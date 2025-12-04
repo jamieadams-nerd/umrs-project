@@ -63,9 +63,9 @@ High-assurance systems need more than simple logs; they need structured, mandato
 
 * Simple high-level API.
   - Once you instantiate a logger with its static context, you can call methods like:
-    - logger.success(“updated configuration”, target_path)
-    - logger.failure(“failed to update configuration”, target_path, error)
-    - logger.error(“unexpected IO error while writing config”, details)
+    - `logger.success(“updated configuration”, target_path)`
+    - `logger.failure(“failed to update configuration”, target_path, error)`
+    - `logger.error(“unexpected IO error while writing config”, details)`
 
 * Pluggable sinks.
   - The actual serialization and transport of events should be pluggable:
