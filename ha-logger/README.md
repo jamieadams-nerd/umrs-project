@@ -226,7 +226,8 @@ Operation names, target types, and result codes can be strongly recommended via 
 No network, no random external calls, no heavy runtime reflection. If you need event_id randomness, use a deterministic, approved RNG (or rely on the system RNG that is already approved in your FIPS context).
 
 
-# Example conceptual flow for your config-editing tool
+# Example conceptual flow for a config-editing tool
+Consider a tool that modifies a key configuration file. We must track changes to this configuration. 
 
 1. At startup, your tool constructs:
 ```rust
