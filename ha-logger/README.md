@@ -241,7 +241,9 @@ logger.success(
 “/etc/myapp.conf”,
 “User requested update of parameter X”
 );
-    3.    If an error occurs:
+```
+3. If an error occurs:
+```rust
 logger.failure(
 “modify_config”,
 “file”,
