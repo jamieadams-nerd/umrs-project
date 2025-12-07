@@ -122,16 +122,4 @@ This layout is:
 
 This is the exact pattern used in hardened government and defense deployments.
 
-Need Extras?
 
-I can also generate:
-
-A Kickstart file that installs RHEL with this exact layout
-
-A diagram/visual map of the filesystem
-
-A CIS benchmark version
-
-A version optimized for virtualization (Parallels, VMware, KVM)
-
-Just tell me what you'd like next!
