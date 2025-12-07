@@ -129,11 +129,9 @@ Relevant controls: AC, SC
 ### Auditing and monitoring
 Relevant controls: AU
 
-* AU-12 Audit Generation
-  - Access to temporary storage can be audited to detect abnormal usage patterns or misuse.
+* AU-12 Audit Generation - Access to temporary storage can be audited to detect abnormal usage patterns or misuse.
 
-* AU-6 Audit Review, Analysis, and Reporting
-  - Audit records associated with temporary storage support incident investigation and corrective action.
+* AU-6 Audit Review, Analysis, and Reporting - Audit records associated with temporary storage support incident investigation and corrective action.
 
 
 ### Accreditation perspective summary
