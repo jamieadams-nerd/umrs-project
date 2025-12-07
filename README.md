@@ -33,12 +33,12 @@ In other words: A high-assurance system provides mathematical or process-based e
 
 4.	Independent evaluation or certification
     - Examples:
-	•	Common Criteria EAL5 – EAL7
-	•	NSA Raise-the-Bar guidance
-	•	NCDSMO evaluations
-	•	FIPS 140-3 validation
-	•	DO-178C (aviation)
-	•	IEC 61508 / ISO 26262 (industrial/safety)
+	  - Common Criteria EAL5 – EAL7
+      - NSA Raise-the-Bar guidance
+      - NCDSMO evaluations
+      - FIPS 140-3 validation
+      - DO-178C (aviation)
+      - IEC 61508 / ISO 26262 (industrial/safety)
 
 5.	Resistance to insider threat, misuse, or misconfiguration
     - The system should remain secure even when users or software try to bypass controls.
