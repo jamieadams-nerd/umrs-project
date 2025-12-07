@@ -136,5 +136,11 @@ Every major CDS vendor still implements HACAMS-like capabilities, just not under
 * It appeared in DARPA, AFRL, NSA, and early MLS program documentation.
 * As MLS desktops declined and CDS guards rose in importance, HACAMS functions were absorbed into CDS management tools.
 
+Modern equivalents exist, but the term “HACAMS” is rarely used. The concept lives on through zero-trust cross-domain governance, enterprise CDS management, and RTB-aligned oversight systems.
 
-• Modern equivalents exist, but the term “HACAMS” is rarely used. The concept lives on through zero-trust cross-domain governance, enterprise CDS management, and RTB-aligned oversight systems.
+---
+_ _ This document is licensed under the Creative Commons Attribution 4.0 International License (CC BY 4.0).
+You may copy, redistribute, and adapt this material, provided that appropriate credit is given to the original author._ _
+
+Author: Jamie L. Adams
+License text: https://creativecommons.org/licenses/by/4.0/
