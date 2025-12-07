@@ -75,37 +75,35 @@ HACAMS appeared in:
 • Early cross-domain architecture proposals
 These were not public commercial documents but DoD/IC research and program documents tied to early MLS workstations and domain bridging systems.
 
-###HOW HACAMS FIT INTO THE MLS ERA
+### HOW HACAMS FIT INTO THE MLS ERA
 During the 1990s and early 2000s, large program offices were experimenting with:
-• Trusted Solaris
-• SELinux in MLS mode
-• separation kernels (INTEGRITY, LynxSecure, etc.)
-• XTS-400 and other trusted systems
+* Trusted Solaris
+* SELinux in MLS mode
+* separation kernels (INTEGRITY, LynxSecure, etc.)
+* XTS-400 and other trusted systems
 
 HACAMS was conceived as the enterprise glue that sat above these technologies.
 Think of it as:
 “identity + policy + audit + domain mapping for multi-level environments.”
 
-###TRANSITION INTO THE CROSS-DOMAIN (CDS) ERA
+### TRANSITION INTO THE CROSS-DOMAIN (CDS) ERA
 Around 2005–2012, the US government shifted from focusing on MLS workstations to Cross-Domain Solutions (CDS).
 Key reasons:
-• MLS desktops were too rigid and slow to accredit.
-• Cross-domain traffic filtering provided more flexibility.
-• Intelligence sharing requirements exploded post-9/11.
-• Guard technologies matured.
-• Raise-the-Bar (RTB) standards began taking shape.
+* MLS desktops were too rigid and slow to accredit.
+* Cross-domain traffic filtering provided more flexibility.
+* Intelligence sharing requirements exploded post-9/11.
+* Raise-the-Bar (RTB) standards began taking shape.
 
 As the CDS guard became the centerpiece, HACAMS was absorbed into supporting layers such as:
 • enterprise CDS management suites
 • identity and access control tools
-• guard admin consoles
 • MLS-to-CDS policy transition tools
 • audit and oversight systems
 • classification and label mapping services
 
 Essentially, HACAMS became functions inside the larger CDS ecosystem.
 
-###OFFICIAL TERMINOLOGY SHIFT
+### OFFICIAL TERMINOLOGY SHIFT
 By the early-to-mid 2010s, the IC and DoD stopped using the term “HACAMS” in formal program documentation.
 Terminology shifted to:
 • Cross-Domain Access Control
