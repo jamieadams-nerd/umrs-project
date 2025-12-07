@@ -54,6 +54,27 @@ A high-assurance system is a system that:
 * asses Common Criteria EAL5+ or higher
 * and provides strong assurance — not just hope — that it will behave securely.
 
+### REAL WORLD EXAMPLES OF HIGH-ASSURANCE SYSTEMS
+* Military / Intelligence
+  - Cross-Domain Solutions (CDS) / Guards: Must meet NSA “Raise the Bar,” NCDSMO standards, formal MLS policies, and cannot fail open under any circumstance.
+  - SIGINT collection platforms: Systems must behave deterministically and securely on submarines, aircraft, or ground stations.
+  - Weapons-control computers: Missile-defense and targeting systems require mathematically proven correctness and safety.
+
+* National Infrastructure
+  - Nuclear command and control: Sub-1% chance of failure is unacceptable; must be nearly mathematically impossible.
+  - Air-traffic control radars and coordination systems: Require absolute integrity and predictable real-time behavior.
+
+<br>
+* Formal Safety-Critical Industries
+  - Aviation flight computers: Governed by DO-178C Level A: every line of code must be traceable, testable, verified.
+  - Medical devices (pacemakers, infusion pumps): Must be provably safe; any crash can kill.
+  - Industrial safety systems (oil refineries, power plants): Loss of control could cause large-scale disasters.
+
+<br>
+* High-Integrity Cryptography & Security
+  - FIPS 140-3 validated crypto modules: Algorithms and implementations must be proven secure under strict constraints.
+  - Formally verified microkernels (e.g., seL4): Entire correctness is mathematically proven.
+
 
 ## THE KEY DIFFERENCES
 
