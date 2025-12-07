@@ -51,7 +51,6 @@ In other words: A high-assurance system provides mathematical or process-based e
 ## REAL-WORLD EXAMPLES
 A system might be considered high assurance if it:
 * Enforces MLS separation on RHEL with SELinux MLS
-* Implements a CDS guard that passes NCDSMO/RTB evaluation
 * Uses formally verified microkernels (e.g., seL4)
 * Implements deterministic control in an aircraft flight computer
 * Uses FIPS 140-3 validated cryptographic modules
