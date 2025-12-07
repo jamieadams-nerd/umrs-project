@@ -31,7 +31,7 @@ In simple terms:
 
 ### THE KEY DIFFERENCE
 
-####1. Level of required evidence
+#### 1. Level of required evidence
 
 Traditional systems rely on:
 • unit tests
@@ -41,7 +41,7 @@ Traditional systems rely on:
 
 High-assurance systems require formal proofs, mathematical models, auditable processes, and verification evidence.
 
-2. Impact of failure
+#### 2. Impact of failure
 
 Traditional:
 Failure means downtime, inconvenience, bugs.
