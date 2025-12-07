@@ -29,8 +29,7 @@ In simple terms:
 - Traditional engineering = “We think it works.”
 - High-assurance engineering = “We can prove it works, and prove it fails safely.”
 
-**WHAT HIGH-ASSURANCE IS NOT**
-It is **not** just:
+**HIGH-ASSURANCE IS NOT JUST:**
 * “Secure coding”
 * Memory-safe language choice (e.g., Rust)
 * SELinux enforcing mode
@@ -77,7 +76,7 @@ High-assurance:
 - Failure may mean a warfighter dies, intelligence is compromised, attackers cross domains, critical national data is exposed, or a weapon system misfires.
 
 
-3. Trust boundary rigor
+### 3. Trust boundary rigor
 
 Traditional:
 - TCB (trusted computing base) isn’t carefully minimized; components grow organically.
@@ -90,7 +89,7 @@ High-assurance:
   - verified
   - controlled through change management
 
-4. Development discipline
+### 4. Development discipline
 Traditional:
 - Agile, quick iteration, “move fast,” flexible.
 
