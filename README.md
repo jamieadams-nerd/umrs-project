@@ -64,13 +64,11 @@ A high-assurance system is a system that:
   - Nuclear command and control: Sub-1% chance of failure is unacceptable; must be nearly mathematically impossible.
   - Air-traffic control radars and coordination systems: Require absolute integrity and predictable real-time behavior.
 
-<br>
 * Formal Safety-Critical Industries
   - Aviation flight computers: Governed by DO-178C Level A: every line of code must be traceable, testable, verified.
   - Medical devices (pacemakers, infusion pumps): Must be provably safe; any crash can kill.
   - Industrial safety systems (oil refineries, power plants): Loss of control could cause large-scale disasters.
 
-<br>
 * High-Integrity Cryptography & Security
   - FIPS 140-3 validated crypto modules: Algorithms and implementations must be proven secure under strict constraints.
   - Formally verified microkernels (e.g., seL4): Entire correctness is mathematically proven.
