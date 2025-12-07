@@ -141,6 +141,5 @@ Modern equivalents exist, but the term “HACAMS” is rarely used. The concept 
 _This document is licensed under the Creative Commons Attribution 4.0 International License (CC BY 4.0).
 You may copy, redistribute, and adapt this material, provided that appropriate credit is given to the original author._
 
-Author: Jamie L. Adams
-
+Author: Jamie L. Adams<br>
 License text: https://creativecommons.org/licenses/by/4.0/
