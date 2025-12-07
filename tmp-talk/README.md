@@ -40,28 +40,26 @@ This mapping is suitable for inclusion in a system security plan, design descrip
 ### Background and design rationale
 Relevant controls: PL, SA
 
-PL-8 Security and Privacy Architectures - The historical background and evolution of /tmp and /var/tmp demonstrate that their modern treatment is part of a defined security architecture. The deliberate distinction between short-lived and longer-lived temporary storage reflects architectural planning rather than default operating system behavior.
+* PL-8 Security and Privacy Architectures - The historical background and evolution of /tmp and /var/tmp demonstrate that their modern treatment is part of a defined security architecture. The deliberate distinction between short-lived and longer-lived temporary storage reflects architectural planning rather than default operating system behavior.
 
-SA-8 Security Engineering Principles - The use of layered controls on shared temporary storage reflects defense-in-depth and least privilege principles. The system design accounts for known classes of weaknesses, including race conditions, symbolic link attacks, and information persistence.
+* SA-8 Security Engineering Principles - The use of layered controls on shared temporary storage reflects defense-in-depth and least privilege principles. The system design accounts for known classes of weaknesses, including race conditions, symbolic link attacks, and information persistence.
 
 
 ### Shared temporary storage risks
 Relevant controls: RA, SI
 
-RA-3 Risk Assessment - The identified risks associated with /tmp and /var/tmp, including unauthorized access, denial-of-service, and data persistence, reflect documented threat scenarios. These conditions are well known and supported by historical vulnerability data and security advisories.
+* RA-3 Risk Assessment - The identified risks associated with /tmp and /var/tmp, including unauthorized access, denial-of-service, and data persistence, reflect documented threat scenarios. These conditions are well known and supported by historical vulnerability data and security advisories.
 
-RA-7 Risk Response - The application of filesystem hardening, isolation, and lifecycle management represents a defined response to these risks rather than acceptance.
+* RA-7 Risk Response - The application of filesystem hardening, isolation, and lifecycle management represents a defined response to these risks rather than acceptance.
 
-SI-7 Information Integrity - Controls applied to temporary storage reduce the likelihood of unauthorized modification of data staged during program execution.
+* SI-7 Information Integrity - Controls applied to temporary storage reduce the likelihood of unauthorized modification of data staged during program execution.
 
 ### Sticky bit and basic filesystem protections
 Relevant controls: AC
 
-AC-6 Least Privilege
-The sticky bit enforces a minimal privilege model within a shared directory. Users retain the ability to create files while being restricted from deleting or modifying files owned by others.
+* AC-6 Least Privilege - The sticky bit enforces a minimal privilege model within a shared directory. Users retain the ability to create files while being restricted from deleting or modifying files owned by others.
 
-AC-3 Access Enforcement
-Filesystem permissions and sticky bit semantics are enforced by the kernel and cannot be bypassed by normal users.
+* AC-3 Access Enforcement - Filesystem permissions and sticky bit semantics are enforced by the kernel and cannot be bypassed by normal users.
 
 
 ### Mount options and execution restrictions
