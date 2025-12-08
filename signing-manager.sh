@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
-
+#
+# Copyright (c) 2025 Jamie L. Adams
+# SPDX-License-Identifier: MIT
+#
 ###############################################################################
 # High-Assurance Signing Key Manager
 #
