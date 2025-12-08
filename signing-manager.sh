@@ -3,6 +3,8 @@
 # Copyright (c) 2025 Jamie L. Adams
 # SPDX-License-Identifier: MIT
 #
+# TODO: Add rsyslogging when creating keys and such.
+#
 ###############################################################################
 # High-Assurance Signing Key Manager
 #
