@@ -11,7 +11,20 @@
 # For information on security controls this helps satisfy, 
 # see the ../docs/git-commit-signing.md file in this 
 # GitHub repository: jamieadams-nerd/ha-security
+# ------------------------------------------------------------------------
+# Testing: Once you've pushed a signed commit, you can check the log to 
+# see if it was in face signed with (sample output):
 #
+#    git log -1 --show-signature
+#       commit 982ff762256c273eb5bf94255a3da4cebfc2c0eb (HEAD -> main, origin/main, origin/HEAD)
+#       gpg: Signature made Tue 09 Dec 2025 11:28:59 AM EST
+#       gpg:                using RSA key 28458CFF01FBB0FBE3F307FC3C86D9F69353A2DF
+#       gpg: Good signature from "Jamie L Adams <jamie_l_adams@icloud.com>" [ultimate]
+#       Author: Jamie L Adams <jamie_l_adams@icloud.com>
+#       Date:   Tue Dec 9 11:28:59 2025 -0500
+#
+#       Enhanced source code comment
+# 
 ##########################################################################
 # Obtain user name and email
 ##########################################################################
