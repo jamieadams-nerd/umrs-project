@@ -1,0 +1,208 @@
+Signature chaining
+
+Right now we’ve only talked about this at the “idea” level, so your question is exactly the right one: what does “chaining” actually mean in concrete terms?
+
+When I said “chaining signatures of logs,” I meant something like this:
+
+Instead of each log file being completely independent, we make each new signature depend on the previous file in some way. That way:
+	•	You can still verify each file’s integrity.
+	•	AND you can also detect if a file in the middle of the history has been deleted or replaced.
+
+Here are three concrete ways to do that, from simplest to fancier.
+	1.	No chain (baseline, what you already understand)
+
+This is just for comparison.
+	•	For each rotated log file (say secure.log-2025-12-08), we compute:
+	•	hash = SHA-256(contents of file)
+	•	sign(hash) with the log-signing key
+	•	We store a detached signature file (e.g., secure.log-2025-12-08.sig).
+
+You can prove each file hasn’t been modified, but you cannot easily prove that you haven’t “lost” secure.log-2025-12-07 entirely, because the signatures don’t reference each other.
+	2.	Simple hash chain using a manifest (easiest to implement)
+
+Here’s the simplest “chain” that’s easy to bolt onto a daemon like the one we discussed for HA-Sign / log-signer:
+	•	Maintain a small “chain manifest” file or SQLite table with rows like:
+sequence_number
+filename
+file_hash
+chain_hash
+
+Where:
+	•	file_hash = SHA-256 of that log file’s contents
+	•	chain_hash = SHA-256(file_hash || previous_chain_hash)
+
+And for the very first file, previous_chain_hash could be all zeros or some fixed constant.
+
+What the daemon does when it sees a new rotated log file:
+	1.	Computes file_hash = SHA-256(file contents).
+	2.	Reads the last chain_hash from the manifest (or DB).
+	3.	Computes new_chain_hash = SHA-256(file_hash || previous_chain_hash).
+	4.	Appends a new row / line:
+seq N, filename, file_hash, new_chain_hash.
+	5.	Signs just this new row, or periodically signs the entire manifest.
+
+Verification time:
+	•	You recompute file_hash for each file.
+	•	You recompute new_chain_hash in sequence and compare to what’s stored.
+	•	If any file was removed or changed, the chain breaks.
+	•	If the manifest itself is signed periodically, you also have integrity of the chain metadata.
+
+This is “chaining” in the strict sense: each entry depends on the previous one, so you can’t tamper with history without breaking the math.
+	3.	Chaining via “previous hash” embedded in each signature
+
+Another way, closer to your original wording (“chaining signatures of logs”), is:
+	•	When you sign log file N, you don’t just sign:
+	•	hash_N = SHA-256(contents_N)
+	•	You sign:
+	•	combined = SHA-256(hash_N || hash_{N-1})
+
+So the detached signature for file N is actually over (hash_N + previous file’s hash).
+
+That gives you:
+	•	Integrity of each file’s content.
+	•	A cryptographic link that says, “this file’s integrity includes knowing what the previous file’s hash was.”
+
+To verify the whole chain you:
+	•	Verify the signature on file 1 → get hash_1.
+	•	For file 2, you check that its signature covers (hash_2 || hash_1).
+	•	For file 3, you check that its signature covers (hash_3 || hash_2).
+	•	And so on.
+
+If someone deletes file 2, you can’t make file 3’s signature verify properly anymore, because it’s bound to hash_2.
+	4.	Which is most practical for our projects?
+
+For your unclassified MLS reference system and the HA-Sign / log-signer idea, I’d probably do:
+	•	Option 2: chain manifest in SQLite (since you already like SQLite for this stuff).
+	•	Table with: id, timestamp, filename, file_hash, prev_chain_hash, chain_hash, maybe a comment.
+	•	A tiny CLI to:
+	•	Verify the chain.
+	•	Dump a report for auditors.
+	•	The daemon keeps appending entries and maybe signs the latest chain_hash occasionally with a long-term key.
+
+Later, if we want something more “cryptographically elegant” or standards-y, we can move toward option 3 or even a Merkle-tree approach. But option 2 gives you:
+	•	Clear, human-readable history.
+	•	Strong detection of:
+	•	Modified log file contents.
+	•	Deleted or reordered log files.
+	•	Easy reporting for auditors (“here is the chain, here is the verification result”).
+
+So: when I said “chaining signatures,” I really meant “create a hash chain over the sequence of log files and sign the data that represents that chain,” not just signing each file in isolation.
+
+Right now we are very much on the same page, you did not misunderstand. Let me restate it in simpler, concrete terms for the “no daemon, just scripts” case.
+	1.	What “chaining signatures” actually means here
+
+Think of each rotated log file as one link in a chain:
+	•	secure-2025-12-09.log
+	•	secure-2025-12-10.log
+	•	secure-2025-12-11.log
+etc.
+
+For each file we can compute:
+	•	Hn = hash of this log file (for example SHA-512 over the file contents).
+	•	Cn = “chain hash” that depends on:
+	•	C(n-1) (the previous chain hash)
+	•	Hn (this file’s hash)
+	•	maybe some metadata (file name, sequence number, date range, etc.)
+
+Then we sign a small record that contains:
+	•	filename
+	•	Hn
+	•	C(n-1)
+	•	Cn
+	•	maybe timestamp or date range
+
+The important bit is: every new link (Cn) is mathematically tied to the previous link (C(n-1)).
+So if someone deletes or alters an old log file, that will break the consistency when you later re-compute the chain.
+	2.	How this looks with a simple “sign-on-rotate” script (no daemon)
+
+Imagine a script called log_sign_rotate.sh that logrotate calls after it rotates a specific log. For one log stream (say /var/log/secure) we can maintain:
+	•	A chain state file:
+/var/lib/ha-log/chains/secure.chain
+	•	Rotated logs:
+/var/log/secure-2025-12-09
+/var/log/secure-2025-12-10
+etc.
+	•	Signature files next to them, e.g.:
+/var/log/secure-2025-12-09.sig
+
+The sign-on-rotate script would roughly do this:
+	1.	Compute Hn for the rotated file:
+Hn = sha512sum secure-2025-12-09
+	2.	Read the previous chain hash C(n-1) from the chain state file.
+	•	If the state file does not exist yet (first run), treat C(n-1) as all zeros or some fixed constant.
+	3.	Build a “chain input” structure, for example:
+chain_input = C(n-1) || Hn || filename || rotation_timestamp
+	4.	Compute the new chain hash:
+Cn = SHA-512(chain_input)
+	5.	Construct a small text record to sign, something like:
+LOGCHAIN V1
+file=secure-2025-12-09
+file_hash=
+prev_chain_hash=<C(n-1)>
+chain_hash=
+rotated_at=
+	6.	Use your log-signing key to create a detached signature over that record:
+secure-2025-12-09.sig
+	7.	Update the chain state file to store Cn:
+write Cn into /var/lib/ha-log/chains/secure.chain
+
+That is the entire “chaining” logic. The only new ingredient compared to a simple “sign each file” scheme is:
+	•	maintaining C(n-1) in a state file
+	•	including C(n-1) and Cn in the signed metadata
+
+Yes, in this no-daemon design, the sign-on-rotate script contains all this logic.
+	3.	A separate verification script
+
+Later, you want to prove “my entire secure log history from day X to day Y is intact.”
+
+You can build a verify_chain.sh script that:
+	1.	Reads the initial C0 value from somewhere trusted (for example, the first known good chain state written down and stored safely).
+	2.	Walks the log files in sequence order:
+secure-2025-12-09
+secure-2025-12-10
+secure-2025-12-11
+etc.
+	3.	For each file:
+a) Read its .sig file.
+b) Verify the signature against your log-signing public key.
+c) From the signed metadata, get Hn, C(n-1), Cn, filename, timestamps.
+d) Recompute Hn from the real file and make sure it matches.
+e) Recompute Cn from C(n-1), Hn, and metadata.
+f) Ensure the recomputed Cn matches the Cn inside the signed record.
+g) Ensure the C(n-1) inside the signed record matches the Cn from the previous file in the sequence.
+	4.	If at any point:
+	•	a signature fails, or
+	•	a hash mismatch occurs, or
+	•	the chain values do not line up,
+you know integrity has been broken (file changed, replaced, removed, re-ordered, or chain state tampered with).
+
+The verification script does not need to know anything about logrotate; it just operates on a directory of log files and their signatures plus the chain state. It can be as simple as:
+	•	“Verify everything in /var/log” or
+	•	“Verify secure* from 2025-12-01 to 2025-12-31”
+
+	4.	You can phase this in slowly
+
+You do not have to ship the full chain logic on day one. A realistic evolution could be:
+
+Phase 1:
+	•	On rotate, compute Hn and sign only Hn + filename + timestamp.
+	•	No chain yet; you still get basic integrity per file.
+
+Phase 2:
+	•	Add C(n-1) and Cn logic and the state file.
+	•	Now you have a forward chain for that log stream.
+
+Phase 3:
+	•	Add a simple verify_chain.sh that auditors can run.
+	•	Later, add HTML or nice text reports if you want.
+
+So to answer your direct question:
+
+Yes, if we do not use a daemon, the sign-on-rotate script will own the chaining logic (maintaining the previous chain hash, computing the new one, and signing a metadata record). A separate verification script will then walk the files later and prove both “each file is intact” and “the sequence has not been tampered with.”
+
+If you like, next step we can sketch a concrete layout for:
+	•	where to store keys
+	•	where to store chain state
+	•	what the signed metadata record actually looks like in plain text
+so you can see exactly what an auditor or admin would read.
+
