@@ -2,7 +2,59 @@
 §gi.require_version(“Gtk”, “4.0”)
 §from gi.repository import Gtk, Gdk
 §
+§§# umrs/application.py
+§import gi
+§gi.require_version(“Gtk”, “3.0”)
+§from gi.repository import Gtk, Gio
 §
+§class UMRSApplication(Gtk.Application):
+§    def init(self, app_id=“org.umrs.example”, flags=Gio.ApplicationFlags.FLAGS_NONE):
+§        Gtk.Application.init(self, application_id=app_id, flags=flags)
+§        self.umrs_env_ok = False
+§        self.selinux_context = None
+§
+§    def do_startup(self):
+§        Gtk.Application.do_startup(self)
+§        self._init_umrs_environment()
+§        self._load_umrs_theme()
+§
+§    def do_activate(self):
+§        # Subclasses will create their UMRSWindow here
+§        pass
+§
+§    def _init_umrs_environment(self):
+§        # Example: check FIPS, SELinux, MLS, key dirs, etc.
+§        # Set self.umrs_env_ok accordingly and log or raise if needed.
+§        self.selinux_context = self._get_selinux_context()
+§
+§    def _get_selinux_context(self):
+§        try:
+§            with open(”/proc/self/attr/current”, “r”, encoding=“utf-8”) as f:
+§                return f.read().strip()
+§        except OSError:
+§            return None
+§
+§    def get_selinux_context(self):
+§        return self.selinux_context
+§
+§    def require_fips(self):
+§        try:
+§            with open(”/proc/sys/crypto/fips_enabled”, “r”, encoding=“ascii”) as f:
+§                if f.read().strip() != “1”:
+§                    # You could raise or log/audit here
+§                    raise RuntimeError(“FIPS mode is required but not enabled”)
+§        except OSError:
+§            raise RuntimeError(“Cannot determine FIPS mode state”)
+§
+§    def _load_umrs_theme(self):
+§        # Load your CSS and apply to the default screen
+§        pass
+§
+§    def audit_event(self, event_type, details):
+§        # Hook into UMRS audit/log system
+§        pass
+
+
 §class UmrsCssManager:
 §    _provider = None
 §    _is_loaded = False
