@@ -1,0 +1,179 @@
+Extra functions
+
+Here’s a small, self-contained logging suite you can drop into the existing HA-Sign Bash script. It logs to syslog via logger with a default facility of authpriv and a tag of ha-sign. It supports info, notice, warning, and error levels so you can distinguish normal lifecycle events (e.g., “created new AUDIT key”) from failures.
+
+All script lines are prefixed with the section symbol, as you requested.
+
+§###############################################################################
+§# Logging configuration and helpers
+§###############################################################################
+§
+§# Default syslog tag and facility for HA-Sign events.
+§# You can override these at runtime:
+§#   HA_SIGN_LOG_TAG=“my-tag” HA_SIGN_LOG_FACILITY=“local3” ./ha-sign.sh …
+§: “${HA_SIGN_LOG_TAG:=ha-sign}”
+§: “${HA_SIGN_LOG_FACILITY:=authpriv}”
+§
+§# _log_syslog LEVEL MESSAGE…
+§# LEVEL is one of: info, notice, warning, err, crit, alert, emerg
+§# MESSAGE is the text to send to syslog.
+§_log_syslog() {
+§    local _level _msg
+§    _level=”$1”
+§    shift
+§    _msg=”$*”
+§
+§    # If logger is not available, fail silently rather than breaking the script.
+§    if command -v logger >/dev/null 2>&1; then
+§        logger -p “${HA_SIGN_LOG_FACILITY}.${_level}” 
+§               -t “${HA_SIGN_LOG_TAG}” 
+§               – “${_msg}”
+§    fi
+§}
+§
+§# Public logging helpers for common levels.
+§log_info() {
+§    _log_syslog info “$@”
+§}
+§
+§log_notice() {
+§    _log_syslog notice “$@”
+§}
+§
+§log_warn() {
+§    _log_syslog warning “$@”
+§}
+§
+§log_error() {
+§    _log_syslog err “$@”
+§}
+§
+§###############################################################################
+§# Example usage inside HA-Sign key-management functions
+§###############################################################################
+§
+§# After successfully creating a new AUDIT signing key:
+§#   log_notice “Created new AUDIT signing key at ${AUDIT_KEY_PATH} (alg=${KEY_ALG}, bits=${KEY_BITS}, expires=${KEY_EXPIRES})”
+§#
+§# After successfully rotating the LOG signing key:
+§#   log_notice “Rotated LOG signing key: old=${OLD_LOG_KEY_ID}, new=${NEW_LOG_KEY_ID}, archive=${ARCHIVE_DIR}”
+§#
+§# On a validation failure or error condition:
+§#   log_error “Key validation failed for ${KEY_PATH}: ${REASON}”
+§#
+§# On a non-fatal warning (e.g., key close to expiration but still valid):
+§#   log_warn “Key ${KEY_PATH} expires soon on ${EXPIRY_DATE} (threshold=${WARN_DAYS} days)”
+
+How this ties into your design:
+	•	For every successful lifecycle event (init, rotate, archive, report generation), call log_notice with enough detail for an auditor: what key, what role (AUDIT, LOG, ARCHIVE, etc.), algorithm, key length, expiration, and where it’s stored.
+	•	For non-fatal but important conditions (about-to-expire keys, missing optional keys), call log_warn.
+	•	For hard failures (could not create key, could not archive, integrity check failed), call log_error.
+
+Because the facility and tag are configurable via HA_SIGN_LOG_FACILITY and HA_SIGN_LOG_TAG, admins can route these messages to a dedicated file (e.g., /var/log/ha-sign.log) using rsyslog/journald configuration, while still having a consistent, auditable trail of all key management operations.
+
+enscript ha-sign-report.txt \
+  --font=Courier10 \
+  --margins=72:72:72:72 \
+  --header='HA-SIGN | Key Inventory Report | Page $% of $=' \
+  --footer='Generated: $(date -u) UTC | Host: $(hostname)' \
+  --line-numbers=1 \
+  -o - | ps2pdf - ha-sign-report.pdf
+
+
+Short answer: there is no perfect, fully-automatic way to know if the terminal can actually “draw” a given emoji, but you can get very close to “safe enough” with a couple of checks and a fallback.
+
+What you can reliably test
+	1.	Is stdout a real terminal?
+
+If your report is going to a file or pipe, you probably don’t want emoji anyway.
+
+§ if [ ! -t 1 ]; then
+§     # stdout is not a terminal (probably a pipe or file)
+§     use_emoji=0
+§ fi
+	2.	Is the environment UTF-8?
+
+If the user’s locale is not UTF-8, sending emoji is likely to produce mojibake or “??”.
+
+A simple check:
+
+§ _locale=”${LC_ALL:-${LC_CTYPE:-$LANG}}”
+§ case “$_locale” in
+§     UTF-8|utf8) utf8_ok=1 ;;
+§     *)              utf8_ok=0 ;;
+§ esac
+
+If utf8_ok is 0, do not use emoji.
+	3.	Does the system treat the emoji as a single character?
+
+This doesn’t prove the font supports it, but it proves libc and locale can handle it. You can use wc -m:
+
+§ if printf ‘🧑‍💻’ | wc -m | grep -qx ‘1’; then
+§     emoji_char_ok=1
+§ else
+§     emoji_char_ok=0
+§ fi
+
+If that returns 1 character, your locale/runtime are Unicode-aware enough that using emoji is reasonably safe. If it returns 4, 5, or errors, don’t use emoji.
+
+Putting it together in your script
+
+Here’s a small helper you can drop into the key-signing manager script:
+
+§ ha_supports_emoji()
+§ {
+§     # 1) stdout must be a TTY
+§     if [ ! -t 1 ]; then
+§         return 1
+§     fi
+§
+§     # 2) allow explicit override: HA_SIGN_NO_EMOJI=1 -> force off
+§     if [ “${HA_SIGN_NO_EMOJI:-0}” -eq 1 ]; then
+§         return 1
+§     fi
+§
+§     # 3) require UTF-8 locale
+§     _loc=”${LC_ALL:-${LC_CTYPE:-$LANG}}”
+§     case “$_loc” in
+§         UTF-8|utf8) ;;
+§         *) return 1 ;;
+§     esac
+§
+§     # 4) check that the emoji is treated as a single character
+§     if printf ‘🧑‍💻’ | wc -m | grep -qx ‘1’; then
+§         return 0
+§     else
+§         return 1
+§     fi
+§ }
+
+Then, when printing your report header:
+
+§ if ha_supports_emoji; then
+§     icon=“🧑‍💻”
+§ else
+§     icon=”[OP]”
+§ fi
+§ printf ‘%s  High-Assurance Signing Key Report\n’ “$icon”
+
+Why this still isn’t perfect
+
+Even with all that:
+	•	A terminal may be UTF-8 and still use a font that doesn’t include that emoji, in which case you’ll see an empty box or a tofu square.
+	•	There is no standard “tell me if you can render U+1F9D1 U+200D U+1F4BB correctly” escape sequence.
+
+So the reality is:
+	•	You can robustly gate on:
+	•	“Is this a real terminal?”
+	•	“Is this UTF-8?”
+	•	“Does libc see this as a valid character?”
+	•	Beyond that, the last tiny bit (actual glyph shape) is out of your control.
+
+Pragmatic recommendation for your project
+	1.	Use the ha_supports_emoji() style check as a gate.
+	2.	Add an environment override:
+	•	HA_SIGN_NO_EMOJI=1 to force ASCII.
+	3.	In your operator’s guide, document:
+	•	“The tool will use emoji if stdout is a UTF-8 terminal and the environment appears to support the characters; operators can disable emoji via HA_SIGN_NO_EMOJI=1 if they see rendering issues.”
+
+That gives admins exactly what you want: an “as automatic as possible” test, but with a clear, simple escape hatch when a particular terminal doesn’t behave.
