@@ -1,8 +1,10 @@
-A high-assurance system is a computer system that must not merely work correctly, but must be proven, verified, and demonstrably trustworthy under the most demanding security or safety conditions.
+<img src="docs/images/umrs-logo-1024px.png" align="right" width=200>
+<p></p>A high-assurance system is a computer system that must not merely work correctly, but must be proven, verified, and demonstrably trustworthy under the most demanding security or safety conditions.</p>
 
-High-assurance engineering has its roots in High Assurance Computing and Management Systems ([HACAMS](HACAMS.md)). In the 1990s and early 2000s, HACAMS was often used in academic papers, DARPA programs, and DoD system descriptions. Over time, the terminology shifted.
+<p>High-assurance engineering has its roots in High Assurance Computing and Management Systems (HACAMS). In the 1990s and early 2000s, HACAMS was often used in academic papers, DARPA programs, and DoD system descriptions. Over time, the terminology shifted.</p>
 
 Today, you rarely hear “HACAMS” used explicitly. Instead, the same ideas live on under different names, such as:
+
 * High-assurance systems
 * Trusted systems
 * MLS (multi-level security) systems
@@ -25,6 +27,7 @@ It applies to systems where failure is unacceptable because it could cause:
 
 > In high-assurance work, the goal is not “works correctly most of the time,” but demonstrable correctness, verifiable security, and predictable behavior under all conditions—even adversarial ones.
 
+<!-- <img src="docs/images/website-banner2.png" align="right" width=400> -->
 In simple terms:
 - Traditional engineering = “We think it works.”
 - High-assurance engineering = “We can prove it works, and prove it fails safely.”
