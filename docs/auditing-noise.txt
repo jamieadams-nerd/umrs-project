@@ -1,0 +1,970 @@
+Auditing noise
+
+Got it. Below is a fully consolidated, plain-text, unformatted answer that combines the previous discussion with the next-stage scaling strategies once audit noise has been reduced. This is written as a single coherent guidance block you can use for design docs, operations manuals, or audit justification.
+
+Everything here aligns with how Red Hat, DISA/STIG-aligned environments, and high-assurance systems actually handle audit load.
+
+⸻
+
+AUDITD NOISE REDUCTION AND SCALING STRATEGY (END-TO-END)
+
+This guidance assumes:
+	•	auditd is writing to /var/log/audit on a dedicated filesystem
+	•	SELinux is enforcing
+	•	STIG/NIST alignment matters
+	•	correctness and integrity are non-negotiable
+
+The correct sequence is:
+	1.	Reduce audit noise
+	2.	Fix policy issues
+	3.	Tighten scope
+	4.	Only then scale capacity (hardware and architecture)
+
+⸻
+
+	1.	FOUNDATIONAL PRINCIPLE
+
+⸻
+
+auditd is not a performance logging system.
+auditd is an accountability and security system.
+
+If audit volume is too high, the correct response is:
+	•	reduce meaningless events
+	•	remove duplication
+	•	focus on security-relevant state changes
+
+Only after that do you scale infrastructure.
+
+⸻
+
+	2.	FIRST PHASE: REDUCE AUDIT NOISE AT THE SOURCE
+
+⸻
+
+2.1 Review audit rules for over-breadth
+
+Look for:
+	•	syscall rules without filters
+	•	execve or open without auid, euid, or exe filters
+	•	“audit everything” rules included for benchmarks
+
+What to remove or tighten:
+	•	broad syscall capture
+	•	rules without clear security intent
+	•	rules that log non-privileged or system daemon behavior
+
+Replace with:
+	•	audit privileged transitions
+	•	audit auid >= 1000 (real users)
+	•	audit changes to security posture, not routine activity
+
+2.2 Eliminate high-churn path watches
+
+Avoid:
+	•	directory watches
+	•	frequently written paths
+	•	temporary directories
+
+Prefer:
+	•	specific security files
+	•	authentication databases
+	•	audit configuration
+	•	SELinux configuration
+	•	time and identity controls
+
+2.3 Remove duplicate coverage
+
+If an event is already reliably logged by:
+	•	systemd-journald
+	•	PAM logs
+	•	sudo logs
+	•	application logs
+
+Then it usually does NOT need to be in auditd unless:
+	•	non-repudiation is required
+	•	the event represents policy enforcement or violation
+
+Audit is not observability.
+
+2.4 Separate benchmark rules from operational rules
+
+Many default rule sets exist only to satisfy:
+	•	CIS
+	•	STIG
+	•	generic compliance checklists
+
+Red Hat and DISA explicitly expect site-specific tailoring.
+
+Document every retained rule:
+	•	what security question it answers
+	•	why it is needed
+	•	where duplicate data would otherwise come from
+
+⸻
+
+	3.	SECOND PHASE: HANDLE SELINUX AVC NOISE (CRITICAL)
+
+⸻
+
+SELinux AVC denials are one of the largest audit noise sources.
+
+There are only two valid approaches.
+
+3.1 Fix the underlying SELinux policy (preferred)
+
+Repeated AVCs indicate:
+	•	intentional behavior
+	•	incorrectly constrained domains
+
+Steps:
+	•	identify repeated AVC patterns
+	•	validate whether access is legitimate
+	•	write targeted policy
+	•	deploy custom modules
+
+Result:
+	•	AVC noise collapses
+	•	security posture improves
+	•	audit volume drops permanently
+
+3.2 Suppress known-benign AVCs (last resort)
+
+If policy cannot be fixed:
+	•	vendor software
+	•	unavoidable legacy behavior
+
+Then and only then:
+	•	add narrowly scoped dontaudit rules
+	•	suppress specific permissions on specific domains
+
+Never:
+	•	suppress broad AVC classes
+	•	suppress by domain alone
+	•	disable AVC logging globally
+
+⸻
+
+	4.	THIRD PHASE: FURTHER AUDIT SCOPE REDUCTION TECHNIQUES
+
+⸻
+
+4.1 Use auid discipline aggressively
+
+Track:
+	•	human users (auid >= 1000)
+	•	privilege escalation
+	•	role transitions
+
+Avoid:
+	•	auditing every action by system services
+	•	auditing uid 0 without context
+
+4.2 Audit state changes, not reads
+
+Reads are noise.
+Writes, policy changes, and ownership changes are signal.
+
+Avoid:
+	•	read syscalls
+	•	open without write intent
+	•	access checks without modification
+
+Prefer:
+	•	chmod, chown
+	•	rule changes
+	•	policy reloads
+	•	identity changes
+
+4.3 Reduce syscall lists
+
+Replace:
+	•	“-S all”
+
+With:
+	•	specific syscalls tied to policy
+
+Audit rule sets often include hundreds of syscalls “just in case”.
+Most are never reviewed or used.
+
+4.4 Remove investigative rules after use
+
+Temporary debug or investigation rules must be removed.
+Leaving them enabled is one of the most common audit explosions.
+
+⸻
+
+	5.	AFTER NOISE REDUCTION: SCALING AND CAPACITY STRATEGIES
+
+⸻
+
+Once audit noise is minimized and justified, only then do you scale.
+
+Hardware is not the first solution; it is the last.
+
+5.1 Increase system memory
+
+More RAM helps:
+	•	kernel audit buffers
+	•	journald intermediary buffering
+	•	disk cache for audit log writes
+
+This is often the highest return hardware upgrade.
+
+5.2 Increase audit buffer size (carefully)
+
+Use auditctl or auditd.conf to tune:
+	•	kernel backlog limits
+	•	backlog wait times
+
+This improves burst tolerance but does NOT solve sustained overload.
+If buffers are constantly full, noise still exists.
+
+5.3 Faster storage for /var/log/audit
+
+Improvements:
+	•	NVMe over SATA
+	•	dedicated physical disk
+	•	high write endurance media
+
+Do NOT:
+	•	disable journaling
+	•	relax integrity guarantees
+
+Faster storage absorbs bursts more safely, it does not excuse excessive logging.
+
+5.4 Off-host audit log shipping (advanced environments)
+
+In very high-assurance systems:
+	•	audit logs may be streamed off-system
+	•	storage and analysis are centralized
+	•	local disks are no longer the bottleneck
+
+This requires:
+	•	trusted transport
+	•	integrity verification
+	•	careful policy design
+
+Not appropriate for all environments, but valid at scale.
+
+5.5 Architectural isolation
+
+For extreme cases:
+	•	dedicate hardware for audit logging
+	•	separate logging domains
+	•	avoid sharing disks with application workloads
+
+This avoids cascading failures under heavy audit load.
+
+⸻
+
+	6.	IMPORTANT THINGS YOU SHOULD NOT DO
+
+⸻
+
+Do NOT:
+	•	speed up audit logging by skipping fsync
+	•	treat audit like journald
+	•	accept dropped audit events
+	•	silence problems rather than fix rules
+	•	use tmpfs for audit logs
+	•	prioritize performance over correctness
+
+Audit integrity outranks availability in compliant systems.
+
+⸻
+
+	7.	HOW RED HAT EXPECTS THIS TO BE DONE
+
+⸻
+
+Red Hat’s implicit, repeated guidance is:
+	1.	Reduce event volume through precise rules
+	2.	Fix SELinux policy instead of logging denials forever
+	3.	Size systems appropriately after scope is minimized
+	4.	Preserve filesystem and audit integrity
+	5.	Prefer buffering and isolation over unsafe tuning
+
+That approach satisfies:
+	•	Red Hat supportability
+	•	DISA STIG expectations
+	•	NIST AU control intent
+	•	Long-term operational stability
+
+⸻
+
+	8.	ONE-PARAGRAPH EXECUTIVE SUMMARY
+
+⸻
+
+Effective audit logging at scale is achieved by reducing audit scope to high-value security events, correcting SELinux policy violations instead of logging them indefinitely, eliminating duplicate and low-signal rules, and only then scaling capacity through memory, storage performance, and architectural isolation. Red Hat guidance consistently emphasizes correctness, buffering, and isolation over unsafe performance optimizations, particularly for audit logs.
+
+If you want next:
+	•	A practical audit.rules review checklist
+	•	A before-and-after audit noise reduction example
+	•	A sample “high signal” audit profile
+	•	NIST AU-control mapping for each phase
+
+Just say the word.
+
+Understood. Below is a fully expanded, plain-text, unformatted, end-to-end treatment with concrete examples. Nothing abstract, no shorthand. This is written the way you would explain it to a senior admin or put straight into an internal hardening guide.
+
+⸻
+
+AUDITD NOISE REDUCTION, SCALING, AND HARDENING – WITH EXAMPLES
+
+This applies to:
+	•	auditd writing to /var/log/audit
+	•	SELinux enforcing
+	•	STIG / NIST alignment required
+	•	High-event-rate or security-sensitive systems
+
+⸻
+
+	0.	FOUNDATIONAL TRUTH (SET CONTEXT)
+
+⸻
+
+auditd is not optimized by making disks faster.
+auditd is optimized by making fewer, better audit decisions.
+
+You always do this in order:
+	1.	Reduce audit noise
+	2.	Fix policy errors
+	3.	Scope audit rules tightly
+	4.	Then scale hardware or architecture
+
+Anything else is working backwards.
+
+⸻
+
+	1.	WHAT “OVERLY BROAD AUDIT RULES” ACTUALLY LOOK LIKE
+
+⸻
+
+This is where most audit explosions come from.
+
+⸻
+
+1.1 Broad syscall rules WITHOUT filters (classic mistake)
+
+Example of a bad rule:
+
+-a always,exit -F arch=b64 -S open
+
+Why this explodes:
+	•	open() is called constantly
+	•	every daemon, shell, cron, library uses it
+	•	no user, permission, or intent filtering
+
+Result:
+Millions of audit events per day with no usable security signal.
+
+Another example:
+
+-a always,exit -F arch=b64 -S execve
+
+Why it is bad:
+	•	execve happens for every shell command
+	•	every service restart
+	•	every script
+	•	every package install
+
+Unless tightly scoped, this rule is almost never defensible in production.
+
+⸻
+
+1.2 What a filtered syscall rule should look like
+
+Example: log exec only when privilege escalation occurs
+
+-a always,exit -F arch=b64 -S execve -F euid=0 -F auid>=1000 -F auid!=4294967295
+
+What this does:
+	•	captures privilege gain
+	•	ignores system daemons
+	•	records only human-initiated elevation
+	•	drastically reduces volume
+
+Example: log execution of critical binaries only
+
+-a always,exit -F arch=b64 -S execve -F exe=/usr/bin/sudo -k priv_esc
+-a always,exit -F arch=b64 -S execve -F exe=/usr/bin/su   -k priv_esc
+
+This is high signal, low noise, and auditor-friendly.
+
+⸻
+
+1.3 “-S all” or multi-syscall buckets
+
+Bad example:
+
+-a always,exit -S all -F arch=b64
+
+This is effectively “audit the kernel.”
+It is never appropriate outside controlled research.
+
+Better approach:
+
+-a always,exit -F arch=b64 -S chmod -S chown -S setxattr -S removexattr
+
+Focus on state changes, not activity.
+
+⸻
+
+	2.	PATH WATCHES: WHAT TO REMOVE AND WHAT TO KEEP
+
+⸻
+
+⸻
+
+2.1 Dangerous path watches
+
+Examples to avoid:
+
+-w /var -p wa
+-w /tmp -p wa
+-w /proc -p wa
+
+Why:
+	•	massive churn
+	•	poor forensic value
+	•	constant rotation pressure
+
+These are famous log killers.
+
+⸻
+
+2.2 Reasonable path watches
+
+High-value examples:
+
+-w /etc/passwd -p wa
+-w /etc/shadow -p wa
+-w /etc/group -p wa
+-w /etc/sudoers -p wa
+-w /etc/ssh/sshd_config -p wa
+-w /etc/audit/ -p wa
+-w /etc/selinux/ -p wa
+
+These paths represent:
+identity
+authentication
+authorization
+policy
+
+⸻
+
+	3.	DUPLICATE COVERAGE (REMOVE IT)
+
+⸻
+
+Common duplicates:
+	•	PAM logs user authentication AND audit logs it again
+	•	sudo logs AND audit logs it again
+	•	journald logs AVCs AND auditd logs them
+
+Ask this for every rule:
+“If auditd disappeared, could I still prove this event occurred?”
+
+If yes:
+auditd probably should not log it again.
+
+Audit is for non-repudiation, not convenience.
+
+⸻
+
+	4.	SELINUX AVC NOISE – PRACTICAL EXAMPLES
+
+⸻
+
+⸻
+
+4.1 Repeated AVC example (policy problem)
+
+Typical AVC:
+
+type=AVC msg=audit(…): denied { read } 
+for pid=1234 comm=“httpd” 
+scontext=system_u:system_r:httpd_t 
+tcontext=system_u:object_r:var_log_t 
+tclass=file
+
+If this happens thousands of times:
+You do not have a logging problem.
+You have a policy mismatch.
+
+Correct action:
+	•	confirm the access is expected
+	•	update policy
+	•	deploy module
+	•	AVCs stop permanently
+
+⸻
+
+4.2 When dontaudit is appropriate
+
+Example:
+Vendor software probes a file it never actually needs.
+
+You review:
+	•	same access
+	•	same class
+	•	safe behavior
+
+Then add a very narrow dontaudit rule.
+
+Never do:
+	•	global dontaudit
+	•	domain-wide suppression
+	•	class-wide suppression
+
+Suppressing AVCs is surgical, not blunt.
+
+⸻
+
+	5.	FURTHER NOISE REDUCTION TECHNIQUES
+
+⸻
+
+⸻
+
+5.1 Audit user discipline (auid)
+
+Bad:
+audit uid=0 always
+
+Better:
+audit auid>=1000 and privilege transitions
+
+System daemons already have accountability.
+Humans do not unless you track them explicitly.
+
+⸻
+
+5.2 Read auditing is almost always noise
+
+Avoid:
+-S read
+-p r
+
+Prefer:
+-Writes
+-Attributes
+-Permission changes
+-Ownership changes
+
+Audit answers “who changed the system,” not “who looked.”
+
+⸻
+
+5.3 Temporary investigative rules (remove them!)
+
+Common failure:
+
+Temporary rule added during investigation
+Never removed
+Audit volume explodes weeks later
+
+Best practice:
+Keep production audit rules minimal
+Add investigative rules briefly
+Remove immediately
+
+⸻
+
+	6.	AFTER NOISE REDUCTION: SCALING THE SYSTEM
+
+⸻
+
+Only do this once noise is minimized.
+
+⸻
+
+6.1 More memory
+
+Benefits:
+	•	larger kernel audit buffers
+	•	smoother disk cache behavior
+	•	better burst tolerance
+
+RAM is usually the best first upgrade.
+
+⸻
+
+6.2 Increase audit backlog buffers carefully
+
+This allows bursts to queue safely.
+
+It does NOT solve long-term overload.
+If backlog is always full, rules are still wrong.
+
+⸻
+
+6.3 Faster dedicated storage
+
+NVMe for /var/log/audit helps absorb bursts.
+
+Never:
+disable journaling
+disable integrity guarantees
+
+⸻
+
+6.4 Architectural separation
+
+Extreme cases:
+	•	dedicated audit collectors
+	•	off-host streaming
+	•	cryptographic integrity enforced
+
+Only when justified.
+
+⸻
+
+	7.	DOES SECCOMP HELP WITH AUDIT NOISE?
+
+⸻
+
+This is a very good question.
+
+Short answer:
+Yes, indirectly — but it must be done correctly.
+
+⸻
+
+7.1 What seccomp actually does
+
+seccomp:
+	•	restricts which syscalls a process may execute
+	•	terminates or traps disallowed calls
+	•	enforces least privilege at syscall level
+
+It does NOT:
+	•	log for you
+	•	replace auditd
+	•	reduce audit rules automatically
+
+⸻
+
+7.2 How seccomp can reduce audit noise
+
+If:
+	•	a daemon is confined to fewer syscalls
+	•	it cannot attempt forbidden actions
+
+Then:
+	•	fewer AVCs
+	•	fewer denied system calls
+	•	fewer audit events
+
+This is prevention, not suppression.
+
+⸻
+
+7.3 Correct use of seccomp
+
+Best candidates:
+	•	network daemons
+	•	service processes
+	•	container workloads
+
+When seccomp eliminates illegal behavior:
+	•	AVCs stop
+	•	audit noise falls
+	•	security improves
+
+But caveat:
+seccomp must be carefully staged.
+Misconfigured seccomp fails hard.
+
+⸻
+
+	8.	IMPORTANT WARNING ABOUT SECCOMP + AUDIT
+
+⸻
+
+If seccomp denies syscalls via SIGSYS:
+You can actually increase audit noise
+if misconfigured
+
+Therefore:
+	•	use seccomp to eliminate behavior
+	•	not as a logging or filtering tool
+
+⸻
+
+	9.	FINAL CONSOLIDATED STRATEGY
+
+⸻
+
+	1.	Remove broad audit rules
+	2.	Filter syscalls aggressively
+	3.	Audit humans, not daemons
+	4.	Fix SELinux policy
+	5.	Suppress only verified-benign AVCs
+	6.	Eliminate duplicate logging
+	7.	Remove investigative leftovers
+	8.	Then scale RAM and storage
+	9.	Optionally use seccomp as prevention
+
+⸻
+
+	10.	ONE-SENTENCE SUMMARY
+
+⸻
+
+Audit performance is achieved by auditing fewer, better events, fixing enforcement mismatches (especially SELinux), and only then scaling capacity; seccomp can reduce noise only by preventing bad behavior, never by filtering logs.
+
+If you want next:
+Example audit.rules before/after
+A concrete AVC triage workflow
+A seccomp deployment pattern for services
+Mapping each technique to NIST AU controls
+
+Understood. Below is a pure plain-text NIST AU control mapping, consolidated with the audit-noise-reduction techniques we discussed. No formatting markup, no bullets beyond simple text structure.
+
+⸻
+
+NIST SP 800-53 AU CONTROL MAPPING FOR AUDIT NOISE REDUCTION
+
+This mapping explains how practical auditd tuning, SELinux policy correction, and scaling choices support specific NIST AU controls. This is written to be defensible in audits and understandable to engineers.
+
+⸻
+
+AU-2 – AUDITABLE EVENTS
+
+AU-2 requires the organization to define which events are auditable.
+
+How noise reduction supports AU-2:
+
+Reducing audit noise is fundamentally an AU-2 activity. You are explicitly deciding which events are worth auditing and which are not.
+
+Examples:
+
+Removing overly broad rules like:
+-a always,exit -S open
+-a always,exit -S execve
+
+and replacing them with filtered rules:
+-log exec only when euid=0
+-log exec only for sudo or su
+
+is an explicit implementation of AU-2. You are narrowing the auditable set to security-relevant events rather than system noise.
+
+Fixing SELinux policy instead of logging the same AVC thousands of times clarifies that those accesses are authorized, and therefore no longer auditable events under AU-2.
+
+Key point:
+Noise reduction is not weakening audit coverage; it is refining the AU-2 event definition.
+
+⸻
+
+AU-3 – CONTENT OF AUDIT RECORDS
+
+AU-3 requires audit records to include sufficient information to understand what happened.
+
+How noise reduction supports AU-3:
+
+Filtered rules produce higher-quality records.
+
+Example:
+
+Over-broad rule:
+-a always,exit -S execve
+
+Produces huge volumes of events with little context value.
+
+Filtered rule:
+-a always,exit -S execve -F euid=0 -F auid>=1000
+
+Produces fewer events, but each event is meaningful:
+Who triggered privilege
+What binary executed
+When it happened
+
+Reducing noise improves the signal-to-noise ratio, making the remaining records far more usable for AU-3 analysis and review.
+
+⸻
+
+AU-4 – AUDIT STORAGE CAPACITY
+
+AU-4 requires sufficient audit storage capacity and management.
+
+How noise reduction supports AU-4:
+
+Reducing unnecessary audit events directly reduces disk consumption and I/O pressure on /var/log/audit.
+
+Fixes that support AU-4:
+Removing unnecessary syscall auditing
+Eliminating duplicate events
+Fixing noisy SELinux AVCs
+Removing read-only auditing
+
+After noise reduction, capacity planning becomes predictable:
+-log volume stabilizes
+-rotation works as intended
+-disk exhaustion risk drops
+
+Adding hardware (more disk, faster disk, more RAM) after noise reduction is a legitimate AU-4 scaling action, but noise reduction is the primary AU-4 compliance mechanism.
+
+⸻
+
+AU-5 – RESPONSE TO AUDIT PROCESSING FAILURES
+
+AU-5 concerns system behavior when audit processing fails.
+
+How noise reduction supports AU-5:
+
+auditd failure is frequently caused by volume, not hardware.
+
+By reducing noise:
+	•	audit queues stop filling
+	•	backlog overflow is avoided
+	•	audit write failures are less likely
+
+Tuning audit rules is therefore a preventive AU-5 control.
+
+Complementary actions:
+configuring auditd space_left and admin_space_left
+ensuring /var/log/audit has its own filesystem
+
+But the most important AU-5 mitigation is keeping event volume reasonable.
+
+⸻
+
+AU-6 – AUDIT REVIEW, ANALYSIS, AND REPORTING
+
+AU-6 is about meaningful audit review.
+
+How noise reduction supports AU-6:
+
+Audit logs that contain millions of irrelevant events are functionally unreviewable.
+
+Noise reduction enables:
+realistic manual review
+useful automated correlation
+faster forensic analysis
+
+Example:
+
+Logging every open() call provides no actionable insight.
+Logging only changes to auth files, privilege elevation, policy changes, and SELinux enforcement failures produces logs that can actually be reviewed.
+
+AU-6 assumes logs are intelligible. Noise reduction is required to meet that assumption.
+
+⸻
+
+AU-7 – AUDIT REDUCTION AND REPORT GENERATION
+
+AU-7 explicitly addresses the ability to reduce and report on audit data.
+
+How noise reduction supports AU-7:
+
+Using filtered rules with keys allows aureport to generate meaningful summaries.
+
+Example:
+-a always,exit -S execve -k priv_esc
+
+Allows:
+aureport -k
+
+Meaningful categorization is impossible if everything is logged indiscriminately.
+
+SELinux policy fixes also support AU-7 by eliminating repeated, identical AVC events that overwhelm reporting tools.
+
+⸻
+
+AU-8 – TIME STAMPS
+
+AU-8 is indirectly supported.
+
+Noise reduction reduces I/O contention and log write latency, which improves timestamp accuracy and consistency under load.
+
+Excessive audit volume can cause delayed writes and make timeline reconstruction harder.
+
+Reducing noise improves temporal fidelity.
+
+⸻
+
+AU-9 – PROTECTION OF AUDIT INFORMATION
+
+AU-9 requires audit logs to be protected from modification and misuse.
+
+How noise reduction supports AU-9:
+
+High audit volume increases:
+rotation frequency
+file handling operations
+error recovery paths
+
+Each of these increases risk.
+
+Reducing event volume:
+reduces churn
+reduces operational manipulation
+reduces emergency maintenance
+
+Correcting SELinux policy instead of logging denials also strengthens AU-9 by aligning enforcement with intent instead of tolerating noisy violations.
+
+⸻
+
+AU-11 – AUDIT RECORD RETENTION
+
+AU-11 requires retaining audit records for defined periods.
+
+How noise reduction supports AU-11:
+
+Retention is impossible if logs fill disks constantly.
+
+Reducing noise:
+slows log growth
+increases practical retention duration
+reduces dependence on emergency purging
+
+Hardware upgrades help, but the primary AU-11 control is limiting audit creation to meaningful events.
+
+⸻
+
+AU-12 – AUDIT GENERATION
+
+AU-12 requires that audit records be generated correctly.
+
+Noise reduction supports AU-12 by ensuring:
+auditd is not overwhelmed
+kernel audit buffers are not saturated
+audit events are not dropped under pressure
+
+Fixing SELinux policy mistakes enhances AU-12 correctness by ensuring that audit logs represent real violations, not misconfigurations.
+
+⸻
+
+SECCOMP AND NIST AU CONTROLS
+
+seccomp is not an AU control, but it supports AU objectives indirectly.
+
+Mapping:
+
+Preventing illegal syscalls reduces:
+SELinux AVCs
+denied syscall audits
+false violation records
+
+This supports:
+AU-2 (fewer audit-worthy events)
+AU-12 (correct audit generation)
+AU-6 (clearer audit records)
+
+Warning:
+seccomp must not be used to hide problems.
+It should prevent bad behavior, not suppress evidence.
+
+⸻
+
+ONE-SENTENCE SUMMARY FOR COMPLIANCE DOCS
+
+Audit noise reduction directly supports NIST SP 800-53 AU-2, AU-3, AU-4, AU-5, AU-6, AU-7, AU-9, AU-11, and AU-12 by refining auditable event definitions, improving audit record quality, preventing capacity and processing failures, enabling effective review and retention, and ensuring accurate audit generation under load.
+
+If you want next:
+a concrete audit.rules before/after example
+an AVC triage checklist mapped to AU controls
+language suitable directly for a POA&M or SSP
