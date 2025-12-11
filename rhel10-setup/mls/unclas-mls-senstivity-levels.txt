@@ -1,0 +1,33 @@
+
+# Unclassified hierarchical levels (lowest → highest):
+
+#
+# s0 GENERAL:
+#    The broad “general unclassified” level — suitable for anything openly 
+#    unclassified, routine, not requiring special controls.
+#
+# s1 PUBLIC
+#    Intended for material that is still unclassified but suitable for public 
+#    dissemination, documentation, public website assets, etc.
+#
+# s2 SENSTIVE
+#    Unclassified but sensitive material that is not meant for public posting. 
+#    Internal business operations, mild sensitivities, etc.#
+#
+# s3 INTERNAL
+#    Internal-use unclassified information that is still above the purely 
+#    sensitive level. This covers items where integrity matters more strongly 
+#    (engineering docs, config examples, internal processes).
+#
+# s4 CONTROLLED
+#    he top of the unclassified-only MLS hierarchy. Used for information 
+#    aligned with CUI-like requirements — unclassified, but subject to explicit 
+#    handling, integrity, and confidentiality expectations. This level models 
+#    what many organizations approximate as “CUI” within an unclassified environment.
+#
+s0=U-General 
+s1=U-Public
+s2=U-Senstive
+S4=U-Internal
+s5=U-Controlled
+
