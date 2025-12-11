@@ -1,0 +1,529 @@
+FIPS cheat sheet
+
+Here’s a first-cut “mental cheat sheet” you can keep in your head when you’re thinking “FIPS-140-2/-3-approved crypto” on a modern system. I’ll focus on what’s effectively current under 140-3 + SP 800-131A Rev.2, but I’ll note legacy bits where it matters.
+
+I’ll group by function:
+	•	Hash
+	•	MAC
+	•	Symmetric encryption
+	•	Digital signatures
+	•	Key establishment (KEX/KEM)
+	•	DRBG / RNG
+
+Think of FIPS-140-2 Annex A as the original list, and 140-3 as “same universe, but filtered through 800-131A + newer PQC standards.”  
+
+⸻
+
+HASH FUNCTIONS (DIGESTS)
+
+Approved families (hash/digest use):
+	•	SHA-2 (FIPS 180-4)
+	•	SHA-224, SHA-256, SHA-384, SHA-512, SHA-512/224, SHA-512/256
+	•	Status: Acceptable for general use.  
+	•	SHA-3 (FIPS 202)
+	•	SHA3-224, SHA3-256, SHA3-384, SHA3-512
+	•	Status: Acceptable; intended as alternative to SHA-2.  
+	•	SHAKE128 / SHAKE256 (XOFs, also in FIPS 202)
+	•	Approved for roles where NIST explicitly permits XOFs (e.g., some KDF/MAC constructions and PQC standards).  
+	•	SHA-1
+	•	Status: Disallowed for digital signatures and most new protections; only allowed in very restricted legacy roles such as HMAC/KDF where explicitly permitted.  
+
+Practical takeaway for new designs: SHA-256/384/512 or SHA3-256/384/512. Treat SHA-1 as “verification/legacy only.”
+
+⸻
+
+MESSAGE AUTHENTICATION (MAC / PRF)
+	•	HMAC (FIPS 198-1)
+	•	HMAC with SHA-2 or SHA-3: Acceptable.
+	•	HMAC with SHA-1: Restricted/legacy; acceptable only where 800-131A still allows it, not for new long-lived systems.  
+	•	CMAC (SP 800-38B)
+	•	CMAC-AES: Acceptable.
+	•	CMAC-TDEA: Legacy only, tracking TDEA status (see below).  
+	•	GMAC (SP 800-38D)
+	•	GMAC-AES (GCM’s MAC-only variant): Acceptable when used as specified.  
+	•	KMAC128 / KMAC256 (SP 800-185, SHA-3-derived)
+	•	KECCAK-based MAC/PRF.
+	•	Status: NIST-recommended; considered approved SHA-3-derived MACs with 128- or 256-bit security strength.  
+
+⸻
+
+SYMMETRIC ENCRYPTION (BLOCK CIPHERS + MODES)
+
+Algorithms:
+	•	AES (FIPS 197)
+	•	Key sizes: 128, 192, 256 bits.
+	•	Status: Acceptable for encryption/decryption with approved modes (SP 800-38 series).  
+	•	TDEA / 3DES (SP 800-67)
+	•	Two-key TDEA (112-bit): Encryption disallowed; decryption only for legacy.
+	•	Three-key TDEA:
+	•	Encryption: Deprecated through 2023; disallowed for new encryption after 2023 (only legacy decryption).  
+
+Approved / common modes (SP 800-38x):
+	•	For AES:
+	•	AES-CBC, AES-CTR, AES-CFB, AES-OFB (SP 800-38A) – classic non-AE modes.
+	•	AES-CCM (SP 800-38C) – AEAD.
+	•	AES-GCM (SP 800-38D) – AEAD, widely used for TLS, IPsec, etc.
+	•	AES-XTS (SP 800-38E) – for disk/storage encryption only.
+	•	AES-KW / AES-KWP (SP 800-38F) – key wrap / key wrap with padding.  
+
+Practical takeaway for new systems:
+	•	Use AES-GCM/CCM for general AEAD.
+	•	Use AES-KW/KWP for wrapping keys.
+	•	Use AES-XTS only for storage.
+	•	Don’t design in TDEA except for legacy decrypt paths.
+
+⸻
+
+DIGITAL SIGNATURE ALGORITHMS
+
+“Classical” (FIPS 186-5, SP 800-131A, SP 800-186):  
+	•	RSA signatures
+	•	Status: Acceptable with modulus sizes providing ≥112-bit security (e.g. 2048-bit and up).
+	•	Padding: RSASSA-PSS / PKCS#1 v1.5 as specified in FIPS 186-5 and PKCS#1.
+	•	For new designs: 2048 bits minimum, 3072+ recommended for long-term.
+	•	DSA (finite-field)
+	•	Domain parameter sets:
+	•	(L=2048, N=224) or (2048, 256) → 112-bit strength.
+	•	(L=3072, N=256) → 128-bit strength.
+	•	Status: Acceptable where already used, but generally not preferred for new systems; in many profiles considered legacy-leaning compared to ECDSA/RSA.  
+	•	ECDSA / EdDSA (elliptic-curve; FIPS 186-5 + SP 800-186)
+	•	Curves: NIST P-224, P-256, P-384, P-521; plus Ed25519/Ed448 in FIPS 186-5.
+	•	Status: Acceptable with ≥224-bit curves (224 is minimum; 256+ recommended).
+	•	Typical choices: P-256 (112 bits), P-384 (192 bits) for long-term.  
+
+Post-quantum (new FIPS):
+	•	ML-DSA (FIPS 204) – lattice-based signature (CRYSTALS-Dilithium)
+	•	Parameter sets with different strengths (e.g. ML-DSA-44/65/87; details in FIPS 204).
+	•	Intended as general-purpose PQ replacement for RSA/ECDSA.  
+	•	SLH-DSA (FIPS 205) – stateless hash-based signature
+	•	Several parameter sets; intended for long-lived data, firmware, etc.  
+
+⸻
+
+KEY ESTABLISHMENT (KEX / KEM)
+
+Classical schemes (SP 800-56A/B, SP 800-186, SP 800-57):  
+	•	Finite-field DH / MQV (SP 800-56A)
+	•	Use parameter sizes that give ≥112-bit security (e.g. 2048-bit p minimum; larger for longer lifetimes).
+	•	RSA key transport / key agreement (SP 800-56B)
+	•	RSA modulus ≥2048-bit.
+	•	Status: Acceptable but not preferred long-term; NIST is steering systems toward DH/ECDH and now KEMs.
+	•	ECDH / ECMQV (SP 800-56A + SP 800-186)
+	•	Curves: NIST P-224, P-256, P-384, P-521.
+	•	Status: Acceptable; very common baseline for TLS/IPsec/etc today.
+
+Post-quantum KEM:
+	•	ML-KEM (FIPS 203 – Kyber)
+	•	Parameter sets: ML-KEM-512, -768, -1024 (increasing security strength vs performance).  
+	•	To be used with an approved DRBG (SP 800-90A) and symmetric cipher (e.g., AES-GCM).  
+
+Practical takeaway:
+	•	For now, many systems still use ECDH over P-256/P-384.
+	•	New high-assurance designs should be planning hybrid or PQC-ready KEX using ML-KEM as NIST guidance matures.
+
+⸻
+
+DRBG / RANDOM NUMBER GENERATION
+
+NIST-approved DRBGs (SP 800-90A/B/C):  
+	•	Hash_DRBG – based on an approved hash (e.g. SHA-256/384).
+	•	HMAC_DRBG – based on HMAC with an approved hash.
+	•	CTR_DRBG – based on block cipher (typically AES).
+
+Notes:
+	•	Dual_EC_DRBG is explicitly withdrawn and disallowed.  
+	•	FIPS 140-3 modules are expected to use one of the approved DRBG constructions with appropriate entropy sources.
+
+⸻
+
+VERY ROUGH “GO/NO-GO” SUMMARY
+
+For a modern FIPS 140-3 mindset (plus 800-131A Rev.2):  
+
+Generally “good” for new high-assurance designs:
+	•	Hash: SHA-256/384/512, SHA3-256/384/512, SHAKE128/256 where explicitly allowed.
+	•	MAC/PRF: HMAC-SHA-2, KMAC128/256, CMAC-AES, GMAC-AES.
+	•	Symmetric: AES-128/192/256 in modern modes (GCM, CCM, KW/KWP, XTS for storage).
+	•	Signatures: ECDSA (P-256/P-384), RSA ≥ 2048-bit, Ed25519/Ed448 where FIPS 186-5 allows, plus PQ ML-DSA/SLH-DSA as they roll into profiles.
+	•	Key establishment: ECDH over NIST curves, and PQ ML-KEM moving forward.
+	•	DRBG: Hash/HMAC/CTR DRBG (SP 800-90A).
+
+“Legacy / restricted / avoid for new design”:
+	•	SHA-1 (anything but very constrained MAC/KDF cases).
+	•	3-key TDEA (only for legacy decrypt; encryption disallowed after 2023).
+	•	2-key TDEA (encryption disallowed; decryption legacy only).
+	•	SKIPJACK, older 80-bit-strength schemes.
+	•	Small RSA/ECC keys (< 2048-bit RSA; <224-bit ECC).
+
+⸻
+
+How we can refine this for you later
+
+This is intentionally high-level and language-level rather than table-dump. If you’d like, next step could be:
+	•	A one-page “wall chart” for your own use that lists:
+	•	Algorithm → status (acceptable / legacy / disallowed)
+	•	Required minimum key size
+	•	Typical uses (TLS, disk, firmware, log signing, etc.)
+	•	Or a version annotated with “good choices for UMRS” vs “only for legacy compatibility.”
+
+Tell me which angle you want next and I’ll tune it to your mental model.
+
+
+Gotcha, let’s take another run at this and keep it tight and practical.
+
+Below is a “page 1 / page 2” style cheat sheet in plain text. Page 1 = what’s FIPS-friendly and recommended, plus gotchas. Page 2 = concrete OpenSSL commands by category.
+
+Note: FIPS 140-2/3 itself doesn’t list algorithms in detail; it points to SP 800-140C for approved security functions and to other NIST docs such as SP 800-131A, FIPS 197 (AES), FIPS 180-4 (SHA-2), FIPS 202 (SHA-3), and FIPS 186-5 (signatures). 
+
+============================================================
+PAGE 1 – FIPS 140-2/3 CRYPTO CHEAT SHEET (ALGORITHMS + PREFERENCES)
+
+A. HASH FUNCTIONS (NON-KEYED)
+	1.	Classical SHA-2 family (FIPS 180-4)
+	•	SHA-224, SHA-256, SHA-384, SHA-512, SHA-512/224, SHA-512/256.
+	•	FIPS-approved; SP 800-131A Rev.2 treats SHA-224 and up as acceptable for ongoing use. 
+Recommended:
+	•	Default: SHA-256 for general hashing and HMAC.
+	•	Higher strength / long-term: SHA-384 or SHA-512 when you want >128-bit security margin.
+Legacy:
+	•	SHA-1 is “disallowed for digital signature generation”; only allowed in some verification/legacy contexts under strict conditions. Don’t design new systems with SHA-1. 
+	2.	SHA-3 family (FIPS 202)
+	•	SHA3-224, SHA3-256, SHA3-384, SHA3-512 as fixed-length hashes. 
+	•	SHAKE128, SHAKE256 as extendable-output functions (XOFs).
+Recommended:
+	•	SHA3-256 or SHA3-384 when you specifically want a Keccak-based hash (e.g., SHA-2 paranoia, future-proofing, or to separate security domains).
+
+Gotchas:
+	•	Some libraries/services still have limited SHA-3/XOF support; interoperability can be spotty.
+	•	SHA-3 is approved, but not always included in module FIPS validations yet; you must check your module’s security policy.
+
+B. MESSAGE AUTHENTICATION (MAC / KDF)
+	1.	HMAC with SHA-2 or SHA-3
+	•	HMAC-SHA-256 / 384 / 512 etc. Standard FIPS-approved MACs. 
+Recommended:
+	•	HMAC-SHA-256 for general use.
+	•	HMAC-SHA-384 for high-assurance long-lived keys.
+Key sizes:
+	•	SP 800-131A: min security strength 112 bits; in practice use keys ≥128 bits (16 bytes) and usually 256 bits (32 bytes). 
+	2.	KDFs / XOFs
+	•	SP 800-108/56C KDFs and KMAC/SHAKE-based constructions are approved when used as specified; details are module-dependent.
+Gotcha:
+	•	HKDF is “non-approved but allowed” in some specific constructions; check module docs if you’re trying to stay strictly FIPS-approved.
+
+C. SYMMETRIC ENCRYPTION
+	1.	AES (FIPS 197)
+	•	Key sizes: 128, 192, 256 bits.
+	•	Approved modes (per SP 800-38 series and OpenSSL FIPS policy): ECB, CBC, CTR, CFB, OFB, GCM, CCM, XTS, KW/KWP, some CTS modes, etc. 
+Recommended patterns:
+	•	Data in transit:
+	•	AES-256-GCM (AEAD, gives you confidentiality + integrity).
+	•	AES-128-GCM is also fine if performance is an issue.
+	•	Data at rest:
+	•	AES-256-XTS for disk/volume encryption.
+	•	Or AES-256-CBC plus a separate integrity mechanism (e.g., HMAC-SHA-256 or GMAC).
+	•	Key wrapping:
+	•	AES Key Wrap (AES-KW/AES-KWP variants) for key transport/at-rest key protection.
+	2.	Triple-DES (TDEA)
+	•	SP 800-131A Rev.2 basically pushes 3DES into “deprecated / disallowed” territory for most new uses (very limited allowances). 
+Recommendation:
+	•	Treat 3DES as dead for new design under 140-3. Some guidance and vendor docs explicitly say “not allowed” in new FIPS 140-3 modules. 
+
+Gotchas for symmetric crypto:
+	•	CBC mode is approved but brittle: you must handle IVs, padding, and separate integrity. For new design, strongly prefer AEAD (GCM, CCM).
+	•	Some FIPS modules disallow certain modes even though NIST standards list them. Always check the module’s security policy.
+
+D. ASYMMETRIC SIGNATURES
+
+NIST guidance (SP 800-131A Rev.2 and related docs) plus recent FIPS 140-3 guidance converge roughly on: 
+	1.	RSA (FIPS 186-5, SP 800-56B)
+	•	Minimum modulus: 2048 bits for new uses.
+	•	3072+ bits recommended for long-term, high-assurance systems.
+	•	Signature schemes:
+	•	RSASSA-PSS preferred.
+	•	RSASSA-PKCS1 v1.5 is still widely used but more legacy-ish.
+	2.	DSA
+	•	FIPS 140-3 guidance typically allows DSA only for verifying existing signatures; new key generation/signing is discouraged or disallowed in many profiles. 
+Recommendation:
+	•	Don’t use DSA for new design.
+	3.	ECDSA (NIST curves)
+	•	Allowed curves: P-224, P-256, P-384, P-521 (with P-192 disallowed). P-224 is aging toward deprecation; P-256 and P-384 are the sweet spot. 
+Recommendations:
+	•	Default: P-256 ECDSA.
+	•	Higher assurance/longer horizon: P-384.
+
+E. KEY ESTABLISHMENT (DH / ECDH)
+	1.	Finite-field DH (SP 800-56A/B)
+	•	DH modulus: 2048–8192 bits for FIPS 140-3 systems. 
+Recommendation:
+	•	In practice, most modern stacks are moving toward ECDH instead.
+	2.	ECDH
+	•	Curves: same NIST curves as ECDSA (P-256, P-384, P-521).
+Recommendation:
+	•	ECDHE (ephemeral) with P-256 or P-384 in TLS or other protocols.
+
+F. RANDOM NUMBER GENERATION (DRBGs)
+	•	Approved DRBGs from SP 800-90A: Hash DRBG, HMAC DRBG, CTR DRBG (usually AES-based). These show up in actual FIPS module security policies. 
+Recommendation:
+	•	When using a FIPS-validated module (e.g., OpenSSL FIPS provider), just use its default DRBG in FIPS mode and don’t try to roll your own RNG.
+
+G. “PREFERRED STACK” SUMMARY (NEW DESIGN, HIGH ASSURANCE)
+	•	Hash/MAC:
+	•	SHA-256 or SHA-384; HMAC-SHA-256 or HMAC-SHA-384.
+	•	Symmetric:
+	•	AES-256-GCM for transport.
+	•	AES-256-XTS for disk/volume encryption.
+	•	Signatures:
+	•	ECDSA P-256 or P-384.
+	•	RSA-3072 with RSASSA-PSS where ECDSA is not available.
+	•	Key exchange:
+	•	ECDHE P-256/P-384.
+	•	DRBG:
+	•	The module’s built-in Hash/HMAC/CTR DRBG.
+
+H. COMMON GOTCHAS / INCOMPATIBILITIES
+	•	Old TLS stacks:
+	•	May not support ECDSA or newer curves, or may insist on RSA + CBC. You might need “compat” cipher suites while keeping a FIPS-safe minimum.
+	•	3DES removal:
+	•	Some old systems still require 3DES; new FIPS 140-3 environments often forbid it.
+	•	SHA-1:
+	•	Still used in old X.509 chains and protocols; you can verify but must avoid generating new SHA-1 signatures.
+	•	OpenSSL version mismatch:
+	•	OpenSSL 3.x in FIPS mode restricts available ciphers and digests to the FIPS provider; algorithms like EdDSA are explicitly “non-FIPS” even though they exist in the provider. 
+
+============================================================
+PAGE 2 – OPENSSL COMMAND EXAMPLES BY CATEGORY (OPENSSL 3.x STYLE)
+
+Note: These examples assume OpenSSL 3.x. For strict FIPS operation, you also need correct FIPS provider configuration; but the commands themselves still illustrate algorithm usage.
+	1.	HASHING (SHA-2 / SHA-3)
+
+a) SHA-256 hash of a file:
+openssl dgst -sha256 -binary -out file.sha256 file.bin
+
+b) SHA-384 hash:
+openssl dgst -sha384 -binary -out file.sha384 file.bin
+
+c) SHA3-256 hash:
+openssl dgst -sha3-256 -binary -out file.sha3-256 file.bin
+	2.	HMAC (HMAC-SHA-256)
+openssl dgst -sha256 -hmac “mysecretkey” -binary -out file.hmac file.bin
+(For production, you’d typically provide the key as hex or via a file, not a literal string.)
+	3.	SYMMETRIC ENCRYPTION (AES-GCM / AES-CBC)
+
+Note: For serious applications, you should use EVP in code rather than “openssl enc”; this is just CLI-level illustration.
+
+a) AES-256-GCM encrypt (key/IV as hex):
+
+openssl enc -aes-256-gcm 
+-K 00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff 
+-iv 00112233445566778899aabb 
+-in plain.bin 
+-out cipher.bin 
+-p
+
+(GCM also produces an authentication tag; with the enc tool, handling the tag is slightly clunky, but this shows the basic idea.)
+
+b) AES-256-CBC encrypt with PBKDF2:
+openssl enc -aes-256-cbc -pbkdf2 -salt 
+-in plain.txt 
+-out cipher.bin
+
+c) Decrypt:
+openssl enc -d -aes-256-cbc -pbkdf2 
+-in cipher.bin 
+-out plain_decrypted.txt
+	4.	RSA KEY GENERATION + SIGNING (RSA-3072, PSS, SHA-256)
+
+a) Generate RSA-3072 private key:
+openssl genpkey -algorithm RSA 
+-pkeyopt rsa_keygen_bits:3072 
+-out rsa-3072-key.pem
+
+b) Extract public key:
+openssl pkey -in rsa-3072-key.pem -pubout -out rsa-3072-pub.pem
+
+c) Sign a message with RSASSA-PSS, SHA-256:
+openssl pkeyutl -sign 
+-in message.bin 
+-inkey rsa-3072-key.pem 
+-pkeyopt digest:sha256 
+-pkeyopt rsa_padding_mode:pss 
+-pkeyopt rsa_pss_saltlen:digest 
+-out sig.bin
+
+d) Verify:
+openssl pkeyutl -verify 
+-in message.bin 
+-sigfile sig.bin 
+-pubin -inkey rsa-3072-pub.pem 
+-pkeyopt digest:sha256 
+-pkeyopt rsa_padding_mode:pss 
+-pkeyopt rsa_pss_saltlen:digest
+	5.	ECDSA (P-256) KEY + SIGN/VERIFY
+
+a) Generate P-256 (prime256v1) key:
+openssl ecparam -name prime256v1 -genkey -noout -out ecdsa-p256-key.pem
+
+b) Public key:
+openssl pkey -in ecdsa-p256-key.pem -pubout -out ecdsa-p256-pub.pem
+
+c) Sign:
+openssl pkeyutl -sign 
+-in message.bin 
+-inkey ecdsa-p256-key.pem 
+-pkeyopt digest:sha256 
+-out ecdsa-sig.bin
+
+d) Verify:
+openssl pkeyutl -verify 
+-in message.bin 
+-sigfile ecdsa-sig.bin 
+-pubin -inkey ecdsa-p256-pub.pem 
+-pkeyopt digest:sha256
+	6.	ECDH / KEY AGREEMENT (SKETCH ONLY)
+
+The CLI support for raw ECDH is limited; typically you’d use ECDHE inside TLS rather than doing ECDH by hand on the command line. In code you would:
+	•	Generate two ECDH keys on the same curve (e.g., P-256).
+	•	Use EVP_PKEY_derive or similar to compute shared secrets on both sides.
+
+	7.	CHECKING WHAT’S FIPS-APPROVED IN YOUR MODULE
+
+For OpenSSL 3.x FIPS provider, the module’s FIPS security policy document lists exactly which algorithms, key sizes, and modes were validated (e.g., AES in GCM/CTR/CBC/XTS, SHA-2/3, RSA, ECDSA, DRBGs). 
+
+You should treat that document as the “ground truth” for what’s allowed in your actual environment, and treat this cheat sheet as conceptual guidance.
+
+⸻
+
+If you’d like, next step we can narrow this specifically to:
+	•	“UMRS recommended profile” = canonical subset you actually want your tools to enforce (e.g., “UMRS will only ever use AES-256-GCM, AES-256-XTS, SHA-256/SHA-384, HMAC-SHA-256, ECDSA-P256, RSA-3072, ECDHE-P256”), and
+	•	attach NIST references / control mappings (e.g., back to SP 800-131A and SP 800-57) so it slots straight into your design docs.
+
+
+That’s actually a great idea — simple, human, and very effective on a one-page cheat sheet.
+
+A few practical thoughts so it works smoothly in real environments:
+
+1) 👍 is a good choice (with minor caveats)
+	•	The Unicode thumbs-up 👍 is UTF-8 and widely supported.
+	•	It renders fine in:
+	•	modern terminals
+	•	PDFs
+	•	Markdown
+	•	most word processors
+	•	It immediately signals “preferred / good default” without extra words.
+
+Possible caveat:
+	•	Some hardened or very minimal console environments (or ancient font configs) may render it as a box or question mark. That’s rare today, but still possible on very stripped-down systems.
+
+2) Consider a two-tier visual system (very effective)
+For example on the cheat sheet only:
+	•	👍 Recommended / preferred
+	•	⚠ Acceptable / legacy / compatibility
+	•	⛔ Not allowed / avoid
+
+That lets someone scan the page in seconds.
+
+Example (conceptual):
+
+SHA-256 👍
+SHA-384 👍
+SHA-1 ⛔
+
+AES-256-GCM 👍
+AES-128-GCM 👍
+AES-CBC ⚠
+3DES ⛔
+
+3) If you want an ASCII-safe fallback
+If you ever need a version guaranteed to render everywhere, you can keep a parallel “ASCII-safe” version:
+	•	[+] Recommended
+	•	[!] Legacy / caution
+	•	Disallowed
+
+You can even say at the top of the document:
+
+“Icons are semantic only; ASCII equivalents available in Appendix A.”
+
+Auditors appreciate that kind of thoughtfulness.
+
+4) This fits your overall UMRS philosophy perfectly
+You’re doing the right thing by:
+	•	keeping the cheat sheet fast and visual
+	•	keeping the heavy justification in reference docs
+	•	making good choices easy and bad choices obvious
+
+That’s exactly what cheat sheets are supposed to do.
+
+If you want, next time we can:
+	•	draft the actual one-page cheat sheet text using 👍 ⚠ ⛔
+	•	or design a “printable + terminal-safe” dual version
+	•	or even map those icons directly to warnings/errors in your UMRS tooling output
+
+But yes — 👍 on the 👍 idea.
+
+Sure — here are the Unicode code points for the symbols we talked about, plus a couple of useful variants.
+
+Thumbs up (recommended)
+	•	👍  U+1F44D
+	•	UTF-8 bytes: F0 9F 91 8D
+
+Warning / caution
+	•	⚠  U+26A0
+	•	UTF-8 bytes: E2 9A A0
+
+No entry / prohibited
+	•	⛔  U+26D4
+	•	UTF-8 bytes: E2 9B 94
+
+If you want a more terminal-friendly fallback set that almost always renders:
+	•	Check mark
+	•	✓  U+2713
+	•	UTF-8 bytes: E2 9C 93
+	•	Heavy multiplication “X” (disallowed)
+	•	✗  U+2717
+	•	UTF-8 bytes: E2 9C 97
+	•	Warning triangle (alt)
+	•	▲  U+25B2
+	•	UTF-8 bytes: E2 96 B2
+
+And ASCII-only equivalents (for ultra-safe environments):
+	•	[+] recommended
+	•	[!] caution
+	•	disallowed
+
+For a cheat sheet, 👍 U+1F44D is perfectly fine in PDFs, Markdown, and most modern terminals. For hardened or ancient consoles, keeping an ASCII fallback version is a smart move.
+
+If you want, I can format a tiny legend block you can drop at the top of the cheat sheet.
+
+Sure — here are the Unicode code points for the symbols we talked about, plus a couple of useful variants.
+
+Thumbs up (recommended)
+	•	👍  U+1F44D
+	•	UTF-8 bytes: F0 9F 91 8D
+
+Warning / caution
+	•	⚠  U+26A0
+	•	UTF-8 bytes: E2 9A A0
+
+No entry / prohibited
+	•	⛔  U+26D4
+	•	UTF-8 bytes: E2 9B 94
+
+If you want a more terminal-friendly fallback set that almost always renders:
+	•	Check mark
+	•	✓  U+2713
+	•	UTF-8 bytes: E2 9C 93
+	•	Heavy multiplication “X” (disallowed)
+	•	✗  U+2717
+	•	UTF-8 bytes: E2 9C 97
+	•	Warning triangle (alt)
+	•	▲  U+25B2
+	•	UTF-8 bytes: E2 96 B2
+
+And ASCII-only equivalents (for ultra-safe environments):
+	•	[+] recommended
+	•	[!] caution
+	•	disallowed
+
+For a cheat sheet, 👍 U+1F44D is perfectly fine in PDFs, Markdown, and most modern terminals. For hardened or ancient consoles, keeping an ASCII fallback version is a smart move.
+
+If you want, I can format a tiny legend block you can drop at the top of the cheat sheet.
