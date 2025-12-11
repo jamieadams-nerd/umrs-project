@@ -1,0 +1,47 @@
+Cui cat projects
+
+Here is the same list in pure, unformatted plain text exactly as you requested.
+No bullets, no italics, no markup — only clean text.
+
+⸻
+
+C0 – CUI (General)
+Definition: The baseline category for all Controlled Unclassified Information. This indicates that information requires controlled handling but does not specify a specialized subcategory.
+Handling Restrictions: Must be safeguarded from unauthorized access and shared only with authorized personnel who have a lawful government purpose. Requires access control and proper dissemination markings. Must not be posted publicly. No encryption requirement beyond standard organizational policy.
+
+C1 – PRIVACY (PII)
+Definition: Personally Identifiable Information. Information that can be used to distinguish or trace an individual’s identity, either alone or combined with other personal or identifying information.
+Handling Restrictions: Must be protected from inadvertent exposure. Requires privacy-protective handling, limited disclosure, and shredding/disposal rules. Should be encrypted at rest and in transit. Strict need-to-know basis.
+
+C2 – TAX
+Definition: Federal tax information regulated under the Internal Revenue Code (IRC). This includes returns, return information, and tax-related data protected by statute.
+Handling Restrictions: Disclosure prohibitions under 26 USC 6103. Requires strong access control, strict audit logging, approved destruction methods, and may require encryption in transit and at rest.
+
+C3 – EXPORT
+Definition: Information requiring protection under export control regulations, including ITAR (International Traffic in Arms Regulations) and EAR (Export Administration Regulations).
+Handling Restrictions: Must not be shared with foreign nationals or exported without authorization. Requires strict access control, need-to-know enforcement, possible segmentation or isolation, and auditability. Handling may be subject to criminal penalties for violations.
+
+C4 – CONTRACT
+Definition: Controlled information that is required to be protected by government contract clauses. Includes proprietary contractor data.
+Handling Restrictions: Must be protected under DFARS, FAR, and acquisition-related clauses. Requires limited dissemination, proper storage, protection from unauthorized release, and adherence to contract-specific controls.
+
+C5 – LEGAL
+Definition: Attorney-client privileged information, litigation information, or information protected under legal discovery privilege.
+Handling Restrictions: Must be restricted to legal personnel or individuals with explicit authorization. Requires tight access control and audit trail maintenance. Must not be shared outside the authorized legal channel.
+
+C6 – FINANCIAL
+Definition: Sensitive financial information including audits, budget details, procurement data, internal financial controls, or data protected under financial statutes.
+Handling Restrictions: Requires restricted access, protection from tampering, and integrity-preserving storage. Often requires audit logging and controlled dissemination.
+
+C7 – PROCUREMENT
+Definition: Information related to acquisition planning, source selection, contract evaluation, bid materials, or vendor-sensitive submissions.
+Handling Restrictions: Must not be released to unauthorized bidders or external parties. Requires confidentiality protections, access logging, and strict segregation during acquisition activities.
+
+C8 – TECHNICAL
+Definition: Controlled technical information including system specifications, engineering data, schematics, research results, and technical documentation protected under law or regulation.
+Handling Restrictions: Must be protected against unauthorized export, copying, or distribution. Requires integrity controls, access restrictions, and possibly encryption depending on organizational requirements.
+
+C9 – INFRA
+Definition: Critical infrastructure information including systems, facilities, operational dependencies, or vulnerability data related to infrastructure sectors.
+Handling Restrictions: Requires strong access control, prohibition of public release, secure storage, and reporting rules if compromised. May require encryption in transit and at rest.
+
