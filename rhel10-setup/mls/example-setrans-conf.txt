@@ -1,0 +1,59 @@
+# Full /etc/selinux/mls/setrans.conf example
+
+# 1. Configuration Keywords
+disable=0
+# Define acceptable whitespace (space and tab)
+Whitespace= \t
+
+# Define the character used to join members of a modifier group (e.g., USA/AUS)
+Join=/
+
+# Define a category bit range for inverse bits (advanced use case)
+# Default=c512.c1023
+
+# Define a new domain or include another config file (less common for translation)
+# Domain=secret_project
+# Include=/etc/selinux/mls/local_translations.conf
+
+# 2. Define Modifier Groups
+# Group for geographic restrictions
+ModifierGroup=Region
+Prefix=REL # Results in "REL USA EYES ONLY"
+Suffix=EYES ONLY
+
+# Group for clearance types
+ModifierGroup=Clearance
+Prefix=Type:
+Suffix=
+
+# 3. Map Categories to Modifier Group Members
+c0=USA,Region
+c1=AUS,Region
+c2=CAN,Region
+c3=TOPSECRET,Clearance
+c4=SCI,Clearance
+c5=SAR,Clearance
+c6=NATO,Region
+
+# 4. Define Direct Translations (cached immediately, no modifiers applied)
+s0=SystemLow
+s15:c0.c1023=SystemHigh
+s0-s15:c0.c1023=SystemLow-SystemHigh
+s15=TopSecretHighlyClassified
+
+# 5. Declare 'Base' (subsequent sensitivity labels use the modifiers)
+Base
+
+# 6. Define Base Sensitivity Translations
+s0=Unclassified
+s1=Confidential
+s2=Secret
+s3=TopSecret
+
+# --- Example Translations Resulting from this Config ---
+
+# s0:c0,c3          -> REL USA Type:TOPSECRET EYES ONLY Unclassified
+# s1:c0,c1,c4       -> REL USA/AUS Type:SCI EYES ONLY Confidential
+# s2:c6,c3,c5       -> REL NATO Type:TOPSECRET/SAR EYES ONLY Secret
+# s3:c0,c1,c2,c3,c4,c5,c6 -> REL USA/AUS/CAN/NATO Type:TOPSECRET/SCI/SAR EYES ONLY TopSecret
+
