@@ -1,0 +1,220 @@
+
+You’re not crazy — the “CUI_” prefix was just something I floated as an option, and it is making things noisier than it needs to be.
+
+
+
+Your preference (“cleaner labels without the CUI_ prefix”) is absolutely fine and actually matches how the DoD / NARA abbreviations are usually written: CTI, EXPT, PRVCY, PROPIN, PROCURE, etc. 
+
+
+
+So let’s lock that in:
+
+
+
+C0 will be the umbrella “CUI” category.
+C1…Cn will be the actual CUI sub-categories (PRVCY, EXPT, PROPIN, …).
+All labels UPPERCASE.
+No “CUI_” prefix.
+Blank line before each group, and a comment describing the group.
+
+
+
+
+Per your request, I’ll give you just the C-side definitions here, with no S-levels. In your real setrans.conf you’ll splice in whatever S-levels you’ve already defined (for example, you might later turn “c0=CUI” into “s4:c0=CUI” or similar). The actual SELinux syntax uses “sX:cY=NAME” lines, but we’ll keep this as a category-only template so you can wire in your S-levels yourself. 
+
+
+
+Here’s a starter setrans.conf fragment in plain text, using the abbreviations from the CUI registry/DoD docs and your formatting rules:
+
+
+
+
+
+BASE CUI UMBRELLA
+
+
+
+
+
+c0=CUI
+
+
+
+
+
+PRIVACY / PERSONALLY IDENTIFIABLE INFORMATION (PII)
+
+
+
+
+
+c1=PRVCY      # GENERAL PRIVACY
+
+c2=CONTRACT   # PRIVACY – CONTRACT USE
+
+c3=DREC       # PRIVACY – DEATH RECORDS
+
+c4=GENETIC    # PRIVACY – GENETIC INFORMATION
+
+c5=HLTH       # PRIVACY – HEALTH INFORMATION
+
+c6=PRIIG      # PRIVACY – INSPECTOR GENERAL PROTECTED
+
+c7=MIL        # PRIVACY – MILITARY PERSONNEL RECORDS
+
+c8=PERS       # PRIVACY – PERSONNEL RECORDS
+
+c9=STUD       # PRIVACY – STUDENT RECORDS
+
+
+
+
+
+PROCUREMENT AND ACQUISITION
+
+
+
+
+
+c10=PROCURE   # GENERAL PROCUREMENT AND ACQUISITION
+
+c11=SBIZ      # SMALL BUSINESS RESEARCH AND TECHNOLOGY
+
+c12=SSEL      # SOURCE SELECTION
+
+
+
+
+
+PROPRIETARY BUSINESS INFORMATION
+
+
+
+
+
+c20=PROPIN    # GENERAL PROPRIETARY BUSINESS INFORMATION
+
+c21=MFC       # PROPRIETARY MANUFACTURER INFORMATION
+
+
+
+
+
+EXPORT CONTROL / TECHNICAL INFORMATION
+
+
+
+
+
+c30=CTI       # CONTROLLED TECHNICAL INFORMATION
+
+c31=EXPT      # EXPORT CONTROLLED
+
+c32=EXPTR     # EXPORT CONTROLLED RESEARCH
+
+
+
+
+
+CRITICAL INFRASTRUCTURE / PHYSICAL SECURITY
+
+
+
+
+
+c40=CRIT      # GENERAL CRITICAL INFRASTRUCTURE INFORMATION
+
+c41=DCRIT     # DOD CRITICAL INFRASTRUCTURE SECURITY INFO
+
+c42=EMGT      # EMERGENCY MANAGEMENT
+
+c43=PHYS      # PHYSICAL SECURITY
+
+c44=ISVI      # INFORMATION SYSTEMS VULNERABILITY INFO
+
+
+
+
+
+OPERATIONS SECURITY
+
+
+
+
+
+c50=OPSEC     # OPERATIONS SECURITY INFORMATION
+
+
+
+
+
+NAVAL NUCLEAR / SPECIAL ENERGY
+
+
+
+
+
+c60=NNPI      # NAVAL NUCLEAR PROPULSION INFORMATION
+
+c61=CEII      # CRITICAL ENERGY INFRASTRUCTURE INFORMATION
+
+
+
+
+
+MISCELLANEOUS SPECIAL CATEGORIES (EXAMPLES)
+
+
+
+
+
+c70=PSEC      # SECRECY ORDERS
+
+c71=PROT      # TEMPORARY PROTECTED STATUS
+
+c72=RAIL      # RAILROAD SAFETY ANALYSIS RECORDS
+
+
+
+A few clarifications so we stay in sync:
+
+
+
+Why no “CUI_” prefix?
+The registry itself uses bare abbreviations like PRVCY, PROPIN, PROCURE, CTI, EXPT, etc. There’s no requirement to prepend “CUI_”, and having that extra noise in your label (“CUI_PROPIN”) doesn’t buy you anything if you already know that all of these MCS categories live under your C0=CUI umbrella.  
+
+How you’ll actually use these with MLS:
+In real setrans.conf for MLS/MCS, each line is of the form:
+sX:cY=HUMAN_LABEL
+where X is the sensitivity level and Y the category number.  
+Since you already have your S-levels defined, you’ll effectively transform the template above into something like:
+s4:c0=CUI
+s4:c1=PRVCY
+s4:c2=CONTRACT
+…
+Or, if you want the same category names visible at multiple sensitivities, you’ll replicate the c-lines under each S-level as needed.
+
+About the “full hundred-plus”:
+The authoritative full list of categories and abbreviations lives in the NARA CUI Registry plus DoD’s “CUI Categories and Abbreviations” site.  
+Right now I can’t fetch that master table directly (the DoD page is not coming through this interface), so I can’t safely dump an “authoritative 100+ mapping” without risking wrong or missing codes.
+What I can do is keep extending this template with additional categories as we go, based on the NIEM CUI basic codes and the public registry category pages. That’s essentially what we’ve started here.
+
+
+
+
+
+If you want next step, we can:
+
+
+
+Pick the next organizational group (e.g., Immigration, Finance, Legal, etc.), and
+Add another block of c-lines in the same style (uppercase labels, blank line, comment header).
+
+
+
+
+But, bottom line: yes, we are going with clean, uppercase abbreviations (PRVCY, EXPT, PROPIN, etc.) with no “CUI_” prefix.
+
+
+
+Sent from my iPhone
