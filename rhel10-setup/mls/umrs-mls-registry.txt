@@ -1,0 +1,105 @@
+Umrs registry 
+
+Yeah, this is exactly the right moment to nail down “where UMRS lives” on the box and how clean/tidy we keep it.
+
+Let me split this into three things:
+– where the JSON should live
+– how we keep UMRS tidy and non-intrusive
+– how we lock it down (permissions + SELinux)
+	1.	Where the JSON should live
+
+Given everything we’ve already talked about for UMRS, I’d strongly suggest:
+	•	/etc/umrs/mls/
+	•	umrs-mls-registry.json      ← your sensitivity + CUI registry JSON
+	•	(later) umrs-mls-policy.json or similar, if you add extra metadata
+
+That matches what you’re aiming for with “/etc/UMRS/MLS” but keeps it conventional (all lowercase paths on Linux) and nicely namespaced under a single umrs tree.
+
+We already mentally reserved:
+	•	/etc/pki/umrs/   for keys (FIPS/log/signing key material)
+	•	/var/lib/umrs/   for state (e.g., umrs-state.json, caches, runtime stuff)
+
+So the picture becomes:
+	•	/etc/umrs/
+	•	mls/
+	•	umrs-mls-registry.json
+	•	(maybe later) gui/ or policy/ etc.
+	•	/etc/pki/umrs/
+	•	key files, certs, etc.
+	•	/var/lib/umrs/
+	•	umrs-state.json
+	•	any future dynamic state
+
+That keeps UMRS:
+	•	clearly identifiable
+	•	not mixed into vendor config files
+	•	small and “sweepable” if someone ever needs to remove UMRS from a system
+
+	2.	“Pre-static” JSON and updates
+
+Your idea is spot on:
+	•	Treat umrs-mls-registry.json as:
+	•	shipped with the UMRS package
+	•	updated only when:
+	•	you update the CUI registry mapping
+	•	or you rev your UMRS tooling
+	•	Runtime utilities:
+	•	never rewrite this file
+	•	only read from it
+	•	use a separate location if you ever need overrides:
+	•	e.g., /etc/umrs/mls/umrs-mls-registry.local.json
+	•	or /var/lib/umrs/ for any dynamic overlays
+
+That way:
+	•	the mapping between C-numbers and abbreviations/semantics is stable
+	•	admins don’t accidentally break meaning by editing the core file casually
+	•	you keep a very clear “this is shipped truth” vs “this is site-local customization”
+
+	3.	Locking it down (permissions and SELinux)
+
+Permissions-wise, I’d do:
+	•	/etc/umrs and /etc/umrs/mls:
+	•	owner: root
+	•	group: umrs (or root if you don’t want a dedicated group)
+	•	mode:
+	•	0750 on the directories
+	•	0640 on umrs-mls-registry.json
+
+That gives:
+	•	read access only to root and UMRS tools (if you run them with group umrs)
+	•	no casual user browsing of sensitivity/CUI mapping details if you don’t want that visible
+
+SELinux-wise, in your policy:
+	•	Define dedicated types:
+	•	etc_umrs_t (or umrs_etc_t)
+	•	var_lib_umrs_t
+	•	Label:
+	•	/etc/umrs(/.*)?      → etc_umrs_t
+	•	/var/lib/umrs(/.*)?  → var_lib_umrs_t
+	•	MLS range:
+	•	keep these at s0 so they’re globally readable from an MLS perspective, but still gatable via UNIX perms and SELinux type rules
+	•	Then grant:
+	•	your UMRS tools’ domain (umrs_t or similar) read access to etc_umrs_t
+	•	no write access from untrusted domains
+
+That gives you:
+	•	clean, minimal footprint:
+	•	no sprinkling files into /etc/ directly
+	•	no weird vendor directory pollution
+	•	clear UMRS “root” anchors:
+	•	/etc/umrs
+	•	/etc/pki/umrs
+	•	/var/lib/umrs
+	•	a good home for the JSON:
+	•	/etc/umrs/mls/umrs-mls-registry.json
+
+When you’re ready to share your first draft of:
+	•	setrans.conf
+	•	umrs-mls-registry.json
+
+we can then write:
+	•	the Rust lookup utility to query that JSON
+	•	plus a little CLI that:
+	•	lists known sensitivities/categories
+	•	describes a given sensitivity or category
+	•	takes a pathname, inspects its SELinux label, and prints the human description and handling guidance.
