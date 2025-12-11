@@ -1,0 +1,133 @@
+
+============================================================
+MLS APACHE MODULE PROJECT — DESIGN SNAPSHOT
+============================================================
+
+PROJECT GOAL
+------------
+Create an Apache HTTP Server module that automatically reads
+the SELinux MLS (Multi-Level Security) label of static
+filesystem content and inserts a translated classification
+string into an HTTP response header:
+
+   X-MLS-Label: <translated MLS label>
+
+Additionally, insert a second header that reports the MLS
+clearance of the Apache HTTP server process itself:
+
+   X-MLS-Server-Level: <translated server MLS label>
+
+This allows end users to understand BOTH:
+1. The classification level of the content they are viewing.
+2. The clearance level of the server delivering the content.
+
+Only static, file-backed responses should be labeled. Dynamic
+content is ignored.
+
+
+MOTIVATION
+----------
+In MLS-enabled RHEL systems, every file has a sensitivity and
+category label (e.g., s2:c5,c12). These map to human-readable
+classifications defined in:
+
+   /etc/selinux/<policy-type>/setrans.conf
+
+The module’s goals:
+
+1. Extract human-readable classification information from
+  SELinux labels.
+2. Add usable and trustworthy classification metadata to HTTP
+  responses.
+3. Provide clear indication of both content and server MLS
+  levels.
+4. Avoid revealing raw SELinux MLS syntax (like s0, c2, etc.).
+
+This is especially useful for classified or regulated systems
+requiring visible classification markings.
+
+
+KEY REQUIREMENTS
+----------------
+1. Inject only:
+      X-MLS-Label: <friendly label for file>
+      X-MLS-Server-Level: <friendly label for server>
+
+2. NEVER expose raw MLS syntax (s0, s1, c0, c3, etc.).
+
+3. Operate ONLY on file-backed responses, such as:
+      - Static HTML, CSS, JS, images, PDFs, text files
+      - Anything served by Apache’s "default-handler"
+
+4. IGNORE:
+      - PHP / mod_php
+      - CGI scripts
+      - Python / mod_wsgi
+      - Reverse proxy responses (mod_proxy)
+      - Any purely generated content
+      - Apache-generated error pages
+
+5. Cache MLS labels to avoid repeated calls to SELinux.
+
+6. Communicate clearly and unambiguously the server’s MLS
+  clearance.
+
+7. Do not alter file content itself — only add headers.
+
+8. Must not disclose higher-level file labels (MLS prevents
+  the read anyway).
+
+
+TECHNICAL APPROACH
+------------------
+1. Identify file responses:
+      - r->handler == "default-handler"
+      - r->filename is non-empty
+      - r->finfo.filetype == APR_REG
+
+2. Retrieve SELinux label of the file:
+      getfilecon(r->filename, &raw)
+
+3. Extract the MLS component:
+      user:role:type:MLS        → take ":MLS" part
+
+4. Translate using libselinux:
+      selinux_raw_to_trans_context()
+
+5. Use only translated forms (e.g., “SECRET//NOFORN”)
+
+6. Insert header:
+      X-MLS-Label: <translated label>
+
+7. Implement caching:
+      - Key: filename + mtime
+      - Value: translated MLS label
+      - Optionally TTL for extra safety
+
+8. Determine server’s own MLS level using getcon():
+
+      getcon(&raw_server_ctx)
+
+  Then extract and translate the server MLS label the same
+  way as file labels.
+
+9. Cache the server-level label once at module initialization.
+
+10. Insert:
+      X-MLS-Server-Level: <translated label>
+
+
+WHY RUST IS A GOOD FIT
+----------------------
+Advantages of using Rust:
+
+- Memory safety (prevents Apache crashes)
+- Easy integration via crates like:
+      apache2
+      mod_rs
+- Flexible FFI for calling libselinux
+- Great caching implementations (hashbrown, lru, cached)
+- Compiles to .so loadable by Apache via LoadModule
+
+A Rust-based module is safer, cleaner, and more maintainable
+than equi
