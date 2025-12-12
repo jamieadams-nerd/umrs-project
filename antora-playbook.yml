@@ -1,0 +1,30 @@
+§#––––––––––––––––––––––––––––––––––
+§#FILE: antora-playbook.yml
+§#––––––––––––––––––––––––––––––––––
+§# Antora playbook for building UMRS docs from the local repository.
+§#
+§# Usage (example):
+§#   antora antora-playbook.yml
+§#
+§# Output goes to ./site by default.
+§
+§site:
+§  title: Unclassified MLS Reference System (UMRS)
+§  start_page: umrs::index.adoc
+§content:
+§  sources:
+§    - url: .
+§      start_path: docs
+§      branches: HEAD
+§ui:
+§  bundle:
+§    url: https://gitlab.com/antora/antora-ui-default/-/archive/master/antora-ui-default-master.zip
+§    snapshot: true
+§output:
+§  dir: ./site
+§asciidoc:
+§  attributes:
+§    # Keep a single, visible version string you can override in CI if desired.
+§    umrs-version: “0.1 (draft)”
+§    # Make source links visible when browsing HTML output (optional).
+§    page-editable: “”
