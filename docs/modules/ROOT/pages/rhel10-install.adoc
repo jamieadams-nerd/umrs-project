@@ -1,0 +1,8 @@
+= RHEL10 Installation Recommendations
+:toc: macro
+:toclevels: 2
+
+toc::[]
+
+== Scope
+This section provides recommendations for installing Red Hat Enterprise Linux 10 for smooth operation of UMRS.
