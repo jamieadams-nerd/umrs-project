@@ -6,7 +6,7 @@
 // Provide pretty, colorized output to standard out and
 // error to really get the operator's attention.
 //
- use colored::*;
+ use colored::Colorize;
 
  /// Initialize console handling.
  /// Currently a no-op, but left here intentionally so

@@ -16,7 +16,7 @@
 use std::path::{PathBuf, Path};
 
 use clap::{Parser, Subcommand};
-use umrs_core::{UmrsState, load_state, save_state};
+use umrs_core::{UmrsState, load_state, save_state, console};
 
 #[derive(Parser, Debug)]
 #[command(name = "umrs-state")]
@@ -65,6 +65,12 @@ impl UmrsKey {
 
 fn main() -> std::io::Result<()> {
     init_logging();
+    console::init();
+    console::info("Starting umrs-state");
+    // Status is simple to give a message, and then true or false. The console
+    // will print "Ok" or "Fail" next to it. This is not tied to keys.
+    console::status("FIPS is Enabled", true);
+    console::status("System Purpose defined in state file", false);
 
     let cli = Cli::parse();
 

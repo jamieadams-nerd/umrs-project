@@ -12,6 +12,8 @@ use std::io::{self, Read, Write};
 
 use serde::{Deserialize, Serialize};
 
+pub mod console;
+
 #[derive(Debug, Serialize, Deserialize, Default)]
 pub struct UmrsState {
     pub purpose: Option<String>,
