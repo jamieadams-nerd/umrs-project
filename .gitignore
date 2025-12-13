@@ -18,4 +18,4 @@ pnpm-debug.log*
 .swo
 
 # Rust work
-umrs-rust
+umrs-rust/target/
