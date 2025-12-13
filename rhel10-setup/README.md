@@ -31,6 +31,9 @@ Red Hat Enterprise Linux stuff:
 * Fix mounting options
 * Reboot
 
+For development systems:
+  * Install rust: sudo dnf install rust  rust-toolset
+  * Configure git client to include ssh keys for communicatig with project repository
 
 
   
@@ -40,7 +43,7 @@ Red Hat Enterprise Linux stuff:
   * Install the umrs-mls-state.json
  
      
-    
+  * 
 
   
 
