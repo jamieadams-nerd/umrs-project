@@ -16,3 +16,6 @@ pnpm-debug.log*
 .DS_Store
 .swp
 .swo
+
+# Rust work
+umrs-rust

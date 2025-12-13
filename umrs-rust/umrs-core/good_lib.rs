@@ -4,23 +4,39 @@ use std::io::{self, Read, Write};
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize, Default)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct UmrsState {
+    pub system_metadata: SystemMetadata,
+    // later: dynamic fields, integrity status, etc.
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct SystemMetadata {
     pub purpose: Option<String>,
     pub system_type: Option<String>,
     pub virtualization: Option<String>,
-    pub fips_enabled: Option<bool>, // Example boolean key
-    // Add more flat keys here as needed
 }
 
-// Load state from a file. Returns default if file is missing.
+impl Default for UmrsState {
+    fn default() -> Self {
+        UmrsState {
+            system_metadata: SystemMetadata {
+                purpose: None,
+                system_type: None,
+                virtualization: None,
+            },
+        }
+    }
+}
+
+
 pub fn load_state(path: &Path) -> io::Result<UmrsState> {
     if !path.exists() {
-       //let msg = format!("state file '{}' not found, using default state.", path.display());
-        //eprintln!("Warning: {}", msg);
+        let msg = format!("state file '{}' not found, using default state.", path.display());
+        eprintln!("Warning: {}", msg);
+        // log::warn!("{}", msg);
         return Ok(UmrsState::default());
     }
-
     let mut file = fs::File::open(path)?;
     let mut buf = String::new();
     file.read_to_string(&mut buf)?;
@@ -29,7 +45,6 @@ pub fn load_state(path: &Path) -> io::Result<UmrsState> {
     Ok(state)
 }
 
-// Save state to a file atomically
 pub fn save_state(path: &Path, state: &UmrsState) -> io::Result<()> {
     let tmp_path = path.with_extension("json.tmp");
     {
@@ -42,4 +57,3 @@ pub fn save_state(path: &Path, state: &UmrsState) -> io::Result<()> {
     fs::rename(tmp_path, path)?;
     Ok(())
 }
-

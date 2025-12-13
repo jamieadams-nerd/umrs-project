@@ -1,5 +1,5 @@
 [workspace]
 members = [
-    “umrs-core”,
-    “umrs-state”,
+    "umrs-core",
+    "umrs-state",
 ]
