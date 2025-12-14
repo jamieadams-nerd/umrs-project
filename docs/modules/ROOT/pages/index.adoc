@@ -18,18 +18,15 @@ My notes:
 
 . Title page
 . Abstract / Overview
-.Scope and Audience
-.Prerequisites / Assumptions
-.Installation Procedures
-.Configuration Procedures
-.Operational Notes
-.Configuration Rationale (your rationale sections)
-.Security Considerations (if applicable)
-.Appendices (optional, technical deep dives)
-.Legal Notices (license + trademarks)
-
-
-
+. Scope and Audience
+. Prerequisites / Assumptions
+. Installation Procedures
+. Configuration Procedures
+. Operational Notes
+. Configuration Rationale (your rationale sections)
+. Security Considerations (if applicable)
+. Appendices (optional, technical deep dives)
+. Legal Notices (license + trademarks)
 
 == Documentation sets
 * Web documentation: versioned static site (Antora).
