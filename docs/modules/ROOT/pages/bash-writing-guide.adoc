@@ -1,0 +1,415 @@
+# Bash Script Writing Administrators
+:icons: font
+
+## Guide Status and Scope
+
+This document is designated as an Official UMRS Guide.
+
+It provides recommended practices for writing secure, reliable Bash scripts used in UMRS administrative tooling and supporting infrastructure. It is not a policy document, does not impose mandatory requirements, and does not assert formal compliance with any external standard.
+
+The intent of this guide is to:
+	•	capture institutional knowledge and experience
+	•	reduce historically common scripting failure modes
+	•	improve auditability and maintainability
+	•	provide a shared baseline for authors and reviewers
+
+Deviation from this guide is acceptable when deliberate and understood.
+
+## Purpose and Positioning
+
+This guide documents personal, experience-based recommendations for writing secure, reliable Bash scripts in administrative and security-sensitive environments.
+
+Bash is highly effective for:
+	•	system administration
+	•	orchestration and glue logic
+	•	cron jobs and timers
+	•	remediation and cleanup tasks
+	•	controlled inspection and enforcement of system state
+
+Bash is not well suited for:
+	•	large, long-lived application logic
+	•	complex data modeling or parsing
+	•	security-critical algorithms
+	•	long-term maintainable production services
+
+The guidance below exists to reduce historically common failure modes using practical experience, CWE examples, and alignment with security control intent (for example, NIST SP 800-53). It is advisory, not prescriptive.
+
+// -------------------------------------------------------------------------
+// Interpreter Directecitve section
+// -------------------------------------------------------------------------
+## Interpreter Directive and Execution Environment
+
+### Interpreter Directive (`+#!+` line)
+
+The first line of a script beginning with `+#!+` is the *interpreter directive*. It instructs the kernel which interpreter executes the script (sometimes informally called a “_shebang_”, slang this author despises. Sorry.).
+
+Recommendations
+* Always use an absolute path in the interpreter directive.
+* Prefer `/usr/bin/bash` or `/bin/bash`.
+* Avoid environment-based interpreter resolution for scripts that cross privilege or trust boundaries.
+
+Rationale
+* Prevents PATH-based interpreter substitution.
+* Mitigates untrusted search path vulnerabilities (CWE-426).
+
+
+// -------------------------------------------------
+### Controlled PATH
+
+Scripts must not rely on the caller’s PATH.
+
+Recommendations
+	•	Explicitly define PATH near the top of the script.
+	•	Export PATH and mark it readonly.
+	•	Alternatively, invoke binaries using absolute paths.
+
+Rationale
+	•	Prevents execution of attacker-controlled binaries.
+	•	Addresses a long-standing privilege escalation class (CWE-426).
+
+Control intent alignment
+	•	NIST SP 800-53 CM-6 (Configuration Settings)
+
+// -------------------------------------------------
+### Environment Sanitization
+
+Inherited environment variables must be treated as untrusted when a script crosses a privilege or trust boundary.
+
+Recommendations
+	•	Explicitly unset high-risk variables such as:
+	•	LD_PRELOAD
+	•	LD_LIBRARY_PATH
+	•	BASH_ENV
+	•	ENV
+	•	IFS
+	•	SHELLOPTS
+	•	GLOBIGNORE
+	•	Normalize locale settings (for example, LC_ALL=C).
+
+Rationale
+	•	Shellshock (CVE-2014-6271) demonstrated that environment variables can become a code-execution vector when Bash is invoked across trust boundaries.
+
+Control intent alignment
+	•	SI-10 (Input Validation)
+	•	CM-6 (Configuration Settings)
+
+
+// -------------------------------------------------
+## Shell Behavior and Defensive Defaults
+
+### Strict Mode (Used Deliberately)
+
+Recommended baseline
+* `set -euo pipefail`
+* Set a safe IFS environment variable. This is the Internal File Seperator (IFS) used by many tools.
+
+Rationale
+* Fail fast on unexpected errors
+* Detect `unset` variables
+* Prevent pipeline failures from being masked
+
+[CAUTION] 
+`set` -e has edge cases; scripts should remain simple, explicit, and readable.
+
+// -------------------------------------------------
+.. Quoting, Globbing, and Tests
+
+Recommendations
+	•	Quote variable expansions unless word splitting is explicitly intended.
+	•	Prefer [[ ... ]] over [ ... ] in Bash scripts.
+	•	Disable globbing when handling untrusted input (set -f), re-enable only if needed.
+
+Rationale
+	•	Prevents argument injection and unintended pathname expansion.
+	•	Improves predictability and reviewability.
+
+⸻
+
+## Variables, Constants, and Functions
+
+### Readonly Constants
+
+Recommendations
+	•	Mark constants as readonly.
+
+Rationale
+	•	Prevents accidental mutation.
+	•	Improves clarity during review.
+
+⸻
+
+3.2 Local Variables
+
+Recommendations
+	•	Use local for variables inside functions.
+
+Rationale
+	•	Reduces global state.
+	•	Improves reasoning about function behavior.
+
+⸻
+
+4. Input Validation and Safe Testing
+
+4.1 Validate Inputs Early
+
+Recommendations
+	•	Validate all external inputs (arguments, paths, modes).
+	•	Prefer allow-lists over deny-lists.
+	•	Validate numeric input before numeric comparison.
+
+Control intent alignment
+	•	SI-10 (Information Input Validation)
+
+⸻
+
+4.2 String vs Integer Tests (Critical Distinction)
+
+Assignment
+	•	x=value
+
+String comparison
+	•	[[ "$a" == "$b" ]]
+	•	[[ "$a" != "$b" ]]
+
+Integer comparison
+	•	[[ "$n" -eq 10 ]]
+	•	[[ "$n" -ge 1 ]]
+
+Rules
+	•	Never use = or == for numeric comparison.
+	•	Never use -eq, -gt, etc. for strings.
+	•	Always quote variables in test expressions.
+
+Rationale
+	•	Silent logic errors become security failures when scripts enforce policy.
+
+⸻
+
+5. Exit Codes and Composability
+
+5.1 Standardized Exit Codes
+
+Exit codes are part of the script interface.
+
+Recommended UMRS taxonomy
+	•	0  OK
+	•	1  General error
+	•	2  Usage / argument error
+	•	3  Preconditions not met
+	•	4  Policy FAIL
+	•	5  Policy WARN
+	•	6  Partial success (optional)
+
+Rationale
+	•	Enables chaining and automation
+	•	Avoids parsing human-readable output
+	•	Supports cron, systemd, and orchestration logic
+
+⸻
+
+5.2 Function Return Handling
+
+Return status must be checked for:
+	•	privileged operations
+	•	file writes and atomic moves
+	•	security-relevant changes
+	•	service and policy modifications
+
+Fail explicitly with a clear message and consistent exit code.
+
+⸻
+
+6. Temporary Files, Atomic Writes, and Filesystem Safety
+
+6.1 Temporary Files
+
+Recommendations
+	•	Always use mktemp for temporary files or directories.
+
+Rationale
+	•	Prevents race conditions and symlink attacks (CWE-377).
+
+⸻
+
+6.2 Cleanup with Traps
+
+Recommendations
+	•	Use trap to ensure cleanup on exit or signal.
+
+Rationale
+	•	Prevents stale artifacts and partial state.
+
+⸻
+
+6.3 Atomic Writes
+
+Recommendations
+	•	Write to a temporary file in the same filesystem.
+	•	Rename into place atomically.
+
+Rationale
+	•	Prevents partial writes.
+	•	Reduces race windows.
+	•	Critical for shared state and configuration files.
+
+⸻
+
+7. Messaging, Logging, and Auditing
+
+7.1 stdout vs stderr
+
+Rules
+	•	stdout is for machine-parseable output.
+	•	stderr is for diagnostics and human messages.
+	•	Never mix diagnostics into stdout when stdout is parseable.
+
+⸻
+
+7.2 Syslog Usage
+
+Recommendations
+	•	Read-only scripts generally do not need syslog entries.
+	•	Scripts that modify configuration, security posture, keys, labels, or services should log a concise summary to syslog/journald.
+
+Never log secrets.
+
+⸻
+
+7.3 Audit Awareness
+
+Distinction
+	•	Syslog records intent.
+	•	Audit records observed system behavior.
+
+Recommendations
+	•	For high-impact changes, ensure audit visibility exists.
+	•	Optionally include a correlation identifier in syslog to link intent to audit records.
+
+Control intent alignment
+	•	AC-6 (Least Privilege)
+	•	SI-11 (Error Handling)
+
+⸻
+
+8. Language Escalation Path
+
+UMRS treats Bash as an orchestration and administration language, not a destination language for growing complexity.
+
+As scripts evolve to include:
+	•	complex branching
+	•	structured data handling
+	•	persistent state
+	•	performance sensitivity
+
+UMRS guidance recommends escalating logic into:
+	•	Python for readability and structured control-plane logic
+	•	Rust for high-assurance, high-performance, security-critical components
+
+Bash should remain:
+	•	the orchestration layer
+	•	the policy enforcement wrapper
+	•	the integration point with the operating system
+
+⸻
+
+9. When Not to Apply This Guide
+
+This guide is intentionally opinionated and optimized for administrative and security-sensitive contexts.
+
+Examples where full adherence may not be appropriate:
+	•	throwaway personal scripts
+	•	one-off diagnostic commands
+	•	non-privileged scripts with tightly controlled inputs
+	•	constrained POSIX sh environments
+	•	performance-critical hot loops
+	•	migration scripts operating on static, trusted datasets
+
+Authors should apply judgment and understand which risks are intentionally accepted.
+
+⸻
+
+10. Summary Philosophy
+
+These Bash recommendations exist to:
+	•	reduce historically exploited failure modes
+	•	improve auditability and reviewability
+	•	make scripts predictable, composable, and safe
+
+They are guidance, not law.
+
+⸻
+
+Example: UMRS-Style Bash Script (Illustrative)
+
+Every line below is prefixed with the section symbol (§).
+
+§#!/usr/bin/bash
+§set -euo pipefail
+§IFS=$’ \t\n’
+§
+§PATH=/usr/sbin:/usr/bin:/sbin:/bin
+§export PATH
+§readonly PATH
+§
+§unset LD_PRELOAD LD_LIBRARY_PATH BASH_ENV ENV IFS SHELLOPTS GLOBIGNORE
+§export LC_ALL=C
+§export LANG=C
+§
+§umask 077
+§
+§readonly EX_OK=0
+§readonly EX_ERR=1
+§readonly EX_USAGE=2
+§readonly EX_PRECONDITION=3
+§readonly EX_FAIL=4
+§readonly EX_WARN=5
+§
+§tool_tag=“umrs-example”
+§readonly tool_tag
+§
+§msg_err() { printf ‘%s\n’ “${tool_tag}: ERROR: $” >&2; }
+§msg_info() { printf ‘%s\n’ “${tool_tag}: INFO: $” >&2; }
+§die() { msg_err “$”; exit “$EX_ERR”; }
+§
+§log_sys() {
+§  local pri=”$1”; shift
+§  /usr/bin/logger -t “$tool_tag” -p “$pri” – “$”
+§}
+§
+§cleanup() {
+§  rc=$?
+§  [[ -n “${tmpdir:-}” ]] && rm -rf – “$tmpdir”
+§  exit “$rc”
+§}
+§trap cleanup EXIT INT TERM
+§
+§mode=”${1:-}”
+§case “$mode” in
+§  get|update) : ;;
+§  *) die “usage: $0 {get|update}” ;;
+§esac
+§
+§if [[ “$mode” == “get” ]]; then
+§  printf ‘%s\n’ “status=OK”
+§  exit “$EX_OK”
+§fi
+§
+§tmpdir=”$(mktemp -d -p /tmp umrs.XXXXXX)” || die “mktemp failed”
+§chmod 0700 “$tmpdir”
+§
+§dest=”/var/lib/umrs/example.state”
+§dir=”$(dirname “$dest”)”
+§tmpfile=”$(mktemp -p “$dir” .example.XXXXXX)” || die “mktemp failed”
+§
+§printf ‘%s\n’ “updated=$(date -u +%FT%TZ)” >”$tmpfile”
+§chmod 0600 “$tmpfile”
+§mv -f – “$tmpfile” “$dest”
+§
+§log_sys “authpriv.notice” “action=update target=$dest result=success”
+§exit “$EX_OK”
+
+⸻
+
+If you drop this into GitHub as-is, you have a credible, opinionated, experience-driven Official UMRS Guide.
+It will age well.
