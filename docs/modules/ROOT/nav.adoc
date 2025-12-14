@@ -6,4 +6,5 @@
 * xref:operations.adoc[Operations]
 * xref:troubleshooting.adoc[Troubleshooting]
 * xref:release-notes.adoc[Release Notes]
+* xref:legal-notices.adoc[Legal Notices]
 
