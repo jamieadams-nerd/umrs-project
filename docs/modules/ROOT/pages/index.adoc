@@ -8,6 +8,17 @@ Version: {umrs-version}
 
 toc::[]
 
+Title
+
+Abstract / Overview
+
+Scope and Audience
+
+High-level diagram or explanation
+
+Links to the rest of the documentation
+
+
 == What this documentation is
 This documentation is written for two audiences:
 
