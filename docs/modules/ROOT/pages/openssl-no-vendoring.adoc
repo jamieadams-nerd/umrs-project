@@ -1,6 +1,8 @@
 # No Vendored OpenSSL
 
-The UMRS Rust tools are deliberately compiled without _vendoring_ cryptographic libraries, relying *instead* on the OpenSSL implementation provided and maintained by the operating system. In this context, “vendored OpenSSL” refers to a build model in which an application bundles and compiles its own private copy of the OpenSSL source code as part of the application build, rather than dynamically linking against the system-supplied OpenSSL libraries. 
+The UMRS tools written in the Rust language are deliberately compiled without _vendoring_ cryptographic libraries, relying *instead* on the OpenSSL implementation provided and maintained by the operating system. 
+
+In this context, “vendored OpenSSL” refers to a build model in which an application bundles and compiles its own private copy of the OpenSSL source code as part of the application build, rather than dynamically linking against the system-supplied OpenSSL libraries. 
 
 [WARNING]
 ----
