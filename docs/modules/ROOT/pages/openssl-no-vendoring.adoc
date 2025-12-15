@@ -19,11 +19,13 @@ By disabling vendored OpenSSL and linking exclusively against the system-provide
 ## Building UMRS Rust Tools
 
 How does Vendored OpenSSL get enabled? Vendoring happens only if the “vendored” feature gets enabled for the OpenSSL binding stack (usually openssl-sys), either:
+
 * directly in your Cargo.toml (you set it), or
 * indirectly by some dependency that enables it via features, or
 * by environment/build configuration that tells openssl-sys to build OpenSSL from source.
 
 If you never enable the vendored feature anywhere, then by default the openssl crate tries to use the system OpenSSL via pkg-config.
+
 
 ### Ensuring No-Vendor OpenSSL
 
