@@ -73,7 +73,9 @@ Expected:
 
 If you do not see libssl/libcrypto listed, you might be statically linking or bundling something unusual. That is a red flag for your “use the platform’s validated crypto” goal.
 
-*Step 3*. Confirm the ELF “NEEDED” entries are for system libs by running:
+### Check ELF Headers
+
+Confirm the ELF “NEEDED” entries are for system libs by running:
 [source,bash]
 ----
 readelf -d target/release/umrs-ecdsa384 | grep NEEDED
@@ -81,16 +83,15 @@ readelf -d target/release/umrs-ecdsa384 | grep NEEDED
 
 Expected to see:
 
-* NEEDED Shared library: \[libssl.so.3]
-* NEEDED Shared library: \[libcrypto.so.3]
+* NEEDED Shared library: [libssl.so.3]
+* NEEDED Shared library: [libcrypto.so.3]
 
 #### Examine Build Artifact
 
-Look for a vendored build artifact (optional sanity check). Vendoring typically leaves behind build output in target/…/build/openssl-sys-*/out/ that includes an OpenSSL source build tree.
+Look for a vendored build artifact (optional sanity check). Vendoring typically leaves behind build output in `target/…/build/openssl-sys-*/out/` that includes an OpenSSL source build tree.
 
 You can do a quick scan:
 [source,bash]
-
 ----
 find target -path ‘openssl-sys’ -type d | head
 ----
