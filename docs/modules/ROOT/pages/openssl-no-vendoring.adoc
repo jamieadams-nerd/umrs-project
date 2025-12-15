@@ -31,7 +31,9 @@ If you never enable the vendored feature anywhere, then by default the openssl c
 
 One hard guard is to use the environment variable `export OPENSSL_NO_VENDOR=1`. When this is set, `openssl-sys` is instructed to refuse vendoring. In practice, that means: if some dependency accidentally enables vendored, the build should fail rather than silently building a private OpenSSL.
 
-So: using `OPENSSL_NO_VENDOR=1` plus the feature checks below gives you “I am correct” confidence.
+Using `OPENSSL_NO_VENDOR=1` plus the feature checks below gives you “I am correct” confidence.
+
+The following verification steps are provided against the project umrs-ecdsa384 Rust project. So, replace the file nams with your binary files. 
 
 Now to prove, with certainty, that you did not vendor OpenSSL Do these checks on the exact build output you will ship. Confirm no vendored feature in the dependency graph run the following command:
 
@@ -46,7 +48,8 @@ If you see “vendored” anywhere under openssl / openssl-sys, you are vendorin
 
 ### Force the build to refuse vendoring
 
-+Step 1+. First, run:
+Run the following commands in your workspace:
+
 [source,bash]
 ----
 export OPENSSL_NO_VENDOR=1
@@ -56,7 +59,9 @@ cargo build –release
 
 If a dependency tries to vendor, this should fail.
 
-*Step 2*. Confirm you are dynamically linking to the system _libssl/libcrypto_ by running:
+### Confirm Dynamic Linking to System Libs
+Confirm you are dynamically linking to the system _libssl/libcrypto_ by running:
+
 [bash,source]
 ----
 ldd target/release/umrs-ecdsa384 | grep -E ‘libssl|libcrypto’
@@ -79,12 +84,13 @@ Expected to see:
 * NEEDED Shared library: \[libssl.so.3]
 * NEEDED Shared library: \[libcrypto.so.3]
 
-*Step 4*. Look for a vendored build artifact (optional sanity check)
+#### Examine Build Artifact
 
-Vendoring typically leaves behind build output in target/…/build/openssl-sys-*/out/ that includes an OpenSSL source build tree.
+Look for a vendored build artifact (optional sanity check). Vendoring typically leaves behind build output in target/…/build/openssl-sys-*/out/ that includes an OpenSSL source build tree.
 
 You can do a quick scan:
 [source,bash]
+
 ----
 find target -path ‘openssl-sys’ -type d | head
 ----
@@ -93,18 +99,15 @@ If you see paths that look like a built OpenSSL source tree under openssl-sys ou
 
 ''''
 
-What I recommend you standardize in UMRS builds
-To make this “always correct” and easy to document, standardize these in your build docs:
+## In Summary
 
-	•	Explicitly do NOT enable vendored in Cargo.toml.
-	•	Always build with:
-OPENSSL_NO_VENDOR=1
-	•	In CI (or your release checklist), run:
-cargo tree -e features | grep -i vendored  (must be empty)
-ldd … | grep -E ‘libssl|libcrypto’         (must show .so.3 system libs)
-readelf -d … | grep NEEDED                (must show libssl.so.3/libcrypto.so.3)
+The UMRS Project recommends standardized builds. To make this “always correct” and easy to document, standardize these in your build docs:
 
-If you do those three checks, you can be confident and you can write a clean “verification appendix” statement like:
-	•	“Builds are forced to use system OpenSSL (OPENSSL_NO_VENDOR=1). Feature graph is verified to exclude vendoring. Final ELF binary is verified to link against system libssl.so.3/libcrypto.so.3.”
+* Explicitly do NOT enable vendored in Cargo.toml.
+* Always build with: `OPENSSL_NO_VENDOR=1`
+* In CI (or your release checklist), run:
+** `cargo tree -e features | grep -i vendored` (must be empty)
+** `ldd … | grep -E ‘libssl|libcrypto’ `       (must show .so.3 system libs)
+** `readelf -d … | grep NEEDED`                (must show libssl.so.3/libcrypto.so.3)
 
-If you want, I can rewrite the build section you’ll paste into UMRS docs to include exactly these verification commands and expected outputs, using your usual UMRS documentation tone.
+For existing tools provided by the UMRS project, be confident that “Builds are forced to use system OpenSSL (OPENSSL_NO_VENDOR=1). Feature graph is verified to exclude vendoring. Final ELF binary is verified to link against system libssl.so.3/libcrypto.so.3.”
