@@ -6,7 +6,10 @@ In this context, “vendored OpenSSL” refers to a build model in which an appl
 
 [WARNING]
 ----
-While vendoring can simplify portability across diverse platforms, it bypasses the operating system’s cryptographic subsystem and shifts responsibility for cryptographic maintenance, patching, and validation to the application itself.
+While vendoring can simplify portability across diverse platforms, 
+it bypasses the operating system’s cryptographic subsystem and shifts 
+responsibility for cryptographic maintenance, patching, and validation 
+to the application itself.
 ----
 
 In a FIPS-enabled environment, this approach is intentionally avoided. FIPS compliance on Red Hat Enterprise Linux is achieved through a specific, vendor-validated OpenSSL build operating under kernel-enforced FIPS mode. Vendoring OpenSSL would result in the use of an uncertified cryptographic module, invalidating FIPS claims and undermining centralized security controls, update mechanisms, and audit expectations. 
