@@ -46,7 +46,7 @@ If you see “vendored” anywhere under openssl / openssl-sys, you are vendorin
 
 ### Force the build to refuse vendoring
 
-1. First, run:
+* Step 1*. First, run:
 [source,bash]
 ----
 export OPENSSL_NO_VENDOR=1
@@ -56,7 +56,7 @@ cargo build –release
 
 If a dependency tries to vendor, this should fail.
 
-2. Confirm you are dynamically linking to the system _libssl/libcrypto_ by running:
+*Step 2*. Confirm you are dynamically linking to the system _libssl/libcrypto_ by running:
 [bash,source]
 ----
 ldd target/release/umrs-ecdsa384 | grep -E ‘libssl|libcrypto’
@@ -68,7 +68,7 @@ Expected:
 
 If you do not see libssl/libcrypto listed, you might be statically linking or bundling something unusual. That is a red flag for your “use the platform’s validated crypto” goal.
 
-3. Confirm the ELF “NEEDED” entries are for system libs by running:
+*Step 3*. Confirm the ELF “NEEDED” entries are for system libs by running:
 [source,bash]
 ----
 readelf -d target/release/umrs-ecdsa384 | grep NEEDED
@@ -79,7 +79,7 @@ Expected to see:
 * NEEDED Shared library: \[libssl.so.3]
 * NEEDED Shared library: \[libcrypto.so.3]
 
-4. Look for a vendored build artifact (optional sanity check)
+*Step 4*. Look for a vendored build artifact (optional sanity check)
 
 Vendoring typically leaves behind build output in target/…/build/openssl-sys-*/out/ that includes an OpenSSL source build tree.
 
@@ -93,7 +93,7 @@ If you see paths that look like a built OpenSSL source tree under openssl-sys ou
 
 ''''
 
-4.	What I recommend you standardize in UMRS builds
+What I recommend you standardize in UMRS builds
 To make this “always correct” and easy to document, standardize these in your build docs:
 
 	•	Explicitly do NOT enable vendored in Cargo.toml.
