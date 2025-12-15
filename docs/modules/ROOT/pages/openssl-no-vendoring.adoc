@@ -1,0 +1,103 @@
+# No Vendored OpenSSL
+
+The UMRS Rust tools are deliberately compiled without _vendoring_ cryptographic libraries, relying *instead* on the OpenSSL implementation provided and maintained by the operating system. In this context, “vendored OpenSSL” refers to a build model in which an application bundles and compiles its own private copy of the OpenSSL source code as part of the application build, rather than dynamically linking against the system-supplied OpenSSL libraries. 
+
+[WARNING]
+----
+While vendoring can simplify portability across diverse platforms, it bypasses the operating system’s cryptographic subsystem and shifts responsibility for cryptographic maintenance, patching, and validation to the application itself.
+----
+
+In a FIPS-enabled environment, this approach is intentionally avoided. FIPS compliance on Red Hat Enterprise Linux is achieved through a specific, vendor-validated OpenSSL build operating under kernel-enforced FIPS mode. Vendoring OpenSSL would result in the use of an uncertified cryptographic module, invalidating FIPS claims and undermining centralized security controls, update mechanisms, and audit expectations. 
+
+By disabling vendored OpenSSL and linking exclusively against the system-provided cryptographic libraries, these tools ensure alignment with the platform’s validated cryptographic boundary, inherit timely security updates, and remain consistent with high-assurance, enterprise, and accreditation requirements.
+
+## Building UMRS Rust Tools
+
+How does Vendored OpenSSL get enabled? Vendoring happens only if the “vendored” feature gets enabled for the OpenSSL binding stack (usually openssl-sys), either:
+* directly in your Cargo.toml (you set it), or
+* indirectly by some dependency that enables it via features, or
+* by environment/build configuration that tells openssl-sys to build OpenSSL from source.
+
+If you never enable the vendored feature anywhere, then by default the openssl crate tries to use the system OpenSSL via pkg-config.
+
+### Ensuring No-Vendor OpenSSL
+
+One hard guard is to use the environment variable `export OPENSSL_NO_VENDOR=1`. When this is set, `openssl-sys` is instructed to refuse vendoring. In practice, that means: if some dependency accidentally enables vendored, the build should fail rather than silently building a private OpenSSL.
+
+So: using `OPENSSL_NO_VENDOR=1` plus the feature checks below gives you “I am correct” confidence.
+
+Now to prove, with certainty, that you did not vendor OpenSSL Do these checks on the exact build output you will ship. Confirm no vendored feature in the dependency graph run the following command:
+
+[source,bash]
+----
+cargo tree -e features | grep -i vendored
+----
+
+Expected output: *nothing*
+
+If you see “vendored” anywhere under openssl / openssl-sys, you are vendoring.
+
+### Force the build to refuse vendoring
+
+1. First, run:
+[source,bash]
+----
+export OPENSSL_NO_VENDOR=1
+cargo clean
+cargo build –release
+----
+
+If a dependency tries to vendor, this should fail.
+
+2. Confirm you are dynamically linking to the system _libssl/libcrypto_ by running:
+[bash,source]
+----
+ldd target/release/umrs-ecdsa384 | grep -E ‘libssl|libcrypto’
+----
+
+Expected:
+* `libssl.so.3 => /usr/lib64/…`
+* `libcrypto.so.3 => /usr/lib64/…`
+
+If you do not see libssl/libcrypto listed, you might be statically linking or bundling something unusual. That is a red flag for your “use the platform’s validated crypto” goal.
+
+3. Confirm the ELF “NEEDED” entries are for system libs by running:
+[source,bash]
+----
+readelf -d target/release/umrs-ecdsa384 | grep NEEDED
+----
+
+Expected to see:
+
+* NEEDED Shared library: \[libssl.so.3]
+* NEEDED Shared library: \[libcrypto.so.3]
+
+4. Look for a vendored build artifact (optional sanity check)
+
+Vendoring typically leaves behind build output in target/…/build/openssl-sys-*/out/ that includes an OpenSSL source build tree.
+
+You can do a quick scan:
+[source,bash]
+----
+find target -path ‘openssl-sys’ -type d | head
+----
+
+If you see paths that look like a built OpenSSL source tree under openssl-sys out directories, that suggests vendoring occurred.
+
+''''
+
+4.	What I recommend you standardize in UMRS builds
+To make this “always correct” and easy to document, standardize these in your build docs:
+
+	•	Explicitly do NOT enable vendored in Cargo.toml.
+	•	Always build with:
+OPENSSL_NO_VENDOR=1
+	•	In CI (or your release checklist), run:
+cargo tree -e features | grep -i vendored  (must be empty)
+ldd … | grep -E ‘libssl|libcrypto’         (must show .so.3 system libs)
+readelf -d … | grep NEEDED                (must show libssl.so.3/libcrypto.so.3)
+
+If you do those three checks, you can be confident and you can write a clean “verification appendix” statement like:
+	•	“Builds are forced to use system OpenSSL (OPENSSL_NO_VENDOR=1). Feature graph is verified to exclude vendoring. Final ELF binary is verified to link against system libssl.so.3/libcrypto.so.3.”
+
+If you want, I can rewrite the build section you’ll paste into UMRS docs to include exactly these verification commands and expected outputs, using your usual UMRS documentation tone.
