@@ -1,0 +1,78 @@
+A BRIEF HISTORY OF MULTILEVEL SECURITY (MLS) SYSTEMS
+INCLUDING TRUSTED PATH AND ORANGE BOOK CONTEXT
+
+Multilevel Security (MLS) systems were not created as an academic curiosity. They were built to solve real operational failures that occurred once computing systems became shared, networked, and responsible for handling information with different sensitivity levels.
+
+To understand MLS properly, it is important to understand not just the technology, but the historical assumptions behind it.
+
+⸻
+
+
+ORANGE BOOK CLASSES (WHY B1/B2 MATTER)
+
+The Orange Book divided systems into broad categories:
+
+D – Minimal protection (mostly historical interest)
+
+C – Discretionary protection
+• C1: Basic DAC, identification, minimal auditing
+• C2: Controlled access protection
+– Stronger DAC
+– Object reuse protection
+– Auditing
+– Individual accountability
+
+Most commercial UNIX systems historically reached C2 at best.
+
+B – Mandatory protection (MLS begins here)
+• B1: Labeled Security Protection
+– Security labels on subjects and objects
+– Mandatory access control
+– Basic MLS enforcement
+• B2: Structured Protection
+– Stronger isolation
+– Trusted path
+– More rigorous design and testing
+• B3: Security Domains
+– Highly robust reference monitor
+– Strong process isolation
+– Extensive assurance evidence
+
+A – Verified Protection
+• A1: Formally verified design and implementation
+– Extremely rare
+– Extremely expensive
+
+When people refer to “B1” or “B2” systems, they are explicitly referring to MLS-capable systems with mandatory policy enforcement.
+
+⸻
+
+TRUSTED PATH: A CRITICAL MLS CONCEPT
+
+Trusted Path is a cornerstone concept in MLS systems.
+
+Definition:
+A trusted path is a guaranteed communication channel between the user and the Trusted Computing Base (TCB), ensuring that sensitive operations cannot be intercepted or spoofed.
+
+Why trusted path exists:
+MLS systems assume:
+• Applications may be compromised
+• User interfaces may be spoofed
+• Users may be tricked into entering sensitive data
+
+Trusted path ensures that:
+• When a user authenticates
+• When a user changes security attributes
+• When a user confirms sensitive actions
+
+…the communication is directly with the TCB, not with an untrusted process.
+
+Classic examples:
+• Secure attention keys (e.g., Ctrl-Alt-Del)
+• Trusted login paths
+• Trusted labeling interfaces
+
+Trusted path becomes mandatory at B2 and above.
+
+Without trusted path, MLS enforcement can be bypassed through deception rather than technical exploitation.
+
