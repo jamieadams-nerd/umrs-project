@@ -1,4 +1,15 @@
 [
+   {
+    "name": "CUI",
+   "abbrv_name": "CUI",
+   "marking": "CUI",
+   "parent_group: "",
+   "description": "Baseline Controlled Unclassified Information. Represents information subject to safeguarding or dissemination controls per law, regulation, or policy.",
+    "handling": "Must be stored, transmitted, and shared only with authorized users. Must be encrypted when leaving controlled environments. Apply CUI markings.",
+   "handling_group_id": "",
+
+   "other": {}
+ }
   {
     "name": "AGR",
     "abbrv_name": "AGR",
