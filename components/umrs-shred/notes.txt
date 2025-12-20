@@ -3,6 +3,15 @@
 
 ./umrs-shred /absolute/path/to/junk
 
+
+
+Advisory Locking:
+
+umrs-shred uses a best-effort advisory lock to serialize destructive operations and preserve a clear, unambiguous audit trail. While concurrent sanitization is not inherently unsafe, overlapping runs can produce interleaved log messages, ambiguous attribution, and confusing operational timelines. Locking ensures that each invocation completes as a discrete, auditable event. Lock files are intentionally placed in per-user runtime locations when running unprivileged (/run/user/<uid>/umrs) and in a dedicated system runtime directory when running as root (/run/umrs). This avoids cross-user interference, respects privilege boundaries, and prevents one user’s activity from blocking another’s authorized work. The lock is advisory, short-lived, automatically released on exit or signal, and is used for operational clarity and auditability rather than as a security control.
+
+
+
+
 Produces two log entries:
 
 
