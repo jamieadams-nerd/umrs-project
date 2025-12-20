@@ -1,0 +1,646 @@
+[
+  {
+    "name": "AGR",
+    "abbrv_name": "AGR",
+    "marking": "CUI//AGR",
+    "description": "",
+    "parent_group": "",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "AMNT",
+    "abbrv_name": "AMNT",
+    "marking": "CUI//AGR/AMNT",
+    "description": "",
+    "parent_group": "AGR",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "CHEM",
+    "abbrv_name": "CHEM",
+    "marking": "CUI//AGR/CHEM",
+    "description": "",
+    "parent_group": "AGR",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "PCI",
+    "abbrv_name": "PCI",
+    "marking": "CUI//AGR/PCI",
+    "description": "",
+    "parent_group": "AGR",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "TOX",
+    "abbrv_name": "TOX",
+    "marking": "CUI//AGR/TOX",
+    "description": "",
+    "parent_group": "AGR",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "WATER",
+    "abbrv_name": "WATER",
+    "marking": "CUI//AGR/WATER",
+    "description": "",
+    "parent_group": "AGR",
+    "handling_group_id": "",
+    "other": {}
+  },
+
+  {
+    "name": "CRIT",
+    "abbrv_name": "CRIT",
+    "marking": "CUI//CRIT",
+    "description": "",
+    "parent_group": "",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "CEII",
+    "abbrv_name": "CEII",
+    "marking": "CUI//CRIT//CEII",
+    "description": "",
+    "parent_group": "CRIT",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "DCRIT",
+    "abbrv_name": "DCRIT",
+    "marking": "CUI//CRIT/DCRIT",
+    "description": "",
+    "parent_group": "CRIT",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "EMGT",
+    "abbrv_name": "EMGT",
+    "marking": "CUI//CRIT/EMGT",
+    "description": "",
+    "parent_group": "CRIT",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "Crit-Infrastructure",
+    "abbrv_name": "Crit-Infrastructure",
+    "marking": "CUI//Crit-Infrastructure",
+    "description": "",
+    "parent_group": "",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "ISVI",
+    "abbrv_name": "ISVI",
+    "marking": "CUI//CRIT/ISVI",
+    "description": "",
+    "parent_group": "CRIT",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "PHYS",
+    "abbrv_name": "PHYS",
+    "marking": "CUI//CRIT/PHYS",
+    "description": "",
+    "parent_group": "CRIT",
+    "handling_group_id": "",
+    "other": {}
+  },
+
+  {
+    "name": "CTI",
+    "abbrv_name": "CTI",
+    "marking": "CUI//CTI",
+    "description": "",
+    "parent_group": "",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "EXPT",
+    "abbrv_name": "EXPT",
+    "marking": "CUI//CTI//EXPT",
+    "description": "",
+    "parent_group": "CTI",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "EXPTR",
+    "abbrv_name": "EXPTR",
+    "marking": "CUI//CTI//EXPTR",
+    "description": "",
+    "parent_group": "CTI",
+    "handling_group_id": "",
+    "other": {}
+  },
+
+  {
+    "name": "FNC",
+    "abbrv_name": "FNC",
+    "marking": "CUI//FNC",
+    "description": "",
+    "parent_group": "",
+    "handling_group_id": "",
+    "other": {}
+  },
+
+  {
+    "name": "GOVT",
+    "abbrv_name": "GOVT",
+    "marking": "CUI//GOVT",
+    "description": "",
+    "parent_group": "",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "GAF",
+    "abbrv_name": "GAF",
+    "marking": "CUI//GOVT/GAF",
+    "description": "",
+    "parent_group": "GOVT",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "GOVTD",
+    "abbrv_name": "GOVTD",
+    "marking": "CUI//GOVT/GOVTD",
+    "description": "",
+    "parent_group": "GOVT",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "LEGL",
+    "abbrv_name": "LEGL",
+    "marking": "CUI//GOVT/LEGL",
+    "description": "",
+    "parent_group": "GOVT",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "LMI",
+    "abbrv_name": "LMI",
+    "marking": "CUI//GOVT/LMI",
+    "description": "",
+    "parent_group": "GOVT",
+    "handling_group_id": "",
+    "other": {}
+  },
+
+  {
+    "name": "LEI",
+    "abbrv_name": "LEI",
+    "marking": "CUI//LEI",
+    "description": "",
+    "parent_group": "",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "Accident Investigation",
+    "abbrv_name": "AIV",
+    "marking": "CUI//LEI//AIV",
+    "description": "Accident Investigation",
+    "parent_group": "LEI",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "Criminal History Records Information",
+    "abbrv_name": "CHRI",
+    "marking": "CUI//LEI//CHRI",
+    "description": "Criminal History Records Information",
+    "parent_group": "LEI",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "Committed Person",
+    "abbrv_name": "CMPRS",
+    "marking": "CUI//LEI//CMPRS",
+    "description": "Committed Person",
+    "parent_group": "LEI",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "Campaign Funds",
+    "abbrv_name": "FUND",
+    "marking": "CUI//LEI//FUND",
+    "description": "Campaign Funds",
+    "parent_group": "LEI",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "Informant",
+    "abbrv_name": "INF",
+    "marking": "CUI//LEI//INF",
+    "description": "Informant",
+    "parent_group": "LEI",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "Investigation",
+    "abbrv_name": "INV",
+    "marking": "CUI//LEI//INV",
+    "description": "Investigation",
+    "parent_group": "LEI",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "Juvenile",
+    "abbrv_name": "JUV",
+    "marking": "CUI//LEI//JUV",
+    "description": "Juvenile",
+    "parent_group": "LEI",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "Communications",
+    "abbrv_name": "LCOMM",
+    "marking": "CUI//LEI//LCOMM",
+    "description": "Communications",
+    "parent_group": "LEI",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "DNA",
+    "abbrv_name": "LDNA",
+    "marking": "CUI//LEI//LDNA",
+    "description": "DNA",
+    "parent_group": "LEI",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "Law Enforcement Financial Records",
+    "abbrv_name": "LFNC",
+    "marking": "CUI//LEI//LFNC",
+    "description": "Law Enforcement Financial Records",
+    "parent_group": "LEI",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "National Security Letter",
+    "abbrv_name": "LNSL",
+    "marking": "CUI//LEI//LNSL",
+    "description": "National Security Letter",
+    "parent_group": "LEI",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "Terrorist Screening",
+    "abbrv_name": "LSCRN",
+    "marking": "CUI//LEI//LSCRN",
+    "description": "Terrorist Screening",
+    "parent_group": "LEI",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "Reward",
+    "abbrv_name": "RWRD",
+    "marking": "CUI//LEI//RWRD",
+    "description": "Reward",
+    "parent_group": "LEI",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "Sex Crime Victim",
+    "abbrv_name": "SCV",
+    "marking": "CUI//LEI//SCV",
+    "description": "Sex Crime Victim",
+    "parent_group": "LEI",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "Controlled Substances",
+    "abbrv_name": "SUB",
+    "marking": "CUI//LEI//SUB",
+    "description": "Controlled Substances",
+    "parent_group": "LEI",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "Pen Register/Trap & Trace",
+    "abbrv_name": "TRACE",
+    "marking": "CUI//LEI//TRACE",
+    "description": "Pen Register/Trap & Trace",
+    "parent_group": "LEI",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "Whistleblower Identity",
+    "abbrv_name": "WHISTL",
+    "marking": "CUI//LEI//WHISTL",
+    "description": "Whistleblower Identity",
+    "parent_group": "LEI",
+    "handling_group_id": "",
+    "other": {}
+  },
+
+  {
+    "name": "MGT",
+    "abbrv_name": "MGT",
+    "marking": "CUI//MGT",
+    "description": "",
+    "parent_group": "",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "NNPI",
+    "abbrv_name": "NNPI",
+    "marking": "CUI//NNPI",
+    "description": "",
+    "parent_group": "",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "Nuclear-Power",
+    "abbrv_name": "Nuclear-Power",
+    "marking": "CUI//Nuclear-Power",
+    "description": "",
+    "parent_group": "",
+    "handling_group_id": "",
+    "other": {}
+  },
+
+  {
+    "name": "OPSEC",
+    "abbrv_name": "OPSEC",
+    "marking": "CUI//OPSEC",
+    "description": "",
+    "parent_group": "",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "Ops-Security",
+    "abbrv_name": "Ops-Security",
+    "marking": "CUI//Ops-Security",
+    "description": "",
+    "parent_group": "",
+    "handling_group_id": "",
+    "other": {}
+  },
+
+  {
+    "name": "Privacy",
+    "abbrv_name": "Privacy",
+    "marking": "CUI//Privacy",
+    "description": "",
+    "parent_group": "",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "PRIVACY",
+    "abbrv_name": "PRIVACY",
+    "marking": "CUI//PRIVACY",
+    "description": "",
+    "parent_group": "",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "CONTRACT",
+    "abbrv_name": "CONTRACT",
+    "marking": "CUI//PRIVACY//CONTRACT",
+    "description": "",
+    "parent_group": "PRIVACY",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "DREC",
+    "abbrv_name": "DREC",
+    "marking": "CUI//PRIVACY//DREC",
+    "description": "",
+    "parent_group": "PRIVACY",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "GENETIC",
+    "abbrv_name": "GENETIC",
+    "marking": "CUI//PRIVACY//GENETIC",
+    "description": "",
+    "parent_group": "PRIVACY",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "HEALTH",
+    "abbrv_name": "HEALTH",
+    "marking": "CUI//PRIVACY//HEALTH",
+    "description": "",
+    "parent_group": "PRIVACY",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "MIL",
+    "abbrv_name": "MIL",
+    "marking": "CUI//PRIVACY//MIL",
+    "description": "",
+    "parent_group": "PRIVACY",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "PERS",
+    "abbrv_name": "PERS",
+    "marking": "CUI//PRIVACY//PERS",
+    "description": "",
+    "parent_group": "PRIVACY",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "PRIIG",
+    "abbrv_name": "PRIIG",
+    "marking": "CUI//PRIVACY//PRIIG",
+    "description": "",
+    "parent_group": "PRIVACY",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "STUD",
+    "abbrv_name": "STUD",
+    "marking": "CUI//PRIVACY//STUD",
+    "description": "",
+    "parent_group": "PRIVACY",
+    "handling_group_id": "",
+    "other": {}
+  },
+
+  {
+    "name": "PROCURE",
+    "abbrv_name": "PROCURE",
+    "marking": "CUI//PROCURE",
+    "description": "",
+    "parent_group": "",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "Procurement",
+    "abbrv_name": "Procurement",
+    "marking": "CUI//Procurement",
+    "description": "",
+    "parent_group": "",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "SBIZ",
+    "abbrv_name": "SBIZ",
+    "marking": "CUI//PROCURE/SBIZ",
+    "description": "",
+    "parent_group": "PROCURE",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "SSEL",
+    "abbrv_name": "SSEL",
+    "marking": "CUI//PROCURE/SSEL",
+    "description": "",
+    "parent_group": "PROCURE",
+    "handling_group_id": "",
+    "other": {}
+  },
+
+  {
+    "name": "PROPIN",
+    "abbrv_name": "PROPIN",
+    "marking": "CUI//PROPIN",
+    "description": "",
+    "parent_group": "",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "MFC",
+    "abbrv_name": "MFC",
+    "marking": "CUI//PROPIN/MFC",
+    "description": "",
+    "parent_group": "PROPIN",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "Proprietary",
+    "abbrv_name": "Proprietary",
+    "marking": "CUI//Proprietary",
+    "description": "",
+    "parent_group": "",
+    "handling_group_id": "",
+    "other": {}
+  },
+
+  {
+    "name": "PROT",
+    "abbrv_name": "PROT",
+    "marking": "CUI//PROT",
+    "description": "",
+    "parent_group": "",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "PSEC",
+    "abbrv_name": "PSEC",
+    "marking": "CUI//PSEC",
+    "description": "",
+    "parent_group": "",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "RAIL",
+    "abbrv_name": "RAIL",
+    "marking": "CUI//RAIL",
+    "description": "",
+    "parent_group": "",
+    "handling_group_id": "",
+    "other": {}
+  },
+
+  {
+    "name": "TAX",
+    "abbrv_name": "TAX",
+    "marking": "CUI//TAX",
+    "description": "",
+    "parent_group": "",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "CONV",
+    "abbrv_name": "CONV",
+    "marking": "CUI//TAX/CONV",
+    "description": "",
+    "parent_group": "TAX",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "TAI",
+    "abbrv_name": "TAI",
+    "marking": "CUI//TAX/TAI",
+    "description": "",
+    "parent_group": "TAX",
+    "handling_group_id": "",
+    "other": {}
+  },
+  {
+    "name": "WDT",
+    "abbrv_name": "WDT",
+    "marking": "CUI//TAX/WDT",
+    "description": "",
+    "parent_group": "TAX",
+    "handling_group_id": "",
+    "other": {}
+  },
+
+  {
+    "name": "TechInfo",
+    "abbrv_name": "TechInfo",
+    "marking": "CUI//TechInfo",
+    "description": "",
+    "parent_group": "",
+    "handling_group_id": "",
+    "other": {}
+  }
+]
+
