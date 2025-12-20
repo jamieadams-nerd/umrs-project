@@ -1,0 +1,29 @@
+
+
+
+./umrs-shred /absolute/path/to/junk
+
+Produces two log entries:
+
+
+When you do not specify a facility or priority, logger uses defaults:
+
+• Facility: user
+• Priority: notice
+
+So your current calls effectively mean:
+
+facility=user
+priority=notice
+tag=umrs-shred
+
+
+
+A begin task and then a result message which could be success or fail.
+
+The detail= field is a free field to explain why the action was done. Our choice.
+
+Dec 19 21:23:19 localhost umrs-shred[414011]: ts_utc=2025-12-20T02:23:19Z level=INFO tool=umrs-shred actor=jadams uid=1000 loginuid=1000 selinux=unconfined_u:unconfined_r:unconfined_t:SystemLow-SystemHigh action=sanitize result=BEGIN file=/home/jadams/Development/umrs-project/components/umrs-shred/junk detail=requested
+
+Dec 19 21:23:19 localhost umrs-shred[414025]: ts_utc=2025-12-20T02:23:19Z level=INFO tool=umrs-shred actor=jadams uid=1000 loginuid=1000 selinux=unconfined_u:unconfined_r:unconfined_t:SystemLow-SystemHigh action=sanitize result=SUCCESS file=/home/jadams/Development/umrs-project/components/umrs-shred/junk detail=shred_completed
+
