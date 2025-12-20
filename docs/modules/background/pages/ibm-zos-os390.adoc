@@ -1,4 +1,5 @@
-# IBM Z and zOS 
+= IBM Z and zOS 
+Jamie L. Adams
 
 
 IBM Z

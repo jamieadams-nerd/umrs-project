@@ -1,13 +1,5 @@
+= Microsoft NT TSEC Evaluation
 
-Microsoft nt
-
-Yes — there is truth behind that joke, and like many good industry jokes, it’s funny because it’s only slightly exaggerated.
-
-Here’s the accurate historical picture, without myth-making.
-
-⸻
-
-SHORT ANSWER
 
 Yes, early Windows NT did receive TCSEC (Orange Book) evaluations, but only under very constrained configurations, and network connectivity either had to be absent or severely restricted.
 

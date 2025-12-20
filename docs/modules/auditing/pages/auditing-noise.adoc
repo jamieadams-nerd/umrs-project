@@ -1,10 +1,8 @@
-Auditing noise
-
-Got it. Below is a fully consolidated, plain-text, unformatted answer that combines the previous discussion with the next-stage scaling strategies once audit noise has been reduced. This is written as a single coherent guidance block you can use for design docs, operations manuals, or audit justification.
+=  Auditing noise
+Jamie L. Adams
+:description: Some description
 
 Everything here aligns with how Red Hat, DISA/STIG-aligned environments, and high-assurance systems actually handle audit load.
-
-⸻
 
 AUDITD NOISE REDUCTION AND SCALING STRATEGY (END-TO-END)
 
@@ -20,9 +18,9 @@ The correct sequence is:
 	3.	Tighten scope
 	4.	Only then scale capacity (hardware and architecture)
 
-⸻
 
-	1.	FOUNDATIONAL PRINCIPLE
+
+== FOUNDATIONAL PRINCIPLE
 
 ⸻
 
@@ -36,11 +34,9 @@ If audit volume is too high, the correct response is:
 
 Only after that do you scale infrastructure.
 
-⸻
 
-	2.	FIRST PHASE: REDUCE AUDIT NOISE AT THE SOURCE
+== FIRST PHASE: REDUCE AUDIT NOISE AT THE SOURCE
 
-⸻
 
 2.1 Review audit rules for over-breadth
 

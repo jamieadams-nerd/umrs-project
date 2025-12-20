@@ -1,0 +1,37 @@
+= UMRS Tooling
+
+Here is the UMRS “technology baseline” as you just defined it, stated crisply.
+
+Languages
+	•	Bash for orchestration and system glue
+	•	Python for accessibility, admin-facing tooling, and rapid iteration (especially GTK work when appropriate)
+	•	Rust for core tooling where performance, safety, and long-term correctness matter
+
+Secure coding posture
+	•	Written secure coding guidance for Bash and Python (and Rust practices by design)
+	•	Consistent, defensive patterns: input validation, safe defaults, explicit error handling, careful filesystem semantics, and audit-quality logging
+
+Configuration format
+	•	TOML for human-edited configuration
+	•	Clear schema expectations, small and stable config surface area
+
+Logging
+	•	Tools log once via syslog APIs (shell logger / Rust syslog)
+	•	journald is the system-of-record
+	•	rsyslog projects UMRS events into a dedicated UMRS JSONL activity log via a JSON template
+	•	UMRS tags (umrs-<tool>) as the primary routing/filter key
+	•	Syslog severity used normally (INFO/WARN/ERR), while UMRS semantic outcomes remain separate (OK/WARN/FAIL)
+
+Data formats and storage
+	•	JSON for structured data interchange and registries (like the label registry)
+	•	JSON Lines for append-only event streams (like the UMRS activity log)
+	•	SQLite3 as an optional durable backend when you need indexing, querying, receipts, state, or tamper-evident workflows
+
+Why this is a good baseline
+	•	Mature, well-supported, and widely deployed in enterprise environments
+	•	Works offline and on RHEL
+	•	Easy to package into RPMs
+	•	Friendly to audit, troubleshooting, and long-term maintenance
+	•	Your innovation is in the high-assurance semantics and workflows, not in exotic tech choices
+
+If you want, the next useful step is to write this as a short “UMRS Engineering Baseline” page (one page) that you can include in the docs and point employers to.
