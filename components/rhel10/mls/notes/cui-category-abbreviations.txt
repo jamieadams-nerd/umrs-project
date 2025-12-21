@@ -1,339 +1,163 @@
 Official CUI abbreviations and category names
-
 Source: DoD CUI “CUI Categories and Abbreviations” list, which mirrors the National CUI Registry but adds the abbreviations in one place. 
-
-
-
 Format:
-
 ABBREV – Category Name (Index Group)
-
 ADJ – Status Adjustment (Immigration)
-
 ADPO – Administrative Proceedings (Legal)
-
 AG – Agriculture (Intelligence)
-
 AIV – Accident Investigation (Law Enforcement)
-
 APP – Patent Applications (Patent)
-
 ARCHR – Archaeological Resources (Natural and Cultural Resources)
-
 ASYL – Asylee (Immigration)
-
 BARG – Collective Bargaining (Legal)
-
 BATT – Battered Spouse or Child (Immigration)
-
 BUDG – Budget (Financial)
-
 CEII – Critical Energy Infrastructure Information (Critical Infrastructure)
-
 CENS – U.S. Census (Statistical)
-
 CHLD – Child Pornography (Legal)
-
 CHRI – Criminal History Records Information (Law Enforcement)
-
 CMPRS – Committed Person (Law Enforcement)
-
 COMPT – Comptroller General (Financial)
-
 CONREG – Entity Registration Information (Proprietary Business Information)
-
 CONTRACT – Contract Use (Privacy)
-
 CONV – Tax Convention (Tax)
-
 CRIT – General Critical Infrastructure Information (Critical Infrastructure)
-
 CRITAN – Ammonium Nitrate (Critical Infrastructure)
-
 CTI – Controlled Technical Information (Defense)
-
 CVI – Chemical-Terrorism Vulnerability Information (Critical Infrastructure)
-
 CVIC – Child Victim/Witness (Legal)
-
 DCNI – Unclassified Controlled Nuclear Information – Defense (Defense)
-
 DCRIT – DoD Critical Infrastructure Security Information (Defense)
-
 DREC – Death Records (Privacy)
-
 EMGT – Emergency Management (Critical Infrastructure)
-
 EXPT – Export Controlled (Export Control)
-
 EXPTR – Export Controlled Research (Export Control)
-
 FINT – International Financial Institutions (Financial)
-
 FISA – Foreign Intelligence Surveillance Act (Intelligence)
-
 FISAB – FISA Business Records (Intelligence)
-
 FNC – General Financial Information (Financial)
-
 FSEC – Bank Secrecy (Financial)
-
 FSI – Financial Supervision Information (Financial)
-
 FUND – Campaign Funds (Law Enforcement)
-
 GENETIC – Genetic Information (Privacy)
-
 GEO – Geodetic Product Information (Intelligence)
-
 HISTP – Historic Properties (Natural and Cultural Resources)
-
 HLTH – Health Information (Privacy)
-
 ID – Internal Data (Intelligence)
-
 IFNC – Intelligence Financial Records (Intelligence)
-
 INF – Informant (Law Enforcement)
-
 INTL – International Agreement Information (International Agreements)
-
 INTEL – General Intelligence (Intelligence)
-
 INV – Investigation (Law Enforcement)
-
 INVENT – Inventions (Patent)
-
 ISVI – Information Systems Vulnerability Information (Critical Infrastructure)
-
 IVIC – Victims of Human Trafficking (Immigration)
-
 JURY – Federal Grand Jury (Legal)
-
 JUV – Juvenile (Law Enforcement)
-
 LCOMM – Communications (Law Enforcement)
-
 LDNA – DNA (Law Enforcement)
-
 LEI – General Law Enforcement (Law Enforcement)
-
 LFNC – Law Enforcement Financial Records (Law Enforcement)
-
 LMI – Legislative Materials (Legal)
-
 LNSL – National Security Letter (Law Enforcement)
-
 LPROT – Protective Order (Legal)
-
 LSCRN – Terrorist Screening (Law Enforcement)
-
 LVIC – Victim (Legal)
-
 MERG – Mergers (Financial)
-
 MFC – Proprietary Manufacturer (Proprietary Business Information)
-
 MIL – Military Personnel Records (Privacy)
-
 NETW – Net Worth (Financial)
-
 NNPI – Naval Nuclear Propulsion Information (Defense)
-
 NPSR – National Park System Resources (Natural and Cultural Resources)
-
 NUC – General Nuclear (Nuclear)
-
 OCCMTO – Ocean Common Carrier and Marine Terminal Operator Agreements (Proprietary Business Information)
-
 OPSEC – Operations Security (Intelligence)
-
 PCII – Protected Critical Infrastructure Information (Critical Infrastructure)
-
 PERS – Personnel Records (Privacy)
-
 PEST – Pesticide Producer Survey (Statistical)
-
 PHYS – Physical Security (Critical Infrastructure)
-
 POST – Proprietary Postal (Proprietary Business Information)
-
 PRE – Presentence Report (Legal)
-
 PRIIG – Inspector General Protected (Privacy)
-
 PRIOR – Prior Arrest (Legal)
-
 PRIVILEGE – Legal Privilege (Legal)
-
 PROCURE – General Procurement and Acquisition (Procurement and Acquisition)
-
 PROPIN – General Proprietary Business Information (Proprietary Business Information)
-
 PROT – Temporary Protected Status (Immigration)
-
 PRVCY – General Privacy (Privacy)
-
 PSEC – Secrecy Orders (Patent)
-
 PSI – Privileged Safety Information (Defense)
-
 RAIL – Railroad Safety Analysis Records (Transportation)
-
 RECOMM – Nuclear Recommendation Material (Nuclear)
-
 RESD – Permanent Resident Status (Immigration)
-
 RTR – Retirement (Financial)
-
 RWRD – Reward (Law Enforcement)
-
 SAFE – SAFETY Act Information (Critical Infrastructure)
-
 SBIZ – Small Business Research and Technology (Procurement and Acquisition)
-
 SCV – Sex Crime Victim (Law Enforcement)
-
 SERV – Ocean Common Carrier Service Contracts (Proprietary Business Information)
-
 SGI – Safeguards Information (Nuclear)
-
 SRI – Nuclear Security-Related Information (Nuclear)
-
 SSEL – Source Selection (Procurement and Acquisition)
-
 SSI – Sensitive Security Information (Transportation)
-
 STAT – Statistical Information (Statistical)
-
 STUD – Student Records (Privacy)
-
 SUB – Controlled Substances (Law Enforcement)
-
 SURV – Investment Survey (Statistical)
-
 TAI – Taxpayer Advocate Information (Tax)
-
 TAX – Federal Taxpayer Information (Tax)
-
 TRACE – Pen Register and Trap & Trace (Law Enforcement)
-
 TSCA – Toxic Substances (Critical Infrastructure)
-
 UCNI – Unclassified Controlled Nuclear Information – Energy (Nuclear)
-
 VISA – Visas (Immigration)
-
 WATER – Water Assessments (Critical Infrastructure)
-
 WDT – Written Determinations (Tax)
-
 WHISTL – Whistleblower Identity (Law Enforcement)
-
 WIT – Witness Protection (Legal)
-
 XFER – Electronic Funds Transfer (Financial)
-
-
-
-
 ========================================================================
-Now, for the categories that are particularly relevant to UMRS (security, infra, IT, logs, etc.), here are concise descriptions based on NARA CUI Registry guidance and derivative references like DoD and university CUI explainers. 
 
+Now, for the categories that are particularly relevant to UMRS (security, infra, IT, logs, etc.), here are concise descriptions based on NARA CUI Registry guidance and derivative references like DoD and university CUI explainers. 
 These are paraphrased; for formal text you’d click through each category in the CUI Registry.
 
-
-
 EXPT – Export Controlled
-
 Information subject to U.S. export control laws such as ITAR or EAR. This includes technical data, software, or other information whose transfer to foreign persons or countries is restricted.
 
-
-
 EXPTR – Export Controlled Research
-
 Research data that falls under export control, often arising in academic or R&D contexts where results could be export-controlled.
 
-
-
 CTI – Controlled Technical Information
-
 Technical information (e.g., engineering, technical data, software) with military or space application that requires protection under specific defense-related regulations or contracts.
 
-
-
 ISVI – Information Systems Vulnerability Information
-
 Details about weaknesses, vulnerabilities, or exploitation paths in information systems or networks (e.g., vulnerability reports, scans) that require protection to avoid aiding adversaries.
 
-
-
 OPSEC – Operations Security
-
 Information whose uncontrolled exposure would undermine operational security (e.g., patterns revealing how an organization operates, schedules, specific capabilities).
 
-
-
 PCII – Protected Critical Infrastructure Information
-
 Critical infrastructure information voluntarily submitted to DHS under PCII authority, which receives special protections and handling controls.
 
-
-
 CEII – Critical Energy Infrastructure Information
-
 Information about energy sector infrastructure (generation, transmission, pipelines, etc.) that could be misused to disrupt services or compromise safety.
 
-
-
 PHYS – Physical Security
-
 Information related to physical security plans, vulnerabilities, or protective measures for facilities or assets.
 
-
-
 HLTH – Health Information
-
 Health-related personal information requiring protection, often overlapping with HIPAA concepts (e.g., medical records or health status).
 
-
-
 PRVCY – General Privacy
-
 General personally identifiable information (PII) that requires safeguarding but isn’t covered by a more specific privacy category.
 
-
-
 MIL – Military Personnel Records
-
 Personnel data for military members that requires safeguarding (assignments, performance, non-public details, etc.).
 
-
-
 PERS – Personnel Records
-
 Similar to MIL but broader: personnel records for non-military staff or employees.
 
-
-
 STUD – Student Records
-
 Educational records subject to privacy or FERPA-like protections.
 
-
-
 GENETIC – Genetic Information
-
 Information about genetic tests or characteristics (DNA, inherited traits) that are individually identifiable and protected.
-
-
-
-ISVI, EXPT, EXPTR, CTI, OPSEC, PCII, CEII, PHYS, HLTH, PRVCY, etc., are exactly the sort of categories you might choose to map into MCS categories in UMRS, because they correspond to concrete handling requirements and real-world risk models.
-
-
-
-
-
-
-
-

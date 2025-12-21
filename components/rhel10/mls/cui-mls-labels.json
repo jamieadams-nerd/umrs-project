@@ -1,15 +1,14 @@
 [
-   {
+  {
     "name": "CUI",
-   "abbrv_name": "CUI",
-   "marking": "CUI",
-   "parent_group: "",
-   "description": "Baseline Controlled Unclassified Information. Represents information subject to safeguarding or dissemination controls per law, regulation, or policy.",
+    "abbrv_name": "CUI",
+    "marking": "CUI",
+    "parent_group": "",
+    "description": "Baseline Controlled Unclassified Information. Represents information subject to safeguarding or dissemination controls per law, regulation, or policy.",
     "handling": "Must be stored, transmitted, and shared only with authorized users. Must be encrypted when leaving controlled environments. Apply CUI markings.",
-   "handling_group_id": "",
-
-   "other": {}
- }
+    "handling_group_id": "",
+    "other": {}
+  },
   {
     "name": "AGR",
     "abbrv_name": "AGR",
@@ -20,7 +19,7 @@
     "other": {}
   },
   {
-    "name": "AMNT",
+    "name": "Ammonium Nitrate",
     "abbrv_name": "AMNT",
     "marking": "CUI//AGR/AMNT",
     "description": "",
@@ -64,7 +63,6 @@
     "handling_group_id": "",
     "other": {}
   },
-
   {
     "name": "CRIT",
     "abbrv_name": "CRIT",
@@ -128,7 +126,6 @@
     "handling_group_id": "",
     "other": {}
   },
-
   {
     "name": "CTI",
     "abbrv_name": "CTI",
@@ -156,7 +153,6 @@
     "handling_group_id": "",
     "other": {}
   },
-
   {
     "name": "FNC",
     "abbrv_name": "FNC",
@@ -166,7 +162,6 @@
     "handling_group_id": "",
     "other": {}
   },
-
   {
     "name": "GOVT",
     "abbrv_name": "GOVT",
@@ -212,7 +207,6 @@
     "handling_group_id": "",
     "other": {}
   },
-
   {
     "name": "LEI",
     "abbrv_name": "LEI",
@@ -375,7 +369,6 @@
     "handling_group_id": "",
     "other": {}
   },
-
   {
     "name": "MGT",
     "abbrv_name": "MGT",
@@ -403,7 +396,6 @@
     "handling_group_id": "",
     "other": {}
   },
-
   {
     "name": "OPSEC",
     "abbrv_name": "OPSEC",
@@ -422,7 +414,6 @@
     "handling_group_id": "",
     "other": {}
   },
-
   {
     "name": "Privacy",
     "abbrv_name": "Privacy",
@@ -436,7 +427,8 @@
     "name": "PRIVACY",
     "abbrv_name": "PRIVACY",
     "marking": "CUI//PRIVACY",
-    "description": "",
+    "description": "Personally Identifiable Information (PII) requiring protection from unauthorized disclosure. Includes general PII and Sensitive PII.",
+      "handling": "Encrypt in transit and at rest. Prevent unnecessary distribution. Apply Privacy Act or SORN constraints if applicable.",
     "parent_group": "",
     "handling_group_id": "",
     "other": {}
@@ -513,7 +505,6 @@
     "handling_group_id": "",
     "other": {}
   },
-
   {
     "name": "PROCURE",
     "abbrv_name": "PROCURE",
@@ -550,7 +541,6 @@
     "handling_group_id": "",
     "other": {}
   },
-
   {
     "name": "PROPIN",
     "abbrv_name": "PROPIN",
@@ -578,7 +568,6 @@
     "handling_group_id": "",
     "other": {}
   },
-
   {
     "name": "PROT",
     "abbrv_name": "PROT",
@@ -606,7 +595,6 @@
     "handling_group_id": "",
     "other": {}
   },
-
   {
     "name": "TAX",
     "abbrv_name": "TAX",
@@ -626,7 +614,7 @@
     "other": {}
   },
   {
-    "name": "TAI",
+    "name": "Taxpayer Advocate Information",
     "abbrv_name": "TAI",
     "marking": "CUI//TAX/TAI",
     "description": "",
@@ -643,7 +631,6 @@
     "handling_group_id": "",
     "other": {}
   },
-
   {
     "name": "TechInfo",
     "abbrv_name": "TechInfo",
@@ -654,4 +641,3 @@
     "other": {}
   }
 ]
-
