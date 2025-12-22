@@ -1,595 +1,558 @@
 {
-    "labels": {
-        "GENERAL": {
-            "name": "General",
-            "description": "The broad general unclassified level suitable for anything openly unclassified, routine, not requiring special controls.",
-	    "handling": "No special handling requirements. Standard system access controls apply."
-        },
-        "U-PUBLIC": {
-            "name": "Unclassified Public",
-            "description": "Intended for material that is still unclassified but suitable for public dissemination, documentation, public website assets, etc."
-        },
-        "U-INTERNAL": {
-            "name": "Unclassified Internal",
-            "description": "Organizational level unclassified information. Internal-use unclassified information that is still above the purely  sensitive level. This covers items where integrity matters more strongly (engineering docs, config examples, internal processes)."
-        },
-        "CUI": {
-            "name": "Controlled Unclassified Information",
-            "abbrv_name": "CUI",
-            "description": "Information requiring safeguarding or dissemination controls under U.S. law, regulation, or government policy. This is the base CUI level to which specific categories may be attached.",
-	    "handling": "Mark clearly as CUI. Enforce access restrictions. Use approved storage, transport, and encryption. Ensure auditing and accountability."
-        }
+  "labels": {
+    "GENERAL": {
+      "name": "General",
+      "level": "s0",
+      "description": "The broad general unclassified level suitable for anything openly unclassified, routine, not requiring special controls.",
+      "handling": "No special handling requirements. Standard system access controls apply."
     },
-    "markings": {
-        "CUI": {
-            "name": "CUI",
-            "abbrv_name": "CUI",
-            "parent_group": "",
-            "description": "Baseline Controlled Unclassified Information. Represents information subject to safeguarding or dissemination controls per law, regulation, or policy.",
-            "handling": "Must be stored, transmitted, and shared only with authorized users. Must be encrypted when leaving controlled environments. Apply CUI markings.",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//AGR": {
-            "name": "AGR",
-            "abbrv_name": "AGR",
-            "description": "",
-            "parent_group": "",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//AGR/AMNT": {
-            "name": "Ammonium Nitrate",
-            "abbrv_name": "AMNT",
-            "description": "",
-            "parent_group": "AGR",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//AGR/CHEM": {
-            "name": "CHEM",
-            "abbrv_name": "CHEM",
-            "description": "",
-            "parent_group": "AGR",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//AGR/PCI": {
-            "name": "PCI",
-            "abbrv_name": "PCI",
-            "description": "",
-            "parent_group": "AGR",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//AGR/TOX": {
-            "name": "TOX",
-            "abbrv_name": "TOX",
-            "description": "",
-            "parent_group": "AGR",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//AGR/WATER": {
-            "name": "WATER",
-            "abbrv_name": "WATER",
-            "description": "",
-            "parent_group": "AGR",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//CRIT": {
-            "name": "CRIT",
-            "abbrv_name": "CRIT",
-            "description": "",
-            "parent_group": "",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//CRIT//CEII": {
-            "name": "CEII",
-            "abbrv_name": "CEII",
-            "description": "",
-            "parent_group": "CRIT",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//CRIT/DCRIT": {
-            "name": "DCRIT",
-            "abbrv_name": "DCRIT",
-            "description": "",
-            "parent_group": "CRIT",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//CRIT/EMGT": {
-            "name": "EMGT",
-            "abbrv_name": "EMGT",
-            "description": "",
-            "parent_group": "CRIT",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//Crit-Infrastructure": {
-            "name": "Crit-Infrastructure",
-            "abbrv_name": "Crit-Infrastructure",
-            "description": "",
-            "parent_group": "",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//CRIT/ISVI": {
-            "name": "ISVI",
-            "abbrv_name": "ISVI",
-            "description": "",
-            "parent_group": "CRIT",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//CRIT/PHYS": {
-            "name": "PHYS",
-            "abbrv_name": "PHYS",
-            "description": "",
-            "parent_group": "CRIT",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//CTI": {
-            "name": "CTI",
-            "abbrv_name": "CTI",
-            "description": "",
-            "parent_group": "",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//CTI//EXPT": {
-            "name": "EXPT",
-            "abbrv_name": "EXPT",
-            "description": "",
-            "parent_group": "CTI",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//CTI//EXPTR": {
-            "name": "EXPTR",
-            "abbrv_name": "EXPTR",
-            "description": "",
-            "parent_group": "CTI",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//FNC": {
-            "name": "FNC",
-            "abbrv_name": "FNC",
-            "description": "",
-            "parent_group": "",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//GOVT": {
-            "name": "GOVT",
-            "abbrv_name": "GOVT",
-            "description": "",
-            "parent_group": "",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//GOVT/GAF": {
-            "name": "GAF",
-            "abbrv_name": "GAF",
-            "description": "",
-            "parent_group": "GOVT",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//GOVT/GOVTD": {
-            "name": "GOVTD",
-            "abbrv_name": "GOVTD",
-            "description": "",
-            "parent_group": "GOVT",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//GOVT/LEGL": {
-            "name": "LEGL",
-            "abbrv_name": "LEGL",
-            "description": "",
-            "parent_group": "GOVT",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//GOVT/LMI": {
-            "name": "LMI",
-            "abbrv_name": "LMI",
-            "description": "",
-            "parent_group": "GOVT",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//LEI": {
-            "name": "LEI",
-            "abbrv_name": "LEI",
-            "description": "",
-            "parent_group": "",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//LEI//AIV": {
-            "name": "Accident Investigation",
-            "abbrv_name": "AIV",
-            "description": "Accident Investigation",
-            "parent_group": "LEI",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//LEI//CHRI": {
-            "name": "Criminal History Records Information",
-            "abbrv_name": "CHRI",
-            "description": "Criminal History Records Information",
-            "parent_group": "LEI",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//LEI//CMPRS": {
-            "name": "Committed Person",
-            "abbrv_name": "CMPRS",
-            "description": "Committed Person",
-            "parent_group": "LEI",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//LEI//FUND": {
-            "name": "Campaign Funds",
-            "abbrv_name": "FUND",
-            "description": "Campaign Funds",
-            "parent_group": "LEI",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//LEI//INF": {
-            "name": "Informant",
-            "abbrv_name": "INF",
-            "description": "Informant",
-            "parent_group": "LEI",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//LEI//INV": {
-            "name": "Investigation",
-            "abbrv_name": "INV",
-            "description": "Investigation",
-            "parent_group": "LEI",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//LEI//JUV": {
-            "name": "Juvenile",
-            "abbrv_name": "JUV",
-            "description": "Juvenile",
-            "parent_group": "LEI",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//LEI//LCOMM": {
-            "name": "Communications",
-            "abbrv_name": "LCOMM",
-            "description": "Communications",
-            "parent_group": "LEI",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//LEI//LDNA": {
-            "name": "DNA",
-            "abbrv_name": "LDNA",
-            "description": "DNA",
-            "parent_group": "LEI",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//LEI//LFNC": {
-            "name": "Law Enforcement Financial Records",
-            "abbrv_name": "LFNC",
-            "description": "Law Enforcement Financial Records",
-            "parent_group": "LEI",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//LEI//LNSL": {
-            "name": "National Security Letter",
-            "abbrv_name": "LNSL",
-            "description": "National Security Letter",
-            "parent_group": "LEI",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//LEI//LSCRN": {
-            "name": "Terrorist Screening",
-            "abbrv_name": "LSCRN",
-            "description": "Terrorist Screening",
-            "parent_group": "LEI",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//LEI//RWRD": {
-            "name": "Reward",
-            "abbrv_name": "RWRD",
-            "description": "Reward",
-            "parent_group": "LEI",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//LEI//SCV": {
-            "name": "Sex Crime Victim",
-            "abbrv_name": "SCV",
-            "description": "Sex Crime Victim",
-            "parent_group": "LEI",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//LEI//SUB": {
-            "name": "Controlled Substances",
-            "abbrv_name": "SUB",
-            "description": "Controlled Substances",
-            "parent_group": "LEI",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//LEI//TRACE": {
-            "name": "Pen Register/Trap & Trace",
-            "abbrv_name": "TRACE",
-            "description": "Pen Register/Trap & Trace",
-            "parent_group": "LEI",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//LEI//WHISTL": {
-            "name": "Whistleblower Identity",
-            "abbrv_name": "WHISTL",
-            "description": "Whistleblower Identity",
-            "parent_group": "LEI",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//MGT": {
-            "name": "MGT",
-            "abbrv_name": "MGT",
-            "description": "",
-            "parent_group": "",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//NNPI": {
-            "name": "NNPI",
-            "abbrv_name": "NNPI",
-            "description": "",
-            "parent_group": "",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//Nuclear-Power": {
-            "name": "Nuclear-Power",
-            "abbrv_name": "Nuclear-Power",
-            "description": "",
-            "parent_group": "",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//OPSEC": {
-            "name": "OPSEC",
-            "abbrv_name": "OPSEC",
-            "description": "",
-            "parent_group": "",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//Ops-Security": {
-            "name": "Ops-Security",
-            "abbrv_name": "Ops-Security",
-            "description": "",
-            "parent_group": "",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//Privacy": {
-            "name": "Privacy",
-            "abbrv_name": "Privacy",
-            "description": "",
-            "parent_group": "",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//PRIVACY": {
-            "name": "PRIVACY",
-            "abbrv_name": "PRIVACY",
-            "description": "Personally Identifiable Information (PII) requiring protection from unauthorized disclosure. Includes general PII and Sensitive PII.",
-            "handling": "Encrypt in transit and at rest. Prevent unnecessary distribution. Apply Privacy Act or SORN constraints if applicable.",
-            "parent_group": "",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//PRIVACY//CONTRACT": {
-            "name": "CONTRACT",
-            "abbrv_name": "CONTRACT",
-            "description": "",
-            "parent_group": "PRIVACY",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//PRIVACY//DREC": {
-            "name": "DREC",
-            "abbrv_name": "DREC",
-            "description": "",
-            "parent_group": "PRIVACY",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//PRIVACY//GENETIC": {
-            "name": "GENETIC",
-            "abbrv_name": "GENETIC",
-            "description": "",
-            "parent_group": "PRIVACY",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//PRIVACY//HEALTH": {
-            "name": "HEALTH",
-            "abbrv_name": "HEALTH",
-            "description": "",
-            "parent_group": "PRIVACY",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//PRIVACY//MIL": {
-            "name": "MIL",
-            "abbrv_name": "MIL",
-            "description": "",
-            "parent_group": "PRIVACY",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//PRIVACY//PERS": {
-            "name": "PERS",
-            "abbrv_name": "PERS",
-            "description": "",
-            "parent_group": "PRIVACY",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//PRIVACY//PRIIG": {
-            "name": "PRIIG",
-            "abbrv_name": "PRIIG",
-            "description": "",
-            "parent_group": "PRIVACY",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//PRIVACY//STUD": {
-            "name": "STUD",
-            "abbrv_name": "STUD",
-            "description": "",
-            "parent_group": "PRIVACY",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//PROCURE": {
-            "name": "PROCURE",
-            "abbrv_name": "PROCURE",
-            "description": "",
-            "parent_group": "",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//Procurement": {
-            "name": "Procurement",
-            "abbrv_name": "Procurement",
-            "description": "",
-            "parent_group": "",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//PROCURE/SBIZ": {
-            "name": "SBIZ",
-            "abbrv_name": "SBIZ",
-            "description": "",
-            "parent_group": "PROCURE",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//PROCURE/SSEL": {
-            "name": "SSEL",
-            "abbrv_name": "SSEL",
-            "description": "",
-            "parent_group": "PROCURE",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//PROPIN": {
-            "name": "PROPIN",
-            "abbrv_name": "PROPIN",
-            "description": "",
-            "parent_group": "",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//PROPIN/MFC": {
-            "name": "MFC",
-            "abbrv_name": "MFC",
-            "description": "",
-            "parent_group": "PROPIN",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//Proprietary": {
-            "name": "Proprietary",
-            "abbrv_name": "Proprietary",
-            "description": "",
-            "parent_group": "",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//PROT": {
-            "name": "PROT",
-            "abbrv_name": "PROT",
-            "description": "",
-            "parent_group": "",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//PSEC": {
-            "name": "PSEC",
-            "abbrv_name": "PSEC",
-            "description": "",
-            "parent_group": "",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//RAIL": {
-            "name": "RAIL",
-            "abbrv_name": "RAIL",
-            "description": "",
-            "parent_group": "",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//TAX": {
-            "name": "TAX",
-            "abbrv_name": "TAX",
-            "description": "",
-            "parent_group": "",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//TAX/CONV": {
-            "name": "CONV",
-            "abbrv_name": "CONV",
-            "description": "",
-            "parent_group": "TAX",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//TAX/TAI": {
-            "name": "Taxpayer Advocate Information",
-            "abbrv_name": "TAI",
-            "description": "",
-            "parent_group": "TAX",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//TAX/WDT": {
-            "name": "WDT",
-            "abbrv_name": "WDT",
-            "description": "",
-            "parent_group": "TAX",
-            "handling_group_id": "",
-            "other": {}
-        },
-        "CUI//TechInfo": {
-            "name": "TechInfo",
-            "abbrv_name": "TechInfo",
-            "description": "",
-            "parent_group": "",
-            "handling_group_id": "",
-            "other": {}
-        }
+    "U-PUBLIC": {
+      "name": "Unclassified Public",
+      "level": "s1",
+      "description": "Intended for material that is still unclassified but suitable for public dissemination, documentation, public website assets, etc."
+    },
+    "U-INTERNAL": {
+      "name": "Unclassified Internal",
+      "level": "s2",
+      "description": "Organizational level unclassified information. Internal-use unclassified information that is still above the purely  sensitive level. This covers items where integrity matters more strongly (engineering docs, config examples, internal processes)."
+    },
+    "CUI": {
+      "name": "Controlled Unclassified Information",
+      "level": "s3",
+      "description": "Information requiring safeguarding or dissemination controls under U.S. law, regulation, or government policy. This is the base CUI level to which specific categories may be attached.",
+      "handling": "Mark clearly as CUI. Enforce access restrictions. Use approved storage, transport, and encryption. Ensure auditing and accountability."
     }
+  },
+  "markings": {
+    "CUI": {
+      "name": "Controlled Unclassified Information",
+      "abbrv_name": "CUI",
+      "parent_group": "",
+      "description": "Baseline Controlled Unclassified Information. Represents information subject to safeguarding or dissemination controls per law, regulation, or policy.",
+      "handling": "Must be stored, transmitted, and shared only with authorized users. Must be encrypted when leaving controlled environments. Apply CUI markings.",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//AGR": {
+      "name": "Agriculture",
+      "abbrv_name": "AGR",
+      "description": "",
+      "parent_group": "CUI",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//AGR/AMNT": {
+      "name": "Ammonium Nitrate",
+      "abbrv_name": "AMNT",
+      "description": "",
+      "parent_group": "AGR",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//AGR/CHEM": {
+      "name": "Chemical",
+      "abbrv_name": "CHEM",
+      "description": "",
+      "parent_group": "AGR",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//AGR/PCI": {
+      "name": "PCI",
+      "abbrv_name": "PCI",
+      "description": "",
+      "parent_group": "AGR",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//AGR/TOX": {
+      "name": "TOX",
+      "abbrv_name": "TOX",
+      "description": "",
+      "parent_group": "AGR",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//AGR/WATER": {
+      "name": "WATER",
+      "abbrv_name": "WATER",
+      "description": "",
+      "parent_group": "AGR",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//CRIT": {
+      "name": "Critical Infrastructure",
+      "abbrv_name": "CRIT",
+      "description": "",
+      "parent_group": "CUI",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//CRIT//CEII": {
+      "name": "CEII",
+      "abbrv_name": "CEII",
+      "description": "",
+      "parent_group": "CRIT",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//CRIT/DCRIT": {
+      "name": "DCRIT",
+      "abbrv_name": "DCRIT",
+      "description": "",
+      "parent_group": "CRIT",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//CRIT/EMGT": {
+      "name": "EMGT",
+      "abbrv_name": "EMGT",
+      "description": "",
+      "parent_group": "CRIT",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//CRIT/ISVI": {
+      "name": "ISVI",
+      "abbrv_name": "ISVI",
+      "description": "",
+      "parent_group": "CRIT",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//CRIT/PHYS": {
+      "name": "PHYS",
+      "abbrv_name": "PHYS",
+      "description": "",
+      "parent_group": "CRIT",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//CTI": {
+      "name": "CTI",
+      "abbrv_name": "CTI",
+      "description": "",
+      "parent_group": "CUI",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//CTI//EXPT": {
+      "name": "EXPT",
+      "abbrv_name": "EXPT",
+      "description": "",
+      "parent_group": "CTI",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//CTI//EXPTR": {
+      "name": "EXPTR",
+      "abbrv_name": "EXPTR",
+      "description": "",
+      "parent_group": "CTI",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//FNC": {
+      "name": "FNC",
+      "abbrv_name": "FNC",
+      "description": "",
+      "parent_group": "CUI",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//GOVT": {
+      "name": "GOVT",
+      "abbrv_name": "GOVT",
+      "description": "",
+      "parent_group": "",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//GOVT/GAF": {
+      "name": "GAF",
+      "abbrv_name": "GAF",
+      "description": "",
+      "parent_group": "GOVT",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//GOVT/GOVTD": {
+      "name": "GOVTD",
+      "abbrv_name": "GOVTD",
+      "description": "",
+      "parent_group": "GOVT",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//GOVT/LEGL": {
+      "name": "LEGL",
+      "abbrv_name": "LEGL",
+      "description": "",
+      "parent_group": "GOVT",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//GOVT/LMI": {
+      "name": "LMI",
+      "abbrv_name": "LMI",
+      "description": "",
+      "parent_group": "GOVT",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//LEI": {
+      "name": "Law Enforcement Information",
+      "abbrv_name": "LEI",
+      "description": "",
+      "parent_group": "CUI",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//LEI//AIV": {
+      "name": "Accident Investigation",
+      "abbrv_name": "AIV",
+      "description": "Accident Investigation",
+      "parent_group": "LEI",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//LEI//CHRI": {
+      "name": "Criminal History Records Information",
+      "abbrv_name": "CHRI",
+      "description": "Criminal History Records Information",
+      "parent_group": "LEI",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//LEI//CMPRS": {
+      "name": "Committed Person",
+      "abbrv_name": "CMPRS",
+      "description": "Committed Person",
+      "parent_group": "LEI",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//LEI//FUND": {
+      "name": "Campaign Funds",
+      "abbrv_name": "FUND",
+      "description": "Campaign Funds",
+      "parent_group": "LEI",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//LEI//INF": {
+      "name": "Informant",
+      "abbrv_name": "INF",
+      "description": "Informant",
+      "parent_group": "LEI",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//LEI//INV": {
+      "name": "Investigation",
+      "abbrv_name": "INV",
+      "description": "Investigation",
+      "parent_group": "LEI",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//LEI//JUV": {
+      "name": "Juvenile",
+      "abbrv_name": "JUV",
+      "description": "Juvenile",
+      "parent_group": "LEI",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//LEI//LCOMM": {
+      "name": "Communications",
+      "abbrv_name": "LCOMM",
+      "description": "Communications",
+      "parent_group": "LEI",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//LEI//LDNA": {
+      "name": "DNA",
+      "abbrv_name": "LDNA",
+      "description": "DNA",
+      "parent_group": "LEI",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//LEI//LFNC": {
+      "name": "Law Enforcement Financial Records",
+      "abbrv_name": "LFNC",
+      "description": "Law Enforcement Financial Records",
+      "parent_group": "LEI",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//LEI//LNSL": {
+      "name": "National Security Letter",
+      "abbrv_name": "LNSL",
+      "description": "National Security Letter",
+      "parent_group": "LEI",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//LEI//LSCRN": {
+      "name": "Terrorist Screening",
+      "abbrv_name": "LSCRN",
+      "description": "Terrorist Screening",
+      "parent_group": "LEI",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//LEI//RWRD": {
+      "name": "Reward",
+      "abbrv_name": "RWRD",
+      "description": "Reward",
+      "parent_group": "LEI",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//LEI//SCV": {
+      "name": "Sex Crime Victim",
+      "abbrv_name": "SCV",
+      "description": "Sex Crime Victim",
+      "parent_group": "LEI",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//LEI//SUB": {
+      "name": "Controlled Substances",
+      "abbrv_name": "SUB",
+      "description": "Controlled Substances",
+      "parent_group": "LEI",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//LEI//TRACE": {
+      "name": "Pen Register/Trap & Trace",
+      "abbrv_name": "TRACE",
+      "description": "Pen Register/Trap & Trace",
+      "parent_group": "LEI",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//LEI//WHISTL": {
+      "name": "Whistleblower Identity",
+      "abbrv_name": "WHISTL",
+      "description": "Whistleblower Identity",
+      "parent_group": "LEI",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//MGT": {
+      "name": "MGT",
+      "abbrv_name": "MGT",
+      "description": "",
+      "parent_group": "CUI",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//NNPI": {
+      "name": "NNPI",
+      "abbrv_name": "NNPI",
+      "description": "",
+      "parent_group": "CUI",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//OPSEC": {
+      "name": "OPSEC",
+      "abbrv_name": "OPSEC",
+      "description": "",
+      "parent_group": "",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//PRIVACY": {
+      "name": "PRIVACY",
+      "abbrv_name": "PRIVACY",
+      "description": "Personally Identifiable Information (PII) requiring protection from unauthorized disclosure. Includes general PII and Sensitive PII.",
+      "handling": "Encrypt in transit and at rest. Prevent unnecessary distribution. Apply Privacy Act or SORN constraints if applicable.",
+      "parent_group": "",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//PRIVACY//CONTRACT": {
+      "name": "CONTRACT",
+      "abbrv_name": "CONTRACT",
+      "description": "",
+      "parent_group": "PRIVACY",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//PRIVACY//DREC": {
+      "name": "Death Records",
+      "abbrv_name": "DREC",
+      "description": "",
+      "parent_group": "PRIVACY",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//PRIVACY//GENETIC": {
+      "name": "Genetic",
+      "abbrv_name": "GENETIC",
+      "description": "",
+      "parent_group": "PRIVACY",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//PRIVACY//HEALTH": {
+      "name": "Health",
+      "abbrv_name": "HEALTH",
+      "description": "",
+      "parent_group": "PRIVACY",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//PRIVACY//MIL": {
+      "name": "Military",
+      "abbrv_name": "MIL",
+      "description": "",
+      "parent_group": "PRIVACY",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//PRIVACY//PERS": {
+      "name": "Personal",
+      "abbrv_name": "PERS",
+      "description": "",
+      "parent_group": "PRIVACY",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//PRIVACY//PRIIG": {
+      "name": "PRIIG",
+      "abbrv_name": "PRIIG",
+      "description": "",
+      "parent_group": "PRIVACY",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//PRIVACY//STUD": {
+      "name": "Student",
+      "abbrv_name": "STUD",
+      "description": "",
+      "parent_group": "PRIVACY",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//PROCURE": {
+      "name": "Procurement",
+      "abbrv_name": "PROCURE",
+      "description": "",
+      "parent_group": "CUI",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//PROCURE/SBIZ": {
+      "name": "Small Business",
+      "abbrv_name": "SBIZ",
+      "description": "",
+      "parent_group": "PROCURE",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//PROCURE/SSEL": {
+      "name": "SSEL",
+      "abbrv_name": "SSEL",
+      "description": "",
+      "parent_group": "PROCURE",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//PROPIN": {
+      "name": "PROPIN",
+      "abbrv_name": "PROPIN",
+      "description": "",
+      "parent_group": "",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//PROPIN/MFC": {
+      "name": "MFC",
+      "abbrv_name": "MFC",
+      "description": "",
+      "parent_group": "PROPIN",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//Proprietary": {
+      "name": "Proprietary",
+      "abbrv_name": "Proprietary",
+      "description": "",
+      "parent_group": "",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//PROT": {
+      "name": "PROT",
+      "abbrv_name": "PROT",
+      "description": "",
+      "parent_group": "",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//PSEC": {
+      "name": "PSEC",
+      "abbrv_name": "PSEC",
+      "description": "",
+      "parent_group": "",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//RAIL": {
+      "name": "RAIL",
+      "abbrv_name": "RAIL",
+      "description": "",
+      "parent_group": "CUI",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//TAX": {
+      "name": "TAX",
+      "abbrv_name": "TAX",
+      "description": "",
+      "parent_group": "CUI",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//TAX/CONV": {
+      "name": "CONV",
+      "abbrv_name": "CONV",
+      "description": "",
+      "parent_group": "TAX",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//TAX/TAI": {
+      "name": "Taxpayer Advocate Information",
+      "abbrv_name": "TAI",
+      "description": "",
+      "parent_group": "TAX",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//TAX/WDT": {
+      "name": "WDT",
+      "abbrv_name": "WDT",
+      "description": "",
+      "parent_group": "TAX",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//TechInfo": {
+      "name": "TechInfo",
+      "abbrv_name": "TechInfo",
+      "description": "",
+      "parent_group": "",
+      "handling_group_id": "",
+      "other": {}
+    }
+  }
 }
