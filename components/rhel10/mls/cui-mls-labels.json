@@ -73,14 +73,6 @@
             "handling_group_id": "",
             "other": {}
         },
-        "CUI//AGR/WATER": {
-            "name": "WATER",
-            "abbrv_name": "WATER",
-            "description": "",
-            "parent_group": "AGR",
-            "handling_group_id": "",
-            "other": {}
-        },
         "CUI//CRIT": {
             "name": "General Critical Infrastructure",
             "abbrv_name": "CRIT",
@@ -92,7 +84,7 @@
         "CUI//CRIT//CEII": {
             "name": "Critical Energy Infrastructure",
             "abbrv_name": "CEII",
-            "description": "",
+            "description": "Information about energy sector infrastructure (generation, transmission, pipelines, etc.) that could be misused to disrupt services or compromise safety.",
             "parent_group": "CRIT",
             "handling_group_id": "",
             "other": {}
@@ -114,9 +106,9 @@
             "other": {}
         },
         "CUI//CRIT/ISVI": {
-            "name": "Information Systems Vulnerability",
+            "name": "Information Systems Vulnerability Information",
             "abbrv_name": "ISVI",
-            "description": "",
+            "description": "Details about weaknesses, vulnerabilities, or exploitation paths in information systems or networks (e.g., vulnerability reports, scans) that require protection to avoid aiding adversaries.",
             "parent_group": "CRIT",
             "handling_group_id": "",
             "other": {}
@@ -124,8 +116,16 @@
         "CUI//CRIT/PHYS": {
             "name": "Physical Security",
             "abbrv_name": "PHYS",
-            "description": "",
+            "description": "Information related to physical security plans, vulnerabilities, or protective measures for facilities or assets.",
             "parent_group": "CRIT",
+            "handling_group_id": "",
+            "other": {}
+        },
+          "CUI//CRIT/WATER": {
+            "name": "Water Assessments",
+            "abbrv_name": "WATER",
+            "description": "Information about related to rinking water systems, water treatment and distribution, dams, reservoirs, aqueducts, ater utilities and infrastructure security. Also, operational, engineering, or vulnerability data about water systems",
+            "parent_group": "AGR",
             "handling_group_id": "",
             "other": {}
         },
@@ -364,7 +364,7 @@
         "CUI//OPSEC": {
             "name": "Operations Security (Intelligence)",
             "abbrv_name": "OPSEC",
-            "description": "",
+            "description": "Information whose uncontrolled exposure would undermine operational security (e.g., patterns revealing how an organization operates, schedules, specific capabilities).",
             "parent_group": "",
             "handling_group_id": "",
             "other": {}
@@ -397,7 +397,7 @@
         "CUI//PRIVACY//GENETIC": {
             "name": "Genetic Information",
             "abbrv_name": "GENETIC",
-            "description": "",
+            "description": "Information about genetic tests or characteristics (DNA, inherited traits) that are individually identifiable and protected.",
             "parent_group": "PRIVACY",
             "handling_group_id": "",
             "other": {}
@@ -413,7 +413,7 @@
         "CUI//PRIVACY//MIL": {
             "name": "Military Personnel Records",
             "abbrv_name": "MIL",
-            "description": "",
+            "description": "Personnel data for military members that requires safeguarding (assignments, performance, non-public details, etc.).",
             "parent_group": "PRIVACY",
             "handling_group_id": "",
             "other": {}
@@ -421,7 +421,7 @@
         "CUI//PRIVACY//PERS": {
             "name": "Personnel Records",
             "abbrv_name": "PERS",
-            "description": "",
+            "description": "Similar to MIL but broader: personnel records for non-military staff or employees.",
             "parent_group": "PRIVACY",
             "handling_group_id": "",
             "other": {}
@@ -437,7 +437,7 @@
         "CUI//PRIVACY//STUD": {
             "name": "Student Records",
             "abbrv_name": "STUD",
-            "description": "",
+            "description": "Educational records subject to privacy or FERPA-like protections.",
             "parent_group": "PRIVACY",
             "handling_group_id": "",
             "other": {}
