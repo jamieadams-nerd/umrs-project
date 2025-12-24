@@ -50,31 +50,15 @@
       "other": {}
     },
     "CUI//AGR/CHEM": {
-      "name": "Chemical",
+      "name": "AgriculturalChemicals",
       "abbrv_name": "CHEM",
       "description": "",
       "parent_group": "AGR",
       "handling_group_id": "",
       "other": {}
     },
-    "CUI//AGR/PCI": {
-      "name": "PCI",
-      "abbrv_name": "PCI",
-      "description": "",
-      "parent_group": "AGR",
-      "handling_group_id": "",
-      "other": {}
-    },
-    "CUI//AGR/TOX": {
-      "name": "TOX",
-      "abbrv_name": "TOX",
-      "description": "",
-      "parent_group": "AGR",
-      "handling_group_id": "",
-      "other": {}
-    },
     "CUI//CRIT": {
-      "name": "General Critical Infrastructure",
+      "name": "Critical Infrastructure",
       "abbrv_name": "CRIT",
       "description": "",
       "parent_group": "CUI",
@@ -82,7 +66,7 @@
       "other": {}
     },
     "CUI//CRIT/CEII": {
-      "name": "Critical Energy Infrastructure",
+      "name": "Critical Energy Infrastructure Information",
       "abbrv_name": "CEII",
       "description": "Information about energy sector infrastructure (generation, transmission, pipelines, etc.) that could be misused to disrupt services or compromise safety.",
       "parent_group": "CRIT",
@@ -125,7 +109,7 @@
       "name": "Water Assessments",
       "abbrv_name": "WATER",
       "description": "Information about related to rinking water systems, water treatment and distribution, dams, reservoirs, aqueducts, ater utilities and infrastructure security. Also, operational, engineering, or vulnerability data about water systems",
-      "parent_group": "AGR",
+      "parent_group": "CRIT",
       "handling_group_id": "",
       "other": {}
     },
@@ -166,22 +150,6 @@
       "abbrv_name": "GOVT",
       "description": "",
       "parent_group": "CUI",
-      "handling_group_id": "",
-      "other": {}
-    },
-    "CUI//GOVT/GAF": {
-      "name": "GAF",
-      "abbrv_name": "GAF",
-      "description": "",
-      "parent_group": "GOVT",
-      "handling_group_id": "",
-      "other": {}
-    },
-    "CUI//GOVT/GOVTD": {
-      "name": "GOVTD",
-      "abbrv_name": "GOVTD",
-      "description": "",
-      "parent_group": "GOVT",
       "handling_group_id": "",
       "other": {}
     },
@@ -366,7 +334,7 @@
       "abbrv_name": "PRIVACY",
       "description": "Personally Identifiable Information (PII) requiring protection from unauthorized disclosure. Includes general PII and Sensitive PII.",
       "handling": "Encrypt in transit and at rest. Prevent unnecessary distribution. Apply Privacy Act or SORN constraints if applicable.",
-      "parent_group": "",
+      "parent_group": "CUI",
       "handling_group_id": "",
       "other": {}
     },
@@ -491,7 +459,7 @@
       "other": {}
     },
     "CUI//RAIL": {
-      "name": "Railroad Safety Anaysis Records (Transportation)",
+      "name": "Railroad Safety Anaylsis Records",
       "abbrv_name": "RAIL",
       "description": "",
       "parent_group": "CUI",
