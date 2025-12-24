@@ -132,8 +132,7 @@
         "CUI//CTI": {
             "name": "Controlled Technical Information (Defense)",
             "abbrv_name": "CTI",
-            "description": "Technical information (e.g., engineering, technical data, software) with military or space application that requires protection under specific defense-related regulations or contracts.
-",
+            "description": "Technical information (e.g., engineering, technical data, software) with military or space application that requires protection under specific defense-related regulations or contracts.",
             "parent_group": "CUI",
             "handling_group_id": "",
             "other": {}
@@ -149,8 +148,7 @@
         "CUI//CTI//EXPTR": {
             "name": "Export Controlled Research",
             "abbrv_name": "EXPTR",
-            "description": "Research data that falls under export control, often arising in academic or R&D contexts where results could be export-controlled.
-",
+            "description": "Research data that falls under export control, often arising in academic or R&D contexts where results could be export-controlled.",
             "parent_group": "CTI",
             "handling_group_id": "",
             "other": {}
