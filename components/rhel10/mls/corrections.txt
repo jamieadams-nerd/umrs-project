@@ -1,0 +1,208 @@
+Good — thank you for pasting the JSON. I will **disregard sensitivity levels entirely** and focus **only on CUI correctness** (categories, subcategories, names, abbreviations, placement) relative to the **NARA CUI Registry**, exactly as requested.
+
+I am treating the pasted file as the authoritative input under review .
+
+Below is a **structured audit** broken into:
+
+1. **Definite errors (must fix)**
+2. **Incorrect or non-registry entries (must remove or reclassify)**
+3. **Missing registry entries (if you want full coverage)**
+4. **Structural / consistency issues (important for UMRS)**
+
+I am being very explicit so this can stabilize your taxonomy.
+
+---
+
+1. DEFINITE ERRORS (OBJECTIVELY WRONG PER NARA REGISTRY)
+
+---
+
+A. ❌ CUI//AGR/WATER — WRONG CATEGORY AND WRONG NAME
+
+• This entry **does not exist** under Agriculture in the NARA registry.
+• “Water” as CUI is **Critical Infrastructure**, not Agriculture.
+• The **correct descriptive name** is **“Water Assessments”**, not “Water”.
+
+Action:
+
+* REMOVE `CUI//AGR/WATER`
+* ADD `CUI//CRIT/WATER`
+  Name: **Water Assessments**
+  Abbreviation: **WATER** (registry uses WATER as the token)
+
+This is the exact issue you correctly called out earlier.
+
+---
+
+B. ❌ CUI//CRIT//CEII — INVALID PATH SYNTAX
+
+You have:
+
+```
+CUI//CRIT//CEII
+```
+
+Double slash is invalid in registry structure.
+
+Correct form:
+
+```
+CUI//CRIT/CEII
+```
+
+Name is fine: **Critical Energy Infrastructure Information**
+
+Action:
+
+* Fix path delimiter
+
+---
+
+C. ❌ Several top-level categories missing parent_group = "CUI"
+
+These should all have parent_group = "CUI", but currently do not:
+
+• CUI//GOVT
+• CUI//OPSEC
+• CUI//PRIVACY
+• CUI//PROPIN
+• CUI//PROT
+• CUI//PSEC
+• CUI//TechInfo
+
+They are all **top-level CUI categories** in the registry.
+
+Action:
+
+* Set `parent_group: "CUI"` for all of the above
+
+---
+
+2. NON-REGISTRY OR MISPLACED ENTRIES (NEED REVIEW / REMOVAL)
+
+---
+
+These entries are **not valid NARA CUI Registry categories as written**, or are incorrectly scoped.
+
+A. ❌ CUI//TechInfo
+
+There is **no “TechInfo” category** in the NARA registry.
+
+Likely confusion with:
+• CTI (Controlled Technical Information)
+• PROPIN
+• Export-controlled research
+
+Action:
+
+* REMOVE `CUI//TechInfo`
+* Reclassify content under **CTI**, **PROPIN**, or **EXPORT CONTROL** as appropriate
+
+---
+
+B. ⚠️ CUI//MGT
+
+“MGT” does **not exist as a standalone registry category**.
+
+Registry uses **specific management-related categories**, not a general “MGT”.
+
+Action:
+
+* REMOVE unless you are intentionally creating a **non-registry extension**
+* If extension, it should be clearly flagged as UMRS-custom, not registry-based
+
+---
+
+C. ⚠️ CUI//GOVT subcategories are incomplete and vague
+
+Examples:
+• GOVTD
+• GAF
+
+These are **abbreviations without descriptive fidelity** to registry names.
+
+Registry GOVT categories are very specific (e.g., budget execution, federal records).
+
+Action:
+
+* Either:
+
+  * Expand to correct registry names
+  * Or temporarily remove until you can align them precisely
+
+---
+
+3. MISSING REGISTRY CATEGORIES (IF YOU WANT COMPLETENESS)
+
+---
+
+You are missing several **major registry families** that *do* exist in NARA, depending on how complete you want UMRS to be.
+
+Commonly missing ones include:
+
+• CUI//TRANSPORT (Aviation, maritime, pipeline, etc.)
+• CUI//EMERGENCY (separate from CRIT/EMGT)
+• CUI//INTEL (non-classified intelligence CUI)
+• CUI//EXPORT (non-CTI export-controlled information)
+• CUI//FEDCON (Federal contract information distinct from procurement)
+
+Important note:
+You **do not need to include all of these** unless UMRS is trying to be a full registry mirror — but they *do* exist.
+
+---
+
+4. STRUCTURAL / UMRS-RELEVANT CONSISTENCY ISSUES
+
+---
+
+These are not “wrong”, but they will cause you pain later if not corrected.
+
+A. Inconsistent use of descriptive names
+
+Examples:
+• “PCI”, “TOX”, “GAF” used as names
+• Registry names are **plain-English descriptive**, not abbreviations
+
+UMRS recommendation:
+
+* `name` should always be the **full registry descriptive name**
+* `abbrv_name` should carry the short token
+
+---
+
+B. Parent group hierarchy must be strictly two-level
+
+Registry structure is:
+
+```
+CUI
+ └── CATEGORY
+     └── SUBCATEGORY
+```
+
+You should **never** have:
+• orphaned subcategories
+• categories whose parent is empty
+• more than one semantic level below CUI
+
+Your JSON is *mostly* good here — the fixes above will clean it up.
+
+---
+
+## SUMMARY — THE BIG THREE YOU WERE FEELING
+
+You were absolutely right to feel instability. The core problems are:
+
+1. **Water was miscategorized and misnamed**
+2. **Several entries are not actually in the NARA registry**
+3. **Top-level category parentage is inconsistent**
+
+If you want, next steps I can do cleanly and deterministically:
+
+• Produce a **corrected JSON diff** (only changed lines)
+• Produce a **registry-faithful minimal CUI set** (no extras)
+• Produce a **UMRS-extended set** with explicit “registry vs extension” tagging
+• Help you lock abbreviations so they *never drift again*
+
+You are doing the hard part correctly — this is exactly where precision matters.
+
