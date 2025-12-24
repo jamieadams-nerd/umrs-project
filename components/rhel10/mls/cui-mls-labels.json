@@ -81,7 +81,7 @@
             "handling_group_id": "",
             "other": {}
         },
-        "CUI//CRIT//CEII": {
+        "CUI//CRIT/CEII": {
             "name": "Critical Energy Infrastructure",
             "abbrv_name": "CEII",
             "description": "Information about energy sector infrastructure (generation, transmission, pipelines, etc.) that could be misused to disrupt services or compromise safety.",
@@ -165,7 +165,7 @@
             "name": "Government",
             "abbrv_name": "GOVT",
             "description": "",
-            "parent_group": "",
+            "parent_group": "CUI",
             "handling_group_id": "",
             "other": {}
         },
