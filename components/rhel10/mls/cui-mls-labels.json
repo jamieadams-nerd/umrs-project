@@ -36,7 +36,7 @@
     "CUI//AGR": {
       "name": "Agriculture",
       "abbrv_name": "AGR",
-      "description": "",
+      "description": "Information related to agriculture, farming, livestock, food production, and agricultural chemicals requiring controlled handling.",
       "parent_group": "CUI",
       "handling_group_id": "",
       "other": {}
@@ -44,15 +44,15 @@
     "CUI//AGR/AMNT": {
       "name": "Ammonium Nitrate",
       "abbrv_name": "AMNT",
-      "description": "",
+      "description": "Information related to the manufacture, storage, distribution, or use of ammonium nitrate, including safety and regulatory data.",
       "parent_group": "AGR",
       "handling_group_id": "",
       "other": {}
     },
     "CUI//AGR/CHEM": {
-      "name": "AgriculturalChemicals",
+      "name": "Agricultural Chemicals",
       "abbrv_name": "CHEM",
-      "description": "",
+      "description": "Information related to agricultural chemicals such as pesticides, herbicides, fertilizers, and their regulated use.",
       "parent_group": "AGR",
       "handling_group_id": "",
       "other": {}
@@ -60,7 +60,7 @@
     "CUI//CRIT": {
       "name": "Critical Infrastructure",
       "abbrv_name": "CRIT",
-      "description": "",
+      "description": "Information related to the protection, operation, or vulnerability of critical infrastructure systems and assets.",
       "parent_group": "CUI",
       "handling_group_id": "",
       "other": {}
@@ -76,7 +76,7 @@
     "CUI//CRIT/DCRIT": {
       "name": "DoD Critical Infrastructure",
       "abbrv_name": "DCRIT",
-      "description": "",
+      "description": "Information concerning Department of Defense critical infrastructure, including facilities, systems, and supporting assets.",
       "parent_group": "CRIT",
       "handling_group_id": "",
       "other": {}
@@ -84,7 +84,7 @@
     "CUI//CRIT/EMGT": {
       "name": "Emergency Management",
       "abbrv_name": "EMGT",
-      "description": "",
+      "description": "Information related to emergency management planning, response, recovery, and coordination activities.",
       "parent_group": "CRIT",
       "handling_group_id": "",
       "other": {}
@@ -100,7 +100,7 @@
     "CUI//CRIT/PHYS": {
       "name": "Physical Security",
       "abbrv_name": "PHYS",
-      "description": "Information related to physical security plans, vulnerabilities, or protective measures for facilities or assets.",
+      "description": "Information related to physical security measures, vulnerabilities, or protection of facilities and assets.",
       "parent_group": "CRIT",
       "handling_group_id": "",
       "other": {}
@@ -108,7 +108,7 @@
     "CUI//CRIT/WATER": {
       "name": "Water Assessments",
       "abbrv_name": "WATER",
-      "description": "Information about related to rinking water systems, water treatment and distribution, dams, reservoirs, aqueducts, ater utilities and infrastructure security. Also, operational, engineering, or vulnerability data about water systems",
+      "description": "Information related to assessments of drinking water systems and water infrastructure, including treatment, distribution, and vulnerability data.",
       "parent_group": "CRIT",
       "handling_group_id": "",
       "other": {}
@@ -140,7 +140,7 @@
     "CUI//FNC": {
       "name": "General Financial Information",
       "abbrv_name": "FNC",
-      "description": "",
+      "description": "Financial information requiring protection, including regulated financial records and compliance-related data.",
       "parent_group": "CUI",
       "handling_group_id": "",
       "other": {}
@@ -148,7 +148,7 @@
     "CUI//GOVT": {
       "name": "Government",
       "abbrv_name": "GOVT",
-      "description": "",
+      "description": "Information related to government operations, processes, and official activities requiring controlled handling.",
       "parent_group": "CUI",
       "handling_group_id": "",
       "other": {}
@@ -164,7 +164,7 @@
     "CUI//GOVT/LMI": {
       "name": "Legislative Materials",
       "abbrv_name": "LMI",
-      "description": "",
+      "description": "Information related to legislative materials, including non-public legislative records and supporting documents.",
       "parent_group": "GOVT",
       "handling_group_id": "",
       "other": {}
@@ -172,7 +172,7 @@
     "CUI//LEI": {
       "name": "Law Enforcement Information",
       "abbrv_name": "LEI",
-      "description": "",
+      "description": "Information related to law enforcement activities, investigations, operations, and sensitive records.",
       "parent_group": "CUI",
       "handling_group_id": "",
       "other": {}
@@ -316,7 +316,7 @@
     "CUI//NNPI": {
       "name": "Naval Nuclear Propulsion Information (Defense)",
       "abbrv_name": "NNPI",
-      "description": "",
+      "description": "Information concerning naval nuclear propulsion systems and technology protected by statute.",
       "parent_group": "CUI",
       "handling_group_id": "",
       "other": {}
@@ -332,7 +332,7 @@
     "CUI//PRIVACY": {
       "name": "General Privacy",
       "abbrv_name": "PRIVACY",
-      "description": "Personally Identifiable Information (PII) requiring protection from unauthorized disclosure. Includes general PII and Sensitive PII.",
+      "description": "Personally identifiable information requiring protection from unauthorized disclosure under privacy laws and policy.",
       "handling": "Encrypt in transit and at rest. Prevent unnecessary distribution. Apply Privacy Act or SORN constraints if applicable.",
       "parent_group": "CUI",
       "handling_group_id": "",
@@ -341,7 +341,7 @@
     "CUI//PRIVACY/CONTRACT": {
       "name": "Contract Use",
       "abbrv_name": "CONTRACT",
-      "description": "",
+      "description": "Personally identifiable information collected or used in the context of contractual relationships.",
       "parent_group": "PRIVACY",
       "handling_group_id": "",
       "other": {}
@@ -349,7 +349,7 @@
     "CUI//PRIVACY/DREC": {
       "name": "Death Records",
       "abbrv_name": "DREC",
-      "description": "",
+      "description": "Information contained in death records that is protected from public disclosure.",
       "parent_group": "PRIVACY",
       "handling_group_id": "",
       "other": {}
@@ -365,7 +365,7 @@
     "CUI//PRIVACY/HEALTH": {
       "name": "Health",
       "abbrv_name": "HEALTH",
-      "description": "",
+      "description": "Health-related information associated with identifiable individuals that requires privacy protection.",
       "parent_group": "PRIVACY",
       "handling_group_id": "",
       "other": {}
@@ -389,7 +389,7 @@
     "CUI//PRIVACY/PRIIG": {
       "name": "Inspector General Protected",
       "abbrv_name": "PRIIG",
-      "description": "",
+      "description": "Personally identifiable information protected in the context of Inspector General activities.",
       "parent_group": "PRIVACY",
       "handling_group_id": "",
       "other": {}
@@ -397,7 +397,7 @@
     "CUI//PRIVACY/STUD": {
       "name": "Student Records",
       "abbrv_name": "STUD",
-      "description": "Educational records subject to privacy or FERPA-like protections.",
+      "description": "Education records related to identifiable students that are protected by privacy requirements.",
       "parent_group": "PRIVACY",
       "handling_group_id": "",
       "other": {}
@@ -405,7 +405,7 @@
     "CUI//PROCURE": {
       "name": "Procurement and Acquisition",
       "abbrv_name": "PROCURE",
-      "description": "",
+      "description": "Information related to government procurement and acquisition activities requiring controlled handling.",
       "parent_group": "CUI",
       "handling_group_id": "",
       "other": {}
@@ -429,7 +429,7 @@
     "CUI//PROPIN": {
       "name": "General Proprietary Business Information",
       "abbrv_name": "PROPIN",
-      "description": "",
+      "description": "Proprietary business information provided to the government that is protected from unauthorized disclosure.",
       "parent_group": "CUI",
       "handling_group_id": "",
       "other": {}
@@ -445,7 +445,7 @@
     "CUI//PROT": {
       "name": "Temporary Protected Status (Immigration)",
       "abbrv_name": "PROT",
-      "description": "",
+      "description": "Information related to individuals granted Temporary Protected Status under immigration law.",
       "parent_group": "CUI",
       "handling_group_id": "",
       "other": {}
@@ -453,15 +453,15 @@
     "CUI//PSEC": {
       "name": "Secrecy Orders (Patent)",
       "abbrv_name": "PSEC",
-      "description": "",
+      "description": "Information subject to patent secrecy orders restricting disclosure of certain inventions.",
       "parent_group": "CUI",
       "handling_group_id": "",
       "other": {}
     },
     "CUI//RAIL": {
-      "name": "Railroad Safety Anaylsis Records",
+      "name": "Railroad Safety Analysis Records",
       "abbrv_name": "RAIL",
-      "description": "",
+      "description": "Information related to railroad safety analysis, inspections, or incident assessments.",
       "parent_group": "CUI",
       "handling_group_id": "",
       "other": {}
@@ -469,7 +469,7 @@
     "CUI//TAX": {
       "name": "Federal Taxpayer Information",
       "abbrv_name": "TAX",
-      "description": "",
+      "description": "Federal taxpayer information protected from unauthorized disclosure under tax law.",
       "parent_group": "CUI",
       "handling_group_id": "",
       "other": {}
