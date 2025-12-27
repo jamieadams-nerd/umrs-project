@@ -1,0 +1,222 @@
+Terminology
+
+Below are clear, precise, defensible definitions for the key terms you and I keep using. These are written in plain engineering language, aligned with how the terms are used in standards, forensics, auditing, and high-assurance systems, not marketing.
+
+Where helpful, I anchor the definition to how bodies like National Institute of Standards and Technology (NIST), digital forensics practice, or PKI usage actually interpret them.
+
+⸻
+
+Provenance
+
+Definition
+Provenance is the documented history of an artifact describing where it originated, how it was produced, and how it has changed over time.
+
+Key properties
+	•	Origin: who or what created the artifact
+	•	Lineage: transformations applied (format conversion, aggregation, filtering)
+	•	Context: when, where, and under what authority it was created or modified
+
+Important distinction
+Provenance answers:
+“Where did this come from, and how did it get here?”
+
+Provenance alone does not guarantee correctness or legitimacy. It only establishes traceable history.
+
+In high-assurance systems
+Provenance must be:
+	•	Tamper-evident
+	•	Attributable (human, system, or device identity)
+	•	Preserved across transformations
+
+⸻
+
+Attestation
+
+Definition
+Attestation is a cryptographic or authoritative assertion by an entity that a specific claim is true at a specific time.
+
+Examples of claims
+	•	“This file was received intact at time T”
+	•	“This configuration matches policy X”
+	•	“This system was in state Y when measured”
+	•	“This data was produced by process Z”
+
+Important distinction
+Attestation answers:
+“I assert this is true, and I am accountable for that assertion.”
+
+Attestation ≠ provenance
+	•	Provenance describes history
+	•	Attestation asserts a fact
+
+In high-assurance systems
+Attestations should be:
+	•	Cryptographically bound to the artifact or measurement
+	•	Non-repudiable (the signer cannot plausibly deny it)
+	•	Explicit about what is being attested (custody, integrity, state — not meaning or correctness)
+
+⸻
+
+Integrity
+
+Definition
+Integrity is the assurance that data has not been altered in an unauthorized or undetected manner.
+
+What integrity means
+	•	The bits are the same as when last trusted
+	•	Any change is detectable
+	•	Authorized changes are attributable
+
+What integrity does not mean
+	•	It does not mean the data is correct
+	•	It does not mean the data is appropriate
+	•	It does not mean the data is authorized for use
+
+Integrity answers:
+“Has this changed since it was last trusted?”
+
+In practice
+Integrity is enforced with:
+	•	Cryptographic hashes
+	•	Digital signatures
+	•	Append-only logs
+	•	Write-once records
+
+⸻
+
+Integrity Assurance
+
+Definition
+Integrity assurance is the degree of confidence that integrity protections are correctly implemented, enforced, and verifiable.
+
+This is the difference between:
+	•	“We hash files”
+and
+	•	“We can prove the hash is meaningful, enforced, and auditable”
+
+Integrity assurance depends on:
+	•	Key management
+	•	Algorithm strength
+	•	Enforcement boundaries
+	•	Auditability
+	•	Resistance to bypass
+
+In high-assurance systems
+Integrity assurance is a system property, not a single mechanism.
+
+⸻
+
+Authenticity
+
+Definition
+Authenticity is the assurance that an artifact is genuinely what it claims to be.
+
+Authenticity answers:
+“Is this really from who or what it claims?”
+
+Authenticity requires:
+	•	Identity binding
+	•	Provenance or attestation
+	•	Integrity
+
+Courts often reject evidence due to failure to authenticate, even when integrity exists.
+
+⸻
+
+Non-repudiation
+
+Definition
+Non-repudiation is the ability to prevent an entity from credibly denying a prior action.
+
+In practice
+This is achieved through:
+	•	Digital signatures
+	•	Secure key custody
+	•	Trusted timestamps
+	•	Audit records
+
+Important nuance
+Non-repudiation is a legal and procedural property, enabled by cryptography but not guaranteed by it alone.
+
+⸻
+
+Chain of Custody
+
+Definition
+Chain of custody is the documented and continuous control history of an artifact from creation or acquisition to final disposition.
+
+Chain of custody answers:
+“Who had control of this, when, and under what authority?”
+
+In digital systems
+Chain of custody requires:
+	•	Integrity protection of the artifact
+	•	Integrity protection of custody records
+	•	Explicit transfer events
+	•	No silent handoffs
+
+This is where many unclassified systems fail.
+
+⸻
+
+Custody vs Content Trust (important distinction)
+
+Custody trust
+	•	“This artifact has not changed since we received it”
+
+Content trust
+	•	“This artifact is accurate, valid, or correct”
+
+High-assurance systems must separate these concepts.
+
+You can trust custody while explicitly not trusting content.
+
+This distinction is critical to UMRS.
+
+⸻
+
+Auditability
+
+Definition
+Auditability is the ability to reconstruct events and decisions after the fact with sufficient fidelity to support accountability.
+
+Auditability requires:
+	•	Complete records
+	•	Meaningful semantics
+	•	Stable identifiers
+	•	Integrity protection
+
+Audit logs that cannot answer “who, what, when, why” are compliance theater, not auditability.
+
+⸻
+
+Assurance (general term)
+
+Definition
+Assurance is confidence justified by evidence, not belief.
+
+In high-assurance engineering:
+	•	Assurance is earned
+	•	Assurance is bounded
+	•	Assurance degrades if controls are bypassed or unverifiable
+
+This is why MLS, FIPS, and NIST frameworks focus on evidence, not intent.
+
+⸻
+
+Why this matters (the meta-point)
+
+Most non-classified systems fail because they:
+	•	Conflate provenance with trust
+	•	Conflate integrity with correctness
+	•	Treat attestation as implicit rather than explicit
+	•	Log events without making them authoritative
+
+What you are building with UMRS is essentially:
+	•	Making these terms real, enforceable, and auditable
+	•	Instead of vague, assumed, or social
+
+If you want, next we can:
+	•	Produce a glossary section suitable for UMRS documentation, or
+	•	Map each term to specific NIST 800-53 controls, or
+	•	Define which terms UMRS explicitly does and does not claim (very powerful in audits).
