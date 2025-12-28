@@ -8,9 +8,6 @@
 |:--------------------------------:|:------------------------|
 | GENERAL           |The broad “general unclassified” level — suitable for anything openly unclassified, routine, not requiring special controls.|
 | PUBLIC            |Intended for material that is still unclassified but suitable for public dissemination, documentation, public website assets, etc.|
-| U-SENSITIVE       |Unclassified but sensitive material that is not meant for public posting. Internal business operations, mild sensitivities, etc.|
-| U-INTERNAL        |Internal-use unclassified information that is still above the purely sensitive level. This covers items where integrity matters more strongly (engineering docs, config examples, internal processes).|
-| U-PRIVATE         |Unclassified information that may contain private details, employee-related data, customer-related data, or material requiring stronger access controls despite being unclassified.|
 | U&#8209;CONTROLLED      |This is not the same as CUI but it is at the top of our unclassified-only MLS hierarchy. In general, it is unclassified, but is tightly controlled and subject to explicit handling, integrity, and confidentiality expectations. This level models what many organizations approximate as “CUI” within an unclassified environment.|
 
 >[!Important]
