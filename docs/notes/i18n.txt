@@ -1,0 +1,944 @@
+Rust i18n
+
+This is a good time to put the framework in place, even if you only translate a handful of strings at first. You are thinking about this the right way.
+
+I will answer in four parts:
+	1.	Practical Rust i18n approach (lightweight, admin-friendly)
+	2.	Five Eyes language/locale strategy
+	3.	Australia vs UK English (the short, correct answer)
+	4.	A concrete recommendation for how you should do this
+
+No emojis, no fluff.
+
+⸻
+
+1) A sane i18n framework for Rust utilities
+
+For Rust CLI / system utilities, you want something that is:
+	•	Deterministic
+	•	Offline-friendly
+	•	Not tied to web frameworks
+	•	Auditable
+	•	Easy for others to add translations later
+
+The de facto approach that fits this well is:
+	•	GNU gettext model
+	•	.po / .mo files
+	•	Runtime locale selection via environment variables
+
+Typical stack
+	•	gettext-rs (bindings)
+	•	gettext tooling (msginit, msgmerge, msgfmt)
+	•	LANG, LC_MESSAGES, LANGUAGE
+
+You do not need ICU or heavy localization frameworks unless you are doing:
+	•	Plural rules beyond basic needs
+	•	Date/number formatting per locale
+	•	Complex scripts
+
+For now, gettext is sufficient and appropriate.
+
+Minimal Rust pattern
+
+use gettext::Catalog;
+use std::env;
+
+fn tr(msgid: &str) -> String {
+    static mut CATALOG: Option<Catalog> = None;
+
+    unsafe {
+        if CATALOG.is_none() {
+            let lang = env::var("LANG").unwrap_or_else(|_| "en_US".to_string());
+            CATALOG = Catalog::new("umrs", "/usr/share/locale", &lang).ok();
+        }
+
+        CATALOG
+            .as_ref()
+            .map(|c| c.gettext(msgid))
+            .unwrap_or_else(|| msgid.to_string())
+    }
+}
+
+Usage:
+
+println!("{}", tr("Audit database verified successfully"));
+
+Key point:
+If no translation exists, the English string is used.
+That is exactly what you want early on.
+
+⸻
+
+2) Five Eyes: what locales actually matter
+
+“Five Eyes” is politically meaningful, but linguistically it collapses quickly.
+
+Here is the realistic breakdown:
+
+Country	Primary locale	Notes
+United States	en_US	Base reference
+United Kingdom	en_GB	Spelling + terms
+Canada	en_CA, fr_CA	French is real requirement
+Australia	en_AU	Minor spelling/terms
+New Zealand	en_NZ	Very close to AU/UK
+
+What this means in practice
+	•	English variants are mostly spelling differences
+	•	French (Canada) is the only structurally different language in Five Eyes
+	•	Everything else is optional refinement
+
+⸻
+
+3) Australian vs British English (important nuance)
+
+Short answer:
+
+Australian English is extremely close to British English, but they are not identical.
+
+Longer, precise answer:
+
+Differences that do exist
+	•	Spelling: mostly identical to UK
+	•	colour, defence, centre
+	•	Vocabulary:
+	•	“program” (AU prefers US spelling in computing)
+	•	“licence” vs “license” (same UK rules)
+	•	Tone:
+	•	AU often prefers plainer phrasing
+	•	Less formal than UK in documentation
+
+Differences that do not matter for your utilities
+	•	Grammar structure
+	•	Sentence construction
+	•	Technical terminology (almost entirely shared)
+
+Translation cost vs benefit
+
+For security/admin tools:
+	•	99% of strings will be identical
+	•	Maintaining separate en_GB and en_AU files will mostly duplicate content
+	•	High risk of divergence with no real user benefit
+
+⸻
+
+4) What I recommend you do
+
+Given your goals (high-assurance utilities, audit clarity, admin users):
+
+Step 1: Pick a canonical source language
+
+Use en_US as the source language (msgid).
+
+This keeps:
+	•	Tooling simpler
+	•	Contributor expectations clear
+	•	Strings stable
+
+Step 2: Provide one non-US English variant
+
+Add en_GB only.
+
+Reason:
+	•	Covers UK, AU, NZ acceptably
+	•	British spelling is broadly accepted across Commonwealth
+	•	Keeps maintenance sane
+
+Step 3: Add French (Canada) when ready
+
+Add fr_CA as the first true translation.
+
+This is the only Five Eyes locale where:
+	•	The language is actually different
+	•	Administrators may reasonably expect localization
+
+Step 4: Allow future refinement, but do not pre-split
+
+If someone later wants:
+	•	en_AU
+	•	en_NZ
+
+They can inherit from en_GB and override only the handful of strings they care about.
+
+That is exactly how gettext is meant to be used.
+
+⸻
+
+Recommended initial locale set
+
+Start with:
+
+en_US  (base / msgid)
+en_GB
+fr_CA
+
+Do not create en_AU yet.
+
+⸻
+
+One subtle but important detail (very “you” thing)
+
+For audit-relevant output:
+	•	Consider never translating certain tokens
+	•	E.g.:
+	•	STATUS_OK
+	•	STATUS_WARN
+	•	STATUS_FAIL
+	•	Event codes
+	•	JSON keys
+
+Only translate human-facing explanations, not machine-consumed data.
+
+This preserves:
+	•	Script stability
+	•	Audit reproducibility
+	•	Cross-language comparability
+
+⸻
+
+If you want, next we can:
+	•	Design a directory layout (locale/, .pot, .po)
+	•	Decide which strings should never be translated
+	•	Add a compile-time check to ensure untranslated strings are intentional
+	•	Map i18n behavior cleanly into your UMRS philosophy (education + audit clarity)
+
+Just say which direction you want to go.
+
+Below is a practical, gettext-style i18n layout and a step-by-step “first template” workflow that works well for Rust CLI utilities. This keeps you in familiar territory (xgettext, .po, .mo) while adding only a small amount of Rust-specific glue.
+
+I am going to assume:
+	•	You want runtime selection via LANG / LC_MESSAGES
+	•	You want to ship .mo files under /usr/share/locale/...
+	•	You want a source tree that contributors can extend cleanly
+
+⸻
+
+1) Suggested directory layout
+
+At your repo root:
+
+umrs-tool/
+  Cargo.toml
+  build.rs
+  src/
+    main.rs
+    i18n.rs
+
+  i18n/
+    umrs-tool.pot
+    LINGUAS
+    en_GB/
+      umrs-tool.po
+    fr_CA/
+      umrs-tool.po
+
+  packaging/
+    umrs-tool.spec
+
+Build artifacts will end up under target/, and you will install compiled .mo files into:
+
+/usr/share/locale/<locale>/LC_MESSAGES/umrs-tool.mo
+
+Notes:
+	•	Domain name: umrs-tool (keep it identical across code, pot/po, and mo filenames)
+	•	LINGUAS is optional but helpful for tooling and packaging
+
+Example i18n/LINGUAS:
+
+en_GB
+fr_CA
+
+
+⸻
+
+2) Add a tiny Rust i18n wrapper
+
+src/i18n.rs
+
+Keep this small and explicit:
+
+use gettext::Catalog;
+use std::sync::OnceLock;
+
+static CATALOG: OnceLock<Option<Catalog>> = OnceLock::new();
+
+pub fn tr(msgid: &str) -> String {
+    let cat_opt = CATALOG.get_or_init(|| {
+        // Domain must match installed .mo name: umrs-tool.mo
+        // Locale dir is where .mo files live
+        Catalog::new("umrs-tool", "/usr/share/locale", None).ok()
+    });
+
+    match cat_opt {
+        Some(cat) => cat.gettext(msgid),
+        None => msgid.to_string(),
+    }
+}
+
+src/main.rs
+
+Use it like:
+
+mod i18n;
+
+fn main() {
+    println!("{}", i18n::tr("Audit database verified successfully"));
+}
+
+Add dependency in Cargo.toml:
+
+[dependencies]
+gettext = "0.4"
+
+(If your environment has a preferred crate/version, pin it accordingly.)
+
+⸻
+
+3) Decide how you will extract strings (Rust + gettext tools)
+
+Rust does not magically integrate with xgettext unless you choose a strategy. The simplest strategy is:
+	•	Treat Rust source as plain text
+	•	Extract strings by looking for a known function name like tr("...")
+
+There are two common approaches:
+
+A) Use xgettext with a language mode and keyword scanning (works if your xgettext supports it well enough)
+B) Use a small “pre-extraction” step (grep or a script) to generate a temporary file, then run xgettext
+
+In practice, I recommend B for reliability, but I will show A first because it is simpler to try.
+
+⸻
+
+4) Generate your first POT template
+
+Step 4.1: Make sure you have gettext tools installed
+
+You need at least:
+	•	xgettext
+	•	msginit
+	•	msgmerge
+	•	msgfmt
+
+On RHEL-like systems these are typically in:
+	•	gettext
+	•	gettext-devel (sometimes not required)
+
+Verify:
+
+xgettext --version
+msginit --version
+msgmerge --version
+msgfmt --version
+
+Step 4.2: Run xgettext to create the POT
+
+From repo root:
+
+mkdir -p i18n
+xgettext \
+  --from-code=UTF-8 \
+  --keyword=tr \
+  --output=i18n/umrs-tool.pot \
+  $(find src -name '*.rs' -print)
+
+If that works, you now have i18n/umrs-tool.pot.
+
+If xgettext complains about Rust syntax (this can happen depending on version/build), then use the “reliable fallback” below.
+
+⸻
+
+5) Reliable fallback extraction (works even when xgettext cannot parse Rust)
+
+The idea is: extract only the string literals passed to tr("..."), write them to a temporary “C-like” file, then let xgettext parse that file.
+
+Example using a simple perl one-liner (single-line strings only):
+
+mkdir -p i18n
+perl -ne 'while (/tr\("((?:[^"\\]|\\.)*)"\)/g) { print "gettext(\"$1\");\n" }' \
+  $(find src -name '*.rs' -print) \
+  > /tmp/umrs-tool.i18n.c
+
+Then:
+
+xgettext \
+  --from-code=UTF-8 \
+  --keyword=gettext \
+  --output=i18n/umrs-tool.pot \
+  /tmp/umrs-tool.i18n.c
+
+This is extremely dependable, but it has a limitation: it only catches tr("literal") forms, not dynamic strings. That is a feature, not a bug, for high-assurance tools.
+
+⸻
+
+6) Create your first PO files (en_GB and fr_CA)
+
+Step 6.1: Initialize a new locale
+
+For British English:
+
+mkdir -p i18n/en_GB
+msginit \
+  --no-translator \
+  --locale=en_GB \
+  --input=i18n/umrs-tool.pot \
+  --output-file=i18n/en_GB/umrs-tool.po
+
+For Canadian French:
+
+mkdir -p i18n/fr_CA
+msginit \
+  --no-translator \
+  --locale=fr_CA \
+  --input=i18n/umrs-tool.pot \
+  --output-file=i18n/fr_CA/umrs-tool.po
+
+Then edit the .po files and fill in translations.
+
+⸻
+
+7) Compile PO to MO
+
+For each locale:
+
+msgfmt -o i18n/en_GB/umrs-tool.mo i18n/en_GB/umrs-tool.po
+msgfmt -o i18n/fr_CA/umrs-tool.mo i18n/fr_CA/umrs-tool.po
+
+
+⸻
+
+8) Test locally without installing system-wide
+
+You can test by pointing gettext at a local locale directory.
+
+Create a staging locale tree (matches the install layout):
+
+mkdir -p ./locale/en_GB/LC_MESSAGES
+mkdir -p ./locale/fr_CA/LC_MESSAGES
+
+cp i18n/en_GB/umrs-tool.mo ./locale/en_GB/LC_MESSAGES/
+cp i18n/fr_CA/umrs-tool.mo ./locale/fr_CA/LC_MESSAGES/
+
+Then change your Rust Catalog::new path temporarily to ./locale or make it configurable (recommended).
+
+A clean approach is:
+	•	Default: /usr/share/locale
+	•	Override: UMRS_LOCALEDIR env var (for testing)
+
+Example tweak in src/i18n.rs:
+
+let localedir = std::env::var("UMRS_LOCALEDIR").unwrap_or_else(|_| "/usr/share/locale".to_string());
+Catalog::new("umrs-tool", &localedir, None).ok()
+
+Then test:
+
+UMRS_LOCALEDIR=./locale LANG=en_GB.UTF-8 cargo run
+UMRS_LOCALEDIR=./locale LANG=fr_CA.UTF-8 cargo run
+
+
+⸻
+
+9) Update workflow after you add/change strings
+
+Whenever you change strings in code:
+	1.	Regenerate POT
+	2.	Merge POT into each PO
+	3.	Recompile MO
+	4.	Install (or stage) and test
+
+Commands:
+
+xgettext --from-code=UTF-8 --keyword=tr --output=i18n/umrs-tool.pot $(find src -name '*.rs' -print)
+
+msgmerge --update i18n/en_GB/umrs-tool.po i18n/umrs-tool.pot
+msgmerge --update i18n/fr_CA/umrs-tool.po i18n/umrs-tool.pot
+
+msgfmt -o i18n/en_GB/umrs-tool.mo i18n/en_GB/umrs-tool.po
+msgfmt -o i18n/fr_CA/umrs-tool.mo i18n/fr_CA/umrs-tool.po
+
+(Use the fallback extraction method if needed.)
+
+⸻
+
+10) Packaging install paths (RPM mindset)
+
+At install time you want:
+
+%{_datadir}/locale/en_GB/LC_MESSAGES/umrs-tool.mo
+%{_datadir}/locale/fr_CA/LC_MESSAGES/umrs-tool.mo
+
+So your spec file can just drop those in place.
+
+⸻
+
+If you want the next step, I can give you a copy-paste-ready Makefile (or justfile) that implements:
+	•	make i18n-pot
+	•	make i18n-update
+	•	make i18n-compile
+	•	make i18n-test
+
+And I can do it in a way that fails hard on missing tools and keeps everything deterministic.
+
+
+
+That is a sound, conservative decision, and it cleanly balances reuse with long-term maintainability.
+
+You are essentially choosing:
+	•	Per-tool gettext domains → clear ownership, clean packaging, no accidental coupling
+	•	Shared i18n implementation in umrs-core → no duplicated logic, consistent behavior
+
+That combination is absolutely valid and commonly used in serious system toolchains.
+
+Below is the clean way to do this so you never have to rethink it later.
+
+⸻
+
+1. The correct mental model
+
+Think of umrs-core as providing an i18n engine, not translations.
+	•	umrs-core knows:
+	•	How to locate locale directories
+	•	How to load catalogs
+	•	How to fall back safely
+	•	How to expose tr() / pgettext()
+	•	Each tool decides:
+	•	Its domain name
+	•	Which strings it owns
+	•	Which .mo file gets installed
+
+That separation is exactly right.
+
+⸻
+
+2. Workspace layout (revised, per-tool domains)
+
+umrs-rust/
+  Cargo.toml                 (workspace)
+
+  umrs-core/
+    src/
+      lib.rs
+      i18n.rs
+
+  umrs-logspace/
+    src/main.rs
+    i18n/
+      umrs-logspace.pot
+      en_GB/umrs-logspace.po
+      fr_CA/umrs-logspace.po
+
+  umrs-ps/
+    src/main.rs
+    i18n/
+      umrs-ps.pot
+      en_GB/umrs-ps.po
+      fr_CA/umrs-ps.po
+
+Install paths at runtime:
+
+/usr/share/locale/<locale>/LC_MESSAGES/umrs-logspace.mo
+/usr/share/locale/<locale>/LC_MESSAGES/umrs-ps.mo
+
+No ambiguity, no collisions.
+
+⸻
+
+3. umrs-core: domain-aware i18n API
+
+umrs-core/src/i18n.rs
+
+This is the key piece. Notice: no hardcoded domain.
+
+use gettext::Catalog;
+use std::sync::OnceLock;
+
+pub struct Translator {
+    catalog: Option<Catalog>,
+}
+
+impl Translator {
+    pub fn new(domain: &str) -> Self {
+        let localedir =
+            std::env::var("UMRS_LOCALEDIR")
+                .unwrap_or_else(|_| "/usr/share/locale".to_string());
+
+        let catalog = Catalog::new(domain, &localedir, None).ok();
+
+        Translator { catalog }
+    }
+
+    pub fn tr(&self, msgid: &str) -> String {
+        match &self.catalog {
+            Some(cat) => cat.gettext(msgid),
+            None => msgid.to_string(),
+        }
+    }
+
+    pub fn pgettext(&self, context: &str, msgid: &str) -> String {
+        match &self.catalog {
+            Some(cat) => cat.pgettext(context, msgid),
+            None => msgid.to_string(),
+        }
+    }
+}
+
+No globals, no statics, no magic.
+
+Each tool creates exactly one Translator.
+
+⸻
+
+4. Tool-side usage (simple and explicit)
+
+umrs-logspace/src/main.rs
+
+use umrs_core::i18n::Translator;
+
+fn main() {
+    let i18n = Translator::new("umrs-logspace");
+
+    println!(
+        "{}",
+        i18n.tr("Audit log space below warning threshold")
+    );
+}
+
+That’s it.
+
+No duplicated gettext logic.
+No duplicated fallback behavior.
+Clear domain ownership.
+
+⸻
+
+5. Extraction per tool (clean and obvious)
+
+Each tool extracts only its own strings.
+
+From umrs-logspace/:
+
+xgettext \
+  --from-code=UTF-8 \
+  --keyword=tr \
+  --keyword=pgettext:1c,2 \
+  --output=i18n/umrs-logspace.pot \
+  $(find src -name '*.rs' -print)
+
+Same fallback strategy applies if your xgettext doesn’t like Rust syntax.
+
+This also keeps translators from seeing strings that are irrelevant to the tool they’re working on.
+
+⸻
+
+6. Why this is a very “UMRS-appropriate” design
+
+This approach:
+	•	Matches RPM packaging reality
+	•	Avoids silent cross-tool coupling
+	•	Keeps audit language scoped and precise
+	•	Makes ownership obvious
+	•	Scales cleanly as UMRS grows
+
+And crucially:
+
+You can still share wording intentionally
+without forcing shared catalogs
+
+If two tools use the same English string, that is fine — but the translation lives where the responsibility lives.
+
+⸻
+
+7. Optional refinements (future-safe)
+
+You can add later, without breaking anything:
+	•	A Translator::with_fallback_domain() (e.g., tool → umrs-core)
+	•	Compile-time --no-i18n feature flag
+	•	A macro wrapper (tr!()) for ergonomics
+	•	Unit tests that assert untranslated strings are intentional
+	•	A make i18n wrapper per tool
+
+None of those require redesign.
+
+⸻
+
+8. Final recommendation (locked in)
+
+You have chosen the correct conservative path:
+	•	Per-tool gettext domains
+	•	Shared i18n implementation in umrs-core
+	•	Explicit, readable, auditable usage
+
+That is exactly how serious system tooling avoids both duplication and accidental coupling.
+
+If you want next, I can:
+	•	Write a minimal tr!() macro that still works with xgettext
+	•	Design a shared i18n.mk that each tool can include
+	•	Show how to test missing translations in CI
+	•	Or integrate this cleanly into your RPM spec templates
+
+Just tell me the next step.
+
+
+Below is a complete, copy-paste-ready toolkit that gives you everything you asked for, except RPM packaging:
+	1.	a tr!() macro that still works with gettext tooling
+	2.	a shared i18n.mk (or Makefile fragment) usable by every tool
+	3.	CI-friendly checks for missing / stale translations
+
+This is designed to be boring, explicit, auditable, and hard to misuse.
+
+⸻
+
+1) tr!() and pgettext!() macros (xgettext-safe)
+
+The key rule for gettext compatibility is:
+
+The string literal must remain visible in source code.
+
+So the macro must expand to a method call that still contains the literal.
+
+⸻
+
+1.1 umrs-core/src/i18n.rs (unchanged engine)
+
+This is your runtime engine (shown again for completeness):
+
+use gettext::Catalog;
+
+pub struct Translator {
+    catalog: Option<Catalog>,
+}
+
+impl Translator {
+    pub fn new(domain: &str) -> Self {
+        let localedir =
+            std::env::var("UMRS_LOCALEDIR")
+                .unwrap_or_else(|_| "/usr/share/locale".to_string());
+
+        let catalog = Catalog::new(domain, &localedir, None).ok();
+        Translator { catalog }
+    }
+
+    pub fn tr(&self, msgid: &str) -> String {
+        match &self.catalog {
+            Some(cat) => cat.gettext(msgid),
+            None => msgid.to_string(),
+        }
+    }
+
+    pub fn pgettext(&self, context: &str, msgid: &str) -> String {
+        match &self.catalog {
+            Some(cat) => cat.pgettext(context, msgid),
+            None => msgid.to_string(),
+        }
+    }
+}
+
+
+⸻
+
+1.2 Macro definitions (place in umrs-core/src/lib.rs)
+
+#[macro_export]
+macro_rules! tr {
+    ($i18n:expr, $msgid:literal) => {
+        $i18n.tr($msgid)
+    };
+}
+
+#[macro_export]
+macro_rules! pgettext {
+    ($i18n:expr, $ctx:literal, $msgid:literal) => {
+        $i18n.pgettext($ctx, $msgid)
+    };
+}
+
+Why this works:
+	•	msgid remains a string literal
+	•	xgettext --keyword=tr --keyword=pgettext:1c,2 can see it
+	•	No runtime magic
+	•	No global state
+
+⸻
+
+1.3 Tool-side usage
+
+use umrs_core::{i18n::Translator, tr, pgettext};
+
+fn main() {
+    let i18n = Translator::new("umrs-logspace");
+
+    println!("{}", tr!(i18n, "Audit log space below warning threshold"));
+
+    println!(
+        "{}",
+        pgettext!(i18n, "umrs-logspace", "Log archive directory missing")
+    );
+}
+
+
+⸻
+
+2) Shared i18n.mk for every tool
+
+Each tool includes this file and gains a standard gettext workflow.
+
+⸻
+
+2.1 File: build/i18n.mk
+
+# Shared i18n rules for UMRS Rust tools
+# Expected variables:
+#   DOMAIN        (e.g. umrs-logspace)
+#   SRC_DIR       (e.g. src)
+#   I18N_DIR      (e.g. i18n)
+
+XGETTEXT ?= xgettext
+MSGINIT  ?= msginit
+MSGMERGE ?= msgmerge
+MSGFMT   ?= msgfmt
+
+LOCALES := $(shell cat $(I18N_DIR)/LINGUAS 2>/dev/null)
+
+POT := $(I18N_DIR)/$(DOMAIN).pot
+
+RS_FILES := $(shell find $(SRC_DIR) -name '*.rs')
+
+.PHONY: i18n-pot
+i18n-pot:
+	$(XGETTEXT) \
+	  --from-code=UTF-8 \
+	  --keyword=tr \
+	  --keyword=pgettext:1c,2 \
+	  --output=$(POT) \
+	  $(RS_FILES)
+
+.PHONY: i18n-init
+i18n-init:
+	@test -n "$(LOCALE)" || (echo "Set LOCALE=xx_YY"; exit 1)
+	mkdir -p $(I18N_DIR)/$(LOCALE)
+	$(MSGINIT) \
+	  --no-translator \
+	  --locale=$(LOCALE) \
+	  --input=$(POT) \
+	  --output-file=$(I18N_DIR)/$(LOCALE)/$(DOMAIN).po
+
+.PHONY: i18n-update
+i18n-update:
+	for l in $(LOCALES); do \
+	  $(MSGMERGE) --update \
+	    $(I18N_DIR)/$$l/$(DOMAIN).po \
+	    $(POT); \
+	done
+
+.PHONY: i18n-compile
+i18n-compile:
+	for l in $(LOCALES); do \
+	  $(MSGFMT) \
+	    -o $(I18N_DIR)/$$l/$(DOMAIN).mo \
+	    $(I18N_DIR)/$$l/$(DOMAIN).po; \
+	done
+
+
+⸻
+
+2.2 Tool Makefile example
+
+umrs-logspace/Makefile:
+
+DOMAIN   := umrs-logspace
+SRC_DIR  := src
+I18N_DIR := i18n
+
+include ../build/i18n.mk
+
+Usage:
+
+make i18n-pot
+make i18n-init LOCALE=en_GB
+make i18n-init LOCALE=fr_CA
+make i18n-update
+make i18n-compile
+
+
+⸻
+
+3) CI checks for translation correctness
+
+These checks fail fast and are appropriate for high-assurance tooling.
+
+⸻
+
+3.1 Check 1: POT is up to date
+
+Detects when someone added strings but forgot to update translations.
+
+make i18n-pot
+git diff --exit-code i18n/*.pot
+
+CI failure message:
+
+error: i18n template out of date
+
+
+⸻
+
+3.2 Check 2: No fuzzy or untranslated strings
+
+for po in i18n/*/*.po; do
+  if msgattrib --untranslated --fuzzy "$po" | grep -q msgid; then
+    echo "ERROR: untranslated or fuzzy strings in $po"
+    exit 1
+  fi
+done
+
+This forces translators (including you) to be explicit.
+
+⸻
+
+3.3 Check 3: .mo files build cleanly
+
+make i18n-compile
+
+If msgfmt fails, CI fails.
+
+⸻
+
+3.4 Optional: enforce literal-only translations
+
+This prevents accidental translation of machine tokens.
+
+Example policy:
+
+if grep -R '"STATUS_' i18n/*/*.po; then
+  echo "ERROR: status tokens must not be translated"
+  exit 1
+fi
+
+You can tune this to your exact invariants.
+
+⸻
+
+4) Summary of what you now have
+
+You now have:
+	•	One shared i18n engine in umrs-core
+	•	One per-tool gettext domain
+	•	Macros that are:
+	•	Ergonomic
+	•	Explicit
+	•	gettext-compatible
+	•	A uniform Makefile workflow
+	•	CI enforcement that:
+	•	Prevents silent drift
+	•	Preserves audit clarity
+	•	Encourages deliberate translation
+
+This is exactly the level of rigor expected in a serious system toolchain.
+
+⸻
+
+If you want next steps, sensible options are:
+	•	add unit tests for Translator fallback behavior
+	•	add a compile-time --no-i18n feature
+	•	add a doc page explaining translation policy to contributors
+	•	add a static analysis check for accidental non-literal strings
+
+Just tell me where you want to go next.

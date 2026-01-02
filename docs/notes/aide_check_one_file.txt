@@ -1,0 +1,118 @@
+Check one file in aide
+
+Yes — with an important caveat about how AIDE works.
+
+Short answer:
+You can check a single file against the AIDE database, but AIDE does not provide a clean, first-class “verify just this file” command. You can, however, do it in a controlled and reliable way using AIDE’s selection and verbosity options.
+
+Below is the precise, admin-accurate explanation.
+
+⸻
+
+How AIDE actually works (key point)
+
+AIDE is fundamentally:
+	•	A database comparison engine
+	•	Not a per-file interactive verifier
+
+When you run aide --check, it:
+	1.	Loads the reference database (e.g., aide.db.gz)
+	2.	Walks the filesystem
+	3.	Applies rule selections
+	4.	Compares computed attributes against stored ones
+
+So the trick is restricting the scope of what AIDE checks, not changing its underlying model.
+
+⸻
+
+The supported and reliable way: restrict the check to one path
+
+You can ask AIDE to only evaluate a specific file by using the --path-check option.
+
+Example: verify a single file
+
+aide --check --path-check=/etc/ssh/sshd_config
+
+What this does:
+	•	Loads the existing AIDE database
+	•	Computes attributes for only that path
+	•	Compares them against the stored baseline
+	•	Reports differences exactly as it would during a full scan
+
+This is the correct and intended method.
+
+⸻
+
+Using a specific database archive explicitly
+
+If you keep multiple historical databases (which is good practice), specify the one you want:
+
+aide --check \
+  --database=file:/var/lib/aide/aide.db.2025-01-01.gz \
+  --path-check=/etc/ssh/sshd_config
+
+This allows you to answer questions like:
+	•	“Has this file changed since that audit snapshot?”
+	•	“Was this file already modified before incident X?”
+
+⸻
+
+What you cannot do (and why)
+
+AIDE cannot:
+	•	Act like sha256sum --check for an arbitrary file
+	•	Verify a file without loading the full database
+	•	Bypass rule evaluation and normalization logic
+
+This is by design — AIDE tracks multiple attributes (permissions, owner, SELinux context, xattrs, hashes, etc.), not just a digest.
+
+⸻
+
+Output behavior to expect
+
+When checking a single file:
+	•	You will still see normal AIDE report structure
+	•	Only entries relevant to that file will appear
+	•	If the file is unchanged, output may be minimal or empty (depending on verbosity)
+
+To force visibility:
+
+aide --check --path-check=/etc/ssh/sshd_config --verbose=5
+
+
+⸻
+
+Operational guidance (best practice)
+
+For routine ops and incident response:
+	•	Use full scans on a schedule (daily/weekly)
+	•	Use --path-check for:
+	•	Targeted validation
+	•	Change justification workflows
+	•	Pre/post maintenance verification
+	•	Archive databases with date-stamped filenames
+	•	Treat the database as audit evidence, not a mutable cache
+
+⸻
+
+Mental model (important)
+
+Think of AIDE as:
+
+“Compare this subset of the filesystem against a cryptographically sealed memory of the past.”
+
+Not:
+
+“Check this file’s hash.”
+
+That distinction matters when you’re reasoning about assurance and audit defensibility.
+
+⸻
+
+If you want, next we can:
+	•	Integrate this into a justification workflow
+	•	Wrap single-file checks in a helper script
+	•	Map this behavior cleanly to NIST 800-53 AU / SI controls
+	•	Or compare AIDE’s model to Tripwire / IMA / fs-verity
+
+Just tell me how deep you want to go.
