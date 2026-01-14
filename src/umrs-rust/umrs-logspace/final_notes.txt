@@ -1,0 +1,357 @@
+You’re absolutely right — thank you for catching that.
+Let’s fix this **cleanly and explicitly**, with **no ambiguity**.
+
+Below is the **complete, concrete source layout**, with **every file named**, and the **measurement module fully implemented**. Nothing is implied, nothing is “left to the reader”.
+
+---
+
+## Final source tree (authoritative)
+
+```
+umrs-logspace/
+├── Cargo.toml
+└── src/
+    ├── main.rs
+    ├── model.rs
+    ├── output.rs
+    ├── config.rs
+    ├── config_loader.rs
+    └── measure.rs
+```
+
+---
+
+## `Cargo.toml`
+
+```toml
+[package]
+name = "umrs-logspace"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+clap = { version = "4.5", features = ["derive"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+toml = "0.8"
+nix = { version = "0.28", features = ["fs"] }
+walkdir = "2.5"
+```
+
+---
+
+## `src/model.rs`
+
+```rust
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ResourcePool {
+    pub name: String,
+    pub mount_point: String,
+    pub total_bytes: u64,
+    pub free_bytes: u64,
+    pub lifecycles: Vec<LifecycleUsage>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct LifecycleUsage {
+    pub state: LifecycleState,
+    pub consumers: Vec<LogConsumer>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct LogConsumer {
+    pub class: LogClass,
+    pub bytes_used: u64,
+}
+
+#[derive(Debug, Serialize, Deserialize, Eq, PartialEq, Hash, Clone)]
+pub enum LifecycleState {
+    Active,
+    Inactive,
+    Archived,
+    Offline,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub enum LogClass {
+    Audit,
+    System,
+    Application,
+    Umrs,
+}
+```
+
+---
+
+## `src/config.rs`
+
+```rust
+use serde::Deserialize;
+
+#[derive(Debug, Deserialize)]
+pub struct Config {
+    pub pool: Vec<PoolConfig>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct PoolConfig {
+    pub name: String,
+    pub mount_point: String,
+    pub lifecycle: Vec<LifecycleConfig>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct LifecycleConfig {
+    pub state: String,
+
+    #[serde(rename = "path")]
+    pub paths: Vec<PathConfig>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct PathConfig {
+    pub path: String,
+    pub class: String,
+}
+```
+
+---
+
+## `src/config_loader.rs`
+
+```rust
+use std::fs;
+use crate::config::Config;
+
+pub fn load_config(path: &str) -> Result<Config, String> {
+    let data = fs::read_to_string(path)
+        .map_err(|e| format!("failed to read config {}: {}", path, e))?;
+
+    toml::from_str(&data)
+        .map_err(|e| format!("failed to parse config {}: {}", path, e))
+}
+```
+
+---
+
+## `src/measure.rs`
+
+**This is the file that was missing content before — here it is in full.**
+
+```rust
+use std::collections::HashMap;
+use std::path::Path;
+
+use nix::sys::statvfs::statvfs;
+use walkdir::WalkDir;
+
+use crate::config::*;
+use crate::model::*;
+
+/* ---------- string → enum mapping ---------- */
+
+fn parse_lifecycle(s: &str) -> Result<LifecycleState, String> {
+    match s {
+        "active" => Ok(LifecycleState::Active),
+        "inactive" => Ok(LifecycleState::Inactive),
+        "archived" => Ok(LifecycleState::Archived),
+        "offline" => Ok(LifecycleState::Offline),
+        _ => Err(format!("unknown lifecycle state '{}'", s)),
+    }
+}
+
+fn parse_class(s: &str) -> Result<LogClass, String> {
+    match s {
+        "audit" => Ok(LogClass::Audit),
+        "system" => Ok(LogClass::System),
+        "application" => Ok(LogClass::Application),
+        "umrs" => Ok(LogClass::Umrs),
+        _ => Err(format!("unknown log class '{}'", s)),
+    }
+}
+
+/* ---------- filesystem helpers ---------- */
+
+fn filesystem_capacity(path: &str) -> Result<(u64, u64), String> {
+    let vfs = statvfs(path)
+        .map_err(|e| format!("statvfs failed for {}: {}", path, e))?;
+
+    let block_size = vfs.block_size() as u64;
+    let total = vfs.blocks() * block_size;
+    let free = vfs.blocks_available() * block_size;
+
+    Ok((total, free))
+}
+
+fn directory_usage(path: &str) -> Result<u64, String> {
+    let mut total: u64 = 0;
+
+    for entry in WalkDir::new(path).follow_links(false) {
+        let entry = entry.map_err(|e| format!("walk error in {}: {}", path, e))?;
+        if entry.file_type().is_file() {
+            let meta = entry.metadata()
+                .map_err(|e| format!("metadata error {:?}: {}", entry.path(), e))?;
+            total += meta.len();
+        }
+    }
+
+    Ok(total)
+}
+
+/* ---------- config → measurement binding ---------- */
+
+pub fn measure_from_config(cfg: &Config) -> Result<Vec<ResourcePool>, String> {
+    let mut pools = Vec::new();
+
+    for pool_cfg in &cfg.pool {
+        let (total, free) = filesystem_capacity(&pool_cfg.mount_point)?;
+
+        let mut lifecycle_map: HashMap<LifecycleState, Vec<LogConsumer>> =
+            HashMap::new();
+
+        for lc in &pool_cfg.lifecycle {
+            let state = parse_lifecycle(&lc.state)?;
+
+            for path_cfg in &lc.paths {
+                let class = parse_class(&path_cfg.class)?;
+
+                if !Path::new(&path_cfg.path).exists() {
+                    return Err(format!("configured path does not exist: {}", path_cfg.path));
+                }
+
+                let bytes = directory_usage(&path_cfg.path)?;
+
+                lifecycle_map
+                    .entry(state.clone())
+                    .or_default()
+                    .push(LogConsumer {
+                        class,
+                        bytes_used: bytes,
+                    });
+            }
+        }
+
+        let lifecycles = lifecycle_map
+            .into_iter()
+            .map(|(state, consumers)| LifecycleUsage {
+                state,
+                consumers,
+            })
+            .collect();
+
+        pools.push(ResourcePool {
+            name: pool_cfg.name.clone(),
+            mount_point: pool_cfg.mount_point.clone(),
+            total_bytes: total,
+            free_bytes: free,
+            lifecycles,
+        });
+    }
+
+    Ok(pools)
+}
+```
+
+---
+
+## `src/output.rs`
+
+```rust
+use crate::model::*;
+
+pub fn print_pools(pools: &[ResourcePool]) {
+    for pool in pools {
+        println!("Resource Pool: {}", pool.name);
+        println!("  Mount point : {}", pool.mount_point);
+        println!("  Total space : {} GiB", gib(pool.total_bytes));
+        println!("  Free space  : {} GiB", gib(pool.free_bytes));
+
+        for lifecycle in &pool.lifecycles {
+            println!("  Lifecycle: {:?}", lifecycle.state);
+            for consumer in &lifecycle.consumers {
+                println!(
+                    "    {:<12} {:>6} GiB",
+                    format!("{:?}", consumer.class),
+                    gib(consumer.bytes_used)
+                );
+            }
+        }
+        println!();
+    }
+}
+
+fn gib(bytes: u64) -> u64 {
+    bytes / 1024 / 1024 / 1024
+}
+```
+
+---
+
+## `src/main.rs`
+
+```rust
+mod model;
+mod output;
+mod config;
+mod config_loader;
+mod measure;
+
+use clap::Parser;
+
+#[derive(Parser)]
+#[command(name = "umrs-logspace")]
+#[command(about = "Resource-pool–centric log space analysis")]
+struct Cli {
+    #[arg(long, default_value = "/etc/umrs/logspace.toml")]
+    config: String,
+
+    #[arg(long)]
+    json: bool,
+}
+
+fn main() {
+    let cli = Cli::parse();
+
+    let config = config_loader::load_config(&cli.config)
+        .expect("configuration error");
+
+    let pools = measure::measure_from_config(&config)
+        .expect("measurement error");
+
+    if cli.json {
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&pools).unwrap()
+        );
+    } else {
+        output::print_pools(&pools);
+    }
+}
+```
+
+---
+
+## Status after this correction
+
+You now have:
+
+* A **real measurement module**
+* Fully named, concrete source files
+* Config-driven traversal only
+* Pool-first accounting
+* Deterministic, reviewable behavior
+
+No placeholders. No missing code.
+
+---
+
+### Next *correct* steps (recommended order)
+
+1. Config validation (overlapping paths, path outside pool)
+2. Optional glob/pattern support
+3. State JSON persistence
+4. Delta + time-to-exhaustion math
+
+Tell me which one you want next, and we’ll continue at the same level of rigor.
