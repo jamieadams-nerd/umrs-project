@@ -1,0 +1,696 @@
+logging capacity
+
+You’re exactly right — and you’ve now arrived at the hard part that CDS-MIB got right and most modern systems still get wrong.
+
+The problem is not collecting numbers.
+The problem is presenting risk clearly when storage topology does not align with lifecycle semantics.
+
+Let’s slow this down and structure it.
+
+⸻
+
+1) The core question operators actually care about
+
+As you said, the operator is really asking:
+
+“Can this system continue to operate safely, and which part of logging will fail first if space runs out?”
+
+That is a failure-mode question, not a filesystem question.
+
+So the reporting must be framed around:
+• Lifecycle phase
+• Failure impact
+• Time-to-failure
+
+Not around mount points.
+
+⸻
+
+2) Why filesystem layout breaks naïve reporting
+
+You correctly identified the two common patterns:
+
+Pattern A: Single filesystem
+
+/var/log
+  ├── active
+  ├── inactive
+  └── archive
+
+Here:
+• One free-space number
+• Multiple lifecycle consumers
+• Competition between states
+
+Pattern B: Split filesystems
+
+/var/log        (active + inactive)
+/var/log/archive
+
+Here:
+• Different failure domains
+• Different risk timelines
+• Different remediation actions
+
+If you report only filesystem usage, you lose lifecycle meaning.
+If you report only lifecycle usage, you lose failure context.
+
+CDS solved this by reporting both — but clearly separated.
+
+⸻
+
+3) The key insight (this is the design pivot)
+
+You must decouple lifecycle state from storage location, then re-correlate them at reporting time.
+
+Think in three layers:
+	1.	Lifecycle semantics
+	2.	Storage topology
+	3.	Failure impact
+
+Never collapse these prematurely.
+
+⸻
+
+4) Correct mental model: “Consumers of space”
+
+Instead of asking:
+
+“How full is this filesystem?”
+
+Ask:
+
+“Which lifecycle consumers are drawing space from which capacity pools?”
+
+So you model:
+
+Capacity pools
+
+• Filesystem A (size, free, thresholds)
+• Filesystem B
+• …
+
+Lifecycle consumers
+
+• Active logs
+• Inactive logs
+• Archived logs
+
+And you map:
+
+Active logs    → FS A
+Inactive logs  → FS A
+Archived logs  → FS B
+
+or in the single-FS case:
+
+Active logs    → FS A
+Inactive logs  → FS A
+Archived logs  → FS A
+
+This mapping is the heart of meaningful reporting.
+
+⸻
+
+5) How CDS-style reporting actually answers the risk question
+
+A good report answers three questions per lifecycle phase:
+
+A) How much space is it using?
+
+(bytes, files, growth rate)
+
+B) Where is that space coming from?
+
+(which filesystem / capacity pool)
+
+C) What happens if it runs out?
+
+(failure mode)
+
+Example (conceptual, not UI yet):
+
+Active logs:
+• Using 2.3 GB
+• Backed by filesystem: /var/log
+• Remaining FS capacity: 1.1 GB
+• Failure impact: immediate loss of logging → system non-compliant
+
+Inactive logs:
+• Using 18 GB
+• Backed by filesystem: /var/log
+• Failure impact: rotation failure → growth into active space
+
+Archived logs:
+• Using 120 GB
+• Backed by filesystem: /archive
+• Failure impact: retention breach, not immediate system failure
+
+This is exactly the operator reasoning CDS expected.
+
+⸻
+
+6) Why this works even when layouts differ
+
+Because you are no longer pretending that:
+
+• “Filesystem == lifecycle”
+• “Directory == state”
+
+Instead:
+• Lifecycle is semantic
+• Filesystems are capacity providers
+• Risk emerges at their intersection
+
+This model works whether:
+• Everything is on one disk
+• Everything is split
+• Archives are NFS, object storage, tape, etc.
+
+The semantics stay stable.
+
+⸻
+
+7) What not to do (common modern mistake)
+
+Do not present:
+
+• One big pie chart of disk usage
+• Only per-filesystem free space
+• Only per-directory sizes without context
+
+Those force the operator to mentally reconstruct failure modes — which CDS explicitly avoided.
+
+⸻
+
+8) A very CDS-correct framing sentence (you’ll want this later)
+
+“Log capacity must be reported by lifecycle state and correlated to the underlying storage pool, because different lifecycle states consume shared capacity but fail with different operational consequences.”
+
+That sentence is essentially CDS-MIB philosophy in modern language.
+
+⸻
+
+9) Where we go next (natural continuation)
+
+The next logical step is one of these:
+	1.	Define failure semantics per lifecycle phase (what actually breaks)
+	2.	Define thresholds and alerts (warning vs critical)
+	3.	Design a neutral reporting structure (JSON / CLI output)
+	4.	Talk about growth rate and time-to-exhaustion, not just size
+	5.	Discuss what happens when multiple phases share one filesystem
+
+You’re not ahead or behind — you’re exactly where this conversation should be.
+
+Tell me which direction you want to take next, and we’ll build it carefully.
+
+Good — this is an excellent anchor point, and you’re remembering CDS-MIB correctly. What you’re describing is not just “logging,” it’s operational capacity assurance, which is why the MIB cared so much.
+
+Let me align terminology, then talk specifically about space accounting and why CDS insisted on it.
+
+⸻
+
+1) CDS-MIB terminology vs the lifecycle terms I used
+
+The CDS-MIB used explicit, operator-facing states, because auditors and operators needed to reason about storage risk quickly.
+
+Typical CDS-MIB states (as you remember):
+
+• Active logs
+• Inactive logs
+• Archived logs
+
+These map very cleanly to the lifecycle phases we just discussed:
+
+CDS-MIB term → Lifecycle meaning
+
+Active logs
+→ Currently writable, open log files (hot data)
+
+Inactive logs
+→ Closed / rolled logs that are no longer written but still online
+
+Archived logs
+→ Logs moved to protected, long-term storage (often read-only, sometimes offline)
+
+The CDS-MIB deliberately did not collapse these, because each state represents a different operational risk.
+
+⸻
+
+2) Why CDS required space reporting per state
+
+This is the key insight.
+
+CDS systems treated log storage as a finite, safety-critical resource, not a convenience.
+
+Each state answers a different question:
+
+Active logs — “Are we about to fail?”
+
+Metrics:
+• Bytes consumed by currently open logs
+• Remaining free space in the active logging filesystem
+
+Risk:
+• If active space fills → logging failure
+• Logging failure → security failure
+• Security failure → accreditation violation
+
+This is immediate operational risk.
+
+⸻
+
+Inactive logs — “Are we accumulating risk?”
+
+Metrics:
+• Space consumed by closed but retained logs
+• Growth rate over time
+
+Risk:
+• Excessive retention
+• Failure to rotate/archive
+• Slow creep toward exhaustion
+
+This is process failure risk.
+
+⸻
+
+Archived logs — “Are we meeting retention and cost expectations?”
+
+Metrics:
+• Space consumed by archived logs
+• Archive growth vs retention policy
+
+Risk:
+• Retention violations
+• Storage cost explosion
+• Failure to destroy logs when allowed
+
+This is governance and compliance risk.
+
+⸻
+
+3) Why “total log space” is not sufficient
+
+A single number like:
+
+“Logs consume 120 GB”
+
+is operationally useless.
+
+CDS knew this, because:
+
+• 5 GB active + 115 GB archived → OK
+• 115 GB active + 5 GB archived → emergency
+
+Same total. Completely different posture.
+
+That’s why CDS-MIB exposed per-state metrics.
+
+⸻
+
+4) Why modern Linux logging usually gets this wrong
+
+Most modern systems expose only:
+
+• Filesystem free space
+• Total log directory size
+
+They do not distinguish:
+
+• Writable vs sealed
+• Mutable vs evidentiary
+• Operational vs compliance data
+
+This is why journald alone is insufficient for high-assurance systems.
+
+⸻
+
+5) Translating CDS-MIB concepts into modern systems
+
+If we restate CDS-MIB in modern, neutral terms, the space model still holds:
+
+You want to track:
+	1.	Active (hot, writable)
+• Path(s)
+• Space used
+• Space remaining
+	2.	Inactive (sealed, online)
+• Path(s)
+• Space used
+• Count of sealed logs
+	3.	Archived (cold, protected)
+• Path(s)
+• Space used
+• Retention horizon
+
+This is exactly the same model, just implemented with filesystems, permissions, and cryptography instead of tape libraries and jukeboxes.
+
+⸻
+
+6) Why this fits UMRS perfectly
+
+UMRS is already oriented toward:
+
+• Explicit state
+• Human-readable posture
+• Auditor-friendly reporting
+
+So a UMRS log status command could cleanly report:
+
+• Active log space (bytes, % of quota)
+• Inactive/sealed log space
+• Archived log space
+• Policy thresholds and warnings
+
+That is pure CDS thinking, modernized.
+
+⸻
+
+7) One sentence you can reuse verbatim
+
+“CDS-MIB log reporting distinguished active, inactive, and archived logs because each lifecycle state represents a different operational and compliance risk; total log space alone is insufficient.”
+
+That sentence captures the entire rationale.
+
+⸻
+
+8) Where we can go next (very natural next steps)
+
+From here, logical continuations would be:
+
+• Define thresholds per lifecycle state (warning vs critical)
+• Discuss what triggers movement between states
+• Map CDS-MIB metrics to a modern JSON status model
+• Design a umrs-log status report that mirrors CDS-MIB intent
+• Talk about what happens when space runs out (fail-secure vs fail-open)
+
+Tell me which one you want to tackle next.
+
+Yes — this is exactly the right refinement, and it stays true to the CDS mindset without overcomplicating the operator view.
+
+What you’re describing is the difference between primary posture reporting and secondary attribution, and you’re right to keep them distinct.
+
+I’ll lay this out carefully.
+
+⸻
+
+1) Logging vs auditing — why the distinction still matters
+
+Even though everything may live under /var/log, these are not the same thing, operationally or assurance-wise.
+
+Logging (general system/application logs)
+
+Purpose:
+• Operations
+• Troubleshooting
+• Performance
+• Diagnostics
+
+Characteristics:
+• High volume
+• Variable structure
+• Often rotated aggressively
+• Lower evidentiary value
+
+Examples:
+• syslog / rsyslog
+• Apache access/error logs
+• application logs
+
+⸻
+
+Auditing (/var/log/audit)
+
+Purpose:
+• Security accountability
+• Policy enforcement visibility
+• Forensics
+• Compliance evidence
+
+Characteristics:
+• Strict schema
+• High integrity expectations
+• Often mandated retention
+• Special failure semantics
+
+Examples:
+• auditd logs
+• AVC denials
+• authentication events
+• policy changes
+
+This distinction matters because audit failure is usually more serious than general logging failure.
+
+⸻
+
+2) How this fits into lifecycle-based space reporting
+
+You already have the primary structure:
+
+• Active
+• Inactive
+• Archived
+
+Now you’re proposing an orthogonal dimension:
+
+• Log class (system, audit, Apache, application, etc.)
+
+That’s the right mental model.
+
+So instead of thinking in rows only, think layers.
+
+⸻
+
+3) Correct way to layer this (important)
+
+You do not want to explode the primary report.
+
+Primary report should still answer:
+
+“Can the system continue to operate safely?”
+
+So the top-level view remains:
+
+• Active log space
+• Inactive log space
+• Archived log space
+• Mapped to capacity pools
+
+That’s the CDS-style operator posture.
+
+⸻
+
+4) Where grouping by log class belongs
+
+What you’re proposing belongs in a secondary breakdown, not the headline numbers.
+
+Example conceptually:
+
+Active logs (total): 3.1 GB
+• Audit logs: 0.9 GB
+• System logs: 0.7 GB
+• Apache logs: 1.2 GB
+• Application logs: 0.3 GB
+
+Inactive logs (total): 22 GB
+• Audit logs: 5 GB
+• System logs: 6 GB
+• Apache logs: 9 GB
+• Application logs: 2 GB
+
+This answers a different question:
+
+“What is driving growth?”
+
+Which is exactly what operators and engineers want after they know they’re safe or unsafe.
+
+⸻
+
+5) Your YAML grouping idea is exactly right
+
+Using a configuration file that defines log groupings by pattern and location is the correct approach.
+
+Key points:
+
+• Grouping is operator-defined, not hardcoded
+• Groups are semantic, not filesystem-based
+• Multiple paths can belong to one group
+• One filesystem can host many groups
+
+Example (conceptual, not syntax-locked):
+
+• Group name: audit
+– Paths: /var/log/audit/*
+
+• Group name: apache
+– Paths: /var/log/httpd/*
+
+• Group name: system
+– Paths: /var/log/messages, /var/log/secure, etc.
+
+• Group name: application
+– Paths: /var/log/myapp/*.log
+
+This keeps the system flexible and future-proof.
+
+⸻
+
+6) Why this works well with shared filesystems
+
+This is where your idea really shines.
+
+Even if:
+• Active, inactive, and archived logs share a filesystem
+
+You can still say:
+
+• “Audit logs are consuming 40% of active log space”
+• “Apache logs dominate inactive growth”
+• “Archives are mostly system logs”
+
+That allows:
+• Tuning retention
+• Adjusting rotation
+• Capacity planning
+• Targeted remediation
+
+Without confusing lifecycle semantics.
+
+⸻
+
+7) Special handling for audit logs (important)
+
+Audit logs deserve extra visibility, even if you don’t elevate them to a separate lifecycle.
+
+Two good practices:
+
+• Always break audit logs out explicitly in group reporting
+• Always highlight audit space exhaustion as higher severity
+
+Because:
+• auditd can halt the system
+• or force fail-secure behavior
+• or cause compliance failure
+
+This mirrors how CDS treated audit logs as special, even when they shared storage.
+
+⸻
+
+8) What this gives you operationally
+
+With this model, an operator can answer:
+
+• Are we safe right now?
+• Which lifecycle phase is at risk?
+• Which filesystem is the bottleneck?
+• Which log class is driving growth?
+• Is audit pressure increasing?
+
+All without mental gymnastics.
+
+That is exactly what CDS-MIB was trying to achieve.
+
+⸻
+
+9) A sentence you’ll want to reuse later
+
+“Lifecycle state determines operational risk, while log grouping provides attribution; both are necessary, but lifecycle reporting must remain primary.”
+
+That captures the philosophy cleanly.
+
+⸻
+
+10) Natural next steps from here
+
+From this point, logical continuations would be:
+
+• Decide how audit logs affect severity scoring
+• Define which groups are mandatory vs optional
+• Discuss time-to-exhaustion per group
+• Design a JSON/CLI output that keeps primary vs secondary views clean
+• Talk about alerting thresholds per lifecycle and per group
+
+You’re not adding complexity for its own sake — you’re adding clarity.
+
+Tell me which of those you want to tackle next.
+
+Yes — that approach is exactly how you get from “snapshot monitoring” to “operational forecasting,” and it’s the right level of complexity.
+
+If you persist the last measurement (plus timestamp) in a small JSON state file, then each run can compute:
+
+• Delta bytes by lifecycle state (active/inactive/archive)
+• Delta bytes by group (audit/system/apache/…)
+• Growth rate (bytes/hour, bytes/day)
+• Estimated time-to-exhaustion for each capacity pool and for each lifecycle state that draws from it
+
+That gives you the “when will it fail?” signal you want.
+
+Key points to do it correctly:
+	1.	Store both the measured values and the context
+You want the state file to capture:
+• Timestamp (ET and UTC)
+• Capacity pool identity (mountpoint, filesystem UUID if possible)
+• Free space at time of measurement
+• Totals per lifecycle state
+• Totals per group per lifecycle state
+
+This avoids errors if mounts change or a path is moved.
+	2.	Calculate rates safely
+Use:
+• rate = (current_bytes - prior_bytes) / elapsed_seconds
+Then:
+• If rate <= 0, time-to-full is “not growing” (or “improving”)
+• If rate > 0, time_to_full = free_bytes / rate
+	3.	Prefer “which phase fails first” as the headline
+Because active/inactive/archive may share a pool, the tool should compute:
+• For each capacity pool: time-to-full
+• For each lifecycle state consuming that pool: “will be impacted”
+• Identify the earliest predicted failure and name the phase
+	4.	Handle cleanup and rotations gracefully
+Your delta logic naturally handles:
+• Cleanup (negative deltas)
+• Log rotation (active down, inactive up)
+• Archive moves (inactive down, archive up)
+
+That’s not noise — it’s insight. It tells you the system is behaving.
+	5.	Don’t overpromise accuracy
+Time-to-exhaustion should be presented as:
+• A simple projection based on the last interval
+• Optionally smoothed if you keep a small history (last N runs)
+
+Even with just “last run vs this run,” you’ll get useful directionality.
+
+Practical detail for UMRS (since you care about guard rails and auditability):
+• Make the state file owned by root, mode 0600, and write it atomically (temp file + rename)
+• Include a state version field
+• Log the calculated deltas and projections as key=value fields to your UMRS JSONL activity log
+
+Bottom line: storing the previous snapshot in a JSON state file is exactly what turns your tool into something that can say, credibly:
+
+“Given current growth, the active+inactive pool will hit the threshold first in ~X hours (ET/UTC), primarily driven by audit logs.”
+
+If you want, next we can sketch the minimal JSON state schema and the computations, but keep it lightweight and copy/paste friendly.
+
+Got it. I’ve remembered this and integrated it into the UMRS mental model.
+
+You’re making an important operational point that absolutely belongs in the log-space utility’s rationale and documentation:
+	•	When logs live on non-isolated or non-dedicated filesystems (for example, / or a shared root filesystem),
+	•	log exhaustion risk becomes non-deterministic, because unrelated activity can consume space at any time,
+	•	UMRS can measure log growth accurately, but cannot predict failure timing when other consumers are present,
+	•	This makes attribution harder: a logging failure may appear “sudden” even though log growth itself was stable,
+	•	Therefore, shared filesystems represent a higher operational risk posture, not just a capacity issue.
+
+This ties cleanly into your broader UMRS theme:
+	•	UMRS reports operational risk, not just raw disk usage
+	•	Filesystem isolation (or lack thereof) becomes a first-class signal
+	•	Dedicated log filesystems reduce uncertainty and improve predictability
+	•	Shared filesystems should be explicitly flagged as risk-elevating, even if they are not currently full
+
+Later, when you want, we can:
+	•	Write the exact documentation paragraph (or warning box)
+	•	Decide how this appears in CLI output (e.g., WARN vs INFO)
+	•	Encode it as a policy expectation in the YAML config
+	•	Or reflect it in the GUI as a “shared capacity risk” indicator
+
+But for now: yes, this is remembered, and it fits UMRS perfectly.
