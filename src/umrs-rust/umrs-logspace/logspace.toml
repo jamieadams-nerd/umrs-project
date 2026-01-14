@@ -1,0 +1,40 @@
+# umrs-logspace configuration
+# Defines resource pools and log classification rules
+
+[[pool]]
+name = "var-log"
+mount_point = "/var/log"
+
+  [[pool.lifecycle]]
+  state = "active"
+
+    [[pool.lifecycle.path]]
+    path = "/var/log/audit"
+    class = "audit"
+
+    [[pool.lifecycle.path]]
+    path = "/var/log/journal"
+    class = "system"
+
+  [[pool.lifecycle]]
+  state = "archived"
+
+    [[pool.lifecycle.path]]
+    path = "/var/log/audit/archive"
+    class = "audit"
+
+
+[[pool]]
+name = "umrs-vault"
+mount_point = "/var/lib/umrs"
+
+  [[pool.lifecycle]]
+  state = "archived"
+
+    [[pool.lifecycle.path]]
+    path = "/var/lib/umrs/receipts"
+    class = "umrs"
+
+    [[pool.lifecycle.path]]
+    path = "/var/lib/umrs/attestations"
+    class = "umrs"
