@@ -18,6 +18,7 @@ pnpm-debug.log*
 .DS_Store
 .swp
 .swo
+._*
 
 # Rust work
 src/umrs-rust/target/

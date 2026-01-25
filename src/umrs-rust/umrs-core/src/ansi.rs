@@ -1,17 +1,20 @@
 // SPDX-License-Identifier: MIT
-// SPDX-FileCopyrightText: 2026 Jamie Adams
+// Copyright (c) 2025 Jamie Adams
 //
-// Unclassified MLS Reference System Project (UMRS)
-// MIT licensed—use, modify, and redistribute per LICENSE.
+//! UMRS Core ANSI Terminal Utilities
+//!
+//! ANSI color definitions and escape sequence helpers for terminal output.
+//!
+//! Guarantees:
+//! - Deterministic mapping of color names to ANSI escape codes
+//! - No side effects beyond returning static escape sequences
+//! - Minimal, dependency-free implementation suitable for CLI formatting
+//!
+//! Non-goals:
+//! - Terminal capability probing or feature detection
+//! - Full color system abstraction beyond basic ANSI escape codes
+//! - Cross-platform console API support outside ANSI terminals
 //
-// Module:  ansi 
-// Purpose: <one-sentence purpose of this file/module>
-// Notes:
-//   - <key design constraint or security property>
-//   - <any invariants / assumptions / non-goals>
-//   - <where to look next: related modules or docs>
-//
-
 #[derive(Clone, Copy, Debug)]
 pub enum AnsiColor {
     Red,
