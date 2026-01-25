@@ -1,11 +1,22 @@
 // SPDX-License-Identifier: MIT
-// Copyright (c) 2025 Jamie Adams
+// SPDX-FileCopyrightText: 2026 Jamie Adams
 //
-// Unclassified MLS Reference System Project
+// --
+// SPDX-FileContributor: Name <email> (useful if you want contributors 
+// credited in-file; not required, and many projects avoid it to reduce churn)
+// --
 //
-// Core library with lots of tasty functions to be used by
-// opter tools
+// Unclassified MLS Reference System Project (UMRS)
+// MIT licensed—use, modify, and redistribute per LICENSE.
 //
+// umrs-core: 
+// Purpose: <one-sentence purpose of this file/module>
+// Notes:
+//   - <key design constraint or security property>
+//   - <any invariants / assumptions / non-goals>
+//   - <where to look next: related modules or docs>
+//
+
 use std::path::Path;
 use std::fs;
 use std::io::{self, Read, Write};

@@ -1,0 +1,4 @@
+# UMRS workspace rustfmt config
+# Keep formatting predictable and consistent across crates.
+max_width = 100
+edition = "2021"

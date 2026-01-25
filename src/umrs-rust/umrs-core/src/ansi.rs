@@ -1,4 +1,16 @@
-// umrs_core/src/ansi.rs
+// SPDX-License-Identifier: MIT
+// SPDX-FileCopyrightText: 2026 Jamie Adams
+//
+// Unclassified MLS Reference System Project (UMRS)
+// MIT licensed—use, modify, and redistribute per LICENSE.
+//
+// Module:  ansi 
+// Purpose: <one-sentence purpose of this file/module>
+// Notes:
+//   - <key design constraint or security property>
+//   - <any invariants / assumptions / non-goals>
+//   - <where to look next: related modules or docs>
+//
 
 #[derive(Clone, Copy, Debug)]
 pub enum AnsiColor {

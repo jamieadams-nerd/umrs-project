@@ -1,11 +1,26 @@
 // SPDX-License-Identifier: MIT
-// Copyright (c) 2025 Jamie Adams
+// SPDX-FileCopyrightText: 2026 Jamie Adams
 //
-// Unclassified MLS Reference System Project
+// --
+// SPDX-FileContributor: Name <email> (useful if you want contributors 
+// credited in-file; not required, and many projects avoid it to reduce churn)
+// --
 //
-// Provide pretty, colorized output to standard out and
-// error to really get the operator's attention.
+// Unclassified MLS Reference System Project (UMRS)
+// MIT licensed—use, modify, and redistribute per LICENSE.
 //
+// umrs-core 
+//
+// Purpose: 
+//   Provide pretty, colorized output to standard out and
+//   error to really get the operator's attention.
+//
+// Notes:
+//   - <key design constraint or security property>
+//   - <any invariants / assumptions / non-goals>
+//   - <where to look next: related modules or docs>
+//
+
  use colored::Colorize;
 
  /// Initialize console handling.

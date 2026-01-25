@@ -4,5 +4,5 @@ members = [
     "umrs-core",
     "umrs-state",
     "umrs-logspace",
-    "umrs-labels",
+    "umrs-labels", "umrs-tester",
 ]

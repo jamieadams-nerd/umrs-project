@@ -1,11 +1,18 @@
 // SPDX-License-Identifier: MIT
-// Copyright (c) 2025 Jamie Adams
+// SPDX-FileCopyrightText: 2026 Jamie Adams
 //
-// Unclassified MLS Reference System Project
+// Unclassified MLS Reference System Project (UMRS)
+// MIT licensed—use, modify, and redistribute per LICENSE.
 //
-//  Provide ability to display a message
-//   with a spinner characer to show progress
-//   on the terminal. 
+// spinner: Collection of spinners 
+//
+// Purpose: 
+//   Collection of spinners for "processing prompts..."
+//
+// Notes:
+//   - <key design constraint or security property>
+//   - <any invariants / assumptions / non-goals>
+//   - <where to look next: related modules or docs>
 //
 use std::io::{self, Write};
 use std::sync::{

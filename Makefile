@@ -33,6 +33,13 @@ docs-serve:
 docs-clean:
 	@rm -rf "$(OUT_DIR)"
 
+i18n-mo:
+	mkdir -p resources/i18n/umrs-tester/locale/en_US/LC_MESSAGES
+	mkdir -p resources/i18n/umrs-tester/locale/fr_FR/LC_MESSAGES
+	msgfmt -o resources/i18n/umrs-tester/locale/en_US/LC_MESSAGES/umrs-tester.mo resources/i18n/umrs-tester/en_US.po
+	msgfmt -o resources/i18n/umrs-tester/locale/fr_FR/LC_MESSAGES/umrs-tester.mo resources/i18n/umrs-tester/fr_FR.po
+
+
 clean: docs-clean
 	@rm -rf "$(ANTORA_DIR)/node_modules"
 
