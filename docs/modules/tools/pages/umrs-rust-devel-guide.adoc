@@ -1,0 +1,320 @@
+ust style guide
+
+# UMRS Rust Programming Style & Writing Guide
+
+Version: 0.1 (Draft)
+Scope: All UMRS Rust workspaces, crates, and tools
+Audience: Primary author (you), future contributors, and technical readers
+Goal: Consistency, clarity, maintainability, and long-term audit readiness
+Non-Goal: Bureaucracy or over-specification
+
+—
+
+## 1. Philosophy
+
+The UMRS Rust style guide exists to:
+
+- Provide consistency across all crates and tools
+- Reduce cognitive load for readers and contributors
+- Improve maintainability and diff readability
+- Support high-assurance and audit-ready development
+- Avoid personal-style drift over time
+
+This guide is intentionally:
+
+- Opinionated
+- Lightweight
+- Practical
+- Example-driven
+- Non-draconian
+
+Where rules are not explicitly defined here, follow idiomatic Rust community standards.
+
+—
+
+## 2. Workspace-Level Formatting
+
+### 2.1 Mandatory rustfmt.toml
+
+Every UMRS workspace must include a rustfmt.toml.
+
+This file is the single source of truth for formatting across all crates.
+
+### 2.2 Line Width
+
+All Rust source files should target a maximum line width of ~100 characters.
+
+This is enforced via rustfmt.toml and is chosen to:
+
+- Improve readability
+- Support side-by-side diffs
+- Remain terminal-friendly
+
+### 2.3 rustfmt Is Required
+
+All developers must run rustfmt before committing code.
+
+Recommended:
+
+bash §cargo fmt --all §
+
+Formatting is considered part of build hygiene, not an optional preference.
+
+—
+
+## 3. Required Source File Header
+
+Every Rust source file must begin with the standard UMRS header.
+
+### 3.1 Header Purpose
+
+The header provides:
+
+- SPDX license identification
+- Copyright metadata
+- Author / contributor attribution
+- Documentation tags for traceability
+
+### 3.2 Header Template
+
+rust §// SPDX-License-Identifier: MIT §// Copyright (c) 2026 Jamie Adams §// §// Project: UMRS §// Crate: umrs-logspace §// Module: rotation §// Purpose: Log rotation and archival logic §// §// Author: Jamie Adams §// Contributors: <optional> §// §// Description: §// Implements log rotation policies and ensures integrity §// across active, inactive, and archived pools. §
+
+This header is:
+
+- Required
+- Not decorative
+- Considered part of the documentation contract
+
+—
+
+## 4. use Statement Ordering
+
+All Rust source files must organize imports into three explicit groups in this order:
+
+### 4.1 Group 1 — Standard Library
+
+rust §use std::fs::File; §use std::io::{Read, Write}; §use std::path::PathBuf; §
+
+### 4.2 Group 2 — Third-Party Crates
+
+rust §use chrono::Utc; §use serde::{Deserialize, Serialize}; §use tracing::{debug, info, warn}; §
+
+### 4.3 Group 3 — Local / UMRS Crates
+
+rust §use umrs_core::errors::UmrsError; §use umrs_logspace::rotation::rotate_logs; §
+
+### 4.4 Rules
+
+- Groups must be separated by a blank line
+- No interleaving between groups
+- No ad-hoc ordering
+- Within each group, standard Rust alphabetical ordering applies
+
+—
+
+## 5. Directory Structure
+
+### 5.1 Workspace Layout
+
+All UMRS repositories are multi-crate workspaces.
+
+text §umrs-project/ §├── Cargo.toml          # workspace root §├── crates/ §│   ├── umrs-logspace/ §│   ├── umrs-state/ §│   ├── umrs-cpu-audit/ §│   └── ... §└── docs/ §
+
+### 5.2 Crate Layout
+
+Each UMRS crate must use the following structure:
+
+text §umrs-logspace/ §├── Cargo.toml §├── src/ §│   └── lib.rs §├── tests/ §│   └── rotation_tests.rs §├── examples/ §│   └── rotate_logs.rs §└── <pending-canonical-dir> §
+
+Rules:
+
+- src/
+  - Production Rust source only
+- tests/
+  - All tests live here
+  - No inline #[cfg(test)] modules
+- examples/
+  - Standalone demo programs
+  - Not tests
+  - Not documentation
+- One additional directory is part of the canonical structure
+  - To be finalized later
+  - Treated as reserved
+
+—
+
+## 6. Testing Standards
+
+### 6.1 Tests Must Be Separate
+
+All tests must live in:
+
+- Dedicated test modules
+- Or the tests/ directory
+
+Inline tests inside src/ are not permitted.
+
+### 6.2 No Rust Doc Tests
+
+Rust doc tests are explicitly disallowed.
+
+Do not embed executable code blocks in doc comments.
+
+rust §// ❌ Not allowed §/// rust
+/// let x = do_thing();
+/// assert!(x.is_ok());
+///  §
+
+### 6.3 Documentation Is Narrative, Not Executable
+
+Rust doc comments should:
+
+- Explain intent
+- Describe behavior
+- Document contracts
+- Reference REQ-IDs and TEST-IDs
+
+They should not:
+
+- Contain runnable code
+- Duplicate real tests
+- Act as a test harness
+
+—
+
+## 7. Test Case Documentation
+
+All test functions must include doc comments with structured metadata.
+
+### 7.1 Required Tags
+
+Each test must include:
+
+- TEST-ID
+- REQUIREMENT
+- Optional: COMPLIANCE
+
+### 7.2 Template
+
+rust §/// TEST-ID: UMRS-LOGSPACE-TS-007 §/// REQUIREMENT: UMRS-REQ-LOGSPACE-002 §/// COMPLIANCE: UMRS-REQ-NIST-AU §/// §/// Verifies that log rotation preserves all audit records §/// during abnormal termination. §#[test] §fn test_log_rotation_integrity_crash() { §    // ... §} §
+
+This provides:
+
+- Traceability
+- Audit readiness
+- Grep-friendly coverage mapping
+
+—
+
+## 8. Internationalization (i18n) Coding Rules
+
+### 8.1 i18n Is Opt-In
+
+Not all UMRS tools or crates require internationalization.
+
+Only apply i18n when:
+
+- The tool has interactive user-facing output
+- Localization is functionally justified
+
+### 8.2 Mandatory Use of UMRS Core i18n Module
+
+All internationalization must use:
+
+- The UMRS core i18n module
+
+No ad-hoc frameworks or per-crate i18n systems are allowed.
+
+### 8.3 i18n Assets Live at Repo Top Level
+
+All localization assets live at the top level of the repository.
+
+They must not be placed inside individual crates.
+
+### 8.4 Translation Marking Discipline
+
+Only wrap interactive user-facing strings with tr():
+
+Allowed:
+
+- Prompts
+- Input labels
+- Status messages
+- Short output messages
+
+Not Allowed:
+
+- Long narrative text
+- Documentation paragraphs
+- Operator logs
+- Internal debug strings
+
+Example:
+
+rust §println!("{}", tr("log_rotation_complete")); §
+
+### 8.5 i18n Ops Are Out of Scope Here
+
+This guide does not cover:
+
+- Message extraction
+- Makefile rules
+- Translation workflows
+- Message compilation
+- Runtime language selection
+- i18n testing procedures
+
+Those belong in operations and tooling documentation.
+
+—
+
+## 9. Default to Idiomatic Rust Elsewhere
+
+Outside the explicitly defined UMRS rules:
+
+- Follow idiomatic Rust community standards
+- Rely on:
+  - rustfmt defaults
+  - Clippy guidance
+  - conventional error handling
+- Avoid premature micro-rules
+- Avoid style-lawyering
+- Let real usage drive future refinements
+
+—
+
+## 10. Summary of Non-Negotiable Rules
+
+| Area                    | Rule                                                  |
+|———————––|—————————————————––|
+| Formatting              | rustfmt.toml required per workspace                  |
+| Line width              | ~100 characters max                                  |
+| Formatting tool         | rustfmt is mandatory                                 |
+| File headers            | SPDX + metadata required at top of each file         |
+| use ordering          | std → third-party → local crates                     |
+| Tests                   | Must be in separate files/modules                    |
+| Doc tests               | Not allowed                                          |
+| Examples in docs        | Not allowed                                          |
+| i18n                    | Opt-in only                                          |
+| i18n framework          | UMRS core module only                                |
+| i18n assets             | Repo top level only                                  |
+| Translation marking     | Only interactive strings via tr()                  |
+| Requirements mapping    | TEST-ID + REQ-ID in test doc comments                |
+
+—
+
+## 11. Status
+
+This guide is intentionally minimal and evolutionary.
+
+New rules should only be added when:
+
+- Repeated friction occurs
+- Inconsistencies become visible
+- Tooling or compliance requirements change
+
+The goal is stability, not churn.
+
+—
+
+End of Document

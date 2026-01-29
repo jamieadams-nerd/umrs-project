@@ -27,6 +27,8 @@ pub mod console;
 pub mod i18n;
 pub mod spinner;
 pub mod metricfmt;
+pub mod timed;
+pub mod boxmsg;
 
 #[derive(Debug, Serialize, Deserialize, Default)]
 pub struct UmrsState {
