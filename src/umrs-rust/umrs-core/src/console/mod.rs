@@ -14,8 +14,9 @@
 //! - verbose()
 //! - console_info()
 //! - console_status()   // Pass success/fail type messages
+//! - console_warn()
 //! - console_error()
-//! - console_fatal()
+//! - console_fatal()    // This will result in program halt
 //! - console_event()    // structured, pre-defined event ty pes
 //!
 //! Non-goals:
@@ -148,24 +149,22 @@ macro_rules! console_info {
 /// Use this for non-fatal conditions that may require user attention or
 /// corrective action but do not prevent continued execution.
 ///
-/// # Parameters
-///
-/// - `message`: Human-readable warning text to display.
-///
-/// # Behavior
-///
-/// - Formats the message using the standard warning style.
-/// - Emits the message to standard error.
-///
-/// # Side Effects
-///
-/// - Writes to stderr.
-///
-/// # Panics
-///
-/// This function does not intentionally panic.
-pub fn warn(message: &str) {
-    eprintln!("{} {}", "[WARN]".yellow().bold(), message);
+#[macro_export]
+#[allow(unused)]
+macro_rules! console_warn {
+    ($fmt:expr $(, $arg:tt)*) => {
+        if $crate::console::stderr_is_tty() {
+            eprintln!(
+                concat!("\x1b[31mWarning:\x1b[0m ", $fmt)
+                $(, $arg)*
+            );
+         } else {
+            eprintln!(
+                concat!("Warning: ", $fmt)
+                $(, $arg)*
+            );
+         }
+    };
 }
 
 // ==================================================================
@@ -177,22 +176,6 @@ pub fn warn(message: &str) {
 /// has failed and that further progress may not be possible without
 /// intervention.
 ///
-/// # Parameters
-///
-/// - `message`: Human-readable error text to display.
-///
-/// # Behavior
-///
-/// - Formats the message using the standard error style.
-/// - Emits the message to standard error.
-///
-/// # Side Effects
-///
-/// - Writes to stderr.
-///
-/// # Panics
-///
-/// This function does not intentionally panic.
 #[macro_export]
 #[allow(unused)]
 macro_rules! console_error {
@@ -221,22 +204,8 @@ macro_rules! console_error {
 ///
 /// # Parameters
 ///
-/// - `label`: Short human-readable label describing the operation being reported.
 /// - `ok`: Boolean status flag indicating success (`true`) or failure (`false`).
-///
-/// # Behavior
-///
-/// - Formats the label and status indicator using the standard status style.
-/// - Emits a success-style output if `ok` is `true`.
-/// - Emits an error-style output if `ok` is `false`.
-///
-/// # Side Effects
-///
-/// - Writes to stdout or stderr depending on the status value.
-///
-/// # Panics
-///
-/// This function does not intentionally panic.
+/// - `label`: Short human-readable label describing the operation being reported.
 ///
 #[macro_export]
 #[allow(unused)]
@@ -264,6 +233,7 @@ macro_rules! console_status {
 
 // ==================================================================
 //   FATAL Event - Will display message and end the program
+//     - Using this will result in program halt!
 // ==================================================================
 #[macro_export]
 #[allow(unused)]
@@ -344,6 +314,7 @@ impl<'a> ConsoleEvent<'a> {
     fn render(&self) -> String {
         match self {
             ConsoleEvent::BeginTask { name } => format!("BEGIN - {}", name),
+
             ConsoleEvent::EndTask { name } => format!("END   - {}", name),
 
             ConsoleEvent::OpenFile { path } => format!("Opening file {}", path),
