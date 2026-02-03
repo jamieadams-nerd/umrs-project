@@ -52,7 +52,6 @@ const FALLBACK_DOMAIN: &str = "umrs";
 /// This function does not intentionally panic.  
 /// Failures to locate or load locale data are handled internally and result
 /// in fallback behavior rather than process termination.
-
 pub fn init(domain: &'static str) {
     let _ = DOMAIN.set(domain);
 
@@ -98,7 +97,6 @@ pub fn init(domain: &'static str) {
 /// This function does not intentionally panic.  
 /// All lookup failures and uninitialized-state conditions are handled
 /// gracefully via fallback behavior.
-
 pub fn tr(msgid: &str) -> String {
     let dom = *DOMAIN.get().unwrap_or(&FALLBACK_DOMAIN);
 

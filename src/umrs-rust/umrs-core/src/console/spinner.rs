@@ -26,7 +26,6 @@ use std::time::Duration;
 
 use crate::console::ansi::AnsiColor;
 
-
 /// Positioning mode for spinner animation relative to its associated message.
 ///
 /// Determines whether the spinner glyph appears before or after the
@@ -37,13 +36,11 @@ pub enum SpinnerPosition {
     Suffix,
 }
 
-
 impl Default for SpinnerPosition {
     fn default() -> Self {
         SpinnerPosition::Prefix
     }
 }
-
 
 /// Visual animation style for spinner rendering.
 ///
@@ -121,12 +118,10 @@ impl SpinnerStyle {
     }
 }
 
-
 /// Configuration options for customizing spinner behavior and appearance.
 ///
 /// All fields are optional. Any field not explicitly set will fall back
 /// to the corresponding default behavior defined by the spinner subsystem.
-#[derive(Clone, Debug)]
 pub struct SpinnerOptions {
     /// Optional animation style override for the spinner.
     ///
@@ -171,7 +166,6 @@ impl Default for SpinnerOptions {
         }
     }
 }
-
 
 /// Active spinner instance managing an in-progress terminal animation.
 ///

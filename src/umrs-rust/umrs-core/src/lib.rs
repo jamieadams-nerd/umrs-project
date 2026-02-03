@@ -23,6 +23,7 @@ use serde::{Deserialize, Serialize};
 
 // Local modules
 pub mod console;
+pub mod prelude;
 pub mod i18n;
 pub mod metricfmt;
 pub mod timed_result;

@@ -1,4 +1,29 @@
-# UMRS workspace rustfmt config
-# Keep formatting predictable and consistent across crates.
-max_width = 100
+# ------------------------------------------------------------
+# rustfmt configuration (stable, portable)
+# ------------------------------------------------------------
+
 edition = "2021"
+
+# Line width
+max_width = 100
+
+# Indentation
+tab_spaces = 4
+hard_tabs = false
+
+# Imports
+reorder_imports = true
+#group_imports = "StdExternalCrate"
+
+# Formatting behavior
+newline_style = "Unix"
+use_small_heuristics = "Default"
+
+# Comments & docs
+#wrap_comments = false
+#format_code_in_doc_comments = false
+
+# Structs and enums
+#struct_lit_single_line = false
+#enum_discrim_align_threshold = 20
+

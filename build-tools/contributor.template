@@ -1,0 +1,31 @@
+Canonical style (neutral, professional, UMRS-aligned)
+
+At the top of the file or above the relevant block:
+
+// SPDX-License-Identifier: MIT
+//
+// Portions of this file were contributed by:
+//   Jane Doe <jane@example.org>
+//   - Initial x86_64 CPUID parsing logic
+//   - IFUNC detection improvements
+//
+// See CONTRIBUTORS.md for full contributor acknowledgments.
+
+Or for a localized contribution:
+
+// NOTE:
+//   The virtualization detection heuristics below were contributed by
+//   Alex Smith <alex@security.example>
+//   (commit 3f7a2c9, 2026-02-14)
+//
+//   Rationale: Detect masked CPU features in KVM/Parallels guests.
+
+Key rules (so it doesn’t get messy):
+	•	Do not add an attribution comment for tiny typo fixes
+	•	Do not add “thank you!” style fluff in code
+	•	Do not embed legal terms in these comments
+	•	Always:
+	•	Name
+	•	Email or handle
+	•	What they contributed
+	•	(Optional but excellent) commit hash

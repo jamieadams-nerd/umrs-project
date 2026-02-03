@@ -28,11 +28,7 @@ impl BoxStyle {
 }
 
 pub fn box_lines(lines: &[String], padding: usize, style: &BoxStyle) -> String {
-    let max_width = lines
-        .iter()
-        .map(|l| l.chars().count())
-        .max()
-        .unwrap_or(0);
+    let max_width = lines.iter().map(|l| l.chars().count()).max().unwrap_or(0);
 
     let inner_width = max_width + padding * 2;
     let top = format!(
@@ -72,4 +68,3 @@ pub fn box_lines(lines: &[String], padding: usize, style: &BoxStyle) -> String {
 
     out.join("\n")
 }
-
