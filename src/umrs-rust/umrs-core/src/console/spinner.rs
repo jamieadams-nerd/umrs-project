@@ -30,33 +30,23 @@ use crate::console::ansi::AnsiColor;
 ///
 /// Determines whether the spinner glyph appears before or after the
 /// accompanying text label during rendering.
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default)]
 pub enum SpinnerPosition {
+    #[default]
     Prefix,
     Suffix,
-}
-
-impl Default for SpinnerPosition {
-    fn default() -> Self {
-        SpinnerPosition::Prefix
-    }
 }
 
 /// Visual animation style for spinner rendering.
 ///
 /// Each style defines a fixed sequence of Unicode frames used to convey
 /// activity or progress in a terminal-friendly manner.
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default)]
 pub enum SpinnerStyle {
+    #[default]
     Line,
     Dots,
     Arrow,
-}
-
-impl Default for SpinnerStyle {
-    fn default() -> Self {
-        SpinnerStyle::Line
-    }
 }
 
 impl SpinnerStyle {
@@ -122,6 +112,7 @@ impl SpinnerStyle {
 ///
 /// All fields are optional. Any field not explicitly set will fall back
 /// to the corresponding default behavior defined by the spinner subsystem.
+#[derive(Default)]
 pub struct SpinnerOptions {
     /// Optional animation style override for the spinner.
     ///
@@ -152,19 +143,6 @@ pub struct SpinnerOptions {
     ///
     /// If `None`, the default frame delay will be used.
     pub frame_delay_ms: Option<u64>,
-}
-
-impl Default for SpinnerOptions {
-    fn default() -> Self {
-        SpinnerOptions {
-            style: None,
-            position: None,
-            final_marker: None,
-            spinner_color: None,
-            message_color: None,
-            frame_delay_ms: None,
-        }
-    }
 }
 
 /// Active spinner instance managing an in-progress terminal animation.

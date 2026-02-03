@@ -60,7 +60,7 @@ pub fn save_state(path: &Path, state: &UmrsState) -> io::Result<()> {
     {
         let mut file = fs::File::create(&tmp_path)?;
         let data = serde_json::to_string_pretty(state)
-            .map_err(|e| io::Error::new(io::ErrorKind::Other, e))?;
+            .map_err(io::Error::other)?;
         file.write_all(data.as_bytes())?;
         file.sync_all()?;
     }
