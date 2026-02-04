@@ -29,6 +29,7 @@ pub mod metricfmt;
 pub mod prelude;
 pub mod sizefmt;
 pub mod timed_result;
+pub mod robots;
 
 #[derive(Debug, Serialize, Deserialize, Default)]
 pub struct UmrsState {
