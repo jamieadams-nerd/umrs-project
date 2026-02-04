@@ -12,6 +12,7 @@ use std::process::ExitCode;
 
 // 3) local crates (my workspace)
 use umrs_core::console;
+use umrs_core::prelude::*;
 use umrs_core::metricfmt::{
     auto_format, auto_format_with_options, format_in_prefix, FormatOptions, FormatWarning,
     PrefixStyle, SIPrefix,
@@ -38,20 +39,20 @@ fn main() -> ExitCode {
     assert_eq!(w3, None);
 
     let msg = format!("t1 auto: {}s  {:?}", s1.replace(" ", ""), w1);
-    console::success(&msg);
+    //console::success(&msg);
 
     let msg = format!("t2 auto: {}s  {:?}", s2.replace(" ", ""), w2);
-    console::success(&msg);
+    //console::success(&msg);
 
     let msg = format!("t3 auto: {}s  {:?}", s3.replace(" ", ""), w3);
-    console::success(&msg);
+    //console::success(&msg);
 
 
     println!("\nExample 2 — Auto-scaling with full-text prefixes");
     let v = 0.0000023_f64; // volts
     let (s, _, _) = auto_format(v, PrefixStyle::FullText);
     let final_str = format!("{} volts", s.trim());
-    console::success(&final_str);
+    //console::success(&final_str);
 
     println!("\nExample 3 — Forced prefix (and detecting precision loss)");
     let t = 0.000000000001234_f64; // 1.234 picoseconds
@@ -60,13 +61,13 @@ fn main() -> ExitCode {
     let (s2, w2) = format_in_prefix(t, SIPrefix::Milli, PrefixStyle::AbbrevAscii);
 
     let msg = format!("Forced pico: {}s  {:?}", s1.replace(" ", ""), w1);
-    console::success(&msg);
+    //console::success(&msg);
 
     let msg = format!("Forced milli: {}s {:?}", s2.replace(" ", ""), w2);
-    console::success(&msg);
+    //console::success(&msg);
 
     if w2 == Some(FormatWarning::PrecisionLoss) {
-        console::warn("Forced scale too coarse; value lost at display precision");
+        //console::warn("Forced scale too coarse; value lost at display precision");
     }
 
     println!("\nExample 4 — Using custom formatting options");
@@ -80,7 +81,7 @@ fn main() -> ExitCode {
 
     let (s, _, _) = auto_format_with_options(v, PrefixStyle::AbbrevAscii, &opts);
     let final_str = format!("{}Hz", s.replace(" ", ""));
-    console::success(&final_str);
+    //console::success(&final_str);
 
     println!("\nExample 5 — Voltage, frequency, and arbitrary domains (unit-agnostic)");
     let freq = 0.000045_f64; // Hz
@@ -92,13 +93,13 @@ fn main() -> ExitCode {
     let (d_s, _, _) = auto_format(dist, PrefixStyle::AbbrevAscii);
 
     let msg = format!("Frequency: {}Hz", f_s.replace(" ", ""));
-    console::success(&msg);
+    //console::success(&msg);
 
     let msg = format!("Voltage:   {}V", v_s.replace(" ", ""));
-    console::success(&msg);
+    //console::success(&msg);
 
     let msg = format!("Distance:  {}m", d_s.replace(" ", ""));
-    console::success(&msg);
+    //console::success(&msg);
 
     ExitCode::SUCCESS
 }

@@ -94,11 +94,11 @@ macro_rules! verbose {
         if $crate::console::VERBOSE.load(std::sync::atomic::Ordering::Relaxed) {
             if $crate::console::stderr_is_tty() {
                eprintln!(
-                   concat!("\x1b[36m\u{21E2}\x1b[0m ", $fmt)
+                   concat!("", $fmt)
                    $(, $arg)*
                );
             } else {
-                eprintln!(concat!("\u{21E2} ", $fmt) $(, $arg)*);
+                eprintln!(concat!("", $fmt) $(, $arg)*);
             }
         }
     };
@@ -127,14 +127,21 @@ macro_rules! verbose {
 #[allow(unused)]
 macro_rules! console_info {
     ($fmt:expr $(, $arg:expr)*) => {{
-        let prefix = "  Info: ";
+        // Options information 'i' is \u{2139} but it would to overwhelming
+        // if several information messages appeared in sequence. But they 
+        // could use verbose most of the time and then an info occassionally.
+        //let prefix = "\u{2139} Info: ";
+        //let prefix = "\u{202F} Info: "; // Halfspace
+        //
+        let prefix = "INFO:";
 
         if $crate::console::stdout_is_tty() {
             // ANSI on tty
             use ::colored::Colorize;
 
+            // Left align and padd to 8
             let msg = format!(
-                "{:10} {}",
+                "{:>8} {}",
                 prefix,
                 format!($fmt $(, $arg)*)
             );
@@ -171,14 +178,17 @@ macro_rules! console_info {
 #[allow(unused)]
 macro_rules! console_warn {
     ($fmt:expr $(, $arg:expr)*) => {{
-        let prefix = "  Warning: ";
+        //let prefix = "\u{26A0} Warning: ";
+        // let prefix = "\u{202F} Warning: "; // Halfspace
+        // Leave trailing space off, format will do it below.
+        let prefix = "WARN:"; 
 
         if $crate::console::stdout_is_tty() {
             // ANSI on tty
             use ::colored::Colorize;
 
             let msg = format!(
-                "{:10} {}",
+                "{:>8} {}",
                 prefix,
                 format!($fmt $(, $arg)*)
             );
@@ -215,14 +225,19 @@ macro_rules! console_warn {
 #[allow(unused)]
 macro_rules! console_error {
     ($fmt:expr $(, $arg:expr)*) => {{
-        let prefix = "  Error: ";
+        // \u{1F6D1} is a giant, red, filled octagon -- it's awkward. 
+        // \u{270B} is a raised hand as if to stay "stop" 
+        // \u{13020} Egyptian hieroglyph - Man raising hands
+        //let prefix = "\u{13020} Error: ";
+        // Don't put trailing space.. format will do it below
+        let prefix = "ERROR:";
 
         if $crate::console::stdout_is_tty() {
             // ANSI on tty
             use ::colored::Colorize;
 
             let msg = format!(
-                "{:10} {}",
+                " {:>7} {}",
                 prefix,
                 format!($fmt $(, $arg)*)
             );
@@ -259,25 +274,46 @@ macro_rules! console_error {
 /// - `ok`: Boolean status flag indicating success (`true`) or failure (`false`).
 /// - `label`: Short human-readable label describing the operation being reported.
 ///
+
 #[macro_export]
+#[allow(unused)]
 #[allow(unused)]
 macro_rules! console_status {
     ($ok:expr, $fmt:expr $(, $arg:expr)*) => {{
+        // \u{2705} and \u{274E) are BIG green boxes with checkmark and X
+        // \u{2714} and \u{2715) are small, plain checkmark and X
         let prefix = if $ok {
-            "  [Success] "
+            "\u{2714}"
         } else {
-            "  [Failure] "
+            "\u{2715}"
         };
 
         if $crate::console::stdout_is_tty() {
-            println!(
-                concat!("\x1b[36m\u{21E2}\x1b[0m ", "{}"),
-                format!(concat!("{}", $fmt), prefix $(, $arg)*)
+            // ANSI on tty
+            use ::colored::Colorize;
+
+            // The ^ will center the symbol inside of 7 spaces
+            // the < > will left and right align
+            let msg = format!(
+                "{:>4} {}",
+                prefix,
+                format!($fmt $(, $arg)*)
             );
+            println!("{}", msg);
+
+            // Colorize just the PREFIX
+            // println!(
+            //     "{} {}", 
+            //     prefix.cyan().bold(),
+            //     format!($fmt $(, $arg)*)
+            // );
+            //
         } else {
+            // plain text off-tty
             println!(
-                "{}",
-                format!(concat!("{}", $fmt), prefix $(, $arg)*)
+                concat!("{} ", $fmt),
+                prefix,
+                $( $arg ),*
             );
         }
     }};
@@ -348,15 +384,16 @@ pub enum ConsoleEvent<'a> {
     BeginTask { name: &'a str },
     EndTask { name: &'a str },
 
-    OpenFile { path: &'a str },
-    CloseFile { path: &'a str },
+    FileOpen { path: &'a str },
+    FileClose { path: &'a str },
 
-    ReadFile { path: &'a str },
-    WriteFile { path: &'a str },
+    DataReading { path: &'a str },
+    DataRead { path: &'a str },
+    DataWrite { path: &'a str },
+    DataWrote { path: &'a str },
 
-    // Misc. Stuff
-    UsingCache { key: &'a str },
-    Skipped { reason: &'a str },
+    // Single Events
+    FileNotFound { path: &'a str },
 }
 
 impl<'a> ConsoleEvent<'a> {
@@ -365,18 +402,25 @@ impl<'a> ConsoleEvent<'a> {
     /// Private: this is presentation logic, not API.
     fn render(&self) -> String {
         match self {
-            ConsoleEvent::BeginTask { name } => format!("BEGIN - {}", name),
+            // Common Paired Events
+            ConsoleEvent::BeginTask { name } => format!("\u{27E6}  Begin. {}", name),
+            ConsoleEvent::EndTask { name } => format!("\u{27E7}  End. {}", name),
 
-            ConsoleEvent::EndTask { name } => format!("END   - {}", name),
+            ConsoleEvent::FileOpen { path } => format!("\u{1F5C0}  Opening {}", path),
+            ConsoleEvent::FileClose { path } => format!("\u{2394}  Closing {}", path),
 
-            ConsoleEvent::OpenFile { path } => format!("Opening file {}", path),
-            ConsoleEvent::CloseFile { path } => format!("Closing file {}", path),
+            ConsoleEvent::DataRead { path } => format!("\u{26C1}  Read {}", path),
+            ConsoleEvent::DataReading { path } => format!("\u{26C1}  Reading {}", path),
 
-            ConsoleEvent::ReadFile { path } => format!("Reading file {}", path),
-            ConsoleEvent::WriteFile { path } => format!("Writing file {}", path),
+            ConsoleEvent::DataWrite { path } => format!("\u{26C3}  Writing {}", path),
+            ConsoleEvent::DataWrote { path } => format!("\u{26C3}  Wrote {}", path),
 
-            ConsoleEvent::UsingCache { key } => format!("Using cached result ({})", key),
-            ConsoleEvent::Skipped { reason } => format!("Skipped: {}", reason),
+            // Common Single events
+            ConsoleEvent::FileNotFound { path } => format!("\u{2715}  Not found: {}", path),
+
+
+            // Common Single events
+
         }
     }
 }
@@ -387,5 +431,5 @@ impl<'a> ConsoleEvent<'a> {
 #[allow(unused)]
 pub fn __console_emit(event: ConsoleEvent<'_>) {
     let message = event.render();
-    verbose!("{}", message);
+    verbose!("  {}", message);
 }
