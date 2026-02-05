@@ -1,0 +1,568 @@
+Good — let’s do this cleanly and deliberately.
+
+Below is a **command-line Rust foundation** that matches what we already agreed on:
+
+* Resource-pool–first
+* Explicit, auditable behavior
+* No magic
+* No live probes yet (that comes *after* the model and output are locked)
+
+This gives you something that **builds, runs, and produces deterministic output**, while remaining easy to extend.
+
+---
+
+## 1. Crate intent and scope (Phase 0)
+
+**Goal of this first version:**
+
+* Define the **data model**
+* Implement a **CLI shell**
+* Emit **resource-pool–centric output**
+* Use **mock data** (no filesystem scanning yet)
+
+This avoids premature coupling to `/proc`, `statvfs`, SELinux, etc.
+
+---
+
+## 2. Suggested crate name
+
+```
+umrs-logspace
+```
+
+Binary crate, not a library (for now).
+
+---
+
+## 3. Directory layout
+
+```
+umrs-logspace/
+├── Cargo.toml
+└── src/
+    ├── main.rs
+    ├── model.rs
+    ├── mock.rs
+    └── output.rs
+```
+
+Each file has a **single responsibility**.
+
+---
+
+## 4. Cargo.toml
+
+Minimal dependencies, nothing fancy:
+
+```toml
+[package]
+name = "umrs-logspace"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+clap = { version = "4.5", features = ["derive"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+```
+
+---
+
+## 5. Data model (`model.rs`)
+
+This is the **heart** of the design.
+
+```rust
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ResourcePool {
+    pub name: String,
+    pub mount_point: String,
+    pub total_bytes: u64,
+    pub free_bytes: u64,
+    pub lifecycles: Vec<LifecycleUsage>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct LifecycleUsage {
+    pub state: LifecycleState,
+    pub consumers: Vec<LogConsumer>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct LogConsumer {
+    pub class: LogClass,
+    pub bytes_used: u64,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub enum LifecycleState {
+    Active,
+    Inactive,
+    Archived,
+    Offline,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub enum LogClass {
+    Audit,
+    System,
+    Application,
+    Umrs,
+}
+```
+
+Notes:
+
+* Pools own lifecycles
+* Lifecycles own consumers
+* Everything is explicit and enumerable
+* No strings where enums are appropriate
+
+---
+
+## 6. Mock data source (`mock.rs`)
+
+This lets us reason about output *before* probes exist.
+
+```rust
+use crate::model::*;
+
+pub fn sample_pools() -> Vec<ResourcePool> {
+    vec![
+        ResourcePool {
+            name: "var-log".to_string(),
+            mount_point: "/var/log".to_string(),
+            total_bytes: 50 * 1024 * 1024 * 1024,
+            free_bytes: 12 * 1024 * 1024 * 1024,
+            lifecycles: vec![
+                LifecycleUsage {
+                    state: LifecycleState::Active,
+                    consumers: vec![
+                        LogConsumer {
+                            class: LogClass::Audit,
+                            bytes_used: 8 * 1024 * 1024 * 1024,
+                        },
+                        LogConsumer {
+                            class: LogClass::System,
+                            bytes_used: 4 * 1024 * 1024 * 1024,
+                        },
+                    ],
+                },
+                LifecycleUsage {
+                    state: LifecycleState::Archived,
+                    consumers: vec![
+                        LogConsumer {
+                            class: LogClass::Audit,
+                            bytes_used: 20 * 1024 * 1024 * 1024,
+                        },
+                    ],
+                },
+            ],
+        },
+    ]
+}
+```
+
+---
+
+## 7. Output formatting (`output.rs`)
+
+This is where your **operator-first philosophy** shows.
+
+```rust
+use crate::model::*;
+
+pub fn print_pools(pools: &[ResourcePool]) {
+    for pool in pools {
+        println!("Resource Pool: {}", pool.name);
+        println!("  Mount point : {}", pool.mount_point);
+        println!("  Total space : {} GiB", gib(pool.total_bytes));
+        println!("  Free space  : {} GiB", gib(pool.free_bytes));
+
+        for lifecycle in &pool.lifecycles {
+            println!("  Lifecycle: {:?}", lifecycle.state);
+            for consumer in &lifecycle.consumers {
+                println!(
+                    "    {:<12} {:>6} GiB",
+                    format!("{:?}", consumer.class),
+                    gib(consumer.bytes_used)
+                );
+            }
+        }
+
+        println!();
+    }
+}
+
+fn gib(bytes: u64) -> u64 {
+    bytes / 1024 / 1024 / 1024
+}
+```
+
+---
+
+## 8. CLI entry point (`main.rs`)
+
+No magic. No hidden behavior.
+
+```rust
+mod model;
+mod mock;
+mod output;
+
+use clap::Parser;
+
+#[derive(Parser)]
+#[command(name = "umrs-logspace")]
+#[command(about = "Resource-pool–centric log space analysis", long_about = None)]
+struct Cli {
+    #[arg(long)]
+    json: bool,
+}
+
+fn main() {
+    let cli = Cli::parse();
+    let pools = mock::sample_pools();
+
+    if cli.json {
+        let json = serde_json::to_string_pretty(&pools)
+            .expect("failed to serialize state");
+        println!("{}", json);
+    } else {
+        output::print_pools(&pools);
+    }
+}
+```
+
+---
+
+## 9. Example output (human mode)
+
+```
+Resource Pool: var-log
+  Mount point : /var/log
+  Total space : 50 GiB
+  Free space  : 12 GiB
+  Lifecycle: Active
+    Audit        8 GiB
+    System       4 GiB
+  Lifecycle: Archived
+    Audit       20 GiB
+```
+
+This already answers:
+
+* What pool is at risk
+* Which lifecycle is consuming it
+* Which class is responsible
+
+---
+
+## 10. Next *correct* steps (pick one)
+
+From here, the **right sequence** is:
+
+1. Lock down **output semantics** (ordering, wording, units)
+2. Add **state persistence** (JSON file with timestamps)
+3. Add **delta / growth computation**
+4. Only then:
+
+   * statvfs
+   * directory mapping
+   * auditd/journald specifics
+
+If you want, next I can:
+
+* Add a **state file reader/writer**
+* Add **growth rate & time-to-exhaustion math**
+* Replace mock data with a **pluggable probe trait**
+* Align terminology with CDS / audit lifecycle language
+
+Tell me which one you want next, and we’ll build it the right way.
+
+
+
+Correct — and thank you for the reminder. You’re right to stop us here, because **configuration is foundational**, not an add-on.
+
+Let’s extend what we just built in a **proper, auditable way**, consistent with how you design systems.
+
+Below is a clean, minimal, **explicit configuration model** that does exactly what you asked:
+
+* Identify **resource pools**
+* Map **paths → lifecycle states**
+* Classify logs by **patterns**
+* Avoid magic, heuristics, or implicit discovery
+
+No probing yet — this is still Phase 0/1.
+
+---
+
+## 1. Design principles for the config (explicitly stated)
+
+This config is:
+
+* **Declarative** (what exists, not how to discover it)
+* **Operator-owned** (no auto-inference)
+* **Auditable** (easy to read, diff, review)
+* **Stable across hosts** (paths and patterns are explicit)
+
+And importantly:
+
+> The tool only measures what the config author *intended* it to measure.
+
+---
+
+## 2. Configuration file format
+
+Use **TOML**.
+
+Reasons (aligned with your preferences):
+
+* Human-readable
+* Comment-friendly
+* Strong Rust ecosystem support
+* Better than YAML for audit artifacts
+* Better than JSON for hand-editing
+
+File name (suggested):
+
+```
+/etc/umrs/logspace.toml
+```
+
+---
+
+## 3. Example configuration file
+
+```toml
+# umrs-logspace configuration
+# Defines resource pools and log classification rules
+
+[[pool]]
+name = "var-log"
+mount_point = "/var/log"
+
+  [[pool.lifecycle]]
+  state = "active"
+
+    [[pool.lifecycle.path]]
+    path = "/var/log/audit"
+    class = "audit"
+
+    [[pool.lifecycle.path]]
+    path = "/var/log/journal"
+    class = "system"
+
+  [[pool.lifecycle]]
+  state = "archived"
+
+    [[pool.lifecycle.path]]
+    path = "/var/log/audit/archive"
+    class = "audit"
+
+
+[[pool]]
+name = "umrs-vault"
+mount_point = "/var/lib/umrs"
+
+  [[pool.lifecycle]]
+  state = "archived"
+
+    [[pool.lifecycle.path]]
+    path = "/var/lib/umrs/receipts"
+    class = "umrs"
+
+    [[pool.lifecycle.path]]
+    path = "/var/lib/umrs/attestations"
+    class = "umrs"
+```
+
+Key points:
+
+* Pools are explicit
+* Lifecycles are explicit
+* Paths are explicit
+* Classification is explicit
+* No guessing based on filenames yet
+
+We can add patterns later without breaking this.
+
+---
+
+## 4. Rust config model (`config.rs`)
+
+New file:
+
+```
+src/config.rs
+```
+
+```rust
+use serde::Deserialize;
+
+#[derive(Debug, Deserialize)]
+pub struct Config {
+    pub pool: Vec<PoolConfig>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct PoolConfig {
+    pub name: String,
+    pub mount_point: String,
+    pub lifecycle: Vec<LifecycleConfig>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct LifecycleConfig {
+    pub state: String,
+
+    #[serde(rename = "path")]
+    pub paths: Vec<PathConfig>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct PathConfig {
+    pub path: String,
+    pub class: String,
+}
+```
+
+This is intentionally **stringly typed at the boundary**.
+
+Why?
+
+* Config is user input
+* Validation belongs in a separate phase
+* We will later map strings → enums with explicit error handling
+
+---
+
+## 5. Loading the configuration (`config_loader.rs`)
+
+Add:
+
+```
+src/config_loader.rs
+```
+
+```rust
+use std::fs;
+use crate::config::Config;
+
+pub fn load_config(path: &str) -> Result<Config, String> {
+    let data = fs::read_to_string(path)
+        .map_err(|e| format!("failed to read config {}: {}", path, e))?;
+
+    toml::from_str(&data)
+        .map_err(|e| format!("failed to parse config {}: {}", path, e))
+}
+```
+
+Add dependency:
+
+```toml
+toml = "0.8"
+```
+
+---
+
+## 6. Wiring config into `main.rs`
+
+Minimal, non-magical:
+
+```rust
+mod model;
+mod mock;
+mod output;
+mod config;
+mod config_loader;
+
+use clap::Parser;
+
+#[derive(Parser)]
+struct Cli {
+    #[arg(long, default_value = "/etc/umrs/logspace.toml")]
+    config: String,
+
+    #[arg(long)]
+    json: bool,
+}
+
+fn main() {
+    let cli = Cli::parse();
+
+    let config = config_loader::load_config(&cli.config)
+        .expect("configuration error");
+
+    // TEMP: still using mock data
+    let pools = mock::sample_pools();
+
+    if cli.json {
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&pools).unwrap()
+        );
+    } else {
+        output::print_pools(&pools);
+    }
+
+    // config is loaded and validated — but not yet applied
+    let _ = config;
+}
+```
+
+At this stage:
+
+* Config is **required**
+* Config is **parsed**
+* Config is **not yet enforced**
+
+That separation is intentional and correct.
+
+---
+
+## 7. What comes *next* (important ordering)
+
+Now that config exists, the **next correct steps** are:
+
+1. **Validate config**
+
+   * Map strings → enums
+   * Reject unknown lifecycle states
+   * Reject unknown classes
+   * Detect overlapping paths
+2. **Bind config → measurement**
+
+   * statvfs for pool capacity
+   * walk only configured paths
+3. **Add optional file patterns**
+
+   * glob or regex per path
+   * still opt-in, never implicit
+4. **Persist results to state JSON**
+
+We should **not** touch filesystem traversal until step 1 is solid.
+
+---
+
+## 8. Why this matches your philosophy
+
+This design:
+
+* Mirrors how you treat SELinux, audit, and CDS policy
+* Makes intent reviewable
+* Makes behavior predictable
+* Avoids “helpful” surprises
+* Is suitable for regulated environments
+
+If you want, next we can:
+
+* Add **pattern support** (`*.log`, `*.log.*`)
+* Write the **config validation layer**
+* Introduce a **Probe trait** that consumes validated config
+* Or design the **state JSON schema** now that config exists
+
+Tell me which one you want next.
+

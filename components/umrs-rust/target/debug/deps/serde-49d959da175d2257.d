@@ -1,0 +1,14 @@
+/home/jadams/Development/umrs-project/components/umrs-rust/target/debug/deps/serde-49d959da175d2257.d: /home/jadams/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs /home/jadams/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs /home/jadams/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs /home/jadams/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs /home/jadams/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs /home/jadams/Development/umrs-project/components/umrs-rust/target/debug/build/serde-0dfd11ac31f88d2b/out/private.rs
+
+/home/jadams/Development/umrs-project/components/umrs-rust/target/debug/deps/libserde-49d959da175d2257.rlib: /home/jadams/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs /home/jadams/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs /home/jadams/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs /home/jadams/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs /home/jadams/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs /home/jadams/Development/umrs-project/components/umrs-rust/target/debug/build/serde-0dfd11ac31f88d2b/out/private.rs
+
+/home/jadams/Development/umrs-project/components/umrs-rust/target/debug/deps/libserde-49d959da175d2257.rmeta: /home/jadams/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs /home/jadams/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs /home/jadams/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs /home/jadams/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs /home/jadams/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs /home/jadams/Development/umrs-project/components/umrs-rust/target/debug/build/serde-0dfd11ac31f88d2b/out/private.rs
+
+/home/jadams/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs:
+/home/jadams/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs:
+/home/jadams/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs:
+/home/jadams/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs:
+/home/jadams/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs:
+/home/jadams/Development/umrs-project/components/umrs-rust/target/debug/build/serde-0dfd11ac31f88d2b/out/private.rs:
+
+# env-dep:OUT_DIR=/home/jadams/Development/umrs-project/components/umrs-rust/target/debug/build/serde-0dfd11ac31f88d2b/out

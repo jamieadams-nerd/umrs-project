@@ -1,8 +1,0 @@
-[package]
-name = "console-tests"
-version = "0.1.0"
-edition = "2024"
-
-[dependencies]
-umrs-core = { path = "../umrs-core" }
-colored = "2"

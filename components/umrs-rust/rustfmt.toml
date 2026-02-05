@@ -1,0 +1,34 @@
+# ------------------------------------------------------------
+# rustfmt configuration (stable, portable)
+# ------------------------------------------------------------
+
+edition = "2021"
+style_edition = "2024"
+
+# Line width
+max_width = 80
+use_small_heuristics = "Off"
+fn_call_width = 60
+#match_arm_blocks = true
+#imports_layout = "Vertical"
+
+# Indentation
+tab_spaces = 4
+hard_tabs = false
+
+# Imports
+reorder_imports = true
+#group_imports = "StdExternalCrate"
+
+# Formatting behavior
+newline_style = "Unix"
+#use_small_heuristics = "Default"
+
+# Comments & docs
+#wrap_comments = false
+#format_code_in_doc_comments = false
+
+# Structs and enums
+#struct_lit_single_line = false
+#enum_discrim_align_threshold = 20
+

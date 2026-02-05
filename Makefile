@@ -11,9 +11,11 @@ help:
 	  "Targets:" \
 	  "  make tools       Install Antora tooling (npm ci)" \
 	  "  make docs        Build the Antora site into $(OUT_DIR)" \
-	  "  make docs-serve   Serve $(OUT_DIR) locally on http://127.0.0.1:8000" \
-	  "  make docs-clean   Remove generated site output" \
-	  "  make clean        docs-clean + remove node_modules"
+	  "  make docs-serve  Serve $(OUT_DIR) locally on http://127.0.0.1:8000" \
+	  "  make docs-clean  Remove generated site output" \
+	  "  make clean       docs-clean + remove node_modules" \
+	  "  make i18n-setup  Setup i18n directory structure" \
+	  "  make i18n-build  Build i18n message objects "
 
 tools:
 	@test -f "$(ANTORA_DIR)/package.json" || (echo "Missing $(ANTORA_DIR)/package.json" >&2; exit 1)

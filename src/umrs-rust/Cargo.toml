@@ -1,8 +1,0 @@
-[workspace]
-resolver = "2"
-members = [
-    "umrs-core",
-    "umrs-state",
-    "umrs-logspace",
-    "umrs-labels", "umrs-tester", "console-tests", "umrs-robotgen", 
-]

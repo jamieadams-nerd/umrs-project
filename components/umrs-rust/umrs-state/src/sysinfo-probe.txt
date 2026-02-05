@@ -1,0 +1,72 @@
+Rust systeminfo 
+
+Here’s a small, self-contained example using the sysinfo crate that you could adapt into umrs-state for the system_metadata section.
+
+It:
+	•	Creates a System object
+	•	Refreshes system info
+	•	Prints some values you probably care about (hostname, OS info, uptime, memory, load averages)
+
+You can drop the same logic into an update_system_metadata() function later.
+
+Cargo.toml (minimal example)
+
+§[package]
+§name = “sysinfo_demo”
+§version = “0.1.0”
+§edition = “2021”
+§
+§[dependencies]
+§sysinfo = “0.30”
+
+main.rs
+
+§use sysinfo::System;
+§
+§fn main() {
+§    // Create a System and load “everything” once.
+§    let mut sys = System::new_all();
+§    sys.refresh_all();
+§
+§    // Hostname (if available)
+§    let hostname = sys
+§        .host_name()
+§        .unwrap_or_else(|| “”.to_string());
+§
+§    // OS name/version (if available)
+§    let os_name = sys
+§        .name()
+§        .unwrap_or_else(|| “”.to_string());
+§    let os_version = sys
+§        .os_version()
+§        .unwrap_or_else(|| “”.to_string());
+§
+§    // Uptime in seconds
+§    let uptime_secs = sys.uptime();
+§
+§    // Memory (values are in KiB)
+§    let total_mem_kib = sys.total_memory();
+§    let used_mem_kib = sys.used_memory();
+§
+§    // Load averages (1, 5, 15 minutes)
+§    let load = sys.load_average();
+§
+§    println!(“Hostname         : {}”, hostname);
+§    println!(“OS               : {} {}”, os_name, os_version);
+§    println!(“Uptime (seconds) : {}”, uptime_secs);
+§    println!(“Total memory KiB : {}”, total_mem_kib);
+§    println!(“Used  memory KiB : {}”, used_mem_kib);
+§    println!(
+§        “Load averages    : 1min = {:.2}, 5min = {:.2}, 15min = {:.2}”,
+§        load.one, load.five, load.fifteen
+§    );
+§}
+
+Notes for umrs-state:
+	•	This exact block can become your “live probe” for system_metadata.* fields.
+	•	In umrs-state, instead of println!, you’d:
+	•	Build a struct representing system_metadata
+	•	Serialize it into your JSON state file
+	•	Update last_checked timestamps the way we discussed
+
+If you’d like, next step I can wrap this into a small helper function (e.g. gather_system_metadata() returning a struct) that matches your umrs-state.json layout.

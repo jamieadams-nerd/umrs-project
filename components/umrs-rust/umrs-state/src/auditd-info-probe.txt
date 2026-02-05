@@ -1,0 +1,663 @@
+Rust audits info
+
+Running auditctl from inside your Rust umrs-state binary is perfectly reasonable, as long as we’re careful about how we do it:
+	•	We call it with a fixed, absolute path (/sbin/auditctl or /usr/sbin/auditctl, depending on RHEL10).
+	•	We never pass untrusted user input to it (only fixed flags like -s, -l).
+	•	We treat it as read-only interrogation (no rules or config changes).
+
+That’s effectively the same as an admin typing auditctl -s by hand, just wrapped in Rust.
+
+Below I’ll do two things for you in one go:
+	1.	Show a small Rust module that runs auditctl -s and parses key fields an auditor cares about.
+	2.	Also show a small helper using sysinfo that you can fold into umrs-state later for system-metadata checks.
+
+All code lines are prefixed with the section symbol so you can paste cleanly.
+
+⸻
+
+	1.	Rust helper to query auditctl -s
+
+⸻
+
+This assumes:
+	•	You can reach auditctl at /sbin/auditctl. If on your RHEL10 build it lives at /usr/sbin/auditctl, just change the constant.
+	•	You’ll eventually call this from inside umrs-state’s update logic to refresh the auditd section of your JSON state.
+
+Save this as src/audit.rs in the umrs-state project:
+
+§use std::process::Command;
+§use std::str;
+§
+§#[derive(Debug)]
+§pub struct AuditStatus {
+§    pub enabled: Option,
+§    pub failure_flag: Option,
+§    pub pid: Option,
+§    pub backlog_limit: Option,
+§    pub backlog_current: Option,
+§}
+§
+§fn parse_u32(value: &str) -> Option {
+§    value.trim().parse::().ok()
+§}
+§
+§pub fn get_audit_status() -> Result<AuditStatus, String> {
+§    // Adjust path if your RHEL10 layout uses /usr/sbin/auditctl instead
+§    const AUDITCTL_PATH: &str = “/sbin/auditctl”;
+§
+§    let output = Command::new(AUDITCTL_PATH)
+§        .arg(”-s”)
+§        .output()
+§        .map_err(|e| format!(“Failed to execute auditctl: {e}”))?;
+§
+§    if !output.status.success() {
+§        let stderr = String::from_utf8_lossy(&output.stderr);
+§        return Err(format!(“auditctl -s failed: {stderr}”));
+§    }
+§
+§    let stdout = String::from_utf8_lossy(&output.stdout);
+§
+§    let mut status = AuditStatus {
+§        enabled: None,
+§        failure_flag: None,
+§        pid: None,
+§        backlog_limit: None,
+§        backlog_current: None,
+§    };
+§
+§    for line in stdout.lines() {
+§        // Typical lines look like:
+§        // “enabled 1”
+§        // “failure 1”
+§        // “pid 1234”
+§        // “backlog_limit 8192”
+§        // “backlog 0”
+§        let mut parts = line.split_whitespace();
+§        if let Some(key) = parts.next() {
+§            if let Some(val) = parts.next() {
+§                match key {
+§                    “enabled” => status.enabled = parse_u32(val),
+§                    “failure” => status.failure_flag = parse_u32(val),
+§                    “pid” => status.pid = parse_u32(val),
+§                    “backlog_limit” => status.backlog_limit = parse_u32(val),
+§                    “backlog” => status.backlog_current = parse_u32(val),
+§                    _ => {}
+§                }
+§            }
+§        }
+§    }
+§
+§    Ok(status)
+§}
+
+And here’s a small example of how you might call it from your existing main.rs (or whatever your CLI entry point is). This is just illustrative; you’ll eventually plug it into your update or verify subcommand:
+
+§mod audit;
+§
+§fn main() {
+§    match audit::get_audit_status() {
+§        Ok(status) => {
+§            println!(“Audit status:”);
+§            if let Some(enabled) = status.enabled {
+§                println!(”  enabled: {enabled}”);
+§            }
+§            if let Some(failure) = status.failure_flag {
+§                println!(”  failure flag: {failure}”);
+§            }
+§            if let Some(pid) = status.pid {
+§                println!(”  pid: {pid}”);
+§            }
+§            if let Some(limit) = status.backlog_limit {
+§                println!(”  backlog_limit: {limit}”);
+§            }
+§            if let Some(cur) = status.backlog_current {
+§                println!(”  backlog: {cur}”);
+§            }
+§        }
+§        Err(e) => {
+§            eprintln!(“Error querying audit status: {e}”);
+§        }
+§    }
+§}
+
+Once this works, the natural next step is to have get_audit_status() return a serde_json::Value or a small struct that you plug directly into your umrs-state JSON file under something like auditd.status.
+
+Security-wise, this is okay because:
+	•	Path is constant and under your control.
+	•	No user-supplied arguments are passed.
+	•	It’s read-only interrogation.
+
+If you ever let users choose extra flags or paths, that’s where you’d need to tighten things up.
+
+⸻
+
+	2.	Short sysinfo example you can fold into umrs-state
+
+⸻
+
+Earlier you asked for a sysinfo example. Here’s a small helper that gathers some high-level system info you might want in system_metadata (total memory, used memory, CPU count, hostname).
+
+You’ll need in your Cargo.toml something like:
+
+§[dependencies]
+§sysinfo = “0.30”
+
+Then in src/sys_meta.rs:
+
+§use sysinfo::{System, SystemExt};
+§
+§#[derive(Debug)]
+§pub struct BasicSysInfo {
+§    pub hostname: Option,
+§    pub total_memory_kib: u64,
+§    pub used_memory_kib: u64,
+§    pub cpu_count: usize,
+§}
+§
+§pub fn get_basic_sysinfo() -> BasicSysInfo {
+§    let mut sys = System::new();
+§    sys.refresh_memory();
+§    sys.refresh_cpu();
+§    sys.refresh_system();
+§
+§    let hostname = sys.host_name();
+§    let total_memory_kib = sys.total_memory();
+§    let used_memory_kib = sys.used_memory();
+§    let cpu_count = sys.cpus().len();
+§
+§    BasicSysInfo {
+§        hostname,
+§        total_memory_kib,
+§        used_memory_kib,
+§        cpu_count,
+§    }
+§}
+
+And a tiny example call from main.rs:
+
+§mod sys_meta;
+§
+§fn main() {
+§    let info = sys_meta::get_basic_sysinfo();
+§    println!(“System info:”);
+§    println!(”  hostname: {:?}”, info.hostname);
+§    println!(”  total memory (KiB): {}”, info.total_memory_kib);
+§    println!(”  used  memory (KiB): {}”, info.used_memory_kib);
+§    println!(”  cpu count: {}”, info.cpu_count);
+§}
+
+You can later map this into fields in umrs-state.json under system_metadata.* and keep your CLI semantics (get/update/verify) exactly as we already outlined.
+
+If you’d like, next step I can show you how to wire get_audit_status() directly into the existing umrs-state JSON update logic you already have, so it stores something like:
+	•	auditd.enabled
+	•	auditd.failure_flag
+	•	auditd.backlog_limit
+	•	auditd.backlog_current
+
+with timestamps and sources.
+
+Right, I see where the confusion is coming from. When I kept saying src/, I meant “the src directory inside each individual crate,” not under the top-level workspace.
+
+Let me lay it out concretely.
+	1.	Workspace layout (UMRSS project)
+
+Imagine your top-level directory is something like:
+
+UMRSS/              (workspace root)
+Cargo.toml        (workspace definition)
+umrs-core/        (library crate, shared helpers later)
+Cargo.toml
+src/
+lib.rs
+umrs-state/       (binary crate for umrs-state)
+Cargo.toml
+src/
+main.rs
+system_info.rs
+audit_status.rs
+
+The important bit: src/ is per crate. There is no single global src for the entire workspace.
+	2.	Where the sysinfo and audit functions live
+
+Since you explicitly said:
+
+“I want them to simply be incorporated into the state binary”
+
+the simplest structure is:
+	•	Put system-level info helpers (using sysinfo crate, etc.) into:
+umrs-state/src/system_info.rs
+	•	Put auditctl / audit status helpers into:
+umrs-state/src/audit_status.rs
+
+Then main.rs in umrs-state just uses those modules.
+
+If, later, you decide some of this should be shared by other binaries, we can move the relevant pieces into umrs-core/src/lib.rs and expose them as functions in the library. But for now we keep it all inside umrs-state to keep your mental model clean.
+	3.	Concrete example: umrs-state crate layout and wiring
+
+Directory:
+
+UMRSS/
+umrs-state/
+Cargo.toml
+src/
+main.rs
+system_info.rs
+audit_status.rs
+
+Example main.rs skeleton using those modules:
+
+§use std::process;
+§
+§mod system_info;
+§mod audit_status;
+§
+§fn main() {
+§    // Here you would parse CLI args for umrs-state (get, set, update, verify, etc.)
+§    // For now we’ll just demonstrate calling the helper functions.
+§
+§    if let Err(e) = run() {
+§        eprintln!(“umrs-state error: {e}”);
+§        process::exit(1);
+§    }
+§}
+§
+§fn run() -> Result<(), Box> {
+§    // Example: query system info via sysinfo helper
+§    let si = system_info::collect_basic_system_info();
+§    println!(“Hostname: {}”, si.hostname.unwrap_or_else(|| “”.to_string()));
+§    println!(“Total memory (bytes): {}”, si.total_memory_bytes);
+§
+§    // Example: query audit status via audit_status helper
+§    let audit = audit_status::get_audit_status()?;
+§    println!(“Audit enabled: {}”, audit.enabled);
+§    println!(“Audit locked: {}”, audit.locked);
+§    println!(“Backlog limit: {}”, audit.backlog_limit);
+§    println!(“Backlog: {}”, audit.backlog);
+§
+§    Ok(())
+§}
+
+Example system_info.rs (in umrs-state/src/system_info.rs) using sysinfo crate:
+
+§use sysinfo::{System, SystemExt};
+§
+§pub struct BasicSystemInfo {
+§    pub hostname: Option,
+§    pub total_memory_bytes: u64,
+§}
+§
+§pub fn collect_basic_system_info() -> BasicSystemInfo {
+§    let mut sys = System::new();
+§    sys.refresh_memory();
+§    sys.refresh_system();
+§
+§    let hostname = sys.host_name();
+§    let total_memory_bytes = sys.total_memory();
+§
+§    BasicSystemInfo {
+§        hostname,
+§        total_memory_bytes,
+§    }
+§}
+
+Example audit_status.rs (in umrs-state/src/audit_status.rs) that shells out to auditctl (for now), but wrapped cleanly:
+
+§use std::process::Command;
+§use std::str;
+§
+§#[derive(Debug)]
+§pub struct AuditStatus {
+§    pub enabled: bool,
+§    pub locked: bool,
+§    pub backlog_limit: u32,
+§    pub backlog: u32,
+§}
+§
+§pub fn get_audit_status() -> Result<AuditStatus, Box> {
+§    // We call auditctl -s and parse the output.
+§    // In production we might want to make the path configurable or verify the binary.
+§    let output = Command::new(“auditctl”)
+§        .arg(”-s”)
+§        .output()?;
+§
+§    if !output.status.success() {
+§        return Err(format!(“auditctl -s failed with status {}”, output.status).into());
+§    }
+§
+§    let stdout = str::from_utf8(&output.stdout)?;
+§
+§    let mut enabled = false;
+§    let mut locked = false;
+§    let mut backlog_limit: u32 = 0;
+§    let mut backlog: u32 = 0;
+§
+§    for line in stdout.lines() {
+§        let line = line.trim();
+§        if line.starts_with(“enabled”) {
+§            if let Some(val) = line.split_whitespace().nth(1) {
+§                enabled = val == “1”;
+§            }
+§        } else if line.starts_with(“locked”) {
+§            if let Some(val) = line.split_whitespace().nth(1) {
+§                locked = val == “1”;
+§            }
+§        } else if line.starts_with(“backlog_limit”) {
+§            if let Some(val) = line.split_whitespace().nth(1) {
+§                if let Ok(n) = val.parse::() {
+§                    backlog_limit = n;
+§                }
+§            }
+§        } else if line.starts_with(“backlog”) {
+§            // Be careful not to confuse backlog with backlog_limit if the
+§            // auditctl output format varies. This assumes separate lines.
+§            if let Some(val) = line.split_whitespace().nth(1) {
+§                if let Ok(n) = val.parse::() {
+§                    backlog = n;
+§                }
+§            }
+§        }
+§    }
+§
+§    Ok(AuditStatus {
+§        enabled,
+§        locked,
+§        backlog_limit,
+§        backlog,
+§    })
+§}
+
+This keeps everything you asked:
+	•	sysinfo usage is inside umrs-state/src/system_info.rs
+	•	auditctl interrogation is inside umrs-state/src/audit_status.rs
+	•	umrs-state/src/main.rs just imports those modules and calls them.
+
+If later you decide, “I want these helpers available to other binaries too,” we can refactor:
+	•	Move system_info.rs and audit_status.rs into umrs-core/src/ (or into a submodule inside lib.rs),
+	•	Export them from the umrs-core library,
+	•	Update umrs-state to use umrs-core::system_info::… etc.
+
+But for now, with your mental model:
+
+UMRSS workspace
+umrs-state crate
+src/main.rs    → CLI + high-level flow
+src/system_info.rs  → Rust sysinfo helpers
+src/audit_status.rs → Rust wrapper around auditctl
+
+everything lives in umrs-state, and src/ always refers to “src directory of that crate.”
+
+If you’d like, next step we can integrate these helpers into the existing umrs-state CLI you already have (with get/set/update/verify and the JSON state file), so they start populating or verifying audit/system metadata in that state file.
+
+Absolutely — this is a good catch, and you’re right: the flat, left-justified tree makes it hard to reason about.
+
+Here is the same structure, shown as a visually indented tree, with clear ownership of what lives where.
+
+────────────────────────────────────────
+UMRS PROJECT DIRECTORY STRUCTURE
+────────────────────────────────────────
+
+UMRSS/
+├── Cargo.toml                (workspace root – defines members)
+│
+├── umrs-core/                (shared Rust library crate)
+│   ├── Cargo.toml
+│   └── src/
+│       └── lib.rs             (shared helpers — empty or minimal for now)
+│
+└── umrs-state/               (Rust binary crate)
+├── Cargo.toml
+└── src/
+├── main.rs            (CLI entry point for umrs-state)
+│
+├── system_info.rs     (uses sysinfo crate — system metadata)
+│
+└── audit_status.rs    (calls auditctl -s — audit subsystem state)
+
+────────────────────────────────────────
+HOW TO READ THIS
+────────────────────────────────────────
+
+• Every crate has its own src/ directory
+• src/ is always relative to the crate — never global
+• The workspace root has no src/ directory
+
+So when you see:
+
+umrs-state/src/system_info.rs
+
+that means:
+
+workspace root
+→ umrs-state directory
+→ src directory
+→ system_info.rs file
+
+────────────────────────────────────────
+MENTAL MODEL (very important)
+────────────────────────────────────────
+
+Think in layers:
+	1.	UMRSS/
+“This is the overall project umbrella”
+	2.	umrs-core/
+“Reusable Rust library — shared code later”
+	3.	umrs-state/
+“This is the actual executable I run”
+	4.	umrs-state/src/
+“Source code only for umrs-state”
+	5.	Modules inside src/
+	•	main.rs = program entry
+	•	system_info.rs = sysinfo logic
+	•	audit_status.rs = audit inspection logic
+
+────────────────────────────────────────
+WHY THIS STRUCTURE IS CORRECT
+────────────────────────────────────────
+
+• Rust expects exactly one binary entry per crate
+• Support code lives beside main.rs as modules
+• Easy to reason about, easy to audit
+• Matches how Red Hat packages Rust projects
+• Clean path for later refactoring into umrs-core
+
+────────────────────────────────────────
+OPTIONAL FUTURE REFACTOR (NOT YET)
+────────────────────────────────────────
+
+Later, if you decide audit_status.rs is useful elsewhere:
+
+UMRSS/
+├── umrs-core/
+│   └── src/
+│       ├── lib.rs
+│       └── audit.rs
+│
+└── umrs-state/
+└── src/
+└── main.rs            (now uses umrs_core::audit)
+
+But for now — keep everything in umrs-state. That keeps the design simple and avoids premature abstraction.
+
+If you want, next we can:
+• wire audit_status + system_info directly into the UMRS state JSON update flow
+• or sketch the update audit vs verify audit commands cleanly
+
+You’re in a really good place architecturally — this is exactly how a serious tooling project starts.
+
+You’re right to worry about paths here – moving to a workspace does change how Cargo.toml needs to look. Let’s nail down the directory layout and then I’ll give you clean, consistent Cargo.toml files for everything.
+
+FIRST: DIRECTORY LAYOUT (WITH INDENTATION)
+
+This is what I’ve been assuming for the UMRS Rust workspace:
+
+UMRS/
+Cargo.toml               (workspace root)
+umrs-core/
+Cargo.toml             (library crate)
+src/
+lib.rs
+umrs-state/
+Cargo.toml             (binary crate)
+src/
+main.rs
+audit.rs             (optional helper module for auditd checks)
+sysinfo.rs           (optional helper module for system info)
+
+Everything below assumes that exact structure.
+
+SECOND: ROOT WORKSPACE CARGO.TOML (UMRS/Cargo.toml)
+
+This file defines the workspace and does NOT build anything itself.
+
+§[workspace]
+§members = [
+§    “umrs-core”,
+§    “umrs-state”,
+§]
+
+You can add workspace-wide [workspace.dependencies] later if you want to share versions, but this is enough to make the workspace work.
+
+THIRD: umrs-core/Cargo.toml (LIBRARY CRATE)
+
+This is the shared library crate. Right now I’ll keep dependencies minimal and generic; you can expand as you decide what “core” really owns.
+
+Path: UMRS/umrs-core/Cargo.toml
+
+§[package]
+§name = “umrs-core”
+§version = “0.1.0”
+§edition = “2021”
+
+§[dependencies]
+§serde = { version = “1”, features = [“derive”] }
+§serde_json = “1”
+§thiserror = “1”
+§anyhow = “1”
+
+You can leave umrs-core::lib.rs almost empty at first:
+
+Path: UMRS/umrs-core/src/lib.rs
+
+§pub mod placeholder {
+§    pub fn hello() {
+§        println!(“umrs-core loaded”);
+§    }
+§}
+
+FOURTH: umrs-state/Cargo.toml (BINARY CRATE USING umrs-core)
+
+This crate builds the UMRS-state CLI binary and depends on umrs-core via a path dependency.
+
+Path: UMRS/umrs-state/Cargo.toml
+
+§[package]
+§name = “umrs-state”
+§version = “0.1.0”
+§edition = “2021”
+
+§[dependencies]
+§umrs-core = { path = “../umrs-core” }
+§clap = { version = “4”, features = [“derive”] }
+§serde = { version = “1”, features = [“derive”] }
+§serde_json = “1”
+§anyhow = “1”
+§log = “0.4”
+§syslog = “6”
+§chrono = { version = “0.4”, features = [“clock”] }
+
+If you later decide to add audit-related crates or others, they go under [dependencies] here as well.
+
+FIFTH: WHERE THE STATE/AUDIT/SYSINFO CODE GOES
+
+Given what you said (“I want them simply to be incorporated into the state binary”), the simplest and least confusing arrangement is:
+	•	Put the main CLI logic in:
+UMRS/umrs-state/src/main.rs
+	•	Put helper modules for state-file handling, sysinfo queries, and auditd checks in:
+UMRS/umrs-state/src/state_file.rs
+UMRS/umrs-state/src/sysinfo.rs
+UMRS/umrs-state/src/audit.rs
+
+Then main.rs just uses them:
+
+Path: UMRS/umrs-state/src/main.rs (very minimal example shell)
+
+§mod state_file;
+§mod sysinfo;
+§mod audit;
+
+§use clap::{Parser, Subcommand};
+
+§#[derive(Parser)]
+§#[command(name = “umrs-state”)]
+§#[command(about = “UMRS system state utility”, long_about = None)]
+§struct Cli {
+§    /// Optional override for the state JSON file path
+§    #[arg(long = “state-file”)]
+§    state_file: Option,
+§
+§    #[command(subcommand)]
+§    command: Commands,
+§}
+
+§#[derive(Subcommand)]
+§enum Commands {
+§    /// Get a value from the state file
+§    Get {
+§        key: String,
+§    },
+§    /// Set a value in the state file (static metadata)
+§    Set {
+§        key: String,
+§        value: String,
+§    },
+§    /// Show summary including audit/system info
+§    Summary,
+§}
+
+§fn main() -> anyhow::Result<()> {
+§    let cli = Cli::parse();
+§
+§    // Decide which state file we are using (default or override)
+§    let state_path = cli
+§        .state_file
+§        .unwrap_or_else(|| “/var/lib/umrs/umrs-state.json”.to_string());
+§
+§    match cli.command {
+§        Commands::Get { key } => {
+§            state_file::cmd_get(&state_path, &key)?;
+§        }
+§        Commands::Set { key, value } => {
+§            state_file::cmd_set(&state_path, &key, &value)?;
+§        }
+§        Commands::Summary => {
+§            sysinfo::print_system_summary()?;
+§            audit::print_audit_summary()?;
+§        }
+§    }
+§
+§    Ok(())
+§}
+
+You don’t need umrs-core for this to compile, but the dependency is there so you can start moving shared pieces into that library when you’re ready (for example, state-file schema types, common error types, etc.).
+
+SIXTH: ABOUT “BROKEN PATHS”
+
+With the layout above:
+	•	The root workspace Cargo.toml refers to:
+“umrs-core” and “umrs-state”
+which must be directories directly under the workspace root (UMRS/).
+	•	umrs-state’s Cargo.toml has:
+umrs-core = { path = “../umrs-core” }
+From UMRS/umrs-state, “../umrs-core” resolves to:
+UMRS/umrs-core
+which matches the tree.
+
+If you keep exactly this directory structure and these Cargo.toml snippets, Cargo will find everything without complaining about paths.
+
+If you paste any previous Cargo.toml I gave you into this new structure, the only thing that would be “broken” is if:
+	•	[workspace] members referred to wrong names, or
+	•	umrs-core path dependencies didn’t match ../umrs-core.
+
+The versions of crates won’t break path resolution; they’re independent.
+
+If you’d like, you can paste your current three Cargo.toml files into a new message and I’ll normalize them to match this exact layout, but if you overwrite them with the ones above you should be in good shape.
