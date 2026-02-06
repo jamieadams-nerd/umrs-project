@@ -23,12 +23,12 @@ label_lookup() {
     echo "Label lookup.... "
     echo "-----------------------"
 
-jq -r --arg k "$label" '
-  .markings[$k] |
-  { key: $k, name: .name }
-' $JSON
+    jq -r --arg k "$label" '
+    .markings[$k] |
+        { key: $k, name: .name }
+        ' $JSON
 
-}
+    }
 
 get_raw_level() {
     local label="$1"
