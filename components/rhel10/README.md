@@ -37,7 +37,31 @@ For development systems:
 
 
   
-* UMRS MLS
+## Controlled Unclassified Labels
+Now, we can install the translation strings for the sensitivity level and categories assigned
+to files and directories. In targeted policy, this have no impact to security. No enforcement 
+is done based on the assignments. They are simply installed to idnetify the CUI assigned to the
+file or directory.
+
+In the future, when operating in MLS policy, they will be related to enforcement. But for now, do
+not worry.
+
+First make a copy of the system's translation configuration, by copying the 
+/etc/selinux/targeted/setrans.conf file to some place safe.
+
+Next, copy the rhel10/components/targeted/setrans.conf-TARGETED to the 
+/etc/selinux/targeted/setrans.conf. Now, restart the mcstrans service.
+
+```
+sudo systemctl restart mcstrans
+sudo systemctl status mcstrans
+```
+
+Now, context levels and categories can be assigned to files and directories. 
+
+
+
+
   * Update the setrans.conf
   * Install the umrs-mls-labels.json
   * Install the umrs-mls-state.json
