@@ -680,6 +680,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "umrs-selinux"
+version = "0.1.0"
+
+[[package]]
+name = "umrs-semanage"
+version = "0.1.0"
+
+[[package]]
+name = "umrs-sepolicy"
+version = "0.1.0"
+
+[[package]]
 name = "umrs-state"
 version = "0.1.0"
 dependencies = [

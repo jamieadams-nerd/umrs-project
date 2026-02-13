@@ -4,7 +4,7 @@ members = [
     "cui-labels", 
     "robotgen", 
     "umrs-core",
-    "umrs-logspace",
+    "umrs-logspace", "umrs-selinux", "umrs-semanage", "umrs-sepolicy",
     "umrs-state",
     "vaultmgr", 
     "xtask", 
