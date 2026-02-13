@@ -1,0 +1,50 @@
+{
+  "handling_groups": {
+    "CUI-BASE": {
+      "inherits": [],
+      "source": {
+        "authority": "Federal Regulation",
+        "document": "32 CFR Part 2002",
+        "sections": [
+          "§2002.12 - CUI Program Requirements",
+          "§2002.14 - Safeguarding: core protection and handling controls",
+          "§2002.15 - Acessing and Disseminating: Covers loawful government purpose, sharing limits etc.",
+          "§2002.16 - Marking: Definese marking requirements",
+          "§2002.18 - Decontrolling: Covers removal of CUI status."
+        ]
+      },
+      "restrictions": [
+        {
+          "id": "CUI-HND-001",
+          "text": "Must be safeguarded from unauthorized access and shared only with authorized personnel who have a lawful government purpose.",
+          "category": "access_control",
+          "nist_controls": []
+        },
+        {
+          "id": "CUI-HND-002",
+          "text": "Requires access control and proper dissemination markings.",
+          "category": "marking",
+          "nist_controls": []
+        },
+        {
+          "id": "CUI-HND-003",
+          "text": "Must not be posted publicly.",
+          "category": "dissemination",
+          "nist_controls": []
+        },
+        {
+          "id": "CUI-HND-004",
+          "text": "No encryption requirement beyond standard organizational policy.",
+          "category": "encryption",
+          "nist_controls": []
+        }
+      ]
+    },
+    "AGR-GROUP": {
+      "inherits": [
+        "CUI-BASE"
+      ],
+      "restrictions": []
+    }
+  }
+}

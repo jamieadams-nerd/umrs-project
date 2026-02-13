@@ -1,0 +1,54 @@
+{
+  "labels": {
+    "GENERAL": {
+      "name": "General",
+      "level": "s0",
+      "description": "The broad general unclassified level suitable for anything openly unclassified, routine, not requiring special controls.",
+      "handling": "No special handling requirements. Standard system access controls apply."
+    },
+    "U-PUBLIC": {
+      "name": "Unclassified Public",
+      "level": "s1",
+      "description": "Intended for material that is still unclassified but suitable for public dissemination, documentation, public website assets, etc."
+    },
+    "U-INTERNAL": {
+      "name": "Unclassified Internal",
+      "level": "s2",
+      "description": "Organizational level unclassified information. Internal-use unclassified information that is still above the purely  sensitive level. This covers items where integrity matters more strongly (engineering docs, config examples, internal processes)."
+    },
+    "CUI": {
+      "name": "Controlled Unclassified Information",
+      "level": "s3",
+      "description": "Information requiring safeguarding or dissemination controls under U.S. law, regulation, or government policy. This is the base CUI level to which specific categories may be attached.",
+      "handling": "Mark clearly as CUI. Enforce access restrictions. Use approved storage, transport, and encryption. Ensure auditing and accountability."
+    }
+  },
+  "markings": {
+    "CUI": {
+      "name": "Controlled Unclassified Information",
+      "abbrv_name": "CUI",
+      "parent_group": "",
+      "description": "Baseline Controlled Unclassified Information. Represents information subject to safeguarding or dissemination controls per law, regulation, or policy.",
+      "handling": "Must be stored, transmitted, and shared only with authorized users. Must be encrypted when leaving controlled environments. Apply CUI markings.",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//AGR": {
+      "name": "Agriculture",
+      "abbrv_name": "AGR",
+      "description": "Information related to agriculture, farming, livestock, food production, and agricultural chemicals requiring controlled handling.",
+      "parent_group": "CUI",
+      "palette_ref": "agriculture_green",
+      "handling_group_id": "",
+      "other": {}
+    },
+    "CUI//AGR/AMNT": {
+      "name": "Ammonium Nitrate",
+      "abbrv_name": "AMNT",
+      "description": "Information related to the manufacture, storage, distribution, or use of ammonium nitrate, including safety and regulatory data.",
+      "parent_group": "AGR",
+      "handling_group_id": "",
+      "other": {}
+    }
+  }
+}

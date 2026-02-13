@@ -31,6 +31,7 @@ pub mod prelude;
 pub mod robots;
 pub mod selinux;
 pub mod timed_result;
+pub mod validate;
 
 #[derive(Debug, Serialize, Deserialize, Default)]
 pub struct UmrsState {

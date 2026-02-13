@@ -27,10 +27,11 @@
     "CUI": {
       "name": "Controlled Unclassified Information",
       "abbrv_name": "CUI",
-      "parent_group": "",
       "description": "Baseline Controlled Unclassified Information. Represents information subject to safeguarding or dissemination controls per law, regulation, or policy.",
+      "parent_group": "",
       "handling": "Must be stored, transmitted, and shared only with authorized users. Must be encrypted when leaving controlled environments. Apply CUI markings.",
-      "handling_group_id": "",
+      "handling_restrictions": "Must be safeguarded from unauthorized access and shared only with authorized personnel who have a lawful government purpose. Requires access control and proper dissemination markings. Must not be posted publicly. No encryption requirement beyond standard organizational policy.",
+      "handling_group_id": "CUI-BASE",
       "other": {}
     },
     "CUI//AGR": {
@@ -38,7 +39,8 @@
       "abbrv_name": "AGR",
       "description": "Information related to agriculture, farming, livestock, food production, and agricultural chemicals requiring controlled handling.",
       "parent_group": "CUI",
-      "handling_group_id": "",
+      "palette_ref": "agriculture_green",
+      "handling_group_id": "AGR-GROUP",
       "other": {}
     },
     "CUI//AGR/AMNT": {
@@ -46,7 +48,7 @@
       "abbrv_name": "AMNT",
       "description": "Information related to the manufacture, storage, distribution, or use of ammonium nitrate, including safety and regulatory data.",
       "parent_group": "AGR",
-      "handling_group_id": "",
+      "handling_group_id": "AGR-GROUP",
       "other": {}
     },
     "CUI//AGR/CHEM": {
@@ -54,15 +56,16 @@
       "abbrv_name": "CHEM",
       "description": "Information related to agricultural chemicals such as pesticides, herbicides, fertilizers, and their regulated use.",
       "parent_group": "AGR",
-      "handling_group_id": "",
+      "handling_group_id": "AGR-GROUP",
       "other": {}
     },
     "CUI//AGR/PCI": {
       "name": "Pesticide Control Information",
       "abbrv_name": "PCI",
-      "description": "",
+      "description": "Information concerning pesticide regulation, application controls, environmental impact data, and restricted chemical handling guidance.",
       "parent_group": "AGR",
-      "handling_group_id": "",
+      "palette_ref": "",
+      "handling_group_id": "AGR-GROUP",
       "other": {}
     },
     "CUI//CRIT": {
@@ -70,7 +73,7 @@
       "abbrv_name": "CRIT",
       "description": "Information related to the protection, operation, or vulnerability of critical infrastructure systems and assets.",
       "parent_group": "CUI",
-      "handling_group_id": "",
+      "handling_group_id": "CUI-BASE",
       "other": {}
     },
     "CUI//CRIT/CEII": {
@@ -82,7 +85,7 @@
       "other": {}
     },
     "CUI//CRIT/DCRIT": {
-      "name": "DoD Critical Infrastructure",
+      "name": "DoD Critical
       "abbrv_name": "DCRIT",
       "description": "Information concerning Department of Defense critical infrastructure, including facilities, systems, and supporting assets.",
       "parent_group": "CRIT",
@@ -148,16 +151,19 @@
     "CUI//FNC": {
       "name": "General Financial Information",
       "abbrv_name": "FNC",
-      "description": "Financial information requiring protection, including regulated financial records and compliance-related data.",
+      "description": "Financially sensitive information, including transactional, operational, or proprietary financial details protected under regulatory frameworks.",
       "parent_group": "CUI",
+      "palette_ref": "",
+      "handling_restrictions": "Requires restricted access, protection from tampering, and integrity-preserving storage. Often requires audit logging and controlled dissemination"
       "handling_group_id": "",
       "other": {}
     },
     "CUI//FNC/BSA": {
       "name": "Bank Secrecy Act Information",
       "abbrv_name": "BSA",
-      "description": "",
+      "description": "Financial records and reporting governed by the Bank Secrecy Act, including anti-money-laundering filings, suspicious activity reports, and regulatory disclosures.",
       "parent_group": "FNC",
+      "palette_ref": "",
       "handling_group_id": "",
       "other": {}
     },
@@ -172,7 +178,7 @@
     "CUI//GOVT/BUDG": {
       "name": "Budget Information",
       "abbrv_name": "BUDG",
-      "description": "",
+      "description": "Non-public budget planning, allocation, and fiscal strategy information related to government funding and appropriations.",
       "parent_group": "GOVT",
       "handling_group_id": "",
       "other": {}
@@ -180,7 +186,7 @@
     "CUI//GOVT/PROC": {
       "name": "Government Procurement",
       "abbrv_name": "PROC",
-      "description": "",
+      "description": "nternal procurement planning, acquisition strategy, and pre-award sourcing information requiring controlled dissemination.",
       "parent_group": "GOVT",
       "handling_group_id": "",
       "other": {}
@@ -188,7 +194,7 @@
     "CUI//GOVT/RECS": {
       "name": "Federal Records Information",
       "abbrv_name": "RECS",
-      "description": "",
+      "description": "Federal records subject to records management controls, retention schedules, and restricted archival handling.",
       "parent_group": "GOVT",
       "handling_group_id": "",
       "other": {}
@@ -214,13 +220,14 @@
       "abbrv_name": "LEI",
       "description": "Information related to law enforcement activities, investigations, operations, and sensitive records.",
       "parent_group": "CUI",
+      "palette_ref": "police_blue",
       "handling_group_id": "",
       "other": {}
     },
     "CUI//LEI/AIV": {
       "name": "Accident Investigation",
       "abbrv_name": "AIV",
-      "description": "Accident Investigation",
+      "description": "Investigative records, forensic analyses, and official findings related to accident investigations conducted by law enforcement authorities.",
       "parent_group": "LEI",
       "handling_group_id": "",
       "other": {}
@@ -228,7 +235,7 @@
     "CUI//LEI/CHRI": {
       "name": "Criminal History Records Information",
       "abbrv_name": "CHRI",
-      "description": "Criminal History Records Information",
+      "description": "Criminal history record information including arrest records, charges, dispositions, and law enforcement identification data.",
       "parent_group": "LEI",
       "handling_group_id": "",
       "other": {}
@@ -236,7 +243,7 @@
     "CUI//LEI/CMPRS": {
       "name": "Committed Person",
       "abbrv_name": "CMPRS",
-      "description": "Committed Person",
+      "description": "ecords pertaining to individuals legally committed through judicial or law enforcement processes, including custody and case documentation.",
       "parent_group": "LEI",
       "handling_group_id": "",
       "other": {}
@@ -244,7 +251,7 @@
     "CUI//LEI/FUND": {
       "name": "Campaign Funds",
       "abbrv_name": "FUND",
-      "description": "Campaign Funds",
+      "description": "Financial tracking, seizure, forfeiture, or investigative accounting records associated with law enforcement operations.",
       "parent_group": "LEI",
       "handling_group_id": "",
       "other": {}
@@ -252,7 +259,7 @@
     "CUI//LEI/INF": {
       "name": "Informant",
       "abbrv_name": "INF",
-      "description": "Informant",
+      "description": "Sensitive information identifying or provided by confidential informants supporting investigative or intelligence activities.",
       "parent_group": "LEI",
       "handling_group_id": "",
       "other": {}
@@ -260,7 +267,7 @@
     "CUI//LEI/INV": {
       "name": "Investigation",
       "abbrv_name": "INV",
-      "description": "Investigation",
+      "description": "Active or closed investigative case records, evidence documentation, and operational law enforcement reporting.",
       "parent_group": "LEI",
       "handling_group_id": "",
       "other": {}
@@ -268,7 +275,7 @@
     "CUI//LEI/JUV": {
       "name": "Juvenile",
       "abbrv_name": "JUV",
-      "description": "Juvenile",
+      "description": "Law enforcement records involving juveniles, protected under statutory confidentiality and restricted dissemination requirements.",
       "parent_group": "LEI",
       "handling_group_id": "",
       "other": {}
@@ -276,7 +283,7 @@
     "CUI//LEI/LCOMM": {
       "name": "Communications",
       "abbrv_name": "LCOMM",
-      "description": "Communications",
+      "description": "Intercepted, monitored, or retained law enforcement communications including authorized surveillance or operational exchanges.",
       "parent_group": "LEI",
       "handling_group_id": "",
       "other": {}
@@ -284,7 +291,7 @@
     "CUI//LEI/LDNA": {
       "name": "DNA",
       "abbrv_name": "LDNA",
-      "description": "DNA",
+      "description": "Forensic DNA profiles, laboratory analyses, and genetic identification records maintained for investigative purposes.",
       "parent_group": "LEI",
       "handling_group_id": "",
       "other": {}
@@ -292,7 +299,7 @@
     "CUI//LEI/LFNC": {
       "name": "Law Enforcement Financial Records",
       "abbrv_name": "LFNC",
-      "description": "Law Enforcement Financial Records",
+      "description": "Financial documentation tied to criminal investigations including fraud, laundering, or asset tracing activities.",
       "parent_group": "LEI",
       "handling_group_id": "",
       "other": {}
@@ -300,7 +307,7 @@
     "CUI//LEI/LNSL": {
       "name": "National Security Letter",
       "abbrv_name": "LNSL",
-      "description": "National Security Letter",
+      "description": "Records and supporting documentation associated with National Security Letters issued under authorized investigative authority.",
       "parent_group": "LEI",
       "handling_group_id": "",
       "other": {}
@@ -308,7 +315,7 @@
     "CUI//LEI/LSCRN": {
       "name": "Terrorist Screening",
       "abbrv_name": "LSCRN",
-      "description": "Terrorist Screening",
+      "description": "Terrorist screening datasets, watchlist correlations, and identity vetting records maintained by law enforcement.",
       "parent_group": "LEI",
       "handling_group_id": "",
       "other": {}
@@ -316,7 +323,7 @@
     "CUI//LEI/RWRD": {
       "name": "Reward",
       "abbrv_name": "RWRD",
-      "description": "Reward",
+      "description": "Documentation related to reward programs, informant compensation, or public incentive investigative initiatives.",
       "parent_group": "LEI",
       "handling_group_id": "",
       "other": {}
@@ -324,7 +331,7 @@
     "CUI//LEI/SCV": {
       "name": "Sex Crime Victim",
       "abbrv_name": "SCV",
-      "description": "Sex Crime Victim",
+      "description": "Protected victim information related to sexual crimes, safeguarded to preserve privacy and investigative integrity.",
       "parent_group": "LEI",
       "handling_group_id": "",
       "other": {}
@@ -332,7 +339,7 @@
     "CUI//LEI/SUB": {
       "name": "Controlled Substances",
       "abbrv_name": "SUB",
-      "description": "Controlled Substances",
+      "description": "Records concerning controlled substances including enforcement actions, seizure logs, and regulatory violations.",
       "parent_group": "LEI",
       "handling_group_id": "",
       "other": {}
@@ -340,7 +347,7 @@
     "CUI//LEI/TRACE": {
       "name": "Pen Register/Trap & Trace",
       "abbrv_name": "TRACE",
-      "description": "Pen Register/Trap & Trace",
+      "description": "Pen register and trap-and-trace surveillance data collected under authorized legal monitoring operations.",
       "parent_group": "LEI",
       "handling_group_id": "",
       "other": {}
@@ -348,7 +355,7 @@
     "CUI//LEI/WHISTL": {
       "name": "Whistleblower Identity",
       "abbrv_name": "WHISTL",
-      "description": "Whistleblower Identity",
+      "description": "Protected identity and disclosure records of whistleblowers supporting investigative or oversight activities.",
       "parent_group": "LEI",
       "handling_group_id": "",
       "other": {}
@@ -372,7 +379,7 @@
     "CUI//PRIVACY": {
       "name": "General Privacy",
       "abbrv_name": "PRIVACY",
-      "description": "Personally identifiable information requiring protection from unauthorized disclosure under privacy laws and policy.",
+      "description": "Personally identifiable information (PII) requiring protection from unauthorized disclosure under privacy laws and policy.",
       "handling": "Encrypt in transit and at rest. Prevent unnecessary distribution. Apply Privacy Act or SORN constraints if applicable.",
       "parent_group": "CUI",
       "handling_group_id": "",
@@ -445,15 +452,16 @@
     "CUI//PROCURE": {
       "name": "Procurement and Acquisition",
       "abbrv_name": "PROCURE",
-      "description": "Information related to government procurement and acquisition activities requiring controlled handling.",
+      "description": "Information related to government acquisition, bidding, procurement, and contract negotiation that must be protected during competitive phases.",
       "parent_group": "CUI",
+      "palette_ref": "",
       "handling_group_id": "",
       "other": {}
     },
     "CUI//PROCURE/SBIZ": {
       "name": "Small Business Research and Technology",
       "abbrv_name": "SBIZ",
-      "description": "",
+      "description": "Acquisition data related to small business research, innovation grants, and technology development programs.",
       "parent_group": "PROCURE",
       "handling_group_id": "",
       "other": {}
@@ -461,7 +469,7 @@
     "CUI//PROCURE/SSEL": {
       "name": "Source Selection",
       "abbrv_name": "SSEL",
-      "description": "",
+      "description": "ource selection materials including evaluation criteria, scoring records, and award decision documentation.",
       "parent_group": "PROCURE",
       "handling_group_id": "",
       "other": {}
@@ -477,7 +485,7 @@
     "CUI//PROPIN/MFC": {
       "name": "Proprietary Manufacturer",
       "abbrv_name": "MFC",
-      "description": "",
+      "description": "Proprietary manufacturing processes, designs, or production data submitted under protected disclosure.",
       "parent_group": "PROPIN",
       "handling_group_id": "",
       "other": {}
@@ -517,7 +525,7 @@
     "CUI//TAX/CONV": {
       "name": "Tax Convention",
       "abbrv_name": "CONV",
-      "description": "",
+      "description": "Information exchanged under international tax conventions, treaties, and bilateral fiscal agreements.",
       "parent_group": "TAX",
       "handling_group_id": "",
       "other": {}
@@ -525,7 +533,7 @@
     "CUI//TAX/TAI": {
       "name": "Taxpayer Advocate Information",
       "abbrv_name": "TAI",
-      "description": "",
+      "description": "Taxpayer Advocate Service case records and protected taxpayer assistance documentation.",
       "parent_group": "TAX",
       "handling_group_id": "",
       "other": {}
@@ -533,7 +541,7 @@
     "CUI//TAX/WDT": {
       "name": "Written Determinations",
       "abbrv_name": "WDT",
-      "description": "",
+      "description": "IRS written determinations including rulings, determinations, and interpretive tax guidance.",
       "parent_group": "TAX",
       "handling_group_id": "",
       "other": {}
@@ -541,7 +549,7 @@
     "CUI//TRANSPORT": {
       "name": "Transportation",
       "abbrv_name": "TRANSPORT",
-      "description": "",
+      "description": "Sensitive transportation infrastructure data including routing systems, safety controls, and operational vulnerabilities.",
       "parent_group": "CUI",
       "handling_group_id": "",
       "other": {}
@@ -549,7 +557,7 @@
     "CUI//AVIATION": {
       "name": "Aviation Safety",
       "abbrv_name": "AVIATION",
-      "description": "",
+      "description": "Aviation safety, security assessments, and regulatory compliance information requiring controlled handling.",
       "parent_group": "CUI",
       "handling_group_id": "",
       "other": {}
@@ -557,7 +565,7 @@
     "CUI//MARITIME": {
       "name": "Maritime Security",
       "abbrv_name": "MARITIME",
-      "description": "",
+      "description": "Maritime security operations, port vulnerability assessments, and vessel tracking intelligence.",
       "parent_group": "CUI",
       "handling_group_id": "",
       "other": {}
@@ -565,7 +573,7 @@
     "CUI//PIPELINE": {
       "name": "Pipeline Security",
       "abbrv_name": "PIPELINE",
-      "description": "",
+      "description": "Pipeline infrastructure schematics, monitoring systems, and energy transport security data.",
       "parent_group": "CUI",
       "handling_group_id": "",
       "other": {}
@@ -573,7 +581,7 @@
     "CUI//EMERGENCY": {
       "name": "Emergency Services",
       "abbrv_name": "EMERGENCY",
-      "description": "",
+      "description": "Emergency services operational plans, response coordination data, and crisis management infrastructure.",
       "parent_group": "CUI",
       "handling_group_id": "",
       "other": {}
@@ -581,7 +589,7 @@
     "CUI//INTEL": {
       "name": "Intelligence",
       "abbrv_name": "INTEL",
-      "description": "",
+      "description": "Sensitive intelligence support data not formally classified but requiring controlled dissemination.",
       "parent_group": "CUI",
       "handling_group_id": "",
       "other": {}
@@ -589,7 +597,7 @@
     "CUI//EXPORT": {
       "name": "Export Control",
       "abbrv_name": "EXPORT",
-      "description": "",
+      "description": "Information limited by export control laws such as ITAR and EAR, including technical data, defense articles, or dual-use technologies.",
       "parent_group": "CUI",
       "handling_group_id": "",
       "other": {}
@@ -597,7 +605,7 @@
     "CUI//FEDCON": {
       "name": "Federal Contract Information",
       "abbrv_name": "FEDCON",
-      "description": "",
+      "description": "Federal contract performance, deliverables, and controlled technical deliverable information.",
       "parent_group": "CUI",
       "handling_group_id": "",
       "other": {}

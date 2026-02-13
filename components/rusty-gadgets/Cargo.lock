@@ -660,6 +660,7 @@ dependencies = [
  "colored",
  "gettext-rs",
  "humansize",
+ "regex",
  "serde",
  "serde_json",
  "textwrap",

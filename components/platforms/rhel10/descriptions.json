@@ -1,8 +1,0 @@
-{
-    "PRIVACY": "Personally Identifiable Information (PII) requiring protection from unauthorized disclosure. Includes general PII and Sensitive PII.",
-    "EXPORT": "Information limited by export control laws such as ITAR and EAR, including technical data, defense articles, or dual-use technologies.",
-    "FINPROT": "Financially sensitive information, including transactional, operational, or proprietary financial details protected under regulatory frameworks.",
-    "PROCURE": "Information related to acquisition, bidding, procurement, and contract negotiation that must be protected during competitive phases.",
-    "LEGAL": "Attorney-client privileged information, legal analyses, litigation strategy, or regulatory investigation details requiring controlled distribution.",
-    "TECHDATA": "Technical specifications, engineering drawings, operational parameters, or internal system documentation requiring controlled distribution."
-}

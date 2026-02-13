@@ -1,0 +1,5 @@
+src/*
+	Source code
+
+*.rs
+	Rust source

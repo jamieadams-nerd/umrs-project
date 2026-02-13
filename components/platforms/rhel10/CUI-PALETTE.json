@@ -1,0 +1,170 @@
+{
+  "palette": {
+
+    "default": {
+      "display_name": "Default Neutral",
+
+      "truecolor": {
+        "fg": "#FFFFFF",
+        "bg": "#404040"
+      },
+
+      "ansi16": {
+        "fg": "bright_white",
+        "bg": "black"
+      },
+
+      "ansi256": {
+        "fg": 231,
+        "bg": 238
+      },
+
+      "style": {
+        "bold": false
+      }
+    },
+
+    "police_blue": {
+      "display_name": "Police Blue",
+
+      "truecolor": {
+        "fg": "#FFFFFF",
+        "bg": "#1F4E79"
+      },
+
+      "ansi16": {
+        "fg": "bright_white",
+        "bg": "blue"
+      },
+
+      "ansi256": {
+        "fg": 231,
+        "bg": 24
+      },
+
+      "style": {
+        "bold": true
+      }
+    },
+
+    "agriculture_green": {
+      "display_name": "Agriculture Green",
+
+      "truecolor": {
+        "fg": "#000000",
+        "bg": "#70AD47"
+      },
+
+      "ansi16": {
+        "fg": "black",
+        "bg": "green"
+      },
+
+      "ansi256": {
+        "fg": 16,
+        "bg": 71
+      }
+    },
+
+    "finance_gold": {
+      "display_name": "Financial Gold",
+
+      "truecolor": {
+        "fg": "#000000",
+        "bg": "#D6A300"
+      },
+
+      "ansi16": {
+        "fg": "black",
+        "bg": "yellow"
+      },
+
+      "ansi256": {
+        "fg": 16,
+        "bg": 178
+      }
+    },
+
+    "intel_purple": {
+      "display_name": "Intelligence Purple",
+
+      "truecolor": {
+        "fg": "#FFFFFF",
+        "bg": "#4B2E83"
+      },
+
+      "ansi16": {
+        "fg": "bright_white",
+        "bg": "magenta"
+      },
+
+      "ansi256": {
+        "fg": 231,
+        "bg": 54
+      }
+    },
+
+    "critical_red": {
+      "display_name": "Critical Red",
+
+      "truecolor": {
+        "fg": "#FFFFFF",
+        "bg": "#A61C1C"
+      },
+
+      "ansi16": {
+        "fg": "bright_white",
+        "bg": "red"
+      },
+
+      "ansi256": {
+        "fg": 231,
+        "bg": 124
+      },
+
+      "style": {
+        "bold": true
+      }
+    },
+
+    "cyber_teal": {
+      "display_name": "Cyber Teal",
+
+      "truecolor": {
+        "fg": "#000000",
+        "bg": "#00A8A8"
+      },
+
+      "ansi16": {
+        "fg": "black",
+        "bg": "cyan"
+      },
+
+      "ansi256": {
+        "fg": 16,
+        "bg": 37
+      }
+    },
+
+    "research_gray": {
+      "display_name": "Research Gray",
+
+      "truecolor": {
+        "fg": "#FFFFFF",
+        "bg": "#6E6E6E"
+      },
+
+      "ansi16": {
+        "fg": "white",
+        "bg": "bright_black"
+      },
+
+      "ansi256": {
+        "fg": 231,
+        "bg": 242
+      }
+    }
+
+  }
+}
+
