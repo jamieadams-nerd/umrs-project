@@ -1,99 +1,100 @@
-// =============================================================================
-// UMRS `SELinux` Modeling Library
-// =============================================================================
-//
-// Module: category
-//
-// Author: Jamie Adams
-// License: MIT
-//
-// Description:
-//   Strongly-typed Rust primitives modeling `SELinux` MLS constructs,
-//   including categories, category sets, and dominance semantics.
-// =============================================================================
-
-//! =============================================================================
-//! Implementation Lineage & Design Note
-//! =============================================================================
 //!
+//! SELinux Catagories, Category Sets, and dominance semantics
+//!
+//! - Author: Jamie Adams
+//! - License: MIT
+//!
+//! Strongly-typed Rust primitives modeling SELinux MLS constructs,
+//! including categories, category sets, and dominance semantics.
+//!
+//! ## Primitive Modeled: MLS Category Bitmap
+//! This module provides a strongly-typed Rust equivalent of the
+//! kernel ebitmap structure used to represent MLS category sets.
+//!
+//! Kernel Sources Consulted:
+//! - security/selinux/ss/ebitmap.c
+//! - security/selinux/ss/ebitmap.h
+//! - security/selinux/ss/mls.c
+//!
+//! Design Deviations:
+//! - Dense bitmap instead of sparse linked nodes
+//! - Fixed 1024-bit width
+//! - Construct-time validation
+//!
+//! These deviations are intentional and reflect userland performance,
+//! determinism, and safety priorities rather than kernel memory
+//! optimization constraints.
+//!
+//! ## Implementation Lineage & Design Note
 //! This module provides an independent, original implementation of
-//! functionality conceptually comparable to traditional `SELinux`
+//! functionality conceptually comparable to traditional SELinux
 //! userland libraries.
 //!
 //! Behavioral interfaces and operational semantics were studied
-//! to ensure familiarity for long-time `SELinux` developers.
+//! to ensure familiarity for long-time SELinux developers.
 //! However:
 //!
-//! • No `SELinux` source code has been copied.
-//! • No code has been translated.
-//! • No line-by-line reimplementation has been performed.
+//! - No SELinux source code has been copied.
+//! - No code has been translated.
+//! - No line-by-line reimplementation has been performed.
 //!
 //! Where appropriate, this implementation takes advantage of
 //! Rust language features such as strong typing, validation at
 //! construction, and memory safety guarantees to improve
 //! correctness and assurance beyond legacy approaches.
-//! =============================================================================
-
-//! =============================================================================
-//! `SELinux` Primitive Lineage Reference
-//! =============================================================================
 //!
-//! Primitive Modeled: MLS Category Bitmap
-//!
-//! Kernel Sources Consulted:
-//!
-//!   security/selinux/ss/ebitmap.c
-//!   security/selinux/ss/ebitmap.h
-//!   security/selinux/ss/mls.c
-//!
-//! This module provides a strongly-typed Rust equivalent of the
-//! kernel ebitmap structure used to represent MLS category sets.
-//!
-//! Design Deviations:
-//!
-//! • Dense bitmap instead of sparse linked nodes
-//! • Fixed 1024-bit width
-//! • Construct-time validation
-//!
-//! These deviations are intentional and reflect userland performance,
-//! determinism, and safety priorities rather than kernel memory
-//! optimization constraints.
-//! =============================================================================
 
 use std::fmt;
 use std::str::FromStr;
 
-//
-// =============================================================================
-// Category Primitive
-// =============================================================================
-//
-// Category represents a single `SELinux` MLS category (c0–c1023).
-//
-// Categories are represented as bit positions within an ebitmap.
-// This Rust type provides a strongly-typed, validated wrapper around
-// that primitive representation.
-//
-
+///
+/// Category Primitive
+///
+/// Category represents a single SELinux MLS category (c0–c1023).
+///
+/// Categories are represented as bit positions within an ebitmap.
+/// This Rust type provides a strongly-typed, validated wrapper around
+/// that primitive representation.
+///
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Category(u16);
 
 pub const MAX_CATEGORY: u16 = 1023;
 
 impl Category {
-    /// Creates a new validated `SELinux` MLS category.
+    /// Creates a new validated SELinux MLS category.
     ///
-    /// Categories represent compartment identifiers within the `SELinux`
+    /// Categories represent compartment identifiers within the SELinux
     /// Multi-Level Security (MLS) model. They are encoded as bit positions
     /// within an MLS category bitmap (ebitmap equivalent).
     ///
     /// Valid category identifiers range from `c0` through `c1023`,
-    /// matching the standard `SELinux` category domain.
+    /// matching the standard SELinux category domain.
     ///
     /// # Errors
     ///
     /// Returns `CategoryError::OutOfRange` if the provided category
     /// identifier exceeds the maximum supported value (`MAX_CATEGORY`).
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let c0 = Category::new(0).unwrap();
+    /// let c40 = Category::new(40).unwrap();
+    /// println!("Created categories: {}, {}", c0, c40);
+    ///
+    /// let invalid = Category::new(5000);
+    /// match invalid {
+    ///    Ok(_) => println!("Unexpected success"),
+    ///    Err(e) => println!("Validation correctly failed: {:?}", e),
+    /// }
+    /// ```
+    ///
+    /// Parsing from a string will also self-validate provided string. 
+    /// ```
+    /// let parsed = Category::from_str("c7").unwrap();
+    /// println!("Parsed category: {}", parsed);
+    /// ```
     ///
     pub const fn new(id: u16) -> Result<Self, CategoryError> {
         if id > MAX_CATEGORY {
@@ -102,6 +103,7 @@ impl Category {
         Ok(Self(id))
     }
 
+    /// Return the numeric id of the category ("c7" would return 7).
     #[must_use]
     pub const fn id(self) -> u16 {
         self.0
@@ -138,19 +140,16 @@ impl FromStr for Category {
     }
 }
 
-//
-// =============================================================================
-// CategorySet — ebitmap Equivalent
-// =============================================================================
-//
-// Kernel MLS uses ebitmap — effectively a sparse bitmap.
-//
-// Userland can safely model this as a dense bitset for performance,
-// determinism, and simplified memory management.
-//
-// Fixed bitmap covering 1024 categories.
-//
-
+///
+/// CategorySet — ebitmap Equivalent
+///
+/// Kernel MLS uses ebitmap — effectively a sparse bitmap.
+///
+/// Fixed bitmap covering 1024 categories.
+///
+/// Userland can safely model this as a dense bitset for performance,
+/// determinism, and simplified memory management.
+///
 #[derive(Clone, PartialEq, Eq)]
 pub struct CategorySet {
     bits: [u64; 16], // 16 * 64 = 1024 bits
@@ -160,11 +159,21 @@ pub struct CategorySet {
 // Constructors
 //
 impl CategorySet {
+    /// Creates an empty category set.
+    /// Internal state: all bits = 0 which conceptually means no compartments.
+    /// 
+    /// # Example
+    /// ```rust
+    /// let mut myset = CategorySet::new();
+    /// myset.insert(Category::new(4)?);
+    /// ```
     #[must_use]
     pub const fn new() -> Self {
         Self { bits: [0; 16] }
     }
 
+    /// Creates a full category set.
+    /// Internal state: all bits = 1 which conceptually means all compartments.
     #[must_use]
     pub const fn full() -> Self {
         Self { bits: [u64::MAX; 16] }
@@ -195,8 +204,8 @@ impl CategorySet {
 impl CategorySet {
     /// Inserts a category into the set.
     ///
-    /// Kernel equivalent:
-    ///   `ebitmap_set_bit()`
+    /// Kernel equivalent: `ebitmap_set_bit()`
+    ///
     pub const fn insert(&mut self, cat: Category) {
         let (word, mask) = Self::index(cat);
         self.bits[word] |= mask;

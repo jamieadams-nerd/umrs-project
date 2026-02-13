@@ -1,19 +1,23 @@
-// =============================================================================
-// UMRS `SELinux` Modeling Library
-// =============================================================================
-//
-// Module: user
-//
-// Author: Jamie Adams
-// License: MIT
-//
-// Description:
-//   Strongly-typed Rust primitive modeling `SELinux` security users.
-// =============================================================================
-
-//! =============================================================================
-//! Implementation Lineage & Design Note
-//! =============================================================================
+//!
+//! # `SELinux` Security User Identifier
+//!
+//! Author: Jamie Adams
+//!
+//! Strongly-typed Rust primitive modeling `SELinux` security users.
+//! This module models only the identifier primitive — not policy
+//! bindings or clearance mappings.
+//!
+//! Kernel / Policy Sources Consulted:
+//! - security/selinux/include/security.h
+//! - security/selinux/ss/policydb.c
+//! - libselinux user mapping interfaces
+//!
+//! In `SELinux` policy, users are symbol table entries associated with:
+//! - Role authorization sets
+//! - MLS clearance ranges
+//! - Login mapping records
+//!
+//! ## Implementation Lineage & Design Note
 //!
 //! This module provides an independent Rust implementation of the
 //! `SELinux` security user construct.
@@ -26,35 +30,12 @@
 //! and policydb structures to preserve familiarity for experienced
 //! `SELinux` practitioners. However:
 //!
-//! • No source code has been copied or translated.
-//! • No line-by-line derivation has occurred.
+//! - No source code has been copied or translated.
+//! - No line-by-line derivation has occurred.
 //!
 //! This implementation introduces strong typing and construction-time
 //! validation to prevent malformed security contexts and improve
 //! assurance in higher-level labeling systems.
-//! =============================================================================
-
-//! =============================================================================
-//! `SELinux` Primitive Lineage Reference
-//! =============================================================================
-//!
-//! Primitive Modeled: `SELinux` Security User Identifier
-//!
-//! Kernel / Policy Sources Consulted:
-//!
-//!   security/selinux/include/security.h
-//!   security/selinux/ss/policydb.c
-//!   libselinux user mapping interfaces
-//!
-//! In `SELinux` policy, users are symbol table entries associated with:
-//!
-//! • Role authorization sets
-//! • MLS clearance ranges
-//! • Login mapping records
-//!
-//! This module models only the identifier primitive — not policy
-//! bindings or clearance mappings.
-//! =============================================================================
 
 use std::fmt;
 use std::str::FromStr;

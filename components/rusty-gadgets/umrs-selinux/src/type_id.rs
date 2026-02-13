@@ -1,44 +1,10 @@
-// =============================================================================
-// UMRS `SELinux` Modeling Library
-// =============================================================================
-//
-// Module: type
-//
-// Author: Jamie Adams
-// License: MIT
-//
-// Description:
-//   Strongly-typed Rust primitive modeling `SELinux` security types.
-// =============================================================================
-
-//! =============================================================================
-//! Implementation Lineage & Design Note
-//! =============================================================================
+//! # `SELinux` Security Type Identifier
+//! - Author: Jamie Adams
+//! - License: MIT
 //!
-//! This module provides an independent Rust implementation of the
-//! `SELinux` security type construct.
-//!
-//! `SELinux` types (domains) are the primary enforcement anchors within
-//! Type Enforcement (TE). They define process domains, object classes,
-//! transition boundaries, and allow/deny rule applicability.
-//!
-//! Behavioral semantics were studied from `SELinux` userland libraries
-//! and policydb structures to preserve familiarity for experienced
-//! `SELinux` practitioners. However:
-//!
-//! • No source code has been copied or translated.
-//! • No line-by-line derivation has occurred.
-//!
-//! This implementation introduces strong typing and construction-time
-//! validation to prevent malformed security contexts and improve
-//! assurance in higher-level labeling systems.
-//! =============================================================================
-
-//! =============================================================================
-//! `SELinux` Primitive Lineage Reference
-//! =============================================================================
-//!
-//! Primitive Modeled: `SELinux` Security Type Identifier
+//! Strongly-typed Rust primitive modeling `SELinux` security types.
+//! This module models only the identifier primitive — not policy rule
+//! bindings, transitions, or attribute associations.
 //!
 //! Kernel / Policy Sources Consulted:
 //!
@@ -55,8 +21,26 @@
 //!
 //! This module models only the identifier primitive — not policy rule
 //! bindings, transitions, or attribute associations.
-//! =============================================================================
-
+//! 
+//! ## Implementation Lineage & Design Note
+//! This module provides an independent Rust implementation of the
+//! `SELinux` security type construct.
+//!
+//! `SELinux` types (domains) are the primary enforcement anchors within
+//! Type Enforcement (TE). They define process domains, object classes,
+//! transition boundaries, and allow/deny rule applicability.
+//!
+//! Behavioral semantics were studied from `SELinux` userland libraries
+//! and policydb structures to preserve familiarity for experienced
+//! `SELinux` practitioners. However:
+//!
+//! - No source code has been copied or translated.
+//! - • No line-by-line derivation has occurred.
+//!
+//! This implementation introduces strong typing and construction-time
+//! validation to prevent malformed security contexts and improve
+//! assurance in higher-level labeling systems.
+//!
 use std::fmt;
 use std::str::FromStr;
 

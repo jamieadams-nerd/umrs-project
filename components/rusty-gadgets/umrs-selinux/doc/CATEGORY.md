@@ -14,5 +14,3 @@ You’ve completed:
 - Licensing + authorship posture (MIT + conceptual lineage notice)
 - Example program demonstrating construction, validation, parsing, and set math
 
-
-

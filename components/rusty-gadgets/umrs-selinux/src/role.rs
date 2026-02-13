@@ -1,60 +1,38 @@
-// =============================================================================
-// UMRS `SELinux` Modeling Library
-// =============================================================================
-//
-// Module: role
-//
-// Author: Jamie Adams
-// License: MIT
-//
-// Description:
-//   Strongly-typed Rust primitive modeling `SELinux` security roles.
-// =============================================================================
-
-//! =============================================================================
-//! Implementation Lineage & Design Note
-//! =============================================================================
+//!
+//! # `SELinux` Security Role Identifier
+//! Strongly-typed Rust primitive modeling `SELinux` security roles.
+//!
+//! - Author: Jamie Adams
+//! - License: MIT
 //!
 //! This module provides an independent Rust implementation of the
-//! `SELinux` security role construct.
+//! `SELinux` security role construct. It models only the identifier 
+//! primitive — not policy bindings, transitions, or authorization rules.
 //!
-//! `SELinux` roles are policy-defined authorization symbols that govern
-//! which domains (types) a subject may enter, as well as role
-//! transition eligibility within RBAC enforcement.
+//! Kernel / Policy Sources Consulted:
 //!
+//! - security/selinux/ss/policydb.c
+//! - security/selinux/include/security.h
+//! - libselinux RBAC interfaces
+//!
+//! In `SELinux` policy, roles are symbol table entries associated with:
+//!
+//! - Authorized domain (type) sets
+//! - Role transition rules
+//! - User-role authorization mappings
+//!
+//! ## Implementation Lineage & Design Note
 //! Behavioral semantics were studied from `SELinux` userland libraries
 //! and policydb structures to preserve familiarity for experienced
 //! `SELinux` practitioners. However:
 //!
-//! • No source code has been copied or translated.
-//! • No line-by-line derivation has occurred.
+//! - No source code has been copied or translated.
+//! - No line-by-line derivation has occurred.
 //!
 //! This implementation introduces strong typing and construction-time
 //! validation to prevent malformed security contexts and improve
 //! assurance in higher-level labeling systems.
-//! =============================================================================
-
-//! =============================================================================
-//! `SELinux` Primitive Lineage Reference
-//! =============================================================================
 //!
-//! Primitive Modeled: `SELinux` Security Role Identifier
-//!
-//! Kernel / Policy Sources Consulted:
-//!
-//!   security/selinux/ss/policydb.c
-//!   security/selinux/include/security.h
-//!   libselinux RBAC interfaces
-//!
-//! In `SELinux` policy, roles are symbol table entries associated with:
-//!
-//! • Authorized domain (type) sets
-//! • Role transition rules
-//! • User-role authorization mappings
-//!
-//! This module models only the identifier primitive — not policy
-//! bindings, transitions, or authorization rules.
-//! =============================================================================
 
 use std::fmt;
 use std::str::FromStr;

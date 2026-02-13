@@ -1,19 +1,21 @@
-// =============================================================================
-// UMRS `SELinux` Modeling Library
-// =============================================================================
-//
-// Module: sensitivity
-//
-// Author: Jamie Adams
-// License: MIT
-//
-// Description:
-//   Strongly-typed Rust primitive modeling `SELinux` MLS sensitivity levels.
-// =============================================================================
-
-//! =============================================================================
-//! Implementation Lineage & Design Note
-//! =============================================================================
+//! # `SELinux` MLS Sensitivity Level
+//!
+//! This module provides an independent Rust implementation of the `SELinux` MLS 
+//! sensitivity level construct. They are strongly-typed Rust primitives.
+//!
+//! In `SELinux` MLS policy, sensitivities are ordinal classification levels forming 
+//! the hierarchical portion of a security label.
+//!
+//! They are combined with category bitmaps to form full MLS levels.
+//! Strongly-typed Rust primitive modeling `SELinux` MLS sensitivity levels.
+//!
+//! Kernel / Policy Sources Consulted:
+//!
+//!   security/selinux/ss/mls.c
+//!   security/selinux/ss/mls.h
+//!   security/selinux/ss/policydb.c
+//!
+//! ## Implementation Lineage & Design Note
 //!
 //! This module provides an independent Rust implementation of the
 //! `SELinux` MLS sensitivity level construct.
@@ -26,31 +28,13 @@
 //! implementations to preserve familiarity for experienced MLS system
 //! engineers. However:
 //!
-//! • No source code has been copied or translated.
-//! • No line-by-line derivation has occurred.
+//! - No source code has been copied or translated.
+//! - No line-by-line derivation has occurred.
 //!
 //! This implementation introduces strong typing, ordering guarantees,
 //! and construction-time validation for improved correctness and
 //! assurance in userland labeling systems.
-//! =============================================================================
-
-//! =============================================================================
-//! `SELinux` Primitive Lineage Reference
-//! =============================================================================
-//!
-//! Primitive Modeled: MLS Sensitivity Level
-//!
-//! Kernel / Policy Sources Consulted:
-//!
-//!   security/selinux/ss/mls.c
-//!   security/selinux/ss/mls.h
-//!   security/selinux/ss/policydb.c
-//!
-//! In `SELinux` MLS policy, sensitivities are ordinal classification
-//! levels forming the hierarchical portion of a security label.
-//!
-//! They are combined with category bitmaps to form full MLS levels.
-//! =============================================================================
+//! 
 
 use std::fmt;
 use std::str::FromStr;
