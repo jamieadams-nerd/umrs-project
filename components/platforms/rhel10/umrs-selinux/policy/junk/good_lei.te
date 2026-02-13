@@ -1,0 +1,106 @@
+########################################
+# Law Enforcement Information - CUI//LEI
+########################################
+policy_module(cui_lei, 1.0)
+
+# Pull in CUI base custody attributes
+gen_require(`
+    attribute cui_data_type;
+    attribute cui_config_type;
+    attribute cui_log_type;
+
+    type unconfined_t;
+')
+
+########################################
+# LEI Classification Attributes
+########################################
+#
+# Law Enforcement custody layers
+#
+
+attribute cui_lei_data_type;
+attribute cui_lei_config_type;
+attribute cui_lei_log_type;
+
+########################################
+# Base LEI Custody Types
+########################################
+#
+# Data custody
+#
+type cui_lei_data_ro_t;
+type cui_lei_data_rw_t;
+
+typeattribute cui_lei_data_ro_t cui_lei_data_type;
+typeattribute cui_lei_data_rw_t cui_lei_data_type;
+
+#
+# Configuration custody
+#
+type cui_lei_config_ro_t;
+type cui_lei_config_rw_t;
+
+typeattribute cui_lei_config_ro_t cui_lei_config_type;
+typeattribute cui_lei_config_rw_t cui_lei_config_type;
+
+#
+# Log custody
+#
+type cui_lei_log_rw_t;
+
+typeattribute cui_lei_log_rw_t cui_lei_log_type;
+
+########################################
+# Inheritance Model
+########################################
+#
+# LEI is a subset of CUI.
+# Therefore LEI custody types inherit
+# baseline CUI classification attributes.
+#
+
+typeattribute cui_lei_data_ro_t cui_data_type;
+typeattribute cui_lei_data_rw_t cui_data_type;
+
+typeattribute cui_lei_config_ro_t cui_config_type;
+typeattribute cui_lei_config_rw_t cui_config_type;
+
+typeattribute cui_lei_log_rw_t cui_log_type;
+
+########################################
+# Classification Guardrails
+########################################
+#
+# Prevent unconfined domains from accessing
+# LEI custody artifacts.
+#
+
+neverallow unconfined_t cui_lei_data_type:file *;
+neverallow unconfined_t cui_lei_data_type:dir  *;
+
+neverallow unconfined_t cui_lei_config_type:file *;
+neverallow unconfined_t cui_lei_config_type:dir  *;
+
+neverallow unconfined_t cui_lei_log_type:file *;
+neverallow unconfined_t cui_lei_log_type:dir  *;
+
+########################################
+# Future Sub-Compartment Expansion
+########################################
+#
+# Downstream modules may inherit LEI custody:
+#
+#   cui_lei_dui.te
+#   cui_lei_dna.te
+#   cui_lei_inv.te
+#
+# They will attach to:
+#
+#   cui_lei_data_type
+#   cui_lei_config_type
+#   cui_lei_log_type
+#
+########################################
+
+

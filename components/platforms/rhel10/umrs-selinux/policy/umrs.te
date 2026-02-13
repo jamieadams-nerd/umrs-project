@@ -1,0 +1,82 @@
+############################################
+# UMRS base object types (custody classes)
+#
+# Use semodule -i or -r or -l to manage.
+############################################
+policy_module(umrs, 1.0)
+
+########################################
+# External dependencies
+########################################
+
+gen_require(`
+    type unconfined_t;
+')
+
+########################################
+# UMRS custody attributes
+########################################
+
+attribute umrs_data_type;
+attribute umrs_config_type;
+attribute umrs_log_type;
+attribute umrs_httpd_type;
+
+########################################
+# Base custody types
+########################################
+
+type umrs_config_ro_t;
+type umrs_config_rw_t;
+type umrs_data_ro_t;
+type umrs_data_rw_t;
+type umrs_httpd_t;
+type umrs_log_ro_t;
+type umrs_log_rw_t;
+
+########################################
+# Classify as filesystem objects
+########################################
+
+files_type(umrs_config_ro_t)
+files_type(umrs_config_rw_t)
+files_type(umrs_data_ro_t)
+files_type(umrs_data_rw_t)
+files_type(umrs_httpd_t)
+files_type(umrs_log_ro_t)
+files_type(umrs_log_rw_t)
+
+########################################
+# Bind to custody attributes
+########################################
+
+typeattribute umrs_data_ro_t   umrs_data_type;
+typeattribute umrs_data_rw_t   umrs_data_type;
+
+typeattribute umrs_config_ro_t umrs_config_type;
+typeattribute umrs_config_rw_t umrs_config_type;
+
+typeattribute umrs_log_ro_t    umrs_log_type;
+typeattribute umrs_log_rw_t    umrs_log_type;
+
+typeattribute umrs_httpd_t     umrs_httpd_type;
+
+########################################
+# Baseline restrictions (targeted policy)
+#
+# UMRS custody must not be reachable
+# from unconfined domains.
+########################################
+
+neverallow unconfined_t umrs_data_type:dir  *;
+neverallow unconfined_t umrs_data_type:file *;
+
+neverallow unconfined_t umrs_config_type:dir  *;
+neverallow unconfined_t umrs_config_type:file *;
+
+neverallow unconfined_t umrs_log_type:dir  *;
+neverallow unconfined_t umrs_log_type:file *;
+
+neverallow unconfined_t umrs_httpd_type:dir  *;
+neverallow unconfined_t umrs_httpd_type:file *;
+

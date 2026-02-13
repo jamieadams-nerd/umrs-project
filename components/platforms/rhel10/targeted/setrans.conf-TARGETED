@@ -17,6 +17,18 @@
 #
 # chcon -l s0:c0,91 /some/path/file
 #
+# You can also use the chcat command:
+#
+#-------------------------------------------------------------------------
+#
+# chcat -L       - List all categories
+# chcat -d file  - Remove all categories
+# chcat <cat> file Set categories
+#
+# chcat CUI//PRIVACY/CONTRACT /path/to/file
+#
+#  The label "CUI//PRIVACY/CONTRACT" can be in double quotes or not.
+#
 #-------------------------------------------------------------------------
 #
 # s0 SystemLow (GENERAL):
@@ -24,134 +36,113 @@
 #    unclassified, routine, not requiring special controls.
 #
 #-------------------------------------------------------------------------
+
 s0=SystemLow
 
 #-------------------------------------------------------------------------
 # BASE CUI UMBRELLA
-s0:c0 = CUI            # Controlled Unclassified Information
+s0:c0 = CUI                       # Controlled Unclassified Information
 
 
 #-------------------------------------------------------------------------
 # PRIVACY / PERSONALLY IDENTIFIABLE INFORMATION (PII)
-c1=PRVCY               # GENERAL PRIVACY
-
 # Subcategories and Markings 
-s0:c1    = CUI//PRIVACY
-s0:c1,c2 = CUI//PRIVACY/CONTRACT  # CONTRACT USE
-s0:c1,c3 = CUI//PRIVACY/DREC      # GENETIC INFORMATION
-s0:c1,c4 = CUI//PRIVACY/GENETIC   # HEALTH INFORMATION 
-s0:c1,c5 = CUI//PRIVACY/HEALTH    # INSPECTOR GENERAL PROTECTED
-s0:c1,c7 = CUI//PRIVACY/MIL       # MILITARY PERSONNEL RECORDS 
-s0:c1,c8 = CUI//PRIVACY/PERS      # PERSONNEL RECORDS
-s0:c1,c9 = CUI//PRIVACY/STUD      # STUDENT RECORDS 
+s0:c1    = CUI//PRIVACY           # GENERAL PRIVACY
+s0:c1,c2 = CUI//PRIVACY/CONTRACT  #  CONTRACT USE
+s0:c1,c3 = CUI//PRIVACY/DREC      #  GENETIC INFORMATION
+s0:c1,c4 = CUI//PRIVACY/GENETIC   #  HEALTH INFORMATION 
+s0:c1,c5 = CUI//PRIVACY/HEALTH    #  INSPECTOR GENERAL PROTECTED
+s0:c1,c7 = CUI//PRIVACY/MIL       #  MILITARY PERSONNEL RECORDS 
+s0:c1,c8 = CUI//PRIVACY/PERS      #  PERSONNEL RECORDS
+s0:c1,c9 = CUI//PRIVACY/STUD      #  STUDENT RECORDS 
 
 
 #-------------------------------------------------------------------------
 # PROCUREMENT AND ACQUISITION
-c10=PROCURE   # GENERAL PROCUREMENT AND ACQUISITION
-
 # Subcategories and Markings
-s0:c10     = CUI//PROCURE
-s0:c10,c11 = CUI//PROCURE/SBIZ # SMALL BUSINESS RESEARCH AND TECHNOLOGY
-s0:c10,c12 = CUI//PROCURE/SSEL # SOURCE SELECTION
+s0:c10     = CUI//PROCURE         # GENERAL PROCUREMENT AND ACQUISITION
+s0:c10,c11 = CUI//PROCURE/SBIZ    #  SMALL BUSINESS RESEARCH AND TECHNOLOGY
+s0:c10,c12 = CUI//PROCURE/SSEL    #  SOURCE SELECTION
 
 
 #-------------------------------------------------------------------------
 # PROPRIETARY BUSINESS INFORMATION
-c20=PROPIN    # GENERAL PROPRIETARY BUSINESS INFORMATION
-
 # Subcategories and Markings
-s0:c20     = CUI//PROPIN      
-s0:c20,c21 = CUI//PROPIN/MFC  # PROPRIETARY MANUFACTURER INFORMATION
+s0:c20     = CUI//PROPIN          # GENERAL PROPRIETARY BUSINESS INFORMATION
+s0:c20,c21 = CUI//PROPIN/MFC      #  PROPRIETARY MANUFACTURER INFORMATION
 
 
 #-------------------------------------------------------------------------
 # EXPORT CONTROL / TECHNICAL INFORMATION
-c30=CTI       # CONTROLLED TECHNICAL INFORMATION
-
 # Subcategories and Markings
-s0:c30     = CUI//CTI
-s0:c30,c31 = CUI//CTI/EXPT  # EXPORT CONTROLLED
-s0:c30,c32 = CUI//CTI/EXPTR # EXPORT CONTROLLED RESEARCH
+s0:c30     = CUI//CTI             # CONTROLLED TECHNICAL INFORMATION
+s0:c30,c31 = CUI//CTI/EXPT        #  EXPORT CONTROLLED
+s0:c30,c32 = CUI//CTI/EXPTR       #  EXPORT CONTROLLED RESEARCH
 
 
 #-------------------------------------------------------------------------
 # CRITICAL INFRASTRUCTURE / PHYSICAL SECURITY
-c40=CRIT      # GENERAL CRITICAL INFRASTRUCTURE INFORMATION
-
 # Subcategories and Markings
-s0:c40      = CUI//CRIT
-s0:c40,c41  = CUI//CRIT/DCRIT  # DOD CRITICAL INFRASTRUCTURE SECURITY INFO
-s0:c40,c42  = CUI//CRIT/EMGT   # EMERGENCY MANAGEMENT
-s0:c40,c43  = CUI//CRIT/PHYS   # PHYSICAL SECURITY
-s0:c40,c44  = CUI//CRIT/ISVI   # INFORMATION SYSTEMS VULNERABILITY INFO
-s0:c40,c45  = CUI//CRIT/CEII   # CEII
-s0:c40,c46  = CUI//CRIT/WATER  # WATER
+s0:c40      = CUI//CRIT           # GENERAL CRITICAL INFRASTRUCTURE INFORMATION
+s0:c40,c41  = CUI//CRIT/DCRIT     #  DOD CRITICAL INFRASTRUCTURE SECURITY INFO
+s0:c40,c42  = CUI//CRIT/EMGT      #  EMERGENCY MANAGEMENT
+s0:c40,c43  = CUI//CRIT/PHYS      #  PHYSICAL SECURITY
+s0:c40,c44  = CUI//CRIT/ISVI      #  INFORMATION SYSTEMS VULNERABILITY INFO
+s0:c40,c45  = CUI//CRIT/CEII      #  CEII
+s0:c40,c46  = CUI//CRIT/WATER     #  WATER
 
 
 #-------------------------------------------------------------------------
 # OPERATIONS SECURITY
-c50=OPSEC     # OPERATIONS SECURITY INFORMATION
-
 # Subcategories and Markings
-s0:c50     = CUI//OPSEC
+s0:c50     = CUI//OPSEC           # OPERATIONS SECURITY INFORMATION
 
 #-------------------------------------------------------------------------
 # NAVAL NUCLEAR / SPECIAL ENERGY
-c60=NNPI      # NAVAL NUCLEAR PROPULSION INFORMATION
-
 # Subcategories and Markings
-s0:c60     = CUI//NNPI
+s0:c60     = CUI//NNPI            # NAVAL NUCLEAR PROPULSION INFORMATION
 
 
 #-------------------------------------------------------------------------
 # MISCELLANEOUS SPECIAL CATEGORIES (EXAMPLES)
-c70=PSEC      # SECRECY ORDERS
-
 # Subcategories and Markings
-s0:c70  = CUI//PSEC
-s0:c71  = CUI//PROT  # TEMPORARY PROTECTED STATUS
-s0:c72  = CUI//RAIL  # RAILROAD SAFETY ANALYSIS RECORDS
+s0:c70  = CUI//PSEC               # SECRECY ORDERS
+s0:c71  = CUI//PROT               # TEMPORARY PROTECTED STATUS
+s0:c72  = CUI//RAIL               # RAILROAD SAFETY ANALYSIS RECORDS
 
 #-------------------------------------------------------------------------
 # TAX
-c80=TAX         # Federal Taxpayer Information
-
 # Subcategories and Markings
-s0:c80     = CUI//TAX
-s0:c80,c81 = CUI//TAX/CONV # Taxpayer Advocate Information
-s0:c80,c82 = CUI//TAX/TAI  # Written Determinations
-s0:c80,c83 = CUI//TAX/WDT  # Written Determinations
+s0:c80     = CUI//TAX             # FEDERAL TAXPAYER INFORMATION
+s0:c80,c81 = CUI//TAX/CONV        #  Taxpayer Advocate Information
+s0:c80,c82 = CUI//TAX/TAI         #  Written Determinations
+s0:c80,c83 = CUI//TAX/WDT         #  Written Determinations
 
 #-------------------------------------------------------------------------
 # LAW ENFORCEMENT
-c90=LEI     # General Law Enforcement Information
-
 # Subcategories and Markings
-s0:c90      = CUI//LEI
-s0:c90,c91  = CUI//LEI/AIV    # Accident Investigation
-s0:c90,c92  = CUI//LEI/CHRI   # Criminal History Records Information
-s0:c90,c93  = CUI//LEI/CMPRS  # Committed Person
-s0:c90,c94  = CUI//LEI/SUB    # Controlled Substances
-s0:c90,c95  = CUI//LEI/LCOMM  # Communications
-s0:c90,c96  = CUI//LEI/LDNA   # DNA
-s0:c90,c97  = CUI//LEI/FUND   # Campaign Funds
-s0:c90,c98  = CUI//LEI/INF    # Informant
-s0:c90,c99  = CUI//LEI/INV    # Investigation
-s0:c90,c100 = CUI//LEI/JUV    # Juvenile
-s0:c90,c101 = CUI//LEI/LFNC   # Law Enforcement Financial Records
-s0:c90,c102 = CUI//LEI/LNSL   # National Security Letter
-s0:c90,c103 = CUI//LEI/LSCRN  # Terrorist Screening
-s0:c90,c104 = CUI//LEI/TRACE  # Pen Register/Trap & Trace
-s0:c90,c105 = CUI//LEI/RWRD   # Reward
-s0:c90,c106 = CUI//LEI/SCV    # Sex Crime Victim
-s0:c90,c107 = CUI//LEI/WHISTL # Whistleblower Identity 
+s0:c90       = CUI//LEI           # General Law Enforcement Information
+s0:c90,c91   = CUI//LEI/AIV       #  Accident Investigation
+s0:c90,c92   = CUI//LEI/CHRI      #  Criminal History Records Information
+s0:c90,c93   = CUI//LEI/CMPRS     #  Committed Person
+s0:c90,c94   = CUI//LEI/SUB       #  Controlled Substances
+s0:c90,c95   = CUI//LEI/LCOMM     #  Communications
+s0:c90,c96   = CUI//LEI/LDNA      #  DNA
+s0:c90,c97   = CUI//LEI/FUND      #  Campaign Funds
+s0:c90,c98   = CUI//LEI/INF       #  Informant
+s0:c90,c99   = CUI//LEI/INV       #  Investigation
+s0:c90,c100  = CUI//LEI/JUV       #  Juvenile
+s0:c90,c101  = CUI//LEI/LFNC      #  Law Enforcement Financial Records
+s0:c90,c102  = CUI//LEI/LNSL      #  National Security Letter
+s0:c90,c103  = CUI//LEI/LSCRN     #  Terrorist Screening
+s0:c90,c104  = CUI//LEI/TRACE     #  Pen Register/Trap & Trace
+s0:c90,c105  = CUI//LEI/RWRD      #  Reward
+s0:c90,c106  = CUI//LEI/SCV       #  Sex Crime Victim
+s0:c90,c107  = CUI//LEI/WHISTL    #  Whistleblower Identity 
 
 #-------------------------------------------------------------------------
 # AGRICULTURE (AGR)
 #
-c110=AGR      # General Agriculture Information
-
 # The comments are too long. So, let's just show them here for reference.
 # c111=AMNT    # Ammonium Nitrate (Note: Often also under CRIT group in NARA registry)
 # c112=CHEM    # Chemical-terrorism Vulnerability Information (Often under CRIT group)
@@ -160,33 +151,27 @@ c110=AGR      # General Agriculture Information
 # c115=WATER   # Water Assessments (Often under CRIT group)
 
 # Subcategories and Markings
-s0:c110      = CUI//AGR
-s0:c110,c111 = CUI//AGR/AMNT  # AMMONIUM NITRATE
-s0:c110,c112 = CUI//AGR/CHEM  # CHEMICAL-TERRORISM 
-s0:c110,c113 = CUI//AGR/PCI   # PROTECTED CRITICAL INFRASTRUCTURE
-s0:c110,c114 = CUI//AGR/TOX   # TOXIC SUBSTANCES
-s0:c110,c115 = CUI//AGR/WATER # WATER ASSESSMENTS
+s0:c110      = CUI//AGR           # General Agriculture Information
+s0:c110,c111 = CUI//AGR/AMNT      # AMMONIUM NITRATE
+s0:c110,c112 = CUI//AGR/CHEM      # CHEMICAL-TERRORISM 
+s0:c110,c113 = CUI//AGR/PCI       # PROTECTED CRITICAL INFRASTRUCTURE
+s0:c110,c114 = CUI//AGR/TOX       # TOXIC SUBSTANCES
+s0:c110,c115 = CUI//AGR/WATER     # WATER ASSESSMENTS
 
 #-------------------------------------------------------------------------
 # FINANCIAL (FNC)
-c120=FNC      # General Financial Information (No NARA subcategories)
+s0:c120      = FNC                # General Financial Information (No NARA subcategories)
 
-# Markings
-s0:c120 = CUI//FNC
 
 #-------------------------------------------------------------------------
 # GOVERNMENT (GOVT)
-c130=GOVT     # General Government Information
-
 # Subcategories and Markings
-s0:c130      = CUI//GOVT
-s0:c130,c131 = CUI//GOVT/GOVTD # Government Documents
-s0:c130,c132 = CUI//GOVT/GAF   # Government Audits/Financials
-s0:c130,c133 = CUI//GOVT/LEGL  # General Legal Information
-s0:c130,c134 = CUI//GOVT/LMI   # Legislative Materials Information
+s0:c130      = CUI//GOVT          # General Government Information
+s0:c130,c131 = CUI//GOVT/GOVTD    #  Government Documents
+s0:c130,c132 = CUI//GOVT/GAF      #  Government Audits/Financials
+s0:c130,c133 = CUI//GOVT/LEGL     #  General Legal Information
+s0:c130,c134 = CUI//GOVT/LMI      #  Legislative Materials Information
 
 #-------------------------------------------------------------------------
 # MANAGEMENT (MGT)
-c140=MGT      # General Management Information (No NARA subcategories)
-
-s0:c140 = CUI//MGT
+s0:c140      = CUI//MGT           # General Management Information (No NARA subcategories)
