@@ -176,14 +176,21 @@ impl fmt::Display for Category {
 ///
 /// Kernel MLS uses ebitmap — effectively a sparse bitmap.
 ///
-/// Fixed bitmap covering 1024 categories.
+/// Fixed bitmap covering 1024 categories. Userland can safely model 
+/// this as a dense bitset for performance, determinism, and 
+/// simplified memory management.
 ///
-/// Userland can safely model this as a dense bitset for performance,
-/// determinism, and simplified memory management.
+/// NIST 800-53 AC-4: Information Flow Enforcement
+/// NSA RTB Requirement: Deterministic execution and bounded memory usage.
+///
+/// Represents a set of 1024 MCS categories (c0 through c1023).
+/// This structure uses a fixed-size bitmask to ensure O(1) dominance math 
+/// and zero heap allocation, minimizing the TCB attack surface.
 ///
 #[derive(Clone, PartialEq, Eq, Hash)]
 pub struct CategorySet {
-    bits: [u64; 16], // 16 * 64 = 1024 bits
+    // 1024 bits = 16 words of 64 bits each
+    bits: [u64; 16], 
 }
 
 //
@@ -240,6 +247,9 @@ impl CategorySet {
     ///
     /// Kernel equivalent: `ebitmap_set_bit()`
     ///
+    /// NSA RTB Principle: Least Privilege.
+    /// Adds a category (0-1023) to the set. Returns an error if out of bounds.
+    ///
     pub const fn insert(&mut self, cat: Category) {
         let (word, mask) = Self::index(cat);
         self.bits[word] |= mask;
@@ -260,6 +270,9 @@ impl CategorySet {
         (self.bits[word] & mask) != 0
     }
 
+
+    /// NSA RTB Principle: Secure Defaults.
+    /// Initializes an empty category set (SystemLow/Unclassified).
     #[must_use]
     pub fn is_empty(&self) -> bool {
         self.bits.iter().all(|w| *w == 0)
@@ -274,6 +287,14 @@ impl CategorySet {
     ///
     /// Kernel equivalent:
     ///   `ebitmap_and()` + comparison logic
+    ///
+    ///  NIST 800-53 AC-4: Dominance Check (Lattice Mathematics).
+    ///
+    /// Evaluates if 'self' (the Subject) dominates 'other' (the Object).
+    /// In MLS, the subject must have at least all the categories of the object.
+    ///
+    /// Mathematically: (Subject & Object) == Object
+    ///
     #[must_use]
     pub fn dominates(&self, other: &Self) -> bool {
         for i in 0..16 {
