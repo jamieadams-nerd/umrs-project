@@ -1,2 +1,2 @@
 # 
-doc-valid-idents= ["SELinux" ]
+doc-valid-idents= ["SELinux", "CategorySet" ]

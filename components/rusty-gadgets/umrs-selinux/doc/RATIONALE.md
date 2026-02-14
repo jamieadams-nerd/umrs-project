@@ -1,0 +1,265 @@
+# Rationale for a Strongly-Typed SELinux Modeling Library
+
+## Introduction
+
+Traditional SELinux tooling and userland integrations frequently represent
+security contexts and labels as unstructured strings. While this approach is
+flexible, it introduces significant risk in high-assurance systems where
+correctness, determinism, and policy fidelity are critical.
+
+This library provides a strongly-typed Rust modeling layer for SELinux
+constructs. Rather than manipulating labels as raw text, each component of a
+security context is represented as a validated, domain-specific data type.
+These include SELinux users, roles, types, sensitivity levels, categories,
+category sets, MLS levels, and clearance ranges.
+
+The objective is not abstraction for its own sake, but the elimination of
+entire classes of labeling, parsing, and enforcement errors before they can
+manifest operationally. More precisely, the goal is to provide strongly-typed
+data models so that userland software can interact with the SELinux ecosystem
+more safely, predictably, and deterministically.
+
+This modeling layer improves how software constructs labels, parses labels,
+validates label components, performs dominance mathematics, pre-validates
+context transitions, and generates policy-aware artifacts before interacting
+with the kernel.
+
+Where feasible, it can operate as an alternative interface to traditional
+SELinux userland libraries such as libselinux, libsepol, and libsemanage — not
+replacing their full functionality, but providing a safer modeling substrate in
+front of them.
+
+---
+
+## Scope and Operational Boundary
+
+This project operates strictly in userland.
+
+It does not modify, replace, recompile, or interfere with SELinux kernel code,
+kernel policy engines, or mandatory access control enforcement mechanisms in
+any way. All enforcement logic remains within the Linux kernel security
+subsystem exactly as implemented upstream.
+
+This includes Access Vector Cache (AVC) decisions, policy rule evaluation, MLS
+and MCS dominance enforcement, type enforcement, constraint evaluation, and
+kernel labeling operations.
+
+The kernel remains the sole authority for security context validation, policy
+enforcement, label transition decisions, and access control outcomes. This
+library exists to improve correctness and assurance before interactions reach
+those enforcement boundaries.
+
+---
+
+## Security Context Decomposition
+
+A security context in SELinux is the full identity label assigned to a subject
+such as a process or an object such as a file. It defines the security
+attributes SELinux uses when making access control decisions.
+
+A context is composed of five elements:
+
+```
+user : role : type : sensitivity : categories
+```
+
+For example, a system file such as /etc/hosts might carry a context similar to:
+
+```
+system_u:object_r:net_conf_t:SystemLow
+```
+
+A user session might appear as:
+
+```
+unconfined_u:unconfined_r:unconfined_t:SystemLow-s0:c0.c1023
+```
+
+Within MLS systems, the sensitivity level and category set together form what
+is commonly referred to as the security label.
+
+By decomposing the context into strongly-typed primitives, each field becomes
+independently validated, explicitly modeled, immune to formatting defects, and
+safe for compositional security logic.
+
+Instead of asking only whether permission bits allow access, SELinux evaluates
+who the subject is, what role it operates in, what type of object it is
+accessing, whether its clearance dominates the target, and whether its
+categories authorize the interaction.
+
+---
+
+## Compile-Time Error Prevention
+
+String-based label handling allows invalid states to exist undetected until
+runtime. Misspelled suffixes, malformed sensitivity identifiers, out-of-range
+categories, incorrect delimiter ordering, and duplicate category declarations
+may all pass silently through tooling until enforcement occurs.
+
+Strong typing prevents these conditions at construction time. If a modeled
+object exists, it is valid. Failure detection shifts from runtime enforcement
+to compile-time or instantiation-time validation — a significant assurance
+improvement.
+
+Each primitive encodes its own structural invariants. Users, roles, and types
+enforce ASCII constraints, suffix requirements, and length boundaries.
+Categories enforce numeric bounds such as c0 through c1023. Sensitivity levels
+enforce classification ranges such as s0 through s15.
+
+This localized validation prevents malformed labels from entering system
+workflows.
+
+---
+
+## Deterministic Category Modeling
+
+MLS and MCS labels rely on category bitmaps to represent compartment
+membership. In the kernel, this is implemented through ebitmap structures.
+
+String representations introduce ambiguity — ordering inconsistencies,
+duplicate entries, inefficient comparison logic, and parsing complexity.
+
+A strongly-typed CategorySet modeled as a fixed bitmap eliminates these risks.
+Membership tests, intersections, unions, and dominance evaluations become
+deterministic, constant-time operations aligned with kernel semantics.
+
+```
+if subject_categories.dominates(object_categories) {
+    // subject has access
+}
+```
+
+---
+
+## Type-Safe Dominance and Clearance Logic
+
+MLS enforcement depends on lattice mathematics: sensitivity dominance, category
+supersets, and clearance containment.
+
+String comparison cannot safely represent these relationships. Strong typing
+encodes them directly.
+
+```
+if subject_level.dominates(object_level) {
+    allow_access();
+}
+```
+
+This prevents lexical comparison errors, inverted access logic, mishandled
+empty sets, and partial dominance miscalculations.
+
+---
+
+## Prevention of Context Construction Errors
+
+Constructing contexts via string concatenation is inherently error-prone.
+
+```
+format!("{user}:{role}:{type}:{level}")
+```
+
+Such approaches permit missing fields, misordered components, and invalid combinations.
+
+Strong typing enforces structural correctness at construction.
+
+```
+SecurityContext::new(user, role, type_id, level)
+```
+
+Invalid contexts cannot be instantiated, serialized, or enforced.
+
+---
+
+## API Contract Enforcement
+
+Rust’s type system introduces additional assurance guarantees. Attributes such
+as must_use prevent ignored security outcomes. Const functions enable
+compile-time modeling. FromStr enforces validated parsing. Display ensures
+canonical serialization.
+
+Together, these features transform SELinux handling from text manipulation into
+a contract-bound security API.
+
+Both attributes align very naturally with high-assurance development principles
+because they formalize intent and reduce the probability of silent failure
+modes.
+
+`#[must_use]` reinforces **decision accountability**. In high-assurance
+systems, especially those dealing with access control, dominance evaluation, or
+label validation, ignoring the outcome of a function is not a benign mistake —
+it is a potential security boundary violation. By forcing the caller to handle
+the return value, the compiler becomes an enforcement point for proper
+control-flow handling. This is analogous to mandatory error checking in
+safety-critical codebases: security-relevant computations cannot be performed
+and then discarded without acknowledgment.
+
+`const fn` supports **determinism and analyzability**, both key properties in
+assured software. When a constructor or accessor is `const`, it guarantees
+side-effect-free behavior and bounded execution. This makes the primitive
+suitable for compile-time evaluation, static policy modeling, and formal
+reasoning. In other words, the function’s behavior is provably stable
+regardless of runtime conditions — a desirable property when modeling security
+labels, classifications, or lattice math.
+
+From a high-assurance coding perspective, these features turn your library into
+more than a convenience wrapper. They establish enforceable contracts: results
+must be used, and core modeling logic must remain pure and deterministic.
+
+---
+
+## Policy Evolution Resilience
+
+SELinux policies evolve. Category ranges expand, sensitivity levels adjust, and
+naming rules tighten.
+
+A strongly-typed model localizes adaptation. Validation logic changes occur in
+one place while consumers remain unaffected. This reduces maintenance cost and
+prevents policy drift across tooling ecosystems.
+
+---
+
+## Memory Safety and Operational Assurance
+
+Rust eliminates classes of vulnerabilities common in legacy label tooling.
+Buffer overflows, unsafe string slicing, bitmap corruption, and undefined
+comparison behavior are structurally prevented.
+
+These properties are particularly valuable in cross-domain solutions,
+high-assurance guards, auditing pipelines, and forensic record systems.
+
+---
+
+## Alignment with Kernel Semantics
+
+The modeling layer reflects SELinux conceptual lineage without copying implementation.
+
+```
+ebitmap     → CategorySet
+Sensitivity → SensitivityLevel
+MLS Level   → MlsLevel
+Context     → SecurityContext
+```
+
+This preserves operator familiarity while modernizing safety guarantees.
+
+---
+
+## Developer and System Benefits
+
+Operationally, strongly-typed modeling improves compile-time validation,
+deterministic enforcement mathematics, parsing reliability, readability,
+testability, and API clarity.
+
+Most importantly, invalid labels become unrepresentable states.
+
+---
+
+## Strategic Assurance Impact
+
+In high-assurance and regulated environments, labeling errors are not cosmetic
+— they are security boundary failures.
+
+A strongly-typed SELinux modeling library provides early failure detection,
+label correctness guarantees, enforcement math integrity, and safer policy
+integration. These properties directly support accreditation, auditability, and
+cross-domain trust architectures.

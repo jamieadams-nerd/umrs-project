@@ -79,6 +79,8 @@ impl Category {
     /// # Examples
     ///
     /// ```
+    /// use umrs_selinux::category::Category;
+    ///
     /// let c0 = Category::new(0).unwrap();
     /// let c40 = Category::new(40).unwrap();
     /// println!("Created categories: {}, {}", c0, c40);
@@ -92,6 +94,9 @@ impl Category {
     ///
     /// Parsing from a string will also self-validate provided string. 
     /// ```
+    /// use std::str::FromStr;
+    /// use umrs_selinux::category::Category;
+    ///
     /// let parsed = Category::from_str("c7").unwrap();
     /// println!("Parsed category: {}", parsed);
     /// ```
@@ -164,8 +169,11 @@ impl CategorySet {
     /// 
     /// # Example
     /// ```rust
+    /// use umrs_selinux::category::CategorySet;
+    /// use umrs_selinux::category::Category;
+    ///
     /// let mut myset = CategorySet::new();
-    /// myset.insert(Category::new(4)?);
+    /// myset.insert(Category::new(4).unwrap());
     /// ```
     #[must_use]
     pub const fn new() -> Self {

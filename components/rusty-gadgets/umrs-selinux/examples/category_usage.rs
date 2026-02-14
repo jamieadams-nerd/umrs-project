@@ -35,7 +35,6 @@ fn main() {
     // Validation failure
     // -------------------------------------------------------------------------
     let invalid = Category::new(5000);
-
     match invalid {
         Ok(_) => println!("Unexpected success"),
         Err(e) => println!("Validation correctly failed: {:?}", e),
@@ -48,10 +47,16 @@ fn main() {
     println!("Parsed category: {}", parsed);
 
     let bad_parse = Category::from_str("x7");
-
     match bad_parse {
         Ok(_) => println!("Unexpected parse success"),
         Err(e) => println!("Parse correctly failed: {:?}", e),
+    }
+
+
+    let bad_parse = Category::from_str("7");
+    match bad_parse {
+        Ok(_) => println!("Unexpected parse success"),
+        Err(e) => println!("CTL-Char Parse correctly failed: {:?}", e),
     }
 
     println!("\n=== CategorySet Operations ===");
