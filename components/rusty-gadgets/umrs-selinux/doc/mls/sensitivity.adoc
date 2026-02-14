@@ -1,0 +1,17 @@
+## Sensitivity Level
+
+
+In the official SELinux vernacular, the Level field (the 4th part of the context) is used for Multi-Level Security (MLS) and Multi-Category Security (MCS). It is essentially the "clearance level" of the system.
+
+The sensitivity level defines a hierarchical "need-to-know" rank.
+Format: Usually represented as s0 through s15.
+
+How it works: It follows the Bell-LaPadula model: "No read up, no write down."
+A process at sensitivity s0 cannot read a file at s1 because it doesn't have a
+high enough clearance.
+
+Common Usage: On most standard systems (like Fedora or RHEL), you will only see
+s0. Higher levels are typically only used in high-security government or
+military environments.
+
+

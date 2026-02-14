@@ -1,0 +1,43 @@
+Multi-Category Security (MCS) is an access control mechanism in SELinux that
+provides non-hierarchical isolation between processes and objects. It is
+essentially a "compartmentalization" system that allows you to tag data and
+processes with categories (ranging from c0 to c1023) to ensure confidentiality. 
+
+How MCS Works
+
+Access Logic: A process can only access an object if it has a superset of the
+object's categories. If a file is labeled with c1,c2, a process with only c1
+will be denied access.
+
+Isolation: This is widely used in containerization (like Docker or Podman) and
+virtualization (sVirt). Each container is assigned a unique, random category
+pair (e.g., s0:c12,c45) so that even if a process escapes the container, it
+cannot access the data of another container with different categories.
+
+Hierarchy: Unlike MLS (Multi-Level Security), MCS typically uses only a single
+sensitivity level (s0), meaning there is no "Top Secret" vs. "Unclassified"
+vertical ranking, only horizontal grouping. 
+
+The Translation Daemon: mcstransd
+
+The "daemon which translates strings" you are referring to is mcstransd (the
+MCS/MLS Translation Daemon). 
+
+Purpose: SELinux internally stores categories as raw numbers (e.g., s0:c0,c1).
+These are hard for humans to read. mcstransd translates these internal
+representations into human-readable labels (e.g., s0:CompanyConfidential) for
+use in command outputs like ls -Z or ps -Z.
+
+Configuration: The mappings are defined in the setrans.conf file, typically
+located at /etc/selinux/{POLICYTYPE}/setrans.conf.
+
+Example Mapping: You can define a rule in setrans.conf like s0:c0=Marketing.
+When you run ls -Z, you will see Marketing instead of c0.
+
+Communication: It communicates with libselinux via a Unix domain socket located
+at /var/run/setrans/.setrans-unix. 
+
+Pro-tip: You can see the current translations on your system by running the command: chcat -L. 
+
+
+

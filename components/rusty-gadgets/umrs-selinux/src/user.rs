@@ -1,67 +1,13 @@
+//! SELinux Security User Identifier
 //!
-//! # `SELinux` Security User Identifier
-//!
-//! Author: Jamie Adams
+//! Author: Jamie Adams (a.k.a, Imodium Operator)
 //!
 //! Strongly-typed Rust primitive modeling `SELinux` security users.
 //! This module models only the identifier primitive — not policy
 //! bindings or clearance mappings.
-//!
-//! Kernel / Policy Sources Consulted:
-//! - security/selinux/include/security.h
-//! - security/selinux/ss/policydb.c
-//! - libselinux user mapping interfaces
-//!
-//! In `SELinux` policy, users are symbol table entries associated with:
-//! - Role authorization sets
-//! - MLS clearance ranges
-//! - Login mapping records
-//!
-//! ## Implementation Lineage & Design Note
-//!
-//! This module provides an independent Rust implementation of the
-//! `SELinux` security user construct.
-//!
-//! `SELinux` users are policy-defined identity symbols that participate
-//! in clearance mapping, role association, and login translation
-//! (e.g., via seusers and login mapping databases).
-//!
-//! Behavioral semantics were studied from `SELinux` userland libraries
-//! and policydb structures to preserve familiarity for experienced
-//! `SELinux` practitioners. However:
-//!
-//! - No source code has been copied or translated.
-//! - No line-by-line derivation has occurred.
-//!
-//! This implementation introduces strong typing and construction-time
-//! validation to prevent malformed security contexts and improve
-//! assurance in higher-level labeling systems.
 
 use std::fmt;
 use std::str::FromStr;
-
-//
-// =============================================================================
-// SelinuxUser Primitive
-// =============================================================================
-//
-// Represents a validated `SELinux` security user identifier.
-//
-// Example values:
-//
-//   system_u
-//   staff_u
-//   user_u
-//
-// Validation rules enforced:
-//
-// • ASCII only
-// • No whitespace
-// • Character set: [a-z0-9_]
-// • Must end in "_u"
-// • Non-empty identifier stem
-// • Length 3–255 bytes
-//
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct SelinuxUser(String);
@@ -74,7 +20,6 @@ pub const MIN_USER_LEN: usize = 3;
 // Error Taxonomy
 // =============================================================================
 //
-
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum UserError {
     Empty,
@@ -112,13 +57,11 @@ impl fmt::Display for UserError {
 
 impl std::error::Error for UserError {}
 
-
 //
 // =============================================================================
 // Constructors
 // =============================================================================
 //
-
 impl SelinuxUser {
     ///
     /// Creates a new validated `SELinux` user identifier.
@@ -156,7 +99,6 @@ impl SelinuxUser {
 // Validation Logic
 // =============================================================================
 //
-
 fn validate_user(value: &str) -> Result<(), UserError> {
     if value.is_empty() {
         return Err(UserError::Empty);
@@ -171,10 +113,7 @@ fn validate_user(value: &str) -> Result<(), UserError> {
     }
 
     for ch in value.chars() {
-        if !ch.is_ascii_lowercase()
-            && !ch.is_ascii_digit()
-            && ch != '_'
-        {
+        if !ch.is_ascii_lowercase() && !ch.is_ascii_digit() && ch != '_' {
             return Err(UserError::InvalidCharacter(ch));
         }
     }
@@ -198,7 +137,6 @@ fn validate_user(value: &str) -> Result<(), UserError> {
 // Trait Implementations
 // =============================================================================
 //
-
 impl fmt::Display for SelinuxUser {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.0)

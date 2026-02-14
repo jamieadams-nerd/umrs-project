@@ -1,0 +1,52 @@
+## SELinux Security User Identifier
+
+In the SELinux vernacular, `user_u` is a generic, low-privilege SELinux User typically assigned to
+standard, non-administrative human users. 
+
+Key Characteristics:
+
+**Identity Mapping:** Unlike Linux UIDs, which change between systems, user_u
+is a consistent identity defined within the SELinux policy. When you log in,
+the system maps your Linux username to this SELinux identity.
+
+**Restricted Privileges:** It is designed for users who should not have
+administrative access. A user mapped to user_u is generally prevented from
+switching to administrative roles like sysadm_r or executing setuid binaries
+that would transition them into a privileged domain.
+
+**Role Limitation:** By default, user_u is only authorized for the user_r Role,
+which limits the processes (domains) they can run to basic user applications
+(e.g., shells, browsers, editors). 
+
+Why "user_u" instead of my username? SELinux uses this abstraction to group many Linux accounts
+under a single security profile. This allows an administrator to define one set of rules for "all
+standard users" rather than writing individual rules for every person on the system
+
+## UMRS SELinux User (SelinuxUser) Module 
+
+Strongly-typed Rust primitive modeling `SELinux` security users. This module
+models only the identifier primitive — not policy bindings or clearance
+mappings.
+
+Kernel / Policy Sources Consulted:
+- security/selinux/include/security.h
+- security/selinux/ss/policydb.c
+- libselinux user mapping interfaces
+
+In SELinux policy, users are symbol table entries associated with:
+- Role authorization sets
+- MLS clearance ranges
+- Login mapping records
+
+
+### Validation of SelinuxUser
+The following represent a validated `SELinux` security user 
+identifier: system_u, staff_u, and user_u
+
+Validation rules enforced:
+- ASCII only
+- No whitespace
+- Character set: [a-z0-9_]
+- Must end in "_u"
+- Non-empty identifier stem
+- Length 3–255 bytes

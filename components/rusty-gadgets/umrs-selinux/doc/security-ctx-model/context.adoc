@@ -1,0 +1,130 @@
+
+## Security Context 
+
+In the official SELinux vernacular, a Security Context is most commonly
+referred to as a Security Label (or simply a Label).
+
+In SELinux, a Security Context (or label) is a string typically divided by
+colons into four distinct fields: user:role:type:level. Each field serves a
+specific purpose in the kernel's access control decisions: A Security Context
+represents the canonical SELinux label format:
+
+``` user:role:type[:level]
+```
+
+* User The SELinux User is a persistent identity defined in the policy, which
+  is separate from the standard Linux UID found in /etc/passwd. 
+  * Purpose: It maps Linux users to specific SELinux privileges.
+  * Examples: unconfined_u (default for human users) or system_u (default for
+    system services).
+  * Convention: Names usually end with _u. 
+* Role The Role is part of the Role-Based Access Control (RBAC) model. It acts
+  as an intermediary layer between the user and the types they can access. 
+  * Purpose: It defines which "domains" (process types) a user is authorized to
+    enter.
+  * Examples: object_r is used as a placeholder for files (which don't have
+    active roles), while sysadm_r or staff_r are used for processes.
+  * Convention: Names usually end with _r. 
+* Type The Type is the most critical field for the Type Enforcement (TE) model,
+  which handles the majority of SELinux's daily work. 
+  * Purpose: It defines a domain for processes and a type for files. The policy
+  specifically allows interactions between types (e.g., the httpd_t domain can
+  read the httpd_sys_content_t type).
+  * Convention: Names usually end with _t. 
+* Level (Optional) The Level is used for Multi-Level Security (MLS) or
+  Multi-Category Security (MCS). 
+  * Purpose: It consists of a sensitivity level (like s0) and optional
+    categories (like c0, c1023). This is often used to isolate similar
+    processes, such as keeping two separate virtual machines from seeing each
+    other's data. 
+  * Example: s0:c0.c1023 represents a base sensitivity with access to all categories.
+
+## Terminology
+
+> NOTE:
+> While "Security Context" is the formal term used in technical documentation and
+> APIs, "Labeling" is the active term used for the process of applying these
+> contexts to system resources. 
+
+There are some key distinctions in the vernavular which often cause confusion.
+Depending on what the context is applied to, specialized terms are often used:
+- LABEL: The general term for a security context assigned to **any object
+  (files, sockets, etc.) or process**.
+- DOMAIN: Specifically refers to the security context of a **process**. When a
+  process is running, you say it is running in a specific "domain" (e.g., the
+  httpd_t domain).
+- TYPE: While technically just one component of the context (the third field,
+  e.g., user_home_t), "Type" is often used interchangeably with "Label" or
+  "Context" in casual conversation because it is the most critical part for
+  Type Enforcement (TE).
+
+## UMRS Security Context Module
+
+The Security Context is a fundamental building block of SELinux. Without it, the kernel has no "identity" to reference when checking permissions.
+
+Here is why it is the core of the entire system:
+
+**Atomic Identity:** The context is the singular label that transforms a generic file or process into an object the kernel recognizes. SELinux doesn't care about "filenames" or "Process IDs"; it only cares about the context attached to them.
+
+**The Key to the Policy:** Think of the SELinux Policy as a massive "If/Then" rulebook. The Security Context is the subject and object of every single rule. For example: "Allow type A to read type B." Without the labels, the rulebook has nothing to point to.
+
+**Enforcement Hook:** Access decisions are made by the Security Server in the kernel. When a process tries to access a file, the kernel fetches the contexts of both, hands them to the Security Server, and asks: "Does the policy allow these two labels to interact?" SELinux Project
+
+This source code module defines the strongly-typed `SecurityContext` structure used
+throughout the UMRS SELinux userland modeling layer.     
+
+This implementation intentionally models the structural components as discrete
+typed fields rather than an unstructured string. This supports high-assurance
+validation, deterministic serialization, and future MLS expansion without
+redesign.      
+
+### Constructing
+
+A new SecurityContext can be created by providing the user, role, and type. For example, 
+
+```rust
+use std::str::FromStr;
+use umrs_selinux::context::SecurityContext;
+use umrs_selinux::user::SelinuxUser;
+use umrs_selinux::role::SelinuxRole;
+use umrs_selinux::type_id::SelinuxType;
+
+let user = SelinuxUser::from_str("system_u")?;
+let role = SelinuxRole::from_str("system_r")?;
+let security_type = SelinuxType::from_str("sshd_t")?;
+
+let ctx = SecurityContext::new(user, role, security_type);
+
+println!("Context: {}", ctx);
+```
+
+A security context can also be constructed from a string. For example:
+
+```rust
+let parsed: SecurityContext = "system_u:system_r:sshd_t".parse()?;
+println!("Parsed: {}", parsed);
+```
+
+### Errors
+The following parsing errors can be produced:
+- InvalidFormat - Context string did not contain the required 3 fields. 
+- InvalidUser - User field failed validation.                                                               
+- InvalidRole - Role field failed validation
+- InvalidType - Type field failed validation.
+
+### Display
+Canonical string serialization in standard SELinux format are provided as shown in the 
+earlier example.
+
+```rust                                                                                             
+let parsed: SecurityContext = "system_u:system_r:sshd_t".parse()?;                                  
+println!("Parsed: {}", parsed);                                                                     
+```
+
+
+
+
+
+
+
+

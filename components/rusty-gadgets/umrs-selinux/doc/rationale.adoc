@@ -1,6 +1,4 @@
-# Rationale for a Strongly-Typed SELinux Modeling Library
-
-## Introduction
+## Rationale for a Strongly-Typed SELinux Modeling Library
 
 Traditional SELinux tooling and userland integrations frequently represent
 security contexts and labels as unstructured strings. While this approach is

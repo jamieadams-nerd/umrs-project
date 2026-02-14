@@ -1,0 +1,21 @@
+## Category Set
+
+In the official SELinux vernacular, the Level field (the 4th part of the
+context) is used for Multi-Level Security (MLS) and Multi-Category Security
+(MCS). It is essentially the "clearance level" of the system
+
+Categories provide non-hierarchical, horizontal isolation (grouping).
+Format: Appended to the sensitivity, like s0:c0,c100.
+How it works: Even if two processes have the same sensitivity (s0), they cannot see each other's data unless their categories match or overlap.
+Common Usage (MCS): This is how Docker or Virtual Machines are isolated. Each container is assigned a random, unique category (e.g., s0:c12,c45). Even if a container escapes to the host, it cannot access the files of another container because the categories don't match.
+
+Summary of the "Level" Field
+
+Component	Example	Purpose
+Sensitivity	s0	Vertical hierarchy (Clearance)
+Category	c102	Horizontal isolation (Compartments)
+
+> Analogy: 
+> If the Sensitivity is the floor number in an office building (Level
+> 1, Level 2), the Category is the specific room number on that floor. You need
+> to be on the right floor and have the key to that specific room to get in.

@@ -1,0 +1,55 @@
+The secolor.conf feature is indeed restricted by a specific architectural requirement: it requires the mcstransd (MCS/MLS Translation Daemon) to be running. Because of this dependency, it typically only functions when using an MLS or MCS policy. 
+Why it doesn't work in standard "Targeted" policies
+In a default Targeted policy, the mcstransd daemon is often not active because there are no sensitivity levels or categories to "translate" into human-readable strings. 
+The Dependency: The library function selinux_raw_context_to_color()—which utilities use to fetch colors—specifically returns an error (ENOENT) if mcstransd is not running.
+The Translation Link: Even if you are using a Targeted policy, secolor.conf relies on the translation library to map raw context components to the color masks defined in your config. 
+Requirements for Implementation
+To successfully implement secolor.conf, your system must meet these criteria:
+Policy Type: Use a policy that supports levels/categories (MLS or MCS).
+Daemon: The mcstransd service must be active.
+Config Location: The file must be located at /etc/selinux/{POLICYTYPE}/contexts/secolor.conf.
+Applications: You must use SELinux-aware applications that specifically call the selinux_raw_context_to_color function (like specialized versions of ls or custom audit tools). 
+Alternative: Zsh Prompt Coloring
+If your goal is to color the SELinux context in your Zsh prompt (which we discussed earlier), you do not need secolor.conf. Instead, you can use a shell function to wrap the ls -Z or id -Z output and apply Zsh's built-in color attributes: 
+bash
+# Example: Custom Zsh function to color your current domain
+function get_selinux_color() {
+  local context=$(id -Z 2>/dev/null)
+  if [[ $context == *"unconfined_t"* ]]; then
+    echo "%F{red}" # Bold red for unconfined
+  else
+    echo "%F{green}" # Green for confined
+  fi
+}
+PROMPT='$(get_selinux_color)%n%f@%m:%~%# '
+Use code with caution.
+
+This bypasses the secolor.conf limitation by handling the "translation" and "coloring" directly within your shell. 
+
+
+
+
+
+The secolor.conf file is used to define how different components of an SELinux security context (user, role, type, and range/level) are colored in supported applications. 
+File Location
+The file must be placed within the active SELinux policy's configuration directory:
+/etc/selinux/{SELINUXTYPE}/contexts/secolor.conf
+(Where {SELINUXTYPE} is usually targeted, mcs, or mls as defined in your /etc/selinux/config file). 
+File Format
+The file consists of two main sections: color definitions and context component mappings. 
+1. Color Definitions
+You define a color name and associate it with a hexadecimal RGB mask. 
+Format: color <color_name> = #<color_mask>
+Example:
+text
+color black  = #000000
+color red    = #ff0000
+color green  = #008000
+Use code with caution.
+
+ 
+2. Context Component Mappings
+This section maps specific context strings to the foreground and background colors defined earlier. The supported components are user, role, type, or range. 
+For more details on the file format, including examples and the use of wildcards, you can refer to the secolor.conf man page.
+
+

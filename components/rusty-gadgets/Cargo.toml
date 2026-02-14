@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
 members = [
-    "cui-labels", 
+    "cui-labels", "kernel-files", 
     "robotgen", 
     "umrs-core",
     "umrs-logspace", "umrs-selinux", "umrs-semanage", "umrs-sepolicy",
