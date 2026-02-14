@@ -81,6 +81,35 @@ pub enum RoleError {
     InvalidStem,
 }
 
+impl fmt::Display for RoleError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Empty => {
+                write!(f, "SELinux role cannot be empty")
+            }
+
+            Self::TooLong(len) => {
+                write!(f, "SELinux role exceeds maximum length ({len})")
+            }
+
+            Self::InvalidCharacter(ch) => {
+                write!(f, "invalid character '{ch}' in SELinux role")
+            }
+
+            Self::InvalidSuffix => {
+                write!(f, "SELinux role has an invalid suffix")
+            }
+
+            Self::InvalidStem => {
+                write!(f, "SELinux role has an invalid stem")
+            }
+        }
+    }
+}
+
+impl std::error::Error for RoleError {}
+
+
 //
 // =============================================================================
 // Constructors

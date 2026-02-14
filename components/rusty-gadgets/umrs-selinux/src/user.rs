@@ -84,6 +84,35 @@ pub enum UserError {
     InvalidStem,
 }
 
+impl fmt::Display for UserError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Empty => {
+                write!(f, "SELinux user cannot be empty")
+            }
+
+            Self::TooLong(len) => {
+                write!(f, "SELinux user exceeds maximum length ({len})")
+            }
+
+            Self::InvalidCharacter(ch) => {
+                write!(f, "invalid character '{ch}' in SELinux user")
+            }
+
+            Self::InvalidSuffix => {
+                write!(f, "SELinux user has an invalid suffix")
+            }
+
+            Self::InvalidStem => {
+                write!(f, "SELinux user has an invalid stem")
+            }
+        }
+    }
+}
+
+impl std::error::Error for UserError {}
+
+
 //
 // =============================================================================
 // Constructors
