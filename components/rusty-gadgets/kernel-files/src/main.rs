@@ -1,6 +1,6 @@
 use kernel_files::{
     SecureReader, SelinuxEnforce, SelinuxMls, SelinuxPolicyVers, 
-    ProcFips, GenericDualBool, EnforceState
+    ProcFips, GenericDualBool, EnforceState, validate_type_redundant
 };
 use std::path::PathBuf;
 
@@ -39,7 +39,6 @@ fn main() {
     println!("\n--- Dual-Boolean Testing (fips_mode) ---");
 
     // 5. SELinux Boolean with Dual-Value (Current/Pending)
-    // Note: 'fips_mode' returns "1 1" or "0 0"
     let dual_reader = SecureReader::<GenericDualBool>::new();
     let fips_mode_node = GenericDualBool {
         path: PathBuf::from("/sys/fs/selinux/booleans/fips_mode"),
@@ -53,6 +52,27 @@ fn main() {
             eprintln!("SELinux fips_mode Err: {} (Boolean may not exist in current policy)", e);
         }
     }
-}
 
+    println!("\n--- NSA RTB Redundancy Verification (TPI) ---");
+
+    // 6. Test 1: Valid high-assurance context
+    // Satisfies RAIN (Redundant): Both Path A and Path B must agree.
+    let valid_context = "unconfined_u:unconfined_r:umrs_data_t:s0";
+    
+    println!("[Test A] Valid Context: {}", valid_context);
+    match validate_type_redundant(valid_context) {
+        Ok(t) => println!("  Result: SUCCESS (Type identified as: {})", t),
+        Err(e) => eprintln!("  Result: FAILED ({})", e),
+    }
+
+    // 7. Test 2: Mismatch Simulation (Fail-Closed)
+    // Satisfies RAIN (Non-bypassable): If one parser fails or disagrees, access is denied.
+    let malformed_context = "unconfined_u:unconfined_r:umrs_data_t"; // Missing final colon
+
+    println!("[Test B] Malformed (No trailing colon): {}", malformed_context);
+    match validate_type_redundant(malformed_context) {
+        Ok(t) => println!("  Result: SUCCESS (Type: {})", t),
+        Err(e) => eprintln!("  Result: DENIED (Reason: {})", e),
+    }
+}
 

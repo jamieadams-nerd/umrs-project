@@ -3,6 +3,12 @@ use std::io::{self, Read};
 use std::path::{Path, PathBuf};
 use std::marker::PhantomData;
 use nix::sys::statfs::{statfs, FsType, SELINUX_MAGIC, PROC_SUPER_MAGIC};
+use nom::{
+    bytes::complete::{tag, take_until},
+    IResult,
+};
+
+
 
 /// NIST 800-53 SI-7: Software and Information Integrity
 /// Core contract for any file originating from a trusted Kernel Pseudo-FS.
@@ -186,3 +192,49 @@ impl<T: KernelFileSource> SecureReader<T> {
         T::parse(&buffer[..bytes_read])
     }
 }
+// ===========================================================================
+// These implement the Redundant (TPI) logic for the type field in a 
+// context string (e.g., user:role:type:level):
+// ===========================================================================
+/// Path A: Combinator-based parser (nom). 
+/// NIST 800-53 AC-4 / NSA RTB Redundancy Requirement.
+fn parse_type_path_a(input: &str) -> IResult<&str, &str> {
+    let (input, _) = take_until(":")(input)?;
+    let (input, _) = tag(":")(input)?;
+    let (input, _) = take_until(":")(input)?;
+    let (input, _) = tag(":")(input)?;
+    let (input, type_name) = take_until(":")(input)?;
+    Ok((input, type_name))
+}
+
+/// Path B: Manual iteration parser. 
+/// NIST 800-53 AC-4 / NSA RTB Redundancy Requirement.
+fn parse_type_path_b(input: &str) -> io::Result<&str> {
+    let mut parts = input.split(':');
+    let _u = parts.next().ok_or(io::Error::new(io::ErrorKind::InvalidData, "No User"))?;
+    let _r = parts.next().ok_or(io::Error::new(io::ErrorKind::InvalidData, "No Role"))?;
+    let t = parts.next().ok_or(io::Error::new(io::ErrorKind::InvalidData, "No Type"))?;
+    Ok(t)
+}
+
+/// NSA RTB "RAIN" Redundancy Check.
+/// Returns Ok(type) only if both Path A and Path B agree exactly.
+#[must_use]
+pub fn validate_type_redundant(context: &str) -> io::Result<&str> {
+    let (_, type_a) = parse_type_path_a(context)
+        .map_err(|_| io::Error::new(io::ErrorKind::InvalidData, "Path A Logic Failure"))?;
+
+    let type_b = parse_type_path_b(context)?;
+
+    // RTB Integrity Gate: Failure of agreement results in a Deny (Fail Closed).
+    if type_a != type_b {
+        return Err(io::Error::new(
+            io::ErrorKind::PermissionDenied,
+            "RTB Redundancy Failure: Logic Mismatch Detected"
+        ));
+    }
+
+    Ok(type_a)
+}
+
+

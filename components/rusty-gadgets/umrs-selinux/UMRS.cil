@@ -1,0 +1,93 @@
+;; ==========================================================
+;; UMRS DATA TYPES & ATTRIBUTES
+;; NIST 800-53 AC-3: Access Enforcement (Grouped by Attribute)
+;; ==========================================================
+
+;; Data Types
+(typeattribute umrs_data_type)
+(typeattributeset umrs_data_type (umrs_data_ro_t umrs_data_rw_t))
+
+(typeattribute umrs_config_type)
+(typeattributeset umrs_config_type (umrs_config_ro_t umrs_config_rw_t))
+
+(typeattribute umrs_log_type)
+(typeattributeset umrs_log_type (umrs_log_ro_t umrs_log_rw_t))
+
+(typeattribute umrs_httpd_type)
+(typeattributeset umrs_httpd_type (umrs_httpd_t))
+
+;; ==========================================================
+;; CONCRETE TYPE DECLARATIONS
+;; ==========================================================
+
+;; Config types
+(type umrs_config_ro_t)
+(roletype object_r umrs_config_ro_t)
+(type umrs_config_rw_t)
+(roletype object_r umrs_config_rw_t)
+
+;; Data types
+(type umrs_data_ro_t)
+(roletype object_r umrs_data_ro_t)
+(type umrs_data_rw_t)
+(roletype object_r umrs_data_rw_t)
+
+;; Service/HTTPD types
+(type umrs_httpd_t)
+(roletype object_r umrs_httpd_t)
+
+;; Log types
+(type umrs_log_ro_t)
+(roletype object_r umrs_log_ro_t)
+(type umrs_log_rw_t)
+(roletype object_r umrs_log_rw_t)
+
+;; ==========================================================
+;; SYSTEM ATTRIBUTE MAPPINGS
+;; Binding UMRS types to standard RHEL file_type attributes
+;; ==========================================================
+
+(typeattributeset cil_gen_require (system_r unconfined_t file_type non_security_file_type non_auth_file_type))
+
+(typeattributeset file_type 
+    (umrs_config_ro_t umrs_config_rw_t umrs_data_ro_t umrs_data_rw_t umrs_httpd_t umrs_log_ro_t umrs_log_rw_t))
+
+(typeattributeset non_security_file_type 
+    (umrs_config_ro_t umrs_config_rw_t umrs_data_ro_t umrs_data_rw_t umrs_httpd_t umrs_log_ro_t umrs_log_rw_t))
+
+(typeattributeset non_auth_file_type 
+    (umrs_config_ro_t umrs_config_rw_t umrs_data_ro_t umrs_data_rw_t umrs_httpd_t umrs_log_ro_t umrs_log_rw_t))
+
+;; ==========================================================
+;; HIGH-ASSURANCE ENFORCEMENT
+;; NIST 800-53 AC-6: Least Privilege (Neverallow Rules)
+;; Blocking 'unconfined_t' from interacting with UMRS protected data.
+;; ==========================================================
+
+;; Prevent unconfined access to UMRS Data
+(neverallow unconfined_t umrs_data_type (dir (all)))
+(neverallow unconfined_t umrs_data_type (file (all)))
+
+;; Prevent unconfined access to UMRS Config
+(neverallow unconfined_t umrs_config_type (dir (all)))
+(neverallow unconfined_t umrs_config_type (file (all)))
+
+;; Prevent unconfined access to UMRS Logs
+(neverallow unconfined_t umrs_log_type (dir (all)))
+(neverallow unconfined_t umrs_log_type (file (all)))
+
+;; Prevent unconfined access to UMRS HTTPD
+(neverallow unconfined_t umrs_httpd_type (dir (all)))
+(neverallow unconfined_t umrs_httpd_type (file (all)))
+
+;; ==========================================================
+;; FILE CONTEXTS (LABELING)
+;; NIST 800-53 SC-28: Protection of Information at Rest
+;; ==========================================================
+
+(filecon "/usr/share/umrs(/.*)?" any (system_u object_r umrs_config_ro_t ((s0) (s0))))
+(filecon "/etc/umrs(/.*)?"      any (system_u object_r umrs_config_ro_t ((s0) (s0))))
+(filecon "/var/lib/umrs(/.*)?"  any (system_u object_r umrs_data_ro_t   ((s0) (s0))))
+(filecon "/var/log/umrs(/.*)?"  any (system_u object_r umrs_log_ro_t   ((s0) (s0))))
+(filecon "/var/www/umrs(/.*)?"  any (system_u object_r umrs_httpd_t    ((s0) (s0))))
+

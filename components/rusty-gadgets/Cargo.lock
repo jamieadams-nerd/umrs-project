@@ -290,6 +290,7 @@ name = "kernel-files"
 version = "0.1.0"
 dependencies = [
  "nix 0.29.0",
+ "nom",
 ]
 
 [[package]]
@@ -372,6 +373,15 @@ dependencies = [
  "cfg-if",
  "cfg_aliases 0.2.1",
  "libc",
+]
+
+[[package]]
+name = "nom"
+version = "8.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "df9761775871bdef83bee530e60050f7e54b1105350d6884eb0fb4f46c2f9405"
+dependencies = [
+ "memchr",
 ]
 
 [[package]]
@@ -677,6 +687,13 @@ name = "toml_write"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5d99f8c9a7727884afe522e9bd5edbfc91a3312b36a77b5fb8926e4c31a41801"
+
+[[package]]
+name = "tpi-parser"
+version = "0.1.0"
+dependencies = [
+ "nom",
+]
 
 [[package]]
 name = "umrs-core"

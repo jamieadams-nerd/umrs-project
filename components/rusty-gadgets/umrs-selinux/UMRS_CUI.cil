@@ -1,0 +1,82 @@
+;; ============================================================================
+;; MODULE: umrs_cui
+;; DESCRIPTION: Defines the Data Plane for Controlled Unclassified Information.
+;; ARCHITECTURE: MLS-based Mandatory Access Control (MAC) for RHEL 10.
+;; ============================================================================
+
+;; ----------------------------------------------------------------------------
+;; CUI ATTRIBUTE DECLARATIONS
+;; NIST 800-53 AC-3: Access Enforcement (Attribute-Based Access Control)
+;; ----------------------------------------------------------------------------
+
+;; Grouping for all CUI data objects
+(typeattribute cui_data_type)
+(typeattributeset cui_data_type (cui_data_ro_t cui_data_rw_t))
+
+;; Grouping for all CUI configuration objects
+(typeattribute cui_config_type)
+(typeattributeset cui_config_type (cui_config_ro_t cui_config_rw_t))
+
+;; Grouping for CUI-specific audit logs
+(typeattribute cui_log_type)
+(typeattributeset cui_log_type (cui_log_rw_t))
+
+;; ----------------------------------------------------------------------------
+;; CONCRETE TYPE DEFINITIONS
+;; NIST 800-53 SC-28: Protection of Information at Rest
+;; ----------------------------------------------------------------------------
+
+;; CUI Data Types
+(type cui_data_ro_t)
+(roletype object_r cui_data_ro_t)
+(type cui_data_rw_t)
+(roletype object_r cui_data_rw_t)
+
+;; CUI Config Types
+(type cui_config_ro_t)
+(roletype object_r cui_config_ro_t)
+(type cui_config_rw_t)
+(roletype object_r cui_config_rw_t)
+
+;; CUI Log Types
+(type cui_log_rw_t)
+(roletype object_r cui_log_rw_t)
+
+;; ----------------------------------------------------------------------------
+;; EXTERNAL REQUIREMENTS
+;; Binding to system-defined roles and types
+;; ----------------------------------------------------------------------------
+(roleattributeset cil_gen_require system_r)
+(typeattributeset cil_gen_require unconfined_t)
+
+;; ----------------------------------------------------------------------------
+;; HIGH-ASSURANCE ISOLATION (NEVERALLOW)
+;; NSA RTB Principle: Strict Domain Separation & Non-Bypassability.
+;; NIST 800-53 AC-6: Least Privilege.
+;; 
+;; These rules ensure that even 'unconfined_t' (the default admin) is 
+;; hardware-blocked from interacting with CUI data by the kernel.
+;; ----------------------------------------------------------------------------
+
+;; Protect CUI Data Objects
+(neverallow unconfined_t cui_data_type 
+    (file (ioctl read write create getattr setattr lock relabelfrom relabelto append map unlink link rename execute swapon quotaon mounton audit_access open execmod watch watch_mount watch_sb watch_with_perm watch_reads execute_no_trans entrypoint)))
+
+(neverallow unconfined_t cui_data_type 
+    (dir (ioctl read write create getattr setattr lock relabelfrom relabelto append map unlink link rename execute swapon quotaon mounton audit_access open execmod watch watch_mount watch_sb watch_with_perm watch_reads add_name remove_name reparent search rmdir)))
+
+;; Protect CUI Config Objects
+(neverallow unconfined_t cui_config_type 
+    (file (ioctl read write create getattr setattr lock relabelfrom relabelto append map unlink link rename execute swapon quotaon mounton audit_access open execmod watch watch_mount watch_sb watch_with_perm watch_reads execute_no_trans entrypoint)))
+
+(neverallow unconfined_t cui_config_type 
+    (dir (ioctl read write create getattr setattr lock relabelfrom relabelto append map unlink link rename execute swapon quotaon mounton audit_access open execmod watch watch_mount watch_sb watch_with_perm watch_reads add_name remove_name reparent search rmdir)))
+
+;; Protect CUI Log Objects
+(neverallow unconfined_t cui_log_type 
+    (file (ioctl read write create getattr setattr lock relabelfrom relabelto append map unlink link rename execute swapon quotaon mounton audit_access open execmod watch watch_mount watch_sb watch_with_perm watch_reads execute_no_trans entrypoint)))
+
+(neverallow unconfined_t cui_log_type 
+    (dir (ioctl read write create getattr setattr lock relabelfrom relabelto append map unlink link rename execute swapon quotaon mounton audit_access open execmod watch watch_mount watch_sb watch_with_perm watch_reads add_name remove_name reparent search rmdir)))
+
+
