@@ -1,6 +1,7 @@
 use kernel_files::{
     SecureReader, SelinuxEnforce, SelinuxMls, SelinuxPolicyVers, 
-    ProcFips, GenericDualBool, EnforceState, validate_type_redundant
+    ProcFips, GenericDualBool, EnforceState, validate_type_redundant,
+    AttributeCard, StaticSource, KernelFileSource
 };
 use std::path::PathBuf;
 
@@ -74,5 +75,22 @@ fn main() {
         Ok(t) => println!("  Result: SUCCESS (Type: {})", t),
         Err(e) => eprintln!("  Result: DENIED (Reason: {})", e),
     }
+
+
+    // Show audit card
+    println!("\n\n");
+    let enforce_reader = SecureReader::<SelinuxEnforce>::new();
+    if let Ok(val) = enforce_reader.read() {
+    let card = AttributeCard::<SelinuxEnforce> { 
+        value: &val, 
+        path: SelinuxEnforce::PATH 
+    };
+    // This prints the formatted "r#" block perfectly
+    println!("{}", card); 
 }
+
+}
+
+
+
 
