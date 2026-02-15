@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT                                                                     
+// Copyright (c) 2026 Jamie Adams (a.k.a, Imodium Operator)
+// ===========================================================================
 //!
 //! SELinux Multi-Category Security (MCS) Namespace
 //!
@@ -9,4 +12,5 @@
 //! hierarchical "sensitivity levels" (e.g., Public vs. Top Secret), MCS uses non-hierarchical
 //! categories (e.g., Project A, Payroll, or HR).
 //!
-
+// ===========================================================================
+pub mod setrans;

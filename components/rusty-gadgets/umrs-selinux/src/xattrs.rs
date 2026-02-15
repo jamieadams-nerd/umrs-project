@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT                                                                     
+// Copyright (c) 2026 Jamie Adams (a.k.a, Imodium Operator) 
+//
 // ============================================================================
 // UMRS SELINUX: Extended Attribute (xattr) Logic
 // NIST 800-53 AC-3 / NSA RTB (Non-Bypassability & Redundancy)
@@ -22,7 +25,7 @@ impl SecureXattrReader {
     /// NIST 800-53 SI-7: High-Assurance xattr retrieval via raw syscalls.
     pub fn read_raw(file: &File, attr: &str) -> io::Result<Vec<u8>> {
         let size = fgetxattr(file, attr, &mut [])
-            .map_err(|e| io::Error::new(io::ErrorKind::Other, e))?;
+            .map_err(#[allow(clippy::redundant_closure)] |e| io::Error::from(e))?;
 
         if size == 0 {
             return Err(io::Error::new(io::ErrorKind::InvalidData, "Empty xattr"));
@@ -30,7 +33,7 @@ impl SecureXattrReader {
 
         let mut buffer = vec![0u8; size];
         let bytes_read = fgetxattr(file, attr, &mut buffer)
-            .map_err(|e| io::Error::new(io::ErrorKind::Other, e))?;
+            .map_err(#[allow(clippy::redundant_closure)] |e| io::Error::from(e))?;
 
         buffer.truncate(bytes_read);
         if let Some(&0) = buffer.last() {
@@ -41,6 +44,9 @@ impl SecureXattrReader {
     }
 
     /// NSA RTB (Redundant/TPI): Validates the context using two independent paths.
+    /// # Errors
+    /// Returns `ErrorKind` Invalid data
+    ///
     pub fn read_context(file: &File) -> io::Result<SecurityContext> {
         let start_time = Instant::now();
         let raw_bytes = Self::read_raw(file, XATTR_NAME_SELINUX)?;
@@ -50,22 +56,22 @@ impl SecureXattrReader {
 
         // --- PATH A: nom Parser (Declarative) ---
         let (_, context_a) = parse_context_nom(context_str).map_err(|e| {
-            log::error!("TPI Path A (nom) failed: {:?}", e);
+            log::error!("TPI Path A (nom) failed: {e}");
             io::Error::new(io::ErrorKind::InvalidData, "TPI Path A Failed")
         })?;
 
         // --- PATH B: FromStr (Imperative) ---
         let context_b: SecurityContext =
             context_str.parse().map_err(|e: ContextParseError| {
-                log::error!("TPI Path B (FromStr) failed: {}", e);
+                log::error!("TPI Path B (FromStr) failed: {e}");
                 io::Error::new(io::ErrorKind::InvalidData, e.to_string())
             })?;
 
         // --- TPI GATE: Integrity Check (Loud Mismatch) ---
         if context_a != context_b {
             log::error!("CRITICAL: RTB Redundancy Failure!");
-            log::error!("PATH A OBJECT: {:?}", context_a);
-            log::error!("PATH B OBJECT: {:?}", context_b);
+            log::error!("PATH A OBJECT: {context_a:?}");
+            log::error!("PATH B OBJECT: {context_b:?}");
             return Err(io::Error::new(
                 io::ErrorKind::PermissionDenied,
                 "RTB Redundancy Failure: Security Ctx logic mismatch",
@@ -74,8 +80,7 @@ impl SecureXattrReader {
 
         let duration = start_time.elapsed();
         log::debug!(
-            "RTB Redundancy Success: Security Ctx logic match in {:?}",
-            duration
+            "RTB Redundancy Success: Security Ctx logic match in {duration:?}"
         );
 
         Ok(context_a)
@@ -116,28 +121,28 @@ fn parse_context_nom(input: &str) -> IResult<&str, SecurityContext> {
             Err(_) => ("", input),
         };
 
-    log::debug!("[PATH A] Raw Type: '{}', Level remainder: '{}'", type_raw, remaining_after_type);
+    log::debug!("[PATH A] Raw Type: '{type_raw}', Level remainder: '{remaining_after_type}'");
 
     // 3. Level Parsing (Sensitivity + Categories)
-    let level = if !remaining_after_type.is_empty() {
+    let level = if remaining_after_type.is_empty() {
+        None
+    } else {
         let (sens_raw, cats_str) = remaining_after_type
             .split_once(':')
             .unwrap_or((remaining_after_type, ""));
 
-        let sens = match SensitivityLevel::from_str(sens_raw) {
-            Ok(s) => s,
-            Err(_) => SensitivityLevel::new(0).unwrap(),
-        };
+        let sens = SensitivityLevel::from_str(sens_raw)
+            .unwrap_or_else(|_| SensitivityLevel::new(0).expect("TCB Invariant: s0 must be valid"));
 
-        let cats = if !cats_str.is_empty() {
+        let cats = if cats_str.is_empty() {
+            CategorySet::new()
+        } else {
             parse_mcs_categories(cats_str).map_err(|_| {
                 nom::Err::Failure(nom::error::Error::new(
                     cats_str,
                     nom::error::ErrorKind::Tag,
                 ))
             })?
-        } else {
-            CategorySet::new()
         };
 
         Some(MlsLevel {
@@ -145,8 +150,6 @@ fn parse_context_nom(input: &str) -> IResult<&str, SecurityContext> {
             categories: cats,
             raw_level: remaining_after_type.to_string(),
         })
-    } else {
-        None
     };
 
     // 4. Map to Strong Types
@@ -169,7 +172,13 @@ fn parse_context_nom(input: &str) -> IResult<&str, SecurityContext> {
 // Shared Category Parser
 // NIST 800-53 AC-4: Helper to parse MCS Category strings (e.g., "c0.c3,c90")
 // ===========================================================================
-pub(crate) fn parse_mcs_categories(
+/// Parses MCS Categories
+///
+/// # Errors
+///
+/// Returns `ErrorKind` due to invalid data.
+///
+pub fn parse_mcs_categories(
     input: &str,
 ) -> io::Result<crate::category::CategorySet> {
     let mut set = crate::category::CategorySet::new();

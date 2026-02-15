@@ -1,10 +1,7 @@
-// ============================================================================
-// UMRS SELINUX: Security Context (Security Label)
-// NIST 800-53 AC-4 / NSA RTB (Strong Data Modeling & Lattice Math)
-// ============================================================================
-//! Security Context (a.k.a, Security Label or just Label)
-//!
-//! Author: Jamie Adams (a.k.a, Imodium Operator)
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Jamie Adams (a.k.a, Imodium Operator)
+//
+//! UMRS SELINUX: Security Context (Security Label)
 //!
 //! This module defines the strongly-typed `SecurityContext` structure used
 //! throughout the UMRS SELinux userland modeling layer.
@@ -12,8 +9,9 @@
 //! A Security Context represents the canonical SELinux label format:
 //!     user : role : type [:level]
 //!
-//! NIST 800-53 AC-4: This module enforces the internal representation of
-//! security attributes used for Information Flow Enforcement.
+//! NIST 800-53 AC-4 / NSA RTB (Strong Data Modeling & Lattice Math)
+//!   This module enforces the internal representation of security attributes used for 
+//!   Information Flow Enforcement.
 
 use std::fmt;
 use std::str::FromStr;

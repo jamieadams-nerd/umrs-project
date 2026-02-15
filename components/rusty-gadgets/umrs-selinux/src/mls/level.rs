@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT                                                                     
+// Copyright (c) 2026 Jamie Adams (a.k.a, Imodium Operator)
+// ===========================================================================
 //! MLS Level primitive for SELinux contexts.
 //!
 //! This module models a single MLS/MCS level consisting of:
@@ -17,6 +20,7 @@
 //! `range` module and are intentionally out of scope here.
 //!
 //! This type is strongly typed and does not rely on libselinux.
+// ===========================================================================
 
 use std::fmt;
 use std::str::FromStr;

@@ -1,8 +1,10 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Jamie Adams (a.k.a, Imodium Operator)
+//
 //!
 //! # UMRS SELinux Modeling Library
 //!
 //! - Project: Unclassified MLS Reference System (exploring CUI)
-//! - Author: Jamie Adams (a.k.a, Imodium Operator)
 //!
 //! This work represents a clean-room, strongly-typed modeling layer designed
 //! to provide ergonomic and high-assurance abstractions over SELinux security

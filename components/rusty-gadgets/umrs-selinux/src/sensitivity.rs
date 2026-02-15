@@ -1,9 +1,12 @@
-//! # `SELinux` MLS Sensitivity Level
+//// SPDX-License-Identifier: MIT                                                                     
+// Copyright (c) 2026 Jamie Adams (a.k.a, Imodium Operator)
+//
+//! # SELinux MLS Sensitivity Level
 //!
 //! This module provides an independent Rust implementation of the `SELinux` MLS 
 //! sensitivity level construct. They are strongly-typed Rust primitives.
 //!
-//! In `SELinux` MLS policy, sensitivities are ordinal classification levels forming 
+//! In SELinux MLS policy, sensitivities are ordinal classification levels forming 
 //! the hierarchical portion of a security label.
 //!
 //! They are combined with category bitmaps to form full MLS levels.
@@ -18,7 +21,7 @@
 //! ## Implementation Lineage & Design Note
 //!
 //! This module provides an independent Rust implementation of the
-//! `SELinux` MLS sensitivity level construct.
+//! SELinux MLS sensitivity level construct.
 //!
 //! Sensitivity levels represent hierarchical classification tiers
 //! within the MLS model. They participate in dominance comparisons,

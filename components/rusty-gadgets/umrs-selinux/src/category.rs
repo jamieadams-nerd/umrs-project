@@ -1,8 +1,8 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Jamie Adams (Immodium Operator)
+// ===========================================================================
 //!
 //! SELinux Catagories, Category Sets, and dominance semantics
-//!
-//! - Author: Jamie Adams
-//! - License: MIT
 //!
 //! Strongly-typed Rust primitives modeling SELinux MLS constructs,
 //! including categories, category sets, and dominance semantics.
@@ -42,7 +42,7 @@
 //! Rust language features such as strong typing, validation at
 //! construction, and memory safety guarantees to improve
 //! correctness and assurance beyond legacy approaches.
-//!
+// ===========================================================================
 
 use std::fmt;
 use std::str::FromStr;
@@ -187,7 +187,7 @@ impl fmt::Display for Category {
 /// This structure uses a fixed-size bitmask to ensure O(1) dominance math 
 /// and zero heap allocation, minimizing the TCB attack surface.
 ///
-#[derive(Clone, PartialEq, Eq, Hash)]
+#[derive(Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct CategorySet {
     // 1024 bits = 16 words of 64 bits each
     bits: [u64; 16], 

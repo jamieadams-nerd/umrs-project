@@ -2,9 +2,8 @@
 resolver = "2"
 members = [
     "cui-labels", "kernel-files", 
-    "robotgen", "tpi-parser", 
     "umrs-core",
-    "umrs-logspace", "umrs-selinux", "umrs-semanage", "umrs-sepolicy",
+    "umrs-logspace", "umrs-selinux", 
     "umrs-state",
     "vaultmgr", 
     "xtask", 

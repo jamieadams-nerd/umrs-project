@@ -8,7 +8,9 @@ edition = "2024"
 rustix = { version = "0.38", features = ["fs", "std"] }
 nom = "7.1"
 chrono = "0.4"
-nix = { version = "0.27", features = ["user"] }
+nix = { version = "0.27", features = ["user", "fs" ] }
 # log = { version = "0.4", features = ["max_level_off", "release_max_level_warn"] }
  log = "0.4"
 env_logger = "0.11"
+
+

@@ -1,10 +1,12 @@
+// SPDX-License-Identifier: MIT                                                                     
+// Copyright (c) 2026 Jamie Adams (a.k.a, Imodium Operator) 
+//
 //! SELinux Security User Identifier
-//!
-//! Author: Jamie Adams (a.k.a, Imodium Operator)
 //!
 //! Strongly-typed Rust primitive modeling `SELinux` security users.
 //! This module models only the identifier primitive — not policy
 //! bindings or clearance mappings.
+//!
 
 use std::fmt;
 use std::str::FromStr;

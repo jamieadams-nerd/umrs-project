@@ -1,6 +1,7 @@
-//! # `SELinux` Security Type Identifier
-//! - Author: Jamie Adams
-//! - License: MIT
+// SPDX-License-Identifier: MIT                                                                     
+// Copyright (c) 2026 Jamie Adams (a.k.a, Imodium Operator)
+//
+//! # SELinux Security Type Identifier
 //!
 //! Strongly-typed Rust primitive modeling `SELinux` security types.
 //! This module models only the identifier primitive — not policy rule
@@ -12,30 +13,30 @@
 //!   security/selinux/include/security.h
 //!   libselinux type and context interfaces
 //!
-//! In `SELinux` policy, types are symbol table entries associated with:
+//! In SELinux policy, types are symbol table entries associated with:
 //!
-//! • Domain execution contexts
-//! • Object labeling rules
-//! • Type transitions
-//! • Allow/deny TE rules
+//! - Domain execution contexts
+//! - Object labeling rules
+//! - Type transitions
+//! - Allow/deny TE rules
 //!
 //! This module models only the identifier primitive — not policy rule
 //! bindings, transitions, or attribute associations.
 //! 
 //! ## Implementation Lineage & Design Note
 //! This module provides an independent Rust implementation of the
-//! `SELinux` security type construct.
+//! SELinux security type construct.
 //!
-//! `SELinux` types (domains) are the primary enforcement anchors within
+//! SELinux types (domains) are the primary enforcement anchors within
 //! Type Enforcement (TE). They define process domains, object classes,
 //! transition boundaries, and allow/deny rule applicability.
 //!
-//! Behavioral semantics were studied from `SELinux` userland libraries
+//! Behavioral semantics were studied from SELinux userland libraries
 //! and policydb structures to preserve familiarity for experienced
-//! `SELinux` practitioners. However:
+//! SELinux practitioners. However:
 //!
 //! - No source code has been copied or translated.
-//! - • No line-by-line derivation has occurred.
+//! - No line-by-line derivation has occurred.
 //!
 //! This implementation introduces strong typing and construction-time
 //! validation to prevent malformed security contexts and improve

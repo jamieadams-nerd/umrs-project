@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT                                                                     
+// Copyright (c) 2026 Jamie Adams (a.k.a, Imodium Operator)
+// ===========================================================================
 //!
 //! # SELinux Multi-Level Security (MLS) Namespace 
 //!
@@ -44,6 +47,7 @@
 //!
 //! All implementations are original Rust constructions aligned at the
 //! semantic level only.
+// ===========================================================================
 
 pub mod level;
 pub mod range;

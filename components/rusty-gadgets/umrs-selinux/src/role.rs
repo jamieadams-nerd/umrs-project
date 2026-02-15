@@ -1,30 +1,29 @@
+//// SPDX-License-Identifier: MIT                                                                     
+// Copyright (c) 2026 Jamie Adams (a.k.a, Imodium Operator)
+//
+//! # SELinux Security Role Identifier
 //!
-//! # `SELinux` Security Role Identifier
-//! Strongly-typed Rust primitive modeling `SELinux` security roles.
-//!
-//! - Author: Jamie Adams
-//! - License: MIT
+//! Strongly-typed Rust primitive modeling SELinux security roles.
 //!
 //! This module provides an independent Rust implementation of the
-//! `SELinux` security role construct. It models only the identifier 
+//! SELinux security role construct. It models only the identifier 
 //! primitive — not policy bindings, transitions, or authorization rules.
 //!
 //! Kernel / Policy Sources Consulted:
-//!
 //! - security/selinux/ss/policydb.c
 //! - security/selinux/include/security.h
 //! - libselinux RBAC interfaces
 //!
-//! In `SELinux` policy, roles are symbol table entries associated with:
-//!
+//! In SELinux policy, roles are symbol table entries associated with:
 //! - Authorized domain (type) sets
 //! - Role transition rules
 //! - User-role authorization mappings
 //!
 //! ## Implementation Lineage & Design Note
-//! Behavioral semantics were studied from `SELinux` userland libraries
+//!
+//! Behavioral semantics were studied from SELinux userland libraries
 //! and policydb structures to preserve familiarity for experienced
-//! `SELinux` practitioners. However:
+//! SELinux practitioners. However:
 //!
 //! - No source code has been copied or translated.
 //! - No line-by-line derivation has occurred.
