@@ -24,8 +24,6 @@ use crate::sensitivity::SensitivityLevel;
 use crate::type_id::SelinuxType;
 use crate::user::SelinuxUser;
 
-// Note: CategorySet will be integrated here for full MLS/MCS bitmask support.
-
 // ===========================================================================
 // MlsLevel structure (Sensitivity + Categories)
 // ===========================================================================
@@ -49,14 +47,12 @@ impl MlsLevel {
     /// Returns the translated, canonical string (Lattice representation).
     /// e.g., s0:c0.c15
     pub fn translated(&self) -> String {
-        // This gives you the s0: categories view
         format!("{}:{}", self.sensitivity, self.categories)
     }
 }
 
 impl fmt::Display for MlsLevel {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        // Default display to the raw level as requested
         write!(f, "{}", self.raw_level)
     }
 }
@@ -76,7 +72,6 @@ pub struct SecurityContext {
 }
 
 impl SecurityContext {
-    /// Creates a new SecurityContext with optional MLS level.
     pub const fn new(
         user: SelinuxUser,
         role: SelinuxRole,
@@ -91,50 +86,22 @@ impl SecurityContext {
         }
     }
 
-    /// Returns the SELinux user component.
-    #[must_use]
-    pub const fn user(&self) -> &SelinuxUser {
-        &self.user
-    }
-
-    /// Returns the SELinux role component.
-    #[must_use]
-    pub const fn role(&self) -> &SelinuxRole {
-        &self.role
-    }
-
-    /// Returns the SELinux type component.
-    #[must_use]
-    pub const fn security_type(&self) -> &SelinuxType {
-        &self.security_type
-    }
-
-    /// Returns the optional MLS/MCS level component.
-    #[must_use]
-    pub fn level(&self) -> Option<&MlsLevel> {
-        self.level.as_ref()
-    }
+    pub const fn user(&self) -> &SelinuxUser { &self.user }
+    pub const fn role(&self) -> &SelinuxRole { &self.role }
+    pub const fn security_type(&self) -> &SelinuxType { &self.security_type }
+    pub fn level(&self) -> Option<&MlsLevel> { self.level.as_ref() }
 
     /// NIST 800-53 AC-4: Information Flow Enforcement
-    /// TODO: Implement Bell-LaPadula Dominance Check (Lattice Math)
-    /// (Subject Sensitivity >= Object Sensitivity) AND (Subject Categories ⊇ Object Categories)
     pub fn dominates(&self, _other: &Self) -> bool {
         todo!("Lattice dominance logic pending CategorySet bitmask integration")
     }
 }
 
-/// Provides canonical string serialization in standard SELinux format.
 impl fmt::Display for SecurityContext {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match &self.level {
-            Some(lvl) => write!(
-                f,
-                "{}:{}:{}:{}",
-                self.user, self.role, self.security_type, lvl
-            ),
-            None => {
-                write!(f, "{}:{}:{}", self.user, self.role, self.security_type)
-            }
+            Some(lvl) => write!(f, "{}:{}:{}:{}", self.user, self.role, self.security_type, lvl),
+            None => write!(f, "{}:{}:{}", self.user, self.role, self.security_type),
         }
     }
 }
@@ -171,13 +138,11 @@ impl std::error::Error for ContextParseError {}
 impl FromStr for SecurityContext {
     type Err = ContextParseError;
 
-    /// NIST 800-53 SI-7: Software Integrity
-    /// This parser handles both 3-part (TE only) and 4-part (MLS) labels.
-    ///
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let parts: Vec<&str> = s.split(':').collect();
 
-        if parts.len() < 3 || parts.len() > 4 {
+        // RHEL 10 MCS labels (e.g., s0:c0,c100) will result in len >= 4
+        if parts.len() < 3 {
             return Err(ContextParseError::InvalidFormat);
         }
 
@@ -190,35 +155,41 @@ impl FromStr for SecurityContext {
         let security_type = SelinuxType::from_str(parts[2])
             .map_err(|_| ContextParseError::InvalidType)?;
 
-        //
-        // Senstivity Level and Categories
-        //
-        let level = if parts.len() == 4 {
-            let level_raw = parts[3];
+        // Path B: Greedy Level Capture (NIST 800-53 SI-7)
+        let level = if parts.len() >= 4 {
+            // Join all remaining parts to handle colons in categories (e.g., s0:c1:c2)
+            let level_raw = parts[3..].join(":");
             log::debug!("[PATH B] Raw Level string: '{}'", level_raw);
 
-            // 1. Sensitivity Logic
-            let sens = match SensitivityLevel::from_str(level_raw) {
+            // 1. Sensitivity Logic: Parse the first part of the level string
+            let sens_part = level_raw.split(':').next().unwrap_or(&level_raw);
+            let sens = match SensitivityLevel::from_str(sens_part) {
                 Ok(s) => s,
-                Err(_) => SensitivityLevel::new(0).unwrap(),
+                Err(_) => SensitivityLevel::new(0).unwrap(), // Alias fallback
             };
 
-            // 2. Category Logic
-            let cats = crate::xattrs::parse_mcs_categories(level_raw)
+            // 2. Category Logic: Only pass the part after the first colon
+            let cats_str = level_raw.split_once(':').map(|(_, c)| c).unwrap_or("");
+            let cats = crate::xattrs::parse_mcs_categories(cats_str)
                 .unwrap_or_else(|_| CategorySet::new());
+
+            //let cat_str = level_raw.split_once
+            //let cats = crate::xattrs::parse_mcs_categories(&level_raw)
+            //    .unwrap_or_else(|_| CategorySet::new());
 
             log::debug!("[PATH B] Sens resolved, categories parsed.");
 
             Some(MlsLevel {
                 sensitivity: sens,
                 categories: cats,
-                raw_level: level_raw.to_string(),
+                raw_level: level_raw,
             })
         } else {
-            log::debug!("[PATH B] No level found (parts.len != 4)");
+            log::debug!("[PATH B] No level found (parts.len < 4)");
             None
         };
 
         Ok(Self::new(user, role, security_type, level))
     }
 }
+

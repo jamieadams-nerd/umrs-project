@@ -11,6 +11,10 @@ use std::process::ExitCode;
 // use clap::Parser
 
 // 3) local crates (my workspace)
+use crate::init;
+use umrs_core::i18n::init;
+use umrs_core::prelude::init;
+
 use umrs_core::console;
 use umrs_core::human::metricfmt::{
     FormatOptions, FormatWarning, PrefixStyle, SIPrefix, auto_format,
@@ -19,7 +23,7 @@ use umrs_core::human::metricfmt::{
 use umrs_core::prelude::*;
 
 fn main() -> ExitCode {
-    console::init();
+    //init();
 
     println!(
         "\nExample 1 — Auto-scaling for time (seconds → ms / µs / ns / etc.)"
