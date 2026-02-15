@@ -36,7 +36,7 @@ impl SecureXattrReader {
             .map_err(#[allow(clippy::redundant_closure)] |e| io::Error::from(e))?;
 
         buffer.truncate(bytes_read);
-        if let Some(&0) = buffer.last() {
+        if buffer.last() == Some(&0) {
             buffer.pop();
         }
 

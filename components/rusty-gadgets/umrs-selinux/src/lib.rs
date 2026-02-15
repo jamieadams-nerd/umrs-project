@@ -35,10 +35,24 @@
 //! - No code has been translated from C to Rust.
 //! - No line-by-line reimplementation has been performed.
 //!
+// ===========================================================================                              
+// 1. CLEAR THE NOISE FIRST
+#![allow(clippy::unreadable_literal)]
+#![allow(clippy::missing_errors_doc)]
+#![allow(clippy::missing_panics_doc)]
+#![allow(clippy::redundant_closure)]
+#![allow(clippy::module_name_repetitions)]
+
+// 2. NOW ENFORCE THE GROUPS
 #![warn(clippy::pedantic)]
 #![warn(clippy::nursery)]
+
+// 3. HARD SECURITY GATES
 #![deny(clippy::unwrap_used)]
 
+#![allow(clippy::missing_errors_doc)]
+
+// ===========================================================================                              
 pub mod status;
 pub mod category;
 pub mod sensitivity;

@@ -273,6 +273,12 @@ pub struct SecureReader<T> {
     _marker: PhantomData<T>,
 }
 
+impl<T> Default for SecureReader<T> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl<T> SecureReader<T> {
     #[must_use]
     pub const fn new() -> Self {
@@ -308,7 +314,7 @@ impl<T: KernelFileSource> SecureReader<T> {
         if stats.filesystem_type() != expected_magic {
             return Err(io::Error::new(
                 io::ErrorKind::PermissionDenied,
-                format!("Integrity Failure: {path:?} is not on the authorized filesystem"),
+                format!("Integrity Failure: {} is not on the authorized filesystem", path.display()),
             ));
         }
 
