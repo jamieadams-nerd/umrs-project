@@ -50,6 +50,7 @@ pub mod user;
 pub mod role;
 pub mod type_id;
 
+pub mod utils;
 pub mod xattrs;
 
 //

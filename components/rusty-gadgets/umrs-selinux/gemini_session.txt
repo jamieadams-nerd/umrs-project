@@ -1,0 +1,28 @@
+Here is the TCB Architectural Checkpoint. This summary captures our "Ground Truth" for the UMRS project. Save this as your master reference to re-sync the session or verify the logic in future watch-turns.
+UMRS Architectural Invariants: Session Checkpoint
+1. The Reference Monitor Principle (NSA RTB)
+Inode Anchoring: All security decisions are anchored to the File Descriptor (FD), not the path. We use File::open followed by fgetxattr and fstat to prevent TOCTOU (Time-of-Check to Time-of-Use) race conditions.
+Non-Bypassability: We bypass libselinux and mcstransd. We read raw bytes from the filesystem extended attributes (security.selinux) to ensure we see the "Ground Truth" before userspace translation.
+TPI (Two-Path Integrity): Every security label must be successfully parsed by two independent logic paths:
+Path A (Declarative): nom parser combinators enforcing a formal grammar.
+Path B (Imperative): Greedy string splitting and joining.
+The Gate: If Path A and Path B do not produce a bit-for-bit identical SecurityContext, the record is rejected and marked <unlabeled>.
+2. Data Modeling & Lattice Math (NIST 800-53 AC-4)
+Sensitivity: Stored as a u16 (SensitivityLevel) where s0 is the baseline for Targeted Policy.
+Categories (CategorySet): A fixed-size bitmask ([u64; 16]) supporting up to 1024 discrete categories.
+Bitmask Invariant: Parsing logic supports single bits (c90), non-contiguous lists (c90,c99), and ranges (c0.c15).
+Lattice Dominance: Security decisions (dominates()) are performed via 
+ bitwise operations on the CategorySet, never on strings.
+3. Audit & Provenance (NIST 800-53 AU-3)
+Dual-Representation: The MlsLevel struct preserves the Provenance String (raw_level) exactly as found on disk (e.g., "s0:c90,c99") alongside the mathematical bitmask.
+Audit Fidelity: The ls_ha tool displays the raw provenance to the operator, ensuring the auditor sees exactly what is stored on the physical media.
+Loud Failures: TPI mismatches trigger log::error! traces that dump the internal state of both objects, ensuring no "silent" logic drift.
+4. System Integration (RHEL 10 Targeted)
+Chain of Custody: We use rustix for safe syscalls and nix for thread-safe UID/GID-to-name resolution (getpwuid_r).
+Vernacular Mapping: We have mastered the setrans.conf structure, mapping RHEL 10 categories to the NARA CUI Registry (e.g., s0:c90,c99 
+ CUI//LEI/INV).
+Performance: We use the log crate facade to allow debug/trace information to be physically compiled out of release binaries, minimizing the production TCB.
+5. Current Code State
+context.rs: Implements "Greedy Join" logic for labels with more than 4 colons.
+xattrs.rs: Implements greedy nom remainder capture and comma-aware category parsing.
+ls_ha.rs: A high-assurance directory lister with dynamic column widths, immutable flag detection (ioctl), and thread-safe user lookups.
