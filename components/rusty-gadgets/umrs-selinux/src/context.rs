@@ -12,17 +12,17 @@
 //! A Security Context represents the canonical SELinux label format:
 //!     user : role : type [:level]
 //!
-//! NIST 800-53 AC-4: This module enforces the internal representation of 
+//! NIST 800-53 AC-4: This module enforces the internal representation of
 //! security attributes used for Information Flow Enforcement.
 
 use std::fmt;
 use std::str::FromStr;
 
+use crate::category::CategorySet;
 use crate::role::SelinuxRole;
+use crate::sensitivity::SensitivityLevel;
 use crate::type_id::SelinuxType;
 use crate::user::SelinuxUser;
-use crate::sensitivity::SensitivityLevel;
-use crate::category::CategorySet;
 
 // Note: CategorySet will be integrated here for full MLS/MCS bitmask support.
 
@@ -34,12 +34,30 @@ use crate::category::CategorySet;
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct MlsLevel {
     pub sensitivity: SensitivityLevel,
-    pub categories: CategorySet, // Integrated in next phase
+    pub categories: CategorySet,
+
+    /// NIST 800-53 AU-3: The exact string found in the xattr (e.g., "SystemLow")
+    pub raw_level: String,
+}
+
+impl MlsLevel {
+    /// Returns the raw, untranslated string (Provenance).
+    pub fn raw(&self) -> &str {
+        &self.raw_level
+    }
+
+    /// Returns the translated, canonical string (Lattice representation).
+    /// e.g., s0:c0.c15
+    pub fn translated(&self) -> String {
+        // This gives you the s0: categories view
+        format!("{}:{}", self.sensitivity, self.categories)
+    }
 }
 
 impl fmt::Display for MlsLevel {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.sensitivity)
+        // Default display to the raw level as requested
+        write!(f, "{}", self.raw_level)
     }
 }
 
@@ -103,15 +121,20 @@ impl SecurityContext {
     pub fn dominates(&self, _other: &Self) -> bool {
         todo!("Lattice dominance logic pending CategorySet bitmask integration")
     }
-
 }
 
 /// Provides canonical string serialization in standard SELinux format.
 impl fmt::Display for SecurityContext {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match &self.level {
-            Some(lvl) => write!(f, "{}:{}:{}:{}", self.user, self.role, self.security_type, lvl),
-            None => write!(f, "{}:{}:{}", self.user, self.role, self.security_type),
+            Some(lvl) => write!(
+                f,
+                "{}:{}:{}:{}",
+                self.user, self.role, self.security_type, lvl
+            ),
+            None => {
+                write!(f, "{}:{}:{}", self.user, self.role, self.security_type)
+            }
         }
     }
 }
@@ -148,8 +171,9 @@ impl std::error::Error for ContextParseError {}
 impl FromStr for SecurityContext {
     type Err = ContextParseError;
 
-    /// NIST 800-53 SI-7: Software Integrity 
+    /// NIST 800-53 SI-7: Software Integrity
     /// This parser handles both 3-part (TE only) and 4-part (MLS) labels.
+    ///
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let parts: Vec<&str> = s.split(':').collect();
 
@@ -166,22 +190,35 @@ impl FromStr for SecurityContext {
         let security_type = SelinuxType::from_str(parts[2])
             .map_err(|_| ContextParseError::InvalidType)?;
 
+        //
+        // Senstivity Level and Categories
+        //
         let level = if parts.len() == 4 {
-            let level_input = if parts[3] == "SystemLow" { "s0" } else { parts[3] };
-            
-            let sens = SensitivityLevel::from_str(level_input)
-                .map_err(|_| ContextParseError::InvalidLevel)?;
-            
-            // Reusing the same helper for TPI agreement
-            let cats = crate::xattrs::parse_mcs_categories(level_input)
+            let level_raw = parts[3];
+            log::debug!("[PATH B] Raw Level string: '{}'", level_raw);
+
+            // 1. Sensitivity Logic
+            let sens = match SensitivityLevel::from_str(level_raw) {
+                Ok(s) => s,
+                Err(_) => SensitivityLevel::new(0).unwrap(),
+            };
+
+            // 2. Category Logic
+            let cats = crate::xattrs::parse_mcs_categories(level_raw)
                 .unwrap_or_else(|_| CategorySet::new());
 
-            Some(MlsLevel { sensitivity: sens, categories: cats })
+            log::debug!("[PATH B] Sens resolved, categories parsed.");
+
+            Some(MlsLevel {
+                sensitivity: sens,
+                categories: cats,
+                raw_level: level_raw.to_string(),
+            })
         } else {
+            log::debug!("[PATH B] No level found (parts.len != 4)");
             None
         };
 
         Ok(Self::new(user, role, security_type, level))
     }
 }
-
