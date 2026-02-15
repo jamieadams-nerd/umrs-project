@@ -13,7 +13,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let role = SelinuxRole::from_str("system_r")?;
     let security_type = SelinuxType::from_str("sshd_t")?;
 
-    let ctx = SecurityContext::new(user, role, security_type);
+    //let ctx = SecurityContext::new(user, role, security_type);
+    let ctx = SecurityContext::new(user, role, security_type, None);
 
     println!("Context: {}", ctx);
 

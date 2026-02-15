@@ -50,6 +50,8 @@ pub mod user;
 pub mod role;
 pub mod type_id;
 
+pub mod xattrs;
+
 //
 // Re-export for ergonomic API, so consumers can write:
 //     use umrs_selinux::{SecurityContext, SelinuxUser};

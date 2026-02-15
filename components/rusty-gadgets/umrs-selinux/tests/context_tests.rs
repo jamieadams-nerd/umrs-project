@@ -23,6 +23,7 @@ fn construct_security_context() {
         user.clone(),
         role.clone(),
         security_type.clone(),
+        None,
     );
 
     assert_eq!(ctx.user(), &user);

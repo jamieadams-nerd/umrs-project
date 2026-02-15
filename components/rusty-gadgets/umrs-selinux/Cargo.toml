@@ -4,3 +4,6 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+# NIST 800-53 SI-7: High-assurance direct syscalls (no libc)
+rustix = { version = "0.38", features = ["fs", "std"] }
+nom = "7.1"
