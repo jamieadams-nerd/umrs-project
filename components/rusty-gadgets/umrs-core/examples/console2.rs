@@ -9,6 +9,10 @@ fn main() {
     macros::init(); // optional but recommended
     let mut args = std::env::args().skip(1);
 
+    println!("Line 1");
+    println!("Line 2");
+    println!("Line 3");
+
     while let Some(arg) = args.next() {
         match arg.as_str() {
             "--verbose" | "-v" => {
@@ -20,9 +24,6 @@ fn main() {
         }
     }
 
-    console_event!(ConsoleEvent::BeginTask {
-        name: "Test the console_*() macros",
-    });
     console_info!("TEST OF THE console_info()!");
     console_warn!("TEST OF THE console_warn()!");
     console_info!("Second test of the console_info()!");
@@ -31,11 +32,7 @@ fn main() {
     console_status!(false, "Unable to load configuration.");
     console_error!("Some Error message using console_error!()");
     console_info!("Third test of the console_info()!");
-    console_event!(ConsoleEvent::EndTask {
-        name: "Finished testing console_*() macros",
-    });
 
-    println!("\n");
     verbose!("Console's verbose!() macro test");
 
     console_status!(true, "Update file");
@@ -67,9 +64,6 @@ fn main() {
     // -----------------------------------------------------------------
     // Scoped coloring pattern
     // -----------------------------------------------------------------
-    console_event!(ConsoleEvent::BeginTask {
-        name: "ANSI Module / Scoped coloring...",
-    });
     verbose!(" ");
     //println!("{}INFO{}  Everything is fine", AnsiColor::Green.start(), RESET);
     // println!("{}WARN{}  Something looks odd", AnsiColor::Yellow.start(), RESET);
@@ -80,22 +74,6 @@ fn main() {
     //AnsiColor::BrightRed.start(),
     //RESET
     //);
-    console_event!(ConsoleEvent::FileOpen {
-        path: "/etc/passwd"
-    });
-    console_event!(ConsoleEvent::FileClose {
-        path: "/etc/passwd"
-    });
-    console_event!(ConsoleEvent::DataRead {
-        path: "/etc/passwd"
-    });
-    console_event!(ConsoleEvent::DataWrote {
-        path: "/etc/passwd"
-    });
-    verbose!(" ");
-    console_event!(ConsoleEvent::EndTask {
-        name: "ANSI Module Tests."
-    });
 
     // -----------------------------------------------------------------
     // Cursor visibility & shape
@@ -207,5 +185,5 @@ fn main() {
     //println!("  Term size (pixels):   {:?}", QUERY_TERM_SIZE_PIXELS);
 
     // Final newline ensures clean terminal state
-    println!();
+    std::process::exit(0);
 }

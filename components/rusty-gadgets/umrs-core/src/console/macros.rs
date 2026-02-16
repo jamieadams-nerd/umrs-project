@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 Jamie Adams
 //
-//
-//
 use std::io::IsTerminal;
 use std::sync::OnceLock;
 use std::sync::atomic::AtomicBool;
@@ -99,40 +97,14 @@ macro_rules! verbose {
 #[allow(unused)]
 macro_rules! console_info {
     ($fmt:expr $(, $arg:expr)*) => {{
-        // Options information 'i' is \u{2139} but it would to overwhelming
-        // if several information messages appeared in sequence. But they
-        // could use verbose most of the time and then an info occassionally.
-        //let prefix = "\u{2139} Info: ";
-        //let prefix = "\u{202F} Info: "; // Halfspace
-        //
-        let prefix = "INFO:";
+        let prefix = "[INFO]";
 
-        if $crate::console::stdout_is_tty() {
-            // ANSI on tty
-            use ::colored::Colorize;
-
-            // Left align and padd to 8
-            let msg = format!(
-                "{:>8} {}",
-                prefix,
-                format!($fmt $(, $arg)*)
-            );
-            println!("{}", msg.cyan().bold());
-
-            // Colorize just the PREFIX
-            // println!(
-            //     "{} {}",
-            //     prefix.cyan().bold(),
-            //     format!($fmt $(, $arg)*)
-            // );
-            //
+        if ! $crate::console::stdout_is_tty() {
+            println!( concat!("{} ", $fmt), prefix, $( $arg ),*);
         } else {
-            // plain text off-tty
-            println!(
-                concat!("{} ", $fmt),
-                prefix,
-                $( $arg ),*
-            );
+            use ::colored::Colorize;
+            let msg = format!( "{prefix} {}", format!($fmt $(, $arg)*));
+            println!("{msg}");
         }
     }};
 }
@@ -149,38 +121,16 @@ macro_rules! console_info {
 #[allow(unused)]
 macro_rules! console_warn {
     ($fmt:expr $(, $arg:expr)*) => {{
-        //let prefix = "\u{26A0} Warning: ";
-        // let prefix = "\u{202F} Warning: "; // Halfspace
-        // Leave trailing space off, format will do it below.
-        let prefix = "WARN:";
+        let prefix = "[WARN]";
 
-        if $crate::console::stdout_is_tty() {
-            // ANSI on tty
-            use ::colored::Colorize;
-
-            let msg = format!(
-                "{:>8} {}",
-                prefix,
-                format!($fmt $(, $arg)*)
-            );
-            println!("{}", msg.yellow().bold());
-
-            // Colorize just the PREFIX
-            // println!(
-            //     "{} {}",
-            //     prefix.cyan().bold(),
-            //     format!($fmt $(, $arg)*)
-            // );
-            //
+        if ! $crate::console::stdout_is_tty() {
+            println!( concat!("{} ", $fmt), prefix, $( $arg ),*);
         } else {
-            // plain text off-tty
-            println!(
-                concat!("{} ", $fmt),
-                prefix,
-                $( $arg ),*
-            );
+            use ::colored::Colorize;
+            let msg = format!( "{} {}", prefix.yellow().bold(), format!($fmt $(, $arg)*));
+            println!("{msg}");
         }
-    }};
+        }};
 }
 
 // ==================================================================
@@ -196,39 +146,15 @@ macro_rules! console_warn {
 #[allow(unused)]
 macro_rules! console_error {
     ($fmt:expr $(, $arg:expr)*) => {{
-        // \u{1F6D1} is a giant, red, filled octagon -- it's awkward.
-        // \u{270B} is a raised hand as if to stay "stop"
-        // \u{13020} Egyptian hieroglyph - Man raising hands
-        //let prefix = "\u{13020} Error: ";
-        // Don't put trailing space.. format will do it below
-        let prefix = "ERROR:";
+        let prefix = "[ERROR]";
 
-        if $crate::console::stdout_is_tty() {
-            // ANSI on tty
+        if ! $crate::console::stdout_is_tty() {
+            println!( concat!("{} ", $fmt), prefix, $( $arg ),*);
+         } else {
             use ::colored::Colorize;
-
-            let msg = format!(
-                " {:>7} {}",
-                prefix,
-                format!($fmt $(, $arg)*)
-            );
-            println!("{}", msg.red().bold());
-
-            // Colorize just the PREFIX
-            // println!(
-            //     "{} {}",
-            //     prefix.cyan().bold(),
-            //     format!($fmt $(, $arg)*)
-            // );
-            //
-        } else {
-            // plain text off-tty
-            println!(
-                concat!("{} ", $fmt),
-                prefix,
-                $( $arg ),*
-            );
-        }
+            let msg = format!( "{} {}", prefix.red().bold(), format!($fmt $(, $arg)*));
+            println!("{msg}");
+         }
     }};
 }
 
@@ -258,33 +184,13 @@ macro_rules! console_status {
             "\u{2715}"
         };
 
-        if $crate::console::stdout_is_tty() {
-            // ANSI on tty
-            use ::colored::Colorize;
-
-            // The ^ will center the symbol inside of 7 spaces
-            // the < > will left and right align
-            let msg = format!(
-                "{:>4} {}",
-                prefix,
-                format!($fmt $(, $arg)*)
-            );
-            println!("{}", msg);
-
-            // Colorize just the PREFIX
-            // println!(
-            //     "{} {}",
-            //     prefix.cyan().bold(),
-            //     format!($fmt $(, $arg)*)
-            // );
-            //
+        if ! $crate::console::stdout_is_tty() {
+            let msg = format!( "{:>4} {}", prefix, format!($fmt $(, $arg)*));
+            println!("{msg}");
         } else {
-            // plain text off-tty
-            println!(
-                concat!("{} ", $fmt),
-                prefix,
-                $( $arg ),*
-            );
+            use ::colored::Colorize;
+            let msg = format!( "{:>4} {}", prefix, format!($fmt $(, $arg)*));
+            println!("{msg}");
         }
     }};
 }

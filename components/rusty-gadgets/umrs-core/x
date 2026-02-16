@@ -1,0 +1,18 @@
+Line 1
+Line 2
+Line 3
+[INFO] TEST OF THE console_info()!
+[WARN] TEST OF THE console_warn()!
+[INFO] Second test of the console_info()!
+   ✔ Found file
+   ✕ Couldn't find directory
+   ✕ Unable to load configuration.
+[ERROR] Some Error message using console_error!()
+[INFO] Third test of the console_info()!
+   ✔ Update file
+   ✕ Update file
+[36m[1mBasic ANSI color + bold demo[0m
+[31mRed[0m [32mGreen[0m [34mBlue[0m
+
+[97m[1mUMRS ANSI DEMO[0m
+────────────────────────

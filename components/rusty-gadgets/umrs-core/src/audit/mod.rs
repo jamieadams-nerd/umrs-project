@@ -9,5 +9,4 @@
 //! Console events are UX artifacts; audit events are records of truth.
 
 pub mod emit;
-pub mod events;
 pub mod schema;
