@@ -1,0 +1,43 @@
+1. The Tricolon (U+205D: ⁝)
+The Tricolon is essentially a "triple colon"—three vertically aligned dots. 
+Rhetorical Origin: Historically, it was used to visually separate a "tricolon," which is a rhetorical structure consisting of three parallel clauses or phrases (e.g., "I came, I saw, I conquered"). It provided a pause stronger than a comma but distinct from a full period.
+Acrophonic Symbol: It is also known as the Epidaurean acrophonic symbol three, used in ancient Greek inscriptions to represent the number three.
+Modern Analogue: In modern typography, its function has been replaced by the semicolon or standard colon, though it is still used by linguists and historians to mark ancient text structures. 
+2. The Five Dot Punctuation (U+2059: ⁙)
+This symbol is arranged like a quincunx (the "5" on a standard die)—four dots forming a square with a fifth dot in the center.
+Lexicography (Ditto Mark): Its primary modern-historical use is in dictionaries and glossaries. It acts as a specialized shorthand to signal the repetition of a headword or a significant part of it, effectively serving as a space-saving "ditto mark".
+The Pentonkion: In ancient contexts, it served as the pentonkion, a symbol for five ounces (a 5-ounce silver coin).
+Editorial Annotation: Like the related four-dot punctuation (⁘), it belongs to a family of marks used in obelism—the practice of annotating or "blue-penciling" manuscripts to indicate corrections, deletions, or spurious text. 
+Quora
+Quora
+ +3
+Practical Use in your UI
+Because these characters are "Other Punctuation" and rarely used, they make excellent, high-contrast delimiters for a terminal status bar where standard colons or pipes (|) might get lost in the data. 
+Symbol 	Character	Unicode	Use Case for UMRS
+Tricolon	⁝	U+205D	A "Heavy Divider" between major audit sections.
+Five Dot	⁙	U+2059	A "Ditto" indicator for repeated MLS levels or types.
+Dotted Cross	⁜	U+205C	A specialized "Target" or "Alert" marker.
+
+In historical Greek and early Latin manuscripts, the Tricolon (⁝) was a "strength" marker for pauses. It was used to divide a sentence into three equal or parallel parts, creating a rhythmic, balanced cadence.
+If we were to translate its classical use into a modern sentence, it acts like a super-semicolon that signals a perfectly balanced three-part thought.
+1. The Classical Rhetorical Example
+"The general's legacy was built on three pillars ⁝ he planned with cold logic ⁝ he fought with iron will ⁝ and he ruled with absolute mercy."
+2. The Lexicographical (Dictionary) Example
+In old European dictionaries, it was often used as a Syllable or Segment Divider to show how a word was constructed without using a hyphen:
+"PRO ⁝ GRAM ⁝ MATIC"
+3. The "Auditor's" Use Case (UMRS Logic)
+For your high-assurance terminal cleanup, the Tricolon is a perfect "Heavy Separator" to distinguish between the Identity, Integrity, and Security blocks of your directory listing. It looks far more professional than a pipe (|) or a standard colon (:).
+Example in your ls_ha tool:
+text
+MODE         OWNER:GROUP ⁝ PROV ⁝ SELINUX TYPE        MLS LEVEL
+drwxr-xr-x   root:root   ⁝ IAV  ⁝ etc_t               SystemLow
+Use code with caution.
+
+Why use U+205D (⁝) over :?
+Visual Weight: Standard colons are "light" and often get lost next to letters like i or l. The Tricolon has 50% more vertical density, making the column break unmistakable.
+Audit Distinction: In a log full of timestamps (which use :) and file paths, the Tricolon stands out as a structural boundary, not a data value.
+Zsh/Terminal Tip
+To see how it looks in your current shell:
+echo -e "IDENTITY \u205D PROVENANCE \u205D SECURITY"
+
+

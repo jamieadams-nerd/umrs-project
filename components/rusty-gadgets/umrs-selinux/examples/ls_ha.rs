@@ -52,6 +52,7 @@ fn main() -> io::Result<()> {
     w_level += 2;
     w_user += 2;
 
+    println!("\n");
     println!(
         "{:<w_mode$} {:3} {:<w_type$} {:<w_level$} {:<w_user$} {:<18} {}",
         "MODE",
@@ -113,5 +114,6 @@ fn main() -> io::Result<()> {
             w_user_sub = w_user - e.username.len() - 1
         );
     }
+    println!("\n");
     Ok(())
 }

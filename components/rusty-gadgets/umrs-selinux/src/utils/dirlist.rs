@@ -132,6 +132,7 @@ pub fn list_directory_ha(dir_path: &Path) -> io::Result<Vec<DirectoryEntry>> {
         }
     };
 
+    log::trace!("Reading directory stream for {}", dir_path.display());
     for entry_result in read_dir {
         // 1. Handle the directory entry itself (e.g., IO error during iteration)
         let entry = match entry_result {

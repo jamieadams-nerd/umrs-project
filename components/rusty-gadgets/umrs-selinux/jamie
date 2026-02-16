@@ -1,0 +1,70 @@
+
+
+echo "\x1b[7m This is a test \x1b[0m\U1FB6C \U1FB68\x1b[7m Phase 2 \x1b[0m\U1FB6C"
+echo "\x1b[7m This is a test \x1b[0m\x1b[42m\U1FB6C\U1FB68\x1b[0m\x1b[7m Phase 2 \x1b[0m\U1FB6C"
+
+
+echo "----"
+echo -n "\x1b[7m Phase 1 transition...\x1b[0m\U1FB6C" 
+echo    "\x1b[32m\U1FB68\x1b[7m Phase 2 \x1b[0m\x1b[32m\U1FB6C\x1b[0m"
+echo "----"
+echo -n "\x1b[7m Runic Transition \u16DE \u16DD \u16DC \x1b[0m\U1FB6C" 
+echo    "\x1b[32m\U1FB68\x1b[7m Part 2\x1b[0m\x1b[32m\U1FB6C\x1b[0m"
+
+
+echo "\U1FB6E\x1b[7m This is a test \x1b[0m\U1FB6C"
+
+
+# Header Row (Inverse Video)
+echo -e "\x1b[1;7m MODE   IAV  SELINUX TYPE         MLS LEVEL   \x1b[0m"
+
+
+# 4. Technical Reference for Shading
+# Visual Density	Character	Unicode	Hex
+# Solid	█	U+2588	\u{2588}
+# Dark (75%)	▓	U+2593	\u{2593}
+# Medium (50%)	▒	U+2592	\u{2592}
+# Light (25%)	░	U+2591	\u{2591}
+
+
+echo -e "\x1b[32m\x1b[7m CUI//PRIVACY \x1b[27m\u2593\U2592\u2591\x1b[0m"
+echo -e "\x1b[32m\x1b[7m CUI//PRIVACY \u2591\U2592\u2593\x1b[0m"
+
+echo
+echo "\x1b[34m\U1FB68\x1b[7m CUI//LEI/INV \x1b[0m\x1b[34m\U1FB6C\x1b[0m"
+echo
+echo "\x1b[2;3m\uAB\U200ARestricted\U200A\uBB\x1b[0m"
+echo
+
+echo  "\x1b[32m\U1FB68\x1b[7m CUI//AGR/AMNT \x1b[0m\x1b[32m\U1FB6C\x1b[0m"
+echo
+
+echo "\U1D670  A to Z \U1D689"
+
+echo "A\u20DD Something"
+echo "A\u20DE Something"
+echo "A\u20DF Something"
+echo "A\u20E0 Something"
+echo "a\u20E1 Arrow"
+echo "a\u20E3 Box"
+echo "a\u20E4 Triangle"
+echo "A\u20E4 Triangle"
+echo "J\u20E4 Triangle"
+echo "\u0365\u20E4AV Triangle"
+echo "a\u20E5 slash"
+echo "a\u20E6 verticals"
+echo "a\u20E7 right corner"
+echo "a\u20E8 e8"
+echo "a\u20E9 e9"
+echo "a\u20EA e9"
+echo "a\u20EB e9"
+echo
+echo "a\u20DBamie"
+echo "a\u20DCamie"
+echo " \u20DCamie"
+echo
+echo "\u27E5\u27DE"
+
+echo "A\u200A\u20DD Second test"
+
+
