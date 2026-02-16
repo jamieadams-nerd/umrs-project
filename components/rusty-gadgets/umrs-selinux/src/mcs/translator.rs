@@ -406,7 +406,8 @@ impl SecurityRange {
     /// as low-high ranges but still must index into the lattice.
     pub fn from_level(level: &MlsLevel) -> Self {
         let t_level = SecurityLevel {
-            sensitivity: level.sensitivity.value() as u32,
+            //sensitivity: level.sensitivity.value() as u32,
+            sensitivity: u32::from(level.sensitivity.value()),
             categories: level.categories.clone(),
         };
 

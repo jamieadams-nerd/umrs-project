@@ -10,7 +10,7 @@
 //!     user : role : type [:level]
 //!
 //! NIST 800-53 AC-4 / NSA RTB (Strong Data Modeling & Lattice Math)
-//!   This module enforces the internal representation of security attributes used for 
+//!   This module enforces the internal representation of security attributes used for
 //!   Information Flow Enforcement.
 
 use std::fmt;
@@ -84,10 +84,18 @@ impl SecurityContext {
         }
     }
 
-    pub const fn user(&self) -> &SelinuxUser { &self.user }
-    pub const fn role(&self) -> &SelinuxRole { &self.role }
-    pub const fn security_type(&self) -> &SelinuxType { &self.security_type }
-    pub fn level(&self) -> Option<&MlsLevel> { self.level.as_ref() }
+    pub const fn user(&self) -> &SelinuxUser {
+        &self.user
+    }
+    pub const fn role(&self) -> &SelinuxRole {
+        &self.role
+    }
+    pub const fn security_type(&self) -> &SelinuxType {
+        &self.security_type
+    }
+    pub fn level(&self) -> Option<&MlsLevel> {
+        self.level.as_ref()
+    }
 
     /// NIST 800-53 AC-4: Information Flow Enforcement
     pub fn dominates(&self, _other: &Self) -> bool {
@@ -98,8 +106,14 @@ impl SecurityContext {
 impl fmt::Display for SecurityContext {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match &self.level {
-            Some(lvl) => write!(f, "{}:{}:{}:{}", self.user, self.role, self.security_type, lvl),
-            None => write!(f, "{}:{}:{}", self.user, self.role, self.security_type),
+            Some(lvl) => write!(
+                f,
+                "{}:{}:{}:{}",
+                self.user, self.role, self.security_type, lvl
+            ),
+            None => {
+                write!(f, "{}:{}:{}", self.user, self.role, self.security_type)
+            }
         }
     }
 }
@@ -157,17 +171,19 @@ impl FromStr for SecurityContext {
         let level = if parts.len() >= 4 {
             // Join all remaining parts to handle colons in categories (e.g., s0:c1:c2)
             let level_raw = parts[3..].join(":");
-            log::debug!("[PATH B] Raw Level string: '{}'", level_raw);
+            log::debug!("[PATH B] Raw Level string: '{level_raw}'");
 
             // 1. Sensitivity Logic: Parse the first part of the level string
             let sens_part = level_raw.split(':').next().unwrap_or(&level_raw);
             let sens = match SensitivityLevel::from_str(sens_part) {
                 Ok(s) => s,
-                Err(_) => SensitivityLevel::new(0).unwrap(), // Alias fallback
+                Err(_) => SensitivityLevel::new(0).expect(
+                    "Invariant failure: SensitivityLevel::new(0) must succeed",
+                ),
             };
 
             // 2. Category Logic: Only pass the part after the first colon
-            let cats_str = level_raw.split_once(':').map(|(_, c)| c).unwrap_or("");
+            let cats_str = level_raw.split_once(':').map_or("", |(_, c)| c);
             let cats = crate::xattrs::parse_mcs_categories(cats_str)
                 .unwrap_or_else(|_| CategorySet::new());
 
@@ -190,4 +206,3 @@ impl FromStr for SecurityContext {
         Ok(Self::new(user, role, security_type, level))
     }
 }
-

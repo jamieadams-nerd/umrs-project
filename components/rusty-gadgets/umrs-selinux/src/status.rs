@@ -1,4 +1,4 @@
-//// SPDX-License-Identifier: MIT                                                                     
+// SPDX-License-Identifier: MIT                                                                     
 // Copyright (c) 2026 Jamie Adams (a.k.a, Imodium Operator)
 //
 //! SELinux runtime status inspection.
@@ -10,6 +10,7 @@ pub struct SelinuxStatus {
 }
 
 impl SelinuxStatus {
+    #[must_use]
     pub fn new(enabled: bool, enforcing: bool) -> Self {
         Self { enabled, enforcing }
     }

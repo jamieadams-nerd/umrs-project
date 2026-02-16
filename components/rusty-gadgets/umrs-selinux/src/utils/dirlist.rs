@@ -27,6 +27,7 @@
 //! simultaneously by:
 //! * **The Declarative Path:** `nom` grammar combinators.
 //! * **The Imperative Path:** Robust string manipulation.
+//!
 //! Only objects that achieve bit-for-bit agreement between both parsers are
 //! granted "Verified" status in the audit trail.
 //!
@@ -82,13 +83,13 @@ pub struct DirectoryEntry {
 fn format_mode(mode: u32) -> String {
     let mut s = String::with_capacity(10);
     let file_type = match mode & 0o170_000 {
-        0o040000 => 'd',
-        0o120000 => 'l',
-        0o100000 => '-',
-        0o060000 => 'b',
-        0o020000 => 'c',
-        0o010000 => 'p',
-        0o140000 => 's',
+        0o040_000 => 'd',
+        0o120_000 => 'l',
+        0o100_000 => '-',
+        0o060_000 => 'b',
+        0o020_000 => 'c',
+        0o010_000 => 'p',
+        0o140_000 => 's',
         _ => '?',
     };
     s.push(file_type);
@@ -117,6 +118,14 @@ fn format_mode(mode: u32) -> String {
 ///
 /// List directory (from high-assurance perspective)
 ///
+/// # Panics
+///
+/// Panics if the GLOBAL_TRANSLATOR `RwLock` is poisoned.
+/// This indicates an unrecoverable integrity failure in the
+/// translator initialization or mutation lifecycle.
+///
+#[allow(clippy::option_if_let_else)]
+#[allow(clippy::too_many_lines)]
 pub fn list_directory_ha(dir_path: &Path) -> io::Result<Vec<DirectoryEntry>> {
     let mut entries = Vec::new();
 
@@ -138,7 +147,7 @@ pub fn list_directory_ha(dir_path: &Path) -> io::Result<Vec<DirectoryEntry>> {
         let entry = match entry_result {
             Ok(e) => e,
             Err(e) => {
-                log::error!("FS ERROR: Failed to read directory entry: {}", e);
+                log::error!("FS ERROR: Failed to read directory entry: {e}");
                 continue;
             }
         };
@@ -204,7 +213,6 @@ pub fn list_directory_ha(dir_path: &Path) -> io::Result<Vec<DirectoryEntry>> {
                 } else {
                     "s0".to_string()
                 };
-
             } else {
                 s_type = "<unlabeled>".to_string();
             }
@@ -232,18 +240,18 @@ pub fn list_directory_ha(dir_path: &Path) -> io::Result<Vec<DirectoryEntry>> {
         }
 
         // Handle mtime carefully without ?
-        let mtime_str = metadata
-            .modified()
-            .map(|m| {
+        let mtime_str = metadata.modified().map_or_else(
+            |_| "Unknown".to_string(),
+            |m| {
                 let dt: DateTime<Local> = m.into();
                 dt.format("%Y-%m-%d %H:%M").to_string()
-            })
-            .unwrap_or_else(|_| "Unknown".to_string());
+            },
+        );
 
         let mode = metadata.mode();
         let mut name = entry.file_name().to_string_lossy().into_owned();
 
-        if (mode & 0o170000) == 0o040000 {
+        if (mode & 0o170_000) == 0o040_000 {
             name.push('/');
         }
 

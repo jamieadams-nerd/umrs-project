@@ -1,6 +1,6 @@
-//// SPDX-License-Identifier: MIT                                                                     
+// SPDX-License-Identifier: MIT                                                                     
 // Copyright (c) 2026 Jamie Adams (a.k.a, Imodium Operator)
-//
+// ===========================================================================
 //! # SELinux Security Role Identifier
 //!
 //! Strongly-typed Rust primitive modeling SELinux security roles.
@@ -32,6 +32,7 @@
 //! validation to prevent malformed security contexts and improve
 //! assurance in higher-level labeling systems.
 //!
+// =============================================================================
 
 use std::fmt;
 use std::str::FromStr;

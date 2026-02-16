@@ -1,6 +1,6 @@
-//// SPDX-License-Identifier: MIT                                                                     
+// SPDX-License-Identifier: MIT                                                                     
 // Copyright (c) 2026 Jamie Adams (a.k.a, Imodium Operator)
-//
+// ===========================================================================
 //! # SELinux MLS Sensitivity Level
 //!
 //! This module provides an independent Rust implementation of the `SELinux` MLS 
@@ -38,6 +38,7 @@
 //! and construction-time validation for improved correctness and
 //! assurance in userland labeling systems.
 //! 
+// =============================================================================
 
 use std::fmt;
 use std::str::FromStr;

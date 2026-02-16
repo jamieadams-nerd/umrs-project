@@ -38,7 +38,6 @@
 // ===========================================================================                              
 // 1. CLEAR THE NOISE FIRST
 #![allow(clippy::unreadable_literal)]
-#![allow(clippy::missing_errors_doc)]
 #![allow(clippy::missing_panics_doc)]
 #![allow(clippy::redundant_closure)]
 #![allow(clippy::module_name_repetitions)]

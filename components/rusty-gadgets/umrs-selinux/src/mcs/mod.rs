@@ -13,5 +13,4 @@
 //! categories (e.g., Project A, Payroll, or HR).
 //!
 // ===========================================================================
-pub mod setrans;
 pub mod translator;

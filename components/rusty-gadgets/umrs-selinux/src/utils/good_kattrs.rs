@@ -112,8 +112,8 @@ pub struct AttributeCard<'a, T: KernelFileSource> {
     pub path: &'static str,
 }
 
-impl<T: KernelFileSource + StaticSource> fmt::Display
-    for AttributeCard<'_, T>
+impl<'a, T: KernelFileSource + StaticSource> fmt::Display
+    for AttributeCard<'a, T>
 where
     T::Output: fmt::Debug,
 {
@@ -314,22 +314,19 @@ impl<T> SecureReader<T> {
 
 impl<T: StaticSource> SecureReader<T> {
     pub fn read(&self) -> io::Result<T::Output> {
-        Self::execute_read(Path::new(T::PATH), T::EXPECTED_MAGIC)
+        SecureReader::<T>::execute_read(Path::new(T::PATH), T::EXPECTED_MAGIC)
     }
 }
 
 impl SecureReader<GenericKernelBool> {
     pub fn read_generic(&self, node: &GenericKernelBool) -> io::Result<bool> {
-        Self::execute_read(
-            &node.path,
-            SELINUX_MAGIC,
-        )
+        SecureReader::<T>::execute_read(&node.path, SELINUX_MAGIC)
     }
 }
 
 impl SecureReader<GenericDualBool> {
     pub fn read_generic(&self, node: &GenericDualBool) -> io::Result<DualBool> {
-        Self::execute_read(&node.path, SELINUX_MAGIC)
+        SecureReader::<T>::execute_read(&node.path, SELINUX_MAGIC)
     }
 }
 
@@ -338,7 +335,9 @@ impl<T: KernelFileSource> SecureReader<T> {
         path: &Path,
         expected_magic: FsType,
     ) -> io::Result<T::Output> {
+
         let stats = statfs(path).map_err(io::Error::other)?;
+
         if stats.filesystem_type() != expected_magic {
             return Err(io::Error::new(
                 io::ErrorKind::PermissionDenied,
