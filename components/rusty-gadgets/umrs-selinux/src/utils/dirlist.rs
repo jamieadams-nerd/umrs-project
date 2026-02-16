@@ -53,7 +53,7 @@ use std::io;
 use std::os::unix::fs::MetadataExt;
 use std::path::Path;
 
-use crate::mcs::setrans;
+use crate::mcs::translator::{GLOBAL_TRANSLATOR, SecurityRange};
 use crate::xattrs::SecureXattrReader;
 
 /// High-Assurance Directory Entry (NIST 800-53 AC-3)
@@ -187,17 +187,24 @@ pub fn list_directory_ha(dir_path: &Path) -> io::Result<Vec<DirectoryEntry>> {
 
             if let Some(ctx) = context {
                 s_type = ctx.security_type().to_string();
+
                 s_level = if let Some(lvl) = ctx.level() {
-                    if let Some(marking) =
-                        setrans::get_map().get_text(&lvl.categories)
-                    {
-                        marking.clone()
+                    // Build a SecurityRange from parsed level
+                    let range = SecurityRange::from_level(lvl);
+
+                    let guard = GLOBAL_TRANSLATOR
+                        .read()
+                        .expect("GLOBAL_TRANSLATOR lock poisoned");
+
+                    if let Some(marking) = guard.lookup(&range) {
+                        marking
                     } else {
                         lvl.raw().to_string()
                     }
                 } else {
                     "s0".to_string()
                 };
+
             } else {
                 s_type = "<unlabeled>".to_string();
             }

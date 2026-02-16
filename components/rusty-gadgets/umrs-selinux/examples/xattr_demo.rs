@@ -1,7 +1,7 @@
 // ============================================================================
 // UMRS EXAMPLE: High-Assurance xattr Retrieval and TPI Validation
 // ============================================================================
-use umrs_selinux::xattrs::{SecureXattrReader, XATTR_NAME_SELINUX};
+use umrs_selinux::xattrs::{SecureXattrReader};
 use std::fs::File;
 use std::io;
 

@@ -49,9 +49,7 @@
 
 // 3. HARD SECURITY GATES
 #![deny(clippy::unwrap_used)]
-
 #![allow(clippy::missing_errors_doc)]
-
 // ===========================================================================                              
 pub mod status;
 pub mod category;
