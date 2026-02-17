@@ -404,6 +404,7 @@ impl SecurityRange {
     ///
     /// Used when translating file contexts which are not expressed
     /// as low-high ranges but still must index into the lattice.
+    #[must_use]
     pub fn from_level(level: &MlsLevel) -> Self {
         let t_level = SecurityLevel {
             //sensitivity: level.sensitivity.value() as u32,

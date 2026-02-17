@@ -58,6 +58,7 @@ use crate::mcs::translator::{GLOBAL_TRANSLATOR, SecurityRange};
 use crate::xattrs::SecureXattrReader;
 
 /// High-Assurance Directory Entry (NIST 800-53 AC-3)
+#[allow(clippy::struct_excessive_bools)]
 pub struct DirectoryEntry {
     pub name: String,
     pub selinux_type: String,
@@ -187,12 +188,14 @@ pub fn list_directory_ha(dir_path: &Path) -> io::Result<Vec<DirectoryEntry>> {
         let mut s_level = "N/A".to_string();
         let mut is_immutable = false;
         let mut has_acl = false;
+
+        #[allow(clippy::useless_let_if_seq)]
         let mut has_ima = false;
 
         // Only perform Inode-anchored checks if we successfully opened the file
-        if let Some(file) = file_opt {
+        if let Some(ref file) = file_opt {
             // Label Provenance (TPI Verified)
-            let context = SecureXattrReader::read_context(&file).ok();
+            let context = SecureXattrReader::read_context(file).ok();
 
             if let Some(ctx) = context {
                 s_type = ctx.security_type().to_string();
@@ -218,14 +221,14 @@ pub fn list_directory_ha(dir_path: &Path) -> io::Result<Vec<DirectoryEntry>> {
             }
 
             // FS Integrity Flags (NIST 800-53 SI-7)
-            is_immutable = match ioctl_getflags(&file) {
+            is_immutable = match ioctl_getflags(file) {
                 Ok(f) => f.contains(IFlags::IMMUTABLE),
                 Err(_) => false,
             };
 
             // NIST 800-53 AC-3: Check for supplemental Access Control Lists (ACLs)
             has_acl = match SecureXattrReader::read_raw(
-                &file,
+                file,
                 "system.posix_acl_access",
             ) {
                 Ok(bytes) => !bytes.is_empty(),
@@ -233,10 +236,13 @@ pub fn list_directory_ha(dir_path: &Path) -> io::Result<Vec<DirectoryEntry>> {
             };
 
             // NIST 800-53 AC-3: Check for Integrity Measurement Arch (IMA) attribute
-            has_ima = match SecureXattrReader::read_raw(&file, "security.ima") {
-                Ok(bytes) => !bytes.is_empty(),
-                Err(_) => false,
-            };
+            if let Some(ref file) = file_opt {
+                has_ima = match SecureXattrReader::read_raw(file, "security.ima") {
+                    Ok(bytes) => !bytes.is_empty(),
+                    Err(_) => false,
+                };
+            }
+
         }
 
         // Handle mtime carefully without ?

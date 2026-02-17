@@ -11,15 +11,17 @@ pub struct SelinuxStatus {
 
 impl SelinuxStatus {
     #[must_use]
-    pub fn new(enabled: bool, enforcing: bool) -> Self {
+    pub const fn new(enabled: bool, enforcing: bool) -> Self {
         Self { enabled, enforcing }
     }
 
-    pub fn enabled(&self) -> bool {
+    #[must_use]
+    pub const fn enabled(&self) -> bool {
         self.enabled
     }
 
-    pub fn enforcing(&self) -> bool {
+    #[must_use]
+    pub const fn enforcing(&self) -> bool {
         self.enforcing
     }
 }

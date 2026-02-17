@@ -38,12 +38,14 @@ pub struct MlsLevel {
 
 impl MlsLevel {
     /// Returns the raw, untranslated string (Provenance).
+    #[must_use]
     pub fn raw(&self) -> &str {
         &self.raw_level
     }
 
     /// Returns the translated, canonical string (Lattice representation).
     /// e.g., s0:c0.c15
+    #[must_use]
     pub fn translated(&self) -> String {
         format!("{}:{}", self.sensitivity, self.categories)
     }
@@ -84,20 +86,28 @@ impl SecurityContext {
         }
     }
 
+    #[must_use]
     pub const fn user(&self) -> &SelinuxUser {
         &self.user
     }
+
+    #[must_use]
     pub const fn role(&self) -> &SelinuxRole {
         &self.role
     }
+
+    #[must_use]
     pub const fn security_type(&self) -> &SelinuxType {
         &self.security_type
     }
-    pub fn level(&self) -> Option<&MlsLevel> {
+
+    #[must_use]
+    pub const fn level(&self) -> Option<&MlsLevel> {
         self.level.as_ref()
     }
 
     /// NIST 800-53 AC-4: Information Flow Enforcement
+    #[must_use]
     pub fn dominates(&self, _other: &Self) -> bool {
         todo!("Lattice dominance logic pending CategorySet bitmask integration")
     }
@@ -175,12 +185,13 @@ impl FromStr for SecurityContext {
 
             // 1. Sensitivity Logic: Parse the first part of the level string
             let sens_part = level_raw.split(':').next().unwrap_or(&level_raw);
-            let sens = match SensitivityLevel::from_str(sens_part) {
-                Ok(s) => s,
-                Err(_) => SensitivityLevel::new(0).expect(
-                    "Invariant failure: SensitivityLevel::new(0) must succeed",
-                ),
-            };
+
+            let sens =
+                SensitivityLevel::from_str(sens_part).unwrap_or_else(|_| {
+                    SensitivityLevel::new(0).expect(
+                      "Invariant failure: SensitivityLevel::new(0) must succeed",
+                    )
+                });
 
             // 2. Category Logic: Only pass the part after the first colon
             let cats_str = level_raw.split_once(':').map_or("", |(_, c)| c);
