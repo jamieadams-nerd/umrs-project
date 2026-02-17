@@ -112,8 +112,7 @@ pub struct AttributeCard<'a, T: KernelFileSource> {
     pub path: &'static str,
 }
 
-impl<T: KernelFileSource + StaticSource> fmt::Display
-    for AttributeCard<'_, T>
+impl<T: KernelFileSource + StaticSource> fmt::Display for AttributeCard<'_, T>
 where
     T::Output: fmt::Debug,
 {
@@ -320,10 +319,7 @@ impl<T: StaticSource> SecureReader<T> {
 
 impl SecureReader<GenericKernelBool> {
     pub fn read_generic(&self, node: &GenericKernelBool) -> io::Result<bool> {
-        Self::execute_read(
-            &node.path,
-            SELINUX_MAGIC,
-        )
+        Self::execute_read(&node.path, SELINUX_MAGIC)
     }
 }
 

@@ -237,12 +237,12 @@ pub fn list_directory_ha(dir_path: &Path) -> io::Result<Vec<DirectoryEntry>> {
 
             // NIST 800-53 AC-3: Check for Integrity Measurement Arch (IMA) attribute
             if let Some(ref file) = file_opt {
-                has_ima = match SecureXattrReader::read_raw(file, "security.ima") {
-                    Ok(bytes) => !bytes.is_empty(),
-                    Err(_) => false,
-                };
+                has_ima =
+                    match SecureXattrReader::read_raw(file, "security.ima") {
+                        Ok(bytes) => !bytes.is_empty(),
+                        Err(_) => false,
+                    };
             }
-
         }
 
         // Handle mtime carefully without ?
