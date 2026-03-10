@@ -1,0 +1,57 @@
+# French translations for umrs-state package
+# Traductions fran�aises du paquet umrs-state.
+# Copyright (C) 2026 THE umrs-state'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the umrs-state package.
+# Automatically generated, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: umrs-state VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-10 07:38+0000\n"
+"PO-Revision-Date: 2026-03-10 07:38+0000\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: fr_CA\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: components/rusty-gadgets/umrs-state/src/main.rs:82
+msgid "Starting umrs-state"
+msgstr ""
+
+#. Status is simple to give a message, and then true or false. The console
+#. will print "Ok" or "Fail" next to it. This is not tied to keys.
+#: components/rusty-gadgets/umrs-state/src/main.rs:85
+msgid "FIPS is Enabled"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-state/src/main.rs:86
+msgid "System Purpose defined in state file"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-state/src/main.rs:150
+msgid "State file does not exist — it will be created."
+msgstr ""
+
+#: components/rusty-gadgets/umrs-state/src/main.rs:156
+msgid "Warning: state file does not exist — using default state."
+msgstr ""
+
+#: components/rusty-gadgets/umrs-state/src/main.rs:168
+#: components/rusty-gadgets/umrs-state/src/main.rs:172
+#: components/rusty-gadgets/umrs-state/src/main.rs:176
+#: components/rusty-gadgets/umrs-state/src/main.rs:180
+msgid "(not set)"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-state/src/main.rs:182
+#: components/rusty-gadgets/umrs-state/src/main.rs:211
+msgid "Unknown key"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-state/src/main.rs:205
+msgid "Invalid boolean value — using false"
+msgstr ""

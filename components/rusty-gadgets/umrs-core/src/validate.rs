@@ -29,8 +29,6 @@ use regex::Regex;
 use std::collections::HashMap;
 use std::sync::{Mutex, OnceLock};
 
-use crate::i18n::tr_core;
-
 
 /// Canonical validation pattern registry.
 ///
@@ -103,8 +101,7 @@ fn get_regex(kind: UmrsPattern) -> Regex {
         return re.clone();
     }
 
-    let errmsg = tr_core("Invalid validation regex");
-    let compiled = Regex::new(kind.regex()).expect(&errmsg);
+    let compiled = Regex::new(kind.regex()).expect("Invalid validation regex");
 
     map.insert(kind, compiled.clone());
     compiled

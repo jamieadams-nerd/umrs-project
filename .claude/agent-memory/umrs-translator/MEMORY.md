@@ -32,8 +32,15 @@ Run from repo root. Re-run after any new `gettext()` wrap in the source.
 - `make i18n-setup` — scaffold directory structure (generic, no translation)
 - `make i18n-build` — generic .po → .mo loop (pre-existing; covers umrs-logspace, umrs-ps, umrs-df)
 
-## Vocabulary Decisions (session 2026-03-10)
+## Vocabulary Decisions
 - "access denied" → "accès refusé" — UMRS decision; no GNU corpus match; standard Unix/Linux francophone
+- "MODE" (column header) → "DROITS" — corpus:coreutils informed; coreutils uses "droits" for mode/permissions throughout
+- "MARKING" (SELinux marking column) → "MARQUAGE" — UMRS decision; OTAN/NATO and ANSSI francophone term for classification marking
+- "OWNER:GROUP" → "PROPRIO:GROUPE" — corpus:coreutils (chown.c "[OWNER][:[GROUP]]" → "[PROPRIO][:[GROUPE]]")
+- "SIZE" → "TAILLE" — corpus:tar (genfile.c "SIZE" → "TAILLE"); also coreutils "Size" → "Taille"
+- "MODIFIED" (mtime column) → "MODIFIÉ" — UMRS decision; no corpus match; ANSSI/POSIX standard
+- "NAME" → "NOM" — corpus:coreutils (who.c) and corpus:tar (tar.c/genfile.c)
+- "<restricted>" → "<restreint>" — corpus:bash (builtins/common.c "restricted" → "restreint"); angle-bracket format preserved
 - See `resources/i18n/vocabulary-fr_CA.md` for full term table
 
 ## Key File Paths
@@ -41,6 +48,8 @@ Run from repo root. Re-run after any new `gettext()` wrap in the source.
 - Domain registry: `resources/i18n/domains.md`
 - Makefile: `/media/psf/repos/umrs-project/Makefile`
 - Corpus skill: invoke `french-lookup` skill — do NOT grep corpus files directly
+- IMPORTANT: Corpus files are in `.claude/corpus/*.po` (NOT `.claude/corpus/gnu-fr/`). The lookup script has a bug in its path; it works because the fallback grep covers `$CORPUS/*.po`. The skill must be invoked via `bash /media/psf/repos/umrs-project/.claude/commands/french_lookup.sh "<term>"` from the repo root when the SKILL.md path is wrong.
+- Corpus files present: coreutils, util-linux (missing), grep, sed, tar, findutils, bash, cryptsetup
 
 ## Cargo.toml Entry (confirmed)
 - `gettext-rs = { version = "0.7", features = ["gettext-system"] }` — workspace-wide entry

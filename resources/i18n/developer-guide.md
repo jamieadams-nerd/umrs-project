@@ -2,24 +2,26 @@
 
 How to wire gettext-based i18n into a UMRS CLI binary using the `umrs-core::i18n` module.
 
-The dual-mode architecture provides:
+The architecture is intentionally simple:
 
 - `init(domain)` — binds the CLI's own text domain at startup
 - `tr(msgid)` — translates a string via the CLI's domain
-- `tr_core(msgid)` — translates a string via the `umrs-core` library domain
+
+**Rule: only tool binaries (CLI crates) translate strings. Library crates return typed
+values and structured errors — they never call `tr()` or `init()`.**
 
 ---
 
 ## Step 1 — Decide the CLI domain name
 
-Pick the gettext domain for the tool. Convention is to use the crate name.
+Pick the gettext domain for the tool. Convention is the crate name.
 
 Examples:
 
 ```
 umrs-ls
-vaultmgr
 umrs-state
+umrs-logspace
 ```
 
 ---
@@ -32,49 +34,92 @@ In `<crate>/src/main.rs`, add before any output:
 use umrs_core::i18n;
 
 fn main() {
-    i18n::init("vaultmgr");
+    i18n::init("umrs-state");
 
-    println!("{}", i18n::tr("Vault manager starting"));
+    println!("{}", i18n::tr("Starting umrs-state"));
 }
 ```
 
 ---
 
-## Step 3 — Use translations in CLI code
+## Step 3 — Wrap user-facing strings with `tr()`
 
-Anywhere in the CLI:
+Wrap any string that appears directly in terminal output:
 
 ```rust
 println!("{}", i18n::tr("Creating vault directory"));
 println!("{}", i18n::tr("Vault created successfully"));
-println!("{}", i18n::tr("Operation failed"));
+eprintln!("{}", i18n::tr("Operation failed"));
 ```
 
 These resolve from:
 
 ```
-/usr/share/locale/<lang>/LC_MESSAGES/vaultmgr.mo
+/usr/share/locale/<lang>/LC_MESSAGES/<domain>.mo
+```
+
+For strings with runtime values, format after translation:
+
+```rust
+// Correct — translate the template, then format
+let msg = format!("{} {path}", i18n::tr("State file not found:"));
+
+// Wrong — the format string is never extracted
+let msg = i18n::tr(&format!("State file {path} not found"));
 ```
 
 ---
 
-## Step 4 — Library messages (automatic)
+## Step 4 — Strings that must NOT be translated
 
-Inside `umrs-core` modules, use:
+**Never wrap these in `tr()`:**
 
-```rust
-use crate::i18n::tr_core;
+- `log::debug!()`, `log::trace!()` — developer-facing; must stay English for log correlation
+- `log::info!()`, `log::warn!()`, `log::error!()` — audit trail strings ingested by SIEMs;
+  translating them breaks log parsing and regex-based alerting
+- `panic!()`, `.expect()`, `assert!()` — diagnostic artifacts, not user UI
+- Internal error variant names and `{:?}` debug representations
 
-tr_core("Audit event emitted")
+**Rule summary**: Only translate strings displayed directly to an interactive user in a
+terminal or report. Log output, audit output, and structured data are always English.
+
+---
+
+## Step 5 — Add to the i18n pipeline (Makefile)
+
+Add three lines to the Makefile i18n configuration block:
+
+```makefile
+I18N_ACTIVE_DOMAINS := umrs-ls umrs-state umrs-logspace   # add domain here
+
+I18N_SRC_DIR_umrs_state    := components/rusty-gadgets/umrs-state/src
+I18N_SRC_DIR_umrs_logspace := components/rusty-gadgets/umrs-logspace/src
+
+I18N_ACTIVE_LOCALES_umrs_state    := fr_CA
+I18N_ACTIVE_LOCALES_umrs_logspace := fr_CA
 ```
 
-Resolves from:
+Then run:
+
+```bash
+make i18n-setup          # scaffold domain directory if new
+make i18n-extract-<domain>   # generate .pot
+# msginit to create initial .po if fr_CA.po does not exist
+make i18n-merge-<domain>     # merge .pot into .po
+make i18n-compile-<domain>   # compile .mo
+```
+
+---
+
+## Step 6 — Install catalogs
 
 ```
-/usr/share/locale/<lang>/LC_MESSAGES/umrs-core.mo
+/usr/share/locale/fr_CA/LC_MESSAGES/umrs-ls.mo
+/usr/share/locale/fr_CA/LC_MESSAGES/umrs-state.mo
+/usr/share/locale/fr_CA/LC_MESSAGES/umrs-logspace.mo
 ```
 
-The CLI's earlier `init()` + `ensure_locale()` covers this automatically.
+If a catalog is missing → graceful fallback to the English msgid.
 
 ---
 
@@ -84,77 +129,26 @@ The CLI's earlier `init()` + `ensure_locale()` covers this automatically.
 LANG=fr_CA.UTF-8 umrs-ls
 ```
 
-| Call        | Domain    | Catalog        |
-|-------------|-----------|----------------|
-| `tr()`      | umrs-ls   | umrs-ls.mo     |
-| `tr_core()` | umrs-core | umrs-core.mo   |
+| Call   | Domain   | Catalog    |
+|--------|----------|------------|
+| `tr()` | umrs-ls  | umrs-ls.mo |
 
-Both resolve simultaneously with no domain collision.
-
----
-
-## Step 5 — Install catalogs
-
-```
-/usr/share/locale/fr_CA/LC_MESSAGES/umrs-ls.mo
-/usr/share/locale/fr_CA/LC_MESSAGES/umrs-core.mo
-```
-
-If a catalog is missing → graceful fallback to the English msgid.
-
----
-
-## Strings that must NOT be translated
-
-**Never wrap these in `tr()` or `tr_core()`:**
-
-- `log::debug!()` — debug strings are for developers, not users. They must stay
-  in English so that upstream bug reports, log correlation, and tooling integrations
-  remain consistent regardless of the operator's locale.
-- `log::trace!()` — same rule as debug.
-- `log::info!()`, `log::warn!()`, `log::error!()` — log strings are part of the
-  audit trail and are ingested by SIEMs and log aggregators. Translating them breaks
-  log parsing, correlation rules, and regex-based alerting. Keep them in English.
-- Panic messages and `assert!()` strings — these are diagnostic artifacts, not user UI.
-- Internal error variant names and debug representations (`{:?}` output).
-
-**Rule summary**: Only translate strings that are displayed directly to an interactive
-user in a terminal UI or report. Log output, debug output, and structured data are
-always English.
-
----
-
-## Important operational rule
-
-**Only the CLI calls `i18n::init()`.** Libraries never call it.
-
-- Prevents domain override
-- Prevents locale mutation from library side
-- Keeps library embedding safe
-
----
-
-## Optional ergonomic alias (CLI side)
-
-```rust
-use umrs_core::i18n::tr;
-
-println!("{}", tr("Vault created"));
-```
+Each tool has exactly one domain. Library code (umrs-core, umrs-selinux, umrs-platform)
+produces no translated output.
 
 ---
 
 ## Summary
 
-| Task                   | Location             |
-|------------------------|----------------------|
-| Initialize domain      | CLI `main()`         |
-| Translate CLI text     | `tr()`               |
-| Translate library text | `tr_core()`          |
-| Locale safety          | `ensure_locale()`    |
-| Catalog install path   | `/usr/share/locale`  |
+| Task                  | Location            |
+|-----------------------|---------------------|
+| Initialize domain     | CLI `main()`        |
+| Translate CLI text    | `tr()`              |
+| Locale initialization | `ensure_locale()`   |
+| Catalog install path  | `/usr/share/locale` |
 
-See `domains.md` for the domain assignment table. See `vocabulary-*.md` for locale-specific vocabulary decisions.
+See `domains.md` for the domain assignment table. See `vocabulary-*.md` for locale-specific
+vocabulary decisions.
 
 ---
 

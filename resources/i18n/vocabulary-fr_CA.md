@@ -7,6 +7,20 @@ When a term has no established francophone equivalent, retain the English term a
 
 ---
 
+## Directory Listing Column Headers (umrs-ls)
+
+| English | French (fr_CA) | Source | Notes |
+|---|---|---|---|
+| MODE (file permissions) | DROITS | corpus:coreutils | coreutils consistently uses "droits" for permission/mode strings; no exact column-header match found, but "droits" is corpus-informed |
+| MARKING (SELinux marking) | MARQUAGE | UMRS decision | See Security and Access Control section |
+| OWNER:GROUP | PROPRIO:GROUPE | corpus:coreutils | coreutils chown.c: "[OWNER][:[GROUP]]" → "[PROPRIO][:[GROUPE]]"; adapted to column-header style |
+| SIZE | TAILLE | corpus:tar | tar genfile.c: "SIZE" → "TAILLE"; also coreutils "Size" → "Taille" |
+| MODIFIED (mtime column) | MODIFIÉ | UMRS decision | No corpus match for "MODIFIED"; ANSSI/POSIX francophone standard for last-modification timestamp |
+| NAME | NOM | corpus:coreutils | coreutils who.c and tar tar.c/genfile.c: "NAME" → "NOM" |
+| <restricted> (placeholder) | <restreint> | corpus:bash | bash builtins/common.c: "restricted" → "restreint"; angle-bracket format preserved |
+
+---
+
 ## Security and Access Control
 
 | English | French (fr_CA) | Source | Notes |
@@ -22,4 +36,6 @@ When a term has no established francophone equivalent, retain the English term a
 | reference monitor | moniteur de référence | UMRS decision | |
 | security context | contexte de sécurité | corpus:coreutils | Corpus uses contexte de sécurité for SELinux label strings throughout |
 | security label | étiquette de sécurité | UMRS decision | |
+| security marking (column header) | MARQUAGE | UMRS decision | OTAN/NATO and ANSSI francophone term for classification marking; preferred over "étiquette" for the human-readable marking string column; no corpus match |
 | sensitivity label | étiquette de sensibilité | UMRS decision | |
+| restricted (placeholder) | restreint | corpus:bash | bash corpus: msgid "restricted" → msgstr "restreint"; applied in angle-bracket placeholder format as <restreint> |

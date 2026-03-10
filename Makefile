@@ -5,8 +5,7 @@ PLAYBOOK   := antora-playbook.yml
 OUT_DIR    := build/site
 
 .PHONY: help tools docs docs-clean docs-serve clean \
-        i18n i18n-check i18n-setup i18n-build \
-        i18n-extract-umrs-ls i18n-merge-umrs-ls i18n-compile-umrs-ls
+        i18n i18n-check i18n-setup i18n-build
 
 help:
 	@printf "%s\n" \
@@ -19,7 +18,11 @@ help:
 	  "  make i18n-setup   Setup i18n directory structure" \
 	  "  make i18n-build   Build i18n message objects (.po -> .mo)" \
 	  "  make i18n         Extract strings, merge .po files, compile .mo files" \
-	  "  make i18n-check   Validate all .po files with msgfmt --check"
+	  "  make i18n-check   Validate all .po files with msgfmt --check" \
+	  "  make i18n-extract-<domain>  Extract strings for one domain (e.g. umrs-ls)" \
+	  "  make i18n-merge-<domain>    Merge .po files for one domain" \
+	  "  make i18n-compile-<domain>  Compile .mo files for one domain" \
+	  "  Active domains: $(I18N_ACTIVE_DOMAINS)"
 
 tools:
 	@test -f "$(ANTORA_DIR)/package.json" || (echo "Missing $(ANTORA_DIR)/package.json" >&2; exit 1)
@@ -54,20 +57,27 @@ clean: docs-clean
 # i18n configuration
 # ------------------------------------------------------------
 
-I18N_BASE_DIR      := resources/i18n
-I18N_TEXT_DOMAINS  := umrs-logspace umrs-ps umrs-df umrs-ls
-I18N_LOCALES       := en_US fr_FR en_GB en_AU en_NZ
+I18N_BASE_DIR       := resources/i18n
+I18N_TEXT_DOMAINS   := umrs-logspace umrs-ps umrs-df umrs-ls umrs-state
+I18N_ACTIVE_DOMAINS := umrs-ls umrs-state
+I18N_LOCALES        := en_US fr_FR en_GB en_AU en_NZ
 
-# Per-domain source file lists for xtr extraction.
-# Add new entries here when a new crate is onboarded to the i18n pipeline.
-# Format: I18N_SOURCES_<domain with hyphens replaced by underscores> := <source files...>
-I18N_SOURCES_umrs_ls := \
-	components/rusty-gadgets/umrs-ls/src/main.rs
+# Internal helper: hyphen-to-underscore for variable name lookup.
+# Usage: $(call i18n_var,umrs-ls) -> umrs_ls
+i18n_var = $(subst -,_,$(1))
+
+# Per-domain source directories for xtr extraction.
+# Add one entry here when a new crate is onboarded to the i18n pipeline.
+# All *.rs files under the directory are discovered automatically at extract time.
+# Format: I18N_SRC_DIR_<domain with hyphens replaced by underscores> := <src/ path>
+I18N_SRC_DIR_umrs_ls    := components/rusty-gadgets/umrs-ls/src
+I18N_SRC_DIR_umrs_state := components/rusty-gadgets/umrs-state/src
 
 # Active locales per domain (locales with committed .po files ready for compilation).
 # The generic I18N_LOCALES list above is for i18n-setup scaffolding only.
 # Add a locale here once its .po file has been initialized and translated.
-I18N_ACTIVE_LOCALES_umrs_ls := fr_CA
+I18N_ACTIVE_LOCALES_umrs_ls    := fr_CA fr_FR en_GB en_AU en_NZ
+I18N_ACTIVE_LOCALES_umrs_state := fr_CA
 
 I18N_POT_EXT := .pot
 I18N_PO_EXT  := .po
@@ -123,50 +133,68 @@ i18n-build:
 # ------------------------------------------------------------
 # i18n extract, merge, and compile (full pipeline)
 # Requires: xtr (cargo install xtr), msgmerge, msgfmt
+#
+# Per-domain targets are generated automatically for every entry in
+# I18N_ACTIVE_DOMAINS.  To add a new domain:
+#   1. Add the domain name to I18N_ACTIVE_DOMAINS (and I18N_TEXT_DOMAINS).
+#   2. Add I18N_SRC_DIR_<domain_underscored> := components/rusty-gadgets/<domain>/src.
+#   3. Add I18N_ACTIVE_LOCALES_<domain_underscored> := <locales...>.
+#   4. Run: make i18n-setup && make i18n-extract-<domain>
 # ------------------------------------------------------------
 
-.PHONY: i18n
-i18n: i18n-extract-umrs-ls i18n-merge-umrs-ls i18n-compile-umrs-ls
-	@echo "==> i18n pipeline complete"
+# Dollar-sign escaping inside define/eval/call:
+#   $(1) and $(call ...) are expanded by call before eval.
+#   Shell variables inside recipe lines need $$$$ (four dollars):
+#   call strips one layer ($$$$ -> $$), Make strips another at recipe
+#   execution time ($$ -> $).
 
-.PHONY: i18n-extract-umrs-ls
-i18n-extract-umrs-ls:
-	@echo "==> Extracting strings: umrs-ls"
+define I18N_DOMAIN_RULES
+
+.PHONY: i18n-extract-$(1) i18n-merge-$(1) i18n-compile-$(1)
+
+i18n-extract-$(1):
+	@echo "==> Extracting strings: $(1)"
 	@command -v xtr >/dev/null 2>&1 || \
 		(echo "  ! xtr not found — install with: cargo install xtr" >&2; exit 1)
-	xtr --package-name umrs-ls \
-		--output $(I18N_BASE_DIR)/umrs-ls/umrs-ls$(I18N_POT_EXT) \
-		$(I18N_SOURCES_umrs_ls)
+	xtr --package-name $(1) \
+		--output $(I18N_BASE_DIR)/$(1)/$(1)$(I18N_POT_EXT) \
+		`find $(I18N_SRC_DIR_$(call i18n_var,$(1))) -name '*.rs' | sort`
 
-.PHONY: i18n-merge-umrs-ls
-i18n-merge-umrs-ls:
-	@echo "==> Merging .po files: umrs-ls"
+i18n-merge-$(1):
+	@echo "==> Merging .po files: $(1)"
 	@set -e; \
-	pot_file="$(I18N_BASE_DIR)/umrs-ls/umrs-ls$(I18N_POT_EXT)"; \
-	for locale in $(I18N_ACTIVE_LOCALES_umrs_ls); do \
-		po_file="$(I18N_BASE_DIR)/umrs-ls/$$locale$(I18N_PO_EXT)"; \
-		if [ -f "$$po_file" ]; then \
-			echo "  - Merging $$pot_file into $$po_file"; \
-			msgmerge --update --backup=none "$$po_file" "$$pot_file"; \
+	pot_file="$(I18N_BASE_DIR)/$(1)/$(1)$(I18N_POT_EXT)"; \
+	for locale in $(I18N_ACTIVE_LOCALES_$(call i18n_var,$(1))); do \
+		po_file="$(I18N_BASE_DIR)/$(1)/$$$$locale$(I18N_PO_EXT)"; \
+		if [ -f "$$$$po_file" ]; then \
+			echo "  - Merging $$$$pot_file into $$$$po_file"; \
+			msgmerge --update --backup=none "$$$$po_file" "$$$$pot_file"; \
 		else \
-			echo "  ! $$po_file not found (run msginit to initialize)"; \
+			echo "  ! $$$$po_file not found (run msginit to initialize)"; \
 		fi; \
 	done
 
-.PHONY: i18n-compile-umrs-ls
-i18n-compile-umrs-ls:
-	@echo "==> Compiling .mo files: umrs-ls"
+i18n-compile-$(1):
+	@echo "==> Compiling .mo files: $(1)"
 	@set -e; \
-	for locale in $(I18N_ACTIVE_LOCALES_umrs_ls); do \
-		po_file="$(I18N_BASE_DIR)/umrs-ls/$$locale$(I18N_PO_EXT)"; \
-		mo_file="$(I18N_BASE_DIR)/umrs-ls/$$locale$(I18N_MO_EXT)"; \
-		if [ -f "$$po_file" ]; then \
-			echo "  - Compiling $$po_file -> $$mo_file"; \
-			msgfmt -o "$$mo_file" "$$po_file"; \
+	for locale in $(I18N_ACTIVE_LOCALES_$(call i18n_var,$(1))); do \
+		po_file="$(I18N_BASE_DIR)/$(1)/$$$$locale$(I18N_PO_EXT)"; \
+		mo_file="$(I18N_BASE_DIR)/$(1)/$$$$locale$(I18N_MO_EXT)"; \
+		if [ -f "$$$$po_file" ]; then \
+			echo "  - Compiling $$$$po_file -> $$$$mo_file"; \
+			msgfmt -o "$$$$mo_file" "$$$$po_file"; \
 		else \
-			echo "  ! Missing $$po_file (skipping)"; \
+			echo "  ! Missing $$$$po_file (skipping)"; \
 		fi; \
 	done
+
+endef
+
+$(foreach _d,$(I18N_ACTIVE_DOMAINS),$(eval $(call I18N_DOMAIN_RULES,$(_d))))
+
+.PHONY: i18n
+i18n: $(foreach _d,$(I18N_ACTIVE_DOMAINS),i18n-extract-$(_d) i18n-merge-$(_d) i18n-compile-$(_d))
+	@echo "==> i18n pipeline complete"
 
 # ------------------------------------------------------------
 # i18n validation (msgfmt --check on all active .po files)
@@ -177,13 +205,16 @@ i18n-check:
 	@echo "==> Validating .po files"
 	@set -e; \
 	failed=0; \
-	po_file="$(I18N_BASE_DIR)/umrs-ls/fr_CA$(I18N_PO_EXT)"; \
-	if [ -f "$$po_file" ]; then \
-		echo "  - Checking $$po_file"; \
-		msgfmt --check "$$po_file" || failed=1; \
-	else \
-		echo "  ! Missing $$po_file (skipping)"; \
-	fi; \
+	$(foreach _d,$(I18N_ACTIVE_DOMAINS), \
+		for locale in $(I18N_ACTIVE_LOCALES_$(call i18n_var,$(_d))); do \
+			po_file="$(I18N_BASE_DIR)/$(_d)/$$locale$(I18N_PO_EXT)"; \
+			if [ -f "$$po_file" ]; then \
+				echo "  - Checking $$po_file"; \
+				msgfmt --check "$$po_file" || failed=1; \
+			else \
+				echo "  ! Missing $$po_file (skipping)"; \
+			fi; \
+		done;) \
 	if [ $$failed -eq 1 ]; then \
 		echo "==> i18n-check FAILED"; \
 		exit 1; \

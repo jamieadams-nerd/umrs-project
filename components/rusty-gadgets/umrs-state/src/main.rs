@@ -17,6 +17,7 @@ use std::path::{Path, PathBuf};
 
 use clap::{Parser, Subcommand};
 use umrs_core::console::*;
+use umrs_core::i18n;
 use umrs_core::{UmrsState, load_state, save_state};
 
 #[derive(Parser, Debug)]
@@ -75,13 +76,14 @@ impl UmrsKey {
 }
 
 fn main() -> std::io::Result<()> {
+    i18n::init("umrs-state");
     init_logging();
     macros::init();
-    console_info!("Starting umrs-state");
+    console_info!("{}", i18n::tr("Starting umrs-state"));
     // Status is simple to give a message, and then true or false. The console
     // will print "Ok" or "Fail" next to it. This is not tied to keys.
-    console_status!(true, "FIPS is Enabled");
-    console_status!(false, "System Purpose defined in state file");
+    console_status!(true, "{}", i18n::tr("FIPS is Enabled"));
+    console_status!(false, "{}", i18n::tr("System Purpose defined in state file"));
 
     let cli = Cli::parse();
 
@@ -144,13 +146,15 @@ fn check_state_file(path: &Path, creating: bool) {
     if !path.exists() {
         if creating {
             eprintln!(
-                "State file '{}' does not exist. It will be created.",
-                path.display()
+                "{}",
+                i18n::tr("State file does not exist — it will be created.")
+                    .replace("%s", &path.display().to_string())
             );
         } else {
             eprintln!(
-                "Warning: state file '{}' does not exist. Using default state.",
-                path.display()
+                "{}",
+                i18n::tr("Warning: state file does not exist — using default state.")
+                    .replace("%s", &path.display().to_string())
             );
         }
     }
@@ -161,21 +165,21 @@ fn handle_get(state: &UmrsState, key: &str) {
     match UmrsKey::parse(key) {
         Some(UmrsKey::Purpose) => match &state.purpose {
             Some(p) => println!("{p}"),
-            None => println!("(not set)"),
+            None => println!("{}", i18n::tr("(not set)")),
         },
         Some(UmrsKey::SystemType) => match &state.system_type {
             Some(t) => println!("{t}"),
-            None => println!("(not set)"),
+            None => println!("{}", i18n::tr("(not set)")),
         },
         Some(UmrsKey::Virtualization) => match &state.virtualization {
             Some(v) => println!("{v}"),
-            None => println!("(not set)"),
+            None => println!("{}", i18n::tr("(not set)")),
         },
         Some(UmrsKey::FipsEnabled) => match state.fips_enabled {
             Some(b) => println!("{b}"),
-            None => println!("(not set)"),
+            None => println!("{}", i18n::tr("(not set)")),
         },
-        None => eprintln!("Unknown key: {key}"),
+        None => eprintln!("{}: {key}", i18n::tr("Unknown key")),
     }
 }
 
@@ -198,13 +202,13 @@ fn handle_set(
                 "true" | "1" => true,
                 "false" | "0" => false,
                 _ => {
-                    eprintln!("Invalid boolean value '{value}', using false.");
+                    eprintln!("{}: '{value}'", i18n::tr("Invalid boolean value — using false"));
                     false
                 }
             };
             state.fips_enabled = Some(b);
         }
-        None => eprintln!("Unknown key: {key}"),
+        None => eprintln!("{}: {key}", i18n::tr("Unknown key")),
     }
     Ok(())
 }

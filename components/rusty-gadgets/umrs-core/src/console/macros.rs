@@ -97,13 +97,11 @@ macro_rules! verbose {
 #[allow(unused)]
 macro_rules! console_info {
     ($fmt:expr $(, $arg:expr)*) => {{
-        let prefix = $crate::i18n::tr_core("[INFO]");
-
         if ! $crate::console::stdout_is_tty() {
-            println!( concat!("{} ", $fmt), prefix, $( $arg ),*);
+            println!( concat!("{} ", $fmt), "[INFO]", $( $arg ),*);
         } else {
             use ::colored::Colorize;
-            let msg = format!( "{prefix} {}", format!($fmt $(, $arg)*));
+            let msg = format!( "{} {}", "[INFO]", format!($fmt $(, $arg)*));
             println!("{msg}");
         }
     }};
@@ -121,13 +119,11 @@ macro_rules! console_info {
 #[allow(unused)]
 macro_rules! console_warn {
     ($fmt:expr $(, $arg:expr)*) => {{
-        let prefix = $crate::i18n::tr_core("[WARN]");
-
         if ! $crate::console::stdout_is_tty() {
-            println!( concat!("{} ", $fmt), prefix, $( $arg ),*);
+            println!( concat!("{} ", $fmt), "[WARN]", $( $arg ),*);
         } else {
             use ::colored::Colorize;
-            let msg = format!( "{} {}", prefix.yellow().bold(), format!($fmt $(, $arg)*));
+            let msg = format!( "{} {}", "[WARN]".yellow().bold(), format!($fmt $(, $arg)*));
             println!("{msg}");
         }
         }};
@@ -146,13 +142,11 @@ macro_rules! console_warn {
 #[allow(unused)]
 macro_rules! console_error {
     ($fmt:expr $(, $arg:expr)*) => {{
-        let prefix = $crate::i18n::tr_core("[ERROR]");
-
         if ! $crate::console::stdout_is_tty() {
-            println!( concat!("{} ", $fmt), prefix, $( $arg ),*);
+            println!( concat!("{} ", $fmt), "[ERROR]", $( $arg ),*);
          } else {
             use ::colored::Colorize;
-            let msg = format!( "{} {}", prefix.red().bold(), format!($fmt $(, $arg)*));
+            let msg = format!( "{} {}", "[ERROR]".red().bold(), format!($fmt $(, $arg)*));
             println!("{msg}");
          }
     }};

@@ -1,7 +1,7 @@
 # French translation of umrs-ls
 # This file is distributed under the same license as the UMRS Project
 # MIT License
-# Copyright (c) 2025 Jamie Adams (a.k.a, Imodium Operator)
+# Copyright (c) 2025 Jamie Adams (a.k.a. Imodium Operator)
 #
 # Initial translation provided by a specialized Claude Code "umrs-translator".
 # The agent was assisted by a technical corpus derived from various GNU
@@ -14,30 +14,31 @@ msgid ""
 msgstr ""
 "Project-Id-Version: umrs-ls\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-11 08:37+0000\n"
+"POT-Creation-Date: 2026-03-11 15:36+0000\n"
 "PO-Revision-Date: 2026-03-11 00:00+0000\n"
 "Last-Translator: umrs-translator (Claude Code)\n"
-"Language-Team: fr_CA\n"
-"Language: fr_CA\n"
+"Language-Team: fr_FR\n"
+"Language: fr_FR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 # TRANSLATOR: Displayed in the access-denied section footer of directory listings.
-# "accès refusé" is the standard Unix/Linux francophone equivalent; no direct
-# corpus match was found in the GNU tools corpus, but the phrase is widely attested
-# throughout POSIX documentation, ANSSI guidance, and OTAN/NATO francophone material.
+# No standalone corpus match for "access denied" in any GNU corpus file.
+# "accès refusé" is the standard francophone Unix/Linux term, widely attested in
+# POSIX documentation, ANSSI guidance, and OTAN/NATO francophone material.
+# Identical to fr_CA — no metropolitan/Canadian difference for this phrase.
 #. Translate the static label, then append the count in parentheses.
 #: components/rusty-gadgets/umrs-ls/src/main.rs:175
 msgid "access denied"
 msgstr "accès refusé"
 
 # TRANSLATOR: Column header for POSIX file permission bits (rwxrwxrwx / octal mode).
-# No exact column-header match for "MODE" was found in the corpus.
-# coreutils consistently translates "mode" and "permissions" as "droits" throughout
-# (e.g., "droits de %s", "modification des droits", "impossible de modifier les droits").
-# "DROITS" is therefore the corpus-informed choice for this header.
+# No standalone column-header match for "MODE" in the corpus.
+# coreutils (fr) consistently renders permission-related operations using "droits"
+# throughout (e.g., "modification des droits", "impossible de modifier les droits").
+# "DROITS" is therefore corpus-informed. Identical to fr_CA.
 # 6 characters — within the ≤8 target for column brevity.
 #. Wrap translations in Cow::Owned
 #: components/rusty-gadgets/umrs-ls/src/main.rs:257
@@ -48,9 +49,8 @@ msgstr "DROITS"
 # No match found in any GNU corpus file. "MARQUAGE" is the established
 # francophone technical term for security marking in OTAN/NATO and ANSSI contexts
 # (e.g., "marquage de sécurité", "marquage de classification").
-# The term is preferred over "étiquette" (label) here because the column reflects
-# the human-readable marking string, not the raw SELinux label.
-# Recorded as UMRS decision in vocabulary-fr_CA.md.
+# Preferred over "étiquette" (label) here as this column reflects the human-readable
+# marking string, not the raw SELinux label. UMRS decision; identical to fr_CA.
 # 8 characters — at the ≤8 target limit.
 #: components/rusty-gadgets/umrs-ls/src/main.rs:258
 msgid "MARKING"
@@ -58,9 +58,8 @@ msgstr "MARQUAGE"
 
 # TRANSLATOR: Column header for file owner UID and GID, displayed as "user:group".
 # Corpus match (coreutils, chown.c): msgid "[OWNER][:[GROUP]]" → msgstr "[PROPRIO][:[GROUPE]]"
-# Adapted to column-header style: "PROPRIO:GROUPE".
-# "PROPRIO" is the coreutils-attested abbreviation for "propriétaire"; retained here
-# for consistency with the corpus. Full form "PROPRIÉTAIRE:GROUPE" exceeds column brevity target.
+# This is the GNU Translation Project's standard French (not a Canadian regionalism);
+# applies equally to fr_FR. Adapted to column-header style: "PROPRIO:GROUPE".
 # 13 characters — slightly over ≤8 target, but inherent to the two-field format.
 #: components/rusty-gadgets/umrs-ls/src/main.rs:259
 msgid "OWNER:GROUP"
@@ -69,26 +68,24 @@ msgstr "PROPRIO:GROUPE"
 # TRANSLATOR: Column header for file size in bytes.
 # Corpus match (tar, tests/genfile.c): msgid "SIZE" → msgstr "TAILLE"
 # Also attested in coreutils: msgid "Size" → msgstr "Taille".
-# "TAILLE" is the unambiguous corpus-mandated translation.
+# "TAILLE" is the unambiguous corpus-mandated translation. Identical to fr_CA.
 # 6 characters — within the ≤8 target.
 #: components/rusty-gadgets/umrs-ls/src/main.rs:260
 msgid "SIZE"
 msgstr "TAILLE"
 
 # TRANSLATOR: Column header for file last-modification timestamp (mtime).
-# No exact match for "MODIFIED" or "MODIFIED" found in the corpus.
-# tar corpus maps "DATE" → "DATE" (not useful). The closest applicable term in
-# francophone technical usage is "MODIFIÉ" (past participle, meaning "last modified").
-# This is consistent with ANSSI and standard POSIX French documentation.
-# Recorded as UMRS decision in vocabulary-fr_CA.md.
+# No exact corpus match for "MODIFIED". The standard francophone term for
+# last-modification state in POSIX and ANSSI documentation is "MODIFIÉ"
+# (past participle). Identical to fr_CA. UMRS decision.
 # 7 characters — within the ≤8 target.
 #: components/rusty-gadgets/umrs-ls/src/main.rs:261
 msgid "MODIFIED"
 msgstr "MODIFIÉ"
 
 # TRANSLATOR: Column header for the file or directory name.
-# Corpus match (coreutils, who.c; tar, tar.c/genfile.c): msgid "NAME" → msgstr "NOM"
-# "NOM" is the unambiguous corpus-mandated translation.
+# Corpus match (coreutils, who.c): msgid "NAME" → msgstr "NOM"
+# Confirmed as exact standalone match. Identical to fr_CA.
 # 3 characters — well within the ≤8 target.
 #: components/rusty-gadgets/umrs-ls/src/main.rs:262
 msgid "NAME"
@@ -96,9 +93,9 @@ msgstr "NOM"
 
 # TRANSLATOR: Placeholder shown when file content or metadata is access-controlled
 # and cannot be displayed to the current user. The angle-bracket format is preserved
-# to match the source string convention (e.g., <restricted>, <inconnu>).
+# to match the source string convention (e.g., <restricted>, <restreint>).
 # Corpus match (bash, builtins/common.c): msgid "restricted" → msgstr "restreint"
-# Applying corpus term in angle-bracket placeholder format: <restreint>.
+# Applying corpus term in angle-bracket placeholder format. Identical to fr_CA.
 #: components/rusty-gadgets/umrs-ls/src/main.rs:467
 msgid "<restricted>"
 msgstr "<restreint>"

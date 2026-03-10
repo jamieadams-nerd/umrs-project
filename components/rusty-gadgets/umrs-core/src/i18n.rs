@@ -120,18 +120,3 @@ pub fn tr(msgid: &str) -> String {
 
     dgettext(dom, msgid)
 }
-
-/// Translate a UMRS Core library message using the core text domain.
-///
-/// This function operates independently of any caller-initialized domain
-/// and will resolve translations from the `umrs-core` catalog if present.
-///
-/// Behavior:
-/// - Ensures locale initialization if not already performed.
-/// - Does not modify global translation domain state.
-/// - Falls back to `msgid` if no translation exists.
-pub fn tr_core(msgid: &str) -> String {
-    ensure_locale();
-
-    dgettext("umrs-core", msgid)
-}

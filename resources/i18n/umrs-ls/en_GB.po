@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: umrs-ls\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-11 00:00+0000\n"
+"POT-Creation-Date: 2026-03-11 15:36+0000\n"
 "PO-Revision-Date: 2026-03-11 00:00+0000\n"
 "Last-Translator: umrs-translator (Claude Code)\n"
 "Language-Team: en_GB\n"
@@ -28,7 +28,52 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 # TRANSLATOR: Displayed in the access-denied section footer of directory listings.
-# "access denied" is identical in en_GB — no spelling difference.
-#: components/rusty-gadgets/umrs-ls/src/main.rs:184
+# "access denied" is identical in en_GB — no spelling difference from en_US.
+#. Translate the static label, then append the count in parentheses.
+#: components/rusty-gadgets/umrs-ls/src/main.rs:175
 msgid "access denied"
 msgstr "access denied"
+
+# TRANSLATOR: Column header for POSIX file permission bits.
+# "MODE" is identical in en_GB — no spelling difference from en_US.
+#. Wrap translations in Cow::Owned
+#: components/rusty-gadgets/umrs-ls/src/main.rs:257
+msgid "MODE"
+msgstr "MODE"
+
+# TRANSLATOR: Column header for SELinux security marking / classification marking.
+# "MARKING" is identical in en_GB — no spelling difference from en_US.
+# The term is used consistently in NCSC (UK) and Five Eyes security guidance.
+#: components/rusty-gadgets/umrs-ls/src/main.rs:258
+msgid "MARKING"
+msgstr "MARKING"
+
+# TRANSLATOR: Column header for file owner UID and GID.
+# "OWNER:GROUP" is identical in en_GB — no spelling difference from en_US.
+#: components/rusty-gadgets/umrs-ls/src/main.rs:259
+msgid "OWNER:GROUP"
+msgstr "OWNER:GROUP"
+
+# TRANSLATOR: Column header for file size in bytes.
+# "SIZE" is identical in en_GB — no spelling difference from en_US.
+#: components/rusty-gadgets/umrs-ls/src/main.rs:260
+msgid "SIZE"
+msgstr "SIZE"
+
+# TRANSLATOR: Column header for file last-modification timestamp (mtime).
+# "MODIFIED" is identical in en_GB — no spelling difference from en_US.
+#: components/rusty-gadgets/umrs-ls/src/main.rs:261
+msgid "MODIFIED"
+msgstr "MODIFIED"
+
+# TRANSLATOR: Column header for the file or directory name.
+# "NAME" is identical in en_GB — no spelling difference from en_US.
+#: components/rusty-gadgets/umrs-ls/src/main.rs:262
+msgid "NAME"
+msgstr "NAME"
+
+# TRANSLATOR: Placeholder shown when content is access-controlled.
+# "<restricted>" is identical in en_GB — no spelling difference from en_US.
+#: components/rusty-gadgets/umrs-ls/src/main.rs:467
+msgid "<restricted>"
+msgstr "<restricted>"
