@@ -5,8 +5,6 @@ use std::io::IsTerminal;
 use std::sync::OnceLock;
 use std::sync::atomic::AtomicBool;
 
-use crate::i18n::tr_core;
-
 // ==================================================================
 //   Initialize Console Messaging subsystem
 // ==================================================================
@@ -99,7 +97,7 @@ macro_rules! verbose {
 #[allow(unused)]
 macro_rules! console_info {
     ($fmt:expr $(, $arg:expr)*) => {{
-        let prefix = tr_core("[INFO]");
+        let prefix = $crate::i18n::tr_core("[INFO]");
 
         if ! $crate::console::stdout_is_tty() {
             println!( concat!("{} ", $fmt), prefix, $( $arg ),*);
@@ -123,7 +121,7 @@ macro_rules! console_info {
 #[allow(unused)]
 macro_rules! console_warn {
     ($fmt:expr $(, $arg:expr)*) => {{
-        let prefix = tr_core("[WARN]");
+        let prefix = $crate::i18n::tr_core("[WARN]");
 
         if ! $crate::console::stdout_is_tty() {
             println!( concat!("{} ", $fmt), prefix, $( $arg ),*);
@@ -148,7 +146,7 @@ macro_rules! console_warn {
 #[allow(unused)]
 macro_rules! console_error {
     ($fmt:expr $(, $arg:expr)*) => {{
-        let prefix = tr_core("[ERROR]");
+        let prefix = $crate::i18n::tr_core("[ERROR]");
 
         if ! $crate::console::stdout_is_tty() {
             println!( concat!("{} ", $fmt), prefix, $( $arg ),*);

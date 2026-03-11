@@ -52,6 +52,8 @@ pub enum LabelTrust {
     ///
     /// This is the only tier at which the label content is safe for use in
     /// policy decisions.
+    ///
+    /// NIST SP 800-53 SI-7 — requires a package-DB digest match. CMMC L2 SI.1.210.
     TrustedLabel,
 
     /// T4 integrity passed (digest verified) but the label content contradicts
@@ -61,6 +63,8 @@ pub enum LabelTrust {
     /// (digest matches), but what it claims does not match what the package
     /// substrate independently determined. Treated as untrusted for policy
     /// decisions. Recorded as an anomaly in the `EvidenceBundle`.
+    ///
+    /// NIST SP 800-53 SI-7, AU-10 — anomalous; must never drive policy decisions.
     IntegrityVerifiedButContradictory {
         /// Brief description of the contradiction (≤64 characters at log sites).
         /// Must not contain security labels, credentials, or file content

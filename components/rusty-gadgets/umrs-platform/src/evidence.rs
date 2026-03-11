@@ -56,6 +56,14 @@ pub enum SourceKind {
     /// Data read from the sysfs pseudo-filesystem (`/sys/`).
     /// Provenance-verified via `SYSFS_MAGIC` before any bytes are consumed.
     SysfsNode,
+
+    /// Data obtained from a `statfs(2)` syscall on a directory or path.
+    ///
+    /// Not a file read — records filesystem-level metadata for a path.
+    /// No file descriptor is opened.
+    ///
+    /// NIST SP 800-53 AU-3 — audit records must correctly identify data acquisition method.
+    StatfsResult,
 }
 
 // ===========================================================================
@@ -228,6 +236,9 @@ impl EvidenceBundle {
     /// Append a record to the bundle.
     ///
     /// Records are never reordered or removed after being pushed.
+    ///
+    /// NIST SP 800-53 AU-10 — records are append-only; callers cannot remove or reorder
+    /// entries after push.
     pub fn push(&mut self, record: EvidenceRecord) {
         self.records.push(record);
     }

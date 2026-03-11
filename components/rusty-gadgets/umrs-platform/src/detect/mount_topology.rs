@@ -254,7 +254,7 @@ fn read_etc_statfs(evidence: &mut EvidenceBundle) -> bool {
             let magic_u64 = magic.cast_unsigned();
             log::debug!("mount_topology: /etc filesystem magic = {magic_u64:#x}");
             evidence.push(EvidenceRecord {
-                source_kind: SourceKind::RegularFile,
+                source_kind: SourceKind::StatfsResult,
                 opened_by_fd: false,
                 path_requested: "/etc".to_owned(),
                 path_resolved: None,
@@ -270,7 +270,7 @@ fn read_etc_statfs(evidence: &mut EvidenceBundle) -> bool {
         Err(e) => {
             log::warn!("mount_topology: statfs(/etc) failed: {e}");
             evidence.push(EvidenceRecord {
-                source_kind: SourceKind::RegularFile,
+                source_kind: SourceKind::StatfsResult,
                 opened_by_fd: false,
                 path_requested: "/etc".to_owned(),
                 path_resolved: None,

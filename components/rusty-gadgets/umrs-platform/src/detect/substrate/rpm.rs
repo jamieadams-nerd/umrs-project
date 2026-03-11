@@ -37,6 +37,8 @@
 
 use std::path::Path;
 
+use nix::sys::statfs::statfs;
+
 use crate::evidence::{EvidenceBundle, EvidenceRecord, SourceKind};
 use crate::os_identity::{Distro, OsFamily, SubstrateIdentity};
 
@@ -50,6 +52,10 @@ const RPM_PACKAGES_BDB: &str = "/var/lib/rpm/Packages";
 
 /// RHEL 10+ SQLite database file path.
 const RPM_PACKAGES_SQLITE: &str = "/var/lib/rpm/rpmdb.sqlite";
+
+/// tmpfs filesystem magic number (linux/magic.h `TMPFS_MAGIC`).
+/// A DB root on tmpfs may not be a real RPM database.
+const TMPFS_MAGIC: i64 = 0x0102_1994;
 
 /// RPM package substrate probe.
 ///
@@ -73,6 +79,7 @@ impl Default for RpmProbe {
 impl PackageProbe for RpmProbe {
     fn probe(&self, bundle: &mut EvidenceBundle) -> ProbeResult {
         // Step 1: Check DB root existence.
+        // Path-based check only — stub limitation; no fd-anchored open or DB parse.
         let root_present = Path::new(RPM_DB_ROOT).exists();
         if !root_present {
             log::debug!("rpm_probe: /var/lib/rpm not found — not an RPM system");
@@ -99,6 +106,25 @@ impl PackageProbe for RpmProbe {
             };
         }
 
+        // statfs the DB root to detect tmpfs substitution.
+        // Filesystem magic TMPFS_MAGIC (0x0102_1994) — not a real RPM database location.
+        let fs_magic_opt: Option<u64> = match statfs(RPM_DB_ROOT) {
+            Ok(stat) => {
+                let magic = stat.filesystem_type().0;
+                if magic == TMPFS_MAGIC {
+                    log::warn!(
+                        "rpm_probe: {RPM_DB_ROOT} is on tmpfs — may not be a real RPM database"
+                    );
+                }
+                // Cast i64 → u64; filesystem magic values are defined as positive constants.
+                Some(magic.cast_unsigned())
+            }
+            Err(e) => {
+                log::debug!("rpm_probe: statfs({RPM_DB_ROOT}) failed: {e}");
+                None
+            }
+        };
+
         let mut identity = SubstrateIdentity {
             family: OsFamily::RpmBased,
             distro: None,
@@ -111,14 +137,18 @@ impl PackageProbe for RpmProbe {
         identity.add_fact();
 
         let mut notes = vec!["RPM DB root present: /var/lib/rpm".to_owned()];
+        if let Some(magic) = fs_magic_opt {
+            notes.push(format!("db_root_fs_magic={magic:#x}"));
+        }
 
         // Step 2: Check for Packages database (fact 2).
-        let packages_present = Path::new(RPM_PACKAGES_SQLITE).exists()
-            || Path::new(RPM_PACKAGES_BDB).exists();
+        // Evaluate each path once and store in booleans to avoid repeated .exists() calls.
+        let sqlite_present = Path::new(RPM_PACKAGES_SQLITE).exists();
+        let bdb_present = Path::new(RPM_PACKAGES_BDB).exists();
 
-        if packages_present {
+        if sqlite_present || bdb_present {
             identity.add_fact();
-            let which = if Path::new(RPM_PACKAGES_SQLITE).exists() {
+            let which = if sqlite_present {
                 "rpmdb.sqlite (RHEL10+)"
             } else {
                 "Packages (BDB, RHEL8/9)"
@@ -126,7 +156,7 @@ impl PackageProbe for RpmProbe {
             notes.push(format!("Packages file present: {which}"));
 
             // Infer RHEL family from SQLite DB presence (RHEL 10+ indicator).
-            if Path::new(RPM_PACKAGES_SQLITE).exists() {
+            if sqlite_present {
                 identity.distro = Some(Distro::Rhel);
                 notes.push("distro inferred: RHEL (SQLite RPM DB)".to_owned());
             }
@@ -145,7 +175,7 @@ impl PackageProbe for RpmProbe {
             path_requested: RPM_DB_ROOT.to_owned(),
             path_resolved: None,
             stat: None,
-            fs_magic: None,
+            fs_magic: fs_magic_opt,
             sha256: None,
             pkg_digest: None,
             parse_ok: true,

@@ -1,0 +1,167 @@
+= CUI Structure and Handling Requirements
+:toc: left
+:description: What CUI is, how it is structured, how it differs from classification and proprietary regimes, and what it requires from a system.
+
+// NIST 800-171 Rev 2 — CUI protection requirements
+// NIST 800-53 AC-4, AC-6
+// EO 13556 — Controlled Unclassified Information
+// 32 CFR Part 2002
+
+== What CUI Is
+
+_Controlled Unclassified Information_ (CUI) is unclassified information that the U.S.
+government designates as requiring controlled handling under law, regulation, or
+government-wide policy.
+
+CUI was created by Executive Order 13556 (2010) to standardize a patchwork of prior
+labels that federal agencies had used inconsistently for decades. Before EO 13556,
+the same type of sensitive-but-unclassified information might be labeled FOUO
+(For Official Use Only), SBU (Sensitive But Unclassified), LES (Law Enforcement
+Sensitive), or any of dozens of agency-specific variants. CUI replaced that
+inconsistency with a single framework governed by the National Archives (NARA).
+
+Authoritative sources:
+
+* Executive Order 13556 (2010)
+* 32 CFR Part 2002 (implementing regulation)
+* NARA CUI Registry: https://www.archives.gov/cui
+* NIST SP 800-171 (CUI protection requirements for non-federal systems)
+
+CUI applies to information, not to people, systems, or clearance levels. It is not
+a classification level. A document marked CUI does not require a security clearance
+to handle — it requires compliance with the applicable handling rules.
+
+== CUI Categories
+
+The NARA CUI Registry defines more than 100 CUI categories organized into index groups.
+Each category identifies a specific type of information with specific handling requirements.
+
+Representative categories relevant to high-assurance system deployments:
+
+[cols="1,2,3"]
+|===
+| Category | Abbreviation | Description
+
+| Controlled Technical Information | CTI | Technical information with military or space application
+| Information Systems Vulnerability Information | ISVI | Weakness, vulnerability, or exploitation path details
+| Operations Security | OPSEC | Information revealing operational patterns or capabilities
+| Protected Critical Infrastructure Information | PCII | Voluntarily submitted critical infrastructure data
+| Critical Energy Infrastructure Information | CEII | Energy sector infrastructure vulnerability data
+| General Privacy | PRVCY | Personally identifiable information (general)
+| General Law Enforcement | LEI | Law enforcement information with handling restrictions
+| Investigation | INV | Ongoing or completed investigation records
+| Export Controlled | EXPT | ITAR / EAR regulated information
+| Export Controlled Research | EXPTR | R&D data subject to export control
+|===
+
+See xref:reference:cui-category-abbreviations.adoc[CUI category abbreviations] for the
+complete list.
+
+== CUI vs Classification
+
+CUI is not a classification level. The distinction is structural:
+
+[cols="1,2,2"]
+|===
+| Property | Classified information (C/S/TS) | CUI
+
+| Authority | Executive Order 13526 | Executive Order 13556
+| Who designates | Original classifying authorities | Any U.S. government agency
+| Who handles | Cleared individuals with need-to-know | Authorized individuals with lawful purpose
+| System requirement | Accredited classified system | System meeting NIST 800-171 requirements
+| Lattice / dominance | Yes (formal MLS hierarchy) | No inherent lattice
+| Enforcement model | Mandatory access control | Regulatory / contractual compliance
+|===
+
+People sometimes describe CUI as "a new security level." That framing is incorrect.
+CUI is a handling framework for unclassified data that still requires protection. It sits
+entirely below the classification boundary. The information is not secret — but it is
+controlled.
+
+== CUI vs Proprietary
+
+CUI and proprietary information have different authorities and must not be conflated.
+
+*CUI* is created by government designation. EO 13556 governs it. Government agencies
+designate information as CUI; contractors and other non-federal entities are required
+to protect it when they receive it.
+
+*Proprietary information* is owned and designated by a company. It covers trade secrets,
+intellectual property, and internal business data. It is not governed by EO 13556.
+Proprietary data is not automatically CUI. CUI data is not automatically proprietary.
+They overlap only when a contract explicitly says so.
+
+From an MLS standpoint, CUI and Proprietary require separate sensitivity labels.
+Collapsing them into a single label obscures which regulatory authority applies
+and complicates compliance reporting.
+
+== CUI vs ITAR / Export Controlled
+
+Export-controlled information (governed by ITAR — the International Traffic in Arms
+Regulations — or EAR — the Export Administration Regulations) is regulated by the
+Department of State and the Department of Commerce respectively. It is a separate legal
+authority from NARA and EO 13556.
+
+Some ITAR information may also be marked CUI in practice, but the legal authority is
+distinct. An MLS label model should represent these as separate sensitivity levels:
+a CUI sensitivity level and an EXPORT_CONTROLLED sensitivity level, with the latter
+carrying additional citizenship and dissemination constraints.
+
+See xref:mls-label-model.adoc[MLS label model] for the UMRS sensitivity level set.
+
+== What CUI Requires from a System
+
+Systems processing CUI must comply with NIST SP 800-171. The key requirements
+relevant to UMRS:
+
+[cols="1,3"]
+|===
+| 800-171 Requirement | UMRS Implementation
+
+| 3.1.3 — Control CUI flow
+| MLS sensitivity labels enforce information flow at the kernel level. Data labeled
+  CUI cannot flow to a domain with lower clearance.
+
+| 3.1.1 — Limit access to authorized users
+| SELinux user clearance ranges bound which sensitivity levels each user can access.
+
+| 3.1.2 — Limit access to authorized functions
+| SELinux type enforcement restricts which system calls and capabilities are available
+  to each process domain.
+
+| 3.13.1 — Monitor, control, and protect CUI
+| IMA/EVM ensures CUI objects are measured and integrity-protected at the kernel level.
+
+| 3.3.1 / 3.3.2 — Audit system events
+| SELinux AVC audit events and the IMA measurement log provide tamper-visible records
+  of access decisions.
+
+| 3.13.10 — Establish and manage cryptographic keys
+| Key management is addressed by the UMRS key management infrastructure.
+  See xref:reference:key-recommendation-list.adoc[Cryptographic key recommendations].
+|===
+
+== CUI in the UMRS Context
+
+UMRS implements CUI handling through MLS enforcement rather than application-layer
+controls. This means:
+
+* A process cleared for CUI sensitivity (s4) cannot read EXPORT_CONTROLLED (s5) data
+  regardless of POSIX permissions.
+* A process at CUI sensitivity cannot write to CONTROLLED (s2) storage — the no-write-down
+  rule prevents intentional or accidental downgrade.
+* CUI objects carry a security label (`s4` with applicable categories) that is stored in
+  a kernel-protected xattr (EVM-protected) and cannot be stripped or altered without
+  breaking the integrity chain.
+
+The goal is to replace reliance on correct application behavior with kernel-enforced
+policy. "Even if the application is compromised, it cannot read CUI data above its
+clearance or write CUI data to a lower-labeled object."
+
+== See Also
+
+* xref:mls-label-model.adoc[MLS label model and CUI mapping]
+* xref:five-eyes-interop.adoc[Five Eyes classification interoperability]
+* xref:reference:cui-descriptions.adoc[CUI category descriptions (c0–c9)]
+* xref:reference:cui-category-abbreviations.adoc[CUI category abbreviations]
+* xref:reference:compliance-frameworks.adoc[Compliance frameworks registry]

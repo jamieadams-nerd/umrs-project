@@ -33,6 +33,8 @@
 
 use std::path::Path;
 
+use nix::sys::statfs::statfs;
+
 use crate::evidence::{EvidenceBundle, EvidenceRecord, SourceKind};
 use crate::os_identity::{OsFamily, SubstrateIdentity};
 
@@ -43,6 +45,10 @@ const DPKG_DB_ROOT: &str = "/var/lib/dpkg";
 
 /// dpkg status file (primary package database).
 const DPKG_STATUS: &str = "/var/lib/dpkg/status";
+
+/// tmpfs filesystem magic number (linux/magic.h `TMPFS_MAGIC`).
+/// A DB root on tmpfs may not be a real dpkg database.
+const TMPFS_MAGIC: i64 = 0x0102_1994;
 
 /// dpkg package substrate probe.
 ///
@@ -66,6 +72,7 @@ impl Default for DpkgProbe {
 impl PackageProbe for DpkgProbe {
     fn probe(&self, bundle: &mut EvidenceBundle) -> ProbeResult {
         // Step 1: Check DB root existence.
+        // Path-based check only — stub limitation; no fd-anchored open or DB parse.
         let root_present = Path::new(DPKG_DB_ROOT).exists();
         if !root_present {
             log::debug!("dpkg_probe: /var/lib/dpkg not found — not a dpkg system");
@@ -92,6 +99,26 @@ impl PackageProbe for DpkgProbe {
             };
         }
 
+        // statfs the DB root to detect tmpfs substitution.
+        // Filesystem magic TMPFS_MAGIC (0x0102_1994) — not a real dpkg database location.
+        let fs_magic_opt: Option<u64> = match statfs(DPKG_DB_ROOT) {
+            Ok(stat) => {
+                let magic = stat.filesystem_type().0;
+                if magic == TMPFS_MAGIC {
+                    log::warn!(
+                        "dpkg_probe: {DPKG_DB_ROOT} is on tmpfs — \
+                         may not be a real dpkg database"
+                    );
+                }
+                // Cast i64 → u64; filesystem magic values are defined as positive constants.
+                Some(magic.cast_unsigned())
+            }
+            Err(e) => {
+                log::debug!("dpkg_probe: statfs({DPKG_DB_ROOT}) failed: {e}");
+                None
+            }
+        };
+
         let mut identity = SubstrateIdentity {
             family: OsFamily::DpkgBased,
             distro: None,
@@ -104,8 +131,12 @@ impl PackageProbe for DpkgProbe {
         identity.add_fact();
 
         let mut notes = vec!["dpkg DB root present: /var/lib/dpkg".to_owned()];
+        if let Some(magic) = fs_magic_opt {
+            notes.push(format!("db_root_fs_magic={magic:#x}"));
+        }
 
         // Step 2: Check for status file (fact 2).
+        // Path-based check only — stub limitation; no fd-anchored open or DB parse.
         if Path::new(DPKG_STATUS).exists() {
             identity.add_fact();
             notes.push("status file present: /var/lib/dpkg/status".to_owned());
@@ -124,7 +155,7 @@ impl PackageProbe for DpkgProbe {
             path_requested: DPKG_DB_ROOT.to_owned(),
             path_resolved: None,
             stat: None,
-            fs_magic: None,
+            fs_magic: fs_magic_opt,
             sha256: None,
             pkg_digest: None,
             parse_ok: true,

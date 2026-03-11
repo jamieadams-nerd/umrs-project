@@ -1,0 +1,49 @@
+= MLS Color Configuration
+:toc: left
+:description: Where MLS color configuration lives on a RHEL MLS system, and why color.conf is commonly absent.
+
+// NIST 800-53 AU-3 — Content of audit records (human-readable label display)
+
+Color configuration for MLS label display is separate from sensitivity label
+translation. It does not live in `setrans.conf`.
+
+== File Locations
+
+[source]
+----
+/etc/selinux/mls/setrans.conf
+/etc/selinux/mls/setrans.d/*.conf
+----
+
+And optionally:
+
+[source]
+----
+/etc/selinux/mls/color.conf
+----
+
+== Why color.conf Is Commonly Absent
+
+On most modern RHEL MLS systems, `color.conf` is either missing, empty, or not
+shipped with the default policy package. When that file is absent or empty,
+`mcstransd` logs that no color configuration was found and falls back to
+uncolored label display.
+
+This is expected behavior, not a configuration error. Color configuration is
+an optional display enhancement — it does not affect label correctness or
+enforcement.
+
+== UMRS secolor Integration
+
+UMRS tools read MLS color definitions from the SELinux `secolor.conf` file,
+not from `color.conf`. The relevant path is:
+
+[source]
+----
+/etc/selinux/<policy>/secolor.conf
+----
+
+Where `<policy>` is the active policy name (e.g., `mls`, `targeted`).
+
+See xref:secolor.adoc[secolor.conf format] for the full reference on how UMRS
+tools load and apply color rules for label display.

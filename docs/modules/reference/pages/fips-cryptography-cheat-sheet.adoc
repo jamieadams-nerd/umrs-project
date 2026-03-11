@@ -1,0 +1,259 @@
+= FIPS 140-2/3 Cryptography Quick Reference
+:toc: left
+:description: Quick reference for FIPS 140-2/3 approved cryptographic algorithms, key sizes, and recommended choices for new high-assurance designs.
+
+// NIST 800-53 SC-13 — Cryptographic protection
+// NIST 800-53 SC-12 — Cryptographic key establishment and management
+// FIPS 140-2/140-3, SP 800-131A Rev.2
+
+This reference covers the approved algorithm landscape under FIPS 140-3 and
+SP 800-131A Rev.2. It is organized by function. Treat it as a quick sanity check,
+not as a substitute for reading the applicable module security policy for your
+specific deployment.
+
+*Legend*
+
+[cols="1,3"]
+|===
+| Mark | Meaning
+
+| `[+]` | Recommended for new high-assurance design
+| `[~]` | Acceptable / legacy — usable but not preferred for new work
+| `[-]` | Disallowed — do not use in new designs
+|===
+
+== Hash Functions
+
+*SHA-2 (FIPS 180-4)*
+
+* `[+]` SHA-256 — default for general hashing and HMAC
+* `[+]` SHA-384 — higher strength, long-term use
+* `[+]` SHA-512 — maximum strength
+* `[+]` SHA-512/224, SHA-512/256, SHA-224 — acceptable; SHA-256 preferred
+
+*SHA-3 (FIPS 202)*
+
+* `[+]` SHA3-256, SHA3-384, SHA3-512 — acceptable alternatives to SHA-2
+* `[+]` SHAKE128, SHAKE256 — approved for specific KDF/MAC constructions and PQC standards
+
+*Legacy*
+
+* `[-]` SHA-1 — disallowed for digital signature generation; only permitted in very
+  restricted legacy verification contexts. Do not design new systems with SHA-1.
+
+== Message Authentication (MAC / PRF)
+
+* `[+]` HMAC-SHA-256 — standard choice for general use
+* `[+]` HMAC-SHA-384 — high-assurance, long-lived keys
+* `[+]` KMAC128 / KMAC256 — SHA-3 derived MACs (SP 800-185); NIST-recommended
+* `[+]` CMAC-AES — AES-based MAC (SP 800-38B)
+* `[+]` GMAC-AES — GCM's MAC-only variant; acceptable when used as specified
+* `[~]` HMAC-SHA-1 — restricted legacy; not for new long-lived systems
+* `[~]` CMAC-TDEA — legacy; follows TDEA status (see Symmetric Encryption)
+
+NOTE: HKDF is "non-approved but allowed" in some specific constructions under certain
+FIPS modules. Check the module security policy before relying on HKDF.
+
+== Symmetric Encryption
+
+*AES (FIPS 197)* — key sizes 128, 192, 256 bits
+
+* `[+]` AES-256-GCM — preferred for data in transit (AEAD: confidentiality + integrity)
+* `[+]` AES-128-GCM — acceptable when performance is constrained
+* `[+]` AES-256-XTS — disk and volume encryption only (SP 800-38E)
+* `[+]` AES-KW / AES-KWP — key wrapping and key wrap with padding (SP 800-38F)
+* `[+]` AES-CCM — AEAD mode (SP 800-38C)
+* `[~]` AES-CBC — approved but requires careful IV/padding/integrity handling; prefer AEAD
+* `[~]` AES-CTR, AES-CFB, AES-OFB — approved; use only when AEAD is not available
+
+*Triple-DES (TDEA)*
+
+* `[-]` 3-key TDEA — encryption disallowed after 2023; legacy decryption only
+* `[-]` 2-key TDEA — encryption disallowed; decryption legacy only
+
+== Digital Signatures
+
+*RSA (FIPS 186-5)*
+
+* `[+]` RSA-3072 with RSASSA-PSS — recommended for long-term, high-assurance use
+* `[+]` RSA-2048 with RSASSA-PSS — minimum acceptable for new use
+* `[~]` RSA-2048 with PKCS#1 v1.5 — widely deployed legacy scheme; acceptable
+
+*ECDSA (FIPS 186-5, SP 800-186)*
+
+* `[+]` ECDSA P-256 — default choice
+* `[+]` ECDSA P-384 — higher assurance, longer horizon
+* `[+]` Ed25519 / Ed448 — acceptable per FIPS 186-5 where the module includes them
+* `[~]` ECDSA P-224 — aging toward deprecation; P-256 preferred
+
+*DSA*
+
+* `[-]` DSA — new key generation/signing discouraged or disallowed in most FIPS 140-3
+  profiles; verification of existing signatures may still be permitted
+
+*Post-quantum (new FIPS)*
+
+* `[+]` ML-DSA (FIPS 204 / CRYSTALS-Dilithium) — general-purpose PQC replacement
+* `[+]` SLH-DSA (FIPS 205) — stateless hash-based signature; suited for long-lived data
+
+== Key Establishment
+
+*Classical*
+
+* `[+]` ECDHE P-256 / P-384 — preferred for TLS and protocol use
+* `[~]` ECDH P-256 / P-384 (static) — acceptable; ephemeral preferred
+* `[~]` Finite-field DH 2048+ — acceptable; ECDHE preferred for new design
+* `[~]` RSA key transport ≥ 2048-bit — acceptable; KEMs preferred long-term
+
+*Post-quantum*
+
+* `[+]` ML-KEM (FIPS 203 / Kyber) — ML-KEM-768 or ML-KEM-1024 for high-assurance
+
+== Random Number Generation (DRBG)
+
+Approved DRBGs per SP 800-90A:
+
+* `[+]` Hash_DRBG (SHA-256/384 based)
+* `[+]` HMAC_DRBG (HMAC-SHA-256/384 based)
+* `[+]` CTR_DRBG (AES based)
+* `[-]` Dual_EC_DRBG — explicitly withdrawn and disallowed
+
+In practice: when using a FIPS-validated module (such as the OpenSSL 3.x FIPS
+provider), use the module's default DRBG in FIPS mode rather than constructing
+your own RNG.
+
+== Recommended Stack for New High-Assurance Designs
+
+[cols="1,2"]
+|===
+| Function | Recommended choice
+
+| Hash | SHA-256 or SHA-384
+| MAC | HMAC-SHA-256 or HMAC-SHA-384
+| Symmetric — transit | AES-256-GCM
+| Symmetric — at rest (disk) | AES-256-XTS
+| Key wrapping | AES-KW / AES-KWP
+| Signature | ECDSA P-256 or P-384; RSA-3072 with PSS where ECDSA unavailable
+| Key exchange | ECDHE P-256 or P-384
+| DRBG | Module-provided Hash/HMAC/CTR DRBG
+|===
+
+== Common Gotchas
+
+*CBC mode:* Approved but brittle. Requires careful IV management, padding, and a
+separate integrity mechanism. Prefer AEAD (GCM, CCM) for new designs.
+
+*SHA-1:* Still present in old X.509 chains. Verification of existing SHA-1-signed
+objects may be permitted, but generating new SHA-1 signatures is disallowed.
+
+*3DES:* Some old systems still require it. New FIPS 140-3 environments generally
+forbid it for encryption.
+
+*SHA-3 / XOF support:* Approved but not universally included in all FIPS module
+validations. Check the module security policy before using SHA-3 in a FIPS-required
+context.
+
+*OpenSSL 3.x FIPS mode:* Restricts available ciphers and digests to the FIPS provider.
+Algorithms such as EdDSA may exist in the provider but are marked non-FIPS. Check the
+module security policy document — it is the ground truth for your specific environment.
+
+== OpenSSL 3.x Command Examples
+
+The following examples illustrate algorithm usage. For strict FIPS operation, FIPS
+provider configuration must also be correct.
+
+=== Hashing
+
+[source,shell]
+----
+# SHA-256 hash of a file
+openssl dgst -sha256 -binary -out file.sha256 file.bin
+
+# SHA-384 hash
+openssl dgst -sha384 -binary -out file.sha384 file.bin
+
+# SHA3-256 hash
+openssl dgst -sha3-256 -binary -out file.sha3-256 file.bin
+----
+
+=== HMAC
+
+[source,shell]
+----
+# HMAC-SHA-256 (provide the key via file in production, not as a literal string)
+openssl dgst -sha256 -hmac "mysecretkey" -binary -out file.hmac file.bin
+----
+
+=== AES-256-CBC (with PBKDF2)
+
+[source,shell]
+----
+# Encrypt
+openssl enc -aes-256-cbc -pbkdf2 -salt -in plain.txt -out cipher.bin
+
+# Decrypt
+openssl enc -d -aes-256-cbc -pbkdf2 -in cipher.bin -out plain_decrypted.txt
+----
+
+=== RSA-3072 with RSASSA-PSS and SHA-256
+
+[source,shell]
+----
+# Generate key
+openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:3072 -out rsa-3072-key.pem
+
+# Extract public key
+openssl pkey -in rsa-3072-key.pem -pubout -out rsa-3072-pub.pem
+
+# Sign
+openssl pkeyutl -sign \
+  -in message.bin -inkey rsa-3072-key.pem \
+  -pkeyopt digest:sha256 -pkeyopt rsa_padding_mode:pss \
+  -pkeyopt rsa_pss_saltlen:digest -out sig.bin
+
+# Verify
+openssl pkeyutl -verify \
+  -in message.bin -sigfile sig.bin -pubin -inkey rsa-3072-pub.pem \
+  -pkeyopt digest:sha256 -pkeyopt rsa_padding_mode:pss \
+  -pkeyopt rsa_pss_saltlen:digest
+----
+
+=== ECDSA P-256
+
+[source,shell]
+----
+# Generate key
+openssl ecparam -name prime256v1 -genkey -noout -out ecdsa-p256-key.pem
+
+# Extract public key
+openssl pkey -in ecdsa-p256-key.pem -pubout -out ecdsa-p256-pub.pem
+
+# Sign
+openssl pkeyutl -sign \
+  -in message.bin -inkey ecdsa-p256-key.pem \
+  -pkeyopt digest:sha256 -out ecdsa-sig.bin
+
+# Verify
+openssl pkeyutl -verify \
+  -in message.bin -sigfile ecdsa-sig.bin -pubin -inkey ecdsa-p256-pub.pem \
+  -pkeyopt digest:sha256
+----
+
+== Compliance References
+
+[cols="1,3"]
+|===
+| Standard | Relevance
+
+| FIPS 197 | AES algorithm specification
+| FIPS 180-4 | SHA-2 hash specification
+| FIPS 202 | SHA-3 and SHAKE specification
+| FIPS 186-5 | Digital signature specification (RSA, ECDSA, EdDSA)
+| FIPS 203 | ML-KEM (Kyber) post-quantum KEM
+| FIPS 204 | ML-DSA (Dilithium) post-quantum signature
+| FIPS 205 | SLH-DSA hash-based signature
+| SP 800-131A Rev.2 | Algorithm transitions and deprecation guidance
+| SP 800-57 | Key management recommendations
+| SP 800-90A | Approved DRBG constructions
+| NIST 800-53 SC-13 | Cryptographic protection control
+|===

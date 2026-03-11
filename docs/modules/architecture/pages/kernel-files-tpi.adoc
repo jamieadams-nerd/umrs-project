@@ -128,6 +128,6 @@ fails closed.
 
 == See Also
 
-* xref:nom_parser.adoc[The nom Parser Combinator in UMRS]
-* xref:reference_monitor.adoc[Reference Monitor Design in UMRS]
-* xref:RTB.adoc[NSA RTB and the RAIN Principle]
+* xref:devel:nom-parser.adoc[The nom Parser Combinator in UMRS]
+* xref:reference-monitor.adoc[Reference Monitor Design in UMRS]
+* xref:rtb-vnssa.adoc[NSA RTB and the RAIN Principle]

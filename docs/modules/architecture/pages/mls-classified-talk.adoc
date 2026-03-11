@@ -1,0 +1,50 @@
+= MLS: Avoiding Classified-Only Assumptions
+:description: Why UMRS is designed around CUI and unclassified handling requirements, not classified system assumptions.
+:toc: left
+
+// NIST 800-171 — Protecting CUI in Nonfederal Systems
+// CMMC 2.0 — Cybersecurity Maturity Model Certification
+// NIST 800-53 AC-4 — Information Flow Enforcement
+
+[NOTE]
+====
+This page is a placeholder. Content will be added in a future milestone.
+====
+
+== Intent
+
+Multi-Level Security has its roots in classified information handling.
+Many MLS implementations and most MLS documentation assume a classified
+environment: SECRET and TOP SECRET levels, SCI compartments, and cleared
+users operating under strict need-to-know rules enforced by a security
+officer.
+
+UMRS targets a different baseline: *Controlled Unclassified Information*
+(CUI). CUI is not classified. It does not carry hierarchical classification
+levels in the traditional sense. It uses category-based handling
+requirements governed by NIST SP 800-171 and CMMC 2.0 — not the
+Intelligence Community's classification authorities.
+
+This distinction matters architecturally. Designs that assume a classified
+environment carry assumptions that do not transfer cleanly to CUI:
+
+* Classification levels (UNCLASSIFIED / SECRET / TOP SECRET) map
+  awkwardly onto CUI categories (PRVCY, ITAR, CTI, etc.)
+* SCI compartment semantics differ from CUI subcategory semantics
+* Cleared-user models differ from CUI authorized-holder models
+* Classification authority chains differ from CUI policy frameworks
+
+== Planned Content
+
+This page will cover:
+
+* Why MCS (single sensitivity level, category-based separation) is a more
+  appropriate enforcement mechanism for CUI than full hierarchical MLS
+* How UMRS models CUI categories as `CategorySet` bitmap entries rather
+  than classification levels
+* The architectural decision to keep sensitivity levels available for
+  future MLS use without requiring them for CUI baseline operation
+* Design considerations for Five Eyes partner-nation unclassified schemes
+
+See xref:five-eyes-interop.adoc[Five Eyes interoperability] for the
+partner-nation scheme design rationale.

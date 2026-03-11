@@ -41,6 +41,8 @@
 //! - **NSA RTB TPI**: Two independent parse paths must agree on the key set.
 
 use std::collections::HashMap;
+use std::io::Read as _;
+use std::os::fd::AsFd as _;
 use std::path::Path;
 
 use nom::branch::alt;
@@ -59,6 +61,7 @@ use crate::os_release::{
     VersionId,
 };
 
+use super::file_ownership::find_stat_for_path;
 use super::label_trust::LabelTrust;
 use super::substrate::FileOwnership;
 
@@ -224,16 +227,120 @@ fn run_inner(
 
 /// Read the os-release file content from the regular filesystem.
 ///
-/// Returns `Some(content)` on success, `None` on I/O failure (side-effect:
-/// records in evidence and downgrades confidence).
+/// Opens the file, verifies `(dev,ino)` against the release_candidate statx
+/// record to detect substitution (TOCTOU), then reads via the open file handle.
+///
+/// Returns `Some(content)` on success, `None` on I/O failure or TOCTOU
+/// detection (side-effect: records in evidence and downgrades confidence).
+// Line-count overage is a result of F-03 TOCTOU re-verification code added
+// for security compliance (NSA RTB TOCTOU, NIST SP 800-53 SI-7).
+#[allow(clippy::too_many_lines)]
 fn read_candidate(
     candidate: &Path,
     candidate_str: &str,
     evidence: &mut EvidenceBundle,
     confidence: &mut ConfidenceModel,
 ) -> Option<String> {
-    match std::fs::read_to_string(candidate) {
-        Ok(s) => Some(s),
+    // os-release is a regular file, not procfs/sysfs — ProcfsText/SysfsText do not apply.
+    let file = match std::fs::File::open(candidate) {
+        Ok(f) => f,
+        Err(e) => {
+            log::warn!("release_parse: could not open {candidate_str}: {e}");
+            confidence.downgrade(
+                TrustLevel::KernelAnchored,
+                "os-release read failed during parse phase",
+            );
+            evidence.push(EvidenceRecord {
+                source_kind: SourceKind::RegularFile,
+                opened_by_fd: false,
+                path_requested: candidate_str.to_owned(),
+                path_resolved: None,
+                stat: None,
+                fs_magic: None,
+                sha256: None,
+                pkg_digest: None,
+                parse_ok: false,
+                notes: vec!["os-release open failed in parse phase".to_owned()],
+            });
+            return None;
+        }
+    };
+
+    // TOCTOU re-verification: fstat the open fd and compare (dev,ino) against
+    // the release_candidate evidence record.
+    let fstat_ok = match rustix::fs::fstat(file.as_fd()) {
+        Ok(st) => {
+            let cur_dev = st.st_dev;
+            let cur_ino = st.st_ino;
+            match find_stat_for_path(evidence, candidate_str) {
+                Some((rec_dev, rec_ino)) if cur_dev != rec_dev || cur_ino != rec_ino => {
+                    log::warn!(
+                        "release_parse: TOCTOU — file identity changed for {candidate_str}: \
+                         recorded=({rec_dev},{rec_ino}) current=({cur_dev},{cur_ino})"
+                    );
+                    evidence.push(EvidenceRecord {
+                        source_kind: SourceKind::RegularFile,
+                        opened_by_fd: false,
+                        path_requested: candidate_str.to_owned(),
+                        path_resolved: None,
+                        stat: None,
+                        fs_magic: None,
+                        sha256: None,
+                        pkg_digest: None,
+                        parse_ok: false,
+                        notes: vec![
+                            "TOCTOU: file identity changed between candidate statx and parse read"
+                                .to_owned(),
+                        ],
+                    });
+                    confidence.downgrade(
+                        TrustLevel::KernelAnchored,
+                        "release_parse: file identity changed before parse read",
+                    );
+                    return None;
+                }
+                Some(_) => {
+                    log::debug!(
+                        "release_parse: fstat verified (dev={cur_dev},ino={cur_ino}) \
+                         matches release_candidate statx"
+                    );
+                    true
+                }
+                None => {
+                    // No stat record available — cannot verify; continue.
+                    false
+                }
+            }
+        }
+        Err(e) => {
+            log::debug!("release_parse: fstat failed for {candidate_str}: {e}");
+            false
+        }
+    };
+
+    // Read from the open file handle (fd-anchored).
+    let mut content = String::new();
+    let mut reader = file;
+    match reader.read_to_string(&mut content) {
+        Ok(_) => {
+            evidence.push(EvidenceRecord {
+                source_kind: SourceKind::RegularFile,
+                opened_by_fd: fstat_ok,
+                path_requested: candidate_str.to_owned(),
+                path_resolved: None,
+                stat: None,
+                fs_magic: None,
+                sha256: None,
+                pkg_digest: None,
+                parse_ok: true,
+                notes: vec![if fstat_ok {
+                    "fstat verified: (dev,ino) matches release_candidate statx".to_owned()
+                } else {
+                    "path-based open; (dev,ino) stat not available for re-verification".to_owned()
+                }],
+            });
+            Some(content)
+        }
         Err(e) => {
             log::warn!("release_parse: could not read {candidate_str}: {e}");
             confidence.downgrade(

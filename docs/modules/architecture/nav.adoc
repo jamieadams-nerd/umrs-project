@@ -1,0 +1,32 @@
+* xref:index.adoc[Architecture Overview]
+
+* Design Rationale
+** xref:rationale-strongly-typed.adoc[Rationale: strongly-typed SELinux model]
+** xref:library-model.adoc[Library model and lineage]
+** xref:openssl-no-vendoring.adoc[OpenSSL: no vendoring]
+** xref:umrs-prog-lang.adoc[Language choice rationale]
+
+* Security Model
+** xref:reference-monitor.adoc[Reference monitor design]
+** xref:rtb-vnssa.adoc[NSA RTB and RAIN]
+** xref:kernel-files-tpi.adoc[Two-path independence (TPI)]
+** xref:five-eyes-interop.adoc[Five Eyes classification interoperability]
+
+* MLS Label Model
+** xref:mls-label-model.adoc[MLS label model and CUI mapping]
+** xref:cui-structure.adoc[CUI structure and handling]
+** xref:integrity-and-provenance.adoc[Integrity and provenance]
+
+* Existing OS Technologies
+** xref:selinux-history.adoc[SELinux history]
+** xref:mls-history.adoc[MLS history]
+** xref:trusted-path-orange.adoc[Trusted path (Orange Book)]
+** xref:HACAMS.adoc[HACAMS lineage]
+** xref:ring-based-security.adoc[Ring-based security]
+** xref:ibm-zos-os390.adoc[IBM z/OS and OS/390]
+** xref:microsoft-nt-orange.adoc[Microsoft NT and Orange Book]
+** xref:one-way-hashes.adoc[One-way hash algorithms]
+
+* Case Studies
+** xref:case-studies.adoc[High-assurance failure case studies]
+** xref:truth-concepts.adoc[Truth and trust concepts]

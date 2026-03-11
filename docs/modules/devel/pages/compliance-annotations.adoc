@@ -240,7 +240,7 @@ applies, and also at any specific item where the control is directly enforced.
 == Reference
 
 For the full list of controls used in this codebase and their versions, see
-xref:compliance-frameworks.adoc[Compliance frameworks registry].
+xref:reference:compliance-frameworks.adoc[Compliance frameworks registry].
 
 For the high-assurance patterns that many of these controls govern, see
 xref:high-assurance-patterns.adoc[High-assurance coding patterns].

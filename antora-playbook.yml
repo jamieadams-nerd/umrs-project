@@ -26,6 +26,13 @@ output:
 asciidoc:
   attributes:
     # Keep a single, visible version string you can override in CI if desired.
-    umrs-version: “0.1 (draft)”
+    umrs-version: "0.1 (draft)"
     # Make source links visible when browsing HTML output (optional).
     page-editable: “”
+
+antora:
+  extensions:
+    - require: '@sntke/antora-mermaid-extension'
+      mermaid_library_url: https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs
+      start_on_load: true
+

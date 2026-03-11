@@ -1,23 +1,37 @@
 These are special notes for @rust-developer.
 
+## Packages/Crate for UMRS:
 Always remember the following dependency rules as a permanent 
 architectural constraint that must never be violated during coding 
 or refactoring:
 
 - umrs-platform: no dependencies on the other two crates
+  - Run on any LInux-family platform (e.g., RHEL, Ubuntu)
+  - MInimum version undetermined yet. 
+  - Do we need changes to the Cargo.toml?
+  - Datatypes in umrs_platform can be used by umrs_selinux and umrs_platform.
 - umrs-selinux: depends on umrs-platform only
+  - Can onlyl run on RHEL-family Linux wiht SELinux capability
+  - Do we need changes to the Cargo.toml to prevent accident build or install on wrong platform
+- FUTURE: umrs-apparmor: depends on umrs-platform onlyu
+  - Can only run on AppArmor capable systems like Ubuntu
+  - Do we need changes to the CArgo.toml to prevent accident build or install on wrong platform
 - umrs-core: depends on both umrs-platform and umrs-selinux
+  - FUTURE: Can we make this smart enough to run with umrs-selinux or umrs-apparmor?
 
-These dependency directions are fixed and must never be reversed 
-or added to.
-
-Future requirements, the formula is always:
-- Add the following permanent constraint to CLAUDE.md: [your rule]
-- The word permanent is important — it signals to Claude Code that this 
-- goes into CLAUDE.md as a standing rule, not just guidance for the current task.
-- For example, umrs-platform should never use console::* items for displaying
-- Datatypes in umrs_selinux:: must not be used in umrs_platform
+## Datatypes
 - Datatypes in umrs_platform can be used by umrs_selinux and umrs_platform.
+- UMRS tools (like umrs-ls) 
+  - should never use path /etc/selinux/targeted/setrans.conf or secolor.conf. The underlying 
+    module selects the right file.
+  - They should not define ANSI terminal sqequence codes - use the ones from umrs-core:: ansi.rs
+  - Use predefined icons/glyphs from umrs-core:: typography.rs or symbols.rs when possible.
+- Prepare Cargo.toml or where needed, be aware of the current build platform. 
+  - Use industry and Rust best practices to support multi-plaform
+  - I may switch from Ubuntu and RHEL10
+  - Track/record issues as make the umrs-platform (and maybe some other codee) comptabile. 
+
+
 
 Ask me if any questions to clarifying. Save this to your coding guidelines
 and consraints. 

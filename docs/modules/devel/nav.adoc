@@ -4,6 +4,7 @@
 ** xref:high-assurance-patterns.adoc[High-assurance coding patterns]
 ** xref:compliance-annotations.adoc[Compliance annotations guide]
 ** xref:rust-must-use-contract.adoc[Compile-time contract enforcement: #[must_use]]
+** xref:nom-parser.adoc[The nom parser combinator]
 
 * Language Guides
 ** xref:rust-style-guide.adoc[Rust style guide]

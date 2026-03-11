@@ -94,6 +94,9 @@ fn run_inner(
     // Step 1: Dispatch probes; select the first successful one.
     let mut selected_identity: Option<SubstrateIdentity> = None;
     let mut selected_probe: Option<Box<dyn PackageProbe>> = None;
+    let mut winning_probe_name: &str = "";
+    let mut winning_can_ownership = false;
+    let mut winning_can_digest = false;
 
     for probe in probes {
         let result = probe.probe(evidence);
@@ -105,6 +108,9 @@ fn run_inner(
                     result.probe_name,
                     identity.facts_count
                 );
+                winning_probe_name = result.probe_name;
+                winning_can_ownership = result.can_query_ownership;
+                winning_can_digest = result.can_verify_digest;
                 selected_identity = Some(identity);
                 selected_probe = Some(probe);
                 break;
@@ -137,6 +143,32 @@ fn run_inner(
             "substrate identity has fewer than 2 corroborating facts",
         );
         return (Some(identity), selected_probe);
+    }
+
+    // Step 2b: Warn if the winning probe is a stub (cannot query ownership or digest).
+    // A probe that cannot verify ownership or digest will prevent T4 from being reached.
+    if !winning_can_ownership || !winning_can_digest {
+        log::warn!(
+            "pkg_substrate: probe '{winning_probe_name}' is a stub — \
+             can_query_ownership={winning_can_ownership}, \
+             can_verify_digest={winning_can_digest}; \
+             T3 asserted on presence-only evidence"
+        );
+        evidence.push(EvidenceRecord {
+            source_kind: SourceKind::PackageDb,
+            opened_by_fd: false,
+            path_requested: "pkg_substrate/stub-warning".to_owned(),
+            path_resolved: None,
+            stat: None,
+            fs_magic: None,
+            sha256: None,
+            pkg_digest: None,
+            parse_ok: true,
+            notes: vec![format!(
+                "stub probe {}: ownership={}, digest={}",
+                winning_probe_name, winning_can_ownership, winning_can_digest
+            )],
+        });
     }
 
     // Step 3: Biba integrity pre-check — SELinux enforce mode verification.

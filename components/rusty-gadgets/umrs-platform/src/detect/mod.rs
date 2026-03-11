@@ -185,6 +185,7 @@ impl OsDetector {
     /// contradictions) are reflected in `DetectionResult::confidence`.
     ///
     /// NIST SP 800-53 SA-8, CM-6, SI-7.
+    /// NIST SP 800-53 SA-8 — orchestrates layered, fail-closed platform verification pipeline.
     pub fn detect(&self) -> Result<DetectionResult, DetectionError> {
         let mut evidence = EvidenceBundle::new();
         let mut confidence = ConfidenceModel::new();

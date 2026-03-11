@@ -115,6 +115,9 @@ impl OsId {
     ///
     /// Leading/trailing whitespace and enclosing double-quotes are stripped
     /// before validation (matching `os-release(5)` quoting rules).
+    ///
+    /// NIST SP 800-53 SI-10 — validates input to the security-critical OS identifier field
+    /// at construction.
     pub fn parse(s: &str) -> Result<Self, OsReleaseParseError> {
         let s = s.trim().trim_matches('"');
         if s.is_empty() || s.len() > 64 {
@@ -403,5 +406,7 @@ pub struct OsRelease {
     pub build_id: Option<BuildId>,
 
     /// `ANSI_COLOR=` — terminal color hint. Informational only; not validated.
+    ///
+    /// **MUST NOT** be used for policy or identity decisions; informational display only.
     pub ansi_color: Option<String>,
 }

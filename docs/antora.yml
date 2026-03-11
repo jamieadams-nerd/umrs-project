@@ -4,6 +4,7 @@ version: latest
 nav:
   - modules/ROOT/nav.adoc
   - modules/architecture/nav.adoc
+  - modules/admin/nav.adoc
   - modules/deployment/nav.adoc
   - modules/operations/nav.adoc
   - modules/reference/nav.adoc

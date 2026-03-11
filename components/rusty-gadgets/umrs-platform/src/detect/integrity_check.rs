@@ -54,13 +54,16 @@
 
 use std::fs::File;
 use std::io::{self, Read};
-use std::path::Path;
+use std::os::fd::AsFd as _;
+use std::path::{Path, PathBuf};
 
 use sha2::{Digest, Sha256};
 
 use crate::confidence::{ConfidenceModel, TrustLevel};
 use crate::evidence::{DigestAlgorithm, EvidenceBundle, EvidenceRecord, PkgDigest, SourceKind};
+use crate::kattrs::{ProcfsText, SecureReader};
 
+use super::file_ownership::find_stat_for_path;
 use super::substrate::{FileOwnership, InstalledDigest, PackageProbe};
 
 // ===========================================================================
@@ -95,6 +98,10 @@ pub(super) fn run(
     result
 }
 
+// run_inner performs a sequential verification pipeline; splitting it would
+// obscure the flow. The line-count overage is a result of F-02 TOCTOU
+// re-verification code added for security compliance.
+#[allow(clippy::too_many_lines)]
 fn run_inner(
     evidence: &mut EvidenceBundle,
     confidence: &mut ConfidenceModel,
@@ -132,7 +139,13 @@ fn run_inner(
         return rejection;
     }
 
+    // NIST SP 800-53 SC-13, CMMC L2 SC.3.177 — gate T4 on FIPS; sha2 crate is not FIPS 140-3 validated.
+    if fips_mode_active(evidence, confidence) {
+        return false;
+    }
+
     // Open the candidate file (single File handle — TOCTOU safe).
+    // path-based open; (dev,ino) re-verified below via fstat before trusting content.
     let mut file = match File::open(candidate) {
         Ok(f) => f,
         Err(e) => {
@@ -144,6 +157,62 @@ fn run_inner(
             return false;
         }
     };
+
+    // TOCTOU re-verification: fstat the open fd and compare (dev,ino) against
+    // the release_candidate statx record. Detects substitution between phases.
+    let fstat_result = rustix::fs::fstat(file.as_fd());
+    let current_dev_ino: Option<(u64, u64)> = match fstat_result {
+        Ok(st) => {
+            // Combine rdev major/minor into the same u64 layout used in FileStat.
+            // fstat returns st_dev as a single u64 on Linux; use it directly.
+            Some((st.st_dev, st.st_ino))
+        }
+        Err(e) => {
+            log::warn!("integrity_check: fstat failed for open fd on {candidate_str}: {e}");
+            None
+        }
+    };
+
+    // Look up the (dev,ino) from the release_candidate evidence record.
+    let candidate_recorded = find_stat_for_path(evidence, &candidate_str);
+
+    // If both are available, verify identity.
+    if let (Some((cur_dev, cur_ino)), Some((rec_dev, rec_ino))) =
+        (current_dev_ino, candidate_recorded)
+    {
+        if cur_dev != rec_dev || cur_ino != rec_ino {
+            log::warn!(
+                "integrity_check: TOCTOU — file identity changed for {candidate_str}: \
+                 recorded=({rec_dev},{rec_ino}) current=({cur_dev},{cur_ino})"
+            );
+            evidence.push(EvidenceRecord {
+                source_kind: SourceKind::RegularFile,
+                opened_by_fd: false,
+                path_requested: candidate_str,
+                path_resolved: None,
+                stat: None,
+                fs_magic: None,
+                sha256: None,
+                pkg_digest: None,
+                parse_ok: false,
+                notes: vec![
+                    "path-based open; (dev,ino) not re-verified against release_candidate statx"
+                        .to_owned(),
+                    "TOCTOU: file identity changed between statx and open; aborting hash"
+                        .to_owned(),
+                ],
+            });
+            confidence.downgrade(
+                TrustLevel::SubstrateAnchored,
+                "integrity: file identity changed between candidate selection and hashing",
+            );
+            return false;
+        }
+        log::debug!(
+            "integrity_check: fstat verified: (dev={cur_dev},ino={cur_ino}) matches \
+             release_candidate statx"
+        );
+    }
 
     // Read bounded content into a buffer.
     let content = match read_bounded(&mut file, max_read_bytes) {
@@ -173,7 +242,7 @@ fn run_inner(
         );
         evidence.push(EvidenceRecord {
             source_kind: SourceKind::RegularFile,
-            opened_by_fd: true,
+            opened_by_fd: false,
             path_requested: candidate_str,
             path_resolved: None,
             stat: None,
@@ -184,13 +253,23 @@ fn run_inner(
                 value: installed.value,
             }),
             parse_ok: false,
-            notes: vec!["SHA-512 vs SHA-256: cross-algorithm comparison unsupported".to_owned()],
+            notes: vec![
+                "path-based open; (dev,ino) not re-verified against release_candidate statx"
+                    .to_owned(),
+                "SHA-512 vs SHA-256: cross-algorithm comparison unsupported".to_owned(),
+            ],
         });
         return false;
     }
 
+    // Determine whether fstat verification succeeded (both sides available and matching).
+    let fstat_verified = matches!(
+        (current_dev_ino, candidate_recorded),
+        (Some((cd, ci)), Some((rd, ri))) if cd == rd && ci == ri
+    );
+
     // Both are SHA-256 at this point.
-    compare_and_record(computed, installed, candidate_str, evidence, confidence)
+    compare_and_record(computed, installed, candidate_str, fstat_verified, evidence, confidence)
 }
 
 // ===========================================================================
@@ -256,22 +335,33 @@ fn check_algorithm_policy(
 
 /// Compare the computed SHA-256 digest against the installed reference.
 ///
+/// `fstat_verified` is `true` if the open fd's `(dev,ino)` was confirmed to
+/// match the `release_candidate` statx record — i.e., the TOCTOU check passed.
+///
 /// Returns `true` if they match and T4 was earned; `false` otherwise.
 fn compare_and_record(
     computed: [u8; 32],
     installed: InstalledDigest,
     candidate_str: String,
+    fstat_verified: bool,
     evidence: &mut EvidenceBundle,
     confidence: &mut ConfidenceModel,
 ) -> bool {
     let digest_matches = computed.as_ref() == installed.value.as_slice();
+
+    // Build common notes reflecting the open method and fstat verification status.
+    let open_note = if fstat_verified {
+        "fstat verified: (dev,ino) matches release_candidate statx".to_owned()
+    } else {
+        "path-based open; (dev,ino) not re-verified against release_candidate statx".to_owned()
+    };
 
     if digest_matches {
         log::debug!("integrity_check: SHA-256 digest verified for {candidate_str}");
         confidence.upgrade(TrustLevel::IntegrityAnchored);
         evidence.push(EvidenceRecord {
             source_kind: SourceKind::RegularFile,
-            opened_by_fd: true,
+            opened_by_fd: fstat_verified,
             path_requested: candidate_str,
             path_resolved: None,
             stat: None,
@@ -282,7 +372,10 @@ fn compare_and_record(
                 value: installed.value,
             }),
             parse_ok: true,
-            notes: vec!["SHA-256 digest verified (T4 earned)".to_owned()],
+            notes: vec![
+                open_note,
+                "SHA-256 digest verified (T4 earned)".to_owned(),
+            ],
         });
         true
     } else {
@@ -296,7 +389,7 @@ fn compare_and_record(
         );
         evidence.push(EvidenceRecord {
             source_kind: SourceKind::RegularFile,
-            opened_by_fd: true,
+            opened_by_fd: false,
             path_requested: candidate_str,
             path_resolved: None,
             stat: None,
@@ -307,7 +400,10 @@ fn compare_and_record(
                 value: installed.value,
             }),
             parse_ok: false,
-            notes: vec!["SHA-256 digest mismatch — integrity deviation recorded".to_owned()],
+            notes: vec![
+                open_note,
+                "SHA-256 digest mismatch — integrity deviation recorded".to_owned(),
+            ],
         });
         false
     }
@@ -331,6 +427,67 @@ fn no_digest_record(candidate_str: &str) -> EvidenceRecord {
         parse_ok: false,
         notes: vec!["no installed digest in package DB".to_owned()],
     }
+}
+
+// ===========================================================================
+// FIPS gate
+// ===========================================================================
+
+/// Check whether FIPS mode is active by reading `/proc/sys/kernel/fips_enabled`.
+///
+/// Returns `true` if FIPS is active and T4 should be blocked. Returns `false`
+/// if FIPS is disabled or the read fails (fail open — missing fips_enabled
+/// usually means FIPS is not configured).
+///
+/// NIST SP 800-53 SC-13, CMMC L2 SC.3.177 — gate T4 on FIPS;
+/// sha2 crate is not FIPS 140-3 validated.
+fn fips_mode_active(evidence: &mut EvidenceBundle, confidence: &mut ConfidenceModel) -> bool {
+    const FIPS_PATH: &str = "/proc/sys/kernel/fips_enabled";
+
+    let node = match ProcfsText::new(PathBuf::from(FIPS_PATH)) {
+        Ok(n) => n,
+        Err(e) => {
+            log::debug!("integrity_check: could not construct ProcfsText for fips_enabled: {e}");
+            return false;
+        }
+    };
+
+    let content = match SecureReader::<ProcfsText>::new().read_generic_text(&node) {
+        Ok(s) => s,
+        Err(e) => {
+            log::debug!("integrity_check: could not read fips_enabled: {e}");
+            return false;
+        }
+    };
+
+    let trimmed = content.trim();
+    if trimmed == "1" {
+        log::warn!(
+            "integrity_check: FIPS mode active — sha2::Sha256 is not FIPS 140-3 validated; \
+             T4 not earned; capping at T3"
+        );
+        evidence.push(EvidenceRecord {
+            source_kind: SourceKind::Procfs,
+            opened_by_fd: true,
+            path_requested: FIPS_PATH.to_owned(),
+            path_resolved: None,
+            stat: None,
+            fs_magic: None,
+            sha256: None,
+            pkg_digest: None,
+            parse_ok: false,
+            notes: vec![
+                "FIPS mode active: sha2 is not FIPS 140-3 validated; T4 not earned".to_owned(),
+            ],
+        });
+        confidence.downgrade(
+            TrustLevel::SubstrateAnchored,
+            "FIPS mode: sha2 not FIPS-validated; integrity check skipped",
+        );
+        return true;
+    }
+
+    false
 }
 
 // ===========================================================================

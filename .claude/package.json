@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@sntke/antora-mermaid-extension": "^0.0.9"
+  }
+}

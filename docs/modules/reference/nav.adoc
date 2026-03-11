@@ -13,9 +13,18 @@
 ** xref:secolor.adoc[secolor.conf format]
 ** xref:booleans.adoc[SELinux booleans]
 
+* MLS Display
+** xref:mls-colors.adoc[MLS color configuration]
+** xref:setrans-technical.adoc[setrans translation engine]
+** xref:example-setrans-conf.adoc[Example setrans.conf]
+** xref:rhel-selinux-users.adoc[RHEL confined SELinux users]
+
 * CUI & Policy
 ** xref:compliance-frameworks.adoc[Compliance frameworks registry]
-// cui-category-abbreviations.txt, cui-descriiptions.txt, umrs-mls-registry.txt,
-// example-setrans-conf.txt, selinux-registry.txt, RHEL_SELINUX_USERS.md,
-// SETRANS.md, mls-COLORS.md, key-recommendation-list.md,
-// fips-cryptography-cheat-sheet.txt pending .adoc conversion
+** xref:cui-descriptions.adoc[CUI category descriptions (c0–c9)]
+** xref:cui-category-abbreviations.adoc[CUI category abbreviations]
+** xref:umrs-mls-registry.adoc[UMRS MLS registry layout]
+
+* Cryptography
+** xref:fips-cryptography-cheat-sheet.adoc[FIPS 140-2/3 cryptography quick reference]
+** xref:key-recommendation-list.adoc[Cryptographic key recommendations]

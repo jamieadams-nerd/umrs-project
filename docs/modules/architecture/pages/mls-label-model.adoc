@@ -1,0 +1,239 @@
+= MLS Label Model and CUI Mapping
+:toc: left
+:description: How UMRS maps unclassified handling regimes to SELinux MLS sensitivity levels, the dominance ordering, and the relationship between CUI and classification concepts.
+
+// NIST 800-53 AC-4 — Information flow enforcement
+// NIST 800-53 AC-16 — Security attributes
+// NIST 800-171 Rev 2 — 3.1.3 Control CUI flow
+// EO 13556 — Controlled Unclassified Information
+
+UMRS implements Multi-Level Security (MLS) for an unclassified environment. The
+sensitivity levels do not correspond to classified information hierarchies. They
+represent distinct legal handling regimes, each with different regulatory authorities,
+handling rules, and enforcement requirements. MLS is the mechanism for enforcing
+those distinctions — not a classification ladder.
+
+This page explains the label model, the sensitivity level set, how CUI fits into it,
+and how it maps to SELinux syntax.
+
+== What CUI Is (and Is Not)
+
+_Controlled Unclassified Information_ (CUI) is unclassified information that the
+U.S. government designates as requiring controlled handling. It was created to
+standardize a patchwork of prior labels — FOUO, SBU, LES, and others — under a
+single framework.
+
+Authoritative sources:
+
+* Executive Order 13556 (2010)
+* 32 CFR Part 2002
+* NARA CUI Registry: https://www.archives.gov/cui
+
+CUI applies to information, not to people, systems, or clearance levels. It is not
+a classification level. It imposes policy-driven handling rules — access control,
+encryption at rest and in transit, auditing, and dissemination controls — but it does
+not introduce a lattice or a dominance relation of its own.
+
+Systems processing CUI must satisfy NIST SP 800-171. UMRS implements those
+requirements through kernel-enforced MLS labels rather than application-layer controls.
+
+=== What CUI Is Not
+
+[cols="1,3"]
+|===
+| Term | Relationship to CUI
+
+| Confidential / Secret / Top Secret
+| These are classification levels. CUI is unclassified — a different authority entirely.
+
+| Proprietary
+| Proprietary data is owned and designated by a company. EO 13556 does not govern it.
+  CUI and Proprietary overlap only when a contract explicitly says so.
+
+| ITAR / EAR
+| Export-controlled data is regulated by State / Commerce, not NARA. Some ITAR data
+  may also be marked CUI, but the legal authority is distinct.
+
+| Privacy Act
+| Federal PII under the Privacy Act of 1974 is a statutory regime. Some Privacy Act
+  data may be designated CUI by an agency, but the authority differs.
+|===
+
+== The UMRS Unclassified MLS Level Set
+
+UMRS uses the following sensitivity levels. Each represents a distinct legal or
+handling regime. The ordered levels map directly to SELinux sensitivity labels.
+
+[cols="1,2,3"]
+|===
+| SELinux level | UMRS name | Legal or handling authority
+
+| s0 | SYSTEM-LOW | Reserved — not used for user data; SELinux system floor
+| s1 | UNRESTRICTED | Public or releasable; no special handling required
+| s2 | CONTROLLED | Internal-use data; no statutory regime; organizational controls apply
+| s3 | PRIVACY_ACT | Federal PII under the Privacy Act of 1974; purpose-limited access
+| s4 | CUI | Government-designated CUI; EO 13556 / NARA; NIST 800-171 applies
+| s5 | EXPORT_CONTROLLED | ITAR / EAR; citizenship and dissemination restrictions
+| s15 | SYSTEM-HIGH | Reserved — TCB ceiling; no user data; only trusted system components
+|===
+
+Levels s6 through s14 are reserved for future expansion. This gap allows new handling
+regimes to be inserted without relabeling existing data or changing dominance rules.
+
+=== Why Each Level Is Separate
+
+Each level in the lattice has a different regulatory authority, different breach
+consequences, and different handling rules. Collapsing them into a single label — even
+a CUI catch-all — reduces clarity, complicates audit, and can create legal liability
+by hiding which authority applies to a given object.
+
+MLS makes this distinction enforceable by construction. A process cleared to s4 (CUI)
+cannot read s5 (EXPORT_CONTROLLED) data regardless of file permissions. A process
+running at s2 (CONTROLLED) cannot write to s1 (UNRESTRICTED) storage. The kernel
+enforces these rules without relying on application logic.
+
+== Dominance Ordering
+
+SELinux MLS dominance follows the standard lattice rules: a higher sensitivity level
+dominates all lower levels. UMRS adds category (compartment) dominance on top of
+level dominance.
+
+----
+s15 dominates s5, s4, s3, s2, s1, s0
+s5  dominates s4, s3, s2, s1, s0
+s4  dominates s3, s2, s1, s0
+s3  dominates s2, s1, s0
+s2  dominates s1, s0
+s1  dominates s0
+----
+
+The resulting information flow rules enforce automatically:
+
+* A CONTROLLED (s2) process cannot read PRIVACY_ACT (s3) data.
+* A CUI (s4) process cannot write to CONTROLLED (s2) storage (no write-down).
+* An EXPORT_CONTROLLED (s5) process can read everything below it, subject to category
+  constraints.
+
+=== System-Low and System-High
+
+`SYSTEM-LOW` (s0) is the SELinux system floor. No user data is labeled at this level.
+Its presence as a defined level ensures the MLS lattice has a valid lower bound for
+system components that must interact with all sensitivity levels.
+
+`SYSTEM-HIGH` (s15) is the reserved ceiling. Only TCB components — the audit daemon,
+trusted guards, and similar system-wide processes — are authorized to operate at this
+level. Ordinary users and services must never receive a clearance range that includes
+s15.
+
+== Category (Compartment) Model
+
+SELinux MLS categories represent compartments — orthogonal access controls that sit
+alongside sensitivity levels. Where sensitivity levels answer "how restricted is this?",
+categories answer "which program, contract, or enclave does this belong to?".
+
+The UMRS category model uses categories for programmatic or organizational scope, not
+for additional sensitivity regimes. Examples:
+
+[cols="1,3"]
+|===
+| Category | Meaning example
+
+| c0 | Program A
+| c1 | Program B
+| c2 | Contract 123
+| c3 | Contract 456
+|===
+
+A subject must hold all categories present in an object's label to gain access (category
+superset requirement). This means a process cleared for Program A (c0) cannot access
+Program B (c1) data even if both are at the same sensitivity level.
+
+Do not use categories to represent CUI, Privacy Act, or other handling regimes — those
+distinctions belong in sensitivity levels.
+
+== Example Security Context Labels
+
+The following examples show the full SELinux context format for objects at each
+sensitivity level.
+
+[cols="2,3"]
+|===
+| Object | Example context
+
+| Public web content | `system_u:object_r:httpd_content_t:s1`
+| Internal controlled document | `system_u:object_r:internal_doc_t:s2`
+| Privacy Act record | `system_u:object_r:privacy_record_t:s3:c1`
+| CUI document | `system_u:object_r:cui_doc_t:s4:c0,c2`
+| Export-controlled design | `system_u:object_r:itar_doc_t:s5:c0`
+|===
+
+== Example User Clearance Ranges
+
+SELinux users receive a clearance range specifying the minimum and maximum sensitivity
+levels they can access. The upper bound of the range is the user's effective clearance.
+
+[cols="2,2,3"]
+|===
+| Role | SELinux range | Access scope
+
+| General staff | `s1-s2` | UNRESTRICTED through CONTROLLED
+| Engineer (proprietary work) | `s1-s2:c2` | CONTROLLED, Contract 123 only
+| Privacy officer | `s1-s3` | CONTROLLED through PRIVACY_ACT
+| CUI engineer | `s1-s4:c0,c2` | CONTROLLED through CUI, Programs A and 123
+| Export-controlled engineer | `s1-s5:c0` | Full range, Program A only
+|===
+
+Avoid assigning ranges such as `s0-s15:c0.c1023`. Clearances must be the minimum
+necessary for the role. Over-broad ranges silently defeat MLS enforcement.
+
+== NIST Control Alignment
+
+The defined sensitivity levels and their ordering implement mandatory enforcement of
+security attributes in accordance with NIST SP 800-53.
+
+[cols="1,3"]
+|===
+| Control | Satisfaction
+
+| AC-4 (Information Flow Enforcement)
+| Dominance ordering enforces no-read-up and no-write-down between all sensitivity
+  levels. Information flow between handling regimes is controlled by the kernel, not
+  by application logic.
+
+| AC-16 (Security Attributes)
+| Sensitivity levels are explicitly defined security attributes, bound to information
+  objects and subjects, consistently enforced by the OS, and auditable.
+
+| AC-6 (Least Privilege)
+| User clearance ranges are bounded to the minimum sensitivity required for each role,
+  preventing over-exposure by construction.
+
+| AU-2 / AU-9 / AU-10
+| Audit records reflect the sensitivity level involved in each access decision,
+  providing a traceable enforcement record.
+
+| SI-7 (Software Integrity)
+| MLS labels are kernel-enforced. Integrity of the label model depends on keeping
+  domains distinct; MLS prevents label confusion and unauthorized downgrade.
+|===
+
+== Relation to MCS (Single-Level Systems)
+
+_Multi-Category Security_ (MCS) is a restricted form of MLS that uses only one
+sensitivity level (s0) and relies on category separation alone. MCS is the default
+model in SELinux targeted policy and is appropriate when sensitivity-level separation
+is not required.
+
+UMRS supports both MLS (multi-level, as described here) and MCS (single-level with
+categories). The choice between them depends on whether the deployment requires
+separation between different handling regimes (MLS) or only separation between
+tenants, programs, or enclaves at the same sensitivity level (MCS).
+
+== See Also
+
+* xref:reference:sensitivity.adoc[Sensitivity levels reference]
+* xref:reference:category_set.adoc[Category set reference]
+* xref:reference:mcs.adoc[MCS overview]
+* xref:cui-structure.adoc[CUI structure and handling]
+* xref:five-eyes-interop.adoc[Five Eyes classification interoperability]
+* xref:mls-history.adoc[MLS history]

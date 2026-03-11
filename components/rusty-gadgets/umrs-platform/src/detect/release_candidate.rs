@@ -133,6 +133,7 @@ fn probe_candidate(
     confidence: &mut ConfidenceModel,
 ) -> Option<PathBuf> {
     // Step 1: statx the path to get metadata and detect presence.
+    // AtFlags::empty() intentionally follows symlinks — returns target (dev,ino), not symlink's.
     let statx_result = statx(CWD, path_str, AtFlags::empty(), StatxFlags::ALL);
 
     let Ok(sx) = statx_result else {
@@ -183,6 +184,15 @@ fn probe_candidate(
         "dev={}:{} ino={}",
         sx.stx_dev_major, sx.stx_dev_minor, sx.stx_ino
     ));
+    // If this path is a symlink, record that statx followed it: the (dev,ino)
+    // belongs to the resolved target, not the symlink inode itself.
+    if resolved.is_some() {
+        notes.push(
+            "statx followed symlink (AT_SYMLINK_NOFOLLOW not set); \
+             (dev,ino) belongs to resolved target"
+                .to_owned(),
+        );
+    }
 
     // Combine major/minor into a single u64 device ID for storage.
     // The standard representation is (major << 32) | minor for unambiguous u64 storage.

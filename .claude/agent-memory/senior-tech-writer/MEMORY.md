@@ -17,58 +17,62 @@
 - "Five Eyes" section = multi-national classification interoperability architecture page (US/UK/CA/AU/NZ)
 - Project origin narrative: third person, factual — no first-person authorship voice
 
----
+## Structural Decisions (confirmed by Jamie, 2026-03-11) — Reorganization
 
-## Senior Tech Writer Backlog — COMPLETED 2026-03-10
-
-All STW-1 through STW-7 items resolved. See feedback.md for per-item resolution notes.
-
-Files created:
-- `docs/modules/ROOT/pages/introduction.adoc`
-- `docs/modules/ROOT/pages/getting-started.adoc`
-- `docs/modules/architecture/pages/five-eyes-interop.adoc`
-- `docs/modules/reference/pages/compliance-frameworks.adoc`
-- `docs/modules/devel/pages/compliance-annotations.adoc`
-
-Files expanded / revised:
-- `docs/modules/architecture/pages/index.adoc` (stub → full overview)
-- `docs/modules/architecture/pages/mls-history.adoc` (MAC definition, Biba model added)
-- `docs/modules/architecture/pages/selinux-history.adoc` (security server defined, hooks defined, Biba named, accreditation defined)
-- `docs/modules/architecture/pages/trusted-path-orange.adoc` (TCB defined before use, TCSEC formal name added, NIST SC-11 cited)
-
-Nav entries added:
-- `docs/modules/ROOT/nav.adoc` — introduction.adoc, getting-started.adoc
-- `docs/modules/architecture/nav.adoc` — five-eyes-interop.adoc
-- `docs/modules/reference/nav.adoc` — compliance-frameworks.adoc
-- `docs/modules/devel/nav.adoc` — compliance-annotations.adoc
-
-## Next Senior Tech Writer Tasks (no backlog item yet — flag for Jamie)
-
-- `docs/modules/ROOT/pages/security-model.adoc` is still a redirect stub; now that
-  architecture/index.adoc is substantive, this stub can likely be removed or replaced.
-  Needs Jamie's decision.
-- When developer use-case pages are ready to write (TW-8 depends on STW-2 being done —
-  it is now done), senior-tech-writer should review TW-8 output before it is published.
+- `security/` module retired; all pages moved to `architecture/` or `devel/`
+- `historical/` module retired; all pages moved to `architecture/`
+- `architecture/` is now the sole owner of all design rationale, history, and security model content
+- `security-model.adoc` in ROOT deleted (was a redirect stub with no content)
+- `_scratch/pdf-security-model.adoc` deleted (approved)
+- `selinux-registry.txt` is a byte-for-byte duplicate of `umrs-mls-registry.txt` — flagged to Jamie
 
 ---
 
-## Primary Source Documents for Introduction and Architecture Content
+## Architecture Module — Complete Page List (2026-03-11)
 
-Two project-level documents contain authoritative, Jamie-authored prose that should be
-used as primary source material — especially for STW-1 (introduction) and STW-2
-(architecture overview). Read these before writing those pages.
+All pages now in `docs/modules/architecture/pages/`:
 
-- `README.md` — defines high-assurance engineering, the HACAMS lineage, real-world HA
-  system examples, and the key differences between HA and traditional systems. Contains
-  Jamie's CC BY 4.0 licensed prose. Use it, don't duplicate it — link or excerpt.
-- `UMRS-PROJECT.md` — the authoritative project description. Covers: what UMRS is,
-  the MLS label hierarchy, CUI handling, the goal of demonstrating (not just describing)
-  HA engineering, the component roadmap, and Jamie's personal note on adoption. This is
-  the single best source for the introduction page.
+| Page | Source |
+|---|---|
+| index.adoc | STW-2 (written 2026-03-10) |
+| five-eyes-interop.adoc | STW-3 (written 2026-03-10) |
+| mls-history.adoc | from historical/ |
+| selinux-history.adoc | from historical/ |
+| trusted-path-orange.adoc | from historical/ |
+| HACAMS.adoc | from historical/ |
+| ring-based-security.adoc | from historical/ |
+| ibm-zos-os390.adoc | from historical/ |
+| microsoft-nt-orange.adoc | from historical/ |
+| one-way-hashes.adoc | from historical/ |
+| openssl-no-vendoring.adoc | from historical/ |
+| umrs-prog-lang.adoc | from devel/ (copy; devel/ retains its copy) |
+| reference-monitor.adoc | from security/ (converted S-1) |
+| rtb-vnssa.adoc | from security/ (converted S-1) |
+| kernel-files-tpi.adoc | from security/ (converted S-1) |
+| library-model.adoc | from security/ (converted S-1) |
+| rationale-strongly-typed.adoc | from security/ (converted S-1, major expansion) |
+| mls-label-model.adoc | Phase 2 A-1 (new) |
+| integrity-and-provenance.adoc | Phase 2 A-2 (new) |
+| case-studies.adoc | Phase 2 A-3 (new) |
+| cui-structure.adoc | Phase 2 A-4 (new) |
+| truth-concepts.adoc | Phase 2 A-5 (stub) |
 
-Both are at the repo root. Jamie's own wording from UMRS-PROJECT.md should be preserved
-or paraphrased closely in introductory content — do not invent the project description
-when a vetted one already exists.
+---
+
+## Reference Module — New Pages (2026-03-11)
+
+All converted from `.txt` or `.md` source files:
+- `mls-colors.adoc` — from mls-COLORS.md
+- `rhel-selinux-users.adoc` — from RHEL_SELINUX_USERS.md
+- `setrans-technical.adoc` — from SETRANS.md
+- `cui-category-abbreviations.adoc` — from cui-category-abbreviations.txt
+- `example-setrans-conf.adoc` — from example-setrans-conf.txt
+- `fips-cryptography-cheat-sheet.adoc` — from fips-cryptography-cheat-sheet.txt
+- `umrs-mls-registry.adoc` — from umrs-mls-registry.txt
+- `cui-descriptions.adoc` — from cui-descriiptions.txt (fixed typo in filename)
+- `key-recommendation-list.adoc` — from key-recommendation-list.md
+
+Original .txt and .md files remain in place (not deleted per policy).
 
 ---
 
@@ -76,11 +80,17 @@ when a vetted one already exists.
 
 - `.md` files in `pages/` dirs do NOT render in Antora without a plugin — convert to `.adoc`
 - `.txt` files in `pages/` dirs are inert — convert to `.adoc`
-- Pending `.md` files in architecture that need conversion (tech-writer task):
-  HACAMS.md, nom_parser.md, RTB.md, reference_monitor.md, kernel-files-TPI.md,
-  TW0-NETIF-JUSTIFICATION.md
-- `umrs-tools/` was already wired into ROOT/nav.adoc before this session started
-- `security-model.adoc` in ROOT is a redirect stub — assess for removal after STW-2 exists
+- `antora.yml` at `docs/antora.yml` is the single component descriptor — no module-level antora.yml files
+- `antora.yml` already references `modules/architecture/nav.adoc` — nav file now exists
+- `security/` and `historical/` were NOT registered in antora.yml — no removal needed
+- `umrs-tools/` was already wired into ROOT/nav.adoc before 2026-03-11 session
+
+---
+
+## Primary Source Documents for Introduction and Architecture Content
+
+- `README.md` — defines high-assurance engineering, HACAMS lineage, HA examples
+- `UMRS-PROJECT.md` — authoritative project description, MLS label hierarchy, CUI handling
 
 ---
 

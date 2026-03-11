@@ -1,0 +1,93 @@
+= UMRS setrans Translation Engine
+:toc: left
+:description: Technical brief on the UMRS TPI-vetted setrans translation module — how kernel bitmasks are translated to human-readable CUI markings.
+
+// NIST 800-53 AC-4 — Information flow enforcement
+// NIST 800-53 AU-3 — Content of audit records
+// NSA RTB RAIN — Redundancy and determinism
+
+Module: `umrs_selinux::mcs::setrans`
+
+== The Problem: Vernacular vs Ground Truth
+
+In SELinux, the ground truth stored on disk is often a raw bitmask (for example,
+`s0:c90,c99`). While mathematically sound for the kernel, this representation is
+illegible to human operators and auditors who require regulatory markings such as
+`CUI//LEI/INV`. Traditional systems rely on the `mcstransd` daemon, which introduces
+a non-anchored userspace dependency.
+
+== The UMRS Solution: TPI-Vetted Translation
+
+The `setrans` module implements a high-performance, redundant translation engine that
+ingests the system's `setrans.conf` and maps kernel bitmasks to human-readable markings
+using Two-Path Integrity (TPI).
+
+=== Redundant Ingestion (The TPI Gate)
+
+To ensure the translation table has not been tampered with or misinterpreted, every line
+in `/etc/selinux/targeted/setrans.conf` is parsed by two independent logic paths:
+
+`Path A (Declarative)`::
+A formal `nom` parser combinator that enforces the strict grammar of the configuration
+file.
+
+`Path B (Imperative)`::
+A robust string-splitting and joining algorithm.
+
+The invariant: both paths must agree bit-for-bit on the mapping before an entry is
+accepted into the trusted translation map. A single character mismatch causes that line
+to be rejected.
+
+=== Lattice-Based Indexing
+
+Unlike standard tools that use string-matching (which is fragile and order-dependent),
+UMRS indexes the translation table using the `CategorySet` bitmask.
+
+* *Order independence* — `c90,c99` and `c99,c90` resolve to the same entry because the
+  key is the bitmask, not the string.
+* *Deterministic lookup* — the table uses a `BTreeMap` of bitmasks, ensuring lookups
+  are mathematically deterministic.
+
+== Performance and Caching
+
+The module is designed for large directory audits (100,000+ files) where performance
+is a secondary security requirement (availability).
+
+`Lazy loading`::
+Using `std::sync::OnceLock`, the translation table is parsed exactly once on first
+access.
+
+`Zero-copy lookups`::
+The engine performs bitmask comparisons rather than expensive string comparisons or
+regex matching.
+
+`Static residence`::
+Once loaded, the map remains in read-only memory, providing thread-safe access to all
+audit tools (CLI, TUI, or GUI) without lock contention.
+
+== Audit Fidelity
+
+*Fail-safe fallback:* If a file carries a category bitmask not defined in the
+configuration, the engine returns the raw provenance string (for example, `s0:c1023`).
+This ensures the auditor sees the unknown state rather than a silent failure or
+an empty field. Per NIST 800-53 AU-3, audit records must contain sufficient information
+to establish what occurred — returning the raw label satisfies this requirement when
+no translation is available.
+
+*Traceability:* Every successful and failed translation can be traced via the log
+facade, identifying exactly which bitmask triggered a vernacular match.
+
+== Future Trajectory
+
+The substrate is designed to bridge into the UMRS CUI Master Catalog. Future iterations
+will use the translated markings (for example, `CUI//AGR`) as a key to pull extended
+metadata from JSON registries, including:
+
+* *Visual fidelity* — dynamic color palettes for UI rendering
+* *Handling instructions* — automated display of NARA-mandated safeguarding requirements
+
+== See Also
+
+* xref:deployment:rhel10-setrans.adoc[Configuring setrans.conf on RHEL 10]
+* xref:example-setrans-conf.adoc[Example setrans.conf]
+* xref:architecture:kernel-files-tpi.adoc[Two-path independence (TPI)]

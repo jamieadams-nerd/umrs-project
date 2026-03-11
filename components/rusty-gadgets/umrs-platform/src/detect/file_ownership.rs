@@ -159,7 +159,11 @@ fn run_inner(
 /// matching `path_str`.
 ///
 /// Returns `(dev, ino)` if found; `None` if no stat record exists for the path.
-fn find_stat_for_path(evidence: &EvidenceBundle, path_str: &str) -> Option<(u64, u64)> {
+///
+/// `pub(super)` so that sibling phase modules (e.g., `integrity_check`,
+/// `release_parse`) can re-verify `(dev, ino)` without duplicating the
+/// search logic. NIST SP 800-53 SI-7 — TOCTOU re-verification.
+pub(super) fn find_stat_for_path(evidence: &EvidenceBundle, path_str: &str) -> Option<(u64, u64)> {
     for record in evidence.records.iter().rev() {
         if record.path_requested == path_str
             && let Some(ref stat) = record.stat

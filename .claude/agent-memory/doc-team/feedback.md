@@ -529,3 +529,71 @@ Sequenced deliverables:
 
 STW-1 and STW-2 are the highest-priority unlocking items. STW-3 and STW-4 depend on STW-2.
 STW-6 depends on STW-5. STW-7 can run in parallel with anything.
+
+---
+
+## [2026-03-11] senior-tech-writer → Jamie: selinux-registry.txt is a duplicate — confirm safe to delete
+
+**Status**: open
+
+`docs/modules/reference/pages/selinux-registry.txt` and
+`docs/modules/reference/pages/umrs-mls-registry.txt` are byte-for-byte identical.
+Both contain the UMRS filesystem layout and registry location discussion.
+
+`umrs-mls-registry.txt` is the correctly named version. It has been converted to
+`umrs-mls-registry.adoc`.
+
+`selinux-registry.txt` should be deleted — its name is misleading (it has nothing to do
+with a SELinux registry), and it duplicates the converted content. Confirm before
+deletion.
+
+---
+
+## [2026-03-11] senior-tech-writer → senior-tech-writer: Phase 1 and Phase 2 reorganization complete
+
+**Status**: resolved
+
+Phase 1 (structural moves):
+
+- S-1: `security/` module retired. All 5 pages moved to `architecture/` or `devel/`.
+  `security/nom_parser.adoc` → `devel/pages/nom-parser.adoc`.
+  `architecture/nav.adoc` and `devel/nav.adoc` updated.
+  `security/` directory removed.
+
+- S-2: `historical/` module retired. All 11 pages copied to `architecture/pages/`.
+  `historical/` directory removed. `antora.yml` required no changes (neither module
+  was registered; `architecture` was already listed).
+
+- S-3: All 9 non-.adoc files in `reference/pages/` converted to `.adoc`.
+  Typo in `cui-descriiptions.txt` corrected to `cui-descriptions.adoc`.
+  `selinux-registry.txt` confirmed as duplicate of `umrs-mls-registry.txt` — flagged
+  to Jamie separately. `reference/nav.adoc` updated with all new pages under
+  "MLS Display", "CUI & Policy", and "Cryptography" sections.
+
+Approved deletions executed:
+- `ROOT/pages/security-model.adoc` — deleted (confirmed redirect stub, no content)
+- `docs/_scratch/pdf-security-model.adoc` — deleted (approved)
+
+Phase 2 (new architecture content pages):
+
+- A-1: `architecture/pages/mls-label-model.adoc` — MLS level set (s0–s15),
+  CUI vs classification vs proprietary, dominance ordering, SELinux mapping,
+  NIST control alignment. Synthesized from umrs-levels-cui.txt and umrs-concepts.txt.
+
+- A-2: `architecture/pages/integrity-and-provenance.adoc` — Defines provenance,
+  integrity, integrity assurance, attestation, authenticity, non-repudiation, chain
+  of custody, custody vs content trust, auditability. Covers IMA/EVM enforcement
+  architecture. Synthesized from terminology.txt and RATIONALE_for_HA.adoc.
+
+- A-3: `architecture/pages/case-studies.adoc` — High-assurance failure cases by CUI
+  category: OPM, Equifax, Twitter misuse, Flint water, water report falsification,
+  rail inspection falsification, Boeing 737 MAX, pipeline fraud, Mars Orbiter,
+  Deepwater Horizon, Vayner, Lorraine v. Markel. All presented as design lessons with
+  UMRS control pattern mapping. IMPORTANT note added on statistical uncertainty.
+
+- A-4: `architecture/pages/cui-structure.adoc` — CUI definition (EO 13556), CUI vs
+  classification, CUI vs proprietary, CUI vs ITAR/EAR, NIST 800-171 mapping to UMRS.
+
+- A-5: `architecture/pages/truth-concepts.adoc` — Placeholder stub.
+
+All new pages added to `architecture/nav.adoc`.

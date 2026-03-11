@@ -129,6 +129,6 @@ data, not just what the filename says it is.
 
 == See Also
 
-* xref:nom_parser.adoc[The nom Parser Combinator in UMRS]
-* xref:RTB.adoc[NSA RTB and the RAIN Principle]
-* xref:kernel-files-TPI.adoc[Two-Path Independence in Kernel File Parsing]
+* xref:devel:nom-parser.adoc[The nom Parser Combinator in UMRS]
+* xref:rtb-vnssa.adoc[NSA RTB and the RAIN Principle]
+* xref:kernel-files-tpi.adoc[Two-Path Independence in Kernel File Parsing]

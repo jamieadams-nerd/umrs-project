@@ -138,4 +138,8 @@ forcing them to agree, you get the features of A and the rock-solid certainty of
 | TCB minimization | Zero-copy; no extra heap allocations during parsing
 |===
 
-References: https://docs.rs/nom/[nom crate documentation] | NIST 800-53 SI-7: Software Integrity | NSA RTB Principle: Redundancy
+== See Also
+
+* xref:architecture:kernel-files-tpi.adoc[Two-Path Independence in Kernel File Parsing]
+* xref:architecture:reference-monitor.adoc[Reference Monitor Design in UMRS]
+* xref:architecture:rtb-vnssa.adoc[NSA RTB and the RAIN Principle]
