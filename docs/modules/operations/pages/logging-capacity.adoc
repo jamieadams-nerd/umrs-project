@@ -1,0 +1,188 @@
+= Log Capacity Planning
+:toc: left
+:description: How to report and reason about log storage capacity in terms of lifecycle state and failure impact rather than raw filesystem usage.
+
+The core question operators care about is not "how full is this filesystem?" It is:
+
+_"Can this system continue to operate safely, and which part of logging will fail first
+if space runs out?"_
+
+That is a failure-mode question, not a filesystem question. Reporting must be framed
+around lifecycle phase, failure impact, and time-to-failure — not around mount points.
+
+== Why Filesystem Layout Breaks Naive Reporting
+
+Two common patterns illustrate the problem.
+
+*Pattern A: Single filesystem*
+
+----
+/var/log
+  ├── active
+  ├── inactive
+  └── archive
+----
+
+Here: one free-space number, multiple lifecycle consumers, and competition between states.
+
+*Pattern B: Split filesystems*
+
+----
+/var/log        (active + inactive)
+/var/log/archive
+----
+
+Here: different failure domains, different risk timelines, different remediation actions.
+
+If you report only filesystem usage, you lose lifecycle meaning. If you report only
+lifecycle usage, you lose failure context. The correct approach reports both, but keeps
+them clearly separated.
+
+== The Design Pivot: Decouple Lifecycle State from Storage Location
+
+Think in three layers:
+
+1. *Lifecycle semantics* — active, inactive, archived.
+2. *Storage topology* — which filesystem hosts which lifecycle state.
+3. *Failure impact* — what breaks first and what the operational consequence is.
+
+Never collapse these prematurely.
+
+== Lifecycle States and Their Operational Risk
+
+=== Active Logs
+
+Logs currently being written to.
+
+* Metrics: bytes consumed, remaining free space in the active logging filesystem.
+* Failure impact: if active space fills, logging fails immediately, which means
+  the system is non-compliant.
+* CDS-MIB characterization: *Immediate operational risk.*
+
+=== Inactive Logs
+
+Rotated logs, no longer written to, still online.
+
+* Metrics: space consumed by closed but retained logs, growth rate over time.
+* Failure impact: rotation failure causes growth into active space.
+* CDS-MIB characterization: *Process failure risk.*
+
+=== Archived Logs
+
+Logs moved to long-term storage, often compressed, often on a separate filesystem.
+
+* Metrics: space consumed, archive growth versus retention policy.
+* Failure impact: retention violations or storage cost explosion, but not immediate
+  system failure.
+* CDS-MIB characterization: *Governance and compliance risk.*
+
+== Why Total Log Space Is Not Sufficient
+
+[source]
+----
+5 GB active + 115 GB archived  → OK
+115 GB active + 5 GB archived  → emergency
+----
+
+Same total. Completely different operational posture. This is why CDS-MIB exposed
+per-state metrics and why UMRS log status reporting follows the same model.
+
+The key sentence from CDS-MIB philosophy stated in modern language:
+
+_"Log capacity must be reported by lifecycle state and correlated to the underlying
+storage pool, because different lifecycle states consume shared capacity but fail with
+different operational consequences."_
+
+== Modeling: Consumers of Space
+
+Instead of asking "how full is this filesystem," ask: "which lifecycle consumers are
+drawing space from which capacity pools?"
+
+[cols="2,1"]
+|===
+| Lifecycle consumer | Capacity pool
+
+| Active logs | Filesystem A
+| Inactive logs | Filesystem A
+| Archived logs | Filesystem B (or A if not separated)
+|===
+
+This mapping is the heart of meaningful reporting.
+
+== Secondary Attribution: Log Class Breakdown
+
+After the primary lifecycle view establishes whether the system is safe, a secondary
+breakdown by log class answers: "what is driving growth?"
+
+[source]
+----
+Active logs (total): 3.1 GB
+  Audit logs:       0.9 GB
+  System logs:      0.7 GB
+  Apache logs:      1.2 GB
+  Application logs: 0.3 GB
+----
+
+Log groupings should be operator-defined, not hardcoded. Groups are semantic, not
+filesystem-based. Multiple paths can belong to one group. One filesystem can host many
+groups.
+
+NOTE: Audit logs always deserve explicit visibility in the group breakdown. `auditd` can
+halt the system if it cannot write — audit space exhaustion must be treated as higher
+severity than general log space exhaustion.
+
+== Time-to-Exhaustion
+
+Store the previous measurement (plus timestamp) in a small JSON state file. Each run
+can compute:
+
+* Delta bytes by lifecycle state and by log group.
+* Growth rate (bytes/hour or bytes/day).
+* Estimated time-to-exhaustion for each capacity pool.
+
+The time-to-exhaustion calculation:
+
+[source]
+----
+rate = (current_bytes - prior_bytes) / elapsed_seconds
+time_to_full = free_bytes / rate     (if rate > 0)
+----
+
+Present this as a simple projection based on the last interval. Even with only two
+data points, it provides useful directionality.
+
+== Shared Filesystem Risk
+
+When logs live on a non-dedicated filesystem (for example, `/` or a shared root
+filesystem):
+
+* Log exhaustion risk becomes non-deterministic because unrelated activity can consume
+  space at any time.
+* UMRS can measure log growth accurately but cannot predict failure timing when other
+  consumers are present.
+* A logging failure may appear "sudden" even though log growth itself was stable.
+* Dedicated log filesystems reduce uncertainty and improve predictability.
+
+Shared filesystems must be flagged as a risk-elevating condition, not just a capacity issue.
+
+== NIST 800-53 Alignment
+
+[cols="1,3"]
+|===
+| Control | Relevance
+
+| `AU-4` (Audit Storage Capacity)
+| Per-lifecycle reporting ensures storage is managed with operational failure modes
+  in mind, not just total usage.
+
+| `AU-5` (Response to Audit Processing Failures)
+| Time-to-exhaustion reporting and threshold alerting support early response before
+  audit logging fails.
+
+| `AU-9` (Protection of Audit Information)
+| Separate lifecycle tracking for audit logs ensures they receive appropriate
+  monitoring priority.
+
+| `AU-11` (Audit Record Retention)
+| Archival state tracking ensures retention requirements are visible and manageable.
+|===

@@ -1,0 +1,122 @@
+= NSA Raise the Bar (RTB) and the RAIN Principle
+:toc: left
+:description: How NSA RTB RAIN requirements map to UMRS design decisions and implementation patterns.
+
+The National Cross Domain Strategy and Management Office (NCDSMO) leads the Raise the
+Bar (RTB) initiative. RTB mandates that Cross-Domain Solutions (CDS) and high-assurance
+security mechanisms follow specific implementation patterns to remain effective against
+persistent, advanced threats.
+
+== Core RTB Principles (Publicly Verifiable)
+
+The "RAIN" Principle is a cornerstone of the NCDSMO strategy.
+
+`Redundant`::
+Security mechanisms must have overlapping layers. In UMRS code, this is the TPI
+(Two-Path Integrity) gate where two independent parsers must agree on the label before
+access is granted.
+
+`Always Invoked`::
+The monitor must be called for every single access attempt. By anchoring the tool to
+the file descriptor, enforcement is invoked at the syscall level for every read and write.
+
+`Independent Implementations`::
+The redundant paths must be implemented using different logic or libraries to prevent
+a single flaw from compromising both. UMRS uses a declarative (nom) parser versus an
+imperative (FromStr) parser.
+
+`Non-Bypassable`::
+There must be no "backdoor" or alternative route to the data. Using `rustix` for direct
+inode-anchored calls prevents path-spoofing that would bypass standard userland checks.
+
+Other core RTB mandates include:
+
+* *Hardware Enforcement* — for any High-Threat Network (HTN) connection, RTB mandates
+  hardware-enforced one-way transfer mechanisms (data diodes).
+* *PEFA (Policy Enforcement Failure Analysis)* — the methodology used to ensure that even
+  if a single security mechanism fails, the overall security posture remains high.
+* *NSM-8 Compliance* — since January 2022, National Security Memorandum 8 has made RTB
+  compliance a reporting requirement for all agencies operating CDS connected to National
+  Security Systems.
+
+== Applying RAIN to UMRS
+
+=== Redundant: Two-Path Independence (TPI)
+
+In a high-assurance system, if two different algorithms do not produce the exact same
+result, the system assumes something is compromised or broken and denies access.
+
+For CUI Labels: UMRS implements Path A (nom) and Path B (FromStr / state machine). Both
+are correct implementations of the specification. The value appears when invalid or
+malicious data enters the system — the two paths will disagree, and access is denied.
+
+=== Always Invoked: SecureReader
+
+The enforcement logic must be in the direct path of the data — never cached in a way
+that allows bypass. `SecureReader` is always in the direct path of kernel attribute reads.
+It cannot be bypassed by the caller.
+
+=== Independent: Library Diversity
+
+UMRS tools must not depend on the security of the applications they are monitoring.
+Using `rustix` and raw syscalls keeps the security layer independent of the system's
+libc. The two parsers use fundamentally different code paths.
+
+=== Non-Bypassable: SELinux MAC + Inode Anchoring
+
+SELinux ensures that the only way to reach CUI data is through the UMRS-validated
+interface. Using `rustix` for inode-anchored fd-based calls removes the filesystem
+namespace as an attack surface.
+
+== Formal Filter Logic (Data Sanitation)
+
+RTB distinguishes between "Complex Data" and "Fixed Format Data."
+
+In UMRS:
+
+* CUI labels are treated as Fixed Format.
+* Zero-copy parsing ensures the label string is never "interpreted" — it is mapped
+  directly to a typed value. If a single byte is out of place, the system fails closed.
+
+== Policy Enforcement Failure Analysis (PEFA)
+
+Code must be written assuming it will fail. In UMRS:
+
+* Rust's `Result` type enforces mandatory error handling.
+* `#[must_use]` annotations make discarded results a compiler warning.
+* Every "Allow" decision requires explicit, positive confirmation. Any error defaults
+  to Deny.
+
+== Minimized Trusted Computing Base (TCB)
+
+RTB v5.0 and later place heavy emphasis on reducing lines of code in the TCB.
+
+* Every dependency added to `Cargo.toml` is audited.
+* `#![forbid(unsafe_code)]` is set in every crate root.
+* Avoid crate bloat — every transitive dependency is attack surface.
+
+== How to Get the Latest Unclassified RTB Information
+
+For engineers working with defense-adjacent organizations, current unclassified
+versions and technical baseline lists are available through:
+
+* NCDSMO Public Portal: the NSA's official NCDSMO page provides strategic direction
+  and identifies the Baseline list of RTB-compliant products.
+* DoD and DCSA Technical Reports: many requirements are released as Cybersecurity
+  Technical Reports (CTR).
+* Vendor whitepapers: companies implementing CDS solutions often publish detailed
+  summaries of RTB requirements to help customers navigate accreditation.
+
+== NIST 800-53 Mapping
+
+For auditors, UMRS implementation of the RAIN principle satisfies several high-impact
+NIST controls:
+
+[cols="1,3"]
+|===
+| Control | Satisfaction
+
+| `AC-3` (Access Enforcement) | The reference monitor mediates all access based on verified security policy.
+| `AC-4` (Information Flow Enforcement) | `CategorySet` bitmasks for lattice math provide deterministic, classification-aware access controls.
+| `SI-7` (Software Integrity) | Redundant parsing and inode anchoring protect the integrity of the security decision-making software.
+|===

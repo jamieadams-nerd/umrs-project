@@ -1,0 +1,209 @@
+= Architecture Overview
+:description: How UMRS is structured — base OS, SELinux context model, MLS/MCS, CUI policy, Rust implementation layer, and high-assurance patterns.
+:toc: left
+:toclevels: 2
+
+// NIST 800-53 AC-4 — Information Flow Enforcement
+// NIST 800-53 SI-7 — Software and Information Integrity
+// NSA RTB RAIN — Non-bypassable security enforcement
+
+UMRS is not a single application. It is a layered system: a hardened OS
+foundation, a kernel-enforced access control model, and a Rust library
+that makes that model safe to work with in userland. This page explains
+each layer and how they relate. Detailed treatment of each topic is in
+the pages linked from each section.
+
+== Base OS Layer
+
+UMRS targets Red Hat Enterprise Linux 10 with SELinux enforcing mode and
+FIPS 140-2/140-3 cryptography active. These are not configurable
+tradeoffs — they are prerequisites. SELinux enforcing mode is what makes
+mandatory access control binding; permissive mode produces audit events
+but does not block access. FIPS mode constrains all cryptographic
+operations to validated primitives, a requirement in CUI environments.
+
+The deployment baseline also includes kernel lockdown, IMA/EVM integrity
+measurement, and OpenSCAP compliance scanning. These controls together
+form the trusted computing base on which label enforcement runs.
+
+See xref:deployment:linux-baseline.adoc[Linux baseline],
+xref:deployment:rhel10-installation.adoc[RHEL 10 installation], and
+xref:deployment:ima-evm-setup.adoc[IMA/EVM setup] for configuration
+details.
+
+== SELinux Context Model
+
+Every subject (process) and object (file, socket, IPC resource) on a
+SELinux system carries a _security context_ — a structured label that
+SELinux uses when making access control decisions. A security context
+has five fields:
+
+----
+user : role : type : sensitivity : categories
+----
+
+For example, a system file might carry:
+
+----
+system_u:object_r:net_conf_t:s0
+----
+
+A user process in an MLS environment might carry:
+
+----
+staff_u:staff_r:staff_t:s0-s2:c0,c4
+----
+
+The *user* and *role* fields identify the principal. The *type* field
+is the primary anchor for type-enforcement policy decisions. The
+*sensitivity* and *categories* together form the MLS label — the
+portion that governs information-flow enforcement.
+
+UMRS models each field as a distinct validated Rust type. A
+`SecurityContext` cannot be constructed with a malformed sensitivity
+level, an out-of-range category, or a missing required field. The
+type system enforces structure before any call reaches the kernel.
+
+See xref:rationale.adoc[Strong-typing rationale] for the detailed
+argument, and the reference pages for each field:
+xref:reference:context.adoc[security context],
+xref:reference:user.adoc[SELinux user],
+xref:reference:role.adoc[SELinux role],
+xref:reference:sensitivity.adoc[sensitivity levels],
+xref:reference:category_set.adoc[category set].
+
+== MLS/MCS Security Model
+
+_Multi-Level Security_ (MLS) is the access control model that governs
+information flow between subjects and objects at different sensitivity
+levels. It formalizes the intuition that a process cleared for
+confidential data may read unclassified data (read down is allowed), but
+must not write that confidential data to an unclassified object (write
+down is prohibited). This is the *no-write-down* rule from the
+Bell-LaPadula confidentiality model.
+
+UMRS implements MLS enforcement through two constructs:
+
+* *Sensitivity levels* — an ordered hierarchy (s0 through s15). A
+  subject dominates an object when the subject's sensitivity level is
+  greater than or equal to the object's.
+* *Category sets* — a 1024-bit bitmap representing compartment
+  membership. A subject's category set must be a superset of the
+  object's for access to be permitted.
+
+Together, sensitivity and categories form an MLS range: a lower bound
+(the minimum label the subject can access) and an upper bound (the
+maximum label the subject can produce). This range is the subject's
+_clearance_.
+
+_Multi-Category Security_ (MCS) is MLS restricted to a single
+sensitivity level (s0) with category-based separation. Most SELinux
+targeted-policy deployments use MCS rather than full MLS. UMRS supports
+both.
+
+See xref:reference:mcs.adoc[MCS overview] and
+xref:mls-history.adoc[MLS history] for background.
+
+== CUI Policy and Multi-National Label Support
+
+_Controlled Unclassified Information_ (CUI) is unclassified information
+that requires safeguarding under federal law, regulation, or policy. The
+governing framework is NIST SP 800-171 (protection requirements) and
+CMMC 2.0 (maturity assessment). CUI does not use hierarchical
+classification levels in the traditional MLS sense, but it does use
+category-based handling requirements — making MCS an appropriate
+enforcement mechanism.
+
+UMRS is designed to support CUI as its primary baseline. It is also
+designed to support the national unclassified information handling
+schemes of Five Eyes partner nations alongside CUI. Each partner country
+maintains its own scheme for marking and handling sensitive-but-unclassified
+information, and interoperability with those schemes is a planned
+architectural objective.
+
+See xref:five-eyes-interop.adoc[Five Eyes interoperability] for the
+design rationale and per-country scheme descriptions.
+
+== Rust Implementation Layer
+
+UMRS is implemented in Rust with three workspace crates forming the
+core dependency chain:
+
+----
+umrs-platform  ←  no workspace dependencies
+     ↑
+umrs-selinux   ←  depends on umrs-platform only
+     ↑
+umrs-core      ←  depends on umrs-platform and umrs-selinux
+----
+
+`umrs-platform` provides provenance-verified kernel attribute readers —
+wrappers over `/proc/` and `/sys/` that verify filesystem magic before
+reading, preventing spoofing via bind-mounts or malicious overlays
+(NIST 800-53 SI-7).
+
+`umrs-selinux` is the primary library. It provides the security context
+model, MLS level and range types, TOCTOU-safe directory entry inspection,
+fd-anchored xattr reading, and the MCS translation layer.
+
+`umrs-core` provides shared formatting, internationalization, and timing
+utilities used by tools built on top of the library.
+
+This dependency order is a fixed architectural constraint. It exists to
+ensure that low-level kernel I/O code carries no dependency on higher-level
+abstractions, and that the security model is self-contained and auditable
+independently of tool code.
+
+Rust was chosen because its type system and ownership model eliminate
+entire classes of memory safety and concurrency errors at compile time.
+`#![forbid(unsafe_code)]` is set in every crate root — this is a
+mechanically verifiable compile-time proof, not a policy statement
+(NIST 800-218 SSDF PW.4, NSA RTB).
+
+See xref:umrs-prog-lang.adoc[Language choice rationale] and
+xref:library-model.adoc[Library model] for the detailed argument.
+
+== High-Assurance Patterns
+
+Every security-relevant operation in UMRS applies one or more
+high-assurance coding patterns derived from NSA RTB VNSSA, NIST 800-218
+SSDF, and operational experience in high-assurance environments. The
+patterns address specific threats: single-point-of-failure parsing,
+TOCTOU race conditions, silent failure modes, sensitive data in error
+messages, and kernel pseudo-filesystem spoofing.
+
+These patterns are not optional conventions. They are applied
+consistently across the codebase and their rationale is documented so
+that future contributors understand what threat is being addressed —
+not just what the pattern looks like.
+
+See xref:devel:high-assurance-patterns.adoc[High-assurance coding patterns]
+for the full catalog.
+
+== Compliance Baseline
+
+The architecture is governed by the following frameworks:
+
+[cols="1,3"]
+|===
+|Framework |Role
+
+|NIST 800-53 Rev 5 AC-4
+|Information flow enforcement — the primary control driving MLS label
+ semantics and access decisions
+
+|NIST 800-53 Rev 5 SI-7
+|Software and information integrity — drives provenance verification
+ of kernel attributes and IMA/EVM integration
+
+|NSA RTB RAIN
+|Non-bypassability requirement — security checks must always be
+ invoked; private constructors and module boundaries enforce this
+
+|NIST 800-218 SSDF PW.4
+|Secure coding practices — drives forbid(unsafe_code), TPI parsing,
+ and secure arithmetic requirements
+|===
+
+See xref:reference:compliance-frameworks.adoc[Compliance frameworks registry]
+for the full list of governing standards and their versions.

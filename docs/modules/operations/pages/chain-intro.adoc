@@ -1,0 +1,165 @@
+= Log Signature Chaining
+:toc: left
+:description: How to chain signatures across rotated log files to detect deletion or reordering of log history.
+
+Signing each log file independently proves that individual files have not been modified.
+It does not prove that files have not been deleted or reordered. Chaining signatures
+across a log sequence addresses that gap.
+
+== Concepts
+
+=== No Chain (Baseline)
+
+Sign each rotated log file independently:
+
+* `hash_N = SHA-256(contents of file N)`
+* `sign(hash_N)` with the log-signing key
+* Store a detached signature file (e.g., `secure.log-2025-12-08.sig`)
+
+You can prove each file has not been modified, but you cannot prove that earlier files
+have not been deleted, because the signatures do not reference each other.
+
+=== Simple Hash Chain Using a Manifest
+
+Maintain a chain manifest file or SQLite table with rows containing:
+
+[cols="1,3"]
+|===
+| Field | Content
+
+| `sequence_number` | Integer, increments with each new log file
+| `filename` | Full path of the log file
+| `file_hash` | SHA-256 of that log file's contents
+| `chain_hash` | SHA-256(file_hash \|\| previous_chain_hash)
+|===
+
+For the very first file, `previous_chain_hash` is all zeros or a fixed constant.
+
+When a new rotated log file arrives:
+
+1. Compute `file_hash = SHA-256(file contents)`.
+2. Read the last `chain_hash` from the manifest.
+3. Compute `new_chain_hash = SHA-256(file_hash || previous_chain_hash)`.
+4. Append a new row: sequence number, filename, file_hash, new_chain_hash.
+5. Sign this new row, or periodically sign the entire manifest.
+
+Verification recomputes `file_hash` for each file, recomputes `new_chain_hash` in
+sequence, and compares against what is stored. If any file was removed or changed, the
+chain breaks.
+
+This is chaining in the strict sense: each entry depends on the previous one, so you
+cannot tamper with history without breaking the math.
+
+=== Chaining via Previous Hash in Each Signature
+
+When signing log file N, instead of signing only `hash_N`, sign:
+
+[source]
+----
+combined = SHA-256(hash_N || hash_{N-1})
+----
+
+The detached signature for file N is over (`hash_N + previous file's hash`). This gives:
+
+* Integrity of each file's content.
+* A cryptographic link: "this file's integrity includes knowing what the previous
+  file's hash was."
+
+To verify the whole chain:
+
+1. Verify the signature on file 1 and get `hash_1`.
+2. For file 2, check that its signature covers `(hash_2 || hash_1)`.
+3. For file 3, check that its signature covers `(hash_3 || hash_2)`.
+
+If someone deletes file 2, file 3's signature cannot verify correctly anymore, because
+it is bound to `hash_2`.
+
+== Practical Recommendation for UMRS
+
+Use Option 2: a chain manifest in SQLite.
+
+* Table columns: `id`, `timestamp`, `filename`, `file_hash`, `prev_chain_hash`,
+  `chain_hash`, comment.
+* A CLI tool to verify the chain and dump a report for auditors.
+* The signing daemon appends entries and signs the latest `chain_hash` occasionally
+  with a long-term key.
+
+This gives:
+
+* Clear, human-readable history.
+* Strong detection of modified log file contents.
+* Detection of deleted or reordered log files.
+* Easy auditor reporting ("here is the chain, here is the verification result").
+
+== No-Daemon Implementation (Sign-on-Rotate)
+
+For a `sign-on-rotate` script (called by `logrotate` after rotation), maintain:
+
+* A chain state file: `/var/lib/ha-log/chains/secure.chain`
+* Rotated logs: `/var/log/secure-YYYY-MM-DD`
+* Signature files: `/var/log/secure-YYYY-MM-DD.sig`
+
+The script performs the following steps for each rotation:
+
+1. Compute `H_n` for the rotated file: `sha512sum <rotated-log>`.
+2. Read the previous chain hash `C(n-1)` from the chain state file. If the state file
+   does not exist (first run), treat `C(n-1)` as all zeros.
+3. Build a chain input: `C(n-1) || H_n || filename || rotation_timestamp`.
+4. Compute the new chain hash: `C_n = SHA-512(chain_input)`.
+5. Construct a signed record:
++
+[source]
+----
+LOGCHAIN V1
+file=secure-2025-12-09
+file_hash=<H_n>
+prev_chain_hash=<C(n-1)>
+chain_hash=<C_n>
+rotated_at=<timestamp>
+----
+6. Use the log-signing key to create a detached signature over that record.
+7. Update the chain state file to store `C_n`.
+
+The only new ingredient compared to a simple "sign each file" scheme is maintaining
+`C(n-1)` in a state file and including `C(n-1)` and `C_n` in the signed metadata.
+
+== Chain Verification
+
+A separate verification script walks the files in sequence order:
+
+1. Reads the initial `C_0` value from a trusted reference (e.g., the first known good
+   chain state stored offline).
+2. For each file, reads the `.sig` file, verifies the signature against the log-signing
+   public key, and extracts `H_n`, `C(n-1)`, `C_n`, filename, and timestamps from the
+   signed metadata.
+3. Recomputes `H_n` from the real file and checks that it matches.
+4. Recomputes `C_n` from `C(n-1)`, `H_n`, and metadata.
+5. Ensures `C(n-1)` inside the signed record matches the `C_n` from the previous file
+   in the sequence.
+
+If any signature fails, any hash mismatches, or chain values do not line up, integrity
+has been broken (file changed, replaced, removed, reordered, or chain state tampered with).
+
+== Phased Implementation
+
+Phase 1: On rotate, compute `H_n` and sign only `H_n + filename + timestamp`. No chain yet; you still get basic integrity per file.
+
+Phase 2: Add `C(n-1)` and `C_n` logic and the state file. Now you have a forward chain for that log stream.
+
+Phase 3: Add a `verify_chain` script that auditors can run. Later, add HTML or text reports.
+
+== Compliance Alignment
+
+[cols="1,3"]
+|===
+| Control | Satisfaction
+
+| `AU-9` (Protection of Audit Information)
+| Chaining detects deletion or reordering of log files that individual signatures cannot.
+
+| `AU-11` (Audit Record Retention)
+| Chain verification confirms the complete retention sequence is intact.
+
+| `SI-7` (Software and Information Integrity)
+| Cryptographic chaining provides a tamper-evident record of the full log history.
+|===

@@ -1,0 +1,82 @@
+§ {
+§   “schema_version”: 1,
+§   “source_registry_date”: "2025-12-11",
+§   “sensitivities”: [
+§     {
+§       “id”: “S0”,
+§       “label”: “PUBLIC”,
+§       “description”: “Information that requires no special handling or protection beyond standard good practices.”,
+§       “handling”: “May be freely shared within and outside the organization, subject to general policy and common sense.”
+§     },
+§     {
+§       “id”: “S1”,
+§       “label”: “INTERNAL”,
+§       “description”: “Operational or administrative data intended for internal use only.”,
+§       “handling”: “Share only with authorized personnel inside the organization. Do not post to public sites or external services without review.”
+§     },
+§     {
+§       “id”: “S2”,
+§       “label”: “SENSITIVE”,
+§       “description”: “Unclassified but sensitive information where unauthorized disclosure could cause limited harm to missions, operations, or individuals.”,
+§       “handling”: “Restrict access on a need-to-know basis. Use authenticated access and encrypted transport where practical.”
+§     },
+§     {
+§       “id”: “S3”,
+§       “label”: “CONTROLLED_UNCLASSIFIED_BASELINE”,
+§       “description”: “Baseline controlled unclassified information that requires safeguarding under law, regulation, or policy.”,
+§       “handling”: “Apply access controls, avoid unencrypted transmission over untrusted networks, and do not share with unauthorized parties.”
+§     },
+§     {
+§       “id”: “S4”,
+§       “label”: “CUI”,
+§       “description”: “Controlled Unclassified Information with defined handling and dissemination controls, including specific CUI categories.”,
+§       “handling”: “Limit access to authorized users, log access where feasible, encrypt at rest and in transit when practical, and apply any additional controls required by the applicable CUI category definitions.”
+§     }
+§   ],
+§   “categories”: [
+§     {
+§       “abbrev”: “CUI”,
+§       “group”: “CUI_GENERAL”,
+§       “name”: “Controlled Unclassified Information (Baseline)”,
+§       “description”: “Generic marker indicating that the information is subject to CUI handling requirements, without specifying a more detailed subcategory.”,
+§       “handling”: “Treat as CUI by default: restrict access to authorized personnel, avoid public release, and follow organization CUI policy. May be combined with more specific CUI subcategories for finer control.”
+§     },
+§     {
+§       “abbrev”: “CUI_PRIVACY”,
+§       “group”: “CUI_PRIVACY”,
+§       “name”: “CUI – Privacy / PII”,
+§       “description”: “Controlled Unclassified Information that includes privacy-related data, such as personally identifiable information (PII) or other data linked or linkable to individuals.”,
+§       “handling”: “Restrict to personnel with a need to know and appropriate training. Apply encryption at rest and in transit where feasible. Do not copy to removable media or external services without explicit authorization and documented justification.”
+§     },
+§     {
+§       “abbrev”: “CUI_EXPORT”,
+§       “group”: “CUI_EXPORT_CONTROL”,
+§       “name”: “CUI – Export Controlled”,
+§       “description”: “Controlled Unclassified Information subject to export control regulations, such as technical data or technology controlled under export control laws.”,
+§       “handling”: “Restrict access to authorized persons who are not export restricted. Prohibit transfer to foreign nationals or external systems without export review. Keep detailed records of distribution in accordance with organizational policy.”
+§     },
+§     {
+§       “abbrev”: “CUI_TECHNICAL”,
+§       “group”: “CUI_TECHNICAL”,
+§       “name”: “CUI – Technical Information”,
+§       “description”: “Controlled technical information, including design data, engineering details, or configuration information that requires safeguarding but is not classified.”,
+§       “handling”: “Restrict to technical staff with a need to know. Avoid posting to shared public repositories or collaboration tools. Ensure backups and mirrors are subject to the same protections as the primary copy.”
+§     },
+§     {
+§       “abbrev”: “CUI_LEGAL”,
+§       “group”: “CUI_LEGAL”,
+§       “name”: “CUI – Legal / Attorney-Client”,
+§       “description”: “Controlled Unclassified Information related to legal matters, attorney-client communications, or privileged internal legal analysis.”,
+§       “handling”: “Limit to authorized legal and designated management personnel. Do not forward outside the organization or to broad internal mailing lists. Preserve logs and audit trails for access where feasible.”
+§     },
+§     {
+§       “abbrev”: “CUI_PROPRIETARY”,
+§       “group”: “CUI_PROPRIETARY”,
+§       “name”: “CUI – Proprietary Business Information”,
+§       “description”: “Controlled Unclassified Information that includes proprietary, trade secret, or competition-sensitive business data.”,
+§       “handling”: “Restrict to staff with a defined business need. Prohibit uncontrolled redistribution, screen capture sharing, or copy-out to personal devices. Apply the same or stronger controls as for other CUI categories.”
+§     }
+§   ]
+§ }
+
+Once you strip the leading “§ ” from each line, you should have valid JSON ready to drop into a file (for your CLI utility, a GTK front end, or both).

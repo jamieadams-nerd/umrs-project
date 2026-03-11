@@ -1,0 +1,32 @@
+In the SELinux vernacular, the Type is the "heavy lifter" of the security
+context. It is the primary attribute used for Type Enforcement (TE), which is
+the mechanism responsible for most access control decisions in the kernel.
+SELinux Project
+
+What it Represents: The meaning of the Type changes depending on whether it is
+applied to a process or an object:
+
+For Processes (Domains): When a type is applied to a process, it is called a
+Domain. It defines what that process is allowed to do. For example, a process
+with the httpd_t domain is allowed to listen on network ports.
+
+For Objects (Files/Sockets): When applied to a file, it is simply called a
+Type. It defines the "category" of the data. For example, files labeled
+httpd_sys_content_t are designated as web content.
+
+How it Works (The "Sandboxing" Effect):
+
+The policy contains rules that link these types together. A typical rule looks like:
+
+> Allow httpd_t to read files of type httpd_sys_content_t.
+
+If a hacker compromises the web server (httpd_t), the Type prevents them from
+accessing your private SSH keys, because those keys are labeled with the
+ssh_home_t type—and the policy has no "allow" rule connecting those two types.
+Red Hat Documentation 
+
+Key Takeaway: 
+
+While the User and Role provide a high-level framework, the Type is what
+actually isolates applications and protects your data on a granular, day-to-day
+basis.

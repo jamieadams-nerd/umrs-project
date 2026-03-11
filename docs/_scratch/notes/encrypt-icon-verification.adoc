@@ -1,0 +1,199 @@
+= Developer Notes: Encryption Icon Verification for umrs-ls
+:author: Developer (for tech-writer handoff)
+:date: 2026-03-07
+
+== Purpose
+
+This note documents how to verify and validate the encryption icon in `umrs-ls`.
+The tech-writer should use this as the basis for updating
+`docs/modules/umrs-tools/pages/umrs-ls.adoc`.
+
+== What the Icon Is
+
+The encryption icon is a Unicode lock symbol (`\u{1F512}` — 🔒) displayed in
+the 3-character *icon zone* at the start of the `NAME` column.
+
+It appears *only* on entries that are filesystem mount points *and* for which
+the encryption detection logic detects an encrypted backing device.
+
+Priority order in the icon zone (only one icon shows):
+
+. `🔒` (lock) — encrypted mount point
+. `⊕` — plain mount point (not encrypted)
+. `📁` — ordinary directory
+. three spaces — regular file, symlink, device, etc.
+
+== Technical Background (for documentation accuracy)
+
+The detection is implemented in `umrs-selinux::fs_encrypt`:
+
+* `detect_mount_encryption(path) -> EncryptionSource` reads `/proc/mounts`
+  (via the provenance-checked `ProcfsText` reader) to find the device backing
+  the mount point.
+* If the backing device is a device-mapper device, it checks
+  `/sys/block/<dev>/dm/uuid` and `/sys/block/<dev>/dm/type` (via `SysfsText`)
+  for LUKS signatures.
+* Returns one of:
+** `EncryptionSource::None` — no encryption detected
+** `EncryptionSource::LuksDevice` — backing device is a LUKS dm-crypt volume
+** `EncryptionSource::EncryptedFilesystem(String)` — filesystem type that
+   implies built-in encryption (e.g., `ext4` with hardware encryption)
+
+`SecureDirent::has_encryption()` returns `true` when `EncryptionSource` is
+anything other than `None`. The icon zone check in `umrs-ls` calls
+`entry.dirent.has_encryption()`.
+
+== Prerequisites for Testing
+
+. RHEL 10 system with SELinux enforcing (targeted policy).
+. `umrs-ls` binary built and accessible (e.g., via `cargo run -p umrs-ls`).
+. Root or sudo access to create loop devices and LUKS volumes.
+. `cryptsetup` installed (`dnf install cryptsetup`).
+
+== Test Case 1: LUKS-encrypted mount (primary case)
+
+This is the most common scenario and the primary one to document.
+
+[source,bash]
+----
+# 1. Create a 64 MiB backing file
+dd if=/dev/zero of=/tmp/test-luks.img bs=1M count=64
+
+# 2. Format as LUKS (accept the warning; use a test passphrase)
+cryptsetup luksFormat /tmp/test-luks.img
+# Enter passphrase: testpassword
+
+# 3. Open the LUKS volume
+cryptsetup open /tmp/test-luks.img test-luks
+# Enter passphrase: testpassword
+
+# 4. Create a filesystem on the opened device
+mkfs.ext4 /dev/mapper/test-luks
+
+# 5. Mount it
+mkdir -p /mnt/test-luks
+mount /dev/mapper/test-luks /mnt/test-luks
+
+# 6. Create a test file inside
+echo "test" > /mnt/test-luks/hello.txt
+
+# 7. List the parent directory — the mount point should show the lock icon
+umrs-ls /mnt --color
+----
+
+*Expected result*: The `test-luks/` entry in the listing of `/mnt` should show
+`🔒` (lock icon) in the icon zone of the `NAME` column, preceding the
+directory name.
+
+*Cleanup*:
+[source,bash]
+----
+umount /mnt/test-luks
+cryptsetup close test-luks
+rm /tmp/test-luks.img
+rmdir /mnt/test-luks
+----
+
+== Test Case 2: Plain mount point (no icon)
+
+Confirm the lock icon does *not* appear on a non-encrypted mount.
+
+[source,bash]
+----
+# Create and mount a plain tmpfs
+mkdir -p /mnt/test-plain
+mount -t tmpfs tmpfs /mnt/test-plain
+
+# List the parent directory
+umrs-ls /mnt --color
+----
+
+*Expected result*: `test-plain/` shows the plain mount symbol (`⊕`), not the
+lock icon.
+
+*Cleanup*:
+[source,bash]
+----
+umount /mnt/test-plain
+rmdir /mnt/test-plain
+----
+
+== Test Case 3: Non-mount directory (no icon)
+
+Confirm neither icon appears on a regular (non-mount) directory.
+
+[source,bash]
+----
+# Any normal directory listing
+umrs-ls /tmp --color
+----
+
+*Expected result*: Regular subdirectories show `📁`. No lock or mount icons
+unless `/tmp` itself is a tmpfs mount (in that case its *parent* listing would
+show `⊕` for `/tmp`).
+
+== Test Case 4: Color-off mode
+
+[source,bash]
+----
+umrs-ls /mnt
+----
+
+*Expected result*: The lock icon `🔒` still appears (it is a Unicode character,
+not an ANSI color code). Color codes are absent.
+
+== What the Tech-Writer Should Document
+
+In `umrs-ls.adoc`, update or add the following:
+
+=== In the Column Reference table (NAME row)
+
+Update the current description:
+
+____
+Mount points are prefixed with `⊕`; encrypted mounts with a lock symbol.
+____
+
+Replace with something like:
+
+____
+A 3-character icon zone precedes the filename:
+
+* `🔒` — encrypted mount point (LUKS dm-crypt or equivalent)
+* `⊕` — plain mount point
+* `📁` — ordinary (non-mount) directory
+* (spaces) — all other entries
+
+Encryption detection reads `/proc/mounts` and `/sys/block/` through
+provenance-verified readers. The icon is only shown when the backing
+device is confirmed as encrypted.
+____
+
+=== Add an "Encryption Icon" subsection
+
+Place it under or near the IOV Marker section. Cover:
+
+. When the icon appears (mount points with detected encryption only).
+. What LUKS is and why it matters (at-rest encryption, NIST SC-28).
+. That non-mount directories never show the lock icon.
+. That the icon is present regardless of `--color` mode.
+. That the absence of the icon on a mount does *not* mean no encryption is
+  present — only that the tool could not confirm it (e.g., hardware-level
+  or filesystem-level encryption the tool does not yet detect).
+
+=== Control mapping to add
+
+| SC-28 | NIST SP 800-53 | Encryption icon surfaces at-rest encryption posture per
+mount point. Absence of the icon is a potential gap indicator.
+
+== Notes for the Tech-Writer
+
+* Do not state that the tool detects *all* forms of encryption.
+  It currently detects LUKS dm-crypt volumes via sysfs device-mapper
+  attributes. Other encryption mechanisms (e.g., `fscrypt`, hardware FDE,
+  eCryptfs) are not yet detected and return `EncryptionSource::None`.
+* The icon appears on the *mount point entry*, not on files inside the mount.
+  A user listing `/mnt/test-luks/` will see no lock icon on the files
+  within — only a listing of `/mnt/` would show it on `test-luks/`.
+* The `--color` flag affects ANSI color codes on text fields (labels, IOV
+  markers). The Unicode icon characters are unaffected by this flag.

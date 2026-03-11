@@ -1,0 +1,25 @@
+= UMRS Tools
+:description: Command-line tools provided by the UMRS project for high-assurance system inspection.
+
+The UMRS project provides a set of command-line tools designed for operating and auditing
+high-assurance systems running SELinux.
+Each tool is built on the `umrs-selinux` library and follows the same design principles:
+inode-anchored access, TOCTOU safety, fail-closed semantics, and structured observation output.
+
+== Available Tools
+
+xref:umrs-ls.adoc[umrs-ls]::
+High-assurance directory listing.
+Groups entries by SELinux type and security marking.
+Distinguishes *restricted* (inode-unverifiable) entries from genuinely *unlabeled* objects.
+
+== Design Principles
+
+All UMRS tools enforce the following invariants:
+
+* **Layered separation** — data collection (`umrs-selinux`), storage, and display are distinct layers.
+* **TOCTOU safety** — all per-file reads anchor to a single file descriptor opened once.
+* **Fail-closed** — when security attributes cannot be verified, the tool says so explicitly
+  (`<restricted>`) rather than silently falling back to a path-based guess.
+* **No path-based label lookup** — unlike `/bin/ls -Z`, UMRS tools never call `lstat` for
+  label retrieval; they open the inode and call `fgetxattr(fd, ...)`.

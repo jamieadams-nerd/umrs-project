@@ -1,0 +1,10 @@
+
+# French translation of UMRS <something>
+# This file is distributed under the same license as the UMRS Project
+# MIT License
+# Copyright (c) 2025 Jamie Adams (a.k.a, Imodium OPerator)
+#
+# Initial translation, although imperfect is provided by a specially
+# trained claude code "umrs-translator". It has consumed  a large
+# corpus of msgid/msgtr for various GNU tools from the https://translationproject.org.
+#

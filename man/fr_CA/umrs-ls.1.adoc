@@ -1,0 +1,156 @@
+= umrs-ls(1)
+:doctype: manpage
+:manmanual: UMRS Commands
+:mansource: UMRS
+:man-linkstyle: pass:[blue R < >]
+
+== NOM
+
+umrs-ls - listage de répertoire ancré à l'inode, sensible au SELinux, groupé par étiquette de sécurité
+
+== SYNOPSIS
+
+umrs-ls [PATH] [--color] [--no-iov] [--no-mtime] [--with-size] [--with-inode]
+
+== DESCRIPTION
+
+umrs-ls liste le contenu d'un répertoire et groupe les entrées par type SELinux et marquage de
+sécurité (étiquette de sensibilité/catégorie). Il est conçu pour les opérateurs et les auditeurs
+de sécurité qui ont besoin de vérifier la posture de sécurité des objets du système de fichiers —
+pas seulement voir leurs noms.
+
+La distinction clé avec `/bin/ls -Z` est la manière dont l'étiquette de sécurité est obtenue.
+Le `ls` standard utilise `lstat`, un appel système basé sur le chemin qui demande au noyau une
+étiquette par chaîne de nom de fichier, sans établir de relation de descripteur de fichier avec
+l'objet. umrs-ls tente de `open()` chaque objet et ancre toutes les lectures de métadonnées
+subséquentes — y compris le xattr SELinux — à ce seul descripteur de fichier. Si `open()` est
+refusé, l'entrée est enregistrée comme `<restricted>` plutôt que de retourner silencieusement
+une étiquette dérivée du chemin qui ne peut pas être vérifiée au niveau de l'inode.
+
+PATH est optionnel ; lorsqu'omis, le répertoire courant est listé. Les indicateurs peuvent
+apparaître dans n'importe quel ordre par rapport à PATH.
+
+== OPTIONS
+
+--color::
+Active la sortie en vraies couleurs ANSI 24 bits. Les en-têtes de groupe utilisent la palette
+de secolor.conf lorsque disponible. La couleur est désactivée par défaut.
+
+--no-iov::
+Supprime la colonne de posture de sécurité IOV à 3 caractères.
+
+--no-mtime::
+Supprime la colonne de date de modification.
+
+--with-size::
+Ajoute une colonne de taille de fichier affichant les tailles en unités binaires lisibles par
+l'humain (B, KiB, MiB, GiB). Les valeurs sont justifiées à droite dans la colonne.
+Désactivé par défaut.
+
+--with-inode::
+Ajoute une colonne de numéro d'inode brut. Désactivé par défaut.
+
+== COLONNES
+
+=== MODE
+
+Chaîne de permissions de 10 caractères : un caractère de type de fichier suivi de neuf bits de
+permission (p. ex., `drwxr-xr-x`). Un suffixe `+` indique qu'une ACL POSIX est présente sur
+l'inode. Voir ls(1) pour l'interprétation standard des bits de permission.
+
+=== IOV
+
+Marqueur de posture de sécurité de largeur fixe à 3 caractères. Chaque position est soit la
+lettre active soit un tiret lorsqu'inactif. Lorsque --color est actif, les caractères actifs
+sont mis en évidence.
+
+I;;
+L'indicateur d'inode `FS_IMMUTABLE_FL` est défini. Le fichier ne peut pas être modifié, renommé
+ou supprimé — même par root — tant que l'indicateur n'est pas effacé. Lu via
+`ioctl(FSGETXATTR)` à travers le descripteur de fichier ouvert.
+
+O;;
+Une ou plusieurs observations de sécurité à signal élevé sont présentes sur cette entrée.
+Se déclenche pour : `SetuidBitSet`, `SetgidBitSet`, `WorldWritable`, `HardLinked`, `AccessDenied`.
+Les observations à fort bruit (`UnresolvedOwner`, `UnresolvedGroup`, `NoImaProtection`,
+`NoSelinuxContext`, `RootOwnedMutable`) sont supprimées dans cette vue pour réduire les faux
+positifs sur les systèmes RHEL normaux.
+
+V;;
+Un xattr IMA (Integrity Measurement Architecture) (`security.ima`) est présent sur l'inode,
+indiquant que le fichier est sous mesure ou évaluation. Lu via
+`fgetxattr(fd, "security.ima")` à travers le descripteur de fichier ouvert.
+
+=== SELINUX TYPE et MARKING
+
+Ces champs apparaissent uniquement dans l'en-tête de séparation de groupe au-dessus de chaque
+bloc d'entrées, pas sur les lignes individuelles.
+
+SELINUX TYPE est la composante type du contexte de sécurité vérifié (p. ex., `bin_t`, `httpd_t`,
+`<unlabeled>`, `<restricted>`).
+
+MARKING est la chaîne de sensibilité/catégorie traduite par setrans lorsque `mcstransd` est actif,
+ou la chaîne de niveau brute sinon (p. ex., `CUI//LEI/INV`, `s0`, `<no-level>`, `<restricted>`).
+
+=== OWNER:GROUP
+
+Noms d'utilisateur et de groupe résolus. Retombe sur l'uid/gid numérique lorsque la résolution
+de noms échoue.
+
+=== SIZE
+
+Taille du fichier en unités binaires lisibles par l'humain (B, KiB, MiB, GiB). Justifié à droite
+dans la largeur de colonne. Désactivé par défaut ; activer avec --with-size.
+
+=== MODIFIED
+
+Date de modification au format `YYYY-MM-DD HH:MM`, fuseau horaire local. Activé par défaut ;
+supprimer avec --no-mtime.
+
+=== INODE
+
+Numéro d'inode brut. Désactivé par défaut ; activer avec --with-inode.
+
+=== NAME
+
+Nom de fichier. Les répertoires reçoivent un `/` final. Les exécutables reçoivent un `*` final.
+Les points de montage ordinaires sont préfixés par `⊕`. Les points de montage chiffrés
+(ecryptfs, gocryptfs, etc.) sont préfixés d'un symbole de verrou.
+
+== NOTES DE SÉCURITÉ
+
+umrs-ls utilise deux étiquettes de groupe spéciales pour les objets dont le contexte de sécurité
+ne peut pas être entièrement vérifié depuis le sujet courant.
+
+`<restricted>`::
+`open()` a été refusé — par les permissions DAC (p. ex., 0700) ou une décision de politique MAC.
+Aucun descripteur de fichier n'a été établi, donc `fgetxattr` ne peut pas être appelé.
+L'étiquette de sécurité au niveau de l'inode est invérifiable pour le sujet courant.
+L'entrée est visible dans le flux de répertoire mais son étiquette est inconnue.
+
+`<unlabeled>`::
+`open()` a réussi et un descripteur de fichier valide a été obtenu, mais
+`fgetxattr(fd, "security.selinux")` a retourné `ENODATA`. L'objet n'est genuinement pas étiqueté
+— cela peut survenir sur des systèmes de fichiers sans support de xattr SELinux ou sur des objets
+créés en dehors de la politique SELinux.
+
+Ces deux états ne sont pas interchangeables. Lorsque umrs-ls rapporte `<restricted>` et que
+`/bin/ls -Z` rapporte une étiquette, ce n'est pas un écart entre deux outils. C'est un écart de
+vérification rendu explicite : `/bin/ls -Z` affiche une étiquette revendiquée basée sur la
+recherche par chemin ; umrs-ls rapporte `<restricted>` parce qu'il ne peut pas établir une chaîne
+de traçabilité vérifiée jusqu'à l'inode.
+
+Ce comportement suit le principe de non-contournabilité NSA RTB (RAIN) : un contrôle de sécurité
+qui peut être contourné en refusant un descripteur de fichier n'est pas un contrôle.
+
+== ÉTAT DE SORTIE
+
+0::
+Succès.
+
+1::
+Erreur d'E/S (p. ex., répertoire illisible, chemin inexistant).
+
+== VOIR AUSSI
+
+ls(1), yelp help:umrs-ls

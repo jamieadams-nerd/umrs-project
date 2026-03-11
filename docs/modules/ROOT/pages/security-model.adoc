@@ -1,0 +1,6 @@
+= Security Model
+:description: Stub — content moved to the Architecture module.
+
+The security model documentation has moved.
+
+See xref:architecture:index.adoc[Architecture].

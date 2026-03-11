@@ -1,0 +1,13 @@
+= umrs-state
+:description: Placeholder — documentation pending API stabilization.
+
+NOTE: This crate is under active development. Documentation will be added when the API stabilizes.
+
+== Planned Purpose
+
+`umrs-state` is the system state introspection subsystem for the UMRS project.
+It captures point-in-time security posture snapshots — including kernel attributes,
+SELinux enforcement status, FIPS mode state, and platform integrity indicators — and
+serializes them for audit, monitoring, and reporting purposes. The crate follows a
+strict layered separation model: a write path that collects and stores state, and a
+separate read path consumed by CLI, TUI, and GUI display layers.

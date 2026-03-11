@@ -1,0 +1,10 @@
+[workspace]
+resolver = "2"
+members = [
+    "cui-labels", "kernel-files", "mcs-setrans", 
+    "umrs-core",
+    "umrs-logspace", "umrs-ls", "umrs-platform", "umrs-selinux", 
+    "umrs-state",
+    "vaultmgr", 
+    "xtask", 
+]

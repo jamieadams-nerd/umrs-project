@@ -1,0 +1,261 @@
+Absolutely. I’ll lay out the **end-to-end information flow** — from “raw bytes on disk” to a **strongly-typed, verified `SecurityContext`** — in the most **secure / reliable / accurate** way, matching the high-assurance style you’ve been building (FD anchoring + TPI parsing).
+
+Below is a detailed, diagram-friendly narrative you can lift directly into a document.
+
+---
+
+## Threat model framing
+
+You are trying to answer:
+
+> “What is the SELinux security context of *this file*?”
+
+The high-assurance hazards are:
+
+* **TOCTOU**: you look up metadata for a pathname, but the inode behind the name changes between checks (rename, replace, bind mount tricks).
+* **Symlink games**: the path resolves differently than you expect.
+* **Inconsistent sources**: you parse from different representations (e.g., `ls -Z` output vs xattr) and silently accept discrepancies.
+* **Malformed / hostile bytes**: xattr payload could be corrupted or unexpected, and your parser must never “best-effort” itself into accepting an ambiguous label.
+
+So the trusted answer must be **inode-anchored**, **single-object**, **validated**.
+
+---
+
+## High-assurance pipeline overview
+
+### The core invariant
+
+**Bind identity first, then read attributes through that binding.**
+
+Your “binding” is a **file descriptor** obtained from `open()` (or `openat()`), and then every security read uses `fgetxattr()` (FD-based) rather than path-based calls.
+
+### One-line dataflow
+
+`path → open() → fd → fgetxattr(security.selinux) → bytes → (TPI parse) → SecurityContext struct`
+
+---
+
+## Step-by-step information flow
+
+### 1) Start with a path (untrusted string)
+
+**Input:** a pathname like `/vaults-lei/intake/foo.txt`
+
+This string is **not the file**. It’s only a *lookup key* into the VFS namespace.
+
+High-assurance rules:
+
+* Prefer `openat()` with a trusted directory FD if you are walking directories.
+* Use `O_NOFOLLOW` if you don’t want to follow symlinks.
+* Use `O_CLOEXEC` always.
+* If you care about reading metadata even when you can’t read the file, consider `O_PATH` for “metadata-only” anchoring.
+
+### 2) Anchor the file identity: `open()` / `openat()`
+
+**Output:** an `fd`
+
+At this moment you have a stable handle to a specific kernel object:
+
+* inode number
+* device ID
+* object type (regular file, dir, symlink, etc.)
+
+If the pathname later changes, the FD still refers to the same inode.
+
+**Diagram hook:**
+
+* “Namespace lookup” happens once.
+* After this, everything is FD-based.
+
+### 3) Optional identity proof: `fstat(fd)` (high-assurance posture)
+
+You can strengthen the binding:
+
+* `fstat(fd)` → get `(st_dev, st_ino, st_mode, st_nlink, …)`
+* record `(st_dev, st_ino)` as your “inode provenance key”
+* confirm it’s a regular file if that matters (`S_IFREG`)
+
+This is not strictly required to read the context, but it’s often part of a “verified audit record.”
+
+### 4) Read SELinux context bytes: `fgetxattr(fd, "security.selinux")`
+
+This is the **authoritative byte source** for the SELinux label on extended-attribute-capable filesystems (typical for ext4/xfs).
+
+* The kernel returns a byte slice for the xattr value.
+* The payload is typically an ASCII-ish string like:
+  `system_u:object_r:sshd_config_t:s0:c0.c1023`
+* It may include a trailing `\0` depending on syscall semantics / library wrappers — your reader should normalize safely.
+
+**Key security property:**
+
+* This read is tied to your FD → no TOCTOU on pathname.
+
+**Failure modes:**
+
+* `ENODATA` / `ENOTSUP`: filesystem doesn’t support xattrs or label isn’t present
+* `EACCES`: permission denial (still useful for “restricted” state)
+* `EINVAL`: invalid name for that filesystem (unlikely here)
+
+### 5) Normalize raw bytes → canonical string representation
+
+This stage is deliberately “dumb”:
+
+* Ensure bytes are bounded (max size guard)
+* Ensure they are valid UTF-8 **or** treat as bytes and validate strict ASCII subset (high-assurance often prefers explicit charset policy)
+* Trim trailing NUL and whitespace **in a deterministic way**
+* Preserve a copy of the original raw string for provenance (`raw()`)
+
+**Output:**
+
+* `raw: String` (or `Box<str>`) that is canonicalized enough to parse deterministically.
+
+### 6) Two-Path Integrity (TPI): parse the raw string twice
+
+This is your signature “high-assurance gate.”
+
+**Input:** canonical raw string
+
+**Path A: Declarative parser (grammar)**
+
+* `nom` parser consumes `user:role:type:mls` with strict token rules
+* rejects invalid characters, missing components, extra separators, invalid MLS format, etc.
+
+**Path B: Imperative parser (split/validate)**
+
+* uses `split(':')`, explicit checks, strict validation per component
+* independently reconstructs the same semantic model
+
+**Invariant:**
+
+* both parsers must produce the **same semantic output**
+* if mismatch → **loud failure** (reject label as unverified)
+
+This prevents:
+
+* “parser differential” vulnerabilities
+* ambiguous interpretations
+* silent acceptance of weird formatting
+
+### 7) Build strongly-typed primitives
+
+From the parse output:
+
+* `SelinuxUser`
+* `SelinuxRole`
+* `SelinuxType`
+* `MlsLevel` (your composite)
+
+  * `SensitivityLevel`
+  * `CategorySet`
+
+Each type constructor enforces:
+
+* allowed charset
+* max length bounds
+* canonical formatting rules
+
+**Output:**
+
+* `SecurityContext { user, role, security_type, mls_level? }`
+* plus `raw` preserved for provenance / fallback display
+
+This is the point where “bytes become meaning.”
+
+### 8) Optional vernacular translation (setrans lattice)
+
+This is **not** part of “what is the security context,” strictly.
+It is a *human* mapping layer.
+
+Flow:
+
+`MlsLevel.categories (CategorySet) → SecurityRange(degenerate) → Translator.lookup → marking string`
+
+Properties:
+
+* O(log n) map lookup (BTreeMap) or O(1) if later hashed
+* category order normalization is irrelevant because `CategorySet` is the key truth
+
+Fallback:
+
+* if no mapping exists → show `lvl.raw()` (never hide state)
+
+### 9) Emit audit record / return struct
+
+Now you can safely return a typed object and/or generate an audit record that includes:
+
+* inode key: `(st_dev, st_ino)`
+* raw label string
+* parsed typed components
+* verification status (TPI verified / restricted / unlabeled / unsupported)
+* optional translated marking
+
+---
+
+## Diagram-friendly layered view
+
+Here’s a compact “stack” diagram you can paste into docs:
+
+```
+[Path String] (untrusted)
+    |
+    v
+open/openat (O_NOFOLLOW? O_CLOEXEC)  --->  [FD] (inode-anchored identity)
+    |
+    v
+fstat(fd) -> (st_dev, st_ino, st_mode)      (provenance key)
+    |
+    v
+fgetxattr(fd, "security.selinux") -> [raw bytes]
+    |
+    v
+normalize bytes -> [canonical raw string] + [raw provenance copy]
+    |
+    v
+TPI Gate:
+  - Path A: nom grammar parse
+  - Path B: split/validate parse
+  -> must match
+    |
+    v
+Strongly-typed primitives:
+  SelinuxUser, SelinuxRole, SelinuxType, MlsLevel(Sensitivity, CategorySet)
+    |
+    v
+SecurityContext { ... } (verified)
+    |
+    +--> optional: Translator(CategorySet)->Marking (setrans)
+```
+
+---
+
+## What “most secure” means in concrete implementation choices
+
+If you want the *highest* assurance posture, your implementation should also:
+
+* Prefer `openat(dirfd, name, ...)` while iterating a directory stream (you already do this pattern conceptually).
+* Use `O_NOFOLLOW` to avoid symlink substitution.
+* Use `O_PATH` if you only need metadata/xattrs and want minimal rights.
+* Never shell out to `ls -Z` or other commands for “truth.”
+* Treat xattr bytes as untrusted input:
+
+  * max size bound
+  * strict charset policy
+  * strict parsing
+* Preserve provenance:
+
+  * raw bytes/strings for audit and debugging
+  * inode key for correlation
+
+---
+
+## Next: what you meant by “explain to me in detail:”
+
+You stopped mid-sentence 🙂 — but I can continue in whatever format you want. Common follow-ons are:
+
+1. A precise explanation of **what the kernel stores** in `security.selinux` and who sets it (SELinux policy/labeling).
+2. A specific breakdown of **failure states**: unlabeled vs restricted vs unsupported vs denied.
+3. A “TOCTOU attack story” showing why FD-based approach wins.
+4. A pseudo-code / Rust outline that mirrors your `SecureXattrReader` + TPI parser flow.
+
+Tell me which of those you want next, and I’ll stick to that format.
+

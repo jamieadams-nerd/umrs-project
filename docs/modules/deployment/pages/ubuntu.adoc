@@ -1,0 +1,14 @@
+= Ubuntu Deployment
+:description: Deploying UMRS on Ubuntu — placeholder.
+
+// NOTE: Ubuntu support is planned but not yet documented.
+
+Ubuntu deployment will follow the same general baseline as
+xref:linux-baseline.adoc[Platform Baseline], with Ubuntu-specific
+package management and SELinux configuration.
+
+// TBD: Confirm target Ubuntu version (24.04 LTS?)
+// TBD: SELinux on Ubuntu — install selinux-basics or ship a policy module?
+// TBD: AppArmor interaction — disable or coexist?
+// TBD: Package names (apt equivalents for mcstrans, rust-toolset, etc.)
+// TBD: mcstrans availability on Ubuntu

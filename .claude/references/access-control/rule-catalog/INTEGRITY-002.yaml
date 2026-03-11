@@ -1,0 +1,7 @@
+id: INTEGRITY-002
+title: Biba Star Integrity Property
+rule: A subject may not write data to a higher integrity level (no write up).
+model: Biba
+category: integrity
+references:
+  - biba-1977.pdf

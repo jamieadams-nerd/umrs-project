@@ -1,0 +1,9 @@
+############################################
+# UMRS Core filesystem custody
+############################################
+
+/usr/share/umrs(/.*)?   system_u:object_r:umrs_config_ro_t:s0
+/etc/umrs(/.*)?         system_u:object_r:umrs_config_ro_t:s0
+/var/lib/umrs(/.*)?     system_u:object_r:umrs_data_ro_t:s0
+/var/log/umrs(/.*)?     system_u:object_r:umrs_log_ro_t:s0
+/var/www/umrs(/.*)?     system_u:object_r:umrs_httpd_t:s0

@@ -1,0 +1,43 @@
+= umrs-state(1)
+:doctype: manpage
+:manmanual: UMRS Commands
+:mansource: UMRS
+:man-linkstyle: pass:[blue R < >]
+
+== Name
+umrs-state - read and update cached UMRS system state
+
+== Synopsis
+umrs-state [–help]  [options]
+
+== Description
+umrs-state manages a cached system-state summary for the UMRS reference workstation.
+The cache includes timestamps and metadata so operators can see staleness explicitly.
+
+== Commands
+get::
+Read cached values only. No live probing.
+
+update::
+Probe live system state and refresh cached entries.
+
+verify::
+Compare cached vs live values without modifying the cache.
+
+== Options
+–state-file ::
+Path to the UMRS state file (default: /var/lib/umrs/umrs-state.json).
+
+–format <text|json>::
+Output format (default: text).
+
+== Exit Status
+0:: success
+1:: failure
+2:: invalid usage
+
+== Files
+/var/lib/umrs/umrs-state.json:: cached state summary (if enabled)
+
+== See Also
+umrs-verify(1)

@@ -1,0 +1,5 @@
+= Administration
+:description: Installation, configuration, key management, and user setup.
+
+This module covers installing and configuring UMRS, managing cryptographic keys,
+and setting up SELinux users and roles.

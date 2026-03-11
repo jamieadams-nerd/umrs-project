@@ -1,0 +1,41 @@
+# ––––––––––––––––––––––––––––––––––
+# FILE: .gitignore
+# ––––––––––––––––––––––––––––––––––
+# UMRS docs build outputs
+/site/
+/dist/
+/build/site/
+/build-tools/antora/node_modules/
+
+# Node / Antora (optional)
+/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor / OS noise
+.DS_Store
+.swp
+.swo
+._*
+
+# Rust work
+target/
+
+src/umrs-rust/target/
+
+
+# RAG pipeline — generated, never commit
+.claude/rag/chroma/
+.claude/rag/converted/
+.claude/rag/manifest.json
+.claude/rag/ingest.log
+
+# Claude local settings — machine specific
+.claude/settings.local.json
+
+# FUSE filesystem artifacts (Parallels shared folder)
+.fuse_hidden*
+
+

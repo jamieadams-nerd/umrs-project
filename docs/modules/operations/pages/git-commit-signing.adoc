@@ -1,0 +1,101 @@
+= Signing Git Commits
+:toc: left
+:description: How digitally signing Git commits satisfies NIST integrity and supply-chain requirements.
+
+Digitally signing Git commits provides cryptographic assurance of the authenticity,
+integrity, and provenance of source code. It directly supports NIST 800-53 SI-7,
+SI-7(1), CM-5(3), and related requirements in NIST 800-171, 800-172, 800-161,
+and 800-160 for trusted software development and supply-chain integrity.
+
+== Security Control Mappings
+
+The following sections map Git commit signing to applicable security controls.
+
+=== NIST SP 800-53
+
+`SI-7: Software, Firmware, and Information Integrity`::
+Git commit signing directly supports this control because it ensures:
+* The source code has not been altered without detection.
+* The origin of commits can be authenticated.
+* Unauthorized modifications can be detected early.
+
+`SI-7(1): Integrity Checks — Cryptographic`::
+One of the strongest control mappings. This enhancement explicitly calls for
+cryptographic integrity mechanisms, which includes digital signatures, signed
+metadata, and tamper-evident records.
+
+`CM-5(3): Access Restrictions for Change — Signed Components`::
+Signing Git commits is exactly this. This enhancement requires cryptographically
+verifying changes before they are accepted as legitimate. A software development
+team that requires commit signing and rejects unsigned commits is implementing CM-5(3).
+
+`CM-3 and CM-6 (Configuration Change Control / Baseline Integrity)`::
+Git commit signing helps ensure:
+* Only authorized individuals submit code.
+* Changes are traceable and attributable.
+* Malicious or mistaken alterations cannot slip in unnoticed.
+
+=== NIST SP 800-171 (Protecting CUI in Non-Federal Systems)
+
+`3.4.8 — Prevent unauthorized modification of software`::
+Signing commits ensures only authenticated developers can push changes.
+
+`3.13.8 — Verify integrity of software before installation or execution`::
+Software must have known-good provenance. Signed commits provide verifiable
+provenance at the development stage.
+
+=== NIST SP 800-172 (Enhanced Requirements for High-Value Assets)
+
+This use case fits 800-172 well. That publication emphasizes:
+
+* Cryptographically authenticated development workflows.
+* Strong provenance assurance.
+* Tamper-evident build pipelines.
+
+Signed Git commits directly satisfy:
+
+* "Integrity protection of code throughout the development lifecycle."
+* "Verification of the identity of code contributors."
+
+=== NIST SP 800-160 Vol. 1 (Systems Security Engineering)
+
+This publication is foundational to high-assurance engineering. Commit signing
+supports the engineering principles of:
+
+* Evidence-based trustworthiness.
+* Provenance of components.
+* Secure development practices.
+* Traceability and accountability.
+
+=== NIST SP 800-161 (Supply Chain Risk Management)
+
+Digitally signing Git commits satisfies portions of:
+
+* Ensuring authenticity of source code.
+* Providing traceability of contributions.
+* Detecting unauthorized insertion of malicious code.
+* Assurance of development artifacts used downstream.
+
+=== NIST SP 800-193 (Firmware/Platform Integrity)
+
+While focused on firmware, 800-193 establishes the broader pattern that:
+
+* Software artifacts must be signed.
+* Only authenticated updates are trusted.
+* Cryptographic provenance is required.
+
+Commit signing is a natural extension of that integrity chain upstream in the
+software lifecycle.
+
+== Summary: What NIST Expects and How Git Signing Meets It
+
+NIST does not require "sign Git commits specifically," but NIST consistently requires:
+
+* Cryptographic integrity mechanisms.
+* Authenticity of developers and contributors.
+* Protection against unauthorized modification.
+* Traceability of changes.
+* Trusted supply chain.
+* Verification of provenance.
+
+Digitally signing Git commits provides all of these in a strong, easily auditable way.

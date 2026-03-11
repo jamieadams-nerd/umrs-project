@@ -1,0 +1,6 @@
+id: AC-003
+title: Separation of Duties
+rule: Critical operations should require multiple independent parties to complete.
+category: principle
+references:
+  - https://csrc.nist.gov/glossary/term/separation_of_duty

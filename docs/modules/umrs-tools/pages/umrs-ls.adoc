@@ -1,0 +1,586 @@
+= umrs-ls — High-Assurance Directory Listing
+Jamie L. Adams
+:description: Reference page for the umrs-ls directory listing tool — inode-anchored, \
+    SELinux-aware, grouped by security label.
+:toc: left
+:toclevels: 3
+
+// NIST SP 800-53 AC-3, AC-4, AU-3, SC-28, SI-7
+// NSA RTB Non-Bypassability (RAIN), TOCTOU safety
+
+== Purpose and Scope
+
+`umrs-ls` lists the contents of a directory and groups entries by their
+SELinux type and security marking.
+It is designed for operators and auditors who need to verify the security
+posture of filesystem objects — not just see their names.
+
+The key distinction from `/bin/ls -Z` is *how the security label is obtained*.
+Standard `ls` uses `lstat`, a path-based syscall that asks the kernel to look
+up metadata by filename string.
+`umrs-ls` attempts to `open()` each object and anchors all subsequent
+metadata reads — including the SELinux xattr — to that single file descriptor.
+
+This inode-anchored approach is described in detail in the
+<<restricted-vs-unlabeled>> and <<threat-model>> sections below.
+
+*Primary audiences:*
+
+* *Operators* — reviewing the label distribution of a directory after policy
+  changes or system updates.
+* *Security auditors* — verifying that objects carry expected labels and that
+  access-denied entries are visible and explained, not silently omitted.
+
+'''
+
+== Usage
+
+[source,shell]
+----
+umrs-ls [PATH] [--color] [--no-iov] [--no-mtime] [--with-size] [--with-inode]
+----
+
+`PATH` is optional.
+When omitted, the current directory is listed.
+Flags may appear in any order relative to `PATH`.
+
+.Flag reference
+[cols="1,3", options="header"]
+|===
+| Flag | Effect
+
+| `--color`
+| Enable ANSI 24-bit true-color output.
+  Group headers use secolor.conf palette when available.
+  Off by default.
+
+| `--no-iov`
+| Suppress the IOV security-posture column.
+
+| `--no-mtime`
+| Suppress the modification-time column.
+
+| `--with-size`
+| Add a file-size column in human-readable binary units (KiB, MiB, GiB).
+  Off by default.
+
+| `--with-inode`
+| Add an inode-number column.
+  Off by default.
+|===
+
+NOTE: `--color` reads `/etc/selinux/targeted/secolor.conf` to assign
+per-label colors to group headers.
+If that file is absent or unreadable, color falls back gracefully to
+bold/underline formatting.
+No error is emitted.
+
+'''
+
+== Column Reference
+
+SELinux type and security marking appear in the group separator header above
+each block of entries.
+They are not repeated on every row.
+
+.Active columns by default
+[cols="1,1,4", options="header"]
+|===
+| Column | Default | Description
+
+| `MODE`
+| On
+| 10-character permission string: file-type character followed by nine
+  permission bits (e.g., `drwxr-xr-x`).
+  A `+` suffix indicates a POSIX ACL is present on the inode.
+
+| `IOV`
+| On
+| 3-character security-posture marker.
+  `I` = immutable flag set; `O` = security observations present;
+  `V` = IMA measurement present.
+  See <<iov-marker>> for detail.
+
+| `SELINUX TYPE`
+| Group header only
+| The SELinux type component of the security context, e.g., `bin_t`,
+  `httpd_t`, `<unlabeled>`, `<restricted>`.
+
+| `MARKING`
+| Group header only
+| The setrans-translated sensitivity/category string when `mcstransd` is
+  running, or the raw level string otherwise.
+  E.g., `CUI//LEI/INV`, `s0`, `<no-level>`, `<restricted>`.
+
+| `OWNER:GROUP`
+| On
+| Resolved user and group names.
+  Falls back to numeric uid/gid when name resolution fails.
+
+| `SIZE`
+| Off
+| File size in binary units (KiB, MiB, GiB).
+  Right-justified.
+  Enable with `--with-size`.
+
+| `MODIFIED`
+| On
+| Modification time in `YYYY-MM-DD HH:MM` format, local timezone.
+  Suppress with `--no-mtime`.
+
+| `INODE`
+| Off
+| Inode number.
+  Enable with `--with-inode`.
+
+| `NAME`
+| On (always last)
+| Filename.
+  Directories receive a trailing `/`.
+  Executables receive a trailing `*`.
+  A 3-character icon zone precedes each filename.
+  Only one icon appears per entry, selected by priority:
+
+  * `🔒` — encrypted mount point (LUKS dm-crypt confirmed)
+  * `⊕` — plain mount point (not encrypted, or encryption not confirmed)
+  * `📁` — ordinary (non-mount) directory
+  * (three spaces) — regular file, symlink, device node, or other entry
+
+  Encryption detection reads `/proc/mounts` and `/sys/block/` through
+  provenance-verified readers.
+  The lock icon appears only when the backing device is confirmed as encrypted.
+  See <<encryption-icon>> for detail.
+|===
+
+'''
+
+[#iov-marker]
+== IOV Security-Posture Marker
+
+The `IOV` column is a 3-character fixed-width field.
+Each character is either the letter (active) or a dash (inactive).
+When `--color` is on, active characters are highlighted.
+
+[cols="1,1,4", options="header"]
+|===
+| Position | Letter | Meaning
+
+| I
+| Immutable
+| The `FS_IMMUTABLE_FL` inode flag is set.
+  The file cannot be modified, renamed, or deleted even by root until the
+  flag is cleared.
+  Read via `ioctl(FSGETXATTR)` through the open fd.
+
+| O
+| Observations
+| One or more security observations are present on this entry.
+  Not all observations light up `O` — only high-signal findings.
+  See the list below.
+
+| V
+| IMA
+| An IMA (Integrity Measurement Architecture) xattr is present on the inode,
+  indicating the file is under measurement or appraisal.
+  Read via `fgetxattr(fd, "security.ima")` through the open fd.
+|===
+
+=== What lights up O
+
+The `O` indicator fires when any `SecurityObservation` on the entry has
+`kind() == ObservationKind::Risk`.
+This determination is made by the observation itself — there is no separate
+hand-maintained blocklist in the display layer.
+Adding a new `Risk`-classified observation to the codebase automatically
+causes it to light up `O`, with no change required in `umrs-ls`.
+
+The observations currently classified as `Risk` are:
+
+* `WorldWritable` — world-writable permission on a non-symlink object.
+  Any user can modify the file or directory.
+  (NIST 800-53 AC-3)
+* `NoSelinuxContext` — the file is genuinely unlabeled (open succeeded but
+  no `security.selinux` xattr was found).
+  On an MLS system, MAC cannot be enforced on an unlabeled object.
+  This is distinct from `<restricted>`, where the label exists but is
+  unverifiable.
+  (NIST 800-53 AC-4)
+* `SetuidWritable` — a setuid binary is also group- or world-writable.
+  This is a direct privilege escalation vector: an attacker who can write
+  to the file can replace it before the setuid execution occurs.
+  Owner-write on a setuid file does not fire this observation.
+  (NIST 800-53 CM-6)
+
+Observations classified as `Warning` — including `SetuidBitSet`,
+`SetgidBitSet`, `HardLinked`, `RootOwnedMutable`, `UnresolvedOwner`,
+`UnresolvedGroup`, and `AccessDenied` — do not light up `O`.
+These conditions are common on system binaries and tightened deployments
+and warrant awareness, not immediate alarm.
+
+Observations classified as `Good` — including `ImaHashPresent` and
+`ImmutableFlagSet` — represent positive security signals.
+They do not fire `O`.
+The `I` and `V` columns surface the most actionable of these: immutable
+flag and IMA measurement status respectively.
+
+The full observation set for every entry — including all `Warning` and
+`Good` findings — is available in the forthcoming `umrs-stat` command,
+which reports per-object detail.
+
+IMPORTANT: When `O` is lit on an entry, investigate before concluding the
+listing is clean.
+`O` represents a `Risk`-class finding with direct security relevance —
+not a stylistic advisory.
+
+'''
+
+[#encryption-icon]
+== Encryption Icon
+
+=== Purpose
+
+The encryption icon surfaces at-rest encryption posture per mount point.
+Its presence confirms that the filesystem backing the entry is encrypted at
+the block-device level.
+Its absence on a mount point is a potential gap indicator — not a guarantee
+of no encryption.
+
+=== When the icon appears
+
+The lock icon (`🔒`) appears only on directory entries that are filesystem
+mount points *and* for which the tool has confirmed an encrypted backing
+device.
+It does not appear on files within an encrypted mount — only on the mount
+point entry itself in a listing of its parent directory.
+
+A listing of `/mnt/` that shows `🔒` on `test-luks/` tells you that the
+filesystem mounted there is backed by an encrypted block device.
+A listing of `/mnt/test-luks/` shows the files inside the mount; none of
+them receive the lock icon.
+
+=== Detection mechanism
+
+Encryption detection is implemented in `umrs_selinux::fs_encrypt`.
+The logic proceeds in two steps:
+
+. *Mount lookup* — `/proc/mounts` is parsed via the provenance-verified
+  `ProcfsText` reader to find the device backing the mount point in question.
+  A raw `File::open` on `/proc/mounts` is not used; the reader validates
+  filesystem magic before reading.
+
+. *Device-mapper check* — if the backing device is a device-mapper device
+  (path under `/dev/mapper/`), the tool reads `/sys/block/<dev>/dm/uuid`
+  and `/sys/block/<dev>/dm/type` via the `SysfsText` reader to detect LUKS
+  signatures.
+
+The function returns one of three `EncryptionSource` variants:
+`None`, `LuksDevice`, or `EncryptedFilesystem(String)`.
+`SecureDirent::has_encryption()` returns `true` for anything other than
+`None`, and the display layer calls this method to choose the icon.
+
+=== Scope and limitations
+
+The tool currently detects LUKS dm-crypt volumes via sysfs device-mapper
+attributes.
+The following encryption mechanisms are *not* currently detected and return
+`EncryptionSource::None`:
+
+* `fscrypt` (filesystem-level encryption, used by ext4 and f2fs)
+* eCryptfs stacked filesystem encryption
+* Hardware full-disk encryption (self-encrypting drives, TCG Opal)
+* Network-attached or hypervisor-managed encryption
+
+The absence of the lock icon on a mount point does not mean the data is
+unencrypted.
+It means the tool could not confirm encryption through the device-mapper
+inspection path.
+Auditors should not treat a missing icon as a positive assertion.
+
+=== Icon zone states
+
+The 3-character icon zone at the start of the `NAME` column always contains
+exactly one of the following, selected by priority:
+
+[cols="1,4", options="header"]
+|===
+| Icon | Condition
+
+| `🔒`
+| Mount point with a confirmed LUKS dm-crypt encrypted backing device.
+
+| `⊕`
+| Mount point where encryption is absent or could not be confirmed.
+
+| `📁`
+| Ordinary directory that is not a mount point.
+
+| (spaces)
+| Regular file, symbolic link, device node, or any other non-directory entry.
+|===
+
+The icon characters are Unicode codepoints, not ANSI color codes.
+They appear regardless of whether `--color` is specified.
+
+'''
+
+[#restricted-vs-unlabeled]
+== restricted vs unlabeled
+
+=== The distinction
+
+`umrs-ls` uses two special group labels for objects whose security context
+cannot be fully verified.
+They are not interchangeable.
+
+`<restricted>`::
+`open()` was *denied* — either by DAC permissions (e.g., `0700`, `0600`)
+or by a MAC policy decision.
+Because no file descriptor could be established, `fgetxattr` cannot be
+called.
+The security label at the inode level is *unverifiable* for the current
+subject.
+The tool records what it can see from the directory stream — the name,
+and nothing more.
+
+`<unlabeled>`::
+`open()` *succeeded* and a valid file descriptor was obtained, but
+`fgetxattr(fd, "security.selinux")` returned `ENODATA`.
+The object is genuinely not labeled.
+This can occur on filesystems without SELinux xattr support, or on objects
+that were created outside SELinux policy.
+
+=== Why this matters
+
+Standard `ls -Z` uses `lstat`, a path-based syscall.
+`lstat` asks the kernel: "what is the label for the file at this path?"
+The kernel looks up the path and returns a label string.
+The calling process never establishes a file-descriptor relationship with
+the object.
+
+IMPORTANT: `ls -Z` can show a label for an object that the current subject
+cannot open.
+The label is what the kernel *claims* is there.
+It is not verified through direct fd access to the inode.
+A TOCTOU race — a symlink swap or rename between the `lstat` call and any
+subsequent operation — can cause the path and the inode to diverge.
+
+`umrs-ls` does not trust the path string.
+It attempts to `open()` each object to anchor to the physical inode.
+If `open()` is denied, the label is unknown at the inode level.
+The entry is marked `<restricted>` to make the gap visible.
+
+=== The auditor framing
+
+When `umrs-ls` reports `<restricted>` and `/bin/ls -Z` reports a label,
+this is not a discrepancy between two tools.
+It is a *verification gap* made explicit.
+
+`/bin/ls -Z` shows a *claimed label* based on path lookup.
+
+`umrs-ls` reports `<restricted>` because it cannot establish a *verified
+chain of custody* to the inode.
+The label may be accurate.
+It may also not be.
+The tool cannot determine which is true, so it does not pretend to know.
+
+[quote]
+____
+Standard ls asks the kernel for a report based on a filename.
+UMRS attempts to establish a secure chain of custody by opening the file
+handle.
+If the kernel denies the open, the label cannot be verified at the inode
+level.
+We mark it restricted to signal that a gap exists between directory
+visibility and security metadata access.
+____
+
+This behavior follows the NSA RTB Non-Bypassability principle (RAIN):
+a security check that can be bypassed by withholding a file descriptor
+is not a check.
+`umrs-ls` fails visibly rather than returning unverified data.
+
+.Example output showing the restricted/unlabeled distinction
+[source,text]
+----
+  MODE        IOV  OWNER:GROUP    MODIFIED             NAME
+====================================================================================================
+
+== <restricted> :: <restricted> ============================================================
+  drwx------  ---  root:root      2025-10-14 20:00     aide/
+  drwx------  ---  root:root      2026-02-09 21:34  ⊕  audit/
+  drwxr-x---  ---  chrony:chrony  2025-11-19 19:00     chrony/
+
+== var_log_t :: s0 ==========================================================================
+  drwxr-xr-x  ---  root:root      2025-12-08 00:09     anaconda/
+  drwxr-xr-x  ---  root:root      2026-01-14 11:22     httpd/
+
+== <unlabeled> :: <no-level> ================================================================
+  -rw-r--r--  ---  root:root      2025-09-01 08:00     legacy-import.log
+----
+
+The `aide/` and `audit/` directories are labeled in `/bin/ls -Z` output.
+In `umrs-ls` they appear under `<restricted>` because their MAC labels
+(`aide_log_t`, `auditd_log_t`) prevent the current subject from opening
+them.
+The tool sees the names from `readdir`; it cannot reach the inodes.
+
+The `legacy-import.log` entry is genuinely unlabeled — `open()` succeeded,
+but no `security.selinux` xattr was found on the inode.
+
+'''
+
+== Relationship to the dirlist Data Layer
+
+`umrs-ls` is the display layer.
+It does not perform any filesystem operations or security decisions directly.
+
+The architecture follows the UMRS layered separation rule:
+
+----
+umrs-ls (display)
+  └── umrs_selinux::utils::dirlist::list_directory()  (data collection)
+        └── umrs_selinux::secure_dirent::SecureDirent::from_path()  (per-entry I/O)
+----
+
+`list_directory()` returns a `DirListing` struct — a structured, owned
+value containing groups, entries, timing, and access-denied records.
+It contains no display logic, no ANSI codes, and no formatted strings.
+
+`umrs-ls` consumes `DirListing` and handles all rendering decisions:
+column selection, color output, header format, mount-point icons, and the
+access-denied footer.
+
+This separation means the same `DirListing` data can be consumed by a
+different frontend — a TUI, a GUI, or a structured report — without
+touching the data layer.
+The security properties (TOCTOU safety, fail-closed on access denial,
+single lock acquisition per entry) are enforced in the data layer
+regardless of which frontend is used.
+
+=== GroupKey and the restricted sentinel
+
+`list_directory()` calls `extract_group_key()` on each `SecureDirent`.
+The group key logic implements the `<restricted>` / `<unlabeled>` distinction:
+
+* If `SecureDirent.access_denied` is `true`, the entry is placed in a group
+  keyed `("<restricted>", "<restricted>")`.
+* If `SecureDirent.selinux_ctx` is `None` but `access_denied` is `false`,
+  the type field is `"<unlabeled>"` and the marking is `"<no-level>"`.
+* Otherwise, the type and marking are derived from the verified security context.
+
+The `<restricted>` sentinel is not a display convention.
+It is a data value set by the collection layer and passed through to the
+display layer unchanged.
+
+'''
+
+[#threat-model]
+== Threat Model
+
+=== What an adversary gains from path-based label lookup
+
+When a tool uses `lstat` or `getxattr` with a path string:
+
+. The kernel resolves the path at the moment of the call.
+. A symlink, bind-mount, or rename in the same directory can redirect that
+  resolution to a different inode between calls.
+. A privileged or malicious process can substitute a differently-labeled
+  object at the path between the label check and any subsequent access decision.
+
+The result: the tool reports a label for an object it never directly accessed.
+A security decision based on that label is based on unverified data.
+
+This is a TOCTOU (Time-of-Check/Time-of-Use) attack.
+It is not theoretical — it is an established class of filesystem race
+condition that has been exploited in real privilege escalation scenarios.
+
+=== How inode-anchoring closes the gap
+
+`umrs-ls` does not trust paths for security metadata.
+It calls `open()` to establish a file descriptor anchored to the physical
+inode.
+All subsequent reads — `fgetxattr(fd, "security.selinux")`,
+`ioctl(fd, FSGETXATTR)` — operate through that descriptor.
+
+If the path is redirected after `open()` returns, the file descriptor still
+points to the original inode.
+The label read through the fd is the label of the object that was actually
+opened.
+
+When `open()` is denied, the inode is unreachable.
+The tool records the entry as `<restricted>` and moves on.
+It does not fall back to `lstat` to fill in a label.
+It does not silently succeed with unverified data.
+Failing visibly is the correct behavior.
+
+=== Scope of protection
+
+`umrs-ls` protects the *label-read operation* from TOCTOU substitution.
+It does not prevent an adversary from modifying a file's label after the
+listing completes.
+For continuous integrity assurance, combine `umrs-ls` with IMA measurement
+(visible in the `V` column) and periodic re-listing.
+
+'''
+
+== NIST and NSA RTB Control Mappings
+
+[cols="1,1,4", options="header"]
+|===
+| Control | Framework | How umrs-ls satisfies it
+
+| AC-3
+| NIST SP 800-53
+| Access enforcement is reflected per entry.
+  Entries where access was denied by DAC or MAC appear in the `<restricted>`
+  group — visible to the operator, not silently dropped.
+
+| AC-4
+| NIST SP 800-53
+| Information-flow labels (SELinux type and sensitivity/category marking)
+  drive the grouping structure.
+  Every entry is associated with its verified label, or explicitly marked
+  `<restricted>` when the label cannot be verified.
+
+| AU-3
+| NIST SP 800-53
+| Each row captures sufficient fields for an audit record: mode, ownership,
+  modification time, inode (optional), and security marking.
+  The `<restricted>` sentinel itself is an audit observation — it records
+  that a gap exists between directory visibility and inode access.
+
+| SI-7
+| NIST SP 800-53
+| IMA xattr presence is reported in the `V` column.
+  Immutable flag status is reported in the `I` column.
+  Both are read through the open file descriptor, not inferred from path
+  metadata.
+
+| Non-Bypassability (RAIN)
+| NSA RTB
+| Label verification cannot be bypassed by the display layer.
+  The `<restricted>` sentinel is set in the data layer (`extract_group_key`)
+  and is not overrideable by a display option.
+  No flag exists to suppress `<restricted>` entries or substitute a
+  path-derived label.
+
+| TOCTOU Safety
+| NSA RTB
+| All per-file metadata reads are anchored to a single `open()` call.
+  `fgetxattr`, `ioctl_getflags`, and `fstat` all operate through the
+  resulting file descriptor.
+  Path is not re-resolved after the initial open.
+  See `SecureDirent::from_path()` and `SecureXattrReader::read_raw()` in
+  the `umrs-selinux` crate.
+
+| SC-28
+| NIST SP 800-53
+| Encryption posture per mount point is surfaced in the `NAME` column icon
+  zone.
+  Mount points backed by a confirmed LUKS dm-crypt volume are marked with a
+  lock icon (`🔒`).
+  Plain or unverified mount points receive the `⊕` icon.
+  Absence of the lock icon is a gap indicator — the tool could not confirm
+  encryption — not a guarantee that the data is unencrypted.
+  See <<encryption-icon>> for the full detection scope and limitations.
+|===

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page xmlns="http://projectmallard.org/1.0/"
+      type="topic"
+      id="concept-iov">
+  <info>
+    <link type="guide" xref="index" group="iov"/>
+    <desc>What the I, O, and V indicators mean and when they activate.</desc>
+  </info>
+
+  <title>The IOV Security-Posture Marker</title>
+
+  <p>
+    The <code>IOV</code> column is a 3-character fixed-width field that summarizes the
+    security posture of each filesystem object. Each character is either the active
+    letter or a dash when not active.
+  </p>
+
+  <terms>
+    <item>
+      <title><code>I</code> — Immutable</title>
+      <p>
+        The <sys>FS_IMMUTABLE_FL</sys> inode flag is set. The file cannot be modified,
+        renamed, or deleted — even by root — until the flag is explicitly cleared.
+        This flag is read via <sys>ioctl(FSGETXATTR)</sys> through the open file descriptor,
+        not inferred from path metadata.
+      </p>
+    </item>
+    <item>
+      <title><code>O</code> — Observations</title>
+      <p>
+        One or more high-signal security observations are present on this entry.
+        When <code>O</code> is lit, do not dismiss it as routine — it has been filtered
+        to show only findings with direct security relevance.
+      </p>
+      <p>Observations that light up <code>O</code>:</p>
+      <list>
+        <item><p><code>SetuidBitSet</code> — the setuid bit is set on the file.</p></item>
+        <item><p><code>SetgidBitSet</code> — the setgid bit is set on the file.</p></item>
+        <item><p><code>WorldWritable</code> — world-writable permission on the object.</p></item>
+        <item><p><code>HardLinked</code> — inode hard-link count greater than one.</p></item>
+        <item><p><code>AccessDenied</code> — <sys>open()</sys> was refused; entry appears as <code>&lt;restricted&gt;</code>.</p></item>
+      </list>
+      <p>
+        The following observations are suppressed in the <code>IOV</code> posture view
+        because they fire on nearly every entry in a normal RHEL system and would
+        produce constant noise:
+      </p>
+      <list>
+        <item><p><code>UnresolvedOwner</code> / <code>UnresolvedGroup</code> — lazy name resolution by design; unresolved does not mean orphaned.</p></item>
+        <item><p><code>NoImaProtection</code> — fires for every regular file when IMA is not deployed systemwide.</p></item>
+        <item><p><code>NoSelinuxContext</code> — already expressed by the <code>&lt;unlabeled&gt;</code> group header.</p></item>
+        <item><p><code>RootOwnedMutable</code> — applies to most system files; too broad for a listing view.</p></item>
+      </list>
+      <p>
+        The full set of observations is available in the forthcoming <cmd>umrs-stat</cmd>
+        command, which reports per-object detail.
+      </p>
+    </item>
+    <item>
+      <title><code>V</code> — IMA</title>
+      <p>
+        An IMA (Integrity Measurement Architecture) xattr (<sys>security.ima</sys>) is
+        present on the inode, indicating the file is under measurement or appraisal.
+        The xattr is read via <sys>fgetxattr(fd, "security.ima")</sys> through the open
+        file descriptor.
+      </p>
+    </item>
+  </terms>
+
+  <note style="tip">
+    <p>
+      When <cmd>--color</cmd> is active, the <code>I</code>, <code>O</code>, and
+      <code>V</code> characters are highlighted in distinct colors to draw attention
+      to active indicators. Inactive dashes are dimmed.
+    </p>
+  </note>
+</page>

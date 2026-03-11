@@ -1,0 +1,167 @@
+= umrs-ls(1)
+:doctype: manpage
+:manmanual: UMRS Commands
+:mansource: UMRS
+:man-linkstyle: pass:[blue R < >]
+
+== Name
+
+umrs-ls - inode-anchored, SELinux-aware directory listing grouped by security label
+
+== Synopsis
+
+umrs-ls [PATH] [--color] [--no-iov] [--no-mtime] [--with-size] [--with-inode]
+
+== Description
+
+umrs-ls lists the contents of a directory and groups entries by their SELinux type
+and security marking (sensitivity/category label).
+It is designed for operators and security auditors who need to verify the security
+posture of filesystem objects — not just see their names.
+
+The key distinction from `/bin/ls -Z` is how the security label is obtained.
+Standard `ls` uses `lstat`, a path-based syscall that asks the kernel for a label
+by filename string, without establishing a file-descriptor relationship with the object.
+umrs-ls attempts to `open()` each object and anchors all subsequent metadata reads —
+including the SELinux xattr — to that single file descriptor.
+If `open()` is denied, the entry is recorded as `<restricted>` rather than silently
+returning a path-derived label that cannot be verified at the inode level.
+
+PATH is optional; when omitted, the current directory is listed.
+Flags may appear in any order relative to PATH.
+
+== Options
+
+--color::
+Enable ANSI 24-bit true-color output.
+Group headers use the secolor.conf palette when available.
+Color is off by default.
+
+--no-iov::
+Suppress the IOV 3-character security-posture column.
+
+--no-mtime::
+Suppress the modification-time column.
+
+--with-size::
+Add a file-size column displaying sizes in human-readable binary units
+(B, KiB, MiB, GiB).
+Values are right-justified within the column.
+Off by default.
+
+--with-inode::
+Add a raw inode-number column.
+Off by default.
+
+== Columns
+
+=== MODE
+
+10-character permission string: a file-type character followed by nine permission bits
+(e.g., `drwxr-xr-x`).
+A `+` suffix indicates a POSIX ACL is present on the inode.
+See ls(1) for standard permission bit interpretation.
+
+=== IOV
+
+3-character fixed-width security-posture marker.
+Each position is either the active letter or a dash when inactive.
+When --color is on, active characters are highlighted.
+
+I;;
+`FS_IMMUTABLE_FL` inode flag is set.
+The file cannot be modified, renamed, or deleted — even by root — until the flag
+is cleared.
+Read via `ioctl(FSGETXATTR)` through the open file descriptor.
+
+O;;
+One or more high-signal security observations are present on this entry.
+Fires for: `SetuidBitSet`, `SetgidBitSet`, `WorldWritable`, `HardLinked`, `AccessDenied`.
+High-noise observations (`UnresolvedOwner`, `UnresolvedGroup`, `NoImaProtection`,
+`NoSelinuxContext`, `RootOwnedMutable`) are suppressed in this view to reduce false
+positives on normal RHEL systems.
+
+V;;
+An IMA (Integrity Measurement Architecture) xattr (`security.ima`) is present on the
+inode, indicating the file is under measurement or appraisal.
+Read via `fgetxattr(fd, "security.ima")` through the open file descriptor.
+
+=== SELINUX TYPE and MARKING
+
+These fields appear only in the group separator header above each block of entries,
+not on individual rows.
+
+SELINUX TYPE is the type component of the verified security context (e.g., `bin_t`,
+`httpd_t`, `<unlabeled>`, `<restricted>`).
+
+MARKING is the setrans-translated sensitivity/category string when `mcstransd` is
+running, or the raw level string otherwise (e.g., `CUI//LEI/INV`, `s0`, `<no-level>`,
+`<restricted>`).
+
+=== OWNER:GROUP
+
+Resolved user and group names.
+Falls back to numeric uid/gid when name resolution fails.
+
+=== SIZE
+
+File size in human-readable binary units (B, KiB, MiB, GiB).
+Right-justified within the column width.
+Off by default; enable with --with-size.
+
+=== MODIFIED
+
+Modification time in `YYYY-MM-DD HH:MM` format, local timezone.
+Off by default; suppress with --no-mtime.
+
+=== INODE
+
+Raw inode number.
+Off by default; enable with --with-inode.
+
+=== NAME
+
+Filename.
+Directories receive a trailing `/`.
+Executables receive a trailing `*`.
+Ordinary mount points are prefixed with `⊕`.
+Encrypted mount points (ecryptfs, gocryptfs, etc.) are prefixed with a lock symbol.
+
+== Security Notes
+
+umrs-ls uses two special group labels for objects whose security context cannot be
+fully verified from the current subject.
+
+`<restricted>`::
+`open()` was denied — by DAC permissions (e.g., 0700) or a MAC policy decision.
+No file descriptor was established, so `fgetxattr` cannot be called.
+The security label at the inode level is unverifiable for the current subject.
+The entry is visible in the directory stream but its label is unknown.
+
+`<unlabeled>`::
+`open()` succeeded and a valid file descriptor was obtained, but
+`fgetxattr(fd, "security.selinux")` returned `ENODATA`.
+The object is genuinely not labeled — this can occur on filesystems without SELinux
+xattr support or on objects created outside of SELinux policy.
+
+These two states are not interchangeable.
+When umrs-ls reports `<restricted>` and `/bin/ls -Z` reports a label, this is not a
+discrepancy between tools.
+It is a verification gap made explicit: `/bin/ls -Z` shows a claimed label based on
+path lookup; umrs-ls reports `<restricted>` because it cannot establish a verified
+chain of custody to the inode.
+
+This behavior follows the NSA RTB Non-Bypassability principle (RAIN): a security check
+that can be bypassed by withholding a file descriptor is not a check.
+
+== Exit Status
+
+0::
+Success.
+
+1::
+I/O error (e.g., directory unreadable, path does not exist).
+
+== See Also
+
+ls(1), yelp help:umrs-ls

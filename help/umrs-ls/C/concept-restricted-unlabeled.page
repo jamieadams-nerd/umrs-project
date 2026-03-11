@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page xmlns="http://projectmallard.org/1.0/"
+      type="topic"
+      id="concept-restricted-unlabeled">
+  <info>
+    <link type="guide" xref="index" group="restricted"/>
+    <desc>The difference between &lt;restricted&gt; and &lt;unlabeled&gt;, and why it matters.</desc>
+  </info>
+
+  <title>&lt;restricted&gt; vs &lt;unlabeled&gt;</title>
+
+  <p>
+    <cmd>umrs-ls</cmd> uses two special group labels for objects whose security context
+    cannot be fully verified. They are not interchangeable.
+  </p>
+
+  <terms>
+    <item>
+      <title><code>&lt;restricted&gt;</code></title>
+      <p>
+        <sys>open()</sys> was <em>denied</em> — either by DAC permissions (e.g., a
+        <code>0700</code> or <code>0600</code> directory) or by a MAC policy decision
+        (SELinux denied the <sys>open</sys> permission). Because no file descriptor could
+        be established, <sys>fgetxattr</sys> cannot be called. The security label at the
+        inode level is <em>unverifiable</em> for the current subject. The tool records
+        what it can see from the directory stream — the name and nothing more.
+      </p>
+    </item>
+    <item>
+      <title><code>&lt;unlabeled&gt;</code></title>
+      <p>
+        <sys>open()</sys> <em>succeeded</em> and a valid file descriptor was obtained,
+        but <sys>fgetxattr(fd, "security.selinux")</sys> returned <sys>ENODATA</sys>.
+        The object is genuinely not labeled. This can occur on filesystems without SELinux
+        xattr support, or on objects that were created outside of SELinux policy.
+      </p>
+    </item>
+  </terms>
+
+  <section id="why-it-matters">
+    <title>Why this distinction matters</title>
+
+    <p>
+      Standard <cmd>ls -Z</cmd> uses <sys>lstat</sys>, a path-based syscall. <sys>lstat</sys>
+      asks the kernel: "what is the label for the file at this path?" The kernel resolves
+      the path and returns a label string. The calling process never establishes a
+      file-descriptor relationship with the object.
+    </p>
+
+    <note style="important">
+      <p>
+        <cmd>ls -Z</cmd> can show a label for an object that the current subject cannot open.
+        The label is what the kernel <em>claims</em> is there — it is not verified through
+        direct file-descriptor access to the inode. A TOCTOU race (a symlink swap or rename
+        between the <sys>lstat</sys> call and any subsequent operation) can cause the path
+        and the inode to diverge.
+      </p>
+    </note>
+
+    <p>
+      <cmd>umrs-ls</cmd> does not trust the path string. It attempts to <sys>open()</sys>
+      each object to anchor to the physical inode. All subsequent reads —
+      <sys>fgetxattr(fd, "security.selinux")</sys>, <sys>ioctl(fd, FSGETXATTR)</sys> —
+      operate through that descriptor.
+    </p>
+
+    <p>
+      If <sys>open()</sys> is denied, the inode is unreachable. The entry is marked
+      <code>&lt;restricted&gt;</code> to make the gap visible. The tool does not fall back
+      to <sys>lstat</sys> to fill in a label. It does not silently succeed with unverified
+      data. Failing visibly is the correct behavior.
+    </p>
+  </section>
+
+  <section id="auditor-framing">
+    <title>The auditor framing</title>
+
+    <p>
+      When <cmd>umrs-ls</cmd> reports <code>&lt;restricted&gt;</code> and
+      <cmd>/bin/ls -Z</cmd> reports a label for the same entry, this is not a discrepancy
+      between two tools. It is a <em>verification gap</em> made explicit.
+    </p>
+
+    <list>
+      <item><p><cmd>/bin/ls -Z</cmd> shows a <em>claimed</em> label based on path lookup.</p></item>
+      <item><p><cmd>umrs-ls</cmd> reports <code>&lt;restricted&gt;</code> because it cannot establish a <em>verified chain of custody</em> to the inode.</p></item>
+    </list>
+
+    <p>
+      The label may be accurate. It may also not be. The tool cannot determine which is
+      true, so it does not pretend to know. This behavior follows the NSA RTB
+      Non-Bypassability principle (RAIN): a security check that can be bypassed by
+      withholding a file descriptor is not a check.
+    </p>
+  </section>
+</page>

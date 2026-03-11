@@ -1,0 +1,59 @@
+= UMRS Directory Structure
+:description: Directory layout for UMRS configuration, binaries, and state on RHEL 10.
+
+// NOTE: This page is a placeholder. Directory paths and installation procedures
+// are still being defined. Update as the design firms up.
+
+The following directory structure is planned for UMRS on RHEL 10. Paths follow
+Linux FHS conventions and will have SELinux file context assignments once the
+policy modules are complete.
+
+== Planned Paths
+
+[cols="1,2",options="header"]
+|===
+| Path | Purpose
+
+| `/etc/umrs`       | Configuration files (JSON, policy references)
+| `/usr/lib/umrs`   | Runtime support files
+| `/usr/share/umrs` | Static data, label definitions, documentation
+|===
+
+// TBD: Add /var/lib/umrs for runtime state files?
+// TBD: Confirm SELinux file context assignments for each path
+// TBD: Add RPM package layout once packaging work starts
+
+== Files to Install
+
+The following files will be placed into the UMRS directory structure:
+
+* `umrs-mls-labels.json` → `/etc/umrs/`
+* `umrs-mls-state.json` → `/etc/umrs/` (or `/var/lib/umrs/` — TBD)
+* UMRS binaries → `/usr/bin/` or `/usr/lib/umrs/`
+* SELinux policy modules → loaded via `semodule` (no permanent install path needed)
+
+// TBD: Finalize installation paths for all files
+// TBD: Add semodule loading procedure for SELinux policy modules
+
+== Create the Directory Structure
+
+// TBD: Add commands once paths are finalized
+// Something like:
+//   sudo mkdir -p /etc/umrs /usr/lib/umrs /usr/share/umrs
+//   sudo restorecon -Rv /etc/umrs /usr/lib/umrs /usr/share/umrs
+
+== Documentation
+
+UMRS documentation will be available in multiple forms:
+
+[cols="1,2",options="header"]
+|===
+| Format | Path
+
+| Antora HTML site  | TBD
+| Man pages         | `/usr/share/man/`
+| API docs (rustdoc) | TBD
+| Desktop help (yelp) | `/usr/share/help/`
+|===
+
+// TBD: Add install procedures for each documentation format

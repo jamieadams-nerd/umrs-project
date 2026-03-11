@@ -1,0 +1,15 @@
+= Deployment
+:description: Installing and configuring UMRS on RHEL 10 and other Linux platforms.
+
+This module covers everything needed to stand up a hardened UMRS platform —
+from filesystem layout decisions made during installation through SELinux label
+configuration, kernel integrity setup, and UMRS-specific directory setup.
+
+If you are starting from scratch, read xref:linux-baseline.adoc[Platform Baseline]
+first to understand the requirements common to all platforms, then follow the
+guide for your operating system.
+
+== Platforms
+
+* xref:rhel10-installation.adoc[Red Hat Enterprise Linux 10] — primary supported platform
+* xref:ubuntu.adoc[Ubuntu] — placeholder, coming later

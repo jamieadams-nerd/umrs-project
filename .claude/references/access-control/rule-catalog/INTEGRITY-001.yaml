@@ -1,0 +1,7 @@
+id: INTEGRITY-001
+title: Biba Simple Integrity Property
+rule: A subject may not read data at a lower integrity level (no read down).
+model: Biba
+category: integrity
+references:
+  - biba-1977.pdf

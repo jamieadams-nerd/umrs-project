@@ -1,0 +1,139 @@
+= Filesystem Layout
+:description: STIG-compliant partition scheme and mount options for UMRS deployments.
+
+Use these layouts as your starting point when partitioning during installation.
+They are aligned with DISA STIG requirements and NIST 800-53 controls (CM-6, AU-9, SC-28).
+
+Sizes are guidelines — adjust for your storage capacity. The partition structure
+and mount options are not optional.
+
+== Bare-Metal Layout (64 GB Reference)
+
+[cols="2,1,3,2",options="header"]
+|===
+| Mount Point | Size | Purpose | Mount Options
+
+| `/boot`          | 1 GB    | Kernel and initramfs           | defaults
+| `/boot/efi`      | 500 MB  | UEFI firmware partition        | umask=0077
+| `/`              | 15 GB   | OS binaries and system files   | defaults
+| `/home`          | 5 GB    | User data                      | nodev
+| `/tmp`           | 2 GB    | Temporary storage              | nodev,nosuid,noexec
+| `/var`           | 8 GB    | System state and RPM data      | defaults
+| `/var/tmp`       | 2 GB    | Persistent temporary files     | nodev,nosuid,noexec
+| `/var/log`       | 4 GB    | System logs                    | nodev,nosuid
+| `/var/log/audit` | 2 GB    | Audit logs                     | nodev,nosuid
+| `/opt`           | 3 GB    | Third-party applications       | defaults
+| Swap             | 4–8 GB  | Swap space                     | —
+|===
+
+This uses approximately 46–50 GB, leaving room for LVM overhead and future growth.
+
+== VM-Optimized Layout (64 GB Disk)
+
+Virtual machines can use a smaller footprint since `/home` and scratch space
+requirements are typically lower. This layout stays fully STIG-compliant while
+reducing disk footprint and keeping snapshots manageable.
+
+[cols="2,1,3,2",options="header"]
+|===
+| Mount Point | Size | Purpose | Mount Options
+
+| `/boot`          | 1 GB    | Kernel and initramfs            | defaults
+| `/boot/efi`      | 500 MB  | UEFI firmware partition         | umask=0077
+| `/`              | 20 GB   | OS binaries and system files    | defaults
+| `/home`          | 2 GB    | User data                       | nodev
+| `/tmp`           | 1 GB    | Temporary storage               | nodev,nosuid,noexec
+| `/var`           | 10 GB   | System state, RPM DB, journals  | defaults
+| `/var/tmp`       | 1 GB    | Persistent temporary files      | nodev,nosuid,noexec
+| `/var/log`       | 4 GB    | System logs                     | nodev,nosuid
+| `/var/log/audit` | 2 GB    | Audit logs                      | nodev,nosuid
+| Swap             | 2–4 GB  | VM memory support               | —
+|===
+
+Omitting `/opt` and `/srv` is acceptable for VMs unless you are running third-party
+services that need them.
+
+=== VM Disk Controller Recommendations
+
+[cols="1,2",options="header"]
+|===
+| Hypervisor | Recommended Controller
+
+| Parallels Desktop (Apple Silicon) | Virtio-SCSI / Virtio Block
+| VMware Fusion / ESXi              | VMware Paravirtual (PVSCSI)
+| KVM / QEMU / Proxmox              | Virtio-SCSI, qcow2 format
+| VirtualBox                        | Virtio-SCSI (fallback: AHCI SATA)
+|===
+
+TIP: Virtio controllers give the best I/O performance on Linux guests. Use
+thin-provisioned disks to keep snapshot and backup sizes manageable.
+
+== Filesystem Type
+
+Use **XFS** for all partitions — it is the RHEL default and performs well under
+Virtio and modern hypervisors. EXT4 is an acceptable alternative for `/var/log`
+and `/var/log/audit` if you prefer faster `fsck`. Both are STIG-compliant.
+
+== Example /etc/fstab
+
+[source,fstab]
+----
+/dev/mapper/cs-root      /                  xfs     defaults                       0 0
+/dev/mapper/cs-home      /home              xfs     nodev                          0 0
+/dev/mapper/cs-tmp       /tmp               xfs     nodev,nosuid,noexec            0 0
+/dev/mapper/cs-vartmp    /var/tmp           xfs     nodev,nosuid,noexec            0 0
+/dev/mapper/cs-var       /var               xfs     defaults                       0 0
+/dev/mapper/cs-varlog    /var/log           xfs     nodev,nosuid                   0 0
+/dev/mapper/cs-audit     /var/log/audit     xfs     nodev,nosuid                   0 0
+/dev/mapper/cs-opt       /opt               xfs     defaults                       0 0
+
+UUID=<boot-uuid>         /boot              xfs     defaults                       0 0
+UUID=<efi-uuid>          /boot/efi          vfat    umask=0077                     0 2
+----
+
+Replace `<boot-uuid>` and `<efi-uuid>` with the actual UUIDs from `blkid`.
+
+NOTE: LVM volume names (`cs-root`, `cs-home`, etc.) match the RHEL installer defaults
+when the volume group is named `cs`. Adjust if you used a different VG name.
+
+== Why These Mount Options
+
+`/tmp` and `/var/tmp` use `noexec,nosuid,nodev`:
+
+* `noexec` — prevents running programs from temporary storage
+* `nosuid` — prevents privilege escalation via setuid/setgid files
+* `nodev` — prevents device files from being created
+
+These three options are required by DISA STIG (CM-6, CM-7, SI-16) and address
+the most common attack vectors on world-writable directories.
+
+`/home` uses `nodev` to prevent placing device files in user directories.
+
+`/boot/efi` uses `umask=0077` to restrict the EFI System Partition to root-only access.
+
+`/var/log` and `/var/log/audit` use `nodev,nosuid` to protect audit data integrity (AU-9).
+
+== STIG Compliance Summary
+
+NOTE: The STIG IDs in this table are RHEL 7 identifiers used as approximate references.
+RHEL 10 STIG IDs have not yet been confirmed. When the RHEL 10 STIG is published,
+update this table with the current IDs.
+
+[cols="2,1,1",options="header"]
+|===
+| Requirement | Reference STIG ID (RHEL 7) | Status
+
+| `/tmp` must be a separate partition          | RHEL-07-021310 | Compliant
+| `/var/log` must be a separate partition      | RHEL-07-021320 | Compliant
+| `/var/log/audit` must be a separate partition | RHEL-07-021330 | Compliant
+| `/home` must be a separate partition         | RHEL-07-021100 | Compliant
+| `/var/tmp` must be separate from `/var`      | RHEL-07-021200 | Compliant
+| `/var` should be a separate partition        | RHEL-07-021000 | Compliant
+| Required mount options applied               | Multiple       | Compliant
+| EFI partition secured                        | RHEL-07-021350 | Compliant
+|===
+
+== Next Steps
+
+xref:tmp-security.adoc[Temporary Filesystem Security] — controls and configuration for
+`/tmp` and `/var/tmp`, including `systemd PrivateTmp` for service-level isolation.

@@ -1,0 +1,144 @@
+= Package Installation
+:description: Platform-specific package installation for RHEL 10 UMRS deployments.
+
+Install the appropriate package set for your deployment type after completing
+xref:rhel10-installation.adoc[installation] and
+xref:rhel10-openscap.adoc[STIG hardening].
+
+== Post-Install Packages
+
+Install the following packages on every UMRS system after completing the base OS
+installation and STIG hardening. These packages are required for UMRS operations
+regardless of system role.
+
+.Steps
+
+. Install the required packages:
++
+[source,bash]
+----
+sudo dnf install -y \
+    ima-evm-utils \
+    mcstrans \
+    jq \
+    gnupg2 \
+    tuned \
+    aide
+----
++
+Expected output: `dnf` resolves and installs the packages and reports `Complete!`.
++
+If any package is not found, verify that the BaseOS and AppStream repos are enabled:
++
+[source,bash]
+----
+subscription-manager repos --list-enabled
+----
+
+.Package descriptions
+
+`ima-evm-utils`::
+Provides `evmctl`, the userspace tool for IMA (Integrity Measurement Architecture)
+and EVM (Extended Verification Module) operations. Required for signing and verifying
+file measurement labels. See xref:ima-evm-setup.adoc[IMA/EVM Setup].
+
+`mcstrans`::
+The Multi-Category Security translation daemon. Translates raw SELinux MCS labels
+(e.g., `s0:c1,c3`) into human-readable strings as defined in `setrans.conf`.
+Must be running before CUI label configuration is applied.
+
+`jq`::
+A command-line JSON processor. Used by UMRS operational scripts to parse and
+format structured output from tools and state files.
+
+`gnupg2`::
+The GnuPG cryptographic toolkit. Required for signing and verifying commits, log
+archives, and release artifacts. Supports NIST 800-53 SI-7 and AU-10 (non-repudiation).
+
+`tuned`::
+The system performance and power management tuning daemon. Allows setting a
+consistent kernel and I/O profile appropriate for a high-assurance logging server.
+The `throughput-performance` or a custom UMRS profile should be activated after
+installation.
+
+`aide`::
+Advanced Intrusion Detection Environment. Provides file integrity monitoring
+against a cryptographic baseline database. Required for NIST 800-53 SI-7 and
+STIG compliance. See the NOTE below.
+
+NOTE: After installing `aide`, initialize the integrity database before the system
+enters active operation. See xref:operations:ima-evm-ops.adoc[IMA/EVM Maintenance]
+for the `aide --init` procedure. Do not run `aide --check` before the database has
+been initialized — it will exit with errors.
+
+== All Systems
+
+These packages are required on every UMRS system regardless of role:
+
+[source,bash]
+----
+sudo dnf install -y \
+    mcstrans \
+    git
+----
+
+=== Enable mcstrans
+
+[source,bash]
+----
+sudo systemctl enable --now mcstrans
+sudo systemctl status mcstrans
+----
+
+`mcstrans` must be running before CUI label configuration.
+See xref:rhel10-setrans.adoc[CUI Label Configuration].
+
+== UMRS Development Platform
+
+For systems used to build and test UMRS, also install:
+
+[source,bash]
+----
+sudo dnf install -y \
+    rust \
+    rust-toolset \
+    rust-analyzer \
+    make
+----
+
+NOTE: RHEL 10 ships a supported Rust toolset via `rust-toolset`. Prefer this over
+installing from rustup.rs to stay within a supported, FIPS-compatible runtime.
+
+Verify the toolchain after installation:
+
+[source,bash]
+----
+rustc --version
+cargo --version
+----
+
+=== Configure Git
+
+[source,bash]
+----
+git config --global user.name "Your Name"
+git config --global user.email "you@example.com"
+----
+
+Set up SSH keys for repository access:
+
+[source,bash]
+----
+ssh-keygen -t ed25519 -C "you@example.com"
+cat ~/.ssh/id_ed25519.pub
+----
+
+Add the public key to your repository host (GitHub, GitLab, or internal server).
+
+// TBD: Confirm GPG signing requirements for commits in this project
+// TBD: Add any project-specific git config (commit signing, hooks, etc.)
+
+== Next Steps
+
+xref:rhel10-setrans.adoc[CUI Label Configuration] — install the UMRS setrans.conf and
+verify MCS label translation.

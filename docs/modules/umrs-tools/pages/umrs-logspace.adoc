@@ -1,0 +1,12 @@
+= umrs-logspace
+:description: Placeholder — documentation pending API stabilization.
+
+NOTE: This crate is under active development. Documentation will be added when the API stabilizes.
+
+== Planned Purpose
+
+`umrs-logspace` is the audit trail and logging subsystem for the UMRS project.
+It provides the foundation for structured, high-assurance audit event recording
+aligned with NIST 800-53 AU controls and NSA RTB requirements. The crate is
+intended to support tamper-evident log production, structured log formatting,
+and integration with the system audit pipeline.

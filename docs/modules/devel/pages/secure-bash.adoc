@@ -1,0 +1,509 @@
+= Secure Bash Script Writing Guidelines 
+
+This guide is provided as part of the UMRS Project. It provides recommended practices for writing secure, reliable Bash scripts used in UMRS administrative tooling and supporting infrastructure. It is not a policy document, does not impose mandatory requirements, and does not assert formal compliance with any external standard.
+
+The intent of this guide is to:
+
+* capture institutional knowledge and experience
+* reduce historically common scripting failure modes
+* improve auditability and maintainability
+* provide a shared baseline for authors and reviewers
+
+Deviation from this guide is acceptable when deliberate and understood.
+
+== On the Matter of Paranoia
+
+It is worth acknowledging that many of the practices described in this guide may appear excessive or overly restrictive when compared to the way shell scripts are commonly written. For short-lived, one-off administrative tasks, a simpler script may indeed be sufficient. 
+
+However, the focus of these guidelines is not on convenience or speed of initial development, but on long-term correctness, predictability, and assurance. In high-assurance environments, shell scripts are often treated as operational software rather than disposable utilities. When a script is intended to run unattended, on a schedule, or as part of a system’s ongoing maintenance—such as through cron jobs, systemd units, or recovery procedures—small assumptions and informal practices can become latent failure modes or security risks over time.
+
+These recommendations are therefore intentionally conservative. They assume that scripts may execute in constrained, degraded, or adversarial conditions, and that they may be read, modified, or reused by administrators who were not the original author. 
+
+Therefore, explicit paths, strict error handling, controlled environments, careful input validation, and consistent logging are not meant to burden the author, but to reduce ambiguity and eliminate entire classes of subtle failure. In a high-assurance system, the cost of a misbehaving administrative script is often far greater than the cost of writing it carefully in the first place. 
+
+The goal of this guidance is not to mandate a single “correct” way to write Bash, but to provide a defensible, security-conscious baseline for scripts that are expected to persist, evolve, and operate reliably over the lifetime of the system.
+
+[quote, Cold War-era security culture] 
+----
+“In God we trust; all others we monitor.”
+
+This is a well-known phrase in security, intelligence, and high-assurance 
+engineering circles. It’s often attributed (sometimes loosely) to Cold War–era 
+security culture and is commonly used—half humor, half doctrine—to express a 
+core principle: trust must be supported by verification.
+----
+
+== Syntax Checkers ==
+
+Talk about ShellCheck and `bash -n` tools.
+
+
+=== Purpose and Positioning
+This guide documents personal, experience-based recommendations for writing secure, reliable Bash scripts in administrative and security-sensitive environments. 
+
+Bash is highly effective for:
+* system administration
+* orchestration and glue logic
+* cron jobs and timers
+* remediation and cleanup tasks
+* controlled inspection and enforcement of system state
+
+Bash is not well suited for:
+
+* large, long-lived application logic
+* complex data modeling or parsing
+* security-critical algorithms
+* long-term maintainable production services
+
+This guide exists to reduce historically common failure modes using practical experience, CWE examples, and alignment with security control intent (for example, NIST SP 800-53). It is advisory, not prescriptive.
+
+
+=== Interpreter Directive and Execution Environment
+
+#### Interpreter Directive (`+#!+` line)
+
+The first line of a script beginning with `+#!+` is the interpreter directive. It instructs the kernel which interpreter executes the script (sometimes informally called a “shebang”).
+
+Recommendations
+
+* Always use an absolute path in the interpreter directive.
+* Prefer /usr/bin/bash or /bin/bash.
+* Avoid environment-based interpreter resolution for scripts that cross privilege or trust boundaries.
+
+Rationale
+
+* Prevents PATH-based interpreter substitution.
+* Mitigates untrusted search path vulnerabilities (CWE-426).
+
+
+#### Controlled PATH
+
+Scripts must not rely on the caller’s PATH.
+
+Recommendations
+* Explicitly define PATH near the top of the script.
+* Export PATH and mark it readonly.
+* Alternatively, invoke binaries using absolute paths.
+
+Rationale
+* Prevents execution of attacker-controlled binaries.
+* Addresses a long-standing privilege escalation class (CWE-426).
+
+Control intent alignment
+* NIST SP 800-53 CM-6 (Configuration Settings)
+
+
+#### Environment Sanitization
+
+Inherited environment variables must be treated as untrusted when a script crosses a privilege or trust boundary.
+
+Recommendations
+* Explicitly unset high-risk variables such as:
+* LD_PRELOAD
+* LD_LIBRARY_PATH
+* BASH_ENV
+* ENV
+* IFS
+* SHELLOPTS
+* GLOBIGNORE
+* Normalize locale settings (for example, LC_ALL=C).
+
+Rationale
+* Shellshock (CVE-2014-6271) demonstrated that environment variables can become a code-execution vector when Bash is invoked across trust boundaries.
+
+Control intent alignment
+* SI-10 (Input Validation)
+* CM-6 (Configuration Settings)
+
+'''
+
+=== Shell Behavior and Defensive Defaults
+
+#### Strict Mode (Used Deliberately)
+
+Recommended baseline
+* set -euo pipefail
+* Set a safe IFS
+
+Rationale
+* Fail fast on unexpected errors
+* Detect unset variables
+* Prevent pipeline failures from being masked
+
+Caution
+* set -e has edge cases; scripts should remain simple, explicit, and readable.
+
+
+#### Quoting, Globbing, and Tests
+
+Recommendations
+* Quote variable expansions unless word splitting is explicitly intended.
+* Prefer [[ ... ]] over [ ... ] in Bash scripts.
+* Disable globbing when handling untrusted input (set -f), re-enable only if needed.
+
+Rationale
+* Prevents argument injection and unintended pathname expansion.
+* Improves predictability and reviewability.
+
+'''
+
+=== Variables, Constants, and Functions
+
+#### Readonly Constants
+
+Recommendations
+* Mark constants as readonly.
+
+Rationale
+* Prevents accidental mutation.
+* Improves clarity during review.
+
+
+#### Local Variables
+
+Recommendations
+* Use local for variables inside functions.
+
+Rationale
+* Reduces global state.
+* Improves reasoning about function behavior.
+
+'''
+
+=== Input Validation and Safe Testing
+
+#### Validate Inputs Early
+
+Recommendations
+* Validate all external inputs (arguments, paths, modes).
+* Prefer allow-lists over deny-lists.
+* Validate numeric input before numeric comparison.
+
+Control intent alignment
+* SI-10 (Information Input Validation)
+
+
+#### String vs Integer Tests (Critical Distinction)
+
+Assignment
+* x=value
+
+String comparison
+* [[ "$a" == "$b" ]]
+* [[ "$a" != "$b" ]]
+
+Integer comparison
+* [[ "$n" -eq 10 ]]
+* [[ "$n" -ge 1 ]]
+
+Rules
+* Never use = or == for numeric comparison.
+* Never use -eq, -gt, etc. for strings.
+* Always quote variables in test expressions.
+
+Rationale
+* Silent logic errors become security failures when scripts enforce policy.
+
+'''
+
+=== Exit Codes and Composability
+
+#### Standardized Exit Codes
+
+Exit codes are part of the script interface.
+
+Recommended UMRS taxonomy
+* 0  OK
+* 1  General error
+* 2  Usage / argument error
+* 3  Preconditions not met
+* 4  Policy FAIL
+* 5  Policy WARN
+* 6  Partial success (optional)
+
+Rationale
+* Enables chaining and automation
+* Avoids parsing human-readable output
+* Supports cron, systemd, and orchestration logic
+
+
+#### Function Return Handling
+
+Return status must be checked for:
+* privileged operations
+* file writes and atomic moves
+* security-relevant changes
+* service and policy modifications
+
+Fail explicitly with a clear message and consistent exit code.
+
+'''
+
+=== Temporary Files, Atomic Writes, and Filesystem Safety
+
+#### Temporary Files
+
+Recommendations
+* Always use mktemp for temporary files or directories.
+
+Rationale
+* Prevents race conditions and symlink attacks (CWE-377).
+
+
+#### Cleanup with Traps
+
+Recommendations
+* Use trap to ensure cleanup on exit or signal.
+
+Rationale
+* Prevents stale artifacts and partial state.
+
+⸻
+
+#### Atomic Writes
+
+Recommendations
+* Write to a temporary file in the same filesystem.
+* Rename into place atomically.
+
+Rationale
+* Prevents partial writes.
+* Reduces race windows.
+* Critical for shared state and configuration files.
+
+'''
+
+=== Messaging, Logging, and Auditing
+
+#### stdout vs stderr
+
+Rules
+* stdout is for machine-parseable output.
+* stderr is for diagnostics and human messages.
+* Never mix diagnostics into stdout when stdout is parseable.
+
+#### Syslog Usage
+
+Recommendations
+* Read-only scripts generally do not need syslog entries.
+* Scripts that modify configuration, security posture, keys, labels, or services should log a concise summary to syslog/journald.
+
+Never log secrets.
+
+
+#### Audit Awareness
+
+Distinction
+* Syslog records intent.
+* Audit records observed system behavior.
+
+Recommendations
+* For high-impact changes, ensure audit visibility exists.
+* Optionally include a correlation identifier in syslog to link intent to audit records.
+
+Control intent alignment
+* AC-6 (Least Privilege)
+* SI-11 (Error Handling)
+
+'''
+
+=== Language Escalation Path
+
+UMRS treats Bash as an orchestration and administration language, not a destination language for growing complexity.
+
+As scripts evolve to include:
+* complex branching
+* structured data handling
+* persistent state
+* performance sensitivity
+
+UMRS guidance recommends escalating logic into:
+* Python for readability and structured control-plane logic
+* Rust for high-assurance, high-performance, security-critical components
+
+Bash should remain:
+* the orchestration layer
+* the policy enforcement wrapper
+* the integration point with the operating system
+
+
+=== When Not to Apply This Guide
+
+This guide is intentionally opinionated and optimized for administrative and security-sensitive contexts.
+
+Examples where full adherence may not be appropriate:
+* throwaway personal scripts
+* one-off diagnostic commands
+* non-privileged scripts with tightly controlled inputs
+* constrained POSIX sh environments
+* performance-critical hot loops
+* migration scripts operating on static, trusted datasets
+
+Authors should apply judgment and understand which risks are intentionally accepted.
+
+=== Summary Philosophy
+
+These Bash recommendations exist to:
+* reduce historically exploited failure modes
+* improve auditability and reviewability
+* make scripts predictable, composable, and safe
+
+They are guidance, *not* law.
+
+=== Example Script 
+Here is an example of a UMRS-Style Bash Script (Illustrative). If you use the bash-library provided by the UMRS project, many of the precursor setup stuff will be done. 
+
+[source,bash]
+----
+#!/usr/bin/bash
+set -euo pipefail
+IFS=$’ \t\n’
+
+PATH=/usr/sbin:/usr/bin:/sbin:/bin
+export PATH
+readonly PATH
+
+unset LD_PRELOAD LD_LIBRARY_PATH BASH_ENV ENV IFS SHELLOPTS GLOBIGNORE
+export LC_ALL=C
+export LANG=C
+
+umask 077
+
+readonly EX_OK=0
+readonly EX_ERR=1
+readonly EX_USAGE=2
+readonly EX_PRECONDITION=3
+readonly EX_FAIL=4
+readonly EX_WARN=5
+
+tool_tag=“umrs-example”
+readonly tool_tag
+
+msg_err() { printf ‘%s\n’ “${tool_tag}: ERROR: $” >&2; }
+msg_info() { printf ‘%s\n’ “${tool_tag}: INFO: $” >&2; }
+die() { msg_err “$”; exit “$EX_ERR”; }
+
+log_sys() {
+  local pri=”$1”; shift
+  /usr/bin/logger -t “$tool_tag” -p “$pri” – “$”
+}
+
+cleanup() {
+  rc=$?
+  [[ -n “${tmpdir:-}” ]] && rm -rf – “$tmpdir”
+  exit “$rc”
+}
+trap cleanup EXIT INT TERM
+
+mode=”${1:-}”
+case “$mode” in
+  get|update) : ;;
+  *) die “usage: $0 {get|update}” ;;
+esac
+
+if [[ “$mode” == “get” ]]; then
+  printf ‘%s\n’ “status=OK”
+  exit “$EX_OK”
+fi
+
+tmpdir=”$(mktemp -d -p /tmp umrs.XXXXXX)” || die “mktemp failed”
+chmod 0700 “$tmpdir”
+
+dest=”/var/lib/umrs/example.state”
+dir=”$(dirname “$dest”)”
+tmpfile=”$(mktemp -p “$dir” .example.XXXXXX)” || die “mktemp failed”
+
+printf ‘%s\n’ “updated=$(date -u +%FT%TZ)” >”$tmpfile”
+chmod 0600 “$tmpfile”
+mv -f – “$tmpfile” “$dest”
+
+log_sys “authpriv.notice” “action=update target=$dest result=success”
+exit “$EX_OK”
+----
+
+
+'''
+
+=== Secrets and Script File Permissions
+
+==== Never store passwords or long-lived secrets in shell scripts
+
+Rule:
+* Never embed passwords, API keys, private keys, shared secrets, or tokens directly in a shell script (including “temporary” debug values).
+
+Rationale:
+* Shell scripts are frequently copied, backed up, emailed, logged, pasted into tickets, and committed to repositories.
+* Even if the script is later deleted, secrets often persist in backups, SCM history, and log files.
+* Secrets in scripts encourage reuse and normalization of unsafe practice.
+
+Acceptable alternatives:
+* Prefer non-interactive mechanisms that avoid embedding secrets:
+* Use system key stores or agent-based auth where possible.
+* Use short-lived credentials (tokens) retrieved at runtime from a protected service.
+* Use root-only readable config files outside the script (if necessary), with strict permissions, and never echo secrets.
+* Prefer mutual TLS, Kerberos, or hardware-backed identity where available.
+
+==== Privileged scripts must not be writable by untrusted users
+
+Rule:
+* If a script is executed with elevated privileges (root, sudo, systemd unit, cron, etc.), it must not be writable by any user other than root.
+* In high-assurance environments, treat “script writable by non-root” as a critical vulnerability.
+
+Rationale:
+* A writable privileged script is a direct privilege escalation path: any user who can modify it can execute arbitrary commands as root the next time it runs.
+* This risk is magnified for scripts run by cron, logrotate hooks, systemd timers, or admin workflows.
+
+Required file ownership and permissions (recommended baseline):
+* Owner: root
+* Group: root (or an admin group such as wheel, but only if needed)
+* Mode:
+* 0700 for root-only scripts
+* 0750 for root + trusted admin group (wheel) read/execute only
+* Never allow:
+* world-writable or group-writable privileged scripts
+* scripts located in writable directories (e.g., /tmp, user home dirs)
+* symlinked script paths in privileged contexts
+
+Operational guidance:
+* Install privileged scripts in root-controlled directories (e.g., /usr/local/sbin, /usr/libexec/umrs, /etc/umrs/scripts).
+* Consider using immutable attributes for high-value scripts (operationally optional):
+* chattr +i /path/to/script
+(Note: this changes operational procedures; document how updates occur.)
+
+Optional runtime self-check (recommended for privileged scripts)
+
+This is a small pattern you can include near the top of any script that might run privileged, to refuse execution if its own file permissions are unsafe.
+
+Each line prefixed with section symbol as you prefer:
+
+----
+SCRIPT_PATH=”$(readlink -f – “${BASH_SOURCE[0]}”)” || exit 1
+SCRIPT_DIR=”$(dirname – “${SCRIPT_PATH}”)” || exit 1
+
+# Refuse symlink execution in privileged contexts.
+if [[ -L “${BASH_SOURCE[0]}” ]]; then
+  printf ‘%s: ERROR: Refusing to run from symlink\n’ “$(basename – “$0”)” >&2
+  exit 1
+fi
+
+# Require root ownership and refuse group/other write bits on the script.
+# stat format: owner username (%U) and permissions (%a)
+owner=”$(stat -c ‘%U’ – “${SCRIPT_PATH}”)” || exit 1
+mode=”$(stat -c ‘%a’ – “${SCRIPT_PATH}”)” || exit 1
+
+if [[ “${owner}” != “root” ]]; then
+  printf ‘%s: ERROR: Script must be owned by root: %s\n’ “$(basename – “$0”)” “${SCRIPT_PATH}” >&2
+  exit 1
+fi
+
+# If group-write or other-write is set, refuse.
+# mode is octal like 750; last two digits control group/other.
+g=$(( (10#${mode} / 10) % 10 ))
+o=$(( 10#${mode} % 10 ))
+if (( (g & 2) != 0 || (o & 2) != 0 )); then
+  printf ‘%s: ERROR: Insecure permissions (group/other writable): %s mode=%s\n’ “$(basename – “$0”)” “${SCRIPT_PATH}” “${mode}” >&2
+  exit 1
+fi
+----
+
+

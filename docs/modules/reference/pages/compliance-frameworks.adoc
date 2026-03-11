@@ -1,0 +1,92 @@
+= Compliance Frameworks Registry
+:description: Authoritative list of governing standards, their versions, and their role in UMRS design and implementation.
+:toc: left
+:toclevels: 2
+
+This page lists each standard or framework that governs UMRS design,
+implementation, and deployment. For each, it states the version in use,
+and the specific role that standard plays in the project.
+
+Control citations in the source code (`// NIST 800-53 AC-4`,
+`// NSA RTB RAIN`) refer to the frameworks listed here. See
+xref:devel:compliance-annotations.adoc[Compliance annotations guide]
+for how to read and write those citations.
+
+== Governing Standards
+
+[cols="1,1,3"]
+|===
+|Standard |Version |Role in UMRS
+
+|NIST SP 800-53
+|Revision 5
+|The primary security and privacy control catalog. Drives control
+ citations throughout the codebase. Key controls: AC-3 (access
+ enforcement), AC-4 (information flow enforcement), AU-3 (audit record
+ content), MP-4 (media protection / zeroize), SC-28 (data at rest),
+ SI-7 (software and information integrity).
+
+|NIST SP 800-171
+|Revision 2
+|CUI protection requirements for non-federal systems. Scopes 800-53
+ to the CUI use case. Drives the CUI labeling model and handling
+ requirements that UMRS enforces.
+
+|NIST SP 800-218 (SSDF)
+|Version 1.1
+|Secure Software Development Framework. Drives high-assurance
+ implementation patterns: TPI parsing (PW.4), provenance verification
+ (PW.4), secure arithmetic (PW.4.1), and supply chain hygiene (PO.1.2,
+ PW.4.3).
+
+|CMMC 2.0
+|Level 1–3
+|Cybersecurity Maturity Model Certification. Operationalizes 800-171
+ requirements as a maturity assessment. Level 2 maps directly to
+ 800-171; Level 3 adds select 800-53 controls. UMRS design targets
+ Level 2 as the minimum baseline.
+
+|NSA RTB VNSSA / RAIN
+|Current NSA guidance
+|NSA Requirements and Test Benchmarks. RAIN (Reference Architecture
+ and Implementation Notes) provides the non-bypassability requirement:
+ security checks must always be invoked. Drives private constructors,
+ module boundaries, TOCTOU-safe I/O, and fail-closed error handling
+ throughout the codebase.
+
+|FIPS 140-2 / 140-3
+|Active standard
+|Cryptographic module validation standard. FIPS mode is assumed active
+ in all production deployments. Any cryptographic primitive used in
+ UMRS must be a FIPS-validated algorithm. Drives the prohibition on
+ vendoring OpenSSL and the preference for FIPS-compatible Rust crates.
+|===
+
+== How These Standards Interact
+
+NIST 800-53 provides the control catalog — a comprehensive set of
+security and privacy controls organized by family (AC, AU, SC, SI,
+etc.). NIST 800-171 scopes that catalog to CUI environments, selecting
+the subset of 800-53 controls that apply to non-federal systems handling
+CUI. CMMC 2.0 takes the 800-171 requirements and structures them as
+a tiered maturity model that organizations can be assessed against.
+
+SSDF operates orthogonally to the control catalog. Where 800-53 and
+800-171 define what security properties a system must have, SSDF defines
+how software must be developed to achieve and maintain those properties.
+SSDF practices (PW.4, PO.1.2) drive the high-assurance coding patterns
+in this codebase — not the control citations, but the implementation
+discipline that makes those controls verifiable.
+
+NSA RTB adds constraints that go beyond what 800-53 requires. The RAIN
+non-bypassability requirement, in particular, is stricter than AC-3 or
+AC-4 alone: it requires that security enforcement be structurally
+impossible to skip, not merely prohibited by policy. UMRS implements
+this through Rust's type system — private constructors and module
+visibility rules prevent callers from bypassing validation at the
+language level.
+
+FIPS 140-2/140-3 constrains the cryptographic primitive layer
+independently of all other frameworks. A system can satisfy AC-4 and
+800-171 while using non-FIPS cryptography; FIPS compliance is a
+separate requirement imposed by the deployment environment.

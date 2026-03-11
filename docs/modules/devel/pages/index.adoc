@@ -1,0 +1,41 @@
+= Developer Guide
+:description: How to write high-assurance code for UMRS: design patterns, language guides, build tooling, compliance annotations, and the rustdoc API contract.
+
+// NIST 800-218 SSDF PW.1 — Define security requirements for the software
+// NSA RTB VNSSA — Non-bypassable security requirements baked into process
+
+This guide is for developers writing code in the UMRS project.
+It covers the *why* and *how* of high-assurance development:
+what threat each design pattern defeats, how to apply it in Rust, Bash, and Python,
+how to annotate code so auditors can trace every security decision to a requirement,
+and how to deliver rustdoc API documentation that is itself a compliance artifact.
+
+The API reference (rustdoc) is delivered separately via `cargo doc`.
+The doc comments in the source are the authoritative source — this guide
+explains how to write them.
+
+== Modules in This Guide
+
+xref:high-assurance-patterns.adoc[High-Assurance Coding Patterns]::
+  The core of this guide. Organized by what you are about to do —
+  open a file, parse input, construct a type, do arithmetic, report an error.
+  Each pattern names the threat it defeats, shows the implementation from
+  the UMRS codebase, and cites the governing standard.
+
+xref:rust-style-guide.adoc[Rust Style Guide]::
+  Formatting, import ordering, file headers, test structure, i18n rules.
+
+xref:secure-bash.adoc[Secure Bash Guide]::
+  Writing shell scripts that behave correctly under adversarial conditions.
+
+xref:secure-python.adoc[Secure Python Guide]::
+  Interpreter isolation, input validation, safe subprocess use.
+
+xref:i18n.adoc[Internationalization (i18n)]::
+  How to use the UMRS core i18n module in code.
+
+xref:build-tooling.adoc[Build Tooling]::
+  `cargo xtask`, rustfmt, clippy policy, `Cargo.lock` hygiene.
+
+xref:cargo-notes.adoc[Cargo & Workspace Notes]::
+  Workspace layout decisions, dependency management, supply chain hygiene.

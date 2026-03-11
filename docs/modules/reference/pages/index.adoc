@@ -1,0 +1,6 @@
+= Reference
+:description: Authoritative lookup: MLS levels, CUI categories, FIPS algorithms, secolor, policy registry.
+
+This module is the authoritative lookup for UMRS configuration values, label
+definitions, MLS sensitivity levels, CUI categories, FIPS algorithm lists,
+secolor.conf format, and the SELinux policy registry.

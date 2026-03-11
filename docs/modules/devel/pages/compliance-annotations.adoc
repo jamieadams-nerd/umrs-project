@@ -1,0 +1,246 @@
+= Compliance Annotations Guide
+:description: How to write NIST-annotated rustdoc in the UMRS codebase — format rules, tiered requirements, and real examples.
+:toc: left
+:toclevels: 3
+
+// NIST 800-218 SSDF PW.4 — Implement secure coding practices
+// NSA RTB RAIN — Non-bypassability; security decisions must be traceable
+
+== Why Annotations Exist
+
+Security auditors trace every enforcement decision to a governing standard.
+If a function performs an access control check, the auditor needs to know
+which NIST 800-53 control that check satisfies. If a type models an MLS
+security label, the auditor needs to know which framework defines the
+requirements for that label's handling.
+
+Without control citations in the source, the code and the compliance
+documentation are separate artifacts that require manual reconciliation.
+With citations in rustdoc, `cargo doc` produces an auditable record that
+is always in sync with the implementation.
+
+Unannotated security-critical code fails an audit. The auditor cannot
+assume that the right control applies; the developer must assert it.
+
+== The Tiered Annotation Requirement
+
+Not every item in the codebase requires an annotation. The requirement
+is tiered by item type:
+
+[cols="1,2,1"]
+|===
+|Item type |Requirement |Reason
+
+|Module (`//!` doc comment)
+|Always annotate with the primary governing control(s)
+|The module is the unit an auditor reviews first
+
+|Security-critical type (`struct`, `enum`)
+|Annotate with the specific control the type satisfies
+|Types that model security attributes are direct compliance artifacts
+
+|Security-critical function
+|Annotate with the specific control the function enforces
+|Functions that make access decisions must be traceable
+
+|Simple accessor (`fn foo(&self) -> &Bar`)
+|No annotation required if the parent type is annotated
+|The parent annotation covers the accessor's context
+
+|Display / Debug impl
+|No annotation required
+|Formatting has no security enforcement role
+|===
+
+The key question for any function is: *does this function make a security
+decision, enforce a boundary, or validate security-relevant input?* If yes,
+annotate it. If it merely reads a field that the constructor already
+validated, the constructor's annotation covers it.
+
+== Annotation Format
+
+=== Module-Level Annotation
+
+Module annotations appear in the `//!` doc block at the top of the file,
+after the description. List each applicable control on its own line.
+
+.Example from `umrs-platform/src/kattrs/mod.rs`
+[source,rust]
+----
+//! UMRS PLATFORM: High-Assurance Kernel Attribute Modeling
+//!
+//! This module provides a high-assurance substrate for interacting with
+//! kernel-resident security attributes on RHEL 10.
+//!
+//! 1. PROVENANCE VERIFICATION (NIST 800-53 SI-7):
+//!    Before any byte is read, the SecureReader verifies the backing filesystem
+//!    integrity using fd-anchored fstatfs.
+//!
+//! 4. NON-BYPASSABILITY (NSA RTB - RAIN):
+//!    By leveraging Rust's type system and private execution engines, we ensure
+//!    that security checks are always invoked.
+----
+
+This format names the control, states the number, and explains in one sentence
+what the module does to satisfy it. The explanation is not documentation of
+the control standard — it is documentation of what *this code* does.
+
+=== Type-Level Annotation
+
+Type annotations appear in the `///` doc block immediately above the type
+definition. State the control number and which property of the type satisfies it.
+
+.Example from `umrs-selinux/src/category.rs`
+[source,rust]
+----
+/// CategorySet — ebitmap Equivalent
+///
+/// Represents a set of 1024 MCS categories (c0 through c1023).
+/// Fixed-size bitmask ensures O(1) dominance math and zero heap allocation.
+///
+/// NIST 800-53 AC-4: Information Flow Enforcement
+/// NSA RTB Requirement: Deterministic execution and bounded memory usage.
+#[derive(Clone, PartialEq, Eq, Hash)]
+pub struct CategorySet {
+    bits: [u64; 16],
+}
+----
+
+The citation is at the end of the description, not at the beginning. The
+description explains what the type does; the citation tells the auditor
+which control it satisfies.
+
+.Example from `umrs-selinux/src/context.rs`
+[source,rust]
+----
+/// NIST 800-53 AC-3: Access Enforcement logic depends on this structure.
+/// NSA RTB: Minimized TCB via strictly bounded data structures.
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[must_use]
+pub struct SecurityContext {
+    user: SelinuxUser,
+    role: SelinuxRole,
+    security_type: SelinuxType,
+    level: Option<MlsLevel>,
+}
+----
+
+`SecurityContext` is the central type for access enforcement decisions, so
+it carries an AC-3 citation. The `#[must_use]` attribute enforces that
+callers cannot discard the result of a security-relevant computation —
+this is the NSA RTB non-bypassability principle applied at the type system level.
+
+=== Function-Level Annotation
+
+Function annotations appear in the `///` doc block above the function.
+Cite the specific control the function enforces and state what enforcement
+action the function takes.
+
+.Example from `umrs-selinux/src/category.rs`
+[source,rust]
+----
+/// Determines MLS dominance.
+///
+/// NIST 800-53 AC-4: Dominance Check (Lattice Mathematics).
+///
+/// Evaluates whether `self` (the subject) dominates `other` (the object).
+/// In MLS, the subject must have at least all the categories of the object.
+///
+/// Mathematically: (Subject & Object) == Object
+#[must_use]
+pub fn dominates(&self, other: &Self) -> bool {
+    // ...
+}
+----
+
+The annotation explains both the control and the mathematical rule being
+implemented. An auditor reviewing this function can verify that the
+implementation matches the Bell-LaPadula category superset requirement
+for AC-4 information flow enforcement.
+
+== Which Control to Cite
+
+For common patterns, the applicable control is usually clear:
+
+[cols="2,1,2"]
+|===
+|What the item does |Control to cite |Notes
+
+|Enforces or evaluates an access decision
+|AC-3
+|Access Enforcement — who can do what to what
+
+|Enforces information flow between labels
+|AC-4
+|Information Flow Enforcement — label-based access; dominance math
+
+|Verifies integrity of a file, kernel attribute, or filesystem source
+|SI-7
+|Software and Information Integrity — provenance verification
+
+|Produces or structures an audit record
+|AU-3
+|Audit Record Content — what goes in an audit event
+
+|Protects data at rest; zeroizes sensitive memory
+|MP-4, SC-28
+|MP-4: media protection; SC-28: data at rest
+
+|Enforces non-bypassability (private constructor, module boundary)
+|NSA RTB RAIN
+|Not a NIST control number — cite as "NSA RTB RAIN"
+
+|Implements TPI (Two-Path Independence) parsing
+|NIST 800-218 SSDF PW.4
+|Cite the SSDF practice, not an 800-53 control
+|===
+
+If multiple controls apply, list all of them. There is no rule against
+citing both AC-4 and SI-7 on the same type if both apply.
+
+== Common Mistakes
+
+*Citing a control on every field, every accessor, and every Display impl.*
+This creates noise and obscures the annotations that matter. Accessors
+and Display impls do not make security decisions. The parent type's
+annotation covers them.
+
+*Using vague language: "security-related", "handles sensitive data".*
+Annotations must name a specific control. "Security-related" is not a
+control citation; it is a hedge. State the control number and what
+property it governs.
+
+*Omitting the control number.*
+"NIST 800-53" alone is not a citation. "NIST 800-53 AC-4" names the
+specific control family and number. Auditors work from control numbers,
+not family names.
+
+*Citing the standard but not explaining what the code does to satisfy it.*
+The annotation should state both the control and the enforcement action.
+"NIST 800-53 AC-4: Dominance Check (Lattice Mathematics)" is better than
+"NIST 800-53 AC-4" alone because it tells the auditor what to look for
+in the implementation.
+
+*Annotating items that the crate re-exports but does not implement.*
+Annotations belong on the implementation, not on re-exports. A thin
+wrapper over an unannotated type is not annotated by the re-export.
+
+== Module-Level vs. Function-Level Precedence
+
+A module-level annotation does not replace function-level annotations for
+security-critical functions. If `category.rs` carries a module-level
+AC-4 citation and `CategorySet::dominates` also carries an AC-4 citation,
+both are correct and both serve a purpose: the module annotation tells
+the auditor what the module is about; the function annotation tells the
+auditor exactly which function performs the enforcement.
+
+The rule is additive: annotate at the coarsest level where the control
+applies, and also at any specific item where the control is directly enforced.
+
+== Reference
+
+For the full list of controls used in this codebase and their versions, see
+xref:compliance-frameworks.adoc[Compliance frameworks registry].
+
+For the high-assurance patterns that many of these controls govern, see
+xref:high-assurance-patterns.adoc[High-assurance coding patterns].

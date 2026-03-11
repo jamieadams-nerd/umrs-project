@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page xmlns="http://projectmallard.org/1.0/"
+      type="topic"
+      id="concept-restricted-unlabeled">
+  <info>
+    <link type="guide" xref="index" group="restricted"/>
+    <desc>La différence entre &lt;restricted&gt; et &lt;unlabeled&gt;, et pourquoi cela importe.</desc>
+  </info>
+
+  <title>&lt;restricted&gt; vs &lt;unlabeled&gt;</title>
+
+  <p>
+    <cmd>umrs-ls</cmd> utilise deux étiquettes de groupe spéciales pour les objets dont le contexte de
+    sécurité ne peut pas être entièrement vérifié. Elles ne sont pas interchangeables.
+  </p>
+
+  <terms>
+    <item>
+      <title><code>&lt;restricted&gt;</code></title>
+      <p>
+        <sys>open()</sys> a été <em>refusé</em> — soit par les permissions DAC (p. ex., un répertoire
+        <code>0700</code> ou <code>0600</code>) soit par une décision de politique MAC (SELinux a refusé
+        la permission <sys>open</sys>). Comme aucun descripteur de fichier n'a pu être établi,
+        <sys>fgetxattr</sys> ne peut pas être appelé. L'étiquette de sécurité au niveau de l'inode est
+        <em>invérifiable</em> pour le sujet courant. L'outil enregistre ce qu'il peut voir depuis le
+        flux de répertoire — le nom et rien de plus.
+      </p>
+    </item>
+    <item>
+      <title><code>&lt;unlabeled&gt;</code></title>
+      <p>
+        <sys>open()</sys> a <em>réussi</em> et un descripteur de fichier valide a été obtenu, mais
+        <sys>fgetxattr(fd, "security.selinux")</sys> a retourné <sys>ENODATA</sys>. L'objet n'est
+        genuinement pas étiqueté. Cela peut survenir sur des systèmes de fichiers sans support de xattr
+        SELinux, ou sur des objets créés en dehors de la politique SELinux.
+      </p>
+    </item>
+  </terms>
+
+  <section id="why-it-matters">
+    <title>Pourquoi cette distinction importe</title>
+
+    <p>
+      Le <cmd>ls -Z</cmd> standard utilise <sys>lstat</sys>, un appel système basé sur le chemin.
+      <sys>lstat</sys> demande au noyau : «quelle est l'étiquette pour le fichier à ce chemin ?» Le
+      noyau résout le chemin et retourne une chaîne d'étiquette. Le processus appelant n'établit jamais
+      de relation de descripteur de fichier avec l'objet.
+    </p>
+
+    <note style="important">
+      <p>
+        <cmd>ls -Z</cmd> peut afficher une étiquette pour un objet que le sujet courant ne peut pas
+        ouvrir. L'étiquette est ce que le noyau <em>prétend</em> être là — elle n'est pas vérifiée par
+        l'accès direct au descripteur de fichier à l'inode. Une course TOCTOU (un échange de lien
+        symbolique ou un renommage entre l'appel <sys>lstat</sys> et toute opération subséquente) peut
+        entraîner une divergence entre le chemin et l'inode.
+      </p>
+    </note>
+
+    <p>
+      <cmd>umrs-ls</cmd> ne fait pas confiance à la chaîne de chemin. Il tente de <sys>open()</sys>
+      chaque objet pour s'ancrer à l'inode physique. Toutes les lectures subséquentes —
+      <sys>fgetxattr(fd, "security.selinux")</sys>, <sys>ioctl(fd, FSGETXATTR)</sys> — opèrent à
+      travers ce descripteur.
+    </p>
+
+    <p>
+      Si <sys>open()</sys> est refusé, l'inode est inaccessible. L'entrée est marquée
+      <code>&lt;restricted&gt;</code> pour rendre l'écart visible. L'outil ne revient pas à
+      <sys>lstat</sys> pour compléter une étiquette. Il ne réussit pas silencieusement avec des données
+      non vérifiées. Échouer visiblement est le comportement correct.
+    </p>
+  </section>
+
+  <section id="auditor-framing">
+    <title>La perspective de l'auditeur</title>
+
+    <p>
+      Lorsque <cmd>umrs-ls</cmd> rapporte <code>&lt;restricted&gt;</code> et que
+      <cmd>/bin/ls -Z</cmd> rapporte une étiquette pour la même entrée, ce n'est pas un écart entre
+      deux outils. C'est un <em>écart de vérification</em> rendu explicite.
+    </p>
+
+    <list>
+      <item><p><cmd>/bin/ls -Z</cmd> affiche une étiquette <em>revendiquée</em> basée sur la recherche par chemin.</p></item>
+      <item><p><cmd>umrs-ls</cmd> rapporte <code>&lt;restricted&gt;</code> parce qu'il ne peut pas établir une <em>chaîne de traçabilité vérifiée</em> jusqu'à l'inode.</p></item>
+    </list>
+
+    <p>
+      L'étiquette peut être exacte. Elle peut aussi ne pas l'être. L'outil ne peut pas déterminer
+      laquelle des deux est vraie, donc il ne prétend pas le savoir. Ce comportement suit le principe
+      de non-contournabilité NSA RTB (RAIN) : un contrôle de sécurité qui peut être contourné en
+      refusant un descripteur de fichier n'est pas un contrôle.
+    </p>
+  </section>
+</page>

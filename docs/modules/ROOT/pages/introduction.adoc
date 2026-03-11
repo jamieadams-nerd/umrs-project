@@ -1,0 +1,108 @@
+= Introduction to UMRS
+:description: What UMRS is, who it is for, and why it exists.
+:toc: left
+:toclevels: 2
+
+// NIST 800-53 AC-4, SI-7 — information flow enforcement and integrity are the
+// primary governing controls for this system's existence.
+
+The Unclassified MLS Reference System (UMRS) is a software platform for
+enforcing, verifying, and auditing mandatory handling labels on unclassified
+systems. It is built on Red Hat Enterprise Linux 10 with SELinux enforcing
+mode active, and it targets environments where unclassified information carries
+legally or contractually binding handling requirements — such as Controlled
+Unclassified Information (CUI) under NIST SP 800-171 and CMMC 2.0.
+
+UMRS does not perform classification. It does not determine whether data is
+authorized for release. It enforces the labels that policy assigns, makes those
+labels observable, and produces auditable evidence that handling requirements
+were respected.
+
+== The Problem UMRS Addresses
+
+Standard Linux systems lack first-class support for mandatory label-based
+access control on unclassified data. SELinux provides the enforcement
+infrastructure, but the userland tooling for constructing, validating,
+and auditing MLS security labels is largely string-based and
+weakly-typed. Labeling errors — misspelled context fields, out-of-range
+sensitivity levels, malformed category sets — often pass silently through
+tooling until they surface as enforcement anomalies.
+
+UMRS addresses this gap with a strongly-typed Rust modeling layer over
+SELinux constructs. Every security label component is validated at
+construction time. Invalid labels cannot be instantiated. The type
+system enforces what policy requires.
+
+Beyond the modeling layer, UMRS applies a set of high-assurance coding
+patterns — Two-Path Independence parsing, TOCTOU-safe I/O, fail-closed
+error handling, provenance verification of kernel attributes — that
+make the enforcement logic auditable and resistant to common
+implementation-level attacks. These patterns derive from NSA RTB
+requirements, NIST 800-218 SSDF, and operational experience in
+high-assurance environments.
+
+== Target Environment
+
+UMRS is designed for:
+
+* Red Hat Enterprise Linux 10 with SELinux enforcing mode (targeted or MLS policy)
+* FIPS 140-2/140-3 mode assumed active — all cryptographic operations must
+  use FIPS-validated primitives
+* Isolated or near-isolated network posture — deployed binaries make no
+  outbound network calls
+* CUI environments governed by NIST 800-171, CMMC 2.0, and related frameworks
+* Eventual support for partner-nation handling schemes (UK, Canada, Australia,
+  New Zealand) alongside the US CUI baseline
+
+Deployment on Ubuntu is supported for development. Production deployment
+targets RHEL 10.
+
+== Project Origin
+
+UMRS was started by an engineer with years of operational experience on
+classified MLS systems — environments where Bell-LaPadula confidentiality
+enforcement, trusted paths, and mandatory access control were not academic
+concepts but daily operational requirements. The goal of UMRS is to bring the
+same engineering discipline and assurance techniques into unclassified CUI
+environments, which increasingly face the same information-flow control
+requirements without the same tooling history.
+
+The project is a clean-room implementation. No classified source code,
+no proprietary MLS system code, and no line-by-line reimplementation of
+existing SELinux userland libraries appears in the codebase.
+
+== Audiences
+
+This documentation is written for three audiences, who will use it differently.
+
+*New engineers* will find concept introductions, architecture background, and
+developer guides that explain both the what and the why — including why
+high-assurance patterns exist and what threat they defeat.
+
+*Security auditors* will find precise control citations (NIST 800-53, CMMC,
+NSA RTB), auditable design rationale, and compliance framework documentation
+that traces enforcement decisions to their governing standards.
+
+*Potential adopters* will find honest descriptions of what the system does,
+what is stable, what is prototype, and how to evaluate whether UMRS fits their
+environment.
+
+== What Is Stable and What Is Not
+
+The core `umrs-selinux` library — including the security context model, MLS
+level and range types, category sets, TOCTOU-safe directory listing, and kernel
+attribute reader — is the stable, documented foundation. The `umrs-ls` tool is
+the first user-facing tool built on that foundation.
+
+Several components are prototypes under active development: `umrs-logspace`
+(audit trail), `umrs-state` (system state introspection), and `vaultmgr`
+(secret ingestion). Documentation for these components will be added when
+their APIs stabilize.
+
+== Where to Go Next
+
+See xref:getting-started.adoc[Getting started] for guided reading paths by
+audience role.
+
+See xref:scope-and-audience.adoc[Scope and audience] for a precise definition
+of what UMRS does and does not do.

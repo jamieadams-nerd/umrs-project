@@ -1,0 +1,255 @@
+
+============================================================
+MLS CHROME EXTENSION — DESIGN & DOCUMENTATION SNAPSHOT
+============================================================
+
+PROJECT GOAL
+------------
+Create a Google Chrome extension that reads the HTTP response
+header:
+
+   X-MLS-Server-Level
+
+This header is provided by an Apache module running on an
+MLS-enabled RHEL system. The extension detects this header,
+stores it, logs it for debugging, optionally displays it to
+the user, and updates badge icons or UI elements based on the
+MLS classification level.
+
+The extension should:
+1. Inspect all HTTP response headers.
+2. Detect the presence of "X-MLS-Server-Level".
+3. Display the classification level to the user.
+4. Provide optional UI feedback (badge text, popup display).
+5. Work with Manifest V3 (current Chrome extension standard).
+6. Remain lightweight and secure.
+
+
+WHAT THE EXTENSION CAN DO
+-------------------------
+- Detect any classification provided by MLS Apache module:
+     SECRET//NOFORN
+     CONFIDENTIAL
+     UNCLASSIFIED
+     TOP_SECRET//SCI
+     etc.
+
+- Store the latest detected MLS header value.
+
+- Display visual indicators via:
+     - console logging
+     - toolbar badge
+     - popup window
+
+- Help users confirm what MLS level their browser session is
+ operating in.
+
+
+FILES AND ARCHITECTURE
+----------------------
+The extension consists of the following files:
+
+1. manifest.json
+    - Declares permissions
+    - Enables background service worker
+    - Grants access to webRequest API
+
+2. background.js
+    - Listens for HTTP response headers
+    - Extracts the X-MLS-Server-Level header
+    - Saves values to chrome.storage
+    - Updates extension badge
+
+3. popup.html (optional UI)
+    - A small window displayed when clicking on extension icon
+
+4. popup.js (optional UI logic)
+    - Reads stored MLS level and displays it
+
+This is a minimal, yet functional Chrome extension that can be
+extended later as needed.
+
+
+MANIFEST.JSON
+-------------
+This file defines the extension's behavior, permissions, and
+runtime configuration.
+
+-----------------------------------------
+manifest.json
+-----------------------------------------
+{
+ "name": "MLS Classification Monitor",
+ "description": "Reads the X-MLS-Server-Level header and displays classification info.",
+ "version": "1.0",
+ "manifest_version": 3,
+
+ "permissions": [
+   "webRequest",
+   "webRequestBlocking",
+   "notifications"
+ ],
+
+ "host_permissions": [
+   "<all_urls>"
+ ],
+
+ "background": {
+   "service_worker": "background.js"
+ },
+
+ "action": {
+   "default_title": "MLS Level"
+ }
+}
+-----------------------------------------
+
+
+BACKGROUND.JS
+-------------
+This is the core logic. It intercepts all HTTP responses and
+extracts the MLS header.
+
+-----------------------------------------
+background.js
+-----------------------------------------
+chrome.webRequest.onHeadersReceived.addListener(
+ (details) => {
+   let headers = details.responseHeaders;
+
+   let mlsHeader = headers.find(h => 
+     h.name.toLowerCase() === "x-mls-server-level"
+   );
+
+   if (mlsHeader) {
+     console.log("MLS Server Level:", mlsHeader.value);
+
+     // Optional: Set badge text on the extension icon
+     chrome.action.setBadgeText({ text: "MLS" });
+     chrome.action.setBadgeBackgroundColor({ color: "#0033cc" });
+
+     // Store header value for display in popup
+     chrome.storage.local.set({ "mlsLevel": mlsHeader.value });
+   } else {
+     // Clear badge when no MLS header present
+     chrome.action.setBadgeText({ text: "" });
+   }
+ },
+ {
+   urls: ["<all_urls>"]
+ },
+ ["responseHeaders"]
+);
+-----------------------------------------
+
+
+POPUP.HTML (OPTIONAL)
+---------------------
+Provides GUI for users clicking on the extension icon.
+
+-----------------------------------------
+popup.html
+-----------------------------------------
+<!DOCTYPE html>
+<html>
+<head>
+ <title>MLS Level</title>
+</head>
+<body>
+ <div id="status">Loading...</div>
+ <script src="popup.js"></script>
+</body>
+</html>
+-----------------------------------------
+
+
+POPUP.JS (OPTIONAL)
+-------------------
+Reads classification label from chrome.storage and displays it
+in the popup.
+
+-----------------------------------------
+popup.js
+-----------------------------------------
+chrome.storage.local.get("mlsLevel", (data) => {
+ document.getElementById("status").innerText =
+   data.mlsLevel ? 
+     "Server Level: " + data.mlsLevel :
+     "No MLS header detected";
+});
+-----------------------------------------
+
+
+HOW TO INSTALL THE EXTENSION
+----------------------------
+1. Open Google Chrome.
+2. Navigate to:
+      chrome://extensions/
+3. Enable:
+      Developer Mode
+4. Click:
+      Load unpacked
+5. Select the folder containing:
+      manifest.json
+      background.js
+      popup.html (optional)
+      popup.js (optional)
+6. Open browser developer console to see logged MLS values.
+
+
+HOW THE EXTENSION WORKS
+-----------------------
+- Chrome calls background.js for every HTTP response.
+- background.js searches for the "X-MLS-Server-Level" header.
+- If present:
+     - Logs the classification
+     - Updates a badge on the extension icon
+     - Saves the classification to chrome.storage
+- The popup reads this stored value for display.
+- If the header is not present, the badge is cleared.
+
+
+SECURITY CONSIDERATIONS
+-----------------------
+- The extension only *reads* network headers.
+- It does not transmit or alter data.
+- Suitable for internal MLS-controlled environments.
+- Uses only standard Chrome APIs.
+- Can be code reviewed and digitally signed if deployed widely.
+
+
+FUTURE ENHANCEMENTS
+--------------------
+1. Color-coded badges:
+      - green = UNCLASSIFIED
+      - blue = CONFIDENTIAL
+      - red = SECRET
+      - yellow = TOP SECRET
+
+2. Page banners inserted via content script.
+
+3. Per-tab classification tracking.
+
+4. User alerts if visiting a server with unexpected MLS level.
+
+5. A policy engine written in JSON that determines whether to
+  warn the user about mismatches between:
+      - file classification (X-MLS-Label)
+      - server classification
+      - expected clearance level
+
+6. Integration with the Apache MLS module being developed.
+
+
+CONCLUSION
+----------
+This Chrome extension provides a lightweight client-side
+awareness mechanism for MLS-labeled websites, enabling users
+to quickly verify the classification level of content they
+are accessing. It is flexible, extensible, and suitable for
+MLS environments requiring classification markings at the
+browser level.
+
+============================================================
+END OF FILE
+============================================================

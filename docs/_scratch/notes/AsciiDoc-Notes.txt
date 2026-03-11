@@ -1,0 +1,268 @@
+Yes. Here is a clean, “start today” way to begin AsciiDoc in a UMRS git repo and produce:
+
+
+
+GitHub Pages static web docs
+One or more PDFs (also shipped on the workstation)
+Man pages (when needed)
+
+
+
+
+This keeps one source of truth and generates everything as build outputs.
+
+
+
+A) Repository layout (recommended starter)
+
+
+
+docs/
+antora.yml
+modules/
+ROOT/
+nav.adoc
+pages/
+index.adoc
+getting-started.adoc
+install.adoc
+admin-guide.adoc
+security-model.adoc
+operations.adoc
+troubleshooting.adoc
+release-notes.adoc
+
+attachments/
+umrs-reference-workstation-pdf/   (optional: final PDFs copied here by CI)
+
+
+
+
+man/
+umrs-state.1.adoc
+umrs-audit-snapshot.8.adoc
+umrs-verify.1.adoc
+
+tools/
+build-docs.sh
+
+site/               (generated; do not hand-edit; usually gitignored)
+dist/
+pdf/              (generated PDFs)
+man/              (generated man pages)
+
+
+
+
+
+Why this structure:
+
+
+
+Antora is a common choice for versioned AsciiDoc doc sites (docs-as-code).  
+Man pages are a first-class Asciidoctor output (manpage backend).  
+PDFs are straightforward with asciidoctor-pdf.  
+
+
+
+
+B) Minimal Antora config to get a web doc site
+
+
+
+docs/antora.yml (component descriptor)
+
+
+
+
+
+
+name: umrs
+title: Unclassified MLS Reference System
+version: latest
+nav:
+modules/ROOT/nav.adoc
+
+
+
+
+
+
+
+docs/modules/ROOT/nav.adoc
+
+
+
+
+
+
+
+xref:index.adoc[Home]
+
+
+xref:getting-started.adoc[Getting Started]
+
+
+xref:install.adoc[Install]
+
+
+xref:admin-guide.adoc[Administrator Guide]
+
+
+xref:security-model.adoc[Security Model]
+
+
+xref:operations.adoc[Operations]
+
+
+xref:troubleshooting.adoc[Troubleshooting]
+
+
+xref:release-notes.adoc[Release Notes]
+
+
+
+
+
+
+
+Create docs/modules/ROOT/pages/index.adoc as your landing page.
+
+
+
+
+C) Build outputs (one command produces all artifacts)
+
+Create tools/build-docs.sh that does these steps:
+
+
+
+Web site (HTML)
+
+
+
+
+
+
+Use Antora to build into ./site
+Antora assembles an HTML site from AsciiDoc content in git repos.  
+
+
+
+
+
+
+PDFs
+
+
+
+
+
+
+Use asciidoctor-pdf to build one or more PDFs into ./dist/pdf
+asciidoctor-pdf converts AsciiDoc directly to PDF.  
+
+
+
+
+Practical approach for “multiple PDFs”:
+
+
+
+Make a small set of top-level “book” entrypoints, e.g.:
+docs/modules/ROOT/pages/admin-guide.adoc (single PDF)
+docs/modules/ROOT/pages/security-model.adoc (single PDF)
+
+Or create dedicated PDF entry files under docs/ (recommended), e.g.:
+docs/pdf-admin-guide.adoc
+docs/pdf-ops-guide.adoc
+Those entry files can include other pages via include:: to assemble book-style PDFs.
+
+
+
+
+
+
+
+Man pages
+
+
+
+
+
+
+Write each man page source as AsciiDoc with doctype manpage.
+Build with asciidoctor using the manpage backend; Asciidoctor documents this flow and uses it for its own man page.  
+
+
+
+
+D) GitHub Pages publishing (simple and reliable)
+
+Two common options:
+
+
+
+Option 1: Publish from /docs on main
+
+
+
+GitHub Pages can publish from a /docs folder on a branch.  
+Downside: your generated HTML must live in /docs, which mixes source and output.
+
+
+
+
+Option 2 (recommended): Publish from a gh-pages branch
+
+
+
+Keep sources on main.
+CI builds the site and pushes only the generated ./site output to gh-pages.
+This keeps main clean and makes it obvious what is source vs generated.
+
+
+
+
+E) Shipping PDFs and man pages onto the “reference workstation”
+
+For your RPM packaging workflow:
+
+
+
+PDFs:
+Install to /usr/share/doc/umrs/ (or /usr/share/doc/umrs/pdf/)
+This is the standard “offline doc payload” location.
+
+Man pages:
+Install generated man pages into:
+/usr/share/man/man1/ for user commands
+/usr/share/man/man8/ for admin commands
+
+Then run mandb (normally handled by packaging scripts).
+
+
+
+
+
+F) A very small “start now” checklist
+
+
+
+Add one page: docs/modules/ROOT/pages/getting-started.adoc
+Add Antora files: docs/antora.yml and docs/modules/ROOT/nav.adoc
+Add one man source: man/umrs-state.1.adoc (doctype manpage)
+Add one PDF entrypoint: docs/pdf-admin-guide.adoc
+Add tools/build-docs.sh that outputs:
+site/ (HTML site)
+dist/pdf/*.pdf
+dist/man/*.[1-9]
+
+
+
+
+
+If you want, I will write the exact initial file contents (antora.yml, nav.adoc, a starter index.adoc, one PDF entrypoint, and one manpage .adoc) and a hardened build-docs.sh suitable for your RHEL 10 FIPS workstation workflow.
+
+
+Sent from my iPhone

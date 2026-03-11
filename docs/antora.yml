@@ -1,0 +1,11 @@
+name: umrs
+title: Unclassified MLS Reference System
+version: latest
+nav:
+  - modules/ROOT/nav.adoc
+  - modules/architecture/nav.adoc
+  - modules/deployment/nav.adoc
+  - modules/operations/nav.adoc
+  - modules/reference/nav.adoc
+  - modules/devel/nav.adoc
+  - modules/umrs-tools/nav.adoc

@@ -1,0 +1,164 @@
+= UMRS Structured Activity Logging Architecture
+Jamie L. Adams
+
+== Overview
+
+UMRS tools implement structured activity logging using the native Red Hat Enterprise Linux logging stack rather than custom log files or proprietary logging frameworks. This design leverages existing, well-understood system components to provide durable, auditable, and machine-parseable logs suitable for automation, analysis, and graphical viewers.
+
+The logging pipeline consists of four layers:
+
+* UMRS tools emitting semantic events via syslog
+* systemd-journald acting as the authoritative event store
+* rsyslog exporting selected events in JSON Lines format
+* consumers (CLI tools or GUIs) parsing and presenting the data
+
+Each layer has a clearly defined responsibility and does not duplicate the role of another.
+
+== Event emission by UMRS tools
+
+UMRS tools emit activity events using the standard syslog interface. This can be done in two equivalent ways:
+
+* calling the syslog API directly (for example, libc::syslog in Rust)
+* invoking the logger utility
+
+In both cases, the tool supplies:
+
+* a stable syslog identifier (program name) beginning with umrs-
+* a message containing UMRS semantic fields encoded as space-separated key=value pairs
+
+Example MESSAGE payload:
+
+----
+action=sanitize result=SUCCESS file=/path/to/file detail='second pass complete'
+----
+
+Values that may contain spaces are enclosed in single quotes. This avoids ambiguity while remaining easy to parse.
+
+UMRS tools intentionally emit only semantic meaning:
+
+* what action occurred
+* what the result was
+* what object was affected
+* optional explanatory detail
+
+UMRS tools do not manage log files, rotation, retention, or output formatting. They only emit events.
+
+== journald as the authoritative store
+
+All syslog messages are first ingested by systemd-journald. journald automatically records authoritative metadata for each event, including (not exhaustive):
+
+* UID, GID, PID
+* executable path
+* SELinux context
+* timestamp and boot ID
+* syslog facility and priority
+
+UMRS does not modify journald defaults or retention policy. journald remains the system of record for activity and forensic analysis.
+
+== rsyslog export and routing
+
+rsyslog is used as an export and transformation layer, not as the primary log store.
+
+UMRS routing is implemented via a dedicated rsyslog configuration file:
+
+----
+/etc/rsyslog.d/10-umrs-activity-json.conf
+----
+
+This file contains two components: a template and a rule.
+
+=== Template
+
+The template defines how matching log events are serialized. UMRS uses rsyslog native JSON output support to generate valid JSON objects without manual escaping.
+
+The output format is JSON Lines (JSONL): one complete JSON object per line. This is append-only, easy to tail, and easy for programs to process incrementally.
+
+The template selects fields such as:
+
+* timestamp
+* hostname
+* program name (syslog identifier, for example umrs-shred)
+* PID
+* syslog severity and facility
+* optional SELinux context (when available to rsyslog)
+* the original MESSAGE payload (UMRS key=value semantic fields)
+
+=== Rule
+
+The rule defines which events the template applies to and what to do with them. UMRS matches events whose program name starts with umrs-, writes them to a dedicated file using the template, and then stops further processing to prevent duplication into /var/log/messages.
+
+The numeric prefix 10- ensures the UMRS rule is evaluated early, and the explicit stop makes behavior deterministic.
+
+== UMRS activity log file
+
+UMRS activity is written to:
+
+----
+/var/log/umrs-activity.jsonl
+----
+
+Each line in this file is a complete JSON object representing one event. Because JSONL is line-delimited:
+
+* the file can be tailed efficiently
+* consumers can process entries one line at a time without loading the whole file
+* a malformed line does not invalidate the entire file (readers should be defensive)
+
+The JSON object includes transport metadata (timestamp, program, severity, etc.) and the MESSAGE field, which contains UMRS semantic key=value fields.
+
+== Reading and parsing
+
+Consumers read the file line-by-line and parse each line as JSON. Each line yields a dictionary/map for that event.
+
+If a consumer further parses the UMRS semantic MESSAGE field, it must handle quoted values correctly. Values with spaces are single-quoted, so shell-style tokenization is recommended (for example shlex.split in Python) rather than naive string splitting.
+
+== Viewer behavior (human readability)
+
+The JSONL file is intentionally structured for machines. A viewer can generate a human-readable description string from the structured fields, for example by combining:
+
+* program/tool name
+* action
+* result
+* primary object (for example file=...)
+* optional detail
+* actor/identity information (from MESSAGE fields and/or journald metadata)
+
+This keeps UMRS tools simple while allowing the viewer to present clear narratives such as "jadams sanitized junk successfully (shred completed)".
+
+== Separation of responsibilities
+
+This architecture separates concerns cleanly:
+
+* UMRS tools: emit semantic events only
+* journald: authoritative storage and system metadata
+* rsyslog: filtering, JSON formatting, and file output
+* viewers/tools: interpretation, correlation, and presentation
+
+Each layer can evolve independently without forcing changes in the others.
+
+== Outcome
+
+The result is a robust, auditable, and demonstrable structured logging pipeline built entirely from standard RHEL components. UMRS gains machine-parseable activity logs suitable for automation and graphical interfaces while preserving compatibility with system forensics and enterprise logging practices.
+
+test.jsonl line entry:
+
+logger -t umrs-test -- 'action=test result=SUCCESS detail=ok'
+
+
+{"ts":"2025-12-20T04:08:19.225397-05:00", "host":"localhost", "program":"umrs-test", "pid":"457979", "severity":"notice", "facility":"user", "selinux_context":"unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023", "message":"action=test result=SUCCESS detail=ok"}
+template(name="umrsJsonLine" type="list" option.jsonf="on" option.caseSensitive="on") {
+property(outname="ts" name="timereported" dateFormat="rfc3339" format="jsonf")
+property(outname="host" name="hostname" format="jsonf")
+property(outname="program" name="programname" format="jsonf")
+property(outname="pid" name="procid" format="jsonf")
+property(outname="severity" name="syslogseverity-text" format="jsonf")
+property(outname="facility" name="syslogfacility-text" format="jsonf")
+property(outname="selinux_context" name="$!_SELINUX_CONTEXT" format="jsonf")
+property(outname="message" name="msg" format="jsonf")
+}
+
+if ($programname startswith "umrs-") then {
+action(type="omfile"
+file="/var/log/umrs-activity.jsonl"
+template="umrsJsonLine")
+stop
+}

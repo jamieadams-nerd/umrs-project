@@ -1,0 +1,16 @@
+* xref:index.adoc[Developer Guide]
+
+* High-Assurance Patterns
+** xref:high-assurance-patterns.adoc[High-assurance coding patterns]
+** xref:compliance-annotations.adoc[Compliance annotations guide]
+** xref:rust-must-use-contract.adoc[Compile-time contract enforcement: #[must_use]]
+
+* Language Guides
+** xref:rust-style-guide.adoc[Rust style guide]
+** xref:secure-bash.adoc[Secure Bash guide]
+** xref:secure-python.adoc[Secure Python guide]
+** xref:i18n.adoc[Internationalization (i18n)]
+
+* Build & Workspace
+** xref:build-tooling.adoc[Build tooling]
+** xref:cargo-notes.adoc[Cargo & workspace notes]

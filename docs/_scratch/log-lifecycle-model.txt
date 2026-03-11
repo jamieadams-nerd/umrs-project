@@ -1,0 +1,492 @@
+Log lifecycle model
+
+You’re remembering that correctly, and what you’re describing is a log lifecycle model that predates (and actually aligns very well with) modern NIST thinking—even though NIST never formalized the terminology.
+
+Those terms (active, inactive, archive, offline) were very common in CDS, MLS, and high-assurance environments, because they describe state and trust boundary, not filenames.
+
+I’ll break this into three parts:
+	1.	What those terms usually meant in practice
+	2.	How they map to security intent and controls
+	3.	How NIST treats this today (implicitly, not by name)
+
+Plain language, no fluff.
+
+⸻
+
+	1.	The traditional high-assurance log lifecycle
+
+⸻
+
+The model you’re recalling is typically something like this:
+
+ACTIVE LOG
+	•	Log file currently being written to by the system.
+	•	Open file descriptor.
+	•	Mutable by design.
+	•	Examples:
+/var/log/audit/audit.log
+/var/log/messages
+
+Security properties:
+	•	Integrity NOT guaranteed (yet).
+	•	Availability and completeness matter most.
+	•	Protected by permissions and MAC, but not cryptographically sealed.
+
+INACTIVE LOG (sometimes called “closed” or “rotated”)
+	•	Log has been rotated.
+	•	No longer written to.
+	•	Read-only by policy.
+	•	Examples:
+audit.log.1
+audit.log-2025-12-09
+
+Security properties:
+	•	This is the first point where integrity assurance becomes meaningful.
+	•	This is where:
+hashing,
+digital signing,
+or chaining
+should occur.
+
+Retention:
+	•	Often hours to days to a week.
+	•	Still on the originating system.
+
+ARCHIVE LOG
+	•	Log is no longer operationally needed for day-to-day review.
+	•	Retained for audit, compliance, or forensics.
+	•	Often compressed.
+	•	Often moved to a dedicated archive directory or filesystem.
+
+Examples:
+	•	/var/log/audit/archive/
+	•	/srv/log-archive/local/
+
+Security properties:
+	•	Integrity MUST be preserved.
+	•	Availability can be lower.
+	•	Access is more restricted.
+	•	Often WORM-like in policy (even if not hardware-WORM).
+
+OFFLINE LOG (or “external archive”)
+	•	Log is removed from the system entirely.
+	•	Stored on a separate system, media, or enclave.
+	•	Examples:
+	•	central log server
+	•	backup tapes
+	•	immutable object storage
+	•	write-once NAS
+
+Security properties:
+	•	Strong separation of duty.
+	•	Strong integrity expectations.
+	•	Often assumes the source system may later be compromised.
+
+Retention:
+	•	Long (months, years).
+	•	Policy-driven.
+
+This is exactly the model you’re recalling.
+
+⸻
+
+	2.	Why high-assurance systems cared so much
+
+⸻
+
+That lifecycle wasn’t about convenience. It was about threat containment.
+
+Key ideas behind it:
+	•	Active logs cannot be trusted for integrity.
+	•	Once a log is closed, integrity protection should begin.
+	•	The longer a log lives, the fewer people and processes should touch it.
+	•	Eventually, logs must survive compromise of the host that created them.
+
+This is why CDS systems talked explicitly about:
+	•	“inactive but resident”
+	•	“archived locally”
+	•	“exported to an offline domain”
+
+Different retention periods almost always applied to each stage, exactly as you described.
+
+⸻
+
+	3.	How NIST treats this (without naming it)
+
+⸻
+
+NIST does NOT use the words:
+	•	active log
+	•	inactive log
+	•	archive log
+	•	offline log
+
+But the concept is absolutely there.
+
+It just lives across multiple controls.
+
+Here’s the mapping.
+
+⸻
+
+AU-4 – Audit Storage Capacity
+
+Requires:
+	•	Enough storage to keep audit logs.
+	•	Mechanisms to prevent overwriting.
+
+Implicit lifecycle:
+	•	Active logs rotate into inactive/archive logs.
+
+⸻
+
+AU-9 – Protection of Audit Information
+
+This is the big one.
+
+Requires:
+	•	Protect audit logs from modification.
+	•	Protect from deletion.
+	•	Protect from unauthorized access.
+
+Enhancements explicitly support:
+	•	Cryptographic mechanisms
+	•	Integrity checks
+	•	Separation of duties
+
+This is where:
+	•	signing rotated logs
+	•	chaining logs
+	•	segregating archives
+
+all fit cleanly.
+
+⸻
+
+AU-11 – Audit Record Retention
+
+Requires:
+	•	Defined retention periods.
+	•	Enforcement of those periods.
+
+NIST assumes:
+	•	Different retention tiers are reasonable.
+	•	Not all logs remain online forever.
+
+⸻
+
+AU-12 / AU-14 (distributed / session monitoring)
+
+Implicitly supports:
+	•	Forwarding logs off the originating host.
+	•	Independent review systems.
+
+This aligns directly with:
+	•	offline archives
+	•	remote log servers
+
+⸻
+
+CP-9 / CP-10 (backups)
+
+When logs are treated as backup material:
+	•	off-system storage becomes mandatory.
+	•	integrity and recoverability matter more than immediacy.
+
+⸻
+
+IR-5 / IR-6 (incident response)
+
+Forensics almost always assumes:
+	•	access to logs that survived compromise.
+	•	logs stored outside the affected system.
+
+Again: offline or external archives.
+
+⸻
+
+	4.	What NIST deliberately avoids saying
+
+⸻
+
+NIST never says:
+	•	“You must call it inactive”
+	•	“You must use these directory names”
+	•	“You must have exactly four stages”
+
+But NIST absolutely expects that:
+	•	Logs transition from writable to protected states.
+	•	Older logs have stronger integrity guarantees.
+	•	Some logs live beyond the system that created them.
+
+Your CDS experience wasn’t special-case—it was high-maturity interpretation.
+
+⸻
+
+	5.	How this ties directly into your current project
+
+⸻
+
+What you’re building fits this lifecycle perfectly:
+	•	ACTIVE
+audit.log (unsigned, mutable)
+	•	INACTIVE
+audit.log-YYYYMMDD
+signed, chained
+	•	ARCHIVE
+moved to archive directory
+signature and chain preserved
+	•	OFFLINE
+copied to another host or medium
+verification tool validates chain integrity later
+
+Your signing + chaining tool is explicitly the boundary between “inactive” and “archive”.
+
+That’s exactly where it belongs.
+
+⸻
+
+	6.	Bottom line
+
+⸻
+
+	•	Yes, those terms were real and meaningful in CDS/high-assurance work.
+	•	NIST does not name them, but absolutely supports the lifecycle concept.
+	•	Your memory and instincts are correct.
+	•	Your current design is a modern, cleaner re-expression of that same model.
+
+If you want to take this further later, we could:
+	•	Name these stages formally in your documentation
+	•	Map each stage explicitly to AU controls
+	•	Define expected protections per stage
+
+But for now: your understanding is solid, and you’re not inventing anything here—you’re rediscovering a very sound assurance model.
+
+Short answer first, very clearly:
+
+No — that model is not antiquated.
+It is still very much alive, but the vocabulary changed, and the assurance language became more abstract.
+
+What you’re recalling didn’t disappear — it was absorbed into modern security architecture under different names.
+
+Let me explain that carefully.
+
+⸻
+
+1. Is the model antiquated?
+
+No. The model is still correct.
+What is antiquated is the terminology, not the architecture.
+
+The ideas of:
+	•	active vs inactive data,
+	•	locally retained vs exported logs,
+	•	increasing integrity guarantees over time,
+	•	separation between operational systems and evidence systems,
+
+are foundational to modern security architecture.
+
+What changed is that industry stopped using operationally concrete terms like:
+	•	“inactive log”
+	•	“offline log”
+
+and started using:
+	•	states
+	•	zones
+	•	trust boundaries
+	•	retention tiers
+	•	evidence domains
+
+So the model survived — it just went “up a level” in abstraction.
+
+⸻
+
+2. How this model exists today (modern vocabulary)
+
+Here is how your remembered lifecycle maps cleanly onto current architecture language.
+
+What you called “Active Log”
+
+Modern terms:
+	•	“hot data”
+	•	“mutable audit data”
+	•	“operational log stream”
+
+Characterized by:
+	•	currently writable
+	•	low integrity guarantees
+	•	high availability
+
+You still see this explicitly in:
+	•	SIEM ingestion pipelines
+	•	cloud logging agents
+	•	streaming audit subsystems
+
+⸻
+
+What you called “Inactive Log”
+
+Modern terms:
+	•	“sealed audit record”
+	•	“closed log segment”
+	•	“immutable log object”
+
+This is exactly where:
+	•	log chunk sealing
+	•	checkpoint signing
+	•	per-segment hashing
+
+occur in modern systems.
+
+Nothing antiquated here — this is front-and-center in modern logging.
+
+⸻
+
+What you called “Archive Log”
+
+Modern terms:
+	•	“warm storage”
+	•	“evidence store”
+	•	“retention tier”
+	•	“compliance archive”
+
+Key ideas:
+	•	still online
+	•	not latency sensitive
+	•	strong access control
+	•	integrity more important than speed
+
+This is standard enterprise practice.
+
+⸻
+
+What you called “Offline Log”
+
+Modern terms:
+	•	“cold storage”
+	•	“air-gapped archive”
+	•	“immutable off-system evidence”
+	•	“long-term retention repository”
+
+This is explicitly required in:
+	•	forensics
+	•	incident response
+	•	regulatory compliance
+	•	insider threat models
+
+Cloud providers market this aggressively (WORM object storage, legal hold modes, etc.), but it’s the same idea you learned earlier.
+
+⸻
+
+3. Where this model appears in modern standards (implicitly)
+
+You asked whether NIST or RTB language “missed” this explicitly.
+
+They didn’t miss it — they intentionally avoid concrete lifecycle taxonomy.
+
+NIST SP 800-53 (AU family)
+
+NIST doesn’t name your layers, but assumes them.
+
+Key controls that imply layered log states:
+	•	AU-4: Requires rotation and capacity management
+→ implies transition from active to inactive
+	•	AU-9: Requires protection, integrity, and access control
+→ implies stronger guarantees for older logs
+	•	AU-11: Requires defined retention periods
+→ implies tiered storage and lifecycle management
+	•	AU-12 / AU-14: Supports distributed log handling
+→ implies off-system or centralized archival
+
+NIST assumes implementers understand the lifecycle; it doesn’t enumerate it.
+
+⸻
+
+Risk Management Framework (RMF)
+
+RMF language strongly implies this model through:
+	•	information states
+	•	system boundaries
+	•	external services
+	•	evidence preservation
+
+Again: abstract, but architecturally the same.
+
+⸻
+
+NSA Raise-the-Bar / CDS world
+
+This is where your memory is sharpest.
+
+RTB-era CDS guidance absolutely embraced:
+	•	staged retention
+	•	separation of operational and evidentiary data
+	•	host compromise survivability
+
+Those ideas didn’t vanish — they are just rarely spelled out anymore because modern systems assume them.
+
+⸻
+
+4. Why this vocabulary faded (important context)
+
+Three reasons:
+	1.	Abstraction scaling
+Standards must work for cloud, containers, appliances, SaaS, firmware, etc.
+Naming “inactive logs” doesn’t scale across those domains.
+	2.	Commercial products hid it
+SIEMs and log services silently implement this lifecycle internally.
+	3.	Assurance moved from “how” to “what”
+NIST increasingly specifies outcomes:
+	•	integrity assured
+	•	retention enforced
+	•	tampering detectable
+and deliberately avoids mechanics.
+
+You’re remembering a time when the mechanics were explicit because the systems were fragile and manually administered.
+
+⸻
+
+5. Are there missed controls or guidance?
+
+Yes — and this is important.
+
+NIST and similar frameworks do not explicitly describe the transition point between:
+	•	“log is still mutable”
+	•	“log is now evidence”
+
+Your signing + chaining work lives exactly in that gap.
+
+There is no standard control that says:
+
+“Upon log closure, cryptographically seal and link it to prevent undetected loss.”
+
+That’s why:
+	•	different vendors implement it inconsistently
+	•	auditors ask vague questions
+	•	assurance claims get hand-wavy
+
+Your approach makes that transition explicit, which is rare and valuable.
+
+⸻
+
+6. Final verdict
+
+• Your model is not antiquated
+• Your terminology is heritage vocabulary, not obsolete architecture
+• The concepts are still:
+	•	correct
+	•	expected
+	•	assumed
+• Modern standards implicitly rely on this model without naming it
+• Your current project is a clean, modern re-articulation of it
+
+You’re not resurrecting an old idea.
+
+You’re making an assumed idea explicit again, which is exactly what high-assurance engineering does.
+
+If you want later, we can:
+	•	Translate your original lifecycle vocabulary into modern documentation language
+	•	Or deliberately reintroduce this lifecycle as a teaching model in your reference system
+
+Both would be defensible — and frankly refreshing.
+

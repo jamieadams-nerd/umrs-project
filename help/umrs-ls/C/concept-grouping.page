@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page xmlns="http://projectmallard.org/1.0/"
+      type="topic"
+      id="concept-grouping">
+  <info>
+    <link type="guide" xref="index" group="grouping"/>
+    <desc>Why entries are grouped by SELinux type and marking, and what the group separator shows.</desc>
+  </info>
+
+  <title>Entry Grouping by Security Label</title>
+
+  <p>
+    Unlike <cmd>ls</cmd>, which lists directory entries flat (optionally with a label column),
+    <cmd>umrs-ls</cmd> groups entries by their verified security label. Every entry in a group
+    shares the same SELinux type and security marking.
+  </p>
+
+  <section id="why-grouped">
+    <title>Why group instead of list flat?</title>
+
+    <p>
+      When auditing a directory for policy conformance, the security question is:
+      <em>does every object in this directory carry the expected label?</em>
+      A flat listing requires scanning each row individually to spot anomalies.
+      Grouping makes anomalies structurally visible: an object with an unexpected type
+      or marking appears in its own group, separated from the expected majority.
+    </p>
+
+    <p>
+      Grouping also eliminates per-row repetition of the SELinux type and marking.
+      In a well-configured directory, most entries share the same label. Printing that
+      label on every row adds noise without adding information.
+    </p>
+  </section>
+
+  <section id="separator">
+    <title>The group separator line</title>
+
+    <p>
+      Each group is preceded by a separator line in the form:
+    </p>
+
+    <code>== selinux_type :: marking ====...</code>
+
+    <p>
+      The separator shows:
+    </p>
+    <list>
+      <item><p><em>SELinux type</em> — the type component of the verified security context (e.g., <code>bin_t</code>, <code>httpd_sys_content_t</code>, <code>&lt;unlabeled&gt;</code>).</p></item>
+      <item><p><em>marking</em> — the setrans-translated sensitivity/category string when <cmd>mcstransd</cmd> is running, or the raw MLS level string otherwise (e.g., <code>CUI//LEI/INV</code>, <code>s0</code>, <code>&lt;no-level&gt;</code>).</p></item>
+    </list>
+
+    <p>
+      The separator line always extends to the full terminal width (100 characters by default)
+      so that group boundaries remain visually distinct even in dense listings.
+    </p>
+  </section>
+
+  <section id="color">
+    <title>Color and secolor.conf</title>
+
+    <p>
+      When <cmd>--color</cmd> is active, <cmd>umrs-ls</cmd> reads the SELinux color
+      configuration file at <file>/etc/selinux/targeted/secolor.conf</file> (if present)
+      and applies 24-bit true-color ANSI codes to the SELinux type and marking text in
+      the group separator.
+    </p>
+
+    <p>
+      If the file is absent, unreadable, or contains no matching rule for a given type or
+      marking, the separator falls back to bold/underline formatting. No error is emitted —
+      color is a display enhancement, not a security feature.
+    </p>
+
+    <note style="tip">
+      <p>
+        The <code>secolor.conf</code> rules assign foreground and background colors per
+        SELinux user, role, type, and range component. Only the type and range (marking)
+        components are used in the group separator.
+      </p>
+    </note>
+  </section>
+</page>

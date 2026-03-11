@@ -1,0 +1,65 @@
+= secolor.conf Reference
+:description: Configuration file for SELinux context colorization in supported applications.
+
+`secolor.conf` defines how SELinux security context components are colored in
+applications that call `selinux_raw_context_to_color()`.
+
+== Requirements
+
+`secolor.conf` only works when all of the following are true:
+
+* The SELinux policy supports sensitivity levels or categories (MLS or MCS policy).
+* The `mcstransd` service is running.
+* The application explicitly calls `selinux_raw_context_to_color()`.
+
+In a standard targeted policy without `mcstransd`, `selinux_raw_context_to_color()`
+returns `ENOENT` and colorization does not occur.
+
+== File Location
+
+The file must be placed in the active SELinux policy's configuration directory:
+
+[source]
+----
+/etc/selinux/<SELINUXTYPE>/contexts/secolor.conf
+----
+
+Where `<SELINUXTYPE>` matches the value in `/etc/selinux/config` (typically
+`targeted`, `mcs`, or `mls`).
+
+== File Format
+
+The file has two sections: color definitions and context component mappings.
+
+=== Color Definitions
+
+Define a color name and associate it with an RGB hex value:
+
+[source]
+----
+color black  = #000000
+color red    = #ff0000
+color green  = #008000
+----
+
+=== Context Component Mappings
+
+Map specific context strings to foreground and background colors. Supported
+components are `user`, `role`, `type`, and `range`.
+
+[source]
+----
+user staff_u = black white
+role staff_r = black white
+type staff_t = black white
+range s0     = black white
+----
+
+See the `secolor.conf(5)` man page for the full format, including wildcard rules.
+
+== Notes
+
+* When `secolor.conf` rules do not match a type or range, the library returns
+  a default color (foreground black, background black on some systems).
+  This renders as invisible text on dark terminals — a known cosmetic limitation.
+* Colorization is display-only. It has no effect on SELinux enforcement decisions.

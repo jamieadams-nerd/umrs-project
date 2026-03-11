@@ -1,0 +1,6 @@
+id: AC-002
+title: Complete Mediation
+rule: Every access request must be checked for authorization without exception.
+category: principle
+references:
+  - Saltzer & Schroeder 1975

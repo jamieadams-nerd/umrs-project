@@ -1,0 +1,43 @@
+{
+  "allowedTools": [
+    "Bash(.claude/commands/*)",
+    "Bash(.claude/rag/ingest.py*)",
+    "Bash(.claude/rag/query.py*)"
+  ],
+  "permissions": {
+    "allow": [
+      "Bash(cargo xtask:*)",
+      "Bash(cargo run:*)",
+      "Bash(cargo build:*)",
+      "Bash(cargo clippy:*)",
+      "Bash(cargo test:*)",
+      "Bash(cargo add:*)",
+      "Bash(cargo search:*)",
+      "Bash(cargo:*)",
+      "Bash(curl:*)",
+      "Bash(ls:*)",
+      "Bash(mv:*)",
+      "Bash(mkdir:*)",
+      "Bash(make docs:*)",
+      "Bash(make i18n-check:*)",
+      "Bash(make i18n-compile-umrs-ls:*)",
+      "Bash(npx:*)",
+      "Bash(npx antora:*)",
+      "Bash(/media/psf/repos/umrs-project/build-tools/antora/node_modules/.bin/antora:*)",
+      "Bash(python:*)",
+      "Bash(python3:*)",
+      "Bash(RAG_CHROMA_PATH=/media/psf/repos/ai-rag-vdb/chroma python3:*)",
+      "Bash(pip:*)",
+      "Bash(pip3:*)",
+      "Bash(test:*)",
+      "Bash(bash:*)",
+      "Bash(git add:*)",
+      "Bash(git status:*)",
+      "Bash(msginit:*)",
+      "Read(//tmp/**)",
+      "Read(//tmp/gettext_test/**)",
+      "Read(//home/jadams/**)",
+      "Read(//media/psf/repos/ai-rag-vdb/**)"
+    ]
+  }
+}

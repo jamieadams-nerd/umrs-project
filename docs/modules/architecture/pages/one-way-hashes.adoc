@@ -1,0 +1,87 @@
+= History of One-Way Hash Algorithms 
+Jamie L. Adams
+:description: One-Way Hash Algorithms: From Cold War Verification to the Post-Quantum Era
+
+== Overview
+
+One-way hash functions did not emerge suddenly as standardized cryptographic primitives. They evolved gradually, shaped by Cold War verification requirements, early academic research, classified government systems, and later public standardization efforts. The modern hash landscape, including SHA-3 and post-quantum constructions, is the result of decades of incremental development driven first by data authenticity needs and later by global interoperability.
+
+This section traces that evolution from its theoretical origins through classified treaty-verification systems, the MD and SHA families, and into the post-quantum era.
+
+== Foundations in One-Way Functions (1970s)
+
+During the 1970s, cryptography was still largely theoretical and domain-specific. In 1976, Diffie and Hellman formally introduced the concept of one-way functions. Although no standardized hash algorithms existed, the essential idea had crystallized: certain functions should be easy to compute but computationally infeasible to reverse.
+
+In parallel, researchers such as Rabin and Carter–Wegman developed early ideas around universal hashing and message authentication. These efforts laid the conceptual groundwork for collision resistance and integrity checking, even though practical, general-purpose message digests had not yet appeared.
+
+== Cold War Operational Hashing (1980s)
+
+Before any public hash standards existed, governments deployed domain-specific one-way digest mechanisms for treaty verification and strategic monitoring. Between roughly 1980 and 1989, the United States and the Soviet Union relied on proprietary, classified hashing techniques to authenticate data collected by arms-control sensors.
+
+These systems were used to protect the integrity of seismic waveforms for nuclear test-ban verification, telemetry data from arms-control sensors, and missile-warning and launch-detection information. The primary concern was not secrecy but authenticity: ensuring that data had not been altered, filtered, replayed, or selectively edited.
+
+These early digests, including systems such as the ASH algorithm referenced in historical material, shared several characteristics. They were not standardized or published, were often embedded directly in sensor hardware, and were designed for specific data formats. They pre-dated MD4 and MD5 and were built to provide integrity guarantees in high-stakes environments rather than general-purpose cryptographic flexibility.
+
+Although classified, these systems established operational patterns that strongly resemble later public message-digest usage.
+
+== Treaty Verification Requirements and Cryptographic Goals
+
+Arms-control treaties such as the Threshold Test Ban Treaty, the Peaceful Nuclear Explosions Treaty, and precursor work for the Comprehensive Nuclear-Test-Ban Treaty required remote, cross-border monitoring of seismic, infrasound, and radionuclide data.
+
+Each side feared tampering, falsified waveforms, altered timestamps, or selective data removal. As a result, three core cryptographic assurances were required: data integrity, authenticity of origin, and correctness of timing. Confidentiality was explicitly not required, as the data itself was not classified.
+
+== Mechanisms Used in Early Verification Systems
+
+The cryptographic mechanisms actually deployed during this period were practical, hardware-centric, and deliberately opaque.
+
+One major mechanism was the use of one-way data seals, which functioned as early hash commitments. During events such as the 1988 Joint Verification Experiment, sensors computed fixed-function summaries of collected data. These summaries were sealed into tamper-proof logs and later recomputed by the verifying party. Although the algorithms were not published, they were fixed, ROM-embedded compression functions with agreed-upon output sizes and acceptable collision rates.
+
+A second mechanism involved cryptographic signing modules embedded in sensor packages. By the late 1980s and early 1990s, verification systems used sealed hardware modules containing government-approved cryptographic keys. These modules automatically signed data blocks, producing verifiable authenticity without exposing private keys. The algorithms evolved over time, ranging from DES-based MAC-like constructions to later RSA-style signatures as technology matured.
+
+A third mechanism was cryptographic chaining of data blocks. Seismic stations computed a checksum for each data block and embedded the previous block’s checksum into the next record. This created a tamper-evident chain similar in concept to later blockchain designs. Any alteration broke the chain, making manipulation immediately detectable. Both parties formally agreed on the chaining format and block size.
+
+== Why Algorithms Were Not Publicly Named
+
+Despite extensive documentation of the mechanisms, the exact algorithms were intentionally not disclosed. Arms-control verification systems feared reverse engineering, cryptographic exploitation, and host-nation manipulation. By agreeing on outputs, formats, and verification procedures rather than algorithm disclosure, governments achieved interoperability and trust without revealing sensitive signal-processing methods.
+
+These agreements were codified through Treaty Technical Annexes and Joint Verification Protocols, which defined authentication requirements, tamper-evidence expectations, inspection rights, and cryptographic key handling. Typically, only public verification keys were exchanged, while private keys remained under national control.
+
+== Emergence of Public Message Digests (1990–1995)
+
+The early 1990s marked the first appearance of widely published, general-purpose hash algorithms. In 1990, Ron Rivest introduced MD4, the first fast, modern message digest. Its weaknesses became apparent quickly, but it influenced subsequent designs.
+
+MD5 followed in 1992 and rapidly became a global standard for checksums and integrity verification. Although collisions were demonstrated in 2005, MD5 remains widely used today for non-cryptographic integrity checking.
+
+In parallel, NIST introduced SHA-0 in 1993, which was quickly withdrawn due to weaknesses, and then SHA-1 in 1995. SHA-1 became the dominant global hash standard for over a decade before being fully broken in 2017.
+
+== Strengthening and Diversification (2000s)
+
+In 2001, NIST introduced the SHA-2 family, including SHA-224, SHA-256, SHA-384, and SHA-512. These designs used a Merkle–Damgard structure with Davies–Meyer compression and became the backbone of TLS, PKI, certificates, and FIPS-validated systems.
+
+SHA-2 remains secure against classical attacks and is still widely approved in regulated environments.
+
+== The SHA-3 Transition (2007–2015)
+
+Concerned about structural similarities between MD5, SHA-1, and SHA-2, NIST launched the SHA-3 competition in 2007. The goal was not to replace SHA-2 immediately but to introduce a fundamentally different design for long-term robustness.
+
+In 2012, Keccak was selected as the winner. Unlike previous hashes, Keccak is based on a sponge construction. It was standardized in 2015 as FIPS 202, providing SHA3-224, SHA3-256, SHA3-384, SHA3-512, and the extendable-output functions SHAKE128 and SHAKE256.
+
+SHA-3 currently has no practical attacks and is considered structurally future-proof.
+
+== Hashing in the Post-Quantum Era (2020s)
+
+Quantum computers do not break hash functions the same way they break RSA or ECC. Grover’s algorithm effectively halves the security strength of a hash output. As a result, 256-bit hashes provide approximately 128 bits of post-quantum security, while 512-bit hashes provide approximately 256 bits.
+
+Modern post-quantum practice therefore relies on longer outputs and flexible constructions. SHA-512 remains acceptable for many FIPS contexts. SHA-3 and SHAKE are heavily used in post-quantum cryptography.
+
+SHAKE functions are core components of algorithms such as CRYSTALS-Kyber, CRYSTALS-Dilithium, FALCON, and SPHINCS+. These schemes rely on hashing for sampling, commitments, and security hardening rather than on number-theoretic primitives.
+
+Non-standard but widely adopted hashes such as BLAKE3 have also emerged, offering extremely high performance through Merkle tree designs and practical post-quantum robustness when used with wide parameters.
+
+== Modern Verification Systems
+
+Unlike Cold War systems, modern CTBT verification infrastructure operated by the CTBTO uses fully disclosed cryptography. SHA-2, RSA signatures, authenticated timestamps, and PKI-based key exchange are openly documented in system requirements and specifications. This reflects a shift from secrecy-based assurance toward interoperability grounded in public cryptographic analysis.
+
+== Summary
+
+The evolution of one-way hashing spans theory, classified operational systems, public standardization, and post-quantum adaptation. What began as fixed-function, sensor-embedded integrity checks for nuclear verification ultimately shaped modern message digests and continues to underpin cryptographic assurance today.

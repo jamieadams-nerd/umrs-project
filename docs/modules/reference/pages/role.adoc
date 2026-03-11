@@ -1,0 +1,67 @@
+## SELinux Security Role Identifier
+
+In the SELinux vernacular, the Role (_r) acts as a gateway between the User and the Type. It is the
+core component of Role-Based Access Control (RBAC). The SELinux Notebook
+
+Key Functions of the Role:
+
+Defining Authorization: A role defines which Types (domains) a process is allowed to enter. For
+example, the `webadm_r` role might be authorized to run the `httpd_t` domain, but the 
+standard `user_r` role is not.
+
+Hierarchical Access: It prevents "privilege escalation" by ensuring a user cannot simply jump into
+a sensitive domain (like shadow_t) unless their current Role permits that transition.
+
+Object Placeholder: For files and static objects, the role is almost always object_r. Since files
+are passive and don't "act," they don't need functional roles; object_r serves as a required
+syntactical placeholder in the context string. Red Hat Documentation
+
+Common Examples:
+- sysadm_r: The system administrator role, authorized for high-privilege domains.
+- staff_r: A role for users who can switch to more privileged roles (like sysadm_r) via sudo or newrole.
+- user_r: A restricted role for everyday users, limited to standard applications.
+
+
+## Security Role Module
+
+This module provides an independent Rust implementation of the
+`SELinux` security role construct. It models only the identifier 
+primitive — not policy bindings, transitions, or authorization rules.
+
+Kernel / Policy Sources Consulted:
+
+- security/selinux/ss/policydb.c
+- security/selinux/include/security.h
+- libselinux RBAC interfaces
+
+In `SELinux` policy, roles are symbol table entries associated with:
+
+- Authorized domain (type) sets
+- Role transition rules
+- User-role authorization mappings
+
+ Represents a validated `SELinux` security role identifier.
+
+ Example values:
+
+   system_r
+   staff_r
+   object_r
+
+
+Validation rules:
+- ASCII only
+- No whitespace
+- Character set: [a-z0-9_]
+- Must end with `_r`
+- on-empty identifier stem
+- Length within policy bounds: 3–255 bytes
+
+# Errors
+
+Returns `RoleError` if:
+- The identifier contains non-ASCII characters.
+- The identifier contains whitespace.
+- The identifier does not follow `SELinux` naming conventions.
+- The identifier exceeds length constraints.
+

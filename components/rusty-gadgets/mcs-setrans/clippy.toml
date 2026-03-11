@@ -1,0 +1,2 @@
+# 
+doc-valid-idents= ["SELinux", "CategorySet", "SELINUX_MAGIC", "ProcFS", "StaticSource", "ATTRIBUTE_NAME" ]

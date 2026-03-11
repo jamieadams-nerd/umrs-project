@@ -1,0 +1,48 @@
+= Platform Baseline
+:description: Common deployment requirements applicable to all supported Linux platforms.
+
+These requirements apply regardless of which Linux distribution you are installing.
+They establish the security baseline that everything else builds on.
+
+== Two Network Interfaces
+
+Every UMRS deployment needs two separate network interfaces:
+
+* *Management interface* — used for SSH, administration, and out-of-band control.
+  Keep this on a restricted administrative network, not reachable from general user traffic.
+* *Data interface* — handles operational traffic (application data, monitoring, etc.).
+
+Keeping them on separate physical or logical interfaces prevents a compromise on the
+data network from immediately reaching the management plane. It satisfies NIST 800-53
+SC-7 (Boundary Protection) for interface separation.
+
+NOTE: On a virtual machine, use separate virtual NICs attached to separate virtual
+networks — not just separate IP addresses on the same virtual switch.
+
+// TBD: Add specific interface naming conventions (eth0/eth1, ens3/ens4, etc.)
+// TBD: Add firewalld zone assignments (e.g., internal for management, dmz for data)
+
+== Filesystem Layout
+
+See xref:filesystem-layout.adoc[Filesystem Layout] for the required partition scheme,
+mount options, and STIG compliance notes.
+
+The short version:
+
+* `/tmp` and `/var/tmp` — separate partitions, mounted `noexec,nosuid,nodev`
+* `/var/log` and `/var/log/audit` — separate partitions
+* `/home` — separate partition
+
+== Temporary Filesystem Security
+
+`/tmp` is a common attack vector on any multi-user Linux system. See
+xref:tmp-security.adoc[Temporary Filesystem Security] for the full picture, including
+how to configure systemd `PrivateTmp` for sensitive services.
+
+Baseline requirement: `/tmp` is mounted `noexec,nosuid,nodev` on a dedicated partition,
+and services that handle sensitive data use `PrivateTmp=true`.
+
+== Next Steps
+
+. xref:filesystem-layout.adoc[Filesystem Layout] — required partition scheme, mount options, and STIG compliance notes
+. xref:tmp-security.adoc[Temporary Filesystem Security] — `/tmp` and `/var/tmp` hardening in detail

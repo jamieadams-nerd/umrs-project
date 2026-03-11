@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page xmlns="http://projectmallard.org/1.0/"
+      type="topic"
+      id="concept-grouping">
+  <info>
+    <link type="guide" xref="index" group="grouping"/>
+    <desc>Pourquoi les entrées sont groupées par type et marquage SELinux, et ce qu'indique la ligne de séparation de groupe.</desc>
+  </info>
+
+  <title>Groupement des entrées par étiquette de sécurité</title>
+
+  <p>
+    Contrairement à <cmd>ls</cmd>, qui liste les entrées de répertoire à plat (optionnellement avec une
+    colonne d'étiquette), <cmd>umrs-ls</cmd> groupe les entrées selon leur étiquette de sécurité vérifiée.
+    Chaque entrée dans un groupe partage le même type SELinux et le même marquage de sécurité.
+  </p>
+
+  <section id="why-grouped">
+    <title>Pourquoi grouper plutôt que lister à plat ?</title>
+
+    <p>
+      Lors de l'audit d'un répertoire pour la conformité de politique, la question de sécurité est :
+      <em>est-ce que chaque objet dans ce répertoire porte l'étiquette attendue ?</em>
+      Un listage à plat exige d'examiner chaque ligne individuellement pour repérer les anomalies.
+      Le groupement rend les anomalies structurellement visibles : un objet avec un type ou un marquage
+      inattendu apparaît dans son propre groupe, séparé de la majorité attendue.
+    </p>
+
+    <p>
+      Le groupement élimine également la répétition par ligne du type SELinux et du marquage.
+      Dans un répertoire bien configuré, la plupart des entrées partagent la même étiquette. Imprimer
+      cette étiquette sur chaque ligne ajoute du bruit sans ajouter d'information.
+    </p>
+  </section>
+
+  <section id="separator">
+    <title>La ligne de séparation de groupe</title>
+
+    <p>
+      Chaque groupe est précédé d'une ligne de séparation de la forme :
+    </p>
+
+    <code>== selinux_type :: marking ====...</code>
+
+    <p>
+      La ligne de séparation indique :
+    </p>
+    <list>
+      <item><p><em>Type SELinux</em> — la composante type du contexte de sécurité vérifié (p. ex., <code>bin_t</code>, <code>httpd_sys_content_t</code>, <code>&lt;unlabeled&gt;</code>).</p></item>
+      <item><p><em>marquage</em> — la chaîne de sensibilité/catégorie traduite par setrans lorsque <cmd>mcstransd</cmd> est actif, ou la chaîne de niveau MLS brute sinon (p. ex., <code>CUI//LEI/INV</code>, <code>s0</code>, <code>&lt;no-level&gt;</code>).</p></item>
+    </list>
+
+    <p>
+      La ligne de séparation s'étend toujours jusqu'à la largeur complète du terminal (100 caractères
+      par défaut) afin que les frontières de groupe restent visuellement distinctes même dans les
+      listages denses.
+    </p>
+  </section>
+
+  <section id="color">
+    <title>Couleur et secolor.conf</title>
+
+    <p>
+      Lorsque <cmd>--color</cmd> est actif, <cmd>umrs-ls</cmd> lit le fichier de configuration de
+      couleur SELinux à <file>/etc/selinux/targeted/secolor.conf</file> (si présent) et applique des
+      codes ANSI 24 bits de vraies couleurs au texte du type SELinux et du marquage dans la ligne de
+      séparation de groupe.
+    </p>
+
+    <p>
+      Si le fichier est absent, illisible, ou ne contient aucune règle correspondant à un type ou
+      marquage donné, la séparation revient à un formatage gras/souligné. Aucune erreur n'est émise —
+      la couleur est une amélioration d'affichage, pas une fonctionnalité de sécurité.
+    </p>
+
+    <note style="tip">
+      <p>
+        Les règles de <code>secolor.conf</code> assignent des couleurs de premier plan et d'arrière-plan
+        par utilisateur, rôle, type et composante de plage SELinux. Seules les composantes type et plage
+        (marquage) sont utilisées dans la ligne de séparation de groupe.
+      </p>
+    </note>
+  </section>
+</page>

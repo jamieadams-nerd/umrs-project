@@ -1,0 +1,34 @@
+To automate the loading of your IMA policy on RHEL 10, create a systemd service that executes before the system fully initializes.
+Since the /sys/kernel/security/ima/policy interface only accepts rules once per boot (unless specific kernel options are enabled), this service ensures your custom rules are the first ones applied.
+1. Create the systemd Service File
+Create the file at /etc/systemd/system/ima-policy-load.service:
+[source,bash]
+sudo vi /etc/systemd/system/ima-policy-load.service
+2. Paste the Service Configuration
+[source,ini]
+[Unit]
+Description=Load Custom IMA Integrity Policy
+DefaultDependencies=no
+After=local-fs.target
+Before=sysinit.target
+ConditionPathExists=/etc/ima/00-integrity.policy
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/sh -c 'cat /etc/ima/00-integrity.policy > /sys/kernel/security/ima/policy'
+[Install]
+WantedBy=sysinit.target
+3. Enable the Service
+Run the following commands to set the correct permissions and enable the service for future boots:
+[source,bash]
+Reload systemd to recognize the new unit
+sudo systemctl daemon-reload
+Enable the service to run at boot
+sudo systemctl enable ima-policy-load.service
+Test the service immediately
+sudo systemctl start ima-policy-load.service
+4. Verify the Policy Load
+After starting the service or rebooting, you can confirm the rules are active in the kernel:
+[source,bash]
+sudo cat /sys/kernel/security/ima/policy
+Note on RHEL 10: If you receive an "Operation not permitted" error when starting the service, it usually means a policy has already been loaded during the current session. IMA typically only allows one policy write per boot to prevent runtime tampering of the security rules.

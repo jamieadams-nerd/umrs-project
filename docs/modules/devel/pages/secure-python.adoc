@@ -1,0 +1,377 @@
+= UMRS Secure Python Guide
+Jamie L. Adams
+
+
+UMRS Secure Python Scripting Guide (RHEL 10 / Python 3) – High-Assurance Style
+
+In high-assurance environments, “works on my machine” is not acceptable. We want deterministic behavior, minimal ambient trust (PATH/env/user site packages), explicit cleanup, strict input handling, safe file/subprocess behavior, and audit-quality failures.
+
+
+== Interpreter directive (shebang) and startup flags
+
+Prefer an absolute interpreter path
+
+* Recommended: `#!/usr/bin/python3`
+* Avoid: `#!/usr/bin/env python3`
+
+Reason: env depends on PATH and environment state. In high-assurance, we avoid ambiguity about which interpreter runs.
+
+
+1.2 Recommended “start clean” runtime flags
+
+Primary flag:
+
+* -I (isolated mode): reduces influence from PYTHON* environment variables and user site-packages.
+
+Often helpful (if tested in your environment):
+
+* -b / -bb: warn or error on suspicious bytes/str comparisons (prevents subtle logic bugs).
+* -P: harden import path behavior (reduces import surprises from unsafe locations).
+
+Practical baseline for system scripts:
+
+`+#!+/usr/bin/python3 -I`
+
+Optional stricter baseline (only if validated):
+
+`+#!+/usr/bin/python3 -I -b -P`
+
+'''
+
+== Context managers and “scope closes it” patterns
+
+2.1 The basic rule: if it must be closed, use “with”
+This applies to files, locks, temp directories, database connections/cursors, and sometimes subprocess pipes.
+
+Example: safe file read (auto-close)
+[source,python]
+----
+with open(path, “rb”) as f:
+    data = f.read()
+----
+
+2.2 “Multiple context files” explained (what I meant)
+Sometimes you do not know ahead of time how many files you’ll open (or you open some conditionally). You still want all of them closed reliably even if something fails mid-way.
+
+Python’s contextlib.ExitStack is the tool for this.
+* It lets you “enter” multiple context managers dynamically.
+* When you leave the ExitStack scope, it closes everything in reverse order.
+* It is the “with open(…) as f” idea, generalized to N resources.
+
+Example: open N input files and guarantee all close
+
+[source,python]
+----
+from contextlib import ExitStack
+
+paths = [“a.bin”, “b.bin”, “c.bin”]
+
+with ExitStack() as stack:
+    files = [stack.enter_context(open(p, “rb”)) for p in paths]
+    blobs = [f.read() for f in files]
+# leaving the scope closes all files even if an exception occurs
+
+Example: conditionally open a key file (only if provided)
+from contextlib import ExitStack
+
+key_path = args.key  # may be None
+
+with ExitStack() as stack:
+    if key_path is not None:
+        key_f = stack.enter_context(open(key_path, “rb”))
+        key_bytes = key_f.read()
+    else:
+        key_bytes = None
+    # do work here
+# scope end closes key_f if it was opened
+----
+
+
+'''
+
+== Input validation (treat everything as hostile)
+
+3.1 CLI parsing: argparse with strict options
+Rules:
+* Use argparse (not ad-hoc sys.argv parsing).
+* Constrain types, values, ranges.
+* Fail fast with clear error messages.
+
+Example: constrained choice + integer bounds
+[source,python]
+----
+import argparse
+
+p = argparse.ArgumentParser()
+p.add_argument(”–mode”, choices=[“verify”, “sign”], required=True)
+p.add_argument(”–refresh”, type=int, default=30)
+args = p.parse_args()
+if not (1 <= args.refresh <= 3600):
+    raise SystemExit(“refresh must be between 1 and 3600 seconds”)
+----
+
+3.2 Paths: normalize and restrict to an allowed root
+Rules:
+* Use pathlib.Path.
+* Resolve to an absolute path.
+* Enforce “must be under allowed root” before opening.
+This mitigates traversal and accidental access outside your controlled tree.
+
+Example: “must be under root” guard
+[source,python]
+----
+from pathlib import Path
+
+def must_be_under_root(p: Path, root: Path) -> Path:
+    rp = p.resolve(strict=False)
+    rr = root.resolve(strict=True)
+    try:
+        rp.relative_to(rr)
+    except ValueError:
+        raise ValueError(f”path escapes allowed root: {rp}”)
+    return rp
+----
+
+'''
+
+== Filesystem safety: temp files, atomic writes, and permissions
+
+
+4.1 Use tempfile; do not invent temp names
+Rule: use tempfile.NamedTemporaryFile or TemporaryDirectory; do not build /tmp filenames yourself.
+
+Example: safe temp directory usage
+
+[source,python]
+----
+import tempfile
+from pathlib import Path
+
+with tempfile.TemporaryDirectory() as td:
+    tmpdir = Path(td)
+    work = tmpdir / “work.bin”
+    work.write_bytes(b”hello”)
+# leaving scope removes the directory
+----
+
+
+4.2 Atomic write pattern (crash-safe and race-resistant)
+Rule: write to a temp file in the destination directory, fsync, then os.replace().
+High-assurance extra: fsync the directory too.
+
+Example: atomic write bytes
+
+[source,python]
+----
+import os
+import tempfile
+from pathlib import Path
+
+def atomic_write_bytes(dst: Path, data: bytes, mode: int = 0o600) -> None:
+    dstdir = dst.parent
+    with tempfile.NamedTemporaryFile(mode=“wb”, dir=str(dstdir), delete=False) as tf:
+        tmp_name = tf.name
+        os.fchmod(tf.fileno(), mode)
+        tf.write(data)
+        tf.flush()
+        os.fsync(tf.fileno())
+    os.replace(tmp_name, str(dst))
+    dir_fd = os.open(str(dstdir), os.O_DIRECTORY)
+    try:
+        os.fsync(dir_fd)
+    finally:
+        os.close(dir_fd)
+----
+
+4.3 Symlink safety (especially for privileged scripts)
+Rule: for privileged writes, do not blindly follow links into attacker-controlled locations.
+Practical approach:
+* Constrain paths to controlled roots.
+* Avoid writing into world-writable directories.
+* For the highest assurance cases, use low-level os.open with flags like O_NOFOLLOW (Linux) and wrap with os.fdopen.
+
+Example: refuse symlink targets before writing (basic check)
+[source,python]
+----
+from pathlib import Path
+
+def refuse_symlink(p: Path) -> None:
+    if p.exists() and p.is_symlink():
+        raise ValueError(f”refusing symlink target: {p}”)
+----
+
+'''
+
+== Subprocess safety (no shell injection, deterministic tooling)
+
+Rules:
+* Avoid shell=True.
+* Pass argv as a list.
+* Use absolute paths to tools.
+* check return codes.
+* Capture output intentionally.
+
+Example: safe subprocess call
+[source,python]
+----
+import subprocess
+
+cmd = [”/usr/bin/openssl”, “version”, “-a”]
+cp = subprocess.run(cmd, check=True, text=True, capture_output=True)
+print(cp.stdout)
+----
+
+'''
+
+== Parsing and serialization safety
+
+Rules:
+* Prefer JSON for interchange.
+* Validate required keys and types.
+* Never unpickle untrusted input.
+
+Example: strict-ish JSON parsing with key checks
+[source,python]
+----
+import json
+
+obj = json.loads(text)
+for k in [“artifact_sha256”, “received_time_utc”, “policy_id”]:
+    if k not in obj:
+        raise ValueError(f”missing required key: {k}”)
+if not isinstance(obj[“artifact_sha256”], str):
+    raise ValueError(“artifact_sha256 must be a string”)
+----
+
+'''
+
+== Logging and audit posture (don’t leak secrets)
+
+Rules:
+* Separate “debug logging” from “audit events” in intent.
+* Never log secrets (keys, tokens, raw evidence contents).
+* Log who/what/where/result/reason for security-relevant actions.
+* Failures should be explicit and machine-parsable where feasible (JSON lines, stable codes).
+
+Example: structured stderr error without secrets
+[source,python]
+----
+import sys
+
+def die(msg: str, code: int = 1) -> “NoReturn”:
+    sys.stderr.write(f”ERROR: {msg}\n”)
+    raise SystemExit(code)
+----
+
+'''
+
+== Least privilege and trust boundaries
+
+Rules:
+* Don’t run Python as root unless there is no alternative.
+* If you need privileged actions, isolate them into a tiny helper with strict inputs and narrow capabilities (your polkit/pkexec pattern is ideal here).
+* Drop privileges when possible before doing “risky” parsing/processing.
+
+Example: “do risky parse after dropping privilege” (conceptual skeleton)
+[source,python]
+----
+# 1) start privileged only if required
+# 2) open necessary privileged file descriptors early
+# 3) drop uid/gid
+# 4) parse/process untrusted inputs as unprivileged
+# (Implementing uid/gid changes is environment-specific; keep it explicit and audited.)
+----
+
+'''
+
+== CWE and control mapping (how to write this up cleanly)
+
+Use this structure in the guide:
+* Rule (what to do)
+* Why (threat)
+* CWE references (code-level weakness classification)
+* Control mapping (NIST 800-53 style intent: input validation, least privilege, audit, etc.)
+* Example snippet (short, directly tied to the rule)
+
+Common CWE buckets you’ll cite frequently for Python scripting:
+* CWE-20 Improper Input Validation
+* CWE-22 Path Traversal
+* CWE-59 Improper Link Resolution Before File Access (symlink issues)
+* CWE-377 Insecure Temporary File
+* CWE-78 OS Command Injection (subprocess misuse)
+* CWE-200 / CWE-532 Information Exposure (general/logging)
+
+About CCE:
+CCE identifiers primarily track configuration issues (system/app settings), not Python source-code practices. In your Python guide, use:
+* CWE for code rules
+* NIST controls for assurance intent
+* CCE/STIG references in a separate “platform prerequisites” section (for OS-level settings that support safe Python execution and dependency control)
+
+'''
+
+== Full example again (with section symbols on every source line)
+
+[source,python]
+----
+#!/usr/bin/python3 -I
+import argparse
+import os
+import sys
+import tempfile
+from pathlib import Path
+
+def parse_args():
+    p = argparse.ArgumentParser()
+    p.add_argument(”–in”, dest=“in_path”, required=True, help=“Input file path”)
+    p.add_argument(”–out”, dest=“out_path”, required=True, help=“Output file path”)
+    p.add_argument(”–root”, dest=“root”, required=True, help=“Allowed root directory for I/O”)
+    return p.parse_args()
+
+def must_be_under_root(p: Path, root: Path) -> Path:
+    rp = p.resolve(strict=False)
+    rr = root.resolve(strict=True)
+    try:
+        rp.relative_to(rr)
+    except ValueError:
+        raise ValueError(f”path escapes allowed root: {rp}”)
+    return rp
+
+def atomic_write_bytes(dst: Path, data: bytes, mode: int = 0o600) -> None:
+    dstdir = dst.parent
+    with tempfile.NamedTemporaryFile(mode=“wb”, dir=str(dstdir), delete=False) as tf:
+        tmp_name = tf.name
+        os.fchmod(tf.fileno(), mode)
+        tf.write(data)
+        tf.flush()
+        os.fsync(tf.fileno())
+    os.replace(tmp_name, str(dst))
+    dir_fd = os.open(str(dstdir), os.O_DIRECTORY)
+    try:
+        os.fsync(dir_fd)
+    finally:
+        os.close(dir_fd)
+
+def main() -> int:
+    args = parse_args()
+    root = Path(args.root)
+
+    in_path = must_be_under_root(Path(args.in_path), root)
+    out_path = must_be_under_root(Path(args.out_path), root)
+
+    with open(in_path, “rb”) as f:
+        blob = f.read()
+
+    # Example transformation: in UMRS you might generate a receipt/manifest here.
+    result = b”RECEIPT:\n” + blob
+
+    atomic_write_bytes(out_path, result)
+    return 0
+
+if name == “main”:
+    try:
+        raise SystemExit(main())
+    except Exception as e:
+        sys.stderr.write(f”ERROR: {e}\n”)
+        raise SystemExit(1)
+
+----

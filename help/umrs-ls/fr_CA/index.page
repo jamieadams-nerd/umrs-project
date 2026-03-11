@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page xmlns="http://projectmallard.org/1.0/"
+      type="guide"
+      id="index">
+  <info>
+    <desc>Apprenez comment umrs-ls liste les répertoires avec vérification d'étiquette SELinux ancrée à l'inode.</desc>
+  </info>
+
+  <title>umrs-ls — Listage de répertoire haute assurance</title>
+
+  <p>
+    <cmd>umrs-ls</cmd> liste le contenu d'un répertoire groupé par type de sécurité SELinux
+    et marquage. Il est conçu pour les opérateurs et les auditeurs de sécurité qui ont besoin de vérifier
+    la posture de sécurité des objets du système de fichiers — pas seulement voir leurs noms.
+  </p>
+
+  <p>
+    La différence clé avec <cmd>ls -Z</cmd> est <em>comment</em> l'étiquette de sécurité est obtenue.
+    Le <cmd>ls</cmd> standard utilise un appel système basé sur le chemin (<sys>lstat</sys>) qui demande
+    au noyau une étiquette par nom de fichier. <cmd>umrs-ls</cmd> tente de <sys>open()</sys> chaque objet
+    et ancre toutes les lectures de métadonnées subséquentes — y compris le xattr SELinux — à ce seul
+    descripteur de fichier. Si <sys>open()</sys> est refusé, l'entrée est marquée
+    <code>&lt;restricted&gt;</code> plutôt que d'afficher une étiquette dérivée du chemin non vérifiée.
+  </p>
+
+  <section id="topics">
+    <title>Sujets</title>
+    <links type="topic"/>
+  </section>
+
+  <links type="topic" groups="iov grouping restricted"/>
+</page>

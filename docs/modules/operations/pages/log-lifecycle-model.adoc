@@ -1,0 +1,179 @@
+= Log Lifecycle Model
+:toc: left
+:description: The four-state log lifecycle model used in high-assurance systems, how it maps to NIST controls, and why it remains valid in modern environments.
+
+The log lifecycle model from CDS and MLS environments describes log state in terms of
+security properties and trust boundaries rather than filenames or directory locations.
+The terms are heritage vocabulary, not obsolete architecture — the concepts are still
+correct, expected, and assumed in modern high-assurance work.
+
+== The Four Lifecycle States
+
+=== Active Log
+
+A log file currently being written to by the system.
+
+* Open file descriptor.
+* Mutable by design.
+* Examples: `/var/log/audit/audit.log`, `/var/log/messages`.
+
+Security properties:
+
+* Integrity not yet guaranteed.
+* Availability and completeness matter most.
+* Protected by permissions and MAC, but not cryptographically sealed.
+
+=== Inactive Log (Rotated)
+
+A log that has been rotated and is no longer written to.
+
+* Read-only by policy.
+* Examples: `audit.log.1`, `audit.log-2025-12-09`.
+
+Security properties:
+
+* This is the first point where integrity assurance becomes meaningful.
+* Hashing, digital signing, or chaining should occur here.
+
+Retention:
+
+* Often hours to days, up to one week.
+* Still on the originating system.
+
+=== Archive Log
+
+No longer operationally needed for day-to-day review.
+
+* Retained for audit, compliance, or forensics.
+* Often compressed and moved to a dedicated archive directory or filesystem.
+* Examples: `/var/log/audit/archive/`, `/srv/log-archive/local/`.
+
+Security properties:
+
+* Integrity must be preserved.
+* Availability can be lower.
+* Access is more restricted.
+* Often WORM-like in policy (even if not hardware-WORM).
+
+=== Offline Log (External Archive)
+
+Removed from the system entirely. Stored on a separate system, media, or enclave.
+
+* Examples: central log server, backup tapes, immutable object storage, write-once NAS.
+
+Security properties:
+
+* Strong separation of duty.
+* Strong integrity expectations.
+* Assumes the source system may later be compromised.
+
+Retention:
+
+* Long-term (months to years).
+* Policy-driven.
+
+== Why High-Assurance Systems Formalized This Model
+
+The lifecycle was not about convenience — it was about threat containment.
+
+* Active logs cannot be trusted for integrity.
+* Once a log is closed, integrity protection must begin.
+* The longer a log lives, the fewer people and processes should be able to touch it.
+* Eventually, logs must survive compromise of the host that created them.
+
+This is why CDS systems explicitly talked about "inactive but resident," "archived locally,"
+and "exported to an offline domain," with different retention periods for each stage.
+
+== NIST 800-53 Mapping
+
+NIST does not use the terms "active log," "inactive log," "archive log," or "offline log,"
+but the concept lives across multiple controls.
+
+[cols="1,3"]
+|===
+| Control | Lifecycle Implication
+
+| `AU-4` (Audit Storage Capacity)
+| Active logs rotate into inactive and archive logs; capacity must be managed per lifecycle state.
+
+| `AU-9` (Protection of Audit Information)
+| Signing rotated logs, chaining logs, and segregating archives all fit cleanly under AU-9.
+  This is where the inactive-to-archive transition is the critical integrity boundary.
+
+| `AU-11` (Audit Record Retention)
+| Defined retention periods per lifecycle state. Different tiers are reasonable; not all
+  logs remain online forever.
+
+| `AU-12` / `AU-14` (Distributed logging, session monitoring)
+| Implicitly supports forwarding logs off the originating host. This aligns directly with
+  offline archives and remote log servers.
+
+| `CP-9` / `CP-10` (Backups)
+| When logs are treated as backup material, off-system storage becomes mandatory.
+
+| `IR-5` / `IR-6` (Incident Response)
+| Forensics almost always assumes access to logs that survived compromise. This requires
+  offline or external archives.
+|===
+
+NIST never dictates specific stage names or directory layouts, but absolutely expects
+that logs transition from writable to protected states, that older logs have stronger
+integrity guarantees, and that some logs live beyond the system that created them.
+
+== How the Model Maps to Modern Vocabulary
+
+The terminology faded in mainstream usage but the architecture did not.
+
+[cols="2,2"]
+|===
+| Legacy term | Modern equivalent
+
+| Active log | "hot data," "mutable audit data," "operational log stream"
+| Inactive log | "sealed audit record," "closed log segment," "immutable log object"
+| Archive log | "warm storage," "evidence store," "retention tier," "compliance archive"
+| Offline log | "cold storage," "air-gapped archive," "long-term retention repository"
+|===
+
+Cloud providers market WORM object storage and legal hold modes aggressively, but it is
+the same idea.
+
+== Why the Vocabulary Faded
+
+Three reasons:
+
+1. *Abstraction scaling* — standards must work for cloud, containers, appliances, and SaaS.
+   Naming "inactive logs" does not scale across those domains.
+2. *Commercial products hid it* — SIEMs and log services implement this lifecycle
+   internally without exposing the terminology.
+3. *Assurance moved from "how" to "what"* — NIST specifies outcomes (integrity assured,
+   retention enforced, tampering detectable) and deliberately avoids mechanics.
+
+You are remembering a time when the mechanics were explicit because the systems were
+fragile and manually administered.
+
+== Where NIST Left a Gap
+
+NIST and similar frameworks do not explicitly describe the transition point between "log
+is still mutable" and "log is now evidence." Your signing and chaining work lives exactly
+in that gap.
+
+There is no standard control that says: "Upon log closure, cryptographically seal and
+link it to prevent undetected loss." This is why different vendors implement it
+inconsistently and why auditors ask vague questions.
+
+Making that transition explicit through signing and chaining is what high-assurance
+engineering does.
+
+== Applying the Model in UMRS
+
+[cols="1,2"]
+|===
+| State | UMRS Implementation
+
+| Active | `audit.log` (unsigned, mutable)
+| Inactive | `audit.log-YYYYMMDD` (signed, chained after rotation)
+| Archive | Moved to archive directory; signature and chain hash preserved
+| Offline | Copied to another host or medium; verification tool validates chain integrity
+|===
+
+The signing and chaining tool is the explicit boundary between inactive and archive.

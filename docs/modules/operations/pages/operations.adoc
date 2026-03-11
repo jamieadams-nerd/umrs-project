@@ -1,0 +1,17 @@
+= Operations
+Jamie L. Adams
+
+:toc: macro
+:toclevels: 2
+
+toc::[]
+
+== Daily operations
+* Run periodic UMRS state updates.
+* Review any failed checks.
+* Preserve logs according to your retention policy.
+
+== Change control
+* Apply changes intentionally.
+* Record what changed, why, and who authorized it.
+* Prefer small, reversible changes.

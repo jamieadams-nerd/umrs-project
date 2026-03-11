@@ -1,0 +1,62 @@
+[[pool]]
+name = "var-log"
+mount_point = "/var/log"
+
+  [[pool.lifecycle]]
+  state = "active"
+
+    [[pool.lifecycle.path]]
+    path = "/var/log/messages"
+    class = "system"
+
+    [[pool.lifecycle.path]]
+    path = "/var/log/secure"
+    class = "system"
+
+    [[pool.lifecycle.path]]
+    path = "/var/log/maillog"
+    class = "system"
+
+    [[pool.lifecycle.path]]
+    path = "/var/log/cron"
+    class = "system"
+
+  [[pool.lifecycle]]
+  state = "archived"
+
+    [[pool.lifecycle.path]]
+    path = "/var/log/messages-*"
+    class = "system"
+
+    [[pool.lifecycle.path]]
+    path = "/var/log/secure-*"
+    class = "system"
+
+    [[pool.lifecycle.path]]
+    path = "/var/log/maillog-*"
+    class = "system"
+
+    [[pool.lifecycle.path]]
+    path = "/var/log/cron-*"
+    class = "system"
+
+
+[[pool]]
+name = "var-log-audit"
+mount_point = "/var/log/audit"
+
+  [[pool.lifecycle]]
+  state = "active"
+
+    [[pool.lifecycle.path]]
+    path = "/var/log/audit/audit.log"
+    class = "audit"
+
+  [[pool.lifecycle]]
+  state = "archived"
+
+    [[pool.lifecycle.path]]
+    path = "/var/log/audit/archive/audit.*"
+    class = "audit"
+
+

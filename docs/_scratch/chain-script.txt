@@ -1,0 +1,207 @@
+Chain script
+
+Good catch on the key layout; let’s bake that into the prototype.
+
+I’ll assume this structure (adjust paths as you like):
+
+/etc/pki/ha-sign/auditd/public/auditd_signing_pubkey.pem
+/etc/pki/ha-sign/auditd/private/auditd_signing_privkey.pem
+
+And a chain area for the per-log records and index:
+
+/var/lib/ha-sign/auditd/
+
+For the prototype, I’m going with a simple flat “chain index” file instead of SQLite. Each rotated auditd log gets:
+
+– A small canonical “record” file describing the log (path, size, mtime, hash, previous record hash, timestamp, host).
+– A detached signature over that record file using the auditd private key.
+– A line appended to an index file that links this record to the previous record (a simple chain).
+
+Below is a first-cut Bash script that can be called from logrotate’s postrotate stanza. It expects one argument: the full path of the rotated audit log (for example, /var/log/audit/audit.log.1).
+
+As requested, every line is prefixed with the section symbol so you can copy/paste cleanly.
+
+§#!/usr/bin/env bash
+§
+§# sign_auditd_log.sh
+§# Prototype: sign a rotated auditd log and append a chained record.
+§
+§set -euo pipefail
+§IFS=$’ \t\n’
+§
+§# —– Configuration —————————————————––
+§
+§# Logical purpose name for this key set
+§PURPOSE=“auditd”
+§
+§# Root where HA-Sign/TA-Sign keeps its purpose-specific keys
+§KEY_ROOT=”/etc/pki/ha-sign/${PURPOSE}”
+§PUB_KEY=”${KEY_ROOT}/public/${PURPOSE}_signing_pubkey.pem”
+§PRIV_KEY=”${KEY_ROOT}/private/${PURPOSE}signing_privkey.pem”
+§
+§# Where we keep chain records and the chain index for this purpose
+§CHAIN_ROOT=”/var/lib/ha-sign/${PURPOSE}”
+§CHAIN_INDEX=”${CHAIN_ROOT}/chain.index”
+§
+§# Command names (override here if paths differ on a hardened build)
+§OPENSSL_BIN=”/usr/bin/openssl”
+§SHA512SUM_BIN=”/usr/bin/sha512sum”
+§STAT_BIN=”/usr/bin/stat”
+§DATE_BIN=”/usr/bin/date”
+§HOSTNAME_BIN=”/usr/bin/hostname”
+§LOGGER_BIN=”/usr/bin/logger”
+§
+§# —– Helpers ———————————————————––
+§
+§log_info() {
+§    local msg=”$1”
+§    if [ -x “${LOGGER_BIN}” ]; then
+§        “${LOGGER_BIN}” -t “ha-sign-${PURPOSE}” – “${msg}” || true
+§    else
+§        printf ‘%s\n’ “ha-sign-${PURPOSE}: ${msg}” >&2
+§    fi
+§}
+§
+§fail() {
+§    local msg=”$1”
+§    log_info “ERROR: ${msg}”
+§    printf ‘%s\n’ “ERROR: ${msg}” >&2
+§    exit 1
+§}
+§
+§# —– Argument and environment checks ————————————
+§
+§if [ “$#” -ne 1 ]; then
+§    printf ‘%s\n’ “Usage: $0 ROTATED_AUDIT_LOG_PATH” >&2
+§    exit 1
+§fi
+§
+§LOG_FILE=”$1”
+§
+§if [ ! -f “${LOG_FILE}” ]; then
+§    fail “Log file does not exist: ${LOG_FILE}”
+§fi
+§
+§if [ ! -r “${LOG_FILE}” ]; then
+§    fail “Log file is not readable: ${LOG_FILE}”
+§fi
+§
+§# Ensure required tools exist
+§[ -x “${OPENSSL_BIN}” ]   || fail “openssl not found at ${OPENSSL_BIN}”
+§[ -x “${SHA512SUM_BIN}” ] || fail “sha512sum not found at ${SHA512SUM_BIN}”
+§[ -x “${STAT_BIN}” ]      || fail “stat not found at ${STAT_BIN}”
+§[ -x “${DATE_BIN}” ]      || fail “date not found at ${DATE_BIN}”
+§[ -x “${HOSTNAME_BIN}” ]  || fail “hostname not found at ${HOSTNAME_BIN}”
+§
+§# Ensure key material exists
+§[ -f “${PRIV_KEY}” ] || fail “Private key missing: ${PRIV_KEY}”
+§[ -r “${PRIV_KEY}” ] || fail “Private key not readable: ${PRIV_KEY}”
+§
+§if [ ! -f “${PUB_KEY}” ]; then
+§    log_info “Warning: public key not found at ${PUB_KEY} (verification host may keep it elsewhere)”
+§fi
+§
+§# Create chain directory if needed
+§if [ ! -d “${CHAIN_ROOT}” ]; then
+§    mkdir -p “${CHAIN_ROOT}” || fail “Unable to create CHAIN_ROOT: ${CHAIN_ROOT}”
+§    chmod 700 “${CHAIN_ROOT}” || true
+§fi
+§
+§# —– Collect file metadata –––––––––––––––––––––––
+§
+§FILE_BASENAME=”$(basename – “${LOG_FILE}”)”
+§FILE_DIRNAME=”$(dirname – “${LOG_FILE}”)”
+§
+§FILE_SIZE=”$(”${STAT_BIN}” -c ‘%s’ – “${LOG_FILE}”)”
+§FILE_MTIME_EPOCH=”$(”${STAT_BIN}” -c ‘%Y’ – “${LOG_FILE}”)”
+§FILE_MTIME_ISO=”$(”${DATE_BIN}” -u -d “@${FILE_MTIME_EPOCH}” ‘+%Y-%m-%dT%H:%M:%SZ’)”
+§
+§FILE_SHA512=”$(”${SHA512SUM_BIN}” – “${LOG_FILE}” | awk ‘{print $1}’)”
+§
+§HOSTNAME_FQDN=”$(”${HOSTNAME_BIN}” -f 2>/dev/null || “${HOSTNAME_BIN}”)”
+§NOW_UTC=”$(”${DATE_BIN}” -u ‘+%Y-%m-%dT%H:%M:%SZ’)”
+§
+§# —– Determine previous record in the chain —————————–
+§
+§SEQ_NUM=1
+§PREV_RECORD_SHA512=“NONE”
+§
+§if [ -f “${CHAIN_INDEX}” ] && [ -s “${CHAIN_INDEX}” ]; then
+§    LAST_LINE=”$(tail -n 1 – “${CHAIN_INDEX}”)”
+§
+§    # Expected index format (pipe-separated):
+§    # seq|timestamp_utc|hostname|log_path|log_sha512|prev_record_sha512|record_sha512|record_file|signature_file
+§
+§    LAST_SEQ=”$(printf ‘%s\n’ “${LAST_LINE}” | cut -d ‘|’ -f 1 || true)”
+§    LAST_RECORD_SHA512=”$(printf ‘%s\n’ “${LAST_LINE}” | cut -d ‘|’ -f 7 || true)”
+§
+§    if [ -n “${LAST_SEQ}” ]; then
+§        SEQ_NUM=”$((LAST_SEQ + 1))”
+§    fi
+§    if [ -n “${LAST_RECORD_SHA512}” ]; then
+§        PREV_RECORD_SHA512=”${LAST_RECORD_SHA512}”
+§    fi
+§fi
+§
+§# —– Build canonical record file ––––––––––––––––––––
+§
+§RECORD_BASENAME=“auditd_log${SEQ_NUM}.record”
+§RECORD_PATH=”${CHAIN_ROOT}/${RECORD_BASENAME}”
+§SIG_PATH=”${RECORD_PATH}.sig”
+§
+§{
+§    printf ‘purpose=%s\n’          “${PURPOSE}”
+§    printf ‘sequence=%s\n’         “${SEQ_NUM}”
+§    printf ‘created_utc=%s\n’      “${NOW_UTC}”
+§    printf ‘host=%s\n’             “${HOSTNAME_FQDN}”
+§    printf ‘log_path=%s\n’         “${LOG_FILE}”
+§    printf ‘log_dir=%s\n’          “${FILE_DIRNAME}”
+§    printf ‘log_file=%s\n’         “${FILE_BASENAME}”
+§    printf ‘log_size_bytes=%s\n’   “${FILE_SIZE}”
+§    printf ‘log_mtime_epoch=%s\n’  “${FILE_MTIME_EPOCH}”
+§    printf ‘log_mtime_utc=%s\n’    “${FILE_MTIME_ISO}”
+§    printf ‘log_sha512=%s\n’       “${FILE_SHA512}”
+§    printf ‘prev_record_sha512=%s\n’ “${PREV_RECORD_SHA512}”
+§} > “${RECORD_PATH}.tmp”
+§
+§chmod 600 “${RECORD_PATH}.tmp” || true
+§mv -f “${RECORD_PATH}.tmp” “${RECORD_PATH}”
+§
+§# —– Hash and sign the record ——————————————
+§
+§RECORD_SHA512=”$(”${SHA512SUM_BIN}” – “${RECORD_PATH}” | awk ‘{print $1}’)”
+§
+§# Create detached signature over the record using the private key
+§”${OPENSSL_BIN}” dgst -sha512 -sign “${PRIV_KEY}” -out “${SIG_PATH}.tmp” “${RECORD_PATH}” 
+§    || fail “openssl signing failed for record ${RECORD_PATH}”
+§
+§chmod 600 “${SIG_PATH}.tmp” || true
+§mv -f “${SIG_PATH}.tmp” “${SIG_PATH}”
+§
+§# —– Append a line to the chain index ———————————–
+§
+§INDEX_LINE=”${SEQ_NUM}|${NOW_UTC}|${HOSTNAME_FQDN}|${LOG_FILE}|${FILE_SHA512}|${PREV_RECORD_SHA512}|${RECORD_SHA512}|${RECORD_PATH}|${SIG_PATH}”
+§
+§# Append atomically where possible
+§{
+§    umask 077
+§    if [ ! -f “${CHAIN_INDEX}” ]; then
+§        : > “${CHAIN_INDEX}”
+§    fi
+§} || fail “Unable to initialize chain index: ${CHAIN_INDEX}”
+§
+§printf ‘%s\n’ “${INDEX_LINE}” >> “${CHAIN_INDEX}” 
+§    || fail “Unable to append to chain index: ${CHAIN_INDEX}”
+§
+§log_info “Signed ${LOG_FILE} (seq=${SEQ_NUM}, log_sha512=${FILE_SHA512})”
+§
+§exit 0
+
+If you want, next step we can sketch the matching “verify all auditd logs” script that:
+
+– Walks the chain.index in order.
+– Re-computes log file hashes.
+– Re-computes record hashes.
+– Verifies each record.signature using the public key in /etc/pki/ha-sign/auditd/public/.
+
+But for now this should align with your updated auditd/public and auditd/private key layout and keep the prototype simple and inspectable.

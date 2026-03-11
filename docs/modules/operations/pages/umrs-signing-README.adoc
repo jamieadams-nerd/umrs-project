@@ -1,0 +1,78 @@
+= UMRS Signing: Project Overview (HA-Sign)
+:toc: left
+:description: Overview, design principles, and compliance narrative for the High-Assurance Signing Key Orchestrator (HA-Sign).
+
+The High-Assurance Signing Key Orchestrator (HA-Sign) is a Bash-based utility that
+standardizes how this system creates, rotates, inventories, and documents signing keys
+used for log and archive integrity.
+
+It enforces FIPS-approved algorithms, strong key lengths, and strict file permissions,
+while deliberately avoiding passphrases for keys used by unattended services. HA-Sign
+centralizes key storage under `/etc/pki`, provides clear naming and directory conventions,
+and generates auditor-ready reports that show exactly which keys protect which artifacts,
+how long they are valid for, and when they were rotated.
+
+For detailed operator procedures see xref:key-manager-tool.adoc[HA-Sign Key Orchestrator].
+For background on key naming conventions and lifecycle management policy see
+xref:key-management.adoc[Cryptographic Key Management].
+
+== Core Design Principles
+
+* *Deterministic structure* — keys live in well-defined locations with predictable names.
+* *Strong defaults* — FIPS-approved algorithms and key lengths enforced by default; the
+  utility refuses to generate keys below the configured minimum security threshold.
+* *No passphrases for automation* — signing keys used by unattended services (auditd,
+  logrotate, journald exports, cron jobs) are created without passphrases.
+  Compensating controls: strict file permissions, dedicated service account isolation, and rotation schedule.
+* *Full lifecycle coverage* — init, rotate, list, report, and discovery of existing keys.
+* *Auditor-friendly reporting* — every key is described with purpose, algorithm, key
+  length, locations, and status (active or archived).
+
+== What HA-Sign Is Not
+
+HA-Sign manages local signing keys for log and archive integrity. It is not:
+
+* A general PKI or certificate authority.
+* A TLS certificate manager.
+* A replacement for system-level cryptographic libraries.
+
+== Assurance Story for Auditors
+
+When an auditor asks "How do you manage signing keys for your logs and archives?" the
+HA-Sign answer is:
+
+We have a dedicated, documented utility that:
+
+* Creates signing keys in one place with FIPS-approved algorithms and minimum key sizes.
+* Separates private and public keys, enforces strict file permissions, and prevents
+  interactive passphrases for automated jobs.
+* Rotates keys on a documented schedule, archives old keys for verification, and tracks
+  lifetimes.
+* Produces a formal report enumerating every key, its purpose, algorithm, length,
+  locations, and status (active or archived).
+* Encapsulates this in a repeatable, scriptable process that can be inspected and tested
+  like any other system component.
+
+This report is used as evidence for:
+
+* Proper key management (`SC-12`, `SC-13`).
+* Log integrity and non-repudiation (`AU-9`, `AU-10`, `SI-7`).
+* Configuration management and continuous monitoring (`CM`, `CA` families).
+
+== Compliance Alignment Summary
+
+[cols="1,3"]
+|===
+| Control | How HA-Sign Satisfies It
+
+| `SC-12` | Lifecycle management: init, rotate, archive, and document all signing keys
+| `SC-13` | Enforces FIPS-approved algorithms; refuses weaker choices
+| `AC-3` | Private keys are root-owned, `0400`, in a locked-down directory
+| `AC-6` | Private and public material separated; dedicated service account for signing
+| `AU-2` | Keys support signing of audit log files, system logs, and archives
+| `AU-9` | Audit logs protected by cryptographic signatures
+| `AU-10` | Non-repudiation: signatures tied to documented key holders
+| `SI-7` | Integrity verification of logs and archives using cryptographic signatures
+| `CM-6` | Configuration file controls algorithm, key length, and expiration; changes are reviewed
+| `CA-7` | Scheduled report runs provide continuous key posture visibility
+|===

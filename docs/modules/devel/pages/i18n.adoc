@@ -1,0 +1,93 @@
+= Internationalization (i18n)
+:description: How to use the UMRS core i18n module in CLI tools and libraries.
+
+UMRS uses a multi-domain gettext architecture. Each CLI tool has its own text domain;
+the shared `umrs-core` library has its own domain. Both can be translated independently.
+
+== Domains
+
+[cols="1,2,2",options="header"]
+|===
+| Call | Domain | Catalog
+
+| `tr()` | Your tool (e.g., `vaultmgr`) | `vaultmgr.mo`
+| `tr_core()` | `umrs-core` | `umrs-core.mo`
+|===
+
+Translations resolve simultaneously with no collision.
+
+== Step 1 — Initialize at Program Start
+
+In your CLI's `main()`, call `i18n::init()` with the tool's domain name before
+producing any output:
+
+[source,rust]
+----
+use umrs_core::i18n;
+
+fn main() {
+    i18n::init("vaultmgr");
+
+    println!("{}", i18n::tr("Vault manager starting"));
+}
+----
+
+Only the CLI calls `init()`. Libraries never call it — doing so would override the
+caller's domain and break embedding.
+
+== Step 2 — Translate Strings
+
+Anywhere in the CLI:
+
+[source,rust]
+----
+println!("{}", i18n::tr("Creating vault directory"));
+println!("{}", i18n::tr("Vault created successfully"));
+println!("{}", i18n::tr("Operation failed"));
+----
+
+For library messages inside `umrs-core`, use `tr_core()` — the CLI does not need
+to do anything special to enable this:
+
+[source,rust]
+----
+tr_core("Audit event emitted")
+----
+
+Optional ergonomic alias:
+
+[source,rust]
+----
+use umrs_core::i18n::tr;
+
+println!("{}", tr("Vault created"));
+----
+
+== Step 3 — Install Catalogs
+
+Both domains must have catalogs installed for a given locale:
+
+[source]
+----
+/usr/share/locale/fr_FR/LC_MESSAGES/vaultmgr.mo
+/usr/share/locale/fr_FR/LC_MESSAGES/umrs-core.mo
+----
+
+If a catalog is missing, the raw message ID is shown (English fallback).
+
+== Runtime Example
+
+[source,bash]
+----
+LANG=fr_FR.UTF-8 vaultmgr
+----
+
+== Rules
+
+* `i18n::init()` — CLI `main()` only, once, before output
+* `tr()` — CLI user-facing strings
+* `tr_core()` — `umrs-core` library strings (called from the library, not the CLI)
+* `ensure_locale()` — called by `init()`, handles locale safety automatically
+
+See xref:build-tooling.adoc[Build Tooling] for `make i18n-setup` and `make i18n-build`
+which manage `.pot`, `.po`, and `.mo` files.

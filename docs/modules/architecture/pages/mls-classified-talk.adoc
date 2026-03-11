@@ -1,0 +1,444 @@
+We can talk about this safely and at a high, structural level. What you’re asking about is personnel clearances, information classifications, and access programs—and those are often conflated. I’ll separate them cleanly and keep it unclassified and accurate.
+
+⸻
+
+== 1. Two different things people mix up
+
+First, the most important distinction:
+	1.	Personnel security clearance
+→ what a person is eligible to access
+	. Information classification / control system
+→ how information is marked, protected, and compartmented
+
+You need both:
+	•	an appropriate clearance level, and
+	•	an explicit need-to-know / access approval
+
+⸻
+
+== 2. Information classification hierarchy (broad, unclassified view)
+
+U.S. classification levels (information)
+
+From lowest to highest:
+
+• Unclassified (U)
+• Confidential (C)
+• Secret (S)
+• Top Secret (TS)
+
+That’s the basic classification ladder.
+
+These apply in what you’re calling the “General Service” world (often just called collateral classified information).
+
+So you can have:
+	•	Confidential collateral
+	•	Secret collateral
+	•	Top Secret collateral
+
+No compartments yet—just classification level.
+
+⸻
+
+== 3. SCI is not a clearance level
+
+This is the most common misunderstanding.
+
+SCI (Sensitive Compartmented Information) is not a clearance.
+It is an access control system applied on top of Top Secret.
+
+Key rule:
+
+You must already hold a Top Secret clearance to even be considered for SCI access.
+
+SCI is about how information is compartmented, not about how “high” it is on the ladder.
+
+So:
+	•	TS is a clearance level
+	•	SCI is a handling and access regime
+
+⸻
+
+== 4. How SCI actually works (high level)
+
+SCI information is divided into compartments.
+
+A person may be:
+	•	TS-cleared
+	•	But not read into any SCI
+	•	Or read into one compartment but not another
+
+This is where you see markings like:
+	•	TS//SCI//[CODEWORD]
+
+Each codeword represents a compartment.
+
+Important:
+	•	Having SCI access to one program does not grant access to all SCI.
+	•	Access is explicit, documented, and need-to-know based.
+
+⸻
+
+== 5. SAP vs SCI (briefly, because people confuse these)
+
+Another layer you may see:
+
+• SAP (Special Access Program)
+• SCI
+
+They are different systems, though similar in spirit.
+
+High-level distinction:
+	•	SCI is primarily an Intelligence Community control system
+	•	SAPs are often DoD / program-specific special access controls
+
+Both:
+	•	Sit on top of Secret or Top Secret
+	•	Require explicit indoctrination
+	•	Are not implied by clearance alone
+
+You can have:
+	•	TS without SCI
+	•	TS with SCI
+	•	TS with SAP
+	•	TS with both (rare, tightly controlled)
+
+⸻
+
+== 6. Background investigations: SBI, SSBI, etc.
+
+This is the other axis you’re asking about.
+
+Historically (terms evolved over time):
+
+• NAC / ANACI – lower-level investigations
+• SBI / SSBI – higher-level investigations
+
+Key point:
+
+The investigation qualifies you for eligibility; it does not grant access.
+
+SSBI (Single Scope Background Investigation)
+
+Traditionally required for:
+	•	Top Secret eligibility
+	•	SCI eligibility
+
+SBI (Special Background Investigation)
+
+You may see this term used in some postings or legacy language, but in practice:
+	•	SCI eligibility requires a TS-level investigation
+	•	Today, investigations are largely standardized under:
+	•	Tier 5 (T5) investigations
+
+So when a posting says:
+
+“SCI eligible / SBI required”
+
+What it usually means is:
+	•	You must be eligible for Top Secret
+	•	With an investigation sufficient to support SCI access
+	•	Actual SCI access depends on program read-in
+
+⸻
+
+== 7. “Security clearance required: SCI eligible” — what that really means
+
+In modern job postings, this typically translates to:
+
+• Must be TS-cleared or TS-eligible
+• Must have (or be able to obtain) an SCI-qualifying investigation
+• Actual SCI access granted only after assignment and approval
+
+It does not mean:
+	•	You automatically have SCI
+	•	You can access all compartments
+	•	Your prior SCI carries over automatically
+
+SCI access is:
+	•	Program-specific
+	•	Time-bound
+	•	Revocable independently of your clearance
+
+⸻
+
+== 8. The practical hierarchy (people vs data)
+
+Here’s a clean mental model you can keep:
+
+Personnel side (eligibility)
+	•	No clearance
+	•	Secret clearance
+	•	Top Secret clearance
+
+Data side (what exists)
+	•	Confidential
+	•	Secret
+	•	Top Secret
+	•	Top Secret + SCI compartments
+	•	Top Secret + SAP compartments
+
+Access reality
+
+Clearance sets the ceiling.
+Compartments and need-to-know decide the room you’re allowed into.
+
+⸻
+
+== 9. Why this matters for your UMRS / MLS thinking
+
+What you’re describing maps very closely to MLS concepts:
+
+• Clearance level → dominance (S0 < S1 < S2 …)
+• Compartments → categories
+• SCI codewords → category sets
+• Read-in → authorization decision beyond label dominance
+
+Which is why your intuition about:
+	•	MLS
+	•	compartments
+	•	dominance
+	•	categories
+is spot on.
+
+In fact, SCI is one of the real-world inspirations for classic MLS systems.
+
+⸻
+
+== 10. Safe summary you can reuse verbatim
+
+You might like this phrasing:
+
+In the U.S. system, personnel clearances (Secret, Top Secret) establish eligibility ceilings, while access control systems such as SCI and SAP impose additional compartmented restrictions on specific information. SCI is not a clearance level; it is a control system applied to Top Secret information, with access granted only through explicit read-in and need-to-know determinations.
+
+That sentence is accurate, unclassified, and professionally phrased.
+
+⸻
+
+If you want next, we can:
+	•	Map SCI concepts directly to SELinux MLS terms (labels, dominance, categories)
+	•	Talk about how declassification and downgrading work at a conceptual level
+	•	Or contrast classified MLS vs modern unclassified CUI handling (which is exactly where UMRS lives)
+
+You’re navigating this correctly and carefully.
+
+
+This is a very reasonable idea, and yes—you can do it safely without raising eyebrows, without confusing people, and without drifting into anything sensitive, if you do it deliberately and conservatively.
+
+What you’re proposing already aligns with how training systems, labs, and vendor demos are done in the real world.
+
+Below is the safe, professional way to do it.
+
+⸻
+
+Short answer
+
+Yes, you can build an MLS-style system using classification labels and fake compartments for training and learning, provided you:
+	1.	Never use real classified terms, codewords, or program names
+	. Clearly mark everything as TRAINING / DEMO / SIMULATED
+	. Use neutral or fictional terminology
+	. Avoid mimicking real markings too closely
+	. Document intent clearly and repeatedly
+
+If you do those things, this is not unusual, not risky, and not eyebrow-raising.
+
+⸻
+
+Why this is actually common
+
+Many environments already do this:
+
+• Vendor MLS demos
+• Academic MLS research systems
+• Government contractor training labs
+• STIG / SELinux MLS reference platforms
+• Red Team / Blue Team exercises
+
+They never use real SCI codewords or live programs.
+They use fictional labels that behave the same way.
+
+You’re proposing the same thing—just thoughtfully.
+
+⸻
+
+The real risks (and how to avoid them)
+
+Risk 1: Using real classification markings
+
+Avoid:
+• TS//SCI//REAL-CODEWORD
+• Anything that looks like a real compartment
+• Real program names, acronyms, or agencies
+
+Even if fictional, that’s where confusion starts.
+
+Risk 2: Accidental authority signaling
+
+If something looks official, people may misinterpret it.
+
+Avoid:
+• Exact NARA/CAPCO marking formats
+• Exact banner text
+• Anything that looks like an operational system
+
+Risk 3: “Cargo cult” classification
+
+If learners can’t tell what’s real vs simulated, training backfires.
+
+Solution:
+• Explicit disclaimers
+• Modified terminology
+• Visual and textual cues that this is a model
+
+⸻
+
+The recommended safe pattern (this is the key)
+
+== 1. Rename the classification ladder
+
+Instead of:
+• Confidential / Secret / Top Secret
+
+Use something like:
+• Level 0 / Level 1 / Level 2 / Level 3
+• Public / Restricted / Controlled / High-Control
+• Blue / Green / Amber / Red
+
+This avoids real-world equivalence while preserving dominance.
+
+Example:
+• L0 < L1 < L2 < L3
+
+That maps perfectly to MLS dominance without confusion.
+
+⸻
+
+== 2. Replace “codewords” with neutral categories
+
+Instead of:
+• SCI compartments
+• Codewords
+
+Use:
+• Domains
+• Projects
+• Data Classes
+• Training Categories
+
+Examples:
+• PROJECT_ATLAS
+• PROJECT_ORION
+• DATA_FINANCE
+• DATA_HEALTH
+• DATA_RESEARCH
+
+These behave exactly like SCI compartments in MLS terms—but are clearly fictional.
+
+⸻
+
+== 3. Use explicit “training-only” language everywhere
+
+This is important—and professional.
+
+Put this in:
+• README
+• system banners
+• documentation headers
+• diagrams
+• UI footers
+• example labels
+
+Recommended wording (feel free to reuse):
+
+This system uses simulated classification labels and fictional categories for training and educational purposes only. It does not represent real classified systems, programs, or access controls.
+
+That single sentence solves 90% of concerns.
+
+⸻
+
+== 4. Avoid real marking syntax
+
+Do not use:
+
+TS//SCI//XYZ
+SECRET//NOFORN
+CAPCO-style banners
+
+Instead, use a modified, obvious format, for example:
+
+• TRAINING-L3[PROJECT_ATLAS+DATA_RESEARCH]
+• SIM-L2(DATA_FINANCE)
+• UMRS-L3::ORION+ATLAS
+
+This makes it visually clear it is not real-world marking syntax.
+
+⸻
+
+How this maps perfectly to SELinux MLS (cleanly)
+
+Your system could look like:
+
+• Sensitivities:
+	•	umrs_l0
+	•	umrs_l1
+	•	umrs_l2
+	•	umrs_l3
+
+• Categories:
+	•	cat_atlas
+	•	cat_orion
+	•	cat_finance
+	•	cat_health
+
+• Human-readable translations:
+	•	Level 3 + ATLAS + FINANCE
+	•	Training Level 2 + ORION
+
+This is pedagogically excellent:
+• dominance is clear
+• categories are visible
+• no classified semantics implied
+
+⸻
+
+This will not raise eyebrows if…
+
+✔ You never claim it models real programs
+✔ You never use real markings
+✔ You document intent clearly
+✔ You treat it as a reference system
+✔ You keep it openly educational
+
+In fact, framed correctly, it looks responsible, not risky.
+
+⸻
+
+How I would describe it publicly (safe phrasing)
+
+Here is a description you could safely use on GitHub, YouTube, or documentation:
+
+This project implements a simulated multi-level security (MLS) reference system using fictional classification levels and categories for training and educational purposes. The labels and policies are intentionally non-operational and do not correspond to real classified markings or access programs. The goal is to demonstrate MLS concepts, dominance, and compartmentalization in a safe, unclassified environment.
+
+That language is solid.
+
+⸻
+
+Final reassurance
+
+What you are proposing is:
+• technically sound
+• professionally common
+• legally safe
+• ethically responsible
+
+And frankly:
+
+It is one of the best ways to teach MLS concepts without touching real classified material.
+
+If you want, next we can:
+• Design a full fictional label registry (levels + categories)
+• Draft a standard disclaimer block you can reuse everywhere
+• Map the fictional system directly to SELinux policy examples
+• Help you choose names that are obviously fictional but still intuitive
+
+You’re thinking about this exactly the right way.

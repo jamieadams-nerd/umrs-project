@@ -1,0 +1,371 @@
+= IMA/EVM Kernel Integrity: Deployment
+:description: Configuring Integrity Measurement Architecture (IMA) and Extended Verification Module (EVM) on RHEL 10.
+
+This page covers post-installation kernel integrity configuration (NIST 800-53 SI-7,
+SI-7(1), SC-28; NSA RTB RAIN non-bypassability).
+
+Integrity Measurement Architecture (IMA) measures file content hashes at access time and
+stores them in the kernel's measurement log.
+Extended Verification Module (EVM) protects file metadata — ownership, permissions, and
+the IMA hash itself — from offline tampering by signing the extended attributes (SI-7(6)).
+
+Together, IMA and EVM ensure that configuration files modified by an unauthorized process,
+or tampered with offline, become unreadable — preventing the system from running in an
+insecure state.
+The kernel becomes the mandatory enforcement point, satisfying NSA RTB RAIN
+non-bypassability: there is no userspace path to bypass appraisal.
+
+This guide uses a staged approach: start in `fix` mode so the kernel writes initial hashes
+without denying access, then switch to `enforce` once hashes are verified.
+Day-to-day operations — updating hashes after authorized changes, switching to enforce mode,
+verification, and recursive hashing — are covered in
+xref:operations:ima-evm-ops.adoc[IMA/EVM Maintenance].
+
+NOTE: Complete xref:rhel10-setrans.adoc[CUI Label Configuration] before this step —
+the IMA policy specifically targets the `setrans.conf` file installed there.
+
+== Step 1: Configure the Kernel for Boot
+
+Update kernel boot parameters to activate IMA in fix mode.
+Fix mode allows the kernel to write missing hashes to files instead of denying access,
+which is required before initial hashes exist (CM-3, CM-7).
+
+[source,bash]
+----
+sudo grubby --update-kernel=ALL --args="ima=on ima_appraise=fix"
+----
+
+`ima=on` enables the subsystem.
+`ima_appraise=fix` allows the kernel to write missing hashes rather than blocking access.
+
+NOTE: `ima_policy=tcb` is intentionally omitted so that only the custom local policy
+governs the system (CM-7 least functionality). `evm=fix` is also omitted at this stage —
+EVM requires a loaded keyring to write metadata.
+
+Reboot to apply the new kernel arguments:
+
+[source,bash]
+----
+sudo reboot
+----
+
+== Step 2: Prepare the Configuration Directory
+
+Create the IMA configuration directory with restricted permissions.
+Only root may manage integrity policies (CM-5):
+
+[source,bash]
+----
+sudo mkdir -p /etc/ima
+sudo chown root:root /etc/ima
+sudo chmod 750 /etc/ima
+----
+
+Apply the policy-defined SELinux context.
+Without this step, the directory inherits the creating process's SELinux identity
+(typically `unconfined_u`), which would leave a system security-policy directory
+labeled as a user object.
+Running `restorecon` assigns `system_u:object_r:etc_t:s0` — the correct identity
+for a system-managed directory under `/etc` in the targeted policy fcontext database:
+
+[source,bash]
+----
+sudo restorecon -v /etc/ima
+----
+
+Verify the context was applied correctly:
+
+[source,bash]
+----
+ls -lZd /etc/ima
+----
+
+Expected output:
+----
+drwxr-x--- root root system_u:object_r:etc_t:s0 /etc/ima
+----
+
+NOTE: RHEL 10's targeted policy does not ship a specific `ima_policy_t` fcontext
+entry for `/etc/ima`, so `etc_t` is the correct assigned type.
+If a future policy update introduces `ima_policy_t`, run `restorecon` again after
+the policy update to pick up the more specific type.
+
+== Step 3: Deploy the Custom Policy
+
+Create the policy file at `/etc/ima/00-integrity.policy`.
+The `00-` prefix ensures it is evaluated first if multiple policy files are present (CM-3).
+
+WARNING: IMA policy rules are evaluated in order — the first matching rule wins,
+exactly like firewall rules.
+The three numbered sections in the policy below are ordered intentionally, and that
+order is safety-critical.
+Getting it wrong in `enforce` mode can make the system unbootable.
+
+*Section 2 (the `dont_appraise` exclusions) must come before Section 3 (the broad rules).*
+Here is why: the rule `measure func=FILE_CHECK mask=MAY_READ uid=0` in Section 3 will
+match files on `/proc`, `/sys`, and other virtual filesystems.
+Those filesystems cannot store extended attributes, so they will never have a
+`security.ima` xattr.
+In `enforce` mode, any file that fails appraisal is denied.
+If the broad appraise rules fire on procfs before the exclusions have a chance to
+skip them, the kernel will deny access to `/proc` — and the system will not finish
+booting.
+
+*Section 1 (specific targets) must come first* because it establishes explicit rules
+for named files before any broader rule can match them.
+If a broad `dont_appraise` or `measure` rule appeared above Section 1, those specific
+`appraise` rules would never be reached.
+
+*`appraise` rules are the dangerous ones.*
+A `measure` rule only writes an entry to the measurement log — it never blocks access.
+An `appraise` rule will block access in `enforce` mode if the file's `security.ima`
+xattr is missing, stale, or cannot be read.
+This means a single misplaced broad `appraise` rule can silently cover filesystems
+or file types that cannot be hashed, and the failure only becomes visible at the
+worst possible time — during boot in `enforce` mode.
+
+`ima_appraise=fix` is your safety net.
+In fix mode, a failed appraisal causes the kernel to write or update the hash rather
+than blocking access.
+A policy mistake in fix mode produces unexpected measurement log entries.
+The same mistake in enforce mode produces an unbootable system.
+*Stay in fix mode until you have verified the policy is correct and every tracked
+file has a valid hash.*
+See xref:operations:ima-evm-ops.adoc#_finalizing_enforcement_optional[Finalizing Enforcement]
+for guidance on when and how to transition.
+
+[source,bash]
+----
+sudo vi /etc/ima/00-integrity.policy
+----
+
+Paste the following policy (then save and exit `vi`):
+
+----
+#####################################
+# 1. SPECIFIC TARGETS (Top Priority)
+#    SI-7(1): integrity checks on security-critical configuration
+#####################################
+measure  func=FILE_CHECK path=/etc/selinux/targeted/setrans.conf
+appraise func=FILE_CHECK path=/etc/selinux/targeted/setrans.conf
+
+#####################################
+# 2. IGNORE: don't measure or appraise
+#    CM-7: exclude virtual and pseudo-filesystems that cannot
+#    be persisted or meaningfully appraised
+#####################################
+dont_measure  fsmagic=0x9fa0        # proc
+dont_appraise fsmagic=0x9fa0        # proc
+dont_measure  fsmagic=0x62656572    # sysfs
+dont_appraise fsmagic=0x62656572    # sysfs
+dont_measure  fsmagic=0x64626720    # debugfs
+dont_appraise fsmagic=0x64626720    # debugfs
+dont_measure  fsmagic=0x01021994    # tmpfs
+dont_appraise fsmagic=0x01021994    # tmpfs
+dont_appraise fsmagic=0x858458f6    # ramfs
+dont_measure  fsmagic=0x1cd1        # devpts
+dont_appraise fsmagic=0x1cd1        # devpts
+dont_measure  fsmagic=0x42494e4d    # binfmt_misc
+dont_appraise fsmagic=0x42494e4d    # binfmt_misc
+dont_measure  fsmagic=0x73636673    # securityfs
+dont_appraise fsmagic=0x73636673    # securityfs
+dont_measure  fsmagic=0xf97cff8c    # selinuxfs
+dont_appraise fsmagic=0xf97cff8c    # selinuxfs
+dont_measure  fsmagic=0x27e0eb      # cgroup
+dont_appraise fsmagic=0x27e0eb      # cgroup
+dont_measure  fsmagic=0x6e736673    # nsfs
+dont_appraise fsmagic=0x6e736673    # nsfs
+
+#####################################
+# 3. SUPPLY CHAIN (Measure only)
+#    SA-12: supply chain protection for kernel modules and firmware
+#    MODULE_CHECK and FIRMWARE_CHECK capture what the kernel actually
+#    loaded at runtime — AIDE cannot replicate this because it only
+#    scans files on disk and cannot detect a module that was loaded
+#    then replaced before the next scheduled scan.
+#####################################
+measure func=MODULE_CHECK
+measure func=FIRMWARE_CHECK
+
+# DEFERRED: runtime binary and file measurement
+#
+# The rules below provide real-time SI-7(14) telemetry for executables,
+# shared libraries, and root file reads. They are commented out because:
+#
+#   1. They are measure-only (never blocking) — no appraisal risk.
+#   2. AIDE will provide equivalent binary integrity coverage on a
+#      scheduled basis once deployed, satisfying SI-7(14) without the
+#      high measurement log volume these rules generate.
+#   3. FILE_CHECK mask=MAY_READ uid=0 in particular generates an entry
+#      for every file root reads and is not practical until log
+#      infrastructure is sized for the volume.
+#
+# Revisit when: AIDE is operational and a decision is made on whether
+# to move these rules from measure to appraise as part of full IMA
+# enforcement.
+#
+#measure func=BPRM_CHECK
+#measure func=FILE_MMAP mask=MAY_EXEC
+#measure func=FILE_CHECK mask=MAY_READ uid=0
+
+#######################################
+# SELinux Context Rules
+#    AU-9: exclude audit and log types from measurement
+#    to avoid measurement log flooding
+#    SI-7: measure system_u / system_r file access
+#######################################
+dont_measure  obj_type=var_log_t
+dont_appraise obj_type=var_log_t
+dont_measure  obj_type=auditd_log_t
+dont_appraise obj_type=auditd_log_t
+measure subj_user=system_u func=FILE_CHECK mask=MAY_READ
+measure subj_role=system_r func=FILE_CHECK mask=MAY_READ
+----
+
+After saving, apply the correct SELinux context to the policy file:
+
+[source,bash]
+----
+sudo restorecon -v /etc/ima/00-integrity.policy
+----
+
+Files created by a shell (even under `sudo`) inherit the creating process's SELinux
+identity. `restorecon` assigns `system_u:object_r:etc_t:s0`, consistent with
+the parent directory and appropriate for a system policy file (SI-7, CM-3).
+
+== Step 4: Initialize and Verify
+
+Load the policy manually for this boot:
+
+[source,bash]
+----
+cat /etc/ima/[0-9]*.policy | sudo tee /sys/kernel/security/ima/policy
+----
+
+Generate the initial hash by reading the target file.
+In fix mode the kernel writes the hash to the file's `security.ima` extended
+attribute (SI-7(1), SI-7(6)):
+
+[source,bash]
+----
+cat /etc/selinux/targeted/setrans.conf > /dev/null
+----
+
+Verify the hash is set:
+
+[source,bash]
+----
+getfattr -n security.ima /etc/selinux/targeted/setrans.conf
+----
+
+The output should show a non-empty `security.ima` value.
+Once all targeted files are verified, the boot parameter can be changed from
+`ima_appraise=fix` to `ima_appraise=enforce`.
+See xref:operations:ima-evm-ops.adoc[IMA/EVM Maintenance] for the enforcement
+transition procedure.
+
+== Step 5: Create the systemd Automation Service
+
+This service re-applies the IMA policy to the kernel automatically at every boot (CM-3).
+The policy interface at `/sys/kernel/security/ima/policy` only accepts rules once per boot,
+so the service must run before `sysinit.target`.
+
+Create the service file:
+
+[source,bash]
+----
+sudo vi /etc/systemd/system/ima-policy-load.service
+----
+
+Paste the following:
+
+[source,ini]
+----
+[Unit]
+Description=Load Custom IMA Integrity Policy
+DefaultDependencies=no
+After=local-fs.target
+Before=sysinit.target
+ConditionPathExists=/etc/ima/00-integrity.policy
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+StandardOutput=journal
+StandardError=journal
+ExecStart=/bin/sh -c 'cat /etc/ima/[0-9]*.policy > /sys/kernel/security/ima/policy'
+
+[Install]
+WantedBy=sysinit.target
+----
+
+The glob `[0-9]*.policy` loads all files whose names begin with a digit, in sort order.
+The `00-` prefix on the base policy ensures it is evaluated first.
+Additional policy files added later (for example, `10-openssl.policy` or `20-umrs.policy`)
+are automatically picked up at the next boot without modifying this service.
+Each file should contain only the rules specific to its purpose so that coverage can be
+extended or removed independently.
+See xref:operations:ima-evm-ops.adoc#_expanding_coverage_tracking_examples[Expanding Coverage]
+for examples of additional policy files.
+
+Apply the SELinux context to the unit file.
+Without this, the file inherits the creating process's identity (`unconfined_u`);
+`restorecon` assigns `system_u:object_r:systemd_unit_file_t:s0`:
+
+[source,bash]
+----
+sudo restorecon -v /etc/systemd/system/ima-policy-load.service
+----
+
+Enable and start the service:
+
+[source,bash]
+----
+sudo systemctl daemon-reload
+sudo systemctl enable ima-policy-load.service
+sudo systemctl start ima-policy-load.service
+----
+
+Verify the policy loaded successfully:
+
+[source,bash]
+----
+sudo cat /sys/kernel/security/ima/policy
+----
+
+NOTE: If you receive "Operation not permitted," a policy has already been loaded in the
+current boot session. IMA only allows one policy write per boot to prevent runtime
+tampering of security rules. This is expected behavior on a running system.
+
+== Auditor Language
+
+If you need to document this configuration in a security plan or SCTM:
+
+____
+The system implements kernel-level integrity measurement and appraisal using the Linux
+Integrity Measurement Architecture (IMA) and Extended Verification Module (EVM) in
+accordance with NIST SP 800-53 SI-7 (Software, Firmware, and Information Integrity),
+enhancement SI-7(1) (Integrity Checks), SI-7(6) (Cryptographic Protection), and SC-28
+(Protection of Information at Rest).
+A custom policy restricts measurement and appraisal to security-relevant targets per
+CM-7 (Least Functionality), excluding virtual filesystems that cannot be persisted.
+Kernel modules and firmware are subject to runtime integrity measurement per SA-12 and
+SI-7(14) via `MODULE_CHECK` and `FIRMWARE_CHECK` rules; these capture the hash of what
+the kernel actually loads at boot, which filesystem-based tools cannot replicate.
+Broad binary and file measurement rules (SI-7(14) runtime telemetry for executables,
+shared libraries, and root file reads) are deferred pending AIDE deployment.
+AIDE provides equivalent SI-7(14) coverage for on-disk binaries on a scheduled basis.
+The IMA policy is loaded via a systemd unit at `sysinit.target` to ensure consistent
+application at every boot, satisfying CM-3 (Configuration Change Control).
+The kernel is the mandatory enforcement point (NSA RTB RAIN non-bypassability).
+____
+
+== Next Steps
+
+xref:kernel-lockdown-moddisable.adoc[Kernel Lockdown and Module Hardening] covers the next
+kernel hardening step: restricting root-level kernel access via Lockdown mode and freezing
+the module interface with `kernel.modules_disabled`.
+
+xref:operations:ima-evm-ops.adoc[IMA/EVM Maintenance] covers day-to-day operations:
+updating hashes after authorized changes, switching to enforce mode, verifying file
+integrity, and auditing for missing hashes before lock-down.

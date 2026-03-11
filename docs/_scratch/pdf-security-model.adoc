@@ -1,0 +1,474 @@
+§./docs/antora.yml
+§./docs/modules/ROOT/nav.adoc
+§./docs/modules/ROOT/pages/index.adoc
+§./docs/modules/ROOT/pages/getting-started.adoc
+§./docs/modules/ROOT/pages/install.adoc
+§./docs/modules/ROOT/pages/admin-guide.adoc
+§./docs/modules/ROOT/pages/security-model.adoc
+§./docs/modules/ROOT/pages/operations.adoc
+§./docs/modules/ROOT/pages/troubleshooting.adoc
+§./docs/modules/ROOT/pages/release-notes.adoc
+§./docs/pdf-admin-guide.adoc
+§./docs/pdf-security-model.adoc
+§./man/umrs-state.1.adoc
+§./man/umrs-verify.1.adoc
+§
+§––––––––––––––––––––––––––––––––––
+§FILE: antora-playbook.yml
+§––––––––––––––––––––––––––––––––––
+§# Antora playbook for building UMRS docs from the local repository.
+§#
+§# Usage (example):
+§#   antora antora-playbook.yml
+§#
+§# Output goes to ./site by default.
+§
+§site:
+§  title: Unclassified MLS Reference System (UMRS)
+§  start_page: umrs::index.adoc
+§content:
+§  sources:
+§    - url: .
+§      start_path: docs
+§      branches: HEAD
+§ui:
+§  bundle:
+§    url: https://gitlab.com/antora/antora-ui-default/-/archive/master/antora-ui-default-master.zip
+§    snapshot: true
+§output:
+§  dir: ./site
+§asciidoc:
+§  attributes:
+§    # Keep a single, visible version string you can override in CI if desired.
+§    umrs-version: “0.1 (draft)”
+§    # Make source links visible when browsing HTML output (optional).
+§    page-editable: “”
+§
+§––––––––––––––––––––––––––––––––––
+§FILE: tools/build-docs.sh
+§––––––––––––––––––––––––––––––––––
+§#!/usr/bin/env bash
+§
+§set -euo pipefail
+§IFS=$’\n\t’
+§umask 077
+§
+§SCRIPT_NAME=”$(basename “$0”)”
+§REPO_ROOT=””
+§
+§die() {
+§  printf ‘%s: ERROR: %s\n’ “$SCRIPT_NAME” “$1” >&2
+§  exit 1
+§}
+§
+§info() {
+§  printf ‘%s: %s\n’ “$SCRIPT_NAME” “$1” >&2
+§}
+§
+§need_cmd() {
+§  command -v “$1” >/dev/null 2>&1 || die “Missing required command: $1”
+§}
+§
+§# Resolve repo root safely.
+§if command -v git >/dev/null 2>&1; then
+§  REPO_ROOT=”$(git rev-parse –show-toplevel 2>/dev/null || true)”
+§fi
+§if [[ -z “${REPO_ROOT}” ]]; then
+§  # Fallback: assume script is in ./tools under repo root
+§  REPO_ROOT=”$(cd “$(dirname “$0”)/..” && pwd -P)”
+§fi
+§
+§DOCS_DIR=”${REPO_ROOT}/docs”
+§MAN_SRC_DIR=”${REPO_ROOT}/man”
+§OUT_SITE_DIR=”${REPO_ROOT}/site”
+§OUT_DIST_DIR=”${REPO_ROOT}/dist”
+§OUT_PDF_DIR=”${OUT_DIST_DIR}/pdf”
+§OUT_MAN_DIR=”${OUT_DIST_DIR}/man”
+§PLAYBOOK=”${REPO_ROOT}/antora-playbook.yml”
+§
+§[[ -d “$DOCS_DIR” ]] || die “docs directory not found: $DOCS_DIR”
+§[[ -f “$PLAYBOOK” ]] || die “Antora playbook not found: $PLAYBOOK”
+§[[ -d “$MAN_SRC_DIR” ]] || die “man source directory not found: $MAN_SRC_DIR”
+§
+§# Tooling checks.
+§# Note: Antora is typically installed via Node (npx antora) or as a system command (antora).
+§# We support either.
+§need_cmd asciidoctor
+§need_cmd asciidoctor-pdf
+§
+§HAS_ANTORA=0
+§if command -v antora >/dev/null 2>&1; then
+§  HAS_ANTORA=1
+§elif command -v npx >/dev/null 2>&1; then
+§  HAS_ANTORA=2
+§else
+§  HAS_ANTORA=0
+§fi
+§
+§if [[ “$HAS_ANTORA” -eq 0 ]]; then
+§  die “Antora not found. Install ‘antora’ (preferred) or provide ‘npx’ with antora available.”
+§fi
+§
+§# Clean outputs (safe delete only if they are within repo root).
+§rm -rf – “$OUT_SITE_DIR” “$OUT_DIST_DIR”
+§mkdir -p – “$OUT_SITE_DIR” “$OUT_PDF_DIR” “$OUT_MAN_DIR”
+§
+§info “Repo root: $REPO_ROOT”
+§info “Building HTML site into: $OUT_SITE_DIR”
+§
+§if [[ “$HAS_ANTORA” -eq 1 ]]; then
+§  antora “$PLAYBOOK”
+§else
+§  # Use a pinned Antora major version via npx if desired; leaving unpinned here for simplicity.
+§  # In locked-down environments, you may prefer a locally installed antora binary.
+§  npx antora “$PLAYBOOK”
+§fi
+§
+§info “Building PDFs into: $OUT_PDF_DIR”
+§
+§# Build one or more PDFs from dedicated entrypoint files.
+§PDF_INPUTS=(
+§  “${DOCS_DIR}/pdf-admin-guide.adoc”
+§  “${DOCS_DIR}/pdf-security-model.adoc”
+§)
+§
+§for f in “${PDF_INPUTS[@]}”; do
+§  [[ -f “$f” ]] || die “Missing PDF entrypoint: $f”
+§done
+§
+§# Asciidoctor PDF produces a single PDF per input file.
+§asciidoctor-pdf -q -D “$OUT_PDF_DIR” “${PDF_INPUTS[@]}”
+§
+§info “Building man pages into: $OUT_MAN_DIR”
+§
+§# Build man pages from AsciiDoc manpage sources.
+§# Convention: doctype=manpage and file extension like .1.adoc or .8.adoc
+§MAN_INPUTS=(
+§  “${MAN_SRC_DIR}/umrs-state.1.adoc”
+§  “${MAN_SRC_DIR}/umrs-verify.1.adoc”
+§)
+§
+§for f in “${MAN_INPUTS[@]}”; do
+§  [[ -f “$f” ]] || die “Missing manpage source: $f”
+§done
+§
+§# Use the manpage backend; output will be e.g. umrs-state.1
+§asciidoctor -q -b manpage -D “$OUT_MAN_DIR” “${MAN_INPUTS[@]}”
+§
+§info “Done.”
+§info “HTML site: $OUT_SITE_DIR/index.html (entry depends on Antora UI; open site/index.html)”
+§info “PDFs:      $OUT_PDF_DIR”
+§info “Man pages: $OUT_MAN_DIR”
+§
+§––––––––––––––––––––––––––––––––––
+§FILE: docs/antora.yml
+§––––––––––––––––––––––––––––––––––
+§name: umrs
+§title: Unclassified MLS Reference System
+§version: latest
+§nav:
+§  - modules/ROOT/nav.adoc
+§
+§––––––––––––––––––––––––––––––––––
+§FILE: docs/modules/ROOT/nav.adoc
+§––––––––––––––––––––––––––––––––––
+§* xref:index.adoc[Home]
+§* xref:getting-started.adoc[Getting Started]
+§* xref:install.adoc[Install]
+§* xref:admin-guide.adoc[Administrator Guide]
+§* xref:security-model.adoc[Security Model]
+§* xref:operations.adoc[Operations]
+§* xref:troubleshooting.adoc[Troubleshooting]
+§* xref:release-notes.adoc[Release Notes]
+§
+§––––––––––––––––––––––––––––––––––
+§FILE: docs/modules/ROOT/pages/index.adoc
+§––––––––––––––––––––––––––––––––––
+§= Unclassified MLS Reference System (UMRS)
+§:toc: macro
+§:toclevels: 2
+§
+§UMRS is an unclassified reference system that demonstrates MLS-style data separation and enforcement patterns on a modern RHEL platform.
+§
+§Version: {umrs-version}
+§
+§toc::[]
+§
+§== What this documentation is
+§This documentation is written for two audiences:
+§
+§1. Administrators who build and operate the UMRS reference workstation.
+§2. Users who need to understand expected behaviors and safe usage patterns.
+§
+§== Documentation sets
+§* Web documentation: versioned static site (Antora).
+§* PDFs: offline guides stored on the workstation (generated from the same sources).
+§* Man pages: authoritative command reference for UMRS tooling.
+§
+§== Quick start
+§* xref:getting-started.adoc[Getting Started]
+§* xref:install.adoc[Install]
+§
+§––––––––––––––––––––––––––––––––––
+§FILE: docs/modules/ROOT/pages/getting-started.adoc
+§––––––––––––––––––––––––––––––––––
+§= Getting Started
+§:toc: macro
+§:toclevels: 2
+§
+§toc::[]
+§
+§== Goals
+§UMRS provides a practical, operator-friendly way to demonstrate:
+§* separation of data by label and category
+§* service confinement and least privilege
+§* auditability and “explainable enforcement”
+§
+§== What you need
+§* A RHEL 10 reference workstation with FIPS mode enabled.
+§* SELinux enforcing (MLS policy in UMRS builds).
+§* A dedicated admin account and at least one non-admin user account.
+§
+§== How to read UMRS docs
+§* Administrators: start with xref:install.adoc[Install] then xref:admin-guide.adoc[Administrator Guide].
+§* Everyone: read xref:security-model.adoc[Security Model] to understand what UMRS enforces and why.
+§
+§––––––––––––––––––––––––––––––––––
+§FILE: docs/modules/ROOT/pages/install.adoc
+§––––––––––––––––––––––––––––––––––
+§= Install
+§:toc: macro
+§:toclevels: 2
+§
+§toc::[]
+§
+§== Scope
+§This section describes how to install UMRS components on a reference workstation.
+§
+§== Packages and components
+§UMRS typically includes:
+§* umrs-state tooling and supporting scripts
+§* optional GUI utilities (GTK4)
+§* configuration under /etc with umrs- prefixed files
+§* optional state under /var/lib/umrs
+§
+§== Installation steps (high level)
+§1. Install RPMs for UMRS components.
+§2. Verify FIPS mode and SELinux enforcement.
+§3. Initialize UMRS state file (if applicable).
+§4. Validate baseline behavior using the UMRS verification commands.
+§
+§== Post-install verification
+§Use the man pages for precise command usage:
+§* umrs-state(1)
+§* umrs-verify(1)
+§
+§––––––––––––––––––––––––––––––––––
+§FILE: docs/modules/ROOT/pages/admin-guide.adoc
+§––––––––––––––––––––––––––––––––––
+§= Administrator Guide
+§:toc: macro
+§:toclevels: 3
+§
+§toc::[]
+§
+§== Administrator responsibilities
+§Administrators are responsible for:
+§* maintaining baseline configuration
+§* applying updates in a controlled manner
+§* preserving audit evidence and operating logs
+§* ensuring labeled data stays in the correct locations
+§
+§== Operational model
+§UMRS uses a cached state summary model:
+§* “get” reads cached values and staleness timestamps.
+§* “update” probes live state to refresh cached entries.
+§* “verify” compares cached vs live values without modifying cached state.
+§
+§== Where things live
+§* Keys (if any): /etc/pki/umrs (umrs- prefixed key files)
+§* State (optional): /var/lib/umrs/umrs-state.json
+§* Docs (offline): /usr/share/doc/umrs/
+§
+§== Minimum admin checks
+§* Confirm FIPS mode is enabled and active.
+§* Confirm SELinux is enforcing.
+§* Confirm UMRS state updates run cleanly and are auditable.
+§
+§––––––––––––––––––––––––––––––––––
+§FILE: docs/modules/ROOT/pages/security-model.adoc
+§––––––––––––––––––––––––––––––––––
+§= Security Model
+§:toc: macro
+§:toclevels: 3
+§
+§toc::[]
+§
+§== Purpose
+§UMRS exists to demonstrate that “unclassified but sensitive” data deserves structured enforcement, not just login-based access control.
+§
+§== Core principles
+§* Labeling: data is associated with labels/categories.
+§* Enforcement: services and users are confined so they can only access labeled data they are authorized to handle.
+§* Auditability: important events are recorded in a way that supports forensics and accreditation evidence.
+§
+§== Non-goals
+§UMRS is not a classified system. UMRS is a reference pattern and teaching platform.
+§
+§––––––––––––––––––––––––––––––––––
+§FILE: docs/modules/ROOT/pages/operations.adoc
+§––––––––––––––––––––––––––––––––––
+§= Operations
+§:toc: macro
+§:toclevels: 2
+§
+§toc::[]
+§
+§== Daily operations
+§* Run periodic UMRS state updates.
+§* Review any failed checks.
+§* Preserve logs according to your retention policy.
+§
+§== Change control
+§* Apply changes intentionally.
+§* Record what changed, why, and who authorized it.
+§* Prefer small, reversible changes.
+§
+§––––––––––––––––––––––––––––––––––
+§FILE: docs/modules/ROOT/pages/troubleshooting.adoc
+§––––––––––––––––––––––––––––––––––
+§= Troubleshooting
+§:toc: macro
+§:toclevels: 2
+§
+§toc::[]
+§
+§== First steps
+§1. Confirm FIPS mode and SELinux enforcement.
+§2. Re-run the UMRS verification command.
+§3. Review relevant logs and the UMRS state timestamps.
+§
+§== Common symptoms
+§* State file values appear stale: run an update and confirm permissions.
+§* Checks fail only under automation: compare environment, PATH, and privileges.
+§
+§––––––––––––––––––––––––––––––––––
+§FILE: docs/modules/ROOT/pages/release-notes.adoc
+§––––––––––––––––––––––––––––––––––
+§= Release Notes
+§:toc: macro
+§:toclevels: 2
+§
+§toc::[]
+§
+§== latest
+§* Initial documentation structure established.
+§* Added PDF and manpage build pipeline.
+§
+§––––––––––––––––––––––––––––––––––
+§FILE: docs/pdf-admin-guide.adoc
+§––––––––––––––––––––––––––––––––––
+§= UMRS Administrator Guide (Offline PDF)
+§:doctype: book
+§:toc: left
+§:toclevels: 3
+§:numbered:
+§
+§This PDF is generated from the UMRS AsciiDoc sources and is intended for offline use on the reference workstation.
+§
+§include::modules/ROOT/pages/admin-guide.adoc[leveloffset=+1]
+§include::modules/ROOT/pages/operations.adoc[leveloffset=+1]
+§include::modules/ROOT/pages/troubleshooting.adoc[leveloffset=+1]
+§
+§––––––––––––––––––––––––––––––––––
+§FILE: docs/pdf-security-model.adoc
+§––––––––––––––––––––––––––––––––––
+§= UMRS Security Model (Offline PDF)
+§:doctype: book
+§:toc: left
+§:toclevels: 3
+§:numbered:
+§
+§This PDF is generated from the UMRS AsciiDoc sources and is intended for offline use on the reference workstation.
+§
+§include::modules/ROOT/pages/security-model.adoc[leveloffset=+1]
+§include::modules/ROOT/pages/install.adoc[leveloffset=+1]
+§
+§––––––––––––––––––––––––––––––––––
+§FILE: man/umrs-state.1.adoc
+§––––––––––––––––––––––––––––––––––
+§= umrs-state(1)
+§:doctype: manpage
+§:manmanual: UMRS Commands
+§:mansource: UMRS
+§:man-linkstyle: pass:[blue R < >]
+§
+§== Name
+§umrs-state - read and update cached UMRS system state
+§
+§== Synopsis
+§umrs-state [–help]  [options]
+§
+§== Description
+§umrs-state manages a cached system-state summary for the UMRS reference workstation.
+§The cache includes timestamps and metadata so operators can see staleness explicitly.
+§
+§== Commands
+§get::
+§Read cached values only. No live probing.
+§
+§update::
+§Probe live system state and refresh cached entries.
+§
+§verify::
+§Compare cached vs live values without modifying the cache.
+§
+§== Options
+§–state-file ::
+§Path to the UMRS state file (default: /var/lib/umrs/umrs-state.json).
+§
+§–format <text|json>::
+§Output format (default: text).
+§
+§== Exit Status
+§0:: success
+§1:: failure
+§2:: invalid usage
+§
+§== Files
+§/var/lib/umrs/umrs-state.json:: cached state summary (if enabled)
+§
+§== See Also
+§umrs-verify(1)
+§
+§––––––––––––––––––––––––––––––––––
+§FILE: man/umrs-verify.1.adoc
+§––––––––––––––––––––––––––––––––––
+§= umrs-verify(1)
+§:doctype: manpage
+§:manmanual: UMRS Commands
+§:mansource: UMRS
+§
+§== Name
+§umrs-verify - run UMRS verification checks on the reference workstation
+§
+§== Synopsis
+§umrs-verify [–help] [–quick] [–verbose]
+§
+§== Description
+§umrs-verify runs a defined set of checks to validate expected UMRS posture (for example, enforcement mode, required components, and basic invariants).
+§
+§== Options
+§–quick::
+§Run a reduced set of checks intended for frequent execution.
+§
+§–verbose::
+§Print additional diagnostic detail.
+§
+§== Exit Status
+§0:: all checks passed
+§1:: one or more checks failed
+§2:: invalid usage
+§
+§== See Also
+§umrs-state(1)

@@ -1,0 +1,29 @@
+= umrs-verify(1)
+:doctype: manpage
+:manmanual: UMRS Commands
+:mansource: UMRS
+
+== Name
+umrs-verify - run UMRS verification checks on the reference workstation
+
+== Synopsis
+umrs-verify [–help] [–quick] [–verbose]
+
+== Description
+umrs-verify runs a defined set of checks to validate expected UMRS posture (for example, enforcement mode, required components, and basic invariants).
+
+== Options
+–quick::
+Run a reduced set of checks intended for frequent execution.
+
+–verbose::
+Print additional diagnostic detail.
+
+== Exit Status
+0:: all checks passed
+1:: one or more checks failed
+2:: invalid usage
+
+== See Also
+umrs-state(1)
+

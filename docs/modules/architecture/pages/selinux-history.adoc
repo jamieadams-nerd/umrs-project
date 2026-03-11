@@ -1,0 +1,40 @@
+= Origins of Security Enhanced Linux (SELinux)
+Jamie L. Adams
+
+The emergence of SELinux was not a single invention or a sudden breakthrough. It was the result of a careful convergence of trusted-systems research, academic operating system work, government security requirements, and commercial engineering discipline. Each contributor focused on a different part of the problem, and that division of labor is precisely why SELinux succeeded where many earlier efforts did not.
+
+By the late 1990s, the core ideas behind Multi-Level Security were already well established. Mandatory access control, labeling, dominance relations, and trusted kernels had been studied and implemented for decades in classified and high-assurance environments. The difficulty was no longer theoretical. Trusted systems existed, but they were often proprietary, costly, and difficult to evolve as software ecosystems changed. Meanwhile, Linux was rapidly becoming the dominant general-purpose operating system across enterprise, research, and government domains. The challenge was how to bring trusted-system principles into a commodity platform without hard-coding policy or sacrificing usability.
+
+The National Security Agency approached this challenge from an architectural perspective rather than a product one. Its goal was not to produce a hardened Linux distribution or to operate Linux systems long-term. Instead, NSA sought to demonstrate that mandatory access control and MLS concepts could be expressed within a modern operating system in a flexible, policy-agnostic way. This effort built directly on the FLASK research conducted by the Flux group at the University of Utah, which introduced a clean separation between security enforcement and security policy.
+
+That separation became the defining characteristic of SELinux.
+The kernel would contain well-defined enforcement points — called _hooks_ — where every security-relevant operation is intercepted.
+The rules governing access decisions would reside in a logically separate _security server_: a policy engine running in kernel space that evaluates access requests against a loaded policy without the policy being hard-coded into the kernel itself.
+This design preserved the classic security-kernel ideal of a small, trusted core, while avoiding the rigidity that had limited earlier MLS systems.
+NSA implemented this architecture inside the Linux kernel as a reference implementation, proving that label-based mandatory access control could be both performant and general-purpose.
+
+However, the early SELinux work was never intended to stand alone as a deployable solution. Policy development was complex, administrative tooling was minimal, and real-world operational workflows were largely unexplored. Bridging the gap between architectural feasibility and operational reality required experience that extended well beyond research prototypes.
+
+== Trusted Computer Solutions
+Trusted Computer Solutions brought that experience. Long before SELinux, TCS had spent decades designing, integrating, and supporting accredited trusted systems in operational environments. Their work included systems such as Trusted X and trusted UNIX platforms, where MLS enforcement, labeled user interfaces, and trusted-path concepts were not academic exercises but daily operational necessities. These systems had to support real users, real missions, and formal accreditation processes under stringent assurance and documentation requirements.
+
+Importantly, TCS’s perspective was shaped not only by classified system development but also by its roots in advanced computing research environments.
+The company’s historical ties to the University of Illinois at Urbana-Champaign and its high-performance computing community placed it at the intersection of operating system theory and large-scale, production computing.
+That background fostered a practical mindset: security mechanisms had to be correct, but they also had to survive contact with complex workloads, real users, and long system lifecycles.
+
+As a result, TCS approached SELinux with an emphasis on correctness grounded in operational reality.
+Their focus was not on inventing new security models, but on ensuring that MLS concepts — Bell-LaPadula confidentiality dominance, Biba integrity ordering, trusted subject privilege — were applied consistently and faithfully when translated into a general-purpose operating system.
+They understood how clearance, dominance, and trusted subjects interacted with user behavior, administrative workflows, and formal accreditation requirements (accreditation being the process by which a DoD authorizing official accepts residual risk and approves a system to operate at a given classification level).
+That operational grounding helped keep SELinux aligned with established trusted-system principles rather than drifting into a superficial approximation.
+
+== Tresys Technology
+While Trusted Computer Solutions emphasized semantic correctness and operational trust models, Tresys Technology addressed a different and equally critical problem: usability. Tresys focused on SELinux policy engineering, tooling, and analysis, helping transform SELinux from a powerful but opaque mechanism into something administrators could understand, debug, and maintain. Through disciplined policy development, analysis tools, training, and consulting, Tresys made SELinux viable outside research labs and specialized security environments.
+
+== Red Hat 
+The final piece of the puzzle was Red Hat. Red Hat integrated SELinux into an enterprise Linux distribution and imposed the engineering discipline required for long-term sustainability. This included stable packaging, upgrade paths, and support models that organizations could rely on. Just as importantly, Red Hat introduced targeted policy modes that allowed SELinux to provide meaningful protection without requiring users or administrators to understand MLS or labeling. That decision made it possible for SELinux to be enabled by default and accepted by a broad audience.
+
+== SELinux Today
+SELinux endured because no single organization attempted to own the entire problem. NSA focused on architecture and kernel enforcement, Trusted Computer Solutions contributed hard-earned operational insight from accredited systems and advanced computing environments, Tresys made the technology usable, and Red Hat made it sustainable. Together, these efforts bridged the gap between decades of trusted-system research and modern commodity operating systems.
+
+This history matters because it demonstrates that high-assurance security ideas can survive outside classified environments when they are applied with restraint, modularity, and respect for operational reality. SELinux is not merely a security feature; it is a successful example of how trusted-system principles can be carried forward into mainstream platforms without losing their integrity.
+

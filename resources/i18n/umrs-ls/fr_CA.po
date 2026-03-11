@@ -1,0 +1,33 @@
+# French translation of umrs-ls
+# This file is distributed under the same license as the UMRS Project
+# MIT License
+# Copyright (c) 2025 Jamie Adams (a.k.a, Imodium Operator)
+#
+# Initial translation provided by a specialized Claude Code "umrs-translator".
+# The agent was assisted by a technical corpus derived from various GNU
+# tools via the Translation Project (https://translationproject.org).
+#
+# NOTE: This translation is AI-generated and may contain nuances
+# requiring human verification.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: umrs-ls\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-10 21:14+0000\n"
+"PO-Revision-Date: 2026-03-10 21:14+0000\n"
+"Last-Translator: umrs-translator (Claude Code)\n"
+"Language-Team: fr_CA\n"
+"Language: fr_CA\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+# TRANSLATOR: Displayed in the access-denied section footer of directory listings.
+# "accès refusé" is the standard Unix/Linux francophone equivalent; no direct
+# corpus match was found in the GNU tools corpus, but the phrase is widely attested
+# throughout POSIX documentation, ANSSI guidance, and OTAN/NATO francophone material.
+#: components/rusty-gadgets/umrs-ls/src/main.rs:184
+msgid "access denied"
+msgstr "accès refusé"

@@ -1,0 +1,42 @@
+policy_module(umrs_CRATE, 1.0)
+
+########################################
+# Types
+########################################
+
+# Executable file type
+type umrs_CRATE_exec_t;
+application_domain(umrs_CRATE_t, umrs_CRATE_exec_t)
+
+########################################
+# Allow rules (minimal baseline)
+########################################
+
+# Allow basic process behavior
+allow umrs_CRATE_t self:process {
+    fork
+    sigchld
+    execmem
+};
+
+# Allow standard I/O
+allow umrs_CRATE_t self:fd use;
+allow umrs_CRATE_t self:filesystem getattr;
+
+# Read shared libraries
+allow umrs_CRATE_t lib_t:file { read open getattr map };
+
+# Read system configuration files (adjust as needed)
+allow umrs_CRATE_t etc_t:file { read open getattr };
+
+########################################
+# Optional: logging (commented by default)
+########################################
+# allow umrs_CRATE_t var_log_t:file { create write append open };
+
+########################################
+# Optional: network (commented by default)
+########################################
+# allow umrs_CRATE_t node_t:node tcp_recv;
+# allow umrs_CRATE_t port_t:tcp_socket name_connect;
+

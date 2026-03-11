@@ -1,0 +1,73 @@
+policy_module(umrs_cui, 1.0)
+
+########################################
+# External Dependencies
+########################################
+gen_require(`
+    type unconfined_t;
+')
+
+########################################
+# CUI Classification Attributes
+########################################
+#
+# Generic custody data
+#
+attribute cui_data_type;
+
+#
+# Configuration custody
+#
+attribute cui_config_type;
+
+#
+# Log custody
+#
+attribute cui_log_type;
+
+########################################
+# Base CUI Custody Types
+########################################
+#
+# Generic classified data
+#
+type cui_data_ro_t;
+type cui_data_rw_t;
+
+typeattribute cui_data_ro_t cui_data_type;
+typeattribute cui_data_rw_t cui_data_type;
+
+#
+# Configuration artifacts
+#
+type cui_config_ro_t;
+type cui_config_rw_t;
+
+typeattribute cui_config_ro_t cui_config_type;
+typeattribute cui_config_rw_t cui_config_type;
+
+#
+# Audit / operational logs
+#
+type cui_log_rw_t;
+
+typeattribute cui_log_rw_t cui_log_type;
+
+########################################
+# Classification Guardrails
+########################################
+
+#
+# Prevent unconfined domains from accessing
+# classified custody artifacts.
+#
+
+neverallow unconfined_t cui_data_type:file *;
+neverallow unconfined_t cui_data_type:dir  *;
+
+neverallow unconfined_t cui_config_type:file *;
+neverallow unconfined_t cui_config_type:dir  *;
+
+neverallow unconfined_t cui_log_type:file *;
+neverallow unconfined_t cui_log_type:dir  *;
+

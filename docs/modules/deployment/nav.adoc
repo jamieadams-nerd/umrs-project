@@ -1,0 +1,18 @@
+* xref:index.adoc[Deployment Overview]
+
+* Generic Linux Baseline
+** xref:linux-baseline.adoc[Platform Overview]
+** xref:filesystem-layout.adoc[Filesystem Layout]
+** xref:tmp-security.adoc[Temporary Filesystem Security]
+
+* RHEL 10
+** xref:rhel10-installation.adoc[Installation]
+** xref:rhel10-openscap.adoc[STIG Hardening with OpenSCAP]
+** xref:rhel10-packages.adoc[Package Installation]
+** xref:rhel10-setrans.adoc[CUI Label Configuration]
+** xref:ima-evm-setup.adoc[IMA/EVM Integrity Setup]
+** xref:kernel-lockdown-moddisable.adoc[Kernel Lockdown and Module Hardening]
+** xref:rhel10-directory-structure.adoc[UMRS Directory Structure]
+
+* Ubuntu
+** xref:ubuntu.adoc[Ubuntu (Placeholder)]

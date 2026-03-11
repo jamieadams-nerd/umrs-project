@@ -1,0 +1,51 @@
+ echo "\U1FB7D\U1FB76\U1FB7E\n\U1FB70\n\U1FB7C\U1FB7B\U1FB7F"
+#🭽🭶🭾
+#🭰
+#🭼🭻🭿
+
+
+echo "\U1FBB2\U1FBB3 Running Man"
+#🮲🮳 Running Man
+
+#Processing: 0x0001FBC5   Symbol: 🯅  Name: STICK FIGURE                                              
+#Processing: 0x0001FBC6   Symbol: 🯆  Name: STICK FIGURE WITH ARMS RAISED                             
+#Processing: 0x0001FBC7   Symbol: 🯇  Name: STICK FIGURE LEANING LEFT                                 
+#Processing: 0x0001FBC8   Symbol: 🯈  Name: STICK FIGURE LEANING RIGHT                                
+#Processing: 0x0001FBC9   Symbol: 🯉  Name: STICK FIGURE WITH DRESS         
+
+#Processing: 0x0001FBF0   Symbol: 🯰  Name: SEGMENTED DIGIT ZERO                                      
+#Processing: 0x0001FBF1   Symbol: 🯱  Name: SEGMENTED DIGIT ONE                                       
+#Processing: 0x0001FBF2   Symbol: 🯲  Name: SEGMENTED DIGIT TWO                                       
+#Processing: 0x0001FBF3   Symbol: 🯳  Name: SEGMENTED DIGIT THREE                                     
+#Processing: 0x0001FBF4   Symbol: 🯴  Name: SEGMENTED DIGIT FOUR                                      
+#Processing: 0x0001FBF5   Symbol: 🯵  Name: SEGMENTED DIGIT FIVE                                      
+#Processing: 0x0001FBF6   Symbol: 🯶  Name: SEGMENTED DIGIT SIX                                       
+#Processing: 0x0001FBF7   Symbol: 🯷  Name: SEGMENTED DIGIT SEVEN                                     
+#Processing: 0x0001FBF8   Symbol: 🯸  Name: SEGMENTED DIGIT EIGHT                                     
+#Processing: 0x0001FBF9   Symbol: 🯹  Name: SEGMENTED DIGIT NINE
+
+for ((c=0x2460; c<=0x2473; c++)); do
+    echo "\u$(printf '%04x' $c)"
+done
+
+for ((c=0x2460; c<=0x2473; c++)); do
+    echo "$c \u$(printf '%04x' $c)"
+done
+
+for ((c=0x1CC30; c<=0x1CCFF; c++)); do
+    echo "$c \U$(printf '%04x' $c)"
+done
+
+echo
+echo "Letters"
+for ((c=0x1CCD6; c<=0x1CCEF; c++)); do
+    echo "$c \U$(printf '%04x' $c)"
+done
+
+echo
+echo "Numbers"
+for ((c=0x1CCF0; c<=0x1CCF9; c++)); do
+    echo "$c \U$(printf '%04x' $c)"
+done
+
+

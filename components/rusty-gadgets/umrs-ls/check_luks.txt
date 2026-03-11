@@ -1,0 +1,12 @@
+1. The "Pure Rust" Way: Inspecting /sys
+On Linux, every block device has a directory in /sys/class/block/. If a device is managed by the Device Mapper (like LUKS), it will have a dm subdirectory. You can trace an ext4 mount back to its parent to see if it has a "crypt" type.
+Logic:
+Read /proc/self/mounts to find the device path for your mount point (e.g., /dev/mapper/data).
+Follow the symlink to the real device name (e.g., dm-0).
+Check /sys/class/block/dm-0/dm/uuid.
+If the UUID starts with CRYPT-LUKS, the device is an encrypted LUKS container. 
+Unix & Linux Stack Exchange
+Unix & Linux Stack Exchange
+ +3
+
+

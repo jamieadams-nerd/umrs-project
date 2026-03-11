@@ -1,0 +1,141 @@
+= The nom Parser Combinator in UMRS
+:toc: left
+:description: Why UMRS uses nom for security-critical parsing and how it satisfies the RTB Redundancy requirement.
+
+In high-assurance engineering, `nom` (Next Generation Object Manipulators) is a parser
+combinator library. To an architect, it is the difference between string-splitting (brute
+force) and formal grammar (surgical precision).
+
+== The Combinator Concept
+
+Instead of writing one massive, complex regular expression or a large `if/else` block,
+you build tiny, verified parsers for small pieces of data (e.g., "parse an integer,"
+"parse a colon"). You then combine them like building blocks to form a full parser.
+
+* Atomic parser: `tag(":")` — matches exactly one colon.
+* Combined parser: `terminated(take_until(":"), tag(":"))` — takes everything until the
+  colon, then consumes the colon.
+
+== Zero-Copy Efficiency (TCB Optimization)
+
+Traditional parsers often create new `String` objects for every piece they find (e.g.,
+`split(':')` creates a whole new `Vec` of strings). `nom` works on slices: it does not
+move or copy the data. It gives you a pointer (slice) to the exact location in the
+original byte array where the data lives.
+
+Impact: this dramatically reduces the memory footprint and eliminates the risk of memory
+exhaustion during the parsing of long or malicious xattrs.
+
+== Explicit Error Handling (NIST 800-53 SI-7)
+
+When `split()` fails, it may just give you a shorter list. When a `nom` parser fails,
+it tells you exactly where it failed and why. It returns a `Result` that specifies:
+
+* *The Error* — what went wrong (e.g., "Expected a digit, found a letter").
+* *The Remainder* — exactly what was left unparsed.
+
+In the TPI gate, this allows Path A to say: "I stopped at byte 14 because the category
+format was invalid," providing a much higher resolution audit trail than a simple
+"parse failed" message.
+
+== Why We Use nom for SELinux Labels
+
+SELinux contexts follow a strict formal grammar: `user:role:type:sensitivity[:categories]`.
+
+By using `nom`, we treat that string as a streaming protocol. We consume the user, then
+the role, then the type. If at any point the protocol is violated, the parser halts
+immediately.
+
+Compared to `split(':')`:
+
+* `split(':')` (imperative) — is like a chainsaw. Fast but messy, and creates a lot
+  of waste (extra strings).
+* `nom` (declarative) — is like a scalpel. It navigates the byte stream with zero
+  overhead and enforces a formal contract on the data.
+
+This is why `nom` is Path A in the TPI (Two-Path Independence) gate. It provides a
+formal, low-level verification that the imperative parsing logic might miss.
+
+== Why nom for UMRS (RTB "Redundant" Path A)
+
+`nom` provides:
+
+* *Zero-copy* — no allocation; returns `&str` slices of the original buffer. Satisfies
+  NSA RTB requirements for minimizing attack surface.
+* *Streaming* — handles partial data gracefully.
+* *No panics* — unlike manual slicing, `nom` returns a `Result` instead of crashing
+  on malformed input.
+
+== Implementing the Two-Path Independence (TPI) Pattern
+
+To satisfy the Redundant invariant of RAIN, we never trust a single parsing algorithm.
+A bug in a library or a subtle logic error in a state machine could lead to an incorrect
+"Allow" decision.
+
+For CUI labels, UMRS implements:
+
+* *Path A (nom)* — a declarative, combinator-based parser. Highly readable and great for
+  structural validation.
+* *Path B (FromStr / state machine)* — a low-level, iterative approach that manually
+  steps through fields. "Dumb" logic — easy to audit for off-by-one errors.
+
+The redundant logic gate:
+
+[source,rust]
+----
+/// NIST 800-53 AC-4 / NSA RTB (Redundant)
+/// Ensures two independent logic paths agree on a security label.
+pub fn validate_label_redundant(raw_input: &str) -> io::Result<MlsLabel> {
+    // Path A: The "Modern" Parser
+    let label_a = parse_with_nom(raw_input)?;
+
+    // Path B: The "Conservative" State Machine
+    let label_b = parse_with_state_machine(raw_input)?;
+
+    // The TPI Gate: If they don't agree exactly, FAIL CLOSED.
+    if label_a != label_b {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            "RTB Integrity Failure: Redundant parsing mismatch"
+        ));
+    }
+
+    Ok(label_a)
+}
+----
+
+== Why Two "Correct" Parsers Are Better Than One
+
+If you have one "perfect" parser and it has a bug you did not see, the attacker wins.
+If you have two different algorithms and one has a bug, the system detects the
+disagreement and stops the attack.
+
+.Example: Type Confusion Attack
+Imagine checking if a user can access a file labeled `umrs_secret_t`. An attacker passes
+a malicious string: `user:role:umrs_secret_t\0:dummy_level`.
+
+* Path A (nom) — hits the `\0`, stops, and returns `umrs_secret_t`. (Access granted.)
+* Path B (simple byte iterator) — counts the bytes, sees the whole string, and returns
+  `umrs_secret_t\0`.
+
+The TPI gate: `umrs_secret_t != umrs_secret_t\0`. *Denied.*
+
+Path A is optimized for features (handling whitespace, ranges, aliases). Path B is
+optimized for simplicity (so simple it is almost impossible to have a logic bug). By
+forcing them to agree, you get the features of A and the rock-solid certainty of B.
+
+== Summary for the Reference Monitor
+
+`nom` in UMRS satisfies the following:
+
+[cols="1,2"]
+|===
+| Property | Satisfaction
+
+| NSA RTB Redundant | Path A in the TPI gate — declarative, combinator-based
+| NIST 800-53 SI-7 | Formal grammar enforcement prevents corrupted label acceptance
+| NIST 800-53 AC-4 | Structural validation ensures label format correctness before any access decision
+| TCB minimization | Zero-copy; no extra heap allocations during parsing
+|===
+
+References: https://docs.rs/nom/[nom crate documentation] | NIST 800-53 SI-7: Software Integrity | NSA RTB Principle: Redundancy

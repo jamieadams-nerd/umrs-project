@@ -1,0 +1,7 @@
+id: AC-001
+title: Principle of Least Privilege
+rule: Subjects should only have the permissions necessary to perform their function.
+category: principle
+references:
+  - https://csrc.nist.gov/glossary/term/least_privilege
+  - Saltzer & Schroeder 1975

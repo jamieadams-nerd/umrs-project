@@ -1,0 +1,570 @@
+= UMRS Shred Wrapper
+Jamie L. Adams
+
+== Purpose and Scope
+
+UMRS defines a controlled file-level sanitization capability through the `umrs-shred` helper utility. This tool formalizes the use of file overwrite techniques as a best-effort measure when removing Controlled Unclassified Information (CUI) files from an unclassified system.
+
+The objective of `umrs-shred` is not to provide guaranteed or forensic-proof data destruction, but to reduce the likelihood of casual or opportunistic data recovery while ensuring that sanitization actions are intentional, repeatable, and auditable.
+
+Due to the characteristics of modern filesystems, journaling behavior, copy-on-write semantics, and solid-state storage, file-level overwriting cannot be guaranteed to remove all residual data. UMRS therefore treats overwrite-based deletion as a supplemental, risk-reduction control and relies primarily on full-disk encryption and cryptographic key destruction for strong assurance of data-at-rest sanitization.
+
+== Relationship to CUI Requirements
+
+CUI handling requirements, as defined by NIST SP 800-171, are risk-based and procedural. They emphasize reasonable safeguards, documented handling practices, and protection against unauthorized disclosure rather than absolute guarantees of data eradication.
+
+When framed correctly, the use of `umrs-shred` supports CUI handling expectations related to media sanitization and controlled disposal. The tool exists to ensure that overwrite-based deletion is performed consistently, safely, and with appropriate audit evidence, rather than relying on ad hoc or undocumented command usage.
+
+UMRS file-level sanitization practices support CUI expectations by reducing the likelihood of unauthorized recovery after deletion, ensuring proper disposal of CUI-containing artifacts, demonstrating operator intent and procedural compliance, and reducing exposure during system operation and system reuse.
+
+== Threat Model Assumptions
+
+UMRS defines a CUI-appropriate threat model for file-level sanitization. This model assumes risks such as accidental disclosure due to improper deletion, recovery using common undelete or low-effort forensic tools, insider error, and reuse of systems or storage media. It further assumes that systems are protected by full-disk encryption.
+
+UMRS does not claim protection against nation-state forensic recovery, advanced laboratory techniques, or storage-level remapping performed internally by modern solid-state media. Such guarantees are explicitly out of scope for overwrite-based file sanitization.
+
+== File-Level Sanitization via umrs-shred
+
+When removing individual files containing CUI, UMRS recommends the use of the `umrs-shred` helper utility. This tool wraps the underlying overwrite mechanism and enforces UMRS-approved parameters, safety checks, and logging behavior.
+
+Using `umrs-shred` rather than invoking overwrite commands directly provides several advantages. It reduces the likelihood of operator error, prevents unsafe or misleading usage patterns, and ensures that sanitization actions are captured as security-relevant events.
+
+UMRS explicitly documents that file-level overwriting, even when performed through `umrs-shred`, cannot guarantee complete removal of all residual data on modern journaling filesystems, copy-on-write filesystems, or solid-state storage devices.
+
+== Standardized Behavior
+
+The `umrs-shred` utility standardizes file-level sanitization behavior by enforcing a fixed overwrite policy, performing a final zeroing pass, removing the file after overwriting, and validating that the target is a regular file.
+
+The tool refuses to operate on directories, block devices, or other unsafe targets, ensuring that overwrite-based deletion is scoped only to appropriate file-level use cases.
+
+== Operational Constraints
+
+UMRS defines clear operational boundaries for `umrs-shred`. The tool is intended only for individual files containing CUI and is not intended for sanitizing entire devices or filesystems. It must not be used to claim secure erase behavior for solid-state media and is not appropriate for classified data handling.
+
+UMRS explicitly prohibits representing overwrite-based deletion as guaranteed or forensic-proof sanitization, regardless of tooling.
+
+== Primary Sanitization Control: Encryption
+
+UMRS relies on full-disk encryption, such as LUKS with dm-crypt, as the primary control for protecting data at rest. When encrypted storage is properly deployed, cryptographic key destruction provides strong assurance that residual data is unrecoverable.
+
+File-level overwriting performed via `umrs-shred` is treated as a supplemental control that enhances compliance with CUI handling expectations, improves auditability, and demonstrates operator intent, but does not replace encryption or key management.
+
+== Auditing and Accountability
+
+A core purpose of `umrs-shred` is to elevate file-level sanitization from an informal action to a documented, auditable security event.
+
+Each invocation of `umrs-shred` records relevant audit information, including operator identity, timestamp, file path, sanitization method, and outcome. This supports accountability, post-event analysis, and alignment with audit and monitoring controls.
+
+== Mapping to NIST and CUI Controls
+
+UMRS file-level sanitization using `umrs-shred` supports NIST SP 800-171 control 3.8.3 (Media Sanitization) by providing a documented, repeatable method for sanitizing CUI prior to disposal or reuse of storage locations.
+
+UMRS aligns with NIST SP 800-53 control MP-6 (Media Sanitization) by defining scoped and repeatable sanitization procedures appropriate to unclassified environments and explicitly identifying overwrite-based deletion as a supplemental control.
+
+UMRS treats sanitization actions performed by `umrs-shred` as security-relevant events under NIST SP 800-53 control AU-2 (Auditable Events), ensuring consistent logging of CUI removal activities.
+
+UMRS relies on encryption and key management as the primary mechanism protecting residual data, aligning with NIST SP 800-53 control IA-7 (Cryptographic Mechanisms), with overwrite-based deletion layered as defense in depth.
+
+== Summary
+
+UMRS defines `umrs-shred` as a controlled helper utility that formalizes best-effort file-level sanitization for CUI. By enforcing safe usage, consistent parameters, and auditable execution, `umrs-shred` improves compliance, reduces risk of recovery using common tools, and demonstrates intentional handling without overstating technical guarantees.
+
+
+
+
+=======================================================================
+HOW IT WORKS
+
+
+
+./umrs-shred /absolute/path/to/junk
+
+
+
+Advisory Locking:
+
+umrs-shred uses a best-effort advisory lock to serialize destructive operations and preserve a clear, unambiguous audit trail. While concurrent sanitization is not inherently unsafe, overlapping runs can produce interleaved log messages, ambiguous attribution, and confusing operational timelines. Locking ensures that each invocation completes as a discrete, auditable event. Lock files are intentionally placed in per-user runtime locations when running unprivileged (/run/user/<uid>/umrs) and in a dedicated system runtime directory when running as root (/run/umrs). This avoids cross-user interference, respects privilege boundaries, and prevents one user’s activity from blocking another’s authorized work. The lock is advisory, short-lived, automatically released on exit or signal, and is used for operational clarity and auditability rather than as a security control.
+
+
+
+
+Produces two log entries:
+
+
+When you do not specify a facility or priority, logger uses defaults:
+
+• Facility: user
+• Priority: notice
+
+So your current calls effectively mean:
+
+facility=user
+priority=notice
+tag=umrs-shred
+
+
+
+A begin task and then a result message which could be success or fail.
+
+The detail= field is a free field to explain why the action was done. Our choice.
+[source,log]
+====
+Dec 19 21:23:19 localhost umrs-shred[414011]: ts_utc=2025-12-20T02:23:19Z level=INFO tool=umrs-shred actor=jadams uid=1000 loginuid=1000 selinux=unconfined_u:unconfined_r:unconfined_t:SystemLow-SystemHigh action=sanitize result=BEGIN file=/home/jadams/Development/umrs-project/components/umrs-shred/junk detail=requested
+
+Dec 19 21:23:19 localhost umrs-shred[414025]: ts_utc=2025-12-20T02:23:19Z level=INFO tool=umrs-shred actor=jadams uid=1000 loginuid=1000 selinux=unconfined_u:unconfined_r:unconfined_t:SystemLow-SystemHigh action=sanitize result=SUCCESS file=/home/jadams/Development/umrs-project/components/umrs-shred/junk detail=shred_completed
+----
+
+
+
+ 1810  logger -t umrs-test -- 'action=test result=BEGIN detail=requested'
+ 1811  logger -t umrs-test -- 'action=test result=SUCCESS detail=ok'
+ 1812  journalctl -t umrs-test -n 5 -o json
+ 1813  journalctl -t umrs-test -n 5 -o json > test.log
+
+
+logger
+→ journald
+→ rsyslog (if enabled and configured)
+→ traditional log files (optional)
+
+You can confirm rsyslog is receiving UMRS messages with:
+journalctl -t umrs-shred -n 5
+and
+grep umrs-shred /var/log/messages
+
+If you see it in both, forwarding is happening.
+
+Important:
+Even if rsyslog is disabled or filtered, journald still keeps the event (subject to retention).
+
+How long is data accessible via journalctl?
+This depends on journald storage mode and limits.
+
+Check current journald mode:
+grep ^Storage= /etc/systemd/journald.conf
+
+Common cases:
+
+A) Storage=volatile
+
+Logs live in memory only
+
+Lost on reboot
+
+Retained until memory pressure or size limit
+
+B) Storage=persistent
+
+Logs stored under /var/log/journal/
+
+Survive reboots
+
+Retained until size/time limits are reached
+
+On most RHEL systems:
+
+persistent storage is enabled if /var/log/journal exists
+
+Check:
+ls -ld /var/log/journal
+
+If it exists, logs are persistent.
+
+What controls retention time and size?
+journald uses size-based retention, not time-based by default.
+
+Key settings (journald.conf):
+
+SystemMaxUse=
+
+SystemKeepFree=
+
+RuntimeMaxUse=
+
+MaxRetentionSec= (optional, newer systems)
+
+Example:
+SystemMaxUse=4G
+
+Meaning:
+
+journald keeps logs until total size reaches 4 GB
+
+oldest entries are dropped first
+
+To see current usage:
+journalctl --disk-usage
+
+Example output:
+Archived and active journals take up 1.2G in the file system.
+
+How far back can journalctl see?
+As far back as:
+
+the oldest retained journal file, and
+
+the current boot (unless you specify otherwise)
+
+Examples:
+
+Current boot only:
+journalctl -b
+
+Previous boot:
+journalctl -b -1
+
+All boots (until retention):
+journalctl
+
+Time-bounded:
+journalctl --since "2025-12-19 20:00" --until "2025-12-19 22:00"
+
+This is extremely useful for forensic timelines.
+
+How this fits your UMRS design (this is the important part)
+You now have a clean separation of responsibilities:
+
+journald:
+
+authoritative event store
+
+identity, SELinux, PID, executable, unit
+
+retention, boot boundaries, timestamps
+
+rsyslog (later):
+
+filtered export
+
+JSON Lines files
+
+permissions, rotation
+
+long-term artifacts for viewers and tooling
+
+UMRS tools:
+
+emit semantic events only
+
+do not manage storage or rotation
+
+remain simple and auditable
+
+Your JSONL experiment via journalctl -o json is effectively a preview of what rsyslog will formalize later.
+
+Practical takeaway
+Right now:
+
+Your events are safely in journald
+
+You can query them reliably
+
+You can prototype a viewer using journalctl JSON output
+
+Later:
+
+You add rsyslog rules to create umrs-activity.jsonl
+
+The viewer tails that file for speed
+
+journalctl remains the forensic backstop
+
+Nothing you did is throwaway work.
+
+If you want, next we can:
+
+check your journald.conf and explain exactly how long logs will live
+
+write a minimal rsyslog JSON template for umrs-* identifiers
+
+decide whether UMRS wants persistent journald as a documented requirement
+
+You are on very solid ground here.
+On RHEL 10, /etc/systemd/journald.conf does not exist by default. journald is running entirely on compiled-in defaults, optionally modified by drop-in snippets. This is intentional systemd behavior, not a misconfiguration.
+
+Here is how it works, concretely.
+
+Why the file is missing
+systemd treats journald.conf as optional. If it is absent:
+
+journald uses built-in defaults
+
+no error is logged
+
+the service runs normally
+
+Red Hat intentionally does not ship a default config file so that:
+
+the effective configuration is simpler
+
+overrides are explicit
+
+changes are auditable
+
+Where configuration actually comes from (precedence order)
+
+Compiled defaults (always present)
+
+Drop-ins:
+/etc/systemd/journald.conf.d/*.conf
+
+Main file:
+/etc/systemd/journald.conf (only if you create it)
+
+Best practice on RHEL 10 is drop-ins, not editing or creating the monolithic file.
+
+How to see what journald is actually doing right now
+This is the key command you want:
+
+systemctl show systemd-journald | grep -E 'Storage=|SystemMaxUse=|RuntimeMaxUse=|MaxRetentionSec='
+
+That shows the effective values, even when no config file exists.
+
+To check whether logs are persistent:
+
+ls -ld /var/log/journal
+
+If it exists → persistent storage (survives reboot)
+
+If it does not → volatile (memory only)
+
+To see how much history you currently have:
+
+journalctl --disk-usage
+
+How long logs are retained
+By default, journald uses size-based retention, not time-based:
+
+Logs are kept until disk usage reaches a limit
+
+Oldest entries are dropped first
+
+Defaults are conservative and system-safe
+
+Unless you set MaxRetentionSec=, there is no fixed time window — retention depends on volume.
+
+If you later want to make journald behavior explicit (recommended for UMRS, but not required yet)
+
+Do not create /etc/systemd/journald.conf.
+
+Instead, create a drop-in:
+
+sudo mkdir -p /etc/systemd/journald.conf.d
+
+sudo tee /etc/systemd/journald.conf.d/umrs.conf >/dev/null <<'EOF'
+[Journal]
+Storage=persistent
+SystemMaxUse=2G
+EOF
+
+Then:
+
+sudo systemctl restart systemd-journald
+
+This gives you:
+
+persistent logs
+
+a bounded size
+
+a clearly documented UMRS override
+
+Why this is good for UMRS
+Your current design aligns perfectly with RHEL 10 expectations:
+
+UMRS tools emit semantic events
+
+journald stores authoritative context
+
+rsyslog (later) exports JSONL
+
+viewer merges meaning + metadata
+
+The absence of journald.conf is not a gap — it is the default, modern systemd model.
+
+
+Yes. You can do exactly that with rsyslog, without changing journald retention at all.
+
+Goal
+
+Anything with SYSLOG_IDENTIFIER / program name starting with umrs- goes to /var/log/umrs-activity.jsonl in JSON Lines format
+
+Those umrs-* entries do NOT also go to /var/log/messages
+
+How it works (high level)
+
+logger -> journald (unchanged)
+
+rsyslog reads from journald
+
+rsyslog matches programname “umrs-*”
+
+rsyslog writes JSON to /var/log/umrs-activity.jsonl
+
+rsyslog stops further processing for those messages so they do not hit /var/log/messages
+
+Step 1: Create the destination file and set permissions
+sudo touch /var/log/umrs-activity.jsonl
+sudo chown root:root /var/log/umrs-activity.jsonl
+sudo chmod 0640 /var/log/umrs-activity.jsonl
+sudo restorecon -v /var/log/umrs-activity.jsonl || true
+
+Step 2: Add an rsyslog rule that routes umrs-* to JSONL and stops propagation
+Create this file:
+
+sudo tee /etc/rsyslog.d/10-umrs-activity-json.conf >/dev/null <<'EOF'
+
+UMRS routing: write umrs-* identifiers to a dedicated JSON Lines activity log and stop further processing.
+This avoids duplicating UMRS events into /var/log/messages.
+
+template(name="umrsJsonLine" type="list") {
+constant(value="{")
+constant(value=""ts":"") property(name="timereported" dateFormat="rfc3339")
+constant(value="","host":") property(name="hostname" format="json")
+constant(value=","program":") property(name="programname" format="json")
+constant(value=","pid":"") property(name="procid")
+constant(value="","severity":"") property(name="syslogseverity-text")
+constant(value="","facility":"") property(name="syslogfacility-text")
+constant(value="","message":") property(name="msg" format="json")
+constant(value="}\n")
+}
+
+if ($programname startswith "umrs-") then {
+action(type="omfile"
+file="/var/log/umrs-activity.jsonl"
+template="umrsJsonLine")
+stop
+}
+EOF
+
+Notes
+
+programname is the syslog tag (what you set with logger -t umrs-shred, etc.)
+
+stop is what prevents it from also going to /var/log/messages
+
+Step 3: Restart rsyslog
+sudo systemctl restart rsyslog
+
+Step 4: Test
+Send a couple of test entries:
+
+logger -t umrs-test -- 'action=test result=BEGIN detail=requested'
+logger -t umrs-test -- 'action=test result=SUCCESS detail=ok'
+
+Now verify they landed in the JSONL file:
+
+sudo tail -n 10 /var/log/umrs-activity.jsonl
+
+And verify they did NOT land in /var/log/messages:
+
+sudo tail -n 50 /var/log/messages | grep umrs-test || echo "No umrs-test entries in /var/log/messages"
+
+Step 5 (recommended): Add logrotate so the JSONL file does not grow forever
+sudo tee /etc/logrotate.d/umrs-activity >/dev/null <<'EOF'
+/var/log/umrs-activity.jsonl {
+daily
+rotate 14
+missingok
+notifempty
+compress
+delaycompress
+create 0640 root root
+sharedscripts
+postrotate
+/bin/systemctl kill -s HUP rsyslog.service >/dev/null 2>&1 || true
+endscript
+}
+EOF
+
+That should give you exactly what you want: journald keeps its defaults, but UMRS events are exported as JSONL to a dedicated file and kept out of /var/log/messages.
+
+If you want the JSONL to include specific journald metadata (like SELinux context) in the JSON file, say so and I’ll give you the RHEL10-friendly way to add those fields (it depends on whether rsyslog is ingesting the full journal fields or only the syslog view).
+
+What you saw “disappear” is exactly the boundary between “classic syslog” and “journald metadata”.
+
+Why the SELinux context (and other journald fields) vanished
+
+journald stores lots of extra metadata fields (including SELinux context) that are NOT part of the traditional syslog message header.
+
+rsyslog can receive messages in two common ways:
+
+the classic syslog stream (imuxsock / syslog socket view) -> you only get facility/severity/program/pid/message, and you lose journald-only fields like SELinux context
+
+the journal database (imjournal) -> you can access journald’s structured fields like _SELINUX_CONTEXT
+
+SELinux context is specifically called out as journald metadata that is absent in a syslog header. 
+Log Analysis | Log Monitoring by Loggly
+
+So, in the rsyslog config I gave you, the JSON template only included the classic syslog properties. That’s why you got a clean JSON line, but not the journald extras.
+
+You have two good choices (pick the one that matches your viewer plan)
+
+Choice A (simplest, and aligns with your earlier realization)
+
+Keep the JSONL file as a fast “semantic activity stream” (message + program + timestamps).
+
+When you need SELinux context and other metadata, query journald directly in the viewer (or via journalctl JSON) and merge it at display time.
+This avoids complexity and keeps rsyslog fast.
+
+Choice B (put journald metadata into the JSONL file)
+To get _SELINUX_CONTEXT and similar fields into /var/log/umrs-activity.jsonl, rsyslog must read from journald’s structured source (imjournal). imjournal is specifically the rsyslog module that imports structured data from the systemd journal. 
+Rsyslog
+
+How to tell what you currently have (quick test)
+After you put your umrs-* routing in place, add selinux_context to the JSON template using this property:
+
+property(name="$!_SELINUX_CONTEXT" format="json")
+
+If it always comes out empty or null, your rsyslog input path is not delivering structured journal fields (you’re on the classic syslog path).
+
+Minimal change to include SELinux context in the JSONL template (works only if imjournal is providing it)
+Edit your template and add a field like this:
+
+,"selinux_context": property(name="$!_SELINUX_CONTEXT" format="json")
+
+For example, inside your existing umrsJsonLine template, add one line before message:
+
+constant(value=","selinux_context":") property(name="$!_SELINUX_CONTEXT" format="json")
+
+If you need to switch rsyslog to read the structured journal (imjournal)
+This is the part that depends on your current rsyslog config. Some RHEL setups already use imjournal; others use the syslog socket view.
+
+The concept is:
+
+ensure rsyslog loads imjournal and has an input(type="imjournal")
+
+then the journal fields show up as structured properties (like $!_SELINUX_CONTEXT)
+
+This “journal fields become accessible to rsyslog” approach is commonly described as imjournal exposing fields you can reference in config. 
+Stack Overflow
+
+Important note: imjournal reads the journal database and is heavier than the classic syslog socket path; rsyslog itself recommends using it only if you need the structured data. 
+Rsyslog
+
+A practical UMRS recommendation
+Given you already decided “the script doesn’t need to log selinux context because journald has it”, the cleanest UMRS architecture is:
+
+JSONL file: semantic UMRS event stream (tool/action/result/object/detail), optimized for speed and tailing
+
+Viewer: optionally enriches display with journald metadata (SELinux context, exe, unit, etc.) by looking up the event in journald when needed
+
+If you still want SELinux context in the JSONL file, say so and I will give you a complete rsyslog config that:
+
+guarantees imjournal input is enabled correctly
+
+writes umrs-* to /var/log/umrs-activity.jsonl in JSONL
+
+stops propagation so it does not go to /var/log/messages
+
+includes selinux context (and optionally _EXE, _SYSTEMD_UNIT, _UID, _PID) when present
+
+And I’ll keep it consistent with your “do not change journald retention defaults” requirement.
+
+
+
+sudo tail -n 5 /var/log/umrs-activity.jsonl 
+{"ts":"2025-12-20T03:55:54.950121-05:00", "host":"localhost", "program":"umrs-test", "pid":"456486", "severity":"notice", "facility":"user", "selinux_context":"unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023", "message":"action=test result=SUCCESS detail=ok", 
+}
+
+

@@ -1,0 +1,24 @@
+= Release Notes
+:toc: left
+:toclevels: 2
+
+== Current Milestone
+
+What is working now:
+
+// Document the capabilities that are stable and available in the current milestone.
+// Include: tool names, crate status, supported platforms, key APIs.
+
+== Planned Features
+
+What is coming in the next milestone:
+
+// Document features that are in progress or scheduled for the next milestone.
+// Include: crates under development, planned API surface, operational capabilities.
+
+== Known Limitations
+
+Current limitations to be aware of:
+
+// Document gaps, prototype status, unsupported configurations, and anything
+// an operator or developer needs to know before relying on current functionality.

@@ -1,0 +1,16 @@
+* xref:index.adoc[Home]
+
+* Start Here
+** xref:introduction.adoc[Introduction]
+** xref:getting-started.adoc[Getting started]
+** xref:scope-and-audience.adoc[Scope and audience]
+** xref:release-notes.adoc[Release notes]
+** xref:legal-notices.adoc[Legal notices]
+
+* xref:architecture:index.adoc[Architecture]
+* xref:admin:index.adoc[Administration]
+* xref:deployment:index.adoc[Deployment]
+* xref:operations:index.adoc[Operations]
+* xref:umrs-tools:index.adoc[UMRS Tools]
+* xref:reference:index.adoc[Reference]
+* xref:devel:index.adoc[Developer Guide]

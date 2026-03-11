@@ -1,0 +1,141 @@
+= Five Eyes Classification Interoperability
+:description: UMRS label support for the national unclassified information handling schemes of Five Eyes partner nations alongside the US CUI baseline.
+:toc: left
+:toclevels: 2
+
+// NIST SP 800-171 Rev 2 — CUI protection requirements
+// CMMC 2.0 — operationalized CUI protection assessment
+
+The Five Eyes alliance is an intelligence-sharing arrangement among
+the United States, United Kingdom, Canada, Australia, and New Zealand.
+Each member nation handles its own national-origin sensitive-but-unclassified
+information under a distinct marking and handling scheme. When UMRS-enabled
+systems operate in coalition or partner environments, the platform must be
+able to represent, enforce, and translate labels from each national scheme
+alongside the US CUI baseline.
+
+This page describes the interoperability requirement, each partner nation's
+scheme, and the UMRS design goal for supporting them.
+
+== Why Interoperability Is an Architectural Requirement
+
+The US CUI program — governed by NIST SP 800-171 and CMMC 2.0 — defines
+categories and handling requirements for unclassified federal information.
+CUI is the primary labeling baseline for UMRS.
+
+Partner nations' schemes are structurally similar to CUI but differ in
+naming, tiering, and specific handling rules. When a document marked
+OFFICIAL:Sensitive (Australian scheme) is received on a UMRS-enabled system,
+the system must know how to represent that marking in a security label,
+apply the appropriate handling controls, and produce audit evidence that the
+label was respected.
+
+Without a common label abstraction, each national scheme would require
+custom enforcement logic. With a common abstraction, the UMRS label model
+maps to any scheme by configuring the mapping layer — the enforcement
+mechanism stays the same.
+
+== US CUI Baseline
+
+The US Controlled Unclassified Information (CUI) program is established
+under Executive Order 13556 and implemented through NIST SP 800-171 and
+32 CFR Part 2002. CUI is unclassified information that requires
+safeguarding based on law, regulation, or government-wide policy.
+
+CUI uses a registry of categories (e.g., CUI//SP-PRVCY for privacy data,
+CUI//CTI for controlled technical information) rather than hierarchical
+classification levels. In UMRS, CUI categories map to MCS category bits.
+
+CUI support is the implemented baseline. All other scheme support described
+in this page is planned and not yet implemented.
+
+== UK: Official and Official Sensitive
+
+The United Kingdom uses the Government Security Classifications (GSC) policy.
+The relevant tiers for UMRS are:
+
+* *OFFICIAL* — the majority of public-sector information. Equivalent in
+  sensitivity to CUI in many handling contexts.
+* *OFFICIAL-SENSITIVE* — OFFICIAL information that requires enhanced access
+  controls due to its sensitivity. Carries a handling descriptor that
+  specifies the control set (e.g., OFFICIAL-SENSITIVE LOCSEN for location
+  sensitive material).
+
+OFFICIAL-SENSITIVE does not map cleanly to a single CUI category but shares
+the same structural pattern: a base marking plus a handling descriptor that
+restricts access to a defined population.
+
+== Canada: Protected A, B, and C
+
+Canada uses the Government of Canada Security Policy framework. The relevant
+tiers are:
+
+* *Protected A* — information whose compromise could reasonably be expected
+  to cause injury to an individual, organization, or government.
+* *Protected B* — information whose compromise could reasonably be expected
+  to cause serious injury. Requires stronger access controls than Protected A.
+* *Protected C* — extremely sensitive information whose compromise could
+  reasonably be expected to cause grave injury. Access is tightly restricted.
+
+Protected B is the most common tier encountered in coalition information
+sharing contexts and maps roughly to mid-level CUI sensitivity.
+
+== Australia: OFFICIAL and OFFICIAL:Sensitive
+
+Australia uses the Protective Security Policy Framework (PSPF). The
+relevant tiers are:
+
+* *OFFICIAL* — the majority of Australian government information.
+  Comparable to US OFFICIAL handling in scope.
+* *OFFICIAL:Sensitive* — information that requires access controls and
+  handling consistent with its sensitive nature. Carries an optional
+  access-limiting marker (e.g., OFFICIAL:Sensitive CABINET).
+
+OFFICIAL:Sensitive maps structurally to CUI: a base marking plus a
+category descriptor that restricts handling.
+
+== New Zealand: IN-CONFIDENCE and SENSITIVE
+
+New Zealand uses the New Zealand Government Security Classification System.
+The relevant tiers are:
+
+* *IN-CONFIDENCE* — information whose release could damage New Zealand
+  interests or create legal, commercial, or reputational issues.
+* *SENSITIVE* — a handling caveat applied to IN-CONFIDENCE information
+  requiring additional controls. Often expressed as SENSITIVE [handling
+  instruction] (e.g., SENSITIVE BUDGET).
+
+These tiers are analogous to CUI categories in their structural role.
+
+== UMRS Design Goal
+
+The goal is a common UMRS label abstraction — a sensitivity level plus
+a category set — that can be mapped to any of the Five Eyes national
+schemes by configuration. An operator provides a mapping that translates
+national scheme markings (e.g., "OFFICIAL-SENSITIVE" or "Protected B")
+to a UMRS MLS level and category set. The enforcement mechanism does not
+change. Only the human-readable marking and its mapping to label bits
+differs.
+
+This design is consistent with the MLS model already implemented for CUI.
+It does not require separate enforcement paths for each national scheme.
+
+== Current Status
+
+CUI (US baseline) is the only implemented scheme. Partner nation support
+is a planned architectural objective. The label abstraction layer is
+designed to accommodate additional schemes without changes to the
+enforcement core.
+
+When partner scheme support is added, it will appear as:
+
+* Configuration mappings in the `setrans.conf` equivalent for each scheme
+* Reference documentation for each scheme's marking categories
+* Integration tests demonstrating correct label translation
+
+Compliance note: NIST SP 800-171 Rev 2 (3.1.3, 3.13.1) governs
+information flow enforcement for CUI. CMMC 2.0 Level 2 (AC.L2-3.1.3)
+maps this control to the maturity assessment model. Partner-nation
+scheme support will be governed by the applicable bilateral agreement
+or information sharing arrangement in effect for the deployment
+environment.

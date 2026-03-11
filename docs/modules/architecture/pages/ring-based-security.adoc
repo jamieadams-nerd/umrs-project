@@ -1,0 +1,57 @@
+= Ring Based Security - FLASK Origins
+
+Ring-based security refers to early hardware-enforced protection models that divided system privilege into concentric rings, allowing only the most trusted components to run in the innermost rings; this concept strongly influenced the design of security kernels and early MLS systems.
+
+
+== What ring-based security means
+Ring-based security is a protection model that organizes system privilege into concentric layers, often referred to as “rings.” The core idea is simple: the closer code runs to the center, the more trusted and more powerful it is. Code running farther from the center has fewer privileges and must go through controlled interfaces to access more sensitive resources.
+
+In this model, code running in an outer ring cannot directly access the resources of an inner ring. Any interaction must be mediated by well-defined, controlled mechanisms. This separation reduces the risk that a failure or compromise in less trusted code can directly affect the most critical parts of the system.
+
+A common way to visualize this is as a castle. The innermost keep represents the most trusted code. Outer walls represent less trusted components. Gates, guards, and moats control movement inward. The design is not about making access impossible, but about ensuring that all access is deliberate, checked, and controlled.
+
+== The classic ring model
+
+Historically, many systems described rings numerically, with lower numbers representing higher privilege. A typical conceptual layout looked like this:
+
+* Ring 0: the kernel, with full control over hardware and system state
+* Ring 1 and Ring 2: core operating system services and, in some designs, device drivers
+* Ring 3: user applications, with the least privilege
+
+Not all systems implemented every ring, and many modern systems effectively collapse this into just two levels (kernel and user space). Even so, the conceptual model remained important because it shaped how designers thought about isolation, trust boundaries, and controlled interfaces.
+
+== Historical origins
+
+Ring-based protection originated in early operating system research, particularly during the 1960s and 1970s. One of the most influential systems was Multics, which was designed with hardware-enforced rings from the start. Unlike later systems that focused primarily on two privilege levels, Multics supported many rings and treated them as a fundamental security mechanism rather than an implementation detail.
+
+Multics and similar early systems influenced a wide range of later security work, including the concept of a Trusted Computer Base (TCB), the idea of a small security kernel enforcing policy, and the design principles behind Multilevel Security (MLS) systems. These ideas were later formalized in documents such as the Trusted Computer System Evaluation Criteria (the Orange Book).
+
+While modern systems no longer expose multiple rings in the same way, the underlying idea remains foundational: reduce trust where possible, strictly control transitions between trust levels, and ensure that the most sensitive components are isolated from direct access by less trusted code.
+
+Here is a **rewritten, prose-first version**, minimal bullets, **raw AsciiDoc**, ready to paste. Formatting is proper AsciiDoc, no smart quotes, no UI formatting.
+
+
+== How this relates to MLS
+
+Ring-based protection and Multilevel Security (MLS) solve different problems, but they are historically and architecturally connected.
+
+Ring-based protection is fundamentally about *privilege*. It answers the question of *which code is trusted to perform sensitive operations* and how that trust is enforced by hardware and the operating system.
+
+MLS, by contrast, is about *data classification and dominance*. It answers the question of *who or what may access information at a given sensitivity level*, regardless of discretionary permissions.
+
+Although these concepts are distinct, early MLS systems depended heavily on ring-based protection to function correctly.
+
+Historically, MLS systems required a very small, highly trusted core that could not be bypassed by ordinary programs. They also required strong isolation between system components and clearly defined trust boundaries. Hardware-enforced rings provided a natural way to achieve this isolation and to keep the Trusted Computer Base (TCB) as small as possible.
+
+In early MLS designs, the security kernel typically lived in the innermost ring. This kernel was responsible for enforcing policy decisions and mediating all access to classified data. User processes executed in outer rings and could not directly access sensitive resources. In some cases, carefully designed trusted subjects were granted limited, controlled access inward, but only through explicit and auditable mechanisms.
+
+This structure allowed MLS systems to make a strong and testable claim: only a very small portion of the system was capable of enforcing or bypassing security policy, and that portion could be isolated, analyzed, and evaluated.
+
+== Why modern systems still care
+
+Modern systems no longer emphasize ring-based terminology as prominently, and most commodity platforms effectively use only two rings: a privileged kernel mode and an unprivileged user mode. On x86 systems, additional rings still exist in hardware, but they are rarely used by general-purpose operating systems.
+
+Despite this simplification, the underlying idea has not gone away. The same principles appear today in the separation between kernel and user space, the placement of hypervisors beneath the operating system, the use of secure enclaves, and the widespread adoption of Mandatory Access Control systems such as SELinux.
+
+Modern MLS implementations continue to rely on these principles even if they are not described explicitly in terms of rings. They assume a trusted enforcement core, strong separation between policy enforcement and application logic, and minimal trusted code paths. In that sense, ring-based protection remains an important conceptual ancestor of MLS, even when the terminology itself has faded from everyday use.
+

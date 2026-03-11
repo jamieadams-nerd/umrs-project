@@ -1,0 +1,112 @@
+= Getting Started
+:description: Guided reading paths for new engineers, security auditors, and potential adopters.
+:toc: left
+:toclevels: 2
+
+UMRS documentation is organized around three reader roles. Each path below
+names the pages to read, in order, and explains why that sequence makes sense.
+Start with the path that matches your goal.
+
+If you have not yet read xref:introduction.adoc[Introduction to UMRS], start
+there. It is a five-minute orientation that all three paths build on.
+
+'''
+
+== Path 1: I Want to Deploy the Reference System
+
+This path is for system administrators and platform engineers responsible
+for standing up a UMRS-enabled environment.
+
+You will work through the OS baseline first, then the RHEL 10–specific
+configuration, then the integrity measurement layer. Each step builds
+on the previous one.
+
+. xref:introduction.adoc[Introduction to UMRS] —
+  understand what you are deploying and why before configuring anything.
+. xref:scope-and-audience.adoc[Scope and audience] —
+  confirm that UMRS addresses your specific handling requirement.
+. xref:architecture:index.adoc[Architecture overview] —
+  read the base OS and SELinux context model sections before configuring
+  SELinux policy.
+. xref:deployment:linux-baseline.adoc[Linux baseline] —
+  OS hardening prerequisites.
+. xref:deployment:rhel10-installation.adoc[RHEL 10 installation] —
+  step-by-step RHEL 10 deployment with SELinux enforcing and FIPS mode.
+. xref:deployment:ima-evm-setup.adoc[IMA/EVM setup] —
+  integrity measurement and extended verification configuration.
+. xref:deployment:rhel10-openscap.adoc[OpenSCAP compliance scanning] —
+  verifying the deployment against the applicable security profile.
+
+After deployment, see the operations index for day-to-day operation and
+troubleshooting guidance.
+
+'''
+
+== Path 2: I Want to Write Code Against UMRS Libraries
+
+This path is for developers who want to build tools or integrations on
+top of the UMRS Rust crates.
+
+Read the architecture overview first. Patterns documentation is only
+useful once you understand what problem the patterns are solving.
+
+. xref:introduction.adoc[Introduction to UMRS] —
+  understand the project context and goals.
+. xref:architecture:index.adoc[Architecture overview] —
+  focus on the SELinux context model, MLS/MCS model, and Rust
+  implementation layer sections.
+. xref:architecture:rationale.adoc[Strong-typing rationale] —
+  why labels are modeled as types rather than strings; what errors
+  this prevents.
+. xref:devel:high-assurance-patterns.adoc[High-assurance coding patterns] —
+  the patterns every contributor must apply. Read before writing any code.
+. xref:devel:rust-style-guide.adoc[Rust style guide] —
+  style, lint policy, and code review expectations.
+. xref:devel:compliance-annotations.adoc[Compliance annotations guide] —
+  how to write NIST-annotated rustdoc correctly.
++
+NOTE: This page is planned and will be added in a future milestone.
+
+After reading the foundations, use the reference module for lookup:
+xref:reference:context.adoc[security context],
+xref:reference:sensitivity.adoc[sensitivity levels],
+xref:reference:category_set.adoc[category set].
+
+Developer use case guides (user-story format: "As a developer, I want to...")
+are planned and will be added in a future milestone.
+
+'''
+
+== Path 3: I Am a Security Auditor
+
+This path is for auditors, assessors, and reviewers evaluating UMRS
+against a compliance framework or assurance requirement.
+
+Start with the scope document — it defines the exact enforcement boundary.
+Then move to architecture for the design rationale and compliance mapping.
+
+. xref:introduction.adoc[Introduction to UMRS] —
+  project origin, stated goals, and what is stable vs. prototype.
+. xref:scope-and-audience.adoc[Scope and audience] —
+  precise in-scope capabilities and explicit non-goals.
+. xref:architecture:index.adoc[Architecture overview] —
+  read the compliance baseline table at the bottom; it maps each
+  governing framework to its role in the design.
+. xref:reference:compliance-frameworks.adoc[Compliance frameworks registry] —
+  authoritative list of governing standards (NIST 800-53, CMMC, RTB, SSDF),
+  versions, and their role in the project.
++
+NOTE: This page is planned and will be added in a future milestone.
+
+. xref:devel:compliance-annotations.adoc[Compliance annotations guide] —
+  how control citations appear in the source code; what to look for
+  during a code review.
++
+NOTE: This page is planned and will be added in a future milestone.
+
+. xref:devel:high-assurance-patterns.adoc[High-assurance coding patterns] —
+  each pattern's rationale, threat model, and codebase example.
+. xref:operations:structured-logging.adoc[Structured logging] —
+  audit trail structure and event taxonomy.
+. xref:operations:troubleshooting.adoc[Troubleshooting] —
+  how enforcement failures surface and how they are investigated.

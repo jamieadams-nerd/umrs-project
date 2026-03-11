@@ -1,0 +1,100 @@
+ou got it. Here is the mathematical verification of SELinux Category Sets using Unicode symbols so you can paste it directly into your .md file without needing a LaTeX renderer.
+SELinux Security Level Verification
+In Multi-Level Security (MLS) and Multi-Category Security (MCS), a security level is defined as:
+L = (s, C)
+Where:
+s ∈ S (Sensitivity: a hierarchical value where s₀ ≤ s₁ ≤ ... ≤ sₙ)
+C ⊆ 𝒞 (Categories: a non-hierarchical set of compartments)
+1. The Dominance Relation (dom)
+For a subject (process) to access an object (file), the system verifies that the subject's level (Lₛ) dominates the object's level (Lₒ).
+Lₛ dom Lₒ ⇔ (sₛ ≥ sₒ) ∧ (Cₒ ⊆ Cₛ)
+Sensitivity Check (sₛ ≥ sₒ): The subject's sensitivity rank must be greater than or equal to the object's.
+Category Check (Cₒ ⊆ Cₛ): The object’s category set must be a subset of the subject’s category set.
+2. Information Flow Verification
+To prevent data leakage, SELinux enforces these set-based constraints:
+Read (No Read Up):
+Access is granted if: Lₛ dom Lₒ
+(The subject has the clearance and all required categories).
+Write (No Write Down):
+Access is granted if: Lₒ dom Lₛ
+(In "Write Equality" configurations, this is simplified to Lₛ = Lₒ).
+3. Isolation (Incomparability)
+Two levels are incomparable (‖) if neither dominates the other, typically because their category sets have a non-empty symmetric difference where neither is a subset:
+Lₛ ‖ Lₒ ⇔ ¬(Lₛ dom Lₒ) ∧ ¬(Lₒ dom Lₛ)
+Example:
+L₁ = (s0, {c1, c2})
+L₂ = (s0, {c2, c3})
+Result: L₁ ‖ L₂ because {c1, c2} ⊈ {c2, c3} and {c2, c3} ⊈ {c1, c2}.
+4. Set Symbols Reference for SELinux
+Symbol	Meaning	SELinux Context
+∈	Element of	A specific category in a set
+⊆	Subset of	Object categories contained in Subject
+⊈	Not a subset	Access denied (missing category)
+∧	Logical AND	Both sensitivity AND category must pass
+¬	Logical NOT	Failure of dominance
+⇔	If and only if	The definition of the dominance rule
+
+Here is the breakdown of the SELinux Category Set verification, formatted with Unicode symbols for your .md file.
+1. Verification Examples Table
+This table demonstrates how the dominance rule (sₛ ≥ sₒ) ∧ (Cₒ ⊆ Cₛ) determines access.
+Assume all examples use the same sensitivity level (s0) to focus on the Category Set logic.
+Subject (Lₛ)	Object (Lₒ)	Mathematical Check	Result	Reason
+s0:c1,c5	s0:c5	{c5} ⊆ {c1, c5}	PASS	Subject possesses all required categories.
+s0:c1..c10	s0:c5	{c5} ⊆ {c1..c10}	PASS	c5 falls within the subject's range.
+s0:c5	s0:c1,c5	{c1, c5} ⊈ {c5}	DENY	Subject is missing c1.
+s0:c1,c2	s0:c3,c4	{c3, c4} ⊈ {c1, c2}	DENY	Sets are disjoint (Incomparable).
+s0:c1..c5	s0:c4..c6	{c4, c5, c6} ⊈ {c1..c5}	DENY	Subject is missing c6.
+2. Bitmask Representation
+Internally, SELinux represents the category set as a Bit Strategy (often a vector of 64-bit integers). This allows the kernel to perform verification using extremely fast CPU bitwise operations.
+If we have a category set 𝒞 = {c0, c1, c2, c3}:
+The set is represented as a binary string (Bitmask) where the 
+ bit is 1 if the category is present.
+c0 = 0001
+c1 = 0010
+c3 = 1000
+Mathematical Verification via Bitwise Logic:
+The subset check (Cₒ ⊆ Cₛ) is verified using the bitwise AND and Equality operators:
+(Bitmask_Sub AND Bitmask_Obj) == Bitmask_Obj
+Example:
+Subject has {c1, c3} → Mask: 1010
+Object has {c1} → Mask: 0010
+Calculation: (1010 & 0010) yields 0010.
+Result: 0010 == 0010 is TRUE (Access Granted).
+3. SELinux MLS Policy Constraints
+In the SELinux policy files (usually policy/mls or policy/mcs), these mathematical rules are defined using the mlsconstrain keyword. This is the "code" version of the formulas above.
+A typical constraint for reading a file looks like this:
+bash
+# Verify: Subject (l1) must dominate Object (l2) to READ
+mlsconstrain { file } { read } (
+    (l1 dom l2) 
+);
+
+# Verify: Subject (l1) must be dominated by Object (l2) to WRITE (No Write Down)
+mlsconstrain { file } { write } (
+    (l1 domby l2)
+);
+Use code with caution.
+
+Key to Policy Symbols:
+l1: The security level of the Subject.
+l2: The security level of the Object.
+dom: Represents the Dominance relation ≥ (Sensitivity ≥ AND Categories ⊇).
+domby: Represents "Dominated By" (≤), the inverse of dominance.
+eq: Represents equality (l1 = l2), often used in MCS to ensure exact category matching.
+4. Unicode Math Summary for your .md
+You can copy this block for a clean summary:
+SELinux Decision Logic Summary:
+Level: L = (s, C)
+Dominance: Lₛ dom Lₒ ⇔ (sₛ ≥ sₒ) ∧ (Cₒ ⊆ Cₛ)
+Read Rule: Allowed if (Lₛ dom Lₒ)
+Write Rule: Allowed if (Lₒ dom Lₛ)
+Bitwise Implementation: (Mₛ & Mₒ) == Mₒ
+
+
+
+2. The Verification Logic (Unicode)
+When your parser checks if a process label matches a setrans.conf definition, it performs a Set Equality check:
+Label Match ⇔ (sᵣₑ₀ == sᵢₙₜ) ∧ (Cᵣₑ₀ == Cᵢₙₜ)
+sᵣₑ₀: Sensitivity defined in setrans.conf.
+Cᵣₑ₀: Category set defined in setrans.conf.
+Cᵢₙₜ: The actual categories found in the binary context. 

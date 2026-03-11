@@ -1,0 +1,8 @@
+id: MLS-001
+title: Bell-LaPadula Simple Security Property
+rule: A subject may not read data at a higher classification level (no read up).
+model: Bell-LaPadula
+category: confidentiality
+references:
+  - https://csrc.nist.gov/glossary/term/simple_security_property
+  - bell-lapadula-1973.pdf

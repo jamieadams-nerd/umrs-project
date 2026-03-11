@@ -1,0 +1,8 @@
+id: MLS-002
+title: Bell-LaPadula Star Property
+rule: A subject may not write information to a lower classification level (no write down).
+model: Bell-LaPadula
+category: confidentiality
+references:
+  - https://csrc.nist.gov/glossary/term/star_property
+  - bell-lapadula-1973.pdf

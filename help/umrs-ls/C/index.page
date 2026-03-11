@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page xmlns="http://projectmallard.org/1.0/"
+      type="guide"
+      id="index">
+  <info>
+    <desc>Learn how umrs-ls lists directories with inode-anchored SELinux label verification.</desc>
+  </info>
+
+  <title>umrs-ls — High-Assurance Directory Listing</title>
+
+  <p>
+    <cmd>umrs-ls</cmd> lists the contents of a directory grouped by SELinux security type
+    and marking. It is designed for operators and security auditors who need to verify
+    the security posture of filesystem objects — not just see their names.
+  </p>
+
+  <p>
+    The key difference from <cmd>ls -Z</cmd> is <em>how</em> the security label is obtained.
+    Standard <cmd>ls</cmd> uses a path-based syscall (<sys>lstat</sys>) that asks the kernel
+    for a label by filename. <cmd>umrs-ls</cmd> attempts to <sys>open()</sys> each object and
+    anchors all subsequent metadata reads — including the SELinux xattr — to that single
+    file descriptor. If <sys>open()</sys> is denied, the entry is marked
+    <code>&lt;restricted&gt;</code> rather than showing an unverified path-derived label.
+  </p>
+
+  <section id="topics">
+    <title>Topics</title>
+    <links type="topic"/>
+  </section>
+
+  <links type="topic" groups="iov grouping restricted"/>
+</page>

@@ -1,0 +1,1307 @@
+= High-Assurance Coding Patterns
+Jamie L. Adams
+:description: The security patterns used throughout UMRS — organized by what you are \
+    about to do, not by what compliance framework says so.
+:toc: left
+:toclevels: 3
+
+// NIST 800-218 SSDF PW.4 — Implement secure coding practices
+// NSA RTB VNSSA / RAIN — Non-bypassable, residual-free security design
+
+== Philosophy
+
+[quote]
+____
+Make the right thing easy to do and the wrong thing hard to do.
+____
+
+This is the design goal behind every pattern in this guide.
+Security in UMRS is not a layer added after the code is written.
+It is encoded in the type system, the module boundaries, and the
+construction rules, so that the compiler enforces it before a
+human reviewer ever sees the code.
+
+Each section below is organized around *what you are about to do* —
+open a file, parse some input, construct a type, do arithmetic, report
+an error.
+That is how code gets written.
+The NIST and NSA RTB citations are there for auditors who read the same
+document; they are at the end of each pattern, not the beginning.
+
+=== The three-layer model
+
+----
+This guide          ← why each pattern exists; what threat it defeats
+rustdoc API docs    ← the contract for each public function
+Source code         ← the implementation, annotated with control citations
+----
+
+The doc comments in the source are the authoritative bottom layer.
+`cargo doc` delivers that layer as the API reference.
+This guide is the layer above it — it explains the reasoning so that a
+developer can apply the same thinking to the next problem, not just
+copy the pattern mechanically.
+
+=== On gatekeeping and leaving early
+
+Two habits that map directly onto the patterns below:
+
+. *Gatekeeping at function entry* — screen all inputs at the top of a
+  function before doing any work.
+  The code never reaches the sensitive operation if the input is wrong.
+  This is validate-at-construction applied to function scope.
+
+. *Leave early and often* — return `Err` the moment a security condition
+  is violated.
+  Do not continue executing with degraded or uncertain state.
+  This is fail-closed applied to control flow.
+
+Both habits are visible throughout the UMRS codebase.
+The patterns below show where.
+
+'''
+
+== 1. Opening and Reading Files
+
+Every file read in UMRS is a potential security event.
+The filesystem is shared, mutable, and partially controlled by other
+processes.
+These four patterns govern every I/O operation in the codebase.
+
+=== 1.1 TOCTOU Safety — Anchor to a Single File Descriptor
+
+*The danger.*
+A file opened by path can be replaced, renamed, or symlinked to a
+different target between the `open` call and any subsequent operation.
+This is a Time-of-Check/Time-of-Use (TOCTOU) race condition.
+An attacker who can write to the directory can swap the target during
+that window.
+
+*The pattern.*
+Open the file once.
+Perform all subsequent operations through the resulting file descriptor.
+Never re-open by path for a second operation on the same logical resource.
+Use `rustix` fd-based syscalls (`fgetxattr`, `ioctl_getflags`) rather
+than path-based syscalls (`getxattr`).
+
+*In the UMRS codebase.*
+
+`SecureXattrReader::read_raw()` in `xattrs.rs` reads the raw xattr bytes
+through the fd the caller already holds — it never opens a path:
+
+[source,rust]
+----
+// xattrs.rs
+pub fn read_raw(file: &File, attr: &str) -> io::Result<Vec<u8>> {
+    let size = fgetxattr(file, attr, &mut [])
+        .map_err(|e| io::Error::from(e))?;
+
+    if size == 0 {
+        return Err(io::Error::new(io::ErrorKind::InvalidData, "Empty xattr"));
+    }
+
+    let mut buffer = vec![0u8; size];
+    let bytes_read = fgetxattr(file, attr, &mut buffer)
+        .map_err(|e| io::Error::from(e))?;
+
+    buffer.truncate(bytes_read);
+    if buffer.last() == Some(&0) {
+        buffer.pop();
+    }
+    Ok(buffer)
+}
+----
+
+`SecureDirent` documents this invariant explicitly in its module comment:
+
+[source,rust]
+----
+// secure_dirent.rs — design invariants
+// - TOCTOU safety: a single `File` handle is opened once; all
+//   subsequent metadata reads (ioctl_getflags, fgetxattr) operate
+//   through that same fd. The path is never re-resolved after open.
+----
+
+*Citation.* NIST 800-53 SI-7 (Software and Information Integrity)
+
+'''
+
+=== 1.2 Provenance Verification — Check Filesystem Magic Before Trusting Kernel Data
+
+*The danger.*
+`/sys/fs/selinux/` and `/proc/` are kernel pseudo-filesystems.
+An attacker or misconfigured container can bind-mount an
+attacker-controlled directory over either path.
+Any byte read from that path would come from the attacker, not the
+kernel.
+
+*The pattern.*
+Before reading any byte from a kernel pseudo-filesystem, verify the
+filesystem magic number.
+`/sys/fs/selinux/` has `SELINUX_MAGIC`; `/proc/` has `PROC_SUPER_MAGIC`.
+A bind-mounted impostor will have a different magic value and must be
+rejected immediately.
+
+Critically, the magic check must be performed on the *open file descriptor*,
+not on the path.
+Calling `statfs(path)` and then `File::open(path)` separately leaves a
+window between the two calls during which an attacker can substitute a
+bind-mounted directory — a TOCTOU race on the check itself.
+The correct sequence is: open the file first, then call `fstatfs` on the
+resulting descriptor.
+See also section 1.1.
+
+*In the UMRS codebase.*
+
+`SecureReader::execute_read()` in `umrs-platform: kattrs.rs` opens the file first,
+then performs the fd-anchored magic check on the open descriptor:
+
+[source,rust]
+----
+// umrs-platform: kattrs.rs
+fn execute_read(path: &Path, expected_magic: FsType) -> io::Result<T::Output> {
+    // Open the file first — the magic check is performed on the open fd,
+    // not on the path. This closes the TOCTOU window that exists between
+    // a path-based statfs() and the subsequent File::open().
+    let mut file = File::open(path)?;
+
+    let stats = fstatfs(&file).map_err(io::Error::other)?;
+    if stats.filesystem_type() != expected_magic {
+        // NIST 800-53 SI-12: the path is sent to the audit log, not to the
+        // caller-visible error string. Kernel paths are not sensitive per se,
+        // but embedding variable data in user-visible errors creates a pattern
+        // that is unsafe when extended to security labels or credentials.
+        log::error!(
+            "Integrity Failure: {} is not on the authorized filesystem",
+            path.display()
+        );
+        return Err(io::Error::new(
+            io::ErrorKind::PermissionDenied,
+            "Integrity Failure: path is not on the authorized filesystem",
+        ));
+    }
+
+    let mut buffer = [0u8; 16];
+    let bytes_read = file.read(&mut buffer)?;
+    T::parse(&buffer[..bytes_read])
+}
+----
+
+If the magic check fails, `file` is dropped immediately and nothing is read.
+The path is emitted to the audit log via `log::error!` — it does not
+appear in the error string returned to the caller (NIST 800-53 SI-12).
+
+*Citation.* NIST 800-53 SI-7
+
+'''
+
+=== 1.3 Compile-Time Path Binding — StaticSource Trait
+
+*The danger.*
+A path string passed at runtime to a kernel attribute reader can be
+wrong — mistyped, injected, or intentionally substituted.
+Even a correct path can have the wrong expected filesystem magic if
+the caller forgets to supply it.
+
+*The pattern.*
+Bind the path and the expected filesystem magic to the *type*, not the
+call site.
+The `StaticSource` trait in `umrs-platform: kattrs.rs` makes the path and magic
+associated constants of each kernel attribute type.
+The compiler verifies that every call uses the correct values.
+There is no runtime parameter to get wrong.
+
+*In the UMRS codebase.*
+
+[source,rust]
+----
+// umrs-platform: kattrs.rs
+pub trait StaticSource: KernelFileSource {
+    const PATH: &'static str;
+    const EXPECTED_MAGIC: FsType = SELINUX_MAGIC;
+
+    // Default implementation routes through SecureReader::execute_read,
+    // which performs the fd-anchored fstatfs magic check before reading.
+    // Provenance verification is non-bypassable via this method.
+    fn read() -> io::Result<Self::Output> {
+        SecureReader::<Self>::new().read()
+    }
+}
+----
+
+Each concrete type (`SelinuxEnforce`, `SelinuxMls`, `SelinuxPolicyVers`,
+`ProcFips`) declares its own `PATH` and `EXPECTED_MAGIC` as associated
+constants, and each carries a doc comment with the applicable NIST 800-53
+control citations.
+
+The default `read()` implementation on `StaticSource` delegates to
+`SecureReader::<Self>::new().read()`, which routes through `execute_read`.
+This means provenance verification is non-bypassable via the trait method —
+there is no code path through `StaticSource::read()` that skips the
+fd-anchored magic check.
+
+A caller invokes `SelinuxEnforce::read()` and cannot accidentally supply
+the wrong path, forget the magic check, or bypass the fd-anchored
+verification — the type and the trait default together enforce all three.
+
+*Citation.* NSA RTB RAIN (Non-Bypassability)
+
+'''
+
+=== 1.4 Trust Gates — Only Read Configuration When the Kernel Confirms
+
+*The danger.*
+`/etc/selinux/config` reflects boot-time configuration, not the running
+kernel state.
+If SELinux is disabled or the kernel is running a different policy,
+the config file may describe a state that does not exist.
+Treating it as authoritative when the kernel disagrees is a trust
+violation.
+
+*The pattern.*
+Gate configuration file reads behind a kernel status check.
+Only read the config when the kernel has confirmed the subsystem is
+active.
+If the kernel says SELinux is disabled, return `None` for the policy —
+do not guess from the config.
+
+*In the UMRS codebase.*
+
+[source,rust]
+----
+// status.rs
+impl SelinuxStatus {
+    pub fn current() -> Self {
+        let enabled = is_selinux_enabled();
+
+        let enforcing = if enabled {
+            SelinuxEnforce::read()
+                .map(|state| state == EnforceState::Enforcing)
+                .unwrap_or(false)
+        } else {
+            false
+        };
+
+        // Only trust the config file when the kernel confirms SELinux is active.
+        let policy = if enabled {
+            read_policy_from_config()
+        } else {
+            None
+        };
+
+        Self { enabled, enforcing, policy }
+    }
+}
+----
+
+*Citation.* NIST 800-53 CM-6 (Configuration Settings)
+
+'''
+
+== 2. Parsing Security-Relevant Input
+
+Any input that drives an access control or classification decision is
+security-relevant.
+A single parsing flaw in that path is a potential privilege escalation.
+These patterns govern every parser in the codebase.
+
+=== 2.1 Two-Path Independence (TPI)
+
+*The danger.*
+A single parser has a single point of failure.
+A subtle logic flaw — an off-by-one in a boundary check, an ambiguous
+grammar rule — can pass malformed input to an access control decision.
+The flaw may not be visible in testing because both the input and the
+expected output are wrong in the same direction.
+
+*The pattern.*
+Parse with two completely independent implementations.
+If both succeed and agree, the result is trustworthy.
+If they disagree, or if either fails, fail closed — return an error,
+never a default or a degraded result.
+
+In UMRS, SELinux security contexts are parsed with `nom` (a declarative
+parser combinator) and `FromStr` (an imperative character-by-character
+implementation).
+These are genuinely independent: different algorithms, different logic
+paths, different failure modes.
+
+*In the UMRS codebase.*
+
+[source,rust]
+----
+// xattrs.rs
+pub fn read_context(file: &File) -> io::Result<SecurityContext> {
+    let raw_bytes = Self::read_raw(file, XATTR_NAME_SELINUX)?;
+    let context_str = std::str::from_utf8(&raw_bytes).map_err(|_| {
+        io::Error::new(io::ErrorKind::InvalidData, "Non-UTF8 Context")
+    })?;
+
+    // PATH A: nom parser (declarative)
+    let (_, context_a) = parse_context_nom(context_str).map_err(|e| {
+        log::error!("TPI Path A (nom) failed: {e}");
+        io::Error::new(io::ErrorKind::InvalidData, "TPI Path A Failed")
+    })?;
+
+    // PATH B: FromStr (imperative)
+    let context_b: SecurityContext = context_str.parse().map_err(|e| {
+        log::error!("TPI Path B (FromStr) failed: {e}");
+        io::Error::new(io::ErrorKind::InvalidData, e.to_string())
+    })?;
+
+    // TPI GATE: if the results disagree, neither is trusted
+    if context_a != context_b {
+        log::error!("CRITICAL: RTB Redundancy Failure!");
+        log::error!("PATH A: {context_a:?}");
+        log::error!("PATH B: {context_b:?}");
+        return Err(io::Error::new(
+            io::ErrorKind::PermissionDenied,
+            "RTB Redundancy Failure: Security Ctx logic mismatch",
+        ));
+    }
+
+    Ok(context_a)
+}
+----
+
+*Citation.* NSA RTB (Redundancy) / NIST 800-218 SSDF PW.4.1
+
+'''
+
+=== 2.2 Fail-Closed on Disagreement
+
+*The danger.*
+When two independent paths disagree, the tempting response is to pick
+one, log a warning, and continue.
+This is fail-open.
+In a security context, a disagreement means something unexpected
+happened — and the safe response to the unexpected is to stop.
+
+*The pattern.*
+Any disagreement between independent parse or validation paths is
+treated as a `PermissionDenied` error.
+Log at `error!` level — loudly and immediately — before returning.
+Never return `Ok` with a degraded or defaulted result when a check
+has fired.
+
+This pattern appears wherever TPI is applied.
+It also governs the type-validation gate in `umrs-platform: kattrs.rs`:
+
+[source,rust]
+----
+// umrs-platform: kattrs.rs
+pub fn validate_type_redundant(context: &str) -> io::Result<&str> {
+    let (_, type_a) = parse_type_path_a(context).map_err(|_| {
+        io::Error::new(io::ErrorKind::InvalidData, "Path A Logic Failure")
+    })?;
+
+    let type_b = parse_type_path_b(context)?;
+
+    if type_a != type_b {
+        return Err(io::Error::new(
+            io::ErrorKind::PermissionDenied,
+            "RTB Redundancy Failure: Logic Mismatch Detected",
+        ));
+    }
+
+    Ok(type_a)
+}
+----
+
+*Citation.* NSA RTB RAIN (Non-Bypassability)
+
+'''
+
+=== 2.3 Path Validation — Single Gate at Construction
+
+*The danger.*
+A null byte in a path string terminates the string at the C layer —
+everything after the null is silently discarded.
+A newline character in a path can break log records or inject false
+entries into structured logs.
+A path or component that exceeds `PATH_MAX` or `NAME_MAX` can cause
+silent truncation in kernel calls.
+
+*The pattern.*
+Validate paths exactly once, at the point where the raw string becomes
+a typed path value.
+The validation gate checks: empty, null byte, newline, `PATH_MAX` total
+length, and `NAME_MAX` per component.
+After construction, the type carries proof of validity — no downstream
+re-validation is needed or expected.
+
+*In the UMRS codebase.*
+
+[source,rust]
+----
+// secure_dirent.rs
+// NSA RTB: Single validation gate. No re-validation downstream.
+// NIST SP 800-53 SI-10: rejects oversized, null-bearing, and
+// newline-bearing paths before they reach any system call.
+fn validate_path_common(raw: &str) -> Result<(), PathError> {
+    if raw.is_empty() {
+        return Err(PathError::Empty);
+    }
+    if raw.contains('\0') {
+        return Err(PathError::ContainsNull);
+    }
+    if raw.contains('\n') || raw.contains('\r') {
+        return Err(PathError::ContainsNewline);
+    }
+    if raw.len() > PATH_MAX {
+        return Err(PathError::TooLong { max: PATH_MAX, got: raw.len() });
+    }
+    for component in raw.split('/').filter(|c| !c.is_empty()) {
+        if component.len() > NAME_MAX {
+            return Err(PathError::ComponentTooLong {
+                component: component.to_owned(),
+                max: NAME_MAX,
+                got: component.len(),
+            });
+        }
+    }
+    Ok(())
+}
+----
+
+*Citation.* NIST 800-53 SI-10 (Information Input Validation)
+
+'''
+
+=== 2.4 POSIX Name Validation
+
+*The danger.*
+Usernames and group names that contain invalid characters can cause
+unexpected behavior in system calls, PAM modules, and audit records.
+A username beginning with a digit or containing a colon is technically
+parseable but violates shadow-utils conventions and can break `/etc/passwd`
+parsing.
+
+*The pattern.*
+Validate at the single construction gate.
+Enforce: not empty, no null byte, length ≤ `POSIX_NAME_MAX_LEN`,
+first character in `[a-zA-Z_]`, remaining characters in `[a-zA-Z0-9_-]`,
+with a trailing `$` permitted only for Samba machine accounts.
+The `'.'` character is explicitly excluded despite appearing in some
+documentation — Linux shadow-utils does not permit it in usernames
+or group names.
+
+*In the UMRS codebase.*
+
+[source,rust]
+----
+// posix/identity.rs
+fn validate_posix_name(raw: &str, allow_trailing_dollar: bool)
+    -> Result<(), PosixNameError>
+{
+    // Null byte: explicit defense against C interop confusion.
+    if raw.contains('\0') {
+        return Err(PosixNameError::ContainsNull);
+    }
+    if raw.is_empty() {
+        return Err(PosixNameError::Empty);
+    }
+    if raw.len() > POSIX_NAME_MAX_LEN {
+        return Err(PosixNameError::TooLong { max: POSIX_NAME_MAX_LEN, got: raw.len() });
+    }
+
+    let mut chars = raw.chars().enumerate();
+
+    // First character: must be [a-zA-Z_]
+    if let Some((_, first)) = chars.next()
+        && !matches!(first, 'a'..='z' | 'A'..='Z' | '_')
+    {
+        return Err(PosixNameError::InvalidFirstChar(first));
+    }
+
+    let last_idx = raw.len().saturating_sub(1);
+    for (i, ch) in chars {
+        let valid = match ch {
+            'a'..='z' | 'A'..='Z' | '0'..='9' | '_' | '-' => true,
+            '$' if allow_trailing_dollar && i == last_idx => true,
+            _ => false,
+        };
+        if !valid {
+            return Err(PosixNameError::InvalidChar(ch));
+        }
+    }
+    Ok(())
+}
+----
+
+*Citation.* IEEE Std 1003.1 (POSIX) / Linux shadow-utils
+
+'''
+
+=== 2.5 UTF-8 Boundary Enforcement
+
+*The danger.*
+Non-UTF8 byte sequences in filenames can cause incorrect display,
+silent truncation, and log injection.
+If a filename containing `\xff\n` reaches a log record, the newline
+splits the record and can cause the remainder to be interpreted as a
+separate log entry — a log injection attack.
+
+*The pattern.*
+Reject any `OsStr` that is not valid UTF-8 at the boundary where the
+kernel name enters the type system.
+Never pass raw bytes through to display, logging, or comparison.
+
+*In the UMRS codebase.*
+`SecureDirent` documents this invariant in its module-level comment:
+
+[source,rust]
+----
+// secure_dirent.rs — design invariants
+// - No raw strings: paths are AbsolutePath/ValidatedFileName,
+//   filenames are UTF-8 validated with non-UTF8 explicitly rejected
+//   at the OsStr boundary.
+----
+
+*Citation.* NIST 800-53 SI-10
+
+'''
+
+== 3. Constructing Security-Relevant Types
+
+In UMRS, a successfully constructed type is a proof.
+`Category(42)` proves the value is a valid category id.
+`SensitivityLevel(3)` proves the value is a valid sensitivity level.
+Downstream code that receives one of these types never needs to
+re-validate — the type carries the guarantee.
+
+=== 3.1 Validate at Construction
+
+*The danger.*
+A value that is constructed without validation — a bare `u16` for a
+category id, a raw `String` for a security type — has no guarantee
+of validity at the point of use.
+Every caller must re-validate, or trust that the previous caller did.
+Either way, the check can be skipped.
+
+*The pattern.*
+Constructor returns `Result`.
+If construction succeeds, the value is within bounds and meets all
+structural requirements.
+Downstream code receives a value, not a `Result` — the error was
+handled at the boundary.
+
+*In the UMRS codebase.*
+
+[source,rust]
+----
+// category.rs
+// Valid range: c0 through c1023 (MAX_CATEGORY = 1023).
+pub const fn new(id: u16) -> Result<Self, CategoryError> {
+    if id > MAX_CATEGORY {
+        return Err(CategoryError::OutOfRange(id));
+    }
+    Ok(Self(id))
+}
+----
+
+[source,rust]
+----
+// sensitivity.rs
+// Valid range: s0 through s15 (MAX_SENSITIVITY = 15).
+pub const fn new(level: u16) -> Result<Self, SensitivityError> {
+    if level > MAX_SENSITIVITY {
+        return Err(SensitivityError::OutOfRange(level));
+    }
+    Ok(Self(level))
+}
+----
+
+Once `Category::new(42)` succeeds, any code holding a `Category` can
+index into a `CategorySet` without bounds-checking.
+The proof travels with the value.
+
+*Citation.* NIST 800-218 SSDF PW.4.1
+
+'''
+
+=== 3.2 Newtype Wrappers
+
+*The danger.*
+`Inode` and `DevId` are both `u64`.
+Without distinct types, the compiler permits passing one where the other
+is expected.
+The mistake is silent and produces incorrect audit records.
+
+*The pattern.*
+Wrap each primitive in a named struct with a private inner field.
+The types are zero-cost — no runtime overhead — but the compiler
+enforces semantic correctness.
+
+*In the UMRS codebase.*
+
+[source,rust]
+----
+// posix/primitives.rs
+// NIST SP 800-53 AU-3: inode number is a required audit record field.
+pub struct Inode(u64);
+
+// Not globally unique — the same number can appear on different devices.
+// Always pair with DevId for global uniqueness.
+pub struct DevId(u64);
+
+pub struct HardLinkCount(u32);
+----
+
+`HardLinkCount` also carries domain-specific security logic:
+
+[source,rust]
+----
+// posix/primitives.rs
+// NIST SP 800-53 AC-3: hard-linked files may bypass path-based controls.
+pub const fn is_multiply_linked(self) -> bool {
+    self.0 > 1
+}
+----
+
+Hard links on CUI systems are a finding — a file accessible through
+two directory entries may be readable outside its expected access
+control tree.
+The type encodes that knowledge; callers do not need to re-derive it.
+
+*Citation.* NIST 800-53 AU-3 / AC-3
+
+'''
+
+=== 3.3 Private Fields and Controlled Constructors
+
+*The danger.*
+A public struct field lets any caller construct an arbitrary internal
+state, bypassing all validation.
+A `CategorySet { bits: [u64::MAX; 16] }` constructed directly would
+represent every category simultaneously, regardless of any access
+control policy.
+
+*The pattern.*
+Make fields private.
+Expose only named constructor functions that enforce structural
+invariants.
+There should be no way to construct an invalid value that the type
+system allows to compile.
+
+*In the UMRS codebase.*
+
+[source,rust]
+----
+// category.rs
+// The 'bits' field is private. The only construction paths are new() and full().
+pub struct CategorySet {
+    bits: [u64; 16],   // 1024 bits — private
+}
+
+impl CategorySet {
+    #[must_use]
+    pub const fn new() -> Self {
+        Self { bits: [0; 16] }   // empty: no compartments
+    }
+
+    #[must_use]
+    pub const fn full() -> Self {
+        Self { bits: [u64::MAX; 16] }   // full: all compartments
+    }
+}
+----
+
+A caller cannot construct a `CategorySet` with an arbitrary bit pattern.
+They start from `new()` or `full()` and modify through the controlled
+`insert()` and `remove()` methods.
+
+*Citation.* NSA RTB RAIN (Non-Bypassability)
+
+'''
+
+=== 3.4 `#[must_use]` Discipline
+
+*The danger.*
+A constructor or query method returns a `Result` or a computed value.
+The caller ignores the return value.
+The compiler says nothing.
+The security check was performed but the result was discarded.
+
+*The pattern.*
+Annotate every constructor, every security-relevant query, and every
+method whose return value reflects a security condition with
+`#[must_use]`.
+The compiler will warn — and because the project runs with `-D warnings`,
+the build will fail — if any call site ignores the return value.
+
+*In the UMRS codebase.*
+
+[source,rust]
+----
+// Constructors — must_use because ignoring Ok(value) discards the type proof
+#[must_use]
+pub const fn new() -> Self { ... }
+
+// Queries — must_use because ignoring true/false is a silent security miss
+#[must_use]
+pub const fn dominates(&self, other: &Self) -> bool { ... }
+
+#[must_use]
+pub const fn is_setuid(self) -> bool { ... }
+
+#[must_use]
+pub const fn is_multiply_linked(self) -> bool { ... }
+----
+
+`#[must_use]` is free.
+It costs nothing at runtime and adds a compile-time guarantee that every
+caller is forced to make a decision about the result.
+
+'''
+
+== 4. Working with Numbers
+
+Integer arithmetic on security-relevant values is not ordinary arithmetic.
+An overflow in a sensitivity level comparison is not a logic bug —
+it is a potential privilege escalation.
+These patterns govern every numerical operation on classification,
+permission, or index values.
+
+=== 4.1 Checked and Saturating Arithmetic
+
+*The danger.*
+Rust's release builds disable overflow checks by default.
+An integer that wraps silently can produce a value on the wrong side of
+an access control boundary.
+`s15 + 1` wrapping to `s0` is a privilege demotion;
+a category index overflowing to `0` is a permissions collapse.
+
+*The pattern.*
+Use `checked_*`, `saturating_*`, or an explicit `.min()` guard for any
+arithmetic on security-relevant values.
+When an explicit `as` cast is necessary, suppress the Clippy warning
+with `#[allow(clippy::cast_possible_truncation)]` and add a comment
+explaining why the cast is provably safe.
+
+*In the UMRS codebase.*
+
+[source,rust]
+----
+// posix/primitives.rs
+// nlink is u64 in MetadataExt but fits in u32 in practice.
+// The .min() guard guarantees the value fits before the cast.
+#[must_use]
+pub fn from_u64(raw: u64) -> Self {
+    #[allow(clippy::cast_possible_truncation)]
+    Self(raw.min(u64::from(u32::MAX)) as u32)
+}
+----
+
+The comment is required — it tells a reviewer why the `#[allow]` is safe
+rather than lazy.
+An unexplained `#[allow(cast_possible_truncation)]` in a security codebase
+is a red flag; an explained one is an audit artifact.
+
+*Citation.* NIST 800-218 SSDF PW.4.4
+
+'''
+
+=== 4.2 Bounds-Safe Indexing
+
+*The danger.*
+A `[i]` index operation panics in debug mode and produces undefined
+behavior in release mode if `i` is out of bounds.
+For security-relevant arrays, an out-of-bounds index is a security
+event — not a logic error to be caught by the runtime.
+
+*The pattern.*
+Where the index comes from an external or unverified source, use
+`.get(i)` and handle the `None` case explicitly.
+Where the index comes from a type that was already validated at
+construction, document why the access is provably safe.
+
+*In the UMRS codebase.*
+
+`CategorySet::index()` is provably safe because `Category::new()` already
+validates that the id is ≤ 1023:
+
+[source,rust]
+----
+// category.rs
+// Safe: Category validates id <= 1023 at construction, so:
+//   word = id / 64  is always in 0..=15  (fits [u64; 16])
+//   bit  = id % 64  is always in 0..=63  (fits u64 shift)
+const fn index(cat: Category) -> (usize, u64) {
+    let id = cat.id() as usize;
+    let word = id / 64;
+    let bit  = id % 64;
+    (word, 1u64 << bit)
+}
+----
+
+The comment is the proof.
+An auditor reading this code can verify: `Category` guarantees ≤ 1023;
+therefore `word` ≤ 15; therefore `self.bits[word]` never panics.
+
+*Citation.* NIST 800-218 SSDF PW.4.4
+
+'''
+
+=== 4.3 Fixed-Size Deterministic Layout
+
+*The danger.*
+A heap-allocated, variable-length structure for a security bitmask has
+unpredictable timing, unpredictable memory layout, and complicates
+serialization stability.
+A `Vec<u64>` that grows on demand could silently change capacity and
+layout between runs.
+
+*The pattern.*
+Use a fixed-size stack-allocated array for any security-relevant bitmask.
+Zero heap allocation means zero allocator influence on timing or layout.
+The serialized form is stable across Rust versions and architectures
+when combined with documented endianness.
+
+*In the UMRS codebase.*
+
+[source,rust]
+----
+// category.rs
+// 1024 bits = 16 words × 64 bits.
+// Layout: [u64; 16], little-endian bit ordering.
+// Stable: no heap, no allocator, auditable by inspection.
+pub struct CategorySet {
+    bits: [u64; 16],
+}
+----
+
+*Citation.* NSA RTB (Deterministic Execution)
+
+'''
+
+=== 4.4 Lattice Dominance Math
+
+*The danger.*
+The kernel implements MLS dominance with `ebitmap_and()` plus a
+comparison loop.
+A custom implementation that diverges from the kernel formula — even
+slightly — produces access control decisions that differ from what the
+kernel would make.
+That divergence is a security defect.
+
+*The pattern.*
+Implement the exact kernel formula.
+Document the kernel equivalent by name.
+Do not abstract or optimize in ways that obscure the correspondence.
+
+*In the UMRS codebase.*
+
+[source,rust]
+----
+// category.rs
+// Kernel equivalent: ebitmap_and() + comparison loop.
+// NIST 800-53 AC-4: Dominance Check (Lattice Mathematics).
+//
+// Subject dominates Object when Subject has at least all of Object's categories.
+// Mathematically: (Subject & Object) == Object
+pub fn dominates(&self, other: &Self) -> bool {
+    for i in 0..16 {
+        if (self.bits[i] & other.bits[i]) != other.bits[i] {
+            return false;
+        }
+    }
+    true
+}
+----
+
+The formula is identical to the kernel's.
+The comment names the kernel function so a reviewer can cross-check
+against the kernel source.
+
+*Citation.* NIST 800-53 AC-4 (Information Flow Enforcement)
+
+'''
+
+== 5. Reporting Errors and Security Findings
+
+Errors and findings in UMRS are data, not text.
+This section explains what that means and why it matters.
+
+=== 5.1 Error Information Discipline
+
+*The danger.*
+An error message that includes a security label, a file path, a
+username, or key material is visible to whoever receives the error.
+In a CUI system, error strings can be logged in places with broader
+access than the data they describe.
+
+*The pattern.*
+Error types are structured enums.
+Variants carry the information needed for programmatic handling —
+original OS errors, input lengths, violating characters — but never
+security labels, key material, or classified data.
+Sensitive context goes to audit logs, which have controlled access.
+User-visible error strings describe the error category, not the
+sensitive value that triggered it.
+
+*In the UMRS codebase.*
+
+[source,rust]
+----
+// secure_dirent.rs
+// NIST SP 800-53 AU-3: error variants carry detail for audit
+// record generation without requiring string parsing by the caller.
+pub enum SecDirError {
+    Metadata(std::io::Error),
+    AccessDenied(std::io::Error),   // itself a security observation
+    InvalidPath(PathError),
+    InvalidFileName,
+    SelinuxReadError(std::io::Error),
+    SelinuxParseError,
+}
+
+impl std::fmt::Display for SecDirError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Metadata(e)         => write!(f, "metadata error: {e}"),
+            Self::AccessDenied(e)     => write!(f, "access denied: {e}"),
+            Self::InvalidPath(e)      => write!(f, "invalid path: {e}"),
+            Self::InvalidFileName     => write!(f, "invalid filename component"),
+            Self::SelinuxReadError(e) => write!(f, "SELinux xattr read error: {e}"),
+            Self::SelinuxParseError   => write!(f, "SELinux context parse failed (both paths)"),
+        }
+    }
+}
+----
+
+Note that `SelinuxParseError` carries no raw input — the input that
+failed to parse is never included in the user-visible message.
+
+*Citation.* NIST 800-53 SI-12 (Information Management and Retention)
+
+'''
+
+=== 5.2 Security Findings as Data
+
+*The danger.*
+Security findings buried in log strings — "WARNING: file is setuid" —
+are visible in the log but invisible to code.
+A calling program cannot query them, count them, sort them, or act on
+specific ones without parsing text.
+Text parsing of security findings is fragile and auditor-hostile.
+
+*The pattern.*
+Security findings are enum variants.
+A `SecurityObservation::Setuid` is a value that can be matched,
+counted, filtered, sorted, and serialized.
+The enum is the finding record.
+The log line, if any, is derived from the enum — not the other way
+around.
+
+*In the UMRS codebase.*
+`SecureDirent` records security findings as `SecurityObservation`
+enum values.
+A caller can ask "does this entry have any high-severity findings"
+without parsing any string:
+
+[source,rust]
+----
+// Usage pattern — no string parsing, no text matching
+let findings: Vec<&SecurityObservation> = dirent
+    .observations()
+    .iter()
+    .filter(|o| o.is_high_severity())
+    .collect();
+----
+
+*Citation.* NIST 800-53 AU-3 (Content of Audit Records)
+
+'''
+
+=== 5.3 Loud Failure
+
+*The danger.*
+A security check fires but the error is swallowed, logged at `debug!`,
+or converted to an `Ok` with a default value.
+The system continues operating as if nothing happened.
+The adversary who triggered the condition learns that it is safe to
+proceed; the operator never knows it occurred.
+
+*The pattern.*
+Every `Err` return on a security path is preceded by `log::error!`.
+The error is loud, immediate, and auditable.
+No security-relevant failure returns `Ok` with degraded content.
+
+*In the UMRS codebase.*
+
+[source,rust]
+----
+// xattrs.rs — TPI gate
+if context_a != context_b {
+    log::error!("CRITICAL: RTB Redundancy Failure!");
+    log::error!("PATH A OBJECT: {context_a:?}");
+    log::error!("PATH B OBJECT: {context_b:?}");
+    return Err(io::Error::new(
+        io::ErrorKind::PermissionDenied,
+        "RTB Redundancy Failure: Security Ctx logic mismatch",
+    ));
+}
+----
+
+The `CRITICAL:` prefix is intentional — it makes the event
+grep-able in audit logs and easy to detect in monitoring rules.
+
+*Citation.* NSA RTB RAIN
+
+'''
+
+=== 5.4 Audit Cards
+
+*The danger.*
+A kernel attribute read occurs — enforce state, MLS status, FIPS mode —
+and the only record is a raw value somewhere in a log.
+An auditor reviewing the system cannot tell what attribute was read,
+from which path, or what it means without additional context.
+
+*The pattern.*
+Every kernel attribute type can render itself as a structured audit
+card showing: the kobject, the attribute name, the path, the value,
+a description, and a kernel note.
+The card is machine-formatted and grep-friendly.
+
+*In the UMRS codebase.*
+
+`AttributeCard<T>` owns its value and carries a `read_at: SystemTime`
+timestamp that records when the read was performed.
+The `Display` implementation prints the timestamp as a Unix-second value,
+making the card self-contained: an auditor can correlate it with system
+logs without consulting any external state.
+
+The recommended production API is `SecureReader::read_with_card()`, which
+produces a card that is proof the value was obtained through the full
+provenance-verified read path.
+
+[source,rust]
+----
+// umrs-platform: kattrs.rs
+impl<T: KernelFileSource + StaticSource> fmt::Display for AttributeCard<T> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let ts = self.read_at
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_secs();
+        write!(
+            f,
+            "--- [ UMRS KERNEL ATTRIBUTE CARD ] ---\n\
+             KernelObj : {}\n\
+             Attribute : {}\n\
+             Path      : {}\n\
+             Value     : {:?}\n\
+             ReadAt    : {ts}\n\n\
+             Description: \n{}\n\n\
+             Note: \n{}\n\
+             ---------------------------------------",
+            T::KOBJECT, T::ATTRIBUTE_NAME, T::PATH,
+            self.value, T::DESCRIPTION, T::KERNEL_NOTE
+        )
+    }
+}
+----
+
+*Citation.* NIST 800-53 AU-3 (Content of Audit Records)
+
+'''
+
+== 6. Mechanically Enforcing Safe Code
+
+=== 6.1 `#![forbid(unsafe_code)]`
+
+*The pattern.*
+Every crate root in this workspace declares:
+
+[source,rust]
+----
+// lib.rs
+// NIST 800-218 SSDF PW.4.3 / NSA RTB: Provable safe-code guarantee.
+// #![forbid] cannot be overridden by any inner #[allow].
+// This is a compile-time proof, not a policy.
+// An auditor can verify it by reading a single line.
+#![forbid(unsafe_code)]
+----
+
+`#![forbid]` is stronger than `#![deny]`.
+`#![deny]` can be locally overridden with `#[allow(unsafe_code)]`.
+`#![forbid]` cannot — any inner `#[allow]` is itself a compile error.
+The guarantee is mechanical and auditor-verifiable without reading
+any other line of code.
+
+*Why this matters.*
+Unsafe Rust permits raw pointer arithmetic, direct memory access,
+and FFI without any compiler-checked invariants.
+One unsound `unsafe` block can invalidate the memory safety guarantees
+that every other pattern in this guide depends on.
+Forbidding it entirely eliminates that class of risk from the audit
+surface.
+
+*Citation.* NIST 800-218 SSDF PW.4.3 / NSA RTB
+
+'''
+
+=== 6.2 Clippy Policy
+
+The workspace runs Clippy with `pedantic` and `nursery` lint groups
+enabled and `-D warnings` in effect.
+Any Clippy finding is a build failure.
+
+Suppressing a lint requires `#[allow(lint_name)]` on the specific
+function — not a global `#![allow]` — with a comment explaining why
+the suggested rewrite would reduce clarity or correctness.
+An unexplained `#[allow]` in a security codebase is a code review
+finding.
+
+See xref:rust-style-guide.adoc[Rust Style Guide] for the full list
+of suppressed lints and their rationale.
+
+*Citation.* NIST 800-218 SSDF PW.4
+
+'''
+
+== 7. Comparing Sensitive Values
+
+[WARNING]
+====
+This section describes a pattern that is *required* but *not yet
+implemented* in the codebase.
+It must be in place before `vaultmgr` handles any key material,
+tokens, or credentials.
+====
+
+=== 7.1 Constant-Time Comparison
+
+*The danger.*
+The machine compares two values by subtracting them and inspecting the
+sign bit of the result.
+When comparing byte sequences, the CPU stops at the first byte that
+differs — there is no reason to continue.
+This means a comparison of two 32-byte tokens takes measurably less
+time when the first byte differs than when the first 31 bytes match.
+
+An attacker who can make many comparison attempts and measure the
+response time can learn, byte by byte, how close their guess is to
+the correct value.
+This is a timing oracle — a side-channel attack that requires no
+memory access, no privilege escalation, and no crash.
+It works over a network.
+
+Standard `==` on `&[u8]`, `String`, or any slice type uses early-exit
+comparison.
+It is not safe for tokens, MACs, or credentials.
+
+*The pattern.*
+Use the `subtle` crate for any comparison of security-relevant byte
+sequences.
+`ConstantTimeEq` performs the comparison in a fixed number of steps
+regardless of where the inputs first differ.
+
+[source,rust]
+----
+// Required pattern — not yet in codebase
+use subtle::ConstantTimeEq;
+
+fn verify_token(provided: &[u8], expected: &[u8]) -> bool {
+    // Fixed-time comparison — does not exit early on first difference.
+    // Prevents timing oracle attacks on token and credential comparisons.
+    provided.ct_eq(expected).into()
+}
+----
+
+*Supply chain note.*
+The `subtle` crate is maintained by the `dalek-cryptography` group and
+is widely used in the Rust cryptographic ecosystem.
+Before adding it, run `cargo audit` and verify it has no known
+vulnerabilities.
+It has no transitive dependencies.
+
+*Scope.*
+This pattern applies to any comparison involving:
+tokens, session identifiers, MACs, HMACs, password hashes, or any
+other value where knowledge of the correct answer provides an advantage
+to an attacker.
+
+*Citation.* NIST 800-218 SSDF PW.4.4 / NIST 800-53 SC-28
+
+'''
+
+== Appendix: SSDF PW.4 Quick-Reference
+
+The following table maps each SSDF PW.4 sub-task to the patterns in
+this guide and to the UMRS source files that implement them.
+
+[cols="1,2,2,2", options="header"]
+|===
+| SSDF Task | Goal | Patterns in This Guide | Primary Source Files
+
+| PW.4.1
+| Validate all input
+| <<_2_1_two_path_independence_tpi,TPI>>,
+  <<_2_3_path_validation_single_gate_at_construction,Path validation>>,
+  <<_3_1_validate_at_construction,Validate at construction>>
+| `xattrs.rs`, `secure_dirent.rs`, `category.rs`, `sensitivity.rs`
+
+| PW.4.2
+| Secure output encoding
+| <<_5_1_error_information_discipline,Error information discipline>>,
+  <<_5_2_security_findings_as_data,Findings as data>>
+| `secure_dirent.rs`
+
+| PW.4.3
+| Memory safety
+| <<_6_1_forbid_unsafe_code,#![forbid(unsafe_code)]>>,
+  <<_3_2_newtype_wrappers,Newtype wrappers>>
+| `lib.rs`, `posix/primitives.rs`
+
+| PW.4.4
+| Secure arithmetic
+| <<_4_1_checked_and_saturating_arithmetic,Checked arithmetic>>,
+  <<_4_2_bounds_safe_indexing,Bounds-safe indexing>>,
+  <<_7_1_constant_time_comparison,Constant-time comparison ⚠>>
+| `posix/primitives.rs`, `category.rs`
+
+| PW.4.5
+| Secure cryptography
+| Use FIPS 140-2/3 validated algorithms.
+  See note below.
+| `vaultmgr/` (future)
+
+|===
+
+=== Note on PW.4.5 and FIPS Cryptography
+
+FIPS 140-2/3 validation is a property of an *algorithm implementation*,
+not of a crate name.
+A crate that uses `AES-256-GCM` is not FIPS validated unless the
+specific implementation has been through the CMVP process.
+
+Common misconceptions:
+
+* The `ring` crate uses strong algorithms but is *not* FIPS 140-2/3
+  validated as of this writing.
+* `openssl` linked against the system OpenSSL on RHEL 10 *may* be
+  FIPS validated if the system is in FIPS mode and using the
+  validated module — but this must be verified for each deployment.
+* The choice of algorithm is necessary but not sufficient.
+  The *module* that implements it must carry a CMVP certificate number.
+
+Before writing any cryptographic code in this project, verify the
+FIPS validation status of the specific implementation against the
+NIST CMVP database (csrc.nist.gov/projects/cryptographic-module-validation-program).
+
+See also the xref:architecture:openssl-no-vendoring.adoc[OpenSSL no-vendoring]
+decision in the Architecture module.
+
+=== Note on Formal Verification
+
+The patterns in this guide achieve security through the Rust type
+system and design discipline.
+AdaCore's SPARK/Ada language achieves equivalent guarantees through
+formal mathematical proof — every function's pre- and post-conditions
+are mechanically verified.
+SPARK represents the tier above Rust in the high-assurance spectrum.
+For systems where even Rust's structural guarantees are insufficient,
+SPARK is the reference point.

@@ -1,0 +1,72 @@
+= UMRS Shred Wrapper
+Jamie L. Adams
+
+== Purpose and Scope
+
+UMRS defines a controlled file-level sanitization capability through the `umrs-shred` helper utility. This tool formalizes the use of file overwrite techniques as a best-effort measure when removing Controlled Unclassified Information (CUI) files from an unclassified system.
+
+The objective of `umrs-shred` is not to provide guaranteed or forensic-proof data destruction, but to reduce the likelihood of casual or opportunistic data recovery while ensuring that sanitization actions are intentional, repeatable, and auditable.
+
+Due to the characteristics of modern filesystems, journaling behavior, copy-on-write semantics, and solid-state storage, file-level overwriting cannot be guaranteed to remove all residual data. UMRS therefore treats overwrite-based deletion as a supplemental, risk-reduction control and relies primarily on full-disk encryption and cryptographic key destruction for strong assurance of data-at-rest sanitization.
+
+== Relationship to CUI Requirements
+
+CUI handling requirements, as defined by NIST SP 800-171, are risk-based and procedural. They emphasize reasonable safeguards, documented handling practices, and protection against unauthorized disclosure rather than absolute guarantees of data eradication.
+
+When framed correctly, the use of `umrs-shred` supports CUI handling expectations related to media sanitization and controlled disposal. The tool exists to ensure that overwrite-based deletion is performed consistently, safely, and with appropriate audit evidence, rather than relying on ad hoc or undocumented command usage.
+
+UMRS file-level sanitization practices support CUI expectations by reducing the likelihood of unauthorized recovery after deletion, ensuring proper disposal of CUI-containing artifacts, demonstrating operator intent and procedural compliance, and reducing exposure during system operation and system reuse.
+
+== Threat Model Assumptions
+
+UMRS defines a CUI-appropriate threat model for file-level sanitization. This model assumes risks such as accidental disclosure due to improper deletion, recovery using common undelete or low-effort forensic tools, insider error, and reuse of systems or storage media. It further assumes that systems are protected by full-disk encryption.
+
+UMRS does not claim protection against nation-state forensic recovery, advanced laboratory techniques, or storage-level remapping performed internally by modern solid-state media. Such guarantees are explicitly out of scope for overwrite-based file sanitization.
+
+== File-Level Sanitization via umrs-shred
+
+When removing individual files containing CUI, UMRS recommends the use of the `umrs-shred` helper utility. This tool wraps the underlying overwrite mechanism and enforces UMRS-approved parameters, safety checks, and logging behavior.
+
+Using `umrs-shred` rather than invoking overwrite commands directly provides several advantages. It reduces the likelihood of operator error, prevents unsafe or misleading usage patterns, and ensures that sanitization actions are captured as security-relevant events.
+
+UMRS explicitly documents that file-level overwriting, even when performed through `umrs-shred`, cannot guarantee complete removal of all residual data on modern journaling filesystems, copy-on-write filesystems, or solid-state storage devices.
+
+== Standardized Behavior
+
+The `umrs-shred` utility standardizes file-level sanitization behavior by enforcing a fixed overwrite policy, performing a final zeroing pass, removing the file after overwriting, and validating that the target is a regular file.
+
+The tool refuses to operate on directories, block devices, or other unsafe targets, ensuring that overwrite-based deletion is scoped only to appropriate file-level use cases.
+
+== Operational Constraints
+
+UMRS defines clear operational boundaries for `umrs-shred`. The tool is intended only for individual files containing CUI and is not intended for sanitizing entire devices or filesystems. It must not be used to claim secure erase behavior for solid-state media and is not appropriate for classified data handling.
+
+UMRS explicitly prohibits representing overwrite-based deletion as guaranteed or forensic-proof sanitization, regardless of tooling.
+
+== Primary Sanitization Control: Encryption
+
+UMRS relies on full-disk encryption, such as LUKS with dm-crypt, as the primary control for protecting data at rest. When encrypted storage is properly deployed, cryptographic key destruction provides strong assurance that residual data is unrecoverable.
+
+File-level overwriting performed via `umrs-shred` is treated as a supplemental control that enhances compliance with CUI handling expectations, improves auditability, and demonstrates operator intent, but does not replace encryption or key management.
+
+== Auditing and Accountability
+
+A core purpose of `umrs-shred` is to elevate file-level sanitization from an informal action to a documented, auditable security event.
+
+Each invocation of `umrs-shred` records relevant audit information, including operator identity, timestamp, file path, sanitization method, and outcome. This supports accountability, post-event analysis, and alignment with audit and monitoring controls.
+
+== Mapping to NIST and CUI Controls
+
+UMRS file-level sanitization using `umrs-shred` supports NIST SP 800-171 control 3.8.3 (Media Sanitization) by providing a documented, repeatable method for sanitizing CUI prior to disposal or reuse of storage locations.
+
+UMRS aligns with NIST SP 800-53 control MP-6 (Media Sanitization) by defining scoped and repeatable sanitization procedures appropriate to unclassified environments and explicitly identifying overwrite-based deletion as a supplemental control.
+
+UMRS treats sanitization actions performed by `umrs-shred` as security-relevant events under NIST SP 800-53 control AU-2 (Auditable Events), ensuring consistent logging of CUI removal activities.
+
+UMRS relies on encryption and key management as the primary mechanism protecting residual data, aligning with NIST SP 800-53 control IA-7 (Cryptographic Mechanisms), with overwrite-based deletion layered as defense in depth.
+
+== Summary
+
+UMRS defines `umrs-shred` as a controlled helper utility that formalizes best-effort file-level sanitization for CUI. By enforcing safe usage, consistent parameters, and auditable execution, `umrs-shred` improves compliance, reduces risk of recovery using common tools, and demonstrates intentional handling without overstating technical guarantees.
+
+

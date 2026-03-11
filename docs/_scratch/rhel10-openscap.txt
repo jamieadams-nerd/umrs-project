@@ -1,0 +1,165 @@
+Opens cap 
+
+Plain text as requested.
+
+Here is the correct, simple, and high-assurance way to download and install OpenSCAP and SCAP Security Guide (SSG) profiles on RHEL 10.
+
+This procedure assumes you are using standard Red Hat repos and want the official compliance profiles (STIG, CIS, PCI-DSS, OSPP, etc.).
+
+⸻
+
+	1.	INSTALL THE REQUIRED PACKAGES
+
+⸻
+
+On RHEL 10, the packages are still named the same as RHEL 8/9:
+
+yum install -y openscap-scanner scap-security-guide
+
+This gives you:
+
+• oscap (the scanner)
+• all compliance content under /usr/share/xml/scap/ssg/
+• all profiles for RHEL10 (STIG, CIS, ANSSI, PCI-DSS, C2S, etc.)
+
+If your system does not have access to Red Hat repos, you must first:
+
+subscription-manager register
+subscription-manager attach
+
+Then enable the correct repo:
+
+subscription-manager repos –enable=rhel-10-for-x86_64-baseos-rpms
+subscription-manager repos –enable=rhel-10-for-x86_64-appstream-rpms
+
+Then re-run the install command.
+
+⸻
+
+	2.	VERIFY WHERE PROFILES ARE LOCATED
+
+⸻
+
+SCAP profiles are stored here:
+
+/usr/share/xml/scap/ssg/content/
+
+For RHEL 10, the main file is expected to be something like:
+
+ssg-rhel10-ds.xml
+ssg-rhel10-xccdf.xml
+ssg-rhel10-oval.xml
+
+(Exact filenames may vary slightly depending on SSG version.)
+
+To list all available profiles:
+
+oscap info /usr/share/xml/scap/ssg/content/ssg-rhel10-ds.xml
+
+This will show names such as:
+
+• xccdf_org.ssgproject.content_profile_stig
+• xccdf_org.ssgproject.content_profile_pci-dss
+• xccdf_org.ssgproject.content_profile_cis
+• xccdf_org.ssgproject.content_profile_c2s
+• xccdf_org.ssgproject.content_profile_ospp
+
+⸻
+
+	3.	SCAN YOUR SYSTEM USING A PROFILE
+
+⸻
+
+Example: STIG scan
+
+oscap xccdf eval 
+–profile xccdf_org.ssgproject.content_profile_stig 
+–results results-stig.xml 
+/usr/share/xml/scap/ssg/content/ssg-rhel10-ds.xml
+
+Example: CIS scan
+
+oscap xccdf eval 
+–profile xccdf_org.ssgproject.content_profile_cis 
+–results results-cis.xml 
+/usr/share/xml/scap/ssg/content/ssg-rhel10-ds.xml
+
+Example: PCI-DSS scan
+
+oscap xccdf eval 
+–profile xccdf_org.ssgproject.content_profile_pci-dss 
+–results results-pci.xml 
+/usr/share/xml/scap/ssg/content/ssg-rhel10-ds.xml
+
+⸻
+
+	4.	GENERATE AN HTML REPORT
+
+⸻
+
+oscap xccdf generate report results-stig.xml > stig-report.html
+
+Open the HTML file in a browser.
+
+⸻
+
+	5.	OPTIONAL: REMEDIATE YOUR SYSTEM AUTOMATICALLY
+
+⸻
+
+oscap xccdf eval 
+–profile xccdf_org.ssgproject.content_profile_stig 
+–remediate 
+/usr/share/xml/scap/ssg/content/ssg-rhel10-ds.xml
+
+Important note:
+Automatic remediation can be aggressive.
+Best practice: review the results first.
+
+⸻
+
+	6.	OPTIONAL: DOWNLOAD UPDATED PROFILES MANUALLY
+
+⸻
+
+If you want the newest SCAP content from the upstream project:
+
+curl -LO https://static.open-scap.org/ssg-rhel10-ds-latest.xml
+
+Then run:
+
+oscap info ssg-rhel10-ds-latest.xml
+
+This is useful for disconnected or hardened environments.
+
+⸻
+
+	7.	VERIFY CONTENT SIGNATURES (GOOD PRACTICE)
+
+⸻
+
+All SCAP content from Red Hat is usually signed with GPG.
+
+rpm -q –qf “%{SIGPGP:pgpsig}\n” scap-security-guide
+
+If verifying external content:
+
+gpg –verify ssg-rhel10-ds-latest.xml.asc ssg-rhel10-ds-latest.xml
+
+⸻
+
+SHORT SUMMARY YOU CAN USE IN TRAINING OR YOUTUBE
+
+“On RHEL 10, install OpenSCAP with ‘yum install openscap-scanner scap-security-guide.’
+All compliance profiles are stored under /usr/share/xml/scap/ssg/content/, including STIG, CIS, PCI-DSS, and C2S. Use ‘oscap info’ to list profiles and ‘oscap xccdf eval’ to scan or remediate your system.”
+
+⸻
+
+If you want, I can also create:
+
+• a hardened RHEL 10 Kickstart that includes SCAP integration
+• a mapping of SCAP → CCE → NIST 800-53 controls
+• a baseline scanning script for your environment
+• a full compliance workflow for YouTube or training content
+
+Just tell me the direction.

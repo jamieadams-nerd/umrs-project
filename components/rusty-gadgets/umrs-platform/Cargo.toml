@@ -1,0 +1,13 @@
+[package]
+name = "umrs-platform"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+nom = "7.1"
+nix    = { version = "0.27", features = ["fs"] }
+log    = { version = "0.4",  features = ["release_max_level_info"] }
+
+[lints.clippy]
+unreadable_literal  = { level = "allow", priority = 1 }
+missing_errors_doc  = { level = "allow", priority = 1 }

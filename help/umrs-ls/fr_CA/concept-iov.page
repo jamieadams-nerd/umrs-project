@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page xmlns="http://projectmallard.org/1.0/"
+      type="topic"
+      id="concept-iov">
+  <info>
+    <link type="guide" xref="index" group="iov"/>
+    <desc>Ce que signifient les indicateurs I, O et V et quand ils s'activent.</desc>
+  </info>
+
+  <title>Le marqueur de posture de sécurité IOV</title>
+
+  <p>
+    La colonne <code>IOV</code> est un champ de largeur fixe de 3 caractères qui résume la posture de
+    sécurité de chaque objet du système de fichiers. Chaque caractère est soit la lettre active soit un
+    tiret lorsqu'il n'est pas actif.
+  </p>
+
+  <terms>
+    <item>
+      <title><code>I</code> — Immuable</title>
+      <p>
+        L'indicateur d'inode <sys>FS_IMMUTABLE_FL</sys> est défini. Le fichier ne peut pas être
+        modifié, renommé ou supprimé — même par root — tant que l'indicateur n'est pas explicitement
+        effacé. Cet indicateur est lu via <sys>ioctl(FSGETXATTR)</sys> à travers le descripteur de
+        fichier ouvert, et non déduit des métadonnées du chemin.
+      </p>
+    </item>
+    <item>
+      <title><code>O</code> — Observations</title>
+      <p>
+        Une ou plusieurs observations de sécurité à signal élevé sont présentes sur cette entrée.
+        Lorsque <code>O</code> est allumé, ne le considérez pas comme routinier — il a été filtré
+        pour afficher uniquement les constatations ayant une pertinence de sécurité directe.
+      </p>
+      <p>Observations qui allument <code>O</code> :</p>
+      <list>
+        <item><p><code>SetuidBitSet</code> — le bit setuid est défini sur le fichier.</p></item>
+        <item><p><code>SetgidBitSet</code> — le bit setgid est défini sur le fichier.</p></item>
+        <item><p><code>WorldWritable</code> — permission d'écriture universelle sur l'objet.</p></item>
+        <item><p><code>HardLinked</code> — nombre de liens physiques d'inode supérieur à un.</p></item>
+        <item><p><code>AccessDenied</code> — <sys>open()</sys> a été refusé ; l'entrée apparaît comme <code>&lt;restricted&gt;</code>.</p></item>
+      </list>
+      <p>
+        Les observations suivantes sont supprimées dans la vue de posture <code>IOV</code> parce
+        qu'elles se déclenchent sur presque toutes les entrées d'un système RHEL normal et
+        produiraient un bruit constant :
+      </p>
+      <list>
+        <item><p><code>UnresolvedOwner</code> / <code>UnresolvedGroup</code> — résolution de noms différée par conception ; non résolu ne signifie pas orphelin.</p></item>
+        <item><p><code>NoImaProtection</code> — se déclenche pour chaque fichier ordinaire quand IMA n'est pas déployé à l'échelle du système.</p></item>
+        <item><p><code>NoSelinuxContext</code> — déjà exprimé par l'en-tête de groupe <code>&lt;unlabeled&gt;</code>.</p></item>
+        <item><p><code>RootOwnedMutable</code> — s'applique à la plupart des fichiers système ; trop large pour une vue de listage.</p></item>
+      </list>
+      <p>
+        L'ensemble complet des observations est disponible dans la commande <cmd>umrs-stat</cmd> à
+        venir, qui rapporte les détails par objet.
+      </p>
+    </item>
+    <item>
+      <title><code>V</code> — IMA</title>
+      <p>
+        Un xattr IMA (Integrity Measurement Architecture) (<sys>security.ima</sys>) est présent sur
+        l'inode, indiquant que le fichier est sous mesure ou évaluation. Le xattr est lu via
+        <sys>fgetxattr(fd, "security.ima")</sys> à travers le descripteur de fichier ouvert.
+      </p>
+    </item>
+  </terms>
+
+  <note style="tip">
+    <p>
+      Lorsque <cmd>--color</cmd> est actif, les caractères <code>I</code>, <code>O</code> et
+      <code>V</code> sont mis en évidence dans des couleurs distinctes pour attirer l'attention
+      sur les indicateurs actifs. Les tirets inactifs sont atténués.
+    </p>
+  </note>
+</page>

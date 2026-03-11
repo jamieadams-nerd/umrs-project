@@ -1,0 +1,232 @@
+= AIDE Configuration and Operations
+:toc: left
+:description: AIDE configuration, dual-pass design, NIST control alignment, and operational guidance for file integrity monitoring on RHEL 10.
+
+Advanced Intrusion Detection Environment (AIDE) provides file integrity monitoring by
+comparing the current state of files against a trusted baseline database. UMRS uses AIDE
+with FIPS-approved hashes and STIG-aligned attribute rules.
+
+== Configuration Design: Dual-Pass Model
+
+UMRS uses two separate AIDE configurations and databases:
+
+`Fast (hourly) pass`::
+High-signal, narrow scope. Monitors authentication databases, security policies,
+audit configuration, SELinux policy, and scheduled tasks. Designed for early detection
+where timeliness matters.
+
+`Deep (daily) pass`::
+Comprehensive baseline check. Monitors static system binaries, libraries, kernel modules,
+and system services. Designed for long-term system provenance.
+
+Separating these into two passes demonstrates intentional, risk-based selection of
+auditable events rather than indiscriminate "audit everything."
+
+== Rule Definitions
+
+=== Fast Pass Rules
+
+[source]
+----
+# Base FIPS / STIG rule
+FAST = p+i+n+u+g+s+m+c+acl+selinux+xattrs+sha512
+
+# Permissions-focused rule (no size/hash churn)
+PERMS = p+i+u+g+acl+selinux
+----
+
+=== Deep Pass Rules
+
+[source]
+----
+# Full integrity rule
+DEEP = p+i+n+u+g+s+b+m+c+acl+selinux+xattrs+sha512
+
+# Directory metadata rule
+DIR = p+i+n+u+g+acl+selinux+xattrs
+----
+
+=== Attribute Reference
+
+[cols="1,3"]
+|===
+| Attribute | What it detects
+
+| `p` | Permission changes (read/write/execute bits)
+| `i` | Inode number change (file replacement or recreation)
+| `n` | Link count change (unexpected hard links or file removal)
+| `u` | Owner (UID) change
+| `g` | Group (GID) change
+| `s` | File size change
+| `b` | Block count change (deep checks only)
+| `m` | Modification time change
+| `c` | Inode change time (metadata change)
+| `S` | Unexpected growth in files allowed to grow (logs)
+| `acl` | POSIX ACL change
+| `xattrs` | Extended attribute change
+| `selinux` | SELinux security label change
+| `sha512` | File content change (FIPS-approved hash)
+|===
+
+== Fast Pass Configuration
+
+Monitors critical security and configuration surfaces. Detects:
+
+* Backdoors added to `sshd_config`.
+* Changes to audit configuration under `/etc/audit`.
+* Sudoers modification to grant privilege.
+* SELinux enforcement bypass via label changes.
+* Cron job drops for persistence.
+* Malicious changes to PAM configuration.
+
+Key paths monitored:
+
+[source]
+----
+/etc/passwd     FAST
+/etc/shadow     FAST
+/etc/group      FAST
+/etc/gshadow    FAST
+/etc/sudoers    FAST
+/etc/pam.d      FAST
+/etc/security   FAST
+/etc/ssh        FAST
+/etc/audit      FAST
+/etc/selinux    FAST
+/etc/cron.d     FAST
+/etc/aide.conf  FAST
+----
+
+== Deep Pass Configuration
+
+Monitors static system binaries, libraries, and services. Detects:
+
+* Rootkit replacement of `ls`, `ps`, or other binaries.
+* Library injection via modified `libc` or `libpam`.
+* Kernel module replacement.
+* Malicious systemd service binaries.
+* Offline tampering with boot or kernel artifacts.
+
+Key paths monitored:
+
+[source]
+----
+/bin       DEEP
+/sbin      DEEP
+/usr/bin   DEEP
+/usr/sbin  DEEP
+/lib       DEEP
+/lib64     DEEP
+/usr/lib   DEEP
+/usr/lib64 DEEP
+/boot      DEEP
+/etc       DEEP
+----
+
+== Exclusions
+
+Both configurations exclude:
+
+[source]
+----
+!/var/log/*
+!/tmp/*
+!/var/tmp/*
+!/run/*
+!/var/run/*
+!/var/cache/*
+!/proc/*
+!/sys/*
+----
+
+== Initialization
+
+After installing `aide`, initialize both databases separately:
+
+[source,bash]
+----
+aide --config /etc/aide-fast.conf --init
+mv /var/lib/aide/aide-fast.db.new.gz /var/lib/aide/aide-fast.db.gz
+
+aide --config /etc/aide-deep.conf --init
+mv /var/lib/aide/aide-deep.db.new.gz /var/lib/aide/aide-deep.db.gz
+----
+
+CAUTION: Do not run `aide --check` before the database has been initialized. It will
+exit with errors because there is no baseline to compare against.
+
+== Regular Checks
+
+Run fast checks hourly via systemd timer or cron:
+
+[source,bash]
+----
+aide --config /etc/aide-fast.conf --check
+----
+
+Run deep checks daily during low-usage windows:
+
+[source,bash]
+----
+aide --config /etc/aide-deep.conf --check
+----
+
+Wrap both invocations with the HA-logger wrapper to emit JSON summaries and forward via
+`rsyslog` or `journald`.
+
+== Reporting Configuration
+
+AIDE can send output to multiple destinations:
+
+* `report_url=stdout` — useful for systemd and cron capture.
+* `report_url=file:/var/log/aide/aide.log` — for local log collection.
+
+AIDE's exit code signals results: exit 0 means no differences. A nonzero exit code
+indicates differences or errors. This makes AIDE easy to integrate with monitoring systems.
+
+== What AIDE Does Not Detect
+
+AIDE does not detect:
+
+* Access-time changes.
+* Read access.
+* Process activity.
+* In-memory tampering.
+* Hardware-level modifications.
+
+Those are covered by `auditd`, kernel lockdown, IMA/EVM, TPM, and runtime monitoring.
+
+== NIST Control Alignment
+
+[cols="1,3"]
+|===
+| Control | Satisfaction
+
+| `AU-2` (Auditable Events)
+| Dual-pass approach demonstrates risk-based selection of what is monitored at
+  what frequency.
+
+| `AU-3` (Content of Audit Records)
+| `sha512`, ownership, permissions, ACLs, extended attributes, and SELinux labels
+  produce records that fully describe security-relevant file state.
+
+| `AU-4` (Audit Storage Capacity)
+| Scoped checks and two separate databases keep database growth predictable.
+
+| `AU-9` (Protection of Audit Information)
+| Separate AIDE databases with strict permissions; FIPS-approved hashing.
+
+| `AU-11` (Audit Record Retention)
+| Tiered check frequency produces manageable output volumes for long-term retention.
+
+| `SI-7` (Software, Firmware, and Information Integrity)
+| Deep pass validates integrity of system binaries and libraries against a trusted
+  baseline; fast pass detects rapid configuration tampering.
+
+| `SI-7(1)` (Integrity Checks)
+| Different frequencies for different risk levels: critical configuration checked
+  hourly, binaries checked daily.
+
+| `SI-7(6)` (Cryptographic Mechanisms)
+| `sha512` exclusively, on a FIPS-enabled platform using validated crypto libraries.
+|===

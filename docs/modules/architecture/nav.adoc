@@ -1,0 +1,28 @@
+* xref:index.adoc[Architecture Overview]
+
+* Design Decisions
+** xref:rationale.adoc[Strong-typing rationale]
+** xref:library-model.adoc[Library model]
+** xref:openssl-no-vendoring.adoc[OpenSSL: no vendoring]
+** xref:umrs-prog-lang.adoc[Language choice rationale]
+
+* Security Model
+** xref:mls-classified-talk.adoc[MLS: avoiding classified-only assumptions]
+** xref:five-eyes-interop.adoc[Five Eyes classification interoperability]
+
+* Parsing & Integrity
+** xref:nom_parser.adoc[nom parser combinator]
+** xref:RTB.adoc[NSA RTB and RAIN]
+** xref:reference_monitor.adoc[Reference monitor design]
+** xref:kernel-files-TPI.adoc[Two-path independence (TPI)]
+** xref:TW0-NETIF-JUSTIFICATION.adoc[Two network interface justification]
+
+* Historical Background
+** xref:mls-history.adoc[MLS history]
+** xref:selinux-history.adoc[SELinux history]
+** xref:trusted-path-orange.adoc[Trusted path (Orange Book)]
+** xref:ring-based-security.adoc[Ring-based security]
+** xref:ibm-zos-os390.adoc[IBM z/OS and OS/390]
+** xref:microsoft-nt-orange.adoc[Microsoft NT and Orange Book]
+** xref:one-way-hashes.adoc[One-way hashes]
+** xref:HACAMS.adoc[HACAMS: High Assurance Computing and Management Systems]
