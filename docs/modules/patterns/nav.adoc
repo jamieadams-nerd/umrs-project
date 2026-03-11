@@ -18,7 +18,15 @@
 ** xref:pattern-loud-failure.adoc[Loud Failure]
 
 * Patterns — Verification Pipelines
+** xref:pattern-os-detection.adoc[OS Detection: A Trust Ladder]
 ** xref:pattern-sec.adoc[Sealed Evidence Cache (SEC) ⚠]
+** xref:pattern-audit-cards.adoc[Audit Cards]
+
+* Patterns — Observability
+** xref:pattern-execution-measurement.adoc[Execution Measurement]
+
+* Patterns — Architecture
+** xref:pattern-layered-separation.adoc[Layered Separation]
 
 * Patterns — Workspace and Dependencies
 ** xref:pattern-supply-chain.adoc[Supply Chain Hygiene]

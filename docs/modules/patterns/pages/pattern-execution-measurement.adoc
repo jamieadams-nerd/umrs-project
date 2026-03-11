@@ -1,0 +1,251 @@
+= Pattern: Execution Measurement
+:toc: left
+:description: Gate debug-mode timing instrumentation behind #[cfg(debug_assertions)] to record how long high-assurance patterns take without adding runtime overhead in release builds.
+
+// NIST 800-218 SSDF PW.4 — Implement and verify secure coding practices
+// NIST 800-53 SA-11 — Developer Testing and Evaluation
+// NIST 800-53 AU-12 — Audit Record Generation
+
+== Overview
+
+High-assurance patterns — TPI dual-path validation, provenance checks, integrity pipelines —
+impose some computational cost. That cost must be measurable. Without measurement, there is
+no way to detect regressions in pattern performance, no baseline for audit reviewers, and
+no data to guide decisions about where caching (such as the
+xref:pattern-sec.adoc[Sealed Evidence Cache]) is justified.
+
+The Execution Measurement pattern records how long each pattern takes at the point it
+completes, using `std::time::Instant` and `.elapsed()`. The instrumentation is gated behind
+`#[cfg(debug_assertions)]` so it is present in debug builds — where performance baselines
+are measured and anomalies are surfaced during development — and absent in release builds,
+where it would add overhead and log volume without operational benefit.
+
+This is not performance optimization. It is a discipline that keeps pattern costs visible
+and traceable, which supports both developer decision-making and audit traceability
+(NIST 800-53 SA-11).
+
+== The Threat
+
+Without timing instrumentation, a high-assurance pattern can silently regress. A change
+to a parsing function, a new library dependency, or a subtle algorithmic change may double
+the cost of a security-critical path. Without a baseline, that regression is invisible
+until it surfaces as a performance complaint in production — at which point the temptation
+is to remove or bypass the pattern rather than diagnose the regression.
+
+Timing data also matters for audit. An auditor reviewing a TPI implementation may ask:
+"Is this pattern fast enough that developers will leave it in, or is it slow enough that
+there is incentive to skip it?" A recorded baseline answers that question with evidence
+rather than assertion.
+
+A secondary risk: if timing instrumentation is present in release builds unconditionally,
+it may produce log volume that obscures genuine audit events, or introduce timing channels
+in contexts where the elapsed duration of a security operation must not be observable.
+The `#[cfg(debug_assertions)]` gate eliminates both of those risks.
+
+== The Pattern
+
+The pattern has four elements:
+
+. Capture a start timestamp using `std::time::Instant::now()` at the beginning of the
+  pattern's critical section.
+. Perform the pattern's work (parse, validate, verify).
+. At the point of successful completion, call `.elapsed()` on the start instant and log
+  the result using `log::debug!`.
+. Gate both the start capture and the log call behind `#[cfg(debug_assertions)]`.
+
+The log entry must include:
+
+* The pattern name (so log output is grep-able by pattern)
+* A completion message (so the entry unambiguously marks the end of the pattern)
+* The elapsed time in microseconds (`as_micros()`)
+
+The `as_micros()` unit is preferred over milliseconds for patterns that complete in
+sub-millisecond time. A TPI parse that completes in 842 µs is uninformative as "0 ms".
+
+Timing is logged only on successful completion. A pattern that fails closed returns an
+error before reaching the timing log — the absence of a timing log entry for a given
+invocation is itself informative: it means the pattern rejected the input.
+
+=== Using `umrs-core::timed_result` for infallible or fallible computations
+
+For functions where timing must be captured at the call site rather than embedded in the
+body, `umrs-core` provides `Timed<T>` and `TimedResult<T, E>`:
+
+[source,rust]
+----
+// umrs-core: timed_result.rs
+
+/// Measure a computation that cannot fail.
+pub struct Timed<T> {
+    pub value: T,
+    pub elapsed: Duration,
+}
+
+impl<T> Timed<T> {
+    pub fn measure<F>(f: F) -> Self
+    where
+        F: FnOnce() -> T,
+    { ... }
+}
+
+/// Measure a computation that may fail.
+pub struct TimedResult<T, E> {
+    pub value: Result<T, E>,
+    pub elapsed: Duration,
+}
+
+impl<T, E> TimedResult<T, E> {
+    pub fn measure<F>(f: F) -> Self
+    where
+        F: FnOnce() -> Result<T, E>,
+    { ... }
+}
+----
+
+Use `Timed::measure` or `TimedResult::measure` when the caller needs the elapsed time
+as a value (for example, to display it or to store it in a result structure). Use
+inline `Instant::now()` / `.elapsed()` when timing is only logged and not carried forward.
+
+== In the UMRS Codebase
+
+=== TPI in `KernelLockdown` (umrs-platform)
+
+The TPI gate in `KernelLockdown::parse` records the elapsed time of the dual-path
+validation on successful completion:
+
+[source,rust]
+----
+// umrs-platform: kattrs/security.rs
+
+fn parse(data: &[u8]) -> io::Result<Self::Output> {
+    #[cfg(debug_assertions)]
+    let start = std::time::Instant::now();
+
+    // Path A: nom declarative parser — locate bracketed mode token
+    let mode_a = parse_lockdown_path_a(s)
+        .map_err(|_| io::Error::new(io::ErrorKind::InvalidData, "Lockdown path A failure"))
+        .and_then(|(_, token)| to_lockdown_mode(token))?;
+
+    // Path B: imperative split parser — independently locate bracketed token
+    let token_b = parse_lockdown_path_b(s)?;
+    let mode_b = to_lockdown_mode(token_b)?;
+
+    // TPI gate: fail closed on any disagreement
+    if mode_a != mode_b {
+        log::error!(
+            "TPI FAILURE: KernelLockdown parse disagreement ({mode_a:?} vs {mode_b:?})"
+        );
+        return Err(io::Error::new(
+            io::ErrorKind::PermissionDenied,
+            "RTB Redundancy Failure: lockdown mode mismatch",
+        ));
+    }
+
+    // Timing logged only if both paths agreed (successful path)
+    #[cfg(debug_assertions)]
+    log::debug!(
+        "TPI: KernelLockdown dual-path validation completed in {} µs",
+        start.elapsed().as_micros()
+    );
+
+    Ok(mode_a)
+}
+----
+
+If the TPI gate fires (path disagreement), the function returns before reaching the
+timing log. The absence of a timing log entry indicates a failed parse — which is
+useful when correlating debug output with audit events.
+
+=== OS detection pipeline (umrs-platform)
+
+Each phase of the OS detection pipeline is independently timed. The pattern is consistent
+across all detection stages:
+
+[source,rust]
+----
+// umrs-platform: detect/release_parse.rs
+pub fn run(/* ... */) -> (Option<OsRelease>, LabelTrust) {
+    #[cfg(debug_assertions)]
+    let t0 = std::time::Instant::now();
+
+    let result = run_inner(/* ... */);
+
+    #[cfg(debug_assertions)]
+    log::debug!(
+        "release_parse: completed in {} µs",
+        t0.elapsed().as_micros()
+    );
+
+    result
+}
+----
+
+The same structure appears in `mount_topology`, `integrity_check`, `pkg_substrate`, and
+`release_candidate`. Each phase records its own elapsed time independently, making it
+straightforward to identify which phase dominates pipeline cost in a given environment.
+
+=== Inline vs. wrapper timing
+
+The inline pattern (`let t0 = Instant::now()` / `log::debug!(... t0.elapsed() ...)`)
+is preferred when timing is debug-only and carries no further use.
+
+The `Timed<T>` and `TimedResult<T, E>` wrappers from `umrs-core::timed_result` are
+preferred when the caller needs the elapsed time as a value — for example, when a tool
+displays per-operation timing in its output. Do not use the wrappers just to carry
+timing; use them only when the elapsed duration is a meaningful output of the operation.
+
+== When to Apply
+
+Apply Execution Measurement to every new high-assurance pattern implementation:
+
+* TPI dual-path parse or validation
+* Provenance verification (magic check + read)
+* Integrity pipeline phases
+* Any operation that is expected to be fast but whose cost could regress undetected
+
+Do not apply to:
+
+* Simple field accessors or display implementations (no meaningful cost)
+* Error paths — timing is not logged on failure, so there is no entry to add
+* Operations where elapsed time must not appear in logs for confidentiality reasons
+
+The architectural review trigger is: *new high-assurance pattern implementation →
+add `#[cfg(debug_assertions)]` timing gate*.
+
+== Security Controls
+
+[cols="1,2"]
+|===
+| Control | Applicability
+
+| NIST 800-218 SSDF PW.4
+| Implement and verify secure coding practices — performance baselines support verification
+  that patterns are maintained and not silently regressed
+
+| NIST 800-53 SA-11
+| Developer Testing and Evaluation — timing data provides objective evidence that
+  security-critical paths meet performance expectations
+
+| NIST 800-53 AU-12
+| Audit Record Generation — pattern completion log entries contribute to the audit trail
+  for security-critical operations
+|===
+
+== Summary
+
+Gate timing instrumentation for every high-assurance pattern behind
+`#[cfg(debug_assertions)]`. Use `std::time::Instant::now()` before the pattern's
+critical section and `.elapsed().as_micros()` at successful completion. Log with
+`log::debug!`, include the pattern name, and use microsecond precision. This makes
+pattern costs visible during development and testing without adding overhead or log
+volume in production. Timing is not logged on failure — the absence of a timing entry
+on an error path is itself informative.
+
+== See Also
+
+* xref:pattern-tpi.adoc[Two-Path Independence (TPI)] — the pattern most commonly instrumented
+  with execution measurement
+* xref:pattern-sec.adoc[Sealed Evidence Cache (SEC)] — timing data justifies when caching
+  is warranted
+* xref:devel:high-assurance-patterns.adoc[High-Assurance Coding Patterns] — consolidated
+  pattern guide

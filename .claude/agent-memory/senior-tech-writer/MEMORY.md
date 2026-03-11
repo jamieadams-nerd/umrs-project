@@ -110,3 +110,26 @@ Preferred: `security label`, `audit event`, `system mediator`, `policy enforceme
 - Architecture Mode for explanatory content
 - STE Mode for procedures
 - Load rules file before writing (`.claude/architecture_mode.md`, `.claude/ste_mode.md`)
+
+---
+
+## OS Detection Pipeline Docs (2026-03-11)
+
+Two new pages written for the `umrs-platform` OS detection pipeline:
+
+- `docs/modules/patterns/pages/pattern-os-detection.adoc` — "OS Detection: A Trust
+  Ladder". Patterns module. Multi-audience (auditors, newcomers, adopters). No code.
+  Wired into `patterns/nav.adoc` under Patterns — Verification Pipelines.
+
+- `docs/modules/devel/pages/os-detection-deep-dive.adoc` — "OS Detection Pipeline —
+  Deep Dive". Devel module. Engineers and security auditors. Full code references,
+  per-phase threat model, confidence model, EvidenceBundle design.
+  Wired into `devel/nav.adoc` under Platform Internals.
+
+Key conventions used in these docs (reuse for future pipeline docs):
+- Code snippets are representative; use `// Conceptual` comment if not yet implemented
+- Every phase section: What / Why / Code Reference / Security Controls sub-sections
+- `(device, inode)` is the canonical TOCTOU defense term — not "dev/ino" or "inode pair"
+- FIPS gate explanation: sha2 crate is not validated; ceiling becomes T3 on FIPS systems
+- EvidenceBundle rationale always links AU-3 and the "silent rejection = audit gap" argument
+- Trust level comparisons use `<`/`>=` on the `TrustLevel` enum (PartialOrd), not integer checks

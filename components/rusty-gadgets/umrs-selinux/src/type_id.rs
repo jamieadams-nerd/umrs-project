@@ -56,15 +56,21 @@ use std::str::FromStr;
 //   sshd_t
 //   var_log_t
 //   httpd_t
+//   NetworkManager_etc_t
 //
 // Validation rules enforced:
 //
 // • ASCII only
 // • No whitespace
-// • Character set: [a-z0-9_]
+// • Character set: [a-zA-Z0-9_]
 // • Must end in "_t"
 // • Non-empty identifier stem
 // • Length 3–255 bytes
+//
+// Note: SELinux type identifiers may begin with or contain uppercase letters.
+// Third-party and distribution-supplied policy modules (e.g., NetworkManager)
+// use mixed-case names. The character set is aligned with the SELinux kernel
+// policy source parser, which accepts [a-zA-Z0-9_] for type identifiers.
 //
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
@@ -123,14 +129,19 @@ impl SelinuxType {
     /// Validation rules:
     /// • ASCII only
     /// • No whitespace
+    /// • Character set: `[a-zA-Z0-9_]` — uppercase letters are permitted
     /// • Must end with `_t`
-    /// • Length within policy bounds
+    /// • Length within policy bounds (3–255 bytes)
+    ///
+    /// Real-world policy types such as `NetworkManager_etc_t` begin with or
+    /// contain uppercase letters. The character set matches the SELinux kernel
+    /// policy parser acceptance rules.
     ///
     /// # Errors
     ///
     /// Returns `TypeError` if:
     /// • The identifier contains non-ASCII characters.
-    /// • The identifier contains whitespace.
+    /// • The identifier contains whitespace or non-alphanumeric/underscore bytes.
     /// • The identifier does not follow `SELinux` naming conventions.
     /// • The identifier exceeds length constraints.
     ///
@@ -165,7 +176,7 @@ fn validate_type(value: &str) -> Result<(), TypeError> {
     }
 
     for ch in value.chars() {
-        if !ch.is_ascii_lowercase() && !ch.is_ascii_digit() && ch != '_' {
+        if !ch.is_ascii_alphabetic() && !ch.is_ascii_digit() && ch != '_' {
             return Err(TypeError::InvalidCharacter(ch));
         }
     }

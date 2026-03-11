@@ -82,10 +82,26 @@ fn rejects_whitespace() {
     assert!(ty.is_err());
 }
 
+// Uppercase letters are valid in SELinux type identifiers.
+// Real policy modules (e.g., NetworkManager) use mixed-case names.
+// The SELinux kernel policy parser accepts [a-zA-Z0-9_] for type identifiers.
 #[test]
-fn rejects_uppercase() {
+fn accepts_uppercase_initial() {
     let ty = SelinuxType::new("Sshd_t");
-    assert!(ty.is_err());
+    assert!(ty.is_ok());
+}
+
+#[test]
+fn accepts_mixed_case_type() {
+    let ty = SelinuxType::new("NetworkManager_etc_t");
+    assert!(ty.is_ok());
+}
+
+#[test]
+fn accepts_mixed_case_type_display_round_trip() {
+    let ty = SelinuxType::new("NetworkManager_etc_t").unwrap();
+    assert_eq!(ty.to_string(), "NetworkManager_etc_t");
+    assert_eq!(ty.as_str(), "NetworkManager_etc_t");
 }
 
 //

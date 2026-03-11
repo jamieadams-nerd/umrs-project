@@ -20,7 +20,7 @@ use std::path::Path;
 use std::str::FromStr;
 
 use crate::context::SecurityContext;
-use crate::xattrs::SecureXattrReader;
+use crate::xattrs::{SecureXattrReader, XattrReadError};
 
 use nix::libc;
 
@@ -32,7 +32,7 @@ use nix::libc;
 ///
 pub fn get_file_context(path: &Path) -> io::Result<SecurityContext> {
     let file = File::open(path)?;
-    SecureXattrReader::read_context(&file)
+    SecureXattrReader::read_context(&file).map_err(xattr_err_to_io)
 }
 
 ///
@@ -44,14 +44,29 @@ pub fn lget_file_context(path: &Path) -> io::Result<SecurityContext> {
         .custom_flags(libc::O_NOFOLLOW)
         .open(path)?;
 
-    SecureXattrReader::read_context(&file)
+    SecureXattrReader::read_context(&file).map_err(xattr_err_to_io)
 }
 
 ///
-/// Retrieve securit context from file descriptor
+/// Retrieve security context from file descriptor
 ///
 pub fn fget_file_context(file: &File) -> io::Result<SecurityContext> {
-    SecureXattrReader::read_context(file)
+    SecureXattrReader::read_context(file).map_err(xattr_err_to_io)
+}
+
+/// Map an `XattrReadError` to an `io::Error` for callers that use the
+/// `io::Result<SecurityContext>` compatibility API.
+///
+/// OS errors are forwarded as-is.  TPI errors are mapped to
+/// `InvalidData` so callers that cannot inspect `XattrReadError` directly
+/// still receive a meaningful error kind.
+fn xattr_err_to_io(e: XattrReadError) -> io::Error {
+    match e {
+        XattrReadError::OsError(io_err) => io_err,
+        XattrReadError::Tpi(tpi_err) => {
+            io::Error::new(io::ErrorKind::InvalidData, tpi_err.to_string())
+        }
+    }
 }
 
 // ===========================================================================

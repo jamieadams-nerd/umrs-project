@@ -1,0 +1,1326 @@
+= OS Detection Pipeline — Deep Dive
+:toc: left
+:description: Full technical reference for the umrs-platform OS detection pipeline: per-phase design, threat model, code references, confidence model, and evidence architecture.
+
+// NIST 800-53 SI-7 — Software and Information Integrity
+// NIST 800-53 CM-6 — Configuration Settings
+// NIST 800-53 SA-8 — Security and Privacy Engineering Principles
+// NIST 800-53 AU-3 — Audit Record Content
+// NIST 800-53 AC-4 — Information Flow Enforcement
+// NIST 800-53 SC-28 — Protection of Information at Rest
+// NSA RTB RAIN — Non-Bypassability, Non-Circumventability
+// NSA RTB VNSSA — Provenance verification before trust
+// NIST 800-218 SSDF PW.4.1 — Validate all inputs
+
+== Overview
+
+The OS detection pipeline lives in `components/rusty-gadgets/umrs-platform/src/detect/`.
+It answers a question that sounds trivial — "What OS is this?" — using a design that
+treats the answer as untrusted input until it has been independently verified from
+multiple corroborating sources.
+
+This document explains the design of every phase: what it does, why it exists, what
+attack it prevents, and which controls it satisfies. It is written for engineers
+implementing changes in `umrs-platform` and security engineers auditing those changes.
+
+For a less technical introduction to the same pipeline, see
+xref:patterns:pattern-os-detection.adoc[OS Detection: A Trust Ladder].
+
+== Why Configuration Data Is Untrusted Input
+
+In a high-assurance environment, files in `/etc/` are untrusted input. That framing
+is not academic paranoia — it follows directly from the threat model and the controls
+the system is required to satisfy.
+
+NIST 800-53 SI-10 (Information Input Validation) requires validating data from any
+source that could be tampered with before that data is used in a security decision.
+An `os-release` file on a mutable filesystem qualifies. So does the mount topology
+in which that file lives, and the kernel pseudo-filesystem through which the process
+reads kernel-reported facts.
+
+The pipeline treats every input as hostile until verified. It verifies them in a
+specific order chosen so that each check is anchored by the layer below it:
+
+. The kernel communication channel itself is verified first (Phase 1). Nothing that
+  follows is meaningful unless procfs is genuine.
+. The filesystem environment is verified second (Phase 2). The kernel may be real but
+  the mount topology may have been manipulated.
+. The candidate file is located and its inode identity is recorded before it is opened
+  (Phase 3). This establishes the reference point for all later TOCTOU checks.
+. An independent source — the package database — is queried for corroboration (Phase 4).
+  This is separate evidence that does not come from the file itself.
+. File ownership and cryptographic integrity are checked using the independent source
+  (Phases 5 and 6).
+. The content is parsed by two independent implementations that must agree (Phase 7).
+
+Each phase adds evidence. The confidence level is raised only when evidence justifies
+it, and it can only be lowered, never raised, after it is set. The final result tells
+callers exactly how much verification the pipeline was able to complete and why.
+
+NIST 800-53 CM-6 requires applying configuration based on a verified baseline. NIST
+800-53 SA-8 requires applying security engineering principles — fail-closed behavior,
+defense in depth, least privilege — to the design of the verification itself. NSA RTB
+RAIN requires that access control enforcement be non-bypassable. The pipeline satisfies
+all three because a falsified OS identity would undermine policy decisions that depend
+on platform identity.
+
+== Architecture
+
+=== Module Layout
+
+[source]
+----
+umrs-platform/src/detect/
+├── mod.rs               — OsDetector public API; orchestrates phase sequence
+├── kernel_anchor.rs     — Phase 1: procfs verification, PID coherence, boot_id
+├── mount_topology.rs    — Phase 2: namespace inode, mountinfo, statfs /etc
+├── release_candidate.rs — Phase 3: os-release location, statx, permissions
+├── pkg_substrate.rs     — Phase 4: RPM/dpkg probe, SELinux enforce check
+├── file_ownership.rs    — Phase 5: package DB ownership query by (dev, ino)
+├── integrity_check.rs   — Phase 6: SHA-256 digest, FIPS gate, fstat re-check
+└── release_parse.rs     — Phase 7: TPI parsing, substrate corroboration, LabelTrust
+----
+
+Supporting types in `umrs-platform/src/`:
+
+[source]
+----
+confidence.rs        — TrustLevel enum (T0–T4), ConfidenceModel, Contradiction
+evidence.rs          — EvidenceBundle, EvidenceRecord, SourceKind, FileStat, PkgDigest
+detect/mod.rs        — DetectionResult, DetectionError, OsDetector
+detect/label_trust.rs — LabelTrust verdict enum
+----
+
+=== Pipeline State Machine
+
+[mermaid]
+....
+stateDiagram-v2
+    [*] --> Untrusted : pipeline start
+
+    Untrusted --> KernelAnchored : Phase 1 passes\n(fstatfs magic, PID coherence)
+    Untrusted --> [*] : Phase 1 HARD GATE fails\nreturn T0
+
+    KernelAnchored --> EnvAnchored : Phase 2 passes or downgrades
+    EnvAnchored --> EnvAnchored : Phase 3 anomaly recorded\nconfidence not advanced
+
+    EnvAnchored --> SubstrateAnchored : Phase 4 — ≥2 facts agree\nSELinux enforcing
+    EnvAnchored --> EnvAnchored : Phase 4 soft failure\nno DB or insufficient facts — stay T2
+
+    SubstrateAnchored --> SubstrateAnchored : Phase 5 mismatch\nrecorded, stay T3
+
+    SubstrateAnchored --> IntegrityAnchored : Phase 6 digest matches\nno FIPS gate
+    SubstrateAnchored --> SubstrateAnchored : Phase 6 — digest mismatch\nor FIPS gate — stay T3
+
+    IntegrityAnchored --> IntegrityAnchored : Phase 7 parse anomaly\nrecorded, stay T4
+    SubstrateAnchored --> SubstrateAnchored : Phase 7 parse anomaly\nrecorded, stay T3
+
+    IntegrityAnchored --> [*] : DetectionResult emitted
+    SubstrateAnchored --> [*] : DetectionResult emitted
+    EnvAnchored --> [*] : DetectionResult emitted
+....
+
+=== Confidence Model
+
+`TrustLevel` is a downgrade-only value. The pipeline starts at `Untrusted` and advances
+it when evidence justifies the advance. Once a phase fails or records a significant
+anomaly, the level is reduced and cannot be raised by any subsequent phase.
+
+[source,rust]
+----
+// umrs-platform/src/confidence.rs
+//
+// NIST 800-53 SA-8 — Security Engineering Principles (defense in depth,
+// fail-closed design); NSA RTB RAIN (non-circumventability)
+
+/// Monotonically ordered trust tier for platform detection evidence.
+///
+/// Confidence accumulates as successive verification gates pass. Each tier
+/// represents a stronger, independently verifiable anchor. Downgrade-only: once
+/// the level is reduced by `ConfidenceModel::downgrade`, no subsequent phase can
+/// raise it.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum TrustLevel {
+    /// T0 — no kernel anchor established; default start state.
+    Untrusted,
+    /// T1 — procfs verified via fstatfs(`PROC_SUPER_MAGIC`) + PID coherence gate.
+    KernelAnchored,
+    /// T2 — mount topology cross-checked; execution environment known.
+    EnvAnchored,
+    /// T3 — package substrate parsed; identity from ≥2 independent facts,
+    /// SELinux enforcing confirmed.
+    SubstrateAnchored,
+    /// T4 — os-release ownership + installed SHA-256 digest verified.
+    IntegrityAnchored,
+}
+----
+
+The `PartialOrd` + `Ord` derivation makes trust level comparisons safe and explicit.
+A gate that requires T3 writes:
+
+[source,rust]
+----
+if result.confidence.level() < TrustLevel::SubstrateAnchored {
+    return Err(InsufficientTrust);
+}
+----
+
+There is no integer comparison, no magic number, no string match. The compiler
+enforces exhaustive handling of every variant in `match` expressions.
+
+=== EvidenceBundle
+
+Every observation the pipeline makes — success or failure — is appended to an
+`EvidenceBundle`. This design satisfies NIST 800-53 AU-3 (Audit Record Content):
+the bundle is sufficient to reconstruct the pipeline's complete decision path.
+
+[source,rust]
+----
+// umrs-platform/src/evidence.rs
+//
+// NIST 800-53 AU-3 — Audit Record Content
+// NIST 800-53 AU-10 — Non-Repudiation (append-only; callers cannot remove records)
+
+/// The origin class of a single piece of detection evidence.
+pub enum SourceKind {
+    Procfs,         // /proc/ — provenance-verified via PROC_SUPER_MAGIC
+    RegularFile,    // persistent filesystem file (e.g., /etc/os-release)
+    PackageDb,      // RPM or dpkg database
+    SymlinkTarget,  // resolved symlink target
+    SysfsNode,      // /sys/ — provenance-verified via SYSFS_MAGIC
+    StatfsResult,   // statfs(2) result on a directory — no fd opened
+}
+
+/// Full provenance record for one artifact consumed during detection.
+pub struct EvidenceRecord {
+    pub source_kind: SourceKind,
+    pub opened_by_fd: bool,         // true = fd-anchored open; false = path-based
+    pub path_requested: String,     // path as given by the caller
+    pub path_resolved: Option<String>, // symlink target, if resolved
+    pub stat: Option<FileStat>,     // statx(2) metadata, if collected
+    pub fs_magic: Option<u64>,      // fstatfs filesystem magic, if verified
+    pub sha256: Option<[u8; 32]>,   // SHA-256 of file content (Phase 6 only)
+    pub pkg_digest: Option<PkgDigest>, // package DB digest for this path (Phase 6 only)
+    pub parse_ok: bool,             // content was successfully parsed
+    pub notes: Vec<String>,         // phase-added annotations; no sensitive data
+}
+
+/// Ordered, append-only collection of EvidenceRecords for one detection run.
+///
+/// The `records` field is private to enforce AU-10: callers can only add
+/// records via `push`, never remove, reorder, or clear them.
+pub struct EvidenceBundle {
+    records: Vec<EvidenceRecord>, // private — append-only invariant
+}
+----
+
+A rejection with no evidence record is indistinguishable from a path that was never
+evaluated. An attacker could hide behind that gap. Every phase appends at least one
+record before it returns — success or failure.
+
+== Phase 1: Kernel Anchor
+
+=== What It Does
+
+Phase 1 verifies that the process is communicating with a genuine kernel procfs. It is
+a hard gate: failure aborts the pipeline immediately and returns T0.
+
+Steps:
+
+. Open a file descriptor to `/proc/self/stat` using `rustix::fs::open`.
+. Call `fstatfs` on that descriptor — not `statfs` on a path.
+. Compare the returned `f_type` against `PROC_SUPER_MAGIC` (0x9FA0).
+. Call `getpid()` and parse `/proc/self/stat` to extract the PID field.
+. Assert that both values are equal.
+. Read `/proc/sys/kernel/random/boot_id` using the `ProcfsText` provenance-checked
+  reader.
+. Read `/proc/sys/kernel/lockdown` using the same reader.
+
+=== Why It Exists
+
+The threat this phase addresses is a substituted or synthetic procfs. In a
+container escape or certain namespace manipulations, an attacker can bind-mount a
+crafted filesystem over `/proc` within the process's mount namespace. That fake
+filesystem can return whatever it wants in response to file reads — including a
+plausible-looking `os-release` path, plausible-looking kernel attributes, and
+plausible-looking PID information.
+
+`fstatfs` on an open file descriptor defeats this substitution because the file
+descriptor is already pinned to the kernel object at open time. The magic number is
+returned by the kernel's VFS layer for the underlying filesystem type — it is not
+a field in a file that an adversary can craft. A real procfs returns
+`PROC_SUPER_MAGIC`. Anything else reveals the substitution.
+
+PID coherence is the second gate within this phase. If `getpid()` returns a different
+value than the PID in `/proc/self/stat`, the process is either in a namespace where
+`/proc` does not match its actual process identity, or `/proc/self/stat` has been
+fabricated. Either condition means the kernel channel is compromised. Because all
+subsequent reads from `/proc/` depend on this channel being genuine, the pipeline
+aborts.
+
+=== Code Reference
+
+[source,rust]
+----
+// umrs-platform/src/detect/kernel_anchor.rs
+//
+// NIST 800-53 SI-7 — Software and Information Integrity
+// NSA RTB VNSSA — Provenance verification before trust
+// NSA RTB RAIN — Non-Bypassability
+
+/// Run the kernel anchor phase.
+///
+/// Returns `Ok(Some(boot_id))` on full success, `Ok(None)` if boot_id read
+/// fails non-fatally, or `Err(DetectionError)` on a hard-gate failure.
+pub(super) fn run(
+    evidence: &mut EvidenceBundle,
+    confidence: &mut ConfidenceModel,
+) -> Result<Option<String>, DetectionError> {
+    // Step 1–2: read /proc/self/stat via ProcfsText (provenance-verified).
+    // SecureReader::read_generic_text calls fstatfs on the open fd and checks
+    // PROC_SUPER_MAGIC before returning any bytes — cannot be deflected by
+    // path manipulation. Magic failure → DetectionError::ProcfsNotReal.
+    let stat_content = read_proc_self_stat(evidence)?;
+
+    // Step 3: PID coherence — getpid(2) must match PID in /proc/self/stat
+    check_pid_coherence(&stat_content)?;
+
+    // procfs is real and PID coherence passed — advance to T1
+    confidence.upgrade(TrustLevel::KernelAnchored);
+
+    // Step 4: boot_id (soft — failure downgrades but does not abort)
+    let boot_id = read_boot_id(evidence, confidence);
+
+    // Step 5: lockdown mode (soft — recorded in evidence, never aborts)
+    read_lockdown(evidence);
+
+    Ok(boot_id)
+}
+
+// Evidence records are pushed for each step using EvidenceRecord struct
+// literals — for example, after the stat read:
+//   evidence.push(EvidenceRecord {
+//       source_kind: SourceKind::Procfs,
+//       opened_by_fd: true,
+//       path_requested: "/proc/self/stat".to_owned(),
+//       parse_ok: true,
+//       notes: vec!["procfs gate: PROC_SUPER_MAGIC verified".to_owned()],
+//       ..Default::default()  // (conceptually — actual code sets all fields)
+//   });
+// PID coherence failure returns Err(DetectionError::PidCoherenceFailed { syscall, procfs }).
+----
+
+=== Security Controls
+
+[cols="1,3"]
+|===
+| Control | Application
+
+| NIST 800-53 SI-7
+| Integrity of the kernel communication channel is verified by filesystem magic before
+  any kernel-reported data is trusted.
+
+| NSA RTB VNSSA
+| The fd-anchored `fstatfs` implements "provenance before trust": the descriptor identity
+  is verified before the data it returns is used.
+
+| NSA RTB RAIN
+| PID coherence failure and magic mismatch both abort the pipeline. There is no
+  fallback that proceeds with an unverified kernel channel.
+|===
+
+== Phase 2: Mount Topology
+
+=== What It Does
+
+Phase 2 reads the process's mount namespace inode, parses `/proc/self/mountinfo` to
+understand the actual filesystem layout visible to this process, and calls `statfs` on
+`/etc` to determine the filesystem type on which configuration files live.
+
+=== Why It Exists
+
+The threat this phase addresses is a bind-mounted substitute over `/etc`. An attacker
+with sufficient privilege — for example, a process running in a privileged container —
+can `mount --bind` a `tmpfs` over `/etc` within the process's mount namespace and
+populate that tmpfs with a crafted `os-release` file. To a naive reader, the file at
+`/etc/os-release` looks normal. The content reads as valid. The path resolves.
+
+The `statfs` call on `/etc` returns the filesystem magic number for the _mounted_
+filesystem, not for the directory's parent. A real RHEL 10 root filesystem uses ext4
+(magic `0xEF53`) or XFS (magic `0x58465342`). An in-memory tmpfs substitute returns
+magic `0x01021994`. These numbers are kernel-reported properties of the virtual
+filesystem object — they cannot be set by writing a file or changing a file attribute.
+
+Checking the filesystem magic of `/etc` does not prove the specific file is unmodified,
+but it detects the substitution of the entire `/etc` directory with an in-memory
+overlay. Combined with the inode ownership and digest checks in later phases, the
+mount topology check is the first line of defense against this attack vector.
+
+The mount namespace inode check detects whether the process is running in an
+unexpected namespace — for example, inside a container that has been set up with an
+isolated `/proc` and mount table.
+
+=== Code Reference
+
+[source,rust]
+----
+// umrs-platform/src/detect/mount_topology.rs
+//
+// NIST 800-53 CM-6 — Configuration Settings
+// NIST 800-53 SI-7 — Software and Information Integrity
+
+/// Run the mount topology phase.
+///
+/// Never returns Err — all failures downgrade confidence and continue.
+/// Upgrades confidence to T2 (EnvAnchored) only if both mountinfo read and
+/// statfs on /etc succeed.
+pub(super) fn run(
+    evidence: &mut EvidenceBundle,
+    confidence: &mut ConfidenceModel,
+    max_mountinfo_bytes: usize,
+) {
+    // Step 1: mount namespace inode from /proc/self/ns/mnt via readlinkat
+    read_mnt_namespace(evidence);
+
+    // Step 2: /proc/self/mountinfo via ProcfsText (provenance-verified)
+    let mountinfo_ok = read_mountinfo(evidence, confidence, max_mountinfo_bytes);
+
+    // Step 3: statfs /etc — records the filesystem magic of the path where
+    // os-release will be sought. tmpfs over /etc is a strong anomaly.
+    let statfs_ok = read_etc_statfs(evidence);
+
+    // T2 only if both steps succeeded
+    if mountinfo_ok && statfs_ok {
+        confidence.upgrade(TrustLevel::EnvAnchored);
+    } else {
+        // Soft failure — downgrade recorded inside each failing step;
+        // confidence stays at T1 (KernelAnchored).
+        log::warn!("mount_topology: partial failure — confidence not upgraded to T2");
+    }
+}
+
+// statfs result is recorded as SourceKind::StatfsResult with fs_magic populated:
+//   evidence.push(EvidenceRecord {
+//       source_kind: SourceKind::StatfsResult,
+//       path_requested: "/etc".to_owned(),
+//       fs_magic: Some(magic_u64),  // raw value from statfs.filesystem_type().0
+//       parse_ok: true,
+//       notes: vec![format!("etc_fs_magic={magic_u64:#x}")],
+//       ...
+//   });
+----
+
+=== Security Controls
+
+[cols="1,3"]
+|===
+| Control | Application
+
+| NIST 800-53 CM-6
+| Configuration integrity requires that `/etc` resides on a persistent, managed
+  filesystem. A tmpfs `/etc` is not a managed configuration state.
+
+| NIST 800-53 SI-7
+| The filesystem magic check is an integrity verification of the storage layer before
+  any file in that layer is trusted.
+|===
+
+== Phase 3: Release Candidate
+
+=== What It Does
+
+Phase 3 locates the `os-release` file, calls `statx` to gather detailed metadata
+(inode number, device number, permissions, modification time), rejects world-writable
+files, and records the `(device, inode)` pair as the file's identity for all
+subsequent phases.
+
+=== Why It Exists
+
+This phase establishes the reference identity of the file before it is opened. The
+`(dev, ino)` pair is the kernel's inode identity for the file — it is stable across
+renames and cannot be forged by userspace operations. It is the anchor point for the
+TOCTOU safety checks in Phases 5 and 6.
+
+The important detail is that `statx` does _not_ open the file. There is a temporal gap
+between `statx` and the later `File::open`. An attacker could rename or replace the
+file at the path in that window. The `(dev, ino)` pair records what the file was at
+`statx` time. Phase 6 calls `fstat` on the open file descriptor and compares the pair
+— if they differ, a substitution occurred in that window, and the pipeline records the
+discrepancy in the `EvidenceBundle` with `parse_ok: false` and a TOCTOU note.
+
+The world-writable check is an explicit integrity gate. A file that any process can
+modify cannot serve as a trusted source of OS identity. The check reads the permission
+bits from the `statx` result; no second open is needed.
+
+=== Code Reference
+
+[source,rust]
+----
+// umrs-platform/src/detect/release_candidate.rs
+//
+// NIST 800-53 SI-7 — Software and Information Integrity
+// NSA RTB TOCTOU — statx establishes (dev,ino) identity before file is opened
+
+/// Standard os-release search paths, in priority order.
+const OS_RELEASE_PATHS: [&str; 2] = ["/etc/os-release", "/usr/lib/os-release"];
+
+/// World-writable mode bit.
+const S_IWOTH: u32 = 0o002;
+
+/// Run the release candidate phase.
+///
+/// Returns `Some(path)` if a usable candidate was found; `None` otherwise.
+/// The (dev, ino) pair from statx is embedded in the EvidenceRecord for all
+/// later TOCTOU re-verification steps.
+pub(super) fn run(
+    evidence: &mut EvidenceBundle,
+    confidence: &mut ConfidenceModel,
+) -> Option<PathBuf> {
+    for &path_str in &OS_RELEASE_PATHS {
+        let Ok(sx) = statx(CWD, path_str, AtFlags::empty(), StatxFlags::ALL) else {
+            continue; // path not present — try next
+        };
+
+        let mode = u32::from(sx.stx_mode);
+
+        // Reject world-writable — any process could modify this file
+        if mode & S_IWOTH != 0 {
+            confidence.downgrade(TrustLevel::EnvAnchored,
+                "os-release candidate is world-writable");
+            evidence.push(EvidenceRecord {
+                source_kind: SourceKind::RegularFile,
+                parse_ok: false,
+                notes: vec!["rejected: world-writable".to_owned()],
+                stat: Some(extract_file_stat(&sx)),
+                // ... remaining fields
+            });
+            continue;
+        }
+
+        // Resolve symlink if present (e.g., /etc/os-release → ../usr/lib/os-release on RHEL 10)
+        let resolved = resolve_symlink(path_str, evidence);
+
+        // Store (dev, ino) as combined u64: (major << 32) | minor
+        // This encoding is used by all subsequent TOCTOU re-verification steps.
+        let dev_combined: u64 =
+            (u64::from(sx.stx_dev_major) << 32) | u64::from(sx.stx_dev_minor);
+
+        evidence.push(EvidenceRecord {
+            source_kind: SourceKind::RegularFile,
+            path_requested: path_str.to_owned(),
+            path_resolved: resolved,
+            stat: Some(FileStat {
+                dev: Some(dev_combined),
+                ino: Some(sx.stx_ino),
+                mode: Some(mode),
+                uid: Some(sx.stx_uid),
+                // ... remaining FileStat fields
+            }),
+            parse_ok: true,
+            notes: vec![format!("dev={}:{} ino={}", sx.stx_dev_major, sx.stx_dev_minor, sx.stx_ino)],
+            // ... remaining EvidenceRecord fields
+        });
+
+        return Some(PathBuf::from(path_str));
+    }
+
+    // Neither path was usable — downgrade and return None
+    confidence.downgrade(TrustLevel::EnvAnchored,
+        "os-release not found at any standard path");
+    None
+}
+----
+
+=== Security Controls
+
+[cols="1,3"]
+|===
+| Control | Application
+
+| NIST 800-53 SI-7
+| Metadata integrity check (world-writable rejection) before the file is trusted as
+  an OS identity source.
+
+| NSA RTB VNSSA
+| `statx` establishes provenance of the file at a point in time. The `(dev, ino)`
+  pair is the provenance reference; it is verified again at open time in Phase 6.
+|===
+
+== Phase 4: Package Substrate
+
+=== What It Does
+
+Phase 4 probes for a reachable RPM or dpkg package database, reads the SELinux
+enforcement mode, and attempts to gather at least two independent corroborating facts
+about the OS identity from the package substrate. If no package database is accessible,
+the phase records a soft failure — confidence stays at T2 and the pipeline continues
+without a substrate identity.
+
+=== Why It Exists
+
+The package database is an independent source of ground truth. It was written by the
+package installation process and is structurally separate from the files it describes.
+If an `os-release` file has been modified after installation, the package database
+records the state at installation time. Querying the database provides evidence that
+does not originate from the file itself.
+
+The SELinux enforcement gate deserves specific explanation. In SELinux permissive mode,
+the MAC label on a process is evaluated and logged but not enforced. This means that
+any process — regardless of its security context — can write to the RPM database,
+modify tracked files, or alter `os-release` without being blocked by policy. The chain
+of custody of the package database degrades from a MAC-enforced invariant to a
+discretionary one. T3 requires that the substrate's independent corroboration be backed
+by mandatory access control. Without enforcement, the database is no more trustworthy
+than the file itself, and the pipeline records this as a substrate confidence reduction.
+
+The two-fact requirement prevents a partial or minimally populated substrate from
+inflating trust. One readable database file is not sufficient. At least two
+independently derived facts — for example, the database is accessible, the OS name
+field in the database matches the os-release candidate, and the architecture field is
+consistent — must agree before T3 is awarded.
+
+=== Code Reference
+
+[source,rust]
+----
+// umrs-platform/src/detect/pkg_substrate.rs
+//
+// NIST 800-53 CM-6 — Configuration Settings
+// NIST 800-53 SI-7 — Software and Information Integrity
+// NSA RTB RAIN — Non-Bypassability (T3 gate enforced before callers see a result)
+
+/// Run the package substrate phase.
+///
+/// Returns `(Option<SubstrateIdentity>, Option<Box<dyn PackageProbe>>)`.
+/// Never returns Err — all failures are soft: they downgrade confidence and
+/// return `(None, None)` or `(Some(identity), probe)` with T3 not asserted.
+pub(super) fn run(
+    evidence: &mut EvidenceBundle,
+    confidence: &mut ConfidenceModel,
+) -> (Option<SubstrateIdentity>, Option<Box<dyn PackageProbe>>) {
+    // Dispatch probes in priority order (RPM first, dpkg second).
+    // All probe results are recorded in evidence regardless of success.
+    let Some(identity) = select_probe(evidence) else {
+        // Soft failure — no hard gate here. Confidence stays at T2.
+        confidence.downgrade(TrustLevel::EnvAnchored,
+            "no package substrate probe succeeded");
+        return (None, None);
+    };
+
+    // T3 threshold: ≥2 independent corroborating facts required
+    if !identity.meets_t3_threshold() {
+        confidence.downgrade(TrustLevel::EnvAnchored,
+            "substrate identity has fewer than 2 corroborating facts");
+        return (Some(identity), selected_probe);
+    }
+
+    // Biba integrity pre-check: SELinux enforce mode must be active.
+    // Without MAC enforcement, the package DB is no more authoritative than
+    // the file itself — any process could have modified it.
+    let selinux_ok = check_selinux_enforce(evidence);
+    if selinux_ok {
+        confidence.upgrade(TrustLevel::SubstrateAnchored);
+    } else {
+        confidence.downgrade(TrustLevel::EnvAnchored,
+            "SELinux enforce check failed — Biba integrity pre-check not satisfied");
+    }
+
+    (Some(identity), selected_probe)
+}
+----
+
+=== Security Controls
+
+[cols="1,3"]
+|===
+| Control | Application
+
+| NIST 800-53 CM-6
+| Package database corroboration verifies that the OS identity claim matches the
+  installed package baseline.
+
+| NIST 800-53 SI-7
+| Independent source verification before trusting the os-release file content.
+  SELinux enforce gate ensures the independent source itself is MAC-protected.
+
+| NSA RTB RAIN
+| T3 cannot be reached without substrate corroboration and SELinux enforcement.
+  This is a compile-time-safe gate — the `TrustLevel` enum prevents T3 being
+  awarded without the substrate confirmation step.
+|===
+
+== Phase 5: File Ownership
+
+=== What It Does
+
+Phase 5 queries the package database for the package that owns the `os-release` file,
+identified by the `(device, inode)` pair captured in Phase 3. A match confirms that
+the package manager knows about this specific file. A non-match is recorded as a
+mismatch.
+
+=== Why It Exists
+
+The `(dev, ino)` query is a deliberate TOCTOU defense layered on top of the name-based
+query that an undefended implementation would use.
+
+A naive implementation queries the package database by path: "which package owns
+`/etc/os-release`?" This query can be fooled by a path swap. An attacker who replaces
+the file at `/etc/os-release` with a different file after Phase 3 but before Phase 5
+will find that the path query returns the same answer — because the path has not
+changed, only the file behind it.
+
+Querying by `(dev, ino)` asks a different question: "which package owns the file whose
+kernel identity is this specific device:inode pair?" If the file behind the path has
+been swapped, the new file will have a different inode number. The package database
+has a record for the original inode, not the replacement. The query returns no match,
+and the mismatch is recorded as evidence of the substitution.
+
+=== Code Reference
+
+[source,rust]
+----
+// umrs-platform/src/detect/file_ownership.rs
+//
+// NIST 800-53 SI-7 — Software and Information Integrity
+// NSA RTB TOCTOU — (dev,ino) from Phase 3 anchors the ownership query
+
+/// Run the file ownership phase.
+///
+/// Returns `Some(FileOwnership)` if the candidate is owned by a known package.
+/// Returns `None` on any failure — prevents T4 from being reached.
+pub(super) fn run(
+    evidence: &mut EvidenceBundle,
+    confidence: &mut ConfidenceModel,
+    candidate: &Path,
+    probe: Option<&dyn PackageProbe>,
+) -> Option<FileOwnership> {
+    let Some(probe) = probe else { return None; };
+
+    // Extract (dev, ino) from the EvidenceRecord the release_candidate phase
+    // recorded — these anchor the query to a specific kernel inode identity,
+    // not just a path. A TOCTOU path swap will produce a different ino.
+    let candidate_str = candidate.to_string_lossy().into_owned();
+    let Some((dev, ino)) = find_stat_for_path(evidence, &candidate_str) else {
+        confidence.downgrade(TrustLevel::SubstrateAnchored,
+            "file ownership: stat record missing for os-release candidate");
+        return None;
+    };
+
+    // Resolve symlink if needed: RPM DB records the real path, not the symlink.
+    // (On RHEL 10, /etc/os-release → ../usr/lib/os-release.)
+    let query_path = resolve_query_path(evidence, candidate, &candidate_str);
+
+    // Query by path + (dev, ino) — probe implementations must cross-verify both
+    let ownership = probe.query_ownership(dev, ino, &query_path);
+
+    // Result is always recorded in evidence — owned or unowned
+    evidence.push(EvidenceRecord {
+        source_kind: SourceKind::PackageDb,
+        path_requested: candidate_str,
+        parse_ok: ownership.is_some(),
+        notes: match &ownership {
+            Some(o) => vec![format!("owner={}", o.package_name),
+                            format!("version={}", o.package_version)],
+            None    => vec!["file unowned by any package".to_owned()],
+        },
+        // ... remaining fields (stat, sha256, etc. are None here)
+    });
+
+    ownership
+}
+----
+
+=== Security Controls
+
+[cols="1,3"]
+|===
+| Control | Application
+
+| NIST 800-53 SI-7
+| Ownership verification via inode identity rather than path prevents path-level TOCTOU
+  attacks from producing a false positive ownership confirmation.
+|===
+
+== Phase 6: Integrity Check
+
+=== What It Does
+
+Phase 6 opens the `os-release` file for reading, enforces a hard byte limit on the
+read, computes the SHA-256 digest of the content, and compares it against the digest
+stored in the package database. It also calls `fstat` on the open file descriptor to
+re-verify `(device, inode)` against the Phase 3 reference, and checks whether FIPS
+mode is active.
+
+=== Why It Exists
+
+Three separate threats motivate this phase.
+
+*TOCTOU window closure.* Phase 3 called `statx` but did not hold the file open. Between
+`statx` and this phase's `File::open`, an attacker could rename or replace the file at
+the path. The `fstat` call on the open file descriptor closes this window. `fstat`
+returns the kernel's inode identity of the file the descriptor actually points to —
+it cannot be deflected by a rename that happens after the `open`. If the `(dev, ino)`
+returned by `fstat` differs from the pair captured in Phase 3, the file was substituted
+in that window, and the pipeline records the anomaly in the `EvidenceBundle` and
+downgrades confidence.
+
+*Content integrity.* Even if the file was not substituted between phases, its content
+may have changed since installation. The package database stores a SHA-256 digest of
+every managed file computed at installation time. Comparing the live digest against the
+stored digest verifies that the content is byte-for-byte identical to what was
+installed. A mismatch is an integrity failure — the file has been modified since
+installation. This blocks T4.
+
+*Bounded reads.* An adversarially crafted replacement file could be multi-gigabyte or
+contain extremely long lines designed to cause resource exhaustion. No legitimate
+`os-release` exceeds two kilobytes. The phase enforces a hard read limit that is wide
+enough to never trigger on any real `os-release` but tight enough to contain
+pathological input. Attempting to read beyond the limit is itself recorded in the
+`EvidenceBundle` as an anomaly.
+
+*FIPS gate.* If the kernel has FIPS mode active, the `sha2` crate used to compute the
+digest is not a FIPS 140-2/3 validated provider. T4 requires a cryptographically
+verified integrity check, and FIPS compliance requires validated primitives. These
+requirements conflict. The pipeline is transparent about the conflict: the FIPS gate is recorded in the
+`EvidenceBundle` with a note that `sha2` is not FIPS 140-3 validated, and T4 is not
+awarded. The
+ceiling on a FIPS-active system is T3 until a FIPS-validated SHA-256 path is available
+in the codebase.
+
+=== Code Reference
+
+[source,rust]
+----
+// umrs-platform/src/detect/integrity_check.rs
+//
+// NIST 800-53 SI-7 — Software and Information Integrity
+// NIST 800-53 SC-28 — Protection at Rest (digest covers cached data)
+// NSA RTB RAIN — digest verification is the gate to T4
+
+/// Run the integrity check phase.
+///
+/// Returns `true` if the SHA-256 digest matches the package DB reference (T4
+/// earned). Returns `false` in all other cases — never returns Err.
+pub(super) fn run(
+    evidence: &mut EvidenceBundle,
+    confidence: &mut ConfidenceModel,
+    candidate: &Path,
+    probe: Option<&dyn PackageProbe>,
+    ownership: Option<&FileOwnership>,
+    max_read_bytes: usize,   // default: OsDetector::max_read_bytes (64 KiB)
+) -> bool {
+    // Guards: both probe and a prior ownership record are required
+    let Some(probe) = probe else { return false; };
+    if ownership.is_none() { return false; }
+
+    // FIPS gate — sha2 crate is not FIPS 140-3 validated; T4 blocked on FIPS systems.
+    // Reads /proc/sys/kernel/fips_enabled via ProcfsText (provenance-verified).
+    if fips_mode_active(evidence, confidence) {
+        return false; // ceiling is T3 on FIPS systems
+    }
+
+    // Resolve symlink path for probe queries (same logic as file_ownership phase)
+    let query_path = resolve_query_path(evidence, candidate);
+
+    // Fetch reference digest from probe
+    let Some(installed) = probe.installed_digest(&query_path) else {
+        evidence.push(/* no-digest record */);
+        return false;
+    };
+
+    // Reject weak algorithms (MD5) or unknown algorithms — never earn T4 from them
+    if check_algorithm_policy(&installed, evidence, confidence).is_some() {
+        return false;
+    }
+
+    // Open candidate (single File handle — TOCTOU safe from this point)
+    let mut file = File::open(candidate)?;  // simplified; actual code handles errors
+
+    // TOCTOU re-verification: fstat the open fd, compare (dev,ino) against
+    // release_candidate's statx record. Device numbers must be normalized:
+    // fstat returns Linux dev_t (compact encoding); FileStat.dev uses
+    // (major << 32) | minor. Decompose with rustix::fs::major/minor first.
+    let fstat_ok = verify_dev_ino(evidence, candidate, &file);
+
+    // Bounded read — prevents unbounded allocation on adversarially large files
+    let content = read_bounded(&mut file, max_read_bytes)?;
+
+    // Compute SHA-256 and compare
+    let computed: [u8; 32] = Sha256::new().chain_update(&content).finalize().into();
+    let digest_ok = computed.as_ref() == installed.value.as_slice();
+
+    if digest_ok {
+        confidence.upgrade(TrustLevel::IntegrityAnchored);
+    } else {
+        confidence.downgrade(TrustLevel::SubstrateAnchored,
+            "integrity: os-release SHA-256 digest does not match package DB");
+    }
+
+    // Record sha256 and pkg_digest in the evidence record regardless of outcome
+    evidence.push(EvidenceRecord {
+        source_kind: SourceKind::RegularFile,
+        opened_by_fd: false,  // File::open is path-based; fstat verification noted below
+        path_requested: candidate.to_string_lossy().into_owned(),
+        sha256: Some(computed),
+        pkg_digest: Some(PkgDigest { algorithm: DigestAlgorithm::Sha256,
+                                      value: installed.value }),
+        parse_ok: digest_ok,
+        notes: vec![if fstat_ok { "fstat verified: (dev,ino) matches release_candidate statx".to_owned() }
+                    else        { "path-based open; fstat re-verification not available".to_owned() },
+                    if digest_ok { "SHA-256 digest verified (T4 earned)".to_owned() }
+                    else         { "SHA-256 digest mismatch — integrity deviation recorded".to_owned() }],
+        // ... remaining fields are None
+    });
+
+    digest_ok
+}
+----
+
+=== Security Controls
+
+[cols="1,3"]
+|===
+| Control | Application
+
+| NIST 800-53 SI-7
+| SHA-256 digest verification against the package DB is the primary content integrity
+  check. `fstat` re-verification closes the TOCTOU window between locate and read.
+
+| NIST 800-53 SC-28
+| The digest computed here is also used by the Sealed Evidence Cache to protect
+  the integrity of cached data at rest in memory.
+
+| NSA RTB RAIN
+| The FIPS gate and digest mismatch both block T4. T4 cannot be reached by any path
+  that does not complete a successful digest comparison.
+|===
+
+== Phase 7: Release Parse
+
+=== What It Does
+
+Phase 7 parses the `os-release` file content into a typed, structured value. It applies
+Two-Path Independence (TPI): `nom` (Path A) and `split_once` (Path B) must agree on
+the set of keys present in the file. Values are parsed into validated newtypes. The
+parsed identity is compared against the substrate's OS identity record to produce the
+final `LabelTrust` verdict.
+
+=== Why It Exists
+
+The `os-release` format is intentionally simple — `KEY=VALUE` pairs, one per line. But
+simple formats have parsing edge cases: unquoted values with embedded `=` signs, lines
+with unexpected leading whitespace, duplicate keys, values with embedded newlines from
+a crafted file. A parser that handles these cases differently from another parser will
+produce different key sets from the same input.
+
+This matters because `os-release` content drives the OS identity claim. The `ID` and
+`VERSION_ID` fields become the `OsRelease` typed value that callers receive. A crafted
+file that causes one parser to see `ID=rhel` and another to see nothing — or to see a
+different key entirely — is a _parser differential attack_. The crafted field could
+cause a downstream component to apply the wrong policy or accept an identity claim it
+should reject.
+
+TPI defeats this attack by requiring both parsers to agree on the key set. If they
+disagree — on any key, for any reason — the disagreement is recorded in the
+`EvidenceBundle` and the parse result is marked unverified. The two parsers share zero
+implementation logic: `nom` is a declarative combinator library; the `split_once` path
+is imperative character-by-character processing. Different algorithms, different
+libraries, different failure modes. An edge case that confuses one is unlikely to
+confuse the other in the same direction.
+
+See xref:patterns:pattern-tpi.adoc[Two-Path Independence (TPI)] for the full
+description of the pattern and its threat model.
+
+=== Code Reference
+
+[source,rust]
+----
+// umrs-platform/src/detect/release_parse.rs
+//
+// NIST 800-53 SI-10 — Information Input Validation
+// NIST 800-218 SSDF PW.4.1 — Validate all inputs
+// NSA RTB TPI — two independent parse paths must agree on the key set
+
+/// Run the release parse phase.
+///
+/// Returns `(Option<OsRelease>, LabelTrust)`. Never returns Err — all failures
+/// produce `(None, UntrustedLabelCandidate)` and downgrade confidence.
+pub(super) fn run(
+    evidence: &mut EvidenceBundle,
+    confidence: &mut ConfidenceModel,
+    candidate: &Path,
+    substrate_identity: Option<&SubstrateIdentity>,
+    ownership: Option<&FileOwnership>,
+    integrity_ok: bool,
+    max_line_len: usize,
+) -> (Option<OsRelease>, LabelTrust) {
+    // Read content via File::open (regular file, not procfs/sysfs).
+    // TOCTOU re-verification: fstat the open fd and compare (dev,ino) against
+    // the release_candidate evidence record before trusting the content.
+    let Some(content) = read_candidate(candidate, evidence, confidence) else {
+        return (None, LabelTrust::UntrustedLabelCandidate);
+    };
+
+    // Enforce per-line length limit before any parsing
+    if content.lines().any(|l| l.len() > max_line_len) {
+        confidence.downgrade(TrustLevel::KernelAnchored,
+            "os-release contains line exceeding max_line_len");
+        return (None, LabelTrust::UntrustedLabelCandidate);
+    }
+
+    // TPI Path A: nom declarative combinator → HashMap<&str, &str>
+    let Some(map_a) = parse_with_nom(&content) else {
+        confidence.downgrade(TrustLevel::KernelAnchored, "os-release: nom parse path failed");
+        return (None, LabelTrust::UntrustedLabelCandidate);
+    };
+
+    // TPI Path B: line-by-line split_once — zero shared logic with Path A
+    let map_b = parse_with_split(&content);
+
+    // TPI gate: key sets must be identical — fail closed on any disagreement
+    if !key_sets_agree(&map_a, &map_b) {
+        confidence.record_contradiction(
+            Contradiction { source_a: "nom", source_b: "split_once",
+                description: "os-release key sets differ between the two parse paths".to_owned() },
+            TrustLevel::KernelAnchored,
+        );
+        evidence.push(EvidenceRecord {
+            source_kind: SourceKind::RegularFile,
+            path_requested: candidate.to_string_lossy().into_owned(),
+            parse_ok: false,
+            notes: vec!["TPI: nom vs split_once key-set disagreement — fail closed".to_owned()],
+            // ... remaining fields are None
+        });
+        return (None, LabelTrust::UntrustedLabelCandidate);
+    }
+
+    // Build typed OsRelease from Path A values (key-set agreement already confirmed)
+    let Ok((os_release, build_notes)) = build_os_release(&map_a) else {
+        confidence.downgrade(TrustLevel::KernelAnchored, "os-release field validation failed");
+        return (None, LabelTrust::UntrustedLabelCandidate);
+    };
+
+    // Record successful parse
+    evidence.push(EvidenceRecord {
+        source_kind: SourceKind::RegularFile,
+        path_requested: candidate.to_string_lossy().into_owned(),
+        parse_ok: true,
+        notes: build_notes,
+        // ... remaining fields are None
+    });
+
+    // Substrate corroboration → LabelTrust verdict
+    let label_trust = assign_label_trust(
+        &os_release, substrate_identity, ownership, integrity_ok, confidence);
+
+    (Some(os_release), label_trust)
+}
+----
+
+=== LabelTrust Assignment
+
+The `LabelTrust` verdict is the final assessment of confidence in the `os-release`
+content specifically, as distinct from the `TrustLevel` for the platform overall.
+
+[source,rust]
+----
+// umrs-platform/src/detect/label_trust.rs   (note: inside detect/, not top-level)
+//
+// NIST 800-53 CM-8, SI-7 — component inventory accuracy; integrity verdict
+// NSA RTB — trust must be explicit and non-forgeable from context alone
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum LabelTrust {
+    /// Permissions failed sanity check, or the file is unowned by any package.
+    ///
+    /// The label may be parsed for display use, but must never be used for
+    /// policy decisions.
+    UntrustedLabelCandidate,
+
+    /// Parsed successfully, but integrity could not be verified.
+    ///
+    /// T3 was not reached, the package DB did not own this file, or the digest
+    /// was unavailable. Structurally valid but provenance unconfirmed.
+    LabelClaim,
+
+    /// T4 reached: file owned by a package, SHA-256 digest verified against
+    /// the package DB, and content corroborates the substrate-derived identity.
+    ///
+    /// The only tier safe for use in policy decisions.
+    TrustedLabel,
+
+    /// T4 integrity passed (digest verified) but the label content contradicts
+    /// the substrate-derived identity. Anomalous — must never drive policy.
+    IntegrityVerifiedButContradictory {
+        /// Brief description of the contradiction. Must not contain security
+        /// labels or credentials (NIST SP 800-53 SI-12).
+        contradiction: String,
+    },
+}
+----
+
+`IntegrityVerifiedButContradictory` is the most important variant to understand. It
+means the file's bytes are exactly what the package database recorded at installation —
+the SHA-256 digest verified — but the parsed content claims a different OS identity
+than the package substrate independently determined. This is an anomalous condition:
+the file has not been tampered with (digest matches), but what it claims does not match
+what the package DB says about this system. It is an explicit anomaly requiring human
+investigation, and must never be used for policy decisions.
+
+=== Security Controls
+
+[cols="1,3"]
+|===
+| Control | Application
+
+| NIST 800-53 SI-10
+| Information Input Validation. The `os-release` content is validated by two
+  independent parsers before any field from it is trusted.
+
+| NIST 800-218 SSDF PW.4.1
+| Validate all inputs. TPI ensures that parsing ambiguities do not silently produce
+  a wrong result.
+
+| NSA RTB Redundancy
+| Two independent parse paths eliminate single-path parse vulnerabilities.
+
+| NIST 800-53 AC-4
+| Information Flow Enforcement. The `LabelTrust` verdict controls what callers may
+  do with the parsed OS identity. `UntrustedLabelCandidate` must not be used for
+  authorization decisions.
+|===
+
+== The EvidenceBundle in Detail
+
+The `EvidenceBundle` is the complete audit record of the pipeline run. Its design
+requirements follow directly from NIST 800-53 AU-3.
+
+=== What AU-3 Requires
+
+NIST 800-53 AU-3 requires audit records to include:
+
+* The type of event
+* When the event occurred
+* Where the event occurred
+* The source of the event
+* The outcome of the event
+
+Every `EvidenceRecord` carries a `SourceKind` variant (which subsystem produced the
+data — procfs, regular file, package DB, sysfs, or symlink), a `path_requested` string
+(where), a `parse_ok` boolean (outcome), and a `notes` vec (phase-specific
+observations). The `SourceKind` enum provides the structured classification — auditors
+can filter, count, and match records programmatically. Fields such as `stat` (statx
+metadata), `fs_magic` (filesystem provenance), `sha256`, and `pkg_digest` are populated
+only by the phases that collect them; absent values are always explicit `None`.
+
+=== Why Every Phase Must Record
+
+A phase that fails silently — returning an error without appending to the bundle —
+creates an audit gap. That gap looks identical to a phase that was never run. An
+attacker who can cause a phase to fail silently can hide evidence of their interference
+behind the absence of any record.
+
+The convention in this pipeline is: every phase appends at least one `EvidenceRecord`
+before returning, regardless of outcome. A phase that finds no anomaly appends a
+confirmation record. A phase that finds an anomaly appends a description of it. The
+bundle grows monotonically throughout the pipeline run.
+
+=== Operationally Useful Partial Results
+
+In a government or DoD context, an opaque error that returns nothing is less useful
+than a partial result with a detailed evidence trail. A `DetectionResult` at T2 with
+six evidence records explaining why T3 was not reached tells a security responder
+exactly which substrates were unreachable, whether SELinux was enforcing, and what the
+mount topology anomaly was. An opaque error with no evidence tells them nothing.
+
+The pipeline is designed to always return the best result it can achieve, along with
+everything it observed on the way. Callers can act on the evidence bundle — log it, send
+it to an audit channel, display it in diagnostic output — independently of what they
+do with the trust level.
+
+== Caller Contract
+
+=== Reading the Result
+
+[source,rust]
+----
+// Example caller — policy gate at T3
+use umrs_platform::detect::{OsDetector, DetectionError};
+use umrs_platform::confidence::TrustLevel;
+
+// OsDetector::default() sets standard read limits (64 KiB, 4 MiB mountinfo, 512-byte lines)
+let result = OsDetector::default().detect()?;  // Err only on hard-gate failures
+
+match result.confidence.level() {
+    TrustLevel::IntegrityAnchored | TrustLevel::SubstrateAnchored => {
+        // Proceed with policy decisions based on verified OS identity
+        if let Some(ref os_release) = result.os_release {
+            configure_policy(os_release)?;
+        }
+    }
+    TrustLevel::EnvAnchored | TrustLevel::KernelAnchored => {
+        // Insufficient verification for policy decisions
+        // Log the evidence bundle for diagnostic purposes
+        log::warn!("OS identity not substrate-verified; records={}", result.evidence.len());
+        return Err(InsufficientPlatformTrust);
+    }
+    TrustLevel::Untrusted => {
+        // Pipeline aborted — kernel channel could not be verified
+        log::error!("OS detection failed at kernel anchor; records={}", result.evidence.len());
+        return Err(KernelChannelUnverified);
+    }
+}
+----
+
+The `match` exhausts all variants. The compiler enforces this — there is no way to
+"fall through" to a policy decision without explicitly handling `Untrusted`.
+
+=== must_use Enforcement
+
+Several accessors in the evidence and confidence types carry `#[must_use]` annotations
+(e.g., `ConfidenceModel::level()`, `EvidenceBundle::records()`). The `-D warnings`
+policy in this workspace elevates unused-result warnings to errors. A caller who
+deliberately discards the return value of a `#[must_use]` function must use `let _ =`
+with a justification comment — the discard cannot be accidental.
+
+== Future: Sealed Memory Cache
+
+NOTE: This section describes planned functionality that is not yet implemented.
+
+Once the Sealed Evidence Cache (SEC) is implemented, the verified `DetectionResult` —
+including the `TrustLevel`, `LabelTrust`, `OsRelease`, and the complete `EvidenceBundle`
+— will be sealed into an in-memory cache after the first successful pipeline run.
+
+The seal is an HMAC computed over:
+
+. A canonical serialization of the `DetectionResult`
+. The `TrustLevel` discriminant as a single byte
+. A SHA-256 digest of the `EvidenceBundle` records in insertion order
+
+The HMAC key is derived from the `boot_id` read in Phase 1 and the process start time.
+This key is:
+
+* Unique per boot session — a reboot produces a different `boot_id` and invalidates
+  any previously sealed result
+* Unique per process invocation — prevents one process's cached result from being
+  used in another process
+* Never written to disk — the key exists only in process memory
+* Zeroized on drop — requires the xref:patterns:pattern-zeroize.adoc[Zeroize] pattern
+  to be implemented before SEC can be safely deployed
+
+The TTL default is 30 seconds. A seal verification failure discards the cache, re-runs
+the full pipeline, and logs an anomaly at `warn!` level. The fresh result is returned
+to the caller — the seal failure is never exposed as a returned error.
+
+See xref:patterns:pattern-sec.adoc[Sealed Evidence Cache (SEC)] for the full design,
+implementation requirements, and FIPS posture.
+
+== Security Controls Summary
+
+[cols="1,3", options="header"]
+|===
+| Control | Primary enforcement point in pipeline
+
+| NIST 800-53 SI-7
+| Phase 1 (kernel magic), Phase 2 (filesystem magic), Phase 3 (permissions),
+  Phase 6 (digest verification). Software and information integrity throughout.
+
+| NIST 800-53 CM-6
+| Phase 4 (package substrate corroboration). Verified configuration baseline.
+
+| NIST 800-53 SA-8
+| Overall pipeline design: fail-closed hard gates, downgrade-only confidence,
+  defense in depth across seven phases.
+
+| NIST 800-53 AU-3
+| `EvidenceBundle` — every phase, every observation. Audit record content.
+
+| NIST 800-53 AC-4
+| `TrustLevel` and `LabelTrust` — typed gate values for information flow decisions.
+
+| NIST 800-53 SC-28
+| Phase 6 digest (input to SEC seal). Protection at rest for cached results.
+
+| NIST 800-53 SI-10
+| Phase 7 TPI parsing. Input validation before any field is trusted.
+
+| NSA RTB RAIN
+| Hard gates (Phase 1 only), `StaticSource` compile-time path binding.
+  Non-bypassability of the trust ladder. Phase 4 is a soft gate — no-substrate
+  downgrades confidence but does not abort the pipeline.
+
+| NSA RTB VNSSA
+| fd-anchored `fstatfs` in Phase 1; `(dev, ino)` reference in Phase 3.
+  Provenance before trust.
+
+| NSA RTB Redundancy
+| TPI in Phase 7. Two independent parse paths for security-relevant input.
+
+| NIST 800-218 SSDF PW.4.1
+| Phase 7 TPI (validate all inputs via independent parsers).
+  Phase 6 bounds-safe read (reject adversarially sized input).
+|===
+
+== API Documentation
+
+All types, traits, and functions referenced in this document are documented in the
+`umrs-platform` crate rustdoc. The following modules are the primary entry points:
+
+[cols="1,3"]
+|===
+| Module | Contents
+
+| `umrs_platform::detect`
+| `OsDetector` (pipeline orchestrator), `DetectionResult`, `DetectionError`. Module doc
+  includes the phase sequence table and compliance citations.
+
+| `umrs_platform::confidence`
+| `TrustLevel` enum (T0–T4 with `Ord` derivation), `ConfidenceModel`
+  (`upgrade`/`downgrade`/`record_contradiction`), `Contradiction`.
+
+| `umrs_platform::evidence`
+| `EvidenceBundle` (append-only provenance log), `EvidenceRecord` (per-observation
+  record), `SourceKind`, `FileStat`, `PkgDigest`, `DigestAlgorithm`.
+
+| `umrs_platform::os_release`
+| `OsRelease` struct and all validated field newtypes: `OsId`, `OsName`, `VersionId`,
+  `OsVersion`, `Codename`, `CpeName`, `ValidatedUrl`, `VariantId`, `BuildId`.
+
+| `umrs_platform::os_identity`
+| `SubstrateIdentity`, `OsFamily`, `Distro`, `KernelRelease`, `CpuArch` — types
+  derived from the package substrate, independent of `os-release`.
+
+| `umrs_platform::detect::label_trust`
+| `LabelTrust` verdict enum — the pipeline's final trust classification for the
+  `os-release` content.
+
+| `umrs_platform::detect::substrate`
+| `PackageProbe` trait, `RpmProbe`, `DpkgProbe`, `FileOwnership`, `InstalledDigest` —
+  the package substrate abstraction layer.
+|===
+
+Generate locally:
+
+[source,bash]
+----
+cd components/rusty-gadgets
+cargo doc -p umrs-platform --no-deps --open
+----
+
+== See Also
+
+* xref:patterns:pattern-os-detection.adoc[OS Detection: A Trust Ladder] — conceptual
+  overview for auditors and newcomers
+* xref:patterns:pattern-provenance.adoc[Provenance Verification] — `fstatfs` and
+  `StaticSource` design
+* xref:patterns:pattern-toctou.adoc[TOCTOU Safety] — `(dev, ino)` re-verification
+  strategy
+* xref:patterns:pattern-tpi.adoc[Two-Path Independence (TPI)] — Phase 7 parsing
+  architecture
+* xref:patterns:pattern-fail-closed.adoc[Fail-Closed] — hard gate behavior
+* xref:patterns:pattern-sec.adoc[Sealed Evidence Cache (SEC)] — future in-memory
+  caching of the pipeline result
+* xref:patterns:pattern-bounds-safe.adoc[Bounds-Safe Indexing] — bounded read in
+  Phase 6
+* xref:patterns:pattern-non-bypassability.adoc[Non-Bypassability (RAIN)] —
+  `StaticSource` compile-time binding

@@ -33,7 +33,9 @@ cargo doc -p umrs-selinux --no-deps --open
 `cargo xtask` is an alias defined in `.cargo/config.toml` that runs the `xtask` workspace crate.
 
 ---
+
 ## General Workflow
+
 - Planning mode. Decide upon primary features or new components.
 - **Before implementing any new type, trait, or module**, search the entire workspace for
   existing equivalents. Duplication requires explicit written justification. Reuse is the default.
@@ -46,14 +48,15 @@ cargo doc -p umrs-selinux --no-deps --open
   - And a use case example to identify its use as a building block.
 
 ## Claude will NEVER
+
 - Never git commit or push
 - Never delete documentation. If it is duplicate, redundant or useless information ask me. We can
-  either delete it merge it.
+  either delete it or merge it.
 
 ## Technology Stack
-- High-assurance platform with SELinux (targeted policy) and future mls work.
-- RUST is the primary language on RHEL10 with some work on Ubuntu
 
+- High-assurance platform with SELinux (targeted policy) and future MLS work.
+- Rust is the primary language on RHEL10 with some work on Ubuntu.
 
 ## Environment Context
 
@@ -88,7 +91,9 @@ Understanding the deployment environment is essential to making correct architec
 ```
 components/rusty-gadgets/   ← Cargo workspace root
   umrs-selinux/             ← PRIMARY CRATE (SELinux MLS reference monitor)
+  umrs-platform/            ← Low-level OS/kernel layer (no workspace deps)
   umrs-core/                ← Shared formatting, i18n, timing utilities
+  umrs-ls/                  ← First tool: security-enriched directory listings
   umrs-logspace/            ← Audit trail and logging
   umrs-state/               ← Prototypes: System state introspection
   cui-labels/               ← CUI label definitions (JSON-serializable)
@@ -98,64 +103,9 @@ components/rusty-gadgets/   ← Cargo workspace root
   xtask/                    ← Build automation (fmt/clippy/test)
 components/platforms/rhel10/ ← SELinux policy modules (non-Rust)
 components/tools/           ← Shell signing tools
+docs/                       ← Antora documentation (architecture, devel, patterns, operations)
+refs/                       ← Third-party standards (NIST, DoD) — see refs/manifest.md
 ```
-
-More specifically.
-```
-.
-├── build-tools
-│   └── antora
-├── components
-│   ├── apache-mls-cui
-│   ├── integrity     
-│   │   └── aide         <-- probably should be moved to deployment or operations.
-│   ├── platforms        <--  Operating system specifics
-│   │   └── rhel10       <-- Things like setrans.conf for MLS labeling
-│   ├── rusty-gadgets    <-- Primary source
-│   │   ├── target
-│   │   ├── cui-labels    <-- SELinux markings/labels for controlled unclass info
-│   │   ├── kernel-files  <--+ Prototypes for stuff that's now in selinux
-│   │   ├── mcs-setrans   <--+ Proto type tools
-│   │   ├── umrs-logspace <-- prototype work
-│   │   ├── vaultmgr      <!-- Prototype for ingesting new files
-│   │   ├── umrs-state    <!-- Prototype to capture state information
-│   │   ├── umrs-ls       <!-- First tool to show directory listings
-│   │   ├── umrs-core     <-- Uses selinux and platform. It is used by tools
-│   │   ├── umrs-selinux  <-- Imports platform
-│   │   ├── umrs-platform <-- Low level
-│   │   └── xtask
-│   ├── tools              <-- Non-ruse prototype tools
-│   │   ├── git-signing
-│   │   ├── umrs-shred
-│   │   └── umrs-signing
-│   └── umrs-python
-│       └── umrs
-├── docs              <--  Primary documentation Antora
-│   ├── images
-│   ├── modules
-│   │   ├── admin
-│   │   ├── architecture <-- Background, history, and why things are the way they are.
-│   │   ├── deployment   <-- Operating system configurations
-│   │   ├── devel        <-- Developer guides
-│   │   ├── operations   <-- Maintaining or day-to-day of an HA system
-│   │   ├── reference
-│   │   └── ROOT
-│   ├── _scratch
-│   │   └── notes
-│   └── _vendor
-│       └── ui
-├── help          <-- placeholder?
-├── man           <-- placeholder?
-├── refs
-│   ├── dod
-│   └── nist
-│       └── fips
-└── resources
-    └── i18n       <== possible internationalization. 
-        └── umrs-tester
-```
-
-
 
 ## Crate Dependency Rules
 
@@ -174,41 +124,6 @@ does not violate the table above. If a proposed design requires a direction not 
 stop and raise it with the developer before proceeding.
 
 ---
-
-## Reference Documents
-
-Third-party standards and guidance documents are stored in `refs/` at the repo root.
-The manifest at `refs/manifest.md` tracks each document's version, download date, source
-URL, and SHA-256 checksum. When asked, Claude Code will check source URLs for newer
-versions and summarize changes.
-
-Two documents in the manifest require manual browser download (DoD portals block curl).
-See `refs/manifest.md` for instructions.
-
----
-
-## Role of Claude Code in This Project
-
-This codebase operates in a high-assurance, heavily scrutinized environment. Claude Code is
-expected to function as an **architectural partner**, not just a code writer. This means:
-
-- **Proactively identify** opportunities to apply security patterns, even when not asked
-- **Flag compliance gaps** — note when a design does not satisfy a NIST, CMMC, or RTB requirement
-  it could satisfy, and propose how to close the gap
-- **Challenge trust boundaries** — when a new interface, module, or data path is being designed,
-  explicitly reason about what is trusted, what is untrusted, and where the validation boundary sits
-- **Raise new patterns** — if a technique from NIST 800-218 SSDF, NSA RTB, or related frameworks
-  applies and has not been used, surface it before implementation begins
-- **Scrutinize new dependencies** — every new crate is an attack surface and a supply chain risk;
-  flag it and assess its suitability before it is added
-- **Think in threat models** — for any new feature, ask: what does an adversary gain if this fails?
-  What does the system reveal? What can be replayed, forged, or bypassed?
-
-The goal is to seize every opportunity to strengthen the security posture. Keep the developer
-on their toes.
-
----
-
 
 ## umrs-selinux Module Map
 
@@ -269,75 +184,12 @@ requirement is tiered:
 
 ## High-Assurance Design Patterns
 
-These patterns derive from NSA RTB VNSSA, NIST 800-53, NIST CMMC 2.0, NIST 800-171, and
-NIST 800-218 (SSDF). They are **not optional** — apply them wherever a security decision,
-parse operation, or I/O operation is involved. When planning or reviewing code, Claude Code
-must proactively flag where these patterns could be applied but have not been.
+The full pattern library with threat descriptions, codebase examples, and control citations
+lives in `docs/modules/patterns/pages/`. The developer guide at
+`docs/modules/devel/pages/high-assurance-patterns.adoc` provides the consolidated narrative.
 
-### TPI — Two-Path Independence
-Parse or validate using two independent methods (e.g., `nom` + `FromStr`). If the results
-disagree, fail closed. This eliminates single-point-of-failure in any security-relevant parse.
-Applies to: context parsing, any input that drives an authorization or classification decision.
-
-### TOCTOU Safety
-Anchor all I/O operations to a single open `File` handle (via `rustix` fd-based syscalls).
-Never re-open a resource by path for a second operation — the filesystem state may have changed
-between calls.
-
-### Fail-Closed
-On any ambiguity, parse error, or disagreement between independent paths, deny access and
-surface the error. Never silently succeed with a degraded or default result in a security context.
-
-### Provenance Verification (NIST 800-53 SI-7)
-Before trusting data from a kernel pseudo-filesystem (`selinuxfs`, `procfs`), verify the
-filesystem magic via `statfs`. This prevents spoofing via bind-mounts or malicious overlays.
-
-### Loud Failure
-Errors are visible and auditable — never swallowed. Use `log::warn!` or `log::error!` when
-a security-relevant operation degrades or fails, even if the caller handles the error.
-
-### Non-Bypassability (RAIN)
-Security checks must always be invoked. Use private constructors, newtype wrappers, and
-module boundaries to ensure callers cannot accidentally skip validation.
-
-### Secure Arithmetic (SSDF PW 4.1)
-For any integer arithmetic on security-relevant values (sensitivity levels, category IDs,
-bitmask indices), use `checked_*`, `saturating_*`, or `wrapping_*` operations explicitly.
-Do not rely on debug-mode overflow panics or release-mode wrapping behavior for correctness.
-Note: Rust release builds disable overflow checks by default — consider enabling
-`overflow-checks = true` in `[profile.release]` for binaries in this codebase.
-
-### Zeroize Sensitive Data (SSDF PW 4.1, NIST 800-53 MP-4)
-Any type that holds secrets, credentials, key material, or classified data must implement
-`Zeroize` (or `ZeroizeOnDrop`) using the `zeroize` crate. For types where the `Debug` output
-must also be redacted, consider the `secrecy` crate (`Secret<T>` prints `[REDACTED]`).
-Applies to: `vaultmgr` secret types, any buffer holding raw key bytes or cleartext credentials.
-
-### Constant-Time Comparisons (SSDF PW 4.1)
-Any comparison of security-relevant byte sequences (tokens, MACs, credentials) must use
-constant-time equality to prevent timing side-channels. Use the `subtle` crate
-(`ConstantTimeEq`). Standard `==` leaks timing information proportional to the position of
-the first differing byte.
-
-### Error Information Discipline (NIST 800-53 SI-12)
-Error messages must never contain security labels, key material, credentials, or classified
-data. Return structured error types; keep sensitive context in audit logs (where access is
-controlled), not in user-visible error strings.
-
-### Bounds-Safe Indexing (SSDF PW 4.1)
-Prefer `.get(i)` over `[i]` for security-relevant array access. Never assume index validity;
-treat out-of-bounds as a security event, not a logic error.
-
-### Sealed Evidence Cache — SEC (NIST 800-53 SC-28, SC-12)
-See the pattern library: `docs/modules/patterns/pages/pattern-sec.adoc`.
-
-### Supply Chain Hygiene (SSDF PO 1.2, PW 4.3)
-Every new external crate is an attack surface. Before adding a dependency:
-- Prefer crates with minimal transitive dependency trees
-- Check with `cargo audit` for known vulnerabilities
-- Assess maintenance status and provenance
-- Prefer crates that are FIPS-compatible or agnostic
-- `Cargo.lock` is committed and treated as an auditable artifact
+Enforcement rules for these patterns are in `.claude/rules/high_assurance_pattern_rules.md`
+and `.claude/rules/assurance_rules.md`.
 
 ---
 
@@ -361,18 +213,54 @@ raise the relevant pattern or concern before proceeding:
 | New crate added to workspace | Add `#![forbid(unsafe_code)]` to its crate root immediately |
 | New type, trait, or module proposed | Search workspace for existing equivalents first — duplication requires written justification |
 | Expensive verification result reused across calls | SEC — sealed evidence cache with HMAC + TTL |
+| Security-relevant fn returns Result/Option | `#[must_use]` with message string |
+| New config file read from /etc/ | Trust gate — confirm kernel subsystem is active first |
 
 ---
 
-## Design Invariants
+## Agent Directory
 
-- Follow and use techniques in NSA RTB VNSSA and RAIN
-- TOCTOU safe and elimination of implicit state (deterministic execution) among others
-- Always try to satisfy NIST 800-53 Security Controls
-- Let NIST CMMC 2.0 Level 1, 2, 3 and NIST 800-171 drive design choices
-- Follow NIST 800-218 Secure Software Development Framework
-- Types validate at construction; raw strings never cross module boundaries
-- TOCTOU safety is achieved by anchoring all operations to a single `File` handle (`rustix` fd-based syscalls), never re-opening by path
-- `CategorySet` layout is deterministic (`[u64; 16]`, little-endian bit ordering); serialized form must remain stable
-- `SecureDirent` records findings as `SecurityObservation` enum values (data), not log strings
-- Prefer easy to read code over fancier, syntactic candy — explicit `if/else` and `match` over functional chaining
+| Agent | Responsibility |
+|---|---|
+| `rust-developer` | New patterns implemented, API changes, doc gaps noticed in source, patterns needed but not yet in library |
+| `security-engineer` | Compliance findings that require doc updates, new control mappings, audit gaps |
+| `security-auditor` | Compliance audits: verifies control citations, identifies annotation debt, produces audit findings and reports |
+| `tech-writer` | Questions about API or pattern intent, requests for source examples |
+| `senior-tech-writer` | Architecture-level doc decisions, cross-module structural changes |
+| `researcher` | RAG pipeline management, reference collection ingestion, standards research, research reports (`refs/reports/`) |
+| `umrs-translator` | Text extractions from i18n-wrapped strings, language translations for active domains |
+| `changelog-updater` | Structured changelog maintenance: tracks additions, changes, and fixes across crates, docs, and infrastructure in `.claude/CHANGELOG.md` |
+
+---
+
+## Role of Claude Code in This Project
+
+This codebase operates in a high-assurance, heavily scrutinized environment. Claude Code is
+expected to function as an **architectural partner**, not just a code writer. This means:
+
+- **Proactively identify** opportunities to apply security patterns, even when not asked
+- **Flag compliance gaps** — note when a design does not satisfy a NIST, CMMC, or RTB requirement
+  it could satisfy, and propose how to close the gap
+- **Challenge trust boundaries** — when a new interface, module, or data path is being designed,
+  explicitly reason about what is trusted, what is untrusted, and where the validation boundary sits
+- **Raise new patterns** — if a technique from NIST 800-218 SSDF, NSA RTB, or related frameworks
+  applies and has not been used, surface it before implementation begins
+- **Scrutinize new dependencies** — every new crate is an attack surface and a supply chain risk;
+  flag it and assess its suitability before it is added
+- **Think in threat models** — for any new feature, ask: what does an adversary gain if this fails?
+  What does the system reveal? What can be replayed, forged, or bypassed?
+
+The goal is to seize every opportunity to strengthen the security posture. Keep the developer
+on their toes.
+
+---
+
+## Reference Documents
+
+Third-party standards and guidance documents are stored in `refs/` at the repo root.
+The manifest at `refs/manifest.md` tracks each document's version, download date, source
+URL, and SHA-256 checksum. When asked, Claude Code will check source URLs for newer
+versions and summarize changes.
+
+Two documents in the manifest require manual browser download (DoD portals block curl).
+See `refs/manifest.md` for instructions.

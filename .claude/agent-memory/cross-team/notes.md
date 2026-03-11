@@ -23,12 +23,35 @@ Mark entries `resolved` when acted on. Do not delete entries.
 |---|---|
 | `rust-developer` | New patterns implemented, API changes, doc gaps noticed in source, patterns needed but not yet in library |
 | `security-engineer` | Compliance findings that require doc updates, new control mappings, audit gaps |
+| `security-auditor` | Compliance audits: verifies control citations, identifies annotation debt, produces audit findings and reports |
 | `tech-writer` | Questions about API or pattern intent, requests for source examples |
 | `senior-tech-writer` | Architecture-level doc decisions, cross-module structural changes |
+| `researcher` | RAG pipeline management, reference collection ingestion, standards research, research reports (`refs/reports/`) |
+| `umrs-translator` | Text extractions from i18n-wrapped strings, language translations for active domains |
+| `changelog-updater` | Structured changelog maintenance: tracks additions, changes, and fixes across crates, docs, and infrastructure in `.claude/CHANGELOG.md` |
 
 ---
 
 <!-- Entries below, newest first -->
+
+---
+
+## [2026-03-11] coordinator → all-agents: Notify umrs-translator for new i18n strings
+
+**Status**: open
+
+If your work introduces new or updated code that contains i18n-wrapped strings (e.g.,
+`gettext!`, `tr!`, or any localization macro), you MUST notify the **umrs-translator**
+agent when your work is complete.
+
+The umrs-translator will then:
+1. Perform text extractions from the updated source.
+2. Perform language translations for all active domains.
+
+Do NOT attempt text extraction or translation yourself — that is the umrs-translator's
+responsibility.
+
+**Active i18n domains**: umrs-ls, umrs-state, umrs-logspace
 
 ---
 

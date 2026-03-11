@@ -133,6 +133,21 @@ pub enum SecurityObservation {
     /// NIST SP 800-53 AU-3: incomplete audit record indicator.
     AccessDenied,
 
+    /// A SELinux xattr was present but one or both TPI parse paths failed.
+    ///
+    /// The label is on the inode but could not be verified. This is a
+    /// code/validator defect — distinct from a genuinely unlabeled inode
+    /// (`NoSelinuxContext`) and from a TPI integrity disagreement
+    /// (`TpiDisagreement`).
+    ///
+    /// Display as `<parse-error>` rather than `<unlabeled>` to prevent false
+    /// negatives in audit output (NIST 800-53 AU-3: accurate audit records).
+    /// NIST 800-53 SI-12: information management.
+    SelinuxParseFailure,
+
+    // ── Risk ──────────────────────────────────────────────────────────────────
+    // (continued below the Good block — TpiDisagreement is Risk)
+
     // ── Good ──────────────────────────────────────────────────────────────────
     /// An IMA integrity hash (`security.ima` xattr) is present on this file.
     /// The inode is under active integrity measurement or appraisal.
@@ -144,6 +159,19 @@ pub enum SecurityObservation {
     /// cleared — even by root.
     /// NIST SP 800-53 AU-9, CM-5.
     ImmutableFlagSet,
+
+    // ── Risk (integrity events) ────────────────────────────────────────────────
+    /// Both TPI parse paths succeeded but produced structurally different
+    /// security contexts.
+    ///
+    /// This is a potential integrity event: an adversary manipulating the
+    /// xattr byte stream at the kernel interface could produce this outcome.
+    /// Reserve this for the TPI Disagreement case only — do not emit this for
+    /// single-path failures (those produce `SelinuxParseFailure`).
+    ///
+    /// NIST 800-53 SI-7: software and information integrity.
+    /// NSA RTB RAIN: redundancy cross-check failure.
+    TpiDisagreement,
     // ── Add new observations above this line ──────────────────────────────────
 }
 
@@ -157,7 +185,8 @@ impl SecurityObservation {
         match self {
             Self::WorldWritable
             | Self::NoSelinuxContext
-            | Self::SetuidWritable => ObservationKind::Risk,
+            | Self::SetuidWritable
+            | Self::TpiDisagreement => ObservationKind::Risk,
             Self::SetuidBitSet
             | Self::SetgidBitSet
             | Self::HardLinked {
@@ -170,7 +199,8 @@ impl SecurityObservation {
             | Self::UnresolvedGroup {
                 ..
             }
-            | Self::AccessDenied => ObservationKind::Warning,
+            | Self::AccessDenied
+            | Self::SelinuxParseFailure => ObservationKind::Warning,
             Self::ImaHashPresent | Self::ImmutableFlagSet => {
                 ObservationKind::Good
             }
@@ -207,6 +237,13 @@ impl fmt::Display for SecurityObservation {
             } => format!("orphaned group (gid={gid})"),
             Self::AccessDenied => {
                 "access denied during attribute read".to_owned()
+            }
+            Self::SelinuxParseFailure => {
+                "SELinux label present but unverifiable (parse failure)"
+                    .to_owned()
+            }
+            Self::TpiDisagreement => {
+                "SELinux TPI integrity violation: parsers disagree".to_owned()
             }
             Self::ImaHashPresent => "IMA integrity hash present".to_owned(),
             Self::ImmutableFlagSet => "immutable flag set".to_owned(),

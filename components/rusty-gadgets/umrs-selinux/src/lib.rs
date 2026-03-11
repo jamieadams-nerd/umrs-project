@@ -86,6 +86,9 @@ mod observations;
 //
 pub use observations::{ObservationKind, SecurityObservation};
 
+pub use secure_dirent::SelinuxCtxState;
+pub use xattrs::{TpiError, XattrReadError};
+
 pub use category::{Category, CategorySet};
 pub use mls::level::MlsLevel;
 pub use sensitivity::SensitivityLevel;

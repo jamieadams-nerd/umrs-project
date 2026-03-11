@@ -7,6 +7,9 @@
 ** xref:rust-must-use-contract.adoc[Compile-time contract enforcement: #[must_use]]
 ** xref:nom-parser.adoc[The nom parser combinator]
 
+* Platform Internals
+** xref:os-detection-deep-dive.adoc[OS Detection Pipeline — Deep Dive]
+
 * Language Guides
 ** xref:rust-style-guide.adoc[Rust style guide]
 ** xref:secure-bash.adoc[Secure Bash guide]

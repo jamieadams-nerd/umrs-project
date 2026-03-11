@@ -1,5 +1,59 @@
 # Changelog
 
+## 2026-03-11
+
+### Added
+- **Pattern library expansion**: 3 new pattern pages — `pattern-execution-measurement.adoc` (debug-mode timing discipline), `pattern-layered-separation.adoc` (write/read/display layer separation), `pattern-audit-cards.adoc` (`AttributeCard<T>` structured audit output); pattern index and nav updated
+- **TPI failure analysis report**: Security-auditor assessment at `.claude/reports/2026-03-11-tpi-failure-analysis.md` — 4 findings (3 HIGH, 1 LOW/MEDIUM); all 3 HIGH findings remediated (tasks #5, #6, #7)
+- **TpiError / XattrReadError / SelinuxCtxState**: Typed error hierarchy and 4-state label model in `xattrs.rs`, `secure_dirent.rs`, `observations.rs`; `SecurityObservation::SelinuxParseFailure` (Warning) and `TpiDisagreement` (Risk) variants; 43 new tests across `tpi_error_tests.rs`, `selinux_label_state_tests.rs`, `xattr_log_discipline_tests.rs`
+- **TPI behavior documentation**: New section in `docs/modules/umrs-tools/pages/umrs-ls.adoc` — three-outcome table, log signature patterns, operator procedures
+- **TpiError enum and XattrReadError**: New typed error hierarchy in `xattrs.rs` — `TpiError::PathAFailed`, `PathBFailed`, `Disagreement`; `XattrReadError::OsError`, `Tpi`; both paths always attempted before gate evaluation; 18 tests in `tpi_error_tests.rs`
+- **SelinuxCtxState enum**: New `Labeled`, `Unlabeled`, `ParseFailure`, `TpiDisagreement` states in `secure_dirent.rs` replacing `Option<SecurityContext>`; distinct display strings (`<unlabeled>`, `<parse-error>`, `<unverifiable>`); 20 tests in `selinux_label_state_tests.rs`
+- **SecurityObservation variants**: `SelinuxParseFailure` (Warning) and `TpiDisagreement` (Risk) added to `observations.rs`
+- **TPI behavior documentation**: New section in `docs/modules/umrs-tools/pages/umrs-ls.adoc` — three-outcome table, log signature patterns, operator procedures for each failure mode
+- **Log discipline tests**: `xattr_log_discipline_tests.rs` — 5 tests verifying nom error output never contains raw input strings (SI-12)
+- **umrs-platform RPM subsystem**: New `src/detect/substrate/rpm_header.rs` (pure-Rust RPM blob parser with TPI dual-path parsing, checked arithmetic, bounds-safe indexing, error information discipline); `src/detect/substrate/rpm_db.rs` (read-only SQLite layer for `/var/lib/rpm/rpmdb.sqlite`, feature-gated `rpm-db`); `src/os_identity.rs` (typed platform identity: `OsFamily`, `Distro`, `KernelRelease`, `CpuArch`, `SubstrateIdentity`)
+- **umrs-platform OS detection phases**: New `src/detect/file_ownership.rs` (ownership verification phase); reworked `src/detect/pkg_substrate.rs` (RPM-first dispatch, T3 threshold, Biba pre-check); updated `src/detect/integrity_check.rs` (FIPS gate via ProcfsText)
+- **umrs-platform examples**: `examples/os_detect.rs`, `examples/rpm_probe.rs`, `examples/display.rs` — three new OS detection examples
+- **umrs-platform integration tests**: `tests/rpm_header_tests.rs` (16 tests), `tests/rpm_db_tests.rs` (7 tests)
+- **High-assurance patterns module** in docs: `patterns/nav.adoc` navigation; `patterns/pages/index.adoc` reference table; 13 pattern pages (TPI, TOCTOU, Provenance, Fail-Closed, Non-Bypassability, Secure Arithmetic, Bounds-Safe Indexing, Error Discipline, Loud Failure, Zeroize, Constant-Time Comparison, SEC/Sealed Evidence Cache, Supply Chain Hygiene) with threat analysis, codebase examples, and control citations
+- **SEC pattern (Sealed Evidence Cache)** — New high-assurance pattern for reusing expensive verification results via HMAC-SHA-256 sealing, TTL, and FIPS gate (NIST 800-53 SC-28, SC-12)
+- **architecture/ module rebuild**: `architecture/nav.adoc` restructured into 4 sections; new pages: `case-studies.adoc` (12 failure cases mapped to UMRS controls), `mls-label-model.adoc`, `cui-structure.adoc`, `integrity-and-provenance.adoc`, `rationale.adoc`, `truth-concepts.adoc` (placeholder)
+- **reference/ module expansion**: New 9 pages — `fips-cryptography-cheat-sheet.adoc`, `key-recommendation-list.adoc`, `cui-descriptions.adoc`, `cui-category-abbreviations.adoc`, `setrans-technical.adoc`, `example-setrans-conf.adoc`, `rhel-selinux-users.adoc`, `mls-colors.adoc`, `umrs-mls-registry.adoc`; new `compliance-frameworks.adoc` standards registry
+- **devel/ module improvements**: Substantially rewritten `i18n.adoc` (7-step workflow, architecture rule, domain listing); new `compliance-annotations.adoc` (with codebase examples); converted `rust-must-use-contract.adoc` from markdown
+- **ROOT/ module onboarding**: New `introduction.adoc` (~500 words) and `getting-started.adoc` (3-path onboarding: deploy, develop, audit)
+- **admin/ placeholder module** — Created with stub navigation; admin content merged into operations/
+- **Deployment module**: New `ubuntu.adoc` placeholder; `rhel10-packages.adoc` extended with post-install packages section
+- **umrs-core console modules**: `BoxStyle` struct in `src/console/symbols.rs` with `SLIM`, `BOLD`, `ROUNDED` constants and `icons` submodule; `TypographyStyle` enum and `stylize()` function in `src/console/typography.rs` (Unicode mathematical alphabets)
+- **umrs-core validation**: New `src/validate.rs` — `UmrsPattern` enum with `is_valid()` validator using `OnceLock<Mutex<HashMap>>` regex cache
+- **i18n domains**: Active `umrs-logspace` translations (5 strings: Resource Pool, Mount point, Total/Free space, Lifecycle) with fr_CA locale; updated `umrs-ls` (5 active locales: fr_CA, fr_FR, en_GB, en_AU, en_NZ); `umrs-state` (8 strings, fr_CA)
+- **umrs-logspace i18n wiring**: `print_pools()` now calls `tr()` for all user-visible strings; `umrs-core` added as dependency
+- **Security audit report**: 29-finding security audit at `components/rusty-gadgets/.claude/reports/2026-03-11-rpm-db-security-audit.md` documenting findings and remediation status
+
+### Changed
+- **CLAUDE.md refactored**: Reduced from 378 to ~195 lines (~48%); removed duplicate workspace tree and HA pattern descriptions that duplicated `.claude/rules/` and `docs/modules/patterns/`; added missing crates (`umrs-platform`, `umrs-ls`) to workspace layout; added 2 new architectural review triggers (`#[must_use]`, trust gates); added pointer to pattern library instead of duplicating content
+- **High-assurance pattern rules expanded**: 6 new rules distilled from `docs/modules/devel/pages/high-assurance-patterns.adoc` into `.claude/rules/high_assurance_pattern_rules.md` — Must-Use Contract, Validate at Construction, Trust Gate, Security Findings as Data, Compile-Time Path Binding, Fixed-Size Deterministic Layout
+- **TPI architecture reworked**: `read_context()` in `xattrs.rs` now always runs both parse paths before evaluating the gate; single-path failures logged at WARN, disagreements at CRITICAL; nom error output sanitized to prevent MLS level leakage (SI-12); `SecureDirent` label state replaced `Option<SecurityContext>` with `SelinuxCtxState` enum — `<parse-error>` and `<unverifiable>` now distinct from `<unlabeled>`
+- **umrs-platform Cargo.toml**: Added `rusqlite 0.31` (optional, rpm-db), `sha2 0.10`, `thiserror 1`; FFI exception documented for rusqlite/libsqlite3-sys
+- **umrs-selinux data files**: `secolor.conf` and `setrans.conf` relocated from crate root to `data/` subdirectory
+- **umrs-ls**: Updated `ObservationKind` import to use `umrs_selinux` re-export
+- **umrs-state**: i18n wiring for 8 translatable strings
+- **Documentation structure**: Antora `antora.yml` updated to register `patterns/` module; architecture, reference, and devel modules restructured
+- **devel/ module nav**: Updated with pattern subsections and high-assurance pattern reference table; added "Platform Internals" section with OS Detection Pipeline deep-dive
+- **patterns/ module nav**: Added "OS Detection: A Trust Ladder" under "Patterns — Verification Pipelines"
+- **Technical documentation**: Multiple .txt/.md files converted to .adoc across modules; originals quarantined to `docs/_scratch/`
+- **i18n developer guide**: Content merged from `resources/i18n/developer-guide.md` into `devel/pages/i18n.adoc`
+- **OS Detection documentation alignment**: All illustrative code snippets in both pattern and deep-dive documents corrected to match current `umrs-platform` source (EvidenceRecord fields, phase signatures, ConfidenceModel API, Phase 4 soft-gate behavior, LabelTrust paths, caller contracts)
+
+### Fixed
+- **umrs-selinux type validation**: `validate_type()` in `type_id.rs` used `is_ascii_lowercase()` instead of `is_ascii_alphabetic()`, rejecting valid SELinux types like `NetworkManager_etc_t`; both TPI paths shared the bug; fixed with 6 new regression tests (3 type tests, 3 context tests)
+- **umrs-platform security audit fixes applied**: RPM-22 (HIGH: `EvidenceBundle::records` made private to enforce AU-10); RPM-01 (replaced nightly `is_multiple_of` API with stable Rust); RPM-02 (rusqlite error Display no longer leaks filesystem paths — SI-12); RPM-07 (added `ArrayLengthMismatch` error for previously silent empty return); RPM-24 (Cargo.toml split `rpm-db` from `rpm-db-bundled` features)
+- **Documentation gaps**: High-assurance patterns previously scattered; now consolidated in patterns/ module with unified threat/pattern/example structure
+- **i18n architecture clarity**: Rules and workflow documented in devel/ with active domains, feature gates, and locale listings
+- **OS Detection pattern documentation**: Pattern page `pattern-os-detection.adoc` — "OS Detection: A Trust Ladder" targeting auditors and newcomers; covers 7-phase trust ladder (T0–T4), threat model, Mermaid diagram, LabelTrust verdict table, EvidenceBundle rationale, and security controls mapping
+- **OS Detection deep-dive documentation**: Developer guide `os-detection-deep-dive.adoc` covering per-phase sections (What/Why/Code/Controls), state machine diagram, ConfidenceModel and EvidenceBundle architecture, LabelTrust caller contract, sealed memory cache design, and API reference table
+- **Documentation Sync Rule**: New rule in `.claude/rules/agent_behavior_rules.md` requiring `rust-developer` to create `doc-sync:` tasks for `tech-writer` when OS detection public APIs, phase logic, or type definitions change
+
 ## 2026-03-10
 
 ### Added

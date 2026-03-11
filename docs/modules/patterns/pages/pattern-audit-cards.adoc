@@ -1,0 +1,203 @@
+= Pattern: Audit Cards
+:toc: left
+:description: Render every kernel attribute read as a structured, self-contained audit card that identifies the attribute, its source path, its value, and when it was read.
+
+// NIST 800-53 AU-3 — Content of Audit Records
+// NIST 800-53 AU-12 — Audit Record Generation
+// NIST 800-53 SI-7 — Software and Information Integrity
+// NSA RTB RAIN — Non-Bypassability; every read produces an auditable record
+
+== Overview
+
+When a kernel attribute is read — enforcement state, MLS status, FIPS mode, lockdown
+level — the raw value alone is not a complete audit record. An auditor reviewing the
+system after the fact cannot reconstruct what attribute was read, from which path, by which
+code, or when, without consulting additional context that may not be available.
+
+The Audit Card pattern solves this by attaching a structured, self-describing rendering
+to every kernel attribute read. Each card identifies the kernel object, the attribute
+name, the path on the filesystem, the value that was read, a human-readable description of
+what the attribute means, a note about kernel behavior, and the Unix timestamp at which
+the read was performed.
+
+Cards are machine-formatted and grep-friendly. A security analyst searching log output for
+a specific attribute read can match on the fixed field labels. An automated monitoring
+rule can extract any field by position. The card is self-contained: no external state is
+needed to interpret it.
+
+This pattern satisfies NIST 800-53 AU-3, which requires that audit records contain
+sufficient information to establish what event occurred, when, and under what circumstances.
+
+== The Threat
+
+A kernel attribute read that produces only a raw value in a log has two audit gaps:
+
+. *Identification gap*: "FIPS enabled: true" in a log line does not record what path
+  was read, whether the provenance check passed, or when the value was obtained. An
+  auditor cannot distinguish a value read through the verified path from a value injected
+  by a spoofed mount.
+
+. *Context gap*: The meaning of a raw kernel attribute value — especially for attributes
+  with non-obvious semantics, such as the bracketed-mode format of the lockdown attribute
+  (`none [integrity] confidentiality`) — is not self-evident. A card that includes a
+  `Description` and a `Note` field provides the context an auditor needs without requiring
+  a manual cross-reference to kernel documentation.
+
+Without structured cards, an audit trail for kernel attribute reads depends on log lines
+being complete, consistently formatted, and correlated correctly with timestamps from
+other sources. All three of these properties are fragile. A structured card eliminates
+the dependency.
+
+== The Pattern
+
+`AttributeCard<T>` is the carrier type. It owns the value read from the kernel and records
+the `SystemTime` at which the read was performed. The `Display` implementation prints the
+card as a fixed-format block.
+
+The `read_with_card()` method on `SecureReader` produces a card as evidence that the value
+was obtained through the full provenance-verified read path. A card produced by
+`read_with_card()` is proof of provenance, not just a convenience display format.
+
+A complete card looks like this:
+
+----
+--- [ UMRS KERNEL ATTRIBUTE CARD ] ---
+KernelObj  : security
+Attribute  : lockdown
+Path       : /sys/kernel/security/lockdown
+Value      : Integrity
+ReadAt     : 1741651200
+
+Description:
+none       -- no lockdown; privileged userspace retains full kernel access
+integrity  -- prevents modifications to kernel code and critical data
+confidentiality -- additionally prevents extraction of kernel secrets
+
+Note:
+Read-only. Active mode shown in brackets: `none [integrity] confidentiality`.
+Configured at boot via `lockdown=` kernel parameter or via IMA policy.
+---------------------------------------
+----
+
+Every field is present on every card. The `ReadAt` field is a Unix timestamp (seconds
+since epoch), making it directly comparable to system log timestamps without timezone
+conversion. The `---` delimiters make the card boundaries grep-able.
+
+== In the UMRS Codebase
+
+`AttributeCard<T>` lives in `umrs-platform/src/kattrs/`. The `Display` implementation
+formats the card from the type's associated constants and the stored value:
+
+[source,rust]
+----
+// umrs-platform: kattrs.rs
+
+impl<T: KernelFileSource + StaticSource> fmt::Display for AttributeCard<T> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let ts = self.read_at
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_secs();
+        write!(
+            f,
+            "--- [ UMRS KERNEL ATTRIBUTE CARD ] ---\n\
+             KernelObj : {}\n\
+             Attribute : {}\n\
+             Path      : {}\n\
+             Value     : {:?}\n\
+             ReadAt    : {ts}\n\n\
+             Description: \n{}\n\n\
+             Note: \n{}\n\
+             ---------------------------------------",
+            T::KOBJECT, T::ATTRIBUTE_NAME, T::PATH,
+            self.value, T::DESCRIPTION, T::KERNEL_NOTE
+        )
+    }
+}
+----
+
+`T::KOBJECT`, `T::ATTRIBUTE_NAME`, `T::PATH`, `T::DESCRIPTION`, and `T::KERNEL_NOTE` are
+compile-time constants provided by the `KernelFileSource` trait. Every kernel attribute
+type in this codebase implements `KernelFileSource`, which means every type that can
+appear in a card carries its own self-description. There is no runtime lookup and no
+possibility of a card being printed with incorrect or placeholder field values.
+
+The `read_at` field captures `SystemTime::now()` at the moment the read completes inside
+`SecureReader`. It is set once, at construction, and is not modifiable by the caller.
+This guarantees the timestamp in the card corresponds to the actual read, not to a later
+rendering call.
+
+=== Producing a card
+
+[source,rust]
+----
+// Example: read KernelLockdown and print the card
+let card: AttributeCard<KernelLockdown> = SecureReader::<KernelLockdown>::new().read_with_card()?;
+println!("{card}");
+----
+
+The card type is parameterized by the attribute type. A card for `KernelLockdown` and
+a card for `SelinuxEnforce` are different types — they cannot be mixed up. The compiler
+rejects incorrect combinations at compile time.
+
+== When to Apply
+
+Apply the Audit Card pattern whenever a kernel attribute is read and the read is part of
+a security decision or audit trail. Specifically:
+
+* SELinux enforcement state (`SelinuxEnforce`)
+* SELinux MLS enablement (`SelinuxMlsEnabled`)
+* FIPS mode (`ProcFips`)
+* Kernel lockdown level (`KernelLockdown`)
+* Any new kernel attribute type that is added to the `umrs-platform` crate
+
+Cards are not required for every display or logging use of a value that was already read
+through a card-producing path. The card is an audit artifact for the read event itself.
+Subsequent uses of the value in display or logic do not need to re-emit a card.
+
+The architectural review trigger is: *new kernel attribute type → implement
+`KernelFileSource` with complete `DESCRIPTION` and `KERNEL_NOTE` constants so that
+`AttributeCard<T>` produces a complete card for that attribute*.
+
+== Security Controls
+
+[cols="1,2"]
+|===
+| Control | Applicability
+
+| NIST 800-53 AU-3
+| Content of Audit Records — cards provide all required fields: what (attribute name),
+  where (path, kernel object), what value (Value), and when (ReadAt)
+
+| NIST 800-53 AU-12
+| Audit Record Generation — cards are produced at the point of the read, not reconstructed
+  later; the timestamp is captured during the read operation
+
+| NIST 800-53 SI-7
+| Software and Information Integrity — a card produced by `read_with_card()` is evidence
+  that the value passed through the provenance-verified read path
+
+| NSA RTB RAIN
+| Non-Bypassability — the `KernelFileSource` trait makes incomplete cards a compile error;
+  every card has every field because the compiler requires it
+|===
+
+== Summary
+
+Every kernel attribute read in this codebase can produce a structured audit card through
+`SecureReader::read_with_card()`. The card identifies the kernel object, attribute name,
+path, value, and read timestamp in a fixed, grep-friendly format. All fields are
+compile-time constants on the attribute type — there is no way to produce a card with
+missing or placeholder fields. A card produced by the `read_with_card()` path is also
+evidence of provenance: the value passed through the full filesystem magic verification
+before reaching the card.
+
+== See Also
+
+* xref:pattern-provenance.adoc[Provenance Verification] — `read_with_card()` includes
+  the provenance check; a card is proof the check was performed
+* xref:pattern-loud-failure.adoc[Loud Failure] — if the provenance check fails, the card
+  is never produced; the error is logged before the caller sees it
+* xref:pattern-non-bypassability.adoc[Non-Bypassability (RAIN)] — the `KernelFileSource`
+  trait requirement makes incomplete `AttributeCard` implementations a compile error
+* xref:devel:high-assurance-patterns.adoc[High-Assurance Coding Patterns]

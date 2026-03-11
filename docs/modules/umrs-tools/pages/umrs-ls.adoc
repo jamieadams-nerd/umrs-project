@@ -348,6 +348,11 @@ and nothing more.
 The object is genuinely not labeled.
 This can occur on filesystems without SELinux xattr support, or on objects
 that were created outside SELinux policy.
++
+NOTE: An entry can also appear under `<unlabeled> :: <no-level>` when the label
+exists on the inode but the TPI parser could not verify it.
+The log output distinguishes these cases.
+See <<tpi-behavior>>.
 
 === Why this matters
 
@@ -426,6 +431,203 @@ The tool sees the names from `readdir`; it cannot reach the inodes.
 
 The `legacy-import.log` entry is genuinely unlabeled — `open()` succeeded,
 but no `security.selinux` xattr was found on the inode.
+
+'''
+
+[#tpi-behavior]
+== TPI Parse Behavior and Label Verification
+
+=== What TPI is
+
+When `umrs-ls` reads the SELinux label from an open file descriptor, it does not parse that
+label once and trust the result.
+It runs two independent parsers against the same raw xattr bytes:
+
+* *Path A* — a `nom`-based declarative parser that applies formal grammar rules to
+  the label string.
+* *Path B* — a `FromStr`-based imperative parser that constructs the same
+  `SecurityContext` value through a separate code path.
+
+After both parsers complete, the results are compared.
+Only if they agree does the function return a verified `SecurityContext`.
+This pattern is called Two-Path Independence (TPI).
+
+The rationale: any single parser can have a bug that admits an invalid label or
+produces an incorrect interpretation.
+Using two independent parsers and requiring them to agree eliminates single-point
+parse failure as a trust boundary.
+A bug that corrupts a label must corrupt it in the same way in both parsers — an
+event far less likely than a single-parser failure.
+(NSA RTB Non-Bypassability/RAIN; NIST 800-53 SI-7)
+
+The timing of the TPI gate is recorded at `debug` log level on each successful
+verification:
+
+----
+RTB Redundancy Success: Security Ctx logic match in 112µs
+----
+
+=== Three distinct outcomes
+
+The TPI gate produces three structurally different outcomes.
+Understanding which outcome occurred determines the correct response.
+
+[cols="1,2,2,2", options="header"]
+|===
+| Outcome | Condition | Display in umrs-ls | Log level
+
+| Verified
+| Both parsers succeeded and agree.
+| Label shown normally in the group header.
+| `DEBUG` (timing only)
+
+| Single-path failure
+| One parser could not parse the label (parse or validation error).
+  The cross-check gate is never reached.
+| `<unlabeled> :: <no-level>`
+| `ERROR` then `WARN`
+
+| TPI disagreement
+| Both parsers completed but produced different `SecurityContext` values.
+| `<unlabeled> :: <no-level>`
+| `ERROR` (critical integrity event)
+|===
+
+These outcomes are distinct in their security meaning.
+Single-path failure is a code defect — the label is on the inode but the tool
+cannot currently parse it.
+TPI disagreement is a potential integrity event — both parsers ran to completion
+and arrived at different answers, which should never happen on a well-formed label.
+
+NOTE: The current codebase does not produce different display strings for these
+two outcomes.
+Both produce `<unlabeled> :: <no-level>`.
+Tasks #5, #6, and #7 are planned to introduce separate display states
+(`<parse-error>` for single-path failures, `<restricted>` for TPI disagreement)
+so that operators can distinguish them in tool output without inspecting logs.
+Until that work is complete, log inspection is required when either condition
+is present.
+
+=== What `<unlabeled> :: <no-level>` means
+
+When a file appears under the group header `<unlabeled> :: <no-level>`, one of
+three conditions caused it:
+
+. *Genuinely unlabeled* — `open()` succeeded, `fgetxattr(fd, "security.selinux")`
+  returned `ENODATA`.
+  The inode has no SELinux xattr.
+  This is expected for objects created outside SELinux policy or on filesystems that
+  do not support xattrs.
+  No log line is emitted; the absence of a label is treated as a normal observation.
+
+. *Single-path parse failure* — `open()` succeeded, the xattr was read, but one of
+  the two parsers could not produce a valid `SecurityContext`.
+  The cross-check gate was never reached.
+  The label exists on the inode but is unverifiable by the current parser.
+  An `ERROR` log line and a subsequent `WARN` log line are emitted.
+
+. *TPI disagreement* — `open()` succeeded, the xattr was read, and both parsers
+  completed, but their outputs did not match.
+  This is a critical integrity event.
+  Multiple `ERROR` log lines are emitted, including the raw parsed values from both
+  paths.
+
+For a genuinely unlabeled file, no log lines accompany the entry.
+If log lines are present, the entry is in one of the parse-failure or disagreement
+conditions.
+
+=== How to distinguish genuinely unlabeled from parse failure
+
+Check the log output for the file's path.
+
+A genuinely unlabeled file produces no log lines at all.
+Its `<unlabeled> :: <no-level>` appearance is silent.
+
+A single-path parse failure produces two log lines:
+
+----
+ERROR: TPI Path A (nom) failed: <error detail>
+WARN:  SELinux context read failed for <path>: TPI Path A Failed
+----
+
+A TPI disagreement produces four log lines:
+
+----
+ERROR: CRITICAL: RTB Redundancy Failure!
+ERROR: PATH A OBJECT: <debug representation of parsed context>
+ERROR: PATH B OBJECT: <debug representation of parsed context>
+WARN:  SELinux context read failed for <path>: RTB Redundancy Failure: Security Ctx logic mismatch
+----
+
+NOTE: If Path A failed before reaching the gate, an additional `TPI Path A (nom) failed`
+ERROR line will precede these.
+
+If the entry has no accompanying log lines, the file is genuinely unlabeled.
+If `CRITICAL: RTB Redundancy Failure!` appears in the log for a path, treat that
+as a security event requiring investigation.
+
+=== What to do
+
+==== Genuinely unlabeled file (no log lines)
+
+On an MLS system, a genuinely unlabeled file is an integrity concern.
+MAC cannot be enforced on an unlabeled object.
+The `O` indicator fires for `NoSelinuxContext` observations.
+
+. Identify the filesystem.
+  Unlabeled objects on `tmpfs`, `proc`, or `sysfs` may be expected.
+  Unlabeled objects under `/etc`, `/usr`, `/var`, or `/home` require investigation.
+. Restore the label with `restorecon -v <path>`.
+. Re-run `umrs-ls` to confirm the label appears.
+. If the object still appears unlabeled after `restorecon`, the filesystem may
+  not support SELinux xattrs.
+  Check with `tune2fs -l <device> | grep features` for ext4, or consult the
+  filesystem documentation.
+
+==== Single-path parse failure (ERROR + WARN in log)
+
+This indicates a parser or validator limitation — the label is present on the
+inode but the current tool version cannot process it.
+The security posture of the object is unknown, not necessarily bad.
+
+. Confirm the raw label with `ls -Z <path>` or `getfattr -n security.selinux <path>`.
+  The label string will be visible even though `umrs-ls` cannot parse it.
+. Report the label string to the development team.
+  This is a known gap category — task #5 tracks the work to surface these as
+  `<parse-error>` rather than `<unlabeled>`.
+. Do not treat the object as actually unlabeled.
+  Its MAC policy label exists.
+  The display gap is in the tool, not in the label.
+
+CAUTION: Do not run `restorecon` on a file that appears here due to a parse
+failure.
+The label is present and may be correct.
+Running `restorecon` without confirming the expected label type could
+replace a correct label.
+
+==== TPI disagreement (CRITICAL log line)
+
+This is the highest-priority condition.
+Two independent parsers read the same xattr bytes and arrived at different
+`SecurityContext` values.
+This should not happen on a well-formed, untampered label.
+
+. Stop the investigation immediately and escalate.
+  Do not attempt self-remediation.
+. Preserve the log output.
+  The `PATH A OBJECT` and `PATH B OBJECT` log lines capture the exact values
+  each parser produced — record them before any system changes.
+. Do not modify or relabel the object until the discrepancy is understood.
+. Determine whether the discrepancy is reproducible.
+  Re-run `umrs-ls` on the same path.
+  If the disagreement occurs consistently, the xattr data itself may be malformed.
+  If it is intermittent, a timing or memory integrity issue may be present.
+. Report the path, both parser outputs, and the system state to the security team.
+
+IMPORTANT: A TPI disagreement is a signal that label verification has broken down.
+It may indicate a code defect, a malformed xattr, or an attempt to manipulate
+label data.
+Do not dismiss it as a tool quirk.
 
 '''
 
@@ -555,6 +757,19 @@ For continuous integrity assurance, combine `umrs-ls` with IMA measurement
   Immutable flag status is reported in the `I` column.
   Both are read through the open file descriptor, not inferred from path
   metadata.
+  The SELinux label is verified via two independent parsers (TPI) before
+  being accepted; any disagreement between parsers is logged as a critical
+  integrity event.
+  See <<tpi-behavior>>.
+
+| RTB Redundancy (TPI)
+| NSA RTB
+| `SecureXattrReader::read_context()` runs a `nom`-based parser (Path A)
+  and a `FromStr`-based parser (Path B) against the same raw xattr bytes.
+  The results must agree before the label is accepted.
+  Path A failure, Path B failure, and disagreement between paths are
+  three distinct conditions — see <<tpi-behavior>> for log signatures
+  and operator procedures for each.
 
 | Non-Bypassability (RAIN)
 | NSA RTB

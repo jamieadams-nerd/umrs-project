@@ -138,3 +138,45 @@ fn contexts_compare_not_equal() {
 
     assert_ne!(a, b);
 }
+
+// -----------------------------------------------------------------------------
+// Mixed-case SELinux type identifiers (regression test)
+//
+// SELinux policy modules such as NetworkManager use types with uppercase
+// initial characters and internal uppercase letters. The parser must accept
+// these identifiers — they are valid per the SELinux kernel policy parser
+// character set [a-zA-Z0-9_].
+//
+// This test reproduces the TPI Path A + Path B failure on
+// `NetworkManager_etc_t` that was diagnosed in task #2. Both paths
+// (nom + FromStr) delegate validation to `SelinuxType::new`, which
+// previously rejected uppercase characters.
+// -----------------------------------------------------------------------------
+
+#[test]
+fn parse_context_with_mixed_case_type() {
+    let input = "system_u:object_r:NetworkManager_etc_t";
+    let ctx: SecurityContext = input.parse().unwrap();
+
+    assert_eq!(ctx.user().to_string(), "system_u");
+    assert_eq!(ctx.role().to_string(), "object_r");
+    assert_eq!(ctx.security_type().to_string(), "NetworkManager_etc_t");
+    assert!(ctx.level().is_none());
+}
+
+#[test]
+fn parse_context_with_mixed_case_type_and_mls_level() {
+    let input = "system_u:object_r:NetworkManager_etc_t:s0";
+    let ctx: SecurityContext = input.parse().unwrap();
+
+    assert_eq!(ctx.security_type().to_string(), "NetworkManager_etc_t");
+    assert!(ctx.level().is_some());
+}
+
+#[test]
+fn display_round_trip_mixed_case_type() {
+    let input = "system_u:object_r:NetworkManager_etc_t";
+    let ctx: SecurityContext = input.parse().unwrap();
+
+    assert_eq!(ctx.to_string(), input);
+}

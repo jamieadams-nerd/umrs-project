@@ -70,15 +70,123 @@ use std::path::Path;
 use rustix::fs::{IFlags, ioctl_getflags};
 
 use crate::context::SecurityContext;
+use crate::observations::SecurityObservation;
 use crate::posix;
-use crate::xattrs::SecureXattrReader;
+use crate::xattrs::{SecureXattrReader, TpiError, XattrReadError};
 
 // Re-export path types — defined here since secdir owns the path hierarchy.
 // If path types are later split to their own module, update these use paths.
 pub use self::filetype::FileType;
 pub use self::flags::InodeSecurityFlags;
 pub use self::path::{AbsolutePath, PathError, ValidatedFileName};
-use crate::observations::SecurityObservation;
+
+// ===========================================================================
+// SelinuxCtxState
+//
+// Replaces Option<SecurityContext> to distinguish four structurally different
+// label outcomes.  A bare Option collapses unlabeled (ENODATA) and parse
+// failures into the same None — producing false-negative audit output.
+//
+// NIST 800-53 AU-3: audit record must accurately reflect the reason a label
+// is absent.
+// NIST 800-53 SI-12: information management — display must not mislead the
+// operator.
+// ===========================================================================
+
+/// The SELinux label state of a filesystem object.
+///
+/// Distinguishes four structurally different outcomes so that the display
+/// and audit layers can respond correctly to each one:
+///
+/// | Variant | Meaning | Display |
+/// |---|---|---|
+/// | `Labeled` | Both TPI paths agreed | Full context string |
+/// | `Unlabeled` | ENODATA — inode has no SELinux xattr | `<unlabeled>` |
+/// | `ParseFailure` | Xattr present but TPI path(s) failed | `<parse-error>` |
+/// | `TpiDisagreement` | Both paths succeeded but disagree | `<unverifiable>` |
+///
+/// `<unlabeled>` and `<parse-error>` must never be conflated: the first means
+/// MAC cannot be enforced on this object; the second means a code defect
+/// prevented label verification.  An operator seeing `<parse-error>` should
+/// investigate the parser, not the policy.
+///
+/// NIST 800-53 AU-3: audit record content.
+/// NIST 800-53 SI-12: accurate information management.
+/// NSA RTB RAIN: non-bypassability of the integrity gate.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum SelinuxCtxState {
+    /// A verified SELinux security context — both TPI paths agreed.
+    ///
+    /// Boxed to equalise the size of enum variants (the other variants carry
+    /// no data). Without boxing the enum would be 232+ bytes on the stack.
+    Labeled(Box<SecurityContext>),
+
+    /// No SELinux xattr on this inode (kernel returned ENODATA or equivalent).
+    ///
+    /// On an MLS/targeted system, unlabeled objects cannot have MAC enforced.
+    /// This is the authoritative "no label" state.
+    Unlabeled,
+
+    /// The SELinux xattr was present but one or both TPI parse paths failed.
+    ///
+    /// The label is on the inode but its structure could not be verified.
+    /// This is a code or validator defect — not an integrity attack.
+    /// NIST 800-53 SI-12: do not display as `<unlabeled>`.
+    ParseFailure,
+
+    /// Both TPI paths succeeded but produced different security contexts.
+    ///
+    /// Potential integrity event. The label on disk may have been tampered
+    /// with. Treat this object as unverifiable until the discrepancy is
+    /// resolved.
+    /// NIST 800-53 SI-7: integrity violation.
+    /// NSA RTB RAIN: redundancy cross-check failure.
+    TpiDisagreement,
+}
+
+impl SelinuxCtxState {
+    /// Returns the context if the label is verified, otherwise `None`.
+    #[must_use]
+    pub fn as_context(&self) -> Option<&SecurityContext> {
+        if let Self::Labeled(ctx) = self {
+            Some(ctx.as_ref())
+        } else {
+            None
+        }
+    }
+
+    /// Returns `true` if this state carries a verified label.
+    #[must_use]
+    pub const fn is_labeled(&self) -> bool {
+        matches!(self, Self::Labeled(_))
+    }
+
+    /// Returns the display string for the SELinux type column.
+    ///
+    /// Used by `dirlist.rs` when building `GroupKey`.
+    #[must_use]
+    pub fn display_type(&self) -> String {
+        match self {
+            Self::Labeled(ctx) => ctx.security_type().to_string(),
+            Self::Unlabeled => "<unlabeled>".to_owned(),
+            Self::ParseFailure => "<parse-error>".to_owned(),
+            Self::TpiDisagreement => "<unverifiable>".to_owned(),
+        }
+    }
+
+    /// Returns the MLS level if this state carries a verified label.
+    ///
+    /// Used by `dirlist.rs` to build the marking column without re-parsing.
+    /// Returns `None` for `Unlabeled`, `ParseFailure`, and `TpiDisagreement`.
+    #[must_use]
+    pub fn level(&self) -> Option<&crate::context::MlsLevel> {
+        if let Self::Labeled(ctx) = self {
+            ctx.level()
+        } else {
+            None
+        }
+    }
+}
 
 // ==========================================================================
 // POSIX path constants
@@ -744,9 +852,13 @@ pub struct SecureDirent {
     pub ownership: posix::identity::LinuxOwnership,
 
     // SEcurity Attributes
+    /// SELinux label state — verified context, unlabeled, parse-error, or
+    /// TPI disagreement. See [`SelinuxCtxState`] for the full invariant.
+    ///
     /// NIST SP 800-53 AC-3/AC-4: MAC label for access and flow enforcement.
+    /// NIST SP 800-53 AU-3: label state is part of the audit record.
     /// NSA RTB: parsed via dual-path TPI gate (nom + FromStr cross-check).
-    pub selinux_ctx: Option<SecurityContext>,
+    pub selinux_label: SelinuxCtxState,
 
     /// NIST SP 800-53 AU-9 / SI-7 / AC-3: immutable, IMA, ACL, SELinux xattr.
     pub sec_flags: InodeSecurityFlags,
@@ -784,7 +896,8 @@ impl SecureDirent {
     /// If `File::open()` fails (permission denied), the entry is still
     /// returned with `access_denied = true`. Path, name, inode, mode,
     /// and ownership are populated from `symlink_metadata()`. Security
-    /// attribute fields (`sec_flags`, `selinux_ctx`) will be empty/None.
+    /// attribute fields (`sec_flags`) will be empty; `selinux_label` will be
+    /// `SelinuxCtxState::Unlabeled`.
     /// The caller receives a `SecurityObservation::AccessDenied` from
     /// `security_observations()`.
     ///
@@ -849,7 +962,8 @@ impl SecureDirent {
         };
 
         let mut sec_flags = InodeSecurityFlags::empty();
-        let mut selinux_ctx: Option<SecurityContext> = None;
+        // Default to Unlabeled; updated below if an xattr is found.
+        let mut selinux_label = SelinuxCtxState::Unlabeled;
 
         if let Some(ref file) = file_opt {
             // Step 6: Inode flags via ioctl(FS_IOC_GETFLAGS)
@@ -900,17 +1014,20 @@ impl SecureDirent {
             }
 
             // Step 9: SELinux context — dual-path RTB gate
+            //
             // SecureXattrReader::read_context() runs nom + FromStr parsers
-            // and cross-checks them. If they disagree it returns an error.
-            // This is the NSA RTB Redundancy / TPI requirement.
+            // and cross-checks them.  Returns XattrReadError which
+            // distinguishes OS errors (ENODATA, EACCES) from TPI failures.
+            //
             // NIST SP 800-53 AC-3/AC-4 / CMMC AC.L2-3.1.3.
+            // NSA RTB RAIN: Non-Bypassability, Redundancy/TPI.
             sec_flags |= InodeSecurityFlags::XATTR_PRESENT;
             match SecureXattrReader::read_context(file) {
                 Ok(ctx) => {
                     sec_flags |= InodeSecurityFlags::SELINUX_XATTR;
-                    selinux_ctx = Some(ctx);
+                    selinux_label = SelinuxCtxState::Labeled(Box::new(ctx));
                 }
-                Err(ref e)
+                Err(XattrReadError::OsError(ref e))
                     if e.raw_os_error().is_some()
                         && e.kind() == std::io::ErrorKind::PermissionDenied =>
                 {
@@ -918,19 +1035,41 @@ impl SecureDirent {
                     // open() succeeded but MAC/DAC policy blocks fgetxattr().
                     // Treat as access_denied: inode anchor exists but label is
                     // unverifiable. Shows as <restricted> rather than <unlabeled>.
-                    // See: docs/_scratch/LS_HA_RESTRICTED_NOTES.txt
                     // NIST SP 800-53 AC-3; NSA RTB Non-Bypassability (RAIN).
                     log::warn!(
                         "SELinux xattr access denied for {abs_path}: {e}"
                     );
                     access_denied = true;
                 }
-                Err(e) => {
-                    // Log but do not fail — absence of label is an observation
-                    // (ENODATA = genuinely unlabeled; parse error = TPI failure).
-                    log::warn!(
-                        "SELinux context read failed for {abs_path}: {e}"
+                Err(XattrReadError::OsError(ref e)) => {
+                    // ENODATA or other OS error — inode is genuinely unlabeled
+                    // or the xattr subsystem is unavailable.
+                    // selinux_label stays Unlabeled.
+                    log::debug!(
+                        "SELinux xattr not present for {abs_path}: {e}"
                     );
+                }
+                Err(XattrReadError::Tpi(TpiError::Disagreement(_, _))) => {
+                    // Both parsers succeeded but disagreed — potential
+                    // integrity event.  Set TpiDisagreement so the display
+                    // layer renders <unverifiable> and the observations
+                    // layer emits SecurityObservation::TpiDisagreement.
+                    log::error!(
+                        "TPI disagreement on SELinux label for {abs_path} \
+                         — object treated as unverifiable"
+                    );
+                    selinux_label = SelinuxCtxState::TpiDisagreement;
+                }
+                Err(XattrReadError::Tpi(_)) => {
+                    // One or both TPI parse paths failed — code/validator
+                    // defect.  The label is present but unverifiable.
+                    // Set ParseFailure so the display layer renders
+                    // <parse-error> rather than <unlabeled>.
+                    log::warn!(
+                        "SELinux label parse failure for {abs_path} — \
+                         label present but unverifiable"
+                    );
+                    selinux_label = SelinuxCtxState::ParseFailure;
                 }
             }
         }
@@ -965,7 +1104,7 @@ impl SecureDirent {
             nlink,
             dev,
             ownership,
-            selinux_ctx,
+            selinux_label,
             sec_flags,
             is_mountpoint,
             encryption,
@@ -996,11 +1135,14 @@ impl SecureDirent {
         self.sec_flags.has_ima_protection()
     }
 
-    /// True if a SELinux context is present and explicitly persisted on disk.
+    /// True if a SELinux context is present, verified, and persisted on disk.
+    ///
+    /// Returns `false` for `ParseFailure` and `TpiDisagreement` states —
+    /// the xattr byte may exist but the label could not be verified.
     /// NIST SP 800-53 AC-4.
     #[must_use]
     pub fn has_explicit_selinux_label(&self) -> bool {
-        self.selinux_ctx.is_some()
+        self.selinux_label.is_labeled()
             && self.sec_flags.has_explicit_selinux_label()
     }
 
@@ -1086,8 +1228,20 @@ impl SecureDirent {
         if self.is_world_writable() && !self.file_type.is_symlink() {
             obs.push(SecurityObservation::WorldWritable);
         }
-        if self.selinux_ctx.is_none() && !self.access_denied {
-            obs.push(SecurityObservation::NoSelinuxContext);
+        match &self.selinux_label {
+            SelinuxCtxState::Unlabeled if !self.access_denied => {
+                // Inode has no SELinux xattr — MAC cannot be enforced.
+                obs.push(SecurityObservation::NoSelinuxContext);
+            }
+            SelinuxCtxState::ParseFailure => {
+                // Xattr present but TPI path(s) failed — code defect.
+                obs.push(SecurityObservation::SelinuxParseFailure);
+            }
+            SelinuxCtxState::TpiDisagreement => {
+                // Both parsers disagreed — potential integrity event.
+                obs.push(SecurityObservation::TpiDisagreement);
+            }
+            SelinuxCtxState::Labeled(_) | SelinuxCtxState::Unlabeled => {}
         }
         if self.is_setuid()
             && (self.mode.group_can_write() || self.mode.is_world_writable())
@@ -1147,13 +1301,11 @@ impl SecureDirent {
 
 impl std::fmt::Display for SecureDirent {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        #[allow(clippy::map_unwrap_or)]
-        let label = {
-            #[allow(clippy::redundant_closure_for_method_calls)]
-            self.selinux_ctx
-                .as_ref()
-                .map(|c| c.to_string())
-                .unwrap_or_else(|| "?unlabeled?".to_owned())
+        let label = match &self.selinux_label {
+            SelinuxCtxState::Labeled(ctx) => ctx.to_string(),
+            SelinuxCtxState::Unlabeled => "<unlabeled>".to_owned(),
+            SelinuxCtxState::ParseFailure => "<parse-error>".to_owned(),
+            SelinuxCtxState::TpiDisagreement => "<unverifiable>".to_owned(),
         };
 
         write!(

@@ -1,0 +1,750 @@
+= OS Detection: A Trust Ladder
+:toc: left
+:description: Why the OS detection pipeline exists, how it builds verified platform identity from nothing, and what that identity enables for every component that follows.
+
+// NIST 800-53 SI-7 — Software and Information Integrity
+// NIST 800-53 CM-6 — Configuration Settings
+// NIST 800-53 SA-8 — Security and Privacy Engineering Principles
+// NIST 800-53 AU-3 — Audit Record Content
+// NSA RTB RAIN — Non-Bypassability, Non-Circumventability
+// NSA RTB VNSSA — Provenance verification before trust
+
+== Why Not Just Read the File?
+
+On a general-purpose Linux system, reading the OS identity is a one-liner:
+
+[source,bash]
+----
+cat /etc/os-release
+----
+
+That is enough for most purposes. In a high-assurance environment it is not enough for
+any security purpose.
+
+The file at `/etc/os-release` is a text file on a mutable filesystem. It carries no
+proof that its content reflects the running system. Any process with the right
+privilege can write a different name into it. The path string `/etc/os-release` is just
+a string — it says nothing about whether the file is on the real root filesystem,
+whether the content was installed by the package manager, or whether the kernel
+interfaces that follow can be trusted at all.
+
+In a system that handles Controlled Unclassified Information (CUI) under SELinux, OS
+identity is upstream of policy decisions. Wrong OS identity means wrong SELinux policy,
+wrong cryptographic profile, wrong audit baseline. Every security control that depends
+on knowing the platform is compromised the moment OS identity can be fabricated.
+
+The OS detection pipeline exists to _earn_ platform identity rather than assume it. It
+starts with nothing and builds trust one verified layer at a time. The result is not a
+string — it is a typed value with an explicit trust level attached.
+
+== The Threat
+
+Controlling what OS identity a system reports to its own software is a meaningful
+attack surface:
+
+* *Policy misdirection.* A component that loads configuration based on OS version
+  will load the wrong configuration if the version is wrong. On RHEL 10 with MLS policy,
+  loading the wrong SELinux module is a privilege boundary failure.
+* *Audit evasion.* Incorrect OS identity in audit records pollutes log correlation.
+  An attacker who controls the reported OS can make events look as though they came from
+  a different baseline, complicating forensic reconstruction.
+* *Trust inflation.* Any gate that says "only proceed if OS identity is verified" is
+  worth nothing if OS identity can be fabricated. The verification must be genuine for
+  the gate to mean anything.
+
+NIST 800-53 SI-7 (Software and Information Integrity) requires verifying the integrity
+of data from sources that could be tampered with before that data drives security
+decisions. An `os-release` file on a mutable filesystem is exactly such a source.
+
+NIST 800-53 CM-6 (Configuration Settings) requires that configuration be applied
+against a known, verified baseline. You cannot verify conformance to a baseline if you
+cannot establish what OS you are running.
+
+NSA RTB RAIN requires that access control enforcement be non-bypassable. A falsified
+OS identity is a circumvention path for any control that depends on platform identity.
+
+== What the Pipeline Produces
+
+The pipeline produces a `DetectionResult` containing three things:
+
+* A `TrustLevel` — the highest level of confidence the pipeline was able to establish,
+  from `Untrusted` (T0) to `IntegrityAnchored` (T4).
+* A `LabelTrust` verdict — a separate, specific confidence assessment of the
+  `os-release` content itself.
+* An `EvidenceBundle` — a complete, ordered record of every observation made during
+  detection, structured for audit reconstruction.
+
+Callers do not parse OS identity themselves. They receive a typed value that already
+carries the evidence of how the identity was established. A component that receives
+`TrustLevel::IntegrityAnchored` knows the OS identity has been verified against a
+cryptographic digest from the package database, by a process that first confirmed the
+kernel pseudo-filesystem was genuine. That is structurally different from reading a
+file.
+
+== The Trust Ladder
+
+The pipeline builds confidence across seven phases. Trust accumulates as each phase
+adds evidence; it can only decrease — a phase that finds an inconsistency downgrades
+the confidence level, and that downgrade persists. Two phases are hard gates: if they
+fail, the pipeline stops. The other five are soft: a failure records evidence of the
+problem and lowers the confidence level, but the pipeline continues collecting
+information.
+
+[mermaid]
+....
+flowchart TD
+    START([Pipeline start\nT0 — Untrusted]) --> P1
+
+    P1["Phase 1: Kernel Anchor\n━━━ HARD GATE ━━━\nfstatfs → PROC_SUPER_MAGIC\nPID coherence check\nread boot_id\nread lockdown mode"]
+    P1 -->|"Magic wrong or\nPID incoherent"| ABORT1([Abort — T0\nkernel channel not genuine])
+    P1 -->|All checks pass| T1([T1 — KernelAnchored])
+
+    T1 --> P2["Phase 2: Mount Topology\nsoft\nMount namespace inode\nParse mountinfo\nstatfs /etc — check magic"]
+    P2 -->|Anomaly recorded| T2
+    P2 --> T2([T2 — EnvAnchored])
+
+    T2 --> P3["Phase 3: Release Candidate\nsoft\nLocate os-release\nstatx for inode + dev\nPermissions sanity\nReject world-writable"]
+    P3 -->|Anomaly recorded| P4
+    P3 --> P4
+
+    P4["Phase 4: Package Substrate\n━━━ HARD GATE ━━━\nProbe RPM / dpkg\nSELinux enforce check\nNeed ≥2 corroborating facts for T3"]
+    P4 -->|"No package DB\naccessible"| ABORT2([Abort — T1\nno substrate])
+    P4 -->|"≥2 facts agree"| T3([T3 — SubstrateAnchored])
+    P4 -->|"Insufficient evidence"| DOWN([Downgrade — confidence\nstays below T3])
+
+    T3 --> P5["Phase 5: File Ownership\nsoft\nQuery package DB for\nos-release owner\nUsing dev+ino from Phase 3"]
+    P5 -->|"Mismatch recorded"| P6
+    P5 --> P6
+
+    P6["Phase 6: Integrity Check\nsoft\nSHA-256 of os-release\nvs. package DB digest\nFIPS gate — blocks T4 if active\nfstat re-verification of dev+ino"]
+    P6 -->|"Digest mismatch\nor FIPS gate"| DOWN
+    P6 -->|Digest verified| T4([T4 — IntegrityAnchored])
+
+    T4 --> P7["Phase 7: Release Parse\nsoft\nTPI: nom + split_once\nBoth paths must agree\nSubstrate corroboration\n→ LabelTrust verdict"]
+    DOWN --> P7
+
+    P7 --> RESULT([DetectionResult\nTrustLevel + LabelTrust\n+ EvidenceBundle])
+
+    style ABORT1 fill:#c0392b,color:#fff
+    style ABORT2 fill:#c0392b,color:#fff
+    style T1 fill:#2980b9,color:#fff
+    style T2 fill:#2980b9,color:#fff
+    style T3 fill:#27ae60,color:#fff
+    style T4 fill:#27ae60,color:#fff
+    style RESULT fill:#27ae60,color:#fff
+    style DOWN fill:#e67e22,color:#fff
+....
+
+[cols="1,1,3"]
+|===
+| Level | Name | Established when
+
+| T0 | Untrusted
+| No evidence gathered. Pipeline has not run, or aborted at Phase 1.
+
+| T1 | KernelAnchored
+| `fstatfs` returned `PROC_SUPER_MAGIC` on an open procfs descriptor. PID coherence
+  confirmed. The kernel communication channel is genuine.
+
+| T2 | EnvAnchored
+| Mount environment is coherent. The `os-release` file has been located, its
+  permissions are sane, and the filesystem hosting `/etc` is a real persistent
+  filesystem type.
+
+| T3 | SubstrateAnchored
+| The package manager independently corroborates the OS identity with at least two
+  agreeing facts from different subsystems. This is the minimum for most policy
+  decisions in this codebase.
+
+| T4 | IntegrityAnchored
+| A SHA-256 digest of the `os-release` file matches the digest stored in the package
+  database at installation time. Cryptographic integrity verified.
+|===
+
+== The Seven Phases
+
+=== Phase 1: Kernel Anchor (Hard Gate)
+
+Every subsequent phase depends on the kernel being reachable through a genuine
+communication channel. Before the pipeline reads anything from the kernel, it
+establishes that the kernel pseudo-filesystem itself is real.
+
+The check uses `fstatfs` on an open file descriptor, not a path-level `statfs`. An
+open file descriptor is pinned to the kernel object — it cannot be re-pointed by a
+bind mount or path manipulation after it is opened. The filesystem magic returned by
+the kernel for a genuine procfs is `PROC_SUPER_MAGIC` (0x9FA0). Any other value means
+something has been substituted for procfs in this process's namespace, and the pipeline
+aborts immediately.
+
+Beyond magic verification, the phase checks PID coherence: the value returned by
+`getpid()` must match the PID in `/proc/self/stat`. A discrepancy indicates that the
+process is operating in a container escape, a namespace manipulation, or against a
+synthetic procfs constructed to deceive. Because all subsequent kernel attribute reads
+depend on procfs being genuine, a PID incoherence is unrecoverable — the pipeline
+returns T0 rather than producing a result the caller cannot trust.
+
+The phase also reads the `boot_id` kernel attribute. This session-unique value is used
+by the Sealed Evidence Cache to prevent cached results from surviving a reboot.
+Finally, the phase reads the kernel lockdown mode to understand what constraints are
+in effect.
+
+=== Phase 2: Mount Topology (Soft)
+
+With a confirmed procfs, the pipeline reads the process's mount namespace inode from
+`/proc/self/ns/mnt` and parses `/proc/self/mountinfo` to understand the actual
+filesystem layout. It then calls `statfs` on `/etc` and checks the filesystem magic
+number of the result.
+
+This check catches a specific, targeted attack: an adversary with sufficient privilege
+could bind-mount a `tmpfs` over `/etc` and populate it with a crafted `os-release`
+file. A real RHEL 10 installation holds `/etc` on ext4 (magic `0xEF53`) or XFS (magic
+`0x58465342`). A memory-backed `tmpfs` substitute has magic `0x01021994`. The magic
+number is a kernel fact about the mounted filesystem, not a user-settable attribute —
+it distinguishes persistent, package-managed storage from an in-memory substitute.
+
+This phase is soft. An anomalous magic number or unexpected mount topology degrades
+confidence and is recorded in the `EvidenceBundle`, but the pipeline continues to
+gather information that may be useful for forensics.
+
+=== Phase 3: Release Candidate (Soft)
+
+The pipeline locates the OS release file — typically `/etc/os-release`, with fallback
+to `/usr/lib/os-release` — and calls `statx` to gather detailed metadata before
+opening the file. This metadata includes the inode number, device number, permissions,
+and modification time.
+
+The permissions check rejects a world-writable `os-release` immediately. A
+world-writable OS identity file means any unprivileged process could have written to
+it. That finding is recorded in the `EvidenceBundle` and the confidence level is
+downgraded.
+
+The `(device, inode)` pair captured here is carried forward throughout the pipeline.
+These two values together uniquely identify a specific file on a specific filesystem at
+this moment. Later phases use this pair to verify they are still examining the same
+file. This is a deliberate TOCTOU defense: `statx` here does not hold the file open,
+but the identity it captures is the reference that Phase 6 checks against after opening
+the file.
+
+=== Phase 4: Package Substrate (Soft / Hard Gate)
+
+The package manager database — RPM on RHEL, dpkg on Debian derivatives — is an
+independent record of what was installed on this system. It was written by the package
+installation process and is structurally separate from the files it tracks. If the
+`os-release` file has been modified since installation, the package database still
+records the original.
+
+This phase probes for a reachable package database. It also checks the SELinux
+enforcement mode. In SELinux permissive mode, any process regardless of its security
+label can write to the RPM database, modify tracked files, or alter `os-release`. When
+enforcement is off, the chain of custody for the package database degrades from a
+MAC-enforced invariant to a discretionary one — the database cannot be trusted as an
+independent corroborating source at the same confidence level. T3 is gated on SELinux
+enforcement being active for this reason.
+
+The phase requires at least two independent corroborating facts before awarding T3.
+A single fact — for example, the database exists and is readable — is not sufficient.
+Independent facts from multiple subsystems are required.
+
+If no package database is accessible at all, this phase becomes a second hard gate. No
+substrate means no path to T3 or T4. The pipeline records all evidence it has gathered
+so far and returns at T1.
+
+=== Phase 5: File Ownership (Soft)
+
+The package database records which package owns each installed file. This phase queries
+the database: given the `(device, inode)` pair from Phase 3, which package claims
+ownership of this file?
+
+The use of `(device, inode)` rather than a path is intentional. A file path can be
+re-pointed between calls — Phase 3 observed a file at `/etc/os-release`, but by the
+time Phase 5 runs, the path might resolve to a different file if an attacker substituted
+it in the window between calls. An inode number, by contrast, identifies the actual
+kernel object on the filesystem. It is stable across renames and cannot be forged by
+userspace. If the file at the original path has been replaced, the inode will not match,
+the ownership query finds nothing, and the phase records a mismatch.
+
+=== Phase 6: Integrity Check (Soft)
+
+The package database stores a SHA-256 digest of every managed file computed at
+installation time. This phase opens the `os-release` file, reads it subject to a hard
+byte limit, and computes the SHA-256 digest of its content. That digest is compared
+against the value stored in the package database.
+
+A mismatch means the content changed since installation. In a high-assurance
+environment this is recorded as an integrity finding and blocks advancement to T4.
+
+Two additional checks occur here. First, the phase calls `fstat` on the open file
+descriptor and compares the `(device, inode)` against the values captured in Phase 3.
+`fstat` operates on the already-open file descriptor — it cannot be deflected by a
+path rename or substitution that occurred between Phase 3 and now. If the inode has
+changed, the pipeline records that the file's identity shifted between the locate step
+and the read step, which is an unambiguous TOCTOU signal.
+
+Second, the phase checks whether the kernel FIPS mode is active. If FIPS is enabled,
+the `sha2` crate used to compute the digest is not a FIPS 140-2/3 validated provider.
+Because T4 requires cryptographic verification and FIPS compliance requires validated
+primitives, a FIPS-active system cannot reach T4 through this pipeline. The pipeline
+is transparent about this: the block is recorded in the `EvidenceBundle`, and T3
+remains the ceiling until a validated digest path is available.
+
+=== Phase 7: Release Parse (Soft)
+
+The final phase parses the `os-release` file content into a structured, typed value.
+It applies Two-Path Independence (TPI): the same input is parsed by two completely
+independent implementations, and the results must agree on the set of keys present in
+the file.
+
+See xref:pattern-tpi.adoc[Two-Path Independence (TPI)] for the full rationale. The
+short version: a single parser is a single point of failure. A carefully crafted
+`os-release` file could be constructed so that one parser accepts a key/value pair that
+the other misreads or ignores — a _parser differential attack_ that smuggles a field
+past one path without the other seeing it. Because `os-release` content drives the OS
+identity claim, a smuggled field could cause wrong policy decisions downstream. Two
+parsers sharing zero implementation logic are unlikely to have the same flaw in the
+same direction, and any disagreement between them is treated as a parse failure.
+
+The phase also compares the parsed OS identity against the substrate identity from
+Phase 4. Contradiction between the `os-release` file content and what the package
+database records about this system is captured in the `LabelTrust` verdict:
+
+[cols="1,3"]
+|===
+| Verdict | Meaning
+
+| `UntrustedLabelCandidate`
+| The label has not been verified against any independent source. Useful as a hint
+  only; must not drive authorization decisions.
+
+| `LabelClaim`
+| The label is self-consistent but has not been independently corroborated against a
+  substrate. Suitable for informational display.
+
+| `TrustedLabel`
+| The label is corroborated by the package database and consistent across all checked
+  sources.
+
+| `IntegrityVerifiedButContradictory`
+| The cryptographic digest matched the package database, but the label content
+  contradicts the substrate. This indicates the file was altered to match its own
+  stored hash while misreporting the OS identity — an anomalous finding that requires
+  investigation.
+|===
+
+== Everything Is Evidence
+
+Every observation — successful or not — is recorded in the `EvidenceBundle`. A failed
+magic check, a world-writable permissions finding, an inode substitution detection, a
+digest mismatch, an SELinux enforcement gap: every one of these goes into the bundle
+as a structured `EvidenceRecord`.
+
+This satisfies NIST 800-53 AU-3 (Audit Record Content): the record contains enough
+information to reconstruct exactly what the pipeline observed and why it produced the
+trust level it did. An auditor can read the `EvidenceBundle` and trace the complete
+path from T0 to the final result. A rejection that leaves no audit trace is
+indistinguishable from a path that was never evaluated — precisely the gap an attacker
+could hide in. The `EvidenceBundle` closes that gap.
+
+A degraded result with a detailed `EvidenceBundle` is also operationally more useful
+than an opaque error. In a DoD context, a partial result at T2 with six recorded
+observations explaining why T3 was not reached tells a responder exactly what to
+investigate. An opaque error returns nothing.
+
+== The Payoff
+
+When the pipeline completes at T4, a downstream consumer receives these verified facts:
+
+. The kernel pseudo-filesystem is real — confirmed by filesystem magic on an open
+  descriptor, not a path.
+. The process's view of itself (PID) is coherent with the kernel's view.
+. The filesystem hosting `/etc` is a real, persistent filesystem type.
+. The `os-release` file is world-writable free and is owned by the package manager
+  according to its inode identity.
+. The content of the file, read subject to a hard byte limit, produces a SHA-256
+  digest that matches the package database record from installation time.
+. The content was verified by two independent parsers that agreed on every key.
+. The parsed OS identity is consistent with what the package database independently
+  records for this system.
+
+That is not a file read. It is a proof of platform identity, with every step of the
+proof recorded for audit.
+
+Downstream components match on the `TrustLevel` enum. A policy gate requiring T3 will
+not silently accept a T1 result — the types require explicit handling of every variant.
+The `#[must_use]` attribute on `DetectionResult` means the caller cannot discard the
+return value without a deliberate, annotated decision.
+
+== Future: Sealed Memory Cache
+
+NOTE: This section describes planned functionality that is not yet implemented.
+
+Once the Sealed Evidence Cache is implemented, the verified `DetectionResult` —
+including the full `EvidenceBundle` — will be sealed into an in-memory cache using an
+ephemeral HMAC key derived from `boot_id` and process start time. Subsequent runtime
+queries within the TTL window will verify the seal and return the cached result without
+re-running the seven-phase pipeline.
+
+The seal binds cached data to the current boot session. A reboot invalidates the key,
+preventing cached results from surviving to a different boot state. A seal verification
+failure discards the cache, re-runs the pipeline, and logs an anomaly. This is a
+performance optimization only — the verification guarantee is preserved.
+
+See xref:pattern-sec.adoc[Sealed Evidence Cache (SEC)] for the full design and current
+implementation status.
+
+== Pattern Connections
+
+The OS detection pipeline composes multiple high-assurance patterns. Each pattern
+handles one specific threat within the pipeline's trust-building sequence.
+
+[cols="1,3"]
+|===
+| Pattern | Role in this pipeline
+
+| xref:pattern-provenance.adoc[Provenance Verification]
+| Phase 1 verifies procfs identity using `fstatfs` on an open file descriptor before
+  reading any kernel attribute. All subsequent kernel reads use the same
+  provenance-checked reader path.
+
+| xref:pattern-toctou.adoc[TOCTOU Safety]
+| Phase 3 captures `(device, inode)` from `statx` at locate time. Phase 6 calls
+  `fstat` on the open descriptor and re-checks the pair to detect file substitution
+  in the window between the locate and the read.
+
+| xref:pattern-tpi.adoc[Two-Path Independence (TPI)]
+| Phase 7 parses `os-release` content with two independent parsers — `nom` (Path A)
+  and `split_once` (Path B). Agreement on the key set is required before the result
+  is accepted.
+
+| xref:pattern-fail-closed.adoc[Fail-Closed]
+| The two hard gates (Phases 1 and 4) abort and return a partial result at the
+  earned trust level rather than defaulting to a level that has not been established.
+  Soft phase failures downgrade confidence; they do not silently skip the downgrade.
+
+| xref:pattern-non-bypassability.adoc[Non-Bypassability (RAIN)]
+| The `StaticSource` trait binds each kernel attribute path to its expected filesystem
+  magic at compile time. There is no code path that reads a kernel attribute without
+  the magic check.
+
+| xref:pattern-bounds-safe.adoc[Bounds-Safe Indexing]
+| The `os-release` file read is bounded to a hard maximum byte count. An adversarially
+  large replacement file is truncated or rejected before digest computation.
+
+| xref:pattern-loud-failure.adoc[Loud Failure]
+| Hard gate failures and anomalous evidence records are logged at appropriate severity
+  before the pipeline returns. Failures are never silent.
+
+| xref:pattern-execution-measurement.adoc[Execution Measurement]
+| Pipeline execution time is recorded in debug mode, with per-phase timing available
+  for performance analysis and anomaly detection.
+
+| xref:pattern-sec.adoc[Sealed Evidence Cache (SEC)]
+| Future: once implemented, the `DetectionResult` will be sealed and cached in memory,
+  eliminating re-execution overhead within a TTL window tied to the current boot session.
+|===
+
+== Security Controls
+
+[cols="1,3", options="header"]
+|===
+| Control | Applicability to OS Detection
+
+| NIST 800-53 SI-7
+| Software and Information Integrity. Phase 6 verifies `os-release` content against the
+  package database digest. Every kernel attribute read uses a provenance-checked path.
+  SI-7 is the primary control satisfied by the pipeline.
+
+| NIST 800-53 CM-6
+| Configuration Settings. Policy decisions that depend on OS identity require a
+  verified baseline. The pipeline establishes that baseline against the package
+  substrate, not from a mutable file.
+
+| NIST 800-53 SA-8
+| Security and Privacy Engineering Principles. The pipeline applies fail-closed behavior,
+  defense in depth across seven phases, and a downgrade-only confidence model that
+  prevents accidental trust inflation.
+
+| NIST 800-53 AU-3
+| Audit Record Content. The `EvidenceBundle` captures every observation, successful or
+  not, in structured form. Audit reconstruction is possible from the bundle alone.
+
+| NIST 800-53 AC-4
+| Information Flow Enforcement. Correct OS identity is a prerequisite for correct policy
+  selection. A falsified OS identity is an information flow control bypass.
+
+| NSA RTB RAIN
+| Non-Bypassability, Non-Circumventability. The `StaticSource` trait makes provenance
+  checking unavoidable for kernel attribute reads at compile time. The trust ladder is
+  non-bypassable: T3 requires substrate corroboration; T4 requires digest verification.
+  Neither can be claimed without the prior steps.
+
+| NSA RTB VNSSA
+| Provenance before trust. Named paths are not trusted; the filesystem magic on the
+  open descriptor is the trust anchor. This principle is established at Phase 1 and
+  carried through all kernel reads in the pipeline.
+|===
+
+== API Documentation
+
+The pipeline's public API is documented in the `umrs-platform` crate rustdoc. Key entry
+points for readers of this document:
+
+* **`umrs_platform::detect`** — module-level documentation for `OsDetector`, `DetectionResult`, and `DetectionError`
+* **`umrs_platform::confidence`** — `TrustLevel` enum (T0–T4), `ConfidenceModel`, `Contradiction`
+* **`umrs_platform::evidence`** — `EvidenceBundle`, `EvidenceRecord`, `SourceKind`, `FileStat`, `PkgDigest`
+* **`umrs_platform::os_release`** — `OsRelease` and all validated field newtypes (`OsId`, `VersionId`, `CpeName`, etc.)
+* **`umrs_platform::detect::label_trust`** — `LabelTrust` verdict enum
+
+Generate locally with:
+
+[source,bash]
+----
+cd components/rusty-gadgets
+cargo doc -p umrs-platform --no-deps --open
+----
+
+== Running the Example
+
+The `os_detect` example in `umrs-platform` runs the full pipeline and renders each
+phase in sequence. It is the fastest way to confirm that the pipeline reaches the
+expected trust level on a given system and to inspect the evidence it collected.
+
+[source,bash]
+----
+cd components/rusty-gadgets
+cargo run -p umrs-platform --example os_detect
+----
+
+Add `RUST_LOG=debug` to the front of the command to include per-phase debug log lines
+alongside the structured output.
+
+=== Annotated Output: T4 on CentOS Stream 10
+
+The following output was produced on a CentOS Stream 10 system running SELinux in
+enforcing mode on an XFS root filesystem. Every detail in the output is real — no
+values have been substituted or redacted.
+
+[source]
+----
+  umrs-platform OS Detection  v0.1.0
+  Exercises the full detection pipeline and renders each phase.
+
+━━━  OS Identity  ━━━
+  ID           : centos
+  NAME         : CentOS Stream
+  VERSION_ID   : 10
+  PRETTY_NAME  : CentOS Stream 10 (Coughlan)
+  CPE_NAME     : cpe:/o:centos:centos:10
+
+  Substrate Identity  (package-DB derived, independent of os-release)
+  family       : RPM-based
+  distro       : CentOS
+  facts_count  : 3
+  probe_used   : rpm
+
+  boot-id      : f7078de5-8b97-400c-9295-7bee10e696ef
+
+━━━  Trust Summary  ━━━
+  TRUSTED LABEL  — T4: ownership + digest verified against package DB.
+  Label content corroborates substrate-derived identity.
+  Safe for policy decisions (NIST SP 800-53 SI-7, CMMC L2 SI.1.210).
+
+━━━  Confidence Model  ━━━
+  Current level: T4 — IntegrityAnchored — os-release ownership + installed digest verified against package DB.
+  No downgrade reasons recorded.
+
+━━━  Evidence Chain  ━━━
+  15 record(s) collected during this detection run.
+
+  [01] /proc/self/stat
+        kind=procfs fd=true  parse_ok=yes
+        note: procfs gate: PROC_SUPER_MAGIC verified
+
+  [02] /proc/sys/kernel/random/boot_id
+        kind=procfs fd=true  parse_ok=yes
+        note: boot_id read ok
+
+  [03] /sys/kernel/security/lockdown
+        kind=sysfs fd=true  parse_ok=yes
+        note: lockdown=none
+
+  [04] /proc/self/ns/mnt
+        kind=procfs fd=false  parse_ok=yes
+        resolved -> mnt:[4026531841]
+        note: mnt_ns=mnt:[4026531841]
+
+  [05] /proc/self/mountinfo
+        kind=procfs fd=true  parse_ok=yes
+        note: mount_count=35
+
+  [06] /etc
+        kind=statfs fd=false  parse_ok=yes
+        fs_magic = 0x58465342
+        note: etc_fs_magic=0x58465342
+
+  [07] /etc/os-release
+        kind=symlink-target fd=false  parse_ok=yes
+        resolved -> ../usr/lib/os-release
+        note: symlink target=../usr/lib/os-release
+
+  [08] /etc/os-release
+        kind=regular-file fd=false  parse_ok=yes
+        resolved -> ../usr/lib/os-release
+        stat: ino=33973894  size=491  uid=0
+        note: owned by root
+        note: dev=253:0 ino=33973894
+        note: statx followed symlink (AT_SYMLINK_NOFOLLOW not set); (dev,ino) belongs to resolved target
+
+  [09] /var/lib/rpm/rpmdb.sqlite
+        kind=package-db fd=false  parse_ok=yes
+        note: rpm db opened read-only
+
+  [10] /var/lib/rpm
+        kind=package-db fd=false  parse_ok=yes
+        fs_magic = 0x58465342
+        note: RPM DB root present: /var/lib/rpm
+        note: db_root_fs_magic=0x58465342
+        note: Packages file present: rpmdb.sqlite (RHEL10+)
+        note: distro tentative: RPM-based (SQLite DB)
+        note: distro refined: CentOs (from centos-stream-release)
+        note: RPM SQLite DB opened and validated
+
+  [11] /sys/fs/selinux/enforce
+        kind=sysfs fd=true  parse_ok=yes
+        note: selinux_enforce=Enforcing; biba_check=true
+
+  [12] /etc/os-release
+        kind=package-db fd=false  parse_ok=yes
+        note: owner=centos-stream-release
+        note: version=10.0
+
+  [13] /etc/os-release
+        kind=regular-file fd=false  parse_ok=yes
+        sha256 = e1e2155608de5325128e091b3fd8e8f11212d62aa19f78294f7e399e135f4c68
+        pkg_digest: alg=sha256  value=e1e2155608de5325128e091b3fd8e8f11212d62aa19f78294f7e399e135f4c68
+        note: fstat verified: (dev,ino) matches release_candidate statx
+        note: SHA-256 digest verified (T4 earned)
+
+  [14] /etc/os-release
+        kind=regular-file fd=true  parse_ok=yes
+        note: fstat verified: (dev,ino) matches release_candidate statx
+
+  [15] /etc/os-release
+        kind=regular-file fd=false  parse_ok=yes
+        note: id=centos
+        note: parsed 17 fields
+
+━━━  Contradictions  ━━━
+  No contradictions recorded.
+
+━━━  Package Query Demo  ━━━
+  is_installed("bash"):
+    installed — package 'bash' found in the RPM database.
+
+  is_installed("openssl"):
+    installed — package 'openssl' found in the RPM database.
+
+  is_installed("nonexistent-pkg"):
+    not installed — package 'nonexistent-pkg' not found in the RPM database.
+----
+
+=== What the Output Shows
+
+**OS Identity and Substrate Identity (two independent sources)**
+
+The top section shows two identity claims side by side: `os-release` reports
+`centos / CentOS Stream / 10`, and the package substrate independently reports
+`CentOS / RPM-based / 3 facts`. These were derived from different subsystems — one
+from a file on disk, one from the RPM database — and they agree. That agreement is
+what makes the result trustworthy rather than just plausible. The `CPE_NAME` field
+(`cpe:/o:centos:centos:10`) is a machine-readable platform identifier used in
+vulnerability databases; its presence is evidence that the `os-release` file is a
+complete, package-managed installation rather than a hand-constructed substitute.
+
+The `boot-id` (`f7078de5-…`) is a kernel-generated, session-unique value read
+directly from `procfs`. It ties the evidence chain to this specific boot session and
+will be used by the Sealed Evidence Cache to prevent cached results from surviving a
+reboot.
+
+**Trust Summary and Confidence Model**
+
+`TRUSTED LABEL — T4` is the highest verdict the pipeline can reach. It means:
+ownership and cryptographic integrity have both been verified against the package
+database, and the label corroborates the substrate. The confidence model reports no
+downgrade reasons — every phase passed cleanly.
+
+**Evidence Chain: Phase by Phase**
+
+The 15 records map directly onto the seven phases described earlier on this page.
+Reading them in order traces every verification step the pipeline performed:
+
+Records [01]–[03] are Phase 1. Record [01] shows the procfs gate passing:
+`PROC_SUPER_MAGIC` was confirmed via `fstatfs` on an open file descriptor (`fd=true`).
+Record [02] shows the `boot_id` read succeeding on the same verified procfs. Record [03]
+shows the kernel lockdown state read from sysfs — `lockdown=none` on this system,
+meaning no restrictions on kernel module loading or live-patching are in effect.
+
+Records [04]–[06] are Phase 2. Record [04] reads the process's mount namespace inode
+directly from `procfs`. Record [05] parses `/proc/self/mountinfo` and finds 35 mount
+points — a realistic count for a standard RHEL-derivative system. Record [06] is the
+`statfs` result for `/etc`: `fs_magic = 0x58465342` is `XFS_SUPER_MAGIC`, confirming
+that `/etc` is hosted on a real, persistent XFS filesystem rather than a `tmpfs` or
+other in-memory substitute. This is the check that defeats a bind-mount attack.
+
+Records [07]–[08] are Phase 3. Record [07] shows the symlink resolution:
+`/etc/os-release` is a symlink to `../usr/lib/os-release`. Record [08] is the `statx`
+result for the resolved target: inode `33973894`, size `491` bytes, owned by uid `0`
+(root). The `(dev=253:0, ino=33973894)` pair is recorded here as the reference identity
+for all subsequent TOCTOU checks. Note `fd=false` — Phase 3 does not hold the file
+open. It captures identity metadata only.
+
+Records [09]–[11] are Phase 4. Record [09] confirms the RPM SQLite database is
+accessible at `/var/lib/rpm/rpmdb.sqlite` (the RHEL 10+ format). Record [10] shows the
+full substrate probe: `fs_magic = 0x58465342` confirms the RPM database itself sits on
+XFS, not an in-memory filesystem. The distro is initially recorded as tentative
+(`RPM-based (SQLite DB)`) and then refined to `CentOs` after the `centos-stream-release`
+package is found — two independent facts. Record [11] confirms SELinux enforcement
+status from sysfs: `selinux_enforce=Enforcing; biba_check=true`. T3 gates on SELinux
+being enforcing; this is why.
+
+Records [12]–[14] are Phases 5 and 6. Record [12] queries the RPM database by inode
+identity and finds that `/etc/os-release` is owned by the `centos-stream-release`
+package, version `10.0`. Record [13] is the integrity check: the SHA-256 of the
+file's current content (`e1e215…`) matches the digest stored in the package database
+from installation time exactly. `fstat` re-verified the `(dev, ino)` before computing
+the digest, confirming the file was not substituted between Phase 3 and now. The note
+`SHA-256 digest verified (T4 earned)` marks the moment T4 is awarded. Record [14] is
+a second `fstat` confirmation on the file descriptor used to read the content for
+parsing in Phase 7 — the same `(dev, ino)` pair, again.
+
+Record [15] is Phase 7. Two independent parsers both successfully parsed the file and
+agreed on 17 fields. The `id=centos` note confirms that the parsed `ID` field matches
+the substrate-derived identity — no contradiction.
+
+**Contradictions**
+
+No contradictions were recorded. In a tampered scenario, this section would show the
+sources that disagreed and the specific field where the disagreement occurred.
+
+NOTE: A system in FIPS mode would show a downgrade reason in the Confidence Model
+section and stop at T3. Phase 6 records a FIPS gate block in the `EvidenceBundle`
+and does not compute the SHA-256 digest. T4 cannot be reached until a FIPS 140-2/3
+validated digest path is available.
+
+== See Also
+
+* xref:pattern-provenance.adoc[Provenance Verification] — fd-anchored filesystem magic
+  checking, the foundation of Phase 1
+* xref:pattern-toctou.adoc[TOCTOU Safety] — `(device, inode)` re-verification between
+  phases
+* xref:pattern-tpi.adoc[Two-Path Independence (TPI)] — Phase 7 parsing strategy and
+  parser differential attack threat
+* xref:pattern-fail-closed.adoc[Fail-Closed] — hard gate behavior and the downgrade
+  confidence model
+* xref:pattern-sec.adoc[Sealed Evidence Cache (SEC)] — future sealed caching of the
+  pipeline result
+* xref:pattern-non-bypassability.adoc[Non-Bypassability (RAIN)] — `StaticSource`
+  compile-time binding
+* xref:pattern-execution-measurement.adoc[Execution Measurement] — pipeline timing in
+  debug mode
+* xref:devel:os-detection-deep-dive.adoc[OS Detection Pipeline — Deep Dive] — full
+  technical reference with code examples and per-phase threat analysis

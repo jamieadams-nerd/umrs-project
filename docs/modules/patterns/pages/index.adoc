@@ -101,6 +101,21 @@ one document, see xref:devel:high-assurance-patterns.adoc[High-Assurance Coding 
 | NIST 800-53 SC-28 / SC-12
 | ⚠ Required — not yet implemented
 
+| xref:pattern-execution-measurement.adoc[Execution Measurement]
+| Gate debug-mode timing behind `#[cfg(debug_assertions)]`; log pattern elapsed time in µs on successful completion
+| NIST 800-218 SSDF PW.4 / NIST 800-53 SA-11
+| ✓ Implemented
+
+| xref:pattern-layered-separation.adoc[Layered Separation]
+| Separate collection, storage, read, and display into distinct layers; display depends only on the read interface
+| NIST 800-53 AC-3 / AC-4 / AC-6
+| ✓ Process — apply when designing any tool with privileged data access
+
+| xref:pattern-audit-cards.adoc[Audit Cards]
+| Render every kernel attribute read as a structured, self-contained card with path, value, and timestamp
+| NIST 800-53 AU-3 / AU-12
+| ✓ Implemented
+
 |===
 
 '''
@@ -194,6 +209,15 @@ See xref:pattern-sec.adoc[Sealed Evidence Cache (SEC)] for full design details.
 === Verification Pipelines
 
 * xref:pattern-sec.adoc[Sealed Evidence Cache (SEC)] ⚠ awaiting implementation
+* xref:pattern-audit-cards.adoc[Audit Cards]
+
+=== Observability
+
+* xref:pattern-execution-measurement.adoc[Execution Measurement]
+
+=== Architecture
+
+* xref:pattern-layered-separation.adoc[Layered Separation]
 
 === Workspace and Dependencies
 

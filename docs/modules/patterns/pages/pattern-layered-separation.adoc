@@ -1,0 +1,220 @@
+= Pattern: Layered Separation
+:toc: left
+:description: Separate data collection, storage, reading, and presentation into distinct layers. Display layers depend only on read interfaces. No layer combines write-path logic with read-path or display logic.
+
+// NIST 800-53 AC-3 — Access Enforcement
+// NIST 800-53 AC-4 — Information Flow Enforcement
+// NIST 800-53 SC-28 — Protection of Information at Rest
+// NSA RTB RAIN — Non-Bypassability; separation of security-relevant execution paths
+
+== Overview
+
+In a high-assurance tool, what data is collected, how it is stored, how it is read back,
+and how it is displayed are four distinct concerns. Layered Separation is the rule that
+keeps them distinct: each layer has a defined responsibility, each layer has a defined
+interface, and no layer reaches across those boundaries.
+
+The practical consequence is that the display layer — the code that renders output for a
+user, whether a CLI table, a TUI panel, or a GUI window — depends only on a read interface.
+It receives typed, already-validated data. It has no access to the write path and no ability
+to trigger data collection. Display code cannot cause a side effect that changes system state.
+
+This separation has a direct security benefit: different access control policies can be
+applied to different layers. The write path (collection and storage) can be restricted to
+privileged processes or system services. The read path can be constrained to specific
+users or roles. The display layer, operating only on data passed to it, inherits no
+privileges from the layers below it.
+
+== The Threat
+
+When write-path and read-path logic are combined in a single function or module, several
+failure modes become possible:
+
+* A display function that also triggers data collection gives a low-privilege UI component
+  the ability to initiate a privileged operation — a privilege escalation through
+  the display layer.
+* Combined logic is harder to audit: an auditor cannot determine at a glance whether
+  rendering a value also updates it, logs it, or transmits it.
+* Testing is harder: a function that collects, stores, and displays cannot be unit-tested
+  for display correctness without triggering real I/O.
+* Access control policy cannot be applied granularly: if collection and display are the
+  same code path, they receive the same permissions, even if that is more than either
+  needs individually (principle of least privilege, NIST 800-53 AC-6).
+
+The failure is not always dramatic. A log line added to a display function, a cache update
+triggered by a render call, or a state mutation on first access — these are the realistic
+forms the problem takes in practice.
+
+== The Pattern
+
+[mermaid]
+....
+flowchart TD
+    COLLECTION["Collection layer\n(privileged — reads kernel, filesystem,\npackage DB, etc.)"]
+    STORAGE["Storage layer\n(structured file or in-memory state;\nread interface exposed)"]
+    READ["Read layer\n(parses and validates stored data;\nreturns typed values only)"]
+    DISPLAY["Display layer\n(CLI / TUI / GUI — depends only on\nread interface)"]
+
+    COLLECTION -->|writes| STORAGE
+    STORAGE -->|read interface| READ
+    READ -->|typed values| DISPLAY
+
+    style COLLECTION fill:#2980b9,color:#fff
+    style STORAGE fill:#8e44ad,color:#fff
+    style READ fill:#27ae60,color:#fff
+    style DISPLAY fill:#e67e22,color:#fff
+....
+
+The four layers and their responsibilities:
+
+[cols="1,3"]
+|===
+| Layer | Responsibility
+
+| Collection
+| Reads from authoritative sources: kernel attributes, filesystem xattrs, package databases,
+  SELinux status interfaces. Runs with the privileges required to access those sources.
+  Writes results to the storage layer. Has no display responsibility.
+
+| Storage
+| Holds the collected data in a structured, stable format (typically a typed struct or a
+  serialized file). Exposes a read interface. Does not initiate collection. Does not render output.
+
+| Read
+| Reads from the storage layer. Validates and parses the stored data. Returns typed values to callers.
+  Does not write to storage. Does not initiate collection. Does not format for display.
+
+| Display
+| Receives typed values from the read layer. Formats and presents output (table, colored text,
+  machine-readable JSON). Has no access to the write path. Cannot trigger collection or storage updates.
+|===
+
+The key invariant: *data flows in one direction* — collection → storage → read → display.
+No layer calls back into a layer above it.
+
+== In the UMRS Codebase
+
+=== `umrs-state` — system posture state file
+
+`umrs-state` is the reference implementation of Layered Separation in this codebase.
+
+*Collection and storage* are the `set` subcommand. When a probe or script updates a
+system posture key (for example, a FIPS mode check), it calls `umrs-state set <key> <value>`.
+The tool writes the update to a structured state file using `umrs_core::save_state`.
+The write path is a distinct execution path; it does not render anything.
+
+[source,rust]
+----
+// umrs-state: main.rs — write path
+Command::Set { key, value } => {
+    let mut state = load_state(&state_path)?;
+    state.set_key(&key, &value);
+    save_state(&state, &state_path)?;
+    // No display logic here — write path is write-only.
+    Ok(())
+}
+----
+
+*Read and display* are the `get` and `list-keys` subcommands. They load state via
+`umrs_core::load_state`, parse the stored data into typed values, and display the result.
+They do not write to the state file.
+
+[source,rust]
+----
+// umrs-state: main.rs — read path
+Command::Get { key } => {
+    let state = load_state(&state_path)?;
+    match state.get_key(&key) {
+        Some(val) => println!("{val}"),
+        None => eprintln!("Key not found: {key}"),
+    }
+    Ok(())
+}
+----
+
+The load/display path has no ability to update the state file. A future TUI or GUI
+component that uses `load_state` as its data source inherits this constraint: it can
+only display what is in the file, not modify it.
+
+=== How this enables per-layer access control
+
+Because collection is a separate execution path (a separate subcommand, or in a future
+design, a separate privileged binary), the operating system can apply different access
+controls to each layer:
+
+* SELinux policy can confine the collection path to a specific domain that has read
+  access to `/proc/` and `/sys/fs/selinux/` — the display path does not need those
+  permissions.
+* The state file can be owned by a system user with read permissions granted to a less
+  privileged display process.
+* Audit rules can target the write path specifically, producing audit events for
+  state mutations without generating noise for read-only display operations.
+
+This is not a future aspiration: the architecture is already structured to support it.
+Adding the policy is a deployment decision, not a code change.
+
+== When to Apply
+
+Apply Layered Separation when designing any tool that:
+
+* Reads from privileged sources (kernel attributes, xattrs, package databases, system logs)
+* Produces output for a human operator or a machine consumer
+* May be extended in the future with a TUI, GUI, or API endpoint
+
+The architectural review trigger is: *new tool with privileged data access → enforce
+layered separation before writing the first line of display code*.
+
+Layered Separation does not apply to simple one-shot scripts that read and display in
+a single pass and have no persistence requirement. Apply it when storage is involved or
+when the tool will grow.
+
+Violation to watch for: a display function that calls a collection function. If the
+display layer needs data that is not yet available, the correct fix is to move collection
+to an earlier point in the pipeline and pass the result forward — not to add a collection
+call inside the display function.
+
+== Security Controls
+
+[cols="1,2"]
+|===
+| Control | Applicability
+
+| NIST 800-53 AC-3
+| Access Enforcement — layered separation enables per-layer access control decisions;
+  the display layer cannot bypass controls applied to the write path
+
+| NIST 800-53 AC-4
+| Information Flow Enforcement — data flows in one direction (collection → storage →
+  read → display); no layer initiates a backward flow
+
+| NIST 800-53 AC-6
+| Least Privilege — each layer is granted only the permissions it needs for its own
+  responsibility; display code requires no collection privileges
+
+| NIST 800-53 SC-28
+| Protection of Information at Rest — the storage layer is the sole write interface to
+  persistent state; clear ownership makes protection policy straightforward to apply
+
+| NSA RTB RAIN
+| Non-Bypassability — the read interface is the only sanctioned path from storage to
+  display; no layer can reach around it to access raw storage directly
+|===
+
+== Summary
+
+Separate data collection, storage, reading, and display into distinct layers with
+one-directional data flow. Display layers depend only on read interfaces and have no
+ability to trigger collection or modify stored state. This structure enables per-layer
+access control policy — the write path can be confined to a privileged domain while the
+display path operates without those privileges. A display function that triggers a
+collection call is a violation of the pattern and a privilege escalation risk.
+
+== See Also
+
+* xref:pattern-non-bypassability.adoc[Non-Bypassability (RAIN)] — the mechanical enforcement
+  principle that ensures each layer cannot bypass the interface above it
+* xref:pattern-provenance.adoc[Provenance Verification] — the collection layer must verify
+  the provenance of kernel data before writing it to the storage layer
+* xref:pattern-error-discipline.adoc[Error Information Discipline] — errors from the read
+  layer must not carry raw storage content into the display layer
+* xref:devel:high-assurance-patterns.adoc[High-Assurance Coding Patterns]

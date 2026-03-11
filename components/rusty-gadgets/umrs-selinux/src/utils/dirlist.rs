@@ -352,24 +352,23 @@ fn extract_group_key(entry: &SecureDirent) -> GroupKey {
         };
     }
 
-    let selinux_type = entry.selinux_ctx.as_ref().map_or_else(
-        || "<unlabeled>".to_string(),
-        |ctx| ctx.security_type().to_string(),
-    );
+    // Derive the type column from SelinuxCtxState.
+    // ParseFailure and TpiDisagreement use their own sentinel values so they
+    // group separately from genuinely unlabeled objects.
+    let selinux_type = entry.selinux_label.display_type();
 
-    let marking =
-        entry.selinux_ctx.as_ref().and_then(|ctx| ctx.level()).map_or_else(
-            || "<no-level>".to_string(),
-            |lvl| {
-                let range = SecurityRange::from_level(lvl);
-                GLOBAL_TRANSLATOR.read().map_or_else(
-                    |_| lvl.raw().to_owned(),
-                    |g| {
-                        g.lookup(&range).unwrap_or_else(|| lvl.raw().to_owned())
-                    },
-                )
-            },
-        );
+    // Derive the marking/level column.
+    // Only Labeled entries have a level; all other states use <no-level>.
+    let marking = entry.selinux_label.level().map_or_else(
+        || "<no-level>".to_owned(),
+        |lvl| {
+            let range = SecurityRange::from_level(lvl);
+            GLOBAL_TRANSLATOR.read().map_or_else(
+                |_| lvl.raw().to_owned(),
+                |g| g.lookup(&range).unwrap_or_else(|| lvl.raw().to_owned()),
+            )
+        },
+    );
 
     GroupKey {
         selinux_type,
