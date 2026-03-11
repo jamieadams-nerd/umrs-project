@@ -1,7 +1,7 @@
 # Plan: i18n Onboarding — umrs-state and umrs-logspace
 
 **Date**: 2026-03-10
-**Status**: STEP 1 COMPLETE — awaiting approval for Step 2
+**Status**: COMPLETE — both steps done
 **Prerequisite**: tr_core() cleanup complete (build clean, 237 tests passing)
 
 ---

@@ -1,0 +1,183 @@
+= Pattern: Fail-Closed
+:toc: left
+:description: On any ambiguity, parse error, or disagreement between independent validation paths, deny access and return an error. Never silently succeed with a degraded or default result in a security context.
+
+// NSA RTB RAIN — Non-bypassable security decisions; no residual pathways
+// NIST 800-53 AC-3 — Access Enforcement
+// NIST 800-53 SI-10 — Information Input Validation
+
+== Overview
+
+Fail-Closed means that when a security check encounters any ambiguity, error, or
+unexpected condition, the response is to deny the operation and return an error — never
+to proceed with a degraded result, a default value, or a best-effort guess.
+
+The alternative — Fail-Open — accepts a partial or degraded state as "good enough" when
+something goes wrong. In a high-assurance system, Fail-Open is not a graceful fallback;
+it is a security bypass. An attacker who can induce an error condition gains access that
+the policy would otherwise deny.
+
+Fail-Closed is the required behavior at every gate in this codebase: TPI disagreements,
+parse failures, filesystem integrity checks, and type construction errors all follow
+the same rule — return `Err`, never `Ok` with compromised content.
+
+== The Threat
+
+The temptation when two independent parse paths disagree is to pick one, log a warning,
+and continue. The reasoning sounds plausible: "The data is probably fine; this is just a
+parser edge case." This reasoning is Fail-Open.
+
+In a security context, a disagreement means something unexpected happened. The unexpected
+may be:
+
+* A parser flaw that one path exposed and the other did not
+* A malformed input crafted to exploit a specific parser's edge case
+* An integrity violation — the data was modified between when it was written and when it was read
+
+None of these cases are safe to proceed through. Continuing with a degraded or guessed
+result means proceeding with a value whose correctness is unknown, in a decision path
+where incorrect values are a security breach.
+
+The same logic applies to type construction: a `SensitivityLevel` or `Category` that
+could not be validated at construction must not be created with a default or clamped
+value. The caller must handle the error. Defaulting silently produces an incorrect label.
+
+== The Pattern
+
+Any error, ambiguity, or disagreement on a security path returns `Err` immediately:
+
+. *Fail on disagreement:* If two independent paths produce different results, return
+  `Err(PermissionDenied)`.
+. *Fail on any single-path error:* If either path fails, return `Err`. Do not fall
+  back to the other path's result alone.
+. *Never substitute a default:* Do not return `Ok(SensitivityLevel::default())` when
+  construction fails. The caller must handle the error.
+. *Log before returning:* Every `Err` on a security path is preceded by `log::error!`.
+  See xref:pattern-loud-failure.adoc[Loud Failure].
+
+The error type should carry enough information for the caller to construct a useful audit
+record without embedding sensitive data in the error string. See
+xref:pattern-error-discipline.adoc[Error Information Discipline].
+
+== In the UMRS Codebase
+
+The TPI gate in `umrs-selinux/src/xattrs.rs` is the primary Fail-Closed site.
+Disagreement between parse paths returns `PermissionDenied`, not the result from either
+individual path:
+
+[source,rust]
+----
+// umrs-selinux: xattrs.rs — TPI gate
+if context_a != context_b {
+    log::error!("CRITICAL: RTB Redundancy Failure!");
+    log::error!("PATH A: {context_a:?}");
+    log::error!("PATH B: {context_b:?}");
+    return Err(io::Error::new(
+        io::ErrorKind::PermissionDenied,
+        "RTB Redundancy Failure: Security Ctx logic mismatch",
+    ));
+}
+----
+
+Type constructors in `umrs-selinux/src/category.rs` and `umrs-selinux/src/sensitivity.rs`
+fail closed at construction — there is no `Default` that produces an unchecked value:
+
+[source,rust]
+----
+// umrs-selinux: category.rs
+pub const fn new(id: u16) -> Result<Self, CategoryError> {
+    if id > MAX_CATEGORY {
+        return Err(CategoryError::OutOfRange(id));  // fail closed — no clamping
+    }
+    Ok(Self(id))
+}
+
+// umrs-selinux: sensitivity.rs
+pub const fn new(level: u16) -> Result<Self, SensitivityError> {
+    if level > MAX_SENSITIVITY {
+        return Err(SensitivityError::OutOfRange(level));  // fail closed — no clamping
+    }
+    Ok(Self(level))
+}
+----
+
+The filesystem integrity check in `umrs-platform/src/kattrs/` also fails closed:
+if the magic check fails, nothing is read and nothing is returned:
+
+[source,rust]
+----
+// umrs-platform: kattrs.rs
+if stats.filesystem_type() != expected_magic {
+    log::error!(
+        "Integrity Failure: {} is not on the authorized filesystem",
+        path.display()
+    );
+    return Err(io::Error::new(
+        io::ErrorKind::PermissionDenied,
+        "Integrity Failure: path is not on the authorized filesystem",
+    ));
+}
+// only reaches here if the magic check passed
+----
+
+== When to Apply
+
+Fail-Closed applies to every security gate in the codebase. The decision rule is:
+
+[cols="1,2"]
+|===
+| Situation | Response
+
+| TPI paths disagree
+| `Err(PermissionDenied)` — never pick a path
+
+| Either parse path fails
+| `Err` — do not fall back to the other path's result
+
+| Type construction fails (out of range, invalid format)
+| `Err` — do not substitute a default or clamp the value
+
+| Filesystem magic check fails
+| `Err(PermissionDenied)` — do not read
+
+| Any unexpected condition on a security path
+| `Err` — investigate; do not proceed
+|===
+
+Non-security-relevant code — configuration parsing, display formatting, optional
+features — can use appropriate fallback behavior. The Fail-Closed requirement applies
+specifically to code paths that produce values used in authorization or classification
+decisions.
+
+== Security Controls
+
+[cols="1,2"]
+|===
+| Control | Applicability
+
+| NSA RTB RAIN
+| Non-Bypassability — no code path reaches a security-relevant decision while carrying
+  unverified or contested input
+
+| NIST 800-53 AC-3
+| Access Enforcement — access decisions must be based on verified, unambiguous input
+
+| NIST 800-53 SI-10
+| Information Input Validation — reject input that cannot be fully validated rather than
+  proceeding with partial validation
+|===
+
+== Summary
+
+When a security check encounters any error, ambiguity, or unexpected condition, the only
+acceptable response is to return `Err` and stop. Proceeding with a degraded result, a
+defaulted value, or one parse path's output when the other failed is Fail-Open — an
+adversary who can induce that condition gains access the policy would have denied.
+
+== See Also
+
+* xref:pattern-tpi.adoc[Two-Path Independence] — the primary site where Fail-Closed
+  gates appear in this codebase
+* xref:pattern-loud-failure.adoc[Loud Failure] — every Fail-Closed return must be logged
+  at `error!` before returning
+* xref:devel:high-assurance-patterns.adoc[High-Assurance Pattern Index]

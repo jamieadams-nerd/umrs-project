@@ -1,5 +1,11 @@
 # Security Engineer — Persistent Memory
 
+## Cross-Team Channel
+To notify the tech-writer or senior-tech-writer of compliance findings that require doc
+updates, new control mappings, or audit gaps: write an entry to
+`.claude/agent-memory/cross-team/notes.md` (from: security-engineer, to: tech-writer or
+senior-tech-writer). Read the file at session start for entries addressed to you.
+
 ## SELinux Type Naming Conventions (umrs-platform)
 - No dedicated SELinux types written yet for the OS detection subsystem.
 - First policy artifact authoring: defer until coder closes F-01/F-02/F-03.

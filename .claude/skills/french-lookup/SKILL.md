@@ -4,7 +4,7 @@ description: Search the GNU translation corpus for technical French terms in pri
 ---
 
 # French Lookup Skill
-Use this skill to query the `.claude/corpus/gnu-fr/` directory for existing technical translations.
+Use this skill to query the `.claude/corpus/` directory for existing technical translations.
 
 ## Usage
 Run the command with the English term you want to find:

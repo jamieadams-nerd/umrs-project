@@ -239,8 +239,12 @@ Load the policy manually for this boot:
 
 [source,bash]
 ----
-cat /etc/ima/[0-9]*.policy | sudo tee /sys/kernel/security/ima/policy
+cat /etc/ima/00-integrity.policy | sudo tee /sys/kernel/security/ima/policy
 ----
+Ubuntu:
+sudo cat /etc/ima/00-integrity.policy
+
+
 
 Generate the initial hash by reading the target file.
 In fix mode the kernel writes the hash to the file's `security.ima` extended

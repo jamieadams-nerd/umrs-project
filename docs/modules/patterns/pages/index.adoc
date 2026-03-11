@@ -1,0 +1,200 @@
+= High-Assurance Pattern Library
+:toc: left
+:description: The security and reliability patterns used throughout UMRS — each pattern covers the threat it defeats, how it is implemented, and when to apply it.
+
+// NSA RTB VNSSA / RAIN — Design discipline for non-bypassable, residual-free security
+// NIST 800-218 SSDF PW.4 — Implement secure coding practices
+// NIST 800-53 SA-8 — Security and Privacy Engineering Principles
+
+== About This Library
+
+These patterns are the design vocabulary of the UMRS codebase. They are not optional
+style guidelines — they are the mechanisms by which the codebase satisfies its NSA RTB,
+NIST 800-53, and SSDF obligations at the implementation level.
+
+Each page covers:
+
+. *The threat* — what goes wrong when the pattern is absent
+. *The pattern* — exactly what the code does and why
+. *In the UMRS codebase* — real source examples with module and file references
+. *When to apply* — the conditions that trigger this pattern
+. *Controls* — which NIST 800-53 and NSA RTB controls the pattern satisfies
+. *Summary* — a one-paragraph statement suitable for a design review or blog post
+
+The patterns are organized into four groups below. The implementation status column
+is maintained so the xref:devel:index.adoc[rust-developer] can identify patterns
+that are documented but not yet applied.
+
+For the full consolidated narrative with inline code examples for all patterns in
+one document, see xref:devel:high-assurance-patterns.adoc[High-Assurance Coding Patterns].
+
+'''
+
+== Pattern Reference Table
+
+[cols="1,2,1,1", options="header"]
+|===
+| Pattern | What it does | Primary control | Implementation status
+
+| xref:pattern-tpi.adoc[Two-Path Independence (TPI)]
+| Parse security-relevant input with two independent implementations; fail closed on disagreement
+| NSA RTB Redundancy / SSDF PW.4.1
+| ✓ Implemented
+
+| xref:pattern-toctou.adoc[TOCTOU Safety]
+| Anchor all I/O to a single open file descriptor; never re-open by path
+| NIST 800-53 SI-7 / NSA RTB VNSSA
+| ✓ Implemented
+
+| xref:pattern-fail-closed.adoc[Fail-Closed]
+| On any error or disagreement, return Err; never succeed with degraded content
+| NSA RTB RAIN / NIST 800-53 AC-3
+| ✓ Implemented
+
+| xref:pattern-provenance.adoc[Provenance Verification]
+| Check filesystem magic on the open descriptor before trusting kernel data
+| NIST 800-53 SI-7 / NSA RTB VNSSA
+| ✓ Implemented
+
+| xref:pattern-loud-failure.adoc[Loud Failure]
+| Every security-relevant Err is preceded by log::error! — no silent failures
+| NSA RTB RAIN / NIST 800-53 AU-3
+| ✓ Implemented
+
+| xref:pattern-non-bypassability.adoc[Non-Bypassability (RAIN)]
+| Private constructors, trait defaults, and module boundaries enforce checks mechanically
+| NSA RTB RAIN / NIST 800-53 AC-3
+| ✓ Implemented
+
+| xref:pattern-secure-arithmetic.adoc[Secure Arithmetic]
+| Use checked_*, saturating_*, or min() guards for arithmetic on security values
+| NIST 800-218 SSDF PW.4.4
+| ✓ Implemented
+
+| xref:pattern-bounds-safe.adoc[Bounds-Safe Indexing]
+| Use .get(i) or a proof comment for every security-relevant array index
+| NIST 800-218 SSDF PW.4.4
+| ✓ Implemented
+
+| xref:pattern-error-discipline.adoc[Error Information Discipline]
+| Sensitive context goes to audit logs; caller-visible errors describe the category only
+| NIST 800-53 SI-12 / AU-3
+| ✓ Implemented
+
+| xref:pattern-zeroize.adoc[Zeroize Sensitive Data]
+| Implement Zeroize / ZeroizeOnDrop on any type that holds secrets or key material
+| NIST 800-53 MP-4 / SC-28
+| ⚠ Required — not yet implemented (vaultmgr)
+
+| xref:pattern-constant-time.adoc[Constant-Time Comparison]
+| Use subtle::ConstantTimeEq for token, MAC, and credential comparisons
+| NIST 800-218 SSDF PW.4.4 / NIST 800-53 SC-28
+| ⚠ Required — not yet implemented
+
+| xref:pattern-supply-chain.adoc[Supply Chain Hygiene]
+| Evaluate every new crate: cargo-audit, transitive deps, FFI surface, FIPS compatibility
+| NIST 800-53 SR-3 / SSDF PO 1.2
+| ✓ Process — apply before each new dependency
+
+| xref:pattern-sec.adoc[Sealed Evidence Cache (SEC)]
+| Seal costly verification results with an ephemeral HMAC + TTL; re-queries verify the seal
+| NIST 800-53 SC-28 / SC-12
+| ⚠ Required — not yet implemented
+
+|===
+
+'''
+
+== Open — Awaiting Implementation
+
+The following patterns are documented, required, and not yet applied in the codebase.
+The rust-developer should look for opportunities to implement them — particularly before
+the `vaultmgr` crate handles real key material or credentials.
+
+=== Zeroize Sensitive Data
+
+*Where it is needed:* `vaultmgr` — any type that holds cryptographic key material,
+session tokens, or cleartext credentials.
+
+*What is missing:* The `zeroize` crate is not in the workspace. No type in `vaultmgr`
+implements `Zeroize` or `ZeroizeOnDrop`.
+
+*Before shipping:*
+
+. Add `zeroize = "1"` to `vaultmgr/Cargo.toml` after running `cargo-audit`
+. Derive `#[derive(ZeroizeOnDrop)]` on every type that holds key material
+. Explicitly call `.zeroize()` on local stack buffers holding decrypted content before
+  they go out of scope
+
+See xref:pattern-supply-chain.adoc[Supply Chain Hygiene] for the dependency evaluation
+checklist before adding `zeroize`.
+
+=== Constant-Time Comparison
+
+*Where it is needed:* Any code path that compares a user-supplied token, MAC, HMAC,
+or password hash against a stored value.
+
+*What is missing:* The `subtle` crate is not in the workspace. No comparison in the
+codebase uses `ConstantTimeEq`.
+
+*Before shipping:*
+
+. Add `subtle = "2"` to the relevant crate's `Cargo.toml` after running `cargo-audit`
+. Replace any `==` comparison on credential byte sequences with `.ct_eq().into()`
+
+See xref:pattern-supply-chain.adoc[Supply Chain Hygiene] for the dependency evaluation
+checklist before adding `subtle`.
+
+=== Sealed Evidence Cache (SEC)
+
+*Where it is needed:* Any pipeline whose output is expensive to produce and whose inputs
+change infrequently — primarily the OS detection pipeline in `umrs-platform` and any
+future multi-phase verification chain.
+
+*What is missing:* No cache implementation exists. The `zeroize` crate is not in the
+workspace (required for sealing key lifetime). SEC cannot be safely implemented until
+xref:pattern-zeroize.adoc[Zeroize Sensitive Data] is in place first.
+
+*Before shipping:*
+
+. Implement xref:pattern-zeroize.adoc[Zeroize Sensitive Data] — the sealing key must
+  be zeroized on drop; this is a hard dependency
+. Choose HMAC-SHA-256 provider; confirm FIPS compatibility on the target platform
+. Implement `SealedCache` around `DetectionResult + TrustLevel + EvidenceBundle digest`
+. Gate on `fips_enabled` at cache initialization — disable caching if no FIPS-validated
+  HMAC is available
+. Set TTL to 30s default; make it configurable downward, not upward
+
+See xref:pattern-sec.adoc[Sealed Evidence Cache (SEC)] for full design details.
+
+'''
+
+== Patterns by Group
+
+=== Parsing and I/O
+
+* xref:pattern-tpi.adoc[Two-Path Independence (TPI)]
+* xref:pattern-toctou.adoc[TOCTOU Safety]
+* xref:pattern-provenance.adoc[Provenance Verification]
+* xref:pattern-fail-closed.adoc[Fail-Closed]
+
+=== Types and Values
+
+* xref:pattern-non-bypassability.adoc[Non-Bypassability (RAIN)]
+* xref:pattern-secure-arithmetic.adoc[Secure Arithmetic]
+* xref:pattern-bounds-safe.adoc[Bounds-Safe Indexing]
+
+=== Secrets and Errors
+
+* xref:pattern-zeroize.adoc[Zeroize Sensitive Data] ⚠ awaiting implementation
+* xref:pattern-constant-time.adoc[Constant-Time Comparison] ⚠ awaiting implementation
+* xref:pattern-error-discipline.adoc[Error Information Discipline]
+* xref:pattern-loud-failure.adoc[Loud Failure]
+
+=== Verification Pipelines
+
+* xref:pattern-sec.adoc[Sealed Evidence Cache (SEC)] ⚠ awaiting implementation
+
+=== Workspace and Dependencies
+
+* xref:pattern-supply-chain.adoc[Supply Chain Hygiene]

@@ -64,7 +64,6 @@ pub enum ObservationKind {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum SecurityObservation {
     // ── Risk ──────────────────────────────────────────────────────────────────
-
     /// World-writable file or directory — any user can modify.
     /// Does not fire on symbolic links (world-writable mode is expected on symlinks).
     /// NIST SP 800-53 AC-3 / CMMC AC.L1-3.1.1.
@@ -83,7 +82,6 @@ pub enum SecurityObservation {
     SetuidWritable,
 
     // ── Warning ───────────────────────────────────────────────────────────────
-
     /// Setuid bit set — privilege escalation risk if exploited.
     /// Common on system binaries (`sudo`, `passwd`); warrants audit coverage.
     /// NIST SP 800-53 CM-6 / CMMC CM.L2-3.4.2.
@@ -136,7 +134,6 @@ pub enum SecurityObservation {
     AccessDenied,
 
     // ── Good ──────────────────────────────────────────────────────────────────
-
     /// An IMA integrity hash (`security.ima` xattr) is present on this file.
     /// The inode is under active integrity measurement or appraisal.
     /// NIST SP 800-53 SI-7 / CMMC SI.L2-3.14.1.
@@ -147,7 +144,6 @@ pub enum SecurityObservation {
     /// cleared — even by root.
     /// NIST SP 800-53 AU-9, CM-5.
     ImmutableFlagSet,
-
     // ── Add new observations above this line ──────────────────────────────────
 }
 
@@ -159,17 +155,25 @@ impl SecurityObservation {
     #[must_use]
     pub const fn kind(&self) -> ObservationKind {
         match self {
-            Self::WorldWritable | Self::NoSelinuxContext | Self::SetuidWritable => {
-                ObservationKind::Risk
-            }
+            Self::WorldWritable
+            | Self::NoSelinuxContext
+            | Self::SetuidWritable => ObservationKind::Risk,
             Self::SetuidBitSet
             | Self::SetgidBitSet
-            | Self::HardLinked { .. }
+            | Self::HardLinked {
+                ..
+            }
             | Self::RootOwnedMutable
-            | Self::UnresolvedOwner { .. }
-            | Self::UnresolvedGroup { .. }
+            | Self::UnresolvedOwner {
+                ..
+            }
+            | Self::UnresolvedGroup {
+                ..
+            }
             | Self::AccessDenied => ObservationKind::Warning,
-            Self::ImaHashPresent | Self::ImmutableFlagSet => ObservationKind::Good,
+            Self::ImaHashPresent | Self::ImmutableFlagSet => {
+                ObservationKind::Good
+            }
         }
     }
 }
@@ -178,20 +182,32 @@ impl fmt::Display for SecurityObservation {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let symbol = match self.kind() {
             ObservationKind::Good => "\u{2713}",    // ✓
-            ObservationKind::Warning => "\u{26A0}",  // ⚠
-            ObservationKind::Risk => "\u{2717}",     // ✗
+            ObservationKind::Warning => "\u{26A0}", // ⚠
+            ObservationKind::Risk => "\u{2717}",    // ✗
         };
         let msg = match self {
             Self::WorldWritable => "world-writable".to_owned(),
-            Self::NoSelinuxContext => "no SELinux context (unlabeled)".to_owned(),
-            Self::SetuidWritable => "setuid with group/world write permissions".to_owned(),
+            Self::NoSelinuxContext => {
+                "no SELinux context (unlabeled)".to_owned()
+            }
+            Self::SetuidWritable => {
+                "setuid with group/world write permissions".to_owned()
+            }
             Self::SetuidBitSet => "SETUID bit set".to_owned(),
             Self::SetgidBitSet => "SETGID bit set".to_owned(),
-            Self::HardLinked { nlink } => format!("hard-linked (nlink={nlink})"),
+            Self::HardLinked {
+                nlink,
+            } => format!("hard-linked (nlink={nlink})"),
             Self::RootOwnedMutable => "root-owned mutable file".to_owned(),
-            Self::UnresolvedOwner { uid } => format!("orphaned owner (uid={uid})"),
-            Self::UnresolvedGroup { gid } => format!("orphaned group (gid={gid})"),
-            Self::AccessDenied => "access denied during attribute read".to_owned(),
+            Self::UnresolvedOwner {
+                uid,
+            } => format!("orphaned owner (uid={uid})"),
+            Self::UnresolvedGroup {
+                gid,
+            } => format!("orphaned group (gid={gid})"),
+            Self::AccessDenied => {
+                "access denied during attribute read".to_owned()
+            }
             Self::ImaHashPresent => "IMA integrity hash present".to_owned(),
             Self::ImmutableFlagSet => "immutable flag set".to_owned(),
         };

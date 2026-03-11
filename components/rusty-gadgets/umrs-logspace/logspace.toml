@@ -15,7 +15,7 @@ mount_point = "/var/log"
 
     [[pool.lifecycle.path]]
     path = "/var/log/maillog"
-    class = "system"
+    class = "application"
 
     [[pool.lifecycle.path]]
     path = "/var/log/cron"
@@ -34,7 +34,7 @@ mount_point = "/var/log"
 
     [[pool.lifecycle.path]]
     path = "/var/log/maillog-*"
-    class = "system"
+    class = "application"
 
     [[pool.lifecycle.path]]
     path = "/var/log/cron-*"
@@ -56,7 +56,7 @@ mount_point = "/var/log/audit"
   state = "archived"
 
     [[pool.lifecycle.path]]
-    path = "/var/log/audit/archive/audit.*"
+    path = "/var/log/audit/audit.log.*"
     class = "audit"
 
 

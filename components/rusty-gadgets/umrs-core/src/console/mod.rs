@@ -8,7 +8,6 @@ pub mod spinner;
 pub mod symbols;
 pub mod typography;
 
-
 // ------------------------------
 // Console public facade
 // ------------------------------

@@ -61,6 +61,21 @@ The patterns below show where.
 
 '''
 
+== Pattern Reference
+
+The patterns have moved to their own module. Each pattern has a dedicated page covering
+the threat it defeats, the implementation in this codebase, when to apply it, and
+applicable controls — plus a self-contained summary paragraph.
+
+See xref:patterns:index.adoc[High-Assurance Pattern Library] for the full listing,
+implementation status, and the "Open — Awaiting Implementation" section that tracks
+patterns not yet applied in the codebase.
+
+The consolidated sections below remain here as a single-document reference. For any
+pattern, follow the cross-module link to the dedicated page for the full treatment.
+
+'''
+
 == 1. Opening and Reading Files
 
 Every file read in UMRS is a potential security event.

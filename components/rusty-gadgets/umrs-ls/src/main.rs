@@ -33,21 +33,21 @@
 // which overrides Cargo.toml lint table entries.
 #![allow(clippy::format_push_string)]
 
+use std::borrow::Cow;
+use std::fmt::Write;
 use std::io;
 use std::path::Path;
 use std::time::SystemTime;
-use std::borrow::Cow;
-use std::fmt::Write;
 
 use chrono::{DateTime, Local};
 use umrs_core::i18n;
 
 use umrs_core::human::sizefmt::{SizeBase, auto_format as fmt_size};
+use umrs_selinux::ObservationKind;
 use umrs_selinux::mcs::colors::{
     ContextComponents, Rgb, SeColorConfig, load_secolors_cached, resolve_colors,
 };
 use umrs_selinux::secure_dirent::{FileType, InodeSecurityFlags};
-use umrs_selinux::ObservationKind;
 use umrs_selinux::utils::dirlist::{
     Column, ColumnSet, DirGroup, GroupKey, ListEntry, list_directory,
 };
@@ -64,7 +64,6 @@ const GREEN: &str = "\x1b[32m";
 const RED: &str = "\x1b[31m";
 const RESET: &str = "\x1b[0m";
 const UNDERLINE: &str = "\x1b[4m";
-
 
 // Runtime display configuration — colour switch, mount symbols, and loaded
 // secolor config.
@@ -100,7 +99,7 @@ impl DisplayConfig {
             use_color,
             mount_symbol: "\u{26C1}",
             plaindir_symbol: "\u{1F4C1}",
-            encrypted_symbol: "\u{1F512}",  // Lock icon
+            encrypted_symbol: "\u{1F512}", // Lock icon
             secolor,
         }
     }
@@ -114,7 +113,6 @@ fn main() -> io::Result<()> {
     .init();
 
     i18n::init("umrs-ls");
-
 
     let args: Vec<String> = std::env::args().collect();
 
@@ -159,7 +157,7 @@ fn main() -> io::Result<()> {
     // Groups.
     let mut total_entries = 0usize;
     for group in &listing.groups {
-        println!();  // Seperate every group
+        println!(); // Seperate every group
         println!("{}", group_separator(&group.key, &cfg));
         for entry in &group.entries {
             print_row(entry, &group.key, &cols, &widths, &cfg);
@@ -232,7 +230,7 @@ fn col_width(widths: &[(Column, usize)], col: Column) -> usize {
 //============================================================================
 fn print_header(cols: &ColumnSet, widths: &[(Column, usize)]) {
     let mut line = ROW_INDENT.to_owned();
-    
+
     for &col in cols.columns() {
         if col == Column::Iov {
             // write! formats directly into 'line' without a temporary String
@@ -247,8 +245,6 @@ fn print_header(cols: &ColumnSet, widths: &[(Column, usize)]) {
     }
     println!("{line}");
 }
-
-
 
 // This will become table header for Textual & Graphical Unser Interfaces
 fn col_header(col: Column) -> Cow<'static, str> {
@@ -267,7 +263,6 @@ fn col_header(col: Column) -> Cow<'static, str> {
         Column::Inode => Cow::Borrowed("INODE"),
     }
 }
-
 
 // ===========================================================================
 // ROW Rendering
@@ -291,15 +286,15 @@ fn print_row(
         if col == Column::Iov {
             line.push_str(&cell_iov(entry, cfg));
             line.push_str("  ");
-
         } else if col == Column::Name {
             line.push_str(&cell_plain(entry, col, key, cfg));
-
         } else if col == Column::Size {
             let w = col_width(widths, col);
             let inner = w.saturating_sub(2);
-            line.push_str(&format!("{:>inner$}  ", cell_plain(entry, col, key, cfg)));
-
+            line.push_str(&format!(
+                "{:>inner$}  ",
+                cell_plain(entry, col, key, cfg)
+            ));
         } else {
             let w = col_width(widths, col);
             line.push_str(&format!("{:<w$}", cell_plain(entry, col, key, cfg)));
@@ -345,21 +340,20 @@ fn cell_plain(
             let group = resolve_groupname(gid);
             format!("{owner}:{group}")
         }
-        Column::Size => fmt_size(u128::from(entry.dirent.size.as_u64()), SizeBase::Binary),
+        Column::Size => {
+            fmt_size(u128::from(entry.dirent.size.as_u64()), SizeBase::Binary)
+        }
         Column::Mtime => format_mtime(entry.mtime),
         Column::Inode => entry.dirent.inode.as_u64().to_string(),
         Column::Name => {
             // 3-char icon zone: encrypted takes priority over plain mount.
             let icon = if entry.dirent.has_encryption() {
                 format!("{}  ", cfg.encrypted_symbol)
-
             } else if entry.dirent.is_mountpoint {
                 format!("{}  ", cfg.mount_symbol)
-
             } else if file_type_char(entry.dirent.file_type) == 'd' {
                 // Only one trailing space because the icon is so big.
-                format!("{} ", cfg.plaindir_symbol )
-
+                format!("{} ", cfg.plaindir_symbol)
             } else {
                 NAME_PREFIX.to_owned()
             };
@@ -466,15 +460,19 @@ fn group_separator(key: &GroupKey, cfg: &DisplayConfig) -> String {
     if key.selinux_type == "<restricted>" {
         let selinux_type = i18n::tr("<restricted>");
         format!(
-        "{DIM_ITALIC}{UNDERLINE}{0} :: {1} {fill}{RESET}", selinux_type, key.marking)
+            "{DIM_ITALIC}{UNDERLINE}{0} :: {1} {fill}{RESET}",
+            selinux_type, key.marking
+        )
     } else {
         format!(
-        "{BOLD_UNDER}{0} :: {1} {fill}{RESET}", key.selinux_type, key.marking )
+            "{BOLD_UNDER}{0} :: {1} {fill}{RESET}",
+            key.selinux_type, key.marking
+        )
     }
 }
 
 //
-//Identity resolution 
+//Identity resolution
 //
 fn resolve_username(uid: u32) -> String {
     match nix::unistd::User::from_uid(nix::unistd::Uid::from_raw(uid)) {

@@ -1,4 +1,8 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Jamie Adams (a.k.a, Imodium Opertator)
+//
 use glob::glob;
+use log::debug;
 use nix::sys::statvfs::statvfs;
 use std::collections::HashMap;
 use walkdir::WalkDir;
@@ -107,6 +111,8 @@ pub fn measure_from_config(cfg: &Config) -> Result<Vec<ResourcePool>, String> {
                             "DEBUG: raw bytes {} = {}",
                             path_cfg.path, bytes
                         );
+                        debug!("Raw bytes {} = {}", path_cfg.path, bytes);
+
                         lifecycle_map.entry(state.clone()).or_default().push(
                             LogConsumer {
                                 class,

@@ -170,7 +170,11 @@ impl ConfidenceModel {
     /// `contradiction.description`.
     ///
     /// NIST SP 800-53 AU-10: contradictions are preserved for non-repudiation.
-    pub fn record_contradiction(&mut self, contradiction: Contradiction, downgrade_to: TrustLevel) {
+    pub fn record_contradiction(
+        &mut self,
+        contradiction: Contradiction,
+        downgrade_to: TrustLevel,
+    ) {
         let reason = contradiction.description.clone();
         self.contradictions.push(contradiction);
         self.downgrade(downgrade_to, reason);

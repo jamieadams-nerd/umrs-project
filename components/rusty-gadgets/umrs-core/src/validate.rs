@@ -29,7 +29,6 @@ use regex::Regex;
 use std::collections::HashMap;
 use std::sync::{Mutex, OnceLock};
 
-
 /// Canonical validation pattern registry.
 ///
 /// Add new patterns here as UMRS validation expands.

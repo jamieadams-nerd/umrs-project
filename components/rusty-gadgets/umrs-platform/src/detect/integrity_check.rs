@@ -60,10 +60,12 @@ use std::path::{Path, PathBuf};
 use sha2::{Digest, Sha256};
 
 use crate::confidence::{ConfidenceModel, TrustLevel};
-use crate::evidence::{DigestAlgorithm, EvidenceBundle, EvidenceRecord, PkgDigest, SourceKind};
+use crate::evidence::{
+    DigestAlgorithm, EvidenceBundle, EvidenceRecord, PkgDigest, SourceKind,
+};
 use crate::kattrs::{ProcfsText, SecureReader};
 
-use super::file_ownership::find_stat_for_path;
+use super::file_ownership::{find_resolved_path, find_stat_for_path};
 use super::substrate::{FileOwnership, InstalledDigest, PackageProbe};
 
 // ===========================================================================
@@ -87,7 +89,14 @@ pub(super) fn run(
     #[cfg(debug_assertions)]
     let t0 = std::time::Instant::now();
 
-    let result = run_inner(evidence, confidence, candidate, probe, ownership, max_read_bytes);
+    let result = run_inner(
+        evidence,
+        confidence,
+        candidate,
+        probe,
+        ownership,
+        max_read_bytes,
+    );
 
     #[cfg(debug_assertions)]
     log::debug!(
@@ -125,8 +134,41 @@ fn run_inner(
         return false;
     }
 
+    // Resolve the query path for RPM DB lookups.
+    //
+    // On RHEL 10, `/etc/os-release` is a symlink to `/usr/lib/os-release`. The RPM
+    // database records the real path. Use the resolved path so that the digest query
+    // can succeed. The candidate_str (symlink path) remains in the audit record's
+    // path_requested field. NIST SP 800-53 SI-7.
+    //
+    // `readlinkat` may return a relative symlink target (e.g., `../usr/lib/os-release`).
+    // Resolve against the candidate's parent directory and canonicalize to an absolute path.
+    let query_path: PathBuf = match find_resolved_path(evidence, &candidate_str)
+    {
+        Some(resolved) => {
+            let p = PathBuf::from(&resolved);
+            if p.is_absolute() {
+                p
+            } else {
+                let parent =
+                    candidate.parent().unwrap_or_else(|| Path::new("/"));
+                std::fs::canonicalize(parent.join(&p))
+                    .unwrap_or_else(|_| parent.join(p))
+            }
+        }
+        None => candidate.to_path_buf(),
+    };
+
+    if query_path != candidate {
+        log::debug!(
+            "integrity_check: using resolved path '{}' (symlink target of '{candidate_str}') \
+             for RPM DB digest query",
+            query_path.display()
+        );
+    }
+
     // Fetch the reference digest from the probe.
-    let Some(installed) = probe.installed_digest(candidate) else {
+    let Some(installed) = probe.installed_digest(&query_path) else {
         log::warn!(
             "integrity_check: no installed digest available for {candidate_str} — T4 not earned"
         );
@@ -135,7 +177,9 @@ fn run_inner(
     };
 
     // Reject weak or unknown digest algorithms.
-    if let Some(rejection) = check_algorithm_policy(&installed, &candidate_str, evidence, confidence) {
+    if let Some(rejection) =
+        check_algorithm_policy(&installed, &candidate_str, evidence, confidence)
+    {
         return rejection;
     }
 
@@ -160,15 +204,36 @@ fn run_inner(
 
     // TOCTOU re-verification: fstat the open fd and compare (dev,ino) against
     // the release_candidate statx record. Detects substitution between phases.
+    //
+    // BUG EXPLANATION — device number encoding mismatch:
+    //
+    // `release_candidate.rs` calls `rustix::fs::statx`, which returns the device
+    // number as separate `stx_dev_major` and `stx_dev_minor` u32 fields.
+    // `FileStat.dev` stores them combined as `(major as u64) << 32 | (minor as u64)`.
+    //
+    // `rustix::fs::fstat()` returns `st_dev` as a Linux `dev_t` — the kernel's compact
+    // encoding via `makedev(major, minor)` (e.g., device 253:0 → 64768, not
+    // `(253u64 << 32) | 0`). These two encodings differ for any device with major > 0.
+    //
+    // Comparing `st.st_dev` directly against `FileStat.dev` would always fail for real
+    // block devices, producing a spurious TOCTOU rejection on every non-loopback system.
+    //
+    // Fix: decompose `st_dev` back into major/minor using `rustix::fs::major` and
+    // `rustix::fs::minor`, then reassemble in the same `(major << 32) | minor` layout
+    // that `release_candidate.rs` uses for `FileStat.dev`.
     let fstat_result = rustix::fs::fstat(file.as_fd());
     let current_dev_ino: Option<(u64, u64)> = match fstat_result {
         Ok(st) => {
-            // Combine rdev major/minor into the same u64 layout used in FileStat.
-            // fstat returns st_dev as a single u64 on Linux; use it directly.
-            Some((st.st_dev, st.st_ino))
+            // Decompose the kernel dev_t compact encoding, then reassemble using the
+            // same `(major << 32) | minor` layout stored in FileStat.dev.
+            let maj = u64::from(rustix::fs::major(st.st_dev));
+            let min = u64::from(rustix::fs::minor(st.st_dev));
+            Some(((maj << 32) | min, st.st_ino))
         }
         Err(e) => {
-            log::warn!("integrity_check: fstat failed for open fd on {candidate_str}: {e}");
+            log::warn!(
+                "integrity_check: fstat failed for open fd on {candidate_str}: {e}"
+            );
             None
         }
     };
@@ -269,7 +334,14 @@ fn run_inner(
     );
 
     // Both are SHA-256 at this point.
-    compare_and_record(computed, installed, candidate_str, fstat_verified, evidence, confidence)
+    compare_and_record(
+        computed,
+        installed,
+        candidate_str,
+        fstat_verified,
+        evidence,
+        confidence,
+    )
 }
 
 // ===========================================================================
@@ -357,11 +429,17 @@ fn compare_and_record(
     };
 
     if digest_matches {
-        log::debug!("integrity_check: SHA-256 digest verified for {candidate_str}");
+        log::debug!(
+            "integrity_check: SHA-256 digest verified for {candidate_str}"
+        );
         confidence.upgrade(TrustLevel::IntegrityAnchored);
         evidence.push(EvidenceRecord {
             source_kind: SourceKind::RegularFile,
-            opened_by_fd: fstat_verified,
+            // The file was opened via File::open (path-based), not via an fd-anchored
+            // call. opened_by_fd is always false here. Fstat verification status is
+            // recorded in the notes field. (NIST SP 800-53 AU-3 — audit records must
+            // accurately reflect the actual open method.)
+            opened_by_fd: false,
             path_requested: candidate_str,
             path_resolved: None,
             stat: None,
@@ -402,7 +480,8 @@ fn compare_and_record(
             parse_ok: false,
             notes: vec![
                 open_note,
-                "SHA-256 digest mismatch — integrity deviation recorded".to_owned(),
+                "SHA-256 digest mismatch — integrity deviation recorded"
+                    .to_owned(),
             ],
         });
         false
@@ -441,18 +520,25 @@ fn no_digest_record(candidate_str: &str) -> EvidenceRecord {
 ///
 /// NIST SP 800-53 SC-13, CMMC L2 SC.3.177 — gate T4 on FIPS;
 /// sha2 crate is not FIPS 140-3 validated.
-fn fips_mode_active(evidence: &mut EvidenceBundle, confidence: &mut ConfidenceModel) -> bool {
+fn fips_mode_active(
+    evidence: &mut EvidenceBundle,
+    confidence: &mut ConfidenceModel,
+) -> bool {
     const FIPS_PATH: &str = "/proc/sys/kernel/fips_enabled";
 
     let node = match ProcfsText::new(PathBuf::from(FIPS_PATH)) {
         Ok(n) => n,
         Err(e) => {
-            log::debug!("integrity_check: could not construct ProcfsText for fips_enabled: {e}");
+            log::debug!(
+                "integrity_check: could not construct ProcfsText for fips_enabled: {e}"
+            );
             return false;
         }
     };
 
-    let content = match SecureReader::<ProcfsText>::new().read_generic_text(&node) {
+    let content = match SecureReader::<ProcfsText>::new()
+        .read_generic_text(&node)
+    {
         Ok(s) => s,
         Err(e) => {
             log::debug!("integrity_check: could not read fips_enabled: {e}");
@@ -502,7 +588,9 @@ fn fips_mode_active(evidence: &mut EvidenceBundle, confidence: &mut ConfidenceMo
 /// NSA RTB: bounded reads prevent unbounded allocation on malformed inputs.
 fn read_bounded(file: &mut File, max_bytes: usize) -> io::Result<Vec<u8>> {
     let mut buf = Vec::new();
-    let bytes_read = file.take((max_bytes as u64).saturating_add(1)).read_to_end(&mut buf)?;
+    let bytes_read = file
+        .take((max_bytes as u64).saturating_add(1))
+        .read_to_end(&mut buf)?;
 
     if bytes_read > max_bytes {
         return Err(io::Error::new(

@@ -1,0 +1,190 @@
+= Pattern: Error Information Discipline
+:toc: left
+:description: Error messages must not contain security labels, key material, credentials, or classified data. Return structured error types; keep sensitive context in audit logs where access is controlled.
+
+// NIST 800-53 SI-12 — Information Management and Retention
+// NIST 800-53 AU-3 — Content of Audit Records
+// NIST 800-53 AC-3 — Access Enforcement
+
+== Overview
+
+Error information discipline separates two audiences for security-relevant error data:
+
+* *Callers and operators* receive structured error types with enough information to
+  handle the error programmatically and understand the error category. They do not
+  receive security labels, key material, or classified content.
+* *Audit logs* receive the full context — paths, labels, raw values — because access
+  to audit logs is controlled by access policy, not by who happens to catch an exception.
+
+The problem with uncontrolled error strings is that error messages travel through
+uncontrolled channels: they appear in `stderr`, in HTTP response bodies, in log files
+that are shipped to centralized logging systems, in test failure output, in crash reports.
+None of these channels have the same access control as the data they could describe.
+
+A `SecurityContext` value that appears in an error string from a privileged process can
+be read by anyone who can read that process's output — even if the security policy would
+not allow them to read the file that the context labels.
+
+== The Threat
+
+Consider an error message that includes variable data from a security-relevant operation:
+
+[source,rust]
+----
+// VIOLATES error information discipline
+return Err(io::Error::new(
+    io::ErrorKind::PermissionDenied,
+    format!("Access denied: label {} does not dominate {}", subject_ctx, object_ctx),
+));
+----
+
+The caller receives both security contexts in the error string. If that error string:
+
+* Travels across a privilege boundary (the caller is a less-privileged process)
+* Is written to a log that has broader read access than the files it describes
+* Is returned to a client over a network connection
+* Appears in a UI that a non-privileged user can see
+
+...then the security label information has been disclosed to an unauthorized reader.
+This is an information flow control violation, regardless of whether the underlying
+access was denied.
+
+The same applies to paths, usernames, group names, cryptographic key fragments, or any
+other value that should only be readable by authorized parties.
+
+== The Pattern
+
+Separate structured error types from user-visible strings:
+
+. *Error types are enums.* Each variant carries the information needed for programmatic
+  handling — the OS error code, the input length, the violating character — but never
+  security labels, key material, or classified data.
+
+. *Display implementations describe the category, not the value.* `"SELinux context
+  parse failed (both paths)"` is a correct display string. `"SELinux context parse
+  failed: unconfined_u:object_r:user_home_t:s0"` is not.
+
+. *Sensitive context goes to the audit log.* A `log::error!` call immediately before
+  returning can include the full diagnostic context — it reaches the log where access
+  is controlled. The caller-visible error receives only the error category.
+
+. *Path information in logs, not error strings.* Paths are generally not sensitive in
+  themselves, but the pattern of "sensitive data in logs, category in error strings"
+  should be applied consistently — including to paths — so the codebase does not develop
+  ad-hoc exceptions that erode the discipline.
+
+== In the UMRS Codebase
+
+`SecDirError` in `umrs-selinux/src/secure_dirent.rs` is the primary example. The
+variants carry structured diagnostic data; the `Display` implementation produces
+category-only strings:
+
+[source,rust]
+----
+// umrs-selinux: secure_dirent.rs
+// NIST SP 800-53 AU-3: error variants carry detail for audit record generation
+// without requiring string parsing by the caller.
+pub enum SecDirError {
+    Metadata(std::io::Error),
+    AccessDenied(std::io::Error),     // the denial itself is a security observation
+    InvalidPath(PathError),
+    InvalidFileName,
+    SelinuxReadError(std::io::Error),
+    SelinuxParseError,                // no raw input — parse failure carries no label
+}
+
+impl std::fmt::Display for SecDirError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Metadata(e)         => write!(f, "metadata error: {e}"),
+            Self::AccessDenied(e)     => write!(f, "access denied: {e}"),
+            Self::InvalidPath(e)      => write!(f, "invalid path: {e}"),
+            Self::InvalidFileName     => write!(f, "invalid filename component"),
+            Self::SelinuxReadError(e) => write!(f, "SELinux xattr read error: {e}"),
+            Self::SelinuxParseError   => write!(f, "SELinux context parse failed (both paths)"),
+        }
+    }
+}
+----
+
+`SelinuxParseError` carries no raw input — the input string that failed to parse never
+appears in the caller-visible error. If a caller needs to log additional detail, they
+call `log::error!` themselves with the context available to them.
+
+The filesystem integrity check in `umrs-platform/src/kattrs/` applies the same
+separation: the path goes to `log::error!`; the caller receives a generic message:
+
+[source,rust]
+----
+// umrs-platform: kattrs.rs
+if stats.filesystem_type() != expected_magic {
+    // Path to the audit log — access to logs is policy-controlled.
+    log::error!(
+        "Integrity Failure: {} is not on the authorized filesystem",
+        path.display()
+    );
+    // Caller gets the category, not the path.
+    return Err(io::Error::new(
+        io::ErrorKind::PermissionDenied,
+        "Integrity Failure: path is not on the authorized filesystem",
+    ));
+}
+----
+
+The log line and the error string are two different information channels, each carrying
+only what is appropriate for its audience.
+
+== When to Apply
+
+Apply Error Information Discipline to every error return on a security code path. The
+check is: *does the error string include any variable data derived from a security
+label, credential, key, or classified value?*
+
+If yes, move that data to a `log::error!` call and replace it in the error string with
+a fixed category description.
+
+This applies to:
+
+* Parse errors on security contexts (`SecurityContext`, MLS labels)
+* Access denied errors that include the subject or object context
+* Authentication or credential errors that include token material
+* Any error that includes a filename, path, or username that might be classified or
+  controlled
+
+Non-security-relevant error strings — configuration parse errors, missing optional
+file, network timeout — do not require this treatment. Apply it where the data in the
+error string could constitute unauthorized disclosure.
+
+== Security Controls
+
+[cols="1,2"]
+|===
+| Control | Applicability
+
+| NIST 800-53 SI-12
+| Information Management and Retention — sensitive information must be retained only
+  in places where access is controlled; error channels are not access-controlled
+
+| NIST 800-53 AU-3
+| Content of Audit Records — audit records should contain the detailed context;
+  structured error types enable audit records without requiring string parsing
+
+| NIST 800-53 AC-3
+| Access Enforcement — information flow through error channels must respect the same
+  policy that governs direct access to the data described
+|===
+
+== Summary
+
+Error messages describe the category of failure; audit logs carry the sensitive detail.
+A security label or credential that appears in an error string travels through every
+channel that receives the error — `stderr`, log shippers, crash reporters, API responses
+— none of which have the same access controls as the data they could describe. Structured
+error types with `Display` implementations that omit sensitive fields enforce this boundary
+without additional caller discipline.
+
+== See Also
+
+* xref:pattern-loud-failure.adoc[Loud Failure] — the `log::error!` call that carries
+  the sensitive context to the audit log before the error is returned
+* xref:devel:high-assurance-patterns.adoc[High-Assurance Pattern Index]

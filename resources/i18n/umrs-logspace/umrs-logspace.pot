@@ -1,0 +1,38 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE umrs-logspace'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the umrs-logspace package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: umrs-logspace VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-10 15:03+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: components/rusty-gadgets/umrs-logspace/src/output.rs:9 components/rusty-gadgets/umrs-logspace/src/output.rs:9
+msgid "Resource Pool"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-logspace/src/output.rs:10 components/rusty-gadgets/umrs-logspace/src/output.rs:10
+msgid "Mount point"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-logspace/src/output.rs:11 components/rusty-gadgets/umrs-logspace/src/output.rs:11
+msgid "Total space"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-logspace/src/output.rs:12 components/rusty-gadgets/umrs-logspace/src/output.rs:12
+msgid "Free space"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-logspace/src/output.rs:15 components/rusty-gadgets/umrs-logspace/src/output.rs:15
+msgid "Lifecycle"
+msgstr ""

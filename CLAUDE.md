@@ -328,6 +328,9 @@ controlled), not in user-visible error strings.
 Prefer `.get(i)` over `[i]` for security-relevant array access. Never assume index validity;
 treat out-of-bounds as a security event, not a logic error.
 
+### Sealed Evidence Cache — SEC (NIST 800-53 SC-28, SC-12)
+See the pattern library: `docs/modules/patterns/pages/pattern-sec.adoc`.
+
 ### Supply Chain Hygiene (SSDF PO 1.2, PW 4.3)
 Every new external crate is an attack surface. Before adding a dependency:
 - Prefer crates with minimal transitive dependency trees
@@ -357,6 +360,7 @@ raise the relevant pattern or concern before proceeding:
 | New public API surface | Compliance annotation — add NIST/RTB control citation |
 | New crate added to workspace | Add `#![forbid(unsafe_code)]` to its crate root immediately |
 | New type, trait, or module proposed | Search workspace for existing equivalents first — duplication requires written justification |
+| Expensive verification result reused across calls | SEC — sealed evidence cache with HMAC + TTL |
 
 ---
 

@@ -1,93 +1,189 @@
 = Internationalization (i18n)
-:description: How to use the UMRS core i18n module in CLI tools and libraries.
+:description: How to wire gettext-based i18n into a UMRS CLI binary using the umrs-core i18n module.
 
-UMRS uses a multi-domain gettext architecture. Each CLI tool has its own text domain;
-the shared `umrs-core` library has its own domain. Both can be translated independently.
+UMRS uses a multi-domain gettext architecture.
+Each CLI tool has its own text domain and manages its own translation catalog.
 
-== Domains
+NOTE: i18n support in this project is intentionally demonstrative — it shows how to wire
+gettext into a high-assurance Rust binary without compromising audit trail integrity.
 
-[cols="1,2,2",options="header"]
-|===
-| Call | Domain | Catalog
+== Architecture Rule
 
-| `tr()` | Your tool (e.g., `vaultmgr`) | `vaultmgr.mo`
-| `tr_core()` | `umrs-core` | `umrs-core.mo`
-|===
+**Only tool binaries (CLI crates) translate strings.**
+Library crates (`umrs-core`, `umrs-selinux`, `umrs-platform`) return typed values and
+structured errors — they never call `tr()` or `init()`.
 
-Translations resolve simultaneously with no collision.
+== Step 1 — Decide the Domain Name
 
-== Step 1 — Initialize at Program Start
+Pick the gettext domain for the tool.
+Convention is the crate name:
 
-In your CLI's `main()`, call `i18n::init()` with the tool's domain name before
-producing any output:
+[source]
+----
+umrs-ls
+umrs-state
+umrs-logspace
+----
+
+Document the assignment in `resources/i18n/domains.md` before extraction work begins.
+
+== Step 2 — Initialize at Program Start
+
+In `<crate>/src/main.rs`, call `i18n::init()` before producing any output:
 
 [source,rust]
 ----
 use umrs_core::i18n;
 
 fn main() {
-    i18n::init("vaultmgr");
+    i18n::init("umrs-state");
 
-    println!("{}", i18n::tr("Vault manager starting"));
+    println!("{}", i18n::tr("Starting umrs-state"));
 }
 ----
 
-Only the CLI calls `init()`. Libraries never call it — doing so would override the
-caller's domain and break embedding.
+`init()` binds the text domain and sets the locale.
+Only the CLI calls it — calling `init()` from a library would override the caller's domain.
 
-== Step 2 — Translate Strings
+== Step 3 — Wrap User-Facing Strings
 
-Anywhere in the CLI:
+Wrap any string that appears directly in terminal output:
 
 [source,rust]
 ----
 println!("{}", i18n::tr("Creating vault directory"));
 println!("{}", i18n::tr("Vault created successfully"));
-println!("{}", i18n::tr("Operation failed"));
+eprintln!("{}", i18n::tr("Operation failed"));
 ----
 
-For library messages inside `umrs-core`, use `tr_core()` — the CLI does not need
-to do anything special to enable this:
-
-[source,rust]
-----
-tr_core("Audit event emitted")
-----
-
-Optional ergonomic alias:
-
-[source,rust]
-----
-use umrs_core::i18n::tr;
-
-println!("{}", tr("Vault created"));
-----
-
-== Step 3 — Install Catalogs
-
-Both domains must have catalogs installed for a given locale:
+Strings resolve from:
 
 [source]
 ----
-/usr/share/locale/fr_FR/LC_MESSAGES/vaultmgr.mo
-/usr/share/locale/fr_FR/LC_MESSAGES/umrs-core.mo
+/usr/share/locale/<lang>/LC_MESSAGES/<domain>.mo
 ----
 
-If a catalog is missing, the raw message ID is shown (English fallback).
+For strings with runtime values, format *after* translation:
 
-== Runtime Example
+[source,rust]
+----
+// Correct — translate the template, then format
+let msg = format!("{} {path}", i18n::tr("State file not found:"));
+
+// Wrong — the format string is never extracted by xtr
+let msg = i18n::tr(&format!("State file {path} not found"));
+----
+
+== Step 4 — Strings That Must NOT Be Translated
+
+Never wrap these in `tr()`:
+
+[cols="1,2",options="header"]
+|===
+| String type | Reason
+
+| `log::debug!()`, `log::trace!()`
+| Developer-facing; must stay English for log correlation
+
+| `log::info!()`, `log::warn!()`, `log::error!()`
+| Audit trail — ingested by SIEMs; translating breaks log parsing and regex alerting
+
+| `panic!()`, `.expect()`, `assert!()`
+| Diagnostic artifacts, not user UI
+
+| Internal error variant names and `{:?}` debug output
+| Structured data, not user-facing text
+|===
+
+**Rule**: Only translate strings displayed directly to an interactive user in a terminal or report.
+Log output, audit output, and structured data are always English.
+
+== Step 5 — Add to the i18n Pipeline
+
+Add entries to the Makefile i18n configuration block:
+
+[source,makefile]
+----
+# Add domain to the active list
+I18N_ACTIVE_DOMAINS := umrs-ls umrs-state umrs-logspace <new-domain>
+
+# Point to the source directory
+I18N_SRC_DIR_<new_domain> := components/rusty-gadgets/<new-crate>/src
+
+# Declare active locales for the domain
+I18N_ACTIVE_LOCALES_<new_domain> := fr_CA
+----
+
+Then run the pipeline:
 
 [source,bash]
 ----
-LANG=fr_FR.UTF-8 vaultmgr
+make i18n-setup                    # scaffold domain directory if new
+make i18n-extract-<domain>         # generate .pot from source
+# msginit to create initial .po if fr_CA.po does not exist
+make i18n-merge-<domain>           # merge .pot into existing .po
+make i18n-compile-<domain>         # compile .mo
 ----
 
-== Rules
+See xref:build-tooling.adoc[Build Tooling] for full Makefile target reference.
 
-* `i18n::init()` — CLI `main()` only, once, before output
-* `tr()` — CLI user-facing strings
-* `tr_core()` — `umrs-core` library strings (called from the library, not the CLI)
-* `ensure_locale()` — called by `init()`, handles locale safety automatically
+== Step 6 — Install Catalogs
 
-See xref:build-tooling.adoc[Build Tooling] for `make i18n-setup` and `make i18n-build`
-which manage `.pot`, `.po`, and `.mo` files.
+[source]
+----
+/usr/share/locale/fr_CA/LC_MESSAGES/umrs-ls.mo
+/usr/share/locale/fr_CA/LC_MESSAGES/umrs-state.mo
+/usr/share/locale/fr_CA/LC_MESSAGES/umrs-logspace.mo
+----
+
+If a catalog is missing, the raw message ID is shown — English fallback is automatic.
+
+== Runtime Behavior
+
+[source,bash]
+----
+LANG=fr_CA.UTF-8 umrs-ls
+----
+
+[cols="1,1,1",options="header"]
+|===
+| Call | Domain | Catalog
+
+| `tr()` | `umrs-ls` | `umrs-ls.mo`
+|===
+
+Each tool has exactly one domain.
+Library code (`umrs-core`, `umrs-selinux`, `umrs-platform`) produces no translated output.
+
+== Summary
+
+[cols="1,2",options="header"]
+|===
+| Task | Location
+
+| Initialize domain | CLI `main()`, before any output
+| Translate CLI text | `i18n::tr()`
+| Locale initialization | `i18n::ensure_locale()` (called by `init()`)
+| Catalog install path | `/usr/share/locale/<lang>/LC_MESSAGES/`
+|===
+
+See `resources/i18n/domains.md` for the domain assignment table.
+See `resources/i18n/vocabulary-fr_CA.md` for French vocabulary decisions.
+
+== Translator Workflow
+
+When making a translation decision for a term that is:
+
+* A technical security or OS concept (SELinux, MLS, FIPS, kernel attributes)
+* A NIST control or framework term
+* A Five Eyes classification or government term
+
+Use the following lookup sequence before committing a translation:
+
+. Run `/rag-query <English term>` to check how the source standard expresses the concept.
+. Run `/french-lookup <term>` to search the GNU francophone corpus for established translations.
+. Record the decision in the appropriate `vocabulary-*.md` file with its source citation.
+
+For Commonwealth English variants (`en_GB`, `en_AU`, `en_NZ`), the `vocabulary-*.md`
+spelling tables are the primary reference — RAG queries are less critical since the
+differences are spelling conventions rather than concept translations.

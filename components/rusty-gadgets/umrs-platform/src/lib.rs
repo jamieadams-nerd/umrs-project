@@ -56,14 +56,17 @@ pub use confidence::{ConfidenceModel, Contradiction, TrustLevel};
 
 // Evidence / provenance records
 pub use evidence::{
-    DigestAlgorithm, EvidenceBundle, EvidenceRecord, FileStat, PkgDigest, SourceKind,
+    DigestAlgorithm, EvidenceBundle, EvidenceRecord, FileStat, PkgDigest,
+    SourceKind,
 };
 
 // OS identity (substrate-derived)
-pub use os_identity::{CpuArch, Distro, KernelRelease, OsFamily, SubstrateIdentity};
+pub use os_identity::{
+    CpuArch, Distro, KernelRelease, OsFamily, SubstrateIdentity,
+};
 
 // OS release types (validated newtypes + error)
 pub use os_release::{
-    BuildId, Codename, CpeName, OsId, OsName, OsRelease, OsReleaseParseError, OsVersion,
-    ValidatedUrl, VariantId, VersionId,
+    BuildId, Codename, CpeName, OsId, OsName, OsRelease, OsReleaseParseError,
+    OsVersion, ValidatedUrl, VariantId, VersionId,
 };

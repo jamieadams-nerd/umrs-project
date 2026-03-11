@@ -563,9 +563,13 @@ impl LinuxOwnership {
     /// NIST SP 800-53 AC-2: Account Management.
     #[must_use]
     pub fn resolve(uid: Uid, gid: Gid) -> Self {
-        use nix::unistd::{Gid as NixGid, Group as NixGroup, Uid as NixUid, User as NixUser};
+        use nix::unistd::{
+            Gid as NixGid, Group as NixGroup, Uid as NixUid, User as NixUser,
+        };
 
-        let user = if let Ok(Some(entry)) = NixUser::from_uid(NixUid::from_raw(uid.as_u32())) {
+        let user = if let Ok(Some(entry)) =
+            NixUser::from_uid(NixUid::from_raw(uid.as_u32()))
+        {
             if let Ok(resolved) = LinuxUser::from_raw(uid, &entry.name) {
                 resolved
             } else {
@@ -575,7 +579,9 @@ impl LinuxOwnership {
             LinuxUser::from_uid(uid)
         };
 
-        let group = if let Ok(Some(entry)) = NixGroup::from_gid(NixGid::from_raw(gid.as_u32())) {
+        let group = if let Ok(Some(entry)) =
+            NixGroup::from_gid(NixGid::from_raw(gid.as_u32()))
+        {
             if let Ok(resolved) = LinuxGroup::from_raw(gid, &entry.name) {
                 resolved
             } else {
@@ -585,7 +591,10 @@ impl LinuxOwnership {
             LinuxGroup::from_gid(gid)
         };
 
-        Self { user, group }
+        Self {
+            user,
+            group,
+        }
     }
 
     /// Returns true if either owner uid or group gid has no resolved name.

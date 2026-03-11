@@ -9,4 +9,5 @@ nav:
   - modules/operations/nav.adoc
   - modules/reference/nav.adoc
   - modules/devel/nav.adoc
+  - modules/patterns/nav.adoc
   - modules/umrs-tools/nav.adoc

@@ -44,12 +44,14 @@
 pub mod label_trust;
 pub mod substrate;
 
-mod kernel_anchor;
-mod mount_topology;
-mod release_candidate;
-mod pkg_substrate;
+pub use substrate::rpm::is_installed;
+
 mod file_ownership;
 mod integrity_check;
+mod kernel_anchor;
+mod mount_topology;
+mod pkg_substrate;
+mod release_candidate;
 mod release_parse;
 
 use thiserror::Error;
@@ -198,7 +200,11 @@ impl OsDetector {
         // ── Phase 2: Mount Topology (soft) ─────────────────────────────────
         // Reads mount namespace, mountinfo, statfs /etc.
         // Upgrades to T2 (EnvAnchored) on success.
-        mount_topology::run(&mut evidence, &mut confidence, self.max_mountinfo_bytes);
+        mount_topology::run(
+            &mut evidence,
+            &mut confidence,
+            self.max_mountinfo_bytes,
+        );
 
         // ── Phase 3: Release Candidate (soft) ──────────────────────────────
         // Locates os-release, records statx metadata, resolves symlink.
@@ -210,8 +216,7 @@ impl OsDetector {
             pkg_substrate::run(&mut evidence, &mut confidence);
 
         // Borrow the probe as a trait object reference for subsequent phases.
-        let probe: Option<&dyn substrate::PackageProbe> =
-            probe_box.as_deref();
+        let probe: Option<&dyn substrate::PackageProbe> = probe_box.as_deref();
 
         // ── Phase 5: File Ownership (soft) ─────────────────────────────────
         // Queries selected probe for package ownership of the candidate.

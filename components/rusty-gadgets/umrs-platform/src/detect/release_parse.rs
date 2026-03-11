@@ -45,20 +45,20 @@ use std::io::Read as _;
 use std::os::fd::AsFd as _;
 use std::path::Path;
 
+use nom::IResult;
 use nom::branch::alt;
 use nom::bytes::complete::{is_not, take_while1};
 use nom::character::complete::{char, line_ending, space0};
 use nom::combinator::{map, opt, recognize};
 use nom::multi::many0;
 use nom::sequence::{delimited, pair, preceded, terminated};
-use nom::IResult;
 
 use crate::confidence::{ConfidenceModel, Contradiction, TrustLevel};
 use crate::evidence::{EvidenceBundle, EvidenceRecord, SourceKind};
 use crate::os_identity::{Distro, SubstrateIdentity};
 use crate::os_release::{
-    BuildId, Codename, CpeName, OsId, OsName, OsRelease, OsVersion, ValidatedUrl, VariantId,
-    VersionId,
+    BuildId, Codename, CpeName, OsId, OsName, OsRelease, OsVersion,
+    ValidatedUrl, VariantId, VersionId,
 };
 
 use super::file_ownership::find_stat_for_path;
@@ -118,7 +118,9 @@ fn run_inner(
     let candidate_str = candidate.to_string_lossy().into_owned();
 
     // Read content from the regular filesystem (os-release is not on procfs/sysfs).
-    let Some(content) = read_candidate(candidate, &candidate_str, evidence, confidence) else {
+    let Some(content) =
+        read_candidate(candidate, &candidate_str, evidence, confidence)
+    else {
         return (None, LabelTrust::UntrustedLabelCandidate);
     };
 
@@ -159,7 +161,9 @@ fn run_inner(
             Contradiction {
                 source_a: "nom",
                 source_b: "split_once",
-                description: "os-release key sets differ between the two parse paths".to_owned(),
+                description:
+                    "os-release key sets differ between the two parse paths"
+                        .to_owned(),
             },
             TrustLevel::KernelAnchored,
         );
@@ -173,7 +177,10 @@ fn run_inner(
             sha256: None,
             pkg_digest: None,
             parse_ok: false,
-            notes: vec!["TPI: nom vs split_once key-set disagreement — fail closed".to_owned()],
+            notes: vec![
+                "TPI: nom vs split_once key-set disagreement — fail closed"
+                    .to_owned(),
+            ],
         });
         return (None, LabelTrust::UntrustedLabelCandidate);
     }
@@ -182,7 +189,9 @@ fn run_inner(
     let (os_release, build_notes) = match build_os_release(&map_a) {
         Ok(pair) => pair,
         Err(e) => {
-            log::warn!("release_parse: OsRelease construction failed for {candidate_str}: {e}");
+            log::warn!(
+                "release_parse: OsRelease construction failed for {candidate_str}: {e}"
+            );
             confidence.downgrade(
                 TrustLevel::KernelAnchored,
                 "os-release field validation failed",
@@ -270,10 +279,18 @@ fn read_candidate(
     // the release_candidate evidence record.
     let fstat_ok = match rustix::fs::fstat(file.as_fd()) {
         Ok(st) => {
-            let cur_dev = st.st_dev;
+            // Normalize dev_t to (major << 32) | minor to match the encoding
+            // used in release_candidate.rs (from statx stx_dev_major/minor).
+            // Linux dev_t uses a different compact encoding — comparing raw
+            // values would always fail for devices with major > 0.
+            let maj = rustix::fs::major(st.st_dev);
+            let min = rustix::fs::minor(st.st_dev);
+            let cur_dev = (u64::from(maj) << 32) | u64::from(min);
             let cur_ino = st.st_ino;
             match find_stat_for_path(evidence, candidate_str) {
-                Some((rec_dev, rec_ino)) if cur_dev != rec_dev || cur_ino != rec_ino => {
+                Some((rec_dev, rec_ino))
+                    if cur_dev != rec_dev || cur_ino != rec_ino =>
+                {
                     log::warn!(
                         "release_parse: TOCTOU — file identity changed for {candidate_str}: \
                          recorded=({rec_dev},{rec_ino}) current=({cur_dev},{cur_ino})"
@@ -391,7 +408,9 @@ fn parse_with_nom(content: &str) -> Option<HashMap<&str, &str>> {
             terminated(
                 pair(
                     // Key: alphanumeric and underscores
-                    take_while1(|c: char| c.is_ascii_alphanumeric() || c == '_'),
+                    take_while1(|c: char| {
+                        c.is_ascii_alphanumeric() || c == '_'
+                    }),
                     preceded(
                         char('='),
                         alt((
@@ -477,46 +496,44 @@ fn key_sets_agree(a: &HashMap<&str, &str>, b: &HashMap<&str, &str>) -> bool {
 /// Notes are accumulated for the evidence record.
 ///
 /// NIST SP 800-53 SI-10 — all values validated at construction.
-fn build_os_release(map: &HashMap<&str, &str>) -> Result<(OsRelease, Vec<String>), String> {
+fn build_os_release(
+    map: &HashMap<&str, &str>,
+) -> Result<(OsRelease, Vec<String>), String> {
     let mut notes = Vec::new();
 
     // Required: ID=
-    let id_str = map.get("ID").ok_or_else(|| "missing required field: ID".to_owned())?;
-    let id = OsId::parse(id_str).map_err(|e| format!("ID validation failed: {e}"))?;
+    let id_str =
+        map.get("ID").ok_or_else(|| "missing required field: ID".to_owned())?;
+    let id = OsId::parse(id_str)
+        .map_err(|e| format!("ID validation failed: {e}"))?;
     notes.push(format!("id={}", id.as_str()));
 
     // Required: NAME=
     let name_str = map
         .get("NAME")
         .ok_or_else(|| "missing required field: NAME".to_owned())?;
-    let name = OsName::parse(name_str).map_err(|e| format!("NAME validation failed: {e}"))?;
+    let name = OsName::parse(name_str)
+        .map_err(|e| format!("NAME validation failed: {e}"))?;
 
     // Optional fields — parse failure is logged but not fatal.
-    let version_id = map
-        .get("VERSION_ID")
-        .and_then(|s| VersionId::parse(s).ok());
+    let version_id =
+        map.get("VERSION_ID").and_then(|s| VersionId::parse(s).ok());
 
-    let version = map
-        .get("VERSION")
-        .and_then(|s| OsVersion::parse(s).ok());
+    let version = map.get("VERSION").and_then(|s| OsVersion::parse(s).ok());
 
-    let version_codename = map
-        .get("VERSION_CODENAME")
-        .and_then(|s| Codename::parse(s).ok());
+    let version_codename =
+        map.get("VERSION_CODENAME").and_then(|s| Codename::parse(s).ok());
 
-    let pretty_name = map
-        .get("PRETTY_NAME")
-        .and_then(|s| OsName::parse(s).ok());
+    let pretty_name =
+        map.get("PRETTY_NAME").and_then(|s| OsName::parse(s).ok());
 
-    let home_url = map
-        .get("HOME_URL")
-        .and_then(|s| ValidatedUrl::parse(s).ok());
+    let home_url =
+        map.get("HOME_URL").and_then(|s| ValidatedUrl::parse(s).ok());
 
     let cpe_name = map.get("CPE_NAME").and_then(|s| CpeName::parse(s).ok());
 
-    let variant_id = map
-        .get("VARIANT_ID")
-        .and_then(|s| VariantId::parse(s).ok());
+    let variant_id =
+        map.get("VARIANT_ID").and_then(|s| VariantId::parse(s).ok());
 
     let build_id = map.get("BUILD_ID").and_then(|s| BuildId::parse(s).ok());
 
@@ -587,14 +604,19 @@ fn assign_label_trust(
     // T4 is in hand — now check substrate corroboration.
     match substrate_identity {
         Some(substrate) => {
-            if substrate_id_matches(os_release.id.as_str(), substrate.distro.as_ref()) {
+            if substrate_id_matches(
+                os_release.id.as_str(),
+                substrate.distro.as_ref(),
+            ) {
                 LabelTrust::TrustedLabel
             } else {
                 let contradiction = format!(
                     "os-release ID='{}' does not match substrate distro",
                     os_release.id.as_str()
                 );
-                log::warn!("release_parse: substrate contradiction: {contradiction}");
+                log::warn!(
+                    "release_parse: substrate contradiction: {contradiction}"
+                );
                 confidence.record_contradiction(
                     Contradiction {
                         source_a: "os_release",

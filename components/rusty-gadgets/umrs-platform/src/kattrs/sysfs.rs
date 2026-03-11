@@ -74,7 +74,9 @@ impl SysfsText {
                 "SysfsText path must be under /sys/",
             ));
         }
-        Ok(Self { path })
+        Ok(Self {
+            path,
+        })
     }
 
     #[must_use]

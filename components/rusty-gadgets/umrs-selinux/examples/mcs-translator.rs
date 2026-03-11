@@ -1,14 +1,35 @@
+use log::LevelFilter;
 use std::str::FromStr;
-use umrs_selinux::mcs::translator::{self, GLOBAL_TRANSLATOR, SecurityRange};
+use systemd_journal_logger::JournalLog;
+use umrs_selinux::mcs::translator::{GLOBAL_TRANSLATOR, SecurityRange};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    //env_logger::init();
+    //JournalLog::new().unwrap().install().unwrap();
+
+    JournalLog::new()?.with_syslog_identifier("umrs".to_string()).install()?;
+
+    log::set_max_level(LevelFilter::Info);
+
+    log::info!("Test");
+
+    //log::info!(target: "umrs-mcs", "Test ingest completed: file={}", "test");
+    // 1. Structure -- Fixed Syntax: "key" => value; "message"
+    log::info!(target: "umrs-mcs", file = "test", trust = "T4"; "Test ingest completed");
+
+    //  sudo journalctl -t umrs-mcs -o json-pretty
+    //
+    //
+
+    log::error!("GLOBAL_CHECK: If you see this, the logger is working");
+
     println!("\n");
     println!("--- [ UMRS SETRANS AUDIT ] ---");
 
     // Initialize the High-Assurance Translation Map (Lazy Load)
     // NIST 800-53 AU-3: Audit of the translation table itself
-    translator::load_setrans_file("setrans.conf")?;
     let guard = GLOBAL_TRANSLATOR.read().unwrap();
+    log::info!("MCS Translator initialized.");
 
     // Forward lookups : SecurityRange -> Label
     // Reverse lookups : Label -> Vec<SecurityRange/strings>

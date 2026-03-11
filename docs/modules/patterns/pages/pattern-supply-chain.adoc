@@ -1,0 +1,253 @@
+= Pattern: Supply Chain Hygiene
+:toc: left
+:description: Every external crate is an attack surface and a supply chain risk. Evaluate each new dependency for known vulnerabilities, maintenance status, transitive dependency count, and FIPS compatibility before adding it to the workspace.
+
+// NIST 800-218 SSDF PO 1.2 — Establish and maintain criteria for determining acceptable software
+// NIST 800-218 SSDF PW 4.3 — Review dependencies for supply chain risk
+// NIST 800-53 SR-3 — Supply Chain Controls and Processes
+// NIST 800-53 SR-6 — Supplier Assessments and Reviews
+// NIST 800-53 SA-15 — Development Process, Standards, and Tools
+
+== Overview
+
+In Rust, adding a crate to `Cargo.toml` is fast. A single line can bring in a
+dependency — along with all of its transitive dependencies — without any compilation
+warning or security check. Each of those transitive dependencies has its own source,
+its own maintainers, its own security history, and its own potential for supply chain
+compromise.
+
+Supply Chain Hygiene is the process of evaluating a new dependency before it enters
+the workspace. The evaluation is not optional — every crate in `Cargo.lock` is
+incorporated into builds that will run on CUI systems under government oversight.
+An unvetted dependency with a known vulnerability or a compromised maintainer account
+is a supply chain attack vector against those systems.
+
+`Cargo.lock` is committed to version control and treated as an auditable artifact.
+It is the fixed bill-of-materials for the workspace. An auditor reviewing the codebase
+can trace every compiled dependency to a specific version and hash. That traceability
+only has value if the original addition decision was deliberate.
+
+== The Threat
+
+The Rust ecosystem has experienced supply chain incidents: crate names that closely
+resemble popular crates (typosquatting), crate ownership transfers to new maintainers
+who publish malicious versions, and transitive dependencies that introduce unexpected
+behavior.
+
+Common failure modes:
+
+* A new crate pulls in five transitive dependencies, one of which has a known
+  vulnerability (`cargo audit` would have caught this)
+* A crate has not been maintained for three years — no security patches since the
+  last dependency audit
+* A crate wraps a C library via FFI — violating the workspace `#![forbid(unsafe_code)]`
+  policy and introducing a class of vulnerability that the workspace is designed to
+  exclude
+* A cryptographic crate appears to provide the right algorithm but is not FIPS
+  140-2/3 validated — an important distinction on systems where FIPS mode is active
+
+== The Pattern
+
+Before adding any new dependency to any crate in this workspace:
+
+[cols="1,3"]
+|===
+| Check | Requirement
+
+| `cargo-audit`
+| Run before adding the crate. Zero high-severity advisories. Record the result.
+  `cargo-audit` checks `Cargo.lock` against the RustSec advisory database.
+  Install with `cargo install cargo-audit`.
+
+| Transitive dependencies
+| List all transitive dependencies introduced by the new crate. Fewer is better.
+  Crates with zero transitive dependencies (like `subtle`, `zeroize`) are preferred.
+
+| Maintenance status
+| Check crates.io for recent activity. A crate with no releases or commits in
+  18+ months is a maintenance risk in a security-sensitive codebase.
+
+| FFI surface
+| Check whether the crate uses `unsafe` or wraps a C library. FFI crates cannot
+  satisfy `#![forbid(unsafe_code)]` in their own source. Document the exception
+  if an FFI crate is unavoidable (e.g., `libc`, `nix`, `rustix`).
+
+| FIPS compatibility
+| For any crate that implements or wraps a cryptographic primitive, verify whether
+  the specific implementation is FIPS 140-2/3 validated. Being FIPS-agnostic
+  (not cryptographic at all) is also acceptable.
+
+| Purpose justification
+| State in the PR or commit message why this crate is the correct choice and why
+  no existing workspace crate satisfies the same need.
+|===
+
+Run `cargo-audit` after the addition as well to confirm the lock file is clean.
+
+== In the UMRS Codebase
+
+=== Cargo.lock as an Auditable Artifact
+
+The workspace `Cargo.lock` is committed and versioned. It records every crate name,
+version, and source hash for the entire dependency tree. This enables:
+
+* Reproducible builds — every developer and CI run compiles the same versions
+* Auditable history — a reviewer can see exactly what changed when a dependency
+  was added or updated
+* Vulnerability scanning — `cargo audit` checks `Cargo.lock` against the
+  RustSec advisory database
+
+=== Existing Justified Dependencies
+
+The workspace's existing external dependencies were added with the following rationale:
+
+[cols="1,2,1"]
+|===
+| Crate | Purpose | FFI / unsafe
+
+| `nom 7.1`
+| Path A of TPI parsing for SELinux security contexts. Zero-copy parser combinator;
+  no transitive dependencies on unsafe code.
+| No
+
+| `rustix 0.38`
+| fd-based syscalls (fgetxattr, fstatfs, ioctl_getflags). Provides the TOCTOU-safe
+  I/O layer. Safe Rust syscall interface — chosen over `libc` for this reason.
+| Minimal (syscall interface only, documented)
+
+| `nix 0.27`
+| POSIX identity resolution (uid, gid lookups). Small, focused scope.
+| Yes — wraps libc; documented exception
+
+| `bitflags 2.x`
+| Type-safe bitmask flags for filesystem mode bits.
+| No
+
+| `zeroize` (not yet added)
+| Required before `vaultmgr` handles key material. See xref:pattern-zeroize.adoc[Zeroize].
+| No (zero-copy, no transitive deps)
+
+| `subtle` (not yet added)
+| Required before any token comparison. See xref:pattern-constant-time.adoc[Constant-Time].
+| No (zero transitive deps)
+
+|===
+
+=== Checking a New Dependency
+
+`cargo-audit` is part of the standard UMRS development workflow. Run it from the
+workspace root:
+
+[source,bash]
+----
+# 1. Check for known vulnerabilities before adding the candidate
+cd components/rusty-gadgets
+cargo-audit
+
+# 2. View the full transitive dependency tree for a specific crate
+cargo tree -p <crate-name> --edges all
+
+# 3. After adding to Cargo.toml and running cargo update, verify the lock file is clean
+cargo-audit
+----
+
+NOTE: `cargo-audit` must be installed separately: `cargo install cargo-audit`.
+The UMRS build workflow (`cargo xtask`) does not currently run `cargo-audit`
+automatically — run it manually before any dependency addition and before deployment.
+
+=== Release Profile Security Setting
+
+The workspace `Cargo.toml` enables overflow checks in release builds — this is a supply
+chain and build hygiene measure that ensures arithmetic behavior matches debug builds:
+
+[source,toml]
+----
+# components/rusty-gadgets/Cargo.toml
+#
+# NIST SP 800-53 SA-15 / ANSSI Rust Secure Coding Guide
+[profile.release]
+overflow-checks = true
+----
+
+== Dependency Evaluation Flow
+
+[mermaid]
+....
+flowchart TD
+    A[New dependency proposed] --> B{cargo audit clean?}
+    B -- No --> REJECT[Reject — known vulnerability]
+    B -- Yes --> C{Transitive deps count}
+    C -- Many --> D[Document each transitive dep\nand justify]
+    C -- Few or zero --> E{Uses unsafe / FFI?}
+    D --> E
+    E -- Yes --> F[Document exception\nIs unsafe justified in this context?]
+    E -- No --> G{Cryptographic primitive?}
+    F -- Unjustifiable --> REJECT
+    F -- Justified --> G
+    G -- Yes --> H{FIPS 140-2/3 validated\nor FIPS-agnostic?}
+    G -- No --> I[Document purpose justification]
+    H -- Validated or agnostic --> I
+    H -- Not validated --> FIPS[Reject or document FIPS gap\nand compensating control]
+    I --> APPROVE[Approved — add to Cargo.toml\ncommit Cargo.lock]
+....
+
+== When to Apply
+
+Apply Supply Chain Hygiene before:
+
+* Adding any new `[dependencies]` entry to any workspace crate's `Cargo.toml`
+* Upgrading a dependency to a new major version (re-evaluate the full checklist)
+* Adding a crate to `[dev-dependencies]` — dev dependencies can still introduce
+  transitive build-time dependencies
+
+The architectural review trigger is: *new external dependency → supply chain hygiene
+— justify the crate*.
+
+Periodic re-evaluation: run `cargo audit` regularly (at minimum before any deployment)
+to catch newly published advisories against crates that were clean at the time of
+addition.
+
+== Security Controls
+
+[cols="1,2"]
+|===
+| Control | Applicability
+
+| NIST 800-218 SSDF PO 1.2
+| Establish and maintain criteria for software that can be incorporated into the
+  organization's products and services — the evaluation checklist above is the
+  operationalization of this requirement
+
+| NIST 800-218 SSDF PW 4.3
+| Analyze the software for vulnerabilities — `cargo audit` and transitive dependency
+  review implement this at dependency-add time
+
+| NIST 800-53 SR-3
+| Supply Chain Controls and Processes — `Cargo.lock` as an auditable artifact and
+  the requirement to document dependency rationale satisfy this control
+
+| NIST 800-53 SR-6
+| Supplier Assessments and Reviews — maintenance status check and provenance
+  verification (crates.io source, published by known maintainer)
+
+| NIST 800-53 SA-15
+| Development Process, Standards, and Tools — the evaluation checklist is a formal
+  development process step, not an ad-hoc decision
+|===
+
+== Summary
+
+Every new crate in `Cargo.lock` is incorporated into builds that run on CUI systems
+under government oversight — treat each one as a component requiring evaluation, not a
+convenience. Run `cargo-audit`, count transitive dependencies, check for FFI, and verify
+FIPS compatibility before adding. `Cargo.lock` is an auditable artifact; an unvetted
+dependency with a known vulnerability is a supply chain attack vector with a paper trail
+that leads directly to the commit that added it.
+
+== See Also
+
+* xref:pattern-zeroize.adoc[Zeroize Sensitive Data] — describes the `zeroize` crate
+  that must be evaluated before use
+* xref:pattern-constant-time.adoc[Constant-Time Comparison] — describes the `subtle`
+  crate that must be evaluated before use
+* xref:devel:high-assurance-patterns.adoc[High-Assurance Pattern Index]

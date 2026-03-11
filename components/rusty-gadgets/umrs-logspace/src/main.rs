@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Jamie Adams (a.k.a, Imodium Opertator)
 mod config;
 mod config_loader;
 mod measure;
@@ -5,6 +7,7 @@ mod model;
 mod output;
 
 use clap::Parser;
+use umrs_core::i18n;
 
 #[derive(Parser)]
 #[command(name = "umrs-logspace")]
@@ -18,6 +21,9 @@ struct Cli {
 }
 
 fn main() {
+    i18n::init("umrs-logspace");
+    env_logger::init();
+
     let cli = Cli::parse();
 
     let config =

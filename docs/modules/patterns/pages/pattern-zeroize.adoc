@@ -1,0 +1,203 @@
+= Pattern: Zeroize Sensitive Data
+:toc: left
+:description: Any type that holds secrets, credentials, key material, or classified data must implement Zeroize or ZeroizeOnDrop so that memory is cleared before it is reclaimed. Standard Drop does not guarantee this.
+
+// NIST 800-53 MP-4 — Media Access (restrict access to media containing CUI)
+// NIST 800-53 SC-28 — Protection of Information at Rest
+// NIST 800-218 SSDF PW.4.1 — Secure handling of sensitive data
+// NIST 800-53 IA-5 — Authenticator Management (protect authenticators in memory)
+
+[WARNING]
+====
+This pattern is *required* but *not yet fully implemented* in the codebase.
+The `vaultmgr` crate and any future type that holds key material or cleartext credentials
+must implement `Zeroize` before those types handle real secrets in a production deployment.
+====
+
+== Overview
+
+When a Rust value is dropped, its memory is reclaimed by the allocator. The allocator
+marks the memory as available; it does not overwrite the bytes. Those bytes remain in RAM
+with their previous contents until the allocator happens to reuse and overwrite them —
+which may never happen, or may happen long after the sensitive value was "released."
+
+In that window, the sensitive bytes are readable by:
+
+* A memory dump taken for debugging or forensics
+* A crash reporter that captures heap contents
+* A privileged process with access to `/proc/<pid>/mem`
+* A hardware-level cold boot attack on volatile RAM
+* Swap space, if the process's memory is paged to disk
+
+Standard `Drop` does not help. The optimizer is permitted to eliminate writes to memory
+that are immediately followed by deallocation — a compiler that sees `buffer = [0u8; N]`
+just before `drop(buffer)` may remove the zeroing as a "dead write" optimization. The
+`zeroize` crate provides zeroing operations that are specifically guaranteed not to be
+eliminated by the optimizer.
+
+== The Threat
+
+CUI systems handle values whose contents must not survive their intended scope:
+
+* Cryptographic key material — a private key that remains in heap memory after the
+  signing operation is complete provides no confidentiality guarantee
+* Session tokens — a token that is "revoked" but still present in memory can be
+  recovered from a heap dump
+* Cleartext passwords and passphrases — during authentication, a cleartext value
+  is transiently held in memory; that value must not outlive the authentication exchange
+* Decrypted CUI content — any plaintext that results from decryption must be zeroed
+  when the buffer is dropped
+
+For a system under MLS policy that handles CUI, a memory dump of a running process is
+a potential data exfiltration path. Sensitive values that outlive their scope in RAM
+are a NIST 800-53 SC-28 and MP-4 finding — protection of information at rest applies
+to volatile memory as well as persistent storage when the system is designed to
+handle classified or controlled content.
+
+== The Pattern
+
+The `zeroize` crate provides the tools. Two approaches:
+
+*Manual implementation* — implement `Zeroize` for a type by overwriting each field
+with zeros in the `zeroize()` method:
+
+[source,rust]
+----
+use zeroize::Zeroize;
+
+struct KeyMaterial {
+    raw_bytes: [u8; 32],
+}
+
+impl Zeroize for KeyMaterial {
+    fn zeroize(&mut self) {
+        self.raw_bytes.zeroize();  // [u8; 32] has a built-in Zeroize impl
+    }
+}
+----
+
+*Derive-based implementation* — derive `ZeroizeOnDrop` to automatically call
+`zeroize()` when the type is dropped, via the `Drop` impl that `ZeroizeOnDrop`
+generates:
+
+[source,rust]
+----
+use zeroize::ZeroizeOnDrop;
+
+#[derive(ZeroizeOnDrop)]
+struct SessionToken {
+    token: Vec<u8>,
+    nonce: [u8; 16],
+}
+// Memory is zeroed automatically when SessionToken is dropped
+----
+
+*Redacted Debug output* — for types where the `Debug` output must not reveal the
+sensitive value (e.g., in log output or in test failures), use the `secrecy` crate:
+
+[source,rust]
+----
+use secrecy::Secret;
+
+// Secret<T> implements Debug as "[REDACTED]"
+// Prevents accidental logging of key material
+let key = Secret::new(raw_key_bytes);
+----
+
+=== Supply Chain Assessment
+
+Before adding `zeroize` or `secrecy` to a crate's `Cargo.toml`:
+
+. Run `cargo audit` to verify no known vulnerabilities
+. Check that the crate has no transitive dependencies (the `zeroize` crate is
+  dependency-free by design)
+. Confirm the version is pinned with a minimum version specifier
+
+The `zeroize` crate is maintained by the `dalek-cryptography` group and is the
+standard choice in the Rust cryptographic ecosystem for this pattern. The `secrecy`
+crate wraps `zeroize` and adds the `Debug`-redacting wrapper.
+
+== In the UMRS Codebase
+
+The `vaultmgr` crate is the current designated location for key management and secret
+handling. Its `Cargo.toml` does not yet include `zeroize`:
+
+[source,toml]
+----
+# vaultmgr/Cargo.toml — current state (zeroize not yet added)
+[dependencies]
+umrs-core = { path = "../umrs-core" }
+colored = "2.0"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+libc = "0.2"
+----
+
+Before `vaultmgr` handles any real key material or credentials, it must:
+
+. Add `zeroize = "1"` (or the current stable version) to `[dependencies]`
+. Add `#[derive(ZeroizeOnDrop)]` to every type that holds key material or cleartext
+. Verify with `cargo audit` that the new dependency has no known vulnerabilities
+. Follow the xref:pattern-supply-chain.adoc[Supply Chain Hygiene] pattern
+
+Any buffer that temporarily holds a decrypted value — even a local variable — should
+use `zeroize()` explicitly before going out of scope, rather than relying on `Drop`,
+because `ZeroizeOnDrop` applies to struct fields, not to local stack buffers.
+
+== When to Apply
+
+Apply Zeroize to any type or buffer that holds:
+
+* Cryptographic key material (private keys, symmetric keys, key derivation inputs)
+* Session tokens, bearer tokens, or authentication credentials
+* Cleartext content temporarily decrypted from an encrypted store
+* Passphrases or passwords held during authentication
+* Any value derived from or capable of reconstructing any of the above
+
+Zeroize is not required for non-sensitive values that happen to be stored in memory —
+apply it only where the content, if recovered from a heap dump, would constitute a
+security breach.
+
+The architectural review trigger is: *type that could hold secret or classified data →
+Zeroize / `secrecy`*.
+
+== Security Controls
+
+[cols="1,2"]
+|===
+| Control | Applicability
+
+| NIST 800-53 MP-4
+| Media Access — prevent unauthorized access to media (including memory) containing CUI;
+  values that outlive their scope in RAM are accessible to processes with sufficient
+  privilege
+
+| NIST 800-53 SC-28
+| Protection of Information at Rest — cryptographic and sensitive material at rest in
+  volatile memory must be protected; zeroing on drop is the in-memory equivalent of
+  secure erasure
+
+| NIST 800-53 IA-5
+| Authenticator Management — protect authenticators (passwords, tokens, keys) in memory
+  and ensure they are not recoverable after use
+
+| NIST 800-218 SSDF PW.4.1
+| Secure handling of sensitive inputs — a sensitive value that survives its scope is an
+  input that was not fully controlled
+|===
+
+== Summary
+
+Any type that holds secrets, key material, or credentials must implement `ZeroizeOnDrop`
+so that its memory is overwritten before the allocator reclaims it. Standard `Drop` does
+not clear memory, and the optimizer is permitted to remove writes that appear to be dead —
+only `zeroize`'s volatile write operations are guaranteed to survive. A heap dump of a
+process that drops secrets without zeroizing them may contain those secrets in plaintext.
+
+== See Also
+
+* xref:pattern-constant-time.adoc[Constant-Time Comparison] — the complementary
+  pattern for comparing sensitive values without leaking timing information
+* xref:pattern-supply-chain.adoc[Supply Chain Hygiene] — required before adding
+  `zeroize` or `secrecy` as dependencies
+* xref:devel:high-assurance-patterns.adoc[High-Assurance Pattern Index]

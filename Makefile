@@ -59,7 +59,7 @@ clean: docs-clean
 
 I18N_BASE_DIR       := resources/i18n
 I18N_TEXT_DOMAINS   := umrs-logspace umrs-ps umrs-df umrs-ls umrs-state
-I18N_ACTIVE_DOMAINS := umrs-ls umrs-state
+I18N_ACTIVE_DOMAINS := umrs-ls umrs-state umrs-logspace
 I18N_LOCALES        := en_US fr_FR en_GB en_AU en_NZ
 
 # Internal helper: hyphen-to-underscore for variable name lookup.
@@ -70,14 +70,16 @@ i18n_var = $(subst -,_,$(1))
 # Add one entry here when a new crate is onboarded to the i18n pipeline.
 # All *.rs files under the directory are discovered automatically at extract time.
 # Format: I18N_SRC_DIR_<domain with hyphens replaced by underscores> := <src/ path>
-I18N_SRC_DIR_umrs_ls    := components/rusty-gadgets/umrs-ls/src
-I18N_SRC_DIR_umrs_state := components/rusty-gadgets/umrs-state/src
+I18N_SRC_DIR_umrs_ls       := components/rusty-gadgets/umrs-ls/src
+I18N_SRC_DIR_umrs_state    := components/rusty-gadgets/umrs-state/src
+I18N_SRC_DIR_umrs_logspace := components/rusty-gadgets/umrs-logspace/src
 
 # Active locales per domain (locales with committed .po files ready for compilation).
 # The generic I18N_LOCALES list above is for i18n-setup scaffolding only.
 # Add a locale here once its .po file has been initialized and translated.
-I18N_ACTIVE_LOCALES_umrs_ls    := fr_CA fr_FR en_GB en_AU en_NZ
-I18N_ACTIVE_LOCALES_umrs_state := fr_CA
+I18N_ACTIVE_LOCALES_umrs_ls       := fr_CA fr_FR en_GB en_AU en_NZ
+I18N_ACTIVE_LOCALES_umrs_state    := fr_CA
+I18N_ACTIVE_LOCALES_umrs_logspace := fr_CA
 
 I18N_POT_EXT := .pot
 I18N_PO_EXT  := .po

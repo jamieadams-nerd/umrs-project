@@ -1,0 +1,204 @@
+= Pattern: TOCTOU Safety
+:toc: left
+:description: Anchor all I/O operations to a single open file descriptor. Never re-open a resource by path for a second operation on the same logical resource.
+
+// NIST 800-53 SI-7 — Software and Information Integrity
+// NSA RTB VNSSA — TOCTOU elimination; deterministic execution
+// NIST 800-218 SSDF PW.4 — Implement secure coding practices
+
+== Overview
+
+Time-of-Check/Time-of-Use (TOCTOU) is a class of race condition in which the state of
+a resource changes between the moment it is inspected and the moment it is acted upon.
+In a filesystem context, a file or directory that exists and passes a check at one
+instant may be replaced, renamed, or re-linked to a different target by the time the
+next operation occurs.
+
+The TOCTOU Safety pattern eliminates this race by anchoring all operations on a resource
+to a single open file descriptor. Once a file is opened, all subsequent operations —
+reading metadata, reading extended attributes, performing integrity checks — go through
+that descriptor. The path is never re-resolved after the initial `open()`.
+
+NSA RTB requires elimination of implicit state. TOCTOU exploits implicit state: the
+assumption that what the path pointed to a moment ago still points to the same thing.
+Anchoring to a descriptor removes that assumption.
+
+== The Threat
+
+[mermaid]
+....
+sequenceDiagram
+    participant P as Process
+    participant FS as Filesystem
+    participant ATK as Attacker
+
+    Note over P,ATK: Vulnerable pattern (path used twice)
+    P->>FS: stat("/run/umrs/status") → owner=root ✓
+    ATK->>FS: replace /run/umrs/status with symlink to /etc/passwd
+    P->>FS: open("/run/umrs/status") → opens /etc/passwd ✗
+    Note over P: Check and use resolved to different inodes
+
+    Note over P,ATK: Safe pattern (fd anchored)
+    P->>FS: open("/run/umrs/status") → fd 7
+    P->>FS: fstat(fd 7) → owner=root ✓
+    P->>FS: fgetxattr(fd 7) → reads from same inode ✓
+    Note over ATK: No window to substitute
+....
+
+A file system path is a name. It resolves to an inode through a lookup in the directory
+hierarchy. Any component of that path can be changed between two consecutive calls that
+use it. An attacker with write access to the directory — or any parent directory —
+can exploit this window.
+
+A concrete attack sequence:
+
+. Process calls `stat("/run/umrs/status")` — verifies the file is owned by root.
+. Attacker replaces `/run/umrs/status` with a symlink to `/etc/passwd`.
+. Process calls `open("/run/umrs/status")` — opens `/etc/passwd` instead.
+
+The check was valid; the use was not. The two operations on the same logical path
+resolved to two different inodes. This is the TOCTOU window.
+
+The window between a path-based `statfs()` for filesystem magic verification and a
+subsequent `File::open()` is also a TOCTOU race. An attacker can bind-mount a malicious
+directory over the target path in that window. This is why the provenance check must be
+performed on the open descriptor, not on the path. See also
+xref:pattern-provenance.adoc[Provenance Verification].
+
+== The Pattern
+
+Open the file exactly once. Perform all subsequent operations through the resulting
+descriptor:
+
+* Use `rustix` fd-based syscalls (`fgetxattr`, `ioctl_getflags`, `fstatfs`, `fstat`)
+  rather than path-based equivalents (`getxattr`, `statfs`)
+* Never call `File::open(path)` a second time on the same logical resource
+* Document the TOCTOU invariant in the module-level comment of any module that holds
+  this guarantee
+
+The invariant must be stated explicitly because it is easy to violate silently — a
+later maintainer who adds a second path-based call breaks the invariant without any
+compiler warning.
+
+== In the UMRS Codebase
+
+`SecureXattrReader::read_raw()` in `umrs-selinux/src/xattrs.rs` reads the raw xattr
+bytes through the descriptor the caller already holds. It never opens a path:
+
+[source,rust]
+----
+// umrs-selinux: xattrs.rs
+pub fn read_raw(file: &File, attr: &str) -> io::Result<Vec<u8>> {
+    // fd-based: no path re-resolution. TOCTOU-safe by construction.
+    let size = fgetxattr(file, attr, &mut [])
+        .map_err(|e| io::Error::from(e))?;
+
+    if size == 0 {
+        return Err(io::Error::new(io::ErrorKind::InvalidData, "Empty xattr"));
+    }
+
+    let mut buffer = vec![0u8; size];
+    let bytes_read = fgetxattr(file, attr, &mut buffer)
+        .map_err(|e| io::Error::from(e))?;
+
+    buffer.truncate(bytes_read);
+    if buffer.last() == Some(&0) {
+        buffer.pop();
+    }
+    Ok(buffer)
+}
+----
+
+`SecureDirent` in `umrs-selinux/src/secure_dirent.rs` states its TOCTOU invariant
+explicitly in the module-level design comment:
+
+[source,rust]
+----
+// umrs-selinux: secure_dirent.rs — design invariants
+//
+// - TOCTOU safety: a single `File` handle is opened once; all
+//   subsequent metadata reads (ioctl_getflags, fgetxattr) operate
+//   through that same fd. The path is never re-resolved after open.
+----
+
+`SecureReader::execute_read_text()` in `umrs-platform/src/kattrs/` opens the kernel
+attribute file first, then performs all subsequent operations — including the filesystem
+magic check — through the open descriptor:
+
+[source,rust]
+----
+// umrs-platform: kattrs.rs
+fn execute_read(path: &Path, expected_magic: FsType) -> io::Result<T::Output> {
+    // Open first. The fstatfs magic check below uses this descriptor.
+    // This closes the TOCTOU window between path-based statfs() and open().
+    let mut file = File::open(path)?;
+
+    let stats = fstatfs(&file).map_err(io::Error::other)?;
+    if stats.filesystem_type() != expected_magic {
+        log::error!(
+            "Integrity Failure: {} is not on the authorized filesystem",
+            path.display()
+        );
+        return Err(io::Error::new(
+            io::ErrorKind::PermissionDenied,
+            "Integrity Failure: path is not on the authorized filesystem",
+        ));
+    }
+
+    let mut buffer = [0u8; 16];
+    let bytes_read = file.read(&mut buffer)?;
+    T::parse(&buffer[..bytes_read])
+}
+----
+
+The order matters: open first, check magic second. The opposite order — check magic on
+the path, then open — leaves the TOCTOU window open.
+
+== When to Apply
+
+Apply TOCTOU Safety whenever:
+
+* A file is opened and then a second operation is performed on the same logical resource
+* Code reads from `/proc/` or `/sys/fs/selinux/` (also see xref:pattern-provenance.adoc[Provenance Verification])
+* Extended attributes are read from a file obtained by directory walk
+* Metadata (stat, flags, xattrs) is gathered for a security decision
+
+The architectural review trigger is: *new file or kernel attribute I/O → TOCTOU safety —
+fd-anchored access*.
+
+TOCTOU Safety does not apply to operations that are inherently single-step (a single
+atomic syscall that both opens and reads in one call), but such syscalls are rare in this
+codebase. When in doubt, anchor to a descriptor.
+
+== Security Controls
+
+[cols="1,2"]
+|===
+| Control | Applicability
+
+| NIST 800-53 SI-7
+| Software and Information Integrity — prevent unauthorized modification of resources
+  between check and use
+
+| NSA RTB VNSSA
+| Elimination of implicit state and non-deterministic execution paths
+
+| NIST 800-218 SSDF PW.4
+| Implement secure coding practices — time-of-check/time-of-use is an explicit SSDF
+  vulnerability class
+|===
+
+== Summary
+
+Open a file once and perform every subsequent operation through the resulting descriptor.
+A path is just a name — it can be replaced between two consecutive calls that use it,
+giving an attacker a window to substitute a different resource. Anchoring all I/O to a
+single file descriptor closes that window permanently, with no runtime cost.
+
+== See Also
+
+* xref:pattern-provenance.adoc[Provenance Verification] — the magic check that must
+  be performed on the open descriptor, not on the path
+* xref:pattern-non-bypassability.adoc[Non-Bypassability] — TOCTOU safety is enforced
+  mechanically via the `StaticSource` trait; callers cannot bypass it
+* xref:devel:high-assurance-patterns.adoc[High-Assurance Pattern Index]

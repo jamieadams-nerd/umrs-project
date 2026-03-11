@@ -83,7 +83,11 @@ fn main() -> std::io::Result<()> {
     // Status is simple to give a message, and then true or false. The console
     // will print "Ok" or "Fail" next to it. This is not tied to keys.
     console_status!(true, "{}", i18n::tr("FIPS is Enabled"));
-    console_status!(false, "{}", i18n::tr("System Purpose defined in state file"));
+    console_status!(
+        false,
+        "{}",
+        i18n::tr("System Purpose defined in state file")
+    );
 
     let cli = Cli::parse();
 
@@ -153,8 +157,10 @@ fn check_state_file(path: &Path, creating: bool) {
         } else {
             eprintln!(
                 "{}",
-                i18n::tr("Warning: state file does not exist — using default state.")
-                    .replace("%s", &path.display().to_string())
+                i18n::tr(
+                    "Warning: state file does not exist — using default state."
+                )
+                .replace("%s", &path.display().to_string())
             );
         }
     }
@@ -202,7 +208,10 @@ fn handle_set(
                 "true" | "1" => true,
                 "false" | "0" => false,
                 _ => {
-                    eprintln!("{}: '{value}'", i18n::tr("Invalid boolean value — using false"));
+                    eprintln!(
+                        "{}: '{value}'",
+                        i18n::tr("Invalid boolean value — using false")
+                    );
                     false
                 }
             };

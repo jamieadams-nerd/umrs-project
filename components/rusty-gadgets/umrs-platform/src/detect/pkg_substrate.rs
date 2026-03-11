@@ -86,10 +86,8 @@ fn run_inner(
 ) -> (Option<SubstrateIdentity>, Option<Box<dyn PackageProbe>>) {
     // Build probe list in priority order: RPM first (primary target platform
     // is RHEL 10), dpkg second.
-    let probes: Vec<Box<dyn PackageProbe>> = vec![
-        Box::new(RpmProbe::new()),
-        Box::new(DpkgProbe::new()),
-    ];
+    let probes: Vec<Box<dyn PackageProbe>> =
+        vec![Box::new(RpmProbe::new()), Box::new(DpkgProbe::new())];
 
     // Step 1: Dispatch probes; select the first successful one.
     let mut selected_identity: Option<SubstrateIdentity> = None;
@@ -124,7 +122,9 @@ fn run_inner(
     }
 
     let Some(identity) = selected_identity else {
-        log::warn!("pkg_substrate: no probe succeeded — substrate identity unavailable");
+        log::warn!(
+            "pkg_substrate: no probe succeeded — substrate identity unavailable"
+        );
         confidence.downgrade(
             TrustLevel::EnvAnchored,
             "no package substrate probe succeeded",
@@ -179,7 +179,9 @@ fn run_inner(
 
     if selinux_enforce_ok {
         confidence.upgrade(TrustLevel::SubstrateAnchored);
-        log::debug!("pkg_substrate: confidence upgraded to SubstrateAnchored (T3)");
+        log::debug!(
+            "pkg_substrate: confidence upgraded to SubstrateAnchored (T3)"
+        );
     } else {
         // SELinux not enforcing: substrate identity is still useful, but T3
         // cannot be fully asserted. Downgrade by one tier.
@@ -213,7 +215,9 @@ fn check_selinux_enforce(evidence: &mut EvidenceBundle) -> bool {
             use crate::kattrs::EnforceState;
             let enforcing = state == EnforceState::Enforcing;
             if enforcing {
-                log::debug!("pkg_substrate: SELinux enforce confirmed (Biba pre-check passed)");
+                log::debug!(
+                    "pkg_substrate: SELinux enforce confirmed (Biba pre-check passed)"
+                );
             } else {
                 log::warn!(
                     "pkg_substrate: SELinux is not enforcing — Biba pre-check failed"
@@ -237,7 +241,9 @@ fn check_selinux_enforce(evidence: &mut EvidenceBundle) -> bool {
             enforcing
         }
         Err(e) => {
-            log::warn!("pkg_substrate: could not read SELinux enforce state: {e}");
+            log::warn!(
+                "pkg_substrate: could not read SELinux enforce state: {e}"
+            );
             evidence.push(EvidenceRecord {
                 source_kind: SourceKind::SysfsNode,
                 opened_by_fd: true,

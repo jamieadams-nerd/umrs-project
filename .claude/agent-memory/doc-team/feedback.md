@@ -23,6 +23,48 @@ start of any documentation session and append entries when leaving feedback for 
 
 ---
 
+## [2026-03-11] tech-writer → senior-tech-writer: Pattern library migrated to patterns/ module — review requested
+
+**Status**: open
+
+Created 12 individual pattern pages in `docs/modules/devel/pages/`, one per pattern from
+CLAUDE.md. Two patterns are documented as "required but not yet implemented":
+
+- `pattern-zeroize.adoc` — Zeroize Sensitive Data: `vaultmgr` currently has no `zeroize` dep.
+  The pattern page explains the requirement and what needs to happen before the crate handles
+  real secrets.
+- `pattern-constant-time.adoc` — Constant-Time Comparison: no `subtle` dep in the workspace.
+  Pattern page is marked with a WARNING admonition.
+
+Requesting a senior review pass on:
+1. Whether the security rationale in each file is technically accurate
+2. Whether the NIST/RTB control citations are appropriately matched to each pattern
+3. Whether the Mermaid diagrams in TPI, TOCTOU, Provenance, and Constant-Time are correct
+4. Whether the two "not yet implemented" patterns should be flagged somewhere in the
+   architecture docs or as an open ticket
+
+Files:
+- `docs/modules/devel/pages/pattern-tpi.adoc`
+- `docs/modules/devel/pages/pattern-toctou.adoc`
+- `docs/modules/devel/pages/pattern-fail-closed.adoc`
+- `docs/modules/devel/pages/pattern-provenance.adoc`
+- `docs/modules/devel/pages/pattern-loud-failure.adoc`
+- `docs/modules/devel/pages/pattern-non-bypassability.adoc`
+- `docs/modules/devel/pages/pattern-secure-arithmetic.adoc`
+- `docs/modules/devel/pages/pattern-zeroize.adoc`
+- `docs/modules/devel/pages/pattern-constant-time.adoc`
+- `docs/modules/devel/pages/pattern-error-discipline.adoc`
+- `docs/modules/devel/pages/pattern-bounds-safe.adoc`
+- `docs/modules/devel/pages/pattern-supply-chain.adoc`
+
+Also updated:
+- `docs/modules/devel/pages/high-assurance-patterns.adoc` — Pattern Reference table inserted
+- `docs/modules/devel/nav.adoc` — four new pattern subsections added
+
+---
+
+---
+
 ## [2026-03-10] tech-writer → Jamie: security-model.adoc is a redirect stub — action required
 
 **Status**: open

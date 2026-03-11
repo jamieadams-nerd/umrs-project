@@ -40,7 +40,7 @@
 //! - **NSA RTB TOCTOU**: `(dev, ino)` anchoring prevents path-substitution
 //!   between candidate selection and ownership query.
 
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use crate::confidence::{ConfidenceModel, TrustLevel};
 use crate::evidence::{EvidenceBundle, EvidenceRecord, SourceKind};
@@ -86,7 +86,9 @@ fn run_inner(
 ) -> Option<FileOwnership> {
     // Step 1: Probe must be present (T3 was reached).
     let Some(probe) = probe else {
-        log::debug!("file_ownership: no probe available — skipping ownership query");
+        log::debug!(
+            "file_ownership: no probe available — skipping ownership query"
+        );
         return None;
     };
 
@@ -106,8 +108,47 @@ fn run_inner(
         return None;
     };
 
-    // Step 3: Query ownership via the probe.
-    let ownership = probe.query_ownership(dev, ino, candidate);
+    // Step 3: Resolve the query path.
+    //
+    // On RHEL 10, `/etc/os-release` is a symlink to `/usr/lib/os-release`. The RPM
+    // database records the real path, not the symlink. Use the resolved path for the
+    // DB query so that ownership can be established. The candidate_str (symlink path)
+    // is still used for the audit record's path_requested field to preserve the
+    // original request path in the evidence chain.
+    //
+    // `readlinkat` may return a relative symlink target (e.g., `../usr/lib/os-release`).
+    // Resolve against the candidate's parent directory and canonicalize to produce an
+    // absolute path that matches what the RPM DB records.
+    //
+    // NIST SP 800-53 SI-7 — integrity verification must complete on the target platform.
+    let query_path: PathBuf = match find_resolved_path(evidence, &candidate_str)
+    {
+        Some(resolved) => {
+            let p = PathBuf::from(&resolved);
+            if p.is_absolute() {
+                p
+            } else {
+                // Relative symlink: join with the candidate's parent directory, then
+                // canonicalize to an absolute path.
+                let parent =
+                    candidate.parent().unwrap_or_else(|| Path::new("/"));
+                std::fs::canonicalize(parent.join(&p))
+                    .unwrap_or_else(|_| parent.join(p))
+            }
+        }
+        None => candidate.to_path_buf(),
+    };
+
+    if query_path != candidate {
+        log::debug!(
+            "file_ownership: using resolved path '{}' (symlink target of '{candidate_str}') \
+             for RPM DB query",
+            query_path.display()
+        );
+    }
+
+    // Step 4: Query ownership via the probe.
+    let ownership = probe.query_ownership(dev, ino, &query_path);
 
     if let Some(o) = &ownership {
         log::debug!(
@@ -163,13 +204,41 @@ fn run_inner(
 /// `pub(super)` so that sibling phase modules (e.g., `integrity_check`,
 /// `release_parse`) can re-verify `(dev, ino)` without duplicating the
 /// search logic. NIST SP 800-53 SI-7 — TOCTOU re-verification.
-pub(super) fn find_stat_for_path(evidence: &EvidenceBundle, path_str: &str) -> Option<(u64, u64)> {
-    for record in evidence.records.iter().rev() {
+pub(super) fn find_stat_for_path(
+    evidence: &EvidenceBundle,
+    path_str: &str,
+) -> Option<(u64, u64)> {
+    for record in evidence.iter().rev() {
         if record.path_requested == path_str
             && let Some(ref stat) = record.stat
             && let (Some(dev), Some(ino)) = (stat.dev, stat.ino)
         {
             return Some((dev, ino));
+        }
+    }
+    None
+}
+
+/// Search the evidence bundle (in reverse order) for a symlink resolution record
+/// where `path_requested` matches `candidate_str` and `path_resolved` is present.
+///
+/// Returns the resolved (real) path string if found; `None` if the candidate was
+/// not recorded as a symlink. Used to redirect RPM DB queries from the symlink path
+/// (e.g., `/etc/os-release`) to the real path that the DB owns (e.g.,
+/// `/usr/lib/os-release`).
+///
+/// `pub(super)` so that `integrity_check` can perform the same redirection.
+/// NIST SP 800-53 SI-7 — integrity verification must use the path the package DB
+/// tracks, not the symlink.
+pub(super) fn find_resolved_path(
+    evidence: &EvidenceBundle,
+    candidate_str: &str,
+) -> Option<String> {
+    for record in evidence.iter().rev() {
+        if record.path_requested == candidate_str
+            && let Some(ref resolved) = record.path_resolved
+        {
+            return Some(resolved.clone());
         }
     }
     None

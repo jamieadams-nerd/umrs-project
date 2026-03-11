@@ -21,6 +21,18 @@ When a term has no established francophone equivalent, retain the English term a
 
 ---
 
+## Storage and Resource Terms (umrs-logspace)
+
+| English | French (fr_CA) | Source | Notes |
+|---|---|---|---|
+| Resource Pool | Groupe de ressources | UMRS decision | No corpus match; refers to a storage partition/disk group; "groupe de ressources" is standard francophone infrastructure terminology |
+| Mount point | Point de montage | corpus:coreutils | coreutils find-mount-point.c: "mount point" → "point de montage" (both %m format string and ~msgid entries confirm this term) |
+| Total space | Espace total | UMRS decision | No corpus match; "espace total" is standard francophone POSIX/Linux usage for total disk capacity |
+| Free space | Espace libre | UMRS decision | No corpus match; "espace libre" is standard francophone POSIX/Linux usage for available disk capacity |
+| Lifecycle | Cycle de vie | UMRS decision | No corpus match; "cycle de vie" is attested ANSSI/OTAN terminology for data retention lifecycle |
+
+---
+
 ## Security and Access Control
 
 | English | French (fr_CA) | Source | Notes |

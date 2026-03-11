@@ -1,9 +1,4 @@
 {
-  "allowedTools": [
-    "Bash(.claude/commands/*)",
-    "Bash(.claude/rag/ingest.py*)",
-    "Bash(.claude/rag/query.py*)"
-  ],
   "permissions": {
     "allow": [
       "Bash(cargo xtask:*)",
@@ -39,5 +34,14 @@
       "Read(//home/jadams/**)",
       "Read(//media/psf/repos/ai-rag-vdb/**)"
     ]
-  }
+  },
+  "enabledPlugins": {
+    "claude-md-management@claude-plugins-official": true,
+    "skill-creator@claude-plugins-official": true
+  },
+  "allowedTools": [
+    "Bash(.claude/commands/*)",
+    "Bash(.claude/rag/ingest.py*)",
+    "Bash(.claude/rag/query.py*)"
+  ]
 }

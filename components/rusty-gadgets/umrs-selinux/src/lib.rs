@@ -68,8 +68,8 @@ pub mod role;
 pub mod type_id;
 pub mod user;
 
-pub mod posix;
 pub mod fs_encrypt;
+pub mod posix;
 pub mod secure_dirent;
 pub mod utils;
 pub mod xattrs;

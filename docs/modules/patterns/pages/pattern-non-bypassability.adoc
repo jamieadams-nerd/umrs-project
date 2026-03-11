@@ -1,0 +1,182 @@
+= Pattern: Non-Bypassability (RAIN)
+:toc: left
+:description: Security checks must always be invoked. Use private constructors, newtype wrappers, and module boundaries so that callers cannot accidentally skip validation.
+
+// NSA RTB RAIN — Reference monitor must be non-bypassable, always-invoked, tamper-proof
+// NIST 800-53 AC-3 — Access Enforcement
+// NIST 800-218 SSDF PW.4.3 — Memory safety and structural safety guarantees
+
+== Overview
+
+Non-Bypassability is the property of a reference monitor that cannot be circumvented,
+disabled, or skipped — whether accidentally or intentionally. NSA RTB's RAIN model
+(Reference monitor Always-Invoked, Non-bypassable) defines this as one of three
+required properties of a trusted security mechanism.
+
+In a software implementation, Non-Bypassability is not achieved by policy or documentation.
+It is achieved by *construction*: the code is structured so that there is no code path
+that reaches a security-relevant operation without first passing through the required
+security gate. Private constructors, newtype wrappers, trait defaults, and module
+boundaries are the tools.
+
+A security check that is optional — that a caller can skip by passing a raw value,
+calling an internal constructor, or using a different code path — does not satisfy RAIN
+no matter how correct the check itself is.
+
+== The Threat
+
+Optional security checks fail whenever a caller forgets to call them, does not know
+they exist, or decides to bypass them for performance. This is not a theoretical risk:
+every optional security check in production software has, at some point, been skipped
+by a caller under time pressure, under misunderstanding, or under the assumption that
+"the input is already validated."
+
+The specific threats:
+
+* A caller constructs a raw `u16` category ID and passes it directly to a bitmask
+  operation, bypassing the `Category::new()` validation gate.
+* A caller reads a kernel attribute by calling `File::open()` directly, bypassing the
+  provenance check.
+* A caller constructs a `SecurityContext` from a raw string without going through the
+  TPI parsing gate.
+
+In each case, the security property is present in the codebase but not enforced for
+that caller. The system is selectively secure — which means it is not reliably secure.
+
+== The Pattern
+
+Structural enforcement uses the type system and module visibility to make the bypass
+impossible, not just inadvisable:
+
+. *Private constructors.* Make struct fields `pub(crate)` or private. Expose only
+  named constructors that enforce invariants. A caller cannot construct an invalid value
+  because the struct literal syntax is not available outside the module.
+
+. *Newtype wrappers.* Distinct types for distinct concepts prevent callers from passing
+  a `DevId` where an `Inode` is expected. The compiler enforces the boundary.
+
+. *Trait defaults that route through security gates.* A trait method whose default
+  implementation invokes the security check cannot be bypassed by calling the trait
+  method — the check is part of the default. A caller must explicitly override the
+  default and consciously omit the check.
+
+. *Module boundaries.* Keep low-level constructors and internal helpers in `pub(crate)`
+  scope. Public API surfaces expose only the validated interface.
+
+== In the UMRS Codebase
+
+`CategorySet` in `umrs-selinux/src/category.rs` has a private `bits` field. The only
+construction paths are `new()` and `full()`, both of which produce structurally valid
+values. There is no public API to construct an arbitrary bit pattern:
+
+[source,rust]
+----
+// umrs-selinux: category.rs
+pub struct CategorySet {
+    bits: [u64; 16],   // private — no external construction via struct literal
+}
+
+impl CategorySet {
+    #[must_use]
+    pub const fn new() -> Self {
+        Self { bits: [0; 16] }    // empty: no compartments
+    }
+
+    #[must_use]
+    pub const fn full() -> Self {
+        Self { bits: [u64::MAX; 16] }  // full: all compartments
+    }
+}
+----
+
+`Category::new()` and `SensitivityLevel::new()` are the only ways to obtain validated
+instances. The inner value is private; the only field access is through methods:
+
+[source,rust]
+----
+// umrs-selinux: category.rs
+pub struct Category(u16);   // private inner field
+
+pub const fn new(id: u16) -> Result<Self, CategoryError> {
+    if id > MAX_CATEGORY {
+        return Err(CategoryError::OutOfRange(id));
+    }
+    Ok(Self(id))
+}
+----
+
+The `StaticSource` trait in `umrs-platform/src/kattrs/` makes provenance verification
+non-bypassable via the standard read path. The default `read()` implementation delegates
+to `SecureReader`, which calls `execute_read`, which performs the magic check. A caller
+who uses `StaticSource::read()` cannot skip the check:
+
+[source,rust]
+----
+// umrs-platform: kattrs.rs
+pub trait StaticSource: KernelFileSource {
+    const PATH: &'static str;
+    const EXPECTED_MAGIC: FsType = SELINUX_MAGIC;
+
+    // Default routes through execute_read, which includes the fd-anchored
+    // fstatfs magic check. Provenance verification is non-bypassable via
+    // this method — there is no code path that skips the check.
+    fn read() -> io::Result<Self::Output> {
+        SecureReader::<Self>::new().read()
+    }
+}
+----
+
+The `#[must_use]` attribute on constructors and security-relevant methods ensures that
+callers cannot silently discard return values that carry security outcomes. See
+xref:devel:rust-must-use-contract.adoc[Compile-Time Contract Enforcement: #[must_use]].
+
+== When to Apply
+
+Apply Non-Bypassability whenever:
+
+* A function validates security-relevant input — make the raw type unavailable or
+  make the validation the only construction path
+* A code path must perform a security check before an operation — express the check
+  as a type invariant or a trait default, not as a function the caller must remember
+  to call
+* A module exposes a public API surface — audit the public surface for any path that
+  reaches security-relevant logic without passing through a gate
+
+The architectural review trigger is: *new public API surface → compliance annotation
+and non-bypassability check*.
+
+== Security Controls
+
+[cols="1,2"]
+|===
+| Control | Applicability
+
+| NSA RTB RAIN
+| Reference monitor Always-Invoked, Non-bypassable — the security mechanism must be
+  invoked on every relevant operation; it must not be possible to skip it
+
+| NIST 800-53 AC-3
+| Access Enforcement — access control mechanisms must enforce authorized access; a
+  bypassable mechanism provides no enforcement
+
+| NIST 800-218 SSDF PW.4.3
+| Memory and structural safety — type-based enforcement provides structural guarantees
+  that are verifiable by inspection, not by trust
+|===
+
+== Summary
+
+Make security checks unavoidable by construction: private fields, private constructors,
+and trait defaults that route through the gate mean a caller cannot accidentally — or
+deliberately — skip validation. An optional security check is no check at all; someone
+will skip it, under time pressure or misunderstanding, and the omission will be silent.
+
+== See Also
+
+* xref:devel:rust-must-use-contract.adoc[Compile-Time Contract Enforcement: #[must_use]] —
+  the `#[must_use]` attribute is a non-bypassability tool at the call-site level
+* xref:pattern-provenance.adoc[Provenance Verification] — the specific check made
+  non-bypassable by the `StaticSource` trait
+* xref:pattern-tpi.adoc[Two-Path Independence] — TPI gates are examples of non-bypassable
+  validation: there is no way to obtain a `SecurityContext` without passing through them
+* xref:devel:high-assurance-patterns.adoc[High-Assurance Pattern Index]

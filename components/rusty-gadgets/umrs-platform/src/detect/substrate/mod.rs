@@ -29,6 +29,9 @@
 
 pub mod dpkg;
 pub mod rpm;
+#[cfg(feature = "rpm-db")]
+pub mod rpm_db;
+pub mod rpm_header;
 
 pub(crate) use dpkg::DpkgProbe;
 pub(crate) use rpm::RpmProbe;
@@ -148,7 +151,12 @@ pub trait PackageProbe: Send + Sync {
     ///
     /// Returns `None` if the file is unowned, the probe lacks ownership
     /// query capability, or an error occurs — fail closed.
-    fn query_ownership(&self, dev: u64, ino: u64, path: &Path) -> Option<FileOwnership>;
+    fn query_ownership(
+        &self,
+        dev: u64,
+        ino: u64,
+        path: &Path,
+    ) -> Option<FileOwnership>;
 
     /// Fetch the expected installed digest for `path` from the package DB.
     ///

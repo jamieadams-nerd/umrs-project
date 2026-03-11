@@ -1,6 +1,6 @@
 #!/bin/bash
 TERM=$1
-CORPUS=".claude/corpus/gnu-fr"
+CORPUS=".claude/corpus/"
 # Define priority order
 FILES=("coreutils" "util-linux" "grep" "sed" "tar" "findutils" "bash")
 

@@ -1,0 +1,58 @@
+# French translation of umrs-logspace
+# This file is distributed under the same license as the UMRS Project
+# MIT License
+# Copyright (c) 2025 Jamie Adams (a.k.a. Imodium Operator)
+#
+# Initial translation provided by a specialized Claude Code "umrs-translator".
+# The agent was assisted by a technical corpus derived from various GNU
+# tools via the Translation Project (https://translationproject.org).
+#
+# NOTE: This translation is AI-generated and may contain nuances
+# requiring human verification.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: umrs-logspace\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-10 15:03+0000\n"
+"PO-Revision-Date: 2026-03-10 15:03+0000\n"
+"Last-Translator: UMRS i18n Team\n"
+"Language-Team: French (Canada)\n"
+"Language: fr_CA\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: components/rusty-gadgets/umrs-logspace/src/output.rs:9
+# TRANSLATOR: "Resource Pool" refers to a storage resource group (disk/partition pool).
+# No GNU corpus match; UMRS decision. Colon is in the format string, not here.
+msgid "Resource Pool"
+msgstr "Groupe de ressources"
+
+#: components/rusty-gadgets/umrs-logspace/src/output.rs:10
+# TRANSLATOR: corpus:coreutils confirms "Point de montage" for "mount point".
+# Colon is in the format string, not here.
+msgid "Mount point"
+msgstr "Point de montage"
+
+#: components/rusty-gadgets/umrs-logspace/src/output.rs:11
+# TRANSLATOR: No GNU corpus match for "Total space"; UMRS decision.
+# "Espace total" is standard francophone POSIX/Linux usage.
+# Colon is in the format string, not here.
+msgid "Total space"
+msgstr "Espace total"
+
+#: components/rusty-gadgets/umrs-logspace/src/output.rs:12
+# TRANSLATOR: No GNU corpus match for "Free space"; UMRS decision.
+# "Espace libre" is standard francophone POSIX/Linux usage.
+# Colon is in the format string, not here.
+msgid "Free space"
+msgstr "Espace libre"
+
+#: components/rusty-gadgets/umrs-logspace/src/output.rs:15
+# TRANSLATOR: "Lifecycle" refers to a log/audit retention lifecycle.
+# No GNU corpus match; UMRS decision. "Cycle de vie" is standard ANSSI/OTAN terminology.
+# Colon is in the format string, not here.
+msgid "Lifecycle"
+msgstr "Cycle de vie"

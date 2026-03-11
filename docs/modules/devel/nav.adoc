@@ -1,7 +1,8 @@
 * xref:index.adoc[Developer Guide]
 
 * High-Assurance Patterns
-** xref:high-assurance-patterns.adoc[High-assurance coding patterns]
+** xref:high-assurance-patterns.adoc[Pattern overview and philosophy]
+** xref:patterns:index.adoc[Pattern Library →]
 ** xref:compliance-annotations.adoc[Compliance annotations guide]
 ** xref:rust-must-use-contract.adoc[Compile-time contract enforcement: #[must_use]]
 ** xref:nom-parser.adoc[The nom parser combinator]

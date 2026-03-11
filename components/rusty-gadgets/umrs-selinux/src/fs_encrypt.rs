@@ -129,15 +129,20 @@ struct MountEntry {
 /// Returns `None` if the mount point is not found or the read fails.
 fn find_mount_entry(mount_point: &Path) -> Option<MountEntry> {
     let node = ProcfsText::new(PathBuf::from("/proc/mounts")).ok()?;
-    let contents = SecureReader::<ProcfsText>::new()
-        .read_generic_text(&node)
-        .ok()?;
+    let contents =
+        SecureReader::<ProcfsText>::new().read_generic_text(&node).ok()?;
 
     for line in contents.lines() {
         let mut parts = line.split_whitespace();
-        let Some(device) = parts.next() else { continue; };
-        let Some(mp) = parts.next() else { continue; };
-        let Some(fs_type) = parts.next() else { continue; };
+        let Some(device) = parts.next() else {
+            continue;
+        };
+        let Some(mp) = parts.next() else {
+            continue;
+        };
+        let Some(fs_type) = parts.next() else {
+            continue;
+        };
         if Path::new(mp) == mount_point {
             return Some(MountEntry {
                 device: device.to_owned(),
@@ -178,7 +183,8 @@ fn check_luks_encrypted(dev_path: &str) -> bool {
 
     // file_name() returns only the terminal component — no `/` can appear,
     // so the kernel_name cannot escape /sys/class/block/ via traversal.
-    let Some(kernel_name) = real_path.file_name().and_then(|n| n.to_str()) else {
+    let Some(kernel_name) = real_path.file_name().and_then(|n| n.to_str())
+    else {
         return false;
     };
 

@@ -123,10 +123,9 @@ impl OsId {
         if s.is_empty() || s.len() > 64 {
             return Err(OsReleaseParseError::InvalidId(s.to_owned()));
         }
-        if !s
-            .chars()
-            .all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '-' || c == '_')
-        {
+        if !s.chars().all(|c| {
+            c.is_ascii_lowercase() || c.is_ascii_digit() || c == '-' || c == '_'
+        }) {
             return Err(OsReleaseParseError::InvalidId(s.to_owned()));
         }
         Ok(Self(s.to_owned()))
@@ -260,7 +259,9 @@ impl CpeName {
     /// Parse and validate a `CPE_NAME=` field value.
     pub fn parse(s: &str) -> Result<Self, OsReleaseParseError> {
         let s = s.trim().trim_matches('"');
-        if s.len() > 256 || (!s.starts_with("cpe:/") && !s.starts_with("cpe:2.3:")) {
+        if s.len() > 256
+            || (!s.starts_with("cpe:/") && !s.starts_with("cpe:2.3:"))
+        {
             return Err(OsReleaseParseError::InvalidCpe(s.to_owned()));
         }
         Ok(Self(s.to_owned()))
@@ -287,7 +288,9 @@ impl ValidatedUrl {
     /// Parse and validate a URL field value.
     pub fn parse(s: &str) -> Result<Self, OsReleaseParseError> {
         let s = s.trim().trim_matches('"');
-        if s.len() > 512 || (!s.starts_with("https://") && !s.starts_with("http://")) {
+        if s.len() > 512
+            || (!s.starts_with("https://") && !s.starts_with("http://"))
+        {
             return Err(OsReleaseParseError::InvalidUrl(s.to_owned()));
         }
         Ok(Self(s.to_owned()))

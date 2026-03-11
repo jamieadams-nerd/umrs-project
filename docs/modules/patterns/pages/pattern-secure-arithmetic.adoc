@@ -1,0 +1,183 @@
+= Pattern: Secure Arithmetic
+:toc: left
+:description: Use checked_*, saturating_*, or wrapping_* operations for any integer arithmetic on security-relevant values. Do not rely on debug-mode overflow detection or release-mode wrapping behavior for correctness.
+
+// NIST 800-218 SSDF PW.4.4 — Secure arithmetic; avoid integer overflow vulnerabilities
+// NSA RTB VNSSA — Deterministic execution; no undefined behavior on arithmetic
+// NIST 800-53 AC-4 — Information Flow Enforcement (sensitivity level arithmetic)
+// ANSSI Rust Secure Coding Guide — overflow-checks in release builds
+
+== Overview
+
+Integer overflow on a security-relevant value is not a logic bug — it is a potential
+privilege escalation. A sensitivity level that wraps from `s15` to `s0` is a privilege
+demotion. A category index that overflows to `0` collapses a 1024-bit compartment mask
+to an empty set. A bitmask word index that overflows its array bounds is a memory safety
+event.
+
+Rust's debug builds panic on integer overflow. Rust's release builds, by default, wrap
+on overflow silently. This means a value that panics safely in testing computes an
+incorrect result in production — with no observable signal.
+
+Secure Arithmetic requires explicit overflow handling for all integer operations on
+security-relevant values: sensitivity levels, category IDs, bitmask indices, word
+positions, and any other numeric value that drives an access control or classification
+decision.
+
+== The Threat
+
+The default release-mode behavior is that integer overflow wraps silently. Consider:
+
+* Sensitivity level `s15` incremented by 1 wraps to `s0` — the highest sensitivity
+  level becomes the lowest
+* A category index computed as `id / 64` where `id` is `u16::MAX` produces `1023` —
+  correct; but a cast from `u64` to `u16` that truncates could produce a wrong id silently
+* A bitmask word index `id / 64` where `id` is not bounded can index past the end of
+  `[u64; 16]` — in debug mode this panics; in release mode it is undefined behavior
+  if the index is not bounds-checked
+
+The danger is that testing under debug mode provides a false sense of safety. The code
+panics correctly in tests and then fails silently in the production binary.
+
+== The Pattern
+
+For any arithmetic on security-relevant values:
+
+. *Prefer `checked_*` operations* when an overflow is a programming error that must
+  surface explicitly: `checked_add`, `checked_sub`, `checked_mul`.
+. *Use `saturating_*` operations* when clamping to the representable range is the
+  correct semantic — appropriate for display conversions but *not* for security
+  comparisons where the correct value matters.
+. *Use explicit `.min()` guards* before narrowing casts, with a comment explaining
+  why the cast is safe.
+. *Annotate `#[allow(cast_possible_truncation)]`* with a proof comment when a cast
+  is provably safe. An unexplained `#[allow]` is an audit finding.
+. *Enable `overflow-checks = true` in the release profile* for all workspace binaries
+  (already set in the workspace `Cargo.toml` — this restores the same overflow detection
+  that debug builds provide).
+
+== In the UMRS Codebase
+
+The workspace `Cargo.toml` enables release-mode overflow checks for all workspace members:
+
+[source,toml]
+----
+# components/rusty-gadgets/Cargo.toml
+#
+# NIST SP 800-53 SA-15 / ANSSI Rust Secure Coding Guide:
+# Rust disables overflow checks in release builds by default.
+# This restores the same defensive behavior that debug builds provide.
+[profile.release]
+overflow-checks = true
+----
+
+`HardLinkCount::from_u64()` in `umrs-selinux/src/posix/primitives.rs` uses `.min()` to
+guard a narrowing cast. The comment is the proof:
+
+[source,rust]
+----
+// umrs-selinux: posix/primitives.rs
+// nlink is u64 in MetadataExt but fits in u32 for all practical filesystems.
+// The .min() guard ensures the value fits before the cast.
+// Annotated explicitly so reviewers can verify the guard is intentional.
+#[must_use]
+pub fn from_u64(raw: u64) -> Self {
+    #[allow(clippy::cast_possible_truncation)]
+    Self(raw.min(u64::from(u32::MAX)) as u32)
+}
+----
+
+`CategorySet::index()` demonstrates safe indexing through the construction invariant.
+No arithmetic overflow is possible because `Category::new()` bounds the input before
+the arithmetic is performed:
+
+[source,rust]
+----
+// umrs-selinux: category.rs
+// Safe: Category validates id <= 1023 at construction, so:
+//   word = id / 64   is always in 0..=15  (fits [u64; 16])
+//   bit  = id % 64   is always in 0..=63  (valid u64 shift)
+// These are compile-time-provable bounds; no checked_* needed.
+const fn index(cat: Category) -> (usize, u64) {
+    let id = cat.id() as usize;
+    let word = id / 64;
+    let bit  = id % 64;
+    (word, 1u64 << bit)
+}
+----
+
+The dominance computation in `CategorySet::dominates()` uses bitwise AND — no overflow
+risk — but is documented with the kernel formula name to enable cross-verification:
+
+[source,rust]
+----
+// umrs-selinux: category.rs
+// Kernel equivalent: ebitmap_and() + comparison loop.
+// NIST 800-53 AC-4: Dominance Check (Lattice Mathematics).
+// Subject dominates Object when Subject has at least all of Object's categories.
+// Mathematically: (Subject & Object) == Object
+pub fn dominates(&self, other: &Self) -> bool {
+    for i in 0..16 {
+        if (self.bits[i] & other.bits[i]) != other.bits[i] {
+            return false;
+        }
+    }
+    true
+}
+----
+
+== When to Apply
+
+Apply Secure Arithmetic to every integer operation on:
+
+* Sensitivity level values (s0–s15)
+* Category IDs (c0–c1023)
+* Bitmask word indices derived from category IDs
+* Hard link counts
+* Any counter or offset that drives an access control or classification decision
+
+Values that have already been validated through typed constructors (`Category`,
+`SensitivityLevel`) carry proof that their numeric value is within bounds. Arithmetic
+on these types does not need additional overflow checks *provided* the arithmetic is
+verified to stay within bounds — document the proof in a comment.
+
+The architectural review trigger is: *integer arithmetic on a security value → secure
+arithmetic — use checked ops*.
+
+== Security Controls
+
+[cols="1,2"]
+|===
+| Control | Applicability
+
+| NIST 800-218 SSDF PW.4.4
+| Secure arithmetic — avoid integer overflow vulnerabilities that produce incorrect
+  security decisions
+
+| NSA RTB VNSSA
+| Deterministic execution — silent overflow changes program behavior in ways that
+  are not visible and not auditable
+
+| NIST 800-53 AC-4
+| Information Flow Enforcement — sensitivity level and category arithmetic must be
+  correct; an overflow changes which flow constraints apply
+
+| ANSSI Rust Secure Coding Guide
+| Overflow checks should be enabled in release builds; checked or saturating operations
+  should be used for security-relevant arithmetic
+|===
+
+== Summary
+
+Use `checked_*`, `saturating_*`, or explicit `.min()` guards for any integer arithmetic
+on security-relevant values. Rust's release builds wrap on overflow silently by default;
+a sensitivity level that wraps from `s15` to `s0` is a privilege demotion with no error
+signal. The workspace `Cargo.toml` sets `overflow-checks = true` in the release profile
+as a workspace-wide safeguard, but individual operations on security values still require
+explicit overflow handling at the call site.
+
+== See Also
+
+* xref:pattern-bounds-safe.adoc[Bounds-Safe Indexing] — the complementary pattern
+  for array index operations derived from security-relevant values
+* xref:devel:high-assurance-patterns.adoc[High-Assurance Pattern Index]

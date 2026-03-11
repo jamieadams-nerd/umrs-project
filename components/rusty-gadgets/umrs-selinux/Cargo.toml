@@ -12,6 +12,7 @@ env_logger = "0.11"
 rustix = { version = "0.38", features = ["fs", "std"] }
 nix    = { version = "0.27", features = ["user", "fs" ] }
 log    = { version = "0.4",  features = ["release_max_level_info"] }
+systemd-journal-logger = "2.2.2"
 
 
 [lints.clippy]

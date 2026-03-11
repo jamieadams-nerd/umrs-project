@@ -12,3 +12,343 @@ package management and SELinux configuration.
 // TBD: AppArmor interaction — disable or coexist?
 // TBD: Package names (apt equivalents for mcstrans, rust-toolset, etc.)
 // TBD: mcstrans availability on Ubuntu
+
+
+/etc/systemd/system/ima-policy-load.service
+---
+[Unit]
+Description=Load Custom IMA Policy
+DefaultDependencies=no
+After=local-fs.target
+Before=sysinit.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c 'cat /etc/ima/ima-policy > /sys/kernel/security/ima/policy'
+RemainAfterExit=yes
+
+[Install]
+WantedBy=sysinit.target
+---
+
+
+How to set up your keys
+To get data into those attributes, you must manually create a keypair. The standard location for these is typically /etc/keys/. 
+Ubuntu Manpage
+Ubuntu Manpage
+ +1
+Generate a Master Key (for EVM):
+bash
+# Create the _evm keyring
+sudo keyctl newring _evm @u
+# Generate a 64-byte master key
+sudo keyctl add user kmk "your_secret_passphrase" @u
+sudo keyctl add encrypted evm-key "new user:kmk 64" @u
+Use code with caution.
+
+Generate IMA/EVM Signing Keys:
+You need an RSA keypair to sign the actual files.
+bash
+# Generate a private key
+sudo openssl genrsa -out /etc/keys/privkey_evm.pem 2048
+# Generate a corresponding public X509 certificate
+sudo openssl req -new -nodes -utf8 -sha256 -days 36500 \
+    -batch -x509 -key /etc/keys/privkey_evm.pem \
+    -out /etc/keys/x509_evm.der -outform DER
+Use code with caution.
+
+Activate EVM:
+After loading the keys, you must tell the kernel to start using them:
+bash
+sudo sh -c 'echo 1 > /sys/kernel/security/evm'
+Use code with caution.
+
+ 
+Manual Signing
+Once the keys are ready, use evmctl to write the attributes that cat couldn't:
+bash
+# Sign the file metadata and content hash
+sudo evmctl sign --imahash --key /etc/keys/privkey_evm.pem /path/to/your/file
+Use code with caution.
+
+
+
+
+
+
+
+= IMA/EVM Configuration Guide for Ubuntu
+:sectnums:
+:toc: left
+
+This guide provides formal instructions for configuring persistent Integrity Measurement Architecture (IMA) and Extended Verification Module (EVM).
+
+== Phase 1: Cryptographic Key Generation
+[IMPORTANT]
+This step must be completed first. The early-boot scripts and hooks rely on these physical files existing in `/etc/keys/`.
+
+1. Create a script named `generate_keys.sh` and paste the following content:
++
+[source,bash]
+----
+#!/bin/bash
+set -e
+KEY_DIR="/etc/keys"
+sudo mkdir -p "$KEY_DIR"
+sudo chmod 700 "$KEY_DIR"
+
+# Generate Master Keys (KMK & EVM-Key)
+sudo dd if=/dev/urandom bs=1 count=32 2>/dev/null | xxd -p -c 32 | sudo tee "$KEY_DIR/kmk" > /dev/null
+sudo dd if=/dev/urandom bs=1 count=32 2>/dev/null | xxd -p -c 32 | sudo tee "$KEY_DIR/evm-key" > /dev/null
+
+# Generate RSA Keypair (No password for auto-boot)
+sudo openssl genrsa -out "$KEY_DIR/privkey_evm.pem" 2048
+sudo openssl req -new -nodes -utf8 -sha256 -days 3650 -batch -x509 \
+    -key "$KEY_DIR/privkey_evm.pem" \
+    -out "$KEY_DIR/x509_evm.der" -outform DER \
+    -subj "/CN=IMA-EVM Root CA/"
+
+sudo cp "$KEY_DIR/x509_evm.der" "$KEY_DIR/x509_ima.der"
+sudo chmod 400 "$KEY_DIR/kmk" "$KEY_DIR/evm-key" "$KEY_DIR/privkey_evm.pem"
+sudo chmod 444 "$KEY_DIR/x509_evm.der" "$KEY_DIR/x509_ima.der"
+----
+
+2. Execute the script:
+[source,bash]
+----
+chmod +x generate_keys.sh
+sudo ./generate_keys.sh
+----
+
+== Phase 2: Kernel Configuration
+Modify boot parameters to enable subsystems in `fix` mode.
+
+1. Edit `/etc/default/grub` and update the `GRUB_CMDLINE_LINUX_DEFAULT` line:
+[source,text]
+----
+GRUB_CMDLINE_LINUX_DEFAULT="ima_policy=tcb ima_appraise=fix evm=fix"
+----
+
+2. Apply changes:
+[source,bash]
+----
+sudo update-grub
+----
+
+== Phase 3: Early-Boot Infrastructure (Initramfs)
+These scripts ensure keys are loaded before the root filesystem is mounted.
+
+=== The Key Hook
+Create `/etc/initramfs-tools/hooks/ima-keys` to bundle keys into the boot image. Ensure it contains `copy_exec` for `keyctl`/`evmctl` and `cp -a /etc/keys/* "${DESTDIR}/etc/keys/"`.
+[source,bash]
+----
+sudo chmod +x /etc/initramfs-tools/hooks/ima-keys
+----
+
+=== The Initialization Script
+Create `/etc/initramfs-tools/scripts/local-top/ima.sh` to initialize keyrings and enable EVM.
+[source,bash]
+----
+sudo chmod +x /etc/initramfs-tools/scripts/local-top/ima.sh
+----
+
+=== Update Initramfs
+[source,bash]
+----
+sudo update-initramfs -u
+----
+
+== Phase 4: Persistent IMA Policy
+1. Define your rules in `/etc/ima/ima-policy`:
+[source,text]
+----
+measure func=FILE_CHECK path=/path/to/your/config.conf
+appraise func=FILE_CHECK path=/path/to/your/config.conf
+----
+
+== Phase 5: Post-Reboot Verification and Labeling
+1. **Reboot the system.**
+2. **Verify EVM Initialization:** `cat /sys/kernel/security/evm` (Should return `1`).
+3. **Sign the File:**
+[source,bash]
+----
+sudo evmctl ima_sign --key /etc/keys/privkey_evm.pem /path/to/your/config.conf
+----
+4. **Verify Extended Attributes:**
+[source,bash]
+----
+getfattr -m . -e hex -d /path/to/your/config.conf
+----
+
+
+
+
+
+= IMA/EVM Signing and Verification
+:sectnums:
+:toc: left
+
+Once the system is booted in `fix` mode and keyrings are initialized, you must manually label target files to generate the required security extended attributes (`xattrs`).
+
+== Manual File Signing
+
+To ensure both file content (IMA) and metadata (EVM) are synchronized, use a combined signing command. This prevents verification failures caused by mismatched metadata hashes.
+
+.Sign both content and metadata:
+[source,bash]
+----
+sudo evmctl sign --imasig --key /etc/keys/privkey_evm.pem /usr/lib/os-release
+----
+
+NOTE: Using `--imasig` ensures a digital signature is written to `security.ima` rather than a simple hash. If you encounter issues in virtualized environments, consider adding the `--portable` flag.
+
+== Verification Procedures
+
+Verification should be performed for both the IMA (content) and EVM (metadata) layers.
+
+=== Verify IMA (Content Integrity)
+This confirms that the file content matches the signature using your public X509 certificate.
+
+[source,bash]
+----
+sudo evmctl ima_verify --key /etc/keys/x509_evm.der /usr/lib/os-release
+----
+*Expected Output:* `verification is OK`
+
+=== Verify EVM (Metadata Integrity)
+This confirms that file attributes (UID, GID, Mode, and Security Xattrs) have not been tampered with.
+
+[source,bash]
+----
+sudo evmctl verify /usr/lib/os-release
+----
+*Expected Output:* `verification is OK`
+
+== Inspection of Extended Attributes
+
+You can inspect the raw cryptographic data stored in the filesystem using `getfattr`.
+
+[source,bash]
+----
+getfattr -m . -e hex -d /usr/lib/os-release
+----
+
+The output should contain:
+* `security.ima`: The digital signature of the file content.
+* `security.evm`: The signature/HMAC of the file metadata.
+
+== Runtime Measurement Validation
+
+Confirm that the kernel has recorded the measurement in the IMA runtime log:
+
+[source,bash]
+----
+sudo grep "os-release" /sys/kernel/security/ima/ascii_runtime_measurements
+----
+
+
+
+
+
+
+There isn't a "default keypath" setting in the kernel or evmctl itself, as these tools are designed to require explicit keys for security. However, you can make this much easier by using a shell alias or a cleanup script.
+1. Set a "Default" Alias
+Add this to your ~/.bashrc (or ~/.zshrc) so you don't have to type the key path every time:
+
+alias ima-sign='sudo evmctl sign --imasig --key /etc/keys/privkey_evm.pem'
+
+Now you can just run: ima-sign /path/to/file
+------------------------------
+2. The "Re-sign Everything" Script
+If you edit a file or break the integrity of a set of files, you can use this script to recursively re-sign everything in a directory or a specific list of files.
+Create a file named ima-refresh.sh:
+
+#!/bin/bash# IMA/EVM Recursive Re-signer# Usage: sudo ./ima-refresh.sh /path/to/monitor/
+
+TARGET=$1
+KEY="/etc/keys/privkey_evm.pem"
+if [ -z "$TARGET" ]; then
+    echo "Usage: $0 <file_or_directory>"
+    exit 1fi
+
+echo "Re-signing $TARGET and subdirectories..."
+# Find all regular files and sign them
+find "$TARGET" -type f | while read -r FILE; do
+    echo "Signing: $FILE"
+    evmctl sign --imasig --key "$KEY" "$FILE"done
+
+echo "Done. Verifying one sample..."
+evmctl verify "$TARGET" 2>/dev/null || evmctl ima_verify --key /etc/keys/x509_evm.der "$TARGET"
+
+3. Automation via ima_appraise=fix
+If you are doing a lot of development and files are changing constantly, stay in ima_appraise=fix mode.
+
+* In fix mode, if you edit a file, the kernel will let you save it and will often update the hash (though not the digital signature) automatically.
+* Once you are finished with your changes, run the Re-sign Script above to "lock" everything down with proper signatures before switching back to enforce mode.
+
+4. Why you have to re-sign
+IMA/EVM is "brittle" by design. Any change to the file content or the metadata (like chmod or chown) invalidates the signature. In a production environment, this is usually handled by the package manager (like rpm or apt) or a deployment script that signs files as the last step of an update.
+Would you like to add a "Re-signing" section to your .adoc documentation? It’s a common operational task for anyone managing an IMA-enabled system.
+
+
+
+
+
+
+# Add this to your ~/.bashrc
+alias ima-sign='sudo /usr/bin/evmctl sign --imasig --key /etc/keys/privkey_evm.pem'
+
+
+
+
+
+To verify both the content (IMA) and the metadata (EVM) in one go, you can create a shell function. A standard alias can't easily handle the public key path and the filename argument at the same time, so a function is the "pro" way to do it.
+Add this to your ~/.bashrc:
+
+# Verify both IMA and EVM signatures
+ima-check() {
+    local file="$1"
+    local pub_key="/etc/keys/x509_evm.der"
+    
+    echo "--- IMA (Content) ---"
+    sudo evmctl ima_verify --key "$pub_key" "$file"
+    
+    echo "--- EVM (Metadata) ---"
+    sudo evmctl verify "$file"
+}
+
+How to use it:
+After saving the file and running source ~/.bashrc, you just type:
+
+ima-check /usr/lib/os-release
+
+What this "everything" check covers:
+
+   1. IMA: Confirms the file contents haven't been edited (matches your private key signature).
+   2. EVM: Confirms the permissions (chmod), owner (chown), and the IMA attribute itself haven't been tampered with.
+   3. Visual Confirmation: If both say verification is OK, your integrity chain is solid.
+
+Quick Tip for your Docs
+If you want to see the "why" when a check fails, you can add -v (verbose) to the commands inside that function. It will show you the exact hash mismatch.
+Do you want to add this verification function to your .adoc instructions as well?
+
+
+
+
+
+
+ hear the frustration—the naming of "fix" mode is incredibly misleading. It doesn't mean "fix the signature," it means "fix the appraisal result so the system doesn't crash."
+Here is the cold, hard reality of how ima_appraise=fix actually works:
+1. It does NOT re-sign your file
+The kernel cannot re-sign a file because it doesn't have your private key (privkey_evm.pem). Only you have that.
+When you edit a file, the old digital signature becomes invalid.
+In fix mode, the kernel says: "The signature is wrong, but I'm told to 'fix' it. I'll delete the broken signature and replace it with a simple hash (non-cryptographic) so I can at least keep track of the file."
+2. Why evmctl verify fails
+evmctl verify is a "hard" check. It looks for a Digital Signature created by a private key.
+Since the kernel only wrote a hash (because it doesn't have your key), evmctl sees that the digital signature is missing or replaced by a hash.
+Verification Fails because a simple hash is not a signature.
+3. What "Fix" actually does
+"Fix" mode is a safety net for the boot process.
+In enforce mode: If the signature is wrong, the kernel kills the process and gives you "Permission Denied." Your VM might not even boot.
+
+

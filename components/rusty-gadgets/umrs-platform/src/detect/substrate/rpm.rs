@@ -1,41 +1,43 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
 //!
-//! # RPM Package Substrate Probe — Stub
+//! # RPM Package Substrate Probe
 //!
-//! Stub implementation of [`PackageProbe`] for RPM-based distributions.
+//! [`PackageProbe`] implementation for RPM-based distributions (RHEL, Fedora,
+//! CentOS). When the `rpm-db` feature is enabled, this probe opens the SQLite
+//! RPM database at `/var/lib/rpm/rpmdb.sqlite` and provides full file-ownership
+//! and digest-query capability.
 //!
-//! The stub validates that the RPM database root (`/var/lib/rpm/`) is present
-//! and returns a minimal substrate identity to allow the pipeline to proceed
-//! to `file_ownership` and `integrity_check`. Full RPM database parsing
-//! (via `rpmdb` BDB/SQLite bindings) is deferred to a future iteration.
+//! ## Feature gate
 //!
-//! ## What the stub does
+//! The `rpm-db` feature controls whether SQLite queries are available.
+//! Without it, the probe reverts to stub behaviour: presence checks only,
+//! `can_query_ownership = false`, `can_verify_digest = false`.
 //!
-//! 1. Probes for the existence of `/var/lib/rpm/` — a necessary (not
-//!    sufficient) condition for an RPM-based system.
-//! 2. Checks for the presence of the Packages database file
-//!    (`/var/lib/rpm/Packages` on RHEL 8/9 or `/var/lib/rpm/rpmdb.sqlite`
-//!    on RHEL 10+). Presence of either file is recorded as a corroborating
-//!    fact.
-//! 3. Returns `facts_count = 1` for the DB root alone, or `facts_count = 2`
-//!    if a Packages file is also present.
+//! ## Trust model
 //!
-//! `query_ownership` and `installed_digest` return `None` in this stub —
-//! full implementation requires RPM DB parsing.
+//! The RPM database is treated as **untrusted input**. Every header blob is
+//! parsed by the TPI parser in `rpm_header` (two independent paths; fail
+//! closed on disagreement). The DB is opened read-only with no shared-cache
+//! mutex. Ownership queries additionally verify `(dev, ino)` against a
+//! re-stat of the path to detect TOCTOU races between the caller's open and
+//! our DB query.
 //!
 //! ## Compliance
 //!
-//! - **NIST SP 800-53 CM-7**: Least Functionality — the stub exposes only
-//!   the operations the pipeline needs; no extra functionality.
+//! - **NIST SP 800-53 CM-7**: Least Functionality — the probe exposes only
+//!   the three operations the pipeline needs.
+//! - **NIST SP 800-53 CM-8**: Component Inventory — file ownership queries
+//!   establish which package owns each detected file.
 //! - **NIST SP 800-53 SA-12**: Supply Chain Risk Management — the RPM
-//!   database is the primary provenance record for installed software on
-//!   RHEL/Fedora systems.
-//! - **NIST SP 800-53 SI-7**: Software Integrity — digest lookup capability
-//!   is declared `false` in this stub; the caller will skip integrity
-//!   verification rather than making a false positive claim.
+//!   database is the primary provenance record for RHEL/Fedora systems.
+//! - **NIST SP 800-53 SI-7**: Software Integrity — digest lookup enables the
+//!   pipeline to verify on-disk files against their package DB reference.
+//! - **NSA RTB TOCTOU**: ownership queries re-verify `(dev, ino)` before
+//!   returning a result.
 
 use std::path::Path;
+use std::sync::Mutex;
 
 use nix::sys::statfs::statfs;
 
@@ -43,6 +45,13 @@ use crate::evidence::{EvidenceBundle, EvidenceRecord, SourceKind};
 use crate::os_identity::{Distro, OsFamily, SubstrateIdentity};
 
 use super::{FileOwnership, InstalledDigest, PackageProbe, ProbeResult};
+
+#[cfg(feature = "rpm-db")]
+use super::rpm_db::RpmDb;
+
+// ===========================================================================
+// Constants
+// ===========================================================================
 
 /// RPM database root directory.
 const RPM_DB_ROOT: &str = "/var/lib/rpm";
@@ -54,19 +63,31 @@ const RPM_PACKAGES_BDB: &str = "/var/lib/rpm/Packages";
 const RPM_PACKAGES_SQLITE: &str = "/var/lib/rpm/rpmdb.sqlite";
 
 /// tmpfs filesystem magic number (linux/magic.h `TMPFS_MAGIC`).
-/// A DB root on tmpfs may not be a real RPM database.
 const TMPFS_MAGIC: i64 = 0x0102_1994;
+
+// ===========================================================================
+// RpmProbe
+// ===========================================================================
 
 /// RPM package substrate probe.
 ///
-/// NIST SP 800-53 CM-7, SA-12, SI-7.
-pub struct RpmProbe;
+/// NIST SP 800-53 CM-7, CM-8, SA-12, SI-7.
+pub struct RpmProbe {
+    /// Lazily-opened RPM database handle. `Mutex` allows `&self` access
+    /// from the `PackageProbe` trait while still initialising on first use.
+    /// `Option<RpmDb>` is `None` until `probe()` succeeds in opening the DB.
+    #[cfg(feature = "rpm-db")]
+    db: Mutex<Option<RpmDb>>,
+}
 
 impl RpmProbe {
     /// Construct a new `RpmProbe`.
     #[must_use]
     pub const fn new() -> Self {
-        Self
+        Self {
+            #[cfg(feature = "rpm-db")]
+            db: Mutex::new(None),
+        }
     }
 }
 
@@ -76,130 +97,373 @@ impl Default for RpmProbe {
     }
 }
 
+// ===========================================================================
+// PackageProbe implementation
+// ===========================================================================
+
 impl PackageProbe for RpmProbe {
     fn probe(&self, bundle: &mut EvidenceBundle) -> ProbeResult {
-        // Step 1: Check DB root existence.
-        // Path-based check only — stub limitation; no fd-anchored open or DB parse.
-        let root_present = Path::new(RPM_DB_ROOT).exists();
-        if !root_present {
-            log::debug!("rpm_probe: /var/lib/rpm not found — not an RPM system");
-            let rec = EvidenceRecord {
-                source_kind: SourceKind::PackageDb,
-                opened_by_fd: false,
-                path_requested: RPM_DB_ROOT.to_owned(),
-                path_resolved: None,
-                stat: None,
-                fs_magic: None,
-                sha256: None,
-                pkg_digest: None,
-                parse_ok: false,
-                notes: vec!["RPM DB root not present".to_owned()],
-            };
-            bundle.push(rec.clone());
-            return ProbeResult {
-                probe_name: "rpm",
-                parse_ok: false,
-                can_query_ownership: false,
-                can_verify_digest: false,
-                identity: None,
-                evidence: rec,
-            };
-        }
+        probe_inner(self, bundle)
+    }
 
-        // statfs the DB root to detect tmpfs substitution.
-        // Filesystem magic TMPFS_MAGIC (0x0102_1994) — not a real RPM database location.
-        let fs_magic_opt: Option<u64> = match statfs(RPM_DB_ROOT) {
-            Ok(stat) => {
-                let magic = stat.filesystem_type().0;
-                if magic == TMPFS_MAGIC {
-                    log::warn!(
-                        "rpm_probe: {RPM_DB_ROOT} is on tmpfs — may not be a real RPM database"
-                    );
-                }
-                // Cast i64 → u64; filesystem magic values are defined as positive constants.
-                Some(magic.cast_unsigned())
-            }
-            Err(e) => {
-                log::debug!("rpm_probe: statfs({RPM_DB_ROOT}) failed: {e}");
-                None
-            }
-        };
+    fn query_ownership(
+        &self,
+        dev: u64,
+        ino: u64,
+        path: &Path,
+    ) -> Option<FileOwnership> {
+        query_ownership_inner(self, dev, ino, path)
+    }
 
-        let mut identity = SubstrateIdentity {
-            family: OsFamily::RpmBased,
-            distro: None,
-            version_id: None,
-            facts_count: 0,
-            probe_used: "rpm",
-        };
+    fn installed_digest(&self, path: &Path) -> Option<InstalledDigest> {
+        installed_digest_inner(self, path)
+    }
+}
 
-        // Fact 1: RPM DB root is present.
-        identity.add_fact();
+// ===========================================================================
+// Implementation functions (extracted to stay under the line limit)
+// ===========================================================================
 
-        let mut notes = vec!["RPM DB root present: /var/lib/rpm".to_owned()];
-        if let Some(magic) = fs_magic_opt {
-            notes.push(format!("db_root_fs_magic={magic:#x}"));
-        }
-
-        // Step 2: Check for Packages database (fact 2).
-        // Evaluate each path once and store in booleans to avoid repeated .exists() calls.
-        let sqlite_present = Path::new(RPM_PACKAGES_SQLITE).exists();
-        let bdb_present = Path::new(RPM_PACKAGES_BDB).exists();
-
-        if sqlite_present || bdb_present {
-            identity.add_fact();
-            let which = if sqlite_present {
-                "rpmdb.sqlite (RHEL10+)"
-            } else {
-                "Packages (BDB, RHEL8/9)"
-            };
-            notes.push(format!("Packages file present: {which}"));
-
-            // Infer RHEL family from SQLite DB presence (RHEL 10+ indicator).
-            if sqlite_present {
-                identity.distro = Some(Distro::Rhel);
-                notes.push("distro inferred: RHEL (SQLite RPM DB)".to_owned());
-            }
-        } else {
-            notes.push("Packages DB file not found (partial probe)".to_owned());
-        }
-
-        log::debug!(
-            "rpm_probe: facts_count={}, parse_ok=true",
-            identity.facts_count
-        );
-
-        let ev = EvidenceRecord {
-            source_kind: SourceKind::PackageDb,
-            opened_by_fd: false,
-            path_requested: RPM_DB_ROOT.to_owned(),
-            path_resolved: None,
-            stat: None,
-            fs_magic: fs_magic_opt,
-            sha256: None,
-            pkg_digest: None,
-            parse_ok: true,
-            notes,
-        };
-        bundle.push(ev.clone());
-
-        ProbeResult {
+/// Execute the probe phase — check presence, statfs, optionally open DB.
+fn probe_inner(probe: &RpmProbe, bundle: &mut EvidenceBundle) -> ProbeResult {
+    // Cache result once to avoid micro-TOCTOU from double `.exists()`.
+    let root_present = Path::new(RPM_DB_ROOT).exists();
+    if !root_present {
+        log::debug!("rpm_probe: /var/lib/rpm not found — not an RPM system");
+        let rec = no_db_record(RPM_DB_ROOT, "RPM DB root not present");
+        bundle.push(rec.clone());
+        return ProbeResult {
             probe_name: "rpm",
-            parse_ok: true,
+            parse_ok: false,
             can_query_ownership: false,
             can_verify_digest: false,
-            identity: Some(identity),
-            evidence: ev,
+            identity: None,
+            evidence: rec,
+        };
+    }
+
+    // statfs DB root to detect tmpfs substitution.
+    let fs_magic_opt: Option<u64> = match statfs(RPM_DB_ROOT) {
+        Ok(stat) => {
+            let magic = stat.filesystem_type().0;
+            if magic == TMPFS_MAGIC {
+                log::warn!(
+                    "rpm_probe: {RPM_DB_ROOT} is on tmpfs — may not be a real RPM database"
+                );
+            }
+            Some(magic.cast_unsigned())
+        }
+        Err(e) => {
+            log::debug!("rpm_probe: statfs({RPM_DB_ROOT}) failed: {e}");
+            None
+        }
+    };
+
+    let mut identity = SubstrateIdentity {
+        family: OsFamily::RpmBased,
+        distro: None,
+        version_id: None,
+        facts_count: 0,
+        probe_used: "rpm",
+    };
+
+    // Fact 1: RPM DB root is present.
+    identity.add_fact();
+
+    let mut notes = vec!["RPM DB root present: /var/lib/rpm".to_owned()];
+    if let Some(magic) = fs_magic_opt {
+        notes.push(format!("db_root_fs_magic={magic:#x}"));
+    }
+
+    // Check for Packages database file (fact 2).
+    let sqlite_present = Path::new(RPM_PACKAGES_SQLITE).exists();
+    let bdb_present = Path::new(RPM_PACKAGES_BDB).exists();
+
+    if sqlite_present || bdb_present {
+        identity.add_fact();
+        let which = if sqlite_present {
+            "rpmdb.sqlite (RHEL10+)"
+        } else {
+            "Packages (BDB, RHEL8/9)"
+        };
+        notes.push(format!("Packages file present: {which}"));
+
+        if sqlite_present {
+            // Tentative — refined by infer_distro() after DB opens.
+            identity.distro = Some(Distro::Rhel);
+            notes.push("distro tentative: RPM-based (SQLite DB)".to_owned());
+        }
+    } else {
+        notes.push("Packages DB file not found (partial probe)".to_owned());
+    }
+
+    // Attempt to open the DB when rpm-db feature is enabled.
+    let (can_query, can_digest) =
+        try_open_db(probe, bundle, sqlite_present, &mut identity, &mut notes);
+
+    // Emit a loud warning if T3 upgrade gate is reached without ownership capability.
+    if !can_query {
+        log::warn!(
+            "rpm_probe: T3 upgrade gate reached with can_query_ownership=false — \
+             ownership and digest verification unavailable"
+        );
+    }
+
+    log::debug!(
+        "rpm_probe: facts_count={}, can_query={can_query}, can_digest={can_digest}",
+        identity.facts_count,
+    );
+
+    let ev = EvidenceRecord {
+        source_kind: SourceKind::PackageDb,
+        opened_by_fd: false,
+        path_requested: RPM_DB_ROOT.to_owned(),
+        path_resolved: None,
+        stat: None,
+        fs_magic: fs_magic_opt,
+        sha256: None,
+        pkg_digest: None,
+        parse_ok: true,
+        notes,
+    };
+    bundle.push(ev.clone());
+
+    ProbeResult {
+        probe_name: "rpm",
+        parse_ok: true,
+        can_query_ownership: can_query,
+        can_verify_digest: can_digest,
+        identity: Some(identity),
+        evidence: ev,
+    }
+}
+
+/// Attempt to open the RPM DB. Returns `(can_query, can_digest)`.
+///
+/// When the `rpm-db` feature is disabled both values are always `false`.
+fn try_open_db(
+    #[cfg(feature = "rpm-db")] probe: &RpmProbe,
+    #[cfg(not(feature = "rpm-db"))] _probe: &RpmProbe,
+    bundle: &mut EvidenceBundle,
+    sqlite_present: bool,
+    identity: &mut SubstrateIdentity,
+    notes: &mut Vec<String>,
+) -> (bool, bool) {
+    #[cfg(feature = "rpm-db")]
+    if sqlite_present {
+        if let Ok(mut guard) = probe.db.lock() {
+            if guard.is_none() {
+                match RpmDb::open(bundle) {
+                    Ok(db) => {
+                        // Refine distro from release package evidence.
+                        if let Ok(Some((distro, pkg))) = db.infer_distro() {
+                            notes.push(format!(
+                                "distro refined: {distro:?} (from {pkg})"
+                            ));
+                            identity.distro = Some(distro);
+                        }
+                        *guard = Some(db);
+                        identity.add_fact();
+                        notes.push(
+                            "RPM SQLite DB opened and validated".to_owned(),
+                        );
+                        return (true, true);
+                    }
+                    Err(e) => {
+                        log::warn!("rpm_probe: DB open failed: {e}");
+                        notes.push("RPM SQLite DB open failed".to_owned());
+                        return (false, false);
+                    }
+                }
+            }
+            // Already opened in a prior call.
+            return (true, true);
+        }
+        log::warn!("rpm_probe: mutex poisoned");
+    }
+
+    #[cfg(not(feature = "rpm-db"))]
+    {
+        let _ = (bundle, sqlite_present, identity, notes);
+    }
+
+    (false, false)
+}
+
+/// Handle a `query_ownership` call.
+fn query_ownership_inner(
+    #[cfg(feature = "rpm-db")] probe: &RpmProbe,
+    #[cfg(not(feature = "rpm-db"))] _probe: &RpmProbe,
+    dev: u64,
+    ino: u64,
+    path: &Path,
+) -> Option<FileOwnership> {
+    #[cfg(feature = "rpm-db")]
+    {
+        let Ok(guard) = probe.db.lock() else {
+            log::warn!("rpm_probe: mutex poisoned in query_ownership");
+            return None;
+        };
+        let db = guard.as_ref()?;
+
+        match db.query_file_owner(path) {
+            Ok(Some((pkg_name, pkg_ver, trail))) => {
+                // TOCTOU verification: re-stat the path and confirm (dev, ino) match.
+                // Detects races between the caller's open and our DB query.
+                //
+                // NSA RTB TOCTOU — re-verify inode identity after query.
+                //
+                // BUG EXPLANATION — device number encoding mismatch:
+                //
+                // `release_candidate.rs` calls `rustix::fs::statx`, which returns the
+                // device number as separate `stx_dev_major` and `stx_dev_minor` u32 fields.
+                // `FileStat.dev` stores them combined as `(major as u64) << 32 | (minor as u64)`.
+                //
+                // `nix::sys::stat::stat()` here returns `st_dev` as a Linux `dev_t` — the
+                // kernel's compact encoding: `makedev(major, minor)` uses bit-packing
+                // (e.g., for 253:0 → `(253 << 8) | 0 = 64768`), NOT the same layout.
+                //
+                // Comparing `st_dev` directly against `FileStat.dev` would always fail for
+                // any device with major > 0, producing a spurious TOCTOU rejection every time.
+                //
+                // Fix: decompose `st_dev` back into major/minor using `nix::sys::stat::major`
+                // and `nix::sys::stat::minor`, then reassemble in the same `(major << 32) |
+                // minor` layout that `release_candidate.rs` uses for `FileStat.dev`.
+                if let Ok(stat) = nix::sys::stat::stat(path) {
+                    let st_major = nix::sys::stat::major(stat.st_dev);
+                    let st_minor = nix::sys::stat::minor(stat.st_dev);
+                    // Normalise to the statx-based encoding: (major << 32) | minor.
+                    // This matches the layout stored in FileStat.dev by release_candidate.rs.
+                    let fdev = (st_major << 32) | st_minor;
+                    let fino = stat.st_ino;
+                    if fdev != dev || fino != ino {
+                        log::warn!(
+                            "rpm_probe: TOCTOU: (dev, ino) mismatch for {}",
+                            path.display()
+                        );
+                        return None;
+                    }
+                } else {
+                    log::warn!(
+                        "rpm_probe: could not re-stat {} for TOCTOU check",
+                        path.display()
+                    );
+                    return None;
+                }
+                Some(FileOwnership {
+                    package_name: pkg_name,
+                    package_version: pkg_ver,
+                    evidence_trail: trail,
+                })
+            }
+            Ok(None) => None,
+            Err(e) => {
+                log::debug!("rpm_probe: query_file_owner failed: {e}");
+                None
+            }
         }
     }
 
-    fn query_ownership(&self, _dev: u64, _ino: u64, _path: &Path) -> Option<FileOwnership> {
-        // Stub: full RPM DB ownership queries not yet implemented.
+    #[cfg(not(feature = "rpm-db"))]
+    {
+        let _ = (dev, ino, path);
         None
     }
+}
 
-    fn installed_digest(&self, _path: &Path) -> Option<InstalledDigest> {
-        // Stub: full RPM DB digest lookup not yet implemented.
+/// Handle an `installed_digest` call.
+fn installed_digest_inner(
+    #[cfg(feature = "rpm-db")] probe: &RpmProbe,
+    #[cfg(not(feature = "rpm-db"))] _probe: &RpmProbe,
+    path: &Path,
+) -> Option<InstalledDigest> {
+    #[cfg(feature = "rpm-db")]
+    {
+        let Ok(guard) = probe.db.lock() else {
+            log::warn!("rpm_probe: mutex poisoned in installed_digest");
+            return None;
+        };
+        let db = guard.as_ref()?;
+
+        match db.query_file_digest(path) {
+            Ok(Some((algorithm, value))) => Some(InstalledDigest {
+                path: path.to_string_lossy().into_owned(),
+                algorithm,
+                value,
+            }),
+            Ok(None) => None,
+            Err(e) => {
+                log::debug!("rpm_probe: query_file_digest failed: {e}");
+                None
+            }
+        }
+    }
+
+    #[cfg(not(feature = "rpm-db"))]
+    {
+        let _ = path;
         None
+    }
+}
+
+// ===========================================================================
+// Public standalone function
+// ===========================================================================
+
+/// Check whether a named RPM package is installed on this system.
+///
+/// Opens `/var/lib/rpm/rpmdb.sqlite` read-only, queries the `Name` table
+/// for an exact match, and returns `true` if found.
+///
+/// Returns `false` if the RPM database is absent, unreadable, or the
+/// package is not installed.
+///
+/// NIST SP 800-53 CM-8 — component inventory query.
+/// NIST SP 800-53 SA-12 — supply chain provenance verification.
+#[cfg(feature = "rpm-db")]
+#[must_use]
+pub fn is_installed(pkgname: &str) -> bool {
+    let mut bundle = EvidenceBundle::new();
+    match RpmDb::open(&mut bundle) {
+        Ok(db) => match db.is_installed(pkgname) {
+            Ok(v) => v,
+            Err(e) => {
+                log::debug!("is_installed({pkgname}): query failed: {e}");
+                false
+            }
+        },
+        Err(e) => {
+            log::debug!("is_installed({pkgname}): db open failed: {e}");
+            false
+        }
+    }
+}
+
+/// Stub — `rpm-db` feature is disabled; always returns `false`.
+///
+/// NIST SP 800-53 CM-8, SA-12.
+#[cfg(not(feature = "rpm-db"))]
+#[must_use]
+pub fn is_installed(_pkgname: &str) -> bool {
+    false
+}
+
+// ===========================================================================
+// Internal helper
+// ===========================================================================
+
+/// Build a minimal failed-probe evidence record.
+fn no_db_record(path: &str, note: &str) -> EvidenceRecord {
+    EvidenceRecord {
+        source_kind: SourceKind::PackageDb,
+        opened_by_fd: false,
+        path_requested: path.to_owned(),
+        path_resolved: None,
+        stat: None,
+        fs_magic: None,
+        sha256: None,
+        pkg_digest: None,
+        parse_ok: false,
+        notes: vec![note.to_owned()],
     }
 }

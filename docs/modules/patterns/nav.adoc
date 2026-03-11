@@ -1,0 +1,24 @@
+* xref:index.adoc[High-Assurance Pattern Library]
+
+* Patterns — Parsing and I/O
+** xref:pattern-tpi.adoc[Two-Path Independence (TPI)]
+** xref:pattern-toctou.adoc[TOCTOU Safety]
+** xref:pattern-provenance.adoc[Provenance Verification]
+** xref:pattern-fail-closed.adoc[Fail-Closed]
+
+* Patterns — Types and Values
+** xref:pattern-non-bypassability.adoc[Non-Bypassability (RAIN)]
+** xref:pattern-secure-arithmetic.adoc[Secure Arithmetic]
+** xref:pattern-bounds-safe.adoc[Bounds-Safe Indexing]
+
+* Patterns — Secrets and Errors
+** xref:pattern-zeroize.adoc[Zeroize Sensitive Data ⚠]
+** xref:pattern-constant-time.adoc[Constant-Time Comparison ⚠]
+** xref:pattern-error-discipline.adoc[Error Information Discipline]
+** xref:pattern-loud-failure.adoc[Loud Failure]
+
+* Patterns — Verification Pipelines
+** xref:pattern-sec.adoc[Sealed Evidence Cache (SEC) ⚠]
+
+* Patterns — Workspace and Dependencies
+** xref:pattern-supply-chain.adoc[Supply Chain Hygiene]

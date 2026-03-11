@@ -1,0 +1,191 @@
+= Pattern: Constant-Time Comparison
+:toc: left
+:description: Compare security-relevant byte sequences using constant-time equality to prevent timing oracle attacks. Standard == exits early on the first differing byte and leaks information proportional to the match length.
+
+// NIST 800-218 SSDF PW.4.4 — Secure arithmetic; avoid timing side-channel vulnerabilities
+// NIST 800-53 SC-28 — Protection of Information at Rest (and in transit)
+// NIST 800-53 IA-5 — Authenticator Management
+
+[WARNING]
+====
+This pattern is *required* but *not yet implemented* in the codebase.
+It must be in place before `vaultmgr` or any other component compares tokens,
+MACs, HMACs, password hashes, or credentials in a path that is observable to
+an attacker.
+====
+
+== Overview
+
+A timing oracle is a side channel: an attacker can infer information about a secret
+value by measuring how long a comparison takes. Standard equality on byte slices exits
+at the first byte that differs. A comparison where the first byte matches takes longer
+than one where it does not. Given enough measurements, an attacker can determine the
+secret byte-by-byte — without ever observing the value directly.
+
+Constant-time comparison defeats timing oracles by performing the comparison in a fixed
+number of steps regardless of where the inputs first differ. The `subtle` crate provides
+`ConstantTimeEq`, which is specifically designed and audited for this purpose.
+
+== The Threat
+
+Consider a token verification endpoint that compares a user-supplied token against a
+stored value using standard `==`:
+
+[source,rust]
+----
+// VULNERABLE: timing oracle
+fn verify_token(provided: &[u8], expected: &[u8]) -> bool {
+    provided == expected  // exits at first differing byte
+}
+----
+
+An attacker who can call this function repeatedly and measure response times:
+
+. Submits tokens with different first bytes, measures average time until success
+. Identifies the correct first byte (the comparison takes slightly longer when byte 0
+  matches because it must check byte 1)
+. Repeats for each subsequent byte
+. Recovers the full token with O(N × 256) attempts — not brute force
+
+This attack works over a network. The timing difference is on the order of nanoseconds
+per byte, but with enough samples and a stable network, it is measurable. Real
+implementations of this attack have been demonstrated against production systems.
+
+Standard `==` on `&[u8]`, `String`, `Vec<u8>`, or any slice type uses early-exit
+comparison. It is not safe for any value where an attacker can observe response timing.
+
+== The Pattern
+
+Use the `subtle` crate's `ConstantTimeEq` trait for any comparison of security-relevant
+byte sequences:
+
+[source,rust]
+----
+use subtle::ConstantTimeEq;
+
+fn verify_token(provided: &[u8], expected: &[u8]) -> bool {
+    // Fixed number of steps regardless of where inputs first differ.
+    // Prevents timing oracle attacks on token and credential comparisons.
+    provided.ct_eq(expected).into()
+}
+----
+
+`ct_eq()` returns a `Choice` — a constant-time boolean type. `.into()` converts it to
+`bool` only at the end, after the comparison is complete. Do not compare the `Choice`
+to another `bool` using `==`; use `.into()` to extract the result once.
+
+For types that own their bytes, derive or implement `ConstantTimeEq` on the type:
+
+[source,rust]
+----
+use subtle::{Choice, ConstantTimeEq};
+
+struct AuthToken {
+    bytes: [u8; 32],
+}
+
+impl ConstantTimeEq for AuthToken {
+    fn ct_eq(&self, other: &Self) -> Choice {
+        self.bytes.ct_eq(&other.bytes)
+    }
+}
+----
+
+=== Supply Chain Assessment
+
+Before adding `subtle` to a crate's `Cargo.toml`:
+
+. Run `cargo audit` to verify no known vulnerabilities
+. Verify the crate has no transitive dependencies (by design — `subtle` is intentionally
+  minimal)
+. The `subtle` crate is maintained by the `dalek-cryptography` group and is the
+  standard choice for constant-time operations in the Rust cryptographic ecosystem
+
+See xref:pattern-supply-chain.adoc[Supply Chain Hygiene] for the full evaluation
+checklist.
+
+== Scope
+
+Constant-time comparison is required for any comparison involving:
+
+* Authentication tokens or session identifiers
+* MACs, HMACs, and other authentication tags
+* Password hashes or key derivatives
+* Any value where knowledge of whether a guess is "closer" to the correct answer
+  provides an advantage to an attacker
+
+Constant-time comparison is *not* required for:
+
+* Sensitivity level comparisons (`s0 == s1`) — these are integer comparisons on
+  validated, non-secret values used in policy decisions, not credential verification
+* Category bitmask comparisons in MLS dominance calculations — the values are not
+  secrets being verified against a hidden expected value
+* Display, logging, or sorting of non-secret values
+
+The distinguishing question: *does an attacker gain useful information if they learn
+how many leading bytes of their guess match the correct value?* If yes, use
+constant-time comparison.
+
+== Timing Diagram
+
+The difference between variable-time and constant-time comparison:
+
+[mermaid]
+....
+sequenceDiagram
+    participant A as Attacker
+    participant S as System
+
+    Note over A,S: Variable-time (vulnerable)
+    A->>S: token = [0x00, ...]
+    S-->>A: response in 10 ns  (byte 0 mismatch, exit early)
+    A->>S: token = [0xAB, ...]
+    S-->>A: response in 15 ns  (byte 0 matches, checks byte 1)
+    Note over A: Learns: first byte is 0xAB
+
+    Note over A,S: Constant-time (correct)
+    A->>S: token = [0x00, ...]
+    S-->>A: response in 42 ns  (all bytes compared)
+    A->>S: token = [0xAB, ...]
+    S-->>A: response in 42 ns  (all bytes compared)
+    Note over A: Learns nothing
+....
+
+== Security Controls
+
+[cols="1,2"]
+|===
+| Control | Applicability
+
+| NIST 800-218 SSDF PW.4.4
+| Secure arithmetic — timing side-channels are an integer comparison vulnerability;
+  constant-time operations eliminate them
+
+| NIST 800-53 SC-28
+| Protection of Information at Rest — a timing oracle on stored credentials allows
+  recovery of those credentials without direct access to storage
+
+| NIST 800-53 IA-5
+| Authenticator Management — authenticators (tokens, credentials, password hashes)
+  must be protected; a timing oracle is a mechanism for recovering them
+
+| NIST 800-53 SI-12
+| Information Management — an oracle that leaks comparative information about a
+  secret is a form of uncontrolled information disclosure
+|===
+
+== Summary
+
+Compare tokens, MACs, and credentials with `subtle::ConstantTimeEq`, never with standard
+`==`. Early-exit comparison leaks timing information proportional to how many leading bytes
+match — an attacker who can make repeated guesses and measure response time can recover
+the correct value byte-by-byte without ever observing it directly. Constant-time
+comparison eliminates the timing signal entirely.
+
+== See Also
+
+* xref:pattern-zeroize.adoc[Zeroize Sensitive Data] — the complementary pattern;
+  after comparison, sensitive buffers must not persist in memory
+* xref:pattern-supply-chain.adoc[Supply Chain Hygiene] — required before adding
+  `subtle` as a dependency
+* xref:devel:high-assurance-patterns.adoc[High-Assurance Pattern Index]

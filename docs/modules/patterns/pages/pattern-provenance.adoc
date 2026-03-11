@@ -1,0 +1,211 @@
+= Pattern: Provenance Verification
+:toc: left
+:description: Before trusting data from a kernel pseudo-filesystem, verify the filesystem magic number on the open file descriptor. Reject any path that is not on the authorized filesystem.
+
+// NIST 800-53 SI-7 — Software and Information Integrity
+// NSA RTB VNSSA — Provenance verification before trust; no implicit trust of named paths
+// NIST 800-218 SSDF PW.4 — Implement secure coding practices
+
+== Overview
+
+Provenance Verification answers the question: before I read data from a path that is
+supposed to be a kernel interface, how do I know the kernel is actually on the other
+end?
+
+Linux kernel pseudo-filesystems — `/sys/fs/selinux/`, `/proc/` — are not real filesystems
+on storage media. They are in-kernel interfaces exposed through the VFS layer and
+identified by unique filesystem magic numbers. A real filesystem mounted at the same
+path will have a different magic number. Checking that magic number before reading
+is how this codebase distinguishes the kernel from an impostor.
+
+The check must be performed on an already-open file descriptor, not on the path. Checking
+the path and then opening the file leaves a window between the two calls during which the
+underlying mount can be changed. See xref:pattern-toctou.adoc[TOCTOU Safety].
+
+Provenance Verification satisfies NIST 800-53 SI-7 (Software and Information Integrity),
+which requires organizations to verify the integrity of data from sources that could be
+tampered with before that data influences security decisions.
+
+== The Threat
+
+Any process with mount privileges — or a container runtime with misconfigured namespaces
+— can bind-mount an attacker-controlled directory over `/sys/fs/selinux/` or over a
+specific path within it. A subsequent `File::open("/sys/fs/selinux/enforce")` would
+open a file in the attacker-controlled directory, not the kernel's interface.
+
+In practice this means:
+
+* The SELinux enforcement state read by the codebase could be falsified — reporting
+  "enforcing" when enforcement is disabled, or vice versa
+* The MLS enabled flag could be falsified — a system not running MLS could report that
+  it is, hiding a configuration gap
+* Any attribute read from the pseudo-filesystem could be replaced with attacker-supplied
+  content
+
+The attack does not require a kernel vulnerability. It requires only the ability to
+manipulate the mount namespace. Container environments and privilege-escalation scenarios
+both provide this capability.
+
+A simple `statfs(path)` check before `open()` does not fully close the threat window.
+An attacker with persistent access can substitute the mount between the `statfs()` and
+the `open()`. The check and the open must be performed as a unit, anchored to the same
+descriptor.
+
+== The Pattern
+
+[mermaid]
+....
+flowchart TD
+    A[File::open path → fd] --> B[fstatfs fd → magic]
+    B --> C{magic == SELINUX_MAGIC\nor PROC_SUPER_MAGIC?}
+    C -- No --> D[log::error! Integrity Failure\nreturn Err PermissionDenied\nfd dropped, nothing read]
+    C -- Yes --> E[Read from fd]
+    E --> F[Return Ok value]
+
+    style D fill:#c0392b,color:#fff
+    style F fill:#27ae60,color:#fff
+
+    note1["Wrong order — vulnerable:\nstatfs path → magic check → File::open path\n(TOCTOU window between check and open)"]
+    style note1 fill:#f39c12,color:#000
+....
+
+The correct sequence:
+
+. Open the file with `File::open(path)`.
+. Call `fstatfs(&file)` on the resulting descriptor.
+. Compare the returned `filesystem_type()` against the expected magic constant.
+. If the magic does not match, return `Err` immediately. Nothing is read.
+. If the magic matches, read from the descriptor.
+
+Two magic constants are relevant in this codebase:
+
+[cols="1,2"]
+|===
+| Constant | Filesystem
+
+| `SELINUX_MAGIC` (0xF97CFF8C)
+| `/sys/fs/selinux/` — kernel SELinux interface
+
+| `PROC_SUPER_MAGIC` (0x9FA0)
+| `/proc/` — kernel process and system information interface
+|===
+
+The error returned when magic fails must not contain variable path data in the
+user-visible message. The path goes to the audit log at `error!` level; the caller
+receives a generic `PermissionDenied` with a fixed message. See
+xref:pattern-error-discipline.adoc[Error Information Discipline].
+
+== In the UMRS Codebase
+
+The provenance check lives in `umrs-platform/src/kattrs/`. `SecureReader::execute_read()`
+opens the file first, then checks magic on the open descriptor:
+
+[source,rust]
+----
+// umrs-platform: kattrs.rs
+fn execute_read(path: &Path, expected_magic: FsType) -> io::Result<T::Output> {
+    // Open first. The magic check is on this descriptor — not on the path.
+    // This eliminates the TOCTOU window that exists between a path-based
+    // statfs() and a subsequent File::open().
+    let mut file = File::open(path)?;
+
+    let stats = fstatfs(&file).map_err(io::Error::other)?;
+    if stats.filesystem_type() != expected_magic {
+        // Path goes to the audit log; the caller-visible error is generic.
+        // NIST 800-53 SI-12: sensitive context in logs, not in error strings.
+        log::error!(
+            "Integrity Failure: {} is not on the authorized filesystem",
+            path.display()
+        );
+        return Err(io::Error::new(
+            io::ErrorKind::PermissionDenied,
+            "Integrity Failure: path is not on the authorized filesystem",
+        ));
+    }
+
+    let mut buffer = [0u8; 16];
+    let bytes_read = file.read(&mut buffer)?;
+    T::parse(&buffer[..bytes_read])
+}
+----
+
+The `StaticSource` trait binds each kernel attribute type to its expected magic at
+compile time. A caller invoking `SelinuxEnforce::read()` cannot accidentally supply
+the wrong magic constant — it is an associated constant on the type:
+
+[source,rust]
+----
+// umrs-platform: kattrs.rs
+pub trait StaticSource: KernelFileSource {
+    const PATH: &'static str;
+    const EXPECTED_MAGIC: FsType = SELINUX_MAGIC;  // default is selinuxfs
+
+    fn read() -> io::Result<Self::Output> {
+        SecureReader::<Self>::new().read()  // routes through execute_read
+    }
+}
+
+// ProcFips overrides the default to procfs magic
+impl StaticSource for ProcFips {
+    const PATH: &'static str = "/proc/sys/crypto/fips_enabled";
+    const EXPECTED_MAGIC: FsType = PROC_SUPER_MAGIC;
+}
+----
+
+The combination of the `StaticSource` trait and `execute_read` means provenance
+verification is *non-bypassable via the trait method* — there is no code path through
+`StaticSource::read()` that skips the magic check. See
+xref:pattern-non-bypassability.adoc[Non-Bypassability].
+
+== When to Apply
+
+Apply Provenance Verification whenever reading from:
+
+* `/sys/fs/selinux/` — any SELinux kernel attribute
+* `/proc/` — any kernel process or system attribute
+* Any kernel pseudo-filesystem path where the kernel is the authoritative source
+
+The architectural review trigger is: *reading from `/sys/fs/selinux/` or `/proc/` →
+provenance verification — check `statfs` magic*.
+
+Per the project mandatory rule: any code that reads from `/proc/` or `/sys/` **must**
+use `ProcfsText` or `SysfsText` from `umrs_platform::kattrs`, routed through
+`SecureReader::read_generic_text`. Raw `File::open` on these paths is prohibited.
+This rule satisfies NSA RTB RAIN (non-bypassable) and NIST 800-53 SI-7.
+
+== Security Controls
+
+[cols="1,2"]
+|===
+| Control | Applicability
+
+| NIST 800-53 SI-7
+| Software and Information Integrity — verify integrity of data received from sources
+  that could be tampered with before data influences a security decision
+
+| NSA RTB VNSSA
+| No implicit trust of named paths; trust must be established by inspection of the
+  resource itself, not by its name
+
+| NIST 800-218 SSDF PW.4
+| Implement secure coding practices — provenance verification is an explicit defense
+  against environmental manipulation
+|===
+
+== Summary
+
+Before reading any byte from a kernel pseudo-filesystem, open the file and verify the
+filesystem magic on the open descriptor. A name like `/sys/fs/selinux/enforce` is not
+proof that the kernel is on the other end — a bind-mounted directory looks identical to
+a caller using path-based `statfs`. The fd-anchored magic check is the only way to
+confirm provenance without leaving a race window.
+
+== See Also
+
+* xref:pattern-toctou.adoc[TOCTOU Safety] — the open-then-check order that closes the
+  window between path resolution and magic verification
+* xref:pattern-non-bypassability.adoc[Non-Bypassability] — how `StaticSource` makes
+  the provenance check mechanically unavoidable
+* xref:pattern-error-discipline.adoc[Error Information Discipline] — why the path goes
+  to the log and not to the caller-visible error string
+* xref:devel:high-assurance-patterns.adoc[High-Assurance Pattern Index]

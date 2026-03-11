@@ -77,8 +77,8 @@ use crate::xattrs::SecureXattrReader;
 // If path types are later split to their own module, update these use paths.
 pub use self::filetype::FileType;
 pub use self::flags::InodeSecurityFlags;
-use crate::observations::SecurityObservation;
 pub use self::path::{AbsolutePath, PathError, ValidatedFileName};
+use crate::observations::SecurityObservation;
 
 // ==========================================================================
 // POSIX path constants
@@ -1107,7 +1107,10 @@ impl SecureDirent {
                 nlink: self.nlink.as_u32(),
             });
         }
-        if self.uid().is_root() && self.file_type.is_regular() && !self.is_write_protected() {
+        if self.uid().is_root()
+            && self.file_type.is_regular()
+            && !self.is_write_protected()
+        {
             obs.push(SecurityObservation::RootOwnedMutable);
         }
         if self.ownership.user.is_unresolved() {

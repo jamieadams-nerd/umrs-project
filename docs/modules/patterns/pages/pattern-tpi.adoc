@@ -1,0 +1,181 @@
+= Pattern: Two-Path Independence (TPI)
+:toc: left
+:description: Parse or validate security-relevant input with two independent implementations and fail closed on any disagreement.
+
+// NSA RTB Redundancy — independent verification of security-critical data
+// NIST 800-218 SSDF PW.4.1 — Validate all inputs
+// NIST 800-53 SI-10 — Information Input Validation
+
+== Overview
+
+Two-Path Independence (TPI) is a parsing strategy for security-relevant input: the same
+input is parsed by two completely independent implementations, and the results are compared.
+If both parsers agree, the result is accepted. If they disagree — or if either fails — the
+operation fails closed with an error.
+
+TPI eliminates single-point-of-failure in any parse path that drives an authorization or
+classification decision. A subtle flaw in a single parser can pass malformed input silently.
+Two independent parsers, by different logic, are unlikely to share the same flaw in the
+same direction.
+
+This pattern is mandated by NSA RTB's Redundancy requirement and aligns with NIST 800-218
+SSDF PW.4.1 (validate all inputs).
+
+== The Threat
+
+A single parser has a single point of failure. An off-by-one in a boundary check, an
+ambiguous grammar rule, or an edge case in whitespace handling can produce a valid-looking
+output from malformed input. That output then travels into an access control or
+classification decision.
+
+The flaw may be invisible in testing: if the test inputs are the same ones the parser
+handles correctly, coverage looks complete while the edge case goes undetected.
+A carefully crafted input that exploits the flaw can bypass the access control entirely.
+
+For SELinux security contexts — which directly drive MLS label decisions — a parsing
+failure that produces an incorrect label is a privilege escalation. There is no acceptable
+margin for ambiguity.
+
+== The Pattern
+
+[mermaid]
+....
+flowchart TD
+    INPUT[Raw input string] --> A[Path A: nom parser\ndeclarative combinator]
+    INPUT --> B[Path B: FromStr\nimperative character walk]
+
+    A --> AG{Path A OK?}
+    B --> BG{Path B OK?}
+
+    AG -- Error --> FAIL_A[log::error! Path A failed\nreturn Err]
+    BG -- Error --> FAIL_B[log::error! Path B failed\nreturn Err]
+
+    AG -- Ok --> GATE{Results equal?}
+    BG -- Ok --> GATE
+
+    GATE -- No --> FAIL_C[log::error! CRITICAL: RTB Redundancy Failure\nreturn Err PermissionDenied]
+    GATE -- Yes --> OK[Return Ok result]
+
+    style FAIL_A fill:#c0392b,color:#fff
+    style FAIL_B fill:#c0392b,color:#fff
+    style FAIL_C fill:#c0392b,color:#fff
+    style OK fill:#27ae60,color:#fff
+....
+
+Implement two parsers for the same grammar using completely different algorithms and
+logic paths:
+
+* *Path A* — a declarative parser combinator (nom). Treats the input as a streaming
+  protocol; fails precisely at the first byte that violates the grammar.
+* *Path B* — an imperative `FromStr` implementation. Character-by-character validation
+  using explicit state and explicit rules.
+
+Both paths must succeed and produce equal output. On any disagreement:
+
+. Log both results at `error!` level immediately — the disagreement is a security event.
+. Return `Err(PermissionDenied)`.
+. Never return `Ok` with a degraded, guessed, or defaulted result.
+
+The independence requirement is strict: different algorithms, different libraries, different
+logic paths, different failure modes. Two parsers that share implementation details are not
+independent and do not satisfy TPI.
+
+== In the UMRS Codebase
+
+`SecureXattrReader::read_context()` in `umrs-selinux/src/xattrs.rs` implements TPI for
+SELinux security context parsing. Path A uses the `nom` combinator defined in `context.rs`;
+Path B uses the `FromStr` implementation on `SecurityContext`:
+
+[source,rust]
+----
+// umrs-selinux: xattrs.rs
+pub fn read_context(file: &File) -> io::Result<SecurityContext> {
+    let raw_bytes = Self::read_raw(file, XATTR_NAME_SELINUX)?;
+    let context_str = std::str::from_utf8(&raw_bytes).map_err(|_| {
+        io::Error::new(io::ErrorKind::InvalidData, "Non-UTF8 Context")
+    })?;
+
+    // PATH A: nom parser (declarative combinator)
+    let (_, context_a) = parse_context_nom(context_str).map_err(|e| {
+        log::error!("TPI Path A (nom) failed: {e}");
+        io::Error::new(io::ErrorKind::InvalidData, "TPI Path A Failed")
+    })?;
+
+    // PATH B: FromStr (imperative character-by-character)
+    let context_b: SecurityContext = context_str.parse().map_err(|e| {
+        log::error!("TPI Path B (FromStr) failed: {e}");
+        io::Error::new(io::ErrorKind::InvalidData, e.to_string())
+    })?;
+
+    // TPI GATE: if results disagree, neither is trusted
+    if context_a != context_b {
+        log::error!("CRITICAL: RTB Redundancy Failure!");
+        log::error!("PATH A: {context_a:?}");
+        log::error!("PATH B: {context_b:?}");
+        return Err(io::Error::new(
+            io::ErrorKind::PermissionDenied,
+            "RTB Redundancy Failure: Security Ctx logic mismatch",
+        ));
+    }
+
+    Ok(context_a)
+}
+----
+
+The `CRITICAL:` prefix in the log output is intentional. It makes the event grep-able in
+audit log analysis and easy to match in monitoring rules. See
+xref:pattern-loud-failure.adoc[Loud Failure] for the logging discipline that accompanies
+the TPI gate.
+
+Path A (`nom`) and Path B (`FromStr`) are described in more detail in
+xref:devel:nom-parser.adoc[The nom parser combinator].
+
+== When to Apply
+
+Apply TPI when:
+
+* The input drives an authorization decision (access allowed or denied)
+* The input drives a classification decision (what sensitivity label applies)
+* A parse failure that produces a wrong result — rather than an error — is a security risk
+* The input comes from the filesystem, the network, or any source outside the trust boundary
+
+TPI is required for all SELinux security context parsing in this codebase. The
+architectural review trigger is: *new parser for security-relevant input → apply TPI*.
+
+TPI is not required for non-security-relevant parsing such as configuration file keys,
+display strings, or values that have no effect on authorization.
+
+== Security Controls
+
+[cols="1,2"]
+|===
+| Control | Applicability
+
+| NSA RTB Redundancy
+| Independent verification eliminates single-path parse vulnerabilities
+
+| NIST 800-218 SSDF PW.4.1
+| Validate all inputs; independent paths detect what single-path testing misses
+
+| NIST 800-53 SI-10
+| Information Input Validation — reject malformed input before it reaches enforcement logic
+
+| NIST 800-53 AC-4
+| Information Flow Enforcement — correct parsing is prerequisite to correct flow control
+|===
+
+== Summary
+
+Parse every security-relevant input twice, through two completely independent
+implementations, and accept the result only when both agree. A single parser has a
+single point of failure; two independent parsers with different algorithms are unlikely
+to share the same flaw in the same direction. Any disagreement is treated as a
+`PermissionDenied` error — never as a cue to pick the "better" result.
+
+== See Also
+
+* xref:pattern-fail-closed.adoc[Fail-Closed] — TPI gates must fail closed; this page
+  covers the specific rules
+* xref:devel:nom-parser.adoc[The nom parser combinator] — why `nom` is Path A and what
+  properties make it suitable for security-critical parsing
+* xref:devel:high-assurance-patterns.adoc[High-Assurance Pattern Index] — full pattern listing

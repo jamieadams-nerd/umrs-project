@@ -131,7 +131,9 @@ impl ProcfsText {
                 "ProcfsText path must be under /proc/",
             ));
         }
-        Ok(Self { path })
+        Ok(Self {
+            path,
+        })
     }
 
     #[must_use]

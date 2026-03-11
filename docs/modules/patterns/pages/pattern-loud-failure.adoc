@@ -1,0 +1,179 @@
+= Pattern: Loud Failure
+:toc: left
+:description: Every security-relevant error is logged at error! level before returning. No security failure is silent, swallowed, or downgraded to a warning.
+
+// NSA RTB RAIN — Security events must be observable; no silent degradation
+// NIST 800-53 AU-3 — Content of Audit Records
+// NIST 800-53 AU-6 — Audit Record Review, Analysis, and Reporting
+// NIST 800-53 SI-12 — Information Management and Retention
+
+== Overview
+
+Loud Failure is the discipline of making every security-relevant error immediately visible
+and auditable. When a security check fires — a TPI disagreement, a failed integrity
+check, a construction failure on a security-critical type — the error is logged at
+`log::error!` level before the function returns.
+
+The alternative is Silent Failure: swallowing errors, logging at `debug!`, or
+substituting a default value and returning `Ok`. Silent failure is operationally
+indistinguishable from success. An adversary who can induce a silent failure achieves
+their goal without triggering any observable event.
+
+Loud Failure ensures that security events are visible to operators and auditors, consistent
+with NSA RTB RAIN and NIST 800-53 AU-3 (audit record content requirements).
+
+== The Threat
+
+A security check fires but the error disappears. This happens when:
+
+* The error is mapped to `None` or a default value and `Ok` is returned
+* The error is logged at `debug!` or `trace!` — levels that are off in production
+* The error is stored in a struct field that the caller never checks
+* The error is propagated with `?` without logging — a caller up the chain may also
+  propagate without logging, and the event is lost
+
+When a security check fires silently, two things happen:
+
+. The adversary who triggered the condition learns it is safe to continue — there is
+  no rate limiting, no lockout, no observable consequence
+. The operator and auditor never learn the event occurred — incident response is impossible
+  without a record to investigate
+
+In a system handling CUI under MLS policy, a silent TPI failure or a silent integrity
+check failure is a gap in the audit trail that an auditor will flag as a deficiency.
+
+== The Pattern
+
+Every `Err` return on a security code path is preceded by `log::error!`. The rules are:
+
+. *Log before returning, not after.* The log call precedes the `return Err(...)` on
+  every security-relevant exit path.
+. *Log at `error!` level.* Not `warn!`, not `debug!`. Security events are errors.
+. *Include a structured prefix.* Use `"CRITICAL:"` for events that indicate a security
+  control failure (TPI disagreement, integrity check failure). This prefix makes the
+  event grep-able across audit log exports.
+. *Do not embed sensitive data in log strings.* Log the path, the error category, and
+  the diagnostic data needed for investigation. Do not log security labels, key material,
+  or classified content. See xref:pattern-error-discipline.adoc[Error Information Discipline].
+. *Log enough to reconstruct the event.* An auditor reading only the log entry must be
+  able to understand what check fired and why.
+
+== In the UMRS Codebase
+
+The TPI gate in `umrs-selinux/src/xattrs.rs` logs both parse results before returning.
+The `CRITICAL:` prefix makes the event grep-able in audit exports:
+
+[source,rust]
+----
+// umrs-selinux: xattrs.rs — TPI disagreement
+if context_a != context_b {
+    log::error!("CRITICAL: RTB Redundancy Failure!");
+    log::error!("PATH A OBJECT: {context_a:?}");
+    log::error!("PATH B OBJECT: {context_b:?}");
+    return Err(io::Error::new(
+        io::ErrorKind::PermissionDenied,
+        "RTB Redundancy Failure: Security Ctx logic mismatch",
+    ));
+}
+----
+
+Path-level failures in the TPI gate also log before returning, identifying which path
+failed:
+
+[source,rust]
+----
+// umrs-selinux: xattrs.rs — individual path failures
+let (_, context_a) = parse_context_nom(context_str).map_err(|e| {
+    log::error!("TPI Path A (nom) failed: {e}");
+    io::Error::new(io::ErrorKind::InvalidData, "TPI Path A Failed")
+})?;
+
+let context_b: SecurityContext = context_str.parse().map_err(|e| {
+    log::error!("TPI Path B (FromStr) failed: {e}");
+    io::Error::new(io::ErrorKind::InvalidData, e.to_string())
+})?;
+----
+
+The filesystem integrity check in `umrs-platform/src/kattrs/` logs the path at `error!`
+level before returning. The path goes to the log — not into the caller-visible error
+string — consistent with error information discipline:
+
+[source,rust]
+----
+// umrs-platform: kattrs.rs — integrity check failure
+if stats.filesystem_type() != expected_magic {
+    log::error!(
+        "Integrity Failure: {} is not on the authorized filesystem",
+        path.display()
+    );
+    return Err(io::Error::new(
+        io::ErrorKind::PermissionDenied,
+        "Integrity Failure: path is not on the authorized filesystem",
+    ));
+}
+----
+
+== When to Apply
+
+Apply Loud Failure on every exit path from a function that:
+
+* Makes an access control decision
+* Performs a TPI gate
+* Checks a type construction invariant for a security-relevant type
+* Verifies filesystem integrity or provenance
+* Detects any unexpected condition on a security code path
+
+Non-security-relevant errors — configuration file not found, display formatting failed,
+optional feature unavailable — can be logged at lower levels or surfaced to the caller
+without a mandatory `error!` call.
+
+The test is: *if this error is swallowed, does an adversary gain an advantage?* If yes,
+it is a security error and must be loud.
+
+== Monitoring Integration
+
+The `CRITICAL:` prefix in error log entries is designed for monitoring integration.
+A SIEM or log aggregation rule that alerts on `CRITICAL: RTB` catches TPI failures across
+all systems. A rule on `CRITICAL: Integrity Failure` catches provenance check failures.
+
+When adding a new security gate, choose a consistent prefix that can be matched in a
+monitoring rule. Document the prefix in the function's doc comment so the monitoring
+team can write the appropriate alert.
+
+== Security Controls
+
+[cols="1,2"]
+|===
+| Control | Applicability
+
+| NSA RTB RAIN
+| Security events must be observable — no silent degradation of security controls
+
+| NIST 800-53 AU-3
+| Content of Audit Records — records must contain sufficient information to identify
+  what occurred, when, and under what conditions
+
+| NIST 800-53 AU-6
+| Audit Record Review, Analysis, and Reporting — auditable events must appear in records
+  that can be reviewed; silent events cannot be analyzed
+
+| NIST 800-53 SI-12
+| Information Management and Retention — sensitive context goes to the audit log where
+  access is controlled, not to user-visible error strings
+|===
+
+== Summary
+
+Every security-relevant error is logged at `error!` level before the function returns.
+A silent failure is operationally indistinguishable from success: the adversary who
+triggered the condition sees no consequence and continues; the operator never sees the
+event and cannot respond. Loud failure ensures the audit trail is complete and that
+monitoring systems have something to act on.
+
+== See Also
+
+* xref:pattern-fail-closed.adoc[Fail-Closed] — the decision to return `Err` that
+  precedes every `log::error!` call on a security path
+* xref:pattern-error-discipline.adoc[Error Information Discipline] — what goes in the
+  log vs. what goes in the caller-visible error string
+* xref:devel:high-assurance-patterns.adoc[High-Assurance Pattern Index]

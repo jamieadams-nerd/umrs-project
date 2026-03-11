@@ -85,7 +85,7 @@ fn show_colors_for_ctx(ctx: &SecurityContext) {
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    translator::load_setrans_file("setrans.conf")?;
+    translator::load_setrans_file("data/setrans.conf")?;
     let _guard = GLOBAL_TRANSLATOR.read().unwrap();
 
     // ---------------------------------------------------------------------

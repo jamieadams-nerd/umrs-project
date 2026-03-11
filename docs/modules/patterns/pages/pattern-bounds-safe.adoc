@@ -1,0 +1,211 @@
+= Pattern: Bounds-Safe Indexing
+:toc: left
+:description: Prefer .get(i) over [i] for security-relevant array access. Treat an out-of-bounds index as a security event. Where [i] is used, document the proof that the access is safe.
+
+// NIST 800-218 SSDF PW.4.4 — Secure arithmetic; avoid bounds violations
+// NIST 800-53 SI-10 — Information Input Validation
+// NSA RTB VNSSA — Deterministic, provably correct execution
+
+== Overview
+
+An array index operation `self.bits[i]` panics in debug mode when `i >= self.bits.len()`.
+In release mode, with bounds checks disabled (not the case in this workspace, but the
+default behavior in Rust), it accesses memory past the end of the array — undefined
+behavior that a compiler can exploit in unpredictable ways.
+
+For security-relevant arrays, an out-of-bounds index is not an acceptable runtime event.
+A panic in a deployed system interrupts service. Undefined behavior in a classification
+or access control computation is a security defect.
+
+Bounds-Safe Indexing requires that every index operation on a security-relevant array
+is either:
+
+* *Guarded by `.get(i)`* with the `None` case handled explicitly, or
+* *Provably safe by construction*, with the proof stated in a comment that an auditor
+  can verify independently
+
+== The Threat
+
+Consider a bitmask operation on `CategorySet` that derives an array index from a
+user-supplied category ID without first validating the ID:
+
+[source,rust]
+----
+// UNSAFE pattern — never do this
+fn set_category(raw_id: u16, bits: &mut [u64; 16]) {
+    let word = (raw_id / 64) as usize;  // raw_id could be > 1023
+    bits[word] |= 1u64 << (raw_id % 64);  // panics or UB if word > 15
+}
+----
+
+A category ID of `1024` produces `word = 16`, which is out of bounds for `[u64; 16]`.
+In debug mode this panics — a denial of service. In a release binary without the
+workspace's `overflow-checks = true` setting, it would access memory beyond the array.
+
+The attack surface is any point where a numeric value from an external source (a parsed
+security context, a network message, a deserialized structure) is used as an array index
+without validation.
+
+== The Pattern
+
+Two acceptable approaches:
+
+=== Approach A: .get(i) with explicit None handling
+
+Use `.get(i)` when the index comes from an unvalidated or external source. The `None`
+case is a security event — treat it accordingly:
+
+[source,rust]
+----
+fn set_category_safe(raw_id: u16, bits: &mut [u64; 16]) -> Result<(), CategoryError> {
+    let word = (raw_id / 64) as usize;
+    let bit  = raw_id % 64;
+
+    match bits.get_mut(word) {
+        Some(slot) => {
+            *slot |= 1u64 << bit;
+            Ok(())
+        }
+        None => {
+            log::error!("CRITICAL: Category index {} is out of bounds", raw_id);
+            Err(CategoryError::OutOfRange(raw_id))
+        }
+    }
+}
+----
+
+=== Approach B: Direct indexing with proof by construction
+
+Use `[i]` when the index is derived from a value that was validated at construction.
+State the proof in a comment that includes:
+
+. The validated bound on the source value
+. The arithmetic that produces the index
+. The conclusion that the index is within bounds
+
+[source,rust]
+----
+// umrs-selinux: category.rs
+//
+// Safe: Category validates id <= 1023 at construction, so:
+//   word = id / 64   is always in 0..=15  (fits [u64; 16])
+//   bit  = id % 64   is always in 0..=63  (valid u64 shift)
+// This is a compile-time-provable bound; no checked_* needed here.
+const fn index(cat: Category) -> (usize, u64) {
+    let id = cat.id() as usize;
+    let word = id / 64;
+    let bit  = id % 64;
+    (word, 1u64 << bit)
+}
+----
+
+The comment is the proof. An auditor reading this code can independently verify:
+`Category::new()` requires `id <= MAX_CATEGORY` where `MAX_CATEGORY = 1023`;
+therefore `word = id / 64 <= 15`; therefore `self.bits[word]` is always in bounds.
+
+The proof comment is not optional. An unexplained `[i]` on a security-relevant array
+is an audit finding — it requires either a `.get(i)` conversion or an added proof
+comment.
+
+== In the UMRS Codebase
+
+The `CategorySet` implementation demonstrates both the proof approach and the validated
+type that makes the proof possible. `category.rs`:
+
+[source,rust]
+----
+// umrs-selinux: category.rs — proof-by-construction safe indexing
+const fn index(cat: Category) -> (usize, u64) {
+    let id = cat.id() as usize;
+    let word = id / 64;
+    let bit  = id % 64;
+    (word, 1u64 << bit)
+    // No bounds check needed: Category::new() has already ensured id <= 1023.
+    // See type invariant in Category::new().
+}
+
+pub fn insert(&mut self, cat: Category) {
+    let (word, bit) = Self::index(cat);
+    self.bits[word] |= bit;   // safe: proven by Self::index()
+}
+
+pub fn remove(&mut self, cat: Category) {
+    let (word, bit) = Self::index(cat);
+    self.bits[word] &= !bit;  // safe: proven by Self::index()
+}
+
+pub fn contains(&self, cat: Category) -> bool {
+    let (word, bit) = Self::index(cat);
+    (self.bits[word] & bit) != 0  // safe: proven by Self::index()
+}
+----
+
+The validation that makes this safe lives in `Category::new()`, which is the single
+gate where the raw `u16` becomes a `Category`:
+
+[source,rust]
+----
+// umrs-selinux: category.rs
+pub const fn new(id: u16) -> Result<Self, CategoryError> {
+    if id > MAX_CATEGORY {
+        return Err(CategoryError::OutOfRange(id));
+    }
+    Ok(Self(id))  // proof established here; travels with the value
+}
+----
+
+After construction, any code holding a `Category` can use `Self::index()` without
+additional bounds checking. The proof is encoded in the type.
+
+== When to Apply
+
+Apply Bounds-Safe Indexing to every array access where:
+
+* The index is derived from external input (parsed, deserialized, or provided by a
+  caller outside the module)
+* The index is derived from a value that has not been validated through a typed
+  constructor
+
+Direct indexing with proof-by-construction is acceptable when:
+
+* The index source is a typed value whose constructor enforces bounds
+* The arithmetic from source value to index is simple enough to verify in a comment
+* A code reviewer can independently confirm the proof without running the code
+
+The architectural review trigger is: *any index operation on a security-relevant array
+→ either `.get()` or a proof comment*.
+
+== Security Controls
+
+[cols="1,2"]
+|===
+| Control | Applicability
+
+| NIST 800-218 SSDF PW.4.4
+| Secure arithmetic — bounds violations are an integer safety issue; out-of-bounds
+  access on security-relevant arrays is a security event, not a logic error
+
+| NIST 800-53 SI-10
+| Information Input Validation — index values derived from external input must be
+  validated before use; construction-time validation is the preferred form
+
+| NSA RTB VNSSA
+| Deterministic execution — panics and undefined behavior are non-deterministic outcomes;
+  provably safe indexing eliminates them
+|===
+
+== Summary
+
+Use `.get(i)` for any array index derived from external input and handle `None` as a
+security event. Where direct `[i]` indexing is used, state the proof that the index is
+in bounds in a comment — the proof is auditable; an unexplained direct index on a
+security-relevant array is a finding. Types that validate at construction carry their
+proof with them, enabling safe direct indexing downstream without re-validation.
+
+== See Also
+
+* xref:pattern-secure-arithmetic.adoc[Secure Arithmetic] — the broader pattern for
+  integer operations on security values; bounds-safe indexing is a specialized case
+* xref:pattern-non-bypassability.adoc[Non-Bypassability] — the typed constructor
+  that establishes the proof that makes direct indexing safe
+* xref:devel:high-assurance-patterns.adoc[High-Assurance Pattern Index]

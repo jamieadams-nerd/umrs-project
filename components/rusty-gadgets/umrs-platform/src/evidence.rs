@@ -218,19 +218,30 @@ pub struct EvidenceRecord {
 /// artifact. The bundle is never reordered, deduplicated, or filtered — the
 /// complete sequence is the audit trail.
 ///
+/// The `records` field is private to enforce the AU-10 append-only invariant at
+/// the type-system level: callers can only add records via [`push`], never remove,
+/// reorder, or clear them. Use [`records`], [`iter`], or [`is_empty`]/[`len`] for
+/// read access.
+///
 /// NIST SP 800-53 AU-3, AU-10 — the bundle is the authoritative provenance
-/// record for the detection run.
+/// record for the detection run. Callers cannot remove or modify records once
+/// pushed.
 #[derive(Debug, Default, Clone)]
 pub struct EvidenceBundle {
     /// All records accumulated during the detection run.
-    pub records: Vec<EvidenceRecord>,
+    ///
+    /// Private: enforces AU-10 append-only non-repudiation. No caller outside
+    /// this module can clear, pop, sort, or splice the inner Vec.
+    records: Vec<EvidenceRecord>,
 }
 
 impl EvidenceBundle {
     /// Construct an empty bundle.
     #[must_use]
     pub const fn new() -> Self {
-        Self { records: Vec::new() }
+        Self {
+            records: Vec::new(),
+        }
     }
 
     /// Append a record to the bundle.
@@ -243,6 +254,21 @@ impl EvidenceBundle {
         self.records.push(record);
     }
 
+    /// Return an immutable slice of all records collected so far.
+    ///
+    /// NIST SP 800-53 AU-10 — read-only access preserves the append-only invariant.
+    #[must_use]
+    pub fn records(&self) -> &[EvidenceRecord] {
+        &self.records
+    }
+
+    /// Return an iterator over all records collected so far.
+    ///
+    /// NIST SP 800-53 AU-10 — read-only iteration; callers cannot mutate records.
+    pub fn iter(&self) -> std::slice::Iter<'_, EvidenceRecord> {
+        self.records.iter()
+    }
+
     /// Return the number of records collected so far.
     #[must_use]
     pub const fn len(&self) -> usize {
@@ -253,5 +279,14 @@ impl EvidenceBundle {
     #[must_use]
     pub const fn is_empty(&self) -> bool {
         self.records.is_empty()
+    }
+}
+
+impl<'a> IntoIterator for &'a EvidenceBundle {
+    type Item = &'a EvidenceRecord;
+    type IntoIter = std::slice::Iter<'a, EvidenceRecord>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.records.iter()
     }
 }

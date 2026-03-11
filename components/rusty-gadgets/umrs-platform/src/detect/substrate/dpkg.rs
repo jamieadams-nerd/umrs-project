@@ -75,7 +75,9 @@ impl PackageProbe for DpkgProbe {
         // Path-based check only — stub limitation; no fd-anchored open or DB parse.
         let root_present = Path::new(DPKG_DB_ROOT).exists();
         if !root_present {
-            log::debug!("dpkg_probe: /var/lib/dpkg not found — not a dpkg system");
+            log::debug!(
+                "dpkg_probe: /var/lib/dpkg not found — not a dpkg system"
+            );
             let rec = EvidenceRecord {
                 source_kind: SourceKind::PackageDb,
                 opened_by_fd: false,
@@ -173,7 +175,12 @@ impl PackageProbe for DpkgProbe {
         }
     }
 
-    fn query_ownership(&self, _dev: u64, _ino: u64, _path: &Path) -> Option<FileOwnership> {
+    fn query_ownership(
+        &self,
+        _dev: u64,
+        _ino: u64,
+        _path: &Path,
+    ) -> Option<FileOwnership> {
         // Stub: full dpkg ownership queries not yet implemented.
         None
     }

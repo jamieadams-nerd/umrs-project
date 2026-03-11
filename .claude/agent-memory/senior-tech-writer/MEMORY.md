@@ -1,5 +1,10 @@
 # Senior Tech Writer — Persistent Memory
 
+## Cross-Team Channel
+`.claude/agent-memory/cross-team/notes.md` — shared with all agents.
+Read at session start for entries addressed to senior-tech-writer.
+Write here to notify rust-developer or security-engineer of doc-driven questions.
+
 ## Project: UMRS Documentation (Antora)
 
 **Docs root**: `docs/modules/`

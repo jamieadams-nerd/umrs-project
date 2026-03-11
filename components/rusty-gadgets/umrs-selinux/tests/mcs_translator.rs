@@ -13,7 +13,7 @@ use umrs_selinux::mcs::translator::{
 };
 
 /// Update this if you relocate the fixture.
-const SETRANS_PATH: &str = "setrans.conf";
+const SETRANS_PATH: &str = "data/setrans.conf";
 
 /// Ensure the setrans file loads exactly once for the test binary.
 static INIT: OnceLock<()> = OnceLock::new();
