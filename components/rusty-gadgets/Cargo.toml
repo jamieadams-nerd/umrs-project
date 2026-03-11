@@ -1,10 +1,18 @@
 [workspace]
 resolver = "2"
 members = [
-    "cui-labels", "kernel-files", "mcs-setrans", 
+    "cui-labels", "kernel-files", "mcs-setrans",
     "umrs-core",
-    "umrs-logspace", "umrs-ls", "umrs-platform", "umrs-selinux", 
+    "umrs-logspace", "umrs-ls", "umrs-platform", "umrs-selinux",
     "umrs-state",
-    "vaultmgr", 
-    "xtask", 
+    "vaultmgr",
+    "xtask",
 ]
+
+# NIST SP 800-53 SA-15: Development Process, Standards, and Tools.
+# ANSSI Rust Secure Coding Guide: integer arithmetic in release builds MUST use
+# checked/saturating/wrapping operations, or overflow-checks must be enabled.
+# Rust disables overflow checks in release builds by default; this restores the
+# same defensive behavior that debug builds provide across all workspace members.
+[profile.release]
+overflow-checks = true

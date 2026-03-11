@@ -10,6 +10,8 @@ is onboarded to the i18n pipeline.
 | Crate | Crate Type | Text Domain | Domain Directory | Notes |
 |---|---|---|---|---|
 | `umrs-ls` | binary | `umrs-ls` | `resources/i18n/umrs-ls/` | First binary crate in pipeline; uses `gettextrs` |
+| `umrs-core` | library | `umrs-core` | `resources/i18n/umrs-core/` | Shared formatting, i18n, timing utilities; uses `gettextrs` |
+| `umrs-platform` | library | `umrs-platform` | `resources/i18n/umrs-platform/` | Kernel attribute access and OS detection pipeline; uses `gettextrs` |
 
 ---
 

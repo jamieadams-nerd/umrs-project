@@ -1,0 +1,322 @@
+# French translation of umrs-platform
+# This file is distributed under the same license as the UMRS Project
+# MIT License
+# Copyright (c) 2025 Jamie Adams (a.k.a. Imodium Operator)
+#
+# Initial translation provided by a specialized Claude Code "umrs-translator".
+# The agent was assisted by a technical corpus derived from various GNU
+# tools via the Translation Project (https://translationproject.org).
+#
+# NOTE: This translation is AI-generated and may contain nuances
+# requiring human verification.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: umrs-platform 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-11 00:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+# ---------------------------------------------------------------------------
+# detect/mod.rs — DetectionError display strings
+# ---------------------------------------------------------------------------
+
+#. Hard-gate error: procfs failed PROC_SUPER_MAGIC check.
+#. NIST SP 800-53 SI-7: kernel channel integrity.
+#: components/rusty-gadgets/umrs-platform/src/detect/mod.rs:81
+msgid "procfs is not real procfs — cannot establish kernel anchor"
+msgstr ""
+
+#. Hard-gate error: PID coherence failed.
+#. Note: {syscall} and {procfs} are process ID integers — not sensitive data.
+#: components/rusty-gadgets/umrs-platform/src/detect/mod.rs:89
+msgid "PID coherence broken: syscall={syscall} procfs={procfs}"
+msgstr ""
+
+#. Hard-gate error: I/O error during kernel anchor phase.
+#: components/rusty-gadgets/umrs-platform/src/detect/mod.rs:99
+msgid "I/O error during kernel anchor: {0}"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# os_release.rs — OsReleaseParseError display strings
+# ---------------------------------------------------------------------------
+
+#: components/rusty-gadgets/umrs-platform/src/os_release.rs:48
+msgid "invalid ID field"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-platform/src/os_release.rs:52
+msgid "invalid NAME field"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-platform/src/os_release.rs:56
+msgid "invalid VERSION_ID field"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-platform/src/os_release.rs:60
+msgid "invalid VERSION field"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-platform/src/os_release.rs:64
+msgid "invalid VERSION_CODENAME field"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-platform/src/os_release.rs:68
+msgid "invalid CPE_NAME field"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-platform/src/os_release.rs:72
+msgid "invalid URL field"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-platform/src/os_release.rs:76
+msgid "invalid VARIANT_ID field"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-platform/src/os_release.rs:80
+msgid "invalid BUILD_ID field"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-platform/src/os_release.rs:84
+msgid "duplicate key"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-platform/src/os_release.rs:88
+msgid "non-UTF-8 content in os-release"
+msgstr ""
+
+#. {0} is a byte count (usize) — not sensitive data.
+#: components/rusty-gadgets/umrs-platform/src/os_release.rs:92
+msgid "line too long ({0} bytes)"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-platform/src/os_release.rs:96
+msgid "required field missing"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# detect/kernel_anchor.rs — log::warn! and log::error! strings
+# ---------------------------------------------------------------------------
+
+#. log::error — path rejected before procfs magic check.
+#: components/rusty-gadgets/umrs-platform/src/detect/kernel_anchor.rs:119
+msgid "kernel_anchor: /proc/self/stat path rejected by ProcfsText"
+msgstr ""
+
+#. log::error — procfs magic check failed.
+#: components/rusty-gadgets/umrs-platform/src/detect/kernel_anchor.rs:128
+msgid "kernel_anchor: /proc/self/stat failed filesystem magic check"
+msgstr ""
+
+#. log::error — I/O error reading /proc/self/stat.
+#: components/rusty-gadgets/umrs-platform/src/detect/kernel_anchor.rs:131
+msgid "kernel_anchor: /proc/self/stat I/O error"
+msgstr ""
+
+#. log::error — /proc/self/stat content larger than expected.
+#: components/rusty-gadgets/umrs-platform/src/detect/kernel_anchor.rs:138
+msgid "kernel_anchor: /proc/self/stat content exceeds expected size"
+msgstr ""
+
+#. log::error — getpid() returned non-positive value (should not occur on Linux).
+#: components/rusty-gadgets/umrs-platform/src/detect/kernel_anchor.rs:178
+msgid "kernel_anchor: getpid() returned non-positive value"
+msgstr ""
+
+#. log::error — PID field in /proc/self/stat could not be parsed.
+#: components/rusty-gadgets/umrs-platform/src/detect/kernel_anchor.rs:184
+msgid "kernel_anchor: could not parse PID from /proc/self/stat"
+msgstr ""
+
+#. log::error — PID coherence check failed. {syscall_pid} and {proc_pid} are integers.
+#: components/rusty-gadgets/umrs-platform/src/detect/kernel_anchor.rs:191
+msgid "kernel_anchor: PID coherence failure (syscall={syscall_pid}, procfs={proc_pid})"
+msgstr ""
+
+#. log::warn — boot_id read failed; confidence downgraded.
+#: components/rusty-gadgets/umrs-platform/src/detect/kernel_anchor.rs:222
+msgid "kernel_anchor: could not read boot_id: {e}"
+msgstr ""
+
+#. log::warn — boot_id content implausibly large; ignored.
+#: components/rusty-gadgets/umrs-platform/src/detect/kernel_anchor.rs:245
+msgid "kernel_anchor: boot_id content unexpectedly large, ignoring"
+msgstr ""
+
+#. log::warn — kernel lockdown mode could not be read.
+#: components/rusty-gadgets/umrs-platform/src/detect/kernel_anchor.rs:298
+msgid "kernel_anchor: could not read kernel lockdown mode: {e}"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# detect/mount_topology.rs — log::warn! strings
+# ---------------------------------------------------------------------------
+
+#. log::warn — overall partial failure at T2 upgrade gate.
+#: components/rusty-gadgets/umrs-platform/src/detect/mount_topology.rs:84
+msgid "mount_topology: partial failure — confidence not upgraded to T2"
+msgstr ""
+
+#. log::warn — mnt namespace symlink could not be read.
+#: components/rusty-gadgets/umrs-platform/src/detect/mount_topology.rs:123
+msgid "mount_topology: could not read mnt namespace link: {e}"
+msgstr ""
+
+#. log::warn — ProcfsText rejected the mountinfo path.
+#: components/rusty-gadgets/umrs-platform/src/detect/mount_topology.rs:160
+msgid "mount_topology: ProcfsText rejected mountinfo path: {e}"
+msgstr ""
+
+#. log::warn — mountinfo read failed.
+#: components/rusty-gadgets/umrs-platform/src/detect/mount_topology.rs:172
+msgid "mount_topology: could not read mountinfo: {e}"
+msgstr ""
+
+#. log::warn — mountinfo exceeded the configured size cap. {content_len} and {cap} are byte counts.
+#: components/rusty-gadgets/umrs-platform/src/detect/mount_topology.rs:194
+msgid "mount_topology: mountinfo content ({content_len} bytes) exceeds cap ({cap} bytes)"
+msgstr ""
+
+#. log::warn — statfs on /etc failed.
+#: components/rusty-gadgets/umrs-platform/src/detect/mount_topology.rs:271
+msgid "mount_topology: statfs(/etc) failed: {e}"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# detect/release_candidate.rs — log::warn! strings
+# ---------------------------------------------------------------------------
+
+#. log::warn — no usable os-release found at any standard path.
+#: components/rusty-gadgets/umrs-platform/src/detect/release_candidate.rs:110
+msgid "release_candidate: no usable os-release candidate found at any standard path"
+msgstr ""
+
+#. log::warn — candidate path is world-writable; rejected.
+#: components/rusty-gadgets/umrs-platform/src/detect/release_candidate.rs:149
+msgid "release_candidate: {path_str} is world-writable — rejecting candidate"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# detect/pkg_substrate.rs — log::warn! strings
+# ---------------------------------------------------------------------------
+
+#. log::warn — no package substrate probe succeeded.
+#: components/rusty-gadgets/umrs-platform/src/detect/pkg_substrate.rs:121
+msgid "pkg_substrate: no probe succeeded — substrate identity unavailable"
+msgstr ""
+
+#. log::warn — substrate identity has too few facts for T3. {facts_count} is an integer.
+#: components/rusty-gadgets/umrs-platform/src/detect/pkg_substrate.rs:132
+msgid "pkg_substrate: identity has only {facts_count} fact(s) — T3 threshold not met (requires 2)"
+msgstr ""
+
+#. log::warn — SELinux not enforcing; T3 degraded.
+#: components/rusty-gadgets/umrs-platform/src/detect/pkg_substrate.rs:154
+msgid "pkg_substrate: SELinux is not in enforce mode — T3 degraded; confidence remains at EnvAnchored"
+msgstr ""
+
+#. log::warn — SELinux enforce state could not be read.
+#: components/rusty-gadgets/umrs-platform/src/detect/pkg_substrate.rs:208
+msgid "pkg_substrate: could not read SELinux enforce state: {e}"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# detect/file_ownership.rs — log::warn! strings
+# ---------------------------------------------------------------------------
+
+#. log::warn — no stat record in evidence bundle for the candidate path.
+#: components/rusty-gadgets/umrs-platform/src/detect/file_ownership.rs:99
+msgid "file_ownership: no stat record found for candidate — cannot anchor ownership query"
+msgstr ""
+
+#. log::warn — candidate file has no package owner; T4 cannot be reached.
+#: components/rusty-gadgets/umrs-platform/src/detect/file_ownership.rs:134
+msgid "file_ownership: {candidate_str} has no package owner — T4 cannot be reached"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# detect/integrity_check.rs — log::warn! strings
+# ---------------------------------------------------------------------------
+
+#. log::warn — no installed digest available in package DB.
+#: components/rusty-gadgets/umrs-platform/src/detect/integrity_check.rs:123
+msgid "integrity_check: no installed digest available for {candidate_str} — T4 not earned"
+msgstr ""
+
+#. log::warn — package DB uses MD5 digest; rejected as weak.
+#: components/rusty-gadgets/umrs-platform/src/detect/integrity_check.rs:213
+msgid "integrity_check: package DB digest for {candidate_str} uses MD5 — algorithm is cryptographically weak; T4 not earned"
+msgstr ""
+
+#. log::warn — package DB uses an unrecognised digest algorithm. {alg} is an algorithm name string.
+#: components/rusty-gadgets/umrs-platform/src/detect/integrity_check.rs:239
+msgid "integrity_check: unknown digest algorithm '{alg}' for {candidate_str} — T4 not earned"
+msgstr ""
+
+#. log::warn — SHA-512 vs SHA-256 cross-algorithm comparison not supported.
+#: components/rusty-gadgets/umrs-platform/src/detect/integrity_check.rs:171
+msgid "integrity_check: package DB uses SHA-512 but we computed SHA-256 — cross-algorithm comparison not supported; T4 not earned"
+msgstr ""
+
+#. log::warn — candidate file could not be opened for hashing.
+#: components/rusty-gadgets/umrs-platform/src/detect/integrity_check.rs:139
+msgid "integrity_check: could not open {candidate_str}: {e}"
+msgstr ""
+
+#. log::warn — file read failed during hashing.
+#: components/rusty-gadgets/umrs-platform/src/detect/integrity_check.rs:152
+msgid "integrity_check: read failed for {candidate_str}: {e}"
+msgstr ""
+
+#. log::warn — SHA-256 digest mismatch; possible tampering.
+#: components/rusty-gadgets/umrs-platform/src/detect/integrity_check.rs:289
+msgid "integrity_check: SHA-256 digest MISMATCH for {candidate_str} — file may have been modified"
+msgstr ""
+
+#. io::Error payload for an oversize file read. Not directly shown to end users
+#. under normal operation, but may surface through error chain Display.
+#: components/rusty-gadgets/umrs-platform/src/detect/integrity_check.rs:353
+msgid "os-release file exceeds maximum read limit"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# detect/release_parse.rs — log::warn! strings
+# ---------------------------------------------------------------------------
+
+#. log::warn — line in os-release exceeds max_line_len. {line_len} is a byte count.
+#: components/rusty-gadgets/umrs-platform/src/detect/release_parse.rs:125
+msgid "release_parse: line in {candidate_str} exceeds max_line_len ({line_len} bytes)"
+msgstr ""
+
+#. log::warn — nom parser failed.
+#: components/rusty-gadgets/umrs-platform/src/detect/release_parse.rs:139
+msgid "release_parse: nom parser failed for {candidate_str}"
+msgstr ""
+
+#. log::warn — TPI key-set disagreement between nom and split_once.
+#: components/rusty-gadgets/umrs-platform/src/detect/release_parse.rs:153
+msgid "release_parse: TPI disagreement — nom and split_once produced different key sets"
+msgstr ""
+
+#. log::warn — OsRelease construction failed; field validation error.
+#: components/rusty-gadgets/umrs-platform/src/detect/release_parse.rs:182
+msgid "release_parse: OsRelease construction failed for {candidate_str}: {e}"
+msgstr ""
+
+#. log::warn — os-release file could not be read in parse phase.
+#: components/rusty-gadgets/umrs-platform/src/detect/release_parse.rs:238
+msgid "release_parse: could not read {candidate_str}: {e}"
+msgstr ""
+
+#. log::warn — substrate contradiction: os-release ID does not match substrate distro.
+#: components/rusty-gadgets/umrs-platform/src/detect/release_parse.rs:490
+msgid "release_parse: substrate contradiction: {contradiction}"
+msgstr ""

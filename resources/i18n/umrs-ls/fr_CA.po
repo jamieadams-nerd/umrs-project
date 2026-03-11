@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: umrs-ls\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-10 21:14+0000\n"
+"POT-Creation-Date: 2026-03-11 08:37+0000\n"
 "PO-Revision-Date: 2026-03-10 21:14+0000\n"
 "Last-Translator: umrs-translator (Claude Code)\n"
 "Language-Team: fr_CA\n"
@@ -28,6 +28,36 @@ msgstr ""
 # "accès refusé" is the standard Unix/Linux francophone equivalent; no direct
 # corpus match was found in the GNU tools corpus, but the phrase is widely attested
 # throughout POSIX documentation, ANSSI guidance, and OTAN/NATO francophone material.
-#: components/rusty-gadgets/umrs-ls/src/main.rs:184
+#. Translate the static label, then append the count in parentheses.
+#: components/rusty-gadgets/umrs-ls/src/main.rs:175
 msgid "access denied"
 msgstr "accès refusé"
+
+#. Wrap translations in Cow::Owned
+#: components/rusty-gadgets/umrs-ls/src/main.rs:257
+msgid "MODE"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-ls/src/main.rs:258
+msgid "MARKING"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-ls/src/main.rs:259
+msgid "OWNER:GROUP"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-ls/src/main.rs:260
+msgid "SIZE"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-ls/src/main.rs:261
+msgid "MODIFIED"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-ls/src/main.rs:262
+msgid "NAME"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-ls/src/main.rs:467
+msgid "<restricted>"
+msgstr ""

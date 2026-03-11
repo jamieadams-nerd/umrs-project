@@ -36,9 +36,11 @@
 use std::io;
 use std::path::Path;
 use std::time::SystemTime;
+use std::borrow::Cow;
+use std::fmt::Write;
 
 use chrono::{DateTime, Local};
-use gettextrs::gettext;
+use umrs_core::i18n;
 
 use umrs_core::human::sizefmt::{SizeBase, auto_format as fmt_size};
 use umrs_selinux::mcs::colors::{
@@ -62,17 +64,6 @@ const GREEN: &str = "\x1b[32m";
 const RED: &str = "\x1b[31m";
 const RESET: &str = "\x1b[0m";
 const UNDERLINE: &str = "\x1b[4m";
-
-// Ordered: TL, TR, BR, BL, H, V (Top-Left, Top-Right, etc.)
-const BOX_SLIM: [char; 6] = ['┌', '┐', '┘', '└', '─', '│'];
-// Box-drawing character sets — BOX_BOLD and BOX_SLIM_CONN are reserved for
-// future table rendering; suppress dead_code until the table renderer is added.
-#[allow(dead_code)]
-const BOX_BOLD: [char; 6] = ['┏', '┓', '┛', '┗', '━', '┃'];
-
-#[allow(dead_code)]
-const BOX_SLIM_CONN: [char; 5] = ['├', '┬', '┼', '┴', '┤'];
-
 
 
 // Runtime display configuration — colour switch, mount symbols, and loaded
@@ -122,6 +113,9 @@ fn main() -> io::Result<()> {
     .format_timestamp(None)
     .init();
 
+    i18n::init("umrs-ls");
+
+
     let args: Vec<String> = std::env::args().collect();
 
     // First non-flag argument after the binary name is the path.
@@ -162,9 +156,6 @@ fn main() -> io::Result<()> {
     print_header(&cols, &widths);
     println!("{}", "=".repeat(TERM_WIDTH));
 
-    println!("Bottom left corner: {}", BOX_SLIM[3]);
-    println!("Test: '\u{251C}', '\u{252C}', '\u{253C}', '\u{2534}', '\u{2524}'");
-
     // Groups.
     let mut total_entries = 0usize;
     for group in &listing.groups {
@@ -181,7 +172,7 @@ fn main() -> io::Result<()> {
         println!();
         let n = listing.access_denied.len();
         // Translate the static label, then append the count in parentheses.
-        let label = format!("{} ({n}) ", gettext("access denied"));
+        let label = format!("{} ({n}) ", i18n::tr("access denied"));
         let fill = "=".repeat(TERM_WIDTH.saturating_sub(label.len()));
         println!("{label}{fill}");
         for name in &listing.access_denied {
@@ -240,36 +231,43 @@ fn col_width(widths: &[(Column, usize)], col: Column) -> usize {
 // HEADER
 //============================================================================
 fn print_header(cols: &ColumnSet, widths: &[(Column, usize)]) {
-    // Account for ROW_INDENT and NAME_PREFIX in header alignment.
     let mut line = ROW_INDENT.to_owned();
+    
     for &col in cols.columns() {
         if col == Column::Iov {
-            line.push_str(&format!("{:<5}", col_header(col)));
+            // write! formats directly into 'line' without a temporary String
+            let _ = write!(line, "{:<5}", col_header(col));
         } else if col == Column::Name {
             line.push_str(NAME_PREFIX);
-            line.push_str(col_header(col));
+            line.push_str(&col_header(col));
         } else {
             let w = col_width(widths, col);
-            line.push_str(&format!("{:<w$}", col_header(col)));
+            let _ = write!(line, "{:<w$}", col_header(col));
         }
     }
     println!("{line}");
 }
 
+
+
 // This will become table header for Textual & Graphical Unser Interfaces
-const fn col_header(col: Column) -> &'static str {
+fn col_header(col: Column) -> Cow<'static, str> {
     match col {
-        Column::Mode => "MODE",
-        Column::Iov => "IOV",
-        Column::SelinuxType => "SELINUX TYPE",
-        Column::Marking => "MARKING",
-        Column::UidGid => "OWNER:GROUP",
-        Column::Size => "SIZE",
-        Column::Mtime => "MODIFIED",
-        Column::Inode => "INODE",
-        Column::Name => "NAME",
+        // Wrap translations in Cow::Owned
+        Column::Mode => Cow::Owned(i18n::tr("MODE")),
+        Column::Marking => Cow::Owned(i18n::tr("MARKING")),
+        Column::UidGid => Cow::Owned(i18n::tr("OWNER:GROUP")),
+        Column::Size => Cow::Owned(i18n::tr("SIZE")),
+        Column::Mtime => Cow::Owned(i18n::tr("MODIFIED")),
+        Column::Name => Cow::Owned(i18n::tr("NAME")),
+
+        // Wrap static literals in Cow::Borrowed
+        Column::Iov => Cow::Borrowed("IOV"),
+        Column::SelinuxType => Cow::Borrowed("SELINUX TYPE"),
+        Column::Inode => Cow::Borrowed("INODE"),
     }
 }
+
 
 // ===========================================================================
 // ROW Rendering
@@ -466,8 +464,9 @@ fn group_separator(key: &GroupKey, cfg: &DisplayConfig) -> String {
     }
 
     if key.selinux_type == "<restricted>" {
+        let selinux_type = i18n::tr("<restricted>");
         format!(
-        "{DIM_ITALIC}{UNDERLINE}{0} :: {1} {fill}{RESET}", key.selinux_type, key.marking)
+        "{DIM_ITALIC}{UNDERLINE}{0} :: {1} {fill}{RESET}", selinux_type, key.marking)
     } else {
         format!(
         "{BOLD_UNDER}{0} :: {1} {fill}{RESET}", key.selinux_type, key.marking )

@@ -33997,5 +33997,47 @@
     "chunks_stored": 502,
     "collection": "access-control",
     "ingested_date": "2026-03-11T05:32:57.663832+00:00"
+  },
+  "nist/NIST.SP.800-160v1r1.pdf": {
+    "hash": "eced250e47e54269",
+    "converted_to": "converted/nist/NIST.SP.800-160v1r1.md",
+    "chunks_stored": 194,
+    "collection": "nist",
+    "ingested_date": "2026-03-11T10:35:27.996448+00:00"
+  },
+  "nist/NIST.SP.800-175Br1.pdf": {
+    "hash": "715d140154622ff0",
+    "converted_to": "converted/nist/NIST.SP.800-175Br1.md",
+    "chunks_stored": 91,
+    "collection": "nist",
+    "ingested_date": "2026-03-11T10:35:30.577365+00:00"
+  },
+  "nist/NIST.SP.800-185.pdf": {
+    "hash": "0ebcdfb5b145bcb6",
+    "converted_to": "converted/nist/NIST.SP.800-185.md",
+    "chunks_stored": 32,
+    "collection": "nist",
+    "ingested_date": "2026-03-11T10:35:31.573054+00:00"
+  },
+  "nist/NIST.SP.800-192.pdf": {
+    "hash": "cedb74f71493588e",
+    "converted_to": "converted/nist/NIST.SP.800-192.md",
+    "chunks_stored": 69,
+    "collection": "nist",
+    "ingested_date": "2026-03-11T10:35:34.196676+00:00"
+  },
+  "nist/nist-sp-1800-44a-ipd.pdf": {
+    "hash": "8d850f3cefce95f3",
+    "converted_to": "converted/nist/nist-sp-1800-44a-ipd.md",
+    "chunks_stored": 18,
+    "collection": "nist",
+    "ingested_date": "2026-03-11T10:35:34.920329+00:00"
+  },
+  "nist/nistspecialpublication800-92.pdf": {
+    "hash": "466c3ab1580bc3b2",
+    "converted_to": "converted/nist/nistspecialpublication800-92.md",
+    "chunks_stored": 57,
+    "collection": "nist",
+    "ingested_date": "2026-03-11T10:35:36.807549+00:00"
   }
 }

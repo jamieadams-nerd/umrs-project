@@ -63,6 +63,8 @@ These resolve from:
 Inside `umrs-core` modules, use:
 
 ```rust
+use crate::i18n::tr_core;
+
 tr_core("Audit event emitted")
 ```
 

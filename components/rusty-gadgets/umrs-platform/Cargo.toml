@@ -4,9 +4,30 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-nom = "7.1"
-nix    = { version = "0.27", features = ["fs"] }
-log    = { version = "0.4",  features = ["release_max_level_info"] }
+nom      = "7.1"
+nix      = { version = "0.27", features = ["fs"] }
+log      = { version = "0.4",  features = ["release_max_level_info"] }
+
+# rustix 0.38 — safe syscall wrappers (no libc, no unsafe surface for callers).
+# Provides: getpid(), statx, readlinkat, openat2 + ResolveFlags.
+# Same version already present in umrs-selinux — consistent across workspace.
+# Supply chain: actively maintained, zero-unsafe API, minimal transitive deps.
+# NIST SP 800-53 SI-7: fd-anchored I/O eliminates TOCTOU races.
+rustix    = { version = "0.38", features = ["fs", "process", "system"] }
+
+# sha2 0.10 — RustCrypto SHA-256 implementation (pure Rust, no unsafe).
+# Used exclusively for integrity verification in integrity_check.rs:
+# computes on-disk digest and compares against package DB reference value.
+# NOT used for key derivation, MAC generation, or authentication tokens.
+# Supply chain: RustCrypto family, well-audited, minimal transitive deps
+# (digest, block-buffer, crypto-common).
+sha2      = { version = "0.10", default-features = false }
+
+# thiserror 1 — typed error derive macro (proc-macro only, no unsafe at runtime).
+# Used for DetectionError and OsReleaseParseError.
+# Supply chain: transitive chain is proc-macro2/syn/quote — standard Rust derive
+# macro infrastructure, widely audited.
+thiserror = "1"
 
 [lints.clippy]
 unreadable_literal  = { level = "allow", priority = 1 }

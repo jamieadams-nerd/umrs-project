@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# Copyright (C) YEAR THE umrs-ls'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the umrs-ls package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: umrs-ls\n"
+"Project-Id-Version: umrs-ls VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-10 21:14+0000\n"
+"POT-Creation-Date: 2026-03-11 08:37+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,36 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: components/rusty-gadgets/umrs-ls/src/main.rs:184
+#. Translate the static label, then append the count in parentheses.
+#: components/rusty-gadgets/umrs-ls/src/main.rs:175
 msgid "access denied"
+msgstr ""
+
+#. Wrap translations in Cow::Owned
+#: components/rusty-gadgets/umrs-ls/src/main.rs:257
+msgid "MODE"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-ls/src/main.rs:258
+msgid "MARKING"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-ls/src/main.rs:259
+msgid "OWNER:GROUP"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-ls/src/main.rs:260
+msgid "SIZE"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-ls/src/main.rs:261
+msgid "MODIFIED"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-ls/src/main.rs:262
+msgid "NAME"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-ls/src/main.rs:467
+msgid "<restricted>"
 msgstr ""
