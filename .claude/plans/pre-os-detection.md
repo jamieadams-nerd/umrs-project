@@ -30,6 +30,7 @@
      - Be sure to document all security controls in source code comments.
 
 4. RULES:
+   - Use log::debug!() to report security check completions: good or bad and duration.
    - Do not duplicate. If a secure reader already exists, use it everywhere.
    - Do not create new error types if existing ones can be extended.
    - Do not create new evidence/provenance types if existing ones can be reused.

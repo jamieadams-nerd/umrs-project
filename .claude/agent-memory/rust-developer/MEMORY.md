@@ -66,6 +66,33 @@ current session. The word "permanent" is the signal to treat it this way.
 - The `gettext-system` feature uses the OS-provided libintl (preferred on RHEL10).
 - Has FFI dep (`gettext-sys`) — supply chain review required before adding.
 
+## umrs-platform OS Detection Subsystem (completed pre-implementation gates 2026-03-11)
+
+### New dependencies added to umrs-platform/Cargo.toml
+- `rustix 0.38` (fs, process, system features) — statx, readlinkat, openat2, getpid
+- `sha2 0.10` (no default features) — SHA-256 for integrity_check.rs only
+- `thiserror 1` — DetectionError, OsReleaseParseError
+
+### Workspace Cargo.toml change
+- Added `[profile.release] overflow-checks = true` (NIST SA-15, ANSSI Rust Guide)
+
+### New modules in umrs-platform/src/ (all complete and clippy-clean)
+- `confidence.rs` — TrustLevel (T0–T4), Contradiction, ConfidenceModel (+upgrade, +downgrade, +record_contradiction)
+- `evidence.rs` — FileStat, SourceKind, DigestAlgorithm, PkgDigest, EvidenceRecord, EvidenceBundle
+- `os_identity.rs` — OsFamily, Distro, KernelRelease, CpuArch, SubstrateIdentity (+add_fact using saturating_add, +meets_t3_threshold)
+- `os_release.rs` — OsRelease + all newtypes (OsId, OsName, VersionId, OsVersion, Codename, CpeName, ValidatedUrl, VariantId, BuildId) + OsReleaseParseError
+- `detect/mod.rs` — OsDetector (default limits), DetectionResult, DetectionError (thiserror); detect() is todo!()
+- `detect/label_trust.rs` — LabelTrust enum (UntrustedLabelCandidate, LabelClaim, TrustedLabel, IntegrityVerifiedButContradictory)
+- `detect/substrate/mod.rs` — PackageProbe trait, ProbeResult, FileOwnership, InstalledDigest
+
+### Phase module naming (semantic, not phase0..phase6)
+kernel_anchor, mount_topology, release_candidate, pkg_substrate, file_ownership, integrity_check, release_parse
+All are commented out in detect/mod.rs pending implementation.
+
+### cargo audit status
+- cargo-audit 0.22.1 installed at /home/jadams/.cargo/bin/cargo-audit
+- Zero advisories against all 152 resolved crates as of 2026-03-11
+
 ## Known Pre-existing Issues Fixed (2026-03-10)
 - `umrs-selinux/src/observations.rs:160` — `missing_const_for_fn` on `SecurityObservation::kind()`.
   Fixed: added `const` to the fn signature.

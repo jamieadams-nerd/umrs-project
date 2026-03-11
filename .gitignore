@@ -29,7 +29,7 @@ src/umrs-rust/target/
 # RAG pipeline — generated, never commit
 .claude/rag/chroma/
 .claude/rag/converted/
-.claude/rag/manifest.json
+.claude/rag/**/*.bin
 .claude/rag/ingest.log
 
 # Claude local settings — machine specific

@@ -1,0 +1,34 @@
+# Australian English translation of umrs-ls
+# This file is distributed under the same license as the UMRS Project
+# MIT License
+# Copyright (c) 2025 Jamie Adams (a.k.a. Imodium Operator)
+#
+# Initial locale established by the umrs-translator agent (Phase 2 i18n).
+#
+# NOTE: Australian English (en_AU) shares most strings with en_US.
+# Only strings with spelling differences from en_US require entries here.
+# All entries follow the -ise/-our/-re/-ll conventions per the
+# Australian Government Style Manual (style.gov.au) and resources/i18n/vocabulary-en_AU.md.
+#
+# This translation is AI-generated and may contain nuances
+# requiring human verification.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: umrs-ls\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-11 00:00+0000\n"
+"PO-Revision-Date: 2026-03-11 00:00+0000\n"
+"Last-Translator: umrs-translator (Claude Code)\n"
+"Language-Team: en_AU\n"
+"Language: en_AU\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# TRANSLATOR: Displayed in the access-denied section footer of directory listings.
+# "access denied" is identical in en_AU — no spelling difference.
+#: components/rusty-gadgets/umrs-ls/src/main.rs:184
+msgid "access denied"
+msgstr "access denied"
