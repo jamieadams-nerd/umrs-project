@@ -1,5 +1,20 @@
 # Changelog
 
+## 2026-03-12
+
+### Added
+- **CMMC Final Rule (32 CFR Part 170)**: Downloaded 89 FR 83092 (Oct 15, 2024, effective Dec 16, 2024) to `refs/dod/cmmc-32cfr170-final-rule.pdf`; ingested into RAG collection `cmmc` (282 chunks)
+- **CMMC Assessment Guide Level 2 v2.13**: Downloaded Sep 2024 edition from dodcio.defense.gov to `refs/dod/cmmc-assessment-guide-l2.pdf`; ingested into RAG collection `cmmc` (263 chunks)
+- **NIST SP 800-171A Rev 3**: Downloaded assessment procedures companion to `refs/nist/sp800-171Ar3.pdf`; ingested into `nist` RAG collection
+- **DoD 5200.01 Information Security Program** (5 documents from esd.whs.mil): DoDI 5200.01, DoDM 5200.01 Volumes 1-3, DoDI 5200.48 (CUI); all downloaded to `refs/dod/`, ingested into RAG collection `dod-5200` (360 chunks)
+- **RAG collections**: 3 new collections — `cmmc` (545 chunks), `dod-5200` (360 chunks), `rustdoc-book` (194 chunks), `asciidoctor-ref` (67 chunks), `dita-spec` (100 chunks); `nist` collection expanded from 461 to 1,447 chunks
+- **Cross-team note**: Reference document topology guide — explains three-layer reference system (`rag-query` → `.claude/references/` → `refs/`) for all agents
+- **Approved source**: `esd.whs.mil` (DoD WHS Issuances portal) added to researcher approved sources
+
+### Changed
+- **refs/manifest.md**: Corrected CMMC Final Rule entry — was pointing to wrong document (2023-27756 OMB submission); now correctly cites 89 FR 83092 (document 2024-22905, Oct 2024); corrected Assessment Guide L2 URL from `AssessmentGuide_L2.pdf` (404) to `AssessmentGuideL2v2.pdf` (v2.13); all 5 DoD 5200.01 entries updated from PENDING to downloaded with SHA-256 checksums
+- **Researcher memory**: Updated collection inventory, retrieval patterns, approved sources, and pending items
+
 ## 2026-03-11
 
 ### Added

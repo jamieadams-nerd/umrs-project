@@ -43,6 +43,20 @@ If a source cannot be verified as current and official, flag it — do not add i
 
 ---
 
+## RAG Augmentation Sources
+
+The `.claude/references/` directory serves a different purpose from `refs/`. While `refs/` holds official security standards with strict provenance requirements, `.claude/references/` holds RAG augmentation material — broader technical references that improve agent knowledge.
+
+Sources for `.claude/references/` collections follow a lighter approval process:
+- Authoritative technical documentation sites (official project docs, style guides, framework references)
+- No provenance chain or SHA-256 checksum required
+- Tracked via `SOURCE.md` files in each collection subdirectory
+- Source URLs recorded in auto-memory `rag-collections.md` for update checks
+
+This scope distinction covers current and future RAG collections.
+
+---
+
 ## Responsibilities
 
 **Retrieval**: Locate, download, and save official documents to `refs/`. Use `curl` via Bash for binary downloads (PDFs). Record a manifest entry for every saved file.

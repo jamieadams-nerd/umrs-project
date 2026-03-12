@@ -1,0 +1,4519 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>AsciiDoc Syntax Quick Reference | Asciidoctor Docs</title>
+    <link rel="stylesheet" href="../../../_/css/site.css">
+    <link rel="stylesheet" href="../../../_/css/vendor/tabs.css">
+    <meta name="generator" content="Antora 3.2.0-alpha.11">
+    <link rel="canonical" href="https://docs.asciidoctor.org/asciidoc/latest/syntax-quick-reference/">
+    <meta property="og:url" content="https://docs.asciidoctor.org/asciidoc/latest/syntax-quick-reference/">
+    <meta name="description" content="The quick reference for common AsciiDoc document and text formatting markup.">
+    <meta property="og:description" content="The quick reference for common AsciiDoc document and text formatting markup.">
+    <meta property="og:site_name" content="Asciidoctor Docs">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta property="og:title" content="AsciiDoc - AsciiDoc Syntax Quick Reference">
+    <meta property="og:image" content="https://docs.asciidoctor.org/_/img/asciidoctor-og.png">
+    <meta name="twitter:site" content="@asciidoctor">
+    <link rel="prev" href="../pass/pass-macro/">
+    <link rel="next" href="../faq/">
+    <meta name="page-spec" content="asciidoc::syntax-quick-reference.adoc">
+    <link rel="icon" href="../../../_/img/favicon.ico" type="image/x-icon">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item logo" title="Asciidoctor" href="https://asciidoctor.org"><img src="../../../_/img/asciidoctor-logo.svg" alt="Asciidoctor" width="48"></a>
+      <a class="navbar-item title" href="https://docs.asciidoctor.org/">Asciidoctor Docs</a>
+      <button class="navbar-burger" aria-controls="topbar-nav" aria-expanded="false" aria-label="Toggle main menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <div class="navbar-item search hide-for-print">
+          <div id="search" class="field has-filter">
+            <input class="query" type="text" placeholder="Search the docs">
+            <label class="filter checkbox">
+              <input type="checkbox" data-facet-filter="component:asciidoc"> In this project
+            </label>
+          </div>
+        </div>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <div class="navbar-link">AsciiDoc</div>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="../">Language</a>
+            <a class="navbar-item" href="./">Syntax Quick Reference</a>
+          </div>
+        </div>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <div class="navbar-link">Processing</div>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="../../../asciidoctor/latest/">Asciidoctor <small>Ruby</small></a>
+            <a class="navbar-item" href="../../../asciidoctor.js/latest/">Asciidoctor.js <small>JavaScript</small></a>
+            <a class="navbar-item" href="../../../asciidoctorj/latest/">AsciidoctorJ <small>Java</small></a>
+          </div>
+        </div>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <div class="navbar-link">Extensions</div>
+          <div class="navbar-dropdown">
+            <div class="navbar-item">Add-on Converters</div>
+            <a class="navbar-item" href="../../../pdf-converter/latest/">PDF <small>Ruby</small></a>
+            <a class="navbar-item" href="../../../epub3-converter/latest/">EPUB3 <small>Ruby</small></a>
+            <a class="navbar-item" href="../../../reveal.js-converter/latest/">reveal.js <small>Ruby, JavaScript</small></a>
+            <hr class="navbar-divider">
+            <div class="navbar-item">Source Compilers</div>
+            <a class="navbar-item" href="https://github.com/asciidoctor/asciidoctor-reducer" target="_blank" rel="noopener">Reducer <small>Ruby, JavaScript</small></a>
+            <hr class="navbar-divider">
+            <div class="navbar-item">Extended Syntax</div>
+            <a class="navbar-item" href="../../../diagram-extension/latest/">Asciidoctor Diagram <small>Ruby</small></a>
+          </div>
+        </div>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <div class="navbar-link">Tooling</div>
+          <div class="navbar-dropdown is-right">
+            <div class="navbar-item">Build Automation</div>
+            <a class="navbar-item" href="../../../maven-tools/latest/">Maven Tools <small>Java</small></a>
+            <a class="navbar-item" href="../../../gradle-plugin/latest/">Gradle Plugin <small>Java</small></a>
+            <a class="navbar-item" href="../../../asciidoclet/latest/">Asciidoclet <small>Java</small></a>
+            <hr class="navbar-divider">
+            <div class="navbar-item">Text Editors / Viewers</div>
+            <a class="navbar-item" href="../../../browser-extension/">Browser Extension</a>
+            <a class="navbar-item" href="https://intellij-asciidoc-plugin.ahus1.de/docs" target="_blank" rel="noopener">IntelliJ Plugin</a>
+          </div>
+        </div>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-item" href="../../../about/get-help/" data-title="Support">
+            <span class="icon"><img src="../../../_/img/octicons-24.svg#view-comment-discussion"></span>
+          </a>
+          <div class="navbar-dropdown is-right">
+            <a class="navbar-item has-icon" href="https://chat.asciidoctor.org" target="_blank" rel="noopener">
+              <span class="icon"><img src="../../../_/img/octicons-16.svg#view-comment-discussion"></span>
+              <span>Chat</span>
+            </a>
+            <!--
+            <a class="navbar-item has-icon" href="https://discuss.asciidoctor.org" target="_blank" rel="noopener">
+              <span class="icon"><img src="../../../_/img/octicons-16.svg#view-mail"></span>
+              <span>List</span>
+            </a>
+            -->
+            <a class="navbar-item has-icon" href="https://github.com/asciidoctor" target="_blank" rel="noopener">
+              <span class="icon"><img src="../../../_/img/octicons-16.svg#view-mark-github"></span>
+              <span>Source</span>
+            </a>
+            <a class="navbar-item has-icon" href="https://twitter.com/asciidoctor" target="_blank" rel="noopener">
+              <span class="icon"><img src="../../../_/img/octicons-16.svg#view-hash"></span>
+              <span>Tweets</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active is-loading" data-panel="menu">
+  <nav class="nav-menu">
+    <button class="nav-menu-toggle" aria-label="Toggle expand/collapse all" style="display: none"></button>
+    <h3 class="title"><a href="../">AsciiDoc</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Introduction</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../document-structure/">Document Structure</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../key-concepts/">Key Concepts</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../document-processing/">Document Processing</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../normalization/">Normalization</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../blocks/">Blocks</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../blocks/delimited/">Delimited Blocks</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../blocks/build-basic-block/">Build a Basic Block</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../blocks/add-title/">Add a Title to a Block</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../blocks/assign-id/">Assign an ID</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../blocks/masquerading/">Block Masquerading</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../blocks/troubleshoot-blocks/">Troubleshooting Blocks</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../attributes/document-attributes/">Document Attributes</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../attributes/attribute-entries/">Attribute Entries</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../attributes/names-and-values/">Attribute Entry Names and Values</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../attributes/wrap-values/">Wrap Attribute Entry Values</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../attributes/attribute-entry-substitutions/">Attribute Entry Substitutions</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../attributes/inline-attribute-entries/">Inline Attribute Entries</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../attributes/built-in-attributes/">Declare Built-In Attributes</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../attributes/boolean-attributes/">Set Boolean Attributes</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../attributes/custom-attributes/">Declare Custom Attributes</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../attributes/unset-attributes/">Unset Attributes</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../attributes/reference-attributes/">Reference Attributes</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../attributes/unresolved-references/">Handle Unresolved References</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../attributes/assignment-precedence/">Attribute Assignment Precedence</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../attributes/counters/">Counters</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../attributes/element-attributes/">Element Attributes</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../attributes/positional-and-named-attributes/">Positional and Named Attributes</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../attributes/id/">ID Attribute</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../attributes/role/">Role Attribute</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../attributes/options/">Options Attribute</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../document/header/">Document Header</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../document/title/">Document Title</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../document/subtitle/">Subtitle</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../document/author-information/">Author Information</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../document/author-line/">Using the Author Line</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../document/multiple-authors/">Add Multiple Authors to a Document</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../document/author-attribute-entries/">Assign Author and Email with Attribute Entries</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../document/reference-author-attributes/">Reference the Author Information</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../document/compound-author-name/">Compound Author Names</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../document/revision-information/">Revision Information</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../document/revision-line/">Using the Revision Line</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../document/revision-attribute-entries/">Assign Revision Attributes with Attribute Entries</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../document/version-label/">Version Label Attribute</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../document/reference-revision-attributes/">Reference the Revision Attributes</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../document/metadata/">Document Metadata</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../document/header-ref/">Document Header Reference</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../document/doctype/">Document Type</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Sections</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../sections/titles-and-levels/">Section Titles and Levels</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../sections/title-links/">Activate Section Title Links</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../sections/auto-ids/">Autogenerate Section IDs</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../sections/id-prefix-and-separator/">Change the ID Prefix and Separator</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../sections/custom-ids/">Assign Custom IDs and Reference Text</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../sections/numbers/">Section Numbers</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../sections/styles/">Section Styles for Articles and Books</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../sections/special-section-titles/">Hide Special Section Titles</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../sections/special-section-numbers/">Number Special Sections</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../sections/colophon/">Colophon</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../sections/dedication/">Dedication</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../sections/abstract/">Abstract (Section)</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../sections/abstract-block/">Abstract (Block)</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../sections/preface/">Preface</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../sections/parts/">Book Parts</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="4">
+    <a class="nav-link" href="../sections/part-numbers-and-signifier/">Part Numbers and Signifier</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../sections/chapters/">Chapters</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../sections/appendix/">Appendix</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../sections/glossary/">Glossary</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../sections/bibliography/">Bibliography</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../sections/user-index/">Index</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../sections/section-ref/">Section Attributes and Styles Reference</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../blocks/paragraphs/">Paragraphs</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../blocks/hard-line-breaks/">Hard Line Breaks</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../blocks/preamble-and-lead/">Preamble and Lead Style</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../blocks/paragraph-alignment/">Paragraph Alignment</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../blocks/discrete-headings/">Discrete Headings</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../blocks/breaks/">Breaks</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../text/">Text Formatting and Punctuation</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../text/bold/">Bold</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../text/italic/">Italic</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../text/monospace/">Monospace</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../text/literal-monospace/">Literal Monospace</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../text/text-span-built-in-roles/">Text Span and Built-in Roles</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../text/highlight/">Highlight</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../text/quotation-marks-and-apostrophes/">Quotation Marks and Apostrophes</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../text/subscript-and-superscript/">Subscript and Superscript</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../text/custom-inline-styles/">Using Custom Inline Styles</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../text/troubleshoot-unconstrained-formatting/">Troubleshoot Unconstrained Formatting Pairs</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Lists</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../lists/unordered/">Unordered Lists</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../lists/ordered/">Ordered Lists</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../lists/checklist/">Checklists</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../lists/separating/">Separating Lists</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../lists/continuation/">Compound List Items</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../lists/description/">Description Lists</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../lists/horizontal/">Horizontal Description List</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../lists/qanda/">Question and Answer Lists</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../lists/description-with-marker/">Description Lists With Marker</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../macros/links/">Links</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../macros/autolinks/">Autolinks</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../macros/url-macro/">URL Macro</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../macros/link-macro/">Link Macro</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../macros/complex-urls/">Troubleshooting Complex URLs</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../macros/link-macro-attribute-parsing/">Link &amp; URL Macro Attribute Parsing</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../macros/mailto-macro/">Mailto Macro</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../macros/link-macro-ref/">Link, URL, and Mailto Macro Attributes Reference</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../macros/xref/">Cross References</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../macros/inter-document-xref/">Document to Document Cross References</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../macros/xref-text-and-style/">Cross Reference Text and Styles</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../macros/xref-validate/">Validate Cross References</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../macros/footnote/">Footnotes</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../macros/images/">Images</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../macros/images-directory/">Set the Images Directory</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../macros/image-url/">Insert Images from a URL</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../macros/image-position/">Position and Frame Images</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../macros/image-link/">Add Link to Image</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../macros/image-size/">Adjust Image Sizes</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../macros/image-format/">Specify Image Format</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../macros/image-svg/">SVG Images</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../macros/image-ref/">Images Reference</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../macros/audio-and-video/">Audio and Video</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../macros/icons/">Icons</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../macros/icons-image/">Image Icons Mode</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../macros/icons-font/">Font Icons Mode</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../macros/icon-macro/">Icon Macro</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../macros/keyboard-macro/">Keyboard Macro</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../macros/ui-macros/">Button and Menu UI Macros</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../blocks/admonitions/">Admonitions</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../blocks/sidebars/">Sidebars</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../blocks/example-blocks/">Example Blocks</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../blocks/blockquotes/">Blockquotes</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../blocks/verses/">Verses</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Verbatim and Source Blocks</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../verbatim/source-blocks/">Source Code Blocks</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../verbatim/source-highlighter/">Source Highlighting</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../verbatim/highlight-lines/">Highlight Select Lines</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../verbatim/highlight-php/">Highlight PHP Source Code</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../verbatim/listing-blocks/">Listing Blocks</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../verbatim/literal-blocks/">Literal Blocks</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../verbatim/callouts/">Callouts</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Tables</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../tables/build-a-basic-table/">Build a Basic Table</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../tables/add-title/">Add a Title</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../tables/customize-title-label/">Customize the Title Label</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../tables/turn-off-title-label/">Turn Off the Title Label</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../tables/add-columns/">Add Columns to a Table</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../tables/adjust-column-widths/">Adjust Column Widths</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../tables/align-by-column/">Align Content by Column</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../tables/format-column-content/">Format Content by Column</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../tables/add-cells-and-rows/">Add Cells and Rows to a Table</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../tables/add-header-row/">Create a Header Row</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../tables/add-footer-row/">Create a Footer Row</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../tables/align-by-cell/">Align Content by Cell</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../tables/format-cell-content/">Format Content by Cell</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../tables/span-cells/">Span Columns and Rows</a>
+  </li>
+  <li class="nav-item" data-depth="3">
+    <a class="nav-link" href="../tables/duplicate-cells/">Duplicate Cells</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../tables/width/">Table Width</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../tables/borders/">Table Borders</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../tables/striping/">Table Striping</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../tables/orientation/">Table Orientation</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../tables/assign-a-role/">Assign a Role to a Table</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../tables/nested/">Nesting Tables</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../tables/data-format/">CSV, TSV and DSV Data</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../tables/table-ref/">Table Reference</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../stem/">Equations and Formulas (STEM)</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../blocks/open-blocks/">Open Blocks</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../blocks/collapsible/">Collapsible Blocks</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../comments/">Comments</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../toc/">Automatic Table of Contents</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../toc/title/">Customize the TOC Title</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../toc/levels/">Adjust the TOC Depth</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../toc/position/">Position the TOC</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../toc/toc-ref/">TOC Attributes Reference</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../docinfo/">Docinfo Files</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../directives/include/">Includes</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../directives/include-with-leveloffset/">Offset Section Levels</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../directives/include-with-indent/">Indent Included Content</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../directives/include-multiple-times-in-same-document/">Use an Include File Multiple Times</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../directives/include-list-item-content/">Include List Item Content</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../directives/include-tagged-regions/">Include Content by Tagged Regions</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../directives/include-lines/">Include Content by Line Ranges</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../directives/include-uri/">Include Content by URI</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../directives/conditionals/">Conditionals</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../directives/ifdef-ifndef/">ifdef and ifndef Directives</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../directives/ifeval/">ifeval Directive</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../subs/">Substitutions</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../subs/special-characters/">Special Characters</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../subs/quotes/">Quotes</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../subs/attributes/">Attribute References</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../subs/replacements/">Character Replacements</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../subs/macros/">Macros</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../subs/post-replacements/">Post Replacements</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../subs/apply-subs-to-blocks/">Customize the Substitutions Applied to Blocks</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../subs/apply-subs-to-text/">Customize the Substitutions Applied to Text</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../subs/prevent/">Escape and Prevent Substitutions</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../pass/">Passthroughs</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../pass/pass-block/">Passthrough Blocks</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../pass/pass-macro/">Inline Passthroughs</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Reference</span>
+<ul class="nav-list">
+  <li class="nav-item is-current-url" data-depth="2">
+    <a class="nav-link" href="./">Syntax Quick Reference</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../faq/">Frequently Asked Questions (FAQ)</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../asciidoc-vs-markdown/">Compare AsciiDoc to Markdown</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../attributes/document-attributes-ref/">Document Attributes Reference</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../attributes/character-replacement-ref/">Character Replacement Attributes Reference</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../glossary/">Glossary of Terms</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+  <script>
+;(function () {
+  var panel = document.querySelector('.nav-panel-menu')
+  var page
+  var hash = window.location.hash
+  if (hash) {
+    if (~hash.indexOf('%')) hash = decodeURIComponent(hash)
+    if (~hash.indexOf('"')) hash = hash.replace(/(?=")/g, '\\')
+    var link = panel.querySelector('.nav-link[href="' + hash + '"]')
+    if (link) page = link.parentNode
+    else if ((page = panel.querySelector('.is-current-url'))) page.classList.add('is-provisional')
+  } else {
+    page = panel.querySelector('.is-current-url')
+  }
+  if (page) {
+    var ancestor = page
+    while ((ancestor = ancestor.parentNode) && ancestor !== panel) {
+      if (ancestor.className === 'nav-item') ancestor.classList.add('is-current-path', 'is-active')
+    }
+    page.classList.add('is-current-page', 'is-active')
+    if (panel.scrollHeight > panel.clientHeight) {
+      var panelRect = panel.getBoundingClientRect()
+      var linkRect = page.querySelector('.nav-link').getBoundingClientRect()
+      panel.scrollTop += Math.round(linkRect.top - panelRect.top - (panelRect.height - linkRect.height) * 0.5)
+    }
+  } else {
+    panel.scrollTop = 0
+  }
+  panel.classList.remove('is-loading')
+})()
+  </script>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">AsciiDoc</span>
+    <span class="version">pre-spec</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <a class="title" href="../">AsciiDoc</a>
+    </li>
+    <li class="component">
+      <a class="title" href="../../../asciidoctor/latest/">Asciidoctor</a>
+      <ul class="versions">
+        <li class="version is-latest">
+          <a href="../../../asciidoctor/latest/">2.0</a>
+        </li>
+      </ul>
+    </li>
+    <li class="component">
+      <a class="title" href="../../../asciidoctor.js/latest/">Asciidoctor.js</a>
+      <ul class="versions">
+        <li class="version is-latest">
+          <a href="../../../asciidoctor.js/latest/">3.0</a>
+        </li>
+        <li class="version">
+          <a href="../../../asciidoctor.js/2.2/">2.2</a>
+        </li>
+      </ul>
+    </li>
+    <li class="component">
+      <a class="title" href="../../../asciidoctorj/latest/">AsciidoctorJ</a>
+      <ul class="versions">
+        <li class="version is-latest">
+          <a href="../../../asciidoctorj/latest/">3.0</a>
+        </li>
+        <li class="version">
+          <a href="../../../asciidoctorj/2.5/">2.5</a>
+        </li>
+      </ul>
+    </li>
+    <li class="component">
+      <a class="title" href="../../../pdf-converter/latest/">Asciidoctor PDF</a>
+      <ul class="versions">
+        <li class="version is-latest">
+          <a href="../../../pdf-converter/latest/">2.3</a>
+        </li>
+        <li class="version">
+          <a href="../../../pdf-converter/2.2/">2.2</a>
+        </li>
+        <li class="version">
+          <a href="../../../pdf-converter/2.1/">2.1</a>
+        </li>
+        <li class="version">
+          <a href="../../../pdf-converter/2.0/">2.0</a>
+        </li>
+      </ul>
+    </li>
+    <li class="component">
+      <a class="title" href="../../../epub3-converter/latest/">Asciidoctor EPUB3</a>
+      <ul class="versions">
+        <li class="version is-latest">
+          <a href="../../../epub3-converter/latest/">2.3</a>
+        </li>
+      </ul>
+    </li>
+    <li class="component">
+      <a class="title" href="../../../reveal.js-converter/latest/">Asciidoctor reveal.js</a>
+      <ul class="versions">
+        <li class="version is-latest">
+          <a href="../../../reveal.js-converter/latest/">5.0</a>
+        </li>
+        <li class="version">
+          <a href="../../../reveal.js-converter/4.1/">4.1</a>
+        </li>
+      </ul>
+    </li>
+    <li class="component">
+      <a class="title" href="../../../maven-tools/latest/">Maven Tools</a>
+      <ul class="versions">
+        <li class="version is-latest">
+          <a href="../../../maven-tools/latest/">3.2</a>
+        </li>
+      </ul>
+    </li>
+    <li class="component">
+      <a class="title" href="../../../gradle-plugin/latest/">Gradle Plugin Suite</a>
+      <ul class="versions">
+        <li class="version">
+          <a href="../../../gradle-plugin/5.0/">5.0</a>
+        </li>
+        <li class="version is-latest">
+          <a href="../../../gradle-plugin/latest/">4.0</a>
+        </li>
+      </ul>
+    </li>
+    <li class="component">
+      <a class="title" href="../../../asciidoclet/latest/">Asciidoclet</a>
+      <ul class="versions">
+        <li class="version is-latest">
+          <a href="../../../asciidoclet/latest/">2.0</a>
+        </li>
+        <li class="version">
+          <a href="../../../asciidoclet/1.5.6/">1.5.6</a>
+        </li>
+      </ul>
+    </li>
+    <li class="component">
+      <a class="title" href="../../../diagram-extension/latest/">Asciidoctor Diagram</a>
+      <ul class="versions">
+        <li class="version is-latest">
+          <a href="../../../diagram-extension/latest/">3.0.1</a>
+        </li>
+      </ul>
+    </li>
+    <li class="component">
+      <a class="title" href="../../../browser-extension/">Browser Extension</a>
+    </li>
+    <li class="component">
+      <a class="title" href="../../../about/">Community</a>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="../../../" class="home-link" title="Home"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="../">AsciiDoc</a></li>
+    <li>Reference</li>
+    <li><a href="./">Syntax Quick Reference</a></li>
+  </ul>
+</nav>
+<div class="pdf-link"><a href="../_exports/asciidoc-pre-spec.pdf#syntax-quick-reference">PDF</a></div>
+<a class="project-link" href="https://gitlab.eclipse.org/eclipse/asciidoc-lang/asciidoc-lang" title="Project home"><span class="icon"><img src="../../../_/img/octicons-16.svg#view-mark-gitlab"></span></a>
+<div class="edit-this-page"><a href="https://gitlab.eclipse.org/eclipse/asciidoc-lang/asciidoc-lang/-/blob/main/docs/modules/ROOT/pages/syntax-quick-reference.adoc?plain&#x3D;1">Edit this Page</a></div>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc asciidoc">
+<h1 class="page">AsciiDoc Syntax Quick Reference</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+The examples on this page demonstrate the output produced by the built-in HTML converter.
+An AsciiDoc converter is expected to produce complementary output when generating other output formats, such as PDF, EPUB, and DocBook.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="paragraphs"><a class="anchor" href="#paragraphs"></a>Paragraphs</h2>
+<div class="sectionbody">
+<div id="ex-normal" class="listingblock">
+<div class="title">Example 1. Paragraph</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">Paragraphs don't require special markup in AsciiDoc.
+A paragraph is defined by one or more consecutive lines of text.
+Line breaks within a paragraph are not displayed.
+
+Leave at least one empty line to begin a new paragraph.</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-normal">Example 1</a></summary>
+<div class="content">
+<div class="paragraph">
+<p>Paragraphs don&#8217;t require special markup in AsciiDoc.
+A paragraph is defined by one or more consecutive lines of text.
+Line breaks within a paragraph are not displayed.</p>
+</div>
+<div class="paragraph">
+<p>Leave at least one empty line to begin a new paragraph.</p>
+</div>
+</div>
+</details>
+<div id="ex-literal" class="listingblock">
+<div class="title">Example 2. Literal paragraph</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">A normal paragraph.
+
+ A literal paragraph.
+ One or more consecutive lines indented by at least one space.
+
+ The text is shown in a fixed-width (typically monospace) font.
+ The lines are preformatted (i.e., as formatted in the source).
+ Spaces and newlines,
+ like the ones in this sentence,
+ are preserved.</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-literal">Example 2</a></summary>
+<div class="content">
+<div class="paragraph">
+<p>A normal paragraph.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>A literal paragraph.
+One or more consecutive lines indented by at least one space.</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>The text is shown in a fixed-width (typically monospace) font.
+The lines are preformatted (i.e., as formatted in the source).
+Spaces and newlines,
+like the ones in this sentence,
+are preserved.</pre>
+</div>
+</div>
+</div>
+</details>
+<div id="ex-hardbreaks" class="listingblock">
+<div class="title">Example 3. Hard line breaks</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">Roses are red, +
+violets are blue.
+
+[%hardbreaks]
+A ruby is red.
+Java is black.</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-hardbreaks">Example 3</a></summary>
+<div class="content">
+<div class="paragraph">
+<p>Roses are red,<br>
+violets are blue.</p>
+</div>
+<div class="paragraph">
+<p>A ruby is red.<br>
+Java is black.</p>
+</div>
+</div>
+</details>
+<div id="ex-lead" class="listingblock">
+<div class="title">Example 4. Lead paragraph</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">[.lead]
+This text will be styled as a lead paragraph (i.e., larger font).
+
+This paragraph will not be.</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-lead">Example 4</a></summary>
+<div class="content">
+<div class="paragraph lead">
+<p>This text will be styled as a lead paragraph (i.e., larger font).</p>
+</div>
+<div class="paragraph">
+<p>This paragraph will not be.</p>
+</div>
+</div>
+</details>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+The default Asciidoctor stylesheet automatically styles the first paragraph of the preamble as a <a href="../blocks/preamble-and-lead/" class="xref page">lead paragraph</a> if no role is specified on that paragraph.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="text-formatting"><a class="anchor" href="#text-formatting"></a>Text formatting</h2>
+<div class="sectionbody">
+<div id="ex-constrained" class="listingblock">
+<div class="title">Example 5. Constrained bold, italic, and monospace</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">It has *strong* significance to me.
+
+I _cannot_ stress this enough.
+
+Type `OK` to accept.
+
+That *_really_* has to go.
+
+Can't pick one? Let's use them `*_all_*`.</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-constrained">Example 5</a></summary>
+<div class="content">
+<div class="paragraph">
+<p>It has <strong>strong</strong> significance to me.</p>
+</div>
+<div class="paragraph">
+<p>I <em>cannot</em> stress this enough.</p>
+</div>
+<div class="paragraph">
+<p>Type <code>OK</code> to accept.</p>
+</div>
+<div class="paragraph">
+<p>That <strong><em>really</em></strong> has to go.</p>
+</div>
+<div class="paragraph">
+<p>Can&#8217;t pick one? Let&#8217;s use them <code><strong><em>all</em></strong></code>.</p>
+</div>
+</div>
+</details>
+<div id="ex-unconstrained" class="listingblock">
+<div class="title">Example 6. Unconstrained bold, italic, and monospace</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">**C**reate, **R**ead, **U**pdate, and **D**elete (CRUD)
+
+That's fan__freakin__tastic!
+
+Don't pass generic ``Object``s to methods that accept ``String``s!
+
+It was Beatle**__mania__**!</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-unconstrained">Example 6</a></summary>
+<div class="content">
+<div class="paragraph">
+<p><strong>C</strong>reate, <strong>R</strong>ead, <strong>U</strong>pdate, and <strong>D</strong>elete (CRUD)</p>
+</div>
+<div class="paragraph">
+<p>That&#8217;s fan<em>freakin</em>tastic!</p>
+</div>
+<div class="paragraph">
+<p>Don&#8217;t pass generic <code>Object</code>s to methods that accept <code>String</code>s!</p>
+</div>
+<div class="paragraph">
+<p>It was Beatle<strong><em>mania</em></strong>!</p>
+</div>
+</div>
+</details>
+<div id="ex-lines" class="listingblock">
+<div class="title">Example 7. Highlight, underline, strikethrough, and custom role</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">Mark my words, #automation is essential#.
+
+##Mark##up refers to text that contains formatting ##mark##s.
+
+Where did all the [.underline]#cores# go?
+
+We need [.line-through]#ten# twenty VMs.
+
+A [.myrole]#custom role# must be fulfilled by the theme.</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-lines">Example 7</a></summary>
+<div class="content">
+<div class="paragraph">
+<p>Mark my words, <mark>automation is essential</mark>.</p>
+</div>
+<div class="paragraph">
+<p><mark>Mark</mark>up refers to text that contains formatting <mark>mark</mark>s.</p>
+</div>
+<div class="paragraph">
+<p>Where did all the <span class="underline">cores</span> go?</p>
+</div>
+<div class="paragraph">
+<p>We need <span class="line-through">ten</span> twenty VMs.</p>
+</div>
+<div class="paragraph">
+<p>A <span class="myrole">custom role</span> must be fulfilled by the theme.</p>
+</div>
+</div>
+</details>
+<div id="ex-sub-sup" class="listingblock">
+<div class="title">Example 8. Superscript and subscript</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">^super^script
+
+~sub~script</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-sub-sup">Example 8</a></summary>
+<div class="content">
+<div class="paragraph">
+<p><sup>super</sup>script</p>
+</div>
+<div class="paragraph">
+<p><sub>sub</sub>script</p>
+</div>
+</div>
+</details>
+<div id="ex-curved" class="listingblock">
+<div class="title">Example 9. Smart quotes and apostrophes</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">"`double curved quotes`"
+
+'`single curved quotes`'
+
+Olaf's desk was a mess.
+
+A ``std::vector```'s size is the number of items it contains.
+
+All of the werewolves`' desks were a mess.
+
+Olaf had been with the company since the `'00s.</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-curved">Example 9</a></summary>
+<div class="content">
+<div class="paragraph">
+<p>&#8220;double curved quotes&#8221;</p>
+</div>
+<div class="paragraph">
+<p>&#8216;single curved quotes&#8217;</p>
+</div>
+<div class="paragraph">
+<p>Olaf&#8217;s desk was a mess.</p>
+</div>
+<div class="paragraph">
+<p>A <code>std::vector</code>&#8217;s size is the number of items it contains.</p>
+</div>
+<div class="paragraph">
+<p>All of the werewolves&#8217; desks were a mess.</p>
+</div>
+<div class="paragraph">
+<p>Olaf had been with the company since the &#8217;00s.</p>
+</div>
+</div>
+</details>
+</div>
+</div>
+<div class="sect1">
+<h2 id="links"><a class="anchor" href="#links"></a>Links</h2>
+<div class="sectionbody">
+<div id="ex-urls" class="listingblock">
+<div class="title">Example 10. Autolinks, URL macro, and mailto macro</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">https://asciidoctor.org - automatic!
+
+https://asciidoctor.org[Asciidoctor]
+
+devel@discuss.example.org
+
+mailto:devel@discuss.example.org[Discuss]
+
+mailto:join@discuss.example.org[Subscribe,Subscribe me,I want to join!]</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-urls">Example 10</a></summary>
+<div class="content">
+<div class="paragraph">
+<p><a href="https://asciidoctor.org" class="bare">asciidoctor.org</a> - automatic!</p>
+</div>
+<div class="paragraph">
+<p><a href="https://asciidoctor.org">Asciidoctor</a></p>
+</div>
+<div class="paragraph">
+<p><a href="mailto:devel@discuss.example.org">devel@discuss.example.org</a></p>
+</div>
+<div class="paragraph">
+<p><a href="mailto:devel@discuss.example.org">Discuss</a></p>
+</div>
+<div class="paragraph">
+<p><a href="mailto:join@discuss.example.org?subject=Subscribe+me&amp;body=I+want+to+join%21">Subscribe</a></p>
+</div>
+</div>
+</details>
+<div id="ex-linkattrs" class="listingblock">
+<div class="title">Example 11. URL macros with attributes</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">https://chat.asciidoc.org[Discuss AsciiDoc,role=external,window=_blank]
+
+https://chat.asciidoc.org[Discuss AsciiDoc^]</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-linkattrs">Example 11</a></summary>
+<div class="content">
+<div class="paragraph">
+<p><a href="https://chat.asciidoc.org" class="external" target="_blank" rel="noopener">Discuss AsciiDoc</a></p>
+</div>
+<div class="paragraph">
+<p><a href="https://chat.asciidoc.org" target="_blank" rel="noopener">Discuss AsciiDoc</a></p>
+</div>
+</div>
+</details>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+The <code>link:</code> macro prefix is <em>not</em> required when the target starts with a URL scheme like <code>https:</code>.
+The URL scheme acts as an implicit macro prefix.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+If the link text contains a comma and the text is followed by one or more named attributes, you must enclose the text in double quotes.
+Otherwise, the text will be cut off at the comma (and the remaining text will get pulled into the attribute parsing).
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">Example 12. URLs with spaces and special characters</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">link:++https://example.org/?q=[a b]++[URL with special characters]
+
+https://example.org/?q=%5Ba%20b%5D[URL with special characters]</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Example 13. Link to relative file</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">link:index.html[Docs]</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Example 14. Link using a Windows UNC path</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">link:\\server\share\whitepaper.pdf[Whitepaper]</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Example 15. Inline anchors</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">[[bookmark-a]]Inline anchors make arbitrary content referenceable.
+
+[#bookmark-b]#Inline anchors can be applied to a phrase like this one.#
+
+anchor:bookmark-c[]Use a cross reference to link to this location.
+
+[[bookmark-d,last paragraph]]The xreflabel attribute will be used as link text in the cross-reference link.</code></pre>
+</div>
+</div>
+<div id="ex-xrefs" class="listingblock">
+<div class="title">Example 16. Cross references</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">See &lt;&lt;paragraphs&gt;&gt; to learn how to write paragraphs.
+
+Learn how to organize the document into &lt;&lt;section-titles,sections&gt;&gt;.</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-xrefs">Example 16</a></summary>
+<div class="content">
+<div class="paragraph">
+<p>See <a href="#paragraphs">Paragraphs</a> to learn how to write paragraphs.</p>
+</div>
+<div class="paragraph">
+<p>Learn how to organize the document into <a href="#section-titles">sections</a>.</p>
+</div>
+</div>
+</details>
+<div class="listingblock">
+<div class="title">Example 17. Inter-document cross references</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">Refer to xref:document-b.adoc#section-b[Section B of Document B] for more information.
+
+If you never return from xref:document-b.adoc[Document B], we'll send help.</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="document-header"><a class="anchor" href="#document-header"></a>Document header</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The <a href="../document/header/" class="xref page">document header</a> is optional.
+The header may not contain any empty lines and must be separated from the content by at least one empty line.</p>
+</div>
+<div class="listingblock">
+<div class="title">Example 18. Title</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">= Document Title
+
+This document provides...</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Example 19. Title and author line</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">= Document Title
+Author Name &lt;author@email.org&gt;
+
+This document provides...</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Example 20. Title, author line, and revision line</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">= Document Title
+Author Name &lt;author@email.org&gt;; Another Author &lt;a.author@email.org&gt;
+v2.0, 2019-03-22
+
+This document provides...</code></pre>
+</div>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+You cannot have a <a href="../document/revision-line/" class="xref page">revision line</a> without an <a href="../document/author-line/" class="xref page">author line</a>.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">Example 21. Document header with attribute entries</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">= Document Title
+Author Name &lt;author@email.org&gt;
+v2.0, 2019-03-22
+:toc:
+:homepage: https://example.org
+
+This document provides...</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="section-titles"><a class="anchor" href="#section-titles"></a>Section titles</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When the document type is <code>article</code> (the default), the document can only have one level 0 section title (<code>=</code>), which is the document title (i.e., doctitle).</p>
+</div>
+<div id="ex-article" class="listingblock">
+<div class="title">Example 22. Article section levels</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">= Document Title (Level 0)
+
+== Level 1 Section Title
+
+=== Level 2 Section Title
+
+==== Level 3 Section Title
+
+===== Level 4 Section Title
+
+====== Level 5 Section Title
+
+== Another Level 1 Section Title</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-article">Example 22</a></summary>
+<div class="content">
+<h1 id="document-title-level-0" class="float">Document Title (Level 0)</h1>
+<h2 id="level-1-section-title" class="float">Level 1 Section Title</h2>
+<h3 id="level-2-section-title" class="float">Level 2 Section Title</h3>
+<h4 id="level-3-section-title" class="float">Level 3 Section Title</h4>
+<h5 id="level-4-section-title" class="float">Level 4 Section Title</h5>
+<h6 id="level-5-section-title" class="float">Level 5 Section Title</h6>
+<h2 id="another-level-1-section-title" class="float">Another Level 1 Section Title</h2>
+</div>
+</details>
+<div class="paragraph">
+<p>The <code>book</code> document type can have additional level 0 section titles, which are interpreted as <a href="../sections/parts/" class="xref page">parts</a>.
+The presence of at least one part implicitly makes the document a multi-part book.</p>
+</div>
+<div class="listingblock">
+<div class="title">Example 23. Book section levels</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">= Document Title (Level 0)
+
+== Level 1 Section Title
+
+= Level 0 Section Title (Part)
+
+== Level 1 Section Title
+
+=== Level 2 Section Title
+
+==== Level 3 Section Title
+
+===== Level 4 Section Title
+
+====== Level 5 Section Title
+
+= Another Level 0 Section Title (Part)</code></pre>
+</div>
+</div>
+<div id="ex-discrete" class="listingblock">
+<div class="title">Example 24. Discrete heading (not a section)</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">[discrete]
+=== I'm an independent heading!
+
+This paragraph is its sibling, not its child.</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-discrete">Example 24</a></summary>
+<div class="content">
+<h3 id="im-an-independent-heading" class="discrete">I&#8217;m an independent heading!</h3>
+<div class="paragraph">
+<p>This paragraph is its sibling, not its child.</p>
+</div>
+</div>
+</details>
+</div>
+</div>
+<div class="sect1">
+<h2 id="automatic-toc"><a class="anchor" href="#automatic-toc"></a>Automatic TOC</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="title">Example 25. Activate Table of Contents for a document</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">= Document Title
+Doc Writer &lt;doc.writer@email.org&gt;
+:toc:</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The Table of Contents&#8217; <a href="../toc/title/" class="xref page">title</a>, <a href="../toc/levels/" class="xref page">displayed section depth</a>, and <a href="../toc/position/" class="xref page">position</a> can be customized.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="includes"><a class="anchor" href="#includes"></a>Includes</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="title">Example 26. Include document parts</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">= Reference Documentation
+Lead Developer
+
+This is documentation for project X.
+
+include::basics.adoc[]
+
+include::installation.adoc[]
+
+include::example.adoc[]</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Example 27. Include content by tagged regions or lines</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">include::filename.txt[tag=definition]
+
+include::filename.txt[lines=5..10]</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Example 28. Include content from a URL</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">include::https://raw.githubusercontent.com/asciidoctor/asciidoctor/main/README.adoc[]</code></pre>
+</div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Including content from a URL is potentially dangerous, so it&#8217;s disabled if the safe mode is SECURE or greater.
+Assuming the safe mode is less than SECURE, you must also set the <code>allow-uri-read</code> attribute to permit the AsciiDoc processor to read content from a URL.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="lists"><a class="anchor" href="#lists"></a>Lists</h2>
+<div class="sectionbody">
+<div id="ex-ul" class="listingblock">
+<div class="title">Example 29. Unordered list</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">* List item
+** Nested list item
+*** Deeper nested list item
+* List item
+ ** Another nested list item
+* List item</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-ul">Example 29</a></summary>
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>List item</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Nested list item</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Deeper nested list item</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>List item</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Another nested list item</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>List item</p>
+</li>
+</ul>
+</div>
+</div>
+</details>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+An empty line is required before and after a list to separate it from other blocks.
+You can force two adjacent lists apart by adding an empty attribute list (i.e., <code>[]</code>) above the second list or by inserting an empty line followed by a line comment after the first list.
+If you use a line comment, the convention is to use <code>//-</code> to provide a hint to other authors that it&#8217;s serving as a list divider.
+</td>
+</tr>
+</table>
+</div>
+<div id="ex-ul-max" class="listingblock">
+<div class="title">Example 30. Unordered list max level nesting</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">* Level 1 list item
+** Level 2 list item
+*** Level 3 list item
+**** Level 4 list item
+***** Level 5 list item
+****** etc.
+* Level 1 list item</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-ul-max">Example 30</a></summary>
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>Level 1 list item</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Level 2 list item</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Level 3 list item</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Level 4 list item</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Level 5 list item</p>
+<div class="ulist">
+<ul>
+<li>
+<p>etc.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Level 1 list item</p>
+</li>
+</ul>
+</div>
+</div>
+</details>
+<div class="paragraph">
+<p>The <a href="../lists/unordered/#markers" class="xref page">unordered list marker</a> can be changed using a list style (e.g., <code>square</code>).</p>
+</div>
+<div id="ex-ol" class="listingblock">
+<div class="title">Example 31. Ordered list</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">. Step 1
+. Step 2
+.. Step 2a
+.. Step 2b
+. Step 3</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-ol">Example 31</a></summary>
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Step 1</p>
+</li>
+<li>
+<p>Step 2</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>Step 2a</p>
+</li>
+<li>
+<p>Step 2b</p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Step 3</p>
+</li>
+</ol>
+</div>
+</div>
+</details>
+<div id="ex-ol-max" class="listingblock">
+<div class="title">Example 32. Ordered list max level nesting</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">. Level 1 list item
+.. Level 2 list item
+... Level 3 list item
+.... Level 4 list item
+..... Level 5 list item
+. Level 1 list item</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-ol-max">Example 32</a></summary>
+<div class="content">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Level 1 list item</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>Level 2 list item</p>
+<div class="olist lowerroman">
+<ol class="lowerroman" type="i">
+<li>
+<p>Level 3 list item</p>
+<div class="olist upperalpha">
+<ol class="upperalpha" type="A">
+<li>
+<p>Level 4 list item</p>
+<div class="olist upperroman">
+<ol class="upperroman" type="I">
+<li>
+<p>Level 5 list item</p>
+</li>
+</ol>
+</div>
+</li>
+</ol>
+</div>
+</li>
+</ol>
+</div>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Level 1 list item</p>
+</li>
+</ol>
+</div>
+</div>
+</details>
+<div class="paragraph">
+<p>Ordered lists support <a href="../lists/ordered/#styles" class="xref page">numeration styles</a> such as <code>lowergreek</code> and <code>decimal-leading-zero</code>.</p>
+</div>
+<div id="ex-check" class="listingblock">
+<div class="title">Example 33. Checklist</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">* [*] checked
+* [x] also checked
+* [ ] not checked
+* normal list item</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-check">Example 33</a></summary>
+<div class="content">
+<div class="ulist checklist">
+<ul class="checklist">
+<li>
+<p><i class="fa fa-check-square-o"></i> checked</p>
+</li>
+<li>
+<p><i class="fa fa-check-square-o"></i> also checked</p>
+</li>
+<li>
+<p><i class="fa fa-square-o"></i> not checked</p>
+</li>
+<li>
+<p>normal list item</p>
+</li>
+</ul>
+</div>
+</div>
+</details>
+<div id="ex-dlist" class="listingblock">
+<div class="title">Example 34. Description list</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">First term:: The description can be placed on the same line
+as the term.
+Second term::
+Description of the second term.
+The description can also start on its own line.</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-dlist">Example 34</a></summary>
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">First term</dt>
+<dd>
+<p>The description can be placed on the same line
+as the term.</p>
+</dd>
+<dt class="hdlist1">Second term</dt>
+<dd>
+<p>Description of the second term.
+The description can also start on its own line.</p>
+</dd>
+</dl>
+</div>
+</div>
+</details>
+<div id="ex-qa" class="listingblock">
+<div class="title">Example 35. Question and answer list</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">[qanda]
+What is the answer?::
+This is the answer.
+
+Are cameras allowed?::
+Are backpacks allowed?::
+No.</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-qa">Example 35</a></summary>
+<div class="content">
+<div class="qlist qanda">
+<ol>
+<li>
+<p><em>What is the answer?</em></p>
+<p>This is the answer.</p>
+</li>
+<li>
+<p><em>Are cameras allowed?</em></p>
+<p><em>Are backpacks allowed?</em></p>
+<p>No.</p>
+</li>
+</ol>
+</div>
+</div>
+</details>
+<div id="ex-mixed" class="listingblock">
+<div class="title">Example 36. Mixed</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">Operating Systems::
+  Linux:::
+    . Fedora
+      * Desktop
+    . Ubuntu
+      * Desktop
+      * Server
+  BSD:::
+    . FreeBSD
+    . NetBSD
+
+Cloud Providers::
+  PaaS:::
+    . OpenShift
+    . CloudBees
+  IaaS:::
+    . Amazon EC2
+    . Rackspace</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-mixed">Example 36</a></summary>
+<div class="content">
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Operating Systems</dt>
+<dd>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Linux</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Fedora</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Desktop</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Ubuntu</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Desktop</p>
+</li>
+<li>
+<p>Server</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</dd>
+<dt class="hdlist1">BSD</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>FreeBSD</p>
+</li>
+<li>
+<p>NetBSD</p>
+</li>
+</ol>
+</div>
+</dd>
+</dl>
+</div>
+</dd>
+<dt class="hdlist1">Cloud Providers</dt>
+<dd>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">PaaS</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>OpenShift</p>
+</li>
+<li>
+<p>CloudBees</p>
+</li>
+</ol>
+</div>
+</dd>
+<dt class="hdlist1">IaaS</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Amazon EC2</p>
+</li>
+<li>
+<p>Rackspace</p>
+</li>
+</ol>
+</div>
+</dd>
+</dl>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</details>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Lists can be indented.
+Leading whitespace is not significant.
+</td>
+</tr>
+</table>
+</div>
+<div id="ex-complex" class="listingblock">
+<div class="title">Example 37. Complex content in outline lists</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">* Every list item has at least one paragraph of content,
+  which may be wrapped, even using a hanging indent.
++
+Additional paragraphs or blocks are adjoined by putting
+a list continuation on a line adjacent to both blocks.
++
+list continuation:: a plus sign (`{plus}`) on a line by itself
+
+* A literal paragraph does not require a list continuation.
+
+ $ cd projects/my-book
+
+* AsciiDoc lists may contain any compound content.
++
+|===
+|Column 1, Header Row |Column 2, Header Row
+
+|Column 1, Row 1
+|Column 2, Row 1
+|===</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-complex">Example 37</a></summary>
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>Every list item has at least one paragraph of content,
+which may be wrapped, even using a hanging indent.</p>
+<div class="paragraph">
+<p>Additional paragraphs or blocks are adjoined by putting
+a list continuation on a line adjacent to both blocks.</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">list continuation</dt>
+<dd>
+<p>a plus sign (<code>&#43;</code>) on a line by itself</p>
+</dd>
+</dl>
+</div>
+</li>
+<li>
+<p>A literal paragraph does not require a list continuation.</p>
+<div class="literalblock">
+<div class="content">
+<pre>$ cd projects/my-book</pre>
+</div>
+</div>
+</li>
+<li>
+<p>AsciiDoc lists may contain any compound content.</p>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Column 1, Header Row</th>
+<th class="tableblock halign-left valign-top">Column 2, Header Row</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Column 1, Row 1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Column 2, Row 1</p></td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+</div>
+</div>
+</details>
+</div>
+</div>
+<div class="sect1">
+<h2 id="images"><a class="anchor" href="#images"></a>Images</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You can use the <a href="../macros/images-directory/" class="xref page">imagesdir attribute</a> to avoid hard coding the common path to your images in every image macro.
+The value of this attribute can be an absolute path, relative path, or base URL.
+If the image target is a relative path, the attribute&#8217;s value is prepended (i.e., it&#8217;s resolved relative to the value of the <code>imagesdir</code> attribute).
+If the image target is a URL or absolute path, the attribute&#8217;s value is <em>not</em> prepended.</p>
+</div>
+<div id="ex-image-blocks" class="listingblock">
+<div class="title">Example 38. Block image macro</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">image::sunset.jpg[]
+
+image::sunset.jpg[Sunset]
+
+.A mountain sunset
+[#img-sunset,caption="Figure 1: ",link=https://www.flickr.com/photos/javh/5448336655]
+image::macros:sunset.jpg[Sunset,200,100]
+
+image::https://asciidoctor.org/images/octocat.jpg[GitHub mascot]</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-image-blocks">Example 38</a></summary>
+<div class="content">
+<div class="imageblock">
+<div class="content">
+<img src="../macros/_images/sunset.jpg" alt="sunset">
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../macros/_images/sunset.jpg" alt="Sunset">
+</div>
+</div>
+<div id="img-sunset" class="imageblock">
+<div class="content">
+<a class="image" href="https://www.flickr.com/photos/javh/5448336655"><img src="../macros/_images/sunset.jpg" alt="Sunset" width="200" height="100"></a>
+</div>
+<div class="title">Figure 1: A mountain sunset</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://asciidoctor.org/images/octocat.jpg" alt="GitHub mascot">
+</div>
+</div>
+</div>
+</details>
+<div class="paragraph">
+<p>Two colons following the image keyword in the macro (i.e., <code>image::</code>) indicates a block image (aka figure), whereas one colon following the image keyword (i.e., <code>image:</code>) indicates an inline image.
+(All macros follow this pattern).
+You use an inline image when you need to place the image in a line of text.
+Otherwise, you should prefer the block form.</p>
+</div>
+<div id="ex-image-inline" class="listingblock">
+<div class="title">Example 39. Inline image macro</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">Click image:play.png[] to get the party started.
+
+Click image:pause.png[title=Pause] when you need a break.</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-image-inline">Example 39</a></summary>
+<div class="content">
+<div class="paragraph">
+<p>Click <span class="image"><img src="../macros/_images/play.png" alt="play"></span> to get the party started.</p>
+</div>
+<div class="paragraph">
+<p>Click <span class="image"><img src="../macros/_images/pause.png" alt="pause" title="Pause"></span> when you need a break.</p>
+</div>
+</div>
+</details>
+<div id="ex-image-role" class="listingblock">
+<div class="title">Example 40. Inline image macro with positioning role</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">image:sunset.jpg[Sunset,150,150,role=right] What a beautiful sunset!</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-image-role">Example 40</a></summary>
+<div class="content">
+<div class="paragraph">
+<p><span class="image right"><img src="../macros/_images/sunset.jpg" alt="Sunset" width="150" height="150"></span> What a beautiful sunset!</p>
+</div>
+</div>
+</details>
+<div class="listingblock">
+<div class="title">Example 41. Embedded</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">= Document Title
+:data-uri:</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When the <code>data-uri</code> attribute is set, all images in the document&#8212;&#8203;including admonition icons&#8212;&#8203;are embedded into the document as <a href="https://developer.mozilla.org/en-US/docs/data_URIs">data URIs</a>.
+You can also pass it as a command line argument using <code>-a data-uri</code>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="audio"><a class="anchor" href="#audio"></a>Audio</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="title">Example 42. Block audio macro</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">audio::ocean-waves.wav[]
+
+audio::ocean-waves.wav[start=60,opts=autoplay]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can control the audio settings using <a href="../macros/audio-and-video/" class="xref page">additional attributes and options</a> on the macro.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="videos"><a class="anchor" href="#videos"></a>Videos</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="title">Example 43. Block video macro</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">video::video-file.mp4[]
+
+video::video-file.mp4[width=640,start=60,opts=autoplay]</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Example 44. Embedded YouTube video</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">video::RvRhUHTV_8k[youtube]</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Example 45. Embedded Vimeo video</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">video::67480300[vimeo]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can control the video settings using <a href="../macros/audio-and-video/" class="xref page">additional attributes and options</a> on the macro.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="keyboard-button-and-menu-macros"><a class="anchor" href="#keyboard-button-and-menu-macros"></a>Keyboard, button, and menu macros</h2>
+<div class="sectionbody">
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+You must set the <code>experimental</code> attribute in the document header to enable these macros.
+</td>
+</tr>
+</table>
+</div>
+<div id="ex-kbd" class="listingblock">
+<div class="title">Example 46. Keyboard macro</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">|===
+|Shortcut |Purpose
+
+|kbd:[F11]
+|Toggle fullscreen
+
+|kbd:[Ctrl+T]
+|Open a new tab
+|===</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-kbd">Example 46</a></summary>
+<div class="content">
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Shortcut</th>
+<th class="tableblock halign-left valign-top">Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><kbd>F11</kbd></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Toggle fullscreen</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="keyseq"><kbd>Ctrl</kbd>+<kbd>T</kbd></span></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Open a new tab</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+<div id="ex-menu" class="listingblock">
+<div class="title">Example 47. Menu macro</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">To save the file, select menu:File[Save].
+
+Select menu:View[Zoom &gt; Reset] to reset the zoom level to the default setting.</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-menu">Example 47</a></summary>
+<div class="content">
+<div class="paragraph">
+<p>To save the file, select <span class="menuseq"><b class="menu">File</b>&#160;<i class="fa fa-angle-right caret"></i> <b class="menuitem">Save</b></span>.</p>
+</div>
+<div class="paragraph">
+<p>Select <span class="menuseq"><b class="menu">View</b>&#160;<i class="fa fa-angle-right caret"></i> <b class="submenu">Zoom</b>&#160;<i class="fa fa-angle-right caret"></i> <b class="menuitem">Reset</b></span> to reset the zoom level to the default setting.</p>
+</div>
+</div>
+</details>
+<div id="ex-button" class="listingblock">
+<div class="title">Example 48. Button macro</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">Press the btn:[OK] button when you are finished.
+
+Select a file in the file navigator and click btn:[Open].</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-button">Example 48</a></summary>
+<div class="content">
+<div class="paragraph">
+<p>Press the <b class="button">OK</b> button when you are finished.</p>
+</div>
+<div class="paragraph">
+<p>Select a file in the file navigator and click <b class="button">Open</b>.</p>
+</div>
+</div>
+</details>
+</div>
+</div>
+<div class="sect1">
+<h2 id="literals-and-source-code"><a class="anchor" href="#literals-and-source-code"></a>Literals and source code</h2>
+<div class="sectionbody">
+<div id="ex-inline-literal" class="listingblock">
+<div class="title">Example 49. Inline literal monospace</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">Output literal monospace text, such as `+{backtick}+` or `+http://localhost:8080+`, by enclosing the text in a pair of pluses surrounded by a pair of backticks.</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-inline-literal">Example 49</a></summary>
+<div class="content">
+<div class="paragraph">
+<p>Output literal monospace text, such as <code>{backtick}</code> or <code>http://localhost:8080</code>, by enclosing the text in a pair of pluses surrounded by a pair of backticks.</p>
+</div>
+</div>
+</details>
+<div id="ex-literal-line" class="listingblock">
+<div class="title">Example 50. Literal paragraph</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">Normal line.
+
+ Indent line by one space to create a literal line.
+
+Normal line.</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-literal-line">Example 50</a></summary>
+<div class="content">
+<div class="paragraph">
+<p>Normal line.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>Indent line by one space to create a literal line.</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Normal line.</p>
+</div>
+</div>
+</details>
+<div id="ex-literal-block" class="listingblock">
+<div class="title">Example 51. Literal block</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">....
+error: 1954 Forbidden search
+absolutely fatal: operation lost in the dodecahedron of doom
+
+Would you like to try again? y/n
+....</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-literal-block">Example 51</a></summary>
+<div class="content">
+<div class="literalblock">
+<div class="content">
+<pre>error: 1954 Forbidden search
+absolutely fatal: operation lost in the dodecahedron of doom
+
+Would you like to try again? y/n</pre>
+</div>
+</div>
+</div>
+</details>
+<div id="ex-listing" class="listingblock">
+<div class="title">Example 52. Listing block with title</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">.Gemfile.lock
+----
+GEM
+  remote: https://rubygems.org/
+  specs:
+    asciidoctor (2.0.15)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  asciidoctor (~&gt; 2.0.15)
+----</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-listing">Example 52</a></summary>
+<div class="content">
+<div class="listingblock">
+<div class="title">Listing 1. Gemfile.lock</div>
+<div class="content">
+<pre>GEM
+  remote: https://rubygems.org/
+  specs:
+    asciidoctor (2.0.15)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  asciidoctor (~&gt; 2.0.15)</pre>
+</div>
+</div>
+</div>
+</details>
+<div id="ex-highlight" class="listingblock">
+<div class="title">Example 53. Source block with title and syntax highlighting</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">.Some Ruby code
+[source,ruby]
+----
+require 'sinatra'
+
+get '/hi' do
+  "Hello World!"
+end
+----</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-highlight">Example 53</a></summary>
+<div class="content">
+<div class="listingblock">
+<div class="title">Listing 1. Some Ruby code</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-ruby hljs" data-lang="ruby">require 'sinatra'
+
+get '/hi' do
+  "Hello World!"
+end</code></pre>
+</div>
+</div>
+</div>
+</details>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>You must enable <a href="../verbatim/source-highlighter/" class="xref page">source highlighting</a> by setting the <code>source-highlighter</code> attribute in the document header, CLI, or API.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">:source-highlighter: rouge</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>See <a href="../../../asciidoctor/latest/syntax-highlighting/" class="xref page">Syntax Highlighting</a> to learn which values are accepted when using Asciidoctor.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div id="ex-callouts" class="listingblock">
+<div class="title">Example 54. Source block with callouts</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">[source,ruby]
+----
+require 'sinatra' // &lt;1&gt;
+
+get '/hi' do // &lt;2&gt;
+  "Hello World!" // &lt;3&gt;
+end
+----
+&lt;1&gt; Library import
+&lt;2&gt; URL mapping
+&lt;3&gt; HTTP response body</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-callouts">Example 54</a></summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-ruby hljs" data-lang="ruby">require 'sinatra' <i class="conum" data-value="1"></i><b>(1)</b>
+
+get '/hi' do <i class="conum" data-value="2"></i><b>(2)</b>
+  "Hello World!" <i class="conum" data-value="3"></i><b>(3)</b>
+end</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Library import</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>URL mapping</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>HTTP response body</td>
+</tr>
+</table>
+</div>
+</div>
+</details>
+<div id="ex-hide-callouts" class="listingblock">
+<div class="title">Example 55. Make callouts non-selectable</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">----
+line of code // &lt;1&gt;
+line of code # &lt;2&gt;
+line of code ;; &lt;3&gt;
+line of code &lt;!--4--&gt;
+----
+&lt;1&gt; A callout behind a line comment for C-style languages.
+&lt;2&gt; A callout behind a line comment for Ruby, Python, Perl, etc.
+&lt;3&gt; A callout behind a line comment for Clojure.
+&lt;4&gt; A callout behind a line comment for XML or SGML languages like HTML.</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-hide-callouts">Example 55</a></summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">line of code <i class="conum" data-value="1"></i><b>(1)</b>
+line of code <i class="conum" data-value="2"></i><b>(2)</b>
+line of code <i class="conum" data-value="3"></i><b>(3)</b>
+line of code <i class="conum" data-value="4"></i><b>(4)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>A callout behind a line comment for C-style languages.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>A callout behind a line comment for Ruby, Python, Perl, etc.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>A callout behind a line comment for Clojure.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>A callout behind a line comment for XML or SGML languages like HTML.</td>
+</tr>
+</table>
+</div>
+</div>
+</details>
+<div class="listingblock">
+<div class="title">Example 56. Source block content included from a file</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">[,ruby]
+----
+include::app.rb[]
+----</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Example 57. Source block content included from file relative to source directory</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">:sourcedir: src/main/java
+
+[source,java]
+----
+include::{sourcedir}/org/asciidoctor/Asciidoctor.java[]
+----</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Example 58. Strip leading indentation from partial file content</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">[source,ruby]
+----
+include::lib/app.rb[tag=main,indent=0]
+----</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The <a href="../directives/include-with-indent/" class="xref page">indent attribute</a> is frequently used when including source code by <a href="../directives/include-tagged-regions/" class="xref page">tagged region</a> or <a href="../directives/include-lines/" class="xref page">lines</a>.
+It can be specified on the include directive itself or the enclosing literal, listing, or source block.</p>
+</div>
+<div class="paragraph">
+<p>When indent is 0, the leading block indent is stripped.</p>
+</div>
+<div class="paragraph">
+<p>When indent is greater than 0, the leading block indent is first stripped, then a block is indented by the number of columns equal to this value.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div id="ex-source-para" class="listingblock">
+<div class="title">Example 59. Source paragraph (no empty lines)</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">[source,xml]
+&lt;meta name="viewport"
+  content="width=device-width, initial-scale=1.0"&gt;
+
+This is normal content.</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-source-para">Example 59</a></summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;meta name="viewport"
+  content="width=device-width, initial-scale=1.0"&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This is normal content.</p>
+</div>
+</div>
+</details>
+</div>
+</div>
+<div class="sect1">
+<h2 id="admonitions"><a class="anchor" href="#admonitions"></a>Admonitions</h2>
+<div class="sectionbody">
+<div id="ex-admon-para" class="listingblock">
+<div class="title">Example 60. Admonition paragraph</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">NOTE: An admonition draws the reader's attention to auxiliary information.
+
+Here are the other built-in admonition types:
+
+IMPORTANT: Don't forget the children!
+
+TIP: Look for the warp zone under the bridge.
+
+CAUTION: Slippery when wet.
+
+WARNING: The software you're about to use is untested.
+
+IMPORTANT: Sign off before stepping away from your computer.</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-admon-para">Example 60</a></summary>
+<div class="content">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+An admonition draws the reader&#8217;s attention to auxiliary information.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Here are the other built-in admonition types:</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+Don&#8217;t forget the children!
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Look for the warp zone under the bridge.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+Slippery when wet.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+The software you&#8217;re about to use is untested.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+Sign off before stepping away from your computer.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</details>
+<div id="ex-admon-block" class="listingblock">
+<div class="title">Example 61. Admonition block</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">[NOTE]
+====
+An admonition block may contain compound content.
+
+.A list
+- one
+- two
+- three
+
+Another paragraph.
+====</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-admon-block">Example 61</a></summary>
+<div class="content">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>An admonition block may contain compound content.</p>
+</div>
+<div class="ulist">
+<div class="title">A list</div>
+<ul>
+<li>
+<p>one</p>
+</li>
+<li>
+<p>two</p>
+</li>
+<li>
+<p>three</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Another paragraph.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</details>
+</div>
+</div>
+<div class="sect1">
+<h2 id="more-delimited-blocks"><a class="anchor" href="#more-delimited-blocks"></a>More delimited blocks</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Any block can have a title.
+A block title is defined using a line of text above the block that starts with a dot.
+That dot cannot be followed by a space.
+For block images, the title is displayed below the block.
+For all other blocks, the title is typically displayed above it.</p>
+</div>
+<div id="ex-sidebar" class="listingblock">
+<div class="title">Example 62. Sidebar block</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">.Optional Title
+****
+Sidebars are used to visually separate auxiliary bits of content
+that supplement the main text.
+****</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-sidebar">Example 62</a></summary>
+<div class="content">
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Optional Title</div>
+<div class="paragraph">
+<p>Sidebars are used to visually separate auxiliary bits of content
+that supplement the main text.</p>
+</div>
+</div>
+</div>
+</div>
+</details>
+<div id="ex-example" class="listingblock">
+<div class="title">Example 63. Example block</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">====
+Here's a sample AsciiDoc document:
+
+----
+= Title of Document
+Doc Writer
+:toc:
+
+This guide provides...
+----
+
+The document header is useful, but not required.
+====</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-example">Example 63</a></summary>
+<div class="content">
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>Here&#8217;s a sample AsciiDoc document:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">= Title of Document
+Doc Writer
+:toc:
+
+This guide provides...</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The document header is useful, but not required.</p>
+</div>
+</div>
+</div>
+</div>
+</details>
+<div id="ex-quotes" class="listingblock">
+<div class="title">Example 64. Blockquotes</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">[quote,Abraham Lincoln,Address delivered at the dedication of the Cemetery at Gettysburg]
+____
+Four score and seven years ago our fathers brought forth
+on this continent a new nation...
+____
+
+[quote,Albert Einstein]
+A person who never made a mistake never tried anything new.
+
+____
+A person who never made a mistake never tried anything new.
+____
+
+[quote,Charles Lutwidge Dodgson,'Mathematician and author, also known as https://en.wikipedia.org/wiki/Lewis_Carroll[Lewis Carroll]']
+____
+If you don't know where you are going, any road will get you there.
+____
+
+"I hold it that a little rebellion now and then is a good thing,
+and as necessary in the political world as storms in the physical."
+-- Thomas Jefferson, Papers of Thomas Jefferson: Volume 11</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-quotes">Example 64</a></summary>
+<div class="content">
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Four score and seven years ago our fathers brought forth
+on this continent a new nation&#8230;&#8203;</p>
+</div>
+</blockquote>
+<div class="attribution">
+&#8212; Abraham Lincoln<br>
+<cite>Address delivered at the dedication of the Cemetery at Gettysburg</cite>
+</div>
+</div>
+<div class="quoteblock">
+<blockquote>
+A person who never made a mistake never tried anything new.
+</blockquote>
+<div class="attribution">
+&#8212; Albert Einstein
+</div>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>A person who never made a mistake never tried anything new.</p>
+</div>
+</blockquote>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>If you don&#8217;t know where you are going, any road will get you there.</p>
+</div>
+</blockquote>
+<div class="attribution">
+&#8212; Charles Lutwidge Dodgson<br>
+<cite>Mathematician and author, also known as <a href="https://en.wikipedia.org/wiki/Lewis_Carroll">Lewis Carroll</a></cite>
+</div>
+</div>
+<div class="quoteblock">
+<blockquote>
+I hold it that a little rebellion now and then is a good thing,
+and as necessary in the political world as storms in the physical.
+</blockquote>
+<div class="attribution">
+&#8212; Thomas Jefferson<br>
+<cite>Papers of Thomas Jefferson: Volume 11</cite>
+</div>
+</div>
+</div>
+</details>
+<div id="ex-open" class="listingblock">
+<div class="title">Example 65. Open blocks</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">--
+An open block can be an anonymous container,
+or it can masquerade as any other block.
+--
+
+[source]
+--
+puts "I'm a source block!"
+--</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-open">Example 65</a></summary>
+<div class="content">
+<div class="openblock">
+<div class="content">
+<div class="paragraph">
+<p>An open block can be an anonymous container,
+or it can masquerade as any other block.</p>
+</div>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">puts "I'm a source block!"</code></pre>
+</div>
+</div>
+</div>
+</details>
+<div id="ex-pass-block" class="listingblock">
+<div class="title">Example 66. Passthrough block</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">++++
+&lt;p&gt;
+Content in a passthrough block is passed to the output unprocessed.
+That means you can include raw HTML, like this embedded Gist:
+&lt;/p&gt;
+
+&lt;script src="https://gist.github.com/mojavelinux/5333524.js"&gt;
+&lt;/script&gt;
+++++</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-pass-block">Example 66</a></summary>
+<div class="content">
+<p>
+Content in a passthrough block is passed to the output unprocessed.
+That means you can include raw HTML, like this embedded Gist:
+</p>
+
+<script src="https://gist.github.com/mojavelinux/5333524.js">
+</script>
+</div>
+</details>
+<div id="ex-block-subs" class="listingblock">
+<div class="title">Example 67. Customize block substitutions</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">:release-version: 2.4.3
+
+[source,xml,subs=attributes+]
+----
+&lt;dependency&gt;
+  &lt;groupId&gt;org.asciidoctor&lt;/groupId&gt;
+  &lt;artifactId&gt;asciidoctorj&lt;/artifactId&gt;
+  &lt;version&gt;{release-version}&lt;/version&gt;
+&lt;/dependency&gt;
+----</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-block-subs">Example 67</a></summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;dependency&gt;
+  &lt;groupId&gt;org.asciidoctor&lt;/groupId&gt;
+  &lt;artifactId&gt;asciidoctorj&lt;/artifactId&gt;
+  &lt;version&gt;2.4.3&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+</div>
+</details>
+</div>
+</div>
+<div class="sect1">
+<h2 id="tables"><a class="anchor" href="#tables"></a>Tables</h2>
+<div class="sectionbody">
+<div id="ex-header-row" class="listingblock">
+<div class="title">Example 68. Table with a title, two columns, a header row, and two rows of content</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">.Table Title
+|===
+|Column 1, Header Row |Column 2, Header Row <i class="conum" data-value="1"></i><b>(1)</b>
+<i class="conum" data-value="2"></i><b>(2)</b>
+|Cell in column 1, row 1
+|Cell in column 2, row 1
+
+|Cell in column 1, row 2
+|Cell in column 2, row 2
+|===</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Unless the <code>cols</code> attribute is specified, the number of columns is equal to the number of cell separators on the first (non-empty) line.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>When an empty line immediately follows a non-empty line at the start of the table, the cells in the first line get promoted to the table header.</td>
+</tr>
+</table>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-header-row">Example 68</a></summary>
+<div class="content">
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. Table Title</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Column 1, Header Row</th>
+<th class="tableblock halign-left valign-top">Column 2, Header Row</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cell in column 1, row 1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cell in column 2, row 1</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cell in column 1, row 2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cell in column 2, row 2</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+<div id="ex-cols" class="listingblock">
+<div class="title">Example 69. Table with two columns, a header row, and two rows of content</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">[%header,cols=2*] <i class="conum" data-value="1"></i><b>(1)</b>
+|===
+|Name of Column 1
+|Name of Column 2
+
+|Cell in column 1, row 1
+|Cell in column 2, row 1
+
+|Cell in column 1, row 2
+|Cell in column 2, row 2
+|===</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>*</code> in the <code>cols</code> attribute is the repeat operator.
+It means repeat the column specification across the remaining columns.
+In this case, we are repeating the default formatting across 2 columns.
+When the cells in the header are not defined on a single line, you must use the <code>cols</code> attribute to set the number of columns in the table and the <code>%header</code> option (or <code>options=header</code> attribute) to promote the first row to the table header.</td>
+</tr>
+</table>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-cols">Example 69</a></summary>
+<div class="content">
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name of Column 1</th>
+<th class="tableblock halign-left valign-top">Name of Column 2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cell in column 1, row 1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cell in column 2, row 1</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cell in column 1, row 2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cell in column 2, row 2</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+<div id="ex-cols-widths" class="listingblock">
+<div class="title">Example 70. Table with three columns, a header row, and two rows of content</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">.Applications
+[cols="1,1,2"] <i class="conum" data-value="1"></i><b>(1)</b>
+|===
+|Name |Category |Description
+
+|Firefox
+|Browser
+|Mozilla Firefox is an open source web browser.
+It's designed for standards compliance,
+performance, portability.
+
+|Arquillian
+|Testing
+|An innovative and highly extensible testing platform.
+Empowers developers to easily create real, automated tests.
+|===</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>In this example, the <code>cols</code> attribute has two functions.
+It specifies that this table has three columns, and it sets their relative widths.</td>
+</tr>
+</table>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-cols-widths">Example 70</a></summary>
+<div class="content">
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. Applications</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Category</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Firefox</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Browser</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Mozilla Firefox is an open source web browser.
+It&#8217;s designed for standards compliance,
+performance, portability.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Arquillian</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Testing</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">An innovative and highly extensible testing platform.
+Empowers developers to easily create real, automated tests.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+<div id="ex-table-adoc" class="listingblock">
+<div class="title">Example 71. Table with column containing AsciiDoc content</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">[cols="2,2,5a"]
+|===
+|Firefox
+|Browser
+|Mozilla Firefox is an open source web browser.
+
+It's designed for:
+
+* standards compliance
+* performance
+* portability
+
+https://getfirefox.com[Get Firefox]!
+|===</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-table-adoc">Example 71</a></summary>
+<div class="content">
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 22.2222%;">
+<col style="width: 22.2222%;">
+<col style="width: 55.5556%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Firefox</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Browser</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Mozilla Firefox is an open source web browser.</p>
+</div>
+<div class="paragraph">
+<p>It&#8217;s designed for:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>standards compliance</p>
+</li>
+<li>
+<p>performance</p>
+</li>
+<li>
+<p>portability</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><a href="https://getfirefox.com">Get Firefox</a>!</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+<div id="ex-csv" class="listingblock">
+<div class="title">Example 72. Table from CSV data using shorthand</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">,===
+Artist,Track,Genre
+
+Baauer,Harlem Shake,Hip Hop
+,===</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-csv">Example 72</a></summary>
+<div class="content">
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Artist</th>
+<th class="tableblock halign-left valign-top">Track</th>
+<th class="tableblock halign-left valign-top">Genre</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Baauer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Harlem Shake</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Hip Hop</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+<div id="ex-csv-formal" class="listingblock">
+<div class="title">Example 73. Table from CSV data</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">[%header,format=csv]
+|===
+Artist,Track,Genre
+Baauer,Harlem Shake,Hip Hop
+The Lumineers,Ho Hey,Folk Rock
+|===</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-csv-formal">Example 73</a></summary>
+<div class="content">
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Artist</th>
+<th class="tableblock halign-left valign-top">Track</th>
+<th class="tableblock halign-left valign-top">Genre</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Baauer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Harlem Shake</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Hip Hop</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The Lumineers</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Ho Hey</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Folk Rock</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+<div id="ex-csv-include" class="listingblock">
+<div class="title">Example 74. Table from CSV data included from file</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">,===
+include::customers.csv[]
+,===</code></pre>
+</div>
+</div>
+<div id="ex-dsv" class="listingblock">
+<div class="title">Example 75. Table from DSV data using shorthand</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">:===
+Artist:Track:Genre
+
+Robyn:Indestructible:Dance
+:===</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-dsv">Example 75</a></summary>
+<div class="content">
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Artist</th>
+<th class="tableblock halign-left valign-top">Track</th>
+<th class="tableblock halign-left valign-top">Genre</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Robyn</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Indestructible</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Dance</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+<div id="ex-cell-format" class="listingblock">
+<div class="title">Example 76. Table with formatted, aligned and merged cells</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">[cols="e,m,^,&gt;s",width="25%"]
+|===
+|1 &gt;s|2 |3 |4
+^|5 2.2+^.^|6 .3+&lt;.&gt;m|7
+^|8
+|9 2+&gt;|10
+|===</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-cell-format">Example 76</a></summary>
+<div class="content">
+<table class="tableblock frame-all grid-all" style="width: 25%;">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>1</em></p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock"><strong>2</strong></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">3</p></td>
+<td class="tableblock halign-right valign-top"><p class="tableblock"><strong>4</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><em>5</em></p></td>
+<td class="tableblock halign-center valign-middle" colspan="2" rowspan="2"><p class="tableblock"><code>6</code></p></td>
+<td class="tableblock halign-left valign-bottom" rowspan="3"><p class="tableblock"><code>7</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><em>8</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>9</em></p></td>
+<td class="tableblock halign-right valign-top" colspan="2"><p class="tableblock"><code>10</code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+</div>
+</div>
+<div class="sect1">
+<h2 id="ids-roles-and-options"><a class="anchor" href="#ids-roles-and-options"></a>IDs, roles, and options</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="title">Example 77. Shorthand method for assigning block ID (anchor) and role</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">[#goals.incremental]
+* Goal 1
+* Goal 2</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>To specify multiple roles using the shorthand syntax, delimit them by dots.</p>
+</li>
+<li>
+<p>The order of <code>id</code> and <code>role</code> values in the shorthand syntax does not matter.</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">Example 78. Formal method for assigning block ID (anchor) and role</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">[id="goals",role="incremental"]
+* Goal 1
+* Goal 2</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Example 79. Explicit section ID (anchor)</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">[#null-values]
+== Primitive types and null values</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Example 80. Assign ID (anchor) and role to inline formatted text</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">[#id-name.role-name]`monospace text`
+
+[#free-world.goals]*free the world*</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Example 81. Shorthand method for assigning block options</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">[%header%footer%autowidth]
+|===
+|Header A |Header B
+|Footer A |Footer B
+|===</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Example 82. Formal method for assigning block options</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">[options="header,footer,autowidth"]
+|===
+|Header A |Header B
+|Footer A |Footer B
+|===
+
+// options can be shorted to opts
+[opts="header,footer,autowidth"]
+|===
+|Header A |Header B
+|Footer A |Footer B
+|===</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="comments"><a class="anchor" href="#comments"></a>Comments</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="title">Example 83. Line and block comments</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">// A single-line comment
+
+////
+A multi-line comment.
+
+Notice it's a delimited block.
+////</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="breaks"><a class="anchor" href="#breaks"></a>Breaks</h2>
+<div class="sectionbody">
+<div id="ex-thematic" class="listingblock">
+<div class="title">Example 84. Thematic break (aka horizontal rule)</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">before
+
+'''
+
+after</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-thematic">Example 84</a></summary>
+<div class="content">
+<div class="paragraph">
+<p>before</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>after</p>
+</div>
+</div>
+</details>
+<div class="listingblock">
+<div class="title">Example 85. Page break</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">&lt;&lt;&lt;</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="attributes-and-substitutions"><a class="anchor" href="#attributes-and-substitutions"></a>Attributes and substitutions</h2>
+<div class="sectionbody">
+<div id="ex-attributes" class="listingblock">
+<div class="title">Example 86. Attribute declaration and usage</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">:url-home: https://asciidoctor.org
+:link-docs: https://asciidoctor.org/docs[documentation]
+:summary: AsciiDoc is a mature, plain-text document format for \
+       writing notes, articles, documentation, books, and more. \
+       It's also a text processor &amp; toolchain for translating \
+       documents into various output formats (i.e., backends), \
+       including HTML, DocBook, PDF and ePub.
+:checkedbox: pass:normal[{startsb}&amp;#10004;{endsb}]
+
+Check out {url-home}[Asciidoctor]!
+
+{summary}
+
+Be sure to read the {link-docs} too!
+
+{checkedbox} That's done!</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-attributes">Example 86</a></summary>
+<div class="content">
+<table class="tableblock frame-all grid-all stretch unstyled">
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Check out <a href="https://asciidoctor.org">Asciidoctor</a>!</p>
+</div>
+<div class="paragraph">
+<p>AsciiDoc is a mature, plain-text document format for writing notes, articles, documentation, books, and more. It&#8217;s also a text processor &amp; toolchain for translating documents into various output formats (i.e., backends), including HTML, DocBook, PDF and ePub.</p>
+</div>
+<div class="paragraph">
+<p>Be sure to read the <a href="https://asciidoctor.org/docs">documentation</a> too!</p>
+</div>
+<div class="paragraph">
+<p>[&#10004;] That&#8217;s done!</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+<div class="paragraph">
+<p>To learn more about the available attributes and substitution groups see:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="../attributes/document-attributes-ref/" class="xref page">Document Attributes Reference</a></p>
+</li>
+<li>
+<p><a href="../attributes/character-replacement-ref/" class="xref page">Character Replacement Attributes Reference</a></p>
+</li>
+<li>
+<p><a href="../subs/apply-subs-to-blocks/#subs-groups" class="xref page">Substitution Groups</a></p>
+</li>
+</ul>
+</div>
+<div id="ex-counter" class="listingblock">
+<div class="title">Example 87. Counter attributes</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">.Parts{counter2:index:0}
+|===
+|Part Id |Description
+
+|PX-{counter:index}
+|Description of PX-{index}
+
+|PX-{counter:index}
+|Description of PX-{index}
+|===</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-counter">Example 87</a></summary>
+<div class="content">
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. Parts</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Part Id</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PX-1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Description of PX-1</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PX-2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Description of PX-2</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+</div>
+</div>
+<div class="sect1">
+<h2 id="text-replacements"><a class="anchor" href="#text-replacements"></a>Text replacements</h2>
+<div class="sectionbody">
+<table class="tableblock frame-none grid-rows fit-content">
+<caption class="title">Textual symbol replacements</caption>
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-center valign-top">Syntax</th>
+<th class="tableblock halign-center valign-top">Unicode Replacement</th>
+<th class="tableblock halign-center valign-top">Rendered</th>
+<th class="tableblock halign-left valign-top">Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Copyright</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">(C)</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">&amp;#169;</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">&#169;</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Registered</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">(R)</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">&amp;#174;</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">&#174;</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Trademark</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">(TM)</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">&amp;#8482;</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">&#8482;</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Em dash</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">--</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">&amp;#8212;</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">&#8201;&#8212;&#8201;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Only replaced if between two word characters, between a word character and a line boundary, or flanked by spaces.</p>
+<p class="tableblock">When flanked by space characters (e.g., <code>a -- b</code>), the normal spaces are replaced by thin spaces (&amp;#8201;).
+Otherwise, the em dash is followed by a zero-width space (&amp;#8203;) to provide a break opportunity.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Ellipsis</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">...</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">&amp;#8230;</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">&#8230;&#8203;</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The ellipsis is followed by a zero-width space (&amp;#8203;) to provide a break opportunity.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Single right arrow</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">-&gt;</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">&amp;#8594;</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">&#8594;</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Double right arrow</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">=&gt;</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">&amp;#8658;</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">&#8658;</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Single left arrow</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">&lt;-</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">&amp;#8592;</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">&#8592;</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Double left arrow</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">&lt;=</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">&amp;#8656;</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">&#8656;</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Typographic apostrophe</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Sam's</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Sam&amp;#8217;s</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Sam&#8217;s</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The typewriter apostrophe is replaced with the typographic (aka curly or smart) apostrophe.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Any named, numeric or hexadecimal <a href="https://en.wikipedia.org/wiki/List_of_XML_and_HTML_character_entity_references" target="_blank" rel="noopener">XML character reference</a> is supported.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="escaping-substitutions"><a class="anchor" href="#escaping-substitutions"></a>Escaping substitutions</h2>
+<div class="sectionbody">
+<div id="ex-slash" class="listingblock">
+<div class="title">Example 88. Backslash</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">In /items/\{id}, the id attribute isn't replaced.
+The curly braces around it are preserved.
+
+\*Stars* isn't displayed as bold text.
+The asterisks around it are preserved.
+
+\&amp;sect; appears as an entity reference.
+It's not converted into the section symbol (&amp;#167;).
+
+\=&gt; The backslash prevents the equals sign followed by a greater
+than sign from combining to form a double arrow character (=&gt;).
+
+\[[Word]] is not interpreted as an anchor.
+The double brackets around it are preserved.
+
+[\[[Word]]] is not interpreted as a bibliography anchor.
+The triple brackets around it are preserved.
+
+\((DD AND CC) OR (DD AND EE)) is not interpreted as a flow index term.
+The double brackets around it are preserved.
+
+The URL \https://example.org isn't converted into an active link.</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-slash">Example 88</a></summary>
+<div class="content">
+<div class="paragraph">
+<p>In /items/{id}, the id attribute isn&#8217;t replaced.
+The curly braces around it are preserved.</p>
+</div>
+<div class="paragraph">
+<p>*Stars* isn&#8217;t displayed as bold text.
+The asterisks around it are preserved.</p>
+</div>
+<div class="paragraph">
+<p>&amp;sect; appears as an entity reference.
+It&#8217;s not converted into the section symbol (&#167;).</p>
+</div>
+<div class="paragraph">
+<p>=&gt; The backslash prevents the equals sign followed by a greater
+than sign from combining to form a double arrow character (&#8658;).</p>
+</div>
+<div class="paragraph">
+<p>[[Word]] is not interpreted as an anchor.
+The double brackets around it are preserved.</p>
+</div>
+<div class="paragraph">
+<p>[[[Word]]] is not interpreted as a bibliography anchor.
+The triple brackets around it are preserved.</p>
+</div>
+<div class="paragraph">
+<p>((DD AND CC) OR (DD AND EE)) is not interpreted as a flow index term.
+The double brackets around it are preserved.</p>
+</div>
+<div class="paragraph">
+<p>The URL https://example.org isn&#8217;t converted into an active link.</p>
+</div>
+</div>
+</details>
+<div id="ex-single-plus" class="listingblock">
+<div class="title">Example 89. Single and double plus inline passthroughs</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">A word or phrase between single pluses, such as +/user/{id}+,
+is not substituted.
+However, the special characters like +&lt;+ and +&gt;+ are still
+escaped in the output.
+
+An attribute reference within a word, such as dev++{conf}++,
+is not replaced.
+
+A plus passthrough will escape standalone formatting marks,
+like +``+, or formatting marks within a word, like all-natural++*++.</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-single-plus">Example 89</a></summary>
+<div class="content">
+<div class="paragraph">
+<p>A word or phrase between single pluses, such as /user/{id},
+is not substituted.
+However, the special characters like &lt; and &gt; are still
+escaped in the output.</p>
+</div>
+<div class="paragraph">
+<p>An attribute reference within a word, such as dev{conf},
+is not replaced.</p>
+</div>
+<div class="paragraph">
+<p>A plus passthrough will escape standalone formatting marks,
+like ``, or formatting marks within a word, like all-natural*.</p>
+</div>
+</div>
+</details>
+<div id="ex-inline-pass" class="listingblock">
+<div class="title">Example 90. Triple plus inline passthrough and inline pass macro</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">+++&lt;del&gt;strike this&lt;/del&gt;+++ is marked as deleted.
+
+pass:[&lt;del&gt;strike this&lt;/del&gt;] is also marked as deleted.</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-inline-pass">Example 90</a></summary>
+<div class="content">
+<div class="paragraph">
+<p><del>strike this</del> is marked as deleted.</p>
+</div>
+<div class="paragraph">
+<p><del>strike this</del> is also marked as deleted.</p>
+</div>
+</div>
+</details>
+</div>
+</div>
+<div class="sect1">
+<h2 id="bibliography"><a class="anchor" href="#bibliography"></a>Bibliography</h2>
+<div class="sectionbody">
+<div id="ex-biblio" class="listingblock">
+<div class="title">Example 91. Bibliography with inbound references</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">_The Pragmatic Programmer_ &lt;&lt;pp&gt;&gt; should be required reading for all developers.
+To learn all about design patterns, refer to the book by the "`Gang of Four`" &lt;&lt;gof&gt;&gt;.
+
+[bibliography]
+== References
+
+* [[[pp]]] Andy Hunt &amp; Dave Thomas. The Pragmatic Programmer:
+From Journeyman to Master. Addison-Wesley. 1999.
+* [[[gof,gang]]] Erich Gamma, Richard Helm, Ralph Johnson &amp; John Vlissides.
+Design Patterns: Elements of Reusable Object-Oriented Software. Addison-Wesley. 1994.</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-biblio">Example 91</a></summary>
+<div class="content">
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><em>The Pragmatic Programmer</em> <a href="#pp">[pp]</a> should be required reading for all developers.
+To learn all about design patterns, refer to the book by the &#8220;Gang of Four&#8221; <a href="#gof">[gang]</a>.</p>
+</div>
+<div class="sect1">
+<h2 id="references"><a class="anchor" href="#references"></a>References</h2>
+<div class="sectionbody">
+<div class="ulist bibliography">
+<ul class="bibliography">
+<li>
+<p><a id="pp"></a>[pp] Andy Hunt &amp; Dave Thomas. The Pragmatic Programmer:
+From Journeyman to Master. Addison-Wesley. 1999.</p>
+</li>
+<li>
+<p><a id="gof"></a>[gang] Erich Gamma, Richard Helm, Ralph Johnson &amp; John Vlissides.
+Design Patterns: Elements of Reusable Object-Oriented Software. Addison-Wesley. 1994.</p>
+</li>
+</ul>
+</div>
+</div>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+</div>
+</div>
+<div class="sect1">
+<h2 id="section-footnotes"><a class="anchor" href="#section-footnotes"></a>Footnotes</h2>
+<div class="sectionbody">
+<div id="ex-footnotes" class="listingblock">
+<div class="title">Example 92. Normal and reusable footnotes</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">A statement.footnote:[Clarification about this statement.]
+
+A bold statement!footnote:disclaimer[Opinions are my own.]
+
+Another bold statement.footnote:disclaimer[]</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-footnotes">Example 92</a></summary>
+<div class="content">
+<table class="tableblock frame-all grid-all stretch unstyled">
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>A statement.<sup class="footnote">[<a id="_footnoteref_1" class="footnote" href="#_footnotedef_1" title="View footnote.">1</a>]</sup></p>
+</div>
+<div class="paragraph">
+<p>A bold statement!<sup class="footnote" id="_footnote_disclaimer">[<a id="_footnoteref_2" class="footnote" href="#_footnotedef_2" title="View footnote.">2</a>]</sup></p>
+</div>
+<div class="paragraph">
+<p>Another bold statement.<sup class="footnoteref">[<a class="footnote" href="#_footnotedef_2" title="View footnote.">2</a>]</sup></p>
+</div>
+<div id="footnotes">
+<hr>
+<div class="footnote" id="_footnotedef_1">
+<a href="#_footnoteref_1">1</a>. Clarification about this statement.
+</div>
+<div class="footnote" id="_footnotedef_2">
+<a href="#_footnoteref_2">2</a>. Opinions are my own.
+</div>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+</div>
+</div>
+<div class="sect1">
+<h2 id="markdown-compatibility"><a class="anchor" href="#markdown-compatibility"></a>Markdown compatibility</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Markdown compatible syntax is an optional feature of the AsciiDoc language and is currently only available when using Asciidoctor.</p>
+</div>
+<div id="ex-md-headings" class="listingblock">
+<div class="title">Example 93. Markdown-style headings</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc"># Document Title (Level 0)
+
+## Section Level 1
+
+### Section Level 2
+
+#### Section Level 3
+
+##### Section Level 4
+
+###### Section Level 5</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-md-headings">Example 93</a></summary>
+<div class="content">
+<h1 id="document-title-level-0-2" class="float">Document Title (Level 0)</h1>
+<h2 id="section-level-1" class="float">Section Level 1</h2>
+<h3 id="section-level-2" class="float">Section Level 2</h3>
+<h4 id="section-level-3" class="float">Section Level 3</h4>
+<h5 id="section-level-4" class="float">Section Level 4</h5>
+<h6 id="section-level-5" class="float">Section Level 5</h6>
+</div>
+</details>
+<div id="ex-fenced" class="listingblock">
+<div class="title">Example 94. Fenced code block with syntax highlighting</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">```ruby
+require 'sinatra'
+
+get '/hi' do
+  "Hello World!"
+end
+```</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-fenced">Example 94</a></summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-ruby hljs" data-lang="ruby">require 'sinatra'
+
+get '/hi' do
+  "Hello World!"
+end</code></pre>
+</div>
+</div>
+</div>
+</details>
+<div id="ex-md-quote" class="listingblock">
+<div class="title">Example 95. Markdown-style blockquote</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">&gt; I hold it that a little rebellion now and then is a good thing,
+&gt; and as necessary in the political world as storms in the physical.
+&gt; -- Thomas Jefferson, Papers of Thomas Jefferson: Volume 11</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-md-quote">Example 95</a></summary>
+<div class="content">
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>I hold it that a little rebellion now and then is a good thing,
+and as necessary in the political world as storms in the physical.</p>
+</div>
+</blockquote>
+<div class="attribution">
+&#8212; Thomas Jefferson<br>
+<cite>Papers of Thomas Jefferson: Volume 11</cite>
+</div>
+</div>
+</div>
+</details>
+<div id="ex-md-blockquote" class="listingblock">
+<div class="title">Example 96. Markdown-style blockquote with block content</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">&gt; &gt; What's new?
+&gt;
+&gt; I've got Markdown in my AsciiDoc!
+&gt;
+&gt; &gt; Like what?
+&gt;
+&gt; * Blockquotes
+&gt; * Headings
+&gt; * Fenced code blocks
+&gt;
+&gt; &gt; Is there more?
+&gt;
+&gt; Yep. AsciiDoc and Markdown share a lot of common syntax already.</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-md-blockquote">Example 96</a></summary>
+<div class="content">
+<div class="quoteblock">
+<blockquote>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>What&#8217;s new?</p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p>I&#8217;ve got Markdown in my AsciiDoc!</p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Like what?</p>
+</div>
+</blockquote>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Blockquotes</p>
+</li>
+<li>
+<p>Headings</p>
+</li>
+<li>
+<p>Fenced code blocks</p>
+</li>
+</ul>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Is there more?</p>
+</div>
+</blockquote>
+</div>
+<div class="paragraph">
+<p>Yep. AsciiDoc and Markdown share a lot of common syntax already.</p>
+</div>
+</blockquote>
+</div>
+</div>
+</details>
+<div id="ex-md-breaks" class="listingblock">
+<div class="title">Example 97. Markdown-style thematic breaks</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-asciidoc hljs" data-lang="asciidoc">---
+
+- - -
+
+***
+
+* * *</code></pre>
+</div>
+</div>
+<details class="result">
+<summary class="title">View result of <a href="#ex-md-breaks">Example 97</a></summary>
+<div class="content">
+<hr>
+<hr>
+<hr>
+<hr>
+</div>
+</details>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="../pass/pass-macro/">Inline Passthroughs</a></span>
+  <span class="next"><a href="../faq/">Frequently Asked Questions (FAQ)</a></span>
+</nav>
+</article>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <div class="footer-main">
+    <figure class="footer-brand">
+      <a class="logo" href="https://asciidoctor.org" target="_blank" rel="noopener"><img src="../../../_/img/asciidoctor-logo.svg" alt="Asciidoctor" width="48"></a>
+      <figcaption class="footer-brand-name"><a href="https://asciidoctor.org" target="_blank" rel="noopener">Asciidoctor</a></figcaption>
+    </figure>
+    <ul class="footer-brand-links">
+      <!--
+      <li><a href="https://asciidoctor.org" target="_blank" rel="noopener">Home</a></li>
+      -->
+      <li><a href="https://docs.asciidoctor.org">Docs</a></li>
+      <li><a href="https://chat.asciidoctor.org" target="_blank" rel="noopener">Chat</a></li>
+      <li><a href="https://github.com/asciidoctor" target="_blank" rel="noopener">Source</a></li>
+      <li><a href="https://discuss.asciidoctor.org" target="_blank" rel="noopener">List (archive)</a></li>
+    </ul>
+    <p class="footer-brand-follow">
+      <a href="https://twitter.com/asciidoctor" title="Follow us on Twitter" target="_blank" rel="noopener"><img src="../../../_/img/twitter-logo.svg" alt="Twitter logo" class="logo" width="28"><span class="handle">@asciidoctor</span></a>
+    </p>
+  </div>
+  <div class="footer-legal">
+    <p>Copyright © 2026 Dan Allen, Sarah White, and individual Asciidoctor contributors. Except where noted, the content is licensed under a Creative Commons Attribution 4.0 International (CC BY 4.0) license.</p>
+    <p>The <a href="https://github.com/asciidoctor/asciidoctor-docs-ui" target="_blank" rel="noopener">UI for this site</a> is derived from the Antora default UI and is licensed under the MPL-2.0 license. Several icons are imported from <a href="https://primer.style/octicons/" target="_blank" rel="noopener">Octicons</a> and are licensed under the MIT license.</p>
+    <p>AsciiDoc® and AsciiDoc Language™ are trademarks of the Eclipse Foundation, Inc.</p>
+  </div>
+  <div class="footer-thanks">
+    <p>Thanks to our <a href="https://asciidoctor.org/supporters/" target="_blank" rel="noopener">backers</a> and <a href="https://asciidoctor.org/contributors/" target="_blank" rel="noopener">contributors</a> for helping to make this project possible. Additional thanks to:</p>
+    <p class="badges">
+      <a href="https://opendevise.com" title="Development support by OpenDevise" target="_blank" rel="noopener"><img src="https://secure.gravatar.com/avatar/823717a797dbd78ceff7b26aa397f383.png?size=80" alt="OpenDevise Logo" width="30"></a>
+      <a href="https://zulip.com" title="Chat powered by Zulip" target="_blank" rel="noopener"><img src="../../../_/img/zulip-logo.svg" alt="Zulip logo" width="30"></a>
+      <a href="https://algolia.com/docsearch" title="Search by Algolia DocSearch" target="_blank" rel="noopener"><img src="../../../_/img/algolia-logo.svg" alt="Algolia logo" width="30"></a>
+      <a href="https://netlify.com" title="Deploys by Netlify" target="_blank" rel="noopener"><img src="../../../_/img/netlify-logo.svg" alt="Deploys by Netlify" width="67"></a>
+    </p>
+    <p>Authored in <a href="https://asciidoc.org" target="_blank" rel="noopener">AsciiDoc</a>.<br>Produced by <a href="https://antora.org" target="_blank" rel="noopener">Antora</a> and <a href="https://asciidoctor.org" target="_blank" rel="noopener">Asciidoctor</a>.</p>
+  </div>
+</footer>
+<script id="site-script" src="../../../_/js/site.js" data-ui-root-path="../../../_"></script>
+<script async src="../../../_/js/vendor/tabs.js"></script>
+<script async src="../../../_/js/vendor/highlight.js"></script>
+<script async id="search-script" src="../../../_/js/vendor/docsearch.js" data-app-id="V1SEVEBOXX" data-api-key="02ab3d2d0cab4dec119447e14abdd3bc" data-index-name="asciidoctor-docs" data-stylesheet="../../../_/css/vendor/docsearch.css"></script>
+  </body>
+</html>

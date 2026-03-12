@@ -133,6 +133,13 @@ Example: "Bell-LaPadula no-read-up property" or "NIST 800-53 AC-3 access enforce
 
 Cite retrieved material in documentation using the source document name and section where possible (e.g., "per NIST SP 800-53r5, AC-3"). Do not fabricate citations — if the query returns no relevant result, say so and note that manual verification is needed.
 
+**Use the `doc-arch` skill when:**
+- Deciding whether content is a tutorial, how-to, reference, or explanation (Diataxis taxonomy)
+- Structuring a procedure (step format, sub-steps, introductory sentences)
+- Working with Antora mechanics (navigation, xrefs, component descriptors)
+- Applying modular documentation patterns (concept/procedure/reference modules)
+- Reviewing whether a page fits its current Antora module
+
 ---
 
 ## Behavioral Constraints

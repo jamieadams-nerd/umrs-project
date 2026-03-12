@@ -87,23 +87,154 @@ Always explain the security rationale. Readers must understand what risk skippin
 
 ---
 
+## Documentation Architecture (Diataxis)
+
+All documentation decisions start from the Diataxis framework. Every page must serve exactly one of four purposes — mixing them causes "blur" that degrades usability.
+
+| Type | Orientation | User need | Answers | UMRS modules |
+|---|---|---|---|---|
+| **Tutorial** | Learning | Acquisition | "Teach me to..." | `devel/` (onboarding) |
+| **How-to** | Task | Application | "How do I..." | `deployment/`, `operations/`, `admin/` |
+| **Reference** | Information | Application | "What is X?" | `reference/`, rustdoc |
+| **Explanation** | Understanding | Acquisition | "Why does..." | `architecture/`, `patterns/` |
+
+### Compass test
+
+When unsure where content belongs, answer two questions:
+1. **Action or cognition?** (practical steps vs. theoretical knowledge)
+2. **Acquisition or application?** (learning/study vs. working)
+
+### Key rules from the framework
+
+- **Tutorials**: You are the teacher. Deliver visible results early. Ruthlessly minimize explanation. Ignore options and alternatives. Aspire to perfect reliability.
+- **How-to guides**: User-centered, not machinery-centered. Focused on one goal. Start and end at meaningful points. Title format: "How to [verb] [noun]".
+- **Reference**: Led by the product, not the user. Mirror code structure. Austere, neutral, factual. Consistent patterns throughout.
+- **Explanation**: Discursive, reflective. Admits opinions and alternatives. Provides historical context and design reasoning. Titles support an implicit "about" prefix.
+
+---
+
+## Modular Documentation (Red Hat)
+
+Content is built from three module types combined into assemblies:
+
+| Module type | Purpose | Title format | Content rule |
+|---|---|---|---|
+| **Concept** (`con-`) | What and why | Noun phrase | No instructions — action items belong in procedures |
+| **Procedure** (`proc-`) | Step-by-step task | Gerund phrase ("Creating X") | Numbered steps in imperative voice; optional prerequisites, verification, troubleshooting |
+| **Reference** (`ref-`) | Lookup data | Noun phrase | Lists or tables for scannability |
+
+**Assemblies** (`assembly-`) collect modules around a user story. An assembly can include other assemblies but a module must not contain another module.
+
+**Snippets** (`snip-`) are reusable text fragments (not standalone modules) — no anchor IDs or H1 headings.
+
+File naming: prefix with type (`con-`, `proc-`, `ref-`, `assembly-`, `snip-`). Every module gets an anchor: `[id="filename_{context}"]`.
+
+---
+
+## Antora Mechanics
+
+### Component version descriptor (`antora.yml`)
+
+Required keys: `name`, `version`. Optional: `nav` (registers navigation files), `start_page`, `title`, `display_version`, `prerelease`, `asciidoc.attributes`.
+
+The `antora.yml` file signals Antora to look for a sibling `modules/` directory. Without it, the location is skipped entirely.
+
+### Navigation
+
+Three requirements: (1) at least one AsciiDoc file with unordered lists, (2) registered in `antora.yml` `nav` key, (3) a UI bundle. Registration order determines menu order. One nav file per module is common.
+
+### Cross-references (xrefs)
+
+Use `xref:` macro: `xref:page.adoc[]` for same-module, add coordinates for cross-module/component. Always prefer `xref:` over shorthand. Default link text comes from target page's reference text.
+
+### Build pipeline
+
+Playbook (YAML) specifies content sources, UI bundle, and site properties. Antora clones repos, finds `antora.yml` files, collects into VFS, converts AsciiDoc to HTML, assembles navigation, wraps in templates, generates sitemaps, publishes. Source location does not determine published URL.
+
+### Best practices
+
+- Always lowercase filenames
+- Paths with `./` resolve relative to playbook location
+- Avoid `#` in branch/tag names (breaks URLs)
+
+---
+
+## Style and Voice
+
+### Google style principles
+- Conversational, friendly, respectful — "like a knowledgeable friend"
+- Avoid "simply", "easily", "just" — condescending and inaccurate
+- State goal before action: "To start X, click Y" (not "Click Y to start X")
+- State location before action: "In the Settings page, click Save"
+- Mark optional steps with "Optional:" at the start
+- Single-step procedures: use a bullet, not a numbered list
+- Omit "please" from instructions
+
+### GitLab documentation voice
+- Concise, direct, precise. Easy to search and scan.
+- Active voice. Customer perspective. No marketing language.
+- Single source of truth: docs-first methodology
+- Sentence case for headings. US English.
+- Start each sentence on a new line in source
+
+### Procedural writing (Google + GitLab)
+- Introductory sentence before numbered steps (end with colon if steps follow immediately)
+- Sub-steps: lowercase letters (a, b, c). Sub-sub-steps: roman numerals (i, ii, iii)
+- Step order: action, command, placeholder explanation, output
+- Multiple methods: separate by headings/tabs, order by likelihood
+
+### API reference documentation
+- Start class docs with purpose (not "This class...")
+- Method docs start with a verb: "Gets the...", "Checks whether...", "Sets the..."
+- Parameters: capitalize first word, end with period. Booleans describe both states.
+- Deprecation: always specify the replacement
+
+---
+
+## Documentation Testing (GitLab model)
+
+The gold standard for doc-ops: treat docs like code with automated quality gates.
+
+Key CI/CD jobs to emulate:
+- **Vale**: Content and style linting
+- **markdownlint**: Structural validation
+- **Link validation**: Checks all relative links resolve
+- **Build validation**: Site generation must succeed
+
+Local testing before push. Pre-push hooks catch issues early.
+
+For this project: `make docs` is the build gate. Zero errors required.
+
+---
+
+## Content Classification Quick Reference
+
+When reviewing or placing content, use this decision table:
+
+| Content contains... | It belongs in... | Diataxis type |
+|---|---|---|
+| "First, do X. Now do Y. You should see..." | Tutorial in `devel/` | Tutorial |
+| "To configure X, edit Y then restart Z" | `deployment/` or `operations/` | How-to |
+| "SecurityContext fields: user, role, type, range" | `reference/` or rustdoc | Reference |
+| "Why UMRS uses dual-path parsing: the threat model..." | `architecture/` or `patterns/` | Explanation |
+| Step-by-step with prerequisites and verification | Procedure module | How-to (modular) |
+| "What is MLS?" + "Why does it matter?" | Concept module in `architecture/` | Explanation |
+
+---
+
 ## Reference Library (RAG)
 
-A semantic search index of authoritative references is available via the `rag-query` skill.
+Two skills provide RAG access:
 
-**Use `rag-query` when:**
-- Writing or reviewing architecture content that touches access control models (Bell-LaPadula, Biba, Clark-Wilson, Chinese Wall, Graham-Denning, HRU)
-- Verifying that NIST control citations are accurate before publishing
-- Explaining Linux capabilities, POSIX ACLs, or SELinux constructs and want to cross-reference the source material
-- Editorial review raises a factual claim that should be grounded in a standard rather than recalled from memory
+### `doc-arch` skill (documentation architecture)
 
-**How to invoke:**
-```
-Use the Skill tool with skill name "rag-query" and a natural-language query.
-Example: "Biba integrity no-write-up rule" or "NIST 800-53 least privilege AC-6"
-```
+Use for questions about content organization, Antora mechanics, modular documentation patterns, style guide rules, and docs-as-code practices. Searches the `doc-structure` collection.
 
-Cite retrieved material using the source document name and section where possible (e.g., "per NIST SP 800-53r5, AC-6"). Do not fabricate citations — if the query returns no relevant result, flag it for manual verification.
+### `rag-query` skill (security references)
+
+Use for access control models (Bell-LaPadula, Biba, Clark-Wilson), NIST control citations, Linux capabilities, SELinux constructs, and kernel internals.
+
+Cite retrieved material using the source document name and section where possible. Do not fabricate citations — if the query returns no relevant result, flag it for manual verification.
 
 ---
 
@@ -113,6 +244,21 @@ Cite retrieved material using the source document name and section where possibl
 - Never delete existing documentation without explicit user instruction; flag duplicates or obsolete content and ask
 - When a document is complete, summarize what was written or revised, flag anything unresolved, and hand it back to the user
 - Update agent memory with terminology decisions, structural conventions, and recurring reviewer feedback
+
+---
+
+## Doc-Ops Discipline
+
+Before reporting any documentation task as complete, run this checklist:
+
+1. **Build**: Run `make docs 2>&1` from the repo root — zero errors required
+2. **Navigation**: Confirm new or moved pages appear in the correct `nav.adoc`
+3. **Cross-references**: Verify xrefs resolve (the build output reports broken ones)
+4. **Module registration**: If a new Antora module was added, confirm it is registered in `docs/antora.yml`
+5. **Version field**: Do not change the `version` field in `antora.yml` without explicit instruction
+6. **Fix before done**: If the build fails, fix the failures before reporting completion
+
+This checklist is non-negotiable. A documentation change that breaks the build is not complete.
 
 ---
 

@@ -64,6 +64,7 @@ natural phrases describing the concept you need, not as keyword strings.
 | `kernel-docs` | Linux kernel internals, LSM hooks, namespaces, capabilities |
 | `linux-fs-standards` | Filesystem standards, inode structure, xattr storage, VFS |
 | `selinux-notebook` | SELinux policy, MLS constraints, type enforcement, contexts |
+| `doc-structure` | Documentation architecture, Antora structure, modular docs, docs-as-code, style guides |
 
 Add new collections as the researcher agent ingests them.
 

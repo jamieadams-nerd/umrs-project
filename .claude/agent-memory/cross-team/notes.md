@@ -36,6 +36,163 @@ Mark entries `resolved` when acted on. Do not delete entries.
 
 ---
 
+## [2026-03-12] researcher → security-engineer, security-auditor: DoD 5200.01 series + CUI policy in RAG
+
+**Status**: open
+
+Five DoD Information Security Program documents downloaded from `esd.whs.mil` and ingested into RAG collection `dod-5200` (360 chunks):
+
+| Document | Chunks | Key content |
+|---|---|---|
+| DoDI 5200.01 | 13 | Authorizing directive — collateral, SAP, SCI, CUI responsibilities |
+| DoDM 5200.01 Vol 1 | 75 | Classification and declassification (Change 3, Jan 2025) |
+| DoDM 5200.01 Vol 2 | 111 | **Marking procedures** — directly relevant to CUI label rendering in `cui-labels` and `mcs-setrans` |
+| DoDM 5200.01 Vol 3 | 121 | Protection safeguards — storage, transmission, access controls |
+| DoDI 5200.48 | 40 | **DoD CUI policy** — identification, marking, handling. Supersedes Vol 4. Requires NIST 800-171. |
+
+Query: `rag-query --collection dod-5200`. Source PDFs at `refs/dod/`.
+
+See Task #6 for full details.
+
+---
+
+## [2026-03-12] researcher → all-agents: RAG expansion complete — 5 new/expanded collections
+
+**Status**: open
+
+The following RAG collections were added or significantly expanded today. All are immediately
+queryable via the `rag-query` skill.
+
+**Updated collection (major expansion):**
+
+| Collection | Old chunks | New chunks | What was added |
+|---|---|---|---|
+| nist | 461 | 1,447 | sp800-171r2, sp800-171r3, **sp800-171Ar3** (new), sp800-218-ssdf, sp800-53r5, fips140-2, fips140-3 |
+
+**New collections:**
+
+| Collection | Chunks | What's in it |
+|---|---|---|
+| rustdoc-book | 194 | Rustdoc reference book (doc.rust-lang.org/rustdoc/print.html) — doc comment syntax, attributes, intra-doc links, test harness |
+| asciidoctor-ref | 67 | AsciiDoc syntax quick reference + document structure guide |
+| dita-spec | 100 | OASIS DITA 1.3 Part 2 Technical Content — concept/task/reference topic type definitions |
+
+**New document added to refs/:**
+- `refs/nist/sp800-171Ar3.pdf` — NIST SP 800-171A Rev 3 (Assessment procedures for CUI controls).
+  SHA-256: `946d963707cdaba19901c49d5c89517adb00844fe5d101e9dac7febc68e34cfa`
+  Manifest entry added to `refs/manifest.md`.
+
+**Notes for specific agents:**
+- **tech-writer / senior-tech-writer**: `rustdoc-book` and `asciidoctor-ref` are now searchable —
+  useful when writing Rust doc comments or Antora AsciiDoc content.
+- **security-engineer / security-auditor**: `nist` collection now includes 800-171A Rev 3 assessment
+  procedures and FIPS 140-2/3. Query with `rag-query --collection nist` for control assessment details.
+- **rust-developer**: `rustdoc-book` collection is available for rustdoc syntax questions.
+
+**Pending (requires user decision):**
+- DoD 5200.01 (Information Security Program, 4 volumes): URLs located at esd.whs.mil (official .mil
+  DoD Issuances site, not currently on approved source list). Flagged for user confirmation.
+- IEEE 829 (Software Test Documentation): paywalled; requires manual download if desired.
+
+---
+
+---
+
+## [2026-03-12] researcher → all-agents: Reference document locations — know where to look
+
+**Status**: open
+
+There are **three layers** of reference material. Know which to use:
+
+| Layer | Path | What's there | When to use |
+|---|---|---|---|
+| **RAG database** | Queried via `rag-query` skill | Chunked, searchable text from all ingested collections | **Default for any technical question** — fast semantic search, use routinely when writing code or docs |
+| **Source documents** | `.claude/references/<collection>/` | Original PDFs, HTML, markdown used to build the RAG | When you need to read the full original document, verify page numbers, or check context around a RAG result |
+| **Official refs** | `refs/nist/`, `refs/dod/`, `refs/reports/` | Canonical copies of standards (NIST SPs, FIPS, CMMC, DoD docs) and researcher reports | Authoritative source of record; integrity-verified via `refs/manifest.md` SHA-256 checksums |
+
+**Key distinctions:**
+- `refs/` is the **permanent, auditable archive** — checksummed, manifested, never modified after download
+- `.claude/references/` is the **RAG source staging area** — may contain copies from `refs/` plus additional material (academic papers, man pages, etc.) organized by collection
+- The RAG database is the **search index** — derived from `.claude/references/`, not from `refs/` directly
+- Some documents exist in both `refs/` and `.claude/references/` (e.g., CMMC PDFs, NIST SPs) — `refs/` is the authoritative copy
+
+**Current RAG collections** (query any via `rag-query`):
+
+| Collection | Chunks | Topics |
+|---|---|---|
+| kernel-docs | 22,738 | Linux kernel documentation tree |
+| access-control | 1,360 | Bell-LaPadula, Biba, Brewer-Nash, Saltzer-Schroeder, ABAC, ZTA, SELinux, capabilities, POSIX ACL |
+| selinux-notebook | 691 | SELinux reference (policy, TE, MLS/MCS, labeling, xattrs) |
+| cmmc | 545 | CMMC Final Rule (32 CFR 170) + Assessment Guide L2 v2.13 |
+| dod-5200 | 360 | DoD 5200.01 (Info Security Program, Vols 1-3) + DoDI 5200.48 (CUI policy) |
+| nist | 1,447 | NIST SPs (800-53r5, 800-171r2, 800-171r3, 800-171Ar3, 800-218) + FIPS 140-2/3 + others |
+| doc-structure | 102 | Diataxis, Antora, modular docs, style guides |
+| rust-security | 73 | Rust security patterns and references |
+| linux-fhs-2-3 | 45 | Filesystem Hierarchy Standard |
+
+**Rule of thumb**: Start with `rag-query`. If you need more context, read the source in `.claude/references/`. If you need the checksummed authoritative copy, go to `refs/`.
+
+---
+
+## [2026-03-12] researcher → security-auditor, security-engineer: CMMC documents downloaded and in RAG
+
+**Status**: open
+
+Two critical CMMC documents are now downloaded, verified, and searchable in the RAG (collection: `cmmc`, 545 chunks):
+
+| Document | Version | Published | Chunks | Path |
+|---|---|---|---|---|
+| CMMC Final Rule (32 CFR Part 170) | 89 FR 83092 | Oct 15, 2024 | 282 | `refs/dod/cmmc-32cfr170-final-rule.pdf` |
+| CMMC Assessment Guide Level 2 | v2.13 | Sep 2024 | 263 | `refs/dod/cmmc-assessment-guide-l2.pdf` |
+
+**Important corrections made to `refs/manifest.md`:**
+- The previously listed Final Rule URL was **wrong** (pointed to an OMB submission, not the CMMC rule). Corrected to the actual final rule (document 2024-22905).
+- The Assessment Guide URL was **stale** (404); corrected to the v2.13 filename (`AssessmentGuideL2v2.pdf`).
+- The Final Rule is from **October 2024** (not December 2023) — this is the legally binding final rule, effective December 16, 2024, not the proposed rule.
+
+**security-auditor**: See Task #2 for detailed action items — verify control citations, check for v2.0→v2.13 deltas, confirm FR citation accuracy in docs.
+
+**security-engineer**: See Task #1 for action items — map Final Rule requirements to UMRS architecture, identify CMMC-specific gaps beyond NIST 800-171.
+
+Use `rag-query` skill with collection `cmmc` to search these documents.
+
+---
+
+## [2026-03-12] coordinator → all-agents: RAG collections fully ingested
+
+**Status**: open
+
+All RAG collections are now ingested and available for querying via the `rag-query` skill:
+
+| Collection | Chunks |
+|---|---|
+| kernel-docs | 22,738 |
+| access-control | 1,360 |
+| selinux-notebook | 691 |
+| nist | 461 |
+| doc-structure | 102 |
+| rust-security | 73 |
+| linux-fhs-2-3 | 45 |
+
+Use the `rag-query` skill to search any of these collections. The `access-control` collection
+covers foundational papers, OS security models, rule catalogs, and standards.
+
+---
+
+## [2026-03-12] coordinator → senior-tech-writer, tech-writer: doc-arch skill and internalized knowledge
+
+**Status**: open
+
+Two changes to the documentation writing agents:
+
+1. **senior-tech-writer.md** — expanded with internalized knowledge distilled from 7 documentation architecture sources (Diataxis, Divio, Antora, Red Hat modular docs, Write the Docs, Google style, GitLab docs). Key additions: Diataxis taxonomy with UMRS module mapping, compass test, modular documentation rules, Antora mechanics, style/voice guidelines, procedural writing rules, content classification quick reference.
+
+2. **New `doc-arch` skill** — searches the `doc-structure` RAG collection (102 chunks). Use this skill for deeper queries about documentation architecture, Antora structure, modular doc patterns, style guide rules, and docs-as-code practices. The senior-tech-writer has the framework internalized; the skill provides backup for specific questions.
+
+The tech-writer agent definition has also been updated to reference the `doc-arch` skill.
+
+---
+
 ## [2026-03-11] coordinator → all-agents: rust-prototypes workspace is out of scope
 
 **Status**: open

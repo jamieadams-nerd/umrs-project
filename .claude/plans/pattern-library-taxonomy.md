@@ -1,247 +1,277 @@
-# Plan: Pattern Library Taxonomy — Concepts, Patterns, Techniques, Process
+# Plan: Pattern Library Taxonomy — Implementation Patterns with Provenance Tags
 
 **Date**: 2026-03-11
-**Status**: Proposed — awaiting Jamie review
+**Status**: Approved — Phase 1 ready for implementation
+**Reviewed by**: senior-tech-writer (2026-03-12), Jamie (2026-03-12)
 **Author**: tech-writer
-**Affects**: `docs/modules/patterns/`, potential new `docs/modules/concepts/`
+**Affects**: `docs/modules/patterns/`
+
+---
+
+## Decisions (locked 2026-03-12)
+
+1. **Single kind: "Implementation Pattern"** — collapse "Design Pattern" and "Coding Technique"
+   into one kind. Use a sub-label for scope: *architectural* or *technique*.
+
+2. **High-assurance provenance tag** — patterns derived from RAIN/RTB, NIST, or other formal
+   security frameworks get a visible badge so developers know they are picking from a
+   security-mandated pool, not just a general engineering best-practice pool.
+   Format: NOTE admonition at top of page, e.g.:
+   ```asciidoc
+   NOTE: *High-Assurance Pattern* — derived from NSA RTB RAIN (Non-Bypassability).
+   ```
+
+3. **Kind label format**: NOTE admonitions (theme-independent, works today). No CSS role badges.
+
+4. **Two-zone page template**: each pattern page uses two clearly marked zones:
+   - Zone 1: "Why This Pattern Exists" — concept/explanation (can be read independently)
+   - Zone 2: "Implementation" — reference/procedure (consulted during work)
+
+5. **Concept basis column**: add a "Concept basis" column to the index table linking each
+   pattern to its `security-concepts/` page where applicable. Empty cells = visible gap list.
+
+6. **Phase 2 becomes cross-linking audit** — before writing any new concept pages, audit
+   existing `security-concepts/` pages (5 exist) against patterns for coverage.
+
+7. **`security-concepts/` module**: deferred. Jamie will revisit when a more complete list of
+   topics is ready. Not to be used as a catch-all.
+
+8. **Phase 3 (module split)**: deferred indefinitely until `security-concepts/` scope is clear.
+
+9. **"Process Discipline"**: kept as a kind but acknowledged as having only one member
+   (supply chain hygiene). Will grow naturally or be folded later.
 
 ---
 
 ## Problem Statement
 
-The current `patterns/` module mixes four distinct kinds of content under one label:
-
-| Current page | What it actually is |
-|---|---|
-| pattern-tpi.adoc | Coding technique — a specific implementation recipe |
-| pattern-toctou.adoc | Coding technique |
-| pattern-provenance.adoc | Coding technique (implements a broader concept) |
-| pattern-fail-closed.adoc | Design pattern — an architectural decision |
-| pattern-loud-failure.adoc | Design pattern |
-| pattern-non-bypassability.adoc | Design pattern (with coding technique aspects) |
-| pattern-error-discipline.adoc | Design pattern |
-| pattern-sec.adoc | Design pattern |
-| pattern-secure-arithmetic.adoc | Coding technique |
-| pattern-bounds-safe.adoc | Coding technique |
-| pattern-zeroize.adoc | Coding technique |
-| pattern-constant-time.adoc | Coding technique |
-| pattern-supply-chain.adoc | Process discipline |
-
-All of these answer "how do I implement X?" They do not answer "what is X and why does it
-exist?" That second question — explaining the underlying security concept — is missing from
-the library entirely and will need to be added as the project matures.
-
-As the library grows (privilege separation, provenance as a broader concept, reference monitor
-theory, information flow control, Bell-LaPadula, least privilege), the absence of a
-clear taxonomy will make the library harder to navigate, harder to assign to writers, and
-harder to convert into blog posts targeting different audiences.
+The current `patterns/` module mixes content types under one label without indicating which
+patterns are general engineering practices and which are mandated by formal security frameworks
+(RAIN, RTB, NIST). As the library grows, developers need to distinguish between "good idea"
+and "security requirement."
 
 ---
 
-## Proposed Taxonomy
+## Taxonomy
 
-Four kinds of content. Every page belongs to exactly one.
+Three kinds. Every page belongs to exactly one.
 
-### 1. Security Concept
+### 1. Implementation Pattern
 
-A foundational security principle. Technology-independent. Answers "what is this, why does
-it matter, and what class of threats does it address?"
+A pattern applied in the UMRS codebase — either an architectural decision or a language-specific
+coding technique. Sub-labeled as *architectural* or *technique* for navigation grouping.
 
-Audience: developers new to high-assurance design; security auditors validating design
-rationale; anyone asking "why does UMRS do things this way?"
+Patterns with formal security provenance (RAIN, RTB, NIST) carry a **High-Assurance Pattern**
+badge. This tells developers: "this is not optional engineering taste — it traces to a specific
+security control or principle."
 
-Blog voice: explainer post. Accessible to a broad technical audience.
+**Sub-label: Architectural** — structural decisions at module/crate boundaries:
+- Fail-Closed
+- Loud Failure
+- Non-Bypassability / RAIN
+- Error Information Discipline
+- Sealed Evidence Cache / SEC
 
-Examples of concepts we will eventually need:
-- Reference Monitor (completeness, non-bypassability, tamper-resistance)
-- Privilege Separation
-- Provenance (broader: chain of custody for trusted data; not just the fstatfs check)
-- Information Flow Control / Lattice Model (the theory behind MLS)
-- Least Privilege
-- Compartmentalization
-- Non-interference (formal property; advanced)
+**Sub-label: Technique** — language-specific implementation recipes:
+- Two-Path Independence (TPI)
+- TOCTOU Safety
+- Provenance Verification
+- Secure Arithmetic
+- Bounds-Safe Indexing
+- Zeroize Sensitive Data
+- Constant-Time Comparison
 
-### 2. Design Pattern
+### 2. Process Discipline
 
-An architectural decision that applies a concept to a specific component boundary. Says
-"structure your component this way so the concept is enforced." Language-agnostic, but
-illustrated with Rust.
+A development workflow practice at the workspace or release level, not within individual modules.
 
-Audience: developers designing a new module or crate; architects reviewing a proposal.
+Current members:
+- Supply Chain Hygiene
 
-Blog voice: technical deep-dive. Explains the pattern and the threat it prevents.
+### 3. Security Concept *(deferred — not in patterns/ module)*
 
-Current examples:
-- Fail-Closed (applies: Reference Monitor completeness)
-- Loud Failure (applies: Audit completeness)
-- Non-Bypassability / RAIN (applies: Reference Monitor; bridges concept and technique)
-- Error Information Discipline (applies: Least Privilege of information)
-- Sealed Evidence Cache / SEC (applies: Integrity + Provenance)
-
-### 3. Coding Technique
-
-A language-specific implementation recipe that realizes a pattern. Says "write exactly this
-code." Rust-specific. Includes the crate, the trait, the call pattern.
-
-Audience: developers implementing a feature; reviewers checking correctness.
-
-Blog voice: code walkthrough. Rust-specific. Shows the before and after.
-
-Current examples:
-- Two-Path Independence (TPI) — nom + FromStr, fail-closed on disagreement
-- TOCTOU Safety — fd-anchored I/O via rustix
-- Provenance Verification — ProcfsText + fstatfs magic check
-- Secure Arithmetic — checked_*, saturating_*
-- Bounds-Safe Indexing — .get(i) over [i]
-- Zeroize Sensitive Data — zeroize crate, ZeroizeOnDrop
-- Constant-Time Comparison — subtle crate, ConstantTimeEq
-
-### 4. Process Discipline
-
-A development workflow practice that is not a code artifact. Applied at the workspace or
-release level, not within individual modules.
-
-Current examples:
-- Supply Chain Hygiene — cargo-audit before each new dependency
+Foundational security principles live in `docs/modules/security-concepts/`. The patterns module
+links to them via the "Concept basis" column in the index table. New concept pages are not
+created in `patterns/` — they go to `security-concepts/` when Jamie is ready.
 
 ---
 
 ## Overlap Is Expected
 
-Some pages span two kinds. Non-Bypassability is both a concept (the RAIN property) and a
-design pattern (private constructors, newtype wrappers). Provenance is both a concept
-(chain of custody) and a coding technique (the fstatfs check).
+Some pages span architectural and technique. Non-Bypassability is both an architectural
+principle (RAIN) and a set of coding techniques (private constructors, newtype wrappers).
 
-The rule: each page belongs to its primary kind. The See Also section and inline links
-connect the two levels. A concept page for "Provenance" would link to the existing
-`pattern-provenance.adoc` coding technique as its primary UMRS implementation. They are
-complementary, not duplicates.
+The rule: each page belongs to its primary sub-label. The See Also section connects levels.
 
 ---
 
-## Proposed Structure
+## Phase 1 — Label, Tag, and Cross-Link (do now)
 
-### Phase 1 — Label Without Moving (do now)
+No files move. No new module. No URL changes.
 
-Add a kind label to each existing page. Minimal change. No files move. No new module.
+### 1a. Update the Pattern Reference Table in `index.adoc`
 
-**Implementation:**
-1. Add an AsciiDoc role badge below the title on each page:
-   ```asciidoc
-   [.pattern-kind]#Coding Technique#
-   ```
-   Or use a simple NOTE admonition on pages where the distinction is non-obvious.
+Add "Sub-group" and "Concept basis" columns:
 
-2. Update the Pattern Reference Table in `index.adoc` to add a "Kind" column:
-   ```asciidoc
-   [cols="1,2,1,1,1", options="header"]
-   | Pattern | What it does | Kind | Primary control | Status
-   ```
+```asciidoc
+[cols="2,3,1,1,1,1", options="header"]
+| Pattern | What it does | Sub-group | Provenance | Concept basis | Status
+```
 
-3. Rename the "Patterns by Group" section to "By Kind" with sub-groups:
-   - Design Patterns
-   - Coding Techniques
-   - Process Disciplines
-   - Security Concepts (initially empty; placeholder for Phase 2)
+"Provenance" values: `HA` (high-assurance — RAIN/RTB/NIST derived) or blank.
+"Concept basis" values: xref link to `security-concepts/` page or blank.
 
-**Estimated effort**: 1–2 hours. No reader-visible URL changes.
+### 1b. Add provenance badge to high-assurance pattern pages
+
+At the top of each high-assurance pattern page, below the title:
+
+```asciidoc
+NOTE: *High-Assurance Pattern* — derived from <source> (<specific control/principle>).
+```
+
+Examples:
+- TPI: `NIST 800-53 SI-10 (Input Validation)`
+- TOCTOU Safety: `NSA RTB RAIN (Non-Bypassability)`
+- Provenance Verification: `NIST 800-53 SI-7 (Software Integrity)`
+- Non-Bypassability: `NSA RTB RAIN`
+- Fail-Closed: `NSA RTB (Fail Secure)`
+- Zeroize: `NIST 800-53 SC-28 (Protection of Information at Rest)`
+
+Patterns without formal security provenance (e.g., Bounds-Safe Indexing) get no badge —
+they are good engineering practice, not security-mandated.
+
+### 1c. Add two-zone structure markers to pattern pages
+
+Each pattern page should use this template structure:
+
+```asciidoc
+== Why This Pattern Exists
+// Zone 1: concept content — threat, consequence, control basis
+// Can be read independently by auditors or newcomers
+
+== The Pattern
+// Zone 2: implementation content — invariant, rule, code recipe
+// Consulted during active development work
+
+== In the UMRS Codebase
+// Zone 2 continued: actual types, traits, file paths
+
+== When to Apply
+// Trigger conditions from Architectural Review Triggers table
+```
+
+### 1d. Reorganize nav.adoc grouping
+
+Rename "Patterns by Group" to sub-groups:
+
+```
+* Architectural Patterns
+** Fail-Closed
+** Loud Failure
+** ...
+* Coding Techniques
+** TPI
+** TOCTOU Safety
+** ...
+* Process
+** Supply Chain Hygiene
+```
+
+### 1e. Cross-linking pass
+
+For each pattern, check `security-concepts/` for a matching concept page and add the link
+to the "Concept basis" column. Current `security-concepts/` pages:
+- `reference-monitor.adoc`
+- `integrity-and-provenance.adoc`
+- `rtb-vnssa.adoc`
+- `security-model.adoc`
+- `truth-concepts.adoc`
 
 ---
 
-### Phase 2 — Add Concept Pages (when first concept is ready)
+## Phase 2 — Cross-Linking Audit (when Phase 1 is complete)
 
-Add `concept-*.adoc` pages to the existing `patterns/` module using a naming convention.
+Before writing any new content:
+
+1. Audit the 5 existing `security-concepts/` pages against all pattern pages.
+2. Identify which patterns have matching concept coverage and which do not.
+3. Populate all "Concept basis" cells that have matches.
+4. Report gaps — concept content genuinely missing from any existing page.
+
+Only then decide whether new concept pages are needed and where they belong.
+
+---
+
+## Phase 3 — Cryptography Section (proposed — awaiting review)
+
+**Date added**: 2026-03-12
+**Status**: Draft — review later
+
+A new major section in the pattern library dedicated to cryptography. This is not a single
+pattern page — it is a multi-page section covering the full cryptographic posture of UMRS.
+
+### Scope
+
+| Area | Content |
+|---|---|
+| FIPS-compliant primitives | Authoritative list of FIPS 140-2/140-3 validated algorithms and their status (approved, deprecated, transitioning) |
+| Purpose mapping | What each primitive is used for — HMAC for integrity sealing, AES-GCM for data-at-rest, key derivation, digital signatures, etc. |
+| Code examples | Rust code showing correct usage of each primitive in a FIPS-compliant context — crate selection, initialization, error handling |
+| UMRS cross-references | Where cryptography is used in UMRS source (e.g., SEC sealing key, future dm-crypt integration) and in the broader US system context |
+| Post-quantum cryptography | PQC algorithms (ML-KEM, ML-DSA, SLH-DSA per NIST FIPS 203/204/205), migration timeline, hybrid approaches, impact on UMRS |
+
+### Proposed page structure
 
 ```
 docs/modules/patterns/pages/
-  index.adoc
-  concept-reference-monitor.adoc   ← new
-  concept-privilege-separation.adoc ← new
-  concept-provenance.adoc          ← new
-  pattern-*.adoc                   ← unchanged
+  crypto-overview.adoc           ← Section landing page: why crypto matters in UMRS, FIPS mandate
+  crypto-fips-approved.adoc      ← Reference table: validated algorithms, modes, key sizes, status
+  crypto-primitives-usage.adoc   ← What each primitive does, when to use it, Rust code examples
+  crypto-in-umrs.adoc            ← Cross-reference: where UMRS uses crypto, which controls apply
+  crypto-post-quantum.adoc       ← PQC landscape, NIST standards, migration strategy, hybrid schemes
 ```
 
-Update `nav.adoc` to add a "Security Concepts" group above the pattern groups.
+### Provenance
 
-Update `index.adoc` to add a "Security Concepts" table above the pattern table.
+All pages in this section carry the High-Assurance Pattern badge:
+- `NIST FIPS 140-2/140-3` (cryptographic module validation)
+- `NIST SP 800-175B` (guideline for using crypto standards)
+- `NIST SP 800-131A` (transitioning crypto algorithms)
+- `NIST 800-53 SC-12, SC-13` (cryptographic key management, cryptographic protection)
 
-**When to start Phase 2**: When we have at least two concept pages ready to write. Writing
-one concept page in isolation is not worth the structural overhead.
+### Dependencies
 
-**Suggested first two concept pages** (because they are the theoretical foundation for the
-most existing patterns):
-1. `concept-reference-monitor.adoc` — basis for RAIN, Non-Bypassability, Fail-Closed
-2. `concept-provenance.adoc` — basis for Provenance Verification, SEC, evidence chains
+- RAG `nist` collection already contains FIPS 140-2/140-3 and SP 800-175B
+- Researcher may need to acquire NIST SP 800-131A Rev 2 (Transitioning Crypto Algorithms)
+  and NIST FIPS 203/204/205 (PQC standards) for the post-quantum section
+- rust-developer input needed for code examples and crate recommendations
+- security-engineer input needed for FIPS mode validation on RHEL10
 
----
+### Open questions (for later review)
 
-### Phase 3 — Separate Module (when concept library reaches ~6 pages)
-
-If the concept library grows large enough that it warrants its own navigation tree and
-cross-promotion (blog series, standalone section in the site header), migrate to a separate
-Antora module.
-
-```
-docs/modules/patterns/   ← design patterns + coding techniques + process
-docs/modules/concepts/   ← security concepts only
-```
-
-Register both in `antora.yml`. Update all cross-module xrefs.
-
-**Trigger for Phase 3**: Six or more concept pages, OR a use case where the concepts section
-needs to appear independently in site navigation (separate nav bar entry, separate sitemap
-category, etc.).
-
-**This is deferred work.** Do not migrate until the trigger condition is met. Premature
-module splitting adds xref maintenance overhead with no reader benefit.
+1. Should PQC get its own standalone page or be a subsection of the overview?
+2. Which Rust crates are FIPS-validated or wrap FIPS-validated libraries (e.g., `aws-lc-rs`,
+   `openssl` with FIPS provider)? Needs rust-developer + security-engineer assessment.
+3. Should this section also cover key management lifecycle (generation, storage, rotation,
+   destruction) or is that a separate operations concern?
+4. Scope of "US system context" — how deep do we go into system-level crypto (dm-crypt,
+   LUKS, IMA signatures) vs. application-level crypto?
 
 ---
 
-## Blog Post Mapping
+## Phase 4 — Deferred
 
-The taxonomy maps cleanly to two editorial categories:
-
-| Kind | Blog category | Target audience | Tone |
-|---|---|---|---|
-| Security Concept | "Understanding X" | Broad technical; security-curious developers | Accessible; no code required |
-| Design Pattern | "Building X the high-assurance way" | Senior developers; architects | Technical; architecture diagrams |
-| Coding Technique | "Implementing X safely in Rust" | Rust developers | Code-first; before/after |
-| Process Discipline | "Our X workflow" | DevSecOps; maintainers | Process-focused |
-
-The SEC page (`pattern-sec.adoc`) is already blog-ready as a Design Pattern post. The
-`Summary` section in each file is the post's lede paragraph.
+Module split and `security-concepts/` expansion deferred until Jamie has a complete
+topic list and clear scope for that module. No action until then.
 
 ---
 
-## Immediate Next Steps (Phase 1 only)
+## Open Questions (resolved)
 
-In priority order:
-
-1. **Add Kind column to the Pattern Reference Table** in `index.adoc`
-2. **Rename "Patterns by Group" to "By Kind"** and reorganize the group list
-3. **Add kind badge to each pattern page** (role or NOTE admonition)
-4. **Write two concept page stubs**: `concept-reference-monitor.adoc` and
-   `concept-provenance.adoc` — title, description, one-paragraph overview, See Also only.
-   Full content deferred until Jamie provides the source material or approves expansion.
-
-Phase 2 and Phase 3 are triggered by content volume, not by calendar.
-
----
-
-## Open Questions for Jamie
-
-1. **Kind label format**: Role badge (`[.pattern-kind]#Coding Technique#`) requires CSS
-   in the Antora UI theme. A NOTE admonition is theme-independent and works today.
-   Which is preferred?
-
-2. **First concept pages**: Should the tech-writer draft `concept-reference-monitor.adoc`
-   and `concept-provenance.adoc` now as stubs, or wait until there is source material
-   (a design doc, a whitepaper, or a "here's what I want to say" note from Jamie)?
-
-3. **Blog conversion**: Is this a concrete near-term goal, or a "nice to have someday"?
-   If concrete, we should align the taxonomy work with whatever publishing platform will
-   be used, so the AsciiDoc → blog conversion is low-friction.
-
-4. **Non-Bypassability**: This page spans Design Pattern and Security Concept. Leave it
-   as a design pattern and let a future `concept-reference-monitor.adoc` absorb the
-   conceptual explanation? Or split the page now?
+| # | Question | Decision |
+|---|---|---|
+| 1 | Kind label format? | NOTE admonitions — theme-independent |
+| 2 | First concept pages? | Deferred — audit existing `security-concepts/` first |
+| 3 | Blog conversion? | Not a near-term priority; taxonomy supports it when ready |
+| 4 | Non-Bypassability split? | Leave as Implementation Pattern (architectural); future concept page links to it |
+| 5 | `security-concepts/` coverage? | Deferred — Jamie will revisit with a fuller list |

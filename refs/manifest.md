@@ -48,19 +48,24 @@ zeroize, bounds-safe indexing), supply chain hygiene (PO.1), and vulnerability t
 | Field | Value |
 |---|---|
 | Full title | Cybersecurity Maturity Model Certification (CMMC) Program — Final Rule |
-| Issuing authority | Department of Defense |
-| Published | Federal Register, December 26, 2023 (Vol. 88, No. 246) |
-| Downloaded | — |
+| Issuing authority | Department of Defense, Office of the Secretary |
+| FR citation | 89 FR 83092 |
+| Published | Federal Register, October 15, 2024 (Vol. 89, No. 199) |
+| Effective | December 16, 2024 |
+| Docket | DoD-2023-OS-0063 / RIN 0790-AL49 |
+| Downloaded | 2026-03-12 |
 | Local path | `dod/cmmc-32cfr170-final-rule.pdf` |
-| Source URL | https://www.govinfo.gov/content/pkg/FR-2023-12-26/pdf/2023-27756.pdf |
-| SHA-256 | — |
-| Status | ⚠ Requires manual download — govinfo.gov blocks automated requests |
+| Source URL | https://www.govinfo.gov/content/pkg/FR-2024-10-15/pdf/2024-22905.pdf |
+| SHA-256 | `34105216b8735f14d42261d2a6794d6f12dacc4fa60bfc30cb2589d1a7dc5fc3` |
+| Status | ✓ Downloaded |
 
-**Manual download instructions**: Open the source URL in a browser and save the PDF to
-`refs/dod/cmmc-32cfr170-final-rule.pdf`, then run `sha256sum` and record the value here.
+**Note**: The previously listed URL (`FR-2023-12-26/pdf/2023-27756.pdf`) was an unrelated
+OMB submission. The proposed rule was 88 FR 89058 (Dec 26, 2023, document 2023-27280);
+this is the **final rule** published October 2024.
 
 **Key relevance**: Legal authority for CMMC Level 2 requirements; defines the regulatory
-basis for CUI protection practices in this codebase.
+basis for CUI protection practices in this codebase. Establishes 32 CFR Part 170 with
+a 4-phase implementation plan over three years.
 
 ---
 
@@ -68,17 +73,20 @@ basis for CUI protection practices in this codebase.
 
 | Field | Value |
 |---|---|
-| Full title | CMMC Assessment Guide Level 2 v2.0 |
+| Full title | CMMC Assessment Guide Level 2 |
 | Issuing authority | Department of Defense (DoD CIO) |
-| Version | 2.0 |
-| Downloaded | — |
+| Version | 2.13 |
+| Published | September 2024 |
+| Document ID | DoD-CIO-00003 (ZRIN 0790-ZA19), 24-T-0461 |
+| Downloaded | 2026-03-12 |
 | Local path | `dod/cmmc-assessment-guide-l2.pdf` |
-| Source URL | https://dodcio.defense.gov/Portals/0/Documents/CMMC/AssessmentGuide_L2.pdf |
-| SHA-256 | — |
-| Status | ⚠ Requires manual download — dodcio.defense.gov (Akamai) blocks automated requests |
+| Source URL | https://dodcio.defense.gov/Portals/0/Documents/CMMC/AssessmentGuideL2v2.pdf |
+| SHA-256 | `0dcaba1626a0d23893981d74dd3f0f2338fff54cece67d81bc811ce76392d867` |
+| Status | ✓ Downloaded |
 
-**Manual download instructions**: Open the source URL in a browser and save the PDF to
-`refs/dod/cmmc-assessment-guide-l2.pdf`, then run `sha256sum` and record the value here.
+**Note**: The previous URL (`AssessmentGuide_L2.pdf`) returned 404 — the document was
+renamed to `AssessmentGuideL2v2.pdf` as part of the v2.x series. The `dodcio.defense.gov`
+domain now redirects to `dowcio.war.gov` (Akamai CDN); the content path is unchanged.
 
 **Key relevance**: Defines the specific assessment objectives and evidence requirements
 for each CMMC Level 2 practice; maps directly to NIST 800-171 controls.
@@ -189,6 +197,29 @@ are validated under 140-3.
 **Key relevance**: Supersedes Rev 2. Restructured to align more closely with NIST SP 800-53
 Rev 5 control families. New requirements added in areas including supply chain risk, software
 integrity, and configuration management. CMMC assessments are beginning to reference Rev 3.
+
+---
+
+---
+
+### NIST SP 800-171A Rev 3 — Assessing CUI Security Requirements
+
+| Field | Value |
+|---|---|
+| Full title | Assessing Enhanced Security Requirements for Controlled Unclassified Information |
+| Issuing authority | NIST |
+| Version | Rev 3 |
+| Published | May 2024 |
+| Downloaded | 2026-03-12 |
+| Local path | `nist/sp800-171Ar3.pdf` |
+| Source URL | https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-171Ar3.pdf |
+| SHA-256 | `946d963707cdaba19901c49d5c89517adb00844fe5d101e9dac7febc68e34cfa` |
+| Status | ✓ Downloaded |
+
+**Key relevance**: Companion to SP 800-171 Rev 3. Defines the assessment procedures (objectives,
+methods, objects) for each of the 110 CUI security requirements. Essential for CMMC Level 2
+assessment preparation — maps each control to specific evidence artifacts and test methods.
+Directly informs what UMRS components must demonstrate and log to satisfy each requirement.
 
 ---
 
@@ -470,6 +501,110 @@ Seven YAML rule files created locally (no web retrieval). All stored at `.claude
 | `MLS-002.yaml` | MLS-002 | Bell-LaPadula Star Property (no write down) |
 | `INTEGRITY-001.yaml` | INTEGRITY-001 | Biba Simple Integrity Property (no read down) |
 | `INTEGRITY-002.yaml` | INTEGRITY-002 | Biba Star Integrity Property (no write up) |
+
+---
+
+---
+
+## DoD 5200.01 — Information Security Program
+
+These documents implement the DoD Information Security Program for classified and CUI.
+Source: esd.whs.mil (official DoD Issuances portal, Washington Headquarters Services).
+
+### DoDI 5200.01 — DoD Information Security Program and Protection of SCI
+
+```
+name: DoDI 5200.01 — DoD Information Security Program and Protection of SCI
+path: refs/dod/dodi-5200.01.pdf
+version: April 21, 2016 (incorporating Change 3)
+source_url: https://www.esd.whs.mil/Portals/54/Documents/DD/issuances/dodi/520001p.pdf
+date_retrieved: 2026-03-12
+sha256: 206eaef84331885b2f9700ed86f5579da80c3119ab4a5c6707e8ed349b2f35e6
+relevance: umrs-selinux, cui-labels, deployment, AC-1, AC-2, AC-3, AC-4, SC-16, MP-1
+status: downloaded
+```
+
+Establishes responsibilities for collateral, SAP, SCI, and CUI within the DoD
+Information Security Program. Authorizing directive for the DoDM 5200.01 volumes.
+
+---
+
+### DoDM 5200.01 Volume 1 — Overview, Classification, and Declassification
+
+```
+name: DoD Manual 5200.01 Volume 1 — DoD Information Security Program: Overview, Classification, and Declassification
+path: refs/dod/dodm-5200.01-vol1.pdf
+version: February 24, 2012, incorporating Change 3 (effective January 17, 2025)
+source_url: https://www.esd.whs.mil/Portals/54/Documents/DD/issuances/dodm/520001m_vol1.pdf
+date_retrieved: 2026-03-12
+sha256: d2db068ed16c7c610125ff9d2ca0bd8dbbc6a5497a4d69aa8b33887e4c52983c
+relevance: umrs-selinux, cui-labels, deployment, AC-1, AC-3, SC-16, MP-1
+status: downloaded
+```
+
+Implements policy for the designation, marking, protection, and dissemination of
+classified and CUI. Change 3 (Jan 2025) removes OCA language in accordance with DoDM 5200.45.
+
+---
+
+### DoDM 5200.01 Volume 2 — Marking of Information
+
+```
+name: DoD Manual 5200.01 Volume 2 — DoD Information Security Program: Marking of Information
+path: refs/dod/dodm-5200.01-vol2.pdf
+version: February 24, 2012, incorporating Change 4 (effective July 28, 2020)
+source_url: https://www.esd.whs.mil/portals/54/Documents/DD/issuances/dodm/520001m_vol2.pdf
+date_retrieved: 2026-03-12
+sha256: 05c4e7d5074704194259bc81f54bb9e78dbcd28f522617bea8ec7378cdb1bbc4
+relevance: umrs-selinux, cui-labels, mcs-setrans, SC-16, AC-16
+status: downloaded
+```
+
+Marking procedures for classified and CUI. Directly relevant to label rendering
+and MCS human-readable category translation in `mcs-setrans`.
+
+---
+
+### DoDM 5200.01 Volume 3 — Protection of Classified Information
+
+```
+name: DoD Manual 5200.01 Volume 3 — DoD Information Security Program: Protection of Classified Information
+path: refs/dod/dodm-5200.01-vol3.pdf
+version: February 24, 2012, incorporating Change 4 (effective January 17, 2025)
+source_url: https://www.esd.whs.mil/Portals/54/Documents/DD/issuances/dodm/520001m_vol3.pdf
+date_retrieved: 2026-03-12
+sha256: 816b5320f018e603a0d45134f0ad6863bc5d728de10598c94aa5fa6fad98f8dc
+relevance: umrs-selinux, deployment, AC-3, AC-4, MP-4, SC-28
+status: downloaded
+```
+
+Physical and procedural safeguards for classified information. Change 4 (Jan 2025)
+aligns with updated OCA provisions. Relevant to storage, transmission, and access controls.
+
+**Note**: Volume 3 also exists at the legacy URL `520001_p.PDF` — use `520001m_vol3.pdf`
+(confirmed via search 2026-03-12).
+
+---
+
+### DoDI 5200.48 — Controlled Unclassified Information (CUI)
+
+```
+name: DoDI 5200.48 — Controlled Unclassified Information (CUI)
+path: refs/dod/dodi-5200.48-cui.pdf
+version: March 6, 2020
+source_url: https://www.esd.whs.mil/Portals/54/Documents/DD/issuances/dodi/520048p.PDF
+date_retrieved: 2026-03-12
+sha256: bbbe4937419808636b21e060c7bc3912edb4bdb20dbe4737d26edb1b7c0a040d
+relevance: umrs-selinux, cui-labels, deployment, CMMC, AC-3, AC-16, MP-4, SC-28
+status: downloaded
+```
+
+DoD-wide CUI program policy: identification, marking, handling, dissemination,
+and protection. Cancels DoDM 5200.01 Volume 4 (CUI marking). Requires NIST SP 800-171
+compliance for contractors. Directly governs how UMRS must handle and label CUI.
+
+**Note**: Volume 4 of DoDM 5200.01 was superseded by DoDI 5200.48 (March 2020).
+DoDI 5200.48 is the current authoritative CUI policy. Volume 4 is not retrieved.
 
 ---
 

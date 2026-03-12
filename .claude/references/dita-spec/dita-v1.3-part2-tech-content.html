@@ -1,0 +1,950 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
+<meta content="Copyright © OASIS Open 2010" name="copyright"></meta>
+<meta content=" Copyright © OASIS 2010" name="DC.rights.owner"></meta>
+<link href="http://docs.oasis-open.org/templates/css/OASIS_Specification_Template_v1-0.css" rel="stylesheet" type="text/css"></link><link href="oasis.css" rel="stylesheet" type="text/css"></link><link href="commonltr.css" rel="stylesheet" type="text/css"></link>
+<base href="http://docs.oasis-open.org/dita/dita/v1.3/os/part2-tech-content/dita-v1.3-os-part2-tech-content.html"></base>
+<title>
+DITA Version 1.3 Specification
+</title>
+</head>
+<body>
+<p><img src="http://docs.oasis-open.org/templates/OASISLogo.jpg" alt="OASIS logo" width="203" height="54"></img></p>
+<div>
+<p class="title">Darwin Information Typing Architecture (DITA) Version 1.3 Part 2: Technical Content Edition</p><p class="subtitle">OASIS Standard</p><p class="subtitle topmargin">17 December 2015</p>
+  <p class="heading4">Specification URIs</p>
+  
+   
+   
+    
+   
+  
+    
+      <p class="titlepageinfo">This version:</p>
+      <p class="titlepageinfodescription"><a href="http://docs.oasis-open.org/dita/dita/v1.3/os/part2-tech-content/dita-v1.3-os-part2-tech-content.html">http://docs.oasis-open.org/dita/dita/v1.3/os/part2-tech-content/dita-v1.3-os-part2-tech-content.html</a> (Authoritative version) </p><p class="titlepageinfodescription"><a href="http://docs.oasis-open.org/dita/dita/v1.3/os/part2-tech-content/dita-v1.3-os-part2-tech-content.pdf">
+      http://docs.oasis-open.org/dita/dita/v1.3/os/part2-tech-content/dita-v1.3-os-part2-tech-content.pdf
+     </a></p>
+    
+    
+      <p class="titlepageinfo">Previous version:</p>
+      <p class="titlepageinfodescription"><a href="http://docs.oasis-open.org/dita/dita/v1.3/cos01/part2-tech-content/dita-v1.3-cos01-part2-tech-content.html">http://docs.oasis-open.org/dita/dita/v1.3/cos01/part2-tech-content/dita-v1.3-cos01-part2-tech-content.html</a>
+          (Authoritative version) </p><p class="titlepageinfodescription"><a href="http://docs.oasis-open.org/dita/dita/v1.3/cos01/part2-tech-content/dita-v1.3-cos01-part2-tech-content.pdf">
+      http://docs.oasis-open.org/dita/dita/v1.3/cos01/part2-tech-content/dita-v1.3-cos01-part2-tech-content.pdf
+     </a></p>
+    
+    
+      <p class="titlepageinfo">Latest version:</p>
+      <p class="titlepageinfodescription"><a href="http://docs.oasis-open.org/dita/dita/v1.3/dita-v1.3-part2-tech-content.html">http://docs.oasis-open.org/dita/dita/v1.3/dita-v1.3-part2-tech-content.html</a>
+          (Authoritative version) </p><p class="titlepageinfodescription"><a href="http://docs.oasis-open.org/dita/dita/v1.3/dita-v1.3-part2-tech-content.pdf"> http://docs.oasis-open.org/dita/dita/v1.3/dita-v1.3-part2-tech-content.pdf</a></p>
+    
+    
+      <p class="titlepageinfo">Technical Committee:</p>
+      <p class="abstract"><a href="https://www.oasis-open.org/committees/dita/">OASIS Darwin Information Typing Architecture (DITA) TC</a></p>
+    
+    
+      <p class="titlepageinfo">Chair:</p>
+      <p class="titlepageinfodescription">Kristen James Eberlein (<a href="mailto:kris@eberleinconsulting.com">kris@eberleinconsulting.com</a>), <a href="http://eberleinconsulting.com/">Eberlein Consulting
+            LLC</a></p>
+    
+    
+      <p class="titlepageinfo">Editors:</p>
+      <p class="titlepageinfodescription">Robert D. Anderson (<a href="mailto:robander@us.ibm.com">robander@us.ibm.com</a>), <a href="http://www.ibm.com">IBM</a></p><p class="titlepageinfodescription">Kristen James Eberlein (<a href="mailto:kris@eberleinconsulting.com">kris@eberleinconsulting.com</a>), <a href="http://eberleinconsulting.com/">Eberlein Consulting
+            LLC</a></p>
+    
+    
+      <p class="titlepageinfo">Additional artifacts:</p>
+      <p class="abstract"> This prose specification is one component of a work product
+        that also includes: </p>
+      <ul class="ul"><li class="li">Darwin Information Typing Architecture (DITA) Part 0: Overview. <a href="http://docs.oasis-open.org/dita/dita/v1.3/os/part0-overview/dita-v1.3-os-part0-overview.html">http://docs.oasis-open.org/dita/dita/v1.3/os/part0-overview/dita-v1.3-os-part0-overview.html</a>. </li><li class="li">Darwin Information Typing Architecture (DITA) Part 1: Base Edition. <a href="http://docs.oasis-open.org/dita/dita/v1.3/os/part1-base/dita-v1.3-os-part1-base.html">http://docs.oasis-open.org/dita/dita/v1.3/os/part1-base/dita-v1.3-os-part1-base.html</a>. This edition contains topic and map; it is designed for
+          implementers and users who need only the most fundamental pieces of the DITA
+          framework.</li><li class="li"> Darwin Information Typing Architecture (DITA) Part 2: Technical Content Edition (this
+          document). <a href="http://docs.oasis-open.org/dita/dita/v1.3/os/part2-tech-content/dita-v1.3-os-part2-tech-content.html">http://docs.oasis-open.org/dita/dita/v1.3/os/part2-tech-content/dita-v1.3-os-part2-tech-content.html</a>. This edition contains the base architecture plus the
+          technical-content specializations; it is designed for authors who use information typing
+          and document complex applications and devices.</li><li class="li">Darwin Information Typing Architecture (DITA) Part 3: All-Inclusive Edition. <a href="http://docs.oasis-open.org/dita/dita/v1.3/os/part3-all-inclusive/dita-v1.3-os-part3-all-inclusive.html">http://docs.oasis-open.org/dita/dita/v1.3/os/part3-all-inclusive/dita-v1.3-os-part3-all-inclusive.html</a>. This edition contains the base architecture, technical
+          content, and the learning and training specializations. It is designed for implementers
+          who want all OASIS-approved specializations, as well as users who develop learning and
+          training materials.</li><li class="li">ZIP file that contains a CHM version of the written specification for
+          this part.<a href="http://docs.oasis-open.org/dita/dita/v1.3/os/part2-tech-content/dita-v1.3-os-part2-tech-content-chm.zip">http://docs.oasis-open.org/dita/dita/v1.3/os/part2-tech-content/dita-v1.3-os-part2-tech-content-chm.zip</a></li><li class="li">ZIP file that contains an HTML version of the written specification
+          for this part.<a href="http://docs.oasis-open.org/dita/dita/v1.3/os/part2-tech-content/dita-v1.3-os-part2-tech-content-html.zip">http://docs.oasis-open.org/dita/dita/v1.3/os/part2-tech-content/dita-v1.3-os-part2-tech-content-html.zip
+     </a></li><li class="li">ZIP file that contains the grammar files for this
+        part.<a href="http://docs.oasis-open.org/dita/dita/v1.3/os/part2-tech-content/dita-v1.3-os-part2-tech-content-grammars.zip">http://docs.oasis-open.org/dita/dita/v1.3/os/part2-tech-content/dita-v1.3-os-part2-tech-content-grammars.zip</a></li><li class="li">ZIP file that contains the DITA source for this part.<a href="http://docs.oasis-open.org/dita/dita/v1.3/os/part2-tech-content/dita-v1.3-os-part2-tech-content-dita.zip">
+      http://docs.oasis-open.org/dita/dita/v1.3/os/part2-tech-content/dita-v1.3-os-part2-tech-content-dita.zip</a></li></ul>
+      <p class="abstract">For more information about the editions and what they contain, see
+          <a href="http://docs.oasis-open.org/dita/dita/v1.3/os/part0-overview/introduction/about-the-dita-specification.html#editions">Editions</a>.</p>
+    
+    
+      <p class="titlepageinfo">Abstract:</p>
+      <p class="abstract">The Darwin Information Typing Architecture (DITA) 1.3 specification defines both a) a set
+        of document types for authoring and organizing topic-oriented information; and b) a set of
+        mechanisms for combining, extending, and constraining document types.</p>
+    
+    
+      <p class="titlepageinfo">Status:</p>
+      <p class="abstract">This document was last revised or approved by the OASIS Darwin Information Typing
+        Architecture (DITA) TC on the above date. The level of approval is also listed above. Check
+        the “Latest version” location noted above for possible later revisions of this document. Any
+        other numbered Versions and other technical work produced by the Technical Committee (TC)
+        are listed at <a href="https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=dita#technical">https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=dita#technical</a>.</p>
+      <p class="abstract">TC members should send comments on this specification to the TC’s email list. Others should
+        send comments to the TC’s public comment list, after subscribing to it by following the
+        instructions at the “Send A Comment” button on the TC’s web page at <a href="https://www.oasis-open.org/committees/comments/index.php?wg_abbrev=dita">https://www.oasis-open.org/committees/comments/index.php?wg_abbrev=dita</a>.</p>
+      <p class="abstract">For information on whether any patents have been disclosed that may be essential to
+        implementing this specification, and any offers of patent licensing terms, please refer to
+        the Intellectual Property Rights section of the TC’s web page (<a href="https://www.oasis-open.org/committees/dita/ipr.php">https://www.oasis-open.org/committees/dita/ipr.php</a>).</p>
+    
+    
+    
+      <p class="titlepageinfo">Citation format:</p>
+      <p class="abstract">When referencing this specification the following citation format should be used:</p>
+      <dl class="cover"><dt class="dlterm oasis-style-reference">[DITA-v1.3-part2-tech-content]</dt><dd class="oasis-style-reference"><cite>Darwin Information Typing Architecture (DITA) Version 1.3 Part 2: Technical
+              Content Edition</cite>. Edited by Robert D. Anderson and Kristen James Eberlein.
+              17 December 2015. OASIS Standard. <a href="http://docs.oasis-open.org/dita/dita/v1.3/os/part2-tech-content/dita-v1.3-os-part2-tech-content.html">http://docs.oasis-open.org/dita/dita/v1.3/os/part2-tech-content/dita-v1.3-os-part2-tech-content.html</a>. Latest version: <a href="http://docs.oasis-open.org/dita/dita/v1.3/dita-v1.3-part2-tech-content.html">http://docs.oasis-open.org/dita/dita/v1.3/dita-v1.3-part2-tech-content.html</a>.</dd></dl>
+    
+    
+  
+
+  <p class="notices">Notices</p>
+  
+   
+   
+    
+   
+  
+    <p class="normal">Copyright © OASIS Open 2015. All Rights
+        Reserved.</p>
+      <p class="normal">All capitalized terms in the following text have the meanings assigned to them in the OASIS
+        Intellectual Property Rights Policy (the "OASIS IPR Policy"). The full <a href="https://www.oasis-open.org/policies-guidelines/ipr">Policy</a> may be found at the OASIS website.</p>
+      <p class="normal">This document and translations of it may be copied and furnished to others, and derivative
+        works that comment on or otherwise explain it or assist in its implementation may be
+        prepared, copied, published, and distributed, in whole or in part, without restriction of
+        any kind, provided that the above copyright notice and this section are included on all such
+        copies and derivative works. However, this document itself may not be modified in any way,
+        including by removing the copyright notice or references to OASIS, except as needed for the
+        purpose of developing any document or deliverable produced by an OASIS Technical Committee
+        (in which case the rules applicable to copyrights, as set forth in the OASIS IPR Policy,
+        must be followed) or as required to translate it into languages other than English.</p>
+      <p class="normal">The limited permissions granted above are perpetual and will not be revoked by OASIS or its
+        successors or assigns.</p>
+      <p class="normal">This document and the information contained herein is provided on an "AS IS" basis and
+        OASIS DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY
+        WARRANTY THAT THE USE OF THE INFORMATION HEREIN WILL NOT INFRINGE ANY OWNERSHIP RIGHTS OR
+        ANY IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.</p>
+      <p class="normal">OASIS requests that any OASIS Party or any other party that believes it has patent claims
+        that would necessarily be infringed by implementations of this OASIS Committee Specification
+        or OASIS Standard, to notify OASIS TC Administrator and provide an indication of its
+        willingness to grant patent licenses to such patent claims in a manner consistent with the
+        IPR Mode of the OASIS Technical Committee that produced this specification.</p>
+      <p class="normal">OASIS invites any party to contact the OASIS TC Administrator if it is aware of a claim of
+        ownership of any patent claims that would necessarily be infringed by implementations of
+        this specification by a patent holder that is not willing to provide a license to such
+        patent claims in a manner consistent with the IPR Mode of the OASIS Technical Committee that
+        produced this specification. OASIS may include such claims on its website, but disclaims any
+        obligation to do so.</p>
+      <p class="normal">OASIS takes no position regarding the validity or scope of any intellectual property or
+        other rights that might be claimed to pertain to the implementation or use of the technology
+        described in this document or the extent to which any license under such rights might or
+        might not be available; neither does it represent that it has made any effort to identify
+        any such rights. Information on OASIS' procedures with respect to rights in any document or
+        deliverable produced by an OASIS Technical Committee can be found on the OASIS website.
+        Copies of claims of rights made available for publication and any assurances of licenses to
+        be made available, or the result of an attempt made to obtain a general license or
+        permission for the use of such proprietary rights by implementers or users of this OASIS
+        Committee Specification or OASIS Standard, can be obtained from the OASIS TC Administrator.
+        OASIS makes no representation that any information or list of intellectual property rights
+        will at any time be complete, or that any claims in such list are, in fact, Essential
+        Claims.</p>
+      <p class="normal">The name "OASIS" is a trademark of <a href="https://www.oasis-open.org/">OASIS</a>, the owner and developer of this
+        specification, and should be used only to refer to the organization and its official
+        outputs. OASIS welcomes reference to, and implementation and use of, specifications, while
+        reserving the right to enforce its marks against misleading uses. Please see <a href="https://www.oasis-open.org/policies-guidelines/trademark">https://www.oasis-open.org/policies-guidelines/trademark</a> for above guidance.</p>
+  
+</div>
+<div>
+<p class="heading1">Table of Contents</p>
+<p id="copy" name="copy" class="titlepageinfodescription">1 <a id="ditaspec" href="introduction/dita-release-overview.html#ditaspec">Introduction to DITA 1.3</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   1.1 <a id="about-the-dita-specification" href="introduction/about-the-dita-specification-technicalContent.html#about-the-dita-specification">About the DITA specification: Technical content edition</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   1.2 <a id="terminology" href="introduction/terminology.html#terminology">Terminology</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   1.3 <a id="normative-references" href="introduction/normative-references.html#normative-references">Normative references</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   1.4 <a id="non-normative-references" href="introduction/non-normative-references.html#non-normative-references">Non-normative references</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   1.5 <a id="formatting-conventions-xhtml-output" href="introduction/formatting-conventions-xhtml-output.html#formatting-conventions-xhtml-output">Formatting conventions in the XHTML version of the specification</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">2 <a id="archspec-technicalcontent" href="archSpec/archSpec-technicalContent.html#archspec-technicalcontent">Architectural specification: Technical content edition</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   2.1 <a id="introduction-to-dita" href="archSpec/base/introduction-to-dita.html#introduction-to-dita">Introduction to DITA</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      2.1.1 <a id="terminology" href="archSpec/base/dita-terminology.html#terminology">DITA terminology and notation</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      2.1.2 <a id="conover" href="archSpec/base/basic-concepts.html#conover">Basic concepts</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      2.1.3 <a id="fileext" href="archSpec/base/fileext.html#fileext">File extensions</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      2.1.4 <a id="single_sourcing" href="archSpec/base/single-sourcing.html#single_sourcing">Producing different deliverables from a single source</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   2.2 <a id="ditamarkup" href="archSpec/base/ditamarkup.html#ditamarkup">DITA markup </a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      2.2.1 <a id="topicsoverview" href="archSpec/base/topicover.html#topicsoverview">DITA topics</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.2.1.1 <a id="topicdefined" href="archSpec/base/topicdefined.html#topicdefined">The topic as the basic unit of information</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.2.1.2 <a id="benefitsoftopics" href="archSpec/base/topicbenefits.html#benefitsoftopics">The benefits of a topic-based architecture</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.2.1.3 <a id="topicorientedwriting" href="archSpec/base/topicorientation.html#topicorientedwriting">Disciplined, topic-oriented writing</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.2.1.4 <a id="information-typing" href="archSpec/base/information-typing.html#information-typing">Information typing</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.2.1.5 <a id="generictopics" href="archSpec/base/generictopics.html#generictopics">Generic topics</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.2.1.6 <a id="topicstructure" href="archSpec/base/topicstructure.html#topicstructure">Topic structure</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.2.1.7 <a id="topiccontent" href="archSpec/base/topiccontent.html#topiccontent">Topic content</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      2.2.2 <a id="ditamaps" href="archSpec/base/ditamaps.html#ditamaps">DITA maps</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.2.2.1 <a id="definition-of-ditamaps" href="archSpec/base/definition-of-ditamaps.html#definition-of-ditamaps">Definition of DITA maps</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.2.2.2 <a id="purpose-of-ditamaps" href="archSpec/base/purpose-of-ditamaps.html#purpose-of-ditamaps">Purpose of DITA maps</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.2.2.3 <a id="ditamap-elements" href="archSpec/base/ditamap-elements.html#ditamap-elements">DITA map elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.2.2.4 <a id="ditamap-attributes" href="archSpec/base/ditamap-attributes.html#ditamap-attributes">DITA map attributes</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.2.2.5 <a id="concept_lnh_zs5_qp" href="archSpec/base/example-ditamaps.html#concept_lnh_zs5_qp">Examples of DITA maps</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            2.2.2.5.1 <a id="concept_xxv_rt5_qp" href="archSpec/base/example-simple-map-w-submap.html#concept_xxv_rt5_qp">Example: DITA map that references a subordinate map</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            2.2.2.5.2 <a id="concept_e5c_3t5_qp" href="archSpec/base/example-simple-map-w-reltable.html#concept_e5c_3t5_qp">Example: DITA map with a simple relationship table</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            2.2.2.5.3 <a id="concept_czm_brv_vr" href="archSpec/base/example-collection-type-and-linking-atts.html#concept_czm_brv_vr">Example: How the collection-type and linking attributes determine links</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            2.2.2.5.4 <a id="concept_efq_qrv_vr" href="archSpec/base/example-how-cascade-att-functions.html#concept_efq_qrv_vr">Example: How the cascade attribute functions</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      2.2.3 <a id="concept_gfn_skx_54" href="archSpec/base/subject-scheme-maps-and-usage.html#concept_gfn_skx_54">Subject scheme maps and their usage</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.2.3.1 <a id="subjectSchema" href="archSpec/base/subjectSchema.html#subjectSchema">Subject scheme maps</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.2.3.2 <a id="controlled-values-for-attributes" href="archSpec/base/controlled-values-for-attributes.html#controlled-values-for-attributes">Defining controlled values for attributes</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.2.3.3 <a id="concept_fpj_jlx_54" href="archSpec/base/binding-controlled-values-to-attribute.html#concept_fpj_jlx_54">Binding controlled values to an attribute</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.2.3.4 <a id="concept_afh_lx1_wp" href="archSpec/base/processing-controlled-attribute-values.html#concept_afh_lx1_wp">Processing controlled attribute values</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.2.3.5 <a id="concept_bxc_hmj_zq" href="archSpec/base/extending-a-subject-scheme.html#concept_bxc_hmj_zq">Extending subject schemes</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.2.3.6 <a id="concept_m1h_t3x_54" href="archSpec/base/scaling-controlled-values-to-define-a-taxonomy.html#concept_m1h_t3x_54">Scaling a list of controlled values to define a taxonomy</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.2.3.7 <a id="concept_wjd_q55_fq" href="archSpec/base/classification-maps.html#concept_wjd_q55_fq">Classification maps</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.2.3.8 <a id="concept_fl2_3rz_vp" href="archSpec/base/examples-subjectScheme-maps.html#concept_fl2_3rz_vp">Examples of subject scheme maps</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            2.2.3.8.1 <a id="concept_hxl_2sz_vp" href="archSpec/base/example-subjectScheme-filtering.html#concept_hxl_2sz_vp">Example: How hierarchies defined in a subject scheme map affect filtering</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            2.2.3.8.2 <a id="concept_mgb_f5n_wp" href="archSpec/base/example-subjectScheme-extension.html#concept_mgb_f5n_wp">Example: Extending a subject scheme</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            2.2.3.8.3 <a id="concept_uny_kjz_vp" href="archSpec/base/example-subjectScheme-extension-upwards.dita.html#concept_uny_kjz_vp">Example: Extending a subject scheme upwards</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            2.2.3.8.4 <a id="example-deliveryTarget" href="archSpec/base/example-subjectScheme-values-for-deliveryTarget.html#example-deliveryTarget">Example: Defining values for deliveryTarget</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      2.2.4 <a id="dita-metadata" href="archSpec/base/dita-metadata.html#dita-metadata">DITA metadata</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.2.4.1 <a id="metadata-elements" href="archSpec/base/metadata-elements.html#metadata-elements">Metadata elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.2.4.2 <a id="metadata-attributes" href="archSpec/base/metadata-attributes.html#metadata-attributes">Metadata attributes</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            2.2.4.2.1 <a id="conditional-processing-attributes" href="archSpec/base/conditional-processing-attributes.html#conditional-processing-attributes">Conditional processing attributes</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            2.2.4.2.2 <a id="translation-and-localization-attributes" href="archSpec/base/translation-and-localization-attributes.html#translation-and-localization-attributes">Translation and localization attributes</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            2.2.4.2.3 <a id="architectural-attributes" href="archSpec/base/architectural-attributes.html#architectural-attributes">Architectural attributes</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.2.4.3 <a id="metadata-in-maps-and-topics" href="archSpec/base/metadata-in-maps-and-topics.html#metadata-in-maps-and-topics">Metadata in maps and topics</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.2.4.4 <a id="cascading-in-a-ditamap" href="archSpec/base/cascading-in-a-ditamap.html#cascading-in-a-ditamap">Cascading of metadata attributes in a DITA map</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.2.4.5 <a id="reconciling-topic-and-map-metadata" href="archSpec/base/reconciling-topic-and-map-metadata.html#reconciling-topic-and-map-metadata">Reconciling topic and map metadata elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.2.4.6 <a id="map-to-map-cascading-of-metadata" href="archSpec/base/map-to-map-cascading-of-metadata.html#map-to-map-cascading-of-metadata">Map-to-map cascading behaviors</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            2.2.4.6.1 <a id="cascading-of-attributes-from-map-to-map" href="archSpec/base/cascading-of-attributes-from-map-to-map.html#cascading-of-attributes-from-map-to-map">Cascading of attributes from map to map</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            2.2.4.6.2 <a id="cascading-of-metadata-elements-from-map-to-map" href="archSpec/base/cascading-of-metadata-elements-from-map-to-map.html#cascading-of-metadata-elements-from-map-to-map">Cascading of metadata elements from map to map</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            2.2.4.6.3 <a id="cascading-of-roles-in-specialized-maps" href="archSpec/base/cascading-of-roles-in-specialized-maps.html#cascading-of-roles-in-specialized-maps">Cascading of roles from map to map</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.2.4.7 <a id="help-systems-and-other-user-assistance" href="archSpec/base/help-systems-and-other-user-assistance.html#help-systems-and-other-user-assistance">Context hooks and window metadata for user assistance</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   2.3 <a id="id" href="archSpec/base/ditaaddressing.html#id">DITA addressing</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      2.3.1 <a id="id" href="archSpec/base/id.html#id">ID attribute</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      2.3.2 <a id="dita-linking" href="archSpec/base/dita-linking.html#dita-linking">DITA linking</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      2.3.3 <a id="uri-based-addressing" href="archSpec/base/uri-based-addressing.html#uri-based-addressing">URI-based (direct) addressing</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      2.3.4 <a id="key-based_addressing" href="archSpec/base/key-based-addressing.html#key-based_addressing">Indirect key-based addressing</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.3.4.1 <a id="concept_igf_3c4_kn" href="archSpec/base/keys-core-concepts.html#concept_igf_3c4_kn">Core concepts for working with keys</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.3.4.2 <a id="concept_nsb_nv4_3q" href="archSpec/base/keyScopes.html#concept_nsb_nv4_3q">Key scopes</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.3.4.3 <a id="using-keys-for-addressing" href="archSpec/base/using-keys-for-addressing.html#using-keys-for-addressing">Using keys for addressing</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.3.4.4 <a id="concept_art_5ps_sr" href="archSpec/base/using-keys-to-address-keys-across-scopes.html#concept_art_5ps_sr">Addressing keys across scopes</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.3.4.5 <a id="links-between-maps" href="archSpec/base/links-between-maps.html#links-between-maps">Cross-deliverable addressing and linking</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.3.4.6 <a id="processing_key_references" href="archSpec/base/processing-key-references-general.html#processing_key_references">Processing key references</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.3.4.7 <a id="processing_key_references" href="archSpec/base/processing-keyref-for-links.html#processing_key_references">Processing key references for navigation links and images</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.3.4.8 <a id="processing-keyref-on-topicref" href="archSpec/base/processing-keyref-on-topicref.html#processing-keyref-on-topicref">Processing key references on topicref elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.3.4.9 <a id="processing_key_references" href="archSpec/base/processing-keyref-for-text.html#processing_key_references">Processing key references to generate text or link text</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.3.4.10 <a id="examples_of_keys" href="archSpec/base/examples-of-keys.html#examples_of_keys">Examples of keys</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            2.3.4.10.1 <a id="concept_ahg_25y_lp" href="archSpec/base/example-key-definition.html#concept_ahg_25y_lp">Examples: Key definition</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            2.3.4.10.2 <a id="concept_g5x_y2z_lp" href="archSpec/base/example-key-definition-for-variable-text.html#concept_g5x_y2z_lp">Examples: Key definitions for variable text</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            2.3.4.10.3 <a id="concept_b1c_mn1_mp" href="archSpec/base/example-scoped-keys-for-variable-text.html#concept_b1c_mn1_mp">Example: Scoped key definitions for variable text</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            2.3.4.10.4 <a id="concept_cmm_rwy_lp" href="archSpec/base/example-resolution-of-duplicate-key-definitions.html#concept_cmm_rwy_lp">Example: Duplicate key definitions within a single map</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            2.3.4.10.5 <a id="concept_zpw_51z_lp" href="archSpec/base/example-resolution-of-duplicate-key-definitions-multiple-maps.html#concept_zpw_51z_lp">Example: Duplicate key definitions across multiple maps</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            2.3.4.10.6 <a id="concept_zpw_51z_lp" href="archSpec/base/example-keydef-with-keyref.html#concept_zpw_51z_lp">Example: Key definition with key reference</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            2.3.4.10.7 <a id="concept_zms_tw1_mp" href="archSpec/base/example-scoped-key-references.html#concept_zms_tw1_mp">Example: References to scoped keys</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            2.3.4.10.8 <a id="concept_myc_r2g_mp" href="archSpec/base/example-nested-key-scopes.html#concept_myc_r2g_mp">Example: Key definitions in nested key scopes</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            2.3.4.10.9 <a id="concept_qz4_35z_lp" href="archSpec/base/example-key-use-for-link-redirection.html#concept_qz4_35z_lp">Example: Link redirection</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            2.3.4.10.10 <a id="concept_gtj_df1_mp" href="archSpec/base/example-keys-removing-link.html#concept_gtj_df1_mp">Example: Link modification or removal</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            2.3.4.10.11 <a id="concept_fwk_bhf_mp" href="archSpec/base/example-keys-links-to-terms.html#concept_fwk_bhf_mp">Example: Links from term or keyword elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            2.3.4.10.12 <a id="concept_cw3_cl1_mp" href="archSpec/base/example-keys-conref-redirection.html#concept_cw3_cl1_mp">Example: conref redirection</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            2.3.4.10.13 <a id="concept_bgq_np2_mp" href="archSpec/base/example-key-scopes-omnibus-publications.html#concept_bgq_np2_mp">Example: Key scopes and omnibus publications</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            2.3.4.10.14 <a id="example-key-precedence-with-scopes" href="archSpec/base/example-keys-scope-defining-precedence.html#example-key-precedence-with-scopes">Example: How key scopes affect key precedence</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            2.3.4.10.15 <a id="concept_yj5_d4f_mp" href="archSpec/base/example-keys-splitting-combining-targets.html#concept_yj5_d4f_mp">Example: Keys and collaboration</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   2.4 <a id="behaviors" href="archSpec/base/behaviors.html#behaviors">DITA processing</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      2.4.1 <a id="navigation" href="archSpec/base/navigation.html#navigation">Navigation</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.4.1.1 <a id="table-of-contents" href="archSpec/base/table-of-contents.html#table-of-contents">Table of contents</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.4.1.2 <a id="indexes" href="archSpec/base/indexes.html#indexes">Indexes</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      2.4.2 <a id="conref" href="archSpec/base/conref.html#conref">Content reference (conref)</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.4.2.1 <a id="conref" href="archSpec/base/conref-overview.html#conref">Conref overview</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.4.2.2 <a id="concept_wf2_3sb_lq" href="archSpec/base/conref-processing.html#concept_wf2_3sb_lq">Processing conrefs</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.4.2.3 <a id="concept_m3j_jvb_lq" href="archSpec/base/conref-attributes-specified-on-elements.html#concept_m3j_jvb_lq">Processing attributes when resolving conrefs</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.4.2.4 <a id="handling-xref-and-conref-within-topics" href="archSpec/base/handling-xref-and-conref-within-topics.html#handling-xref-and-conref-within-topics">Processing xrefs and conrefs within a conref</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      2.4.3 <a id="condproc" href="archSpec/base/condproc.html#condproc">Conditional processing (profiling)</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.4.3.1 <a id="usage-of-conditional-processing-attributes" href="archSpec/base/usage-of-conditional-processing-attributes.html#usage-of-conditional-processing-attributes">Conditional processing values and groups</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.4.3.2 <a id="filtering" href="archSpec/base/filtering.html#filtering">Filtering</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.4.3.3 <a id="flagging" href="archSpec/base/flagging.html#flagging">Flagging</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.4.3.4 <a id="printing" href="archSpec/base/conditional-processing-for-specific-output-types.html#printing">Conditional processing to generate multiple deliverable types</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.4.3.5 <a id="examples-of-condproc" href="archSpec/base/examples-of-conditional-processing.html#examples-of-condproc">Examples of conditional processing</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            2.4.3.5.1 <a id="example-condproc-values" href="archSpec/base/example-setting-condproc-values.html#example-condproc-values">Example: Setting conditional processing values and groups</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            2.4.3.5.2 <a id="evaluating-conditional-processing-attributes" href="archSpec/base/evaluating-conditional-processing-attributes.html#evaluating-conditional-processing-attributes">Example: Filtering and flagging topic content</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      2.4.4 <a id="branch-filter" href="archSpec/base/branch-filtering.html#branch-filter">Branch filtering</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.4.4.1 <a id="branch-filter-overview" href="archSpec/base/branch-filtering-overview.html#branch-filter-overview">Overview of branch filtering</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.4.4.2 <a id="branch-filter-single-set" href="archSpec/base/branch-filtering-single-set.html#branch-filter-single-set">Branch filtering: Single condition set for a branch</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.4.4.3 <a id="branch-filter-multiple-sets" href="archSpec/base/branch-filtering-multiple-sets.html#branch-filter-multiple-sets">Branch filtering: Multiple condition sets for a branch</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.4.4.4 <a id="resource-names" href="archSpec/base/branch-filtering-resource-names.html#resource-names">Branch filtering: Impact on resource and key names</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.4.4.5 <a id="branch-filtering-implications-of-processing-order" href="archSpec/base/branch-filtering-implications-of-processing-order.html#branch-filtering-implications-of-processing-order">Branch filtering: Implications of processing order</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.4.4.6 <a id="examples-of-branch-filter" href="archSpec/base/examples-of-branch-filter.html#examples-of-branch-filter">Examples of branch filtering</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            2.4.4.6.1 <a id="example-single-ditavalref" href="archSpec/base/example-single-ditavalref-on-branch.html#example-single-ditavalref">Example: Single ditavalref on a branch</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            2.4.4.6.2 <a id="example-multiple-ditavalref" href="archSpec/base/example-multiple-ditavalref.html#example-multiple-ditavalref">Example: Multiple ditavalref elements on a branch</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            2.4.4.6.3 <a id="example-ditavalref-as-child-of-map" href="archSpec/base/example-ditavalref-as-child-of-map.html#example-ditavalref-as-child-of-map">Example: Single ditavalref as a child of map</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            2.4.4.6.4 <a id="example-ditavalref-with-mapref" href="archSpec/base/example-ditavalref-with-mapref.html#example-ditavalref-with-mapref">Example: Single ditavalref in a reference to a map</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            2.4.4.6.5 <a id="example-multiple-ditavalref-as-child-of-map" href="archSpec/base/example-multiple-ditavalref-as-child-of-map.html#example-multiple-ditavalref-as-child-of-map">Example: Multiple ditavalref elements as children of map in a root map</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            2.4.4.6.6 <a id="example-multiple-ditavalref-with-mapref" href="archSpec/base/example-multiple-ditavalref-with-mapref.html#example-multiple-ditavalref-with-mapref">Example: Multiple ditavalref elements in a reference to a map</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            2.4.4.6.7 <a id="example-ditavalref-in-filtered-branch" href="archSpec/base/example-ditavalref-in-filtered-branch.html#example-ditavalref-in-filtered-branch">Example: ditavalref within a branch that already uses ditavalref</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            2.4.4.6.8 <a id="example-ditavalref-error-conditions" href="archSpec/base/example-ditavalref-error-conditions.html#example-ditavalref-error-conditions">Example: ditavalref error conditions</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      2.4.5 <a id="chunking" href="archSpec/base/chunking.html#chunking">Chunking</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.4.5.1 <a id="chunkingdetails" href="archSpec/base/chunkingdetails.html#chunkingdetails">Using the chunk attribute</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.4.5.2 <a id="chunkingexamples" href="archSpec/base/chunkingexamples.html#chunkingexamples">Chunking examples</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      2.4.6 <a id="translation" href="archSpec/base/translation.html#translation">Translation and localization</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.4.6.1 <a id="xmllang" href="archSpec/base/xmllang.html#xmllang">The xml:lang attribute</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.4.6.2 <a id="diratt" href="archSpec/base/diratt.html#diratt">The dir attribute</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      2.4.7 <a id="module-compatibility" href="archSpec/base/module-compatibility.html#module-compatibility">Processing documents with different values of the domains attribute</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      2.4.8 <a id="sort-as-processing" href="archSpec/base/sort-as-processing.html#sort-as-processing">Sorting</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   2.5 <a id="configuration-specialization-and-constraints" href="archSpec/base/configuration-specialization-and-constraints.html#configuration-specialization-and-constraints">Configuration, specialization, generalization, and constraints </a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      2.5.1 <a id="ditaspecialization" href="archSpec/base/ditaspecialization.html#ditaspecialization">Overview of DITA extension facilities</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      2.5.2 <a id="concept_fgy_hbp_wr" href="archSpec/base/configuration.html#concept_fgy_hbp_wr">Configuration</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.5.2.1 <a id="createCustomDocType" href="archSpec/base/document-type-shells.html#createCustomDocType">Overview of document-type shells</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.5.2.2 <a id="concept_vrp_lzb_wr" href="archSpec/base/rules-document-type-shells.html#concept_vrp_lzb_wr">Rules for document-type shells</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.5.2.3 <a id="document-type-shells-equivalence" href="archSpec/base/document-type-shells-equivalence.html#document-type-shells-equivalence">Equivalence of document-type shells</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.5.2.4 <a id="document-type-shells-conformance" href="archSpec/base/document-type-shells-conformance.html#document-type-shells-conformance">Conformance of document-type shells</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      2.5.3 <a id="specialize" href="archSpec/base/specialization.html#specialize">Specialization</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.5.3.1 <a id="specialization-overview" href="archSpec/base/specialization-overview.html#specialization-overview">Overview of specialization</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.5.3.2 <a id="modularization" href="archSpec/base/specialization-modularization.html#modularization">Modularization</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.5.3.3 <a id="vocabularymodules" href="archSpec/base/specialization-vocabulary-modules.html#vocabularymodules">Vocabulary modules</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.5.3.4 <a id="specialization-rules-elements" href="archSpec/base/specialization-rules-elements.html#specialization-rules-elements">Specialization rules for element types</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.5.3.5 <a id="specialization-rules-attributes" href="archSpec/base/specialization-rules-attributes.html#specialization-rules-attributes">Specialization rules for attributes</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.5.3.6 <a id="classatt" href="archSpec/base/specialization-class-attribute.html#classatt">class attribute rules and syntax</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.5.3.7 <a id="domainsatt" href="archSpec/base/specialization-domains-attribute.html#domainsatt">domains attribute rules and syntax</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.5.3.8 <a id="concept-1" href="archSpec/base/specialization-including-non-dita-content.html#concept-1">Specializing to include non-DITA content</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.5.3.9 <a id="topic_nt3_b12_zl" href="archSpec/base/specialization-sharing-elements-across-modules.html#topic_nt3_b12_zl">Sharing elements across specializations</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      2.5.4 <a id="generalization" href="archSpec/base/generalization.html#generalization">Generalization</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.5.4.1 <a id="generalization-overview" href="archSpec/base/generalization-overview.html#generalization-overview">Overview of generalization</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.5.4.2 <a id="generalize" href="archSpec/base/generalization-elements.html#generalize">Element generalization</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.5.4.3 <a id="generalization-processor-expectations" href="archSpec/base/generalization-processor-expectations.html#generalization-processor-expectations">Processor expectations when generalizing elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.5.4.4 <a id="attributegeneralize" href="archSpec/base/generalization-attributes.html#attributegeneralize">Attribute generalization</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.5.4.5 <a id="generalization-w-cross-specialization-dependencies" href="archSpec/base/generalization-w-cross-specialization-dependencies.html#generalization-w-cross-specialization-dependencies">Generalization with cross-specialization dependencies</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      2.5.5 <a id="concept_sv4_2gm_vp" href="archSpec/base/constraints.html#concept_sv4_2gm_vp">Constraints</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.5.5.1 <a id="concept_sv4_2gm_vp" href="archSpec/base/constraints-overview.html#concept_sv4_2gm_vp">Overview of constraints</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.5.5.2 <a id="concept_ycp_3jm_vp" href="archSpec/base/constraint-rules.html#concept_ycp_3jm_vp">Constraint rules</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.5.5.3 <a id="concept_nqd_ys5_kq" href="archSpec/base/constraints-processing-interoperability.html#concept_nqd_ys5_kq">Constraints, processing, and interoperability</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.5.5.4 <a id="concept_ofy_pmz_vq" href="archSpec/base/constraints-strong-and-weak.html#concept_ofy_pmz_vq">Weak and strong constraints</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.5.5.5 <a id="conref-compatibility-constraints" href="archSpec/base/constraints-conref-compatibility.html#conref-compatibility-constraints">Conref compatibility with constraints</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.5.5.6 <a id="concept_ghv_45r_5p" href="archSpec/base/examples-constraints.html#concept_ghv_45r_5p">Examples: Constraints</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            2.5.5.6.1 <a id="reference_cfb_ck4_5p" href="archSpec/base/example-contraints-redefine-content-model.html#reference_cfb_ck4_5p">Example: Redefine the content model for the topic element</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            2.5.5.6.2 <a id="reference_cfb_ck4_5p" href="archSpec/base/example-contraints-redefine-content-model-attributes.html#reference_cfb_ck4_5p">Example: Constrain attributes for the section element</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            2.5.5.6.3 <a id="reference_cfb_ck4_5p" href="archSpec/base/example-contraints-subset-domain.html#reference_cfb_ck4_5p">Example: Constrain a domain module</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            2.5.5.6.4 <a id="reference_cfb_ck4_5p" href="archSpec/base/example-contraints-replace-base-element-w-domain-extensions.html#reference_cfb_ck4_5p">Example: Replace a base element with the domain extensions</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            2.5.5.6.5 <a id="reference_cfb_ck4_5p" href="archSpec/base/example-contraints-apply-multiple-constraints.html#reference_cfb_ck4_5p">Example: Apply multiple constraints to a single document-type shell</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   2.6 <a id="coding-practices" href="archSpec/base/coding-requirements.html#coding-practices">Coding practices for DITA grammar files</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      2.6.1 <a id="recognizedconstraintmechanisms" href="archSpec/base/recognizedconstraintmechanisms.html#recognizedconstraintmechanisms">Recognized XML-document grammar mechanisms</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      2.6.2 <a id="using-relax-ng" href="archSpec/base/using-relax-ng.html#using-relax-ng">Normative versions of DITA grammar files</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      2.6.3 <a id="dtd-requirements" href="archSpec/base/dtd-requirements.html#dtd-requirements">DTD coding requirements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.6.3.1 <a id="dtd-requirements-overview" href="archSpec/base/dtd-coding-overview.html#dtd-requirements-overview">DTD: Overview of coding requirements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.6.3.2 <a id="shell-dtd-coding-reqs" href="archSpec/base/dtd-coding-doctype-shell.html#shell-dtd-coding-reqs">DTD: Coding requirements for document-type shells</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.6.3.3 <a id="general-coding-requirements" href="archSpec/base/dtd-coding-element-types.html#general-coding-requirements">DTD: Coding requirements for element type declarations</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.6.3.4 <a id="dtdStructuralCoding" href="archSpec/base/dtd-coding-structural-modules.html#dtdStructuralCoding">DTD: Coding requirements for structural modules</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.6.3.5 <a id="domainpattern" href="archSpec/base/dtd-coding-element-domains.html#domainpattern">DTD: Coding requirements for element domain modules</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.6.3.6 <a id="attdomain" href="archSpec/base/dtd-coding-attribute-domains.html#attdomain">DTD: Coding requirements for attribute domain modules</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.6.3.7 <a id="constraintsDomainDesignPattern-dtd" href="archSpec/base/dtd-coding-constraint-modules.html#constraintsDomainDesignPattern-dtd">DTD: Coding requirements for constraint modules</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      2.6.4 <a id="rng-requirements" href="archSpec/base/relax-ng-requirements.html#rng-requirements">RELAX NG coding requirements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.6.4.1 <a id="rng-requirements-overview" href="archSpec/base/relax-ng-coding-overview.html#rng-requirements-overview">RELAX NG: Overview of coding requirements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.6.4.2 <a id="concept_rrq_p45_dn" href="archSpec/base/relax-ng-coding-doctype-shell.html#concept_rrq_p45_dn">RELAX NG: Coding requirements for document-type shells</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.6.4.3 <a id="concept_yvl_ncv_dn" href="archSpec/base/relax-ng-coding-element-types.html#concept_yvl_ncv_dn">RELAX NG: Coding requirements for element type declarations</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.6.4.4 <a id="relax-ng-structural-module-coding-requirements" href="archSpec/base/relax-ng-coding-structural-modules.html#relax-ng-structural-module-coding-requirements">RELAX NG: Coding requirements for structural modules</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.6.4.5 <a id="relax-ng-element-domain-module-coding-requirements" href="archSpec/base/relax-ng-coding-element-domains.html#relax-ng-element-domain-module-coding-requirements">RELAX NG: Coding requirements for element domain modules</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.6.4.6 <a id="relax-ng-attribute-domain-module-coding-requirements" href="archSpec/base/relax-ng-coding-attribute-domains.html#relax-ng-attribute-domain-module-coding-requirements">RELAX NG: Coding requirements for attribute domain modules</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.6.4.7 <a id="relax-ng-constraint-module-coding-requirements" href="archSpec/base/relax-ng-coding-constraint-modules.html#relax-ng-constraint-module-coding-requirements">RELAX NG: Coding requirements for constraint modules</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      2.6.5 <a id="xsd-requirements" href="archSpec/base/xsd-requirements.html#xsd-requirements">XML Schema coding requirements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.6.5.1 <a id="xsd-requirements-overview" href="archSpec/base/xsd-coding-overview.html#xsd-requirements-overview">XML Schema: Overview and limitations of coding requirements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.6.5.2 <a id="topicShellPattern" href="archSpec/base/xsd-coding-doctype-shell.html#topicShellPattern">XML Schema: Coding requirements for document-type shells</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.6.5.3 <a id="xsdGeneralCodingReq" href="archSpec/base/xsd-coding-element-types.html#xsdGeneralCodingReq">XML Schema: Coding requirements for element type declarations</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.6.5.4 <a id="xsdStructuralSpecializationReqs" href="archSpec/base/xsd-coding-structural-modules.html#xsdStructuralSpecializationReqs">XML Schema: Coding requirements for structural modules</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.6.5.5 <a id="schemaattdomain" href="archSpec/base/xsd-coding-attribute-domains.html#schemaattdomain">XML Schema: Coding requirements for attribute domain modules</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.6.5.6 <a id="constraintsDomainDesignPattern-xsd" href="archSpec/base/xsd-coding-constraint-modules.html#constraintsDomainDesignPattern-xsd">XML Schema: Coding requirements for constraint modules</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   2.7 <a id="technical-content-specializations" href="archSpec/technicalContent/technical-content-specializations.html#technical-content-specializations">Technical content specializations</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      2.7.1 <a id="dita_technicalContent_InformationTypes" href="archSpec/technicalContent/dita-technicalContent-InformationTypes.html#dita_technicalContent_InformationTypes">Technical content: Document types</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.7.1.1 <a id="dita_concept_topic" href="archSpec/technicalContent/dita-concept-topic.html#dita_concept_topic">Concept topic</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.7.1.2 <a id="dita_ref_topic" href="archSpec/technicalContent/dita-reference-topic.html#dita_ref_topic">Reference topic</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.7.1.3 <a id="dita_generic_task_topic" href="archSpec/technicalContent/dita-generic-task-topic.html#dita_generic_task_topic">General task topic</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.7.1.4 <a id="dita_task_topic" href="archSpec/technicalContent/dita-task-topic.html#dita_task_topic">Task topic (strict task)</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.7.1.5 <a id="dita_spec_2_1_info_tasks" href="archSpec/technicalContent/dita-machinerytask-topic.html#dita_spec_2_1_info_tasks">Machinery Task topic</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.7.1.6 <a id="dita-troubleshooting-topic" href="archSpec/technicalContent/dita-troubleshooting-topic.html#dita-troubleshooting-topic">Troubleshooting topic</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.7.1.7 <a id="glossaryArch" href="archSpec/technicalContent/dita-glossary-topic.html#glossaryArch">Glossary entry topic</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.7.1.8 <a id="GlossaryGroupTopic-0282E9F1" href="archSpec/technicalContent/dita-glossarygroup-topic.html#GlossaryGroupTopic-0282E9F1">Glossary group topic</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.7.1.9 <a id="dita_spec_intro_bookmap" href="archSpec/technicalContent/dita-spec-intro-bookmap.html#dita_spec_intro_bookmap">Bookmap</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      2.7.2 <a id="technical-content-domains" href="archSpec/technicalContent/technical-content-domains.html#technical-content-domains">Technical content domains</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.7.2.1 <a id="concept-1" href="archSpec/technicalContent/xNALDomain.html#concept-1">The xNAL domain</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.7.2.2 <a id="xnaldetails" href="archSpec/technicalContent/xnaldetails.html#xnaldetails">xNAL usage guidelines</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.7.2.3 <a id="mathML-and-equation-domains" href="archSpec/technicalContent/mathML-and-equation-domains.html#mathML-and-equation-domains">MathML and equation domains</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         2.7.2.4 <a id="dita_release_management_domain_topic" href="archSpec/technicalContent/releaseManagement-domain.html#dita_release_management_domain_topic">Release management domain</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      2.7.3 <a id="concept_dr5_htt_hj" href="archSpec/technicalContent/TroubleshootingElements.html#concept_dr5_htt_hj">Troubleshooting information</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">3 <a id="langRef-technicalContent" href="langRef/langRef-technicalContent.html#langRef-technicalContent">Language reference: Technical content edition</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   3.1 <a id="element-quick-reference" href="langRef/containers/element-quick-reference.html#element-quick-reference">Element quick reference</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.1.1 <a id="alphalist" href="langRef/quick-reference/base-elements-a-to-z.html#alphalist">Base DITA elements, A to Z</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.1.2 <a id="technical_content_elements_a_to_z" href="langRef/quick-reference/technicalContent-elements-a-to-z.html#technical_content_elements_a_to_z">Technical content elements, A to Z</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   3.2 <a id="topic_elements" href="langRef/containers/topic-elements.html#topic_elements">Topic elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.2.1 <a id="topic2" href="langRef/containers/basic-topic-elements.html#topic2">Basic topic elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.1.1 <a id="topic" href="langRef/base/topic.html#topic">topic</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.1.2 <a id="title" href="langRef/base/title.html#title">title</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.1.3 <a id="titlealts" href="langRef/base/titlealts.html#titlealts">titlealts</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.1.4 <a id="searchtitle" href="langRef/base/searchtitle.html#searchtitle">searchtitle</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.1.5 <a id="navtitle" href="langRef/base/navtitle.html#navtitle">navtitle</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.1.6 <a id="shortdesc" href="langRef/base/shortdesc.html#shortdesc">shortdesc</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.1.7 <a id="abstract" href="langRef/base/abstract.html#abstract">abstract</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.1.8 <a id="body" href="langRef/base/body.html#body">body</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.1.9 <a id="bodydiv" href="langRef/base/bodydiv.html#bodydiv">bodydiv</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.1.10 <a id="related-links" href="langRef/base/related-links.html#related-links">related-links</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.1.11 <a id="dita" href="langRef/base/dita.html#dita">dita</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.2.2 <a id="body2" href="langRef/containers/body-elements.html#body2">Body elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.2.1 <a id="alt" href="langRef/base/alt.html#alt">alt</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.2.2 <a id="cite" href="langRef/base/cite.html#cite">cite</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.2.3 <a id="dd" href="langRef/base/dd.html#dd">dd</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.2.4 <a id="desc" href="langRef/base/desc.html#desc">desc</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.2.5 <a id="ddhd" href="langRef/base/ddhd.html#ddhd">ddhd</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.2.6 <a id="div" href="langRef/base/div.html#div">div</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.2.7 <a id="dl" href="langRef/base/dl.html#dl">dl</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.2.8 <a id="dlentry" href="langRef/base/dlentry.html#dlentry">dlentry</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.2.9 <a id="dlhead" href="langRef/base/dlhead.html#dlhead">dlhead</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.2.10 <a id="dt" href="langRef/base/dt.html#dt">dt</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.2.11 <a id="draft-comment" href="langRef/base/draft-comment.html#draft-comment">draft-comment</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.2.12 <a id="dthd" href="langRef/base/dthd.html#dthd">dthd</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.2.13 <a id="example" href="langRef/base/example.html#example">example</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.2.14 <a id="fig" href="langRef/base/fig.html#fig">fig</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.2.15 <a id="figgroup" href="langRef/base/figgroup.html#figgroup">figgroup</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.2.16 <a id="fn" href="langRef/base/fn.html#fn">fn</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.2.17 <a id="image" href="langRef/base/image.html#image">image</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.2.18 <a id="keyword" href="langRef/base/keyword.html#keyword">keyword</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.2.19 <a id="li" href="langRef/base/li.html#li">li</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.2.20 <a id="lines" href="langRef/base/lines.html#lines">lines</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.2.21 <a id="longdescref" href="langRef/base/longdescref.html#longdescref">longdescref</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.2.22 <a id="longquoteref" href="langRef/base/longquoteref.html#longquoteref">longquoteref</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.2.23 <a id="lq" href="langRef/base/lq.html#lq">lq</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.2.24 <a id="note" href="langRef/base/note.html#note">note</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.2.25 <a id="object" href="langRef/base/object.html#object">object</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.2.26 <a id="ol" href="langRef/base/ol.html#ol">ol</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.2.27 <a id="p" href="langRef/base/p.html#p">p</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.2.28 <a id="param" href="langRef/base/param.html#param">param</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.2.29 <a id="ph" href="langRef/base/ph.html#ph">ph</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.2.30 <a id="pre" href="langRef/base/pre.html#pre">pre</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.2.31 <a id="q" href="langRef/base/q.html#q">q</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.2.32 <a id="section" href="langRef/base/section.html#section">section</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.2.33 <a id="sectiondiv" href="langRef/base/sectiondiv.html#sectiondiv">sectiondiv</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.2.34 <a id="sl" href="langRef/base/sl.html#sl">sl</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.2.35 <a id="sli" href="langRef/base/sli.html#sli">sli</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.2.36 <a id="term" href="langRef/base/term.html#term">term</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.2.37 <a id="text" href="langRef/base/text.html#text">text</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.2.38 <a id="tm" href="langRef/base/tm.html#tm">tm</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.2.39 <a id="ul" href="langRef/base/ul.html#ul">ul</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.2.40 <a id="xref" href="langRef/base/xref.html#xref">xref</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.2.3 <a id="table2" href="langRef/containers/table-elements.html#table2">Table elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.3.1 <a id="table" href="langRef/base/table.html#table">table</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.3.2 <a id="tgroup" href="langRef/base/tgroup.html#tgroup">tgroup</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.3.3 <a id="colspec" href="langRef/base/colspec.html#colspec">colspec</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.3.4 <a id="thead" href="langRef/base/thead.html#thead">thead</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.3.5 <a id="tbody" href="langRef/base/tbody.html#tbody">tbody</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.3.6 <a id="row" href="langRef/base/row.html#row">row</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.3.7 <a id="entry" href="langRef/base/entry.html#entry">entry</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.3.8 <a id="simpletable" href="langRef/base/simpletable.html#simpletable">simpletable</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.3.9 <a id="sthead" href="langRef/base/sthead.html#sthead">sthead</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.3.10 <a id="strow" href="langRef/base/strow.html#strow">strow</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.3.11 <a id="stentry" href="langRef/base/stentry.html#stentry">stentry</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.2.4 <a id="relatedl" href="langRef/containers/related-links-elements.html#relatedl">Related links elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.4.1 <a id="link" href="langRef/base/link.html#link">link</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.4.2 <a id="linklist" href="langRef/base/linklist.html#linklist">linklist</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.4.3 <a id="linkpool" href="langRef/base/linkpool.html#linkpool">linkpool</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.4.4 <a id="linktext" href="langRef/base/linktext.html#linktext">linktext</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.2.4.5 <a id="linkinfo" href="langRef/base/linkinfo.html#linkinfo">linkinfo</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   3.3 <a id="map_elements" href="langRef/containers/map-elements.html#map_elements">Map elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.3.1 <a id="body2map2" href="langRef/containers/basic-map-elements.html#body2map2">Basic map elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.3.1.1 <a id="map" href="langRef/base/map.html#map">map</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.3.1.2 <a id="topicref" href="langRef/base/topicref.html#topicref">topicref</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.3.1.3 <a id="topicmeta" href="langRef/base/topicmeta.html#topicmeta">topicmeta</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.3.1.4 <a id="anchor" href="langRef/base/anchor.html#anchor">anchor</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.3.1.5 <a id="navref" href="langRef/base/navref.html#navref">navref</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.3.1.6 <a id="reltable" href="langRef/base/reltable.html#reltable">reltable</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.3.1.7 <a id="relrow" href="langRef/base/relrow.html#relrow">relrow</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.3.1.8 <a id="relcell" href="langRef/base/relcell.html#relcell">relcell</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.3.1.9 <a id="relheader" href="langRef/base/relheader.html#relheader">relheader</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.3.1.10 <a id="relcolspec" href="langRef/base/relcolspec.html#relcolspec">relcolspec</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.3.1.11 <a id="ux-window" href="langRef/base/ux-window.html#ux-window">ux-window</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.3.2 <a id="mapgroup" href="langRef/containers/mapgroup-d.html#mapgroup">Map group elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.3.2.1 <a id="anchorref" href="langRef/base/anchorref.html#anchorref">anchorref</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.3.2.2 <a id="keydef" href="langRef/base/keydef.html#keydef">keydef</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.3.2.3 <a id="mapref" href="langRef/base/mapref.html#mapref">mapref</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.3.2.4 <a id="topicgroup" href="langRef/base/topicgroup.html#topicgroup">topicgroup</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.3.2.5 <a id="topichead" href="langRef/base/topichead.html#topichead">topichead</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.3.2.6 <a id="topicset" href="langRef/base/topicset.html#topicset">topicset</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.3.2.7 <a id="topicsetref" href="langRef/base/topicsetref.html#topicsetref">topicsetref</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   3.4 <a id="metadata_elements" href="langRef/containers/metadata-elements.html#metadata_elements">Metadata elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.4.1 <a id="prolog2" href="langRef/containers/prolog-elements.html#prolog2">Prolog (metadata) elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.4.1.1 <a id="prolog" href="langRef/base/prolog.html#prolog">prolog</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.4.1.2 <a id="audience" href="langRef/base/audience.html#audience">audience</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.4.1.3 <a id="author" href="langRef/base/author.html#author">author</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.4.1.4 <a id="brand" href="langRef/base/brand.html#brand">brand</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.4.1.5 <a id="category" href="langRef/base/category.html#category">category</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.4.1.6 <a id="component" href="langRef/base/component.html#component">component</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.4.1.7 <a id="copyright" href="langRef/base/copyright.html#copyright">copyright</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.4.1.8 <a id="copyrholder" href="langRef/base/copyrholder.html#copyrholder">copyrholder</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.4.1.9 <a id="copyryear" href="langRef/base/copyryear.html#copyryear">copyryear</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.4.1.10 <a id="created" href="langRef/base/created.html#created">created</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.4.1.11 <a id="critdates" href="langRef/base/critdates.html#critdates">critdates</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.4.1.12 <a id="featnum" href="langRef/base/featnum.html#featnum">featnum</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.4.1.13 <a id="keywords" href="langRef/base/keywords.html#keywords">keywords</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.4.1.14 <a id="metadata" href="langRef/base/metadata.html#metadata">metadata</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.4.1.15 <a id="othermeta" href="langRef/base/othermeta.html#othermeta">othermeta</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.4.1.16 <a id="permissions" href="langRef/base/permissions.html#permissions">permissions</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.4.1.17 <a id="platform" href="langRef/base/platform.html#platform">platform</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.4.1.18 <a id="prodinfo" href="langRef/base/prodinfo.html#prodinfo">prodinfo</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.4.1.19 <a id="prodname" href="langRef/base/prodname.html#prodname">prodname</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.4.1.20 <a id="prognum" href="langRef/base/prognum.html#prognum">prognum</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.4.1.21 <a id="publisher" href="langRef/base/publisher.html#publisher">publisher</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.4.1.22 <a id="resourceid" href="langRef/base/resourceid.html#resourceid">resourceid</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.4.1.23 <a id="revised" href="langRef/base/revised.html#revised">revised</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.4.1.24 <a id="series" href="langRef/base/series.html#series">series</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.4.1.25 <a id="source" href="langRef/base/source.html#source">source</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.4.1.26 <a id="vrmlist" href="langRef/base/vrmlist.html#vrmlist">vrmlist</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.4.1.27 <a id="vrm" href="langRef/base/vrm.html#vrm">vrm</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.4.2 <a id="indexingdgroup" href="langRef/containers/indexing-d.html#indexingdgroup">Indexing group elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.4.2.1 <a id="indexterm" href="langRef/base/indexterm.html#indexterm">indexterm</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.4.2.2 <a id="indextermref" href="langRef/base/indextermref.html#indextermref">indextermref</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.4.2.3 <a id="index-see" href="langRef/base/index-see.html#index-see">index-see</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.4.2.4 <a id="index-see-also" href="langRef/base/index-see-also.html#index-see-also">index-see-also</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.4.2.5 <a id="index-sort-as" href="langRef/base/index-sort-as.html#index-sort-as">index-sort-as</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.4.3 <a id="delayconref" href="langRef/containers/delayconref-d.html#delayconref">Delayed conref resolution elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.4.3.1 <a id="exportanchors" href="langRef/base/exportanchors.html#exportanchors">exportanchors</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.4.3.2 <a id="anchorid" href="langRef/base/anchorid.html#anchorid">anchorid</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.4.3.3 <a id="anchorkey" href="langRef/base/anchorkey.html#anchorkey">anchorkey</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   3.5 <a id="domain_elements" href="langRef/containers/domain-elements.html#domain_elements">Domain elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.5.1 <a id="hazard" href="langRef/containers/hazard-d.html#hazard">Hazard statement elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.5.1.1 <a id="hazardstatement" href="langRef/base/hazardstatement.html#hazardstatement">hazardstatement</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.5.1.2 <a id="consequence" href="langRef/base/consequence.html#consequence">consequence</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.5.1.3 <a id="hazardsymbol" href="langRef/base/hazardsymbol.html#hazardsymbol">hazardsymbol</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.5.1.4 <a id="howtoavoid" href="langRef/base/howtoavoid.html#howtoavoid">howtoavoid</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.5.1.5 <a id="messagepanel" href="langRef/base/messagepanel.html#messagepanel">messagepanel</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.5.1.6 <a id="typeofhazard" href="langRef/base/typeofhazard.html#typeofhazard">typeofhazard</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.5.2 <a id="highld" href="langRef/containers/hi-d.html#highld">Highlighting elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.5.2.1 <a id="b" href="langRef/base/b.html#b">b</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.5.2.2 <a id="i" href="langRef/base/i.html#i">i</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.5.2.3 <a id="sup" href="langRef/base/sup.html#sup">sup</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.5.2.4 <a id="sub" href="langRef/base/sub.html#sub">sub</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.5.2.5 <a id="tt" href="langRef/base/tt.html#tt">tt</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.5.2.6 <a id="u" href="langRef/base/u.html#u">u</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.5.2.7 <a id="line-through" href="langRef/base/line-through.html#line-through">line-through</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.5.2.8 <a id="overline" href="langRef/base/overline.html#overline">overline</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.5.3 <a id="utilities" href="langRef/containers/ut-d.html#utilities">Utilities elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.5.3.1 <a id="area" href="langRef/base/area.html#area">area</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.5.3.2 <a id="coords" href="langRef/base/coords.html#coords">coords</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.5.3.3 <a id="imagemap" href="langRef/base/imagemap.html#imagemap">imagemap</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.5.3.4 <a id="shape" href="langRef/base/shape.html#shape">shape</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.5.3.5 <a id="sort-as" href="langRef/base/sort-as.html#sort-as">sort-as</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.5.4 <a id="ditaval-d" href="langRef/containers/ditaval-d.html#ditaval-d">DITAVAL reference domain</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.5.4.1 <a id="ditavalref" href="langRef/base/ditavalref.html#ditavalref">ditavalref</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.5.4.2 <a id="ditavalmeta" href="langRef/base/ditavalmeta.html#ditavalmeta">ditavalmeta</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.5.4.3 <a id="dvrResourcePrefix" href="langRef/base/dvrResourcePrefix.html#dvrResourcePrefix">dvrResourcePrefix</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.5.4.4 <a id="dvrResourceSuffix" href="langRef/base/dvrResourceSuffix.html#dvrResourceSuffix">dvrResourceSuffix</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.5.4.5 <a id="dvrKeyscopePrefix" href="langRef/base/dvrKeyscopePrefix.html#dvrKeyscopePrefix">dvrKeyscopePrefix</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.5.4.6 <a id="dvrKeyscopeSuffix" href="langRef/base/dvrKeyscopeSuffix.html#dvrKeyscopeSuffix">dvrKeyscopeSuffix</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   3.6 <a id="classification_elements" href="langRef/containers/classification-elements.html#classification_elements">Classification elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.6.1 <a id="subjectscheme" href="langRef/containers/subjectScheme.html#subjectscheme">Subject scheme elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.6.1.1 <a id="subjectScheme" href="langRef/base/subjectScheme.html#subjectScheme">subjectScheme</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.6.1.2 <a id="schemeref" href="langRef/base/schemeref.html#schemeref">schemeref</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.6.1.3 <a id="hasInstance" href="langRef/base/hasInstance.html#hasInstance">hasInstance</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.6.1.4 <a id="hasKind" href="langRef/base/hasKind.html#hasKind">hasKind</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.6.1.5 <a id="hasNarrower" href="langRef/base/hasNarrower.html#hasNarrower">hasNarrower</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.6.1.6 <a id="hasPart" href="langRef/base/hasPart.html#hasPart">hasPart</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.6.1.7 <a id="hasRelated" href="langRef/base/hasRelated.html#hasRelated">hasRelated</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.6.1.8 <a id="enumerationdef" href="langRef/base/enumerationdef.html#enumerationdef">enumerationdef</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.6.1.9 <a id="elementdef" href="langRef/base/elementdef.html#elementdef">elementdef</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.6.1.10 <a id="attributedef" href="langRef/base/attributedef.html#attributedef">attributedef</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.6.1.11 <a id="defaultSubject" href="langRef/base/defaultSubject.html#defaultSubject">defaultSubject</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.6.1.12 <a id="subjectHead" href="langRef/base/subjectHead.html#subjectHead">subjectHead</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.6.1.13 <a id="subjectHeadMeta" href="langRef/base/subjectHeadMeta.html#subjectHeadMeta">subjectHeadMeta</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.6.1.14 <a id="subjectdef" href="langRef/base/subjectdef.html#subjectdef">subjectdef</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.6.1.15 <a id="relatedSubjects" href="langRef/base/relatedSubjects.html#relatedSubjects">relatedSubjects</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.6.1.16 <a id="subjectRelTable" href="langRef/base/subjectRelTable.html#subjectRelTable">subjectRelTable</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.6.1.17 <a id="subjectRelHeader" href="langRef/base/subjectRelHeader.html#subjectRelHeader">subjectRelHeader</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.6.1.18 <a id="subjectRel" href="langRef/base/subjectRel.html#subjectRel">subjectRel</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.6.1.19 <a id="subjectRole" href="langRef/base/subjectRole.html#subjectRole">subjectRole</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.6.2 <a id="classd" href="langRef/containers/classify-d.html#classd">Classification domain elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.6.2.1 <a id="subjectref" href="langRef/base/subjectref.html#subjectref">subjectref</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.6.2.2 <a id="topicapply" href="langRef/base/topicapply.html#topicapply">topicapply</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.6.2.3 <a id="topicsubject" href="langRef/base/topicsubject.html#topicsubject">topicsubject</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.6.2.4 <a id="topicSubjectTable" href="langRef/base/topicSubjectTable.html#topicSubjectTable">topicSubjectTable</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.6.2.5 <a id="topicSubjectHeader" href="langRef/base/topicSubjectHeader.html#topicSubjectHeader">topicSubjectHeader</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.6.2.6 <a id="topicSubjectRow" href="langRef/base/topicSubjectRow.html#topicSubjectRow">topicSubjectRow</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.6.2.7 <a id="topicCell" href="langRef/base/topicCell.html#topicCell">topicCell</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.6.2.8 <a id="subjectCell" href="langRef/base/subjectCell.html#subjectCell">subjectCell</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   3.7 <a id="special" href="langRef/containers/specialization-elements.html#special">Specialization elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.7.1 <a id="boolean" href="langRef/base/boolean.html#boolean">boolean</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.7.2 <a id="data" href="langRef/base/data.html#data">data</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.7.3 <a id="data-about" href="langRef/base/data-about.html#data-about">data-about</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.7.4 <a id="foreign" href="langRef/base/foreign.html#foreign">foreign</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.7.5 <a id="index-base" href="langRef/base/index-base.html#index-base">index-base</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.7.6 <a id="itemgroup" href="langRef/base/itemgroup.html#itemgroup">itemgroup</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.7.7 <a id="no-topic-nesting" href="langRef/base/no-topic-nesting.html#no-topic-nesting">no-topic-nesting</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.7.8 <a id="state" href="langRef/base/state.html#state">state</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.7.9 <a id="unknown" href="langRef/base/unknown.html#unknown">unknown</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   3.8 <a id="legacy_conversion_elements" href="langRef/containers/legacy-conversion-elements.html#legacy_conversion_elements">Legacy conversion elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.8.1 <a id="required-cleanup" href="langRef/base/required-cleanup.html#required-cleanup">required-cleanup</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   3.9 <a id="ditaval" href="langRef/containers/ditaval-elements.html#ditaval">DITAVAL elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.9.1 <a id="ditaval-val" href="langRef/ditaval/ditaval-val.html#ditaval-val">val</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.9.2 <a id="ditaval-style-conflict" href="langRef/ditaval/ditaval-style-conflict.html#ditaval-style-conflict">style-conflict</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.9.3 <a id="ditaval-prop" href="langRef/ditaval/ditaval-prop.html#ditaval-prop">prop</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.9.4 <a id="ditaval-revprop" href="langRef/ditaval/ditaval-revprop.html#ditaval-revprop">revprop</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.9.5 <a id="ditaval-startflag" href="langRef/ditaval/ditaval-startflag.html#ditaval-startflag">startflag</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.9.6 <a id="ditaval-endflag" href="langRef/ditaval/ditaval-endflag.html#ditaval-endflag">endflag</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.9.7 <a id="ditaval-alt-text" href="langRef/ditaval/ditaval-alt-text.html#ditaval-alt-text">alt-text</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   3.10 <a id="concept2" href="langRef/containers/concept-elements.html#concept2">Concept elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.10.1 <a id="concept" href="langRef/technicalContent/concept.html#concept">concept</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.10.2 <a id="conbody" href="langRef/technicalContent/conbody.html#conbody">conbody</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.10.3 <a id="conbodydiv" href="langRef/technicalContent/conbodydiv.html#conbodydiv">conbodydiv</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   3.11 <a id="task2" href="langRef/containers/task-elements.html#task2">Task elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.11.1 <a id="task" href="langRef/technicalContent/task.html#task">task</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.11.2 <a id="taskbody" href="langRef/technicalContent/taskbody.html#taskbody">taskbody</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.11.3 <a id="prereq" href="langRef/technicalContent/prereq.html#prereq">prereq</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.11.4 <a id="context" href="langRef/technicalContent/context.html#context">context</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.11.5 <a id="steps" href="langRef/technicalContent/steps.html#steps">steps</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.11.6 <a id="steps-informal" href="langRef/technicalContent/steps-informal.html#steps-informal">steps-informal</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.11.7 <a id="steps-unordered" href="langRef/technicalContent/steps-unordered.html#steps-unordered">steps-unordered</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.11.8 <a id="step" href="langRef/technicalContent/step.html#step">step</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.11.9 <a id="stepsection" href="langRef/technicalContent/stepsection.html#stepsection">stepsection</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.11.10 <a id="cmd" href="langRef/technicalContent/cmd.html#cmd">cmd</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.11.11 <a id="info" href="langRef/technicalContent/info.html#info">info</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.11.12 <a id="substeps" href="langRef/technicalContent/substeps.html#substeps">substeps</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.11.13 <a id="substep" href="langRef/technicalContent/substep.html#substep">substep</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.11.14 <a id="stepxmp" href="langRef/technicalContent/stepxmp.html#stepxmp">stepxmp</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.11.15 <a id="choicetable" href="langRef/technicalContent/choicetable.html#choicetable">choicetable</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.11.16 <a id="chhead" href="langRef/technicalContent/chhead.html#chhead">chhead</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.11.17 <a id="choptionhd" href="langRef/technicalContent/choptionhd.html#choptionhd">choptionhd</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.11.18 <a id="chdeschd" href="langRef/technicalContent/chdeschd.html#chdeschd">chdeschd</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.11.19 <a id="chrow" href="langRef/technicalContent/chrow.html#chrow">chrow</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.11.20 <a id="choption" href="langRef/technicalContent/choption.html#choption">choption</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.11.21 <a id="chdesc" href="langRef/technicalContent/chdesc.html#chdesc">chdesc</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.11.22 <a id="choices" href="langRef/technicalContent/choices.html#choices">choices</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.11.23 <a id="choice" href="langRef/technicalContent/choice.html#choice">choice</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.11.24 <a id="steptroubleshooting" href="langRef/technicalContent/steptroubleshooting.html#steptroubleshooting">steptroubleshooting</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.11.25 <a id="stepresult" href="langRef/technicalContent/stepresult.html#stepresult">stepresult</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.11.26 <a id="tutorialinfo" href="langRef/technicalContent/tutorialinfo.html#tutorialinfo">tutorialinfo</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.11.27 <a id="tasktroubleshooting" href="langRef/technicalContent/tasktroubleshooting.html#tasktroubleshooting">tasktroubleshooting</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.11.28 <a id="result" href="langRef/technicalContent/result.html#result">result</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.11.29 <a id="postreq" href="langRef/technicalContent/postreq.html#postreq">postreq</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   3.12 <a id="reference2" href="langRef/containers/reference-elements.html#reference2">Reference elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.12.1 <a id="reference" href="langRef/technicalContent/reference.html#reference">reference</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.12.2 <a id="refbody" href="langRef/technicalContent/refbody.html#refbody">refbody</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.12.3 <a id="refbodydiv" href="langRef/technicalContent/refbodydiv.html#refbodydiv">refbodydiv</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.12.4 <a id="refsyn" href="langRef/technicalContent/refsyn.html#refsyn">refsyn</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.12.5 <a id="properties" href="langRef/technicalContent/properties.html#properties">properties</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.12.6 <a id="prophead" href="langRef/technicalContent/prophead.html#prophead">prophead</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.12.7 <a id="proptypehd" href="langRef/technicalContent/proptypehd.html#proptypehd">proptypehd</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.12.8 <a id="propvaluehd" href="langRef/technicalContent/propvaluehd.html#propvaluehd">propvaluehd</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.12.9 <a id="propdeschd" href="langRef/technicalContent/propdeschd.html#propdeschd">propdeschd</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.12.10 <a id="property" href="langRef/technicalContent/property.html#property">property</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.12.11 <a id="proptype" href="langRef/technicalContent/proptype.html#proptype">proptype</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.12.12 <a id="propvalue" href="langRef/technicalContent/propvalue.html#propvalue">propvalue</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.12.13 <a id="propdesc" href="langRef/technicalContent/propdesc.html#propdesc">propdesc</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   3.13 <a id="reference_xm5_sqz_vm" href="langRef/containers/troubleshooting-elements.html#reference_xm5_sqz_vm">Troubleshooting elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.13.1 <a id="troubleshooting" href="langRef/technicalContent/troubleshooting.html#troubleshooting">troubleshooting</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.13.2 <a id="troublebody" href="langRef/technicalContent/troublebody.html#troublebody">troublebody</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.13.3 <a id="condition" href="langRef/technicalContent/condition.html#condition">condition</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.13.4 <a id="troubleSolution" href="langRef/technicalContent/troubleSolution.html#troubleSolution">troubleSolution</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.13.5 <a id="cause" href="langRef/technicalContent/cause.html#cause">cause</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.13.6 <a id="remedy" href="langRef/technicalContent/remedy.html#remedy">remedy</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.13.7 <a id="responsibleParty" href="langRef/technicalContent/responsibleParty.html#responsibleParty">responsibleParty</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   3.14 <a id="glossary-elements" href="langRef/containers/glossary-elements.html#glossary-elements">Glossary elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.14.1 <a id="glossary2" href="langRef/containers/glossentry-elements.html#glossary2">Glossentry elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.14.1.1 <a id="glossentry" href="langRef/technicalContent/glossentry.html#glossentry">glossentry</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.14.1.2 <a id="glossterm" href="langRef/technicalContent/glossterm.html#glossterm">glossterm</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.14.1.3 <a id="glossdef" href="langRef/technicalContent/glossdef.html#glossdef">glossdef</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.14.1.4 <a id="glossAbbreviation" href="langRef/technicalContent/glossAbbreviation.html#glossAbbreviation">glossAbbreviation</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.14.1.5 <a id="glossAcronym" href="langRef/technicalContent/glossAcronym.html#glossAcronym">glossAcronym</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.14.1.6 <a id="glossAlt" href="langRef/technicalContent/glossAlt.html#glossAlt">glossAlt</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.14.1.7 <a id="glossAlternateFor" href="langRef/technicalContent/glossAlternateFor.html#glossAlternateFor">glossAlternateFor</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.14.1.8 <a id="glossBody" href="langRef/technicalContent/glossBody.html#glossBody">glossBody</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.14.1.9 <a id="glossPartOfSpeech" href="langRef/technicalContent/glossPartOfSpeech.html#glossPartOfSpeech">glossPartOfSpeech</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.14.1.10 <a id="glossProperty" href="langRef/technicalContent/glossProperty.html#glossProperty">glossProperty</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.14.1.11 <a id="glossScopeNote" href="langRef/technicalContent/glossScopeNote.html#glossScopeNote">glossScopeNote</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.14.1.12 <a id="glossShortForm" href="langRef/technicalContent/glossShortForm.html#glossShortForm">glossShortForm</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.14.1.13 <a id="glossStatus" href="langRef/technicalContent/glossStatus.html#glossStatus">glossStatus</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.14.1.14 <a id="glossSurfaceForm" href="langRef/technicalContent/glossSurfaceForm.html#glossSurfaceForm">glossSurfaceForm</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.14.1.15 <a id="glossSymbol" href="langRef/technicalContent/glossSymbol.html#glossSymbol">glossSymbol</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.14.1.16 <a id="glossSynonym" href="langRef/technicalContent/glossSynonym.html#glossSynonym">glossSynonym</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.14.1.17 <a id="glossUsage" href="langRef/technicalContent/glossUsage.html#glossUsage">glossUsage</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.14.2 <a id="glossrelated" href="langRef/containers/glossary-related-elements.html#glossrelated">Glossary related elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.14.2.1 <a id="abbreviated-form" href="langRef/technicalContent/abbreviated-form.html#abbreviated-form">abbreviated-form</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.14.2.2 <a id="glossref" href="langRef/technicalContent/glossref.html#glossref">glossref</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.14.2.3 <a id="glossgroup" href="langRef/technicalContent/glossgroup.html#glossgroup">glossgroup</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   3.15 <a id="bookmap-elements" href="langRef/containers/bookmap-elements.html#bookmap-elements">Bookmap elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.15.1 <a id="about-bookmap-1" href="langRef/containers/bookmap-content-elements.html#about-bookmap-1">Bookmap content elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.1.1 <a id="bookmap" href="langRef/technicalContent/bookmap.html#bookmap">bookmap</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.1.2 <a id="abbrevlist" href="langRef/technicalContent/abbrevlist.html#abbrevlist">abbrevlist</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.1.3 <a id="amendments" href="langRef/technicalContent/amendments.html#amendments">amendments</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.1.4 <a id="appendices" href="langRef/technicalContent/appendices.html#appendices">appendices</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.1.5 <a id="appendix" href="langRef/technicalContent/appendix.html#appendix">appendix</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.1.6 <a id="backmatter" href="langRef/technicalContent/backmatter.html#backmatter">backmatter</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.1.7 <a id="bibliolist" href="langRef/technicalContent/bibliolist.html#bibliolist">bibliolist</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.1.8 <a id="bookabstract" href="langRef/technicalContent/bookabstract.html#bookabstract">bookabstract</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.1.9 <a id="booklibrary" href="langRef/technicalContent/booklibrary.html#booklibrary">booklibrary</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.1.10 <a id="booklist" href="langRef/technicalContent/booklist.html#booklist">booklist</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.1.11 <a id="booklists" href="langRef/technicalContent/booklists.html#booklists">booklists</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.1.12 <a id="booktitle" href="langRef/technicalContent/booktitle.html#booktitle">booktitle</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.1.13 <a id="booktitlealt" href="langRef/technicalContent/booktitlealt.html#booktitlealt">booktitlealt</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.1.14 <a id="chapter" href="langRef/technicalContent/chapter.html#chapter">chapter</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.1.15 <a id="colophon" href="langRef/technicalContent/colophon.html#colophon">colophon</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.1.16 <a id="dedication" href="langRef/technicalContent/dedication.html#dedication">dedication</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.1.17 <a id="draftintro" href="langRef/technicalContent/draftintro.html#draftintro">draftintro</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.1.18 <a id="figurelist" href="langRef/technicalContent/figurelist.html#figurelist">figurelist</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.1.19 <a id="frontmatter" href="langRef/technicalContent/frontmatter.html#frontmatter">frontmatter</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.1.20 <a id="glossarylist" href="langRef/technicalContent/glossarylist.html#glossarylist">glossarylist</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.1.21 <a id="indexlist" href="langRef/technicalContent/indexlist.html#indexlist">indexlist</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.1.22 <a id="mainbooktitle" href="langRef/technicalContent/mainbooktitle.html#mainbooktitle">mainbooktitle</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.1.23 <a id="notices" href="langRef/technicalContent/notices.html#notices">notices</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.1.24 <a id="part" href="langRef/technicalContent/part.html#part">part</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.1.25 <a id="preface" href="langRef/technicalContent/preface.html#preface">preface</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.1.26 <a id="tablelist" href="langRef/technicalContent/tablelist.html#tablelist">tablelist</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.1.27 <a id="toc" href="langRef/technicalContent/toc.html#toc">toc</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.1.28 <a id="trademarklist" href="langRef/technicalContent/trademarklist.html#trademarklist">trademarklist</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.15.2 <a id="bookmap-meta" href="langRef/containers/bookmap-metadata-elements.html#bookmap-meta">Bookmap metadata elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.2.1 <a id="bookmeta" href="langRef/technicalContent/bookmeta.html#bookmeta">bookmeta</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.2.2 <a id="approved" href="langRef/technicalContent/approved.html#approved">approved</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.2.3 <a id="bookchangehistory" href="langRef/technicalContent/bookchangehistory.html#bookchangehistory">bookchangehistory</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.2.4 <a id="bookevent" href="langRef/technicalContent/bookevent.html#bookevent">bookevent</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.2.5 <a id="bookeventtype" href="langRef/technicalContent/bookeventtype.html#bookeventtype">bookeventtype</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.2.6 <a id="bookid" href="langRef/technicalContent/bookid.html#bookid">bookid</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.2.7 <a id="booknumber" href="langRef/technicalContent/booknumber.html#booknumber">booknumber</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.2.8 <a id="bookowner" href="langRef/technicalContent/bookowner.html#bookowner">bookowner</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.2.9 <a id="bookpartno" href="langRef/technicalContent/bookpartno.html#bookpartno">bookpartno</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.2.10 <a id="bookrestriction" href="langRef/technicalContent/bookrestriction.html#bookrestriction">bookrestriction</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.2.11 <a id="bookrights" href="langRef/technicalContent/bookrights.html#bookrights">bookrights</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.2.12 <a id="completed" href="langRef/technicalContent/completed.html#completed">completed</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.2.13 <a id="copyrfirst" href="langRef/technicalContent/copyrfirst.html#copyrfirst">copyrfirst</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.2.14 <a id="copyrlast" href="langRef/technicalContent/copyrlast.html#copyrlast">copyrlast</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.2.15 <a id="day" href="langRef/technicalContent/day.html#day">day</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.2.16 <a id="edited" href="langRef/technicalContent/edited.html#edited">edited</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.2.17 <a id="edition" href="langRef/technicalContent/edition.html#edition">edition</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.2.18 <a id="isbn" href="langRef/technicalContent/isbn.html#isbn">isbn</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.2.19 <a id="maintainer" href="langRef/technicalContent/maintainer.html#maintainer">maintainer</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.2.20 <a id="month" href="langRef/technicalContent/month.html#month">month</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.2.21 <a id="organization" href="langRef/technicalContent/organization.html#organization">organization</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.2.22 <a id="person" href="langRef/technicalContent/person.html#person">person</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.2.23 <a id="printlocation" href="langRef/technicalContent/printlocation.html#printlocation">printlocation</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.2.24 <a id="published" href="langRef/technicalContent/published.html#published">published</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.2.25 <a id="publisherinformation" href="langRef/technicalContent/publisherinformation.html#publisherinformation">publisherinformation</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.2.26 <a id="publishtype" href="langRef/technicalContent/publishtype.html#publishtype">publishtype</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.2.27 <a id="reviewed" href="langRef/technicalContent/reviewed.html#reviewed">reviewed</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.2.28 <a id="revisionid" href="langRef/technicalContent/revisionid.html#revisionid">revisionid</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.2.29 <a id="started" href="langRef/technicalContent/started.html#started">started</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.2.30 <a id="summary" href="langRef/technicalContent/summary.html#summary">summary</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.2.31 <a id="tested" href="langRef/technicalContent/tested.html#tested">tested</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.2.32 <a id="volume" href="langRef/technicalContent/volume.html#volume">volume</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.15.2.33 <a id="year" href="langRef/technicalContent/year.html#year">year</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   3.16 <a id="technicalContent-domain-elements" href="langRef/containers/technicalContent-domain-elements.html#technicalContent-domain-elements">Technical-content domains elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.16.1 <a id="equation-elements" href="langRef/containers/equation-elements.html#equation-elements">Equation domain elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.1.1 <a id="equation-block" href="langRef/technicalContent/equation-block.html#equation-block">equation-block</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.1.2 <a id="equation-figure" href="langRef/technicalContent/equation-figure.html#equation-figure">equation-figure</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.1.3 <a id="equation-inline" href="langRef/technicalContent/equation-inline.html#equation-inline">equation-inline</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.1.4 <a id="equation-number" href="langRef/technicalContent/equation-number.html#equation-number">equation-number</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.16.2 <a id="markup-domain" href="langRef/containers/markup-domain.html#markup-domain">Markup domain</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.2.1 <a id="markupname" href="langRef/technicalContent/markupname.html#markupname">markupname</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.16.3 <a id="mathml-d" href="langRef/containers/mathml-d.html#mathml-d">MathML domain elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.3.1 <a id="mathml" href="langRef/technicalContent/mathml.html#mathml">mathml</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.3.2 <a id="mathmlref" href="langRef/technicalContent/mathmlref.html#mathmlref">mathmlref</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.16.4 <a id="progd" href="langRef/containers/pr-d.html#progd">Programming elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.4.1 <a id="apiname" href="langRef/technicalContent/apiname.html#apiname">apiname</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.4.2 <a id="codeblock" href="langRef/technicalContent/codeblock.html#codeblock">codeblock</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.4.3 <a id="codeph" href="langRef/technicalContent/codeph.html#codeph">codeph</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.4.4 <a id="coderef" href="langRef/technicalContent/coderef.html#coderef">coderef</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.4.5 <a id="option" href="langRef/technicalContent/option.html#option">option</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.4.6 <a id="parmname" href="langRef/technicalContent/parmname.html#parmname">parmname</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.4.7 <a id="parml" href="langRef/technicalContent/parml.html#parml">parml</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.4.8 <a id="plentry" href="langRef/technicalContent/plentry.html#plentry">plentry</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.4.9 <a id="pt" href="langRef/technicalContent/pt.html#pt">pt</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.4.10 <a id="pd" href="langRef/technicalContent/pd.html#pd">pd</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.4.11 <a id="synph" href="langRef/technicalContent/synph.html#synph">synph</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.4.12 <a id="syntaxdiagram" href="langRef/technicalContent/syntaxdiagram.html#syntaxdiagram">syntaxdiagram</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.4.13 <a id="groupseq" href="langRef/technicalContent/groupseq.html#groupseq">groupseq</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.4.14 <a id="groupchoice" href="langRef/technicalContent/groupchoice.html#groupchoice">groupchoice</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.4.15 <a id="groupcomp" href="langRef/technicalContent/groupcomp.html#groupcomp">groupcomp</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.4.16 <a id="fragment" href="langRef/technicalContent/fragment.html#fragment">fragment</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.4.17 <a id="fragref" href="langRef/technicalContent/fragref.html#fragref">fragref</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.4.18 <a id="synblk" href="langRef/technicalContent/synblk.html#synblk">synblk</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.4.19 <a id="synnote" href="langRef/technicalContent/synnote.html#synnote">synnote</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.4.20 <a id="synnoteref" href="langRef/technicalContent/synnoteref.html#synnoteref">synnoteref</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.4.21 <a id="kwd" href="langRef/technicalContent/kwd.html#kwd">kwd</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.4.22 <a id="var" href="langRef/technicalContent/var.html#var">var</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.4.23 <a id="oper" href="langRef/technicalContent/oper.html#oper">oper</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.4.24 <a id="delim" href="langRef/technicalContent/delim.html#delim">delim</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.4.25 <a id="sep" href="langRef/technicalContent/sep.html#sep">sep</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.4.26 <a id="repsep" href="langRef/technicalContent/repsep.html#repsep">repsep</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.16.5 <a id="Release-management-domain-elements" href="langRef/containers/Release-management-domain-elements.html#Release-management-domain-elements">Release-management domain elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.5.1 <a id="change-completed" href="langRef/technicalContent/change-completed.html#change-completed">change-completed</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.5.2 <a id="change-historylist" href="langRef/technicalContent/change-historylist.html#change-historylist">change-historylist</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.5.3 <a id="change-item" href="langRef/technicalContent/change-item.html#change-item">change-item</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.5.4 <a id="change-organization" href="langRef/technicalContent/change-organization.html#change-organization">change-organization</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.5.5 <a id="change-person" href="langRef/technicalContent/change-person.html#change-person">change-person</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.5.6 <a id="change-request-id" href="langRef/technicalContent/change-request-id.html#change-request-id">change-request-id</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.5.7 <a id="change-request-reference" href="langRef/technicalContent/change-request-reference.html#change-request-reference">change-request-reference</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.5.8 <a id="change-request-system" href="langRef/technicalContent/change-request-system.html#change-request-system">change-request-system</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.5.9 <a id="change-revisionid" href="langRef/technicalContent/change-revisionid.html#change-revisionid">change-revisionid</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.5.10 <a id="change-started" href="langRef/technicalContent/change-started.html#change-started">change-started</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.5.11 <a id="change-summary" href="langRef/technicalContent/change-summary.html#change-summary">change-summary</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.16.6 <a id="softwd" href="langRef/containers/sw-d.html#softwd">Software elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.6.1 <a id="msgph" href="langRef/technicalContent/msgph.html#msgph">msgph</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.6.2 <a id="msgblock" href="langRef/technicalContent/msgblock.html#msgblock">msgblock</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.6.3 <a id="msgnum" href="langRef/technicalContent/msgnum.html#msgnum">msgnum</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.6.4 <a id="cmdname" href="langRef/technicalContent/cmdname.html#cmdname">cmdname</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.6.5 <a id="varname" href="langRef/technicalContent/varname.html#varname">varname</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.6.6 <a id="filepath" href="langRef/technicalContent/filepath.html#filepath">filepath</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.6.7 <a id="userinput" href="langRef/technicalContent/userinput.html#userinput">userinput</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.6.8 <a id="systemoutput" href="langRef/technicalContent/systemoutput.html#systemoutput">systemoutput</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.16.7 <a id="SVG-elements" href="langRef/containers/SVG-elements.html#SVG-elements">SVG elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.7.1 <a id="svg-container" href="langRef/technicalContent/svg-container.html#svg-container">svg-container</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.7.2 <a id="svgref" href="langRef/technicalContent/svgref.html#svgref">svgref</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.16.8 <a id="mitask-d" href="langRef/containers/mitask-d.html#mitask-d">Task requirements domain</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.8.1 <a id="prelreqs" href="langRef/technicalContent/prelreqs.html#prelreqs">prelreqs</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.8.2 <a id="closereqs" href="langRef/technicalContent/closereqs.html#closereqs">closereqs</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.8.3 <a id="reqconds" href="langRef/technicalContent/reqconds.html#reqconds">reqconds</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.8.4 <a id="reqcond" href="langRef/technicalContent/reqcond.html#reqcond">reqcond</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.8.5 <a id="noconds" href="langRef/technicalContent/noconds.html#noconds">noconds</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.8.6 <a id="reqcontp" href="langRef/technicalContent/reqcontp.html#reqcontp">reqcontp</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.8.7 <a id="reqpers" href="langRef/technicalContent/reqpers.html#reqpers">reqpers</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.8.8 <a id="personnel" href="langRef/technicalContent/personnel.html#personnel">personnel</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.8.9 <a id="perscat" href="langRef/technicalContent/perscat.html#perscat">perscat</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.8.10 <a id="perskill" href="langRef/technicalContent/perskill.html#perskill">perskill</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.8.11 <a id="esttime" href="langRef/technicalContent/esttime.html#esttime">esttime</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.8.12 <a id="supeqli" href="langRef/technicalContent/supeqli.html#supeqli">supeqli</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.8.13 <a id="supequi" href="langRef/technicalContent/supequi.html#supequi">supequi</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.8.14 <a id="supequip" href="langRef/technicalContent/supequip.html#supequip">supequip</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.8.15 <a id="nosupeq" href="langRef/technicalContent/nosupeq.html#nosupeq">nosupeq</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.8.16 <a id="supplies" href="langRef/technicalContent/supplies.html#supplies">supplies</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.8.17 <a id="supply" href="langRef/technicalContent/supply.html#supply">supply</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.8.18 <a id="supplyli" href="langRef/technicalContent/supplyli.html#supplyli">supplyli</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.8.19 <a id="nosupply" href="langRef/technicalContent/nosupply.html#nosupply">nosupply</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.8.20 <a id="spare" href="langRef/technicalContent/spare.html#spare">spare</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.8.21 <a id="spares" href="langRef/technicalContent/spares.html#spares">spares</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.8.22 <a id="sparesli" href="langRef/technicalContent/sparesli.html#sparesli">sparesli</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.8.23 <a id="nospares" href="langRef/technicalContent/nospares.html#nospares">nospares</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.8.24 <a id="nosafety" href="langRef/technicalContent/nosafety.html#nosafety">nosafety</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.8.25 <a id="safecond" href="langRef/technicalContent/safecond.html#safecond">safecond</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.8.26 <a id="safety" href="langRef/technicalContent/safety.html#safety">safety</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.16.9 <a id="userid" href="langRef/containers/ui-d.html#userid">User interface elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.9.1 <a id="uicontrol" href="langRef/technicalContent/uicontrol.html#uicontrol">uicontrol</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.9.2 <a id="wintitle" href="langRef/technicalContent/wintitle.html#wintitle">wintitle</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.9.3 <a id="menucascade" href="langRef/technicalContent/menucascade.html#menucascade">menucascade</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.9.4 <a id="shortcut" href="langRef/technicalContent/shortcut.html#shortcut">shortcut</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.9.5 <a id="screen" href="langRef/technicalContent/screen.html#screen">screen</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.16.10 <a id="xml-mention-domain" href="langRef/containers/xml-mention-domain.html#xml-mention-domain">XML mention domain</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.10.1 <a id="numcharref" href="langRef/technicalContent/numcharref.html#numcharref">numcharref</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.10.2 <a id="parameterentity" href="langRef/technicalContent/parameterentity.html#parameterentity">parameterentity</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.10.3 <a id="textentity" href="langRef/technicalContent/textentity.html#textentity">textentity</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.10.4 <a id="xmlatt" href="langRef/technicalContent/xmlatt.html#xmlatt">xmlatt</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.10.5 <a id="xmlelement" href="langRef/technicalContent/xmlelement.html#xmlelement">xmlelement</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.10.6 <a id="xmlnsname" href="langRef/technicalContent/xmlnsname.html#xmlnsname">xmlnsname</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.10.7 <a id="xmlpi" href="langRef/technicalContent/xmlpi.html#xmlpi">xmlpi</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.16.11 <a id="xnald" href="langRef/containers/xnal-d.html#xnald">xNAL domain elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.11.1 <a id="authorinformation" href="langRef/technicalContent/authorinformation.html#authorinformation">authorinformation</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.11.2 <a id="addressdetails" href="langRef/technicalContent/addressdetails.html#addressdetails">addressdetails</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.11.3 <a id="administrativearea" href="langRef/technicalContent/administrativearea.html#administrativearea">administrativearea</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.11.4 <a id="contactnumber" href="langRef/technicalContent/contactnumber.html#contactnumber">contactnumber</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.11.5 <a id="contactnumbers" href="langRef/technicalContent/contactnumbers.html#contactnumbers">contactnumbers</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.11.6 <a id="country" href="langRef/technicalContent/country.html#country">country</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.11.7 <a id="emailaddress" href="langRef/technicalContent/emailaddress.html#emailaddress">emailaddress</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.11.8 <a id="emailaddresses" href="langRef/technicalContent/emailaddresses.html#emailaddresses">emailaddresses</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.11.9 <a id="firstname" href="langRef/technicalContent/firstname.html#firstname">firstname</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.11.10 <a id="generationidentifier" href="langRef/technicalContent/generationidentifier.html#generationidentifier">generationidentifier</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.11.11 <a id="honorific" href="langRef/technicalContent/honorific.html#honorific">honorific</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.11.12 <a id="lastname" href="langRef/technicalContent/lastname.html#lastname">lastname</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.11.13 <a id="locality" href="langRef/technicalContent/locality.html#locality">locality</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.11.14 <a id="localityname" href="langRef/technicalContent/localityname.html#localityname">localityname</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.11.15 <a id="middlename" href="langRef/technicalContent/middlename.html#middlename">middlename</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.11.16 <a id="namedetails" href="langRef/technicalContent/namedetails.html#namedetails">namedetails</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.11.17 <a id="organizationinfo" href="langRef/technicalContent/organizationinfo.html#organizationinfo">organizationinfo</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.11.18 <a id="organizationname" href="langRef/technicalContent/organizationname.html#organizationname">organizationname</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.11.19 <a id="organizationnamedetails" href="langRef/technicalContent/organizationnamedetails.html#organizationnamedetails">organizationnamedetails</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.11.20 <a id="otherinfo" href="langRef/technicalContent/otherinfo.html#otherinfo">otherinfo</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.11.21 <a id="personinfo" href="langRef/technicalContent/personinfo.html#personinfo">personinfo</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.11.22 <a id="personname" href="langRef/technicalContent/personname.html#personname">personname</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.11.23 <a id="postalcode" href="langRef/technicalContent/postalcode.html#postalcode">postalcode</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.11.24 <a id="thoroughfare" href="langRef/technicalContent/thoroughfare.html#thoroughfare">thoroughfare</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.11.25 <a id="url" href="langRef/technicalContent/url.html#url">url</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.16.11.26 <a id="urls" href="langRef/technicalContent/urls.html#urls">urls</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   3.17 <a id="attributes" href="langRef/attributes/attributes.html#attributes">Attributes</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.17.1 <a id="univ-atts" href="langRef/attributes/universalAttributes.html#univ-atts">Universal attribute group</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.17.1.1 <a id="id-atts" href="langRef/attributes/idAttributes.html#id-atts">ID attribute group</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.17.1.2 <a id="select-atts" href="langRef/attributes/metadataAttributes.html#select-atts">Metadata attribute group</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.17.1.3 <a id="localization-atts" href="langRef/attributes/localizationAttributes.html#localization-atts">Localization attribute group</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.17.1.4 <a id="global-atts" href="langRef/attributes/debugAttributes.html#global-atts">Debug attribute group</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.17.2 <a id="arch-atts" href="langRef/attributes/architecturalAttributes.html#arch-atts">Architectural attribute group</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.17.3 <a id="topicref-atts" href="langRef/attributes/commonMapAttributes.html#topicref-atts">Attributes common to many map elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.17.4 <a id="oet-atts" href="langRef/attributes/calsTableAttributes.html#oet-atts">Complex-table attribute group</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.17.5 <a id="data-element-atts" href="langRef/attributes/dataElementAttributes.html#data-element-atts">Data element attributes group</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.17.6 <a id="date-atts" href="langRef/attributes/dateAttributes.html#date-atts">Date attributes group</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.17.7 <a id="display-atts" href="langRef/attributes/displayAttributes.html#display-atts">Display attribute group</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.17.8 <a id="relational-atts" href="langRef/attributes/linkRelationshipAttributes.html#relational-atts">Link relationship attribute group</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.17.9 <a id="common-atts" href="langRef/attributes/commonAttributes.html#common-atts">Other common attributes</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.17.10 <a id="simpletable-atts" href="langRef/attributes/simpletableAttributes.html#simpletable-atts">Simpletable attribute group</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.17.11 <a id="specialization-atts" href="langRef/attributes/specializationAttributes.html#specialization-atts">Specialization attributes group</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.17.12 <a id="topicref-element-atts" href="langRef/attributes/topicrefElementAttributes.html#topicref-element-atts">Topicref element attributes group</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      3.17.13 <a id="complexattributedefinitions" href="langRef/attributes/complexattributedefinitions.html#complexattributedefinitions">Complex attribute definitions</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.17.13.1 <a id="thehrefattribute" href="langRef/attributes/thehrefattribute.html#thehrefattribute">The href attribute</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.17.13.2 <a id="thekeysattribute" href="langRef/attributes/thekeysattribute.html#thekeysattribute">The keys attribute</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.17.13.3 <a id="thekeyrefattribute" href="langRef/attributes/thekeyrefattribute.html#thekeyrefattribute">The keyref attribute</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.17.13.4 <a id="keyscope-attribute" href="langRef/attributes/the-key-scope-attribute.html#keyscope-attribute">The keyscope attribute</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.17.13.5 <a id="theconrefattribute" href="langRef/attributes/theconrefattribute.html#theconrefattribute">The conref attribute</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">            3.17.13.5.1 <a id="usingthe-dita-use-conref-targetvalue" href="langRef/attributes/ditauseconreftarget.html#usingthe-dita-use-conref-targetvalue">Using the -dita-use-conref-target value</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.17.13.6 <a id="theconactionattribute" href="langRef/attributes/theconactionattribute.html#theconactionattribute">The conaction attribute</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.17.13.7 <a id="theconrefendattribute" href="langRef/attributes/theconrefendattribute.html#theconrefendattribute">The conrefend attribute</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.17.13.8 <a id="theconkeyrefattribute" href="langRef/attributes/theconkeyrefattribute.html#theconkeyrefattribute">The conkeyref attribute</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.17.13.9 <a id="thetypeattribute" href="langRef/attributes/thetypeattribute.html#thetypeattribute">The type attribute</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.17.13.10 <a id="theformatattribute" href="langRef/attributes/theformatattribute.html#theformatattribute">The format attribute</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.17.13.11 <a id="thescopeattribute" href="langRef/attributes/thescopeattribute.html#thescopeattribute">The scope attribute</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">         3.17.13.12 <a id="theroleattribute" href="langRef/attributes/theroleattribute.html#theroleattribute">The role and otherrole attributes</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">4 <a id="conformance" href="conformance/conformance.html#conformance">Conformance</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">Appendix A <a id="r-acknowledgments" href="acknowledgments/acknowledgments.html#r-acknowledgments">Acknowledgments</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">Appendix B <a id="non-normative-information" href="non-normative/non-normative-information.html#non-normative-information">Non-normative information</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   B.1 <a id="about-the-spec" href="non-normative/about-specification-source.html#about-the-spec">About the specification source</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   B.2 <a id="changes-from-previous-versions" href="non-normative/changes-from-previous-versions.html#changes-from-previous-versions">Changes from previous versions</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      B.2.1 <a id="new-in-1.3" href="non-normative/new-in-1.3.html#new-in-1.3">Changes from DITA 1.2 to DITA 1.3</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      B.2.2 <a id="new-in_1_2" href="non-normative/new-in-1.2.html#new-in_1_2">Changes from DITA 1.1 to DITA 1.2</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      B.2.3 <a id="new-in_1_1" href="non-normative/new-in-1.1.html#new-in_1_1">Changes from DITA 1.0 to DITA 1.1</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   B.3 <a id="file-naming-conventions" href="non-normative/file-naming-conventions.html#file-naming-conventions">File naming conventions</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   B.4 <a id="migrating" href="non-normative/migration-to-new-version.html#migrating">Migrating to new versions of DITA</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      B.4.1 <a id="migrating_from_1.2_to_1.3" href="non-normative/migration-1.2-to-1.3.html#migrating_from_1.2_to_1.3">Migrating from DITA 1.2 to 1.3</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      B.4.2 <a id="migrating_from_1.1_to_1.2" href="non-normative/migration-1.1-to-1.2.html#migrating_from_1.1_to_1.2">Migrating from DITA 1.1 to 1.2</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   B.5 <a id="foreigngeneralization" href="non-normative/foreigngeneralization.html#foreigngeneralization">Considerations for generalizing foreign elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   B.6 <a id="elements" href="non-normative/elementsMerged.html#elements">Element-by-element recommendations for translators: Technical content edition</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   B.7 <a id="dtd-public-identifiers" href="non-normative/dtd-public-identifiers.html#dtd-public-identifiers">DTD public identifiers</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   B.8 <a id="xml-schema-catalog-identifiers" href="non-normative/xml-schema-catalog-identifiers.html#xml-schema-catalog-identifiers">XML Schema catalog identifiers</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   B.9 <a id="domainscontainer" href="non-normative/domainscontainer.html#domainscontainer">Domains and constraints in the OASIS specification</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      B.9.1 <a id="oasisdomains" href="non-normative/oasisdomains.html#oasisdomains">Domains and constraints in the OASIS specification</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      B.9.2 <a id="basedomains" href="non-normative/basedomains.html#basedomains">Base domains: Where they are used</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      B.9.3 <a id="tcdomains" href="non-normative/technicalcontentdomains.html#tcdomains">Technical content domains and constraints: Where they are used</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      B.9.4 <a id="oasisdomains" href="non-normative/basedoctypes.html#oasisdomains">Base document types: Included domains</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">      B.9.5 <a id="tcdoctypes" href="non-normative/technicalcontentdoctypes.html#tcdoctypes">Technical content document types: Included domains and constraints</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   B.10 <a id="nteroperability-considerations" href="non-normative/interoperability-considerations.html#nteroperability-considerations">Processing interoperability considerations</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   B.11 <a id="speclimits" href="non-normative/speclimits.html#speclimits">Specialization design, customization, and the limits of specialization</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">Appendix C <a id="cmtc" href="contentmodels/cmtc.html#cmtc">Content models: Technical content edition</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   C.1 <a id="cmtca" href="contentmodels/cmtca.html#cmtca">A elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   C.2 <a id="cmtcb" href="contentmodels/cmtcb.html#cmtcb">B elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   C.3 <a id="cmtcc" href="contentmodels/cmtcc.html#cmtcc">C elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   C.4 <a id="cmtcd" href="contentmodels/cmtcd.html#cmtcd">D elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   C.5 <a id="cmtce" href="contentmodels/cmtce.html#cmtce">E elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   C.6 <a id="cmtcf" href="contentmodels/cmtcf.html#cmtcf">F elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   C.7 <a id="cmtcg" href="contentmodels/cmtcg.html#cmtcg">G elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   C.8 <a id="cmtch" href="contentmodels/cmtch.html#cmtch">H elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   C.9 <a id="cmtci" href="contentmodels/cmtci.html#cmtci">I elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   C.10 <a id="cmtck" href="contentmodels/cmtck.html#cmtck">K elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   C.11 <a id="cmtcl" href="contentmodels/cmtcl.html#cmtcl">L elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   C.12 <a id="cmtcm" href="contentmodels/cmtcm.html#cmtcm">M elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   C.13 <a id="cmtcn" href="contentmodels/cmtcn.html#cmtcn">N elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   C.14 <a id="cmtco" href="contentmodels/cmtco.html#cmtco">O elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   C.15 <a id="cmtcp" href="contentmodels/cmtcp.html#cmtcp">P elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   C.16 <a id="cmtcq" href="contentmodels/cmtcq.html#cmtcq">Q elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   C.17 <a id="cmtcr" href="contentmodels/cmtcr.html#cmtcr">R elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   C.18 <a id="cmtcs" href="contentmodels/cmtcs.html#cmtcs">S elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   C.19 <a id="cmtct" href="contentmodels/cmtct.html#cmtct">T elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   C.20 <a id="cmtcu" href="contentmodels/cmtcu.html#cmtcu">U elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   C.21 <a id="cmtcv" href="contentmodels/cmtcv.html#cmtcv">V elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   C.22 <a id="cmtcw" href="contentmodels/cmtcw.html#cmtcw">W elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   C.23 <a id="cmtcx" href="contentmodels/cmtcx.html#cmtcx">X elements</a></p>
+<p id="copy" name="copy" class="titlepageinfodescription">   C.24 <a id="cmtcy" href="contentmodels/cmtcy.html#cmtcy">Y elements</a></p>
+<p></p>
+<div class="familylinks">
+<div class="titlepageinfodescription"><strong>Next topic:</strong> <a href="introduction/dita-release-overview.html" title="The Darwin Information Typing Architecture (DITA) specification defines a set of document types for authoring and organizing topic-oriented information, as well as a set of mechanisms for combining, extending, and constraining document types.">1 Introduction to DITA 1.3</a></div>
+</div>
+</div>
+<div class="footer"><p></p><table class="footer-table"><colgroup><col width="25%"></col><col width="55%"></col><col width="20%"></col></colgroup><tr><td class="footer-left"><p>dita-v1.3-os-part2-tech-content</p><p>Standards Track Work Product</p></td><td class="footer-center">
+Copyright © OASIS Open 2015. All Rights Reserved.</td><td class="footer-right">17 December 2015</td></tr></table></div></body>
+</html>

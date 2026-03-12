@@ -34039,5 +34039,383 @@
     "chunks_stored": 57,
     "collection": "nist",
     "ingested_date": "2026-03-11T10:35:36.807549+00:00"
+  },
+  "doc-structure/antora/SOURCE.md": {
+    "hash": "13396a7b249c5989",
+    "converted_to": "converted/doc-structure/antora/SOURCE.md",
+    "chunks_stored": 1,
+    "collection": "doc-structure",
+    "ingested_date": "2026-03-12T08:29:19.720495+00:00"
+  },
+  "doc-structure/antora/component-version-descriptor.md": {
+    "hash": "54e141a6cda8a323",
+    "converted_to": "converted/doc-structure/antora/component-version-descriptor.md",
+    "chunks_stored": 5,
+    "collection": "doc-structure",
+    "ingested_date": "2026-03-12T08:29:19.953871+00:00"
+  },
+  "doc-structure/antora/how-antora-works.md": {
+    "hash": "a3430bfba0cc5c63",
+    "converted_to": "converted/doc-structure/antora/how-antora-works.md",
+    "chunks_stored": 1,
+    "collection": "doc-structure",
+    "ingested_date": "2026-03-12T08:29:20.030454+00:00"
+  },
+  "doc-structure/antora/navigation.md": {
+    "hash": "f580b9c7c2b2cad3",
+    "converted_to": "converted/doc-structure/antora/navigation.md",
+    "chunks_stored": 1,
+    "collection": "doc-structure",
+    "ingested_date": "2026-03-12T08:29:20.095050+00:00"
+  },
+  "doc-structure/antora/organizing-content.md": {
+    "hash": "2d441b912a2cb24f",
+    "converted_to": "converted/doc-structure/antora/organizing-content.md",
+    "chunks_stored": 4,
+    "collection": "doc-structure",
+    "ingested_date": "2026-03-12T08:29:20.301214+00:00"
+  },
+  "doc-structure/antora/overview.md": {
+    "hash": "e3217d57dd8b19c2",
+    "converted_to": "converted/doc-structure/antora/overview.md",
+    "chunks_stored": 3,
+    "collection": "doc-structure",
+    "ingested_date": "2026-03-12T08:29:20.426991+00:00"
+  },
+  "doc-structure/antora/playbook.md": {
+    "hash": "a3e1a8b7f9d371c2",
+    "converted_to": "converted/doc-structure/antora/playbook.md",
+    "chunks_stored": 5,
+    "collection": "doc-structure",
+    "ingested_date": "2026-03-12T08:29:20.635935+00:00"
+  },
+  "doc-structure/antora/xrefs.md": {
+    "hash": "f11cc5c8012671d2",
+    "converted_to": "converted/doc-structure/antora/xrefs.md",
+    "chunks_stored": 3,
+    "collection": "doc-structure",
+    "ingested_date": "2026-03-12T08:29:20.745504+00:00"
+  },
+  "doc-structure/diataxis/SOURCE.md": {
+    "hash": "6262786bb2d45e6d",
+    "converted_to": "converted/doc-structure/diataxis/SOURCE.md",
+    "chunks_stored": 1,
+    "collection": "doc-structure",
+    "ingested_date": "2026-03-12T08:29:20.821221+00:00"
+  },
+  "doc-structure/diataxis/compass-and-map.md": {
+    "hash": "a48c29a159c0fbc5",
+    "converted_to": "converted/doc-structure/diataxis/compass-and-map.md",
+    "chunks_stored": 6,
+    "collection": "doc-structure",
+    "ingested_date": "2026-03-12T08:29:21.046911+00:00"
+  },
+  "doc-structure/diataxis/explanation.md": {
+    "hash": "16ddd870a69265cd",
+    "converted_to": "converted/doc-structure/diataxis/explanation.md",
+    "chunks_stored": 2,
+    "collection": "doc-structure",
+    "ingested_date": "2026-03-12T08:29:21.132868+00:00"
+  },
+  "doc-structure/diataxis/how-to-guides.md": {
+    "hash": "6241a638acebaae1",
+    "converted_to": "converted/doc-structure/diataxis/how-to-guides.md",
+    "chunks_stored": 3,
+    "collection": "doc-structure",
+    "ingested_date": "2026-03-12T08:29:21.279298+00:00"
+  },
+  "doc-structure/diataxis/index.md": {
+    "hash": "5675d39e5c75f80c",
+    "converted_to": "converted/doc-structure/diataxis/index.md",
+    "chunks_stored": 2,
+    "collection": "doc-structure",
+    "ingested_date": "2026-03-12T08:29:21.360903+00:00"
+  },
+  "doc-structure/diataxis/reference.md": {
+    "hash": "eba0b7dd55b0147d",
+    "converted_to": "converted/doc-structure/diataxis/reference.md",
+    "chunks_stored": 2,
+    "collection": "doc-structure",
+    "ingested_date": "2026-03-12T08:29:21.442699+00:00"
+  },
+  "doc-structure/diataxis/tutorials.md": {
+    "hash": "87ba57511d4ae254",
+    "converted_to": "converted/doc-structure/diataxis/tutorials.md",
+    "chunks_stored": 4,
+    "collection": "doc-structure",
+    "ingested_date": "2026-03-12T08:29:21.557055+00:00"
+  },
+  "doc-structure/divio/SOURCE.md": {
+    "hash": "62c88c7e32af1adb",
+    "converted_to": "converted/doc-structure/divio/SOURCE.md",
+    "chunks_stored": 1,
+    "collection": "doc-structure",
+    "ingested_date": "2026-03-12T08:29:21.630556+00:00"
+  },
+  "doc-structure/divio/explanation.md": {
+    "hash": "6a2b59dd15799c57",
+    "converted_to": "converted/doc-structure/divio/explanation.md",
+    "chunks_stored": 2,
+    "collection": "doc-structure",
+    "ingested_date": "2026-03-12T08:29:21.717300+00:00"
+  },
+  "doc-structure/divio/reference.md": {
+    "hash": "8bf972468116e729",
+    "converted_to": "converted/doc-structure/divio/reference.md",
+    "chunks_stored": 2,
+    "collection": "doc-structure",
+    "ingested_date": "2026-03-12T08:29:21.830858+00:00"
+  },
+  "doc-structure/divio/tutorials.md": {
+    "hash": "f04185109dec61f4",
+    "converted_to": "converted/doc-structure/divio/tutorials.md",
+    "chunks_stored": 1,
+    "collection": "doc-structure",
+    "ingested_date": "2026-03-12T08:29:21.910537+00:00"
+  },
+  "doc-structure/gitlab-docs/SOURCE.md": {
+    "hash": "3a869e518e1636f9",
+    "converted_to": "converted/doc-structure/gitlab-docs/SOURCE.md",
+    "chunks_stored": 1,
+    "collection": "doc-structure",
+    "ingested_date": "2026-03-12T08:29:21.984391+00:00"
+  },
+  "doc-structure/gitlab-docs/contribution-overview.md": {
+    "hash": "dcfb9c2982fd0379",
+    "converted_to": "converted/doc-structure/gitlab-docs/contribution-overview.md",
+    "chunks_stored": 1,
+    "collection": "doc-structure",
+    "ingested_date": "2026-03-12T08:29:22.056556+00:00"
+  },
+  "doc-structure/gitlab-docs/style-guide.md": {
+    "hash": "055d81fd1dd85161",
+    "converted_to": "converted/doc-structure/gitlab-docs/style-guide.md",
+    "chunks_stored": 8,
+    "collection": "doc-structure",
+    "ingested_date": "2026-03-12T08:29:22.205957+00:00"
+  },
+  "doc-structure/gitlab-docs/testing.md": {
+    "hash": "3bc1eee1c94280cf",
+    "converted_to": "converted/doc-structure/gitlab-docs/testing.md",
+    "chunks_stored": 3,
+    "collection": "doc-structure",
+    "ingested_date": "2026-03-12T08:29:22.351297+00:00"
+  },
+  "doc-structure/gitlab-docs/topic-types.md": {
+    "hash": "6e7a664a64d191e7",
+    "converted_to": "converted/doc-structure/gitlab-docs/topic-types.md",
+    "chunks_stored": 4,
+    "collection": "doc-structure",
+    "ingested_date": "2026-03-12T08:29:22.524365+00:00"
+  },
+  "doc-structure/google-style/SOURCE.md": {
+    "hash": "acb71dbeb8563748",
+    "converted_to": "converted/doc-structure/google-style/SOURCE.md",
+    "chunks_stored": 1,
+    "collection": "doc-structure",
+    "ingested_date": "2026-03-12T08:29:22.591153+00:00"
+  },
+  "doc-structure/google-style/api-reference.md": {
+    "hash": "097aa4acb24146f6",
+    "converted_to": "converted/doc-structure/google-style/api-reference.md",
+    "chunks_stored": 3,
+    "collection": "doc-structure",
+    "ingested_date": "2026-03-12T08:29:22.728915+00:00"
+  },
+  "doc-structure/google-style/overview.md": {
+    "hash": "0591d6989d17116e",
+    "converted_to": "converted/doc-structure/google-style/overview.md",
+    "chunks_stored": 2,
+    "collection": "doc-structure",
+    "ingested_date": "2026-03-12T08:29:22.831590+00:00"
+  },
+  "doc-structure/google-style/procedures.md": {
+    "hash": "791cc1a07ebf2a14",
+    "converted_to": "converted/doc-structure/google-style/procedures.md",
+    "chunks_stored": 4,
+    "collection": "doc-structure",
+    "ingested_date": "2026-03-12T08:29:23.014967+00:00"
+  },
+  "doc-structure/google-style/voice-and-tone.md": {
+    "hash": "b2d2a38b9cc6c0f4",
+    "converted_to": "converted/doc-structure/google-style/voice-and-tone.md",
+    "chunks_stored": 4,
+    "collection": "doc-structure",
+    "ingested_date": "2026-03-12T08:29:23.198121+00:00"
+  },
+  "doc-structure/redhat-modular/modular-docs-guide.md": {
+    "hash": "e3ef4cb6c693615c",
+    "converted_to": "converted/doc-structure/redhat-modular/modular-docs-guide.md",
+    "chunks_stored": 12,
+    "collection": "doc-structure",
+    "ingested_date": "2026-03-12T08:29:23.588615+00:00"
+  },
+  "doc-structure/redhat-modular/overview.md": {
+    "hash": "06d4f6b0d795c089",
+    "converted_to": "converted/doc-structure/redhat-modular/overview.md",
+    "chunks_stored": 1,
+    "collection": "doc-structure",
+    "ingested_date": "2026-03-12T08:29:23.678038+00:00"
+  },
+  "doc-structure/write-the-docs/SOURCE.md": {
+    "hash": "bce819e3505e277a",
+    "converted_to": "converted/doc-structure/write-the-docs/SOURCE.md",
+    "chunks_stored": 1,
+    "collection": "doc-structure",
+    "ingested_date": "2026-03-12T08:29:23.755927+00:00"
+  },
+  "doc-structure/write-the-docs/docs-as-code.md": {
+    "hash": "cf0d15241df1cdf5",
+    "converted_to": "converted/doc-structure/write-the-docs/docs-as-code.md",
+    "chunks_stored": 1,
+    "collection": "doc-structure",
+    "ingested_date": "2026-03-12T08:29:23.841851+00:00"
+  },
+  "doc-structure/write-the-docs/guide-overview.md": {
+    "hash": "b5640cc0ae9aa188",
+    "converted_to": "converted/doc-structure/write-the-docs/guide-overview.md",
+    "chunks_stored": 2,
+    "collection": "doc-structure",
+    "ingested_date": "2026-03-12T08:29:23.964303+00:00"
+  },
+  "doc-structure/write-the-docs/how-to-write-docs.md": {
+    "hash": "9af0da209872371c",
+    "converted_to": "converted/doc-structure/write-the-docs/how-to-write-docs.md",
+    "chunks_stored": 1,
+    "collection": "doc-structure",
+    "ingested_date": "2026-03-12T08:29:24.037925+00:00"
+  },
+  "doc-structure/write-the-docs/style-guides.md": {
+    "hash": "f07ef3b61207aed2",
+    "converted_to": "converted/doc-structure/write-the-docs/style-guides.md",
+    "chunks_stored": 4,
+    "collection": "doc-structure",
+    "ingested_date": "2026-03-12T08:29:24.214684+00:00"
+  },
+  "cmmc/cmmc-32cfr170-final-rule.pdf": {
+    "hash": "34105216b8735f14",
+    "converted_to": "converted/cmmc/cmmc-32cfr170-final-rule.md",
+    "chunks_stored": 282,
+    "collection": "cmmc",
+    "ingested_date": "2026-03-12T09:14:07.002265+00:00"
+  },
+  "cmmc/cmmc-assessment-guide-l2.pdf": {
+    "hash": "0dcaba1626a0d238",
+    "converted_to": "converted/cmmc/cmmc-assessment-guide-l2.md",
+    "chunks_stored": 263,
+    "collection": "cmmc",
+    "ingested_date": "2026-03-12T09:14:15.346382+00:00"
+  },
+  "nist/fips140-2.pdf": {
+    "hash": "0df0fdd676df6438",
+    "converted_to": "converted/nist/fips140-2.md",
+    "chunks_stored": 69,
+    "collection": "nist",
+    "ingested_date": "2026-03-12T09:24:58.717949+00:00"
+  },
+  "nist/fips140-3.pdf": {
+    "hash": "942a4f929dfbd2b4",
+    "converted_to": "converted/nist/fips140-3.md",
+    "chunks_stored": 11,
+    "collection": "nist",
+    "ingested_date": "2026-03-12T09:24:59.120327+00:00"
+  },
+  "nist/sp800-171Ar3.pdf": {
+    "hash": "946d963707cdaba1",
+    "converted_to": "converted/nist/sp800-171Ar3.md",
+    "chunks_stored": 122,
+    "collection": "nist",
+    "ingested_date": "2026-03-12T09:25:03.717802+00:00"
+  },
+  "nist/sp800-171r2.pdf": {
+    "hash": "298bdbfcf6a4890a",
+    "converted_to": "converted/nist/sp800-171r2.md",
+    "chunks_stored": 114,
+    "collection": "nist",
+    "ingested_date": "2026-03-12T09:25:07.392280+00:00"
+  },
+  "nist/sp800-171r3.pdf": {
+    "hash": "3e4631df8b5d61f4",
+    "converted_to": "converted/nist/sp800-171r3.md",
+    "chunks_stored": 120,
+    "collection": "nist",
+    "ingested_date": "2026-03-12T09:25:11.453970+00:00"
+  },
+  "nist/sp800-218-ssdf.pdf": {
+    "hash": "617746e553a9e2da",
+    "converted_to": "converted/nist/sp800-218-ssdf.md",
+    "chunks_stored": 48,
+    "collection": "nist",
+    "ingested_date": "2026-03-12T09:25:12.993958+00:00"
+  },
+  "nist/sp800-53r5.pdf": {
+    "hash": "fc63bcd61715d018",
+    "converted_to": "converted/nist/sp800-53r5.md",
+    "chunks_stored": 502,
+    "collection": "nist",
+    "ingested_date": "2026-03-12T09:25:29.194737+00:00"
+  },
+  "rustdoc-book/rustdoc-book.html": {
+    "hash": "5bce81f7d827842e",
+    "converted_to": "converted/rustdoc-book/rustdoc-book.md",
+    "chunks_stored": 194,
+    "collection": "rustdoc-book",
+    "ingested_date": "2026-03-12T09:26:29.136299+00:00"
+  },
+  "asciidoctor-ref/asciidoc-ref.html": {
+    "hash": "86577041a47e8ea3",
+    "converted_to": "converted/asciidoctor-ref/asciidoc-ref.md",
+    "chunks_stored": 55,
+    "collection": "asciidoctor-ref",
+    "ingested_date": "2026-03-12T09:29:55.734896+00:00"
+  },
+  "asciidoctor-ref/asciidoc-writer-guide.html": {
+    "hash": "e6298f1b099ec6c5",
+    "converted_to": "converted/asciidoctor-ref/asciidoc-writer-guide.md",
+    "chunks_stored": 12,
+    "collection": "asciidoctor-ref",
+    "ingested_date": "2026-03-12T09:29:56.484140+00:00"
+  },
+  "dita-spec/dita-v1.3-part2-tech-content.html": {
+    "hash": "0041bc0e3299f0b0",
+    "converted_to": "converted/dita-spec/dita-v1.3-part2-tech-content.md",
+    "chunks_stored": 100,
+    "collection": "dita-spec",
+    "ingested_date": "2026-03-12T09:31:51.254555+00:00"
+  },
+  "dod-5200/dodi-5200.01.pdf": {
+    "hash": "206eaef84331885b",
+    "converted_to": "converted/dod-5200/dodi-5200.01.md",
+    "chunks_stored": 13,
+    "collection": "dod-5200",
+    "ingested_date": "2026-03-12T09:46:43.002884+00:00"
+  },
+  "dod-5200/dodi-5200.48-cui.pdf": {
+    "hash": "bbbe493741980863",
+    "converted_to": "converted/dod-5200/dodi-5200.48-cui.md",
+    "chunks_stored": 40,
+    "collection": "dod-5200",
+    "ingested_date": "2026-03-12T09:46:44.956870+00:00"
+  },
+  "dod-5200/dodm-5200.01-vol1.pdf": {
+    "hash": "d2db068ed16c7c61",
+    "converted_to": "converted/dod-5200/dodm-5200.01-vol1.md",
+    "chunks_stored": 75,
+    "collection": "dod-5200",
+    "ingested_date": "2026-03-12T09:46:48.573009+00:00"
+  },
+  "dod-5200/dodm-5200.01-vol2.pdf": {
+    "hash": "05c4e7d507470419",
+    "converted_to": "converted/dod-5200/dodm-5200.01-vol2.md",
+    "chunks_stored": 111,
+    "collection": "dod-5200",
+    "ingested_date": "2026-03-12T09:46:52.122472+00:00"
+  },
+  "dod-5200/dodm-5200.01-vol3.pdf": {
+    "hash": "816b5320f018e603",
+    "converted_to": "converted/dod-5200/dodm-5200.01-vol3.md",
+    "chunks_stored": 121,
+    "collection": "dod-5200",
+    "ingested_date": "2026-03-12T09:46:56.125130+00:00"
   }
 }
