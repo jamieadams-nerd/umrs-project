@@ -20,6 +20,7 @@ ui:
   bundle:
     url: ./docs/_vendor/ui/antora-ui-default.zip
     snapshot: false
+  supplemental_files: ./docs/supplemental-ui
 
 output:
   dir: ./site

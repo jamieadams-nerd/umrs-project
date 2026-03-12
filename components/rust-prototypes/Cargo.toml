@@ -1,11 +1,10 @@
 [workspace]
 resolver = "2"
 members = [
-    "umrs-apparmor",
-    "umrs-core", "umrs-crypto",
-    "umrs-logspace", "umrs-ls", "umrs-platform", "umrs-selinux",
-    "umrs-state",
-    "xtask",
+    "cui-labels",
+    "kernel-files",
+    "mcs-setrans",
+    "vaultmgr",
 ]
 
 # NIST SP 800-53 SA-15: Development Process, Standards, and Tools.

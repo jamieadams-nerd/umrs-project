@@ -46,6 +46,7 @@ pub mod evidence;
 pub mod kattrs;
 pub mod os_identity;
 pub mod os_release;
+pub mod sealed_cache;
 
 // ---------------------------------------------------------------------------
 // Crate-root re-exports
@@ -69,4 +70,9 @@ pub use os_identity::{
 pub use os_release::{
     BuildId, Codename, CpeName, OsId, OsName, OsRelease, OsReleaseParseError,
     OsVersion, ValidatedUrl, VariantId, VersionId,
+};
+
+// Sealed evidence cache (SEC pattern)
+pub use sealed_cache::{
+    CacheStatus, DEFAULT_TTL_SECS, MAX_TTL_SECS, SealedCache,
 };

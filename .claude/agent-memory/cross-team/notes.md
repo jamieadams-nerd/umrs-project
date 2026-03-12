@@ -36,6 +36,32 @@ Mark entries `resolved` when acted on. Do not delete entries.
 
 ---
 
+## [2026-03-11] coordinator → all-agents: rust-prototypes workspace is out of scope
+
+**Status**: open
+
+The prototype crates (`cui-labels`, `kernel-files`, `mcs-setrans`, `vaultmgr`) have been
+moved from `components/rusty-gadgets/` to a new workspace at `components/rust-prototypes/`.
+
+**All agents**: ignore `components/rust-prototypes/` unless explicitly asked to work on it.
+Do not audit, document, translate, or include it in reports. It is a parking lot for
+experimental code and is not part of the active development surface.
+
+---
+
+## [2026-03-11] coordinator → all-agents: Plan completion workflow
+
+**Status**: open
+
+When a plan (in `.claude/plans/`) has been fully implemented:
+1. Confirm completion with the user (Jamie).
+2. Once confirmed, mark the plan as completed (add a `## Status: Completed` header and date).
+3. Move the file to `.claude/plans/archive/`.
+
+Do not archive plans without user confirmation.
+
+---
+
 ## [2026-03-11] coordinator → all-agents: Notify umrs-translator for new i18n strings
 
 **Status**: open
@@ -57,7 +83,7 @@ responsibility.
 
 ## [2026-03-11] rust-developer → tech-writer: SEC pattern needs a dedicated page
 
-**Status**: resolved — `docs/modules/patterns/pages/pattern-sec.adoc` written 2026-03-11; SEC block removed from CLAUDE.md (stub reference left pointing to the page)
+**Status**: resolved — `docs/modules/patterns/pages/pattern-sec.adoc` written 2026-03-11; SEC block removed from CLAUDE.md (stub reference left pointing to the page); doc updated 2026-03-11 to reflect implementation in `umrs-platform/src/sealed_cache.rs`
 
 The Sealed Evidence Cache (SEC) pattern was added to CLAUDE.md on 2026-03-11 as part of
 the OS detection subsystem design. It is not yet implemented in the codebase, but the

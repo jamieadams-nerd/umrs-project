@@ -23,6 +23,40 @@ start of any documentation session and append entries when leaving feedback for 
 
 ---
 
+## [2026-03-11] tech-writer → senior-tech-writer: pattern-sec.adoc updated for implementation — review requested
+
+**Status**: open
+
+SEC is now implemented in `umrs-platform/src/sealed_cache.rs`. Updated three documents:
+
+1. `docs/modules/patterns/pages/pattern-sec.adoc`:
+   - Removed WARNING block ("required, not yet implemented")
+   - Replaced with NOTE confirming implementation location and zeroize crate presence
+   - Rewrote "In the UMRS Codebase" section — removed conceptual pseudocode,
+     replaced with actual `SealedCache` / `SealingKey` / `SealedEntry` / `CacheStatus` types
+   - Updated Summary to remove the "hard dependency on zeroize" framing (now resolved)
+
+2. `docs/modules/patterns/pages/index.adoc`:
+   - SEC row in Pattern Reference Table: ⚠ → ✓ Implemented
+   - Removed SEC block from "Open — Awaiting Implementation" section
+   - Removed "⚠ awaiting implementation" annotation in Patterns by Group
+
+3. `docs/modules/devel/pages/os-detection-deep-dive.adoc`:
+   - Replaced "Future: Sealed Memory Cache" section with "Sealed Evidence Cache" section
+   - Covers: `SealedCache` usage, seal payload layout, sealing key derivation,
+     seal failure behavior, FIPS gate behavior, conservative `decode_cached_result()`
+     design note, `CacheStatus` enum, compliance table
+   - Updated See Also reference from "future" to "implemented"
+   - Updated SC-28 row in Security Controls Summary
+
+Requesting review pass for:
+1. Technical accuracy of the seal payload layout description against the source
+2. Whether the `decode_cached_result()` design note is clear to an engineer reading
+   the doc without access to the source
+3. Whether the FIPS fail-closed rationale is precise enough for audit purposes
+
+---
+
 ## [2026-03-11] tech-writer → senior-tech-writer: Pattern library migrated to patterns/ module — review requested
 
 **Status**: open

@@ -1,0 +1,592 @@
+kernel flags
+
+I reviewed the upstream Linux kernel documentation for runtime kernel parameters (especially the /proc/sys/kernel sysctl interface documented in the official kernel docs) and related hardening references. These files describe tunable runtime kernel behavior exposed through /proc/sys/* and accessible via sysctl. They are explicitly intended to control and observe kernel behavior and therefore are ideal signals for security posture assessment.  
+
+Below is a structured list of kernel flags and parameters that are highly useful for a “security posture probe”—exactly the kind of inspection layer you’re building for UMRS or a system-introspection tool.
+
+I organized them into posture categories, which is how most hardened OS frameworks reason about them.
+
+⸻
+
+Linux Kernel Security Posture Signals
+
+(Runtime kernel parameters worth querying)
+
+1. Kernel Self-Protection / Hardening
+
+These indicate how aggressively the kernel protects its own memory and symbols.
+
+Parameter	Location	Meaning
+kernel.kptr_restrict	/proc/sys/kernel/kptr_restrict	Controls exposure of kernel pointers. Prevents information leaks useful for exploits.  
+kernel.randomize_va_space	/proc/sys/kernel/randomize_va_space	Enables ASLR (address space layout randomization).
+kernel.unprivileged_bpf_disabled	/proc/sys/kernel/unprivileged_bpf_disabled	Prevents unprivileged users from loading BPF programs.
+kernel.perf_event_paranoid	/proc/sys/kernel/perf_event_paranoid	Restricts performance monitoring access which can leak kernel state.
+kernel.yama.ptrace_scope	/proc/sys/kernel/yama/ptrace_scope	Restricts process inspection via ptrace.
+kernel.dmesg_restrict	/proc/sys/kernel/dmesg_restrict	Restricts access to kernel logs.
+kernel.kexec_load_disabled	/proc/sys/kernel/kexec_load_disabled	Prevents replacing the running kernel with kexec.
+kernel.sysrq	/proc/sys/kernel/sysrq	Controls dangerous SysRq debugging functions.
+
+
+⸻
+
+2. Kernel Integrity & Module Control
+
+These help detect whether the kernel allows runtime modification.
+
+Parameter	Meaning
+kernel.modules_disabled	Disables loading of new kernel modules once set.
+module.sig_enforce (boot param)	Requires signed kernel modules.
+lockdown= (boot param)	Enables kernel lockdown mode.
+kernel.kexec_load_disabled	Prevents loading alternate kernels.
+kernel.ftrace_enabled	Enables kernel tracing facilities.
+kernel.bpf_stats_enabled	Indicates if BPF statistics/tracing enabled.
+
+Important signal:
+
+kernel.modules_disabled=1
+→ prevents loading of new modules after boot, significantly reducing rootkit risk.  
+
+⸻
+
+3. Kernel Debug / Attack Surface Signals
+
+These expose whether debugging capabilities are available.
+
+Parameter	Meaning
+kernel.ftrace_enabled	Kernel tracing system active
+kernel.stack_tracer_enabled	Stack tracing active
+kernel.debug_exception_trace	Kernel debug exception logging
+kernel.watchdog	Kernel watchdog active
+kernel.hardlockup_panic	Panic on hard lockups
+kernel.soft_watchdog	Soft lockup detector
+
+These don’t directly weaken security but indicate attack surface exposure.
+
+⸻
+
+4. Process Isolation / Namespace Controls
+
+Important for container or privilege-escalation risk.
+
+Parameter	Meaning
+kernel.unprivileged_userns_clone	Allows unprivileged user namespaces
+kernel.pid_max	Process ID range
+kernel.core_pattern	Core dump configuration
+fs.suid_dumpable	Whether SUID processes dump cores
+
+Example:
+
+kernel.unprivileged_userns_clone=0
+→ prevents many container-escape style exploits.  
+
+⸻
+
+5. Filesystem Safety Controls
+
+Mitigate symlink/hardlink attacks.
+
+Parameter	Meaning
+fs.protected_symlinks	Restricts symlink following
+fs.protected_hardlinks	Restricts hardlink creation
+fs.protected_fifos	Prevents writes to attacker-controlled FIFO
+fs.protected_regular	Protects regular files in world-writable dirs
+
+These directly mitigate common TOCTOU privilege escalation attacks.  
+
+⸻
+
+6. CPU Mitigation Signals
+
+Relevant for hardware attack surface.
+
+Usually boot parameters:
+
+spectre_v2
+spec_store_bypass_disable
+l1d_flush
+nosmt
+tsx=off
+mitigations=
+
+These indicate whether the kernel is protecting against:
+	•	Spectre
+	•	Meltdown
+	•	Speculative execution attacks
+
+⸻
+
+7. Kernel Boot Security Signals
+
+These appear in kernel command line.
+
+Parameter	Meaning
+lockdown=integrity or confidentiality	Kernel lockdown mode
+init_on_alloc	Zero memory on allocation
+init_on_free	Zero memory on free
+slab_nomerge	Prevent slab merging attacks
+pti=on	Kernel page table isolation
+
+
+⸻
+
+8. Capability Boundary Signals
+
+These determine the system privilege model.
+
+Parameter	Meaning
+kernel.cap_last_cap	Highest supported Linux capability
+kernel.seccomp.actions_logged	Seccomp logging
+kernel.seccomp.actions_avail	Available seccomp actions
+
+
+⸻
+
+9. Logging & Audit Behavior
+
+Useful for your UMRS mediator architecture.
+
+Parameter	Meaning
+kernel.printk	Kernel logging level
+kernel.printk_ratelimit	Rate limiting of logs
+kernel.printk_ratelimit_burst	Logging burst limits
+
+
+⸻
+
+10. System Behavior / Panic Policy
+
+Relevant for reliability posture.
+
+Parameter	Meaning
+kernel.panic	Automatic reboot on panic
+kernel.panic_on_oops	Panic on kernel OOPS
+kernel.hung_task_timeout_secs	Hung task detector
+
+
+⸻
+
+Example: Minimal “Security Posture Probe” Set
+
+If you wanted a compact high-signal list, I would recommend monitoring:
+
+kernel.kptr_restrict
+kernel.dmesg_restrict
+kernel.randomize_va_space
+kernel.unprivileged_bpf_disabled
+kernel.unprivileged_userns_clone
+kernel.perf_event_paranoid
+kernel.yama.ptrace_scope
+kernel.kexec_load_disabled
+kernel.modules_disabled
+kernel.sysrq
+fs.protected_symlinks
+fs.protected_hardlinks
+fs.protected_fifos
+fs.protected_regular
+fs.suid_dumpable
+
+Plus boot-time parameters:
+
+lockdown
+module.sig_enforce
+mitigations
+nosmt
+pti
+
+
+⸻
+
+Architectural Observation (relevant to your UMRS design)
+
+These parameters collectively form three security layers:
+	1.	Kernel integrity
+	•	lockdown
+	•	module loading
+	•	kexec
+	2.	Information leak reduction
+	•	kptr_restrict
+	•	dmesg_restrict
+	•	perf_event_paranoid
+	3.	Privilege boundary enforcement
+	•	ptrace_scope
+	•	user namespaces
+	•	BPF restrictions
+
+Together they give a high-confidence picture of the system’s runtime trust posture.
+
+⸻
+
+If you’d like, I can also produce something that might be extremely useful for your project:
+
+A canonical “Linux Kernel Security Posture Catalog” (~60–80 signals) structured exactly like a UMRS catalog JSON, with:
+
+signal_id
+kernel_parameter
+source
+recommended_value
+assurance_level
+rationale
+
+That structure would integrate very naturally into your UMRS probe architecture.
+
+Yes — and this is the right way to model it.
+
+For a high-assurance posture probe, you want two views for each signal:
+	1.	Live / effective state — what the running kernel is actually doing now, usually from /proc/sys/..., /sys/..., or /proc/cmdline.
+	2.	Configured / intended state — what the system is set up to do across reboot, usually from sysctl.d, modprobe.d, or boot-loader kernel arguments. The kernel docs explicitly describe runtime sysctls under /proc/sys/*, and the sysctl and modprobe man pages describe how boot-time persistence is applied from *.conf files. Kernel command-line settings are passed in at boot and are visible in /proc/cmdline.  
+
+I would treat the live kernel value as the immediate source of truth and the persisted config as the intended source of truth. When they disagree, that is exactly the kind of contradiction your probe should report.
+
+Core runtime sysctls to dual-check
+
+1) kernel.modules_disabled
+
+Desired live value: 1
+Why: The kernel documentation says that once set to true, modules can neither be loaded nor unloaded, and it cannot be reset back to false. That is a very strong hardening signal because it closes a major runtime kernel-modification path.
+High-assurance relevance: Very high. It materially reduces post-boot attack surface and rootkit/injection opportunities.
+Persistence: This is a runtime sysctl, so you persist the intended value through sysctl.d files processed by systemd-sysctl at boot. The live value should be read from /proc/sys/kernel/modules_disabled; the configured value should be read from your merged sysctl.d view. Note that because this setting becomes irreversible once enabled, a mismatch can also tell you when in boot it was applied.  
+
+2) kernel.kexec_load_disabled
+
+Desired live value: 1
+Why: The kernel documentation states that when set to 1, the kexec_load and kexec_file_load syscalls are disabled and cannot be re-enabled until reboot.
+High-assurance relevance: Very high. It blocks runtime replacement of the running kernel via kexec, which is exactly the sort of kernel transition path you usually want closed on hardened systems.
+Persistence: Persist through sysctl.d; observe live at /proc/sys/kernel/kexec_load_disabled. This one pairs naturally with modules_disabled as a combined integrity signal.  
+
+3) kernel.kptr_restrict
+
+Desired live value: 2
+Why: The kernel docs describe this as restricting exposure of kernel addresses through /proc and other interfaces. For a high-assurance posture, the strongest practical target is the most restrictive setting your platform supports, typically 2, because this minimizes useful kernel address disclosure to user space.
+High-assurance relevance: High. This is directly about exploit resistance and information-leak reduction.
+Persistence: Persist via sysctl.d; observe live at /proc/sys/kernel/kptr_restrict.  
+
+4) kernel.dmesg_restrict
+
+Desired live value: 1
+Why: The kernel documentation is explicit: 0 means no restriction, 1 means users need CAP_SYSLOG to use dmesg.
+High-assurance relevance: High. Kernel logs often expose memory layout, device state, boot-time secrets-adjacent metadata, and debugging details that help attackers.
+Persistence: Persist via sysctl.d; observe live at /proc/sys/kernel/dmesg_restrict.  
+
+5) kernel.randomize_va_space
+
+Desired live value: 2
+Why: The kernel docs say value 2 additionally enables heap randomization. That is the strongest ASLR posture in this interface.
+High-assurance relevance: High. It increases exploit difficulty, especially for memory-corruption paths.
+Persistence: Persist via sysctl.d; observe live at /proc/sys/kernel/randomize_va_space.  
+
+6) kernel.perf_event_paranoid
+
+Desired live value: 3 or higher if supported; otherwise at least 2
+Why: The official kernel docs say the default is 2, and that >=2 disallows kernel profiling by users without CAP_PERFMON. For a high-assurance system, you generally want the most restrictive value supported by your kernel and tooling, because perf can expose sensitive microarchitectural and kernel-observability surfaces.
+High-assurance relevance: High. This reduces local observability that can assist side-channel and introspection abuse.
+Persistence: Persist via sysctl.d; observe live at /proc/sys/kernel/perf_event_paranoid.  
+
+7) kernel.unprivileged_bpf_disabled
+
+Desired live value: 2 preferred, otherwise 1
+Why: The kernel docs show: 0 enables unprivileged bpf(), 1 disables it “without recovery,” and 2 disables it. For a high-assurance baseline, unprivileged BPF should not be allowed. If your platform uses 2 as the default-off posture and permits later enabling, that is still a hardened state; if you want a one-way lock, 1 is even stricter operationally.
+High-assurance relevance: Very high. eBPF is extremely powerful; restricting unprivileged access removes a major attack and observability surface.
+Persistence: Persist via sysctl.d; observe live at /proc/sys/kernel/unprivileged_bpf_disabled.  
+
+8) kernel.yama.ptrace_scope
+
+Desired live value: 2 for strong admin-only attach, or 3 if you intentionally want no ptrace attach at all
+Why: The Yama LSM documentation defines 0 as classic same-UID ptrace, 1 as restricted ptrace, 2 as admin-only attach, and 3 as no attach; value 3 is irreversible until reboot. For a hardened general-purpose system, 2 is a strong and practical choice. For a very locked-down appliance/reference monitor role, 3 is defensible if you can live without ptrace-based debugging.
+High-assurance relevance: High. This sharply reduces credential-stealing and cross-process inspection opportunities.
+Persistence: Persist via sysctl.d; observe live at /proc/sys/kernel/yama/ptrace_scope.  
+
+9) fs.protected_hardlinks
+
+Desired live value: 1
+Why: The kernel docs say that when set to 1, hardlinks cannot be created by users who do not already own the source file or lack read/write access.
+High-assurance relevance: High. This mitigates long-standing link-based privilege escalation patterns.
+Persistence: Persist via sysctl.d; observe live at /proc/sys/fs/protected_hardlinks.  
+
+10) fs.protected_symlinks
+
+Desired live value: 1
+Why: The kernel docs say that with 1, symlinks in sticky world-writable directories are only followed under constrained ownership conditions.
+High-assurance relevance: High. This is another direct mitigation against common symlink race and privilege-escalation problems.
+Persistence: Persist via sysctl.d; observe live at /proc/sys/fs/protected_symlinks.  
+
+11) fs.protected_fifos
+
+Desired live value: 2
+Why: The docs state that 2 extends protection to group-writable sticky directories in addition to world-writable ones. That is the stronger posture.
+High-assurance relevance: Medium-high. It helps prevent attacker-controlled FIFO abuse in shared writable directories.
+Persistence: Persist via sysctl.d; observe live at /proc/sys/fs/protected_fifos.  
+
+12) fs.protected_regular
+
+Desired live value: 2
+Why: As with FIFOs, the docs say 2 extends the protection to group-writable sticky directories, which is the stronger setting.
+High-assurance relevance: Medium-high. This closes a class of “expected to create a file, actually opened attacker-controlled file” issues.
+Persistence: Persist via sysctl.d; observe live at /proc/sys/fs/protected_regular.  
+
+13) fs.suid_dumpable
+
+Desired live value: 0
+Why: The kernel docs define 0 as the traditional default behavior, where privileged or tainted binaries are not dumped. They also explicitly describe 1 as insecure for debugging and 2 as a special “suidsafe” mode. For a high-assurance baseline, 0 is the conservative choice.
+High-assurance relevance: High. Core dumps of privileged processes are obvious confidentiality risks.
+Persistence: Persist via sysctl.d; observe live at /proc/sys/fs/suid_dumpable.  
+
+Boot-time kernel command-line signals to dual-check
+
+For these, the live effective source is typically /proc/cmdline, and the configured source is your boot-loader configuration. The proc man page explicitly says /proc/cmdline contains arguments passed to the kernel at boot, often by GRUB or another boot manager.  
+
+14) lockdown=
+
+Desired configured/live value: lockdown=confidentiality for the strongest posture; lockdown=integrity if you need a slightly less restrictive operational profile
+Why: The kernel docs state that integrity disables kernel features that allow userland to modify the running kernel, while confidentiality additionally disables features that would allow userland to extract confidential information from the kernel.
+High-assurance relevance: Extremely high. This is one of the clearest single indicators that the platform is actively constraining kernel attack and exfiltration surfaces.
+Persistence: Persist in the boot-loader kernel command line; verify live in /proc/cmdline.  
+
+15) module.sig_enforce=1
+
+Desired configured/live value: 1
+Why: The official kernel module-signing documentation says that when CONFIG_MODULE_SIG_FORCE is enabled or module.sig_enforce=1 is supplied on the kernel command line, the kernel will only load validly signed modules for which it has a trusted public key.
+High-assurance relevance: Extremely high, especially if you permit any module loading at all. This is the signature-enforcement half of kernel module trust.
+Persistence: Persist in the boot-loader kernel command line; verify live from /proc/cmdline. Depending on kernel build and distro, you may also want to corroborate with kernel taint state if unsigned modules were ever loaded.  
+
+16) CPU mitigation arguments, especially mitigations=, spectre_v2=, pti=
+
+Desired configured/live value: Do not disable mitigations on hardened systems. In practice that means no blanket mitigations=off, and no weakening of specific knobs such as Spectre v2 or PTI unless you have a very deliberate exception. The kernel docs show these are boot parameters that directly control mitigation behavior.
+High-assurance relevance: High. These are part of the platform’s side-channel and speculative-execution posture.
+Persistence: Persist in the boot-loader kernel command line; verify live in /proc/cmdline.  
+
+17) random.trust_cpu=off
+
+Desired configured/live value: off when your assurance model does not want to trust CPU RNG seeding alone
+Why: The kernel docs state this disables trusting the CPU random number generator to initialize the kernel RNG.
+High-assurance relevance: Context-dependent but important in paranoid/trust-minimizing environments. It is less about “more security” in the generic sense and more about explicit trust-boundary control.
+Persistence: Persist in the boot-loader kernel command line; verify live in /proc/cmdline.  
+
+18) random.trust_bootloader=off
+
+Desired configured/live value: off when you do not want bootloader-provided seed material treated as trusted for initial RNG state
+Why: The kernel docs say this disables trusting a seed passed by the bootloader to initialize the kernel RNG.
+High-assurance relevance: Same story as random.trust_cpu=off: this is a trust-source decision, valuable in systems that are explicitly modeling provenance and trust ladders.
+Persistence: Persist in boot-loader kernel arguments; verify live in /proc/cmdline.  
+
+Special signal: FIPS mode
+
+19) /proc/sys/crypto/fips_enabled
+
+Desired live value: 1 on systems that claim to be operating in FIPS mode
+Why: Red Hat’s documentation states that if /proc/sys/crypto/fips_enabled contains 1, core cryptographic components switch to FIPS mode, and if it contains 0, they do not. Red Hat also stresses that the correct way to ensure full FIPS posture is to enable it during installation, or use the supported distro tooling when switching later.
+High-assurance relevance: Very high in compliance-bound or crypto-constrained environments, but only when you interpret it correctly: it is a strong signal, not the whole story.
+Persistence: This one is distro-specific. On RHEL-family systems, supported tooling such as fips-mode-setup manages the necessary boot-time and system policy changes; Red Hat notes that enabling FIPS adds the relevant kernel parameter and requires reboot. So your dual-check should compare the live kernel flag (/proc/sys/crypto/fips_enabled) with the persisted distro configuration/tooling state rather than treating it as “just another sysctl.”  
+
+Persistence model you should encode
+
+For your probe, I would encode persistence like this:
+	•	sysctl class → intended value comes from merged sysctl.d precedence (/usr/lib, /usr/local/lib, /run, /etc, lexicographic ordering; /etc overrides vendor state). Live value comes from /proc/sys/....  
+	•	kernel_cmdline class → intended value comes from boot-loader configuration; live value comes from /proc/cmdline.  
+	•	modprobe class → intended module parameter state comes from modprobe.d precedence; live module parameter state comes from /sys/module/<name>/parameters/... when applicable. The kernel docs say modprobe also consults the kernel command line for module parameters, which is important for cross-checking built-in vs loadable module cases.  
+	•	distro_managed class → intended state is derived from supported distro mechanisms and policy files, not just a flat key/value file. FIPS is the prime example.  
+
+Practical recommendation for your “ground truth” model
+
+I would define these fields per signal:
+	•	signal_id
+	•	class = sysctl | kernel_cmdline | modprobe | distro_managed
+	•	live_source
+	•	live_value
+	•	configured_source
+	•	configured_value
+	•	desired_value
+	•	assurance_impact = critical | high | medium
+	•	rationale
+	•	contradiction = boolean
+	•	notes
+
+And I would classify contradictions like this:
+	•	configured hardened / live not hardened → boot drift, failed early-boot application, or mutable runtime override
+	•	live hardened / configured not hardened → manual hotfix, ephemeral state, or incomplete persistence
+	•	live unknown / configured present → kernel lacks feature, module not loaded, or source unavailable
+	•	live and configured hardened but unsupported by workload → policy exception candidate, not a raw failure
+
+That structure fits your trust-ladder thinking very well: running kernel behavior is the ground truth of effect, while persisted config is the ground truth of intent.
+
+The next clean step is to turn this into a machine-readable catalog. I can do that as a compact JSON or Rust static catalog with fields like desired_value, live_path, configured_sources, persistence_class, assurance_impact, and rationale.
+
+Yes — and this is the right way to model it.
+
+For a high-assurance posture probe, you want two views for each signal:
+	1.	Live / effective state — what the running kernel is actually doing now, usually from /proc/sys/..., /sys/..., or /proc/cmdline.
+	2.	Configured / intended state — what the system is set up to do across reboot, usually from sysctl.d, modprobe.d, or boot-loader kernel arguments. The kernel docs explicitly describe runtime sysctls under /proc/sys/*, and the sysctl and modprobe man pages describe how boot-time persistence is applied from *.conf files. Kernel command-line settings are passed in at boot and are visible in /proc/cmdline.  
+
+I would treat the live kernel value as the immediate source of truth and the persisted config as the intended source of truth. When they disagree, that is exactly the kind of contradiction your probe should report.
+
+Core runtime sysctls to dual-check
+
+1) kernel.modules_disabled
+
+Desired live value: 1
+Why: The kernel documentation says that once set to true, modules can neither be loaded nor unloaded, and it cannot be reset back to false. That is a very strong hardening signal because it closes a major runtime kernel-modification path.
+High-assurance relevance: Very high. It materially reduces post-boot attack surface and rootkit/injection opportunities.
+Persistence: This is a runtime sysctl, so you persist the intended value through sysctl.d files processed by systemd-sysctl at boot. The live value should be read from /proc/sys/kernel/modules_disabled; the configured value should be read from your merged sysctl.d view. Note that because this setting becomes irreversible once enabled, a mismatch can also tell you when in boot it was applied.  
+
+2) kernel.kexec_load_disabled
+
+Desired live value: 1
+Why: The kernel documentation states that when set to 1, the kexec_load and kexec_file_load syscalls are disabled and cannot be re-enabled until reboot.
+High-assurance relevance: Very high. It blocks runtime replacement of the running kernel via kexec, which is exactly the sort of kernel transition path you usually want closed on hardened systems.
+Persistence: Persist through sysctl.d; observe live at /proc/sys/kernel/kexec_load_disabled. This one pairs naturally with modules_disabled as a combined integrity signal.  
+
+3) kernel.kptr_restrict
+
+Desired live value: 2
+Why: The kernel docs describe this as restricting exposure of kernel addresses through /proc and other interfaces. For a high-assurance posture, the strongest practical target is the most restrictive setting your platform supports, typically 2, because this minimizes useful kernel address disclosure to user space.
+High-assurance relevance: High. This is directly about exploit resistance and information-leak reduction.
+Persistence: Persist via sysctl.d; observe live at /proc/sys/kernel/kptr_restrict.  
+
+4) kernel.dmesg_restrict
+
+Desired live value: 1
+Why: The kernel documentation is explicit: 0 means no restriction, 1 means users need CAP_SYSLOG to use dmesg.
+High-assurance relevance: High. Kernel logs often expose memory layout, device state, boot-time secrets-adjacent metadata, and debugging details that help attackers.
+Persistence: Persist via sysctl.d; observe live at /proc/sys/kernel/dmesg_restrict.  
+
+5) kernel.randomize_va_space
+
+Desired live value: 2
+Why: The kernel docs say value 2 additionally enables heap randomization. That is the strongest ASLR posture in this interface.
+High-assurance relevance: High. It increases exploit difficulty, especially for memory-corruption paths.
+Persistence: Persist via sysctl.d; observe live at /proc/sys/kernel/randomize_va_space.  
+
+6) kernel.perf_event_paranoid
+
+Desired live value: 3 or higher if supported; otherwise at least 2
+Why: The official kernel docs say the default is 2, and that >=2 disallows kernel profiling by users without CAP_PERFMON. For a high-assurance system, you generally want the most restrictive value supported by your kernel and tooling, because perf can expose sensitive microarchitectural and kernel-observability surfaces.
+High-assurance relevance: High. This reduces local observability that can assist side-channel and introspection abuse.
+Persistence: Persist via sysctl.d; observe live at /proc/sys/kernel/perf_event_paranoid.  
+
+7) kernel.unprivileged_bpf_disabled
+
+Desired live value: 2 preferred, otherwise 1
+Why: The kernel docs show: 0 enables unprivileged bpf(), 1 disables it “without recovery,” and 2 disables it. For a high-assurance baseline, unprivileged BPF should not be allowed. If your platform uses 2 as the default-off posture and permits later enabling, that is still a hardened state; if you want a one-way lock, 1 is even stricter operationally.
+High-assurance relevance: Very high. eBPF is extremely powerful; restricting unprivileged access removes a major attack and observability surface.
+Persistence: Persist via sysctl.d; observe live at /proc/sys/kernel/unprivileged_bpf_disabled.  
+
+8) kernel.yama.ptrace_scope
+
+Desired live value: 2 for strong admin-only attach, or 3 if you intentionally want no ptrace attach at all
+Why: The Yama LSM documentation defines 0 as classic same-UID ptrace, 1 as restricted ptrace, 2 as admin-only attach, and 3 as no attach; value 3 is irreversible until reboot. For a hardened general-purpose system, 2 is a strong and practical choice. For a very locked-down appliance/reference monitor role, 3 is defensible if you can live without ptrace-based debugging.
+High-assurance relevance: High. This sharply reduces credential-stealing and cross-process inspection opportunities.
+Persistence: Persist via sysctl.d; observe live at /proc/sys/kernel/yama/ptrace_scope.  
+
+9) fs.protected_hardlinks
+
+Desired live value: 1
+Why: The kernel docs say that when set to 1, hardlinks cannot be created by users who do not already own the source file or lack read/write access.
+High-assurance relevance: High. This mitigates long-standing link-based privilege escalation patterns.
+Persistence: Persist via sysctl.d; observe live at /proc/sys/fs/protected_hardlinks.  
+
+10) fs.protected_symlinks
+
+Desired live value: 1
+Why: The kernel docs say that with 1, symlinks in sticky world-writable directories are only followed under constrained ownership conditions.
+High-assurance relevance: High. This is another direct mitigation against common symlink race and privilege-escalation problems.
+Persistence: Persist via sysctl.d; observe live at /proc/sys/fs/protected_symlinks.  
+
+11) fs.protected_fifos
+
+Desired live value: 2
+Why: The docs state that 2 extends protection to group-writable sticky directories in addition to world-writable ones. That is the stronger posture.
+High-assurance relevance: Medium-high. It helps prevent attacker-controlled FIFO abuse in shared writable directories.
+Persistence: Persist via sysctl.d; observe live at /proc/sys/fs/protected_fifos.  
+
+12) fs.protected_regular
+
+Desired live value: 2
+Why: As with FIFOs, the docs say 2 extends the protection to group-writable sticky directories, which is the stronger setting.
+High-assurance relevance: Medium-high. This closes a class of “expected to create a file, actually opened attacker-controlled file” issues.
+Persistence: Persist via sysctl.d; observe live at /proc/sys/fs/protected_regular.  
+
+13) fs.suid_dumpable
+
+Desired live value: 0
+Why: The kernel docs define 0 as the traditional default behavior, where privileged or tainted binaries are not dumped. They also explicitly describe 1 as insecure for debugging and 2 as a special “suidsafe” mode. For a high-assurance baseline, 0 is the conservative choice.
+High-assurance relevance: High. Core dumps of privileged processes are obvious confidentiality risks.
+Persistence: Persist via sysctl.d; observe live at /proc/sys/fs/suid_dumpable.  
+
+Boot-time kernel command-line signals to dual-check
+
+For these, the live effective source is typically /proc/cmdline, and the configured source is your boot-loader configuration. The proc man page explicitly says /proc/cmdline contains arguments passed to the kernel at boot, often by GRUB or another boot manager.  
+
+14) lockdown=
+
+Desired configured/live value: lockdown=confidentiality for the strongest posture; lockdown=integrity if you need a slightly less restrictive operational profile
+Why: The kernel docs state that integrity disables kernel features that allow userland to modify the running kernel, while confidentiality additionally disables features that would allow userland to extract confidential information from the kernel.
+High-assurance relevance: Extremely high. This is one of the clearest single indicators that the platform is actively constraining kernel attack and exfiltration surfaces.
+Persistence: Persist in the boot-loader kernel command line; verify live in /proc/cmdline.  
+
+15) module.sig_enforce=1
+
+Desired configured/live value: 1
+Why: The official kernel module-signing documentation says that when CONFIG_MODULE_SIG_FORCE is enabled or module.sig_enforce=1 is supplied on the kernel command line, the kernel will only load validly signed modules for which it has a trusted public key.
+High-assurance relevance: Extremely high, especially if you permit any module loading at all. This is the signature-enforcement half of kernel module trust.
+Persistence: Persist in the boot-loader kernel command line; verify live from /proc/cmdline. Depending on kernel build and distro, you may also want to corroborate with kernel taint state if unsigned modules were ever loaded.  
+
+16) CPU mitigation arguments, especially mitigations=, spectre_v2=, pti=
+
+Desired configured/live value: Do not disable mitigations on hardened systems. In practice that means no blanket mitigations=off, and no weakening of specific knobs such as Spectre v2 or PTI unless you have a very deliberate exception. The kernel docs show these are boot parameters that directly control mitigation behavior.
+High-assurance relevance: High. These are part of the platform’s side-channel and speculative-execution posture.
+Persistence: Persist in the boot-loader kernel command line; verify live in /proc/cmdline.  
+
+17) random.trust_cpu=off
+
+Desired configured/live value: off when your assurance model does not want to trust CPU RNG seeding alone
+Why: The kernel docs state this disables trusting the CPU random number generator to initialize the kernel RNG.
+High-assurance relevance: Context-dependent but important in paranoid/trust-minimizing environments. It is less about “more security” in the generic sense and more about explicit trust-boundary control.
+Persistence: Persist in the boot-loader kernel command line; verify live in /proc/cmdline.  
+
+18) random.trust_bootloader=off
+
+Desired configured/live value: off when you do not want bootloader-provided seed material treated as trusted for initial RNG state
+Why: The kernel docs say this disables trusting a seed passed by the bootloader to initialize the kernel RNG.
+High-assurance relevance: Same story as random.trust_cpu=off: this is a trust-source decision, valuable in systems that are explicitly modeling provenance and trust ladders.
+Persistence: Persist in boot-loader kernel arguments; verify live in /proc/cmdline.  
+
+Special signal: FIPS mode
+
+19) /proc/sys/crypto/fips_enabled
+
+Desired live value: 1 on systems that claim to be operating in FIPS mode
+Why: Red Hat’s documentation states that if /proc/sys/crypto/fips_enabled contains 1, core cryptographic components switch to FIPS mode, and if it contains 0, they do not. Red Hat also stresses that the correct way to ensure full FIPS posture is to enable it during installation, or use the supported distro tooling when switching later.
+High-assurance relevance: Very high in compliance-bound or crypto-constrained environments, but only when you interpret it correctly: it is a strong signal, not the whole story.
+Persistence: This one is distro-specific. On RHEL-family systems, supported tooling such as fips-mode-setup manages the necessary boot-time and system policy changes; Red Hat notes that enabling FIPS adds the relevant kernel parameter and requires reboot. So your dual-check should compare the live kernel flag (/proc/sys/crypto/fips_enabled) with the persisted distro configuration/tooling state rather than treating it as “just another sysctl.”  
+
+Persistence model you should encode
+
+For your probe, I would encode persistence like this:
+	•	sysctl class → intended value comes from merged sysctl.d precedence (/usr/lib, /usr/local/lib, /run, /etc, lexicographic ordering; /etc overrides vendor state). Live value comes from /proc/sys/....  
+	•	kernel_cmdline class → intended value comes from boot-loader configuration; live value comes from /proc/cmdline.  
+	•	modprobe class → intended module parameter state comes from modprobe.d precedence; live module parameter state comes from /sys/module/<name>/parameters/... when applicable. The kernel docs say modprobe also consults the kernel command line for module parameters, which is important for cross-checking built-in vs loadable module cases.  
+	•	distro_managed class → intended state is derived from supported distro mechanisms and policy files, not just a flat key/value file. FIPS is the prime example.  
+
+Practical recommendation for your “ground truth” model
+
+I would define these fields per signal:
+	•	signal_id
+	•	class = sysctl | kernel_cmdline | modprobe | distro_managed
+	•	live_source
+	•	live_value
+	•	configured_source
+	•	configured_value
+	•	desired_value
+	•	assurance_impact = critical | high | medium
+	•	rationale
+	•	contradiction = boolean
+	•	notes
+
+And I would classify contradictions like this:
+	•	configured hardened / live not hardened → boot drift, failed early-boot application, or mutable runtime override
+	•	live hardened / configured not hardened → manual hotfix, ephemeral state, or incomplete persistence
+	•	live unknown / configured present → kernel lacks feature, module not loaded, or source unavailable
+	•	live and configured hardened but unsupported by workload → policy exception candidate, not a raw failure
+
+That structure fits your trust-ladder thinking very well: running kernel behavior is the ground truth of effect, while persisted config is the ground truth of intent.
+
+The next clean step is to turn this into a machine-readable catalog. I can do that as a compact JSON or Rust static catalog with fields like desired_value, live_path, configured_sources, persistence_class, assurance_impact, and rationale.

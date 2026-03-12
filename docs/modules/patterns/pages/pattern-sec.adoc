@@ -5,12 +5,9 @@
 // Controls: NIST 800-53 SC-28 (protection at rest), SC-12 (key management),
 //           SI-7 (integrity verification), NIST 800-218 SSDF PW.4
 
-[WARNING]
-====
-This pattern is *required* and *not yet implemented* in the UMRS codebase.
-The design is stable. Implementation should proceed before the OS detection pipeline
-enters production use. See xref:index.adoc#open[Open — Awaiting Implementation].
-====
+NOTE: The SEC pattern is implemented in
+`components/rusty-gadgets/umrs-platform/src/sealed_cache.rs`.
+The `zeroize` crate is in the workspace; `SealingKey` derives `ZeroizeOnDrop`.
 
 == Overview
 
@@ -138,89 +135,120 @@ occurred in a way that leaks the cached value.
 
 == In the UMRS Codebase
 
-The SEC pattern is designed around types that already exist in `umrs-platform`. When
-implemented, the cache will wrap the output of the OS detection pipeline.
+SEC is implemented in `components/rusty-gadgets/umrs-platform/src/sealed_cache.rs`.
+It wraps `OsDetector` and caches its `DetectionResult` output.
 
-=== Existing Types the Cache Will Seal
-
-`TrustLevel` (defined in `umrs-platform/src/confidence.rs`) is the primary value
-being protected. Its discriminants map directly to the pipeline's evidence strength:
+=== Public API
 
 [source,rust]
 ----
-// umrs-platform/src/confidence.rs
-pub enum TrustLevel {
-    Untrusted,              // T0 — no evidence
-    KernelAnchored,         // T1 — kernel attributes only
-    EnvAnchored,            // T2 — kernel + environment
-    SubstrateAnchored,      // T3 — substrate (package DB) confirmed
-    IntegrityAnchored,      // T4 — cryptographic digest verified
+// umrs-platform/src/sealed_cache.rs
+
+/// In-memory sealed cache for DetectionResult.
+///
+/// Wraps an OsDetector and caches its output with a cryptographic HMAC-SHA-256
+/// seal. Each call to query() either returns the cached result (if valid) or
+/// runs the full detection pipeline.
+///
+/// NIST SP 800-53 SC-28, SC-12, SI-7, AU-3.
+pub struct SealedCache { /* ... */ }
+
+impl SealedCache {
+    /// Construct a SealedCache with the default TTL (30 seconds).
+    pub fn new(detector: OsDetector) -> Self;
+
+    /// Construct a SealedCache with a custom TTL.
+    /// ttl_secs is clamped to MAX_TTL_SECS (300 seconds).
+    pub fn with_ttl(detector: OsDetector, ttl_secs: u64) -> Self;
+
+    /// Run or serve a cached OS detection result.
+    #[must_use = "detection result must be inspected — discard silently loses trust tier"]
+    pub fn query(&mut self) -> Result<DetectionResult, DetectionError>;
+
+    /// Return the current observable status of the cache.
+    pub fn status(&self) -> CacheStatus;
+
+    /// Return true if caching is currently enabled for this instance.
+    pub fn caching_enabled(&self) -> bool;
+
+    /// Return the configured TTL for cache entries.
+    pub fn ttl(&self) -> Duration;
 }
 ----
 
-A falsified cache entry that changes `IntegrityAnchored` to `SubstrateAnchored`
-would cause policy decisions to treat the host as having weaker provenance. The seal
-covers the `TrustLevel` byte, so this substitution is detectable.
+=== Supporting Types
 
-`EvidenceBundle` (defined in `umrs-platform/src/evidence.rs`) carries the full
-record of what was observed. The evidence chain digest in the seal covers all records
-in the bundle, so removing or replacing an `EvidenceRecord` also invalidates the seal.
+`SealingKey` (private) holds the 256-bit HMAC key and derives `ZeroizeOnDrop` — the
+key bytes are overwritten with zeros when `SealedCache` is dropped.
 
-=== Where `boot_id` Is Already Read
+`SealedEntry` (private) holds the canonical payload bytes, the HMAC-SHA-256 tag, and
+the expiry instant for a single cached result.
 
-The `kernel_anchor` phase already reads `boot_id` using the correct provenance-checked
-path (`ProcfsText` + `SecureReader`):
+`CacheStatus` (public) is the observable state of the cache at a point in time:
 
 [source,rust]
 ----
-// umrs-platform/src/detect/kernel_anchor.rs (step 3 of run())
-let boot_id_node = ProcfsText::new("/proc/sys/kernel/random/boot_id");
-let boot_id_raw = SecureReader::<ProcfsText>::new()
-    .read_generic_text(&boot_id_node)?;
-----
-
-The cache implementation should reuse this value — it is already in the
-`EvidenceBundle` produced by `kernel_anchor`. There is no need to read it again at
-seal time.
-
-=== FIPS Gate — Existing Pattern
-
-The FIPS check is already established in `integrity_check.rs`:
-
-[source,rust]
-----
-// umrs-platform/src/detect/integrity_check.rs
-let fips_node = ProcfsText::new("/proc/sys/kernel/fips_enabled");
-let fips_raw = SecureReader::<ProcfsText>::new()
-    .read_generic_text(&fips_node)?;
-----
-
-The cache initialization should gate on the same path to decide whether to enable
-HMAC caching or disable it and fall through to the pipeline on every call.
-
-=== Conceptual Cache Structure
-
-The cache is not yet implemented. When it is, the structure will resemble:
-
-[source,rust]
-----
-// Conceptual — not yet in the codebase
-struct SealedCache {
-    // Sealed payload: serialized DetectionResult + TrustLevel byte + evidence digest
-    sealed_bytes: Vec<u8>,
-    // HMAC tag over sealed_bytes
-    tag: [u8; 32],
-    // Expiry: Instant::now() + Duration::from_secs(ttl)
-    expires_at: Instant,
-    // Ephemeral sealing key — zeroized on drop
-    // key: SecretBox<[u8; 32]>,  ← requires zeroize crate (pattern-zeroize)
+pub enum CacheStatus {
+    Empty,     // No entry stored (miss, expired, or first run)
+    Live,      // Entry present; TTL not yet expired
+    Expired,   // Entry present but TTL has elapsed
+    Disabled,  // FIPS active or boot_id absent
 }
 ----
 
-NOTE: The `zeroize` crate is not yet in the workspace. The key type placeholder above
-requires xref:pattern-zeroize.adoc[Zeroize Sensitive Data] to be implemented first.
-The two patterns have a hard dependency: SEC cannot safely hold its sealing key without
-zeroize-on-drop.
+=== Sealing Key Derivation
+
+The sealing key is derived on the first successful pipeline run — not at construction:
+
+[source,rust]
+----
+// Key = SHA-256(boot_id_bytes ‖ 0x00 separator ‖ starttime_ticks_le)
+----
+
+`boot_id` comes from the `DetectionResult` produced by Phase 1 — no second read is
+needed. The process start time is read from field 22 of `/proc/self/stat` via
+`ProcfsText` + `SecureReader` (provenance-verified).
+
+=== Seal Payload Layout
+
+The canonical payload covers the security-relevant fields of `DetectionResult`:
+
+[source]
+----
+[trust_level_byte: u8]                  1 byte
+[evidence_sha256: [u8; 32]]            32 bytes  ← SHA-256 of all EvidenceRecords
+[boot_id_len: u32 LE][boot_id_bytes]   variable
+[os_id_len: u32 LE][os_id_bytes]       variable
+[version_id_len: u32 LE][version_id_bytes]  variable
+[substrate_distro_len: u32 LE][substrate_bytes]  variable
+----
+
+Absent optional fields are encoded as a four-byte zero length with no following bytes.
+Length prefixes are little-endian `u32`.
+
+=== FIPS Gate
+
+FIPS mode is checked once at cache construction time — never at seal time — to avoid
+a TOCTOU window. If `fips_enabled` reads `"1"` or if the procfs read fails for any
+reason, `caching_enabled` is set to `false` and every `query()` call runs the full
+pipeline directly.
+
+Fail-closed rationale: `hmac` + `sha2` crates are not FIPS 140-3 validated. On a
+FIPS-required deployment, a procfs disruption must not silently enable unvalidated
+HMAC.
+
+=== `decode_cached_result()` — Conservative Design
+
+On a verified cache hit, the current implementation re-runs the pipeline and returns
+a fresh `DetectionResult` rather than deserializing the payload bytes:
+
+The seal's purpose is tamper detection, not I/O elimination. `DetectionResult`
+contains non-`Clone` fields and would require a full serialization layer to restore.
+The conservative design avoids that complexity while preserving the primary security
+property: in-memory substitution of the payload bytes is detected on the next query.
+
+A future iteration will store the serialized result to serve true cache hits without
+repeating the pipeline.
 
 == When to Apply
 
@@ -287,9 +315,9 @@ integrity check that resolves to a `TrustLevel`.
 The Sealed Evidence Cache (SEC) pattern adds a cryptographic integrity check to
 in-memory caching of expensive, security-relevant pipeline results. The seal is bound
 to a single boot session by an ephemeral key; a failed seal triggers a full pipeline
-re-run and anomaly log rather than returning stale data. The pattern has a hard
-dependency on xref:pattern-zeroize.adoc[Zeroize Sensitive Data] — the sealing key must
-be zeroized on drop, and that capability must be in place before SEC is implemented.
+re-run and anomaly log rather than returning stale data. The pattern is implemented in
+`umrs-platform/src/sealed_cache.rs`. `SealingKey` derives `ZeroizeOnDrop` — the sealing
+key is overwritten with zeros when `SealedCache` is dropped.
 
 == See Also
 

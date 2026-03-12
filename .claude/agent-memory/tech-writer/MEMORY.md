@@ -59,7 +59,7 @@ Pattern files:
 - `pattern-error-discipline.adoc` — Error Information Discipline
 - `pattern-bounds-safe.adoc` — Bounds-Safe Indexing
 - `pattern-supply-chain.adoc` — Supply Chain Hygiene (cargo-audit is the tool; Mermaid flowchart)
-- `pattern-sec.adoc` — Sealed Evidence Cache [⚠ documented; not yet implemented; hard dep on Zeroize]
+- `pattern-sec.adoc` — Sealed Evidence Cache [✓ implemented in `umrs-platform/src/sealed_cache.rs`]
 
 Index page: `patterns/pages/index.adoc`
 - Full reference table with implementation status (✓ / ⚠)
@@ -73,7 +73,8 @@ section now redirects to `patterns:index.adoc` instead of listing pages inline.
 ## Status of Unimplemented Patterns
 - Zeroize: vaultmgr needs `zeroize` crate + `ZeroizeOnDrop` on secret types
 - Constant-Time: `subtle` crate not in workspace; needed before any credential comparison
-- SEC (Sealed Evidence Cache): page written 2026-03-11; hard dep on Zeroize before implementation
+- SEC (Sealed Evidence Cache): IMPLEMENTED — `umrs-platform/src/sealed_cache.rs`;
+  zeroize crate is in workspace; SealingKey derives ZeroizeOnDrop
 
 ## Open Items for Jamie (as of 2026-03-10)
 - admin/ module cleanup: originals in admin/pages/ still present; see feedback.md open entry
@@ -89,3 +90,9 @@ section now redirects to `patterns:index.adoc` instead of listing pages inline.
 - 12 individual high-assurance pattern pages created in devel/pages/
 - high-assurance-patterns.adoc updated with Pattern Reference table linking to all 12
 - devel/nav.adoc updated with pattern subsections
+- SEC pattern docs updated for implementation:
+  - pattern-sec.adoc: WARNING block removed; "In the UMRS Codebase" rewritten for actual types
+  - patterns/index.adoc: SEC status ⚠→✓; "Open — Awaiting Implementation" SEC block removed
+  - os-detection-deep-dive.adoc: "Future: Sealed Memory Cache" section replaced with
+    full "Sealed Evidence Cache" section covering SealedCache API, seal payload layout,
+    FIPS gate, decode_cached_result() design note, CacheStatus, compliance table

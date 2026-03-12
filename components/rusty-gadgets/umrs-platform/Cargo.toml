@@ -42,6 +42,27 @@ sha2      = { version = "0.10", default-features = false }
 thiserror = "1"
 env_logger = "0.11.9"
 
+# hmac 0.12 — RustCrypto HMAC construction (HMAC-SHA-256 seal for SEC pattern).
+# Used exclusively in sealed_cache.rs to compute and verify HMAC-SHA-256 tags
+# over cached DetectionResult payloads. Provides constant-time verify_slice()
+# which prevents timing-based tag oracle attacks.
+# Supply chain: RustCrypto family — same audit lineage as sha2. Transitive deps:
+# digest, crypto-common. No unsafe surface exposed to callers.
+# Note: On FIPS systems, the sealed cache is disabled (FIPS gate in SealedCache::new).
+# HMAC-SHA-256 via this crate is not FIPS 140-3 validated; caching is
+# unconditionally disabled when /proc/sys/kernel/fips_enabled = 1.
+# NIST SP 800-53 SC-28, SC-12 — integrity protection and key management.
+hmac = "0.12"
+
+# zeroize 1 — memory zeroing for ephemeral key material (SEC pattern).
+# Used exclusively in sealed_cache.rs for the SealingKey type, which holds
+# the ephemeral HMAC-SHA-256 sealing key. ZeroizeOnDrop ensures key bytes
+# are overwritten when SealedCache is dropped.
+# Supply chain: single-purpose crate, minimal dependencies, no unsafe surface
+# exposed to callers. Derive feature required for ZeroizeOnDrop proc-macro.
+# NIST SP 800-53 SC-12 — ephemeral key material must be cleared after use.
+zeroize = { version = "1", features = ["derive"] }
+
 # rusqlite 0.31 — safe Rust bindings to SQLite (optional, feature-gated).
 # Used exclusively to read /var/lib/rpm/rpmdb.sqlite in read-only mode.
 # Default: links against system libsqlite3 (RHEL-patched, hardened, FIPS-aware).

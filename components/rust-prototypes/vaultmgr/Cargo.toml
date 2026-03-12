@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-umrs-core = { path = "../umrs-core" }
+umrs-core = { path = "../../rusty-gadgets/umrs-core" }
 colored = "2.0"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"

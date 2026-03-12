@@ -99,7 +99,7 @@ one document, see xref:devel:high-assurance-patterns.adoc[High-Assurance Coding 
 | xref:pattern-sec.adoc[Sealed Evidence Cache (SEC)]
 | Seal costly verification results with an ephemeral HMAC + TTL; re-queries verify the seal
 | NIST 800-53 SC-28 / SC-12
-| ⚠ Required — not yet implemented
+| ✓ Implemented (`umrs-platform/src/sealed_cache.rs`)
 
 | xref:pattern-execution-measurement.adoc[Execution Measurement]
 | Gate debug-mode timing behind `#[cfg(debug_assertions)]`; log pattern elapsed time in µs on successful completion
@@ -160,28 +160,6 @@ codebase uses `ConstantTimeEq`.
 See xref:pattern-supply-chain.adoc[Supply Chain Hygiene] for the dependency evaluation
 checklist before adding `subtle`.
 
-=== Sealed Evidence Cache (SEC)
-
-*Where it is needed:* Any pipeline whose output is expensive to produce and whose inputs
-change infrequently — primarily the OS detection pipeline in `umrs-platform` and any
-future multi-phase verification chain.
-
-*What is missing:* No cache implementation exists. The `zeroize` crate is not in the
-workspace (required for sealing key lifetime). SEC cannot be safely implemented until
-xref:pattern-zeroize.adoc[Zeroize Sensitive Data] is in place first.
-
-*Before shipping:*
-
-. Implement xref:pattern-zeroize.adoc[Zeroize Sensitive Data] — the sealing key must
-  be zeroized on drop; this is a hard dependency
-. Choose HMAC-SHA-256 provider; confirm FIPS compatibility on the target platform
-. Implement `SealedCache` around `DetectionResult + TrustLevel + EvidenceBundle digest`
-. Gate on `fips_enabled` at cache initialization — disable caching if no FIPS-validated
-  HMAC is available
-. Set TTL to 30s default; make it configurable downward, not upward
-
-See xref:pattern-sec.adoc[Sealed Evidence Cache (SEC)] for full design details.
-
 '''
 
 == Patterns by Group
@@ -208,7 +186,7 @@ See xref:pattern-sec.adoc[Sealed Evidence Cache (SEC)] for full design details.
 
 === Verification Pipelines
 
-* xref:pattern-sec.adoc[Sealed Evidence Cache (SEC)] ⚠ awaiting implementation
+* xref:pattern-sec.adoc[Sealed Evidence Cache (SEC)]
 * xref:pattern-audit-cards.adoc[Audit Cards]
 
 === Observability

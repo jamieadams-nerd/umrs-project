@@ -1183,37 +1183,141 @@ policy in this workspace elevates unused-result warnings to errors. A caller who
 deliberately discards the return value of a `#[must_use]` function must use `let _ =`
 with a justification comment — the discard cannot be accidental.
 
-== Future: Sealed Memory Cache
+== Sealed Evidence Cache
 
-NOTE: This section describes planned functionality that is not yet implemented.
+The `SealedCache` type in `umrs-platform/src/sealed_cache.rs` wraps `OsDetector`
+and caches the `DetectionResult` with a cryptographic HMAC-SHA-256 seal. It is the
+primary consumer of the pipeline output and the canonical application of the
+xref:patterns:pattern-sec.adoc[Sealed Evidence Cache (SEC)] pattern.
 
-Once the Sealed Evidence Cache (SEC) is implemented, the verified `DetectionResult` —
-including the `TrustLevel`, `LabelTrust`, `OsRelease`, and the complete `EvidenceBundle`
-— will be sealed into an in-memory cache after the first successful pipeline run.
+=== Usage
 
-The seal is an HMAC computed over:
+[source,rust]
+----
+use umrs_platform::detect::OsDetector;
+use umrs_platform::sealed_cache::SealedCache;
 
-. A canonical serialization of the `DetectionResult`
-. The `TrustLevel` discriminant as a single byte
-. A SHA-256 digest of the `EvidenceBundle` records in insertion order
+// SealedCache::new evaluates the FIPS gate at construction time.
+let mut cache = SealedCache::new(OsDetector::default());
 
-The HMAC key is derived from the `boot_id` read in Phase 1 and the process start time.
-This key is:
+// query() returns cached result if valid; runs pipeline otherwise.
+let result = cache.query()?;
+----
 
-* Unique per boot session — a reboot produces a different `boot_id` and invalidates
-  any previously sealed result
-* Unique per process invocation — prevents one process's cached result from being
-  used in another process
-* Never written to disk — the key exists only in process memory
-* Zeroized on drop — requires the xref:patterns:pattern-zeroize.adoc[Zeroize] pattern
-  to be implemented before SEC can be safely deployed
+Callers who need a non-default TTL use `SealedCache::with_ttl(detector, secs)`.
+The TTL is clamped to 300 seconds regardless of the value supplied.
 
-The TTL default is 30 seconds. A seal verification failure discards the cache, re-runs
-the full pipeline, and logs an anomaly at `warn!` level. The fresh result is returned
-to the caller — the seal failure is never exposed as a returned error.
+=== What the Seal Covers
 
-See xref:patterns:pattern-sec.adoc[Sealed Evidence Cache (SEC)] for the full design,
-implementation requirements, and FIPS posture.
+The HMAC-SHA-256 seal is computed over a canonical byte payload containing:
+
+* `TrustLevel` discriminant as a single byte
+* SHA-256 digest of all `EvidenceRecord` entries in insertion order
+* `boot_id` string (length-prefixed, little-endian `u32`)
+* `os_id` string from `OsRelease`, if present
+* `version_id` string from `OsRelease`, if present
+* Substrate probe type string (e.g., `"rpm"` or `"dpkg"`), if present
+
+A substitution attack that downgrades the `TrustLevel`, replaces an evidence record,
+or swaps the OS identity fields will produce a payload mismatch and invalidate the tag.
+
+=== Sealing Key
+
+The sealing key is derived after the first successful pipeline run using two values
+that are unique to this boot session and process invocation:
+
+* `boot_id` — from the `DetectionResult` produced by Phase 1 (no second read)
+* Process start time — field 22 of `/proc/self/stat`, read via `ProcfsText` +
+  `SecureReader` (provenance-verified)
+
+Key construction: `SHA-256(boot_id_bytes ‖ 0x00 separator ‖ starttime_ticks_le)`
+
+If either entropy source is unavailable, key derivation fails and caching is disabled
+for the lifetime of that `SealedCache` instance. `SealingKey` derives `ZeroizeOnDrop`
+— the key bytes are overwritten with zeros when the cache is dropped.
+
+=== Seal Failure Behavior
+
+Seal verification failure is a security event, not a recoverable error:
+
+. The cache entry is discarded immediately
+. The full pipeline re-runs
+. An anomaly is logged at `warn!` level:
+  `SEC: HMAC seal verification failed — possible cache substitution; discarding entry and re-running pipeline`
+. A fresh, pipeline-verified result is returned to the caller
+
+The caller cannot observe that a seal failure occurred — the returned value is always
+from a fresh pipeline run. See xref:patterns:pattern-fail-closed.adoc[Fail-Closed]
+and xref:patterns:pattern-loud-failure.adoc[Loud Failure].
+
+=== FIPS Mode — Caching Disabled
+
+FIPS mode is detected once at `SealedCache` construction by reading
+`/proc/sys/kernel/fips_enabled` via `ProcfsText`. The `hmac` + `sha2` crates are not
+FIPS 140-3 validated. When FIPS is active, `caching_enabled` is set to `false` and
+every `query()` call runs the full pipeline directly — no caching, no HMAC.
+
+If procfs is unreadable at construction time, the cache also defaults to disabled.
+Fail-closed: a temporary procfs disruption must not silently enable unvalidated HMAC
+on a FIPS-required deployment.
+
+=== `decode_cached_result()` — Conservative Design
+
+The current implementation re-runs the pipeline on a verified cache hit rather than
+deserializing the stored payload. `DetectionResult` contains non-`Clone` fields that
+would require a complete serialization layer to restore from bytes. The conservative
+approach preserves the primary security property — tamper detection — while avoiding
+that complexity. A future iteration will store the full serialized result to serve true
+cache hits without repeating the pipeline.
+
+=== `CacheStatus`
+
+`CacheStatus` provides observable cache state for tests and diagnostics without
+exposing the sealing key or payload bytes:
+
+[source,rust]
+----
+pub enum CacheStatus {
+    Empty,     // no entry stored
+    Live,      // entry present; TTL not expired
+    Expired,   // entry present but TTL elapsed
+    Disabled,  // FIPS active or boot_id absent
+}
+----
+
+Call `SealedCache::status()` to inspect. `status()` does not perform seal verification.
+
+=== Compliance
+
+The `SealedCache` implementation satisfies the same controls as the SEC pattern:
+
+[cols="1,3"]
+|===
+| Control | Application
+
+| NIST 800-53 SC-28
+| HMAC seal provides integrity protection while the detection result resides in
+  the in-memory cache.
+
+| NIST 800-53 SC-12
+| Sealing key is ephemeral, boot-session-bound, never written to disk, zeroized
+  on drop via `ZeroizeOnDrop`.
+
+| NIST 800-53 SI-7
+| Seal verification detects in-memory substitution. Verification failure triggers
+  pipeline re-run rather than returning an unverified result.
+
+| NIST 800-53 AU-3
+| Seal failures are logged at `warn!` level, producing auditable anomaly records
+  without exposing payload content.
+
+| NIST 800-53 SC-13
+| FIPS gate: no unvalidated HMAC on FIPS 140-3 systems; caching disabled if FIPS
+  is active or if the gate cannot be read (fail-closed).
+|===
+
+See xref:patterns:pattern-sec.adoc[Sealed Evidence Cache (SEC)] for the full pattern
+description and threat model.
 
 == Security Controls Summary
 
@@ -1239,7 +1343,8 @@ implementation requirements, and FIPS posture.
 | `TrustLevel` and `LabelTrust` — typed gate values for information flow decisions.
 
 | NIST 800-53 SC-28
-| Phase 6 digest (input to SEC seal). Protection at rest for cached results.
+| Phase 6 digest (covered by the SEC seal in `SealedCache`). Protection at rest
+  for cached results.
 
 | NIST 800-53 SI-10
 | Phase 7 TPI parsing. Input validation before any field is trusted.
@@ -1318,8 +1423,8 @@ cargo doc -p umrs-platform --no-deps --open
 * xref:patterns:pattern-tpi.adoc[Two-Path Independence (TPI)] — Phase 7 parsing
   architecture
 * xref:patterns:pattern-fail-closed.adoc[Fail-Closed] — hard gate behavior
-* xref:patterns:pattern-sec.adoc[Sealed Evidence Cache (SEC)] — future in-memory
-  caching of the pipeline result
+* xref:patterns:pattern-sec.adoc[Sealed Evidence Cache (SEC)] — in-memory caching
+  of the pipeline result; implemented in `umrs-platform/src/sealed_cache.rs`
 * xref:patterns:pattern-bounds-safe.adoc[Bounds-Safe Indexing] — bounded read in
   Phase 6
 * xref:patterns:pattern-non-bypassability.adoc[Non-Bypassability (RAIN)] —

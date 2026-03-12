@@ -29,6 +29,7 @@
 - **i18n domains**: Active `umrs-logspace` translations (5 strings: Resource Pool, Mount point, Total/Free space, Lifecycle) with fr_CA locale; updated `umrs-ls` (5 active locales: fr_CA, fr_FR, en_GB, en_AU, en_NZ); `umrs-state` (8 strings, fr_CA)
 - **umrs-logspace i18n wiring**: `print_pools()` now calls `tr()` for all user-visible strings; `umrs-core` added as dependency
 - **Security audit report**: 29-finding security audit at `components/rusty-gadgets/.claude/reports/2026-03-11-rpm-db-security-audit.md` documenting findings and remediation status
+- **Kernel security posture probe plan**: `.claude/plans/kernel-security-posture-probe.md` — Design for new `posture/` module in `umrs-platform` reading 22 kernel security hardening signals (sysctl, cmdline, securityfs) with static Rust catalog, dual-check model (live vs. configured), typed contradictions, and two-tier API (simple and expert)
 
 ### Changed
 - **CLAUDE.md refactored**: Reduced from 378 to ~195 lines (~48%); removed duplicate workspace tree and HA pattern descriptions that duplicated `.claude/rules/` and `docs/modules/patterns/`; added missing crates (`umrs-platform`, `umrs-ls`) to workspace layout; added 2 new architectural review triggers (`#[must_use]`, trust gates); added pointer to pattern library instead of duplicating content

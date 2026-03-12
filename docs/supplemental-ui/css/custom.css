@@ -1,0 +1,121 @@
+/*
+ * UMRS Documentation Theme
+ * Scope: headings, links, sidebar, toolbar, code blocks, admonitions, navbar
+ * Everything else inherits Antora defaults.
+ *
+ * Colors
+ *   Background ............ #ffffff
+ *   Sidebar / toolbar ..... #f6f8fa
+ *   Primary accent ........ #1f3a5f  (steel blue)
+ *   Accent tint ........... #c5d3e0  (for borders and dividers)
+ *   Text .................. #1f2933
+ *   Code block bg ......... #f6f8fa
+ *   Code border ........... #e1e4e8
+ */
+
+/* ── Navbar ──────────────────────────────────────────────────────────────── */
+.header,
+.navbar {
+  background-color: #1f3a5f;
+}
+
+.navbar-brand .navbar-item,
+.navbar-brand .navbar-item:hover {
+  color: #ffffff;
+}
+
+.site-title {
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 1rem;
+  margin-left: 0.6rem;
+  letter-spacing: 0.01em;
+}
+
+/* ── Sidebar ─────────────────────────────────────────────────────────────── */
+.nav-container,
+.nav-panel-menu {
+  background-color: #f6f8fa;
+}
+
+/* Component / module title */
+.nav-menu h3.title {
+  color: #1f3a5f;
+}
+
+/* Nav links */
+.nav-link {
+  color: #3d4852;
+}
+
+.nav-link:hover {
+  color: #1f3a5f;
+}
+
+/* Active-page indicator: left border + accent color */
+.is-current-page > .nav-link {
+  border-left: 3px solid #1f3a5f;
+  color: #1f3a5f;
+}
+
+/* ── Breadcrumb toolbar ───────────────────────────────────────────────────── */
+.toolbar {
+  background-color: #f6f8fa;
+  box-shadow: 0 1px 0 #e1e4e8;
+}
+
+/* ── Headings ────────────────────────────────────────────────────────────── */
+.doc h1,
+.doc h2,
+.doc h3,
+.doc h4 {
+  color: #1f2933;
+}
+
+/* h2 section divider — steel-blue tint instead of neutral gray */
+.doc h2:not(.discrete) {
+  border-bottom-color: #c5d3e0;
+}
+
+/* ── Links ───────────────────────────────────────────────────────────────── */
+.doc a,
+.toc a {
+  color: #1f3a5f;
+}
+
+.doc a:hover,
+.toc a:hover {
+  color: #2e5490;
+}
+
+/* ── Code blocks ─────────────────────────────────────────────────────────── */
+.doc .listingblock pre,
+.doc .literalblock pre {
+  background-color: #f6f8fa;
+  border: 1px solid #e1e4e8;
+}
+
+/* ── Admonition blocks ───────────────────────────────────────────────────── */
+/* Left-border triage: NOTE/TIP neutral, WARNING/CAUTION amber, IMPORTANT accent */
+.doc .admonitionblock {
+  border-left: 3px solid #c5d3e0;
+}
+
+.doc .admonitionblock.warning,
+.doc .admonitionblock.caution {
+  border-left-color: #8a6300;
+}
+
+.doc .admonitionblock.important {
+  border-left-color: #1f3a5f;
+}
+
+/* ── Footer ──────────────────────────────────────────────────────────────── */
+.footer {
+  background-color: #f6f8fa;
+  border-top: 1px solid #e1e4e8;
+  color: #1f2933;
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 1rem;
+}

@@ -15,8 +15,8 @@
 ## Known Annotation Debt
 
 - `umrs-platform/src/detect/` — all phase modules are well-annotated as of 2026-03-11
-- `umrs-platform/src/evidence.rs` — AU-10 claim on `EvidenceBundle` is unsupported
-  because `records` is `pub` (finding RPM-22); coder must make field private
+- `umrs-platform/src/evidence.rs` — `records` field is now private (corrected as of
+  2026-03-11 SEC audit); AU-10 invariant is enforced at the type-system level.
 
 ## Recurring Gap Patterns
 
@@ -43,6 +43,18 @@ SQLite (no "bundled" feature) is preferable and should be evaluated.
 
 ### Pattern: test unwrap() is acceptable
 `unwrap()` in `tests/` is acceptable per project policy. Do not flag it.
+
+## SEC Pattern — Key Observations (2026-03-11)
+
+- Pattern spec (pattern-sec.adoc) requires process start time from /proc/self/stat as
+  second key entropy source; implementation uses wall-clock subsecond nanos instead.
+  Code wins — either fix code or update spec.
+- FIPS gate fails open on procfs read failure. For FIPS deployments the correct
+  behavior is fail-closed (return true / disable caching).
+- decode_cached_result re-runs the pipeline on every cache hit — the sealed cache
+  provides tamper detection only, not I/O avoidance, until full serialization is
+  implemented. Pattern spec flowchart contradicts this.
+- On FIPS gate: cite SC-13 in Cargo.toml hmac dep comment, not just in source.
 
 ## Common Incorrect Citations Seen
 

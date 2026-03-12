@@ -33,6 +33,23 @@ When a term has no established francophone equivalent, retain the English term a
 
 ---
 
+## System State Terms (umrs-state)
+
+| English | French (fr_CA) | Source | Notes |
+|---|---|---|---|
+| Starting [tool-name] | Démarrage de [tool-name] | UMRS decision | No corpus match; "démarrage de" is the standard francophone Linux/POSIX startup-message pattern |
+| Enabled (FIPS is Enabled) | activé | corpus:coreutils | Corpus-attested form; FIPS acronym retained untranslated in OTAN/NATO and ANSSI contexts |
+| System Purpose | Objet du système | UMRS decision | RHEL concept; "objet du système" used in RHEL francophone subscription tooling |
+| state file | fichier d'état | UMRS decision | No corpus match; standard francophone Linux/POSIX term for a persistent state/status file |
+| Warning (prefix) | Avertissement | corpus:coreutils | Coreutils and bash corpus: "Warning" → "Avertissement" (well attested) |
+| (not set) | (non défini) | UMRS decision | No corpus match; standard francophone Linux/POSIX placeholder for an absent/unset value |
+| Unknown key | Clé inconnue | corpus:findutils | findutils: "unknown" → "inconnu(e)"; "clé" is feminine in French → "inconnue" |
+| Invalid | invalide | UMRS decision | No corpus match; "invalide" is the standard francophone computing term |
+| boolean | booléen/booléenne | UMRS decision | No corpus match; universally attested francophone computing term |
+| false (boolean value) | faux | UMRS decision | Standard francophone term for the boolean value false |
+
+---
+
 ## Security and Access Control
 
 | English | French (fr_CA) | Source | Notes |
