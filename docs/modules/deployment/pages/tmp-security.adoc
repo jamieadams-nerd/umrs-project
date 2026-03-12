@@ -154,5 +154,5 @@ This language is acceptable for DISA, NSA RTB, and NCDSMO reviews.
 
 == Next Steps
 
-xref:rhel10-installation.adoc[RHEL 10 Installation] — start the RHEL 10 deployment
+xref:rhel/rhel10-installation.adoc[RHEL 10 Installation] — start the RHEL 10 deployment
 sequence, applying the filesystem layout and mount options covered in this section.

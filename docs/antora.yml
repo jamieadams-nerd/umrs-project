@@ -4,10 +4,11 @@ version: latest
 nav:
   - modules/ROOT/nav.adoc
   - modules/architecture/nav.adoc
-  - modules/admin/nav.adoc
+  - modules/security-concepts/nav.adoc
   - modules/deployment/nav.adoc
-  - modules/operations/nav.adoc
-  - modules/reference/nav.adoc
   - modules/devel/nav.adoc
   - modules/patterns/nav.adoc
   - modules/umrs-tools/nav.adoc
+  - modules/operations/nav.adoc
+  - modules/logging-audit/nav.adoc
+  - modules/reference/nav.adoc

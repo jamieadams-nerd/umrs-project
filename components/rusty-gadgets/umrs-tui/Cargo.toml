@@ -1,0 +1,8 @@
+[package]
+name = "umrs-tui"
+version = "0.1.0"
+edition = "2021"
+description = "UMRS terminal UI — wizard art display with left/right justification"
+
+[dependencies]
+umrs-core = { path = "../umrs-core" }

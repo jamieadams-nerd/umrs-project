@@ -41,6 +41,12 @@ rust-developer and security-engineer leave doc requests here.
 - When a file is modified externally between a Read and Edit call, re-read before editing.
 - nav.adoc entries use `xref:filename.adoc[Display Text]` — cross-module refs use `module:file.adoc[Text]`
 
+## MANDATORY: Build Verification Rule
+- **`make docs` must pass cleanly** before any docs/ work is considered done. No exceptions.
+- Run `make docs 2>&1` from the repo root and verify zero xref errors in the output.
+- When moving pages into subdirectories, update ALL xrefs across ALL modules that reference the moved pages — not just the nav files.
+- Cross-module xrefs (e.g., `reference:context.adoc`) must be updated when the target page moves to a subdirectory (e.g., `reference:selinux/context.adoc`).
+
 ## High-Assurance Pattern Library (`docs/modules/patterns/`)
 Created 2026-03-11. Dedicated Antora module. Registered in `antora.yml`.
 Each pattern from CLAUDE.md has its own .adoc page under `patterns/pages/`.

@@ -54,7 +54,7 @@ Representative categories relevant to high-assurance system deployments:
 | Export Controlled Research | EXPTR | R&D data subject to export control
 |===
 
-See xref:reference:cui-category-abbreviations.adoc[CUI category abbreviations] for the
+See xref:reference:cui/cui-category-abbreviations.adoc[CUI category abbreviations] for the
 complete list.
 
 == CUI vs Classification
@@ -138,7 +138,7 @@ relevant to UMRS:
 
 | 3.13.10 — Establish and manage cryptographic keys
 | Key management is addressed by the UMRS key management infrastructure.
-  See xref:reference:key-recommendation-list.adoc[Cryptographic key recommendations].
+  See xref:reference:cryptography/key-recommendation-list.adoc[Cryptographic key recommendations].
 |===
 
 == CUI in the UMRS Context
@@ -161,7 +161,7 @@ clearance or write CUI data to a lower-labeled object."
 == See Also
 
 * xref:mls-label-model.adoc[MLS label model and CUI mapping]
-* xref:five-eyes-interop.adoc[Five Eyes classification interoperability]
-* xref:reference:cui-descriptions.adoc[CUI category descriptions (c0–c9)]
-* xref:reference:cui-category-abbreviations.adoc[CUI category abbreviations]
+* xref:history/five-eyes-interop.adoc[Five Eyes classification interoperability]
+* xref:reference:cui/cui-descriptions.adoc[CUI category descriptions (c0–c9)]
+* xref:reference:cui/cui-category-abbreviations.adoc[CUI category abbreviations]
 * xref:reference:compliance-frameworks.adoc[Compliance frameworks registry]

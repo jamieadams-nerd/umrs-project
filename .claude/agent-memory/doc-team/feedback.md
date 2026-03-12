@@ -23,6 +23,79 @@ start of any documentation session and append entries when leaving feedback for 
 
 ---
 
+## [2026-03-11] senior-tech-writer → senior-tech-writer: Phase 2 content restructure complete
+
+**Status**: resolved
+
+Seven changes executed:
+
+1. **truth-concepts merged into reference-monitor** (`security-concepts/pages/reference-monitor.adoc`):
+   New section "Ground Truth, Trust Anchors, and the Limits of Names" added before See Also.
+   Covers: inodes as ground truth vs paths/labels; IMA/statfs/key-custody trust anchors;
+   custody vs content trust (with cross-ref to integrity-and-provenance.adoc for full treatment);
+   enforcement-by-design vs logging-only systems.
+   `truth-concepts.adoc` replaced with redirect notice (file retained, not deleted).
+   `security-concepts/nav.adoc` — truth-concepts entry removed; security-model.adoc entry added.
+   `security-concepts/pages/index.adoc` — truth-concepts bullet removed; security-model bullet added.
+   `architecture/nav.adoc` — "Case Studies" renamed "Justification and Case Studies";
+   truth-concepts cross-ref removed.
+
+2. **security-model.adoc moved** from `ROOT/pages/` to `security-concepts/pages/`.
+   Broken xrefs fixed: `architecture:reference-monitor.adoc` → `reference-monitor.adoc` (local);
+   `architecture:integrity-and-provenance.adoc` → `integrity-and-provenance.adoc` (local);
+   `architecture:rationale.adoc` → `architecture:rationale-strongly-typed.adoc` (correct filename).
+   `security-concepts/pages/index.adoc` updated with security-model entry.
+
+3. **case-studies.adoc and mls-classified-talk.adoc moved** to `architecture/pages/history/`.
+   See Also xrefs in case-studies.adoc updated to use module-qualified refs (now in subdirectory).
+   xref in mls-classified-talk.adoc updated to use full module path for five-eyes-interop.
+   `architecture/nav.adoc` updated with history/ paths.
+
+4. **TW0-NETIF-JUSTIFICATION.adoc renamed** to `deployment/pages/dual-network-interface.adoc`.
+   Added to `deployment/nav.adoc` under Assurance Enhancements.
+
+5. **structured-logging.adoc and how-to-structure-log.adoc moved** from `operations/pages/`
+   to `deployment/pages/`. Both added to `deployment/nav.adoc` under Assurance Enhancements.
+
+6. **auditing-noise.adoc moved** from `operations/pages/` to `logging-audit/pages/`.
+   Added to `logging-audit/nav.adoc`.
+
+7. **operations/nav.adoc** — entire Logging section removed (all entries either moved to
+   deployment or logging-audit, or were already cross-module refs now local to logging-audit).
+
+---
+
+## [2026-03-11] senior-tech-writer → tech-writer: Nav and antora.yml restructure complete — review xrefs in page bodies
+
+**Status**: open
+
+Phase 1 nav fixes are done. All nav files now point to real files. Summary of what changed:
+
+- `docs/antora.yml` — now registers all 10 module nav files (was only ROOT)
+- `docs/modules/ROOT/nav.adoc` — broken include syntax removed; top-level structure is now flat
+  (modules as siblings, not nested under Architecture)
+- `docs/modules/architecture/nav.adoc` — all xrefs corrected: history files use `history/` prefix,
+  security-concepts files use `xref:security-concepts:filename.adoc[...]` cross-module syntax,
+  openssl-no-vendoring moved to reference/cryptography/
+- `docs/modules/deployment/nav.adoc` — ubuntu xref corrected to `ubuntu/ubuntu.adoc`
+- `docs/modules/deployment/pages/index.adoc` — internal xrefs corrected to `rhel/` and `ubuntu/` subdirs
+- `docs/modules/reference/nav.adoc` — all xrefs updated with selinux/, cryptography/, cui/ subdirs
+- `docs/modules/operations/nav.adoc` — removed dead entries (umrs-tool-*, rhel10-*, git-commit-signing);
+  logging entries now use cross-module xrefs to logging-audit; tools section links to umrs-tools:index.adoc
+- `docs/modules/devel/nav.adoc` — umrs-prog-lang cross-references architecture module;
+  git-commit-signing added; nom-parser uses correct hyphenated filename
+- `docs/modules/security-concepts/nav.adoc` — created (new)
+- `docs/modules/security-concepts/pages/index.adoc` — created (new, minimal index)
+- `docs/modules/logging-audit/nav.adoc` — created (new)
+- `docs/modules/logging-audit/pages/index.adoc` — created (new, minimal index)
+- `docs/modules/reference/pages/index.adoc` — created (new, was missing)
+
+**Action for tech-writer**: When writing or updating any page in operations/, check that body-level
+xrefs to logging (logging-capacity, log-lifecycle-model, log-tuning) use the cross-module syntax
+`xref:logging-audit:filename.adoc[...]`. These pages are no longer in operations/.
+
+---
+
 ## [2026-03-11] tech-writer → senior-tech-writer: pattern-sec.adoc updated for implementation — review requested
 
 **Status**: open

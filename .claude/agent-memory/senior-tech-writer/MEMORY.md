@@ -8,7 +8,10 @@ Write here to notify rust-developer or security-engineer of doc-driven questions
 ## Project: UMRS Documentation (Antora)
 
 **Docs root**: `docs/modules/`
-**Modules**: ROOT, architecture, devel, deployment, operations, reference, umrs-tools
+**Modules**: ROOT, architecture, security-concepts, devel, deployment, operations, logging-audit, reference, umrs-tools, patterns
+
+**antora.yml** registers all 10 module nav files — updated 2026-03-11.
+**security-concepts** and **logging-audit** are now registered; both have nav.adoc and index.adoc.
 
 ---
 
@@ -86,9 +89,23 @@ Original .txt and .md files remain in place (not deleted per policy).
 - `.md` files in `pages/` dirs do NOT render in Antora without a plugin — convert to `.adoc`
 - `.txt` files in `pages/` dirs are inert — convert to `.adoc`
 - `antora.yml` at `docs/antora.yml` is the single component descriptor — no module-level antora.yml files
-- `antora.yml` already references `modules/architecture/nav.adoc` — nav file now exists
 - `security/` and `historical/` were NOT registered in antora.yml — no removal needed
 - `umrs-tools/` was already wired into ROOT/nav.adoc before 2026-03-11 session
+
+### File locations after Phase 1 reorganization (canonical, 2026-03-11)
+
+| Files | Module | Subdirectory |
+|---|---|---|
+| rtb-vnssa, integrity-and-provenance, truth-concepts, reference-monitor | security-concepts | pages/ |
+| selinux-history, five-eyes-interop, HACAMS, ibm-zos-os390, microsoft-nt-orange, ring-based-security, mls-history, one-way-hashes, trusted-path-orange | architecture | pages/history/ |
+| category_set, security_type, role, user, context, sensitivity, booleans, secolor, mcs, mls-colors, rhel-selinux-users, setrans-technical, example-setrans-conf, umrs-mls-registry | reference | pages/selinux/ |
+| openssl-no-vendoring, key-recommendation-list, fips-cryptography-cheat-sheet | reference | pages/cryptography/ |
+| cui-category-abbreviations, cui-descriptions | reference | pages/cui/ |
+| logging-capacity, log-lifecycle-model, log-tuning | logging-audit | pages/ |
+| rhel10-installation, rhel10-openscap, rhel10-packages, rhel10-setrans, rhel10-directory-structure | deployment | pages/rhel/ |
+| ubuntu.adoc | deployment | pages/ubuntu/ |
+| git-commit-signing | devel | pages/ |
+| umrs-tooling, umrs-tool-shred, umrs-tool-shred-usage | umrs-tools | pages/ |
 
 ---
 
@@ -106,10 +123,36 @@ Preferred: `security label`, `audit event`, `system mediator`, `policy enforceme
 
 ---
 
+## MANDATORY: Build Verification Rule
+- **`make docs` must pass cleanly** before any docs/ work is considered done. No exceptions.
+- Run `make docs 2>&1` from the repo root and verify zero xref errors in the output.
+- When moving pages into subdirectories, update ALL xrefs across ALL modules that reference the moved pages — not just the nav files.
+- Cross-module xrefs (e.g., `reference:context.adoc`) must be updated when the target page moves to a subdirectory (e.g., `reference:selinux/context.adoc`).
+
 ## Writing Mode Defaults
 - Architecture Mode for explanatory content
 - STE Mode for procedures
 - Load rules file before writing (`.claude/architecture_mode.md`, `.claude/ste_mode.md`)
+
+---
+
+## Phase 2 Reorganization (2026-03-11)
+
+File locations changed from Phase 1:
+
+| Pages | From | To |
+|---|---|---|
+| security-model.adoc | ROOT/pages/ | security-concepts/pages/ |
+| case-studies.adoc, mls-classified-talk.adoc | architecture/pages/ | architecture/pages/history/ |
+| structured-logging.adoc, how-to-structure-log.adoc | operations/pages/ | deployment/pages/ |
+| auditing-noise.adoc | operations/pages/ | logging-audit/pages/ |
+| TW0-NETIF-JUSTIFICATION.adoc | deployment/pages/ | deployment/pages/dual-network-interface.adoc |
+
+truth-concepts.adoc content merged into reference-monitor.adoc (new section). truth-concepts.adoc is now a redirect stub — keep, do not edit.
+
+IMPORTANT: `architecture:rationale.adoc` does NOT exist. Correct filename is `architecture:rationale-strongly-typed.adoc`.
+
+Operations module NO LONGER has a Logging section — all logging content is in deployment/ (setup) or logging-audit/ (operations).
 
 ---
 

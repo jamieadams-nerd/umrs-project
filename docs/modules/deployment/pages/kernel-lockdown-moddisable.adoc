@@ -290,5 +290,5 @@ ____
 
 == Next Steps
 
-xref:rhel10-directory-structure.adoc[UMRS Directory Structure] covers the planned directory
+xref:rhel/rhel10-directory-structure.adoc[UMRS Directory Structure] covers the planned directory
 layout for UMRS configuration files, binaries, and state on RHEL 10.

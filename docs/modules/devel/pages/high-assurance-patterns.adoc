@@ -1307,7 +1307,7 @@ Before writing any cryptographic code in this project, verify the
 FIPS validation status of the specific implementation against the
 NIST CMVP database (csrc.nist.gov/projects/cryptographic-module-validation-program).
 
-See also the xref:architecture:openssl-no-vendoring.adoc[OpenSSL no-vendoring]
+See also the xref:reference:cryptography/openssl-no-vendoring.adoc[OpenSSL no-vendoring]
 decision in the Architecture module.
 
 === Note on Formal Verification

@@ -30,11 +30,11 @@ on the previous one.
   SELinux policy.
 . xref:deployment:linux-baseline.adoc[Linux baseline] —
   OS hardening prerequisites.
-. xref:deployment:rhel10-installation.adoc[RHEL 10 installation] —
+. xref:deployment:rhel/rhel10-installation.adoc[RHEL 10 installation] —
   step-by-step RHEL 10 deployment with SELinux enforcing and FIPS mode.
 . xref:deployment:ima-evm-setup.adoc[IMA/EVM setup] —
   integrity measurement and extended verification configuration.
-. xref:deployment:rhel10-openscap.adoc[OpenSCAP compliance scanning] —
+. xref:deployment:rhel/rhel10-openscap.adoc[OpenSCAP compliance scanning] —
   verifying the deployment against the applicable security profile.
 
 After deployment, see the operations index for day-to-day operation and
@@ -68,9 +68,9 @@ useful once you understand what problem the patterns are solving.
 NOTE: This page is planned and will be added in a future milestone.
 
 After reading the foundations, use the reference module for lookup:
-xref:reference:context.adoc[security context],
-xref:reference:sensitivity.adoc[sensitivity levels],
-xref:reference:category_set.adoc[category set].
+xref:reference:selinux/context.adoc[security context],
+xref:reference:selinux/sensitivity.adoc[sensitivity levels],
+xref:reference:selinux/category_set.adoc[category set].
 
 Developer use case guides (user-story format: "As a developer, I want to...")
 are planned and will be added in a future milestone.
@@ -106,7 +106,7 @@ NOTE: This page is planned and will be added in a future milestone.
 
 . xref:devel:high-assurance-patterns.adoc[High-assurance coding patterns] —
   each pattern's rationale, threat model, and codebase example.
-. xref:operations:structured-logging.adoc[Structured logging] —
+. xref:deployment:structured-logging.adoc[Structured logging] —
   audit trail structure and event taxonomy.
 . xref:operations:troubleshooting.adoc[Troubleshooting] —
   how enforcement failures surface and how they are investigated.

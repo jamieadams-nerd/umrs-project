@@ -1,0 +1,16 @@
+= Logging and Audit
+:description: Audit trail design, log capacity planning, and log lifecycle management for UMRS.
+
+This module covers the design and operation of the UMRS audit trail — how audit events are
+structured, how logs are sized and tuned, and how the log lifecycle is managed from
+generation through retention and disposal.
+
+== Topics
+
+* xref:logging-capacity.adoc[Log capacity planning] — sizing audit storage for your deployment.
+
+* xref:log-lifecycle-model.adoc[Log lifecycle model] — generation, retention, archival, and
+  disposal policy for audit records.
+
+* xref:log-tuning.adoc[Log filesystem and journald tuning] — kernel and journald configuration
+  for reliable, high-throughput audit logging.

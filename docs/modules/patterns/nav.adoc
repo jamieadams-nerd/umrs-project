@@ -1,5 +1,5 @@
-* xref:index.adoc[High-Assurance Pattern Library]
-
+.xref:index.adoc[High-Assurance Pattern Library]
+[collapsible]
 * Patterns — Parsing and I/O
 ** xref:pattern-tpi.adoc[Two-Path Independence (TPI)]
 ** xref:pattern-toctou.adoc[TOCTOU Safety]
@@ -12,14 +12,14 @@
 ** xref:pattern-bounds-safe.adoc[Bounds-Safe Indexing]
 
 * Patterns — Secrets and Errors
-** xref:pattern-zeroize.adoc[Zeroize Sensitive Data ⚠]
-** xref:pattern-constant-time.adoc[Constant-Time Comparison ⚠]
+** xref:pattern-zeroize.adoc[Zeroize Sensitive Data]
+** xref:pattern-constant-time.adoc[Constant-Time Comparison]
 ** xref:pattern-error-discipline.adoc[Error Information Discipline]
 ** xref:pattern-loud-failure.adoc[Loud Failure]
 
 * Patterns — Verification Pipelines
 ** xref:pattern-os-detection.adoc[OS Detection: A Trust Ladder]
-** xref:pattern-sec.adoc[Sealed Evidence Cache (SEC) ⚠]
+** xref:pattern-sec.adoc[Sealed Evidence Cache (SEC)]
 ** xref:pattern-audit-cards.adoc[Audit Cards]
 
 * Patterns — Observability

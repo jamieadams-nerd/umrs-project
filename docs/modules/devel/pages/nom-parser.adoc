@@ -141,5 +141,5 @@ forcing them to agree, you get the features of A and the rock-solid certainty of
 == See Also
 
 * xref:architecture:kernel-files-tpi.adoc[Two-Path Independence in Kernel File Parsing]
-* xref:architecture:reference-monitor.adoc[Reference Monitor Design in UMRS]
-* xref:architecture:rtb-vnssa.adoc[NSA RTB and the RAIN Principle]
+* xref:security-concepts:reference-monitor.adoc[Reference Monitor Design in UMRS]
+* xref:security-concepts:rtb-vnssa.adoc[NSA RTB and the RAIN Principle]

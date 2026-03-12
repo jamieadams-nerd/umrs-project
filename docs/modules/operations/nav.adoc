@@ -1,27 +1,12 @@
-* xref:index.adoc[Operations Overview]
+.xref:index.adoc[Operations]
+[collapsible]
+* xref:operations.adoc[Operations]
+* xref:troubleshooting.adoc[Troubleshooting]
 
-* Overview
-** xref:operations.adoc[Operations]
-** xref:troubleshooting.adoc[Troubleshooting]
-
-* Tools
-** xref:umrs-tooling.adoc[UMRS tooling overview]
-** xref:umrs-tool-shred.adoc[umrs-tool-shred]
-** xref:umrs-tool-shred-usage.adoc[umrs-tool-shred usage]
+* Signing and Chain of Custody
 ** xref:umrs-signing-README.adoc[UMRS Signing — HA-Sign overview]
 ** xref:chain-intro.adoc[Log signature chaining]
 ** xref:chain-verify-sign.adoc[Signing and verifying audit log chains]
-
-* Logging
-** xref:structured-logging.adoc[Structured logging]
-** xref:how-to-structure-log.adoc[How to structure a log]
-** xref:logging-capacity.adoc[Log capacity planning]
-** xref:log-lifecycle-model.adoc[Log lifecycle model]
-** xref:log-tuning.adoc[Log filesystem and journald tuning]
-
-* Audit
-** xref:auditing-noise.adoc[Auditing noise]
-** xref:rhel10-openscap.adoc[OpenSCAP on RHEL 10]
 
 * Integrity
 ** xref:ima-evm-ops.adoc[IMA/EVM Maintenance]
@@ -30,7 +15,9 @@
 * Administration
 ** xref:admin-index.adoc[Administration Overview]
 ** xref:admin-install.adoc[Install Overview]
-** xref:rhel10-install.adoc[RHEL 10 Installation Recommendations]
 ** xref:key-management.adoc[Cryptographic Key Management]
 ** xref:key-manager-tool.adoc[HA-Sign Key Orchestrator]
-** xref:git-commit-signing.adoc[Signing Git Commits]
+** xref:devel:git-commit-signing.adoc[Signing Git Commits]
+
+* Tools
+** xref:umrs-tools:index.adoc[UMRS Tools →]

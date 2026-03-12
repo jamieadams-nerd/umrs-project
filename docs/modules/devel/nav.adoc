@@ -1,16 +1,17 @@
-* xref:index.adoc[Developer Guide]
-
+.xref:index.adoc[Developer Guide]
+[collapsible]
 * High-Assurance Patterns
 ** xref:high-assurance-patterns.adoc[Pattern overview and philosophy]
 ** xref:patterns:index.adoc[Pattern Library →]
 ** xref:compliance-annotations.adoc[Compliance annotations guide]
-** xref:rust-must-use-contract.adoc[Compile-time contract enforcement: #[must_use]]
+** xref:rust-must-use-contract.adoc[Compile-time contract enforcement: #[must_use\]]
 ** xref:nom-parser.adoc[The nom parser combinator]
 
 * Platform Internals
 ** xref:os-detection-deep-dive.adoc[OS Detection Pipeline — Deep Dive]
 
 * Language Guides
+** xref:architecture:umrs-prog-lang.adoc[Language choice rationale]
 ** xref:rust-style-guide.adoc[Rust style guide]
 ** xref:secure-bash.adoc[Secure Bash guide]
 ** xref:secure-python.adoc[Secure Python guide]
@@ -19,3 +20,4 @@
 * Build & Workspace
 ** xref:build-tooling.adoc[Build tooling]
 ** xref:cargo-notes.adoc[Cargo & workspace notes]
+** xref:git-commit-signing.adoc[Signing Git Commits]

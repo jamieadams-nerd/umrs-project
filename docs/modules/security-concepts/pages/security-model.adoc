@@ -1,0 +1,59 @@
+= Security Model Overview
+:description: High-level summary of the UMRS security model — mandatory access control, CUI handling, and enforcement architecture.
+:toc: left
+
+// NIST 800-53 AC-4 — Information Flow Enforcement
+// NIST 800-53 SI-7 — Software and Information Integrity
+// NSA RTB RAIN — Non-bypassable security enforcement
+
+[NOTE]
+====
+This page is a placeholder. The detailed security model documentation is
+being consolidated from the architecture module. Content will be added in
+a future milestone.
+====
+
+== Summary
+
+UMRS implements mandatory access control (MAC) enforcement for
+Controlled Unclassified Information (CUI) using SELinux with either
+targeted or MLS policy. The security model rests on three pillars:
+
+Kernel-enforced labels::
+Every subject (process) and object (file, socket, IPC resource) carries
+an SELinux security context. Access decisions are made by the kernel
+policy engine — they cannot be bypassed by unprivileged userland code.
+
+Strongly-typed context modeling::
+UMRS models security contexts as validated Rust types, not raw strings.
+A label cannot be constructed in a malformed state; structural validity
+is enforced at construction time before any value reaches the kernel.
+See xref:architecture:rationale-strongly-typed.adoc[Strong-typing rationale].
+
+High-assurance coding patterns::
+All security-relevant operations apply patterns derived from NSA RTB
+VNSSA, NIST 800-218 SSDF, and NIST 800-53. These include two-path
+independent parsing (TPI), TOCTOU-safe fd-anchored I/O, provenance
+verification of kernel pseudo-filesystem attributes, and fail-closed
+error handling.
+See xref:devel:high-assurance-patterns.adoc[High-assurance coding patterns].
+
+== Governing Frameworks
+
+The security model is governed by:
+
+* *NIST SP 800-53 Rev 5* — security and privacy controls (AC-4, SI-7, AU-2)
+* *NIST SP 800-171* — protecting CUI in nonfederal systems
+* *CMMC 2.0* — cybersecurity maturity model certification
+* *NIST SP 800-218 SSDF* — secure software development framework
+* *NSA RTB VNSSA* — raise the bar / RAIN principle
+
+See xref:reference:compliance-frameworks.adoc[Compliance frameworks registry]
+for the full list with versions and roles.
+
+== Further Reading
+
+* xref:architecture:index.adoc[Architecture overview]
+* xref:reference-monitor.adoc[Reference monitor design]
+* xref:architecture:mls-label-model.adoc[MLS label model]
+* xref:integrity-and-provenance.adoc[Integrity and provenance]

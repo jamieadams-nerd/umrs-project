@@ -17,6 +17,7 @@
     to query it for stuff. They heed abstraction and ease of use. 
     - For example, they just want to know if a package is installed?
     - What's the version of this OS
+    - Things like the OsDetector:: is **GREAT**! Love public facing detectors like this.
     - Simple for them and keep the detailed, advanced stuff we have for experienced programmers.
 
 ## New Capabilities

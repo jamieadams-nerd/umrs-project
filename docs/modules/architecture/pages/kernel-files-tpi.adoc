@@ -129,5 +129,5 @@ fails closed.
 == See Also
 
 * xref:devel:nom-parser.adoc[The nom Parser Combinator in UMRS]
-* xref:reference-monitor.adoc[Reference Monitor Design in UMRS]
-* xref:rtb-vnssa.adoc[NSA RTB and the RAIN Principle]
+* xref:security-concepts:reference-monitor.adoc[Reference Monitor Design in UMRS]
+* xref:security-concepts:rtb-vnssa.adoc[NSA RTB and the RAIN Principle]

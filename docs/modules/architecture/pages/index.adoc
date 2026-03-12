@@ -27,7 +27,7 @@ measurement, and OpenSCAP compliance scanning. These controls together
 form the trusted computing base on which label enforcement runs.
 
 See xref:deployment:linux-baseline.adoc[Linux baseline],
-xref:deployment:rhel10-installation.adoc[RHEL 10 installation], and
+xref:deployment:rhel/rhel10-installation.adoc[RHEL 10 installation], and
 xref:deployment:ima-evm-setup.adoc[IMA/EVM setup] for configuration
 details.
 
@@ -64,13 +64,13 @@ UMRS models each field as a distinct validated Rust type. A
 level, an out-of-range category, or a missing required field. The
 type system enforces structure before any call reaches the kernel.
 
-See xref:rationale.adoc[Strong-typing rationale] for the detailed
+See xref:rationale-strongly-typed.adoc[Strong-typing rationale] for the detailed
 argument, and the reference pages for each field:
-xref:reference:context.adoc[security context],
-xref:reference:user.adoc[SELinux user],
-xref:reference:role.adoc[SELinux role],
-xref:reference:sensitivity.adoc[sensitivity levels],
-xref:reference:category_set.adoc[category set].
+xref:reference:selinux/context.adoc[security context],
+xref:reference:selinux/user.adoc[SELinux user],
+xref:reference:selinux/role.adoc[SELinux role],
+xref:reference:selinux/sensitivity.adoc[sensitivity levels],
+xref:reference:selinux/category_set.adoc[category set].
 
 == MLS/MCS Security Model
 
@@ -101,8 +101,8 @@ sensitivity level (s0) with category-based separation. Most SELinux
 targeted-policy deployments use MCS rather than full MLS. UMRS supports
 both.
 
-See xref:reference:mcs.adoc[MCS overview] and
-xref:mls-history.adoc[MLS history] for background.
+See xref:reference:selinux/mcs.adoc[MCS overview] and
+xref:history/mls-history.adoc[MLS history] for background.
 
 == CUI Policy and Multi-National Label Support
 
@@ -121,7 +121,7 @@ maintains its own scheme for marking and handling sensitive-but-unclassified
 information, and interoperability with those schemes is a planned
 architectural objective.
 
-See xref:five-eyes-interop.adoc[Five Eyes interoperability] for the
+See xref:history/five-eyes-interop.adoc[Five Eyes interoperability] for the
 design rationale and per-country scheme descriptions.
 
 == Rust Implementation Layer

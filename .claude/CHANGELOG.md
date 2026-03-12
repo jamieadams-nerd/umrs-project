@@ -32,6 +32,18 @@
 - **Kernel security posture probe plan**: `.claude/plans/kernel-security-posture-probe.md` — Design for new `posture/` module in `umrs-platform` reading 22 kernel security hardening signals (sysctl, cmdline, securityfs) with static Rust catalog, dual-check model (live vs. configured), typed contradictions, and two-tier API (simple and expert)
 
 ### Changed
+- **Antora module registration**: All 9 modules now registered in `antora.yml` (previously only ROOT); module sidebar now includes architecture, deployment, reference, operations, devel, patterns, security-concepts, logging-audit, and umrs-tools
+- **ROOT/nav.adoc restructured**: Fixed broken `include::` syntax; converted to flat top-level module links with `[collapsible]` sections
+- **Module nav xrefs corrected**: All xrefs across architecture, deployment, reference, operations, and devel modules updated to match actual subdirectory paths and cross-module references
+- **Navigation collapsibility**: Added `[collapsible]` to all module nav sections to reduce sidebar clutter
+- **security-concepts and logging-audit modules created**: New nav and index pages for both modules
+- **reference/pages/index.adoc created**: Previously missing
+- **File moves completed**: `security-model.adoc` (ROOT → security-concepts), `case-studies.adoc` and `mls-classified-talk.adoc` (architecture → architecture/pages/history/), `TW0-NETIF-JUSTIFICATION.adoc` renamed to `dual-network-interface.adoc` in deployment, `structured-logging.adoc` and `how-to-structure-log.adoc` (operations → deployment), `auditing-noise.adoc` (operations → logging-audit)
+- **plus-ref-monitor-info.txt merged**: Content integrated into `reference-monitor.adoc` with new sections (UMRS-vs-kernel distinction, LSM architecture, historical sources) and Mermaid diagrams
+- **Operations nav cleaned up**: Removed dead entries for relocated files
+- **Deployment nav enhanced**: Added assurance enhancement entries
+- **Architecture nav renamed**: "Case Studies" → "Justification and Case Studies" with history/ paths
+- **truth-concepts.adoc restored**: Re-established as standalone page in security-concepts module
 - **CLAUDE.md refactored**: Reduced from 378 to ~195 lines (~48%); removed duplicate workspace tree and HA pattern descriptions that duplicated `.claude/rules/` and `docs/modules/patterns/`; added missing crates (`umrs-platform`, `umrs-ls`) to workspace layout; added 2 new architectural review triggers (`#[must_use]`, trust gates); added pointer to pattern library instead of duplicating content
 - **High-assurance pattern rules expanded**: 6 new rules distilled from `docs/modules/devel/pages/high-assurance-patterns.adoc` into `.claude/rules/high_assurance_pattern_rules.md` — Must-Use Contract, Validate at Construction, Trust Gate, Security Findings as Data, Compile-Time Path Binding, Fixed-Size Deterministic Layout
 - **TPI architecture reworked**: `read_context()` in `xattrs.rs` now always runs both parse paths before evaluating the gate; single-path failures logged at WARN, disagreements at CRITICAL; nom error output sanitized to prevent MLS level leakage (SI-12); `SecureDirent` label state replaced `Option<SecurityContext>` with `SelinuxCtxState` enum — `<parse-error>` and `<unverifiable>` now distinct from `<unlabeled>`
@@ -47,6 +59,11 @@
 - **OS Detection documentation alignment**: All illustrative code snippets in both pattern and deep-dive documents corrected to match current `umrs-platform` source (EvidenceRecord fields, phase signatures, ConfidenceModel API, Phase 4 soft-gate behavior, LabelTrust paths, caller contracts)
 
 ### Fixed
+- **Antora module registration and nav xrefs**: Module nav files were not registered in `antora.yml` and xrefs were broken (incorrect paths, stale file locations, missing cross-module references); all 9 modules now registered and xrefs corrected across navigation
+- **ROOT nav include syntax**: Fixed broken `include::` directive in ROOT/nav.adoc causing sidebar build failures
+- **File path references in nav**: Updated all nav.adoc files to reflect actual subdirectory structure (e.g., `architecture/pages/history/` for moved case studies)
+- **reference/pages/index.adoc**: Missing file created to restore module completeness
+- **Stray directories**: Removed empty archive/ subdirectory and stray .claude/ directory inside .claude/plans/
 - **umrs-selinux type validation**: `validate_type()` in `type_id.rs` used `is_ascii_lowercase()` instead of `is_ascii_alphabetic()`, rejecting valid SELinux types like `NetworkManager_etc_t`; both TPI paths shared the bug; fixed with 6 new regression tests (3 type tests, 3 context tests)
 - **umrs-platform security audit fixes applied**: RPM-22 (HIGH: `EvidenceBundle::records` made private to enforce AU-10); RPM-01 (replaced nightly `is_multiple_of` API with stable Rust); RPM-02 (rusqlite error Display no longer leaks filesystem paths — SI-12); RPM-07 (added `ArrayLengthMismatch` error for previously silent empty return); RPM-24 (Cargo.toml split `rpm-db` from `rpm-db-bundled` features)
 - **Documentation gaps**: High-assurance patterns previously scattered; now consolidated in patterns/ module with unified threat/pattern/example structure

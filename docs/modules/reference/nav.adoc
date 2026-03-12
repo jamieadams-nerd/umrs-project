@@ -1,30 +1,31 @@
-* xref:index.adoc[Reference Overview]
-
+.xref:index.adoc[Reference]
+[collapsible]
 * SELinux Context Model
-** xref:context.adoc[Security context]
-** xref:user.adoc[SELinux user]
-** xref:role.adoc[SELinux role]
-** xref:security_type.adoc[SELinux type]
+** xref:selinux/context.adoc[Security context]
+** xref:selinux/user.adoc[SELinux user]
+** xref:selinux/role.adoc[SELinux role]
+** xref:selinux/security_type.adoc[SELinux type]
 
 * MLS
-** xref:sensitivity.adoc[Sensitivity levels]
-** xref:category_set.adoc[Category set]
-** xref:mcs.adoc[MCS overview]
-** xref:secolor.adoc[secolor.conf format]
-** xref:booleans.adoc[SELinux booleans]
+** xref:selinux/sensitivity.adoc[Sensitivity levels]
+** xref:selinux/category_set.adoc[Category set]
+** xref:selinux/mcs.adoc[MCS overview]
+** xref:selinux/secolor.adoc[secolor.conf format]
+** xref:selinux/booleans.adoc[SELinux booleans]
 
 * MLS Display
-** xref:mls-colors.adoc[MLS color configuration]
-** xref:setrans-technical.adoc[setrans translation engine]
-** xref:example-setrans-conf.adoc[Example setrans.conf]
-** xref:rhel-selinux-users.adoc[RHEL confined SELinux users]
+** xref:selinux/mls-colors.adoc[MLS color configuration]
+** xref:selinux/setrans-technical.adoc[setrans translation engine]
+** xref:selinux/example-setrans-conf.adoc[Example setrans.conf]
+** xref:selinux/rhel-selinux-users.adoc[RHEL confined SELinux users]
+** xref:selinux/umrs-mls-registry.adoc[UMRS MLS registry layout]
 
 * CUI & Policy
 ** xref:compliance-frameworks.adoc[Compliance frameworks registry]
-** xref:cui-descriptions.adoc[CUI category descriptions (c0–c9)]
-** xref:cui-category-abbreviations.adoc[CUI category abbreviations]
-** xref:umrs-mls-registry.adoc[UMRS MLS registry layout]
+** xref:cui/cui-descriptions.adoc[CUI category descriptions (c0–c9)]
+** xref:cui/cui-category-abbreviations.adoc[CUI category abbreviations]
 
 * Cryptography
-** xref:fips-cryptography-cheat-sheet.adoc[FIPS 140-2/3 cryptography quick reference]
-** xref:key-recommendation-list.adoc[Cryptographic key recommendations]
+** xref:cryptography/fips-cryptography-cheat-sheet.adoc[FIPS 140-2/3 cryptography quick reference]
+** xref:cryptography/key-recommendation-list.adoc[Cryptographic key recommendations]
+** xref:cryptography/openssl-no-vendoring.adoc[OpenSSL: no vendoring]

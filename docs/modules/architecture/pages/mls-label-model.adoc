@@ -231,9 +231,9 @@ tenants, programs, or enclaves at the same sensitivity level (MCS).
 
 == See Also
 
-* xref:reference:sensitivity.adoc[Sensitivity levels reference]
-* xref:reference:category_set.adoc[Category set reference]
-* xref:reference:mcs.adoc[MCS overview]
+* xref:reference:selinux/sensitivity.adoc[Sensitivity levels reference]
+* xref:reference:selinux/category_set.adoc[Category set reference]
+* xref:reference:selinux/mcs.adoc[MCS overview]
 * xref:cui-structure.adoc[CUI structure and handling]
-* xref:five-eyes-interop.adoc[Five Eyes classification interoperability]
-* xref:mls-history.adoc[MLS history]
+* xref:history/five-eyes-interop.adoc[Five Eyes classification interoperability]
+* xref:history/mls-history.adoc[MLS history]

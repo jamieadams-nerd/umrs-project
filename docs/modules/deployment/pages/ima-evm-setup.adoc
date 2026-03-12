@@ -21,7 +21,7 @@ Day-to-day operations — updating hashes after authorized changes, switching to
 verification, and recursive hashing — are covered in
 xref:operations:ima-evm-ops.adoc[IMA/EVM Maintenance].
 
-NOTE: Complete xref:rhel10-setrans.adoc[CUI Label Configuration] before this step —
+NOTE: Complete xref:rhel/rhel10-setrans.adoc[CUI Label Configuration] before this step —
 the IMA policy specifically targets the `setrans.conf` file installed there.
 
 == Step 1: Configure the Kernel for Boot

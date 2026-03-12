@@ -1,6 +1,12 @@
-* xref:index.adoc[UMRS Tools]
-** xref:umrs-ls.adoc[umrs-ls — High-Assurance Directory Listing]
+.xref:index.adoc[UMRS Tools]
+[collapsible]
+* xref:umrs-ls.adoc[umrs-ls — High-Assurance Directory Listing]
 
 * Prototype Crates
 ** xref:umrs-logspace.adoc[umrs-logspace — Audit Trail and Logging]
 ** xref:umrs-state.adoc[umrs-state — System State Introspection]
+
+* Tool Operations
+** xref:umrs-tooling.adoc[UMRS tooling overview]
+** xref:umrs-tool-shred.adoc[umrs-tool-shred]
+** xref:umrs-tool-shred-usage.adoc[umrs-tool-shred usage]
