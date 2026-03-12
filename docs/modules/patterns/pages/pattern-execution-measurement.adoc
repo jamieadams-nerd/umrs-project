@@ -6,7 +6,8 @@
 // NIST 800-53 SA-11 — Developer Testing and Evaluation
 // NIST 800-53 AU-12 — Audit Record Generation
 
-== Overview
+== Why This Pattern Exists
+// Zone 1: concept — threat, consequence, control basis
 
 High-assurance patterns — TPI dual-path validation, provenance checks, integrity pipelines —
 impose some computational cost. That cost must be measurable. Without measurement, there is
@@ -24,7 +25,7 @@ This is not performance optimization. It is a discipline that keeps pattern cost
 and traceable, which supports both developer decision-making and audit traceability
 (NIST 800-53 SA-11).
 
-== The Threat
+=== The Threat
 
 Without timing instrumentation, a high-assurance pattern can silently regress. A change
 to a parsing function, a new library dependency, or a subtle algorithmic change may double
@@ -43,6 +44,7 @@ in contexts where the elapsed duration of a security operation must not be obser
 The `#[cfg(debug_assertions)]` gate eliminates both of those risks.
 
 == The Pattern
+// Zone 2: implementation — invariant, rule, code recipe
 
 The pattern has four elements:
 
@@ -107,6 +109,7 @@ as a value (for example, to display it or to store it in a result structure). Us
 inline `Instant::now()` / `.elapsed()` when timing is only logged and not carried forward.
 
 == In the UMRS Codebase
+// Zone 2 continued: types, traits, file paths
 
 === TPI in `KernelLockdown` (umrs-platform)
 

@@ -1,10 +1,190 @@
 = Cryptographic Policy Tiers
-:description: Algorithm policy tiers — Preferred, Approved, Acceptable, and Disallowed — with usage guidance for each category.
+:description: Algorithm policy tiers — Preferred, Approved, Baseline, and Disallowed — with usage guidance for each category.
 :toc: left
 :toclevels: 2
 
-UMRS applies a four-tier policy framework to cryptographic algorithm selection: Preferred, Approved, Acceptable, and Disallowed. This page defines each tier, lists algorithms by tier and category, and explains the constraints that determine tier placement.
+// NIST 800-53 SC-12 — Cryptographic key establishment and management
+// NIST 800-53 SC-13 — Cryptographic protection
+// NIST 800-53 IA-7 — Cryptographic module authentication
+// FIPS 140-3, SP 800-131A Rev.2
 
-// Placeholder — full content will be populated in Phase 3.
-// Source material: docs/new-stuff/crypto.md (policy tiers section)
-// Controls: NIST SP 800-53 SC-12, SC-13, IA-7
+UMRS applies a four-tier policy framework to cryptographic algorithm selection.
+Each tier carries specific usage constraints.
+New designs must justify any choice below Preferred.
+
+== Tier Definitions
+
+[cols="1,3", options="header"]
+|===
+| Tier | Meaning
+
+| *Preferred*
+| Use in all new high-assurance designs.
+Highest security margin, FIPS-validated, and aligned with current NSA guidance.
+
+| *Approved*
+| Acceptable for new designs; may have minor constraints.
+FIPS-validated but with a lower security margin or more limited use cases than Preferred.
+
+| *Baseline / Legacy*
+| Acceptable only for interoperability with existing systems that cannot be upgraded.
+Not for new designs.
+Requires documented justification when used.
+
+| *Disallowed*
+| Must not be used under any circumstances.
+Deprecated, broken, or known-weak.
+|===
+
+== Hash Functions
+
+[cols="2,1,1,2", options="header"]
+|===
+| Algorithm | Digest | Tier | Notes
+
+| SHA-512 | 512 bits | Preferred | Highest security margin
+| SHA-384 | 384 bits | Preferred | Government systems; NSA Suite B
+| SHA-256 | 256 bits | Approved | TLS, software verification
+| SHA3-512 | 512 bits | Approved | Sponge-based; alternative to SHA-2
+| SHA3-256 | 256 bits | Approved | Alternative to SHA-2
+| SHA-224 | 224 bits | Baseline | Legacy compatibility only
+| SHA-1 | 160 bits | Disallowed | Cryptographically broken for signatures
+| MD5 | 128 bits | Disallowed | Cryptographically broken
+|===
+
+== Symmetric Encryption
+
+[cols="1,1,1,2", options="header"]
+|===
+| Algorithm | Key size | Tier | Notes
+
+| AES | 256 bits | Preferred | Highest security margin
+| AES | 192 bits | Approved | Rarely used in practice
+| AES | 128 bits | Approved | Widely deployed baseline
+|===
+
+== AES Cipher Modes
+
+[cols="1,1,1,2", options="header"]
+|===
+| Mode | Property | Tier | Typical use
+
+| GCM | Authenticated encryption | Preferred | TLS, network encryption, file encryption
+| CCM | Authenticated encryption | Approved | Embedded environments
+| XTS | Disk encryption | Preferred (storage) | Full-disk encryption (dm-crypt)
+| CTR | Confidentiality only | Approved | Streaming encryption
+| CBC | Confidentiality only | Baseline | Older protocols; no integrity protection
+| CFB / OFB | Confidentiality only | Baseline | Rare; legacy only
+| ECB | None | Disallowed | Reveals block patterns; never acceptable
+|===
+
+== Message Authentication
+
+[cols="2,1,1,2", options="header"]
+|===
+| Algorithm | Based on | Tier | Typical use
+
+| HMAC-SHA-512 | SHA-512 | Preferred | High-assurance messaging, audit chain
+| HMAC-SHA-384 | SHA-384 | Preferred | Government systems
+| HMAC-SHA-256 | SHA-256 | Approved | TLS, APIs
+| CMAC-AES | AES | Approved | Embedded systems, hardware token
+|===
+
+== Digital Signatures
+
+[cols="2,1,1,2", options="header"]
+|===
+| Algorithm | Key / security | Tier | Notes
+
+| ML-DSA-87 | PQ lattice, ~256-bit | Preferred (PQ) | High-assurance post-quantum
+| ML-DSA-65 | PQ lattice, ~192-bit | Approved (PQ) | Post-quantum baseline
+| ECDSA P-384 | ~192-bit | Preferred (classical) | NSA Suite B; government systems
+| ECDSA P-256 | ~128-bit | Approved (classical) | Widely deployed
+| RSA-4096 | ~200-bit | Approved | High-assurance RSA
+| RSA-3072 | ~128-bit | Approved | Baseline RSA
+| SLH-DSA | PQ hash-based | Approved (PQ) | Conservative PQ; large signatures
+| RSA-2048 | ~112-bit | Baseline | Legacy interoperability only
+|===
+
+NOTE: ML-DSA is expected to become the primary post-quantum signature algorithm in most UMRS deployments.
+SLH-DSA is appropriate where hash-based security assumptions are preferred over lattice-based assumptions.
+
+== Key Agreement and Key Encapsulation
+
+[cols="2,1,1,2", options="header"]
+|===
+| Algorithm | Type | Tier | Notes
+
+| ML-KEM-1024 | PQ lattice | Preferred (PQ) | High-assurance post-quantum KEM
+| ML-KEM-768 | PQ lattice | Approved (PQ) | Post-quantum baseline
+| ECDH P-384 | Classical | Preferred (classical) | NSA Suite B
+| ECDH P-256 | Classical | Approved (classical) | Widely deployed
+| DH 3072 | Classical | Approved | Approved baseline
+| DH 2048 | Classical | Baseline | Legacy interoperability only
+|===
+
+== Key Derivation Functions
+
+[cols="2,1,1,2", options="header"]
+|===
+| Algorithm | Based on | Tier | Typical use
+
+| HKDF-SHA-384 | SHA-384 | Preferred | Key material derivation
+| HKDF-SHA-256 | SHA-256 | Approved | Widely deployed
+| PBKDF2-SHA-256 | SHA-256 | Approved | Password-based key derivation
+| NIST Counter KDF | Various | Approved | Approved KDF for DRBG-derived keys
+|===
+
+== Random Number Generation
+
+[cols="1,1,2", options="header"]
+|===
+| Generator | Tier | Notes
+
+| OS CSPRNG (`getrandom(2)`) | Preferred | Platform interface; backed by kernel DRBG
+| Hash_DRBG | Approved | NIST SP 800-90A
+| HMAC_DRBG | Approved | NIST SP 800-90A; preferred DRBG for direct use
+| CTR_DRBG (AES-256) | Approved | NIST SP 800-90A
+|===
+
+== Summary: Disallowed Algorithms
+
+These algorithms must not appear in any UMRS component:
+
+* SHA-1 (for digital signatures)
+* MD5 (for any purpose)
+* DES / 3DES
+* RC4
+* AES-ECB mode
+* RSA key sizes below 2048 bits
+* Elliptic curves not in the NIST-approved list (no Brainpool, no custom curves)
+
+== Control Mapping
+
+[cols="1,3", options="header"]
+|===
+| Control | Satisfaction
+
+| NIST 800-53 SC-13
+| Cryptographic protection.
+Use of Preferred-tier algorithms satisfies SC-13 for high-impact systems.
+
+| NIST 800-53 SC-12
+| Key establishment and management.
+ML-KEM-1024 and ECDH P-384 are the approved key establishment algorithms.
+
+| NIST 800-53 IA-7
+| Cryptographic module authentication.
+All implementations must use FIPS 140-2/3 validated modules.
+
+| SP 800-131A Rev.2
+| Transitions between allowed and disallowed algorithms.
+Baseline algorithms require documented justification and a transition plan.
+|===
+
+== See Also
+
+* xref:fips-cryptography-cheat-sheet.adoc[FIPS Cryptography Quick Reference] — condensed algorithm table
+* xref:crypto-post-quantum.adoc[Post-Quantum Cryptography] — PQC algorithm detail
+* xref:key-recommendation-list.adoc[Key Recommendations]
+* xref:glossary:index.adoc[Glossary] — cryptographic term definitions

@@ -7,7 +7,8 @@
 // NIST 800-53 AU-6 — Audit Record Review, Analysis, and Reporting
 // NIST 800-53 SI-12 — Information Management and Retention
 
-== Overview
+== Why This Pattern Exists
+// Zone 1: concept — threat, consequence, control basis
 
 Loud Failure is the discipline of making every security-relevant error immediately visible
 and auditable. When a security check fires — a TPI disagreement, a failed integrity
@@ -22,7 +23,7 @@ their goal without triggering any observable event.
 Loud Failure ensures that security events are visible to operators and auditors, consistent
 with NSA RTB RAIN and NIST 800-53 AU-3 (audit record content requirements).
 
-== The Threat
+=== The Threat
 
 A security check fires but the error disappears. This happens when:
 
@@ -43,6 +44,7 @@ In a system handling CUI under MLS policy, a silent TPI failure or a silent inte
 check failure is a gap in the audit trail that an auditor will flag as a deficiency.
 
 == The Pattern
+// Zone 2: implementation — invariant, rule, code recipe
 
 Every `Err` return on a security code path is preceded by `log::error!`. The rules are:
 
@@ -59,6 +61,7 @@ Every `Err` return on a security code path is preceded by `log::error!`. The rul
   able to understand what check fired and why.
 
 == In the UMRS Codebase
+// Zone 2 continued: types, traits, file paths
 
 The TPI gate in `umrs-selinux/src/xattrs.rs` logs both parse results before returning.
 The `CRITICAL:` prefix makes the event grep-able in audit exports:
@@ -177,3 +180,5 @@ monitoring systems have something to act on.
 * xref:pattern-error-discipline.adoc[Error Information Discipline] — what goes in the
   log vs. what goes in the caller-visible error string
 * xref:devel:high-assurance-patterns.adoc[High-Assurance Pattern Index]
+* xref:security-concepts:reference-monitor.adoc[Reference Monitor Design in UMRS] — the
+  non-bypassability and tamper-resistance properties that make observable failure essential

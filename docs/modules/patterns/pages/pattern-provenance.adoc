@@ -6,7 +6,13 @@
 // NSA RTB VNSSA — Provenance verification before trust; no implicit trust of named paths
 // NIST 800-218 SSDF PW.4 — Implement secure coding practices
 
-== Overview
+NOTE: This pattern is required by *NSA RTB VNSSA*.
+Any read from `/proc/` or `/sys/fs/selinux/` without a prior magic-number check is an
+implicit trust of a named path — which an attacker can redirect via bind-mount or overlay.
+Satisfies NIST 800-53 SI-7.
+
+== Why This Pattern Exists
+// Zone 1: concept — threat, consequence, control basis
 
 Provenance Verification answers the question: before I read data from a path that is
 supposed to be a kernel interface, how do I know the kernel is actually on the other
@@ -26,7 +32,7 @@ Provenance Verification satisfies NIST 800-53 SI-7 (Software and Information Int
 which requires organizations to verify the integrity of data from sources that could be
 tampered with before that data influences security decisions.
 
-== The Threat
+=== The Threat
 
 Any process with mount privileges — or a container runtime with misconfigured namespaces
 — can bind-mount an attacker-controlled directory over `/sys/fs/selinux/` or over a
@@ -52,6 +58,7 @@ the `open()`. The check and the open must be performed as a unit, anchored to th
 descriptor.
 
 == The Pattern
+// Zone 2: implementation — invariant, rule, code recipe
 
 [mermaid]
 ....
@@ -96,6 +103,7 @@ receives a generic `PermissionDenied` with a fixed message. See
 xref:pattern-error-discipline.adoc[Error Information Discipline].
 
 == In the UMRS Codebase
+// Zone 2 continued: types, traits, file paths
 
 The provenance check lives in `umrs-platform/src/kattrs/`. `SecureReader::execute_read()`
 opens the file first, then checks magic on the open descriptor:
@@ -209,3 +217,5 @@ confirm provenance without leaving a race window.
 * xref:pattern-error-discipline.adoc[Error Information Discipline] — why the path goes
   to the log and not to the caller-visible error string
 * xref:devel:high-assurance-patterns.adoc[High-Assurance Pattern Index]
+* xref:security-concepts:integrity-and-provenance.adoc[Integrity and Provenance in UMRS] —
+  the provenance concept this pattern enforces at the kernel pseudo-filesystem layer

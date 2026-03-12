@@ -14,7 +14,8 @@ MACs, HMACs, password hashes, or credentials in a path that is observable to
 an attacker.
 ====
 
-== Overview
+== Why This Pattern Exists
+// Zone 1: concept — threat, consequence, control basis
 
 A timing oracle is a side channel: an attacker can infer information about a secret
 value by measuring how long a comparison takes. Standard equality on byte slices exits
@@ -26,7 +27,7 @@ Constant-time comparison defeats timing oracles by performing the comparison in 
 number of steps regardless of where the inputs first differ. The `subtle` crate provides
 `ConstantTimeEq`, which is specifically designed and audited for this purpose.
 
-== The Threat
+=== The Threat
 
 Consider a token verification endpoint that compares a user-supplied token against a
 stored value using standard `==`:
@@ -55,6 +56,7 @@ Standard `==` on `&[u8]`, `String`, `Vec<u8>`, or any slice type uses early-exit
 comparison. It is not safe for any value where an attacker can observe response timing.
 
 == The Pattern
+// Zone 2: implementation — invariant, rule, code recipe
 
 Use the `subtle` crate's `ConstantTimeEq` trait for any comparison of security-relevant
 byte sequences:

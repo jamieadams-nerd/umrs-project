@@ -6,7 +6,13 @@
 // NIST 800-53 AC-3 — Access Enforcement
 // NIST 800-218 SSDF PW.4.3 — Memory safety and structural safety guarantees
 
-== Overview
+NOTE: This pattern is required by *NSA RTB RAIN* (non-bypassable, always-invoked reference monitor).
+Enforcement must be structurally guaranteed by the type system and module boundaries —
+policy statements and code review are not sufficient substitutes.
+Satisfies NIST 800-53 AC-3.
+
+== Why This Pattern Exists
+// Zone 1: concept — threat, consequence, control basis
 
 Non-Bypassability is the property of a reference monitor that cannot be circumvented,
 disabled, or skipped — whether accidentally or intentionally. NSA RTB's RAIN model
@@ -23,7 +29,7 @@ A security check that is optional — that a caller can skip by passing a raw va
 calling an internal constructor, or using a different code path — does not satisfy RAIN
 no matter how correct the check itself is.
 
-== The Threat
+=== The Threat
 
 Optional security checks fail whenever a caller forgets to call them, does not know
 they exist, or decides to bypass them for performance. This is not a theoretical risk:
@@ -44,6 +50,7 @@ In each case, the security property is present in the codebase but not enforced 
 that caller. The system is selectively secure — which means it is not reliably secure.
 
 == The Pattern
+// Zone 2: implementation — invariant, rule, code recipe
 
 Structural enforcement uses the type system and module visibility to make the bypass
 impossible, not just inadvisable:
@@ -64,6 +71,7 @@ impossible, not just inadvisable:
   scope. Public API surfaces expose only the validated interface.
 
 == In the UMRS Codebase
+// Zone 2 continued: types, traits, file paths
 
 `CategorySet` in `umrs-selinux/src/category.rs` has a private `bits` field. The only
 construction paths are `new()` and `full()`, both of which produce structurally valid
@@ -180,3 +188,5 @@ will skip it, under time pressure or misunderstanding, and the omission will be 
 * xref:pattern-tpi.adoc[Two-Path Independence] — TPI gates are examples of non-bypassable
   validation: there is no way to obtain a `SecurityContext` without passing through them
 * xref:devel:high-assurance-patterns.adoc[High-Assurance Pattern Index]
+* xref:security-concepts:rtb-vnssa.adoc[NSA Raise the Bar (RTB) and the RAIN Principle] —
+  the framework that defines non-bypassability as a first-class reference monitor property

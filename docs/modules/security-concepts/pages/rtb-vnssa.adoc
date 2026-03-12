@@ -120,3 +120,13 @@ NIST controls:
 | `AC-4` (Information Flow Enforcement) | `CategorySet` bitmasks for lattice math provide deterministic, classification-aware access controls.
 | `SI-7` (Software Integrity) | Redundant parsing and inode anchoring protect the integrity of the security decision-making software.
 |===
+
+== See Also
+
+* xref:reference-monitor.adoc[Reference Monitor Design in UMRS]
+* xref:patterns:pattern-non-bypassability.adoc[Non-Bypassability (RAIN)] — the direct
+  implementation of the RAIN non-bypassability requirement in the UMRS codebase
+* xref:patterns:pattern-tpi.adoc[Two-Path Independence (TPI)] — independent verification
+  as mandated by RTB Redundancy
+* xref:patterns:pattern-provenance.adoc[Provenance Verification] — NSA RTB VNSSA
+  requirement applied to kernel pseudo-filesystem reads

@@ -1,21 +1,150 @@
-## Category Set
+= Category Set
+:description: SELinux category set — compartment bitmask model, dominance math, and UMRS implementation.
+:toc: left
 
-In the official SELinux vernacular, the Level field (the 4th part of the
-context) is used for Multi-Level Security (MLS) and Multi-Category Security
-(MCS). It is essentially the "clearance level" of the system
+// NIST 800-53 AC-4 — Information Flow Enforcement
+// NSA RTB: Deterministic Execution — Fixed-size, stack-allocated bitmask
 
-Categories provide non-hierarchical, horizontal isolation (grouping).
-Format: Appended to the sensitivity, like s0:c0,c100.
-How it works: Even if two processes have the same sensitivity (s0), they cannot see each other's data unless their categories match or overlap.
-Common Usage (MCS): This is how Docker or Virtual Machines are isolated. Each container is assigned a random, unique category (e.g., s0:c12,c45). Even if a container escapes to the host, it cannot access the files of another container because the categories don't match.
+The category set is the compartment component of an SELinux security context.
+It provides horizontal isolation within a sensitivity level.
+Two subjects at the same sensitivity level cannot access each other's objects
+unless their category sets satisfy the dominance requirement.
 
-Summary of the "Level" Field
+Categories are also the mechanism for CUI compartment enforcement in UMRS.
 
-Component	Example	Purpose
-Sensitivity	s0	Vertical hierarchy (Clearance)
-Category	c102	Horizontal isolation (Compartments)
+// TODO: Expand this page when SELinux reference pages are more thoroughly documented.
+// The lattice dominance model details and bit-ordering conventions for serialization
+// stability will be covered here. Review deferred to Phase 5. (User instruction 2026-03-12)
 
-> Analogy: 
-> If the Sensitivity is the floor number in an office building (Level
-> 1, Level 2), the Category is the specific room number on that floor. You need
-> to be on the right floor and have the key to that specific room to get in.
+== Format
+
+Categories are written with a `c` prefix followed by a numeric ordinal:
+
+```
+c0   c1   c2   ...   c1023
+```
+
+Category sets appear after the sensitivity level, separated by a colon.
+Multiple categories are comma-separated.
+Ranges use a period as the range separator:
+
+```
+s2:c0,c4          -- two categories: 0 and 4
+s2:c0.c15         -- range: categories 0 through 15 (all 16 bits)
+s0                -- no categories (empty set — unclassified baseline)
+```
+
+== Dominance Rule
+
+Access requires the subject's category set to _dominate_ the object's category set.
+
+A subject's category set dominates an object's category set when the object's set is
+a subset of (or equal to) the subject's set.
+Formally: `(subject_categories & object_categories) == object_categories`.
+
+[cols="1,1,1", options="header"]
+|===
+| Subject | Object | Access permitted?
+
+| `s2:c0,c4`
+| `s2:c0`
+| Yes — object's `c0` is contained in subject's `{c0, c4}`
+
+| `s2:c0`
+| `s2:c0,c4`
+| No — object requires `c4`, which subject does not hold
+
+| `s2:c0,c4`
+| `s2:c0,c4`
+| Yes — sets are equal; subject dominates
+
+| `s2:c0`
+| `s2`
+| Yes — empty object set is dominated by any subject set
+|===
+
+The sensitivity level requirement must also be satisfied.
+Both conditions — sensitivity dominance and category dominance — must hold for access
+to be permitted (NIST 800-53 AC-4, Information Flow Enforcement).
+
+== UMRS Type Model
+
+UMRS models the category set as a distinct validated Rust type: `CategorySet`.
+
+=== Category (single value)
+
+`Category(u16)` — a single category identifier.
+
+* Valid range: `c0` through `c1023`
+* Maximum value: `MAX_CATEGORY = 1023`
+* Validation: input must start with `c`, remainder must be a valid decimal integer, value must fall within `0..=1023`
+
+=== CategorySet (bitmask)
+
+`CategorySet { bits: [u64; 16] }` — a 1024-bit dense bitmask.
+
+* 16 `u64` words — 64 bits per word × 16 words = 1024 bits total
+* Category `cN` maps to bit position `N` within the array
+* Stack-allocated — zero heap allocation
+
+[source,rust]
+----
+let mut set = CategorySet::new();   // empty set — SystemLow / unclassified baseline
+set.insert(Category::from_str("c0")?);
+set.insert(Category::from_str("c4")?);
+
+// Dominance check — subject.dominates(object)
+assert!(set.dominates(&object_set));
+----
+
+The `dominates()` method implements the lattice check:
+`(self.bits & other.bits) == other.bits` — word-by-word across all 16 `u64` words.
+
+=== Boundary constructors
+
+* `CategorySet::new()` — empty set; represents the unclassified baseline (SystemLow)
+* `CategorySet::full()` — all 1024 bits set; represents a subject cleared for all compartments (SystemHigh)
+
+=== Design deviation from the kernel
+
+The kernel SELinux implementation uses `ebitmap` — a sparse, linked-node structure
+designed to minimize kernel memory for large, sparse policy bitmaps.
+
+UMRS uses a dense 1024-bit fixed-size array for three reasons:
+
+. *Performance*: Dominance checks require no pointer traversal.
+. *Determinism*: Fixed size eliminates allocator influence on timing and layout.
+. *Simplicity*: The array fits on the stack; no heap allocations, no lifetime management.
+
+The semantic equivalence to the kernel `ebitmap` model is preserved:
+
+[cols="1,1", options="header"]
+|===
+| Kernel (`ebitmap`) | UMRS (`CategorySet`)
+
+| `ebitmap_set_bit()`
+| `CategorySet::insert()`
+
+| `ebitmap_get_bit()`
+| `CategorySet::contains()`
+
+| Dominance (MLS layer in `mls.c`)
+| `CategorySet::dominates()`
+|===
+
+=== Kernel source correspondence
+
+Kernel sources consulted:
+
+* `security/selinux/ss/ebitmap.c` — sparse bitmap structure and operations
+* `security/selinux/ss/ebitmap.h` — ebitmap type definitions
+* `security/selinux/ss/mls.c` — dominance logic
+
+No kernel source code has been copied or translated.
+
+== Related Reference Pages
+
+* xref:selinux/context.adoc[Security context] — the full five-component label
+* xref:selinux/sensitivity.adoc[Sensitivity levels] — the hierarchical component
+* xref:selinux/mcs.adoc[MCS overview] — Multi-Category Security usage model
+* xref:glossary:index.adoc#_category_set[Glossary: Category Set]

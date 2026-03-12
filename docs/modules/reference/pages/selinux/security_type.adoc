@@ -1,32 +1,142 @@
-In the SELinux vernacular, the Type is the "heavy lifter" of the security
-context. It is the primary attribute used for Type Enforcement (TE), which is
-the mechanism responsible for most access control decisions in the kernel.
-SELinux Project
+= SELinux Type
+:description: SELinux type identifier — Type Enforcement, domain vs. type distinction, and UMRS model.
+:toc: left
 
-What it Represents: The meaning of the Type changes depending on whether it is
-applied to a process or an object:
+// NIST 800-53 AC-3 — Access Enforcement
+// NIST 800-53 AC-4 — Information Flow Enforcement
+// NSA RTB RAIN — Non-bypassable, always-invoked reference monitor
+// Kernel sources: security/selinux/ss/policydb.c, security/selinux/include/security.h
 
-For Processes (Domains): When a type is applied to a process, it is called a
-Domain. It defines what that process is allowed to do. For example, a process
-with the httpd_t domain is allowed to listen on network ports.
+The SELinux type is the third component of a security context.
+It is the primary anchor for Type Enforcement (TE) — the mechanism that handles
+the majority of SELinux access control decisions in the kernel.
 
-For Objects (Files/Sockets): When applied to a file, it is simply called a
-Type. It defines the "category" of the data. For example, files labeled
-httpd_sys_content_t are designated as web content.
+Every allow or deny decision in SELinux TE is expressed as a relation between two types:
 
-How it Works (The "Sandboxing" Effect):
+```
+allow domain_A  object_type_B : object_class { permissions };
+```
 
-The policy contains rules that link these types together. A typical rule looks like:
+== Domain vs. Type
 
-> Allow httpd_t to read files of type httpd_sys_content_t.
+The term "type" applies to all SELinux principals.
+When the type is assigned to a running process, it is specifically called a *domain*.
 
-If a hacker compromises the web server (httpd_t), the Type prevents them from
-accessing your private SSH keys, because those keys are labeled with the
-ssh_home_t type—and the policy has no "allow" rule connecting those two types.
-Red Hat Documentation 
+[cols="1,1,3", options="header"]
+|===
+| Applied to | Term used | Meaning
 
-Key Takeaway: 
+| Running process
+| Domain
+| Defines what operations the process is permitted to perform.
+A process running in `httpd_t` is said to be _in the httpd_t domain_.
 
-While the User and Role provide a high-level framework, the Type is what
-actually isolates applications and protects your data on a granular, day-to-day
-basis.
+| File or object
+| Type
+| Defines the class of the data.
+Files labeled `httpd_sys_content_t` are designated web server content.
+|===
+
+The policy links domains to types:
+a process in `httpd_t` may read files of type `httpd_sys_content_t`,
+but not files of type `ssh_home_t` — unless policy explicitly permits it.
+This is the sandboxing effect of Type Enforcement.
+
+== Naming Convention
+
+SELinux type identifiers end with `_t`.
+Type identifiers may contain uppercase letters — real-world policy includes
+identifiers such as `NetworkManager_etc_t` sourced from third-party policy modules.
+
+[cols="1,3", options="header"]
+|===
+| Identifier | Description
+
+| `httpd_t`
+| Apache HTTP server process domain.
+Authorized to read `httpd_sys_content_t` files and listen on designated network ports.
+
+| `httpd_sys_content_t`
+| Files designated as web server content.
+Readable by processes in `httpd_t`.
+
+| `sshd_t`
+| SSH daemon process domain.
+
+| `var_log_t`
+| Log files under `/var/log/`.
+Read-write access governed by TE rules per domain.
+
+| `NetworkManager_etc_t`
+| NetworkManager configuration files.
+Mixed-case name from a distribution policy module.
+|===
+
+== UMRS Type Model
+
+UMRS models the SELinux type as a distinct validated Rust type: `SelinuxType`.
+
+[source,text]
+----
+SelinuxType(String)
+
+Valid identifiers: httpd_t, sshd_t, var_log_t, NetworkManager_etc_t
+MIN_TYPE_LEN: 3 bytes
+MAX_TYPE_LEN: 255 bytes
+----
+
+Validation rules enforced at construction time:
+
+* ASCII characters only
+* No whitespace
+* Character set: `[a-zA-Z0-9_]` — uppercase letters are permitted
+* Must end with `_t`
+* Stem (identifier minus the `_t` suffix) must be non-empty
+* Length within bounds: 3–255 bytes
+
+NOTE: Unlike SELinux user and role identifiers — which are lowercase only —
+type identifiers may begin with or contain uppercase letters.
+This is because real-world distribution policy modules (for example, NetworkManager)
+produce mixed-case type names.
+The character set matches the SELinux kernel policy source parser acceptance rules.
+
+A `SelinuxType` cannot be constructed with a malformed identifier.
+Construction succeeds and returns the typed value, or it fails and returns an error.
+
+[source,rust]
+----
+let t: SelinuxType = "httpd_t".parse()?;
+let nm: SelinuxType = "NetworkManager_etc_t".parse()?;
+
+// Invalid — wrong suffix
+let err = SelinuxType::new("httpd_r");
+assert!(err.is_err());
+----
+
+=== Kernel Source Correspondence
+
+Kernel and policy sources consulted:
+
+* `security/selinux/ss/policydb.c` — type symbol table handling
+* `security/selinux/include/security.h` — type and attribute structures
+* libselinux type and context interfaces
+
+No kernel source code has been copied or translated.
+
+=== Policy Bindings (not modeled in this type)
+
+This type models only the identifier primitive.
+The following are defined in policy, not in this type:
+
+* Domain execution contexts
+* Object labeling rules
+* Type transitions
+* Allow/deny TE rules
+* Type attribute associations
+
+== Related Reference Pages
+
+* xref:selinux/context.adoc[Security context] — the full five-component label
+* xref:selinux/role.adoc[SELinux role] — the role that authorizes a domain
+* xref:selinux/user.adoc[SELinux user] — the user identity component
+* xref:glossary:index.adoc#_security_context[Glossary: Security Context]

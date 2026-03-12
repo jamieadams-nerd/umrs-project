@@ -7,7 +7,8 @@
 // NIST 800-53 SC-28 — Protection of Information at Rest
 // NSA RTB RAIN — Non-Bypassability; separation of security-relevant execution paths
 
-== Overview
+== Why This Pattern Exists
+// Zone 1: concept — threat, consequence, control basis
 
 In a high-assurance tool, what data is collected, how it is stored, how it is read back,
 and how it is displayed are four distinct concerns. Layered Separation is the rule that
@@ -25,7 +26,7 @@ privileged processes or system services. The read path can be constrained to spe
 users or roles. The display layer, operating only on data passed to it, inherits no
 privileges from the layers below it.
 
-== The Threat
+=== The Threat
 
 When write-path and read-path logic are combined in a single function or module, several
 failure modes become possible:
@@ -46,6 +47,7 @@ triggered by a render call, or a state mutation on first access — these are th
 forms the problem takes in practice.
 
 == The Pattern
+// Zone 2: implementation — invariant, rule, code recipe
 
 [mermaid]
 ....
@@ -93,6 +95,7 @@ The key invariant: *data flows in one direction* — collection → storage → 
 No layer calls back into a layer above it.
 
 == In the UMRS Codebase
+// Zone 2 continued: types, traits, file paths
 
 === `umrs-state` — system posture state file
 
@@ -218,3 +221,5 @@ collection call is a violation of the pattern and a privilege escalation risk.
 * xref:pattern-error-discipline.adoc[Error Information Discipline] — errors from the read
   layer must not carry raw storage content into the display layer
 * xref:devel:high-assurance-patterns.adoc[High-Assurance Coding Patterns]
+* xref:security-concepts:reference-monitor.adoc[Reference Monitor Design in UMRS] — the
+  isolation principle that layered separation enforces at the software architecture level

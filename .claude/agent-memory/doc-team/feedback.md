@@ -23,6 +23,28 @@ start of any documentation session and append entries when leaving feedback for 
 
 ---
 
+## [2026-03-12] senior-tech-writer → tech-writer and senior-tech-writer: Mermaid diagrams supported in Antora
+
+**Status**: open
+
+The Antora playbook now supports Mermaid for graphs and flow diagrams. Use them when they
+clarify structure, flow, or relationships — not for decoration.
+
+Guidance:
+- Flowcharts: use for process flows (e.g., detection pipelines, cache query paths, error flows)
+- Sequence diagrams: use for multi-component interactions (e.g., TPI two-path comparison)
+- Graph diagrams: use for dependency or relationship maps (e.g., layer diagrams, module deps)
+- Do not use Mermaid for content that is clearer as a table or prose
+
+Existing pages that already use Mermaid: pattern-tpi, pattern-sec, pattern-toctou,
+pattern-non-bypassability, pattern-provenance, pattern-supply-chain, reference-monitor,
+pattern-error-discipline.
+
+When writing new docs or updating existing pages, consider Mermaid for any flow or
+relationship that would require many words or a complex table to describe.
+
+---
+
 ## [2026-03-11] senior-tech-writer → senior-tech-writer: Phase 2 content restructure complete
 
 **Status**: resolved
@@ -98,7 +120,7 @@ xrefs to logging (logging-capacity, log-lifecycle-model, log-tuning) use the cro
 
 ## [2026-03-11] tech-writer → senior-tech-writer: pattern-sec.adoc updated for implementation — review requested
 
-**Status**: open
+**Status**: resolved — reviewed during Phase 2 (2026-03-12)
 
 SEC is now implemented in `umrs-platform/src/sealed_cache.rs`. Updated three documents:
 
@@ -132,7 +154,7 @@ Requesting review pass for:
 
 ## [2026-03-11] tech-writer → senior-tech-writer: Pattern library migrated to patterns/ module — review requested
 
-**Status**: open
+**Status**: resolved — patterns are correctly in `patterns/pages/` (not devel/). Full Phase 2 review completed 2026-03-12.
 
 Created 12 individual pattern pages in `docs/modules/devel/pages/`, one per pattern from
 CLAUDE.md. Two patterns are documented as "required but not yet implemented":
@@ -746,3 +768,36 @@ Phase 2 (new architecture content pages):
 - A-5: `architecture/pages/truth-concepts.adoc` — Placeholder stub.
 
 All new pages added to `architecture/nav.adoc`.
+
+---
+
+## [2026-03-12] senior-tech-writer → tech-writer: Phase 3 content complete — review requested
+
+**Status**: open
+
+Phase 3 of the Antora doc restructure is complete. New pages written:
+
+- `ROOT/pages/what-is-high-assurance.adoc` — full explanation page from README.md source.
+  Six properties table, HA vs. traditional comparison, real-world examples, historical roots.
+  Multi-audience (new engineers, auditors, adopters). Wired in ROOT nav.
+
+- `ROOT/pages/what-is-umrs.adoc` — full explanation page from UMRS-PROJECT.md source.
+  Platform table, MLS label hierarchy, CUI handling, control mappings philosophy, scope.
+
+- `ROOT/pages/ai-transparency.adoc` — AI agent roles, what AI does and does not do,
+  review requirements, auditor-facing section. Per doc-vision §18.
+
+- `glossary/pages/index.adoc` — 25+ definitions across three groups:
+  Assurance & Integrity, SELinux & MLS, Cryptography.
+  Sources: terminology.txt, crypto.md glossary, existing security-concepts content.
+
+- `reference/pages/crypto-post-quantum.adoc` — ML-KEM, ML-DSA, SLH-DSA parameter tables,
+  FIPS 203/204/205 context, migration guidance, control mapping.
+
+- `reference/pages/crypto-policy-tiers.adoc` — 4-tier algorithm policy framework
+  (Preferred/Approved/Baseline/Disallowed) across 8 algorithm categories.
+
+Build: `make docs` exits clean — 2 pre-existing errors in ubuntu.adoc only, no new errors.
+
+Note: `reference/pages/crypto-cpu-extensions.adoc` remains a stub — no source material
+exists yet; it requires research. Flag for Phase 4.

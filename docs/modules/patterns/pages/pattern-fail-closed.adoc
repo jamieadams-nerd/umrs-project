@@ -6,7 +6,13 @@
 // NIST 800-53 AC-3 — Access Enforcement
 // NIST 800-53 SI-10 — Information Input Validation
 
-== Overview
+NOTE: This pattern is required by *NSA RTB (Fail Secure)*.
+A system that proceeds with degraded, ambiguous, or unverified input on error does not
+satisfy the fail-secure requirement regardless of what the policy document states.
+Satisfies NIST 800-53 AC-3.
+
+== Why This Pattern Exists
+// Zone 1: concept — threat, consequence, control basis
 
 Fail-Closed means that when a security check encounters any ambiguity, error, or
 unexpected condition, the response is to deny the operation and return an error — never
@@ -21,7 +27,7 @@ Fail-Closed is the required behavior at every gate in this codebase: TPI disagre
 parse failures, filesystem integrity checks, and type construction errors all follow
 the same rule — return `Err`, never `Ok` with compromised content.
 
-== The Threat
+=== The Threat
 
 The temptation when two independent parse paths disagree is to pick one, log a warning,
 and continue. The reasoning sounds plausible: "The data is probably fine; this is just a
@@ -43,6 +49,7 @@ could not be validated at construction must not be created with a default or cla
 value. The caller must handle the error. Defaulting silently produces an incorrect label.
 
 == The Pattern
+// Zone 2: implementation — invariant, rule, code recipe
 
 Any error, ambiguity, or disagreement on a security path returns `Err` immediately:
 
@@ -60,6 +67,7 @@ record without embedding sensitive data in the error string. See
 xref:pattern-error-discipline.adoc[Error Information Discipline].
 
 == In the UMRS Codebase
+// Zone 2 continued: types, traits, file paths
 
 The TPI gate in `umrs-selinux/src/xattrs.rs` is the primary Fail-Closed site.
 Disagreement between parse paths returns `PermissionDenied`, not the result from either
@@ -181,3 +189,5 @@ adversary who can induce that condition gains access the policy would have denie
 * xref:pattern-loud-failure.adoc[Loud Failure] — every Fail-Closed return must be logged
   at `error!` before returning
 * xref:devel:high-assurance-patterns.adoc[High-Assurance Pattern Index]
+* xref:security-concepts:reference-monitor.adoc[Reference Monitor Design in UMRS] — the
+  fail-secure property is a defining requirement of a reference monitor

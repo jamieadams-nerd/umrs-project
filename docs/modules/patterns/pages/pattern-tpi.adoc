@@ -6,7 +6,13 @@
 // NIST 800-218 SSDF PW.4.1 — Validate all inputs
 // NIST 800-53 SI-10 — Information Input Validation
 
-== Overview
+NOTE: This pattern is mandated by *NSA RTB Redundancy*.
+It is a required design constraint on every parse path that produces values used in
+authorization or classification decisions — not a quality-of-life improvement.
+Satisfies NIST 800-53 SI-10.
+
+== Why This Pattern Exists
+// Zone 1: concept — threat, consequence, control basis
 
 Two-Path Independence (TPI) is a parsing strategy for security-relevant input: the same
 input is parsed by two completely independent implementations, and the results are compared.
@@ -21,7 +27,7 @@ same direction.
 This pattern is mandated by NSA RTB's Redundancy requirement and aligns with NIST 800-218
 SSDF PW.4.1 (validate all inputs).
 
-== The Threat
+=== The Threat
 
 A single parser has a single point of failure. An off-by-one in a boundary check, an
 ambiguous grammar rule, or an edge case in whitespace handling can produce a valid-looking
@@ -37,6 +43,7 @@ failure that produces an incorrect label is a privilege escalation. There is no 
 margin for ambiguity.
 
 == The Pattern
+// Zone 2: implementation — invariant, rule, code recipe
 
 [mermaid]
 ....
@@ -81,6 +88,7 @@ logic paths, different failure modes. Two parsers that share implementation deta
 independent and do not satisfy TPI.
 
 == In the UMRS Codebase
+// Zone 2 continued: types, traits, file paths
 
 `SecureXattrReader::read_context()` in `umrs-selinux/src/xattrs.rs` implements TPI for
 SELinux security context parsing. Path A uses the `nom` combinator defined in `context.rs`;
@@ -179,3 +187,5 @@ to share the same flaw in the same direction. Any disagreement is treated as a
 * xref:devel:nom-parser.adoc[The nom parser combinator] — why `nom` is Path A and what
   properties make it suitable for security-critical parsing
 * xref:devel:high-assurance-patterns.adoc[High-Assurance Pattern Index] — full pattern listing
+* xref:security-concepts:reference-monitor.adoc[Reference Monitor Design in UMRS] — the
+  architectural context that mandates independent verification of security-critical data

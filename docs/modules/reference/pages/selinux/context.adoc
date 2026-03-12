@@ -1,130 +1,141 @@
+= Security Context
+:toc: left
+:description: The five-component SELinux security context — field definitions, MLS format, and UMRS type model.
 
-## Security Context 
+// NIST 800-53 AC-4 — Information Flow Enforcement
+// NIST 800-53 AC-3 — Access Enforcement
+// NSA RTB RAIN — Non-bypassable, always-invoked reference monitor
 
-In the official SELinux vernacular, a Security Context is most commonly
-referred to as a Security Label (or simply a Label).
+A security context is the structured label that SELinux assigns to every subject (process)
+and object (file, socket, IPC resource) on the system.
+The kernel's reference monitor compares the security context of the subject against
+the security context of the object when making every access decision.
 
-In SELinux, a Security Context (or label) is a string typically divided by
-colons into four distinct fields: user:role:type:level. Each field serves a
-specific purpose in the kernel's access control decisions: A Security Context
-represents the canonical SELinux label format:
+Without a security context, SELinux has no identity to enforce policy against.
 
-``` user:role:type[:level]
+NOTE: "Security label" appears widely as an informal synonym for security context.
+In UMRS documentation and code, _security context_ is the precise, preferred term.
+See xref:glossary:index.adoc#_security_label[Glossary: Security Label].
+
+== Field Structure
+
+A security context has five components, separated by colons:
+
+```
+user : role : type : sensitivity_level : category_set
 ```
 
-* User The SELinux User is a persistent identity defined in the policy, which
-  is separate from the standard Linux UID found in /etc/passwd. 
-  * Purpose: It maps Linux users to specific SELinux privileges.
-  * Examples: unconfined_u (default for human users) or system_u (default for
-    system services).
-  * Convention: Names usually end with _u. 
-* Role The Role is part of the Role-Based Access Control (RBAC) model. It acts
-  as an intermediary layer between the user and the types they can access. 
-  * Purpose: It defines which "domains" (process types) a user is authorized to
-    enter.
-  * Examples: object_r is used as a placeholder for files (which don't have
-    active roles), while sysadm_r or staff_r are used for processes.
-  * Convention: Names usually end with _r. 
-* Type The Type is the most critical field for the Type Enforcement (TE) model,
-  which handles the majority of SELinux's daily work. 
-  * Purpose: It defines a domain for processes and a type for files. The policy
-  specifically allows interactions between types (e.g., the httpd_t domain can
-  read the httpd_sys_content_t type).
-  * Convention: Names usually end with _t. 
-* Level (Optional) The Level is used for Multi-Level Security (MLS) or
-  Multi-Category Security (MCS). 
-  * Purpose: It consists of a sensitivity level (like s0) and optional
-    categories (like c0, c1023). This is often used to isolate similar
-    processes, such as keeping two separate virtual machines from seeing each
-    other's data. 
-  * Example: s0:c0.c1023 represents a base sensitivity with access to all categories.
+Example (MLS context):
 
-## Terminology
-
-> NOTE:
-> While "Security Context" is the formal term used in technical documentation and
-> APIs, "Labeling" is the active term used for the process of applying these
-> contexts to system resources. 
-
-There are some key distinctions in the vernavular which often cause confusion.
-Depending on what the context is applied to, specialized terms are often used:
-- LABEL: The general term for a security context assigned to **any object
-  (files, sockets, etc.) or process**.
-- DOMAIN: Specifically refers to the security context of a **process**. When a
-  process is running, you say it is running in a specific "domain" (e.g., the
-  httpd_t domain).
-- TYPE: While technically just one component of the context (the third field,
-  e.g., user_home_t), "Type" is often used interchangeably with "Label" or
-  "Context" in casual conversation because it is the most critical part for
-  Type Enforcement (TE).
-
-## UMRS Security Context Module
-
-The Security Context is a fundamental building block of SELinux. Without it, the kernel has no "identity" to reference when checking permissions.
-
-Here is why it is the core of the entire system:
-
-**Atomic Identity:** The context is the singular label that transforms a generic file or process into an object the kernel recognizes. SELinux doesn't care about "filenames" or "Process IDs"; it only cares about the context attached to them.
-
-**The Key to the Policy:** Think of the SELinux Policy as a massive "If/Then" rulebook. The Security Context is the subject and object of every single rule. For example: "Allow type A to read type B." Without the labels, the rulebook has nothing to point to.
-
-**Enforcement Hook:** Access decisions are made by the Security Server in the kernel. When a process tries to access a file, the kernel fetches the contexts of both, hands them to the Security Server, and asks: "Does the policy allow these two labels to interact?" SELinux Project
-
-This source code module defines the strongly-typed `SecurityContext` structure used
-throughout the UMRS SELinux userland modeling layer.     
-
-This implementation intentionally models the structural components as discrete
-typed fields rather than an unstructured string. This supports high-assurance
-validation, deterministic serialization, and future MLS expansion without
-redesign.      
-
-### Constructing
-
-A new SecurityContext can be created by providing the user, role, and type. For example, 
-
-```rust
-use std::str::FromStr;
-use umrs_selinux::context::SecurityContext;
-use umrs_selinux::user::SelinuxUser;
-use umrs_selinux::role::SelinuxRole;
-use umrs_selinux::type_id::SelinuxType;
-
-let user = SelinuxUser::from_str("system_u")?;
-let role = SelinuxRole::from_str("system_r")?;
-let security_type = SelinuxType::from_str("sshd_t")?;
-
-let ctx = SecurityContext::new(user, role, security_type);
-
-println!("Context: {}", ctx);
+```
+staff_u:staff_r:staff_t:s2:c0,c4
 ```
 
-A security context can also be constructed from a string. For example:
+Example (targeted policy, no MLS level):
 
-```rust
-let parsed: SecurityContext = "system_u:system_r:sshd_t".parse()?;
-println!("Parsed: {}", parsed);
+```
+system_u:system_r:httpd_t:s0
 ```
 
-### Errors
-The following parsing errors can be produced:
-- InvalidFormat - Context string did not contain the required 3 fields. 
-- InvalidUser - User field failed validation.                                                               
-- InvalidRole - Role field failed validation
-- InvalidType - Type field failed validation.
+In MLS deployments, all five components are present.
+In targeted policy deployments, the sensitivity level is `s0` and the category set
+is typically absent.
 
-### Display
-Canonical string serialization in standard SELinux format are provided as shown in the 
-earlier example.
+== Field Definitions
 
-```rust                                                                                             
-let parsed: SecurityContext = "system_u:system_r:sshd_t".parse()?;                                  
-println!("Parsed: {}", parsed);                                                                     
-```
+=== User
 
+The SELinux user is a persistent identity defined in the policy.
+It is separate from the POSIX UID in `/etc/passwd`.
 
+* Maps Linux users to specific SELinux privileges
+* Controls which roles the identity is permitted to enter
+* Names conventionally end with `_u`
 
+Examples: `unconfined_u` (default for interactive users), `system_u` (system services),
+`staff_u` (confined staff users).
 
+=== Role
 
+The role is part of the Role-Based Access Control (RBAC) layer.
+It acts as an intermediate between the user and the types the user can access.
 
+* Defines which process domains (types) the user can enter
+* Names conventionally end with `_r`
 
+Examples: `staff_r` (confined staff), `sysadm_r` (system administrator),
+`object_r` (placeholder for files, which do not have active roles).
 
+=== Type
+
+The type field is the primary anchor for Type Enforcement (TE) — the mechanism that
+handles the majority of SELinux access decisions.
+
+* Defines a _domain_ for processes and a _type_ for files and objects
+* Policy rules are expressed as: "Allow domain A to perform operation X on type B"
+* Names conventionally end with `_t`
+
+Examples: `httpd_t` (Apache HTTP server domain), `httpd_sys_content_t` (files the
+HTTP server may read), `sshd_t` (SSH daemon domain).
+
+NOTE: "Domain" specifically refers to the type of a running process.
+"Type" is the general term.
+When a process is running with `httpd_t`, it is said to be running _in the httpd_t domain_.
+
+=== Sensitivity Level
+
+The sensitivity level is the hierarchical component of the MLS label.
+Valid range: `s0` (lowest) through `s15` (highest) — exact hierarchy is policy-defined.
+
+In UMRS, the sensitivity levels correspond to the unclassified data classification
+hierarchy (GENERAL, PUBLIC, U-CONTROLLED).
+
+Bell–LaPadula rules apply:
+
+* *No-read-up*: A process at `s2` cannot read objects labeled `s3` or higher
+* *No-write-down*: A process at `s2` cannot write to objects labeled `s1` or lower
+
+See xref:selinux/sensitivity.adoc[Sensitivity levels] for the UMRS level definitions.
+
+=== Category Set
+
+The category set is a bitmask representing compartment membership within a sensitivity level.
+A subject's category set must be a superset of the object's category set for access to be permitted,
+in addition to meeting the sensitivity level requirement.
+
+In UMRS, `CategorySet` is a 1024-bit `[u64; 16]` fixed-size array supporting up to 1024 distinct
+categories.
+Categories are written as `c0`, `c1`, `c1023`, or as ranges: `c0.c15`.
+
+Example: `s2:c0,c4` means sensitivity level s2 with categories 0 and 4.
+
+See xref:selinux/category_set.adoc[Category set] for the bitmask model and lattice math.
+
+== UMRS Type Model
+
+UMRS models each component as a distinct validated Rust type.
+A `SecurityContext` cannot be constructed with a malformed sensitivity level,
+an out-of-range category, or an invalid user, role, or type value.
+If construction fails, an error is returned at the boundary — downstream code receives
+a valid `SecurityContext` or nothing at all.
+
+[source,rust]
+----
+// Construct from a full MLS context string (TPI: two independent parse paths)
+let ctx: SecurityContext = "staff_u:staff_r:staff_t:s2:c0,c4".parse()?;
+
+// Each component is a typed value — not a string
+println!("{}", ctx.sensitivity());   // SensitivityLevel
+println!("{:?}", ctx.categories());  // CategorySet
+----
+
+The dual-path parsing (TPI) is documented at xref:patterns:pattern-tpi.adoc[Two-Path Independence].
+
+== Related Reference Pages
+
+* xref:selinux/user.adoc[SELinux user]
+* xref:selinux/role.adoc[SELinux role]
+* xref:selinux/security_type.adoc[SELinux type]
+* xref:selinux/sensitivity.adoc[Sensitivity levels]
+* xref:selinux/category_set.adoc[Category set]
+* xref:glossary:index.adoc[Glossary] — definitions for security context, sensitivity level, category set, MLS range

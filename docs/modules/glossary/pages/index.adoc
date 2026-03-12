@@ -3,6 +3,469 @@
 :toc: left
 :toclevels: 2
 
-This glossary provides definitions for security, assurance, cryptographic, and platform terms used throughout the UMRS documentation.
+This glossary defines security, assurance, cryptographic, MLS, and platform terms
+used throughout UMRS documentation.
 
-// Placeholder — terms will be populated in Phase 3.
+Terms that appear in multiple modules have a single authoritative definition here.
+Where a term maps to a NIST control, standard, or UMRS implementation, that mapping is noted.
+
+NOTE: This glossary is the reader-facing definition of UMRS terms.
+The project also maintains an internal approved terminology list at `.claude/approved_terminology.md`
+(preferred English forms and do-not-abbreviate rules) and a translator vocabulary at
+`.claude/agent-memory/umrs-translator/vocabulary.md` (English-to-French mappings).
+All three lists must remain consistent.
+
+== Assurance and Integrity
+
+=== Assurance
+
+Confidence justified by evidence, not by belief.
+
+In high-assurance engineering, assurance is earned through structured evidence: formal proofs,
+auditing, controlled processes, and independent evaluation.
+Assurance is bounded — it covers specific properties of specific components under specific
+conditions, and it degrades if controls are bypassed or become unverifiable.
+
+See also: NIST 800-53 SA-4; xref:ROOT:what-is-high-assurance.adoc[What Is High Assurance?]
+
+=== Attestation
+
+A cryptographic or authoritative assertion by an entity that a specific claim is true
+at a specific time.
+
+Examples:
+
+* "This file was received intact at time T."
+* "This system was in configuration state Y when measured."
+* "This data was produced by process Z."
+
+Attestation answers: "I assert this is true, and I am accountable for that assertion."
+
+Attestation is distinct from provenance.
+Provenance describes history.
+Attestation asserts a specific fact about a specific artifact at a specific moment.
+
+In UMRS, the IMA measurement log is an implicit attestation: it records what was seen,
+when, and in what state, in a tamper-visible ledger.
+
+See also: NIST 800-53 AU-10 (Non-repudiation).
+
+=== Auditability
+
+The ability to reconstruct events and decisions after the fact with sufficient fidelity
+to support accountability.
+
+Auditability requires complete records, meaningful semantics (who, what, when, why),
+stable identifiers, and integrity protection of the audit records themselves.
+Audit logs that cannot answer "who, what, when, why" are compliance theater, not auditability.
+
+See also: NIST 800-53 AU-3 (Content of audit records).
+
+=== Authenticity
+
+The assurance that an artifact is genuinely what it claims to be — that it comes from
+the identity it purports to come from and has not been substituted.
+
+Authenticity answers: "Is this really from who or what it claims?"
+
+Authenticity requires identity binding, provenance or attestation, and integrity.
+Courts frequently reject digital evidence for failure to authenticate, even when integrity
+is present — the distinction matters in forensic and legal contexts.
+
+=== Chain of Custody
+
+The documented and continuous control history of an artifact from creation or acquisition
+to final disposition.
+
+Chain of custody answers: "Who had control of this, when, and under what authority?"
+
+In digital systems, chain of custody requires:
+
+* Integrity protection of the artifact itself
+* Integrity protection of the custody records
+* Explicit transfer events — no silent handoffs
+
+A gap in the chain is a break in trust.
+Most unclassified systems fail here: logs exist, but custody records are not themselves
+cryptographically protected.
+IMA/EVM prevents this by making the measurement log tamper-visible.
+
+=== Custody Trust vs. Content Trust
+
+Two distinct properties that must not be conflated.
+
+*Custody trust* — "This artifact has not changed since we received it."
+
+*Content trust* — "This artifact is accurate, valid, or correct."
+
+A system can trust custody while explicitly withholding content trust.
+UMRS claims custody trust through IMA/EVM enforcement.
+It does not automatically claim content trust — a CUI document whose IMA hash verifies
+is demonstrably unaltered, but whether its content is accurate is a separate determination.
+
+Conflating these two properties is a common cause of audit failures.
+
+See also: xref:security-concepts:integrity-and-provenance.adoc[Integrity and Provenance in UMRS].
+
+=== Integrity
+
+The assurance that data has not been altered in an unauthorized or undetected manner.
+
+Integrity answers: "Has this changed since it was last trusted?"
+
+Integrity does not mean the data is correct, appropriate, or authorized for use.
+It means the bits are the same as when last trusted, and any change is detectable.
+
+Enforced in UMRS via:
+
+* *IMA (Integrity Measurement Architecture)* — file content hashes, kernel measurement log
+* *EVM (Extended Verification Module)* — HMAC over security-relevant xattrs
+
+See also: NIST 800-53 SI-7 (Software and information integrity).
+
+=== Integrity Assurance
+
+The degree of confidence that integrity protections are correctly implemented, enforced,
+and verifiable.
+
+The difference between "we hash files" and integrity assurance:
+
+* The hash must be meaningful (correct algorithm, correct scope)
+* The algorithm must be FIPS-validated
+* Enforcement must be at the kernel level — not in a daemon that can be stopped
+* The measurement log must be integrity-protected (append-only, signed)
+* The mechanism must resist bypass
+
+Integrity assurance is a system property, not a property of a single mechanism.
+
+=== Non-repudiation
+
+The ability to prevent an entity from credibly denying a prior action.
+
+Non-repudiation is a legal and procedural property, enabled by cryptography but not
+guaranteed by it alone.
+Requirements: digital signatures with key custody controls, trusted timestamps, and
+audit records that cannot be silently altered.
+
+UMRS satisfies this through signed audit logs and IMA/EVM measurements that tie actions
+to kernel-verified identities.
+
+See also: NIST 800-53 AU-10.
+
+=== Provenance
+
+The documented history of an artifact: where it originated, how it was produced, and
+what transformations have been applied.
+
+Provenance answers: "Where did this come from, and how did it get here?"
+
+Provenance alone does not guarantee correctness or legitimacy.
+It establishes traceable history.
+In high-assurance systems, provenance must be tamper-evident, attributable to a specific
+identity (human, system, or device), and preserved across transformations.
+
+In UMRS, provenance verification applies before trusting data from kernel pseudo-filesystems
+(`/proc/`, `/sys/fs/selinux/`): the filesystem magic number is checked via `statfs`
+to confirm the source is the kernel, not a bind-mount or overlay (NIST 800-53 SI-7).
+
+See also: xref:patterns:pattern-provenance.adoc[Provenance Verification pattern].
+
+== SELinux and MLS
+
+=== Audit Event
+
+A discrete, timestamped record of a security-relevant action or decision.
+
+Audit events are generated at the kernel level (SELinux AVC denials, IMA measurements)
+and at the application level (structured log output).
+Each event must capture who acted, on what, when, and with what outcome — the minimum
+content specified by NIST 800-53 AU-3 (Content of audit records).
+
+An audit event is not the same as a log line.
+A log line is a serialization format.
+An audit event is the structured, queryable record of a specific decision.
+UMRS represents audit events as typed enum variants so callers can match, filter, and
+count them programmatically.
+
+See also: xref:security-concepts:integrity-and-provenance.adoc[Integrity and Provenance in UMRS].
+
+=== Category Set
+
+A bitmask that represents the set of compartments or categories assigned to a security context.
+
+// TODO: Expand this entry when SELinux reference pages are more thoroughly documented.
+// The lattice dominance model and bit-ordering conventions will be covered in detail there.
+In UMRS, `CategorySet` is a 1024-bit `[u64; 16]` fixed-size stack-allocated array.
+Category membership determines whether a process's category set _dominates_ an object's
+category set — a required condition for MLS access decisions alongside the sensitivity level.
+
+See also: xref:reference:selinux/context.adoc[Security context reference].
+
+=== Controlled Unclassified Information (CUI)
+
+A handling framework for sensitive but unclassified information — not a classification
+level, clearance, or MLS label.
+
+CUI was established by Executive Order 13556 (2010) to standardize handling of information
+previously labeled inconsistently (FOUO, SBU, LES, and others).
+The authoritative registry is maintained by NARA.footnote:[https://www.archives.gov/cui]
+
+In UMRS, CUI objects are labeled at the `U-CONTROLLED` sensitivity level with
+appropriate category bits.
+
+See also: xref:architecture:mls-label-model.adoc[MLS Label Model and CUI Mapping].
+
+=== Mandatory Access Control (MAC)
+
+An access control model in which policy decisions are made by the system, not by the
+data owner.
+
+Users and applications cannot grant access that policy does not permit.
+SELinux implements MAC in the Linux kernel via the Linux Security Module (LSM) framework.
+
+Contrast with discretionary access control (DAC), where owners can grant access to anyone.
+In UMRS, both DAC (POSIX permissions) and MAC (SELinux) are active.
+MAC decisions override DAC decisions.
+
+=== MLS Range
+
+The pair of MLS levels (low and high) that defines the range within which a subject may
+operate or an object may be accessed.
+
+Format: `sensitivity_low:categories_low-sensitivity_high:categories_high`.
+
+Example: `s0:c0-s3:c0,c2` means the subject operates at or between those two levels.
+
+=== Policy Enforcement
+
+The act of the reference monitor evaluating a subject's request against the active
+security policy and producing a permit or deny decision.
+
+Policy enforcement is non-discretionary: neither the subject nor the data owner
+can override the decision.
+Enforcement happens in the kernel; it is not a userland check that can be skipped.
+
+The term distinguishes active, kernel-mediated enforcement from passive policy statements,
+logging, or advisory warnings.
+A system that logs policy violations but does not block them is not enforcing policy.
+
+See also: xref:security-concepts:reference-monitor.adoc[Reference Monitor Design in UMRS];
+NIST 800-53 AC-3 (Access Enforcement).
+
+=== Reference Monitor
+
+A security mechanism that mediates every access between subjects and objects, ensuring
+the access complies with the active security policy.
+
+The reference monitor must be non-bypassable, always invoked, and tamper-resistant.
+These three properties are required — any exception breaks the security guarantee.
+
+In UMRS, SELinux is the kernel-level reference monitor.
+Every file open, socket connection, and IPC operation passes through the SELinux access
+vector cache (AVC) before being permitted or denied.
+
+See also: xref:security-concepts:reference-monitor.adoc[Reference Monitor Design in UMRS].
+
+=== Security Context
+
+The full, structured SELinux label assigned to a subject or object.
+A security context has five components:
+
+```
+user : role : type : sensitivity_level : category_set
+```
+
+Every process and file on a SELinux system has a security context.
+Access decisions compare the subject's security context against the object's security context
+using the active policy.
+
+Example: `system_u:system_r:httpd_t:s0:c0,c1`
+
+In UMRS, each component is modeled as a distinct validated Rust type.
+A `SecurityContext` cannot be constructed with a malformed sensitivity level, an
+out-of-range category, or a missing required field.
+
+NOTE: "Security label" is a colloquial shorthand that people use to mean the full security
+context.
+In UMRS documentation and code, always use _security context_ for precision.
+
+See also: xref:reference:selinux/context.adoc[Security context field reference].
+
+=== Security Label
+
+_Colloquial synonym for security context._ Not a preferred term in UMRS documentation.
+
+"Security label" appears widely in informal writing and vendor documentation as a shorthand
+for the full SELinux security context.
+In UMRS documentation, use _security context_ — the precise term that names all five components.
+
+=== Sensitivity Level
+
+The hierarchical component of a security context (for example, `s0` through `s15`).
+
+NOTE: "Sensitivity label" is a colloquial, non-preferred variant of this term.
+Use _sensitivity level_ consistently.
+
+Bell–LaPadula rules govern read and write access by sensitivity level:
+
+* *No-read-up*: A subject at `s4` cannot read objects labeled `s5` or higher.
+* *No-write-down*: A subject at `s4` cannot write to objects labeled `s3` or lower.
+
+These rules prevent both unauthorized disclosure (upward reads) and covert downgrade
+(downward writes).
+
+== Cryptography
+
+=== AES (Advanced Encryption Standard)
+
+A symmetric block cipher standardized by NIST (FIPS 197).
+Used in UMRS for data confidentiality: dm-crypt full-disk encryption, IMA HMAC keying.
+Preferred key size: 256 bits (AES-256).
+
+=== Authenticated Encryption
+
+Encryption that provides both confidentiality and integrity protection in a single operation.
+
+Example: AES-GCM (Galois/Counter Mode) computes a ciphertext and an authentication tag.
+Any tampering with the ciphertext causes tag verification to fail.
+
+Preferred over confidentiality-only encryption modes in new designs.
+
+=== Cipher Mode
+
+The operational method used to apply a block cipher to a data stream.
+
+[cols="1,1,2", options="header"]
+|===
+| Mode | Property | Notes
+
+| GCM | Authenticated encryption | Preferred for network and file encryption
+| XTS | Disk encryption | Standard for full-disk encryption (dm-crypt)
+| CBC | Confidentiality only | Legacy; no integrity protection
+| ECB | None | Disallowed — reveals block patterns
+|===
+
+=== DRBG (Deterministic Random Bit Generator)
+
+A cryptographic algorithm that generates pseudorandom bits from a seed value.
+
+NIST-approved DRBGs (Hash_DRBG, HMAC_DRBG, CTR_DRBG) are the only acceptable RNG
+implementations in FIPS-compliant systems.
+
+In practice, UMRS code uses the OS CSPRNG (`/dev/urandom` or `getrandom(2)`) as the
+preferred interface; the kernel's DRBG backs it.
+
+=== ECDH (Elliptic Curve Diffie-Hellman)
+
+A key agreement algorithm that establishes a shared secret between two parties without
+transmitting the secret.
+
+Preferred curve: P-384 (~192-bit security).
+
+See also: xref:reference:fips-cryptography-cheat-sheet.adoc[FIPS Cryptography Quick Reference].
+
+=== ECDSA (Elliptic Curve Digital Signature Algorithm)
+
+A digital signature algorithm based on elliptic curve cryptography.
+
+Preferred curve: P-384.
+Used in UMRS for signing audit log chains and software artifacts.
+
+=== FIPS (Federal Information Processing Standard)
+
+A class of standards published by NIST defining approved cryptographic algorithms and
+implementation requirements for U.S. government systems.
+
+Key standards relevant to UMRS:
+
+* FIPS 140-2/3 — cryptographic module validation
+* FIPS 197 — AES
+* FIPS 180-4 — SHA-2 hash functions
+* FIPS 186-5 — ECDSA and RSA signatures
+* FIPS 203 — ML-KEM (post-quantum key encapsulation)
+* FIPS 204 — ML-DSA (post-quantum digital signatures)
+* FIPS 205 — SLH-DSA (post-quantum hash-based signatures)
+
+=== Hash Function
+
+A one-way mathematical function that maps arbitrary input data to a fixed-length digest.
+
+Properties: deterministic, collision-resistant, pre-image resistant.
+
+Used in UMRS for integrity checking, digital signatures, key derivation, and audit
+log chaining.
+
+[cols="1,1,2", options="header"]
+|===
+| Algorithm | Digest size | Status
+
+| SHA-512 | 512 bits | Preferred
+| SHA-384 | 384 bits | Preferred
+| SHA-256 | 256 bits | Approved
+| SHA-1 | 160 bits | Disallowed for signatures
+| MD5 | 128 bits | Disallowed
+|===
+
+=== HKDF (HMAC-based Key Derivation Function)
+
+A KDF that derives cryptographic keys from shared secrets using HMAC.
+Standardized in NIST SP 800-56C.
+Preferred variant: HKDF-SHA-384.
+
+=== ML-DSA (Module-Lattice Digital Signature Algorithm)
+
+A NIST-standardized post-quantum digital signature algorithm.
+Standardized in FIPS 204 (2024).
+Formerly known as CRYSTALS-Dilithium.
+
+Preferred for new high-assurance signature use cases where post-quantum resistance is required.
+Preferred parameter set: ML-DSA-87 (highest security margin).
+
+See also: xref:reference:crypto-post-quantum.adoc[Post-Quantum Cryptography].
+
+=== ML-KEM (Module-Lattice Key Encapsulation Mechanism)
+
+A NIST-standardized post-quantum key encapsulation mechanism.
+Standardized in FIPS 203 (2024).
+Formerly known as CRYSTALS-Kyber.
+
+Preferred for new key establishment protocols where post-quantum resistance is required.
+Preferred parameter set: ML-KEM-1024 (highest security margin).
+
+See also: xref:reference:crypto-post-quantum.adoc[Post-Quantum Cryptography].
+
+=== Post-Quantum Cryptography (PQC)
+
+Cryptographic algorithms designed to resist attacks by sufficiently powerful quantum computers.
+
+Classical algorithms (RSA, ECDSA, ECDH) rely on mathematical problems believed to be
+efficiently solvable by quantum computers via Shor's algorithm.
+NIST standardized three PQC algorithms in 2024:
+
+* FIPS 203 — ML-KEM (key encapsulation)
+* FIPS 204 — ML-DSA (digital signatures)
+* FIPS 205 — SLH-DSA (hash-based signatures)
+
+See also: xref:reference:crypto-post-quantum.adoc[Post-Quantum Cryptography].
+
+=== SLH-DSA (Stateless Hash-Based Digital Signature Algorithm)
+
+A NIST-standardized post-quantum digital signature algorithm.
+Standardized in FIPS 205 (2024).
+Formerly known as SPHINCS+.
+
+Uses hash-function security assumptions rather than lattice-based assumptions —
+a conservative choice for deployments that prefer not to rely on the security of
+lattice-based mathematics.
+
+Signatures are larger than ML-DSA; appropriate where conservative assumptions
+outweigh size constraints.
+
+== See Also
+
+* xref:reference:fips-cryptography-cheat-sheet.adoc[FIPS Cryptography Quick Reference]
+* xref:reference:crypto-post-quantum.adoc[Post-Quantum Cryptography]
+* xref:reference:crypto-policy-tiers.adoc[Cryptographic Policy Tiers]
+* xref:security-concepts:integrity-and-provenance.adoc[Integrity and Provenance in UMRS]
+* xref:security-concepts:reference-monitor.adoc[Reference Monitor Design]
+* xref:ROOT:what-is-high-assurance.adoc[What Is High Assurance?]

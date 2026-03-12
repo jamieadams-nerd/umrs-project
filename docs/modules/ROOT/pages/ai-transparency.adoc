@@ -3,7 +3,153 @@
 :toc: left
 :toclevels: 2
 
-UMRS uses AI coding assistants and documentation agents as part of its development process. This page explains the scope of AI involvement, the review requirements applied to AI-generated content, and what this means for auditors and contributors.
+UMRS uses AI coding assistants and documentation agents as part of its development process.
+This page explains the scope of AI involvement, the review requirements applied to
+AI-generated contributions, and what this means for auditors and contributors.
 
-// Placeholder — full content will be populated in Phase 3.
-// See doc-vision.md §18 for the content scope for this page.
+Transparency here is a design requirement, not a courtesy.
+UMRS is a high-assurance project.
+Auditors and adopters need to know what was produced by AI, what was reviewed, and
+where human judgment is the final authority.
+
+== Why AI Is Used
+
+The UMRS project has been driven primarily by a single engineer.
+AI serves as a force multiplier — enabling the breadth of research, documentation,
+and review work that would otherwise require a team.
+
+AI assistance does not substitute for human judgment.
+It accelerates execution of tasks where the engineer has already made the architectural
+and security decisions.
+
+The use of AI is openly acknowledged because the opposite — concealing AI involvement
+in a project that claims transparency and auditability — would itself be a contradiction.
+
+== What AI Agents Do
+
+[cols="1,3", options="header"]
+|===
+| Role | Scope
+
+| Research assistance
+| Searching reference material (NIST, NSA RTB, SELinux notebooks), summarizing standards,
+identifying control citations, and proposing mappings between design decisions and
+applicable frameworks.
+
+| Documentation drafting
+| Writing, structuring, and editing Antora pages: architecture explanations, how-to guides,
+pattern descriptions, and reference tables.
+
+| Documentation organization
+| Assessing content placement, maintaining the documentation architecture, identifying gaps,
+and proposing structural improvements.
+
+| Code review assistance
+| Reviewing Rust code for high-assurance pattern compliance: missing `#[must_use]` annotations,
+unsafe block usage, missing error handling, and compliance citation gaps.
+
+| Test-case generation
+| Proposing test cases for security-relevant code paths; reviewing test coverage against
+assurance requirements.
+
+| Quality review
+| Acting as reviewer agents (new-engineer perspective and security-auditor perspective)
+to surface gaps in documentation clarity and precision.
+
+| Structure and planning
+| Maintaining documentation plans, tracking phase completion, and managing cross-module
+xref consistency.
+|===
+
+== What AI Agents Do Not Do
+
+The following remain solely under human direction and accountability:
+
+* *Architectural decisions* — the security model, enforcement strategy, and system design
+  are determined by the project engineer.
+  AI proposes; the engineer decides.
+
+* *Security policy* — SELinux policy modules are written and reviewed by the project engineer.
+  AI may assist with research, not policy authorship.
+
+* *Final approval* — no AI-generated code, documentation, or configuration change is
+  incorporated without engineer review and explicit acceptance.
+
+* *Compliance claims* — NIST control citations and compliance assertions in documentation are
+  reviewed by the engineer before publication.
+  AI identifies candidates; the engineer confirms them.
+
+* *Git commits and pushes* — AI agents are explicitly prohibited from committing to the
+  repository.
+  All commits are made by the engineer.
+
+== Agent Architecture
+
+The project uses a multi-agent system built on Claude Code.
+Each agent has a defined role and scope.
+Agents communicate through a shared task board and cross-team notes channel.
+No agent acts outside its defined scope without engineer instruction.
+
+[cols="1,3", options="header"]
+|===
+| Agent | Responsibility
+
+| `rust-developer`
+| New patterns, API changes, doc gaps noticed in source code
+
+| `security-engineer`
+| Compliance findings requiring doc updates, new control mappings, audit gaps
+
+| `security-auditor`
+| Compliance audits: verifies control citations, identifies annotation debt, produces audit findings
+
+| `tech-writer`
+| API and pattern documentation, developer guide updates
+
+| `senior-tech-writer`
+| Architecture-level doc decisions, cross-module structural changes
+
+| `researcher`
+| RAG pipeline management, reference collection ingestion, standards research
+
+| `umrs-translator`
+| i18n string extraction and language translations
+
+| `changelog-updater`
+| Structured changelog maintenance across crates, docs, and infrastructure
+|===
+
+== Review Requirements
+
+All AI-generated content in this project is subject to the following review requirements:
+
+* *Code*: Every AI-drafted Rust function or module is reviewed against the project's
+  high-assurance pattern rules before acceptance.
+  Unsafe code is prohibited regardless of AI involvement — `#![forbid(unsafe_code)]`
+  is a compile-time enforcement, not a policy declaration.
+
+* *Documentation*: AI-drafted pages are reviewed for technical accuracy, control citation
+  correctness, and alignment with the documentation architecture before they are published.
+
+* *Plans and structure*: Documentation architecture decisions proposed by AI agents are
+  reviewed and confirmed by the project engineer before execution.
+
+== For Auditors
+
+Auditors assessing this project should be aware:
+
+* AI tools have been used to accelerate documentation drafting and standards research.
+* All compliance control citations are intended to be accurate and have been reviewed.
+  Flag any citation that appears incorrect — corrections will be applied.
+* AI agents do not have access to classified information, operational systems, or
+  production deployment environments.
+* The project repository and its `docs/` tree are the authoritative record.
+  AI tools assist in building it, but the repository is the source of truth.
+* The use of AI is openly documented here so that auditors can assess its scope
+  rather than discover it unexpectedly.
+
+== See Also
+
+* xref:what-is-umrs.adoc[What Is UMRS?]
+* xref:scope-and-audience.adoc[Scope and Audience]
+* xref:what-is-high-assurance.adoc[What Is High Assurance?]

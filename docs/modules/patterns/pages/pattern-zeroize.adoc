@@ -14,7 +14,13 @@ The `vaultmgr` crate and any future type that holds key material or cleartext cr
 must implement `Zeroize` before those types handle real secrets in a production deployment.
 ====
 
-== Overview
+NOTE: This pattern is required by *NIST 800-53 SC-28* (Protection of Information at Rest)
+and *IA-5* (Authenticator Management).
+Standard `Drop` does not zero memory — a memory dump, swap file, or hibernation image
+can expose key material that was never explicitly cleared.
+
+== Why This Pattern Exists
+// Zone 1: concept — threat, consequence, control basis
 
 When a Rust value is dropped, its memory is reclaimed by the allocator. The allocator
 marks the memory as available; it does not overwrite the bytes. Those bytes remain in RAM
@@ -35,7 +41,7 @@ just before `drop(buffer)` may remove the zeroing as a "dead write" optimization
 `zeroize` crate provides zeroing operations that are specifically guaranteed not to be
 eliminated by the optimizer.
 
-== The Threat
+=== The Threat
 
 CUI systems handle values whose contents must not survive their intended scope:
 
@@ -55,6 +61,7 @@ to volatile memory as well as persistent storage when the system is designed to
 handle classified or controlled content.
 
 == The Pattern
+// Zone 2: implementation — invariant, rule, code recipe
 
 The `zeroize` crate provides the tools. Two approaches:
 
@@ -118,6 +125,7 @@ standard choice in the Rust cryptographic ecosystem for this pattern. The `secre
 crate wraps `zeroize` and adds the `Debug`-redacting wrapper.
 
 == In the UMRS Codebase
+// Zone 2 continued: types, traits, file paths
 
 The `vaultmgr` crate is the current designated location for key management and secret
 handling. Its `Cargo.toml` does not yet include `zeroize`:

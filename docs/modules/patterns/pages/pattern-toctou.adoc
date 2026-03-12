@@ -6,7 +6,12 @@
 // NSA RTB VNSSA — TOCTOU elimination; deterministic execution
 // NIST 800-218 SSDF PW.4 — Implement secure coding practices
 
-== Overview
+NOTE: This pattern is required by *NSA RTB RAIN* (non-bypassable, deterministic execution).
+All filesystem I/O on security-relevant resources must be fd-anchored.
+Satisfies NIST 800-53 SI-7.
+
+== Why This Pattern Exists
+// Zone 1: concept — threat, consequence, control basis
 
 Time-of-Check/Time-of-Use (TOCTOU) is a class of race condition in which the state of
 a resource changes between the moment it is inspected and the moment it is acted upon.
@@ -23,7 +28,7 @@ NSA RTB requires elimination of implicit state. TOCTOU exploits implicit state: 
 assumption that what the path pointed to a moment ago still points to the same thing.
 Anchoring to a descriptor removes that assumption.
 
-== The Threat
+=== The Threat
 
 [mermaid]
 ....
@@ -66,6 +71,7 @@ performed on the open descriptor, not on the path. See also
 xref:pattern-provenance.adoc[Provenance Verification].
 
 == The Pattern
+// Zone 2: implementation — invariant, rule, code recipe
 
 Open the file exactly once. Perform all subsequent operations through the resulting
 descriptor:
@@ -81,6 +87,7 @@ later maintainer who adds a second path-based call breaks the invariant without 
 compiler warning.
 
 == In the UMRS Codebase
+// Zone 2 continued: types, traits, file paths
 
 `SecureXattrReader::read_raw()` in `umrs-selinux/src/xattrs.rs` reads the raw xattr
 bytes through the descriptor the caller already holds. It never opens a path:
@@ -202,3 +209,5 @@ single file descriptor closes that window permanently, with no runtime cost.
 * xref:pattern-non-bypassability.adoc[Non-Bypassability] — TOCTOU safety is enforced
   mechanically via the `StaticSource` trait; callers cannot bypass it
 * xref:devel:high-assurance-patterns.adoc[High-Assurance Pattern Index]
+* xref:security-concepts:integrity-and-provenance.adoc[Integrity and Provenance in UMRS] —
+  the integrity model that fd-anchored I/O enforces at the filesystem layer

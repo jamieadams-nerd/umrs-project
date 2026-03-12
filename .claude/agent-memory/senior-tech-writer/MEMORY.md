@@ -111,15 +111,23 @@ Original .txt and .md files remain in place (not deleted per policy).
 
 ## Primary Source Documents for Introduction and Architecture Content
 
-- `README.md` — defines high-assurance engineering, HACAMS lineage, HA examples
+- `README.md` — defines high-assurance engineering, HACAMS lineage, real-world examples
 - `UMRS-PROJECT.md` — authoritative project description, MLS label hierarchy, CUI handling
 
 ---
 
-## Terminology Preferences (confirmed)
-See `.claude/approved_terminology.md` for the full list.
-Preferred: `security label`, `audit event`, `system mediator`, `policy enforcement`,
-`sensitivity level`, `category set`, `MLS range`, `reference monitor`, `security context`
+## Terminology Decisions (confirmed by Jamie, 2026-03-12)
+See `.claude/approved_terminology.md` for the full list and translator cross-references.
+
+Key decisions:
+- `security context` — PREFERRED. Full five-part label: `user:role:type:sensitivity_level:category_set`
+- `security label` — COLLOQUIAL. Do not use as a primary term; it means "security context" generically
+- `sensitivity level` — PREFERRED (the s0–s15 hierarchical component)
+- `sensitivity label` — NON-PREFERRED colloquial form; translator vocabulary corrected
+- `HA` abbreviation — NEVER. "HA" = high-availability; always spell out "high-assurance"
+- "HA-Sign" — correct product name; the "HA-" is part of the name, not an abbreviation
+
+CategorySet glossary entry marked TODO for expansion when SELinux reference pages are more complete.
 
 ---
 
@@ -156,23 +164,78 @@ Operations module NO LONGER has a Logging section — all logging content is in 
 
 ---
 
+## Patterns Module — Phase 2 Taxonomy (2026-03-12)
+
+Phase 2 complete. All 16 standard pattern pages updated (not pattern-os-detection.adoc):
+
+**2c (Two-zone structure)**: All pages renamed `== Overview` → `== Why This Pattern Exists`
+with `// Zone 1:` comment; `== The Threat` demoted to `===`; `// Zone 2:` comments added
+to `== The Pattern` and `== In the UMRS Codebase`.
+
+**2b (Provenance badges)**: NOTE admonitions added to TPI, TOCTOU, Provenance, Non-Bypassability,
+Fail-Closed, Zeroize citing the mandating framework.
+
+**2d (Nav)**: Reorganized into Architectural Patterns / Coding Techniques / Observability / Process / Deep Dives.
+
+**2a (Index table)**: Added Sub-group, Concept basis columns; renamed Status column.
+
+**2e (Cross-links)**: Security-concepts xrefs added to 8 pattern pages' See Also sections.
+Reverse links added to reference-monitor.adoc, integrity-and-provenance.adoc, rtb-vnssa.adoc.
+
+Nav groups: Architectural (Fail-Closed, Loud Failure, Non-Bypassability, Error Discipline, SEC, Layered Separation)
+Coding Techniques (TPI, TOCTOU, Provenance, Secure Arithmetic, Bounds-Safe, Zeroize, Constant-Time)
+Observability (Execution Measurement, Audit Cards) | Process (Supply Chain Hygiene) | Deep Dives (OS Detection)
+
 ## OS Detection Pipeline Docs (2026-03-11)
+- `patterns/pages/pattern-os-detection.adoc` — concept/architecture. Multi-audience.
+- `devel/pages/os-detection-deep-dive.adoc` — engineer deep dive, full code references.
+- `(device, inode)` is the canonical TOCTOU defense term. FIPS gate: sha2 not validated; ceiling T3.
 
-Two new pages written for the `umrs-platform` OS detection pipeline:
+## Phase 3 Content — Filled Structural Gaps (2026-03-12)
 
-- `docs/modules/patterns/pages/pattern-os-detection.adoc` — "OS Detection: A Trust
-  Ladder". Patterns module. Multi-audience (auditors, newcomers, adopters). No code.
-  Wired into `patterns/nav.adoc` under Patterns — Verification Pipelines.
+ROOT stubs populated (all were placeholder skeletons):
+- `ROOT/pages/what-is-high-assurance.adoc` — full explanation from README.md
+- `ROOT/pages/what-is-umrs.adoc` — full explanation from UMRS-PROJECT.md
+- `ROOT/pages/ai-transparency.adoc` — AI agent roles, review requirements, auditor guidance
 
-- `docs/modules/devel/pages/os-detection-deep-dive.adoc` — "OS Detection Pipeline —
-  Deep Dive". Devel module. Engineers and security auditors. Full code references,
-  per-phase threat model, confidence model, EvidenceBundle design.
-  Wired into `devel/nav.adoc` under Platform Internals.
+Glossary populated:
+- `glossary/pages/index.adoc` — 25+ definitions across 3 groups (Assurance/Integrity, SELinux/MLS, Cryptography)
+- Sources: terminology.txt, crypto.md glossary, in-codebase SELinux concepts
 
-Key conventions used in these docs (reuse for future pipeline docs):
-- Code snippets are representative; use `// Conceptual` comment if not yet implemented
-- Every phase section: What / Why / Code Reference / Security Controls sub-sections
-- `(device, inode)` is the canonical TOCTOU defense term — not "dev/ino" or "inode pair"
-- FIPS gate explanation: sha2 crate is not validated; ceiling becomes T3 on FIPS systems
-- EvidenceBundle rationale always links AU-3 and the "silent rejection = audit gap" argument
-- Trust level comparisons use `<`/`>=` on the `TrustLevel` enum (PartialOrd), not integer checks
+Crypto reference stubs filled:
+- `reference/pages/crypto-post-quantum.adoc` — ML-KEM/ML-DSA/SLH-DSA tables, migration approach
+- `reference/pages/crypto-policy-tiers.adoc` — 4-tier framework (Preferred/Approved/Baseline/Disallowed), 8 algorithm categories
+- `crypto-cpu-extensions.adoc` remains stub — no source material; requires research
+- `fips-cryptography-cheat-sheet.adoc` and `key-recommendation-list.adoc` were already complete
+
+3f (high-assurance enhancements coherence): deployment/nav.adoc already has "Assurance Enhancements" section — no changes needed.
+
+## Phase 4 Complete — Antora Doc Restructure (2026-03-12)
+
+**Plan archived**: `.claude/plans/completed/antora-doc-restructure.md`
+**Vision archived**: `.claude/plans/completed/doc-vision.md`
+
+4a — SELinux reference pages rewritten from Markdown to proper AsciiDoc using source `///` comments:
+- `reference/selinux/sensitivity.adoc` — SensitivityLevel, Bell-LaPadula, UMRS type model
+- `reference/selinux/category_set.adoc` — CategorySet bitmask, dominance math, kernel ebitmap deviation
+- `reference/selinux/user.adoc` — SelinuxUser, naming conventions, POSIX vs SELinux identity
+- `reference/selinux/role.adoc` — SelinuxRole, RBAC layer, domain authorization
+- `reference/selinux/security_type.adoc` — SelinuxType, TE mechanism, domain vs type distinction
+
+4b — Cross-reference audit complete. `deployment/pages/index.adoc` now links to operations, logging-audit, glossary.
+
+4c — Scratch file cleanup: dispositions identified (30 files), no deletions made (awaiting Jamie approval).
+Group 1 (15 files): DELETED 2026-03-12.
+Group 2 (awaiting Jamie): mls-classified-talk (444L vs 249L promoted), category_set_math, MLS_CATEGORIES_SET_MATH, HIGH_ASSURANCE_EXTRA, TPI_DUAL_LOGIC_FLOW, UMRS.cil, UMRS_CUI.cil, UMRS_LABELS-tool.txt, umrs-core-unicode.txt, notes/umrs-concepts, notes/umrs-levels-cui, notes/case-studies, notes/i18n, notes/CQRS, notes/encrypt-icon-verification, plus ~15 tool/logspace notes (umrs-logspace-*, umrs-state-*, umrs-signing-*, umrs-shred-notes, umrs-selinux-doc-README, AGR-NOTES, apache-mls-project, chain-script, chrome-mls-extension, fgexattr, IVM-SYSTEMD, logging_notrs, LS_HA_RESTRICTED_NOTES, rhel10-scripts-JSON, selinux-policy-junk-NOTES, unicode_symbols).
+
+4d — Vision §21 validation: 5 topics tested, all placements unambiguous.
+
+4e — Build: 2 errors total, both pre-existing in ubuntu.adoc. Zero new errors.
+
+## SELinux Source Module Reference (for future SELinux doc work)
+
+Key design deviations documented in source:
+- CategorySet: dense [u64;16] vs kernel sparse ebitmap — for performance/determinism
+- SelinuxType: mixed-case allowed (e.g., NetworkManager_etc_t) — matches kernel policy parser
+- SelinuxUser/Role: lowercase only — [a-z0-9_] character set
+- dominates(): `(subject & object) == object` — implemented word-by-word across 16 u64 words

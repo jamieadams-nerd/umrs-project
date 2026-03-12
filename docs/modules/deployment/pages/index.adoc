@@ -13,3 +13,9 @@ guide for your operating system.
 
 * xref:rhel/rhel10-installation.adoc[Red Hat Enterprise Linux 10] — primary supported platform
 * xref:ubuntu/ubuntu.adoc[Ubuntu 26] — placeholder, coming later
+
+== Related Modules
+
+* xref:operations:index.adoc[Operations] — day-to-day system operation after deployment
+* xref:logging-audit:index.adoc[Logging and Audit] — log pipeline setup and lifecycle
+* xref:glossary:index.adoc[Glossary] — definitions for MLS, CUI, and assurance terms used in this module

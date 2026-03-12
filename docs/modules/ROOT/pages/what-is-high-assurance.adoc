@@ -3,8 +3,173 @@
 :toc: left
 :toclevels: 2
 
-High assurance is an engineering standard, not a marketing claim. A high-assurance system provides mechanically verifiable guarantees about its security properties — guarantees that hold even under adversarial conditions. This page explains the concept and its relevance to UMRS.
+// NIST 800-53 SA-4 — Acquisition process
+// NIST 800-53 SA-11 — Developer testing and evaluation
+// NSA RTB — Raise the Bar design standards
 
-// Placeholder — full content will be populated in Phase 3.
-// Source material: README.md "What is a High-Assurance System" section (repo root),
-// docs/_scratch/RATIONALE_for_HA.adoc, docs/_scratch/HIGH_ASSURANCE_EXTRA.txt
+High assurance is an engineering standard, not a marketing claim.
+A high-assurance system provides mechanically verifiable guarantees about its security properties —
+guarantees that hold even under adversarial conditions.
+
+The distinction from ordinary "secure" systems is explicit:
+
+* A traditional system says: "We think it works."
+* A high-assurance system says: "We can prove it works, and prove it fails safely."
+
+Proof is not optional.
+Assurance is confidence justified by evidence, not by confidence alone.
+
+== What High Assurance Requires
+
+For a system to qualify as high assurance, its correctness, security policy, and enforcement behavior
+must be formally defined, independently evaluated, and continuously verifiable.
+
+That last point separates high assurance from certification theater.
+A system that passes an evaluation and then drifts is not high assurance.
+The properties must hold throughout the operational lifecycle.
+
+Evidence takes structured forms:
+
+* Formal mathematical proofs or model checking
+* Code auditing against specified invariants
+* Controlled development processes with configuration management
+* Trusted build environments (reproducible, inspectable)
+* Independent evaluation (Common Criteria, NSA RTB, FIPS 140-3)
+* Continuous verification during the operational lifecycle
+
+[TIP]
+====
+*Assurance = evidence + process + verification + proven behavior.*
+
+A Rust codebase with no unsafe code and 100% test coverage is not high assurance —
+it is high quality.
+The difference is third-party-verifiable evidence of enforcement, not intent.
+====
+
+== Six Properties of High-Assurance Systems
+
+[cols="1,3", options="header"]
+|===
+| Property | What it means
+
+| Non-discretionary access control
+| The security policy is enforced by the kernel — users and applications cannot override it.
+MAC and MLS enforcement in SELinux satisfies this requirement.
+Formal models: Bell–LaPadula (confidentiality), Biba (integrity).
+
+| Minimal trusted computing base (TCB)
+| Only a small, auditable set of components is trusted.
+Everything outside the TCB is untrusted by design.
+A smaller TCB means fewer places for a flaw to hide.
+
+| Strict development process
+| Coding standards, code reviews, static analysis, documentation requirements,
+and security-model alignment are mandatory — not optional.
+
+| Independent evaluation or certification
+| Examples: Common Criteria EAL5–EAL7, NSA Raise the Bar (RTB),
+FIPS 140-3 validation, DO-178C Level A (aviation), IEC 61508 (industrial safety).
+
+| Resistance to insider threat and misconfiguration
+| The system remains secure even when privileged users or software attempt to bypass controls.
+Enforcement lives in the kernel — not in application logic that can be disabled.
+
+| Formal security model
+| Security policy is derived from a formal model, not ad-hoc rules.
+This enables auditors to verify that the implementation matches the specification.
+|===
+
+== What High Assurance Is Not
+
+High assurance is frequently confused with individual security measures.
+The following are necessary but not sufficient:
+
+* Memory-safe language choice (Rust, Ada)
+* SELinux enforcing mode
+* FIPS-mode encryption
+* Firewalls and network controls
+* Unit tests and integration tests
+
+These are security measures.
+Assurance is what you have when you can prove those measures are correctly implemented,
+non-bypassable, and independently verifiable.
+
+== High Assurance vs. Traditional Engineering
+
+[cols="1,2,2", options="header"]
+|===
+| Dimension | High-Assurance Systems | Traditional Systems
+
+| Evidence required
+| Formal proofs, mathematical models, auditable processes, verification artifacts
+| Unit tests, integration tests, spot checks, general best practices
+
+| Impact of failure
+| Warfighter safety, intelligence compromise, weapon system misfire,
+classified data exposure, critical infrastructure loss
+| Downtime, bugs, inconvenience
+
+| Trust boundary
+| TCB is minimal, auditable, inspected, and change-controlled
+| TCB is not carefully minimized; components grow organically
+
+| Development discipline
+| Strict coding standards, formal peer reviews, static analysis,
+configuration control, threat modeling, security models (MLS, RBAC),
+reproducible builds, mandatory hardening
+| Agile, rapid iteration, flexible process
+|===
+
+== Where High Assurance Applies
+
+High-assurance engineering is not for all systems.
+It applies where failure is unacceptable because the consequences include loss of life,
+national-security compromise, mission failure, classified data leakage, or critical infrastructure disruption.
+
+[cols="1,3", options="header"]
+|===
+| Domain | Standard and example
+
+| Military / Intelligence
+| Cross-Domain Solutions must meet NSA RTB and NCDSMO standards.
+Weapons-control computers require mathematically proven correctness.
+
+| National infrastructure
+| Nuclear command and control requires near-zero failure probability.
+Air-traffic control requires absolute integrity and real-time predictability.
+
+| Safety-critical industries
+| Aviation: DO-178C Level A — every line of code is traceable, testable, and verified.
+Medical devices (pacemakers, infusion pumps): provably safe under all conditions.
+
+| High-integrity cryptography
+| FIPS 140-3 validated modules: algorithms and implementations must be proven secure.
+Formally verified microkernels (seL4): correctness is mathematically proven.
+|===
+
+== Historical Roots
+
+The term *High Assurance Computing and Management Systems* (HACAMS) appeared in DARPA
+programs and DoD system descriptions during the 1990s and early 2000s.
+The terminology shifted over time.
+Today the same concepts appear under labels such as:
+
+* Multi-level security (MLS) systems
+* Cross-domain solutions (CDS)
+* Trusted systems
+* Raise-the-Bar (RTB) assurance initiatives
+* Safety-critical and mission-critical systems
+
+The concept is the same.
+The standard is the same.
+Only the vocabulary changed.
+
+For deeper background, see xref:architecture:history/HACAMS.adoc[HACAMS: Historical context].
+
+== See Also
+
+* xref:what-is-umrs.adoc[What Is UMRS?] — how these principles are applied in this project
+* xref:security-concepts:reference-monitor.adoc[Reference Monitor Design] — the kernel enforcement mechanism
+* xref:architecture:index.adoc[Architecture overview]
+* xref:patterns:index.adoc[High-Assurance Pattern Library]
+* xref:glossary:index.adoc[Glossary] — definitions for assurance, integrity, provenance

@@ -5,4 +5,6 @@ edition = "2021"
 description = "UMRS terminal UI — wizard art display with left/right justification"
 
 [dependencies]
+ratatui = "0.30.0"
+ratatui-garnish = "0.1.0"
 umrs-core = { path = "../umrs-core" }

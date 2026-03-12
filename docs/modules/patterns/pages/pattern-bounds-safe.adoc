@@ -6,7 +6,8 @@
 // NIST 800-53 SI-10 — Information Input Validation
 // NSA RTB VNSSA — Deterministic, provably correct execution
 
-== Overview
+== Why This Pattern Exists
+// Zone 1: concept — threat, consequence, control basis
 
 An array index operation `self.bits[i]` panics in debug mode when `i >= self.bits.len()`.
 In release mode, with bounds checks disabled (not the case in this workspace, but the
@@ -24,7 +25,7 @@ is either:
 * *Provably safe by construction*, with the proof stated in a comment that an auditor
   can verify independently
 
-== The Threat
+=== The Threat
 
 Consider a bitmask operation on `CategorySet` that derives an array index from a
 user-supplied category ID without first validating the ID:
@@ -47,6 +48,7 @@ security context, a network message, a deserialized structure) is used as an arr
 without validation.
 
 == The Pattern
+// Zone 2: implementation — invariant, rule, code recipe
 
 Two acceptable approaches:
 
@@ -108,6 +110,7 @@ is an audit finding — it requires either a `.get(i)` conversion or an added pr
 comment.
 
 == In the UMRS Codebase
+// Zone 2 continued: types, traits, file paths
 
 The `CategorySet` implementation demonstrates both the proof approach and the validated
 type that makes the proof possible. `category.rs`:

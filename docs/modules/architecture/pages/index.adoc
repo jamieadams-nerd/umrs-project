@@ -207,3 +207,10 @@ The architecture is governed by the following frameworks:
 
 See xref:reference:compliance-frameworks.adoc[Compliance frameworks registry]
 for the full list of governing standards and their versions.
+
+== See Also
+
+* xref:security-concepts:index.adoc[Security Concepts] — the principles that underpin these design choices
+* xref:patterns:index.adoc[Pattern Library] — the coding patterns that enforce these properties
+* xref:glossary:index.adoc[Glossary] — definitions for security context, MLS range, sensitivity level,
+  mandatory access control, and other terms used throughout this module

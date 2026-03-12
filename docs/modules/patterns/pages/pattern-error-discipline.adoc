@@ -6,7 +6,8 @@
 // NIST 800-53 AU-3 — Content of Audit Records
 // NIST 800-53 AC-3 — Access Enforcement
 
-== Overview
+== Why This Pattern Exists
+// Zone 1: concept — threat, consequence, control basis
 
 Error information discipline separates two audiences for security-relevant error data:
 
@@ -25,7 +26,7 @@ A `SecurityContext` value that appears in an error string from a privileged proc
 be read by anyone who can read that process's output — even if the security policy would
 not allow them to read the file that the context labels.
 
-== The Threat
+=== The Threat
 
 Consider an error message that includes variable data from a security-relevant operation:
 
@@ -53,6 +54,7 @@ The same applies to paths, usernames, group names, cryptographic key fragments, 
 other value that should only be readable by authorized parties.
 
 == The Pattern
+// Zone 2: implementation — invariant, rule, code recipe
 
 Separate structured error types from user-visible strings:
 
@@ -74,6 +76,7 @@ Separate structured error types from user-visible strings:
   ad-hoc exceptions that erode the discipline.
 
 == In the UMRS Codebase
+// Zone 2 continued: types, traits, file paths
 
 `SecDirError` in `umrs-selinux/src/secure_dirent.rs` is the primary example. The
 variants carry structured diagnostic data; the `Display` implementation produces

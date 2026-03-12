@@ -1,8 +1,8 @@
 # Plan: Antora Documentation Restructure
 
 **Date**: 2026-03-11 (originated as pattern-library-taxonomy)
-**Updated**: 2026-03-12
-**Status**: Phase 0 complete, Phase 1 complete — Phase 2 next
+**Updated**: 2026-03-12 (completed)
+**Status**: COMPLETE — all phases done. Archived to `.claude/plans/completed/`.
 **Author**: tech-writer, senior-tech-writer
 **Reviewed by**: Jamie (2026-03-12)
 **Vision source**: `.claude/jamies_brain/doc-vision.md`

@@ -248,3 +248,19 @@ documents:
 * xref:truth-concepts.adoc[Truth and trust concepts]
 * xref:integrity-and-provenance.adoc[Integrity and provenance]
 * xref:architecture:history/mls-history.adoc[MLS history]
+
+=== Implementation Patterns
+
+The following patterns from the UMRS pattern library implement reference monitor properties
+in the codebase:
+
+* xref:patterns:pattern-non-bypassability.adoc[Non-Bypassability (RAIN)] — structural
+  enforcement of the always-invoked property
+* xref:patterns:pattern-fail-closed.adoc[Fail-Closed] — the fail-secure property at
+  every security gate
+* xref:patterns:pattern-loud-failure.adoc[Loud Failure] — observable failures as a
+  tamper-resistance mechanism
+* xref:patterns:pattern-tpi.adoc[Two-Path Independence (TPI)] — redundant verification
+  to eliminate single-path parse vulnerabilities
+* xref:patterns:pattern-layered-separation.adoc[Layered Separation] — isolation between
+  collection, storage, and display layers

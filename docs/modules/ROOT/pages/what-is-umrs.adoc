@@ -3,7 +3,160 @@
 :toc: left
 :toclevels: 2
 
-UMRS (Unclassified MLS Reference System) is a high-assurance software platform for handling Controlled Unclassified Information (CUI) on systems with SELinux mandatory access control. This page defines the scope, identity, and assurance focus of the project.
+// NIST 800-53 SA-3 — System development lifecycle
+// NIST 800-171 — CUI handling requirements (EO 13556)
+// NIST SP 800-53 CM-6 — Configuration settings
 
-// Placeholder — full content will be populated in Phase 3.
-// Source material: UMRS-PROJECT.md (repo root), docs/_scratch/notes/umrs-concepts.txt
+UMRS — the Unclassified MLS Reference System — is a high-assurance engineering project
+built on Red Hat Enterprise Linux 10.
+It operates in FIPS mode, with SELinux MLS policy active and a complete unclassified sensitivity
+label hierarchy configured.
+
+The goal is not only to harden the OS.
+The goal is to demonstrate how a real organization can extend a commercial Linux distribution
+to satisfy its own security and accreditation requirements —
+and to produce verifiable evidence that it has done so.
+
+== What UMRS Demonstrates
+
+Hardening is widely documented.
+High-assurance engineering is not.
+
+The difference:
+
+* *Hardening* — applying configuration to reduce attack surface.
+* *High-assurance engineering* — providing evidence that the system behaves as intended,
+  continues to behave as intended, and can prove that fact to third parties.
+
+UMRS is a blueprint for the second kind of work.
+Every capability — key inventory tools, audit-log signing and chaining, MLS configuration interfaces,
+FIPS-state inspection utilities — is accompanied by explicit mappings to NIST controls, STIG requirements,
+and applicable security guidance.
+
+The intent is to show how configuration and code create evidence, not just settings.
+
+Many organizations deploy an operating system as shipped and never explore how much value
+careful customization adds.
+This reference system exists to show that systems can be adapted and strengthened while
+maintaining verifiability, accreditation readiness, and rigorous operational integrity.
+
+== The Platform
+
+[cols="1,3", options="header"]
+|===
+| Component | Configuration
+
+| Operating system
+| Red Hat Enterprise Linux 10 (primary target)
+
+| Cryptographic mode
+| FIPS 140-2/3 active; `ProcFips` is a first-class kernel attribute in this codebase.
+All cryptographic operations use FIPS-validated primitives.
+
+| Access control
+| SELinux MLS policy (mandatory, non-bypassable).
+Every process and file has a security context.
+The kernel mediates all access decisions.
+
+| Baseline hardening
+| STIG-aligned configuration.
+IMA/EVM active for file integrity measurement and xattr protection.
+AIDE for filesystem state monitoring.
+|===
+
+Ubuntu is a secondary deployment target.
+See xref:deployment:ubuntu/ubuntu.adoc[Ubuntu deployment notes].
+
+== The MLS Label Hierarchy
+
+UMRS implements an unclassified Multi-Level Security (MLS) sensitivity label hierarchy.
+MLS separates data at the kernel level by sensitivity.
+Processes at one level cannot read or write objects at another level
+without explicit policy authorization.
+
+[NOTE]
+====
+These sensitivity labels are illustrative examples provided to clarify the structure.
+Exact label assignments are subject to change for each deployment.
+====
+
+[cols="1,3", options="header"]
+|===
+| Sensitivity Level | Description
+
+| `GENERAL`
+| The broad unclassified level.
+Suitable for routine, openly unclassified material that requires no special controls.
+
+| `PUBLIC`
+| Unclassified material suitable for public dissemination:
+documentation, website assets, published references.
+
+| `U-CONTROLLED`
+| The top of the unclassified MLS hierarchy.
+Not the same as CUI, but models what many organizations handle as "controlled"
+within an unclassified environment.
+Subject to explicit handling, integrity, and confidentiality expectations.
+|===
+
+== CUI Handling
+
+Controlled Unclassified Information (CUI) is a handling framework — not an MLS label,
+not a clearance, and not a classification level.
+
+CUI was created to standardize how the U.S. government handles sensitive but unclassified
+information that previously carried inconsistent labels: FOUO, SBU, LES, and others.
+The authoritative source is Executive Order 13556 (2010) and the NARA CUI Registry.footnote:[NARA CUI Registry: https://www.archives.gov/cui]
+
+UMRS attaches CUI category labels (for example, `c0`) to objects to provide granularity
+below the sensitivity level.
+This combination — sensitivity level plus category set — gives auditors a precise,
+machine-enforced record of what was handled, when, and under what controls.
+
+[IMPORTANT]
+====
+CUI applies to information — not to people, systems, or clearance levels.
+A process handling CUI data operates at `U-CONTROLLED` with the appropriate
+category bits set in its MLS range.
+====
+
+For the full label model, see xref:architecture:mls-label-model.adoc[MLS Label Model and CUI Mapping].
+
+== Control Mappings Accompany Every Feature
+
+UMRS does not describe a configuration and leave auditors to map it to requirements.
+Each feature includes explicit control citations:
+
+* Inventorying cryptographic signing keys maps to controls around trusted code paths,
+  cryptographic integrity, privileged operations, and auditability.
+* Audit-log signing chains satisfy tamper-evidence, forensic readiness, and
+  incident response controls.
+* MLS administrative safeguards tie directly to mandatory access control
+  and separation-of-duty requirements.
+
+Every high-assurance capability in UMRS describes which security controls it helps address
+and why.
+The intention is to show how capabilities create evidence, not just configuration.
+
+== What UMRS Is Not
+
+UMRS is a reference implementation — a worked example.
+It is not a finished product for direct deployment to production systems without customization.
+
+Organizations using UMRS should:
+
+* Adapt the MLS label hierarchy to their own sensitivity categories
+* Review and extend the SELinux policy for their specific application set
+* Apply and verify the STIG baseline against their deployment environment
+* Contribute observations back to the project where they improve the general case
+
+The project is released under the MIT license.
+Adaptation and reuse are explicitly encouraged.
+
+== See Also
+
+* xref:what-is-high-assurance.adoc[What Is High Assurance?] — the engineering standard this project applies
+* xref:scope-and-audience.adoc[Scope and Audience] — who this documentation is for
+* xref:security-concepts:reference-monitor.adoc[Reference Monitor Design]
+* xref:architecture:mls-label-model.adoc[MLS Label Model and CUI Mapping]
+* xref:architecture:index.adoc[Architecture overview]

@@ -242,3 +242,15 @@ of data whose integrity and access controls matter.
 * xref:architecture:mls-label-model.adoc[MLS label model and CUI mapping]
 * xref:deployment:ima-evm-setup.adoc[IMA/EVM setup]
 * xref:reference:compliance-frameworks.adoc[Compliance frameworks registry]
+
+=== Implementation Patterns
+
+The following patterns from the UMRS pattern library implement integrity and provenance
+properties at the code level:
+
+* xref:patterns:pattern-provenance.adoc[Provenance Verification] — magic-number check
+  before trusting kernel pseudo-filesystem data
+* xref:patterns:pattern-toctou.adoc[TOCTOU Safety] — fd-anchored I/O to prevent
+  path-substitution attacks between check and use
+* xref:patterns:pattern-sec.adoc[Sealed Evidence Cache (SEC)] — HMAC-based integrity
+  protection over cached verification results

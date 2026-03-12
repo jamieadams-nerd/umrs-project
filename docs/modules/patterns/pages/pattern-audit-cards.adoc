@@ -7,7 +7,8 @@
 // NIST 800-53 SI-7 — Software and Information Integrity
 // NSA RTB RAIN — Non-Bypassability; every read produces an auditable record
 
-== Overview
+== Why This Pattern Exists
+// Zone 1: concept — threat, consequence, control basis
 
 When a kernel attribute is read — enforcement state, MLS status, FIPS mode, lockdown
 level — the raw value alone is not a complete audit record. An auditor reviewing the
@@ -28,7 +29,7 @@ needed to interpret it.
 This pattern satisfies NIST 800-53 AU-3, which requires that audit records contain
 sufficient information to establish what event occurred, when, and under what circumstances.
 
-== The Threat
+=== The Threat
 
 A kernel attribute read that produces only a raw value in a log has two audit gaps:
 
@@ -49,6 +50,7 @@ other sources. All three of these properties are fragile. A structured card elim
 the dependency.
 
 == The Pattern
+// Zone 2: implementation — invariant, rule, code recipe
 
 `AttributeCard<T>` is the carrier type. It owns the value read from the kernel and records
 the `SystemTime` at which the read was performed. The `Display` implementation prints the
@@ -84,6 +86,7 @@ since epoch), making it directly comparable to system log timestamps without tim
 conversion. The `---` delimiters make the card boundaries grep-able.
 
 == In the UMRS Codebase
+// Zone 2 continued: types, traits, file paths
 
 `AttributeCard<T>` lives in `umrs-platform/src/kattrs/`. The `Display` implementation
 formats the card from the type's associated constants and the stored value:

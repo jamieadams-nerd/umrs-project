@@ -21,3 +21,12 @@ way it is.
 
 * xref:truth-concepts.adoc[Truth and trust concepts] — ground truth, trust anchors, and
   the distinction between custody trust and content trust.
+
+== Related Modules
+
+* xref:patterns:index.adoc[Pattern Library] — the implementation patterns that apply
+  these security concepts in code.
+* xref:architecture:index.adoc[Architecture] — design rationale and historical context
+  for the UMRS security model.
+* xref:glossary:index.adoc[Glossary] — precise definitions for provenance, integrity,
+  attestation, reference monitor, and related terms.

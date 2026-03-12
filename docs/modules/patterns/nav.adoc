@@ -1,32 +1,28 @@
 .xref:index.adoc[High-Assurance Pattern Library]
 [collapsible]
-* Patterns — Parsing and I/O
+* Architectural Patterns
+** xref:pattern-fail-closed.adoc[Fail-Closed]
+** xref:pattern-loud-failure.adoc[Loud Failure]
+** xref:pattern-non-bypassability.adoc[Non-Bypassability (RAIN)]
+** xref:pattern-error-discipline.adoc[Error Information Discipline]
+** xref:pattern-sec.adoc[Sealed Evidence Cache (SEC)]
+** xref:pattern-layered-separation.adoc[Layered Separation]
+
+* Coding Techniques
 ** xref:pattern-tpi.adoc[Two-Path Independence (TPI)]
 ** xref:pattern-toctou.adoc[TOCTOU Safety]
 ** xref:pattern-provenance.adoc[Provenance Verification]
-** xref:pattern-fail-closed.adoc[Fail-Closed]
-
-* Patterns — Types and Values
-** xref:pattern-non-bypassability.adoc[Non-Bypassability (RAIN)]
 ** xref:pattern-secure-arithmetic.adoc[Secure Arithmetic]
 ** xref:pattern-bounds-safe.adoc[Bounds-Safe Indexing]
-
-* Patterns — Secrets and Errors
 ** xref:pattern-zeroize.adoc[Zeroize Sensitive Data]
 ** xref:pattern-constant-time.adoc[Constant-Time Comparison]
-** xref:pattern-error-discipline.adoc[Error Information Discipline]
-** xref:pattern-loud-failure.adoc[Loud Failure]
 
-* Patterns — Verification Pipelines
-** xref:pattern-os-detection.adoc[OS Detection: A Trust Ladder]
-** xref:pattern-sec.adoc[Sealed Evidence Cache (SEC)]
+* Observability
+** xref:pattern-execution-measurement.adoc[Execution Measurement]
 ** xref:pattern-audit-cards.adoc[Audit Cards]
 
-* Patterns — Observability
-** xref:pattern-execution-measurement.adoc[Execution Measurement]
-
-* Patterns — Architecture
-** xref:pattern-layered-separation.adoc[Layered Separation]
-
-* Patterns — Workspace and Dependencies
+* Process
 ** xref:pattern-supply-chain.adoc[Supply Chain Hygiene]
+
+* Deep Dives
+** xref:pattern-os-detection.adoc[OS Detection: A Trust Ladder]

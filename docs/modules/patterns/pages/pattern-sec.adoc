@@ -9,7 +9,8 @@ NOTE: The SEC pattern is implemented in
 `components/rusty-gadgets/umrs-platform/src/sealed_cache.rs`.
 The `zeroize` crate is in the workspace; `SealingKey` derives `ZeroizeOnDrop`.
 
-== Overview
+== Why This Pattern Exists
+// Zone 1: concept — threat, consequence, control basis
 
 Some verification pipelines are expensive — they open files, check filesystem magic,
 query package databases, compute digests, and resolve contradictions across multiple
@@ -26,7 +27,7 @@ the cache is discarded, the pipeline re-runs, and the anomaly is logged.
 The design is intentionally minimal: no persistent storage, no network, one cache
 entry per caller context. The sealing key is ephemeral and zeroized on drop.
 
-== The Threat
+=== The Threat
 
 A verification pipeline that produces a trusted result creates a high-value target.
 An adversary who can substitute a cached result can:
@@ -51,6 +52,7 @@ prevents this by deriving the sealing key from a boot-local value (`boot_id`) an
 process start time — values an attacker cannot know until after the system is running.
 
 == The Pattern
+// Zone 2: implementation — invariant, rule, code recipe
 
 [mermaid]
 ....
@@ -134,6 +136,7 @@ seal failure is prohibited; the caller must not be able to observe that a seal f
 occurred in a way that leaks the cached value.
 
 == In the UMRS Codebase
+// Zone 2 continued: types, traits, file paths
 
 SEC is implemented in `components/rusty-gadgets/umrs-platform/src/sealed_cache.rs`.
 It wraps `OsDetector` and caches its `DetectionResult` output.
@@ -327,3 +330,5 @@ key is overwritten with zeros when `SealedCache` is dropped.
 * xref:pattern-provenance.adoc[Provenance Verification] — boot_id read uses ProcfsText
 * xref:pattern-toctou.adoc[TOCTOU Safety] — FIPS gate must be read at init, not at seal time
 * xref:devel:high-assurance-patterns.adoc[High-Assurance Patterns — overview and philosophy]
+* xref:security-concepts:integrity-and-provenance.adoc[Integrity and Provenance in UMRS] —
+  the integrity assurance model that the HMAC seal enforces over cached verification results

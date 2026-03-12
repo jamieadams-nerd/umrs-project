@@ -8,7 +8,8 @@
 // NIST 800-53 SR-6 — Supplier Assessments and Reviews
 // NIST 800-53 SA-15 — Development Process, Standards, and Tools
 
-== Overview
+== Why This Pattern Exists
+// Zone 1: concept — threat, consequence, control basis
 
 In Rust, adding a crate to `Cargo.toml` is fast. A single line can bring in a
 dependency — along with all of its transitive dependencies — without any compilation
@@ -27,7 +28,7 @@ It is the fixed bill-of-materials for the workspace. An auditor reviewing the co
 can trace every compiled dependency to a specific version and hash. That traceability
 only has value if the original addition decision was deliberate.
 
-== The Threat
+=== The Threat
 
 The Rust ecosystem has experienced supply chain incidents: crate names that closely
 resemble popular crates (typosquatting), crate ownership transfers to new maintainers
@@ -47,6 +48,7 @@ Common failure modes:
   140-2/3 validated — an important distinction on systems where FIPS mode is active
 
 == The Pattern
+// Zone 2: implementation — invariant, rule, code recipe
 
 Before adding any new dependency to any crate in this workspace:
 
@@ -85,6 +87,7 @@ Before adding any new dependency to any crate in this workspace:
 Run `cargo-audit` after the addition as well to confirm the lock file is clean.
 
 == In the UMRS Codebase
+// Zone 2 continued: types, traits, file paths
 
 === Cargo.lock as an Auditable Artifact
 

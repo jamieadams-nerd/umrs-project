@@ -7,7 +7,8 @@
 // NIST 800-53 AC-4 — Information Flow Enforcement (sensitivity level arithmetic)
 // ANSSI Rust Secure Coding Guide — overflow-checks in release builds
 
-== Overview
+== Why This Pattern Exists
+// Zone 1: concept — threat, consequence, control basis
 
 Integer overflow on a security-relevant value is not a logic bug — it is a potential
 privilege escalation. A sensitivity level that wraps from `s15` to `s0` is a privilege
@@ -24,7 +25,7 @@ security-relevant values: sensitivity levels, category IDs, bitmask indices, wor
 positions, and any other numeric value that drives an access control or classification
 decision.
 
-== The Threat
+=== The Threat
 
 The default release-mode behavior is that integer overflow wraps silently. Consider:
 
@@ -40,6 +41,7 @@ The danger is that testing under debug mode provides a false sense of safety. Th
 panics correctly in tests and then fails silently in the production binary.
 
 == The Pattern
+// Zone 2: implementation — invariant, rule, code recipe
 
 For any arithmetic on security-relevant values:
 
@@ -57,6 +59,7 @@ For any arithmetic on security-relevant values:
   that debug builds provide).
 
 == In the UMRS Codebase
+// Zone 2 continued: types, traits, file paths
 
 The workspace `Cargo.toml` enables release-mode overflow checks for all workspace members:
 
