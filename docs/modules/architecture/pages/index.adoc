@@ -160,7 +160,7 @@ entire classes of memory safety and concurrency errors at compile time.
 mechanically verifiable compile-time proof, not a policy statement
 (NIST 800-218 SSDF PW.4, NSA RTB).
 
-See xref:umrs-prog-lang.adoc[Language choice rationale] and
+See xref:devel:umrs-prog-lang.adoc[Language choice rationale] and
 xref:library-model.adoc[Library model] for the detailed argument.
 
 == High-Assurance Patterns

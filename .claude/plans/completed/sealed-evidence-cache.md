@@ -1,7 +1,7 @@
 # Plan: Sealed Evidence Cache (SEC) for OS Detection
 
 ---
-status: draft
+status: completed
 date: 2026-03-11
 crate: umrs-platform
 area: detect

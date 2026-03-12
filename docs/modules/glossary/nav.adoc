@@ -1,0 +1,3 @@
+.xref:index.adoc[Glossary]
+[collapsible]
+* xref:index.adoc[Glossary]

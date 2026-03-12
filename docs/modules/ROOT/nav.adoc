@@ -1,6 +1,10 @@
 * xref:index.adoc[Home]
 * xref:introduction.adoc[Introduction]
+* xref:what-is-umrs.adoc[What is UMRS]
+* xref:what-is-high-assurance.adoc[What is High Assurance]
+* xref:scope-and-audience.adoc[Scope and Audience]
 * xref:getting-started.adoc[Getting Started]
+* xref:ai-transparency.adoc[AI in This Project]
 
 * xref:architecture:index.adoc[Architecture]
 * xref:security-concepts:index.adoc[Security Concepts]
@@ -11,5 +15,7 @@
 * xref:operations:index.adoc[Operations]
 * xref:logging-audit:index.adoc[Logging and Audit]
 * xref:reference:index.adoc[Reference]
+* xref:glossary:index.adoc[Glossary]
 
-* xref:legal-notices.adoc[Legal notices]
+* xref:legal-notices.adoc[Legal Notices]
+* xref:release-notes.adoc[Release Notes]

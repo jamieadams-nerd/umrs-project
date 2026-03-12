@@ -1,0 +1,10 @@
+= Post-Quantum Cryptography
+:description: Post-quantum cryptographic algorithms — ML-KEM, ML-DSA, SLH-DSA — and their FIPS 203/204/205 standardization status.
+:toc: left
+:toclevels: 2
+
+Post-quantum cryptography (PQC) refers to cryptographic algorithms believed to be resistant to attacks by quantum computers. NIST finalized three PQC standards in 2024: FIPS 203 (ML-KEM), FIPS 204 (ML-DSA), and FIPS 205 (SLH-DSA). This page covers their properties, FIPS status, and relevance to UMRS deployments.
+
+// Placeholder — full content will be populated in Phase 3.
+// Source material: docs/new-stuff/crypto.md (post-quantum section)
+// Controls: NIST SP 800-53 SC-12, SC-13

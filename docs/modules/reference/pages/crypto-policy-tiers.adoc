@@ -1,0 +1,10 @@
+= Cryptographic Policy Tiers
+:description: Algorithm policy tiers — Preferred, Approved, Acceptable, and Disallowed — with usage guidance for each category.
+:toc: left
+:toclevels: 2
+
+UMRS applies a four-tier policy framework to cryptographic algorithm selection: Preferred, Approved, Acceptable, and Disallowed. This page defines each tier, lists algorithms by tier and category, and explains the constraints that determine tier placement.
+
+// Placeholder — full content will be populated in Phase 3.
+// Source material: docs/new-stuff/crypto.md (policy tiers section)
+// Controls: NIST SP 800-53 SC-12, SC-13, IA-7

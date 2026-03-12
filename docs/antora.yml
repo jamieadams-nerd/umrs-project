@@ -12,3 +12,4 @@ nav:
   - modules/operations/nav.adoc
   - modules/logging-audit/nav.adoc
   - modules/reference/nav.adoc
+  - modules/glossary/nav.adoc

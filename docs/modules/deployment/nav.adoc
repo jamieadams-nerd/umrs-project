@@ -14,7 +14,5 @@
 ** xref:ima-evm-setup.adoc[IMA/EVM Integrity Setup]
 ** xref:tmp-security.adoc[Temporary Filesystem Security]
 ** xref:dual-network-interface.adoc[Dual Network Interface Separation]
-** xref:structured-logging.adoc[Structured Activity Logging]
-** xref:how-to-structure-log.adoc[Configuring Structured Logs]
 ** Kernel Security
 *** xref:kernel-lockdown-moddisable.adoc[Kernel Lockdown and Module Hardening]

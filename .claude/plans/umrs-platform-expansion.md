@@ -1,7 +1,8 @@
 ---
-  name: Scope of umrs-platform to expand
+  name: Scope of umrs-platform to expand for new detection items
   path: components/rusty-gadgets/umrs-platform
   agent: rusty-developer
+  status: reeady to review
 ---
 
 ## umrs-platform package/crate 

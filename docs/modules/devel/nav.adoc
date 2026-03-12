@@ -11,7 +11,7 @@
 ** xref:os-detection-deep-dive.adoc[OS Detection Pipeline — Deep Dive]
 
 * Language Guides
-** xref:architecture:umrs-prog-lang.adoc[Language choice rationale]
+** xref:umrs-prog-lang.adoc[Language choice rationale]
 ** xref:rust-style-guide.adoc[Rust style guide]
 ** xref:secure-bash.adoc[Secure Bash guide]
 ** xref:secure-python.adoc[Secure Python guide]

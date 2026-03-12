@@ -25,7 +25,10 @@
 ** xref:cui/cui-descriptions.adoc[CUI category descriptions (c0–c9)]
 ** xref:cui/cui-category-abbreviations.adoc[CUI category abbreviations]
 
-* Cryptography
-** xref:cryptography/fips-cryptography-cheat-sheet.adoc[FIPS 140-2/3 cryptography quick reference]
-** xref:cryptography/key-recommendation-list.adoc[Cryptographic key recommendations]
-** xref:cryptography/openssl-no-vendoring.adoc[OpenSSL: no vendoring]
+* Cryptographic Baseline
+** xref:fips-cryptography-cheat-sheet.adoc[FIPS-Approved Algorithms]
+** xref:key-recommendation-list.adoc[Key Recommendations]
+** xref:openssl-no-vendoring.adoc[OpenSSL Vendoring Policy]
+** xref:crypto-post-quantum.adoc[Post-Quantum Cryptography]
+** xref:crypto-policy-tiers.adoc[Cryptographic Policy Tiers]
+** xref:crypto-cpu-extensions.adoc[CPU Cryptographic Extensions]

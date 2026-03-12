@@ -1,0 +1,8 @@
+= Glossary
+:description: Terminology definitions used across UMRS documentation.
+:toc: left
+:toclevels: 2
+
+This glossary provides definitions for security, assurance, cryptographic, and platform terms used throughout the UMRS documentation.
+
+// Placeholder — terms will be populated in Phase 3.

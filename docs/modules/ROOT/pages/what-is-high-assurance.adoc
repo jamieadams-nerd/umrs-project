@@ -1,0 +1,10 @@
+= What Is High Assurance?
+:description: High-assurance engineering introduction — what it means, why it matters, and what it requires.
+:toc: left
+:toclevels: 2
+
+High assurance is an engineering standard, not a marketing claim. A high-assurance system provides mechanically verifiable guarantees about its security properties — guarantees that hold even under adversarial conditions. This page explains the concept and its relevance to UMRS.
+
+// Placeholder — full content will be populated in Phase 3.
+// Source material: README.md "What is a High-Assurance System" section (repo root),
+// docs/_scratch/RATIONALE_for_HA.adoc, docs/_scratch/HIGH_ASSURANCE_EXTRA.txt

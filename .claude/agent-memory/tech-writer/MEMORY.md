@@ -102,3 +102,33 @@ section now redirects to `patterns:index.adoc` instead of listing pages inline.
   - os-detection-deep-dive.adoc: "Future: Sealed Memory Cache" section replaced with
     full "Sealed Evidence Cache" section covering SealedCache API, seal payload layout,
     FIPS gate, decode_cached_result() design note, CacheStatus, compliance table
+
+## Completed Work (2026-03-12 Phase 1 Antora restructure)
+- security-compliance/ module deleted (was empty, not in antora.yml)
+- architecture/umrs-prog-lang.adoc deleted; devel/ copy is canonical; all xrefs updated
+  - Fixed in: architecture/nav.adoc, devel/nav.adoc, architecture/pages/index.adoc
+- deployment/structured-logging.adoc moved to logging-audit/
+- deployment/how-to-structure-log.adoc moved to logging-audit/
+  - Fixed xref in: ROOT/pages/getting-started.adoc (deployment: → logging-audit:)
+- deployment/pages/_archive/ directory deleted (5 .md files, all superseded)
+- glossary/ module created: pages/index.adoc + nav.adoc; registered in antora.yml
+- reference/pages/cryptography/ subdir promoted to top-level reference/pages/
+  - Nav heading renamed: "Cryptography" → "Cryptographic Baseline"
+  - Fixed xrefs in: reference/pages/index.adoc, devel/pages/high-assurance-patterns.adoc,
+    architecture/pages/cui-structure.adoc
+- Placeholder pages created: ROOT/pages/what-is-umrs.adoc, what-is-high-assurance.adoc,
+  ai-transparency.adoc; reference/pages/crypto-post-quantum.adoc, crypto-policy-tiers.adoc,
+  crypto-cpu-extensions.adoc
+- ROOT/nav.adoc: orientation pages first; glossary and release-notes added
+
+## Module Structure (as of 2026-03-12 Phase 1 complete)
+Active modules: ROOT, architecture, security-concepts, deployment, devel, patterns,
+umrs-tools, operations, logging-audit, reference, glossary
+- Crypto pages: reference/pages/ top-level (NOT cryptography/ subdir)
+- Logging architecture pages: logging-audit/ (NOT deployment/)
+- umrs-prog-lang.adoc: devel/ (NOT architecture/)
+
+## Cross-Module Xref Gotchas
+- Grep ALL .adoc files when moving/deleting pages — nav files alone are not enough
+- reference/pages/index.adoc mirrors nav.adoc as a body list — update both when moving pages
+- architecture/pages/index.adoc had an inline xref that a nav-only grep would miss

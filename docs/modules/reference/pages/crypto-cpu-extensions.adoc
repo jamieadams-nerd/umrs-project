@@ -1,0 +1,10 @@
+= CPU Cryptographic Extensions
+:description: Hardware cryptographic extensions — AES-NI, SHA extensions, AVX-512 VAES — and how to audit an ELF binary for their use.
+:toc: left
+:toclevels: 2
+
+Modern processors include hardware extensions that accelerate cryptographic operations while maintaining constant-time execution properties. This page lists the relevant CPU extensions, describes their security implications, and explains how to audit a compiled ELF binary to determine which extensions it relies on.
+
+// Placeholder — full content will be populated in Phase 3.
+// See doc-vision.md §10 for the content scope for this page.
+// Content TBD — no existing source material; requires research.

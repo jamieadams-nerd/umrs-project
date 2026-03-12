@@ -10,10 +10,17 @@
 - **RAG collections**: 3 new collections — `cmmc` (545 chunks), `dod-5200` (360 chunks), `rustdoc-book` (194 chunks), `asciidoctor-ref` (67 chunks), `dita-spec` (100 chunks); `nist` collection expanded from 461 to 1,447 chunks
 - **Cross-team note**: Reference document topology guide — explains three-layer reference system (`rag-query` → `.claude/references/` → `refs/`) for all agents
 - **Approved source**: `esd.whs.mil` (DoD WHS Issuances portal) added to researcher approved sources
+- **Documentation restructure plan**: Comprehensive 5-phase plan at `.claude/plans/antora-doc-restructure.md` aligned with vision document (`.claude/jamies_brain/doc-vision.md`); phases: 0 (Audit — completed), 1 (Structural foundation — completed), 2 (Patterns taxonomy), 3 (New content), 4 (Curation); 5 phase tasks created on task board with blocking dependencies
+- **Phase 0 audit report**: Audited 130 Antora pages, mapped to doc-vision domains; triaged 46 `docs/_scratch/` files (12 delete, 19 promote, 15 discard); triaged 5 `docs/modules/deployment/pages/_archive/` files (all superseded); assessed README/UMRS-PROJECT/UMRS-PLAN for content extraction; migration manifest at `.claude/reports/phase0-migration-manifest.md`
+- **Phase 1 structural changes**: Deleted empty `security-compliance/` module; deleted duplicate `architecture/umrs-prog-lang.adoc`; moved `structured-logging.adoc` and `how-to-structure-log.adoc` to `logging-audit/`; promoted cryptography subdirectory pages to `reference/pages/` top-level; deleted all 5 files in `deployment/pages/_archive/`; created `glossary/` module skeleton; created 6 placeholder pages (ROOT: `what-is-umrs.adoc`, `what-is-high-assurance.adoc`, `ai-transparency.adoc`; reference: `crypto-post-quantum.adoc`, `crypto-policy-tiers.adoc`, `crypto-cpu-extensions.adoc`); updated nav.adoc files and fixed xrefs; `make docs` passes clean
+- **Rogue .claude/ directories removed**: Deleted `.claude/plans/.claude/`, `.claude/.claude/`, and `.claude/rag/.claude/` containing stale session permissions and duplicate agent memory
+- **Plan retired**: `sealed-evidence-cache.md` marked completed and moved to `.claude/plans/completed/` (SEC pattern fully implemented in `umrs-platform/src/sealed_cache.rs`)
+- **Documentation freeze notice**: Posted to cross-team notes
 
 ### Changed
 - **refs/manifest.md**: Corrected CMMC Final Rule entry — was pointing to wrong document (2023-27756 OMB submission); now correctly cites 89 FR 83092 (document 2024-22905, Oct 2024); corrected Assessment Guide L2 URL from `AssessmentGuide_L2.pdf` (404) to `AssessmentGuideL2v2.pdf` (v2.13); all 5 DoD 5200.01 entries updated from PENDING to downloaded with SHA-256 checksums
 - **Researcher memory**: Updated collection inventory, retrieval patterns, approved sources, and pending items
+- **Phase 1 nav and xrefs**: All Antora nav.adoc files updated; cross-module xrefs corrected to reflect structural moves and new placeholder pages; all 9 modules now consistently registered and navigable
 
 ## 2026-03-11
 

@@ -36,6 +36,46 @@ Mark entries `resolved` when acted on. Do not delete entries.
 
 ---
 
+## [2026-03-12] coordinator → all-agents: DOCUMENTATION FREEZE — Antora restructure underway
+
+**Status**: open
+
+**DO NOT add new documentation pages to `docs/modules/` until the restructure is complete.**
+
+Jamie has approved a full Antora documentation restructure to align with the project's
+documentation vision (`.claude/jamies_brain/doc-vision.md`). The plan is at
+`.claude/plans/antora-doc-restructure.md`.
+
+**What's happening**:
+- Phase 0: Audit every page, triage `_scratch/` and `_archive/`, produce migration manifest
+- Phase 1: Move misplaced content, delete empty `security-compliance/`, create `glossary/` module, strengthen ROOT
+- Phase 2: Patterns taxonomy (labeling, provenance badges, two-zone structure)
+- Phase 3: New content (crypto section, glossary, ROOT pages, AI transparency)
+- Phase 4: Curation, cross-linking, final validation
+
+**Key decisions**:
+- `security-compliance/` module: being deleted (empty, no purpose)
+- `glossary/`: new module being created
+- `_scratch`/`_archive` files: deleted after content is promoted into Antora pages
+- `docs/new-stuff/crypto.md`: seed material for cryptography section
+
+**Agent impacts**:
+- **tech-writer, senior-tech-writer**: You are the primary executors. Check task board for
+  Phase 0–4 tasks. Senior-tech-writer leads Phase 0 (audit) and Phase 4 (curation).
+  Tech-writer leads Phase 1 (moves) and Phase 2 (patterns). Both collaborate on Phase 3.
+- **rust-developer**: If your work produces new public API or patterns, create a `doc-sync:`
+  task as usual — but note that the target module may change during restructure. Include
+  the content description; the tech-writer will determine final placement.
+- **security-engineer, security-auditor**: Compliance doc updates should be queued as tasks
+  rather than written directly until the restructure settles.
+- **researcher**: No impact on RAG work. Continue ingestion as normal.
+- **umrs-translator**: No impact — i18n domains are tool binaries, not docs.
+- **changelog-updater**: Log the restructure as a single entry when each phase completes.
+
+**Task board**: Phase tasks are #2 (Phase 0), #4 (Phase 1), #5 (Phase 2), #1 (Phase 3), #3 (Phase 4) with blocking dependencies set.
+
+---
+
 ## [2026-03-12] researcher → security-engineer, security-auditor: DoD 5200.01 series + CUI policy in RAG
 
 **Status**: open

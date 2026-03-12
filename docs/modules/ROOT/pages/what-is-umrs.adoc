@@ -1,0 +1,9 @@
+= What Is UMRS?
+:description: What UMRS is and is not — scope, identity, and assurance focus.
+:toc: left
+:toclevels: 2
+
+UMRS (Unclassified MLS Reference System) is a high-assurance software platform for handling Controlled Unclassified Information (CUI) on systems with SELinux mandatory access control. This page defines the scope, identity, and assurance focus of the project.
+
+// Placeholder — full content will be populated in Phase 3.
+// Source material: UMRS-PROJECT.md (repo root), docs/_scratch/notes/umrs-concepts.txt

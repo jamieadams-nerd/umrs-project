@@ -106,7 +106,7 @@ NOTE: This page is planned and will be added in a future milestone.
 
 . xref:devel:high-assurance-patterns.adoc[High-assurance coding patterns] —
   each pattern's rationale, threat model, and codebase example.
-. xref:deployment:structured-logging.adoc[Structured logging] —
+. xref:logging-audit:structured-logging.adoc[Structured logging] —
   audit trail structure and event taxonomy.
 . xref:operations:troubleshooting.adoc[Troubleshooting] —
   how enforcement failures surface and how they are investigated.

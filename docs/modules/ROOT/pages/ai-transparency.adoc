@@ -1,0 +1,9 @@
+= AI in This Project
+:description: The role of AI tools and agents in the UMRS project — what they do, what they do not do, and how their contributions are reviewed.
+:toc: left
+:toclevels: 2
+
+UMRS uses AI coding assistants and documentation agents as part of its development process. This page explains the scope of AI involvement, the review requirements applied to AI-generated content, and what this means for auditors and contributors.
+
+// Placeholder — full content will be populated in Phase 3.
+// See doc-vision.md §18 for the content scope for this page.
