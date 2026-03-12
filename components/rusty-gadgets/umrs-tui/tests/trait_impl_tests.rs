@@ -1,0 +1,232 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Jamie Adams
+
+//! Integration tests for the [`AuditCardApp`] trait via a minimal mock impl.
+//!
+//! Verifies object safety, correct return values for all trait methods, and
+//! that an invalid tab index produces a defined fallback from `data_rows`.
+//! No terminal backend is required.
+
+use umrs_tui::app::{
+    AuditCardApp, DataRow, StatusLevel, StatusMessage, StyleHint, TabDef,
+};
+use umrs_tui::tabs::tabs_from_labels;
+
+// ---------------------------------------------------------------------------
+// Mock implementation
+// ---------------------------------------------------------------------------
+
+/// Minimal `AuditCardApp` implementation used exclusively for testing.
+///
+/// Provides two tabs of static data: "Summary" and "Details".
+struct MockApp {
+    tabs: Vec<TabDef>,
+    status: StatusMessage,
+}
+
+impl MockApp {
+    fn new() -> Self {
+        Self {
+            tabs: tabs_from_labels(&["Summary", "Details"]),
+            status: StatusMessage::new(StatusLevel::Ok, "All checks passed"),
+        }
+    }
+}
+
+impl AuditCardApp for MockApp {
+    fn report_name(&self) -> &'static str {
+        "Test Report"
+    }
+
+    fn report_subject(&self) -> &'static str {
+        "mock.host.example"
+    }
+
+    fn tabs(&self) -> &[TabDef] {
+        &self.tabs
+    }
+
+    fn active_tab(&self) -> usize {
+        0
+    }
+
+    fn data_rows(&self, tab_index: usize) -> Vec<DataRow> {
+        match tab_index {
+            0 => vec![
+                DataRow::normal("Kernel", "6.12.0"),
+                DataRow::separator(),
+                DataRow::new("SELinux", "Enforcing", StyleHint::TrustGreen),
+            ],
+            1 => vec![
+                DataRow::normal("Arch", "aarch64"),
+                DataRow::normal("FIPS", "active"),
+            ],
+            // Fail-closed: unknown tab returns empty — no panic, no garbage data
+            _ => vec![],
+        }
+    }
+
+    fn status(&self) -> &StatusMessage {
+        &self.status
+    }
+}
+
+// ---------------------------------------------------------------------------
+// report_name / report_subject
+// ---------------------------------------------------------------------------
+
+#[test]
+fn report_name_returns_expected_value() {
+    let app = MockApp::new();
+    assert_eq!(app.report_name(), "Test Report");
+}
+
+#[test]
+fn report_subject_returns_expected_value() {
+    let app = MockApp::new();
+    assert_eq!(app.report_subject(), "mock.host.example");
+}
+
+// ---------------------------------------------------------------------------
+// tabs
+// ---------------------------------------------------------------------------
+
+#[test]
+fn tabs_returns_two_entries() {
+    let app = MockApp::new();
+    assert_eq!(app.tabs().len(), 2);
+}
+
+#[test]
+fn tabs_first_label_is_summary() {
+    let app = MockApp::new();
+    assert_eq!(app.tabs()[0].label, "Summary");
+}
+
+#[test]
+fn tabs_second_label_is_details() {
+    let app = MockApp::new();
+    assert_eq!(app.tabs()[1].label, "Details");
+}
+
+// ---------------------------------------------------------------------------
+// active_tab
+// ---------------------------------------------------------------------------
+
+#[test]
+fn active_tab_returns_zero() {
+    let app = MockApp::new();
+    assert_eq!(app.active_tab(), 0);
+}
+
+// ---------------------------------------------------------------------------
+// data_rows — tab 0
+// ---------------------------------------------------------------------------
+
+#[test]
+fn data_rows_tab_zero_returns_three_rows() {
+    let app = MockApp::new();
+    let rows = app.data_rows(0);
+    assert_eq!(rows.len(), 3, "tab 0 must have 3 rows");
+}
+
+#[test]
+fn data_rows_tab_zero_first_row_key_is_kernel() {
+    let app = MockApp::new();
+    let rows = app.data_rows(0);
+    assert_eq!(rows[0].key, "Kernel");
+}
+
+#[test]
+fn data_rows_tab_zero_separator_has_empty_fields() {
+    let app = MockApp::new();
+    let rows = app.data_rows(0);
+    assert!(rows[1].key.is_empty(), "separator row key must be empty");
+    assert!(
+        rows[1].value.is_empty(),
+        "separator row value must be empty"
+    );
+}
+
+#[test]
+fn data_rows_tab_zero_selinux_row_has_trust_green_hint() {
+    let app = MockApp::new();
+    let rows = app.data_rows(0);
+    assert_eq!(rows[2].style_hint, StyleHint::TrustGreen);
+}
+
+// ---------------------------------------------------------------------------
+// data_rows — tab 1
+// ---------------------------------------------------------------------------
+
+#[test]
+fn data_rows_tab_one_returns_two_rows() {
+    let app = MockApp::new();
+    let rows = app.data_rows(1);
+    assert_eq!(rows.len(), 2, "tab 1 must have 2 rows");
+}
+
+#[test]
+fn data_rows_tab_one_arch_row_value() {
+    let app = MockApp::new();
+    let rows = app.data_rows(1);
+    assert_eq!(rows[0].value, "aarch64");
+}
+
+// ---------------------------------------------------------------------------
+// data_rows — invalid tab index (fail-closed)
+// ---------------------------------------------------------------------------
+
+#[test]
+fn data_rows_invalid_tab_index_returns_empty_vec() {
+    let app = MockApp::new();
+    let rows = app.data_rows(99);
+    assert!(
+        rows.is_empty(),
+        "invalid tab index must return empty Vec — fail closed, no panic"
+    );
+}
+
+// ---------------------------------------------------------------------------
+// status
+// ---------------------------------------------------------------------------
+
+#[test]
+fn status_returns_ok_level() {
+    let app = MockApp::new();
+    assert_eq!(app.status().level, StatusLevel::Ok);
+}
+
+#[test]
+fn status_returns_expected_text() {
+    let app = MockApp::new();
+    assert_eq!(app.status().text, "All checks passed");
+}
+
+// ---------------------------------------------------------------------------
+// Object safety — trait usable as &dyn AuditCardApp
+// ---------------------------------------------------------------------------
+
+#[test]
+fn audit_card_app_is_object_safe() {
+    let app = MockApp::new();
+    // If AuditCardApp were not object-safe this would fail to compile.
+    let dyn_app: &dyn AuditCardApp = &app;
+    assert_eq!(dyn_app.report_name(), "Test Report");
+    assert_eq!(dyn_app.tabs().len(), 2);
+}
+
+#[test]
+fn dyn_audit_card_app_data_rows_works() {
+    let app = MockApp::new();
+    let dyn_app: &dyn AuditCardApp = &app;
+    let rows = dyn_app.data_rows(0);
+    assert_eq!(rows.len(), 3);
+}
+
+#[test]
+fn dyn_audit_card_app_status_works() {
+    let app = MockApp::new();
+    let dyn_app: &dyn AuditCardApp = &app;
+    assert_eq!(dyn_app.status().level, StatusLevel::Ok);
+}

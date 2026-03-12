@@ -1,134 +1,502 @@
 // SPDX-License-Identifier: MIT
-// Copyright (c) 2025 Jamie Adams
+// Copyright (c) 2026 Jamie Adams
 //
 // NIST 800-218 SSDF PW.4 / NSA RTB: Provable safe-code guarantee.
-// #![forbid] cannot be overridden by any inner #[allow] — this is a
-// compile-time proof, not a policy.
 #![forbid(unsafe_code)]
+#![warn(clippy::pedantic)]
+#![warn(clippy::nursery)]
+#![deny(clippy::unwrap_used)]
+#![allow(clippy::doc_markdown)]
+#![allow(clippy::missing_errors_doc)]
+#![allow(clippy::missing_panics_doc)]
+#![allow(clippy::module_name_repetitions)]
+#![allow(clippy::option_if_let_else)]
+#![allow(clippy::redundant_closure)]
+#![allow(clippy::unreadable_literal)]
 
-//! UMRS TUI — wizard art viewer.
+//! # umrs-tui — OS Detection Audit Card
 //!
-//! Renders the built-in braille wizard art with configurable terminal
-//! justification. Uses `COLUMNS` environment variable for terminal width
-//! detection; falls back to 80 columns when the variable is absent or
-//! unparseable.
+//! Runs the `umrs-platform` OS detection pipeline and displays the result
+//! as an interactive ratatui audit card. Two tabs present the data:
 //!
-//! Usage:
-//!   umrs-tui [--justify left|right] [-j left|right]
+//! - **Tab 0 — OS Information**: `os-release` fields, substrate identity,
+//!   boot ID.
+//! - **Tab 1 — Trust / Evidence**: label trust classification, confidence
+//!   tier, downgrade reasons, contradictions, evidence records.
 //!
-//! Options:
-//!   -j, --justify <left|right>   Justify art to the left or right (default: left)
+//! Key bindings: `Tab`/`Right` = next tab, `Shift-Tab`/`Left` = prev tab,
+//! `j`/`k` = scroll, `q`/`Esc` = quit.
+//!
+//! ## Compliance
+//!
+//! - **NIST SP 800-53 CM-8**: Component inventory via substrate identity.
+//! - **NIST SP 800-53 SI-7**: Software integrity via label trust / T4 gate.
+//! - **NIST SP 800-53 AU-3**: Evidence chain display for audit record content.
 
-use umrs_core::robots::{WIZARD_MEDIUM, WIZARD_SMALL};
+use std::time::Duration;
+
+use crossterm::event::{self, Event};
+use umrs_core::i18n;
+use umrs_platform::detect::label_trust::LabelTrust;
+use umrs_platform::detect::{DetectionError, DetectionResult, OsDetector};
+use umrs_platform::evidence::SourceKind;
+use umrs_platform::{Distro, OsFamily, TrustLevel};
+use umrs_tui::app::{
+    AuditCardApp, AuditCardState, DataRow, StatusLevel, StatusMessage,
+    StyleHint, TabDef,
+};
+use umrs_tui::keymap::KeyMap;
+use umrs_tui::layout::render_audit_card;
+use umrs_tui::theme::Theme;
 
 // ---------------------------------------------------------------------------
-// Justification
+// Display helpers
 // ---------------------------------------------------------------------------
 
-/// Output justification for the wizard art display.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum Justify {
-    Left,
-    Right,
+const fn trust_level_label(level: TrustLevel) -> &'static str {
+    match level {
+        TrustLevel::Untrusted => "T0 — Untrusted",
+        TrustLevel::KernelAnchored => "T1 — KernelAnchored",
+        TrustLevel::EnvAnchored => "T2 — EnvAnchored",
+        TrustLevel::SubstrateAnchored => "T3 — SubstrateAnchored",
+        TrustLevel::IntegrityAnchored => "T4 — IntegrityAnchored",
+    }
+}
+
+const fn trust_level_description(level: TrustLevel) -> &'static str {
+    match level {
+        TrustLevel::Untrusted => "No kernel anchor established.",
+        TrustLevel::KernelAnchored => {
+            "procfs verified via PROC_SUPER_MAGIC + PID coherence."
+        }
+        TrustLevel::EnvAnchored => {
+            "Mount topology cross-checked (mountinfo vs statfs)."
+        }
+        TrustLevel::SubstrateAnchored => {
+            "Package substrate parsed; identity from >= 2 facts."
+        }
+        TrustLevel::IntegrityAnchored => {
+            "os-release ownership + installed digest verified."
+        }
+    }
+}
+
+const fn trust_level_hint(level: TrustLevel) -> StyleHint {
+    match level {
+        TrustLevel::Untrusted => StyleHint::TrustRed,
+        TrustLevel::KernelAnchored | TrustLevel::EnvAnchored => {
+            StyleHint::TrustYellow
+        }
+        TrustLevel::SubstrateAnchored | TrustLevel::IntegrityAnchored => {
+            StyleHint::TrustGreen
+        }
+    }
+}
+
+const fn source_kind_label(kind: &SourceKind) -> &'static str {
+    match kind {
+        SourceKind::Procfs => "procfs",
+        SourceKind::RegularFile => "regular-file",
+        SourceKind::PackageDb => "package-db",
+        SourceKind::SymlinkTarget => "symlink-target",
+        SourceKind::SysfsNode => "sysfs",
+        SourceKind::StatfsResult => "statfs",
+    }
+}
+
+fn distro_label(distro: &Distro) -> String {
+    match distro {
+        Distro::Rhel => "RHEL".to_owned(),
+        Distro::Fedora => "Fedora".to_owned(),
+        Distro::CentOs => "CentOS".to_owned(),
+        Distro::AlmaLinux => "AlmaLinux".to_owned(),
+        Distro::RockyLinux => "Rocky Linux".to_owned(),
+        Distro::Debian => "Debian".to_owned(),
+        Distro::Ubuntu => "Ubuntu".to_owned(),
+        Distro::Kali => "Kali Linux".to_owned(),
+        Distro::Other(s) => s.clone(),
+    }
+}
+
+const fn family_label(family: &OsFamily) -> &'static str {
+    match family {
+        OsFamily::RpmBased => "RPM-based",
+        OsFamily::DpkgBased => "dpkg-based",
+        OsFamily::PacmanBased => "pacman-based",
+        OsFamily::Unknown => "unknown",
+    }
 }
 
 // ---------------------------------------------------------------------------
-// Argument parsing
+// OsDetectApp
 // ---------------------------------------------------------------------------
 
-/// Parse `--justify` / `-j` from the argument list.
+/// Audit card data source backed by the OS detection pipeline.
 ///
-/// Returns `Err(String)` with a usage message on unrecognized arguments or
-/// invalid values. Unrecognized flags are rejected — the binary has a single
-/// purpose and a minimal contract.
-fn parse_args() -> Result<Justify, String> {
-    let args: Vec<String> = std::env::args().collect();
-    let mut justify = Justify::Left;
-    let mut i = 1usize;
+/// Constructed once; detection is not re-run on refresh (the result is
+/// immutable after construction). The `status` field is mutable so the
+/// caller can update it to reflect the detection outcome.
+///
+/// NIST SP 800-53 CM-8, SI-7, AU-3.
+struct OsDetectApp {
+    tabs: Vec<TabDef>,
+    os_info_rows: Vec<DataRow>,
+    trust_rows: Vec<DataRow>,
+    status: StatusMessage,
+}
 
-    while i < args.len() {
-        let arg = args.get(i).map(String::as_str).unwrap_or("");
-        match arg {
-            "--justify" | "-j" => {
-                i = i.saturating_add(1);
-                let value = args.get(i).map(String::as_str).unwrap_or("");
-                match value {
-                    "left" => justify = Justify::Left,
-                    "right" => justify = Justify::Right,
-                    other => {
-                        return Err(format!(
-                            "unknown justification '{}'; expected 'left' or 'right'",
-                            other
-                        ));
-                    }
-                }
-            }
-            "--help" | "-h" => {
-                print_usage();
-                std::process::exit(0);
-            }
-            other => {
-                return Err(format!(
-                    "unrecognized argument '{}'\nRun with --help for usage.",
-                    other
-                ));
-            }
+impl OsDetectApp {
+    /// Build the app from a successful detection result.
+    fn from_result(result: &DetectionResult) -> Self {
+        let tabs = vec![
+            TabDef::new("OS Information"),
+            TabDef::new("Trust / Evidence"),
+        ];
+
+        let os_info_rows = build_os_info_rows(result);
+        let trust_rows = build_trust_rows(result);
+        let status = build_status(result);
+
+        Self {
+            tabs,
+            os_info_rows,
+            trust_rows,
+            status,
         }
-        i = i.saturating_add(1);
     }
 
-    Ok(justify)
+    /// Build the app from a hard-gate detection failure.
+    fn from_error(err: &DetectionError) -> Self {
+        let tabs = vec![
+            TabDef::new("OS Information"),
+            TabDef::new("Trust / Evidence"),
+        ];
+
+        // Error description — does not include variable kernel data
+        // (NIST SP 800-53 SI-12 — no sensitive data in user-visible errors).
+        let description = match err {
+            DetectionError::ProcfsNotReal => {
+                "Hard gate: procfs is not real procfs".to_owned()
+            }
+            DetectionError::PidCoherenceFailed {
+                ..
+            } => "Hard gate: PID coherence broken".to_owned(),
+            DetectionError::KernelAnchorIo(_) => {
+                "Hard gate: I/O error during kernel anchor".to_owned()
+            }
+        };
+
+        let os_info_rows = vec![
+            DataRow::new(
+                "Status",
+                "Detection pipeline failed",
+                StyleHint::TrustRed,
+            ),
+            DataRow::new("Reason", description, StyleHint::TrustRed),
+        ];
+
+        let trust_rows = vec![
+            DataRow::new("Trust level", "T0 — Untrusted", StyleHint::TrustRed),
+            DataRow::new(
+                "Reason",
+                "Hard gate failure aborted pipeline",
+                StyleHint::TrustRed,
+            ),
+        ];
+
+        let status =
+            StatusMessage::new(StatusLevel::Error, "Detection pipeline failed");
+
+        Self {
+            tabs,
+            os_info_rows,
+            trust_rows,
+            status,
+        }
+    }
 }
 
-fn print_usage() {
-    println!("umrs-tui — UMRS wizard art viewer");
-    println!();
-    println!("USAGE:");
-    println!("    umrs-tui [OPTIONS]");
-    println!();
-    println!("OPTIONS:");
-    println!("    -j, --justify <left|right>   Justify output (default: left)");
-    println!("    -h, --help                   Print this help");
+impl AuditCardApp for OsDetectApp {
+    fn report_name(&self) -> &'static str {
+        "OS Detection"
+    }
+
+    fn report_subject(&self) -> &'static str {
+        "Platform Identity and Integrity"
+    }
+
+    fn card_title(&self) -> String {
+        i18n::tr("OS Detection Audit")
+    }
+
+    fn tabs(&self) -> &[TabDef] {
+        &self.tabs
+    }
+
+    fn active_tab(&self) -> usize {
+        // Authoritative tab is in AuditCardState; this is a hint only.
+        0
+    }
+
+    fn data_rows(&self, tab_index: usize) -> Vec<DataRow> {
+        match tab_index {
+            0 => self.os_info_rows.clone(),
+            1 => self.trust_rows.clone(),
+            _ => vec![DataRow::normal("(no data)", "(invalid tab index)")],
+        }
+    }
+
+    fn status(&self) -> &StatusMessage {
+        &self.status
+    }
 }
 
 // ---------------------------------------------------------------------------
-// Terminal width
+// Row builders
 // ---------------------------------------------------------------------------
 
-/// Determine terminal width.
-///
-/// Reads the `COLUMNS` environment variable and parses it as a `usize`.
-/// Falls back to 80 if the variable is absent, empty, or non-numeric.
-fn terminal_width() -> usize {
-    std::env::var("COLUMNS")
-        .ok()
-        .and_then(|v| v.trim().parse::<usize>().ok())
-        .unwrap_or(80)
-}
+fn build_os_info_rows(result: &DetectionResult) -> Vec<DataRow> {
+    let mut rows = Vec::new();
 
-// ---------------------------------------------------------------------------
-// Rendering
-// ---------------------------------------------------------------------------
-
-/// Compute the left-padding string for right-justification.
-///
-/// Returns a `String` of spaces sized so the art ends at `term_width`.
-/// Saturating subtraction prevents underflow when `art_width >= term_width`.
-fn right_pad(term_width: usize, art_width: usize) -> String {
-    let spaces = term_width.saturating_sub(art_width);
-    " ".repeat(spaces)
-}
-
-/// Print one piece of wizard art with the requested justification.
-fn print_art(art: &umrs_core::robots::AsciiArtStatic, justify: Justify, term_width: usize) {
-    let pad = if justify == Justify::Right {
-        right_pad(term_width, art.width)
+    // os-release fields
+    if let Some(rel) = &result.os_release {
+        rows.push(DataRow::new(
+            "ID",
+            rel.id.as_str().to_owned(),
+            StyleHint::Highlight,
+        ));
+        rows.push(DataRow::normal("NAME", rel.name.as_str().to_owned()));
+        if let Some(ver) = &rel.version_id {
+            rows.push(DataRow::normal("VERSION_ID", ver.as_str().to_owned()));
+        }
+        if let Some(pn) = &rel.pretty_name {
+            rows.push(DataRow::normal("PRETTY_NAME", pn.as_str().to_owned()));
+        }
+        if let Some(cpe) = &rel.cpe_name {
+            rows.push(DataRow::normal("CPE_NAME", cpe.as_str().to_owned()));
+        }
     } else {
-        String::new()
-    };
+        rows.push(DataRow::new(
+            "os-release",
+            i18n::tr("not available"),
+            StyleHint::TrustYellow,
+        ));
+    }
 
-    for line in art.lines {
-        println!("{}{}", pad, line);
+    rows.push(DataRow::separator());
+
+    // Substrate identity
+    if let Some(sub) = &result.substrate_identity {
+        rows.push(DataRow::new(
+            i18n::tr("substrate family"),
+            family_label(&sub.family).to_owned(),
+            StyleHint::Highlight,
+        ));
+        if let Some(distro) = &sub.distro {
+            rows.push(DataRow::normal(
+                i18n::tr("substrate distro"),
+                distro_label(distro),
+            ));
+        }
+        if let Some(ver) = &sub.version_id {
+            rows.push(DataRow::normal("substrate version", ver.clone()));
+        }
+        rows.push(DataRow::normal(
+            "substrate facts",
+            sub.facts_count.to_string(),
+        ));
+        rows.push(DataRow::normal("probe used", sub.probe_used.to_owned()));
+    } else {
+        rows.push(DataRow::new(
+            "substrate identity",
+            i18n::tr("not available"),
+            StyleHint::TrustYellow,
+        ));
+    }
+
+    rows.push(DataRow::separator());
+
+    // Boot ID
+    if let Some(boot) = &result.boot_id {
+        rows.push(DataRow::normal("boot_id", boot.clone()));
+    } else {
+        rows.push(DataRow::new(
+            "boot_id",
+            i18n::tr("not available"),
+            StyleHint::Dim,
+        ));
+    }
+
+    rows
+}
+
+fn build_trust_rows(result: &DetectionResult) -> Vec<DataRow> {
+    let mut rows = Vec::new();
+
+    // Label trust
+    let (lt_label, lt_hint) = label_trust_display(&result.label_trust);
+    rows.push(DataRow::new(i18n::tr("label trust"), lt_label, lt_hint));
+
+    rows.push(DataRow::separator());
+
+    // Confidence level
+    let level = result.confidence.level();
+    rows.push(DataRow::new(
+        i18n::tr("trust level"),
+        trust_level_label(level).to_owned(),
+        trust_level_hint(level),
+    ));
+    rows.push(DataRow::new(
+        "description",
+        trust_level_description(level).to_owned(),
+        StyleHint::Dim,
+    ));
+
+    rows.push(DataRow::separator());
+
+    // Downgrade reasons
+    if result.confidence.downgrade_reasons.is_empty() {
+        rows.push(DataRow::new(
+            i18n::tr("downgrade reasons"),
+            "none",
+            StyleHint::TrustGreen,
+        ));
+    } else {
+        rows.push(DataRow::new(
+            i18n::tr("downgrade reasons"),
+            result.confidence.downgrade_reasons.len().to_string(),
+            StyleHint::TrustYellow,
+        ));
+        for (i, reason) in
+            result.confidence.downgrade_reasons.iter().enumerate()
+        {
+            let idx = i.saturating_add(1);
+            rows.push(DataRow::new(
+                format!("  [{idx}]"),
+                reason.clone(),
+                StyleHint::Dim,
+            ));
+        }
+    }
+
+    rows.push(DataRow::separator());
+
+    // Contradictions
+    if result.confidence.contradictions.is_empty() {
+        rows.push(DataRow::new(
+            i18n::tr("contradictions"),
+            "none",
+            StyleHint::TrustGreen,
+        ));
+    } else {
+        rows.push(DataRow::new(
+            i18n::tr("contradictions"),
+            result.confidence.contradictions.len().to_string(),
+            StyleHint::TrustRed,
+        ));
+        for (i, con) in result.confidence.contradictions.iter().enumerate() {
+            let idx = i.saturating_add(1);
+            let desc: String = con.description.chars().take(64).collect();
+            rows.push(DataRow::new(
+                format!("  [{idx}] {} vs {}", con.source_a, con.source_b),
+                desc,
+                StyleHint::TrustRed,
+            ));
+        }
+    }
+
+    rows.push(DataRow::separator());
+
+    // Evidence records (abbreviated)
+    let evidence = result.evidence.records();
+    rows.push(DataRow::new(
+        i18n::tr("evidence records"),
+        evidence.len().to_string(),
+        StyleHint::Normal,
+    ));
+    for (i, rec) in evidence.iter().enumerate() {
+        let idx = i.saturating_add(1);
+        // Truncate path for display — NIST SP 800-53 SI-12 (no sensitive data in UI).
+        let path_display: String =
+            rec.path_requested.chars().take(40).collect();
+        let fd_str = if rec.opened_by_fd {
+            "fd"
+        } else {
+            "path"
+        };
+        let ok_str = if rec.parse_ok {
+            "ok"
+        } else {
+            "FAIL"
+        };
+        rows.push(DataRow::new(
+            format!("  [{idx:02}] {}", source_kind_label(&rec.source_kind)),
+            format!("{path_display}  open={fd_str}  parse={ok_str}"),
+            if rec.parse_ok {
+                StyleHint::Dim
+            } else {
+                StyleHint::TrustYellow
+            },
+        ));
+    }
+
+    rows
+}
+
+fn label_trust_display(trust: &LabelTrust) -> (String, StyleHint) {
+    match trust {
+        LabelTrust::UntrustedLabelCandidate => (
+            "UntrustedLabelCandidate — do not use for policy".to_owned(),
+            StyleHint::TrustRed,
+        ),
+        LabelTrust::LabelClaim => (
+            "LabelClaim — structurally valid; integrity unconfirmed".to_owned(),
+            StyleHint::TrustYellow,
+        ),
+        LabelTrust::TrustedLabel => (
+            "TrustedLabel — T4: ownership + digest verified".to_owned(),
+            StyleHint::TrustGreen,
+        ),
+        LabelTrust::IntegrityVerifiedButContradictory {
+            contradiction,
+        } => {
+            let desc: String = contradiction.chars().take(48).collect();
+            (
+                format!("IntegrityVerifiedButContradictory: {desc}"),
+                StyleHint::TrustRed,
+            )
+        }
+    }
+}
+
+fn build_status(result: &DetectionResult) -> StatusMessage {
+    match result.confidence.level() {
+        TrustLevel::IntegrityAnchored => {
+            StatusMessage::new(StatusLevel::Ok, "Integrity Anchored")
+        }
+        TrustLevel::SubstrateAnchored => {
+            StatusMessage::new(StatusLevel::Info, "Substrate Anchored")
+        }
+        TrustLevel::EnvAnchored => StatusMessage::new(
+            StatusLevel::Warn,
+            format!(
+                "{} — {}",
+                trust_level_label(TrustLevel::EnvAnchored),
+                trust_level_description(TrustLevel::EnvAnchored)
+            ),
+        ),
+        TrustLevel::KernelAnchored => StatusMessage::new(
+            StatusLevel::Warn,
+            format!(
+                "{} — {}",
+                trust_level_label(TrustLevel::KernelAnchored),
+                trust_level_description(TrustLevel::KernelAnchored)
+            ),
+        ),
+        TrustLevel::Untrusted => StatusMessage::new(
+            StatusLevel::Error,
+            "Untrusted — no kernel anchor",
+        ),
     }
 }
 
@@ -137,17 +505,76 @@ fn print_art(art: &umrs_core::robots::AsciiArtStatic, justify: Justify, term_wid
 // ---------------------------------------------------------------------------
 
 fn main() {
-    let justify = match parse_args() {
-        Ok(j) => j,
-        Err(msg) => {
-            eprintln!("error: {msg}");
-            std::process::exit(1);
+    // ── i18n ─────────────────────────────────────────────────────────────
+    // Initialize gettext catalog for the "umrs-tui" domain. Must be called
+    // before any i18n::tr() calls. Falls back to the msgid if no catalog
+    // is found — no error surfaced to the user.
+    i18n::init("umrs-tui");
+
+    // ── Logging ──────────────────────────────────────────────────────────
+    // Best-effort journald logger. Failures are silently ignored — a TUI
+    // should not write to stderr (would corrupt the terminal state).
+    if let Ok(logger) = systemd_journal_logger::JournalLog::new() {
+        // Ignore install error — another logger may already be set.
+        let _ = logger.install();
+        log::set_max_level(log::LevelFilter::Info);
+    }
+
+    // ── Detection ────────────────────────────────────────────────────────
+    let app: OsDetectApp = match OsDetector::default().detect() {
+        Ok(result) => {
+            log::info!(
+                "OS detection succeeded: {:?}",
+                result.confidence.level()
+            );
+            OsDetectApp::from_result(&result)
+        }
+        Err(ref e) => {
+            log::warn!("OS detection hard-gate failure: {e}");
+            OsDetectApp::from_error(e)
         }
     };
 
-    let term_width = terminal_width();
+    // ── UI state ─────────────────────────────────────────────────────────
+    let mut state = AuditCardState::new(app.tabs().len());
+    let keymap = KeyMap::default();
+    let theme = Theme::default();
 
-    print_art(&WIZARD_MEDIUM, justify, term_width);
-    println!();
-    print_art(&WIZARD_SMALL, justify, term_width);
+    // ── Terminal setup ────────────────────────────────────────────────────
+    let mut terminal = ratatui::init();
+
+    // ── Event loop ───────────────────────────────────────────────────────
+    loop {
+        if let Err(e) = terminal.draw(|f| {
+            render_audit_card(f, f.area(), &app, &state, &theme);
+        }) {
+            log::error!("terminal draw error: {e}");
+            break;
+        }
+
+        match event::poll(Duration::from_millis(250)) {
+            Ok(true) => match event::read() {
+                Ok(Event::Key(key)) => {
+                    if let Some(action) = keymap.lookup(&key) {
+                        state.handle_action(&action);
+                    }
+                }
+                Ok(_) => {}
+                Err(e) => {
+                    log::warn!("event read error: {e}");
+                }
+            },
+            Ok(false) => {}
+            Err(e) => {
+                log::warn!("event poll error: {e}");
+            }
+        }
+
+        if state.should_quit {
+            break;
+        }
+    }
+
+    // ── Terminal teardown ─────────────────────────────────────────────────
+    ratatui::restore();
 }

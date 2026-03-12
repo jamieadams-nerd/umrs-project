@@ -1,134 +1,125 @@
 // SPDX-License-Identifier: MIT
-// Copyright (c) 2025 Jamie Adams
+// Copyright (c) 2026 Jamie Adams
 //
 // NIST 800-218 SSDF PW.4 / NSA RTB: Provable safe-code guarantee.
-// #![forbid] cannot be overridden by any inner #[allow] — this is a
-// compile-time proof, not a policy.
+// #![forbid] cannot be overridden by any inner #[allow] — compile-time proof.
 #![forbid(unsafe_code)]
+#![warn(clippy::pedantic)]
+#![warn(clippy::nursery)]
+#![deny(clippy::unwrap_used)]
+#![allow(clippy::doc_markdown)]
+#![allow(clippy::missing_errors_doc)]
+#![allow(clippy::missing_panics_doc)]
+#![allow(clippy::module_name_repetitions)]
+#![allow(clippy::option_if_let_else)]
+#![allow(clippy::redundant_closure)]
+#![allow(clippy::unreadable_literal)]
 
-//! UMRS TUI — wizard art viewer.
+//! # show_logo — Robot Gallery Audit Card Demo
 //!
-//! Renders the built-in braille wizard art with configurable terminal
-//! justification. Uses `COLUMNS` environment variable for terminal width
-//! detection; falls back to 80 columns when the variable is absent or
-//! unparseable.
+//! Minimal demonstration of the `umrs-tui` audit card template. Displays
+//! all built-in robot ASCII art entries from `umrs-core` as a scrollable
+//! audit card.
+//!
+//! This example is the guest-coder entry point for evaluating the audit
+//! card API. It shows:
+//! - Implementing [`AuditCardApp`] on a simple data struct
+//! - Constructing [`AuditCardState`] and the event loop
+//! - Using `render_audit_card` for all rendering
 //!
 //! Usage:
-//!   umrs-tui [--justify left|right] [-j left|right]
-//!
-//! Options:
-//!   -j, --justify <left|right>   Justify art to the left or right (default: left)
+//! ```sh
+//! cargo run -p umrs-tui --example show_logo
+//! ```
 
-use umrs_core::robots::{WIZARD_MEDIUM, WIZARD_SMALL};
+use std::time::Duration;
+
+use crossterm::event::{self, Event};
+use umrs_core::robots::ALL_ROBOTS;
+use umrs_tui::app::{
+    AuditCardApp, AuditCardState, DataRow, StatusLevel, StatusMessage,
+    StyleHint, TabDef,
+};
+use umrs_tui::keymap::KeyMap;
+use umrs_tui::layout::render_audit_card;
+use umrs_tui::theme::Theme;
 
 // ---------------------------------------------------------------------------
-// Justification
+// LogoDemoApp
 // ---------------------------------------------------------------------------
 
-/// Output justification for the wizard art display.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum Justify {
-    Left,
-    Right,
+/// Audit card data source for the robot gallery demo.
+///
+/// Single tab listing all `ALL_ROBOTS` entries with name, width, and height.
+struct LogoDemoApp {
+    tabs: Vec<TabDef>,
+    rows: Vec<DataRow>,
+    status: StatusMessage,
 }
 
-// ---------------------------------------------------------------------------
-// Argument parsing
-// ---------------------------------------------------------------------------
+impl LogoDemoApp {
+    fn new() -> Self {
+        let tabs = vec![TabDef::new("Robots")];
 
-/// Parse `--justify` / `-j` from the argument list.
-///
-/// Returns `Err(String)` with a usage message on unrecognized arguments or
-/// invalid values. Unrecognized flags are rejected — the binary has a single
-/// purpose and a minimal contract.
-fn parse_args() -> Result<Justify, String> {
-    let args: Vec<String> = std::env::args().collect();
-    let mut justify = Justify::Left;
-    let mut i = 1usize;
-
-    while i < args.len() {
-        let arg = args.get(i).map(String::as_str).unwrap_or("");
-        match arg {
-            "--justify" | "-j" => {
-                i = i.saturating_add(1);
-                let value = args.get(i).map(String::as_str).unwrap_or("");
-                match value {
-                    "left" => justify = Justify::Left,
-                    "right" => justify = Justify::Right,
-                    other => {
-                        return Err(format!(
-                            "unknown justification '{}'; expected 'left' or 'right'",
-                            other
-                        ));
-                    }
-                }
-            }
-            "--help" | "-h" => {
-                print_usage();
-                std::process::exit(0);
-            }
-            other => {
-                return Err(format!(
-                    "unrecognized argument '{}'\nRun with --help for usage.",
-                    other
-                ));
-            }
+        let mut rows = Vec::new();
+        for robot in ALL_ROBOTS {
+            rows.push(DataRow::new(
+                "name",
+                robot.name.to_owned(),
+                StyleHint::Highlight,
+            ));
+            rows.push(DataRow::new(
+                "  width",
+                robot.width.to_string(),
+                StyleHint::Normal,
+            ));
+            rows.push(DataRow::new(
+                "  height",
+                robot.height.to_string(),
+                StyleHint::Normal,
+            ));
+            rows.push(DataRow::separator());
         }
-        i = i.saturating_add(1);
+
+        let status = StatusMessage::new(
+            StatusLevel::Ok,
+            format!("{} robots in gallery", ALL_ROBOTS.len()),
+        );
+
+        Self {
+            tabs,
+            rows,
+            status,
+        }
+    }
+}
+
+impl AuditCardApp for LogoDemoApp {
+    fn report_name(&self) -> &'static str {
+        "Robot Gallery"
     }
 
-    Ok(justify)
-}
+    fn report_subject(&self) -> &'static str {
+        "umrs-core built-in ASCII art"
+    }
 
-fn print_usage() {
-    println!("umrs-tui — UMRS wizard art viewer");
-    println!();
-    println!("USAGE:");
-    println!("    umrs-tui [OPTIONS]");
-    println!();
-    println!("OPTIONS:");
-    println!("    -j, --justify <left|right>   Justify output (default: left)");
-    println!("    -h, --help                   Print this help");
-}
+    fn tabs(&self) -> &[TabDef] {
+        &self.tabs
+    }
 
-// ---------------------------------------------------------------------------
-// Terminal width
-// ---------------------------------------------------------------------------
+    fn active_tab(&self) -> usize {
+        0
+    }
 
-/// Determine terminal width.
-///
-/// Reads the `COLUMNS` environment variable and parses it as a `usize`.
-/// Falls back to 80 if the variable is absent, empty, or non-numeric.
-fn terminal_width() -> usize {
-    std::env::var("COLUMNS")
-        .ok()
-        .and_then(|v| v.trim().parse::<usize>().ok())
-        .unwrap_or(80)
-}
+    fn data_rows(&self, tab_index: usize) -> Vec<DataRow> {
+        match tab_index {
+            0 => self.rows.clone(),
+            _ => vec![DataRow::normal("(no data)", "(invalid tab index)")],
+        }
+    }
 
-// ---------------------------------------------------------------------------
-// Rendering
-// ---------------------------------------------------------------------------
-
-/// Compute the left-padding string for right-justification.
-///
-/// Returns a `String` of spaces sized so the art ends at `term_width`.
-/// Saturating subtraction prevents underflow when `art_width >= term_width`.
-fn right_pad(term_width: usize, art_width: usize) -> String {
-    let spaces = term_width.saturating_sub(art_width);
-    " ".repeat(spaces)
-}
-
-/// Print one piece of wizard art with the requested justification.
-fn print_art(art: &umrs_core::robots::AsciiArtStatic, justify: Justify, term_width: usize) {
-    let pad = if justify == Justify::Right {
-        right_pad(term_width, art.width)
-    } else {
-        String::new()
-    };
-
-    for line in art.lines {
-        println!("{}{}", pad, line);
+    fn status(&self) -> &StatusMessage {
+        &self.status
     }
 }
 
@@ -137,17 +128,44 @@ fn print_art(art: &umrs_core::robots::AsciiArtStatic, justify: Justify, term_wid
 // ---------------------------------------------------------------------------
 
 fn main() {
-    let justify = match parse_args() {
-        Ok(j) => j,
-        Err(msg) => {
-            eprintln!("error: {msg}");
-            std::process::exit(1);
+    let app = LogoDemoApp::new();
+    let mut state = AuditCardState::new(app.tabs().len());
+    let keymap = KeyMap::default();
+    let theme = Theme::default();
+
+    let mut terminal = ratatui::init();
+
+    loop {
+        if let Err(e) = terminal.draw(|f| {
+            render_audit_card(f, f.area(), &app, &state, &theme);
+        }) {
+            // Draw error — restore terminal and exit cleanly.
+            eprintln!("draw error: {e}");
+            break;
         }
-    };
 
-    let term_width = terminal_width();
+        match event::poll(Duration::from_millis(250)) {
+            Ok(true) => match event::read() {
+                Ok(Event::Key(key)) => {
+                    if let Some(action) = keymap.lookup(&key) {
+                        state.handle_action(&action);
+                    }
+                }
+                Ok(_) => {}
+                Err(e) => {
+                    eprintln!("event read error: {e}");
+                }
+            },
+            Ok(false) => {}
+            Err(e) => {
+                eprintln!("event poll error: {e}");
+            }
+        }
 
-    print_art(&WIZARD_MEDIUM, justify, term_width);
-    println!();
-    print_art(&WIZARD_SMALL, justify, term_width);
+        if state.should_quit {
+            break;
+        }
+    }
+
+    ratatui::restore();
 }

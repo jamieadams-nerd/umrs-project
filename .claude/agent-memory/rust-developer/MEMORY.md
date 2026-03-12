@@ -111,6 +111,74 @@ rusqlite::Error Display can leak paths. Use:
 - `OsDetector::detect()` is NOT integrated — caller uses `SealedCache::query()` instead
 - map_or pattern: `.map_or(b"" as &[u8], |x| ...)` is required when default is a byte literal
 
+## umrs-selinux Import Paths (confirmed 2026-03-12)
+
+- `observations` module is **private** — import via crate root re-exports:
+  `umrs_selinux::ObservationKind`, `umrs_selinux::SecurityObservation`
+- `SelinuxCtxState` is re-exported at `umrs_selinux::SelinuxCtxState`
+- `fs_encrypt` and `posix` are `pub mod` — import directly
+- `SecurityContext` accessors: `.user()`, `.role()`, `.security_type()`, `.level()` (returns `Option<&MlsLevel>`)
+- `MlsLevel::raw()` returns `&str`; `.level()` returns `Option<&MlsLevel>`
+- `FileSize` is `Copy` — pass by value, not `&FileSize`. Has `.as_u64()` accessor.
+- `SecureDirent::access_denied` is a `pub bool` field (not inside `SelinuxCtxState`)
+
+## AuditCardApp `report_subject()` Pattern
+
+`report_subject()` returns `&'static str`. To use a runtime string:
+`let s: &'static str = Box::leak(runtime_string.into_boxed_str());`
+Store `s` in the struct. One-time allocation per binary run — acceptable.
+
+## tree_magic_mini Supply Chain Note
+
+`tree_magic_mini = "3"` added to `umrs-tui` only.
+- Pure-Rust MIME detection via magic bytes + file path
+- No network access; display-only (not trust-relevant, not policy)
+- Path-based API (`from_filepath`), not fd-based — documented in source comment
+
+## umrs-tui Binaries (as of 2026-03-12)
+
+- `umrs-os-detect-tui` — `src/main.rs`
+- `umrs-file-stat` — `src/bin/file_stat.rs`
+  Tabs: Identity / Security / Observations
+  Deps: `umrs-selinux`, `umrs-platform`, `tree_magic_mini`
+  Identity tab: path, type, symlink target, MIME, ELF info, size, mode, inode, device,
+    hard links (yellow if >1 non-dir), owner, group, mount point, filesystem info from /proc/mounts
+
+## /proc/mounts Lookup Pattern (file_stat.rs `find_fs_info`)
+
+- Use `ProcfsText::new(PathBuf::from("/proc/mounts")).ok()?` + `SecureReader::<ProcfsText>::new().read_generic_text(&node).ok()?`
+- Walk lines, split_whitespace for (device, mount_point, fs_type)
+- Longest-prefix match on `path.to_str()?.starts_with(mp)` — tracks `best_len`
+- Returns `Option<FsInfo>` — caller shows rows only if Some
+
+## ELF Header Read Pattern (file_stat.rs `read_elf_info`)
+
+- `std::fs::File::open(path).ok()?` + `f.read_exact(&mut [0u8; 20]).ok()?`
+- Display-only — same policy as tree_magic_mini; document "not trust-relevant"
+- EI_CLASS: byte 4 (1=ELF32, 2=ELF64)
+- e_type: bytes 16-17 little-endian `u16::from_le_bytes([buf[16], buf[17]])`
+- Returns `Option<ElfInfo { class: &'static str, elf_type: &'static str }>`
+
+## umrs-tui Architecture (implemented 2026-03-12)
+
+- Library crate `umrs_tui` (lib.rs) + binary `umrs-tui` (main.rs)
+- Modules: `app`, `theme`, `keymap`, `layout`, `header`, `tabs`, `data_panel`, `status_bar`
+- Entry trait: `AuditCardApp` (object-safe). `report_name` / `report_subject` return `&'static str`.
+- State: `AuditCardState::new(tab_count)` — owns active_tab, scroll_offset, should_quit
+- Render: `render_audit_card(frame, f.area(), &dyn AuditCardApp, &state, &theme)`
+- Layout: Vertical[header(WIZARD_SMALL.height+2), 1 tab, Min(0) data, 1 status]. Header row splits [Min(0) text | Exact(WIZARD_SMALL.width+2) logo].
+- Main binary: `OsDetectApp` — Tab 0 = OS info, Tab 1 = Trust/Evidence
+- Example: `examples/show_logo.rs` — robot gallery (guest-coder API entry point)
+- Deps added: `crossterm = "0.28"`, `rustix = { version = "1", features = ["system"] }`, `systemd-journal-logger = "2"`
+- Journald init: best-effort `JournalLog::new()?.install()`; TUI never writes to stderr
+
+## Clippy Patterns Confirmed (2026-03-12)
+
+- `missing_const_for_fn`: pure match-on-enum fns must be `const fn`
+- `unnecessary_literal_bound`: trait methods returning literal `&str` need `&'static str`
+- `cast_possible_truncation` on small known-safe `usize as u16`: use `#[allow(...)]` with comment explaining the value is always in range
+- `#[allow(...)]` in layout.rs for WIZARD_SMALL dimension casts (width=15, height=7)
+
 ## Outstanding Audit Findings
 
 Reports in `.claude/reports/` with findings assigned to "coder":
@@ -126,3 +194,36 @@ Reports in `.claude/reports/` with findings assigned to "coder":
 - `is_multiple_of(2)` is preferred over `% 2 == 0` by clippy 1.92
 - `match` with one Some/Ok arm and one None/Err arm fires `single_match_else` — use `if let ... else` or `let Some(...) = ... else { return ... }` (let-else)
 - `let-else` form: `let Some(x) = expr else { return None; };` — preferred for early-return error paths
+- Test helper functions that can be `const fn` will trigger `missing_const_for_fn` — make them const, never suppress
+
+## umrs-tui Test Suite (added 2026-03-12)
+
+4 integration test files under `umrs-tui/tests/` — 92 tests total, all passing:
+- `audit_card_state_tests.rs` (27) — `AuditCardState` + `Action` state machine
+- `keymap_tests.rs` (18) — `KeyMap` default bindings and custom bind
+- `data_types_tests.rs` (18) — `DataRow`, `TabDef`, `StatusMessage`, `StyleHint`, `StatusLevel`, `tabs_from_labels`
+- `theme_tests.rs` (11) — `status_bg_color` and `style_hint_color` const color mapping
+- `trait_impl_tests.rs` (18) — mock `AuditCardApp` impl; object safety verified
+
+Key test patterns:
+- `AuditCardState::handle_action` takes `&Action` (reference)
+- `keymap_tests.rs` `key()` helper must be `const fn` to pass clippy
+- Mock impl fails-closed on invalid tab index (returns empty Vec, no panic)
+- Object safety test: assign `&app` to `&dyn AuditCardApp` — compile failure = not object-safe
+
+## i18n Integration in umrs-tui (added 2026-03-12)
+
+- `i18n::init("umrs-tui")` — first line of `main()` in BOTH binaries, before logging setup
+- `i18n::tr("msgid")` returns `String` — compatible with `impl Into<String>` in DataRow::new
+- Library header labels ("Report", "Host", "Subject") wrapped with `i18n::tr()` in `header.rs`
+- `card_title()` default method added to `AuditCardApp` — returns `String`, not `&'static str`
+- Both binaries override `card_title()` to return `i18n::tr("...")` for their specific title
+- `report_name()` and `report_subject()` intentionally stay `&'static str` — do NOT change
+- Header title construction: `let title = format!(" {} ", app.card_title());`
+- Header field label padding: `format!("{:<8} : ", i18n::tr("Report"))` — 8-char left-pad
+
+## Clippy too_many_lines (100-line limit)
+
+- Adding `i18n::tr()` wrappers can push a function over 100 lines
+- Fix: extract logical blocks into helper functions, NOT suppress with `#[allow]`
+- Example: `build_inode_flag_rows(dirent)` extracted from `build_security_rows()` in file_stat.rs

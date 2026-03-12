@@ -2,9 +2,40 @@
 name = "umrs-tui"
 version = "0.1.0"
 edition = "2021"
-description = "UMRS terminal UI — wizard art display with left/right justification"
+description = "UMRS terminal UI — audit card template library and OS detection demo"
+
+[lib]
+name = "umrs_tui"
+path = "src/lib.rs"
+
+[[bin]]
+name = "umrs-os-detect-tui"
+path = "src/main.rs"
+
+[[bin]]
+name = "umrs-file-stat"
+path = "src/bin/file_stat.rs"
 
 [dependencies]
 ratatui = "0.30.0"
 ratatui-garnish = "0.1.0"
+crossterm = "0.28"
+rustix = { version = "1", features = ["system"] }
 umrs-core = { path = "../umrs-core" }
+umrs-platform = { path = "../umrs-platform" }
+umrs-selinux = { path = "../umrs-selinux" }
+tree_magic_mini = "3"
+log = "0.4"
+systemd-journal-logger = "2"
+
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+nursery = { level = "warn", priority = -1 }
+unwrap_used = "deny"
+doc_markdown = "allow"
+missing_errors_doc = "allow"
+missing_panics_doc = "allow"
+module_name_repetitions = "allow"
+option_if_let_else = "allow"
+redundant_closure = "allow"
+unreadable_literal = "allow"
