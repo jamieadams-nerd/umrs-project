@@ -121,12 +121,25 @@ section now redirects to `patterns:index.adoc` instead of listing pages inline.
   crypto-cpu-extensions.adoc
 - ROOT/nav.adoc: orientation pages first; glossary and release-notes added
 
-## Module Structure (as of 2026-03-12 Phase 1 complete)
+## Module Structure (as of 2026-03-13 crypto module added)
 Active modules: ROOT, architecture, security-concepts, deployment, devel, patterns,
-umrs-tools, operations, logging-audit, reference, glossary
-- Crypto pages: reference/pages/ top-level (NOT cryptography/ subdir)
+umrs-tools, operations, logging-audit, reference, cryptography, glossary
+- Crypto pages: cryptography/pages/ (MOVED from reference/pages/ — update plans accordingly)
+  - fips-cryptography-cheat-sheet.adoc, crypto-policy-tiers.adoc, crypto-post-quantum.adoc,
+    key-recommendation-list.adoc, crypto-cpu-extensions.adoc
+- reference/ still exists for compliance-frameworks, SELinux context, MLS, CUI pages
 - Logging architecture pages: logging-audit/ (NOT deployment/)
 - umrs-prog-lang.adoc: devel/ (NOT architecture/)
+
+## Completed Work (2026-03-13 CTW tasks)
+- CTW-NAV-1: ROOT/nav.adoc restructured with groupings; architecture/nav.adoc "Historical
+  Context" consolidation done; security-concepts/nav.adoc "Foundations"/"Integrity and Trust"
+  groupings added; what-is-umrs.adoc content merged into introduction.adoc and removed from nav
+- CTW-CRYPTO-1: Three crypto enhancements applied to cryptography/ pages:
+  1. fips-cryptography-cheat-sheet.adoc: referenced standards preamble added
+  2. fips-cryptography-cheat-sheet.adoc: NOTE about audit log chaining added after SHA-1 entry
+  3. crypto-policy-tiers.adoc: KDF "Typical use" column improved
+- docs/new-stuff/used/ receives processed source files (crypto.md, left-navbar.md moved there)
 
 ## Cross-Module Xref Gotchas
 - Grep ALL .adoc files when moving/deleting pages — nav files alone are not enough

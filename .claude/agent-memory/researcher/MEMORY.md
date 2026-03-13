@@ -24,12 +24,13 @@ Collections and status as of 2026-03-13:
 | nist | NIST SPs (800-171r2, 800-171r3, 800-171Ar3, 800-218, 800-53r5) + FIPS 140-2/3 + others | ✓ Ingested | 1,447 |
 | cmmc | CMMC Final Rule + Assessment Guide L2 | ✓ Ingested | 545 |
 | dod-5200 | DoDI 5200.01, DoDM 5200.01 Vol 1-3, DoDI 5200.48 (CUI) | ✓ Ingested | 360 |
-| nist-pqc | FIPS 203/204/205 PDFs + 10 web articles | ✓ Ingested | 264 |
+| nist-pqc | FIPS 203/204/205 PDFs + 12 web articles | ✓ Ingested | 285 |
 | rustdoc-book | doc.rust-lang.org/rustdoc/print.html | ✓ Ingested | 194 |
 | asciidoctor-ref | docs.asciidoctor.org (quick reference + document structure) | ✓ Ingested | 67 |
 | dita-spec | OASIS DITA 1.3 Part 2 Technical Content (HTML) | ✓ Ingested | 100 |
 
 Full source URL list for update checks: see `rag-collections.md` in this directory.
+PQC status tracker (team-readable): see `pqc-tracker.md` in this directory.
 
 ## RAG Pipeline
 
@@ -132,6 +133,30 @@ Some pages return only CSS/JS framework code via WebFetch (no article body):
 - Terra Quantum (React/Gatsby): same approach
 - Pattern: fetch the page, note it is JS-rendered, search for indexed snippet via WebSearch,
   write stub with `## Note on Retrieval` header explaining the limitation
+
+## Standing Refresh Tasks
+
+When Jamie says "researcher, refresh your library" or "check for updates", perform these tasks:
+
+### 1. PQC Tracker Refresh (PRIORITY)
+- Read `pqc-tracker.md` in this directory for current status and monitoring URLs
+- Check each URL in the "Monitoring Sources" tables for new content
+- Update the tracker with any changes (new standards, RHEL updates, FIPS validation progress)
+- If anything material changed, notify the team via cross-team notes
+- Update the `nist-pqc` RAG collection if new documents are available
+- Update `Last checked` date in the tracker
+
+### 2. Full Library Refresh
+- Check `rag-collections.md` source URLs for newer versions
+- Check `refs/manifest.md` documents for newer revisions (NIST SPs, FIPS, DoD docs)
+- Re-ingest any updated collections into RAG
+- Update chunk counts in this MEMORY.md and in `rag-collections.md`
+- Update `Last version check` date below
+
+### 3. Post-Refresh Notifications
+- Post cross-team note summarizing what changed (or confirming "no changes found")
+- If documentation-impacting changes are found, create tasks for tech-writer/senior-tech-writer
+- Update the change log in `pqc-tracker.md`
 
 ## Pending Items
 - NSA RTB VNSSA and RAIN: referenced in CLAUDE.md but not yet acquired; may be distribution-restricted

@@ -19,6 +19,8 @@
 * xref:operations:index.adoc[Operations]
 * xref:logging-audit:index.adoc[Logging and Audit]
 
+* xref:cryptography:index.adoc[Cryptography]
+
 * xref:reference:index.adoc[Reference]
 * xref:glossary:index.adoc[Glossary]
 

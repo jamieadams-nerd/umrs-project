@@ -3,8 +3,8 @@
 **Created by:** researcher
 **Date:** 2026-03-13
 **Assigned to:** senior-tech-writer, tech-writer
-**Status:** open
-**Blocked by:** Antora doc restructure (Phase 3 — new content phase)
+**Status:** completed (2026-03-13)
+**Blocked by:** ~~Antora doc restructure (Phase 3 — new content phase)~~ — restructure completed 2026-03-12; all PQC doc work completed 2026-03-13
 
 ---
 

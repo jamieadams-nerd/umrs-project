@@ -51,7 +51,7 @@ NIST.SP.800-185.pdf, NIST.SP.800-192.pdf, nist-sp-1800-44a-ipd.pdf, nistspecialp
 | fips140-2.pdf | https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.140-2.pdf |
 | fips140-3.pdf | https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.140-3.pdf |
 
-## nist-pqc (ingested 2026-03-13, 264 chunks — expanded 2026-03-13 +55 chunks from web resources)
+## nist-pqc (ingested 2026-03-13, 285 chunks — expanded 2026-03-13 +21 chunks from two new web resources)
 
 NIST Post-Quantum Cryptography FIPS standards plus supplementary web articles. FIPS published August 13, 2024.
 
@@ -73,11 +73,13 @@ NIST Post-Quantum Cryptography FIPS standards plus supplementary web articles. F
 | serverion-pqc-standards-en.md | https://www.serverion.com/uncategorized/nist-standards-for-post-quantum-cryptography/ | Migration timeline/performance table |
 | serverion-pqc-standards-no.md | https://www.serverion.com/nn/uncategorized/nist-standards-for-post-quantum-cryptography/ | Norwegian translation |
 | csrc-nist-pqc-project.md | https://csrc.nist.gov/projects/post-quantum-cryptography | NIST CSRC project page |
-| csrc-nist-pqc-standardization.md | https://csrc.nist.gov/projects/post-quantum-cryptography/post-quantum-cryptography-standardization | Standardization process, FIPS 206 status |
+| csrc-nist-pqc-standardization.md | https://csrc.nist.gov/projects/post-quantum-cryptography/post-quantum-cryptography-standardization | Standardization process, FIPS 206 status (original fetch) |
+| csrc-nist-pqc-standardization-2025.md | https://csrc.nist.gov/projects/post-quantum-cryptography/post-quantum-cryptography-standardization | Updated 2026-03-13; includes HQC/FIPS 207 selection (March 2025), NIST IR 8545, transition timeline |
 | wolfssl-fips-203-204-205.md | https://www.wolfssl.com/what-are-fips-203-204-and-205/ | Developer-focused, CNSA 2.0 notes |
 | csa-fips-203-204-205-quantum-safe.md | https://cloudsecurityalliance.org/blog/2024/08/15/nist-fips-203-204-and-205-finalized-an-important-step-towards-a-quantum-safe-future | CSA Quantum-Safe Working Group |
 | sectigo-pqc-algorithm-winners.md | https://www.sectigo.com/blog/who-are-nists-post-quantum-algorithm-winners | PKI context; JS-rendered (stub) |
 | terraquantum-pqc-standards.md | https://terraquantum.swiss/news/diving-into-nists-new-post-quantum-standards/ | SLH-DSA technical detail; JS-rendered (stub) |
+| redhat-quantum-safe-openshift-roadmap.md | https://www.redhat.com/en/blog/road-to-quantum-safe-cryptography-red-hat-openshift | Red Hat OpenShift PQC roadmap; TEST-PQ policy, FIPS 140 vs PQC trade-off, ML-KEM RHEL/OpenShift versions, hybrid KEM, JP Jung, May 2025 |
 
 ## rustdoc-book (ingested 2026-03-12, 194 chunks)
 

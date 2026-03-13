@@ -1,0 +1,39 @@
+= Cryptography
+:description: Cryptographic baseline, post-quantum migration, and where cryptography is deployed across the OS and UMRS.
+
+// NIST 800-53 SC-12 — Cryptographic key establishment and management
+// NIST 800-53 SC-13 — Cryptographic protection
+
+This module documents the cryptographic foundation of a UMRS deployment.
+It covers three areas:
+
+* The *classical baseline* — FIPS 140-3 approved algorithms, key size requirements, and policy tier assignments that govern algorithm selection in new designs.
+* *Post-quantum cryptography* — the NIST-standardized post-quantum algorithms (ML-KEM, ML-DSA, SLH-DSA), their current status, and migration guidance for CUI environments.
+* *Cryptographic deployment* — where cryptography is actually used in the RHEL 10 base OS and in UMRS itself, so auditors and engineers can trace algorithm choices to their implementation sites.
+
+== Classical Baseline
+
+* xref:fips-cryptography-cheat-sheet.adoc[FIPS-Approved Algorithms] — quick reference table of approved, acceptable, and disallowed algorithms by function
+* xref:key-recommendation-list.adoc[Key Recommendations] — minimum key sizes and algorithm choices for new high-assurance designs
+* xref:crypto-policy-tiers.adoc[Cryptographic Policy Tiers] — four-tier algorithm policy framework (Preferred / Approved / Baseline / Disallowed)
+* xref:crypto-cpu-extensions.adoc[CPU Cryptographic Extensions] — hardware acceleration support on RHEL 10 targets
+* xref:openssl-no-vendoring.adoc[OpenSSL Vendoring Policy] — rationale for using the system OpenSSL rather than vendoring a custom build
+
+== Post-Quantum
+
+* xref:crypto-post-quantum.adoc[Post-Quantum Cryptography] — ML-KEM, ML-DSA, SLH-DSA algorithm details, parameter tables, and migration strategy
+
+== Deployment
+
+* xref:crypto-usage-map.adoc[Cryptographic Usage Map] — where cryptography is used across the OS and in UMRS, mapped to algorithm and control
+
+== Compliance
+
+SC-12 (Cryptographic Key Establishment and Management) and SC-13 (Cryptographic Protection)
+are the primary controls for this module.
+SI-7 applies wherever cryptography is used for integrity verification.
+SC-28 applies to any encryption of data at rest.
+
+These controls are cited at the specific pages where they apply.
+The xref:reference:compliance-frameworks.adoc[Compliance Frameworks Registry] in the Reference module provides the
+broader control mapping across NIST 800-53, CMMC 2.0, and the NSA RTB.

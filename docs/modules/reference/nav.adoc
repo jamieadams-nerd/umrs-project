@@ -24,11 +24,3 @@
 ** xref:compliance-frameworks.adoc[Compliance frameworks registry]
 ** xref:cui/cui-descriptions.adoc[CUI category descriptions (c0–c9)]
 ** xref:cui/cui-category-abbreviations.adoc[CUI category abbreviations]
-
-* Cryptographic Baseline
-** xref:fips-cryptography-cheat-sheet.adoc[FIPS-Approved Algorithms]
-** xref:key-recommendation-list.adoc[Key Recommendations]
-** xref:openssl-no-vendoring.adoc[OpenSSL Vendoring Policy]
-** xref:crypto-post-quantum.adoc[Post-Quantum Cryptography]
-** xref:crypto-policy-tiers.adoc[Cryptographic Policy Tiers]
-** xref:crypto-cpu-extensions.adoc[CPU Cryptographic Extensions]

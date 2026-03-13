@@ -3,7 +3,7 @@
 **Source documents**: `docs/new-stuff/crypto.md`, `docs/new-stuff/left-navbar.md`
 **Prepared by**: senior-tech-writer
 **Date**: 2026-03-13
-**Status**: Ready for tech-writer execution (all questions resolved 2026-03-13)
+**Status**: Completed 2026-03-13 — all enhancements applied, make docs clean, source files moved to used/
 
 ---
 

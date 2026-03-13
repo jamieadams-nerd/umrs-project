@@ -316,6 +316,18 @@ These rules prevent both unauthorized disclosure (upward reads) and covert downg
 
 == Cryptography
 
+=== Asymmetric Cryptography
+
+Cryptography that uses a mathematically related key pair: a public key (freely distributed)
+and a private key (kept secret).
+
+Also called _public-key cryptography_.
+Used for key agreement (ECDH), digital signatures (ECDSA, ML-DSA), and key encapsulation (ML-KEM).
+Asymmetric algorithms are the ones vulnerable to Shor's algorithm — this is why post-quantum
+cryptography exists.
+
+Contrast with symmetric cryptography, which uses a single shared key.
+
 === AES (Advanced Encryption Standard)
 
 A symmetric block cipher standardized by NIST (FIPS 197).
@@ -345,6 +357,71 @@ The operational method used to apply a block cipher to a data stream.
 | ECB | None | Disallowed — reveals block patterns
 |===
 
+=== Crypto Policy (RHEL System-Wide Cryptographic Policy)
+
+A RHEL mechanism that enforces a consistent set of cryptographic algorithm constraints
+across all system libraries and services from a single configuration point.
+
+The active policy is set with `update-crypto-policies --set <POLICY>` and affects
+OpenSSL, GnuTLS, NSS, Kerberos, OpenSSH, and other system libraries.
+The policy file is stored in `/etc/crypto-policies/`.
+
+Standard policies in RHEL 10:
+
+[cols="1,3", options="header"]
+|===
+| Policy | Description
+
+| `DEFAULT`
+| Secure, broadly compatible. Includes PQC support on RHEL 10.1+.
+
+| `FIPS`
+| Restricts to FIPS 140-3 validated algorithms. Disables PQC. Required for CUI handling
+  under NIST 800-171 and CMMC.
+
+| `FUTURE`
+| Stricter algorithm requirements intended for future deployments.
+
+| `LEGACY`
+| Enables older algorithms for compatibility. Not appropriate for high-assurance deployments.
+|===
+
+On RHEL 10.1+, the `DEFAULT` policy includes PQC support (ML-KEM, ML-DSA) through
+OpenSSL, GnuTLS, and Go.
+Enabling `FIPS` mode removes PQC availability because NIST has not yet completed FIPS 140-3
+validation for post-quantum modules.
+
+UMRS deployments handling CUI must use the `FIPS` policy.
+See xref:cryptography:crypto-post-quantum.adoc#_rhel_10_pqc_availability[RHEL 10 PQC Availability]
+for the current FIPS/PQC compatibility status.
+
+See also: NIST 800-53 SC-13 (Cryptographic Protection); NIST 800-53 CM-6 (Configuration Settings).
+
+=== CRQC (Cryptographically-Relevant Quantum Computer)
+
+A quantum computer powerful enough to break currently deployed public-key cryptography
+using Shor's algorithm.
+
+No CRQC exists today.
+Expert consensus places the likely emergence at 5 to 15 years.
+The "harvest now, decrypt later" threat model means data encrypted today with RSA or ECDH
+is at risk even before a CRQC is built.
+
+See also: xref:cryptography:crypto-post-quantum.adoc[Post-Quantum Cryptography].
+
+=== Digital Signature
+
+A cryptographic mechanism that provides authentication, integrity, and non-repudiation
+for digital data.
+
+The signer uses a private key to produce the signature; any party with the corresponding
+public key can verify it.
+A valid signature proves: the data has not been altered, and the holder of the private key
+produced it.
+
+Classical algorithms: RSA, ECDSA, DSA (all vulnerable to Shor's algorithm).
+Post-quantum algorithms: ML-DSA (FIPS 204), SLH-DSA (FIPS 205).
+
 === DRBG (Deterministic Random Bit Generator)
 
 A cryptographic algorithm that generates pseudorandom bits from a seed value.
@@ -362,7 +439,7 @@ transmitting the secret.
 
 Preferred curve: P-384 (~192-bit security).
 
-See also: xref:reference:fips-cryptography-cheat-sheet.adoc[FIPS Cryptography Quick Reference].
+See also: xref:cryptography:fips-cryptography-cheat-sheet.adoc[FIPS Cryptography Quick Reference].
 
 === ECDSA (Elliptic Curve Digital Signature Algorithm)
 
@@ -370,6 +447,18 @@ A digital signature algorithm based on elliptic curve cryptography.
 
 Preferred curve: P-384.
 Used in UMRS for signing audit log chains and software artifacts.
+
+=== FIPS Mode
+
+An operating system configuration that restricts the kernel and userspace cryptographic
+libraries to use only FIPS-validated algorithms and implementations.
+
+On RHEL 10, FIPS mode is enabled at install time or via `fips-mode-setup`.
+When active, the kernel sets `/proc/sys/crypto/fips_enabled` to `1`, and the OpenSSL
+FIPS provider becomes the only available cryptographic backend.
+
+In UMRS, `ProcFips` is a first-class kernel attribute.
+Any cryptographic operation must use a FIPS-validated primitive when FIPS mode is active.
 
 === FIPS (Federal Information Processing Standard)
 
@@ -406,11 +495,68 @@ log chaining.
 | MD5 | 128 bits | Disallowed
 |===
 
+=== Grover's Algorithm
+
+A quantum algorithm that provides a quadratic speedup for searching unstructured spaces.
+
+Applied to symmetric cryptography, it halves the effective security level: a 128-bit
+key provides approximately 64 bits of quantum security.
+Consequence: AES-128 is insufficient in a post-quantum threat model; AES-256 remains adequate.
+
+Unlike Shor's algorithm, Grover's does not break symmetric cryptography — it weakens it.
+The mitigation is to use larger key sizes, not to replace algorithms.
+
+=== HMAC (Hash-based Message Authentication Code)
+
+A keyed hash construction that provides both integrity and authenticity.
+
+HMAC combines a secret key with a hash function (e.g., HMAC-SHA-256) to produce a tag
+that can only be verified by a party holding the same key.
+
+Used in UMRS for: EVM extended attribute protection, Sealed Evidence Cache (SEC) integrity
+seals, and key derivation (HKDF).
+
+See also: NIST SP 800-107.
+
+=== Hybrid Cryptography
+
+A migration strategy that combines classical and post-quantum algorithms in a single
+protocol exchange.
+
+Example: hybrid key agreement uses ECDH P-384 combined with ML-KEM-768 — the resulting
+shared secret is secure as long as _either_ algorithm remains unbroken.
+
+Hybrid deployment provides defense in depth during the transition period before
+post-quantum algorithms have accumulated sufficient operational confidence.
+
+See also: xref:cryptography:crypto-post-quantum.adoc[Post-Quantum Cryptography — Migration Approach].
+
 === HKDF (HMAC-based Key Derivation Function)
 
 A KDF that derives cryptographic keys from shared secrets using HMAC.
 Standardized in NIST SP 800-56C.
 Preferred variant: HKDF-SHA-384.
+
+=== KEM (Key Encapsulation Mechanism)
+
+A cryptographic primitive that allows one party to securely transmit a shared secret
+to another using the recipient's public key.
+
+A KEM is _not_ a key agreement protocol like ECDH (a Non-Interactive Key Exchange / NIKE).
+In a KEM, the sender generates the shared secret and encapsulates it; the recipient
+decapsulates it with their private key.
+Code that uses an ECDH API cannot be trivially swapped for a KEM without changes to the
+key establishment flow.
+
+ML-KEM (FIPS 203) is the NIST-standardized post-quantum KEM.
+
+=== KDF (Key Derivation Function)
+
+A function that derives one or more cryptographic keys from a source of key material
+(a shared secret, a password, or another key).
+
+KDFs ensure derived keys are cryptographically independent and properly distributed.
+NIST-approved KDFs include HKDF (SP 800-56C) and PBKDF2 (SP 800-132).
 
 === ML-DSA (Module-Lattice Digital Signature Algorithm)
 
@@ -421,7 +567,7 @@ Formerly known as CRYSTALS-Dilithium.
 Preferred for new high-assurance signature use cases where post-quantum resistance is required.
 Preferred parameter set: ML-DSA-87 (highest security margin).
 
-See also: xref:reference:crypto-post-quantum.adoc[Post-Quantum Cryptography].
+See also: xref:cryptography:crypto-post-quantum.adoc[Post-Quantum Cryptography].
 
 === ML-KEM (Module-Lattice Key Encapsulation Mechanism)
 
@@ -432,7 +578,40 @@ Formerly known as CRYSTALS-Kyber.
 Preferred for new key establishment protocols where post-quantum resistance is required.
 Preferred parameter set: ML-KEM-1024 (highest security margin).
 
-See also: xref:reference:crypto-post-quantum.adoc[Post-Quantum Cryptography].
+See also: xref:cryptography:crypto-post-quantum.adoc[Post-Quantum Cryptography].
+
+=== RSA (Rivest-Shamir-Adleman)
+
+A classical public-key cryptosystem used for key exchange and digital signatures.
+
+Security basis: the difficulty of factoring large integers — a problem Shor's algorithm
+solves efficiently on a quantum computer.
+
+RSA remains widely deployed (RPM signing, TLS, SSH) but is being migrated to post-quantum
+replacements: ML-KEM (FIPS 203) for key encapsulation, ML-DSA (FIPS 204) for signatures.
+NIST IR 8547 establishes a 2035 deprecation deadline for RSA in federal systems.
+
+=== Shor's Algorithm
+
+A quantum algorithm that efficiently solves integer factorization and discrete logarithm
+problems — the mathematical foundations of RSA, ECDH, ECDSA, and DSA.
+
+A sufficiently powerful quantum computer running Shor's algorithm would break all
+currently deployed public-key cryptography.
+This is the primary motivation for post-quantum cryptography.
+
+See also: xref:cryptography:crypto-post-quantum.adoc[Post-Quantum Cryptography — The Quantum Threat].
+
+=== Symmetric Cryptography
+
+Cryptography that uses a single shared key for both encryption and decryption (or for
+both tag generation and verification in the case of MACs).
+
+Examples: AES (encryption), HMAC (authentication), SHA-2 (hashing).
+Symmetric algorithms are not broken by Shor's algorithm but are weakened by Grover's
+algorithm — use AES-256 (not AES-128) in post-quantum threat models.
+
+Contrast with asymmetric cryptography, which uses key pairs.
 
 === Post-Quantum Cryptography (PQC)
 
@@ -446,7 +625,7 @@ NIST standardized three PQC algorithms in 2024:
 * FIPS 204 — ML-DSA (digital signatures)
 * FIPS 205 — SLH-DSA (hash-based signatures)
 
-See also: xref:reference:crypto-post-quantum.adoc[Post-Quantum Cryptography].
+See also: xref:cryptography:crypto-post-quantum.adoc[Post-Quantum Cryptography].
 
 === SLH-DSA (Stateless Hash-Based Digital Signature Algorithm)
 
@@ -463,9 +642,10 @@ outweigh size constraints.
 
 == See Also
 
-* xref:reference:fips-cryptography-cheat-sheet.adoc[FIPS Cryptography Quick Reference]
-* xref:reference:crypto-post-quantum.adoc[Post-Quantum Cryptography]
-* xref:reference:crypto-policy-tiers.adoc[Cryptographic Policy Tiers]
+* xref:cryptography:fips-cryptography-cheat-sheet.adoc[FIPS Cryptography Quick Reference]
+* xref:cryptography:crypto-post-quantum.adoc[Post-Quantum Cryptography]
+* xref:cryptography:crypto-policy-tiers.adoc[Cryptographic Policy Tiers]
+* xref:cryptography:crypto-usage-map.adoc[Cryptographic Usage Map]
 * xref:security-concepts:integrity-and-provenance.adoc[Integrity and Provenance in UMRS]
 * xref:security-concepts:reference-monitor.adoc[Reference Monitor Design]
 * xref:ROOT:what-is-high-assurance.adoc[What Is High Assurance?]

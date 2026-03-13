@@ -8,9 +8,10 @@ Write here to notify rust-developer or security-engineer of doc-driven questions
 ## Project: UMRS Documentation (Antora)
 
 **Docs root**: `docs/modules/`
-**Modules**: ROOT, architecture, security-concepts, devel, deployment, operations, logging-audit, reference, umrs-tools, patterns
+**Modules**: ROOT, architecture, security-concepts, devel, deployment, operations, logging-audit, cryptography, reference, umrs-tools, patterns
 
-**antora.yml** registers all 10 module nav files — updated 2026-03-11.
+**antora.yml** registers all 11 module nav files — updated 2026-03-13.
+**cryptography** module added 2026-03-13 — nav.adoc, index.adoc, crypto-usage-map.adoc, and 6 pages moved from reference/pages/.
 **security-concepts** and **logging-audit** are now registered; both have nav.adoc and index.adoc.
 
 ---
@@ -99,7 +100,7 @@ Original .txt and .md files remain in place (not deleted per policy).
 | rtb-vnssa, integrity-and-provenance, truth-concepts, reference-monitor | security-concepts | pages/ |
 | selinux-history, five-eyes-interop, HACAMS, ibm-zos-os390, microsoft-nt-orange, ring-based-security, mls-history, one-way-hashes, trusted-path-orange | architecture | pages/history/ |
 | category_set, security_type, role, user, context, sensitivity, booleans, secolor, mcs, mls-colors, rhel-selinux-users, setrans-technical, example-setrans-conf, umrs-mls-registry | reference | pages/selinux/ |
-| openssl-no-vendoring, key-recommendation-list, fips-cryptography-cheat-sheet, crypto-post-quantum, crypto-policy-tiers, crypto-cpu-extensions | reference | pages/ (root, NOT pages/cryptography/) |
+| openssl-no-vendoring, key-recommendation-list, fips-cryptography-cheat-sheet, crypto-post-quantum, crypto-policy-tiers, crypto-cpu-extensions, crypto-usage-map | cryptography | pages/ |
 | cui-category-abbreviations, cui-descriptions | reference | pages/cui/ |
 | logging-capacity, log-lifecycle-model, log-tuning | logging-audit | pages/ |
 | rhel10-installation, rhel10-openscap, rhel10-packages, rhel10-setrans, rhel10-directory-structure | deployment | pages/rhel/ |
@@ -184,6 +185,41 @@ Crypto reference pages complete: `crypto-post-quantum.adoc`, `crypto-policy-tier
 SELinux reference pages rewritten to AsciiDoc (sensitivity, category_set, user, role, security_type — all in `reference/selinux/`).
 Phase 4 plans archived: `.claude/plans/completed/`.
 Build status: 2 pre-existing errors in ubuntu.adoc only.
+
+## PQC Documentation Expansion (2026-03-13, round 1)
+
+`crypto-post-quantum.adoc` expanded with:
+- New "The Quantum Threat" section: Shor's/Grover's algorithms, harvest-now threat, CRQC
+  timeline (5–15 years expert consensus), NIST standardization history (Dec 2016 – Aug 2024)
+- KEM vs NIKE NOTE in ML-KEM section
+- CNSA 2.0 NOTE in SLH-DSA section (CNSA 2.0 includes LMS/XMSS, excludes SLH-DSA)
+- New "Algorithm Replacement Mapping" table (between SLH-DSA and Migration sections)
+- NIST IR 8547 deprecation note (2035 deadline) and FIPS 206/HQC mention in Migration
+- FIPS provider + hybrid deployment IMPORTANT block in Migration
+- SI-7 added to control mapping
+All facts verified via nist-pqc RAG collection. Build passes clean.
+
+## PQC Documentation Expansion (2026-03-13, round 2 — RHEL 10 availability)
+
+Source: `docs/new-stuff/latest-on-pqc.txt`. File incorporated and noted as resolved in cross-team notes.
+
+Changes:
+- `crypto-post-quantum.adoc`: FALCON/FIPS 206 language tightened; HQC draft timeline noted;
+  14-candidate signature on-ramp (CROSS, FAEST, MAYO) added; FIPS IMPORTANT block updated
+  with explicit FIPS/PQC mutual exclusion and CMVP pointer; new `== RHEL 10 PQC Availability`
+  section with 3-row status table and FIPS constraint narrative; 3 Red Hat source URLs as footnotes.
+- `crypto-usage-map.adoc`: Planned umrs-crypto goals list updated with FIPS gate bullet.
+- `glossary/pages/index.adoc`: New `=== Crypto Policy (RHEL System-Wide Cryptographic Policy)` entry.
+- `deployment/pages/rhel/rhel10-packages.adoc`: New `== Cryptographic Policy` cross-reference section.
+
+## FIPS / PQC Constraint (authoritative — confirmed 2026-03-13)
+
+FIPS mode and PQC are mutually exclusive on current RHEL 10.
+NIST has not completed FIPS 140-3 validation for ML-KEM, ML-DSA, or SLH-DSA.
+CUI systems (NIST 800-171, CMMC) must use FIPS mode → no PQC until validation completes.
+RHEL 10.0 (May 2025): PQC was Technology Preview — required crypto-policies-pq-preview + DEFAULT:TEST-PQ.
+RHEL 10.1+: PQC GA under DEFAULT policy for non-FIPS systems.
+State this constraint explicitly whenever documenting PQC or umrs-crypto design.
 
 ## SELinux Source Module Reference
 

@@ -139,6 +139,23 @@ Add the public key to your repository host (GitHub, GitLab, or internal server).
 // TBD: Confirm GPG signing requirements for commits in this project
 // TBD: Add any project-specific git config (commit signing, hooks, etc.)
 
+== Cryptographic Policy
+
+RHEL 10 controls which cryptographic algorithms are available system-wide through the
+`crypto-policies` package (installed by default).
+No additional package installation is needed for standard deployments.
+
+For UMRS deployments:
+
+* The `FIPS` policy is required for systems handling CUI under NIST 800-171 or CMMC.
+  Enable it at install time via the FIPS mode installer option, or after installation with
+  `fips-mode-setup --enable` followed by a reboot.
+* On RHEL 10.1+, the `DEFAULT` policy includes PQC support (ML-KEM, ML-DSA) for
+  non-FIPS systems. The `DEFAULT:TEST-PQ` subpolicy used on RHEL 10.0 is no longer needed.
+* FIPS mode and PQC support are mutually exclusive on current RHEL releases.
+  See xref:cryptography:crypto-post-quantum.adoc#_rhel_10_pqc_availability[RHEL 10 PQC Availability]
+  for the full compatibility matrix.
+
 == Next Steps
 
 xref:rhel/rhel10-setrans.adoc[CUI Label Configuration] — install the UMRS setrans.conf and

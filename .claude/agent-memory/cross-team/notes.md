@@ -36,9 +36,97 @@ Mark entries `resolved` when acted on. Do not delete entries.
 
 ---
 
-## [2026-03-13] researcher → senior-tech-writer, tech-writer: PQC documentation task created
+## [2026-03-13] researcher → all-agents: PQC Status Tracker created
 
 **Status**: open
+
+A living PQC status tracker is now available at `.claude/agent-memory/researcher/pqc-tracker.md`.
+
+**What it covers**:
+- NIST PQC program status (finalized standards, FIPS 206, HQC, signature on-ramp)
+- RHEL 10 PQC availability (10.0 preview → 10.1 GA → FIPS limitation)
+- FIPS 140-3 validation status for PQC
+- UMRS impact notes
+- Monitoring source URLs for periodic refresh
+
+**How to use**: Read the tracker for current PQC status before writing documentation, making architectural decisions, or auditing crypto-related content. The researcher updates it on each library refresh cycle.
+
+**Refresh trigger**: When Jamie says "researcher, refresh your library" — all collections are checked for updates and this tracker is refreshed.
+
+---
+
+## [2026-03-13] senior-tech-writer → all-agents: docs/new-stuff/latest-on-pqc.txt incorporated
+
+**Status**: resolved
+
+Source file `docs/new-stuff/latest-on-pqc.txt` has been fully incorporated. The file can
+be archived or deleted when convenient.
+
+**Changes made:**
+
+1. `docs/modules/cryptography/pages/crypto-post-quantum.adoc`
+   - "NIST's Standardization Effort" subsection expanded: FALCON/FIPS 206 language tightened
+     to "finalized shortly"; draft HQC standard expected early 2026 noted; on-ramp for 14
+     new signature candidates (CROSS, FAEST, MAYO) added.
+   - FIPS IMPORTANT block updated: explicit statement that FIPS mode and PQC are mutually
+     exclusive on current RHEL releases, with explanation of why (FIPS 140-3 validation
+     not yet complete for PQC modules).
+   - New section added: `== RHEL 10 PQC Availability` — includes the three-row status table
+     (RHEL 10.0 / RHEL 10.1+ / FIPS mode), prose on 10.1 DEFAULT policy, RHEL 10.0 preview
+     package removal procedure, and FIPS constraint narrative with CUI/CMMC implications.
+     Three Red Hat source URLs preserved as AsciiDoc footnotes.
+
+2. `docs/modules/cryptography/pages/crypto-usage-map.adoc`
+   - Planned `umrs-crypto` section updated: added FIPS gate bullet — the crate must check
+     `/proc/sys/crypto/fips_enabled` and fall back to classical algorithms when FIPS is
+     active. Cross-reference to the new RHEL 10 availability section added.
+
+3. `docs/modules/glossary/pages/index.adoc`
+   - New entry added: `=== Crypto Policy (RHEL System-Wide Cryptographic Policy)` in the
+     Cryptography section. Covers `update-crypto-policies`, standard policies (DEFAULT,
+     FIPS, FUTURE, LEGACY), RHEL 10.1+ PQC availability under DEFAULT, UMRS CUI requirement
+     for FIPS policy, and cross-reference to PQC availability section.
+
+4. `docs/modules/deployment/pages/rhel/rhel10-packages.adoc`
+   - New section added: `== Cryptographic Policy` — brief operational guidance on FIPS mode
+     requirement for CUI deployments, DEFAULT policy PQC inclusion on 10.1+, the removal of
+     the `DEFAULT:TEST-PQ` subpolicy requirement, and cross-reference to the crypto module.
+
+`make docs` passes cleanly — 2 pre-existing ubuntu.adoc errors only, zero new errors.
+
+---
+
+## [2026-03-13] senior-tech-writer → all agents: new `cryptography` Antora module created
+
+**Status**: open
+
+A new `cryptography` module has been extracted from the `reference` module.
+
+**What changed:**
+
+- Six pages moved from `reference/pages/` to `cryptography/pages/` via `git mv`:
+  `fips-cryptography-cheat-sheet.adoc`, `key-recommendation-list.adoc`, `openssl-no-vendoring.adoc`,
+  `crypto-post-quantum.adoc`, `crypto-policy-tiers.adoc`, `crypto-cpu-extensions.adoc`
+- New module files created: `cryptography/nav.adoc`, `cryptography/pages/index.adoc`
+- New reference page created: `cryptography/pages/crypto-usage-map.adoc`
+- `docs/antora.yml` — `modules/cryptography/nav.adoc` added between logging-audit and reference
+- `docs/modules/ROOT/nav.adoc` — `cryptography:index.adoc` added between logging-audit and reference
+- `reference/nav.adoc` — "Cryptographic Baseline" section removed
+- `reference/pages/index.adoc` — Cryptographic Baseline section replaced with cross-module pointer
+- Cross-references updated in: `devel/high-assurance-patterns.adoc`, `architecture/cui-structure.adoc`,
+  `glossary/pages/index.adoc` (all `reference:crypto-*` and `reference:fips-*` xrefs updated to `cryptography:`)
+
+**Impact for rust-developer:**
+Any new code that references crypto documentation should now point to `cryptography:` module, not `reference:`.
+
+**Impact for changelog-updater:**
+Please log this as a documentation structural change in the CHANGELOG.
+
+---
+
+## [2026-03-13] researcher → senior-tech-writer, tech-writer: PQC documentation task created
+
+**Status**: resolved — completed 2026-03-13 by senior-tech-writer
 
 A PQC documentation task has been created at `.claude/plans/pqc-documentation-task.md`.
 It defines required content for four topic areas:
@@ -48,6 +136,9 @@ It defines required content for four topic areas:
 3. Algorithm replacement mapping table (RSA/ECDH/ECDSA → FIPS 203/204/205)
 4. Developer awareness additions to existing crypto docs
 
+All four areas implemented as additions to `docs/modules/reference/pages/crypto-post-quantum.adoc`.
+No new pages created. `make docs` passes cleanly (pre-existing ubuntu.adoc errors only).
+
 Blocked by: Antora doc restructure Phase 3 (new content phase). Do not create new pages until Phase 3 opens.
 RAG: `rag-query --collection nist-pqc` — 264 chunks including FIPS PDFs and 10 web articles.
 
@@ -55,7 +146,7 @@ RAG: `rag-query --collection nist-pqc` — 264 chunks including FIPS PDFs and 10
 
 ## [2026-03-13] researcher → senior-tech-writer, tech-writer: nist-pqc RAG collection expanded with web resources
 
-**Status**: open
+**Status**: resolved — PQC documentation expanded 2026-03-13; RAG used for all fact verification
 
 The `nist-pqc` RAG collection has been expanded from 209 chunks (FIPS PDFs only) to **264 chunks** (+55) by ingesting 10 supplementary web articles covering PQC context, algorithm overviews, and migration guidance.
 
@@ -85,7 +176,7 @@ The `nist-pqc` RAG collection has been expanded from 209 chunks (FIPS PDFs only)
 
 ## [2026-03-13] researcher → senior-tech-writer, tech-writer: FIPS 203/204/205 PQC standards downloaded and in RAG
 
-**Status**: open
+**Status**: resolved — parameter tables verified against RAG; no corrections needed; doc expanded 2026-03-13
 
 Three NIST Post-Quantum Cryptography FIPS standards have been downloaded to `refs/nist/fips/` and ingested into the RAG:
 

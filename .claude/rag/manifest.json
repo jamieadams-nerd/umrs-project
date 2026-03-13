@@ -34515,5 +34515,19 @@
     "chunks_stored": 6,
     "collection": "nist-pqc",
     "ingested_date": "2026-03-13T16:30:03.640478+00:00"
+  },
+  "nist-pqc/web/csrc-nist-pqc-standardization-2025.md": {
+    "hash": "dcd84aab2eedd5ca",
+    "converted_to": "converted/nist-pqc/web/csrc-nist-pqc-standardization-2025.md",
+    "chunks_stored": 9,
+    "collection": "nist-pqc",
+    "ingested_date": "2026-03-13T17:28:42.112470+00:00"
+  },
+  "nist-pqc/web/redhat-quantum-safe-openshift-roadmap.md": {
+    "hash": "9a1e0aced9805a23",
+    "converted_to": "converted/nist-pqc/web/redhat-quantum-safe-openshift-roadmap.md",
+    "chunks_stored": 12,
+    "collection": "nist-pqc",
+    "ingested_date": "2026-03-13T17:28:42.589090+00:00"
   }
 }

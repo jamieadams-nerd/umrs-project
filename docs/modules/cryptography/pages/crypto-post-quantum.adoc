@@ -1,0 +1,367 @@
+= Post-Quantum Cryptography
+:description: Post-quantum cryptographic algorithms — ML-KEM, ML-DSA, SLH-DSA — and their FIPS 203/204/205 standardization status.
+:toc: left
+:toclevels: 2
+
+// NIST 800-53 SC-12 — Cryptographic key establishment and management
+// NIST 800-53 SC-13 — Cryptographic protection
+// NIST 800-53 SI-7 — Software, firmware, and information integrity
+// FIPS 203, 204, 205 (2024)
+
+Post-quantum cryptography (PQC) refers to cryptographic algorithms believed to be resistant
+to attacks by sufficiently powerful quantum computers.
+
+Classical public-key algorithms — RSA, ECDSA, ECDH — rely on mathematical problems
+(integer factorization and discrete logarithm) that Shor's algorithm solves efficiently
+on a quantum computer.
+NIST completed standardization of three post-quantum algorithms in 2024.
+These are the algorithms to use in new designs where post-quantum resistance is required.
+
+[IMPORTANT]
+====
+Post-quantum algorithms are _additions_ to a classical baseline, not replacements for
+existing algorithms in deployed systems.
+Current guidance is to plan migration; not all environments have completed it.
+For FIPS-compliant deployments today, classical algorithms remain the primary option
+unless the specific FIPS 203/204/205 module is validated and available in the toolchain.
+====
+
+== The Quantum Threat
+
+=== Why Classical Public-Key Cryptography Is Vulnerable
+
+The security of RSA, ECDH, and ECDSA rests on the difficulty of two mathematical problems
+for classical computers:
+
+* *Integer factorization* — the basis of RSA: given a large composite number, find its prime factors.
+* *Discrete logarithm* — the basis of ECDH and ECDSA: given a point on an elliptic curve, find the
+  scalar that produced it.
+
+Both problems are computationally intractable for classical computers at the key sizes in use today.
+A quantum computer running *Shor's algorithm* solves both problems in polynomial time.
+At sufficient scale, a quantum computer would break RSA key exchange, RSA signatures, ECDH key
+agreement, and ECDSA signatures.
+
+DSA is also affected — it depends on the discrete logarithm problem in finite fields, which Shor's
+algorithm also solves.
+
+=== Grover's Algorithm and Symmetric Cryptography
+
+Symmetric algorithms — AES, SHA-2, SHA-3 — are affected differently.
+*Grover's algorithm* provides a quantum speedup for unstructured search, which applies to
+symmetric key search.
+The effect is to halve the effective security level: a 128-bit key provides approximately 64 bits
+of quantum security.
+
+Practical consequences:
+
+* AES-128 is no longer sufficient in a post-quantum threat model.
+Use AES-256 instead.
+* AES-256, SHA-384, and SHA-512 retain adequate security margins under Grover's algorithm.
+No algorithm change is required for these.
+
+=== The "Harvest Now, Decrypt Later" Threat
+
+Adversaries can capture encrypted traffic today and store it for future decryption once a
+cryptographically-relevant quantum computer (CRQC) becomes available.
+Data protected today with RSA or ECDH key exchange is at risk.
+The threat is active now, before quantum computers exist, because the harvested data retains
+value over time.
+
+Systems handling CUI or long-lived sensitive data must treat this as a current threat, not a
+future one.
+Key agreement is the highest-priority migration target because it is where harvest-now attacks
+collect usable material.
+
+=== Timeline to Cryptographically-Relevant Quantum Computers
+
+No CRQC exists today.
+Expert consensus places the likely emergence of a CRQC at 5 to 15 years.
+A 2023 survey cited by Cloudflare found that more than a quarter of interviewed cryptography
+experts considered a CRQC within the next decade more likely than not.
+The Cloud Security Alliance places the window at 5 to 10 years.
+
+The uncertainty in this timeline is the reason to migrate now rather than wait.
+A CRQC that arrives before migration is complete renders all harvested data decryptable.
+
+=== NIST's Standardization Effort
+
+NIST solicited proposals for quantum-resistant algorithms on December 20, 2016.
+82 candidates were submitted from cryptography teams worldwide.
+After four rounds of evaluation over eight years, NIST finalized three standards on August 13, 2024.
+
+A fourth algorithm — FALCON — is being finalized as FIPS 206 (FN-DSA) and is expected to
+be published shortly after the initial three standards.
+
+A backup key encapsulation mechanism — HQC (Hamming Quasi-Cyclic), a code-based KEM
+providing algorithm diversity against potential lattice vulnerabilities — was selected on
+March 11, 2025 and is documented in NIST IR 8545.
+A draft standard for HQC is expected in early 2026.
+
+To provide broader variety in digital signature schemes, NIST is evaluating 14 new
+signature candidates in an additional on-ramp process.
+These include CROSS (Code-based signatures), FAEST (AES-based signatures), and MAYO
+(multivariate-based signatures).
+These candidates address the concentration of currently standardized signature algorithms
+in lattice-based mathematics.
+None of the on-ramp candidates are required for current migrations — they expand the
+long-term portfolio.
+
+== Standardized Post-Quantum Algorithms
+
+[cols="1,1,1,2", options="header"]
+|===
+| Algorithm | Standard | Type | Former name
+
+| ML-KEM | FIPS 203 (2024) | Key encapsulation mechanism | CRYSTALS-Kyber
+| ML-DSA | FIPS 204 (2024) | Digital signature | CRYSTALS-Dilithium
+| SLH-DSA | FIPS 205 (2024) | Hash-based digital signature | SPHINCS+
+|===
+
+== ML-KEM — Key Encapsulation
+
+ML-KEM (Module-Lattice Key Encapsulation Mechanism) establishes a shared secret between
+two parties.
+It replaces classical key agreement (ECDH, DH) in protocols where quantum resistance is required.
+
+Security basis: Module Learning With Errors (MLWE) problem.
+
+[NOTE]
+====
+ML-KEM is a KEM (Key Encapsulation Mechanism), not a NIKE (Non-Interactive Key Exchange).
+This is a semantic and API difference from ECDH.
+Code that calls an ECDH API cannot be trivially swapped for ML-KEM without changes to
+the key establishment flow.
+====
+
+[cols="1,1,1,2", options="header"]
+|===
+| Parameter set | Security level | Public key size | Shared secret size
+
+| ML-KEM-512 | ~128-bit (AES-128 equivalent) | 800 bytes | 32 bytes
+| ML-KEM-768 | ~192-bit (AES-192 equivalent) | 1,184 bytes | 32 bytes
+| ML-KEM-1024 | ~256-bit (AES-256 equivalent) | 1,568 bytes | 32 bytes
+|===
+
+*UMRS recommendation*: ML-KEM-1024 for high-assurance use.
+ML-KEM-768 is the baseline for interoperability-constrained environments.
+
+== ML-DSA — Digital Signatures
+
+ML-DSA (Module-Lattice Digital Signature Algorithm) is the primary post-quantum digital
+signature standard.
+Use for signing artifacts, audit chains, and software delivery.
+
+Security basis: Module-lattice hard problems — MLWE and Module Short Integer Solution (MSIS).
+
+[cols="1,1,1,1", options="header"]
+|===
+| Parameter set | Security level | Public key size | Signature size
+
+| ML-DSA-44 | ~128-bit | 1,312 bytes | 2,420 bytes
+| ML-DSA-65 | ~192-bit | 1,952 bytes | 3,293 bytes
+| ML-DSA-87 | ~256-bit | 2,592 bytes | 4,595 bytes
+|===
+
+*UMRS recommendation*: ML-DSA-87 for high-assurance signing.
+ML-DSA-65 is the baseline.
+
+== SLH-DSA — Hash-Based Signatures
+
+SLH-DSA (Stateless Hash-Based Digital Signature Algorithm) is a conservative alternative
+to ML-DSA.
+Its security depends only on the underlying hash function's properties — not on
+lattice-based hardness assumptions.
+
+Use SLH-DSA when deploying environments require conservative assumptions or when
+formal verification of the security basis is a requirement.
+
+Note: SLH-DSA signatures are significantly larger than ML-DSA signatures, which may
+constrain its use in size-sensitive protocols.
+
+[cols="1,1,2", options="header"]
+|===
+| Parameter set | Security level | Characteristic
+
+| SLH-DSA-SHAKE-128s / -128f | ~128-bit | Small signatures (s) or fast signing (f)
+| SLH-DSA-SHAKE-192s / -192f | ~192-bit | Small signatures (s) or fast signing (f)
+| SLH-DSA-SHAKE-256s / -256f | ~256-bit | Small signatures (s) or fast signing (f)
+|===
+
+[NOTE]
+====
+NSA's Commercial National Security Algorithm Suite 2.0 (CNSA 2.0) specifies LMS and XMSS
+as the hash-based signature algorithms for national security systems — it does not include
+SLH-DSA.
+Deployments under NSA governance must verify whether SLH-DSA is an acceptable choice in
+their specific accreditation context.
+SLH-DSA is an appropriate choice under NIST standards; CNSA 2.0 is a separate, narrower
+requirement.
+====
+
+== Algorithm Replacement Mapping
+
+This table maps classical algorithms to their quantum-resistant replacements.
+Use it to assess what changes a migration requires.
+
+[cols="2,2,2", options="header"]
+|===
+| Classical algorithm | Vulnerability | Post-quantum replacement
+
+| RSA key exchange
+| Shor's algorithm — integer factorization
+| ML-KEM / FIPS 203
+
+| ECDH key agreement
+| Shor's algorithm — elliptic curve discrete log
+| ML-KEM / FIPS 203
+
+| RSA digital signatures
+| Shor's algorithm — integer factorization
+| ML-DSA / FIPS 204
+
+| ECDSA digital signatures
+| Shor's algorithm — elliptic curve discrete log
+| ML-DSA / FIPS 204 or SLH-DSA / FIPS 205
+
+| DSA digital signatures
+| Shor's algorithm — discrete log (finite field)
+| ML-DSA / FIPS 204
+
+| AES-128
+| Grover's algorithm — effective key halved to ~64 bits
+| Use AES-256 instead (no new FIPS standard required)
+
+| AES-256, SHA-384, SHA-512
+| Grover's algorithm — manageable reduction; security margins remain adequate
+| No change needed
+|===
+
+== Migration Approach
+
+For systems that must support both classical and post-quantum algorithms during transition:
+
+. Identify the cryptographic primitives in each component (key agreement, signatures, KDF).
+. For each primitive, confirm whether a FIPS 203/204/205-validated implementation is available
+  in your toolchain.
+. For key agreement: consider hybrid schemes that combine ECDH P-384 with ML-KEM-768 or
+  ML-KEM-1024 — this preserves classical security while adding post-quantum resistance.
+. For signatures: prefer ML-DSA-87 for new signing infrastructure.
+  Keep existing ECDSA P-384 infrastructure active until all verifiers are updated.
+. Document all migration decisions as control evidence under NIST 800-53 SC-12.
+
+[NOTE]
+====
+*Deprecation deadline*: NIST IR 8547 establishes that quantum-vulnerable algorithms
+(RSA, ECDH, ECDSA, DSA) will be deprecated by 2035.
+High-risk systems should complete their transitions earlier — the 2035 date is the final
+deadline, not a target.
+
+*In development*: FIPS 206 (FN-DSA, based on FALCON) is being finalized by NIST.
+HQC — a code-based backup KEM selected in March 2025 (NIST IR 8545) — provides
+algorithm diversity against potential future lattice vulnerabilities.
+Neither is required for current migrations, but both are worth tracking.
+====
+
+[IMPORTANT]
+====
+*FIPS environments (RHEL 10)*: FIPS 203, 204, and 205 implementations MUST be used
+through a FIPS-validated cryptographic provider when one is available.
+Do not implement these algorithms directly.
+The OpenSSL FIPS provider on RHEL 10 is the expected delivery vehicle.
+
+*FIPS mode and PQC are mutually exclusive on current RHEL 10 systems.*
+FIPS mode restricts the system to FIPS-validated cryptographic modules.
+NIST has not yet finalized FIPS 140-3 validation requirements for ML-KEM, ML-DSA, or
+SLH-DSA.
+Enabling FIPS mode disables PQC on RHEL 10; disabling FIPS mode to use PQC removes
+FIPS 140-3 validated cryptography from all OS subsystems.
+You must choose one. For the current status of FIPS validation for PQC modules, see the
+NIST Cryptographic Module Validation Program (CMVP).
+
+*Hybrid deployment*: During the transition period, run classical and post-quantum
+algorithms simultaneously.
+Hybrid key agreement (ECDH + ML-KEM) provides defense in depth: the combined secret is
+secure as long as either algorithm remains unbroken.
+Hybrid signature verification is less common but applicable to long-lived signing keys.
+====
+
+== RHEL 10 PQC Availability
+
+PQC availability in RHEL 10 changed significantly between the initial release and the 10.1
+update. The status depends on the minor version and whether FIPS mode is enabled.
+
+[cols="1,2,2", options="header"]
+|===
+| RHEL Version | PQC Status | How to Enable
+
+| RHEL 10.0 (May 2025)
+| Technology Preview — not supported for production use
+| Install `crypto-policies-pq-preview`; set `DEFAULT:TEST-PQ` via `update-crypto-policies`
+
+| RHEL 10.1+
+| Generally Available — fully supported for ML-KEM and ML-DSA in OpenSSL, GnuTLS, and Go
+| Included in the `DEFAULT` crypto-policy; no additional packages or policy flags required
+
+| Any version (FIPS mode enabled)
+| Unsupported — PQC algorithms unavailable
+| Cannot be combined with FIPS mode; see the IMPORTANT block above
+|===
+
+On RHEL 10.1 and later, PQC key exchange and signatures are available by default through
+the system crypto-policy.
+Applications that use OpenSSL, GnuTLS, or Go TLS will automatically negotiate hybrid
+post-quantum key exchange when the peer supports it, without application-level changes.
+
+On RHEL 10.0, PQC was gated behind the `crypto-policies-pq-preview` package and
+the `DEFAULT:TEST-PQ` policy subpolicy.
+Systems upgraded from 10.0 to 10.1 can remove the preview package and revert to the
+standard `DEFAULT` policy.
+
+=== FIPS Mode Constraint
+
+For systems that require FIPS 140-3 validated cryptography — which includes most DoD and
+federal deployments — PQC algorithms are not available until NIST completes FIPS 140-3
+validation for the relevant modules.
+Until that validation is complete, the security posture is:
+
+* FIPS-compliant systems: use ECDH P-384 + AES-256 + SHA-384/512 (classical baseline).
+  Plan migration; do not delay adoption of the FIPS baseline under the assumption that
+  PQC will be available imminently.
+* Non-FIPS systems (development, testing, interoperability labs): PQC algorithms available
+  on RHEL 10.1+ under the `DEFAULT` policy.
+  Hybrid key exchange is recommended to preserve classical security.
+
+Systems handling CUI under NIST 800-171 or CMMC must operate in FIPS mode.
+PQC migration for those systems is blocked on FIPS 140-3 validation completing.
+
+footnote:[RHEL 10.1 PQC availability: https://www.redhat.com/en/blog/whats-new-post-quantum-cryptography-rhel-101]
+footnote:[RHEL 10 PQC overview: https://www.redhat.com/en/blog/post-quantum-cryptography-red-hat-enterprise-linux-10]
+footnote:[OpenShift quantum-safe roadmap: https://www.redhat.com/en/blog/road-to-quantum-safe-cryptography-red-hat-openshift]
+
+== Control Mapping
+
+[cols="1,3", options="header"]
+|===
+| Control | Satisfaction
+
+| NIST 800-53 SC-12
+| Key establishment for ML-KEM follows FIPS 203.
+ML-KEM-1024 provides key agreement meeting the highest NIST-defined security level.
+
+| NIST 800-53 SC-13
+| Cryptographic protection.
+ML-DSA-87 and SLH-DSA are NIST-standardized algorithms under FIPS 204/205.
+Use of standardized algorithms with documented parameter choices satisfies SC-13.
+
+| NIST 800-53 SI-7
+| Software, firmware, and information integrity.
+ML-DSA signatures applied to software artifacts provide post-quantum integrity verification.
+|===
+
+== See Also
+
+* xref:fips-cryptography-cheat-sheet.adoc[FIPS Cryptography Quick Reference] — classical baseline
+* xref:crypto-policy-tiers.adoc[Cryptographic Policy Tiers] — algorithm tier assignments
+* xref:key-recommendation-list.adoc[Key Recommendations]
+* xref:glossary:index.adoc[Glossary] — definitions for ML-KEM, ML-DSA, SLH-DSA, FIPS

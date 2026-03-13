@@ -1,0 +1,250 @@
+= Cryptographic Usage Map
+:toc: left
+:toclevels: 2
+:description: Where cryptography is used in the RHEL 10 base OS and in UMRS — mapped to algorithm, purpose, and control.
+
+// NIST 800-53 SC-12 — Cryptographic key establishment and management
+// NIST 800-53 SC-13 — Cryptographic protection
+// NIST 800-53 SI-7 — Software, firmware, and information integrity
+// NIST 800-53 AU-9 — Protection of audit information
+// NIST 800-53 SC-28 — Protection of information at rest
+
+This page is a cross-reference for auditors and engineers.
+It maps each use of cryptography — in the base operating system and in UMRS itself — to the
+algorithm employed, the asset or channel it protects, and the applicable NIST control.
+
+An auditor can read this page to verify that algorithm choices are traceable.
+An engineer can read it to identify where a new design should align with existing patterns.
+
+== Operating System Cryptographic Usage
+
+These entries reflect the RHEL 10 default configuration with FIPS mode enabled.
+FIPS mode restricts algorithm choices across all listed subsystems; where a subsystem supports
+multiple algorithms, the FIPS-approved choice is listed first.
+
+[cols="2,2,3,1", options="header"]
+|===
+| Subsystem
+| Algorithm / Primitive
+| What it protects
+| Controls
+
+| *IMA/EVM — Measurement*
+| SHA-256 (file measurements), SHA-512 (optional)
+| Integrity measurement of file content at access time; measurement log fed to remote attestation
+| SI-7
+
+| *IMA/EVM — Appraisal signatures*
+| RSA-2048 or ECDSA-P256 (kernel keyring signatures)
+| Prevents modification of IMA policy and labeled files; kernel enforces signature before access
+| SI-7, SC-13
+
+| *dm-crypt / LUKS2*
+| AES-256-XTS (volume encryption), Argon2id or PBKDF2-SHA-256 (passphrase derivation)
+| Full-disk or partition encryption for data at rest
+| SC-28, SC-13
+
+| *journald Forward Secure Sealing (FSS)*
+| FSPRG (Forward Secure Pseudo Random Generator, HMAC-SHA-256 based)
+| Tamper evidence on journal entries — past entries cannot be forged after key rotation
+| AU-9
+
+| *`/etc/shadow` — Password hashing*
+| yescrypt (RHEL 10 default); SHA-512-crypt (legacy)
+| Protects stored authentication credentials from offline dictionary attacks
+| IA-5
+
+| *RPM package signing*
+| RSA-4096 + SHA-256 (detached signature over package content)
+| Verifies package integrity and authenticity before installation
+| SI-7, SA-12
+
+| *SSH — Host keys*
+| Ed25519 (preferred), ECDSA-P256, RSA-3072+ (legacy)
+| Authenticates the server to the client; prevents MITM on remote access
+| SC-13, IA-3
+
+| *SSH — Transport*
+| AES-256-GCM or AES-256-CTR + HMAC-SHA2-256 (session encryption)
+| Protects data in transit for remote administration sessions
+| SC-8, SC-13
+
+| *TLS (OpenSSL FIPS provider)*
+| ECDHE-P384 + AES-256-GCM + SHA-384 (TLS 1.3 preferred cipher suite)
+| Secures HTTPS for Cockpit web console, systemd socket activations, and internal services
+| SC-8, SC-13
+
+| *SELinux policy module loading*
+| SHA-256 (policy binary hash, verified by kernel on load)
+| Ensures the policy binary has not been tampered with between compile and enforcement
+| SI-7, AC-3
+
+| *DNSSEC*
+| ECDSA-P256 + SHA-256 (zone signing), RSA + SHA-256 (legacy)
+| Authenticates DNS records; prevents DNS spoofing and cache poisoning
+| SC-20, SC-21
+
+| *Kerberos (SSSD / IPA integration)*
+| AES-256-CTS-HMAC-SHA384 (aes256-cts-hmac-sha384-192, RFC 8009)
+| Authenticates users and services; ticket integrity and confidentiality
+| SC-8, IA-2, IA-3
+
+| *Kernel module signing*
+| RSA-2048+ + SHA-512 (detached PKCS#7 signature)
+| Enforces that only signed modules load when `module.sig_enforce=1`
+| SI-7, SA-12
+
+| *Audit subsystem (kernel auditd)*
+| No cryptographic protection at the kernel level — integrity is a logging-audit concern
+| Integrity of the audit stream is addressed at the collection layer; see xref:cryptography:crypto-usage-map.adoc#umrs-crypto[UMRS Audit Log Signing] below
+| AU-9
+
+|===
+
+NOTE: Entries marked // TODO: verify are based on RHEL 10 documentation and NIST guidance.
+Confirm against your specific system configuration and module security policy before citing
+these in a compliance artifact.
+
+=== CPU Hardware Acceleration
+
+RHEL 10 on supported x86_64 and aarch64 hardware uses CPU instructions to accelerate
+the algorithms listed above.
+See xref:crypto-cpu-extensions.adoc[CPU Cryptographic Extensions] for a list of relevant
+instruction set extensions (AES-NI, SHA-NI, CLMUL) and their availability on target platforms.
+
+Acceleration is transparent to callers — the same algorithms are used; only throughput changes.
+FIPS mode does not affect which CPU extensions are used.
+
+[#umrs-crypto]
+== UMRS Cryptographic Usage
+
+=== Current
+
+The following cryptographic operations are implemented and active in the UMRS codebase.
+
+[cols="2,2,3,1", options="header"]
+|===
+| Component
+| Algorithm / Primitive
+| Purpose
+| Controls
+
+| *Sealed Evidence Cache (SEC)*
+| HMAC-SHA-256 (sealing), SHA-256 (evidence digest)
+| Seals cached OS detection results against substitution.
+  Key is ephemeral, derived from `boot_id` and process start time, zeroized on drop.
+  See xref:patterns:pattern-sec.adoc[SEC pattern].
+| SC-28, SC-12, SI-7
+
+| *Integrity check (umrs-platform)*
+| SHA-256 (file content digest)
+| Verifies on-disk file content against RPM package database reference digest.
+  Used during OS substrate detection.
+  Pure Rust via RustCrypto `sha2` crate.
+| SI-7
+
+|===
+
+[IMPORTANT]
+====
+*FIPS gate on the Sealed Evidence Cache* +
+The HMAC-SHA-256 seal in `SealedCache` uses the RustCrypto `hmac` crate, which is not FIPS 140-3
+validated.
+When `/proc/sys/kernel/fips_enabled` is `1`, the sealed cache is unconditionally disabled —
+`SealedCache::new()` returns a disabled instance and no caching occurs.
+All queries re-run the full detection pipeline.
+This is an explicit, documented trade-off: correctness over performance in FIPS deployments.
+====
+
+=== Future (Planned Architecture)
+
+[NOTE]
+====
+*Planned* — The `umrs-crypto` crate is not yet implemented.
+This section describes the intended cryptographic architecture for future UMRS components.
+Nothing below reflects current code.
+====
+
+The planned `umrs-crypto` crate will be the single cryptographic building block for all
+`umrs-*` crates.
+Its goals are:
+
+* Provide one set of FIPS-validated algorithm bindings used across the entire workspace.
+* Prevent individual crates from introducing their own cryptographic dependencies.
+* Enforce algorithm policy at the crate boundary — callers receive typed constructs, not raw primitives.
+* Gate PQC algorithm selection on FIPS mode status — when `/proc/sys/crypto/fips_enabled`
+  is `1`, fall back to FIPS-validated classical algorithms (ECDH P-384, ECDSA P-384, AES-256)
+  because NIST has not yet finalized FIPS 140-3 validation for ML-KEM, ML-DSA, or SLH-DSA.
+  PQC algorithms are only available on RHEL 10.1+ without FIPS mode enabled.
+  See xref:crypto-post-quantum.adoc#_rhel_10_pqc_availability[RHEL 10 PQC Availability] for version details.
+
+The following subsystems are planned to use `umrs-crypto` when it is implemented.
+
+[NOTE]
+====
+*Planned* — Audit log signing is not yet implemented.
+====
+
+==== Audit Log Signing (ML-DSA)
+
+UMRS audit records will be signed at emission time using ML-DSA (FIPS 204, ML-DSA-65 or ML-DSA-87).
+This provides:
+
+* Non-repudiation — a signed record cannot be plausibly denied.
+* Tamper evidence — any modification to the record invalidates the signature.
+* Post-quantum durability — ML-DSA signatures remain secure against quantum adversaries.
+
+See xref:crypto-post-quantum.adoc[Post-Quantum Cryptography] for algorithm parameters.
+
+Control: AU-9 (protection of audit information), SC-13.
+
+[NOTE]
+====
+*Planned* — Label integrity checking is not yet implemented.
+====
+
+==== Security Label Integrity (HMAC)
+
+In future MLS-mode deployments, security labels applied to data objects will carry an HMAC
+tag computed over the label content and a context-specific key.
+This detects label tampering at the storage layer — before the label is used in an access
+control decision.
+
+Control: AC-4 (information flow enforcement), SI-7.
+
+[NOTE]
+====
+*Planned* — UMRS software delivery signing is not yet implemented.
+====
+
+==== Software Delivery Signing (ML-DSA)
+
+UMRS binary and package releases will be signed using ML-DSA (FIPS 204).
+This provides post-quantum resistant supply chain assurance for deployed artifacts.
+See xref:patterns:pattern-supply-chain.adoc[Supply Chain Hygiene] for the broader signing policy.
+
+Control: SA-12 (supply chain protection), SI-7.
+
+[NOTE]
+====
+*Planned* — CUI encryption at rest is not yet implemented.
+====
+
+==== CUI Encryption at Rest (AES-256-GCM)
+
+CUI data objects stored on disk by UMRS components will be encrypted using AES-256-GCM via
+the `umrs-crypto` crate's key management interface.
+Encryption is in addition to (not a replacement for) the mandatory SELinux label enforcement
+that governs access to labeled objects.
+
+Control: SC-28 (protection of information at rest), SC-13.
+
+== See Also
+
+* xref:fips-cryptography-cheat-sheet.adoc[FIPS-Approved Algorithms] — full algorithm table by function
+* xref:crypto-policy-tiers.adoc[Cryptographic Policy Tiers] — how algorithm choices are tiered
+* xref:crypto-post-quantum.adoc[Post-Quantum Cryptography] — PQC algorithm details and migration guidance
+* xref:key-recommendation-list.adoc[Key Recommendations] — minimum key sizes for new designs
+* xref:patterns:pattern-sec.adoc[Sealed Evidence Cache] — SEC pattern full documentation
+* xref:patterns:pattern-supply-chain.adoc[Supply Chain Hygiene] — software signing and dependency vetting
+* xref:reference:compliance-frameworks.adoc[Compliance Frameworks Registry] — full NIST/CMMC/RTB control mapping

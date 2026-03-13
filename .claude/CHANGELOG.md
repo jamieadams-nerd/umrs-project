@@ -7,6 +7,13 @@
 - **PQC documentation task**: `.claude/plans/pqc-documentation-task.md` created for senior-tech-writer and tech-writer — covers PQC emergence, FIPS 203/204/205 detail, algorithm replacement mapping (RSA/ECDH/ECDSA → ML-KEM/ML-DSA/SLH-DSA), and developer awareness additions to crypto docs
 - **RAG pipeline bug documented**: `--source` flag does not exist in ingest.py; correct invocation uses `--collection <name>` — recorded in researcher MEMORY.md
 - **Plan created**: `.claude/plans/docs-new-stuff-crypto-and-navbar.md` — comprehensive analysis of `docs/new-stuff/crypto.md` and `docs/new-stuff/left-navbar.md` with disposition decisions, overlap assessment, and task specifications
+- **PQC Status Tracker created**: `.claude/agent-memory/researcher/pqc-tracker.md` — living team-readable document tracking NIST PQC program milestones, RHEL 10 availability (10.0 preview, 10.1 GA, FIPS partial), FIPS hybrid exceptions, and 16 monitoring sources (NIST, Red Hat, cryptographic conferences)
+- **nist-pqc collection expanded to 285 chunks**: Added 2 FIPS PDFs (FIPS 203/204/205 references) plus 12 web articles covering NIST standardization, RHEL PQC roadmap, crypto-safety guidance, and algorithm reference implementations
+- **Cryptography module created**: New Antora module `docs/modules/cryptography/` housing 6 pages (fips-cryptography-cheat-sheet, key-recommendation-list, openssl-no-vendoring, crypto-post-quantum, crypto-policy-tiers, crypto-cpu-extensions) moved from `reference/` via git mv; module landing page (`index.adoc`) and collapsible nav with Classical Baseline / Post-Quantum / Deployment groupings
+- **crypto-post-quantum.adoc expanded**: New "The Quantum Threat" section (Shor's algorithm, Grover's algorithm, harvest-now/decrypt-later, CRQC timeline, NIST standardization history); "Algorithm Replacement Mapping" table (RSA/ECDH/ECDSA/DSA → ML-KEM/ML-DSA); SLH-DSA CNSA 2.0 exclusion note; ML-KEM KEM vs NIKE API note; Migration section with NIST IR 8547 deprecation timeline, FIPS 206/HQC development status, FIPS provider requirement, and hybrid deployment guidance; SI-7 added to control mapping; new "RHEL 10 PQC Availability" section with status table (10.0/10.1/FIPS), hybrid exception detail, source footnotes
+- **Cryptographic Usage Map created**: New page `crypto-usage-map.adoc` mapping 13 OS-level crypto subsystems (IMA/EVM, dm-crypt, journald, shadow, RPM signing, SSH, TLS, SELinux, DNSSEC, Kerberos, kernel module signing, audit hashing, systemd-homed) and 5 planned UMRS usage items (umrs-crypto crate, SEC pattern HMAC, CA bundle validation, audit log chaining, threat model assessment)
+- **Glossary expanded**: Added 13 new cryptography terms (Asymmetric Cryptography, CRQC, Crypto Policy, Digital Signature, FIPS Mode, Grover's Algorithm, HMAC, Hybrid Cryptography, KDF, KEM, RSA, Shor's Algorithm, Symmetric Cryptography)
+- **Researcher standing refresh instructions**: Added to researcher MEMORY.md for periodic nist-pqc collection library updates using ingest.py
 
 ### Changed
 - **ROOT navigation restructured**: Flat navigation replaced with grouped structure — Getting Started at top, Introduction group (merged pages), logical module groupings, AI/Legal/Release Notes moved to bottom
@@ -15,9 +22,13 @@
 - **security-concepts/nav.adoc**: Added "Foundations" and "Integrity and Trust" section groupings
 - **fips-cryptography-cheat-sheet.adoc enhanced**: Added referenced standards preamble (FIPS 140-3, 203, 204, 205, SP 800-131A) and hash use case NOTE documenting audit log chaining and file integrity verification
 - **crypto-policy-tiers.adoc improved**: Enhanced "Typical use" column entries in KDF table
+- **antora.yml**: Registered new cryptography module in navigation
+- **reference/nav.adoc and reference/pages/index.adoc**: Updated to reflect 6 pages moved to cryptography module
+- **Deployment documentation**: Added Cryptographic Policy section to `rhel10-packages.adoc`
 
 ### Fixed
 - **docs/new-stuff source files processed**: `crypto.md` and `left-navbar.md` moved to `docs/new-stuff/used/` after analysis and disposition
+- **Cross-module xrefs updated**: All references to moved crypto pages corrected across glossary, devel, architecture modules
 
 ## 2026-03-12
 

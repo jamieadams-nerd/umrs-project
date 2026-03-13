@@ -1,0 +1,42 @@
+NIST is actively expanding its post-quantum cryptography (PQC) portfolio beyond the initial three standards. In RHEL 10, PQC support has rapidly transitioned from an experimental preview to a supported feature in recent updates. [1, 2, 3] 
+New NIST PQC Evaluation Status
+NIST is currently in the Fourth Round of its [Standardization Process](https://csrc.nist.gov/projects/post-quantum-cryptography/post-quantum-cryptography-standardization) to identify additional "backup" algorithms that do not rely on lattice-based math. [4, 5] 
+
+* New Selection (March 2025): HQC (Hamming Quasi-Cyclic) was officially selected for standardization as a second key-encapsulation mechanism (KEM) to serve as a backup to ML-KEM. A draft standard for HQC is expected in early 2026.
+* On-Ramp for Signatures: NIST is evaluating 14 new digital signature candidates (including algorithms like CROSS, FAEST, and MAYO) to provide a broader variety of signature schemes.
+* Upcoming Standard: FALCON is being finalized as FIPS 206 and is expected to be published shortly. [4, 5, 6, 7, 8, 9, 10] 
+
+RHEL 10 Status and Availability
+As of early 2026, PQC in RHEL 10 is no longer restricted to a "preview-only" mode for all users. [3] 
+
+* Current Status (RHEL 10.1): PQC is Generally Available (GA) and fully supported for key exchange (ML-KEM) and digital signatures (ML-DSA) in core libraries like OpenSSL, GnuTLS, and Go.
+* Default Policy: Starting with RHEL 10.1, PQC support is included in the system-wide DEFAULT crypto-policy. This allows for hybrid PQC/classic key exchange without manual "test" flags.
+* Previous Requirement (RHEL 10.0): In the initial 10.0 release (May 2025), PQC was a Technology Preview that required installing the crypto-policies-pq-preview package and setting the policy to DEFAULT:TEST-PQ.
+* FIPS Mode Limitation: Currently, RHEL 10's [FIPS-certified modules](https://www.redhat.com/en/blog/road-to-quantum-safe-cryptography-red-hat-openshift) do not yet support PQC. If you enable FIPS mode, you cannot use PQC algorithms because NIST has not yet finalized the FIPS 140-3 validation requirements for these new standards. [3, 11, 12, 13, 14] 
+
+Summary Table for RHEL 10
+
+| RHEL Version [3, 11, 14, 15] | PQC Status | How to Enable |
+|---|---|---|
+| RHEL 10.0 | Technology Preview | Install crypto-policies-pq-preview; set DEFAULT:TEST-PQ |
+| RHEL 10.1+ | Generally Available | Supported by DEFAULT policy for major libraries |
+| Any (FIPS Mode) | Unsupported | Must choose between FIPS compliance or PQC |
+
+Do you need specific CLI commands to verify if your current RHEL 10 system has the PQC-enabled crypto-policies active?
+
+[1] [https://www.nist.gov](https://www.nist.gov/news-events/news/2024/08/nist-releases-first-3-finalized-post-quantum-encryption-standards)
+[2] [https://www.youtube.com](https://www.youtube.com/watch?v=LLF4tGjWTQ4&t=192)
+[3] [https://www.redhat.com](https://www.redhat.com/en/blog/whats-new-post-quantum-cryptography-rhel-101)
+[4] [https://csrc.nist.gov](https://csrc.nist.gov/news/2025/hqc-announced-as-a-4th-round-selection)
+[5] [https://csrc.nist.gov](https://csrc.nist.gov/projects/post-quantum-cryptography/post-quantum-cryptography-standardization)
+[6] [https://csrc.nist.gov](https://csrc.nist.gov/projects/post-quantum-cryptography/post-quantum-cryptography-standardization)
+[7] [https://csrc.nist.gov](https://csrc.nist.gov/projects/post-quantum-cryptography/post-quantum-cryptography-standardization)
+[8] [https://en.wikipedia.org](https://en.wikipedia.org/wiki/NIST_Post-Quantum_Cryptography_Standardization)
+[9] [https://csrc.nist.gov](https://csrc.nist.gov/news/2024/pqc-digital-signature-second-round-announcement)
+[10] [https://csrc.nist.gov](https://csrc.nist.gov/projects/pqc-dig-sig)
+[11] [https://www.redhat.com](https://www.redhat.com/en/blog/post-quantum-cryptography-red-hat-enterprise-linux-10)
+[12] [https://www.redhat.com](https://www.redhat.com/en/blog/if-how-year-post-quantum-reality)
+[13] [https://www.redhat.com](https://www.redhat.com/en/blog/post-quantum-cryptography-red-hat-enterprise-linux-10#:~:text=The%20second%20section%20explains%20which%20PQC%20signature,will%20remain%20Technology%20Preview%20while%20this%20occurs.%29)
+[14] [https://www.redhat.com](https://www.redhat.com/en/blog/road-to-quantum-safe-cryptography-red-hat-openshift)
+[15] [https://www.redhat.com](https://www.redhat.com/en/blog/road-to-quantum-safe-cryptography-red-hat-openshift)
+

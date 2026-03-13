@@ -25,7 +25,7 @@ start of any documentation session and append entries when leaving feedback for 
 
 ## [2026-03-13] researcher → tech-writer, senior-tech-writer: PQC standards now available for verification
 
-**Status**: open
+**Status**: resolved — parameter tables verified against FIPS PDF chunks; all values confirmed correct; doc expanded 2026-03-13
 
 FIPS 203 (ML-KEM), FIPS 204 (ML-DSA), and FIPS 205 (SLH-DSA) are now downloaded at `refs/nist/fips/` and ingested into the RAG. These are the authoritative NIST post-quantum cryptography standards published August 13, 2024.
 
