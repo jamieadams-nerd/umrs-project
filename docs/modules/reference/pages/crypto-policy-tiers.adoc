@@ -129,10 +129,10 @@ SLH-DSA is appropriate where hash-based security assumptions are preferred over 
 |===
 | Algorithm | Based on | Tier | Typical use
 
-| HKDF-SHA-384 | SHA-384 | Preferred | Key material derivation
-| HKDF-SHA-256 | SHA-256 | Approved | Widely deployed
+| HKDF-SHA-384 | SHA-384 | Preferred | High-assurance key material derivation
+| HKDF-SHA-256 | SHA-256 | Approved | TLS key schedule, general derivation
 | PBKDF2-SHA-256 | SHA-256 | Approved | Password-based key derivation
-| NIST Counter KDF | Various | Approved | Approved KDF for DRBG-derived keys
+| NIST Counter KDF | Various | Approved | Protocol key derivation (NIST SP 800-108)
 |===
 
 == Random Number Generation

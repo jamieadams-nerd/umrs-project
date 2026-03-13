@@ -34417,5 +34417,103 @@
     "chunks_stored": 121,
     "collection": "dod-5200",
     "ingested_date": "2026-03-12T09:46:56.125130+00:00"
+  },
+  "nist-pqc/fips203.pdf": {
+    "hash": "fe1f12f32a7e44ec",
+    "converted_to": "converted/nist-pqc/fips203.md",
+    "chunks_stored": 61,
+    "collection": "nist-pqc",
+    "ingested_date": "2026-03-13T16:17:54.259698+00:00"
+  },
+  "nist-pqc/fips204.pdf": {
+    "hash": "57239b9f84c03227",
+    "converted_to": "converted/nist-pqc/fips204.md",
+    "chunks_stored": 77,
+    "collection": "nist-pqc",
+    "ingested_date": "2026-03-13T16:17:56.520914+00:00"
+  },
+  "nist-pqc/fips205.pdf": {
+    "hash": "8ef34228276f3386",
+    "converted_to": "converted/nist-pqc/fips205.md",
+    "chunks_stored": 71,
+    "collection": "nist-pqc",
+    "ingested_date": "2026-03-13T16:17:58.862881+00:00"
+  },
+  "nist-pqc/web/cloudflare-pqc-standards.md": {
+    "hash": "e981b56b3ea873f8",
+    "converted_to": "converted/nist-pqc/web/cloudflare-pqc-standards.md",
+    "chunks_stored": 6,
+    "collection": "nist-pqc",
+    "ingested_date": "2026-03-13T16:30:01.362872+00:00"
+  },
+  "nist-pqc/web/csa-fips-203-204-205-quantum-safe.md": {
+    "hash": "e6f3071dd41bd32e",
+    "converted_to": "converted/nist-pqc/web/csa-fips-203-204-205-quantum-safe.md",
+    "chunks_stored": 8,
+    "collection": "nist-pqc",
+    "ingested_date": "2026-03-13T16:30:01.590655+00:00"
+  },
+  "nist-pqc/web/csrc-nist-pqc-project.md": {
+    "hash": "6c3efc718b42ebce",
+    "converted_to": "converted/nist-pqc/web/csrc-nist-pqc-project.md",
+    "chunks_stored": 3,
+    "collection": "nist-pqc",
+    "ingested_date": "2026-03-13T16:30:01.743083+00:00"
+  },
+  "nist-pqc/web/csrc-nist-pqc-standardization.md": {
+    "hash": "b2687f74eb0a2dfc",
+    "converted_to": "converted/nist-pqc/web/csrc-nist-pqc-standardization.md",
+    "chunks_stored": 5,
+    "collection": "nist-pqc",
+    "ingested_date": "2026-03-13T16:30:01.937620+00:00"
+  },
+  "nist-pqc/web/hklaw-pqc-standards-2024.md": {
+    "hash": "9b60837e08a5c6de",
+    "converted_to": "converted/nist-pqc/web/hklaw-pqc-standards-2024.md",
+    "chunks_stored": 4,
+    "collection": "nist-pqc",
+    "ingested_date": "2026-03-13T16:30:02.096996+00:00"
+  },
+  "nist-pqc/web/nist-pqc-announcement-2024.md": {
+    "hash": "d3062ac181412a5f",
+    "converted_to": "converted/nist-pqc/web/nist-pqc-announcement-2024.md",
+    "chunks_stored": 2,
+    "collection": "nist-pqc",
+    "ingested_date": "2026-03-13T16:30:02.207158+00:00"
+  },
+  "nist-pqc/web/sectigo-pqc-algorithm-winners.md": {
+    "hash": "e7c8b6de2f6eddc0",
+    "converted_to": "converted/nist-pqc/web/sectigo-pqc-algorithm-winners.md",
+    "chunks_stored": 3,
+    "collection": "nist-pqc",
+    "ingested_date": "2026-03-13T16:30:02.358908+00:00"
+  },
+  "nist-pqc/web/serverion-pqc-standards-en.md": {
+    "hash": "c0c1eebe0c0b3e04",
+    "converted_to": "converted/nist-pqc/web/serverion-pqc-standards-en.md",
+    "chunks_stored": 11,
+    "collection": "nist-pqc",
+    "ingested_date": "2026-03-13T16:30:02.738466+00:00"
+  },
+  "nist-pqc/web/serverion-pqc-standards-no.md": {
+    "hash": "082b53008b8b05f1",
+    "converted_to": "converted/nist-pqc/web/serverion-pqc-standards-no.md",
+    "chunks_stored": 4,
+    "collection": "nist-pqc",
+    "ingested_date": "2026-03-13T16:30:02.917982+00:00"
+  },
+  "nist-pqc/web/terraquantum-pqc-standards.md": {
+    "hash": "7f129276714321da",
+    "converted_to": "converted/nist-pqc/web/terraquantum-pqc-standards.md",
+    "chunks_stored": 3,
+    "collection": "nist-pqc",
+    "ingested_date": "2026-03-13T16:30:03.404709+00:00"
+  },
+  "nist-pqc/web/wolfssl-fips-203-204-205.md": {
+    "hash": "d8832c9a001b025d",
+    "converted_to": "converted/nist-pqc/web/wolfssl-fips-203-204-205.md",
+    "chunks_stored": 6,
+    "collection": "nist-pqc",
+    "ingested_date": "2026-03-13T16:30:03.640478+00:00"
   }
 }

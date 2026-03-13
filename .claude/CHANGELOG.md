@@ -1,5 +1,24 @@
 # Changelog
 
+## 2026-03-13
+
+### Added
+- **nist-pqc RAG collection expanded**: 10 supplementary web articles added to `.claude/references/nist-pqc/web/`; collection grew from 209 to 264 chunks (+55). New files: cloudflare-pqc-standards.md, nist-pqc-announcement-2024.md, hklaw-pqc-standards-2024.md, serverion-pqc-standards-en.md, serverion-pqc-standards-no.md, csrc-nist-pqc-project.md, csrc-nist-pqc-standardization.md, wolfssl-fips-203-204-205.md, csa-fips-203-204-205-quantum-safe.md, sectigo-pqc-algorithm-winners.md, terraquantum-pqc-standards.md. Sources: Cloudflare, NIST, Holland & Knight, Serverion, NIST CSRC, wolfSSL, Cloud Security Alliance, Sectigo, Terra Quantum.
+- **PQC documentation task**: `.claude/plans/pqc-documentation-task.md` created for senior-tech-writer and tech-writer — covers PQC emergence, FIPS 203/204/205 detail, algorithm replacement mapping (RSA/ECDH/ECDSA → ML-KEM/ML-DSA/SLH-DSA), and developer awareness additions to crypto docs
+- **RAG pipeline bug documented**: `--source` flag does not exist in ingest.py; correct invocation uses `--collection <name>` — recorded in researcher MEMORY.md
+- **Plan created**: `.claude/plans/docs-new-stuff-crypto-and-navbar.md` — comprehensive analysis of `docs/new-stuff/crypto.md` and `docs/new-stuff/left-navbar.md` with disposition decisions, overlap assessment, and task specifications
+
+### Changed
+- **ROOT navigation restructured**: Flat navigation replaced with grouped structure — Getting Started at top, Introduction group (merged pages), logical module groupings, AI/Legal/Release Notes moved to bottom
+- **introduction.adoc merged with what-is-umrs.adoc**: Content from `what-is-umrs.adoc` incorporated into `introduction.adoc` to create single Introduction page; file preserved but removed from nav
+- **architecture/nav.adoc consolidated**: "Existing OS Technologies" and "Justification and Case Studies" merged into single "Historical Context" section
+- **security-concepts/nav.adoc**: Added "Foundations" and "Integrity and Trust" section groupings
+- **fips-cryptography-cheat-sheet.adoc enhanced**: Added referenced standards preamble (FIPS 140-3, 203, 204, 205, SP 800-131A) and hash use case NOTE documenting audit log chaining and file integrity verification
+- **crypto-policy-tiers.adoc improved**: Enhanced "Typical use" column entries in KDF table
+
+### Fixed
+- **docs/new-stuff source files processed**: `crypto.md` and `left-navbar.md` moved to `docs/new-stuff/used/` after analysis and disposition
+
 ## 2026-03-12
 
 ### Added

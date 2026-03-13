@@ -23,6 +23,121 @@ start of any documentation session and append entries when leaving feedback for 
 
 ---
 
+## [2026-03-13] researcher → tech-writer, senior-tech-writer: PQC standards now available for verification
+
+**Status**: open
+
+FIPS 203 (ML-KEM), FIPS 204 (ML-DSA), and FIPS 205 (SLH-DSA) are now downloaded at `refs/nist/fips/` and ingested into the RAG. These are the authoritative NIST post-quantum cryptography standards published August 13, 2024.
+
+**Action items**:
+1. `reference/pages/crypto-post-quantum.adoc` — verify ML-KEM/ML-DSA/SLH-DSA parameter tables against the actual FIPS text (previously written from secondary sources)
+2. `reference/pages/fips-cryptography-cheat-sheet.adoc` — standards alignment block already lists these; no change needed unless parameter details are wrong
+3. `glossary/pages/index.adoc` — PQC glossary entries can be cross-checked against FIPS definitions
+
+Low priority — existing content was written carefully. This is a verification opportunity, not a rewrite trigger.
+
+---
+
+## [2026-03-13] senior-tech-writer → tech-writer: CTW-NAV-1 — Rewrite ROOT/nav.adoc per Jamie's feedback
+
+**Status**: resolved — completed 2026-03-13
+
+Plan location: `.claude/plans/docs-new-stuff-crypto-and-navbar.md` — read Part 2 in full before starting.
+
+**Goal**: Rewrite `docs/modules/ROOT/nav.adoc` to reflect Jamie's navigation vision from `docs/new-stuff/left-navbar.md`.
+
+**Target structure** (implement this exactly):
+
+```asciidoc
+* xref:index.adoc[Home]
+* xref:getting-started.adoc[Getting Started]
+
+* Introduction
+** xref:introduction.adoc[What is UMRS?]
+** xref:what-is-umrs.adoc[UMRS at a Glance]
+** xref:what-is-high-assurance.adoc[What is High Assurance?]
+** xref:scope-and-audience.adoc[Scope and Audience]
+
+* xref:architecture:index.adoc[Architecture]
+* xref:security-concepts:index.adoc[Security Concepts]
+
+* xref:deployment:index.adoc[Deployment]
+
+* xref:devel:index.adoc[Development]
+* xref:patterns:index.adoc[High-Assurance Pattern Library]
+
+* xref:umrs-tools:index.adoc[UMRS Tools]
+
+* xref:operations:index.adoc[Operations]
+* xref:logging-audit:index.adoc[Logging and Audit]
+
+* xref:reference:index.adoc[Reference]
+* xref:glossary:index.adoc[Glossary]
+
+* xref:ai-transparency.adoc[AI in This Project]
+* xref:legal-notices.adoc[Legal Notices]
+* xref:release-notes.adoc[Release Notes]
+```
+
+**Notes**:
+- Verify all four Introduction group pages exist before writing the nav.
+- No file moves. No page body edits. Nav-layer changes only.
+- Optional improvement: add section groupings to `docs/modules/security-concepts/nav.adoc`
+  (see plan Part 2 for the grouping details — "Foundations" and "Integrity and Trust").
+- The label for `introduction.adoc` and `what-is-umrs.adoc` is under Jamie review (see plan Q1).
+  Use the labels above for now — Jamie can adjust.
+- Run `make docs 2>&1` after editing. Two pre-existing errors in ubuntu.adoc are acceptable. Zero new errors.
+
+---
+
+## [2026-03-13] senior-tech-writer → tech-writer: CTW-CRYPTO-1 — Apply minor crypto enhancements to reference pages
+
+**Status**: resolved — all three enhancements applied 2026-03-13; `make docs` clean
+
+Plan location: `.claude/plans/docs-new-stuff-crypto-and-navbar.md` — read Part 1 in full before starting.
+
+**Context**: `docs/new-stuff/crypto.md` was analyzed against all existing crypto reference pages.
+The source document is almost entirely duplicate of existing content. The existing pages are more
+complete and precise. Only three minor enhancements are warranted.
+
+**Goal**: Apply three targeted line-level edits. No new pages. No rewrites.
+
+**Enhancement 1** — `docs/modules/reference/pages/fips-cryptography-cheat-sheet.adoc`:
+
+After the existing intro paragraph ("This reference covers the approved algorithm landscape..."),
+before the Legend table, add:
+
+```asciidoc
+This reference is aligned with the following standards:
+
+* FIPS 140-3 — Security Requirements for Cryptographic Modules
+* FIPS 203 — ML-KEM Post-Quantum Key Encapsulation Mechanism
+* FIPS 204 — ML-DSA Post-Quantum Digital Signature Algorithm
+* FIPS 205 — SLH-DSA Stateless Hash-Based Digital Signature Algorithm
+* NIST SP 800-131A Rev.2 — Transitioning the Use of Cryptographic Algorithms and Key Lengths
+```
+
+**Enhancement 2** — `docs/modules/reference/pages/fips-cryptography-cheat-sheet.adoc`:
+
+In the Hash Functions section, after the SHA-1 bullet (`[-]` SHA-1), add:
+
+```asciidoc
+NOTE: Hash functions are also used for audit log chaining and file integrity verification.
+SHA-512 is the recommended algorithm for both in high-assurance deployments.
+```
+
+**Enhancement 3** — `docs/modules/reference/pages/crypto-policy-tiers.adoc`:
+
+In the Key Derivation Functions table, update the "Typical use" column entries:
+- HKDF-SHA-384: change from "Key material derivation" to "High-assurance key material derivation"
+- HKDF-SHA-256: change from "Widely deployed" to "TLS key schedule, general derivation"
+- NIST Counter KDF: change from "Approved KDF for DRBG-derived keys" to "Protocol key derivation (NIST SP 800-108)"
+- PBKDF2-SHA-256: no change needed
+
+Run `make docs 2>&1` after editing. Zero new errors.
+
+---
+
 ## [2026-03-12] senior-tech-writer → tech-writer and senior-tech-writer: Mermaid diagrams supported in Antora
 
 **Status**: open

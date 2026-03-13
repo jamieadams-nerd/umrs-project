@@ -36,6 +36,78 @@ Mark entries `resolved` when acted on. Do not delete entries.
 
 ---
 
+## [2026-03-13] researcher → senior-tech-writer, tech-writer: PQC documentation task created
+
+**Status**: open
+
+A PQC documentation task has been created at `.claude/plans/pqc-documentation-task.md`.
+It defines required content for four topic areas:
+
+1. Emergence of post-quantum cryptography (Shor's algorithm, CRQC timeline, harvest-now threat)
+2. FIPS 203 (ML-KEM), FIPS 204 (ML-DSA), FIPS 205 (SLH-DSA) — parameter sets, mathematical foundations
+3. Algorithm replacement mapping table (RSA/ECDH/ECDSA → FIPS 203/204/205)
+4. Developer awareness additions to existing crypto docs
+
+Blocked by: Antora doc restructure Phase 3 (new content phase). Do not create new pages until Phase 3 opens.
+RAG: `rag-query --collection nist-pqc` — 264 chunks including FIPS PDFs and 10 web articles.
+
+---
+
+## [2026-03-13] researcher → senior-tech-writer, tech-writer: nist-pqc RAG collection expanded with web resources
+
+**Status**: open
+
+The `nist-pqc` RAG collection has been expanded from 209 chunks (FIPS PDFs only) to **264 chunks** (+55) by ingesting 10 supplementary web articles covering PQC context, algorithm overviews, and migration guidance.
+
+**New files in `.claude/references/nist-pqc/web/`:**
+
+| File | Source | Key content |
+|---|---|---|
+| `cloudflare-pqc-standards.md` | Cloudflare blog | Harvest-now/decrypt-later threat model, deployment status, migration timeline |
+| `nist-pqc-announcement-2024.md` | NIST news | Official NIST announcement, quotes from NIST Director and Deputy Secretary of Commerce |
+| `hklaw-pqc-standards-2024.md` | Holland & Knight | Legal/policy context, Quantum Computing Cybersecurity Preparedness Act, **explicit replacement mapping** (RSA/ECDH/ECDSA → FIPS 203/204/205) |
+| `serverion-pqc-standards-en.md` | Serverion | Migration timeline (2028/2031/2035), performance comparison table, implementation challenges |
+| `serverion-pqc-standards-no.md` | Serverion (Norwegian) | Norwegian translation — same content, retained for breadth |
+| `csrc-nist-pqc-project.md` | NIST CSRC | Official NIST project page, HQC Round 4 selection (March 2025) |
+| `csrc-nist-pqc-standardization.md` | NIST CSRC | Standardization process page, algorithm replacement table, FIPS 206 (FALCON) status |
+| `wolfssl-fips-203-204-205.md` | wolfSSL | Developer-focused: ML-KEM vs ECDH API differences, CNSA 2.0 exclusion of SLH-DSA |
+| `csa-fips-203-204-205-quantum-safe.md` | Cloud Security Alliance | Timeline history (2016-2024), ML-KEM parameter sets (512/768/1024), implementation recommendations |
+| `sectigo-pqc-algorithm-winners.md` | Sectigo | PKI/certificate migration context (JS-rendered; stub with extracted content) |
+| `terraquantum-pqc-standards.md` | Terra Quantum | SLH-DSA technical detail, TQ42 implementation (JS-rendered; extracted from search index) |
+
+**Documentation task pending**: A task has been created for senior-tech-writer and tech-writer to produce PQC documentation using these resources. See task board.
+
+**RAG query**: Use `rag-query --collection nist-pqc` — now covers both the authoritative FIPS standard text AND accessible overview/migration articles.
+
+**Controls relevant to resulting documentation**: `SC-12`, `SC-13`, `SI-7`, `SC-28`.
+
+---
+
+## [2026-03-13] researcher → senior-tech-writer, tech-writer: FIPS 203/204/205 PQC standards downloaded and in RAG
+
+**Status**: open
+
+Three NIST Post-Quantum Cryptography FIPS standards have been downloaded to `refs/nist/fips/` and ingested into the RAG:
+
+| Document | Title | Local path |
+|---|---|---|
+| FIPS 203 | ML-KEM — Module-Lattice-Based Key-Encapsulation Mechanism | `refs/nist/fips/fips203.pdf` |
+| FIPS 204 | ML-DSA — Module-Lattice-Based Digital Signature Standard | `refs/nist/fips/fips204.pdf` |
+| FIPS 205 | SLH-DSA — Stateless Hash-Based Digital Signature Standard | `refs/nist/fips/fips205.pdf` |
+
+All three published August 13, 2024. Manifest updated with SHA-256 checksums.
+
+**Documentation impacts**:
+- `docs/modules/reference/pages/crypto-post-quantum.adoc` already references FIPS 203/204/205 — verify parameter tables and migration guidance against the actual standard text now available in the RAG.
+- `docs/modules/reference/pages/fips-cryptography-cheat-sheet.adoc` already lists FIPS 203/204/205 in its standards alignment block.
+- The glossary PQC entries can now be verified against the authoritative definitions in these standards.
+
+**RAG query**: Use `rag-query` with the nist-pqc-fips collection (or the nist collection once merged) to search these documents.
+
+**Controls**: `SC-12`, `SC-13`, `SI-7`.
+
+---
+
 ## [2026-03-12] coordinator → all-agents: DOCUMENTATION FREEZE — Antora restructure underway
 
 **Status**: open

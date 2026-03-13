@@ -608,6 +608,75 @@ DoDI 5200.48 is the current authoritative CUI policy. Volume 4 is not retrieved.
 
 ---
 
+## Post-Quantum Cryptography Standards
+
+### FIPS 203 — Module-Lattice-Based Key-Encapsulation Mechanism Standard (ML-KEM)
+
+| Field | Value |
+|---|---|
+| Full title | Module-Lattice-Based Key-Encapsulation Mechanism Standard |
+| Issuing authority | NIST |
+| Version | FIPS 203 |
+| Published | August 13, 2024 |
+| Downloaded | 2026-03-13 |
+| Local path | `nist/fips/fips203.pdf` |
+| Source URL | https://nvlpubs.nist.gov/nistpubs/fips/nist.fips.203.pdf |
+| SHA-256 | `fe1f12f32a7e44ec9fdebbf400cda843a40b506dee676725234dc6f7923b6cac` |
+| Status | ✓ Downloaded |
+
+**Key relevance**: First NIST post-quantum key encapsulation mechanism standard. Based on the
+CRYSTALS-Kyber algorithm (Module Learning With Errors). Defines ML-KEM-512, ML-KEM-768, and
+ML-KEM-1024 parameter sets. Critical for future-proofing key exchange in FIPS-validated
+environments. Supersedes pre-quantum key agreement mechanisms for quantum-resistant deployments.
+`SC-12`, `SC-13`.
+
+---
+
+### FIPS 204 — Module-Lattice-Based Digital Signature Standard (ML-DSA)
+
+| Field | Value |
+|---|---|
+| Full title | Module-Lattice-Based Digital Signature Standard |
+| Issuing authority | NIST |
+| Version | FIPS 204 |
+| Published | August 13, 2024 |
+| Downloaded | 2026-03-13 |
+| Local path | `nist/fips/fips204.pdf` |
+| Source URL | https://nvlpubs.nist.gov/nistpubs/fips/nist.fips.204.pdf |
+| SHA-256 | `57239b9f84c03227eda3ca0991204dc7764c79af9ce2e6824eda774918d46b6b` |
+| Status | ✓ Downloaded |
+
+**Key relevance**: Primary NIST post-quantum digital signature standard. Based on the
+CRYSTALS-Dilithium algorithm (Module Learning With Errors). Defines ML-DSA-44, ML-DSA-65,
+and ML-DSA-87 parameter sets. Intended as the general-purpose quantum-resistant replacement
+for RSA and ECDSA signatures in FIPS-validated environments. `SC-12`, `SC-13`, `SI-7`.
+
+---
+
+### FIPS 205 — Stateless Hash-Based Digital Signature Standard (SLH-DSA)
+
+| Field | Value |
+|---|---|
+| Full title | Stateless Hash-Based Digital Signature Standard |
+| Issuing authority | NIST |
+| Version | FIPS 205 |
+| Published | August 13, 2024 |
+| Downloaded | 2026-03-13 |
+| Local path | `nist/fips/fips205.pdf` |
+| Source URL | https://nvlpubs.nist.gov/nistpubs/fips/nist.fips.205.pdf |
+| SHA-256 | `8ef34228276f3386d23cb0da8c14592b8cfb0db3358016bba64df7a004f8d13d` |
+| Status | ✓ Downloaded |
+
+**Key relevance**: Conservative post-quantum digital signature standard based on SPHINCS+
+(hash-based cryptography). Security relies only on hash function properties — no lattice
+assumptions. Provides a hedge against potential weaknesses in lattice-based schemes. Defines
+twelve parameter sets across SHA-256 and SHAKE variants. Larger signatures but minimal
+cryptographic assumptions. `SC-12`, `SC-13`, `SI-7`.
+
+---
+
+---
+
 ## Pending Documents
 
 The following documents are referenced in CLAUDE.md but not yet downloaded.

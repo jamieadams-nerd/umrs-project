@@ -16,7 +16,7 @@
 ** xref:cui-structure.adoc[CUI structure and handling]
 ** xref:security-concepts:integrity-and-provenance.adoc[Integrity and provenance]
 
-* Existing OS Technologies
+* Historical Context
 ** xref:history/selinux-history.adoc[SELinux history]
 ** xref:history/mls-history.adoc[MLS history]
 ** xref:history/trusted-path-orange.adoc[Trusted path (Orange Book)]
@@ -25,8 +25,6 @@
 ** xref:history/ibm-zos-os390.adoc[IBM z/OS and OS/390]
 ** xref:history/microsoft-nt-orange.adoc[Microsoft NT and Orange Book]
 ** xref:history/one-way-hashes.adoc[One-way hash algorithms]
-
-* Justification and Case Studies
 ** xref:history/case-studies.adoc[High-assurance failure case studies]
 ** xref:history/mls-classified-talk.adoc[MLS and the classified world]
 ** xref:security-concepts:truth-concepts.adoc[Truth and trust concepts]

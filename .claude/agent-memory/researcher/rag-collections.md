@@ -1,6 +1,6 @@
 # RAG Collections — Source URLs for Update Checks
 
-Last updated: 2026-03-12 (session 2)
+Last updated: 2026-03-13
 
 ## doc-structure (ingested 2026-03-12)
 
@@ -50,6 +50,34 @@ NIST.SP.800-185.pdf, NIST.SP.800-192.pdf, nist-sp-1800-44a-ipd.pdf, nistspecialp
 | sp800-53r5.pdf | https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-53r5.pdf |
 | fips140-2.pdf | https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.140-2.pdf |
 | fips140-3.pdf | https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.140-3.pdf |
+
+## nist-pqc (ingested 2026-03-13, 264 chunks — expanded 2026-03-13 +55 chunks from web resources)
+
+NIST Post-Quantum Cryptography FIPS standards plus supplementary web articles. FIPS published August 13, 2024.
+
+### FIPS PDFs (nist-pqc/ root)
+
+| File | Source URL |
+|---|---|
+| fips203.pdf | https://nvlpubs.nist.gov/nistpubs/fips/nist.fips.203.pdf |
+| fips204.pdf | https://nvlpubs.nist.gov/nistpubs/fips/nist.fips.204.pdf |
+| fips205.pdf | https://nvlpubs.nist.gov/nistpubs/fips/nist.fips.205.pdf |
+
+### Web Articles (nist-pqc/web/)
+
+| File | Source URL | Notes |
+|---|---|---|
+| cloudflare-pqc-standards.md | https://blog.cloudflare.com/nists-first-post-quantum-standards/ | Harvest-now/decrypt-later, deployment status |
+| nist-pqc-announcement-2024.md | https://www.nist.gov/news-events/news/2024/08/nist-releases-first-3-finalized-post-quantum-encryption-standards | Official NIST announcement |
+| hklaw-pqc-standards-2024.md | https://www.hklaw.com/en/insights/publications/2024/08/nist-releases-three-post-quantum-cryptography-standards | Legal/policy context, replacement mapping |
+| serverion-pqc-standards-en.md | https://www.serverion.com/uncategorized/nist-standards-for-post-quantum-cryptography/ | Migration timeline/performance table |
+| serverion-pqc-standards-no.md | https://www.serverion.com/nn/uncategorized/nist-standards-for-post-quantum-cryptography/ | Norwegian translation |
+| csrc-nist-pqc-project.md | https://csrc.nist.gov/projects/post-quantum-cryptography | NIST CSRC project page |
+| csrc-nist-pqc-standardization.md | https://csrc.nist.gov/projects/post-quantum-cryptography/post-quantum-cryptography-standardization | Standardization process, FIPS 206 status |
+| wolfssl-fips-203-204-205.md | https://www.wolfssl.com/what-are-fips-203-204-and-205/ | Developer-focused, CNSA 2.0 notes |
+| csa-fips-203-204-205-quantum-safe.md | https://cloudsecurityalliance.org/blog/2024/08/15/nist-fips-203-204-and-205-finalized-an-important-step-towards-a-quantum-safe-future | CSA Quantum-Safe Working Group |
+| sectigo-pqc-algorithm-winners.md | https://www.sectigo.com/blog/who-are-nists-post-quantum-algorithm-winners | PKI context; JS-rendered (stub) |
+| terraquantum-pqc-standards.md | https://terraquantum.swiss/news/diving-into-nists-new-post-quantum-standards/ | SLH-DSA technical detail; JS-rendered (stub) |
 
 ## rustdoc-book (ingested 2026-03-12, 194 chunks)
 

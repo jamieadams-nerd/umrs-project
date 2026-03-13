@@ -103,6 +103,7 @@ sudo dnf install -y \
     rust \
     rust-toolset \
     rust-analyzer \
+    ctags \
     make
 ----
 

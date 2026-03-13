@@ -231,6 +231,17 @@ raise the relevant pattern or concern before proceeding:
 | `umrs-translator` | Text extractions from i18n-wrapped strings, language translations for active domains |
 | `changelog-updater` | Structured changelog maintenance: tracks additions, changes, and fixes across crates, docs, and infrastructure in `.claude/CHANGELOG.md` |
 
+## Team Collaboration & Workflow
+
+**All agents must read `.claude/team-collaboration.md` at session start.** It defines:
+
+- Team structure, role boundaries, and why specialization matters
+- The review pipeline (developer → security → architecture → documentation)
+- How work enters the system (Jamie's research → `jamies_brain/` → `plans/`)
+- Cross-notification responsibilities and post-work handoff rules
+- `docs/new_stuff/` routing (senior-tech-writer and tech-writer only)
+- Operational rules: notify when idle, remind when blocked, never block silently
+
 ---
 
 ## Role of Claude Code in This Project
