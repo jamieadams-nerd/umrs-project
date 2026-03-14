@@ -1,0 +1,30 @@
+
+# Clutter - I can't stand it because it casues confusion.
+
+- Many of this is my fault. 
+- I will use jamies_brains, new-stuff, or plans in the future.
+- We need to get organized.
+
+
+## Check these files in .claude/
+- These files I think have already been read and we took action. If so, move to a designated archive
+  - rust-uml.md
+  - team-collaboration.md
+  - team-updates.md
+  - the-team.md
+
+- I believe this file is being used by some skill. Can we move this file to be colcated with skill?
+  - ste_mode.md
+
+- Did documentation team create this? We need a dedicated place for the documenatoin to keep there
+  resources, guidelines, stuff like this. 
+  - approved_terminology.md
+
+- Check node_modules at the top-level of the project.
+  - I think it is needed by Antora. If so, let's keep the top-level clean.
+
+- Please clheck .claude/ for other rogue or unsed files. 
+
+## Assign accordingly.
+- If it's documentaton related, assign to the senior-tech-writer.
+

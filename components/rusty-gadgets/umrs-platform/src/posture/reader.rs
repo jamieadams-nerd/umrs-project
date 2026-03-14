@@ -29,7 +29,7 @@
 //!
 //! ## Compliance
 //!
-//! NIST 800-53 SI-7: Software and Information Integrity — all live reads use
+//! NIST SP 800-53 SI-7: Software and Information Integrity — all live reads use
 //! provenance-verified paths; no raw `File::open` on `/proc/` or `/sys/`.
 //! NSA RTB RAIN: Non-Bypassable — `StaticSource::read()` routes through
 //! `SecureReader::execute_read`, which cannot be skipped.
@@ -60,8 +60,8 @@ use crate::kattrs::traits::{KernelFileSource, StaticSource};
 /// implementation; all other sysctl-integer signals follow the same structure
 /// and are stamped out by `define_sysctl_signal!`.
 ///
-/// NIST 800-53 SI-7: reading from provenance-verified procfs.
-/// NIST 800-53 SC-39: information hiding prevents KASLR bypass.
+/// NIST SP 800-53 SI-7: reading from provenance-verified procfs.
+/// NIST SP 800-53 SC-39: information hiding prevents KASLR bypass.
 /// NSA RTB RAIN: Non-bypassable via `StaticSource::read()`.
 pub struct KptrRestrict;
 
@@ -111,7 +111,7 @@ impl StaticSource for KptrRestrict {
 /// For sysctl nodes that can legitimately emit negative values (e.g.,
 /// `kernel.perf_event_paranoid = -1`), use `parse_sysctl_i32` instead.
 ///
-/// NIST 800-53 SI-10: Input Validation — rejects non-numeric content
+/// NIST SP 800-53 SI-10: Input Validation — rejects non-numeric content
 /// rather than silently defaulting.
 pub fn parse_sysctl_u32(data: &[u8]) -> io::Result<u32> {
     let s = std::str::from_utf8(data).map_err(|_| {
@@ -127,12 +127,12 @@ pub fn parse_sysctl_u32(data: &[u8]) -> io::Result<u32> {
 /// Used for sysctl nodes that legitimately emit negative values, such as
 /// `kernel.perf_event_paranoid` where `-1` means "unrestricted for all users".
 /// Using `parse_sysctl_u32` on such nodes would return `Err` for `-1`,
-/// silently degrading the signal to `live_value: None` and giving a
-/// false-assurance picture (Finding 1).
+/// silently degrading the signal to `live_value: None` and producing a
+/// false-assurance picture where an unhardened system appears as data-unavailable.
 ///
-/// NIST 800-53 CA-7: must not discard valid kernel states; `-1` is a
+/// NIST SP 800-53 CA-7: must not discard valid kernel states; `-1` is a
 /// legitimate (unhardened) value that must be represented, not erased.
-/// NIST 800-53 SI-10: Input Validation — rejects non-numeric content.
+/// NIST SP 800-53 SI-10: Input Validation — rejects non-numeric content.
 pub fn parse_sysctl_i32(data: &[u8]) -> io::Result<i32> {
     let s = std::str::from_utf8(data).map_err(|_| {
         io::Error::new(io::ErrorKind::InvalidData, "sysctl: non-UTF8 data")
@@ -177,7 +177,7 @@ macro_rules! define_sysctl_signal {
         /// Sysctl integer signal — stamped out by `define_sysctl_signal!`.
         /// See `KptrRestrict` for the hand-written auditor reference.
         ///
-        /// NIST 800-53 SI-7 / NSA RTB RAIN: provenance-verified via `StaticSource::read()`.
+        /// NIST SP 800-53 SI-7 / NSA RTB RAIN: provenance-verified via `StaticSource::read()`.
         pub struct $type_name;
 
         impl $crate::kattrs::traits::KernelFileSource for $type_name {
@@ -237,10 +237,11 @@ define_sysctl_signal!(
 // PerfEventParanoid uses a hand-written implementation (not the macro) because
 // the kernel legitimately emits -1 for this node ("unrestricted for all users").
 // parse_sysctl_u32 would return Err on -1, silently degrading the signal to
-// live_value: None and producing a false-assurance picture. parse_sysctl_i32 is
-// used instead, and the Output type is i32. See Finding 1 in the security review.
+// live_value: None and producing a false-assurance picture where an unhardened
+// system appears as data-unavailable. parse_sysctl_i32 is used so that -1 is
+// represented as LiveValue::SignedInteger(-1) and meets_desired=Some(false).
 //
-// NIST 800-53 CA-7: a system with perf_event_paranoid=-1 is unhardened and must
+// NIST SP 800-53 CA-7: a system with perf_event_paranoid=-1 is unhardened and must
 // produce meets_desired=Some(false), not a missing signal.
 
 /// `kernel.perf_event_paranoid` — signed sysctl reader.
@@ -251,9 +252,9 @@ define_sysctl_signal!(
 /// `LiveValue::SignedInteger(-1)` with `meets_desired: Some(false)` rather
 /// than being silently discarded as a parse error.
 ///
-/// NIST 800-53 CA-7: accurate monitoring requires representing all
+/// NIST SP 800-53 CA-7: accurate monitoring requires representing all
 /// kernel-valid states, including negative ones.
-/// NIST 800-53 SI-7: provenance-verified via PROC_SUPER_MAGIC.
+/// NIST SP 800-53 SI-7: provenance-verified via PROC_SUPER_MAGIC.
 /// NSA RTB RAIN: Non-bypassable via `StaticSource::read()`.
 pub struct PerfEventParanoid;
 
@@ -402,7 +403,7 @@ define_sysctl_signal!(
 /// before consuming any bytes — identical provenance guarantees to the sysctl
 /// readers.
 ///
-/// NIST 800-53 SI-7: provenance-verified read.
+/// NIST SP 800-53 SI-7: provenance-verified read.
 /// NSA RTB RAIN: Non-bypassable path through `SecureReader`.
 pub struct CmdlineReader {
     content: String,
@@ -411,7 +412,7 @@ pub struct CmdlineReader {
 impl CmdlineReader {
     /// Read `/proc/cmdline` through the provenance-verified `ProcfsText` path.
     ///
-    /// NIST 800-53 SI-7: provenance-verified read of `/proc/cmdline`.
+    /// NIST SP 800-53 SI-7: provenance-verified read of `/proc/cmdline`.
     pub fn read() -> io::Result<Self> {
         use crate::kattrs::procfs::ProcfsText;
         use crate::kattrs::traits::SecureReader;
@@ -461,7 +462,7 @@ impl CmdlineReader {
 ///
 /// Implemented independently of the `detect` module as specified in the plan.
 ///
-/// NIST 800-53 AU-3: event content — boot ID provides temporal anchor for
+/// NIST SP 800-53 AU-3: event content — boot ID provides temporal anchor for
 /// audit records.
 pub struct BootIdReader;
 
@@ -503,7 +504,7 @@ impl BootIdReader {
 /// For `PerfEventParanoid`, which can emit signed values, use
 /// `read_live_sysctl_signed` instead.
 ///
-/// NIST 800-53 SI-7: all reads provenance-verified through `StaticSource`.
+/// NIST SP 800-53 SI-7: all reads provenance-verified through `StaticSource`.
 #[must_use = "live sysctl read result must be examined"]
 pub fn read_live_sysctl(
     id: crate::posture::signal::SignalId,
@@ -526,7 +527,8 @@ pub fn read_live_sysctl(
         SignalId::ProtectedRegular => ProtectedRegular::read().map(Some),
         SignalId::SuidDumpable => SuidDumpable::read().map(Some),
         // PerfEventParanoid uses a signed reader — handled by read_live_sysctl_signed.
-        // Non-sysctl signals handled elsewhere.
+        // Non-sysctl signals (cmdline, SecurityFs, DistroManaged, ModprobeConfig)
+        // are handled elsewhere; this function only covers sysctl u32 signals.
         SignalId::PerfEventParanoid
         | SignalId::ModulesDisabled
         | SignalId::Lockdown
@@ -535,7 +537,12 @@ pub fn read_live_sysctl(
         | SignalId::Pti
         | SignalId::RandomTrustCpu
         | SignalId::RandomTrustBootloader
-        | SignalId::FipsEnabled => Ok(None),
+        | SignalId::FipsEnabled
+        | SignalId::NfConntrackAcct
+        | SignalId::BluetoothBlacklisted
+        | SignalId::UsbStorageBlacklisted
+        | SignalId::FirewireCoreBlacklisted
+        | SignalId::ThunderboltBlacklisted => Ok(None),
     }
 }
 
@@ -544,9 +551,9 @@ pub fn read_live_sysctl(
 /// Currently handles `PerfEventParanoid`, which can emit `-1` ("unrestricted
 /// for all users"). All other signals pass through as `Ok(None)`.
 ///
-/// NIST 800-53 CA-7: represents the complete set of kernel-valid states,
+/// NIST SP 800-53 CA-7: represents the complete set of kernel-valid states,
 /// including negative values, so no valid unhardened state is silently discarded.
-/// NIST 800-53 SI-7: provenance-verified via `StaticSource`.
+/// NIST SP 800-53 SI-7: provenance-verified via `StaticSource`.
 #[must_use = "live signed sysctl read result must be examined"]
 pub fn read_live_sysctl_signed(
     id: crate::posture::signal::SignalId,
@@ -570,7 +577,7 @@ pub fn read_live_sysctl_signed(
 /// verifies `SECURITYFS_MAGIC`. Returns `Ok(None)` if securityfs is not
 /// mounted.
 ///
-/// NIST 800-53 SI-7: provenance-verified via SECURITYFS_MAGIC.
+/// NIST SP 800-53 SI-7: provenance-verified via SECURITYFS_MAGIC.
 pub fn read_lockdown_live()
 -> io::Result<Option<crate::kattrs::security::LockdownMode>> {
     use crate::kattrs::security::KernelLockdown;

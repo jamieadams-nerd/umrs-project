@@ -5,7 +5,7 @@
 //! Provides `validate_type_redundant`, which extracts the SELinux type field
 //! using two independent strategies and fails closed if they disagree.
 //!
-//! NIST 800-53 SI-7: Software and Information Integrity.
+//! NIST SP 800-53 SI-7: Software and Information Integrity.
 //! NSA RTB VNSSA: deterministic, bounded parsing.
 //! NSA RTB RAIN: fail-closed on any ambiguity.
 
@@ -45,7 +45,7 @@ fn parse_type_path_b(input: &str) -> io::Result<&str> {
 /// function fails closed — guaranteeing that a single parser bug cannot
 /// produce a trusted result.
 ///
-/// NIST 800-53 SI-7: Software and Information Integrity.
+/// NIST SP 800-53 SI-7: Software and Information Integrity.
 /// NSA RTB VNSSA: deterministic, bounded parsing.
 /// NSA RTB RAIN: fail-closed on any ambiguity.
 pub fn validate_type_redundant(context: &str) -> io::Result<&str> {

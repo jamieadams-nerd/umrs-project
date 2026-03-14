@@ -16,13 +16,32 @@
 //! | Live unreadable, configured value present | `SourceUnavailable` |
 //! | Both hardened or both not hardened | No contradiction |
 //!
+//! ## Blacklist Sentinel Semantics
+//!
+//! For modprobe.d blacklist signals, `ConfiguredValue::raw` is set to the
+//! sentinel string `"blacklisted"` when a `blacklist <module>` entry exists
+//! in modprobe.d. This string cannot be parsed as a `u32`, so
+//! `evaluate_configured_meets` handles it explicitly:
+//!
+//! - `"blacklisted"` → the module is explicitly blacklisted in modprobe.d.
+//!   The desired value for blacklist signals is `Exact(1)` ("blacklist
+//!   effective"). A configured blacklist entry meets the desired value
+//!   (`configured_meets = Some(true)`).
+//! - Any other non-integer string → `None` (no configured value for
+//!   contradiction purposes).
+//!
+//! The FIPS cross-check configured value is a human-readable audit summary
+//! string (e.g., `"marker=present cmdline=fips=1"`). This always returns
+//! `None` from `evaluate_configured_meets` — the FIPS path does not
+//! participate in `classify()` by construction.
+//!
 //! ## Compliance
 //!
-//! NIST 800-53 CM-6: Configuration Settings — contradictions between the
+//! NIST SP 800-53 CM-6: Configuration Settings — contradictions between the
 //! configured and effective state indicate a configuration management gap.
-//! NIST 800-53 CA-7: Continuous Monitoring — contradiction detection is a
+//! NIST SP 800-53 CA-7: Continuous Monitoring — contradiction detection is a
 //! key output of the posture probe's monitoring function.
-//! NIST 800-53 AU-3: Audit Record Content — `ContradictionKind` is a typed
+//! NIST SP 800-53 AU-3: Audit Record Content — `ContradictionKind` is a typed
 //! enum so audit consumers can programmatically classify findings.
 
 // ===========================================================================
@@ -35,9 +54,9 @@
 /// they disagree. The variant tells the operator what kind of configuration
 /// management problem is present.
 ///
-/// NIST 800-53 CM-6: distinguishes between ephemeral hotfixes (live is better
+/// NIST SP 800-53 CM-6: distinguishes between ephemeral hotfixes (live is better
 /// than config) and boot drift (config is better than live).
-/// NIST 800-53 AU-3: typed enum enables machine-readable audit classification.
+/// NIST SP 800-53 AU-3: typed enum enables machine-readable audit classification.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ContradictionKind {
     /// Live value is hardened; configured value is not.
@@ -97,8 +116,8 @@ impl std::fmt::Display for ContradictionKind {
 /// Returns `Some(ContradictionKind)` when a contradiction is detected,
 /// or `None` when no contradiction exists (both agree, or one is absent).
 ///
-/// NIST 800-53 CM-6: contradiction detection logic.
-/// NIST 800-53 CA-7: produces typed findings for continuous monitoring.
+/// NIST SP 800-53 CM-6: contradiction detection logic.
+/// NIST SP 800-53 CA-7: produces typed findings for continuous monitoring.
 #[must_use = "contradiction classification result must be examined"]
 pub const fn classify(
     live_meets: Option<bool>,
@@ -129,15 +148,45 @@ pub const fn classify(
 /// desired values (cmdline signals), for unparseable strings, or for
 /// `DesiredValue::Custom`.
 ///
-/// NIST 800-53 SI-10: Input Validation — non-parseable configured values
-/// produce `None` rather than a silent failure.
+/// ## Blacklist Sentinel
+///
+/// The sentinel string `"blacklisted"` is handled as a special case for
+/// modprobe.d blacklist signals. Blacklist signals use `DesiredValue::Exact(1)`;
+/// a configured `"blacklisted"` entry represents the equivalent of integer `1`
+/// (blacklist effective = hardened). This produces `Some(true)` when the desired
+/// value is `Exact(1)`, enabling contradiction detection for the critical case
+/// where a module is blacklisted in modprobe.d but loaded at runtime
+/// (`live_meets = Some(false)`, `configured_meets = Some(true)` → `BootDrift`).
+///
+/// NIST SP 800-53 SI-10: Input Validation — non-parseable configured values
+/// produce `None` rather than a silent failure. The `"blacklisted"` sentinel
+/// is an explicitly recognised non-integer value, not an error.
+/// NIST SP 800-53 CM-6: Configuration Settings — blacklist contradiction
+/// detection requires the sentinel to participate in `classify()`.
+/// NIST SP 800-53 AU-3: Security Findings as Data — `BootDrift` must be
+/// producible for blacklist signals; suppressing it silently is a defect.
 #[must_use = "configured value evaluation result must be examined"]
 pub fn evaluate_configured_meets(
     raw: &str,
     desired: &crate::posture::signal::DesiredValue,
 ) -> Option<bool> {
+    // Blacklist sentinel: a modprobe.d `blacklist <module>` entry sets raw to
+    // "blacklisted". The desired value for blacklist signals is Exact(1) —
+    // meaning "blacklist effective" (module not loaded = hardened).
+    // Treat "blacklisted" as the integer 1 for the purposes of meets_integer.
+    // This allows classify() to emit BootDrift when the module is loaded
+    // despite a modprobe.d blacklist entry.
+    if raw.trim() == "blacklisted" {
+        return desired.meets_integer(1);
+    }
+
     match raw.trim().parse::<u32>() {
         Ok(v) => desired.meets_integer(v),
+        // Note: negative configured values (e.g., perf_event_paranoid=-1)
+        // parse as Err from u32 and produce None. This is conservative —
+        // a negative configured value will not trigger a contradiction even if
+        // the live value also differs. The signed reader handles live values
+        // but sysctl.d configured values go through this unsigned path.
         Err(_) => None,
     }
 }

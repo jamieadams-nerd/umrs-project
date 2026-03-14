@@ -28,6 +28,7 @@
 - Bare `#[must_use]` without a message is non-compliant — always include the reason.
 - When a caller intentionally discards a return value, the discard must use `let _ =` with a justification comment.
 - Controls: NIST SP 800-53 SI-10, SA-11 / RTB: Fail Secure.
+- **Enforcement note**: `clippy::must_use_candidate` does not enforce message strings. The project relies on code review and the security-auditor agent to catch bare `#[must_use]` annotations. When reviewing new code, verify every `#[must_use]` has a descriptive message.
 
 ## Validate at Construction Rule
 
@@ -67,3 +68,18 @@
 - Document the endianness and bit ordering for serialization stability.
 - Example: `CategorySet` uses `[u64; 16]` with little-endian bit ordering.
 - Controls: NSA RTB (Deterministic Execution).
+
+## Signal Evaluation Path Rule
+
+- When a new `SignalId` variant or non-integer signal type is added to the posture catalog, the developer MUST verify it flows through the full contradiction detection path end-to-end.
+- Specifically: `evaluate_configured_meets()` must be able to process the signal's `ConfiguredValue.raw` format. If the raw value is not a parseable integer (e.g., `"blacklisted"`, `"FIPS"`, a string sentinel), a dedicated evaluation path must be implemented.
+- A regression test covering the full contradiction path (configured → evaluate → classify → ContradictionKind) is REQUIRED for every new signal class — not just "does it parse".
+- Controls: NIST SP 800-53 CA-7, CM-6.
+
+## Debug Log Information Discipline Rule
+
+- Every new source file that emits `log::debug!()` with variable data from configuration files, kernel nodes, or security-relevant state MUST follow the Error Information Discipline pattern.
+- Log keys, paths, and line numbers — but suppress raw values from configuration files on DoD/CUI systems where debug logging may be enabled during troubleshooting.
+- Reference implementation: `posture/configured.rs` — the explicit comment documenting why values are suppressed from sysctl.d logging is the canonical example of this pattern.
+- When reviewing new code, check every `log::debug!()` call for value leakage.
+- Controls: NIST SP 800-53 SI-11; NSA RTB Error Discipline.

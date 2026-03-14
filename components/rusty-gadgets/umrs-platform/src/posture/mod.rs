@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
-//! Kernel Security Posture Probe — Phase 1.
+//! Kernel Security Posture Probe — Phase 1 + Phase 2a.
 //!
 //! Reads, categorises, and reports on Linux kernel security hardening signals.
 //! The probe gives callers a typed, iterable view of the system's runtime
@@ -52,11 +52,11 @@
 //!
 //! ## Compliance
 //!
-//! NIST 800-53 CA-7: Continuous Monitoring — the posture probe is the
+//! NIST SP 800-53 CA-7: Continuous Monitoring — the posture probe is the
 //! mechanism for continuous kernel security baseline assessment.
-//! NIST 800-53 CM-6: Configuration Settings — live vs. configured
+//! NIST SP 800-53 CM-6: Configuration Settings — live vs. configured
 //! contradiction detection identifies configuration management gaps.
-//! NIST 800-53 AU-3: Audit Record Content — typed signal reports enable
+//! NIST SP 800-53 AU-3: Audit Record Content — typed signal reports enable
 //! machine-readable audit trail generation.
 //! NSA RTB RAIN: Non-Bypassable — all kernel reads route through the
 //! provenance-verified `SecureReader` engine.
@@ -66,6 +66,8 @@
 pub mod catalog;
 pub mod configured;
 pub mod contradiction;
+pub mod fips_cross;
+pub mod modprobe;
 pub mod reader;
 pub mod signal;
 pub mod snapshot;
@@ -76,6 +78,8 @@ pub mod snapshot;
 
 pub use catalog::{SIGNALS, SignalDescriptor};
 pub use contradiction::ContradictionKind;
+pub use fips_cross::FipsCrossCheck;
+pub use modprobe::{ModprobeConfig, ParsedDirective, parse_modprobe_line};
 pub use signal::{
     AssuranceImpact, ConfiguredValue, DesiredValue, LiveValue, SignalClass,
     SignalId,

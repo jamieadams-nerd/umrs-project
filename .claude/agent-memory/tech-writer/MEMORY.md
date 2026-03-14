@@ -145,3 +145,21 @@ umrs-tools, operations, logging-audit, reference, cryptography, glossary
 - Grep ALL .adoc files when moving/deleting pages — nav files alone are not enough
 - reference/pages/index.adoc mirrors nav.adoc as a body list — update both when moving pages
 - architecture/pages/index.adoc had an inline xref that a nav-only grep would miss
+
+## umrs-platform Source Doc Standards (established 2026-03-14)
+
+- Correct citation: `NIST SP 800-53` (with `SP`). ~30 occurrences in umrs-platform use bare `NIST 800-53` — sweep needed.
+  See: [feedback_citation_format.md](feedback_citation_format.md)
+- All `//!` blocks should open with `# Module Name — Subtitle` heading. ~15 modules missing this.
+- Best-in-class doc examples: `sealed_cache.rs` (threat model), `posture/modprobe.rs` (patterns section)
+- Needs high-priority rewrite: `kattrs/mod.rs` (all-caps prose style, no Markdown structure)
+- `lib.rs` module table missing row for `sealed_cache`
+- Internal review references ("Finding N", "RAG Finding N") in source comments should be replaced with self-contained rationale
+
+## Future Antora Pages Needed (from 2026-03-14 review)
+- detect pipeline walkthrough (devel/)
+- Confidence model / T0-T4 trust tiers (devel/ or architecture/)
+- posture module developer guide (devel/)
+- Provenance verification pattern page (patterns/)
+- Trust Gate pattern page (patterns/)
+- umrs-platform architecture overview (architecture/)

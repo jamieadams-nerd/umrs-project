@@ -1,0 +1,192 @@
+French notes
+
+Below is a clean Markdown section you can paste directly into your AGENTS.md.
+It is written as deterministic style rules so a translation agent can apply them consistently.
+
+⸻
+
+French Quotation Rules (Guillemets)
+
+When translating English technical documentation into French, the agent must follow proper French typographic rules for quotation marks.
+
+French uses guillemets instead of English straight quotes.
+
+Opening mark:
+
+«
+
+Closing mark:
+
+»
+
+Example:
+
+« Bonjour »
+
+
+⸻
+
+Mandatory Spacing Rule
+
+French typography requires spaces inside the guillemets.
+
+Correct:
+
+« texte »
+
+Incorrect:
+
+«texte»
+
+In high-quality typography the spaces should be non-breaking spaces, but if non-breaking spaces cannot be produced, normal spaces are acceptable.
+
+Preferred:
+
+« texte »
+
+
+⸻
+
+When to Use Guillemets
+
+Use guillemets in the following situations.
+
+1. Direct quotations
+
+When quoting spoken or written text.
+
+Example:
+
+Il a déclaré : « Le système est sécurisé. »
+
+
+⸻
+
+2. Literal program output
+
+When referring to exact error messages, output text, or UI messages that appear on screen.
+
+Example:
+
+Le système affiche « Permission denied ».
+
+
+⸻
+
+3. Introducing a new or foreign term
+
+When introducing a technical term or English word for the first time.
+
+Example:
+
+Cette technique est appelée « fuzzing ».
+
+After the first introduction the term should normally not be quoted again.
+
+Correct later usage:
+
+Le fuzzing permet de détecter des erreurs.
+
+
+⸻
+
+4. Referring to a word as a word
+
+When discussing terminology.
+
+Example:
+
+Le terme « sandbox » est utilisé dans ce document.
+
+
+⸻
+
+When NOT to Use Guillemets
+
+Do not use guillemets simply because a word is English.
+
+Incorrect:
+
+Le système utilise « Linux ».
+
+Correct:
+
+Le système utilise Linux.
+
+
+⸻
+
+Acronyms and Proper Names
+
+Acronyms and names must not be quoted.
+
+Examples:
+
+OTAN
+ONU
+Linux
+SELinux
+Rust
+
+Correct usage:
+
+Le système utilise SELinux.
+
+
+⸻
+
+Commands, Code, and File Names
+
+Do not use guillemets for commands or code.
+
+Use monospace formatting instead.
+
+Commands:
+
+Exécutez la commande `ls -l`.
+
+File paths:
+
+Le fichier `/etc/passwd` contient les comptes utilisateurs.
+
+Code identifiers:
+
+La fonction `open()` retourne un descripteur de fichier.
+
+
+⸻
+
+Nested Quotations
+
+If a quotation appears inside another quotation, use double quotes inside guillemets.
+
+Example:
+
+Il a déclaré : « Le système affiche "Permission denied". »
+
+
+⸻
+
+Summary Rules for the Translation Agent
+
+Follow these rules in order:
+	1.	Use « » instead of English quotation marks.
+	2.	Insert spaces inside the guillemets.
+	3.	Use guillemets for:
+	•	quotations
+	•	literal program messages
+	•	introducing new technical terms
+	•	referring to a word as a word
+	4.	Do not quote acronyms, names, or common technical terms.
+	5.	Use monospace formatting for commands, code, and file paths.
+
+⸻
+
+If you’d like, I can also help you add a second section for French typography rules used in professional technical documentation, such as:
+	•	non-breaking spaces before : ; ? !
+	•	capitalization rules for headings
+	•	treatment of English technical vocabulary
+
+Those rules are extremely useful if you want your translation agent to produce native-quality French technical documentation rather than generic machine translation.
+
+

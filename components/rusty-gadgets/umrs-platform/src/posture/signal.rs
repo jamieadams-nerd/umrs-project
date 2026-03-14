@@ -8,15 +8,15 @@
 //!
 //! ## Compliance
 //!
-//! NIST 800-53 AU-3: Audit record content — every signal report carries a
+//! NIST SP 800-53 AU-3: Audit record content — every signal report carries a
 //! typed `SignalId` rather than a raw string, enabling programmatic filtering
 //! and machine-readable audit trails.
 //!
-//! NIST 800-53 CM-6: Configuration Settings — `SignalClass` distinguishes
+//! NIST SP 800-53 CM-6: Configuration Settings — `SignalClass` distinguishes
 //! runtime-effective from boot-persistent configuration sources, which is
 //! essential for contradiction detection.
 //!
-//! NIST 800-53 CA-7: Continuous Monitoring — `AssuranceImpact` lets callers
+//! NIST SP 800-53 CA-7: Continuous Monitoring — `AssuranceImpact` lets callers
 //! prioritise monitoring effort by security relevance.
 //!
 //! NSA RTB: Compile-Time Path Binding — `SignalId` variants are an exhaustive
@@ -32,7 +32,7 @@
 /// stable iteration. The enum is `Copy` and `Hash` to support use as a map key
 /// and efficient pass-by-value throughout the posture pipeline.
 ///
-/// NIST 800-53 AU-3: typed signal identity for audit records — avoids
+/// NIST SP 800-53 AU-3: typed signal identity for audit records — avoids
 /// free-form strings that could be mis-parsed by downstream consumers.
 /// NSA RTB: Compile-Time Path Binding — the compiler enforces exhaustive
 /// handling of all variants.
@@ -108,6 +108,24 @@ pub enum SignalId {
     /// `/proc/sys/crypto/fips_enabled` — FIPS 140-2/3 mode active. Reuses
     /// `ProcFips` from kattrs.
     FipsEnabled,
+
+    // ── modprobe.d (Phase 2a) ────────────────────────────────────────────
+    /// `nf_conntrack acct` — connection tracking accounting for audit trails.
+    /// Configured via `options nf_conntrack acct=1` in modprobe.d.
+    /// Live value read from `/sys/module/nf_conntrack/parameters/acct`.
+    NfConntrackAcct,
+    /// `bluetooth` — blacklisted in modprobe.d; Bluetooth stack is an attack
+    /// surface on servers. Live state: module directory absent = confirms blacklist.
+    BluetoothBlacklisted,
+    /// `usb_storage` — blacklisted in modprobe.d; USB mass storage is a data
+    /// exfiltration vector. Live state: module directory absent = confirms blacklist.
+    UsbStorageBlacklisted,
+    /// `firewire_core` — blacklisted in modprobe.d; FireWire DMA attacks
+    /// bypass memory protection. Live state: module directory absent = confirms blacklist.
+    FirewireCoreBlacklisted,
+    /// `thunderbolt` — blacklisted in modprobe.d; Thunderbolt DMA attacks
+    /// bypass memory protection. Live state: module directory absent = confirms blacklist.
+    ThunderboltBlacklisted,
 }
 
 impl SignalId {
@@ -140,6 +158,13 @@ impl SignalId {
             Self::RandomTrustCpu => "random.trust_cpu",
             Self::RandomTrustBootloader => "random.trust_bootloader",
             Self::FipsEnabled => "crypto.fips_enabled",
+            Self::NfConntrackAcct => "modprobe:nf_conntrack/acct",
+            Self::BluetoothBlacklisted => "modprobe:bluetooth/blacklisted",
+            Self::UsbStorageBlacklisted => "modprobe:usb_storage/blacklisted",
+            Self::FirewireCoreBlacklisted => {
+                "modprobe:firewire_core/blacklisted"
+            }
+            Self::ThunderboltBlacklisted => "modprobe:thunderbolt/blacklisted",
         }
     }
 }
@@ -160,7 +185,7 @@ impl std::fmt::Display for SignalId {
 /// sources — essential for contradiction detection and for informing operators
 /// which reboot/sysctl command would remediate a finding.
 ///
-/// NIST 800-53 CM-6: Configuration Settings — provenance of the effective
+/// NIST SP 800-53 CM-6: Configuration Settings — provenance of the effective
 /// value determines the remediation path.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum SignalClass {
@@ -183,6 +208,13 @@ pub enum SignalClass {
     /// configuration channel is a distro tool (e.g., `fips-mode-setup`,
     /// `mokutil`). Configured value discovery is distro-specific.
     DistroManaged,
+    /// modprobe.d configured: live value from `/sys/module/<mod>/parameters/`
+    /// or inferred from module-directory presence; configured value from the
+    /// modprobe.d merge tree. Provenance-verified via `SYSFS_MAGIC`.
+    ///
+    /// NSA RTB: Compile-Time Path Binding — sysfs reads verified against
+    /// `SYSFS_MAGIC` at read time.
+    ModprobeConfig,
 }
 
 // ===========================================================================
@@ -194,9 +226,9 @@ pub enum SignalClass {
 /// Ordered ascending (`Medium < High < Critical`) to support
 /// `by_impact(min: AssuranceImpact)` filtering via `>=` comparison.
 ///
-/// NIST 800-53 CA-7: Continuous Monitoring — impact tier drives prioritisation
+/// NIST SP 800-53 CA-7: Continuous Monitoring — impact tier drives prioritisation
 /// of monitoring, alerting, and remediation effort.
-/// NIST 800-53 RA-3: Risk Assessment — impact tiers align with risk severity.
+/// NIST SP 800-53 RA-3: Risk Assessment — impact tiers align with risk severity.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum AssuranceImpact {
     /// Meaningful security improvement but limited blast radius.
@@ -218,9 +250,9 @@ pub enum AssuranceImpact {
 /// does not rely on string matching. The `meets` method implements the
 /// hardening check for each variant.
 ///
-/// NIST 800-53 CM-6: Configuration Settings — the desired value is the
+/// NIST SP 800-53 CM-6: Configuration Settings — the desired value is the
 /// security baseline against which live and configured values are measured.
-/// NIST 800-53 SI-10: Input Validation — `meets` rejects unrecognised values.
+/// NIST SP 800-53 SI-10: Input Validation — `meets` rejects unrecognised values.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum DesiredValue {
     /// Live value must equal this integer exactly.
@@ -239,8 +271,9 @@ pub enum DesiredValue {
     /// Example: `mitigations=off`.
     CmdlineAbsent(&'static str),
     /// Evaluated by custom signal-specific logic (e.g., `kernel.sysrq`).
-    /// The `meets` method always returns `None` for this variant; callers
-    /// must invoke the signal-specific validator.
+    /// The `meets_integer` and `meets_signed_integer` methods always return
+    /// `None` for this variant; callers must invoke the signal-specific
+    /// validator instead.
     Custom,
 }
 
@@ -273,7 +306,7 @@ impl DesiredValue {
     ///
     /// Returns `None` for `CmdlinePresent`, `CmdlineAbsent`, and `Custom`.
     ///
-    /// NIST 800-53 CA-7: must not discard valid kernel states; `-1` must
+    /// NIST SP 800-53 CA-7: must not discard valid kernel states; `-1` must
     /// produce `Some(false)` rather than a parse error.
     #[must_use = "hardening check result must be examined"]
     pub fn meets_signed_integer(&self, live: i32) -> Option<bool> {
@@ -316,7 +349,7 @@ impl DesiredValue {
 /// Avoids false positives from prefix matches: `mitigations=off` should not
 /// match `mitigations=off,nosmt`.
 ///
-/// NIST 800-53 SI-10: Input Validation — token comparison is exact and
+/// NIST SP 800-53 SI-10: Input Validation — token comparison is exact and
 /// delimiter-aware.
 fn cmdline_contains(cmdline: &str, token: &str) -> bool {
     cmdline.split_whitespace().any(|t| t == token)
@@ -337,7 +370,7 @@ fn cmdline_contains(cmdline: &str, token: &str) -> bool {
 /// signed value for display and audit output while enabling correct comparison
 /// against unsigned thresholds via `DesiredValue::meets_signed_integer`.
 ///
-/// NIST 800-53 CA-7: accurate representation of all kernel-valid values
+/// NIST SP 800-53 CA-7: accurate representation of all kernel-valid values
 /// is required for reliable continuous monitoring.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum LiveValue {
@@ -346,7 +379,7 @@ pub enum LiveValue {
     /// A sysctl signed integer value for nodes that can emit negative values
     /// (e.g., `kernel.perf_event_paranoid = -1` means "unrestricted").
     ///
-    /// NIST 800-53 CA-7: a negative value such as `-1` is a kernel-valid
+    /// NIST SP 800-53 CA-7: a negative value such as `-1` is a kernel-valid
     /// unhardened state; it must be represented faithfully, not discarded.
     SignedInteger(i32),
     /// A string value (cmdline token, lockdown mode, etc.).

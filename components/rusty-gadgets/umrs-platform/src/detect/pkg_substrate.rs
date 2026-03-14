@@ -16,12 +16,13 @@
 //!
 //! 2. Before asserting T3, verify that SELinux enforce mode is active via
 //!    `SecureReader::<SelinuxEnforce>::new().read()`. This implements the
-//!    Biba integrity pre-check (RAG Finding 5): a system where SELinux is in
-//!    permissive mode cannot fully constrain subject/object interactions,
-//!    which reduces the authority of the package DB as an integrity anchor.
-//!    If SELinux is not in enforce mode, the substrate identity is still
-//!    returned, but confidence is downgraded by one tier and the deviation
-//!    is recorded.
+//!    Biba integrity pre-check: a system where SELinux is in permissive mode
+//!    cannot fully constrain subject/object interactions, which reduces the
+//!    authority of the package DB as an integrity anchor. Without MAC
+//!    enforcement active, a compromised subject could modify the package DB
+//!    without a policy violation being recorded. If SELinux is not in enforce
+//!    mode, the substrate identity is still returned, but confidence is
+//!    downgraded by one tier and the deviation is recorded.
 //!
 //! 3. Verify the substrate identity meets the T3 threshold (`facts_count >= 2`).
 //!    If it does not, confidence is not upgraded.
@@ -172,9 +173,9 @@ fn run_inner(
     }
 
     // Step 3: Biba integrity pre-check — SELinux enforce mode verification.
-    // (RAG Finding 5) T3 cannot be fully asserted on a permissive-mode system
-    // because MAC controls do not constrain subject/object interactions,
-    // reducing the authority of the package DB as an integrity anchor.
+    // T3 cannot be fully asserted on a permissive-mode system because MAC
+    // controls do not constrain subject/object interactions, reducing the
+    // authority of the package DB as an integrity anchor.
     let selinux_enforce_ok = check_selinux_enforce(evidence);
 
     if selinux_enforce_ok {
@@ -208,7 +209,8 @@ fn run_inner(
 /// disabled, or the read failed. Result is recorded in evidence.
 ///
 /// NIST SP 800-53 SI-3, SI-7 — MAC enforcement.
-/// RAG Finding 5: Biba integrity pre-check before asserting T3.
+/// Biba integrity pre-check: without MAC enforcement active, a compromised
+/// subject could modify the package DB without a policy violation.
 fn check_selinux_enforce(evidence: &mut EvidenceBundle) -> bool {
     match SecureReader::<SelinuxEnforce>::new().read() {
         Ok(state) => {

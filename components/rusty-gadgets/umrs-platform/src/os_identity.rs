@@ -124,11 +124,13 @@ pub struct KernelRelease {
 // CpuArch
 // ===========================================================================
 
-/// CPU architecture from the kernel, cross-checked against the ELF header.
+/// CPU architecture identifier sourced from `uname(2)`.
 ///
-/// The primary source is `uname(2)` (machine field). Cross-checking against
-/// the ELF `e_machine` field in a known-good binary provides a second
-/// independent fact (NIST SP 800-53 CM-8).
+/// The primary source is `uname(2)` (the `machine` field). The type stores
+/// raw ELF `e_machine` values in `Unknown(u16)` for audit records when the
+/// architecture is not enumerated here. Cross-checking `uname(2)` against the
+/// ELF `e_machine` field in a known binary is the caller's responsibility —
+/// this type does not perform the cross-check itself (NIST SP 800-53 CM-8).
 ///
 /// `Unknown(u16)` preserves the raw ELF `e_machine` value for audit records
 /// when the architecture is not in this enumeration.
@@ -182,7 +184,9 @@ pub struct SubstrateIdentity {
     /// Must reach ≥2 before T3 (`SubstrateAnchored`) can be asserted.
     /// Incremented exclusively via [`SubstrateIdentity::add_fact`], which uses
     /// `saturating_add(1)` to prevent overflow in release builds regardless of
-    /// the workspace `overflow-checks` setting (ANSSI Rust Guide, Finding 1).
+    /// the workspace `overflow-checks` setting (ANSSI Secure Rust Coding Guide:
+    /// integer overflow must be handled explicitly rather than relying on
+    /// debug-mode overflow checks, which are absent in release builds).
     pub facts_count: u8,
 
     /// The probe implementation that produced this identity.

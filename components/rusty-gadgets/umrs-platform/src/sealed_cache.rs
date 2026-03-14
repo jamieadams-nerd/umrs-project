@@ -6,8 +6,9 @@
 //! Caches the verified result of the OS detection pipeline with a cryptographic
 //! HMAC-SHA-256 seal. The seal binds the cached data to a specific boot session and
 //! process invocation. Re-queries within a short TTL verify the seal and return cached
-//! results without re-running the full pipeline. Seal failure → discard, re-run,
-//! log anomaly, return fresh result.
+//! results without re-running the full pipeline. On seal verification failure,
+//! the cache discards the stored result, re-runs the detection pipeline, logs
+//! an anomaly, and returns the fresh result.
 //!
 //! ## Threat Model
 //!
@@ -50,7 +51,7 @@
 //!   detects substitution; seal failure triggers re-verification.
 //! - **NIST SP 800-53 AU-3**: Audit record content — seal failures are logged with
 //!   `log::warn!` producing auditable anomaly records.
-//! - **NIST 800-218 SSDF PW.4**: Secure coding — fail-closed behavior (PW.4.1),
+//! - **NIST SP 800-218 SSDF PW.4**: Secure coding — fail-closed behavior (PW.4.1),
 //!   ephemeral key management to limit exposure.
 
 use std::path::PathBuf;
@@ -613,6 +614,11 @@ impl SealedCache {
     /// A future iteration may store the full serialized result to avoid the
     /// re-run on cache hit. For now, the security property (tamper detection)
     /// is preserved while avoiding a complex deserialization path.
+    ///
+    /// TODO: implement result serialization to enable true cache-hit avoidance
+    /// of pipeline re-runs. This deferred path must use a FIPS 140-3 validated
+    /// serialization + integrity primitive before being enabled.
+    /// NIST SP 800-218 SSDF PW.6.1: residual defect — deferred capability.
     fn decode_cached_result(
         &mut self,
     ) -> Result<DetectionResult, DetectionError> {

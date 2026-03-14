@@ -42,3 +42,18 @@
 - Do not refactor solely for compactness.
 - Performance or security requirements may justify chaining.
 - If chaining is required, keep transformations understandable and scoped.
+
+## Citation Format Rule
+
+- All NIST citations in Rust doc comments (`///` and `//!`) must use the canonical form: `NIST SP 800-53` (not `NIST 800-53`).
+- NSA RTB citations use: `NSA RTB` followed by the specific principle (e.g., `NSA RTB RAIN`).
+- NIST SSDF citations use: `NIST SP 800-218 SSDF` followed by the practice (e.g., `NIST SP 800-218 SSDF PW.4`).
+- FIPS citations use: `FIPS 140-2` or `FIPS 140-3` (with the dash).
+- CMMC citations use: `CMMC` followed by domain and level (e.g., `CMMC SC.L2-3.13.10`).
+- Runtime output strings (e.g., `nist_controls` fields in catalog entries) may use abbreviated forms for display compactness.
+
+## Internal Reference Prohibition Rule
+
+- Doc comments must NEVER contain references to internal review documents, finding numbers, or session-specific context (e.g., "Finding 1", "Finding 3", "RAG Finding 5", "security review session").
+- All rationale in doc comments must be self-contained — a reader must understand the WHY without access to any external document.
+- If a design decision was driven by a review finding, embed the technical rationale directly in the comment.

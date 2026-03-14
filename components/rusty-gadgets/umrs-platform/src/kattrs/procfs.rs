@@ -5,7 +5,7 @@
 //! All types in this module read from procfs and are verified against
 //! `PROC_SUPER_MAGIC` before any bytes are parsed.
 //!
-//! NIST 800-53 CM-7, SC-28, SI-7: Least functionality, protection of
+//! NIST SP 800-53 CM-7, SC-28, SI-7: Least functionality, protection of
 //! information at rest, and software integrity.
 //! NSA RTB: Non-bypassable reads via `SecureReader`.
 
@@ -21,7 +21,7 @@ use super::traits::{KernelFileSource, SecureReader, StaticSource};
 
 /// FIPS mode attribute node (`/proc/sys/crypto/fips_enabled`).
 ///
-/// NIST 800-53 SC-28 / SI-7: Protection of Information at Rest / Software
+/// NIST SP 800-53 SC-28 / SI-7: Protection of Information at Rest / Software
 /// Integrity — confirms that the kernel is operating with FIPS 140-2/140-3
 /// validated cryptographic primitives. Verified via `PROC_SUPER_MAGIC`.
 pub struct ProcFips;
@@ -65,9 +65,9 @@ impl StaticSource for ProcFips {
 /// (fd-anchored `fstatfs` before any read) is the security layer that ensures
 /// the value originates from the kernel and not a bind-mounted substitute.
 ///
-/// NIST 800-53 CM-7: Least Functionality — a locked latch enforces that no
+/// NIST SP 800-53 CM-7: Least Functionality — a locked latch enforces that no
 /// new modules can extend the kernel attack surface at runtime.
-/// NIST 800-53 SI-7: Software and Information Integrity — the latch value is
+/// NIST SP 800-53 SI-7: Software and Information Integrity — the latch value is
 /// read from a provenance-verified kernel pseudo-filesystem.
 /// NSA RTB: minimized attack surface; no write path is provided here.
 pub struct ModuleLoadLatch;
@@ -110,7 +110,7 @@ impl StaticSource for ModuleLoadLatch {
 /// and cannot be overridden by the caller. All reads flow through
 /// `SecureReader::read_generic_text` — the single trusted engine.
 ///
-/// NIST 800-53 SI-7: provenance-verified read; magic check before any bytes
+/// NIST SP 800-53 SI-7: provenance-verified read; magic check before any bytes
 /// are consumed. NSA RTB RAIN: Non-Bypassable — callers cannot skip the
 /// fstatfs gate.
 pub struct ProcfsText {
@@ -122,7 +122,7 @@ impl ProcfsText {
     ///
     /// Returns `InvalidInput` if `path` does not start with `/proc/`.
     ///
-    /// NIST 800-53 SI-10: Input Validation — rejects non-procfs paths
+    /// NIST SP 800-53 SI-10: Input Validation — rejects non-procfs paths
     /// before any I/O is attempted.
     pub fn new(path: PathBuf) -> io::Result<Self> {
         if !path.starts_with("/proc/") {
@@ -149,7 +149,7 @@ impl SecureReader<ProcfsText> {
     /// then reads the full content as a UTF-8 string. Fails closed on any
     /// I/O error or magic mismatch.
     ///
-    /// NIST 800-53 SI-7 / NSA RTB RAIN.
+    /// NIST SP 800-53 SI-7 / NSA RTB RAIN.
     pub fn read_generic_text(&self, node: &ProcfsText) -> io::Result<String> {
         Self::execute_read_text(&node.path, PROC_SUPER_MAGIC)
     }

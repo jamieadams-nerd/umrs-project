@@ -1,0 +1,612 @@
+Logspace
+
+Yes — I remember that now. What you’re describing is the earlier umrs-logspace utility, which is completely different from the later event-analysis “logspace” idea I summarized earlier. Thanks for clarifying. Let me restate the original tool design so we re-anchor on the correct concept.
+
+This utility is about log storage capacity management, not event querying.
+
+⸻
+
+UMRS logspace Utility — Design Summary
+
+1. Purpose
+
+umrs-logspace is a capacity and resource-pool visibility tool for log storage.
+
+It serves a role similar to:
+	•	df — filesystem utilization
+	•	du — directory usage
+
+But instead of filesystems, it reports logical logging resource pools used by the UMRS logging architecture.
+
+The intent is to give operators clear visibility into log lifecycle storage tiers, including:
+	•	active logs
+	•	inactive logs
+	•	archived logs
+
+This tool helps prevent conditions such as:
+	•	log exhaustion
+	•	runaway logging
+	•	unbounded archive growth
+	•	audit retention violations
+
+⸻
+
+2. Core Concept: Log Resource Pools
+
+Instead of treating logs as simple directories, the design models them as resource pools.
+
+A pool represents a logical storage tier with policy and capacity constraints.
+
+Example pools:
+
+Pool	Purpose
+active	logs currently being written
+inactive	rotated logs awaiting archival
+archive	long-term retention logs
+
+This provides a lifecycle model:
+
+active → inactive → archive
+
+Pools may reside on:
+	•	separate directories
+	•	separate filesystems
+	•	separate storage classes
+
+⸻
+
+3. Similarity to df
+
+The output model intentionally mirrors df so operators instantly understand it.
+
+Example conceptual output:
+
+POOL        PATH                        SIZE   USED   AVAIL  USE%
+active      /var/log/umrs/active        10G    4.2G   5.8G   42%
+inactive    /var/log/umrs/inactive      20G    8.1G   11.9G  40%
+archive     /vaults-lei/log-archive     200G   63G    137G   31%
+
+The tool answers:
+	•	how much log space exists
+	•	how much is used
+	•	how much remains available
+
+⸻
+
+4. TOML Configuration
+
+The tool is driven by a TOML configuration file.
+
+The configuration defines the resource pools the utility should monitor.
+
+Example:
+
+[[pool]]
+name = "active"
+path = "/var/log/umrs/active"
+description = "Active event logs"
+
+[[pool]]
+name = "inactive"
+path = "/var/log/umrs/inactive"
+description = "Rotated logs awaiting archival"
+
+[[pool]]
+name = "archive"
+path = "/vaults-lei/log-archive"
+description = "Long term log archive"
+
+The utility iterates the pools and calculates storage metrics.
+
+⸻
+
+5. Information Reported
+
+For each configured pool the tool gathers:
+
+Field	Meaning
+pool name	logical identifier
+path	filesystem path
+size	total capacity
+used	bytes consumed
+available	remaining free space
+utilization	percentage used
+
+These values are typically derived from filesystem statistics.
+
+⸻
+
+6. Intended Operator Use
+
+Typical operational use cases:
+
+Capacity Monitoring
+
+umrs logspace
+
+Operators quickly see if log pools are nearing exhaustion.
+
+⸻
+
+Pre-Maintenance Inspection
+
+Before system upgrades or maintenance windows.
+
+⸻
+
+Compliance Verification
+
+Ensuring required retention capacity exists.
+
+⸻
+
+Early Warning Detection
+
+Example scenario:
+
+inactive pool suddenly spikes
+
+Possible causes:
+	•	archive job failing
+	•	log rotation misconfiguration
+	•	abnormal logging behavior
+
+⸻
+
+7. Design Philosophy
+
+This utility follows several UMRS design principles:
+
+Explicit Resource Visibility
+
+Operators should never have to guess where logs are going.
+
+⸻
+
+Lifecycle Awareness
+
+Logs are not static files; they move through stages.
+
+The tool reflects this lifecycle.
+
+⸻
+
+Configuration Driven
+
+No hardcoded paths.
+
+The configuration allows deployment-specific layouts.
+
+⸻
+
+Minimal Dependencies
+
+The utility should:
+	•	be lightweight
+	•	run quickly
+	•	avoid unnecessary libraries
+	•	be suitable for automation
+
+⸻
+
+8. Potential Future Enhancements
+
+These were ideas we briefly discussed for later phases.
+
+Threshold Warnings
+
+Example:
+
+WARN: active pool above 80%
+
+
+⸻
+
+Colorized Output
+
+green < 70%
+yellow 70–90%
+red > 90%
+
+
+⸻
+
+JSON Output
+
+Useful for automation:
+
+umrs logspace --json
+
+
+⸻
+
+Trend Tracking
+
+Track growth rate of logs.
+
+Example:
+
+archive pool growing 3GB/day
+
+
+⸻
+
+Retention Forecasting
+
+Estimate:
+
+archive pool will fill in 42 days
+
+
+⸻
+
+9. Relationship to the UMRS Logging System
+
+umrs-logspace complements the UMRS logging infrastructure by managing storage capacity, while other tools manage event data.
+
+Component	Role
+journald	primary system log ingress
+UMRS mediator	event normalization
+event JSONL store	structured event persistence
+logspace utility	storage capacity monitoring
+
+
+⸻
+
+10. Current Status (As You Mentioned)
+
+Based on your comment, the tool:
+	•	exists
+	•	parses the TOML config
+	•	enumerates pools
+	•	reports storage statistics
+
+Remaining work likely includes:
+	•	formatting improvements
+	•	error handling
+	•	thresholds
+	•	CLI flags
+	•	configuration validation
+
+⸻
+
+Important Clarification
+
+There are now two unrelated meanings of “logspace” in our conversations:
+
+1️⃣ UMRS logspace utility
+→ reports log storage capacity
+
+2️⃣ logspace event exploration concept
+→ semantic event analysis
+
+The first one is the actual implemented tool.
+
+⸻
+
+Quick Confirmation Question
+
+To make sure I recover the rest of the design correctly:
+
+Did the logspace tool compute pool usage using:
+
+A) filesystem stats (statvfs / statfs)
+or
+
+B) directory walking (du style summation)?
+
+I believe we designed it to support both, but I want to confirm before reconstructing the full original implementation plan.
+
+
+
+
+
+
+
+
+
+
+
+
+Logspace
+
+Yes — I remember that now. What you’re describing is the earlier umrs-logspace utility, which is completely different from the later event-analysis “logspace” idea I summarized earlier. Thanks for clarifying. Let me restate the original tool design so we re-anchor on the correct concept.
+
+This utility is about log storage capacity management, not event querying.
+
+⸻
+
+UMRS logspace Utility — Design Summary
+
+1. Purpose
+
+umrs-logspace is a capacity and resource-pool visibility tool for log storage.
+
+It serves a role similar to:
+	•	df — filesystem utilization
+	•	du — directory usage
+
+But instead of filesystems, it reports logical logging resource pools used by the UMRS logging architecture.
+
+The intent is to give operators clear visibility into log lifecycle storage tiers, including:
+	•	active logs
+	•	inactive logs
+	•	archived logs
+
+This tool helps prevent conditions such as:
+	•	log exhaustion
+	•	runaway logging
+	•	unbounded archive growth
+	•	audit retention violations
+
+⸻
+
+2. Core Concept: Log Resource Pools
+
+Instead of treating logs as simple directories, the design models them as resource pools.
+
+A pool represents a logical storage tier with policy and capacity constraints.
+
+Example pools:
+
+Pool	Purpose
+active	logs currently being written
+inactive	rotated logs awaiting archival
+archive	long-term retention logs
+
+This provides a lifecycle model:
+
+active → inactive → archive
+
+Pools may reside on:
+	•	separate directories
+	•	separate filesystems
+	•	separate storage classes
+
+⸻
+
+3. Similarity to df
+
+The output model intentionally mirrors df so operators instantly understand it.
+
+Example conceptual output:
+
+POOL        PATH                        SIZE   USED   AVAIL  USE%
+active      /var/log/umrs/active        10G    4.2G   5.8G   42%
+inactive    /var/log/umrs/inactive      20G    8.1G   11.9G  40%
+archive     /vaults-lei/log-archive     200G   63G    137G   31%
+
+The tool answers:
+	•	how much log space exists
+	•	how much is used
+	•	how much remains available
+
+⸻
+
+4. TOML Configuration
+
+The tool is driven by a TOML configuration file.
+
+The configuration defines the resource pools the utility should monitor.
+
+Example:
+
+[[pool]]
+name = "active"
+path = "/var/log/umrs/active"
+description = "Active event logs"
+
+[[pool]]
+name = "inactive"
+path = "/var/log/umrs/inactive"
+description = "Rotated logs awaiting archival"
+
+[[pool]]
+name = "archive"
+path = "/vaults-lei/log-archive"
+description = "Long term log archive"
+
+The utility iterates the pools and calculates storage metrics.
+
+⸻
+
+5. Information Reported
+
+For each configured pool the tool gathers:
+
+Field	Meaning
+pool name	logical identifier
+path	filesystem path
+size	total capacity
+used	bytes consumed
+available	remaining free space
+utilization	percentage used
+
+These values are typically derived from filesystem statistics.
+
+⸻
+
+6. Intended Operator Use
+
+Typical operational use cases:
+
+Capacity Monitoring
+
+umrs logspace
+
+Operators quickly see if log pools are nearing exhaustion.
+
+⸻
+
+Pre-Maintenance Inspection
+
+Before system upgrades or maintenance windows.
+
+⸻
+
+Compliance Verification
+
+Ensuring required retention capacity exists.
+
+⸻
+
+Early Warning Detection
+
+Example scenario:
+
+inactive pool suddenly spikes
+
+Possible causes:
+	•	archive job failing
+	•	log rotation misconfiguration
+	•	abnormal logging behavior
+
+⸻
+
+7. Design Philosophy
+
+This utility follows several UMRS design principles:
+
+Explicit Resource Visibility
+
+Operators should never have to guess where logs are going.
+
+⸻
+
+Lifecycle Awareness
+
+Logs are not static files; they move through stages.
+
+The tool reflects this lifecycle.
+
+⸻
+
+Configuration Driven
+
+No hardcoded paths.
+
+The configuration allows deployment-specific layouts.
+
+⸻
+
+Minimal Dependencies
+
+The utility should:
+	•	be lightweight
+	•	run quickly
+	•	avoid unnecessary libraries
+	•	be suitable for automation
+
+⸻
+
+8. Potential Future Enhancements
+
+These were ideas we briefly discussed for later phases.
+
+Threshold Warnings
+
+Example:
+
+WARN: active pool above 80%
+
+
+⸻
+
+Colorized Output
+
+green < 70%
+yellow 70–90%
+red > 90%
+
+
+⸻
+
+JSON Output
+
+Useful for automation:
+
+umrs logspace --json
+
+
+⸻
+
+Trend Tracking
+
+Track growth rate of logs.
+
+Example:
+
+archive pool growing 3GB/day
+
+
+⸻
+
+Retention Forecasting
+
+Estimate:
+
+archive pool will fill in 42 days
+
+
+⸻
+
+9. Relationship to the UMRS Logging System
+
+umrs-logspace complements the UMRS logging infrastructure by managing storage capacity, while other tools manage event data.
+
+Component	Role
+journald	primary system log ingress
+UMRS mediator	event normalization
+event JSONL store	structured event persistence
+logspace utility	storage capacity monitoring
+
+
+⸻
+
+10. Current Status (As You Mentioned)
+
+Based on your comment, the tool:
+	•	exists
+	•	parses the TOML config
+	•	enumerates pools
+	•	reports storage statistics
+
+Remaining work likely includes:
+	•	formatting improvements
+	•	error handling
+	•	thresholds
+	•	CLI flags
+	•	configuration validation
+
+⸻
+
+Important Clarification
+
+There are now two unrelated meanings of “logspace” in our conversations:
+
+1️⃣ UMRS logspace utility
+→ reports log storage capacity
+
+2️⃣ logspace event exploration concept
+→ semantic event analysis
+
+The first one is the actual implemented tool.
+
+⸻
+
+Quick Confirmation Question
+
+To make sure I recover the rest of the design correctly:
+
+Did the logspace tool compute pool usage using:
+
+A) filesystem stats (statvfs / statfs)
+or
+
+B) directory walking (du style summation)?
+
+I believe we designed it to support both, but I want to confirm before reconstructing the full original implementation plan.
+
+
+
+

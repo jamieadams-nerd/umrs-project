@@ -1,0 +1,1006 @@
+Performance corpus
+
+What you’re doing—curating a domain corpus for the agent—is exactly how you turn a generic coding agent into a specialist engineer. Since your Rust developer agent already has deep material on security and assurance, the next logical corpus is performance engineering.
+
+You want sources that cover three layers:
+	1.	Algorithmic performance (big-O, graph/search/data structures)
+	2.	Systems performance (cache, memory layout, CPU behavior)
+	3.	Rust-specific optimization patterns
+
+Below are high-value technical resources that work well as an ingestion corpus for agents.
+
+⸻
+
+1. Rust-Specific Performance Engineering
+
+These are the most important documents for a Rust performance-focused agent.
+
+The Rust Performance Book
+
+Rust Programming Language
+
+Author: Nicholas Nethercote (Rust compiler team)
+
+https://nnethercote.github.io/perf-book/
+
+Topics include:
+	•	profiling
+	•	memory layout
+	•	allocation reduction
+	•	branch prediction
+	•	data structures
+	•	SIMD
+	•	inlining
+	•	avoiding bounds checks
+	•	iterator performance
+
+This is arguably the best Rust performance guide available.
+
+You should absolutely include this.
+
+⸻
+
+Rust Compiler Performance Guide
+
+https://rustc-dev-guide.rust-lang.org/profiling.html
+
+Important topics:
+	•	flamegraphs
+	•	perf tools
+	•	profiling methodology
+	•	compiler performance strategies
+
+Even if you’re not writing a compiler, this contains excellent performance analysis techniques.
+
+⸻
+
+Rust Optimization Patterns
+
+https://github.com/PacktPublishing/Hands-On-Concurrency-with-Rust
+
+Important chapters:
+	•	lock-free structures
+	•	atomic operations
+	•	memory ordering
+	•	thread pools
+	•	async performance
+
+⸻
+
+2. High-Performance Algorithm Sources
+
+Your agent should know more than typical developer algorithms.
+
+These references are excellent.
+
+⸻
+
+Algorithm Design Manual
+
+Author: Steven Skiena
+
+Companion site:
+
+https://www.algorist.com/
+
+Topics:
+	•	graph algorithms
+	•	search optimization
+	•	heuristics
+	•	combinatorial optimization
+
+Agents benefit from this because it includes real-world algorithm tradeoffs, not just theory.
+
+⸻
+
+MIT Open Algorithms Course
+
+https://ocw.mit.edu/courses/6-006-introduction-to-algorithms/
+
+Includes lectures and notes covering:
+	•	trees
+	•	hashing
+	•	dynamic programming
+	•	graph traversal
+	•	shortest paths
+	•	divide-and-conquer
+
+Excellent corpus for algorithmic reasoning.
+
+⸻
+
+Competitive Programming Algorithms Repository
+
+https://github.com/kth-competitive-programming/kactl
+
+This repository contains high-performance algorithm implementations.
+
+Topics:
+	•	graph theory
+	•	flow algorithms
+	•	geometry
+	•	number theory
+	•	string algorithms
+
+Agents learn fast implementations, not just theoretical ones.
+
+⸻
+
+3. Systems Performance Engineering
+
+Your project is very systems-oriented, so these resources are extremely valuable.
+
+⸻
+
+What Every Programmer Should Know About Memory
+
+Author: Ulrich Drepper
+
+https://people.freebsd.org/~lstewart/articles/cpumemory.pdf
+
+This document explains:
+	•	CPU caches
+	•	NUMA
+	•	memory latency
+	•	prefetching
+	•	memory alignment
+
+For performance work this document is legendary.
+
+Agents trained on it gain strong intuition about cache behavior.
+
+⸻
+
+Brendan Gregg Performance Engineering
+
+https://www.brendangregg.com/linuxperf.html
+
+Topics include:
+	•	CPU profiling
+	•	flame graphs
+	•	kernel performance analysis
+	•	latency tracing
+
+Excellent for Linux systems performance.
+
+⸻
+
+Systems Performance (Gregg)
+
+https://www.brendangregg.com/systems-performance-2nd-edition-book.html
+
+Covers:
+	•	CPU scheduling
+	•	IO performance
+	•	memory bottlenecks
+	•	kernel instrumentation
+
+⸻
+
+4. High-Performance Data Structures
+
+Agents often default to naive structures. These sources help them choose better ones.
+
+⸻
+
+Fast Data Structures in Rust
+
+https://github.com/rust-lang/rustc-perf
+
+Important structures:
+	•	arena allocators
+	•	slab allocators
+	•	smallvec
+	•	bump allocators
+
+These appear frequently in high-performance Rust codebases.
+
+⸻
+
+Abseil Performance Tips
+
+https://abseil.io/tips/
+
+Although written for C++, the concepts apply universally:
+	•	memory locality
+	•	avoiding allocations
+	•	branch prediction
+	•	container selection
+
+Agents benefit greatly from this corpus.
+
+⸻
+
+5. SIMD and CPU Optimization
+
+These techniques can produce huge speedups.
+
+⸻
+
+Rust SIMD Guide
+
+https://rust-lang.github.io/packed_simd/
+
+Topics:
+	•	vectorized math
+	•	CPU instruction sets
+	•	data parallelism
+
+⸻
+
+Agner Fog Optimization Manuals
+
+https://www.agner.org/optimize/
+
+These documents explain:
+	•	instruction latency
+	•	microarchitecture
+	•	branch prediction
+	•	vectorization
+
+These are extremely deep but extremely valuable.
+
+⸻
+
+6. Real High-Performance Rust Codebases
+
+One of the best ways to teach agents performance is by letting them analyze fast Rust projects.
+
+These repositories are excellent.
+
+⸻
+
+ripgrep
+
+ripgrep
+
+https://github.com/BurntSushi/ripgrep
+
+Why it’s useful:
+	•	memory-mapped IO
+	•	SIMD search
+	•	parallel traversal
+	•	extremely optimized code
+
+⸻
+
+Tokio
+
+https://github.com/tokio-rs/tokio
+
+Topics:
+	•	async runtime
+	•	scheduler design
+	•	lock-free structures
+
+⸻
+
+Rayon
+
+https://github.com/rayon-rs/rayon
+
+Topics:
+	•	work-stealing schedulers
+	•	parallel iterators
+	•	data parallelism
+
+⸻
+
+Tantivy
+
+https://github.com/quickwit-oss/tantivy
+
+High-performance search engine written in Rust.
+
+Great examples of:
+	•	indexing
+	•	memory layout
+	•	fast IO
+
+⸻
+
+7. Benchmarking Tools Your Agent Should Understand
+
+Performance knowledge is incomplete without measurement tools.
+
+⸻
+
+Criterion
+
+https://github.com/bheisler/criterion.rs
+
+Provides:
+	•	statistically sound benchmarks
+	•	variance detection
+	•	performance regression tracking
+
+⸻
+
+Flamegraph
+
+https://github.com/flamegraph-rs/flamegraph
+
+Useful for:
+	•	CPU hotspot detection
+	•	profiling
+
+⸻
+
+perf
+
+Linux performance analysis tool.
+
+https://perf.wiki.kernel.org/
+
+⸻
+
+8. Rust Micro-Optimization Techniques
+
+These topics should become agent skills.
+
+Important techniques include:
+
+Allocation reduction
+
+Prefer:
+
+Vec::with_capacity
+SmallVec
+bump allocators
+
+
+⸻
+
+Data locality
+
+Prefer:
+
+struct-of-arrays
+
+instead of:
+
+array-of-structs
+
+for certain workloads.
+
+⸻
+
+Avoiding bounds checks
+
+Rust can eliminate them when:
+
+for i in 0..slice.len()
+
+pattern is used.
+
+⸻
+
+Branch prediction
+
+Prefer:
+
+likely patterns
+
+and minimize unpredictable branches.
+
+⸻
+
+Iterator fusion
+
+Rust iterators are often optimized into zero-cost loops.
+
+Agents should prefer:
+
+iter().map().filter()
+
+over manual loops in many cases.
+
+⸻
+
+9. Suggested Corpus Structure for Your Agent
+
+A clean layout might be:
+
+performance-corpus/
+   algorithms/
+   rust-performance/
+   systems-performance/
+   profiling/
+   high-performance-codebases/
+
+Examples:
+
+algorithms/
+   mit-algorithms
+   kactl
+
+rust-performance/
+   rust-perf-book
+   rustc-dev-guide
+
+systems-performance/
+   drepper-memory
+   brendan-gregg
+
+codebases/
+   ripgrep
+   rayon
+   tokio
+
+
+⸻
+
+10. One Extremely Important Skill for Your Agent
+
+Performance improvements rarely come from clever tricks.
+
+They come from:
+
+measure
+analyze
+optimize
+measure again
+
+Teaching the agent profiling discipline is more valuable than teaching micro-optimizations.
+
+⸻
+
+If you want, I can also show you something that would give your Rust developer agent a very large performance advantage immediately:
+
+A curated list of about 25 specific Rust performance techniques used by the fastest Rust projects (ripgrep, rustc, serde, tokio). These are the patterns that routinely produce 10× improvements when applied correctly.
+
+What you are describing is essentially the difference between passive reference material and an active knowledge index. Right now your agent has documents available, but unless it already knows what to look for, it won’t discover the new concepts inside them.
+
+The solution is to introduce a knowledge extraction pass whenever new material is added. This turns raw documents into a structured capability index that the agent can consult quickly.
+
+Below is a practical approach that works very well for agent-driven development teams.
+
+⸻
+
+1. The Core Idea: Pre-Digest the Corpus
+
+When you add new material, run a task that:
+	1.	scans the document
+	2.	extracts important concepts
+	3.	builds a small structured summary
+	4.	stores that summary in a directory your agents can quickly consult
+
+Instead of searching entire books, the agent first consults this knowledge digest.
+
+Think of it like a table of contents written for the agent.
+
+⸻
+
+2. Example Workflow
+
+When new material appears:
+
+performance-corpus/new-docs/
+    rust-perf-book.md
+    drepper-memory.pdf
+
+You trigger an agent task:
+
+scan-new-knowledge
+
+The Rust developer agent then:
+	1.	reads the new document
+	2.	extracts important ideas
+	3.	generates a structured knowledge summary
+
+⸻
+
+3. What the Extracted Knowledge Should Look Like
+
+The key is structured output.
+
+Example:
+
+developer-intelligence/performance-index/
+
+Example file:
+
+rust-perf-book.index.json
+
+Example contents:
+
+{
+  "topics": [
+    "allocation reduction",
+    "memory locality",
+    "branch prediction",
+    "iterator fusion",
+    "SIMD optimization"
+  ],
+  "key_techniques": [
+    "Vec::with_capacity",
+    "SmallVec",
+    "bump allocation",
+    "avoid bounds checks",
+    "loop unrolling"
+  ],
+  "relevant_for": [
+    "high-performance Rust",
+    "low-latency systems",
+    "CPU-bound workloads"
+  ]
+}
+
+Now the agent has explicit awareness of the concepts contained in the material.
+
+⸻
+
+4. Build a Global Knowledge Map
+
+Next, combine these extracted summaries into a master index.
+
+Example:
+
+developer-intelligence/
+    knowledge-map.json
+
+Example:
+
+{
+  "performance_topics": [
+    "cache locality",
+    "allocation strategies",
+    "lock-free concurrency",
+    "SIMD vectorization",
+    "branch prediction"
+  ],
+  "algorithm_domains": [
+    "graph traversal",
+    "shortest path algorithms",
+    "parallel search",
+    "bloom filters"
+  ]
+}
+
+This file becomes the awareness layer for the agent.
+
+When solving problems it can think:
+
+Does this relate to any known performance domains?
+
+
+⸻
+
+5. Create “Capability Files”
+
+Another extremely useful technique is to convert new knowledge into capabilities.
+
+Example:
+
+skills/performance-optimization.md
+
+Example content:
+
+Capabilities gained from corpus:
+
+- memory locality optimization
+- lock-free structures
+- arena allocation strategies
+- SIMD vectorization
+- branch prediction optimization
+
+This helps the agent reason:
+
+I have the ability to optimize memory layout.
+
+
+⸻
+
+6. Create a “Discovery Prompt”
+
+Add a rule to the agent instructions such as:
+
+When new knowledge appears in the corpus:
+
+1. scan the material
+2. extract important concepts
+3. update the performance capability index
+4. store results in developer-intelligence
+
+This makes the system self-updating.
+
+⸻
+
+7. Even Better: Extract Patterns
+
+The most useful information is not just topics but actionable techniques.
+
+Example extracted items:
+
+pattern: reduce allocations
+pattern: reuse buffers
+pattern: prefer stack allocation
+pattern: batch IO operations
+pattern: precompute lookup tables
+
+This allows the agent to recognize opportunities.
+
+⸻
+
+8. A Directory Layout That Works Well
+
+You might structure it like this:
+
+developer-intelligence/
+    corpus/
+        performance/
+        algorithms/
+        systems-performance/
+
+    indexes/
+        performance-index.json
+        algorithms-index.json
+
+    patterns/
+        memory-optimization.md
+        concurrency-patterns.md
+
+    summaries/
+        rust-perf-book.md
+        cpu-memory.md
+
+Your agent consults this directory before deep searches.
+
+⸻
+
+9. Why This Works
+
+Without preprocessing:
+
+Agent searches documents only when needed.
+
+With preprocessing:
+
+Agent knows what concepts exist before searching.
+
+This is essentially how human experts build mental maps.
+
+⸻
+
+10. What This Enables Later
+
+Once you have these indexes, you can build very powerful capabilities:
+
+Example:
+
+performance-scan <crate>
+
+The agent checks:
+
+- allocation patterns
+- memory locality
+- algorithm complexity
+
+because it already knows those ideas exist.
+
+⸻
+
+11. One More Extremely Useful Addition
+
+If you want a big improvement, you can also have the agent extract:
+
+anti-patterns
+
+Example:
+
+- excessive allocations in loops
+- poor data locality
+- unnecessary cloning
+- locking on hot paths
+
+These become automatic performance warnings.
+
+⸻
+
+✅ Summary
+
+To make the agent aware of new knowledge:
+	1.	add the documents to a corpus directory
+	2.	run a knowledge extraction task
+	3.	generate structured indexes
+	4.	maintain a global capability map
+	5.	update agent skills
+
+This converts raw documents into usable engineering knowledge.
+
+⸻
+
+If you want, I can also show you a very powerful pattern used in large AI-assisted development teams: a “Developer Intelligence System” that automatically indexes codebases, documentation, performance techniques, and security patterns so agents gain new engineering capabilities over time. It would fit extremely well with the architecture you are building.
+
+Yes — you’re thinking about the architecture exactly right. What you’re describing is essentially a three-layer knowledge system, and the “middle layer” you’re proposing is what makes RAG systems actually useful for engineering work.
+
+Your model would look like this:
+
+⸻
+
+1. Raw Corpus Layer (Ground Truth)
+
+This is the material you already keep.
+
+Example:
+
+corpus/
+   rust-perf-book/
+   mit-algorithms/
+   cpu-memory/
+   ripgrep-source/
+   tokio-source/
+
+These are the full original documents.
+
+Important properties:
+
+• authoritative
+• complete
+• rarely modified
+• used when deep context is needed
+
+This layer feeds the RAG embedding database.
+
+⸻
+
+2. RAG Layer (Semantic Retrieval)
+
+The second layer is your standard retrieval system.
+
+When the agent asks a question like:
+
+How do we reduce allocations in Rust loops?
+
+The RAG system retrieves passages from:
+	•	Rust performance book
+	•	Rust compiler docs
+	•	Tokio source comments
+
+The benefit:
+
+• natural language search
+• contextual retrieval
+• semantic matching
+
+But RAG has a limitation:
+
+The agent must ask the right question.
+
+If the agent doesn’t know the concept exists, RAG may never retrieve it.
+
+That’s the gap you correctly identified.
+
+⸻
+
+3. Knowledge Index Layer (Your New Idea)
+
+The layer you’re proposing sits between RAG and the agent reasoning system.
+
+This layer contains structured distilled knowledge extracted from the corpus.
+
+Example:
+
+developer-intelligence/
+    performance/
+        techniques.json
+        anti-patterns.json
+        algorithms.json
+    security/
+        assurance-patterns.json
+    systems/
+        kernel-observables.json
+
+Example extracted knowledge:
+
+Technique: reduce allocations
+Examples:
+    Vec::with_capacity
+    SmallVec
+    bump allocation
+
+When useful:
+    hot loops
+    high-frequency paths
+
+Now the agent knows the concept exists even before it searches RAG.
+
+⸻
+
+4. Why This Middle Layer Is Powerful
+
+Without the middle layer:
+
+Agent → RAG → corpus
+
+Agent only retrieves what it thinks to ask for.
+
+With the middle layer:
+
+Agent
+  ↓
+Knowledge index
+  ↓
+RAG retrieval
+  ↓
+Corpus
+
+Now the agent can reason:
+
+Possible performance improvements include:
+  - allocation reduction
+  - SIMD
+  - memory locality
+  - branch prediction
+
+Then it queries RAG for deeper information.
+
+⸻
+
+5. This Is Essentially an “Engineering Ontology”
+
+Your middle layer becomes something like:
+
+engineering knowledge graph
+
+Example relationships:
+
+memory locality
+    related_to: cache behavior
+    techniques: struct-of-arrays
+
+allocation reduction
+    techniques:
+        bump allocation
+        arena allocation
+        object reuse
+
+This gives the agent structured awareness of the domain.
+
+⸻
+
+6. Why This Works Well for Development Agents
+
+Software engineering knowledge has a structure:
+
+problem
+   ↓
+pattern
+   ↓
+technique
+   ↓
+implementation
+
+Example:
+
+problem: slow filesystem traversal
+pattern: parallel traversal
+technique: work stealing
+implementation: rayon
+
+Your middle layer captures that structure.
+
+⸻
+
+7. Practical Implementation
+
+Your pipeline could look like this:
+
+Step 1
+
+Add document to corpus
+
+corpus/performance/rust-perf-book
+
+
+⸻
+
+Step 2
+
+Run extraction task
+
+scan-corpus rust-perf-book
+
+Agent generates:
+
+knowledge-index/performance/rust-techniques.json
+
+
+⸻
+
+Step 3
+
+Update master index
+
+knowledge-index/performance/topics.json
+
+Example:
+
+cache locality
+allocation reduction
+branch prediction
+lock-free concurrency
+SIMD vectorization
+
+
+⸻
+
+Step 4
+
+RAG embedding
+
+Raw corpus still goes into the vector store.
+
+⸻
+
+8. A Useful Additional Layer
+
+Many systems also include pattern summaries.
+
+Example:
+
+patterns/
+    memory-optimization.md
+    concurrency-optimization.md
+    filesystem-optimization.md
+
+These are small distilled documents the agent can read quickly.
+
+⸻
+
+9. This Architecture Is Very Close to What Research Labs Use
+
+Large AI engineering teams often have:
+
+raw corpus
+vector index
+structured knowledge index
+agent skills
+
+Your new middle layer is essentially the knowledge index.
+
+It dramatically improves reasoning.
+
+⸻
+
+10. Your System Will Eventually Look Like This
+
+knowledge-system/
+
+corpus/
+    raw documents
+
+rag/
+    vector embeddings
+
+developer-intelligence/
+    structured knowledge
+    patterns
+    techniques
+    anti-patterns
+
+skills/
+    agent capabilities
+
+Each layer serves a different purpose.
+
+⸻
+
+11. The Big Benefit
+
+You’re not just feeding information to the agent.
+
+You’re building something closer to a machine-readable engineering handbook.
+
+The agent gradually accumulates:
+
+security expertise
+performance expertise
+kernel expertise
+algorithm expertise
+
+All searchable and structured.
+
+⸻
+
+If you’d like, I can also show you a very powerful enhancement that fits perfectly with what you’re building: a Rust performance playbook extracted from the fastest Rust projects (ripgrep, rustc, tokio, rayon, serde) that your agent could consult automatically when optimizing code. It’s basically a curated set of optimization patterns used by the Rust core ecosystem.

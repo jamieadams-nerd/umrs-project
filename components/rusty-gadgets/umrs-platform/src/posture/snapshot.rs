@@ -21,11 +21,11 @@
 //!
 //! ## Compliance
 //!
-//! NIST 800-53 CA-7: Continuous Monitoring — the snapshot is the atomic unit
+//! NIST SP 800-53 CA-7: Continuous Monitoring — the snapshot is the atomic unit
 //! of posture assessment, anchored to a specific boot instance via `boot_id`.
-//! NIST 800-53 AU-3: Audit Record Content — `SignalReport` carries typed,
+//! NIST SP 800-53 AU-3: Audit Record Content — `SignalReport` carries typed,
 //! structured findings rather than free-form strings.
-//! NIST 800-53 CM-6: Configuration Settings — contradiction detection compares
+//! NIST SP 800-53 CM-6: Configuration Settings — contradiction detection compares
 //! live vs. configured values from the sysctl.d merge tree.
 
 use std::time::SystemTime;
@@ -33,6 +33,8 @@ use std::time::SystemTime;
 use crate::posture::catalog::{SIGNALS, SignalDescriptor};
 use crate::posture::configured::SysctlConfig;
 use crate::posture::contradiction::{self, ContradictionKind};
+use crate::posture::fips_cross::FipsCrossCheck;
+use crate::posture::modprobe::ModprobeConfig;
 use crate::posture::reader::{BootIdReader, CmdlineReader};
 use crate::posture::signal::{
     AssuranceImpact, ConfiguredValue, DesiredValue, LiveValue, SignalClass,
@@ -48,8 +50,8 @@ use crate::posture::signal::{
 /// Contains the live (kernel) value, the configured (sysctl.d) value,
 /// the hardening assessment, and any contradiction classification.
 ///
-/// NIST 800-53 AU-3: structured finding record.
-/// NIST 800-53 CM-6: live vs. configured comparison.
+/// NIST SP 800-53 AU-3: structured finding record.
+/// NIST SP 800-53 CM-6: live vs. configured comparison.
 #[must_use = "signal reports carry security posture findings — do not discard"]
 pub struct SignalReport {
     /// Static catalog entry for this signal.
@@ -79,8 +81,8 @@ pub struct SignalReport {
 /// between two snapshots, the comparison is cross-boot and may reflect
 /// expected deltas.
 ///
-/// NIST 800-53 CA-7: Continuous Monitoring — atomic posture assessment unit.
-/// NIST 800-53 AU-3: temporal anchor via `collected_at` and `boot_id`.
+/// NIST SP 800-53 CA-7: Continuous Monitoring — atomic posture assessment unit.
+/// NIST SP 800-53 AU-3: temporal anchor via `collected_at` and `boot_id`.
 #[must_use = "posture snapshots contain security findings — do not discard"]
 pub struct PostureSnapshot {
     /// All signal reports, one per catalog entry, in catalog order.
@@ -102,8 +104,8 @@ impl PostureSnapshot {
     /// `live_value: None` field rather than propagated as errors — the
     /// snapshot degrades gracefully when kernel nodes are absent.
     ///
-    /// NIST 800-53 CA-7: produces the posture assessment record.
-    /// NIST 800-53 CM-6: contradiction detection via sysctl.d merge.
+    /// NIST SP 800-53 CA-7: produces the posture assessment record.
+    /// NIST SP 800-53 CM-6: contradiction detection via sysctl.d merge.
     #[must_use = "posture snapshot contains security findings — examine before discarding"]
     pub fn collect() -> Self {
         #[cfg(debug_assertions)]
@@ -132,9 +134,19 @@ impl PostureSnapshot {
         // Load sysctl.d configured values once for the entire snapshot.
         let sysctl_config = SysctlConfig::load();
 
+        // Load modprobe.d configured values once for all modprobe signals.
+        let modprobe_config = ModprobeConfig::load();
+
         let reports: Vec<SignalReport> = SIGNALS
             .iter()
-            .map(|desc| collect_one(desc, cmdline.as_ref(), &sysctl_config))
+            .map(|desc| {
+                collect_one(
+                    desc,
+                    cmdline.as_ref(),
+                    &sysctl_config,
+                    &modprobe_config,
+                )
+            })
             .collect();
 
         let readable =
@@ -222,6 +234,7 @@ fn collect_one(
     desc: &'static SignalDescriptor,
     cmdline: Option<&CmdlineReader>,
     sysctl_config: &SysctlConfig,
+    modprobe_config: &ModprobeConfig,
 ) -> SignalReport {
     log::debug!(
         "posture: reading signal {:?} from {}",
@@ -231,7 +244,13 @@ fn collect_one(
 
     let (live_value, meets_desired) = read_live(desc, cmdline);
 
-    let configured_value = read_configured(desc, sysctl_config);
+    let configured_value = read_configured(
+        desc,
+        sysctl_config,
+        cmdline,
+        live_value.as_ref(),
+        modprobe_config,
+    );
 
     let configured_meets: Option<bool> =
         configured_value.as_ref().and_then(|cv| {
@@ -276,6 +295,7 @@ fn read_live(
         SignalClass::KernelCmdline => read_live_cmdline_signal(desc, cmdline),
         SignalClass::SecurityFs => read_live_security_fs(desc),
         SignalClass::DistroManaged => read_live_distro_managed(desc),
+        SignalClass::ModprobeConfig => read_live_modprobe(desc),
     }
 }
 
@@ -377,7 +397,7 @@ fn read_live_sysctl_signal(
 /// allocation of the full cmdline per signal and limits exposure of potentially
 /// sensitive boot parameters in the snapshot.
 ///
-/// NIST 800-53 SC-28: minimise retention of boot parameter content.
+/// NIST SP 800-53 SC-28: minimise retention of boot parameter content.
 fn read_live_cmdline_signal(
     desc: &'static SignalDescriptor,
     cmdline: Option<&CmdlineReader>,
@@ -415,7 +435,7 @@ fn read_live_cmdline_signal(
 /// Routes to `read_lockdown_live()` for the `Lockdown` signal. Any unknown
 /// `SecurityFs`-class signal degrades gracefully to `(None, None)`.
 ///
-/// NIST 800-53 SI-7: provenance-verified via SECURITYFS_MAGIC.
+/// NIST SP 800-53 SI-7: provenance-verified via SECURITYFS_MAGIC.
 fn read_live_security_fs(
     desc: &'static SignalDescriptor,
 ) -> (Option<LiveValue>, Option<bool>) {
@@ -471,21 +491,138 @@ fn read_live_distro_managed(
     }
 }
 
+/// Read a modprobe.d-configured signal live value from sysfs.
+///
+/// For blacklist signals: reads module directory presence from sysfs as the
+/// live check. Module absent = `Bool(true)` (blacklist effective). Module
+/// present = `Bool(false)` (module loaded, blacklist not effective).
+///
+/// For parameter signals (`NfConntrackAcct`): reads
+/// `/sys/module/<mod>/parameters/<param>` via `SysfsText` + `SYSFS_MAGIC`,
+/// but only if the module is loaded (Trust Gate). Returns `(None, None)` if
+/// module is not loaded.
+///
+/// NIST SP 800-53 SI-7: provenance-verified sysfs reads via SYSFS_MAGIC.
+/// NIST SP 800-53 CM-6: Trust Gate — module must be loaded to read parameters.
+fn read_live_modprobe(
+    desc: &'static SignalDescriptor,
+) -> (Option<LiveValue>, Option<bool>) {
+    use crate::posture::modprobe::{is_module_loaded, read_module_param};
+
+    match desc.id {
+        SignalId::NfConntrackAcct => {
+            // Trust Gate: only read if nf_conntrack is loaded.
+            if !is_module_loaded("nf_conntrack") {
+                log::debug!(
+                    "posture: modprobe cross-check: nf_conntrack not loaded \
+                     — live value unavailable (Trust Gate)"
+                );
+                return (None, None);
+            }
+            match read_module_param("nf_conntrack", "acct") {
+                Ok(Some(raw)) => {
+                    let parsed = raw.trim().parse::<u32>().ok();
+                    if let Some(v) = parsed {
+                        let meets = desc.desired.meets_integer(v);
+                        log::debug!(
+                            "posture: modprobe cross-check: \
+                             nf_conntrack acct: live={v} meets={meets:?}"
+                        );
+                        (Some(LiveValue::Integer(v)), meets)
+                    } else {
+                        log::debug!(
+                            "posture: modprobe cross-check: \
+                             nf_conntrack acct: non-integer live value '{raw}'"
+                        );
+                        (None, None)
+                    }
+                }
+                Ok(None) => {
+                    log::debug!(
+                        "posture: modprobe cross-check: \
+                         nf_conntrack/acct: parameter node absent"
+                    );
+                    (None, None)
+                }
+                Err(e) => {
+                    log::debug!(
+                        "posture: modprobe cross-check: \
+                         nf_conntrack/acct: sysfs read failed: {e}"
+                    );
+                    (None, None)
+                }
+            }
+        }
+        // Blacklist signals: module-directory presence is the live check.
+        // Module absent → blacklist effective (Bool(true) = hardened).
+        // Module present → blacklist not effective (Bool(false) = unhardened).
+        id @ (SignalId::BluetoothBlacklisted
+        | SignalId::UsbStorageBlacklisted
+        | SignalId::FirewireCoreBlacklisted
+        | SignalId::ThunderboltBlacklisted) => {
+            let module_name = module_name_for_blacklist_signal(id);
+            let loaded = is_module_loaded(module_name);
+            // Blacklist hardened = module NOT loaded.
+            let hardened = !loaded;
+            log::debug!(
+                "posture: modprobe cross-check: {} blacklisted={} \
+                 loaded={} → {}",
+                module_name,
+                !loaded,
+                loaded,
+                if hardened {
+                    "PASS (module absent)"
+                } else {
+                    "FAIL (module present)"
+                }
+            );
+            // desired=Exact(1) means "blacklist effective" (Bool(true) = hardened).
+            (Some(LiveValue::Bool(hardened)), Some(hardened))
+        }
+        id => {
+            log::debug!("posture: unknown ModprobeConfig signal {id:?}");
+            (None, None)
+        }
+    }
+}
+
+/// Map a blacklist `SignalId` to the corresponding kernel module name.
+///
+/// Used to derive the `/sys/module/<name>/` path for module-load detection.
+const fn module_name_for_blacklist_signal(id: SignalId) -> &'static str {
+    match id {
+        SignalId::BluetoothBlacklisted => "bluetooth",
+        SignalId::UsbStorageBlacklisted => "usb_storage",
+        SignalId::FirewireCoreBlacklisted => "firewire_core",
+        SignalId::ThunderboltBlacklisted => "thunderbolt",
+        // All other IDs are not blacklist signals; this function is only
+        // called from the blacklist match arm above.
+        _ => "unknown",
+    }
+}
+
 // ===========================================================================
 // read_configured — configured value lookup
 // ===========================================================================
 
-/// Look up the configured value for a signal from the sysctl.d merge tree.
+/// Look up the configured value for a signal from the appropriate source.
 ///
-/// Returns `None` for cmdline signals (Phase 1 defers bootloader reading)
-/// and for signals with no sysctl key.
+/// - `Sysctl` + `DistroManaged` (sysctl key present): sysctl.d merge tree.
+/// - `DistroManaged` `FipsEnabled`: FIPS cross-check via `FipsCrossCheck`.
+/// - `ModprobeConfig`: modprobe.d merge tree.
+/// - `KernelCmdline` + `SecurityFs`: deferred (Phase 2b / not applicable).
+///
+/// NIST SP 800-53 CM-6: configured-value lookup from the full set of
+/// persistence sources.
 fn read_configured(
     desc: &'static SignalDescriptor,
     sysctl_config: &SysctlConfig,
+    cmdline: Option<&CmdlineReader>,
+    live_value: Option<&LiveValue>,
+    modprobe_config: &ModprobeConfig,
 ) -> Option<ConfiguredValue> {
-    // Cmdline and SecurityFs configured values are deferred to Phase 2.
-    // SecurityFs signals (e.g., Lockdown) are controlled by kernel LSM state,
-    // not by sysctl.d or bootloader cmdline key=value pairs.
+    // KernelCmdline bootloader config deferred to Phase 2b.
+    // SecurityFs LSM signals have no sysctl.d / cmdline configured value.
     if matches!(
         desc.class,
         SignalClass::KernelCmdline | SignalClass::SecurityFs
@@ -493,6 +630,111 @@ fn read_configured(
         return None;
     }
 
-    let key = desc.sysctl_key?;
-    sysctl_config.get(key)
+    match desc.class {
+        SignalClass::ModprobeConfig => {
+            read_configured_modprobe(desc, modprobe_config)
+        }
+        SignalClass::DistroManaged if desc.id == SignalId::FipsEnabled => {
+            read_configured_fips(cmdline, live_value)
+        }
+        SignalClass::Sysctl | SignalClass::DistroManaged => {
+            let key = desc.sysctl_key?;
+            sysctl_config.get(key)
+        }
+        // KernelCmdline and SecurityFs filtered above; this arm is unreachable
+        // but the compiler requires exhaustiveness.
+        SignalClass::KernelCmdline | SignalClass::SecurityFs => None,
+    }
+}
+
+/// Look up configured value for a modprobe.d signal.
+///
+/// For blacklist signals: returns `Some(ConfiguredValue { raw: "blacklisted", ... })`
+/// if the module is in the blacklist map.
+/// For parameter signals: returns the configured `options` value.
+fn read_configured_modprobe(
+    desc: &'static SignalDescriptor,
+    modprobe_config: &ModprobeConfig,
+) -> Option<ConfiguredValue> {
+    use crate::posture::modprobe::blacklist_configured_value;
+
+    match desc.id {
+        SignalId::NfConntrackAcct => {
+            let cv = modprobe_config.get_option("nf_conntrack", "acct");
+            if let Some(ref c) = cv {
+                let raw = &c.raw;
+                let src = &c.source_file;
+                log::debug!(
+                    "posture: modprobe cross-check: nf_conntrack acct: \
+                     configured={raw} source={src}"
+                );
+            }
+            cv
+        }
+        id @ (SignalId::BluetoothBlacklisted
+        | SignalId::UsbStorageBlacklisted
+        | SignalId::FirewireCoreBlacklisted
+        | SignalId::ThunderboltBlacklisted) => {
+            let module_name = module_name_for_blacklist_signal(id);
+            let cv = blacklist_configured_value(module_name, modprobe_config);
+            if let Some(ref c) = cv {
+                let src = &c.source_file;
+                log::debug!(
+                    "posture: modprobe cross-check: {module_name} blacklisted \
+                     source={src}"
+                );
+            } else {
+                log::debug!(
+                    "posture: modprobe cross-check: {module_name} not found in \
+                     modprobe.d blacklist"
+                );
+            }
+            cv
+        }
+        id => {
+            log::debug!(
+                "posture: read_configured_modprobe: unknown ModprobeConfig \
+                 signal {id:?}"
+            );
+            None
+        }
+    }
+}
+
+/// Evaluate the FIPS configured-value via the cross-check module.
+///
+/// Implements the Trust Gate: only invokes FIPS cross-check if the live
+/// FIPS value was successfully read. Returns the cross-check's
+/// `ConfiguredValue` summary for insertion into `SignalReport`.
+///
+/// NIST SP 800-53 CM-6: Trust Gate — config reads gated on live availability.
+/// NIST 800-218 SSDF PW.4: pattern timing in debug builds.
+fn read_configured_fips(
+    cmdline: Option<&CmdlineReader>,
+    live_value: Option<&LiveValue>,
+) -> Option<ConfiguredValue> {
+    #[cfg(debug_assertions)]
+    let start = std::time::Instant::now();
+
+    // Trust Gate: only run cross-check if live FIPS value was readable.
+    let live_fips_readable = live_value.is_some();
+
+    // Extract cmdline fips=1 token from the shared CmdlineReader.
+    let cmdline_has_fips1 = cmdline.map(|r| r.contains_token("fips=1"));
+
+    let cross_check =
+        FipsCrossCheck::evaluate(live_fips_readable, cmdline_has_fips1);
+    let result = cross_check.as_configured_value();
+
+    #[cfg(debug_assertions)]
+    {
+        let elapsed = start.elapsed().as_micros();
+        let raw_display = result.as_ref().map(|c| &c.raw);
+        log::debug!(
+            "posture: FIPS cross-check: read_configured completed in \
+             {elapsed} µs, result={raw_display:?}"
+        );
+    }
+
+    result
 }

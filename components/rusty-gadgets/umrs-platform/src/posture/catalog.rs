@@ -2,7 +2,7 @@
 // Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
 //! Static signal catalog — compile-time array of `SignalDescriptor` entries.
 //!
-//! Every kernel security posture signal known to Phase 1 is described here
+//! Every kernel security posture signal known to Phase 1 and Phase 2a is described here
 //! as a `const` value. The catalog is the single authoritative source for
 //! signal metadata: paths, sysctl keys, desired values, impact tiers, and
 //! rationale text.
@@ -338,5 +338,67 @@ pub static SIGNALS: &[SignalDescriptor] = &[
         rationale: "FIPS 140-2/3 mode enforces validated cryptographic primitives \
                     and is a mandatory baseline for DoD/government deployments.",
         nist_controls: "NIST 800-53 SC-13, SC-28; FIPS 140-2/140-3; CMMC SC.L2-3.13.10",
+    },
+    // ── modprobe.d (Phase 2a) ─────────────────────────────────────────────
+    SignalDescriptor {
+        id: SignalId::NfConntrackAcct,
+        class: SignalClass::ModprobeConfig,
+        live_path: "/sys/module/nf_conntrack/parameters/acct",
+        sysctl_key: None,
+        desired: DesiredValue::Exact(1),
+        impact: AssuranceImpact::Medium,
+        rationale: "Connection tracking accounting (acct=1) enables per-connection \
+                    byte/packet counters used by audit and firewall logging tools.",
+        nist_controls: "NIST 800-53 AU-12, CM-6; NSA RTB: audit trail completeness",
+    },
+    SignalDescriptor {
+        id: SignalId::BluetoothBlacklisted,
+        class: SignalClass::ModprobeConfig,
+        live_path: "/sys/module/bluetooth",
+        sysctl_key: None,
+        desired: DesiredValue::Exact(1),
+        impact: AssuranceImpact::High,
+        rationale: "The Bluetooth stack is a large attack surface on servers; \
+                    blacklisting prevents accidental or malicious module loading.",
+        nist_controls: "NIST 800-53 CM-7, SC-39; NSA RTB: attack surface reduction; \
+                        CMMC CM.L2-3.4.6",
+    },
+    SignalDescriptor {
+        id: SignalId::UsbStorageBlacklisted,
+        class: SignalClass::ModprobeConfig,
+        live_path: "/sys/module/usb_storage",
+        sysctl_key: None,
+        desired: DesiredValue::Exact(1),
+        impact: AssuranceImpact::High,
+        rationale: "USB mass storage is a primary data exfiltration vector on \
+                    classified and government systems; blacklisting prevents \
+                    mounting of untrusted external media.",
+        nist_controls: "NIST 800-53 MP-7, CM-7; NSA RTB: media protection; \
+                        CMMC MP.L2-3.8.7",
+    },
+    SignalDescriptor {
+        id: SignalId::FirewireCoreBlacklisted,
+        class: SignalClass::ModprobeConfig,
+        live_path: "/sys/module/firewire_core",
+        sysctl_key: None,
+        desired: DesiredValue::Exact(1),
+        impact: AssuranceImpact::High,
+        rationale: "FireWire DMA can bypass memory protection; blacklisting \
+                    prevents direct memory access attacks via physical FireWire \
+                    ports.",
+        nist_controls: "NIST 800-53 SI-7, CM-7; NSA RTB: physical attack surface \
+                        reduction",
+    },
+    SignalDescriptor {
+        id: SignalId::ThunderboltBlacklisted,
+        class: SignalClass::ModprobeConfig,
+        live_path: "/sys/module/thunderbolt",
+        sysctl_key: None,
+        desired: DesiredValue::Exact(1),
+        impact: AssuranceImpact::High,
+        rationale: "Thunderbolt DMA can bypass IOMMU protections on some hardware; \
+                    blacklisting prevents DMA-based attacks via Thunderbolt ports.",
+        nist_controls: "NIST 800-53 SI-7, CM-7; NSA RTB: physical attack surface \
+                        reduction; CMMC CM.L2-3.4.6",
     },
 ];

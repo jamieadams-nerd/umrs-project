@@ -2,7 +2,7 @@
 name: Kernel Security Posture Probe
 path: components/rusty-gadgets/umrs-platform
 agent: rust-developer
-status: approved — decisions locked, ready for implementation
+status: phase-2a-complete — code done, 173 tests pass (34 new modprobe + 14 new fips), docs pending; hand off to security-engineer for review
 depends-on: umrs-platform-expansion.md
 ---
 
@@ -468,20 +468,285 @@ All tests in `umrs-platform/tests/posture_tests.rs`:
 
 ## 10. Phasing
 
-### Phase 1 (this plan)
+### Phase 1 — COMPLETE
 - `SignalId` enum, `SignalDescriptor`, static catalog
 - Live-value readers for all sysctl signals (via `SecureReader`)
 - `/proc/cmdline` parser for boot-time signals
 - `PostureSnapshot::collect()` with iterator interface
 - Configured-value reading for sysctl.d (merge logic)
 - Contradiction detection (live vs. configured sysctl only)
-- Tests, example, docs
+- Tests (60/60 pass), example (`posture_demo.rs`), lib.rs re-exports
+- Developer guide documentation: pending
 
-### Phase 2 (future)
-- Configured-value reading for bootloader cmdline
-- `modprobe.d` parameter cross-check
-- FIPS distro-managed cross-check (fips-mode-setup state)
-- CPU mitigation sub-signals (individual spectre/meltdown knobs)
+### Phase 2a — modprobe.d Cross-Check + FIPS Distro-Managed Cross-Check
+
+**Goal**: Extend the posture probe with two new configured-value sources that
+follow the same merge-tree and contradiction-detection patterns proven in Phase 1.
+Both features strengthen the configured-vs-live comparison model and give the
+security-engineer new trust boundary surface to audit.
+
+**Checkpoint**: After 2a is complete and tests pass, save progress and hand off
+to `security-engineer` for a full review of the Phase 1 + 2a posture module.
+
+---
+
+#### 2a.1 — modprobe.d Configured-Value Cross-Check
+
+**What**: Read kernel module parameter configuration from the modprobe.d merge
+tree and cross-check against live values from `/sys/module/*/parameters/`.
+
+**Why**: An adversary who modifies `/etc/modprobe.d/` can alter module behaviour
+at next load without changing the running kernel — a persistence vector that
+escapes live-only monitoring. Conversely, a runtime `sysfs` write can override
+configured parameters — an ephemeral change that escapes config-only auditing.
+The same contradiction-detection model that Phase 1 uses for sysctl.d applies.
+
+##### New Files
+
+```
+posture/
+  modprobe.rs    ← modprobe.d merge-tree reader and parameter cross-check
+```
+
+##### modprobe.d Merge Tree — Precedence Order
+
+Follows `modprobe.d(5)` precedence (last-writer-wins, lexicographic within dir):
+
+1. `/usr/lib/modprobe.d/*.conf` — distro/vendor defaults (lowest)
+2. `/run/modprobe.d/*.conf` — transient overrides
+3. `/etc/modprobe.d/*.conf` — admin overrides (highest)
+
+##### Line Format (read-only — this probe reads config files, never modifies them)
+
+modprobe.d config files use several directive types. The probe reads and
+parses these to determine the **intended** module configuration:
+
+```
+options <module_name> <param1>=<value1> [<param2>=<value2> ...]
+blacklist <module_name>                  # soft blacklist
+install <module_name> /bin/true          # sysadmin blacklist technique (see below)
+```
+
+**Phase 2a** parses `options` and `blacklist` directives — both have
+well-defined, deterministic formats.
+
+**Phase 2b** adds parsing for `install` directives. In modprobe.d, an
+`install` line does not install software — it is a redirection: when the
+kernel requests a module load, `modprobe` executes the specified command
+**instead of** loading the module. Sysadmins commonly write
+`install usb_storage /bin/true` to prevent a module from loading — the
+kernel's load request is silently swallowed by `/bin/true`. Detecting
+whether an `install` directive is a blacklist-equivalent requires parsing
+the command string (`/bin/true`, `/bin/false`, `/sbin/modprobe --ignore-install`, etc.),
+which is string analysis deferred to 2b for high-assurance parsing design.
+
+##### Live Value Source
+
+`/sys/module/<module_name>/parameters/<param>` — readable via `SysfsText`
+with `SYSFS_MAGIC` provenance verification.
+
+##### Applicable High-Assurance Patterns
+
+| Pattern | Application | Control |
+|---------|-------------|---------|
+| **Compile-Time Path Binding** | Module parameter paths bound as associated constants on newtype; `SYSFS_MAGIC` verified at read time. No runtime path construction from user input. | NSA RTB RAIN |
+| **Provenance Verification** | `/sys/module/` reads go through `SecureReader` with `fstatfs` against `SYSFS_MAGIC`. `/etc/modprobe.d/` reads are regular-filesystem best-effort (advisory, not authoritative). | NIST 800-53 SI-7 |
+| **Trust Gate** | Only read `/sys/module/<mod>/parameters/` if the module is currently loaded (check `/sys/module/<mod>/` existence first). If the module is absent, the live value is `None` — do not guess from config. | NIST 800-53 CM-6 |
+| **Security Findings as Data** | Module parameter contradictions are `ContradictionKind` enum variants, not log strings. Callers match, filter, count programmatically. | NIST 800-53 AU-3 |
+| **Fail-Closed Parsing** | Lines that fail to parse are rejected and logged — never silently skipped. Unrecognised directives (e.g., `softdep`) are logged at `debug` and excluded from the parameter map rather than causing errors. | NIST 800-53 SI-10 |
+| **Layered Separation** | The merge-tree reader (`modprobe.rs`) is a data-collection layer. It does not format, display, or make remediation decisions. Presentation layers consume `SignalReport` downstream. | NSA RTB / NIST 800-53 SC-3 |
+| **Pattern Execution Measurement** | `#[cfg(debug_assertions)]` timing on merge-tree load, per-module parameter read, and cross-check comparison. `log::debug!("posture: modprobe.d merge completed in {} µs: {} files, {} modules", ...)` | NIST 800-218 SSDF PW.4 |
+| **Must-Use Contract** | All public functions returning `Result` or `Option` carry `#[must_use = "..."]` with an explanation. `ModprobeConfig` type carries `#[must_use]` at the type level. | NIST 800-53 SI-10, SA-11 |
+| **Validate at Construction** | `ModprobeConfig::load()` returns a validated, immutable config. Downstream code receives the type, not a `Result` — the error was handled at the boundary. | NIST 800-218 SSDF PW.4.1 |
+
+##### Signals to Add
+
+Phase 2a adds cross-check for **security-critical module parameters only** —
+modules whose parameter configuration has a direct security impact:
+
+| Module | Parameter | Desired | Rationale | Impact |
+|--------|-----------|---------|-----------|--------|
+| `nf_conntrack` | `acct` | `1` | Connection tracking accounting for audit trails | Medium |
+| `bluetooth` | (blacklisted) | blacklisted | Bluetooth stack is an attack surface on servers | High |
+| `usb_storage` | (blacklisted) | blacklisted | USB mass storage is a data exfiltration vector | High |
+| `firewire_core` | (blacklisted) | blacklisted | FireWire DMA attacks bypass memory protection | High |
+| `thunderbolt` | (blacklisted) | blacklisted | Thunderbolt DMA attacks bypass memory protection | High |
+
+Blacklist signals check both `blacklist <mod>` entries and `install <mod> /bin/true`
+or `/bin/false` patterns in the modprobe.d merge tree.
+
+##### New Types
+
+```rust
+/// Merged modprobe.d configuration.
+///
+/// NIST 800-53 CM-6: modprobe.d persistence layer for module parameter
+/// and blacklist state.
+#[must_use = "modprobe config carries module parameter findings — do not discard"]
+pub struct ModprobeConfig {
+    /// module_name → { param_name → (value, source_file) }
+    options: HashMap<String, HashMap<String, (String, String)>>,
+    /// module_name → source_file (blacklisted modules)
+    blacklisted: HashMap<String, String>,
+}
+```
+
+##### Debug Logging Requirements
+
+Every significant operation must emit `log::debug!()`:
+
+```
+DEBUG posture: modprobe.d merge: scanning /usr/lib/modprobe.d/ (12 files)
+DEBUG posture: modprobe.d merge: /etc/modprobe.d/blacklist-bluetooth.conf:3 blacklist bluetooth
+DEBUG posture: modprobe.d merge: /etc/modprobe.d/nf_conntrack.conf:1 options nf_conntrack acct=1
+DEBUG posture: modprobe.d merge: completed in 340 µs: 18 files, 4 modules, 2 blacklisted
+DEBUG posture: modprobe cross-check: bluetooth blacklisted=true, /sys/module/bluetooth absent → live confirms blacklist
+DEBUG posture: modprobe cross-check: nf_conntrack acct: configured=1, live=1 → PASS
+DEBUG posture: modprobe cross-check: usb_storage blacklisted=true, /sys/module/usb_storage present → CONTRADICTION: BootDrift
+```
+
+##### Evidence Chain
+
+`SignalReport` for modprobe signals must capture:
+- `configured_value`: the raw value from the highest-precedence modprobe.d file, with source file path
+- `live_value`: the value from `/sys/module/<mod>/parameters/<param>`, or `Bool(false)` for blacklist checks where the module is loaded
+- `contradiction`: `EphemeralHotfix` (module unloaded at runtime but config allows it), `BootDrift` (config blacklists but module is loaded), `SourceUnavailable` (module absent, cannot verify parameters)
+
+##### Testing Strategy
+
+All tests in `umrs-platform/tests/posture_modprobe_tests.rs`:
+
+1. **Line parser unit tests** — `options`, `blacklist`, comments, malformed lines
+2. **Merge precedence** — later directories override earlier ones
+3. **Live cross-check** — mock-free integration against `/sys/module/` (degrade gracefully if modules absent)
+4. **Contradiction classification** — all scenarios: blacklisted+loaded, blacklisted+absent, options match, options mismatch
+5. **ModprobeConfig construction** — validate-at-construction guarantees
+6. **Integration** — modprobe signals appear in `PostureSnapshot::collect()`
+
+---
+
+#### 2a.2 — FIPS Distro-Managed Cross-Check
+
+**What**: Extend the existing `FipsEnabled` signal with configured-value discovery
+from RHEL 10's FIPS persistence layer, enabling contradiction detection between
+the kernel's live FIPS state and the distro's intended FIPS configuration.
+
+**Why**: FIPS mode on RHEL is a system-wide posture decision with three sources
+of truth that can disagree:
+
+1. **Kernel live**: `/proc/sys/crypto/fips_enabled` (already read by `ProcFips`)
+2. **Dracut initramfs**: `fips=1` on the kernel cmdline (already checked by Phase 1's cmdline parser)
+3. **Distro persistent state**: `/etc/system-fips` (marker file) and the output of `fips-mode-setup --check`
+
+If (1) says enabled but (3) says not configured, the system is in an ephemeral
+FIPS state that will not survive a dracut rebuild. If (3) says configured but
+(1) says disabled, FIPS was intended but is not active — a compliance gap.
+
+##### RHEL 10 FIPS State Discovery
+
+On RHEL 10, FIPS persistent state is determined by:
+
+- **Marker file**: `/etc/system-fips` — presence indicates FIPS was configured via
+  `fips-mode-setup --enable`. This is a simple existence check, not a content parse.
+- **Kernel cmdline**: `fips=1` in `/proc/cmdline` — already covered by Phase 1's
+  cmdline parser. Phase 2a cross-references this.
+- **Crypto policy**: `/etc/crypto-policies/state/current` — should read `FIPS` or
+  `FIPS:*` when FIPS is configured. This is a secondary indicator.
+
+##### Applicable High-Assurance Patterns
+
+| Pattern | Application | Control |
+|---------|-------------|---------|
+| **Trust Gate** | Only read `/etc/system-fips` and crypto-policy state if `/proc/sys/crypto/fips_enabled` is accessible. If the kernel cannot confirm the crypto subsystem state, config reads are meaningless. | NIST 800-53 CM-6 |
+| **Provenance Verification** | `/proc/sys/crypto/fips_enabled` already verified via `PROC_SUPER_MAGIC` (Phase 1). `/etc/system-fips` and `/etc/crypto-policies/` are regular-filesystem reads — best-effort, not authoritative. | NIST 800-53 SI-7 |
+| **Fail-Closed Parsing** | If `/etc/system-fips` is absent, the configured state is `None` (not "FIPS disabled"). If crypto-policy file is unreadable, degrade to `None` — never assume a default. | NIST 800-53 SI-10 / RTB Fail Secure |
+| **Security Findings as Data** | FIPS contradiction is `ContradictionKind::BootDrift` (configured but not active) or `ContradictionKind::EphemeralHotfix` (active but not configured persistently). Programmatically matchable. | NIST 800-53 AU-3 |
+| **Error Information Discipline** | FIPS state errors must not reveal the specific crypto-policy string in error messages — it could indicate the system's cryptographic posture to an adversary. Log at `debug`, not `warn`. | NIST 800-53 SI-11 / RTB Error Discipline |
+| **Pattern Execution Measurement** | `#[cfg(debug_assertions)]` timing on FIPS cross-check. | NIST 800-218 SSDF PW.4 |
+| **Must-Use Contract** | `FipsCrossCheck::evaluate()` returns a `#[must_use]` result. | NIST 800-53 SI-10, SA-11 |
+| **Non-Bypassability** | The cross-check is invoked unconditionally during `PostureSnapshot::collect()` — there is no code path that skips it. The `collect_one` dispatch for `SignalId::FipsEnabled` calls the cross-check as part of configured-value resolution. | NSA RTB RAIN |
+
+##### New Types
+
+```rust
+/// FIPS persistent configuration state from RHEL distro tooling.
+///
+/// Aggregates multiple FIPS configuration indicators into a single
+/// typed assessment. Each indicator is independently resolved and
+/// recorded for audit evidence.
+///
+/// NIST 800-53 SC-13: Cryptographic Protection — FIPS configuration
+/// state determines which cryptographic modules are permitted.
+/// FIPS 140-2/140-3: system-wide FIPS mode enforcement.
+#[must_use = "FIPS cross-check results carry compliance findings — do not discard"]
+pub struct FipsCrossCheck {
+    /// Presence of `/etc/system-fips` marker file.
+    pub marker_present: Option<bool>,
+    /// `fips=1` found in `/proc/cmdline` (from Phase 1 CmdlineReader).
+    pub cmdline_fips: Option<bool>,
+    /// Content of `/etc/crypto-policies/state/current`.
+    pub crypto_policy: Option<String>,
+    /// Overall assessment: configured FIPS state agrees with live kernel state.
+    pub configured_meets_desired: Option<bool>,
+}
+```
+
+##### Integration with Existing Posture Architecture
+
+The `FipsCrossCheck` is not a new signal — it enhances the existing
+`SignalId::FipsEnabled` by providing a `configured_value` that was `None`
+in Phase 1. The enhancement flows through the existing `read_configured()`
+dispatch in `snapshot.rs`:
+
+- `read_configured()` for `SignalClass::DistroManaged` + `SignalId::FipsEnabled`
+  now invokes `FipsCrossCheck::evaluate()` instead of returning `None`.
+- The `ConfiguredValue.raw` field contains a structured summary (e.g.,
+  `"marker=present cmdline=fips=1 policy=FIPS"`) for audit display.
+- The `ConfiguredValue.source_file` field records whichever indicator was
+  the primary source (e.g., `/etc/system-fips`).
+- Contradiction detection uses the existing `classify()` function — no changes
+  to the contradiction engine.
+
+##### Debug Logging Requirements
+
+```
+DEBUG posture: FIPS cross-check: /etc/system-fips exists=true
+DEBUG posture: FIPS cross-check: /proc/cmdline fips=1 present=true
+DEBUG posture: FIPS cross-check: /etc/crypto-policies/state/current = "FIPS"
+DEBUG posture: FIPS cross-check: completed in 95 µs — marker=true cmdline=true policy=FIPS
+DEBUG posture: FIPS cross-check: configured_meets_desired=true (all indicators agree)
+```
+
+Or on a system with a contradiction:
+
+```
+DEBUG posture: FIPS cross-check: /etc/system-fips exists=false
+DEBUG posture: FIPS cross-check: /proc/cmdline fips=1 present=false
+DEBUG posture: FIPS cross-check: live /proc/sys/crypto/fips_enabled=1
+DEBUG posture: FIPS cross-check: CONTRADICTION — live FIPS active but not persistently configured
+DEBUG posture: FIPS cross-check: classified as EphemeralHotfix
+```
+
+##### Testing Strategy
+
+All tests in `umrs-platform/tests/posture_fips_tests.rs`:
+
+1. **Marker file detection** — present, absent, unreadable (permissions)
+2. **Crypto-policy parsing** — `FIPS`, `FIPS:OSPP`, `DEFAULT`, empty, absent
+3. **Cross-check evaluation** — all contradiction scenarios
+4. **Integration** — `FipsEnabled` signal in snapshot now has `configured_value`
+5. **Trust gate** — if `/proc/sys/crypto/fips_enabled` is unreadable, configured
+   checks return `None` (not a false positive)
+
+---
+
+### Phase 2b (future — after security-engineer review of 2a)
+- Configured-value reading for **bootloader cmdline** (grub2, systemd-boot, BLS entries)
+- **CPU mitigation sub-signals** (break umbrella `Mitigations` into spectre_v2, mds, tsx, etc.)
+- **core_pattern** signal (requires high-assurance string parsing design — TPI candidate)
+- **SEC caching** for posture signals (short TTL + invalidation design)
+- **modprobe.d `install` directive** read-only parsing — detect blacklist-equivalent
+  `install <module> /bin/true` patterns by analysing the command string (not executing it)
 
 ### Phase 3 (future — from expansion plan)
 - CPU extension detection (security/crypto extensions)
@@ -497,7 +762,7 @@ All tests in `umrs-platform/tests/posture_tests.rs`:
    for auditor reference. All expansions route through existing `SecureReader` and
    `KernelFileSource + StaticSource` traits — no new read paths.
 
-2. **SEC caching**: Deferred to Phase 2. Posture signals can change at runtime
+2. **SEC caching**: Deferred to Phase 2b. Posture signals can change at runtime
    (sysctl writes), so caching needs a short TTL and careful invalidation design.
 
 3. **No dependency on `detect`**: `PostureSnapshot::collect()` reads `boot_id`
@@ -506,14 +771,23 @@ All tests in `umrs-platform/tests/posture_tests.rs`:
 4. **Sysrq**: `DesiredValue::Custom` with a dedicated validator. Default hardened
    check is `value == 0`. Explicit, auditor-friendly, site-policy-overridable.
 
-5. **core_pattern**: Deferred to Phase 2. Requires high-assurance string parsing
-   design before inclusion.
+5. **core_pattern**: Deferred to Phase 2b. Requires high-assurance string parsing
+   design before inclusion. Candidate for TPI dual-path parsing.
 
 6. **CPU mitigations**: Single umbrella signal parsing `/proc/cmdline`. Individual
-   sub-signals deferred to Phase 2 if audit requires granularity.
+   sub-signals deferred to Phase 2b — requires catalog schema change that ripples
+   through exhaustive matches and tests.
 
 7. **Phase 1 scope**: Live values + sysctl.d configured values + contradiction
-   detection. Bootloader cmdline configured values deferred to Phase 2.
+   detection. Bootloader cmdline configured values deferred to Phase 2b.
+
+8. **Phase 2a/2b split rationale** (2026-03-14): Phase 2a (modprobe.d + FIPS
+   cross-check) builds on proven Phase 1 patterns — merge-tree reading,
+   contradiction detection, existing `SignalClass::DistroManaged`. Phase 2b
+   items (bootloader cmdline, CPU sub-signals, core_pattern, SEC caching)
+   introduce new architectural patterns or require catalog schema changes.
+   The split minimises risk for the developer and creates a clean checkpoint
+   for security-engineer review before expanding the attack surface further.
 
 ---
 

@@ -1,0 +1,529 @@
+Truths
+
+What you’re describing is a very well-known assurance principle, and the terminology you were reaching for is usually expressed using a few related phrases. For the way you are using it in UMRS, the most accurate terminology is:
+
+Runtime Source of Truth (or Authoritative Runtime State)
+
+But in high-assurance systems documentation you will also see closely related terms.
+
+⸻
+
+1. Runtime Source of Truth (Recommended UMRS Term)
+
+The runtime kernel state is the authoritative source of truth, not configuration artifacts.
+
+Definition
+
+The authoritative security state of a system is determined by the active runtime state enforced by the kernel or security subsystem, not by configuration files that merely describe intended state.
+
+Example
+
+Artifact	Value
+/etc/selinux/config	SELINUX=enforcing
+Kernel state (/sys/fs/selinux/enforce)	0
+
+Result:
+
+Effective security posture: PERMISSIVE
+Configuration intent: ENFORCING
+Status: CONFIGURATION DRIFT / SECURITY DEGRADATION
+
+Your tools must trust the kernel state.
+
+⸻
+
+2. Effective State vs Intended State
+
+This pair of terms is extremely common in security compliance systems.
+
+Term	Meaning
+Intended State	What configuration files say should happen
+Effective State	What the kernel or runtime is actually enforcing
+
+Your UMRS tools should always evaluate:
+
+Effective State
+      vs
+Intended State
+
+Mismatch = policy drift or security drift.
+
+⸻
+
+3. Authoritative Runtime State
+
+In high-assurance documentation you will often see wording like:
+
+“The kernel is the authoritative source of security state.”
+
+For example:
+
+Authoritative State: kernel
+Advisory State: configuration files
+
+Configuration files are intent declarations, not enforcement mechanisms.
+
+⸻
+
+4. Ground Truth
+
+Another phrase used in security engineering:
+
+Ground Truth
+
+Meaning:
+
+The observable system state that cannot be overridden by configuration artifacts.
+
+For Linux security controls this is typically obtained from:
+
+/proc
+/sys
+kernel APIs
+securityfs
+selinuxfs
+
+
+⸻
+
+5. How This Fits Your UMRS Philosophy
+
+Your UMRS tools are essentially implementing a runtime verification model.
+
+Pattern:
+
+Configuration Artifact  -> Intent
+Kernel / Subsystem      -> Enforcement
+UMRS                    -> Validation
+
+So your tool flow is:
+
+1. Read runtime kernel state (SOURCE OF TRUTH)
+2. Read configuration artifacts (INTENT)
+3. Compare
+4. Report drift
+
+
+⸻
+
+6. Example UMRS Documentation Language
+
+You could put something like this in the UMRS Operations Guide.
+
+Runtime Authority Principle
+
+UMRS tools treat the kernel runtime state as the authoritative source of truth for all security controls.
+
+Configuration files represent administrative intent, but they are not considered authoritative because:
+	•	they may not yet be applied
+	•	they may have been overridden
+	•	the system may have been modified at runtime
+
+Therefore all UMRS inspections follow this precedence:
+
+1. Kernel runtime state (authoritative)
+2. Security subsystem state (SELinux, LSM, capabilities)
+3. Mount state
+4. Configuration artifacts
+
+If a mismatch occurs, UMRS reports security configuration drift.
+
+Example:
+
+Control: SELinux enforcement
+
+Runtime state:
+    /sys/fs/selinux/enforce = 0
+
+Configuration intent:
+    /etc/selinux/config = enforcing
+
+Result:
+    SECURITY DRIFT DETECTED
+    Effective mode: permissive
+
+
+⸻
+
+7. Short Phrase You Can Use Everywhere
+
+If you want a concise phrase for your docs:
+
+“Kernel Runtime Authority”
+
+or
+
+“Runtime Source of Truth.”
+
+Example:
+
+UMRS always evaluates controls using the Kernel Runtime Source of Truth.
+
+
+⸻
+
+8. This Aligns With High-Assurance Systems
+
+The same principle appears in:
+	•	NSA high assurance guidance
+	•	STIG validation tools
+	•	OpenSCAP
+	•	compliance scanners
+	•	formal system verification models
+
+Because the only thing that matters is what the kernel is enforcing right now.
+
+⸻
+
+If you want, I can also help you formalize a UMRS terminology entry for this concept (similar to your “Vault”, “Registry”, “Archive”, etc.) so every tool and document uses exactly the same wording. That would fit nicely with the vocabulary discipline you’ve been building for the project.
+
+Below is a formal operations-guide style section you can drop directly into UMRS documentation. I wrote it in a neutral, engineering documentation tone appropriate for an Ops/Security Guide.
+
+⸻
+
+Runtime Source of Truth
+
+Overview
+
+UMRS evaluates system security posture using the Runtime Source of Truth principle.
+
+Under this principle, the authoritative security state of a system is determined by the runtime state enforced by the kernel, not by configuration files that merely describe the intended system configuration.
+
+Configuration files represent administrative intent, but they do not guarantee that the system is currently enforcing that intent.
+
+Therefore, all UMRS inspection tools treat the kernel runtime state as the authoritative source of truth for system security controls.
+
+⸻
+
+Rationale
+
+On Linux systems, configuration artifacts such as:
+
+/etc/selinux/config
+/etc/sysctl.conf
+/etc/security/*
+systemd unit files
+bootloader parameters
+
+describe how a system should behave after configuration or reboot.
+
+However, these artifacts do not necessarily reflect the actual enforcement state of the running system.
+
+A system may deviate from its intended configuration for several reasons:
+	•	runtime administrative changes
+	•	temporary debugging or maintenance actions
+	•	configuration drift
+	•	partial configuration application
+	•	system misconfiguration
+	•	malicious tampering
+
+Because of these possibilities, relying solely on configuration files can produce false assumptions about the security posture of the system.
+
+UMRS therefore verifies security controls by interrogating the active runtime state of the kernel and security subsystems.
+
+⸻
+
+Authoritative State vs Intended State
+
+UMRS distinguishes between two types of system state.
+
+Intended State
+
+The intended state represents the system configuration defined by administrators.
+
+Examples include:
+	•	configuration files
+	•	system policy files
+	•	persistent boot parameters
+	•	systemd unit configuration
+	•	application configuration
+
+These artifacts express how the system is expected to behave.
+
+⸻
+
+Effective State
+
+The effective state represents the actual runtime behavior enforced by the kernel.
+
+This state is determined by querying:
+	•	kernel interfaces
+	•	/proc pseudo-filesystem
+	•	/sys pseudo-filesystem
+	•	security subsystem interfaces
+	•	active mount configuration
+	•	runtime system parameters
+
+The effective state represents what the system is enforcing at this moment.
+
+⸻
+
+Runtime Authority Principle
+
+UMRS tools follow the Runtime Authority Principle:
+
+The kernel runtime state is the authoritative source of truth for all security enforcement decisions.
+
+When evaluating system security controls, UMRS always prioritizes runtime evidence in the following order:
+
+1. Kernel runtime state
+2. Security subsystem state (e.g., SELinux, LSM)
+3. Active mount and filesystem state
+4. Configuration artifacts expressing administrative intent
+
+This ordering ensures that security posture assessments reflect actual system behavior rather than configuration assumptions.
+
+⸻
+
+Configuration Drift Detection
+
+UMRS performs drift analysis by comparing:
+
+Runtime Effective State
+        versus
+Configuration Intended State
+
+If these values differ, the system is experiencing configuration drift.
+
+Configuration drift indicates that the running system is not enforcing the security posture defined by persistent configuration.
+
+Such conditions should be investigated and corrected.
+
+⸻
+
+Example: SELinux Enforcement Drift
+
+Example system configuration:
+
+Configuration artifact:
+/etc/selinux/config
+
+SELINUX=enforcing
+
+Runtime kernel state:
+
+/sys/fs/selinux/enforce = 0
+
+Interpretation:
+
+Effective state: permissive
+Intended state: enforcing
+
+Result:
+
+Security drift detected
+
+The system is currently running with SELinux in permissive mode
+despite persistent configuration specifying enforcing mode.
+
+In this situation, UMRS reports the effective security posture as permissive, because the kernel is the authoritative enforcement mechanism.
+
+⸻
+
+Example: Kernel Module Loading
+
+Configuration intent:
+
+/etc/sysctl.conf
+
+kernel.modules_disabled = 1
+
+Runtime state:
+
+/proc/sys/kernel/modules_disabled = 0
+
+Interpretation:
+
+Effective state: module loading permitted
+Intended state: module loading disabled
+
+Result:
+
+Security drift detected
+
+Kernel module loading is currently permitted despite
+persistent configuration specifying module loading
+should be disabled.
+
+
+⸻
+
+Operational Implications
+
+System administrators should understand that configuration artifacts represent desired policy, but the runtime kernel state determines the actual security posture.
+
+UMRS therefore reports the effective runtime state when evaluating security controls.
+
+Operational responses may include:
+	•	correcting configuration files
+	•	reapplying system configuration
+	•	investigating unauthorized changes
+	•	rebooting systems when required for configuration changes
+	•	validating system integrity
+
+⸻
+
+UMRS Design Principle
+
+All UMRS inspection tools are designed with the following assumption:
+
+Configuration describes intent.
+The kernel enforces reality.
+
+Therefore, the UMRS platform always derives security posture assessments from the runtime state of the system, and uses configuration artifacts only for drift detection and diagnostic analysis.
+
+⸻
+
+If you’d like, I can also help you add a short boxed doctrine statement that appears at the beginning of the UMRS Ops Guide — something like a “UMRS Operational Axiom”. It would make this concept extremely memorable and consistent across the entire documentation set.
+
+Yes — that concept is extremely important in high-assurance systems, and it has a very specific lineage in security engineering. What you’re referring to is typically described using the Reference Monitor properties, particularly the Non-Bypassability requirement. This is a perfect concept to include right next to your Runtime Source of Truth section because they reinforce each other.
+
+Below is a formal section you could place in the operations or security architecture guide.
+
+⸻
+
+Non-Bypassability and Enforcement Integrity
+
+Overview
+
+UMRS security evaluations assume that critical enforcement mechanisms must be non-bypassable.
+
+A security control is considered non-bypassable when all relevant operations must pass through the enforcement mechanism, and there exists no alternate path that allows the control to be circumvented.
+
+If an enforcement mechanism can be bypassed, the system cannot reliably enforce the intended security policy.
+
+⸻
+
+Reference Monitor Principle
+
+The concept of non-bypassability originates from the Reference Monitor model, which defines three required properties for trustworthy security enforcement:
+
+Property	Description
+Non-bypassable	All security-relevant operations must go through the enforcement mechanism
+Tamper-resistant	The enforcement mechanism cannot be modified by untrusted subjects
+Verifiable	The enforcement mechanism is small and analyzable enough to validate
+
+In Linux systems, the kernel security subsystem (for example LSM frameworks such as SELinux) acts as the practical realization of a reference monitor.
+
+⸻
+
+Bypassable Controls
+
+A security control is bypassable if there exists a path that avoids the enforcement mechanism.
+
+Examples may include:
+	•	alternate system interfaces that avoid policy checks
+	•	privileged operations that disable enforcement
+	•	kernel configuration options that silently disable controls
+	•	runtime states that weaken enforcement mechanisms
+	•	subsystems that operate outside of the intended security model
+
+When such conditions occur, the security guarantees expected from the control are invalidated.
+
+⸻
+
+Relationship to Runtime Source of Truth
+
+The Runtime Source of Truth principle ensures that UMRS tools evaluate the actual enforcement state of the system.
+
+This is critical for detecting bypass conditions.
+
+For example, a system may appear correctly configured based on policy files, but the enforcement mechanism may be inactive or degraded at runtime.
+
+UMRS therefore evaluates both:
+
+Runtime enforcement state
+and
+Structural enforcement integrity
+
+This allows the system to detect cases where a control appears present but is not actually enforcing policy.
+
+⸻
+
+Example: SELinux Permissive Mode
+
+Configuration artifact:
+
+/etc/selinux/config
+
+SELINUX=enforcing
+
+Runtime state:
+
+/sys/fs/selinux/enforce = 0
+
+Interpretation:
+
+SELinux policy is loaded but not enforced.
+
+Security implication:
+
+The SELinux enforcement mechanism is effectively bypassable.
+
+Although policy rules exist, they are not preventing access violations.
+
+UMRS reports the effective enforcement state as degraded.
+
+⸻
+
+Example: Kernel Module Loading
+
+If kernel module loading is permitted, an attacker with sufficient privileges could load a module that disables or interferes with security mechanisms.
+
+Runtime state:
+
+/proc/sys/kernel/modules_disabled = 0
+
+Interpretation:
+
+Kernel module loading is enabled.
+
+Security implication:
+
+Security enforcement mechanisms may be modifiable.
+
+This represents a potential bypass vector against kernel-level protections.
+
+⸻
+
+Enforcement Integrity Checks
+
+UMRS tools evaluate enforcement mechanisms for both presence and integrity.
+
+Typical checks include:
+	•	verification that the enforcement subsystem is active
+	•	validation that enforcement modes are not degraded
+	•	confirmation that enforcement hooks cannot be bypassed
+	•	identification of configuration states that weaken enforcement
+
+These checks help ensure that the system’s security controls remain structurally sound and non-bypassable.
+
+⸻
+
+Operational Guidance
+
+Administrators should treat any condition that weakens enforcement integrity as a high-priority security issue.
+
+Potential remediation steps include:
+	•	restoring enforcement modes
+	•	reapplying security configuration
+	•	disabling runtime bypass mechanisms
+	•	validating kernel configuration
+	•	performing system integrity checks
+
+Ensuring that security controls remain non-bypassable is essential for maintaining the trustworthiness of the system.
+
+⸻
+
+UMRS Security Principle
+
+UMRS adopts the following security principle:
+
+Security controls must be enforced by mechanisms that are
+non-bypassable, tamper-resistant, and verifiable.
+
+Runtime inspection tools are therefore designed to identify conditions where enforcement mechanisms are weakened, bypassable, or inactive.
+
+⸻
+
+If you’d like, I can also show you something very interesting that maps directly to your UMRS philosophy: there are actually about seven classic failure patterns where security mechanisms become bypassable, and several of them show up in Linux systems (especially around capabilities, namespaces, mount propagation, and LSM stacking). That list would fit perfectly into your Ops guide as a “Common Bypass Patterns” section.

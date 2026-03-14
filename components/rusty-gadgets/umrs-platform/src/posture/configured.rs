@@ -40,10 +40,13 @@
 //!
 //! ## Compliance
 //!
-//! NIST 800-53 CM-6: Configuration Settings — reading the persistence layer
+//! NIST SP 800-53 CM-6: Configuration Settings — reading the persistence layer
 //! to compare intended vs. effective configuration.
-//! NIST 800-53 CA-7: Continuous Monitoring — contradiction detection between
+//! NIST SP 800-53 CA-7: Continuous Monitoring — contradiction detection between
 //! configured and live values is the primary use of this data.
+//! NIST SP 800-53 SI-10: Input Validation — sysctl.d file content is validated
+//! line-by-line via `parse_sysctl_line`; malformed lines are rejected and
+//! logged rather than silently accepted or causing a parse error.
 
 use std::collections::HashMap;
 use std::io;
@@ -60,7 +63,7 @@ use crate::posture::signal::ConfiguredValue;
 /// Built by `SysctlConfig::load()`, which reads all sysctl.d sources in
 /// precedence order and produces a final key→value map.
 ///
-/// NIST 800-53 CM-6: provides the configured (persistence-layer) baseline
+/// NIST SP 800-53 CM-6: provides the configured (persistence-layer) baseline
 /// for contradiction detection.
 pub struct SysctlConfig {
     /// Final merged map: sysctl key → (value, source file path).
@@ -74,7 +77,7 @@ impl SysctlConfig {
     /// `/etc/sysctl.conf` in precedence order. Missing directories and
     /// unreadable files are silently skipped (logged at `debug`).
     ///
-    /// NIST 800-53 CM-6: collects the full configured baseline from all
+    /// NIST SP 800-53 CM-6: collects the full configured baseline from all
     /// persistence layers.
     #[must_use = "sysctl config must be examined for configured values"]
     pub fn load() -> Self {
@@ -130,7 +133,7 @@ impl SysctlConfig {
     /// Returns `Some(ConfiguredValue)` if the key was present in any
     /// sysctl.d file, or `None` if it was not found in any source.
     ///
-    /// NIST 800-53 CM-6: returns the last-writer-wins effective configured value.
+    /// NIST SP 800-53 CM-6: returns the last-writer-wins effective configured value.
     #[must_use = "configured value lookup result must be examined"]
     pub fn get(&self, sysctl_key: &str) -> Option<ConfiguredValue> {
         self.map.get(sysctl_key).map(|(raw, source)| ConfiguredValue {
@@ -212,7 +215,7 @@ fn load_conf_dir(
 ///
 /// Returns the number of key=value pairs successfully parsed.
 ///
-/// NIST 800-53 SI-10: Input Validation — malformed lines are rejected and
+/// NIST SP 800-53 SI-10: Input Validation — malformed lines are rejected and
 /// logged rather than silently ignored or causing a parse error.
 fn load_conf_file(
     path: &Path,
@@ -239,12 +242,12 @@ fn load_conf_file(
                 // (kernel.kptr_restrict) at insertion time. The catalog uses dot-style
                 // keys exclusively. Without this normalisation, sysctl.d files using
                 // slash-style keys produce ConfiguredValue: None for every signal,
-                // silently disabling contradiction detection. (Finding 3)
+                // silently disabling contradiction detection.
                 let key: String = raw_key.replace('/', ".");
+                // Error Information Discipline (NIST SP 800-53 SI-11, SC-28):
                 // Log only the key and line location — not the raw value — to limit
                 // exposure of configuration values in the debug stream on DoD/CUI
                 // systems where debug logging may be enabled during troubleshooting.
-                // (Finding 4)
                 log::debug!(
                     "posture: sysctl.d: {}:{} key={}",
                     source,
@@ -283,10 +286,15 @@ fn load_conf_file(
 /// without filesystem interaction. The caller is responsible for slash→dot
 /// normalisation (performed by `load_conf_file` at insertion time).
 ///
-/// NIST 800-53 SI-10: Input Validation — malformed lines are rejected and
+/// NIST SP 800-53 SI-10: Input Validation — malformed lines are rejected and
 /// logged rather than silently ignored.
 #[must_use = "sysctl.d parse result must be examined — None means the line is a comment or malformed"]
 pub fn parse_sysctl_line(line: &str) -> Option<(&str, &str)> {
+    let trimmed = line.trim();
+    if trimmed.starts_with('#') || trimmed.starts_with(';') {
+        return None;
+    }
+
     let eq_pos = line.find('=')?;
     let key = line[..eq_pos].trim();
     let value = line[eq_pos.saturating_add(1)..].trim();
@@ -306,7 +314,7 @@ pub fn parse_sysctl_line(line: &str) -> Option<(&str, &str)> {
 /// **Phase 1**: always returns `None`. Bootloader configuration parsing
 /// is deferred to Phase 2 due to distro-specific path and format variation.
 ///
-/// NIST 800-53 CM-6: boot-persistence layer for cmdline signals.
+/// NIST SP 800-53 CM-6: boot-persistence layer for cmdline signals.
 #[must_use = "configured cmdline result must be examined"]
 pub fn configured_cmdline() -> Option<String> {
     log::debug!(

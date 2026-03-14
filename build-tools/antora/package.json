@@ -3,6 +3,7 @@
   "private": true,
   "devDependencies": {
     "@antora/cli": "^3.1.0",
-    "@antora/site-generator": "^3.1.0"
+    "@antora/site-generator": "^3.1.0",
+    "@sntke/antora-mermaid-extension": "^0.0.9"
   }
 }

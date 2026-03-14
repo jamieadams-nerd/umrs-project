@@ -1,9 +1,0 @@
-@researcher Follow the research plan in research-plan-rust-security.md 
-and collect all documents into .claude/references/rust-security/. 
-Report a manifest when done. Do not ingest.
-
-Then after you review:
-
-@researcher Follow the research plan in research-plan-access-control.md 
-and collect all documents into .claude/references/access-control/. 
-Report a manifest when done. Do not ingest.

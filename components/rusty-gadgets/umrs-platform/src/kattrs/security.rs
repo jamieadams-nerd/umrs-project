@@ -9,7 +9,7 @@
 //! bracketed format (`none [integrity] confidentiality`) carries a security
 //! classification decision: any ambiguity must fail closed.
 //!
-//! NIST 800-53 CM-7, SC-39, SI-7: Least functionality, process isolation,
+//! NIST SP 800-53 CM-7, SC-39, SI-7: Least functionality, process isolation,
 //! and software integrity.
 //! NSA RTB RAIN: Non-bypassable enforcement; fail-closed on parse disagreement.
 
@@ -31,7 +31,7 @@ use super::traits::{KernelFileSource, StaticSource};
 ///
 /// Value `0x73636673` is defined in the Linux kernel `include/linux/magic.h`.
 /// Used to verify that a file opened under `/sys/kernel/security/` was indeed
-/// served by securityfs and not a bind-mounted substitute (NIST 800-53 SI-7).
+/// served by securityfs and not a bind-mounted substitute (NIST SP 800-53 SI-7).
 pub const SECURITYFS_MAGIC: FsType = FsType(0x7363_6673);
 
 // ===========================================================================
@@ -44,11 +44,11 @@ pub const SECURITYFS_MAGIC: FsType = FsType(0x7363_6673);
 /// Discriminants ascend with restrictiveness, enabling `Ord`-based comparisons
 /// such as "is the current lockdown level at least `Integrity`?"
 ///
-/// NIST 800-53 CM-7: Least Functionality — lockdown restricts kernel
+/// NIST SP 800-53 CM-7: Least Functionality — lockdown restricts kernel
 /// functionality to the minimum required.
-/// NIST 800-53 SC-39: Process Isolation — confidentiality lockdown prevents
+/// NIST SP 800-53 SC-39: Process Isolation — confidentiality lockdown prevents
 /// even privileged processes from extracting kernel secrets.
-/// NIST 800-53 SI-7: Software and Information Integrity — integrity lockdown
+/// NIST SP 800-53 SI-7: Software and Information Integrity — integrity lockdown
 /// prevents userspace from modifying kernel code or data.
 /// NSA RTB RAIN: once set, lockdown is non-bypassable at the kernel level.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Default)]
@@ -141,11 +141,11 @@ fn to_lockdown_mode(s: &str) -> io::Result<LockdownMode> {
 /// disagree the parse fails closed (NSA RTB RAIN).
 ///
 /// Provenance is verified via fd-anchored `fstatfs` against `SECURITYFS_MAGIC`
-/// before any bytes are read (NIST 800-53 SI-7).
+/// before any bytes are read (NIST SP 800-53 SI-7).
 ///
-/// NIST 800-53 CM-7: Least Functionality.
-/// NIST 800-53 SC-39: Process Isolation.
-/// NIST 800-53 SI-7: Software and Information Integrity.
+/// NIST SP 800-53 CM-7: Least Functionality.
+/// NIST SP 800-53 SC-39: Process Isolation.
+/// NIST SP 800-53 SI-7: Software and Information Integrity.
 /// NSA RTB RAIN: Non-bypassable, fail-closed TPI parsing.
 pub struct KernelLockdown;
 

@@ -1,0 +1,42 @@
+
+very valuable information which can be disected and incoproated into various sections of
+documentation. 
+
+
+UMRS As A Complete System
+The Core Thesis is that unclassified CUI systems have been chronically under-engineered. The handling requirements exist on paper but the technical enforcement mechanisms that the classified world takes for granted — MLS enforcement, cryptographic provenance, chain of custody, integrity measurement — are simply absent from most CUI deployments. UMRS is a reference implementation that closes that gap.
+
+The Four Pillars I'm Hearing
+
+The first is Data Governance — the MLS/MCS label structure maps NARA CUI categories to SELinux enforcement. Data is marked at ingestion, handled according to its category restrictions, encrypted at rest where required, and its provenance is cryptographically guaranteed throughout its lifecycle. Chain of custody via digital signatures and receipt mechanisms means the system can account for data movement even when it leaves the boundary.
+The second is Kernel-Enforced Access Control — SELinux MLS policy enforces the CUI category structure at the kernel level. Services like Apache and Samba are confined to their appropriate category sets. This is mandatory and non-bypassable, not advisory. The KATTRS, SecureDirent, and path hierarchy work we've been doing are the foundational building blocks for tools that can introspect and verify this enforcement.
+The third is Integrity and Cryptographic Assurance — IMA for file integrity measurement, digital signing of ingested data, dm-crypt for encrypted filesystems, key management infrastructure, and audit subsystem hardening. The goal is that every security-relevant assertion about data or system state has a cryptographic backing.
+The fourth is Security-Aware Tooling — replacing or augmenting standard Unix tools with equivalents that expose the security posture rather than hiding it. The secure directory listing and secure df are early examples. Binary auditing — checking linkage, compiler hardening flags, CPU extension utilization, RELRO, stack canaries, PIE — is another dimension. The mental model is that every tool gives you a security auditor's view rather than a system user's view.
+
+The Chain of Trust From Bottom to Top
+Hardware (CPU crypto extensions, TPM)
+    ↓
+Measured boot + kernel integrity
+    ↓
+SELinux MLS policy (CUI category enforcement)
+    ↓
+IMA (file integrity measurement)
+    ↓
+dm-crypt (encrypted filesystems for required categories)
+    ↓
+KATTRS (provenance-checked kernel attribute reader)
+    ↓
+SecureDirent + path hierarchy (typed, validated structures)
+    ↓
+Security-aware tools (ls, df, binary auditor, custody tracker)
+    ↓
+CUI data lifecycle (ingest, mark, sign, custody, egress)
+
+What Strikes Me As Genuinely Novel
+Most of these individual techniques exist somewhere. What UMRS is doing that I haven't seen documented as a coherent whole is applying the full classified-world assurance stack to an unclassified system and providing working reference tooling that makes the security posture visible and auditable. The binary auditing piece in particular — checking whether executables are actually taking advantage of the hardware they're running on — is something I haven't seen as a first-class security tool.
+When you get to your desktop and share the KATTRS code, I think we have a clear enough picture to finalize SecureDirent properly and then move on to the directory listing engine. The mount encryption detection and binary auditing threads will be very interesting when we get there.
+
+
+
+
+

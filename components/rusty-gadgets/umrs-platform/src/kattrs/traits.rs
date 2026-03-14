@@ -8,7 +8,7 @@
 //! through `SecureReader::execute_read`, which performs fd-anchored `fstatfs`
 //! provenance verification before any bytes are parsed.
 //!
-//! NIST 800-53 SI-7: Software and Information Integrity.
+//! NIST SP 800-53 SI-7: Software and Information Integrity.
 //! NSA RTB RAIN: Non-bypassable — all reads must flow through this module.
 
 use nix::sys::statfs::{FsType, SELINUX_MAGIC, fstatfs};
@@ -33,24 +33,24 @@ pub(crate) const MAX_KATTR_READ: usize = 64;
 
 /// Core contract for any file originating from a trusted Kernel Pseudo-FS.
 ///
-/// NIST 800-53 SI-7: Software and Information Integrity — every implementor
+/// NIST SP 800-53 SI-7: Software and Information Integrity — every implementor
 /// must provide a parse function and the required kobject metadata constants.
 pub trait KernelFileSource {
     type Output;
 
-    /// NIST 800-53 AU-3: Attribute Identifier
+    /// NIST SP 800-53 AU-3: Attribute Identifier
     /// The formal attribute name as defined in kernel kobject/sysfs vernacular.
     const ATTRIBUTE_NAME: &'static str;
 
-    /// NIST 800-53 AU-3: Event Content/Description
+    /// NIST SP 800-53 AU-3: Event Content/Description
     /// Documentation or Format string derived from kernel-parameters.txt or rst docs.
     const DESCRIPTION: &'static str;
 
-    /// NIST 800-53 AU-3: Audit Context
+    /// NIST SP 800-53 AU-3: Audit Context
     /// Additional context regarding deprecation, defaults, or kernel version specifics.
     const KERNEL_NOTE: &'static str = "";
 
-    /// NIST 800-53 AU-3: Location/Provenance Identifier
+    /// NIST SP 800-53 AU-3: Location/Provenance Identifier
     /// The parent kobject in the kernel hierarchy (e.g., "selinuxfs" or "crypto")
     const KOBJECT: &'static str;
 
@@ -63,7 +63,7 @@ pub trait KernelFileSource {
     /// kernel attributes through `SecureReader` or `StaticSource::read()`,
     /// which open the file and verify filesystem magic before any bytes are
     /// parsed. Calling `parse()` directly on bytes not obtained from a
-    /// verified kernel source bypasses all NIST 800-53 SI-7 / NSA RTB RAIN
+    /// verified kernel source bypasses all NIST SP 800-53 SI-7 / NSA RTB RAIN
     /// guarantees.
     fn parse(data: &[u8]) -> io::Result<Self::Output>;
 }
@@ -75,12 +75,17 @@ pub trait KernelFileSource {
 /// backing filesystem magic via fd-anchored `fstatfs` before parsing any
 /// bytes. The magic check cannot be bypassed via this path.
 ///
-/// NIST 800-53 SI-7: provenance-verified read path for all static nodes.
+/// NIST SP 800-53 SI-7: provenance-verified read path for all static nodes.
 pub trait StaticSource: KernelFileSource + Sized {
     const PATH: &'static str;
     const EXPECTED_MAGIC: FsType = SELINUX_MAGIC;
 
     /// Provenance-verified read. Routes through `SecureReader::execute_read`.
+    ///
+    /// NIST SP 800-53 SI-10, SA-11: the result carries the security-relevant
+    /// kernel attribute value and must not be silently discarded.
+    #[must_use = "kernel attribute read result carries the provenance-verified value — \
+                  discarding it silently loses the security-relevant kernel state"]
     fn read() -> io::Result<Self::Output> {
         SecureReader::<Self>::new().read()
     }
@@ -100,7 +105,7 @@ pub trait StaticSource: KernelFileSource + Sized {
 /// Direct field construction is permitted but does not carry provenance proof;
 /// it is intended for display-format testing only.
 ///
-/// NIST 800-53 AU-3: Audit record completeness (what, when, where, outcome).
+/// NIST SP 800-53 AU-3: Audit record completeness (what, when, where, outcome).
 pub struct AttributeCard<T: KernelFileSource> {
     pub value: T::Output,
     pub path: &'static str,
@@ -156,7 +161,7 @@ Note:
 /// fd-anchored `fstatfs` to verify the filesystem magic — eliminating the
 /// TOCTOU window present in path-based magic checks — before parsing any bytes.
 ///
-/// NIST 800-53 SI-7: Software and Information Integrity.
+/// NIST SP 800-53 SI-7: Software and Information Integrity.
 /// NSA RTB RAIN: Non-bypassable — all reads must flow through this type.
 pub struct SecureReader<T> {
     _marker: PhantomData<T>,
@@ -169,7 +174,7 @@ impl<T> Default for SecureReader<T> {
 }
 
 impl<T> SecureReader<T> {
-    #[must_use]
+    #[must_use = "SecureReader must be retained to call read() or read_with_card()"]
     #[allow(clippy::new_without_default)]
     pub const fn new() -> Self {
         Self {
@@ -188,7 +193,7 @@ impl<T> SecureReader<T> {
     /// engine; the caller is the gate.
     ///
     /// `pub(crate)` — all external callers route through `read_generic_text`
-    /// on a typed wrapper (NIST 800-53 SI-7, NSA RTB RAIN).
+    /// on a typed wrapper (NIST SP 800-53 SI-7, NSA RTB RAIN).
     pub(crate) fn execute_read_text(
         path: &Path,
         expected_magic: FsType,
@@ -219,6 +224,12 @@ impl<T> SecureReader<T> {
 }
 
 impl<T: StaticSource> SecureReader<T> {
+    /// Provenance-verified read of a static kernel attribute node.
+    ///
+    /// NIST SP 800-53 SI-10, SA-11 / NSA RTB Fail Secure: the result carries
+    /// the security-relevant kernel attribute value and must be examined.
+    #[must_use = "kernel attribute read result carries the provenance-verified value — \
+                  discarding it silently loses the security-relevant kernel state"]
     pub fn read(&self) -> io::Result<T::Output> {
         Self::execute_read(Path::new(T::PATH), T::EXPECTED_MAGIC)
     }
@@ -233,8 +244,12 @@ where
     /// The card captures the parsed value, path, and wall-clock read time.
     /// Cards constructed via this method are proof that the value was obtained
     /// through the full provenance-verified path (open → fstatfs → parse).
+    /// See [`AttributeCard`] — only cards produced via this method carry the
+    /// provenance guarantee.
     ///
-    /// NIST 800-53 AU-3: Audit record completeness.
+    /// NIST SP 800-53 AU-3: Audit record completeness.
+    #[must_use = "AttributeCard is the audit record for this kernel attribute read — \
+                  discarding it loses the provenance-verified audit trail"]
     pub fn read_with_card(&self) -> io::Result<AttributeCard<T>> {
         let value = Self::execute_read(Path::new(T::PATH), T::EXPECTED_MAGIC)?;
         Ok(AttributeCard {
@@ -251,7 +266,7 @@ impl<T: KernelFileSource> SecureReader<T> {
     /// Opens the file first to anchor to the inode, then verifies the
     /// filesystem magic on the open fd before reading any bytes.
     /// This ordering eliminates the TOCTOU race that exists in path-based
-    /// statfs checks (NIST 800-53 SI-7, NSA RTB RAIN).
+    /// statfs checks (NIST SP 800-53 SI-7, NSA RTB RAIN).
     ///
     /// `pub(crate)` so that sibling modules (e.g., `selinux`) can implement
     /// specialised `read_generic` wrappers for dynamic-path nodes.
@@ -259,7 +274,7 @@ impl<T: KernelFileSource> SecureReader<T> {
         path: &Path,
         expected_magic: FsType,
     ) -> io::Result<T::Output> {
-        // TOCTOU safety (NIST 800-53 SI-7): open the file FIRST to anchor to the
+        // TOCTOU safety (NIST SP 800-53 SI-7): open the file FIRST to anchor to the
         // inode, then verify filesystem magic on the open fd via fstatfs. Using
         // fd-anchored fstatfs eliminates the race window between a path-based statfs
         // and a subsequent open that could be exploited via bind-mount substitution.
@@ -267,7 +282,7 @@ impl<T: KernelFileSource> SecureReader<T> {
         let stats = fstatfs(&file).map_err(io::Error::other)?;
 
         if stats.filesystem_type() != expected_magic {
-            // NIST 800-53 AU-2 / Loud Failure: log path to the audit stream
+            // NIST SP 800-53 AU-2 / Loud Failure: log path to the audit stream
             // (access-controlled); return a generic error to the caller (SI-12).
             log::error!(
                 "INTEGRITY FAILURE: filesystem magic mismatch on '{}' \

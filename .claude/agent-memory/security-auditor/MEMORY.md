@@ -66,3 +66,35 @@ SQLite (no "bundled" feature) is preferable and should be evaluated.
 
 See `.claude/reports/2026-03-11-os-detection-umrs-platform-surface-audit.md`
 and `.claude/reports/2026-03-11-rpm-db-security-audit.md` for full finding lists.
+
+## umrs-platform In-Depth Audit Results (2026-03-14)
+
+Report: `.claude/reports/2026-03-14-security-auditor-umrs-platform-audit.md`
+
+Key findings for future sessions:
+
+### Confirmed Resolved Since 2026-03-11
+- `evidence.rs` `records` field is now `pub(crate)` private — AU-10 enforced ✓
+- SEC FIPS gate now correctly fails closed on procfs read error ✓
+- `decode_cached_result` re-runs pipeline on cache hit — still present; design note
+  explicitly acknowledges this; ongoing debt, not a regression.
+
+### New High-Priority Open Gaps (2026-03-14)
+1. **F-11 (HIGH)**: `integrity_check.rs` — T4 (TrustedLabel) asserted via
+   unvalidated `sha2` crate on FIPS-active systems. No FIPS gate. Violates SC-13.
+   Owner: coder.
+2. **F-07 (HIGH)**: `SecureReader::read()` missing `#[must_use]`. Primary kernel
+   read path. Owner: coder.
+
+### SecureReader #[must_use] Debt Pattern
+`kattrs/traits.rs`: SecureReader::new() has bare #[must_use] (no message);
+SecureReader::read() and read_with_card() have no #[must_use] at all.
+Both selinux read_generic() methods are also missing it.
+This is a recurring pattern: the mandatory read engine is under-annotated
+relative to the types that call it.
+
+### SC-28 Claim Precision
+`sealed_cache.rs` module doc overstates SC-28 protection: the HMAC seal covers
+bytes that are never served to callers (pipeline always re-runs on hit). SC-28
+claim must be narrowed to "tamper detection" not "protection while in cache."
+Owner: tech-writer.

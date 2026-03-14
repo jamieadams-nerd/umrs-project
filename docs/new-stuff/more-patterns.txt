@@ -1,0 +1,160 @@
+Refs
+
+
+Yes — and the best way to use them in Rust is as implementation patterns tied to control intent, not as vague slogans. NIST SP 800-53 Rev. 5 provides the control catalog; 800-53B includes baselines and specific controls such as least privilege, separate processing domains, and fail-safe procedures; 800-53A emphasizes that assessments should verify controls are actually implemented and effective, not just documented. CMMC Level 2 is built around protecting CUI with practices covering access control, audit, configuration management, identification/authentication, media protection, and system/information integrity.  
+
+For Rust specifically, there are now several strong upstream sources you can mine for coding patterns: the ANSSI Secure Rust Guide, the Rust Secure Code Working Group, the RustSec ecosystem, and the Rust Foundation’s Safety-Critical Rust Coding Guidelines effort. Those are excellent companion references for a high-assurance Rust agent because they focus on unsafe-code discipline, dependency risk, review rigor, and reliability-oriented coding guidance.  
+
+Here is a practical high-assurance Rust pattern list you can use. I’ve phrased each pattern so your rust-developer and security-engineer agents can apply them directly.
+
+1. Least-privilege API pattern
+
+Design modules so callers get only the operations they need, with narrow traits and small capability-bearing objects. This maps cleanly to AC-6 least privilege and to CMMC access-control expectations. In Rust terms: prefer narrow trait bounds, small wrapper types, explicit constructor gating, and no “god object” admin handles.  
+
+2. Separate processing domains pattern
+
+Split trusted and untrusted work into separate processes, services, crates, or modules with explicit interfaces. This aligns with AC-6(5) separate processing domains and strongly supports SELinux domain separation, seccomp profiles, and distinct Unix identities. In Rust, use message passing or typed request/response boundaries instead of shared mutable authority.  
+
+3. Fail-safe defaults pattern
+
+Deny by default, opt in explicitly, and make the safe path the default path. This matches the fail-safe procedures concept in 800-53B and general secure-design guidance. In Rust, use enums instead of booleans when policy matters, closed sets instead of open strings, and constructors that begin in a restricted state.  
+
+4. Explicit trust-boundary pattern
+
+Mark every boundary where trust changes: file input, network input, environment variables, command output, kernel pseudo-filesystems, external config, xattrs, and IPC. Require validation and normalization at the boundary, not later. This supports integrity, input handling, and assurance reasoning across 800-53 and CMMC.  
+
+5. Parse-then-validate-then-convert pattern
+
+Do not pass raw strings or loosely typed data deeper into the system. Parse into a temporary representation, validate against rules, then convert into a trusted domain type. This is one of the strongest high-assurance coding habits you can enforce in Rust. It reduces ambiguity and supports correctness, integrity, and auditability. The ANSSI guide is especially relevant here.  
+
+6. Strongly typed security domain model pattern
+
+Represent sensitive concepts as types: SelinuxType, CapabilitySet, KernelBool, TrustedPath, ValidatedLabel, AuditEventId, NonEmptyPath, and so on. This is classic high-assurance design: move invalid states out of the reachable program state space. It directly improves reliability and correctness, which you said are your top priorities.  
+
+7. Trusted-constructor pattern
+
+Make critical types constructible only through checked constructors like TryFrom, FromStr, or dedicated builders that enforce invariants. Never expose unchecked public fields for security-sensitive state. This is a concrete governance-and-trust pattern because provenance begins at object creation.  
+
+8. Small unsafe island pattern
+
+If unsafe is necessary, isolate it in a tiny module, document invariants, wrap it in a safe API, and keep the unsafe surface auditable. This is directly supported by the Unsafe Code Guidelines work and by the safety-critical Rust effort.  
+
+9. No-panic production path pattern
+
+For high-assurance code, treat panics as exceptional and often unacceptable in core paths. Return structured errors instead. The safety-critical Rust guidelines effort is explicitly discussing panic-avoidance as an important reliability concern. In your environment, this is very consistent with deterministic behavior and fault containment.  
+
+10. Deterministic error taxonomy pattern
+
+Use explicit error enums with stable meanings, consistent categories, and enough context for audit and debugging. This helps with AU-family audit expectations, traceability, and operational correctness. Avoid ad hoc stringly-typed errors in security-critical paths.  
+
+11. Immutable-by-default policy pattern
+
+Make configurations, policy objects, and validated security decisions immutable after creation. Mutability should be narrow and visible. This improves provenance and reduces hidden state drift, which supports CM-family configuration management concerns.  
+
+12. Known-good baseline pattern
+
+Establish canonical defaults, canonical config serialization, and known-good startup baselines. Validate runtime configuration against those baselines and detect drift. This maps directly to CM-6 configuration settings and CMMC system baselining/configuration expectations.  
+
+13. Dual-path verification pattern
+
+For critical inputs or security decisions, corroborate with two independent sources or methods when practical. Examples: syscall result plus /proc, on-disk metadata plus package DB, parser output plus schema validation. This is a classic high-assurance pattern for trust and provenance because it detects contradiction rather than assuming single-source truth. 800-53A’s assessment posture strongly supports verification-oriented design.  
+
+14. Complete mediation pattern
+
+Every access to a protected resource should go through the same enforcement path. Don’t validate once and then pass around raw handles that bypass policy. In Rust, centralize privileged file opens, xattr access, policy checks, and labeling logic behind dedicated APIs. This strongly supports least privilege and auditability.  
+
+15. Audit-first security event pattern
+
+For security-relevant actions, define events first: what happened, who requested it, what object was affected, what decision was made, what evidence supports it. Then implement the code path. This aligns well with CMMC audit requirements and your own logging/auditing background.  
+
+16. Provenance-carrying data pattern
+
+Attach provenance metadata to critical data as it moves: source, validation status, timestamp, authority, digest, and transformation history. In Rust this can be a wrapper struct around payload plus metadata. This is especially valuable for governance, trust, and later assurance review.  
+
+17. Capability-style interface pattern
+
+Instead of global authority, pass specific capability-bearing objects that grant only one class of operation. For example, a type that can append to an audit log but cannot delete it. This is one of the cleanest ways to embody least privilege in Rust code structure.  
+
+18. Minimal dependency / supply-chain scrutiny pattern
+
+Add dependencies reluctantly, pin and review them, scan them, and inspect unsafe usage. The Rust Secure Code WG maintains tools like cargo-audit, cargo-geiger, and cargo-supply-chain, which make this pattern operational rather than theoretical.  
+
+19. Unsafe-surface measurement pattern
+
+Measure unsafe usage in your crate graph and track it over time. cargo-geiger exists specifically to gather statistics on unsafe usage in a crate and its dependencies. That makes it a very good governance metric for your Rust developer and auditor agents.  
+
+20. Security control traceability pattern
+
+Tie code artifacts to controls explicitly: module comment, config schema, audit event, test, and documentation all point back to the relevant NIST/CMMC requirement. This is exactly the bridge your security-auditor agent is meant to provide, and 800-53A supports evidence-based verification of control implementation.  
+
+21. Verification-by-test-vector pattern
+
+For parsers, policies, and normalization logic, create deterministic “known good / known bad” vectors and keep them versioned. This helps with correctness, regression resistance, and evidence for assessments. It is especially strong for your validation-heavy UMRS-style components.  
+
+22. Explicit lifecycle / state-machine pattern
+
+Represent security-sensitive workflows as enums plus explicit transitions rather than ad hoc flags. Intake → stage → archive is exactly the sort of lifecycle that benefits from this. This supports correctness, auditability, and makes illegal transitions unrepresentable or at least obvious.  
+
+23. Trusted path / trusted channel pattern
+
+For sensitive operations, use a deliberately constrained path or interface and identify it as trusted. NIST 800-53 includes trusted-path/trusted-channel concepts; in code, that means no side doors for critical actions, and ideally stronger authn/authz and clearer audit events on those paths.  
+
+24. Subset-of-privileged-users pattern
+
+Administrative functions, audit management, config mutation, and key operations should be callable only through explicitly separated roles or interfaces. CMMC and NIST both emphasize limiting management of audit/security functions to a subset of privileged users or roles. In code, separate admin APIs from operational APIs.  
+
+25. Evidence-producing design pattern
+
+Design the system so it naturally emits the evidence an assessor would ask for: structured logs, config snapshots, version data, hashes, policy identifiers, and validation results. 800-53A is explicit that assessments are about verifying implementation and effectiveness, so evidence-friendly design is a real engineering pattern, not just paperwork.  
+
+26. Safe replacement of unsafe dependencies pattern
+
+The Rust Secure Code ecosystem’s “safety-dance” work is literally about auditing unsafe code and replacing it with safe code where feasible. For a high-assurance project, this is a strong recurring pattern: prefer safe crates, reduce unsafe transitive surface, and replace dubious components where practical.  
+
+27. Reviewability over cleverness pattern
+
+Prefer simple, boring, auditable code over clever abstractions in critical paths. This is deeply aligned with safety-critical Rust guidance and with your stated preference for reliability and accuracy over raw performance.  
+
+28. Performance-secondary-but-measured pattern
+
+Performance is secondary to correctness, but still important. The pattern here is: build the correct, explicit, strongly typed version first; then measure and optimize with clear proof that you preserved invariants. That posture is much more high-assurance than optimizing early and rationalizing later. This is an inference from the safety-critical and assessment-oriented sources rather than a verbatim named rule.  
+
+29. Configuration is code-like pattern
+
+Treat security-relevant configuration as typed, validated, versioned input with migration rules and signatures/checks where needed. This supports CM-family controls, trust, provenance, and rollback to known-good states.  
+
+30. Defense-in-depth composition pattern
+
+Assume no single mechanism is sufficient: Rust type safety, explicit validation, DAC, capabilities, seccomp, SELinux, audit, and config management should reinforce each other. That layered posture is consistent with 800-53/CMMC and with Raise-the-Bar-style thinking in practice.  
+
+For your project, I’d distill these into a core “top 12” your Rust agent should always apply:
+	1.	least-privilege APIs
+	2.	separate processing domains
+	3.	fail-safe defaults
+	4.	parse-validate-convert
+	5.	strongly typed domain models
+	6.	trusted constructors
+	7.	small unsafe islands
+	8.	no-panic critical paths
+	9.	deterministic error taxonomy
+	10.	audit-first event design
+	11.	provenance-carrying data
+	12.	evidence-producing design   
+
+A very practical next step would be to turn this into a machine-readable file under .claude/references, for example:
+
+patterns:
+  - id: least_privilege_api
+    priority: high
+    controls: [AC-6]
+    rust_examples: [narrow_traits, capability_objects, explicit_constructors]
+
+  - id: parse_validate_convert
+    priority: high
+    controls: [SI, CM]
+    rust_examples: [TryFrom, FromStr, validated_newtypes]
+
+That would make the list directly usable by your rust-developer, security-engineer, and security-auditor agents.
+
+
+

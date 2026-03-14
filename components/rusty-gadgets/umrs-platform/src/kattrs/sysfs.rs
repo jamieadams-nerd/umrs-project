@@ -10,7 +10,7 @@
 //! is validated at construction; the sysfs magic check is performed inside
 //! `SecureReader::read_generic_text` before any bytes are consumed.
 //!
-//! NIST 800-53 SI-7: Software and Information Integrity — provenance
+//! NIST SP 800-53 SI-7: Software and Information Integrity — provenance
 //! verification before trusting kernel pseudo-filesystem data.
 //! NSA RTB RAIN: Non-bypassable — all reads flow through `SecureReader`.
 
@@ -30,7 +30,7 @@ use super::traits::SecureReader;
 /// Value `0x62656572` from `linux/magic.h`. Not exposed as a named constant
 /// in nix 0.27 on this target, so defined locally.
 ///
-/// NIST 800-53 SI-7: magic verification prevents bind-mount spoofing of
+/// NIST SP 800-53 SI-7: magic verification prevents bind-mount spoofing of
 /// `/sys/` paths — an attacker with a bind-mount could substitute any
 /// filesystem; only genuine sysfs carries this magic.
 #[allow(clippy::unreadable_literal)]
@@ -53,7 +53,7 @@ pub const SYSFS_MAGIC: FsType = FsType(0x62656572_i64);
 /// substitute a different magic. All reads flow through
 /// `SecureReader::read_generic_text` — the single trusted engine.
 ///
-/// NIST 800-53 SI-7: provenance-verified read; magic check before any bytes
+/// NIST SP 800-53 SI-7: provenance-verified read; magic check before any bytes
 /// are consumed. NSA RTB RAIN: Non-Bypassable — callers cannot skip the
 /// fstatfs gate.
 pub struct SysfsText {
@@ -65,7 +65,7 @@ impl SysfsText {
     ///
     /// Returns `InvalidInput` if `path` does not start with `/sys/`.
     ///
-    /// NIST 800-53 SI-10: Input Validation — rejects non-sysfs paths
+    /// NIST SP 800-53 SI-10: Input Validation — rejects non-sysfs paths
     /// before any I/O is attempted.
     pub fn new(path: PathBuf) -> io::Result<Self> {
         if !path.starts_with("/sys/") {
@@ -92,7 +92,7 @@ impl SecureReader<SysfsText> {
     /// then reads the full content as a UTF-8 string. Fails closed on any
     /// I/O error or magic mismatch.
     ///
-    /// NIST 800-53 SI-7 / NSA RTB RAIN.
+    /// NIST SP 800-53 SI-7 / NSA RTB RAIN.
     pub fn read_generic_text(&self, node: &SysfsText) -> io::Result<String> {
         Self::execute_read_text(&node.path, SYSFS_MAGIC)
     }

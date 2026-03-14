@@ -56,7 +56,7 @@ For procedures: number every step. State the expected outcome after steps that p
 
 Three modes are available. When a mode is specified, load the corresponding rules file before writing. If unspecified, default to Architecture Mode for explanatory content, STE Mode for procedural content.
 
-- **STE Mode** — Operational docs, procedures, step-by-step tasks. Rules: `.claude/ste_mode.md`
+- **STE Mode** — Operational docs, procedures, step-by-step tasks. Rules: `.claude/rules/ste_mode.md`
 - **Architecture Mode** — Design explanations and rationale. Rules: `.claude/architecture_mode.md`
 - **Specification Mode** — Formal behavioral definitions. Rules: `.claude/specification_mode.md`
 
@@ -79,7 +79,7 @@ Do not silently drop content from drafts. If something is unclear, duplicative, 
 
 ## Terminology
 
-Maintain the Approved Terminology List at `.claude/approved_terminology.md`. Prefer industry-standard terms. Use terms consistently once chosen. Flag inconsistencies and propose corrections. Propose new terms explicitly; add to list when approved.
+Maintain the Approved Terminology List at `.claude/agent-memory/doc-team/approved_terminology.md`. Prefer industry-standard terms. Use terms consistently once chosen. Flag inconsistencies and propose corrections. Propose new terms explicitly; add to list when approved.
 
 Preferred terms: `kernel module`, `security label`, `audit event`, `system mediator`, `policy enforcement`, `sensitivity level`, `category set`, `MLS range`, `reference monitor`, `security context`.
 

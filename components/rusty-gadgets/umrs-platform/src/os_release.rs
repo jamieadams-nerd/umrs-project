@@ -148,6 +148,9 @@ pub struct OsName(String);
 
 impl OsName {
     /// Parse and validate a `NAME=` or `PRETTY_NAME=` field value.
+    ///
+    /// NIST SP 800-53 SI-10: Input Validation — validates OS name at
+    /// construction; rejects empty or oversized values.
     pub fn parse(s: &str) -> Result<Self, OsReleaseParseError> {
         let s = s.trim().trim_matches('"');
         if s.is_empty() || s.len() > 256 {
@@ -205,6 +208,9 @@ pub struct OsVersion(String);
 
 impl OsVersion {
     /// Parse and validate a `VERSION=` field value.
+    ///
+    /// NIST SP 800-53 SI-10: Input Validation — validates OS version string at
+    /// construction; rejects empty or oversized values.
     pub fn parse(s: &str) -> Result<Self, OsReleaseParseError> {
         let s = s.trim().trim_matches('"');
         if s.is_empty() || s.len() > 128 {
@@ -230,6 +236,9 @@ pub struct Codename(String);
 
 impl Codename {
     /// Parse and validate a `VERSION_CODENAME=` field value.
+    ///
+    /// NIST SP 800-53 SI-10: Input Validation — validates distribution codename
+    /// at construction; rejects empty or oversized values.
     pub fn parse(s: &str) -> Result<Self, OsReleaseParseError> {
         let s = s.trim().trim_matches('"');
         if s.is_empty() || s.len() > 64 {
@@ -313,6 +322,9 @@ pub struct VariantId(String);
 
 impl VariantId {
     /// Parse and validate a `VARIANT_ID=` field value.
+    ///
+    /// NIST SP 800-53 SI-10: Input Validation — validates variant ID at
+    /// construction; rejects empty or oversized values.
     pub fn parse(s: &str) -> Result<Self, OsReleaseParseError> {
         let s = s.trim().trim_matches('"');
         if s.is_empty() || s.len() > 64 {

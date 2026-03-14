@@ -58,3 +58,19 @@ First observed: `release_parse.rs` `read_candidate()` re-opening by path.
 - `2026-03-11-os-detection-umrs-platform.md` — 8 findings (2H, 3M, 3L)
   Key issues: FIPS gate missing (F-01), false opened_by_fd (F-02),
   release_parse TOCTOU (F-03), stub T3 warning (F-04), Path::exists TOCTOU (F-05).
+- `security-engineer-posture-2a-review.md` — 5 findings (0C, 1H, 1M, 3L)
+  Key issue: `evaluate_configured_meets` cannot parse the "blacklisted" sentinel
+  string, silently suppressing BootDrift contradiction for all 4 DMA-surface
+  blacklist signals. Also: module parameter values logged unredacted at debug
+  level during modprobe.d merge.
+
+## Posture Probe — Known Type Patterns
+- `ModprobeConfig::raw` field for blacklist signals uses sentinel `"blacklisted"`.
+  `evaluate_configured_meets` must handle this sentinel — it is not a u32.
+  Any future signal that uses a non-integer configured-value sentinel must
+  extend `evaluate_configured_meets` or use a dedicated evaluation path.
+- `FipsCrossCheck::as_configured_value()` raw field is a human-readable summary
+  string (e.g., `"marker=present cmdline=fips=1"`). It cannot participate in
+  the standard `evaluate_configured_meets` integer path; `configured_meets`
+  will always be `None` for FIPS by construction. This is currently latent
+  (no incorrect result) but should be documented.

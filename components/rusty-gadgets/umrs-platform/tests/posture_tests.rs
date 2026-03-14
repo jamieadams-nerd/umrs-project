@@ -78,10 +78,11 @@ fn catalog_no_duplicate_ids() {
 #[test]
 fn catalog_length_matches_signal_id_count() {
     // Count must match the `all_ids` array in catalog_covers_all_signal_ids.
+    // Phase 1: 22 signals. Phase 2a adds 5 modprobe signals = 27 total.
     assert_eq!(
         SIGNALS.len(),
-        22,
-        "catalog length must match SignalId variant count"
+        27,
+        "catalog length must match SignalId variant count (22 Phase 1 + 5 Phase 2a)"
     );
 }
 
@@ -620,7 +621,8 @@ fn sysctl_config_slash_key_normalized_to_dot() {
     use std::io::Write;
 
     // Write a temp sysctl.d conf file with a slash-style key.
-    let tmp = tempfile::NamedTempFile::new().expect("tempfile creation must succeed");
+    let tmp =
+        tempfile::NamedTempFile::new().expect("tempfile creation must succeed");
     writeln!(tmp.as_file(), "kernel/kptr_restrict = 2")
         .expect("write to tempfile must succeed");
     let tmp_path = tmp.path().to_path_buf();
