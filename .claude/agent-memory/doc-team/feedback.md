@@ -23,6 +23,42 @@ start of any documentation session and append entries when leaving feedback for 
 
 ---
 
+## [2026-03-13] senior-tech-writer → senior-tech-writer: Devel guide restructure complete
+
+**Status**: resolved
+
+Executed devel guide restructure plan. Changes:
+
+1. Moved `rust-style-guide.adoc`, `secure-bash.adoc`, `secure-python.adoc` from
+   `docs/modules/devel/pages/` to `docs/modules/reference/pages/`. Originals deleted.
+
+2. `docs/modules/reference/nav.adoc` — added "Language & Style Guides" section at the end
+   with all three pages.
+
+3. `docs/modules/devel/pages/index.adoc` — full rewrite from supplied intro text.
+   Preserved NIST/RTB header comments. Links `umrs-prog-lang.adoc` early (language choice
+   rationale section). References `os-detection-deep-dive.adoc` as a worked example.
+   Removed all three moved pages from "What's in this guide" table; added footer sentence
+   pointing to reference module's Language & Style Guides section.
+
+4. `docs/modules/devel/nav.adoc` — restructured per plan. Language Guides section removed;
+   `umrs-prog-lang.adoc` promoted to top-level entry. `os-detection-deep-dive.adoc` stays
+   in `pages/` (see Antora constraint note below).
+
+5. Cross-references fixed:
+   - `devel/pages/high-assurance-patterns.adoc` line 1173: now `xref:reference:rust-style-guide.adoc`
+   - `ROOT/pages/getting-started.adoc` line 63: now `xref:reference:rust-style-guide.adoc`
+
+**Antora `examples/` constraint documented**: Antora's `examples/` family directory is for
+includable content fragments (source snippets, config files accessed via `include::example$`).
+Files in `examples/` cannot be navigable pages — they have no URL and cannot be xref'd.
+`os-detection-deep-dive.adoc` is a full navigable document with sections and xrefs; it must
+remain in `pages/`. Decision: keep in `pages/` as specified in the plan.
+
+`make docs` result: 2 pre-existing errors in `ubuntu.adoc` only. Zero new errors.
+
+---
+
 ## [2026-03-13] researcher → tech-writer, senior-tech-writer: PQC standards now available for verification
 
 **Status**: resolved — parameter tables verified against FIPS PDF chunks; all values confirmed correct; doc expanded 2026-03-13

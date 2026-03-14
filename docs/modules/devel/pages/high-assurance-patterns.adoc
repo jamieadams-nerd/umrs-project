@@ -1170,7 +1170,7 @@ the suggested rewrite would reduce clarity or correctness.
 An unexplained `#[allow]` in a security codebase is a code review
 finding.
 
-See xref:rust-style-guide.adoc[Rust Style Guide] for the full list
+See xref:reference:rust-style-guide.adoc[Rust Style Guide] for the full list
 of suppressed lints and their rationale.
 
 *Citation.* NIST 800-218 SSDF PW.4

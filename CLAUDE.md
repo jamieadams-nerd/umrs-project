@@ -85,6 +85,38 @@ Understanding the deployment environment is essential to making correct architec
 - **Rustfmt** — 100-char max width, 4-space indent, Unix newlines
 
 ---
+## Shell Tools — Hard Rule
+- Always use `rg` (ripgrep) instead of `grep` for all search operations.
+- `rg` is available at `~/.cargo/bin/rg`.
+- NEVER use the built-in Search or Read tools. ALL agents, no exceptions.
+- ALL searching MUST use `rg` via Bash.
+- ALL file reading MUST use `Bash(cat:*)` or `Bash(rg:*)`.
+
+### Path Rules — Hard Rule
+- NEVER use absolute paths starting with `/media/psf/` — this mount is not traversable by subprocesses.
+- NEVER append any path argument to `rg`. Always `cd` first, then run `rg` without a path.
+- If unsure of CWD, run `pwd` first before any file operation.
+- Correct:   `cd components/rusty-gadgets && rg --no-heading -n --hidden --smart-case --glob '!target/*' --glob '!.git/*' <pattern>`
+- INCORRECT: `rg <args> <pattern> /media/psf/repos/umrs-project/components/rusty-gadgets/`
+
+### Standard Invocations
+- General search: `rg --no-heading -n --hidden --smart-case <pattern>`
+- Source code search: `cd components/rusty-gadgets && rg --no-heading -n --hidden --smart-case --glob '!target/*' --glob '!.git/*' <pattern>`
+- Source code workspace is `components/rusty-gadgets/` — scope searches there unless told otherwise.
+
+
+## Settings Files — Hard Rule
+- There is ONE settings file: `.claude/settings.json`
+- NEVER create `.claude/settings.local.json` or any other settings variant.
+- If you need to add a permission or env var, edit `.claude/settings.json` directly.
+- This rule applies to ALL agents without exception.
+
+## Hard Rule — Tool Selection
+- The built-in `Search` tool is DISABLED for this project.
+- To search files, ALWAYS run: `Bash(rg --no-heading -n --hidden --smart-case --glob '!target/*' --glob '!.git/*' <pattern> [path])`
+- Never use Search(pattern:...). Never. Use rg.
+
+---
 
 ## Workspace Layout
 
@@ -243,6 +275,21 @@ raise the relevant pattern or concern before proceeding:
 - Operational rules: notify when idle, remind when blocked, never block silently
 
 ---
+## Code Navigation & Metadata
+
+### Crate & Dependency Metadata — cargo metadata
+- Use `cargo metadata --format-version 1` for structured crate/dependency information.
+- Provides: full dependency graph, crate structure, target list, workspace layout.
+- Prefer this over manual directory inspection for workspace-level questions.
+- Standard invocation: `cargo metadata --format-version 1 | python3 -m json.tool`
+- For dependency-only queries (faster): `cargo metadata --format-version 1 --no-deps`
+
+### rust-developer Agent Rules
+- Before asking Jamie about crate structure, run `cargo metadata` first.
+- Never traverse `target/` for metadata — use `cargo metadata` instead.
+- Use `--no-deps` by default; only drop it when external dependency graph is explicitly needed.
+
+---
 
 ## Role of Claude Code in This Project
 
@@ -275,3 +322,38 @@ versions and summarize changes.
 
 Two documents in the manifest require manual browser download (DoD portals block curl).
 See `refs/manifest.md` for instructions.
+
+---
+
+## Performance & Task Tracking
+
+### Task Log — Hard Rule
+- Every agent MUST append a one-line entry to `.claude/logs/task-log.md` upon task completion.
+- Create the file and directory if it does not exist.
+- Format:
+  `[YYYY-MM-DD HH:MM] [agent-name] [brief task description] [tools used] [outcome: success/partial/failed] [notes]`
+
+### Examples
+```
+[2026-03-14 09:15] rust-developer  unwrap() audit  rg,cargo-metadata  success  zero hits confirmed
+[2026-03-14 09:30] security-auditor  comment review on umrs-selinux  rg,cat  success  2 annotations added
+[2026-03-14 10:00] researcher  NIST SP 800-53 rev5 fetch  WebFetch  partial  rate limited on 2nd doc
+```
+
+### What to Record in Notes
+- Dead ends or retries
+- Tools that failed or were unavailable
+- Anything that required Jamie intervention
+- Unexpected findings worth remembering
+
+### Benchmark Query
+- The canonical baseline query for rust-developer efficiency is:
+  `"List all crates, their editions, and internal dependencies."`
+- Record tool count and steps in notes when running this query after significant workflow changes.
+
+
+### End of Session Report
+- When the team goes idle, always report a summary of `.claude/logs/task-log.md` 
+  entries from the current session before signing off.
+
+

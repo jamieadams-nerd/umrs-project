@@ -1,5 +1,7 @@
 .xref:index.adoc[Developer Guide]
 [collapsible]
+* xref:umrs-prog-lang.adoc[Language choice rationale]
+
 * High-Assurance Patterns
 ** xref:high-assurance-patterns.adoc[Pattern overview and philosophy]
 ** xref:patterns:index.adoc[Pattern Library →]
@@ -10,11 +12,7 @@
 * Platform Internals
 ** xref:os-detection-deep-dive.adoc[OS Detection Pipeline — Deep Dive]
 
-* Language Guides
-** xref:umrs-prog-lang.adoc[Language choice rationale]
-** xref:rust-style-guide.adoc[Rust style guide]
-** xref:secure-bash.adoc[Secure Bash guide]
-** xref:secure-python.adoc[Secure Python guide]
+* Internationalization
 ** xref:i18n.adoc[Internationalization (i18n)]
 
 * Build & Workspace

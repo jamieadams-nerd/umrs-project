@@ -60,7 +60,7 @@ useful once you understand what problem the patterns are solving.
   this prevents.
 . xref:devel:high-assurance-patterns.adoc[High-assurance coding patterns] —
   the patterns every contributor must apply. Read before writing any code.
-. xref:devel:rust-style-guide.adoc[Rust style guide] —
+. xref:reference:rust-style-guide.adoc[Rust style guide] —
   style, lint policy, and code review expectations.
 . xref:devel:compliance-annotations.adoc[Compliance annotations guide] —
   how to write NIST-annotated rustdoc correctly.

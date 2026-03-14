@@ -227,6 +227,16 @@ Key design deviations: CategorySet: dense [u64;16] vs kernel sparse ebitmap.
 SelinuxType: mixed-case allowed. SelinuxUser/Role: lowercase [a-z0-9_] only.
 dominates(): `(subject & object) == object`, word-by-word across 16 u64 words.
 
+## Devel Guide Restructure (2026-03-13)
+
+`rust-style-guide.adoc`, `secure-bash.adoc`, `secure-python.adoc` moved from `devel/pages/` to `reference/pages/`.
+Reference `nav.adoc` now has a "Language & Style Guides" section at the bottom.
+`devel/pages/index.adoc` rewritten — links to reference module for those guides.
+`devel/nav.adoc` restructured — Language Guides section removed; `umrs-prog-lang.adoc` promoted to top level.
+`os-detection-deep-dive.adoc` stays in `devel/pages/` (Antora `examples/` family is for includes only, not navigable pages).
+
+**Antora `examples/` constraint**: Files in `examples/` cannot be navigable pages or xref targets. They are includable fragments accessed via `include::example$filename[]`. Never put navigable documents in `examples/`.
+
 ## Navigation Restructure Plan (2026-03-13)
 
 Plan: `.claude/plans/docs-new-stuff-crypto-and-navbar.md`

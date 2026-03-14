@@ -1,41 +1,183 @@
 = Developer Guide
-:description: How to write high-assurance code for UMRS: design patterns, language guides, build tooling, compliance annotations, and the rustdoc API contract.
+:description: How to write high-assurance code for UMRS: design patterns, compliance annotations, build tooling, and crate architecture.
 
 // NIST 800-218 SSDF PW.1 — Define security requirements for the software
 // NSA RTB VNSSA — Non-bypassable security requirements baked into process
 
-This guide is for developers writing code in the UMRS project.
-It covers the *why* and *how* of high-assurance development:
-what threat each design pattern defeats, how to apply it in Rust, Bash, and Python,
-how to annotate code so auditors can trace every security decision to a requirement,
-and how to deliver rustdoc API documentation that is itself a compliance artifact.
+The UMRS platform provides a set of Rust crates designed to support the development of
+high-assurance system software.
+These libraries implement both high-assurance engineering techniques and recognized
+high-assurance security patterns in order to increase confidence in the correctness,
+provenance, and trustworthiness of system-derived data.
+
+== The Core Assumption
+
+Many programming environments provide convenient abstractions for interacting with
+operating system state.
+In most cases, these abstractions assume that system information can be trusted without
+verification.
+Files are read, parsed, and consumed with the assumption that the data retrieved from
+the operating system accurately reflects reality.
+
+The UMRS platform operates under a different assumption: *system state must be validated
+before it is trusted.*
+
+This emphasis on correctness is not merely about returning accurate values or displaying
+correct information.
+In many systems, information obtained from the operating system becomes input to other
+subsystems that make decisions based on that data.
+Security policies, configuration logic, compatibility handling, and automated system
+behavior frequently depend on correctly understanding the system environment.
+
+For example, accurately determining the operating system and platform characteristics
+is often critical.
+Different operating systems expose different kernel interfaces, security models,
+filesystem semantics, and configuration expectations.
+If foundational platform identification is incorrect or unverified, subsequent
+components may apply incorrect assumptions about how the system behaves.
+Those incorrect assumptions can lead to faulty configuration decisions, incorrect
+security posture evaluation, or improper system behavior.
+
+For this reason, the correctness and assurance of the data itself becomes foundational
+to the correctness of all decisions that follow.
+
+== Language Choice
+
+Before writing code, read xref:umrs-prog-lang.adoc[Language choice rationale].
+It explains why Rust was selected for the UMRS crates and what properties of the
+language support the high-assurance goals of the platform.
+
+== Foundational Crate Architecture
+
+The UMRS platform is organized as a layered set of foundational crates that provide
+progressively higher levels of abstraction while preserving strict validation guarantees.
+
+[cols="1,3", options="header"]
+|===
+|Crate |Purpose
+
+|`umrs-platform`
+|Low-level platform interrogation, hardened readers, kernel interface access,
+and trusted system ingestion
+
+|`umrs-selinux`
+|Strongly typed abstractions and primitives for interacting with SELinux policy
+and system security state
+
+|`umrs-core`
+|Higher-level orchestration utilities, shared abstractions, and reusable platform logic
+|===
+
+This layered design allows systems to use only the level of functionality required
+while maintaining the same high-assurance design principles.
+Future releases will introduce additional optional security modules — for example,
+an AppArmor layer providing equivalent abstractions for that framework.
+
+== High-Assurance System Interrogation
+
+Typical software libraries retrieve operating system information by directly reading
+files such as `/etc/os-release` or by issuing system calls without validating the
+integrity of the data source.
+
+The UMRS platform instead performs progressive trust validation before accepting
+system data as trustworthy.
+This process follows a trust ladder beginning at T0 and progressing upward through
+increasingly higher levels of assurance.
+Each step gathers additional corroborating evidence about the provenance and integrity
+of the system information being retrieved.
+
+During this process the platform may:
+
+* obtain authoritative information from kernel pseudo-filesystems such as sysfs,
+  procfs, or securityfs
+* validate filesystem provenance and mount topology
+* confirm package manager ownership of system files
+* verify file integrity where cryptographic mechanisms are available
+* apply strict parsing and validation rules before returning structured results
+
+Only after these verification steps succeed does the platform read and parse the
+target data source.
+
+For a detailed walkthrough of this approach, see
+xref:os-detection-deep-dive.adoc[OS Detection Pipeline — Deep Dive].
+That page traces the full interrogation sequence for OS detection, including
+the trust ladder, the sealed evidence cache, and the compliance mapping.
+
+== Evidence Chains and Verifiable Assurance
+
+A key design principle of UMRS is that trust decisions must be inspectable and auditable.
+When information is retrieved through the UMRS libraries, the result includes an
+evidence chain describing the validation steps that were performed to establish trust
+in the data.
+
+The evidence chain records:
+
+* which trusted sources were consulted
+* what verification checks were performed
+* the trust level reached
+* the conditions under which the data was accepted
+
+Because the validation process follows recognized high-assurance patterns, these evidence
+chains can also be used to demonstrate compliance and traceability, cross-referencing
+validation steps against NIST and NSA RTB guidance.
+
+== Strongly Typed System Primitives
+
+In addition to secure ingestion techniques, the UMRS crates expose strongly typed
+primitives representing common system concepts.
+Many traditional system APIs return loosely structured strings or unvalidated data.
+The UMRS platform instead exposes strongly typed structures whose values are validated
+at construction time.
+
+Examples include strongly typed representations of platform identities, security
+contexts, labels and attributes, system identifiers, and other security-sensitive
+system metadata.
+By enforcing validation during object construction, the platform ensures that downstream
+logic interacts only with verified and well-formed data structures.
+
+== What's in This Guide
+
+[cols="1,2", options="header"]
+|===
+|Page |Contents
+
+|xref:high-assurance-patterns.adoc[High-assurance patterns]
+|Pattern overview, threat model for each pattern, and implementation philosophy.
+Links to the full pattern library.
+
+|xref:compliance-annotations.adoc[Compliance annotations guide]
+|How to write NIST 800-53, CMMC, and RTB annotations in rustdoc.
+Tiers of annotation requirement. Real examples from the codebase.
+
+|xref:rust-must-use-contract.adoc[Compile-time contract enforcement: `#[must_use\]`]
+|Why security-relevant return values must carry `#[must_use]` and how to write the
+annotation correctly.
+
+|xref:nom-parser.adoc[The nom parser combinator]
+|How the UMRS crates use `nom` for structured, fail-closed parsing of security-relevant input.
+
+|xref:os-detection-deep-dive.adoc[OS Detection Pipeline — Deep Dive]
+|A complete worked example of the high-assurance interrogation approach:
+trust ladder, evidence chain, sealed cache, and compliance mapping.
+
+|xref:i18n.adoc[Internationalization (i18n)]
+|How to use the UMRS i18n module.
+Which crates own translation domains.
+Why libraries return typed values rather than translated strings.
+
+|xref:build-tooling.adoc[Build tooling]
+|`cargo xtask`, rustfmt configuration, Clippy policy, and how to keep the build clean.
+
+|xref:cargo-notes.adoc[Cargo & workspace notes]
+|Workspace layout decisions, dependency management, and supply chain hygiene.
+
+|xref:git-commit-signing.adoc[Signing Git commits]
+|Commit signing setup and verification requirements.
+|===
+
+Language and style reference guides (Rust, Bash, Python) are in the
+xref:reference:index.adoc[Reference module] under Language & Style Guides.
 
 The API reference (rustdoc) is delivered separately via `cargo doc`.
-The doc comments in the source are the authoritative source — this guide
-explains how to write them.
-
-== Modules in This Guide
-
-xref:high-assurance-patterns.adoc[High-Assurance Coding Patterns]::
-  The core of this guide. Organized by what you are about to do —
-  open a file, parse input, construct a type, do arithmetic, report an error.
-  Each pattern names the threat it defeats, shows the implementation from
-  the UMRS codebase, and cites the governing standard.
-
-xref:rust-style-guide.adoc[Rust Style Guide]::
-  Formatting, import ordering, file headers, test structure, i18n rules.
-
-xref:secure-bash.adoc[Secure Bash Guide]::
-  Writing shell scripts that behave correctly under adversarial conditions.
-
-xref:secure-python.adoc[Secure Python Guide]::
-  Interpreter isolation, input validation, safe subprocess use.
-
-xref:i18n.adoc[Internationalization (i18n)]::
-  How to use the UMRS core i18n module in code.
-
-xref:build-tooling.adoc[Build Tooling]::
-  `cargo xtask`, rustfmt, clippy policy, `Cargo.lock` hygiene.
-
-xref:cargo-notes.adoc[Cargo & Workspace Notes]::
-  Workspace layout decisions, dependency management, supply chain hygiene.
+Doc comments in the source are the authoritative source — the compliance annotations
+guide explains how to write them.

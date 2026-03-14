@@ -1,0 +1,149 @@
+Developer Guide Introduction
+
+The UMRS platform provides a set of Rust crates designed to support the development of
+high-assurance system software. These libraries implement both high-assurance engineering techniques
+and recognized high-assurance security patterns in order to increase confidence in the correctness,
+provenance, and trustworthiness of system-derived data.
+
+Many programming environments provide convenient abstractions for interacting with operating system
+state. In most cases, these abstractions assume that system information can be trusted without
+verification. Files are read, parsed, and consumed with the assumption that the data retrieved from
+the operating system accurately reflects reality.
+
+The UMRS platform operates under a different assumption: system state must be validated before it is
+trusted.
+
+This emphasis on correctness is not merely about returning accurate values or displaying correct
+information. In many systems, information obtained from the operating system becomes input to other
+subsystems that make decisions based on that data. Security policies, configuration logic,
+compatibility handling, and automated system behavior frequently depend on correctly understanding
+the system environment.
+
+For example, accurately determining the operating system and platform characteristics is often
+critical. Different operating systems expose different kernel interfaces, security models,
+filesystem semantics, and configuration expectations. If foundational platform identification is
+incorrect or unverified, subsequent components may apply incorrect assumptions about how the system
+behaves. Those incorrect assumptions can lead to faulty configuration decisions, incorrect security
+posture evaluation, or improper system behavior.
+
+For this reason, the correctness and assurance of the data itself becomes foundational to the
+correctness of all decisions that follow.
+
+The UMRS platform is designed with this principle in mind. Before system information is consumed,
+the platform performs validation steps intended to establish confidence in the provenance and
+integrity of the data source.
+
+To support this goal, the UMRS crates implement defensive validation strategies, secure ingestion
+mechanisms, and verifiable evidence tracking designed for environments where system integrity,
+auditability, and traceable assurance are critical requirements.
+
+The goals of the UMRS development ecosystem are therefore twofold:
+	1.	Provide reusable high-assurance primitives that can be incorporated into system software.
+	2.	Demonstrate high-assurance engineering patterns through working examples and reference implementations.
+
+Although these libraries form the technical foundation of the UMRS platform, they are not restricted
+to UMRS itself. Individual crates can be used independently within other Rust programs. Specific
+UMRS components—such as secure system readers, trusted parsing utilities, or strongly typed system
+primitives—can be incorporated into other projects without deploying the full UMRS platform.
+
+In this sense, the UMRS codebase functions both as the internal infrastructure of the platform and
+as a general-purpose toolkit for building trustworthy system software.
+
+⸻
+
+UMRS Foundational Crate Architecture
+
+The UMRS platform is organized as a layered set of foundational crates that provide progressively higher levels of abstraction while preserving strict validation guarantees.
+
+From lowest level to highest level, the core crates are:
+
+Crate	Purpose
+umrs-platform	Low-level platform interrogation, hardened readers, kernel interface access, and trusted system ingestion
+umrs-selinux	Strongly typed abstractions and primitives for interacting with SELinux policy and system security state
+umrs-core	Higher-level orchestration utilities, shared abstractions, and reusable platform logic
+
+Future releases will introduce additional optional security modules. For example, systems that use AppArmor rather than SELinux will be able to use an alternative security layer providing equivalent abstractions for that framework.
+
+This layered design allows systems to use only the level of functionality required while maintaining the same high-assurance design principles.
+
+⸻
+
+High-Assurance System Interrogation
+
+Typical software libraries retrieve operating system information by directly reading files such as /etc/os-release or by issuing system calls without validating the integrity of the data source.
+
+The UMRS platform instead performs progressive trust validation before accepting system data as trustworthy.
+
+This process follows a trust ladder beginning at T0 and progressing upward through increasingly higher levels of assurance. Each step gathers additional corroborating evidence about the provenance and integrity of the system information being retrieved. The trust level continues to increase until the platform has sufficient confidence to safely consume the data.
+
+Some information may require only minimal validation, while other information may require significantly greater levels of assurance depending on how critical the data is to downstream decisions.
+
+During this process the platform may:
+	•	obtain authoritative information from kernel pseudo-filesystems such as sysfs, procfs, or securityfs
+	•	validate filesystem provenance and mount topology
+	•	confirm package manager ownership of system files
+	•	verify file integrity where cryptographic mechanisms are available
+	•	apply strict parsing and validation rules before returning structured results
+
+Only after these verification steps succeed does the platform read and parse the target data source.
+
+⸻
+
+Evidence Chains and Verifiable Assurance
+
+A key design principle of UMRS is that trust decisions must be inspectable and auditable.
+
+When information is retrieved through the UMRS libraries, the result includes an evidence chain describing the validation steps that were performed to establish trust in the data.
+
+This evidence chain records information such as:
+	•	which trusted sources were consulted
+	•	what verification checks were performed
+	•	the trust level reached
+	•	the conditions under which the data was accepted
+
+These evidence chains provide a verifiable record of how trust was established for a given piece of system information.
+
+Because the validation process follows recognized high-assurance patterns, these evidence chains can also be used by organizations to demonstrate compliance and traceability, allowing validation steps to be cross-referenced against recognized security guidance.
+
+Many of the high-assurance patterns implemented within UMRS are derived from or aligned with guidance from respected security authorities, including:
+	•	National Institute of Standards and Technology
+	•	NSA Raise the Bar Initiative
+
+By preserving these validation records, systems using UMRS can demonstrate how trust in system state was established using recognized high-assurance practices.
+
+⸻
+
+Secure Readers and Trusted Parsing
+
+To support these guarantees, the UMRS platform provides hardened readers and parsers designed specifically for interacting with kernel and system pseudo-filesystems.
+
+These components implement defensive engineering techniques such as:
+	•	secure file descriptor handling
+	•	bounded and validated reads
+	•	dual-path verification logic
+	•	strict provenance validation
+	•	hardened parsing routines
+
+These mechanisms allow system data to be safely consumed from sources such as:
+	•	sysfs
+	•	procfs
+	•	securityfs
+	•	trusted system configuration files
+
+⸻
+
+Strongly Typed System Primitives
+
+In addition to secure ingestion techniques, the UMRS crates provide a collection of strongly typed primitives representing common system concepts.
+
+Many traditional system APIs return loosely structured strings or unvalidated data. The UMRS platform instead exposes strongly typed structures whose values are validated at construction time.
+
+Examples include strongly typed representations of:
+	•	platform identities
+	•	security contexts
+	•	labels and attributes
+	•	system identifiers
+	•	other security-sensitive system metadata
+
+By enforcing validation during object construction, the platform ensures that downstream system logic interacts only with verified and well-formed data structures rather than unvalidated strings or loosely typed values.
+

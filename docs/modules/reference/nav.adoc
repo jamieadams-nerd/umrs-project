@@ -24,3 +24,8 @@
 ** xref:compliance-frameworks.adoc[Compliance frameworks registry]
 ** xref:cui/cui-descriptions.adoc[CUI category descriptions (c0–c9)]
 ** xref:cui/cui-category-abbreviations.adoc[CUI category abbreviations]
+
+* Language & Style Guides
+** xref:rust-style-guide.adoc[Rust style guide]
+** xref:secure-bash.adoc[Secure Bash guide]
+** xref:secure-python.adoc[Secure Python guide]
