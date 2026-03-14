@@ -1,6 +1,6 @@
 {
   "env": {
-    "PATH": "/home/jamie/.cargo/bin:/usr/local/bin:/usr/bin:/bin"
+    "PATH": "~/.local/bin:/home/jamie/.cargo/bin:/usr/local/bin:/usr/bin:/bin"
   },
   "permissions": {
     "allow": [

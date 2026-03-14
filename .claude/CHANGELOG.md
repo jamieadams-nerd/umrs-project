@@ -1,5 +1,28 @@
 # Changelog
 
+## 2026-03-14
+
+### Added
+- **Developer guide introduction**: Added devel module intro page covering high-assurance design principles, pattern library reference, and Rust workflow guidance
+- **Ripgrep capability**: Added ripgrep (rg) search capability to Claude Code agent for efficient source code discovery across workspace
+- **Cargo metadata search**: Added cargo metadata search skill to rust-developer agent for crate dependency analysis and workspace structure queries
+- **UML diagram generation from Rust code**: New skill enabling creation of UML diagrams from Rust source code for architectural documentation and type relationship visualization
+
+### Changed
+- **Documentation structure reorganized**: Further refinement of Antora module hierarchy and navigation following Phase 4 restructure completion
+- **Antora navigation deduplicated**: Comprehensive audit and cleanup of all 12 nav.adoc files; removed 8 duplicate cross-module entries that caused sidebar items to appear twice
+- **ROOT/nav.adoc**: Removed cross-module references to Architecture, Security Concepts, Deployment, Development, Patterns, UMRS Tools, Operations, Logging/Audit, Cryptography, Reference, and Glossary — these modules have their own nav sections; added `what-is-umrs.adoc` to Introduction section
+- **architecture/nav.adoc**: Removed Design Rationale section (moved to devel); removed 4 security-concepts cross-refs (reference-monitor, rtb-vnssa, integrity-and-provenance, truth-concepts) — these belong in security-concepts module per VISION.md
+- **devel/nav.adoc**: Added Design Rationale section with architecture cross-refs (rationale-strongly-typed, library-model) and consolidated language choice rationale (was duplicated as both top-level item and architecture cross-ref)
+- **operations/nav.adoc**: Removed git-commit-signing cross-ref (owned by devel) and "UMRS Tools →" pointer (separate top-level section)
+- **glossary/nav.adoc**: Removed duplicate index entry (was listed as both section header and list item)
+
+### Fixed
+- **Broken xref in getting-started.adoc**: Updated `architecture:rationale.adoc` → `architecture:rationale-strongly-typed.adoc` after deleting redundant summary page
+
+### Removed
+- **architecture/pages/rationale.adoc**: Deleted redundant summary page that only pointed to `rationale-strongly-typed.adoc` (already in nav via Design Rationale section)
+
 ## 2026-03-13
 
 ### Added

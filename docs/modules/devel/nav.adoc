@@ -1,6 +1,9 @@
 .xref:index.adoc[Developer Guide]
 [collapsible]
-* xref:umrs-prog-lang.adoc[Language choice rationale]
+* Design Rationale
+** xref:architecture:rationale-strongly-typed.adoc[Rationale: strongly-typed SELinux model]
+** xref:architecture:library-model.adoc[Library model and lineage]
+** xref:umrs-prog-lang.adoc[Language choice rationale]
 
 * High-Assurance Patterns
 ** xref:high-assurance-patterns.adoc[Pattern overview and philosophy]

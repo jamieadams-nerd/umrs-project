@@ -227,3 +227,23 @@ Key test patterns:
 - Adding `i18n::tr()` wrappers can push a function over 100 lines
 - Fix: extract logical blocks into helper functions, NOT suppress with `#[allow]`
 - Example: `build_inode_flag_rows(dirent)` extracted from `build_security_rows()` in file_stat.rs
+
+## posture Module (Phase 1 — implemented 2026-03-14)
+
+Module location: `umrs-platform/src/posture/`
+
+Files:
+- `mod.rs` — public API re-exports
+- `signal.rs` — SignalId (22 variants), SignalClass, AssuranceImpact, DesiredValue, LiveValue, ConfiguredValue
+- `catalog.rs` — SIGNALS: &[SignalDescriptor] — 22 static entries, const array
+- `reader.rs` — KptrRestrict (hand-written reference), define_sysctl_signal! macro (13 signals), CmdlineReader, BootIdReader, read_live_sysctl(), read_lockdown_live()
+- `configured.rs` — SysctlConfig (sysctl.d merge), configured_cmdline() (Phase 2 placeholder)
+- `contradiction.rs` — ContradictionKind (EphemeralHotfix/BootDrift/SourceUnavailable), classify() (const fn), evaluate_configured_meets()
+- `snapshot.rs` — PostureSnapshot::collect(), SignalReport, iter/findings/contradictions/by_impact/get methods
+
+Reused kattrs types: ProcFips (FipsEnabled), ModuleLoadLatch (ModulesDisabled), KernelLockdown (Lockdown)
+
+Tests: `umrs-platform/tests/posture_tests.rs` — 35 tests, all passing
+Example: `umrs-platform/examples/posture_demo.rs`
+
+Phase 2 deferred: bootloader cmdline reading, modprobe.d cross-check, FIPS distro cross-check, CPU sub-signals, SEC cache

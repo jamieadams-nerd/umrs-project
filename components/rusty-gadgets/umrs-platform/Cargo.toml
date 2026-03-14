@@ -94,6 +94,13 @@ zeroize = { version = "1", features = ["derive"] }
 # NIST SP 800-53 SA-12: supply chain risk explicitly evaluated and accepted.
 rusqlite = { version = "0.31", optional = true }
 
+[dev-dependencies]
+# tempfile — creates temporary files for white-box posture parser tests.
+# Used in posture_tests.rs to test sysctl.d file parsing (slash-key normalisation)
+# without touching system sysctl.d directories.
+# Supply chain: single-purpose crate, minimal transitive deps, no unsafe surface.
+tempfile = "3"
+
 [lints.clippy]
 unreadable_literal  = { level = "allow", priority = 1 }
 missing_errors_doc  = { level = "allow", priority = 1 }

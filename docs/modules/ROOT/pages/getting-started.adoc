@@ -55,7 +55,7 @@ useful once you understand what problem the patterns are solving.
 . xref:architecture:index.adoc[Architecture overview] —
   focus on the SELinux context model, MLS/MCS model, and Rust
   implementation layer sections.
-. xref:architecture:rationale.adoc[Strong-typing rationale] —
+. xref:architecture:rationale-strongly-typed.adoc[Strong-typing rationale] —
   why labels are modeled as types rather than strings; what errors
   this prevents.
 . xref:devel:high-assurance-patterns.adoc[High-assurance coding patterns] —

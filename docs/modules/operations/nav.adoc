@@ -17,7 +17,3 @@
 ** xref:admin-install.adoc[Install Overview]
 ** xref:key-management.adoc[Cryptographic Key Management]
 ** xref:key-manager-tool.adoc[HA-Sign Key Orchestrator]
-** xref:devel:git-commit-signing.adoc[Signing Git Commits]
-
-* Tools
-** xref:umrs-tools:index.adoc[UMRS Tools →]

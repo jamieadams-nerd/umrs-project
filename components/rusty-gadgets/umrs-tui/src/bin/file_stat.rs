@@ -426,22 +426,14 @@ fn build_inode_flag_rows(dirent: &SecureDirent) -> Vec<DataRow> {
 fn build_security_rows(dirent: &SecureDirent) -> Vec<DataRow> {
     let mut rows = Vec::new();
 
-    // SELinux label — full context string, color by state
-    let (label_str, label_hint) = match &dirent.selinux_label {
-        SelinuxCtxState::Labeled(ctx) => {
-            (ctx.to_string(), StyleHint::TrustGreen)
-        }
-        SelinuxCtxState::Unlabeled => {
-            ("<unlabeled>".to_owned(), StyleHint::TrustRed)
-        }
-        SelinuxCtxState::ParseFailure => {
-            ("<parse-error>".to_owned(), StyleHint::TrustRed)
-        }
-        SelinuxCtxState::TpiDisagreement => {
-            ("<unverifiable>".to_owned(), StyleHint::TrustRed)
-        }
+    // SELinux label — color hint derived from label state; full context is shown
+    // per-component below, so the summary row displays a placeholder.
+    let label_hint = match &dirent.selinux_label {
+        SelinuxCtxState::Labeled(_) => StyleHint::TrustGreen,
+        SelinuxCtxState::Unlabeled
+        | SelinuxCtxState::ParseFailure
+        | SelinuxCtxState::TpiDisagreement => StyleHint::TrustRed,
     };
-    // For now, don't show the whole context since we are showing each element
     let label_str = " ";
     rows.push(DataRow::new(
         i18n::tr("SELinux Context"),
@@ -473,7 +465,11 @@ fn build_security_rows(dirent: &SecureDirent) -> Vec<DataRow> {
                 ("TpiDisagreement", StyleHint::TrustRed)
             }
         };
-        rows.push(DataRow::new(i18n::tr("  Label state"), state_str, state_hint));
+        rows.push(DataRow::new(
+            i18n::tr("  Label state"),
+            state_str,
+            state_hint,
+        ));
 
         rows.push(DataRow::separator());
 
@@ -482,7 +478,7 @@ fn build_security_rows(dirent: &SecureDirent) -> Vec<DataRow> {
         // that corresponds to the raw kernel level string.
         // NIST SP 800-53 AC-4: Information Flow Enforcement.
         //
-        //  TODO: Add security handling and ohter information from 
+        //  TODO: Add security handling and ohter information from
         //  our custom json file
         if let Some(lvl) = ctx.level() {
             let range = SecurityRange::from_level(lvl);

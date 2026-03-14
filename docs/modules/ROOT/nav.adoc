@@ -2,27 +2,10 @@
 * xref:getting-started.adoc[Getting Started]
 
 * Introduction
+** xref:what-is-umrs.adoc[What Is UMRS?]
 ** xref:introduction.adoc[Introduction]
 ** xref:what-is-high-assurance.adoc[What is High Assurance?]
 ** xref:scope-and-audience.adoc[Scope and Audience]
-
-* xref:architecture:index.adoc[Architecture]
-* xref:security-concepts:index.adoc[Security Concepts]
-
-* xref:deployment:index.adoc[Deployment]
-
-* xref:devel:index.adoc[Development]
-* xref:patterns:index.adoc[High-Assurance Pattern Library]
-
-* xref:umrs-tools:index.adoc[UMRS Tools]
-
-* xref:operations:index.adoc[Operations]
-* xref:logging-audit:index.adoc[Logging and Audit]
-
-* xref:cryptography:index.adoc[Cryptography]
-
-* xref:reference:index.adoc[Reference]
-* xref:glossary:index.adoc[Glossary]
 
 * xref:ai-transparency.adoc[AI in This Project]
 * xref:legal-notices.adoc[Legal Notices]

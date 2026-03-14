@@ -22,6 +22,7 @@
 //! | `os_identity` | `OsFamily`, `Distro`, `KernelRelease`, `CpuArch`, `SubstrateIdentity` |
 //! | `os_release` | `OsRelease` and all validated field newtypes |
 //! | `detect` | `OsDetector`, `DetectionResult`, `DetectionError`, phase modules |
+//! | `posture` | `PostureSnapshot`, `SignalReport`, `SignalId`, `AssuranceImpact` |
 //!
 //! ## Compliance
 //!
@@ -46,6 +47,7 @@ pub mod evidence;
 pub mod kattrs;
 pub mod os_identity;
 pub mod os_release;
+pub mod posture;
 pub mod sealed_cache;
 
 // ---------------------------------------------------------------------------
@@ -76,3 +78,6 @@ pub use os_release::{
 pub use sealed_cache::{
     CacheStatus, DEFAULT_TTL_SECS, MAX_TTL_SECS, SealedCache,
 };
+
+// Posture probe
+pub use posture::{AssuranceImpact, PostureSnapshot, SignalId, SignalReport};
