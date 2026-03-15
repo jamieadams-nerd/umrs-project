@@ -677,6 +677,90 @@ cryptographic assumptions. `SC-12`, `SC-13`, `SI-7`.
 
 ---
 
+## RMF Core Documents (Security-Auditor Methodology Corpus — Phase 1)
+
+Acquired 2026-03-15 per `.claude/plans/security-auditor-corpus.md` Phase 1.
+
+### NIST SP 800-37 Rev. 2 — Risk Management Framework
+
+| Field | Value |
+|---|---|
+| Full title | Risk Management Framework for Information Systems and Organizations |
+| Issuing authority | NIST |
+| Version | Rev 2 |
+| Published | December 2018 |
+| Downloaded | 2026-03-15 |
+| Local path | `nist/sp800-37r2.pdf` |
+| Source URL | https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-37r2.pdf |
+| SHA-256 | `4f75e1136bb905a654f1bcd9eefefb4108f47597276ee5eec0688f6d96f6a01d` |
+| Status | ✓ Downloaded |
+
+**Key relevance**: Full RMF lifecycle (categorize, select, implement, assess, authorize,
+monitor). Teaches the security-auditor agent the assessment workflow real assessors follow.
+
+---
+
+### NIST SP 800-53A Rev. 5 — Assessing Security and Privacy Controls
+
+| Field | Value |
+|---|---|
+| Full title | Assessing Security and Privacy Controls in Information Systems and Organizations |
+| Issuing authority | NIST |
+| Version | Rev 5 |
+| Published | January 2022 |
+| Downloaded | 2026-03-15 |
+| Local path | `nist/sp800-53Ar5.pdf` |
+| Source URL | https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-53Ar5.pdf |
+| SHA-256 | `75665570048b969ad465a4f4f1db425ce505c374951c2c64e462949c6b21be47` |
+| Status | ✓ Downloaded |
+
+**Key relevance**: Defines the three assessment methods (Examine, Interview, Test) and maps
+each control to specific assessment procedures. The single most important document for making
+the security-auditor agent behave like a real assessor.
+
+---
+
+### NIST SP 800-30 Rev. 1 — Guide for Conducting Risk Assessments
+
+| Field | Value |
+|---|---|
+| Full title | Guide for Conducting Risk Assessments |
+| Issuing authority | NIST |
+| Version | Rev 1 |
+| Published | September 2012 |
+| Downloaded | 2026-03-15 |
+| Local path | `nist/sp800-30r1.pdf` |
+| Source URL | https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-30r1.pdf |
+| SHA-256 | `f214087f0bdb35932a28c16eb93932a33c67a6edfb5e6f1638866bd201c98e04` |
+| Status | ✓ Downloaded |
+
+**Key relevance**: Risk assessment methodology — threat identification, likelihood
+determination, impact analysis. Underpins the severity model in the assessment engine.
+
+---
+
+### NIST SP 800-39 — Managing Information Security Risk
+
+| Field | Value |
+|---|---|
+| Full title | Managing Information Security Risk: Organization, Mission, and Information System View |
+| Issuing authority | NIST |
+| Version | Initial |
+| Published | March 2011 |
+| Downloaded | 2026-03-15 |
+| Local path | `nist/sp800-39.pdf` |
+| Source URL | https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-39.pdf |
+| SHA-256 | `cf680760d171fc590396c1d98eef184af96efa971ef9880830cd2912ea1a54a8` |
+| Status | ✓ Downloaded |
+
+**Key relevance**: Enterprise risk governance — how risk decisions roll up from system
+level to organizational level. Provides the framing for how UMRS assessment findings
+feed into broader accreditation decisions.
+
+---
+
+---
+
 ## Pending Documents
 
 The following documents are referenced in CLAUDE.md but not yet downloaded.

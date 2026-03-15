@@ -2,6 +2,7 @@
 [collapsible]
 * xref:structured-logging.adoc[Structured Activity Logging]
 * xref:how-to-structure-log.adoc[Configuring Structured Logs]
+* xref:boot-id.adoc[Linux Boot ID and Event Epochs]
 * xref:logging-capacity.adoc[Log capacity planning]
 * xref:log-lifecycle-model.adoc[Log lifecycle model]
 * xref:log-tuning.adoc[Log filesystem and journald tuning]

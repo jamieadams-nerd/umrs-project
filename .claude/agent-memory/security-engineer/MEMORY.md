@@ -42,6 +42,17 @@ First observed: `rpm.rs` + `dpkg.rs` stubs. Flag in every future review.
 `Path::exists()` is a TOCTOU check-then-use. For package DB or security-file
 presence, require at minimum a `statfs` magic check after existence confirmation.
 Record `fs_magic` in the EvidenceRecord. Flag everywhere this appears.
+Also seen in posture module: `configured.rs` and `modprobe.rs` use `dir.exists()`
+before `read_dir()`. Correct fix: remove the guard and handle `NotFound` from
+`read_dir()` / `read_to_string()` directly (matching `BootIdReader` pattern).
+
+### Pattern: collect_one / summary debug log leaking raw configured values
+Any function that assembles a `SignalReport` and logs both live and configured
+raw values at `log::debug!` WITHOUT `#[cfg(debug_assertions)]` gating violates
+Error Information Discipline. The loader functions (`configured.rs`,
+`modprobe.rs`) suppress values correctly; the assembler (`snapshot.rs:collect_one`)
+must not bypass that discipline. Flag whenever a summary log emits `c.raw` for
+configured values from /etc/ paths outside debug_assertions gating.
 
 ### Pattern: Second path-based file open after statx
 A file selected via `statx` in one phase and re-opened by path in a later
@@ -63,6 +74,13 @@ First observed: `release_parse.rs` `read_candidate()` re-opening by path.
   string, silently suppressing BootDrift contradiction for all 4 DMA-surface
   blacklist signals. Also: module parameter values logged unredacted at debug
   level during modprobe.d merge.
+  **Status: findings now RESOLVED in current code (blacklist sentinel fix implemented).**
+- `posture-security-review-phase2a.md` — 7 findings (0C, 1H, 4M, 2L)
+  Key issue (F-01 HIGH): `collect_one` debug summary log in `snapshot.rs` emits
+  raw configured values for ALL 27 signals in release builds — bypasses the
+  Error Information Discipline applied in `configured.rs` and `modprobe.rs`.
+  F-05 MEDIUM: negative sysctl.d configured values (e.g., `perf_event_paranoid=-1`)
+  parse as `None` in `evaluate_configured_meets`, suppressing EphemeralHotfix.
 
 ## Posture Probe — Known Type Patterns
 - `ModprobeConfig::raw` field for blacklist signals uses sentinel `"blacklisted"`.

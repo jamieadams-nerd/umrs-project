@@ -1,0 +1,463 @@
+= High Availability vs High Assurance: A Historical Record
+:toc: left
+:toclevels: 2
+:description: The history of redundancy engineering in technology — and why high availability is not the same as high assurance.
+
+// This page exists to establish the distinction between high availability (HA) and
+// high assurance in technical documentation. The two terms are frequently confused.
+// High availability addresses uptime and fault tolerance. High assurance addresses
+// correctness, integrity, and security trustworthiness. These are different engineering
+// disciplines with different goals, different failure modes, and different design methods.
+
+The abbreviation HA is used throughout the computing industry to mean *high availability* —
+systems engineered for continuous uptime, fault tolerance, and service continuity.
+In the UMRS project, HA does not appear as an abbreviation because it would be confused
+with *high assurance*, which is an entirely different engineering discipline.
+
+This page traces the history of redundancy and availability engineering to show where
+high availability came from and why it is distinct from high assurance.
+
+== Why This Distinction Matters for UMRS
+
+High availability and high assurance address different problems:
+
+[cols="1,2,2"]
+|===
+| Dimension | High Availability | High Assurance
+
+| *Goal*
+| Keep the service running
+| Prove that the result is correct and trustworthy
+
+| *Threat*
+| Hardware failure, network outage, software crash
+| Incorrect behavior, policy violation, security compromise
+
+| *Success measure*
+| Uptime percentage (nines)
+| Correctness of enforcement; absence of bypass conditions
+
+| *Primary technique*
+| Redundant components, failover, replication
+| Independent verification, provenance checking, non-bypassable enforcement
+
+| *Failure mode*
+| Service unavailable
+| Service available but wrong or compromised
+
+| *Correctness assumed?*
+| Yes — replicas assumed identical and correct
+| No — independent mechanisms must agree
+|===
+
+A system can be highly available but insecure.
+A system can be high assurance but have planned maintenance windows.
+Neither property implies the other.
+
+UMRS is designed for high assurance, not high availability.
+When UMRS detects a security enforcement failure, the correct response may be to halt
+the affected service — which is the opposite of an availability-optimized system's response.
+
+== Part 1 — The Origins of Redundancy Engineering
+
+=== Telecommunications (Early–Mid 20th Century)
+
+The earliest large-scale redundancy concepts originated in telecommunications networks,
+long before digital computing required high availability.
+
+Telephone systems built in the early and mid-20th century faced a fundamental reliability
+problem: a single switching office or trunk line failure could disconnect entire regions.
+
+Bell Labs and other telecom engineering organizations developed techniques to prevent this:
+
+* *Alternate routing* — networks designed so traffic could be rerouted through alternate
+  switching centers if a direct path failed.
+* *Trunk diversity* — cities connected by multiple trunk circuits, physically separated to
+  avoid common-mode failures.
+* *Protection switching* — automatic circuit failover when a failure occurred.
+
+These techniques established the earliest form of path redundancy and introduced
+terminology still used today:
+
+[cols="1,2"]
+|===
+| Term | Meaning
+
+| Alternate routing | Multiple network routes between points
+| Protection switching | Automatic circuit failover
+| Trunk diversity | Multiple physical connections
+| Carrier diversity | Using different telecom providers
+|===
+
+=== Military Survivability Engineering (Cold War Era)
+
+During the Cold War, communications reliability became a national security concern.
+DARPA, the RAND Corporation, and military communications laboratories studied survivable
+communication systems — networks that could continue functioning even if parts were destroyed.
+
+Key techniques developed in this era:
+
+* *Decentralized network topology* — many distributed nodes instead of central switching,
+  reducing single points of failure.
+* *Packet switching* — messages divided into packets that could travel independently
+  on different routes.
+* *Dynamic routing* — routing decisions changed at runtime based on network conditions.
+
+These ideas formed the basis of ARPANET, the precursor to the Internet.
+The goal was availability after partial destruction — not correctness of content.
+
+=== Aerospace Reliability Engineering
+
+A major advance in redundancy engineering came from spacecraft and aircraft design.
+Unlike terrestrial systems, spacecraft cannot be repaired after launch.
+Failures must be tolerated by design.
+
+*Triple Modular Redundancy (TMR)*
+
+Three processors perform the same computation simultaneously.
+A voter circuit determines the correct output.
+If one processor produces an incorrect result, the other two override it.
+
+[source]
+----
+CPU A
+CPU B  → Majority Voter → Output
+CPU C
+----
+
+*Fly-by-wire aircraft*
+
+Modern aircraft replaced mechanical flight controls with electronic systems.
+The F-16, F-18, and Airbus flight control systems use three or four redundant flight
+computers that continuously compare results.
+
+Terminology from aerospace reliability engineering:
+
+[cols="1,2"]
+|===
+| Term | Meaning
+
+| TMR | Triple Modular Redundancy
+| Voter circuit | Majority decision mechanism
+| Fault containment | Prevents propagation of faults
+| Graceful degradation | Reduced functionality instead of total failure
+|===
+
+NOTE: Aerospace TMR is primarily an *availability* mechanism — it keeps the aircraft
+flying. The voter does not verify that the computation is *correct in a security sense*,
+only that a majority of processors agreed. This is distinct from the assurance redundancy
+used in high-assurance security systems.
+
+== Part 2 — Computing Hardware Redundancy
+
+=== Early Computers: Repairability (1940s–1960s)
+
+Early computers (ENIAC, UNIVAC, IBM mainframes) did not incorporate redundancy.
+Failures were frequent due to vacuum tube failures and thermal stress.
+The strategy was rapid repair:
+
+* Spare parts inventories of replacement components
+* Modular construction for quick replacement
+* Metrics introduced: *MTBF* (Mean Time Between Failures) and *MTTR* (Mean Time To Repair)
+
+=== Field Replaceable Units (1960s–1980s)
+
+Vendors began designing systems specifically for field servicing.
+A *Field Replaceable Unit (FRU)* is a component designed to be replaced on site without
+factory repair. Examples: power supplies, CPU boards, memory modules, disk controllers.
+
+FRUs reduced repair time significantly but systems still relied on single active components.
+Availability improved through faster repair, not through eliminating downtime.
+
+=== Embedded Controllers and Intelligent Hardware
+
+A turning point occurred when hardware components began including embedded processors
+and firmware. Earlier components were passive devices — disk drives, power supplies, and
+interface boards could not monitor their own health or coordinate failover.
+
+Embedded microcontrollers changed this by enabling hardware to:
+
+* Detect failures and isolate faulty components
+* Coordinate failover operations
+* Support live component replacement
+
+This development made modern hot-swap, RAID, and redundant controller architectures
+possible.
+
+=== RAID and Storage Redundancy
+
+RAID technology was introduced in the late 1980s. Common RAID levels:
+
+[cols="1,2"]
+|===
+| Level | Purpose
+
+| RAID 1 | Mirroring — exact duplicate of all data
+| RAID 5 | Parity protection — one disk failure tolerated
+| RAID 6 | Dual parity — two disk failures tolerated
+| RAID 10 | Mirrored striping — performance and redundancy combined
+|===
+
+=== Hot-Swap Hardware
+
+Hot-swap technology allowed components to be replaced while systems remained operational.
+This required embedded hardware logic to detect device insertion, manage power sequencing,
+and initialize hardware safely.
+
+[cols="1,2"]
+|===
+| Term | Meaning
+
+| Hot swap | Replace component while system is running
+| Hot plug | Device insertion detected automatically
+| Cold spare | Replacement not yet installed
+| Warm spare | Installed but inactive
+|===
+
+=== Redundant Controllers and Multipath
+
+Enterprise systems introduced dual controllers and multiple data paths.
+
+[source]
+----
+Server
+  |        |
+HBA A    HBA B
+  |        |
+SAN A    SAN B
+  |        |
+Controller A
+Controller B
+----
+
+This architecture survives controller failures, cable failures, and switch failures.
+
+[cols="1,2"]
+|===
+| Term | Meaning
+
+| Active-Active | Both controllers active simultaneously
+| Active-Passive | Secondary controller in standby
+| Multipathing | Multiple I/O routes to the same storage
+| Dual fabric | Two independent SAN networks
+|===
+
+== Part 3 — Facility and Geographic Redundancy
+
+=== Data Center Infrastructure
+
+Redundancy expanded to the facility level.
+
+*Power systems*
+
+[cols="1,2"]
+|===
+| Model | Meaning
+
+| N | Minimum required capacity
+| N+1 | One redundant component
+| 2N | Fully duplicated systems
+| 2N+1 | Dual systems plus spare
+|===
+
+Data centers deployed multiple utility feeds, UPS battery systems, and backup generators.
+Cooling infrastructure incorporated redundant chillers, cooling towers, and air handlers.
+
+=== Geographic Redundancy
+
+Even fully redundant data centers remain vulnerable to regional disasters.
+Organizations developed geographically separated disaster recovery sites with constraints:
+
+* Different power grids
+* Different flood and earthquake zones
+* Independent telecommunications providers
+
+=== Storage Replication Technologies
+
+[cols="1,3"]
+|===
+| Model | Behavior
+
+| Synchronous replication | Data written to both sites simultaneously — zero data loss,
+latency-sensitive, limited by distance.
+
+| Asynchronous replication | Write occurs at primary site first; replication follows —
+supports long distances, small window of possible data loss.
+|===
+
+== Part 4 — Cluster Software and Failover Orchestration
+
+=== High-Availability Clusters (Late 1990s–Early 2000s)
+
+Replication alone was not sufficient — software had to coordinate failover between servers.
+Cluster software emerged to perform this function.
+
+A cluster typically included:
+
+* Node A (Primary) and Node B (Standby)
+* Shared storage
+* Heartbeat network
+
+Cluster software monitored system health and initiated failover when necessary.
+
+=== Heartbeat and Automatic Failover
+
+Nodes periodically exchange heartbeat messages. If heartbeats stop, the cluster assumes
+a node failure and performs automatic failover:
+
+. Detect failure
+. Stop services on failed node
+. Activate services on standby node
+. Mount shared storage
+. Redirect network traffic
+
+Major cluster platforms included Veritas Cluster Server, Sun Cluster, Oracle RAC, and
+Microsoft Cluster Server.
+
+=== Split Brain and Quorum
+
+Clusters face the *split brain* problem: if nodes lose communication but both continue
+operating, they may believe they are each the active system, causing conflicting writes
+and data corruption.
+
+Solutions:
+
+* *Quorum* — only the node group with quorum (majority agreement) remains active.
+* *Fencing* — failed nodes are forcibly isolated via power fencing, storage fencing, or
+  network isolation.
+
+=== Availability Metrics
+
+[cols="1,2"]
+|===
+| Availability | Downtime per year
+
+| 99% | ~3.6 days
+| 99.9% | ~8.7 hours
+| 99.99% | ~52 minutes
+| 99.999% | ~5 minutes
+|===
+
+These "nines" became standard contractual guarantees in service level agreements.
+Failure to meet them could result in financial penalties and service credits.
+
+== Part 5 — Assurance Redundancy vs Availability Redundancy
+
+The cluster and replication era represented the maturation of availability-oriented
+redundancy. A separate engineering tradition — assurance-oriented redundancy — developed
+in parallel in aerospace, nuclear control, and high-assurance security systems.
+
+=== The Distinction
+
+*Availability redundancy* keeps services running when components fail.
+Correctness is assumed. If one server fails, the backup serves identical data.
+The focus is uptime.
+
+*Assurance redundancy* detects incorrect or compromised results.
+Correctness is verified, not assumed. If two independent implementations disagree,
+the system rejects the result and fails closed.
+The focus is trustworthiness.
+
+=== Assurance Redundancy Patterns
+
+[cols="1,3"]
+|===
+| Pattern | Description
+
+| N-Version Programming
+| Multiple independently developed implementations of the same function run in parallel.
+Results are compared or voted. Reduces common-mode failures. Used in avionics, safety
+controllers, and cross-domain security systems.
+
+| Self-Checking Pair (SCP)
+| Two independent channels compute the same result. A comparator checks agreement.
+If outputs differ, the system fails closed. Used extensively in fly-by-wire and
+safety-critical controllers.
+
+| Diverse Self-Checking Pair (DSCP)
+| A self-checking pair where the two channels are intentionally different implementations
+(different languages, algorithms, or teams) to reduce correlated failure. UMRS uses this
+pattern: the `nom`-based declarative parser and the `FromStr`-based imperative parser
+must agree on every security label before access is granted.
+
+| Recovery Blocks
+| Primary algorithm runs; an acceptance test validates the result; if validation fails,
+an alternate implementation runs. Formalized by Randell (1975). Redundancy in time
+rather than in space.
+
+| Byzantine Fault Tolerance
+| Multiple replicas cross-validate each other. Designed for environments where some
+components may behave maliciously rather than just failing silently. Requires 3f+1 nodes
+to tolerate f Byzantine faults.
+
+| End-to-End Integrity Verification
+| Multiple layers independently validate data integrity. Even if an intermediate layer
+checks integrity, endpoints verify independently. Principle from Saltzer, Reed, and Clark.
+|===
+
+=== Why Common-Mode Failure Matters
+
+The central challenge in assurance redundancy is *common-mode failure*: two implementations
+may share the same specification error, algorithmic mistake, or library vulnerability,
+causing them to fail in the same way.
+
+High-assurance systems mitigate this by introducing diversity:
+
+* Different programming languages
+* Different algorithms
+* Different development teams
+* Different compilers
+* Different operating environments
+
+The goal is to reduce correlated failure — to make it unlikely that the same bug
+compromises both independent paths.
+
+=== The Assurance Principle
+
+____
+Trust is replaced by independent verification.
+
+Instead of believing a single component is correct, the system asks:
+do multiple independent mechanisms agree on the result?
+____
+
+This principle appears in safety engineering, nuclear control systems, avionics,
+cryptographic protocols, and cross-domain security systems.
+It is the foundation of the Two-Path Integrity (TPI) pattern in UMRS.
+
+== How These Traditions Connect to UMRS
+
+UMRS draws from the assurance redundancy tradition, not the availability redundancy
+tradition. The specific patterns:
+
+[cols="2,3"]
+|===
+| UMRS mechanism | Assurance pattern
+
+| TPI (Two-Path Integrity) — `nom` + `FromStr` parsers must agree
+| Diverse Self-Checking Pair
+
+| Fail-closed on TPI disagreement
+| SCP mismatch → reject result
+
+| `CategorySet` bitmask — fixed-size, deterministic layout
+| Deterministic execution; no allocator influence on timing
+
+| Inode-anchored xattr reads via `rustix`
+| Non-bypassable — no path-based bypass possible
+
+| KATTRS statfs magic verification
+| Provenance verification — confirms kernel filesystem identity before trusting the read
+|===
+
+UMRS does use availability concepts in infrastructure design, but they are secondary.
+When a security check fails, UMRS does not attempt to keep the service running.
+It fails closed and reports the condition.
+
+== See Also
+
+* xref:architecture:rationale-strongly-typed.adoc[Strong-typing rationale]
+* xref:patterns:pattern-tpi.adoc[Two-Path Independence (TPI)]
+* xref:patterns:pattern-non-bypassability.adoc[Non-Bypassability]
+* xref:patterns:pattern-fail-closed.adoc[Fail-Closed]
+* xref:ROOT:what-is-high-assurance.adoc[What Is High Assurance?]

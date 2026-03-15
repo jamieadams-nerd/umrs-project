@@ -1,24 +1,327 @@
 = Truth and Trust Concepts
 :toc: left
-:description: Placeholder — documentation on ground truth, trust anchors, and the distinction between custody trust and content trust in UMRS.
+:toclevels: 2
+:description: Runtime Source of Truth, non-bypassability, and enforcement integrity — the foundational operational principles of UMRS.
 
-NOTE: This page is a placeholder. Content will be added in a future session covering
-ground truth, trust anchors, the distinction between custody trust and content trust,
-and how UMRS establishes verifiable truth in kernel attribute reads and audit records.
+// NIST SP 800-53 CM-6 — Configuration settings
+// NIST SP 800-53 CA-7 — Continuous monitoring
+// NIST SP 800-53 SI-7 — Software and information integrity
+// NIST SP 800-53 SI-10 — Information input validation
+// NIST SP 800-53 AC-3 — Access enforcement
+// NSA RTB RAIN — Non-bypassable security enforcement
 
-== Planned Coverage
+UMRS is built on two foundational operational principles: the *Runtime Source of Truth*
+and *Non-Bypassability*. These principles define how UMRS treats system state, why it
+queries the kernel directly rather than reading configuration files, and what it means
+for a security control to be trustworthy.
 
-* What "ground truth" means in a high-assurance system and why names (paths, labels)
-  are not ground truth — inodes and kernel measurements are.
-* Trust anchors: how UMRS roots trust in kernel measurements (IMA), kernel attribute
-  provenance checks (statfs magic), and cryptographic key custody.
-* Custody trust vs content trust — a system can assert that a file has not changed
-  without asserting that the file's content is correct or appropriate.
-* The distinction between a system that logs access and a system that enforces
-  trustworthy behavior by design.
+== Runtime Source of Truth
+
+=== Overview
+
+UMRS evaluates system security posture using the Runtime Source of Truth principle.
+
+Under this principle, the authoritative security state of a system is determined by
+the runtime state enforced by the kernel — not by configuration files that describe
+the intended system configuration.
+
+Configuration files represent administrative intent. They do not guarantee that the
+system is currently enforcing that intent.
+
+Therefore, all UMRS inspection tools treat the kernel runtime state as the
+authoritative source of truth for system security controls.
+
+=== Rationale
+
+On Linux systems, configuration artifacts such as `/etc/selinux/config`,
+`/etc/sysctl.conf`, `/etc/security/*`, systemd unit files, and bootloader parameters
+describe how a system should behave after configuration or reboot.
+
+These artifacts do not necessarily reflect the actual enforcement state of the running
+system. A system may deviate from its intended configuration for several reasons:
+
+* Runtime administrative changes
+* Temporary debugging or maintenance actions
+* Configuration drift
+* Partial configuration application
+* System misconfiguration
+* Malicious tampering
+
+Because of these possibilities, relying solely on configuration files can produce false
+assumptions about the security posture of the system.
+
+UMRS therefore verifies security controls by interrogating the active runtime state of
+the kernel and security subsystems.
+
+=== Effective State vs Intended State
+
+UMRS distinguishes between two types of system state:
+
+[cols="1,3"]
+|===
+| State type | Definition
+
+| *Intended State*
+| The system configuration defined by administrators.
+Expressed in configuration files, policy files, persistent boot parameters, and application
+configuration. These artifacts describe how the system is expected to behave.
+
+| *Effective State*
+| The actual runtime behavior enforced by the kernel.
+Determined by querying kernel interfaces, `/proc`, `/sys`, security subsystem interfaces,
+active mount configuration, and runtime system parameters.
+This is what the system is enforcing at this moment.
+|===
+
+When Intended State and Effective State differ, the system is experiencing
+*configuration drift*. Configuration drift indicates that the running system is not
+enforcing the security posture defined by persistent configuration.
+
+=== Runtime Authority Principle
+
+UMRS tools follow the Runtime Authority Principle:
+
+The kernel runtime state is the authoritative source of truth for all security
+enforcement decisions.
+
+When evaluating system security controls, UMRS always prioritizes runtime evidence
+in this order:
+
+. Kernel runtime state
+. Security subsystem state (SELinux, LSM, capabilities)
+. Active mount and filesystem state
+. Configuration artifacts expressing administrative intent
+
+This ordering ensures that security posture assessments reflect actual system behavior
+rather than configuration assumptions.
+
+=== Example: SELinux Enforcement Drift
+
+[source]
+----
+Configuration artifact:
+/etc/selinux/config
+    SELINUX=enforcing
+
+Runtime kernel state:
+/sys/fs/selinux/enforce = 0
+
+Interpretation:
+  Effective state:  permissive
+  Intended state:   enforcing
+
+Result: SECURITY DRIFT DETECTED
+----
+
+The system is running with SELinux in permissive mode despite persistent configuration
+specifying enforcing mode. UMRS reports the effective security posture as permissive,
+because the kernel is the authoritative enforcement mechanism.
+
+=== Example: Kernel Module Loading
+
+[source]
+----
+Configuration intent:
+/etc/sysctl.conf
+    kernel.modules_disabled = 1
+
+Runtime state:
+/proc/sys/kernel/modules_disabled = 0
+
+Interpretation:
+  Effective state:  module loading permitted
+  Intended state:   module loading disabled
+
+Result: SECURITY DRIFT DETECTED
+----
+
+Kernel module loading is currently permitted despite persistent configuration
+specifying that it should be disabled.
+
+=== UMRS Design Axiom
+
+UMRS is built on this axiom:
+
+____
+Configuration describes intent. The kernel enforces reality.
+____
+
+All UMRS inspection tools derive security posture assessments from the runtime state of
+the system, and use configuration artifacts only for drift detection and diagnostic
+analysis.
+
+== Non-Bypassability and Enforcement Integrity
+
+=== Overview
+
+UMRS security evaluations assume that critical enforcement mechanisms must be
+non-bypassable.
+
+A security control is non-bypassable when all relevant operations must pass through the
+enforcement mechanism, and there exists no alternate path that allows the control to be
+circumvented.
+
+If an enforcement mechanism can be bypassed, the system cannot reliably enforce the
+intended security policy.
+
+=== Reference Monitor Properties
+
+The concept of non-bypassability originates from the Reference Monitor model, which
+defines three required properties for trustworthy security enforcement. See
+xref:reference-monitor.adoc[Reference Monitor Design] for the full treatment.
+
+The three properties are:
+
+[cols="1,3"]
+|===
+| Property | Description
+
+| Non-bypassable
+| All security-relevant operations must go through the enforcement mechanism.
+
+| Tamper-resistant
+| The enforcement mechanism cannot be modified by untrusted subjects.
+
+| Verifiable
+| The enforcement mechanism is small and analyzable enough to validate.
+|===
+
+In Linux systems, the kernel security subsystem (LSM + SELinux) is the practical
+realization of a reference monitor. UMRS verifies that this mechanism satisfies all
+three properties at runtime.
+
+=== Bypassable Controls
+
+A security control is bypassable if there exists a path that avoids the enforcement
+mechanism. Examples include:
+
+* Alternate system interfaces that avoid policy checks
+* Privileged operations that disable enforcement
+* Kernel configuration options that silently disable controls
+* Runtime states that weaken enforcement mechanisms
+* Subsystems that operate outside the intended security model
+
+When such conditions occur, the security guarantees expected from the control are
+invalidated — even if the configuration files say the control is active.
+
+=== Relationship to Runtime Source of Truth
+
+The Runtime Source of Truth principle ensures that UMRS tools evaluate the actual
+enforcement state of the system. This is critical for detecting bypass conditions.
+
+A system may appear correctly configured based on policy files, but the enforcement
+mechanism may be inactive or degraded at runtime. UMRS evaluates both:
+
+* Runtime enforcement state
+* Structural enforcement integrity
+
+This allows the system to detect cases where a control appears present but is not
+actually enforcing policy.
+
+=== Example: SELinux Permissive Mode as Bypass Condition
+
+[source]
+----
+Configuration artifact:
+/etc/selinux/config
+    SELINUX=enforcing
+
+Runtime state:
+/sys/fs/selinux/enforce = 0
+
+Interpretation:
+  SELinux policy is loaded but not enforced.
+
+Security implication:
+  The SELinux enforcement mechanism is effectively bypassable.
+  Policy rules exist but do not prevent access violations.
+
+UMRS reports: enforcement state DEGRADED
+----
+
+=== Example: Kernel Module Loading as Bypass Vector
+
+[source]
+----
+Runtime state:
+/proc/sys/kernel/modules_disabled = 0
+
+Security implication:
+  Kernel module loading is enabled.
+  Security enforcement mechanisms may be modifiable.
+  This represents a potential bypass vector against kernel-level protections.
+----
+
+If kernel module loading is permitted, a subject with sufficient privileges could load
+a module that disables or interferes with security mechanisms. This is a structural
+bypass condition, not a configuration error.
+
+=== Enforcement Integrity Checks
+
+UMRS tools evaluate enforcement mechanisms for both presence and integrity. Typical
+checks include:
+
+* Verification that the enforcement subsystem is active
+* Validation that enforcement modes are not degraded
+* Confirmation that enforcement hooks cannot be bypassed
+* Identification of configuration states that weaken enforcement
+
+These checks ensure that the system's security controls remain structurally sound and
+non-bypassable.
+
+=== UMRS Security Principle
+
+UMRS adopts this security principle:
+
+____
+Security controls must be enforced by mechanisms that are
+non-bypassable, tamper-resistant, and verifiable.
+____
+
+Runtime inspection tools are therefore designed to identify conditions where enforcement
+mechanisms are weakened, bypassable, or inactive — not only conditions where the
+configuration is wrong.
+
+== Operational Implications
+
+Administrators should treat any condition that weakens enforcement integrity as a
+high-priority security issue.
+
+When UMRS reports configuration drift or a degraded enforcement state, appropriate
+responses include:
+
+* Restoring enforcement modes (`setenforce 1`)
+* Reapplying system configuration
+* Disabling runtime bypass mechanisms
+* Validating kernel configuration
+* Performing system integrity checks
+* Investigating the cause of drift — accidental or deliberate
+
+Ensuring that security controls remain non-bypassable is essential for maintaining the
+trustworthiness of the system.
+
+== What "Ground Truth" Means in UMRS
+
+In high-assurance systems, *ground truth* is the observable system state that cannot
+be overridden by configuration artifacts. For Linux security controls, ground truth is
+obtained from:
+
+* `/proc` and `/sys` kernel pseudo-filesystems
+* Kernel APIs and security subsystem interfaces
+* `securityfs` and `selinuxfs`
+* Inode-level filesystem state (not path names)
+
+Path names and configuration files are not ground truth — they are advisory. Inodes
+and kernel-reported state are ground truth. This is why UMRS anchors all security
+checks to kernel interfaces rather than to configuration file parsing.
+
+See xref:integrity-and-provenance.adoc[Integrity and provenance] for the related
+treatment of trust anchors and provenance verification.
 
 == See Also
 
 * xref:integrity-and-provenance.adoc[Integrity and provenance]
 * xref:reference-monitor.adoc[Reference monitor design]
 * xref:architecture:history/case-studies.adoc[High-assurance failure case studies]
+* xref:patterns:pattern-non-bypassability.adoc[Non-Bypassability pattern]
+* xref:patterns:pattern-fail-closed.adoc[Fail-Closed pattern]

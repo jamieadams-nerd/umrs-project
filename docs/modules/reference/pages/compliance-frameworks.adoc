@@ -62,6 +62,151 @@ for how to read and write those citations.
  vendoring OpenSSL and the preference for FIPS-compatible Rust crates.
 |===
 
+== CMMC Level Structure
+
+CMMC 2.0 is not simply a subset of NIST SP 800-53. It is a certification mechanism that
+enforces specific requirements tailored to defense contractors protecting FCI (Federal
+Contract Information) and CUI.
+
+[cols="1,2,3", options="header"]
+|===
+| Level | Requirement basis | Scope
+
+| Level 1 — Foundational
+| 15 practices from FAR 52.204-21
+| Basic safeguarding of FCI. Self-assessment permitted.
+
+| Level 2 — Advanced
+| 110 practices aligned with NIST SP 800-171 Rev 2
+| Protection of CUI. Third-party assessment required for prioritized programs.
+  This is UMRS's minimum target baseline.
+
+| Level 3 — Expert
+| 110 practices from NIST SP 800-171 plus enhanced requirements from NIST SP 800-172
+| Advanced persistent threat (APT) resistance for highest-priority programs.
+  Government-led assessment required.
+
+|===
+
+CMMC does not mandate specific programming languages or implementation techniques.
+It requires demonstrated process discipline and evidence of compliance — documented
+code reviews, automated scanning, version-controlled configurations, and secure SDLC
+practices are the categories assessors evaluate.
+
+=== CMMC Coding-Level Focus Areas
+
+The areas of CMMC Level 2 most directly relevant to software development are:
+
+*Configuration Management (CM).* Code must be version-controlled, configurations
+documented, and build processes auditable. Baselines must be established and drift
+detected.
+
+*System and Information Integrity (SI).* Known vulnerabilities must be patched.
+The development environment must be scanned. Code must be reviewed for flaws before
+promotion.
+
+*Secure Development Life Cycle (SDLC) evidence.* Assessors expect evidence that
+security is embedded in the development process: static analysis results, documented
+code review records, and test outcomes.
+
+The SSDF (NIST SP 800-218) is the DoD's preferred framework for specifying how
+these CMMC obligations are met at the implementation level.
+
+'''
+
+== NIST SP 800-218 SSDF Practice Groups
+
+The SSDF organizes secure software development obligations into four practice groups.
+The table below provides the authoritative outline. The UMRS pattern library and the
+compliance annotations guide give specific Rust implementations for each applicable
+practice.
+
+[cols="1,2,4", options="header"]
+|===
+| Group | Practices | Goal
+
+| *PO* — Prepare the Organization
+| PO.1 Define Software Security Requirements +
+PO.2 Implement Roles and Responsibilities +
+PO.3 Implement Supporting Toolchains +
+PO.4 Define and Use Criteria for Checks +
+PO.5 Implement and Maintain Secure Environments
+| Ensure people, processes, and technology are ready to perform secure development.
+
+| *PS* — Protect the Software
+| PS.1 Protect Code Repositories +
+PS.2 Verify Software Release Integrity +
+PS.3 Archive and Protect Software Releases
+| Protect all components of the software from tampering and unauthorized access.
+
+| *PW* — Produce Well-Secured Software
+| PW.1 Design Software to Meet Security Requirements +
+PW.2 Review Software Designs +
+PW.3 Reuse Well-Secured Software Components +
+PW.4 Implement Secure Coding Practices +
+PW.5 Configure Build Processes +
+PW.6 Review Code +
+PW.7 Test Executable Code +
+PW.8 Configure Software Securely
+| Produce software with minimal security vulnerabilities. PW.4 drives UMRS coding patterns.
+
+| *RV* — Respond to Vulnerabilities
+| RV.1 Identify and Confirm Vulnerabilities +
+RV.2 Assess, Prioritize, and Remediate Vulnerabilities +
+RV.3 Analyze Root Causes
+| Identify and remediate vulnerabilities in released software.
+
+|===
+
+=== PW.4 Secure Coding Practices — UMRS Mapping
+
+PW.4 is the practice with the most direct impact on source code. The sub-tasks map to
+specific Rust mechanisms enforced in this codebase.
+
+[cols="1,2,2,2", options="header"]
+|===
+| Sub-task | Goal | Rust mechanism | UMRS implementation
+
+| PW.4.1
+| Validate all input from untrusted sources
+| Parse into typed structs at the boundary (`TryFrom`, `FromStr`).
+  "Parse, don't validate" — if construction succeeds, the value is proven valid.
+| `SecurityContext`, `CategorySet`, `SensitivityLevel` constructors all return `Result`.
+  Downstream code receives a validated type, not a raw string.
+
+| PW.4.2
+| Encode output; do not reflect sensitive data to callers
+| Separate what goes to audit logs from what is returned in errors.
+  Variable data goes to `log::error!`; caller-visible errors describe the category only.
+| `SecureReader::execute_read()` — path is logged, not returned in the error string.
+
+| PW.4.3
+| Prevent memory corruption: buffer overflows, use-after-free
+| `#![forbid(unsafe_code)]` in every crate root — a compile-time proof, not a policy.
+  Rust's ownership model and borrow checker enforce safety without runtime overhead.
+| Every crate root carries `#![forbid(unsafe_code)]`. No unsafe blocks in the workspace.
+
+| PW.4.4
+| Handle integer overflows and underflows
+| `.checked_add()`, `.checked_sub()`, `.checked_mul()` — return `Option`, forcing
+  explicit handling. `.get(i)` instead of `buf[i]` for security-relevant indexing.
+  `subtle::ConstantTimeEq` for credential comparisons.
+| `CategorySet` bit operations; `SensitivityLevel` arithmetic.
+
+| PW.4.5
+| Use approved cryptographic modules and algorithms
+| FIPS 140-2/3 validated implementations only. Algorithm choice is necessary but
+  not sufficient — the implementing module must carry a CMVP certificate number.
+| FIPS mode assumed active on all deployments. `ProcFips` is a first-class kernel
+  attribute in `umrs-platform`. See xref:cryptography:fips-cryptography-cheat-sheet.adoc[FIPS cryptography reference].
+
+|===
+
+See xref:devel:compliance-annotations.adoc[Compliance annotations guide] for how these
+sub-tasks translate to rustdoc annotation practice.
+
+'''
+
 == How These Standards Interact
 
 NIST 800-53 provides the control catalog — a comprehensive set of

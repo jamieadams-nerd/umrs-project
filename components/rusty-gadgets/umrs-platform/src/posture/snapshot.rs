@@ -708,7 +708,7 @@ fn read_configured_modprobe(
 /// `ConfiguredValue` summary for insertion into `SignalReport`.
 ///
 /// NIST SP 800-53 CM-6: Trust Gate — config reads gated on live availability.
-/// NIST 800-218 SSDF PW.4: pattern timing in debug builds.
+/// NIST SP 800-218 SSDF PW.4: pattern timing in debug builds.
 fn read_configured_fips(
     cmdline: Option<&CmdlineReader>,
     live_value: Option<&LiveValue>,

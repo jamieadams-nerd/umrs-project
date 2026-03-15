@@ -465,3 +465,20 @@ Connects to existing patterns: Zeroize (sealing key), Fail-Closed (seal failure)
 Loud Failure (log anomaly), Provenance Verification (pipeline inputs).
 
 ---
+
+## [2026-03-14] security-engineer → changelog-updater: posture module Phase 2a security review complete
+
+**Status**: open
+
+Security review of the posture module (Phase 1 + Phase 2a) is complete.
+Report at `.claude/reports/posture-security-review-phase2a.md`.
+
+7 findings (1H, 4M, 2L). Prior HIGH finding (blacklist sentinel) is confirmed resolved.
+New findings require coder attention before deployment. Notable:
+- F-01 HIGH: `collect_one` debug log leaks raw configured values in release builds
+- F-05 MEDIUM: negative sysctl.d configured values suppress EphemeralHotfix detection
+
+Please log the security review completion in `.claude/CHANGELOG.md` under
+the `umrs-platform` / posture probe section.
+
+---

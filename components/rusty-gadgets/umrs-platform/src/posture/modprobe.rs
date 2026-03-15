@@ -43,7 +43,7 @@
 //!   rejected and logged; unrecognised directives are logged at debug and excluded.
 //! - **Layered Separation** (NSA RTB / NIST SP 800-53 SC-3): this module collects
 //!   data only; no formatting, display, or remediation logic.
-//! - **Pattern Execution Measurement** (NIST 800-218 SSDF PW.4): timing logged
+//! - **Pattern Execution Measurement** (NIST SP 800-218 SSDF PW.4): timing logged
 //!   at debug under `#[cfg(debug_assertions)]`.
 //! - **Must-Use Contract** (NIST SP 800-53 SI-10, SA-11): all public functions
 //!   returning `Result` or `Option` carry `#[must_use]`.

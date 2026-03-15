@@ -45,7 +45,7 @@
 //!   through `ContradictionKind` — programmatically matchable.
 //! - **Error Information Discipline** (NIST SP 800-53 SI-11 / RTB Error Discipline):
 //!   crypto-policy content not revealed in error messages.
-//! - **Pattern Execution Measurement** (NIST 800-218 SSDF PW.4): debug-mode
+//! - **Pattern Execution Measurement** (NIST SP 800-218 SSDF PW.4): debug-mode
 //!   timing under `#[cfg(debug_assertions)]`.
 //! - **Must-Use Contract** (NIST SP 800-53 SI-10, SA-11): `FipsCrossCheck` and
 //!   `evaluate()` carry `#[must_use]`.

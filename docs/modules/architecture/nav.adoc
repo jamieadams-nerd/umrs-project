@@ -19,3 +19,4 @@
 ** xref:history/one-way-hashes.adoc[One-way hash algorithms]
 ** xref:history/case-studies.adoc[High-assurance failure case studies]
 ** xref:history/mls-classified-talk.adoc[MLS and the classified world]
+** xref:history/high-availability-history.adoc[High availability vs high assurance]

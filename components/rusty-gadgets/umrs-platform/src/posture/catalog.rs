@@ -17,15 +17,15 @@
 //!
 //! When a new signal is added, the change must pass code review — there is no
 //! silent data-file edit path. This property is important for auditability
-//! under NIST 800-218 SSDF PW.4.
+//! under NIST SP 800-218 SSDF PW.4.
 //!
 //! ## Compliance
 //!
-//! NIST 800-53 CM-6: Configuration Settings — the catalog defines the security
+//! NIST SP 800-53 CM-6: Configuration Settings — the catalog defines the security
 //! baseline against which runtime state is measured.
-//! NIST 800-53 CA-7: Continuous Monitoring — catalog entries enumerate the
+//! NIST SP 800-53 CA-7: Continuous Monitoring — catalog entries enumerate the
 //! complete set of monitored security controls.
-//! NIST 800-218 SSDF PW.4: Compile-time binding of security-relevant constants.
+//! NIST SP 800-218 SSDF PW.4: Compile-time binding of security-relevant constants.
 //! NSA RTB: Compile-Time Path Binding — paths and expected values are
 //! compiler-verified, not runtime-parsed.
 
@@ -40,9 +40,9 @@ use super::signal::{AssuranceImpact, DesiredValue, SignalClass, SignalId};
 /// All instances are `const` and live in the `SIGNALS` array. No heap
 /// allocation is required to access the catalog.
 ///
-/// NIST 800-53 CM-6: each descriptor captures the security baseline
+/// NIST SP 800-53 CM-6: each descriptor captures the security baseline
 /// (desired value) alongside its rationale and NIST control citation.
-/// NIST 800-53 AU-3: `nist_controls` provides the audit control mapping
+/// NIST SP 800-53 AU-3: `nist_controls` provides the audit control mapping
 /// needed for compliance evidence generation.
 pub struct SignalDescriptor {
     /// The typed signal identifier.
@@ -61,7 +61,7 @@ pub struct SignalDescriptor {
     pub impact: AssuranceImpact,
     /// One-sentence rationale for the desired value.
     pub rationale: &'static str,
-    /// Applicable NIST 800-53 and NSA RTB control references.
+    /// Applicable NIST SP 800-53 and NSA RTB control references.
     pub nist_controls: &'static str,
 }
 
@@ -74,8 +74,8 @@ pub struct SignalDescriptor {
 /// Ordered by `SignalId` grouping (kernel self-protection → integrity →
 /// process isolation → filesystem safety → boot-time → special).
 ///
-/// NIST 800-53 CA-7: the catalog is the enumerated monitoring scope.
-/// NIST 800-53 CM-6: each entry encodes the security baseline.
+/// NIST SP 800-53 CA-7: the catalog is the enumerated monitoring scope.
+/// NIST SP 800-53 CM-6: each entry encodes the security baseline.
 pub static SIGNALS: &[SignalDescriptor] = &[
     // ── Kernel Self-Protection ───────────────────────────────────────────
     SignalDescriptor {
@@ -312,9 +312,9 @@ pub static SIGNALS: &[SignalDescriptor] = &[
         // conservative; Phase 2 can integrate FIPS cross-check.
         desired: DesiredValue::CmdlineAbsent("random.trust_cpu=on"),
         impact: AssuranceImpact::Medium,
-        rationale: "Trusting CPU RNG unconditionally may not satisfy FIPS SP 800-90B; \
+        rationale: "Trusting CPU RNG unconditionally may not satisfy NIST SP 800-90B; \
                     RHEL 10 defaults to not trusting it.",
-        nist_controls: "NIST 800-53 SC-12; FIPS SP 800-90B entropy requirements",
+        nist_controls: "NIST 800-53 SC-12; NIST SP 800-90B entropy requirements",
     },
     SignalDescriptor {
         id: SignalId::RandomTrustBootloader,
@@ -325,7 +325,7 @@ pub static SIGNALS: &[SignalDescriptor] = &[
         impact: AssuranceImpact::Medium,
         rationale: "Trusting bootloader-provided entropy requires a verified \
                     boot chain; absent Secure Boot attestation, the seed is untrusted.",
-        nist_controls: "NIST 800-53 SC-12, SI-7; FIPS SP 800-90B entropy requirements",
+        nist_controls: "NIST 800-53 SC-12, SI-7; NIST SP 800-90B entropy requirements",
     },
     // ── Special ──────────────────────────────────────────────────────────
     SignalDescriptor {

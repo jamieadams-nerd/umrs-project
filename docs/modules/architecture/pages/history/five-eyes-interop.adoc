@@ -6,6 +6,10 @@
 // NIST SP 800-171 Rev 2 — CUI protection requirements
 // CMMC 2.0 — operationalized CUI protection assessment
 
+NOTE: This page covers Five Eyes nations (US, UK, Canada, Australia, New Zealand) plus France.
+France is not a Five Eyes member, but it is included here because UMRS is designed
+to support coalition and partner environments that include French-origin information.
+
 The Five Eyes alliance is an intelligence-sharing arrangement among
 the United States, United Kingdom, Canada, Australia, and New Zealand.
 Each member nation handles its own national-origin sensitive-but-unclassified
@@ -35,90 +39,331 @@ custom enforcement logic. With a common abstraction, the UMRS label model
 maps to any scheme by configuring the mapping layer — the enforcement
 mechanism stays the same.
 
-== US CUI Baseline
+== The Four-Axis Normalization Model
 
-The US Controlled Unclassified Information (CUI) program is established
-under Executive Order 13556 and implemented through NIST SP 800-171 and
-32 CFR Part 2002. CUI is unclassified information that requires
-safeguarding based on law, regulation, or government-wide policy.
+To understand how different national schemes compare and how UMRS maps to them, it
+helps to separate unclassified information controls into four independent axes:
 
-CUI uses a registry of categories (e.g., CUI//SP-PRVCY for privacy data,
-CUI//CTI for controlled technical information) rather than hierarchical
-classification levels. In UMRS, CUI categories map to MCS category bits.
+[cols="1,3"]
+|===
+| Axis | Meaning
 
-CUI support is the implemented baseline. All other scheme support described
-in this page is planned and not yet implemented.
+| *Protection tier*
+| The impact level within unclassified — routine, sensitive, higher-but-not-classified.
+Determines baseline handling requirements.
 
-== UK: Official and Official Sensitive
+| *Subject taxonomy*
+| A domain category system (e.g., Law Enforcement, Agriculture, Health).
+Specifies what kind of information is involved, independent of its sensitivity tier.
 
-The United Kingdom uses the Government Security Classifications (GSC) policy.
-The relevant tiers for UMRS are:
+| *Handling requirements*
+| Specific rules for storage, processing, transmission, and disposal.
+May be defined per tier, per category, or both.
 
-* *OFFICIAL* — the majority of public-sector information. Equivalent in
-  sensitivity to CUI in many handling contexts.
-* *OFFICIAL-SENSITIVE* — OFFICIAL information that requires enhanced access
-  controls due to its sensitivity. Carries a handling descriptor that
-  specifies the control set (e.g., OFFICIAL-SENSITIVE LOCSEN for location
-  sensitive material).
+| *Dissemination restrictions*
+| Who the information may be shared with — citizenship limits, need-to-know,
+compartment membership, "no foreign" controls.
+|===
 
-OFFICIAL-SENSITIVE does not map cleanly to a single CUI category but shares
-the same structural pattern: a base marking plus a handling descriptor that
-restricts access to a defined population.
+The US CUI model is unusual in formalizing all four axes explicitly. Most other nations
+formalize only the protection tier and leave the other three to policy guidance or
+organizational judgment.
 
-== Canada: Protected A, B, and C
+=== The Three Structural Philosophies
 
-Canada uses the Government of Canada Security Policy framework. The relevant
-tiers are:
+Five Eyes nations use three distinct structural approaches to unclassified information control:
 
-* *Protected A* — information whose compromise could reasonably be expected
-  to cause injury to an individual, organization, or government.
-* *Protected B* — information whose compromise could reasonably be expected
-  to cause serious injury. Requires stronger access controls than Protected A.
-* *Protected C* — extremely sensitive information whose compromise could
-  reasonably be expected to cause grave injury. Access is tightly restricted.
+[cols="1,2,3"]
+|===
+| Model | Countries | Structure
 
-Protected B is the most common tier encountered in coalition information
-sharing contexts and maps roughly to mid-level CUI sensitivity.
+| Hierarchical ladder
+| Canada, New Zealand
+| Multiple distinct tiers within non-classified information (Protected A/B/C; In-Confidence/Sensitive).
+Tiers represent severity of injury if compromised.
 
-== Australia: OFFICIAL and OFFICIAL:Sensitive
+| Flat tier + caveats
+| United States
+| Single unclassified tier (CUI) with orthogonal subject taxonomy and explicit dissemination controls.
 
-Australia uses the Protective Security Policy Framework (PSPF). The
-relevant tiers are:
+| Flat tier + handling caveat
+| United Kingdom, Australia, France
+| Single official tier (OFFICIAL, Diffusion Restreinte) with a sensitivity marker
+that triggers stricter access and handling rules.
+|===
 
-* *OFFICIAL* — the majority of Australian government information.
-  Comparable to US OFFICIAL handling in scope.
-* *OFFICIAL:Sensitive* — information that requires access controls and
-  handling consistent with its sensitive nature. Carries an optional
-  access-limiting marker (e.g., OFFICIAL:Sensitive CABINET).
+Understanding which model each partner nation uses is essential for designing label mappings
+that represent intent accurately without forcing one nation's philosophy onto another.
 
-OFFICIAL:Sensitive maps structurally to CUI: a base marking plus a
-category descriptor that restricts handling.
+== Per-Country Profiles
 
-== New Zealand: IN-CONFIDENCE and SENSITIVE
+=== United States — CUI
 
-New Zealand uses the New Zealand Government Security Classification System.
-The relevant tiers are:
+*Program name*: Controlled Unclassified Information (CUI) Program +
+*Primary authority*: Executive Order 13556; 32 CFR Part 2002; NIST SP 800-171; NARA CUI Registry
 
-* *IN-CONFIDENCE* — information whose release could damage New Zealand
-  interests or create legal, commercial, or reputational issues.
-* *SENSITIVE* — a handling caveat applied to IN-CONFIDENCE information
-  requiring additional controls. Often expressed as SENSITIVE [handling
+The US CUI model formalizes all four axes:
+
+* *Protection tier*: CUI is the single controlled tier within unclassified.
+* *Subject taxonomy*: A national registry of categories and subcategories
+  (e.g., CUI//SP-PRVCY for privacy data, CUI//CTI for controlled technical information).
+* *Handling requirements*: Defined per category — some categories require encryption at rest,
+  others carry specific transmission controls.
+* *Dissemination restrictions*: Explicit Limited Dissemination Controls (LDCs) such as
+  NOFORN, FED ONLY, and REL TO partner nations.
+
+A fully qualified US CUI marking:
+
+----
+CUI//LAW-ENF//NOFORN
+----
+
+Meaning: CUI tier, Law Enforcement category, no foreign nationals.
+
+In UMRS, CUI categories map to MCS category bits. This is the implemented baseline.
+
+=== United Kingdom — GSCP
+
+*Program name*: Government Security Classifications Policy (GSCP) +
+*Primary authority*: Cabinet Office / GOV.UK
+
+The UK scheme has three tiers (OFFICIAL, SECRET, TOP SECRET). Within the unclassified
+range relevant to UMRS:
+
+* *Protection tier*: OFFICIAL is the baseline for the vast majority of government business.
+* *Sensitivity caveat*: OFFICIAL-SENSITIVE is not a separate classification level — it is
+  a handling caveat applied to OFFICIAL information that needs tighter controls.
+  It signals stricter access (need-to-know) and special handling.
+* *Subject taxonomy*: No central national registry equivalent to the CUI Registry.
+  Subject breakdown is organizational and mission-defined.
+* *Dissemination restrictions*: Primarily need-to-know. Specific caveats (e.g., LOCSEN
+  for location-sensitive material) exist but are not standardized to the same degree as US LDCs.
+
+Structurally, UK unclassified is one tier (OFFICIAL) plus an optional sensitivity flag
+(OFFICIAL-SENSITIVE) that triggers stricter dissemination and handling.
+
+=== Canada — Protected A/B/C
+
+*Program name*: Government of Canada security classification and designation system +
+*Primary authority*: Canada.ca "Levels of security" (official Government of Canada guidance)
+
+Canada has a clear vertical ladder within non-classified information:
+
+* *UNCLASSIFIED* — routine government information.
+* *PROTECTED A* — low injury if compromised.
+* *PROTECTED B* — serious injury if compromised. The most common tier in coalition
+  information-sharing contexts.
+* *PROTECTED C* — extremely grave injury if compromised. Access tightly restricted.
+
+Access is determined by security screening level plus need-to-know:
+
+* Reliability Status → access to Protected A and B
+* Enhanced screening → access to Protected A, B, and C
+
+This is a vertical risk ladder, not a formal MLS dominance lattice. Someone cleared for
+Protected C can access B and A with need-to-know, but this is administrative policy
+rather than mathematically enforced lattice semantics.
+
+Canada's Protected tiers mirror injury severity, not national-security status, which
+is why they map cleanly to UMRS sensitivity levels:
+
+----
+Protected C ≈ serious injury → S2
+Protected B ≈ moderate injury → S1
+Protected A ≈ low injury → S1 (sub-category)
+----
+
+=== New Zealand — PSR
+
+*Program name*: New Zealand Government Security Classification System / Protective Security Requirements (PSR) +
+*Primary authority*: NZ Protective Security "Classification System"
+
+New Zealand uses multiple tiers that include unclassified-style levels:
+
+* *UNCLASSIFIED*
+* *IN-CONFIDENCE* — moderate sensitivity; release could damage NZ interests or create
+  legal, commercial, or reputational issues.
+* *SENSITIVE* — greater harm if disclosed. Often expressed as SENSITIVE [handling
   instruction] (e.g., SENSITIVE BUDGET).
 
-These tiers are analogous to CUI categories in their structural role.
+Higher levels (RESTRICTED, CONFIDENTIAL, SECRET, TOP SECRET) enter the national-security
+classification range.
 
-== UMRS Design Goal
+Access rules are role, need-to-know, and agency policy — not strict MLS dominance.
+NZ is similar to Canada in spirit: a ladder within unclassified, with IN-CONFIDENCE and
+SENSITIVE as meaningful intermediate tiers.
 
-The goal is a common UMRS label abstraction — a sensitivity level plus
-a category set — that can be mapped to any of the Five Eyes national
-schemes by configuration. An operator provides a mapping that translates
-national scheme markings (e.g., "OFFICIAL-SENSITIVE" or "Protected B")
-to a UMRS MLS level and category set. The enforcement mechanism does not
-change. Only the human-readable marking and its mapping to label bits
-differs.
+=== Australia — PSPF
 
-This design is consistent with the MLS model already implemented for CUI.
-It does not require separate enforcement paths for each national scheme.
+*Program name*: Protective Security Policy Framework (PSPF) +
+*Primary authority*: Official PSPF site ("PSPF Release 2025")
+
+Australia follows the UK structural model within unclassified:
+
+* *OFFICIAL* — routine government information.
+* *OFFICIAL: Sensitive* — OFFICIAL information containing sensitive material needing
+  extra protection, with access limited to need-to-know.
+
+Handling requirements come from PSPF policy, not from a subject taxonomy registry.
+Structurally, Australia looks like UK: baseline tier plus a sensitivity marker that
+triggers stricter dissemination rules.
+
+=== France — SGDSN / IGI 1300
+
+*Program name*: Protection du secret de la défense nationale +
+*Primary authority*: SGDSN IGI 1300
+
+France focuses on distribution restriction rather than a subject taxonomy:
+
+* *Unclassified baseline* — routine information.
+* *Diffusion Restreinte (DR)* — not a classification level in France.
+  It is explicitly described as restricting dissemination of non-classified information,
+  without carrying the penal protections of classified defense secret.
+* *Spécial France* — an additional caveat used in some contexts for direct
+  citizenship-based distribution restrictions.
+
+DR is best modeled as an unclassified baseline plus a restriction marker, with optional
+extra caveats for specific dissemination constraints.
+
+== Structural Comparison Table
+
+[cols="1,1,1,1,1,1,1"]
+|===
+| Axis | US (CUI) | UK (GSCP) | Canada | NZ | Australia | France
+
+| *Base tier*
+| CUI
+| OFFICIAL
+| UNCLASSIFIED / PROTECTED A/B/C
+| UNCLASSIFIED / IN-CONFIDENCE / SENSITIVE
+| OFFICIAL
+| Unclassified + DR marker
+
+| *Subject taxonomy*
+| Formal national registry
+| No central taxonomy
+| No central taxonomy
+| No central taxonomy
+| No central taxonomy
+| No central taxonomy
+
+| *Handling rules*
+| Per CUI category
+| GSCP policy guidance
+| Per Protected level
+| PSR policy
+| PSPF policy
+| Government information rules
+
+| *Dissemination restrictions*
+| Explicit LDCs (NOFORN, FED ONLY, REL TO)
+| Mostly need-to-know; limited caveats
+| Need-to-know and contract rules
+| Need-to-know and marking rules
+| Need-to-know; OFFICIAL: Sensitive
+| Diffusion Restreinte or specific caveats
+|===
+
+== The Key Architectural Insight
+
+The US system is unique because it formalizes three layers that other countries leave informal:
+
+. Subject taxonomy
+. Standard dissemination caveats
+. Category-specific handling requirements
+
+Most other countries implement only:
+
+* Protection tier
+* Need-to-know
+* Policy guidance
+
+This means a system that works well for US CUI must be deliberately designed to avoid
+imposing US taxonomy assumptions on partner-nation data.
+
+== UMRS Label Model Mapping
+
+The UMRS label model separates the four axes, which means it can represent all national
+schemes without forcing one country's philosophy onto another.
+
+The proposed mapping uses a sensitivity level as the tier axis and orthogonal attributes
+for the remaining axes:
+
+----
+UMRS Label
+ ├─ Sensitivity level (tier axis)
+ ├─ Category set (domain/subject taxonomy — optional per country)
+ ├─ Membership / dissemination restrictions
+ └─ Handling controls
+----
+
+Conceptual label examples across partner nations:
+
+----
+S1:US:CUI:LAW_ENF:REL_TO_FBI
+S1:NZ:SENSITIVE:POLICY
+S1:CA:PROTECTED_B:PROCUREMENT
+S1:UK:OFFICIAL_SENSITIVE
+S1:AU:OFFICIAL_SENSITIVE
+S1:FR:DR
+----
+
+=== Country Profile Enable/Disable Model
+
+Because the four axes are independent, each country profile simply enables or disables
+the axes that its scheme formalizes:
+
+[cols="1,1,1,1"]
+|===
+| Country | Tier axis | Domain axis | Dissemination axis
+
+| US
+| S0 (mostly)
+| Yes
+| Yes
+
+| Canada
+| Yes (A/B/C ladder)
+| Limited
+| Limited
+
+| NZ
+| Yes (IC/Sensitive ladder)
+| Limited
+| Limited
+
+| UK
+| S0 (mostly)
+| No
+| Minimal
+
+| Australia
+| S0 (mostly)
+| No
+| Minimal
+
+| France
+| S0 (mostly)
+| No
+| Yes (DR)
+|===
+
+S0 means the tier is essentially a single unclassified band — the subject taxonomy and
+dissemination axes carry the protection semantics.
+
+=== Important Consequence
+
+Canada and New Zealand have vertical tiers that are administratively real — but they
+do not enforce MLS dominance. Access is clearance plus need-to-know, not read-down/write-up
+lattice semantics. Modeling them with a sensitivity level plus category sets and membership
+controls is correct and technically sound:
+
+* No dominance relationship is implied or enforced
+* No read-down / read-up semantics
+* Access decisions come from membership plus policy, not MLS level comparison
+
+This keeps the SELinux MLS machinery simple while letting UMRS represent all national
+models through categories and attributes.
 
 == Current Status
 

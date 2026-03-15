@@ -2,7 +2,7 @@
 name: Kernel Security Posture Probe
 path: components/rusty-gadgets/umrs-platform
 agent: rust-developer
-status: phase-2a-complete — code done, 173 tests pass (34 new modprobe + 14 new fips), docs pending; hand off to security-engineer for review
+status: phase-2a-reviewed — security-engineer review complete (7 findings, report in .claude/reports/), tech-writer comment review done, rust-developer applied 11 comment fixes; docs deferred to post-2b; ready for Phase 2b planning
 depends-on: umrs-platform-expansion.md
 ---
 
@@ -737,6 +737,21 @@ All tests in `umrs-platform/tests/posture_fips_tests.rs`:
 4. **Integration** — `FipsEnabled` signal in snapshot now has `configured_value`
 5. **Trust gate** — if `/proc/sys/crypto/fips_enabled` is unreadable, configured
    checks return `None` (not a false positive)
+
+---
+
+### Model Assignments
+
+| Phase / Work Item | Agent | Model | Rationale |
+|---|---|---|---|
+| Phase 2b — bootloader cmdline | rust-developer | **sonnet** | Follows established file-parsing patterns from Phase 1 |
+| Phase 2b — CPU mitigation sub-signals | rust-developer | **opus** | Catalog schema change, ripples through exhaustive matches and tests |
+| Phase 2b — core_pattern | rust-developer | **opus** | TPI candidate, high-assurance string parsing design |
+| Phase 2b — SEC caching | rust-developer | **opus** | TTL + invalidation design, HMAC integration |
+| Phase 2b — modprobe install directive | rust-developer | **sonnet** | Extends established 2a patterns |
+| Phase 2b — security review | security-engineer | **opus** | Full posture module review, trust boundary analysis |
+| Phase 2c — documentation | tech-writer | **sonnet** | Developer guide from established API |
+| Phase 3 — CPU extension detection | rust-developer | **opus** | New signal classes, three-layer model, major scope |
 
 ---
 

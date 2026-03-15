@@ -2,15 +2,73 @@
 :toc: left
 :description: How the reference monitor concept applies to UMRS — the kernel enforces, UMRS validates.
 
-// NIST 800-53 AC-3 — Access Enforcement
-// NIST 800-53 AC-4 — Information Flow Enforcement
-// NIST 800-53 SI-7 — Software and Information Integrity
+// NIST SP 800-53 AC-3 — Access Enforcement
+// NIST SP 800-53 AC-4 — Information Flow Enforcement
+// NIST SP 800-53 SI-7 — Software and Information Integrity
+// NIST SP 800-53 CA-7 — Continuous Monitoring
 // NSA RTB RAIN — Non-bypassable security enforcement
 
 In high-assurance security engineering, a *reference monitor* is the mechanism that
 mediates all access to objects and enforces the system's access control policy. The
 original Anderson Report (1972) defined the core properties. NSA Raise the Bar (RTB)
 evolves these into the RAIN principle for modern Cross-Domain Solutions (CDS).
+
+UMRS does not implement a reference monitor. The Linux kernel security subsystem is
+the reference monitor. UMRS validates that the reference monitor is correctly
+configured, active, and enforcing the intended policy. This distinction is
+architecturally precise and operationally significant.
+
+== The Reference Monitor Model
+
+The reference monitor concept was introduced in the Anderson Report (1972), a study
+commissioned by the U.S. Air Force Electronic Systems Division. The report defined a
+mechanism that must validate each reference to programs or data against authorized
+access rules. This concept became the foundation of MLS systems, TCSEC evaluation
+criteria, security kernels, and modern LSM enforcement models.
+
+The Orange Book (TCSEC) extended this model by defining the *security kernel* as
+"the hardware and software that implements the reference monitor concept." Both the
+reference monitor abstraction and the security kernel construct form the intellectual
+lineage of the enforcement model that SELinux implements today.
+
+=== The Three Properties
+
+A reference monitor must satisfy three properties to be considered trustworthy:
+
+[cols="1,3"]
+|===
+| Property | Meaning
+
+| Complete mediation (non-bypassable)
+| Every access request to every object must pass through the reference monitor.
+There must be no alternate path that circumvents enforcement.
+
+| Tamper resistance
+| Subjects cannot modify the reference monitor.
+The enforcement mechanism itself is protected from alteration.
+
+| Verifiability
+| The reference monitor must be small enough to analyze completely and validate.
+A mechanism too large to analyze cannot be trusted.
+|===
+
+These three properties are the criteria against which any claimed reference monitor
+implementation must be evaluated. They are also the criteria UMRS uses when validating
+enforcement integrity — see xref:truth-concepts.adoc[Runtime Source of Truth].
+
+NSA RTB evolves these properties into the RAIN principle — see <<rain-principle>> below.
+
+=== The Security Kernel
+
+The security kernel is the set of hardware and software that implements the reference
+monitor concept. The security kernel:
+
+* Enforces the system's access control policy on behalf of the reference monitor
+* Is protected from modification by less-trusted subjects
+* Is small enough to be analyzed and formally verified
+
+In a Linux MLS system, the security kernel is the combination of the kernel proper,
+the LSM framework, and the loaded security module (SELinux in UMRS deployments).
 
 == The Reference Monitor in Linux and Where UMRS Fits
 
@@ -43,6 +101,16 @@ process calls `open()`, `read()`, `write()`, `exec()`, `mount()`, or `ptrace()`,
 kernel invokes security hooks such as `security_inode_permission()`,
 `security_file_open()`, and `security_task_create()`. Those hooks enforce the security
 policy. The kernel security subsystem *is* the reference monitor.
+
+The LSM framework satisfies the three reference monitor properties in Linux:
+
+* *Complete mediation* — LSM hooks are placed at every security-relevant system call
+  boundary in the kernel. Every access to a file, socket, IPC resource, or process
+  passes through the hook chain.
+* *Tamper resistance* — the LSM framework is part of the kernel. Modifying it requires
+  kernel privilege and is detectable through integrity measurement.
+* *Verifiability* — SELinux policy is loaded and verified at boot. The policy
+  enforcement code is reviewed and audited as part of the kernel.
 
 === UMRS Validates the Reference Monitor
 
@@ -92,6 +160,23 @@ be accurate. UMRS performs security posture validation, runtime inspection, enfo
 verification, and policy drift detection. The kernel enforces; UMRS verifies that the
 enforcement is trustworthy.
 
+The distinction also matters for auditors. A system that claims to implement a
+reference monitor is making a strong architectural claim — one that requires evidence
+of complete mediation, tamper resistance, and verifiability. UMRS makes a different
+and equally precise claim: that it provides assurance evidence about the system that
+does implement the reference monitor.
+
+[cols="2,2"]
+|===
+| Classic concept | UMRS equivalent
+
+| Reference Monitor | Linux kernel + SELinux
+| Security Kernel | Kernel + LSM framework
+| Trusted Computing Base | Kernel + enforcement subsystems
+| Assurance Validation | UMRS runtime inspection
+|===
+
+[[rain-principle]]
 == The RAIN Principle (NSA RTB Core)
 
 NSA RTB mandates that a security mechanism follow the RAIN concept to ensure it is

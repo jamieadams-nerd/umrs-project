@@ -32,8 +32,10 @@ src/umrs-rust/target/
 .claude/rag/**/*.bin
 .claude/rag/ingest.log
 
-# Claude local settings — machine specific
+# Claude local settings — machine specific, never commit
 .claude/settings.local.json
+# Nested .claude directories — agents create these by mistake
+.claude/.claude/
 
 # FUSE filesystem artifacts (Parallels shared folder)
 .fuse_hidden*

@@ -3,8 +3,8 @@
 :toc: left
 :toclevels: 2
 
-// NIST 800-53 AC-4 — Information Flow Enforcement
-// NIST 800-53 SI-7 — Software and Information Integrity
+// NIST SP 800-53 AC-4 — Information Flow Enforcement
+// NIST SP 800-53 SI-7 — Software and Information Integrity
 // NSA RTB RAIN — Non-bypassable security enforcement
 
 UMRS is not a single application. It is a layered system: a hardened OS
@@ -12,6 +12,13 @@ foundation, a kernel-enforced access control model, and a Rust library
 that makes that model safe to work with in userland. This page explains
 each layer and how they relate. Detailed treatment of each topic is in
 the pages linked from each section.
+
+The system is organized around four interlocking capabilities — Data Governance,
+Kernel-Enforced Access Control, Integrity and Cryptographic Assurance, and
+Security-Aware Tooling. Each capability depends on the others; together they close
+the gap between CUI handling requirements on paper and enforced, auditable reality on
+a running system. See xref:ROOT:what-is-umrs.adoc[What Is UMRS?] for the full
+description of these four pillars and the chain of trust they rest on.
 
 == Base OS Layer
 

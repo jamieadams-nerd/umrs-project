@@ -7,6 +7,8 @@
 - **Ripgrep capability**: Added ripgrep (rg) search capability to Claude Code agent for efficient source code discovery across workspace
 - **Cargo metadata search**: Added cargo metadata search skill to rust-developer agent for crate dependency analysis and workspace structure queries
 - **UML diagram generation from Rust code**: New skill enabling creation of UML diagrams from Rust source code for architectural documentation and type relationship visualization
+- **Security-engineer review report (Phase 2a)**: Completed security review of umrs-platform posture module; report saved to `.claude/reports/posture-security-review-phase2a.md`; documented 7 findings (1 HIGH, 4 MEDIUM, 2 LOW) with remediation guidance
+- **Tech-writer source comment review report**: Audited all 37 .rs files in umrs-platform/src/ for clarity and compliance; report saved to `.claude/reports/umrs-platform-comment-review.md`; identified 11 fixes across citation format, bare #[must_use], and source comment discipline
 
 ### Changed
 - **Documentation structure reorganized**: Further refinement of Antora module hierarchy and navigation following Phase 4 restructure completion
@@ -16,6 +18,9 @@
 - **devel/nav.adoc**: Added Design Rationale section with architecture cross-refs (rationale-strongly-typed, library-model) and consolidated language choice rationale (was duplicated as both top-level item and architecture cross-ref)
 - **operations/nav.adoc**: Removed git-commit-signing cross-ref (owned by devel) and "UMRS Tools →" pointer (separate top-level section)
 - **glossary/nav.adoc**: Removed duplicate index entry (was listed as both section header and list item)
+- **umrs-platform source citations**: Fixed 8 citation format violations in posture/catalog.rs (NIST 800-53 → NIST SP 800-53), sealed_cache.rs, fips_cross.rs, modprobe.rs, snapshot.rs (NIST 800-218 → NIST SP 800-218 SSDF); fixed 4 SSDF PW citations in kattrs/selinux.rs and kattrs/security.rs to NIST SP 800-218 SSDF PW.4.1 canonical form
+- **umrs-platform source corrections**: Fixed 2 factual errors (FIPS SP 800-90B → NIST SP 800-90B); removed per-constant NIST citations from kattrs/traits.rs per Source Comment Discipline Rule; merged duplicate SA-8 citation in detect/mod.rs
+- **sealed_cache.rs #[must_use]**: Added descriptive message string to bare #[must_use] annotation on status() return type
 
 ### Fixed
 - **Broken xref in getting-started.adoc**: Updated `architecture:rationale.adoc` → `architecture:rationale-strongly-typed.adoc` after deleting redundant summary page

@@ -218,7 +218,7 @@ impl KernelFileSource for GenericDualBool {
         let s = std::str::from_utf8(data).map_err(|_| {
             io::Error::new(io::ErrorKind::InvalidData, "Non-UTF8")
         })?;
-        // SSDF PW 4.1: bounds-safe access — use .get() rather than direct indexing
+        // NIST SP 800-218 SSDF PW.4.1: bounds-safe access — use .get() rather than direct indexing
         let parts: Vec<&str> = s.split_whitespace().collect();
         let current_str = parts.first().copied().ok_or_else(|| {
             io::Error::new(io::ErrorKind::InvalidData, "Malformed dual bool")

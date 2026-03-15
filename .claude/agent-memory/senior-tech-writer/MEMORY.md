@@ -157,7 +157,8 @@ File locations changed from Phase 1:
 | auditing-noise.adoc | operations/pages/ | logging-audit/pages/ |
 | TW0-NETIF-JUSTIFICATION.adoc | deployment/pages/ | deployment/pages/dual-network-interface.adoc |
 
-truth-concepts.adoc content merged into reference-monitor.adoc (new section). truth-concepts.adoc is now a redirect stub — keep, do not edit.
+truth-concepts.adoc: fully written 2026-03-14 — Runtime Source of Truth + Non-Bypassability. No longer a stub.
+high-availability-history.adoc: new page in architecture/pages/history/ — HA vs high-assurance distinction. Added to architecture nav.
 
 IMPORTANT: `architecture:rationale.adoc` does NOT exist. Correct filename is `architecture:rationale-strongly-typed.adoc`.
 

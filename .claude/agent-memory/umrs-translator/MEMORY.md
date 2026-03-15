@@ -75,6 +75,14 @@ Run from repo root. Re-run after any new `gettext()` wrap in the source.
 - "Invalid boolean value — using false" → "Valeur booléenne invalide — utilisation de faux" — UMRS decision
 - See `resources/i18n/vocabulary-fr_CA.md` for full term table
 
+## French Typography Rules
+See [french_typography.md](french_typography.md) — Jamie's canonical rules (from `.claude/jamies_brain/french_quotes.txt`).
+- Use « » with interior spaces; never English " "
+- Guillemets for: quotations, literal program output, first-use technical terms, word-as-word
+- No guillemets for: acronyms, proper names, code, file paths, commands
+- Commands/code/paths: monospace backtick format only
+- Nested quotes: « outer "inner" »
+
 ## Key File Paths
 - Vocabulary: `resources/i18n/vocabulary-fr_CA.md`
 - Domain registry: `resources/i18n/domains.md`

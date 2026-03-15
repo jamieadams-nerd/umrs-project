@@ -375,7 +375,7 @@ fn verify_tag(
 /// The sealing key is zeroized when `SealedCache` is dropped.
 ///
 /// NIST SP 800-53 SC-28, SC-12, SI-7, AU-3.
-/// NIST 800-218 SSDF PW.4.
+/// NIST SP 800-218 SSDF PW.4.
 pub struct SealedCache {
     /// The underlying detector, run on cache miss or seal failure.
     detector: OsDetector,
@@ -815,7 +815,7 @@ impl SealedCache {
     ///
     /// Does not perform seal verification — use `query()` for a full
     /// verified read.
-    #[must_use]
+    #[must_use = "CacheStatus indicates FIPS gate and seal health — discarding it loses the security posture signal"]
     pub fn status(&self) -> CacheStatus {
         if !self.caching_enabled {
             return CacheStatus::Disabled;

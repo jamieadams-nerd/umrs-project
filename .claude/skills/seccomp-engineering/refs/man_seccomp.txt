@@ -1,0 +1,174 @@
+seccomp(2) - Linux Manual Page Reference
+Source: https://man7.org/linux/man-pages/man2/seccomp.2.html
+Retrieved: 2026-03-14
+
+NAME
+    seccomp - operate on Secure Computing state of the process
+
+LIBRARY
+    Standard C library (libc, -lc)
+
+SYNOPSIS
+    #include <linux/seccomp.h>
+    #include <linux/filter.h>
+    #include <linux/audit.h>
+    #include <linux/signal.h>
+    #include <sys/ptrace.h>
+    #include <sys/syscall.h>
+    #include <unistd.h>
+
+    int syscall(SYS_seccomp, unsigned int operation, unsigned int flags,
+                void *args);
+
+    Note: glibc provides no wrapper; use syscall(2) directly.
+
+OPERATIONS
+
+SECCOMP_SET_MODE_STRICT
+    Permits only read(2), write(2), _exit(2), and sigreturn(2). Other calls
+    terminate the thread or process with SIGKILL. Useful for sandboxing
+    untrusted bytecode. Requires flags=0 and args=NULL. Functionally
+    equivalent to prctl(PR_SET_SECCOMP, SECCOMP_MODE_STRICT).
+
+SECCOMP_SET_MODE_FILTER
+    Allows system calls via Berkeley Packet Filter (BPF) programs passed
+    through args. A struct sock_fprog pointer defines the filter. Requires
+    either CAP_SYS_ADMIN capability or the no_new_privs bit already set.
+    Child processes inherit parent filters; filters persist across execve(2).
+
+    Recognized flags:
+    - SECCOMP_FILTER_FLAG_LOG (Linux 4.14+): Log all non-ALLOW actions
+    - SECCOMP_FILTER_FLAG_NEW_LISTENER (Linux 5.0+): Return file descriptor
+      for user-space notifications
+    - SECCOMP_FILTER_FLAG_SPEC_ALLOW (Linux 4.17+): Disable Speculative Store
+      Bypass mitigation
+    - SECCOMP_FILTER_FLAG_TSYNC: Synchronize all threads to same filter tree
+
+SECCOMP_GET_ACTION_AVAIL (Linux 4.14+)
+    Test kernel support for specific filter actions. Requires flags=0 and
+    pointer to unsigned 32-bit action value.
+
+SECCOMP_GET_NOTIF_SIZES (Linux 5.0+)
+    Retrieve sizes of notification structures. Returns struct
+    seccomp_notif_sizes with fields: seccomp_notif, seccomp_notif_resp,
+    seccomp_data.
+
+FILTER STRUCTURES
+
+struct sock_fprog:
+    struct sock_fprog {
+        unsigned short len;         /* Number of BPF instructions */
+        struct sock_filter *filter; /* Pointer to BPF array */
+    };
+
+struct sock_filter:
+    struct sock_filter {
+        __u16 code;  /* Filter code */
+        __u8 jt;     /* Jump true */
+        __u8 jf;     /* Jump false */
+        __u32 k;     /* Generic field */
+    };
+
+struct seccomp_data:
+    struct seccomp_data {
+        int nr;                    /* System call number */
+        __u32 arch;                /* AUDIT_ARCH_* value */
+        __u64 instruction_pointer; /* CPU instruction pointer */
+        __u64 args[6];             /* Up to 6 system call arguments */
+    };
+
+FILTER RETURN ACTIONS (Decreasing Precedence)
+
+SECCOMP_RET_KILL_PROCESS (Linux 4.14+)
+    Immediate process termination with core dump via SIGSYS signal. All
+    threads terminate.
+
+SECCOMP_RET_KILL_THREAD (SECCOMP_RET_KILL)
+    Immediate thread termination; other threads continue. Generates SIGSYS
+    signal. Core dump produced on Linux 4.11+ for single-threaded processes.
+
+SECCOMP_RET_TRAP
+    Sends SIGSYS signal with populated siginfo_t structure including call
+    address, syscall details, and error code from filter data.
+
+SECCOMP_RET_ERRNO
+    Passes filter data portion as errno without executing the system call.
+
+SECCOMP_RET_USER_NOTIF (Linux 5.0+)
+    Forwards call to user-space supervisor via attached file descriptor.
+    Returns ENOSYS if no supervisor present.
+
+SECCOMP_RET_TRACE
+    Notifies ptrace(2)-based tracer via PTRACE_EVENT_SECCOMP. Returns ENOSYS
+    if no tracer present. Tracer can skip call or modify syscall number.
+
+SECCOMP_RET_LOG (Linux 4.14+)
+    Executes system call after logging filter action.
+
+SECCOMP_RET_ALLOW
+    Executes the system call normally.
+
+RETURN VALUES
+    Success returns 0. With SECCOMP_FILTER_FLAG_TSYNC, returns thread ID
+    causing synchronization failure. Other errors return -1 with errno set.
+
+ERROR CODES
+    EACCES: Missing CAP_SYS_ADMIN or no_new_privs not set
+    EBUSY:  NEW_LISTENER flag used with existing listener filter
+    EFAULT: Invalid args address
+    EINVAL: Unknown operation, invalid flags, misaligned BPF access,
+            conflicting mode, invalid filter, or filter exceeds
+            BPF_MAXINSNS (4096)
+    ENOMEM: Out of memory or total filters exceed MAX_INSNS_PER_PATH (32768)
+    EOPNOTSUPP: Kernel doesn't support specified action
+    ESRCH:  Thread sync failure with unidentifiable thread
+
+FILTERS AND PRECEDENCE
+    Multiple filters execute in reverse installation order (most recent
+    first). All filters execute regardless of early returns. First
+    highest-precedence action encountered determines result.
+
+IMPORTANT CONSIDERATIONS
+
+Architecture Handling:
+    The arch field is not unique; x86-64 and x32 both use AUDIT_ARCH_X86_64.
+    Policies must recognize __X32_SYSCALL_BIT (0x40000000) for proper
+    distinction.
+
+Allow-List Approach Recommended:
+    Deny-lists require constant updates and are vulnerable to representation
+    bypasses. Allow-lists are more robust.
+
+Argument Truncation:
+    Arguments are truncated after seccomp checks. Full 64-bit values appear
+    in seccomp_data even when kernel processes narrower values.
+
+vDSO Bypass:
+    System calls with user-space implementations (clock_gettime, gettimeofday,
+    time) may not be filtered.
+
+Wrapper Function Differences:
+    Library wrappers often use different underlying syscalls than expected
+    (exit uses exit_group, fork uses clone).
+
+/proc INTERFACES
+
+/proc/sys/kernel/seccomp/actions_avail (Linux 4.14+)
+    Read-only ordered list of supported filter actions in decreasing
+    precedence.
+
+/proc/sys/kernel/seccomp/actions_logged (Linux 4.14+)
+    Read-write list of actions permitted for logging. "allow" cannot be
+    logged.
+
+ARCHITECTURE SUPPORT
+    Seccomp BPF available on: x86-64/i386/x32 (3.5+), ARM (3.8+), s390
+    (3.8+), MIPS (3.16+), ARM-64 (3.19+), PowerPC (4.3+), Tile (4.3+),
+    PA-RISC (4.6+).
+
+SEE ALSO
+    bpfc(1), strace(1), bpf(2), prctl(2), ptrace(2), seccomp_unotify(2),
+    sigaction(2), proc(5), signal(7), socket(7).
+
+    libseccomp library provides higher-level interface avoiding manual BPF
+    construction.

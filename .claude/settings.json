@@ -1,4 +1,18 @@
 {
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/session-cleanup.sh\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  },
   "env": {
     "PATH": "~/.local/bin:/home/jamie/.cargo/bin:/usr/local/bin:/usr/bin:/bin"
   },
@@ -6,12 +20,17 @@
     "allow": [
       "Bash(bash:*)",
       "Bash(cargo:*)",
+      "Bash(cd:*)",
       "Bash(cargo audit:*)",
       "Bash(cargo metadata:*)",
       "Bash(cat:*)",
       "Bash(curl:*)",
       "Bash(export:*)",
+      "Bash(diff:*)",
+      "Bash(du:*)",
+      "Bash(echo:*)",
       "Bash(find:*)",
+      "Bash(for:*)",
       "Bash(gh api:*)",
       "Bash(git:*)",
       "Bash(git show:*)",
@@ -32,6 +51,7 @@
       "Bash(npx:*)",
       "Bash(pip:*)",
       "Bash(pip3:*)",
+      "Bash(pwd:*)",
       "Bash(python:*)",
       "Bash(python3:*)",
       "Bash(RAG_CHROMA_PATH=/media/psf/repos/ai-rag-vdb/chroma python3:*)",
@@ -63,7 +83,10 @@
       "WebFetch(domain:www.cs.virginia.edu)",
       "WebFetch(domain:www.latacora.com)",
       "WebSearch",
-      "Write(logs/task-log.md)"
+      "Write(logs/task-log.md)",
+      "Bash(chmod:*)",
+      "Bash(cp:*)",
+      "Bash(gh:*)"
     ]
   },
   "enabledPlugins": {

@@ -98,3 +98,40 @@ relative to the types that call it.
 bytes that are never served to callers (pipeline always re-runs on hit). SC-28
 claim must be narrowed to "tamper detection" not "protection while in cache."
 Owner: tech-writer.
+
+## CPU Feature Matrix — Key Audit Principles (2026-03-14)
+
+Report: `.claude/reports/cpu-matrix-review/security-auditor-review.md`
+
+### Two-Layer Model: Hardware Capability vs. Software Utilization
+A CPU feature being present is necessary but not sufficient for a security posture claim.
+The audit must verify BOTH layers:
+1. CPU reports the feature (CPUID, /proc/cpuinfo)
+2. Software actually uses it (/proc/crypto, openssl probing, ELF binary headers)
+
+Key example: AES-NI present in CPU + OpenSSL compiled without AES-NI support = HIGH finding
+on a FIPS system. The software-AES fallback may have timing side-channels the hardware
+eliminates, and may not be FIPS-validated for the specific algorithm combination.
+
+### /proc/crypto as Primary Detection Interface
+`/proc/crypto` shows which algorithm implementations are registered by the kernel and whether
+they are hardware-backed (e.g., `aes-aesni` vs `aes-generic`). The `fips_allowed` field and
+`selftest: passed` are FIPS-relevant. This interface is more authoritative than /proc/cpuinfo
+for determining whether hardware acceleration is actually in use.
+
+### NIST SP 800-90B Required for RDRAND/RDSEED Classification
+Cannot classify CPU entropy features as Critical/Important without consulting SP 800-90B.
+The posture catalog already cites this document (SignalId::RandomTrustCpu). RDRAND is
+Critical on FIPS systems; classification must be consistent across hardware and OS layers.
+
+### Missing Entire Category: Defensive CPU Controls
+The spec is missing speculative-execution mitigations (IBRS, IBPB, STIBP, SSBD, MDS/MD_CLEAR)
+and CPU-enforced access controls (SMEP, SMAP, CET, UMIP, NX/XD). These are Critical/Defensive
+and directly connected to existing posture signals (SignalId::Mitigations, Pti).
+
+Primary detection for mitigations: `/sys/devices/system/cpu/vulnerabilities/` — not /proc/cpuinfo.
+
+### CET Binary Verification
+CET requires CPU + kernel + per-binary ELF opt-in (-fcf-protection=full). Verify via
+`.note.gnu.property` section in ELF headers (`eu-readelf -n <binary>` or `objdump -p`).
+UMRS binaries themselves must carry CET headers if auditing for CET compliance.

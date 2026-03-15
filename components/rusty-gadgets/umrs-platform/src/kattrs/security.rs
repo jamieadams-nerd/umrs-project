@@ -91,7 +91,7 @@ fn parse_lockdown_path_a(input: &str) -> IResult<&str, &str> {
 ///
 /// Scans all whitespace-separated tokens for one that starts with `[` and ends
 /// with `]`.  Returns the content between the brackets.
-/// SSDF PW 4.1: bounds-safe slice indexing via checked length guard.
+/// NIST SP 800-218 SSDF PW.4.1: bounds-safe slice indexing via checked length guard.
 fn parse_lockdown_path_b(input: &str) -> io::Result<&str> {
     for token in input.split_whitespace() {
         if token.starts_with('[') && token.ends_with(']') {

@@ -38,20 +38,16 @@ pub(crate) const MAX_KATTR_READ: usize = 64;
 pub trait KernelFileSource {
     type Output;
 
-    /// NIST SP 800-53 AU-3: Attribute Identifier
     /// The formal attribute name as defined in kernel kobject/sysfs vernacular.
     const ATTRIBUTE_NAME: &'static str;
 
-    /// NIST SP 800-53 AU-3: Event Content/Description
-    /// Documentation or Format string derived from kernel-parameters.txt or rst docs.
+    /// Documentation or format string derived from kernel-parameters.txt or rst docs.
     const DESCRIPTION: &'static str;
 
-    /// NIST SP 800-53 AU-3: Audit Context
     /// Additional context regarding deprecation, defaults, or kernel version specifics.
     const KERNEL_NOTE: &'static str = "";
 
-    /// NIST SP 800-53 AU-3: Location/Provenance Identifier
-    /// The parent kobject in the kernel hierarchy (e.g., "selinuxfs" or "crypto")
+    /// The parent kobject in the kernel hierarchy (e.g., `"selinuxfs"` or `"crypto"`).
     const KOBJECT: &'static str;
 
     /// Low-level byte-slice parser for this attribute type.

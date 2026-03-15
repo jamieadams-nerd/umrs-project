@@ -1,0 +1,205 @@
+seccomp_unotify(2) - Linux Manual Page
+Source: https://man7.org/linux/man-pages/man2/seccomp_unotify.2.html
+Retrieved: 2026-03-14
+Man-pages 6.16 (2025-09-21)
+
+NAME
+    seccomp_unotify - Secure Computing user-space notification mechanism
+
+LIBRARY
+    Standard C library (libc, -lc)
+
+SYNOPSIS
+    #include <linux/seccomp.h>
+    #include <linux/filter.h>
+    #include <linux/audit.h>
+
+    int seccomp(unsigned int operation, unsigned int flags, void *args);
+
+    #include <sys/ioctl.h>
+
+    int ioctl(int fd, SECCOMP_IOCTL_NOTIF_RECV,
+             struct seccomp_notif *req);
+    int ioctl(int fd, SECCOMP_IOCTL_NOTIF_SEND,
+             struct seccomp_notif_resp *resp);
+    int ioctl(int fd, SECCOMP_IOCTL_NOTIF_ID_VALID, __u64 *id);
+    int ioctl(int fd, SECCOMP_IOCTL_NOTIF_ADDFD,
+             struct seccomp_notif_addfd *addfd);
+
+DESCRIPTION
+
+Overview
+    The user-space notification mechanism allows seccomp filters to delegate
+    system call handling to another user-space process. The filter-bearing
+    threads are called the "target," while the notified process is the
+    "supervisor."
+
+    Key principle: "This mechanism is explicitly not intended as a method
+    implementing security policy."
+
+Operational Flow
+
+    Step 1: Target Setup
+        - Establishes seccomp filter with SECCOMP_FILTER_FLAG_NEW_LISTENER flag
+        - Returns a "listening" file descriptor for receiving notifications
+        - Filter returns SECCOMP_RET_USER_NOTIF action value when appropriate
+        - Only one listening filter per thread is permitted
+
+    Step 2: Descriptor Transfer
+        The listening file descriptor must be passed from target to supervisor
+        via UNIX domain socket using SCM_RIGHTS ancillary messages, or
+        pidfd_getfd(2) system call.
+
+    Step 3: Notification Sizes
+        Supervisor determines structure sizes using SECCOMP_GET_NOTIF_SIZES
+        operation, allocating buffers for seccomp_notif and seccomp_notif_resp.
+
+    Step 4: Target Workload
+        Target executes system calls controlled by filter. When
+        SECCOMP_RET_USER_NOTIF triggers, kernel does not execute the system
+        call; target execution blocks temporarily (interruptible by signals);
+        notification event generated on listening descriptor.
+
+    Step 5: Supervisor Monitoring
+        Supervisor monitors listening descriptor using SECCOMP_IOCTL_NOTIF_RECV.
+        Can be monitored with select(2), poll(2), or epoll(7).
+
+    Step 6: Information Discovery
+        seccomp_notif structure includes same information passed to filter,
+        thread ID, and unique cookie. Supervisor can inspect pointer arguments
+        via /proc/tid/mem.
+
+    Step 7: Action Performance
+        Supervisor may perform actions on behalf of target (e.g., mounting
+        filesystems with elevated privileges).
+
+    Step 8: Response Transmission
+        Supervisor sends response using SECCOMP_IOCTL_NOTIF_SEND, transmitting
+        seccomp_notif_resp with cookie, return value, and errno for target.
+
+    Step 9: Target Unblocking
+        Once response sent, target's system call unblocks with supervisor-
+        provided information.
+
+IOCTL OPERATIONS
+
+SECCOMP_IOCTL_NOTIF_RECV (Linux 5.0+)
+    Obtain user-space notification event. Blocks until event pending; returns
+    information in seccomp_notif structure (must be zeroed before call):
+
+        struct seccomp_notif {
+            __u64  id;              /* Cookie */
+            __u32  pid;             /* TID of target thread */
+            __u32  flags;           /* Currently unused (0) */
+            struct seccomp_data data;   /* See seccomp(2) */
+        };
+
+    Error Codes:
+        EINVAL (Linux 5.5+): Non-zero fields in passed structure
+        ENOENT: Target killed by signal or system call interrupted by signal
+
+SECCOMP_IOCTL_NOTIF_ID_VALID (Linux 5.0+)
+    Verify notification ID still valid (target exists, system call blocked).
+    Argument: Pointer to cookie ID from earlier SECCOMP_IOCTL_NOTIF_RECV.
+    Returns 0 if valid; -1 with ENOENT if invalid.
+
+    Use Case: Prevents race conditions when target PID terminates and is
+    reused by another process. MUST be called before reading /proc/tid/mem.
+
+SECCOMP_IOCTL_NOTIF_SEND (Linux 5.0+)
+    Send notification response to kernel:
+
+        struct seccomp_notif_resp {
+            __u64 id;           /* Cookie value */
+            __s64 val;          /* Success return value */
+            __s32 error;        /* 0 (success) or negative error number */
+            __u32 flags;        /* See below */
+        };
+
+    Response Type 1: Execute Target System Call
+        flags includes SECCOMP_USER_NOTIF_FLAG_CONTINUE
+        error and val must be zero
+        CAUTION: Time-of-check, time-of-use race possible; attacker could
+        rewrite arguments while target blocked.
+
+    Response Type 2: Spoofed Return
+        flags does not contain SECCOMP_USER_NOTIF_FLAG_CONTINUE
+        error set to 0 (success) or negative error number (failure)
+
+    Error Codes:
+        EINPROGRESS: Response already sent for this notification
+        EINVAL: Invalid flags; CONTINUE with nonzero error or val
+        ENOENT: Target system call interrupted or target terminated
+
+SECCOMP_IOCTL_NOTIF_ADDFD (Linux 5.9+)
+    Install file descriptor into target's file descriptor table. Equivalent
+    to duplicating descriptor from supervisor to target (like SCM_RIGHTS).
+
+    Use Case: Emulate system calls generating file descriptors (socket,
+    openat) when supervisor performs actual call.
+
+        struct seccomp_notif_addfd {
+            __u64 id;           /* Cookie value */
+            __u32 flags;        /* Flags */
+            __u32 srcfd;        /* Local file descriptor number */
+            __u32 newfd;        /* 0 or desired FD number in target */
+            __u32 newfd_flags;  /* Flags to set on target FD */
+        };
+
+    Flags:
+        SECCOMP_ADDFD_FLAG_SETFD: Use specific newfd value
+        SECCOMP_ADDFD_FLAG_SEND (Linux 5.14+): Atomic ADDFD + SEND; returns
+            allocated FD number on success
+
+    newfd_flags: O_CLOEXEC: Set close-on-exec flag
+
+    Example (openat emulation):
+        int fd = openat(req->data.args[0], path, req->data.args[2],
+                        req->data.args[3]);
+        struct seccomp_notif_addfd addfd = {
+            .id = req->id,
+            .srcfd = fd,
+            .newfd = 0,
+            .flags = 0,
+            .newfd_flags = O_CLOEXEC,
+        };
+        targetFd = ioctl(notifyFd, SECCOMP_IOCTL_NOTIF_ADDFD, &addfd);
+        close(fd);
+
+NOTES
+
+Design Goals; SECCOMP_USER_NOTIF_FLAG_CONTINUE Caution
+    "This mechanism must not be used to make security policy decisions about
+    the system call, which would be inherently race-prone."
+
+    Time-of-Check, Time-of-Use Race: SECCOMP_USER_NOTIF_FLAG_CONTINUE
+    presents window where attacker could rewrite system call arguments while
+    target blocked.
+
+    Bypass Risk: User-space notifier can be bypassed if existing filters
+    permit seccomp(2) or prctl(2) installation of higher-precedence filters.
+
+    Critical Principle: "The seccomp user-space notification mechanism cannot
+    be used to implement a security policy! It should only ever be used in
+    scenarios where a more privileged process supervises the system calls of
+    a lesser privileged target to get around kernel-enforced security
+    restrictions when the supervisor deems this safe."
+
+/proc/tid/mem Caveats
+    SECCOMP_IOCTL_NOTIF_ID_VALID must be used when reading target memory.
+    Target's blocked system call may be interrupted at any time; any memory
+    information must be considered invalid without re-validation.
+    Write operations to target memory "can never be considered safe."
+
+select()/poll()/epoll Semantics
+    Readable: Notification pending
+    Writable: Notification received; response can be sent
+    End-of-file: Last thread using filter terminated and reaped
+
+BUGS
+    If SECCOMP_IOCTL_NOTIF_RECV performed after target terminates, operation
+    blocks rather than returning error indicating target no longer exists.
+
+SEE ALSO
+    ioctl(2), pidfd_getfd(2), pidfd_open(2), seccomp(2),
+    samples/seccomp/user-trap.c (kernel source example)

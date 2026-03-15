@@ -237,10 +237,140 @@ auditor exactly which function performs the enforcement.
 The rule is additive: annotate at the coarsest level where the control
 applies, and also at any specific item where the control is directly enforced.
 
+== SSDF PW.4 and CMMC — Developer Summary
+
+=== What CMMC Requires from Developers
+
+CMMC 2.0 Level 2 does not mandate a specific programming language.
+It requires evidence that security is built into the development process.
+An assessor reviewing UMRS will look for:
+
+* Version-controlled code with restricted write access
+* Documented code reviews before code is promoted
+* Static analysis results (Clippy, `cargo audit`, `cargo-geiger`)
+* Demonstrated input validation at trust boundaries
+* Use of approved cryptographic modules
+* Evidence that known-vulnerable dependencies are tracked and addressed
+
+UMRS satisfies these through its toolchain (`cargo xtask`), workspace
+lint policy, and the coding patterns in this guide.
+
+=== SSDF PW.4 in Rust — Implementation Reference
+
+NIST SP 800-218 SSDF PW.4 defines five secure coding practices.
+Each maps directly to a Rust mechanism used in this codebase.
+
+==== PW.4.1 — Input Validation: Parse, Don't Validate
+
+The SSDF requires validating all input from untrusted sources before use.
+In Rust, the idiomatic implementation is "parse, don't validate": construct
+a typed value at the trust boundary. If construction fails, reject the input
+immediately — it never reaches business logic.
+
+[source,rust]
+----
+// Construct a validated type at the boundary.
+// If this succeeds, downstream code has a proven-valid value — not a string.
+let ctx = SecurityContext::parse("user_u:user_r:user_t:s0-s3:c0,c1")?;
+// ctx is now a SecurityContext — downstream code cannot receive an invalid label.
+----
+
+The key rule: constructors return `Result`. A successful construction is a
+proof of validity. Fields are private to prevent callers from constructing
+types that bypass validation.
+
+*NIST SP 800-218 SSDF PW.4.1 / NIST SP 800-53 SI-10*
+
+==== PW.4.2 — Output Encoding: Error Information Discipline
+
+The SSDF requires encoding output to prevent injection and information leakage.
+In UMRS, this applies to error messages: variable data (file paths, label strings,
+kernel values) goes to the audit log; caller-visible error strings describe the
+*category* of failure without including the sensitive data.
+
+[source,rust]
+----
+// Correct: path logged, not returned to caller
+log::error!("Integrity failure: {} is not on the authorized filesystem", path.display());
+return Err(io::Error::new(
+    io::ErrorKind::PermissionDenied,
+    "Integrity failure: path is not on the authorized filesystem",
+));
+----
+
+The caller gets the category. The log gets the specifics.
+An attacker who triggers the error learns nothing useful from the return value.
+
+*NIST SP 800-218 SSDF PW.4.2 / NIST SP 800-53 SI-12*
+
+==== PW.4.3 — Memory Safety
+
+Rust satisfies PW.4.3 structurally. The borrow checker prevents buffer overflows,
+use-after-free, and null-pointer dereferences at compile time.
+
+The UMRS codebase adds a compile-time enforcement layer:
+
+[source,rust]
+----
+#![forbid(unsafe_code)]
+----
+
+This attribute, placed in every crate root, prevents any `unsafe` block from
+compiling anywhere in the crate — including in transitively called macros.
+It is a mechanical proof verifiable by an auditor without reading the code.
+
+*NIST SP 800-218 SSDF PW.4.3 / NIST SP 800-53 SA-11*
+
+==== PW.4.4 — Secure Arithmetic
+
+Integer overflow in a security-relevant calculation can produce silent
+incorrect results. The SSDF requires explicit handling. Rust provides
+checked variants on all primitive integer operations.
+
+[source,rust]
+----
+// Instead of: let new_count = count + 1; // silent overflow possible
+let new_count = count.checked_add(1)
+    .ok_or(MyError::CountOverflow)?;
+----
+
+For security values, also prefer `.get(i)` over direct indexing `buf[i]`.
+The former returns `Option` on out-of-bounds; the latter panics.
+
+For credential comparisons, use `subtle::ConstantTimeEq` to prevent
+timing oracle attacks — see xref:patterns:pattern-constant-time.adoc[Constant-Time Comparison].
+
+*NIST SP 800-218 SSDF PW.4.4 / NIST SP 800-53 SC-28*
+
+==== PW.4.5 — Secure Cryptography
+
+The SSDF requires using approved cryptographic modules. For UMRS, "approved"
+means FIPS 140-2 or 140-3 validated. This is a property of a specific
+*implementation*, not a crate name:
+
+* A crate can use `AES-256-GCM` but not be FIPS validated.
+* RHEL 10 in FIPS mode provides validated OpenSSL — but this must be
+  verified against the NIST CMVP database for each deployment.
+* The `ring` crate uses strong algorithms but does not hold FIPS validation
+  as of this writing.
+
+Before writing cryptographic code, verify the FIPS validation status of the
+specific implementation at csrc.nist.gov/projects/cryptographic-module-validation-program.
+
+See also xref:cryptography:fips-cryptography-cheat-sheet.adoc[FIPS cryptography reference].
+
+*NIST SP 800-218 SSDF PW.4.5 / FIPS 140-2 / FIPS 140-3*
+
+'''
+
 == Reference
 
 For the full list of controls used in this codebase and their versions, see
 xref:reference:compliance-frameworks.adoc[Compliance frameworks registry].
+
+For the complete SSDF practice group outline and CMMC level structure, see
+xref:reference:compliance-frameworks.adoc#_nist_sp_800_218_ssdf_practice_groups[SSDF Practice Groups]
+in the Compliance Frameworks Registry.
 
 For the high-assurance patterns that many of these controls govern, see
 xref:high-assurance-patterns.adoc[High-assurance coding patterns].

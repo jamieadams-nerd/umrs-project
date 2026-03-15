@@ -1320,3 +1320,495 @@ are mechanically verified.
 SPARK represents the tier above Rust in the high-assurance spectrum.
 For systems where even Rust's structural guarantees are insufficient,
 SPARK is the reference point.
+
+'''
+
+== Extended Pattern Catalog
+
+The patterns in the core library (xref:patterns:index.adoc[Pattern Library]) cover the
+mechanisms most directly implemented in the UMRS codebase today. The catalog below covers
+additional patterns that are either architectural disciplines, design-level obligations, or
+patterns whose time to implement is approaching. They are organized in five groups.
+
+Authoritative sources for this catalog: NIST SP 800-53 Rev 5, NIST SP 800-53B,
+NIST SP 800-218 SSDF v1.1, ANSSI Secure Rust Guide, Rust Secure Code Working Group,
+and the Rust Foundation Safety-Critical Rust Coding Guidelines effort.
+
+=== Group A: API and Trust Boundary Design
+
+These patterns govern how module boundaries are drawn and how authority is passed between them.
+
+==== Least-Privilege API
+
+*What it is.* Design modules so that callers receive only the operations they need.
+Use narrow trait bounds, small wrapper types, and explicit constructor gating.
+No "god object" with unrestricted authority.
+
+*Threat.* Broad APIs grant callers capabilities they should not have.
+An attacker who reaches the API surface can invoke operations outside the intended scope.
+
+*In Rust.* Prefer narrow trait objects over concrete `&mut self` admin handles.
+Expose distinct types for distinct operation classes rather than one configurable struct.
+Gate construction behind a function that encodes the privilege level.
+
+*Controls.* NIST SP 800-53 AC-6 (Least Privilege).
+
+==== Separate Processing Domains
+
+*What it is.* Split trusted and untrusted work into separate processes, crates, or modules
+with explicit typed interfaces. Avoid shared mutable state across trust levels.
+
+*Threat.* Collocating trusted and untrusted computation allows privilege escalation through
+shared memory, shared references, or implicit side-channel coupling.
+
+*In Rust.* Use message passing and typed request/response boundaries rather than shared
+mutable references. In SELinux environments, distinct processes get distinct SELinux types,
+which enforces the boundary at the kernel level.
+
+*Controls.* NIST SP 800-53 AC-6(5) (Least Privilege — Privileged Accounts).
+
+==== Explicit Trust Boundary
+
+*What it is.* Mark every boundary where trust changes: file input, network input,
+environment variables, command output, kernel pseudo-filesystems, external configuration,
+xattrs, and IPC. Validate and normalize at the boundary; never deeper.
+
+*Threat.* Untrusted data that passes a boundary without validation can corrupt internal
+state, cause incorrect access decisions, or reach audit output.
+
+*In Rust.* The boundary is the constructor call. All `TryFrom`/`FromStr`/`parse()`
+implementations are trust boundaries. Anything beyond the constructor is already validated.
+Never pass raw bytes or strings through more than one layer.
+
+*Controls.* NIST SP 800-53 SI-10 (Information Input Validation).
+
+==== Capability-Style Interface
+
+*What it is.* Instead of granting global authority, pass objects that carry a single
+specific capability: append to a log but not delete it; read an xattr but not write it.
+
+*Threat.* Global authority handles (file handles, admin objects) can be misused if
+they reach the wrong code path. An auditor cannot verify access is bounded without
+inspecting every use site.
+
+*In Rust.* Define wrapper types that expose only the operations they are meant to permit.
+A type that holds a `File` opened read-only is a proof that the holder cannot write.
+
+*Controls.* NIST SP 800-53 AC-6 / AC-3.
+
+==== Complete Mediation
+
+*What it is.* Every access to a protected resource goes through the same enforcement path.
+No side doors, no bypass handles, no "already checked" shortcuts that skip policy.
+
+*Threat.* Partial mediation is a classic vulnerability class. Code that validates once and
+then passes a raw handle around allows callers to bypass policy by using the raw handle directly.
+
+*In Rust.* Centralize privileged operations behind dedicated APIs.
+The provenance verification pattern (section 1.2) applies this to kernel pseudo-filesystem reads.
+Private constructors in security types apply it to label parsing.
+
+*Controls.* NIST SP 800-53 AC-3 / NSA RTB RAIN (Non-Bypassability).
+
+==== Trusted Path / Trusted Channel
+
+*What it is.* For sensitive operations, use a deliberately constrained interface and
+identify it as the trusted path. No side channels for critical actions. Stronger
+authentication and clearer audit events on that path.
+
+*Threat.* Untrusted paths used for privileged operations allow an attacker to bypass
+the controls that are only applied to the designated trusted path.
+
+*In Rust.* Encode the trusted path as a specific type or function. Gate access to it
+behind the strictest available authentication and privilege checks. Ensure every call
+on the trusted path emits an audit event.
+
+*Controls.* NIST SP 800-53 SC-11 (Trusted Path).
+
+'''
+
+=== Group B: Type System and Construction Discipline
+
+These patterns use Rust's type system to make invalid states unrepresentable.
+
+==== Strongly Typed Security Domain Model
+
+*What it is.* Represent sensitive concepts as distinct types: `SelinuxType`, `CapabilitySet`,
+`TrustedPath`, `ValidatedLabel`, `AuditEventId`, `NonEmptyPath`. Move invalid state out of
+the reachable program state space.
+
+*Threat.* Stringly-typed or weakly-typed security data is easily confused, mixed, or misrouted.
+A function that accepts `String` cannot distinguish a security label from a filename.
+Type confusion leads to incorrect access decisions and audit gaps.
+
+*In Rust.* Newtype wrappers with private fields and validated constructors.
+`SecurityContext` is the primary example: it is not a `String`, and it cannot be constructed
+from a `String` without going through the dual-parser TPI path.
+
+*Controls.* NIST SP 800-218 SSDF PW.4.1 / NIST SP 800-53 SI-10.
+
+==== Trusted-Constructor Pattern
+
+*What it is.* Make critical types constructible only through checked constructors
+(`TryFrom`, `FromStr`, dedicated builders) that enforce invariants.
+Never expose unchecked public fields on security-sensitive types.
+
+*Threat.* Public fields allow callers to construct values that bypass validation.
+A type constructed without the validated constructor can hold invalid or attacker-controlled state.
+
+*In Rust.* All fields on security-relevant types are private.
+The only path to a valid instance is through a constructor that validates and returns `Result`.
+This is "validate at construction" — the UMRS compile-time contract rule.
+
+*Controls.* NIST SP 800-218 SSDF PW.4.1 / NSA RTB RAIN.
+
+==== Immutable-by-Default Policy
+
+*What it is.* Make configurations, policy objects, and validated security decisions
+immutable after construction. Mutability is narrow and explicitly visible.
+
+*Threat.* Mutable configuration objects can be modified after validation.
+Post-construction mutation creates windows where the object holds an inconsistent state.
+It also obscures the provenance of the current value.
+
+*In Rust.* Validated types with private fields are immutable by default — there are no
+setters that bypass the constructor's invariants. If a policy object must be updated,
+construct a new one from scratch through the same validated constructor.
+
+*Controls.* NIST SP 800-53 CM-5 (Least Privilege — Access Restrictions for Change).
+
+==== Explicit Lifecycle / State-Machine
+
+*What it is.* Represent security-sensitive workflows as enums plus explicit transitions
+rather than ad hoc flags. Make illegal state transitions unrepresentable.
+
+*Threat.* Flag-based state management allows code to reach impossible state combinations
+(e.g., "validated but not parsed", "sealed but no key"). These states produce undefined behavior
+that is hard to reason about and easy to exploit.
+
+*In Rust.* Use enums to model lifecycle states. Transitions are functions that consume the
+old state and produce the new one. Callers cannot hold a reference to both states simultaneously.
+
+[source,rust]
+----
+// The compiler enforces that you cannot use a sealed result after breaking the seal.
+enum CacheState { Empty, Pending(PendingResult), Sealed(SealedResult) }
+----
+
+*Controls.* NIST SP 800-218 SSDF PW.4 / NIST SP 800-53 SA-8.
+
+'''
+
+=== Group C: Reliability and Correctness Discipline
+
+These patterns prevent the failure modes that create security vulnerabilities in critical paths.
+
+==== No-Panic Production Path
+
+*What it is.* In production code paths, return structured errors rather than panicking.
+Treat panics as exceptional — reserved for truly unrecoverable programming errors.
+
+*Threat.* A panic in a high-assurance component terminates the process. In a security
+mediator, this is a denial-of-service vulnerability and a fail-open risk if callers
+assume success on an interrupted path.
+
+*In Rust.* Use `Result` and `?` throughout. Avoid `.unwrap()` — it is denied in this
+codebase. Use `.expect()` only where a panic genuinely indicates a programming error that
+should never occur at runtime, and add a comment explaining why the invariant holds.
+The `#[deny(clippy::unwrap_used)]` lint enforces this.
+
+*Controls.* NIST SP 800-53 SI-17 (Fail-Safe Procedures) / NSA RTB RAIN.
+
+==== Deterministic Error Taxonomy
+
+*What it is.* Use explicit error enums with stable, well-named variants.
+Each variant represents a distinct failure category with enough context for audit and diagnosis.
+Avoid stringly-typed or ad hoc errors in security-critical paths.
+
+*Threat.* Generic or string-based errors make it impossible to programmatically
+distinguish failure causes. Callers cannot filter by category, security tools cannot
+classify events, and auditors cannot trace failures to their root cause.
+
+*In Rust.* Define a crate-level or module-level `Error` enum. Each variant covers
+one failure class. Implement `Display` for human-readable messages but keep the enum
+variants as the canonical representation. Do not nest `String` where a variant suffices.
+
+*Controls.* NIST SP 800-53 AU-3 (Audit Record Content) / NIST SP 800-218 SSDF RV.1.
+
+==== Secure Arithmetic (boundary discipline)
+
+The core pattern is covered in xref:patterns:pattern-secure-arithmetic.adoc[Secure Arithmetic].
+The additional discipline here: apply checked arithmetic to any integer derived from
+security-relevant input even when overflow seems unlikely. The value could come from an
+attacker-controlled file or kernel attribute. "Unlikely" is not a guarantee.
+
+==== Verification by Test Vector
+
+*What it is.* For parsers, policy logic, and normalization code, define deterministic
+"known-good / known-bad" test vectors and keep them versioned with the code.
+
+*Threat.* Parser or policy logic that passes unit tests on well-formed input may fail
+silently on edge cases, malformed input, or adversarial input. Without explicit test
+vectors, regressions are not caught until production.
+
+*In Rust.* Create integration tests (under `tests/`) with explicitly named vectors covering:
+valid canonical input, valid non-canonical input (whitespace, alternate formats), boundary
+values, and known-invalid input that must be rejected. Version the vectors alongside the code.
+
+*Controls.* NIST SP 800-218 SSDF PW.7 (Test Executable Code) / NIST SP 800-53 SA-11.
+
+'''
+
+=== Group D: Operational Discipline and Governance
+
+These patterns connect the codebase to auditable, assessable evidence of compliance.
+
+==== Audit-First Security Event Design
+
+*What it is.* For security-relevant actions, define the audit event before implementing the code.
+Specify: what happened, who requested it, what object was affected, what decision was made,
+what evidence supports the decision.
+
+*Threat.* Code written first, logging added as an afterthought produces incomplete or inconsistent
+audit records. An assessor reviewing logs cannot reconstruct the access decision from partial data.
+
+*In Rust.* Define the audit event as a struct or enum variant. The code path emits the event
+as part of its normal execution, not as an afterthought appended after the fact. The log
+record should be self-contained: a reader should be able to reconstruct the access decision
+from the record alone.
+
+*Controls.* NIST SP 800-53 AU-3 / AU-12 / CMMC CA.L2-3.3.1.
+
+==== Provenance-Carrying Data
+
+*What it is.* Attach provenance metadata to critical data as it moves through the system:
+source, validation status, timestamp, authority, digest, and transformation history.
+The Sealed Evidence Cache (SEC) pattern is a specific implementation of this principle.
+
+*Threat.* Data that crosses module boundaries loses its provenance. A downstream module
+that receives a validated label cannot verify that validation actually occurred, or when.
+An attacker who injects data after the validation step can feed unvalidated values into enforcement logic.
+
+*In Rust.* Wrapper structs that carry payload plus metadata.
+The metadata is set once at construction and is inaccessible for modification.
+Downstream callers receive both the value and its provenance proof.
+
+See xref:patterns:pattern-sec.adoc[Sealed Evidence Cache] for the implemented example.
+
+*Controls.* NIST SP 800-53 SI-7 / NIST SP 800-218 SSDF PW.4.
+
+==== Known-Good Baseline
+
+*What it is.* Establish canonical defaults, canonical configuration serialization,
+and known-good startup baselines. Validate runtime configuration against those baselines
+and detect drift.
+
+*Threat.* Systems that start from unknown or partially-modified configuration may be operating
+outside the validated posture. Drift from the known-good baseline is a common precursor to
+both security failures and compliance findings.
+
+*In Rust.* Represent the known-good baseline as a typed constant or configuration struct.
+Load runtime configuration through the same validated constructor. Compare loaded configuration
+against the baseline at startup and emit an audit event on drift.
+
+*Controls.* NIST SP 800-53 CM-6 (Configuration Settings) / CMMC CM.L2-3.4.2.
+
+==== Security Control Traceability
+
+*What it is.* Every security-critical module, type, and function carries explicit citations
+to the NIST or NSA control it satisfies. Source code, test cases, and documentation all
+point back to the same requirement.
+
+*Threat.* Undocumented security decisions cannot be verified by an auditor.
+The auditor must assume the implementation is correct or re-derive the intent from first principles.
+Unannotated security code fails a compliance review.
+
+*In Rust.* Module-level `//!` doc blocks cite the governing controls.
+Security-critical types and functions carry `///` citations.
+See xref:compliance-annotations.adoc[Compliance annotations guide] for the full requirement.
+
+*Controls.* NIST SP 800-218 SSDF PW.1 / NIST SP 800-53 SA-8 / NIST SP 800-53A.
+
+==== Evidence-Producing Design
+
+*What it is.* Design the system so it naturally emits the evidence an assessor would request:
+structured logs, configuration snapshots, version data, hashes, policy identifiers,
+and validation results. Evidence is a first-class output of the system, not an afterthought.
+
+*Threat.* Systems designed without assessability in mind require retroactive instrumentation
+during audits. Retroactive instrumentation is expensive and often incomplete.
+
+*In Rust.* Structure `Display` and `Debug` impls to emit parseable key=value output.
+Emit structured log events at every significant decision point.
+Include version and configuration information in startup log output.
+Design for `cargo doc` to produce auditable API documentation with control citations.
+
+*Controls.* NIST SP 800-53A (Assessment Procedures) / NIST SP 800-218 SSDF PO.4.
+
+==== Subset-of-Privileged-Users
+
+*What it is.* Administrative functions — audit management, configuration mutation,
+key operations — are callable only through explicitly separated roles or interfaces.
+Operational and administrative APIs are distinct.
+
+*Threat.* Conflating operational and administrative APIs allows operational code paths
+to trigger privileged operations without explicit privilege elevation.
+
+*In Rust.* Separate admin types from operational types. An operational caller cannot
+obtain an admin handle without explicit privilege grant. The type system enforces this
+separation structurally.
+
+*Controls.* NIST SP 800-53 AC-6(5) / CMMC AC.L2-3.1.6.
+
+'''
+
+=== Group E: Process and Workspace Governance
+
+These patterns apply at the workspace, toolchain, or development process level.
+
+==== Small Unsafe Island
+
+*What it is.* If `unsafe` is ever necessary (e.g., FFI, performance-critical operations
+with external libraries), isolate it in a tiny, dedicated module. Document the invariants
+that the unsafe code relies on. Wrap it in a safe public API. Keep the unsafe surface
+auditable.
+
+*Threat.* `unsafe` scattered throughout a codebase is an audit liability. An auditor
+must locate and review every `unsafe` block. Undocumented `unsafe` blocks have no stated
+invariants and cannot be verified correct.
+
+*Note for UMRS.* The codebase currently has `#![forbid(unsafe_code)]` in every crate root.
+This means unsafe is not currently used anywhere. If a future requirement makes unsafe
+necessary, this pattern defines how to contain it.
+
+*Controls.* NIST SP 800-218 SSDF PW.4.3 / NIST SP 800-53 SA-11.
+
+==== Unsafe-Surface Measurement
+
+*What it is.* Use `cargo-geiger` to measure the total unsafe code surface in the crate
+graph — both direct and transitive. Track this metric over time. Any increase triggers review.
+
+*Threat.* A dependency added for convenience may introduce unsafe code that is invisible
+in a code review of first-party code. The unsafe surface grows silently.
+
+*In practice.* Run `cargo geiger` before each release. Treat an increase in unsafe count
+as a finding requiring justification. This is a governance metric, not a blocker — but
+the trend must be understood.
+
+See also xref:patterns:pattern-supply-chain.adoc[Supply Chain Hygiene].
+
+*Controls.* NIST SP 800-218 SSDF PW.3 / NIST SP 800-53 SR-3.
+
+==== Safe Replacement of Unsafe Dependencies
+
+*What it is.* Prefer safe Rust crates over crates with large unsafe surfaces.
+When a safe equivalent exists, prefer it. Track opportunities to replace unsafe-heavy
+dependencies in the workspace.
+
+*Threat.* Unsafe code in dependencies is outside the control of this project but contributes
+to the attack surface and complicates formal review.
+
+*In practice.* The Rust Secure Code WG maintains the "safety-dance" effort cataloging
+safe alternatives. Use `cargo-geiger` to identify the highest-unsafe-surface dependencies
+and evaluate whether safer alternatives exist.
+
+*Controls.* NIST SP 800-218 SSDF PW.3 / NIST SP 800-53 SR-3 / SR-5.
+
+==== Configuration Is Code-Like
+
+*What it is.* Treat security-relevant configuration as typed, validated, versioned input
+with migration rules and integrity checks. Configuration is not free-form text.
+
+*Threat.* Unvalidated configuration can produce incorrect security decisions silently.
+An attacker or misconfiguration that changes a security-relevant setting without validation
+or audit may go undetected.
+
+*In Rust.* Parse configuration files through the same validated-constructor pattern used
+for runtime input. Log configuration at startup (values permitting — see error information
+discipline). Detect and log drift from the known-good baseline on startup.
+
+*Controls.* NIST SP 800-53 CM-6 / NSA RTB Trust Gate.
+
+==== Reviewability Over Cleverness
+
+*What it is.* In security-critical paths, prefer simple, explicit, auditable code over
+clever abstractions. The code must be understandable by a reviewer who is not the author
+and did not write the code.
+
+*Threat.* Clever abstractions obscure intent. An auditor reviewing a dense combinator chain
+cannot verify the security property it encodes. Cleverness introduces review gaps.
+
+*In Rust.* Break complex method chains into intermediate `let` bindings with descriptive names.
+Use `if let` / `match` instead of `.map_or_else()` when the intent is clearer. Clippy aesthetic
+lints that reduce readability are explicitly suppressed in this codebase — see `CLAUDE.md`.
+
+*Controls.* NIST SP 800-218 SSDF PW.2 (Review Software Designs).
+
+==== Defense-in-Depth Composition
+
+*What it is.* No single mechanism is sufficient. Rust type safety, explicit validation,
+DAC, capabilities, seccomp, SELinux policy, audit logging, and configuration management
+must reinforce each other. Each layer assumes the others may be absent or compromised.
+
+*Threat.* Reliance on a single control creates a single point of failure. An attacker who
+bypasses one layer reaches an unprotected system.
+
+*In practice.* When adding a new feature, enumerate the layers it touches. Identify which
+layers are currently active and which are absent or unverified. Flag gaps. The UMRS design
+explicitly combines SELinux policy, Rust type safety, provenance verification, TOCTOU safety,
+and audit logging because no single mechanism covers all adversary capabilities.
+
+*Controls.* NIST SP 800-53 SC-39 (Process Isolation) / NIST SP 800-53 AC-4 / NSA RTB VNSSA.
+
+==== Performance-Secondary-but-Measured
+
+*What it is.* Correctness and security come first. Performance is optimized only with
+explicit measurement that demonstrates the invariants are preserved by the optimization.
+
+*Threat.* Premature optimization introduces complexity, reduces reviewability, and creates
+subtle bugs. Performance optimizations in security-critical code have historically introduced
+timing side-channels and integer errors.
+
+*In practice.* Build the correct, strongly typed version first.
+Measure with explicit benchmarks before optimizing.
+Any optimization that changes behavior (caching, batching, short-circuiting) must be
+reviewed for security impact. See the xref:patterns:pattern-execution-measurement.adoc[Execution Measurement] pattern for timing instrumentation.
+
+*Controls.* NIST SP 800-218 SSDF PW.4 (general engineering discipline).
+
+'''
+
+=== Extended Pattern Summary Table
+
+[cols="2,2,3,1", options="header"]
+|===
+| Pattern | Group | Primary control | Status
+
+| Least-Privilege API | API Design | NIST SP 800-53 AC-6 | Architectural discipline
+| Separate Processing Domains | API Design | NIST SP 800-53 AC-6(5) | Architectural discipline
+| Explicit Trust Boundary | API Design | NIST SP 800-53 SI-10 | Applied (constructors)
+| Capability-Style Interface | API Design | NIST SP 800-53 AC-6 / AC-3 | Architectural discipline
+| Complete Mediation | API Design | NIST SP 800-53 AC-3 / NSA RTB RAIN | Applied (kattrs, xattrs)
+| Trusted Path / Trusted Channel | API Design | NIST SP 800-53 SC-11 | Architectural discipline
+| Strongly Typed Domain Model | Type Discipline | NIST SP 800-218 SSDF PW.4.1 | Applied (all crates)
+| Trusted-Constructor | Type Discipline | NIST SP 800-218 SSDF PW.4.1 | Applied (all crates)
+| Immutable-by-Default | Type Discipline | NIST SP 800-53 CM-5 | Applied (private fields)
+| Explicit Lifecycle / State-Machine | Type Discipline | NIST SP 800-218 SSDF PW.4 | Architectural discipline
+| No-Panic Production Path | Reliability | NIST SP 800-53 SI-17 | Applied (`#[deny(clippy::unwrap_used)]`)
+| Deterministic Error Taxonomy | Reliability | NIST SP 800-53 AU-3 | Partially applied
+| Verification by Test Vector | Reliability | NIST SP 800-218 SSDF PW.7 | Partially applied
+| Audit-First Security Event | Governance | NIST SP 800-53 AU-3 / AU-12 | Architectural discipline
+| Provenance-Carrying Data | Governance | NIST SP 800-53 SI-7 | Applied (SEC pattern)
+| Known-Good Baseline | Governance | NIST SP 800-53 CM-6 | Architectural discipline
+| Security Control Traceability | Governance | NIST SP 800-218 SSDF PW.1 | Applied (annotations guide)
+| Evidence-Producing Design | Governance | NIST SP 800-53A | Partially applied
+| Subset-of-Privileged-Users | Governance | NIST SP 800-53 AC-6(5) | Architectural discipline
+| Small Unsafe Island | Workspace | NIST SP 800-218 SSDF PW.4.3 | Not needed (forbid unsafe)
+| Unsafe-Surface Measurement | Workspace | NIST SP 800-218 SSDF PW.3 | Process — use cargo-geiger
+| Safe Replacement of Unsafe Deps | Workspace | NIST SP 800-53 SR-3 | Process — ongoing
+| Configuration Is Code-Like | Workspace | NIST SP 800-53 CM-6 | Architectural discipline
+| Reviewability Over Cleverness | Workspace | NIST SP 800-218 SSDF PW.2 | Applied (Clippy suppressions)
+| Defense-in-Depth Composition | Workspace | NIST SP 800-53 SC-39 | Architectural discipline
+| Performance-Secondary-but-Measured | Workspace | NIST SP 800-218 SSDF PW.4 | Applied (measurement pattern)
+
+|===
