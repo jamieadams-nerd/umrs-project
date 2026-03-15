@@ -36,6 +36,44 @@ Mark entries `resolved` when acted on. Do not delete entries.
 
 ---
 
+## [2026-03-15] researcher → security-auditor: Phase 2 corpus staged — accreditation-artifacts
+
+**Status**: open
+
+Security-auditor methodology corpus Phase 2 has been staged. Eight documents have been
+identified, researched, and added to the manifest. They are awaiting manual download.
+
+**What was staged** (all from approved sources — fedramp.gov and nvlpubs.nist.gov):
+- NIST SP 800-18 Rev. 1 — SSP structure and required content (published Feb 2006)
+- FedRAMP CSP Authorization Playbook v4.2 — current accreditation workflow (Nov 2025)
+- FedRAMP Agency Authorization Playbook v4.1 — AO/ISSO review process (Nov 2025)
+- FedRAMP SAP Training PDF — how auditors write test plans
+- FedRAMP SAR Training PDF — how auditors document findings
+- FedRAMP SSP Template (Rev5, DOCX) — SSP document structure
+- FedRAMP SAP Template (Rev5, DOCX) — SAP document structure
+- FedRAMP SAR Template (Rev5, DOCX) — SAR document structure
+
+**What is blocked**: Manual download is required. Jamie needs to run the curl commands in
+`.claude/references/accreditation-artifacts/SOURCE.md` (or authorize the researcher agent to
+run them), then trigger RAG ingestion with:
+
+```bash
+cd /media/psf/repos/umrs-project/.claude/rag
+RAG_CHROMA_PATH=/media/psf/repos/ai-rag-vdb/chroma python ingest.py --collection accreditation-artifacts
+```
+
+**DOCX caveat**: The three FedRAMP templates (SSP/SAP/SAR) are .docx only — no PDF available.
+They need `pandoc <file>.docx -o <file>.txt` conversion before ingestion. The SAP/SAR training
+PDFs cover the same structural ground and are the priority format for initial ingestion.
+
+**After ingestion**: Run `corpus-familiarization` on the `accreditation-artifacts` collection
+before using it for plan reviews. This is a standing rule from Jamie.
+
+**Plan status**: `.claude/plans/security-auditor-corpus.md` updated to
+`phase-2-staged-awaiting-download`.
+
+---
+
 ## [2026-03-13] researcher → all-agents: PQC Status Tracker created
 
 **Status**: open
@@ -480,5 +518,39 @@ New findings require coder attention before deployment. Notable:
 
 Please log the security review completion in `.claude/CHANGELOG.md` under
 the `umrs-platform` / posture probe section.
+
+---
+
+---
+
+## [2026-03-15] researcher → security-auditor: RMF methodology corpus available in RAG
+
+**Status**: open
+
+Phase 1 of the Security Auditor Methodology Corpus plan is complete.
+
+The following NIST RMF core documents are now ingested into the `rmf-methodology` RAG
+collection (1,132 chunks total):
+
+| Document | Chunks | Purpose |
+|---|---|---|
+| NIST SP 800-53A Rev. 5 | 749 | Assessment methods: Examine / Interview / Test |
+| NIST SP 800-37 Rev. 2 | 183 | Full RMF lifecycle |
+| NIST SP 800-30 Rev. 1 | 99 | Risk assessment methodology |
+| NIST SP 800-39 | 99 | Enterprise risk governance |
+
+SP 800-53A is the highest-value document — it maps each control to specific assessment
+procedures (Examine, Interview, Test). Use it to:
+- Classify your own review activities by method type
+- Cite specific assessment procedures when reviewing code or plans
+- Identify evidence gaps, not just annotation gaps
+
+Documents are also available as PDFs at `refs/nist/` for direct reference.
+
+Next step per the plan: security-auditor should run a feedback pass on active plans
+(kernel-security-posture-probe, cpu-security-corpus-plan, umrs-platform-expansion)
+using the new methodology grounding.
+
+Plan: `.claude/plans/security-auditor-corpus.md`
 
 ---

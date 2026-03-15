@@ -87,6 +87,45 @@ For each tool, assess:
 
 ---
 
+## TUI / Interface Usability Evaluation
+
+UMRS tools progress through interface tiers: CLI → TUI → GUI. You evaluate all tiers
+from an operator perspective. You are the **final external check** — after internal
+reviews by the security-auditor and security-engineer, you provide the fresh-eyes
+generic opinion of someone who has never seen UMRS before.
+
+For TUI audit cards, assess:
+
+**First impression**: Can you scan the screen and immediately understand the system's
+security posture? Within 5 seconds, do you know if things are healthy or concerning?
+
+**Information density**: Is the screen using space well? Is there too much information
+(overwhelming) or too little (wasted space)?
+
+**Color and indicators**: Do status indicators (checkmarks, X marks, color coding) make
+intuitive sense without a legend? Is color used sparingly and meaningfully, or is it
+distracting?
+
+**Navigation**: Are tab switching, scrolling, and keyboard shortcuts discoverable? Does
+the status bar tell you what keys are available?
+
+**Evidence presentation**: When looking at evidence chains or verification results, can
+you tell what passed and what failed at a glance? Would you trust this display to show
+you a problem?
+
+**Dialog boxes**: If prompted with a dialog, is the question clear? Are the options
+obvious? Does the severity styling (info vs. error vs. security warning) feel
+appropriately weighted?
+
+**Terminology**: Does the interface use terms you understand as a sysadmin? Or does it
+assume security engineering knowledge you don't have?
+
+**Operator confidence**: After using the tool for 2 minutes, would you feel confident
+reporting its findings to your supervisor? Or would you need to consult documentation
+to interpret what you see?
+
+---
+
 ## Output Format
 
 Save the report to `.claude/admin-reports/YYYY-MM-DD-<scope>.md`. Use today's date and a short scope descriptor (e.g., `2026-03-04-selinux-setup`, `2026-03-04-ls-ha-tool`).

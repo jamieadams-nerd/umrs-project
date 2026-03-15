@@ -102,3 +102,49 @@ OASIS DITA 1.3 Part 2 — Technical Content Edition (concept, task, reference, b
 |---|---|---|
 | dita-v1.3-part2-tech-content.html | https://docs.oasis-open.org/dita/dita/v1.3/os/part2-tech-content/dita-v1.3-os-part2-tech-content.html | Ingested |
 | dita-v1.3-part2-tech-content.pdf | https://docs.oasis-open.org/dita/dita/v1.3/os/part2-tech-content/dita-v1.3-os-part2-tech-content.pdf | Downloaded but ingest fails (PDF reader compat issue); HTML version covers same content |
+
+## accreditation-artifacts (staged 2026-03-15 — awaiting manual download)
+
+Security-auditor methodology corpus Phase 2. SSP/SAP/SAR structure and FedRAMP accreditation process.
+All documents require manual download — outbound curl was unavailable during staging session.
+See `.claude/references/accreditation-artifacts/SOURCE.md` for download instructions.
+
+| File | Source URL | Notes |
+|---|---|---|
+| sp800-18r1.pdf | https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-18r1.pdf | NIST approved source |
+| fedramp-csp-authorization-playbook.pdf | https://www.fedramp.gov/assets/resources/documents/CSP_Authorization_Playbook.pdf | v4.2, Nov 2025 |
+| fedramp-agency-authorization-playbook.pdf | https://www.fedramp.gov/resources/documents/Agency_Authorization_Playbook.pdf | v4.1, Nov 2025 |
+| fedramp-sap-training.pdf | https://www.fedramp.gov/assets/resources/training/200-B-FedRAMP-Training-Security-Assessment-Plan-SAP.pdf | PDF |
+| fedramp-sar-training.pdf | https://www.fedramp.gov/assets/resources/training/200-C-FedRAMP-Training-Security-Assessment-Report-SAR.pdf | PDF |
+| fedramp-ssp-template.docx | https://www.fedramp.gov/resources/templates/FedRAMP-High-Moderate-Low-LI-SaaS-Baseline-System-Security-Plan-(SSP).docx | DOCX — needs conversion |
+| fedramp-sap-template.docx | https://www.fedramp.gov/resources/templates/FedRAMP-Security-Assessment-Plan-(SAP)-Template.docx | DOCX — needs conversion |
+| fedramp-sar-template.docx | https://www.fedramp.gov/assets/resources/templates/FedRAMP-Security-Assessment-Report-(SAR)-Template.docx | DOCX — needs conversion |
+
+Note on DOCX: FedRAMP templates are .docx only. ingest.py cannot handle .docx directly.
+Options: (a) `pandoc <file>.docx -o <file>.txt` then place .txt in collection, or
+(b) `libreoffice --headless --convert-to pdf <file>.docx`. The SAP/SAR training PDFs
+cover the same structural ground and are the preferred format for initial ingestion.
+
+Update check URLs:
+- https://www.fedramp.gov/documents-templates/ (FedRAMP changelog and template versions)
+- https://csrc.nist.gov/publications/detail/sp/800-18/rev-1/final (NIST 800-18 — no newer revision expected)
+
+---
+
+## rmf-methodology (ingested 2026-03-15, 1,132 chunks)
+
+NIST RMF core documents for security-auditor methodology corpus. Phase 1 of
+`.claude/plans/security-auditor-corpus.md`.
+
+| File | Source URL |
+|---|---|
+| sp800-37r2.pdf | https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-37r2.pdf |
+| sp800-53Ar5.pdf | https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-53Ar5.pdf |
+| sp800-30r1.pdf | https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-30r1.pdf |
+| sp800-39.pdf | https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-39.pdf |
+
+Update check URLs:
+- https://csrc.nist.gov/publications/detail/sp/800-37/rev-2/final
+- https://csrc.nist.gov/publications/detail/sp/800-53a/5/final
+- https://csrc.nist.gov/publications/detail/sp/800-30/rev-1/final
+- https://csrc.nist.gov/publications/detail/sp/800-39/final

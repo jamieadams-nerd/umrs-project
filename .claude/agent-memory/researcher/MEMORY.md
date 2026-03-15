@@ -1,17 +1,18 @@
 # Researcher Agent Memory
-# Last updated: 2026-03-13
+# Last updated: 2026-03-15
 
 ## Reference Library
 
 ### refs/ manifest (official security docs)
 - `refs/manifest.md` is the canonical manifest — always read before retrieval tasks
-- `refs/nist/` — NIST SPs (800-218, 800-171r2, 800-171r3, 800-53r5) + FIPS (140-2, 140-3)
+- `refs/nist/` — NIST SPs (800-218, 800-171r2, 800-171r3, 800-53r5, 800-37r2, 800-53Ar5, 800-30r1, 800-39) + FIPS (140-2, 140-3)
 - `refs/nist/fips/` — FIPS 203, 204, 205 (PQC standards, downloaded 2026-03-13)
 - `refs/dod/` — DoD CMMC docs (Final Rule + Assessment Guide L2, both downloaded 2026-03-12)
+- `refs/fedramp/` — FedRAMP accreditation docs (staged 2026-03-15, awaiting manual download)
 - Last version check: 2026-03-12 (next due 2026-04-12)
 
 ### .claude/references/ (technical reference collections for RAG)
-Collections and status as of 2026-03-13:
+Collections and status as of 2026-03-15:
 
 | Collection | Source | Status | Chunks |
 |---|---|---|---|
@@ -28,6 +29,8 @@ Collections and status as of 2026-03-13:
 | rustdoc-book | doc.rust-lang.org/rustdoc/print.html | ✓ Ingested | 194 |
 | asciidoctor-ref | docs.asciidoctor.org (quick reference + document structure) | ✓ Ingested | 67 |
 | dita-spec | OASIS DITA 1.3 Part 2 Technical Content (HTML) | ✓ Ingested | 100 |
+| rmf-methodology | NIST SP 800-37r2, 800-53Ar5, 800-30r1, 800-39 | ✓ Ingested | 1,132 |
+| accreditation-artifacts | NIST 800-18 + FedRAMP playbooks/templates (8 docs) | Staged — awaiting manual download | 0 |
 
 Full source URL list for update checks: see `rag-collections.md` in this directory.
 PQC status tracker (team-readable): see `pqc-tracker.md` in this directory.
@@ -75,6 +78,7 @@ python ingest.py --summary               # show chunk counts and exit
 - CVEs: nvd.nist.gov, cve.mitre.org
 - CMMC: dodcio.defense.gov, acq.osd.mil
 - DoD Issuances: esd.whs.mil (approved 2026-03-12)
+- FedRAMP: fedramp.gov (approved 2026-03-15 — accreditation process artifacts)
 
 ## Research Reports — MANDATORY RULE
 
@@ -165,3 +169,7 @@ When Jamie says "researcher, refresh your library" or "check for updates", perfo
 - HRU 1976: requires manual download via ACM DL (DOI: 10.1145/360051.360056)
 - IEEE 829 (Software Test Documentation): paywalled — requires manual download if desired
 - Version check due 2026-04-12
+- accreditation-artifacts collection: 8 documents staged, awaiting manual download + ingestion
+  - Instructions: `.claude/references/accreditation-artifacts/SOURCE.md`
+  - FedRAMP SAP/SAR training PDFs are the priority (PDF format, no conversion needed)
+  - DOCX templates need pandoc conversion before ingest.py can process them

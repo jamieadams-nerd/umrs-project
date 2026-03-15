@@ -99,6 +99,24 @@ bytes that are never served to callers (pipeline always re-runs on hit). SC-28
 claim must be narrowed to "tamper detection" not "protection while in cache."
 Owner: tech-writer.
 
+## RMF Methodology Knowledge Artifacts (2026-03-15)
+
+Corpus familiarization pass completed. Five artifacts written to
+`.claude/agent-memory/security-auditor/`:
+- `concept-index.md` — SP800-37, SP800-53A, SP800-30, SP800-39
+- `cross-reference-map.md` — agreements, tensions, chains, gaps
+- `style-decision-record.md` — SDR-001 through SDR-005 (SDR-005 PENDING)
+- `term-glossary.md` — ~25 canonical RMF terms
+- `rmf-methodology-README.md` — collection summary
+
+### Key RMF Anchors for Audit Work
+- Missing annotation on public item → "other than satisfied" on SA-11 (code review)
+  or PL-2 (system documentation); Examine object: system design documentation
+- UMRS audit report = SAR component; finding + remediation = POA&M entry
+- UMRS HIGH severity = SP 800-30 High or Very High impact on operations/assets
+- AO risk determination (R-2) requires documented risk assessment (SP 800-30) as input
+- ODP values belong in the SSP, not code annotations — SDR-005 PENDING
+
 ## CPU Feature Matrix — Key Audit Principles (2026-03-14)
 
 Report: `.claude/reports/cpu-matrix-review/security-auditor-review.md`
@@ -135,3 +153,59 @@ Primary detection for mitigations: `/sys/devices/system/cpu/vulnerabilities/` �
 CET requires CPU + kernel + per-binary ELF opt-in (-fcf-protection=full). Verify via
 `.note.gnu.property` section in ELF headers (`eu-readelf -n <binary>` or `objdump -p`).
 UMRS binaries themselves must carry CET headers if auditing for CET compliance.
+
+## TUI Audit Card Plan Review (2026-03-15)
+
+Report: `.claude/reports/tui-plan-security-review.md`
+
+### Established Patterns for TUI Audit Card Work
+
+- `IndicatorValue` for kernel posture flags → cite SI-7 + CM-6 (NOT SI-3, which is malware)
+- `SecurityWarning` dialog acknowledgements → must document AU-10 requirement in API doc comment;
+  caller is responsible for emitting audit log entry; library cannot enforce this
+- Evidence display verification column → structured codes (e.g., `OK(sha256)`) not narrative
+  strings; assessors need checkable claims not conclusions
+- SELinux indicator must distinguish `permissive` (Inactive) from `enforcing` (Active); reading
+  `/sys/fs/selinux/enforce` value `0` must NOT render as `Active("0")` — it means permissive
+- `indicator_unavailable` must be visually distinct from `indicator_inactive`; both cannot share
+  `DarkGray` because unavailable is a potential security concern requiring investigation
+- `TwoColumnTable` in Phase 6 plan is actually three columns — naming error caught; pattern:
+  always check column count vs. variant name when reviewing evidence table designs
+- Evidence records currently have no timestamps — this is a known `EvidenceRecord` gap in
+  umrs-platform; TUI display cannot fix it but headers should show detection run time as minimum
+- Tool version as a `HeaderField` is required for audit card to serve as SP 800-53A Examine object
+
+### Portfolio Gap Pattern — TUI-Specific
+TUI plans produce runtime display only — no persisted assessment artifacts. Same gap seen
+across all UMRS plans. Evidence tab display is not an Examine object until it can be exported
+as structured data (future G4 work).
+
+## RMF Plan Review — Portfolio-Wide Gap Pattern (2026-03-15)
+
+Report: `.claude/reports/rmf-plan-review-2026-03-15.md`
+
+### Systemic Cross-Plan Gap: Strong Implement, Weak Assess/Monitor Artifact Production
+All three active plans (kernel posture probe, CPU corpus, umbrella) correctly implement
+mechanisms but do not specify how mechanism outputs become persisted assessment artifacts.
+This is a consistent portfolio gap: runtime `SignalReport` / `DetectionResult` / iterator
+outputs are not connected to SAR-consumable Examine objects (CM-6 deviation records,
+CA-7 monitoring strategy documents, CM-8 persistent inventory).
+
+When reviewing new plans, always check: does the plan specify an output artifact format
+that an assessor can use as an Examine object, or does it produce only runtime data?
+
+### "Other Than Satisfied" Controls Across Current Plans (2026-03-15)
+- CA-7: monitoring frequency ODP undefined (posture probe)
+- CM-6(iii): no persistent deviation document produced (posture probe)
+- SC-13: Layer 2/3 utilization assessment procedure absent (CPU corpus)
+- SI-7: Ubuntu dpkg path has no Test coverage (umbrella)
+- SC-28: DetectionResult serialization deferred; interim control undocumented (umbrella)
+- CM-8: inventory persistence mechanism undefined for OS Detection (umbrella)
+
+### RMF Lifecycle Mapping for UMRS Plan Components
+- Signal catalog / baseline definition → Select S-2, S-3
+- Runtime collection mechanism → Monitor M-2 (ongoing assessments)
+- Contradiction detection output → Monitor M-3 (ongoing remediation)
+- Control implementation (FIPS gate, CET, etc.) → Implement I-2
+- Open architectural decisions (CpuSignalId, MAC abstraction, serialization) → Authorize R-1
+- Research corpus (CPU features) → Select S-2 pre-requisite (knowledge base for control tailoring)

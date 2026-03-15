@@ -258,6 +258,16 @@ filesystem metadata  statx             confirmed
 
 ---
 
+# Dialog
+From main.rs, I'd like to be able to:
+- Present a dialoge box in the center (horizontlly/vertically) in the screen. comprises of one line
+  of text but stretched to an aesthetically please lenght. No stubby boxes only 10 chars?
+  - This popup has the focus
+  - I should be able to pass a message to get ehtir attention. Esc or something common to close it.
+  - Smame message but itneractive. I can do two choice options: Y/N  or Cancel/Okay. 
+  - give me some basic themes for style. Simple information, versus error, or soemthing security
+    serious.
+
 # Design Philosophy
 
 The interface should feel like:
