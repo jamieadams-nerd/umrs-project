@@ -17,7 +17,7 @@
 
 use ratatui::style::{Color, Modifier, Style};
 
-use crate::app::{StatusLevel, StyleHint};
+use crate::app::{IndicatorValue, StatusLevel, StyleHint};
 
 // ---------------------------------------------------------------------------
 // Trust level color helpers — imported from app to avoid circular deps
@@ -93,6 +93,51 @@ pub struct Theme {
 
     /// Status bar text (bold black on colored background).
     pub status_text: Style,
+
+    /// Indicator badge style for `IndicatorValue::Active` (green, bold).
+    pub indicator_active: Style,
+
+    /// Indicator badge style for `IndicatorValue::Inactive` (dark gray).
+    pub indicator_inactive: Style,
+
+    /// Indicator badge style for `IndicatorValue::Unavailable` (yellow).
+    ///
+    /// Yellow signals that the kernel source could not be read — the probe
+    /// failed rather than returning a known-inactive state. This is visually
+    /// distinct from `indicator_inactive` (dark gray) so that operators can
+    /// immediately distinguish "explicitly disabled" from "could not determine".
+    ///
+    /// NIST SP 800-53 CA-7 — a failed probe must be distinguishable from a
+    /// known-inactive feature during continuous monitoring.
+    pub indicator_unavailable: Style,
+
+    /// Group title style in the data panel (bold white).
+    ///
+    /// Group titles are visual organizers that mark the start of a named
+    /// section in the data panel. Bold white makes them stand out from
+    /// dim-cyan key labels while remaining unobtrusive.
+    ///
+    /// NIST SP 800-53 AU-3 — labelled sections improve audit record
+    /// readability; an assessor can locate assessment objects by group.
+    pub group_title: Style,
+}
+
+impl Theme {
+    /// Return the appropriate indicator badge style for the given `IndicatorValue`.
+    ///
+    /// Maps `Active` → `indicator_active`, `Inactive` → `indicator_inactive`,
+    /// `Unavailable` → `indicator_unavailable`.
+    ///
+    /// NIST SP 800-53 AU-3 — security state must be visually unambiguous;
+    /// active, inactive, and unavailable are rendered with distinct styles.
+    #[must_use = "indicator style is used for rendering; discarding it has no effect"]
+    pub const fn indicator_style(&self, value: &IndicatorValue) -> Style {
+        match value {
+            IndicatorValue::Active(_) => self.indicator_active,
+            IndicatorValue::Inactive(_) => self.indicator_inactive,
+            IndicatorValue::Unavailable => self.indicator_unavailable,
+        }
+    }
 }
 
 impl Default for Theme {
@@ -117,6 +162,14 @@ impl Default for Theme {
             wizard: Style::default().fg(Color::Green),
             status_text: Style::default()
                 .fg(Color::Black)
+                .add_modifier(Modifier::BOLD),
+            indicator_active: Style::default()
+                .fg(Color::Green)
+                .add_modifier(Modifier::BOLD),
+            indicator_inactive: Style::default().fg(Color::DarkGray),
+            indicator_unavailable: Style::default().fg(Color::Yellow),
+            group_title: Style::default()
+                .fg(Color::White)
                 .add_modifier(Modifier::BOLD),
         }
     }

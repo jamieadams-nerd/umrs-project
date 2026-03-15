@@ -16,8 +16,8 @@ use std::io::Write;
 use std::path::PathBuf;
 
 use umrs_platform::posture::bootcmdline::read_configured_cmdline;
-use umrs_platform::posture::snapshot::PostureSnapshot;
 use umrs_platform::posture::signal::SignalId;
+use umrs_platform::posture::snapshot::PostureSnapshot;
 
 // ===========================================================================
 // Helper — create a temp BLS entry file
@@ -199,10 +199,8 @@ fn bls_format_blank_lines_skipped() {
     );
 
     let content = std::fs::read_to_string(&path).expect("read");
-    let non_empty: Vec<&str> = content
-        .lines()
-        .filter(|l| !l.trim().is_empty())
-        .collect();
+    let non_empty: Vec<&str> =
+        content.lines().filter(|l| !l.trim().is_empty()).collect();
 
     assert_eq!(non_empty.len(), 2);
     let _ = tmp;
@@ -222,12 +220,10 @@ fn bls_no_options_line_returns_none() {
     );
 
     let content = std::fs::read_to_string(&path).expect("read");
-    let options_line = content
-        .lines()
-        .find(|l| {
-            let t = l.trim();
-            !t.is_empty() && !t.starts_with('#') && t.starts_with("options")
-        });
+    let options_line = content.lines().find(|l| {
+        let t = l.trim();
+        !t.is_empty() && !t.starts_with('#') && t.starts_with("options")
+    });
 
     assert!(
         options_line.is_none(),
@@ -277,10 +273,7 @@ fn snapshot_cmdline_signals_have_correct_class() {
 #[test]
 fn snapshot_cmdline_configured_value_does_not_panic() {
     let snap = PostureSnapshot::collect();
-    let cmdline_ids = [
-        SignalId::ModuleSigEnforce,
-        SignalId::Mitigations,
-    ];
+    let cmdline_ids = [SignalId::ModuleSigEnforce, SignalId::Mitigations];
     for id in cmdline_ids {
         let report = snap
             .get(id)

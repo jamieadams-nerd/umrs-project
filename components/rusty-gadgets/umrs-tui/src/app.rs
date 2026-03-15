@@ -23,6 +23,80 @@
 use crate::keymap::Action;
 
 // ---------------------------------------------------------------------------
+// IndicatorValue
+// ---------------------------------------------------------------------------
+
+/// The state of a single security indicator, as read from the kernel.
+///
+/// Fail-closed: any read failure or unimplemented source maps to `Unavailable`,
+/// never to a false `Active` or `Inactive` assertion.
+///
+/// NIST SP 800-53 SI-7: Software and Information Integrity — indicator values
+/// are derived exclusively from provenance-verified kernel attribute reads.
+/// NIST SP 800-53 CM-6: Configuration Settings — captures live kernel state,
+/// not assumed configuration.
+#[derive(Debug, Clone, PartialEq, Eq)]
+#[must_use = "security indicator value must be inspected; discarding it hides the kernel state"]
+pub enum IndicatorValue {
+    /// Kernel attribute confirms the feature is active/enforcing.
+    Active(String),
+    /// Kernel attribute confirms the feature is inactive/permissive.
+    Inactive(String),
+    /// Source not yet implemented, or read failed — fail-closed default.
+    Unavailable,
+}
+
+// ---------------------------------------------------------------------------
+// SecurityIndicators
+// ---------------------------------------------------------------------------
+
+/// Snapshot of live kernel security indicators for the header indicator row.
+///
+/// Populated once per session by [`crate::indicators::read_security_indicators`]
+/// and passed to the render path. Values are never mutated after construction.
+///
+/// All fields default to `IndicatorValue::Unavailable` — the fail-closed
+/// baseline. A field becomes `Active` or `Inactive` only when a provenance-
+/// verified kernel attribute read succeeds.
+///
+/// NIST SP 800-53 SI-7: Software and Information Integrity — all values
+/// originate from `SecureReader`-gated kernel attribute reads.
+/// NIST SP 800-53 CM-6: Configuration Settings — live kernel state, not
+/// static configuration.
+#[derive(Debug, Clone)]
+pub struct SecurityIndicators {
+    /// SELinux enforcement mode (`/sys/fs/selinux/enforce`).
+    pub selinux_status: IndicatorValue,
+
+    /// FIPS 140-2/3 cryptographic mode (`/proc/sys/crypto/fips_enabled`).
+    pub fips_mode: IndicatorValue,
+
+    /// Active LSM list (`/sys/kernel/security/lsm` — TODO: not yet implemented).
+    pub active_lsm: IndicatorValue,
+
+    /// Kernel lockdown level (`/sys/kernel/security/lockdown`).
+    pub lockdown_mode: IndicatorValue,
+
+    /// Secure Boot state (platform-specific — TODO: not yet implemented).
+    pub secure_boot: IndicatorValue,
+}
+
+impl Default for SecurityIndicators {
+    /// Construct a fully-unavailable indicator set — the fail-closed baseline.
+    ///
+    /// Callers should replace fields with live kernel reads where available.
+    fn default() -> Self {
+        Self {
+            selinux_status: IndicatorValue::Unavailable,
+            fips_mode: IndicatorValue::Unavailable,
+            active_lsm: IndicatorValue::Unavailable,
+            lockdown_mode: IndicatorValue::Unavailable,
+            secure_boot: IndicatorValue::Unavailable,
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
 // StyleHint
 // ---------------------------------------------------------------------------
 
@@ -138,47 +212,318 @@ impl TabDef {
 // DataRow
 // ---------------------------------------------------------------------------
 
-/// A single key-value row in the data panel.
+/// A single content item in the data panel.
 ///
-/// The `style_hint` controls value color. Keys are always rendered in the
-/// dim-cyan key style from the theme.
+/// `KeyValue` is the standard entry (key: value). `TwoColumn` renders two
+/// independent key-value pairs side-by-side in the left and right half of
+/// the panel area. `GroupTitle` adds a labelled section header (wired up in
+/// Phase 4). `Separator` inserts a blank line.
+///
+/// ## Column pairing convention
+///
+/// Use `TwoColumn` when two logically independent but equally-weighted facts
+/// belong on the same conceptual row (e.g., distro name vs. kernel version).
+/// Use `KeyValue` for single facts, or facts that have subordinate detail
+/// rows below them. `TwoColumn` is not appropriate when one fact is
+/// subordinate to the other.
+///
+/// ## Trust boundary
+///
+/// Key and value strings are rendered verbatim. Callers must not include
+/// security labels, credentials, or classified data in display strings
+/// (NIST SP 800-53 SI-12).
+///
+/// NIST SP 800-53 AU-3 — every data item is labelled; no ambiguous blobs.
 #[derive(Debug, Clone)]
-pub struct DataRow {
-    /// Left column: field name or label.
-    pub key: String,
+pub enum DataRow {
+    /// Standard single-column key-value row.
+    KeyValue {
+        /// Field name or label.
+        key: String,
+        /// Field value or description.
+        value: String,
+        /// Visual hint applied to the value column.
+        style_hint: StyleHint,
+    },
 
-    /// Right column: field value or description.
-    pub value: String,
+    /// Two key-value pairs rendered side-by-side.
+    ///
+    /// The panel area is split at the midpoint. The left pair occupies the
+    /// left half; the right pair occupies the right half. Each half uses
+    /// half the standard key column width.
+    TwoColumn {
+        /// Key for the left column.
+        left_key: String,
+        /// Value for the left column.
+        left_value: String,
+        /// Style hint for the left value.
+        left_hint: StyleHint,
+        /// Key for the right column.
+        right_key: String,
+        /// Value for the right column.
+        right_value: String,
+        /// Style hint for the right value.
+        right_hint: StyleHint,
+    },
 
-    /// Visual hint applied to the value column.
-    pub style_hint: StyleHint,
+    /// Section header rendered flush-left using the `group_title` theme style.
+    ///
+    /// ## Indentation convention
+    ///
+    /// Items that logically belong under a group title should be indented by
+    /// the caller prepending `"  "` (two spaces) to the `key` string in
+    /// subsequent `KeyValue` and `TwoColumn` rows. The library does not enforce
+    /// or track indentation state — this is a presentation convention only.
+    ///
+    /// ## Semantic scope
+    ///
+    /// Group titles carry no semantic enforcement. They are visual organizers
+    /// only. The caller is responsible for placing the correct rows under the
+    /// correct group title. Misplacement does not produce a rendering error,
+    /// but it may mislead an assessor who interprets the visual grouping as
+    /// an accurate representation of data source boundaries.
+    GroupTitle(String),
+
+    /// Blank separator line.
+    Separator,
+
+    /// A fixed three-column table row for structured evidence display.
+    ///
+    /// Used for evidence chains and similar structured, labelled data. Columns
+    /// are left-aligned; widths are fixed by the constants in `data_panel`.
+    ///
+    /// `style_hint` is applied to `col3` (the verification / outcome column),
+    /// which conveys the security-relevant result at a glance. `col1` and
+    /// `col2` are rendered with the standard key and value styles respectively.
+    ///
+    /// ## Trust Boundary
+    ///
+    /// Column strings are rendered verbatim. Callers must not include security
+    /// labels, credentials, or classified data (NIST SP 800-53 SI-12). Path
+    /// strings must be truncated to column width at the call site.
+    ///
+    /// NIST SP 800-53 AU-3 — evidence records are labelled and structured;
+    /// each row names its type, source, and verification outcome.
+    TableRow {
+        /// Evidence type label (column 1 — `Evidence Type`).
+        col1: String,
+        /// Source path or identifier (column 2 — `Source`).
+        col2: String,
+        /// Verification outcome string (column 3 — `Verification`).
+        col3: String,
+        /// Visual hint applied to the verification column.
+        style_hint: StyleHint,
+    },
+
+    /// Table column header row rendered with bold key styling across all columns.
+    ///
+    /// Emitted once per evidence group, immediately after the `GroupTitle` row
+    /// and before the first `TableRow`. Provides column labels so the table is
+    /// self-describing.
+    ///
+    /// NIST SP 800-53 AU-3 — every field in the evidence table is labelled.
+    TableHeader {
+        /// Label for column 1.
+        col1: String,
+        /// Label for column 2.
+        col2: String,
+        /// Label for column 3.
+        col3: String,
+    },
 }
 
 impl DataRow {
-    /// Construct a data row with the given key, value, and style hint.
-    #[must_use]
-    pub fn new(
+    /// Construct a `KeyValue` row with an explicit style hint.
+    ///
+    /// This is the primary constructor. Use `normal()` for unstyled rows.
+    #[must_use = "DataRow must be pushed into the row list; discarding it omits \
+                  a labelled field from the audit card"]
+    pub fn key_value(
         key: impl Into<String>,
         value: impl Into<String>,
         hint: StyleHint,
     ) -> Self {
-        Self {
+        Self::KeyValue {
             key: key.into(),
             value: value.into(),
             style_hint: hint,
         }
     }
 
-    /// Construct a data row with `Normal` style.
-    #[must_use]
-    pub fn normal(key: impl Into<String>, value: impl Into<String>) -> Self {
-        Self::new(key, value, StyleHint::Normal)
+    /// Construct a `KeyValue` row with the given key, value, and style hint.
+    ///
+    /// Alias for [`DataRow::key_value`] — kept for call-site readability when
+    /// the hint is already a named variable at the call site.
+    #[must_use = "DataRow must be pushed into the row list; discarding it omits \
+                  a labelled field from the audit card"]
+    pub fn new(
+        key: impl Into<String>,
+        value: impl Into<String>,
+        hint: StyleHint,
+    ) -> Self {
+        Self::key_value(key, value, hint)
     }
 
-    /// Construct a blank separator row (empty key and value, Dim style).
-    #[must_use]
-    pub fn separator() -> Self {
-        Self::new("", "", StyleHint::Dim)
+    /// Construct a `KeyValue` row with `Normal` style.
+    #[must_use = "DataRow must be pushed into the row list; discarding it omits \
+                  a labelled field from the audit card"]
+    pub fn normal(key: impl Into<String>, value: impl Into<String>) -> Self {
+        Self::key_value(key, value, StyleHint::Normal)
+    }
+
+    /// Construct a blank `Separator` row.
+    #[must_use = "DataRow::separator() must be pushed into the row list; \
+                  discarding it omits visual spacing from the audit card"]
+    pub const fn separator() -> Self {
+        Self::Separator
+    }
+
+    /// Construct a `TwoColumn` row with explicitly styled left and right pairs.
+    ///
+    /// Use when two independently meaningful facts should share a display row.
+    /// See the type-level documentation for the column pairing convention.
+    #[must_use = "DataRow must be pushed into the row list; discarding it omits \
+                  labelled fields from the audit card"]
+    pub fn two_column(
+        left_key: impl Into<String>,
+        left_value: impl Into<String>,
+        left_hint: StyleHint,
+        right_key: impl Into<String>,
+        right_value: impl Into<String>,
+        right_hint: StyleHint,
+    ) -> Self {
+        Self::TwoColumn {
+            left_key: left_key.into(),
+            left_value: left_value.into(),
+            left_hint,
+            right_key: right_key.into(),
+            right_value: right_value.into(),
+            right_hint,
+        }
+    }
+
+    /// Construct a `GroupTitle` row with the given label string.
+    ///
+    /// Renders flush-left using the `group_title` theme style (bold white by
+    /// default). Use to introduce a named section in the data panel. Follow
+    /// with `KeyValue` or `TwoColumn` rows indented per the caller convention
+    /// described in the `GroupTitle` variant documentation.
+    #[must_use = "DataRow::group_title() must be pushed into the row list; \
+                  discarding it omits a section header from the audit card"]
+    pub fn group_title(title: impl Into<String>) -> Self {
+        Self::GroupTitle(title.into())
+    }
+
+    /// Construct a `TableRow` with three column strings and a style hint.
+    ///
+    /// `col1` is the evidence type label; `col2` is the source path or
+    /// identifier; `col3` is the verification outcome. `hint` is applied
+    /// to `col3` to convey the security-relevant result at a glance.
+    ///
+    /// Column strings must not exceed the fixed column widths defined in
+    /// `data_panel`. Callers are responsible for truncation before calling
+    /// this constructor (NIST SP 800-53 SI-12).
+    ///
+    /// NIST SP 800-53 AU-3 — evidence rows are labelled and structured.
+    #[must_use = "DataRow::table_row() must be pushed into the row list; \
+                  discarding it silently omits an evidence record from the audit card"]
+    pub fn table_row(
+        col1: impl Into<String>,
+        col2: impl Into<String>,
+        col3: impl Into<String>,
+        hint: StyleHint,
+    ) -> Self {
+        Self::TableRow {
+            col1: col1.into(),
+            col2: col2.into(),
+            col3: col3.into(),
+            style_hint: hint,
+        }
+    }
+
+    /// Construct a `TableHeader` row with three column label strings.
+    ///
+    /// Rendered with bold key styling across all three columns. Emit once per
+    /// evidence group, immediately after the `GroupTitle` row and before the
+    /// first `TableRow`.
+    ///
+    /// NIST SP 800-53 AU-3 — table headers ensure the evidence display is
+    /// self-labelling; no column requires external context to interpret.
+    #[must_use = "DataRow::table_header() must be pushed into the row list; \
+                  discarding it omits column labels from the evidence table"]
+    pub fn table_header(
+        col1: impl Into<String>,
+        col2: impl Into<String>,
+        col3: impl Into<String>,
+    ) -> Self {
+        Self::TableHeader {
+            col1: col1.into(),
+            col2: col2.into(),
+            col3: col3.into(),
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// HeaderField
+// ---------------------------------------------------------------------------
+
+/// A single labelled field displayed in the header below the indicator row.
+///
+/// Callers use this to surface supplemental identification data — for example,
+/// a tool version string, a run timestamp, or an assessment identifier — so
+/// that every rendered card carries enough context to serve as a standalone
+/// SP 800-53A Examine object.
+///
+/// ## Trust Boundary
+///
+/// `value` is rendered verbatim. The caller must ensure it does not contain
+/// security labels, credentials, or classified data (NIST SP 800-53 SI-12).
+/// This field is for identification metadata only, not policy data.
+///
+/// NIST SP 800-53 AU-3 — labelled header fields ensure every audit card is
+/// self-identifying: report, host, subject, and supplemental context are all
+/// present on every rendered frame.
+#[derive(Debug, Clone)]
+pub struct HeaderField {
+    /// Display label for the left column (e.g., `"Version"`).
+    pub label: String,
+
+    /// Display value for the right column.
+    ///
+    /// Must not contain security labels, credentials, or classified data.
+    pub value: String,
+
+    /// Visual style hint applied to the value column.
+    pub style_hint: StyleHint,
+}
+
+impl HeaderField {
+    /// Construct a `HeaderField` with an explicit style hint.
+    ///
+    /// `label` is shown in the left column; `value` in the right column.
+    /// The `hint` controls the foreground color of the value.
+    #[must_use = "HeaderField must be stored and returned from header_fields(); \
+                  discarding it silently omits identification data from the audit card"]
+    pub fn new(
+        label: impl Into<String>,
+        value: impl Into<String>,
+        hint: StyleHint,
+    ) -> Self {
+        Self {
+            label: label.into(),
+            value: value.into(),
+            style_hint: hint,
+        }
+    }
+
+    /// Construct a `HeaderField` with `Normal` style.
+    ///
+    /// Convenience constructor for fields that need no emphasis.
+    #[must_use = "HeaderField must be stored and returned from header_fields(); \
+                  discarding it silently omits identification data from the audit card"]
+    pub fn normal(label: impl Into<String>, value: impl Into<String>) -> Self {
+        Self::new(label, value, StyleHint::Normal)
     }
 }
 
@@ -226,6 +571,23 @@ pub trait AuditCardApp {
 
     /// Current status message to display in the status bar.
     fn status(&self) -> &StatusMessage;
+
+    /// Supplemental identification fields rendered below the indicator row.
+    ///
+    /// Returns a slice of [`HeaderField`] values. These are appended to the
+    /// header after the fixed rows (report, host, subject) and the security
+    /// indicator row. If more fields are provided than the available header
+    /// height allows, the renderer truncates with a `"…"` marker.
+    ///
+    /// The default implementation returns an empty slice — existing impls
+    /// need not change, making this addition backward-compatible.
+    ///
+    /// NIST SP 800-53 AU-3 — supplemental fields extend audit card
+    /// identification so each rendered card can serve as a standalone
+    /// SP 800-53A Examine object (e.g., tool version, run timestamp).
+    fn header_fields(&self) -> &[HeaderField] {
+        &[]
+    }
 }
 
 // ---------------------------------------------------------------------------

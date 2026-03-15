@@ -709,11 +709,12 @@ mock `AuditCardApp` handles a third tab without panicking — extend the mock to
 
 ---
 
-## Dialog API Design
+## Phase 8 — Dialog API
 
-**Scope note:** The dialog is not in Jamie's implementation order for the current work
-batch. The design is captured here so it can be reviewed and approved before
-implementation begins in a future session.
+### Goal
+
+Provide a centered modal dialog overlay callable from `main.rs`. Four modes:
+Info, Error, SecurityWarning, Confirm. Focus management for two-button dialogs.
 
 ### Design
 
@@ -827,6 +828,30 @@ pub struct Theme {
 }
 ```
 
+### Files Modified
+
+- `src/dialog.rs` — new module; `DialogState`, `DialogMode`, `DialogFocus`, `render_dialog()`
+- `src/app.rs` — add `DialogState`, `DialogMode`, `DialogFocus` types (or re-export from dialog)
+- `src/keymap.rs` — add `DialogConfirm`, `DialogCancel`, `DialogToggleFocus` action variants
+- `src/theme.rs` — add `dialog_info_border`, `dialog_error_border`, `dialog_security_border`,
+  `dialog_button_focused`, `dialog_button_unfocused`, `dialog_title`, `dialog_message` fields
+- `src/lib.rs` — add `pub mod dialog`; re-export dialog types
+
+### Backward Compatibility
+
+Additive only. No existing signatures change. The caller opts in by creating a `DialogState`
+and calling `render_dialog()` after `render_audit_card()`.
+
+### Tests Needed
+
+- `tests/dialog_tests.rs` (new file):
+  - `dialog_state_default_is_not_visible()` — initial state has `visible: false`
+  - `dialog_mode_variants_are_distinct()` — all four modes compare differently
+  - `dialog_focus_toggle()` — Primary → Secondary → Primary
+  - `dialog_info_mode_response_is_always_true()` — Info dismiss sets `Some(true)`
+  - `dialog_confirm_mode_starts_pending()` — response is `None` until user acts
+  - `dialog_min_width_enforced()` — width never below 40 chars
+
 ---
 
 ## Cross-Cutting Constraints
@@ -926,7 +951,9 @@ produced from this plan:
 | `tests/trait_impl_tests.rs` | 2, 7 | Extend |
 | `tests/indicators_tests.rs` | 1 | New file |
 | `tests/theme_tests.rs` | 5 | Extend |
-| `tests/dialog_tests.rs` | future | New file (dialog phase) |
+| `src/dialog.rs` | 8 | New file |
+| `src/keymap.rs` | 8 | Add dialog action variants |
+| `tests/dialog_tests.rs` | 8 | New file |
 
 ---
 
@@ -941,6 +968,7 @@ Jamie's specified order maps to the phases above:
 5. Phase 5 (theme styling) — `theme.rs` additions (partly needed by Phases 1+4 already)
 6. Phase 6 (evidence tab grouping) — `main.rs` `build_trust_rows` refactor + new variants
 7. Phase 7 (kernel security placeholder tab) — `main.rs` only
+8. Phase 8 (dialog API) — `dialog.rs` + `keymap.rs` + `theme.rs`
 
 Phases 1 and 5 are partially interleaved: the `theme.rs` indicator style fields are needed
 by Phase 1's header render code. The developer should add those theme fields during Phase 1

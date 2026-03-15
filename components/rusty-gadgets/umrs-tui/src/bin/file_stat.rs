@@ -64,6 +64,7 @@ use umrs_tui::app::{
     AuditCardApp, AuditCardState, DataRow, StatusLevel, StatusMessage,
     StyleHint, TabDef,
 };
+use umrs_tui::indicators::read_security_indicators;
 use umrs_tui::keymap::KeyMap;
 use umrs_tui::layout::render_audit_card;
 use umrs_tui::theme::Theme;
@@ -773,6 +774,7 @@ fn main() {
     let mut state = AuditCardState::new(app.tabs().len());
     let keymap = KeyMap::default();
     let theme = Theme::default();
+    let indicators = read_security_indicators();
 
     // ── Terminal setup ────────────────────────────────────────────────────
     let mut terminal = ratatui::init();
@@ -780,7 +782,7 @@ fn main() {
     // ── Event loop ────────────────────────────────────────────────────────
     loop {
         if let Err(e) = terminal.draw(|f| {
-            render_audit_card(f, f.area(), &app, &state, &theme);
+            render_audit_card(f, f.area(), &app, &state, &indicators, &theme);
         }) {
             log::error!("terminal draw error: {e}");
             break;

@@ -7,9 +7,76 @@
 //! documented terminal [`Color`]. These are pure const functions — no
 //! terminal backend required.
 
-use ratatui::style::Color;
-use umrs_tui::app::{StatusLevel, StyleHint};
+use ratatui::style::{Color, Style};
+use umrs_tui::Theme;
+use umrs_tui::app::{IndicatorValue, StatusLevel, StyleHint};
 use umrs_tui::theme::{status_bg_color, style_hint_color};
+
+// ---------------------------------------------------------------------------
+// Theme::default — field coverage
+// ---------------------------------------------------------------------------
+
+#[test]
+fn theme_default_has_group_title_style() {
+    let theme = Theme::default();
+    // group_title must not be the zero Style — it should carry at least a
+    // foreground color so it is visually distinct from data rows.
+    assert_ne!(
+        theme.group_title,
+        Style::default(),
+        "theme.group_title must not be the zero Style"
+    );
+}
+
+#[test]
+fn theme_default_indicator_unavailable_is_yellow() {
+    let theme = Theme::default();
+    // indicator_unavailable must use Color::Yellow so it is visually
+    // distinct from indicator_inactive (DarkGray). A failed kernel probe
+    // is operationally different from a known-inactive feature.
+    // NIST SP 800-53 CA-7 — continuous monitoring requires this distinction.
+    let style = theme.indicator_style(&IndicatorValue::Unavailable);
+    assert_eq!(
+        style.fg,
+        Some(Color::Yellow),
+        "indicator_unavailable must use Yellow foreground (CA-7: \
+         failed probe is distinct from known-inactive)"
+    );
+}
+
+#[test]
+fn theme_default_indicator_inactive_and_unavailable_differ() {
+    let theme = Theme::default();
+    let inactive =
+        theme.indicator_style(&IndicatorValue::Inactive("off".to_owned()));
+    let unavailable = theme.indicator_style(&IndicatorValue::Unavailable);
+    assert_ne!(
+        inactive, unavailable,
+        "inactive and unavailable must have distinct styles"
+    );
+}
+
+#[test]
+fn theme_default_all_indicator_styles_differ() {
+    let theme = Theme::default();
+    let active =
+        theme.indicator_style(&IndicatorValue::Active("on".to_owned()));
+    let inactive =
+        theme.indicator_style(&IndicatorValue::Inactive("off".to_owned()));
+    let unavailable = theme.indicator_style(&IndicatorValue::Unavailable);
+    assert_ne!(
+        active, inactive,
+        "active and inactive must have distinct styles"
+    );
+    assert_ne!(
+        active, unavailable,
+        "active and unavailable must have distinct styles"
+    );
+    assert_ne!(
+        inactive, unavailable,
+        "inactive and unavailable must have distinct styles"
+    );
+}
 
 // ---------------------------------------------------------------------------
 // status_bg_color

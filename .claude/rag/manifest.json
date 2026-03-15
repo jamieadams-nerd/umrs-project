@@ -34634,5 +34634,194 @@
     "chunks_stored": 48,
     "collection": "accreditation-artifacts",
     "ingested_date": "2026-03-15T15:27:06.315750+00:00"
+  },
+  "tui-cli/SOURCE.md": {
+    "hash": "3c24eb1e94b66ac0",
+    "converted_to": "converted/tui-cli/SOURCE.md",
+    "chunks_stored": 15,
+    "collection": "tui-cli",
+    "ingested_date": "2026-03-15T17:05:32.224963+00:00"
+  },
+  "tui-cli/_index.md": {
+    "hash": "e56b0f4754a82eeb",
+    "converted_to": "converted/tui-cli/_index.md",
+    "chunks_stored": 4,
+    "collection": "tui-cli",
+    "ingested_date": "2026-03-15T17:05:32.722036+00:00"
+  },
+  "tui-cli/architecture/ratatui-architecture.md": {
+    "hash": "6a2c3462e7102437",
+    "converted_to": "converted/tui-cli/architecture/ratatui-architecture.md",
+    "chunks_stored": 11,
+    "collection": "tui-cli",
+    "ingested_date": "2026-03-15T17:05:33.094953+00:00"
+  },
+  "tui-cli/architecture/ratatui-breaking-changes.md": {
+    "hash": "fa652ad5d9299330",
+    "converted_to": "converted/tui-cli/architecture/ratatui-breaking-changes.md",
+    "chunks_stored": 11,
+    "collection": "tui-cli",
+    "ingested_date": "2026-03-15T17:05:33.512004+00:00"
+  },
+  "tui-cli/awesome-ratatui/README.md": {
+    "hash": "aecb70b142dd6eae",
+    "converted_to": "converted/tui-cli/awesome-ratatui/README.md",
+    "chunks_stored": 10,
+    "collection": "tui-cli",
+    "ingested_date": "2026-03-15T17:05:33.884687+00:00"
+  },
+  "tui-cli/backend/clap.md": {
+    "hash": "8a0e7917eeefc279",
+    "converted_to": "converted/tui-cli/backend/clap.md",
+    "chunks_stored": 14,
+    "collection": "tui-cli",
+    "ingested_date": "2026-03-15T17:05:34.384648+00:00"
+  },
+  "tui-cli/backend/color-eyre.md": {
+    "hash": "26036a083cab9111",
+    "converted_to": "converted/tui-cli/backend/color-eyre.md",
+    "chunks_stored": 9,
+    "collection": "tui-cli",
+    "ingested_date": "2026-03-15T17:05:34.714052+00:00"
+  },
+  "tui-cli/backend/crossterm-event.md": {
+    "hash": "f29b4b90284949cd",
+    "converted_to": "converted/tui-cli/backend/crossterm-event.md",
+    "chunks_stored": 7,
+    "collection": "tui-cli",
+    "ingested_date": "2026-03-15T17:05:35.000187+00:00"
+  },
+  "tui-cli/backend/crossterm-overview.md": {
+    "hash": "e67323a60810b131",
+    "converted_to": "converted/tui-cli/backend/crossterm-overview.md",
+    "chunks_stored": 6,
+    "collection": "tui-cli",
+    "ingested_date": "2026-03-15T17:05:35.229304+00:00"
+  },
+  "tui-cli/backend/crossterm-style.md": {
+    "hash": "7ff16322e5652cb4",
+    "converted_to": "converted/tui-cli/backend/crossterm-style.md",
+    "chunks_stored": 7,
+    "collection": "tui-cli",
+    "ingested_date": "2026-03-15T17:05:35.463999+00:00"
+  },
+  "tui-cli/backend/crossterm-terminal.md": {
+    "hash": "9700d49b4480c6ea",
+    "converted_to": "converted/tui-cli/backend/crossterm-terminal.md",
+    "chunks_stored": 4,
+    "collection": "tui-cli",
+    "ingested_date": "2026-03-15T17:05:35.629174+00:00"
+  },
+  "tui-cli/cli-ux/SOURCE.md": {
+    "hash": "ef3049994903f2e2",
+    "converted_to": "converted/tui-cli/cli-ux/SOURCE.md",
+    "chunks_stored": 4,
+    "collection": "tui-cli",
+    "ingested_date": "2026-03-15T17:05:35.800634+00:00"
+  },
+  "tui-cli/cli-ux/awesome-tuis.md": {
+    "hash": "7c35731d40552631",
+    "converted_to": "converted/tui-cli/cli-ux/awesome-tuis.md",
+    "chunks_stored": 25,
+    "collection": "tui-cli",
+    "ingested_date": "2026-03-15T17:05:36.595047+00:00"
+  },
+  "tui-cli/cli-ux/clig-guidelines.md": {
+    "hash": "a2a94a2df8516317",
+    "converted_to": "converted/tui-cli/cli-ux/clig-guidelines.md",
+    "chunks_stored": 43,
+    "collection": "tui-cli",
+    "ingested_date": "2026-03-15T17:05:37.969392+00:00"
+  },
+  "tui-cli/cli-ux/no-color.md": {
+    "hash": "67eb1ccd735e7316",
+    "converted_to": "converted/tui-cli/cli-ux/no-color.md",
+    "chunks_stored": 5,
+    "collection": "tui-cli",
+    "ingested_date": "2026-03-15T17:05:38.192458+00:00"
+  },
+  "tui-cli/ratatui-examples/demo2_app.rs": {
+    "hash": "7fefd4a396e3facc",
+    "converted_to": "converted/tui-cli/ratatui-examples/demo2_app.md",
+    "chunks_stored": 4,
+    "collection": "tui-cli",
+    "ingested_date": "2026-03-15T17:05:38.424439+00:00"
+  },
+  "tui-cli/ratatui-examples/flex_layouts.rs": {
+    "hash": "7289d370250440d3",
+    "converted_to": "converted/tui-cli/ratatui-examples/flex_layouts.md",
+    "chunks_stored": 10,
+    "collection": "tui-cli",
+    "ingested_date": "2026-03-15T17:05:38.844196+00:00"
+  },
+  "tui-cli/ratatui-examples/popup.rs": {
+    "hash": "ad2c145fabc70d0f",
+    "converted_to": "converted/tui-cli/ratatui-examples/popup.md",
+    "chunks_stored": 1,
+    "collection": "tui-cli",
+    "ingested_date": "2026-03-15T17:05:38.964816+00:00"
+  },
+  "tui-cli/ratatui-examples/scrollbar.rs": {
+    "hash": "d56fcaf277a1db19",
+    "converted_to": "converted/tui-cli/ratatui-examples/scrollbar.md",
+    "chunks_stored": 5,
+    "collection": "tui-cli",
+    "ingested_date": "2026-03-15T17:05:39.204543+00:00"
+  },
+  "tui-cli/ratatui-examples/table.rs": {
+    "hash": "3f493d9a19319e6d",
+    "converted_to": "converted/tui-cli/ratatui-examples/table.md",
+    "chunks_stored": 7,
+    "collection": "tui-cli",
+    "ingested_date": "2026-03-15T17:05:39.491034+00:00"
+  },
+  "tui-cli/ratatui-website/api-style.md": {
+    "hash": "f930889c8cfac8a2",
+    "converted_to": "converted/tui-cli/ratatui-website/api-style.md",
+    "chunks_stored": 7,
+    "collection": "tui-cli",
+    "ingested_date": "2026-03-15T17:05:39.747341+00:00"
+  },
+  "tui-cli/ratatui-website/api-widgets-overview.md": {
+    "hash": "ab31be1801f41f90",
+    "converted_to": "converted/tui-cli/ratatui-website/api-widgets-overview.md",
+    "chunks_stored": 9,
+    "collection": "tui-cli",
+    "ingested_date": "2026-03-15T17:05:40.085459+00:00"
+  },
+  "tui-cli/ratatui-website/architecture.md": {
+    "hash": "9a2934d7235e097c",
+    "converted_to": "converted/tui-cli/ratatui-website/architecture.md",
+    "chunks_stored": 7,
+    "collection": "tui-cli",
+    "ingested_date": "2026-03-15T17:05:40.328214+00:00"
+  },
+  "tui-cli/ratatui-website/concepts-application-architecture.md": {
+    "hash": "064a7274fca536be",
+    "converted_to": "converted/tui-cli/ratatui-website/concepts-application-architecture.md",
+    "chunks_stored": 10,
+    "collection": "tui-cli",
+    "ingested_date": "2026-03-15T17:05:40.673550+00:00"
+  },
+  "tui-cli/ratatui-website/concepts-backends.md": {
+    "hash": "cf350ac7e743f768",
+    "converted_to": "converted/tui-cli/ratatui-website/concepts-backends.md",
+    "chunks_stored": 9,
+    "collection": "tui-cli",
+    "ingested_date": "2026-03-15T17:05:41.004697+00:00"
+  },
+  "tui-cli/ratatui-website/concepts-layout.md": {
+    "hash": "43aff99513df4d25",
+    "converted_to": "converted/tui-cli/ratatui-website/concepts-layout.md",
+    "chunks_stored": 9,
+    "collection": "tui-cli",
+    "ingested_date": "2026-03-15T17:05:41.360389+00:00"
+  },
+  "tui-cli/ratatui-website/concepts-widgets.md": {
+    "hash": "70ee8caf8e727823",
+    "converted_to": "converted/tui-cli/ratatui-website/concepts-widgets.md",
+    "chunks_stored": 9,
+    "collection": "tui-cli",
+    "ingested_date": "2026-03-15T17:05:41.682572+00:00"
   }
 }

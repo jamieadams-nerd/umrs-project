@@ -171,15 +171,15 @@ fn select_entry(entries: &[PathBuf]) -> Option<&PathBuf> {
     if let Some(osrelease) = read_kernel_osrelease() {
         for entry in entries {
             if let Some(version) = parse_bls_field(entry, "version")
-            && version.trim() == osrelease.trim()
-        {
-            log::debug!(
-                "posture: bootcmdline: matched entry by osrelease '{}': {}",
-                osrelease.trim(),
-                entry.display()
-            );
-            return Some(entry);
-        }
+                && version.trim() == osrelease.trim()
+            {
+                log::debug!(
+                    "posture: bootcmdline: matched entry by osrelease '{}': {}",
+                    osrelease.trim(),
+                    entry.display()
+                );
+                return Some(entry);
+            }
         }
         log::debug!(
             "posture: bootcmdline: no entry matched osrelease '{}', \

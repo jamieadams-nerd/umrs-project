@@ -289,6 +289,19 @@ raise the relevant pattern or concern before proceeding:
 - Never traverse `target/` for metadata — use `cargo metadata` instead.
 - Use `--no-deps` by default; only drop it when external dependency graph is explicitly needed.
 
+
+## TUI/CLI Design Principles
+
+UMRS targets security operators in high-stakes environments. The interface
+must communicate trust. Apply these constraints to all TUI/CLI work:
+
+- Honor NO_COLOR environment variable unconditionally
+- State changes must be explicitly communicated to the user
+- Provide --json output mode for all commands that return structured data
+- Default output must be operator-readable without log-level labels or debug noise
+- Verbose mode (--verbose / -v) is the correct place for developer-facing output
+- Error messages must describe what happened and what the operator should do next
+
 ---
 
 ## Role of Claude Code in This Project

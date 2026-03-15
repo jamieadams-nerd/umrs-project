@@ -1,5 +1,32 @@
 # Changelog
 
+## 2026-03-15
+
+### Added
+- **Settings & Infrastructure**: WebFetch permissions for nvlpubs.nist.gov and fedramp.gov; Bash(pandoc:*) permission for DOCX template conversion
+- **Accreditation artifacts RAG collection**: Downloaded 6 of 8 NIST/FedRAMP documents; converted 3 DOCX templates to .txt via pandoc; ingested 405 chunks
+- **FedRAMP reference directory**: Created `refs/fedramp/` with corrected URLs and 3 playbook/template documents
+- **Security-auditor corpus familiarization**: Completed Phase 1–2 of security-auditor-corpus.md plan; 5 knowledge artifacts (policy-landscape, framework-relationships, audit-procedures, maturity-model-guide, fedramp-playbook-guide)
+- **AI Transparency module (ai-transparency/)**: New Antora module with 13 pages covering agent roles, knowledge pipeline, RAG collections, corpus familiarization, knowledge provenance, skills catalog, auditor guide, case study, feedback/rules, and workflow mechanics; registered in antora.yml and ROOT nav
+- **ROADMAP**: Added G10 (AI Transparency) goal and M5 milestone; added tool enhancement brainstorm (umrs-file-stat, umrs-os-detect, report export, integrated help, TUI interaction design, wizard mascot concept)
+- **TUI/CLI reference corpus**: Acquired 12 reference items (ratatui website, API docs v0.30.0, examples, CLIG guidelines, NO_COLOR standard, clap docs/cookbook, ratatui ARCHITECTURE.md, BREAKING-CHANGES.md, color-eyre, awesome-tuis, awesome-ratatui, crossterm API docs); saved to `.claude/references/tui-cli/` (27 files across 6 subdirectories)
+- **TUI/CLI RAG collection**: Ingested `tui-cli` collection into ChromaDB — 262 chunks indexed
+- **TUI/CLI knowledge artifacts (rust-developer)**: Produced 3 knowledge files in `.claude/knowledge/tui-cli/`: concept-index (9 core concepts), cross-reference-map (22 connections), style-decision-record (10 rulings + 3 design decisions)
+- **TUI/CLI corpus familiarization (security-auditor)**: Completed Phase 1–2; audit memory saved to `.claude/agent-memory/security-auditor/tui-cli-corpus.md`
+- **TUI/CLI design decisions**: PH-1 (Async tokio event loops — approved), PH-2 (Keyboard-only interaction for now), PH-3 (Shell completions via clap_complete for bash/zsh/fish — approved); JSON output (`--json`) established as future standard for all tools
+- **Settings consolidated**: Updated `.claude/settings.json` with consolidated WebFetch (domain:*) and added Write(.claude/references/**)
+- **Agent aliases**: Researcher assigned "The Librarian"; senior-tech-writer assigned "The Imprimatur"; tech-writer assigned "Von Neumann"; umrs-translator assigned "Simone"; guest-coder assigned "Summer Intern"
+
+### Changed
+- **FedRAMP reference URLs corrected**: Updated broken URLs in SOURCE.md and refs/manifest.md (Rev5 reorganization)
+- **Security-auditor-corpus.md plan**: Phases 1 and 2 marked complete; Phase 3 in progress
+- **ROADMAP**: Added mood-reactive wizard mascot concept (Unix Magic poster heritage) with tone/informal elements guidance
+
+### Fixed
+- **Removed redundant ROOT/pages/ai-transparency.adoc**: Module index is now the single source for ai-transparency content
+- **FedRAMP documents**: Marked 2 training PDFs (SAP/SAR) as permanently unavailable (removed from fedramp.gov in Rev5)
+- **"Tooling" section in ai-transparency index**: Identified Claude Code as primary platform; ChatGPT/Gemini as side research tools
+
 ## 2026-03-14
 
 ### Added

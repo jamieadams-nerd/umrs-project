@@ -8,7 +8,8 @@
 //! No terminal backend is required.
 
 use umrs_tui::app::{
-    AuditCardApp, DataRow, StatusLevel, StatusMessage, StyleHint, TabDef,
+    AuditCardApp, DataRow, HeaderField, StatusLevel, StatusMessage, StyleHint,
+    TabDef,
 };
 use umrs_tui::tabs::tabs_from_labels;
 
@@ -134,17 +135,22 @@ fn data_rows_tab_zero_returns_three_rows() {
 fn data_rows_tab_zero_first_row_key_is_kernel() {
     let app = MockApp::new();
     let rows = app.data_rows(0);
-    assert_eq!(rows[0].key, "Kernel");
+    match &rows[0] {
+        DataRow::KeyValue {
+            key,
+            ..
+        } => assert_eq!(key, "Kernel"),
+        other => panic!("expected DataRow::KeyValue, got {other:?}"),
+    }
 }
 
 #[test]
-fn data_rows_tab_zero_separator_has_empty_fields() {
+fn data_rows_tab_zero_separator_is_separator_variant() {
     let app = MockApp::new();
     let rows = app.data_rows(0);
-    assert!(rows[1].key.is_empty(), "separator row key must be empty");
     assert!(
-        rows[1].value.is_empty(),
-        "separator row value must be empty"
+        matches!(rows[1], DataRow::Separator),
+        "row[1] must be DataRow::Separator"
     );
 }
 
@@ -152,7 +158,15 @@ fn data_rows_tab_zero_separator_has_empty_fields() {
 fn data_rows_tab_zero_selinux_row_has_trust_green_hint() {
     let app = MockApp::new();
     let rows = app.data_rows(0);
-    assert_eq!(rows[2].style_hint, StyleHint::TrustGreen);
+    match &rows[2] {
+        DataRow::KeyValue {
+            style_hint,
+            ..
+        } => {
+            assert_eq!(*style_hint, StyleHint::TrustGreen);
+        }
+        other => panic!("expected DataRow::KeyValue, got {other:?}"),
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -170,7 +184,13 @@ fn data_rows_tab_one_returns_two_rows() {
 fn data_rows_tab_one_arch_row_value() {
     let app = MockApp::new();
     let rows = app.data_rows(1);
-    assert_eq!(rows[0].value, "aarch64");
+    match &rows[0] {
+        DataRow::KeyValue {
+            value,
+            ..
+        } => assert_eq!(value, "aarch64"),
+        other => panic!("expected DataRow::KeyValue, got {other:?}"),
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -229,4 +249,94 @@ fn dyn_audit_card_app_status_works() {
     let app = MockApp::new();
     let dyn_app: &dyn AuditCardApp = &app;
     assert_eq!(dyn_app.status().level, StatusLevel::Ok);
+}
+
+// ---------------------------------------------------------------------------
+// HeaderField — Phase 2
+// ---------------------------------------------------------------------------
+
+/// Minimal `AuditCardApp` that overrides `header_fields()` with two fields.
+struct MockAppWithFields {
+    tabs: Vec<TabDef>,
+    status: StatusMessage,
+    fields: Vec<HeaderField>,
+}
+
+impl MockAppWithFields {
+    fn new() -> Self {
+        Self {
+            tabs: tabs_from_labels(&["Summary"]),
+            status: StatusMessage::new(StatusLevel::Info, "Ready"),
+            fields: vec![
+                HeaderField::normal("Version", "1.0.0"),
+                HeaderField::new("Trust", "verified", StyleHint::TrustGreen),
+            ],
+        }
+    }
+}
+
+impl AuditCardApp for MockAppWithFields {
+    fn report_name(&self) -> &'static str {
+        "Fields Test"
+    }
+
+    fn report_subject(&self) -> &'static str {
+        "test.subject"
+    }
+
+    fn tabs(&self) -> &[TabDef] {
+        &self.tabs
+    }
+
+    fn active_tab(&self) -> usize {
+        0
+    }
+
+    fn data_rows(&self, _tab_index: usize) -> Vec<DataRow> {
+        vec![]
+    }
+
+    fn status(&self) -> &StatusMessage {
+        &self.status
+    }
+
+    fn header_fields(&self) -> &[HeaderField] {
+        &self.fields
+    }
+}
+
+#[test]
+fn header_fields_default_returns_empty_slice() {
+    // MockApp does not override header_fields; the default impl must return &[].
+    let app = MockApp::new();
+    assert!(
+        app.header_fields().is_empty(),
+        "default header_fields() must return an empty slice"
+    );
+}
+
+#[test]
+fn header_fields_override_returns_custom_fields() {
+    let app = MockAppWithFields::new();
+    assert_eq!(
+        app.header_fields().len(),
+        2,
+        "overridden header_fields() must return the two configured fields"
+    );
+}
+
+#[test]
+fn header_field_new_sets_all_fields() {
+    let field = HeaderField::new("Key", "Val", StyleHint::TrustRed);
+    assert_eq!(field.label, "Key");
+    assert_eq!(field.value, "Val");
+    assert_eq!(field.style_hint, StyleHint::TrustRed);
+}
+
+#[test]
+fn header_field_normal_sets_normal_hint() {
+    let field = HeaderField::normal("Label", "value");
+    assert_eq!(field.label, "Label");
+    assert_eq!(field.value, "value");
+    assert_eq!(field.style_hint, StyleHint::Normal);
 }

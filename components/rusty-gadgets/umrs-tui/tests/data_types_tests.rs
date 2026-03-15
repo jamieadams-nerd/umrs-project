@@ -16,39 +16,59 @@ use umrs_tui::tabs::tabs_from_labels;
 // ---------------------------------------------------------------------------
 
 #[test]
-fn data_row_new_sets_key_value_and_hint() {
+fn data_row_key_value_sets_key_value_and_hint() {
+    let row =
+        DataRow::key_value("Hostname", "rhel10.example", StyleHint::Highlight);
+    match row {
+        DataRow::KeyValue {
+            key,
+            value,
+            style_hint,
+        } => {
+            assert_eq!(key, "Hostname");
+            assert_eq!(value, "rhel10.example");
+            assert_eq!(style_hint, StyleHint::Highlight);
+        }
+        other => panic!("expected DataRow::KeyValue, got {other:?}"),
+    }
+}
+
+#[test]
+fn data_row_new_is_alias_for_key_value() {
     let row = DataRow::new("Hostname", "rhel10.example", StyleHint::Highlight);
-    assert_eq!(row.key, "Hostname");
-    assert_eq!(row.value, "rhel10.example");
-    assert_eq!(row.style_hint, StyleHint::Highlight);
+    assert!(
+        matches!(row, DataRow::KeyValue { .. }),
+        "DataRow::new must produce the KeyValue variant"
+    );
 }
 
 #[test]
 fn data_row_normal_sets_normal_hint() {
     let row = DataRow::normal("OS", "RHEL 10");
-    assert_eq!(row.key, "OS");
-    assert_eq!(row.value, "RHEL 10");
-    assert_eq!(
-        row.style_hint,
-        StyleHint::Normal,
-        "DataRow::normal must set StyleHint::Normal"
-    );
+    match row {
+        DataRow::KeyValue {
+            key,
+            value,
+            style_hint,
+        } => {
+            assert_eq!(key, "OS");
+            assert_eq!(value, "RHEL 10");
+            assert_eq!(
+                style_hint,
+                StyleHint::Normal,
+                "DataRow::normal must set StyleHint::Normal"
+            );
+        }
+        other => panic!("expected DataRow::KeyValue, got {other:?}"),
+    }
 }
 
 #[test]
-fn data_row_separator_has_empty_key_and_value() {
+fn data_row_separator_variant_is_separator() {
     let row = DataRow::separator();
-    assert!(row.key.is_empty(), "separator key must be empty");
-    assert!(row.value.is_empty(), "separator value must be empty");
-}
-
-#[test]
-fn data_row_separator_has_dim_style() {
-    let row = DataRow::separator();
-    assert_eq!(
-        row.style_hint,
-        StyleHint::Dim,
-        "separator must use StyleHint::Dim"
+    assert!(
+        matches!(row, DataRow::Separator),
+        "DataRow::separator() must produce the Separator variant"
     );
 }
 
@@ -57,8 +77,71 @@ fn data_row_accepts_string_owned_values() {
     let key = String::from("Dynamic Key");
     let val = String::from("Dynamic Value");
     let row = DataRow::new(key.clone(), val.clone(), StyleHint::TrustGreen);
-    assert_eq!(row.key, key);
-    assert_eq!(row.value, val);
+    match row {
+        DataRow::KeyValue {
+            key: k,
+            value: v,
+            ..
+        } => {
+            assert_eq!(k, key);
+            assert_eq!(v, val);
+        }
+        other => panic!("expected DataRow::KeyValue, got {other:?}"),
+    }
+}
+
+#[test]
+fn data_row_two_column_sets_all_fields() {
+    let row = DataRow::two_column(
+        "left key",
+        "left value",
+        StyleHint::TrustGreen,
+        "right key",
+        "right value",
+        StyleHint::TrustYellow,
+    );
+    match row {
+        DataRow::TwoColumn {
+            left_key,
+            left_value,
+            left_hint,
+            right_key,
+            right_value,
+            right_hint,
+        } => {
+            assert_eq!(left_key, "left key");
+            assert_eq!(left_value, "left value");
+            assert_eq!(left_hint, StyleHint::TrustGreen);
+            assert_eq!(right_key, "right key");
+            assert_eq!(right_value, "right value");
+            assert_eq!(right_hint, StyleHint::TrustYellow);
+        }
+        other => panic!("expected DataRow::TwoColumn, got {other:?}"),
+    }
+}
+
+#[test]
+fn data_row_group_title_stores_string() {
+    let row = DataRow::group_title("SELinux");
+    match row {
+        DataRow::GroupTitle(title) => {
+            assert_eq!(
+                title, "SELinux",
+                "group_title must store the provided string verbatim"
+            );
+        }
+        other => panic!("expected DataRow::GroupTitle, got {other:?}"),
+    }
+}
+
+#[test]
+fn data_row_group_title_accepts_owned_string() {
+    let label = String::from("FIPS Status");
+    let row = DataRow::group_title(label.clone());
+    match row {
+        DataRow::GroupTitle(title) => assert_eq!(title, label),
+        other => panic!("expected DataRow::GroupTitle, got {other:?}"),
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -140,6 +223,87 @@ fn status_level_variants_are_distinct() {
     assert_ne!(StatusLevel::Info, StatusLevel::Ok);
     assert_ne!(StatusLevel::Warn, StatusLevel::Error);
     assert_ne!(StatusLevel::Ok, StatusLevel::Error);
+}
+
+// ---------------------------------------------------------------------------
+// DataRow::TableRow and DataRow::TableHeader (Phase 6)
+// ---------------------------------------------------------------------------
+
+#[test]
+fn data_row_table_row_stores_three_columns() {
+    let row = DataRow::table_row(
+        "package-db",
+        "/var/lib/rpm/rpmdb.sqlite",
+        "\u{2713} ok (fd)",
+        StyleHint::TrustGreen,
+    );
+    match row {
+        DataRow::TableRow {
+            col1,
+            col2,
+            col3,
+            style_hint,
+        } => {
+            assert_eq!(col1, "package-db");
+            assert_eq!(col2, "/var/lib/rpm/rpmdb.sqlite");
+            assert_eq!(col3, "\u{2713} ok (fd)");
+            assert_eq!(style_hint, StyleHint::TrustGreen);
+        }
+        other => panic!("expected DataRow::TableRow, got {other:?}"),
+    }
+}
+
+#[test]
+fn data_row_table_header_stores_three_columns() {
+    let row =
+        DataRow::table_header("Evidence Type", "Source", "Verification");
+    match row {
+        DataRow::TableHeader { col1, col2, col3 } => {
+            assert_eq!(col1, "Evidence Type");
+            assert_eq!(col2, "Source");
+            assert_eq!(col3, "Verification");
+        }
+        other => panic!("expected DataRow::TableHeader, got {other:?}"),
+    }
+}
+
+#[test]
+fn data_row_table_row_accepts_owned_strings() {
+    let c1 = String::from("procfs");
+    let c2 = String::from("/proc/sys/kernel/ostype");
+    let c3 = String::from("\u{2717} FAIL (path)");
+    let row =
+        DataRow::table_row(c1.clone(), c2.clone(), c3.clone(), StyleHint::TrustRed);
+    match row {
+        DataRow::TableRow {
+            col1,
+            col2,
+            col3,
+            style_hint,
+        } => {
+            assert_eq!(col1, c1);
+            assert_eq!(col2, c2);
+            assert_eq!(col3, c3);
+            assert_eq!(style_hint, StyleHint::TrustRed);
+        }
+        other => panic!("expected DataRow::TableRow, got {other:?}"),
+    }
+}
+
+#[test]
+fn data_row_table_header_accepts_owned_strings() {
+    let c1 = String::from("Type");
+    let c2 = String::from("Path");
+    let c3 = String::from("Result");
+    let row = DataRow::table_header(c1.clone(), c2.clone(), c3.clone());
+    match row {
+        DataRow::TableHeader { col1, col2, col3 } => {
+            assert_eq!(col1, c1);
+            assert_eq!(col2, c2);
+            assert_eq!(col3, c3);
+        }
+        other => panic!("expected DataRow::TableHeader, got {other:?}"),
+    }
 }
 
 // ---------------------------------------------------------------------------

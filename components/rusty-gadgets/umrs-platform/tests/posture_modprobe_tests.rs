@@ -895,10 +895,7 @@ fn install_non_sentinel_command_not_hard_blacklist() {
                 ..
             }
         );
-        assert!(
-            !is_hard,
-            "line '{line}' must NOT parse as hard blacklist"
-        );
+        assert!(!is_hard, "line '{line}' must NOT parse as hard blacklist");
         // Must still be Install variant.
         assert!(
             matches!(parsed, ParsedDirective::Install { .. }),
@@ -923,7 +920,12 @@ fn blacklist_source_prefers_hard_blacklist_evidence() {
     let hard = parse("install usb_storage /bin/true");
 
     assert!(
-        matches!(soft, ParsedDirective::Blacklist { module: "usb_storage" }),
+        matches!(
+            soft,
+            ParsedDirective::Blacklist {
+                module: "usb_storage"
+            }
+        ),
         "soft blacklist must be Blacklist variant"
     );
     assert!(

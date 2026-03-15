@@ -230,3 +230,13 @@ that an assessor can use as an Examine object, or does it produce only runtime d
 - Control implementation (FIPS gate, CET, etc.) → Implement I-2
 - Open architectural decisions (CpuSignalId, MAC abstraction, serialization) → Authorize R-1
 - Research corpus (CPU features) → Select S-2 pre-requisite (knowledge base for control tailoring)
+
+## TUI/CLI Corpus Knowledge (2026-03-15)
+
+See [`tui-cli-corpus.md`](tui-cli-corpus.md) for full details. Key audit checkpoints:
+- NO_COLOR: crossterm handles implicitly; verify no raw `\x1b` escape sequences bypass it.
+- `--json` flag required on all structured-data commands (CLAUDE.md).
+- `ratatui::init()` / `ratatui::restore()` must be paired; no eprintln after init.
+- `clap` derive API required; hand-rolled arg parsing (current file_stat.rs) should migrate.
+- Ratatui v0.30.0: `frame.area()` not `frame.size()`; `block::Title` removed; use `Line::from()`.
+- Current umrs-tui: no clap, no --json; acceptable for TUI-only binaries but watch for growth.

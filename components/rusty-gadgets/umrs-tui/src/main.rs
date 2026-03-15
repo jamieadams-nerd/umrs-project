@@ -37,14 +37,17 @@ use std::time::Duration;
 
 use crossterm::event::{self, Event};
 use umrs_core::i18n;
+use std::collections::BTreeMap;
+
 use umrs_platform::detect::label_trust::LabelTrust;
 use umrs_platform::detect::{DetectionError, DetectionResult, OsDetector};
-use umrs_platform::evidence::SourceKind;
+use umrs_platform::evidence::{EvidenceRecord, SourceKind};
 use umrs_platform::{Distro, OsFamily, TrustLevel};
 use umrs_tui::app::{
     AuditCardApp, AuditCardState, DataRow, StatusLevel, StatusMessage,
     StyleHint, TabDef,
 };
+use umrs_tui::indicators::read_security_indicators;
 use umrs_tui::keymap::KeyMap;
 use umrs_tui::layout::render_audit_card;
 use umrs_tui::theme::Theme;
@@ -407,40 +410,108 @@ fn build_trust_rows(result: &DetectionResult) -> Vec<DataRow> {
 
     rows.push(DataRow::separator());
 
-    // Evidence records (abbreviated)
+    // Evidence records — grouped by source kind and displayed as a table.
+    // Groups are ordered deterministically by their label string (BTreeMap).
+    // NIST SP 800-53 AU-3 — evidence is labelled, grouped, and structured.
+    // NIST SP 800-53 SI-12 — no raw kernel values or security labels in display.
     let evidence = result.evidence.records();
     rows.push(DataRow::new(
         i18n::tr("evidence records"),
         evidence.len().to_string(),
         StyleHint::Normal,
     ));
-    for (i, rec) in evidence.iter().enumerate() {
-        let idx = i.saturating_add(1);
-        // Truncate path for display — NIST SP 800-53 SI-12 (no sensitive data in UI).
-        let path_display: String =
-            rec.path_requested.chars().take(40).collect();
-        let fd_str = if rec.opened_by_fd {
-            "fd"
-        } else {
-            "path"
-        };
-        let ok_str = if rec.parse_ok {
-            "ok"
-        } else {
-            "FAIL"
-        };
-        rows.push(DataRow::new(
-            format!("  [{idx:02}] {}", source_kind_label(&rec.source_kind)),
-            format!("{path_display}  open={fd_str}  parse={ok_str}"),
-            if rec.parse_ok {
-                StyleHint::Dim
-            } else {
-                StyleHint::TrustYellow
-            },
-        ));
+
+    if !evidence.is_empty() {
+        rows.push(DataRow::separator());
+        append_grouped_evidence(&mut rows, evidence);
     }
 
     rows
+}
+
+/// Append evidence records grouped by source kind to the row list.
+///
+/// Records are collected into a `BTreeMap` keyed by the source-kind display
+/// label so groups are emitted in a stable, deterministic order. Within each
+/// group, records appear in pipeline-append order (the bundle is append-only).
+///
+/// Each group is introduced by a `GroupTitle`, followed by a `TableHeader`,
+/// followed by one `TableRow` per record. Groups are separated by a
+/// `Separator`. No raw kernel values or security-label data appear in the
+/// display strings (NIST SP 800-53 SI-12).
+///
+/// NIST SP 800-53 AU-3 — evidence rows are labelled and structured.
+fn append_grouped_evidence(rows: &mut Vec<DataRow>, evidence: &[EvidenceRecord]) {
+    // Build a BTreeMap<group_label, Vec<record_ref>> for deterministic ordering.
+    let mut groups: BTreeMap<&'static str, Vec<&EvidenceRecord>> =
+        BTreeMap::new();
+    for rec in evidence {
+        groups
+            .entry(source_kind_label(&rec.source_kind))
+            .or_default()
+            .push(rec);
+    }
+
+    let mut first_group = true;
+    for (group_label, records) in &groups {
+        if !first_group {
+            rows.push(DataRow::separator());
+        }
+        first_group = false;
+
+        rows.push(DataRow::group_title(group_label.to_uppercase()));
+        rows.push(DataRow::table_header(
+            "Evidence Type",
+            "Source",
+            "Verification",
+        ));
+
+        for rec in records {
+            rows.push(DataRow::table_row(
+                // col1: source kind (same as the group label — keeps the row
+                // readable in isolation even when scrolled away from the title).
+                source_kind_label(&rec.source_kind),
+                // col2: path truncated to TABLE_COL2_WIDTH (24 chars).
+                // Paths are clipped here; data_panel clips at render time too,
+                // providing defence-in-depth against display overflow.
+                // NIST SP 800-53 SI-12 — no sensitive data in display strings.
+                rec.path_requested.chars().take(24).collect::<String>(),
+                // col3: structured verification outcome.
+                evidence_verification_str(rec),
+                evidence_style_hint(rec),
+            ));
+        }
+    }
+}
+
+/// Map an `EvidenceRecord` to a structured verification outcome string.
+///
+/// Returns a minimal, status-code-style string that an assessor can read and
+/// act on. Unicode check (✓ U+2713) and cross (✗ U+2717) mark positive and
+/// negative outcomes. The open-by-fd flag and source kind provide enough
+/// context for independent verification without exposing raw kernel data.
+///
+/// NIST SP 800-53 AU-3 — verification strings identify the outcome and method.
+fn evidence_verification_str(rec: &EvidenceRecord) -> String {
+    let open_method = if rec.opened_by_fd { "fd" } else { "path" };
+    if rec.parse_ok {
+        format!("\u{2713} ok ({open_method})")
+    } else {
+        format!("\u{2717} FAIL ({open_method})")
+    }
+}
+
+/// Map an `EvidenceRecord` to the appropriate `StyleHint` for the
+/// verification column.
+///
+/// - Parse succeeded → `TrustGreen`
+/// - Parse failed → `TrustRed`
+const fn evidence_style_hint(rec: &EvidenceRecord) -> StyleHint {
+    if rec.parse_ok {
+        StyleHint::TrustGreen
+    } else {
+        StyleHint::TrustRed
+    }
 }
 
 fn label_trust_display(trust: &LabelTrust) -> (String, StyleHint) {
@@ -539,6 +610,7 @@ fn main() {
     let mut state = AuditCardState::new(app.tabs().len());
     let keymap = KeyMap::default();
     let theme = Theme::default();
+    let indicators = read_security_indicators();
 
     // ── Terminal setup ────────────────────────────────────────────────────
     let mut terminal = ratatui::init();
@@ -546,7 +618,7 @@ fn main() {
     // ── Event loop ───────────────────────────────────────────────────────
     loop {
         if let Err(e) = terminal.draw(|f| {
-            render_audit_card(f, f.area(), &app, &state, &theme);
+            render_audit_card(f, f.area(), &app, &state, &indicators, &theme);
         }) {
             log::error!("terminal draw error: {e}");
             break;

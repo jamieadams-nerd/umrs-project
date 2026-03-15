@@ -32,6 +32,7 @@ Collections and status as of 2026-03-15:
 | dita-spec | OASIS DITA 1.3 Part 2 Technical Content (HTML) | ✓ Ingested | 100 |
 | rmf-methodology | NIST SP 800-37r2, 800-53Ar5, 800-30r1, 800-39 | ✓ Ingested | 1,132 |
 | accreditation-artifacts | NIST 800-18 + FedRAMP playbooks/templates (6 docs; 200-B/200-C training removed from fedramp.gov) | Downloaded — awaiting ingestion | 0 |
+| tui-cli | crossterm, color-eyre, clap, ratatui (v0.30.0), awesome-ratatui | Downloaded — awaiting ingestion | 0 |
 
 Full source URL list for update checks: see `rag-collections.md` in this directory.
 PQC status tracker (team-readable): see `pqc-tracker.md` in this directory.
@@ -180,3 +181,13 @@ When Jamie says "researcher, refresh your library" or "check for updates", perfo
   - 200-B SAP training and 200-C SAR training PDFs: removed from fedramp.gov (Rev5 reorg), not available
   - DOCX templates already converted to .txt by pandoc
   - Run: `cd /media/psf/repos/umrs-project/.claude/rag && RAG_CHROMA_PATH=/media/psf/repos/ai-rag-vdb/chroma python ingest.py --collection accreditation-artifacts`
+- tui-cli collection: Section 2 (cli-ux) complete 2026-03-15 — READY FOR RAG INGESTION
+  - Section 1: 13+ files in ratatui-website/, ratatui-examples/, awesome-ratatui/, backend/, architecture/
+  - Section 2 (cli-ux): clig-guidelines.md, no-color.md, awesome-tuis.md, SOURCE.md (2026-03-15)
+  - Run: `cd /media/psf/repos/umrs-project/.claude/rag && RAG_CHROMA_PATH=/media/psf/repos/ai-rag-vdb/chroma python ingest.py --collection tui-cli`
+  - To add ratatui.rs and docs.rs WebFetch: add to `.claude/settings.json` WebFetch allowlist
+
+## WebFetch Allowlist Note (tui-cli)
+- `ratatui.rs` and `docs.rs` are NOT in the allowlist — content was synthesized via WebSearch
+- Add `WebFetch(domain:ratatui.rs)` and `WebFetch(domain:docs.rs)` to settings.json for future
+  verbatim fetches of the ratatui.rs tutorials and docs.rs API pages

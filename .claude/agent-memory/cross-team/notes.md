@@ -519,6 +519,42 @@ the `umrs-platform` / posture probe section.
 
 ---
 
+## [2026-03-15] researcher → rust-developer, senior-tech-writer: tui-cli RAG collection complete — ready for ingestion
+
+**Status**: open
+
+Section 1 of the tui-cli RAG collection acquisition is complete. Combined with the Section 3/4
+content from the earlier session, the full collection is ready for ingestion.
+
+**What was added (Section 1):**
+
+| Directory | Files | Content |
+|---|---|---|
+| `ratatui-website/` | 7 | Architecture, layout concepts, widget concepts, backends, app architecture, style API, widgets overview |
+| `ratatui-examples/` | 5 | `demo2_app.rs`, `popup.rs`, `table.rs`, `scrollbar.rs`, `flex_layouts.rs` — real source from v0.30.0 |
+| `awesome-ratatui/` | 1 | Curated list of ratatui libraries and applications |
+
+**Previously added (Sections 3/4):**
+- `backend/`: crossterm, color-eyre, clap
+- `architecture/`: ratatui-architecture, breaking-changes
+- `cli-ux/`: clig-guidelines, no-color
+
+**Ratatui version covered**: v0.30.0 (December 2024) — the latest stable release.
+
+**Ingestion command:**
+```bash
+cd /media/psf/repos/umrs-project/.claude/rag
+RAG_CHROMA_PATH=/media/psf/repos/ai-rag-vdb/chroma python ingest.py --collection tui-cli
+```
+
+**Index**: `.claude/references/tui-cli/_index.md`
+
+**WebFetch note for future update passes**: Add `WebFetch(domain:ratatui.rs)` and
+`WebFetch(domain:docs.rs)` to `.claude/settings.json` to enable verbatim page fetches
+of the ratatui tutorials and API reference.
+
+---
+
 ## [2026-03-15] researcher → security-auditor: RMF methodology corpus available in RAG
 
 **Status**: open

@@ -586,10 +586,7 @@ fn parse_install_directive(rest: &str) -> ParsedDirective<'_> {
     // the recognised no-op paths. Only compare the command executable, not
     // any arguments, to avoid false positives from complex command strings.
     // We do not execute the command — only classify it by string comparison.
-    let cmd_executable = command
-        .split_whitespace()
-        .next()
-        .unwrap_or("");
+    let cmd_executable = command.split_whitespace().next().unwrap_or("");
     let is_hard_blacklist = matches!(
         cmd_executable,
         "/bin/true" | "/usr/bin/true" | "/bin/false" | "/usr/bin/false"

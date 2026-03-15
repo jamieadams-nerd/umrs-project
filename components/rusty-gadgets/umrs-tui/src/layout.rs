@@ -19,7 +19,7 @@
 //! └─────────────────────────────────────────────────┘
 //! ```
 //!
-//! The header height is fixed at `WIZARD_SMALL.height + 2` (borders).
+//! The header height is fixed at `WIZARD_SMALL.height + 2 + 1` (borders + indicator row).
 //! The logo panel width is fixed at `WIZARD_SMALL.width + 2` (borders).
 //!
 //! ## Compliance
@@ -35,7 +35,7 @@ use ratatui::widgets::{Block, BorderType, Borders, Paragraph};
 
 use umrs_core::robots::WIZARD_SMALL;
 
-use crate::app::{AuditCardApp, AuditCardState};
+use crate::app::{AuditCardApp, AuditCardState, SecurityIndicators};
 use crate::data_panel::render_data_panel;
 use crate::header::render_header;
 use crate::status_bar::render_status_bar;
@@ -52,11 +52,12 @@ use crate::theme::Theme;
 #[allow(clippy::cast_possible_truncation)]
 const LOGO_PANEL_WIDTH: u16 = WIZARD_SMALL.width as u16 + 2;
 
-/// Header height = wizard height + 2 border rows.
+/// Header height = wizard height + 2 border rows + 1 indicator row.
 ///
 /// `WIZARD_SMALL.height` is 7 — well within u16 range. The cast is safe.
+/// The +1 accounts for the security indicator badge row added in Phase 1.
 #[allow(clippy::cast_possible_truncation)]
-const HEADER_HEIGHT: u16 = WIZARD_SMALL.height as u16 + 2;
+const HEADER_HEIGHT: u16 = WIZARD_SMALL.height as u16 + 2 + 1;
 
 // ---------------------------------------------------------------------------
 // Master render entry point
@@ -68,14 +69,19 @@ const HEADER_HEIGHT: u16 = WIZARD_SMALL.height as u16 + 2;
 ///
 /// `state` carries mutable UI state (active tab, scroll offset). The data
 /// itself is read from `app` on every frame — keep `data_rows()` cheap.
+/// `indicators` is a `SecurityIndicators` snapshot populated once per session
+/// via [`crate::indicators::read_security_indicators`].
 ///
-/// NIST SP 800-53 AU-3 — all fields (report, host, subject, data, status)
-/// are always present in every rendered frame.
+/// NIST SP 800-53 AU-3 — all fields (report, host, subject, indicators, data,
+/// status) are always present in every rendered frame.
+/// NIST SP 800-53 SI-7 — indicator values originate from provenance-verified
+/// kernel attribute reads; the layout renders them unmodified.
 pub fn render_audit_card(
     frame: &mut Frame,
     area: Rect,
     app: &dyn AuditCardApp,
     state: &AuditCardState,
+    indicators: &SecurityIndicators,
     theme: &Theme,
 ) {
     // ── Outer vertical split ─────────────────────────────────────────────
@@ -101,7 +107,7 @@ pub fn render_audit_card(
         .constraints([Constraint::Min(0), Constraint::Length(LOGO_PANEL_WIDTH)])
         .split(header_area);
 
-    render_header(frame, header_cols[0], app, theme);
+    render_header(frame, header_cols[0], app, indicators, theme);
     render_logo(frame, header_cols[1], theme);
 
     // ── Tab bar ──────────────────────────────────────────────────────────
