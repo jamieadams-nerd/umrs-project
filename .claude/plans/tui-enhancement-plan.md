@@ -330,6 +330,8 @@ No breaking changes. Default implementation returns `&[]`. Existing impls unaffe
 
 ## Phase 3 — Two-Column Layout in Dynamic Data Area
 
+**Status: COMPLETE (2026-03-15)**
+
 ### Goal
 
 The data panel currently renders a single vertical stream. Add left/right column support
@@ -522,6 +524,8 @@ pub struct Theme {
 
 ## Phase 5 — Theme-Based Styling for Group Titles and Indicators
 
+**Status: COMPLETE (2026-03-15)**
+
 ### Goal
 
 All visual styling for the new elements (group titles, security indicators) is defined in
@@ -587,6 +591,8 @@ pub fn indicator_style<'a>(value: &IndicatorValue, theme: &'a Theme) -> &'a Styl
 ---
 
 ## Phase 6 — Evidence Tab Grouping
+
+**Status: COMPLETE (2026-03-15)**
 
 ### Goal
 
@@ -698,7 +704,7 @@ No security labels or raw kernel values in the display strings — NIST SP 800-5
 
 ---
 
-## Phase 7 — Placeholder Kernel Security Tab
+## Phase 7 — Placeholder Kernel Security Tab **[COMPLETE 2026-03-15]**
 
 ### Goal
 
@@ -777,7 +783,7 @@ mock `AuditCardApp` handles a third tab without panicking — extend the mock to
 
 ---
 
-## Phase 8 — Dialog API
+## Phase 8 — Dialog API **[COMPLETE 2026-03-15]**
 
 ### Goal
 

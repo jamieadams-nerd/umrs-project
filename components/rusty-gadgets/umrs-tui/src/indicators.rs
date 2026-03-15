@@ -3,13 +3,15 @@
 
 //! # Indicators — Live Kernel Security Indicator and Header Context Reader
 //!
-//! Provides two public functions:
+//! Provides public functions:
 //!
 //! - [`read_security_indicators`] — queries kernel attribute nodes and returns
 //!   a [`SecurityIndicators`] snapshot for the audit card header indicator rows.
 //! - [`build_header_context`] — reads all system-identification fields (boot ID,
-//!   kernel version, system UUID, hostname, assessment timestamp) alongside the
+//!   kernel version, architecture, hostname, assessment timestamp) alongside the
 //!   security indicators, returning a [`HeaderContext`] snapshot.
+//! - [`read_system_uuid`] — reads the DMI system UUID from sysfs for display
+//!   in the Kernel Security tab (requires root on most kernels).
 //!
 //! ## Fail-Closed Contract
 //!
@@ -121,13 +123,18 @@ pub fn read_security_indicators() -> SecurityIndicators {
 /// Build a complete `HeaderContext` snapshot for the audit card header.
 ///
 /// Reads all live security indicators (via [`read_security_indicators`])
-/// plus system-identification fields: hostname, kernel version, boot ID,
-/// system UUID, and a formatted assessment timestamp.
+/// plus system-identification fields: hostname, kernel version, architecture,
+/// boot ID, and a formatted assessment timestamp.
 ///
 /// `tool_name` and `tool_version` are supplied by the calling binary —
 /// typically `env!("CARGO_PKG_NAME")` and `env!("CARGO_PKG_VERSION")`.
 /// These are compile-time values; passing them from the caller avoids making
 /// this library function depend on a specific binary's package metadata.
+///
+/// `os_name` is supplied by the calling binary. Binaries that run the OS
+/// detection pipeline should pass `PRETTY_NAME` (or `NAME VERSION_ID`) from
+/// the detected `OsRelease`. Binaries without OS detection should pass
+/// `"unavailable"`.
 ///
 /// All reads are fail-closed: if a field cannot be read, it is set to
 /// `"unavailable"` — never to a guessed or fabricated value.
@@ -146,13 +153,14 @@ pub fn read_security_indicators() -> SecurityIndicators {
 pub fn build_header_context(
     tool_name: impl Into<String>,
     tool_version: impl Into<String>,
+    os_name: impl Into<String>,
 ) -> HeaderContext {
     #[cfg(debug_assertions)]
     let start = std::time::Instant::now();
 
     let indicators = read_security_indicators();
     let assessed_at = format_assessed_at();
-    let (hostname, kernel_version) = read_uname_fields();
+    let (hostname, kernel_version, architecture) = read_uname_fields();
     let boot_id = read_boot_id();
     let system_uuid = read_system_uuid();
 
@@ -169,8 +177,10 @@ pub fn build_header_context(
         assessed_at,
         hostname,
         kernel_version,
+        architecture,
         boot_id,
         system_uuid,
+        os_name: os_name.into(),
     }
 }
 
@@ -280,15 +290,16 @@ fn format_assessed_at() -> String {
     format!("{y:04}-{m:02}-{d:02} {hours:02}:{minutes:02}:{seconds:02} UTC")
 }
 
-/// Read hostname and kernel release from `uname(2)`.
+/// Read hostname, kernel release, and CPU architecture from `uname(2)`.
 ///
-/// Returns `("(unknown)", "(unknown)")` if either field is non-UTF-8.
-/// Both values are display-only — not trust-relevant assertions.
-fn read_uname_fields() -> (String, String) {
+/// Returns `("(unknown)", "(unknown)", "(unknown)")` if any field is non-UTF-8.
+/// All values are display-only — not trust-relevant assertions.
+fn read_uname_fields() -> (String, String, String) {
     let uname = rustix::system::uname();
     let hostname = uname.nodename().to_str().unwrap_or("(unknown)").to_owned();
     let kernel = uname.release().to_str().unwrap_or("(unknown)").to_owned();
-    (hostname, kernel)
+    let arch = uname.machine().to_str().unwrap_or("(unknown)").to_owned();
+    (hostname, kernel, arch)
 }
 
 /// Read the kernel boot ID from `/proc/sys/kernel/random/boot_id`.
@@ -323,9 +334,14 @@ fn read_boot_id() -> String {
 /// permission denied — readable only by root on many kernels).
 /// The value is trimmed of trailing whitespace before return.
 ///
+/// This function is public so that binaries can surface the system UUID in
+/// the Kernel Security tab without storing it in `HeaderContext` (where it
+/// is not displayed in the header proper).
+///
 /// NSA RTB RAIN — raw `File::open` on `/sys/` is prohibited; all reads
 /// route through `SysfsText`.
-fn read_system_uuid() -> String {
+#[must_use = "system UUID string must be used; discarding it omits hardware identity from the display"]
+pub fn read_system_uuid() -> String {
     let Ok(node) =
         SysfsText::new(PathBuf::from("/sys/class/dmi/id/product_uuid"))
     else {

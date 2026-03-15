@@ -112,7 +112,8 @@ impl Default for SecurityIndicators {
 /// Separating system-identification data from the `AuditCardApp` trait keeps
 /// the trait focused on application data (rows, tabs, status) while this
 /// struct holds fields that are the same for every card on the same system:
-/// hostname, kernel version, boot ID, and security posture indicators.
+/// hostname, kernel version, boot ID, OS name, architecture, system UUID,
+/// and security posture indicators.
 ///
 /// The `assessed_at` field is the ISO-8601 timestamp captured at detection
 /// time, satisfying the CA-7 requirement that each Examine object carry a
@@ -121,10 +122,13 @@ impl Default for SecurityIndicators {
 ///
 /// ## Trust Boundary
 ///
-/// All values are display-only. `hostname` and `kernel_version` come from
-/// `uname(2)` and are not trust-relevant assertions. `boot_id` comes from
-/// `/proc/sys/kernel/random/boot_id` via `ProcfsText` + `SecureReader`.
-/// `system_uuid` comes from `/sys/class/dmi/id/product_uuid` via `SysfsText`.
+/// All values are display-only. `hostname`, `kernel_version`, and
+/// `architecture` come from `uname(2)` and are not trust-relevant assertions.
+/// `boot_id` comes from `/proc/sys/kernel/random/boot_id` via
+/// `ProcfsText` + `SecureReader`. `os_name` is supplied by the calling binary
+/// from the OS detection pipeline; it is display-only and not a policy input.
+/// `system_uuid` comes from `/sys/class/dmi/id/product_uuid` via `SysfsText`;
+/// set to `"unavailable"` on read failure (non-UEFI systems, permission errors).
 /// `indicators` are populated via provenance-verified kattr reads.
 ///
 /// NIST SP 800-53 AU-3 — every header field is labelled and sourced; the
@@ -164,6 +168,12 @@ pub struct HeaderContext {
     /// Provides platform context for the assessor.
     pub kernel_version: String,
 
+    /// CPU architecture — display-only, from `uname(2)` machine field.
+    ///
+    /// Provides hardware context for the assessor (e.g., `"aarch64"`,
+    /// `"x86_64"`). Not a trust-relevant assertion.
+    pub architecture: String,
+
     /// Boot ID from `/proc/sys/kernel/random/boot_id` (display-only).
     ///
     /// Used for journald log correlation (CA-7). Set to `"unavailable"` if
@@ -175,6 +185,14 @@ pub struct HeaderContext {
     /// Used for cross-run correlation. Set to `"unavailable"` if the
     /// sysfs read fails (non-UEFI systems, permission errors).
     pub system_uuid: String,
+
+    /// Operating system display name — supplied by the calling binary.
+    ///
+    /// Populated from `PRETTY_NAME` in `/etc/os-release` when available;
+    /// otherwise composed from `NAME` and `VERSION_ID`. Set to
+    /// `"unavailable"` when OS detection does not run or cannot determine
+    /// the OS name. Display-only; not a trust-relevant assertion.
+    pub os_name: String,
 }
 
 // ---------------------------------------------------------------------------
@@ -744,9 +762,21 @@ impl AuditCardState {
             Action::PageUp => {
                 self.scroll_offset = self.scroll_offset.saturating_sub(10);
             }
-            Action::Refresh => {
-                // Refresh is application-defined; state itself has no refresh
-                // behavior. Callers may use this signal to re-run detection.
+            Action::Refresh
+            | Action::DialogConfirm
+            | Action::DialogCancel
+            | Action::DialogToggleFocus => {
+                // These actions have no effect on AuditCardState itself.
+                //
+                // Refresh is application-defined — callers use this signal to
+                // re-run detection; AuditCardState carries no refresh behavior.
+                //
+                // Dialog actions are handled by the calling binary's event loop.
+                // The caller owns Option<DialogState> and mutates it directly
+                // (response, focused). AuditCardState has no dialog lifecycle
+                // authority — there is no implicit global modal state.
+                //
+                // NIST SP 800-53 AC-2 — explicit lifecycle; no hidden modal state.
             }
         }
     }

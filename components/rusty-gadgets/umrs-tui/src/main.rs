@@ -42,12 +42,13 @@ use umrs_core::i18n;
 use umrs_platform::detect::label_trust::LabelTrust;
 use umrs_platform::detect::{DetectionError, DetectionResult, OsDetector};
 use umrs_platform::evidence::{EvidenceRecord, SourceKind};
-use umrs_platform::{Distro, OsFamily, TrustLevel};
+use umrs_platform::posture::{LiveValue, PostureSnapshot, SignalId};
+use umrs_platform::{Distro, OsFamily, OsRelease, TrustLevel};
 use umrs_tui::app::{
-    AuditCardApp, AuditCardState, DataRow, StatusLevel, StatusMessage,
-    StyleHint, TabDef,
+    AuditCardApp, AuditCardState, DataRow, HeaderContext, IndicatorValue,
+    SecurityIndicators, StatusLevel, StatusMessage, StyleHint, TabDef,
 };
-use umrs_tui::indicators::build_header_context;
+use umrs_tui::indicators::{build_header_context, read_system_uuid};
 use umrs_tui::keymap::KeyMap;
 use umrs_tui::layout::render_audit_card;
 use umrs_tui::theme::Theme;
@@ -107,6 +108,27 @@ const fn source_kind_label(kind: &SourceKind) -> &'static str {
     }
 }
 
+/// Derive the OS display name from an `OsRelease` value.
+///
+/// Prefers `NAME + VERSION_ID` (e.g., "CentOS Stream 10") for brevity.
+/// Falls back to bare `NAME` if `VERSION_ID` is absent. Returns
+/// `"unavailable"` when `os_release` is `None`.
+///
+/// `PRETTY_NAME` is intentionally not used — it often includes codenames
+/// or parenthetical suffixes (e.g., "CentOS Stream 10 (Coughlan)") that
+/// are too long for the header's fixed-width left column.
+///
+/// This is display-only — not a trust-relevant assertion.
+fn os_name_from_release(rel: Option<&OsRelease>) -> String {
+    let Some(rel) = rel else {
+        return "unavailable".to_owned();
+    };
+    if let Some(ver) = &rel.version_id {
+        return format!("{} {}", rel.name.as_str(), ver.as_str());
+    }
+    rel.name.as_str().to_owned()
+}
+
 fn distro_label(distro: &Distro) -> String {
     match distro {
         Distro::Rhel => "RHEL".to_owned(),
@@ -140,39 +162,78 @@ const fn family_label(family: &OsFamily) -> &'static str {
 /// immutable after construction). The `status` field is mutable so the
 /// caller can update it to reflect the detection outcome.
 ///
-/// NIST SP 800-53 CM-8, SI-7, AU-3.
+/// Three tabs are presented:
+/// - Tab 0 — OS Information: `os-release` fields, substrate identity, boot ID.
+/// - Tab 1 — Trust / Evidence: label trust classification, confidence tier,
+///   downgrade reasons, contradictions, evidence records.
+/// - Tab 2 — Kernel Security: boot integrity, cryptographic posture, kernel
+///   self-protection, process isolation, filesystem hardening, and module
+///   restrictions — populated from a live `PostureSnapshot`.
+///
+/// NIST SP 800-53 CM-8, SI-7, AU-3, CA-7.
 struct OsDetectApp {
     tabs: Vec<TabDef>,
     os_info_rows: Vec<DataRow>,
     trust_rows: Vec<DataRow>,
+    kernel_security_rows: Vec<DataRow>,
     status: StatusMessage,
 }
 
 impl OsDetectApp {
     /// Build the app from a successful detection result.
-    fn from_result(result: &DetectionResult) -> Self {
+    ///
+    /// `ctx` is passed in for header indicators and kernel version string.
+    /// `snap` provides the full `PostureSnapshot` for the Kernel Security tab.
+    /// `system_uuid` is the DMI product UUID (display-only; may be "unavailable"
+    /// if the sysfs read failed or root was not available).
+    fn from_result(
+        result: &DetectionResult,
+        ctx: &HeaderContext,
+        snap: &PostureSnapshot,
+        system_uuid: &str,
+    ) -> Self {
         let tabs = vec![
             TabDef::new("OS Information"),
             TabDef::new("Trust / Evidence"),
+            TabDef::new("Kernel Security"),
         ];
 
         let os_info_rows = build_os_info_rows(result);
         let trust_rows = build_trust_rows(result);
+        let kernel_security_rows = build_kernel_security_rows(
+            snap,
+            &ctx.indicators,
+            &ctx.kernel_version,
+            result.os_release.as_ref(),
+            system_uuid,
+        );
         let status = build_status(result);
 
         Self {
             tabs,
             os_info_rows,
             trust_rows,
+            kernel_security_rows,
             status,
         }
     }
 
     /// Build the app from a hard-gate detection failure.
-    fn from_error(err: &DetectionError) -> Self {
+    ///
+    /// `ctx` is passed in for header indicators and kernel version string.
+    /// `snap` provides the full `PostureSnapshot` for the Kernel Security tab —
+    /// kernel posture data is available independently of OS detection.
+    /// `system_uuid` is the DMI product UUID (display-only).
+    fn from_error(
+        err: &DetectionError,
+        ctx: &HeaderContext,
+        snap: &PostureSnapshot,
+        system_uuid: &str,
+    ) -> Self {
         let tabs = vec![
             TabDef::new("OS Information"),
             TabDef::new("Trust / Evidence"),
+            TabDef::new("Kernel Security"),
         ];
 
         // Error description — does not include variable kernel data
@@ -207,6 +268,13 @@ impl OsDetectApp {
             ),
         ];
 
+        let kernel_security_rows = build_kernel_security_rows(
+            snap,
+            &ctx.indicators,
+            &ctx.kernel_version,
+            None,
+            system_uuid,
+        );
         let status =
             StatusMessage::new(StatusLevel::Error, "Detection pipeline failed");
 
@@ -214,6 +282,7 @@ impl OsDetectApp {
             tabs,
             os_info_rows,
             trust_rows,
+            kernel_security_rows,
             status,
         }
     }
@@ -245,6 +314,7 @@ impl AuditCardApp for OsDetectApp {
         match tab_index {
             0 => self.os_info_rows.clone(),
             1 => self.trust_rows.clone(),
+            2 => self.kernel_security_rows.clone(),
             _ => vec![DataRow::normal("(no data)", "(invalid tab index)")],
         }
     }
@@ -429,6 +499,327 @@ fn build_trust_rows(result: &DetectionResult) -> Vec<DataRow> {
     rows
 }
 
+/// Append kernel identity preamble rows to the Kernel Security tab row list.
+///
+/// Emits: OS release label (if available), version ID, kernel version,
+/// system UUID (DMI), and active LSM indicator. A separator follows.
+///
+/// These are informational rows — none are hardening assertions. They provide
+/// component identity context (NIST SP 800-53 CM-8) so the operator can
+/// correlate the security posture data with the specific OS and hardware.
+fn append_kernel_identity_rows(
+    rows: &mut Vec<DataRow>,
+    indicators: &SecurityIndicators,
+    kernel_version: &str,
+    os_release: Option<&OsRelease>,
+    system_uuid: &str,
+) {
+    // OS stability context — from os-release fields; display-only.
+    if let Some(rel) = os_release {
+        let os_id = rel.id.as_str().to_owned();
+        let os_label = if let Some(pn) = &rel.pretty_name {
+            pn.as_str().to_owned()
+        } else if let Some(ver) = &rel.version_id {
+            format!("{} {}", rel.name.as_str(), ver.as_str())
+        } else {
+            rel.name.as_str().to_owned()
+        };
+        rows.push(DataRow::key_value("os release", os_label, StyleHint::Dim));
+        if let Some(ver) = &rel.version_id {
+            rows.push(DataRow::key_value(
+                "version id",
+                format!("{os_id} {}", ver.as_str()),
+                StyleHint::Dim,
+            ));
+        }
+        rows.push(DataRow::separator());
+    }
+
+    // Kernel version from uname(2) — display-only, not a hardening assertion.
+    rows.push(DataRow::key_value(
+        "kernel version",
+        kernel_version.to_owned(),
+        StyleHint::Dim,
+    ));
+
+    // System UUID from /sys/class/dmi/id/product_uuid — display-only.
+    // Readable only by root; "unavailable" on non-root or non-UEFI systems.
+    rows.push(DataRow::key_value(
+        "system uuid",
+        system_uuid.to_owned(),
+        StyleHint::Dim,
+    ));
+
+    // Active LSM — no kattr type for /sys/kernel/security/lsm yet.
+    // Uses the header indicator value; returns Unavailable until implemented.
+    let (lsm_val, lsm_hint) = indicator_to_display(&indicators.active_lsm);
+    rows.push(DataRow::key_value("active lsm", lsm_val, lsm_hint));
+
+    rows.push(DataRow::separator());
+}
+
+/// Build the Kernel Security tab rows from a live `PostureSnapshot`.
+///
+/// Organises all probed signals into six purpose-based groups. Groups with
+/// no readable signal data are omitted entirely — an empty group with only
+/// `"(not probed)"` entries is noise. Kernel version appears as an
+/// informational row at the top, not as its own group.
+///
+/// Signal styling follows the hardening assessment from the snapshot:
+/// - `meets_desired = Some(true)` → `TrustGreen` (hardened)
+/// - `meets_desired = Some(false)` → `TrustRed` (not hardened)
+/// - `meets_desired = None` (unreadable) → `Dim`
+///
+/// For the lockdown indicator, the header's `SecurityIndicators` value is
+/// used as a cross-reference since the `Lockdown` signal in the snapshot
+/// carries the same value via a different read path.
+///
+/// NIST SP 800-53 CA-7: Continuous Monitoring — all rendered values are
+/// sourced from a single atomic posture snapshot.
+/// NIST SP 800-53 CM-6: Configuration Settings — live kernel values rendered
+/// without interpretation or transformation.
+/// NIST SP 800-53 SI-11: Error Handling — unreadable signals display as Dim
+/// rather than propagating errors to the display layer.
+fn build_kernel_security_rows(
+    snap: &PostureSnapshot,
+    indicators: &SecurityIndicators,
+    kernel_version: &str,
+    os_release: Option<&OsRelease>,
+    system_uuid: &str,
+) -> Vec<DataRow> {
+    let mut rows = Vec::new();
+
+    append_kernel_identity_rows(
+        &mut rows,
+        indicators,
+        kernel_version,
+        os_release,
+        system_uuid,
+    );
+
+    append_boot_integrity_group(&mut rows, snap, indicators);
+    append_signal_group(
+        &mut rows,
+        "CRYPTOGRAPHIC POSTURE",
+        snap,
+        &[
+            (SignalId::FipsEnabled, "fips_enabled"),
+            (SignalId::ModulesDisabled, "modules_disabled"),
+            (SignalId::RandomTrustCpu, "random.trust_cpu"),
+            (SignalId::RandomTrustBootloader, "random.trust_bootloader"),
+        ],
+    );
+    append_signal_group(
+        &mut rows,
+        "KERNEL SELF-PROTECTION",
+        snap,
+        &[
+            (SignalId::RandomizeVaSpace, "randomize_va_space"),
+            (SignalId::KptrRestrict, "kptr_restrict"),
+            (SignalId::UnprivBpfDisabled, "unprivileged_bpf_disabled"),
+            (SignalId::PerfEventParanoid, "perf_event_paranoid"),
+            (SignalId::YamaPtraceScope, "yama.ptrace_scope"),
+            (SignalId::DmesgRestrict, "dmesg_restrict"),
+        ],
+    );
+    append_signal_group(
+        &mut rows,
+        "PROCESS ISOLATION",
+        snap,
+        &[
+            (SignalId::UnprivUsernsClone, "unprivileged_userns_clone"),
+            (SignalId::Sysrq, "sysrq"),
+            (SignalId::SuidDumpable, "suid_dumpable"),
+        ],
+    );
+    append_signal_group(
+        &mut rows,
+        "FILESYSTEM HARDENING",
+        snap,
+        &[
+            (SignalId::ProtectedSymlinks, "protected_symlinks"),
+            (SignalId::ProtectedHardlinks, "protected_hardlinks"),
+            (SignalId::ProtectedFifos, "protected_fifos"),
+            (SignalId::ProtectedRegular, "protected_regular"),
+        ],
+    );
+    append_signal_group(
+        &mut rows,
+        "MODULE RESTRICTIONS",
+        snap,
+        &[
+            (SignalId::BluetoothBlacklisted, "bluetooth (blacklisted)"),
+            (SignalId::UsbStorageBlacklisted, "usb_storage (blacklisted)"),
+            (
+                SignalId::FirewireCoreBlacklisted,
+                "firewire_core (blacklisted)",
+            ),
+            (
+                SignalId::ThunderboltBlacklisted,
+                "thunderbolt (blacklisted)",
+            ),
+            (SignalId::NfConntrackAcct, "nf_conntrack acct"),
+        ],
+    );
+
+    // Remove trailing separator if present.
+    if matches!(rows.last(), Some(DataRow::Separator)) {
+        rows.pop();
+    }
+
+    rows
+}
+
+/// Append the BOOT INTEGRITY group to the row list.
+///
+/// Lockdown is the primary boot-integrity signal. If the posture snapshot
+/// could not read the securityfs node (kernel without CONFIG_SECURITY_LOCKDOWN),
+/// the header indicator value is used as a fallback so the row is never silently
+/// absent on systems where lockdown is otherwise visible in the header.
+///
+/// Other boot-integrity signals (kexec, module sig, mitigations, PTI) are
+/// appended from the snapshot. The group is omitted only if every signal is
+/// unreadable AND the fallback indicator is also unavailable.
+fn append_boot_integrity_group(
+    rows: &mut Vec<DataRow>,
+    snap: &PostureSnapshot,
+    indicators: &SecurityIndicators,
+) {
+    // Snapshot-sourced boot-integrity signals.
+    let boot_signals: &[(SignalId, &str)] = &[
+        (SignalId::Lockdown, "lockdown"),
+        (SignalId::KexecLoadDisabled, "kexec_load_disabled"),
+        (SignalId::ModuleSigEnforce, "module.sig_enforce"),
+        (SignalId::Mitigations, "mitigations"),
+        (SignalId::Pti, "pti"),
+    ];
+    let group_rows = signal_group_rows(snap, boot_signals);
+
+    // If lockdown was not in the snapshot, fall back to the header indicator.
+    let has_lockdown =
+        snap.get(SignalId::Lockdown).is_some_and(|r| r.live_value.is_some());
+    let fallback: Option<DataRow> = if has_lockdown {
+        None
+    } else {
+        let (lv, lh) = indicator_to_display(&indicators.lockdown_mode);
+        if matches!(lh, StyleHint::Dim) {
+            None // header indicator also unavailable — skip
+        } else {
+            Some(DataRow::key_value("lockdown (header)", lv, lh))
+        }
+    };
+
+    if !group_rows.is_empty() || fallback.is_some() {
+        rows.push(DataRow::group_title("BOOT INTEGRITY"));
+        rows.extend(group_rows);
+        if let Some(r) = fallback {
+            rows.push(r);
+        }
+        rows.push(DataRow::separator());
+    }
+}
+
+/// Append a named signal group to the row list.
+///
+/// Skips the group header and separator entirely when no signal in `signals`
+/// has a readable live value — an empty group is not shown.
+fn append_signal_group(
+    rows: &mut Vec<DataRow>,
+    title: &'static str,
+    snap: &PostureSnapshot,
+    signals: &[(SignalId, &str)],
+) {
+    let group_rows = signal_group_rows(snap, signals);
+    if !group_rows.is_empty() {
+        rows.push(DataRow::group_title(title));
+        rows.extend(group_rows);
+        rows.push(DataRow::separator());
+    }
+}
+
+/// Build display rows for a named group of posture signals.
+///
+/// For each `(SignalId, label)` pair, looks up the `SignalReport` in the
+/// snapshot. Signals with a readable `live_value` are rendered as
+/// `DataRow::key_value` rows styled by their hardening outcome. Signals
+/// with no live value (`live_value: None`) are silently skipped — the caller
+/// is responsible for deciding whether to omit the group entirely.
+///
+/// Returns an empty `Vec` when no signal in the group has a readable value,
+/// allowing the caller to suppress the group header.
+///
+/// NIST SP 800-53 SI-11: degraded signals are skipped, not fabricated.
+fn signal_group_rows(
+    snap: &PostureSnapshot,
+    signals: &[(SignalId, &str)],
+) -> Vec<DataRow> {
+    let mut rows = Vec::new();
+    for (id, label) in signals {
+        let Some(report) = snap.get(*id) else {
+            continue;
+        };
+        let Some(ref live) = report.live_value else {
+            // Signal was not readable on this kernel — omit the row.
+            continue;
+        };
+        let hint = meets_desired_hint(report.meets_desired);
+        rows.push(DataRow::key_value(
+            label.to_owned(),
+            format_live_value(live),
+            hint,
+        ));
+    }
+    rows
+}
+
+/// Map a `LiveValue` to a concise display string for the Kernel Security tab.
+///
+/// Integer values are rendered as their decimal string. Boolean values are
+/// rendered as `"enabled"` / `"disabled"` for operator clarity rather than
+/// Rust's `true` / `false`. Text values are passed through unchanged.
+fn format_live_value(live: &LiveValue) -> String {
+    match live {
+        LiveValue::Integer(v) => v.to_string(),
+        LiveValue::SignedInteger(v) => v.to_string(),
+        LiveValue::Bool(true) => "enabled".to_owned(),
+        LiveValue::Bool(false) => "disabled".to_owned(),
+        LiveValue::Text(s) => s.clone(),
+    }
+}
+
+/// Map a hardening assessment to the appropriate `StyleHint`.
+///
+/// - `Some(true)` → `TrustGreen` — signal meets the hardened baseline.
+/// - `Some(false)` → `TrustRed` — signal does not meet the hardened baseline.
+/// - `None` → `Dim` — the assessment could not be computed (unreadable or
+///   custom signal type).
+const fn meets_desired_hint(meets: Option<bool>) -> StyleHint {
+    match meets {
+        Some(true) => StyleHint::TrustGreen,
+        Some(false) => StyleHint::TrustRed,
+        None => StyleHint::Dim,
+    }
+}
+
+/// Convert an [`IndicatorValue`] to a display string and [`StyleHint`] pair.
+///
+/// Used by [`build_kernel_security_rows`] to render live kernel indicator
+/// values in the Kernel Security tab with the same semantic styling as the
+/// header indicator row.
+///
+/// - `Active(s)` → value string + `StyleHint::TrustGreen`
+/// - `Inactive(s)` → value string + `StyleHint::TrustYellow`
+/// - `Unavailable` → `"unavailable"` + `StyleHint::Dim`
+fn indicator_to_display(value: &IndicatorValue) -> (String, StyleHint) {
+    match value {
+        IndicatorValue::Active(s) => (s.clone(), StyleHint::TrustGreen),
+        IndicatorValue::Inactive(s) => (s.clone(), StyleHint::TrustYellow),
+        IndicatorValue::Unavailable => {
+            ("unavailable".to_owned(), StyleHint::Dim)
+        }
+    }
+}
+
 /// Append evidence records grouped by source kind to the row list.
 ///
 /// Records are collected into a `BTreeMap` keyed by the source-kind display
@@ -598,6 +989,36 @@ fn main() {
         log::set_max_level(log::LevelFilter::Info);
     }
 
+    // ── Header context ───────────────────────────────────────────────────
+    // Build before detection so that live security indicators (lockdown mode,
+    // FIPS state) and the kernel version string are available to the Kernel
+    // Security tab row builder. Detection result is independent of ctx.
+    // os_name is initially "unavailable" and updated after detection completes.
+    let mut ctx = build_header_context(
+        env!("CARGO_PKG_NAME"),
+        env!("CARGO_PKG_VERSION"),
+        "unavailable",
+    );
+
+    // ── Posture snapshot ─────────────────────────────────────────────────
+    // Collect all kernel security posture signals once before building the app.
+    // The snapshot is independent of OS detection — it reads directly from
+    // kernel nodes via the provenance-verified SecureReader engine.
+    // Used exclusively to populate the Kernel Security tab.
+    //
+    // NIST SP 800-53 CA-7: Continuous Monitoring — posture collected at startup.
+    let snap = PostureSnapshot::collect();
+    log::info!(
+        "posture snapshot: {}/{} signals readable",
+        snap.readable_count(),
+        snap.reports.len()
+    );
+
+    // ── System UUID ───────────────────────────────────────────────────────
+    // Read once here for the Kernel Security tab. Requires root on most kernels;
+    // returns "unavailable" if the sysfs read fails. Display-only.
+    let system_uuid = read_system_uuid();
+
     // ── Detection ────────────────────────────────────────────────────────
     let app: OsDetectApp = match OsDetector::default().detect() {
         Ok(result) => {
@@ -605,11 +1026,13 @@ fn main() {
                 "OS detection succeeded: {:?}",
                 result.confidence.level()
             );
-            OsDetectApp::from_result(&result)
+            // Populate os_name from the detection result now that it is available.
+            ctx.os_name = os_name_from_release(result.os_release.as_ref());
+            OsDetectApp::from_result(&result, &ctx, &snap, &system_uuid)
         }
         Err(ref e) => {
             log::warn!("OS detection hard-gate failure: {e}");
-            OsDetectApp::from_error(e)
+            OsDetectApp::from_error(e, &ctx, &snap, &system_uuid)
         }
     };
 
@@ -617,8 +1040,6 @@ fn main() {
     let mut state = AuditCardState::new(app.tabs().len());
     let keymap = KeyMap::default();
     let theme = Theme::default();
-    let ctx =
-        build_header_context(env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
 
     // ── Terminal setup ────────────────────────────────────────────────────
     let mut terminal = ratatui::init();

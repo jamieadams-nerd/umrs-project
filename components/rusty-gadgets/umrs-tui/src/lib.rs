@@ -48,6 +48,7 @@
 
 pub mod app;
 pub mod data_panel;
+pub mod dialog;
 pub mod header;
 pub mod indicators;
 pub mod keymap;
@@ -62,7 +63,10 @@ pub use app::{
     IndicatorValue, SecurityIndicators, StatusLevel, StatusMessage, StyleHint,
     TabDef,
 };
-pub use indicators::{build_header_context, read_security_indicators};
+pub use dialog::{DialogFocus, DialogMode, DialogState, render_dialog};
+pub use indicators::{
+    build_header_context, read_security_indicators, read_system_uuid,
+};
 pub use keymap::{Action, KeyMap};
 pub use layout::render_audit_card;
 pub use theme::Theme;

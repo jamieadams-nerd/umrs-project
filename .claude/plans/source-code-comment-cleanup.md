@@ -1,0 +1,73 @@
+# Plan: Source Code Comment Cleanup
+
+**Date:** 2026-03-15
+**Status:** Not started — queued for future work
+**ROADMAP Goals:** G7 (Public Project), G8 (High-Assurance Patterns)
+**Owner:** rust-developer (Rusty)
+**Reviewer:** security-auditor (The IRS), tech-writer (Von Neumann)
+
+---
+
+## Purpose
+
+Improve API documentation quality across all crates by removing clippy lint
+suppressions and fixing the resulting violations. This is prerequisite work for
+M4 (Public Release) — source code comments must be reviewed before crates.io
+publication.
+
+---
+
+## Task 1 — Remove `missing_errors_doc` suppression
+
+Remove `#![allow(clippy::missing_errors_doc)]` and add proper `# Errors` sections
+to all public `Result`-returning functions.
+
+| Crate | Estimated violations | Status |
+|---|---|---|
+| umrs-platform | 40 | Not started |
+| umrs-selinux | TBD (check count) | Not started |
+| umrs-core | TBD | Not started |
+| umrs-tui | TBD | Not started |
+| umrs-ls | TBD | Not started |
+
+**Approach:** One crate at a time. Remove suppression, fix all violations, clippy clean,
+separate commit per crate.
+
+## Task 2 — Remove `missing_panics_doc` suppression
+
+Remove `#![allow(clippy::missing_panics_doc)]` where present and add `# Panics` sections.
+Currently suppressed in umrs-tui. Check other crates.
+
+## Task 3 — Module-level comment review (Von Neumann)
+
+Von Neumann (tech-writer) reviews every module-level `//!` comment block across all crates for:
+- **Clarity** — is the module's purpose immediately understandable?
+- **Accuracy** — do the comments match what the code actually does?
+- **Cross-references** — are related modules, types, and patterns properly linked?
+- **Control citations** — are NIST/CMMC/RTB references correct and complete?
+- **Terminology** — consistent with OSCAL, SP 800-53A, and project glossary?
+
+Von Neumann produces a findings report per crate. Rusty fixes all findings.
+The IRS reviews the final result for compliance annotation completeness.
+
+| Crate | Review status | Findings fixed |
+|---|---|---|
+| umrs-platform | Not started | — |
+| umrs-selinux | Not started | — |
+| umrs-core | Not started | — |
+| umrs-tui | Not started | — |
+| umrs-ls | Not started | — |
+
+## Task 4 — (reserved for future Jamie tasks)
+
+Jamie will add additional source code comment cleanup tasks here.
+
+---
+
+## Constraints
+
+- Each crate is a separate pass — don't batch across crates
+- `# Errors` sections should describe the actual error conditions, not just "returns Err"
+- `# Panics` sections only needed where panics are reachable (not for unreachable panics)
+- Von Neumann reviews the doc text for clarity after Rusty writes it
+- The IRS reviews for completeness — are all error paths documented?

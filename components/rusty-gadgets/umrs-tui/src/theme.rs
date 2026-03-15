@@ -79,7 +79,7 @@ pub struct Theme {
     /// Key column in data rows (dim cyan).
     pub data_key: Style,
 
-    /// Value column in data rows (bright white).
+    /// Value column in data rows (white, no bold).
     pub data_value: Style,
 
     /// Header report name (bold bright white).
@@ -120,6 +120,46 @@ pub struct Theme {
     /// NIST SP 800-53 AU-3 — labelled sections improve audit record
     /// readability; an assessor can locate assessment objects by group.
     pub group_title: Style,
+
+    // -----------------------------------------------------------------------
+    // Dialog styles
+    // -----------------------------------------------------------------------
+    /// Border style for `Info` and `Confirm` dialogs (cyan).
+    ///
+    /// NIST SP 800-53 AU-3 — visually distinct dialog modes reduce operator
+    /// error when interpreting dialog severity.
+    pub dialog_info_border: Style,
+
+    /// Border style for `Error` dialogs (red).
+    ///
+    /// NIST SP 800-53 AU-3 — error dialogs must be visually distinguishable
+    /// from informational dialogs without relying solely on text.
+    pub dialog_error_border: Style,
+
+    /// Border style for `SecurityWarning` dialogs (yellow).
+    ///
+    /// Yellow signals a security-relevant warning — distinct from error (red)
+    /// and informational (cyan). Operators must make a deliberate choice before
+    /// confirming; the yellow border reinforces heightened attention.
+    ///
+    /// NIST SP 800-53 SC-5 — visual distinction reinforces the fail-safe
+    /// default (Cancel) by signaling that this dialog requires care.
+    pub dialog_security_border: Style,
+
+    /// Style for the currently focused dialog button (bold cyan on black).
+    ///
+    /// NIST SP 800-53 SC-5, SI-10 — focused button must be unambiguously
+    /// distinguishable from the unfocused button.
+    pub dialog_button_focused: Style,
+
+    /// Style for the unfocused dialog button (dim gray).
+    pub dialog_button_unfocused: Style,
+
+    /// Style for dialog title text (bold white).
+    pub dialog_title: Style,
+
+    /// Style for dialog message body text (white).
+    pub dialog_message: Style,
 }
 
 impl Theme {
@@ -152,9 +192,7 @@ impl Default for Theme {
             data_key: Style::default()
                 .fg(Color::Cyan)
                 .add_modifier(Modifier::DIM),
-            data_value: Style::default()
-                .fg(Color::White)
-                .add_modifier(Modifier::BOLD),
+            data_value: Style::default().fg(Color::White),
             header_name: Style::default()
                 .fg(Color::White)
                 .add_modifier(Modifier::BOLD),
@@ -171,6 +209,21 @@ impl Default for Theme {
             group_title: Style::default()
                 .fg(Color::White)
                 .add_modifier(Modifier::BOLD),
+            // Dialog styles
+            dialog_info_border: Style::default().fg(Color::Cyan),
+            dialog_error_border: Style::default().fg(Color::Red),
+            dialog_security_border: Style::default()
+                .fg(Color::Yellow)
+                .add_modifier(Modifier::BOLD),
+            dialog_button_focused: Style::default()
+                .fg(Color::Black)
+                .bg(Color::Cyan)
+                .add_modifier(Modifier::BOLD),
+            dialog_button_unfocused: Style::default().fg(Color::DarkGray),
+            dialog_title: Style::default()
+                .fg(Color::White)
+                .add_modifier(Modifier::BOLD),
+            dialog_message: Style::default().fg(Color::White),
         }
     }
 }

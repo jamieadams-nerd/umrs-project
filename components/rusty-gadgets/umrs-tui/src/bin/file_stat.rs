@@ -817,8 +817,14 @@ fn main() {
     let mut state = AuditCardState::new(app.tabs().len());
     let keymap = KeyMap::default();
     let theme = Theme::default();
-    let ctx =
-        build_header_context(env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
+    // os_name is "unavailable" in file_stat — this binary does not run
+    // the OS detection pipeline. The OS is visible from the RHEL host context;
+    // the header row displays the best available value.
+    let ctx = build_header_context(
+        env!("CARGO_PKG_NAME"),
+        env!("CARGO_PKG_VERSION"),
+        "unavailable",
+    );
 
     // ── Terminal setup ────────────────────────────────────────────────────
     let mut terminal = ratatui::init();

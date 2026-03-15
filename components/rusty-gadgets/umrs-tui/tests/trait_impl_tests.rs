@@ -340,3 +340,113 @@ fn header_field_normal_sets_normal_hint() {
     assert_eq!(field.value, "value");
     assert_eq!(field.style_hint, StyleHint::Normal);
 }
+
+// ---------------------------------------------------------------------------
+// Three-tab mock — Phase 7 validation
+// ---------------------------------------------------------------------------
+
+/// Minimal `AuditCardApp` with three tabs to verify that a third tab
+/// (Kernel Security placeholder) can be added without panics or fallback.
+///
+/// Mirrors the structure of `OsDetectApp` after Phase 7: tab 0 = OS info,
+/// tab 1 = Trust / Evidence, tab 2 = Kernel Security. An invalid index
+/// returns empty (fail-closed).
+struct MockAppThreeTabs {
+    tabs: Vec<TabDef>,
+    status: StatusMessage,
+}
+
+impl MockAppThreeTabs {
+    fn new() -> Self {
+        Self {
+            tabs: tabs_from_labels(&[
+                "OS Information",
+                "Trust / Evidence",
+                "Kernel Security",
+            ]),
+            status: StatusMessage::new(StatusLevel::Ok, "Ready"),
+        }
+    }
+}
+
+impl AuditCardApp for MockAppThreeTabs {
+    fn report_name(&self) -> &'static str {
+        "Three Tab Test"
+    }
+
+    fn report_subject(&self) -> &'static str {
+        "mock.host.example"
+    }
+
+    fn tabs(&self) -> &[TabDef] {
+        &self.tabs
+    }
+
+    fn active_tab(&self) -> usize {
+        0
+    }
+
+    fn data_rows(&self, tab_index: usize) -> Vec<DataRow> {
+        match tab_index {
+            0 => vec![DataRow::normal("ID", "rhel")],
+            1 => vec![DataRow::normal("trust_level", "T3")],
+            2 => vec![
+                DataRow::group_title("FIPS STATE"),
+                DataRow::normal("fips_enabled", "active"),
+            ],
+            _ => vec![],
+        }
+    }
+
+    fn status(&self) -> &StatusMessage {
+        &self.status
+    }
+}
+
+#[test]
+fn three_tab_mock_has_three_tabs() {
+    let app = MockAppThreeTabs::new();
+    assert_eq!(app.tabs().len(), 3);
+}
+
+#[test]
+fn three_tab_mock_tab_two_label_is_kernel_security() {
+    let app = MockAppThreeTabs::new();
+    assert_eq!(app.tabs()[2].label, "Kernel Security");
+}
+
+#[test]
+fn three_tab_mock_data_rows_tab_two_returns_two_rows() {
+    let app = MockAppThreeTabs::new();
+    let rows = app.data_rows(2);
+    assert_eq!(rows.len(), 2, "kernel security tab must have 2 rows");
+}
+
+#[test]
+fn three_tab_mock_data_rows_tab_two_first_row_is_group_title() {
+    let app = MockAppThreeTabs::new();
+    let rows = app.data_rows(2);
+    assert!(
+        matches!(rows[0], DataRow::GroupTitle { .. }),
+        "first row of kernel security tab must be a GroupTitle"
+    );
+}
+
+#[test]
+fn three_tab_mock_data_rows_invalid_index_returns_empty() {
+    let app = MockAppThreeTabs::new();
+    let rows = app.data_rows(3);
+    assert!(
+        rows.is_empty(),
+        "invalid tab index must return empty Vec — fail closed, no panic"
+    );
+}
+
+#[test]
+fn three_tab_mock_is_object_safe_with_three_tabs() {
+    let app = MockAppThreeTabs::new();
+    let dyn_app: &dyn AuditCardApp = &app;
+    assert_eq!(dyn_app.tabs().len(), 3);
+    let rows = dyn_app.data_rows(2);
+    assert_eq!(rows.len(), 2);
+}

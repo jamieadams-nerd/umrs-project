@@ -182,6 +182,7 @@ are escalated.
 | Event viewer (TUI/GUI) | Read and display structured JSON event logs from journald; acknowledge events | G5 tools, event logging infrastructure | M2+ |
 | CUI label installer | Choose CUI categories and optional Five Eyes markings | G3 CUI labeling | M3 |
 | MCS translator CLI | Human-readable MCS category translation | G2 SELinux/MLS modeling | M3 |
+| `umrs-systemd` | Systemd service inspector (read-only) — unit hardening audit, seccomp profile analysis, service config review, dependency graph | G1 platform awareness, G5 tools | M2+ |
 
 The current `umrs-ls` tool is pure CLI. Next step is an interactive TUI:
 - Data display area with up/down navigation, highlighting the selected row

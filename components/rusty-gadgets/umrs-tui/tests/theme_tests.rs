@@ -79,6 +79,42 @@ fn theme_default_all_indicator_styles_differ() {
 }
 
 // ---------------------------------------------------------------------------
+// indicator_style — named coverage (Phase 5)
+// ---------------------------------------------------------------------------
+
+#[test]
+fn indicator_style_active_returns_active_style() {
+    let theme = Theme::default();
+    let value = IndicatorValue::Active("enforcing".to_owned());
+    let style = theme.indicator_style(&value);
+    assert_eq!(
+        style, theme.indicator_active,
+        "Active variant must return the indicator_active theme style"
+    );
+}
+
+#[test]
+fn indicator_style_inactive_returns_inactive_style() {
+    let theme = Theme::default();
+    let value = IndicatorValue::Inactive("permissive".to_owned());
+    let style = theme.indicator_style(&value);
+    assert_eq!(
+        style, theme.indicator_inactive,
+        "Inactive variant must return the indicator_inactive theme style"
+    );
+}
+
+#[test]
+fn indicator_style_unavailable_returns_unavailable_style() {
+    let theme = Theme::default();
+    let style = theme.indicator_style(&IndicatorValue::Unavailable);
+    assert_eq!(
+        style, theme.indicator_unavailable,
+        "Unavailable variant must return the indicator_unavailable theme style"
+    );
+}
+
+// ---------------------------------------------------------------------------
 // status_bg_color
 // ---------------------------------------------------------------------------
 

@@ -1,0 +1,9 @@
+╭ OS Detection Audit ───────────────────────────────────────────────────────────────────────────────╮╭───────────────╮
+│Assessment : OS Detection  Boot ID    : f7078de5-8b97-400c-9295-7bee10e696ef                       ││⠀⠀⠀⠀⠀⠀⠀⣀⡀⠀⠀⠀⠀⠀⠀│
+│Scope      : Platform Identity and Integrity  Assessed   : 2026-03-15 19:31:54 UTC                 ││⠀⠀⠀⠀⠀⣠⣿⣿⣿⣦⠀⠀⠀⠀⠀│
+│Host       : goldeneye  Kernel     : 6.12.0-211.el10.aarch64                                       ││⠀⠀⠀⠀⣰⠟⠉⠀⠈⠙⢧⠀⠀⠀⠀│
+│Tool       : umrs-tui 0.1.0  System ID  : unavailable                                              ││⠀⠀⠀⢐⢇⠀⠻⣿⡿⠁⣠⢇⠀⠀⠀│
+│SELinux    : enforcing  LSM        : unavailable                                                   ││⠀⢐⡻⠿⣶⣕⡀⠀⠀⣺⣵⡿⠿⣒⠀│
+│FIPS       : active  Lockdown   : none                                                             ││⠀⠨⣭⣛⡲⠮⣭⣓⣯⡽⠶⣛⣫⡭⠀│
+│                                                                                                   ││⠀⠀⠀⠈⠉⠛⠲⠾⠶⠚⠋⠉⠀⠀⠀│
+╰───────────────────────────────────────────────────────────────────────────────────────────────────╯╰───────────────╯

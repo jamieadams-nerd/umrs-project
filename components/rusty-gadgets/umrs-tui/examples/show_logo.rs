@@ -133,8 +133,12 @@ fn main() {
     let mut state = AuditCardState::new(app.tabs().len());
     let keymap = KeyMap::default();
     let theme = Theme::default();
-    let ctx =
-        build_header_context(env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
+    // os_name is "unavailable" for this demo — show_logo does not run OS detection.
+    let ctx = build_header_context(
+        env!("CARGO_PKG_NAME"),
+        env!("CARGO_PKG_VERSION"),
+        "unavailable",
+    );
 
     let mut terminal = ratatui::init();
 

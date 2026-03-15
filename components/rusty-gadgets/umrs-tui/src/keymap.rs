@@ -56,6 +56,34 @@ pub enum Action {
 
     /// Request a data refresh (re-run detection or reload source data).
     Refresh,
+
+    /// Confirm the active dialog (typically Enter or Y).
+    ///
+    /// The calling binary maps this action to the appropriate key events and
+    /// sets `DialogState::response = Some(true)` in its event loop.
+    ///
+    /// NIST SP 800-53 SI-10, AU-2 — explicit operator confirmation; callers
+    /// must log the acknowledgement for `SecurityWarning` and `Confirm` dialogs.
+    DialogConfirm,
+
+    /// Cancel or dismiss the active dialog (typically Esc or N).
+    ///
+    /// The calling binary sets `DialogState::response = Some(false)` in its
+    /// event loop. For single-button dialogs (`Info`, `Error`), this is
+    /// equivalent to `DialogConfirm` — both dismiss the dialog.
+    ///
+    /// NIST SP 800-53 SI-10 — explicit operator dismissal.
+    DialogCancel,
+
+    /// Move focus between buttons in a two-button dialog (Tab / Left / Right).
+    ///
+    /// Only meaningful for `SecurityWarning` and `Confirm` modes. The calling
+    /// binary calls `DialogFocus::toggle()` on `DialogState::focused` in
+    /// response to this action.
+    ///
+    /// NIST SP 800-53 SC-5 — focus navigation ensures the operator makes a
+    /// deliberate choice before confirming a security-affecting action.
+    DialogToggleFocus,
 }
 
 // ---------------------------------------------------------------------------

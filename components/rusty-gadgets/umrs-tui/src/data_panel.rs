@@ -120,6 +120,13 @@ const TABLE_COL1_WIDTH: usize = 20;
 /// Fixed width of the `Source` column in a `TableRow` / `TableHeader`.
 const TABLE_COL2_WIDTH: usize = 24;
 
+/// Minimum space inserted between adjacent evidence table columns.
+///
+/// Prevents columns from visually merging when rendered in a terminal.
+/// Two characters of padding give operators a clear visual break between
+/// the Source and Verification columns without wasting display width.
+const TABLE_COL_GAP: &str = "  ";
+
 /// Build a single [`Line`] from a [`DataRow`].
 ///
 /// Each variant produces a line that fits within the panel's text area:
@@ -139,6 +146,7 @@ fn build_row_line<'a>(row: &'a DataRow, theme: &'a Theme) -> Line<'a> {
             let key_padded = pad_key(key, KEY_COL_WIDTH);
             let value_color = style_hint_color(*style_hint);
             Line::from(vec![
+                Span::raw(" "),
                 Span::styled(key_padded, theme.data_key),
                 Span::styled(value.clone(), theme.data_value.fg(value_color)),
             ])
@@ -169,6 +177,7 @@ fn build_row_line<'a>(row: &'a DataRow, theme: &'a Theme) -> Line<'a> {
             let left_val_padded = pad_value(left_value, left_budget);
 
             Line::from(vec![
+                Span::raw(" "),
                 Span::styled(left_key_str, theme.data_key),
                 Span::styled(
                     left_val_padded,
@@ -186,7 +195,10 @@ fn build_row_line<'a>(row: &'a DataRow, theme: &'a Theme) -> Line<'a> {
             // Flush-left, single styled span. No padding — the group title
             // fills the full line width naturally. Indentation of rows under
             // this title is the caller's responsibility (see DataRow docs).
-            Line::from(Span::styled(title.clone(), theme.group_title))
+            Line::from(vec![
+                Span::raw(" "),
+                Span::styled(title.clone(), theme.group_title),
+            ])
         }
 
         DataRow::Separator => Line::from(""),
@@ -205,8 +217,11 @@ fn build_row_line<'a>(row: &'a DataRow, theme: &'a Theme) -> Line<'a> {
             // remainder of the line so no fixed width needed.
             let col3_color = style_hint_color(*style_hint);
             Line::from(vec![
+                Span::raw(" "),
                 Span::styled(col1_str, theme.data_key),
+                Span::raw(TABLE_COL_GAP),
                 Span::styled(col2_str, theme.data_value),
+                Span::raw(TABLE_COL_GAP),
                 Span::styled(col3.clone(), theme.data_value.fg(col3_color)),
             ])
         }
@@ -221,8 +236,11 @@ fn build_row_line<'a>(row: &'a DataRow, theme: &'a Theme) -> Line<'a> {
             let col1_str = clip_pad(col1, TABLE_COL1_WIDTH);
             let col2_str = clip_pad(col2, TABLE_COL2_WIDTH);
             Line::from(vec![
+                Span::raw(" "),
                 Span::styled(col1_str, theme.data_key),
+                Span::raw(TABLE_COL_GAP),
                 Span::styled(col2_str, theme.data_key),
+                Span::raw(TABLE_COL_GAP),
                 Span::styled(col3.clone(), theme.data_key),
             ])
         }
