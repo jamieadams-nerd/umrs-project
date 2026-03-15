@@ -138,6 +138,21 @@ The difference between "we hash files" and integrity assurance:
 
 Integrity assurance is a system property, not a property of a single mechanism.
 
+=== Ground Truth
+
+The authoritative, kernel-verified source of a security-relevant value.
+
+Ground truth contrasts with derived or reported values that could be forged or manipulated
+by userspace.
+In UMRS, kernel pseudo-filesystems (`/proc/`, `/sys/fs/selinux/`) are considered ground truth
+for their respective subsystems, but only after provenance verification confirms the source
+is the kernel (not a bind mount or overlay that a privileged user constructed).
+
+The term signals that the value is the definitive one — the system state as the kernel
+sees it, not as any application or configuration file reports it.
+
+See also: xref:#_provenance[Provenance]; xref:patterns:pattern-provenance.adoc[Provenance Verification pattern].
+
 === Non-repudiation
 
 The ability to prevent an entity from credibly denying a prior action.
@@ -151,6 +166,31 @@ UMRS satisfies this through signed audit logs and IMA/EVM measurements that tie 
 to kernel-verified identities.
 
 See also: NIST 800-53 AU-10.
+
+=== Trusted Computing Base (TCB)
+
+The set of hardware, firmware, and software components that must be trusted for a system's
+security policy to be enforced correctly.
+
+The TCB is the boundary of trust.
+If any component inside the TCB is compromised, the security guarantees of the system fail.
+If a component outside the TCB is compromised, the security guarantees still hold.
+
+Minimizing the TCB is a core high-assurance engineering principle.
+A smaller TCB means fewer components an auditor must evaluate, fewer places a flaw can hide,
+and a smaller attack surface for a targeted compromise.
+
+In UMRS, the TCB includes:
+
+* The hardware (CPU, TPM if present)
+* The bootloader (GRUB with measured boot)
+* The Linux kernel (with SELinux, IMA, EVM, dm-crypt)
+* The SELinux policy
+
+Application code, utilities, and services are outside the TCB — the TCB enforces policy
+on them without trusting them.
+
+See also: NIST SP 800-53 SA-3; xref:ROOT:what-is-high-assurance.adoc[What Is High Assurance?].
 
 === Provenance
 
@@ -171,6 +211,18 @@ to confirm the source is the kernel, not a bind-mount or overlay (NIST 800-53 SI
 See also: xref:patterns:pattern-provenance.adoc[Provenance Verification pattern].
 
 == SELinux and MLS
+
+=== Access Vector Cache (AVC)
+
+The in-kernel cache that stores the results of recent SELinux policy decisions.
+
+When a subject requests access to an object, the kernel checks the AVC first.
+If the decision is cached, it is returned immediately without consulting the full policy.
+On a cache miss, the security server evaluates the policy and caches the result.
+
+The AVC is a performance mechanism — it does not change the enforcement model.
+Cached decisions are still policy-correct.
+When policy is reloaded, the AVC is flushed so new decisions are re-evaluated.
 
 === Audit Event
 
@@ -215,6 +267,81 @@ appropriate category bits.
 
 See also: xref:architecture:mls-label-model.adoc[MLS Label Model and CUI Mapping].
 
+=== Discretionary Access Control (DAC)
+
+An access control model in which the owner of a resource decides who may access it.
+
+Under DAC, file owners can grant or revoke permissions for other users.
+POSIX permissions (read, write, execute bits; `chmod`, `chown`) and POSIX ACLs are
+the DAC mechanisms on Linux.
+
+DAC is discretionary because the owner has discretion — and can make mistakes.
+A misconfigured `chmod 777` exposes a file to everyone on the system.
+No kernel mechanism prevents the owner from making that error.
+
+In UMRS, DAC (POSIX permissions) and MAC (SELinux) are both active.
+MAC decisions run after DAC decisions.
+If either denies access, the access is rejected.
+MAC cannot be overridden by changing file permissions.
+
+Contrast with xref:#_mandatory_access_control_mac[Mandatory Access Control].
+
+=== Extended Verification Module (EVM)
+
+A Linux kernel integrity subsystem that protects the security-relevant extended attributes
+(`xattrs`) of files using an HMAC.
+
+IMA measures file content.
+EVM protects the metadata that controls how IMA interprets that content — specifically,
+the IMA hash stored in `security.ima` and SELinux labels stored in `security.selinux`.
+Without EVM, an attacker who can write xattrs could change a file's IMA hash or its
+SELinux security context without triggering detection.
+
+EVM computes an HMAC over the protected xattrs using a kernel-held key.
+Any unauthorized modification to the protected xattrs causes EVM verification to fail.
+
+In UMRS, EVM is used alongside IMA to provide layered integrity enforcement.
+
+See also: xref:#_integrity_measurement_architecture_ima[Integrity Measurement Architecture]; NIST SP 800-53 SI-7.
+
+=== Integrity Measurement Architecture (IMA)
+
+A Linux kernel integrity subsystem that measures file content and records the measurements
+in a signed, append-only log.
+
+When a file is accessed, IMA computes a hash of its content and compares it against a
+reference value (stored in the `security.ima` xattr or a reference manifest).
+If the hash does not match, IMA can deny access (in `enforce` mode) or log the mismatch
+(in `fix` or `log` mode).
+
+The IMA measurement log records every distinct file access with its hash value.
+The log is append-only and protected by the TPM (when a TPM is present).
+This log is the primary tamper-evident record of what the system has executed.
+
+In UMRS, IMA is active in enforce mode.
+Files that do not carry a valid IMA signature or have not been measured are denied
+execution and access, depending on the IMA policy.
+
+See also: xref:#_extended_verification_module_evm[Extended Verification Module];
+NIST SP 800-53 SI-7 (Software and information integrity).
+
+=== Linux Security Module (LSM)
+
+A Linux kernel framework that allows security subsystems to hook into kernel operations
+and enforce access control policy.
+
+LSM hooks are inserted at security-relevant kernel call sites — file opens, network
+connections, process operations, IPC — and give registered security modules the ability
+to allow or deny the operation.
+
+SELinux is the primary LSM used in UMRS.
+IMA and EVM also use the LSM hook infrastructure.
+Multiple LSMs can be stacked (RHEL 10 supports LSM stacking by default).
+
+The LSM framework is the architectural mechanism that makes the reference monitor
+property possible in Linux: all access decisions pass through LSM hooks,
+so a registered security module cannot be bypassed by user-space code.
+
 === Mandatory Access Control (MAC)
 
 An access control model in which policy decisions are made by the system, not by the
@@ -235,6 +362,29 @@ operate or an object may be accessed.
 Format: `sensitivity_low:categories_low-sensitivity_high:categories_high`.
 
 Example: `s0:c0-s3:c0,c2` means the subject operates at or between those two levels.
+
+=== Multi-Level Security (MLS)
+
+An access control model that enforces information flow restrictions based on a hierarchical
+sensitivity label structure.
+
+MLS systems assign every subject (process) and object (file, socket, IPC object) a
+sensitivity level and a category set.
+Access decisions enforce two core properties:
+
+* *No-read-up* — a subject may not read objects at a higher sensitivity level.
+* *No-write-down* — a subject may not write to objects at a lower sensitivity level.
+
+These rules derive from the Bell–LaPadula model for confidentiality.
+The Biba model applies analogous rules for integrity (no-read-down for integrity,
+no-write-up for integrity).
+
+In UMRS, SELinux MLS policy enforces the sensitivity label hierarchy.
+The hierarchy runs from `GENERAL` (publicly shareable, unclassified) through
+`U-CONTROLLED` (highest unclassified sensitivity requiring explicit handling controls).
+
+See also: xref:architecture:mls-label-model.adoc[MLS Label Model and CUI Mapping];
+xref:#_sensitivity_level[Sensitivity Level].
 
 === Policy Enforcement
 
@@ -265,6 +415,22 @@ Every file open, socket connection, and IPC operation passes through the SELinux
 vector cache (AVC) before being permitted or denied.
 
 See also: xref:security-concepts:reference-monitor.adoc[Reference Monitor Design in UMRS].
+
+=== Role-Based Access Control (RBAC)
+
+An access control model that grants permissions based on the role a user or process holds,
+not on the identity of that user or process directly.
+
+Roles group permissions.
+Subjects are assigned to roles.
+A subject's effective permissions are determined by its current role.
+
+In SELinux, roles constrain which types a user can transition to.
+A user in the `sysadm_r` role can run processes of types allowed for system administrators.
+A user in the `user_r` role is restricted to types appropriate for unprivileged sessions.
+
+RBAC in SELinux is a middle layer between user identity and type enforcement (TE).
+The full stack is: user → role → type → sensitivity level.
 
 === Security Context
 
@@ -639,6 +805,78 @@ lattice-based mathematics.
 
 Signatures are larger than ML-DSA; appropriate where conservative assumptions
 outweigh size constraints.
+
+== UMRS Patterns
+
+=== Two-Path Independence (TPI)
+
+A parsing and validation pattern that requires two completely independent implementations
+to parse the same input and agree before the result is trusted.
+
+The threat TPI addresses is parser confusion: if a single parser misinterprets a
+security-critical input — a security context, a label, a policy value — the system may
+grant access it should deny, or deny access it should grant.
+A second independent parser eliminates the class of single-parser errors.
+If the two parsers disagree, the system fails closed.
+
+In UMRS, the canonical implementation is `SecurityContext`, which uses both a `nom`
+combinator parser and a `FromStr` implementation.
+These two paths are architecturally independent.
+A parsing result is only accepted when both paths produce identical output.
+Any disagreement returns an error.
+
+TPI is required for all parsers that consume security-critical input.
+The pattern applies to: security context parsing, sensitivity level parsing, category set
+parsing, and any new parser introduced for security-relevant configuration or kernel data.
+
+See also: xref:patterns:pattern-tpi.adoc[Two-Path Independence pattern];
+NIST SP 800-218 SSDF PW.4.
+
+=== Fail-Closed
+
+A behavioral property of a security mechanism: when the mechanism encounters an error,
+unexpected input, or ambiguous state, it denies access rather than permitting it.
+
+Fail-closed is the default safety posture for security enforcement in UMRS.
+A parser that fails closed returns an error on malformed input — it does not guess,
+default to permissive, or fall through to a less restrictive path.
+
+The alternative — fail-open — permits access when the mechanism cannot make a determination.
+Fail-open is appropriate for availability-critical systems where denying is worse than
+permitting.
+In a security-enforcement context, fail-open is almost always wrong.
+
+In UMRS, every security-critical function that returns `Result` must carry `#[must_use]`
+so callers cannot discard the error.
+This is the compile-time enforcement of the fail-closed property.
+
+See also: NSA RTB (Fail Secure); NIST SP 800-53 SI-10 (Information Input Validation).
+
+=== TOCTOU Safety
+
+A property that prevents time-of-check to time-of-use (TOCTOU) races when accessing
+files and kernel attributes.
+
+A TOCTOU race occurs when:
+
+. A security check is performed on a resource (for example, checking that a file belongs
+   to root and has the expected SELinux label).
+. The resource is accessed using a different, re-resolvable reference (for example, a path).
+. Between steps 1 and 2, an attacker substitutes a different resource at the path.
+
+The check passed, but the access operates on the attacker's resource.
+
+TOCTOU-safe access anchors both the check and the access to the same file descriptor.
+Once an `fd` is open, it refers to exactly one inode.
+An attacker cannot substitute a different file at the path to affect an already-open `fd`.
+
+In UMRS, all file and xattr access is anchored to file descriptors.
+`SecureDirent` and `SecureXattrReader` are the types that enforce this property.
+Directory traversal also uses fd-anchored (`openat`) operations to prevent directory
+substitution attacks.
+
+See also: xref:patterns:pattern-toctou.adoc[TOCTOU Safety pattern];
+NIST SP 800-53 SI-10.
 
 == See Also
 

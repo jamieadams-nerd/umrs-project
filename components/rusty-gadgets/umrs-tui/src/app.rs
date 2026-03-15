@@ -97,6 +97,87 @@ impl Default for SecurityIndicators {
 }
 
 // ---------------------------------------------------------------------------
+// HeaderContext
+// ---------------------------------------------------------------------------
+
+/// System-identification and security posture snapshot for the header panel.
+///
+/// Constructed once per session by [`crate::indicators::build_header_context`]
+/// and passed into [`crate::layout::render_audit_card`]. All fields are
+/// immutable after construction; the header render path receives a shared
+/// reference.
+///
+/// ## Design
+///
+/// Separating system-identification data from the `AuditCardApp` trait keeps
+/// the trait focused on application data (rows, tabs, status) while this
+/// struct holds fields that are the same for every card on the same system:
+/// hostname, kernel version, boot ID, and security posture indicators.
+///
+/// The `assessed_at` field is the ISO-8601 timestamp captured at detection
+/// time, satisfying the CA-7 requirement that each Examine object carry a
+/// collection timestamp. The `tool_name` and `tool_version` fields allow
+/// an assessor to trace evidence to a specific tool version (SA-11).
+///
+/// ## Trust Boundary
+///
+/// All values are display-only. `hostname` and `kernel_version` come from
+/// `uname(2)` and are not trust-relevant assertions. `boot_id` comes from
+/// `/proc/sys/kernel/random/boot_id` via `ProcfsText` + `SecureReader`.
+/// `system_uuid` comes from `/sys/class/dmi/id/product_uuid` via `SysfsText`.
+/// `indicators` are populated via provenance-verified kattr reads.
+///
+/// NIST SP 800-53 AU-3 — every header field is labelled and sourced; the
+/// header uniquely identifies the host, tool, and collection time.
+/// NIST SP 800-53 CA-7 — `assessed_at` timestamps each collection event.
+/// NIST SP 800-53 SA-11 — `tool_name` and `tool_version` provide
+/// traceability to the specific tool version that collected the evidence.
+#[derive(Debug, Clone)]
+pub struct HeaderContext {
+    /// Live kernel security posture indicators.
+    pub indicators: SecurityIndicators,
+
+    /// Tool name — the binary that produced this audit card.
+    ///
+    /// Typically `env!("CARGO_PKG_NAME")` from the calling binary.
+    pub tool_name: String,
+
+    /// Tool version — the binary version that produced this audit card.
+    ///
+    /// Typically `env!("CARGO_PKG_VERSION")` from the calling binary.
+    pub tool_version: String,
+
+    /// ISO-8601 timestamp of when detection was run.
+    ///
+    /// Captured at tool startup before the detection pipeline runs.
+    /// Satisfies CA-7 requirement for timestamped collection events.
+    pub assessed_at: String,
+
+    /// System hostname — display-only, from `uname(2)`.
+    ///
+    /// Not a trust-relevant assertion. Used only to label which host
+    /// the card was collected on.
+    pub hostname: String,
+
+    /// Kernel release string — display-only, from `uname(2)`.
+    ///
+    /// Provides platform context for the assessor.
+    pub kernel_version: String,
+
+    /// Boot ID from `/proc/sys/kernel/random/boot_id` (display-only).
+    ///
+    /// Used for journald log correlation (CA-7). Set to `"unavailable"` if
+    /// the procfs read fails.
+    pub boot_id: String,
+
+    /// System UUID from `/sys/class/dmi/id/product_uuid` (display-only).
+    ///
+    /// Used for cross-run correlation. Set to `"unavailable"` if the
+    /// sysfs read fails (non-UEFI systems, permission errors).
+    pub system_uuid: String,
+}
+
+// ---------------------------------------------------------------------------
 // StyleHint
 // ---------------------------------------------------------------------------
 

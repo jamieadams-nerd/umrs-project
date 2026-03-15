@@ -40,7 +40,7 @@ use umrs_tui::app::{
     AuditCardApp, AuditCardState, DataRow, StatusLevel, StatusMessage,
     StyleHint, TabDef,
 };
-use umrs_tui::indicators::read_security_indicators;
+use umrs_tui::indicators::build_header_context;
 use umrs_tui::keymap::KeyMap;
 use umrs_tui::layout::render_audit_card;
 use umrs_tui::theme::Theme;
@@ -133,13 +133,14 @@ fn main() {
     let mut state = AuditCardState::new(app.tabs().len());
     let keymap = KeyMap::default();
     let theme = Theme::default();
-    let indicators = read_security_indicators();
+    let ctx =
+        build_header_context(env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
 
     let mut terminal = ratatui::init();
 
     loop {
         if let Err(e) = terminal.draw(|f| {
-            render_audit_card(f, f.area(), &app, &state, &indicators, &theme);
+            render_audit_card(f, f.area(), &app, &state, &ctx, &theme);
         }) {
             // Draw error — restore terminal and exit cleanly.
             eprintln!("draw error: {e}");

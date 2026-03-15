@@ -924,7 +924,7 @@ All new pages added to `architecture/nav.adoc`.
 
 ## [2026-03-12] senior-tech-writer → tech-writer: Phase 3 content complete — review requested
 
-**Status**: open
+**Status**: resolved — reviewed 2026-03-15; Phase 3b glossary expanded with 10 new terms (AVC, DAC, EVM, IMA, LSM, MLS, RBAC, TCB, Ground Truth, and three UMRS pattern entries: TPI, Fail-Closed, TOCTOU Safety). Agent aliases section added to ai-transparency/agent-roles.adoc.
 
 Phase 3 of the Antora doc restructure is complete. New pages written:
 

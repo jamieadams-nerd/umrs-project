@@ -111,22 +111,90 @@ for that slot. **Do not** read the raw file with `File::open` — all reads must
 `SecureReader`. If the path does not yet exist in `umrs-platform`, stub the field with
 `Unavailable` and file a follow-up task.
 
-**`header.rs` changes:**
+**`header.rs` changes — two-column readable layout:**
 
 `render_header` gains an additional argument: `indicators: &SecurityIndicators`.
-The indicators row is rendered as a single compact line below the existing three lines,
-using icon glyphs from `umrs_core::console::symbols::icons` for visual scannability.
+
+**DESIGN RULE (Jamie, 2026-03-15):** Do NOT use the compressed bracket format:
+```
+NO: [SEL:enforcing] [FIPS:active] [LSM:?] [LKD:none] [SB:?]
+```
+This is unreadable and operator-hostile.
+
+**Instead:** Security indicators are rendered as full key-value lines grouped with
+related information, using a two-column layout where the right side carries additional
+context. Like information is grouped for at-a-glance comprehension.
+
+**Terminology (security-auditor review, 2026-03-15 — NIST SP 800-53A / OSCAL aligned):**
+- "Report" → **Assessment** — SP 800-53A normative term; "Report" is informal
+- "Subject" → **Scope** — SAR Section 2.3 term; assessors recognize it immediately
+- "Checked" → **Assessed** — consistent with SP 800-53A language
+- Display labels may be terse; JSON keys use normative OSCAL terms (see JSON section)
+
+**Mandatory header fields (every tool, every run):**
+
+| Display Label | JSON Key | Source | Purpose |
+|---|---|---|---|
+| Assessment | `assessment_type` | Caller-supplied | Names what was assessed |
+| Scope | `assessment_object` | Caller-supplied | What was examined (SP 800-53A) |
+| Assessed | `assessed_at` | System clock (ISO-8601) | CA-7 timestamped checks |
+| Tool | `tool.name` + `tool.version` | Compile-time constants | SA-11 traceability |
+| Host | `hostname` | System | Identifies assessed system |
+| Boot ID | `boot_id` | `/proc/sys/kernel/random/boot_id` | Journald correlation, CA-7 |
+| System ID | `system_uuid` | `/sys/class/dmi/id/product_uuid` | Cross-run correlation |
+| Kernel | `kernel_version` | `uname` | Platform context |
+| SELinux | `selinux` | kattr | Enforcement posture |
+| FIPS | `fips_mode` | kattr | Crypto compliance |
+| LSM | `active_lsm` | kattr | Security framework |
+| Lockdown | `lockdown_mode` | kattr | Kernel lockdown |
+
+**Target layout (6 rows — must fit in the header alongside the wizard art):**
 
 ```
-Report  : OS Detection
-Host    : rhel10.lab
-Subject : Platform Identity
-         [SEL:enforcing] [FIPS:active] [LSM:selinux] [LKD:integrity] [SB:on]
+Assessment : OS Detection                           Boot ID   : a3f7c2d1-...
+Scope      : Platform Identity and Integrity        Assessed  : 2026-03-15 14:32
+Host       : goldeneye                              Kernel    : 6.12.0-211.el10
+Tool       : umrs-os-detect 0.3.1                   System ID : <UUID>
+SELinux    : Enabled (Enforcing) / Targeted         LSM       : selinux
+FIPS       : Active                                 Lockdown  : integrity
 ```
 
-Each indicator token is styled via a new theme field (see Phase 5 / theme additions).
-A new `StyleHint` variant or direct `IndicatorValue → Style` mapping is used to color
-active vs. inactive vs. unavailable states.
+**Design constraints:**
+- Header must uniquely identify this system and the type of assessment
+- At a glance, it should give easily understood information
+- Like information grouped together, easy to read
+- Right column is optional — **be width-aware**: the file-stat report launched by
+  umrs-ls will be narrower. When terminal width is insufficient, fall back to
+  single-column layout. Minimum viable header = left column only
+- All header fields must map cleanly to structured JSON for future `--json` report export
+- 6 rows is the target — do not exceed this without Jamie's approval
+
+**JSON export structure (OSCAL-aligned — future `--json` output):**
+
+```json
+{
+  "assessment_type": "OS Detection",
+  "assessment_object": "Platform Identity and Integrity",
+  "assessed_at": "2026-03-15T14:32:00Z",
+  "tool": { "name": "umrs-os-detect", "version": "0.3.1" },
+  "system": {
+    "hostname": "goldeneye",
+    "system_uuid": "...",
+    "boot_id": "a3f7c2d1-...",
+    "kernel_version": "6.12.0-211.el10"
+  },
+  "security_posture": {
+    "selinux": "Enabled (Enforcing) / Targeted",
+    "fips_mode": "Active",
+    "active_lsm": "selinux",
+    "lockdown_mode": "integrity"
+  }
+}
+```
+
+Each indicator value is styled via a new theme field (see Phase 5 / theme additions).
+A direct `IndicatorValue → Style` mapping is used to color active vs. inactive vs.
+unavailable states. Full words ("Enabled", "Active", "integrity") — no abbreviations.
 
 **Header height adjustment:**
 
@@ -985,6 +1053,38 @@ On completion, a `doc-sync:` task must be created for the `tech-writer` covering
 - Documentation pages that may contain code snippets referencing `DataRow` struct fields
   (the enum migration is a breaking change visible in examples)
 - Any Antora page that describes the audit card layout (header height, column behavior)
+
+---
+
+## Future Phases (from ROADMAP — not yet designed)
+
+### Phase 9 — Findings Tab (ROADMAP enhancement)
+
+When the security posture isn't good, a dedicated **Findings** tab should indicate what
+was wrong and the related security control. Each finding should:
+- Name the failed check
+- Cite the specific security control (e.g., NIST SP 800-53 CM-6)
+- Indicate severity
+- Be structured data (`SecurityObservation` enum variants, not strings)
+
+This ties into the assessment engine (G4) — findings are the bridge between tool output
+and formal assessment reports.
+
+### Phase 10 — Security Control Text Pop-Up (ROADMAP enhancement)
+
+When viewing a finding, the operator should be able to pop up a meaningful snippet of the
+security control text so they understand *why* the control isn't satisfied.
+
+**Level-of-effort estimate needed before implementation.** Considerations:
+- Does NOT need to be the entire control text — a meaningful snippet is sufficient
+- Source data: could come from the RAG corpus (NIST collection) or a compiled-in lookup table
+- The Dialog API (Phase 8) provides the overlay mechanism
+- Scope question: how many controls do we need to cover? All of SP 800-53? Just the ones
+  UMRS tools can assess? Start with the subset relevant to posture checks.
+- Jamie flagged this as potentially enormous — estimate first, build second
+
+**Dependencies:** Phase 8 (Dialog API), Phase 9 (Findings Tab), security-auditor input on
+which controls to include and what constitutes a "meaningful snippet."
 
 ---
 

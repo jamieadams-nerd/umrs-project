@@ -255,10 +255,13 @@ fn data_row_table_row_stores_three_columns() {
 
 #[test]
 fn data_row_table_header_stores_three_columns() {
-    let row =
-        DataRow::table_header("Evidence Type", "Source", "Verification");
+    let row = DataRow::table_header("Evidence Type", "Source", "Verification");
     match row {
-        DataRow::TableHeader { col1, col2, col3 } => {
+        DataRow::TableHeader {
+            col1,
+            col2,
+            col3,
+        } => {
             assert_eq!(col1, "Evidence Type");
             assert_eq!(col2, "Source");
             assert_eq!(col3, "Verification");
@@ -272,8 +275,12 @@ fn data_row_table_row_accepts_owned_strings() {
     let c1 = String::from("procfs");
     let c2 = String::from("/proc/sys/kernel/ostype");
     let c3 = String::from("\u{2717} FAIL (path)");
-    let row =
-        DataRow::table_row(c1.clone(), c2.clone(), c3.clone(), StyleHint::TrustRed);
+    let row = DataRow::table_row(
+        c1.clone(),
+        c2.clone(),
+        c3.clone(),
+        StyleHint::TrustRed,
+    );
     match row {
         DataRow::TableRow {
             col1,
@@ -297,7 +304,11 @@ fn data_row_table_header_accepts_owned_strings() {
     let c3 = String::from("Result");
     let row = DataRow::table_header(c1.clone(), c2.clone(), c3.clone());
     match row {
-        DataRow::TableHeader { col1, col2, col3 } => {
+        DataRow::TableHeader {
+            col1,
+            col2,
+            col3,
+        } => {
             assert_eq!(col1, c1);
             assert_eq!(col2, c2);
             assert_eq!(col3, c3);

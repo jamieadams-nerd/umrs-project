@@ -58,10 +58,11 @@ pub mod theme;
 
 // Convenience re-exports for callers
 pub use app::{
-    AuditCardApp, AuditCardState, DataRow, HeaderField, IndicatorValue,
-    SecurityIndicators, StatusLevel, StatusMessage, StyleHint, TabDef,
+    AuditCardApp, AuditCardState, DataRow, HeaderContext, HeaderField,
+    IndicatorValue, SecurityIndicators, StatusLevel, StatusMessage, StyleHint,
+    TabDef,
 };
-pub use indicators::read_security_indicators;
+pub use indicators::{build_header_context, read_security_indicators};
 pub use keymap::{Action, KeyMap};
 pub use layout::render_audit_card;
 pub use theme::Theme;

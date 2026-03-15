@@ -81,7 +81,7 @@ Not blocking current work. Blocks M4.
 - [ ] Kernel posture probe complete (through Phase 2b)
 - [ ] CPU corpus research complete
 - [ ] Security-auditor methodology corpus ingested
-- [ ] Documentation restructure complete
+- [x] Documentation restructure complete (2026-03-12)
 
 ### M2 — Assessment Capable (G1, G4, G6)
 - [ ] Assessment engine v1 (evidence/assertion/finding pipeline)
@@ -95,6 +95,11 @@ Not blocking current work. Blocks M4.
       - Install utility to choose CUI categories and optional Five Eyes
 - [ ] Five Eyes interop mapping
 - [ ] French translations for all tool domains (Five Eyes demonstration)
+- [ ] Extending label information to external systems:
+      - Apache module which can read the SELinux label adn then add an http header to indicate
+        the file being servied is CUI and deserves awareness.
+      - If Linux server is running Samba with labeled files:
+        - Use the alternate data stream (ADS) in the file's extended attributes to hold labeling
 
 ### M4 — Public Release (G7, G9)
 - [ ] Project structure decided (see G9)
@@ -107,8 +112,8 @@ Not blocking current work. Blocks M4.
 - [ ] Documentation and API available on GitHub Pages
 
 ### M5 — AI Transparency (G10)
-- [ ] Antora module: `ai-transparency`
-- [ ] Agents and their roles
+- [x] Antora module: `ai-transparency` (2026-03-15)
+- [x] Agents and their roles (2026-03-15 — agent-roles.adoc with aliases)
 - [ ] Corpus/RAG setup — how we improved agents with authoritative knowledge
       - Document every collection, its sources, and why it exists
       - The pipeline: Jamie identifies knowledge gap → researcher acquires → corpus built →
@@ -160,6 +165,13 @@ are escalated.
   - Complement Antora operations docs with man pages for CLI tier
 - If the security posture is not-so-good, the ascii art logo in the upper corner changes to a red.
   If okay, green. It would be funny to equate its mood to the posture. 
+- If there findings or the security posture isn't good, we should have a findings tab
+  to indicate what was wrong the related security control. 
+  - It owuld be nice to pop-up the text of the security control. This might be an enormous
+    undertaking so let's just iniitally estimate the level of effort. It doesn't have to be 
+    entire text of thecontrol -- just a meaningful snippet so they undertand why the control
+    isn't satisified.
+
 
 ### Planned Tools
 

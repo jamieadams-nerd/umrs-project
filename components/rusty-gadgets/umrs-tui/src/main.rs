@@ -36,8 +36,8 @@
 use std::time::Duration;
 
 use crossterm::event::{self, Event};
-use umrs_core::i18n;
 use std::collections::BTreeMap;
+use umrs_core::i18n;
 
 use umrs_platform::detect::label_trust::LabelTrust;
 use umrs_platform::detect::{DetectionError, DetectionResult, OsDetector};
@@ -47,7 +47,7 @@ use umrs_tui::app::{
     AuditCardApp, AuditCardState, DataRow, StatusLevel, StatusMessage,
     StyleHint, TabDef,
 };
-use umrs_tui::indicators::read_security_indicators;
+use umrs_tui::indicators::build_header_context;
 use umrs_tui::keymap::KeyMap;
 use umrs_tui::layout::render_audit_card;
 use umrs_tui::theme::Theme;
@@ -441,7 +441,10 @@ fn build_trust_rows(result: &DetectionResult) -> Vec<DataRow> {
 /// display strings (NIST SP 800-53 SI-12).
 ///
 /// NIST SP 800-53 AU-3 — evidence rows are labelled and structured.
-fn append_grouped_evidence(rows: &mut Vec<DataRow>, evidence: &[EvidenceRecord]) {
+fn append_grouped_evidence(
+    rows: &mut Vec<DataRow>,
+    evidence: &[EvidenceRecord],
+) {
     // Build a BTreeMap<group_label, Vec<record_ref>> for deterministic ordering.
     let mut groups: BTreeMap<&'static str, Vec<&EvidenceRecord>> =
         BTreeMap::new();
@@ -493,7 +496,11 @@ fn append_grouped_evidence(rows: &mut Vec<DataRow>, evidence: &[EvidenceRecord])
 ///
 /// NIST SP 800-53 AU-3 — verification strings identify the outcome and method.
 fn evidence_verification_str(rec: &EvidenceRecord) -> String {
-    let open_method = if rec.opened_by_fd { "fd" } else { "path" };
+    let open_method = if rec.opened_by_fd {
+        "fd"
+    } else {
+        "path"
+    };
     if rec.parse_ok {
         format!("\u{2713} ok ({open_method})")
     } else {
@@ -610,7 +617,8 @@ fn main() {
     let mut state = AuditCardState::new(app.tabs().len());
     let keymap = KeyMap::default();
     let theme = Theme::default();
-    let indicators = read_security_indicators();
+    let ctx =
+        build_header_context(env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
 
     // ── Terminal setup ────────────────────────────────────────────────────
     let mut terminal = ratatui::init();
@@ -618,7 +626,7 @@ fn main() {
     // ── Event loop ───────────────────────────────────────────────────────
     loop {
         if let Err(e) = terminal.draw(|f| {
-            render_audit_card(f, f.area(), &app, &state, &indicators, &theme);
+            render_audit_card(f, f.area(), &app, &state, &ctx, &theme);
         }) {
             log::error!("terminal draw error: {e}");
             break;

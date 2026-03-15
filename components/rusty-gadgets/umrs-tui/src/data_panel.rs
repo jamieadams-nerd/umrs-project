@@ -211,7 +211,11 @@ fn build_row_line<'a>(row: &'a DataRow, theme: &'a Theme) -> Line<'a> {
             ])
         }
 
-        DataRow::TableHeader { col1, col2, col3 } => {
+        DataRow::TableHeader {
+            col1,
+            col2,
+            col3,
+        } => {
             // All three columns rendered with the bold key style to signal
             // that this is a header, not a data row.
             let col1_str = clip_pad(col1, TABLE_COL1_WIDTH);

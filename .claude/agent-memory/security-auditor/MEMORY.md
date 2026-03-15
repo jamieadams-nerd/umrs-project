@@ -195,6 +195,9 @@ Report: `.claude/reports/tui-plan-security-review.md`
 - Evidence records currently have no timestamps — this is a known `EvidenceRecord` gap in
   umrs-platform; TUI display cannot fix it but headers should show detection run time as minimum
 - Tool version as a `HeaderField` is required for audit card to serve as SP 800-53A Examine object
+- Header terminology: "Report"→"Assessment", "Subject"→"Scope", "Checked"→"Assessed"
+  (SP 800-53A normative terms); JSON keys must use OSCAL names; see full analysis in
+  [`header-terminology-review.md`](header-terminology-review.md)
 
 ### Portfolio Gap Pattern — TUI-Specific
 TUI plans produce runtime display only — no persisted assessment artifacts. Same gap seen

@@ -1,23 +1,31 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Jamie Adams
 
-//! # Indicators — Live Kernel Security Indicator Reader
+//! # Indicators — Live Kernel Security Indicator and Header Context Reader
 //!
-//! Provides [`read_security_indicators`], which queries kernel attribute
-//! nodes via the `umrs-platform` `SecureReader` engine and returns a
-//! [`SecurityIndicators`] snapshot for display in the audit card header.
+//! Provides two public functions:
+//!
+//! - [`read_security_indicators`] — queries kernel attribute nodes and returns
+//!   a [`SecurityIndicators`] snapshot for the audit card header indicator rows.
+//! - [`build_header_context`] — reads all system-identification fields (boot ID,
+//!   kernel version, system UUID, hostname, assessment timestamp) alongside the
+//!   security indicators, returning a [`HeaderContext`] snapshot.
 //!
 //! ## Fail-Closed Contract
 //!
 //! Every read operation wraps its result: success maps to `Active` or
 //! `Inactive`; any I/O error or unimplemented source maps to `Unavailable`.
-//! The caller is never handed a guess — degraded state is explicit.
+//! System-identification reads (boot ID, system UUID) fall back to the string
+//! `"unavailable"` on failure — never to a fabricated or guessed value.
 //!
 //! ## Trust Boundary
 //!
-//! Values originate from provenance-verified kernel pseudo-filesystem reads
+//! Values from kernel attribute nodes originate from provenance-verified reads
 //! (`SecureReader` engine with fd-anchored `fstatfs` magic checks). They are
-//! display-only in the header — they are not enforcement inputs.
+//! display-only in the header — they are not enforcement inputs or policy decisions.
+//!
+//! Hostname and kernel version come from `uname(2)` — display-only, not
+//! trust-relevant assertions.
 //!
 //! ## Compliance
 //!
@@ -26,18 +34,25 @@
 //! - **NIST SP 800-53 CM-6**: Configuration Settings — live kernel state is
 //!   read directly; no static configuration file is trusted without a kernel
 //!   gate (Trust Gate pattern).
-//! - **NSA RTB RAIN**: Non-Bypassability — no raw `File::open` is used;
-//!   all reads route through the `StaticSource::read()` path.
+//! - **NIST SP 800-53 CA-7**: Continuous Monitoring — `assessed_at` timestamps
+//!   each collection event so records are datable.
+//! - **NIST SP 800-53 SA-11**: Developer Testing — tool name and version provide
+//!   traceability to the specific tool build that collected evidence.
+//! - **NSA RTB RAIN**: Non-Bypassability — no raw `File::open` is used on
+//!   `/proc/` or `/sys/`; all reads route through `ProcfsText`/`SysfsText`.
+
+use std::path::PathBuf;
+use std::time::{SystemTime, UNIX_EPOCH};
 
 use umrs_platform::kattrs::{
-    EnforceState, KernelLockdown, LockdownMode, ProcFips, SelinuxEnforce,
-    StaticSource,
+    EnforceState, KernelLockdown, LockdownMode, ProcFips, ProcfsText,
+    SecureReader, SelinuxEnforce, StaticSource, SysfsText,
 };
 
-use crate::app::{IndicatorValue, SecurityIndicators};
+use crate::app::{HeaderContext, IndicatorValue, SecurityIndicators};
 
 // ---------------------------------------------------------------------------
-// Public entry point
+// Public entry point — security indicators only
 // ---------------------------------------------------------------------------
 
 /// Read all live kernel security indicators and return a snapshot.
@@ -69,7 +84,7 @@ pub fn read_security_indicators() -> SecurityIndicators {
     let selinux_status = read_selinux_status();
     let fips_mode = read_fips_mode();
 
-    // TODO: No kattr type exists for /sys/kernel/security/lsm yet.
+    // No kattr type exists for /sys/kernel/security/lsm yet.
     // The path is under securityfs (not sysfs), and requires a dedicated
     // StaticSource implementation with SECURITYFS_MAGIC. Return Unavailable
     // until that type is added to umrs-platform.
@@ -77,9 +92,11 @@ pub fn read_security_indicators() -> SecurityIndicators {
 
     let lockdown_mode = read_lockdown_mode();
 
-    // TODO: Secure Boot state is platform-specific. On UEFI systems it is
-    // readable from /sys/firmware/efi/efivars/SecureBoot-*.  A dedicated
-    // sysfs kattr type is needed. Return Unavailable until implemented.
+    // Secure Boot state is platform-specific. On UEFI systems it is readable
+    // from /sys/firmware/efi/efivars/SecureBoot-* but the path includes a
+    // GUID suffix that must be determined at runtime via directory enumeration.
+    // This cannot be expressed as a compile-time StaticSource path. A dedicated
+    // probe is required; return Unavailable until implemented.
     let secure_boot = IndicatorValue::Unavailable;
 
     #[cfg(debug_assertions)]
@@ -98,13 +115,73 @@ pub fn read_security_indicators() -> SecurityIndicators {
 }
 
 // ---------------------------------------------------------------------------
-// Private per-source readers
+// Public entry point — full header context
+// ---------------------------------------------------------------------------
+
+/// Build a complete `HeaderContext` snapshot for the audit card header.
+///
+/// Reads all live security indicators (via [`read_security_indicators`])
+/// plus system-identification fields: hostname, kernel version, boot ID,
+/// system UUID, and a formatted assessment timestamp.
+///
+/// `tool_name` and `tool_version` are supplied by the calling binary —
+/// typically `env!("CARGO_PKG_NAME")` and `env!("CARGO_PKG_VERSION")`.
+/// These are compile-time values; passing them from the caller avoids making
+/// this library function depend on a specific binary's package metadata.
+///
+/// All reads are fail-closed: if a field cannot be read, it is set to
+/// `"unavailable"` — never to a guessed or fabricated value.
+///
+/// ## Pattern: Pattern Execution Measurement
+///
+/// In debug builds, the total build time is logged at `debug` level with the
+/// pattern name and duration in microseconds.
+///
+/// NIST SP 800-53 AU-3 — the returned context carries sufficient identification
+/// for every rendered card to serve as a standalone SP 800-53A Examine object.
+/// NIST SP 800-53 CA-7 — `assessed_at` timestamps the collection event.
+/// NIST SP 800-53 SA-11 — `tool_name` and `tool_version` provide traceability.
+#[must_use = "HeaderContext must be passed to render_audit_card; discarding it hides \
+              system identification and security posture from the audit card"]
+pub fn build_header_context(
+    tool_name: impl Into<String>,
+    tool_version: impl Into<String>,
+) -> HeaderContext {
+    #[cfg(debug_assertions)]
+    let start = std::time::Instant::now();
+
+    let indicators = read_security_indicators();
+    let assessed_at = format_assessed_at();
+    let (hostname, kernel_version) = read_uname_fields();
+    let boot_id = read_boot_id();
+    let system_uuid = read_system_uuid();
+
+    #[cfg(debug_assertions)]
+    log::debug!(
+        "Pattern: build_header_context completed in {} µs",
+        start.elapsed().as_micros()
+    );
+
+    HeaderContext {
+        indicators,
+        tool_name: tool_name.into(),
+        tool_version: tool_version.into(),
+        assessed_at,
+        hostname,
+        kernel_version,
+        boot_id,
+        system_uuid,
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Security indicator readers (private)
 // ---------------------------------------------------------------------------
 
 /// Read SELinux enforcement mode from `/sys/fs/selinux/enforce`.
 ///
 /// Returns `Active("enforcing")`, `Inactive("permissive")`, or
-/// `Unavailable` on read failure (selinux not mounted, kernel error).
+/// `Unavailable` on read failure (SELinux not mounted, kernel error).
 fn read_selinux_status() -> IndicatorValue {
     match SelinuxEnforce::read() {
         Ok(EnforceState::Enforcing) => {
@@ -146,6 +223,124 @@ fn read_lockdown_mode() -> IndicatorValue {
         Err(e) => {
             log::warn!("indicators: lockdown_mode read failed: {e}");
             IndicatorValue::Unavailable
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// System identification readers (private)
+// ---------------------------------------------------------------------------
+
+/// Format an ISO-8601 UTC timestamp for the current moment.
+///
+/// Uses `SystemTime::now()` — display-only, not a trust assertion.
+/// Falls back to `"unavailable"` if the clock is behind UNIX_EPOCH
+/// (should not occur on a sane system, but handled for correctness).
+fn format_assessed_at() -> String {
+    let Ok(dur) = SystemTime::now().duration_since(UNIX_EPOCH) else {
+        return "unavailable".to_owned();
+    };
+    let total_secs = dur.as_secs();
+    let days_since_epoch: i64 = match i64::try_from(total_secs / 86400) {
+        Ok(d) => d,
+        Err(_) => return "unavailable".to_owned(),
+    };
+    let rem = total_secs % 86400;
+    let hours = rem / 3600;
+    let minutes = (rem % 3600) / 60;
+    let seconds = rem % 60;
+
+    // Days since 1970-01-01 → calendar date via Howard Hinnant's Gregorian
+    // algorithm (public domain). All arithmetic stays in i64 to avoid casts.
+    // Algorithm invariant: `doe` is always in [0, 146096] after subtraction,
+    // and `yoe` is always in [0, 399]; `mp` and `d` are always positive.
+    let z: i64 = days_since_epoch + 719_468;
+    let era: i64 = if z >= 0 {
+        z
+    } else {
+        z - 146_096
+    } / 146_097;
+    let doe: i64 = z - era * 146_097; // [0, 146096]
+    let yoe: i64 = (doe - doe / 1460 + doe / 36524 - doe / 146096) / 365; // [0, 399]
+    let y: i64 = yoe + era * 400;
+    let doy: i64 = doe - (365 * yoe + yoe / 4 - yoe / 100);
+    let mp: i64 = (5 * doy + 2) / 153;
+    let d: i64 = doy - (153 * mp + 2) / 5 + 1;
+    let m: i64 = if mp < 10 {
+        mp + 3
+    } else {
+        mp - 9
+    };
+    let y: i64 = if m <= 2 {
+        y + 1
+    } else {
+        y
+    };
+
+    format!("{y:04}-{m:02}-{d:02} {hours:02}:{minutes:02}:{seconds:02} UTC")
+}
+
+/// Read hostname and kernel release from `uname(2)`.
+///
+/// Returns `("(unknown)", "(unknown)")` if either field is non-UTF-8.
+/// Both values are display-only — not trust-relevant assertions.
+fn read_uname_fields() -> (String, String) {
+    let uname = rustix::system::uname();
+    let hostname = uname.nodename().to_str().unwrap_or("(unknown)").to_owned();
+    let kernel = uname.release().to_str().unwrap_or("(unknown)").to_owned();
+    (hostname, kernel)
+}
+
+/// Read the kernel boot ID from `/proc/sys/kernel/random/boot_id`.
+///
+/// Uses `ProcfsText` + `SecureReader` (PROC_SUPER_MAGIC verification).
+/// Returns `"unavailable"` on any read error. The value is trimmed of
+/// trailing whitespace before return.
+///
+/// NSA RTB RAIN — raw `File::open` on `/proc/` is prohibited; all reads
+/// route through `ProcfsText`.
+fn read_boot_id() -> String {
+    let Ok(node) =
+        ProcfsText::new(PathBuf::from("/proc/sys/kernel/random/boot_id"))
+    else {
+        log::warn!("indicators: boot_id path rejected by ProcfsText");
+        return "unavailable".to_owned();
+    };
+
+    match SecureReader::<ProcfsText>::new().read_generic_text(&node) {
+        Ok(raw) => raw.trim().to_owned(),
+        Err(e) => {
+            log::warn!("indicators: boot_id read failed: {e}");
+            "unavailable".to_owned()
+        }
+    }
+}
+
+/// Read the system UUID from `/sys/class/dmi/id/product_uuid`.
+///
+/// Uses `SysfsText` + `SecureReader` (SYSFS_MAGIC verification).
+/// Returns `"unavailable"` on any read error (non-UEFI systems,
+/// permission denied — readable only by root on many kernels).
+/// The value is trimmed of trailing whitespace before return.
+///
+/// NSA RTB RAIN — raw `File::open` on `/sys/` is prohibited; all reads
+/// route through `SysfsText`.
+fn read_system_uuid() -> String {
+    let Ok(node) =
+        SysfsText::new(PathBuf::from("/sys/class/dmi/id/product_uuid"))
+    else {
+        log::warn!("indicators: system_uuid path rejected by SysfsText");
+        return "unavailable".to_owned();
+    };
+
+    match SecureReader::<SysfsText>::new().read_generic_text(&node) {
+        Ok(raw) => raw.trim().to_owned(),
+        Err(e) => {
+            // Permission denied is expected on non-root; debug level is appropriate.
+            log::debug!(
+                "indicators: system_uuid read failed (may require root): {e}"
+            );
+            "unavailable".to_owned()
         }
     }
 }

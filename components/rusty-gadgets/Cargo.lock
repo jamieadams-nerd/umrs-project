@@ -2301,6 +2301,7 @@ dependencies = [
 name = "umrs-tui"
 version = "0.1.0"
 dependencies = [
+ "clap",
  "crossterm 0.28.1",
  "log",
  "ratatui 0.30.0",

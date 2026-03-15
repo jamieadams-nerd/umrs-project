@@ -163,3 +163,18 @@ umrs-tools, operations, logging-audit, reference, cryptography, glossary
 - Provenance verification pattern page (patterns/)
 - Trust Gate pattern page (patterns/)
 - umrs-platform architecture overview (architecture/)
+
+## Glossary State (as of 2026-03-15)
+Single-page file at `docs/modules/glossary/pages/index.adoc`.
+Sections: Assurance and Integrity, SELinux and MLS, Cryptography, UMRS Patterns.
+Added 2026-03-15: AVC, DAC, EVM, IMA, LSM, MLS (dedicated entry), RBAC, TCB,
+Ground Truth, TPI, Fail-Closed, TOCTOU Safety.
+In-page xref anchor format: `xref:#_term_name_abbrev[...]` — lowercase, underscores, auto-generated.
+
+## AI Transparency — Agent Aliases (added 2026-03-15)
+Section "== Agent Aliases" added to `ai-transparency/agent-roles.adoc`.
+Table maps alias → agent → rationale.
+Aliases: Boss (orchestrator), Rusty (rust-developer), The IRS (security-auditor),
+The Librarian (researcher), The Imprimatur (senior-tech-writer), Von Neumann (tech-writer),
+Simone (umrs-translator), Summer Intern (guest-coder).
+Formal task board entries always use canonical identifier, not alias.

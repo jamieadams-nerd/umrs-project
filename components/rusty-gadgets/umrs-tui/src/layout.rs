@@ -7,7 +7,7 @@
 //!
 //! ```text
 //! ┌─────────────────────────────────┬──────────────┐
-//! │ Header (report, host, subject)  │  WIZARD_SMALL │
+//! │ Header (assessment, indicators) │  WIZARD_SMALL │
 //! ├─────────────────────────────────┴──────────────┤
 //! │ Tab bar                                         │
 //! ├─────────────────────────────────────────────────┤
@@ -19,8 +19,9 @@
 //! └─────────────────────────────────────────────────┘
 //! ```
 //!
-//! The header height is fixed at `WIZARD_SMALL.height + 2 + 1` (borders + indicator row).
-//! The logo panel width is fixed at `WIZARD_SMALL.width + 2` (borders).
+//! The header height is fixed at `WIZARD_SMALL.height + 2` (borders only —
+//! the six header rows fit within the wizard height). The logo panel width
+//! is fixed at `WIZARD_SMALL.width + 2` (borders).
 //!
 //! ## Compliance
 //!
@@ -35,7 +36,7 @@ use ratatui::widgets::{Block, BorderType, Borders, Paragraph};
 
 use umrs_core::robots::WIZARD_SMALL;
 
-use crate::app::{AuditCardApp, AuditCardState, SecurityIndicators};
+use crate::app::{AuditCardApp, AuditCardState, HeaderContext};
 use crate::data_panel::render_data_panel;
 use crate::header::render_header;
 use crate::status_bar::render_status_bar;
@@ -52,12 +53,15 @@ use crate::theme::Theme;
 #[allow(clippy::cast_possible_truncation)]
 const LOGO_PANEL_WIDTH: u16 = WIZARD_SMALL.width as u16 + 2;
 
-/// Header height = wizard height + 2 border rows + 1 indicator row.
+/// Header height = wizard height + 2 border rows.
+///
+/// The six fixed header rows (Assessment/Boot ID through FIPS/Lockdown) fit
+/// within the wizard height (7 lines) with one spare line. No indicator row
+/// adjustment is needed — the indicators are embedded in the six fixed rows.
 ///
 /// `WIZARD_SMALL.height` is 7 — well within u16 range. The cast is safe.
-/// The +1 accounts for the security indicator badge row added in Phase 1.
 #[allow(clippy::cast_possible_truncation)]
-const HEADER_HEIGHT: u16 = WIZARD_SMALL.height as u16 + 2 + 1;
+const HEADER_HEIGHT: u16 = WIZARD_SMALL.height as u16 + 2;
 
 // ---------------------------------------------------------------------------
 // Master render entry point
@@ -69,11 +73,12 @@ const HEADER_HEIGHT: u16 = WIZARD_SMALL.height as u16 + 2 + 1;
 ///
 /// `state` carries mutable UI state (active tab, scroll offset). The data
 /// itself is read from `app` on every frame — keep `data_rows()` cheap.
-/// `indicators` is a `SecurityIndicators` snapshot populated once per session
-/// via [`crate::indicators::read_security_indicators`].
+/// `ctx` is a [`HeaderContext`] snapshot built once per session via
+/// [`crate::indicators::build_header_context`]; it holds all system
+/// identification fields and live security posture indicators.
 ///
-/// NIST SP 800-53 AU-3 — all fields (report, host, subject, indicators, data,
-/// status) are always present in every rendered frame.
+/// NIST SP 800-53 AU-3 — all fields (assessment, scope, host, tool,
+/// indicators, data, status) are always present in every rendered frame.
 /// NIST SP 800-53 SI-7 — indicator values originate from provenance-verified
 /// kernel attribute reads; the layout renders them unmodified.
 pub fn render_audit_card(
@@ -81,7 +86,7 @@ pub fn render_audit_card(
     area: Rect,
     app: &dyn AuditCardApp,
     state: &AuditCardState,
-    indicators: &SecurityIndicators,
+    ctx: &HeaderContext,
     theme: &Theme,
 ) {
     // ── Outer vertical split ─────────────────────────────────────────────
@@ -96,10 +101,9 @@ pub fn render_audit_card(
         ])
         .split(area);
 
-    let header_area = outer[0];
-    let tab_area = outer[1];
-    let data_area = outer[2];
-    let status_area = outer[3];
+    let [header_area, tab_area, data_area, status_area] = *outer else {
+        return;
+    };
 
     // ── Header row: text info + logo ─────────────────────────────────────
     let header_cols = Layout::default()
@@ -107,8 +111,12 @@ pub fn render_audit_card(
         .constraints([Constraint::Min(0), Constraint::Length(LOGO_PANEL_WIDTH)])
         .split(header_area);
 
-    render_header(frame, header_cols[0], app, indicators, theme);
-    render_logo(frame, header_cols[1], theme);
+    let [header_text_area, logo_area] = *header_cols else {
+        return;
+    };
+
+    render_header(frame, header_text_area, app, ctx, theme);
+    render_logo(frame, logo_area, theme);
 
     // ── Tab bar ──────────────────────────────────────────────────────────
     render_tabs(frame, tab_area, app, state.active_tab, theme);

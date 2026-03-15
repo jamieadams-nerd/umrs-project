@@ -17,6 +17,7 @@ name = "umrs-file-stat"
 path = "src/bin/file_stat.rs"
 
 [dependencies]
+clap = { version = "4.5", features = ["derive"] }
 ratatui = "0.30.0"
 ratatui-garnish = "0.1.0"
 crossterm = "0.28"

@@ -33,7 +33,9 @@
 //!
 //! ```text
 //! umrs-file-stat <PATH>
+//! umrs-file-stat <PATH> --json
 //! umrs-file-stat --help
+//! umrs-file-stat --version
 //! ```
 //!
 //! ## Compliance
@@ -50,6 +52,7 @@
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 
+use clap::Parser;
 use crossterm::event::{self, Event};
 use umrs_core::i18n;
 use umrs_platform::kattrs::{ProcfsText, SecureReader};
@@ -64,7 +67,7 @@ use umrs_tui::app::{
     AuditCardApp, AuditCardState, DataRow, StatusLevel, StatusMessage,
     StyleHint, TabDef,
 };
-use umrs_tui::indicators::read_security_indicators;
+use umrs_tui::indicators::build_header_context;
 use umrs_tui::keymap::KeyMap;
 use umrs_tui::layout::render_audit_card;
 use umrs_tui::theme::Theme;
@@ -699,6 +702,41 @@ impl AuditCardApp for FileStatApp {
 }
 
 // ---------------------------------------------------------------------------
+// CLI argument definition
+// ---------------------------------------------------------------------------
+
+/// Command-line arguments for `umrs-file-stat`.
+///
+/// Uses the clap derive API per project style decision SDR-7.
+/// The `--json` flag is reserved for future structured output; the flag is
+/// accepted today so operator scripts can be written in advance of the
+/// implementation.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**: Operator supplies the target path explicitly;
+///   no implicit subject selection occurs.
+/// - **NIST SP 800-53 CM-6**: Output mode is operator-controlled via `--json`;
+///   the default mode is human-readable with no configuration assumption.
+#[derive(Parser)]
+#[command(
+    name = "umrs-file-stat",
+    version,
+    about = "Display security attributes of a file as an interactive audit card"
+)]
+struct Args {
+    /// Path to the file whose security attributes will be inspected.
+    path: PathBuf,
+
+    /// Emit machine-readable JSON output instead of the interactive TUI.
+    ///
+    /// JSON output support is reserved for a future implementation phase.
+    /// Supplying this flag today is accepted and noted in the debug log.
+    #[arg(long)]
+    json: bool,
+}
+
+// ---------------------------------------------------------------------------
 // Entry point
 // ---------------------------------------------------------------------------
 
@@ -718,23 +756,28 @@ fn main() {
     }
 
     // ── Argument parsing ─────────────────────────────────────────────────
-    // Hand-rolled: single required positional argument (file path).
-    // No external crate needed for this simple interface.
-    let args: Vec<String> = std::env::args().collect();
+    // Clap derive API — exits with usage text on missing args or --help.
+    let args = Args::parse();
 
-    let path_str = match args.get(1) {
-        Some(arg) if arg == "--help" || arg == "-h" => {
-            eprintln!("Usage: umrs-file-stat <PATH>");
-            eprintln!("       umrs-file-stat --help");
-            std::process::exit(1);
-        }
-        Some(arg) => arg.clone(),
-        None => {
-            eprintln!("Usage: umrs-file-stat <PATH>");
-            eprintln!("       umrs-file-stat --help");
-            std::process::exit(1);
-        }
+    // Convert PathBuf to &str for downstream callers that require it.
+    // Non-UTF-8 paths are rejected with a clear operator message — this tool
+    // operates on labelled paths that must be displayable in the audit card.
+    let path_str = if let Some(s) = args.path.to_str() {
+        s.to_owned()
+    } else {
+        eprintln!(
+            "error: path contains non-UTF-8 characters and cannot be displayed"
+        );
+        std::process::exit(1);
     };
+
+    // --json flag: accepted today; JSON output is a future implementation phase.
+    // The flag is noted in the debug log so operators can verify it was received.
+    // Using the value here also prevents a dead-code lint when JSON is not yet wired.
+    log::debug!(
+        "umrs-file-stat: json={} (JSON output not yet implemented)",
+        args.json
+    );
 
     // ── SecureDirent ──────────────────────────────────────────────────────
     #[cfg(debug_assertions)]
@@ -774,7 +817,8 @@ fn main() {
     let mut state = AuditCardState::new(app.tabs().len());
     let keymap = KeyMap::default();
     let theme = Theme::default();
-    let indicators = read_security_indicators();
+    let ctx =
+        build_header_context(env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
 
     // ── Terminal setup ────────────────────────────────────────────────────
     let mut terminal = ratatui::init();
@@ -782,7 +826,7 @@ fn main() {
     // ── Event loop ────────────────────────────────────────────────────────
     loop {
         if let Err(e) = terminal.draw(|f| {
-            render_audit_card(f, f.area(), &app, &state, &indicators, &theme);
+            render_audit_card(f, f.area(), &app, &state, &ctx, &theme);
         }) {
             log::error!("terminal draw error: {e}");
             break;
