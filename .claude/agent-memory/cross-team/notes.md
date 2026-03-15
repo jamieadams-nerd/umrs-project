@@ -38,39 +38,35 @@ Mark entries `resolved` when acted on. Do not delete entries.
 
 ## [2026-03-15] researcher → security-auditor: Phase 2 corpus staged — accreditation-artifacts
 
-**Status**: open
+**Status**: resolved — 2026-03-15 by security-auditor
 
-Security-auditor methodology corpus Phase 2 has been staged. Eight documents have been
-identified, researched, and added to the manifest. They are awaiting manual download.
+Security-auditor methodology corpus Phase 2 has been fully completed.
 
-**What was staged** (all from approved sources — fedramp.gov and nvlpubs.nist.gov):
+**What was delivered**:
 - NIST SP 800-18 Rev. 1 — SSP structure and required content (published Feb 2006)
 - FedRAMP CSP Authorization Playbook v4.2 — current accreditation workflow (Nov 2025)
 - FedRAMP Agency Authorization Playbook v4.1 — AO/ISSO review process (Nov 2025)
-- FedRAMP SAP Training PDF — how auditors write test plans
-- FedRAMP SAR Training PDF — how auditors document findings
-- FedRAMP SSP Template (Rev5, DOCX) — SSP document structure
-- FedRAMP SAP Template (Rev5, DOCX) — SAP document structure
-- FedRAMP SAR Template (Rev5, DOCX) — SAR document structure
+- FedRAMP SSP Template (Rev5, DOCX + txt) — SSP document structure
+- FedRAMP SAP Template (Rev5, DOCX + txt) — SAP document structure
+- FedRAMP SAR Template (Rev5, DOCX + txt) — SAR document structure
 
-**What is blocked**: Manual download is required. Jamie needs to run the curl commands in
-`.claude/references/accreditation-artifacts/SOURCE.md` (or authorize the researcher agent to
-run them), then trigger RAG ingestion with:
+**Note**: SAP Training (200-B) and SAR Training (200-C) PDFs are no longer available
+from fedramp.gov (removed in Rev5 reorganization). Rev5 templates cover the same ground.
 
-```bash
-cd /media/psf/repos/umrs-project/.claude/rag
-RAG_CHROMA_PATH=/media/psf/repos/ai-rag-vdb/chroma python ingest.py --collection accreditation-artifacts
-```
+**Ingestion**: 405 chunks in `accreditation-artifacts` RAG collection.
 
-**DOCX caveat**: The three FedRAMP templates (SSP/SAP/SAR) are .docx only — no PDF available.
-They need `pandoc <file>.docx -o <file>.txt` conversion before ingestion. The SAP/SAR training
-PDFs cover the same structural ground and are the priority format for initial ingestion.
+**Corpus-familiarization**: Completed 2026-03-15 by security-auditor. Five knowledge
+artifacts written to `.claude/agent-memory/security-auditor/`:
+- `accreditation-artifacts-README.md`
+- `accreditation-concept-index.md`
+- `accreditation-document-structures.md`
+- `accreditation-umrs-mapping.md`
+- `accreditation-term-glossary.md`
 
-**After ingestion**: Run `corpus-familiarization` on the `accreditation-artifacts` collection
-before using it for plan reviews. This is a standing rule from Jamie.
+**MEMORY.md updated** with accreditation anchors for audit work.
 
-**Plan status**: `.claude/plans/security-auditor-corpus.md` updated to
-`phase-2-staged-awaiting-download`.
+**Plan status**: `.claude/plans/security-auditor-corpus.md` should be updated to
+`phase-2-complete`.
 
 ---
 

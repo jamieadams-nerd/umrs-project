@@ -1,0 +1,157 @@
+= Skills Catalog
+:description: Reference table of all UMRS agent skills — what each skill does, when it triggers, and what it produces.
+:toc: left
+:toclevels: 2
+
+[id="skills-catalog"]
+
+Skills are reusable prompt patterns that standardize how agents perform common tasks.
+Rather than rediscovering the correct procedure for RAG ingestion or new-crate scaffolding
+every session, each skill defines the procedure once and agents invoke it consistently.
+
+This page is a reference inventory.
+For the rationale behind the skills system as a workflow optimization, see
+xref:workflow-mechanics.adoc[How Work Flows Through the Team].
+
+== Skills Reference
+
+=== `rag-query`
+
+[cols="1,3"]
+|===
+| Path | `.claude/rag/query.py` via `.claude/skills/rag-query/SKILL.md`
+| Purpose | Semantic search over the UMRS RAG reference library
+| Triggers | Any technical question touching SELinux, MLS, Linux kernel internals, NIST controls, CMMC, access control models, or any topic likely in the reference library; "search the docs", "check the reference library", "look up X in the RAG"
+| Primary users | All agents — especially `security-auditor`, `security-engineer`, `rust-developer`, `tech-writer`
+| Persistent artifact | None — produces transient search results; agent uses them to ground its response
+| Produces | Ranked chunks with source attribution: collection, source file, section heading, similarity score, text preview
+|===
+
+=== `rag-ingest`
+
+[cols="1,3"]
+|===
+| Path | `.claude/rag/ingest.py` via `.claude/skills/rag-ingest/SKILL.md`
+| Purpose | Ingest new or updated reference documents into the ChromaDB RAG database
+| Triggers | "add a collection to the RAG", "ingest new documents", "update the reference library", new directory in `.claude/references/` not yet in the database
+| Primary users | `researcher`
+| Persistent artifact | Updated ChromaDB at `.claude/rag/chroma/`; updated manifest at `.claude/rag/manifest.json`; converted Markdown files at `.claude/rag/converted/<collection>/`
+| Produces | Ingested chunks with chunk counts per collection; manifest entries for new files
+|===
+
+=== `corpus-familiarization`
+
+[cols="1,3"]
+|===
+| Path | `.claude/skills/corpus-familiarization/SKILL.md`
+| Purpose | Build active knowledge from newly ingested RAG collections — produces four knowledge artifacts that become always-on agent context
+| Triggers | After any corpus ingestion event; "familiarize yourself with the corpus", "read through the reference material", "build your knowledge base"
+| Primary users | Target agent for the relevant collection (e.g., `security-auditor` for `rmf-methodology`, `tech-writer` for `doc-structure`)
+| Persistent artifact | Four knowledge artifacts in `.claude/knowledge/<collection>/`: `concept-index.md`, `cross-reference-map.md`, `style-decision-record.md`, `term-glossary.md`, plus `README.md`
+| Produces | Five structured knowledge files that the agent loads into always-on context
+|===
+
+=== `doc-arch`
+
+[cols="1,3"]
+|===
+| Path | `.claude/rag/query.py --collection doc-structure` via `.claude/skills/doc-arch/SKILL.md`
+| Purpose | Semantic search over the `doc-structure` RAG collection for documentation architecture guidance
+| Triggers | Decisions about content placement, page structure, navigation, Diataxis type classification, Antora mechanics, modular docs patterns; "where should this doc go?", "what type of doc is this?", "how does Antora handle X?"
+| Primary users | `senior-tech-writer`, `tech-writer`
+| Persistent artifact | None — produces transient search results
+| Produces | Ranked chunks from Diataxis, Antora, Red Hat modular docs, Google style, GitLab docs sources
+|===
+
+=== `new-crate`
+
+[cols="1,3"]
+|===
+| Path | `.claude/skills/new-crate/SKILL.md`
+| Purpose | Scaffold a new Rust crate in the `components/rusty-gadgets/` workspace with all project conventions pre-applied
+| Triggers | "add a new crate called X", "create a new tool", "start a new workspace member", "new binary for Y"
+| Primary users | `rust-developer`
+| Persistent artifact | New crate directory with `src/`, `tests/`, `examples/`; updated `Cargo.toml` workspace members; crate root with copyright header, `#![forbid(unsafe_code)]`, clippy lints, module doc comment
+| Produces | A ready-to-develop crate that builds cleanly and follows all project conventions
+|===
+
+=== `project-cleanup`
+
+[cols="1,3"]
+|===
+| Path | `.claude/skills/project-cleanup/SKILL.md`
+| Purpose | Housekeeping sweep — merges stray `local.settings.json` files, consolidates rogue `.claude/` directories, and retires completed plans
+| Triggers | Explicit housekeeping request; detection of stray settings files or rogue directories
+| Primary users | Any agent; primarily used during session maintenance
+| Persistent artifact | Cleaned settings.json (merged); archived plans in `.claude/plans/completed/`
+| Produces | Summary report of what was merged, moved, or retired
+|===
+
+=== `french-lookup`
+
+[cols="1,3"]
+|===
+| Path | `.claude/commands/french_lookup.sh` via `.claude/skills/french-lookup/SKILL.md`
+| Purpose | Look up existing French translations for technical terms in the GNU translation corpus
+| Triggers | Any translation task; always run before proposing a new French translation for a technical string
+| Primary users | `umrs-translator`
+| Persistent artifact | None — produces transient lookup results
+| Produces | Existing `msgstr` value from the highest-priority corpus file (coreutils first); if found, this translation must be adopted
+|===
+
+=== `rust-uml`
+
+[cols="1,3"]
+|===
+| Path | `.claude/skills/rust-uml/SKILL.md`
+| Purpose | Generate Mermaid UML class diagrams from Rust source code
+| Triggers | "draw a diagram of", "show the relationships between", "UML for this module", "class diagram for"; when documenting Rust source architecture in `devel/`, `architecture/`, or `patterns/`
+| Primary users | `tech-writer`, `senior-tech-writer`
+| Persistent artifact | Mermaid diagram embedded in AsciiDoc page
+| Produces | Standards-compliant UML class diagram using Mermaid syntax with correct visibility symbols, stereotypes, and relationship arrows
+|===
+
+=== `seccomp-engineering`
+
+[cols="1,3"]
+|===
+| Path | `.claude/skills/seccomp-engineering/SKILL.md`
+| Purpose | Design, review, and analyze Linux seccomp syscall filter policies for process sandboxing
+| Triggers | "seccomp", "syscall filter", "sandbox policy", "syscall surface", "BPF filter"; hardening systemd units, Rust daemons, or container runtimes
+| Primary users | `security-engineer`, `rust-developer`
+| Persistent artifact | Seccomp profile recommendation (structured output with purpose, allowlist, blocked high-risk syscalls, default action, architecture, security benefit)
+| Produces | Minimal auditable seccomp policy with justification for each allowed syscall
+|===
+
+== Skills vs. Standing Rules
+
+Skills and standing rules are different mechanisms that serve different purposes:
+
+[cols="1,2,2", options="header"]
+|===
+| Mechanism | Location | Governs
+
+| Skills
+| `.claude/skills/<name>/SKILL.md`
+| How to perform a specific task — procedural knowledge that agents apply on demand
+
+| Standing rules
+| `.claude/rules/<name>.md`
+| Behavioral constraints that apply unconditionally to all agent output in all sessions
+
+| Agent memory
+| `.claude/agent-memory/<agent>/MEMORY.md`
+| Persistent knowledge specific to one agent's domain
+|===
+
+A skill defines _how_ to do something (ingest a collection, scaffold a crate).
+A standing rule defines _what_ constraints apply to everything (no unsafe code, citations
+at module level only, no absolute `/media/psf/` paths).
+Agent memory captures _what the agent has learned_ (RMF methodology, documentation
+structure decisions, active knowledge from corpus familiarization).
+
+== See Also
+
+* xref:workflow-mechanics.adoc[How Work Flows Through the Team]
+* xref:corpus-familiarization.adoc[Corpus Familiarization]
+* xref:rag-collections.adoc[RAG Collections and Their Sources]

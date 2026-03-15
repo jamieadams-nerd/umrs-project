@@ -30,7 +30,9 @@ use umrs_platform::posture::{
 #[test]
 fn catalog_covers_all_signal_ids() {
     // Exhaustive match ensures this test is updated when SignalId gains a new variant.
+    // Phase 1: 22 signals. Phase 2a adds 5 modprobe signals = 27 total.
     let all_ids = [
+        // Phase 1 — sysctl signals
         SignalId::KptrRestrict,
         SignalId::RandomizeVaSpace,
         SignalId::UnprivBpfDisabled,
@@ -46,6 +48,7 @@ fn catalog_covers_all_signal_ids() {
         SignalId::ProtectedFifos,
         SignalId::ProtectedRegular,
         SignalId::SuidDumpable,
+        // Phase 1 — cmdline and special signals
         SignalId::Lockdown,
         SignalId::ModuleSigEnforce,
         SignalId::Mitigations,
@@ -53,6 +56,12 @@ fn catalog_covers_all_signal_ids() {
         SignalId::RandomTrustCpu,
         SignalId::RandomTrustBootloader,
         SignalId::FipsEnabled,
+        // Phase 2a — modprobe.d signals
+        SignalId::NfConntrackAcct,
+        SignalId::BluetoothBlacklisted,
+        SignalId::UsbStorageBlacklisted,
+        SignalId::FirewireCoreBlacklisted,
+        SignalId::ThunderboltBlacklisted,
     ];
 
     for id in all_ids {
@@ -688,6 +697,72 @@ fn eval_configured_overflow_is_none() {
         evaluate_configured_meets("4294967296", &DesiredValue::Exact(0)),
         None,
         "u32::MAX + 1 must return None (parse failure)"
+    );
+}
+
+/// F-05 regression: negative configured value (-1) with AtLeast(2) must return
+/// `Some(false)`, not `None`. Without the signed-parse fallback, a sysctl.d
+/// file containing `kernel.perf_event_paranoid = -1` silently suppresses
+/// `EphemeralHotfix` detection when the live value was hotfixed to 2.
+///
+/// Control: NIST SP 800-53 CA-7 — must not suppress EphemeralHotfix when
+/// configured and live values legitimately disagree.
+#[test]
+fn eval_configured_negative_one_fails_at_least_two() {
+    assert_eq!(
+        evaluate_configured_meets("-1", &DesiredValue::AtLeast(2)),
+        Some(false),
+        "configured=-1 with AtLeast(2) must return Some(false), not None"
+    );
+}
+
+/// F-05 regression: full EphemeralHotfix path — live hardened (2), configured
+/// unhardened (-1 in sysctl.d) must produce EphemeralHotfix.
+///
+/// Before the fix, `evaluate_configured_meets("-1", AtLeast(2))` returned
+/// `None`, causing `classify(Some(true), None)` to produce `None` (no
+/// contradiction). The correct result is `classify(Some(true), Some(false)) =
+/// Some(EphemeralHotfix)`.
+#[test]
+fn eval_configured_negative_ephemeral_hotfix_path() {
+    // live_meets = Some(true): live value is 2, AtLeast(2) passes.
+    let live_meets = Some(true);
+    // configured_meets = Some(false): configured is -1, AtLeast(2) fails.
+    let configured_meets =
+        evaluate_configured_meets("-1", &DesiredValue::AtLeast(2));
+    assert_eq!(
+        configured_meets,
+        Some(false),
+        "configured=-1 must produce Some(false) for EphemeralHotfix path"
+    );
+    // Full contradiction classification must emit EphemeralHotfix.
+    assert_eq!(
+        classify(live_meets, configured_meets),
+        Some(ContradictionKind::EphemeralHotfix),
+        "live=hardened + configured=-1(unhardened) must classify as EphemeralHotfix"
+    );
+}
+
+/// F-05 regression: negative configured value that also fails the desired
+/// check produces `Some(false)`, enabling BootDrift detection when both
+/// live and configured are unhardened.
+#[test]
+fn eval_configured_negative_both_unhardened_no_contradiction() {
+    // live_meets = Some(false): live value is -1 (signed), AtLeast(2) fails.
+    let live_meets = Some(false);
+    // configured_meets = Some(false): configured is also -1.
+    let configured_meets =
+        evaluate_configured_meets("-1", &DesiredValue::AtLeast(2));
+    assert_eq!(
+        configured_meets,
+        Some(false),
+        "configured=-1 must be Some(false)"
+    );
+    // Both agree (both unhardened) — no contradiction.
+    assert_eq!(
+        classify(live_meets, configured_meets),
+        None,
+        "live=unhardened + configured=unhardened must produce no contradiction"
     );
 }
 

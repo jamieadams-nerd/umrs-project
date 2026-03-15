@@ -1,0 +1,224 @@
+= RAG Collections and Their Sources
+:description: Reference table of all UMRS RAG collections — what each covers, its source documents, chunk counts, and which agents query it.
+:toc: left
+:toclevels: 2
+
+[id="rag-collections"]
+
+This page is a reference inventory of all RAG collections currently available to UMRS
+agents.
+For each collection: what it covers, the source documents it was built from, the chunk
+count, and which agents use it.
+
+For an explanation of how collections are built and why they exist, see
+xref:knowledge-pipeline.adoc[How Knowledge Enters the System].
+
+== The Three-Layer Reference Architecture
+
+The RAG system has three distinct layers, each serving a different purpose:
+
+[cols="1,2,2,2", options="header"]
+|===
+| Layer | Location | Contents | When to use
+
+| *RAG database*
+| Queried via `rag-query` skill
+| Chunked, semantically searchable text from all collections
+| Default — start here for any technical question
+
+| *Source documents*
+| `.claude/references/<collection>/`
+| Original PDFs, HTML, Markdown used to build the RAG
+| When full document context is needed, or to verify a RAG result's surrounding text
+
+| *Official refs archive*
+| `refs/nist/`, `refs/dod/`, `refs/fedramp/`
+| Checksummed canonical copies of standards
+| Authoritative source of record; integrity-verified via `refs/manifest.md`
+|===
+
+Some documents exist in both `refs/` and `.claude/references/`.
+The `refs/` copy is authoritative.
+The `.claude/references/` copy is the RAG source staging area.
+
+== Collection Reference
+
+=== `kernel-docs`
+
+[cols="1,3"]
+|===
+| Chunks | 22,738
+| Coverage | Linux kernel documentation tree — internals, LSM hooks, security modules, namespaces, capabilities, process model
+| Source | Linux kernel documentation (kernel.org docs tree)
+| Primary users | `rust-developer`, `security-engineer`, `security-auditor`
+| Typical queries | LSM hook invocation paths; SELinux process label transitions; Linux capability model; namespace isolation; kernel attribute files
+|===
+
+=== `access-control`
+
+[cols="1,3"]
+|===
+| Chunks | 1,360
+| Coverage | Foundational access control models, OS security, standards, and rule catalog
+| Source documents | Bell-LaPadula (1976 unified exposition), Biba (1977), Brewer-Nash Chinese Wall (1989), Saltzer-Schroeder (1975), NIST SP 800-53r5, NIST SP 800-162 (ABAC), NIST SP 800-207 (ZTA), SELinux Notebook (2024), Linux capabilities(7), POSIX ACL(5), and seven locally-created YAML rule files (AC-001–AC-003, MLS-001–002, INTEGRITY-001–002)
+| Primary users | `security-auditor`, `security-engineer`, `rust-developer`
+| Typical queries | Bell-LaPadula no-read-up property; MLS write constraint enforcement; ABAC label-based access decisions; ZTA never-trust-always-verify; Linux capability MAC override
+|===
+
+=== `selinux-notebook`
+
+[cols="1,3"]
+|===
+| Chunks | 691
+| Coverage | Comprehensive SELinux reference — type enforcement, MLS/MCS policy, security contexts, labeling, xattrs, access vectors, policy language
+| Source | SELinux Notebook Release 20240430 (SELinuxProject/selinux-notebook, compiled PDF)
+| Primary users | `rust-developer`, `security-engineer`, `security-auditor`
+| Typical queries | Type enforcement allow rules; MLS range write equality; security context format; xattr `security.selinux`; domain transition rules; category set enforcement
+|===
+
+=== `nist`
+
+[cols="1,3"]
+|===
+| Chunks | 1,447
+| Coverage | NIST SP 800-53 Rev 5 control catalog, CUI protection requirements (800-171 r2/r3), CUI assessment procedures (800-171A r3), SSDF secure software development practices, and FIPS 140-2/3 cryptographic module standards
+| Source documents | NIST SP 800-53r5, NIST SP 800-171r2, NIST SP 800-171r3, NIST SP 800-171Ar3, NIST SP 800-218 SSDF, FIPS 140-2, FIPS 140-3
+| Primary users | All agents — especially `security-auditor`, `security-engineer`
+| Typical queries | AC-4 information flow enforcement; SI-7 integrity verification; AU-3 audit record content; PW.4 safe code guarantees; FIPS 140-3 validation requirements; CUI handling requirements
+|===
+
+=== `rmf-methodology`
+
+[cols="1,3"]
+|===
+| Chunks | 1,132
+| Coverage | Full NIST Risk Management Framework — assessment methods (Examine/Interview/Test), full RMF lifecycle, risk assessment methodology, enterprise risk governance
+| Source documents | NIST SP 800-53A Rev 5 (assessment procedures), NIST SP 800-37 Rev 2 (RMF lifecycle), NIST SP 800-30 Rev 1 (risk assessment), NIST SP 800-39 (risk governance)
+| Primary users | `security-auditor`
+| Typical queries | AC-2 examination assessment procedures; evidence artifacts for SA-11; interview objects for CM-6; test procedures for AU-12; risk determination likelihood assessment; system authorization decision criteria
+| Notes | SP 800-53A is the highest-value document — maps each NIST control to specific assessment procedures; enables the security-auditor to classify findings by method type
+|===
+
+=== `cmmc`
+
+[cols="1,3"]
+|===
+| Chunks | 545
+| Coverage | CMMC Level 2 legal framework and assessment guide — practice identifiers, assessment objectives, evidence requirements
+| Source documents | CMMC Final Rule 32 CFR Part 170 (89 FR 83092, October 2024, effective December 16, 2024), CMMC Assessment Guide Level 2 v2.13 (September 2024)
+| Primary users | `security-auditor`, `security-engineer`
+| Typical queries | CMMC practice SC.L2-3.13.3 definitions; assessment objective evidence; L2 scoping guidance; 32 CFR 170 implementation timeline; practice-to-800-171 mapping
+|===
+
+=== `dod-5200`
+
+[cols="1,3"]
+|===
+| Chunks | 360
+| Coverage | DoD Information Security Program — classification, marking procedures, physical/procedural safeguards, CUI policy
+| Source documents | DoDI 5200.01, DoDM 5200.01 Volumes 1–3 (incorporating 2025 changes), DoDI 5200.48 (CUI policy, March 2020)
+| Primary users | `security-engineer`, `security-auditor`
+| Typical queries | CUI marking requirements; classification declassification procedures; DoD CUI identification and handling; storage safeguards for classified information; DoDI 5200.48 NIST 800-171 requirement
+| Notes | DoDI 5200.48 supersedes DoDM 5200.01 Volume 4 for CUI policy — use DoDI 5200.48 for all current CUI questions
+|===
+
+=== `accreditation-artifacts`
+
+[cols="1,3"]
+|===
+| Chunks | 405
+| Coverage | Federal accreditation process documents — SSP/SAP/SAR templates, authorization playbooks, security planning guide
+| Source documents | NIST SP 800-18 Rev 1 (SSP structure), FedRAMP CSP Authorization Playbook v4.2 (November 2025), FedRAMP Agency Authorization Playbook v4.1 (November 2025), FedRAMP SSP/SAP/SAR Templates (Rev 5, August 2025)
+| Primary users | `security-auditor`
+| Typical queries | SSP required elements; authorization package structure; continuous monitoring requirements; SAP assessment scope; SAR finding documentation; AO review criteria
+| Notes | DOCX templates were converted to plaintext via pandoc for ingestion; original DOCX files are preserved in `refs/fedramp/`
+|===
+
+=== `nist-pqc`
+
+[cols="1,3"]
+|===
+| Chunks | 264
+| Coverage | NIST post-quantum cryptography standards and migration guidance
+| Source documents | FIPS 203 (ML-KEM), FIPS 204 (ML-DSA), FIPS 205 (SLH-DSA), plus 11 web articles on PQC context, migration timelines, and algorithm comparisons (Cloudflare, NIST CSRC, Cloud Security Alliance, wolfSSL, and others)
+| Primary users | `security-engineer`, `senior-tech-writer`
+| Typical queries | ML-KEM parameter sets; ML-DSA vs ECDSA migration; SLH-DSA hash-based security assumptions; FIPS 203 key encapsulation mechanism; harvest-now decrypt-later threat model; RHEL 10 PQC availability
+|===
+
+=== `doc-structure`
+
+[cols="1,3"]
+|===
+| Chunks | 102
+| Coverage | Documentation architecture, Antora mechanics, modular documentation patterns, style guides, docs-as-code practices
+| Source | Diataxis Framework, Divio documentation taxonomy, Antora official docs, Red Hat Modular Docs guide, Google Developer Style Guide, GitLab documentation practices, Write the Docs resources
+| Primary users | `senior-tech-writer`, `tech-writer`
+| Typical queries | Diataxis tutorial vs how-to distinction; Antora navigation file registration; Red Hat modular concept/procedure/reference types; Google style procedures format; GitLab docs-first methodology
+|===
+
+=== `rustdoc-book`
+
+[cols="1,3"]
+|===
+| Chunks | 194
+| Coverage | Rustdoc reference — doc comment syntax, attributes, intra-doc links, test harness
+| Source | The Rustdoc Book (doc.rust-lang.org/rustdoc)
+| Primary users | `rust-developer`, `tech-writer`
+| Typical queries | Intra-doc link syntax; `#[doc]` attribute usage; doc test structure; module-level doc comment format; `#[must_use]` documentation
+|===
+
+=== `rust-security`
+
+[cols="1,3"]
+|===
+| Chunks | 73
+| Coverage | Rust security patterns and references
+| Primary users | `rust-developer`, `security-engineer`
+|===
+
+=== `linux-fhs-2-3`
+
+[cols="1,3"]
+|===
+| Chunks | 45
+| Coverage | Filesystem Hierarchy Standard — standard directory layout and purpose
+| Primary users | `rust-developer`, `security-auditor`
+|===
+
+== How to Query
+
+All collections are searchable via the `rag-query` skill:
+
+[source,bash]
+----
+# Search all collections
+python .claude/rag/query.py "NIST SP 800-53 AC-4 information flow enforcement"
+
+# Search a specific collection
+python .claude/rag/query.py "MLS range write constraint" --collection selinux-notebook
+
+# List all collections with chunk counts
+python .claude/rag/query.py --list-collections
+----
+
+See xref:skills-catalog.adoc[Skills Catalog] for full usage documentation.
+
+== Manifest Verification
+
+Every source document in the official refs archive has a SHA-256 checksum in
+`refs/manifest.md`.
+To verify a document has not been modified since download:
+
+[source,bash]
+----
+sha256sum refs/nist/sp800-53r5.pdf
+# Compare against manifest entry
+----
+
+This is the same integrity verification applied to software dependencies.
+
+== See Also
+
+* xref:knowledge-pipeline.adoc[How Knowledge Enters the System]
+* xref:knowledge-provenance.adoc[Knowledge Provenance and Claim Traceability]
+* xref:skills-catalog.adoc[Skills Catalog]

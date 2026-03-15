@@ -3,8 +3,8 @@
 **Goal**: G10 — AI Transparency
 **Milestone**: M5 — AI Transparency
 **Date**: 2026-03-15
-**Status**: Draft — awaiting Jamie approval before execution
-**Blocked by**: Antora doc restructure freeze (lift before executing)
+**Status**: Completed — 2026-03-15 by senior-tech-writer
+**Blocked by**: (resolved — doc restructure freeze lifted)
 
 ---
 

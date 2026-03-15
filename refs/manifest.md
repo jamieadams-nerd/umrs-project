@@ -766,9 +766,14 @@ feed into broader accreditation decisions.
 Acquired 2026-03-15 per `.claude/plans/security-auditor-corpus.md` Phase 2.
 RAG collection: `accreditation-artifacts` at `.claude/references/accreditation-artifacts/`.
 
-Note: Outbound curl is unavailable in the researcher agent execution context.
-All items below are staged for manual download using the instructions in
-`.claude/references/accreditation-artifacts/SOURCE.md`.
+Downloaded 2026-03-15. All items acquired via curl from official sources.
+RAG ingestion pending. DOCX templates converted to .txt with pandoc for ingestion.
+
+**URL corrections from original SOURCE.md**: The `/assets/resources/documents/` and
+`/assets/resources/training/` URL paths contained S3 website redirect objects (redirect to
+path + trailing slash), not actual files. Correct paths are `/resources/documents/` and
+`/resources/templates/`. The 200-B and 200-C training PDFs were removed in the FedRAMP Rev5
+reorganization and are no longer available at fedramp.gov.
 
 ### NIST SP 800-18 Rev. 1 — Guide for Developing Security Plans
 
@@ -777,10 +782,10 @@ name: NIST SP 800-18 Rev. 1 — Guide for Developing Security Plans for Federal 
 path: refs/nist/sp800-18r1.pdf
 version: Rev 1
 source_url: https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-18r1.pdf
-date_retrieved: —
-sha256: —
+date_retrieved: 2026-03-15
+sha256: 1635870f7cac9c0606cddbf42a7e4d0d8d01c5ab8709d3667821a4cdeaddd506
 relevance: security-auditor, umrs-selinux, deployment, PL-2, CA-2, CA-7
-status: requires_manual_download
+status: downloaded
 ```
 
 Published February 2006. Defines SSP structure, required system description elements, control
@@ -788,8 +793,7 @@ implementation summaries, and SSP approval process. This is the foundational doc
 for understanding what a complete accreditation package must contain. Required reading for
 the security-auditor to evaluate whether UMRS documentation would satisfy an SSP review.
 
-Manual download: `curl -L -o refs/nist/sp800-18r1.pdf "https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-18r1.pdf"`
-Also copy to: `.claude/references/accreditation-artifacts/sp800-18r1.pdf`
+Also copied to: `.claude/references/accreditation-artifacts/sp800-18r1.pdf`
 
 ---
 
@@ -799,11 +803,11 @@ Also copy to: `.claude/references/accreditation-artifacts/sp800-18r1.pdf`
 name: FedRAMP CSP Authorization Playbook
 path: refs/fedramp/fedramp-csp-authorization-playbook.pdf
 version: 4.2 (November 17, 2025)
-source_url: https://www.fedramp.gov/assets/resources/documents/CSP_Authorization_Playbook.pdf
-date_retrieved: —
-sha256: —
+source_url: https://www.fedramp.gov/resources/documents/CSP_Authorization_Playbook.pdf
+date_retrieved: 2026-03-15
+sha256: 6ae7066b90afdc6bc3a54836b6aa1ad59181cda4efef5bb63ed3cb2d0cb5b8e4
 relevance: security-auditor, deployment, CA-2, CA-7, PL-2, RA-3
-status: requires_manual_download
+status: downloaded
 ```
 
 Current authoritative FedRAMP authorization process document. Replaces the legacy "Security
@@ -811,8 +815,10 @@ Assessment Framework" document in the Rev5 transition. Covers the end-to-end aut
 workflow: readiness assessment, full authorization package, agency sponsor engagement,
 continuous monitoring. V4.2 aligns with OMB Memo M-24-15 (FedRAMP modernization, July 2024).
 
-Manual download: `curl -L -o refs/fedramp/fedramp-csp-authorization-playbook.pdf "https://www.fedramp.gov/assets/resources/documents/CSP_Authorization_Playbook.pdf"`
-Also copy to: `.claude/references/accreditation-artifacts/fedramp-csp-authorization-playbook.pdf`
+Also copied to: `.claude/references/accreditation-artifacts/fedramp-csp-authorization-playbook.pdf`
+
+**URL correction**: Original SOURCE.md had `/assets/resources/documents/CSP_Authorization_Playbook.pdf`
+which is an S3 redirect stub. Correct URL is `/resources/documents/CSP_Authorization_Playbook.pdf`.
 
 ---
 
@@ -823,18 +829,17 @@ name: FedRAMP Agency Authorization Playbook
 path: refs/fedramp/fedramp-agency-authorization-playbook.pdf
 version: 4.1 (November 17, 2025)
 source_url: https://www.fedramp.gov/resources/documents/Agency_Authorization_Playbook.pdf
-date_retrieved: —
-sha256: —
+date_retrieved: 2026-03-15
+sha256: 96fa3abc505e7b7aa89fa03d5595678824caaf99b8289a3d7e73c66e8a6cb87d
 relevance: security-auditor, deployment, CA-2, CA-7, PL-2
-status: requires_manual_download
+status: downloaded
 ```
 
 Agency-side view of the FedRAMP authorization process. Covers the AO/ISSO role, review
 procedures, authorization package evaluation, and ongoing monitoring expectations. Paired
 with the CSP Playbook to give the security-auditor both sides of the accreditation process.
 
-Manual download: `curl -L -o refs/fedramp/fedramp-agency-authorization-playbook.pdf "https://www.fedramp.gov/resources/documents/Agency_Authorization_Playbook.pdf"`
-Also copy to: `.claude/references/accreditation-artifacts/fedramp-agency-authorization-playbook.pdf`
+Also copied to: `.claude/references/accreditation-artifacts/fedramp-agency-authorization-playbook.pdf`
 
 ---
 
@@ -843,20 +848,18 @@ Also copy to: `.claude/references/accreditation-artifacts/fedramp-agency-authori
 ```
 name: FedRAMP Security Assessment Plan (SAP) Training
 path: refs/fedramp/fedramp-sap-training.pdf
-version: current (fedramp.gov)
+version: —
 source_url: https://www.fedramp.gov/assets/resources/training/200-B-FedRAMP-Training-Security-Assessment-Plan-SAP.pdf
 date_retrieved: —
 sha256: —
 relevance: security-auditor, CA-2, CA-7, SA-11
-status: requires_manual_download
+status: not_available
 ```
 
-Official FedRAMP training document covering SAP structure: test case selection, scope
-definition, control boundaries, and methodology documentation. Teaches the security-auditor
-what an assessor's test plan must contain and how test scope is defined.
-
-Manual download: `curl -L -o refs/fedramp/fedramp-sap-training.pdf "https://www.fedramp.gov/assets/resources/training/200-B-FedRAMP-Training-Security-Assessment-Plan-SAP.pdf"`
-Also copy to: `.claude/references/accreditation-artifacts/fedramp-sap-training.pdf`
+**Removed from fedramp.gov**: The 200-B SAP Training PDF was a Rev4-era document. As of
+2026-03-15, the URL returns an S3 website redirect stub (83 bytes, not a valid PDF). The file
+no longer exists at fedramp.gov. The SAP Template DOCX (Rev 5) covers the same structural
+ground and is available below.
 
 ---
 
@@ -865,20 +868,18 @@ Also copy to: `.claude/references/accreditation-artifacts/fedramp-sap-training.p
 ```
 name: FedRAMP Security Assessment Report (SAR) Training
 path: refs/fedramp/fedramp-sar-training.pdf
-version: current (fedramp.gov)
+version: —
 source_url: https://www.fedramp.gov/assets/resources/training/200-C-FedRAMP-Training-Security-Assessment-Report-SAR.pdf
 date_retrieved: —
 sha256: —
 relevance: security-auditor, CA-2, CA-7, SA-11
-status: requires_manual_download
+status: not_available
 ```
 
-Official FedRAMP training document covering SAR structure: findings documentation,
-risk ratings, deviation requests, residual risks. Teaches the security-auditor how to
-structure its own findings output in SAR-compatible format.
-
-Manual download: `curl -L -o refs/fedramp/fedramp-sar-training.pdf "https://www.fedramp.gov/assets/resources/training/200-C-FedRAMP-Training-Security-Assessment-Report-SAR.pdf"`
-Also copy to: `.claude/references/accreditation-artifacts/fedramp-sar-training.pdf`
+**Removed from fedramp.gov**: The 200-C SAR Training PDF was a Rev4-era document. As of
+2026-03-15, the URL returns an S3 website redirect stub (85 bytes, not a valid PDF). The file
+no longer exists at fedramp.gov. The SAR Template DOCX (Rev 5) covers the same structural
+ground and is available below.
 
 ---
 
@@ -887,19 +888,19 @@ Also copy to: `.claude/references/accreditation-artifacts/fedramp-sar-training.p
 ```
 name: FedRAMP High/Moderate/Low/LI-SaaS Baseline System Security Plan Template
 path: refs/fedramp/fedramp-ssp-template.docx
-version: Rev 5
+version: Rev 5 (last modified 2025-08-07)
 source_url: https://www.fedramp.gov/resources/templates/FedRAMP-High-Moderate-Low-LI-SaaS-Baseline-System-Security-Plan-(SSP).docx
-date_retrieved: —
-sha256: —
+date_retrieved: 2026-03-15
+sha256: e05d7fb0021cf42f7fe15eed5c21362e99a0182ccb6f428b1015babc59226c48
 relevance: security-auditor, PL-2, CA-2
-status: requires_manual_download
+status: downloaded
 ```
 
-Official FedRAMP SSP template. DOCX only — no PDF version published. For RAG ingestion:
-convert with `pandoc fedramp-ssp-template.docx -o fedramp-ssp-template.txt` or
-`libreoffice --headless --convert-to pdf fedramp-ssp-template.docx`.
+Official FedRAMP SSP template. DOCX only — no PDF version published. Converted to .txt with
+pandoc for RAG ingestion: `.claude/references/accreditation-artifacts/fedramp-ssp-template.txt`
+(SHA-256: `e631914c8afbfad5603220c42ae13038c3b7e42ff9a542e1f7a2cdbb9e02166e`, 151K).
 
-Manual download: `curl -L -o refs/fedramp/fedramp-ssp-template.docx "https://www.fedramp.gov/resources/templates/FedRAMP-High-Moderate-Low-LI-SaaS-Baseline-System-Security-Plan-(SSP).docx"`
+Also copied to: `.claude/references/accreditation-artifacts/fedramp-ssp-template.docx`
 
 ---
 
@@ -908,17 +909,19 @@ Manual download: `curl -L -o refs/fedramp/fedramp-ssp-template.docx "https://www
 ```
 name: FedRAMP Security Assessment Plan Template
 path: refs/fedramp/fedramp-sap-template.docx
-version: Rev 5
+version: Rev 5 (last modified 2025-08-07)
 source_url: https://www.fedramp.gov/resources/templates/FedRAMP-Security-Assessment-Plan-(SAP)-Template.docx
-date_retrieved: —
-sha256: —
+date_retrieved: 2026-03-15
+sha256: 4d2f79e0577cb52a34e2eff1aad0290585c6e0af1ac1f6468d6ef0cba7fc6aae
 relevance: security-auditor, CA-2, SA-11
-status: requires_manual_download
+status: downloaded
 ```
 
-Official FedRAMP SAP template. DOCX only. Convert before RAG ingestion (see SSP template note).
+Official FedRAMP SAP template. DOCX only. Converted to .txt with pandoc for RAG ingestion:
+`.claude/references/accreditation-artifacts/fedramp-sap-template.txt`
+(SHA-256: `004cbf245201cf229e236090716e5761969f77c43f3a964e663be6ff4f326fa4`, 91K).
 
-Manual download: `curl -L -o refs/fedramp/fedramp-sap-template.docx "https://www.fedramp.gov/resources/templates/FedRAMP-Security-Assessment-Plan-(SAP)-Template.docx"`
+Also copied to: `.claude/references/accreditation-artifacts/fedramp-sap-template.docx`
 
 ---
 
@@ -927,17 +930,22 @@ Manual download: `curl -L -o refs/fedramp/fedramp-sap-template.docx "https://www
 ```
 name: FedRAMP Security Assessment Report Template
 path: refs/fedramp/fedramp-sar-template.docx
-version: Rev 5 (December 6, 2024)
-source_url: https://www.fedramp.gov/assets/resources/templates/FedRAMP-Security-Assessment-Report-(SAR)-Template.docx
-date_retrieved: —
-sha256: —
+version: Rev 5 (last modified 2025-08-07)
+source_url: https://www.fedramp.gov/resources/templates/FedRAMP-Security-Assessment-Report-(SAR)-Template.docx
+date_retrieved: 2026-03-15
+sha256: a779218bd12a5c52f26f8a5edd8896fcd8515801975e9a5f7c09f8228864b9a7
 relevance: security-auditor, CA-2, SA-11
-status: requires_manual_download
+status: downloaded
 ```
 
-Official FedRAMP SAR template. DOCX only. Convert before RAG ingestion (see SSP template note).
+Official FedRAMP SAR template. DOCX only. Converted to .txt with pandoc for RAG ingestion:
+`.claude/references/accreditation-artifacts/fedramp-sar-template.txt`
+(SHA-256: `77f745835de5b2160bed708166d54d7da318794f6a46612dd60db1d3a80b1372`, 93K).
 
-Manual download: `curl -L -o refs/fedramp/fedramp-sar-template.docx "https://www.fedramp.gov/assets/resources/templates/FedRAMP-Security-Assessment-Report-(SAR)-Template.docx"`
+**URL correction**: Original SOURCE.md had `/assets/resources/templates/...` which is an S3
+redirect stub. Correct URL is `/resources/templates/FedRAMP-Security-Assessment-Report-(SAR)-Template.docx`.
+
+Also copied to: `.claude/references/accreditation-artifacts/fedramp-sar-template.docx`
 
 ---
 

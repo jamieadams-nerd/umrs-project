@@ -1,0 +1,178 @@
+= Agent Roles and Responsibilities
+:description: Reference table of every agent in the UMRS AI system — their scope, outputs, coordination channels, and what they deliberately defer to others.
+:toc: left
+:toclevels: 2
+
+[id="agent-roles"]
+
+The UMRS project uses a multi-agent system where each agent has a defined scope and
+deliberately stays within it.
+This is not an arbitrary organizational choice — it is a security and quality design.
+
+When agents stay specialized, the security agent can go deep on threat analysis without
+being pulled toward ergonomics tradeoffs.
+When they communicate through explicit channels, nothing falls through the cracks silently.
+When role boundaries are clear, an auditor can understand exactly what each agent can
+and cannot have contributed to any given artifact.
+
+== Why Specialization Matters
+
+The UMRS knowledge surface spans Linux kernel internals, SELinux policy, Rust secure
+coding, RMF assessment methodology, documentation architecture, i18n, and compliance
+frameworks.
+No single agent — and no single engineer — holds all of it at expert depth simultaneously.
+
+Real strength comes from complementary expertise with deliberate overlap.
+The security-auditor asks: "What are the trust boundaries? Can this be attacker-controlled?"
+The rust-developer asks: "Is this correct and maintainable?"
+The tech-writer asks: "Is this understandable to the intended audience?"
+These are not the same questions.
+An agent optimizing for all three simultaneously will optimize for none of them well.
+
+== Agent Directory
+
+[cols="1,2,2,2", options="header"]
+|===
+| Agent | Primary responsibility | Typical outputs | Defers to
+
+| `rust-developer`
+| Implementation correctness, API design, high-assurance pattern application
+| New types, modules, tests, examples; doc gaps noticed in source; pattern opportunities
+| `security-engineer` for trust boundary analysis; `tech-writer` for documentation sync
+
+| `security-engineer`
+| Compliance findings, control mappings, audit gaps, deployment and operations policy
+| Compliance findings reports, doc update tasks, architecture gap analysis
+| `security-auditor` for formal RMF assessment; `rust-developer` for implementation choices
+
+| `security-auditor`
+| RMF-methodology-grounded compliance audits — Examine, Interview, Test classification
+| Audit findings reports, annotation debt inventories, control citation verification
+| `security-engineer` for day-to-day compliance questions; engineer for final decisions
+
+| `tech-writer`
+| Clarity, organization, audience alignment for developer-facing documentation
+| Developer guide pages, pattern descriptions, API documentation, doc-sync responses
+| `senior-tech-writer` for module-level structure decisions; engineer for scope
+
+| `senior-tech-writer`
+| Documentation architecture, Antora module decisions, cross-module structure
+| New Antora modules, navigation changes, content placement decisions, structural plans
+| Engineer for final approval on structural changes
+
+| `researcher`
+| Authoritative reference acquisition, RAG pipeline management, standards research
+| New RAG collections, manifest updates, research reports in `refs/reports/`
+| Engineer for source approval; team for what knowledge gaps to address
+
+| `umrs-translator`
+| i18n string extraction and translation for active tool domains
+| Updated `.po` files for active domains (umrs-ls, umrs-state, umrs-logspace)
+| `rust-developer` for new strings; engineer for language decisions
+
+| `changelog-updater`
+| Structured changelog maintenance across crates, docs, and infrastructure
+| Entries in `.claude/CHANGELOG.md` organized by component and change type
+| All agents who complete work requiring a log entry
+|===
+
+== What Each Agent Does Not Do
+
+These constraints are as important as the responsibilities above.
+
+[cols="1,3", options="header"]
+|===
+| Agent | Does not do
+
+| `rust-developer`
+| Security policy decisions; architecture decisions; SELinux policy; compliance claims
+
+| `security-engineer`
+| Formal RMF assessment procedures; code implementation
+
+| `security-auditor`
+| Code changes; architecture decisions; final compliance claims
+
+| `tech-writer`
+| Module-level structural decisions; compliance annotation
+
+| `senior-tech-writer`
+| Code review; compliance analysis; implementation decisions
+
+| `researcher`
+| Code implementation; documentation writing; policy decisions
+
+| `umrs-translator`
+| New string addition; translation policy decisions; architectural choices
+
+| `changelog-updater`
+| Code changes; documentation authorship; compliance analysis
+|===
+
+None of these agents commits to the repository.
+All commits are made by the project engineer.
+
+== Communication Channels
+
+Agents communicate through four shared channels.
+Each channel has a specific purpose.
+
+=== Task Board
+
+The task board is the primary cross-agent coordination mechanism.
+It holds actionable work items with status, priority, and hand-off notes.
+
+Use the task board for:
+
+* Notifying another agent that their work is ready
+* Requesting a review or action from a specific agent
+* Tracking multi-step work across agent boundaries
+* Recording findings that require engineer attention
+
+Agents check the task board at session start.
+Status updates keep the board current.
+
+=== Cross-Team Notes
+
+Cross-team notes (`.claude/agent-memory/cross-team/notes.md`) hold contextual advisories
+that do not fit the task format.
+
+Use cross-team notes for:
+
+* Announcing new RAG collections or knowledge resources
+* Flagging architectural changes that affect multiple agents
+* Posting notifications about completed work that others should be aware of
+
+=== Doc-Team Feedback Log
+
+The doc-team feedback log (`.claude/agent-memory/doc-team/feedback.md`) is shared between
+`tech-writer` and `senior-tech-writer`.
+It tracks documentation decisions across sessions — what was decided, why, and whether it
+has been acted on.
+
+=== Agent Memory
+
+Each agent has a persistent memory file at `.claude/agent-memory/<agent>/MEMORY.md`.
+This file holds stable project knowledge that the agent should carry into every session:
+terminology decisions, pattern notes, recurring reviewer feedback, active knowledge
+summaries from corpus familiarization passes.
+
+Agent memory is private to each agent but may be referenced when another agent needs to
+understand how a peer's knowledge base is structured.
+
+== Specialization as a Security Property
+
+In a high-assurance environment, role clarity is not just organizational hygiene —
+it is a control.
+When an auditor reviews a NIST citation in UMRS documentation, they can ask:
+which agent produced that citation, under what knowledge base, reviewed by whom?
+
+The agent directory and communication channels documented here make that question
+answerable.
+That is what it means to have a traceable AI pipeline.
+
+== See Also
+
+* xref:workflow-mechanics.adoc[How Work Flows Through the Team]
+* xref:what-ai-does-and-does-not-do.adoc[What AI Does and Does Not Do]
+* xref:devel:index.adoc[Developer Guide] — where contributors interact with the rust-developer agent output

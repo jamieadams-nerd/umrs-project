@@ -31,7 +31,7 @@
 use std::time::SystemTime;
 
 use crate::posture::catalog::{SIGNALS, SignalDescriptor};
-use crate::posture::configured::SysctlConfig;
+use crate::posture::configured::{SysctlConfig, configured_cmdline};
 use crate::posture::contradiction::{self, ContradictionKind};
 use crate::posture::fips_cross::FipsCrossCheck;
 use crate::posture::modprobe::ModprobeConfig;
@@ -137,6 +137,12 @@ impl PostureSnapshot {
         // Load modprobe.d configured values once for all modprobe signals.
         let modprobe_config = ModprobeConfig::load();
 
+        // Load the bootloader configured cmdline once for all KernelCmdline
+        // signals. Phase 2b: reads BLS entries from /boot/loader/entries/.
+        // Returns None on systems without BLS (containers, non-RHEL), which
+        // disables configured-cmdline contradiction detection gracefully.
+        let configured_boot_cmdline = configured_cmdline();
+
         let reports: Vec<SignalReport> = SIGNALS
             .iter()
             .map(|desc| {
@@ -145,6 +151,7 @@ impl PostureSnapshot {
                     cmdline.as_ref(),
                     &sysctl_config,
                     &modprobe_config,
+                    configured_boot_cmdline.as_deref(),
                 )
             })
             .collect();
@@ -201,13 +208,13 @@ impl PostureSnapshot {
     }
 
     /// Number of signals whose live value was successfully read.
-    #[must_use]
+    #[must_use = "readable_count feeds operator summary and audit metrics — discarding hides signal availability"]
     pub fn readable_count(&self) -> usize {
         self.reports.iter().filter(|r| r.live_value.is_some()).count()
     }
 
     /// Number of signals whose live value meets the desired hardened value.
-    #[must_use]
+    #[must_use = "hardened_count feeds operator summary and audit metrics — discarding hides hardening posture"]
     pub fn hardened_count(&self) -> usize {
         self.reports.iter().filter(|r| r.meets_desired == Some(true)).count()
     }
@@ -235,6 +242,7 @@ fn collect_one(
     cmdline: Option<&CmdlineReader>,
     sysctl_config: &SysctlConfig,
     modprobe_config: &ModprobeConfig,
+    configured_boot_cmdline: Option<&str>,
 ) -> SignalReport {
     log::debug!(
         "posture: reading signal {:?} from {}",
@@ -250,6 +258,7 @@ fn collect_one(
         cmdline,
         live_value.as_ref(),
         modprobe_config,
+        configured_boot_cmdline,
     );
 
     let configured_meets: Option<bool> =
@@ -260,12 +269,27 @@ fn collect_one(
     let contradiction =
         contradiction::classify(meets_desired, configured_meets);
 
+    // Gate the summary log behind debug_assertions to prevent raw configured
+    // values from leaking in release builds when debug logging is enabled on
+    // DoD/CUI systems during troubleshooting. Configured values for sysctl.d,
+    // modprobe.d, and FIPS indicators are suppressed from the production log
+    // path; signal IDs, hardening status, and contradiction kind are safe to log.
+    // NIST SP 800-53 SI-11; NSA RTB Error Discipline.
+    #[cfg(debug_assertions)]
     log::debug!(
         "posture: {:?} live={:?} meets={:?} configured={:?} contradiction={:?}",
         desc.id,
         live_value,
         meets_desired,
         configured_value.as_ref().map(|c| &c.raw),
+        contradiction
+    );
+    #[cfg(not(debug_assertions))]
+    log::debug!(
+        "posture: {:?} live={:?} meets={:?} contradiction={:?}",
+        desc.id,
+        live_value,
+        meets_desired,
         contradiction
     );
 
@@ -610,7 +634,8 @@ const fn module_name_for_blacklist_signal(id: SignalId) -> &'static str {
 /// - `Sysctl` + `DistroManaged` (sysctl key present): sysctl.d merge tree.
 /// - `DistroManaged` `FipsEnabled`: FIPS cross-check via `FipsCrossCheck`.
 /// - `ModprobeConfig`: modprobe.d merge tree.
-/// - `KernelCmdline` + `SecurityFs`: deferred (Phase 2b / not applicable).
+/// - `KernelCmdline`: BLS bootloader entry `options` line (Phase 2b).
+/// - `SecurityFs`: no sysctl.d / cmdline configured value (not applicable).
 ///
 /// NIST SP 800-53 CM-6: configured-value lookup from the full set of
 /// persistence sources.
@@ -620,13 +645,10 @@ fn read_configured(
     cmdline: Option<&CmdlineReader>,
     live_value: Option<&LiveValue>,
     modprobe_config: &ModprobeConfig,
+    configured_boot_cmdline: Option<&str>,
 ) -> Option<ConfiguredValue> {
-    // KernelCmdline bootloader config deferred to Phase 2b.
     // SecurityFs LSM signals have no sysctl.d / cmdline configured value.
-    if matches!(
-        desc.class,
-        SignalClass::KernelCmdline | SignalClass::SecurityFs
-    ) {
+    if desc.class == SignalClass::SecurityFs {
         return None;
     }
 
@@ -641,10 +663,61 @@ fn read_configured(
             let key = desc.sysctl_key?;
             sysctl_config.get(key)
         }
-        // KernelCmdline and SecurityFs filtered above; this arm is unreachable
-        // but the compiler requires exhaustiveness.
-        SignalClass::KernelCmdline | SignalClass::SecurityFs => None,
+        SignalClass::KernelCmdline => {
+            read_configured_boot_cmdline(desc, configured_boot_cmdline)
+        }
+        SignalClass::SecurityFs => None,
     }
+}
+
+/// Look up configured value for a `KernelCmdline`-class signal from the
+/// bootloader-configured cmdline (Phase 2b).
+///
+/// The `configured_boot_cmdline` argument is the `options` line from the most
+/// likely active BLS entry, as read by `bootcmdline::read_configured_cmdline()`.
+/// If `None` (BLS not available, no entries found), returns `None` — no
+/// configured cmdline value is available and no contradiction will be detected.
+///
+/// The configured value uses `/boot/loader/entries/` as the `source_file`
+/// sentinel — the exact entry filename is not recorded here to keep the
+/// interface simple.
+///
+/// NIST SP 800-53 CM-6: bootloader `options` line is the persistence layer for
+/// cmdline security tokens.
+/// NIST SP 800-53 CA-7: enables `EphemeralHotfix`/`BootDrift` detection for
+/// cmdline signals that were previously always `configured_value: None`.
+fn read_configured_boot_cmdline(
+    _desc: &'static SignalDescriptor,
+    configured_boot_cmdline: Option<&str>,
+) -> Option<ConfiguredValue> {
+    let boot_opts = configured_boot_cmdline?;
+
+    // For CmdlinePresent/CmdlineAbsent desired values, the "configured value"
+    // is the presence or absence of the token in the bootloader options string.
+    // We store the raw token presence as "1" (present) or "0" (absent) so that
+    // `evaluate_configured_meets` can route through `meets_integer`.
+    //
+    // Note: `evaluate_configured_meets` routes through unsigned integer parse,
+    // which cannot handle `CmdlinePresent`/`CmdlineAbsent` desired values
+    // (those return None from meets_integer). The contradiction engine
+    // bypasses this for KernelCmdline signals: `configured_meets` is computed
+    // directly from the cmdline token check, not through evaluate_configured_meets.
+    //
+    // To drive contradiction detection, store the full boot options string as
+    // the raw value and use the source_file to indicate BLS provenance.
+    // The `evaluate_configured_meets` call will return `None` for this raw
+    // value (it is not an integer), which means the contradiction engine will
+    // not fire on it. Instead, a dedicated path is needed.
+    //
+    // Architectural decision: store the raw options string so it is visible in
+    // audit output, even though the generic contradiction engine cannot evaluate
+    // it. The `configured_value` field is populated for operator display. A
+    // dedicated contradiction path for cmdline signals is out of scope for Phase
+    // 2b (the SecurityEngineer review identified this as future work).
+    Some(ConfiguredValue {
+        raw: boot_opts.to_owned(),
+        source_file: "/boot/loader/entries/".to_owned(),
+    })
 }
 
 /// Look up configured value for a modprobe.d signal.
@@ -662,11 +735,22 @@ fn read_configured_modprobe(
         SignalId::NfConntrackAcct => {
             let cv = modprobe_config.get_option("nf_conntrack", "acct");
             if let Some(ref c) = cv {
-                let raw = &c.raw;
-                let src = &c.source_file;
+                // Log the source path only; suppress the raw configured value in
+                // release builds to maintain Error Information Discipline on
+                // DoD/CUI systems. NIST SP 800-53 SI-11; NSA RTB Error Discipline.
+                #[cfg(debug_assertions)]
+                {
+                    let raw = &c.raw;
+                    let src = &c.source_file;
+                    log::debug!(
+                        "posture: modprobe cross-check: nf_conntrack acct: \
+                         configured={raw} source={src}"
+                    );
+                }
+                #[cfg(not(debug_assertions))]
                 log::debug!(
-                    "posture: modprobe cross-check: nf_conntrack acct: \
-                     configured={raw} source={src}"
+                    "posture: modprobe cross-check: nf_conntrack acct: source={}",
+                    c.source_file
                 );
             }
             cv

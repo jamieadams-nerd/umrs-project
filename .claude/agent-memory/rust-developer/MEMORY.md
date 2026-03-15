@@ -228,22 +228,29 @@ Key test patterns:
 - Fix: extract logical blocks into helper functions, NOT suppress with `#[allow]`
 - Example: `build_inode_flag_rows(dirent)` extracted from `build_security_rows()` in file_stat.rs
 
-## posture Module (Phase 1 — implemented 2026-03-14)
+## posture Module (Phase 1+2a+2b — implemented through 2026-03-15)
 
 Module location: `umrs-platform/src/posture/`
 
 Files:
 - `mod.rs` — public API re-exports
-- `signal.rs` — SignalId (22 variants), SignalClass, AssuranceImpact, DesiredValue, LiveValue, ConfiguredValue
-- `catalog.rs` — SIGNALS: &[SignalDescriptor] — 22 static entries, const array
-- `reader.rs` — KptrRestrict (hand-written reference), define_sysctl_signal! macro (13 signals), CmdlineReader, BootIdReader, read_live_sysctl(), read_lockdown_live()
-- `configured.rs` — SysctlConfig (sysctl.d merge), configured_cmdline() (Phase 2 placeholder)
-- `contradiction.rs` — ContradictionKind (EphemeralHotfix/BootDrift/SourceUnavailable), classify() (const fn), evaluate_configured_meets()
-- `snapshot.rs` — PostureSnapshot::collect(), SignalReport, iter/findings/contradictions/by_impact/get methods
+- `signal.rs` — SignalId (27 variants), SignalClass (Sysctl/KernelCmdline/Lockdown/ModprobeBlacklist), AssuranceImpact, DesiredValue, LiveValue, ConfiguredValue
+- `catalog.rs` — SIGNALS: &[SignalDescriptor] — 27 static entries
+- `reader.rs` — KptrRestrict, define_sysctl_signal! macro, CmdlineReader, BootIdReader, read_live_sysctl(), read_lockdown_live()
+- `configured.rs` — SysctlConfig (sysctl.d merge), configured_cmdline() delegates to bootcmdline::read_configured_cmdline()
+- `contradiction.rs` — ContradictionKind; evaluate_configured_meets() has i32 signed fallback for negative sysctl values (e.g., perf_event_paranoid=-1)
+- `snapshot.rs` — PostureSnapshot::collect(), SignalReport; collect_one() raw configured-value log gated behind cfg(debug_assertions) (F-01 fix)
+- `bootcmdline.rs` — NEW Phase 2b: BLS entry reader; selection heuristic: single→osrelease match→last; graceful degrade to None
+- `fips_cross.rs` — FipsCrossCheck; uses std::fs::metadata() not Path::exists() (TOCTOU fix)
+- `modprobe.rs` — ModprobeConfig; ParsedDirective now has Install{module,command,is_hard_blacklist} variant; hard_blacklisted HashMap; is_hard_blacklisted()/blacklist_source() methods
 
-Reused kattrs types: ProcFips (FipsEnabled), ModuleLoadLatch (ModulesDisabled), KernelLockdown (Lockdown)
-
-Tests: `umrs-platform/tests/posture_tests.rs` — 35 tests, all passing
+Tests: posture_tests.rs (63), posture_modprobe_tests.rs (50), posture_bootcmdline_tests.rs (10) — all passing
 Example: `umrs-platform/examples/posture_demo.rs`
 
-Phase 2 deferred: bootloader cmdline reading, modprobe.d cross-check, FIPS distro cross-check, CPU sub-signals, SEC cache
+Phase 2b remaining (opus scope): CPU mitigation sub-signals, core_pattern, SEC cache integration
+
+## Error Information Discipline Pattern (posture/configured.rs canonical)
+
+Debug logs: log key + line number, suppress raw configured values in release builds.
+In snapshot.rs collect_one(): dual cfg(debug_assertions)/cfg(not(debug_assertions)) blocks — debug shows full configured.raw, release omits it.
+Apply this to every new source file that logs variable data from config files or kernel nodes.

@@ -182,11 +182,23 @@ pub fn evaluate_configured_meets(
 
     match raw.trim().parse::<u32>() {
         Ok(v) => desired.meets_integer(v),
-        // Note: negative configured values (e.g., perf_event_paranoid=-1)
-        // parse as Err from u32 and produce None. This is conservative —
-        // a negative configured value will not trigger a contradiction even if
-        // the live value also differs. The signed reader handles live values
-        // but sysctl.d configured values go through this unsigned path.
-        Err(_) => None,
+        Err(_) => {
+            // Fall back to signed parse for sysctl nodes that legitimately
+            // store negative configured values (e.g., `kernel.perf_event_paranoid = -1`
+            // means "unrestricted for all users"). Without this path, a sysctl.d file
+            // with `perf_event_paranoid = -1` produces `None`, suppressing
+            // `EphemeralHotfix` detection when the live value was hotfixed to 2.
+            //
+            // The signed path routes through `meets_signed_integer`, which compares
+            // in `i64` to avoid overflow, and correctly returns `Some(false)` for
+            // a negative value against `AtLeast(2)`.
+            //
+            // NIST SP 800-53 CA-7: must not silently suppress EphemeralHotfix
+            // when the configured and live values legitimately disagree.
+            raw.trim()
+                .parse::<i32>()
+                .ok()
+                .and_then(|v| desired.meets_signed_integer(v))
+        }
     }
 }

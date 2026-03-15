@@ -1,0 +1,265 @@
+= How Knowledge Enters the System
+:description: The full pipeline from knowledge gap to grounded agent output — RAG architecture, corpus familiarization, and why each stage exists.
+:toc: left
+:toclevels: 2
+
+[id="knowledge-pipeline"]
+
+This is the most important page in the AI transparency module for anyone evaluating
+the technical soundness of this methodology.
+
+The question that matters is not "did you use AI to write this?" — it is "how do you
+know the AI was right?"
+
+The answer is the pipeline described here.
+
+== The Problem With Raw AI Knowledge
+
+Large language models are trained on massive text corpora.
+That training data has two critical limitations for high-assurance technical work.
+
+*First: the training cutoff.*
+A model trained before August 2025 has no knowledge of FIPS 203 (finalized August 2024),
+NIST SP 800-171 Rev 3 (May 2024), or the CMMC Final Rule (October 2024).
+Standards evolve.
+Compliance requirements change.
+A model's training-data knowledge of any standard may be months or years out of date.
+
+*Second: confabulation.*
+Language models can produce plausible-sounding citations that do not correspond to real
+controls.
+A model that has seen thousands of NIST documents will produce well-formatted citations
+with confident tone — and some of those citations will be wrong.
+Not obviously wrong.
+Plausibly wrong.
+The kind of wrong that passes a quick review.
+
+For a general-purpose assistant, these limitations are manageable.
+For a project where control citations appear in code comments that auditors will review,
+they are unacceptable.
+
+== The Solution: Retrieval-Augmented Generation
+
+RAG (Retrieval-Augmented Generation) is a technique that replaces model recall with
+document retrieval.
+Instead of asking the model to remember what NIST SP 800-53 AC-4 says, the system
+fetches the actual text from a stored document and gives it to the model as context.
+
+The model is then summarizing and applying a specific, inspectable text — not generating
+from training data.
+
+The UMRS RAG pipeline has three layers:
+
+[cols="1,2,2", options="header"]
+|===
+| Layer | Location | Role
+
+| *RAG database*
+| Queried via `rag-query` skill / `rag/query.py`
+| Chunked, searchable text from all ingested collections — fast semantic search
+
+| *Source documents*
+| `.claude/references/<collection>/`
+| Original PDFs, HTML, and Markdown used to build the RAG — full document context
+
+| *Official refs archive*
+| `refs/nist/`, `refs/dod/`, `refs/fedramp/`, etc.
+| Checksummed canonical copies of standards — integrity-verified via `refs/manifest.md`
+|===
+
+== The Full Pipeline
+
+This is how knowledge moves from a gap to a grounded agent output.
+
+[source,mermaid]
+----
+flowchart TD
+    A[Engineer identifies knowledge gap] --> B[Researcher acquires source documents]
+    B --> C[SHA-256 checksums recorded in refs/manifest.md]
+    C --> D[Documents stored in official refs archive]
+    D --> E[Copied to .claude/references/collection/]
+    E --> F[ingest.py chunks and indexes into ChromaDB]
+    F --> G[Corpus familiarization skill runs]
+    G --> H[Four knowledge artifacts written to .claude/knowledge/collection/]
+    H --> I[Agent produces grounded output]
+    I --> J[Engineer reviews and accepts or rejects]
+    J --> K[Commit — the audit trail]
+----
+
+=== Stage 1: Gap Identification
+
+The engineer identifies that the current knowledge base is insufficient for a specific
+task.
+Example: "The security-auditor agent needs to classify its findings by RMF assessment
+method type (Examine, Interview, Test)."
+That knowledge lives in NIST SP 800-53A Rev 5 — a document the agent has not read.
+
+=== Stage 2: Document Acquisition
+
+The researcher agent locates and downloads the authoritative source.
+For NIST documents: `nvlpubs.nist.gov` — the canonical NIST publications server.
+For DoD documents: `esd.whs.mil` — the official DoD Issuances portal.
+For CMMC documents: `dodcio.defense.gov` — the official DoD CIO portal.
+
+The researcher verifies the document is from an official source before acquiring it.
+
+=== Stage 3: Manifest Recording
+
+The document is checksummed with SHA-256 and recorded in `refs/manifest.md` with:
+
+* Full title
+* Issuing authority
+* Version and publication date
+* Download date
+* Source URL
+* SHA-256 checksum
+* Key relevance statement
+
+This record makes the knowledge base auditable.
+An auditor can verify that a specific document was obtained from a specific URL on a
+specific date and that the file has not been modified since.
+
+=== Stage 4: Ingestion
+
+The document is copied to `.claude/references/<collection>/` and the ingest pipeline runs:
+
+. `ingest.py` reads the source documents
+. Documents are converted from PDF/HTML/DOCX to Markdown as needed
+. The converted text is split into overlapping chunks (default ~1,000 tokens)
+. Each chunk is embedded and stored in ChromaDB with metadata (collection, source file, section heading)
+. A manifest hash check prevents re-ingesting unchanged files
+
+=== Stage 5: Corpus Familiarization
+
+After ingestion, the target agent runs the corpus familiarization skill.
+This is not optional.
+An agent that has RAG access but has not run familiarization knows that material exists
+but does not know what to ask for.
+
+The familiarization skill produces four artifacts:
+
+* *Concept index* — one entry per document covering: what it covers, key terms, what decisions it governs, related documents
+* *Cross-reference map* — where documents agree, conflict, chain, or leave gaps
+* *Style decision record* — project-specific resolutions to cross-reference tensions
+* *Term glossary* — canonical terminology from authoritative sources, with source citations
+
+These artifacts are written to `.claude/knowledge/<collection>/` and loaded into the
+agent's always-on context.
+They function as the agent's internal map of its own knowledge.
+
+=== Stage 6: Grounded Work
+
+The agent can now produce grounded output.
+When it cites NIST SP 800-53A AC-2.2 examination procedure, it has read that document.
+The citation traces to a specific chunk in the RAG database, which traces to a specific
+section of a PDF that is checksummed in `refs/manifest.md`.
+
+=== Stage 7: Review and Acceptance
+
+The engineer reviews the output.
+AI-produced citations are not accepted without review.
+The commit is the acceptance record.
+
+== Why Semantic Search
+
+The RAG database uses vector embeddings for semantic search, not keyword matching.
+A query for "mandatory access control write policy enforcement" returns relevant chunks
+about Bell-LaPadula star property and SELinux MLS constraints — even if those chunks
+do not contain the exact phrase.
+
+This matters for compliance work because control descriptions use varying terminology.
+A query that relies on exact keyword matching would miss relevant material that uses
+synonymous language.
+
+The search scores tell the agent how relevant a chunk is (0.0–1.0).
+Scores above 0.85 indicate high relevance.
+Scores below 0.6 are treated as potentially tangential and require agent judgment about
+whether to use them.
+
+== Current Collection Sizes
+
+As of the module's last update (2026-03-15):
+
+[cols="2,1,3", options="header"]
+|===
+| Collection | Chunks | Coverage summary
+
+| `kernel-docs`
+| 22,738
+| Linux kernel documentation tree — internals, LSM hooks, namespaces, capabilities
+
+| `access-control`
+| 1,360
+| Bell-LaPadula, Biba, Brewer-Nash, Saltzer-Schroeder, ABAC, ZTA, SELinux, POSIX ACL
+
+| `nist`
+| 1,447
+| NIST SPs (800-53r5, 800-171r2/r3, 800-171Ar3, 800-218 SSDF) + FIPS 140-2/3
+
+| `rmf-methodology`
+| 1,132
+| NIST SP 800-53A r5, 800-37 r2, 800-30 r1, 800-39
+
+| `cmmc`
+| 545
+| CMMC Final Rule (32 CFR 170) + Assessment Guide L2 v2.13
+
+| `dod-5200`
+| 360
+| DoD 5200.01 (Info Security Program) + DoDI 5200.48 (CUI policy)
+
+| `accreditation-artifacts`
+| 405
+| FedRAMP SSP/SAP/SAR templates + NIST SP 800-18
+
+| `selinux-notebook`
+| 691
+| SELinux reference — policy, TE, MLS/MCS, labeling, xattrs
+
+| `nist-pqc`
+| 264
+| FIPS 203/204/205 (ML-KEM, ML-DSA, SLH-DSA) + 11 web articles on PQC migration
+
+| `doc-structure`
+| 102
+| Diataxis, Antora, Red Hat modular docs, Google style, GitLab docs
+
+| `rustdoc-book`
+| 194
+| Rustdoc reference — doc comment syntax, attributes, intra-doc links
+|===
+
+See xref:rag-collections.adoc[RAG Collections and Their Sources] for the full reference
+table with source documents.
+
+== The Honest Limitations
+
+RAG grounding reduces — but does not eliminate — AI knowledge uncertainty.
+
+*Retrieval is semantic, not exact.*
+A retrieved chunk may be adjacent to the right answer rather than the answer itself.
+An agent may retrieve the wrong section of a standard and apply it to the wrong context.
+Engineer review closes this gap.
+
+*Training data is not fully auditable.*
+The underlying language model (Claude) has its own training data that is not controlled
+or inspectable.
+When an agent responds to a query, its response is influenced by both the retrieved
+context and its training-data priors.
+Grounding reduces the influence of training-data priors, but they do not disappear.
+
+*Claims without a RAG path are flagged.*
+When an agent produces a claim that has no retrievable source in the current collections,
+it is required to flag it explicitly for manual verification.
+Ungrounded claims should not appear in committed documentation without engineer
+verification against a source.
+
+These limitations are acknowledged here because honest disclosure of gaps is itself
+a component of the traceability requirement.
+
+== See Also
+
+* xref:rag-collections.adoc[RAG Collections and Their Sources]
+* xref:corpus-familiarization.adoc[Corpus Familiarization]
+* xref:knowledge-provenance.adoc[Knowledge Provenance and Claim Traceability]
+* xref:why-transparency.adoc[Why We Document the AI Pipeline]

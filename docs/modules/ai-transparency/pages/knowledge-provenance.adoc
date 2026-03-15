@@ -1,0 +1,186 @@
+= Knowledge Provenance and Claim Traceability
+:description: How every security claim in UMRS documentation traces back to a specific source document — the full traceability chain from committed artifact to checksummed reference.
+:toc: left
+:toclevels: 2
+
+[id="knowledge-provenance"]
+
+Knowledge provenance is the question: where did this come from, and how do I verify it?
+
+For code, provenance is relatively well-understood.
+`git blame` shows who wrote a line and when.
+`git log` shows the commit message that explains why.
+Dependency lockfiles pin third-party code to specific versions.
+
+For AI-assisted documentation and compliance annotations, provenance requires more
+deliberate engineering.
+This page documents the chain.
+
+== The Traceability Chain
+
+When UMRS documentation contains a compliance citation — for example, `NIST SP 800-53 AC-4`
+appearing in a Rust doc comment or architecture page — that citation has a complete,
+inspectable provenance chain:
+
+. A UMRS doc comment or documentation page contains the citation
+. That citation was proposed by an AI agent during development work
+. The agent queried the `nist` RAG collection and retrieved a matching chunk
+. That chunk came from `refs/nist/sp800-53r5.pdf`
+. That PDF has a SHA-256 checksum recorded in `refs/manifest.md`
+. The engineer reviewed the citation and accepted it in a git commit
+
+Each link in this chain is inspectable.
+None of the links is implicit or assumed.
+
+== Where to Inspect the Chain
+
+=== The Manifest: `refs/manifest.md`
+
+This is the starting point for any provenance investigation.
+`refs/manifest.md` records every reference document in the project:
+
+* Full title and issuing authority
+* Version and publication date
+* Download date
+* Source URL — the exact URL from which the document was obtained
+* SHA-256 checksum — computed at download time
+* Key relevance — what the document governs in this project
+
+To verify a document is authentic and unmodified:
+
+[source,bash]
+----
+sha256sum refs/nist/sp800-53r5.pdf
+# Expected: fc63bcd61715d0181dd8e85998b1e6201ae3515fc6626102101cab1841e11ec6
+----
+
+A mismatch means the file was corrupted or modified after download.
+In either case, the document must not be used as a reference and must be re-downloaded
+and re-verified.
+
+=== The Source Documents: `.claude/references/<collection>/`
+
+These are the files that were fed into the RAG ingestion pipeline.
+For standards like NIST SPs and FIPS documents, the files in `.claude/references/`
+are copies of the files in `refs/`.
+For supplementary material (man pages, web articles, academic papers), the original
+sources may differ.
+
+When a RAG result references a specific source file, the full original document is
+available in the corresponding collection directory.
+
+=== The RAG Database: `rag/chroma/`
+
+ChromaDB stores each chunk with its metadata:
+* Collection name
+* Source file path (relative to `.claude/references/`)
+* Section heading (the Markdown heading the chunk falls under)
+* Embedding vector
+
+When an agent cites a specific control or makes a claim grounded in RAG retrieval,
+it includes: collection name, source file, and section heading.
+These are the coordinates needed to locate the original passage.
+
+=== The Git History
+
+The git log is the audit trail for what was accepted.
+Every compliance citation that appears in committed code or documentation was reviewed
+by the engineer before the commit.
+
+The commit message provides context.
+The diff shows exactly what changed.
+The combination — inspectable diff plus human-authored commit message — is the acceptance
+record.
+
+AI agents do not commit.
+Every commit in this repository is a human action.
+
+== A Worked Example
+
+Here is how an auditor would trace a specific citation.
+
+*Claim*: `umrs-selinux/src/context.rs` has a doc comment citing `NIST SP 800-53 AC-4`.
+
+*Step 1 — Find the commit.*
+`git log -S "AC-4" umrs-selinux/src/context.rs` — find the commit that introduced the
+citation.
+
+*Step 2 — Read the commit.*
+The commit message explains why the citation was added and who accepted it.
+
+*Step 3 — Trace to the source.*
+The security-auditor or engineer would have retrieved the AC-4 definition from the
+`nist` RAG collection, which includes `refs/nist/sp800-53r5.pdf`.
+
+*Step 4 — Verify the document.*
+`sha256sum refs/nist/sp800-53r5.pdf` — compare against the manifest entry
+`fc63bcd61715d0181dd8e85998b1e6201ae3515fc6626102101cab1841e11ec6`.
+
+*Step 5 — Verify the control.*
+Open `refs/nist/sp800-53r5.pdf`, locate the AC-4 control definition, and verify that
+the citation in the code comment accurately describes the control implementation.
+
+The chain is complete.
+No step relies on trusting an AI's memory.
+Every step is verifiable against inspectable artifacts.
+
+== Limitations and Honest Gaps
+
+=== Retrieval Is Semantic, Not Exact
+
+RAG retrieval uses vector similarity search.
+A retrieved chunk may be adjacent to the relevant passage rather than the exact passage.
+An agent may retrieve the correct section heading but misread the specific requirement
+within it.
+
+This is why engineer review is non-negotiable.
+The agent presents a candidate citation with source; the engineer verifies the specific
+claim against the specific text.
+
+=== Model Training Data Is Not Auditable
+
+The underlying language model (Claude) has training data that is not controlled or
+inspectable by this project.
+When an agent responds, its response is influenced by both the retrieved context and
+its training-data priors.
+
+RAG grounding reduces the influence of training-data priors, but does not eliminate them.
+An agent that retrieves the correct passage may still interpret it through a training-data
+lens that introduces subtle inaccuracies.
+
+The mitigation is the same as for retrieval errors: engineer review of every citation.
+
+=== Claims Without a RAG Path Are Flagged
+
+When an agent produces a compliance claim with no retrievable source in the current
+collections, it is required to flag it explicitly:
+"This claim has no RAG grounding — manual verification against the source document is
+required before committing."
+
+Ungrounded claims should not appear in committed documentation without explicit engineer
+verification.
+If an auditor finds an ungrounded claim that was accepted without verification, that is
+a finding worth raising — and the correction process is the same as any other finding:
+trace the claim, verify it, correct if needed, commit the fix.
+
+== Why This Matters for CUI and DoD Contexts
+
+NIST SP 800-53 AU-10 (Non-Repudiation) establishes the principle that information
+systems must protect against individuals falsely denying having performed specific actions.
+In the documentation context, this principle extends to claims: a documentation record
+that cannot be traced to its source is a non-repudiation gap.
+
+The UMRS traceability chain — from committed documentation through git history, through
+the RAG database, through source documents, through the checksummed manifest — is the
+documentation equivalent of a non-repudiation record.
+
+It is also the documentation equivalent of a reproducible build.
+An auditor can inspect the knowledge sources the same way they can inspect the code
+dependencies.
+
+== See Also
+
+* xref:knowledge-pipeline.adoc[How Knowledge Enters the System]
+* xref:rag-collections.adoc[RAG Collections and Their Sources]
+* xref:auditor-guide.adoc[Auditor's Guide]
+* xref:reference:compliance-frameworks.adoc[Compliance Frameworks] — framework context for control citations

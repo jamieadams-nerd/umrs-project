@@ -84,13 +84,24 @@ const SYS_MODULE_BASE: &str = "/sys/module";
 
 /// Result of parsing one modprobe.d line.
 ///
-/// `Unrecognised` is produced for known-unhandled directives (`install`,
-/// `softdep`, `alias`, `override`) — they are logged at debug and silently
-/// excluded from the merged configuration. This is the fail-closed behaviour
-/// for unrecognised but non-malformed input.
+/// Phase 2b adds `Install` for `install <module> <command>` directives.
+/// An `install` directive with `/bin/true` or `/bin/false` as the command
+/// is a **hard blacklist** — it prevents module loading even when explicitly
+/// requested via `modprobe`. The probe detects this pattern and records it
+/// as a stronger form of blacklist evidence.
+///
+/// `Unrecognised` is produced for known-unhandled directives (`softdep`,
+/// `alias`, `override`) — they are logged at debug and silently excluded
+/// from the merged configuration. This is the fail-closed behaviour for
+/// unrecognised but non-malformed input.
 ///
 /// Exposed as `pub` to enable integration testing of the parser without
 /// filesystem interaction.
+///
+/// NIST SP 800-53 CM-7: Least Functionality — `install <mod> /bin/true`
+/// is the sysadmin-standard mechanism for enforcing module load prevention.
+/// Detecting it closes the gap where a soft `blacklist` entry could be
+/// bypassed by an explicit `modprobe` call.
 #[derive(Debug, PartialEq, Eq)]
 pub enum ParsedDirective<'a> {
     /// `options <module> <param>=<value> [...]`
@@ -98,14 +109,32 @@ pub enum ParsedDirective<'a> {
         module: &'a str,
         params: Vec<(&'a str, &'a str)>,
     },
-    /// `blacklist <module>`
+    /// `blacklist <module>` — soft blacklist. Prevents automatic loading but
+    /// can be bypassed by an explicit `modprobe` call.
     Blacklist {
         module: &'a str,
     },
+    /// `install <module> <command>` — may be a hard blacklist.
+    ///
+    /// When `command` is `/bin/true`, `/bin/false`, or `/usr/bin/true`,
+    /// this is a hard blacklist: `modprobe <module>` silently succeeds but
+    /// the kernel's load request executes the command instead of loading the
+    /// module. The `is_hard_blacklist` field is `true` for these patterns.
+    ///
+    /// Other commands (e.g., `modprobe --ignore-install <module>`) are
+    /// complex redirections not equivalent to a blacklist. These are recorded
+    /// with `is_hard_blacklist: false` and logged for operator awareness.
+    Install {
+        module: &'a str,
+        command: &'a str,
+        /// `true` if `command` is a recognised hard-blacklist sentinel
+        /// (`/bin/true`, `/bin/false`, or `/usr/bin/true`).
+        is_hard_blacklist: bool,
+    },
     /// Comment or blank line — safely ignored.
     Comment,
-    /// Recognised directive not handled in Phase 2a (`install`, `softdep`,
-    /// `alias`, `override`).
+    /// Recognised directive not handled in Phase 2b (`softdep`, `alias`,
+    /// `override`).
     Unrecognised {
         keyword: &'a str,
     },
@@ -122,16 +151,28 @@ pub enum ParsedDirective<'a> {
 /// Built by `ModprobeConfig::load()`, which reads all modprobe.d sources in
 /// precedence order and produces final option and blacklist maps.
 ///
+/// Two blacklist maps are maintained:
+/// - `blacklisted` — soft blacklists from `blacklist <module>` directives.
+///   Can be bypassed by an explicit `modprobe` invocation.
+/// - `hard_blacklisted` — hard blacklists from `install <module> /bin/true`
+///   (or `/bin/false`) directives. These redirect the kernel's load request
+///   to a no-op command, preventing loading even with explicit `modprobe`.
+///
 /// NIST SP 800-53 CM-6: provides the configured (persistence-layer) baseline for
 /// module parameter and blacklist contradiction detection.
+/// NIST SP 800-53 CM-7: Least Functionality — hard blacklist evidence distinguishes
+/// between bypass-resistant and bypass-susceptible module load prevention.
 /// NSA RTB RAIN: `ModprobeConfig` is constructed via a validated builder;
 /// callers receive a complete, validated value — not a partial `Result`.
 #[must_use = "modprobe config carries module parameter findings — do not discard"]
 pub struct ModprobeConfig {
     /// module_name → { param_name → (value, source_file) }
     options: HashMap<String, HashMap<String, (String, String)>>,
-    /// module_name → source_file (soft-blacklisted modules)
+    /// module_name → source_file (soft-blacklisted modules via `blacklist <mod>`)
     blacklisted: HashMap<String, String>,
+    /// module_name → source_file (hard-blacklisted modules via
+    /// `install <mod> /bin/true` or `install <mod> /bin/false`)
+    hard_blacklisted: HashMap<String, String>,
 }
 
 impl ModprobeConfig {
@@ -151,31 +192,38 @@ impl ModprobeConfig {
         let mut options: HashMap<String, HashMap<String, (String, String)>> =
             HashMap::new();
         let mut blacklisted: HashMap<String, String> = HashMap::new();
+        let mut hard_blacklisted: HashMap<String, String> = HashMap::new();
         let mut file_count: usize = 0;
 
         for dir in MODPROBE_SEARCH_DIRS {
             let dir_path = Path::new(dir);
-            if dir_path.exists() {
-                log::debug!("posture: modprobe.d merge: scanning {dir} ...");
-                let loaded =
-                    load_conf_dir(dir_path, &mut options, &mut blacklisted);
-                file_count = file_count.saturating_add(loaded);
-            } else {
-                log::debug!("posture: modprobe.d dir absent: {dir}");
-            }
+            // The `exists()` pre-check is omitted intentionally. `load_conf_dir`
+            // calls `read_dir` and handles `NotFound` in its error arm, collapsing
+            // the TOCTOU window from a two-step check-then-open to a single
+            // operation. NIST SP 800-53 SI-10.
+            log::debug!("posture: modprobe.d merge: scanning {dir} ...");
+            let loaded = load_conf_dir(
+                dir_path,
+                &mut options,
+                &mut blacklisted,
+                &mut hard_blacklisted,
+            );
+            file_count = file_count.saturating_add(loaded);
         }
 
         #[cfg(debug_assertions)]
         {
             let module_count = options.len();
             let blacklist_count = blacklisted.len();
+            let hard_count = hard_blacklisted.len();
             log::debug!(
                 "posture: modprobe.d merge completed in {} µs: {} files, {} modules, \
-                 {} blacklisted",
+                 {} soft-blacklisted, {} hard-blacklisted",
                 start.elapsed().as_micros(),
                 file_count,
                 module_count,
-                blacklist_count
+                blacklist_count,
+                hard_count
             );
         }
 
@@ -185,6 +233,7 @@ impl ModprobeConfig {
         Self {
             options,
             blacklisted,
+            hard_blacklisted,
         }
     }
 
@@ -208,20 +257,46 @@ impl ModprobeConfig {
         })
     }
 
-    /// Check whether a module is soft-blacklisted.
+    /// Check whether a module is blacklisted (soft or hard).
     ///
-    /// Returns `Some(true)` if a `blacklist <module>` entry was found,
-    /// `Some(false)` is never returned (absence means not found in config,
-    /// not "explicitly allowed"). Returns `None` if not found at all.
+    /// Returns `Some(true)` if a `blacklist <module>` **or** an
+    /// `install <module> /bin/true` entry was found in any modprobe.d source.
+    /// Returns `None` if the module is not present in any blacklist map
+    /// (absence means "not configured in modprobe.d", not "explicitly allowed").
     ///
-    /// Note: a `blacklist` entry is a **soft** blacklist — userspace can still
-    /// load the module explicitly. For a hard blacklist, `install <mod> /bin/true`
-    /// is needed (Phase 2b).
+    /// Use `is_hard_blacklisted()` to distinguish bypass-resistant hard
+    /// blacklists (`install <mod> /bin/true`) from bypass-susceptible soft
+    /// blacklists (`blacklist <mod>`).
     ///
     /// NIST SP 800-53 CM-6: configured blacklist state for contradiction detection.
+    /// NIST SP 800-53 CM-7: Least Functionality — both forms prevent module
+    /// loading in the intended configuration; both are security-relevant findings.
     #[must_use = "blacklist check result must be examined — None means absent from config, not allowed"]
     pub fn is_blacklisted(&self, module: &str) -> Option<bool> {
-        if self.blacklisted.contains_key(module) {
+        if self.blacklisted.contains_key(module)
+            || self.hard_blacklisted.contains_key(module)
+        {
+            Some(true)
+        } else {
+            None
+        }
+    }
+
+    /// Check whether a module is hard-blacklisted via `install <mod> /bin/true`.
+    ///
+    /// Returns `Some(true)` only if an `install <module> /bin/true` (or
+    /// `/bin/false`) directive was found. Returns `None` if absent from the
+    /// hard-blacklist map (which may still be soft-blacklisted).
+    ///
+    /// A hard blacklist is bypass-resistant: even an explicit `modprobe <module>`
+    /// invocation will silently succeed without loading the module. Soft
+    /// blacklists (`blacklist <mod>`) can be bypassed by explicit modprobe.
+    ///
+    /// NIST SP 800-53 CM-7: hard blacklist provides stronger load prevention
+    /// than soft blacklist; detecting it provides higher-confidence evidence.
+    #[must_use = "hard blacklist check result must be examined — None means not hard-blacklisted"]
+    pub fn is_hard_blacklisted(&self, module: &str) -> Option<bool> {
+        if self.hard_blacklisted.contains_key(module) {
             Some(true)
         } else {
             None
@@ -230,10 +305,16 @@ impl ModprobeConfig {
 
     /// Return the source file that established the blacklist entry for `module`.
     ///
-    /// Returns `None` if the module is not blacklisted.
+    /// Prefers the hard-blacklist source file when both are present, because
+    /// the `install` directive provides stronger evidence. Returns `None` if
+    /// the module is not present in either blacklist map.
     #[must_use = "blacklist source file result must be examined"]
     pub fn blacklist_source(&self, module: &str) -> Option<&str> {
-        self.blacklisted.get(module).map(String::as_str)
+        // Prefer hard blacklist evidence (stronger guarantee).
+        self.hard_blacklisted
+            .get(module)
+            .or_else(|| self.blacklisted.get(module))
+            .map(String::as_str)
     }
 }
 
@@ -250,6 +331,7 @@ fn load_conf_dir(
     dir: &Path,
     options: &mut HashMap<String, HashMap<String, (String, String)>>,
     blacklisted: &mut HashMap<String, String>,
+    hard_blacklisted: &mut HashMap<String, String>,
 ) -> usize {
     let mut files: Vec<PathBuf> = match std::fs::read_dir(dir) {
         Ok(entries) => entries
@@ -273,7 +355,7 @@ fn load_conf_dir(
 
     let mut count = 0usize;
     for path in &files {
-        match load_conf_file(path, options, blacklisted) {
+        match load_conf_file(path, options, blacklisted, hard_blacklisted) {
             Ok(()) => count = count.saturating_add(1),
             Err(e) => {
                 log::debug!(
@@ -288,8 +370,9 @@ fn load_conf_dir(
 
 /// Parse one modprobe.d `.conf` file, inserting directives into the maps.
 ///
-/// `options` and `blacklist` directives are applied with last-writer-wins
-/// semantics (later files in the precedence order overwrite earlier ones).
+/// `options`, `blacklist`, and `install` (hard blacklist) directives are
+/// applied with last-writer-wins semantics (later files in the precedence
+/// order overwrite earlier ones).
 ///
 /// NIST SP 800-53 SI-10: Input Validation — malformed lines are logged and
 /// skipped rather than silently ignored or causing a parse error.
@@ -297,6 +380,7 @@ fn load_conf_file(
     path: &Path,
     options: &mut HashMap<String, HashMap<String, (String, String)>>,
     blacklisted: &mut HashMap<String, String>,
+    hard_blacklisted: &mut HashMap<String, String>,
 ) -> io::Result<()> {
     let content = std::fs::read_to_string(path)?;
     let source = path.to_string_lossy().into_owned();
@@ -334,13 +418,31 @@ fn load_conf_file(
                 );
                 blacklisted.insert(module.to_owned(), source.clone());
             }
+            ParsedDirective::Install {
+                module,
+                command,
+                is_hard_blacklist,
+            } => {
+                if is_hard_blacklist {
+                    log::debug!(
+                        "posture: modprobe.d merge: {source}:{human_no} \
+                         install {module} (hard blacklist via '{command}')"
+                    );
+                    hard_blacklisted.insert(module.to_owned(), source.clone());
+                } else {
+                    log::debug!(
+                        "posture: modprobe.d merge: {source}:{human_no} \
+                         install {module} (complex command — not a hard blacklist)"
+                    );
+                }
+            }
             ParsedDirective::Comment => {}
             ParsedDirective::Unrecognised {
                 keyword,
             } => {
                 log::debug!(
                     "posture: modprobe.d merge: {source}:{human_no} unrecognised \
-                     directive '{keyword}' (Phase 2b handles install/softdep)"
+                     directive '{keyword}' — skipped"
                 );
             }
             ParsedDirective::Malformed => {
@@ -364,7 +466,9 @@ fn load_conf_file(
 /// - Blank lines and comments (`#`)
 /// - `options <module> <param>=<value> [...]`
 /// - `blacklist <module>`
-/// - Unrecognised keywords (`install`, `softdep`, `alias`, `override`) —
+/// - `install <module> <command>` — Phase 2b. Hard blacklists are detected
+///   when `command` is `/bin/true`, `/bin/false`, or `/usr/bin/true`.
+/// - Unrecognised keywords (`softdep`, `alias`, `override`) —
 ///   returned as `Unrecognised` for caller to log at debug.
 /// - Anything else → `Malformed`.
 ///
@@ -372,6 +476,8 @@ fn load_conf_file(
 /// filesystem interaction.
 ///
 /// NIST SP 800-53 SI-10: Input Validation — fails closed on unrecognised content.
+/// NIST SP 800-53 CM-7: `install <mod> /bin/true` detection enables hard-blacklist
+/// evidence collection.
 #[must_use = "modprobe.d line parse result must be examined — Malformed means the line is invalid"]
 pub fn parse_modprobe_line(line: &str) -> ParsedDirective<'_> {
     let trimmed = line.trim();
@@ -388,7 +494,8 @@ pub fn parse_modprobe_line(line: &str) -> ParsedDirective<'_> {
     match keyword {
         "options" => parse_options_directive(rest),
         "blacklist" => parse_blacklist_directive(rest),
-        "install" | "softdep" | "alias" | "override" | "remove" => {
+        "install" => parse_install_directive(rest),
+        "softdep" | "alias" | "override" | "remove" => {
             ParsedDirective::Unrecognised {
                 keyword,
             }
@@ -447,6 +554,54 @@ fn parse_blacklist_directive(rest: &str) -> ParsedDirective<'_> {
     }
 }
 
+/// Parse the body of an `install` directive after the keyword.
+///
+/// Format: `<module> <command>` where `<command>` is the shell command
+/// that `modprobe` executes instead of loading the module.
+///
+/// Hard blacklist detection: `/bin/true`, `/bin/false`, and `/usr/bin/true`
+/// are recognised as sentinel no-op commands that unconditionally prevent
+/// module loading. Other commands (e.g., `modprobe --ignore-install <mod>`,
+/// `/sbin/modprobe --ignore-install`) are recorded as non-hard-blacklist
+/// `Install` directives — logged for operator awareness but not treated as
+/// security-relevant blacklist evidence.
+///
+/// Returns `Malformed` if the module name or command is absent.
+///
+/// NIST SP 800-53 CM-7: hard blacklist sentinel detection.
+/// NIST SP 800-53 SI-10: Input Validation — command string is not executed;
+/// only compared against a fixed set of known safe sentinel patterns.
+fn parse_install_directive(rest: &str) -> ParsedDirective<'_> {
+    // Split into module name and the rest of the command.
+    let mut parts = rest.splitn(2, char::is_whitespace);
+    let Some(module) = parts.next().filter(|s| !s.is_empty()) else {
+        return ParsedDirective::Malformed;
+    };
+    let command = parts.next().unwrap_or("").trim();
+    if command.is_empty() {
+        return ParsedDirective::Malformed;
+    }
+
+    // Hard blacklist sentinel: the first token of the command must be one of
+    // the recognised no-op paths. Only compare the command executable, not
+    // any arguments, to avoid false positives from complex command strings.
+    // We do not execute the command — only classify it by string comparison.
+    let cmd_executable = command
+        .split_whitespace()
+        .next()
+        .unwrap_or("");
+    let is_hard_blacklist = matches!(
+        cmd_executable,
+        "/bin/true" | "/usr/bin/true" | "/bin/false" | "/usr/bin/false"
+    );
+
+    ParsedDirective::Install {
+        module,
+        command,
+        is_hard_blacklist,
+    }
+}
+
 // ===========================================================================
 // Live sysfs cross-check helpers
 // ===========================================================================
@@ -471,6 +626,20 @@ fn parse_blacklist_directive(rest: &str) -> ParsedDirective<'_> {
 /// Returns `false` immediately for an empty `module_name` to prevent path
 /// construction anomalies where `join("")` would resolve to the base sysfs
 /// module directory itself.
+///
+/// # Security note — SELinux MAC enforcement
+///
+/// The `/sys/module/` directory hierarchy is labeled `sysfs_t` under SELinux.
+/// On an enforcing system with the RHEL 10 targeted or MLS policy, symlink
+/// substitution attacks against entries under `/sys/module/` are blocked by
+/// type enforcement: the sysfs object class constraints prevent creating
+/// symlinks in `sysfs_t`-labeled directories that point outside the sysfs
+/// pseudo-filesystem. This makes the metadata-only `is_dir()` check safe as
+/// a trust gate without requiring full `SYSFS_MAGIC` provenance verification —
+/// provenance verification occurs in the subsequent `read_module_param` call
+/// if the trust gate passes. This design depends on SELinux being in enforcing
+/// mode; the posture probe documents this dependency here so reviewers have
+/// explicit context. NIST SP 800-53 SI-7; NSA RTB RAIN.
 #[must_use = "module loaded check result must be examined"]
 pub fn is_module_loaded(module_name: &str) -> bool {
     if module_name.is_empty() {

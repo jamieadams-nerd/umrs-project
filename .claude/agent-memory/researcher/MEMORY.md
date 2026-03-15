@@ -8,7 +8,8 @@
 - `refs/nist/` — NIST SPs (800-218, 800-171r2, 800-171r3, 800-53r5, 800-37r2, 800-53Ar5, 800-30r1, 800-39) + FIPS (140-2, 140-3)
 - `refs/nist/fips/` — FIPS 203, 204, 205 (PQC standards, downloaded 2026-03-13)
 - `refs/dod/` — DoD CMMC docs (Final Rule + Assessment Guide L2, both downloaded 2026-03-12)
-- `refs/fedramp/` — FedRAMP accreditation docs (staged 2026-03-15, awaiting manual download)
+- `refs/fedramp/` — FedRAMP accreditation docs (downloaded 2026-03-15: CSP playbook, Agency playbook, SSP/SAP/SAR templates)
+- `refs/nist/sp800-18r1.pdf` — NIST SP 800-18 Rev 1 (downloaded 2026-03-15)
 - Last version check: 2026-03-12 (next due 2026-04-12)
 
 ### .claude/references/ (technical reference collections for RAG)
@@ -30,7 +31,7 @@ Collections and status as of 2026-03-15:
 | asciidoctor-ref | docs.asciidoctor.org (quick reference + document structure) | ✓ Ingested | 67 |
 | dita-spec | OASIS DITA 1.3 Part 2 Technical Content (HTML) | ✓ Ingested | 100 |
 | rmf-methodology | NIST SP 800-37r2, 800-53Ar5, 800-30r1, 800-39 | ✓ Ingested | 1,132 |
-| accreditation-artifacts | NIST 800-18 + FedRAMP playbooks/templates (8 docs) | Staged — awaiting manual download | 0 |
+| accreditation-artifacts | NIST 800-18 + FedRAMP playbooks/templates (6 docs; 200-B/200-C training removed from fedramp.gov) | Downloaded — awaiting ingestion | 0 |
 
 Full source URL list for update checks: see `rag-collections.md` in this directory.
 PQC status tracker (team-readable): see `pqc-tracker.md` in this directory.
@@ -117,6 +118,12 @@ Existing reports:
 - CMMC manifest correction: document 2023-27756 was an OMB submission, NOT the CMMC rule;
   the actual Final Rule is document 2024-22905 (89 FR 83092, Oct 2024)
 - CMMC Assessment Guide L2 filename changed from `AssessmentGuide_L2.pdf` to `AssessmentGuideL2v2.pdf`
+- fedramp.gov S3 redirect stubs: URLs at `/assets/resources/documents/` and `/assets/resources/templates/`
+  return 59–83 byte `binary/octet-stream` objects with `x-amz-website-redirect-location` headers
+  (trailing slash redirect). Actual files are at `/resources/documents/` and `/resources/templates/`.
+  Always check `content-length` and `content-type` — a valid PDF is `application/pdf`, not `binary/octet-stream`.
+- fedramp.gov Rev4 training PDFs (200-B SAP, 200-C SAR) were removed in the Rev5 reorganization.
+  As of 2026-03-15 these URLs return S3 redirect stubs. Do not attempt to download them.
 
 ## Retrieval Notes (learned 2026-03-12)
 
@@ -169,7 +176,7 @@ When Jamie says "researcher, refresh your library" or "check for updates", perfo
 - HRU 1976: requires manual download via ACM DL (DOI: 10.1145/360051.360056)
 - IEEE 829 (Software Test Documentation): paywalled — requires manual download if desired
 - Version check due 2026-04-12
-- accreditation-artifacts collection: 8 documents staged, awaiting manual download + ingestion
-  - Instructions: `.claude/references/accreditation-artifacts/SOURCE.md`
-  - FedRAMP SAP/SAR training PDFs are the priority (PDF format, no conversion needed)
-  - DOCX templates need pandoc conversion before ingest.py can process them
+- accreditation-artifacts collection: 6 docs downloaded 2026-03-15, .txt conversions done — READY FOR RAG INGESTION
+  - 200-B SAP training and 200-C SAR training PDFs: removed from fedramp.gov (Rev5 reorg), not available
+  - DOCX templates already converted to .txt by pandoc
+  - Run: `cd /media/psf/repos/umrs-project/.claude/rag && RAG_CHROMA_PATH=/media/psf/repos/ai-rag-vdb/chroma python ingest.py --collection accreditation-artifacts`

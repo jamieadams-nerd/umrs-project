@@ -14,3 +14,4 @@ nav:
   - modules/cryptography/nav.adoc
   - modules/reference/nav.adoc
   - modules/glossary/nav.adoc
+  - modules/ai-transparency/nav.adoc

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
-//! Kernel Security Posture Probe — Phase 1 + Phase 2a.
+//! Kernel Security Posture Probe — Phase 1 + Phase 2a + Phase 2b.
 //!
 //! Reads, categorises, and reports on Linux kernel security hardening signals.
 //! The probe gives callers a typed, iterable view of the system's runtime
@@ -47,6 +47,7 @@
 //! | `catalog` | Static `SIGNALS` array — compile-time catalog of all signals |
 //! | `reader` | Live-value readers routing through `SecureReader` |
 //! | `configured` | sysctl.d merge-tree configured-value reading |
+//! | `bootcmdline` | BLS entry reader for configured kernel cmdline (Phase 2b) |
 //! | `contradiction` | `ContradictionKind` and classification logic |
 //! | `snapshot` | `PostureSnapshot` and `SignalReport` — the public API |
 //!
@@ -63,6 +64,7 @@
 //! NSA RTB: Compile-Time Path Binding — signal paths and desired values
 //! are `const`, compiler-verified, and catalog-bound.
 
+pub mod bootcmdline;
 pub mod catalog;
 pub mod configured;
 pub mod contradiction;

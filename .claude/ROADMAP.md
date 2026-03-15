@@ -136,6 +136,31 @@ are escalated.
 | `umrs-state` | `umrs-state` | System state introspection — kernel posture, platform detection, security signals | Prototype | Host system |
 | `umrs-logspace` | `umrs-logspace` | Audit trail and logging — structured security event capture | Prototype | Audit events |
 
+### Suggested Tool Enhancements
+
+- **umrs-file-stat** (in development)
+  - Beyond MIME type, identify ELF information: library vs binary, stripped status, etc.
+  - Package provenance: package name, version, install date, checksum/hash verification status
+    - Install date reveals whether a file is a recent patch — also explains why integrity checks are alerting
+    - File type: is it marked as `%config` in the RPM database?
+  - Best-guess file purpose analysis:
+    - Use the Linux FHS to classify files as system binaries/libraries based on path
+    - Superficial content inspection for additional classification
+    - Detect whether the file is a systemd-managed daemon
+    - Goal: understand system impact if this file has integrity problems
+- **umrs-os-detect** (in development)
+  - Adding security-related kernel flags tab
+  - CPU extension information
+- **All tools**: enable systemd-journald audit logging
+  - Provide an evidence tab in each tool's output
+- **Report export**: tools should be able to save findings as bundled reports with evidence
+  - Format TBD — check with security-auditor for assessment requirements
+  - Better than an auditor scraping the screen and copying/pasting
+- **Integrated help**: in-tool help system (pop-up scrollable panels in TUI?)
+  - Complement Antora operations docs with man pages for CLI tier
+- If the security posture is not-so-good, the ascii art logo in the upper corner changes to a red.
+  If okay, green. It would be funny to equate its mood to the posture. 
+
 ### Planned Tools
 
 | Tool | Purpose | Depends On | Milestone |
@@ -145,6 +170,14 @@ are escalated.
 | Event viewer (TUI/GUI) | Read and display structured JSON event logs from journald; acknowledge events | G5 tools, event logging infrastructure | M2+ |
 | CUI label installer | Choose CUI categories and optional Five Eyes markings | G3 CUI labeling | M3 |
 | MCS translator CLI | Human-readable MCS category translation | G2 SELinux/MLS modeling | M3 |
+
+The current `umrs-ls` tool is pure CLI. Next step is an interactive TUI:
+- Data display area with up/down navigation, highlighting the selected row
+- Pressing Enter on a:
+  - **Directory**: refresh the TUI showing the selected directory's contents
+  - **Permission denied**: pop-up message informing the user
+  - **Non-regular file** (device, symlink): pop-up explaining the file type cannot be inspected
+  - **Regular file**: launch `umrs-file-stat` report card as a focused sub-panel (not full screen); returns focus to `umrs-ls` on exit
 
 ### Interface Roadmap
 

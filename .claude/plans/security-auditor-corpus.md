@@ -1,7 +1,7 @@
 ---
 name: Security Auditor Methodology Corpus
 agent: researcher
-status: phase-2-staged-awaiting-download
+status: phase-2-complete — Phase 3 next
 source: .claude/jamies_brain/enhance-sa.txt (Initiative A)
 depends-on: none (independent track)
 ---
@@ -208,11 +208,12 @@ directly improve feedback on other active plans:
 ## Definition of Done
 
 - [x] Phase 1: RMF core documents acquired and ingested into RAG (2026-03-15, 1,132 chunks)
-- [ ] Phase 1: Security-auditor demonstrates Examine/Interview/Test classification
-- [ ] Phase 2: FedRAMP templates and SSP guidance acquired and ingested
+- [x] Phase 1: Security-auditor demonstrates Examine/Interview/Test classification (confirmed in rmf-plan-review-2026-03-15.md)
+- [x] Phase 2: FedRAMP templates and SSP guidance acquired and ingested
   - [x] Manifest entries created (2026-03-15) — all 8 documents staged, awaiting manual download
-  - [ ] Manual downloads completed (instructions in `.claude/references/accreditation-artifacts/SOURCE.md`)
-  - [ ] RAG ingestion run after downloads complete
+  - [x] Manual downloads completed (2026-03-15) — 6 documents; 2 training PDFs (200-B SAP, 200-C SAR) unavailable (removed from fedramp.gov in Rev5 reorg)
+  - [x] RAG ingestion run after downloads complete (2026-03-15, 405 chunks)
+  - [x] Corpus familiarization completed (2026-03-15) — 5 knowledge artifacts
 - [ ] Phase 3: RHEL STIG and CIS Benchmark ingested; signal-to-STIG mapping started
 - [ ] Phase 4: NIST SP 800-160 acquired and ingested
 - [ ] Phase 5: Lower-priority resources acquired as time permits

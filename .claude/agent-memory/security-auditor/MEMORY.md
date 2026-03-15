@@ -109,6 +109,27 @@ Corpus familiarization pass completed. Five artifacts written to
 - `term-glossary.md` — ~25 canonical RMF terms
 - `rmf-methodology-README.md` — collection summary
 
+## Accreditation Artifacts Knowledge Artifacts (2026-03-15)
+
+Corpus familiarization pass completed on `accreditation-artifacts` collection (405 chunks).
+Four artifacts written to `.claude/agent-memory/security-auditor/`:
+- `accreditation-artifacts-README.md` — collection summary, document inventory
+- `accreditation-concept-index.md` — authorization lifecycle, impact levels, system boundaries, roles
+- `accreditation-document-structures.md` — SSP/SAP/SAR required sections, appendices, quality criteria
+- `accreditation-umrs-mapping.md` — how accreditation concepts map to UMRS audit work
+- `accreditation-term-glossary.md` — canonical definitions for ATO, SSP, SAR, SAP, POA&M, etc.
+
+### Key Accreditation Anchors for Audit Work
+- UMRS code review = SP 800-53A "Examine" assessment method; code is a system design document
+- Missing annotation on security-critical fn = "Other Than Satisfied" on SA-11
+- SAP timing rule: system must be frozen (no changes) during 3PAO assessment
+- High risks must be remediated within 30 days; no authorization until all High risks cleared
+- Control implementation statement must answer: what, how, who — for each sub-part
+- Do NOT modify control requirement text; citations must use canonical SP 800-53 Rev 5 form
+- 3PAO advisory/assessment independence: two-year separation required (A2LA R311)
+- FedRAMP 20x transition: Rev5 process expected to cease end of FY27; current work stays Rev5-based
+- Impact level is determined by the agency AO, not the CSP — coordinate to confirm categorization
+
 ### Key RMF Anchors for Audit Work
 - Missing annotation on public item → "other than satisfied" on SA-11 (code review)
   or PL-2 (system documentation); Examine object: system design documentation

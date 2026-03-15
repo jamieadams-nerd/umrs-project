@@ -34564,5 +34564,75 @@
     "chunks_stored": 749,
     "collection": "rmf-methodology",
     "ingested_date": "2026-03-15T13:52:37.527397+00:00"
+  },
+  "accreditation-artifacts/SOURCE.md": {
+    "hash": "5457299c13e43bf8",
+    "converted_to": "converted/accreditation-artifacts/SOURCE.md",
+    "chunks_stored": 12,
+    "collection": "accreditation-artifacts",
+    "ingested_date": "2026-03-15T15:26:53.002256+00:00"
+  },
+  "accreditation-artifacts/fedramp-agency-authorization-playbook.pdf": {
+    "hash": "96fa3abc505e7b7a",
+    "converted_to": "converted/accreditation-artifacts/fedramp-agency-authorization-playbook.md",
+    "chunks_stored": 22,
+    "collection": "accreditation-artifacts",
+    "ingested_date": "2026-03-15T15:26:53.799431+00:00"
+  },
+  "accreditation-artifacts/fedramp-csp-authorization-playbook.pdf": {
+    "hash": "6ae7066b90afdc6b",
+    "converted_to": "converted/accreditation-artifacts/fedramp-csp-authorization-playbook.md",
+    "chunks_stored": 36,
+    "collection": "accreditation-artifacts",
+    "ingested_date": "2026-03-15T15:26:55.016648+00:00"
+  },
+  "accreditation-artifacts/fedramp-sap-template.docx": {
+    "hash": "4d2f79e0577cb52a",
+    "converted_to": "converted/accreditation-artifacts/fedramp-sap-template.md",
+    "chunks_stored": 39,
+    "collection": "accreditation-artifacts",
+    "ingested_date": "2026-03-15T15:26:56.443788+00:00"
+  },
+  "accreditation-artifacts/fedramp-sap-template.txt": {
+    "hash": "004cbf245201cf22",
+    "converted_to": "converted/accreditation-artifacts/fedramp-sap-template.md",
+    "chunks_stored": 41,
+    "collection": "accreditation-artifacts",
+    "ingested_date": "2026-03-15T15:26:57.693852+00:00"
+  },
+  "accreditation-artifacts/fedramp-sar-template.docx": {
+    "hash": "a779218bd12a5c52",
+    "converted_to": "converted/accreditation-artifacts/fedramp-sar-template.md",
+    "chunks_stored": 49,
+    "collection": "accreditation-artifacts",
+    "ingested_date": "2026-03-15T15:26:59.520568+00:00"
+  },
+  "accreditation-artifacts/fedramp-sar-template.txt": {
+    "hash": "77f745835de5b216",
+    "converted_to": "converted/accreditation-artifacts/fedramp-sar-template.md",
+    "chunks_stored": 49,
+    "collection": "accreditation-artifacts",
+    "ingested_date": "2026-03-15T15:27:00.882937+00:00"
+  },
+  "accreditation-artifacts/fedramp-ssp-template.docx": {
+    "hash": "e05d7fb0021cf42f",
+    "converted_to": "converted/accreditation-artifacts/fedramp-ssp-template.md",
+    "chunks_stored": 54,
+    "collection": "accreditation-artifacts",
+    "ingested_date": "2026-03-15T15:27:03.246848+00:00"
+  },
+  "accreditation-artifacts/fedramp-ssp-template.txt": {
+    "hash": "e631914c8afbfad5",
+    "converted_to": "converted/accreditation-artifacts/fedramp-ssp-template.md",
+    "chunks_stored": 55,
+    "collection": "accreditation-artifacts",
+    "ingested_date": "2026-03-15T15:27:04.816166+00:00"
+  },
+  "accreditation-artifacts/sp800-18r1.pdf": {
+    "hash": "1635870f7cac9c06",
+    "converted_to": "converted/accreditation-artifacts/sp800-18r1.md",
+    "chunks_stored": 48,
+    "collection": "accreditation-artifacts",
+    "ingested_date": "2026-03-15T15:27:06.315750+00:00"
   }
 }

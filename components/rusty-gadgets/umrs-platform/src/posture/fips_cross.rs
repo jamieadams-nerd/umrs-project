@@ -261,9 +261,13 @@ impl FipsCrossCheck {
 /// Returns `true` if it exists, `false` if it does not.
 /// Absence is a valid (non-FIPS) state — never returns a failure.
 ///
-/// NIST SP 800-53 SI-10: Fail Closed — absence is `false`, not unknown.
+/// Uses `std::fs::metadata()` rather than `Path::exists()` to collapse the
+/// check into a single syscall, eliminating the TOCTOU window between an
+/// existence check and a subsequent operation. The result is the same
+/// (`true`/`false`), but the race window is removed. NIST SP 800-53 SI-10.
 fn check_system_fips_marker() -> bool {
-    let exists = std::path::Path::new(SYSTEM_FIPS_MARKER).exists();
+    let exists =
+        std::fs::metadata(SYSTEM_FIPS_MARKER).is_ok();
     log::debug!(
         "posture: FIPS cross-check: {SYSTEM_FIPS_MARKER} exists={exists}"
     );

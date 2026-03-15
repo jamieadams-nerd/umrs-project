@@ -1,0 +1,86 @@
+= AI in This Project
+:description: How AI agents participate in UMRS — their roles, knowledge sources, and the review gates that keep every accepted artifact human-verified.
+:toc: left
+:toclevels: 2
+
+[id="ai-transparency-index"]
+
+UMRS uses a structured multi-agent AI system as part of its development process.
+This module documents how that system works — not as a disclosure footnote, but as a
+first-class engineering artifact.
+
+In a high-assurance project, every substantive claim must be traceable.
+When AI agents contribute research, documentation, and code review, the same traceability
+requirement applies to the AI pipeline itself.
+This module is the audit trail for that pipeline.
+
+If you found a NIST control citation in a UMRS code comment and want to know where it
+came from, this module has the answer.
+If you are evaluating whether this AI methodology is sound enough to replicate, this module
+shows you exactly how it works.
+If you are a new contributor trying to understand how the team operates, this module is
+the right place to start.
+
+== What This Module Covers
+
+[cols="1,2,2", options="header"]
+|===
+| Group | Pages | Who should read it
+
+| *Overview*
+| xref:why-transparency.adoc[Why We Document the AI Pipeline],
+  xref:what-ai-does-and-does-not-do.adoc[What AI Does and Does Not Do]
+| Everyone — especially auditors and adopters
+
+| *Team and Workflow*
+| xref:agent-roles.adoc[Agent Roles and Responsibilities],
+  xref:workflow-mechanics.adoc[How Work Flows Through the Team],
+  xref:feedback-and-standing-rules.adoc[How Feedback Becomes Permanent Rules]
+| Contributors and curious engineers
+
+| *Knowledge Pipeline*
+| xref:knowledge-pipeline.adoc[How Knowledge Enters the System],
+  xref:rag-collections.adoc[RAG Collections and Their Sources],
+  xref:corpus-familiarization.adoc[Corpus Familiarization],
+  xref:knowledge-provenance.adoc[Knowledge Provenance and Claim Traceability]
+| Auditors (primary), adopters, contributors
+
+| *Reference*
+| xref:skills-catalog.adoc[Skills Catalog]
+| Contributors and engineers
+
+| *For Auditors*
+| xref:auditor-guide.adoc[Auditor's Guide]
+| Security auditors
+
+| *Case Study*
+| xref:case-study-rmf-corpus.adoc[Case Study: RMF Methodology Corpus]
+| Adopters, contributors
+|===
+
+== Tooling
+
+The primary AI platform for UMRS is https://claude.ai/code[Claude Code] by Anthropic.
+All agent orchestration, code generation, documentation drafting, compliance research, and
+review work runs through Claude Code's multi-agent system.
+
+Side research has been conducted using ChatGPT and Gemini — exploring questions, gathering
+alternative perspectives, and testing ideas.
+The results of that research are fed back into Claude Code, where they are verified against
+the RAG knowledge base and integrated into the project through the standard review pipeline.
+No output from any AI tool bypasses engineer review.
+
+== The Short Version
+
+AI agents in this project do research, write documentation, review code for pattern compliance,
+and help plan work.
+They do not make architectural decisions, author SELinux policy, or commit to the repository.
+Every AI-produced artifact goes through engineer review before acceptance.
+The commit record is the audit trail.
+
+For auditors who need more depth, start at xref:auditor-guide.adoc[Auditor's Guide].
+
+== See Also
+
+* xref:ROOT:what-is-umrs.adoc[What Is UMRS?] — project context
+* xref:ROOT:getting-started.adoc[Getting Started] — onboarding for new contributors

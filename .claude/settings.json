@@ -42,6 +42,7 @@
       "Bash(grep:*)",
       "Bash(head:*)",
       "Bash(ls:*)",
+      "Bash(ls -lh:*)",
       "Bash(make:*)",
       "Bash(/media/psf/repos/umrs-project/build-tools/antora/node_modules/.bin/antora:*)",
       "Bash(mkdir:*)",
@@ -82,11 +83,16 @@
       "WebFetch(domain:rust-fuzz.github.io)",
       "WebFetch(domain:www.cs.virginia.edu)",
       "WebFetch(domain:www.latacora.com)",
+      "WebFetch(domain:nvlpubs.nist.gov)",
+      "WebFetch(domain:www.fedramp.gov)",
+      "WebFetch(domain:fedramp.gov)",
+      "Bash(pandoc:*)",
       "WebSearch",
       "Write(logs/task-log.md)",
       "Bash(chmod:*)",
       "Bash(cp:*)",
-      "Bash(gh:*)"
+      "Bash(gh:*)",
+      "Bash(sha256sum:*)"
     ]
   },
   "enabledPlugins": {

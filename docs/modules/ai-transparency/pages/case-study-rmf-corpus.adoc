@@ -1,0 +1,220 @@
+= Case Study: Building the RMF Methodology Corpus
+:description: A concrete, step-by-step account of the full AI knowledge pipeline — from identified gap to grounded agent capability — using the March 2026 RMF corpus build as the example.
+:toc: left
+:toclevels: 2
+
+[id="case-study-rmf-corpus"]
+
+Abstract descriptions of pipelines are useful.
+Concrete examples are better.
+
+This page documents a specific, real pipeline run from 2026-03-15 — the construction of
+the `rmf-methodology` RAG collection and the corpus familiarization pass that followed.
+Every step, every decision, every artifact.
+
+This is what the knowledge pipeline looks like in practice.
+
+== The Gap
+
+The security-auditor agent was performing compliance reviews — reading Rust code,
+examining documentation, and identifying NIST control annotation gaps.
+That work was useful, but it was shallow in a specific way.
+
+The agent could identify that a control citation was missing.
+It could not classify its own review activity by RMF assessment method type.
+It could not cite specific assessment procedures from NIST SP 800-53A.
+It could not identify evidence gaps as distinct from annotation gaps.
+
+A human assessor with deep RMF experience approaches compliance review differently.
+They do not just check whether a citation is present — they classify the review activity
+(Examine? Interview? Test?), identify the specific assessment objects, and determine
+whether the available evidence would satisfy a formal assessment procedure.
+
+The gap: the security-auditor agent did not know how to think like a real assessor because
+it had not read the assessor's methodology document.
+
+== The Research Phase
+
+The researcher agent located four NIST RMF core documents from `nvlpubs.nist.gov` —
+the official NIST publications server:
+
+[cols="1,2,1", options="header"]
+|===
+| Document | Purpose | Published
+
+| NIST SP 800-53A Rev 5
+| Assessment procedures for NIST SP 800-53 controls — Examine, Interview, Test methods with specific assessment objects and procedures for each control
+| January 2022
+
+| NIST SP 800-37 Rev 2
+| Risk Management Framework lifecycle — Categorize, Select, Implement, Assess, Authorize, Monitor
+| December 2018
+
+| NIST SP 800-30 Rev 1
+| Risk assessment methodology — threat identification, likelihood, impact
+| September 2012
+
+| NIST SP 800-39
+| Enterprise risk governance — organizational risk management
+| March 2011
+|===
+
+SP 800-53A was identified as the highest-value document.
+It is the single document that maps every NIST control to specific assessment procedures,
+evidence artifacts, and method classifications.
+It is what a real NIST assessor uses.
+
+== The Manifest Update
+
+Each document was downloaded with SHA-256 checksum verification and recorded in
+`refs/manifest.md`:
+
+[cols="2,1"]
+|===
+| Document | SHA-256 (first 16 hex)
+
+| NIST SP 800-53A Rev 5 | `75665570048b969a...`
+| NIST SP 800-37 Rev 2 | `4f75e1136bb905a6...`
+| NIST SP 800-30 Rev 1 | `f214087f0bdb3593...`
+| NIST SP 800-39 | `cf680760d171fc59...`
+|===
+
+Full checksums are in `refs/manifest.md` under "RMF Core Documents."
+The source URL is recorded for each document so future version checks can be performed.
+
+== The Ingestion
+
+The researcher ran `ingest.py` against the four PDFs.
+The ingest pipeline:
+
+. Converted each PDF to Markdown via pandoc
+. Split the converted text into overlapping chunks (~1,000 tokens each)
+. Embedded each chunk using the sentence-transformer model
+. Stored chunks in ChromaDB under collection name `rmf-methodology`
+
+Result:
+
+[cols="2,1", options="header"]
+|===
+| Document | Chunks
+
+| NIST SP 800-53A Rev 5
+| 749
+
+| NIST SP 800-37 Rev 2
+| 183
+
+| NIST SP 800-30 Rev 1
+| 99
+
+| NIST SP 800-39
+| 99
+
+| *Total*
+| *1,132*
+|===
+
+The researcher posted to `cross-team/notes.md` notifying the security-auditor that the
+collection was available and ready for familiarization.
+
+== The Familiarization
+
+The security-auditor ran the corpus-familiarization skill on the `rmf-methodology`
+collection.
+
+The skill read all four documents in priority order (standards documents first).
+For 800-53A — the most important document — the agent read through the assessment
+procedure structure, catalogued the three method types (Examine, Interview, Test),
+identified the assessment objects taxonomy (specifications, mechanisms, activities,
+and individuals), and noted the structure of assessment procedures for each control.
+
+Five knowledge artifacts were written to `.claude/knowledge/rmf-methodology/`:
+
+`concept-index.md`::
+Entry for each of the four documents with: what it covers, key terms introduced, what
+review activities it governs, and cross-references to related documents.
+The SP 800-53A entry is the most detailed — it maps out the assessment procedure structure
+and explains what each method type means in practice.
+
+`cross-reference-map.md`::
+Maps the relationships between the four documents.
+Key finding: 800-53A defers to 800-37 for authorization decisions; 800-37 references
+800-30 for risk assessment inputs; 800-39 provides the organizational context that 800-37
+operates within.
+These chain relationships tell the agent how to move between documents when a question
+spans multiple framework documents.
+
+`style-decision-record.md`::
+Resolutions for the handful of terminology tensions found across the four documents.
+Primarily canonical terms: "assessment procedure" (not "test procedure"); "assessment
+object" (not "artifact" or "evidence"); "authorization decision" (not "accreditation
+decision").
+
+`term-glossary.md`::
+Canonical RMF terminology extracted from authoritative sources: assessment method,
+assessment object, assessment procedure, risk assessment, risk determination,
+security authorization, security controls, system security plan, and two dozen more.
+Every term includes the source document and section.
+
+`README.md`::
+Collection summary: documents processed, artifacts written, key findings, open questions.
+
+== The Result
+
+After familiarization, the security-auditor's review outputs changed in measurable ways:
+
+*Before familiarization*:
+"Finding: `umrs-platform/src/status.rs` is missing a NIST SP 800-53 CM-6 annotation.
+The kernel FIPS status read should cite the Configuration Management family."
+
+*After familiarization*:
+"Finding: `umrs-platform/src/status.rs` — CM-6 annotation gap.
+Assessment method: Examine (review of code documentation for control description).
+Assessment objects: Code comments in `ProcFips::is_enabled()`.
+Evidence gap: No annotation documenting how this function satisfies CM-6 Configuration
+Settings. Required evidence for Examine method: documentation of the configuration
+management practice. Recommendation: Add `/// NIST SP 800-53 CM-6` annotation with a
+brief description of how the function gates configuration reads on kernel status
+verification."
+
+The second finding is more useful to an engineer than the first.
+It tells them specifically what is missing, what evidence would satisfy it, and how to
+fix it.
+That precision comes directly from SP 800-53A's assessment procedure framework.
+
+== The Cross-Team Notification
+
+After completing the familiarization, the security-auditor posted to `cross-team/notes.md`
+confirming completion and notifying the team that the new methodology grounding was active.
+The researcher's original notification was marked resolved.
+
+The security-auditor also updated its own `MEMORY.md` with a summary of the RMF
+methodology anchors — key concepts it should carry into every future session.
+
+== What This Demonstrates
+
+This case study makes the abstract pipeline concrete.
+
+The knowledge gap was specific and identifiable — not "the agent needs to be smarter" but
+"the agent has not read the assessor's methodology document."
+
+The acquisition was traceable — specific documents, specific download dates, specific
+checksums.
+
+The ingestion was reproducible — the same `ingest.py` run on the same files will produce
+the same chunks (modulo chunking randomness).
+
+The familiarization was structured — four artifacts with defined schemas, not unstructured
+notes.
+
+The result was measurable — before and after outputs are qualitatively different in
+specific, describable ways.
+
+This is what a principled AI knowledge pipeline looks like.
+
+== See Also
+
+* xref:knowledge-pipeline.adoc[How Knowledge Enters the System]
+* xref:corpus-familiarization.adoc[Corpus Familiarization]
+* xref:rag-collections.adoc[RAG Collections and Their Sources]
+* xref:knowledge-provenance.adoc[Knowledge Provenance and Claim Traceability]

@@ -1,0 +1,223 @@
+= Auditor's Guide
+:description: A direct, precise account of AI scope, review gates, and inspection paths for security auditors assessing UMRS.
+:toc: left
+:toclevels: 2
+
+[id="auditor-guide"]
+
+This page is written for security auditors assessing the UMRS project.
+It does not assume prior familiarity with the AI methodology — it states the facts
+directly.
+
+Applicable controls: NIST SP 800-53 SA-11 (Developer Security Testing and Evaluation),
+NIST SP 800-53 AU-10 (Non-Repudiation), NIST SP 800-53 SI-7 (Software, Firmware, and
+Information Integrity).
+
+== What AI Involvement Means for Audit Scope
+
+AI tools have been used to accelerate standards research, documentation drafting,
+and code review for pattern compliance.
+They have not replaced human judgment on any security decision.
+
+The auditable artifacts are the same artifacts you would inspect in a project without
+AI involvement:
+
+* The repository — code, documentation, configuration
+* The commit history — who changed what, when, and with what stated rationale
+* The compliance citations in code comments and documentation
+* The reference documents that support those citations
+
+AI accelerated the production of these artifacts.
+It did not change what they are or what they mean.
+
+== The Hard Rules
+
+These are not policies — they are technically enforced constraints:
+
+* AI agents cannot commit to the repository. The tool configuration prohibits it.
+  Every commit was made by a human engineer.
+* `#![forbid(unsafe_code)]` is set at compile time in every crate root.
+  This cannot be overridden by any inner `#[allow]` annotation.
+  It is a compiler-verified proof, not a declaration.
+* All compliance citations are identified by AI agents and confirmed by engineer review
+  before acceptance.
+  The commit is the acceptance record.
+
+== Where to Find Evidence of AI Scope
+
+[cols="1,3", options="header"]
+|===
+| Artifact | What it shows
+
+| This module (`ai-transparency:`)
+| Full methodology — what agents do, how knowledge is grounded, what the review gates are
+
+| `.claude/rules/`
+| Standing rules that govern agent behavior — loaded into every agent context.
+  Reviewable without running any AI tool.
+
+| `refs/manifest.md`
+| Complete inventory of reference documents — title, version, download date, source URL, SHA-256
+
+| Git history
+| Every accepted artifact — the diff shows what changed, the commit message shows why
+
+| `docs/antora.yml` and module nav files
+| Documentation structure — what pages exist and how they are organized
+|===
+
+== The Commit Record as Audit Trail
+
+The git log is the authoritative audit trail for this project.
+
+Every change to code, documentation, or configuration that has been accepted appears
+in the git history.
+AI agents cannot commit.
+A human engineer made every commit.
+That engineer reviewed what they committed.
+
+To trace a specific claim:
+
+. Find the commit that introduced it: `git log -S "claim text" path/to/file`
+. Read the commit message for context
+. Identify the source in `refs/manifest.md` if it is a compliance citation
+. Verify the citation against the referenced document
+
+See xref:knowledge-provenance.adoc[Knowledge Provenance and Claim Traceability] for a
+worked example.
+
+== Compliance Citation Accuracy
+
+Control citations in UMRS documentation follow the Citation Format Rule defined in
+`.claude/rules/rust_design_rules.md`:
+
+* NIST citations: `NIST SP 800-53` followed by control ID
+* NIST SSDF citations: `NIST SP 800-218 SSDF` followed by practice ID
+* CMMC citations: `CMMC` followed by domain and level
+* FIPS citations: `FIPS 140-2` or `FIPS 140-3`
+* NSA RTB citations: `NSA RTB` followed by principle name
+
+Citations are placed at the module, type, or function level — not on every line.
+The applicable tier (module, type, function) is defined in CLAUDE.md under
+"Compliance Annotations."
+
+If you find a citation that appears incorrect:
+
+. Flag it with the specific control ID, the location in the source, and the concern
+. Corrections will be applied through the standard review and commit process
+. The correction itself will be traceable in the git history
+
+The correction process is transparent for the same reason everything else is transparent.
+
+== How to Verify the Knowledge Base
+
+The RAG knowledge base is not externally accessible.
+However, every source document used to build it is available for inspection.
+
+To verify a specific claim traces to an authoritative source:
+
+. Identify the claim and its location
+. Locate the relevant RAG collection in xref:rag-collections.adoc[RAG Collections and Their Sources]
+. The source documents for each collection are listed there with paths under `refs/`
+. Verify the document integrity: `sha256sum refs/<path>` against the manifest entry
+. Open the source document and locate the relevant passage
+
+If you need a specific claim traced to its source chunk and the context surrounding it,
+that trace is available on request.
+
+== What the Agent Behavioral Rules Look Like
+
+Agent behavioral rules are plain text files in `.claude/rules/`.
+They are loaded into every agent context at session start.
+They are checked into the repository and therefore version-controlled and auditable.
+
+Key rules with security relevance:
+
+[cols="1,3", options="header"]
+|===
+| File | Key rules
+
+| `agent_behavior_rules.md`
+| No git commits; no branch modifications; no production config changes; protected file patterns (JSON config, `.gitignore`) require explicit user instruction
+
+| `high_assurance_pattern_rules.md`
+| Must-use contracts; validate-at-construction; trust gate; fail-closed patterns; debug log information discipline
+
+| `rust_design_rules.md`
+| Citation format; no internal reference IDs in doc comments; security findings as data; compile-time path binding
+
+| `ste_mode.md`
+| Simplified Technical English for procedural documentation — applies to numbered procedure steps only
+
+| `assurance_rules.md`
+| Security and reliability are primary requirements; performance is secondary; pattern execution measurement
+|===
+
+These rules define the constraints within which agents operate.
+An auditor reviewing agent output can compare it against these rules to assess compliance.
+
+== Agent Memory Is Not a Production Artifact
+
+Agent memory files (`.claude/agent-memory/<agent>/MEMORY.md`) record persistent knowledge
+that agents carry between sessions.
+These files contain terminology decisions, corpus familiarization summaries, recurring
+feedback, and project context.
+
+They are not production artifacts and are not subject to the same review requirements
+as committed code or documentation.
+They are included here as context: they show how agents accumulate and evolve their
+knowledge over the course of the project.
+
+== Contact and Findings Process
+
+If you identify a finding during assessment:
+
+. Incorrect compliance citation: raise it with the specific location and concern
+. Missing control annotation: raise it as an annotation gap with the applicable control
+. Agent behavior that appears outside its stated scope: flag it with the specific output
+  and the rule it appears to violate
+
+All findings will be addressed through the standard review and commit process, making
+the correction and its rationale part of the git history.
+
+== Summary Checklist for Auditors
+
+[cols="1,3,2"]
+|===
+| Check | What to inspect | Location
+
+| AI scope disclosure
+| Full methodology documented
+| This module
+
+| Hard rules
+| Technical constraints on agent behavior
+| `.claude/rules/`
+
+| Reference document integrity
+| SHA-256 checksums for all knowledge base sources
+| `refs/manifest.md`
+
+| Commit authorship
+| Every commit is human-authored
+| `git log --format="%an %ae"`
+
+| Citation format compliance
+| Citations follow the Citation Format Rule
+| `.claude/rules/rust_design_rules.md`
+
+| Unsafe code prohibition
+| `#![forbid(unsafe_code)]` in every crate root
+| `components/rusty-gadgets/*/src/lib.rs`
+
+| Behavioral rules
+| Standing rules govern agent behavior
+| `.claude/rules/*.md`
+|===
+
+== See Also
+
+* xref:knowledge-provenance.adoc[Knowledge Provenance and Claim Traceability]
+* xref:what-ai-does-and-does-not-do.adoc[What AI Does and Does Not Do]
+* xref:rag-collections.adoc[RAG Collections and Their Sources]
+* xref:ROOT:getting-started.adoc[Getting Started] — broader project orientation

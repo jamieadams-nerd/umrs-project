@@ -1,0 +1,190 @@
+= How Work Flows Through the Team
+:description: The end-to-end workflow for AI-assisted work in UMRS — from knowledge gap to committed artifact, with each stage explained.
+:toc: left
+:toclevels: 2
+
+[id="workflow-mechanics"]
+
+Understanding how work flows through this team matters for three reasons.
+
+For contributors: you need to know how to participate without disrupting established
+knowledge provenance.
+
+For auditors: you need to know where human judgment sits in the pipeline, what the
+review gates are, and how to trace an artifact back to its origin.
+
+For adopters: the workflow is the replicable part.
+If the UMRS AI methodology is sound, it is because of how the pipeline is structured,
+not because of which specific tools are used.
+
+== The Review Pipeline
+
+Work in UMRS follows a review pipeline that mirrors how security-sensitive engineering
+organizations structure human review:
+
+. Engineer identifies a gap or feature — architecture, design, and security decisions made here
+. Research phase — researcher agent acquires authoritative sources
+. RAG ingestion and familiarization — knowledge base updated, agents build active knowledge
+. Development work — agents produce grounded output under engineer direction
+. Security review — trust boundaries, threat surface, policy
+. Documentation review — clarity, completeness, audience alignment
+. Engineer acceptance — review, commit
+
+Each stage catches different classes of problems.
+No stage replaces another.
+
+== How Work Enters the System
+
+The engineer (Jamie) researches new features and enhancements offline before involving
+agents.
+This is deliberate: architectural decisions happen before agent work begins, not during it.
+
+When a new work item is ready, it moves through the following stages:
+
+=== Knowledge Gap Identification
+
+The engineer identifies that the AI pipeline lacks the knowledge needed for a specific
+task.
+Example: the security-auditor agent needs deep knowledge of NIST RMF assessment procedures
+to review control implementation effectively.
+
+=== Research Phase
+
+The researcher agent locates authoritative source documents from approved sources.
+For standards work: NIST CSRC (`nvlpubs.nist.gov`), DISA STIGs, CMMC documentation,
+DoD Issuances portal.
+
+Every acquired document is:
+
+* Checksummed (SHA-256)
+* Recorded in `refs/manifest.md` with title, version, download date, and source URL
+* Stored in the official refs archive (`refs/`)
+* Copied to the RAG source staging area (`.claude/references/<collection>/`)
+
+=== RAG Ingestion
+
+The researcher agent runs the ingest pipeline against the new source documents.
+The ingest script (`rag/ingest.py`) chunks documents, converts formats as needed,
+and stores the chunks in ChromaDB at `.claude/rag/chroma/`.
+A manifest (`rag/manifest.json`) tracks what has been ingested and detects updates.
+
+=== Corpus Familiarization
+
+After ingestion, the target agent runs a structured familiarization pass over the new
+material.
+This is more than just having the RAG available — it is the agent actively reading the
+corpus and building four persistent knowledge artifacts:
+
+* A concept index — what each document covers and what it governs
+* A cross-reference map — where documents agree, conflict, or chain together
+* A style decision record — project-specific resolutions to documentation tensions
+* A term glossary — canonical terminology from authoritative sources
+
+These artifacts live in `.claude/knowledge/<collection>/` and are loaded into the
+agent's always-on context.
+Without this step, an agent knows that relevant material exists in the RAG but does not
+know what to ask for.
+
+See xref:corpus-familiarization.adoc[Corpus Familiarization] for how this works.
+
+=== Active Work
+
+With the knowledge base current and the agent familiarized, active work begins.
+The engineer directs the work through plans and direct instruction.
+Agents produce grounded output — research findings, documentation drafts, code review
+reports, compliance annotation proposals.
+
+=== Review and Acceptance
+
+The engineer reviews the output.
+For documentation: accuracy, citation correctness, audience alignment.
+For code review findings: each finding is assessed and acted on or dismissed with
+documented rationale.
+For compliance annotations: each proposed citation is verified against the source.
+
+Acceptance is explicit.
+The commit is the artifact of acceptance.
+
+== The Inbox Locations
+
+Three locations hold material waiting for placement or action:
+
+[cols="1,2,2", options="header"]
+|===
+| Location | Contents | Who uses it
+
+| `.claude/plans/`
+| Active work queue — pending, in-progress, and completed plans
+| All agents — check at session start; work from plans with approved status
+
+| `docs/new_stuff/`
+| Research material waiting for placement in the Antora docs tree
+| `senior-tech-writer` and `tech-writer` only
+
+| `.claude/jamies_brain/`
+| Engineer's private research area — not an agent input queue
+| Engineers only — agents do not read this unless explicitly directed
+|===
+
+== Plan Lifecycle
+
+Plans document what work is being done, why it exists, and how it relates to the ROADMAP.
+
+Every plan references one or more ROADMAP goals (G1–G10) to justify its existence.
+A plan that cannot be connected to a ROADMAP goal is a planning signal — it may indicate
+scope creep or a gap in the ROADMAP.
+
+[cols="1,2", options="header"]
+|===
+| State | Location
+
+| Pending (approved, not started)
+| `.claude/plans/` root
+
+| In progress (partially executed)
+| `.claude/plans/` root — status updated in plan frontmatter
+
+| Completed
+| `.claude/plans/completed/` — moved after engineer confirmation
+|===
+
+Plans are moved to `completed/` only after the engineer confirms completion.
+Agents do not self-archive plans.
+
+== The Task Board
+
+The task board is the cross-agent coordination mechanism for actionable work items.
+It is not a planning document — it is a live operational board.
+
+Agents check the task board at every session start.
+After completing work that affects another agent, the completing agent leaves a status
+update and hand-off note.
+
+Rules:
+
+* One task per actionable work item
+* Status updated when work starts and when it completes
+* Hand-off notes are specific: file paths, findings, what the next agent needs to do
+* Tasks that block on engineer decision are flagged explicitly — agents do not block
+  silently
+
+== Engineering the Workflow
+
+The workflow described here did not emerge from a documentation exercise.
+It was built incrementally in response to real problems:
+
+* Agents producing inconsistent citations → RAG grounding and corpus familiarization
+* Agents repeating the same mistakes session after session → standing rules in `.claude/rules/`
+* Work being lost between sessions → persistent agent memory
+* Coordination failures between agents → task board and cross-team notes
+* Subprocess path failures → hard rules about `cd`-first patterns and no absolute `/media/psf/` paths
+* Wasted time on manual tool setup → permission grants in `.claude/settings.json`
+
+See xref:feedback-and-standing-rules.adoc[How Feedback Becomes Permanent Rules] for how
+problems become rules.
+
+== See Also
+
+* xref:knowledge-pipeline.adoc[How Knowledge Enters the System]
+* xref:agent-roles.adoc[Agent Roles and Responsibilities]
+* xref:feedback-and-standing-rules.adoc[How Feedback Becomes Permanent Rules]

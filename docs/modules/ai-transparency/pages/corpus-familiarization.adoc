@@ -1,0 +1,157 @@
+= Corpus Familiarization
+:description: How the corpus familiarization skill converts passive RAG retrieval into active, reliable agent knowledge — and why it is the difference between an agent that knows what to look for and one that does not.
+:toc: left
+:toclevels: 2
+
+[id="corpus-familiarization"]
+
+RAG (Retrieval-Augmented Generation) is a pull-only system.
+An agent retrieves only what it already knows to ask for.
+
+This creates a fundamental problem: if an agent has a blind spot in its prior knowledge,
+it cannot formulate a query to fill that blind spot.
+The relevant material is sitting in the corpus, unchunked and unsearched, because the
+agent does not know it is there.
+
+Corpus familiarization is the mechanism that closes this gap.
+
+== What the Problem Looks Like in Practice
+
+Imagine the security-auditor agent has been given access to a RAG collection containing
+NIST SP 800-53A Rev 5 — the document that maps each NIST control to specific assessment
+procedures (Examine, Interview, Test).
+
+Without familiarization, the agent knows the collection exists.
+If asked a question about AC-4, it can retrieve chunks about AC-4.
+But it does not know that 800-53A uses a three-method assessment taxonomy.
+It does not know that there is a specific evidence artifacts table for each control.
+It does not know the terminology that 800-53A uses for assessment objects.
+
+So when it writes a compliance review, it assesses compliance in the way it "knows" from
+training data — which may be a reasonable approximation, but is not grounded in the actual
+methodology.
+
+After familiarization, the agent knows the structure of the document, the terminology
+it uses, the key concepts it introduces, and what each section governs.
+It can formulate informed queries.
+Its output is grounded in the actual methodology rather than training-data approximation.
+
+== The Four Artifacts
+
+The familiarization skill reads every document in a collection and writes four
+structured knowledge artifacts to `.claude/knowledge/<collection>/`:
+
+=== Artifact 1: Concept Index (`concept-index.md`)
+
+For each document processed, one entry containing:
+
+* Document name and short identifier
+* What the document covers (2–4 sentences in the agent's own words)
+* Key terms and concepts it introduces
+* What writing tasks or agent decisions it governs
+* Related documents in the corpus (cross-references)
+
+The concept index is the agent's answer to: "What do I know, and what does each piece
+of knowledge govern?"
+
+=== Artifact 2: Cross-Reference Map (`cross-reference-map.md`)
+
+A structured map of relationships across documents:
+
+* *Agreements* — where two or more documents reinforce the same guidance
+* *Tensions* — where documents conflict or require a judgment call
+* *Chains* — where one document defers to another for detailed guidance
+* *Gaps* — topics the corpus does not cover that the agent should flag when encountered
+
+The cross-reference map is the agent's conflict-resolution reference.
+When guidance from two sources points in different directions, this artifact surfaces
+the tension and the appropriate resolution.
+
+=== Artifact 3: Style Decision Record (`style-decision-record.md`)
+
+Project-specific resolutions to cross-reference tensions.
+This artifact captures:
+
+* The tension or choice point
+* Which source takes precedence for this project, and why
+* Context conditions that change the ruling
+
+Example: the doc-structure collection contains both MIL-STD-38784A (which has strict
+requirements for warning language format) and Plain Language Guidelines (which emphasize
+brevity).
+The style decision record resolves this tension: plain language for operator procedures,
+MIL-STD structured format for formal safety notices.
+
+Decisions that require project owner input are marked explicitly as placeholders.
+
+=== Artifact 4: Term Glossary (`term-glossary.md`)
+
+Canonical terminology extracted from the domain reference documents.
+For each term:
+
+* Canonical spelling and capitalization (authoritative source wins)
+* Definition verbatim from the source where the source is normative
+* Source document and section
+* Synonyms or deprecated variants to avoid
+* Usage notes for context-specific meanings
+
+The term glossary prevents terminology drift.
+When a specific standard uses specific language for a concept, the agent uses that
+language rather than training-data synonyms.
+
+== When to Run Familiarization
+
+Run the corpus familiarization skill:
+
+* After any new collection is ingested into the RAG
+* After significant additions to an existing collection
+* After a document in a collection is updated to a new version
+* When an agent is about to do substantial work grounded in a specific collection
+
+The skill is idempotent — running it again after adding new documents updates the
+artifacts without discarding existing knowledge.
+
+== Where Artifacts Live
+
+Artifacts are written to `.claude/knowledge/<collection>/`.
+They are loaded into the agent's system-prompt context — not retrieved on demand.
+
+This distinction matters.
+Retrieved content arrives when the agent formulates a query.
+Always-on context is present regardless of what the agent is asked.
+The concept index and cross-reference map are always-on because the agent needs them
+before it can formulate queries, not after.
+
+== A Concrete Example: RMF Methodology Corpus
+
+On 2026-03-15, the researcher agent ingested four NIST RMF core documents into the
+`rmf-methodology` collection (1,132 chunks total):
+NIST SP 800-53A Rev 5, NIST SP 800-37 Rev 2, NIST SP 800-30 Rev 1, and NIST SP 800-39.
+
+Before familiarization, the security-auditor agent could retrieve chunks from these
+documents when asked specific questions.
+But its assessment methodology was based on general training-data knowledge of NIST
+controls, not on the specific three-method taxonomy (Examine, Interview, Test) defined
+in 800-53A.
+
+After familiarization, the security-auditor:
+
+* Knows the 800-53A assessment procedure structure and can cite specific procedures
+* Can classify its own review activities by method type (e.g., "this is an Examine
+  activity — reviewing documentation for control description")
+* Can identify evidence gaps: "This control requires a Test activity involving
+  actual execution — documentation review alone is insufficient"
+* Uses 800-53A terminology for assessment objects, assessment methods, and assessment
+  procedures
+
+The result is assessment output that looks like it came from someone who read the
+actual assessment guide — because it did.
+
+See xref:case-study-rmf-corpus.adoc[Case Study: RMF Methodology Corpus] for the
+full pipeline run documented as a concrete example.
+
+== See Also
+
+* xref:knowledge-pipeline.adoc[How Knowledge Enters the System]
+* xref:rag-collections.adoc[RAG Collections and Their Sources]
+* xref:skills-catalog.adoc[Skills Catalog]

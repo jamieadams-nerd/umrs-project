@@ -238,6 +238,19 @@ Reference `nav.adoc` now has a "Language & Style Guides" section at the bottom.
 
 **Antora `examples/` constraint**: Files in `examples/` cannot be navigable pages or xref targets. They are includable fragments accessed via `include::example$filename[]`. Never put navigable documents in `examples/`.
 
+## AI Transparency Module (2026-03-15)
+
+`ai-transparency` module created and registered. 13 pages written (all Phase 1 + Phase 2).
+
+- All pages in `docs/modules/ai-transparency/pages/`
+- nav.adoc covers all 13 pages — index, why-transparency, what-ai-does-and-does-not-do, agent-roles, workflow-mechanics, knowledge-pipeline, rag-collections, knowledge-provenance, auditor-guide, feedback-and-standing-rules, corpus-familiarization, skills-catalog, case-study-rmf-corpus
+- Registered in `docs/antora.yml` after glossary entry
+- ROOT nav updated: `xref:ai-transparency:index.adoc[AI in This Project]`
+- ROOT page `ai-transparency.adoc` retained as summary stub; "Full Documentation" section added pointing to module
+- Build verified: zero new errors (pre-existing ubuntu.adoc errors only)
+
+ROOT nav disposition: The ROOT `ai-transparency.adoc` page is kept as a brief summary. The ROOT nav now points directly to `ai-transparency:index.adoc` (the module). If Jamie wants the ROOT page kept separately from the nav, the nav entry can be reverted.
+
 ## Navigation Restructure Plan (2026-03-13)
 
 Plan: `.claude/plans/docs-new-stuff-crypto-and-navbar.md`

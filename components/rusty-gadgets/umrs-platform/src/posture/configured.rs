@@ -89,22 +89,30 @@ impl SysctlConfig {
 
         // Process each source in ascending precedence order.
         // Later sources overwrite earlier ones (last-writer-wins).
+        //
+        // The `exists()` pre-check is omitted intentionally. `load_conf_dir`
+        // calls `read_dir` directly and handles `NotFound` in its error arm,
+        // collapsing the TOCTOU window from a two-step check-then-open to a
+        // single operation. NIST SP 800-53 SI-10.
         for dir in SYSCTL_SEARCH_DIRS {
             let dir_path = Path::new(dir);
-            if dir_path.exists() {
-                let loaded = load_conf_dir(dir_path, &mut map);
-                file_count = file_count.saturating_add(loaded);
-            } else {
-                log::debug!("posture: sysctl.d dir absent: {dir}");
-            }
+            let loaded = load_conf_dir(dir_path, &mut map);
+            file_count = file_count.saturating_add(loaded);
         }
 
         // /etc/sysctl.conf — highest precedence legacy file.
+        // Attempt the read directly; handle NotFound as a silent absent-file
+        // condition. Collapsing the two-step exists()+read into a single call
+        // eliminates the TOCTOU window on this path. NIST SP 800-53 SI-10.
         let legacy = Path::new("/etc/sysctl.conf");
-        if legacy.exists()
-            && let Ok(n) = load_conf_file(legacy, &mut map)
-        {
-            file_count = file_count.saturating_add(n);
+        match load_conf_file(legacy, &mut map) {
+            Ok(n) => file_count = file_count.saturating_add(n),
+            Err(ref e) if e.kind() == io::ErrorKind::NotFound => {
+                log::debug!("posture: sysctl.d: /etc/sysctl.conf absent");
+            }
+            Err(e) => {
+                log::debug!("posture: sysctl.d: /etc/sysctl.conf: {e}");
+            }
         }
 
         let key_count = map.len();
@@ -143,7 +151,7 @@ impl SysctlConfig {
     }
 
     /// Return the total number of keys loaded across all sources.
-    #[must_use]
+    #[must_use = "key count is used to verify sysctl.d load success — discarding may hide empty-config conditions"]
     pub fn key_count(&self) -> usize {
         self.map.len()
     }
@@ -311,14 +319,16 @@ pub fn parse_sysctl_line(line: &str) -> Option<(&str, &str)> {
 
 /// Read the configured cmdline from the bootloader configuration.
 ///
-/// **Phase 1**: always returns `None`. Bootloader configuration parsing
-/// is deferred to Phase 2 due to distro-specific path and format variation.
+/// **Phase 2b**: delegates to `bootcmdline::read_configured_cmdline()`, which
+/// reads the `options` line from the most likely active BLS entry under
+/// `/boot/loader/entries/`. On systems without BLS entries (containers, minimal
+/// images, non-RHEL environments), returns `None` silently.
 ///
-/// NIST SP 800-53 CM-6: boot-persistence layer for cmdline signals.
-#[must_use = "configured cmdline result must be examined"]
+/// NIST SP 800-53 CM-6: boot-persistence layer for cmdline signals — enables
+/// `EphemeralHotfix` and `BootDrift` detection for cmdline-class signals.
+/// NIST SP 800-53 CA-7: Continuous Monitoring — contradiction detection now
+/// covers configured cmdline tokens, not just live `/proc/cmdline`.
+#[must_use = "configured cmdline result must be examined — None means bootloader config unavailable"]
 pub fn configured_cmdline() -> Option<String> {
-    log::debug!(
-        "posture: configured_cmdline: deferred to Phase 2, returning None"
-    );
-    None
+    crate::posture::bootcmdline::read_configured_cmdline()
 }

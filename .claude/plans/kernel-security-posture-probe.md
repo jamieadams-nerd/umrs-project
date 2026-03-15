@@ -2,7 +2,7 @@
 name: Kernel Security Posture Probe
 path: components/rusty-gadgets/umrs-platform
 agent: rust-developer
-status: phase-2a-reviewed — security-engineer review complete (7 findings, report in .claude/reports/), tech-writer comment review done, rust-developer applied 11 comment fixes; docs deferred to post-2b; ready for Phase 2b planning
+status: phase-2b-complete — Phase 2a security findings (F-01 HIGH through F-07) all addressed; Phase 2b (sonnet scope) implemented: bootcmdline.rs BLS reader + modprobe install hard-blacklist; 123 tests pass (63 posture, 50 modprobe, 10 bootcmdline); workspace clippy clean; docs deferred to tech-writer; ready for security-engineer Phase 2b review
 depends-on: umrs-platform-expansion.md
 ---
 

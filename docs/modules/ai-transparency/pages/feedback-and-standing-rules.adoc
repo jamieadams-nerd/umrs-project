@@ -1,0 +1,143 @@
+= How Feedback Becomes Permanent Rules
+:description: The feedback loop that turns one-time corrections into standing rules — and why this is the mechanism that makes the AI pipeline reliable over time.
+:toc: left
+:toclevels: 2
+
+[id="feedback-and-standing-rules"]
+
+The hardest problem in AI-assisted work is not getting good output from a single session.
+It is getting consistent output across dozens of sessions without repeating the same
+corrections every time.
+
+The solution is a feedback loop that turns corrections into rules.
+This page explains how that loop works in UMRS.
+
+== The Problem: Context Loss
+
+Every AI agent session starts fresh.
+Without explicit mechanisms to carry knowledge forward, an agent that learned a preference
+or correction in one session has no memory of it in the next.
+
+The result: the engineer corrects the same issue repeatedly.
+The agent is not getting worse — it just has no memory.
+
+== The Solution: Three Persistence Layers
+
+UMRS uses three complementary mechanisms to carry knowledge forward:
+
+=== Standing Rules (`.claude/rules/`)
+
+Standing rules are project-level behavioral constraints applied to every agent at every
+session.
+They are plain text files checked into the repository.
+They are version-controlled, auditable, and applied unconditionally.
+
+When a correction is general enough to apply across all sessions and all similar
+situations, it becomes a standing rule.
+
+Examples of how corrections became rules:
+
+*Correction*: "Don't mark every enum variant and struct field with NIST citations —
+only annotate at module and type level."
+
+*Rule*: `rust_design_rules.md` — Source Comment Discipline Rule, with specific guidance
+on where control citations belong (module, struct, major component) and where they do not
+(every field, every line).
+
+---
+
+*Correction*: "Don't use absolute paths starting with `/media/psf/` — subprocesses
+can't traverse that mount."
+
+*Rule*: `CLAUDE.md` — Path Rules (Hard Rule), with explicit examples of correct and
+incorrect patterns, enforced across all agents.
+
+---
+
+*Correction*: "After finishing a documentation module, check the nav files for duplicates,
+orphans, and broken xrefs — don't just check your own work."
+
+*Rule*: Agent memory (`feedback_nav_scrutiny.md`) — nav scrutiny is required before any
+documentation work is declared complete.
+
+=== Agent Memory (`.claude/agent-memory/<agent>/MEMORY.md`)
+
+Per-agent memory files hold knowledge that is specific to a particular agent's domain
+and workflow.
+They are loaded into the agent's context at every session.
+
+Agent memory captures:
+
+* Stable patterns and design conventions
+* Terminology decisions made in previous sessions
+* Recurring reviewer feedback that affects this agent specifically
+* Active knowledge summaries from corpus familiarization passes
+
+Unlike standing rules, agent memory can be agent-specific.
+The security-auditor's memory contains RMF assessment methodology notes.
+The senior-tech-writer's memory contains documentation structure decisions.
+These do not need to be in every agent's context.
+
+=== The Doc-Team Feedback Log
+
+The doc-team feedback log (`.claude/agent-memory/doc-team/feedback.md`) is shared between
+`senior-tech-writer` and `tech-writer`.
+It tracks documentation decisions across sessions with a simple format:
+
+* Date, from-agent, to-agent, topic
+* Status (open or resolved)
+* One concern per entry
+
+This channel handles the class of corrections that are documentation-specific but not
+general enough to become project-wide standing rules.
+It prevents the senior technical writer from repeating navigation feedback to the tech
+writer, and vice versa.
+
+== What Gets Promoted to a Standing Rule
+
+Not every correction becomes a standing rule.
+The promotion criteria:
+
+* *Recurrence*: the same correction has been made more than once
+* *Generality*: the rule applies across multiple files, agents, or situations
+* *Non-obviousness*: the correct behavior was not obvious from the project's base context
+
+A correction that was made once, in a specific context, for a specific file, stays in
+session notes or agent memory rather than becoming a standing rule.
+Over-populated standing rules create cognitive load without proportionate benefit.
+
+== The Feedback Loop in Practice
+
+[source,mermaid]
+----
+flowchart LR
+    A[Engineer corrects agent output] --> B{Is this recurrent and general?}
+    B -- Yes --> C[Write standing rule in .claude/rules/]
+    B -- No --> D{Agent-specific?}
+    D -- Yes --> E[Add to agent MEMORY.md]
+    D -- No, documentation --> F[Add to doc-team feedback.md]
+    C --> G[Rule applies to all future sessions]
+    E --> G
+    F --> G
+----
+
+== Why This Matters for Reliability
+
+An AI pipeline without a feedback loop degrades in practice because the engineer must
+repeat corrections indefinitely.
+With the feedback loop:
+
+* Common mistakes become rules that prevent recurrence
+* Domain knowledge accumulates in agent memory between sessions
+* Documentation-specific decisions persist in the feedback log
+* The overall system improves over the project lifetime
+
+This is the mechanism that makes the UMRS AI pipeline reliable enough to use on
+high-assurance work.
+Not the quality of any single session's output, but the accumulation of corrections
+into rules that govern all future output.
+
+== See Also
+
+* xref:workflow-mechanics.adoc[How Work Flows Through the Team]
+* xref:agent-roles.adoc[Agent Roles and Responsibilities]

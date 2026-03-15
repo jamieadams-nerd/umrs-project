@@ -7,6 +7,6 @@
 ** xref:what-is-high-assurance.adoc[What is High Assurance?]
 ** xref:scope-and-audience.adoc[Scope and Audience]
 
-* xref:ai-transparency.adoc[AI in This Project]
+* xref:ai-transparency:index.adoc[AI in This Project]
 * xref:legal-notices.adoc[Legal Notices]
 * xref:release-notes.adoc[Release Notes]

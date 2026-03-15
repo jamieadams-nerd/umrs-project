@@ -437,13 +437,13 @@ impl CmdlineReader {
     }
 
     /// Return the full cmdline string (trimmed of trailing whitespace/newline).
-    #[must_use]
+    #[must_use = "cmdline content is used for token lookup — discarding loses boot parameter context"]
     pub fn as_str(&self) -> &str {
         self.content.trim_end()
     }
 
     /// Test whether the given token is present as a whitespace-delimited word.
-    #[must_use]
+    #[must_use = "token presence check drives cmdline signal evaluation — discarding silently drops the result"]
     pub fn contains_token(&self, token: &str) -> bool {
         self.as_str().split_whitespace().any(|t| t == token)
     }
