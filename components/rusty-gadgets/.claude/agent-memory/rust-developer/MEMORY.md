@@ -47,6 +47,15 @@
 - Blacklist signals use `DesiredValue::Exact(1)` — "blacklisted" maps to integer 1.
 - Without this fix, `BootDrift` was silently suppressed for all four DMA-surface blacklist signals.
 
+## Known Patterns — KernelCmdline Contradiction Path (S-01 fix)
+- `evaluate_configured_meets()` returns None for BLS options strings (not integer, not "blacklisted").
+- For `SignalClass::KernelCmdline` signals, `collect_one()` bypasses `evaluate_configured_meets()`.
+- Instead uses `desc.desired.meets_cmdline(configured_boot_cmdline)` directly.
+- This is the ONLY way to produce BootDrift/EphemeralHotfix for cmdline signals.
+- `read_configured_boot_cmdline()` stores the full raw BLS options string for operator display.
+- The dedicated path is in `collect_one()` — not in `evaluate_configured_meets()`.
+- Tests in `posture_tests.rs` section "S-01: KernelCmdline configured-value contradiction detection".
+
 ## Confirmed Patterns (umrs-platform posture module)
 - All `/proc/` reads: `ProcfsText` + `SecureReader::read_generic_text`
 - All `/sys/` reads: `SysfsText` + `SecureReader::read_generic_text` with SYSFS_MAGIC

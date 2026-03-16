@@ -195,9 +195,24 @@ fn select_entry(entries: &[PathBuf]) -> Option<&PathBuf> {
 /// Read the running kernel's osrelease string from
 /// `/proc/sys/kernel/osrelease`.
 ///
-/// This is NOT a provenance-verified read because we are using it only for
-/// heuristic entry matching — not for security decisions. The live cmdline
-/// (from `/proc/cmdline` via `CmdlineReader`) is the authoritative source.
+/// This is NOT a provenance-verified read because the osrelease value is used
+/// only for heuristic BLS entry selection — not for a security assertion. The
+/// live cmdline (from `/proc/cmdline` via `CmdlineReader`) is the authoritative
+/// source; the osrelease value only influences which BLS entry is compared.
+///
+/// # Security note — unverified procfs read
+///
+/// This read does not go through `SecureReader` / `PROC_SUPER_MAGIC`. On an
+/// enforcing SELinux system, `/proc/sys/kernel/osrelease` is labeled `proc_t`
+/// and is writable only by the kernel — userspace cannot inject a false value
+/// through the procfs VFS layer. The unverified read is therefore safe under
+/// the project's target deployment (SELinux enforcing, integrity lockdown).
+/// If the posture probe is ever deployed without SELinux enforcing, this read
+/// should be upgraded to `ProcfsText` + `PROC_SUPER_MAGIC` to remove the
+/// deployment assumption. This dependency is documented here so reviewers have
+/// explicit context.
+///
+/// NIST SP 800-53 SI-7; NIST SP 800-218 SSDF PW.4; NSA RTB RAIN.
 ///
 /// Returns `None` if unreadable (permission, absent node).
 fn read_kernel_osrelease() -> Option<String> {
@@ -232,6 +247,16 @@ fn parse_bls_options(entry_path: &Path) -> Option<String> {
 ///
 /// Returns the trimmed value for the first occurrence of `field`, or `None`
 /// if the file cannot be read or the field is absent.
+///
+/// # File size assumption
+///
+/// BLS entry files are expected to be small (well under 64 KiB in practice —
+/// a typical entry is under 1 KiB). `std::fs::read_to_string` reads the entire
+/// file into memory without a size cap. A crafted or corrupted entry that is
+/// extremely large would cause a proportional allocation before this function
+/// returns `None` via the error path. This is an availability concern only (no
+/// security failure); the worst outcome is a transient memory spike. For
+/// correctness on realistic BLS files, the current approach is sufficient.
 ///
 /// NIST SP 800-53 SI-10: Input Validation — malformed lines are skipped;
 /// the field match is exact (not a substring match).

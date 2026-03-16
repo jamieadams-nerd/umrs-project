@@ -126,6 +126,57 @@ pub enum SignalId {
     /// `thunderbolt` — blacklisted in modprobe.d; Thunderbolt DMA attacks
     /// bypass memory protection. Live state: module directory absent = confirms blacklist.
     ThunderboltBlacklisted,
+
+    // ── CPU mitigation sub-signals (Phase 2b) ────────────────────────────
+    // These signals complement the umbrella `Mitigations` signal by checking
+    // individual per-CVE weakening flags on `/proc/cmdline`. Each checks that
+    // the specific weakening override is ABSENT (present = hardening failure).
+    // All are `KernelCmdline` class with `DesiredValue::CmdlineAbsent`.
+    //
+    // NIST SP 800-53 SI-16: Memory Protection — per-CVE mitigation overrides.
+    // NSA RTB: CPU vulnerability mitigations must not be individually disabled.
+
+    /// `spectre_v2=off` — must be absent; explicitly disables Spectre v2
+    /// (Variant 2) mitigation (retpoline, IBRS, EIBRS).
+    SpectreV2Off,
+    /// `spectre_v2_user=off` — must be absent; disables user-space Spectre v2
+    /// mitigation (IBPB/STIBP), leaving processes unable to opt in via
+    /// `prctl(PR_SET_SPECULATION_CTRL)`.
+    SpectreV2UserOff,
+    /// `mds=off` — must be absent; disables Microarchitectural Data Sampling
+    /// (MDS/RIDL/Fallout/ZombieLoad) mitigations (CVE-2018-12126 et al.).
+    MdsOff,
+    /// `tsx_async_abort=off` — must be absent; disables TSX Async Abort
+    /// mitigation (CVE-2019-11135, Intel processors with TSX).
+    TsxAsyncAbortOff,
+    /// `l1tf=off` — must be absent; disables L1 Terminal Fault mitigation
+    /// (CVE-2018-3615/3620/3646, Intel processors).
+    L1tfOff,
+    /// `retbleed=off` — must be absent; disables RETBLEED mitigation
+    /// (CVE-2022-29900/29901, branch predictor return address vulnerability).
+    RetbleedOff,
+    /// `srbds=off` — must be absent; disables Special Register Buffer Data
+    /// Sampling mitigation (CVE-2020-0543, Intel processors).
+    SrbdsOff,
+    /// `nosmt=off` — must be absent; re-enables Simultaneous Multi-Threading
+    /// (SMT) when `nosmt` was set. Weakens MDS, L1TF, and cross-HT attacks.
+    NoSmtOff,
+
+    // ── Kernel core dump (Phase 2b) ──────────────────────────────────────
+    /// `kernel.core_pattern` — core dump disposition.
+    ///
+    /// Hardened state: value begins with `|` (piped to a registered handler
+    /// such as `systemd-coredump`). A raw path value risks uncontrolled file
+    /// creation with sensitive process memory as content.
+    ///
+    /// Validated via TPI: structural (first byte is `|`) and semantic (handler
+    /// path is a non-empty absolute path). Both paths must agree; fail closed
+    /// on any disagreement.
+    ///
+    /// NIST SP 800-53 SC-28: Protection of Information at Rest — core dumps
+    /// contain process memory including key material and credentials.
+    /// NIST SP 800-53 CM-6: managed coredump handlers provide accountability.
+    CorePattern,
 }
 
 impl SignalId {
@@ -165,6 +216,15 @@ impl SignalId {
                 "modprobe:firewire_core/blacklisted"
             }
             Self::ThunderboltBlacklisted => "modprobe:thunderbolt/blacklisted",
+            Self::SpectreV2Off => "spectre_v2=off",
+            Self::SpectreV2UserOff => "spectre_v2_user=off",
+            Self::MdsOff => "mds=off",
+            Self::TsxAsyncAbortOff => "tsx_async_abort=off",
+            Self::L1tfOff => "l1tf=off",
+            Self::RetbleedOff => "retbleed=off",
+            Self::SrbdsOff => "srbds=off",
+            Self::NoSmtOff => "nosmt=off",
+            Self::CorePattern => "kernel.core_pattern",
         }
     }
 }

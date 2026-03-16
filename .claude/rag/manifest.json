@@ -34823,5 +34823,299 @@
     "chunks_stored": 9,
     "collection": "tui-cli",
     "ingested_date": "2026-03-15T17:05:41.682572+00:00"
+  },
+  "tech-writer-corpus/SOURCE.md": {
+    "hash": "38add87aea96e0a6",
+    "converted_to": "converted/tech-writer-corpus/SOURCE.md",
+    "chunks_stored": 6,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-16T07:46:10.524194+00:00"
+  },
+  "tech-writer-corpus/gov-standards/FederalPLGuidelines.pdf": {
+    "hash": "1fc4243305bc4c86",
+    "converted_to": "converted/tech-writer-corpus/gov-standards/FederalPLGuidelines.md",
+    "chunks_stored": 3,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-16T07:46:11.010145+00:00"
+  },
+  "tech-writer-corpus/gov-standards/MIL-STD-38784B-MANUAL-DOWNLOAD.md": {
+    "hash": "7ce2a8b6939e3942",
+    "converted_to": "converted/tech-writer-corpus/gov-standards/MIL-STD-38784B-MANUAL-DOWNLOAD.md",
+    "chunks_stored": 7,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-16T07:46:11.282414+00:00"
+  },
+  "tech-writer-corpus/gov-standards/MIL-STD-38784B.pdf": {
+    "hash": "d7072a44cbeaabd3",
+    "converted_to": "converted/tech-writer-corpus/gov-standards/MIL-STD-38784B.md",
+    "chunks_stored": 86,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-16T07:46:15.001118+00:00"
+  },
+  "tech-writer-corpus/gov-standards/SOURCE.md": {
+    "hash": "50571fced50d3af2",
+    "converted_to": "converted/tech-writer-corpus/gov-standards/SOURCE.md",
+    "chunks_stored": 6,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-16T07:46:15.286285+00:00"
+  },
+  "tech-writer-corpus/gov-standards/everyspec-38784b-page.md": {
+    "hash": "1f6d57635eae657f",
+    "converted_to": "converted/tech-writer-corpus/gov-standards/everyspec-38784b-page.md",
+    "chunks_stored": 8,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-16T07:46:15.611216+00:00"
+  },
+  "tech-writer-corpus/gov-standards/federal-plain-language-guidelines.md": {
+    "hash": "13394f62428b7e6d",
+    "converted_to": "converted/tech-writer-corpus/gov-standards/federal-plain-language-guidelines.md",
+    "chunks_stored": 10,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-16T07:46:16.051215+00:00"
+  },
+  "tech-writer-corpus/gov-standards/nist-author-instructions.md": {
+    "hash": "eaac00d6fa832fe5",
+    "converted_to": "converted/tech-writer-corpus/gov-standards/nist-author-instructions.md",
+    "chunks_stored": 37,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-16T07:46:17.197543+00:00"
+  },
+  "tech-writer-corpus/gov-standards/plain-language-active-voice.md": {
+    "hash": "f1f45e977f2f1ada",
+    "converted_to": "converted/tech-writer-corpus/gov-standards/plain-language-active-voice.md",
+    "chunks_stored": 3,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-16T07:46:17.377179+00:00"
+  },
+  "tech-writer-corpus/gov-standards/plain-language-conversational.md": {
+    "hash": "f8d381bbaf56ec41",
+    "converted_to": "converted/tech-writer-corpus/gov-standards/plain-language-conversational.md",
+    "chunks_stored": 1,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-16T07:46:17.456618+00:00"
+  },
+  "tech-writer-corpus/gov-standards/plain-language-guidelines-index.md": {
+    "hash": "afc09bce2ae4faf4",
+    "converted_to": "converted/tech-writer-corpus/gov-standards/plain-language-guidelines-index.md",
+    "chunks_stored": 1,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-16T07:46:17.544225+00:00"
+  },
+  "tech-writer-corpus/gov-standards/plain-language-organize.md": {
+    "hash": "80f22cf65641291a",
+    "converted_to": "converted/tech-writer-corpus/gov-standards/plain-language-organize.md",
+    "chunks_stored": 1,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-16T07:46:17.618245+00:00"
+  },
+  "tech-writer-corpus/gov-standards/plain-language-sentences.md": {
+    "hash": "2ae689e112b5013e",
+    "converted_to": "converted/tech-writer-corpus/gov-standards/plain-language-sentences.md",
+    "chunks_stored": 1,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-16T07:46:17.704648+00:00"
+  },
+  "tech-writer-corpus/gov-standards/plain-language-short-sections.md": {
+    "hash": "92ee72d12ada8e79",
+    "converted_to": "converted/tech-writer-corpus/gov-standards/plain-language-short-sections.md",
+    "chunks_stored": 2,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-16T07:46:17.834952+00:00"
+  },
+  "tech-writer-corpus/gov-standards/plain-language-simple-words.md": {
+    "hash": "cede672a89387c90",
+    "converted_to": "converted/tech-writer-corpus/gov-standards/plain-language-simple-words.md",
+    "chunks_stored": 2,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-16T07:46:17.961602+00:00"
+  },
+  "tech-writer-corpus/gov-standards/plain-language-words-index.md": {
+    "hash": "2a97ae1851c6bb05",
+    "converted_to": "converted/tech-writer-corpus/gov-standards/plain-language-words-index.md",
+    "chunks_stored": 1,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-16T07:46:18.058911+00:00"
+  },
+  "tech-writer-corpus/gov-standards/plain-language-words.md": {
+    "hash": "fe76456304e2d833",
+    "converted_to": "converted/tech-writer-corpus/gov-standards/plain-language-words.md",
+    "chunks_stored": 1,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-16T07:46:18.138617+00:00"
+  },
+  "tech-writer-corpus/style-guides/google/SOURCE.md": {
+    "hash": "3208989499822e44",
+    "converted_to": "converted/tech-writer-corpus/style-guides/google/SOURCE.md",
+    "chunks_stored": 2,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-16T07:46:18.259482+00:00"
+  },
+  "tech-writer-corpus/style-guides/google/about-and-highlights.md": {
+    "hash": "650e8fb1d7ca5982",
+    "converted_to": "converted/tech-writer-corpus/style-guides/google/about-and-highlights.md",
+    "chunks_stored": 6,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-16T07:46:18.524631+00:00"
+  },
+  "tech-writer-corpus/style-guides/google/accessibility.md": {
+    "hash": "39e8eb433c585a3d",
+    "converted_to": "converted/tech-writer-corpus/style-guides/google/accessibility.md",
+    "chunks_stored": 47,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-16T07:46:19.878850+00:00"
+  },
+  "tech-writer-corpus/style-guides/google/code-in-text.md": {
+    "hash": "75a8b941f9403463",
+    "converted_to": "converted/tech-writer-corpus/style-guides/google/code-in-text.md",
+    "chunks_stored": 45,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-16T07:46:21.309810+00:00"
+  },
+  "tech-writer-corpus/style-guides/google/highlights-detail.md": {
+    "hash": "e8edfa77aaefad08",
+    "converted_to": "converted/tech-writer-corpus/style-guides/google/highlights-detail.md",
+    "chunks_stored": 37,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-16T07:46:22.394148+00:00"
+  },
+  "tech-writer-corpus/style-guides/google/highlights-main.md": {
+    "hash": "bc9a4efc62d3d346",
+    "converted_to": "converted/tech-writer-corpus/style-guides/google/highlights-main.md",
+    "chunks_stored": 37,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-16T07:46:23.500000+00:00"
+  },
+  "tech-writer-corpus/style-guides/google/inclusive-documentation.md": {
+    "hash": "50915ef55d44ce2e",
+    "converted_to": "converted/tech-writer-corpus/style-guides/google/inclusive-documentation.md",
+    "chunks_stored": 41,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-16T07:46:24.702009+00:00"
+  },
+  "tech-writer-corpus/style-guides/google/link-text.md": {
+    "hash": "77773f849f5441c8",
+    "converted_to": "converted/tech-writer-corpus/style-guides/google/link-text.md",
+    "chunks_stored": 52,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-16T07:46:26.272198+00:00"
+  },
+  "tech-writer-corpus/style-guides/google/procedures-formatting-accessibility.md": {
+    "hash": "6c376dadfa5873cf",
+    "converted_to": "converted/tech-writer-corpus/style-guides/google/procedures-formatting-accessibility.md",
+    "chunks_stored": 7,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-16T07:46:26.562080+00:00"
+  },
+  "tech-writer-corpus/style-guides/google/procedures.md": {
+    "hash": "c03fc63f5900c83f",
+    "converted_to": "converted/tech-writer-corpus/style-guides/google/procedures.md",
+    "chunks_stored": 46,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-16T07:46:28.059748+00:00"
+  },
+  "tech-writer-corpus/style-guides/google/text-formatting.md": {
+    "hash": "9911a4267157cd83",
+    "converted_to": "converted/tech-writer-corpus/style-guides/google/text-formatting.md",
+    "chunks_stored": 38,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-16T07:46:29.190870+00:00"
+  },
+  "tech-writer-corpus/style-guides/google/tone.md": {
+    "hash": "8d0158afcef4b824",
+    "converted_to": "converted/tech-writer-corpus/style-guides/google/tone.md",
+    "chunks_stored": 37,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-16T07:46:30.286715+00:00"
+  },
+  "tech-writer-corpus/style-guides/google/word-list.md": {
+    "hash": "7a763a7eee757c52",
+    "converted_to": "converted/tech-writer-corpus/style-guides/google/word-list.md",
+    "chunks_stored": 157,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-16T07:46:34.777074+00:00"
+  },
+  "tech-writer-corpus/style-guides/microsoft/SOURCE.md": {
+    "hash": "8c8caed1590f326e",
+    "converted_to": "converted/tech-writer-corpus/style-guides/microsoft/SOURCE.md",
+    "chunks_stored": 1,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-16T07:46:34.885698+00:00"
+  },
+  "tech-writer-corpus/style-guides/microsoft/bias-free-communication.md": {
+    "hash": "0fa0796c4f22dcdf",
+    "converted_to": "converted/tech-writer-corpus/style-guides/microsoft/bias-free-communication.md",
+    "chunks_stored": 6,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-16T07:46:35.129745+00:00"
+  },
+  "tech-writer-corpus/style-guides/microsoft/brand-voice.md": {
+    "hash": "9d6c4a1765999a7f",
+    "converted_to": "converted/tech-writer-corpus/style-guides/microsoft/brand-voice.md",
+    "chunks_stored": 4,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-16T07:46:35.311891+00:00"
+  },
+  "tech-writer-corpus/style-guides/microsoft/capitalization.md": {
+    "hash": "5740cbf669ae0523",
+    "converted_to": "converted/tech-writer-corpus/style-guides/microsoft/capitalization.md",
+    "chunks_stored": 5,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-16T07:46:35.536480+00:00"
+  },
+  "tech-writer-corpus/style-guides/microsoft/global-communications.md": {
+    "hash": "5923c6508676c496",
+    "converted_to": "converted/tech-writer-corpus/style-guides/microsoft/global-communications.md",
+    "chunks_stored": 2,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-16T07:46:35.671882+00:00"
+  },
+  "tech-writer-corpus/style-guides/microsoft/headings.md": {
+    "hash": "a10b3ece64beb16f",
+    "converted_to": "converted/tech-writer-corpus/style-guides/microsoft/headings.md",
+    "chunks_stored": 4,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-16T07:46:35.874495+00:00"
+  },
+  "tech-writer-corpus/style-guides/microsoft/lists.md": {
+    "hash": "f88da1b95d5d82a8",
+    "converted_to": "converted/tech-writer-corpus/style-guides/microsoft/lists.md",
+    "chunks_stored": 6,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-16T07:46:36.112295+00:00"
+  },
+  "tech-writer-corpus/style-guides/microsoft/procedures-instructions.md": {
+    "hash": "3a41f74be7ea4969",
+    "converted_to": "converted/tech-writer-corpus/style-guides/microsoft/procedures-instructions.md",
+    "chunks_stored": 5,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-16T07:46:36.327807+00:00"
+  },
+  "tech-writer-corpus/style-guides/microsoft/scannable-content.md": {
+    "hash": "e979566edcc88f0b",
+    "converted_to": "converted/tech-writer-corpus/style-guides/microsoft/scannable-content.md",
+    "chunks_stored": 6,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-16T07:46:36.589338+00:00"
+  },
+  "tech-writer-corpus/style-guides/microsoft/top-10-tips-style-voice.md": {
+    "hash": "db640c3d8d886d5e",
+    "converted_to": "converted/tech-writer-corpus/style-guides/microsoft/top-10-tips-style-voice.md",
+    "chunks_stored": 8,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-16T07:46:36.841068+00:00"
+  },
+  "tech-writer-corpus/style-guides/microsoft/welcome.md": {
+    "hash": "bb6119d2a1d7f726",
+    "converted_to": "converted/tech-writer-corpus/style-guides/microsoft/welcome.md",
+    "chunks_stored": 1,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-16T07:46:36.960744+00:00"
+  },
+  "tech-writer-corpus/style-guides/microsoft/word-choice.md": {
+    "hash": "595bafbc9fc61b4d",
+    "converted_to": "converted/tech-writer-corpus/style-guides/microsoft/word-choice.md",
+    "chunks_stored": 3,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-16T07:46:37.120974+00:00"
   }
 }

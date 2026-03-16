@@ -2,7 +2,7 @@
 // Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
 //! Static signal catalog — compile-time array of `SignalDescriptor` entries.
 //!
-//! Every kernel security posture signal known to Phase 1 and Phase 2a is described here
+//! Every kernel security posture signal known to Phase 1, Phase 2a, and Phase 2b is described here
 //! as a `const` value. The catalog is the single authoritative source for
 //! signal metadata: paths, sysctl keys, desired values, impact tiers, and
 //! rationale text.
@@ -400,5 +400,125 @@ pub static SIGNALS: &[SignalDescriptor] = &[
                     blacklisting prevents DMA-based attacks via Thunderbolt ports.",
         nist_controls: "NIST 800-53 SI-7, CM-7; NSA RTB: physical attack surface \
                         reduction; CMMC CM.L2-3.4.6",
+    },
+    // ── CPU mitigation sub-signals (Phase 2b) ────────────────────────────
+    // These complement the umbrella `Mitigations` signal (which checks for the
+    // global `mitigations=off` flag) by checking each per-CVE weakening override
+    // individually. An operator who disables a specific mitigation without using
+    // the umbrella flag will be caught here.
+    //
+    // All entries: KernelCmdline, /proc/cmdline, CmdlineAbsent.
+    SignalDescriptor {
+        id: SignalId::SpectreV2Off,
+        class: SignalClass::KernelCmdline,
+        live_path: "/proc/cmdline",
+        sysctl_key: None,
+        desired: DesiredValue::CmdlineAbsent("spectre_v2=off"),
+        impact: AssuranceImpact::High,
+        rationale: "Explicitly disabling Spectre v2 mitigation exposes the system to \
+                    branch-predictor injection attacks between processes and the kernel.",
+        nist_controls: "NIST 800-53 SI-16, SC-39; NSA RTB: CPU vulnerability mitigations",
+    },
+    SignalDescriptor {
+        id: SignalId::SpectreV2UserOff,
+        class: SignalClass::KernelCmdline,
+        live_path: "/proc/cmdline",
+        sysctl_key: None,
+        desired: DesiredValue::CmdlineAbsent("spectre_v2_user=off"),
+        impact: AssuranceImpact::Medium,
+        rationale: "Disabling user-space Spectre v2 mitigation prevents processes \
+                    from opting in to IBPB/STIBP protection via prctl, increasing \
+                    cross-process speculation exposure.",
+        nist_controls: "NIST 800-53 SI-16, SC-39; NSA RTB: CPU vulnerability mitigations",
+    },
+    SignalDescriptor {
+        id: SignalId::MdsOff,
+        class: SignalClass::KernelCmdline,
+        live_path: "/proc/cmdline",
+        sysctl_key: None,
+        desired: DesiredValue::CmdlineAbsent("mds=off"),
+        impact: AssuranceImpact::High,
+        rationale: "Disabling MDS mitigation exposes the system to RIDL/Fallout/\
+                    ZombieLoad attacks (CVE-2018-12126 et al.) that leak kernel and \
+                    hypervisor memory across fill-buffer boundaries.",
+        nist_controls: "NIST 800-53 SI-16, SC-39; NSA RTB: CPU vulnerability mitigations",
+    },
+    SignalDescriptor {
+        id: SignalId::TsxAsyncAbortOff,
+        class: SignalClass::KernelCmdline,
+        live_path: "/proc/cmdline",
+        sysctl_key: None,
+        desired: DesiredValue::CmdlineAbsent("tsx_async_abort=off"),
+        impact: AssuranceImpact::Medium,
+        rationale: "Disabling TAA mitigation exposes Intel systems with TSX to \
+                    CVE-2019-11135, which leaks data via asynchronous TSX aborts.",
+        nist_controls: "NIST 800-53 SI-16, SC-39; NSA RTB: CPU vulnerability mitigations",
+    },
+    SignalDescriptor {
+        id: SignalId::L1tfOff,
+        class: SignalClass::KernelCmdline,
+        live_path: "/proc/cmdline",
+        sysctl_key: None,
+        desired: DesiredValue::CmdlineAbsent("l1tf=off"),
+        impact: AssuranceImpact::High,
+        rationale: "Disabling L1TF mitigation exposes Intel processors to L1 Terminal \
+                    Fault (CVE-2018-3615/3620/3646), which leaks L1 cache data across \
+                    VM and process boundaries.",
+        nist_controls: "NIST 800-53 SI-16, SC-39; NSA RTB: CPU vulnerability mitigations",
+    },
+    SignalDescriptor {
+        id: SignalId::RetbleedOff,
+        class: SignalClass::KernelCmdline,
+        live_path: "/proc/cmdline",
+        sysctl_key: None,
+        desired: DesiredValue::CmdlineAbsent("retbleed=off"),
+        impact: AssuranceImpact::High,
+        rationale: "Disabling RETBLEED mitigation exposes the kernel to \
+                    CVE-2022-29900/29901, allowing return-address speculation attacks \
+                    that bypass retpoline on affected CPUs.",
+        nist_controls: "NIST 800-53 SI-16, SC-39; NSA RTB: CPU vulnerability mitigations",
+    },
+    SignalDescriptor {
+        id: SignalId::SrbdsOff,
+        class: SignalClass::KernelCmdline,
+        live_path: "/proc/cmdline",
+        sysctl_key: None,
+        desired: DesiredValue::CmdlineAbsent("srbds=off"),
+        impact: AssuranceImpact::Medium,
+        rationale: "Disabling SRBDS mitigation exposes Intel processors to \
+                    CVE-2020-0543, which leaks RNG output from special registers \
+                    via sampling attacks.",
+        nist_controls: "NIST 800-53 SI-16, SC-39; NSA RTB: CPU vulnerability mitigations",
+    },
+    SignalDescriptor {
+        id: SignalId::NoSmtOff,
+        class: SignalClass::KernelCmdline,
+        live_path: "/proc/cmdline",
+        sysctl_key: None,
+        desired: DesiredValue::CmdlineAbsent("nosmt=off"),
+        impact: AssuranceImpact::Medium,
+        rationale: "Re-enabling SMT when the kernel was booted with nosmt weakens \
+                    MDS, L1TF, and cross-HT speculation attack mitigations that \
+                    depend on SMT being disabled.",
+        nist_controls: "NIST 800-53 SI-16, SC-39; NSA RTB: CPU vulnerability mitigations",
+    },
+    // ── Kernel core dump (Phase 2b) ──────────────────────────────────────
+    SignalDescriptor {
+        id: SignalId::CorePattern,
+        class: SignalClass::Sysctl,
+        live_path: "/proc/sys/kernel/core_pattern",
+        sysctl_key: Some("kernel.core_pattern"),
+        // Hardened check is string-based: value must begin with `|`.
+        // This uses Custom because neither Exact(u32) nor CmdlinePresent/Absent
+        // can express "string must begin with `|`". The CorePattern validator
+        // in reader.rs implements TPI (two-path independence) for this check.
+        desired: DesiredValue::Custom,
+        impact: AssuranceImpact::High,
+        rationale: "A core_pattern beginning with `|` routes dumps to a registered \
+                    handler (e.g., systemd-coredump), enabling audit, compression, \
+                    and access control. A raw path writes process memory directly to \
+                    the filesystem with no handler accountability.",
+        nist_controls: "NIST 800-53 SC-28, CM-6, AU-9; NSA RTB: information disclosure \
+                        prevention; CMMC SC.L2-3.13.10",
     },
 ];

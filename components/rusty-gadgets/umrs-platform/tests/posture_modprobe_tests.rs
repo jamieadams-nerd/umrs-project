@@ -462,14 +462,15 @@ fn catalog_blacklist_signals_have_no_sysctl_key() {
     }
 }
 
-/// Updated catalog length must match total SignalId variant count (22 + 5 = 27).
+/// Updated catalog length must match total SignalId variant count
+/// (22 Phase 1 + 5 Phase 2a modprobe + 8 Phase 2b CPU mitigations + 1 CorePattern = 36).
 #[test]
 fn catalog_length_matches_signal_id_count() {
     assert_eq!(
         SIGNALS.len(),
-        27,
+        36,
         "catalog length must match total SignalId variant count \
-         (22 Phase 1 + 5 Phase 2a modprobe)"
+         (22 Phase 1 + 5 Phase 2a + 9 Phase 2b)"
     );
 }
 

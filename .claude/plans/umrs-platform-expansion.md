@@ -319,17 +319,16 @@ probe and CPU extension work proceeds. Serializing an unstable type creates migr
 
 ---
 
-## Open Architectural Decisions
+## Architectural Decisions — Resolved
 
-The following decisions need Jamie's input before the affected work items can be
-implemented.
+Decided by Jamie on 2026-03-16.
 
-| Decision | Context | Options | Owner |
-|----------|---------|---------|-------|
-| `CpuSignalId` enum design | CPU extension detection needs a signal catalog type | (A) Separate `CpuSignalId` enum — rust-developer recommends this; (B) Extend existing `SignalId` | Jamie |
-| `MandatoryAccessControl` abstraction | Issue 1 (cross-platform) — T3 on Ubuntu requires a MAC check that is not SELinux | (A) `MandatoryAccessControl` trait that maps `OsFamily` → MAC check strategy; (B) Simpler phase-level decision table; (C) Accept T3 with downgrade note, defer abstraction | Jamie |
-| `DetectionResult` serialization format | Full SEC benefit requires serializing the detection result | (A) `postcard` (compact binary, no_std friendly); (B) CBOR; (C) JSON (human-readable); (D) Custom binary format | Jamie |
-| Serialization sequencing | When should the serialization layer be added | (A) After assessment engine types stabilize — rust-developer recommendation; (B) Earlier, accepting migration risk | Jamie |
+| Decision | Choice | Rationale |
+|----------|--------|-----------|
+| `CpuSignalId` enum design | **(A) Separate `CpuSignalId` enum** | Keeps posture catalog and CPU extension catalog from growing into a single unwieldy type. Aligns with rust-developer recommendation. |
+| `MandatoryAccessControl` abstraction | **(B) Phase-level decision table** | A trait is over-engineering for two MAC systems. A decision table (`OsFamily` → MAC check) is concrete and testable. Evolve to a trait only if a third MAC system matters. |
+| `DetectionResult` serialization format | **(C) JSON** | Evidence chain must be human-readable for operators and auditors on CUI/DoD systems. Aligns with the `--json` output standard planned for all tools, the assessment engine's evidence pipeline, and `umrs-logspace` structured events. Size overhead is acceptable for system state snapshots. |
+| Serialization sequencing | **(A) After assessment engine types stabilize** | Type structure is still evolving with posture probe and CPU extension work. Serializing an unstable type creates migration debt. |
 
 ---
 

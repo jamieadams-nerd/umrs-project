@@ -228,26 +228,26 @@ Key test patterns:
 - Fix: extract logical blocks into helper functions, NOT suppress with `#[allow]`
 - Example: `build_inode_flag_rows(dirent)` extracted from `build_security_rows()` in file_stat.rs
 
-## posture Module (Phase 1+2a+2b — implemented through 2026-03-15)
+## posture Module (Phase 1+2a+2b — implemented through 2026-03-16)
 
 Module location: `umrs-platform/src/posture/`
+Signal catalog: **37 signals** (Phase 1: 22, Phase 2a: +5 modprobe, Phase 2b: +8 CPU sub + 1 CorePattern)
 
-Files:
-- `mod.rs` — public API re-exports
-- `signal.rs` — SignalId (27 variants), SignalClass (Sysctl/KernelCmdline/Lockdown/ModprobeBlacklist), AssuranceImpact, DesiredValue, LiveValue, ConfiguredValue
-- `catalog.rs` — SIGNALS: &[SignalDescriptor] — 27 static entries
-- `reader.rs` — KptrRestrict, define_sysctl_signal! macro, CmdlineReader, BootIdReader, read_live_sysctl(), read_lockdown_live()
-- `configured.rs` — SysctlConfig (sysctl.d merge), configured_cmdline() delegates to bootcmdline::read_configured_cmdline()
-- `contradiction.rs` — ContradictionKind; evaluate_configured_meets() has i32 signed fallback for negative sysctl values (e.g., perf_event_paranoid=-1)
-- `snapshot.rs` — PostureSnapshot::collect(), SignalReport; collect_one() raw configured-value log gated behind cfg(debug_assertions) (F-01 fix)
-- `bootcmdline.rs` — NEW Phase 2b: BLS entry reader; selection heuristic: single→osrelease match→last; graceful degrade to None
+Key files:
+- `signal.rs` — SignalId (37 variants), SignalClass, AssuranceImpact, DesiredValue, LiveValue, ConfiguredValue
+- `catalog.rs` — SIGNALS: &[SignalDescriptor] — 37 static entries
+- `reader.rs` — KptrRestrict, define_sysctl_signal! macro, CorePatternReader, CorePatternKind, classify_core_pattern(), CmdlineReader, BootIdReader, read_live_sysctl(), read_live_core_pattern()
+- `snapshot.rs` — PostureSnapshot::collect(), SignalReport; CorePattern handled in dedicated arm of read_live_sysctl_signal()
+- `bootcmdline.rs` — BLS entry reader; heuristic: single→osrelease match→last; graceful degrade to None
 - `fips_cross.rs` — FipsCrossCheck; uses std::fs::metadata() not Path::exists() (TOCTOU fix)
-- `modprobe.rs` — ModprobeConfig; ParsedDirective now has Install{module,command,is_hard_blacklist} variant; hard_blacklisted HashMap; is_hard_blacklisted()/blacklist_source() methods
+- `modprobe.rs` — ModprobeConfig; ParsedDirective has Install{module,command,is_hard_blacklist} variant
 
-Tests: posture_tests.rs (63), posture_modprobe_tests.rs (50), posture_bootcmdline_tests.rs (10) — all passing
+CPU sub-signals (Phase 2b): SpectreV2Off, SpectreV2UserOff, MdsOff, TsxAsyncAbortOff, L1tfOff, RetbleedOff, SrbdsOff, NoSmtOff — all KernelCmdline/CmdlineAbsent
+CorePattern (Phase 2b): Sysctl/Custom, TPI via classify_core_pattern(); ManagedHandler=hardened (starts with |/path), RawPath=unhardened, Invalid=fail-closed
+SEC caching for posture: DEFERRED — no serde in umrs-platform; signals change at runtime; pending serialization design (plan decision 9)
+
+Tests: posture_tests.rs (79+), posture_modprobe_tests.rs (50), posture_bootcmdline_tests.rs (10)
 Example: `umrs-platform/examples/posture_demo.rs`
-
-Phase 2b remaining (opus scope): CPU mitigation sub-signals, core_pattern, SEC cache integration
 
 ## Error Information Discipline Pattern (posture/configured.rs canonical)
 

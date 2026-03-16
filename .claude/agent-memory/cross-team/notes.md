@@ -36,6 +36,46 @@ Mark entries `resolved` when acted on. Do not delete entries.
 
 ---
 
+## [2026-03-16] rust-developer → tech-writer: doc-sync: umrs-platform posture — Phase 2b CPU sub-signals + CorePattern
+
+**Status**: open
+
+Phase 2b additions to the `umrs-platform` posture probe require documentation updates.
+
+**Files changed**:
+- `umrs-platform/src/posture/signal.rs` — 9 new `SignalId` variants
+- `umrs-platform/src/posture/catalog.rs` — 9 new catalog entries + 1 CorePattern
+- `umrs-platform/src/posture/reader.rs` — `CorePatternReader`, `CorePatternKind`, `classify_core_pattern`, `read_live_core_pattern`
+- `umrs-platform/tests/posture_tests.rs` — 16 new tests
+
+**What changed**:
+
+1. **CPU mitigation sub-signals** (8 new `SignalId` variants):
+   `SpectreV2Off`, `SpectreV2UserOff`, `MdsOff`, `TsxAsyncAbortOff`, `L1tfOff`,
+   `RetbleedOff`, `SrbdsOff`, `NoSmtOff`. All are `KernelCmdline` class,
+   `DesiredValue::CmdlineAbsent`. They complement the existing umbrella `Mitigations`
+   signal by checking individual per-CVE weakening flags. Catalog grows from 27 to 36.
+
+2. **`CorePattern` signal** (1 new `SignalId` variant):
+   `SignalId::CorePattern` — `Sysctl` class, `DesiredValue::Custom`, reads
+   `/proc/sys/kernel/core_pattern`. Validated via TPI (`classify_core_pattern`):
+   Path 1 structural (first byte `|`), Path 2 semantic (handler path starts with `/`).
+   Hardened state: managed handler (starts with `|/path/to/handler`).
+   Fail-closed on TPI disagreement → `CorePatternKind::Invalid`.
+
+3. **SEC caching**: resolved-deferred. Rationale documented in plan decision 9.
+   No code changes needed — tech-writer should note this in architecture docs.
+
+**Documentation pages affected**:
+- `docs/modules/devel/pages/` — posture probe developer guide needs:
+  - New "CPU Mitigation Sub-Signals" section explaining umbrella vs. per-CVE granularity
+  - New "CorePattern TPI Validation" section explaining the two-path independence design
+  - Updated signal count (27→37) in any tables or counts
+  - SEC caching note: deferred pending serialization design
+- `docs/modules/patterns/pages/` — TPI pattern page should cite `CorePattern` as a new example
+
+---
+
 ## [2026-03-15] researcher → security-auditor: Phase 2 corpus staged — accreditation-artifacts
 
 **Status**: resolved — 2026-03-15 by security-auditor

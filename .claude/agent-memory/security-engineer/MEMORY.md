@@ -92,3 +92,29 @@ First observed: `release_parse.rs` `read_candidate()` re-opening by path.
   the standard `evaluate_configured_meets` integer path; `configured_meets`
   will always be `None` for FIPS by construction. This is currently latent
   (no incorrect result) but should be documented.
+- `KernelCmdline` class signals (Phase 2b): `configured_value.raw` is the full
+  BLS options string. `evaluate_configured_meets` returns `None` for it
+  (not an integer, not "blacklisted"). A dedicated token-based evaluation path
+  MUST be implemented in `collect_one()` for contradiction detection to work
+  for cmdline signals. Until S-01 (Phase 2b review) is resolved, BootDrift and
+  EphemeralHotfix are silently suppressed for all six KernelCmdline signals.
+
+## Audit Reports Produced — Phase 2b
+- `security-engineer-phase2b-review.md` — 8 findings (0C, 1H, 2M, 5L)
+  Key issue (S-01 HIGH): KernelCmdline contradiction detection non-functional
+  (configured_meets always None; BootDrift/EphemeralHotfix never produced for
+  cmdline signals despite configured_value populated from BLS entries).
+  M-02: /usr/bin/false missing from hard-blacklist sentinel set in modprobe.rs.
+  M-03: is_module_loaded/read_module_param public API accepts path-traversal
+  characters in module_name.
+
+## Advisory configured-value read pattern (posture module)
+Files under /etc/ and /boot/ (sysctl.d, modprobe.d, BLS entries) use raw
+std::fs::read_to_string / read_dir — NOT SecureReader. This is intentional and
+correct: they represent advisory configured (intended) values; the live kernel
+state (from /proc/ and /sys/) is always authoritative. Do not flag raw reads
+on these paths as provenance violations in future reviews.
+
+Exception: /proc/sys/kernel/osrelease in bootcmdline.rs is read raw for
+heuristic BLS entry selection. This is safe due to SELinux procfs write
+protection, but the SELinux dependency must be documented (Finding B-01).

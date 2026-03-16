@@ -8,8 +8,13 @@
 //! ## Scope
 //!
 //! Phase 2a covers `options` and `blacklist` directives — both have
-//! well-defined, deterministic formats. `install` and `softdep` directives
-//! are logged at debug and excluded from the parameter map (Phase 2b).
+//! well-defined, deterministic formats.
+//!
+//! Phase 2b adds `install` directive parsing. An `install <module> /bin/true`
+//! (or `/bin/false`, `/usr/bin/true`, `/usr/bin/false`) directive is detected
+//! as a hard blacklist and recorded in `hard_blacklisted`. `softdep`, `alias`,
+//! and `remove` directives are logged at debug and excluded from the merged
+//! configuration.
 //!
 //! ## Trust Boundary
 //!
@@ -603,6 +608,25 @@ fn parse_install_directive(rest: &str) -> ParsedDirective<'_> {
 // Live sysfs cross-check helpers
 // ===========================================================================
 
+/// Validate a module or parameter name for use in sysfs path construction.
+///
+/// Rejects names that are empty, contain a `/` (path separator), contain a
+/// null byte `\0`, or are the `..` component. These are the minimal guards
+/// required to prevent path-traversal attacks when the name is joined with
+/// `SYS_MODULE_BASE` to form a sysfs path.
+///
+/// Kernel module names in practice consist of alphanumeric characters,
+/// underscores, and hyphens only. This function does not enforce that positive
+/// constraint — it only rejects known-dangerous patterns.
+///
+/// NIST SP 800-53 SI-10: Input Validation.
+fn is_valid_module_name(name: &str) -> bool {
+    !name.is_empty()
+        && !name.contains('/')
+        && !name.contains('\0')
+        && name != ".."
+}
+
 /// Check whether a kernel module is currently loaded by testing for the
 /// existence of `/sys/module/<module_name>/` in sysfs.
 ///
@@ -619,10 +643,14 @@ fn parse_install_directive(rest: &str) -> ParsedDirective<'_> {
 ///
 /// NIST SP 800-53 CM-6: Trust Gate — do not attempt parameter reads when the
 /// module is absent.
+/// NIST SP 800-53 SI-10: Input Validation — `module_name` is validated against
+/// path-traversal characters before use. Module names containing `/`, `\0`, or
+/// `..` components are rejected; only the catalog-internal callers (which use
+/// compile-time constant names) are expected in practice, but the public API
+/// must guard against adversary-supplied input.
 ///
-/// Returns `false` immediately for an empty `module_name` to prevent path
-/// construction anomalies where `join("")` would resolve to the base sysfs
-/// module directory itself.
+/// Returns `false` immediately for an empty `module_name` or a name containing
+/// path-traversal characters, to prevent path construction anomalies.
 ///
 /// # Security note — SELinux MAC enforcement
 ///
@@ -639,7 +667,11 @@ fn parse_install_directive(rest: &str) -> ParsedDirective<'_> {
 /// explicit context. NIST SP 800-53 SI-7; NSA RTB RAIN.
 #[must_use = "module loaded check result must be examined"]
 pub fn is_module_loaded(module_name: &str) -> bool {
-    if module_name.is_empty() {
+    if !is_valid_module_name(module_name) {
+        log::debug!(
+            "posture: modprobe: is_module_loaded: \
+             rejected invalid module name (empty, contains '/', '\\0', or '..')"
+        );
         return false;
     }
     Path::new(SYS_MODULE_BASE).join(module_name).is_dir()
@@ -655,7 +687,15 @@ pub fn is_module_loaded(module_name: &str) -> bool {
 /// **Prerequisite**: call `is_module_loaded()` first (Trust Gate). If the
 /// module is not loaded, do not call this function.
 ///
+/// `module_name` and `param_name` are validated against path-traversal
+/// characters before use. Names containing `/`, `\0`, or `..` components are
+/// rejected with `io::ErrorKind::InvalidInput`. In normal usage, both names
+/// come from compile-time catalog constants and are safe; this guard protects
+/// the public API surface against adversary-supplied names.
+///
 /// NIST SP 800-53 SI-7: provenance-verified via `SYSFS_MAGIC`.
+/// NIST SP 800-53 SI-10: Input Validation — module and param names are
+/// validated against path-traversal characters before path construction.
 /// NSA RTB RAIN: Non-bypassable path through `SysfsText` + `SecureReader`.
 #[must_use = "sysfs parameter read result must be examined"]
 pub fn read_module_param(
@@ -664,6 +704,14 @@ pub fn read_module_param(
 ) -> io::Result<Option<String>> {
     use crate::kattrs::sysfs::SysfsText;
     use crate::kattrs::traits::SecureReader;
+
+    if !is_valid_module_name(module_name) || !is_valid_module_name(param_name) {
+        log::debug!(
+            "posture: modprobe: read_module_param: \
+             rejected invalid name (empty, contains '/', '\\0', or '..')"
+        );
+        return Err(io::Error::from(io::ErrorKind::InvalidInput));
+    }
 
     #[cfg(debug_assertions)]
     let start = std::time::Instant::now();

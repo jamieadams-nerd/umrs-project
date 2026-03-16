@@ -171,6 +171,36 @@ Added 2026-03-15: AVC, DAC, EVM, IMA, LSM, MLS (dedicated entry), RBAC, TCB,
 Ground Truth, TPI, Fail-Closed, TOCTOU Safety.
 In-page xref anchor format: `xref:#_term_name_abbrev[...]` — lowercase, underscores, auto-generated.
 
+## CPU Extensions Reference (added 2026-03-16)
+
+`docs/modules/reference/pages/cpu-extensions.adoc` — new reference page.
+Three-layer activation model (hardware / OS / software), Mermaid activation flow,
+6 extension groups: Cryptographic Acceleration, Hardware RNG, Memory Protection,
+Speculation Mitigations, Vector/Compute (security-adjacent), Trusted Execution.
+Detection quick-reference table covers all extensions. Compliance notes: SC-13,
+SI-7, CM-8, CA-7, SC-39. Written for i18n (complete sentences, no fragments).
+Nav: added "Platform Security" section to `reference/nav.adoc`.
+Source: `.claude/plans/umrs-platform-expansion.md` + `.claude/plans/cpu-security-corpus-plan.md`.
+Feeds future `CpuSignalId` enum. `ContradictionKind::CapabilityUnused` surfaced as a future
+finding concept (Layer 1 present, Layer 2 enabled, Layer 3 not used).
+Note: "crypto-cpu-extensions.adoc" in MEMORY.md line 129 is a phantom stub that was never
+on disk. This new `cpu-extensions.adoc` fulfills that intent.
+
+## Platform Update Checklists (added 2026-03-16)
+
+`docs/modules/devel/pages/update-checklists.adoc` — new developer guide.
+Covers: kernel version update (7-step signal addition procedure), CPU extension
+update (three-layer activation model, `CpuSignalId` add checklist), signal
+deprecation (never delete variants, use `#[deprecated]` + graceful `None`).
+Nav: added under "Platform Internals" in `devel/nav.adoc`.
+Source: `signal.rs`, `catalog.rs`, `kattrs/mod.rs`, `umrs-platform-expansion.md`,
+`platform-api-enrichment.md`.
+Two reference pages are forward-referenced but do not yet exist:
+`reference/pages/kernel-probe-signals.adoc` (created by security-auditor
+2026-03-16 — confirmed exists), `reference/pages/cpu-extensions.adoc`
+(created 2026-03-16 — confirmed exists). Both xrefs use forward references in the
+See Also section to avoid dead xrefs at build time.
+
 ## AI Transparency — Agent Aliases (added 2026-03-15)
 Section "== Agent Aliases" added to `ai-transparency/agent-roles.adoc`.
 Table maps alias → agent → rationale.

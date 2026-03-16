@@ -1,0 +1,790 @@
+= CPU Security Extensions Reference
+:description: Security-relevant CPU extensions detected by the UMRS platform layer, organized by the three-layer activation model.
+:toc: left
+:toclevels: 3
+
+// NIST SP 800-53 SC-13 (Cryptographic Protection), SI-7 (Software Integrity)
+// NIST SP 800-53 CM-8 (System Component Inventory)
+
+This reference documents the CPU extensions and hardware security features that are
+relevant to UMRS platform security evaluation. It is organized around the three-layer
+activation model: hardware availability, OS enablement, and software utilization.
+
+These extensions will be probed by the future `CpuSignalId` system in `umrs-platform`.
+The descriptions on this page are written to be i18n-compatible — complete sentences,
+no interpolated fragments.
+
+== The Three-Layer Activation Model
+
+A CPU extension being present in silicon does not mean it is protecting the system.
+Between the hardware and any security benefit lie two additional layers that must also
+be satisfied. Understanding all three layers is the foundation of a meaningful hardware
+security assessment.
+
+[mermaid]
+----
+flowchart TD
+    A["Layer 1: Hardware Availability\n/proc/cpuinfo flags\nCPUID advertisement"] --> B{OS enabled?}
+    B -- No --> C["Extension unused\nNo security benefit"]
+    B -- Yes --> D["Layer 2: OS Enablement\nKernel XSAVE / CR4 / XCR0\nKernel config and drivers"]
+    D --> E{Software uses it?}
+    E -- No --> F["Capability present\nBut software takes software path\nPotential timing side channel"]
+    E -- Yes --> G["Layer 3: Software Utilization\nCompiler targeting, runtime dispatch,\nor direct intrinsics"]
+    G --> H["Full benefit realized\nHardware-accelerated, FIPS-aligned path"]
+
+    style C fill:#c0392b,color:#fff
+    style F fill:#e67e22,color:#fff
+    style H fill:#27ae60,color:#fff
+----
+
+=== Layer 1 — Hardware Availability
+
+The processor advertises supported instructions through CPUID flags. These flags appear
+in `/proc/cpuinfo`, `lscpu`, and the raw `cpuid` instruction output. This layer only
+confirms that the silicon contains the necessary circuitry. Nothing is active yet.
+
+Detection path: `/proc/cpuinfo` flags field (safe Rust read, no `unsafe` required).
+
+=== Layer 2 — OS Enablement
+
+Some extensions require the operating system to perform active setup before software
+can use them. The kernel enables extended processor state management through XSAVE, sets
+bits in the XCR0 and CR4 control registers, and loads kernel modules that expose the
+hardware to userspace. If the OS does not perform this setup, the extension remains
+unavailable to applications even though the CPU supports it.
+
+Detection path: kernel-managed sysfs nodes and `/proc/self/status` for xsave state flags.
+
+=== Layer 3 — Software Utilization
+
+This is the most consequential layer. The majority of CPU extensions are used only when
+software is explicitly compiled or configured to use them. Three common patterns exist:
+
+* **Compile-time targeting** — the compiler generates instructions directly (for example,
+  `-C target-cpu=native` in Rust, or `-mavx2 -maes` in C).
+* **Runtime CPU dispatch** — a library detects CPU features at startup and selects the
+  fastest available implementation path. OpenSSL, libsodium, and the Rust `ring` crate
+  all do this for AES-NI and SHA extensions.
+* **Direct intrinsics** — code explicitly calls CPU instruction wrappers, such as
+  `_mm_aesenc_si128()` in C or the `std::arch` intrinsics in Rust.
+
+Detection path: `/proc/crypto` for kernel crypto driver registration; ELF binary
+inspection (`objdump -d <binary> | grep aesenc`) for application-level usage.
+
+=== Why All Three Layers Matter
+
+A system with AES-NI in the CPU but a binary compiled for the generic `x86-64` target
+receives no AES-NI acceleration. The hardware path is never taken. The software falls
+back to a table-driven AES implementation that may be vulnerable to cache-timing attacks
+and is not covered by a FIPS 140-3 hardware module validation.
+
+For FIPS compliance, the question is not "does this system have AES-NI?" but rather
+"is the FIPS-validated OpenSSL provider using AES-NI for its AES operations?" Both the
+hardware capability and the software utilization must be confirmed.
+
+.UMRS assessment principle
+[NOTE]
+====
+`CpuSignalId` will represent Layer 1 (hardware) and Layer 2 (OS) assertions.
+A future `ContradictionKind::CapabilityUnused` finding will surface cases where
+a cryptographic extension is present at Layer 1 and enabled at Layer 2 but not
+registered in `/proc/crypto` — indicating the software stack is not taking the
+hardware-accelerated path.
+====
+
+---
+
+== Group 1: Cryptographic Acceleration
+
+These extensions accelerate the core symmetric cryptographic operations used in every
+TLS session, disk encryption, and integrity check on the system. They are the
+highest-priority extensions for FIPS-mode deployments.
+
+=== AES-NI
+
+AES-NI (Advanced Encryption Standard New Instructions) is a set of six x86 instructions
+that implement the full AES block cipher in hardware, including the key schedule.
+
+*Why it matters for security:* AES-NI eliminates the cache-timing vulnerability present
+in table-driven software AES implementations. A software AES implementation using lookup
+tables can leak key material through cache access patterns observable by a co-resident
+process. AES-NI performs the operation entirely in registers with no memory access, making
+it immune to this class of attack. On FIPS systems, AES-NI is the path through the
+validated hardware module.
+
+*Detection path:* `/proc/cpuinfo` flag `aes`. Kernel crypto driver: `aesni_intel` on
+x86, `aes-ce` on ARM. Check `/proc/crypto` for an entry with `driver: aesni_intel` and
+`selftest: passed` to confirm OS-level registration.
+
+*Auto-used:* Yes. OpenSSL, BoringSSL, libsodium, and the Rust `ring` crate all detect
+and use AES-NI automatically via runtime CPU dispatch when the flag is present.
+
+*OS enablement required:* No. AES-NI instructions are available to userspace directly
+once the kernel loads the `aesni_intel` module. No additional OS configuration is needed.
+
+*ARM equivalent:* ARMv8 Cryptography Extension (`aes` flag in `/proc/cpuinfo` Features).
+
+*FIPS relevance:* On a FIPS-enabled RHEL system, the OpenSSL FIPS provider uses AES-NI
+for all AES operations when the CPU flag is present. A system without AES-NI requires
+a software AES path that must itself be separately FIPS-validated.
+
+=== SHA Extensions (SHA-NI)
+
+The SHA extensions (also called SHA-NI on x86) accelerate SHA-1, SHA-256, and related
+round functions in hardware. AMD introduced SHA-NI in Zen 1 (2017); Intel added it in
+Ice Lake (2019).
+
+*Why it matters for security:* SHA-256 is used in HMAC-SHA-256 (TLS, IPsec), certificate
+fingerprints, FIPS-compliant integrity checks, and the UMRS audit log chain. Hardware
+acceleration reduces the cost of computing these operations and keeps the implementation
+in a validated code path.
+
+*Detection path:* `/proc/cpuinfo` flag `sha_ni`. Kernel crypto drivers: `sha256-ni`,
+`sha256_ssse3`, `sha256-avx2`. Check `/proc/crypto` to determine which driver is active.
+
+*Auto-used:* Yes, when crypto libraries are built with SHA-NI support. The kernel's own
+crypto subsystem uses SHA-NI automatically when the module loads.
+
+*OS enablement required:* No.
+
+*ARM equivalent:* ARMv8 SHA extension (`sha2` and `sha512` flags).
+
+=== PCLMULQDQ (Carryless Multiply)
+
+PCLMULQDQ (Carry-Less Multiplication) is an instruction that performs polynomial
+multiplication over GF(2^n), the mathematical operation at the core of GCM
+(Galois/Counter Mode) authentication and CRC computation.
+
+*Why it matters for security:* AES-GCM is the dominant authenticated encryption mode
+in TLS 1.3, IPsec, and disk encryption. The GCM authentication tag computation requires
+GF(2^128) multiplication. Without PCLMULQDQ, this step is performed in software using a
+table-based method that is slow and can be vulnerable to timing attacks.
+
+*Detection path:* `/proc/cpuinfo` flag `pclmulqdq`. Kernel crypto drivers:
+`ghash-clmulni-intel`, `crct10dif-pclmul`.
+
+*Auto-used:* Yes, when the kernel's `ghash-clmulni-intel` module is loaded. OpenSSL and
+GnuTLS pick this up automatically for AES-GCM.
+
+*OS enablement required:* No.
+
+=== VAES (Vector AES on AVX-512)
+
+VAES extends AES-NI to AVX-512 register widths, allowing 2 or 4 AES blocks to be
+processed in a single instruction on 256-bit and 512-bit registers respectively.
+
+*Why it matters for security:* VAES increases AES throughput for workloads that encrypt
+or decrypt large data volumes, such as full-disk encryption under dm-crypt or high-rate
+TLS traffic. Higher throughput reduces the incentive to disable or weaken AES in
+performance-constrained deployments.
+
+*Detection path:* `/proc/cpuinfo` flag `vaes`. Requires AVX-512 to be present and
+OS-enabled. See AVX-512 entry in Group 5.
+
+*Auto-used:* Only when software is compiled explicitly for AVX-512. Most deployed binaries
+on generic Linux systems do not use VAES even when the hardware supports it.
+
+*OS enablement required:* Yes — AVX-512 state must be enabled by the kernel (see Group 5).
+
+=== VPCLMULQDQ
+
+VPCLMULQDQ extends PCLMULQDQ to AVX-512 widths, enabling vectorized GF(2^n) polynomial
+multiplication across multiple blocks simultaneously.
+
+*Why it matters for security:* VPCLMULQDQ accelerates AES-GCM authentication for
+high-throughput scenarios, for the same reason VAES accelerates AES encryption.
+
+*Detection path:* `/proc/cpuinfo` flag `vpclmulqdq`. Requires AVX-512 enablement.
+
+*Auto-used:* Only in AVX-512-optimized builds. Not used by default in generic-compiled
+system software.
+
+*OS enablement required:* Yes — AVX-512 state must be enabled by the kernel.
+
+---
+
+== Group 2: Hardware Random Number Generation
+
+Hardware random number generation is the foundation of cryptographic key generation and
+the kernel entropy pool. On FIPS-mode systems, the quality and trustworthiness of this
+source is subject to NIST SP 800-90B evaluation requirements.
+
+=== RDRAND
+
+RDRAND is an x86 instruction that returns random numbers produced by an on-chip hardware
+random number generator (HRNG) built into the CPU. The HRNG includes a conditioning
+component that processes raw entropy through AES-CBC-MAC before returning values.
+
+*Why it matters for security:* RDRAND provides cryptographically conditioned random
+numbers directly from the CPU without requiring the application to wait for the OS entropy
+pool to fill. The kernel uses RDRAND to seed and reseed the Linux CSPRNG.
+
+*Detection path:* `/proc/cpuinfo` flag `rdrand`. The kernel sysctl
+`/proc/sys/kernel/random/trust_cpu` controls whether the kernel unconditionally trusts
+RDRAND output to seed the entropy pool.
+
+*Auto-used:* Yes. The kernel CSPRNG uses RDRAND automatically when the flag is present
+and `random.trust_cpu` is not explicitly set to `0`. OpenSSL and `ring` use it as an
+additional entropy source.
+
+*OS enablement required:* No instruction-level enablement is required. The `random.trust_cpu`
+kernel parameter governs whether the kernel seeds the entropy pool from RDRAND without
+additional conditioning — this is a policy decision, not a hardware gate.
+
+.FIPS and RDRAND trust
+[IMPORTANT]
+====
+NIST SP 800-90B defines entropy source validation requirements. Not all CPU steppings
+implement an 800-90B-compliant RDRAND health test. On FIPS-mode deployments, the
+`random.trust_cpu=0` setting may be appropriate to ensure the entropy pool is seeded
+only from sources with a documented entropy assessment. Confirm with the system security
+plan.
+====
+
+*ARM equivalent:* ARMv8.5-RNG extension (`rng` flag).
+
+=== RDSEED
+
+RDSEED is an x86 instruction that returns raw entropy from the CPU's digital noise source,
+before the AES conditioning step applied by RDRAND. RDSEED is intended for seeding
+external entropy sources and DRBGs (Deterministic Random Bit Generators), not for direct
+use in applications.
+
+*Why it matters for security:* RDSEED provides access to the unconditioned entropy source.
+This allows a software DRBG implementation to seed itself from hardware entropy with
+provable statistical properties, rather than relying on the conditioned RDRAND output whose
+internal state is not directly observable.
+
+*Detection path:* `/proc/cpuinfo` flag `rdseed`.
+
+*Auto-used:* No. RDSEED is used only by implementations that explicitly need raw entropy
+for DRBG seeding. The kernel entropy pool uses it when available.
+
+*OS enablement required:* No.
+
+.RDSEED vs RDRAND
+[NOTE]
+====
+RDSEED provides raw entropy suitable for seeding an independent DRBG. RDRAND provides
+conditioned pseudo-random output from a built-in DRBG. Do not use RDSEED as a direct
+source of random bytes — run it through a NIST SP 800-90A-approved DRBG construction
+first.
+====
+
+---
+
+== Group 3: Memory Protection and Exploit Mitigation
+
+These hardware features directly enforce memory safety properties at the CPU level. Each
+addresses a specific class of memory corruption or privilege escalation attack. Unlike the
+cryptographic extensions above, most of these features are active by default when supported
+by both the CPU and the kernel.
+
+=== NX/XD (No-Execute / Execute Disable)
+
+NX (AMD) or XD (Intel) is the hardware mechanism that marks memory pages as
+non-executable. The CPU enforces a W^X (write XOR execute) policy: a page can be writable
+or executable, but not both simultaneously.
+
+*Why it matters for security:* NX/XD is the foundational mitigation against stack and
+heap execution attacks. Without it, an attacker who writes shellcode to the stack can
+immediately execute it. NX/XD forces an attacker to use code already present in memory
+(return-to-libc, ROP gadgets) rather than injecting new code.
+
+*Detection path:* `/proc/cpuinfo` flag `nx` (AMD) or `pae` + absence of `nx` indicates
+older CPU without XD. Modern kernels report `nx` for both vendors. Verify kernel
+enforcement: `grep nx /proc/cpuinfo`.
+
+*Auto-used:* Yes. The Linux kernel enables NX/XD on all pages where it is appropriate
+during boot. No application configuration is required.
+
+*OS enablement required:* No — the kernel enables this at boot when the CPU supports it.
+
+=== SMEP (Supervisor Mode Execution Prevention)
+
+SMEP prevents the kernel from executing code in userspace memory pages. When SMEP is
+active, any attempt by the kernel to execute a userspace address causes an immediate
+fault.
+
+*Why it matters for security:* SMEP closes a common kernel exploitation technique. A
+kernel vulnerability that allows an attacker to redirect control flow to a userspace
+address — where the attacker has placed shellcode — is blocked: the CPU refuses to
+execute userspace code in kernel mode.
+
+*Detection path:* `/proc/cpuinfo` flag `smep`. Kernel config: `CONFIG_X86_SMEP`.
+
+*Auto-used:* Yes. The kernel sets the SMEP bit in CR4 at boot when the CPU reports
+the flag. No additional configuration is required on RHEL 10.
+
+*OS enablement required:* Yes — the kernel must set the SMEP bit in the CR4 control
+register at boot. All modern RHEL kernels do this by default.
+
+=== SMAP (Supervisor Mode Access Prevention)
+
+SMAP prevents the kernel from reading or writing userspace memory pages unless the
+kernel explicitly grants itself temporary access using the `stac`/`clac` instructions
+around a specific operation.
+
+*Why it matters for security:* SMAP complements SMEP. SMEP blocks execution of userspace
+code by the kernel; SMAP blocks the kernel from reading or writing userspace data except
+through designated, auditable paths. This prevents an attacker from placing a malicious
+data structure in userspace and tricking the kernel into dereferencing it without going
+through the kernel's copy-in/copy-out validation path.
+
+*Detection path:* `/proc/cpuinfo` flag `smap`. Kernel config: `CONFIG_X86_SMAP`.
+
+*Auto-used:* Yes. The kernel sets the SMAP bit in CR4 at boot when the CPU supports it.
+
+*OS enablement required:* Yes — kernel must set SMAP in CR4. Enabled by default on
+RHEL 10 for all CPUs that support it.
+
+=== CET-SS (Control-flow Enforcement Technology: Shadow Stack)
+
+CET-SS (Shadow Stack) maintains a second, hardware-protected call stack in addition to
+the normal program stack. Return addresses are written to both stacks on function call.
+On function return, the CPU compares the return address from the normal stack against the
+shadow stack. Any mismatch causes an immediate fault.
+
+*Why it matters for security:* CET-SS prevents return-oriented programming (ROP) attacks.
+ROP is the primary technique used by modern exploits to execute arbitrary code on systems
+with NX/XD: an attacker overwrites a return address on the stack to chain together
+sequences of existing code (gadgets). The shadow stack makes this impossible — overwriting
+the normal stack return address no longer controls execution because the CPU will reject
+the mismatch.
+
+*Detection path:* `/proc/cpuinfo` flag `shstk`. Binary support check:
+`eu-readelf -n <binary>` and inspect the `.note.gnu.property` section for
+`GNU_PROPERTY_X86_FEATURE_1_AND` with the `SHSTK` bit set. Per-process status:
+`/proc/<pid>/status` for `x86_Thread_features`.
+
+*Auto-used:* No. Both the kernel and the application binary must be compiled with CET-SS
+support. On RHEL 10, system glibc and core binaries are compiled with
+`-fcf-protection=full`. Locally compiled applications must also be built with this flag
+to receive protection.
+
+*OS enablement required:* Yes. The kernel must enable CET state management through XSAVE
+and configure the `MSR_IA32_U_CET` register per thread. RHEL 10 supports this for
+compatible binaries.
+
+.Audit implication
+[IMPORTANT]
+====
+A binary without CET-SS support running on a CET-capable system receives no shadow-stack
+protection even though the hardware supports it. Auditing CET utilization requires
+inspecting binaries, not just the CPU or kernel.
+====
+
+=== CET-IBT (Control-flow Enforcement Technology: Indirect Branch Tracking)
+
+CET-IBT enforces that every indirect branch (computed function call or jump through a
+register or pointer) lands on a valid, compiler-designated target. Target validity is
+marked by the `endbr64` instruction placed at the beginning of each valid function entry
+point.
+
+*Why it matters for security:* CET-IBT closes the JOP (jump-oriented programming) and
+COP (call-oriented programming) attack classes that bypass NX by chaining indirect jumps
+to existing code. With CET-IBT, an attacker can only redirect an indirect branch to a
+location that the compiler explicitly marked as a valid landing pad, which dramatically
+reduces the set of usable gadgets.
+
+*Detection path:* `/proc/cpuinfo` flag `ibt`. Binary support: check for `endbr64`
+instructions at function entry points (`objdump -d <binary> | grep endbr64`) or inspect
+`.note.gnu.property` for the `IBT` bit.
+
+*Auto-used:* No. Same requirement as CET-SS — both the kernel and application must be
+compiled with IBT support.
+
+*OS enablement required:* Yes. Kernel must configure `MSR_IA32_U_CET` for IBT per thread.
+
+=== PKU (Protection Keys for Userspace)
+
+PKU allows user processes to tag up to 16 groups of memory pages with a protection key
+and then toggle read or write permission on any key group without a system call, using
+the `wrpkru` instruction.
+
+*Why it matters for security:* PKU enables fine-grained, low-latency memory domain
+isolation within a process. For example, a library handling sensitive key material can
+place that memory in a protected domain and remove access permissions before executing
+untrusted code, then restore access only for the specific operations that need it.
+This limits the blast radius of a vulnerability in the untrusted code path.
+
+*Detection path:* `/proc/cpuinfo` flag `pku`. Check `/proc/self/status` for `Pkey_access`
+to see active protection key state.
+
+*Auto-used:* No. Applications must explicitly use the `pkey_mprotect()` system call to
+assign keys and `wrpkru` to toggle permissions.
+
+*OS enablement required:* Yes. The kernel must save and restore PKRU state as part of
+context switching.
+
+---
+
+== Group 4: Speculation Attack Mitigations
+
+Speculative execution attacks exploit the CPU's performance optimization of executing
+instructions ahead of time before it is known whether those instructions will actually be
+needed. The CPU's internal state during speculative execution can leak information through
+side channels.
+
+=== Background
+
+*Spectre (2018, CVE-2017-5753 / CVE-2017-5715):* Tricks the CPU's branch predictor into
+speculatively executing code that reads memory the attacker should not access. The
+contents are not directly returned but can be inferred by measuring cache timing.
+
+*Meltdown (2018, CVE-2017-5754):* Exploits out-of-order execution to read kernel memory
+from a userspace process on Intel CPUs without SMAP. Mitigated by Kernel Page-Table
+Isolation (KPTI / PTI), which separates kernel and userspace page tables.
+
+*MDS (Microarchitectural Data Sampling, 2019, CVE-2018-12126 and related):* A family of
+attacks including RIDL, Fallout, and ZombieLoad that sample data from CPU-internal buffers
+(line fill buffers, store buffers, load ports) as they are being filled or drained. Can
+cross hyperthread boundaries on SMT systems.
+
+=== How Mitigations Work
+
+Speculation mitigations operate at two levels: CPU microcode provides the hardware
+mechanism (new instructions, new register bits, or behavioral changes for existing
+instructions), and the Linux kernel uses those mechanisms in the right places.
+
+Microcode updates are required for some mitigations. A CPU with outdated microcode may
+report a CPUID flag as present but not fully implement the mitigation. Microcode version
+can be checked at `/proc/cpuinfo` (`microcode` field) and
+`/sys/devices/system/cpu/cpu0/microcode/version`.
+
+The authoritative source for current mitigation status on a running kernel is the sysfs
+vulnerability interface at `/sys/devices/system/cpu/vulnerabilities/`. Each file in this
+directory reports the mitigation status for one vulnerability class. Possible values
+include `Not affected`, `Mitigation: ...` (with a description of the active mitigation),
+and `Vulnerable` (no mitigation active).
+
+=== Kernel Cmdline Relationship
+
+The kernel command line parameters `spectre_v2`, `mds`, `l1tf`, `pti`, `mitigations`, and
+related options control whether mitigations are active. The UMRS kernel posture probe
+already monitors several of these through `SignalId::Mitigations` (which checks the
+`mitigations` cmdline parameter) and `SignalId::Pti` (which checks the `pti` parameter).
+
+The future `CpuSignalId` system will correlate these cmdline signals with the hardware
+capability flags and the `/sys/devices/system/cpu/vulnerabilities/` status files to
+produce a complete picture: what the CPU can do, what the kernel has configured, and
+whether the mitigation is actually active.
+
+.Key mitigation signals
+[cols="1,1,2"]
+|===
+|Mitigation |CPUID / sysfs flag |What it addresses
+
+|IBRS / eIBRS
+|`ibrs`, `enhanced_ibrs`
+|Restricts indirect branch speculation across privilege levels and processes (Spectre v2).
+Enhanced IBRS (eIBRS) is the preferred form — it is always-on and carries lower
+performance overhead than the original IBRS.
+
+|IBPB
+|`ibpb`
+|Indirect Branch Predictor Barrier. A fence that flushes the branch predictor on
+context switch, preventing one process's branch history from influencing another's
+speculative execution.
+
+|STIBP
+|`stibp`
+|Single Thread Indirect Branch Predictors. On SMT systems, prevents one hyperthread
+from influencing the branch predictor of its sibling hyperthread.
+
+|SSBD
+|`ssbd`
+|Speculative Store Bypass Disable. Prevents a speculative load from reading a value
+written by an older store that has not yet been committed, closing the Spectre v4 variant.
+
+|MDS / MD_CLEAR
+|`md_clear`
+|On context switch or when crossing privilege boundaries, clears CPU-internal buffers
+(fill buffers, store buffers, load ports) using the VERW instruction to prevent
+microarchitectural data sampling.
+
+|L1D Flush
+|`flush_l1d`
+|Flushes the L1 data cache on hypervisor entry/exit or context switch to prevent
+L1TF (L1 Terminal Fault / Foreshadow) attacks, which can read hypervisor memory from
+a guest VM by exploiting L1 cache access patterns.
+
+|PCID
+|`pcid`
+|Process Context Identifiers allow the CPU to tag TLB entries with a process identifier,
+avoiding a full TLB flush on context switch when PTI (Kernel Page-Table Isolation) is
+active. PCID does not itself mitigate any vulnerability — it reduces the performance
+overhead of the PTI mitigation to an acceptable level.
+|===
+
+---
+
+== Group 5: Vector and Compute Extensions (Security-Adjacent)
+
+Vector extensions are primarily performance features. They are security-adjacent for two
+reasons: they provide the platform on which cryptographic acceleration is built, and their
+power consumption characteristics can introduce timing side channels.
+
+=== AVX and AVX2
+
+AVX (Advanced Vector Extensions) and AVX2 extend SSE with 256-bit SIMD registers (YMM)
+and additional operations, including integer operations on 256-bit vectors (AVX2 only).
+
+*Why they matter for security:* AVX and AVX2 are the register widths used by many crypto
+library implementations. SHA-256 with AVX2 (`sha256-avx2` in `/proc/crypto`) and AES
+in CBC mode with AVX2 are common. The performance improvement makes hardware-accelerated
+paths practical for high-frequency operations.
+
+*Detection path:* `/proc/cpuinfo` flags `avx` and `avx2`. Kernel `/proc/crypto` driver
+names include the `avx2` suffix for AVX2-accelerated implementations.
+
+*OS enablement required:* Yes. The kernel must enable YMM register state saving via XSAVE.
+All modern RHEL kernels do this by default.
+
+*Timing side channel consideration:* On some Intel CPUs, the first AVX instruction after
+a period of non-use triggers a frequency transition delay of up to 1 ms. An attacker who
+can measure timing may detect when AVX-using code first executes. This is an
+implementation-quality concern for constant-time code, not a cryptographic break.
+
+=== AVX-512
+
+AVX-512 extends SIMD to 512-bit registers (ZMM) and introduces many additional
+instruction subsets (VAES, VPCLMULQDQ, AVX-512F, AVX-512CD, and others).
+
+*Why it matters for security:* VAES and VPCLMULQDQ (see Group 1) depend on AVX-512
+state enablement. AVX-512 crypto operations process 4 AES blocks or 4 GHASH blocks
+simultaneously.
+
+*Detection path:* `/proc/cpuinfo` flags `avx512f` (foundation). Multiple additional
+flags for specific subsets (`avx512dq`, `avx512bw`, `avx512vl`, `avx512vaes`,
+`avx512vpclmulqdq`).
+
+*OS enablement required:* Yes. The kernel must save and restore ZMM register state,
+which is substantially larger than YMM state.
+
+*Thermal and frequency concern:* AVX-512 workloads on Intel CPUs cause the CPU to drop
+to a lower frequency bin for thermal headroom. This frequency transition is observable
+as a timing difference by other processes on the same physical core. Code performing
+constant-time cryptography must account for this if it uses AVX-512 instructions.
+
+*Hypervisor masking:* Many cloud hypervisors and some BIOS configurations disable
+AVX-512 exposure to guests to prevent frequency scaling attacks. `CpuSignalId` will
+distinguish between a CPU that does not support AVX-512 and a CPU where AVX-512 is
+available but masked.
+
+=== AMX (Advanced Matrix Extensions)
+
+AMX is an Intel instruction set that adds tile registers and matrix operations intended
+for machine learning inference workloads.
+
+*Why it matters for security:* AMX is not a cryptographic acceleration feature. It is
+listed here because its tile state management creates a large additional context-save
+area, and because future use of AMX for matrix-based lattice cryptography (PQC) has
+been proposed. Currently, AMX is security-adjacent rather than security-critical.
+
+*Detection path:* `/proc/cpuinfo` flag `amx_tile`.
+
+*OS enablement required:* Yes. Tile state management requires explicit kernel
+enablement via `arch_prctl(ARCH_REQ_XCOMP_PERM)` — this is not enabled by default
+for all processes.
+
+.AMX and PQC
+[NOTE]
+====
+Post-quantum key encapsulation (ML-KEM, FIPS 203) and signature schemes (ML-DSA,
+FIPS 204) involve matrix and polynomial operations. AMX has been studied as a potential
+accelerator for these workloads, but no FIPS-validated AMX-based PQC implementation
+exists as of this writing. Do not rely on AMX for PQC acceleration in a FIPS deployment
+without a current CMVP validation certificate.
+====
+
+---
+
+== Group 6: Trusted Execution
+
+Trusted execution environments create isolated computation domains within or alongside
+the main CPU. They are relevant to CUI and classified workloads because they can protect
+key material and sensitive computations from compromise even if the host OS is
+compromised.
+
+=== Intel SGX (Software Guard Extensions)
+
+SGX allows an application to create a protected memory region called an enclave. Code
+and data inside the enclave are encrypted in memory using a key known only to the CPU.
+The CPU enforces that enclave memory cannot be read or written by the OS, hypervisor,
+or other applications, even with kernel-level access.
+
+*Why it matters for security:* SGX can protect secret key material, sensitive computation,
+and attestation operations from a compromised OS or hypervisor. For CUI workloads, SGX
+can create a hardware-protected boundary around the most sensitive operations.
+
+*Detection path:* `/proc/cpuinfo` flag `sgx`. Device node existence:
+`/dev/sgx_enclave`. SGX enclaves are not available unless the device node is present
+and accessible.
+
+*Auto-used:* No. Applications must be written explicitly to use SGX, using the Intel SGX
+SDK or a compatible framework. Standard applications receive no SGX protection.
+
+*OS enablement required:* Yes. The kernel must support SGX enclave management. RHEL 10
+includes kernel SGX support. BIOS/UEFI must also enable SGX, as many server BIOS
+configurations ship with SGX disabled.
+
+*Deprecation status:* Intel deprecated SGX for client platforms (consumer CPUs) in
+12th-generation (Alder Lake) and later processors. SGX remains supported on server
+Xeon platforms (Ice Lake-SP, Sapphire Rapids, and successors). For new CUI workload
+designs, evaluate whether the target server platform retains SGX support.
+
+.SGX: attack surface when unused
+[CAUTION]
+====
+SGX presence without active use is not a neutral condition. SGX has been the subject
+of multiple serious hardware side-channel vulnerabilities: Foreshadow/L1TF
+(CVE-2018-3615), SGAxe, CrossTalk, LVI, and AEPIC Leak. An SGX-capable system that
+does not use SGX still carries the attack surface of a complex, firmware-managed
+subsystem. If SGX is not needed, disable it in BIOS and confirm the CPUID flag is
+absent.
+====
+
+---
+
+== Detection Path Quick Reference
+
+The following table summarizes all primary detection paths referenced in this document.
+
+[cols="2,2,3"]
+|===
+|Extension / Feature |Primary detection path |Notes
+
+|AES-NI
+|`/proc/cpuinfo` flag `aes`
+|`/proc/crypto`: `aesni_intel` (x86), `aes-ce` (ARM)
+
+|SHA-NI
+|`/proc/cpuinfo` flag `sha_ni`
+|`/proc/crypto`: `sha256-ni`, `sha256-avx2`
+
+|PCLMULQDQ
+|`/proc/cpuinfo` flag `pclmulqdq`
+|`/proc/crypto`: `ghash-clmulni-intel`
+
+|VAES
+|`/proc/cpuinfo` flag `vaes`
+|Requires AVX-512 OS enablement
+
+|VPCLMULQDQ
+|`/proc/cpuinfo` flag `vpclmulqdq`
+|Requires AVX-512 OS enablement
+
+|RDRAND
+|`/proc/cpuinfo` flag `rdrand`
+|Also: `/proc/sys/kernel/random/trust_cpu` for trust policy
+
+|RDSEED
+|`/proc/cpuinfo` flag `rdseed`
+|
+
+|NX/XD
+|`/proc/cpuinfo` flag `nx`
+|Active by default; absence is a critical finding
+
+|SMEP
+|`/proc/cpuinfo` flag `smep`
+|
+
+|SMAP
+|`/proc/cpuinfo` flag `smap`
+|
+
+|CET-SS
+|`/proc/cpuinfo` flag `shstk`
+|Binary check: `.note.gnu.property` SHSTK bit
+
+|CET-IBT
+|`/proc/cpuinfo` flag `ibt`
+|Binary check: `.note.gnu.property` IBT bit; `endbr64` presence
+
+|PKU
+|`/proc/cpuinfo` flag `pku`
+|`/proc/self/status`: `Pkey_access`
+
+|Spectre/MDS mitigations
+|`/sys/devices/system/cpu/vulnerabilities/*`
+|Authoritative mitigation status per vulnerability class
+
+|Microcode version
+|`/proc/cpuinfo` field `microcode`
+|Also: `/sys/devices/system/cpu/cpu0/microcode/version`
+
+|AVX / AVX2
+|`/proc/cpuinfo` flags `avx`, `avx2`
+|`/proc/crypto`: `-avx2` suffix drivers
+
+|AVX-512
+|`/proc/cpuinfo` flag `avx512f`
+|Multiple subset flags; hypervisor may mask
+
+|AMX
+|`/proc/cpuinfo` flag `amx_tile`
+|Requires per-process `arch_prctl` enablement
+
+|SGX
+|`/proc/cpuinfo` flag `sgx`; `/dev/sgx_enclave` device node
+|BIOS gate; server platforms only (current)
+
+|ARM AES
+|`/proc/cpuinfo` Features: `aes`
+|`/proc/crypto`: `aes-ce`
+
+|ARM SHA
+|`/proc/cpuinfo` Features: `sha2`, `sha512`
+|
+
+|ARM RNG
+|`/proc/cpuinfo` Features: `rng`
+|ARMv8.5 hardware RNG
+
+|===
+
+---
+
+== Compliance Notes
+
+The CPU extension detection system maps to the following controls.
+
+[cols="1,3"]
+|===
+|Control |Relevance
+
+|NIST SP 800-53 SC-13
+|Cryptographic Protection — requires the use of FIPS-validated cryptographic mechanisms.
+AES-NI, SHA-NI, and PCLMULQDQ directly support the hardware-accelerated FIPS code paths.
+
+|NIST SP 800-53 SI-7
+|Software, Firmware, and Information Integrity — CET-SS and CET-IBT enforce control-flow
+integrity at the hardware level, complementing software-layer integrity verification.
+
+|NIST SP 800-53 CM-8
+|System Component Inventory — CPU extension detection contributes to the component
+inventory by recording what security-relevant hardware capabilities are present.
+
+|NIST SP 800-53 CA-7
+|Continuous Monitoring — the `CpuSignalId` posture probe will surface deviations such as
+mitigations disabled, SGX present but BIOS-gated, or hardware crypto extensions present
+but not utilized by the software stack.
+
+|NIST SP 800-53 SC-39
+|Process Isolation — SMEP, SMAP, and PKU enforce hardware-level process and memory
+domain isolation complementary to SELinux mandatory access control.
+
+|===
+
+---
+
+== See Also
+
+* xref:compliance-frameworks.adoc[Compliance Frameworks Registry]
+* xref:reference:index.adoc[Reference Index]
+* xref:devel:os-detection-deep-dive.adoc[OS Detection Deep Dive] — the existing kernel
+  posture probe design, which `CpuSignalId` will parallel
+* xref:patterns:pattern-provenance.adoc[Provenance Verification Pattern] — detection paths
+  use the same statfs-anchored provenance model as the kernel attribute reader

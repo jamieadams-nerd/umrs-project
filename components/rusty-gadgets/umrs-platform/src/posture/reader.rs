@@ -391,6 +391,190 @@ define_sysctl_signal!(
 );
 
 // ===========================================================================
+// CorePatternReader — /proc/sys/kernel/core_pattern with TPI validation
+// ===========================================================================
+
+/// Core dump pattern reader with Two-Path Independence (TPI) validation.
+///
+/// Reads `/proc/sys/kernel/core_pattern` and validates the value using two
+/// independent paths to determine whether it represents a managed handler.
+///
+/// ## TPI Design
+///
+/// The hardened state is: value begins with `|` (piped to a registered
+/// handler such as `|/usr/lib/systemd/systemd-coredump`). A raw path (no
+/// leading `|`) writes process memory directly to the filesystem.
+///
+/// Two independent validation paths:
+///
+/// **Path 1 — Structural**: checks the first byte of the raw value is `|`
+/// (ASCII 0x7C). This is a byte-level check that does not interpret the
+/// string.
+///
+/// **Path 2 — Semantic**: trims whitespace, splits on whitespace, takes the
+/// first token, checks it starts with `|`, and verifies the remainder (after
+/// the `|`) is a non-empty string beginning with `/` (an absolute path). A
+/// bare `|` with no path fails this check.
+///
+/// **Fail-closed on disagreement**: if Path 1 and Path 2 produce different
+/// results, the value is classified as a raw path (not a managed handler) and
+/// the signal fails the hardening check. This ensures that a carefully crafted
+/// malformed value cannot pass by satisfying only one path.
+///
+/// ## Trust Boundary
+///
+/// `/proc/sys/kernel/core_pattern` is read via `ProcfsText` + `SecureReader`
+/// with `PROC_SUPER_MAGIC` verification. The content is an untrusted string
+/// from the kernel interface — TPI validation is applied before classification.
+///
+/// ## Compliance
+///
+/// NIST SP 800-53 SC-28: Protection of Information at Rest — core dumps
+/// contain process memory; routing to a handler provides access control.
+/// NIST SP 800-53 CM-6: Configuration Settings — managed handler is the
+/// hardened baseline for all deployment environments.
+/// NIST SP 800-218 SSDF PW.4: TPI validation — two independent parse paths
+/// that fail closed on disagreement.
+/// NSA RTB RAIN: Non-bypassable via `StaticSource::read()`.
+pub struct CorePatternReader;
+
+impl KernelFileSource for CorePatternReader {
+    type Output = String;
+
+    const KOBJECT: &'static str = "proc/sys/kernel";
+    const ATTRIBUTE_NAME: &'static str = "core_pattern";
+    const DESCRIPTION: &'static str =
+        "Core dump disposition. Hardened: starts with '|' (piped to handler). \
+         Unhardened: raw filesystem path.";
+    const KERNEL_NOTE: &'static str =
+        "TPI validation applied: structural (first byte '|') and semantic \
+         (handler path is absolute). Fail closed on disagreement.";
+
+    fn parse(data: &[u8]) -> io::Result<Self::Output> {
+        #[cfg(debug_assertions)]
+        let start = std::time::Instant::now();
+
+        let s = std::str::from_utf8(data).map_err(|_| {
+            io::Error::new(
+                io::ErrorKind::InvalidData,
+                "core_pattern: non-UTF8 data",
+            )
+        })?;
+        let trimmed = s.trim_end();
+
+        #[cfg(debug_assertions)]
+        log::debug!(
+            "posture: CorePatternReader parse completed in {} µs",
+            start.elapsed().as_micros()
+        );
+
+        Ok(trimmed.to_owned())
+    }
+}
+
+impl StaticSource for CorePatternReader {
+    const PATH: &'static str = "/proc/sys/kernel/core_pattern";
+    const EXPECTED_MAGIC: nix::sys::statfs::FsType = PROC_SUPER_MAGIC;
+}
+
+/// Classification of a `core_pattern` value.
+///
+/// `ManagedHandler` means the pattern begins with `|` and routes to a handler
+/// binary — the hardened state. `RawPath` means a filesystem path is written
+/// directly. `Invalid` means the value failed to parse as either.
+///
+/// NIST SP 800-53 SC-28: classification drives the hardening assessment.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CorePatternKind {
+    /// Value starts with `|` and the handler path is a non-empty absolute path.
+    /// Both TPI paths agree. Hardened state.
+    ManagedHandler,
+    /// Value is a raw filesystem path (no leading `|`). Both TPI paths agree.
+    /// Unhardened state.
+    RawPath,
+    /// The two TPI paths disagreed or the value is empty. Fail-closed: treated
+    /// as unhardened.
+    Invalid,
+}
+
+/// Classify a `core_pattern` string using Two-Path Independence.
+///
+/// Returns `CorePatternKind::ManagedHandler` only if **both** independent
+/// paths agree that the value represents a managed coredump handler.
+/// Fails closed (`Invalid`) on any disagreement or empty input.
+///
+/// ## Path 1 — Structural
+/// Checks the first byte is `|` (ASCII 0x7C). No interpretation.
+///
+/// ## Path 2 — Semantic
+/// Trims whitespace, takes the first whitespace-delimited token, checks it
+/// begins with `|`, and verifies the character immediately after `|` is `/`
+/// (absolute path). A value of `||` or `|` with no path fails Path 2.
+///
+/// ## Fail-Closed
+/// If Path 1 says "handler" but Path 2 does not (or vice versa), returns
+/// `Invalid`. This prevents a crafted value from passing on a single path.
+///
+/// ## Pattern Execution Measurement
+/// Timing logged in debug builds.
+///
+/// NIST SP 800-218 SSDF PW.4: TPI — two independent parse paths, fail closed.
+/// NIST SP 800-53 SI-10: Input Validation — rejects ambiguous or malformed input.
+#[must_use = "core_pattern classification drives hardening assessment — do not discard"]
+pub fn classify_core_pattern(value: &str) -> CorePatternKind {
+    #[cfg(debug_assertions)]
+    let start = std::time::Instant::now();
+
+    let result = classify_core_pattern_inner(value);
+
+    #[cfg(debug_assertions)]
+    log::debug!(
+        "posture: TPI classify_core_pattern completed in {} µs, \
+         result={result:?}",
+        start.elapsed().as_micros()
+    );
+
+    result
+}
+
+/// Inner classification logic — separated so `classify_core_pattern` can
+/// wrap it with timing without affecting the logic.
+fn classify_core_pattern_inner(value: &str) -> CorePatternKind {
+    if value.is_empty() {
+        return CorePatternKind::Invalid;
+    }
+
+    // Path 1 — Structural: first byte is `|` (ASCII 0x7C).
+    let path1_is_handler = value.as_bytes().first() == Some(&b'|');
+
+    // Path 2 — Semantic: first whitespace-delimited token starts with `|`
+    // and the character immediately after `|` is `/` (absolute handler path).
+    let path2_is_handler = {
+        let first_token = value.split_whitespace().next().unwrap_or("");
+        if let Some(after_pipe) = first_token.strip_prefix('|') {
+            // The handler path must be non-empty and absolute.
+            after_pipe.starts_with('/')
+        } else {
+            false
+        }
+    };
+
+    match (path1_is_handler, path2_is_handler) {
+        (true, true) => CorePatternKind::ManagedHandler,
+        (false, false) => CorePatternKind::RawPath,
+        // Paths disagree — fail closed.
+        _ => {
+            log::warn!(
+                "posture: core_pattern TPI disagreement: \
+                 path1_handler={path1_is_handler} path2_handler={path2_is_handler} — \
+                 classified as Invalid (fail-closed)"
+            );
+            CorePatternKind::Invalid
+        }
+    }
+}
+
+// ===========================================================================
 // CmdlineReader — /proc/cmdline single-read cache for snapshot collection
 // ===========================================================================
 
@@ -527,8 +711,11 @@ pub fn read_live_sysctl(
         SignalId::ProtectedRegular => ProtectedRegular::read().map(Some),
         SignalId::SuidDumpable => SuidDumpable::read().map(Some),
         // PerfEventParanoid uses a signed reader — handled by read_live_sysctl_signed.
+        // CorePattern uses a string reader — handled by read_live_core_pattern.
         // Non-sysctl signals (cmdline, SecurityFs, DistroManaged, ModprobeConfig)
         // are handled elsewhere; this function only covers sysctl u32 signals.
+        // CPU mitigation sub-signals are KernelCmdline class — handled by
+        // read_live_cmdline_signal in snapshot.rs.
         SignalId::PerfEventParanoid
         | SignalId::ModulesDisabled
         | SignalId::Lockdown
@@ -542,7 +729,51 @@ pub fn read_live_sysctl(
         | SignalId::BluetoothBlacklisted
         | SignalId::UsbStorageBlacklisted
         | SignalId::FirewireCoreBlacklisted
-        | SignalId::ThunderboltBlacklisted => Ok(None),
+        | SignalId::ThunderboltBlacklisted
+        | SignalId::SpectreV2Off
+        | SignalId::SpectreV2UserOff
+        | SignalId::MdsOff
+        | SignalId::TsxAsyncAbortOff
+        | SignalId::L1tfOff
+        | SignalId::RetbleedOff
+        | SignalId::SrbdsOff
+        | SignalId::NoSmtOff
+        | SignalId::CorePattern => Ok(None),
+    }
+}
+
+// ===========================================================================
+// read_live_core_pattern — live value for CorePattern signal
+// ===========================================================================
+
+/// Read the live `core_pattern` value and apply TPI classification.
+///
+/// Reads `/proc/sys/kernel/core_pattern` via `CorePatternReader` (provenance-
+/// verified through `PROC_SUPER_MAGIC`), then classifies the result using
+/// `classify_core_pattern` (two independent validation paths).
+///
+/// Returns:
+/// - `Ok(Some((kind, raw)))` — raw string plus classification
+/// - `Ok(None)` — node absent (kernel without coredump support)
+/// - `Err(_)` — I/O or provenance failure
+///
+/// NIST SP 800-53 SI-7: provenance-verified read via PROC_SUPER_MAGIC.
+/// NIST SP 800-218 SSDF PW.4: TPI classification applied to the raw value.
+#[must_use = "core_pattern live read result drives hardening assessment — do not discard"]
+pub fn read_live_core_pattern(
+) -> io::Result<Option<(CorePatternKind, String)>> {
+    use crate::kattrs::traits::StaticSource;
+
+    match CorePatternReader::read() {
+        Ok(raw) => {
+            let kind = classify_core_pattern(&raw);
+            log::debug!(
+                "posture: CorePattern live read: kind={kind:?}"
+            );
+            Ok(Some((kind, raw)))
+        }
+        Err(e) if e.kind() == io::ErrorKind::NotFound => Ok(None),
+        Err(e) => Err(e),
     }
 }
 

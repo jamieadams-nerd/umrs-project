@@ -158,6 +158,23 @@ pub const fn classify(
 /// where a module is blacklisted in modprobe.d but loaded at runtime
 /// (`live_meets = Some(false)`, `configured_meets = Some(true)` → `BootDrift`).
 ///
+/// ## FIPS Cross-Check
+///
+/// The FIPS configured value is a human-readable audit summary string (e.g.,
+/// `"marker=present cmdline=fips=1"`). This always returns `None` from this
+/// function — the FIPS path does not participate in `classify()` by construction.
+///
+/// ## KernelCmdline (BLS Options String)
+///
+/// For `KernelCmdline`-class signals, the configured raw value is the full BLS
+/// options string (e.g., `"root=UUID=abc fips=1 module.sig_enforce=1"`). This
+/// function returns `None` for such values — token-based evaluation for these
+/// signals is handled via a dedicated path in `collect_one()` (see
+/// `snapshot.rs`). `DesiredValue::meets_cmdline()` is called directly on the
+/// BLS options string rather than routing through this function. This design
+/// is intentional: the BLS options string is not an integer and cannot be
+/// evaluated here without knowing which token to search for.
+///
 /// NIST SP 800-53 SI-10: Input Validation — non-parseable configured values
 /// produce `None` rather than a silent failure. The `"blacklisted"` sentinel
 /// is an explicitly recognised non-integer value, not an error.

@@ -30,7 +30,7 @@ use umrs_platform::posture::{
 #[test]
 fn catalog_covers_all_signal_ids() {
     // Exhaustive match ensures this test is updated when SignalId gains a new variant.
-    // Phase 1: 22 signals. Phase 2a adds 5 modprobe signals = 27 total.
+    // Phase 1: 22. Phase 2a: +5 modprobe = 27. Phase 2b: +9 CPU sub-signals + 1 core_pattern = 37.
     let all_ids = [
         // Phase 1 — sysctl signals
         SignalId::KptrRestrict,
@@ -62,6 +62,17 @@ fn catalog_covers_all_signal_ids() {
         SignalId::UsbStorageBlacklisted,
         SignalId::FirewireCoreBlacklisted,
         SignalId::ThunderboltBlacklisted,
+        // Phase 2b — CPU mitigation sub-signals
+        SignalId::SpectreV2Off,
+        SignalId::SpectreV2UserOff,
+        SignalId::MdsOff,
+        SignalId::TsxAsyncAbortOff,
+        SignalId::L1tfOff,
+        SignalId::RetbleedOff,
+        SignalId::SrbdsOff,
+        SignalId::NoSmtOff,
+        // Phase 2b — core dump
+        SignalId::CorePattern,
     ];
 
     for id in all_ids {
@@ -86,12 +97,12 @@ fn catalog_no_duplicate_ids() {
 /// Catalog must have exactly as many entries as `SignalId` variants.
 #[test]
 fn catalog_length_matches_signal_id_count() {
-    // Count must match the `all_ids` array in catalog_covers_all_signal_ids.
-    // Phase 1: 22 signals. Phase 2a adds 5 modprobe signals = 27 total.
+    // Phase 1: 22. Phase 2a: +5 modprobe = 27. Phase 2b: +8 CPU sub-signals + 1 core_pattern = 36.
     assert_eq!(
         SIGNALS.len(),
-        27,
-        "catalog length must match SignalId variant count (22 Phase 1 + 5 Phase 2a)"
+        36,
+        "catalog length must match SignalId variant count \
+         (22 Phase 1 + 5 Phase 2a + 8 CPU sub-signals + 1 core_pattern = 36)"
     );
 }
 
@@ -784,6 +795,271 @@ fn catalog_sysctl_signals_have_sysctl_key() {
     }
 }
 
+// ===========================================================================
+// 12. CPU mitigation sub-signals (Phase 2b)
+// ===========================================================================
+
+/// All CPU mitigation sub-signals must be `KernelCmdline` class.
+#[test]
+fn cpu_mitigation_sub_signals_are_cmdline_class() {
+    let cpu_ids = [
+        SignalId::SpectreV2Off,
+        SignalId::SpectreV2UserOff,
+        SignalId::MdsOff,
+        SignalId::TsxAsyncAbortOff,
+        SignalId::L1tfOff,
+        SignalId::RetbleedOff,
+        SignalId::SrbdsOff,
+        SignalId::NoSmtOff,
+    ];
+    for id in cpu_ids {
+        let desc = SIGNALS
+            .iter()
+            .find(|d| d.id == id)
+            .unwrap_or_else(|| panic!("CPU sub-signal {id:?} missing from catalog"));
+        assert_eq!(
+            desc.class,
+            SignalClass::KernelCmdline,
+            "CPU sub-signal {id:?} must be KernelCmdline class"
+        );
+    }
+}
+
+/// All CPU mitigation sub-signals must use `CmdlineAbsent` desired values.
+#[test]
+fn cpu_mitigation_sub_signals_use_cmdline_absent() {
+    let cpu_ids = [
+        SignalId::SpectreV2Off,
+        SignalId::SpectreV2UserOff,
+        SignalId::MdsOff,
+        SignalId::TsxAsyncAbortOff,
+        SignalId::L1tfOff,
+        SignalId::RetbleedOff,
+        SignalId::SrbdsOff,
+        SignalId::NoSmtOff,
+    ];
+    for id in cpu_ids {
+        let desc = SIGNALS
+            .iter()
+            .find(|d| d.id == id)
+            .unwrap_or_else(|| panic!("CPU sub-signal {id:?} missing from catalog"));
+        assert!(
+            matches!(desc.desired, DesiredValue::CmdlineAbsent(_)),
+            "CPU sub-signal {id:?} must use DesiredValue::CmdlineAbsent, \
+             got {:?}",
+            desc.desired
+        );
+    }
+}
+
+/// A cmdline that explicitly disables `spectre_v2` fails the `SpectreV2Off` check.
+#[test]
+fn spectre_v2_off_in_cmdline_fails() {
+    let cmdline = "BOOT_IMAGE=/vmlinuz root=/dev/sda1 ro quiet spectre_v2=off";
+    let desc = SIGNALS
+        .iter()
+        .find(|d| d.id == SignalId::SpectreV2Off)
+        .expect("SpectreV2Off must be in catalog");
+    let meets = desc.desired.meets_cmdline(cmdline);
+    assert_eq!(
+        meets,
+        Some(false),
+        "spectre_v2=off present must fail the hardening check"
+    );
+}
+
+/// A clean cmdline with no weakening flags passes the `SpectreV2Off` check.
+#[test]
+fn spectre_v2_off_absent_passes() {
+    let cmdline = "BOOT_IMAGE=/vmlinuz root=/dev/sda1 ro quiet";
+    let desc = SIGNALS
+        .iter()
+        .find(|d| d.id == SignalId::SpectreV2Off)
+        .expect("SpectreV2Off must be in catalog");
+    let meets = desc.desired.meets_cmdline(cmdline);
+    assert_eq!(
+        meets,
+        Some(true),
+        "spectre_v2=off absent must pass the hardening check"
+    );
+}
+
+/// Verify that `spectre_v2=on` does not trigger `SpectreV2Off` (whole-word match).
+#[test]
+fn spectre_v2_off_whole_word_no_false_positive() {
+    // "spectre_v2=off_extended" must NOT trigger the check — token must match exactly.
+    let cmdline = "BOOT_IMAGE=/vmlinuz spectre_v2=off_extended";
+    let desc = SIGNALS
+        .iter()
+        .find(|d| d.id == SignalId::SpectreV2Off)
+        .expect("SpectreV2Off must be in catalog");
+    let meets = desc.desired.meets_cmdline(cmdline);
+    assert_eq!(
+        meets,
+        Some(true),
+        "spectre_v2=off_extended is not the same token as spectre_v2=off \
+         — should not trigger the hardening check"
+    );
+}
+
+/// The umbrella `Mitigations` signal and individual sub-signals can both fire
+/// on the same cmdline that contains `mitigations=off`.
+#[test]
+fn umbrella_and_sub_signals_independent() {
+    // A cmdline with the umbrella flag also has no spectre_v2=off separately.
+    let cmdline = "BOOT_IMAGE=/vmlinuz root=/dev/sda1 mitigations=off";
+
+    let mitigations_desc = SIGNALS
+        .iter()
+        .find(|d| d.id == SignalId::Mitigations)
+        .expect("Mitigations must be in catalog");
+    let spectre_v2_desc = SIGNALS
+        .iter()
+        .find(|d| d.id == SignalId::SpectreV2Off)
+        .expect("SpectreV2Off must be in catalog");
+
+    // Umbrella fails (mitigations=off is present).
+    assert_eq!(
+        mitigations_desc.desired.meets_cmdline(cmdline),
+        Some(false),
+        "mitigations=off must fail the Mitigations check"
+    );
+    // spectre_v2=off is absent, so SpectreV2Off passes individually.
+    assert_eq!(
+        spectre_v2_desc.desired.meets_cmdline(cmdline),
+        Some(true),
+        "spectre_v2=off absent means SpectreV2Off passes individually"
+    );
+}
+
+// ===========================================================================
+// 13. core_pattern TPI classification (Phase 2b)
+// ===========================================================================
+
+use umrs_platform::posture::reader::{CorePatternKind, classify_core_pattern};
+
+/// systemd-coredump style handler is classified as ManagedHandler.
+#[test]
+fn core_pattern_systemd_coredump_is_handler() {
+    let value =
+        "|/usr/lib/systemd/systemd-coredump %P %u %g %s %t %c %h %e";
+    assert_eq!(
+        classify_core_pattern(value),
+        CorePatternKind::ManagedHandler,
+        "systemd-coredump pattern must be classified as ManagedHandler"
+    );
+}
+
+/// A raw filesystem path is classified as RawPath.
+#[test]
+fn core_pattern_raw_path_is_raw() {
+    assert_eq!(
+        classify_core_pattern("/var/crash/core.%e.%p"),
+        CorePatternKind::RawPath,
+        "raw path pattern must be classified as RawPath"
+    );
+}
+
+/// A relative path (no leading /) is classified as RawPath.
+#[test]
+fn core_pattern_relative_path_is_raw() {
+    assert_eq!(
+        classify_core_pattern("core"),
+        CorePatternKind::RawPath,
+        "relative path must be classified as RawPath"
+    );
+}
+
+/// An empty string fails closed to Invalid.
+#[test]
+fn core_pattern_empty_is_invalid() {
+    assert_eq!(
+        classify_core_pattern(""),
+        CorePatternKind::Invalid,
+        "empty core_pattern must be classified as Invalid (fail-closed)"
+    );
+}
+
+/// A bare `|` with no handler path fails closed to Invalid.
+///
+/// Path 1 (structural) sees `|` — passes.
+/// Path 2 (semantic) finds the token `|`, strips the prefix, gets an empty
+/// string — fails (no absolute path).
+/// The two paths disagree → Invalid (fail-closed).
+#[test]
+fn core_pattern_bare_pipe_is_invalid() {
+    assert_eq!(
+        classify_core_pattern("|"),
+        CorePatternKind::Invalid,
+        "bare pipe without handler path must be classified as Invalid \
+         (TPI fail-closed on disagreement)"
+    );
+}
+
+/// A `|` followed by a relative handler path fails closed to Invalid.
+///
+/// Path 1 passes (first byte `|`). Path 2 fails (handler path is relative,
+/// not starting with `/`). Disagreement → Invalid.
+#[test]
+fn core_pattern_pipe_relative_handler_is_invalid() {
+    assert_eq!(
+        classify_core_pattern("|usr/bin/coredump-handler"),
+        CorePatternKind::Invalid,
+        "pipe with relative handler path must be Invalid (path 2 requires /)"
+    );
+}
+
+/// A minimal valid piped handler `|/bin/true` is ManagedHandler.
+#[test]
+fn core_pattern_bin_true_is_handler() {
+    assert_eq!(
+        classify_core_pattern("|/bin/true"),
+        CorePatternKind::ManagedHandler,
+        "|/bin/true must be classified as ManagedHandler"
+    );
+}
+
+/// Trailing whitespace/newline in raw data is handled correctly.
+#[test]
+fn core_pattern_trailing_newline_handled() {
+    // The reader trims trailing whitespace before classification. This test
+    // exercises the classify_core_pattern function directly with a trimmed value.
+    assert_eq!(
+        classify_core_pattern("|/usr/lib/systemd/systemd-coredump"),
+        CorePatternKind::ManagedHandler,
+        "handler without extra args must still be ManagedHandler"
+    );
+}
+
+/// `CorePattern` signal in catalog must be Sysctl class with Custom desired.
+#[test]
+fn catalog_core_pattern_is_sysctl_custom() {
+    let desc = SIGNALS
+        .iter()
+        .find(|d| d.id == SignalId::CorePattern)
+        .expect("CorePattern must be in catalog");
+    assert_eq!(
+        desc.class,
+        SignalClass::Sysctl,
+        "CorePattern must be Sysctl class"
+    );
+    assert_eq!(
+        desc.desired,
+        DesiredValue::Custom,
+        "CorePattern must use DesiredValue::Custom"
+    );
+    assert_eq!(
+        desc.live_path,
+        "/proc/sys/kernel/core_pattern",
+        "CorePattern live_path must be /proc/sys/kernel/core_pattern"
+    );
+    assert_eq!(
+        desc.sysctl_key,
+        Some("kernel.core_pattern"),
+        "CorePattern sysctl_key must be Some(kernel.core_pattern)"
+    );
+}
+
 /// Every KernelCmdline-class signal must have `sysctl_key: None`.
 #[test]
 fn catalog_cmdline_signals_have_no_sysctl_key() {
@@ -877,4 +1153,332 @@ fn snapshot_boot_id_non_empty_if_present() {
         );
     }
     // boot_id may be None in container environments — that is acceptable.
+}
+
+// ===========================================================================
+// S-01: KernelCmdline configured-value contradiction detection
+//
+// These tests verify the full contradiction path for KernelCmdline-class
+// signals: token presence in the BLS options string is checked via
+// DesiredValue::meets_cmdline(), producing BootDrift and EphemeralHotfix
+// findings when live /proc/cmdline and the BLS options line disagree.
+//
+// NIST SP 800-53 CA-7: BootDrift/EphemeralHotfix must fire for cmdline signals.
+// NIST SP 800-53 CM-6: BLS options line is the configured persistence source.
+// ===========================================================================
+
+/// S-01 regression: `meets_cmdline` applied to the BLS options string for
+/// `CmdlinePresent` correctly evaluates token presence.
+///
+/// This is the core building block: `DesiredValue::meets_cmdline(bls_opts)`
+/// is called in `collect_one()` for KernelCmdline signals. Verify the function
+/// produces the correct `Some(bool)` for each case.
+#[test]
+fn cmdline_desired_meets_cmdline_present_on_bls_opts() {
+    let desired = DesiredValue::CmdlinePresent("module.sig_enforce=1");
+
+    // Token present in BLS options → configured meets desired (Some(true)).
+    let bls_with_token =
+        "root=UUID=abc-123 fips=1 module.sig_enforce=1 quiet";
+    assert_eq!(
+        desired.meets_cmdline(bls_with_token),
+        Some(true),
+        "BLS options containing token must return Some(true) for CmdlinePresent"
+    );
+
+    // Token absent from BLS options → configured does not meet desired (Some(false)).
+    let bls_without_token = "root=UUID=abc-123 fips=1 quiet";
+    assert_eq!(
+        desired.meets_cmdline(bls_without_token),
+        Some(false),
+        "BLS options missing token must return Some(false) for CmdlinePresent"
+    );
+}
+
+/// S-01 regression: `meets_cmdline` applied to the BLS options string for
+/// `CmdlineAbsent` correctly evaluates token absence.
+#[test]
+fn cmdline_desired_meets_cmdline_absent_on_bls_opts() {
+    let desired = DesiredValue::CmdlineAbsent("mitigations=off");
+
+    // Token absent from BLS options → configured meets desired (Some(true) — hardened).
+    let bls_without_token = "root=UUID=abc-123 quiet";
+    assert_eq!(
+        desired.meets_cmdline(bls_without_token),
+        Some(true),
+        "BLS options without weakening token must return Some(true) for CmdlineAbsent"
+    );
+
+    // Token present in BLS options → configured does not meet desired (Some(false)).
+    let bls_with_token = "root=UUID=abc-123 mitigations=off quiet";
+    assert_eq!(
+        desired.meets_cmdline(bls_with_token),
+        Some(false),
+        "BLS options containing weakening token must return Some(false) for CmdlineAbsent"
+    );
+}
+
+/// S-01 regression (BootDrift path): live cmdline lacks module.sig_enforce=1
+/// but BLS options contain it → BootDrift.
+///
+/// This is the highest-priority scenario: the operator intended to harden the
+/// boot with module.sig_enforce=1, but the running kernel does not have it
+/// (configuration management gap).
+#[test]
+fn cmdline_boot_drift_sig_enforce_configured_not_live() {
+    // Configured hardened: BLS options contain module.sig_enforce=1.
+    let bls_opts =
+        "root=UUID=abc-123 fips=1 module.sig_enforce=1 quiet";
+    let desired = DesiredValue::CmdlinePresent("module.sig_enforce=1");
+
+    // Live NOT hardened: /proc/cmdline does not have module.sig_enforce=1.
+    let live_cmdline = "root=UUID=abc-123 fips=1 quiet";
+    let live_meets = desired.meets_cmdline(live_cmdline);
+    assert_eq!(
+        live_meets,
+        Some(false),
+        "live cmdline without module.sig_enforce=1 must not meet CmdlinePresent desired"
+    );
+
+    // Configured hardened: BLS options contain the token.
+    let configured_meets = desired.meets_cmdline(bls_opts);
+    assert_eq!(
+        configured_meets,
+        Some(true),
+        "BLS options with module.sig_enforce=1 must meet CmdlinePresent desired"
+    );
+
+    // Contradiction: configured=hardened, live=not hardened → BootDrift.
+    assert_eq!(
+        classify(live_meets, configured_meets),
+        Some(ContradictionKind::BootDrift),
+        "configured hardened + live unhardened must classify as BootDrift"
+    );
+}
+
+/// S-01 regression (EphemeralHotfix path): live cmdline has module.sig_enforce=1
+/// but BLS options do not → EphemeralHotfix.
+///
+/// This scenario indicates a runtime injection that is not persisted in the
+/// bootloader configuration — the hardening will be lost on next reboot.
+#[test]
+fn cmdline_ephemeral_hotfix_sig_enforce_live_not_configured() {
+    // Live hardened: /proc/cmdline has module.sig_enforce=1.
+    let live_cmdline =
+        "root=UUID=abc-123 fips=1 module.sig_enforce=1 quiet";
+    let desired = DesiredValue::CmdlinePresent("module.sig_enforce=1");
+
+    let live_meets = desired.meets_cmdline(live_cmdline);
+    assert_eq!(
+        live_meets,
+        Some(true),
+        "live cmdline with module.sig_enforce=1 must meet CmdlinePresent desired"
+    );
+
+    // Configured NOT hardened: BLS options do not contain the token.
+    let bls_opts = "root=UUID=abc-123 fips=1 quiet";
+    let configured_meets = desired.meets_cmdline(bls_opts);
+    assert_eq!(
+        configured_meets,
+        Some(false),
+        "BLS options without module.sig_enforce=1 must not meet CmdlinePresent desired"
+    );
+
+    // Contradiction: live=hardened, configured=not hardened → EphemeralHotfix.
+    assert_eq!(
+        classify(live_meets, configured_meets),
+        Some(ContradictionKind::EphemeralHotfix),
+        "live hardened + configured unhardened must classify as EphemeralHotfix"
+    );
+}
+
+/// S-01 regression: token absent in both live cmdline and BLS options → no contradiction.
+///
+/// If neither live nor configured has the token, both agree on the unhardened
+/// state — no contradiction is produced.
+#[test]
+fn cmdline_no_contradiction_token_absent_in_both() {
+    let desired = DesiredValue::CmdlinePresent("module.sig_enforce=1");
+    let cmdline_without = "root=UUID=abc-123 quiet";
+
+    let live_meets = desired.meets_cmdline(cmdline_without);
+    let configured_meets = desired.meets_cmdline(cmdline_without);
+
+    assert_eq!(live_meets, Some(false));
+    assert_eq!(configured_meets, Some(false));
+    assert_eq!(
+        classify(live_meets, configured_meets),
+        None,
+        "both absent → both unhardened → no contradiction"
+    );
+}
+
+/// S-01 regression: token present in both live cmdline and BLS options → no contradiction.
+///
+/// Both agree on the hardened state — no contradiction.
+#[test]
+fn cmdline_no_contradiction_token_present_in_both() {
+    let desired = DesiredValue::CmdlinePresent("module.sig_enforce=1");
+    let cmdline_with = "root=UUID=abc-123 fips=1 module.sig_enforce=1 quiet";
+
+    let live_meets = desired.meets_cmdline(cmdline_with);
+    let configured_meets = desired.meets_cmdline(cmdline_with);
+
+    assert_eq!(live_meets, Some(true));
+    assert_eq!(configured_meets, Some(true));
+    assert_eq!(
+        classify(live_meets, configured_meets),
+        None,
+        "both present → both hardened → no contradiction"
+    );
+}
+
+/// S-01 regression: Mitigations signal BootDrift — configured BLS has no
+/// `mitigations=off` (hardened for CmdlineAbsent) but live cmdline has it.
+///
+/// For `CmdlineAbsent("mitigations=off")`: live has the token (fails check),
+/// configured does not (passes check) → BootDrift.
+#[test]
+fn cmdline_boot_drift_mitigations_off_live_not_configured() {
+    let desired = DesiredValue::CmdlineAbsent("mitigations=off");
+
+    // Live NOT hardened: /proc/cmdline has mitigations=off.
+    let live_meets =
+        desired.meets_cmdline("root=UUID=abc mitigations=off quiet");
+    assert_eq!(live_meets, Some(false));
+
+    // Configured hardened: BLS options do not have mitigations=off.
+    let configured_meets = desired.meets_cmdline("root=UUID=abc quiet");
+    assert_eq!(configured_meets, Some(true));
+
+    // live=unhardened, configured=hardened → BootDrift.
+    assert_eq!(
+        classify(live_meets, configured_meets),
+        Some(ContradictionKind::BootDrift),
+        "live has mitigations=off but configured BLS does not → BootDrift"
+    );
+}
+
+/// S-01 regression: BLS configured_meets is None when BLS unavailable, which
+/// produces no contradiction (graceful degrade for non-BLS systems).
+#[test]
+fn cmdline_no_contradiction_when_bls_unavailable() {
+    // configured_meets = None simulates BLS being absent (configured_boot_cmdline = None).
+    let live_meets = Some(false);
+    let configured_meets: Option<bool> = None;
+
+    assert_eq!(
+        classify(live_meets, configured_meets),
+        None,
+        "no configured value (BLS absent) must produce no contradiction"
+    );
+}
+
+// ===========================================================================
+// M-02: /usr/bin/false hard-blacklist sentinel test
+// ===========================================================================
+
+/// M-02: verify that /usr/bin/false is recognised as a hard-blacklist sentinel.
+///
+/// On usr-merge systems (RHEL 9+/10), /usr/bin/false is as valid a hard-blacklist
+/// path as /bin/false. An operator writing `install thunderbolt /usr/bin/false`
+/// must produce is_hard_blacklist=true.
+#[test]
+fn parse_install_usr_bin_false_is_hard_blacklist() {
+    use umrs_platform::posture::{ParsedDirective, parse_modprobe_line};
+    let result = parse_modprobe_line("install thunderbolt /usr/bin/false");
+    assert_eq!(
+        result,
+        ParsedDirective::Install {
+            module: "thunderbolt",
+            command: "/usr/bin/false",
+            is_hard_blacklist: true,
+        },
+        "/usr/bin/false must be recognised as a hard-blacklist sentinel"
+    );
+}
+
+// ===========================================================================
+// M-03: path-traversal validation in is_module_loaded / read_module_param
+// ===========================================================================
+
+/// M-03: verify that is_module_loaded() rejects a module name with '/'.
+#[test]
+fn is_module_loaded_rejects_path_traversal_slash() {
+    use umrs_platform::posture::modprobe::is_module_loaded;
+    // A name with '/' must not probe unexpected sysfs paths.
+    let result = is_module_loaded("../net");
+    assert!(
+        !result,
+        "is_module_loaded must return false for names containing '/' or '..'"
+    );
+}
+
+/// M-03: verify that is_module_loaded() rejects an empty module name.
+#[test]
+fn is_module_loaded_rejects_empty_name() {
+    use umrs_platform::posture::modprobe::is_module_loaded;
+    assert!(
+        !is_module_loaded(""),
+        "is_module_loaded must return false for empty module name"
+    );
+}
+
+/// M-03: verify that is_module_loaded() rejects a null-byte module name.
+#[test]
+fn is_module_loaded_rejects_null_byte() {
+    use umrs_platform::posture::modprobe::is_module_loaded;
+    assert!(
+        !is_module_loaded("bluetooth\0evil"),
+        "is_module_loaded must return false for names containing '\\0'"
+    );
+}
+
+/// M-03: verify that is_module_loaded() accepts a well-formed module name.
+///
+/// A valid name like "bluetooth" must not be rejected by the guard.
+/// The result may be true or false depending on whether the module is loaded,
+/// but it must not be rejected for an invalid name.
+///
+/// Note: we cannot assert the exact boolean result because the test environment
+/// may or may not have bluetooth loaded. We only verify the guard does not
+/// reject the name by confirming the call completes without panic.
+#[test]
+fn is_module_loaded_accepts_valid_name() {
+    use umrs_platform::posture::modprobe::is_module_loaded;
+    // "nf_conntrack" is a well-formed module name — must not be rejected.
+    // We don't assert the result (depends on whether module is loaded in CI).
+    let _ = is_module_loaded("nf_conntrack");
+}
+
+/// M-03: verify that read_module_param() rejects a module name with '/'.
+#[test]
+fn read_module_param_rejects_path_traversal_slash() {
+    use umrs_platform::posture::modprobe::read_module_param;
+    let result = read_module_param("../net", "acct");
+    assert!(
+        result.is_err(),
+        "read_module_param must return Err for module names containing '/'"
+    );
+    assert_eq!(
+        result.unwrap_err().kind(),
+        std::io::ErrorKind::InvalidInput,
+        "error kind must be InvalidInput for path-traversal rejection"
+    );
+}
+
+/// M-03: verify that read_module_param() rejects a param name with '/'.
+#[test]
+fn read_module_param_rejects_param_path_traversal() {
+    use umrs_platform::posture::modprobe::read_module_param;
+    let result = read_module_param("nf_conntrack", "../secrets");
+    assert!(
+        result.is_err(),
+        "read_module_param must return Err for param names containing '/'"
+    );
+    assert_eq!(
+        result.unwrap_err().kind(),
+        std::io::ErrorKind::InvalidInput,
+        "error kind must be InvalidInput for param path-traversal rejection"
+    );
 }

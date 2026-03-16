@@ -1,22 +1,18 @@
+
+//
 * xref:index.adoc[AI in This Project]
-
-* Overview
-** xref:why-transparency.adoc[Why We Document the AI Pipeline]
-** xref:what-ai-does-and-does-not-do.adoc[What AI Does and Does Not Do]
-
-* Team and Workflow
-** xref:agent-roles.adoc[Agent Roles and Responsibilities]
-** xref:workflow-mechanics.adoc[How Work Flows Through the Team]
-** xref:feedback-and-standing-rules.adoc[How Feedback Becomes Permanent Rules]
-
-* Knowledge Pipeline
-** xref:knowledge-pipeline.adoc[How Knowledge Enters the System]
-** xref:rag-collections.adoc[RAG Collections and Their Sources]
-** xref:corpus-familiarization.adoc[Corpus Familiarization]
-** xref:knowledge-provenance.adoc[Knowledge Provenance and Claim Traceability]
-
-* xref:skills-catalog.adoc[Skills Catalog]
-
-* xref:auditor-guide.adoc[Auditor's Guide]
-
-* xref:case-study-rmf-corpus.adoc[Case Study: RMF Methodology Corpus]
+** Overview
+*** xref:why-transparency.adoc[Why We Document the AI Pipeline]
+*** xref:what-ai-does-and-does-not-do.adoc[What AI Does and Does Not Do]
+** Team and Workflow
+*** xref:agent-roles.adoc[Agent Roles and Responsibilities]
+*** xref:workflow-mechanics.adoc[How Work Flows Through the Team]
+*** xref:feedback-and-standing-rules.adoc[How Feedback Becomes Permanent Rules]
+** Knowledge Pipeline
+*** xref:knowledge-pipeline.adoc[How Knowledge Enters the System]
+*** xref:rag-collections.adoc[RAG Collections and Their Sources]
+*** xref:corpus-familiarization.adoc[Corpus Familiarization]
+*** xref:knowledge-provenance.adoc[Knowledge Provenance and Claim Traceability]
+** xref:skills-catalog.adoc[Skills Catalog]
+** xref:auditor-guide.adoc[Auditor's Guide]
+** xref:case-study-rmf-corpus.adoc[Case Study: RMF Methodology Corpus]

@@ -2,7 +2,7 @@
 name: Kernel Security Posture Probe
 path: components/rusty-gadgets/umrs-platform
 agent: rust-developer
-status: phase-2b-complete — Phase 2a security findings (F-01 HIGH through F-07) all addressed; Phase 2b (sonnet scope) implemented: bootcmdline.rs BLS reader + modprobe install hard-blacklist; 123 tests pass (63 posture, 50 modprobe, 10 bootcmdline); workspace clippy clean; docs deferred to tech-writer; ready for security-engineer Phase 2b review
+status: phase-2b-opus — CPU mitigation sub-signals (8 new SignalId variants: SpectreV2Off, SpectreV2UserOff, MdsOff, TsxAsyncAbortOff, L1tfOff, RetbleedOff, SrbdsOff, NoSmtOff) + CorePattern (TPI classification, 2-path independence) implemented; catalog now 37 signals; 16 new tests in posture_tests.rs; SEC caching deferred (see Resolved Decisions 9); pending cargo xtask clippy + test verification; docs deferred to tech-writer
 depends-on: umrs-platform-expansion.md
 ---
 
@@ -786,15 +786,21 @@ All tests in `umrs-platform/tests/posture_fips_tests.rs`:
 4. **Sysrq**: `DesiredValue::Custom` with a dedicated validator. Default hardened
    check is `value == 0`. Explicit, auditor-friendly, site-policy-overridable.
 
-5. **core_pattern**: Deferred to Phase 2b. Requires high-assurance string parsing
-   design before inclusion. Candidate for TPI dual-path parsing.
+5. **core_pattern** (2026-03-16): Implemented in Phase 2b. `SignalId::CorePattern`
+   added as `Sysctl` class, `DesiredValue::Custom`. TPI classification in
+   `classify_core_pattern()`: Path 1 structural (first byte `|`), Path 2 semantic
+   (handler path starts with `/`). Fail-closed on disagreement → `Invalid`.
+   `CorePatternReader` implements `KernelFileSource + StaticSource` for
+   `/proc/sys/kernel/core_pattern` with `PROC_SUPER_MAGIC` verification.
 
-6. **CPU mitigations**: Single umbrella signal parsing `/proc/cmdline`. Individual
-   sub-signals deferred to Phase 2b — requires catalog schema change that ripples
-   through exhaustive matches and tests.
+6. **CPU mitigations** (2026-03-16): Umbrella `Mitigations` signal retained as-is.
+   Eight individual sub-signal variants added: `SpectreV2Off`, `SpectreV2UserOff`,
+   `MdsOff`, `TsxAsyncAbortOff`, `L1tfOff`, `RetbleedOff`, `SrbdsOff`, `NoSmtOff`.
+   All are `KernelCmdline` class, `CmdlineAbsent`. No catalog schema change required —
+   they slot into the existing cmdline dispatch. Catalog grows from 27 to 37 signals.
 
 7. **Phase 1 scope**: Live values + sysctl.d configured values + contradiction
-   detection. Bootloader cmdline configured values deferred to Phase 2b.
+   detection. Bootloader cmdline configured values deferred to Phase 2b (now done).
 
 8. **Phase 2a/2b split rationale** (2026-03-14): Phase 2a (modprobe.d + FIPS
    cross-check) builds on proven Phase 1 patterns — merge-tree reading,
@@ -803,6 +809,17 @@ All tests in `umrs-platform/tests/posture_fips_tests.rs`:
    introduce new architectural patterns or require catalog schema changes.
    The split minimises risk for the developer and creates a clean checkpoint
    for security-engineer review before expanding the attack surface further.
+
+9. **SEC caching for posture signals** (2026-03-16): DEFERRED beyond Phase 2b.
+   Rationale: (a) `PostureSnapshot` has no serialization impl — serde is not a
+   dependency of `umrs-platform` and adding it requires supply-chain review and
+   Jamie's approval; (b) posture signals can change at runtime (sysctl writes),
+   so cache validity windows are short and cache hit value is low; (c) the
+   expansion plan explicitly sequences serialization after assessment types
+   stabilize; (d) existing `SealedCache` was designed for stable per-boot
+   `DetectionResult`, not frequently-changing runtime state. The SEC pattern is
+   already implemented for the detection pipeline — posture caching is a Phase 3
+   item contingent on serialization being in place.
 
 ---
 

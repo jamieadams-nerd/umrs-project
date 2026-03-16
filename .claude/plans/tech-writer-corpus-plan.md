@@ -1,7 +1,7 @@
 # Tech-Writer RAG Corpus Acquisition Plan
 
 **Created:** 2026-03-15
-**Status:** Not started
+**Status:** Phases 1-2 in progress (Phase 1.1 partial, Phase 1.2 complete, Phase 2 substantially complete)
 **Source:** `.claude/jamies_brain/researcher-for-tw.md`
 **ROADMAP Goals:** G10 (AI Transparency), G1 (Documentation Excellence)
 **Agent:** researcher
@@ -113,11 +113,11 @@ that already exist, create symlinks or reference pointers rather than duplicatin
 
 | Item | Phase | Priority | Status |
 |------|-------|----------|--------|
-| Google Developer Style Guide | 1 | High | -- |
-| Microsoft Writing Style Guide | 1 | High | -- |
-| MIL-STD-38784A | 2 | High | -- |
-| NIST Author Instructions | 2 | High | -- |
-| Plain Language Guidelines | 2 | High | -- |
+| Google Developer Style Guide | 1 | High | DONE — 10 pages fetched via curl+pandoc (2026-03-16); verbatim content replaces prior summaries |
+| Microsoft Writing Style Guide | 1 | High | DONE — 13 files (2026-03-16) |
+| MIL-STD-38784B | 2 | High | DONE — PDF downloaded from everyspec.com (Jamie-approved); 3.95 MB; SHA-256 recorded (2026-03-16) |
+| NIST Author Instructions | 2 | High | DONE — 740-line markdown fetched via curl+pandoc (2026-03-16) |
+| Plain Language Guidelines | 2 | High | PARTIAL — PDF URL dead (301 to digital.gov); 6 guideline pages fetched from GSA GitHub archive (CC0); original PDF no longer available via curl |
 | NIST SP 800-53 Rev 5 | 3 | Critical | CHECK existing |
 | NIST SP 800-171 Rev 3 | 3 | High | CHECK existing |
 | CMMC Level 2 Assessment Guide | 3 | High | CHECK existing |

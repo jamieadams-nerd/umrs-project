@@ -261,10 +261,30 @@ fn collect_one(
         configured_boot_cmdline,
     );
 
-    let configured_meets: Option<bool> =
+    // For KernelCmdline signals, configured_meets is evaluated via token-based
+    // matching on the BLS options string, not through evaluate_configured_meets().
+    // The BLS options string is not an integer and not the "blacklisted" sentinel,
+    // so evaluate_configured_meets() would return None for it — which would
+    // silently suppress BootDrift and EphemeralHotfix detection for all cmdline
+    // signals. Instead, apply DesiredValue::meets_cmdline() directly to the raw
+    // BLS options string.
+    //
+    // NIST SP 800-53 CA-7: BootDrift/EphemeralHotfix must fire when the BLS
+    // options line disagrees with /proc/cmdline on a security token.
+    // NIST SP 800-53 CM-6: configured persistence layer for cmdline signals is
+    // the BLS options line, not a sysctl.d integer value.
+    let configured_meets: Option<bool> = if desc.class == SignalClass::KernelCmdline {
+        // For KernelCmdline signals, configured_meets is derived from token
+        // presence in the BLS options string (configured_boot_cmdline).
+        // If configured_boot_cmdline is None (BLS unavailable), configured_meets
+        // is None — no contradiction can be detected (graceful degrade).
+        configured_boot_cmdline
+            .and_then(|opts| desc.desired.meets_cmdline(opts))
+    } else {
         configured_value.as_ref().and_then(|cv| {
             contradiction::evaluate_configured_meets(&cv.raw, &desc.desired)
-        });
+        })
+    };
 
     let contradiction =
         contradiction::classify(meets_desired, configured_meets);
@@ -284,6 +304,13 @@ fn collect_one(
         configured_value.as_ref().map(|c| &c.raw),
         contradiction
     );
+    // Release-mode debug log: live_value is intentionally included because
+    // current Text-valued signals store only compile-time catalog tokens (e.g.,
+    // "module.sig_enforce=1", "absent"), not raw kernel output. If a future
+    // signal stores kernel-supplied text in LiveValue::Text (e.g., a raw sysfs
+    // string), this log line must be gated under #[cfg(debug_assertions)] for
+    // that signal to maintain Error Information Discipline.
+    // NIST SP 800-53 SI-11; NSA RTB Error Discipline.
     #[cfg(not(debug_assertions))]
     log::debug!(
         "posture: {:?} live={:?} meets={:?} contradiction={:?}",
@@ -328,6 +355,29 @@ fn read_live_sysctl_signal(
     desc: &'static SignalDescriptor,
 ) -> (Option<LiveValue>, Option<bool>) {
     match desc.id {
+        SignalId::CorePattern => {
+            // CorePattern is Sysctl-class but returns a String, not a u32.
+            // TPI classification is applied in read_live_core_pattern.
+            match crate::posture::reader::read_live_core_pattern() {
+                Ok(Some((kind, raw))) => {
+                    use crate::posture::reader::CorePatternKind;
+                    let meets =
+                        Some(kind == CorePatternKind::ManagedHandler);
+                    log::debug!(
+                        "posture: CorePattern: kind={kind:?} meets={meets:?}"
+                    );
+                    (Some(LiveValue::Text(raw)), meets)
+                }
+                Ok(None) => {
+                    log::debug!("posture: CorePattern: kernel node absent");
+                    (None, None)
+                }
+                Err(e) => {
+                    log::debug!("posture: CorePattern read failed: {e}");
+                    (None, None)
+                }
+            }
+        }
         SignalId::ModulesDisabled => {
             use crate::kattrs::procfs::ModuleLoadLatch;
             use crate::kattrs::traits::StaticSource;
@@ -671,12 +721,19 @@ fn read_configured(
 }
 
 /// Look up configured value for a `KernelCmdline`-class signal from the
-/// bootloader-configured cmdline (Phase 2b).
+/// bootloader-configured cmdline.
 ///
 /// The `configured_boot_cmdline` argument is the `options` line from the most
 /// likely active BLS entry, as read by `bootcmdline::read_configured_cmdline()`.
 /// If `None` (BLS not available, no entries found), returns `None` — no
 /// configured cmdline value is available and no contradiction will be detected.
+///
+/// The raw BLS options string is stored as-is for operator display and audit
+/// output. Contradiction detection for `KernelCmdline` signals does NOT go
+/// through `evaluate_configured_meets()` — it uses a dedicated token-based path
+/// in `collect_one()` that calls `DesiredValue::meets_cmdline()` directly on
+/// the BLS options string. This is the correct path for `CmdlinePresent` and
+/// `CmdlineAbsent` desired values.
 ///
 /// The configured value uses `/boot/loader/entries/` as the `source_file`
 /// sentinel — the exact entry filename is not recorded here to keep the
@@ -685,35 +742,23 @@ fn read_configured(
 /// NIST SP 800-53 CM-6: bootloader `options` line is the persistence layer for
 /// cmdline security tokens.
 /// NIST SP 800-53 CA-7: enables `EphemeralHotfix`/`BootDrift` detection for
-/// cmdline signals that were previously always `configured_value: None`.
+/// cmdline signals (`ModuleSigEnforce`, `Mitigations`, `Pti`, etc.).
 fn read_configured_boot_cmdline(
     _desc: &'static SignalDescriptor,
     configured_boot_cmdline: Option<&str>,
 ) -> Option<ConfiguredValue> {
     let boot_opts = configured_boot_cmdline?;
 
-    // For CmdlinePresent/CmdlineAbsent desired values, the "configured value"
-    // is the presence or absence of the token in the bootloader options string.
-    // We store the raw token presence as "1" (present) or "0" (absent) so that
-    // `evaluate_configured_meets` can route through `meets_integer`.
+    // Store the full BLS options line as the raw configured value for operator
+    // display and audit output. This string is not an integer and not the
+    // "blacklisted" sentinel, so evaluate_configured_meets() returns None for it.
     //
-    // Note: `evaluate_configured_meets` routes through unsigned integer parse,
-    // which cannot handle `CmdlinePresent`/`CmdlineAbsent` desired values
-    // (those return None from meets_integer). The contradiction engine
-    // bypasses this for KernelCmdline signals: `configured_meets` is computed
-    // directly from the cmdline token check, not through evaluate_configured_meets.
-    //
-    // To drive contradiction detection, store the full boot options string as
-    // the raw value and use the source_file to indicate BLS provenance.
-    // The `evaluate_configured_meets` call will return `None` for this raw
-    // value (it is not an integer), which means the contradiction engine will
-    // not fire on it. Instead, a dedicated path is needed.
-    //
-    // Architectural decision: store the raw options string so it is visible in
-    // audit output, even though the generic contradiction engine cannot evaluate
-    // it. The `configured_value` field is populated for operator display. A
-    // dedicated contradiction path for cmdline signals is out of scope for Phase
-    // 2b (the SecurityEngineer review identified this as future work).
+    // Contradiction detection for KernelCmdline signals is handled via a
+    // dedicated token-based path in collect_one(): configured_meets is computed
+    // by calling DesiredValue::meets_cmdline(boot_opts) rather than routing
+    // through evaluate_configured_meets(). This produces correct BootDrift and
+    // EphemeralHotfix results when the BLS options line disagrees with
+    // /proc/cmdline on a security token.
     Some(ConfiguredValue {
         raw: boot_opts.to_owned(),
         source_file: "/boot/loader/entries/".to_owned(),

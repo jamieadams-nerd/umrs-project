@@ -1,0 +1,626 @@
+= UMRS Platform Update Checklists
+:description: Step-by-step checklists for updating umrs-platform when kernel versions change, new CPU extensions are introduced, or existing signals are removed.
+:toc: left
+:toclevels: 3
+
+// NIST SP 800-53 CM-6: Configuration Settings — catalog must track the kernel
+// version it was validated against and be updated on any baseline change.
+// NIST SP 800-53 CA-7: Continuous Monitoring — these checklists ensure the
+// monitored signal set stays current with the underlying kernel.
+// NIST SP 800-53 SA-11: Developer Testing — all catalog changes require a
+// complete test pass before merging.
+
+`umrs-platform` contains a compile-time catalog of kernel security posture
+signals in `umrs-platform/src/posture/catalog.rs`. Each entry in the
+`SIGNALS` array describes one probed kernel attribute: its path, its desired
+hardened value, its security rationale, and applicable NIST control citations.
+
+The catalog is intentionally static — values are bound at compile time, not
+loaded from a file. This design gives an auditor one place to review the
+entire monitored signal set. The trade-off is that the catalog must be
+actively maintained as the kernel evolves.
+
+These checklists cover the three events that require catalog maintenance:
+
+* <<kernel-version,A new kernel version is released>>
+* <<cpu-extension,A new CPU extension is announced>>
+* <<signal-removal,An existing signal is removed or deprecated>>
+
+A fourth section covers <<version-tracking,version tracking>> — recording
+which kernel version the catalog was validated against.
+
+NOTE: These checklists are for the `rust-developer` agent and platform
+engineers. Documentation steps (marked with a doc icon) are handled by
+`tech-writer`. Review steps are handled by `security-auditor`.
+
+'''
+
+[[kernel-version]]
+== Kernel Version Update Checklist
+
+A new kernel release — RHEL, upstream, or Ubuntu LTS — may add new sysctl
+nodes, change default values for existing nodes, add new LSM features, or
+remove deprecated interfaces. Left unaddressed, any of these can silently
+invalidate the catalog.
+
+The risk is subtle: a node that moves path, changes its numeric scale, or
+acquires a new semantic meaning will continue to return a value that
+`umrs-platform` parses successfully — but the parsed value no longer means
+what the `SignalDescriptor.desired` field expects. The system reports
+"pass" for a signal that may actually be failing. This is a false-negative
+in a security posture assessment.
+
+=== Step 1: Review the Kernel Changelog
+
+Identify changes relevant to the signal catalog. Scan the following
+locations:
+
+. Read the kernel changelog for the target version. For RHEL, check:
++
+----
+/usr/share/doc/kernel*/changelog
+----
++
+For upstream, read the `CHANGES` and `Documentation/` files in the kernel
+source tree.
+
+. Search for changes to `/proc/sys/` sysctl nodes.
++
+Specifically look for:
++
+** New nodes (potential new signals)
+** Removed nodes (signals that may need deprecation)
+** Changed default values (signals where `DesiredValue` may need updating)
+** Changed numeric scales (e.g., a paranoia level gaining a new valid value)
+
+. Search for changes to `/sys/kernel/security/` securityfs nodes.
++
+These map to `SignalClass::SecurityFs` signals. The `KernelLockdown`
+reader in `kattrs/security.rs` is the primary consumer.
+
+. Search for changes to `/proc/cmdline` boot parameters.
++
+Scan for new kernel hardening parameters added as command-line options.
+New per-CVE mitigation flags are the most common addition here.
+
+. Search for changes to `/sys/module/` parameters.
++
+These map to `SignalClass::ModprobeConfig` signals. New kernel modules
+with security-relevant parameters are candidates.
+
+. Search for new or changed LSM features.
++
+Check `Documentation/security/` in the kernel source. New LSMs or new
+lockdown levels require catalog entries.
+
+. Search for new or changed lockdown levels.
++
+`/sys/kernel/security/lockdown` currently exposes `none`, `integrity`,
+and `confidentiality`. A new level requires updating the `LockdownMode`
+enum in `kattrs/security.rs` and the `Lockdown` signal descriptor.
+
+NOTE: Kernel changelogs are large. Focus on the `kernel/`, `fs/`, `security/`,
+`arch/x86/`, and `Documentation/admin-guide/kernel-parameters.txt` sections.
+The `Documentation/admin-guide/sysctl/` tree is the authoritative source for
+sysctl semantics.
+
+=== Step 2: Diff Against umrs-platform
+
+For each change identified in Step 1, determine the required action.
+
+.Decision table — one row per change type
+[cols="2,3", options="header"]
+|===
+| Change found
+| Required action
+
+| New sysctl or securityfs node with security relevance
+| Add a new `SignalId` variant and `SignalDescriptor` — see <<add-signal>>
+
+| Changed default value for an existing node
+| Update `DesiredValue` in the matching `SignalDescriptor` in `catalog.rs` +
+  Update `rationale` if the security reasoning changed
+
+| Removed node
+| Mark the signal deprecated — see <<deprecate-signal>>
+
+| Changed semantic meaning (same path, different interpretation)
+| Update `rationale`, `description`, and `DesiredValue` as needed +
+  Add an explanatory comment in `catalog.rs` noting the kernel version +
+  where the semantic change occurred
+
+| New LSM or new lockdown level
+| Update `LockdownMode` enum in `kattrs/security.rs` +
+  Update the `Lockdown` signal descriptor if the desired level changes +
+  Add a new signal if the new LSM exposes its own sysfs/securityfs nodes
+
+| New per-CVE CPU mitigation cmdline flag
+| Add a `SignalId` variant in the `// ── CPU mitigation sub-signals` group +
+  Use `SignalClass::KernelCmdline` and `DesiredValue::CmdlineAbsent` +
+  Follow the existing pattern for `SpectreV2Off`, `MdsOff`, etc.
+|===
+
+[[add-signal]]
+=== Step 3: Add a New Signal
+
+For each new signal identified in Step 2, complete all items in this
+checklist in the order shown. Do not skip ahead — each step depends on
+the previous one compiling cleanly.
+
+[cols="1,4", options="header"]
+|===
+| Step
+| Action
+
+| 3.1
+| Add a `SignalId` variant to `signal.rs`. +
+  Place it in the correct group section. Add a doc comment that includes: +
+  the sysctl key or path, one sentence on what the node controls, and +
+  `NIST SP 800-53` citation if applicable.
+
+| 3.2
+| Add a `label()` match arm to `SignalId::label()` in `signal.rs`. +
+  The label must mirror the sysctl key or parameter name exactly +
+  (e.g., `"kernel.kptr_restrict"`) to give operators a direct +
+  cross-reference to `sysctl -a` output.
+
+| 3.3
+| Add a `SignalDescriptor` entry to the `SIGNALS` array in `catalog.rs`. +
+  Populate all fields: `id`, `class`, `live_path`, `sysctl_key`, +
+  `desired`, `impact`, `rationale`, and `nist_controls`. +
+  When the platform API enrichment plan (Phase 1) is complete, also +
+  populate `description` and `group`.
+
+| 3.4
+| Implement the reader in `posture/reader.rs`. +
+  Route the signal through the appropriate `SignalClass` arm. +
+  For sysctl signals, use `ProcfsText`; for securityfs signals, +
+  use `KernelLockdown`; for sysfs/modprobe signals, use `SysfsText`. +
+  All reads must verify filesystem magic via the kattrs `SecureReader` +
+  infrastructure — direct `std::fs::read_to_string` on these paths is +
+  non-compliant with NSA RTB RAIN.
+
+| 3.5
+| If the signal has a configured value (sysctl.d, modprobe.d, or BLS +
+  bootloader entry), implement the configured-value reader. +
+  Follow the existing pattern in `posture/configured.rs`. +
+  Do not log raw values from sysctl.d files — log the key and path only. +
+  See the Debug Log Information Discipline rule.
+
+| 3.6
+| Wire contradiction detection if both live and configured values are +
+  available. Add the signal to the evaluation path in +
+  `posture/contradiction.rs`. Add a test that covers the full path: +
+  configured → evaluate → classify → `ContradictionKind`.
+
+| 3.7
+| Add integration tests in `tests/posture_tests.rs`. +
+  At minimum: one test that reads the live value and asserts +
+  `SignalReport.live.is_some()`, and one that exercises the +
+  `DesiredValue::meets_*` path for this signal's variant.
+
+| 3.8
+| Run the full build and lint pass: +
+  `cargo xtask clippy && cargo xtask test`
+
+|===
+
+WARNING: Step 3.4 is the most common failure point. Verifying the
+filesystem magic via `SecureReader` is not optional — it is the
+mechanism that satisfies NSA RTB RAIN (Non-Bypassability). A direct
+read bypasses provenance verification entirely.
+
+=== Step 4: Update the TUI
+
+When `platform-api-enrichment` Phase 1 is complete, new signals
+automatically appear in `PostureSnapshot::by_group()`. The TUI rendering
+layer requires no changes for the signal to appear in the correct group.
+
+Until Phase 1 is complete, add the signal manually:
+
+. Open `umrs-tui/src/main.rs` (or wherever `build_kernel_security_rows()`
+  lives).
+. Add the new signal to the appropriate `append_signal_group()` call,
+  matching the group the signal belongs to.
+. Build the TUI binary and verify the signal renders correctly.
+. Verify that `NO_COLOR` mode produces readable output for the new signal.
+
+=== Step 5: Update Documentation
+
+The following documentation must be updated for every new signal. Do not
+mark a signal addition as complete until all documentation is current.
+
+[cols="1,4", options="header"]
+|===
+| Step
+| Action
+
+| 5.1
+| Update `docs/modules/reference/pages/kernel-probe-signals.adoc`. +
+  Add a row to the signal table with: `SignalId` variant name, +
+  `label()` output, group, impact tier, and NIST control citations. +
+  Note the kernel version where this signal was introduced.
+
+| 5.2
+| If a new `SignalClass` variant was added (rare), update the +
+  developer guide to explain the new class and its read path.
+
+| 5.3
+| If new high-assurance patterns were used, update the relevant +
+  pattern page in `docs/modules/patterns/pages/`.
+
+| 5.4
+| Run `make docs` from the project root. +
+  Zero new errors is the acceptance criterion.
+
+|===
+
+NOTE: `docs/modules/reference/pages/kernel-probe-signals.adoc` does not
+exist yet. It should be created on the first signal addition after these
+checklists are published. The reference page tracks the full catalog
+with kernel-version annotations.
+
+=== Step 6: Review
+
+. Security-auditor reviews the new `SignalDescriptor` for:
+** Correct NIST SP 800-53 control citations
+** `AssuranceImpact` tier appropriate to the signal's threat model
+** `rationale` text accurate and auditor-readable
+
+. Tech-writer reviews `description` (once Phase 1 of platform API
+  enrichment is complete) for:
+** Clarity to an operator unfamiliar with the signal
+** i18n readiness — complete sentences, no embedded interpolation
+** Consistency with approved terminology
+
+'''
+
+[[cpu-extension]]
+== CPU Extension Update Checklist
+
+CPU extension updates arrive through vendor ISA manuals (Intel Architecture
+Software Developer's Manual, AMD64 Architecture Programmer's Manual, Arm
+Architecture Reference Manual). Security-relevant extensions cover
+cryptographic acceleration (AES-NI, SHA), entropy generation (RDRAND,
+RDSEED), memory protection (SMEP, SMAP, CET-SS, CET-IBT), and CPU
+vulnerability mitigations.
+
+The three-layer activation model is the core design concept for CPU
+extension detection:
+
+[mermaid]
+....
+graph TD
+    A["Layer 1: Hardware (CPUID flag in /proc/cpuinfo)"]
+    B["Layer 2: OS enablement (XSAVE state, CR4 flags, kernel support)"]
+    C["Layer 3: Software utilization (compiler target, library dispatch, intrinsics)"]
+    A --> B --> C
+    style A fill:#2d4a6b,color:#fff
+    style B fill:#3d5a7b,color:#fff
+    style C fill:#4d6a8b,color:#fff
+....
+
+A CPU flag in `/proc/cpuinfo` does not mean the system is using the
+extension. A platform assessment must check all three layers to determine
+whether the extension provides its intended security benefit. An AES-NI
+capable CPU running a binary compiled with `-march=x86-64` receives no
+AES acceleration whatsoever.
+
+NOTE: CPU extension detection is future work — implementation begins
+after the kernel security posture probe is complete and the CPU security
+corpus research is validated. See `.claude/plans/umrs-platform-expansion.md`.
+This checklist defines the process that will be followed at that time.
+
+=== Step 1: Review Vendor Documentation
+
+. Identify the source: Intel ISA update, AMD architecture manual revision,
+  or Arm architecture extension specification.
+
+. For each new extension, determine:
+** The canonical flag name that appears in `/proc/cpuinfo` (Layer 1)
+** Whether the kernel must enable it — requires OS state management
+  (Layer 2). Check `Documentation/arch/x86/xsave.rst` or equivalent.
+** Whether crypto libraries auto-detect it, or require explicit compiler
+  targeting (Layer 3)
+
+. Classify the extension by security relevance:
+** Cryptographic: accelerates FIPS 140-2/3 approved primitives
+  (AES, SHA, RNG). These are highest priority.
+** Memory protection: reduces exploit viability (SMEP, SMAP, CET).
+** Mitigation: addresses a specific CVE class.
+** General performance: no direct security impact. Low priority.
+
+. Check for deprecated extensions.
++
+Intel SGX deprecation is the canonical example. When an extension is
+deprecated, detect its presence but mark the detection as
+informational — the system no longer depends on it.
+
+=== Step 2: Assess the Three Layers
+
+For each security-relevant extension found in Step 1:
+
+.Layer assessment questions
+[cols="1,3,2", options="header"]
+|===
+| Layer
+| Question to answer
+| Detection path
+
+| 1 — Hardware
+| Does `/proc/cpuinfo` expose the flag?
+| Parse the `flags` line; no unsafe code required.
+
+| 2 — OS
+| Does the kernel enable the extension for userspace?
+| Check `/proc/self/status` for XSAVE flags; +
+  check kernel sysfs nodes for extension-specific state.
+
+| 3 — Software
+| Do crypto libraries actually use the extension?
+| Check `/proc/crypto` for registered driver names +
+  (e.g., `aesni-intel`). +
+  Check `OPENSSL_ia32cap` for explicit overrides.
+|===
+
+=== Step 3: Add a New CPU Extension Signal
+
+CPU extensions use a separate `CpuSignalId` enum (decided 2026-03-16),
+not `SignalId`. This keeps the kernel posture catalog and the CPU
+extension catalog from growing into a single unwieldy type.
+
+[cols="1,4", options="header"]
+|===
+| Step
+| Action
+
+| 3.1
+| Add a `CpuSignalId` variant to the CPU signals module. +
+  Name it after the CPUID flag name (e.g., `AesNi`, `Avx512f`, `Rdrand`).
+
+| 3.2
+| Add `label()` returning the vendor-canonical flag name +
+  (e.g., `"aes"` as it appears in `/proc/cpuinfo`).
+
+| 3.3
+| Add `description()` explaining what the extension does and why it +
+  matters for security. Follow the what/why split: description answers +
+  "what is this?" and rationale answers "why does it matter?"
+
+| 3.4
+| If the Intel and AMD names for the same capability differ, document +
+  both names. Vendor naming is not always consistent — this is +
+  reference documentation, not just code.
+
+| 3.5
+| Implement the Layer 1 detector: parse `/proc/cpuinfo` flags. +
+  Route through `ProcfsText` with provenance verification.
+
+| 3.6
+| Implement the Layer 2 check if applicable: read `/proc/self/status` +
+  or the relevant sysfs node. Route through `SysfsText`.
+
+| 3.7
+| Implement the Layer 3 check if applicable: parse `/proc/crypto` +
+  for the relevant driver name.
+
+| 3.8
+| Add integration tests.
+  At minimum: test that the Layer 1 reader returns a `Some` value
+  on an architecture where the flag is present, and a graceful `None`
+  on hardware that does not advertise it.
+
+| 3.9
+| Run: `cargo xtask clippy && cargo xtask test`
+
+|===
+
+WARNING: Layer 1 results without Layer 2 and Layer 3 checks produce
+misleading output. An assessment that reports AES-NI "present" without
+checking whether OpenSSL is actually using it fails to answer the
+operator's real question. Where all three layers are detectable,
+report all three.
+
+=== Step 4: Update Reference Documentation
+
+. Update `docs/modules/reference/pages/cpu-extensions.adoc`.
++
+Add a row with: `CpuSignalId` variant, vendor-canonical flag name,
+description, security relevance, and detection layer(s) implemented.
+Note vendor-specific naming differences in the Notes column.
+
+. If the CPU security corpus was updated (new ISA manual ingested), note
+  the corpus version in the reference page header.
+
+. Run `make docs`. Zero new errors is the acceptance criterion.
+
+=== Step 5: Update the RAG Corpus
+
+If the CPU security corpus plan has a collection for the relevant vendor:
+
+. Check `.claude/plans/cpu-security-corpus-plan.md` for the collection
+  name and tracked source URL.
+. Verify whether the vendor has published an updated ISA manual.
+. If updated: re-ingest the new document into the corpus collection.
+. Run corpus familiarization after ingestion.
+  The researcher agent must run corpus-familiarization before the new
+  material is used in documentation.
+
+'''
+
+[[signal-removal]]
+== Signal Removal and Deprecation Checklist
+
+When the kernel removes or renames a sysctl, securityfs, or sysfs node,
+the probing code will silently fail. Depending on how the reader is
+written, it may return `None` (graceful) or produce an error that stops
+the posture assessment entirely.
+
+The correct response is never to delete the `SignalId` variant. Deleted
+variants create gaps in the audit trail — historical reports reference
+signal IDs that no longer exist in the codebase, making reports
+unverifiable. Deprecation is the only correct path.
+
+[cols="1,4", options="header"]
+|===
+| Step
+| Action
+
+| 1
+| Do NOT remove the `SignalId` variant from `signal.rs`. +
+  Mark it with `#[deprecated(since = "X.Y.Z", note = "kernel removed +
+  <path> in kernel <version>")]`. +
+  This preserves the variant for historical report matching.
+
+| 2
+| Update the reader in `reader.rs` to handle graceful absence. +
+  The reader must return `(None, None)` when the node is absent, +
+  not an error. The signal appears in reports as "unavailable" +
+  rather than causing the assessment to fail.
+
+| 3
+| Update the `SignalDescriptor.rationale` in `catalog.rs`. +
+  Add a note: "Deprecated in kernel <version>. Node removed. +
+  See <replacement signal, if any>."
+
+| 4
+| If a replacement signal exists, add it using the
+  <<add-signal,Add a New Signal>> checklist.
+
+| 5
+| Add a `log::debug!()` call in the reader when the deprecated signal +
+  is absent. Log the `SignalId` label and the path that was not found. +
+  Do not log the absent value — there is no value to log.
+
+| 6
+| Update `docs/modules/reference/pages/kernel-probe-signals.adoc`. +
+  Mark the signal row as deprecated, note the kernel version, +
+  and link to the replacement if one exists.
+
+| 7
+| Run `make docs`. Zero new errors.
+
+|===
+
+WARNING: Do not mark a signal deprecated prematurely. If the node is
+absent only on some kernel configurations (e.g., compiled without a
+specific option), the signal is optional — not deprecated. Handle
+optional absence in the reader without changing the `SignalId` variant.
+
+IMPORTANT: If you are uncertain whether a node was truly removed or is
+conditionally absent, check the kernel source tree before making any
+deprecation decision. A wrong deprecation marking in an audit environment
+creates a compliance gap that is difficult to explain.
+
+'''
+
+[[version-tracking]]
+== Version Tracking
+
+The signal catalog must declare which kernel version it was validated
+against. Without this, a reviewer cannot determine whether the catalog
+is current or whether it predates significant kernel changes.
+
+=== Catalog Version Declaration
+
+Record the validated kernel version in two places:
+
+. In the `catalog.rs` module doc comment, after the compliance block:
++
+[source,rust]
+----
+//! ## Catalog Version
+//!
+//! Signal catalog validated against RHEL 10 kernel 6.12.0-211.
+//! Last reviewed: 2026-03-16.
+//! Next review target: next RHEL 10 minor update.
+----
+
+. In `docs/modules/reference/pages/kernel-probe-signals.adoc`,
+  in the document header:
++
+[source,asciidoc]
+----
+:kernel-version: RHEL 10 kernel 6.12.0-211
+:validated-date: 2026-03-16
+----
+
+=== Review Cadence
+
+Review the catalog on each of the following triggers:
+
+* RHEL 10 minor update (kernel version increment)
+* Upstream kernel LTS release adopted by RHEL
+* Any CVE with a kernel mitigation that adds a new sysctl or cmdline flag
+* Any NSA RTB update that introduces new required controls
+
+There is no fixed calendar cadence. The catalog is current when reviewed
+against the deployed kernel. The catalog is stale when the deployed
+kernel version differs from the `catalog.rs` declaration.
+
+NOTE: The current catalog was written for RHEL 10 kernel 6.12.0-211.
+Update the declaration in `catalog.rs` after each review pass.
+
+'''
+
+== Quick Reference: Change Type to Action
+
+[cols="3,2,2,2", options="header"]
+|===
+| Event
+| Code change
+| TUI change
+| Doc change
+
+| New sysctl signal
+| `signal.rs`, `catalog.rs`, `reader.rs`, tests
+| Add to group (manual until API enrichment)
+| `kernel-probe-signals.adoc`, `make docs`
+
+| New cmdline signal
+| `signal.rs`, `catalog.rs`, `reader.rs`, tests
+| Add to Boot Integrity group
+| `kernel-probe-signals.adoc`, `make docs`
+
+| New modprobe signal
+| `signal.rs`, `catalog.rs`, `reader.rs`, tests
+| Add to Module Restrictions group
+| `kernel-probe-signals.adoc`, `make docs`
+
+| Changed default value
+| `catalog.rs` — `DesiredValue` only
+| None
+| `kernel-probe-signals.adoc`, `make docs`
+
+| Changed rationale/semantic
+| `catalog.rs` — `rationale` field
+| None
+| `kernel-probe-signals.adoc`, `make docs`
+
+| Removed node
+| `signal.rs` — `#[deprecated]`; `reader.rs` — graceful `None`
+| None
+| Mark deprecated in `kernel-probe-signals.adoc`, `make docs`
+
+| New CPU extension
+| `CpuSignalId`, CPU readers
+| Add to CPU panel (once implemented)
+| `cpu-extensions.adoc`, `make docs`
+
+| New lockdown level
+| `LockdownMode` enum, `Lockdown` descriptor
+| None — `KernelLockdown` reader handles it
+| `kernel-probe-signals.adoc`, `make docs`
+|===
+
+== See Also
+
+* `umrs-platform/src/posture/signal.rs` — `SignalId` enum and `SignalClass`
+* `umrs-platform/src/posture/catalog.rs` — `SIGNALS` static array
+* `umrs-platform/src/kattrs/` — kernel attribute reader infrastructure
+* `.claude/plans/umrs-platform-expansion.md` — platform architecture roadmap
+* `.claude/plans/platform-api-enrichment.md` — signal description and grouping plan
+* xref:os-detection-deep-dive.adoc[OS Detection Pipeline — Deep Dive]
+* xref:patterns:pattern-toctou.adoc[TOCTOU Safety Pattern]
+* xref:patterns:pattern-provenance.adoc[Provenance Verification Pattern]
+* xref:patterns:pattern-non-bypassability.adoc[Non-Bypassability Pattern]

@@ -1,0 +1,1330 @@
+= Kernel Security Posture Signals
+:description: Authoritative reference for every signal probed by the UMRS Kernel Security Posture tool — what each signal measures, what good looks like, and the compliance controls each signal satisfies.
+:toc: left
+:toclevels: 3
+
+This reference covers every kernel security posture signal that UMRS probes.
+For each signal you will find the kernel parameter name, a plain language explanation,
+the hardened value, the insecure/default value, the risk of leaving it unhardened,
+and the applicable compliance controls.
+
+This document is the authoritative input for signal descriptions used by the TUI,
+CLI, JSON reports, and any future assessment engine.
+All descriptions are complete sentences, suitable for display, i18n translation,
+and inclusion in operator-facing audit narratives.
+
+== How signals are read
+
+UMRS reads kernel security state from three sources.
+
+*Runtime sysctl* (`/proc/sys/`): Values that take effect immediately and can change
+without a reboot.
+The configured value comes from the `sysctl.d` merge tree (`/etc/sysctl.d/`,
+`/usr/lib/sysctl.d/`, `/run/sysctl.d/`).
+
+*Kernel command line* (`/proc/cmdline`): Values baked in at boot time.
+Changing them requires editing the bootloader entry and rebooting.
+On RHEL 10 the configured value comes from the BLS entry in
+`/boot/loader/entries/`.
+
+*Security filesystem and distro-managed* (`/sys/kernel/security/`, vendor tooling):
+Values set by the kernel LSM subsystem or by distro-specific tools such as
+`fips-mode-setup`.
+These are read-only status indicators, not sysctl knobs.
+
+*Module restrictions* (`/sys/module/`, `modprobe.d`): Values that reflect whether
+specific kernel modules are present or explicitly blacklisted.
+The configured value comes from the `modprobe.d` merge tree.
+
+NOTE: The posture probe reads all sources at the same instant and returns an
+atomic `PostureSnapshot`.
+If the kernel node is absent or unreadable, the signal is shown as unknown (`?`)
+rather than as a failure.
+This is intentional: unavailability is different from a policy violation.
+
+== Signal groups
+
+Signals are organized into six groups by security domain.
+Empty groups (all signals unreadable) are not displayed.
+
+=== BOOT INTEGRITY
+
+Boot integrity signals verify that the system booted into a controlled, verifiable
+state and that the kernel cannot be silently replaced or weakened at runtime.
+These are the highest-consequence signals: an integrity failure here undermines
+every other control on the system.
+
+==== lockdown=
+
+*Kernel parameter:* `lockdown=` (read from `/sys/kernel/security/lockdown`, verified against `SECURITYFS_MAGIC`)
+
+*What it is:* Kernel lockdown is a Linux Security Module that restricts what root
+can do to the running kernel.
+When active, root cannot modify kernel memory, load unsigned modules, read
+physical memory, or use other channels that could subvert kernel integrity.
+Lockdown is the runtime enforcement of Secure Boot's promise.
+
+*What good looks like:* `integrity` — the kernel enforces strong restrictions on
+modifications to its own code and data.
+The `confidentiality` level is stricter still and blocks kernel-to-user data paths
+as well.
+
+*What bad looks like:* `none` — lockdown is disabled.
+Root can modify the running kernel, load unsigned modules, and read physical
+memory directly.
+Secure Boot provides no runtime guarantee if lockdown is not active.
+
+*Why it matters:* Without lockdown, a privileged attacker (or a misconfigured
+service running as root) can replace kernel code at runtime, bypassing every
+audit and access control in the system.
+
+*Controls:* NIST SP 800-53 CM-7 (Least Functionality), SI-7 (Software and
+Information Integrity); NSA RTB: boot integrity
+
+*CMMC:* CM.L2-3.4.6 (Least Functionality)
+
+==== kernel.kexec_load_disabled
+
+*Kernel parameter:* `kernel.kexec_load_disabled` (sysctl, `/proc/sys/kernel/kexec_load_disabled`)
+
+*What it is:* The `kexec` system call lets root load and boot a new kernel without
+going through the system firmware or bootloader.
+This is a one-way latch: once set to `1`, the kexec_load syscall is permanently
+disabled until the next reboot.
+
+*What good looks like:* `1` — kexec is disabled.
+The running kernel can only be replaced by a full reboot through the firmware and
+bootloader, preserving Secure Boot and IMA verification.
+
+*What bad looks like:* `0` — kexec is enabled.
+A privileged user can load an arbitrary kernel at runtime, bypassing all
+boot-time integrity checks.
+
+*Why it matters:* Disabling kexec preserves the integrity guarantees established
+at boot — Secure Boot, IMA, kernel lockdown — by ensuring that the only path
+to a new kernel goes through the verified boot chain.
+
+*Controls:* NIST SP 800-53 SI-7 (Software and Information Integrity), CM-7
+(Least Functionality); NSA RTB: boot integrity
+
+==== module.sig_enforce
+
+*Kernel parameter:* `module.sig_enforce=1` (kernel command line, `/proc/cmdline`)
+
+*What it is:* When this kernel command-line parameter is present, the kernel
+refuses to load any module that does not carry a valid cryptographic signature
+verified against the system's trusted key ring.
+This extends Secure Boot's chain of trust into the post-boot module loading path.
+
+*What good looks like:* `module.sig_enforce=1` present in `/proc/cmdline` — only
+signed modules can be loaded.
+
+*What bad looks like:* Parameter absent — the kernel will load unsigned modules,
+allowing an attacker with root access to inject arbitrary kernel code at runtime.
+
+*Why it matters:* Unsigned kernel modules are a classic persistence and privilege-escalation
+mechanism.
+Requiring module signatures means that even a root-level compromise cannot load
+novel kernel code without a valid signing key.
+
+*Controls:* NIST SP 800-53 SI-7 (Software and Information Integrity), CM-7
+(Least Functionality); NSA RTB: boot integrity
+
+==== mitigations=
+
+*Kernel parameter:* `mitigations=off` must be absent (kernel command line, `/proc/cmdline`)
+
+*What it is:* `mitigations=off` is a kernel command-line flag that disables
+all CPU vulnerability mitigations in a single switch — Spectre, Meltdown, MDS,
+L1TF, RETBLEED, and more.
+This signal checks that the umbrella disable flag is absent.
+Individual per-CVE override signals are covered in the CPU Mitigation sub-signals below.
+
+*What good looks like:* `mitigations=off` absent — all CPU mitigations are active
+at their kernel defaults.
+
+*What bad looks like:* `mitigations=off` present — every CPU-level isolation
+control is disabled.
+An unprivileged process on a shared system can read kernel memory, cross VM
+boundaries, and extract credentials from sibling processes.
+
+*Why it matters:* CPU vulnerability mitigations are the primary defense against
+a class of side-channel attacks that bypass all software access controls.
+Disabling them in a single flag is the highest-impact misconfiguration available
+on the kernel command line.
+
+*Controls:* NIST SP 800-53 SI-16 (Memory Protection), SC-39 (Process Isolation);
+NSA RTB: CPU vulnerability mitigations
+
+==== pti=
+
+*Kernel parameter:* `pti=off` must be absent (kernel command line, `/proc/cmdline`)
+
+*What it is:* Page Table Isolation (PTI) is the Meltdown mitigation.
+It maintains separate page tables for user space and kernel space so that a
+speculative memory access from user space cannot read kernel memory.
+This signal checks that PTI is not explicitly disabled.
+
+*What good looks like:* `pti=off` absent — PTI is active (kernel default on
+affected Intel processors).
+
+*What bad looks like:* `pti=off` present — PTI is disabled.
+User processes can exploit Meltdown (CVE-2017-5754) to read arbitrary kernel
+memory including credentials, keys, and other process memory.
+
+*Why it matters:* PTI is the specific mitigation for Meltdown, one of the most
+widely exploited CPU vulnerabilities.
+Disabling it removes kernel address space protection on Intel processors that
+do not have hardware-level isolation.
+
+*Controls:* NIST SP 800-53 SI-16 (Memory Protection); NSA RTB: CPU vulnerability
+mitigations
+
+=== CRYPTOGRAPHIC POSTURE
+
+Cryptographic posture signals verify that the system uses validated cryptographic
+primitives and that entropy sources meet standards required for DoD and government
+deployments.
+FIPS mode is a mandatory baseline for CUI systems — its absence is a compliance
+blocker, not merely a hardening recommendation.
+
+==== crypto.fips_enabled
+
+*Kernel parameter:* `crypto.fips_enabled` (distro-managed, `/proc/sys/crypto/fips_enabled`)
+
+*What it is:* FIPS 140-2/3 mode restricts the kernel's cryptographic framework to
+validated algorithm implementations and key lengths.
+When active, the system rejects any cryptographic operation that does not use a
+FIPS-validated primitive.
+On RHEL 10, FIPS mode is enabled and verified by the `fips-mode-setup` tool, which
+sets the kernel parameter and installs a FIPS kernel integrity check.
+
+*What good looks like:* `true` (enabled) — FIPS mode is active.
+All cryptographic operations use validated primitives.
+
+*What bad looks like:* `false` (disabled) — FIPS mode is not active.
+The system may use non-validated cryptographic implementations.
+
+*Why it matters:* FIPS 140-2/3 mode is a mandatory baseline for federal and
+DoD systems handling CUI.
+Without it, the system cannot demonstrate use of validated cryptography, and
+the deployment does not meet the minimum cryptographic requirements for the
+authorization boundary.
+
+*Controls:* NIST SP 800-53 SC-13 (Cryptographic Protection), SC-28 (Protection
+of Information at Rest); FIPS 140-2/140-3; CMMC SC.L2-3.13.10
+
+==== kernel.modules_disabled
+
+*Kernel parameter:* `kernel.modules_disabled` (sysctl, `/proc/sys/kernel/modules_disabled`)
+
+*What it is:* This is a one-way latch.
+Once set to `1`, the kernel will not load any additional modules for the
+remainder of that boot.
+The latch cannot be reversed without a reboot.
+Setting it locks the kernel attack surface in place.
+
+*What good looks like:* `true` (enabled) — module loading is permanently disabled
+for this boot.
+The kernel's code base is fixed and cannot be extended by any privileged user.
+
+*What bad looks like:* `false` (disabled) — modules can still be loaded.
+A privileged attacker can introduce kernel code at any time.
+
+*Why it matters:* Once all required kernel modules are loaded during system
+initialization, there is no operational reason to allow further module loading.
+Locking the latch eliminates an entire class of kernel persistence mechanisms.
+
+*Controls:* NIST SP 800-53 CM-7 (Least Functionality), SI-7 (Software and
+Information Integrity); NSA RTB: minimized attack surface
+
+==== random.trust_cpu
+
+*Kernel parameter:* `random.trust_cpu=on` must be absent (kernel command line, `/proc/cmdline`)
+
+*What it is:* When `random.trust_cpu=on` is set, the kernel seeds its entropy pool
+exclusively from the CPU hardware random number generator (RDRAND/RDSEED) at
+early boot, without mixing in other entropy sources.
+RHEL 10 defaults to not trusting the CPU RNG unconditionally.
+
+*What good looks like:* `random.trust_cpu=on` absent — the kernel collects entropy
+from multiple sources, meeting NIST SP 800-90B entropy requirements.
+
+*What bad looks like:* `random.trust_cpu=on` present — the kernel relies solely
+on CPU-provided entropy.
+On systems with a backdoored or weak hardware RNG, this would produce predictable
+cryptographic keys from the moment of boot.
+
+*Why it matters:* Unconditional trust in hardware RNG is problematic on government
+systems where CPU supply chain integrity cannot be assumed.
+Mixing entropy sources provides defense in depth against a compromised hardware
+RNG.
+
+*Controls:* NIST SP 800-53 SC-12 (Cryptographic Key Establishment and Management);
+NIST SP 800-90B entropy source requirements
+
+==== random.trust_bootloader
+
+*Kernel parameter:* `random.trust_bootloader=on` must be absent (kernel command line, `/proc/cmdline`)
+
+*What it is:* When `random.trust_bootloader=on` is set, the kernel accepts the
+entropy seed provided by the bootloader as a trusted source without verification.
+This is only safe when the full boot chain is verified by Secure Boot and the
+bootloader is measured and attested.
+
+*What good looks like:* `random.trust_bootloader=on` absent — bootloader-provided
+entropy is not unconditionally trusted.
+
+*What bad looks like:* `random.trust_bootloader=on` present without a verified
+boot chain — the kernel accepts an untrusted entropy seed, potentially weakening
+all cryptographic operations that depend on early-boot randomness.
+
+*Why it matters:* The security of early-boot cryptographic operations (including
+disk encryption key derivation) depends on the quality of the initial entropy
+seed.
+An attacker who can influence the bootloader-provided seed can weaken those
+operations.
+
+*Controls:* NIST SP 800-53 SC-12 (Cryptographic Key Establishment and Management),
+SI-7 (Software and Information Integrity); NIST SP 800-90B entropy source
+requirements
+
+=== KERNEL SELF-PROTECTION
+
+Kernel self-protection signals control whether the kernel makes it harder for
+an attacker to exploit memory-corruption vulnerabilities.
+These settings do not prevent bugs — they raise the cost of turning a bug into
+a working exploit.
+
+==== kernel.randomize_va_space
+
+*Kernel parameter:* `kernel.randomize_va_space` (sysctl, `/proc/sys/kernel/randomize_va_space`)
+
+*What it is:* Address Space Layout Randomization (ASLR) randomizes the memory
+addresses of the stack, heap, and shared libraries each time a process starts.
+This makes it significantly harder for an attacker to reliably predict memory
+layout and jump to exploit code.
+
+Values:
+`0` = ASLR disabled; `1` = partial (stack + mmap only); `2` = full (stack, mmap, heap, VDSO).
+
+*What good looks like:* `2` — full ASLR.
+Stack, mmap, heap, and VDSO base addresses are all randomized.
+
+*What bad looks like:* `0` or `1` — ASLR is disabled or partial.
+Memory-corruption exploits (buffer overflows, use-after-free) become substantially
+easier to weaponize because the target addresses are predictable.
+
+*Why it matters:* Full ASLR is the most widely deployed and most effective
+general-purpose exploit mitigation.
+Its absence does not cause vulnerabilities, but it makes every memory-corruption
+vulnerability in every running process easier to exploit.
+
+*Controls:* NIST SP 800-53 SI-16 (Memory Protection), SC-39 (Process Isolation);
+NSA RTB: exploit mitigation
+
+==== kernel.kptr_restrict
+
+*Kernel parameter:* `kernel.kptr_restrict` (sysctl, `/proc/sys/kernel/kptr_restrict`)
+
+*What it is:* Controls whether kernel pointer values are visible in `/proc/` and
+other kernel interfaces.
+Kernel pointers reveal the memory addresses of kernel data structures.
+An attacker who can read these addresses can bypass Kernel Address Space Layout
+Randomization (KASLR), which is the kernel's equivalent of ASLR.
+
+Values:
+`0` = pointers visible to everyone; `1` = pointers hidden from non-privileged users; `2` = pointers hidden from all users including root.
+
+*What good looks like:* `2` — kernel pointers are hidden from all contexts,
+including processes running as root.
+
+*What bad looks like:* `0` or `1` — kernel pointers leak into `/proc/` output.
+Any process that can read `/proc/` (level 0) or any process running as root
+(level 1) can extract kernel addresses and defeat KASLR.
+
+*Why it matters:* KASLR is the primary defense against kernel memory corruption
+exploits.
+Kernel pointer exposure through `/proc/` is one of the most common KASLR
+bypass techniques.
+Level 2 closes this channel even for processes running as root.
+
+*Controls:* NIST SP 800-53 SI-7 (Software and Information Integrity), SC-39
+(Process Isolation); NSA RTB: minimized information disclosure
+
+==== kernel.unprivileged_bpf_disabled
+
+*Kernel parameter:* `kernel.unprivileged_bpf_disabled` (sysctl, `/proc/sys/kernel/unprivileged_bpf_disabled`)
+
+*What it is:* Berkeley Packet Filter (BPF) programs can be loaded into the kernel
+to perform high-speed packet filtering and kernel observability.
+Unprivileged BPF allows non-root users to load BPF programs, which have been a
+recurring source of kernel exploits through the JIT compiler and verifier.
+
+Values:
+`0` = unprivileged BPF allowed; `1` = restricted to CAP_BPF or CAP_SYS_ADMIN;
+`2` = permanently locked to privileged users (cannot be re-enabled without reboot).
+
+*What good looks like:* `1` or `2` — BPF is restricted to privileged users.
+
+*What bad looks like:* `0` — unprivileged BPF is allowed.
+Any user can load BPF programs, providing a large, complex attack surface in
+the kernel JIT compiler and verifier.
+
+*Why it matters:* The BPF subsystem has produced a disproportionate number of
+kernel privilege escalation CVEs in recent years.
+Restricting BPF to privileged users eliminates unprivileged access to this
+attack surface while preserving its use for legitimate observability tooling.
+
+*Controls:* NIST SP 800-53 CM-7 (Least Functionality), SC-39 (Process Isolation);
+NSA RTB: attack surface reduction
+
+==== kernel.perf_event_paranoid
+
+*Kernel parameter:* `kernel.perf_event_paranoid` (sysctl, `/proc/sys/kernel/perf_event_paranoid`)
+
+*What it is:* Controls access to the `perf_event_open()` system call, which exposes
+hardware performance counters.
+Performance counters can be used to mount side-channel attacks (including some
+Spectre variants) and to leak ASLR information through timing measurements.
+
+Values:
+`-1` = unrestricted access for all users; `0` = allow user-space access with CPU events;
+`1` = disallow CPU events for non-privileged users; `2` = disallow all perf access for
+non-privileged users; `3` = disallow even kernel profiling (some distros extend this).
+
+*What good looks like:* `2` or higher — unprivileged users cannot access performance
+counters.
+
+*What bad looks like:* `0`, `1`, or `-1` — unprivileged users can access performance
+counters and use them for ASLR bypass and side-channel attacks.
+
+*Why it matters:* Performance counters are a powerful observability tool that can
+be abused to perform timing-based attacks against other processes and the kernel.
+Restricting them to privileged users removes this side channel without affecting
+normal application workloads.
+
+*Controls:* NIST SP 800-53 SC-39 (Process Isolation), SI-7 (Software and
+Information Integrity); NSA RTB: information disclosure prevention
+
+==== kernel.yama.ptrace_scope
+
+*Kernel parameter:* `kernel.yama.ptrace_scope` (sysctl, `/proc/sys/kernel/yama/ptrace_scope`)
+
+*What it is:* The YAMA Linux Security Module extends the kernel's `ptrace`
+access controls.
+`ptrace` is the system call that allows one process to read and modify the memory
+and registers of another — it is how debuggers work.
+Without YAMA, any process running as the same user can `ptrace` any other process
+of that user, enabling credential extraction.
+
+Values:
+`0` = classic ptrace (any process can trace any other of the same uid); `1` = restricted
+(only parent processes can trace children); `2` = admin-only; `3` = disabled kernel-wide.
+
+*What good looks like:* `1` or higher — ptrace is restricted to parent/child
+relationships.
+A compromised user-space process cannot attach to another process of the same
+user and extract credentials or private key material from its memory.
+
+*What bad looks like:* `0` — any process can ptrace any other process with the
+same user ID.
+This is the classic attack path for credential extraction from authentication
+agents, browsers, and password managers.
+
+*Why it matters:* Many credential theft attacks work by attaching to an already-authenticated
+process (an SSH agent, a browser, a PAM module) and reading its memory.
+YAMA scope 1 closes this avenue without breaking legitimate debugger use.
+
+*Controls:* NIST SP 800-53 SC-39 (Process Isolation), AC-6 (Least Privilege);
+NSA RTB: process isolation
+
+==== kernel.dmesg_restrict
+
+*Kernel parameter:* `kernel.dmesg_restrict` (sysctl, `/proc/sys/kernel/dmesg_restrict`)
+
+*What it is:* Controls whether unprivileged users can read the kernel message
+buffer (dmesg).
+The kernel message buffer often contains kernel addresses, driver error messages,
+and capability-related log entries that provide an attacker useful reconnaissance
+information.
+
+Values:
+`0` = dmesg readable by all users; `1` = dmesg restricted to users with CAP_SYSLOG.
+
+*What good looks like:* `1` — dmesg is restricted to privileged users.
+
+*What bad looks like:* `0` — any user can read the kernel message buffer.
+This leaks kernel addresses, device information, and error messages that help
+an attacker identify vulnerable software versions and bypass KASLR.
+
+*Why it matters:* The kernel log is a reconnaissance goldmine.
+Restricting it to privileged users closes a low-effort information gathering
+channel that costs nothing to defend.
+
+*Controls:* NIST SP 800-53 SI-7 (Software and Information Integrity), SC-28
+(Protection of Information at Rest); NSA RTB: information disclosure prevention
+
+=== PROCESS ISOLATION
+
+Process isolation signals control whether the kernel enforces boundaries between
+user processes.
+Weak process isolation allows a compromised or malicious process to inspect,
+modify, or control sibling processes — even when those processes run under a
+different security context.
+
+==== kernel.unprivileged_userns_clone
+
+*Kernel parameter:* `kernel.unprivileged_userns_clone` (sysctl, `/proc/sys/kernel/unprivileged_userns_clone`)
+
+*What it is:* User namespaces allow a process to have a different view of user
+and group IDs — they are the foundation of rootless containers.
+When unprivileged user namespace creation is allowed, any user can create a
+namespace that grants them root-like capabilities inside that namespace, which
+can then be leveraged to exploit kernel vulnerabilities and escape the namespace.
+
+Values:
+`0` = blocked (only root can create user namespaces); `1` = any user can create user namespaces.
+
+*What good looks like:* `0` — unprivileged user namespace creation is blocked.
+
+*What bad looks like:* `1` — any user can create user namespaces.
+This is one of the primary container escape attack surfaces and has enabled
+numerous kernel privilege escalation exploits.
+
+*Why it matters:* Unprivileged user namespaces dramatically expand the kernel
+attack surface available to non-root users.
+On servers that do not run rootless containers, there is no operational reason
+to enable them.
+
+*Controls:* NIST SP 800-53 SC-39 (Process Isolation), CM-7 (Least Functionality);
+NSA RTB: process isolation
+
+==== kernel.sysrq
+
+*Kernel parameter:* `kernel.sysrq` (sysctl, `/proc/sys/kernel/sysrq`)
+
+*What it is:* The SysRq key combination on a physical keyboard or serial console
+triggers emergency kernel functions directly, bypassing normal access controls.
+It can be used to sync filesystems, kill all processes, remount filesystems read-only,
+or reboot the system — even when the system is locked or unresponsive.
+The value is a bitmask; `0` disables all SysRq functions.
+
+*What good looks like:* `0` — SysRq is fully disabled.
+No emergency console bypass is available.
+
+*What bad looks like:* Any non-zero value — at least some SysRq functions are
+available at the console.
+On a server without physical access controls, SysRq can be used to crash, reboot,
+or manipulate a running system.
+
+*Why it matters:* SysRq functions bypass the operating system's access control
+enforcement.
+On production servers in hardened environments, physical console access should
+be controlled by facility security; SysRq provides no benefit that cannot be
+addressed through proper IPMI or console management.
+
+NOTE: Some sites permit restricted SysRq (e.g., `176` = sync + remount + reboot only).
+The default hardened check is `0`.
+Sites with a documented SysRq policy should configure a custom validator.
+
+*Controls:* NIST SP 800-53 AC-3 (Access Enforcement), CM-7 (Least Functionality);
+NSA RTB: attack surface reduction
+
+==== fs.suid_dumpable
+
+*Kernel parameter:* `fs.suid_dumpable` (sysctl, `/proc/sys/fs/suid_dumpable`)
+
+*What it is:* Controls whether processes that have elevated privileges (SUID/SGID
+binaries, processes with capabilities) produce core dump files when they crash.
+Core dumps contain the complete memory image of the crashed process, including
+any secrets, keys, or credentials it held at the time of the crash.
+
+Values:
+`0` = no core dumps for SUID/privileged processes; `1` = core dumps enabled for all;
+`2` = core dumps enabled but owned by root.
+
+*What good looks like:* `0` — privileged processes do not produce core dumps.
+A crashing SUID binary does not write its memory to disk.
+
+*What bad looks like:* `1` — any crashing privileged process writes a core dump
+to disk, potentially exposing credentials, private keys, and other sensitive
+material from its memory.
+
+*Why it matters:* Privileged processes (sudo, SSH daemon, PAM modules) handle
+credentials.
+A core dump from one of these processes is a ready-made credential dump.
+Disabling core dumps for privileged processes removes this exposure path.
+
+*Controls:* NIST SP 800-53 SC-28 (Protection of Information at Rest), SI-12
+(Information Management and Retention); NSA RTB: information disclosure prevention
+
+=== FILESYSTEM HARDENING
+
+Filesystem hardening signals control whether the kernel enforces additional safety
+checks on common filesystem operations.
+These protections block a class of race-condition attacks (TOCTOU — time-of-check
+to time-of-use) that allow attackers to redirect file operations through symlinks
+or hardlinks to targets they do not own.
+
+==== fs.protected_symlinks
+
+*Kernel parameter:* `fs.protected_symlinks` (sysctl, `/proc/sys/fs/protected_symlinks`)
+
+*What it is:* When enabled, the kernel blocks a process from following a symlink
+in a world-writable sticky directory (such as `/tmp`) unless the symlink is owned
+by the same user as the process following it, or the process owns the directory.
+This prevents a classic TOCTOU symlink attack where an attacker places a symlink
+in `/tmp` pointing to a sensitive file, then tricks a privileged program into
+following it.
+
+Values:
+`0` = no protection; `1` = symlink following protected in sticky directories.
+
+*What good looks like:* `1` — symlink attacks in `/tmp` and similar directories
+are blocked.
+
+*What bad looks like:* `0` — any user can place a symlink in `/tmp` and potentially
+redirect privileged file operations to arbitrary targets.
+
+*Why it matters:* The `/tmp` directory is a classic privilege escalation attack
+surface.
+Enabling symlink protection closes a well-documented TOCTOU attack class with
+no operational impact on correctly written software.
+
+*Controls:* NIST SP 800-53 SI-10 (Information Input Validation), SC-28 (Protection
+of Information at Rest); NSA RTB: filesystem hardening
+
+==== fs.protected_hardlinks
+
+*Kernel parameter:* `fs.protected_hardlinks` (sysctl, `/proc/sys/fs/protected_hardlinks`)
+
+*What it is:* When enabled, the kernel restricts hardlink creation to files that
+the calling process owns, or where the process has read and write permission to
+the target file.
+Without this protection, a user can create a hardlink to a SUID binary they do
+not own, then wait for a privileged process to operate on it.
+
+Values:
+`0` = no protection; `1` = hardlinks to unowned files are blocked.
+
+*What good looks like:* `1` — hardlinks to unowned files are blocked.
+
+*What bad looks like:* `0` — any user can hardlink to any file they can read.
+This enables privilege escalation via hardlinks to SUID binaries in contexts
+where a privileged process might operate on them.
+
+*Why it matters:* Hardlink attacks are less common than symlink attacks but are
+equally exploitable.
+Enabling this protection closes the attack at the kernel level with no impact
+on legitimate use cases.
+
+*Controls:* NIST SP 800-53 AC-6 (Least Privilege), SI-10 (Information Input
+Validation); NSA RTB: filesystem hardening
+
+==== fs.protected_fifos
+
+*Kernel parameter:* `fs.protected_fifos` (sysctl, `/proc/sys/fs/protected_fifos`)
+
+*What it is:* FIFOs (named pipes) in world-writable sticky directories can be
+created by any user.
+Without protection, a privileged process writing to a path in `/tmp` might be
+redirected to a FIFO owned by an attacker, causing it to transmit sensitive
+data to an attacker-controlled reader.
+
+Values:
+`0` = no protection; `1` = FIFOs in sticky directories protected for non-root;
+`2` = FIFOs in sticky directories protected for all users including root.
+
+*What good looks like:* `2` — privileged processes (including root) cannot write
+to FIFOs they do not own in world-writable sticky directories.
+
+*What bad looks like:* `0` — any process, including privileged ones, can be
+redirected to write sensitive output to an attacker-controlled FIFO.
+
+*Why it matters:* FIFO-based attacks are a variation of the symlink attack targeting
+data interception rather than file modification.
+Level 2 closes the attack even for root-owned processes.
+
+*Controls:* NIST SP 800-53 SI-10 (Information Input Validation), CM-7 (Least
+Functionality); NSA RTB: filesystem hardening
+
+==== fs.protected_regular
+
+*Kernel parameter:* `fs.protected_regular` (sysctl, `/proc/sys/fs/protected_regular`)
+
+*What it is:* Analogous to FIFO protection, this setting prevents privileged
+processes from writing to regular files in world-writable sticky directories
+that they do not own.
+An attacker can pre-create a file in `/tmp` and wait for a privileged process
+to write sensitive content to it.
+
+Values:
+`0` = no protection; `1` = regular files in sticky directories protected for non-root;
+`2` = regular files in sticky directories protected for all users including root.
+
+*What good looks like:* `2` — privileged processes cannot write to unowned regular
+files in world-writable sticky directories.
+
+*What bad looks like:* `0` — a privileged program writing to a temporary file
+can be redirected to an attacker-owned file, exposing its output content.
+
+*Why it matters:* Temporary file handling in privileged programs is a perennial
+source of vulnerabilities.
+This protection provides a kernel-level backstop for those cases.
+
+*Controls:* NIST SP 800-53 SI-10 (Information Input Validation), CM-7 (Least
+Functionality); NSA RTB: filesystem hardening
+
+=== MODULE RESTRICTIONS
+
+Module restriction signals verify that specific kernel modules are either blacklisted
+(forbidden from loading) or configured securely.
+On hardened servers, modules that provide physical-layer access (Bluetooth, USB,
+FireWire, Thunderbolt) or that expand the network attack surface should be
+blacklisted if the corresponding hardware is not present or not required.
+
+==== bluetooth (blacklisted)
+
+*Configuration:* `blacklist bluetooth` in `modprobe.d` (live state: `/sys/module/bluetooth` absent)
+
+*What it is:* The Bluetooth kernel stack exposes a large, complex protocol
+implementation that has historically produced remote code execution vulnerabilities
+(BlueBorne, BIAS, KNOB, and others).
+On servers without Bluetooth hardware, the driver should be blacklisted to prevent
+the module from being loaded.
+
+*What good looks like:* Module absent (`/sys/module/bluetooth` does not exist) —
+the Bluetooth stack is not loaded and `blacklist bluetooth` is configured in
+`modprobe.d`.
+
+*What bad looks like:* Module present — the Bluetooth stack is loaded, exposing
+its attack surface even if no Bluetooth hardware is present.
+
+*Why it matters:* A loaded but unused network stack is an attack surface with no
+operational benefit.
+Blacklisting it eliminates the exposure entirely.
+
+*Controls:* NIST SP 800-53 CM-7 (Least Functionality), SC-39 (Process Isolation);
+NSA RTB: attack surface reduction; CMMC CM.L2-3.4.6
+
+==== usb_storage (blacklisted)
+
+*Configuration:* `blacklist usb_storage` in `modprobe.d` (live state: `/sys/module/usb_storage` absent)
+
+*What it is:* The USB mass storage driver allows the system to mount external
+USB drives, USB sticks, and other USB storage devices.
+On classified and government systems, external media is a primary data exfiltration
+vector and an introduction path for malware.
+
+*What good looks like:* Module absent (`/sys/module/usb_storage` does not exist) —
+USB storage devices cannot be mounted.
+
+*What bad looks like:* Module present — any user with physical access to a USB
+port can connect a storage device.
+
+*Why it matters:* Physical access to a USB port combined with an unlocked screen
+or unattended system is sufficient to exfiltrate data or introduce malware on a
+system without USB storage blacklisted.
+This is a media protection control, not a network control.
+
+*Controls:* NIST SP 800-53 MP-7 (Media Use), CM-7 (Least Functionality);
+NSA RTB: media protection; CMMC MP.L2-3.8.7
+
+==== firewire_core (blacklisted)
+
+*Configuration:* `blacklist firewire_core` in `modprobe.d` (live state: `/sys/module/firewire_core` absent)
+
+*What it is:* FireWire (IEEE 1394) supports Direct Memory Access (DMA) — a
+hardware feature that allows a connected device to read and write system memory
+directly, bypassing the CPU and operating system.
+A device connected to a FireWire port can read the contents of RAM, extract
+encryption keys, and capture credentials without any software involvement.
+
+*What good looks like:* Module absent (`/sys/module/firewire_core` does not exist) —
+FireWire DMA attacks are not possible.
+
+*What bad looks like:* Module present — a connected FireWire device can perform
+DMA operations against system memory.
+
+*Why it matters:* FireWire DMA attacks are a physical attack vector that completely
+bypasses software-level access controls, encryption, and SELinux.
+On systems without FireWire hardware, the module provides zero benefit and
+significant risk.
+
+*Controls:* NIST SP 800-53 SI-7 (Software and Information Integrity), CM-7
+(Least Functionality); NSA RTB: physical attack surface reduction
+
+==== thunderbolt (blacklisted)
+
+*Configuration:* `blacklist thunderbolt` in `modprobe.d` (live state: `/sys/module/thunderbolt` absent)
+
+*What it is:* Thunderbolt ports support DMA via PCIe tunneling.
+Even when IOMMU is enabled, some Thunderbolt DMA attack paths have bypassed
+IOMMU protections on affected hardware.
+A device connected to a Thunderbolt port may be able to read system memory
+directly.
+
+*What good looks like:* Module absent (`/sys/module/thunderbolt` does not exist) —
+Thunderbolt DMA attacks are not possible.
+
+*What bad looks like:* Module present — Thunderbolt PCIe tunneling is available
+and a connected device may be able to access system memory via DMA.
+
+*Why it matters:* Thunderbolt DMA attacks have been demonstrated in the wild
+(Thunderspy and related work) against systems with IOMMU enabled.
+On servers without Thunderbolt hardware, blacklisting costs nothing and eliminates
+the attack surface.
+
+*Controls:* NIST SP 800-53 SI-7 (Software and Information Integrity), CM-7
+(Least Functionality); NSA RTB: physical attack surface reduction; CMMC CM.L2-3.4.6
+
+==== modprobe:nf_conntrack/acct
+
+*Configuration:* `options nf_conntrack acct=1` in `modprobe.d` (live state: `/sys/module/nf_conntrack/parameters/acct`)
+
+*What it is:* The `nf_conntrack` module tracks network connections for stateful
+firewall rules.
+The `acct` parameter (accounting) enables per-connection byte and packet counters.
+These counters are required by audit and firewall logging tools to produce complete
+per-connection audit trails.
+
+NOTE: This signal is only readable when `nf_conntrack` is loaded.
+If the module is not loaded (no stateful firewall rules active), the signal shows
+as unknown (`?`), not as a failure.
+
+*What good looks like:* `1` — connection accounting is enabled.
+Firewall logs include per-connection byte and packet counts.
+
+*What bad looks like:* `0` — connection accounting is disabled.
+Firewall logs contain connection events but not byte/packet volumes, which limits
+the completeness of network audit trails.
+
+*Why it matters:* Complete audit trails for network connections require both the
+connection event and the associated data volume.
+Without accounting, it is impossible to determine the magnitude of a connection
+from logs alone.
+
+*Controls:* NIST SP 800-53 AU-12 (Audit Record Generation), CM-6 (Configuration
+Settings); NSA RTB: audit trail completeness
+
+=== CPU MITIGATION SUB-SIGNALS
+
+These signals complement the umbrella `mitigations=` signal by checking individual
+per-CVE weakening flags on the kernel command line.
+An operator who disables a specific CPU mitigation without using the umbrella
+`mitigations=off` flag will be detected here.
+Each signal checks that its corresponding weakening override is absent.
+If the override is absent, the mitigation is active (or not applicable to this
+CPU).
+
+All sub-signals are read from `/proc/cmdline`.
+
+==== spectre_v2=off
+
+*Kernel parameter:* `spectre_v2=off` must be absent
+
+*What it is:* Spectre variant 2 (branch target injection) allows a malicious
+process to manipulate the CPU's indirect branch predictor to redirect speculative
+execution into kernel or other process memory, leaking data through side channels.
+Mitigations include retpoline, IBRS, and EIBRS.
+
+*What good looks like:* `spectre_v2=off` absent — Spectre v2 mitigations are
+active.
+
+*What bad looks like:* `spectre_v2=off` present — Spectre v2 mitigations are
+explicitly disabled.
+Processes can perform branch predictor injection attacks against the kernel and
+other processes.
+
+*Why it matters:* Spectre v2 has been weaponized in cross-VM environments and
+in browser-based attacks.
+On multi-tenant or multi-user systems, disabling this mitigation allows unprivileged
+code to read kernel and cross-process memory.
+
+*Controls:* NIST SP 800-53 SI-16 (Memory Protection), SC-39 (Process Isolation);
+NSA RTB: CPU vulnerability mitigations
+
+==== spectre_v2_user=off
+
+*Kernel parameter:* `spectre_v2_user=off` must be absent
+
+*What it is:* This flag controls user-space Spectre v2 mitigations (IBPB and
+STIBP).
+When disabled, user-space processes cannot protect themselves from cross-process
+Spectre v2 speculation via the `prctl(PR_SET_SPECULATION_CTRL)` interface.
+This increases cross-process speculation exposure independent of kernel-level
+mitigations.
+
+*What good looks like:* `spectre_v2_user=off` absent — user-space processes can
+opt in to IBPB/STIBP protection.
+
+*What bad looks like:* `spectre_v2_user=off` present — user-space Spectre v2
+mitigations are disabled.
+Processes cannot protect themselves from cross-process branch predictor attacks.
+
+*Why it matters:* Some security-sensitive processes use `prctl` to request
+isolation from speculative execution side channels.
+Disabling this mechanism removes their ability to do so.
+
+*Controls:* NIST SP 800-53 SI-16 (Memory Protection), SC-39 (Process Isolation);
+NSA RTB: CPU vulnerability mitigations
+
+==== mds=off
+
+*Kernel parameter:* `mds=off` must be absent
+
+*What it is:* Microarchitectural Data Sampling (MDS) is a family of CPU
+vulnerabilities (RIDL, Fallout, ZombieLoad — CVE-2018-12126 et al.) that allow
+an attacker to read data from CPU internal buffers: line fill buffers, store
+buffers, and load ports.
+These buffers can contain data from any security context that recently ran on
+the same CPU core, including kernel memory and hypervisor data.
+
+*What good looks like:* `mds=off` absent — MDS mitigations are active (buffer
+clearing on context switch).
+
+*What bad looks like:* `mds=off` present — MDS mitigations are disabled.
+Kernel and cross-VM memory can be sampled from CPU internal buffers.
+
+*Why it matters:* On multi-tenant systems (shared physical hardware, VMs, containers),
+MDS vulnerabilities allow an attacker to read data belonging to other tenants by
+sampling CPU buffers that contain their recently processed data.
+
+*Controls:* NIST SP 800-53 SI-16 (Memory Protection), SC-39 (Process Isolation);
+NSA RTB: CPU vulnerability mitigations
+
+==== tsx_async_abort=off
+
+*Kernel parameter:* `tsx_async_abort=off` must be absent
+
+*What it is:* TSX Async Abort (TAA, CVE-2019-11135) is an Intel-specific vulnerability
+in the Transactional Synchronization Extensions (TSX) hardware feature.
+When a TSX transaction aborts, the CPU may speculatively forward stale data to
+a dependent load, leaking data from CPU fill buffers.
+The mitigation disables TSX or clears buffers on abort.
+
+*What good looks like:* `tsx_async_abort=off` absent — TAA mitigations are active.
+
+*What bad looks like:* `tsx_async_abort=off` present — TAA mitigations are disabled.
+Stale data from CPU fill buffers can leak across security boundaries via TSX
+abort events.
+
+*Why it matters:* TAA affects Intel processors with TSX and can leak data across
+VM boundaries in cloud environments.
+On non-Intel hardware this signal is not applicable and will show as absent (not
+a failure).
+
+*Controls:* NIST SP 800-53 SI-16 (Memory Protection), SC-39 (Process Isolation);
+NSA RTB: CPU vulnerability mitigations
+
+==== l1tf=off
+
+*Kernel parameter:* `l1tf=off` must be absent
+
+*What it is:* L1 Terminal Fault (L1TF, CVE-2018-3615/3620/3646) is an Intel
+processor vulnerability that allows a guest VM to read the contents of the L1
+data cache, which may contain data from the host kernel, hypervisor, or other VMs.
+The mitigation flushes the L1 cache on VM entry/exit.
+
+*What good looks like:* `l1tf=off` absent — L1TF mitigations are active.
+
+*What bad looks like:* `l1tf=off` present — L1TF mitigations are disabled.
+Guest VMs can read host and hypervisor data from the L1 data cache.
+
+*Why it matters:* L1TF is particularly serious in virtualized environments.
+On bare-metal servers without VM guests the risk is lower, but the mitigation
+cost is also lower.
+Disabling it provides no operational benefit on a hardened server.
+
+*Controls:* NIST SP 800-53 SI-16 (Memory Protection), SC-39 (Process Isolation);
+NSA RTB: CPU vulnerability mitigations
+
+==== retbleed=off
+
+*Kernel parameter:* `retbleed=off` must be absent
+
+*What it is:* RETBLEED (CVE-2022-29900/29901) is a return address speculation
+attack that affects AMD and Intel processors that use retpoline as a Spectre v2
+mitigation.
+On affected CPUs, the `RET` instruction itself can be exploited for speculative
+execution, bypassing retpoline.
+The mitigation adds additional return barriers.
+
+*What good looks like:* `retbleed=off` absent — RETBLEED mitigations are active.
+
+*What bad looks like:* `retbleed=off` present — RETBLEED mitigations are disabled.
+Return address speculation attacks can bypass retpoline on affected CPUs.
+
+*Why it matters:* RETBLEED showed that retpoline — previously considered a
+complete Spectre v2 fix — was insufficient on some CPU microarchitectures.
+Disabling the RETBLEED mitigation re-exposes the kernel to return-address
+speculation attacks.
+
+*Controls:* NIST SP 800-53 SI-16 (Memory Protection), SC-39 (Process Isolation);
+NSA RTB: CPU vulnerability mitigations
+
+==== srbds=off
+
+*Kernel parameter:* `srbds=off` must be absent
+
+*What it is:* Special Register Buffer Data Sampling (SRBDS, CVE-2020-0543) is
+an Intel-specific vulnerability where data from special registers (including
+hardware RNG output from RDRAND/RDSEED) can be sampled from CPU buffers by
+code running on another logical CPU core.
+The mitigation serializes RDRAND/RDSEED operations to prevent cross-core sampling.
+
+*What good looks like:* `srbds=off` absent — SRBDS mitigations are active.
+
+*What bad looks like:* `srbds=off` present — SRBDS mitigations are disabled.
+Hardware RNG output can be sampled cross-core, potentially weakening cryptographic
+key generation.
+
+*Why it matters:* On FIPS systems where hardware RNG output contributes to
+cryptographic key material, SRBDS represents a targeted attack against the entropy
+source.
+The mitigation cost is a small performance penalty on RDRAND/RDSEED operations.
+
+*Controls:* NIST SP 800-53 SI-16 (Memory Protection), SC-39 (Process Isolation);
+NSA RTB: CPU vulnerability mitigations
+
+==== nosmt=off
+
+*Kernel parameter:* `nosmt=off` must be absent
+
+*What it is:* Simultaneous Multi-Threading (SMT, also known as Hyper-Threading)
+allows two logical CPU cores to share one physical core's execution resources.
+Several CPU vulnerabilities (MDS, L1TF, cross-HT Spectre v2) become substantially
+harder to exploit when SMT is disabled because the attack requires sharing a
+physical core with the target.
+`nosmt` disables SMT at boot.
+`nosmt=off` re-enables SMT even when the kernel was booted with `nosmt`.
+
+*What good looks like:* `nosmt=off` absent — if `nosmt` was configured, it remains
+effective.
+
+*What bad looks like:* `nosmt=off` present — SMT is re-enabled after being
+explicitly disabled, weakening MDS, L1TF, and cross-HT speculation mitigations.
+
+*Why it matters:* SMT-dependent attacks are among the hardest to mitigate in
+software.
+If a site chose to disable SMT (accepting the performance cost), `nosmt=off`
+silently re-enables the hardware sharing that makes those attacks possible.
+
+*Controls:* NIST SP 800-53 SI-16 (Memory Protection), SC-39 (Process Isolation);
+NSA RTB: CPU vulnerability mitigations
+
+=== KERNEL CORE DUMP
+
+==== kernel.core_pattern
+
+*Kernel parameter:* `kernel.core_pattern` (sysctl, `/proc/sys/kernel/core_pattern`)
+
+*What it is:* When a process crashes and the kernel is configured to produce a
+core dump, `core_pattern` determines where the dump goes.
+It can be a file path template (the dump is written directly to the filesystem)
+or a pipe handler (a `|` prefix causes the dump to be piped to a program such
+as `systemd-coredump`).
+
+Core dumps contain the complete memory image of the crashed process, including
+any keys, credentials, tokens, or CUI data that the process held at the time
+of the crash.
+
+*What good looks like:* Value begins with `|` — dumps are piped to a registered
+handler (for example, `|/usr/lib/systemd/systemd-coredump %P %u %g %s %t %c %h`).
+A managed handler can apply access control, compression, and encryption to
+the dump before storing it.
+
+*What bad looks like:* Value is a raw filesystem path — dumps are written
+directly to the filesystem with no handler accountability, access control, or
+audit trail.
+Any user who can read the dump file gains access to the crashed process's
+complete memory contents.
+
+*Why it matters:* Core dumps from privileged processes are a ready-made data
+extraction path.
+A managed handler ensures that access to dump files is controlled, logged,
+and subject to the same policies as the original data.
+
+NOTE: This signal is evaluated using Two-Path Independent (TPI) parsing.
+Both a structural check (first byte is `|`) and a semantic check (handler
+path is a non-empty absolute path) must agree before the signal is reported
+as hardened.
+If the two parse paths disagree, the signal reports as unhardened (fail-closed).
+
+*Controls:* NIST SP 800-53 SC-28 (Protection of Information at Rest), CM-6
+(Configuration Settings), AU-9 (Protection of Audit Information); NSA RTB:
+information disclosure prevention; CMMC SC.L2-3.13.10
+
+== Interpreting trust and contradiction evidence
+
+=== Hardening status symbols
+
+The TUI uses color and a short status indicator to convey each signal's assessment.
+
+|===
+| Indicator | Color | Meaning
+
+| Hardened value
+| Green
+| The live kernel value meets the hardened desired value.
+
+| Unhardened value
+| Red
+| The live kernel value does not meet the hardened desired value.
+
+| Unknown / unavailable
+| Dim
+| The kernel node could not be read.
+The signal is absent on this kernel version or this hardware,
+or a read permission error occurred.
+This is not recorded as a failure — unavailability is distinct from a policy violation.
+|===
+
+=== Contradiction types
+
+A contradiction occurs when the live (kernel-effective) value disagrees with
+the configured (sysctl.d or bootloader) value.
+Contradictions indicate configuration management gaps: the system is not in
+the state that its configuration files declare it should be in.
+
+|===
+| Contradiction kind | Meaning | Operator action
+
+| EphemeralHotfix
+| Live value is hardened; configured value is not.
+A manual `sysctl` write applied a hardening setting that is not persisted in
+`sysctl.d`.
+The hardening will be lost on the next reboot.
+| Persist the setting in `sysctl.d` so the hardening survives reboots.
+
+| BootDrift
+| Configured value is hardened; live value is not.
+The `sysctl.d` configuration declares the setting should be hardened, but the
+running kernel disagrees.
+Possible causes: `sysctl -p` was not run at boot, the value was overwritten
+at runtime, or the kernel does not support the parameter.
+| Investigate whether `sysctl -p` ran at boot.
+Check kernel version for parameter support.
+Check for runtime overrides.
+
+| SourceUnavailable
+| The live value could not be read but a configured value exists.
+The kernel node is absent (unsupported feature, missing module) or a read error
+occurred.
+The configured value cannot be verified against the live state.
+| Check kernel version and module availability.
+If the module is not compiled into this kernel, the configured value is
+unreachable.
+|===
+
+=== Signal classes
+
+The class of a signal determines which configuration layer is authoritative
+and whether contradiction detection applies.
+
+|===
+| Class | Live source | Configured source | Contradiction detection
+
+| Sysctl
+| `/proc/sys/`
+| `sysctl.d` merge tree
+| Yes
+
+| KernelCmdline
+| `/proc/cmdline`
+| BLS bootloader entry in `/boot/loader/entries/`
+| Yes (requires BLS)
+
+| SecurityFs
+| `/sys/kernel/security/` (verified against SECURITYFS_MAGIC)
+| Not applicable
+| No
+
+| DistroManaged
+| `/proc/sys/crypto/fips_enabled`
+| FIPS cross-check (marker file + cmdline `fips=1`)
+| Partial (FIPS path only)
+
+| ModprobeConfig
+| `/sys/module/` (verified against SYSFS_MAGIC)
+| `modprobe.d` merge tree
+| Yes
+|===
+
+=== Impact tiers
+
+Each signal carries an impact tier that indicates the severity of a hardening failure.
+
+|===
+| Tier | Meaning
+
+| Critical
+| Foundational control.
+Failure directly enables serious attacks: kernel pointer leaks, full ASLR bypass,
+persistent module loading, or FIPS non-compliance.
+These signals should be remediated before all others.
+
+| High
+| Significant hardening gap.
+Failure provides a useful primitive for an attack chain.
+The signal should be hardened on any production server.
+
+| Medium
+| Meaningful improvement.
+Failure has limited blast radius or requires additional conditions.
+Hardening is recommended but may be subject to site-policy exceptions.
+|===
+
+== Compliance mapping summary
+
+The following table lists all signals with their primary NIST SP 800-53 controls
+and CMMC practices for quick auditor reference.
+
+|===
+| Signal | NIST SP 800-53 | CMMC
+
+| lockdown=
+| CM-7, SI-7
+| CM.L2-3.4.6
+
+| kernel.kexec_load_disabled
+| SI-7, CM-7
+|
+
+| module.sig_enforce
+| SI-7, CM-7
+|
+
+| mitigations=
+| SI-16, SC-39
+|
+
+| pti=
+| SI-16
+|
+
+| crypto.fips_enabled
+| SC-13, SC-28
+| SC.L2-3.13.10
+
+| kernel.modules_disabled
+| CM-7, SI-7
+|
+
+| random.trust_cpu
+| SC-12
+|
+
+| random.trust_bootloader
+| SC-12, SI-7
+|
+
+| kernel.randomize_va_space
+| SI-16, SC-39
+|
+
+| kernel.kptr_restrict
+| SI-7, SC-39
+|
+
+| kernel.unprivileged_bpf_disabled
+| CM-7, SC-39
+|
+
+| kernel.perf_event_paranoid
+| SC-39, SI-7
+|
+
+| kernel.yama.ptrace_scope
+| SC-39, AC-6
+|
+
+| kernel.dmesg_restrict
+| SI-7, SC-28
+|
+
+| kernel.unprivileged_userns_clone
+| SC-39, CM-7
+|
+
+| kernel.sysrq
+| AC-3, CM-7
+|
+
+| fs.suid_dumpable
+| SC-28, SI-12
+|
+
+| fs.protected_symlinks
+| SI-10, SC-28
+|
+
+| fs.protected_hardlinks
+| AC-6, SI-10
+|
+
+| fs.protected_fifos
+| SI-10, CM-7
+|
+
+| fs.protected_regular
+| SI-10, CM-7
+|
+
+| bluetooth (blacklisted)
+| CM-7, SC-39
+| CM.L2-3.4.6
+
+| usb_storage (blacklisted)
+| MP-7, CM-7
+| MP.L2-3.8.7
+
+| firewire_core (blacklisted)
+| SI-7, CM-7
+|
+
+| thunderbolt (blacklisted)
+| SI-7, CM-7
+| CM.L2-3.4.6
+
+| nf_conntrack acct
+| AU-12, CM-6
+|
+
+| spectre_v2=off
+| SI-16, SC-39
+|
+
+| spectre_v2_user=off
+| SI-16, SC-39
+|
+
+| mds=off
+| SI-16, SC-39
+|
+
+| tsx_async_abort=off
+| SI-16, SC-39
+|
+
+| l1tf=off
+| SI-16, SC-39
+|
+
+| retbleed=off
+| SI-16, SC-39
+|
+
+| srbds=off
+| SI-16, SC-39
+|
+
+| nosmt=off
+| SI-16, SC-39
+|
+
+| kernel.core_pattern
+| SC-28, CM-6, AU-9
+| SC.L2-3.13.10
+|===

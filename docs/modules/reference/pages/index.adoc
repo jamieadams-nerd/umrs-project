@@ -26,6 +26,11 @@ specifications, configuration examples, compliance mappings, and cryptographic g
 * xref:cui/cui-descriptions.adoc[CUI category descriptions]
 * xref:cui/cui-category-abbreviations.adoc[CUI category abbreviations]
 
+== Platform Security
+
+* xref:cpu-extensions.adoc[CPU security extensions] — x86 and ARM hardware security features
+* xref:kernel-probe-signals.adoc[Kernel probe signals] — every signal probed by the UMRS Kernel Security Posture tool, with hardened values, risk descriptions, and compliance control mappings
+
 == Cryptography
 
 Cryptographic reference material is now in the xref:cryptography:index.adoc[Cryptography module].
