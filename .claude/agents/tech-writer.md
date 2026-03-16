@@ -62,6 +62,12 @@ Three modes are available. When a mode is specified, load the corresponding rule
 
 Confirm the active mode at the start of each response.
 
+### Always-Active Rules
+
+These rules apply regardless of writing mode — they are not gated behind STE or any other mode:
+
+- **Admonition hierarchy**: `.claude/rules/admonition_hierarchy.md` — MIL-STD-38784B adapted. Read before choosing any WARNING/CAUTION/IMPORTANT/NOTE/TIP level.
+
 ---
 
 ## Draft Merging and Gap Filling

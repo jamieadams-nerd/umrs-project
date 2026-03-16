@@ -195,9 +195,9 @@ The current `umrs-ls` tool is pure CLI. Next step is an interactive TUI:
 ### Interface Roadmap
 
 All tools will progress through interface tiers as they mature:
-- **CLI** — first delivery, scriptable, evidence-producing
-- **TUI** — interactive terminal interface for operators
-- **GUI** — eventual graphical interface for broader adoption
+- **CLI** — first delivery, scriptable, evidence-producing (Secondory)
+- **TUI** — interactive terminal interface for operators (PRIMARY)
+- **GUI** — eventual graphical interface for broader adoption (Last)
 
 ### Event Logging Architecture
 

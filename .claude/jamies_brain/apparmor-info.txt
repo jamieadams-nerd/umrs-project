@@ -1,0 +1,1542 @@
+Lsm hooks
+
+You already have the right instinct for how to approach AppArmor: compare it to SELinux from the perspective of someone who already understands TE, labels, contexts, MLS/MCS, and LSM behavior. I’ll walk through it in that exact frame so the differences are clear.
+
+⸻
+
+AppArmor vs SELinux — Architecture and Concepts
+
+1. Kernel Integration (LSM)
+
+Both AppArmor and SELinux are Linux Security Modules (LSM) implemented inside the kernel.
+
+They hook the same LSM security hooks (file open, exec, socket operations, ptrace, etc.).
+
+Feature	SELinux	AppArmor
+Kernel subsystem	LSM	LSM
+Enabled at boot	selinux=1	apparmor=1
+Runtime visibility	/sys/fs/selinux	/sys/kernel/security/apparmor
+Policy loaded by	libselinux / policycoreutils	apparmor_parser
+
+Example kernel filesystem locations:
+
+SELinux
+/sys/fs/selinux/
+
+AppArmor
+/sys/kernel/security/apparmor/
+
+Example:
+
+cat /sys/module/apparmor/parameters/enabled
+
+
+⸻
+
+2. Enforcement Mode (Equivalent to getenforce)
+
+Yes — AppArmor has the same concept.
+
+SELinux
+
+getenforce
+setenforce 0
+setenforce 1
+
+AppArmor
+
+Profiles operate in two modes:
+
+Mode	Meaning
+enforce	policy enforced
+complain	violations logged but allowed
+
+Commands:
+
+aa-status
+aa-enforce <profile>
+aa-complain <profile>
+
+Example:
+
+sudo aa-status
+
+Output shows:
+
+profiles loaded
+profiles enforcing
+profiles in complain mode
+processes confined
+
+This is roughly equivalent to:
+
+sestatus
+
+
+⸻
+
+3. Labeling Model (Major Architectural Difference)
+
+This is the largest difference between the two systems.
+
+SELinux
+
+SELinux is label based.
+
+Every object has a security context.
+
+Example:
+
+system_u:object_r:httpd_sys_content_t:s0
+
+Context fields:
+
+user : role : type : level
+
+Files are labeled via:
+
+xattr security.selinux
+
+Example:
+
+ls -Z
+
+
+⸻
+
+AppArmor
+
+AppArmor is path based, not label based.
+
+Instead of labels on objects, policy references filesystem paths.
+
+Example policy rule:
+
+/usr/bin/foo {
+    /etc/foo.conf r,
+    /var/log/foo.log rw,
+}
+
+Meaning:
+
+process running /usr/bin/foo
+can read /etc/foo.conf
+can write /var/log/foo.log
+
+There is no label stored on files.
+
+⸻
+
+Consequence
+
+This means AppArmor policies break if paths change.
+
+Example problem:
+
+mv /etc/foo.conf /tmp/foo.conf
+
+SELinux still enforces correctly (label stays).
+
+AppArmor policy may fail because the path changed.
+
+⸻
+
+4. Security Contexts
+
+SELinux
+
+Processes and objects have contexts.
+
+Example:
+
+system_u:system_r:sshd_t:s0
+
+
+⸻
+
+AppArmor
+
+Processes have profile attachment, not contexts.
+
+Example:
+
+/usr/sbin/sshd
+
+Running process:
+
+cat /proc/<pid>/attr/current
+
+Example output:
+
+/usr/sbin/sshd (enforce)
+
+This means:
+
+process confined by profile /usr/sbin/sshd
+
+No multi-field context exists.
+
+⸻
+
+5. Policy Model
+
+SELinux
+
+Policy language defines:
+
+types
+roles
+domains
+attributes
+booleans
+
+Example rule:
+
+allow httpd_t httpd_sys_content_t:file read;
+
+
+⸻
+
+AppArmor
+
+Policy is simpler and path oriented.
+
+Example profile:
+
+/usr/bin/foo {
+  /etc/foo.conf r,
+  /var/log/foo.log rw,
+  /tmp/** rw,
+}
+
+Permissions:
+
+Permission	Meaning
+r	read
+w	write
+m	memory map
+k	lock
+x	execute
+ix	inherit execute
+px	discrete execute
+
+
+⸻
+
+6. Type Enforcement Comparison
+
+You asked if AppArmor is like type enforcement.
+
+Partially.
+
+SELinux TE
+
+subject type -> object type -> permission
+
+Example:
+
+httpd_t -> httpd_sys_content_t -> read
+
+
+⸻
+
+AppArmor
+
+Equivalent model is:
+
+profile -> path -> permission
+
+Example:
+
+/usr/bin/httpd -> /var/www/** -> read
+
+So conceptually:
+
+SELinux: domain/type
+AppArmor: program/path
+
+
+⸻
+
+7. Multi Category Security (MCS)
+
+This is something AppArmor does not implement.
+
+Feature	SELinux	AppArmor
+MLS	yes	no
+MCS	yes	no
+sensitivity levels	yes	no
+category sets	yes	no
+
+AppArmor is strictly DAC + path restrictions.
+
+No lattice model.
+
+⸻
+
+8. Policy Loading
+
+SELinux
+
+Policies compiled into binary policy store.
+
+/etc/selinux/targeted/policy/
+
+Load via:
+
+semodule
+
+
+⸻
+
+AppArmor
+
+Profiles stored as text files:
+
+/etc/apparmor.d/
+
+Load with:
+
+apparmor_parser
+
+Example:
+
+sudo apparmor_parser -r /etc/apparmor.d/usr.bin.foo
+
+
+⸻
+
+9. Runtime Inspection
+
+Commands:
+
+aa-status
+
+List loaded profiles.
+
+aa-enabled
+
+Check if AppArmor is active.
+
+aa-logprof
+
+Generate rules from logs.
+
+aa-genprof
+
+Create new profile interactively.
+
+⸻
+
+10. Logging
+
+AppArmor violations go through kernel audit.
+
+Typical log:
+
+audit: apparmor="DENIED" operation="open"
+profile="/usr/bin/foo"
+name="/etc/shadow"
+
+Visible via:
+
+journalctl -k
+
+or
+
+/var/log/audit/audit.log
+
+
+⸻
+
+11. Filesystem Controls
+
+AppArmor supports controls for:
+
+Resource	Control
+files	path permissions
+sockets	unix/network
+signals	process interaction
+ptrace	debugging
+capabilities	POSIX capabilities
+mount	mount operations
+
+Example:
+
+capability net_bind_service,
+
+
+⸻
+
+12. Exec Transition (Closest thing to Domain Transition)
+
+SELinux:
+
+domain transition
+
+Example:
+
+init_t -> sshd_t
+
+
+⸻
+
+AppArmor equivalent:
+
+px
+cx
+ix
+ux
+
+Example:
+
+/usr/bin/foo px,
+
+Meaning:
+
+execute under foo profile
+
+
+⸻
+
+13. Strengths vs Weaknesses
+
+AppArmor Advantages
+
+Simple.
+
+Policies easier to write.
+
+Easy to debug.
+
+Path oriented policies intuitive.
+
+⸻
+
+AppArmor Weaknesses
+
+No:
+	•	labels
+	•	MLS
+	•	MCS
+	•	lattice models
+	•	category sets
+	•	object identity persistence
+
+Path based means TOCTOU and rename issues exist.
+
+⸻
+
+14. Distribution Adoption
+
+Distribution	Default
+Ubuntu	AppArmor
+Debian	AppArmor
+SUSE	AppArmor
+RHEL	SELinux
+Fedora	SELinux
+
+
+⸻
+
+15. Conceptual Summary (for SELinux Experts)
+
+Think of AppArmor as:
+
+SELinux Type Enforcement
+minus labels
+minus MLS
+minus object identity
+plus path rules
+
+Conceptually:
+
+SELinux:
+subject context -> object context -> permission
+
+AppArmor:
+program profile -> path -> permission
+
+
+⸻
+
+16. Where AppArmor Excels
+
+Application sandboxing.
+
+Example:
+
+Firefox
+Chrome
+Snap packages
+Flatpak
+
+Many desktop sandboxes rely on AppArmor.
+
+⸻
+
+17. What SELinux Does That AppArmor Cannot
+
+Important for your UMRS architecture thinking:
+
+SELinux uniquely supports:
+	•	multi level security
+	•	non bypassable labels
+	•	reference monitor style enforcement
+	•	object identity independent of path
+	•	category sets
+
+Those are foundational to high assurance systems.
+
+⸻
+
+If you’d like, next I can also show you something extremely interesting:
+
+How AppArmor actually works internally in the kernel compared to SELinux (policy engine, mediation hooks, credential structures, and why SELinux is fundamentally stronger).
+
+The kernel internals comparison is fascinating and explains why AppArmor was designed the way it was.
+
+Since you already understand SELinux at the architectural level, the really interesting part of AppArmor is how the kernel enforcement actually works internally and why the design ended up so different from SELinux. The contrast reveals a lot about the trade-offs between high assurance policy systems vs practical application sandboxing.
+
+I’ll walk through it from the kernel inward.
+
+⸻
+
+1. The Linux Security Module (LSM) Framework
+
+Both systems live inside the LSM framework.
+
+The kernel exposes security hooks at critical points such as:
+
+security_inode_permission()
+security_bprm_check()
+security_file_open()
+security_socket_connect()
+security_ptrace_access()
+security_task_kill()
+
+When these hooks fire, the active LSM decides whether to allow or deny the operation.
+
+Simplified:
+
+kernel operation
+        ↓
+LSM hook
+        ↓
+security module decision
+        ↓
+allow / deny
+
+Both SELinux and AppArmor implement handlers for those hooks.
+
+⸻
+
+2. Credential Model in the Kernel
+
+Every process has a kernel credential structure:
+
+struct cred
+
+Inside this structure the kernel stores security module data.
+
+Example:
+
+struct cred {
+    kuid_t uid;
+    kgid_t gid;
+    struct group_info *groups;
+    void *security;
+}
+
+The security pointer is where LSMs attach their metadata.
+
+⸻
+
+SELinux
+
+SELinux attaches:
+
+struct task_security_struct
+
+This structure stores:
+
+SID (security identifier)
+policy attributes
+MLS range
+
+Example conceptually:
+
+task_security_struct {
+    sid
+    exec_sid
+    create_sid
+    keycreate_sid
+}
+
+That SID maps to the full security context.
+
+⸻
+
+AppArmor
+
+AppArmor attaches:
+
+struct aa_task_ctx
+
+This structure mainly contains:
+
+current profile
+previous profile
+execution state
+
+Conceptually:
+
+aa_task_ctx {
+    profile
+    previous
+    onexec
+}
+
+So instead of security contexts, AppArmor stores the profile controlling the process.
+
+⸻
+
+3. Profile Attachment (Process Confinement)
+
+AppArmor confinement begins during exec().
+
+When a process executes a binary:
+
+security_bprm_check()
+
+AppArmor checks:
+
+Does a profile exist for this path?
+
+Example:
+
+/usr/bin/ssh
+
+If a profile exists:
+
+/etc/apparmor.d/usr.bin.ssh
+
+The kernel attaches that profile to the process.
+
+Result:
+
+task->cred->security = profile
+
+From then on every operation by that process is checked against that profile.
+
+⸻
+
+4. How AppArmor Resolves Paths
+
+This is the most technically interesting part.
+
+SELinux decisions rely on labels stored in inode metadata.
+
+AppArmor must determine the file path for every access.
+
+That means AppArmor must reconstruct the pathname from kernel objects.
+
+The kernel has:
+
+struct dentry
+struct inode
+struct path
+
+AppArmor reconstructs the full path via VFS path walking.
+
+Conceptually:
+
+dentry → parent → parent → parent → root
+
+Result:
+
+/var/log/nginx/access.log
+
+The reconstructed path is compared against policy rules.
+
+⸻
+
+5. Path Matching Engine
+
+AppArmor policies use glob-like matching.
+
+Example rule:
+
+/var/log/nginx/** rw,
+
+Internally this compiles into a DFA-style matching structure.
+
+The kernel performs pattern matching against the resolved path.
+
+Supported patterns:
+
+*   wildcard
+**  recursive directories
+?   single character
+
+Example:
+
+/tmp/** rw
+
+matches:
+
+/tmp/a
+/tmp/a/b
+/tmp/a/b/c
+
+
+⸻
+
+6. Why Path-Based Security Is Hard
+
+This is where AppArmor’s limitations originate.
+
+The kernel object representing a file is the inode, not the path.
+
+Multiple paths may refer to the same inode:
+
+hard links
+bind mounts
+overlayfs
+
+Example:
+
+/etc/passwd
+/tmp/passwd_link
+
+Both could reference the same inode.
+
+SELinux labels attach to the inode.
+
+AppArmor evaluates the path used for access.
+
+⸻
+
+7. TOCTOU Risk
+
+The kernel resolves paths during access checks.
+
+But files can move.
+
+Example race:
+
+check permission
+rename file
+open file
+
+This is the classic time-of-check / time-of-use problem.
+
+The kernel mitigates this through VFS locking and path resolution semantics, but path-based models are still inherently weaker than inode label models.
+
+⸻
+
+8. Execution Transition Logic
+
+When a process executes another program, AppArmor decides how confinement changes.
+
+Execution modes include:
+
+ix  inherit profile
+px  discrete profile
+ux  unconfined
+cx  child profile
+
+Example rule:
+
+/usr/bin/python px,
+
+Meaning:
+
+switch to python profile when executed
+
+The kernel handles this during:
+
+security_bprm_set_creds()
+
+
+⸻
+
+9. File Permission Checks
+
+Every file operation goes through hooks like:
+
+security_inode_permission()
+security_file_open()
+
+AppArmor performs:
+	1.	resolve full path
+	2.	locate active profile
+	3.	match path rule
+	4.	evaluate permission mask
+
+Example:
+
+profile: /usr/bin/foo
+operation: open
+path: /etc/shadow
+
+If policy lacks permission:
+
+DENIED
+
+Audit log emitted.
+
+⸻
+
+10. Capabilities Control
+
+AppArmor also mediates Linux capabilities.
+
+Example rule:
+
+capability net_bind_service,
+
+This corresponds to kernel capability checks:
+
+cap_capable()
+
+If profile does not allow it:
+
+operation denied
+
+
+⸻
+
+11. Networking Mediation
+
+AppArmor can restrict networking:
+
+Example:
+
+network inet stream,
+
+Internally this hooks:
+
+security_socket_create()
+security_socket_connect()
+security_socket_listen()
+
+Policies can restrict:
+
+protocol
+socket type
+address family
+
+
+⸻
+
+12. Mount and Namespace Control
+
+AppArmor also mediates mount operations:
+
+mount,
+umount,
+pivot_root
+
+Hook:
+
+security_sb_mount()
+
+Policies can restrict:
+
+filesystem types
+mount targets
+flags
+
+
+⸻
+
+13. Logging and Audit Integration
+
+When a violation occurs the kernel emits an audit record.
+
+Example:
+
+apparmor="DENIED"
+operation="open"
+profile="/usr/bin/foo"
+name="/etc/shadow"
+
+These appear in:
+
+auditd
+journalctl
+dmesg
+
+
+⸻
+
+14. Policy Compilation
+
+Userland tool:
+
+apparmor_parser
+
+Compiles text policies into kernel structures.
+
+The compiled structures include:
+
+permission masks
+path match automata
+profile objects
+
+These are loaded into kernel memory.
+
+⸻
+
+15. Policy Storage
+
+Policies exist in:
+
+/etc/apparmor.d/
+
+Examples:
+
+usr.bin.man
+usr.sbin.sshd
+usr.bin.firefox
+
+Each corresponds to a program path.
+
+⸻
+
+16. Why AppArmor Exists
+
+Historically AppArmor was created because:
+
+SELinux policy writing was considered too complex.
+
+SELinux policy requires understanding:
+
+types
+domains
+attributes
+booleans
+roles
+transitions
+MLS
+
+AppArmor allowed administrators to simply say:
+
+this program may read these files
+
+
+⸻
+
+17. Security Philosophy Difference
+
+This is the deepest conceptual difference.
+
+SELinux
+
+Security model:
+
+system wide mandatory access control lattice
+
+Focus:
+
+information flow control
+
+
+⸻
+
+AppArmor
+
+Security model:
+
+application sandboxing
+
+Focus:
+
+restrict compromised programs
+
+
+⸻
+
+18. Why Containers Often Use AppArmor
+
+Containers typically run single applications.
+
+Example:
+
+nginx container
+postgres container
+redis container
+
+AppArmor works well because confinement is per executable.
+
+Example Docker profile:
+
+docker-default
+
+
+⸻
+
+19. Why High Assurance Systems Prefer SELinux
+
+SELinux supports features necessary for reference monitor style systems:
+
+non bypassable labels
+MLS / MCS
+type attributes
+object identity
+policy composition
+
+These are essential for:
+
+cross domain guards
+multi level security
+information flow control
+
+Which aligns closely with the systems you’ve spent your career building.
+
+⸻
+
+20. Kernel Complexity Comparison
+
+Approximate scale:
+
+System	Lines of Kernel Code
+SELinux	~80k
+AppArmor	~35k
+
+SELinux is larger because it implements:
+
+policy engine
+labeling system
+MLS
+constraint system
+RBAC
+
+
+⸻
+
+Final Conceptual Summary
+
+You can think of the two systems like this:
+
+SELinux
+
+Label every object in the system.
+Decide access using label relationships.
+
+AppArmor
+
+Attach a sandbox profile to a program.
+Allow only specific filesystem paths and capabilities.
+
+
+⸻
+
+If you’re interested, there is one more fascinating layer I can show you next:
+
+Why modern Linux now allows multiple security modules simultaneously (LSM stacking), and how SELinux + AppArmor + Landlock + BPF LSM can all run together.
+
+That architecture is extremely interesting from a reference monitor perspective.
+
+
+
+More app armor
+
+You already have the right instinct for how to approach AppArmor: compare it to SELinux from the perspective of someone who already understands TE, labels, contexts, MLS/MCS, and LSM behavior. I’ll walk through it in that exact frame so the differences are clear.
+
+⸻
+
+AppArmor vs SELinux — Architecture and Concepts
+
+1. Kernel Integration (LSM)
+
+Both AppArmor and SELinux are Linux Security Modules (LSM) implemented inside the kernel.
+
+They hook the same LSM security hooks (file open, exec, socket operations, ptrace, etc.).
+
+Feature	SELinux	AppArmor
+Kernel subsystem	LSM	LSM
+Enabled at boot	selinux=1	apparmor=1
+Runtime visibility	/sys/fs/selinux	/sys/kernel/security/apparmor
+Policy loaded by	libselinux / policycoreutils	apparmor_parser
+
+Example kernel filesystem locations:
+
+SELinux
+/sys/fs/selinux/
+
+AppArmor
+/sys/kernel/security/apparmor/
+
+Example:
+
+cat /sys/module/apparmor/parameters/enabled
+
+
+⸻
+
+2. Enforcement Mode (Equivalent to getenforce)
+
+Yes — AppArmor has the same concept.
+
+SELinux
+
+getenforce
+setenforce 0
+setenforce 1
+
+AppArmor
+
+Profiles operate in two modes:
+
+Mode	Meaning
+enforce	policy enforced
+complain	violations logged but allowed
+
+Commands:
+
+aa-status
+aa-enforce <profile>
+aa-complain <profile>
+
+Example:
+
+sudo aa-status
+
+Output shows:
+
+profiles loaded
+profiles enforcing
+profiles in complain mode
+processes confined
+
+This is roughly equivalent to:
+
+sestatus
+
+
+⸻
+
+3. Labeling Model (Major Architectural Difference)
+
+This is the largest difference between the two systems.
+
+SELinux
+
+SELinux is label based.
+
+Every object has a security context.
+
+Example:
+
+system_u:object_r:httpd_sys_content_t:s0
+
+Context fields:
+
+user : role : type : level
+
+Files are labeled via:
+
+xattr security.selinux
+
+Example:
+
+ls -Z
+
+
+⸻
+
+AppArmor
+
+AppArmor is path based, not label based.
+
+Instead of labels on objects, policy references filesystem paths.
+
+Example policy rule:
+
+/usr/bin/foo {
+    /etc/foo.conf r,
+    /var/log/foo.log rw,
+}
+
+Meaning:
+
+process running /usr/bin/foo
+can read /etc/foo.conf
+can write /var/log/foo.log
+
+There is no label stored on files.
+
+⸻
+
+Consequence
+
+This means AppArmor policies break if paths change.
+
+Example problem:
+
+mv /etc/foo.conf /tmp/foo.conf
+
+SELinux still enforces correctly (label stays).
+
+AppArmor policy may fail because the path changed.
+
+⸻
+
+4. Security Contexts
+
+SELinux
+
+Processes and objects have contexts.
+
+Example:
+
+system_u:system_r:sshd_t:s0
+
+
+⸻
+
+AppArmor
+
+Processes have profile attachment, not contexts.
+
+Example:
+
+/usr/sbin/sshd
+
+Running process:
+
+cat /proc/<pid>/attr/current
+
+Example output:
+
+/usr/sbin/sshd (enforce)
+
+This means:
+
+process confined by profile /usr/sbin/sshd
+
+No multi-field context exists.
+
+⸻
+
+5. Policy Model
+
+SELinux
+
+Policy language defines:
+
+types
+roles
+domains
+attributes
+booleans
+
+Example rule:
+
+allow httpd_t httpd_sys_content_t:file read;
+
+
+⸻
+
+AppArmor
+
+Policy is simpler and path oriented.
+
+Example profile:
+
+/usr/bin/foo {
+  /etc/foo.conf r,
+  /var/log/foo.log rw,
+  /tmp/** rw,
+}
+
+Permissions:
+
+Permission	Meaning
+r	read
+w	write
+m	memory map
+k	lock
+x	execute
+ix	inherit execute
+px	discrete execute
+
+
+⸻
+
+6. Type Enforcement Comparison
+
+You asked if AppArmor is like type enforcement.
+
+Partially.
+
+SELinux TE
+
+subject type -> object type -> permission
+
+Example:
+
+httpd_t -> httpd_sys_content_t -> read
+
+
+⸻
+
+AppArmor
+
+Equivalent model is:
+
+profile -> path -> permission
+
+Example:
+
+/usr/bin/httpd -> /var/www/** -> read
+
+So conceptually:
+
+SELinux: domain/type
+AppArmor: program/path
+
+
+⸻
+
+7. Multi Category Security (MCS)
+
+This is something AppArmor does not implement.
+
+Feature	SELinux	AppArmor
+MLS	yes	no
+MCS	yes	no
+sensitivity levels	yes	no
+category sets	yes	no
+
+AppArmor is strictly DAC + path restrictions.
+
+No lattice model.
+
+⸻
+
+8. Policy Loading
+
+SELinux
+
+Policies compiled into binary policy store.
+
+/etc/selinux/targeted/policy/
+
+Load via:
+
+semodule
+
+
+⸻
+
+AppArmor
+
+Profiles stored as text files:
+
+/etc/apparmor.d/
+
+Load with:
+
+apparmor_parser
+
+Example:
+
+sudo apparmor_parser -r /etc/apparmor.d/usr.bin.foo
+
+
+⸻
+
+9. Runtime Inspection
+
+Commands:
+
+aa-status
+
+List loaded profiles.
+
+aa-enabled
+
+Check if AppArmor is active.
+
+aa-logprof
+
+Generate rules from logs.
+
+aa-genprof
+
+Create new profile interactively.
+
+⸻
+
+10. Logging
+
+AppArmor violations go through kernel audit.
+
+Typical log:
+
+audit: apparmor="DENIED" operation="open"
+profile="/usr/bin/foo"
+name="/etc/shadow"
+
+Visible via:
+
+journalctl -k
+
+or
+
+/var/log/audit/audit.log
+
+
+⸻
+
+11. Filesystem Controls
+
+AppArmor supports controls for:
+
+Resource	Control
+files	path permissions
+sockets	unix/network
+signals	process interaction
+ptrace	debugging
+capabilities	POSIX capabilities
+mount	mount operations
+
+Example:
+
+capability net_bind_service,
+
+
+⸻
+
+12. Exec Transition (Closest thing to Domain Transition)
+
+SELinux:
+
+domain transition
+
+Example:
+
+init_t -> sshd_t
+
+
+⸻
+
+AppArmor equivalent:
+
+px
+cx
+ix
+ux
+
+Example:
+
+/usr/bin/foo px,
+
+Meaning:
+
+execute under foo profile
+
+
+⸻
+
+13. Strengths vs Weaknesses
+
+AppArmor Advantages
+
+Simple.
+
+Policies easier to write.
+
+Easy to debug.
+
+Path oriented policies intuitive.
+
+⸻
+
+AppArmor Weaknesses
+
+No:
+	•	labels
+	•	MLS
+	•	MCS
+	•	lattice models
+	•	category sets
+	•	object identity persistence
+
+Path based means TOCTOU and rename issues exist.
+
+⸻
+
+14. Distribution Adoption
+
+Distribution	Default
+Ubuntu	AppArmor
+Debian	AppArmor
+SUSE	AppArmor
+RHEL	SELinux
+Fedora	SELinux
+
+
+⸻
+
+15. Conceptual Summary (for SELinux Experts)
+
+Think of AppArmor as:
+
+SELinux Type Enforcement
+minus labels
+minus MLS
+minus object identity
+plus path rules
+
+Conceptually:
+
+SELinux:
+subject context -> object context -> permission
+
+AppArmor:
+program profile -> path -> permission
+
+
+⸻
+
+16. Where AppArmor Excels
+
+Application sandboxing.
+
+Example:
+
+Firefox
+Chrome
+Snap packages
+Flatpak
+
+Many desktop sandboxes rely on AppArmor.
+
+⸻
+
+17. What SELinux Does That AppArmor Cannot
+
+Important for your UMRS architecture thinking:
+
+SELinux uniquely supports:
+	•	multi level security
+	•	non bypassable labels
+	•	reference monitor style enforcement
+	•	object identity independent of path
+	•	category sets
+
+Those are foundational to high assurance systems.
+
+⸻
+
+If you’d like, next I can also show you something extremely interesting:
+
+How AppArmor actually works internally in the kernel compared to SELinux (policy engine, mediation hooks, credential structures, and why SELinux is fundamentally stronger).
+
+The kernel internals comparison is fascinating and explains why AppArmor was designed the way it was.
+
+

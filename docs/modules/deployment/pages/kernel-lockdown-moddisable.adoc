@@ -16,7 +16,7 @@ deployments.
 Future UMRS work will explore these capabilities as part of a deeper kernel integrity posture,
 complementing the IMA/EVM measurements configured in the previous step.
 
-NOTE: Complete xref:ima-evm-setup.adoc[IMA/EVM Integrity Setup] before this step.
+IMPORTANT: Complete xref:ima-evm-setup.adoc[IMA/EVM Integrity Setup] before this step.
 IMA policy rules capture `MODULE_CHECK` and `FIRMWARE_CHECK` events.
 Disabling module loading after IMA is active ensures the measurement log reflects
 the full set of modules loaded before the interface was locked.

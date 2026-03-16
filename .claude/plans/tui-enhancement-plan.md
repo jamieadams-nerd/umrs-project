@@ -4,6 +4,7 @@
 **Author:** rust-developer agent
 **ROADMAP Goals:** G5 (Security Tools), G8 (High-Assurance Patterns)
 **Input:** `.claude/jamies_brain/tui-feedback.md`
+**Display grouping reference:** `.claude/references/capability-matrix-domains.md` (Jamie's 7-domain capability matrix)
 
 ---
 

@@ -1,5 +1,46 @@
 # Changelog
 
+## 2026-03-16
+
+### Added
+- **Kernel security posture signals (Phase 2b)**: 8 CPU mitigation sub-signals added to catalog (SpectreV2Off, SpectreV2UserOff, MdsOff, TsxAsyncAbortOff, L1tfOff, RetbleedOff, SrbdsOff, NoSmtOff) — all KernelCmdline class with CmdlineAbsent desired values; CorePattern signal with dual-path TPI validation and DesiredValue::Custom
+- **S-01 HIGH fix**: KernelCmdline contradiction detection functional — collect_one() routes cmdline signals through meets_cmdline() for BLS options evaluation; BootDrift and EphemeralHotfix now fire correctly for all cmdline signals
+- **M-03 fix**: Path-traversal validation added to is_module_loaded() and read_module_param() — rejects `/`, `\0`, `..`
+- **M-02 fix**: `/usr/bin/false` added to hard-blacklist sentinel test
+- **M-01 fix**: Stale scope doc comment in modprobe.rs updated
+- **Signal catalog**: Expanded from 27 to 36 signals total (22 Phase 1 + 5 Phase 2a + 9 Phase 2b)
+- **Posture tests**: 93 tests passing (up from 78); full workspace clean
+- **kernel-probe-signals.adoc**: Authoritative reference page with all 37 signals across 8 groups; what/why/good/bad/controls per signal; contradiction taxonomy; trust evidence explanation
+- **cpu-extensions.adoc**: CPU extension reference with 6 groups, three-layer activation model, Mermaid diagram, vendor-canonical naming, FIPS relevance, detection paths
+- **update-checklists.adoc**: Kernel version update, CPU extension update, and signal deprecation checklists with step-by-step procedures in STE mode
+- **Architectural decisions resolved (umrs-platform-expansion.md)**: CpuSignalId=separate enum, MAC=phase-level decision table, serialization=JSON, timing=after assessment types stabilize
+- **platform-api-enrichment.md plan**: Moves labels/descriptions from TUI to umrs-platform; adds SignalGroup enum, description field on SignalDescriptor, i18n-ready strings
+- **Security-engineer Phase 2b review**: Complete audit at `.claude/reports/security-engineer-phase2b-review.md` — 8 findings (0 CRITICAL, 1 HIGH, 2 MEDIUM, 5 LOW), all addressed
+- **Tech-writer corpus (Phases 1-2)**: 42 reference files acquired (Google/Microsoft style guides 23 files, MIL-STD-38784B, NIST author instructions, GSA Plain Language guidelines); ingested into ChromaDB `tech-writer-corpus` collection (779 chunks)
+- **Agent memory consolidation**: Moved 6 rust-developer and security-auditor memory files from rogue `.claude/` directories to repo-root `.claude/agent-memory/`
+- **Admonition audit**: 15 admonition corrections across 10 `.adoc` files per MIL-STD-38784B adapted hierarchy (WARNING=security/data-loss, CAUTION=recoverable degradation, IMPORTANT=prerequisite, NOTE=supplementary, TIP=optional)
+- **Admonition hierarchy rule**: Created `.claude/rules/admonition_hierarchy.md` — standalone always-active rule defining MIL-STD-38784B adapted hierarchy; not gated behind STE mode
+- **posture-probe-internals.adoc**: New developer guide in devel module covering signal taxonomy, CPU mitigation sub-signals, CorePattern TPI walkthrough, and operational rundown
+- **pattern-tpi.adoc**: Updated with CorePattern as second TUI codebase example alongside SecurityContext
+- **Tech-writer corpus familiarization**: Both writers completed corpus familiarization with style guides and government standards (Google, Microsoft, MIL-STD-38784B, NIST, Plain Language)
+- **Common Criteria (CC) acquired**: CC:2022 Parts 1 & 2 (ISO/IEC 15408) from commoncriteriaportal.org; ingested into `tech-writer-corpus` collection (466 chunks)
+- **CC glossary entries**: 6 new terms (EAL, PP, SFR, ST, TOE, TSF) added to glossary with CC definitions
+- **SCAP/STIG Phase 0+1 complete**: 451 signals extracted from rhel10-playbook-stig.yml; generated `stig-signal-index.md` (451 rows) and `cce-nist-crossref.md` (451 CCEs); ingested into RAG as `scap-security-guide` collection
+- **Capability matrix**: Jamie's 7-domain operator-facing groupings incorporated into TUI, kernel probe, and platform expansion plans; technical reference created at `.claude/references/capability-matrix-domains.md`
+- **SCAP/STIG ingestion plan**: Created `.claude/plans/scap-stig-corpus-plan.md` — Phases 0+1 complete, Phase 2 (5-agent familiarization) and Phase 3 (CCE annotations, coverage gap report, methodology comparison) pending
+- **High-assurance writing guide plan**: Placeholder created at `.claude/plans/high-assurance-writing-guide.md` — shareable guide for teaching agents/humans to write high-assurance documentation
+- **CCE cross-referencing requirement**: New project requirement — cite CCE identifiers alongside NIST controls in source code and documentation
+- **Settings.json permissions broadened**: Added `Write(docs/**)`, `Edit(docs/**)`, `Write(.claude/**)`, `Edit(.claude/**)`
+- **Agent definitions updated**: Both writer agents now have "Always-Active Rules" section pointing to admonition hierarchy
+
+### Changed
+- **ai-transparency/nav.adoc**: Removed duplicate "AI in This Project" entry; restructured for collapsibility
+- **Navigation audit**: "AI in This Project" duplicate removed from ROOT/nav.adoc
+- **Style decisions resolved**: SDR-009 (third person for architecture, second person for procedures), SDR-010 (inclusive terms in narrative, standard terms in specs, editorial notes for verbatim quotes), SDR-011 (CC SFR prose register — two registers coexist)
+
+### Fixed
+- **4 rogue `.claude/` directories consolidated**: jamies_brain/.claude, plans/.claude, rag/.claude, components/rusty-gadgets/.claude — unique files merged to repo-root, rogue dirs removed; all permissions already covered by `.claude/settings.json` wildcards
+
 ## 2026-03-15
 
 ### Added

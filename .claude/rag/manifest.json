@@ -35117,5 +35117,40 @@
     "chunks_stored": 3,
     "collection": "tech-writer-corpus",
     "ingested_date": "2026-03-16T07:46:37.120974+00:00"
+  },
+  "tech-writer-corpus/domain-refs/CC2022PART1R1.pdf": {
+    "hash": "62cccce618919ea3",
+    "converted_to": "converted/tech-writer-corpus/domain-refs/CC2022PART1R1.md",
+    "chunks_stored": 162,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-16T13:46:36.052628+00:00"
+  },
+  "tech-writer-corpus/domain-refs/CC2022PART2R1.pdf": {
+    "hash": "16c853ad1ccf6eb1",
+    "converted_to": "converted/tech-writer-corpus/domain-refs/CC2022PART2R1.md",
+    "chunks_stored": 304,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-16T13:46:47.704963+00:00"
+  },
+  "scap-security-guide/cce-nist-crossref.md": {
+    "hash": "d4a931aabe314d91",
+    "converted_to": "converted/scap-security-guide/cce-nist-crossref.md",
+    "chunks_stored": 1,
+    "collection": "scap-security-guide",
+    "ingested_date": "2026-03-16T14:10:59.571747+00:00"
+  },
+  "scap-security-guide/extract_stig_index.py": {
+    "hash": "2b18658039ff4e18",
+    "converted_to": "converted/scap-security-guide/extract_stig_index.md",
+    "chunks_stored": 5,
+    "collection": "scap-security-guide",
+    "ingested_date": "2026-03-16T14:10:59.880807+00:00"
+  },
+  "scap-security-guide/stig-signal-index.md": {
+    "hash": "ca3a14c9ff3c00d2",
+    "converted_to": "converted/scap-security-guide/stig-signal-index.md",
+    "chunks_stored": 1,
+    "collection": "scap-security-guide",
+    "ingested_date": "2026-03-16T14:11:00.045903+00:00"
   }
 }

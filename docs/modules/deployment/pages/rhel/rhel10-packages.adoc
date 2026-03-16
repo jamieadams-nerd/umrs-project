@@ -66,7 +66,7 @@ Advanced Intrusion Detection Environment. Provides file integrity monitoring
 against a cryptographic baseline database. Required for NIST 800-53 SI-7 and
 STIG compliance. See the NOTE below.
 
-NOTE: After installing `aide`, initialize the integrity database before the system
+IMPORTANT: After installing `aide`, initialize the integrity database before the system
 enters active operation. See xref:operations:ima-evm-ops.adoc[IMA/EVM Maintenance]
 for the `aide --init` procedure. Do not run `aide --check` before the database has
 been initialized — it will exit with errors.

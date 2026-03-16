@@ -127,7 +127,7 @@ Log groupings should be operator-defined, not hardcoded. Groups are semantic, no
 filesystem-based. Multiple paths can belong to one group. One filesystem can host many
 groups.
 
-NOTE: Audit logs always deserve explicit visibility in the group breakdown. `auditd` can
+CAUTION: Audit logs always deserve explicit visibility in the group breakdown. `auditd` can
 halt the system if it cannot write — audit space exhaustion must be treated as higher
 severity than general log space exhaustion.
 

@@ -6,7 +6,7 @@
 // NIST 800-218 SSDF PW.4.1 — Validate all inputs
 // NIST 800-53 SI-10 — Information Input Validation
 
-NOTE: This pattern is mandated by *NSA RTB Redundancy*.
+IMPORTANT: This pattern is mandated by *NSA RTB Redundancy*.
 It is a required design constraint on every parse path that produces values used in
 authorization or classification decisions — not a quality-of-life improvement.
 Satisfies NIST 800-53 SI-10.
@@ -137,6 +137,84 @@ the TPI gate.
 
 Path A (`nom`) and Path B (`FromStr`) are described in more detail in
 xref:devel:nom-parser.adoc[The nom parser combinator].
+
+=== CorePattern Classification — `classify_core_pattern`
+
+A second TPI implementation in the codebase applies the same pattern to a different
+input domain: the `kernel.core_pattern` sysctl value in `umrs-platform`.
+
+The hardened state for `core_pattern` is: value begins with `|` followed by an
+absolute path (a pipe to a managed coredump handler such as
+`|/usr/lib/systemd/systemd-coredump`).
+A single byte check — "is the first byte `|`?" — is not sufficient.
+A bare `|` with no path passes the byte check while naming no valid handler.
+A value such as `|usr/bin/handler` also passes the byte check but uses a relative
+path that is not under operator control at crash time.
+
+`classify_core_pattern` in `umrs-platform/src/posture/reader.rs` applies two
+independent paths:
+
+*Path 1 — Structural*: checks that the first raw byte is `|` (ASCII 0x7C).
+No string interpretation.
+
+*Path 2 — Semantic*: takes the first whitespace-delimited token, checks it starts
+with `|`, and verifies the character immediately after `|` is `/` (absolute path).
+A bare `|` fails this check.
+A relative path such as `|usr/bin/handler` also fails.
+
+[source,rust]
+----
+// umrs-platform: posture/reader.rs
+fn classify_core_pattern_inner(value: &str) -> CorePatternKind {
+    if value.is_empty() {
+        return CorePatternKind::Invalid;
+    }
+
+    // Path 1 — Structural: first byte is `|` (ASCII 0x7C).
+    let path1_is_handler = value.as_bytes().first() == Some(&b'|');
+
+    // Path 2 — Semantic: first token starts with `|` and handler path is absolute.
+    let path2_is_handler = {
+        let first_token = value.split_whitespace().next().unwrap_or("");
+        if let Some(after_pipe) = first_token.strip_prefix('|') {
+            after_pipe.starts_with('/')
+        } else {
+            false
+        }
+    };
+
+    match (path1_is_handler, path2_is_handler) {
+        (true, true)   => CorePatternKind::ManagedHandler,
+        (false, false) => CorePatternKind::RawPath,
+        // Paths disagree — fail closed.
+        _ => {
+            log::warn!(
+                "posture: core_pattern TPI disagreement: \
+                 path1_handler={path1_is_handler} \
+                 path2_handler={path2_is_handler} — classified as Invalid (fail-closed)"
+            );
+            CorePatternKind::Invalid
+        }
+    }
+}
+----
+
+`CorePatternKind::Invalid` is the fail-closed result.
+Any value where Path 1 and Path 2 disagree — including crafted edge cases like `|`
+or `|relative/path` — is treated as unhardened rather than accepted on the strength
+of one path alone.
+
+This implementation differs from the `SecurityContext` example in two ways.
+The two paths here are structural (byte-level) and semantic (token + path check)
+rather than two parser libraries.
+The disagreement result is also a typed enum variant rather than a `PermissionDenied`
+error — the caller in `snapshot.rs` decides how to handle the classification.
+Both implementations satisfy the TPI invariant: independent algorithms, same input,
+fail closed on disagreement.
+
+For the full developer walkthrough of this implementation, including the classification
+table and edge case examples, see
+xref:devel:posture-probe-internals.adoc[Posture Probe Internals — CorePattern TPI Classification].
 
 == When to Apply
 

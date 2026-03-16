@@ -4,9 +4,18 @@ path: components/rusty-gadgets/umrs-platform
 agent: rust-developer
 status: phase-2b-opus — CPU mitigation sub-signals (8 new SignalId variants: SpectreV2Off, SpectreV2UserOff, MdsOff, TsxAsyncAbortOff, L1tfOff, RetbleedOff, SrbdsOff, NoSmtOff) + CorePattern (TPI classification, 2-path independence) implemented; catalog now 37 signals; 16 new tests in posture_tests.rs; SEC caching deferred (see Resolved Decisions 9); pending cargo xtask clippy + test verification; docs deferred to tech-writer
 depends-on: umrs-platform-expansion.md
+display-grouping: .claude/references/capability-matrix-domains.md
 ---
 
 # Kernel Security Posture Probe — Implementation Plan
+
+> **Display grouping:** When signals reach the TUI or report output, they must be organized
+> under Jamie's 7-domain Capability Matrix (see `.claude/references/capability-matrix-domains.md`
+> and source at `.claude/jamies_brain/kernel-probe-grouping.txt`). The `SignalDescriptor`
+> struct will need a domain field (e.g., `domain: CapabilityDomain`) to enable this grouping.
+> The 7 domains are: Kernel Enforcement Controls, Boot Chain Integrity, Cryptographic
+> Enforcement, Mandatory Access Control, Kernel Integrity Monitoring, Logging and Forensics
+> Assurance, Memory and Exploit Mitigation.
 
 ## Overview
 

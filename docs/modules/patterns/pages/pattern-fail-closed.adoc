@@ -6,7 +6,7 @@
 // NIST 800-53 AC-3 — Access Enforcement
 // NIST 800-53 SI-10 — Information Input Validation
 
-NOTE: This pattern is required by *NSA RTB (Fail Secure)*.
+IMPORTANT: This pattern is required by *NSA RTB (Fail Secure)*.
 A system that proceeds with degraded, ambiguous, or unverified input on error does not
 satisfy the fail-secure requirement regardless of what the policy document states.
 Satisfies NIST 800-53 AC-3.

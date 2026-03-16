@@ -6,7 +6,7 @@
 // NIST 800-53 AC-3 — Access Enforcement
 // NIST 800-218 SSDF PW.4.3 — Memory safety and structural safety guarantees
 
-NOTE: This pattern is required by *NSA RTB RAIN* (non-bypassable, always-invoked reference monitor).
+IMPORTANT: This pattern is required by *NSA RTB RAIN* (non-bypassable, always-invoked reference monitor).
 Enforcement must be structurally guaranteed by the type system and module boundaries —
 policy statements and code review are not sufficient substitutes.
 Satisfies NIST 800-53 AC-3.

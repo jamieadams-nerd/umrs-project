@@ -37,7 +37,7 @@ Evidence takes structured forms:
 * Independent evaluation (Common Criteria, NSA RTB, FIPS 140-3)
 * Continuous verification during the operational lifecycle
 
-[TIP]
+[NOTE]
 ====
 *Assurance = evidence + process + verification + proven behavior.*
 

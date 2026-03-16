@@ -88,58 +88,16 @@ section now redirects to `patterns:index.adoc` instead of listing pages inline.
 - security-model.adoc: redirect stub — decide to remove or replace with genuine content
 - i18n.md in docs/_scratch/: confirm safe to delete (i18n.adoc is the complete version)
 
-## Completed Work (2026-03-10 batch)
-- Task 0: deployment/rhel10-packages.adoc — Post-Install Packages section added
-- TW-1 through TW-10: see feedback.md for details
-
-## Completed Work (2026-03-11 batch)
-- 12 individual high-assurance pattern pages created in devel/pages/
-- high-assurance-patterns.adoc updated with Pattern Reference table linking to all 12
-- devel/nav.adoc updated with pattern subsections
-- SEC pattern docs updated for implementation:
-  - pattern-sec.adoc: WARNING block removed; "In the UMRS Codebase" rewritten for actual types
-  - patterns/index.adoc: SEC status ⚠→✓; "Open — Awaiting Implementation" SEC block removed
-  - os-detection-deep-dive.adoc: "Future: Sealed Memory Cache" section replaced with
-    full "Sealed Evidence Cache" section covering SealedCache API, seal payload layout,
-    FIPS gate, decode_cached_result() design note, CacheStatus, compliance table
-
-## Completed Work (2026-03-12 Phase 1 Antora restructure)
-- security-compliance/ module deleted (was empty, not in antora.yml)
-- architecture/umrs-prog-lang.adoc deleted; devel/ copy is canonical; all xrefs updated
-  - Fixed in: architecture/nav.adoc, devel/nav.adoc, architecture/pages/index.adoc
-- deployment/structured-logging.adoc moved to logging-audit/
-- deployment/how-to-structure-log.adoc moved to logging-audit/
-  - Fixed xref in: ROOT/pages/getting-started.adoc (deployment: → logging-audit:)
-- deployment/pages/_archive/ directory deleted (5 .md files, all superseded)
-- glossary/ module created: pages/index.adoc + nav.adoc; registered in antora.yml
-- reference/pages/cryptography/ subdir promoted to top-level reference/pages/
-  - Nav heading renamed: "Cryptography" → "Cryptographic Baseline"
-  - Fixed xrefs in: reference/pages/index.adoc, devel/pages/high-assurance-patterns.adoc,
-    architecture/pages/cui-structure.adoc
-- Placeholder pages created: ROOT/pages/what-is-umrs.adoc, what-is-high-assurance.adoc,
-  ai-transparency.adoc; reference/pages/crypto-post-quantum.adoc, crypto-policy-tiers.adoc,
-  crypto-cpu-extensions.adoc
-- ROOT/nav.adoc: orientation pages first; glossary and release-notes added
-
 ## Module Structure (as of 2026-03-13 crypto module added)
 Active modules: ROOT, architecture, security-concepts, deployment, devel, patterns,
 umrs-tools, operations, logging-audit, reference, cryptography, glossary
-- Crypto pages: cryptography/pages/ (MOVED from reference/pages/ — update plans accordingly)
+- Crypto pages: cryptography/pages/ (MOVED from reference/pages/)
   - fips-cryptography-cheat-sheet.adoc, crypto-policy-tiers.adoc, crypto-post-quantum.adoc,
     key-recommendation-list.adoc, crypto-cpu-extensions.adoc
 - reference/ still exists for compliance-frameworks, SELinux context, MLS, CUI pages
 - Logging architecture pages: logging-audit/ (NOT deployment/)
 - umrs-prog-lang.adoc: devel/ (NOT architecture/)
-
-## Completed Work (2026-03-13 CTW tasks)
-- CTW-NAV-1: ROOT/nav.adoc restructured with groupings; architecture/nav.adoc "Historical
-  Context" consolidation done; security-concepts/nav.adoc "Foundations"/"Integrity and Trust"
-  groupings added; what-is-umrs.adoc content merged into introduction.adoc and removed from nav
-- CTW-CRYPTO-1: Three crypto enhancements applied to cryptography/ pages:
-  1. fips-cryptography-cheat-sheet.adoc: referenced standards preamble added
-  2. fips-cryptography-cheat-sheet.adoc: NOTE about audit log chaining added after SHA-1 entry
-  3. crypto-policy-tiers.adoc: KDF "Typical use" column improved
-- docs/new-stuff/used/ receives processed source files (crypto.md, left-navbar.md moved there)
+- docs/new-stuff/used/ receives processed source files after incorporation
 
 ## Cross-Module Xref Gotchas
 - Grep ALL .adoc files when moving/deleting pages — nav files alone are not enough
@@ -200,6 +158,35 @@ Two reference pages are forward-referenced but do not yet exist:
 2026-03-16 — confirmed exists), `reference/pages/cpu-extensions.adoc`
 (created 2026-03-16 — confirmed exists). Both xrefs use forward references in the
 See Also section to avoid dead xrefs at build time.
+
+## Style Corpus Knowledge Index (familiarized 2026-03-16)
+Artifacts at `.claude/knowledge/tech-writer-corpus/`. RAG collection: `tech-writer-corpus`.
+Four always-on artifacts: concept-index.md, cross-reference-map.md, style-decision-record.md, term-glossary.md.
+
+**Authority hierarchy** (highest to lowest for conflict resolution):
+1. MIL-STD-38784B — DoD TM format; Warning/Caution/Note hierarchy; CUI marking (Rev B 2020)
+2. Federal Plain Language Guidelines — statutory (Plain Writing Act P.L. 111-274); 15–20 word sentences; active voice
+3. NIST Author Instructions — normative for NIST pubs; canonical inclusive terminology (allowlist/denylist, primary/secondary)
+4. Google Developer Documentation Style Guide — primary commercial authority for devel/ module
+5. Microsoft Writing Style Guide — operator-facing docs (operations/); 7-step max; scan-first design
+
+**Active Style Decisions (SDR-001 through SDR-009):**
+- SDR-001: Contractions permitted in devel/ and operations/; not in reference/, compliance docs, or government submissions
+- SDR-002: No "please" in procedure steps
+- SDR-003: UMRS uses STE Mode register (not full MIL-STD TM format); conversational for conceptual sections
+- SDR-004: AsciiDoc admonitions — WARNING=data loss/breach, CAUTION=irreversible/security-critical, NOTE=supplementary, IMPORTANT=procedure failure risk
+- SDR-005: Second person throughout; third person only when describing system behavior
+- SDR-006: NIST canonical inclusive terminology takes precedence; Google for terms NIST doesn't cover
+- SDR-007: Procedure steps ≤20 words; explanatory prose 15–20 target/26 ceiling; 30-word absolute max for architecture
+- SDR-008: Use code font for CLI tool names in prose (sestatus, cargo, systemctl, etc.)
+- SDR-009: "Optional:" prefix with colon (not parentheses) for optional procedure steps
+
+**Key tensions to watch:**
+- Contractions: Microsoft encourages; NIST/MIL-STD formal docs prohibit — SDR-001 resolves by module
+- Sentence length: Plain Language 15–20 words vs. Google accessibility 26-word ceiling — SDR-007 resolves by context
+- Second vs. third person in architecture pages: SDR-005 resolved (second person default)
+
+**Pending corpus gaps:** Common Criteria SFR prose, GPO Style Manual, AsciiDoc/Antora-specific rules (carried in agent memory and CLAUDE.md instead)
 
 ## AI Transparency — Agent Aliases (added 2026-03-15)
 Section "== Agent Aliases" added to `ai-transparency/agent-roles.adoc`.

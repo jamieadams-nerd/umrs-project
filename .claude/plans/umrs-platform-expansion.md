@@ -5,6 +5,12 @@ agent: rust-developer
 status: active umbrella — subsidiary plans in progress
 ---
 
+## Display Grouping Reference
+
+When posture signals are presented to operators (TUI, reports, `--json`), organize them
+under Jamie's 7-domain Capability Matrix. See `.claude/references/capability-matrix-domains.md`
+for the full mapping. Source: `.claude/jamies_brain/kernel-probe-grouping.txt`.
+
 ## Vision
 
 `umrs-platform` is the low-level OS and kernel layer for UMRS. It currently contains OS

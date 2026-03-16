@@ -52,7 +52,7 @@ Collections and status as of 2026-03-15:
 | rmf-methodology | NIST SP 800-37r2, 800-53Ar5, 800-30r1, 800-39 | ✓ Ingested | 1,132 |
 | accreditation-artifacts | NIST 800-18 + FedRAMP playbooks/templates (6 docs; 200-B/200-C training removed from fedramp.gov) | Downloaded — awaiting ingestion | 0 |
 | tui-cli | crossterm, color-eyre, clap, ratatui (v0.30.0), awesome-ratatui | Downloaded — awaiting ingestion | 0 |
-| tech-writer-corpus | Microsoft Style Guide (13 files), Google Style Guide (partial, WebFetch blocked), Federal Plain Language, NIST Author Instructions | Downloaded — awaiting ingestion | 0 |
+| tech-writer-corpus | MS Style Guide, Google Style Guide, MIL-STD-38784B, Plain Language, NIST Author Instructions, CC Parts 1+2 | Ingested (2026-03-16) | 1245 |
 
 Full source URL list for update checks: see `rag-collections.md` in this directory.
 PQC status tracker (team-readable): see `pqc-tracker.md` in this directory.
@@ -101,6 +101,7 @@ python ingest.py --summary               # show chunk counts and exit
 - CMMC: dodcio.defense.gov, acq.osd.mil
 - DoD Issuances: esd.whs.mil (approved 2026-03-12)
 - FedRAMP: fedramp.gov (approved 2026-03-15 — accreditation process artifacts)
+- Common Criteria: commoncriteriaportal.org (approved per tech-writer-corpus-plan.md Phase 3.6 — RAG only, not refs/)
 
 ## Research Reports — MANDATORY RULE
 
@@ -190,7 +191,7 @@ On "refresh library" or "check for updates":
   - Section 2 (cli-ux): clig-guidelines.md, no-color.md, awesome-tuis.md, SOURCE.md (2026-03-15)
   - Run: `cd /media/psf/repos/umrs-project/.claude/rag && RAG_CHROMA_PATH=/media/psf/repos/ai-rag-vdb/chroma python ingest.py --collection tui-cli`
   - To add ratatui.rs and docs.rs WebFetch: add to `.claude/settings.json` WebFetch allowlist
-- tech-writer-corpus collection: Phases 1-2 substantially complete (2026-03-16) — READY FOR INGESTION
+- tech-writer-corpus collection: Phase 3.6 CC Parts 1+2 DONE (2026-03-16) — ingested, 1245 total chunks
   - style-guides/microsoft/: 13 files (complete)
   - style-guides/google/: 10 files — verbatim via curl+pandoc (2026-03-16); supersedes prior WebSearch summaries
   - gov-standards/: NIST Author Instructions (verbatim 740 lines); MIL-STD-38784B PDF (3.95 MB, downloaded);

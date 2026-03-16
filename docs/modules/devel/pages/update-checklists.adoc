@@ -415,7 +415,7 @@ extension catalog from growing into a single unwieldy type.
 
 |===
 
-WARNING: Layer 1 results without Layer 2 and Layer 3 checks produce
+CAUTION: Layer 1 results without Layer 2 and Layer 3 checks produce
 misleading output. An assessment that reports AES-NI "present" without
 checking whether OpenSSL is actually using it fails to answer the
 operator's real question. Where all three layers are detectable,
@@ -502,7 +502,7 @@ unverifiable. Deprecation is the only correct path.
 
 |===
 
-WARNING: Do not mark a signal deprecated prematurely. If the node is
+CAUTION: Do not mark a signal deprecated prematurely. If the node is
 absent only on some kernel configurations (e.g., compiled without a
 specific option), the signal is optional — not deprecated. Handle
 optional absence in the reader without changing the `SignalId` variant.

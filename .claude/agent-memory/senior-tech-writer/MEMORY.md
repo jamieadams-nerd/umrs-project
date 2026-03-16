@@ -257,3 +257,41 @@ Plan: `.claude/plans/docs-new-stuff-crypto-and-navbar.md`
 Tasks assigned to tech-writer in feedback.md: CTW-NAV-1 (ROOT nav rewrite), CTW-CRYPTO-1 (minor crypto enhancements).
 crypto.md from new-stuff: almost entirely duplicate of existing pages. Three minor enhancements only.
 Open questions for Jamie (in plan): Q1 page label disambiguation, Q2 historical section consolidation, Q3 API orientation page.
+
+---
+
+## Tech-Writer Corpus — Style Knowledge (2026-03-16)
+
+**Location**: `.claude/knowledge/tech-writer-corpus/`
+**RAG collection**: `tech-writer-corpus`
+**Artifacts**: concept-index.md, cross-reference-map.md, style-decision-record.md, term-glossary.md, README.md
+
+### Source priority order (highest → lowest)
+1. MIL-STD-38784B — DoD TM structure, WARNING/CAUTION/NOTE hierarchy, modal vocabulary
+2. Federal Plain Language Guidelines — statutory (Plain Writing Act 2010); active voice, 15-20 word sentences
+3. NIST Author Instructions — NIST pub structure, Section 508, inclusive terminology (CANONICAL authority)
+4. Google Developer Documentation Style Guide — developer docs primary commercial authority
+5. Microsoft Writing Style Guide — secondary commercial authority; warm/relaxed voice
+
+### Key resolved decisions (see style-decision-record.md for full SDRs)
+- **Headings**: Sentence case always (Google + Microsoft agree); ALL-CAPS only in formal DoD TM submissions
+- **Admonitions**: WARNING = security/data-loss risk; CAUTION = recoverable degradation; NOTE = informational; IMPORTANT = prerequisite
+- **Inclusive terms**: allowlist/denylist (not whitelist/blacklist); primary/subordinate (not master/slave) — NIST is highest authority
+- **Modals**: "shall/should/may" only in normative spec docs; use "must"/present tense in all other UMRS docs
+- **Procedures**: Introductory sentence required; numbered steps, one action each; 7-step limit; sub-steps a/b/c then i/ii/iii
+- **Oxford comma**: Required (both Google and Microsoft agree)
+- **SDR-009 RESOLVED**: Third person for architecture/security-concepts; second person for devel/deployment/operations
+- **SDR-010 RESOLVED**: Inclusive terms in narrative; standard terms in specs; verbatim quotes get editorial note
+
+### Common Criteria Knowledge (CC:2022, added 2026-03-16)
+- **Part 1** (Introduction): 94 formal definitions; evaluation chain: assets → threats → objectives → SFRs → SARs
+- **Part 2** (SFR classes): 11 classes — FAU, FCS, FDP, FIA, FMT, FPR, FPT, FRU, FTA, FTP, FCO
+- **UMRS mappings**: FAU=audit, FCS=FIPS/crypto, FDP=MLS/Bell-LaPadula, FIA=security context, FPT=fail-closed/self-test
+- **Writing rule**: SFR element text uses "shall" (not "must") per CC convention
+- **SFR operations**: assignment, selection, refinement, iteration — bracket/bold notation
+- **Conformance types**: strict, demonstrable, exact (new in CC:2022)
+- 6 CC terms added to term-glossary.md: EAL, PP, SFR, ST, TOE, TSF
+
+### Remaining gaps
+- GPO Style Manual — cited by MIL-STD for formal TM capitalization/punctuation
+- Google word-list.md (2766 lines) — deferred; query RAG for specific terms

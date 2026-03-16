@@ -123,7 +123,7 @@ that already exist, create symlinks or reference pointers rather than duplicatin
 | CMMC Level 2 Assessment Guide | 3 | High | CHECK existing |
 | RHEL 10 Security Guide | 3 | High | -- |
 | SELinux Project Notebook | 3 | Medium | CHECK existing |
-| Common Criteria Parts 1 & 2 | 3 | Medium | -- |
+| Common Criteria Parts 1 & 2 | 3 | Medium | DONE — CC:2022 R1 Parts 1 (162 chunks) & 2 (304 chunks) ingested from commoncriteriaportal.org (2026-03-16) |
 | Apple Style Guide | 4 | Medium | -- |
 | DigitalOcean Guidelines | 4 | Medium | -- |
 | Mailchimp Style Guide | 4 | Medium | -- |

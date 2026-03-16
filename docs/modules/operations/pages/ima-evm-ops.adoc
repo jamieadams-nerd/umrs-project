@@ -37,7 +37,7 @@ under IMA appraisal — skipping it causes the kernel to block all access to tha
 
 == Finalizing Enforcement (Optional)
 
-IMPORTANT: The UMRS project is still actively developing.
+NOTE: The UMRS project is still actively developing.
 Running in `ima_appraise=fix` is the recommended stance during this phase — the kernel
 measures and logs integrity events without blocking access if a hash is missing or stale.
 Do not switch to enforce mode on a system you need to keep working.
@@ -115,7 +115,7 @@ Each new policy file must have its SELinux context set after creation:
 sudo restorecon -v /etc/ima/10-openssl.policy
 ----
 
-CAUTION: Rule order within each file matters — the kernel evaluates rules top to bottom
+WARNING: Rule order within each file matters — the kernel evaluates rules top to bottom
 and stops at the first match, exactly like firewall rules.
 *Every new policy file must start with its own `dont_appraise` exclusions* for any
 virtual or pseudo-filesystem that the new rules could accidentally match, before any

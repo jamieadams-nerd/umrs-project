@@ -76,8 +76,11 @@
       "Read(umrs-project/)",
       "WebFetch(domain:*)",
       "WebSearch",
-      "Write(.claude/references/**)",
-      "Write(logs/task-log.md)"
+      "Write(.claude/**)",
+      "Write(docs/**)",
+      "Edit(.claude/**)",
+      "Edit(docs/**)",
+      "Bash(# Copy unique files from jamies_brain rogue\ncp -n /media/psf/repos/umrs-project/.claude/jamies_brain/.claude/agent-memory/rust-developer/tui_phase*.md /media/psf/repos/umrs-project/.claude/agent-memory/rust-developer/ 2>/dev/null\n\n# Copy unique files from rusty-gadgets rogue \\(security-auditor reviews\\)\ncp -n /media/psf/repos/umrs-project/components/rusty-gadgets/.claude/agent-memory/security-auditor/kernel-tab-content-review.md /media/psf/repos/umrs-project/.claude/agent-memory/security-auditor/ 2>/dev/null\ncp -n /media/psf/repos/umrs-project/components/rusty-gadgets/.claude/agent-memory/security-auditor/three-layer-evaluation-review.md /media/psf/repos/umrs-project/.claude/agent-memory/security-auditor/ 2>/dev/null\n\necho \"Files copied\")"
     ]
   },
   "enabledPlugins": {

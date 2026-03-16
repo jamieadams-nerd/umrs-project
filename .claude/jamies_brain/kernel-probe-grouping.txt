@@ -1,0 +1,243 @@
+Audit check
+
+Excellent. What you’re describing naturally becomes a High-Assurance Linux Capability Matrix — essentially a structured catalog of kernel and system capabilities that materially influence system trustworthiness.
+
+This fits perfectly with your earlier kernel introspection / source-of-truth probing layer and the security-eval tool you’ve been designing.
+
+Below is a model that is practical, machine-queryable, and aligns with high-assurance evaluation practices.
+
+⸻
+
+High-Assurance Linux Capability Matrix
+
+Purpose
+
+The capability matrix enumerates Linux kernel and system security features that significantly affect the assurance properties of a system, including integrity, enforcement non-bypassability, tamper resistance, and provenance.
+
+These capabilities differ from traditional compliance hardening rules in that they represent architectural security mechanisms rather than configuration baselines.
+
+The matrix allows a security auditor to determine:
+	•	what assurance mechanisms exist
+	•	whether they are active
+	•	how they affect trust boundaries
+	•	whether they can be bypassed
+
+⸻
+
+Capability Classification Model
+
+Each capability should be classified along several axes.
+
+Field	Purpose
+capability_id	Stable identifier
+subsystem	Kernel / boot / SELinux / logging
+assurance_property	Integrity / isolation / provenance
+runtime_probe	Where to read state
+desired_state	Expected value
+bypassability	Can attackers disable it
+persistence_method	How it survives reboot
+security_impact	Explanation
+
+
+⸻
+
+Major Assurance Capability Domains
+
+1 Kernel Enforcement Controls
+
+These are kernel mechanisms that restrict privileged behavior.
+
+Capability	Probe Location	Desired State
+Kernel Lockdown Mode	/sys/kernel/security/lockdown	integrity or confidentiality
+Disable Module Loading	/proc/sys/kernel/modules_disabled	1
+Kexec Disabled	/proc/sys/kernel/kexec_load_disabled	1
+BPF JIT Harden	/proc/sys/net/core/bpf_jit_harden	2
+Unprivileged BPF Disabled	/proc/sys/kernel/unprivileged_bpf_disabled	1
+
+Assurance property:
+	•	prevents runtime kernel modification
+	•	reduces attack surface for root compromise
+
+⸻
+
+2 Boot Chain Integrity
+
+Ensures system trust begins at boot.
+
+Capability	Probe	Desired
+Secure Boot	/sys/firmware/efi/efivars/SecureBoot-*	enabled
+Bootloader Verification	firmware policy	verified
+Kernel Lockdown Auto Mode	kernel command line	enforced
+
+Assurance property:
+	•	prevents unsigned kernel execution
+	•	protects kernel memory integrity
+
+⸻
+
+3 Cryptographic Enforcement
+
+Ensures approved cryptography is used.
+
+Capability	Probe	Desired
+FIPS Mode	/proc/sys/crypto/fips_enabled	1
+Kernel Crypto Policy	/etc/crypto-policies/state/current	restricted
+OpenSSL Provider Policy	openssl.cnf	restricted providers
+
+This aligns with your existing FIPS posture checks.
+
+⸻
+
+4 Mandatory Access Control
+
+Strong enforcement boundaries.
+
+Capability	Probe	Desired
+SELinux Mode	/sys/fs/selinux/enforce	1
+SELinux Policy	/etc/selinux/config	targeted/MLS
+SELinux Boolean Integrity	selinuxfs booleans	locked
+
+Assurance property:
+	•	non-bypassable access control
+	•	domain isolation
+
+You’ve already been building the strongly typed SELinux primitives for exactly this purpose.
+
+⸻
+
+5 Kernel Integrity Monitoring
+
+Detects runtime tampering.
+
+Capability	Probe	Desired
+IMA Enabled	/sys/kernel/security/ima	active
+EVM Enabled	/sys/kernel/security/evm	active
+IMA Policy	/sys/kernel/security/ima/policy	defined
+
+Assurance property:
+	•	file integrity validation
+	•	runtime tamper detection
+
+⸻
+
+6 Logging and Forensics Assurance
+
+Ensures evidence integrity.
+
+Capability	Probe	Desired
+Audit Enabled	/proc/sys/kernel/audit	1
+Audit Immutable	/proc/sys/kernel/audit_immutable	1
+Journald Persistent	journald.conf	persistent
+Log Forwarding	journald/audit config	remote
+
+Assurance property:
+	•	tamper-resistant logging
+	•	forensic traceability
+
+This connects strongly with your UMRS logging mediator architecture.
+
+⸻
+
+7 Memory and Exploit Mitigation
+
+Protects runtime memory.
+
+Capability	Probe	Desired
+ASLR	/proc/sys/kernel/randomize_va_space	2
+SMEP/SMAP	/proc/cpuinfo flags	present
+KASLR	kernel cmdline	enabled
+
+Assurance property:
+	•	exploit resistance
+	•	memory isolation
+
+⸻
+
+Capability Metadata Example
+
+A structured catalog entry might look like this:
+
+{
+  "capability_id": "KERNEL_MODULES_DISABLED",
+  "subsystem": "kernel",
+  "assurance_property": "integrity",
+  "probe": "/proc/sys/kernel/modules_disabled",
+  "desired_state": "1",
+  "bypassability": "non-bypassable once enabled",
+  "persistence": "kernel runtime irreversible",
+  "impact": "prevents runtime kernel extension loading"
+}
+
+This makes the matrix machine queryable.
+
+⸻
+
+How Your Auditor Would Use It
+
+Example queries:
+
+show capabilities impacting kernel integrity
+
+list disabled assurance mechanisms
+
+explain module loading risk
+
+Output example:
+
+Capability: Kernel Module Loading
+State: ENABLED
+Risk: Runtime kernel code injection possible
+Recommendation: Set modules_disabled=1
+
+
+⸻
+
+Integration With Your Existing Design
+
+This capability matrix integrates beautifully with the things you already designed:
+
+Your existing concept	Capability matrix role
+kernel pseudo-filesystem readers	runtime probes
+security-eval tool	evaluation engine
+high-assurance taxonomy	capability classification
+UMRS logging	evidence capture
+
+Essentially:
+
+kernel state → probe layer → capability matrix → evaluation engine
+
+
+⸻
+
+Why This Is Powerful
+
+This gives you a security evaluation engine that is not compliance-dependent.
+
+You can answer questions like:
+	•	Is the kernel runtime mutable?
+	•	Can root load arbitrary code?
+	•	Can logs be tampered with?
+	•	Can policies be bypassed?
+
+Those are assurance questions, not compliance questions.
+
+⸻
+
+One More Idea (Extremely Useful)
+
+You can also attach assurance scoring weights:
+
+Level	Meaning
+Critical	system trust boundary
+Strong	major integrity mechanism
+Moderate	defense-in-depth
+Informational	posture visibility
+
+This allows your tool to produce something like:
+
+High Assurance Score: 82%
+Kernel Integrity: PASS
+Boot Integrity: PASS
+Logging Integrity: PARTIAL
+
+

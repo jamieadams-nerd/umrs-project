@@ -6,7 +6,7 @@
 // NSA RTB VNSSA — TOCTOU elimination; deterministic execution
 // NIST 800-218 SSDF PW.4 — Implement secure coding practices
 
-NOTE: This pattern is required by *NSA RTB RAIN* (non-bypassable, deterministic execution).
+IMPORTANT: This pattern is required by *NSA RTB RAIN* (non-bypassable, deterministic execution).
 All filesystem I/O on security-relevant resources must be fd-anchored.
 Satisfies NIST 800-53 SI-7.
 

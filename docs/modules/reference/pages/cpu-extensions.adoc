@@ -635,7 +635,7 @@ Xeon platforms (Ice Lake-SP, Sapphire Rapids, and successors). For new CUI workl
 designs, evaluate whether the target server platform retains SGX support.
 
 .SGX: attack surface when unused
-[CAUTION]
+[WARNING]
 ====
 SGX presence without active use is not a neutral condition. SGX has been the subject
 of multiple serious hardware side-channel vulnerabilities: Foreshadow/L1TF

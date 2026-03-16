@@ -1,0 +1,564 @@
+= Kernel Security Posture Probe — Internals
+:toc: left
+:toclevels: 3
+:description: Developer reference for the umrs-platform posture probe: signal taxonomy, the CPU mitigation sub-signal pattern, and the CorePattern TPI implementation.
+
+// NIST SP 800-53 CM-6: Configuration Settings — signals encode the hardened baseline
+// NIST SP 800-53 CA-7: Continuous Monitoring — the probe is the monitoring mechanism
+// NIST SP 800-53 SI-16: Memory Protection — CPU mitigation signals
+// NIST SP 800-218 SSDF PW.4: TPI classification of core_pattern
+// NSA RTB RAIN: Non-Bypassability — all reads route through SecureReader
+
+== Overview
+
+The kernel security posture probe lives in `umrs-platform/src/posture/`.
+It reads kernel security state from procfs, sysfs, securityfs, and modprobe.d
+and produces a `PostureSnapshot` — an immutable, point-in-time assessment of
+whether the system's kernel-level security controls meet the hardened baseline.
+
+The probe is not a scanner.
+It does not search for vulnerabilities or test exploit paths.
+It answers a narrower question: for each of the signals in the static catalog,
+is the kernel currently configured as the hardened baseline requires?
+
+=== Module Layout
+
+[source]
+----
+umrs-platform/src/posture/
+├── mod.rs            — public API; re-exports PostureSnapshot, SignalReport, ContradictionKind
+├── signal.rs         — SignalId enum, SignalClass, AssuranceImpact, DesiredValue
+├── catalog.rs        — SIGNALS static array; all SignalDescriptor entries
+├── reader.rs         — live-value readers; CorePatternReader; classify_core_pattern
+├── snapshot.rs       — PostureSnapshot::collect(); orchestrates all readers
+├── configured.rs     — sysctl.d and modprobe.d configured-value readers
+└── contradiction.rs  — ContradictionKind classification; evaluate_configured_meets
+----
+
+=== Signal Count by Phase
+
+[cols="2,1,3", options="header"]
+|===
+| Phase | Signals | What was added
+
+| Phase 1
+| 22
+| Sysctl (kernel self-protection, integrity, process isolation, filesystem safety),
+  KernelCmdline (boot integrity), DistroManaged (FIPS)
+
+| Phase 2a
+| +5 (27 total)
+| modprobe.d signals: `bluetooth`, `usb_storage`, `firewire_core`, `thunderbolt`,
+  `nf_conntrack acct`
+
+| Phase 2b
+| +10 (37 total)
+| 8 CPU mitigation sub-signals + `CorePattern` (TPI)
+
+|===
+
+For the operator-facing description of every signal, see
+xref:reference:kernel-probe-signals.adoc[Kernel Security Posture Signals].
+
+== Signal Taxonomy
+
+Every signal is described by a `SignalDescriptor` in the `SIGNALS` static array.
+The descriptor is `const` — all values are compiler-verified, not loaded at runtime.
+This satisfies NIST SP 800-218 SSDF PW.4 (compile-time binding of security-relevant
+constants) and eliminates the attack surface of a runtime-parsed configuration file.
+
+=== SignalClass
+
+`SignalClass` determines where the live value comes from and whether contradiction
+detection applies.
+
+[cols="2,3,2", options="header"]
+|===
+| Variant | Live source | Contradiction detection
+
+| `Sysctl`
+| `/proc/sys/` (verified against `PROC_SUPER_MAGIC`)
+| Yes — compared against sysctl.d merge tree
+
+| `KernelCmdline`
+| `/proc/cmdline` (verified against `PROC_SUPER_MAGIC`)
+| Yes — compared against BLS bootloader entry
+
+| `SecurityFs`
+| `/sys/kernel/security/` (verified against `SECURITYFS_MAGIC`)
+| No — LSM state is not user-configurable via sysctl.d
+
+| `DistroManaged`
+| `/proc/sys/crypto/fips_enabled`
+| Partial — FIPS path only
+
+| `ModprobeConfig`
+| `/sys/module/` (verified against `SYSFS_MAGIC`)
+| Yes — compared against modprobe.d merge tree
+
+|===
+
+All live reads route through the `kattrs::traits::StaticSource::read()` default
+method, which verifies filesystem magic via `fstatfs` before reading the node.
+The provenance check cannot be skipped — it is the default method path, not an
+opt-in call.
+This satisfies NSA RTB RAIN (Non-Bypassability).
+
+=== DesiredValue
+
+`DesiredValue` expresses the hardened baseline as a type-safe comparison rather
+than a string.
+The `meets_*` methods implement the check for each variant.
+
+[cols="2,3", options="header"]
+|===
+| Variant | Meaning
+
+| `Exact(u32)`
+| Live value must equal this integer exactly
+
+| `AtLeast(u32)`
+| Live value must be >= this threshold
+
+| `AtMost(u32)`
+| Live value must be \<= this threshold
+
+| `CmdlinePresent(&'static str)`
+| This exact token must appear in `/proc/cmdline` (whitespace-delimited)
+
+| `CmdlineAbsent(&'static str)`
+| This exact token must NOT appear in `/proc/cmdline` (whitespace-delimited)
+
+| `Custom`
+| Signal-specific logic; `meets_integer` and `meets_cmdline` return `None`
+
+|===
+
+Token matching for `CmdlinePresent` and `CmdlineAbsent` is whole-word.
+`mitigations=off` does not match `mitigations=off,nosmt` — they are different
+whitespace-delimited tokens.
+This prevents false negatives where a combined flag bypasses detection.
+
+== CPU Mitigation Sub-Signals (Phase 2b)
+
+=== The Problem
+
+Phase 1 includes the `Mitigations` signal, which checks that `mitigations=off` is
+absent from `/proc/cmdline`.
+This umbrella flag disables all CPU vulnerability mitigations in one switch.
+
+However, the kernel also accepts per-CVE weakening overrides — individual flags that
+disable a specific mitigation while leaving others active.
+A kernel command line such as:
+
+----
+spectre_v2=off mds=off
+----
+
+does not trigger the `Mitigations` signal, because `mitigations=off` is not present.
+Phase 2b adds eight sub-signals, one per weakening override, to catch selective
+disabling.
+
+=== The Pattern
+
+All eight CPU mitigation sub-signals share the same structure:
+
+[cols="1,3", options="header"]
+|===
+| Field | Value
+
+| `class`
+| `SignalClass::KernelCmdline`
+
+| `live_path`
+| `/proc/cmdline`
+
+| `sysctl_key`
+| `None` — no sysctl key; cmdline only
+
+| `desired`
+| `DesiredValue::CmdlineAbsent("<flag>=off")`
+
+| `impact`
+| `High` or `Medium` depending on CVE severity
+
+|===
+
+A signal passes when its `CmdlineAbsent` token is not present.
+Absent means the mitigation is either active at the kernel default or not applicable
+to this CPU — both are safe outcomes.
+The signal detects only the explicit weakening override; it does not distinguish
+between "mitigation active" and "mitigation not applicable to this hardware."
+
+The umbrella signal and the sub-signals are complementary, not redundant.
+A clean `Mitigations` result (no `mitigations=off`) does not guarantee clean
+sub-signal results.
+Both must pass for a complete boot integrity assessment.
+
+=== Signal Table
+
+[cols="2,1,3", options="header"]
+|===
+| `SignalId` | Impact | Token checked (must be absent)
+
+| `SpectreV2Off`
+| High
+| `spectre_v2=off`
+
+| `SpectreV2UserOff`
+| Medium
+| `spectre_v2_user=off`
+
+| `MdsOff`
+| High
+| `mds=off`
+
+| `TsxAsyncAbortOff`
+| Medium
+| `tsx_async_abort=off`
+
+| `L1tfOff`
+| High
+| `l1tf=off`
+
+| `RetbleedOff`
+| High
+| `retbleed=off`
+
+| `SrbdsOff`
+| Medium
+| `srbds=off`
+
+| `NoSmtOff`
+| Medium
+| `nosmt=off`
+
+|===
+
+NOTE: `NoSmtOff` checks for `nosmt=off` — the flag that re-enables Simultaneous
+Multi-Threading when the kernel was booted with `nosmt`.
+If a site disabled SMT to improve MDS and L1TF isolation, `nosmt=off` silently
+undoes that decision.
+This signal detects that reversal.
+
+=== Reader Path
+
+`KernelCmdline` signals share a single `/proc/cmdline` read.
+`PostureSnapshot::collect()` reads the cmdline once at collection time and passes
+the string to each signal's `DesiredValue::meets_cmdline()` call.
+No per-signal procfs open is performed.
+
+No reader change is required when adding a new `KernelCmdline` sub-signal.
+The only code changes are a `SignalId` variant in `signal.rs`, a `label()` match
+arm, and a `SignalDescriptor` entry in `catalog.rs`.
+
+=== Adding a New Sub-Signal
+
+When a new per-CVE mitigation weakening flag appears in a kernel release, add it
+in the section of `signal.rs` marked:
+
+[source,rust]
+----
+// ── CPU mitigation sub-signals (Phase 2b) ────────────────────────────
+----
+
+Use `SignalClass::KernelCmdline` and `DesiredValue::CmdlineAbsent("flag=off")`.
+Set `impact` to `High` if the CVE enables cross-process or cross-VM memory reads;
+set it to `Medium` for narrower threat models (Intel-specific hardware, or attacks
+requiring prior access).
+
+IMPORTANT: After adding the variant, update the exhaustive match in
+`catalog_covers_all_signal_ids` in `posture_tests.rs`.
+The test will fail to compile — not fail at runtime — if a variant is missing.
+This is intentional: the compiler enforces catalog completeness.
+
+For the complete seven-step process, see
+xref:update-checklists.adoc#add-signal[Step 3: Add a New Signal].
+
+== CorePattern — TPI Classification (Phase 2b)
+
+=== Background
+
+`kernel.core_pattern` is a sysctl that controls how the kernel handles core dumps
+when a process crashes.
+Two formats are valid:
+
+* A file path template — the kernel writes the dump directly to the filesystem.
+* A pipe handler — a value beginning with `|` causes the dump to be piped to a
+  program such as `|/usr/lib/systemd/systemd-coredump`.
+
+On hardened systems, the piped handler format is required.
+A managed handler can apply access control, compression, and encryption before
+storing the dump.
+A raw filesystem path writes process memory — which may include key material,
+credentials, and CUI data — directly to disk with no handler accountability.
+
+WARNING: Core dumps from privileged processes are a ready-made data extraction path.
+`kernel.core_pattern` configured as a raw filesystem path means any user who can
+read the dump file gains access to the crashed process's complete memory contents,
+including credentials and private keys.
+
+The signal uses `SignalClass::Sysctl` with `DesiredValue::Custom` because neither
+an integer comparison nor a cmdline token check can express the hardened state.
+Classification is handled by a dedicated TPI function.
+
+=== Why TPI Is Applied Here
+
+The check "does the value start with `|`?" is not sufficient on its own.
+
+A bare `|` (pipe character only, no path) passes a single byte check — its first
+byte is `|`.
+But it is not a valid handler; it names no program to pipe the dump to.
+
+Likewise, `|usr/bin/handler` starts with `|` but the path is not absolute.
+A handler with a relative path depends on the working directory at crash time,
+which is not under operator control.
+
+Two independent validation paths applied to the same input detect these edge cases.
+This is the TPI pattern: two parsers, different algorithms, fail closed on any
+disagreement.
+See xref:patterns:pattern-tpi.adoc[Two-Path Independence (TPI)].
+
+=== The Two Paths
+
+The outer function `classify_core_pattern` calls `classify_core_pattern_inner`,
+which implements both paths and combines the results at a gate.
+
+*Path 1 — Structural*
+
+Checks whether the first byte of the raw string is `|` (ASCII 0x7C).
+This is a byte-level check with no interpretation of the remaining content.
+
+[source,rust]
+----
+let path1_is_handler = value.as_bytes().first() == Some(&b'|');
+----
+
+*Path 2 — Semantic*
+
+Trims whitespace, takes the first whitespace-delimited token, checks that the token
+starts with `|`, and verifies that the character immediately after `|` is `/`
+(an absolute path).
+
+[source,rust]
+----
+let path2_is_handler = {
+    let first_token = value.split_whitespace().next().unwrap_or("");
+    if let Some(after_pipe) = first_token.strip_prefix('|') {
+        after_pipe.starts_with('/')
+    } else {
+        false
+    }
+};
+----
+
+Path 2 rejects a bare `|` (no character after the pipe), `|usr/bin/handler`
+(relative path), and any value where the first token does not begin with `|`.
+
+*TPI Gate*
+
+[source,rust]
+----
+match (path1_is_handler, path2_is_handler) {
+    (true, true)   => CorePatternKind::ManagedHandler,
+    (false, false) => CorePatternKind::RawPath,
+    _ => {
+        log::warn!(
+            "posture: core_pattern TPI disagreement: \
+             path1_handler={path1_is_handler} \
+             path2_handler={path2_is_handler} — classified as Invalid (fail-closed)"
+        );
+        CorePatternKind::Invalid
+    }
+}
+----
+
+Path disagreement is logged at `warn!` level with both path results for audit
+visibility.
+The result is `Invalid`, which the snapshot treats as unhardened.
+
+=== Classification Outcomes
+
+[cols="2,1,3", options="header"]
+|===
+| `CorePatternKind` | Hardened? | Condition
+
+| `ManagedHandler`
+| Yes
+| Both paths agree: first byte is `\|` and remainder is an absolute path
+
+| `RawPath`
+| No
+| Both paths agree: no leading `\|`; dump writes directly to filesystem
+
+| `Invalid`
+| No (fail-closed)
+| Paths disagree, or value is empty
+
+|===
+
+=== Example Values
+
+[cols="3,2,3", options="header"]
+|===
+| Value | Classification | Reason
+
+| `\|/usr/lib/systemd/systemd-coredump`
+| `ManagedHandler`
+| Both paths agree: `\|` present, handler path is absolute
+
+| `\|/bin/true`
+| `ManagedHandler`
+| Valid minimal handler path
+
+| `/var/crash/core.%e.%p`
+| `RawPath`
+| No `\|` prefix; raw filesystem path template
+
+| `core`
+| `RawPath`
+| No `\|` prefix; relative path template
+
+| `` (empty string)
+| `Invalid`
+| Empty input; both paths fail
+
+| `\|`
+| `Invalid`
+| Path 1 passes (byte is `\|`); Path 2 fails (no absolute path after `\|`)
+
+| `\|usr/bin/handler`
+| `Invalid`
+| Path 1 passes; Path 2 fails (path after `\|` is not absolute)
+
+|===
+
+The `Invalid` cases are the reason TPI is applied.
+A structural-only check would classify `|` and `|usr/bin/handler` as hardened —
+both have `|` as the first byte.
+The semantic path rejects both because neither identifies a valid absolute handler.
+
+=== How `snapshot.rs` Uses the Classification
+
+`PostureSnapshot::collect()` handles `CorePattern` through a dedicated dispatch arm.
+The arm calls `read_live_core_pattern`, which reads the sysctl via `CorePatternReader`
+(provenance-verified through `StaticSource::read`) and applies `classify_core_pattern`
+to the result.
+
+The `meets` outcome is:
+
+* `Some(true)` if kind is `ManagedHandler`
+* `Some(false)` if kind is `RawPath` or `Invalid`
+* `None` if the kernel node could not be read
+
+`None` is reported as unknown, not as a failure.
+Unavailability is distinct from a policy violation.
+
+=== Pattern Execution Measurement
+
+Both `CorePatternReader::parse` and `classify_core_pattern` log wall-clock
+duration in debug builds:
+
+[source,rust]
+----
+#[cfg(debug_assertions)]
+log::debug!(
+    "posture: TPI classify_core_pattern completed in {} µs, result={result:?}",
+    start.elapsed().as_micros()
+);
+----
+
+Timing is logged only in `#[cfg(debug_assertions)]` builds and is not emitted in
+release builds.
+This satisfies the Pattern Execution Measurement Rule.
+
+=== Source References
+
+[cols="2,3", options="header"]
+|===
+| Symbol | Location
+
+| `CorePatternReader`
+| `umrs-platform/src/posture/reader.rs`
+
+| `CorePatternKind`
+| `umrs-platform/src/posture/reader.rs`
+
+| `classify_core_pattern` (public)
+| `umrs-platform/src/posture/reader.rs`
+
+| `classify_core_pattern_inner` (private)
+| `umrs-platform/src/posture/reader.rs`
+
+| `SignalId::CorePattern`
+| `umrs-platform/src/posture/signal.rs`
+
+| CorePattern `SignalDescriptor`
+| `umrs-platform/src/posture/catalog.rs`
+
+| Integration tests (section 13)
+| `umrs-platform/tests/posture_tests.rs`
+
+|===
+
+== Fail-Closed Behavior Across the Probe
+
+All signals fail in the same direction: if a value cannot be read, the signal is
+reported as unknown (`?`), not as hardened.
+A missing kernel node is not treated as a hardening confirmation.
+
+`CorePatternKind::Invalid` applies the same principle at the classification level.
+A value that cannot be unambiguously classified as a managed handler is not
+reported as hardened.
+
+The underlying principle is documented in
+xref:patterns:pattern-fail-closed.adoc[Fail-Closed].
+
+== Compliance Summary
+
+[cols="2,3", options="header"]
+|===
+| Control | How the posture probe satisfies it
+
+| NIST SP 800-53 CM-6
+| The static `SIGNALS` catalog defines the configuration baseline;
+  every signal encodes its desired hardened value as a `const` expression
+
+| NIST SP 800-53 CA-7
+| `PostureSnapshot::collect()` provides a point-in-time assessment of all
+  monitored controls for continuous monitoring integration
+
+| NIST SP 800-53 SI-16
+| CPU mitigation sub-signals detect per-CVE weakening flags on the kernel
+  command line, complementing the umbrella `Mitigations` signal
+
+| NIST SP 800-53 SC-28
+| `CorePattern` enforces managed handler routing for core dumps containing
+  process memory including key material and credentials
+
+| NIST SP 800-53 AU-3
+| Typed `SignalId` variants enable programmatic filtering and machine-readable
+  audit records; no free-form string dispatch
+
+| NIST SP 800-218 SSDF PW.4
+| TPI applied to `core_pattern` classification; fail-closed on path disagreement;
+  compile-time binding of all catalog constants
+
+| NSA RTB RAIN
+| All kernel reads route through `StaticSource::read()`, which verifies filesystem
+  magic before reading — the provenance check is the default method path and
+  cannot be bypassed
+
+|===
+
+== See Also
+
+* `umrs-platform/src/posture/signal.rs` — `SignalId`, `SignalClass`, `DesiredValue`
+* `umrs-platform/src/posture/catalog.rs` — `SIGNALS` static array and all `SignalDescriptor` entries
+* `umrs-platform/src/posture/reader.rs` — live-value readers, `CorePatternReader`, `classify_core_pattern`
+* `umrs-platform/tests/posture_tests.rs` — integration tests; section 12 for CPU sub-signals, section 13 for CorePattern TPI
+* xref:reference:kernel-probe-signals.adoc[Kernel Security Posture Signals] — operator-facing descriptions for all 37 signals
+* xref:update-checklists.adoc[Platform Update Checklists] — procedure for adding a new signal
+* xref:patterns:pattern-tpi.adoc[Two-Path Independence (TPI)] — the pattern applied to CorePattern classification
+* xref:patterns:pattern-fail-closed.adoc[Fail-Closed] — fail-closed behavior at signal and classification level
+* xref:patterns:pattern-non-bypassability.adoc[Non-Bypassability] — NSA RTB RAIN provenance verification
