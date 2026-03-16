@@ -1,3 +1,53 @@
 = UMRS Documentation
 
-UMRS documentation covers deployment, operations, architecture, security, and development.
+The Unclassified MLS Reference System (UMRS) is a free, MIT-licensed project started and currently
+maintained by one person to explore primarily high-assurance: in both operations and development.
+
+The UMRS Project is a reference system to explore and learn:
+
+* Using SELinux MCS labeling mechanism
+* Operations to Enhance High-Assurance
+* High-assurance software development
+* Use of AI to improve quality of tooling
+
+The UMRS Project is several interrelated disciplines. One or all you may find useful. You're free to
+adopt one or all, but remember, this is not a production system. It is a reference system intended
+to educate, encourage exploration, and be a place to collaborate.
+
+|===
+| Documentation Set | Topics
+
+|xref:introduction.adoc[The UMRS Project]
+a| * Introduction and Background
+   * Emergence of High-Assurance
+   ** Significant Historical Events
+   ** Birth of MLS
+   * Security Concepts
+
+|xref:security-concepts:index.adoc[UMRS CUI Labeling]
+a| * Understanding SELinux
+   * Enable CUI Labeling
+
+
+|xref:operations:index.adoc[UMRS Operations]
+a| * Deployment of a UMRS Playground
+   * High-Assurance Enhancements
+   * UMRS Developed Tools
+
+
+|xref:devel:index.adoc[UMRS High-Assurance Development]
+a| * Development Guidelines
+   * High-Assurance Patterns
+   * UMRS Software Library
+
+
+|xref:ai-transparency:index.adoc[UMRS Use of AI]
+|Demonstrating how an AI with the right knowledgebase can contribute to high-quality software with
+proper cross-referencing, secure code, and excellent tooling.
+
+
+|References
+|Reference material is included within each documentation set rather than separated.
+Each set carries the references that serve its audience.
+
+|===

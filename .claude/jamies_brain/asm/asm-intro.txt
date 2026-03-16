@@ -1,0 +1,16 @@
+Good instinct — the readability concern is exactly right. Let me write this as both a `CLAUDE.md` rule (always-on) and a skill (detailed guidance when the agent actually needs to use it).Four files — here's how to deploy them:
+
+**`asm-policy-claude-md.md`** — paste this block into your `CLAUDE.md` under a new `## ASM Usage Policy` section. This is Rusty's always-on constraint, same weight as your FFI prohibition.
+
+**`asm-guidance/`** — drop the whole folder into `.claude/skills/` on the RHEL VM alongside `corpus-familiarization/`.
+
+A few design decisions worth noting:
+
+The **`// REVIEW: ASM`** marker in the templates is intentional — it gives The IRS a trivial grep target to find every ASM block in the codebase during audit cycles:
+```bash
+rg "REVIEW: ASM" --type rust
+```
+
+The **RDTSCP template** is the one you'll most likely actually use in UMRS — audit log timestamps that correctly order kernel events need serialization that `std::time` simply cannot provide. The template has the invariant TSC verification requirement baked in so Rusty won't skip that step.
+
+The **three-gate test in `CLAUDE.md`** is the key constraint — it forces Rusty to check `core::arch` first every time, which means raw `asm!` stays genuinely rare rather than becoming a habit.

@@ -1,6 +1,6 @@
 # UMRS ROADMAP
 
-**Updated:** 2026-03-15
+**Updated:** 2026-03-16
 
 High-assurance Rust platform for system security on Linux.
 Typed, provenance-verified answers about what a system is, what it runs, and whether it meets policy.
@@ -49,12 +49,18 @@ graph LR
     G9[G9 Project Structure] -.->|blocks| G7
     G4 --> G10[G10 AI Transparency]
     G10 --> G7
+    G9 -.->|informs| G11[G11 Multi-Site Docs]
+    G11 --> G7
+    G11 -.->|informs| G12[G12 Doc Theme]
+    G12 --> G7
 
     style G1 fill:#4a9,stroke:#333
     style G2 fill:#4a9,stroke:#333
     style G7 fill:#f96,stroke:#333
     style G9 fill:#ff9,stroke:#333
     style G10 fill:#9cf,stroke:#333
+    style G11 fill:#ff9,stroke:#333
+    style G12 fill:#ff9,stroke:#333
 ```
 
 - G1 feeds G4: platform awareness provides evidence for assessment
@@ -64,12 +70,67 @@ graph LR
 - G4 feeds G10: assessment methodology informs how we document AI knowledge provenance
 - G10 feeds G7: AI transparency documentation is part of the public project story
 - G9 blocks parts of G7: can't publish to crates.io without deciding repo structure
+- G9 informs G11: repo layout decisions affect where Antora site directories live
+- G11 feeds G7: multi-site docs improve navigation and ownership for public release
 
 ### G9 — Project Structure (decision pending)
 
 The project may need to split into multiple repos for crates.io, GitHub Pages,
 and contributor clarity. Decision captured in `.claude/plans/project-restructure.md`.
 Not blocking current work. Blocks M4.
+
+### G11 — Multi-Site Documentation Architecture (planned)
+
+The six Documentation Sets defined in `docs/modules/ROOT/pages/index.adoc` may each
+become their own Antora site, replacing the current single-site/multi-module layout:
+
+| Documentation Set | Current modules | Proposed site |
+|---|---|---|
+| The UMRS Project | ROOT, architecture (history), glossary | `docs/umrs-project/` |
+| UMRS CUI Labeling | security-concepts, architecture (MLS/CUI) | `docs/umrs-cui-labeling/` |
+| UMRS Operations | deployment, operations, umrs-tools, logging-audit | `docs/umrs-operations/` |
+| UMRS High-Assurance Development | devel, patterns, cryptography | `docs/umrs-ha-development/` |
+| UMRS Use of AI | ai-transparency | `docs/umrs-ai/` |
+
+**No standalone References site.** Reference material is distributed to the site it serves:
+- Development references (rust-style-guide, secure-bash, secure-python, compliance-frameworks, cpu-extensions) → HA Development
+- Operations references (kernel-probe-signals, SELinux reference pages) → Operations
+- Historical/conceptual references (glossary) → The UMRS Project
+- CUI references (cui-descriptions, cui-abbreviations, MLS registry) → CUI Labeling
+
+Each site gets its own `antora.yml`, modules, and nav — enabling independent versioning,
+focused navigation, and clearer ownership boundaries. Sites are aggregated by the Antora
+playbook into a unified published output.
+
+**Execution:** senior-tech-writer to produce the migration plan. Jamie is actively refining
+the content scope of each set (see the index.adoc table) and will signal when the boundaries
+are stable enough to execute.
+
+**Dependency:** G9 (project structure) informs this — repo layout decisions affect where
+site directories live.
+
+### G12 — Documentation Theme & Visual Identity (planned)
+
+The current Antora theme is the default — plain white, generic, indistinguishable from
+any other project's docs. It does not reflect what UMRS is about: security, precision,
+the wizard mascot, the mystique of high-assurance engineering.
+
+**The problem:** A project about MLS, Bell-LaPadula, and kernel-level enforcement should
+not look like a SaaS onboarding guide. The visual identity should communicate trust,
+craft, and depth — the same qualities the code demands.
+
+**What we want:**
+- Dark theme with security-appropriate aesthetics (think terminal green, muted blues, subtle glow)
+- The wizard mascot integrated into the brand — header, favicon, 404 page
+- Typography that says "precision engineering," not "corporate blog"
+- Color accents that echo the TUI's security posture indicators (green/amber/red)
+- A visual identity that makes someone landing on the docs think "these people take security seriously"
+
+**Approach:** Antora supports custom UI bundles. Build a custom theme that replaces the
+default. This is primarily frontend/design work — HTML templates, CSS, SVG assets.
+
+**Dependency:** G11 (multi-site architecture) should be decided first so the theme
+applies consistently across all sites.
 
 ---
 
@@ -101,7 +162,7 @@ Not blocking current work. Blocks M4.
       - If Linux server is running Samba with labeled files:
         - Use the alternate data stream (ADS) in the file's extended attributes to hold labeling
 
-### M4 — Public Release (G7, G9)
+### M4 — Public Release (G7, G9, G11, G12)
 - [ ] Project structure decided (see G9)
       - May mean different GitHub repositories
       - Repository work needed
@@ -110,6 +171,8 @@ Not blocking current work. Blocks M4.
 - [ ] Core crates on crates.io
 - [ ] Source code comments reviewed by tech-writer and security-auditor
 - [ ] Documentation and API available on GitHub Pages
+- [ ] Multi-site documentation architecture (G11) — each Documentation Set as its own Antora site
+- [ ] Custom documentation theme (G12) — visual identity reflecting security, the wizard, and the project's character
 
 ### M5 — AI Transparency (G10)
 - [x] Antora module: `ai-transparency` (2026-03-15)
@@ -253,11 +316,13 @@ usability → findings drive the next iteration. This applies to every interface
 ## Principles
 
 1. **Security over convenience**
-2. **Evidence over claims**
-3. **Types over strings**
-4. **Rust over FFI**
-5. **Approachable over intimidating**
-6. **Iterative over perfect**
+2. **Usability co-equal with security** — the most secure tool is worthless if operators can't use it, misread it, or avoid it
+3. **Evidence over claims**
+4. **Types over strings**
+5. **Rust over FFI**
+6. **Explain, don't abbreviate** — output, logs, and interfaces should tell a story a human can follow
+7. **Approachable over intimidating**
+8. **Iterative over perfect**
 
 ---
 

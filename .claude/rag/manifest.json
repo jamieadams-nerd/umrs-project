@@ -35152,5 +35152,222 @@
     "chunks_stored": 1,
     "collection": "scap-security-guide",
     "ingested_date": "2026-03-16T14:11:00.045903+00:00"
+  },
+  "performance-corpus/profiling/criterion-rs.md": {
+    "hash": "c3cd50c84cd846fd",
+    "converted_to": "converted/performance-corpus/profiling/criterion-rs.md",
+    "chunks_stored": 9,
+    "collection": "performance-corpus",
+    "ingested_date": "2026-03-16T20:30:59.271080+00:00"
+  },
+  "performance-corpus/profiling/flamegraph-rs.md": {
+    "hash": "e736e016ead600af",
+    "converted_to": "converted/performance-corpus/profiling/flamegraph-rs.md",
+    "chunks_stored": 18,
+    "collection": "performance-corpus",
+    "ingested_date": "2026-03-16T20:31:00.009304+00:00"
+  },
+  "performance-corpus/rust-performance/SOURCE.md": {
+    "hash": "f96a5a4c30f6f123",
+    "converted_to": "converted/performance-corpus/rust-performance/SOURCE.md",
+    "chunks_stored": 3,
+    "collection": "performance-corpus",
+    "ingested_date": "2026-03-16T20:31:00.166323+00:00"
+  },
+  "performance-corpus/rust-performance/perf-book-SUMMARY.md": {
+    "hash": "0dea41133844c83a",
+    "converted_to": "converted/performance-corpus/rust-performance/perf-book-SUMMARY.md",
+    "chunks_stored": 1,
+    "collection": "performance-corpus",
+    "ingested_date": "2026-03-16T20:31:00.258717+00:00"
+  },
+  "performance-corpus/rust-performance/perf-book-benchmarking.md": {
+    "hash": "af70a341b5e82322",
+    "converted_to": "converted/performance-corpus/rust-performance/perf-book-benchmarking.md",
+    "chunks_stored": 1,
+    "collection": "performance-corpus",
+    "ingested_date": "2026-03-16T20:31:00.367944+00:00"
+  },
+  "performance-corpus/rust-performance/perf-book-bounds-checks.md": {
+    "hash": "cc873a34841da6c4",
+    "converted_to": "converted/performance-corpus/rust-performance/perf-book-bounds-checks.md",
+    "chunks_stored": 1,
+    "collection": "performance-corpus",
+    "ingested_date": "2026-03-16T20:31:00.482785+00:00"
+  },
+  "performance-corpus/rust-performance/perf-book-build-configuration.md": {
+    "hash": "fde14fab2ec5189e",
+    "converted_to": "converted/performance-corpus/rust-performance/perf-book-build-configuration.md",
+    "chunks_stored": 16,
+    "collection": "performance-corpus",
+    "ingested_date": "2026-03-16T20:31:01.306232+00:00"
+  },
+  "performance-corpus/rust-performance/perf-book-compile-times.md": {
+    "hash": "4a249d4aee2da6a4",
+    "converted_to": "converted/performance-corpus/rust-performance/perf-book-compile-times.md",
+    "chunks_stored": 4,
+    "collection": "performance-corpus",
+    "ingested_date": "2026-03-16T20:31:01.489773+00:00"
+  },
+  "performance-corpus/rust-performance/perf-book-general-tips.md": {
+    "hash": "d8081b12259c0325",
+    "converted_to": "converted/performance-corpus/rust-performance/perf-book-general-tips.md",
+    "chunks_stored": 4,
+    "collection": "performance-corpus",
+    "ingested_date": "2026-03-16T20:31:01.693903+00:00"
+  },
+  "performance-corpus/rust-performance/perf-book-hashing.md": {
+    "hash": "bf284cb365b89f6f",
+    "converted_to": "converted/performance-corpus/rust-performance/perf-book-hashing.md",
+    "chunks_stored": 2,
+    "collection": "performance-corpus",
+    "ingested_date": "2026-03-16T20:31:01.823080+00:00"
+  },
+  "performance-corpus/rust-performance/perf-book-heap-allocations.md": {
+    "hash": "ab826a6a9f1917a4",
+    "converted_to": "converted/performance-corpus/rust-performance/perf-book-heap-allocations.md",
+    "chunks_stored": 16,
+    "collection": "performance-corpus",
+    "ingested_date": "2026-03-16T20:31:02.440975+00:00"
+  },
+  "performance-corpus/rust-performance/perf-book-inlining.md": {
+    "hash": "8d6e3354ac72d61c",
+    "converted_to": "converted/performance-corpus/rust-performance/perf-book-inlining.md",
+    "chunks_stored": 4,
+    "collection": "performance-corpus",
+    "ingested_date": "2026-03-16T20:31:02.634831+00:00"
+  },
+  "performance-corpus/rust-performance/perf-book-introduction.md": {
+    "hash": "c283e6362fc11e28",
+    "converted_to": "converted/performance-corpus/rust-performance/perf-book-introduction.md",
+    "chunks_stored": 1,
+    "collection": "performance-corpus",
+    "ingested_date": "2026-03-16T20:31:02.745062+00:00"
+  },
+  "performance-corpus/rust-performance/perf-book-io.md": {
+    "hash": "967a5b6df59a7210",
+    "converted_to": "converted/performance-corpus/rust-performance/perf-book-io.md",
+    "chunks_stored": 4,
+    "collection": "performance-corpus",
+    "ingested_date": "2026-03-16T20:31:02.926608+00:00"
+  },
+  "performance-corpus/rust-performance/perf-book-iterators.md": {
+    "hash": "7a465f197cbd67a2",
+    "converted_to": "converted/performance-corpus/rust-performance/perf-book-iterators.md",
+    "chunks_stored": 4,
+    "collection": "performance-corpus",
+    "ingested_date": "2026-03-16T20:31:03.114210+00:00"
+  },
+  "performance-corpus/rust-performance/perf-book-linting.md": {
+    "hash": "e5c697b6bc3609f3",
+    "converted_to": "converted/performance-corpus/rust-performance/perf-book-linting.md",
+    "chunks_stored": 3,
+    "collection": "performance-corpus",
+    "ingested_date": "2026-03-16T20:31:03.268098+00:00"
+  },
+  "performance-corpus/rust-performance/perf-book-logging-and-debugging.md": {
+    "hash": "a3af0d478858aa54",
+    "converted_to": "converted/performance-corpus/rust-performance/perf-book-logging-and-debugging.md",
+    "chunks_stored": 1,
+    "collection": "performance-corpus",
+    "ingested_date": "2026-03-16T20:31:03.354718+00:00"
+  },
+  "performance-corpus/rust-performance/perf-book-machine-code.md": {
+    "hash": "5d88569850b6a31f",
+    "converted_to": "converted/performance-corpus/rust-performance/perf-book-machine-code.md",
+    "chunks_stored": 1,
+    "collection": "performance-corpus",
+    "ingested_date": "2026-03-16T20:31:03.441632+00:00"
+  },
+  "performance-corpus/rust-performance/perf-book-parallelism.md": {
+    "hash": "748094cbd16ed5c8",
+    "converted_to": "converted/performance-corpus/rust-performance/perf-book-parallelism.md",
+    "chunks_stored": 1,
+    "collection": "performance-corpus",
+    "ingested_date": "2026-03-16T20:31:03.534651+00:00"
+  },
+  "performance-corpus/rust-performance/perf-book-profiling.md": {
+    "hash": "79b370dd0160157f",
+    "converted_to": "converted/performance-corpus/rust-performance/perf-book-profiling.md",
+    "chunks_stored": 4,
+    "collection": "performance-corpus",
+    "ingested_date": "2026-03-16T20:31:03.753230+00:00"
+  },
+  "performance-corpus/rust-performance/perf-book-standard-library-types.md": {
+    "hash": "9aa3ba701734354f",
+    "converted_to": "converted/performance-corpus/rust-performance/perf-book-standard-library-types.md",
+    "chunks_stored": 5,
+    "collection": "performance-corpus",
+    "ingested_date": "2026-03-16T20:31:03.995019+00:00"
+  },
+  "performance-corpus/rust-performance/perf-book-title-page.md": {
+    "hash": "f0d395e981c79575",
+    "converted_to": "converted/performance-corpus/rust-performance/perf-book-title-page.md",
+    "chunks_stored": 1,
+    "collection": "performance-corpus",
+    "ingested_date": "2026-03-16T20:31:04.067968+00:00"
+  },
+  "performance-corpus/rust-performance/perf-book-type-sizes.md": {
+    "hash": "1f9e4a832c99c806",
+    "converted_to": "converted/performance-corpus/rust-performance/perf-book-type-sizes.md",
+    "chunks_stored": 7,
+    "collection": "performance-corpus",
+    "ingested_date": "2026-03-16T20:31:04.343032+00:00"
+  },
+  "performance-corpus/rust-performance/perf-book-wrapper-types.md": {
+    "hash": "5b1e258aa0d54fdc",
+    "converted_to": "converted/performance-corpus/rust-performance/perf-book-wrapper-types.md",
+    "chunks_stored": 1,
+    "collection": "performance-corpus",
+    "ingested_date": "2026-03-16T20:31:04.435350+00:00"
+  },
+  "performance-corpus/rust-performance/rustc-profile-guided-optimization.md": {
+    "hash": "eca644fa1d54b6e7",
+    "converted_to": "converted/performance-corpus/rust-performance/rustc-profile-guided-optimization.md",
+    "chunks_stored": 6,
+    "collection": "performance-corpus",
+    "ingested_date": "2026-03-16T20:31:04.692887+00:00"
+  },
+  "performance-corpus/rust-performance/rustc-profiling-guide.md": {
+    "hash": "0d04bc23d2a35aef",
+    "converted_to": "converted/performance-corpus/rust-performance/rustc-profiling-guide.md",
+    "chunks_stored": 6,
+    "collection": "performance-corpus",
+    "ingested_date": "2026-03-16T20:31:04.918684+00:00"
+  },
+  "performance-corpus/rust-performance/rustc-profiling-with-perf.md": {
+    "hash": "7fd1ace8c2c86e41",
+    "converted_to": "converted/performance-corpus/rust-performance/rustc-profiling-with-perf.md",
+    "chunks_stored": 9,
+    "collection": "performance-corpus",
+    "ingested_date": "2026-03-16T20:31:05.257908+00:00"
+  },
+  "performance-corpus/systems-performance/agner-fog-optimize-index.md": {
+    "hash": "7853e79796df0ca6",
+    "converted_to": "converted/performance-corpus/systems-performance/agner-fog-optimize-index.md",
+    "chunks_stored": 16,
+    "collection": "performance-corpus",
+    "ingested_date": "2026-03-16T20:31:05.824854+00:00"
+  },
+  "performance-corpus/systems-performance/agner-fog-optimizing-cpp.pdf": {
+    "hash": "a6b9e3fd990c1a3b",
+    "converted_to": "converted/performance-corpus/systems-performance/agner-fog-optimizing-cpp.md",
+    "chunks_stored": 181,
+    "collection": "performance-corpus",
+    "ingested_date": "2026-03-16T20:31:11.772424+00:00"
+  },
+  "performance-corpus/systems-performance/brendan-gregg-linux-perf.md": {
+    "hash": "1b412db7ad7a0dc9",
+    "converted_to": "converted/performance-corpus/systems-performance/brendan-gregg-linux-perf.md",
+    "chunks_stored": 20,
+    "collection": "performance-corpus",
+    "ingested_date": "2026-03-16T20:31:12.427310+00:00"
+  },
+  "performance-corpus/systems-performance/cpumemory-drepper.pdf": {
+    "hash": "2902dddcadb1ec97",
+    "converted_to": "converted/performance-corpus/systems-performance/cpumemory-drepper.md",
+    "chunks_stored": 199,
+    "collection": "performance-corpus",
+    "ingested_date": "2026-03-16T20:31:17.984612+00:00"
   }
 }

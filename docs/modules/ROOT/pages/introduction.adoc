@@ -8,17 +8,22 @@
 // NIST 800-53 SA-3 — System development lifecycle
 // NIST 800-171 — CUI handling requirements (EO 13556)
 
-The Unclassified MLS Reference System (UMRS) is a software platform for
-enforcing, verifying, and auditing mandatory handling labels on unclassified
-systems. It is built on Red Hat Enterprise Linux 10 with SELinux enforcing
-mode active, and it targets environments where unclassified information carries
-legally or contractually binding handling requirements — such as Controlled
-Unclassified Information (CUI) under NIST SP 800-171 and CMMC 2.0.
+The genesis of the project was to incorporate NARA-registered controlled unclassified (CUI) labeling
+to an SELinux system using the multi-category system (MCS). The first phase was to simply apply the
+labeling and ensure awareness within the boundaries of the system and resources labeled. How they
+should be treated and handled. The second phase will broaden to include enforcement policies.
 
-UMRS does not perform classification. It does not determine whether data is
-authorized for release. It enforces the labels that policy assigns, makes those
-labels observable, and produces auditable evidence that handling requirements
-were respected.
+However, during this process several other areas of high-availability turned out to be very
+interesting and worth exploring. Given the person’s background in the classified world and
+strict, isolated systems, this seemed a worthy challenge.
+
+The UMRS Project is a reference system to explore and learn: 
+
+* Using SELinux MCS labeling mechanism 
+* Operations to Enhance High-Assurance 
+* High-assurance software development 
+* Use of AI to improve quality of tooling
+
 
 == What UMRS Demonstrates
 
@@ -82,60 +87,13 @@ high-assurance environments.
   a security context. The kernel mediates all access decisions.
 
 | Baseline hardening
-| STIG-aligned configuration. IMA/EVM active for file integrity measurement
-  and xattr protection. AIDE for filesystem state monitoring.
+| STIG-aligned configuration. (e.g., OpenSCAP SSG)
 |===
 
 Ubuntu is a secondary deployment target.
 See xref:deployment:ubuntu/ubuntu.adoc[Ubuntu deployment notes].
 
-== Target Environment
 
-UMRS is designed for:
-
-* Red Hat Enterprise Linux 10 with SELinux enforcing mode (targeted or MLS policy)
-* FIPS 140-2/140-3 mode assumed active — all cryptographic operations must
-  use FIPS-validated primitives
-* Isolated or near-isolated network posture — deployed binaries make no
-  outbound network calls
-* CUI environments governed by NIST 800-171, CMMC 2.0, and related frameworks
-* Eventual support for partner-nation handling schemes (UK, Canada, Australia,
-  New Zealand) alongside the US CUI baseline
-
-Deployment on Ubuntu is supported for development. Production deployment
-targets RHEL 10.
-
-== The MLS Label Hierarchy
-
-UMRS implements an unclassified Multi-Level Security (MLS) sensitivity label
-hierarchy. MLS separates data at the kernel level by sensitivity. Processes at
-one level cannot read or write objects at another level without explicit policy
-authorization.
-
-[NOTE]
-====
-These sensitivity labels are illustrative examples provided to clarify the
-structure. Exact label assignments are subject to change for each deployment.
-====
-
-[cols="1,3", options="header"]
-|===
-| Sensitivity Level | Description
-
-| `GENERAL`
-| The broad unclassified level. Suitable for routine, openly unclassified
-  material that requires no special controls.
-
-| `PUBLIC`
-| Unclassified material suitable for public dissemination: documentation,
-  website assets, published references.
-
-| `U-CONTROLLED`
-| The top of the unclassified MLS hierarchy. Not the same as CUI, but models
-  what many organizations handle as "controlled" within an unclassified
-  environment. Subject to explicit handling, integrity, and confidentiality
-  expectations.
-|===
 
 == CUI Handling
 
@@ -212,29 +170,3 @@ environment. Organizations using UMRS should adapt the MLS label hierarchy to
 their own sensitivity categories, review and extend the SELinux policy for their
 specific application set, and verify the STIG baseline against their deployment
 environment.
-
-== What Is Stable and What Is Not
-
-The core `umrs-selinux` library — including the security context model, MLS
-level and range types, category sets, TOCTOU-safe directory listing, and kernel
-attribute reader — is the stable, documented foundation. The `umrs-ls` tool is
-the first user-facing tool built on that foundation.
-
-Several components are prototypes under active development: `umrs-logspace`
-(audit trail), `umrs-state` (system state introspection), and `vaultmgr`
-(secret ingestion). Documentation for these components will be added when
-their APIs stabilize.
-
-== Where to Go Next
-
-See xref:getting-started.adoc[Getting started] for guided reading paths by
-audience role.
-
-See xref:scope-and-audience.adoc[Scope and audience] for a precise definition
-of what UMRS does and does not do.
-
-See xref:what-is-high-assurance.adoc[What Is High Assurance?] for the
-engineering standard this project applies.
-
-See xref:architecture:index.adoc[Architecture overview] for the technical
-design of the system.

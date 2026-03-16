@@ -220,4 +220,4 @@ the correction and its rationale part of the git history.
 * xref:knowledge-provenance.adoc[Knowledge Provenance and Claim Traceability]
 * xref:what-ai-does-and-does-not-do.adoc[What AI Does and Does Not Do]
 * xref:rag-collections.adoc[RAG Collections and Their Sources]
-* xref:ROOT:getting-started.adoc[Getting Started] — broader project orientation
+* xref:ROOT:introduction.adoc[Introduction to UMRS] — broader project orientation
