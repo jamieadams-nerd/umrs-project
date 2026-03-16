@@ -38,7 +38,7 @@ Mark entries `resolved` when acted on. Do not delete entries.
 
 ## [2026-03-16] rust-developer → tech-writer: doc-sync: umrs-platform posture — Phase 2b CPU sub-signals + CorePattern
 
-**Status**: open
+**Status**: resolved — 2026-03-16 by tech-writer
 
 Phase 2b additions to the `umrs-platform` posture probe require documentation updates.
 
