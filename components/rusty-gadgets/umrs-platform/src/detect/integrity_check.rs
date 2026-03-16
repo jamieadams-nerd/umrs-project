@@ -266,6 +266,7 @@ fn run_inner(
                     "TOCTOU: file identity changed between statx and open; aborting hash"
                         .to_owned(),
                 ],
+                duration_ns: None,
             });
             confidence.downgrade(
                 TrustLevel::SubstrateAnchored,
@@ -323,6 +324,7 @@ fn run_inner(
                     .to_owned(),
                 "SHA-512 vs SHA-256: cross-algorithm comparison unsupported".to_owned(),
             ],
+            duration_ns: None,
         });
         return false;
     }
@@ -383,6 +385,7 @@ fn check_algorithm_policy(
                 }),
                 parse_ok: false,
                 notes: vec!["MD5 digest rejected: weak algorithm".to_owned()],
+                duration_ns: None,
             });
             Some(false)
         }
@@ -454,6 +457,7 @@ fn compare_and_record(
                 open_note,
                 "SHA-256 digest verified (T4 earned)".to_owned(),
             ],
+            duration_ns: None,
         });
         true
     } else {
@@ -483,6 +487,7 @@ fn compare_and_record(
                 "SHA-256 digest mismatch — integrity deviation recorded"
                     .to_owned(),
             ],
+            duration_ns: None,
         });
         false
     }
@@ -505,6 +510,7 @@ fn no_digest_record(candidate_str: &str) -> EvidenceRecord {
         pkg_digest: None,
         parse_ok: false,
         notes: vec!["no installed digest in package DB".to_owned()],
+        duration_ns: None,
     }
 }
 
@@ -565,6 +571,7 @@ fn fips_mode_active(
             notes: vec![
                 "FIPS mode active: sha2 is not FIPS 140-3 validated; T4 not earned".to_owned(),
             ],
+            duration_ns: None,
         });
         confidence.downgrade(
             TrustLevel::SubstrateAnchored,

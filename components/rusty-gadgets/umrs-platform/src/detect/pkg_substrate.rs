@@ -169,6 +169,7 @@ fn run_inner(
                 "stub probe {}: ownership={}, digest={}",
                 winning_probe_name, winning_can_ownership, winning_can_digest
             )],
+            duration_ns: None,
         });
     }
 
@@ -239,6 +240,7 @@ fn check_selinux_enforce(evidence: &mut EvidenceBundle) -> bool {
                     "selinux_enforce={:?}; biba_check={enforcing}",
                     state
                 )],
+                duration_ns: None,
             });
             enforcing
         }
@@ -257,6 +259,7 @@ fn check_selinux_enforce(evidence: &mut EvidenceBundle) -> bool {
                 pkg_digest: None,
                 parse_ok: false,
                 notes: vec!["SELinux enforce read failed".to_owned()],
+                duration_ns: None,
             });
             false
         }

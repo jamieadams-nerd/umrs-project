@@ -24,6 +24,7 @@
 //! | `detect` | `OsDetector`, `DetectionResult`, `DetectionError`, phase modules |
 //! | `posture` | `PostureSnapshot`, `SignalReport`, `SignalId`, `AssuranceImpact` |
 //! | `sealed_cache` | `SealedCache`, `CacheStatus`, `DEFAULT_TTL_SECS`, `MAX_TTL_SECS` — SEC pattern |
+//! | `timestamp` | `BootSessionTimestamp`, `BootSessionDuration`, `TimestampError` — nanosecond audit ordering |
 //!
 //! ## Compliance
 //!
@@ -65,6 +66,7 @@ pub mod os_identity;
 pub mod os_release;
 pub mod posture;
 pub mod sealed_cache;
+pub mod timestamp;
 
 // ---------------------------------------------------------------------------
 // Crate-root re-exports
@@ -78,6 +80,9 @@ pub use evidence::{
     DigestAlgorithm, EvidenceBundle, EvidenceRecord, FileStat, PkgDigest,
     SourceKind,
 };
+
+// Detection phase timing
+pub use detect::{DetectionPhase, PhaseDuration};
 
 // OS identity (substrate-derived)
 pub use os_identity::{
@@ -97,3 +102,8 @@ pub use sealed_cache::{
 
 // Posture probe
 pub use posture::{AssuranceImpact, PostureSnapshot, SignalId, SignalReport};
+
+// Boot-session timestamps (nanosecond-precision monotonic ordering)
+pub use timestamp::{
+    BootSessionDuration, BootSessionTimestamp, TimestampError,
+};

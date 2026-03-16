@@ -135,7 +135,6 @@ pub enum SignalId {
     //
     // NIST SP 800-53 SI-16: Memory Protection — per-CVE mitigation overrides.
     // NSA RTB: CPU vulnerability mitigations must not be individually disabled.
-
     /// `spectre_v2=off` — must be absent; explicitly disables Spectre v2
     /// (Variant 2) mitigation (retpoline, IBRS, EIBRS).
     SpectreV2Off,

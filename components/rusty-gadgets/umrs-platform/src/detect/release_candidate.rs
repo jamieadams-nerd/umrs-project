@@ -169,6 +169,7 @@ fn probe_candidate(
             pkg_digest: None,
             parse_ok: false,
             notes: vec!["rejected: world-writable".to_owned()],
+            duration_ns: None,
         });
         return None;
     }
@@ -227,6 +228,7 @@ fn probe_candidate(
         pkg_digest: None,
         parse_ok: true,
         notes,
+        duration_ns: None,
     });
 
     log::debug!(
@@ -293,6 +295,7 @@ fn resolve_symlink(
             pkg_digest: None,
             parse_ok: true,
             notes: vec![format!("symlink target={target_str}")],
+            duration_ns: None,
         });
         Some(target_str)
     } else {

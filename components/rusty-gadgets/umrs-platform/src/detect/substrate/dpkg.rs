@@ -89,6 +89,7 @@ impl PackageProbe for DpkgProbe {
                 pkg_digest: None,
                 parse_ok: false,
                 notes: vec!["dpkg DB root not present".to_owned()],
+                duration_ns: None,
             };
             bundle.push(rec.clone());
             return ProbeResult {
@@ -162,6 +163,7 @@ impl PackageProbe for DpkgProbe {
             pkg_digest: None,
             parse_ok: true,
             notes,
+            duration_ns: None,
         };
         bundle.push(ev.clone());
 

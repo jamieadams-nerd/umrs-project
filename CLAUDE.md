@@ -128,7 +128,8 @@ Example: `ls -lh | tee output.txt` not `ls -lh > output.txt`
 ```
 components/rusty-gadgets/   ← Cargo workspace root
   umrs-selinux/             ← PRIMARY CRATE (SELinux MLS reference monitor)
-  umrs-platform/            ← Low-level OS/kernel layer (no workspace deps)
+  umrs-hw/                  ← Hardware timestamp isolation (workspace unsafe boundary)
+  umrs-platform/            ← Low-level OS/kernel layer (depends on umrs-hw only)
   umrs-core/                ← Shared formatting, i18n, timing utilities
   umrs-ls/                  ← First tool: security-enriched directory listings
   umrs-logspace/            ← Audit trail and logging
@@ -152,7 +153,8 @@ directions is prohibited without an explicit architectural decision.
 
 | Crate | Allowed dependencies (workspace) |
 |---|---|
-| `umrs-platform` | None — no dependencies on `umrs-selinux` or `umrs-core` |
+| `umrs-hw` | None — the workspace's unsafe isolation boundary; no workspace deps |
+| `umrs-platform` | `umrs-hw` only — no dependencies on `umrs-selinux` or `umrs-core` |
 | `umrs-selinux` | `umrs-platform` only |
 | `umrs-core` | `umrs-platform` and `umrs-selinux` |
 

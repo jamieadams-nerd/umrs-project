@@ -206,6 +206,21 @@ pub struct EvidenceRecord {
     /// labels, credentials, or file content (NIST SP 800-53 SI-12). Strings
     /// longer than 64 characters should be truncated at the call site.
     pub notes: Vec<String>,
+
+    /// Elapsed time for the I/O operation that produced this record.
+    ///
+    /// `Some(n)` where `n` is in CPU cycles (x86_64 RDTSCP) or nanoseconds
+    /// (other architectures via `CLOCK_MONOTONIC_RAW`). `None` if per-record
+    /// I/O timing was not captured for this record (e.g., package DB batch
+    /// queries where individual record timing is not meaningful).
+    ///
+    /// Computed as `end_ts.saturating_sub(start_ts)` using
+    /// `umrs_hw::read_hw_timestamp()`. Saturating subtraction prevents
+    /// underflow on a non-invariant TSC.
+    ///
+    /// NIST SP 800-53 AU-8 — per-record I/O timing supports fine-grained
+    /// temporal analysis of the detection audit trail.
+    pub duration_ns: Option<u64>,
 }
 
 // ===========================================================================

@@ -491,5 +491,6 @@ fn evidence_record(path: &str, ok: bool, notes: Vec<String>) -> EvidenceRecord {
         pkg_digest: None,
         parse_ok: ok,
         notes,
+        duration_ns: None,
     }
 }

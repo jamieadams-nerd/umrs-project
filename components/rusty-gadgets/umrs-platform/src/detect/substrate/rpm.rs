@@ -225,6 +225,7 @@ fn probe_inner(probe: &RpmProbe, bundle: &mut EvidenceBundle) -> ProbeResult {
         pkg_digest: None,
         parse_ok: true,
         notes,
+        duration_ns: None,
     };
     bundle.push(ev.clone());
 
@@ -465,5 +466,6 @@ fn no_db_record(path: &str, note: &str) -> EvidenceRecord {
         pkg_digest: None,
         parse_ok: false,
         notes: vec![note.to_owned()],
+        duration_ns: None,
     }
 }

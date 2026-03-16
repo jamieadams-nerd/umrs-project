@@ -181,6 +181,7 @@ fn run_inner(
                 "TPI: nom vs split_once key-set disagreement — fail closed"
                     .to_owned(),
             ],
+            duration_ns: None,
         });
         return (None, LabelTrust::UntrustedLabelCandidate);
     }
@@ -212,6 +213,7 @@ fn run_inner(
         pkg_digest: None,
         parse_ok: true,
         notes: build_notes,
+        duration_ns: None,
     });
 
     // --- Substrate corroboration and label trust assignment ---
@@ -270,6 +272,7 @@ fn read_candidate(
                 pkg_digest: None,
                 parse_ok: false,
                 notes: vec!["os-release open failed in parse phase".to_owned()],
+                duration_ns: None,
             });
             return None;
         }
@@ -309,6 +312,7 @@ fn read_candidate(
                             "TOCTOU: file identity changed between candidate statx and parse read"
                                 .to_owned(),
                         ],
+                        duration_ns: None,
                     });
                     confidence.downgrade(
                         TrustLevel::KernelAnchored,
@@ -355,6 +359,7 @@ fn read_candidate(
                 } else {
                     "path-based open; (dev,ino) stat not available for re-verification".to_owned()
                 }],
+                duration_ns: None,
             });
             Some(content)
         }
@@ -375,6 +380,7 @@ fn read_candidate(
                 pkg_digest: None,
                 parse_ok: false,
                 notes: vec!["os-release read failed in parse phase".to_owned()],
+                duration_ns: None,
             });
             None
         }

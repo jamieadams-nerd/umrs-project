@@ -2,7 +2,7 @@
 resolver = "2"
 members = [
     "umrs-apparmor",
-    "umrs-core", "umrs-crypto",
+    "umrs-core", "umrs-crypto", "umrs-hw",
     "umrs-logspace", "umrs-ls", "umrs-platform", "umrs-selinux",
     "umrs-state", "umrs-tui",
     "xtask",

@@ -813,10 +813,9 @@ fn cpu_mitigation_sub_signals_are_cmdline_class() {
         SignalId::NoSmtOff,
     ];
     for id in cpu_ids {
-        let desc = SIGNALS
-            .iter()
-            .find(|d| d.id == id)
-            .unwrap_or_else(|| panic!("CPU sub-signal {id:?} missing from catalog"));
+        let desc = SIGNALS.iter().find(|d| d.id == id).unwrap_or_else(|| {
+            panic!("CPU sub-signal {id:?} missing from catalog")
+        });
         assert_eq!(
             desc.class,
             SignalClass::KernelCmdline,
@@ -839,10 +838,9 @@ fn cpu_mitigation_sub_signals_use_cmdline_absent() {
         SignalId::NoSmtOff,
     ];
     for id in cpu_ids {
-        let desc = SIGNALS
-            .iter()
-            .find(|d| d.id == id)
-            .unwrap_or_else(|| panic!("CPU sub-signal {id:?} missing from catalog"));
+        let desc = SIGNALS.iter().find(|d| d.id == id).unwrap_or_else(|| {
+            panic!("CPU sub-signal {id:?} missing from catalog")
+        });
         assert!(
             matches!(desc.desired, DesiredValue::CmdlineAbsent(_)),
             "CPU sub-signal {id:?} must use DesiredValue::CmdlineAbsent, \
@@ -941,8 +939,7 @@ use umrs_platform::posture::reader::{CorePatternKind, classify_core_pattern};
 /// systemd-coredump style handler is classified as ManagedHandler.
 #[test]
 fn core_pattern_systemd_coredump_is_handler() {
-    let value =
-        "|/usr/lib/systemd/systemd-coredump %P %u %g %s %t %c %h %e";
+    let value = "|/usr/lib/systemd/systemd-coredump %P %u %g %s %t %c %h %e";
     assert_eq!(
         classify_core_pattern(value),
         CorePatternKind::ManagedHandler,
@@ -1049,8 +1046,7 @@ fn catalog_core_pattern_is_sysctl_custom() {
         "CorePattern must use DesiredValue::Custom"
     );
     assert_eq!(
-        desc.live_path,
-        "/proc/sys/kernel/core_pattern",
+        desc.live_path, "/proc/sys/kernel/core_pattern",
         "CorePattern live_path must be /proc/sys/kernel/core_pattern"
     );
     assert_eq!(
@@ -1178,8 +1174,7 @@ fn cmdline_desired_meets_cmdline_present_on_bls_opts() {
     let desired = DesiredValue::CmdlinePresent("module.sig_enforce=1");
 
     // Token present in BLS options → configured meets desired (Some(true)).
-    let bls_with_token =
-        "root=UUID=abc-123 fips=1 module.sig_enforce=1 quiet";
+    let bls_with_token = "root=UUID=abc-123 fips=1 module.sig_enforce=1 quiet";
     assert_eq!(
         desired.meets_cmdline(bls_with_token),
         Some(true),
@@ -1227,8 +1222,7 @@ fn cmdline_desired_meets_cmdline_absent_on_bls_opts() {
 #[test]
 fn cmdline_boot_drift_sig_enforce_configured_not_live() {
     // Configured hardened: BLS options contain module.sig_enforce=1.
-    let bls_opts =
-        "root=UUID=abc-123 fips=1 module.sig_enforce=1 quiet";
+    let bls_opts = "root=UUID=abc-123 fips=1 module.sig_enforce=1 quiet";
     let desired = DesiredValue::CmdlinePresent("module.sig_enforce=1");
 
     // Live NOT hardened: /proc/cmdline does not have module.sig_enforce=1.
@@ -1264,8 +1258,7 @@ fn cmdline_boot_drift_sig_enforce_configured_not_live() {
 #[test]
 fn cmdline_ephemeral_hotfix_sig_enforce_live_not_configured() {
     // Live hardened: /proc/cmdline has module.sig_enforce=1.
-    let live_cmdline =
-        "root=UUID=abc-123 fips=1 module.sig_enforce=1 quiet";
+    let live_cmdline = "root=UUID=abc-123 fips=1 module.sig_enforce=1 quiet";
     let desired = DesiredValue::CmdlinePresent("module.sig_enforce=1");
 
     let live_meets = desired.meets_cmdline(live_cmdline);

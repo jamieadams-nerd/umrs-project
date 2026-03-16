@@ -203,7 +203,8 @@ pub fn build_two_column_lines<'a>(
     // a trust-relevant assertion (see module doc).
     let os_str = format!("{} ({})", ctx.os_name, ctx.architecture);
     // Row 1: combine report_name and report_subject with " / " separator.
-    let assessment_value = format!("{} / {}", app.report_name(), app.report_subject());
+    let assessment_value =
+        format!("{} / {}", app.report_name(), app.report_subject());
 
     vec![
         // Blank line before the Assessment row for visual breathing room.
@@ -276,7 +277,8 @@ pub fn build_single_column_lines<'a>(
     let lbl_selinux = i18n::tr("SELinux");
 
     let os_str = format!("{} ({})", ctx.os_name, ctx.architecture);
-    let assessment_value = format!("{} / {}", app.report_name(), app.report_subject());
+    let assessment_value =
+        format!("{} / {}", app.report_name(), app.report_subject());
 
     vec![
         Line::from(""),
@@ -456,8 +458,10 @@ fn append_supplemental_fields<'a>(
 
     if truncated {
         // Show a truncation marker so the operator knows fields were omitted.
-        lines
-            .push(Line::from(Span::styled(" …".to_owned(), theme.header_field)));
+        lines.push(Line::from(Span::styled(
+            " …".to_owned(),
+            theme.header_field,
+        )));
     }
 }
 

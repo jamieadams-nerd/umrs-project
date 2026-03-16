@@ -443,11 +443,9 @@ impl KernelFileSource for CorePatternReader {
 
     const KOBJECT: &'static str = "proc/sys/kernel";
     const ATTRIBUTE_NAME: &'static str = "core_pattern";
-    const DESCRIPTION: &'static str =
-        "Core dump disposition. Hardened: starts with '|' (piped to handler). \
+    const DESCRIPTION: &'static str = "Core dump disposition. Hardened: starts with '|' (piped to handler). \
          Unhardened: raw filesystem path.";
-    const KERNEL_NOTE: &'static str =
-        "TPI validation applied: structural (first byte '|') and semantic \
+    const KERNEL_NOTE: &'static str = "TPI validation applied: structural (first byte '|') and semantic \
          (handler path is absolute). Fail closed on disagreement.";
 
     fn parse(data: &[u8]) -> io::Result<Self::Output> {
@@ -760,16 +758,14 @@ pub fn read_live_sysctl(
 /// NIST SP 800-53 SI-7: provenance-verified read via PROC_SUPER_MAGIC.
 /// NIST SP 800-218 SSDF PW.4: TPI classification applied to the raw value.
 #[must_use = "core_pattern live read result drives hardening assessment — do not discard"]
-pub fn read_live_core_pattern(
-) -> io::Result<Option<(CorePatternKind, String)>> {
+pub fn read_live_core_pattern() -> io::Result<Option<(CorePatternKind, String)>>
+{
     use crate::kattrs::traits::StaticSource;
 
     match CorePatternReader::read() {
         Ok(raw) => {
             let kind = classify_core_pattern(&raw);
-            log::debug!(
-                "posture: CorePattern live read: kind={kind:?}"
-            );
+            log::debug!("posture: CorePattern live read: kind={kind:?}");
             Ok(Some((kind, raw)))
         }
         Err(e) if e.kind() == io::ErrorKind::NotFound => Ok(None),

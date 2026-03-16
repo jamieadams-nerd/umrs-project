@@ -1,0 +1,28 @@
+Phase duration timing is now implemented. Before any optimization work,
+we need a performance baseline.
+
+Plan the following in order — do not implement anything until I approve
+the full plan:
+
+1. Write a benchmark harness using criterion for OsDetector::detect() 
+   and each of the 7 phases individually. Benchmarks go in separate 
+   files per project standards.
+
+2. Run the benchmarks on the current implementation and record the 
+   baseline results.
+
+3. Review the implementation with the rust-performance corpus in mind.
+   Identify specific, measurable optimization opportunities. For each one:
+   - What is the opportunity
+   - Which phase it affects
+   - Expected improvement (memory, latency, throughput)
+   - Risk to correctness or audit guarantees
+   - NIST control implications if any
+
+4. Rank opportunities by impact vs risk. Present the ranked list for 
+   my approval before touching any code.
+
+5. Implement approved optimizations one at a time, re-running benchmarks 
+   after each one to confirm the expected improvement materialized.
+
+Do not batch optimizations. One at a time, measure, confirm, then next.

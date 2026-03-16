@@ -120,6 +120,7 @@ fn read_mnt_namespace(evidence: &mut EvidenceBundle) {
                 pkg_digest: None,
                 parse_ok: true,
                 notes: vec![format!("mnt_ns={target_str}")],
+                duration_ns: None,
             });
         }
         Err(e) => {
@@ -137,6 +138,7 @@ fn read_mnt_namespace(evidence: &mut EvidenceBundle) {
                 pkg_digest: None,
                 parse_ok: false,
                 notes: vec!["mnt namespace readlink failed".to_owned()],
+                duration_ns: None,
             });
         }
     }
@@ -192,6 +194,7 @@ fn read_mountinfo(
                 pkg_digest: None,
                 parse_ok: false,
                 notes: vec!["mountinfo read failed".to_owned()],
+                duration_ns: None,
             });
             return false;
         }
@@ -218,6 +221,7 @@ fn read_mountinfo(
             pkg_digest: None,
             parse_ok: false,
             notes: vec!["mountinfo exceeded size cap".to_owned()],
+            duration_ns: None,
         });
         return false;
     }
@@ -236,6 +240,7 @@ fn read_mountinfo(
         pkg_digest: None,
         parse_ok: true,
         notes: vec![format!("mount_count={mount_count}")],
+        duration_ns: None,
     });
 
     true
@@ -273,6 +278,7 @@ fn read_etc_statfs(evidence: &mut EvidenceBundle) -> bool {
                 pkg_digest: None,
                 parse_ok: true,
                 notes: vec![format!("etc_fs_magic={magic_u64:#x}")],
+                duration_ns: None,
             });
             true
         }
@@ -289,6 +295,7 @@ fn read_etc_statfs(evidence: &mut EvidenceBundle) -> bool {
                 pkg_digest: None,
                 parse_ok: false,
                 notes: vec!["statfs(/etc) failed".to_owned()],
+                duration_ns: None,
             });
             false
         }

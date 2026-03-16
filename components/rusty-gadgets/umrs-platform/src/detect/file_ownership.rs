@@ -170,6 +170,7 @@ fn run_inner(
                 format!("owner={}", o.package_name),
                 format!("version={}", o.package_version),
             ],
+            duration_ns: None,
         });
     } else {
         log::warn!(
@@ -186,6 +187,7 @@ fn run_inner(
             pkg_digest: None,
             parse_ok: false,
             notes: vec!["file unowned by any package".to_owned()],
+            duration_ns: None,
         });
     }
 

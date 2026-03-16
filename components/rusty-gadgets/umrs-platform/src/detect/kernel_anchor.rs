@@ -162,6 +162,7 @@ fn read_proc_self_stat(
         pkg_digest: None,
         parse_ok: true,
         notes: vec!["procfs gate: PROC_SUPER_MAGIC verified".to_owned()],
+        duration_ns: None,
     });
 
     Ok(content)
@@ -250,6 +251,7 @@ fn read_boot_id(
                     pkg_digest: None,
                     parse_ok: false,
                     notes: vec!["boot_id read failed".to_owned()],
+                    duration_ns: None,
                 });
                 return None;
             }
@@ -276,6 +278,7 @@ fn read_boot_id(
         pkg_digest: None,
         parse_ok: true,
         notes: vec!["boot_id read ok".to_owned()],
+        duration_ns: None,
     });
 
     Some(boot_id)
@@ -309,6 +312,7 @@ fn read_lockdown(evidence: &mut EvidenceBundle) {
                 pkg_digest: None,
                 parse_ok: true,
                 notes: vec![format!("lockdown={mode}")],
+                duration_ns: None,
             });
         }
         Err(e) => {
@@ -329,6 +333,7 @@ fn read_lockdown(evidence: &mut EvidenceBundle) {
                     "lockdown read failed — securityfs may be unavailable"
                         .to_owned(),
                 ],
+                duration_ns: None,
             });
         }
     }

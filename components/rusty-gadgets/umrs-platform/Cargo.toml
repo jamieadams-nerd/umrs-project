@@ -16,6 +16,14 @@ rpm-db = ["dep:rusqlite"]
 rpm-db-bundled = ["rpm-db", "rusqlite/bundled"]
 
 [dependencies]
+# umrs-hw — hardware timestamp isolation crate (the workspace's unsafe boundary).
+# Provides safe read_hw_timestamp() backed by RDTSCP on x86_64 or
+# CLOCK_MONOTONIC_RAW on aarch64. The only workspace crate permitted to contain
+# unsafe code; all unsafe is encapsulated behind a safe public API.
+# NIST SP 800-53 AU-8 — high-resolution timing for phase duration audit records.
+# Reviewed and accepted by: Jamie Adams, 2026-03-16
+umrs-hw  = { path = "../umrs-hw" }
+
 nom      = "7.1"
 nix      = { version = "0.27", features = ["fs"] }
 log      = { version = "0.4",  features = ["release_max_level_info"] }
@@ -25,7 +33,11 @@ log      = { version = "0.4",  features = ["release_max_level_info"] }
 # Same version already present in umrs-selinux — consistent across workspace.
 # Supply chain: actively maintained, zero-unsafe API, minimal transitive deps.
 # NIST SP 800-53 SI-7: fd-anchored I/O eliminates TOCTOU races.
-rustix    = { version = "0.38", features = ["fs", "process", "system"] }
+rustix    = { version = "0.38", features = ["fs", "process", "system", "time"] }
+# "time" feature added to support clock_gettime(CLOCK_MONOTONIC_RAW) in
+# timestamp.rs (BootSessionTimestamp). No new transitive dependencies — the
+# "time" feature has an empty dependency list in rustix 0.38. This is a
+# feature expansion on an already-vetted dependency, not a new crate addition.
 
 # sha2 0.10 — RustCrypto SHA-256 implementation (pure Rust, no unsafe).
 # Used exclusively for integrity verification in integrity_check.rs:

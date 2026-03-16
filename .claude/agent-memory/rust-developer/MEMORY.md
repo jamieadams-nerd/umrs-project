@@ -6,6 +6,7 @@
 - Prototype workspace: `components/rust-prototypes/` — moved 2026-03-11; no xtask, use `cargo build/test` directly
 - Primary crate: `umrs-selinux` (under `src/`)
 - Platform crate: `umrs-platform` (detect pipeline, kattrs, evidence)
+- HW crate: `umrs-hw` — ONLY crate WITHOUT `#![forbid(unsafe_code)]`; isolates RDTSCP asm
 - All tests in `tests/`, never inline
 - Run everything via `cargo xtask {fmt,clippy,test}` from `components/rusty-gadgets/`
 
@@ -228,29 +229,17 @@ Key test patterns:
 - Fix: extract logical blocks into helper functions, NOT suppress with `#[allow]`
 - Example: `build_inode_flag_rows(dirent)` extracted from `build_security_rows()` in file_stat.rs
 
-## posture Module (Phase 1+2a+2b — implemented through 2026-03-16)
+## posture Module — see posture_module.md (Phase 1+2a+2b, 37 signals, implemented 2026-03-16)
 
-Module location: `umrs-platform/src/posture/`
-Signal catalog: **37 signals** (Phase 1: 22, Phase 2a: +5 modprobe, Phase 2b: +8 CPU sub + 1 CorePattern)
-
-Key files:
-- `signal.rs` — SignalId (37 variants), SignalClass, AssuranceImpact, DesiredValue, LiveValue, ConfiguredValue
-- `catalog.rs` — SIGNALS: &[SignalDescriptor] — 37 static entries
-- `reader.rs` — KptrRestrict, define_sysctl_signal! macro, CorePatternReader, CorePatternKind, classify_core_pattern(), CmdlineReader, BootIdReader, read_live_sysctl(), read_live_core_pattern()
-- `snapshot.rs` — PostureSnapshot::collect(), SignalReport; CorePattern handled in dedicated arm of read_live_sysctl_signal()
-- `bootcmdline.rs` — BLS entry reader; heuristic: single→osrelease match→last; graceful degrade to None
-- `fips_cross.rs` — FipsCrossCheck; uses std::fs::metadata() not Path::exists() (TOCTOU fix)
-- `modprobe.rs` — ModprobeConfig; ParsedDirective has Install{module,command,is_hard_blacklist} variant
-
-CPU sub-signals (Phase 2b): SpectreV2Off, SpectreV2UserOff, MdsOff, TsxAsyncAbortOff, L1tfOff, RetbleedOff, SrbdsOff, NoSmtOff — all KernelCmdline/CmdlineAbsent
-CorePattern (Phase 2b): Sysctl/Custom, TPI via classify_core_pattern(); ManagedHandler=hardened (starts with |/path), RawPath=unhardened, Invalid=fail-closed
-SEC caching for posture: DEFERRED — no serde in umrs-platform; signals change at runtime; pending serialization design (plan decision 9)
-
+Key: 37 signals, `PostureSnapshot::collect()`, contradiction detection, FipsCrossCheck.
 Tests: posture_tests.rs (79+), posture_modprobe_tests.rs (50), posture_bootcmdline_tests.rs (10)
-Example: `umrs-platform/examples/posture_demo.rs`
+
+## timestamp Module — see timestamp_module.md (implemented 2026-03-16)
+
+`BootSessionTimestamp` / `BootSessionDuration` — CLOCK_MONOTONIC_RAW via rustix, nanosecond ordering.
+`rustix` dep gained `time` feature (no new transitive deps). 17 tests passing.
 
 ## Error Information Discipline Pattern (posture/configured.rs canonical)
 
 Debug logs: log key + line number, suppress raw configured values in release builds.
-In snapshot.rs collect_one(): dual cfg(debug_assertions)/cfg(not(debug_assertions)) blocks — debug shows full configured.raw, release omits it.
-Apply this to every new source file that logs variable data from config files or kernel nodes.
+In snapshot.rs collect_one(): dual cfg(debug_assertions)/cfg(not(debug_assertions)) blocks.

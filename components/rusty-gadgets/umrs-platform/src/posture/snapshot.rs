@@ -273,18 +273,19 @@ fn collect_one(
     // options line disagrees with /proc/cmdline on a security token.
     // NIST SP 800-53 CM-6: configured persistence layer for cmdline signals is
     // the BLS options line, not a sysctl.d integer value.
-    let configured_meets: Option<bool> = if desc.class == SignalClass::KernelCmdline {
-        // For KernelCmdline signals, configured_meets is derived from token
-        // presence in the BLS options string (configured_boot_cmdline).
-        // If configured_boot_cmdline is None (BLS unavailable), configured_meets
-        // is None — no contradiction can be detected (graceful degrade).
-        configured_boot_cmdline
-            .and_then(|opts| desc.desired.meets_cmdline(opts))
-    } else {
-        configured_value.as_ref().and_then(|cv| {
-            contradiction::evaluate_configured_meets(&cv.raw, &desc.desired)
-        })
-    };
+    let configured_meets: Option<bool> =
+        if desc.class == SignalClass::KernelCmdline {
+            // For KernelCmdline signals, configured_meets is derived from token
+            // presence in the BLS options string (configured_boot_cmdline).
+            // If configured_boot_cmdline is None (BLS unavailable), configured_meets
+            // is None — no contradiction can be detected (graceful degrade).
+            configured_boot_cmdline
+                .and_then(|opts| desc.desired.meets_cmdline(opts))
+        } else {
+            configured_value.as_ref().and_then(|cv| {
+                contradiction::evaluate_configured_meets(&cv.raw, &desc.desired)
+            })
+        };
 
     let contradiction =
         contradiction::classify(meets_desired, configured_meets);
@@ -361,8 +362,7 @@ fn read_live_sysctl_signal(
             match crate::posture::reader::read_live_core_pattern() {
                 Ok(Some((kind, raw))) => {
                     use crate::posture::reader::CorePatternKind;
-                    let meets =
-                        Some(kind == CorePatternKind::ManagedHandler);
+                    let meets = Some(kind == CorePatternKind::ManagedHandler);
                     log::debug!(
                         "posture: CorePattern: kind={kind:?} meets={meets:?}"
                     );
