@@ -1,7 +1,7 @@
 # Plan: Source Code Comment Cleanup
 
 **Date:** 2026-03-15
-**Status:** Not started — queued for future work
+**Status:** Tasks 1-2 COMPLETE (2026-03-17); Task 3 not started
 **ROADMAP Goals:** G7 (Public Project), G8 (High-Assurance Patterns)
 **Owner:** rust-developer (Rusty)
 **Reviewer:** security-auditor (The IRS), tech-writer (Von Neumann)
@@ -22,13 +22,14 @@ publication.
 Remove `#![allow(clippy::missing_errors_doc)]` and add proper `# Errors` sections
 to all public `Result`-returning functions.
 
-| Crate | Estimated violations | Status |
+| Crate | Violations fixed | Status |
 |---|---|---|
-| umrs-platform | 40 | Not started |
-| umrs-selinux | TBD (check count) | Not started |
-| umrs-core | TBD | Not started |
-| umrs-tui | TBD | Not started |
-| umrs-ls | TBD | Not started |
+| umrs-platform | 41 | DONE (2026-03-17) |
+| umrs-selinux | 21 + 2 panics | DONE (2026-03-17) |
+| umrs-hw | 0 (suppression removed) | DONE (2026-03-17) |
+| umrs-core | 0 (no suppression) | N/A |
+| umrs-tui | suppression remains | Deferred — TUI has its own enhancement plan |
+| umrs-ls | 0 (no suppression) | N/A |
 
 **Approach:** One crate at a time. Remove suppression, fix all violations, clippy clean,
 separate commit per crate.

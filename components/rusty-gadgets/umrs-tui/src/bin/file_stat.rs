@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Jamie Adams
 //
-// NIST 800-218 SSDF PW.4 / NSA RTB: Provable safe-code guarantee.
+// NIST SP 800-218 SSDF PW.4 / NSA RTB: Provable safe-code guarantee.
 #![forbid(unsafe_code)]
 #![warn(clippy::pedantic)]
 #![warn(clippy::nursery)]

@@ -12,7 +12,7 @@
 //   - XattrReadError From<io::Error> and From<TpiError> conversions work
 //   - nom_error_kind never includes raw input bytes (SI-12)
 //
-// NIST 800-53 SI-7 / SI-12 / NSA RTB RAIN.
+// NIST SP 800-53 SI-7 / SI-12 / NSA RTB RAIN.
 // -----------------------------------------------------------------------------
 
 use std::fmt::Write as _;

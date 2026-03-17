@@ -244,6 +244,17 @@ permanent, stable location — always look here first.
 
 ---
 
+### STIG Signal Coverage — Phase 3 Posture Probe Cross-Reference
+
+| Field | Value |
+|---|---|
+| File | `refs/reports/stig-signal-coverage.md` |
+| Date | 2026-03-17 |
+| Topics | UMRS posture indicator → STIG rule mapping, coverage gaps, CMMC alignment, severity cross-reference, candidate new indicators |
+| Relevance | `umrs-platform` (posture catalog), `umrs-selinux`, CMMC, `CM-6`, `CM-7`, `SC-7`, `SC-13`, `AU-5`, `AU-12`, `SI-16` |
+
+---
+
 ---
 
 ## Access Control Reference Collection
@@ -948,6 +959,101 @@ redirect stub. Correct URL is `/resources/templates/FedRAMP-Security-Assessment-
 Also copied to: `.claude/references/accreditation-artifacts/fedramp-sar-template.docx`
 
 ---
+
+---
+
+## Technical Compliance Documents (Security-Auditor Methodology Corpus — Phase 3)
+
+Acquisition status per `.claude/plans/security-auditor-corpus.md` Phase 3.
+Initiated 2026-03-17.
+
+### RHEL 10 STIG Playbook (SCAP Security Guide)
+
+```
+name: SCAP Security Guide — RHEL 10 STIG Ansible Playbook
+path: .claude/references/scap-security-guide/rhel10-playbook-stig.yml
+version: SCAP Security Guide (ComplianceAsCode project) — version at collection date
+source_url: https://github.com/ComplianceAsCode/content (official RHEL SCAP content)
+date_retrieved: (prior to 2026-03-17 — already present in collection)
+sha256: (not computed — RAG augmentation source, no provenance chain required)
+relevance: umrs-platform posture probe, CM-6, CM-7, AC-6, SC-39, SI-16, AU-12
+status: ingested (451 STIG rules extracted to stig-signal-index.md)
+```
+
+**Note:** This is the ComplianceAsCode SCAP Security Guide content, not the official DISA
+STIG. DISA has not published an official RHEL 10 STIG as of 2026-03-17. The SSG playbook
+is the authoritative Red Hat-maintained STIG-aligned content until a DISA RHEL 10 STIG is
+published. Monitor `public.cyber.mil` for the official STIG release.
+
+---
+
+### DISA RHEL 9 STIG v2r5
+
+```
+name: DISA Red Hat Enterprise Linux 9 Security Technical Implementation Guide
+path: refs/dod/stig/U_RHEL_9_V2R5_STIG.zip
+version: V2R5 (September 2025)
+source_url: https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_RHEL_9_V2R5_STIG.zip
+date_retrieved: —
+sha256: —
+relevance: security-auditor, umrs-platform posture probe, CM-6, CM-7, SC-39, SI-16
+status: requires_manual_download
+```
+
+**Status: Awaiting download — needs Bash write permission to `refs/dod/stig/`.**
+HTTP 200 confirmed from `dl.dod.cyber.mil` (2.1 MB ZIP). The file is publicly accessible
+without authentication. Once Bash write permission is granted, run:
+
+```bash
+mkdir -p /media/psf/repos/umrs-project/refs/dod/stig
+curl -L -o /media/psf/repos/umrs-project/refs/dod/stig/U_RHEL_9_V2R5_STIG.zip \
+  https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_RHEL_9_V2R5_STIG.zip
+sha256sum /media/psf/repos/umrs-project/refs/dod/stig/U_RHEL_9_V2R5_STIG.zip
+```
+
+Then update this entry with the computed SHA-256 and `status: downloaded`.
+
+**Why RHEL 9 STIG is useful:** RHEL 9 STIG v2r5 is the closest official DISA STIG to the
+RHEL 10 target. Many kernel-level rules (sysctl, module blacklisting) are identical between
+RHEL 9 and RHEL 10. Until a DISA RHEL 10 STIG exists, the RHEL 9 STIG provides the
+authoritative DISA rule IDs and Vulnerability IDs (VulnIDs) needed for formal evidence mapping.
+
+---
+
+### CMMC Assessment Guide Level 2 v2.13
+
+Already tracked under the DoD section above. See entry `dod/cmmc-assessment-guide-l2.pdf`.
+No duplicate entry needed.
+
+---
+
+### CIS Red Hat Enterprise Linux Benchmark
+
+```
+name: CIS Red Hat Enterprise Linux 9 Benchmark
+path: refs/dod/stig/cis-rhel9-benchmark.pdf
+version: v2.0.0 (June 2024)
+source_url: https://www.cisecurity.org/benchmark/red_hat_linux
+date_retrieved: —
+sha256: —
+relevance: umrs-platform posture probe, CM-6, CM-7, SC-39
+status: requires_manual_download
+```
+
+**Status: Requires manual browser download.**
+CIS Benchmarks are available free of charge but require account registration at
+`cisecurity.org`. An unofficial mirror was located at `rayasec.com` but cannot be used
+as it is not an approved source. Manual steps:
+
+1. Create a free account at https://www.cisecurity.org/cis-benchmarks/
+2. Download "CIS Red Hat Enterprise Linux 9 Benchmark" (PDF)
+3. Save to `refs/dod/stig/cis-rhel9-benchmark.pdf`
+4. Run `sha256sum` and record the checksum here
+
+**Priority:** Medium. The SCAP Security Guide playbooks already provide the CIS
+Level 1/2 content in machine-readable form (`rhel10-playbook-cis.yml`). The PDF
+benchmark adds rationale text and Level 1 / Level 2 profile distinctions that
+improve the security-auditor's reasoning depth.
 
 ---
 

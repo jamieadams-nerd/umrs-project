@@ -50,7 +50,6 @@
 #![warn(clippy::nursery)]
 #![deny(clippy::unwrap_used)]
 #![allow(clippy::doc_markdown)]
-#![allow(clippy::missing_errors_doc)]
 #![allow(clippy::module_name_repetitions)]
 #![allow(clippy::option_if_let_else)]
 

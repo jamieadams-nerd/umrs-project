@@ -10,7 +10,7 @@
 //! 3. **Cross-check evaluation** — all contradiction scenarios exercised through
 //!    the public `FipsCrossCheck` API.
 //! 4. **`as_configured_value`** — structured output for audit display.
-//! 5. **Integration** — `FipsEnabled` signal in `PostureSnapshot::collect()`
+//! 5. **Integration** — `FipsEnabled` indicator in `PostureSnapshot::collect()`
 //!    has a coherent configured_value when the live value is readable.
 
 use umrs_platform::posture::{
@@ -175,7 +175,7 @@ fn as_configured_value_source_file_non_empty() {
 }
 
 // ===========================================================================
-// 3. Catalog consistency for FipsEnabled signal
+// 3. Catalog consistency for FipsEnabled indicator
 // ===========================================================================
 
 /// FipsEnabled must be DistroManaged in the catalog.
@@ -210,14 +210,14 @@ fn catalog_fips_enabled_desired_is_exact_1() {
 // 4. Integration — FipsEnabled in PostureSnapshot
 // ===========================================================================
 
-/// FipsEnabled signal in snapshot must have coherent fields.
+/// FipsEnabled indicator in snapshot must have coherent fields.
 ///
 /// When live FIPS is readable, `configured_value` must be `Some`
 /// (because the FIPS cross-check runs and produces at least a marker check).
 /// When live FIPS is not readable, `configured_value` may be `None`
 /// (Trust Gate blocked).
 #[test]
-fn snapshot_fips_signal_has_coherent_configured_value() {
+fn snapshot_fips_indicator_has_coherent_configured_value() {
     let snap = PostureSnapshot::collect();
     let report = snap
         .get(IndicatorId::FipsEnabled)

@@ -118,6 +118,10 @@ impl OsId {
     ///
     /// NIST SP 800-53 SI-10 — validates input to the security-critical OS identifier field
     /// at construction.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`OsReleaseParseError`] if the value is empty, exceeds the length limit, or contains invalid characters.
     pub fn parse(s: &str) -> Result<Self, OsReleaseParseError> {
         let s = s.trim().trim_matches('"');
         if s.is_empty() || s.len() > 64 {
@@ -151,6 +155,10 @@ impl OsName {
     ///
     /// NIST SP 800-53 SI-10: Input Validation — validates OS name at
     /// construction; rejects empty or oversized values.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`OsReleaseParseError`] if the value is empty or exceeds 256 bytes.
     pub fn parse(s: &str) -> Result<Self, OsReleaseParseError> {
         let s = s.trim().trim_matches('"');
         if s.is_empty() || s.len() > 256 {
@@ -177,6 +185,10 @@ pub struct VersionId(String);
 
 impl VersionId {
     /// Parse and validate a `VERSION_ID=` field value.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`OsReleaseParseError`] if the value is empty, exceeds 32 bytes, or contains non-version characters.
     pub fn parse(s: &str) -> Result<Self, OsReleaseParseError> {
         let s = s.trim().trim_matches('"');
         if s.is_empty() || s.len() > 32 {
@@ -211,6 +223,10 @@ impl OsVersion {
     ///
     /// NIST SP 800-53 SI-10: Input Validation — validates OS version string at
     /// construction; rejects empty or oversized values.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`OsReleaseParseError`] if the value is empty or exceeds 128 bytes.
     pub fn parse(s: &str) -> Result<Self, OsReleaseParseError> {
         let s = s.trim().trim_matches('"');
         if s.is_empty() || s.len() > 128 {
@@ -239,6 +255,10 @@ impl Codename {
     ///
     /// NIST SP 800-53 SI-10: Input Validation — validates distribution codename
     /// at construction; rejects empty or oversized values.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`OsReleaseParseError`] if the value is empty or exceeds 64 bytes.
     pub fn parse(s: &str) -> Result<Self, OsReleaseParseError> {
         let s = s.trim().trim_matches('"');
         if s.is_empty() || s.len() > 64 {
@@ -266,6 +286,10 @@ pub struct CpeName(String);
 
 impl CpeName {
     /// Parse and validate a `CPE_NAME=` field value.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`OsReleaseParseError`] if the value exceeds 256 bytes or does not start with a valid CPE prefix.
     pub fn parse(s: &str) -> Result<Self, OsReleaseParseError> {
         let s = s.trim().trim_matches('"');
         if s.len() > 256
@@ -295,6 +319,10 @@ pub struct ValidatedUrl(String);
 
 impl ValidatedUrl {
     /// Parse and validate a URL field value.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`OsReleaseParseError`] if the value exceeds 512 bytes or does not use an HTTP(S) scheme.
     pub fn parse(s: &str) -> Result<Self, OsReleaseParseError> {
         let s = s.trim().trim_matches('"');
         if s.len() > 512
@@ -325,6 +353,10 @@ impl VariantId {
     ///
     /// NIST SP 800-53 SI-10: Input Validation — validates variant ID at
     /// construction; rejects empty or oversized values.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`OsReleaseParseError`] if the value is empty or exceeds 64 bytes.
     pub fn parse(s: &str) -> Result<Self, OsReleaseParseError> {
         let s = s.trim().trim_matches('"');
         if s.is_empty() || s.len() > 64 {
@@ -350,6 +382,10 @@ pub struct BuildId(String);
 
 impl BuildId {
     /// Parse and validate a `BUILD_ID=` field value.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`OsReleaseParseError`] if the value is empty, exceeds 128 bytes, or contains non-printable characters.
     pub fn parse(s: &str) -> Result<Self, OsReleaseParseError> {
         let s = s.trim().trim_matches('"');
         if s.is_empty()

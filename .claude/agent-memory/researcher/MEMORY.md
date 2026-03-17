@@ -55,6 +55,7 @@ Collections and status as of 2026-03-15:
 | accreditation-artifacts | NIST 800-18 + FedRAMP playbooks/templates (6 docs; 200-B/200-C training removed from fedramp.gov) | Downloaded — awaiting ingestion | 0 |
 | tui-cli | crossterm, color-eyre, clap, ratatui (v0.30.0), awesome-ratatui | Downloaded — awaiting ingestion | 0 |
 | tech-writer-corpus | MS Style Guide, Google Style Guide, MIL-STD-38784B, Plain Language, NIST Author Instructions, CC Parts 1+2, RHEL 10 security guides (4 PDFs) | Ingested (2026-03-17) | 2017 |
+| scap-security-guide | RHEL 10 STIG playbook preprocessed indexes (451 signals, CCE→NIST table) | Ingested (2026-03-17) | 7 |
 
 Full source URL list for update checks: see `rag-collections.md` in this directory.
 PQC status tracker (team-readable): see `pqc-tracker.md` in this directory.
@@ -122,6 +123,9 @@ Existing reports:
 - `refs/reports/kernel-selinux-module-context-security.md` (2026-03-10)
   Topics: modules_disabled, MODULE_SIG_FORCE, Lockdown/LoadPin/IPE LSMs,
   SELinux system:module_request, MLS mlsvalidatetrans, Bell-LaPadula tranquility
+- `refs/reports/stig-signal-coverage.md` (2026-03-17)
+  Topics: 36 posture indicators vs 451 STIG rules; 20 direct matches; audit gap (51 rules);
+  network gap (19 rules); 7 Tier-1 candidate indicators; CMMC alignment; severity cross-reference
 
 ## Retrieval Patterns (learned 2026-03-11)
 
@@ -169,6 +173,16 @@ Some pages return only CSS/JS framework code via WebFetch (no article body):
 - Pattern: fetch the page, note it is JS-rendered, search for indexed snippet via WebSearch,
   write stub with `## Note on Retrieval` header explaining the limitation
 
+## scap-security-guide Collection Notes (2026-03-17)
+
+- 451 STIG signals for RHEL 10; `stig-signal-index.md` and `cce-nist-crossref.md` in `.claude/references/scap-security-guide/`
+- **Chunking limitation:** both index files are single-heading flat markdown tables → each stored as one 20k+ token chunk
+  - RAG semantic search always returns same two chunks — not discriminating
+  - Workaround: read files directly with Read tool for CCE/signal lookups
+  - Fix: re-generate with alphabetical section headings (`## Signals: A-C`, etc.), then `--force` re-ingest
+- Plan: `.claude/plans/scap-stig-corpus-plan.md` — Phases 2-3 (agent familiarization + code integration) pending
+- Key UMRS-relevant signals: sysctl kernel hardening (~35), SELinux state/policytype, audit kmod rules, FIPS crypto policy
+
 ## Standing Refresh Tasks
 
 On "refresh library" or "check for updates":
@@ -178,6 +192,9 @@ On "refresh library" or "check for updates":
 4. Post cross-team note summarizing changes; create tasks for tech-writer if docs are affected
 
 ## Pending Items
+- DISA RHEL 9 STIG v2r5 (ZIP, 2.1MB): needs Bash write permission to `refs/dod/stig/`; URL confirmed OK: `https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_RHEL_9_V2R5_STIG.zip`
+- CIS RHEL 9 Benchmark: requires free registration at cisecurity.org; manual download to `refs/dod/stig/cis-rhel9-benchmark.pdf`
+- DISA RHEL 10 STIG: NOT YET PUBLISHED as of 2026-03-17; monitor public.cyber.mil
 - NSA RTB VNSSA and RAIN: referenced in CLAUDE.md but not yet acquired; may be distribution-restricted
 - Clark-Wilson 1987: requires manual download via IEEE Xplore (DOI: 10.1109/SP.1987.10001)
 - Graham-Denning 1972: requires manual download via ACM DL (DOI: 10.1145/361011.361067)

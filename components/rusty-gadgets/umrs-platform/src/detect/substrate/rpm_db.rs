@@ -148,8 +148,13 @@ impl RpmDb {
     /// Open the RPM database read-only, recording the attempt in `bundle`.
     ///
     /// Records a `PackageDb` evidence entry on both success and failure so
-    /// the audit trail is complete. Returns `Err` if the DB cannot be opened
-    /// or is not a real SQLite database.
+    /// the audit trail is complete.
+    ///
+    /// # Errors
+    ///
+    /// Returns `RpmDbError::Sqlite` if the file cannot be opened as a SQLite
+    /// database, or if the `Packages` table is absent (indicating the path
+    /// does not point to a valid RPM database).
     ///
     /// NIST SP 800-53 AU-3 — evidence pushed regardless of outcome.
     /// NIST SP 800-53 CM-8, SA-12.
@@ -213,6 +218,11 @@ impl RpmDb {
     /// the header's file list.
     ///
     /// Returns `(name, version, evidence_trail)` or `None` if unowned.
+    ///
+    /// # Errors
+    ///
+    /// Returns `RpmDbError::Sqlite` if the `Basenames` query fails due to a
+    /// SQLite error.
     ///
     /// NIST SP 800-53 CM-8 — ownership query.
     /// NIST SP 800-53 SA-12 — provenance establishment.
@@ -285,6 +295,11 @@ impl RpmDb {
     /// Query the installed digest for `path` from the package database.
     ///
     /// Returns `(DigestAlgorithm, bytes)` or `None` if no digest record exists.
+    ///
+    /// # Errors
+    ///
+    /// Returns `RpmDbError::Sqlite` if the `Basenames` query fails, or
+    /// `RpmDbError::HexDecode` if the stored digest hex string is malformed.
     ///
     /// NIST SP 800-53 SI-7 — reference digest for integrity verification.
     /// NIST SP 800-53 CM-8 — provenance record.
@@ -363,6 +378,10 @@ impl RpmDb {
     /// This is evidence-driven inference — it uses the actual package name
     /// rather than assuming a distro from the DB format alone.
     ///
+    /// # Errors
+    ///
+    /// Returns `RpmDbError::Sqlite` if the `Name` table query fails.
+    ///
     /// NIST SP 800-53 CM-8 — component inventory, evidence-based identity.
     pub fn infer_distro(
         &self,
@@ -391,6 +410,11 @@ impl RpmDb {
     /// Check whether a named package is installed.
     ///
     /// Queries the `Name` table directly for an exact match.
+    ///
+    /// # Errors
+    ///
+    /// Returns `RpmDbError::Sqlite` if the `Name` table query fails with an
+    /// error other than `QueryReturnedNoRows` (which is treated as `false`).
     ///
     /// NIST SP 800-53 CM-8 — component inventory check.
     /// NIST SP 800-53 SA-12 — supply chain provenance.

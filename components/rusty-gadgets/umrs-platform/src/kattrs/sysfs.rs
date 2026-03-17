@@ -63,7 +63,10 @@ pub struct SysfsText {
 impl SysfsText {
     /// Construct a sysfs text reader, validating the path prefix.
     ///
-    /// Returns `InvalidInput` if `path` does not start with `/sys/`.
+    /// # Errors
+    ///
+    /// Returns `io::ErrorKind::InvalidInput` if `path` does not start with
+    /// `/sys/`.
     ///
     /// NIST SP 800-53 SI-10: Input Validation — rejects non-sysfs paths
     /// before any I/O is attempted.
@@ -91,6 +94,12 @@ impl SecureReader<SysfsText> {
     /// Opens the file, verifies `SYSFS_MAGIC` via fd-anchored `fstatfs`,
     /// then reads the full content as a UTF-8 string. Fails closed on any
     /// I/O error or magic mismatch.
+    ///
+    /// # Errors
+    ///
+    /// Returns `io::Error` if the file cannot be opened, if the filesystem
+    /// magic does not match `SYSFS_MAGIC` (integrity failure), or if the
+    /// file content is not valid UTF-8.
     ///
     /// NIST SP 800-53 SI-7 / NSA RTB RAIN.
     pub fn read_generic_text(&self, node: &SysfsText) -> io::Result<String> {

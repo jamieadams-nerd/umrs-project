@@ -192,6 +192,12 @@ impl BootSessionTimestamp {
     ///
     /// NIST SP 800-53 AU-12: Audit Record Generation — each call generates an
     /// ordered reference point for event sequencing.
+    ///
+    /// # Errors
+    ///
+    /// Returns `TimestampError::NegativeSecs` if `tv_sec` is negative,
+    /// `TimestampError::NegativeNsecs` if `tv_nsec` is negative, or
+    /// `TimestampError::Overflow` if the nanosecond conversion overflows `u64`.
     #[must_use = "BootSessionTimestamp::now() returns the current monotonic timestamp — \
                   discarding it silently loses the audit ordering reference point"]
     pub fn now() -> Result<Self, TimestampError> {

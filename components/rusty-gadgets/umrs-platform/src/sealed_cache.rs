@@ -467,6 +467,10 @@ impl SealedCache {
     ///
     /// NIST SP 800-53 SC-28, SI-7 — sealed cache with fail-closed on
     /// verification failure.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`DetectionError`] if the underlying probe fails or the cache seal has been tampered with.
     #[must_use = "detection result must be inspected — discard silently loses trust tier"]
     pub fn query(&mut self) -> Result<DetectionResult, DetectionError> {
         #[cfg(debug_assertions)]

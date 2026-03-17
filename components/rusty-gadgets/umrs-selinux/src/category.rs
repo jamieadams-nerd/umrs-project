@@ -178,7 +178,7 @@ impl fmt::Display for Category {
 /// this as a dense bitset for performance, determinism, and
 /// simplified memory management.
 ///
-/// NIST 800-53 AC-4: Information Flow Enforcement
+/// NIST SP 800-53 AC-4: Information Flow Enforcement
 /// NSA RTB Requirement: Deterministic execution and bounded memory usage.
 ///
 /// Represents a set of 1024 MCS categories (c0 through c1023).
@@ -289,7 +289,7 @@ impl CategorySet {
     /// Kernel equivalent:
     ///   `ebitmap_and()` + comparison logic
     ///
-    ///  NIST 800-53 AC-4: Dominance Check (Lattice Mathematics).
+    ///  NIST SP 800-53 AC-4: Dominance Check (Lattice Mathematics).
     ///
     /// Evaluates if 'self' (the Subject) dominates 'other' (the Object).
     /// In MLS, the subject must have at least all the categories of the object.

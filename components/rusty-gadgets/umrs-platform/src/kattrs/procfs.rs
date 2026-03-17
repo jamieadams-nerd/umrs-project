@@ -120,7 +120,10 @@ pub struct ProcfsText {
 impl ProcfsText {
     /// Construct a procfs text reader, validating the path prefix.
     ///
-    /// Returns `InvalidInput` if `path` does not start with `/proc/`.
+    /// # Errors
+    ///
+    /// Returns `io::ErrorKind::InvalidInput` if `path` does not start with
+    /// `/proc/`.
     ///
     /// NIST SP 800-53 SI-10: Input Validation — rejects non-procfs paths
     /// before any I/O is attempted.
@@ -148,6 +151,12 @@ impl SecureReader<ProcfsText> {
     /// Opens the file, verifies `PROC_SUPER_MAGIC` via fd-anchored `fstatfs`,
     /// then reads the full content as a UTF-8 string. Fails closed on any
     /// I/O error or magic mismatch.
+    ///
+    /// # Errors
+    ///
+    /// Returns `io::Error` if the file cannot be opened, if the filesystem
+    /// magic does not match `PROC_SUPER_MAGIC` (integrity failure), or if the
+    /// file content is not valid UTF-8.
     ///
     /// NIST SP 800-53 SI-7 / NSA RTB RAIN.
     pub fn read_generic_text(&self, node: &ProcfsText) -> io::Result<String> {

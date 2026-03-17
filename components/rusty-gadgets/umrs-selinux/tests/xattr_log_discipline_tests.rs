@@ -1,7 +1,7 @@
 // -----------------------------------------------------------------------------
 // UMRS SELinux — SI-12 Log Discipline Tests for xattrs.rs
 //
-// NIST 800-53 SI-12: Information Management and Retention
+// NIST SP 800-53 SI-12: Information Management and Retention
 //
 // These tests verify that the nom_error_kind() helper — which is used to
 // sanitize log output from TPI Path A parse failures — never includes raw

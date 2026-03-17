@@ -347,6 +347,14 @@ impl OsDetector {
     /// NIST SP 800-53 SA-8, CM-6, SI-7, AU-8 — orchestrates a layered,
     /// fail-closed platform verification pipeline; hard gates abort on kernel
     /// channel compromise (SA-8); phase durations recorded per AU-8.
+    ///
+    /// # Errors
+    ///
+    /// Returns `DetectionError` if a hard-gate phase (Phase 1: Kernel Anchor
+    /// or Phase 2: SELinux Channel) fails — for example, if `/proc` or
+    /// `/sys/fs/selinux` cannot be opened, the filesystem magic does not match,
+    /// or the kernel reports an unexpected state. Later phases (OS Release,
+    /// RPM substrate) degrade confidence but do not return `Err`.
     // Line count exceeds the 100-line clippy limit because each of the seven
     // phases requires a timestamp pair, evidence-length delta, and a
     // record_phase() call — six lines of instrumentation per phase. The

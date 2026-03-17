@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
-//! Contradiction classification for kernel security posture signals.
+//! Contradiction classification for kernel security posture indicators.
 //!
-//! A contradiction arises when the live (kernel-effective) value of a signal
+//! A contradiction arises when the live (kernel-effective) value of a indicator
 //! disagrees with its configured (sysctl.d or cmdline) value. Contradictions
 //! indicate configuration management problems that may affect security posture
 //! across reboots.
@@ -18,13 +18,13 @@
 //!
 //! ## Blacklist Sentinel Semantics
 //!
-//! For modprobe.d blacklist signals, `ConfiguredValue::raw` is set to the
+//! For modprobe.d blacklist indicators, `ConfiguredValue::raw` is set to the
 //! sentinel string `"blacklisted"` when a `blacklist <module>` entry exists
 //! in modprobe.d. This string cannot be parsed as a `u32`, so
 //! `evaluate_configured_meets` handles it explicitly:
 //!
 //! - `"blacklisted"` → the module is explicitly blacklisted in modprobe.d.
-//!   The desired value for blacklist signals is `Exact(1)` ("blacklist
+//!   The desired value for blacklist indicators is `Exact(1)` ("blacklist
 //!   effective"). A configured blacklist entry meets the desired value
 //!   (`configured_meets = Some(true)`).
 //! - Any other non-integer string → `None` (no configured value for
@@ -145,13 +145,13 @@ pub const fn classify(
 ///
 /// Returns `Some(true)` if the configured value parses as an integer and
 /// satisfies the desired integer constraint. Returns `None` for non-integer
-/// desired values (cmdline signals), for unparseable strings, or for
+/// desired values (cmdline indicators), for unparseable strings, or for
 /// `DesiredValue::Custom`.
 ///
 /// ## Blacklist Sentinel
 ///
 /// The sentinel string `"blacklisted"` is handled as a special case for
-/// modprobe.d blacklist signals. Blacklist signals use `DesiredValue::Exact(1)`;
+/// modprobe.d blacklist indicators. Blacklist indicators use `DesiredValue::Exact(1)`;
 /// a configured `"blacklisted"` entry represents the equivalent of integer `1`
 /// (blacklist effective = hardened). This produces `Some(true)` when the desired
 /// value is `Exact(1)`, enabling contradiction detection for the critical case
@@ -166,10 +166,10 @@ pub const fn classify(
 ///
 /// ## KernelCmdline (BLS Options String)
 ///
-/// For `KernelCmdline`-class signals, the configured raw value is the full BLS
+/// For `KernelCmdline`-class indicators, the configured raw value is the full BLS
 /// options string (e.g., `"root=UUID=abc fips=1 module.sig_enforce=1"`). This
 /// function returns `None` for such values — token-based evaluation for these
-/// signals is handled via a dedicated path in `collect_one()` (see
+/// indicators is handled via a dedicated path in `collect_one()` (see
 /// `snapshot.rs`). `DesiredValue::meets_cmdline()` is called directly on the
 /// BLS options string rather than routing through this function. This design
 /// is intentional: the BLS options string is not an integer and cannot be
@@ -181,14 +181,14 @@ pub const fn classify(
 /// NIST SP 800-53 CM-6: Configuration Settings — blacklist contradiction
 /// detection requires the sentinel to participate in `classify()`.
 /// NIST SP 800-53 AU-3: Security Findings as Data — `BootDrift` must be
-/// producible for blacklist signals; suppressing it silently is a defect.
+/// producible for blacklist indicators; suppressing it silently is a defect.
 #[must_use = "configured value evaluation result must be examined"]
 pub fn evaluate_configured_meets(
     raw: &str,
     desired: &crate::posture::indicator::DesiredValue,
 ) -> Option<bool> {
     // Blacklist sentinel: a modprobe.d `blacklist <module>` entry sets raw to
-    // "blacklisted". The desired value for blacklist signals is Exact(1) —
+    // "blacklisted". The desired value for blacklist indicators is Exact(1) —
     // meaning "blacklist effective" (module not loaded = hardened).
     // Treat "blacklisted" as the integer 1 for the purposes of meets_integer.
     // This allows classify() to emit BootDrift when the module is loaded

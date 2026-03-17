@@ -366,6 +366,10 @@ pub mod path {
 
     impl AbsolutePath {
         /// Construct a validated `AbsolutePath`. Single validation gate.
+        ///
+        /// # Errors
+        ///
+        /// Returns [`PathError::NotAbsolute`] if the path does not start with `/`.
         pub fn new(raw: &str) -> Result<Self, PathError> {
             validate_path_common(raw)?;
             if !raw.starts_with('/') {
@@ -463,6 +467,10 @@ pub mod path {
 
     impl ValidatedFileName {
         /// Construct from a `&str`. Single validation gate.
+        ///
+        /// # Errors
+        ///
+        /// Returns [`PathError`] if the component is empty, contains null bytes, newlines, or invalid path characters.
         pub fn new(raw: &str) -> Result<Self, PathError> {
             if raw.is_empty() {
                 return Err(PathError::Empty);
@@ -495,6 +503,10 @@ pub mod path {
         ///
         /// NSA RTB: non-UTF8 rejected at the OsStr conversion boundary.
         /// NIST SP 800-53 AU-3: audit records require representable filenames.
+        ///
+        /// # Errors
+        ///
+        /// Returns [`PathError`] if the OS string is not valid UTF-8 or fails component validation.
         pub fn from_os_str(os: &OsStr) -> Result<Self, PathError> {
             let s = os.to_str().ok_or(PathError::ContainsNull)?;
             Self::new(s)

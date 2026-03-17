@@ -78,8 +78,10 @@
       "WebSearch",
       "Write(.claude/**)",
       "Write(docs/**)",
+      "Write(components/**)",
       "Edit(.claude/**)",
       "Edit(docs/**)",
+      "Edit(components/**)",
       "Bash(# Copy unique files from jamies_brain rogue\ncp -n /media/psf/repos/umrs-project/.claude/jamies_brain/.claude/agent-memory/rust-developer/tui_phase*.md /media/psf/repos/umrs-project/.claude/agent-memory/rust-developer/ 2>/dev/null\n\n# Copy unique files from rusty-gadgets rogue \\(security-auditor reviews\\)\ncp -n /media/psf/repos/umrs-project/components/rusty-gadgets/.claude/agent-memory/security-auditor/kernel-tab-content-review.md /media/psf/repos/umrs-project/.claude/agent-memory/security-auditor/ 2>/dev/null\ncp -n /media/psf/repos/umrs-project/components/rusty-gadgets/.claude/agent-memory/security-auditor/three-layer-evaluation-review.md /media/psf/repos/umrs-project/.claude/agent-memory/security-auditor/ 2>/dev/null\n\necho \"Files copied\")",
       "Bash(cd docs:*)",
       "WebFetch(domain:raw.githubusercontent.com)",
@@ -99,7 +101,18 @@
       "Bash(tee /media/psf/repos/umrs-project/components/rusty-gadgets/.claude/agent-memory/researcher/corpus_conventions.md echo done)",
       "Bash(mkdir -p ../../.claude/jamies_brain/archive/doc-theme)",
       "Bash(mv ../../.claude/jamies_brain/doc-theme/doc-theme.md ../../.claude/jamies_brain/archive/doc-theme/doc-theme.md)",
-      "Bash(rmdir ../../.claude/jamies_brain/doc-theme/)"
+      "Bash(rmdir ../../.claude/jamies_brain/doc-theme/)",
+      "Bash(env)",
+      "Bash(do echo:*)",
+      "Read(//media/psf/repos/umrs-project/**)",
+      "Bash(done)",
+      "Bash(sed -i 's/sysctl.d slash-key normalization \\(Finding 3\\)/sysctl.d slash-key normalization/' umrs-platform/tests/posture_tests.rs)",
+      "Bash(sed -i 's/This is the regression test for Finding 3: without/Regression: without/' umrs-platform/tests/posture_tests.rs)",
+      "Bash(sed -i 's/after Finding 8 fix/\u2014 SecurityFs is correct for kernel security filesystem nodes/' umrs-platform/tests/posture_tests.rs)",
+      "Bash(sed -i 's/status: blocked \u2014 waiting on posture probe Phase 2b completion/status: unblocked \u2014 posture probe Phase 2c complete, security-auditor corpus Phase 3 complete/' /media/psf/repos/umrs-project/.claude/plans/umrs-assessment-engine.md)",
+      "Bash(sed -i 's/\\\\*\\\\*BLOCKED\\\\*\\\\* \u2014 Do not begin implementation until posture probe Phase 2b is complete and the/\\\\*\\\\*UNBLOCKED\\\\*\\\\* \\(2026-03-17\\) \u2014 posture probe Phase 2c and security-auditor corpus Phase 3 are both complete. The/' /media/psf/repos/umrs-project/.claude/plans/umrs-assessment-engine.md)",
+      "Bash(sed -i \"s/\\\\`security-auditor-corpus.md\\\\` plan has been executed. This plan is a vision and architecture/security-auditor corpus is ingested with coverage mapping. This plan is a vision and architecture/\" /media/psf/repos/umrs-project/.claude/plans/umrs-assessment-engine.md)",
+      "Bash(git checkout:*)"
     ]
   },
   "enabledPlugins": {

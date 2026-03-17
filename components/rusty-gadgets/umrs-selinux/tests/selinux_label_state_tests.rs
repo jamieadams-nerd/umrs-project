@@ -17,8 +17,8 @@
 //   - SecurityObservation::TpiDisagreement is emitted for TpiDisagreement
 //   - ParseFailure and TpiDisagreement do NOT emit NoSelinuxContext
 //
-// NIST 800-53 AU-3: accurate audit records.
-// NIST 800-53 SI-12: information management / no false negatives in display.
+// NIST SP 800-53 AU-3: accurate audit records.
+// NIST SP 800-53 SI-12: information management / no false negatives in display.
 // -----------------------------------------------------------------------------
 
 use umrs_selinux::secure_dirent::SelinuxCtxState;

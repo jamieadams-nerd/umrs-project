@@ -30,9 +30,9 @@ use umrs_platform::posture::{
 #[test]
 fn catalog_covers_all_signal_ids() {
     // Exhaustive match ensures this test is updated when IndicatorId gains a new variant.
-    // Phase 1: 22. Phase 2a: +5 modprobe = 27. Phase 2b: +9 CPU sub-signals + 1 core_pattern = 37.
+    // Phase 1: 22. Phase 2a: +5 modprobe = 27. Phase 2b: +9 CPU sub-indicators + 1 core_pattern = 37.
     let all_ids = [
-        // Phase 1 — sysctl signals
+        // Phase 1 — sysctl indicators
         IndicatorId::KptrRestrict,
         IndicatorId::RandomizeVaSpace,
         IndicatorId::UnprivBpfDisabled,
@@ -48,7 +48,7 @@ fn catalog_covers_all_signal_ids() {
         IndicatorId::ProtectedFifos,
         IndicatorId::ProtectedRegular,
         IndicatorId::SuidDumpable,
-        // Phase 1 — cmdline and special signals
+        // Phase 1 — cmdline and special indicators
         IndicatorId::Lockdown,
         IndicatorId::ModuleSigEnforce,
         IndicatorId::Mitigations,
@@ -56,13 +56,13 @@ fn catalog_covers_all_signal_ids() {
         IndicatorId::RandomTrustCpu,
         IndicatorId::RandomTrustBootloader,
         IndicatorId::FipsEnabled,
-        // Phase 2a — modprobe.d signals
+        // Phase 2a — modprobe.d indicators
         IndicatorId::NfConntrackAcct,
         IndicatorId::BluetoothBlacklisted,
         IndicatorId::UsbStorageBlacklisted,
         IndicatorId::FirewireCoreBlacklisted,
         IndicatorId::ThunderboltBlacklisted,
-        // Phase 2b — CPU mitigation sub-signals
+        // Phase 2b — CPU mitigation sub-indicators
         IndicatorId::SpectreV2Off,
         IndicatorId::SpectreV2UserOff,
         IndicatorId::MdsOff,
@@ -100,12 +100,12 @@ fn catalog_no_duplicate_ids() {
 /// Catalog must have exactly as many entries as `IndicatorId` variants.
 #[test]
 fn catalog_length_matches_signal_id_count() {
-    // Phase 1: 22. Phase 2a: +5 modprobe = 27. Phase 2b: +8 CPU sub-signals + 1 core_pattern = 36.
+    // Phase 1: 22. Phase 2a: +5 modprobe = 27. Phase 2b: +8 CPU sub-indicators + 1 core_pattern = 36.
     assert_eq!(
         INDICATORS.len(),
         36,
         "catalog length must match IndicatorId variant count \
-         (22 Phase 1 + 5 Phase 2a + 8 CPU sub-signals + 1 core_pattern = 36)"
+         (22 Phase 1 + 5 Phase 2a + 8 CPU sub-indicators + 1 core_pattern = 36)"
     );
 }
 
@@ -383,7 +383,7 @@ fn sysctl_config_get_missing_key_returns_none() {
 /// Verify that `collect()` does not panic, returns a non-empty report vec,
 /// and that readable_count <= reports.len().
 ///
-/// On a development machine with procfs, most signals will be readable.
+/// On a development machine with procfs, most indicators will be readable.
 /// In a container or minimal CI environment, many may return `live_value: None`
 /// — this is the expected graceful degradation.
 #[test]
@@ -414,9 +414,9 @@ fn snapshot_iterators_return_subsets() {
     assert!(snap.by_impact(AssuranceImpact::Critical).count() <= total);
 }
 
-/// Verify that `get()` returns a report for each signal in the catalog.
+/// Verify that `get()` returns a report for each indicator in the catalog.
 #[test]
-fn snapshot_get_finds_all_catalog_signals() {
+fn snapshot_get_finds_all_catalog_indicators() {
     let snap = PostureSnapshot::collect();
     for desc in INDICATORS {
         assert!(
@@ -427,7 +427,7 @@ fn snapshot_get_finds_all_catalog_signals() {
     }
 }
 
-/// Verify that `by_impact(Medium)` returns all signals (Medium is the lowest tier).
+/// Verify that `by_impact(Medium)` returns all indicators (Medium is the lowest tier).
 #[test]
 fn snapshot_by_impact_medium_returns_all() {
     let snap = PostureSnapshot::collect();
@@ -435,7 +435,7 @@ fn snapshot_by_impact_medium_returns_all() {
     assert_eq!(
         by_medium,
         snap.reports.len(),
-        "by_impact(Medium) must return all signals"
+        "by_impact(Medium) must return all indicators"
     );
 }
 
@@ -447,20 +447,20 @@ fn snapshot_by_impact_ordering() {
     let high = snap.by_impact(AssuranceImpact::High).count();
     assert!(
         critical <= high,
-        "Critical signals must be a subset of High signals"
+        "Critical indicators must be a subset of High indicators"
     );
 }
 
 // ===========================================================================
-// 8. parse_sysctl_i32 — signed parser regression tests (Finding 1)
+// 8. parse_sysctl_i32 — signed parser regression tests
 // ===========================================================================
 
 /// Verify that `parse_sysctl_i32` correctly parses `-1\n`.
 ///
-/// Regression test for Finding 1: the kernel legitimately emits `-1` for
+/// Regression: the kernel legitimately emits `-1` for
 /// `kernel.perf_event_paranoid` (means "unrestricted for all users"). The
 /// unsigned parser `parse_sysctl_u32` returns `Err` for this input, causing
-/// the signal to degrade to `live_value: None` — a false-assurance failure.
+/// the indicator to degrade to `live_value: None` — a false-assurance failure.
 /// `parse_sysctl_i32` must succeed and return `-1`.
 #[test]
 fn parse_sysctl_i32_negative_one() {
@@ -567,7 +567,7 @@ fn snapshot_perf_event_paranoid_has_live_value_or_node_absent() {
 }
 
 // ===========================================================================
-// 9. sysctl.d slash-key normalization (Finding 3)
+// 9. sysctl.d slash-key normalization
 // ===========================================================================
 
 /// Verify that `parse_sysctl_line` parses a dotted key correctly.
@@ -637,7 +637,7 @@ fn parse_sysctl_line_empty_line_is_none() {
 /// `SysctlConfig::from_file` (tested indirectly through `load_conf_file`'s
 /// normalisation), and verifies that `get("kernel.kptr_restrict")` finds the key.
 ///
-/// This is the regression test for Finding 3: without normalisation, the slash-style
+/// Regression: without normalisation, the slash-style
 /// key would produce `ConfiguredValue: None` for every catalog lookup.
 #[test]
 fn sysctl_config_slash_key_normalized_to_dot() {
@@ -784,14 +784,14 @@ fn eval_configured_negative_both_unhardened_no_contradiction() {
 // 11. Catalog cross-type consistency
 // ===========================================================================
 
-/// Every Sysctl-class signal must have a `sysctl_key: Some(_)`.
+/// Every Sysctl-class indicator must have a `sysctl_key: Some(_)`.
 #[test]
-fn catalog_sysctl_signals_have_sysctl_key() {
+fn catalog_sysctl_indicators_have_sysctl_key() {
     for desc in INDICATORS {
         if desc.class == IndicatorClass::Sysctl {
             assert!(
                 desc.sysctl_key.is_some(),
-                "Sysctl-class signal {:?} must have sysctl_key",
+                "Sysctl-class indicator {:?} must have sysctl_key",
                 desc.id
             );
         }
@@ -799,12 +799,12 @@ fn catalog_sysctl_signals_have_sysctl_key() {
 }
 
 // ===========================================================================
-// 12. CPU mitigation sub-signals (Phase 2b)
+// 12. CPU mitigation sub-indicators (Phase 2b)
 // ===========================================================================
 
-/// All CPU mitigation sub-signals must be `KernelCmdline` class.
+/// All CPU mitigation sub-indicators must be `KernelCmdline` class.
 #[test]
-fn cpu_mitigation_sub_signals_are_cmdline_class() {
+fn cpu_mitigation_sub_indicators_are_cmdline_class() {
     let cpu_ids = [
         IndicatorId::SpectreV2Off,
         IndicatorId::SpectreV2UserOff,
@@ -818,19 +818,19 @@ fn cpu_mitigation_sub_signals_are_cmdline_class() {
     for id in cpu_ids {
         let desc =
             INDICATORS.iter().find(|d| d.id == id).unwrap_or_else(|| {
-                panic!("CPU sub-signal {id:?} missing from catalog")
+                panic!("CPU sub-indicator {id:?} missing from catalog")
             });
         assert_eq!(
             desc.class,
             IndicatorClass::KernelCmdline,
-            "CPU sub-signal {id:?} must be KernelCmdline class"
+            "CPU sub-indicator {id:?} must be KernelCmdline class"
         );
     }
 }
 
-/// All CPU mitigation sub-signals must use `CmdlineAbsent` desired values.
+/// All CPU mitigation sub-indicators must use `CmdlineAbsent` desired values.
 #[test]
-fn cpu_mitigation_sub_signals_use_cmdline_absent() {
+fn cpu_mitigation_sub_indicators_use_cmdline_absent() {
     let cpu_ids = [
         IndicatorId::SpectreV2Off,
         IndicatorId::SpectreV2UserOff,
@@ -844,11 +844,11 @@ fn cpu_mitigation_sub_signals_use_cmdline_absent() {
     for id in cpu_ids {
         let desc =
             INDICATORS.iter().find(|d| d.id == id).unwrap_or_else(|| {
-                panic!("CPU sub-signal {id:?} missing from catalog")
+                panic!("CPU sub-indicator {id:?} missing from catalog")
             });
         assert!(
             matches!(desc.desired, DesiredValue::CmdlineAbsent(_)),
-            "CPU sub-signal {id:?} must use DesiredValue::CmdlineAbsent, \
+            "CPU sub-indicator {id:?} must use DesiredValue::CmdlineAbsent, \
              got {:?}",
             desc.desired
         );
@@ -905,10 +905,10 @@ fn spectre_v2_off_whole_word_no_false_positive() {
     );
 }
 
-/// The umbrella `Mitigations` signal and individual sub-signals can both fire
+/// The umbrella `Mitigations` indicator and individual sub-indicators can both fire
 /// on the same cmdline that contains `mitigations=off`.
 #[test]
-fn umbrella_and_sub_signals_independent() {
+fn umbrella_and_sub_indicators_independent() {
     // A cmdline with the umbrella flag also has no spectre_v2=off separately.
     let cmdline = "BOOT_IMAGE=/vmlinuz root=/dev/sda1 mitigations=off";
 
@@ -1033,7 +1033,7 @@ fn core_pattern_trailing_newline_handled() {
     );
 }
 
-/// `CorePattern` signal in catalog must be Sysctl class with Custom desired.
+/// `CorePattern` indicator in catalog must be Sysctl class with Custom desired.
 #[test]
 fn catalog_core_pattern_is_sysctl_custom() {
     let desc = INDICATORS
@@ -1061,28 +1061,28 @@ fn catalog_core_pattern_is_sysctl_custom() {
     );
 }
 
-/// Every KernelCmdline-class signal must have `sysctl_key: None`.
+/// Every KernelCmdline-class indicator must have `sysctl_key: None`.
 #[test]
-fn catalog_cmdline_signals_have_no_sysctl_key() {
+fn catalog_cmdline_indicators_have_no_sysctl_key() {
     for desc in INDICATORS {
         if desc.class == IndicatorClass::KernelCmdline {
             assert!(
                 desc.sysctl_key.is_none(),
-                "KernelCmdline-class signal {:?} must have sysctl_key: None",
+                "KernelCmdline-class indicator {:?} must have sysctl_key: None",
                 desc.id
             );
         }
     }
 }
 
-/// Every SecurityFs-class signal must have `sysctl_key: None`.
+/// Every SecurityFs-class indicator must have `sysctl_key: None`.
 #[test]
-fn catalog_security_fs_signals_have_no_sysctl_key() {
+fn catalog_security_fs_indicators_have_no_sysctl_key() {
     for desc in INDICATORS {
         if desc.class == IndicatorClass::SecurityFs {
             assert!(
                 desc.sysctl_key.is_none(),
-                "SecurityFs-class signal {:?} must have sysctl_key: None",
+                "SecurityFs-class indicator {:?} must have sysctl_key: None",
                 desc.id
             );
         }
@@ -1103,7 +1103,7 @@ fn catalog_sysrq_uses_custom_desired() {
     );
 }
 
-/// `Lockdown` must use `IndicatorClass::SecurityFs` after Finding 8 fix.
+/// `Lockdown` must use `IndicatorClass::SecurityFs` — SecurityFs is correct for kernel security filesystem nodes.
 #[test]
 fn catalog_lockdown_uses_security_fs_class() {
     let desc = INDICATORS
@@ -1160,11 +1160,11 @@ fn snapshot_boot_id_non_empty_if_present() {
 // S-01: KernelCmdline configured-value contradiction detection
 //
 // These tests verify the full contradiction path for KernelCmdline-class
-// signals: token presence in the BLS options string is checked via
+// indicators: token presence in the BLS options string is checked via
 // DesiredValue::meets_cmdline(), producing BootDrift and EphemeralHotfix
 // findings when live /proc/cmdline and the BLS options line disagree.
 //
-// NIST SP 800-53 CA-7: BootDrift/EphemeralHotfix must fire for cmdline signals.
+// NIST SP 800-53 CA-7: BootDrift/EphemeralHotfix must fire for cmdline indicators.
 // NIST SP 800-53 CM-6: BLS options line is the configured persistence source.
 // ===========================================================================
 
@@ -1172,7 +1172,7 @@ fn snapshot_boot_id_non_empty_if_present() {
 /// `CmdlinePresent` correctly evaluates token presence.
 ///
 /// This is the core building block: `DesiredValue::meets_cmdline(bls_opts)`
-/// is called in `collect_one()` for KernelCmdline signals. Verify the function
+/// is called in `collect_one()` for KernelCmdline indicators. Verify the function
 /// produces the correct `Some(bool)` for each case.
 #[test]
 fn cmdline_desired_meets_cmdline_present_on_bls_opts() {
@@ -1331,7 +1331,7 @@ fn cmdline_no_contradiction_token_present_in_both() {
     );
 }
 
-/// S-01 regression: Mitigations signal BootDrift — configured BLS has no
+/// S-01 regression: Mitigations indicator BootDrift — configured BLS has no
 /// `mitigations=off` (hardened for CmdlineAbsent) but live cmdline has it.
 ///
 /// For `CmdlineAbsent("mitigations=off")`: live has the token (fails check),

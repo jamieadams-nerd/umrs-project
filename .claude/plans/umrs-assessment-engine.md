@@ -1,7 +1,7 @@
 ---
 name: umrs-assessment-engine
 agent: rust-developer
-status: blocked — waiting on posture probe Phase 2b completion
+status: unblocked — posture probe Phase 2c complete, security-auditor corpus Phase 3 complete
 depends-on:
   - kernel-security-posture-probe.md
   - security-auditor-corpus.md
@@ -11,8 +11,8 @@ depends-on:
 
 ## Status
 
-**BLOCKED** — Do not begin implementation until posture probe Phase 2b is complete and the
-`security-auditor-corpus.md` plan has been executed. This plan is a vision and architecture
+**UNBLOCKED** (2026-03-17) — posture probe Phase 2c and security-auditor corpus Phase 3 are both complete. The
+security-auditor corpus is ingested with coverage mapping. This plan is a vision and architecture
 document only. No code changes are authorized at this time.
 
 ---

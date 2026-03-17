@@ -538,6 +538,10 @@ fn load_into(
 /// Loads (or reloads) a setrans.conf into `GLOBAL_TRANSLATOR`.
 /// Under normal operation the global is auto-loaded on first access;
 /// call this only for explicit reload scenarios.
+///
+/// # Errors
+///
+/// Returns an error if the setrans configuration file cannot be opened or contains malformed entries.
 pub fn load_setrans_file(path: &str) -> Result<(), Box<dyn std::error::Error>> {
     let mut translator =
         GLOBAL_TRANSLATOR.write().map_err(|_| "Lock poisoned")?;

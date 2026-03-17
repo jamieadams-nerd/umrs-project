@@ -1,7 +1,7 @@
 ---
 name: Security Auditor Methodology Corpus
 agent: researcher
-status: phase-2-complete — Phase 3 next
+status: phase-3-complete — STIG mapping done, coverage report written; RHEL 9 STIG + CIS downloads are optional supplementary
 source: .claude/jamies_brain/enhance-sa.txt (Initiative A)
 depends-on: none (independent track)
 ---
@@ -214,7 +214,14 @@ directly improve feedback on other active plans:
   - [x] Manual downloads completed (2026-03-15) — 6 documents; 2 training PDFs (200-B SAP, 200-C SAR) unavailable (removed from fedramp.gov in Rev5 reorg)
   - [x] RAG ingestion run after downloads complete (2026-03-15, 405 chunks)
   - [x] Corpus familiarization completed (2026-03-15) — 5 knowledge artifacts
-- [ ] Phase 3: RHEL STIG and CIS Benchmark ingested; signal-to-STIG mapping started
+- [x] Phase 3: RHEL 10 STIG (SSG playbook, 451 rules) confirmed already in collection — not duplicated
+- [x] Phase 3: CMMC Assessment Guide L2 v2.13 confirmed already in manifest (`refs/dod/cmmc-assessment-guide-l2.pdf`)
+- [x] Phase 3: Signal-to-STIG cross-reference mapping complete — `refs/reports/stig-signal-coverage.md`
+  - 36 indicators analyzed; 20 direct STIG matches; 10 CPU mitigation indicators exceed STIG baseline
+  - Audit gap (51 rules, zero UMRS coverage) and network hardening gap (19 rules) identified
+  - 7 Tier 1 candidate new indicators identified with CCEs and NIST controls
+- [ ] Phase 3 (optional): DISA RHEL 9 STIG v2r5 — supplementary; RHEL 10 not yet published by DISA
+- [ ] Phase 3 (optional): CIS RHEL 9 Benchmark — supplementary; requires manual download
 - [ ] Phase 4: NIST SP 800-160 acquired and ingested
 - [ ] Phase 5: Lower-priority resources acquired as time permits
 - [ ] All acquired documents tracked in `refs/manifest.md` with version, date, URL, SHA-256

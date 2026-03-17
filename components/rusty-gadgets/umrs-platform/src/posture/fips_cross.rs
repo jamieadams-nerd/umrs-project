@@ -2,7 +2,7 @@
 // Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
 //! FIPS distro-managed configured-value cross-check.
 //!
-//! Extends the existing `FipsEnabled` signal (Phase 1) with configured-value
+//! Extends the existing `FipsEnabled` indicator (Phase 1) with configured-value
 //! discovery from RHEL 10's FIPS persistence layer, enabling contradiction
 //! detection between the kernel's live FIPS state and the distro's intended
 //! FIPS configuration.

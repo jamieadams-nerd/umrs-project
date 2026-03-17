@@ -133,7 +133,10 @@ pub struct GenericKernelBool {
 impl GenericKernelBool {
     /// Construct a selinuxfs boolean node, validating the path prefix.
     ///
-    /// Returns `InvalidInput` if `path` is not under `/sys/fs/selinux/`.
+    /// # Errors
+    ///
+    /// Returns `io::ErrorKind::InvalidInput` if `path` does not start with
+    /// `/sys/fs/selinux/`.
     pub fn new_selinux(path: PathBuf) -> io::Result<Self> {
         if !path.starts_with("/sys/fs/selinux/") {
             return Err(io::Error::new(
@@ -187,7 +190,10 @@ pub struct GenericDualBool {
 impl GenericDualBool {
     /// Construct a selinuxfs dual-bool node, validating the path prefix.
     ///
-    /// Returns `InvalidInput` if `path` is not under `/sys/fs/selinux/`.
+    /// # Errors
+    ///
+    /// Returns `io::ErrorKind::InvalidInput` if `path` does not start with
+    /// `/sys/fs/selinux/`.
     pub fn new_selinux(path: PathBuf) -> io::Result<Self> {
         if !path.starts_with("/sys/fs/selinux/") {
             return Err(io::Error::new(
@@ -240,6 +246,12 @@ impl KernelFileSource for GenericDualBool {
 impl SecureReader<GenericKernelBool> {
     /// Provenance-verified read of a dynamic selinuxfs boolean attribute.
     ///
+    /// # Errors
+    ///
+    /// Returns `io::Error` if the attribute file cannot be opened, if the
+    /// filesystem magic does not match `SELINUX_MAGIC` (integrity failure),
+    /// or if the byte content is not a valid boolean (`0` or `1`).
+    ///
     /// NIST SP 800-53 SI-10, SA-11, AC-3: the result is the live enforcement
     /// state of a runtime SELinux boolean and must be examined — discarding it
     /// silently loses the live enforcement state.
@@ -252,6 +264,13 @@ impl SecureReader<GenericKernelBool> {
 
 impl SecureReader<GenericDualBool> {
     /// Provenance-verified read of a dynamic selinuxfs dual-boolean attribute.
+    ///
+    /// # Errors
+    ///
+    /// Returns `io::Error` if the attribute file cannot be opened, if the
+    /// filesystem magic does not match `SELINUX_MAGIC` (integrity failure),
+    /// or if the content cannot be parsed as two whitespace-separated boolean
+    /// tokens.
     ///
     /// NIST SP 800-53 SI-10, SA-11, AC-3: the result carries both the committed
     /// and pending values of a kernel SELinux policy decision — must be examined.

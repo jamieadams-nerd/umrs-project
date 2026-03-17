@@ -45,8 +45,6 @@
 #![deny(clippy::unwrap_used)]
 #![allow(clippy::option_if_let_else)]
 #![allow(clippy::module_name_repetitions)]
-#![allow(clippy::missing_errors_doc)]
-#![allow(clippy::missing_panics_doc)]
 #![allow(clippy::doc_markdown)]
 
 pub mod hw_timestamp;

@@ -3,7 +3,7 @@
 //! Point-in-time kernel security posture snapshot.
 //!
 //! `PostureSnapshot` is the primary user-facing type. It collects every
-//! signal in the static catalog, reads live and configured values, evaluates
+//! indicator in the static catalog, reads live and configured values, evaluates
 //! hardening status, and records any contradictions.
 //!
 //! ## Usage
@@ -45,7 +45,7 @@ use crate::posture::reader::{BootIdReader, CmdlineReader};
 // IndicatorReport
 // ===========================================================================
 
-/// The result of reading and evaluating one security posture signal.
+/// The result of reading and evaluating one security posture indicator.
 ///
 /// Contains the live (kernel) value, the configured (sysctl.d) value,
 /// the hardening assessment, and any contradiction classification.
@@ -54,7 +54,7 @@ use crate::posture::reader::{BootIdReader, CmdlineReader};
 /// NIST SP 800-53 CM-6: live vs. configured comparison.
 #[must_use = "indicator reports carry security posture findings — do not discard"]
 pub struct IndicatorReport {
-    /// Static catalog entry for this signal.
+    /// Static catalog entry for this indicator.
     pub descriptor: &'static IndicatorDescriptor,
     /// The value currently active in the kernel, or `None` if unreadable.
     pub live_value: Option<LiveValue>,
@@ -71,9 +71,9 @@ pub struct IndicatorReport {
 // PostureSnapshot
 // ===========================================================================
 
-/// Point-in-time snapshot of all kernel security posture signals.
+/// Point-in-time snapshot of all kernel security posture indicators.
 ///
-/// Constructed via `PostureSnapshot::collect()`, which reads every signal
+/// Constructed via `PostureSnapshot::collect()`, which reads every indicator
 /// in the static catalog and produces a `IndicatorReport` for each.
 ///
 /// The snapshot is anchored to a specific boot instance via `boot_id`
@@ -85,7 +85,7 @@ pub struct IndicatorReport {
 /// NIST SP 800-53 AU-3: temporal anchor via `collected_at` and `boot_id`.
 #[must_use = "posture snapshots contain security findings — do not discard"]
 pub struct PostureSnapshot {
-    /// All signal reports, one per catalog entry, in catalog order.
+    /// All indicator reports, one per catalog entry, in catalog order.
     pub reports: Vec<IndicatorReport>,
     /// Wall-clock time when this snapshot was collected.
     pub collected_at: SystemTime,
@@ -94,13 +94,13 @@ pub struct PostureSnapshot {
 }
 
 impl PostureSnapshot {
-    /// Collect all signals from the static catalog and produce a snapshot.
+    /// Collect all indicators from the static catalog and produce a snapshot.
     ///
     /// Reads `/proc/sys/*` nodes via provenance-verified `SecureReader` paths,
-    /// `/proc/cmdline` once (shared across all cmdline signals), and the
+    /// `/proc/cmdline` once (shared across all cmdline indicators), and the
     /// sysctl.d merge tree for configured values.
     ///
-    /// Individual signal read failures are captured in the report's
+    /// Individual indicator read failures are captured in the report's
     /// `live_value: None` field rather than propagated as errors — the
     /// snapshot degrades gracefully when kernel nodes are absent.
     ///
@@ -122,7 +122,7 @@ impl PostureSnapshot {
             }
         };
 
-        // Read /proc/cmdline once; shared across all cmdline signals.
+        // Read /proc/cmdline once; shared across all cmdline indicators.
         let cmdline = match CmdlineReader::read() {
             Ok(r) => Some(r),
             Err(e) => {
@@ -134,11 +134,11 @@ impl PostureSnapshot {
         // Load sysctl.d configured values once for the entire snapshot.
         let sysctl_config = SysctlConfig::load();
 
-        // Load modprobe.d configured values once for all modprobe signals.
+        // Load modprobe.d configured values once for all modprobe indicators.
         let modprobe_config = ModprobeConfig::load();
 
         // Load the bootloader configured cmdline once for all KernelCmdline
-        // signals. Phase 2b: reads BLS entries from /boot/loader/entries/.
+        // indicators. Phase 2b: reads BLS entries from /boot/loader/entries/.
         // Returns None on systems without BLS (containers, non-RHEL), which
         // disables configured-cmdline contradiction detection gracefully.
         let configured_boot_cmdline = configured_cmdline();
@@ -175,22 +175,22 @@ impl PostureSnapshot {
         }
     }
 
-    /// Iterator over all signal reports in catalog order.
-    #[must_use = "signal report iterator must be consumed to examine posture findings"]
+    /// Iterator over all indicator reports in catalog order.
+    #[must_use = "indicator report iterator must be consumed to examine posture findings"]
     pub fn iter(&self) -> impl Iterator<Item = &IndicatorReport> {
         self.reports.iter()
     }
 
-    /// Iterator over signals that do NOT meet their desired hardened value.
+    /// Iterator over indicators that do NOT meet their desired hardened value.
     ///
-    /// Excludes signals whose live value could not be read (`meets_desired == None`).
-    /// Use `iter()` and filter manually to include unreadable signals.
-    #[must_use = "findings iterator carries unhardened signals — examine each report"]
+    /// Excludes indicators whose live value could not be read (`meets_desired == None`).
+    /// Use `iter()` and filter manually to include unreadable indicators.
+    #[must_use = "findings iterator carries unhardened indicators — examine each report"]
     pub fn findings(&self) -> impl Iterator<Item = &IndicatorReport> {
         self.reports.iter().filter(|r| r.meets_desired == Some(false))
     }
 
-    /// Iterator over signals with a live/configured contradiction.
+    /// Iterator over indicators with a live/configured contradiction.
     #[must_use = "contradictions iterator carries configuration management gaps — examine each report"]
     pub fn contradictions(&self) -> impl Iterator<Item = &IndicatorReport> {
         self.reports.iter().filter(|r| r.contradiction.is_some())
@@ -207,33 +207,33 @@ impl PostureSnapshot {
         self.reports.iter().filter(move |r| r.descriptor.impact >= min)
     }
 
-    /// Number of signals whose live value was successfully read.
-    #[must_use = "readable_count feeds operator summary and audit metrics — discarding hides signal availability"]
+    /// Number of indicators whose live value was successfully read.
+    #[must_use = "readable_count feeds operator summary and audit metrics — discarding hides indicator availability"]
     pub fn readable_count(&self) -> usize {
         self.reports.iter().filter(|r| r.live_value.is_some()).count()
     }
 
-    /// Number of signals whose live value meets the desired hardened value.
+    /// Number of indicators whose live value meets the desired hardened value.
     #[must_use = "hardened_count feeds operator summary and audit metrics — discarding hides hardening posture"]
     pub fn hardened_count(&self) -> usize {
         self.reports.iter().filter(|r| r.meets_desired == Some(true)).count()
     }
 
-    /// Look up the report for a specific signal by ID.
+    /// Look up the report for a specific indicator by ID.
     ///
-    /// Returns `None` if the signal is not in the catalog (should not happen
-    /// in practice — the catalog is exhaustive for Phase 1 signals).
-    #[must_use = "signal lookup result must be examined"]
+    /// Returns `None` if the indicator is not in the catalog (should not happen
+    /// in practice — the catalog is exhaustive for Phase 1 indicators).
+    #[must_use = "indicator lookup result must be examined"]
     pub fn get(&self, id: IndicatorId) -> Option<&IndicatorReport> {
         self.reports.iter().find(|r| r.descriptor.id == id)
     }
 }
 
 // ===========================================================================
-// collect_one — single-signal collection logic
+// collect_one — single-indicator collection logic
 // ===========================================================================
 
-/// Collect the report for one signal.
+/// Collect the report for one indicator.
 ///
 /// Reads the live value, looks up the configured value, evaluates whether
 /// the live value meets the desired baseline, and classifies any contradiction.
@@ -261,21 +261,21 @@ fn collect_one(
         configured_boot_cmdline,
     );
 
-    // For KernelCmdline signals, configured_meets is evaluated via token-based
+    // For KernelCmdline indicators, configured_meets is evaluated via token-based
     // matching on the BLS options string, not through evaluate_configured_meets().
     // The BLS options string is not an integer and not the "blacklisted" sentinel,
     // so evaluate_configured_meets() would return None for it — which would
     // silently suppress BootDrift and EphemeralHotfix detection for all cmdline
-    // signals. Instead, apply DesiredValue::meets_cmdline() directly to the raw
+    // indicators. Instead, apply DesiredValue::meets_cmdline() directly to the raw
     // BLS options string.
     //
     // NIST SP 800-53 CA-7: BootDrift/EphemeralHotfix must fire when the BLS
     // options line disagrees with /proc/cmdline on a security token.
-    // NIST SP 800-53 CM-6: configured persistence layer for cmdline signals is
+    // NIST SP 800-53 CM-6: configured persistence layer for cmdline indicators is
     // the BLS options line, not a sysctl.d integer value.
     let configured_meets: Option<bool> =
         if desc.class == IndicatorClass::KernelCmdline {
-            // For KernelCmdline signals, configured_meets is derived from token
+            // For KernelCmdline indicators, configured_meets is derived from token
             // presence in the BLS options string (configured_boot_cmdline).
             // If configured_boot_cmdline is None (BLS unavailable), configured_meets
             // is None — no contradiction can be detected (graceful degrade).
@@ -294,7 +294,7 @@ fn collect_one(
     // values from leaking in release builds when debug logging is enabled on
     // DoD/CUI systems during troubleshooting. Configured values for sysctl.d,
     // modprobe.d, and FIPS indicators are suppressed from the production log
-    // path; signal IDs, hardening status, and contradiction kind are safe to log.
+    // path; indicator IDs, hardening status, and contradiction kind are safe to log.
     // NIST SP 800-53 SI-11; NSA RTB Error Discipline.
     #[cfg(debug_assertions)]
     log::debug!(
@@ -306,11 +306,11 @@ fn collect_one(
         contradiction
     );
     // Release-mode debug log: live_value is intentionally included because
-    // current Text-valued signals store only compile-time catalog tokens (e.g.,
+    // current Text-valued indicators store only compile-time catalog tokens (e.g.,
     // "module.sig_enforce=1", "absent"), not raw kernel output. If a future
-    // signal stores kernel-supplied text in LiveValue::Text (e.g., a raw sysfs
+    // indicator stores kernel-supplied text in LiveValue::Text (e.g., a raw sysfs
     // string), this log line must be gated under #[cfg(debug_assertions)] for
-    // that signal to maintain Error Information Discipline.
+    // that indicator to maintain Error Information Discipline.
     // NIST SP 800-53 SI-11; NSA RTB Error Discipline.
     #[cfg(not(debug_assertions))]
     log::debug!(
@@ -334,10 +334,10 @@ fn collect_one(
 // read_live — live value dispatch
 // ===========================================================================
 
-/// Read the live value of a signal and evaluate whether it meets the desired value.
+/// Read the live value of a indicator and evaluate whether it meets the desired value.
 ///
 /// Returns `(Some(value), Some(meets))` on success, `(None, None)` if the
-/// signal's kernel node is absent or unreadable.
+/// indicator's kernel node is absent or unreadable.
 fn read_live(
     desc: &'static IndicatorDescriptor,
     cmdline: Option<&CmdlineReader>,
@@ -345,7 +345,7 @@ fn read_live(
     match desc.class {
         IndicatorClass::Sysctl => read_live_sysctl_signal(desc),
         IndicatorClass::KernelCmdline => {
-            read_live_cmdline_signal(desc, cmdline)
+            read_live_cmdline_indicator(desc, cmdline)
         }
         IndicatorClass::SecurityFs => read_live_security_fs(desc),
         IndicatorClass::DistroManaged => read_live_distro_managed(desc),
@@ -353,7 +353,7 @@ fn read_live(
     }
 }
 
-/// Read a sysctl integer or boolean signal.
+/// Read a sysctl integer or boolean indicator.
 fn read_live_sysctl_signal(
     desc: &'static IndicatorDescriptor,
 ) -> (Option<LiveValue>, Option<bool>) {
@@ -427,7 +427,7 @@ fn read_live_sysctl_signal(
             }
         }
         id => {
-            // All remaining Sysctl-class signals return u32.
+            // All remaining Sysctl-class indicators return u32.
             match crate::posture::reader::read_live_sysctl(id) {
                 Ok(Some(v)) => {
                     let meets = if desc.desired == DesiredValue::Custom {
@@ -468,15 +468,15 @@ fn read_live_sysctl_signal(
     }
 }
 
-/// Read a kernel cmdline signal.
+/// Read a kernel cmdline indicator.
 ///
 /// Stores only the matched token (or `"absent"` for `CmdlineAbsent` tokens)
 /// as the `LiveValue`, not the full cmdline string. This avoids repeated heap
-/// allocation of the full cmdline per signal and limits exposure of potentially
+/// allocation of the full cmdline per indicator and limits exposure of potentially
 /// sensitive boot parameters in the snapshot.
 ///
 /// NIST SP 800-53 SC-28: minimise retention of boot parameter content.
-fn read_live_cmdline_signal(
+fn read_live_cmdline_indicator(
     desc: &'static IndicatorDescriptor,
     cmdline: Option<&CmdlineReader>,
 ) -> (Option<LiveValue>, Option<bool>) {
@@ -491,7 +491,7 @@ fn read_live_cmdline_signal(
     // Store only the relevant token, not the full cmdline string.
     // For both CmdlinePresent and CmdlineAbsent: store the token text if the token
     // is present in the cmdline, or "absent" if it is not. This records what was
-    // observed without retaining the entire cmdline content per signal.
+    // observed without retaining the entire cmdline content per indicator.
     let token_value = match &desc.desired {
         DesiredValue::CmdlinePresent(token)
         | DesiredValue::CmdlineAbsent(token) => {
@@ -501,17 +501,17 @@ fn read_live_cmdline_signal(
                 "absent".to_owned()
             }
         }
-        // Non-cmdline desired values should not reach here for KernelCmdline signals.
+        // Non-cmdline desired values should not reach here for KernelCmdline indicators.
         _ => cmdline_str.to_owned(),
     };
 
     (Some(LiveValue::Text(token_value)), meets)
 }
 
-/// Read a SecurityFs signal (currently only `Lockdown`).
+/// Read a SecurityFs indicator (currently only `Lockdown`).
 ///
-/// Routes to `read_lockdown_live()` for the `Lockdown` signal. Any unknown
-/// `SecurityFs`-class signal degrades gracefully to `(None, None)`.
+/// Routes to `read_lockdown_live()` for the `Lockdown` indicator. Any unknown
+/// `SecurityFs`-class indicator degrades gracefully to `(None, None)`.
 ///
 /// NIST SP 800-53 SI-7: provenance-verified via SECURITYFS_MAGIC.
 fn read_live_security_fs(
@@ -543,7 +543,7 @@ fn read_live_security_fs(
     }
 }
 
-/// Read a distro-managed signal (currently only `FipsEnabled`).
+/// Read a distro-managed indicator (currently only `FipsEnabled`).
 fn read_live_distro_managed(
     desc: &'static IndicatorDescriptor,
 ) -> (Option<LiveValue>, Option<bool>) {
@@ -569,13 +569,13 @@ fn read_live_distro_managed(
     }
 }
 
-/// Read a modprobe.d-configured signal live value from sysfs.
+/// Read a modprobe.d-configured indicator live value from sysfs.
 ///
-/// For blacklist signals: reads module directory presence from sysfs as the
+/// For blacklist indicators: reads module directory presence from sysfs as the
 /// live check. Module absent = `Bool(true)` (blacklist effective). Module
 /// present = `Bool(false)` (module loaded, blacklist not effective).
 ///
-/// For parameter signals (`NfConntrackAcct`): reads
+/// For parameter indicators (`NfConntrackAcct`): reads
 /// `/sys/module/<mod>/parameters/<param>` via `SysfsText` + `SYSFS_MAGIC`,
 /// but only if the module is loaded (Trust Gate). Returns `(None, None)` if
 /// module is not loaded.
@@ -631,7 +631,7 @@ fn read_live_modprobe(
                 }
             }
         }
-        // Blacklist signals: module-directory presence is the live check.
+        // Blacklist indicators: module-directory presence is the live check.
         // Module absent → blacklist effective (Bool(true) = hardened).
         // Module present → blacklist not effective (Bool(false) = unhardened).
         id @ (IndicatorId::BluetoothBlacklisted
@@ -673,7 +673,7 @@ const fn module_name_for_blacklist_signal(id: IndicatorId) -> &'static str {
         IndicatorId::UsbStorageBlacklisted => "usb_storage",
         IndicatorId::FirewireCoreBlacklisted => "firewire_core",
         IndicatorId::ThunderboltBlacklisted => "thunderbolt",
-        // All other IDs are not blacklist signals; this function is only
+        // All other IDs are not blacklist indicators; this function is only
         // called from the blacklist match arm above.
         _ => "unknown",
     }
@@ -683,7 +683,7 @@ const fn module_name_for_blacklist_signal(id: IndicatorId) -> &'static str {
 // read_configured — configured value lookup
 // ===========================================================================
 
-/// Look up the configured value for a signal from the appropriate source.
+/// Look up the configured value for a indicator from the appropriate source.
 ///
 /// - `Sysctl` + `DistroManaged` (sysctl key present): sysctl.d merge tree.
 /// - `DistroManaged` `FipsEnabled`: FIPS cross-check via `FipsCrossCheck`.
@@ -701,7 +701,7 @@ fn read_configured(
     modprobe_config: &ModprobeConfig,
     configured_boot_cmdline: Option<&str>,
 ) -> Option<ConfiguredValue> {
-    // SecurityFs LSM signals have no sysctl.d / cmdline configured value.
+    // SecurityFs LSM indicators have no sysctl.d / cmdline configured value.
     if desc.class == IndicatorClass::SecurityFs {
         return None;
     }
@@ -726,7 +726,7 @@ fn read_configured(
     }
 }
 
-/// Look up configured value for a `KernelCmdline`-class signal from the
+/// Look up configured value for a `KernelCmdline`-class indicator from the
 /// bootloader-configured cmdline.
 ///
 /// The `configured_boot_cmdline` argument is the `options` line from the most
@@ -735,7 +735,7 @@ fn read_configured(
 /// configured cmdline value is available and no contradiction will be detected.
 ///
 /// The raw BLS options string is stored as-is for operator display and audit
-/// output. Contradiction detection for `KernelCmdline` signals does NOT go
+/// output. Contradiction detection for `KernelCmdline` indicators does NOT go
 /// through `evaluate_configured_meets()` — it uses a dedicated token-based path
 /// in `collect_one()` that calls `DesiredValue::meets_cmdline()` directly on
 /// the BLS options string. This is the correct path for `CmdlinePresent` and
@@ -748,7 +748,7 @@ fn read_configured(
 /// NIST SP 800-53 CM-6: bootloader `options` line is the persistence layer for
 /// cmdline security tokens.
 /// NIST SP 800-53 CA-7: enables `EphemeralHotfix`/`BootDrift` detection for
-/// cmdline signals (`ModuleSigEnforce`, `Mitigations`, `Pti`, etc.).
+/// cmdline indicators (`ModuleSigEnforce`, `Mitigations`, `Pti`, etc.).
 fn read_configured_boot_cmdline(
     _desc: &'static IndicatorDescriptor,
     configured_boot_cmdline: Option<&str>,
@@ -759,7 +759,7 @@ fn read_configured_boot_cmdline(
     // display and audit output. This string is not an integer and not the
     // "blacklisted" sentinel, so evaluate_configured_meets() returns None for it.
     //
-    // Contradiction detection for KernelCmdline signals is handled via a
+    // Contradiction detection for KernelCmdline indicators is handled via a
     // dedicated token-based path in collect_one(): configured_meets is computed
     // by calling DesiredValue::meets_cmdline(boot_opts) rather than routing
     // through evaluate_configured_meets(). This produces correct BootDrift and
@@ -771,11 +771,11 @@ fn read_configured_boot_cmdline(
     })
 }
 
-/// Look up configured value for a modprobe.d signal.
+/// Look up configured value for a modprobe.d indicator.
 ///
-/// For blacklist signals: returns `Some(ConfiguredValue { raw: "blacklisted", ... })`
+/// For blacklist indicators: returns `Some(ConfiguredValue { raw: "blacklisted", ... })`
 /// if the module is in the blacklist map.
-/// For parameter signals: returns the configured `options` value.
+/// For parameter indicators: returns the configured `options` value.
 fn read_configured_modprobe(
     desc: &'static IndicatorDescriptor,
     modprobe_config: &ModprobeConfig,
@@ -829,7 +829,7 @@ fn read_configured_modprobe(
         id => {
             log::debug!(
                 "posture: read_configured_modprobe: unknown ModprobeConfig \
-                 signal {id:?}"
+                 indicator {id:?}"
             );
             None
         }

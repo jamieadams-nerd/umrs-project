@@ -1,6 +1,6 @@
 # Plan: Antora Multi-Component Documentation Split
 
-**Status:** Reviewed — awaiting Jamie approval
+**Status:** Approved — execute after antora-doc-theme is complete
 
 **Sequencing:** Execute `antora-doc-theme.md` FIRST, then this plan. Theme is independent and benefits the split (build verification runs against final UI).
 

@@ -141,8 +141,8 @@ pub enum SecurityObservation {
     /// (`TpiDisagreement`).
     ///
     /// Display as `<parse-error>` rather than `<unlabeled>` to prevent false
-    /// negatives in audit output (NIST 800-53 AU-3: accurate audit records).
-    /// NIST 800-53 SI-12: information management.
+    /// negatives in audit output (NIST SP 800-53 AU-3: accurate audit records).
+    /// NIST SP 800-53 SI-12: information management.
     SelinuxParseFailure,
 
     // ── Risk ──────────────────────────────────────────────────────────────────
@@ -169,7 +169,7 @@ pub enum SecurityObservation {
     /// Reserve this for the TPI Disagreement case only — do not emit this for
     /// single-path failures (those produce `SelinuxParseFailure`).
     ///
-    /// NIST 800-53 SI-7: software and information integrity.
+    /// NIST SP 800-53 SI-7: software and information integrity.
     /// NSA RTB RAIN: redundancy cross-check failure.
     TpiDisagreement,
     // ── Add new observations above this line ──────────────────────────────────

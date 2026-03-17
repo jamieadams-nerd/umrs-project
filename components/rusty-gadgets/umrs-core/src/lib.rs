@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 Jamie Adams
 //
-// NIST 800-218 SSDF PW.4 / NSA RTB: Provable safe-code guarantee.
+// NIST SP 800-218 SSDF PW.4 / NSA RTB: Provable safe-code guarantee.
 // #![forbid] cannot be overridden by any inner #[allow] — this is a
 // compile-time proof, not a policy. An auditor can verify it mechanically.
 #![forbid(unsafe_code)]

@@ -27,7 +27,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("--- [ UMRS SETRANS AUDIT ] ---");
 
     // Initialize the High-Assurance Translation Map (Lazy Load)
-    // NIST 800-53 AU-3: Audit of the translation table itself
+    // NIST SP 800-53 AU-3: Audit of the translation table itself
     let guard = GLOBAL_TRANSLATOR.read().unwrap();
     log::info!("MCS Translator initialized.");
 

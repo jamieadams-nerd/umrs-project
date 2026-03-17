@@ -204,6 +204,10 @@ impl LinuxUsername {
     /// This is the only public constructor — validation happens here and
     /// nowhere else. Usernames permit a trailing `$` for Samba machine
     /// accounts (e.g., `MYHOST$`).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`PosixNameError`] if the name is empty, exceeds the length limit, or contains invalid characters.
     pub fn new(raw: &str) -> Result<Self, PosixNameError> {
         validate_posix_name(raw, /* allow_trailing_dollar = */ true)?;
         Ok(Self(raw.to_owned()))
@@ -306,6 +310,10 @@ impl LinuxGroupName {
     /// Construct a validated `LinuxGroupName`.
     ///
     /// Trailing `$` is rejected — it is a username-only convention.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`PosixNameError`] if the name is empty, exceeds the length limit, or contains invalid characters.
     pub fn new(raw: &str) -> Result<Self, PosixNameError> {
         validate_posix_name(raw, /* allow_trailing_dollar = */ false)?;
         Ok(Self(raw.to_owned()))
@@ -417,6 +425,12 @@ impl LinuxUser {
         }
     }
 
+    /// Construct a `LinuxUser` from a raw UID and username string, validating
+    /// the username at construction time.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`PosixNameError`] if the username fails validation.
     pub fn from_raw(uid: Uid, name: &str) -> Result<Self, PosixNameError> {
         Ok(Self {
             uid,
@@ -475,6 +489,10 @@ impl LinuxGroup {
     }
 
     /// Convenience: construct with gid and raw name string.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`PosixNameError`] if the group name fails validation.
     pub fn from_raw(gid: Gid, name: &str) -> Result<Self, PosixNameError> {
         Ok(Self {
             gid,
@@ -527,6 +545,10 @@ impl LinuxOwnership {
 
     /// Convenience: construct from raw uid/gid/name strings.
     /// Validates both names. Returns the first error encountered.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`PosixNameError`] if the group name fails validation.
     pub fn from_raw(
         uid: Uid,
         username: &str,
@@ -643,6 +665,10 @@ impl UserIdentity {
     }
 
     /// Convenience constructor from raw strings — validates both at once.
+    ///
+    /// # Errors
+    ///
+    /// Returns `io::Error` if the user or group cannot be resolved from the system database.
     pub fn from_raw(
         username: &str,
         group: &str,

@@ -113,6 +113,10 @@ impl StaticSource for KptrRestrict {
 ///
 /// NIST SP 800-53 SI-10: Input Validation — rejects non-numeric content
 /// rather than silently defaulting.
+///
+/// # Errors
+///
+/// Returns `io::Error` if the byte content is not valid UTF-8 or does not contain a valid unsigned 32-bit integer.
 pub fn parse_sysctl_u32(data: &[u8]) -> io::Result<u32> {
     let s = std::str::from_utf8(data).map_err(|_| {
         io::Error::new(io::ErrorKind::InvalidData, "sysctl: non-UTF8 data")
@@ -133,6 +137,10 @@ pub fn parse_sysctl_u32(data: &[u8]) -> io::Result<u32> {
 /// NIST SP 800-53 CA-7: must not discard valid kernel states; `-1` is a
 /// legitimate (unhardened) value that must be represented, not erased.
 /// NIST SP 800-53 SI-10: Input Validation — rejects non-numeric content.
+///
+/// # Errors
+///
+/// Returns `io::Error` if the byte content is not valid UTF-8 or does not contain a valid signed 32-bit integer.
 pub fn parse_sysctl_i32(data: &[u8]) -> io::Result<i32> {
     let s = std::str::from_utf8(data).map_err(|_| {
         io::Error::new(io::ErrorKind::InvalidData, "sysctl: non-UTF8 data")
@@ -595,6 +603,10 @@ impl CmdlineReader {
     /// Read `/proc/cmdline` through the provenance-verified `ProcfsText` path.
     ///
     /// NIST SP 800-53 SI-7: provenance-verified read of `/proc/cmdline`.
+    ///
+    /// # Errors
+    ///
+    /// Returns `io::Error` if `/proc/cmdline` cannot be read.
     pub fn read() -> io::Result<Self> {
         use crate::kattrs::procfs::ProcfsText;
         use crate::kattrs::traits::SecureReader;
@@ -653,6 +665,10 @@ impl BootIdReader {
     ///
     /// Returns `Ok(Some(id))` on success, `Ok(None)` if the node is absent,
     /// or `Err` on I/O or provenance failure.
+    ///
+    /// # Errors
+    ///
+    /// Returns `io::Error` if the BLS entry directory cannot be read.
     pub fn read() -> io::Result<Option<String>> {
         use crate::kattrs::procfs::ProcfsText;
         use crate::kattrs::traits::SecureReader;
@@ -687,6 +703,10 @@ impl BootIdReader {
 /// `read_live_sysctl_signed` instead.
 ///
 /// NIST SP 800-53 SI-7: all reads provenance-verified through `StaticSource`.
+///
+/// # Errors
+///
+/// Returns `io::Error` if the sysctl value cannot be read via the indicator's `SecureReader`.
 #[must_use = "live sysctl read result must be examined"]
 pub fn read_live_sysctl(
     id: crate::posture::indicator::IndicatorId,
@@ -757,6 +777,10 @@ pub fn read_live_sysctl(
 ///
 /// NIST SP 800-53 SI-7: provenance-verified read via PROC_SUPER_MAGIC.
 /// NIST SP 800-218 SSDF PW.4: TPI classification applied to the raw value.
+///
+/// # Errors
+///
+/// Returns `io::Error` if the sysctl value cannot be read or parsed as a signed integer.
 #[must_use = "core_pattern live read result drives hardening assessment — do not discard"]
 pub fn read_live_core_pattern() -> io::Result<Option<(CorePatternKind, String)>>
 {
@@ -781,6 +805,10 @@ pub fn read_live_core_pattern() -> io::Result<Option<(CorePatternKind, String)>>
 /// NIST SP 800-53 CA-7: represents the complete set of kernel-valid states,
 /// including negative values, so no valid unhardened state is silently discarded.
 /// NIST SP 800-53 SI-7: provenance-verified via `StaticSource`.
+///
+/// # Errors
+///
+/// Returns `io::Error` if the core_pattern sysctl cannot be read or parsed.
 #[must_use = "live signed sysctl read result must be examined"]
 pub fn read_live_sysctl_signed(
     id: crate::posture::indicator::IndicatorId,
@@ -805,6 +833,10 @@ pub fn read_live_sysctl_signed(
 /// mounted.
 ///
 /// NIST SP 800-53 SI-7: provenance-verified via SECURITYFS_MAGIC.
+///
+/// # Errors
+///
+/// Returns `io::Error` if the lockdown attribute cannot be read from the kernel security filesystem.
 pub fn read_lockdown_live()
 -> io::Result<Option<crate::kattrs::security::LockdownMode>> {
     use crate::kattrs::security::KernelLockdown;

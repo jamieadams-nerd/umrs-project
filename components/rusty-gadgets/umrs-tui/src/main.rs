@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Jamie Adams
 //
-// NIST 800-218 SSDF PW.4 / NSA RTB: Provable safe-code guarantee.
+// NIST SP 800-218 SSDF PW.4 / NSA RTB: Provable safe-code guarantee.
 #![forbid(unsafe_code)]
 #![warn(clippy::pedantic)]
 #![warn(clippy::nursery)]
@@ -560,8 +560,8 @@ fn append_kernel_identity_rows(
 
 /// Build the Kernel Security tab rows from a live `PostureSnapshot`.
 ///
-/// Organises all probed signals into six purpose-based groups. Groups with
-/// no readable signal data are omitted entirely — an empty group with only
+/// Organises all probed indicators into six purpose-based groups. Groups with
+/// no readable indicator data are omitted entirely — an empty group with only
 /// `"(not probed)"` entries is noise. Kernel version appears as an
 /// informational row at the top, not as its own group.
 ///
@@ -571,14 +571,14 @@ fn append_kernel_identity_rows(
 /// - `meets_desired = None` (unreadable) → `Dim`
 ///
 /// For the lockdown indicator, the header's `SecurityIndicators` value is
-/// used as a cross-reference since the `Lockdown` signal in the snapshot
+/// used as a cross-reference since the `Lockdown` indicator in the snapshot
 /// carries the same value via a different read path.
 ///
 /// NIST SP 800-53 CA-7: Continuous Monitoring — all rendered values are
 /// sourced from a single atomic posture snapshot.
 /// NIST SP 800-53 CM-6: Configuration Settings — live kernel values rendered
 /// without interpretation or transformation.
-/// NIST SP 800-53 SI-11: Error Handling — unreadable signals display as Dim
+/// NIST SP 800-53 SI-11: Error Handling — unreadable indicators display as Dim
 /// rather than propagating errors to the display layer.
 fn build_kernel_security_rows(
     snap: &PostureSnapshot,
@@ -598,7 +598,7 @@ fn build_kernel_security_rows(
     );
 
     append_boot_integrity_group(&mut rows, snap, indicators);
-    append_signal_group(
+    append_indicator_group(
         &mut rows,
         "CRYPTOGRAPHIC POSTURE",
         snap,
@@ -612,7 +612,7 @@ fn build_kernel_security_rows(
             ),
         ],
     );
-    append_signal_group(
+    append_indicator_group(
         &mut rows,
         "KERNEL SELF-PROTECTION",
         snap,
@@ -625,7 +625,7 @@ fn build_kernel_security_rows(
             (IndicatorId::DmesgRestrict, "dmesg_restrict"),
         ],
     );
-    append_signal_group(
+    append_indicator_group(
         &mut rows,
         "PROCESS ISOLATION",
         snap,
@@ -635,7 +635,7 @@ fn build_kernel_security_rows(
             (IndicatorId::SuidDumpable, "suid_dumpable"),
         ],
     );
-    append_signal_group(
+    append_indicator_group(
         &mut rows,
         "FILESYSTEM HARDENING",
         snap,
@@ -646,7 +646,7 @@ fn build_kernel_security_rows(
             (IndicatorId::ProtectedRegular, "protected_regular"),
         ],
     );
-    append_signal_group(
+    append_indicator_group(
         &mut rows,
         "MODULE RESTRICTIONS",
         snap,
@@ -678,28 +678,28 @@ fn build_kernel_security_rows(
 
 /// Append the BOOT INTEGRITY group to the row list.
 ///
-/// Lockdown is the primary boot-integrity signal. If the posture snapshot
+/// Lockdown is the primary boot-integrity indicator. If the posture snapshot
 /// could not read the securityfs node (kernel without CONFIG_SECURITY_LOCKDOWN),
 /// the header indicator value is used as a fallback so the row is never silently
 /// absent on systems where lockdown is otherwise visible in the header.
 ///
-/// Other boot-integrity signals (kexec, module sig, mitigations, PTI) are
-/// appended from the snapshot. The group is omitted only if every signal is
+/// Other boot-integrity indicators (kexec, module sig, mitigations, PTI) are
+/// appended from the snapshot. The group is omitted only if every indicator is
 /// unreadable AND the fallback indicator is also unavailable.
 fn append_boot_integrity_group(
     rows: &mut Vec<DataRow>,
     snap: &PostureSnapshot,
     indicators: &SecurityIndicators,
 ) {
-    // Snapshot-sourced boot-integrity signals.
-    let boot_signals: &[(IndicatorId, &str)] = &[
+    // Snapshot-sourced boot-integrity indicators.
+    let boot_indicators: &[(IndicatorId, &str)] = &[
         (IndicatorId::Lockdown, "lockdown"),
         (IndicatorId::KexecLoadDisabled, "kexec_load_disabled"),
         (IndicatorId::ModuleSigEnforce, "module.sig_enforce"),
         (IndicatorId::Mitigations, "mitigations"),
         (IndicatorId::Pti, "pti"),
     ];
-    let group_rows = signal_group_rows(snap, boot_signals);
+    let group_rows = indicator_group_rows(snap, boot_indicators);
 
     // If lockdown was not in the snapshot, fall back to the header indicator.
     let has_lockdown =
@@ -725,17 +725,17 @@ fn append_boot_integrity_group(
     }
 }
 
-/// Append a named signal group to the row list.
+/// Append a named indicator group to the row list.
 ///
-/// Skips the group header and separator entirely when no signal in `signals`
+/// Skips the group header and separator entirely when no indicator in `signals`
 /// has a readable live value — an empty group is not shown.
-fn append_signal_group(
+fn append_indicator_group(
     rows: &mut Vec<DataRow>,
     title: &'static str,
     snap: &PostureSnapshot,
     signals: &[(IndicatorId, &str)],
 ) {
-    let group_rows = signal_group_rows(snap, signals);
+    let group_rows = indicator_group_rows(snap, signals);
     if !group_rows.is_empty() {
         rows.push(DataRow::group_title(title));
         rows.extend(group_rows);
@@ -743,7 +743,7 @@ fn append_signal_group(
     }
 }
 
-/// Build display rows for a named group of posture signals.
+/// Build display rows for a named group of posture indicators.
 ///
 /// For each `(IndicatorId, label)` pair, looks up the `IndicatorReport` in the
 /// snapshot. Indicators with a readable `live_value` are rendered as
@@ -751,11 +751,11 @@ fn append_signal_group(
 /// with no live value (`live_value: None`) are silently skipped — the caller
 /// is responsible for deciding whether to omit the group entirely.
 ///
-/// Returns an empty `Vec` when no signal in the group has a readable value,
+/// Returns an empty `Vec` when no indicator in the group has a readable value,
 /// allowing the caller to suppress the group header.
 ///
 /// NIST SP 800-53 SI-11: degraded signals are skipped, not fabricated.
-fn signal_group_rows(
+fn indicator_group_rows(
     snap: &PostureSnapshot,
     signals: &[(IndicatorId, &str)],
 ) -> Vec<DataRow> {
@@ -795,10 +795,10 @@ fn format_live_value(live: &LiveValue) -> String {
 
 /// Map a hardening assessment to the appropriate `StyleHint`.
 ///
-/// - `Some(true)` → `TrustGreen` — signal meets the hardened baseline.
-/// - `Some(false)` → `TrustRed` — signal does not meet the hardened baseline.
+/// - `Some(true)` → `TrustGreen` — indicator meets the hardened baseline.
+/// - `Some(false)` → `TrustRed` — indicator does not meet the hardened baseline.
 /// - `None` → `Dim` — the assessment could not be computed (unreadable or
-///   custom signal type).
+///   custom indicator type).
 const fn meets_desired_hint(meets: Option<bool>) -> StyleHint {
     match meets {
         Some(true) => StyleHint::TrustGreen,
@@ -1007,7 +1007,7 @@ fn main() {
     );
 
     // ── Posture snapshot ─────────────────────────────────────────────────
-    // Collect all kernel security posture signals once before building the app.
+    // Collect all kernel security posture indicators once before building the app.
     // The snapshot is independent of OS detection — it reads directly from
     // kernel nodes via the provenance-verified SecureReader engine.
     // Used exclusively to populate the Kernel Security tab.
@@ -1015,7 +1015,7 @@ fn main() {
     // NIST SP 800-53 CA-7: Continuous Monitoring — posture collected at startup.
     let snap = PostureSnapshot::collect();
     log::info!(
-        "posture snapshot: {}/{} signals readable",
+        "posture snapshot: {}/{} indicators readable",
         snap.readable_count(),
         snap.reports.len()
     );

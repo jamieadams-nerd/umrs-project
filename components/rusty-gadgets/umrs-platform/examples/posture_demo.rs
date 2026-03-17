@@ -4,7 +4,7 @@
 //!
 //! Collects all kernel security posture signals and displays a formatted
 //! summary report to stdout. Demonstrates both the novice-friendly
-//! `PostureSnapshot` interface and the expert path (individual signal lookup,
+//! `PostureSnapshot` interface and the expert path (individual indicator lookup,
 //! catalog iteration).
 //!
 //! # Running
@@ -17,7 +17,7 @@
 //!
 //! Many signals require read access to `/proc/sys/` nodes. On systems where
 //! access is restricted or the node is absent (containers, minimal kernels),
-//! the signal will show `live=None` — this is expected graceful degradation.
+//! the indicator will show `live=None` — this is expected graceful degradation.
 
 use umrs_platform::posture::{
     AssuranceImpact, ContradictionKind, IndicatorId, PostureSnapshot,
@@ -51,16 +51,16 @@ fn main() {
     );
     println!("Catalog   : {} total signals", snap.reports.len());
     println!(
-        "Findings  : {} signal(s) not meeting desired value",
+        "Findings  : {} indicator(s) not meeting desired value",
         snap.findings().count()
     );
     println!(
-        "Contradictions: {} signal(s) with live/configured disagreement",
+        "Contradictions: {} indicator(s) with live/configured disagreement",
         snap.contradictions().count()
     );
     println!();
 
-    // ── Per-signal table ────────────────────────────────────────────────────
+    // ── Per-indicator table ────────────────────────────────────────────────────
     println!(
         "{:<35} {:<10} {:<12} {:<8} Status",
         "Indicator", "Live", "Meets", "Impact"
@@ -121,7 +121,7 @@ fn main() {
         );
         for report in &findings {
             println!();
-            println!("  Signal  : {}", report.descriptor.id);
+            println!("  Indicator  : {}", report.descriptor.id);
             println!("  Impact  : {:?}", report.descriptor.impact);
             println!("  Live    : {:?}", report.live_value);
             println!("  Desired : {:?}", report.descriptor.desired);
@@ -154,9 +154,9 @@ fn main() {
         println!();
     }
 
-    // ── Expert path: individual signal lookup ────────────────────────────────
+    // ── Expert path: individual indicator lookup ────────────────────────────────
     println!(
-        "── Individual signal lookup (KptrRestrict) ───────────────────────────────────"
+        "── Individual indicator lookup (KptrRestrict) ───────────────────────────────────"
     );
     if let Some(r) = snap.get(IndicatorId::KptrRestrict) {
         println!("  live={:?}  meets={:?}", r.live_value, r.meets_desired);

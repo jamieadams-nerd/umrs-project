@@ -49,7 +49,7 @@
 //! NIST SP 800-53 CM-6: Configuration Settings — the BLS `options` line is the
 //! persistence layer for cmdline security tokens.
 //! NIST SP 800-53 CA-7: Continuous Monitoring — enables `EphemeralHotfix` and
-//! `BootDrift` detection for cmdline signals (`ModuleSigEnforce`, `Mitigations`,
+//! `BootDrift` detection for cmdline indicators (`ModuleSigEnforce`, `Mitigations`,
 //! `Pti`, `Lockdown`, `RandomTrustCpu`, `RandomTrustBootloader`).
 //! NIST SP 800-53 SI-10: Input Validation — BLS entry content is validated
 //! line-by-line; malformed entries are skipped with debug logging.
@@ -80,8 +80,8 @@ const KERNEL_OSRELEASE: &str = "/proc/sys/kernel/osrelease";
 /// is returned. The caller must not treat `None` as an error condition — it
 /// means the configured cmdline is unavailable in this environment.
 ///
-/// NIST SP 800-53 CM-6: boot-persistence layer for cmdline signals.
-/// NIST SP 800-53 CA-7: enables contradiction detection for cmdline signals.
+/// NIST SP 800-53 CM-6: boot-persistence layer for cmdline indicators.
+/// NIST SP 800-53 CA-7: enables contradiction detection for cmdline indicators.
 #[must_use = "configured cmdline result must be examined — None means bootloader config unavailable"]
 pub fn read_configured_cmdline() -> Option<String> {
     #[cfg(debug_assertions)]

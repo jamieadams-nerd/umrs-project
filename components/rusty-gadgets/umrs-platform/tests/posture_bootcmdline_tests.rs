@@ -9,7 +9,7 @@
 //!    These tests run in any environment (no filesystem dependency).
 //! 2. **Options extraction** — `read_configured_cmdline` graceful degrade and
 //!    environment-conditional assertions.
-//! 3. **Snapshot integration** — KernelCmdline signals have `configured_value`
+//! 3. **Snapshot integration** — KernelCmdline indicators have `configured_value`
 //!    when BLS entries are present; gracefully return `None` when absent.
 
 use umrs_platform::posture::bootcmdline::{parse_bls_content, read_configured_cmdline};
@@ -210,13 +210,13 @@ fn bls_options_parses_as_whitespace_separated_tokens() {
 }
 
 // ===========================================================================
-// 3. Snapshot integration — KernelCmdline signals
+// 3. Snapshot integration — KernelCmdline indicators
 // ===========================================================================
 
-/// KernelCmdline signals in the snapshot must have `descriptor.class ==
+/// KernelCmdline indicators in the snapshot must have `descriptor.class ==
 /// IndicatorClass::KernelCmdline`.
 #[test]
-fn snapshot_cmdline_signals_have_correct_class() {
+fn snapshot_cmdline_indicators_have_correct_class() {
     use umrs_platform::posture::indicator::IndicatorClass;
 
     let snap = PostureSnapshot::collect();
@@ -243,7 +243,7 @@ fn snapshot_cmdline_signals_have_correct_class() {
 }
 
 /// `PostureSnapshot::collect()` must not panic regardless of whether BLS
-/// entries are present. The configured_value for cmdline signals is either
+/// entries are present. The configured_value for cmdline indicators is either
 /// Some (BLS available) or None (BLS absent) — both are valid.
 #[test]
 fn snapshot_cmdline_configured_value_does_not_panic() {
@@ -259,7 +259,7 @@ fn snapshot_cmdline_configured_value_does_not_panic() {
     }
 }
 
-/// If BLS entries are available, configured_value for cmdline signals must
+/// If BLS entries are available, configured_value for cmdline indicators must
 /// be Some with a non-empty raw string. This test is environment-conditional:
 /// it only asserts when BLS is available.
 #[test]
@@ -272,7 +272,7 @@ fn snapshot_cmdline_configured_value_non_empty_when_bls_available() {
     }
 
     let snap = PostureSnapshot::collect();
-    // At least one cmdline signal should have a configured_value.
+    // At least one cmdline indicator should have a configured_value.
     let has_configured = snap
         .iter()
         .filter(|r| {
@@ -283,7 +283,7 @@ fn snapshot_cmdline_configured_value_non_empty_when_bls_available() {
 
     assert!(
         has_configured,
-        "when BLS entries are available, at least one KernelCmdline signal \
+        "when BLS entries are available, at least one KernelCmdline indicator \
          must have a configured_value"
     );
 }

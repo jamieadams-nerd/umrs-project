@@ -1,10 +1,89 @@
 # SCAP/STIG Corpus Ingestion Plan
 
 **Created:** 2026-03-16
-**Status:** Ready to execute
+**Status:** Phase 1 COMPLETE. Phase 3c done via security-auditor-corpus plan. Phases 2 (agent familiarization) and 3a/3b/3d pending.
 **Source:** `.claude/references/scap-security-guide/rhel10-playbook-stig.yml`
 **ROADMAP Goals:** G2 (Security Posture Assessment), G5 (Security Tools), G8 (High-Assurance Patterns)
 **Agent:** researcher (ingestion), then rust-developer + security-engineer + security-auditor + tech-writer + senior-tech-writer (familiarization)
+
+---
+
+## Ingestion Notes (2026-03-17)
+
+**Collection:** `scap-security-guide` in ChromaDB at `/media/psf/repos/ai-rag-vdb/chroma`
+**Chunks stored:** 7 total (2 primary data chunks + 5 extraction script chunks)
+**Date ingested:** 2026-03-17
+
+### Chunking limitation — known issue
+
+The two primary data files (`stig-signal-index.md` and `cce-nist-crossref.md`) are stored as
+single massive chunks (~23,000 and ~21,000 tokens respectively). The ingest pipeline's markdown
+chunker splits on H1/H2/H3 headings — both files have only one heading, with the entire content
+as a single flat table. Tables have no paragraph breaks between rows, so the token-bounded splitter
+cannot subdivide them.
+
+**Impact:** Every RAG query against `scap-security-guide` returns the same two chunks regardless
+of query specificity. The chunks are too large for the embedding model to produce discriminating
+vectors. Targeted lookups by CCE or signal name do not work — the entire table is always returned.
+
+**Workaround (current session):** Direct file reads of `stig-signal-index.md` and
+`cce-nist-crossref.md` work reliably for CCE/signal lookup within this context window.
+Agents needing a specific CCE or signal should read the file directly rather than relying on
+RAG semantic search for this collection.
+
+**Recommended fix (future):** Re-generate the index files broken into alphabetical sections
+(e.g., `## Signals: A-C`, `## Signals: D-G`) so the chunker can split them into ~50 rows per
+chunk. This would require modifying `extract_stig_index.py` to emit section headings and
+re-running ingestion with `--force`.
+
+### Corpus content summary (researcher familiarization)
+
+**451 unique signals across the following check method categories:**
+- `sysctl` (kernel parameter checks) — ~35 signals, all directly relevant to UMRS posture catalog
+- `audit-rule` (audit framework rules) — ~55 signals covering DAC modification, file deletion, privileged commands, login events
+- `file-check` (file ownership/permissions) — ~120 signals covering /etc/ and system dirs
+- `package-check` (package presence/absence) — ~30 signals
+- `cmdline` (kernel command line arguments) — ~8 signals (grub, audit, pti, vsyscall)
+- `service-check` (systemd service state) — ~5 signals
+- `other` (various — PAM, SSH, SELinux config, crypto policy) — ~200 signals
+
+**UMRS-relevant signal highlights (sysctl category — directly maps to posture catalog):**
+
+| Signal | CCE | NIST Controls | Relevance to UMRS |
+|---|---|---|---|
+| `sysctl_kernel_kexec_load_disabled` | CCE-89232-3 | CM-6 | Already cited in plan; maps to kexec signal |
+| `sysctl_kernel_randomize_va_space` | CCE-87876-9 | CM-6(a), SC-30, SC-30(2) | ASLR — likely in posture catalog |
+| `sysctl_kernel_dmesg_restrict` | CCE-89000-4 | SI-11(a), SI-11(b) | Kernel log access restriction |
+| `sysctl_kernel_kptr_restrict` | CCE-88686-1 | CM-6(a), SC-30 | Kernel pointer address restriction |
+| `sysctl_kernel_unprivileged_bpf_disabled` | CCE-89405-5 | AC-6, SC-7(10) | Unprivileged BPF access |
+| `sysctl_kernel_yama_ptrace_scope` | CCE-88785-1 | SC-7(10) | ptrace scope restriction |
+| `sysctl_net_core_bpf_jit_harden` | CCE-89631-6 | CM-6, SC-7(10) | BPF JIT hardening |
+| `sysctl_kernel_exec_shield` | CCE-89079-8 | CM-6(a), SC-39 | Exec shield (NX/SMEP) |
+| `sysctl_fs_protected_hardlinks` | CCE-86689-7 | AC-6(1), CM-6(a) | Hardlink protection |
+| `sysctl_fs_protected_symlinks` | CCE-88796-8 | AC-6(1), CM-6(a) | Symlink protection |
+| `sysctl_kernel_core_pattern` | CCE-86714-3 | SC-7(10) | Core dump storage disable |
+| `sysctl_kernel_perf_event_paranoid` | CCE-90142-1 | AC-6 | Unprivileged perf profiling |
+
+**SELinux-specific signals:**
+- `selinux_state` (CCE-89386-7): AC-3, AC-3(3)(a), AU-9, SC-7(21) — high severity — UMRS verifies this
+- `selinux_policytype` (CCE-88366-0): AC-3, AC-3(3)(a), AU-9, SC-7(21) — medium — UMRS verifies this
+
+**Audit/kmod signals directly relevant to UMRS:**
+- `audit_rules_kernel_module_loading_init` (CCE-90172-8): AC-6(9), AU-12(c)
+- `audit_rules_kernel_module_loading_finit` (CCE-88638-2): AC-6(9), AU-12(c)
+- `audit_rules_kernel_module_loading_delete` (CCE-89982-3): AC-6(9), AU-12(c)
+
+**FIPS/crypto policy signals (relevant to SC-13, FIPS 140-2 environment):**
+- `configure_crypto_policy` (CCE-89085-5): AC-17(2), SC-12(2), SC-12(3), SC-13 — high severity
+- `configure_bind_crypto_policy` (CCE-86874-5): SC-12(2), SC-13 — high
+- `aide_use_fips_hashes` (CCE-90260-1): CM-6(a), SI-7, SI-7(1) — AIDE must use FIPS 140-2 hashes
+
+**Note on STIG check methodology vs. UMRS approach:**
+All STIG checks use `check_method: other` or `check_method: sysctl` — meaning they read
+configuration files or sysctl values but do NOT compare configured values against live kernel
+state. The UMRS contradiction detection approach (configured vs. live) catches cases where a
+sysctl.d file sets a value but the running kernel has a different value — a gap the STIG scan
+will miss entirely. This is a differentiating capability worth documenting explicitly.
 
 ---
 
@@ -146,14 +225,20 @@ standard SCAP scans miss.
 
 ## Definition of Done
 
-- [ ] Phase 0: Signal index and CCE cross-reference tables generated
-- [ ] Phase 1: `scap-stig` collection ingested into RAG
-- [ ] Phase 2: All 5 agents complete familiarization, MEMORY.md updated
+- [x] Phase 0: Signal index and CCE cross-reference tables generated (451 signals, both files in `scap-security-guide/`)
+- [x] Phase 1: `scap-stig` collection ingested into RAG (collection: `scap-security-guide`, 7 chunks)
+- [x] Phase 2 (researcher): Corpus familiarization complete — see ingestion notes above
+- [ ] Phase 2 (rust-developer): CCE mappings for existing SignalId variants; new signal candidates
+- [ ] Phase 2 (security-engineer): STIG deployment posture; SELinux policy, file permissions, audit rules
+- [ ] Phase 2 (security-auditor): Coverage gap analysis vs. posture catalog; CCE annotation debt
+- [ ] Phase 2 (tech-writer): Descriptive text patterns; CCE citation format
+- [ ] Phase 2 (senior-tech-writer): Structural integration; CCE citations in Antora modules
 - [ ] Phase 3a: `cce` field added to `SignalDescriptor`; existing signals annotated
 - [ ] Phase 3b: Documentation style for CCE citations established
-- [ ] Phase 3c: Coverage gap report produced
-- [ ] Phase 3d: Check methodology comparison documented
+- [ ] Phase 3c: Coverage gap report produced at `.claude/reports/stig-coverage-gaps.md`
+- [ ] Phase 3d: Check methodology comparison documented in `docs/modules/architecture/`
 - [ ] All agents using CCE citations in new work where applicable
+- [ ] RAG chunking fix: re-generate index files with section headings; re-ingest with `--force`
 
 ---
 

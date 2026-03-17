@@ -154,6 +154,10 @@ pub struct SecureXattrReader;
 
 impl SecureXattrReader {
     /// NIST 800-53 SI-7: High-Assurance xattr retrieval via raw syscalls.
+    ///
+    /// # Errors
+    ///
+    /// Returns `io::Error` if the extended attribute cannot be read from the file descriptor.
     pub fn read_raw(file: &File, attr: &str) -> io::Result<Vec<u8>> {
         let size = fgetxattr(file, attr, &mut []).map_err(
             #[allow(clippy::redundant_closure)]
@@ -209,6 +213,10 @@ impl SecureXattrReader {
     ///
     /// NIST 800-53 AC-3 / SI-7 / SI-12.
     /// NSA RTB RAIN: redundancy cross-check must always fire.
+    ///
+    /// # Errors
+    ///
+    /// Returns `io::Error` if the extended attribute cannot be read, or an integrity error if TPI validation detects a mismatch.
     pub fn read_context(
         file: &File,
     ) -> Result<SecurityContext, XattrReadError> {

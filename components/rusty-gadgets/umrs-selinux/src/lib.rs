@@ -38,21 +38,19 @@
 // ===========================================================================
 //  Don't mess with the order unless YOU know what you're doing!
 //
-// NIST 800-218 SSDF PW.4 / NSA RTB: Provable safe-code guarantee.
+// NIST SP 800-218 SSDF PW.4 / NSA RTB: Provable safe-code guarantee.
 // #![forbid] cannot be overridden by any inner #[allow] — this is a
 // compile-time proof, not a policy. An auditor can verify it mechanically.
 #![forbid(unsafe_code)]
 #![warn(clippy::pedantic)]
 #![warn(clippy::nursery)]
 #![allow(clippy::unreadable_literal)]
-#![allow(clippy::missing_panics_doc)]
 #![allow(clippy::redundant_closure)]
 #![allow(clippy::redundant_closure_for_method_calls)]
 #![allow(clippy::module_name_repetitions)]
 //
 #![deny(clippy::unwrap_used)]
 #![allow(clippy::option_if_let_else)]
-#![allow(clippy::missing_errors_doc)]
 #![allow(clippy::doc_markdown)]
 // ===========================================================================
 pub mod category;

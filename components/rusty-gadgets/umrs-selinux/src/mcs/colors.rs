@@ -88,6 +88,15 @@ static SECOLORS_CACHE: OnceLock<RwLock<CacheState>> = OnceLock::new();
 // Public Entry
 // ============================================================================
 
+/// Load the `secolors` configuration, returning a cached copy if unchanged.
+///
+/// # Errors
+///
+/// Returns `io::Error` if the color configuration file cannot be read or parsed.
+///
+/// # Panics
+///
+/// Panics if the internal `RwLock` is poisoned.
 pub fn load_secolors_cached(path: &Path) -> io::Result<SeColorConfig> {
     let meta = fs::metadata(path)?;
     let mtime = meta.modified().ok();
@@ -131,6 +140,11 @@ pub fn load_secolors_cached(path: &Path) -> io::Result<SeColorConfig> {
 // Parser
 // ============================================================================
 
+/// Parse a `secolors` configuration file into a [`SeColorConfig`].
+///
+/// # Errors
+///
+/// Returns `io::Error` if the file cannot be opened or contains malformed color entries.
 pub fn parse_secolor_file(path: &Path) -> io::Result<SeColorConfig> {
     let text = fs::read_to_string(path)?;
     let mut cfg = SeColorConfig::default();
@@ -356,6 +370,10 @@ fn io_err(msg: &str) -> io::Error {
 /// NIST 800-53 CM-6: Uses the policy type from `/etc/selinux/config` to construct
 /// the correct path (`/etc/selinux/{policy}/secolor.conf`), guarding against
 /// hard-coded `targeted`-only assumptions that break MLS deployments.
+///
+/// # Errors
+///
+/// Returns `io::Error` if the default color configuration file cannot be read or parsed.
 pub fn load_default() -> io::Result<SeColorConfig> {
     use crate::status::selinux_policy;
     let policy = selinux_policy().ok_or_else(|| {

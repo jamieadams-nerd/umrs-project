@@ -9,7 +9,7 @@
 //! A Security Context represents the canonical SELinux label format:
 //!     user : role : type [:level]
 //!
-//! NIST 800-53 AC-4 / NSA RTB (Strong Data Modeling & Lattice Math)
+//! NIST SP 800-53 AC-4 / NSA RTB (Strong Data Modeling & Lattice Math)
 //!   This module enforces the internal representation of security attributes used for
 //!   Information Flow Enforcement.
 
@@ -32,7 +32,7 @@ pub struct MlsLevel {
     pub sensitivity: SensitivityLevel,
     pub categories: CategorySet,
 
-    /// NIST 800-53 AU-3: The exact string found in the xattr (e.g., "SystemLow")
+    /// NIST SP 800-53 AU-3: The exact string found in the xattr (e.g., "SystemLow")
     pub raw_level: String,
 }
 
@@ -60,7 +60,7 @@ impl fmt::Display for MlsLevel {
 // ===========================================================================
 // SecurityContext structure
 // ===========================================================================
-/// NIST 800-53 AC-3: Access Enforcement logic depends on this structure.
+/// NIST SP 800-53 AC-3: Access Enforcement logic depends on this structure.
 /// NSA RTB: Minimized TCB via strictly bounded data structures.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 #[must_use]
@@ -106,7 +106,7 @@ impl SecurityContext {
         self.level.as_ref()
     }
 
-    /// NIST 800-53 AC-4: Information Flow Enforcement
+    /// NIST SP 800-53 AC-4: Information Flow Enforcement
     #[must_use]
     pub fn dominates(&self, _other: &Self) -> bool {
         todo!("Lattice dominance logic pending CategorySet bitmask integration")
@@ -177,7 +177,7 @@ impl FromStr for SecurityContext {
         let security_type = SelinuxType::from_str(parts[2])
             .map_err(|_| ContextParseError::InvalidType)?;
 
-        // Path B: Greedy Level Capture (NIST 800-53 SI-7)
+        // Path B: Greedy Level Capture (NIST SP 800-53 SI-7)
         let level = if parts.len() >= 4 {
             // Join all remaining parts to handle colons in categories (e.g., s0:c1:c2)
             let level_raw = parts[3..].join(":");

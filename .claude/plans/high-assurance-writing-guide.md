@@ -1,7 +1,7 @@
 # High-Assurance Documentation Writing Guide — Plan
 
 **Created:** 2026-03-16
-**Status:** Placeholder — execute after current corpus familiarization and SCAP ingestion complete
+**Status:** Unblocked — SCAP ingestion complete; ready for execution
 **ROADMAP Goals:** G1 (Documentation Excellence), G10 (AI Transparency)
 **Agent:** senior-tech-writer (primary author), tech-writer (reviewer)
 **Audience:** External agents, new contributors, other projects adopting similar practices

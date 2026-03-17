@@ -13,8 +13,8 @@
 //!    catalog entries with correct class, impact, and desired values.
 //! 5. **Live cross-check integration** — `is_module_loaded` degrades
 //!    gracefully when sysfs is available or modules are absent.
-//! 6. **Snapshot integration** — new modprobe signals appear in
-//!    `PostureSnapshot::collect()` with the correct signal class.
+//! 6. **Snapshot integration** — new modprobe indicators appear in
+//!    `PostureSnapshot::collect()` with the correct indicator class.
 //! 7. **Blacklist contradiction regression** — `evaluate_configured_meets`
 //!    correctly handles the `"blacklisted"` sentinel so that `BootDrift` is
 //!    produced when a module is blacklisted in modprobe.d but loaded at runtime.
@@ -239,7 +239,7 @@ fn parse_param_without_equals_is_malformed() {
     // This is distinct from `options mymod` (no params string at all), which
     // returns Options { params: [] } and represents a module with no params.
     //
-    // NIST 800-53 SI-10: Input Validation — fail closed on unrecognised input.
+    // NIST SP 800-53 SI-10: Input Validation — fail closed on unrecognised input.
     let result = parse_line("options mymod noequalssign");
     assert_eq!(result, ParsedDirective::Malformed);
 }
@@ -333,15 +333,15 @@ fn modprobe_config_blacklist_source_absent_returns_none() {
 
 /// All new Phase 2a modprobe IndicatorId variants must appear in the catalog.
 #[test]
-fn catalog_covers_phase_2a_modprobe_signals() {
-    let new_signals = [
+fn catalog_covers_phase_2a_modprobe_indicators() {
+    let new_indicators = [
         IndicatorId::NfConntrackAcct,
         IndicatorId::BluetoothBlacklisted,
         IndicatorId::UsbStorageBlacklisted,
         IndicatorId::FirewireCoreBlacklisted,
         IndicatorId::ThunderboltBlacklisted,
     ];
-    for id in new_signals {
+    for id in new_indicators {
         let found = INDICATORS.iter().any(|d| d.id == id);
         assert!(
             found,
@@ -352,15 +352,15 @@ fn catalog_covers_phase_2a_modprobe_signals() {
 
 /// All Phase 2a modprobe indicators must use `IndicatorClass::ModprobeConfig`.
 #[test]
-fn catalog_phase_2a_signals_use_modprobe_config_class() {
-    let modprobe_signals = [
+fn catalog_phase_2a_indicators_use_modprobe_config_class() {
+    let modprobe_indicators = [
         IndicatorId::NfConntrackAcct,
         IndicatorId::BluetoothBlacklisted,
         IndicatorId::UsbStorageBlacklisted,
         IndicatorId::FirewireCoreBlacklisted,
         IndicatorId::ThunderboltBlacklisted,
     ];
-    for id in modprobe_signals {
+    for id in modprobe_indicators {
         let desc = INDICATORS
             .iter()
             .find(|d| d.id == id)
@@ -373,16 +373,16 @@ fn catalog_phase_2a_signals_use_modprobe_config_class() {
     }
 }
 
-/// Blacklist signals must have `DesiredValue::Exact(1)` (blacklist effective).
+/// Blacklist indicators must have `DesiredValue::Exact(1)` (blacklist effective).
 #[test]
-fn catalog_blacklist_signals_have_exact_1_desired() {
-    let blacklist_signals = [
+fn catalog_blacklist_indicators_have_exact_1_desired() {
+    let blacklist_indicators = [
         IndicatorId::BluetoothBlacklisted,
         IndicatorId::UsbStorageBlacklisted,
         IndicatorId::FirewireCoreBlacklisted,
         IndicatorId::ThunderboltBlacklisted,
     ];
-    for id in blacklist_signals {
+    for id in blacklist_indicators {
         let desc = INDICATORS
             .iter()
             .find(|d| d.id == id)
@@ -395,16 +395,16 @@ fn catalog_blacklist_signals_have_exact_1_desired() {
     }
 }
 
-/// Blacklist signals must be `High` impact.
+/// Blacklist indicators must be `High` impact.
 #[test]
-fn catalog_blacklist_signals_are_high_impact() {
-    let blacklist_signals = [
+fn catalog_blacklist_indicators_are_high_impact() {
+    let blacklist_indicators = [
         IndicatorId::BluetoothBlacklisted,
         IndicatorId::UsbStorageBlacklisted,
         IndicatorId::FirewireCoreBlacklisted,
         IndicatorId::ThunderboltBlacklisted,
     ];
-    for id in blacklist_signals {
+    for id in blacklist_indicators {
         let desc = INDICATORS
             .iter()
             .find(|d| d.id == id)
@@ -431,7 +431,7 @@ fn catalog_nf_conntrack_acct_is_medium_impact() {
     );
 }
 
-/// NfConntrackAcct must have `sysctl_key: None` (it's not a sysctl signal).
+/// NfConntrackAcct must have `sysctl_key: None` (it's not a sysctl indicator).
 #[test]
 fn catalog_nf_conntrack_acct_has_no_sysctl_key() {
     let desc = INDICATORS
@@ -444,23 +444,23 @@ fn catalog_nf_conntrack_acct_has_no_sysctl_key() {
     );
 }
 
-/// Blacklist signals must have no sysctl_key (they are modprobe.d signals).
+/// Blacklist indicators must have no sysctl_key (they are modprobe.d indicators).
 #[test]
-fn catalog_blacklist_signals_have_no_sysctl_key() {
-    let blacklist_signals = [
+fn catalog_blacklist_indicators_have_no_sysctl_key() {
+    let blacklist_indicators = [
         IndicatorId::BluetoothBlacklisted,
         IndicatorId::UsbStorageBlacklisted,
         IndicatorId::FirewireCoreBlacklisted,
         IndicatorId::ThunderboltBlacklisted,
     ];
-    for id in blacklist_signals {
+    for id in blacklist_indicators {
         let desc = INDICATORS
             .iter()
             .find(|d| d.id == id)
             .unwrap_or_else(|| panic!("{id:?} must be in catalog"));
         assert!(
             desc.sysctl_key.is_none(),
-            "{id:?} must have sysctl_key: None (modprobe.d signal)"
+            "{id:?} must have sysctl_key: None (modprobe.d indicator)"
         );
     }
 }
@@ -481,7 +481,7 @@ fn catalog_length_matches_signal_id_count() {
 #[test]
 fn catalog_covers_all_signal_ids_including_phase_2a() {
     let all_ids = [
-        // Phase 1 — 22 signals
+        // Phase 1 — 22 indicators
         IndicatorId::KptrRestrict,
         IndicatorId::RandomizeVaSpace,
         IndicatorId::UnprivBpfDisabled,
@@ -504,7 +504,7 @@ fn catalog_covers_all_signal_ids_including_phase_2a() {
         IndicatorId::RandomTrustCpu,
         IndicatorId::RandomTrustBootloader,
         IndicatorId::FipsEnabled,
-        // Phase 2a — 5 modprobe signals
+        // Phase 2a — 5 modprobe indicators
         IndicatorId::NfConntrackAcct,
         IndicatorId::BluetoothBlacklisted,
         IndicatorId::UsbStorageBlacklisted,
@@ -554,12 +554,12 @@ fn is_module_loaded_empty_string_returns_false() {
 }
 
 // ===========================================================================
-// 6. Snapshot integration — modprobe signals in PostureSnapshot
+// 6. Snapshot integration — modprobe indicators in PostureSnapshot
 // ===========================================================================
 
-/// Phase 2a modprobe signals must appear in `PostureSnapshot::collect()`.
+/// Phase 2a modprobe indicators must appear in `PostureSnapshot::collect()`.
 #[test]
-fn snapshot_contains_phase_2a_modprobe_signals() {
+fn snapshot_contains_phase_2a_modprobe_indicators() {
     let snap = PostureSnapshot::collect();
 
     let modprobe_ids = [
@@ -588,7 +588,7 @@ fn snapshot_contains_phase_2a_modprobe_signals() {
     }
 }
 
-/// Snapshot for blacklist signals: if the module is not loaded, live_value
+/// Snapshot for blacklist indicators: if the module is not loaded, live_value
 /// should be Bool(true) (blacklist effective) and meets_desired Some(true).
 /// If the module is loaded, Bool(false) and Some(false).
 #[test]
@@ -627,18 +627,18 @@ fn snapshot_blacklist_signal_coherent_with_module_load_state() {
                 );
             }
             None => {
-                // live_value=None is unexpected for blacklist signals
+                // live_value=None is unexpected for blacklist indicators
                 // because read_live_modprobe always sets a Bool value.
                 // Fail the test to catch regressions.
                 panic!(
                     "{id:?}: unexpected live_value=None — \
-                     blacklist signals must always produce a Bool value"
+                     blacklist indicators must always produce a Bool value"
                 );
             }
             other => {
                 panic!(
                     "{id:?}: unexpected live_value={other:?} — \
-                     blacklist signals must produce LiveValue::Bool"
+                     blacklist indicators must produce LiveValue::Bool"
                 );
             }
         }
@@ -664,13 +664,13 @@ fn snapshot_blacklist_signal_coherent_with_module_load_state() {
 ///
 /// This is the critical case. Before the fix, evaluate_configured_meets
 /// returned None for "blacklisted" (non-integer parse failure), so
-/// classify() always returned None for blacklist signals — BootDrift was
+/// classify() always returned None for blacklist indicators — BootDrift was
 /// never produced.
 ///
 /// NIST SP 800-53 CM-6, CA-7, AU-3: typed contradiction must be produced.
 #[test]
 fn blacklist_contradiction_loaded_module_produces_boot_drift() {
-    // Blacklist signals use DesiredValue::Exact(1): "blacklist effective" = 1.
+    // Blacklist indicators use DesiredValue::Exact(1): "blacklist effective" = 1.
     let desired = DesiredValue::Exact(1);
 
     // configured="blacklisted" → evaluate should return Some(true)
@@ -749,7 +749,7 @@ fn blacklist_contradiction_no_config_entry_module_loaded_produces_no_contradicti
 /// Regression: "blacklisted" sentinel with AtLeast desired value behaves
 /// consistently with the integer equivalent.
 ///
-/// Blacklist signals all use Exact(1), but this test confirms the sentinel
+/// Blacklist indicators all use Exact(1), but this test confirms the sentinel
 /// behaves correctly with AtLeast(1) as well (meets_integer(1) returns true).
 #[test]
 fn blacklist_sentinel_with_at_least_1_desired_returns_some_true() {

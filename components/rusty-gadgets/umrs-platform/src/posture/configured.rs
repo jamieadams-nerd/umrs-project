@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
-//! Configured-value reading for kernel security posture signals.
+//! Configured-value reading for kernel security posture indicators.
 //!
 //! Reads the *intended* configuration from the sysctl.d merge tree —
 //! `/usr/lib/sysctl.d/`, `/run/sysctl.d/`, `/etc/sysctl.d/`, and
@@ -249,7 +249,7 @@ fn load_conf_file(
                 // Normalise slash-style keys (e.g., kernel/kptr_restrict) to dot-style
                 // (kernel.kptr_restrict) at insertion time. The catalog uses dot-style
                 // keys exclusively. Without this normalisation, sysctl.d files using
-                // slash-style keys produce ConfiguredValue: None for every signal,
+                // slash-style keys produce ConfiguredValue: None for every indicator,
                 // silently disabling contradiction detection.
                 let key: String = raw_key.replace('/', ".");
                 // Error Information Discipline (NIST SP 800-53 SI-11, SC-28):
@@ -324,8 +324,8 @@ pub fn parse_sysctl_line(line: &str) -> Option<(&str, &str)> {
 /// `/boot/loader/entries/`. On systems without BLS entries (containers, minimal
 /// images, non-RHEL environments), returns `None` silently.
 ///
-/// NIST SP 800-53 CM-6: boot-persistence layer for cmdline signals — enables
-/// `EphemeralHotfix` and `BootDrift` detection for cmdline-class signals.
+/// NIST SP 800-53 CM-6: boot-persistence layer for cmdline indicators — enables
+/// `EphemeralHotfix` and `BootDrift` detection for cmdline-class indicators.
 /// NIST SP 800-53 CA-7: Continuous Monitoring — contradiction detection now
 /// covers configured cmdline tokens, not just live `/proc/cmdline`.
 #[must_use = "configured cmdline result must be examined — None means bootloader config unavailable"]

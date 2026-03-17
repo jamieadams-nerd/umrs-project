@@ -45,6 +45,12 @@ fn parse_type_path_b(input: &str) -> io::Result<&str> {
 /// function fails closed — guaranteeing that a single parser bug cannot
 /// produce a trusted result.
 ///
+/// # Errors
+///
+/// Returns `io::ErrorKind::InvalidData` if either parse path fails to extract
+/// the type field from `context`. Returns `io::ErrorKind::PermissionDenied` if
+/// both paths succeed but disagree on the extracted type value.
+///
 /// NIST SP 800-53 SI-7: Software and Information Integrity.
 /// NSA RTB VNSSA: deterministic, bounded parsing.
 /// NSA RTB RAIN: fail-closed on any ambiguity.

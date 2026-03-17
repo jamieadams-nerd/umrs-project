@@ -30,6 +30,10 @@ use nix::libc;
 /// Opens the file, anchors to inode, and retrieves the verified
 /// SELinux security context.
 ///
+///
+/// # Errors
+///
+/// Returns `io::Error` if the file's security context xattr cannot be read.
 pub fn get_file_context(path: &Path) -> io::Result<SecurityContext> {
     let file = File::open(path)?;
     SecureXattrReader::read_context(&file).map_err(xattr_err_to_io)
@@ -38,6 +42,10 @@ pub fn get_file_context(path: &Path) -> io::Result<SecurityContext> {
 ///
 /// Symbolic link security context retrieval
 ///
+///
+/// # Errors
+///
+/// Returns `io::Error` if the symlink's security context xattr cannot be read.
 pub fn lget_file_context(path: &Path) -> io::Result<SecurityContext> {
     let file = std::fs::OpenOptions::new()
         .read(true)
@@ -50,6 +58,10 @@ pub fn lget_file_context(path: &Path) -> io::Result<SecurityContext> {
 ///
 /// Retrieve security context from file descriptor
 ///
+///
+/// # Errors
+///
+/// Returns `io::Error` if the file descriptor's security context xattr cannot be read.
 pub fn fget_file_context(file: &File) -> io::Result<SecurityContext> {
     SecureXattrReader::read_context(file).map_err(xattr_err_to_io)
 }
@@ -74,6 +86,10 @@ fn xattr_err_to_io(e: XattrReadError) -> io::Error {
 /// libselinux-style: `getpidcon()`
 ///
 /// Reads `/proc/<pid>/attr/current` (procfs attribute contents) and parses it.
+///
+/// # Errors
+///
+/// Returns `io::Error` if `/proc/<pid>/attr/current` cannot be read.
 pub fn get_pid_context(pid: u32) -> io::Result<SecurityContext> {
     let path = format!("/proc/{pid}/attr/current");
 
@@ -95,6 +111,10 @@ pub fn get_pid_context(pid: u32) -> io::Result<SecurityContext> {
 }
 
 /// Convenience helper for current process
+///
+/// # Errors
+///
+/// Returns `io::Error` if `/proc/self/attr/current` cannot be read.
 pub fn get_self_context() -> io::Result<SecurityContext> {
     get_pid_context(std::process::id())
 }

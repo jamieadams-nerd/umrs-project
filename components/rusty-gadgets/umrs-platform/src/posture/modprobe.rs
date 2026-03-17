@@ -61,7 +61,7 @@
 //! layer for module parameter and blacklist state.
 //! NIST SP 800-53 CA-7: Continuous Monitoring — cross-check detects live vs.
 //! configured divergence that escapes single-source monitoring.
-//! NIST SP 800-53 AU-3: structured signal reports enable machine-readable audit.
+//! NIST SP 800-53 AU-3: structured indicator reports enable machine-readable audit.
 //! NIST SP 800-53 SI-7: provenance-verified `/sys/module/` reads.
 
 use std::collections::HashMap;
@@ -697,6 +697,10 @@ pub fn is_module_loaded(module_name: &str) -> bool {
 /// NIST SP 800-53 SI-10: Input Validation — module and param names are
 /// validated against path-traversal characters before path construction.
 /// NSA RTB RAIN: Non-bypassable path through `SysfsText` + `SecureReader`.
+///
+/// # Errors
+///
+/// Returns `io::Error` if the modprobe configuration directory cannot be read.
 #[must_use = "sysfs parameter read result must be examined"]
 pub fn read_module_param(
     module_name: &str,
@@ -750,9 +754,9 @@ pub fn read_module_param(
     result
 }
 
-/// Evaluate the configured value and live state for a blacklist signal.
+/// Evaluate the configured value and live state for a blacklist indicator.
 ///
-/// For blacklist signals, `ConfiguredValue::raw` is set to `"blacklisted"`
+/// For blacklist indicators, `ConfiguredValue::raw` is set to `"blacklisted"`
 /// when a `blacklist <module>` entry exists in modprobe.d, and `"absent"`
 /// when no such entry is found.
 ///

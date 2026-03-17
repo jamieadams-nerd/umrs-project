@@ -617,6 +617,14 @@ fn read_int32(
 /// - NIST SP 800-53 CM-8 — enables package ownership mapping.
 /// - NIST SP 800-218 SSDF PW.4.1 — secure arithmetic throughout.
 /// - NSA RTB — fail-closed on any disagreement or out-of-bounds condition.
+///
+/// # Errors
+///
+/// Returns `RpmHeaderError::TooLarge` if `blob` exceeds the maximum allowed
+/// size, `RpmHeaderError::TooShort` if `blob` is fewer than 8 bytes or a
+/// required field extends past the buffer end, and `RpmHeaderError::Overflow`
+/// or other variants if index arithmetic overflows or the store region is
+/// malformed.
 pub fn parse_rpm_header(blob: &[u8]) -> Result<RpmHeader, RpmHeaderError> {
     #[cfg(debug_assertions)]
     let t0 = std::time::Instant::now();

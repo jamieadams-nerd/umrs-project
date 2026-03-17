@@ -52,6 +52,12 @@ pub trait KernelFileSource {
 
     /// Low-level byte-slice parser for this attribute type.
     ///
+    /// # Errors
+    ///
+    /// Returns `io::ErrorKind::InvalidData` if the byte slice does not
+    /// represent a valid value for this attribute type. The exact conditions
+    /// are implementation-defined by each `KernelFileSource` implementor.
+    ///
     /// # Warning
     ///
     /// This is a low-level primitive. It operates on arbitrary byte slices
@@ -77,6 +83,12 @@ pub trait StaticSource: KernelFileSource + Sized {
     const EXPECTED_MAGIC: FsType = SELINUX_MAGIC;
 
     /// Provenance-verified read. Routes through `SecureReader::execute_read`.
+    ///
+    /// # Errors
+    ///
+    /// Returns `io::Error` if the kernel attribute file cannot be opened, if
+    /// the backing filesystem magic does not match `EXPECTED_MAGIC` (integrity
+    /// failure), or if the byte content fails to parse.
     ///
     /// NIST SP 800-53 SI-10, SA-11: the result carries the security-relevant
     /// kernel attribute value and must not be silently discarded.
@@ -222,6 +234,12 @@ impl<T> SecureReader<T> {
 impl<T: StaticSource> SecureReader<T> {
     /// Provenance-verified read of a static kernel attribute node.
     ///
+    /// # Errors
+    ///
+    /// Returns `io::Error` if the kernel attribute file cannot be opened, if
+    /// the backing filesystem magic does not match `T::EXPECTED_MAGIC`
+    /// (integrity failure), or if the byte content fails to parse.
+    ///
     /// NIST SP 800-53 SI-10, SA-11 / NSA RTB Fail Secure: the result carries
     /// the security-relevant kernel attribute value and must be examined.
     #[must_use = "kernel attribute read result carries the provenance-verified value — \
@@ -242,6 +260,12 @@ where
     /// through the full provenance-verified path (open → fstatfs → parse).
     /// See [`AttributeCard`] — only cards produced via this method carry the
     /// provenance guarantee.
+    ///
+    /// # Errors
+    ///
+    /// Returns `io::Error` if the kernel attribute file cannot be opened, if
+    /// the backing filesystem magic does not match `T::EXPECTED_MAGIC`
+    /// (integrity failure), or if the byte content fails to parse.
     ///
     /// NIST SP 800-53 AU-3: Audit record completeness.
     #[must_use = "AttributeCard is the audit record for this kernel attribute read — \
