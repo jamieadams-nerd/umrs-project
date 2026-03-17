@@ -2,7 +2,7 @@
 name: Kernel Security Posture Probe
 path: components/rusty-gadgets/umrs-platform
 agent: rust-developer
-status: phase-2b-opus — CPU mitigation sub-signals (8 new SignalId variants: SpectreV2Off, SpectreV2UserOff, MdsOff, TsxAsyncAbortOff, L1tfOff, RetbleedOff, SrbdsOff, NoSmtOff) + CorePattern (TPI classification, 2-path independence) implemented; catalog now 37 signals; 16 new tests in posture_tests.rs; SEC caching deferred (see Resolved Decisions 9); pending cargo xtask clippy + test verification; docs deferred to tech-writer
+status: phases-1-through-2c-COMPLETE (2026-03-17) — all code + docs done through Phase 2c; Phase 3 (CPU extension detection) deferred to later
 depends-on: umrs-platform-expansion.md
 display-grouping: .claude/references/capability-matrix-domains.md
 ---
@@ -764,11 +764,49 @@ All tests in `umrs-platform/tests/posture_fips_tests.rs`:
 
 ---
 
+### Phase 2b.0 — Signal → Indicator Terminology Refactor (ACTIVE)
+
+**Goal**: Rename all "Signal" terminology to "Indicator" across the posture module before
+running clippy/test verification on the Phase 2b codebase. Doing the rename first avoids
+verifying code that will immediately change.
+
+**Why**: "Indicator" better describes what these are — security posture indicators, not
+signals in the systems/communications sense.
+
+**Rename mapping:**
+
+| Current | New |
+|---|---|
+| `SignalId` | `IndicatorId` |
+| `SignalReport` | `IndicatorReport` |
+| `SignalDescriptor` | `IndicatorDescriptor` |
+| `SignalClass` | `IndicatorClass` |
+| `signal.rs` | `indicator.rs` |
+| `SIGNALS` (catalog const) | `INDICATORS` |
+
+**Files affected** (14 Rust files):
+- `posture/signal.rs` → `posture/indicator.rs` (file rename)
+- `posture/mod.rs`, `posture/catalog.rs`, `posture/snapshot.rs`, `posture/reader.rs`
+- `posture/contradiction.rs`, `posture/fips_cross.rs`
+- `lib.rs` (re-exports)
+- `examples/posture_demo.rs`
+- `tests/posture_tests.rs`, `tests/posture_modprobe_tests.rs`
+- `tests/posture_bootcmdline_tests.rs`, `tests/posture_fips_tests.rs`
+- `umrs-tui/src/main.rs`
+
+**Also update**: doc comments, log format strings, `#[must_use]` messages.
+
+**Verification**: `cargo xtask fmt` + `cargo xtask clippy` + `cargo xtask test`
+
+**Agent**: rust-developer (mechanical rename, sonnet)
+
+---
+
 ### Phase 2b (future — after security-engineer review of 2a)
 - Configured-value reading for **bootloader cmdline** (grub2, systemd-boot, BLS entries)
-- **CPU mitigation sub-signals** (break umbrella `Mitigations` into spectre_v2, mds, tsx, etc.)
-- **core_pattern** signal (requires high-assurance string parsing design — TPI candidate)
-- **SEC caching** for posture signals (short TTL + invalidation design)
+- **CPU mitigation sub-signals** — DONE (8 sub-indicators implemented)
+- **core_pattern** — DONE (TPI classification implemented)
+- **SEC caching** for posture indicators (short TTL + invalidation design) — DEFERRED (see Decision 9)
 - **modprobe.d `install` directive** read-only parsing — detect blacklist-equivalent
   `install <module> /bin/true` patterns by analysing the command string (not executing it)
 
@@ -829,6 +867,13 @@ All tests in `umrs-platform/tests/posture_fips_tests.rs`:
    `DetectionResult`, not frequently-changing runtime state. The SEC pattern is
    already implemented for the detection pipeline — posture caching is a Phase 3
    item contingent on serialization being in place.
+
+10. **Signal → Indicator rename** (2026-03-17): Jamie approved renaming all "Signal"
+    terminology to "Indicator" — better describes security posture indicators vs.
+    signals in the systems/comms sense. Inserted as Phase 2b.0, executed before
+    clippy/test verification so the build is verified on final terminology.
+    `PostureSnapshot` name retained — it accurately describes the narrow, ephemeral
+    view of system state.
 
 ---
 

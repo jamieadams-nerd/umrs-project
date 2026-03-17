@@ -1,13 +1,18 @@
 = Kernel Security Posture Probe — Internals
 :toc: left
 :toclevels: 3
-:description: Developer reference for the umrs-platform posture probe: signal taxonomy, the CPU mitigation sub-signal pattern, and the CorePattern TPI implementation.
+:description: Developer reference for the umrs-platform posture probe: indicator taxonomy, the CPU mitigation sub-indicator pattern, and the CorePattern TPI implementation.
 
-// NIST SP 800-53 CM-6: Configuration Settings — signals encode the hardened baseline
+// NIST SP 800-53 CM-6: Configuration Settings — indicators encode the hardened baseline
 // NIST SP 800-53 CA-7: Continuous Monitoring — the probe is the monitoring mechanism
-// NIST SP 800-53 SI-16: Memory Protection — CPU mitigation signals
+// NIST SP 800-53 SI-16: Memory Protection — CPU mitigation indicators
 // NIST SP 800-218 SSDF PW.4: TPI classification of core_pattern
 // NSA RTB RAIN: Non-Bypassability — all reads route through SecureReader
+
+NOTE: This page covers the implementation internals of the CPU mitigation
+sub-indicators and the CorePattern TPI classification.
+For the developer guide — module architecture, core types, usage examples, and how
+to add a new indicator — see xref:posture-probe.adoc[Kernel Security Posture Probe — Developer Guide].
 
 == Overview
 
@@ -18,7 +23,7 @@ whether the system's kernel-level security controls meet the hardened baseline.
 
 The probe is not a scanner.
 It does not search for vulnerabilities or test exploit paths.
-It answers a narrower question: for each of the signals in the static catalog,
+It answers a narrower question: for each of the indicators in the static catalog,
 is the kernel currently configured as the hardened baseline requires?
 
 === Module Layout
@@ -26,20 +31,23 @@ is the kernel currently configured as the hardened baseline requires?
 [source]
 ----
 umrs-platform/src/posture/
-├── mod.rs            — public API; re-exports PostureSnapshot, SignalReport, ContradictionKind
-├── signal.rs         — SignalId enum, SignalClass, AssuranceImpact, DesiredValue
-├── catalog.rs        — SIGNALS static array; all SignalDescriptor entries
-├── reader.rs         — live-value readers; CorePatternReader; classify_core_pattern
-├── snapshot.rs       — PostureSnapshot::collect(); orchestrates all readers
-├── configured.rs     — sysctl.d and modprobe.d configured-value readers
-└── contradiction.rs  — ContradictionKind classification; evaluate_configured_meets
+├── mod.rs          — public API; re-exports PostureSnapshot, IndicatorReport, ContradictionKind
+├── indicator.rs    — IndicatorId enum, IndicatorClass, AssuranceImpact, DesiredValue
+├── catalog.rs      — INDICATORS static array; all IndicatorDescriptor entries
+├── reader.rs       — live-value readers; CorePatternReader; classify_core_pattern
+├── snapshot.rs     — PostureSnapshot::collect(); orchestrates all readers
+├── configured.rs   — sysctl.d configured-value reader; configured_cmdline()
+├── bootcmdline.rs  — BLS bootloader entry reader for configured cmdline
+├── modprobe.rs     — modprobe.d configured-value reader; ModprobeConfig
+├── fips_cross.rs   — FipsCrossCheck; RHEL FIPS persistence layer cross-check
+└── contradiction.rs — ContradictionKind classification; evaluate_configured_meets
 ----
 
-=== Signal Count by Phase
+=== Indicator Count by Phase
 
 [cols="2,1,3", options="header"]
 |===
-| Phase | Signals | What was added
+| Phase | Indicators | What was added
 
 | Phase 1
 | 22
@@ -48,28 +56,28 @@ umrs-platform/src/posture/
 
 | Phase 2a
 | +5 (27 total)
-| modprobe.d signals: `bluetooth`, `usb_storage`, `firewire_core`, `thunderbolt`,
+| modprobe.d indicators: `bluetooth`, `usb_storage`, `firewire_core`, `thunderbolt`,
   `nf_conntrack acct`
 
 | Phase 2b
 | +10 (37 total)
-| 8 CPU mitigation sub-signals + `CorePattern` (TPI)
+| 8 CPU mitigation sub-indicators + `CorePattern` (TPI)
 
 |===
 
-For the operator-facing description of every signal, see
+For the operator-facing description of every indicator, see
 xref:reference:kernel-probe-signals.adoc[Kernel Security Posture Signals].
 
-== Signal Taxonomy
+== Indicator Taxonomy
 
-Every signal is described by a `SignalDescriptor` in the `SIGNALS` static array.
+Every indicator is described by an `IndicatorDescriptor` in the `INDICATORS` static array.
 The descriptor is `const` — all values are compiler-verified, not loaded at runtime.
 This satisfies NIST SP 800-218 SSDF PW.4 (compile-time binding of security-relevant
 constants) and eliminates the attack surface of a runtime-parsed configuration file.
 
-=== SignalClass
+=== IndicatorClass
 
-`SignalClass` determines where the live value comes from and whether contradiction
+`IndicatorClass` determines where the live value comes from and whether contradiction
 detection applies.
 
 [cols="2,3,2", options="header"]
@@ -130,7 +138,7 @@ The `meets_*` methods implement the check for each variant.
 | This exact token must NOT appear in `/proc/cmdline` (whitespace-delimited)
 
 | `Custom`
-| Signal-specific logic; `meets_integer` and `meets_cmdline` return `None`
+| Indicator-specific logic; `meets_integer` and `meets_cmdline` return `None`
 
 |===
 
@@ -139,11 +147,11 @@ Token matching for `CmdlinePresent` and `CmdlineAbsent` is whole-word.
 whitespace-delimited tokens.
 This prevents false negatives where a combined flag bypasses detection.
 
-== CPU Mitigation Sub-Signals (Phase 2b)
+== CPU Mitigation Sub-Indicators (Phase 2b)
 
 === The Problem
 
-Phase 1 includes the `Mitigations` signal, which checks that `mitigations=off` is
+Phase 1 includes the `Mitigations` indicator, which checks that `mitigations=off` is
 absent from `/proc/cmdline`.
 This umbrella flag disables all CPU vulnerability mitigations in one switch.
 
@@ -155,20 +163,20 @@ A kernel command line such as:
 spectre_v2=off mds=off
 ----
 
-does not trigger the `Mitigations` signal, because `mitigations=off` is not present.
-Phase 2b adds eight sub-signals, one per weakening override, to catch selective
+does not trigger the `Mitigations` indicator, because `mitigations=off` is not present.
+Phase 2b adds eight sub-indicators, one per weakening override, to catch selective
 disabling.
 
 === The Pattern
 
-All eight CPU mitigation sub-signals share the same structure:
+All eight CPU mitigation sub-indicators share the same structure:
 
 [cols="1,3", options="header"]
 |===
 | Field | Value
 
 | `class`
-| `SignalClass::KernelCmdline`
+| `IndicatorClass::KernelCmdline`
 
 | `live_path`
 | `/proc/cmdline`
@@ -184,22 +192,22 @@ All eight CPU mitigation sub-signals share the same structure:
 
 |===
 
-A signal passes when its `CmdlineAbsent` token is not present.
+An indicator passes when its `CmdlineAbsent` token is not present.
 Absent means the mitigation is either active at the kernel default or not applicable
 to this CPU — both are safe outcomes.
-The signal detects only the explicit weakening override; it does not distinguish
+The indicator detects only the explicit weakening override; it does not distinguish
 between "mitigation active" and "mitigation not applicable to this hardware."
 
-The umbrella signal and the sub-signals are complementary, not redundant.
+The umbrella indicator and the sub-indicators are complementary, not redundant.
 A clean `Mitigations` result (no `mitigations=off`) does not guarantee clean
-sub-signal results.
+sub-indicator results.
 Both must pass for a complete boot integrity assessment.
 
-=== Signal Table
+=== Indicator Table
 
 [cols="2,1,3", options="header"]
 |===
-| `SignalId` | Impact | Token checked (must be absent)
+| `IndicatorId` | Impact | Token checked (must be absent)
 
 | `SpectreV2Off`
 | High
@@ -239,41 +247,41 @@ NOTE: `NoSmtOff` checks for `nosmt=off` — the flag that re-enables Simultaneou
 Multi-Threading when the kernel was booted with `nosmt`.
 If a site disabled SMT to improve MDS and L1TF isolation, `nosmt=off` silently
 undoes that decision.
-This signal detects that reversal.
+This indicator detects that reversal.
 
 === Reader Path
 
-`KernelCmdline` signals share a single `/proc/cmdline` read.
+`KernelCmdline` indicators share a single `/proc/cmdline` read.
 `PostureSnapshot::collect()` reads the cmdline once at collection time and passes
-the string to each signal's `DesiredValue::meets_cmdline()` call.
-No per-signal procfs open is performed.
+the string to each indicator's `DesiredValue::meets_cmdline()` call.
+No per-indicator procfs open is performed.
 
-No reader change is required when adding a new `KernelCmdline` sub-signal.
-The only code changes are a `SignalId` variant in `signal.rs`, a `label()` match
-arm, and a `SignalDescriptor` entry in `catalog.rs`.
+No reader change is required when adding a new `KernelCmdline` sub-indicator.
+The only code changes are an `IndicatorId` variant in `indicator.rs`, a `label()`
+match arm, and an `IndicatorDescriptor` entry in `catalog.rs`.
 
-=== Adding a New Sub-Signal
+=== Adding a New Sub-Indicator
 
 When a new per-CVE mitigation weakening flag appears in a kernel release, add it
-in the section of `signal.rs` marked:
+in the section of `indicator.rs` marked:
 
 [source,rust]
 ----
-// ── CPU mitigation sub-signals (Phase 2b) ────────────────────────────
+// ── CPU mitigation sub-indicators (Phase 2b) ─────────────────────────
 ----
 
-Use `SignalClass::KernelCmdline` and `DesiredValue::CmdlineAbsent("flag=off")`.
+Use `IndicatorClass::KernelCmdline` and `DesiredValue::CmdlineAbsent("flag=off")`.
 Set `impact` to `High` if the CVE enables cross-process or cross-VM memory reads;
 set it to `Medium` for narrower threat models (Intel-specific hardware, or attacks
 requiring prior access).
 
 IMPORTANT: After adding the variant, update the exhaustive match in
-`catalog_covers_all_signal_ids` in `posture_tests.rs`.
+`catalog_covers_all_indicator_ids` in `posture_tests.rs`.
 The test will fail to compile — not fail at runtime — if a variant is missing.
 This is intentional: the compiler enforces catalog completeness.
 
-For the complete seven-step process, see
-xref:update-checklists.adoc#add-signal[Step 3: Add a New Signal].
+For the complete six-step process, see
+xref:posture-probe.adoc#_how_to_add_a_new_indicator[How to Add a New Indicator].
 
 == CorePattern — TPI Classification (Phase 2b)
 
@@ -298,7 +306,7 @@ WARNING: Core dumps from privileged processes are a ready-made data extraction p
 read the dump file gains access to the crashed process's complete memory contents,
 including credentials and private keys.
 
-The signal uses `SignalClass::Sysctl` with `DesiredValue::Custom` because neither
+The indicator uses `IndicatorClass::Sysctl` with `DesiredValue::Custom` because neither
 an integer comparison nor a cmdline token check can express the hardened state.
 Classification is handled by a dedicated TPI function.
 
@@ -490,10 +498,10 @@ This satisfies the Pattern Execution Measurement Rule.
 | `classify_core_pattern_inner` (private)
 | `umrs-platform/src/posture/reader.rs`
 
-| `SignalId::CorePattern`
-| `umrs-platform/src/posture/signal.rs`
+| `IndicatorId::CorePattern`
+| `umrs-platform/src/posture/indicator.rs`
 
-| CorePattern `SignalDescriptor`
+| CorePattern `IndicatorDescriptor`
 | `umrs-platform/src/posture/catalog.rs`
 
 | Integration tests (section 13)
@@ -503,7 +511,7 @@ This satisfies the Pattern Execution Measurement Rule.
 
 == Fail-Closed Behavior Across the Probe
 
-All signals fail in the same direction: if a value cannot be read, the signal is
+All indicators fail in the same direction: if a value cannot be read, the indicator is
 reported as unknown (`?`), not as hardened.
 A missing kernel node is not treated as a hardening confirmation.
 
@@ -521,23 +529,23 @@ xref:patterns:pattern-fail-closed.adoc[Fail-Closed].
 | Control | How the posture probe satisfies it
 
 | NIST SP 800-53 CM-6
-| The static `SIGNALS` catalog defines the configuration baseline;
-  every signal encodes its desired hardened value as a `const` expression
+| The static `INDICATORS` catalog defines the configuration baseline;
+  every indicator encodes its desired hardened value as a `const` expression
 
 | NIST SP 800-53 CA-7
 | `PostureSnapshot::collect()` provides a point-in-time assessment of all
   monitored controls for continuous monitoring integration
 
 | NIST SP 800-53 SI-16
-| CPU mitigation sub-signals detect per-CVE weakening flags on the kernel
-  command line, complementing the umbrella `Mitigations` signal
+| CPU mitigation sub-indicators detect per-CVE weakening flags on the kernel
+  command line, complementing the umbrella `Mitigations` indicator
 
 | NIST SP 800-53 SC-28
 | `CorePattern` enforces managed handler routing for core dumps containing
   process memory including key material and credentials
 
 | NIST SP 800-53 AU-3
-| Typed `SignalId` variants enable programmatic filtering and machine-readable
+| Typed `IndicatorId` variants enable programmatic filtering and machine-readable
   audit records; no free-form string dispatch
 
 | NIST SP 800-218 SSDF PW.4
@@ -553,12 +561,13 @@ xref:patterns:pattern-fail-closed.adoc[Fail-Closed].
 
 == See Also
 
-* `umrs-platform/src/posture/signal.rs` — `SignalId`, `SignalClass`, `DesiredValue`
-* `umrs-platform/src/posture/catalog.rs` — `SIGNALS` static array and all `SignalDescriptor` entries
+* `umrs-platform/src/posture/indicator.rs` — `IndicatorId`, `IndicatorClass`, `DesiredValue`
+* `umrs-platform/src/posture/catalog.rs` — `INDICATORS` static array and all `IndicatorDescriptor` entries
 * `umrs-platform/src/posture/reader.rs` — live-value readers, `CorePatternReader`, `classify_core_pattern`
-* `umrs-platform/tests/posture_tests.rs` — integration tests; section 12 for CPU sub-signals, section 13 for CorePattern TPI
-* xref:reference:kernel-probe-signals.adoc[Kernel Security Posture Signals] — operator-facing descriptions for all 37 signals
-* xref:update-checklists.adoc[Platform Update Checklists] — procedure for adding a new signal
+* `umrs-platform/tests/posture_tests.rs` — integration tests; section 12 for CPU sub-indicators, section 13 for CorePattern TPI
+* xref:posture-probe.adoc[Posture Probe Developer Guide] — architecture, core types, usage examples, how to add an indicator
+* xref:reference:kernel-probe-signals.adoc[Kernel Security Posture Signals] — operator-facing descriptions for all 37 indicators
+* xref:update-checklists.adoc[Platform Update Checklists] — procedure for adding a new indicator
 * xref:patterns:pattern-tpi.adoc[Two-Path Independence (TPI)] — the pattern applied to CorePattern classification
 * xref:patterns:pattern-fail-closed.adoc[Fail-Closed] — fail-closed behavior at signal and classification level
 * xref:patterns:pattern-non-bypassability.adoc[Non-Bypassability] — NSA RTB RAIN provenance verification

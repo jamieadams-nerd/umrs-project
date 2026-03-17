@@ -22,7 +22,7 @@
 //! | `os_identity` | `OsFamily`, `Distro`, `KernelRelease`, `CpuArch`, `SubstrateIdentity` |
 //! | `os_release` | `OsRelease` and all validated field newtypes |
 //! | `detect` | `OsDetector`, `DetectionResult`, `DetectionError`, phase modules |
-//! | `posture` | `PostureSnapshot`, `SignalReport`, `SignalId`, `AssuranceImpact` |
+//! | `posture` | `PostureSnapshot`, `IndicatorReport`, `IndicatorId`, `AssuranceImpact` |
 //! | `sealed_cache` | `SealedCache`, `CacheStatus`, `DEFAULT_TTL_SECS`, `MAX_TTL_SECS` — SEC pattern |
 //! | `timestamp` | `BootSessionTimestamp`, `BootSessionDuration`, `TimestampError` — nanosecond audit ordering |
 //!
@@ -101,7 +101,9 @@ pub use sealed_cache::{
 };
 
 // Posture probe
-pub use posture::{AssuranceImpact, PostureSnapshot, SignalId, SignalReport};
+pub use posture::{
+    AssuranceImpact, IndicatorId, IndicatorReport, PostureSnapshot,
+};
 
 // Boot-session timestamps (nanosecond-precision monotonic ordering)
 pub use timestamp::{

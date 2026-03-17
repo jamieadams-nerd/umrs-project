@@ -1,5 +1,5 @@
 # Researcher Agent Memory
-# Last updated: 2026-03-16
+# Last updated: 2026-03-17
 
 ## Critical: Bash Fetch Patterns
 
@@ -19,6 +19,8 @@ Verify PDF: `head -c 4 <file>` must show `%PDF`.
 - plainlanguage.gov / digital.gov web pages: JavaScript SPAs — curl returns empty shells
 - Use GSA GitHub raw: `raw.githubusercontent.com/GSA/plainlanguage.gov/main/_pages/guidelines/`
 - everyspec.com: **curl WORKS** — Jamie-approved for unclassified DoD specs (2026-03-16)
+- docs.redhat.com PDFs: **curl WORKS** — URL pattern: `/en/documentation/red_hat_enterprise_linux/<ver>/pdf/<guide-name>/<title>-en-US.pdf`
+  e.g. `Red_Hat_Enterprise_Linux-10-Security_hardening-en-US.pdf` (title uses underscores, spaces become underscores)
 
 ## Reference Library
 
@@ -52,7 +54,7 @@ Collections and status as of 2026-03-15:
 | rmf-methodology | NIST SP 800-37r2, 800-53Ar5, 800-30r1, 800-39 | ✓ Ingested | 1,132 |
 | accreditation-artifacts | NIST 800-18 + FedRAMP playbooks/templates (6 docs; 200-B/200-C training removed from fedramp.gov) | Downloaded — awaiting ingestion | 0 |
 | tui-cli | crossterm, color-eyre, clap, ratatui (v0.30.0), awesome-ratatui | Downloaded — awaiting ingestion | 0 |
-| tech-writer-corpus | MS Style Guide, Google Style Guide, MIL-STD-38784B, Plain Language, NIST Author Instructions, CC Parts 1+2 | Ingested (2026-03-16) | 1245 |
+| tech-writer-corpus | MS Style Guide, Google Style Guide, MIL-STD-38784B, Plain Language, NIST Author Instructions, CC Parts 1+2, RHEL 10 security guides (4 PDFs) | Ingested (2026-03-17) | 2017 |
 
 Full source URL list for update checks: see `rag-collections.md` in this directory.
 PQC status tracker (team-readable): see `pqc-tracker.md` in this directory.
@@ -191,13 +193,15 @@ On "refresh library" or "check for updates":
   - Section 2 (cli-ux): clig-guidelines.md, no-color.md, awesome-tuis.md, SOURCE.md (2026-03-15)
   - Run: `cd /media/psf/repos/umrs-project/.claude/rag && RAG_CHROMA_PATH=/media/psf/repos/ai-rag-vdb/chroma python ingest.py --collection tui-cli`
   - To add ratatui.rs and docs.rs WebFetch: add to `.claude/settings.json` WebFetch allowlist
-- tech-writer-corpus collection: Phase 3.6 CC Parts 1+2 DONE (2026-03-16) — ingested, 1245 total chunks
+- tech-writer-corpus collection: Phase 3.4 RHEL 10 guides DONE (2026-03-17) — 2017 total chunks
   - style-guides/microsoft/: 13 files (complete)
-  - style-guides/google/: 10 files — verbatim via curl+pandoc (2026-03-16); supersedes prior WebSearch summaries
-  - gov-standards/: NIST Author Instructions (verbatim 740 lines); MIL-STD-38784B PDF (3.95 MB, downloaded);
-    Plain Language: PDF URL dead (301 to digital.gov); 6 pages from GSA GitHub archive (CC0)
+  - style-guides/google/: 10 files — verbatim via curl+pandoc (2026-03-16)
+  - gov-standards/: NIST Author Instructions, MIL-STD-38784B PDF, Plain Language pages (CC0)
+  - domain-refs/CC2022PART1R1.pdf + CC2022PART2R1.pdf: Common Criteria Parts 1+2 (complete)
+  - domain-refs/rhel-security-guide/: 4 RHEL 10 PDFs from docs.redhat.com (complete 2026-03-17)
   - FederalPLGuidelines.pdf is an INVALID FILE (HTML redirect) — do not use; see SOURCE.md
-  - Run: `cd /media/psf/repos/umrs-project/.claude/rag && RAG_CHROMA_PATH=/media/psf/repos/ai-rag-vdb/chroma python ingest.py --collection tech-writer-corpus`
+  - Remaining Phase 3: NIST SPs (check existing), SELinux Notebook (check existing)
+  - Phase 4+ (Apple, DigitalOcean, Mailchimp, NASA): not yet acquired
 
 ## WebFetch Allowlist Note (tui-cli)
 - `ratatui.rs` and `docs.rs` are NOT in the allowlist — content was synthesized via WebSearch

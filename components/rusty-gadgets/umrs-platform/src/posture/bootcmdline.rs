@@ -239,14 +239,55 @@ fn parse_bls_options(entry_path: &Path) -> Option<String> {
     parse_bls_field(entry_path, "options")
 }
 
-/// Read a named field from a BLS entry file.
+/// Parse a named field from the string content of a BLS entry.
 ///
 /// BLS entry format: each line is `<key>  <value>` (one or more spaces/tabs
 /// between key and value). Lines starting with `#` are comments. Empty lines
 /// are ignored.
 ///
 /// Returns the trimmed value for the first occurrence of `field`, or `None`
-/// if the file cannot be read or the field is absent.
+/// if the content contains no such field.
+///
+/// This function is separated from the file-reading path so that the parser
+/// logic can be exercised directly in tests without depending on
+/// `/boot/loader/entries/` being present (T-01 coverage gap resolution).
+///
+/// NIST SP 800-53 SI-10: Input Validation — malformed lines are skipped;
+/// the field match is exact (not a substring match).
+/// NIST SP 800-53 CA-7: enables direct test coverage of the BLS parser logic
+/// in any environment, including CI systems without physical BLS entries.
+#[must_use = "BLS field parse result must be examined"]
+pub fn parse_bls_content<'a>(
+    content: &'a str,
+    field: &str,
+) -> Option<&'a str> {
+    for line in content.lines() {
+        let trimmed = line.trim();
+        if trimmed.is_empty() || trimmed.starts_with('#') {
+            continue;
+        }
+
+        // BLS lines are: `<key>[ \t]+<value>`
+        // Split on the first run of whitespace.
+        let mut parts = trimmed.splitn(2, |c: char| c.is_ascii_whitespace());
+        let Some(key) = parts.next() else {
+            continue;
+        };
+        if key != field {
+            continue;
+        }
+        let value = parts.next().unwrap_or("").trim();
+        return Some(value);
+    }
+
+    None
+}
+
+/// Read a named field from a BLS entry file.
+///
+/// Reads the file at `entry_path` into memory and delegates to
+/// `parse_bls_content`. Returns `None` if the file cannot be read or the
+/// field is absent.
 ///
 /// # File size assumption
 ///
@@ -257,9 +298,6 @@ fn parse_bls_options(entry_path: &Path) -> Option<String> {
 /// returns `None` via the error path. This is an availability concern only (no
 /// security failure); the worst outcome is a transient memory spike. For
 /// correctness on realistic BLS files, the current approach is sufficient.
-///
-/// NIST SP 800-53 SI-10: Input Validation — malformed lines are skipped;
-/// the field match is exact (not a substring match).
 fn parse_bls_field(entry_path: &Path, field: &str) -> Option<String> {
     let content = match std::fs::read_to_string(entry_path) {
         Ok(c) => c,
@@ -272,22 +310,5 @@ fn parse_bls_field(entry_path: &Path, field: &str) -> Option<String> {
         }
     };
 
-    for line in content.lines() {
-        let trimmed = line.trim();
-        if trimmed.is_empty() || trimmed.starts_with('#') {
-            continue;
-        }
-
-        // BLS lines are: `<key>[ \t]+<value>`
-        // Split on the first run of whitespace.
-        let mut parts = trimmed.splitn(2, |c: char| c.is_ascii_whitespace());
-        let key = parts.next()?;
-        if key != field {
-            continue;
-        }
-        let value = parts.next().unwrap_or("").trim();
-        return Some(value.to_owned());
-    }
-
-    None
+    parse_bls_content(&content, field).map(str::to_owned)
 }

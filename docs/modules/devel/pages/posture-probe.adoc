@@ -1,0 +1,847 @@
+= Kernel Security Posture Probe — Developer Guide
+:toc: left
+:toclevels: 3
+:description: Developer guide for the umrs-platform posture probe: architecture, core types, usage examples, and how to add new indicators.
+
+// NIST SP 800-53 CM-6: Configuration Settings — indicators encode the hardened baseline
+// NIST SP 800-53 CA-7: Continuous Monitoring — the probe is the monitoring mechanism
+// NIST SP 800-53 AU-3: Audit Record Content — typed findings, not log strings
+// NSA RTB RAIN: Non-Bypassability — all reads route through SecureReader
+// NIST SP 800-218 SSDF PW.4: Compile-time binding of security-relevant constants
+
+== Overview
+
+The kernel security posture probe lives in `umrs-platform/src/posture/`.
+It reads kernel security state from procfs, sysfs, securityfs, and modprobe.d and
+produces a `PostureSnapshot` — a typed, immutable, point-in-time assessment of
+whether the system's kernel-level security controls meet the hardened baseline.
+
+The probe answers a specific question: for each of the 37 indicators in the static
+catalog, is the kernel currently configured as the hardened baseline requires?
+It is not a vulnerability scanner. It does not test exploit paths. It reports
+configuration posture.
+
+=== Two Audiences
+
+The probe API is designed for two audiences.
+
+*Experienced callers* need direct access to individual indicators, contradictions,
+and catalog metadata. They iterate `PostureSnapshot::iter()`, filter by
+`AssuranceImpact`, and inspect `IndicatorReport::contradiction` programmatically.
+
+*Novice callers* need a summary in three lines. `PostureSnapshot::collect()` does
+everything: reads all sources, evaluates all indicators, detects contradictions, and
+returns a snapshot with `hardened_count()` and `findings()` ready to consume.
+
+=== The Dual-Check Model
+
+Every indicator that has a persistence layer is evaluated twice.
+
+The *live value* is the kernel's current effective state — read from `/proc/sys/`,
+`/proc/cmdline`, `/sys/kernel/security/`, or `/sys/module/` via the provenance-verified
+`SecureReader` engine. This is what the running system is doing right now.
+
+The *configured value* is the operator's stated intent — read from the sysctl.d
+merge tree, the modprobe.d merge tree, or the BLS bootloader entry. This is what
+the system should be doing after the next configuration reload or reboot.
+
+When the two values disagree, the probe classifies the contradiction. This is the
+only way to detect ephemeral hotfixes that will be lost on reboot, or configuration
+entries that are not taking effect.
+
+[mermaid]
+....
+graph TD
+    A[PostureSnapshot::collect] --> B[Read live value<br/>from kernel]
+    A --> C[Read configured value<br/>from persistence layer]
+    B --> D{Both available?}
+    C --> D
+    D -- Yes --> E[Compare via<br/>contradiction::classify]
+    D -- No --> F[IndicatorReport<br/>contradiction: None]
+    E -- Agree --> F
+    E -- Disagree --> G[IndicatorReport<br/>ContradictionKind set]
+    B --> H[Evaluate meets_desired]
+    H --> I[IndicatorReport<br/>meets_desired: Some true/false/None]
+....
+
+== Architecture
+
+=== Module Layout
+
+[source]
+----
+umrs-platform/src/posture/
+├── mod.rs          — public API re-exports; module-level compliance annotations
+├── indicator.rs    — IndicatorId, IndicatorClass, AssuranceImpact, DesiredValue,
+│                     LiveValue, ConfiguredValue
+├── catalog.rs      — INDICATORS static array; all IndicatorDescriptor entries
+├── reader.rs       — live-value readers; CorePatternReader; classify_core_pattern
+├── configured.rs   — sysctl.d merge-tree reader; SysctlConfig; configured_cmdline
+├── bootcmdline.rs  — BLS bootloader entry reader for configured cmdline
+├── modprobe.rs     — modprobe.d merge-tree reader; ModprobeConfig; ParsedDirective
+├── contradiction.rs — ContradictionKind; classify(); evaluate_configured_meets()
+├── fips_cross.rs   — FipsCrossCheck; RHEL FIPS persistence layer cross-check
+└── snapshot.rs     — PostureSnapshot; IndicatorReport; collect_one orchestration
+----
+
+The module is self-contained. Its only dependency within `umrs-platform` is the
+`kattrs` engine, which provides the `StaticSource` trait and the provenance-verified
+reader types (`ProcFips`, `ModuleLoadLatch`, `KernelLockdown`, `SysfsText`).
+
+It does not depend on the `detect` module.
+
+=== Indicator Count by Phase
+
+[cols="2,1,3", options="header"]
+|===
+| Phase | Indicators | Content
+
+| Phase 1
+| 22
+| Sysctl (kernel self-protection, integrity, process isolation, filesystem safety),
+  KernelCmdline (boot integrity, FIPS-mode flags), DistroManaged (FIPS)
+
+| Phase 2a
+| +5 (27 total)
+| modprobe.d indicators: `NfConntrackAcct`, `BluetoothBlacklisted`,
+  `UsbStorageBlacklisted`, `FirewireCoreBlacklisted`, `ThunderboltBlacklisted`
+
+| Phase 2b
+| +10 (37 total)
+| 8 CPU mitigation sub-indicators (`SpectreV2Off` through `NoSmtOff`)
+  + `CorePattern` with TPI classification
+
+|===
+
+== Core Types
+
+=== `IndicatorId`
+
+`IndicatorId` is the typed identifier for every indicator in the catalog. It is a
+`Copy + Hash` enum used as a map key and passed by value throughout the pipeline.
+Variants are grouped by security domain.
+
+The enum is exhaustive at compile time. Adding a new indicator requires adding a
+variant and a corresponding arm in every `match` that covers `IndicatorId`.
+The catalog completeness test in `posture_tests.rs` will fail to compile — not
+fail at runtime — if the `INDICATORS` array is missing any variant.
+
+Every variant has a `label()` method that returns the sysctl key or kernel
+parameter name. This label is the human-readable name used in audit output and
+operator display.
+
+=== `IndicatorDescriptor`
+
+`IndicatorDescriptor` is the catalog entry for one indicator. All instances are
+`const` in the `INDICATORS` static array. No heap allocation is required to access
+the catalog.
+
+[cols="1,3", options="header"]
+|===
+| Field | Meaning
+
+| `id`
+| The `IndicatorId` variant for this indicator
+
+| `class`
+| `IndicatorClass` — determines the live-value source and whether contradiction
+  detection applies
+
+| `live_path`
+| The kernel pseudo-filesystem path from which the live value is read
+
+| `sysctl_key`
+| The dotted sysctl key for sysctl.d lookup; `None` for cmdline-class indicators
+
+| `desired`
+| The `DesiredValue` expressing the hardened baseline
+
+| `impact`
+| `AssuranceImpact` tier for this indicator
+
+| `rationale`
+| One-sentence explanation of why this value is required
+
+| `nist_controls`
+| Applicable NIST SP 800-53 and NSA RTB control references
+
+|===
+
+The catalog is a `const` Rust array rather than an external file. The compiler
+verifies every path, key, and desired-value expression at build time. There is no
+runtime I/O error path for catalog access and no deserialization surface.
+
+=== `IndicatorClass`
+
+`IndicatorClass` determines where the live value comes from and whether contradiction
+detection applies.
+
+[cols="2,3,2", options="header"]
+|===
+| Variant | Live source | Contradiction detection
+
+| `Sysctl`
+| `/proc/sys/` (verified against `PROC_SUPER_MAGIC`)
+| Yes — compared against sysctl.d merge tree
+
+| `KernelCmdline`
+| `/proc/cmdline` (verified against `PROC_SUPER_MAGIC`)
+| Yes — compared against BLS bootloader entry (Phase 2b)
+
+| `SecurityFs`
+| `/sys/kernel/security/` (verified against `SECURITYFS_MAGIC`)
+| No — LSM state is not user-configurable via sysctl.d
+
+| `DistroManaged`
+| `/proc/sys/crypto/fips_enabled`
+| Partial — FIPS cross-check via `FipsCrossCheck` only
+
+| `ModprobeConfig`
+| `/sys/module/` (verified against `SYSFS_MAGIC`)
+| Yes — compared against modprobe.d merge tree
+
+|===
+
+=== `AssuranceImpact`
+
+`AssuranceImpact` is the security impact tier for an indicator not meeting its
+desired value. The enum is `Ord`, so `by_impact(min)` filtering uses a `>=`
+comparison.
+
+[cols="1,3", options="header"]
+|===
+| Variant | Meaning
+
+| `Medium`
+| Meaningful improvement, limited blast radius
+
+| `High`
+| Significant hardening; failure provides an attack primitive
+
+| `Critical`
+| Foundational control; failure directly enables serious attacks
+
+|===
+
+=== `DesiredValue`
+
+`DesiredValue` expresses the hardened baseline as a type-safe comparison.
+
+[cols="2,3", options="header"]
+|===
+| Variant | Meaning
+
+| `Exact(u32)`
+| Live value must equal this integer exactly
+
+| `AtLeast(u32)`
+| Live value must be >= this threshold
+
+| `AtMost(u32)`
+| Live value must be \<= this threshold
+
+| `CmdlinePresent(&'static str)`
+| This exact token must appear in `/proc/cmdline` (whitespace-delimited)
+
+| `CmdlineAbsent(&'static str)`
+| This exact token must NOT appear in `/proc/cmdline` (whitespace-delimited)
+
+| `Custom`
+| Indicator-specific logic; `meets_integer` and `meets_cmdline` return `None`
+
+|===
+
+Token matching for `CmdlinePresent` and `CmdlineAbsent` is whole-word.
+`mitigations=off` does not match `mitigations=off,nosmt` — they are different
+whitespace-delimited tokens. This prevents false negatives where a compound flag
+bypasses detection.
+
+For indicators where `Custom` is used (currently `Sysrq` and `CorePattern`), the
+`meets_desired` evaluation is implemented in indicator-specific code in `reader.rs`
+and `snapshot.rs`.
+
+=== `IndicatorReport`
+
+`IndicatorReport` is the result of reading and evaluating one indicator. The
+`PostureSnapshot::reports` field holds one report per catalog entry, in catalog order.
+
+[cols="2,3", options="header"]
+|===
+| Field | Meaning
+
+| `descriptor`
+| Reference to the static `IndicatorDescriptor` for this indicator
+
+| `live_value`
+| The kernel-effective value, or `None` if the node was unreadable
+
+| `configured_value`
+| The persistence-layer configured value, or `None` if absent
+
+| `meets_desired`
+| `Some(true)` = hardened, `Some(false)` = not hardened, `None` = unreadable
+
+| `contradiction`
+| `Some(ContradictionKind)` if live and configured disagree; `None` otherwise
+
+|===
+
+=== `PostureSnapshot`
+
+`PostureSnapshot` is the primary user-facing type. It holds all indicator reports
+and provides iteration and query methods.
+
+[cols="2,3", options="header"]
+|===
+| Method | Purpose
+
+| `collect()`
+| Collects all indicators from the static catalog; returns a snapshot
+
+| `iter()`
+| All reports in catalog order
+
+| `findings()`
+| Reports where `meets_desired == Some(false)` (live value not hardened)
+
+| `contradictions()`
+| Reports where `contradiction.is_some()`
+
+| `by_impact(min)`
+| Reports where `descriptor.impact >= min`
+
+| `get(id)`
+| Look up the report for a specific `IndicatorId`
+
+| `readable_count()`
+| Number of indicators whose live value was successfully read
+
+| `hardened_count()`
+| Number of indicators whose live value meets the desired value
+
+|===
+
+The snapshot is anchored to a boot instance via `boot_id`, read from
+`/proc/sys/kernel/random/boot_id`. If `boot_id` changes between two snapshots,
+the comparison is cross-boot and may reflect expected deltas.
+
+=== `ContradictionKind`
+
+`ContradictionKind` classifies the relationship between a live value and a
+configured value when they disagree.
+
+[cols="2,3,2", options="header"]
+|===
+| Variant | Meaning | Operator action
+
+| `EphemeralHotfix`
+| Live is hardened; configured is not
+| Persist the setting — the hardening will be lost on reboot
+
+| `BootDrift`
+| Configured is hardened; live is not
+| Investigate: was sysctl.d applied at boot? Was the value overwritten at runtime?
+
+| `SourceUnavailable`
+| Live value unreadable; configured value exists
+| Check kernel version and module availability
+
+|===
+
+== Usage Examples
+
+=== Simple Path: Full Snapshot
+
+For most callers, `PostureSnapshot::collect()` is the entire API surface.
+
+[source,rust]
+----
+use umrs_platform::posture::{PostureSnapshot, AssuranceImpact};
+
+// Collect all indicators in one call.
+let snap = PostureSnapshot::collect();
+
+// Summary counts.
+println!(
+    "{}/{} indicators meet hardened baseline",
+    snap.hardened_count(),
+    snap.readable_count()
+);
+
+// Indicators that are not meeting their desired value.
+for report in snap.findings() {
+    println!(
+        "{}: live={:?}  impact={:?}",
+        report.descriptor.id,
+        report.live_value,
+        report.descriptor.impact
+    );
+}
+----
+
+=== Filtering by Impact
+
+[source,rust]
+----
+use umrs_platform::posture::{PostureSnapshot, AssuranceImpact};
+
+let snap = PostureSnapshot::collect();
+
+// Critical-impact indicators only.
+for report in snap.by_impact(AssuranceImpact::Critical) {
+    println!(
+        "{:?}: meets={:?}",
+        report.descriptor.id,
+        report.meets_desired
+    );
+}
+----
+
+=== Contradiction Inspection
+
+[source,rust]
+----
+use umrs_platform::posture::{PostureSnapshot, ContradictionKind};
+
+let snap = PostureSnapshot::collect();
+
+for report in snap.contradictions() {
+    match report.contradiction {
+        Some(ContradictionKind::EphemeralHotfix) => {
+            println!(
+                "{}: live is hardened but config is not — persist the setting",
+                report.descriptor.id
+            );
+        }
+        Some(ContradictionKind::BootDrift) => {
+            println!(
+                "{}: config says hardened but live is not — investigate sysctl.d",
+                report.descriptor.id
+            );
+        }
+        Some(ContradictionKind::SourceUnavailable) => {
+            println!(
+                "{}: live unreadable — check kernel version",
+                report.descriptor.id
+            );
+        }
+        None => {}
+    }
+}
+----
+
+=== Single Indicator Lookup
+
+[source,rust]
+----
+use umrs_platform::posture::{PostureSnapshot, IndicatorId};
+
+let snap = PostureSnapshot::collect();
+
+if let Some(report) = snap.get(IndicatorId::KptrRestrict) {
+    println!(
+        "kptr_restrict hardened: {:?}  live value: {:?}",
+        report.meets_desired,
+        report.live_value
+    );
+}
+----
+
+=== Direct Catalog Access
+
+If you need to inspect indicator metadata without reading the kernel, iterate the
+static `INDICATORS` array directly.
+
+[source,rust]
+----
+use umrs_platform::posture::catalog::INDICATORS;
+
+for desc in INDICATORS {
+    println!(
+        "{}: desired={:?}  impact={:?}",
+        desc.id.label(),
+        desc.desired,
+        desc.impact
+    );
+}
+----
+
+No kernel reads are performed when iterating `INDICATORS`. The catalog is a `const`
+static array.
+
+== How to Add a New Indicator
+
+This procedure applies when a new kernel security setting needs to be monitored.
+Follow it in order. Do not skip the test step.
+
+=== Prerequisites
+
+Before adding a new indicator, search the workspace for an existing equivalent.
+Duplicate indicators for the same kernel node are prohibited unless the check logic
+differs and that difference is explicitly documented.
+
+Determine the indicator class:
+
+* Does the live value come from `/proc/sys/`? → `Sysctl`
+* Does the live value come from `/proc/cmdline`? → `KernelCmdline`
+* Is the value managed by a distro tool (not a plain sysctl)? → `DistroManaged`
+* Does the value come from `/sys/module/`? → `ModprobeConfig`
+* Does the value come from `/sys/kernel/security/`? → `SecurityFs`
+
+=== Step 1: Add the `IndicatorId` variant
+
+Open `umrs-platform/src/posture/indicator.rs`.
+
+Add the new variant to the `IndicatorId` enum in the appropriate section (grouped
+by domain: Kernel Self-Protection, Kernel Integrity, Process Isolation, Filesystem
+Safety, Boot-time, Special, modprobe.d, or CPU mitigation sub-indicators).
+
+Add a `label()` arm returning the sysctl key or parameter name.
+
+For example:
+
+[source,rust]
+----
+/// `kernel.perf_cpu_time_max_percent` — limits perf subsystem CPU usage.
+PerfCpuTimeMaxPercent,
+----
+
+And in `label()`:
+
+[source,rust]
+----
+Self::PerfCpuTimeMaxPercent => "kernel.perf_cpu_time_max_percent",
+----
+
+=== Step 2: Add the `IndicatorDescriptor` entry to `INDICATORS`
+
+Open `umrs-platform/src/posture/catalog.rs`.
+
+Add an `IndicatorDescriptor` entry in the `INDICATORS` static array in the same
+domain group as the new variant. All fields are required.
+
+[source,rust]
+----
+IndicatorDescriptor {
+    id: IndicatorId::PerfCpuTimeMaxPercent,
+    class: IndicatorClass::Sysctl,
+    live_path: "/proc/sys/kernel/perf_cpu_time_max_percent",
+    sysctl_key: Some("kernel.perf_cpu_time_max_percent"),
+    desired: DesiredValue::AtMost(25),
+    impact: AssuranceImpact::Medium,
+    rationale: "Limits the CPU share the perf subsystem can consume, \
+                reducing the impact of profiling-based attacks.",
+    nist_controls: "NIST 800-53 SC-39, CM-7; NSA RTB: attack surface reduction",
+},
+----
+
+Provide a `rationale` sentence that explains what the setting does and why the
+chosen desired value is hardened. Provide `nist_controls` citing the most relevant
+controls from NIST SP 800-53.
+
+=== Step 3: Implement a reader (if needed)
+
+For `KernelCmdline`-class indicators, no reader change is required. The cmdline
+is read once by `PostureSnapshot::collect()` and passed to every indicator's
+`DesiredValue::meets_cmdline()` call.
+
+For `Sysctl`-class indicators returning an unsigned integer value, use the
+`define_sysctl_signal!` macro in `reader.rs`. The macro expands to a reader
+struct with `StaticSource` implemented. The hand-written `KptrRestrict` reader
+is the reference implementation an auditor can compare against.
+
+For indicators requiring custom evaluation (e.g., string values, TPI validation),
+implement a dedicated reader function and add a dispatch arm to the
+`read_live_sysctl_signal()` function in `snapshot.rs`.
+
+Refer to `CorePatternReader` and `read_live_core_pattern()` as the pattern for
+a custom sysctl reader with TPI classification.
+
+CAUTION: If the new indicator reads from `/sys/` or `/proc/`, the read must go
+through `StaticSource::read()`. A direct `File::open` bypasses the `fstatfs`
+provenance check and violates NSA RTB RAIN. Never open kernel pseudo-filesystem
+nodes with `std::fs::read_to_string` or `std::fs::File::open` directly.
+
+=== Step 4: Add tests
+
+IMPORTANT: A regression test covering the full contradiction path is required for
+every new indicator. The test must cover: configured value present and matching,
+configured value present and not matching, and configured value absent.
+
+Tests live in `umrs-platform/tests/posture_tests.rs`. Add:
+
+1. A unit test for the reader (if a new reader was implemented).
+2. A contradiction detection test covering `EphemeralHotfix`, `BootDrift`, and the
+   no-contradiction case.
+3. Verify the catalog completeness test covers the new variant (it should compile
+   without changes if you added the variant and the `INDICATORS` entry correctly).
+
+Run the tests:
+
+[source,bash]
+----
+cd components/rusty-gadgets
+cargo test -p umrs-platform
+----
+
+All tests must pass before the indicator is considered complete.
+
+=== Step 5: Verify the end-to-end path
+
+Run the demo:
+
+[source,bash]
+----
+cargo run -p umrs-platform --example posture_demo
+----
+
+Verify the new indicator appears in the output table with the expected label,
+impact, and meets value.
+
+=== Step 6: Update documentation
+
+Add the new indicator to `docs/modules/reference/pages/kernel-probe-signals.adoc`
+(the operator-facing signal reference).
+
+If the indicator is in a new category or introduces a new reader pattern, update
+this guide as well.
+
+== Contradiction Detection
+
+Contradiction detection compares the live value to the configured value and
+classifies any disagreement.
+
+=== How It Works
+
+After `PostureSnapshot::collect()` reads both the live value and the configured
+value for an indicator, it calls `contradiction::classify(live_meets, configured_meets)`.
+
+`live_meets` is `Some(true)` if the live value satisfies the desired value,
+`Some(false)` if it does not, or `None` if the kernel node was unreadable.
+
+`configured_meets` is `Some(true)` or `Some(false)` if a configured value was
+found and parsed successfully, or `None` if no configured value was available.
+
+[mermaid]
+....
+graph TD
+    A[live_meets / configured_meets] --> B{Both Some?}
+    B -- No --> C[No contradiction]
+    B -- live=None configured=Some --> D[SourceUnavailable]
+    B -- live=true configured=false --> E[EphemeralHotfix]
+    B -- live=false configured=true --> F[BootDrift]
+    B -- Both agree --> C
+....
+
+When both values agree (both hardened or both not hardened), no contradiction is
+reported. When only one value is available, no contradiction is reported.
+
+=== Configured Value Sources by Class
+
+The configured value source depends on the indicator class.
+
+[cols="2,3", options="header"]
+|===
+| `IndicatorClass` | Configured value source
+
+| `Sysctl`
+| sysctl.d merge tree: `/usr/lib/sysctl.d/`, `/run/sysctl.d/`, `/etc/sysctl.d/`,
+  `/etc/sysctl.conf` (last-writer-wins, lexicographic order within each directory)
+
+| `KernelCmdline`
+| BLS bootloader entry: `options` line from `/boot/loader/entries/*.conf`
+  (heuristic: single entry, or entry matching running kernel version,
+  or lexicographically last)
+
+| `DistroManaged`
+| FIPS cross-check: `/etc/system-fips` marker and
+  `/etc/crypto-policies/state/current`
+
+| `ModprobeConfig`
+| modprobe.d merge tree: `/usr/lib/modprobe.d/`, `/run/modprobe.d/`,
+  `/etc/modprobe.d/` (last-writer-wins, lexicographic order within each directory).
+  Blacklist indicators use the sentinel `"blacklisted"` when a `blacklist <module>`
+  entry is found.
+
+| `SecurityFs`
+| None — LSM state is not user-configurable via a merge tree
+
+|===
+
+All configured-value reads are best-effort. Missing directories, unreadable files,
+and absent keys are silently skipped. The configured value is `None` in those cases,
+which disables contradiction detection for that indicator without raising an error.
+
+=== The Blacklist Sentinel
+
+modprobe.d blacklist indicators use `DesiredValue::Exact(1)` to express "module
+load is blocked." However, modprobe.d files do not store integer values for
+blacklist entries — the directive is `blacklist <module>`, not a key=value pair.
+
+When `ModprobeConfig::load()` finds a `blacklist <module>` entry, it sets the
+`ConfiguredValue::raw` field to the sentinel string `"blacklisted"`. The
+`evaluate_configured_meets()` function in `contradiction.rs` recognises this
+sentinel and evaluates it as integer `1` against the desired value.
+
+This design allows `BootDrift` to fire when a module is blacklisted in modprobe.d
+but loaded at runtime — a critical case that would be silently suppressed if
+non-integer configured values were treated as absent.
+
+== High-Assurance Patterns Applied
+
+The posture probe applies several patterns from the pattern library.
+This section identifies where each pattern appears and why.
+
+=== Compile-Time Path Binding
+
+Every kernel path, desired value, and sysctl key in the catalog is a `const`
+expression in a Rust array. The compiler verifies these values at build time.
+There is no runtime path for loading indicator definitions from a file, and no
+deserialization surface.
+
+The `StaticSource` trait's associated `const PATH` and `const EXPECTED_MAGIC`
+fields extend this guarantee to the reader layer: the path and expected filesystem
+magic are bound at compile time, not provided at runtime.
+
+See xref:patterns:pattern-non-bypassability.adoc[Non-Bypassability (RAIN)].
+
+=== Provenance Verification
+
+Every live read from `/proc/sys/`, `/proc/cmdline`, `/sys/module/`, or
+`/sys/kernel/security/` goes through `StaticSource::read()`, which calls
+`fstatfs` to verify the filesystem magic before reading the node.
+
+A file placed at the same path on a different filesystem (for example, a bind-mount
+attack) will fail the magic check. The read is rejected, not silently accepted.
+
+See xref:patterns:pattern-provenance.adoc[Provenance Verification].
+
+=== Trust Gate
+
+`FipsCrossCheck::evaluate()` gates all config reads (`/etc/system-fips`,
+`/etc/crypto-policies/state/current`) behind a check that the live FIPS state
+was readable. If the kernel FIPS node was unavailable, config reads are skipped.
+
+This prevents a situation where config-file evidence is treated as ground truth
+when the kernel has not confirmed the subsystem is active.
+
+`ModprobeConfig` applies the same pattern: sysfs parameter reads under
+`/sys/module/<mod>/parameters/` are gated behind a check that the module directory
+`/sys/module/<mod>/` exists.
+
+See xref:patterns:pattern-toctou.adoc[TOCTOU Safety].
+
+=== Two-Path Independence (TPI) on `CorePattern`
+
+`kernel.core_pattern` accepts both raw filesystem paths and pipe-to-handler
+strings. A structural check alone (first byte is `|`) cannot distinguish a valid
+handler from a bare `|` or a relative-path handler.
+
+The `classify_core_pattern` function applies two independent parsers:
+
+* *Path 1 (structural)*: checks whether the first byte is `|` (ASCII 0x7C).
+* *Path 2 (semantic)*: checks whether the first whitespace-delimited token starts
+  with `|` and is followed by an absolute path.
+
+Both paths must agree. Disagreement produces `CorePatternKind::Invalid`, which
+`PostureSnapshot` treats as not hardened.
+
+For the full TPI analysis including example values and a classification table, see
+xref:posture-probe-internals.adoc#_corepattern_tpi_classification_phase_2b[CorePattern TPI Classification].
+For the pattern definition, see xref:patterns:pattern-tpi.adoc[Two-Path Independence (TPI)].
+
+=== Fail-Closed
+
+When a kernel node cannot be read, `live_value` is `None` and `meets_desired` is
+`None`. A missing node is never reported as hardened. This is the fail-closed
+direction: an unreadable control does not contribute a false positive to the
+hardened count.
+
+At the classification level, `CorePatternKind::Invalid` applies the same principle.
+A value that cannot be unambiguously classified as a managed handler is not reported
+as hardened.
+
+See xref:patterns:pattern-fail-closed.adoc[Fail-Closed].
+
+=== Security Findings as Data
+
+`ContradictionKind` is a typed enum. Callers can match, filter, count, and route
+contradiction results programmatically. There are no string-matching patterns in
+the contradiction pipeline.
+
+`IndicatorId` is also typed. There is no free-form string dispatch in the posture
+pipeline at any level.
+
+See xref:patterns:pattern-non-bypassability.adoc[Non-Bypassability (RAIN)].
+
+=== Error Information Discipline
+
+Debug-mode logging in `configured.rs` and `snapshot.rs` logs sysctl keys and line
+numbers but suppresses raw configured values. On DoD and CUI systems, debug logging
+may be enabled during troubleshooting; raw sysctl values from configuration files
+must not be exposed in that stream.
+
+See xref:patterns:pattern-error-discipline.adoc[Error Information Discipline].
+
+== Compliance Summary
+
+[cols="2,3", options="header"]
+|===
+| Control | How the posture probe satisfies it
+
+| NIST SP 800-53 CM-6
+| The static `INDICATORS` catalog defines the configuration baseline;
+  every indicator encodes its desired hardened value as a `const` expression.
+  The sysctl.d and modprobe.d merge-tree readers compare intended vs. effective
+  configuration.
+
+| NIST SP 800-53 CA-7
+| `PostureSnapshot::collect()` provides a point-in-time assessment of all 37
+  monitored controls for continuous monitoring integration. The snapshot is
+  anchored to a boot instance via `boot_id`.
+
+| NIST SP 800-53 AU-3
+| Typed `IndicatorId` variants and `ContradictionKind` enums enable programmatic
+  filtering and machine-readable audit records. No free-form string dispatch.
+
+| NIST SP 800-53 SI-16
+| CPU mitigation sub-indicators detect per-CVE weakening flags on the kernel
+  command line, complementing the umbrella `Mitigations` indicator.
+
+| NIST SP 800-53 SC-28
+| `CorePattern` enforces managed handler routing for core dumps, which contain
+  process memory including key material and credentials.
+
+| NIST SP 800-53 SC-13
+| `FipsEnabled` and `FipsCrossCheck` verify FIPS 140-2/3 mode from both the live
+  kernel state and the RHEL persistence layer.
+
+| NIST SP 800-218 SSDF PW.4
+| All catalog constants are `const`, compiler-verified. TPI applied to
+  `CorePattern` classification. Fail-closed on path disagreement.
+
+| NSA RTB RAIN
+| All kernel reads route through `StaticSource::read()`, which verifies filesystem
+  magic before reading — the provenance check is the default method path and
+  cannot be bypassed.
+
+|===
+
+== See Also
+
+* xref:posture-probe-internals.adoc[Posture Probe Internals] — CPU mitigation sub-indicators,
+  CorePattern TPI classification detail, and TPI code walk-through
+* xref:update-checklists.adoc[Platform Update Checklists] — step-by-step procedure for
+  adding a new indicator when a kernel version update introduces new hardening options
+* xref:reference:kernel-probe-signals.adoc[Kernel Security Posture Signals] — operator-facing
+  descriptions for all 37 indicators
+* xref:patterns:pattern-tpi.adoc[Two-Path Independence (TPI)] — the pattern applied to
+  CorePattern classification
+* xref:patterns:pattern-fail-closed.adoc[Fail-Closed] — fail-closed behavior at indicator
+  and classification level
+* xref:patterns:pattern-non-bypassability.adoc[Non-Bypassability (RAIN)] — NSA RTB RAIN
+  provenance verification and the `StaticSource` enforcement mechanism
+* xref:patterns:pattern-provenance.adoc[Provenance Verification] — `fstatfs` magic verification
+  for `/proc/` and `/sys/` reads
+* xref:patterns:pattern-error-discipline.adoc[Error Information Discipline] — debug log
+  value suppression in `configured.rs`

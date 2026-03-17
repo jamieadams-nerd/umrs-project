@@ -19,7 +19,7 @@
 //! Three signals already have complete `KernelFileSource + StaticSource`
 //! implementations in `kattrs`:
 //!
-//! | Signal | Existing type | How reused |
+//! | Indicator | Existing type | How reused |
 //! |---|---|---|
 //! | `FipsEnabled` | `ProcFips` | Called directly via `ProcFips::read()` |
 //! | `ModulesDisabled` | `ModuleLoadLatch` | Called directly via `ModuleLoadLatch::read()` |
@@ -675,7 +675,7 @@ impl BootIdReader {
 
 /// Read the live unsigned integer value of a sysctl signal.
 ///
-/// The dispatch uses a match over `SignalId` variants so the compiler can
+/// The dispatch uses a match over `IndicatorId` variants so the compiler can
 /// verify exhaustiveness. Each arm calls the corresponding type's
 /// provenance-verified read path.
 ///
@@ -689,54 +689,54 @@ impl BootIdReader {
 /// NIST SP 800-53 SI-7: all reads provenance-verified through `StaticSource`.
 #[must_use = "live sysctl read result must be examined"]
 pub fn read_live_sysctl(
-    id: crate::posture::signal::SignalId,
+    id: crate::posture::indicator::IndicatorId,
 ) -> io::Result<Option<u32>> {
     use crate::kattrs::traits::StaticSource;
-    use crate::posture::signal::SignalId;
+    use crate::posture::indicator::IndicatorId;
 
     match id {
-        SignalId::KptrRestrict => KptrRestrict::read().map(Some),
-        SignalId::RandomizeVaSpace => RandomizeVaSpace::read().map(Some),
-        SignalId::UnprivBpfDisabled => UnprivBpfDisabled::read().map(Some),
-        SignalId::YamaPtraceScope => YamaPtraceScope::read().map(Some),
-        SignalId::DmesgRestrict => DmesgRestrict::read().map(Some),
-        SignalId::KexecLoadDisabled => KexecLoadDisabled::read().map(Some),
-        SignalId::Sysrq => SysrqRaw::read().map(Some),
-        SignalId::UnprivUsernsClone => UnprivUsernsClone::read().map(Some),
-        SignalId::ProtectedSymlinks => ProtectedSymlinks::read().map(Some),
-        SignalId::ProtectedHardlinks => ProtectedHardlinks::read().map(Some),
-        SignalId::ProtectedFifos => ProtectedFifos::read().map(Some),
-        SignalId::ProtectedRegular => ProtectedRegular::read().map(Some),
-        SignalId::SuidDumpable => SuidDumpable::read().map(Some),
+        IndicatorId::KptrRestrict => KptrRestrict::read().map(Some),
+        IndicatorId::RandomizeVaSpace => RandomizeVaSpace::read().map(Some),
+        IndicatorId::UnprivBpfDisabled => UnprivBpfDisabled::read().map(Some),
+        IndicatorId::YamaPtraceScope => YamaPtraceScope::read().map(Some),
+        IndicatorId::DmesgRestrict => DmesgRestrict::read().map(Some),
+        IndicatorId::KexecLoadDisabled => KexecLoadDisabled::read().map(Some),
+        IndicatorId::Sysrq => SysrqRaw::read().map(Some),
+        IndicatorId::UnprivUsernsClone => UnprivUsernsClone::read().map(Some),
+        IndicatorId::ProtectedSymlinks => ProtectedSymlinks::read().map(Some),
+        IndicatorId::ProtectedHardlinks => ProtectedHardlinks::read().map(Some),
+        IndicatorId::ProtectedFifos => ProtectedFifos::read().map(Some),
+        IndicatorId::ProtectedRegular => ProtectedRegular::read().map(Some),
+        IndicatorId::SuidDumpable => SuidDumpable::read().map(Some),
         // PerfEventParanoid uses a signed reader — handled by read_live_sysctl_signed.
         // CorePattern uses a string reader — handled by read_live_core_pattern.
         // Non-sysctl signals (cmdline, SecurityFs, DistroManaged, ModprobeConfig)
         // are handled elsewhere; this function only covers sysctl u32 signals.
         // CPU mitigation sub-signals are KernelCmdline class — handled by
         // read_live_cmdline_signal in snapshot.rs.
-        SignalId::PerfEventParanoid
-        | SignalId::ModulesDisabled
-        | SignalId::Lockdown
-        | SignalId::ModuleSigEnforce
-        | SignalId::Mitigations
-        | SignalId::Pti
-        | SignalId::RandomTrustCpu
-        | SignalId::RandomTrustBootloader
-        | SignalId::FipsEnabled
-        | SignalId::NfConntrackAcct
-        | SignalId::BluetoothBlacklisted
-        | SignalId::UsbStorageBlacklisted
-        | SignalId::FirewireCoreBlacklisted
-        | SignalId::ThunderboltBlacklisted
-        | SignalId::SpectreV2Off
-        | SignalId::SpectreV2UserOff
-        | SignalId::MdsOff
-        | SignalId::TsxAsyncAbortOff
-        | SignalId::L1tfOff
-        | SignalId::RetbleedOff
-        | SignalId::SrbdsOff
-        | SignalId::NoSmtOff
-        | SignalId::CorePattern => Ok(None),
+        IndicatorId::PerfEventParanoid
+        | IndicatorId::ModulesDisabled
+        | IndicatorId::Lockdown
+        | IndicatorId::ModuleSigEnforce
+        | IndicatorId::Mitigations
+        | IndicatorId::Pti
+        | IndicatorId::RandomTrustCpu
+        | IndicatorId::RandomTrustBootloader
+        | IndicatorId::FipsEnabled
+        | IndicatorId::NfConntrackAcct
+        | IndicatorId::BluetoothBlacklisted
+        | IndicatorId::UsbStorageBlacklisted
+        | IndicatorId::FirewireCoreBlacklisted
+        | IndicatorId::ThunderboltBlacklisted
+        | IndicatorId::SpectreV2Off
+        | IndicatorId::SpectreV2UserOff
+        | IndicatorId::MdsOff
+        | IndicatorId::TsxAsyncAbortOff
+        | IndicatorId::L1tfOff
+        | IndicatorId::RetbleedOff
+        | IndicatorId::SrbdsOff
+        | IndicatorId::NoSmtOff
+        | IndicatorId::CorePattern => Ok(None),
     }
 }
 
@@ -783,13 +783,13 @@ pub fn read_live_core_pattern() -> io::Result<Option<(CorePatternKind, String)>>
 /// NIST SP 800-53 SI-7: provenance-verified via `StaticSource`.
 #[must_use = "live signed sysctl read result must be examined"]
 pub fn read_live_sysctl_signed(
-    id: crate::posture::signal::SignalId,
+    id: crate::posture::indicator::IndicatorId,
 ) -> io::Result<Option<i32>> {
     use crate::kattrs::traits::StaticSource;
-    use crate::posture::signal::SignalId;
+    use crate::posture::indicator::IndicatorId;
 
     match id {
-        SignalId::PerfEventParanoid => PerfEventParanoid::read().map(Some),
+        IndicatorId::PerfEventParanoid => PerfEventParanoid::read().map(Some),
         _ => Ok(None),
     }
 }

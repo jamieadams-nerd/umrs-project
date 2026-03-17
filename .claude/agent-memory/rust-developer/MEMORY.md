@@ -1,5 +1,16 @@
 # Rust Developer Agent Memory
 
+## Topic Files (linked memory)
+
+- [Posture module history](posture_module_history.md) — Signal→Indicator rename, Phase 2b architecture, security review findings
+
+## WARNING — Rogue .claude Directory
+
+A `.claude/` directory at `components/rusty-gadgets/.claude/` was created by a prior agent
+violating the Single .claude Directory Rule. It contains stale copies of memory files.
+DO NOT READ OR WRITE to `components/rusty-gadgets/.claude/` — use the repo-root `.claude/` only.
+The duplicate has been flagged to Jamie.
+
 ## Key Architectural Facts
 
 - Primary workspace: `components/rusty-gadgets/` — production crates only

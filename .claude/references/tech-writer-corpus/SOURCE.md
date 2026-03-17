@@ -46,14 +46,30 @@ Sources: plainlanguage.gov, nist.gov, quicksearch.dla.mil (CAC required)
 
 ---
 
-## Phases Not Yet Executed (as of 2026-03-16)
+### domain-refs/rhel-security-guide/
+RHEL 10 official security documentation — 4 PDFs from docs.redhat.com:
+- `rhel10-security-hardening.pdf` — FIPS, crypto policy, AIDE, Keylime, LUKS/Clevis, fapolicyd
+- `rhel10-using-selinux.pdf` — SELinux core, MLS (Ch6), MCS (Ch7), custom policy, containers
+- `rhel10-risk-reduction-recovery.pdf` — Audit system (Ch7), security monitoring (Ch8)
+- `rhel10-kernel-management.pdf` — IMA/EVM (Ch24), module signing (Ch22), Secure Boot
+
+Status: Phase 3.4 complete (2026-03-17) — 772 new chunks ingested; total collection: 2017 chunks
+Sources: docs.redhat.com (approved source)
+
+---
+
+## Phase Status (as of 2026-03-17)
 
 | Phase | Items | Status |
 |-------|-------|--------|
-| Phase 3 | Domain refs (NIST SPs, RHEL 10, SELinux, Common Criteria) | Not started — many exist already |
+| Phase 1.1 | Google Style Guide | Partial — curl+pandoc verbatim acquired (2026-03-16) |
+| Phase 1.2 | Microsoft Writing Style Guide | Complete (2026-03-16) |
+| Phase 2 | Gov standards (Plain Language, NIST Author, MIL-STD-38784B) | Substantially complete; MIL-STD manual download pending |
+| Phase 3.4 | RHEL 10 Security Guides | Complete (2026-03-17) |
+| Phase 3.5 | SELinux Project Notebook | CHECK — exists at .claude/references/selinux-notebook/ |
+| Phase 3.6 | Common Criteria Parts 1 & 2 | Complete (2026-03-16) |
 | Phase 4 | Apple, DigitalOcean, Mailchimp style guides | Not started |
 | Phase 5 | NASA writing guidance | Not started |
-| Phase 6 | RAG ingestion and familiarization | Not started |
 
 ---
 

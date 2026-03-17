@@ -35369,5 +35369,40 @@
     "chunks_stored": 199,
     "collection": "performance-corpus",
     "ingested_date": "2026-03-16T20:31:17.984612+00:00"
+  },
+  "tech-writer-corpus/domain-refs/rhel-security-guide/SOURCE.md": {
+    "hash": "659d875bc82347ab",
+    "converted_to": "converted/tech-writer-corpus/domain-refs/rhel-security-guide/SOURCE.md",
+    "chunks_stored": 6,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-17T10:19:32.025614+00:00"
+  },
+  "tech-writer-corpus/domain-refs/rhel-security-guide/rhel10-kernel-management.pdf": {
+    "hash": "6b1501fb1e94a020",
+    "converted_to": "converted/tech-writer-corpus/domain-refs/rhel-security-guide/rhel10-kernel-management.md",
+    "chunks_stored": 278,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-17T10:19:40.775433+00:00"
+  },
+  "tech-writer-corpus/domain-refs/rhel-security-guide/rhel10-risk-reduction-recovery.pdf": {
+    "hash": "5e72bc8ab214edf0",
+    "converted_to": "converted/tech-writer-corpus/domain-refs/rhel-security-guide/rhel10-risk-reduction-recovery.md",
+    "chunks_stored": 107,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-17T10:19:44.070275+00:00"
+  },
+  "tech-writer-corpus/domain-refs/rhel-security-guide/rhel10-security-hardening.pdf": {
+    "hash": "f00f29908467bdb4",
+    "converted_to": "converted/tech-writer-corpus/domain-refs/rhel-security-guide/rhel10-security-hardening.md",
+    "chunks_stored": 231,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-17T10:19:50.904897+00:00"
+  },
+  "tech-writer-corpus/domain-refs/rhel-security-guide/rhel10-using-selinux.pdf": {
+    "hash": "83cb891eec8ed9e8",
+    "converted_to": "converted/tech-writer-corpus/domain-refs/rhel-security-guide/rhel10-using-selinux.md",
+    "chunks_stored": 150,
+    "collection": "tech-writer-corpus",
+    "ingested_date": "2026-03-17T10:19:55.400057+00:00"
   }
 }

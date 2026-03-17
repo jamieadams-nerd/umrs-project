@@ -3,7 +3,7 @@
 //! Integration tests for the `posture` module.
 //!
 //! Tests are grouped by subsystem:
-//! 1. Catalog completeness — every `SignalId` variant has a catalog entry.
+//! 1. Catalog completeness — every `IndicatorId` variant has a catalog entry.
 //! 2. `DesiredValue` comparison logic — `Exact`, `AtLeast`, `AtMost`,
 //!    `CmdlinePresent`, `CmdlineAbsent`, `Custom`.
 //! 3. sysctl integer parser — handles well-formed, trimming, and error cases.
@@ -15,10 +15,10 @@
 
 use umrs_platform::posture::{
     ContradictionKind,
-    catalog::SIGNALS,
+    catalog::INDICATORS,
     configured::parse_sysctl_line,
     contradiction::{classify, evaluate_configured_meets},
-    signal::{AssuranceImpact, DesiredValue, SignalClass, SignalId},
+    indicator::{AssuranceImpact, DesiredValue, IndicatorClass, IndicatorId},
     snapshot::PostureSnapshot,
 };
 
@@ -26,58 +26,61 @@ use umrs_platform::posture::{
 // 1. Catalog completeness
 // ===========================================================================
 
-/// Every `SignalId` variant must appear exactly once in SIGNALS.
+/// Every `IndicatorId` variant must appear exactly once in INDICATORS.
 #[test]
 fn catalog_covers_all_signal_ids() {
-    // Exhaustive match ensures this test is updated when SignalId gains a new variant.
+    // Exhaustive match ensures this test is updated when IndicatorId gains a new variant.
     // Phase 1: 22. Phase 2a: +5 modprobe = 27. Phase 2b: +9 CPU sub-signals + 1 core_pattern = 37.
     let all_ids = [
         // Phase 1 — sysctl signals
-        SignalId::KptrRestrict,
-        SignalId::RandomizeVaSpace,
-        SignalId::UnprivBpfDisabled,
-        SignalId::PerfEventParanoid,
-        SignalId::YamaPtraceScope,
-        SignalId::DmesgRestrict,
-        SignalId::KexecLoadDisabled,
-        SignalId::Sysrq,
-        SignalId::ModulesDisabled,
-        SignalId::UnprivUsernsClone,
-        SignalId::ProtectedSymlinks,
-        SignalId::ProtectedHardlinks,
-        SignalId::ProtectedFifos,
-        SignalId::ProtectedRegular,
-        SignalId::SuidDumpable,
+        IndicatorId::KptrRestrict,
+        IndicatorId::RandomizeVaSpace,
+        IndicatorId::UnprivBpfDisabled,
+        IndicatorId::PerfEventParanoid,
+        IndicatorId::YamaPtraceScope,
+        IndicatorId::DmesgRestrict,
+        IndicatorId::KexecLoadDisabled,
+        IndicatorId::Sysrq,
+        IndicatorId::ModulesDisabled,
+        IndicatorId::UnprivUsernsClone,
+        IndicatorId::ProtectedSymlinks,
+        IndicatorId::ProtectedHardlinks,
+        IndicatorId::ProtectedFifos,
+        IndicatorId::ProtectedRegular,
+        IndicatorId::SuidDumpable,
         // Phase 1 — cmdline and special signals
-        SignalId::Lockdown,
-        SignalId::ModuleSigEnforce,
-        SignalId::Mitigations,
-        SignalId::Pti,
-        SignalId::RandomTrustCpu,
-        SignalId::RandomTrustBootloader,
-        SignalId::FipsEnabled,
+        IndicatorId::Lockdown,
+        IndicatorId::ModuleSigEnforce,
+        IndicatorId::Mitigations,
+        IndicatorId::Pti,
+        IndicatorId::RandomTrustCpu,
+        IndicatorId::RandomTrustBootloader,
+        IndicatorId::FipsEnabled,
         // Phase 2a — modprobe.d signals
-        SignalId::NfConntrackAcct,
-        SignalId::BluetoothBlacklisted,
-        SignalId::UsbStorageBlacklisted,
-        SignalId::FirewireCoreBlacklisted,
-        SignalId::ThunderboltBlacklisted,
+        IndicatorId::NfConntrackAcct,
+        IndicatorId::BluetoothBlacklisted,
+        IndicatorId::UsbStorageBlacklisted,
+        IndicatorId::FirewireCoreBlacklisted,
+        IndicatorId::ThunderboltBlacklisted,
         // Phase 2b — CPU mitigation sub-signals
-        SignalId::SpectreV2Off,
-        SignalId::SpectreV2UserOff,
-        SignalId::MdsOff,
-        SignalId::TsxAsyncAbortOff,
-        SignalId::L1tfOff,
-        SignalId::RetbleedOff,
-        SignalId::SrbdsOff,
-        SignalId::NoSmtOff,
+        IndicatorId::SpectreV2Off,
+        IndicatorId::SpectreV2UserOff,
+        IndicatorId::MdsOff,
+        IndicatorId::TsxAsyncAbortOff,
+        IndicatorId::L1tfOff,
+        IndicatorId::RetbleedOff,
+        IndicatorId::SrbdsOff,
+        IndicatorId::NoSmtOff,
         // Phase 2b — core dump
-        SignalId::CorePattern,
+        IndicatorId::CorePattern,
     ];
 
     for id in all_ids {
-        let found = SIGNALS.iter().any(|d| d.id == id);
-        assert!(found, "SignalId::{id:?} has no entry in catalog::SIGNALS");
+        let found = INDICATORS.iter().any(|d| d.id == id);
+        assert!(
+            found,
+            "IndicatorId::{id:?} has no entry in catalog::INDICATORS"
+        );
     }
 }
 
@@ -85,23 +88,23 @@ fn catalog_covers_all_signal_ids() {
 #[test]
 fn catalog_no_duplicate_ids() {
     let mut seen = std::collections::HashSet::new();
-    for desc in SIGNALS {
+    for desc in INDICATORS {
         assert!(
             seen.insert(desc.id),
-            "Duplicate catalog entry for SignalId::{:?}",
+            "Duplicate catalog entry for IndicatorId::{:?}",
             desc.id
         );
     }
 }
 
-/// Catalog must have exactly as many entries as `SignalId` variants.
+/// Catalog must have exactly as many entries as `IndicatorId` variants.
 #[test]
 fn catalog_length_matches_signal_id_count() {
     // Phase 1: 22. Phase 2a: +5 modprobe = 27. Phase 2b: +8 CPU sub-signals + 1 core_pattern = 36.
     assert_eq!(
-        SIGNALS.len(),
+        INDICATORS.len(),
         36,
-        "catalog length must match SignalId variant count \
+        "catalog length must match IndicatorId variant count \
          (22 Phase 1 + 5 Phase 2a + 8 CPU sub-signals + 1 core_pattern = 36)"
     );
 }
@@ -415,7 +418,7 @@ fn snapshot_iterators_return_subsets() {
 #[test]
 fn snapshot_get_finds_all_catalog_signals() {
     let snap = PostureSnapshot::collect();
-    for desc in SIGNALS {
+    for desc in INDICATORS {
         assert!(
             snap.get(desc.id).is_some(),
             "snapshot must have a report for {:?}",
@@ -536,9 +539,9 @@ fn desired_custom_meets_signed_is_none() {
 /// (not None) on a real Linux system where the node is readable.
 #[test]
 fn snapshot_perf_event_paranoid_has_live_value_or_node_absent() {
-    use umrs_platform::posture::signal::{LiveValue, SignalId};
+    use umrs_platform::posture::indicator::{IndicatorId, LiveValue};
     let snap = PostureSnapshot::collect();
-    if let Some(report) = snap.get(SignalId::PerfEventParanoid) {
+    if let Some(report) = snap.get(IndicatorId::PerfEventParanoid) {
         // If the node is readable, the live_value must be SignedInteger, not None.
         // On a system with perf_event_paranoid=-1, meets_desired must be Some(false).
         if let Some(ref live) = report.live_value {
@@ -784,8 +787,8 @@ fn eval_configured_negative_both_unhardened_no_contradiction() {
 /// Every Sysctl-class signal must have a `sysctl_key: Some(_)`.
 #[test]
 fn catalog_sysctl_signals_have_sysctl_key() {
-    for desc in SIGNALS {
-        if desc.class == SignalClass::Sysctl {
+    for desc in INDICATORS {
+        if desc.class == IndicatorClass::Sysctl {
             assert!(
                 desc.sysctl_key.is_some(),
                 "Sysctl-class signal {:?} must have sysctl_key",
@@ -803,22 +806,23 @@ fn catalog_sysctl_signals_have_sysctl_key() {
 #[test]
 fn cpu_mitigation_sub_signals_are_cmdline_class() {
     let cpu_ids = [
-        SignalId::SpectreV2Off,
-        SignalId::SpectreV2UserOff,
-        SignalId::MdsOff,
-        SignalId::TsxAsyncAbortOff,
-        SignalId::L1tfOff,
-        SignalId::RetbleedOff,
-        SignalId::SrbdsOff,
-        SignalId::NoSmtOff,
+        IndicatorId::SpectreV2Off,
+        IndicatorId::SpectreV2UserOff,
+        IndicatorId::MdsOff,
+        IndicatorId::TsxAsyncAbortOff,
+        IndicatorId::L1tfOff,
+        IndicatorId::RetbleedOff,
+        IndicatorId::SrbdsOff,
+        IndicatorId::NoSmtOff,
     ];
     for id in cpu_ids {
-        let desc = SIGNALS.iter().find(|d| d.id == id).unwrap_or_else(|| {
-            panic!("CPU sub-signal {id:?} missing from catalog")
-        });
+        let desc =
+            INDICATORS.iter().find(|d| d.id == id).unwrap_or_else(|| {
+                panic!("CPU sub-signal {id:?} missing from catalog")
+            });
         assert_eq!(
             desc.class,
-            SignalClass::KernelCmdline,
+            IndicatorClass::KernelCmdline,
             "CPU sub-signal {id:?} must be KernelCmdline class"
         );
     }
@@ -828,19 +832,20 @@ fn cpu_mitigation_sub_signals_are_cmdline_class() {
 #[test]
 fn cpu_mitigation_sub_signals_use_cmdline_absent() {
     let cpu_ids = [
-        SignalId::SpectreV2Off,
-        SignalId::SpectreV2UserOff,
-        SignalId::MdsOff,
-        SignalId::TsxAsyncAbortOff,
-        SignalId::L1tfOff,
-        SignalId::RetbleedOff,
-        SignalId::SrbdsOff,
-        SignalId::NoSmtOff,
+        IndicatorId::SpectreV2Off,
+        IndicatorId::SpectreV2UserOff,
+        IndicatorId::MdsOff,
+        IndicatorId::TsxAsyncAbortOff,
+        IndicatorId::L1tfOff,
+        IndicatorId::RetbleedOff,
+        IndicatorId::SrbdsOff,
+        IndicatorId::NoSmtOff,
     ];
     for id in cpu_ids {
-        let desc = SIGNALS.iter().find(|d| d.id == id).unwrap_or_else(|| {
-            panic!("CPU sub-signal {id:?} missing from catalog")
-        });
+        let desc =
+            INDICATORS.iter().find(|d| d.id == id).unwrap_or_else(|| {
+                panic!("CPU sub-signal {id:?} missing from catalog")
+            });
         assert!(
             matches!(desc.desired, DesiredValue::CmdlineAbsent(_)),
             "CPU sub-signal {id:?} must use DesiredValue::CmdlineAbsent, \
@@ -854,9 +859,9 @@ fn cpu_mitigation_sub_signals_use_cmdline_absent() {
 #[test]
 fn spectre_v2_off_in_cmdline_fails() {
     let cmdline = "BOOT_IMAGE=/vmlinuz root=/dev/sda1 ro quiet spectre_v2=off";
-    let desc = SIGNALS
+    let desc = INDICATORS
         .iter()
-        .find(|d| d.id == SignalId::SpectreV2Off)
+        .find(|d| d.id == IndicatorId::SpectreV2Off)
         .expect("SpectreV2Off must be in catalog");
     let meets = desc.desired.meets_cmdline(cmdline);
     assert_eq!(
@@ -870,9 +875,9 @@ fn spectre_v2_off_in_cmdline_fails() {
 #[test]
 fn spectre_v2_off_absent_passes() {
     let cmdline = "BOOT_IMAGE=/vmlinuz root=/dev/sda1 ro quiet";
-    let desc = SIGNALS
+    let desc = INDICATORS
         .iter()
-        .find(|d| d.id == SignalId::SpectreV2Off)
+        .find(|d| d.id == IndicatorId::SpectreV2Off)
         .expect("SpectreV2Off must be in catalog");
     let meets = desc.desired.meets_cmdline(cmdline);
     assert_eq!(
@@ -887,9 +892,9 @@ fn spectre_v2_off_absent_passes() {
 fn spectre_v2_off_whole_word_no_false_positive() {
     // "spectre_v2=off_extended" must NOT trigger the check — token must match exactly.
     let cmdline = "BOOT_IMAGE=/vmlinuz spectre_v2=off_extended";
-    let desc = SIGNALS
+    let desc = INDICATORS
         .iter()
-        .find(|d| d.id == SignalId::SpectreV2Off)
+        .find(|d| d.id == IndicatorId::SpectreV2Off)
         .expect("SpectreV2Off must be in catalog");
     let meets = desc.desired.meets_cmdline(cmdline);
     assert_eq!(
@@ -907,13 +912,13 @@ fn umbrella_and_sub_signals_independent() {
     // A cmdline with the umbrella flag also has no spectre_v2=off separately.
     let cmdline = "BOOT_IMAGE=/vmlinuz root=/dev/sda1 mitigations=off";
 
-    let mitigations_desc = SIGNALS
+    let mitigations_desc = INDICATORS
         .iter()
-        .find(|d| d.id == SignalId::Mitigations)
+        .find(|d| d.id == IndicatorId::Mitigations)
         .expect("Mitigations must be in catalog");
-    let spectre_v2_desc = SIGNALS
+    let spectre_v2_desc = INDICATORS
         .iter()
-        .find(|d| d.id == SignalId::SpectreV2Off)
+        .find(|d| d.id == IndicatorId::SpectreV2Off)
         .expect("SpectreV2Off must be in catalog");
 
     // Umbrella fails (mitigations=off is present).
@@ -1031,13 +1036,13 @@ fn core_pattern_trailing_newline_handled() {
 /// `CorePattern` signal in catalog must be Sysctl class with Custom desired.
 #[test]
 fn catalog_core_pattern_is_sysctl_custom() {
-    let desc = SIGNALS
+    let desc = INDICATORS
         .iter()
-        .find(|d| d.id == SignalId::CorePattern)
+        .find(|d| d.id == IndicatorId::CorePattern)
         .expect("CorePattern must be in catalog");
     assert_eq!(
         desc.class,
-        SignalClass::Sysctl,
+        IndicatorClass::Sysctl,
         "CorePattern must be Sysctl class"
     );
     assert_eq!(
@@ -1059,8 +1064,8 @@ fn catalog_core_pattern_is_sysctl_custom() {
 /// Every KernelCmdline-class signal must have `sysctl_key: None`.
 #[test]
 fn catalog_cmdline_signals_have_no_sysctl_key() {
-    for desc in SIGNALS {
-        if desc.class == SignalClass::KernelCmdline {
+    for desc in INDICATORS {
+        if desc.class == IndicatorClass::KernelCmdline {
             assert!(
                 desc.sysctl_key.is_none(),
                 "KernelCmdline-class signal {:?} must have sysctl_key: None",
@@ -1073,8 +1078,8 @@ fn catalog_cmdline_signals_have_no_sysctl_key() {
 /// Every SecurityFs-class signal must have `sysctl_key: None`.
 #[test]
 fn catalog_security_fs_signals_have_no_sysctl_key() {
-    for desc in SIGNALS {
-        if desc.class == SignalClass::SecurityFs {
+    for desc in INDICATORS {
+        if desc.class == IndicatorClass::SecurityFs {
             assert!(
                 desc.sysctl_key.is_none(),
                 "SecurityFs-class signal {:?} must have sysctl_key: None",
@@ -1087,9 +1092,9 @@ fn catalog_security_fs_signals_have_no_sysctl_key() {
 /// `Sysrq` must use `DesiredValue::Custom` in the catalog.
 #[test]
 fn catalog_sysrq_uses_custom_desired() {
-    let desc = SIGNALS
+    let desc = INDICATORS
         .iter()
-        .find(|d| d.id == SignalId::Sysrq)
+        .find(|d| d.id == IndicatorId::Sysrq)
         .expect("Sysrq must be in catalog");
     assert_eq!(
         desc.desired,
@@ -1098,16 +1103,16 @@ fn catalog_sysrq_uses_custom_desired() {
     );
 }
 
-/// `Lockdown` must use `SignalClass::SecurityFs` after Finding 8 fix.
+/// `Lockdown` must use `IndicatorClass::SecurityFs` after Finding 8 fix.
 #[test]
 fn catalog_lockdown_uses_security_fs_class() {
-    let desc = SIGNALS
+    let desc = INDICATORS
         .iter()
-        .find(|d| d.id == SignalId::Lockdown)
+        .find(|d| d.id == IndicatorId::Lockdown)
         .expect("Lockdown must be in catalog");
     assert_eq!(
         desc.class,
-        SignalClass::SecurityFs,
+        IndicatorClass::SecurityFs,
         "Lockdown must use SecurityFs class — it reads from securityfs, not /proc/cmdline"
     );
 }

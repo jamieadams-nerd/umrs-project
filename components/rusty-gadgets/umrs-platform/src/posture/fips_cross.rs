@@ -50,7 +50,7 @@
 //! - **Must-Use Contract** (NIST SP 800-53 SI-10, SA-11): `FipsCrossCheck` and
 //!   `evaluate()` carry `#[must_use]`.
 //! - **Non-Bypassability** (NSA RTB RAIN): cross-check invoked unconditionally
-//!   from `read_configured()` for `SignalId::FipsEnabled`.
+//!   from `read_configured()` for `IndicatorId::FipsEnabled`.
 //!
 //! ## Compliance
 //!
@@ -62,7 +62,7 @@
 //! NIST SP 800-53 SI-11: Error Handling — crypto-policy content not in errors.
 //! FIPS 140-2/140-3: system-wide FIPS mode enforcement.
 
-use crate::posture::signal::ConfiguredValue;
+use crate::posture::indicator::ConfiguredValue;
 
 // ===========================================================================
 // Paths
@@ -194,7 +194,7 @@ impl FipsCrossCheck {
         }
     }
 
-    /// Produce a `ConfiguredValue` suitable for insertion into a `SignalReport`.
+    /// Produce a `ConfiguredValue` suitable for insertion into an `IndicatorReport`.
     ///
     /// Returns `None` if all indicators were unavailable (Trust Gate blocked or
     /// no indicators readable).

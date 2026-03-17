@@ -1,7 +1,7 @@
 # Tech-Writer RAG Corpus Acquisition Plan
 
 **Created:** 2026-03-15
-**Status:** Phases 1-2 in progress (Phase 1.1 partial, Phase 1.2 complete, Phase 2 substantially complete)
+**Status:** COMPLETE (2026-03-17). Phases 1-3 done, Phase 6 ingestion done (2,017 chunks). Phases 4-5 skipped per Jamie (NASA=skip, DigitalOcean=revisit later, Apple/Mailchimp=skip). Familiarization by writers pending.
 **Source:** `.claude/jamies_brain/researcher-for-tw.md`
 **ROADMAP Goals:** G10 (AI Transparency), G1 (Documentation Excellence)
 **Agent:** researcher

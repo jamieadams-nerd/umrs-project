@@ -50,7 +50,7 @@
 
 /// Classification of a live-vs-configured value contradiction.
 ///
-/// Used in `SignalReport::contradiction` when both values are available and
+/// Used in `IndicatorReport::contradiction` when both values are available and
 /// they disagree. The variant tells the operator what kind of configuration
 /// management problem is present.
 ///
@@ -185,7 +185,7 @@ pub const fn classify(
 #[must_use = "configured value evaluation result must be examined"]
 pub fn evaluate_configured_meets(
     raw: &str,
-    desired: &crate::posture::signal::DesiredValue,
+    desired: &crate::posture::indicator::DesiredValue,
 ) -> Option<bool> {
     // Blacklist sentinel: a modprobe.d `blacklist <module>` entry sets raw to
     // "blacklisted". The desired value for blacklist signals is Exact(1) —

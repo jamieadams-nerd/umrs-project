@@ -42,7 +42,7 @@ use umrs_core::i18n;
 use umrs_platform::detect::label_trust::LabelTrust;
 use umrs_platform::detect::{DetectionError, DetectionResult, OsDetector};
 use umrs_platform::evidence::{EvidenceRecord, SourceKind};
-use umrs_platform::posture::{LiveValue, PostureSnapshot, SignalId};
+use umrs_platform::posture::{IndicatorId, LiveValue, PostureSnapshot};
 use umrs_platform::{Distro, OsFamily, OsRelease, TrustLevel};
 use umrs_tui::app::{
     AuditCardApp, AuditCardState, DataRow, HeaderContext, IndicatorValue,
@@ -565,7 +565,7 @@ fn append_kernel_identity_rows(
 /// `"(not probed)"` entries is noise. Kernel version appears as an
 /// informational row at the top, not as its own group.
 ///
-/// Signal styling follows the hardening assessment from the snapshot:
+/// Indicator styling follows the hardening assessment from the snapshot:
 /// - `meets_desired = Some(true)` → `TrustGreen` (hardened)
 /// - `meets_desired = Some(false)` → `TrustRed` (not hardened)
 /// - `meets_desired = None` (unreadable) → `Dim`
@@ -603,10 +603,13 @@ fn build_kernel_security_rows(
         "CRYPTOGRAPHIC POSTURE",
         snap,
         &[
-            (SignalId::FipsEnabled, "fips_enabled"),
-            (SignalId::ModulesDisabled, "modules_disabled"),
-            (SignalId::RandomTrustCpu, "random.trust_cpu"),
-            (SignalId::RandomTrustBootloader, "random.trust_bootloader"),
+            (IndicatorId::FipsEnabled, "fips_enabled"),
+            (IndicatorId::ModulesDisabled, "modules_disabled"),
+            (IndicatorId::RandomTrustCpu, "random.trust_cpu"),
+            (
+                IndicatorId::RandomTrustBootloader,
+                "random.trust_bootloader",
+            ),
         ],
     );
     append_signal_group(
@@ -614,12 +617,12 @@ fn build_kernel_security_rows(
         "KERNEL SELF-PROTECTION",
         snap,
         &[
-            (SignalId::RandomizeVaSpace, "randomize_va_space"),
-            (SignalId::KptrRestrict, "kptr_restrict"),
-            (SignalId::UnprivBpfDisabled, "unprivileged_bpf_disabled"),
-            (SignalId::PerfEventParanoid, "perf_event_paranoid"),
-            (SignalId::YamaPtraceScope, "yama.ptrace_scope"),
-            (SignalId::DmesgRestrict, "dmesg_restrict"),
+            (IndicatorId::RandomizeVaSpace, "randomize_va_space"),
+            (IndicatorId::KptrRestrict, "kptr_restrict"),
+            (IndicatorId::UnprivBpfDisabled, "unprivileged_bpf_disabled"),
+            (IndicatorId::PerfEventParanoid, "perf_event_paranoid"),
+            (IndicatorId::YamaPtraceScope, "yama.ptrace_scope"),
+            (IndicatorId::DmesgRestrict, "dmesg_restrict"),
         ],
     );
     append_signal_group(
@@ -627,9 +630,9 @@ fn build_kernel_security_rows(
         "PROCESS ISOLATION",
         snap,
         &[
-            (SignalId::UnprivUsernsClone, "unprivileged_userns_clone"),
-            (SignalId::Sysrq, "sysrq"),
-            (SignalId::SuidDumpable, "suid_dumpable"),
+            (IndicatorId::UnprivUsernsClone, "unprivileged_userns_clone"),
+            (IndicatorId::Sysrq, "sysrq"),
+            (IndicatorId::SuidDumpable, "suid_dumpable"),
         ],
     );
     append_signal_group(
@@ -637,10 +640,10 @@ fn build_kernel_security_rows(
         "FILESYSTEM HARDENING",
         snap,
         &[
-            (SignalId::ProtectedSymlinks, "protected_symlinks"),
-            (SignalId::ProtectedHardlinks, "protected_hardlinks"),
-            (SignalId::ProtectedFifos, "protected_fifos"),
-            (SignalId::ProtectedRegular, "protected_regular"),
+            (IndicatorId::ProtectedSymlinks, "protected_symlinks"),
+            (IndicatorId::ProtectedHardlinks, "protected_hardlinks"),
+            (IndicatorId::ProtectedFifos, "protected_fifos"),
+            (IndicatorId::ProtectedRegular, "protected_regular"),
         ],
     );
     append_signal_group(
@@ -648,17 +651,20 @@ fn build_kernel_security_rows(
         "MODULE RESTRICTIONS",
         snap,
         &[
-            (SignalId::BluetoothBlacklisted, "bluetooth (blacklisted)"),
-            (SignalId::UsbStorageBlacklisted, "usb_storage (blacklisted)"),
+            (IndicatorId::BluetoothBlacklisted, "bluetooth (blacklisted)"),
             (
-                SignalId::FirewireCoreBlacklisted,
+                IndicatorId::UsbStorageBlacklisted,
+                "usb_storage (blacklisted)",
+            ),
+            (
+                IndicatorId::FirewireCoreBlacklisted,
                 "firewire_core (blacklisted)",
             ),
             (
-                SignalId::ThunderboltBlacklisted,
+                IndicatorId::ThunderboltBlacklisted,
                 "thunderbolt (blacklisted)",
             ),
-            (SignalId::NfConntrackAcct, "nf_conntrack acct"),
+            (IndicatorId::NfConntrackAcct, "nf_conntrack acct"),
         ],
     );
 
@@ -686,18 +692,18 @@ fn append_boot_integrity_group(
     indicators: &SecurityIndicators,
 ) {
     // Snapshot-sourced boot-integrity signals.
-    let boot_signals: &[(SignalId, &str)] = &[
-        (SignalId::Lockdown, "lockdown"),
-        (SignalId::KexecLoadDisabled, "kexec_load_disabled"),
-        (SignalId::ModuleSigEnforce, "module.sig_enforce"),
-        (SignalId::Mitigations, "mitigations"),
-        (SignalId::Pti, "pti"),
+    let boot_signals: &[(IndicatorId, &str)] = &[
+        (IndicatorId::Lockdown, "lockdown"),
+        (IndicatorId::KexecLoadDisabled, "kexec_load_disabled"),
+        (IndicatorId::ModuleSigEnforce, "module.sig_enforce"),
+        (IndicatorId::Mitigations, "mitigations"),
+        (IndicatorId::Pti, "pti"),
     ];
     let group_rows = signal_group_rows(snap, boot_signals);
 
     // If lockdown was not in the snapshot, fall back to the header indicator.
     let has_lockdown =
-        snap.get(SignalId::Lockdown).is_some_and(|r| r.live_value.is_some());
+        snap.get(IndicatorId::Lockdown).is_some_and(|r| r.live_value.is_some());
     let fallback: Option<DataRow> = if has_lockdown {
         None
     } else {
@@ -727,7 +733,7 @@ fn append_signal_group(
     rows: &mut Vec<DataRow>,
     title: &'static str,
     snap: &PostureSnapshot,
-    signals: &[(SignalId, &str)],
+    signals: &[(IndicatorId, &str)],
 ) {
     let group_rows = signal_group_rows(snap, signals);
     if !group_rows.is_empty() {
@@ -739,9 +745,9 @@ fn append_signal_group(
 
 /// Build display rows for a named group of posture signals.
 ///
-/// For each `(SignalId, label)` pair, looks up the `SignalReport` in the
-/// snapshot. Signals with a readable `live_value` are rendered as
-/// `DataRow::key_value` rows styled by their hardening outcome. Signals
+/// For each `(IndicatorId, label)` pair, looks up the `IndicatorReport` in the
+/// snapshot. Indicators with a readable `live_value` are rendered as
+/// `DataRow::key_value` rows styled by their hardening outcome. Indicators
 /// with no live value (`live_value: None`) are silently skipped — the caller
 /// is responsible for deciding whether to omit the group entirely.
 ///
@@ -751,7 +757,7 @@ fn append_signal_group(
 /// NIST SP 800-53 SI-11: degraded signals are skipped, not fabricated.
 fn signal_group_rows(
     snap: &PostureSnapshot,
-    signals: &[(SignalId, &str)],
+    signals: &[(IndicatorId, &str)],
 ) -> Vec<DataRow> {
     let mut rows = Vec::new();
     for (id, label) in signals {
@@ -759,7 +765,7 @@ fn signal_group_rows(
             continue;
         };
         let Some(ref live) = report.live_value else {
-            // Signal was not readable on this kernel — omit the row.
+            // Indicator was not readable on this kernel — omit the row.
             continue;
         };
         let hint = meets_desired_hint(report.meets_desired);

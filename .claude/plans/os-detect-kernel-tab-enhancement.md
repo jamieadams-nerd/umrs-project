@@ -1,7 +1,7 @@
 # Plan: OS Detection Tool & Kernel Security Tab Enhancement
 
 **Date:** 2026-03-15
-**Status:** Phase 0 in progress (IRS signal definitions)
+**Status:** Phase 0 in progress (IRS indicator definitions)
 **ROADMAP Goals:** G1 (Platform Awareness), G5 (Security Tools), G8 (High-Assurance Patterns)
 **Owner:** All-team effort
 **Justification:** NIST SP 800-53A (assessment clarity), CLIG guidelines (operator UX),
@@ -11,7 +11,7 @@ CMMC SC.L2-3.13.10 (CUI system monitoring requires understandable output)
 
 ## Problem Statement
 
-The Kernel Security tab displays 25+ signals across 6 groups with cryptic names,
+The Kernel Security tab displays 25+ indicators across 6 groups with cryptic names,
 raw numeric values, and no explanatory context. An operator sees `kptr_restrict : 2`
 and has no idea what it means or whether it's good. Even trained auditors need a
 reference sheet. The tool produces correct data but fails to communicate it.
@@ -25,21 +25,21 @@ has no assessment value — regardless of how technically correct the underlying
 
 | Agent | Alias | Responsibility |
 |---|---|---|
-| security-auditor | The IRS | Defines what each signal means, what "good" looks like, NIST/CMMC control mapping |
+| security-auditor | The IRS | Defines what each indicator means, what "good" looks like, NIST/CMMC control mapping |
 | rust-developer | Rusty | Implements display descriptions, value translations, UX improvements in code |
 | tech-writer | Von Neumann | Writes the operations reference guide in Antora docs |
 | senior-tech-writer | The Imprimatur | Reviews and approves final documentation |
-| security-engineer | *(unassigned)* | Reviews deployment context for signal relevance |
+| security-engineer | *(unassigned)* | Reviews deployment context for indicator relevance |
 
 ---
 
-## Phase 0 — Signal Definition Reference (The IRS)
+## Phase 0 — Indicator Definition Reference (The IRS)
 
 **Status:** In progress
 
-The IRS produces the authoritative signal reference table:
+The IRS produces the authoritative indicator reference table:
 
-For every signal:
+For every indicator:
 - Plain language description (what is this?)
 - What "good" looks like (expected hardened value)
 - What "bad" looks like (insecure/default value)
@@ -56,7 +56,7 @@ For trust evidence tab:
 - How to interpret trust tiers (T0→T3)
 - Better phrasing for "downgrade reasons: none"
 
-**Output:** `.claude/agent-memory/security-auditor/signal-definitions-plain-language.md`
+**Output:** `.claude/agent-memory/security-auditor/indicator-definitions-plain-language.md`
 
 ---
 
@@ -77,11 +77,11 @@ Jamie to decide.
 
 ---
 
-## Phase 2 — Signal Descriptions (Rusty)
+## Phase 2 — Indicator Descriptions (Rusty)
 
 **Depends on:** Phase 0 complete
 
-Add brief explanatory text to each signal row. Options:
+Add brief explanatory text to each indicator row. Options:
 
 **Option A — Inline description:**
 ```
@@ -138,7 +138,7 @@ Use the Dialog API (Info mode) to provide contextual help:
 Von Neumann writes the authoritative reference in `docs/modules/operations/` or
 `docs/modules/umrs-tools/`:
 
-- Every signal documented with The IRS's definitions
+- Every indicator documented with The IRS's definitions
 - Every group explained
 - Screenshots or text captures of the TUI output
 - "What to do when you see red" — operator response procedures
@@ -156,7 +156,7 @@ The Imprimatur reviews and approves before publication.
 
 The IRS runs the enhanced tool and evaluates:
 
-- Is every signal understandable without external reference?
+- Is every indicator understandable without external reference?
 - Does the color coding consistently indicate security posture?
 - Can an auditor produce a finding from this output?
 - Does the evidence tab satisfy SP 800-53A Examine requirements?

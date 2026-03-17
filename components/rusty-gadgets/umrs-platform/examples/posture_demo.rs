@@ -20,8 +20,8 @@
 //! the signal will show `live=None` — this is expected graceful degradation.
 
 use umrs_platform::posture::{
-    AssuranceImpact, ContradictionKind, PostureSnapshot, SignalId,
-    catalog::SIGNALS,
+    AssuranceImpact, ContradictionKind, IndicatorId, PostureSnapshot,
+    catalog::INDICATORS,
 };
 
 fn main() {
@@ -63,7 +63,7 @@ fn main() {
     // ── Per-signal table ────────────────────────────────────────────────────
     println!(
         "{:<35} {:<10} {:<12} {:<8} Status",
-        "Signal", "Live", "Meets", "Impact"
+        "Indicator", "Live", "Meets", "Impact"
     );
     println!("{}", "─".repeat(78));
 
@@ -158,7 +158,7 @@ fn main() {
     println!(
         "── Individual signal lookup (KptrRestrict) ───────────────────────────────────"
     );
-    if let Some(r) = snap.get(SignalId::KptrRestrict) {
+    if let Some(r) = snap.get(IndicatorId::KptrRestrict) {
         println!("  live={:?}  meets={:?}", r.live_value, r.meets_desired);
     } else {
         println!("  KptrRestrict not found in snapshot");
@@ -170,7 +170,7 @@ fn main() {
     println!(
         "── Static catalog (first 5 entries) ─────────────────────────────────────────"
     );
-    for desc in SIGNALS.iter().take(5) {
+    for desc in INDICATORS.iter().take(5) {
         println!(
             "  {:?}: desired={:?} impact={:?}",
             desc.id, desc.desired, desc.impact

@@ -52,7 +52,7 @@ use std::collections::HashMap;
 use std::io;
 use std::path::{Path, PathBuf};
 
-use crate::posture::signal::ConfiguredValue;
+use crate::posture::indicator::ConfiguredValue;
 
 // ===========================================================================
 // SysctlConfig — merged sysctl.d key→value map

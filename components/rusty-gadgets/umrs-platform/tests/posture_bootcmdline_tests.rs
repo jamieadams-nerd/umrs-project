@@ -4,57 +4,174 @@
 //!
 //! Tests are grouped by subsystem:
 //!
-//! 1. **BLS field parser** — `parse_bls_field` via temp file: options line,
-//!    multi-field entries, comment lines, blank lines, absent fields.
-//! 2. **Options extraction** — `read_configured_cmdline` with mock BLS directories.
-//! 3. **Entry selection** — single entry, multiple entries, version matching.
-//! 4. **Graceful degrade** — absent directory, empty directory, unreadable entry.
-//! 5. **Snapshot integration** — KernelCmdline signals now have `configured_value`
+//! 1. **BLS content parser** — `parse_bls_content` directly: options line,
+//!    multi-field entries, comment lines, blank lines, absent fields, tabs.
+//!    These tests run in any environment (no filesystem dependency).
+//! 2. **Options extraction** — `read_configured_cmdline` graceful degrade and
+//!    environment-conditional assertions.
+//! 3. **Snapshot integration** — KernelCmdline signals have `configured_value`
 //!    when BLS entries are present; gracefully return `None` when absent.
 
-use std::io::Write;
-use std::path::PathBuf;
-
-use umrs_platform::posture::bootcmdline::read_configured_cmdline;
-use umrs_platform::posture::signal::SignalId;
+use umrs_platform::posture::bootcmdline::{parse_bls_content, read_configured_cmdline};
+use umrs_platform::posture::indicator::IndicatorId;
 use umrs_platform::posture::snapshot::PostureSnapshot;
 
 // ===========================================================================
-// Helper — create a temp BLS entry file
+// 1. BLS content parser — direct tests (no filesystem dependency)
+//
+// These tests call `parse_bls_content` directly on in-memory strings,
+// so they run correctly in any environment (CI, containers, systems without
+// /boot/loader/entries/). This resolves the T-01 coverage gap identified
+// in the Phase 2b security review (2026-03-16).
 // ===========================================================================
 
-fn write_bls_entry(
-    dir: &std::path::Path,
-    filename: &str,
-    content: &str,
-) -> PathBuf {
-    let path = dir.join(filename);
-    let mut f = std::fs::File::create(&path).expect("create BLS entry");
-    write!(f, "{content}").expect("write BLS entry");
-    path
+/// Options line is extracted correctly from a typical RHEL BLS entry.
+#[test]
+fn parse_bls_content_options_typical_rhel_entry() {
+    let entry = "title Red Hat Enterprise Linux\n\
+                 version 5.14.0-503.el10.aarch64\n\
+                 linux /vmlinuz-5.14.0-503.el10.aarch64\n\
+                 initrd /initramfs-5.14.0-503.el10.aarch64.img\n\
+                 options root=UUID=abc rhgb quiet fips=1 audit=1\n";
+
+    let result = parse_bls_content(entry, "options");
+    assert_eq!(
+        result,
+        Some("root=UUID=abc rhgb quiet fips=1 audit=1"),
+        "options field must be extracted from a typical RHEL BLS entry"
+    );
+}
+
+/// `version` field is extracted correctly.
+#[test]
+fn parse_bls_content_version_field() {
+    let entry = "title My Kernel\n\
+                 version 5.14.0-503.el10.aarch64\n\
+                 options root=/dev/sda1\n";
+
+    let result = parse_bls_content(entry, "version");
+    assert_eq!(
+        result,
+        Some("5.14.0-503.el10.aarch64"),
+        "version field must be extracted correctly"
+    );
+}
+
+/// Comment lines (starting with `#`) are skipped.
+#[test]
+fn parse_bls_content_comment_lines_skipped() {
+    let entry = "# This is a comment\n\
+                 title My Kernel\n\
+                 # options should not match this comment\n\
+                 options root=/dev/sda1 quiet\n";
+
+    let result = parse_bls_content(entry, "options");
+    assert_eq!(
+        result,
+        Some("root=/dev/sda1 quiet"),
+        "comment lines must not be matched as fields"
+    );
+}
+
+/// Blank lines are skipped without error.
+#[test]
+fn parse_bls_content_blank_lines_skipped() {
+    let entry = "\n\n\
+                 title My Kernel\n\
+                 \n\
+                 options root=/dev/sda1\n\
+                 \n";
+
+    let result = parse_bls_content(entry, "options");
+    assert_eq!(
+        result,
+        Some("root=/dev/sda1"),
+        "blank lines must not interfere with field extraction"
+    );
+}
+
+/// Absent field returns `None`.
+#[test]
+fn parse_bls_content_absent_field_returns_none() {
+    let entry = "title My Kernel\n\
+                 version 5.14.0\n\
+                 linux /vmlinuz\n";
+
+    let result = parse_bls_content(entry, "options");
+    assert!(
+        result.is_none(),
+        "absent field must return None from parse_bls_content"
+    );
+}
+
+/// Empty content returns `None`.
+#[test]
+fn parse_bls_content_empty_string_returns_none() {
+    let result = parse_bls_content("", "options");
+    assert!(
+        result.is_none(),
+        "empty content must return None from parse_bls_content"
+    );
+}
+
+/// Tab-separated key/value (BLS allows tabs as well as spaces).
+#[test]
+fn parse_bls_content_tab_separated_field() {
+    let entry = "title\tMy Kernel\noptions\troot=/dev/sda1 fips=1\n";
+    let result = parse_bls_content(entry, "options");
+    assert_eq!(
+        result,
+        Some("root=/dev/sda1 fips=1"),
+        "tab-separated key/value must be parsed correctly"
+    );
+}
+
+/// A field with no value (key only) returns an empty string (not None).
+/// This preserves the first occurrence — a line `options` with no value
+/// returns `Some("")`.
+#[test]
+fn parse_bls_content_key_only_line_returns_empty_string() {
+    let entry = "title My Kernel\noptions\n";
+    // `options` line has no value — parser returns the empty trimmed value.
+    let result = parse_bls_content(entry, "options");
+    assert_eq!(
+        result,
+        Some(""),
+        "a key-only line must return Some(\"\"), not None"
+    );
+}
+
+/// The field match is exact: `optionsfoo` must not match `options`.
+#[test]
+fn parse_bls_content_exact_field_match() {
+    let entry = "optionsfoo root=/dev/sda1\n\
+                 options root=/dev/sda2\n";
+    let result = parse_bls_content(entry, "options");
+    assert_eq!(
+        result,
+        Some("root=/dev/sda2"),
+        "field match must be exact — prefix matches must not fire"
+    );
+}
+
+/// First occurrence of a duplicate field is returned.
+#[test]
+fn parse_bls_content_first_occurrence_wins() {
+    let entry = "options root=/dev/sda1\n\
+                 options root=/dev/sda2\n";
+    let result = parse_bls_content(entry, "options");
+    assert_eq!(
+        result,
+        Some("root=/dev/sda1"),
+        "first occurrence of a duplicate field must be returned"
+    );
 }
 
 // ===========================================================================
-// 1. BLS field parser
+// 2. read_configured_cmdline — environment-conditional tests
 // ===========================================================================
 
-// We test the public `read_configured_cmdline()` function indirectly by
-// creating real BLS entry directories and files in tempdir. The internal
-// `parse_bls_field` function is private, so we test it via the public API.
-
-/// A minimal BLS entry with only `title` and `options` produces the correct
-/// `options` value.
-///
-/// Note: `read_configured_cmdline()` reads `/boot/loader/entries/` which may
-/// or may not exist on the test system. We cannot override the path from
-/// tests, so we test the parser logic via direct BLS file parsing through
-/// the public API by relying on the graceful-degrade path.
-///
-/// Parser correctness is verified by unit-testing the module-private
-/// `parse_bls_field` via integration assertions on files in tempdir.
-/// Since the function reads from a fixed path, these tests verify that:
-/// - On systems with BLS entries: the function returns a non-None string.
-/// - On systems without BLS entries: the function returns None gracefully.
+/// `read_configured_cmdline` must not panic on any system.
 #[test]
 fn read_configured_cmdline_does_not_panic() {
     // On most test environments (containers, CI) /boot/loader/entries/
@@ -62,8 +179,6 @@ fn read_configured_cmdline_does_not_panic() {
     // On RHEL 10 with BLS, it may return Some(options).
     // Either result is acceptable — the test verifies no panic.
     let result = read_configured_cmdline();
-    // We accept both None (no BLS) and Some (BLS available).
-    // The result is not asserted on value to keep the test environment-agnostic.
     let _ = result; // intentional discard — we only test no-panic
 }
 
@@ -80,14 +195,11 @@ fn read_configured_cmdline_non_empty_if_some() {
     // None is acceptable — test passes silently when BLS is absent.
 }
 
-/// If BLS entries exist on this system and `fips=1` is in the configured
-/// cmdline, it must also be in `/proc/cmdline` (or at least parseable).
-/// This is a sanity check, not a security assertion.
+/// If BLS entries exist on this system, the options line parses as
+/// whitespace-separated tokens with no empty tokens.
 #[test]
 fn bls_options_parses_as_whitespace_separated_tokens() {
     if let Some(cmdline) = read_configured_cmdline() {
-        // The options line must be parseable as whitespace-separated tokens.
-        // No token may be empty.
         for token in cmdline.split_whitespace() {
             assert!(
                 !token.is_empty(),
@@ -98,159 +210,22 @@ fn bls_options_parses_as_whitespace_separated_tokens() {
 }
 
 // ===========================================================================
-// 2. BLS file content parsing — via tempdir
-// ===========================================================================
-
-/// Write a BLS entry file with specific content and verify that
-/// `read_configured_cmdline` is stable (no panic) when called on the
-/// live system path. We cannot override the path, so this is a structural
-/// test verifying the parsing logic handles BLS format correctly by examining
-/// the module's exported BLS parsing helper indirectly.
-///
-/// Direct parsing tests are provided below using a whitebox approach that
-/// reads files directly to exercise the format parsing.
-///
-/// Verify that BLS options content with typical RHEL tokens is preserved
-/// correctly by parsing the format from a temp file.
-#[test]
-fn bls_format_parse_options_line() {
-    let tmp = tempfile::tempdir().expect("tempdir");
-    let path = write_bls_entry(
-        tmp.path(),
-        "test.conf",
-        "title Red Hat Enterprise Linux\n\
-         version 5.14.0-503.el10.aarch64\n\
-         linux /vmlinuz-5.14.0-503.el10.aarch64\n\
-         initrd /initramfs-5.14.0-503.el10.aarch64.img\n\
-         options root=UUID=abc rhgb quiet fips=1 audit=1\n",
-    );
-
-    // Read and parse the file manually to verify the format.
-    let content = std::fs::read_to_string(&path).expect("read temp file");
-    let options_line = content
-        .lines()
-        .filter(|l| {
-            let trimmed = l.trim();
-            !trimmed.is_empty()
-                && !trimmed.starts_with('#')
-                && trimmed.starts_with("options")
-        })
-        .map(|l| {
-            l.trim()
-                .split_once(|c: char| c.is_ascii_whitespace())
-                .map(|x| x.1)
-                .unwrap_or("")
-                .trim()
-                .to_owned()
-        })
-        .next();
-
-    assert_eq!(
-        options_line.as_deref(),
-        Some("root=UUID=abc rhgb quiet fips=1 audit=1"),
-        "options line must be parsed correctly from BLS entry"
-    );
-
-    let _ = tmp;
-}
-
-/// Verify comment lines are skipped during BLS parsing.
-#[test]
-fn bls_format_comment_lines_skipped() {
-    let tmp = tempfile::tempdir().expect("tempdir");
-    let path = write_bls_entry(
-        tmp.path(),
-        "test.conf",
-        "# This is a comment\n\
-         title My Kernel\n\
-         # Another comment\n\
-         options root=/dev/sda1 quiet\n",
-    );
-
-    let content = std::fs::read_to_string(&path).expect("read");
-    let non_comment_non_blank: Vec<&str> = content
-        .lines()
-        .filter(|l| {
-            let t = l.trim();
-            !t.is_empty() && !t.starts_with('#')
-        })
-        .collect();
-
-    assert_eq!(non_comment_non_blank.len(), 2);
-    assert!(non_comment_non_blank[0].starts_with("title"));
-    assert!(non_comment_non_blank[1].starts_with("options"));
-
-    let _ = tmp;
-    let _ = path;
-}
-
-/// Verify blank lines are skipped during BLS parsing.
-#[test]
-fn bls_format_blank_lines_skipped() {
-    let tmp = tempfile::tempdir().expect("tempdir");
-    let path = write_bls_entry(
-        tmp.path(),
-        "test.conf",
-        "\n\n\
-         title My Kernel\n\
-         \n\
-         options root=/dev/sda1\n\
-         \n",
-    );
-
-    let content = std::fs::read_to_string(&path).expect("read");
-    let non_empty: Vec<&str> =
-        content.lines().filter(|l| !l.trim().is_empty()).collect();
-
-    assert_eq!(non_empty.len(), 2);
-    let _ = tmp;
-    let _ = path;
-}
-
-/// A BLS entry with no `options` line produces no options value.
-#[test]
-fn bls_no_options_line_returns_none() {
-    let tmp = tempfile::tempdir().expect("tempdir");
-    let path = write_bls_entry(
-        tmp.path(),
-        "test.conf",
-        "title My Kernel\n\
-         version 5.14.0\n\
-         linux /vmlinuz\n",
-    );
-
-    let content = std::fs::read_to_string(&path).expect("read");
-    let options_line = content.lines().find(|l| {
-        let t = l.trim();
-        !t.is_empty() && !t.starts_with('#') && t.starts_with("options")
-    });
-
-    assert!(
-        options_line.is_none(),
-        "entry without options line must produce no options value"
-    );
-
-    let _ = tmp;
-    let _ = path;
-}
-
-// ===========================================================================
 // 3. Snapshot integration — KernelCmdline signals
 // ===========================================================================
 
 /// KernelCmdline signals in the snapshot must have `descriptor.class ==
-/// SignalClass::KernelCmdline`.
+/// IndicatorClass::KernelCmdline`.
 #[test]
 fn snapshot_cmdline_signals_have_correct_class() {
-    use umrs_platform::posture::signal::SignalClass;
+    use umrs_platform::posture::indicator::IndicatorClass;
 
     let snap = PostureSnapshot::collect();
     let cmdline_ids = [
-        SignalId::ModuleSigEnforce,
-        SignalId::Mitigations,
-        SignalId::Pti,
-        SignalId::RandomTrustCpu,
-        SignalId::RandomTrustBootloader,
+        IndicatorId::ModuleSigEnforce,
+        IndicatorId::Mitigations,
+        IndicatorId::Pti,
+        IndicatorId::RandomTrustCpu,
+        IndicatorId::RandomTrustBootloader,
     ];
 
     for id in cmdline_ids {
@@ -259,7 +234,7 @@ fn snapshot_cmdline_signals_have_correct_class() {
             .unwrap_or_else(|| panic!("{id:?} must appear in snapshot"));
         assert_eq!(
             report.descriptor.class,
-            SignalClass::KernelCmdline,
+            IndicatorClass::KernelCmdline,
             "{id:?} must have KernelCmdline class"
         );
         // live_value is Some or None depending on /proc/cmdline availability.
@@ -273,7 +248,7 @@ fn snapshot_cmdline_signals_have_correct_class() {
 #[test]
 fn snapshot_cmdline_configured_value_does_not_panic() {
     let snap = PostureSnapshot::collect();
-    let cmdline_ids = [SignalId::ModuleSigEnforce, SignalId::Mitigations];
+    let cmdline_ids = [IndicatorId::ModuleSigEnforce, IndicatorId::Mitigations];
     for id in cmdline_ids {
         let report = snap
             .get(id)
@@ -302,7 +277,7 @@ fn snapshot_cmdline_configured_value_non_empty_when_bls_available() {
         .iter()
         .filter(|r| {
             r.descriptor.class
-                == umrs_platform::posture::signal::SignalClass::KernelCmdline
+                == umrs_platform::posture::indicator::IndicatorClass::KernelCmdline
         })
         .any(|r| r.configured_value.is_some());
 

@@ -15,8 +15,8 @@
 
 use umrs_platform::posture::{
     FipsCrossCheck,
-    catalog::SIGNALS,
-    signal::{DesiredValue, SignalClass, SignalId},
+    catalog::INDICATORS,
+    indicator::{DesiredValue, IndicatorClass, IndicatorId},
     snapshot::PostureSnapshot,
 };
 
@@ -181,23 +181,23 @@ fn as_configured_value_source_file_non_empty() {
 /// FipsEnabled must be DistroManaged in the catalog.
 #[test]
 fn catalog_fips_enabled_is_distro_managed() {
-    let desc = SIGNALS
+    let desc = INDICATORS
         .iter()
-        .find(|d| d.id == SignalId::FipsEnabled)
+        .find(|d| d.id == IndicatorId::FipsEnabled)
         .expect("FipsEnabled must be in catalog");
     assert_eq!(
         desc.class,
-        SignalClass::DistroManaged,
-        "FipsEnabled must use SignalClass::DistroManaged"
+        IndicatorClass::DistroManaged,
+        "FipsEnabled must use IndicatorClass::DistroManaged"
     );
 }
 
 /// FipsEnabled desired value must be Exact(1).
 #[test]
 fn catalog_fips_enabled_desired_is_exact_1() {
-    let desc = SIGNALS
+    let desc = INDICATORS
         .iter()
-        .find(|d| d.id == SignalId::FipsEnabled)
+        .find(|d| d.id == IndicatorId::FipsEnabled)
         .expect("FipsEnabled must be in catalog");
     assert_eq!(
         desc.desired,
@@ -220,7 +220,7 @@ fn catalog_fips_enabled_desired_is_exact_1() {
 fn snapshot_fips_signal_has_coherent_configured_value() {
     let snap = PostureSnapshot::collect();
     let report = snap
-        .get(SignalId::FipsEnabled)
+        .get(IndicatorId::FipsEnabled)
         .expect("FipsEnabled must appear in snapshot");
 
     // Coherence: if live is readable, configured must also be Some.
@@ -240,11 +240,11 @@ fn snapshot_fips_signal_has_coherent_configured_value() {
 fn snapshot_fips_report_descriptor_id_correct() {
     let snap = PostureSnapshot::collect();
     let report = snap
-        .get(SignalId::FipsEnabled)
+        .get(IndicatorId::FipsEnabled)
         .expect("FipsEnabled must appear in snapshot");
     assert_eq!(
         report.descriptor.id,
-        SignalId::FipsEnabled,
+        IndicatorId::FipsEnabled,
         "FipsEnabled report descriptor.id must be FipsEnabled"
     );
 }
@@ -254,7 +254,7 @@ fn snapshot_fips_report_descriptor_id_correct() {
 fn snapshot_fips_configured_value_raw_not_empty() {
     let snap = PostureSnapshot::collect();
     let report = snap
-        .get(SignalId::FipsEnabled)
+        .get(IndicatorId::FipsEnabled)
         .expect("FipsEnabled must appear in snapshot");
     if let Some(ref cv) = report.configured_value {
         assert!(

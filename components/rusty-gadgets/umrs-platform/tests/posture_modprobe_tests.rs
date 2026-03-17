@@ -9,7 +9,7 @@
 //! 2. **Merge precedence** — later directories override earlier ones.
 //! 3. **ModprobeConfig queries** — `get_option`, `is_blacklisted`,
 //!    `blacklist_source`.
-//! 4. **Catalog completeness** — all new Phase 2a `SignalId` variants have
+//! 4. **Catalog completeness** — all new Phase 2a `IndicatorId` variants have
 //!    catalog entries with correct class, impact, and desired values.
 //! 5. **Live cross-check integration** — `is_module_loaded` degrades
 //!    gracefully when sysfs is available or modules are absent.
@@ -20,12 +20,12 @@
 //!    produced when a module is blacklisted in modprobe.d but loaded at runtime.
 
 use umrs_platform::posture::{
-    catalog::SIGNALS,
+    catalog::INDICATORS,
     contradiction::{ContradictionKind, classify, evaluate_configured_meets},
+    indicator::{AssuranceImpact, DesiredValue, IndicatorClass, IndicatorId},
     modprobe::{
         ModprobeConfig, ParsedDirective, is_module_loaded, parse_modprobe_line,
     },
-    signal::{AssuranceImpact, DesiredValue, SignalClass, SignalId},
     snapshot::PostureSnapshot,
 };
 
@@ -328,44 +328,47 @@ fn modprobe_config_blacklist_source_absent_returns_none() {
 }
 
 // ===========================================================================
-// 4. Catalog completeness — new Phase 2a SignalId variants
+// 4. Catalog completeness — new Phase 2a IndicatorId variants
 // ===========================================================================
 
-/// All new Phase 2a modprobe SignalId variants must appear in the catalog.
+/// All new Phase 2a modprobe IndicatorId variants must appear in the catalog.
 #[test]
 fn catalog_covers_phase_2a_modprobe_signals() {
     let new_signals = [
-        SignalId::NfConntrackAcct,
-        SignalId::BluetoothBlacklisted,
-        SignalId::UsbStorageBlacklisted,
-        SignalId::FirewireCoreBlacklisted,
-        SignalId::ThunderboltBlacklisted,
+        IndicatorId::NfConntrackAcct,
+        IndicatorId::BluetoothBlacklisted,
+        IndicatorId::UsbStorageBlacklisted,
+        IndicatorId::FirewireCoreBlacklisted,
+        IndicatorId::ThunderboltBlacklisted,
     ];
     for id in new_signals {
-        let found = SIGNALS.iter().any(|d| d.id == id);
-        assert!(found, "SignalId::{id:?} has no entry in catalog::SIGNALS");
+        let found = INDICATORS.iter().any(|d| d.id == id);
+        assert!(
+            found,
+            "IndicatorId::{id:?} has no entry in catalog::INDICATORS"
+        );
     }
 }
 
-/// All Phase 2a modprobe signals must use `SignalClass::ModprobeConfig`.
+/// All Phase 2a modprobe indicators must use `IndicatorClass::ModprobeConfig`.
 #[test]
 fn catalog_phase_2a_signals_use_modprobe_config_class() {
     let modprobe_signals = [
-        SignalId::NfConntrackAcct,
-        SignalId::BluetoothBlacklisted,
-        SignalId::UsbStorageBlacklisted,
-        SignalId::FirewireCoreBlacklisted,
-        SignalId::ThunderboltBlacklisted,
+        IndicatorId::NfConntrackAcct,
+        IndicatorId::BluetoothBlacklisted,
+        IndicatorId::UsbStorageBlacklisted,
+        IndicatorId::FirewireCoreBlacklisted,
+        IndicatorId::ThunderboltBlacklisted,
     ];
     for id in modprobe_signals {
-        let desc = SIGNALS
+        let desc = INDICATORS
             .iter()
             .find(|d| d.id == id)
             .unwrap_or_else(|| panic!("{id:?} must be in catalog"));
         assert_eq!(
             desc.class,
-            SignalClass::ModprobeConfig,
-            "{id:?} must use SignalClass::ModprobeConfig"
+            IndicatorClass::ModprobeConfig,
+            "{id:?} must use IndicatorClass::ModprobeConfig"
         );
     }
 }
@@ -374,13 +377,13 @@ fn catalog_phase_2a_signals_use_modprobe_config_class() {
 #[test]
 fn catalog_blacklist_signals_have_exact_1_desired() {
     let blacklist_signals = [
-        SignalId::BluetoothBlacklisted,
-        SignalId::UsbStorageBlacklisted,
-        SignalId::FirewireCoreBlacklisted,
-        SignalId::ThunderboltBlacklisted,
+        IndicatorId::BluetoothBlacklisted,
+        IndicatorId::UsbStorageBlacklisted,
+        IndicatorId::FirewireCoreBlacklisted,
+        IndicatorId::ThunderboltBlacklisted,
     ];
     for id in blacklist_signals {
-        let desc = SIGNALS
+        let desc = INDICATORS
             .iter()
             .find(|d| d.id == id)
             .unwrap_or_else(|| panic!("{id:?} must be in catalog"));
@@ -396,13 +399,13 @@ fn catalog_blacklist_signals_have_exact_1_desired() {
 #[test]
 fn catalog_blacklist_signals_are_high_impact() {
     let blacklist_signals = [
-        SignalId::BluetoothBlacklisted,
-        SignalId::UsbStorageBlacklisted,
-        SignalId::FirewireCoreBlacklisted,
-        SignalId::ThunderboltBlacklisted,
+        IndicatorId::BluetoothBlacklisted,
+        IndicatorId::UsbStorageBlacklisted,
+        IndicatorId::FirewireCoreBlacklisted,
+        IndicatorId::ThunderboltBlacklisted,
     ];
     for id in blacklist_signals {
-        let desc = SIGNALS
+        let desc = INDICATORS
             .iter()
             .find(|d| d.id == id)
             .unwrap_or_else(|| panic!("{id:?} must be in catalog"));
@@ -417,9 +420,9 @@ fn catalog_blacklist_signals_are_high_impact() {
 /// NfConntrackAcct must be `Medium` impact.
 #[test]
 fn catalog_nf_conntrack_acct_is_medium_impact() {
-    let desc = SIGNALS
+    let desc = INDICATORS
         .iter()
-        .find(|d| d.id == SignalId::NfConntrackAcct)
+        .find(|d| d.id == IndicatorId::NfConntrackAcct)
         .expect("NfConntrackAcct must be in catalog");
     assert_eq!(
         desc.impact,
@@ -431,9 +434,9 @@ fn catalog_nf_conntrack_acct_is_medium_impact() {
 /// NfConntrackAcct must have `sysctl_key: None` (it's not a sysctl signal).
 #[test]
 fn catalog_nf_conntrack_acct_has_no_sysctl_key() {
-    let desc = SIGNALS
+    let desc = INDICATORS
         .iter()
-        .find(|d| d.id == SignalId::NfConntrackAcct)
+        .find(|d| d.id == IndicatorId::NfConntrackAcct)
         .expect("NfConntrackAcct must be in catalog");
     assert!(
         desc.sysctl_key.is_none(),
@@ -445,13 +448,13 @@ fn catalog_nf_conntrack_acct_has_no_sysctl_key() {
 #[test]
 fn catalog_blacklist_signals_have_no_sysctl_key() {
     let blacklist_signals = [
-        SignalId::BluetoothBlacklisted,
-        SignalId::UsbStorageBlacklisted,
-        SignalId::FirewireCoreBlacklisted,
-        SignalId::ThunderboltBlacklisted,
+        IndicatorId::BluetoothBlacklisted,
+        IndicatorId::UsbStorageBlacklisted,
+        IndicatorId::FirewireCoreBlacklisted,
+        IndicatorId::ThunderboltBlacklisted,
     ];
     for id in blacklist_signals {
-        let desc = SIGNALS
+        let desc = INDICATORS
             .iter()
             .find(|d| d.id == id)
             .unwrap_or_else(|| panic!("{id:?} must be in catalog"));
@@ -462,56 +465,59 @@ fn catalog_blacklist_signals_have_no_sysctl_key() {
     }
 }
 
-/// Updated catalog length must match total SignalId variant count
+/// Updated catalog length must match total IndicatorId variant count
 /// (22 Phase 1 + 5 Phase 2a modprobe + 8 Phase 2b CPU mitigations + 1 CorePattern = 36).
 #[test]
 fn catalog_length_matches_signal_id_count() {
     assert_eq!(
-        SIGNALS.len(),
+        INDICATORS.len(),
         36,
-        "catalog length must match total SignalId variant count \
+        "catalog length must match total IndicatorId variant count \
          (22 Phase 1 + 5 Phase 2a + 9 Phase 2b)"
     );
 }
 
-/// All SignalId variants including Phase 2a must appear in the catalog.
+/// All IndicatorId variants including Phase 2a must appear in the catalog.
 #[test]
 fn catalog_covers_all_signal_ids_including_phase_2a() {
     let all_ids = [
         // Phase 1 — 22 signals
-        SignalId::KptrRestrict,
-        SignalId::RandomizeVaSpace,
-        SignalId::UnprivBpfDisabled,
-        SignalId::PerfEventParanoid,
-        SignalId::YamaPtraceScope,
-        SignalId::DmesgRestrict,
-        SignalId::KexecLoadDisabled,
-        SignalId::Sysrq,
-        SignalId::ModulesDisabled,
-        SignalId::UnprivUsernsClone,
-        SignalId::ProtectedSymlinks,
-        SignalId::ProtectedHardlinks,
-        SignalId::ProtectedFifos,
-        SignalId::ProtectedRegular,
-        SignalId::SuidDumpable,
-        SignalId::Lockdown,
-        SignalId::ModuleSigEnforce,
-        SignalId::Mitigations,
-        SignalId::Pti,
-        SignalId::RandomTrustCpu,
-        SignalId::RandomTrustBootloader,
-        SignalId::FipsEnabled,
+        IndicatorId::KptrRestrict,
+        IndicatorId::RandomizeVaSpace,
+        IndicatorId::UnprivBpfDisabled,
+        IndicatorId::PerfEventParanoid,
+        IndicatorId::YamaPtraceScope,
+        IndicatorId::DmesgRestrict,
+        IndicatorId::KexecLoadDisabled,
+        IndicatorId::Sysrq,
+        IndicatorId::ModulesDisabled,
+        IndicatorId::UnprivUsernsClone,
+        IndicatorId::ProtectedSymlinks,
+        IndicatorId::ProtectedHardlinks,
+        IndicatorId::ProtectedFifos,
+        IndicatorId::ProtectedRegular,
+        IndicatorId::SuidDumpable,
+        IndicatorId::Lockdown,
+        IndicatorId::ModuleSigEnforce,
+        IndicatorId::Mitigations,
+        IndicatorId::Pti,
+        IndicatorId::RandomTrustCpu,
+        IndicatorId::RandomTrustBootloader,
+        IndicatorId::FipsEnabled,
         // Phase 2a — 5 modprobe signals
-        SignalId::NfConntrackAcct,
-        SignalId::BluetoothBlacklisted,
-        SignalId::UsbStorageBlacklisted,
-        SignalId::FirewireCoreBlacklisted,
-        SignalId::ThunderboltBlacklisted,
+        IndicatorId::NfConntrackAcct,
+        IndicatorId::BluetoothBlacklisted,
+        IndicatorId::UsbStorageBlacklisted,
+        IndicatorId::FirewireCoreBlacklisted,
+        IndicatorId::ThunderboltBlacklisted,
     ];
 
     for id in all_ids {
-        let found = SIGNALS.iter().any(|d| d.id == id);
-        assert!(found, "SignalId::{id:?} has no entry in catalog::SIGNALS");
+        let found = INDICATORS.iter().any(|d| d.id == id);
+        assert!(
+            found,
+            "IndicatorId::{id:?} has no entry in catalog::INDICATORS"
+        );
     }
 }
 
@@ -519,10 +525,10 @@ fn catalog_covers_all_signal_ids_including_phase_2a() {
 #[test]
 fn catalog_no_duplicate_ids_after_phase_2a() {
     let mut seen = std::collections::HashSet::new();
-    for desc in SIGNALS {
+    for desc in INDICATORS {
         assert!(
             seen.insert(desc.id),
-            "Duplicate catalog entry for SignalId::{:?}",
+            "Duplicate catalog entry for IndicatorId::{:?}",
             desc.id
         );
     }
@@ -557,11 +563,11 @@ fn snapshot_contains_phase_2a_modprobe_signals() {
     let snap = PostureSnapshot::collect();
 
     let modprobe_ids = [
-        SignalId::NfConntrackAcct,
-        SignalId::BluetoothBlacklisted,
-        SignalId::UsbStorageBlacklisted,
-        SignalId::FirewireCoreBlacklisted,
-        SignalId::ThunderboltBlacklisted,
+        IndicatorId::NfConntrackAcct,
+        IndicatorId::BluetoothBlacklisted,
+        IndicatorId::UsbStorageBlacklisted,
+        IndicatorId::FirewireCoreBlacklisted,
+        IndicatorId::ThunderboltBlacklisted,
     ];
 
     for id in modprobe_ids {
@@ -574,8 +580,8 @@ fn snapshot_contains_phase_2a_modprobe_signals() {
         );
         assert_eq!(
             report.descriptor.class,
-            SignalClass::ModprobeConfig,
-            "{id:?} report must have SignalClass::ModprobeConfig"
+            IndicatorClass::ModprobeConfig,
+            "{id:?} report must have IndicatorClass::ModprobeConfig"
         );
         // live_value is Some or None depending on module load state —
         // either is acceptable in an integration environment.
@@ -587,14 +593,14 @@ fn snapshot_contains_phase_2a_modprobe_signals() {
 /// If the module is loaded, Bool(false) and Some(false).
 #[test]
 fn snapshot_blacklist_signal_coherent_with_module_load_state() {
-    use umrs_platform::posture::signal::LiveValue;
+    use umrs_platform::posture::indicator::LiveValue;
 
     let snap = PostureSnapshot::collect();
     let blacklist_ids = [
-        (SignalId::BluetoothBlacklisted, "bluetooth"),
-        (SignalId::UsbStorageBlacklisted, "usb_storage"),
-        (SignalId::FirewireCoreBlacklisted, "firewire_core"),
-        (SignalId::ThunderboltBlacklisted, "thunderbolt"),
+        (IndicatorId::BluetoothBlacklisted, "bluetooth"),
+        (IndicatorId::UsbStorageBlacklisted, "usb_storage"),
+        (IndicatorId::FirewireCoreBlacklisted, "firewire_core"),
+        (IndicatorId::ThunderboltBlacklisted, "thunderbolt"),
     ];
 
     for (id, module_name) in blacklist_ids {

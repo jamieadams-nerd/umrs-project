@@ -9,10 +9,10 @@
 //! ## Usage
 //!
 //! ```rust,ignore
-//! use umrs_platform::posture::{PostureSnapshot, SignalId, AssuranceImpact};
+//! use umrs_platform::posture::{PostureSnapshot, IndicatorId, AssuranceImpact};
 //!
 //! let snap = PostureSnapshot::collect();
-//! println!("{}/{} signals hardened", snap.hardened_count(), snap.readable_count());
+//! println!("{}/{} indicators hardened", snap.hardened_count(), snap.readable_count());
 //!
 //! for report in snap.findings() {
 //!     println!("{}: live={:?}", report.descriptor.id, report.live_value);
@@ -23,26 +23,26 @@
 //!
 //! NIST SP 800-53 CA-7: Continuous Monitoring — the snapshot is the atomic unit
 //! of posture assessment, anchored to a specific boot instance via `boot_id`.
-//! NIST SP 800-53 AU-3: Audit Record Content — `SignalReport` carries typed,
+//! NIST SP 800-53 AU-3: Audit Record Content — `IndicatorReport` carries typed,
 //! structured findings rather than free-form strings.
 //! NIST SP 800-53 CM-6: Configuration Settings — contradiction detection compares
 //! live vs. configured values from the sysctl.d merge tree.
 
 use std::time::SystemTime;
 
-use crate::posture::catalog::{SIGNALS, SignalDescriptor};
+use crate::posture::catalog::{INDICATORS, IndicatorDescriptor};
 use crate::posture::configured::{SysctlConfig, configured_cmdline};
 use crate::posture::contradiction::{self, ContradictionKind};
 use crate::posture::fips_cross::FipsCrossCheck;
+use crate::posture::indicator::{
+    AssuranceImpact, ConfiguredValue, DesiredValue, IndicatorClass,
+    IndicatorId, LiveValue,
+};
 use crate::posture::modprobe::ModprobeConfig;
 use crate::posture::reader::{BootIdReader, CmdlineReader};
-use crate::posture::signal::{
-    AssuranceImpact, ConfiguredValue, DesiredValue, LiveValue, SignalClass,
-    SignalId,
-};
 
 // ===========================================================================
-// SignalReport
+// IndicatorReport
 // ===========================================================================
 
 /// The result of reading and evaluating one security posture signal.
@@ -52,10 +52,10 @@ use crate::posture::signal::{
 ///
 /// NIST SP 800-53 AU-3: structured finding record.
 /// NIST SP 800-53 CM-6: live vs. configured comparison.
-#[must_use = "signal reports carry security posture findings — do not discard"]
-pub struct SignalReport {
+#[must_use = "indicator reports carry security posture findings — do not discard"]
+pub struct IndicatorReport {
     /// Static catalog entry for this signal.
-    pub descriptor: &'static SignalDescriptor,
+    pub descriptor: &'static IndicatorDescriptor,
     /// The value currently active in the kernel, or `None` if unreadable.
     pub live_value: Option<LiveValue>,
     /// The configured value from the persistence layer, or `None` if absent.
@@ -74,7 +74,7 @@ pub struct SignalReport {
 /// Point-in-time snapshot of all kernel security posture signals.
 ///
 /// Constructed via `PostureSnapshot::collect()`, which reads every signal
-/// in the static catalog and produces a `SignalReport` for each.
+/// in the static catalog and produces a `IndicatorReport` for each.
 ///
 /// The snapshot is anchored to a specific boot instance via `boot_id`
 /// (read from `/proc/sys/kernel/random/boot_id`). If `boot_id` changes
@@ -86,7 +86,7 @@ pub struct SignalReport {
 #[must_use = "posture snapshots contain security findings — do not discard"]
 pub struct PostureSnapshot {
     /// All signal reports, one per catalog entry, in catalog order.
-    pub reports: Vec<SignalReport>,
+    pub reports: Vec<IndicatorReport>,
     /// Wall-clock time when this snapshot was collected.
     pub collected_at: SystemTime,
     /// Kernel boot ID (`/proc/sys/kernel/random/boot_id`), if readable.
@@ -143,7 +143,7 @@ impl PostureSnapshot {
         // disables configured-cmdline contradiction detection gracefully.
         let configured_boot_cmdline = configured_cmdline();
 
-        let reports: Vec<SignalReport> = SIGNALS
+        let reports: Vec<IndicatorReport> = INDICATORS
             .iter()
             .map(|desc| {
                 collect_one(
@@ -163,7 +163,7 @@ impl PostureSnapshot {
 
         #[cfg(debug_assertions)]
         log::debug!(
-            "posture: PostureSnapshot collected {readable}/{} signals in {} µs ({hardened} hardened)",
+            "posture: PostureSnapshot collected {readable}/{} indicators in {} µs ({hardened} hardened)",
             reports.len(),
             start.elapsed().as_micros()
         );
@@ -177,7 +177,7 @@ impl PostureSnapshot {
 
     /// Iterator over all signal reports in catalog order.
     #[must_use = "signal report iterator must be consumed to examine posture findings"]
-    pub fn iter(&self) -> impl Iterator<Item = &SignalReport> {
+    pub fn iter(&self) -> impl Iterator<Item = &IndicatorReport> {
         self.reports.iter()
     }
 
@@ -186,24 +186,24 @@ impl PostureSnapshot {
     /// Excludes signals whose live value could not be read (`meets_desired == None`).
     /// Use `iter()` and filter manually to include unreadable signals.
     #[must_use = "findings iterator carries unhardened signals — examine each report"]
-    pub fn findings(&self) -> impl Iterator<Item = &SignalReport> {
+    pub fn findings(&self) -> impl Iterator<Item = &IndicatorReport> {
         self.reports.iter().filter(|r| r.meets_desired == Some(false))
     }
 
     /// Iterator over signals with a live/configured contradiction.
     #[must_use = "contradictions iterator carries configuration management gaps — examine each report"]
-    pub fn contradictions(&self) -> impl Iterator<Item = &SignalReport> {
+    pub fn contradictions(&self) -> impl Iterator<Item = &IndicatorReport> {
         self.reports.iter().filter(|r| r.contradiction.is_some())
     }
 
-    /// Iterator over signals meeting a minimum assurance impact threshold.
+    /// Iterator over indicators meeting a minimum assurance impact threshold.
     ///
     /// Returns reports whose `descriptor.impact >= min`.
     #[must_use = "impact-filtered iterator carries security findings — examine each report"]
     pub fn by_impact(
         &self,
         min: AssuranceImpact,
-    ) -> impl Iterator<Item = &SignalReport> {
+    ) -> impl Iterator<Item = &IndicatorReport> {
         self.reports.iter().filter(move |r| r.descriptor.impact >= min)
     }
 
@@ -224,7 +224,7 @@ impl PostureSnapshot {
     /// Returns `None` if the signal is not in the catalog (should not happen
     /// in practice — the catalog is exhaustive for Phase 1 signals).
     #[must_use = "signal lookup result must be examined"]
-    pub fn get(&self, id: SignalId) -> Option<&SignalReport> {
+    pub fn get(&self, id: IndicatorId) -> Option<&IndicatorReport> {
         self.reports.iter().find(|r| r.descriptor.id == id)
     }
 }
@@ -238,14 +238,14 @@ impl PostureSnapshot {
 /// Reads the live value, looks up the configured value, evaluates whether
 /// the live value meets the desired baseline, and classifies any contradiction.
 fn collect_one(
-    desc: &'static SignalDescriptor,
+    desc: &'static IndicatorDescriptor,
     cmdline: Option<&CmdlineReader>,
     sysctl_config: &SysctlConfig,
     modprobe_config: &ModprobeConfig,
     configured_boot_cmdline: Option<&str>,
-) -> SignalReport {
+) -> IndicatorReport {
     log::debug!(
-        "posture: reading signal {:?} from {}",
+        "posture: reading indicator {:?} from {}",
         desc.id,
         desc.live_path
     );
@@ -274,7 +274,7 @@ fn collect_one(
     // NIST SP 800-53 CM-6: configured persistence layer for cmdline signals is
     // the BLS options line, not a sysctl.d integer value.
     let configured_meets: Option<bool> =
-        if desc.class == SignalClass::KernelCmdline {
+        if desc.class == IndicatorClass::KernelCmdline {
             // For KernelCmdline signals, configured_meets is derived from token
             // presence in the BLS options string (configured_boot_cmdline).
             // If configured_boot_cmdline is None (BLS unavailable), configured_meets
@@ -321,7 +321,7 @@ fn collect_one(
         contradiction
     );
 
-    SignalReport {
+    IndicatorReport {
         descriptor: desc,
         live_value,
         configured_value,
@@ -339,24 +339,26 @@ fn collect_one(
 /// Returns `(Some(value), Some(meets))` on success, `(None, None)` if the
 /// signal's kernel node is absent or unreadable.
 fn read_live(
-    desc: &'static SignalDescriptor,
+    desc: &'static IndicatorDescriptor,
     cmdline: Option<&CmdlineReader>,
 ) -> (Option<LiveValue>, Option<bool>) {
     match desc.class {
-        SignalClass::Sysctl => read_live_sysctl_signal(desc),
-        SignalClass::KernelCmdline => read_live_cmdline_signal(desc, cmdline),
-        SignalClass::SecurityFs => read_live_security_fs(desc),
-        SignalClass::DistroManaged => read_live_distro_managed(desc),
-        SignalClass::ModprobeConfig => read_live_modprobe(desc),
+        IndicatorClass::Sysctl => read_live_sysctl_signal(desc),
+        IndicatorClass::KernelCmdline => {
+            read_live_cmdline_signal(desc, cmdline)
+        }
+        IndicatorClass::SecurityFs => read_live_security_fs(desc),
+        IndicatorClass::DistroManaged => read_live_distro_managed(desc),
+        IndicatorClass::ModprobeConfig => read_live_modprobe(desc),
     }
 }
 
 /// Read a sysctl integer or boolean signal.
 fn read_live_sysctl_signal(
-    desc: &'static SignalDescriptor,
+    desc: &'static IndicatorDescriptor,
 ) -> (Option<LiveValue>, Option<bool>) {
     match desc.id {
-        SignalId::CorePattern => {
+        IndicatorId::CorePattern => {
             // CorePattern is Sysctl-class but returns a String, not a u32.
             // TPI classification is applied in read_live_core_pattern.
             match crate::posture::reader::read_live_core_pattern() {
@@ -378,7 +380,7 @@ fn read_live_sysctl_signal(
                 }
             }
         }
-        SignalId::ModulesDisabled => {
+        IndicatorId::ModulesDisabled => {
             use crate::kattrs::procfs::ModuleLoadLatch;
             use crate::kattrs::traits::StaticSource;
             match ModuleLoadLatch::read() {
@@ -393,9 +395,9 @@ fn read_live_sysctl_signal(
             }
         }
         // PerfEventParanoid uses a signed reader (can emit -1 = "unrestricted").
-        SignalId::PerfEventParanoid => {
+        IndicatorId::PerfEventParanoid => {
             match crate::posture::reader::read_live_sysctl_signed(
-                SignalId::PerfEventParanoid,
+                IndicatorId::PerfEventParanoid,
             ) {
                 Ok(Some(v)) => {
                     let meets = desc.desired.meets_signed_integer(v);
@@ -437,26 +439,28 @@ fn read_live_sysctl_signal(
                     (Some(LiveValue::Integer(v)), meets)
                 }
                 Ok(None) => {
-                    // A Sysctl-class signal fell through read_live_sysctl without
+                    // A Sysctl-class indicator fell through read_live_sysctl without
                     // a matching arm. This is a catalog/reader mismatch that
                     // should be caught in debug builds.
                     debug_assert!(
                         false,
-                        "Sysctl-class signal {id:?} not dispatched by read_live_sysctl — \
+                        "Sysctl-class indicator {id:?} not dispatched by read_live_sysctl — \
                          catalog/reader mismatch"
                     );
                     log::warn!(
-                        "posture: Sysctl-class signal {id:?} returned Ok(None) from \
+                        "posture: Sysctl-class indicator {id:?} returned Ok(None) from \
                          read_live_sysctl — catalog/reader mismatch"
                     );
                     (None, None)
                 }
                 Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
-                    log::debug!("posture: signal {id:?}: kernel node absent");
+                    log::debug!(
+                        "posture: indicator {id:?}: kernel node absent"
+                    );
                     (None, None)
                 }
                 Err(e) => {
-                    log::debug!("posture: signal {id:?} read failed: {e}");
+                    log::debug!("posture: indicator {id:?} read failed: {e}");
                     (None, None)
                 }
             }
@@ -473,7 +477,7 @@ fn read_live_sysctl_signal(
 ///
 /// NIST SP 800-53 SC-28: minimise retention of boot parameter content.
 fn read_live_cmdline_signal(
-    desc: &'static SignalDescriptor,
+    desc: &'static IndicatorDescriptor,
     cmdline: Option<&CmdlineReader>,
 ) -> (Option<LiveValue>, Option<bool>) {
     let Some(reader) = cmdline else {
@@ -511,10 +515,10 @@ fn read_live_cmdline_signal(
 ///
 /// NIST SP 800-53 SI-7: provenance-verified via SECURITYFS_MAGIC.
 fn read_live_security_fs(
-    desc: &'static SignalDescriptor,
+    desc: &'static IndicatorDescriptor,
 ) -> (Option<LiveValue>, Option<bool>) {
     match desc.id {
-        SignalId::Lockdown => {
+        IndicatorId::Lockdown => {
             match crate::posture::reader::read_lockdown_live() {
                 Ok(Some(mode)) => {
                     use crate::kattrs::security::LockdownMode;
@@ -533,7 +537,7 @@ fn read_live_security_fs(
             }
         }
         id => {
-            log::debug!("posture: unknown SecurityFs signal {id:?}");
+            log::debug!("posture: unknown SecurityFs indicator {id:?}");
             (None, None)
         }
     }
@@ -541,10 +545,10 @@ fn read_live_security_fs(
 
 /// Read a distro-managed signal (currently only `FipsEnabled`).
 fn read_live_distro_managed(
-    desc: &'static SignalDescriptor,
+    desc: &'static IndicatorDescriptor,
 ) -> (Option<LiveValue>, Option<bool>) {
     match desc.id {
-        SignalId::FipsEnabled => {
+        IndicatorId::FipsEnabled => {
             use crate::kattrs::procfs::ProcFips;
             use crate::kattrs::traits::StaticSource;
             match ProcFips::read() {
@@ -559,7 +563,7 @@ fn read_live_distro_managed(
             }
         }
         id => {
-            log::debug!("posture: unknown DistroManaged signal {id:?}");
+            log::debug!("posture: unknown DistroManaged indicator {id:?}");
             (None, None)
         }
     }
@@ -579,12 +583,12 @@ fn read_live_distro_managed(
 /// NIST SP 800-53 SI-7: provenance-verified sysfs reads via SYSFS_MAGIC.
 /// NIST SP 800-53 CM-6: Trust Gate — module must be loaded to read parameters.
 fn read_live_modprobe(
-    desc: &'static SignalDescriptor,
+    desc: &'static IndicatorDescriptor,
 ) -> (Option<LiveValue>, Option<bool>) {
     use crate::posture::modprobe::{is_module_loaded, read_module_param};
 
     match desc.id {
-        SignalId::NfConntrackAcct => {
+        IndicatorId::NfConntrackAcct => {
             // Trust Gate: only read if nf_conntrack is loaded.
             if !is_module_loaded("nf_conntrack") {
                 log::debug!(
@@ -630,10 +634,10 @@ fn read_live_modprobe(
         // Blacklist signals: module-directory presence is the live check.
         // Module absent → blacklist effective (Bool(true) = hardened).
         // Module present → blacklist not effective (Bool(false) = unhardened).
-        id @ (SignalId::BluetoothBlacklisted
-        | SignalId::UsbStorageBlacklisted
-        | SignalId::FirewireCoreBlacklisted
-        | SignalId::ThunderboltBlacklisted) => {
+        id @ (IndicatorId::BluetoothBlacklisted
+        | IndicatorId::UsbStorageBlacklisted
+        | IndicatorId::FirewireCoreBlacklisted
+        | IndicatorId::ThunderboltBlacklisted) => {
             let module_name = module_name_for_blacklist_signal(id);
             let loaded = is_module_loaded(module_name);
             // Blacklist hardened = module NOT loaded.
@@ -654,21 +658,21 @@ fn read_live_modprobe(
             (Some(LiveValue::Bool(hardened)), Some(hardened))
         }
         id => {
-            log::debug!("posture: unknown ModprobeConfig signal {id:?}");
+            log::debug!("posture: unknown ModprobeConfig indicator {id:?}");
             (None, None)
         }
     }
 }
 
-/// Map a blacklist `SignalId` to the corresponding kernel module name.
+/// Map a blacklist `IndicatorId` to the corresponding kernel module name.
 ///
 /// Used to derive the `/sys/module/<name>/` path for module-load detection.
-const fn module_name_for_blacklist_signal(id: SignalId) -> &'static str {
+const fn module_name_for_blacklist_signal(id: IndicatorId) -> &'static str {
     match id {
-        SignalId::BluetoothBlacklisted => "bluetooth",
-        SignalId::UsbStorageBlacklisted => "usb_storage",
-        SignalId::FirewireCoreBlacklisted => "firewire_core",
-        SignalId::ThunderboltBlacklisted => "thunderbolt",
+        IndicatorId::BluetoothBlacklisted => "bluetooth",
+        IndicatorId::UsbStorageBlacklisted => "usb_storage",
+        IndicatorId::FirewireCoreBlacklisted => "firewire_core",
+        IndicatorId::ThunderboltBlacklisted => "thunderbolt",
         // All other IDs are not blacklist signals; this function is only
         // called from the blacklist match arm above.
         _ => "unknown",
@@ -690,7 +694,7 @@ const fn module_name_for_blacklist_signal(id: SignalId) -> &'static str {
 /// NIST SP 800-53 CM-6: configured-value lookup from the full set of
 /// persistence sources.
 fn read_configured(
-    desc: &'static SignalDescriptor,
+    desc: &'static IndicatorDescriptor,
     sysctl_config: &SysctlConfig,
     cmdline: Option<&CmdlineReader>,
     live_value: Option<&LiveValue>,
@@ -698,25 +702,27 @@ fn read_configured(
     configured_boot_cmdline: Option<&str>,
 ) -> Option<ConfiguredValue> {
     // SecurityFs LSM signals have no sysctl.d / cmdline configured value.
-    if desc.class == SignalClass::SecurityFs {
+    if desc.class == IndicatorClass::SecurityFs {
         return None;
     }
 
     match desc.class {
-        SignalClass::ModprobeConfig => {
+        IndicatorClass::ModprobeConfig => {
             read_configured_modprobe(desc, modprobe_config)
         }
-        SignalClass::DistroManaged if desc.id == SignalId::FipsEnabled => {
+        IndicatorClass::DistroManaged
+            if desc.id == IndicatorId::FipsEnabled =>
+        {
             read_configured_fips(cmdline, live_value)
         }
-        SignalClass::Sysctl | SignalClass::DistroManaged => {
+        IndicatorClass::Sysctl | IndicatorClass::DistroManaged => {
             let key = desc.sysctl_key?;
             sysctl_config.get(key)
         }
-        SignalClass::KernelCmdline => {
+        IndicatorClass::KernelCmdline => {
             read_configured_boot_cmdline(desc, configured_boot_cmdline)
         }
-        SignalClass::SecurityFs => None,
+        IndicatorClass::SecurityFs => None,
     }
 }
 
@@ -744,7 +750,7 @@ fn read_configured(
 /// NIST SP 800-53 CA-7: enables `EphemeralHotfix`/`BootDrift` detection for
 /// cmdline signals (`ModuleSigEnforce`, `Mitigations`, `Pti`, etc.).
 fn read_configured_boot_cmdline(
-    _desc: &'static SignalDescriptor,
+    _desc: &'static IndicatorDescriptor,
     configured_boot_cmdline: Option<&str>,
 ) -> Option<ConfiguredValue> {
     let boot_opts = configured_boot_cmdline?;
@@ -771,13 +777,13 @@ fn read_configured_boot_cmdline(
 /// if the module is in the blacklist map.
 /// For parameter signals: returns the configured `options` value.
 fn read_configured_modprobe(
-    desc: &'static SignalDescriptor,
+    desc: &'static IndicatorDescriptor,
     modprobe_config: &ModprobeConfig,
 ) -> Option<ConfiguredValue> {
     use crate::posture::modprobe::blacklist_configured_value;
 
     match desc.id {
-        SignalId::NfConntrackAcct => {
+        IndicatorId::NfConntrackAcct => {
             let cv = modprobe_config.get_option("nf_conntrack", "acct");
             if let Some(ref c) = cv {
                 // Log the source path only; suppress the raw configured value in
@@ -800,10 +806,10 @@ fn read_configured_modprobe(
             }
             cv
         }
-        id @ (SignalId::BluetoothBlacklisted
-        | SignalId::UsbStorageBlacklisted
-        | SignalId::FirewireCoreBlacklisted
-        | SignalId::ThunderboltBlacklisted) => {
+        id @ (IndicatorId::BluetoothBlacklisted
+        | IndicatorId::UsbStorageBlacklisted
+        | IndicatorId::FirewireCoreBlacklisted
+        | IndicatorId::ThunderboltBlacklisted) => {
             let module_name = module_name_for_blacklist_signal(id);
             let cv = blacklist_configured_value(module_name, modprobe_config);
             if let Some(ref c) = cv {
@@ -834,7 +840,7 @@ fn read_configured_modprobe(
 ///
 /// Implements the Trust Gate: only invokes FIPS cross-check if the live
 /// FIPS value was successfully read. Returns the cross-check's
-/// `ConfiguredValue` summary for insertion into `SignalReport`.
+/// `ConfiguredValue` summary for insertion into `IndicatorReport`.
 ///
 /// NIST SP 800-53 CM-6: Trust Gate — config reads gated on live availability.
 /// NIST SP 800-218 SSDF PW.4: pattern timing in debug builds.

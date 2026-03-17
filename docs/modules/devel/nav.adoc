@@ -14,7 +14,8 @@
 
 * Platform Internals
 ** xref:os-detection-deep-dive.adoc[OS Detection Pipeline — Deep Dive]
-** xref:posture-probe-internals.adoc[Posture Probe Internals]
+** xref:posture-probe.adoc[Posture Probe — Developer Guide]
+** xref:posture-probe-internals.adoc[Posture Probe — Internals]
 ** xref:update-checklists.adoc[Platform Update Checklists]
 
 * Internationalization

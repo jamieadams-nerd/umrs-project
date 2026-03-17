@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
-//! Static signal catalog — compile-time array of `SignalDescriptor` entries.
+//! Static indicator catalog — compile-time array of `IndicatorDescriptor` entries.
 //!
-//! Every kernel security posture signal known to Phase 1, Phase 2a, and Phase 2b is described here
-//! as a `const` value. The catalog is the single authoritative source for
-//! signal metadata: paths, sysctl keys, desired values, impact tiers, and
-//! rationale text.
+//! Every kernel security posture indicator known to Phase 1, Phase 2a, and
+//! Phase 2b is described here as a `const` value. The catalog is the single
+//! authoritative source for indicator metadata: paths, sysctl keys, desired
+//! values, impact tiers, and rationale text.
 //!
 //! ## Design
 //!
@@ -15,8 +15,8 @@
 //! path for catalog access, no deserialization surface, and no risk of a
 //! substituted data file.
 //!
-//! When a new signal is added, the change must pass code review — there is no
-//! silent data-file edit path. This property is important for auditability
+//! When a new indicator is added, the change must pass code review — there is
+//! no silent data-file edit path. This property is important for auditability
 //! under NIST SP 800-218 SSDF PW.4.
 //!
 //! ## Compliance
@@ -29,35 +29,37 @@
 //! NSA RTB: Compile-Time Path Binding — paths and expected values are
 //! compiler-verified, not runtime-parsed.
 
-use super::signal::{AssuranceImpact, DesiredValue, SignalClass, SignalId};
+use super::indicator::{
+    AssuranceImpact, DesiredValue, IndicatorClass, IndicatorId,
+};
 
 // ===========================================================================
-// SignalDescriptor
+// IndicatorDescriptor
 // ===========================================================================
 
-/// Compile-time catalog entry describing one kernel security posture signal.
+/// Compile-time catalog entry describing one kernel security posture indicator.
 ///
-/// All instances are `const` and live in the `SIGNALS` array. No heap
+/// All instances are `const` and live in the `INDICATORS` array. No heap
 /// allocation is required to access the catalog.
 ///
 /// NIST SP 800-53 CM-6: each descriptor captures the security baseline
 /// (desired value) alongside its rationale and NIST control citation.
 /// NIST SP 800-53 AU-3: `nist_controls` provides the audit control mapping
 /// needed for compliance evidence generation.
-pub struct SignalDescriptor {
-    /// The typed signal identifier.
-    pub id: SignalId,
-    /// How this signal is persisted and read.
-    pub class: SignalClass,
+pub struct IndicatorDescriptor {
+    /// The typed indicator identifier.
+    pub id: IndicatorId,
+    /// How this indicator is persisted and read.
+    pub class: IndicatorClass,
     /// The kernel pseudo-filesystem path from which the live value is read.
-    /// For `KernelCmdline` signals this is `/proc/cmdline`.
+    /// For `KernelCmdline` indicators this is `/proc/cmdline`.
     pub live_path: &'static str,
-    /// The sysctl key used to look up this signal in sysctl.d merge output.
-    /// `None` for cmdline and special signals that have no sysctl key.
+    /// The sysctl key used to look up this indicator in sysctl.d merge output.
+    /// `None` for cmdline and special indicators that have no sysctl key.
     pub sysctl_key: Option<&'static str>,
-    /// The hardened desired value for this signal.
+    /// The hardened desired value for this indicator.
     pub desired: DesiredValue,
-    /// Security impact of this signal not meeting its desired value.
+    /// Security impact of this indicator not meeting its desired value.
     pub impact: AssuranceImpact,
     /// One-sentence rationale for the desired value.
     pub rationale: &'static str,
@@ -66,21 +68,21 @@ pub struct SignalDescriptor {
 }
 
 // ===========================================================================
-// SIGNALS — static catalog
+// INDICATORS — static catalog
 // ===========================================================================
 
-/// Static catalog of all Phase 1 kernel security posture signals.
+/// Static catalog of all kernel security posture indicators (Phase 1–2b).
 ///
-/// Ordered by `SignalId` grouping (kernel self-protection → integrity →
+/// Ordered by `IndicatorId` grouping (kernel self-protection → integrity →
 /// process isolation → filesystem safety → boot-time → special).
 ///
 /// NIST SP 800-53 CA-7: the catalog is the enumerated monitoring scope.
 /// NIST SP 800-53 CM-6: each entry encodes the security baseline.
-pub static SIGNALS: &[SignalDescriptor] = &[
+pub static INDICATORS: &[IndicatorDescriptor] = &[
     // ── Kernel Self-Protection ───────────────────────────────────────────
-    SignalDescriptor {
-        id: SignalId::KptrRestrict,
-        class: SignalClass::Sysctl,
+    IndicatorDescriptor {
+        id: IndicatorId::KptrRestrict,
+        class: IndicatorClass::Sysctl,
         live_path: "/proc/sys/kernel/kptr_restrict",
         sysctl_key: Some("kernel.kptr_restrict"),
         desired: DesiredValue::Exact(2),
@@ -89,9 +91,9 @@ pub static SIGNALS: &[SignalDescriptor] = &[
                     preventing KASLR bypass via /proc leaks.",
         nist_controls: "NIST 800-53 SI-7, SC-39; NSA RTB: minimized information disclosure",
     },
-    SignalDescriptor {
-        id: SignalId::RandomizeVaSpace,
-        class: SignalClass::Sysctl,
+    IndicatorDescriptor {
+        id: IndicatorId::RandomizeVaSpace,
+        class: IndicatorClass::Sysctl,
         live_path: "/proc/sys/kernel/randomize_va_space",
         sysctl_key: Some("kernel.randomize_va_space"),
         desired: DesiredValue::Exact(2),
@@ -100,9 +102,9 @@ pub static SIGNALS: &[SignalDescriptor] = &[
                     making memory-corruption exploits significantly harder.",
         nist_controls: "NIST 800-53 SI-16, SC-39; NSA RTB: exploit mitigation",
     },
-    SignalDescriptor {
-        id: SignalId::UnprivBpfDisabled,
-        class: SignalClass::Sysctl,
+    IndicatorDescriptor {
+        id: IndicatorId::UnprivBpfDisabled,
+        class: IndicatorClass::Sysctl,
         live_path: "/proc/sys/kernel/unprivileged_bpf_disabled",
         sysctl_key: Some("kernel.unprivileged_bpf_disabled"),
         desired: DesiredValue::Exact(1),
@@ -111,9 +113,9 @@ pub static SIGNALS: &[SignalDescriptor] = &[
                     kernel exploits; restricting to CAP_BPF/CAP_SYS_ADMIN reduces attack surface.",
         nist_controls: "NIST 800-53 CM-7, SC-39; NSA RTB: attack surface reduction",
     },
-    SignalDescriptor {
-        id: SignalId::PerfEventParanoid,
-        class: SignalClass::Sysctl,
+    IndicatorDescriptor {
+        id: IndicatorId::PerfEventParanoid,
+        class: IndicatorClass::Sysctl,
         live_path: "/proc/sys/kernel/perf_event_paranoid",
         sysctl_key: Some("kernel.perf_event_paranoid"),
         desired: DesiredValue::AtLeast(2),
@@ -122,9 +124,9 @@ pub static SIGNALS: &[SignalDescriptor] = &[
                     blocking side-channel attacks and profiling-based ASLR leaks.",
         nist_controls: "NIST 800-53 SC-39, SI-7; NSA RTB: information disclosure prevention",
     },
-    SignalDescriptor {
-        id: SignalId::YamaPtraceScope,
-        class: SignalClass::Sysctl,
+    IndicatorDescriptor {
+        id: IndicatorId::YamaPtraceScope,
+        class: IndicatorClass::Sysctl,
         live_path: "/proc/sys/kernel/yama/ptrace_scope",
         sysctl_key: Some("kernel.yama.ptrace_scope"),
         desired: DesiredValue::AtLeast(1),
@@ -133,9 +135,9 @@ pub static SIGNALS: &[SignalDescriptor] = &[
                     preventing credential extraction from sibling processes.",
         nist_controls: "NIST 800-53 SC-39, AC-6; NSA RTB: process isolation",
     },
-    SignalDescriptor {
-        id: SignalId::DmesgRestrict,
-        class: SignalClass::Sysctl,
+    IndicatorDescriptor {
+        id: IndicatorId::DmesgRestrict,
+        class: IndicatorClass::Sysctl,
         live_path: "/proc/sys/kernel/dmesg_restrict",
         sysctl_key: Some("kernel.dmesg_restrict"),
         desired: DesiredValue::Exact(1),
@@ -144,9 +146,9 @@ pub static SIGNALS: &[SignalDescriptor] = &[
                     from reading kernel addresses and capability-related messages.",
         nist_controls: "NIST 800-53 SI-7, SC-28; NSA RTB: information disclosure prevention",
     },
-    SignalDescriptor {
-        id: SignalId::KexecLoadDisabled,
-        class: SignalClass::Sysctl,
+    IndicatorDescriptor {
+        id: IndicatorId::KexecLoadDisabled,
+        class: IndicatorClass::Sysctl,
         live_path: "/proc/sys/kernel/kexec_load_disabled",
         sysctl_key: Some("kernel.kexec_load_disabled"),
         desired: DesiredValue::Exact(1),
@@ -155,9 +157,9 @@ pub static SIGNALS: &[SignalDescriptor] = &[
                     by root, preserving boot-time integrity guarantees (Secure Boot, IMA).",
         nist_controls: "NIST 800-53 SI-7, CM-7; NSA RTB: boot integrity",
     },
-    SignalDescriptor {
-        id: SignalId::Sysrq,
-        class: SignalClass::Sysctl,
+    IndicatorDescriptor {
+        id: IndicatorId::Sysrq,
+        class: IndicatorClass::Sysctl,
         live_path: "/proc/sys/kernel/sysrq",
         sysctl_key: Some("kernel.sysrq"),
         // Custom: bitmask semantics are site-policy-dependent.
@@ -171,9 +173,9 @@ pub static SIGNALS: &[SignalDescriptor] = &[
         nist_controls: "NIST 800-53 AC-3, CM-7; NSA RTB: attack surface reduction",
     },
     // ── Kernel Integrity ─────────────────────────────────────────────────
-    SignalDescriptor {
-        id: SignalId::ModulesDisabled,
-        class: SignalClass::Sysctl,
+    IndicatorDescriptor {
+        id: IndicatorId::ModulesDisabled,
+        class: IndicatorClass::Sysctl,
         live_path: "/proc/sys/kernel/modules_disabled",
         sysctl_key: Some("kernel.modules_disabled"),
         desired: DesiredValue::Exact(1),
@@ -183,9 +185,9 @@ pub static SIGNALS: &[SignalDescriptor] = &[
         nist_controls: "NIST 800-53 CM-7, SI-7; NSA RTB: minimised attack surface",
     },
     // ── Process Isolation ────────────────────────────────────────────────
-    SignalDescriptor {
-        id: SignalId::UnprivUsernsClone,
-        class: SignalClass::Sysctl,
+    IndicatorDescriptor {
+        id: IndicatorId::UnprivUsernsClone,
+        class: IndicatorClass::Sysctl,
         live_path: "/proc/sys/kernel/unprivileged_userns_clone",
         sysctl_key: Some("kernel.unprivileged_userns_clone"),
         desired: DesiredValue::Exact(0),
@@ -195,9 +197,9 @@ pub static SIGNALS: &[SignalDescriptor] = &[
         nist_controls: "NIST 800-53 SC-39, CM-7; NSA RTB: process isolation",
     },
     // ── Filesystem Safety ────────────────────────────────────────────────
-    SignalDescriptor {
-        id: SignalId::ProtectedSymlinks,
-        class: SignalClass::Sysctl,
+    IndicatorDescriptor {
+        id: IndicatorId::ProtectedSymlinks,
+        class: IndicatorClass::Sysctl,
         live_path: "/proc/sys/fs/protected_symlinks",
         sysctl_key: Some("fs.protected_symlinks"),
         desired: DesiredValue::Exact(1),
@@ -206,9 +208,9 @@ pub static SIGNALS: &[SignalDescriptor] = &[
                     directories (e.g., /tmp); following symlinks owned by others is blocked.",
         nist_controls: "NIST 800-53 SI-10, SC-28; NSA RTB: filesystem hardening",
     },
-    SignalDescriptor {
-        id: SignalId::ProtectedHardlinks,
-        class: SignalClass::Sysctl,
+    IndicatorDescriptor {
+        id: IndicatorId::ProtectedHardlinks,
+        class: IndicatorClass::Sysctl,
         live_path: "/proc/sys/fs/protected_hardlinks",
         sysctl_key: Some("fs.protected_hardlinks"),
         desired: DesiredValue::Exact(1),
@@ -217,9 +219,9 @@ pub static SIGNALS: &[SignalDescriptor] = &[
                     own, blocking privilege escalation via SUID binaries.",
         nist_controls: "NIST 800-53 AC-6, SI-10; NSA RTB: filesystem hardening",
     },
-    SignalDescriptor {
-        id: SignalId::ProtectedFifos,
-        class: SignalClass::Sysctl,
+    IndicatorDescriptor {
+        id: IndicatorId::ProtectedFifos,
+        class: IndicatorClass::Sysctl,
         live_path: "/proc/sys/fs/protected_fifos",
         sysctl_key: Some("fs.protected_fifos"),
         desired: DesiredValue::Exact(2),
@@ -228,9 +230,9 @@ pub static SIGNALS: &[SignalDescriptor] = &[
                     in world-writable sticky directories that they do not own.",
         nist_controls: "NIST 800-53 SI-10, CM-7; NSA RTB: filesystem hardening",
     },
-    SignalDescriptor {
-        id: SignalId::ProtectedRegular,
-        class: SignalClass::Sysctl,
+    IndicatorDescriptor {
+        id: IndicatorId::ProtectedRegular,
+        class: IndicatorClass::Sysctl,
         live_path: "/proc/sys/fs/protected_regular",
         sysctl_key: Some("fs.protected_regular"),
         desired: DesiredValue::Exact(2),
@@ -239,9 +241,9 @@ pub static SIGNALS: &[SignalDescriptor] = &[
                     files in world-writable sticky directories that they do not own.",
         nist_controls: "NIST 800-53 SI-10, CM-7; NSA RTB: filesystem hardening",
     },
-    SignalDescriptor {
-        id: SignalId::SuidDumpable,
-        class: SignalClass::Sysctl,
+    IndicatorDescriptor {
+        id: IndicatorId::SuidDumpable,
+        class: IndicatorClass::Sysctl,
         live_path: "/proc/sys/fs/suid_dumpable",
         sysctl_key: Some("fs.suid_dumpable"),
         desired: DesiredValue::Exact(0),
@@ -251,13 +253,13 @@ pub static SIGNALS: &[SignalDescriptor] = &[
         nist_controls: "NIST 800-53 SC-28, SI-12; NSA RTB: information disclosure prevention",
     },
     // ── Boot-time / kernel cmdline ───────────────────────────────────────
-    SignalDescriptor {
-        id: SignalId::Lockdown,
+    IndicatorDescriptor {
+        id: IndicatorId::Lockdown,
         // SecurityFs: live value from /sys/kernel/security/lockdown (SECURITYFS_MAGIC),
         // not /proc/cmdline. The lockdown LSM state is read via KernelLockdown::read()
         // which verifies SECURITYFS_MAGIC. Contradiction detection is not applicable
         // in Phase 1 — configured-value discovery for LSM state is deferred.
-        class: SignalClass::SecurityFs,
+        class: IndicatorClass::SecurityFs,
         live_path: "/sys/kernel/security/lockdown",
         sysctl_key: None,
         desired: DesiredValue::CmdlinePresent("lockdown=integrity"),
@@ -266,9 +268,9 @@ pub static SIGNALS: &[SignalDescriptor] = &[
                     modification by root, preserving Secure Boot guarantees.",
         nist_controls: "NIST 800-53 CM-7, SI-7; NSA RTB: boot integrity",
     },
-    SignalDescriptor {
-        id: SignalId::ModuleSigEnforce,
-        class: SignalClass::KernelCmdline,
+    IndicatorDescriptor {
+        id: IndicatorId::ModuleSigEnforce,
+        class: IndicatorClass::KernelCmdline,
         live_path: "/proc/cmdline",
         sysctl_key: None,
         desired: DesiredValue::CmdlinePresent("module.sig_enforce=1"),
@@ -277,9 +279,9 @@ pub static SIGNALS: &[SignalDescriptor] = &[
                     unsigned kernel modules, complementing lockdown mode.",
         nist_controls: "NIST 800-53 SI-7, CM-7; NSA RTB: boot integrity",
     },
-    SignalDescriptor {
-        id: SignalId::Mitigations,
-        class: SignalClass::KernelCmdline,
+    IndicatorDescriptor {
+        id: IndicatorId::Mitigations,
+        class: IndicatorClass::KernelCmdline,
         live_path: "/proc/cmdline",
         sysctl_key: None,
         // The hardened check is: `mitigations=off` must be ABSENT.
@@ -289,9 +291,9 @@ pub static SIGNALS: &[SignalDescriptor] = &[
                     must not be disabled; `mitigations=off` is a critical weakening flag.",
         nist_controls: "NIST 800-53 SI-16, SC-39; NSA RTB: CPU vulnerability mitigations",
     },
-    SignalDescriptor {
-        id: SignalId::Pti,
-        class: SignalClass::KernelCmdline,
+    IndicatorDescriptor {
+        id: IndicatorId::Pti,
+        class: IndicatorClass::KernelCmdline,
         live_path: "/proc/cmdline",
         sysctl_key: None,
         // Hardened: `pti=off` must be absent (PTI enabled by default).
@@ -301,9 +303,9 @@ pub static SIGNALS: &[SignalDescriptor] = &[
                     explicitly disabled; `pti=off` removes kernel address space protection.",
         nist_controls: "NIST 800-53 SI-16; NSA RTB: CPU vulnerability mitigations",
     },
-    SignalDescriptor {
-        id: SignalId::RandomTrustCpu,
-        class: SignalClass::KernelCmdline,
+    IndicatorDescriptor {
+        id: IndicatorId::RandomTrustCpu,
+        class: IndicatorClass::KernelCmdline,
         live_path: "/proc/cmdline",
         sysctl_key: None,
         // On FIPS systems: random.trust_cpu=off is preferred (NIST SP 800-90B).
@@ -316,9 +318,9 @@ pub static SIGNALS: &[SignalDescriptor] = &[
                     RHEL 10 defaults to not trusting it.",
         nist_controls: "NIST 800-53 SC-12; NIST SP 800-90B entropy requirements",
     },
-    SignalDescriptor {
-        id: SignalId::RandomTrustBootloader,
-        class: SignalClass::KernelCmdline,
+    IndicatorDescriptor {
+        id: IndicatorId::RandomTrustBootloader,
+        class: IndicatorClass::KernelCmdline,
         live_path: "/proc/cmdline",
         sysctl_key: None,
         desired: DesiredValue::CmdlineAbsent("random.trust_bootloader=on"),
@@ -328,9 +330,9 @@ pub static SIGNALS: &[SignalDescriptor] = &[
         nist_controls: "NIST 800-53 SC-12, SI-7; NIST SP 800-90B entropy requirements",
     },
     // ── Special ──────────────────────────────────────────────────────────
-    SignalDescriptor {
-        id: SignalId::FipsEnabled,
-        class: SignalClass::DistroManaged,
+    IndicatorDescriptor {
+        id: IndicatorId::FipsEnabled,
+        class: IndicatorClass::DistroManaged,
         live_path: "/proc/sys/crypto/fips_enabled",
         sysctl_key: Some("crypto.fips_enabled"),
         desired: DesiredValue::Exact(1),
@@ -340,9 +342,9 @@ pub static SIGNALS: &[SignalDescriptor] = &[
         nist_controls: "NIST 800-53 SC-13, SC-28; FIPS 140-2/140-3; CMMC SC.L2-3.13.10",
     },
     // ── modprobe.d (Phase 2a) ─────────────────────────────────────────────
-    SignalDescriptor {
-        id: SignalId::NfConntrackAcct,
-        class: SignalClass::ModprobeConfig,
+    IndicatorDescriptor {
+        id: IndicatorId::NfConntrackAcct,
+        class: IndicatorClass::ModprobeConfig,
         live_path: "/sys/module/nf_conntrack/parameters/acct",
         sysctl_key: None,
         desired: DesiredValue::Exact(1),
@@ -351,9 +353,9 @@ pub static SIGNALS: &[SignalDescriptor] = &[
                     byte/packet counters used by audit and firewall logging tools.",
         nist_controls: "NIST 800-53 AU-12, CM-6; NSA RTB: audit trail completeness",
     },
-    SignalDescriptor {
-        id: SignalId::BluetoothBlacklisted,
-        class: SignalClass::ModprobeConfig,
+    IndicatorDescriptor {
+        id: IndicatorId::BluetoothBlacklisted,
+        class: IndicatorClass::ModprobeConfig,
         live_path: "/sys/module/bluetooth",
         sysctl_key: None,
         desired: DesiredValue::Exact(1),
@@ -363,9 +365,9 @@ pub static SIGNALS: &[SignalDescriptor] = &[
         nist_controls: "NIST 800-53 CM-7, SC-39; NSA RTB: attack surface reduction; \
                         CMMC CM.L2-3.4.6",
     },
-    SignalDescriptor {
-        id: SignalId::UsbStorageBlacklisted,
-        class: SignalClass::ModprobeConfig,
+    IndicatorDescriptor {
+        id: IndicatorId::UsbStorageBlacklisted,
+        class: IndicatorClass::ModprobeConfig,
         live_path: "/sys/module/usb_storage",
         sysctl_key: None,
         desired: DesiredValue::Exact(1),
@@ -376,9 +378,9 @@ pub static SIGNALS: &[SignalDescriptor] = &[
         nist_controls: "NIST 800-53 MP-7, CM-7; NSA RTB: media protection; \
                         CMMC MP.L2-3.8.7",
     },
-    SignalDescriptor {
-        id: SignalId::FirewireCoreBlacklisted,
-        class: SignalClass::ModprobeConfig,
+    IndicatorDescriptor {
+        id: IndicatorId::FirewireCoreBlacklisted,
+        class: IndicatorClass::ModprobeConfig,
         live_path: "/sys/module/firewire_core",
         sysctl_key: None,
         desired: DesiredValue::Exact(1),
@@ -389,9 +391,9 @@ pub static SIGNALS: &[SignalDescriptor] = &[
         nist_controls: "NIST 800-53 SI-7, CM-7; NSA RTB: physical attack surface \
                         reduction",
     },
-    SignalDescriptor {
-        id: SignalId::ThunderboltBlacklisted,
-        class: SignalClass::ModprobeConfig,
+    IndicatorDescriptor {
+        id: IndicatorId::ThunderboltBlacklisted,
+        class: IndicatorClass::ModprobeConfig,
         live_path: "/sys/module/thunderbolt",
         sysctl_key: None,
         desired: DesiredValue::Exact(1),
@@ -401,16 +403,16 @@ pub static SIGNALS: &[SignalDescriptor] = &[
         nist_controls: "NIST 800-53 SI-7, CM-7; NSA RTB: physical attack surface \
                         reduction; CMMC CM.L2-3.4.6",
     },
-    // ── CPU mitigation sub-signals (Phase 2b) ────────────────────────────
-    // These complement the umbrella `Mitigations` signal (which checks for the
-    // global `mitigations=off` flag) by checking each per-CVE weakening override
-    // individually. An operator who disables a specific mitigation without using
-    // the umbrella flag will be caught here.
+    // ── CPU mitigation sub-indicators (Phase 2b) ─────────────────────────
+    // These complement the umbrella `Mitigations` indicator (which checks for
+    // the global `mitigations=off` flag) by checking each per-CVE weakening
+    // override individually. An operator who disables a specific mitigation
+    // without using the umbrella flag will be caught here.
     //
     // All entries: KernelCmdline, /proc/cmdline, CmdlineAbsent.
-    SignalDescriptor {
-        id: SignalId::SpectreV2Off,
-        class: SignalClass::KernelCmdline,
+    IndicatorDescriptor {
+        id: IndicatorId::SpectreV2Off,
+        class: IndicatorClass::KernelCmdline,
         live_path: "/proc/cmdline",
         sysctl_key: None,
         desired: DesiredValue::CmdlineAbsent("spectre_v2=off"),
@@ -419,9 +421,9 @@ pub static SIGNALS: &[SignalDescriptor] = &[
                     branch-predictor injection attacks between processes and the kernel.",
         nist_controls: "NIST 800-53 SI-16, SC-39; NSA RTB: CPU vulnerability mitigations",
     },
-    SignalDescriptor {
-        id: SignalId::SpectreV2UserOff,
-        class: SignalClass::KernelCmdline,
+    IndicatorDescriptor {
+        id: IndicatorId::SpectreV2UserOff,
+        class: IndicatorClass::KernelCmdline,
         live_path: "/proc/cmdline",
         sysctl_key: None,
         desired: DesiredValue::CmdlineAbsent("spectre_v2_user=off"),
@@ -431,9 +433,9 @@ pub static SIGNALS: &[SignalDescriptor] = &[
                     cross-process speculation exposure.",
         nist_controls: "NIST 800-53 SI-16, SC-39; NSA RTB: CPU vulnerability mitigations",
     },
-    SignalDescriptor {
-        id: SignalId::MdsOff,
-        class: SignalClass::KernelCmdline,
+    IndicatorDescriptor {
+        id: IndicatorId::MdsOff,
+        class: IndicatorClass::KernelCmdline,
         live_path: "/proc/cmdline",
         sysctl_key: None,
         desired: DesiredValue::CmdlineAbsent("mds=off"),
@@ -443,9 +445,9 @@ pub static SIGNALS: &[SignalDescriptor] = &[
                     hypervisor memory across fill-buffer boundaries.",
         nist_controls: "NIST 800-53 SI-16, SC-39; NSA RTB: CPU vulnerability mitigations",
     },
-    SignalDescriptor {
-        id: SignalId::TsxAsyncAbortOff,
-        class: SignalClass::KernelCmdline,
+    IndicatorDescriptor {
+        id: IndicatorId::TsxAsyncAbortOff,
+        class: IndicatorClass::KernelCmdline,
         live_path: "/proc/cmdline",
         sysctl_key: None,
         desired: DesiredValue::CmdlineAbsent("tsx_async_abort=off"),
@@ -454,9 +456,9 @@ pub static SIGNALS: &[SignalDescriptor] = &[
                     CVE-2019-11135, which leaks data via asynchronous TSX aborts.",
         nist_controls: "NIST 800-53 SI-16, SC-39; NSA RTB: CPU vulnerability mitigations",
     },
-    SignalDescriptor {
-        id: SignalId::L1tfOff,
-        class: SignalClass::KernelCmdline,
+    IndicatorDescriptor {
+        id: IndicatorId::L1tfOff,
+        class: IndicatorClass::KernelCmdline,
         live_path: "/proc/cmdline",
         sysctl_key: None,
         desired: DesiredValue::CmdlineAbsent("l1tf=off"),
@@ -466,9 +468,9 @@ pub static SIGNALS: &[SignalDescriptor] = &[
                     VM and process boundaries.",
         nist_controls: "NIST 800-53 SI-16, SC-39; NSA RTB: CPU vulnerability mitigations",
     },
-    SignalDescriptor {
-        id: SignalId::RetbleedOff,
-        class: SignalClass::KernelCmdline,
+    IndicatorDescriptor {
+        id: IndicatorId::RetbleedOff,
+        class: IndicatorClass::KernelCmdline,
         live_path: "/proc/cmdline",
         sysctl_key: None,
         desired: DesiredValue::CmdlineAbsent("retbleed=off"),
@@ -478,9 +480,9 @@ pub static SIGNALS: &[SignalDescriptor] = &[
                     that bypass retpoline on affected CPUs.",
         nist_controls: "NIST 800-53 SI-16, SC-39; NSA RTB: CPU vulnerability mitigations",
     },
-    SignalDescriptor {
-        id: SignalId::SrbdsOff,
-        class: SignalClass::KernelCmdline,
+    IndicatorDescriptor {
+        id: IndicatorId::SrbdsOff,
+        class: IndicatorClass::KernelCmdline,
         live_path: "/proc/cmdline",
         sysctl_key: None,
         desired: DesiredValue::CmdlineAbsent("srbds=off"),
@@ -490,9 +492,9 @@ pub static SIGNALS: &[SignalDescriptor] = &[
                     via sampling attacks.",
         nist_controls: "NIST 800-53 SI-16, SC-39; NSA RTB: CPU vulnerability mitigations",
     },
-    SignalDescriptor {
-        id: SignalId::NoSmtOff,
-        class: SignalClass::KernelCmdline,
+    IndicatorDescriptor {
+        id: IndicatorId::NoSmtOff,
+        class: IndicatorClass::KernelCmdline,
         live_path: "/proc/cmdline",
         sysctl_key: None,
         desired: DesiredValue::CmdlineAbsent("nosmt=off"),
@@ -503,9 +505,9 @@ pub static SIGNALS: &[SignalDescriptor] = &[
         nist_controls: "NIST 800-53 SI-16, SC-39; NSA RTB: CPU vulnerability mitigations",
     },
     // ── Kernel core dump (Phase 2b) ──────────────────────────────────────
-    SignalDescriptor {
-        id: SignalId::CorePattern,
-        class: SignalClass::Sysctl,
+    IndicatorDescriptor {
+        id: IndicatorId::CorePattern,
+        class: IndicatorClass::Sysctl,
         live_path: "/proc/sys/kernel/core_pattern",
         sysctl_key: Some("kernel.core_pattern"),
         // Hardened check is string-based: value must begin with `|`.

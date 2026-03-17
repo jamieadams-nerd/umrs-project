@@ -1,43 +1,43 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
-//! Core signal taxonomy types for the Kernel Security Posture Probe.
+//! Core indicator taxonomy types for the Kernel Security Posture Probe.
 //!
 //! Defines the typed vocabulary used throughout the posture module:
-//! signal identifiers, classification axes, impact tiers, and the
+//! indicator identifiers, classification axes, impact tiers, and the
 //! desired-value model that drives hardening assessment.
 //!
 //! ## Compliance
 //!
-//! NIST SP 800-53 AU-3: Audit record content — every signal report carries a
-//! typed `SignalId` rather than a raw string, enabling programmatic filtering
+//! NIST SP 800-53 AU-3: Audit record content — every indicator report carries a
+//! typed `IndicatorId` rather than a raw string, enabling programmatic filtering
 //! and machine-readable audit trails.
 //!
-//! NIST SP 800-53 CM-6: Configuration Settings — `SignalClass` distinguishes
+//! NIST SP 800-53 CM-6: Configuration Settings — `IndicatorClass` distinguishes
 //! runtime-effective from boot-persistent configuration sources, which is
 //! essential for contradiction detection.
 //!
 //! NIST SP 800-53 CA-7: Continuous Monitoring — `AssuranceImpact` lets callers
 //! prioritise monitoring effort by security relevance.
 //!
-//! NSA RTB: Compile-Time Path Binding — `SignalId` variants are an exhaustive
+//! NSA RTB: Compile-Time Path Binding — `IndicatorId` variants are an exhaustive
 //! compile-time enumeration; no string-based dispatch is possible.
 
 // ===========================================================================
-// SignalId
+// IndicatorId
 // ===========================================================================
 
-/// Unique identifier for each kernel security posture signal.
+/// Unique identifier for each kernel security posture indicator.
 ///
 /// Variants are grouped by security domain and ordered by catalog number for
 /// stable iteration. The enum is `Copy` and `Hash` to support use as a map key
 /// and efficient pass-by-value throughout the posture pipeline.
 ///
-/// NIST SP 800-53 AU-3: typed signal identity for audit records — avoids
+/// NIST SP 800-53 AU-3: typed indicator identity for audit records — avoids
 /// free-form strings that could be mis-parsed by downstream consumers.
 /// NSA RTB: Compile-Time Path Binding — the compiler enforces exhaustive
 /// handling of all variants.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum SignalId {
+pub enum IndicatorId {
     // ── Kernel Self-Protection ──────────────────────────────────────────
     /// `kernel.kptr_restrict` — restrict exposure of kernel pointers in
     /// procfs and other interfaces.
@@ -127,11 +127,11 @@ pub enum SignalId {
     /// bypass memory protection. Live state: module directory absent = confirms blacklist.
     ThunderboltBlacklisted,
 
-    // ── CPU mitigation sub-signals (Phase 2b) ────────────────────────────
-    // These signals complement the umbrella `Mitigations` signal by checking
-    // individual per-CVE weakening flags on `/proc/cmdline`. Each checks that
-    // the specific weakening override is ABSENT (present = hardening failure).
-    // All are `KernelCmdline` class with `DesiredValue::CmdlineAbsent`.
+    // ── CPU mitigation sub-indicators (Phase 2b) ─────────────────────────
+    // These indicators complement the umbrella `Mitigations` indicator by
+    // checking individual per-CVE weakening flags on `/proc/cmdline`. Each
+    // checks that the specific weakening override is ABSENT (present = hardening
+    // failure). All are `KernelCmdline` class with `DesiredValue::CmdlineAbsent`.
     //
     // NIST SP 800-53 SI-16: Memory Protection — per-CVE mitigation overrides.
     // NSA RTB: CPU vulnerability mitigations must not be individually disabled.
@@ -178,12 +178,12 @@ pub enum SignalId {
     CorePattern,
 }
 
-impl SignalId {
+impl IndicatorId {
     /// Returns a stable, human-readable label for display in audit output.
     ///
     /// The label mirrors the sysctl key or kernel parameter name where
     /// applicable, providing a direct cross-reference to kernel documentation.
-    #[must_use = "signal labels are used for display and audit output"]
+    #[must_use = "indicator labels are used for display and audit output"]
     pub const fn label(self) -> &'static str {
         match self {
             Self::KptrRestrict => "kernel.kptr_restrict",
@@ -228,17 +228,17 @@ impl SignalId {
     }
 }
 
-impl std::fmt::Display for SignalId {
+impl std::fmt::Display for IndicatorId {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_str(self.label())
     }
 }
 
 // ===========================================================================
-// SignalClass
+// IndicatorClass
 // ===========================================================================
 
-/// How the signal is persisted and where its live value is read from.
+/// How the indicator is persisted and where its live value is read from.
 ///
 /// Distinguishes between runtime-effective and boot-persistent configuration
 /// sources — essential for contradiction detection and for informing operators
@@ -247,7 +247,7 @@ impl std::fmt::Display for SignalId {
 /// NIST SP 800-53 CM-6: Configuration Settings — provenance of the effective
 /// value determines the remediation path.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum SignalClass {
+pub enum IndicatorClass {
     /// Runtime sysctl: live value from `/proc/sys/*`, configured value from
     /// the sysctl.d merge tree. Changes can take effect without a reboot.
     Sysctl,
@@ -280,7 +280,7 @@ pub enum SignalClass {
 // AssuranceImpact
 // ===========================================================================
 
-/// Security impact tier for a posture signal.
+/// Security impact tier for a posture indicator.
 ///
 /// Ordered ascending (`Medium < High < Critical`) to support
 /// `by_impact(min: AssuranceImpact)` filtering via `>=` comparison.
@@ -329,9 +329,9 @@ pub enum DesiredValue {
     /// This token must NOT be present in `/proc/cmdline`.
     /// Example: `mitigations=off`.
     CmdlineAbsent(&'static str),
-    /// Evaluated by custom signal-specific logic (e.g., `kernel.sysrq`).
+    /// Evaluated by custom indicator-specific logic (e.g., `kernel.sysrq`).
     /// The `meets_integer` and `meets_signed_integer` methods always return
-    /// `None` for this variant; callers must invoke the signal-specific
+    /// `None` for this variant; callers must invoke the indicator-specific
     /// validator instead.
     Custom,
 }
@@ -418,10 +418,11 @@ fn cmdline_contains(cmdline: &str, token: &str) -> bool {
 // LiveValue / ConfiguredValue wrappers
 // ===========================================================================
 
-/// The live (kernel-effective) value of a posture signal.
+/// The live (kernel-effective) value of a posture indicator.
 ///
 /// Wraps the raw parsed value from the kernel interface. Integer values
-/// are used for sysctl signals; string values for cmdline and special signals.
+/// are used for sysctl indicators; string values for cmdline and special
+/// indicators.
 ///
 /// `SignedInteger` is reserved for sysctl nodes that legitimately emit
 /// negative values (e.g., `kernel.perf_event_paranoid = -1` means
@@ -458,7 +459,7 @@ impl std::fmt::Display for LiveValue {
     }
 }
 
-/// The configured (intended) value of a posture signal, as read from the
+/// The configured (intended) value of a posture indicator, as read from the
 /// sysctl.d merge tree or other persistence source.
 ///
 /// Always a string because sysctl.d files store values as text.
