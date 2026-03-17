@@ -138,6 +138,21 @@ CategorySet glossary entry marked TODO for expansion when SELinux reference page
 - When moving pages into subdirectories, update ALL xrefs across ALL modules that reference the moved pages — not just the nav files.
 - Cross-module xrefs (e.g., `reference:context.adoc`) must be updated when the target page moves to a subdirectory (e.g., `reference:selinux/context.adoc`).
 
+## Multi-Component Split Plan (review complete 2026-03-17)
+
+Plan: `.claude/plans/antora-multi-component-split.md` — Draft, awaiting Jamie approval.
+Review report: `.claude/reports/multi-component-split-review.md`
+
+Key facts from review:
+- Cross-module xref count: **272 occurrences across 72 files** — scripted substitution is mandatory
+- 5-component structure is correct; no boundary changes recommended
+- `umrs-development` nav will be 46+ items — requires deliberate sectioning before migration
+- `crypto-usage-map.adoc` and `crypto-post-quantum.adoc` are dual-audience; plan assignments acceptable but need cross-component xrefs
+- Glossary Option C (umrs-project) is correct
+- Doc-theme plan should execute before the component split
+- 4 open feedback items are pre-migration prerequisites: `rhel10-install.adoc` duplicate, `admin/` originals, `security-model.adoc` stub, `apparmor/` empty dir
+- Nav drafts for all 5 components are required before any files move
+
 ## Writing Mode Defaults
 - Architecture Mode for explanatory content
 - STE Mode for procedures

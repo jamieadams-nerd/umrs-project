@@ -1,0 +1,550 @@
+ENV variables
+
+If you want authoritative language describing the risks of environment variables, there are a handful of security standards and secure-coding references that explicitly discuss it. The relevant guidance tends to appear under process environment handling, sensitive information exposure, and untrusted input rather than a single “environment variable” control.
+
+Below are the primary standards and exact places where the issue is formally addressed.
+
+⸻
+
+1. NIST SP 800-53 (Configuration / Sensitive Data Exposure)
+
+The closest formal control language appears in:
+	•	National Institute of Standards and Technology
+	•	Publication: NIST Special Publication 800-53 Revision 5
+
+Relevant controls
+
+IA-5 – Authenticator Management
+
+Key text (excerpted conceptually):
+
+Authentication information shall be protected from unauthorized disclosure and modification.
+
+Environment variables are frequently cited in guidance as an insecure storage location for secrets such as tokens, passwords, and keys because they can be inherited by child processes or exposed through system interfaces.
+
+⸻
+
+SC-28 – Protection of Information at Rest
+
+Implementation guidance warns against placing sensitive information in areas not designed for confidentiality protections, which often includes process environments.
+
+⸻
+
+SI-7 – Software, Firmware, and Information Integrity
+
+The control includes preventing unauthorized modification of runtime configuration.
+Environment variables are considered runtime configuration injection points.
+
+⸻
+
+2. MITRE CWE (Directly about Environment Variables)
+
+The most explicit security classification comes from:
+	•	MITRE Corporation
+	•	Catalog: Common Weakness Enumeration
+
+CWE-526
+
+Exposure of Sensitive Information Through Environment Variables
+
+Description:
+
+Sensitive information such as credentials, API keys, or cryptographic material may be stored in environment variables.
+Environment variables can be read by other processes, system utilities, or debugging interfaces, resulting in unintended disclosure.
+
+Typical exposure paths listed:
+	•	/proc/<pid>/environ
+	•	process listing tools
+	•	crash dumps
+	•	inherited environments
+	•	container orchestration metadata
+	•	debug tooling
+
+Mitigation recommendations:
+	•	avoid storing secrets in environment variables
+	•	use dedicated secret stores
+	•	sanitize inherited environments
+	•	restrict process visibility
+
+⸻
+
+3. CERT Secure Coding Standard
+
+From:
+	•	CERT Coordination Center
+	•	CERT C Secure Coding Standard
+
+ENV Rules
+
+ENV03-C: Sanitize the environment when invoking external programs
+
+Key principle:
+
+Programs that invoke other programs shall ensure that the environment variables passed to the new process are sanitized.
+
+The reason:
+
+Environment variables can alter program behavior and can be exploited to:
+	•	change library paths
+	•	alter runtime configuration
+	•	inject malicious behavior
+
+Examples include:
+
+LD_PRELOAD
+LD_LIBRARY_PATH
+PATH
+IFS
+PYTHONPATH
+
+
+⸻
+
+4. OWASP Guidance
+
+From:
+	•	OWASP
+	•	Project: OWASP Top Ten
+
+A2 / A3 – Sensitive Data Exposure / Security Misconfiguration
+
+OWASP documentation repeatedly states:
+
+Secrets should not be stored in environment variables when the runtime environment allows other processes or logs to read them.
+
+OWASP recommends instead:
+	•	secrets managers
+	•	protected configuration stores
+	•	runtime injection via secure mechanisms
+
+⸻
+
+5. POSIX / UNIX Security Guidance
+
+Environment variables are part of the process execution environment defined by:
+	•	POSIX.1-2017
+
+Key security implications described in secure programming references:
+	•	environment is inherited by child processes
+	•	environment variables may influence program behavior
+	•	privileged programs must ignore or sanitize them
+
+This is why setuid programs must sanitize the environment.
+
+⸻
+
+6. Linux Kernel Exposure Path
+
+The major real-world leak path is:
+
+/proc/<pid>/environ
+
+Which contains a NUL-separated dump of the process environment.
+
+Unless restricted:
+	•	debuggers
+	•	same-UID processes
+	•	crash collectors
+	•	container tooling
+
+may read this.
+
+This is the root of the common security warning:
+
+Environment variables are not a secure storage mechanism for secrets.
+
+⸻
+
+7. The Actual Security Pattern
+
+The high-assurance security pattern usually described is:
+
+Environment Scrubbing
+
+When launching a privileged or sensitive process:
+	1.	clear the inherited environment
+	2.	allow only a small allow-list
+	3.	explicitly set safe values
+
+Example pattern:
+
+clearenv()
+
+setenv("PATH", "/usr/bin:/bin", 1)
+setenv("LANG", "C", 1)
+
+Equivalent in many secure runtimes.
+
+This pattern is sometimes called:
+	•	Environment Whitelisting
+	•	Process Environment Sanitization
+	•	Trusted Execution Environment Setup
+
+⸻
+
+8. High-Assurance System Pattern (Common in MLS / RTB Systems)
+
+In systems similar to the ones you’ve worked on (MLS guards, high assurance gateways), the typical rule is:
+
+Rule
+
+Sensitive configuration shall not be supplied through environment variables.
+
+Reasons:
+	1.	environment is mutable
+	2.	environment is inherited
+	3.	environment is externally observable
+	4.	environment bypasses configuration validation
+
+Instead they require:
+	•	signed config files
+	•	restricted configuration directories
+	•	kernel-protected storage
+	•	explicit configuration parsing
+
+This aligns closely with the design direction you’re taking in UMRS with signed configuration artifacts treated as part of the TCB.
+
+⸻
+
+9. The Three References Most People Cite
+
+If you want the exact authoritative citations, these are the ones to read:
+	1.	MITRE CWE-526
+	2.	CERT ENV03-C
+	3.	OWASP Sensitive Data Exposure guidance
+
+Those three directly mention environment variables.
+
+⸻
+
+If you’d like, I can also show you
+	•	the exact Linux kernel code path where environments are stored
+	•	why systemd deliberately strips environments for services
+	•	how sudo, polkit, and setuid programs sanitize environments
+	•	how container runtimes leak secrets via env variables
+
+Those implementation details make the security issue much clearer from a systems engineering perspective.
+
+Yes — and to correct the terms, you mean sudo, polkit/pkexec, and setuid.
+
+They do not all sanitize the environment in the same way.
+
+1) sudo
+
+sudo has an explicit environment policy layer in sudoers. The key mechanism is env_reset.
+
+The sudoers(5) man page says:
+	•	environment variables can influence program behavior, so sudoers restricts which variables are inherited by the command being run.  
+	•	By default, env_reset is enabled, which causes commands to run with a new, minimal environment. HOME, MAIL, SHELL, LOGNAME, and USER are initialized for the target user; SUDO_* variables are set; and only selected variables such as DISPLAY, PATH, and TERM may be preserved if allowed by env_check or env_keep.  
+	•	if env_reset is disabled, more of the caller’s environment is inherited, but the manual warns that it is not possible to block all dangerous variables and therefore the default env_reset behavior is encouraged.  
+
+So, in plain English, sudo sanitizes by:
+	•	starting from a minimal clean environment
+	•	allowing back only a controlled subset
+	•	supporting allow/deny lists like env_keep, env_check, and env_delete  
+
+That is the cleanest example of deliberate environment scrubbing.
+
+⸻
+
+2) polkit / pkexec
+
+pkexec also sanitizes, but in a more opinionated way.
+
+Its man page states that:
+	•	the program run by pkexec gets a “minimal known and safe environment” to avoid code injection through LD_LIBRARY_PATH and similar mechanisms.  
+	•	PKEXEC_UID is set to the invoking user’s UID.  
+	•	by default it does not preserve DISPLAY and XAUTHORITY, which is why GUI apps typically do not work through plain pkexec unless a special policy annotation is used.  
+	•	retaining those GUI variables is discouraged and intended only for legacy programs.  
+
+So pkexec sanitizes by:
+	•	replacing the environment with a minimal safe one
+	•	dropping variables commonly used for loader/runtime injection
+	•	refusing GUI-related vars unless policy explicitly permits them  
+
+⸻
+
+3) setuid
+
+This is the subtle one: setuid itself is not a user-space policy engine like sudo.
+
+What happens is:
+	•	when a binary runs with changed credentials, such as a set-user-ID or set-group-ID program, the runtime enters secure-execution mode.  
+	•	in secure-execution mode, the dynamic linker says that the effects of some environment variables are voided or modified, and those variables are stripped from the environment so the program does not even see them.  
+	•	the list includes dangerous loader/runtime variables such as LD_LIBRARY_PATH, LD_PRELOAD, LD_AUDIT, LD_DEBUG, LOCPATH, TMPDIR, and others.  
+	•	this secure mode is triggered when real and effective UID or GID differ, which is the normal setuid/setgid case.  
+	•	glibc also provides secure_getenv(), which returns NULL when secure execution is in effect, specifically to help libraries avoid trusting environment variables in setuid/setgid or capability-elevated execution.  
+
+So the precise statement is:
+
+A setuid program does not get a full sudo-style policy scrub by default.
+Instead, privileged execution triggers AT_SECURE / secure-execution mode, and the dynamic linker strips a defined set of dangerous variables; additionally, safe code should use things like secure_getenv() or explicit allowlisting.  
+
+⸻
+
+The practical difference
+	•	sudo: configurable policy-driven environment reset with allow/deny lists.  
+	•	pkexec: runs the target with a minimal known-safe environment and keeps very little by default.  
+	•	setuid: privileged execution triggers secure-execution mode, where the loader strips dangerous variables, but the application still must treat the remaining environment as untrusted.  
+
+The exact pattern name you can cite
+
+The pattern is usually described as:
+	•	environment sanitization
+	•	environment scrubbing
+	•	minimal trusted environment
+	•	allowlisted inherited environment
+
+If you want the most exact standards-style wording, the best anchors are:
+	•	sudoers(5) for policy-controlled environment reset  
+	•	pkexec(1) for minimal known and safe environment  
+	•	ld.so(8) and secure_getenv(3) for secure-execution mode under setuid/capability elevation  
+
+I can also give you a copy-pasteable control/pattern writeup in high-assurance language for your docs, such as “Privileged Process Environment Sanitization,” with rationale, threat model, and implementation guidance.
+
+Short answer: Rust does not provide a built-in equivalent to env_reset, clearenv, or secure_getenv as a unified “environment sanitization API.” Most of the mechanisms you saw are OS or C runtime features, and in Rust you typically:
+	1.	call the standard library environment functions,
+	2.	optionally use libc bindings, or
+	3.	implement the sanitization pattern yourself.
+
+However, all of the primitives needed are available.
+
+Below is the exact landscape.
+
+⸻
+
+1. Rust Standard Library Environment APIs
+
+Rust exposes process environment manipulation through:
+	•	Rust Standard Library
+module std::env
+
+Relevant functions:
+
+std::env::vars()
+std::env::var()
+std::env::set_var()
+std::env::remove_var()
+
+Example:
+
+use std::env;
+
+for (key, _) in env::vars() {
+    env::remove_var(key);
+}
+
+This effectively implements clearenv-style behavior, though it is not atomic like the libc call.
+
+Important note:
+	•	These affect only the current process environment
+	•	Child processes inherit the environment unless overridden.
+
+⸻
+
+2. Rust Child Process Environment Control
+
+Rust has a very powerful API for spawning processes with a clean environment.
+
+Module:
+
+std::process::Command
+
+Key methods:
+
+env_clear()
+env()
+env_remove()
+
+Example:
+
+use std::process::Command;
+
+Command::new("/usr/bin/myprogram")
+    .env_clear()
+    .env("PATH", "/usr/bin:/bin")
+    .env("LANG", "C")
+    .spawn()?;
+
+env_clear() is essentially Rust’s closest equivalent to sudo env_reset.
+
+This is the preferred modern pattern.
+
+⸻
+
+3. Access to libc clearenv()
+
+If you want the actual POSIX function, you can call it through the libc crate.
+	•	libc crate
+
+Example:
+
+unsafe {
+    libc::clearenv();
+}
+
+But:
+	•	it requires unsafe
+	•	behavior varies slightly across libc implementations.
+
+Most Rust programs avoid it unless writing low-level system software.
+
+⸻
+
+4. Access to glibc secure_getenv()
+
+Yes — you can use it.
+
+glibc provides:
+
+secure_getenv()
+
+which returns NULL when running in secure execution mode (setuid, capability elevation, etc.).
+
+Rust access:
+
+use libc::secure_getenv;
+use std::ffi::CStr;
+
+unsafe {
+    let val = secure_getenv(b"PATH\0".as_ptr() as *const i8);
+    if !val.is_null() {
+        let s = CStr::from_ptr(val).to_string_lossy();
+        println!("{}", s);
+    }
+}
+
+This requires:
+	•	glibc
+	•	unsafe
+	•	the libc crate.
+
+Rust itself does not wrap this directly.
+
+⸻
+
+5. Why Rust Does Not Provide a High-Level API
+
+Rust intentionally keeps environment handling minimal because:
+
+Environment security policies vary widely:
+	•	setuid programs
+	•	container runtimes
+	•	service managers
+	•	privilege elevation frameworks
+	•	hardened runtime policies
+
+Therefore Rust leaves the policy decision to the application.
+
+Instead it provides:
+	•	basic environment control
+	•	safe child process APIs.
+
+⸻
+
+6. The Typical High-Assurance Rust Pattern
+
+Most hardened Rust programs implement a simple environment whitelist.
+
+Example:
+
+use std::env;
+
+fn sanitize_env() {
+    let allow = ["PATH", "LANG", "TERM"];
+
+    let vars: Vec<String> = env::vars().map(|(k, _)| k).collect();
+
+    for k in vars {
+        if !allow.contains(&k.as_str()) {
+            env::remove_var(k);
+        }
+    }
+}
+
+This mirrors what:
+	•	sudo
+	•	systemd
+	•	pkexec
+
+effectively do.
+
+⸻
+
+7. The Most Secure Rust Pattern
+
+For launching privileged helpers:
+
+Command::env_clear()
+
+plus explicit environment construction.
+
+Example:
+
+Command::new("/usr/bin/helper")
+    .env_clear()
+    .env("PATH", "/usr/bin:/bin")
+    .env("LANG", "C")
+    .spawn()?;
+
+This is stronger than trying to clean the parent process environment.
+
+⸻
+
+8. What Systemd Does (Interesting Parallel)
+	•	systemd
+
+systemd service units also start processes with:
+	•	a minimal environment
+	•	explicit Environment= entries.
+
+So the Rust env_clear() model mirrors this design very closely.
+
+⸻
+
+9. If You Want a High-Assurance Rust Library
+
+Given your UMRS high-assurance design philosophy, a useful crate would provide:
+
+umrs_secure_env
+
+Features:
+
+sanitize_current_process()
+sanitize_child(Command)
+secure_getenv()
+denylist_runtime_vars()
+allowlist_env()
+detect_secure_execution()
+
+This would encapsulate the patterns used by:
+	•	sudo
+	•	pkexec
+	•	glibc secure mode
+	•	systemd service execution
+
+in a safe Rust interface.
+
+This would actually be a very valuable crate because almost nobody has written one.
+
+⸻
+
+10. One Important Caveat
+
+Even after sanitization:
+
+environment variables are still:
+	•	inherited
+	•	mutable
+	•	observable via /proc/<pid>/environ
+
+So high-assurance systems usually avoid using them for secrets entirely.
+
+⸻
+
+If you’d like, I can also show you something extremely interesting:
+
+the full list of environment variables that the Linux dynamic loader blocks in secure execution mode.
+
+That list explains exactly what attacks environment variables can enable (library injection, audit hooks, etc.), and it’s quite enlightening from a security engineering standpoint.
+

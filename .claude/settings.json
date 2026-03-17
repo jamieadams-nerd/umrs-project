@@ -84,7 +84,19 @@
       "Bash(cd docs:*)",
       "WebFetch(domain:raw.githubusercontent.com)",
       "WebFetch(domain:www.brendangregg.com)",
-      "Bash(for f:*)"
+      "Bash(for f:*)",
+      "Bash(ls:*)",
+      "WebFetch(domain:docs.redhat.com)",
+      "Bash(2)",
+      "Bash(mkdir -p ../../.claude/jamies_brain/archive/fun)",
+      "Bash(mv ../../.claude/jamies_brain/fun/idea.txt ../../.claude/jamies_brain/archive/fun/idea.txt)",
+      "Bash(mv ../../.claude/jamies_brain/fun/jamie.md ../../.claude/jamies_brain/archive/fun/jamie.md)",
+      "Bash(rmdir ../../.claude/jamies_brain/fun/)",
+      "Bash(tee /media/psf/repos/umrs-project/.claude/references/xdg-basedir-spec.md echo 'exit: $?')",
+      "Bash(tee -a /media/psf/repos/umrs-project/.claude/logs/task-log.md)",
+      "Bash(tee /media/psf/repos/umrs-project/components/rusty-gadgets/.claude/agent-memory/researcher/MEMORY.md echo done)",
+      "Bash(tee /media/psf/repos/umrs-project/components/rusty-gadgets/.claude/agent-memory/researcher/retrieval_notes.md echo done)",
+      "Bash(tee /media/psf/repos/umrs-project/components/rusty-gadgets/.claude/agent-memory/researcher/corpus_conventions.md echo done)"
     ]
   },
   "enabledPlugins": {

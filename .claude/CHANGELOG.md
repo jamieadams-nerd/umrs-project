@@ -1,5 +1,26 @@
 # Changelog
 
+## 2026-03-17
+
+### Added
+- **UMRS Tool Initialization API plan**: `.claude/plans/umrs-tool-init.md` — comprehensive environment audit and validated accessors for tool startup; SanitizedEnv validated constructor with 8 validation classes (PATH, LD_PRELOAD, locale, network, auth, TZ, shell, crypto); 30+ environment variable denylist (including CVE-2023-4911 GLIBC_TUNABLES mitigation); SensitiveValue newtype for confidential vars; journald-native logging with fallback cascade to stderr; i18n auto-detection; security-engineer and security-auditor reviews completed with all findings incorporated; NIST SP 800-53 AU-5 rationale documented
+- **Quote of the Day (QOTD) corpus plan**: `.claude/plans/qotd-quotes-corpus.md` — ~55 curated engineering culture quotes with terminal and ratatui popup display; JSON corpus format for easy additions; typography module text effects reuse; designed to reflect team identity and system security posture
+- **Antora documentation theme plan**: `.claude/plans/antora-doc-theme.md` — custom wizard-motif dark-first design with two-register admonition color system (WARNING/CAUTION=alert register, IMPORTANT/NOTE/TIP=neutral register); vendored fonts for offline deployment; accessibility and print-friendly pass; NIST control tag pills for compliance visibility; senior-tech-writer review completed with all findings incorporated
+- **Antora multi-component split plan**: `.claude/plans/antora-multi-component-split.md` — split monolithic Antora site into 5 audience-focused components (Project, CUI Labeling, Operations, Development, AI) plus collection home; identified 272 cross-module xrefs requiring migration; defined cross-component linking strategy and audience routing; senior-tech-writer review completed with all findings incorporated
+- **XDG Base Directory Specification reference**: `.claude/references/xdg-basedir-spec.md` — specification v0.8 with key finding that ~/.local/bin is a convention, not a formal standard; informs deployment model for tool initialization
+- **Security review reports**: Three comprehensive multi-agent reviews completed: `2026-03-17-umrs-tool-init-security-review.md` (security-engineer, 11 findings), `2026-03-17-umrs-tool-init-compliance-audit.md` (security-auditor, 12 findings), and `multi-component-split-review.md` (senior-tech-writer, 12 findings)
+- **Agent memory files**: Created independent memory files for researcher, security-auditor, and security-engineer agents on specialized topics (corpus conventions, annotation debt, citation mapping, denylist reference, unsafe boundary knowledge, XDG reference)
+
+### Changed
+- **jamies_brain archive restructuring**: Archived 11 files/directories (`kernel-probe-grouping.txt`, `rusty-optimize.txt`, entire `asm/` subtree, `env-scrubbing.txt`, `path-scrubbing.txt`, `fun/` subtree, `doc-theme/doc-theme.md`) into `.claude/jamies_brain/archive/` with DO NOT DELETE preservation semantics; files already incorporated into completed plans or existing documentation/skills
+- **Agent memory consolidation**: Moved 7 agent memory files from rogue `components/rusty-gadgets/.claude/` directory to correct location at `/.claude/agent-memory/*/`; removed empty rogue directory
+- **Project memory updates**: Normalized performance-baseline.md status header to project convention; recorded initial release deployment model (~/.local/bin, XDG paths, no root required); clarified that kernel-probe-grouping.txt source was archived (capability matrix already implemented)
+- **Settings permissions**: Fine-tuned `.claude/settings.json` for agent archive operations and future knowledge work
+
+### Fixed
+- **Rogue .claude directories**: Consolidated stray `components/rusty-gadgets/.claude/` with 7 unique memory files and 2 stubs; no duplicate local.settings.json found
+- **Memory debt**: Created explicit feedback memory for Jamie to archive jamies_brain files after conversion to plans, preventing accumulation of stale brain-state documents
+
 ## 2026-03-16
 
 ### Added
