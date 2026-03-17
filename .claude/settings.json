@@ -96,7 +96,10 @@
       "Bash(tee -a /media/psf/repos/umrs-project/.claude/logs/task-log.md)",
       "Bash(tee /media/psf/repos/umrs-project/components/rusty-gadgets/.claude/agent-memory/researcher/MEMORY.md echo done)",
       "Bash(tee /media/psf/repos/umrs-project/components/rusty-gadgets/.claude/agent-memory/researcher/retrieval_notes.md echo done)",
-      "Bash(tee /media/psf/repos/umrs-project/components/rusty-gadgets/.claude/agent-memory/researcher/corpus_conventions.md echo done)"
+      "Bash(tee /media/psf/repos/umrs-project/components/rusty-gadgets/.claude/agent-memory/researcher/corpus_conventions.md echo done)",
+      "Bash(mkdir -p ../../.claude/jamies_brain/archive/doc-theme)",
+      "Bash(mv ../../.claude/jamies_brain/doc-theme/doc-theme.md ../../.claude/jamies_brain/archive/doc-theme/doc-theme.md)",
+      "Bash(rmdir ../../.claude/jamies_brain/doc-theme/)"
     ]
   },
   "enabledPlugins": {

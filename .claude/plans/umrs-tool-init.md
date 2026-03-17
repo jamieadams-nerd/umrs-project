@@ -1,6 +1,6 @@
 # Plan: UMRS Tool Initialization API (`umrs-core::init`)
 
-**Status:** Approved — ready for implementation
+**Status:** Approved — ready for implementation (environment scrubbing, validated env accessors, unified tool startup)
 
 **ROADMAP alignment:** G2 (Platform Library), G4 (Tool Ecosystem), G8 (Human-Centered Design)
 
@@ -38,8 +38,9 @@ Instead, this module provides three things:
 
 - **Posture signal.** If `LD_PRELOAD` or `GLIBC_TUNABLES` appear in the environment of a UMRS tool, that is an anomaly worth recording. The scrub report creates auditable evidence.
 - **Defense in depth.** Even though UMRS tools don't fork, validating the environment prevents a class of bugs where a tool accidentally reads a poisoned `HOME`, `TMPDIR`, or `TZ` value.
-- **Reusable for the ecosystem.** The validator set (path safety, locale, terminal, timezone, username) doesn't exist as a Rust crate. This is independently publishable.
+- **Reusable for the ecosystem.** The validator set (path safety, locale, terminal, timezone, username, SELinux components, hostnames, device paths) doesn't exist as a Rust crate. This is independently publishable.
 - **Zero side effects.** The parent process is untouched. Nothing breaks. The module is a read-only audit + validation layer.
+- **Advisory, not prescriptive.** The library reports what's wrong and why. The `umrs-env` tool shows the operator their environment through a security lens — what's clean, what's suspicious, what failed validation. The operator chooses what to do about it. We tell them what's jacked up; they decide whether to fix it, source the clean output, or just take note.
 
 ## Design
 
@@ -87,7 +88,13 @@ umrs-core/src/init/
     ├── username.rs     ← validate_username()
     ├── tz.rs           ← validate_tz()
     ├── dbus.rs         ← validate_dbus_address()
-    └── integer.rs      ← validate_positive_int()
+    ├── integer.rs      ← validate_positive_int()
+    ├── log_level.rs    ← validate_log_level()
+    ├── device.rs       ← validate_device_path()
+    ├── hostname.rs     ← validate_hostname()
+    ├── enum_set.rs     ← validate_enum() — generic enum membership check
+    ├── selinux.rs      ← validate_selinux_component() — role/level syntax via umrs-selinux
+    └── identifier.rs   ← validate_safe_identifier()
 ```
 
 ---
@@ -115,6 +122,8 @@ umrs-core/src/init/
 16. **`rustix` not `nix`** — Use `rustix = { version = "0.38", features = ["fs", "process"] }` for path validation. Matches existing workspace usage. `umrs-tui` version conflict (`rustix = "1"`) must be resolved before adding to `umrs-core`.
 17. **`USER`/`LOGNAME` cross-check** — Validate syntax AND cross-check against actual UID via `getuid()` + `/etc/passwd` lookup. Syntactically valid `USER=root` from a non-root process is rejected. Controls: AU-3 (audit record content integrity).
 18. **Symlink chain validation** — `validate_safe_path` must check every directory component in the resolved path using `open(O_PATH | O_NOFOLLOW)` + `fstat()`, not just the leaf. O(depth) cost is acceptable for startup-once validation.
+19. **`RUST_LOG`** — Tier 2 (preserve + validate). Validated as a restricted enum: only `error`, `warn`, `info`, `debug`, `trace` are accepted (case-insensitive). Module-level filters (e.g., `umrs_selinux=debug`) are also accepted but only for `umrs_*` crate prefixes — arbitrary module paths are rejected. This prevents an attacker from enabling verbose logging on third-party dependencies to extract timing or data side-channels. Controls: AU-9 (protection of audit information), CM-7 (least functionality).
+20. **`umrs-env` tool** — New binary crate. Acts like `env(1)` but produces scrubbed/sanitized output. Reads from inherited environment by default, or from stdin (pipe `env | umrs-env` or `echo $HOME | umrs-env`). Uses the `umrs_core::init` scrub engine. See dedicated section below.
 
 ---
 
@@ -162,6 +171,10 @@ Prevents classic trojan horse attacks: an attacker places a malicious binary in 
 | `XDG_DATA_HOME` | Safe Path (directory) | Default: `$HOME/.local/share`; must be owned by current UID | UMRS data storage, quote corpus |
 | `XDG_CACHE_HOME` | Safe Path (directory) | Default: `$HOME/.cache`; must be owned by current UID | UMRS cache (compiled translations, etc.) |
 | `XDG_STATE_HOME` | Safe Path (directory) | Default: `$HOME/.local/state`; must be owned by current UID | UMRS state files, persistent tool state |
+| `SHELL` | Safe Path (file) | Must be executable; should exist in `/etc/shells` | Login shell identification |
+| `MAIL` | Safe Path (file) | Typically `/var/spool/mail/$USER`; must be owned by current UID or root | Mail spool |
+| `PWD` | Safe Path (directory) | Must match actual CWD (`getcwd()`) — mismatch is suspicious | Current working directory |
+| `OLDPWD` | Safe Path (directory) | May not exist (directory was deleted); non-existence is a note, not rejection | Previous working directory |
 #### Validation Class: Colon-Delimited Path List (`validate_path_list`)
 
 For PATH-like variables that contain multiple directories separated by `:`.
@@ -172,6 +185,10 @@ For PATH-like variables that contain multiple directories separated by `:`.
 3. Relative components (not starting with `/`) are removed
 4. Duplicate components are removed (first occurrence wins)
 5. Total component count capped at 64 (sanity)
+
+| Variable | Class | Additional Rules | Needed By |
+|---|---|---|---|
+| `XDG_DATA_DIRS` | Colon-Delimited Path List | Default: `/usr/local/share:/usr/share` if unset | System-wide data directories |
 
 **Note:** This validator is used for Tier 1 reset _verification_ (confirm the reset value is safe) and could be offered to external consumers who build PATH-like strings.
 
@@ -217,6 +234,24 @@ For PATH-like variables that contain multiple directories separated by `:`.
 |---|---|---|---|
 | `TERM` | Terminal Identifier | — | `crossterm`, `ratatui`, `colored` crate (implicit), `console::ansi` |
 | `COLORTERM` | Enum | Must be exactly `truecolor` or `24bit` | True-color detection |
+| `RUST_LOG` | Log Level Enum | See validation class below | `env_logger`, `tracing-subscriber`, debug diagnostics |
+
+#### Validation Class: Log Level Enum (`validate_log_level`)
+
+**Rules:**
+1. Max 256 chars
+2. Simple form: must be one of `error`, `warn`, `info`, `debug`, `trace` (case-insensitive)
+3. Module-filtered form: `<module>=<level>` where `<module>` must start with `umrs_` — only UMRS crate modules are permitted. No arbitrary third-party module targeting.
+4. Comma-separated list of the above forms is accepted (e.g., `info,umrs_selinux=debug`)
+5. No NUL bytes, no shell metacharacters, no whitespace outside of the value
+6. `off` is accepted (disables logging entirely)
+7. Numeric level values are rejected (use named levels only)
+
+**Rationale:** An attacker who controls `RUST_LOG` can enable verbose debug output on third-party dependencies, potentially extracting timing side-channels, internal state, or memory layout information through log output. Restricting module filters to `umrs_*` prefixes limits the blast radius.
+
+| Variable | Class | Additional Rules | Needed By |
+|---|---|---|---|
+| `RUST_LOG` | Log Level Enum | Only `umrs_*` module prefixes; no arbitrary crate targeting | `env_logger`, `tracing-subscriber`, debug diagnostics |
 
 #### Validation Class: Positive Integer (`validate_positive_int`)
 
@@ -230,6 +265,9 @@ For PATH-like variables that contain multiple directories separated by `:`.
 |---|---|---|---|
 | `COLUMNS` | Positive Integer | Range 1–9999 | `textwrap`, terminal width detection |
 | `LINES` | Positive Integer | Range 1–9999 | `ratatui` terminal height |
+| `HISTSIZE` | Positive Integer | Range 1–100000 | Shell history size |
+| `SHLVL` | Positive Integer | Range 1–999 | Shell nesting level |
+| `XDG_SESSION_ID` | Positive Integer | Range 1–999999 | logind session ID |
 
 #### Validation Class: Username (`validate_username`)
 
@@ -285,6 +323,74 @@ Per the `NO_COLOR` specification (https://no-color.org/): any non-empty value me
 |---|---|---|---|
 | `DBUS_SESSION_BUS_ADDRESS` | D-Bus Address | Only `unix:` transport; `tcp:`/`unixexec:` rejected and logged at `warn` | Desktop integration |
 
+#### Validation Class: Device Path (`validate_device_path`)
+
+**Rules:**
+1. Must start with `/dev/`
+2. Must match `^/dev/(pts/[0-9]+|tty[a-zA-Z0-9]*)$`
+3. No `..` components, no symlink traversal outside `/dev/`
+4. Must exist (stat check) and be a character device
+5. Max 128 chars
+
+| Variable | Class | Additional Rules | Needed By |
+|---|---|---|---|
+| `SSH_TTY` | Device Path | Must be `/dev/pts/*` | SSH session terminal |
+| `GPG_TTY` | Device Path | Must be `/dev/pts/*` or `/dev/tty*` | GPG pinentry |
+
+#### Validation Class: Hostname (`validate_hostname`)
+
+**Rules:**
+1. Max 253 chars (DNS limit)
+2. Labels separated by `.`, each label max 63 chars
+3. Charset per label: `[a-zA-Z0-9-]`, must not start or end with `-`
+4. Single-label hostnames are valid (common on RHEL)
+5. No NUL bytes, no whitespace, no shell metacharacters
+
+| Variable | Class | Additional Rules | Needed By |
+|---|---|---|---|
+| `HOSTNAME` | Hostname | — | System identification, logging |
+
+#### Validation Class: Enum Set (`validate_enum`)
+
+For variables with a small, fixed set of acceptable values. Validation is a case-sensitive membership check.
+
+| Variable | Accepted Values | Needed By |
+|---|---|---|
+| `HISTCONTROL` | `ignorespace`, `ignoredups`, `ignoreboth`, `erasedups` | Shell history |
+| `XDG_SESSION_TYPE` | `x11`, `wayland`, `tty`, `mir`, `unspecified` | logind session type |
+| `XDG_SESSION_CLASS` | `user`, `greeter`, `lock-screen` | logind session class |
+
+#### Validation Class: SELinux Component (`validate_selinux_component`)
+
+These variables are set by PAM (`pam_selinux`) at login. They contain SELinux role or level strings that UMRS can validate using `umrs-selinux`'s existing parsers.
+
+**Rules:**
+1. Max 256 chars
+2. `SELINUX_ROLE_REQUESTED` — must match SELinux role syntax: `[a-zA-Z_][a-zA-Z0-9_]*_r` or empty
+3. `SELINUX_LEVEL_REQUESTED` — must parse as a valid MLS level/range (delegate to `umrs-selinux` if available) or match `s[0-9]+-s[0-9]+(:[cC][0-9]+)*` pattern
+4. No NUL bytes, no shell metacharacters
+
+**Note:** These are validated structurally. Whether the role/level is _permitted_ for the user is a policy question, not a scrubbing question. The scrubber confirms the value isn't malformed or injected.
+
+| Variable | Class | Additional Rules | Needed By |
+|---|---|---|---|
+| `SELINUX_ROLE_REQUESTED` | SELinux Component (role) | Empty string is valid (means "default") | PAM/login |
+| `SELINUX_LEVEL_REQUESTED` | SELinux Component (level) | Empty string is valid (means "default") | PAM/login |
+
+#### Validation Class: Safe Identifier (`validate_safe_identifier`)
+
+For variables that contain simple identifiers — command names, function names, etc.
+
+**Rules:**
+1. Max 256 chars
+2. Charset: `[a-zA-Z0-9_./-]` (alphanumeric + dot + underscore + hyphen + slash)
+3. No NUL bytes, no shell metacharacters, no whitespace
+4. Must not be empty
+
+| Variable | Class | Additional Rules | Needed By |
+|---|---|---|---|
+| `_` | Safe Identifier | Set by bash; typically last command name | Shell introspection |
+
 #### Validation Summary Table
 
 | Variable | Validation Class | Fail Action | Needed By |
@@ -297,6 +403,7 @@ Per the `NO_COLOR` specification (https://no-color.org/): any non-empty value me
 | `TERM` | Terminal Identifier | Remove (fallback: `dumb`) | `crossterm`, `ratatui`, `colored` |
 | `COLORTERM` | Enum (`truecolor`/`24bit`) | Remove | True-color detection |
 | `NO_COLOR` | Boolean Presence | Remove | `colored` crate |
+| `RUST_LOG` | Log Level Enum (`umrs_*` only) | Remove | Debug diagnostics |
 | `COLUMNS` | Positive Integer (1–9999) | Remove | `textwrap`, terminal width |
 | `LINES` | Positive Integer (1–9999) | Remove | `ratatui` terminal height |
 | `TZ` | Timezone | Remove | Time formatting, timestamps |
@@ -306,6 +413,24 @@ Per the `NO_COLOR` specification (https://no-color.org/): any non-empty value me
 | `XDG_CACHE_HOME` | Safe Path (dir) | Remove | UMRS cache |
 | `XDG_STATE_HOME` | Safe Path (dir) | Remove | UMRS state |
 | `DBUS_SESSION_BUS_ADDRESS` | D-Bus Address (unix only; tcp rejected) | Remove | Desktop integration |
+| `SHELL` | Safe Path (file, executable) | Remove | Login shell identification |
+| `MAIL` | Safe Path (file) | Remove | Mail spool |
+| `PWD` | Safe Path (dir) | Remove | Current working directory |
+| `OLDPWD` | Safe Path (dir) | Remove | Previous working directory |
+| `SSH_TTY` | Device Path | Remove | SSH terminal device |
+| `GPG_TTY` | Device Path | Remove | GPG pinentry terminal |
+| `HISTSIZE` | Positive Integer (1–100000) | Remove | Shell history |
+| `SHLVL` | Positive Integer (1–999) | Remove | Shell nesting level |
+| `XDG_SESSION_ID` | Positive Integer (1–999999) | Remove | logind session ID |
+| `XDG_SESSION_TYPE` | Enum (`x11`/`wayland`/`tty`/`unspecified`) | Remove | Session type |
+| `XDG_SESSION_CLASS` | Enum (`user`/`greeter`/`lock-screen`) | Remove | Session class |
+| `XDG_DATA_DIRS` | Colon-Delimited Path List | Remove | System data dirs |
+| `HOSTNAME` | Hostname | Remove | System hostname |
+| `HISTCONTROL` | Enum (see below) | Remove | Shell history control |
+| `SELINUX_ROLE_REQUESTED` | SELinux Component | Remove | PAM/login SELinux role |
+| `SELINUX_LEVEL_REQUESTED` | SELinux Component | Remove | PAM/login MLS level |
+| `SELINUX_USE_CURRENT_RANGE` | Boolean Presence | Remove | PAM/login range flag |
+| `_` | Safe Identifier | Remove | Last command (set by bash) |
 
 **Tier 3: Strip unconditionally**
 
@@ -343,6 +468,14 @@ Everything not in Tier 1 or 2 is removed. Additionally, these are _always_ remov
 | `NIS_PATH` | NIS lookup manipulation |
 | `MALLOC_CHECK_` / `MALLOC_TRACE` | Memory debugging exposure |
 | `SSH_AUTH_SOCK` | SSH agent credential access — lateral movement vector; opt-in via `scrub_env_with` |
+| `SSH_CLIENT` / `SSH_CONNECTION` | Leaks source IP, port — information exposure in process listing |
+| `DEBUGINFOD_URLS` | External URLs — network access from air-gapped system is anomalous |
+| `DEBUGINFOD_IMA_CERT_PATH` | Debug infrastructure path — not needed by UMRS tools |
+| `OTEL_*` (all OpenTelemetry vars) | Telemetry export endpoints — network exfiltration vector on air-gapped systems |
+| `LESSOPEN` / `LESSCLOSE` | Shell command execution via `less` preprocessor — command injection vector |
+| `LS_COLORS` | Excessively long values possible; no UMRS tool uses it (we have our own color logic) |
+| `GIT_EDITOR` / `EDITOR` / `VISUAL` | Editor invocation paths — UMRS tools never spawn editors; opt-in via `scrub_env_with` |
+| `MOTD_SHOWN` | PAM/login marker — no value to UMRS tools |
 
 This denylist mirrors what glibc's `__libc_secure_getenv()` / AT_SECURE / secure-execution mode blocks in the dynamic linker (`ld.so(8)`), extended for interpreter paths and recent CVEs.
 
@@ -865,7 +998,302 @@ Tests split across files by validation class in `umrs-core/tests/`:
 | `umrs-core/tests/validate_lang_tests.rs` | POSIX locale tests (6 cases) |
 | `umrs-core/tests/validate_term_tests.rs` | Terminal identifier tests (5 cases) |
 | `umrs-core/tests/validate_misc_tests.rs` | Username, integer, TZ, D-Bus tests (9 cases) |
-| docs | Developer guide section on tool initialization pattern + validator API reference |
+| `umrs-core/src/init/validate/log_level.rs` | `validate_log_level()` — RUST_LOG enum + `umrs_*` module filter validation |
+| `umrs-core/src/init/validate/device.rs` | `validate_device_path()` — `/dev/pts/*` and `/dev/tty*` validation |
+| `umrs-core/src/init/validate/hostname.rs` | `validate_hostname()` — RFC 1123 hostname syntax |
+| `umrs-core/src/init/validate/enum_set.rs` | `validate_enum()` — generic fixed-set membership check |
+| `umrs-core/src/init/validate/selinux.rs` | `validate_selinux_component()` — SELinux role/level syntax validation |
+| `umrs-core/src/init/validate/identifier.rs` | `validate_safe_identifier()` — safe alphanumeric identifier |
+| `umrs-core/tests/validate_log_level_tests.rs` | RUST_LOG validation tests (accepted levels, rejected modules, comma lists) |
+| `umrs-env/Cargo.toml` | New binary crate — depends on `umrs-core`, `clap`, `serde_json` |
+| `umrs-env/src/main.rs` | CLI entry point — stdin/env reading, output formatting, `--debug` comments |
+| `umrs-env/tests/cli_tests.rs` | Integration tests via `assert_cmd` (default, debug, json, stdin, --var, --allow modes) |
+| docs | Developer guide section on tool initialization pattern + validator API reference + `umrs-env` operator guide |
+
+---
+
+## `umrs-env` — Scrubbed Environment Tool
+
+**ROADMAP alignment:** G4 (Tool Ecosystem), G8 (Human-Centered Design)
+
+### Concept
+
+A standalone CLI tool that acts like `env(1)` but runs every variable through the `umrs_core::init` scrub engine. **It never modifies the caller's environment** — it reports what's clean, what's jacked up, and why. The operator decides what to do about it. If they want to act on the results, they can source the output or pipe it into their workflow. The tool is an advisor, not a mutator.
+
+Designed for three use cases:
+
+1. **Operator inspection** — "What does my environment look like after UMRS scrubbing?" Run `umrs-env` to see only what UMRS tools would trust.
+2. **Shell integration** — `eval $(umrs-env)` or `umrs-env > ~/.umrs-env && source ~/.umrs-env` to launch a scrubbed subshell or source a clean environment file.
+3. **Pipe scrubbing** — `env | umrs-env` or `echo "$HOME" | umrs-env --var HOME` to scrub arbitrary input through the validator pipeline.
+
+### CLI Interface
+
+```
+umrs-env [OPTIONS]
+
+OPTIONS:
+    --debug             Show scrubbing decisions as # comments in output
+    --json              Output as JSON (ScrubReport structure)
+    --list              Dump the full variable dictionary: every variable we know about,
+                        its tier, validation class, and what we check for
+    --list <VAR>        Show details for a specific variable (tier, validator, rules)
+    --allow <VAR>       Add variable(s) to the allowlist (repeatable)
+    --var <NAME>        When reading stdin, treat input as the value of NAME
+    --stdin             Read KEY=VALUE pairs from stdin instead of inherited env
+    -v, --verbose       Verbose operation (passed to init_tool)
+    -h, --help          Show help
+    --version           Show version
+```
+
+### `--list` — Variable Dictionary
+
+Dumps the complete dictionary of environment variables the scrub engine knows about. For each variable: its tier, validation class, what the validator checks for, and the NIST control mapping. This lets an operator answer: "Does umrs-env know about my variable? What does it do with it?"
+
+```bash
+$ umrs-env --list
+VARIABLE              TIER   VALIDATION CLASS         ACTION    CONTROLS
+─────────────────────────────────────────────────────────────────────────
+BASH_ENV              3      (denylist)               strip     CM-7
+CDPATH                3      (denylist)               strip     CM-7
+COLORTERM             2      Enum (truecolor|24bit)   validate  SI-10
+COLUMNS               2      Positive Integer 1-9999  validate  SI-10
+DBUS_SESSION_BUS_ADDRESS  2  D-Bus Address (unix)     validate  CM-7, AC-3
+GLIBC_TUNABLES        3      (denylist)               strip     CM-7, SI-7
+GPG_TTY               2      Device Path (/dev/*)     validate  SI-10
+HISTCONTROL           2      Enum (4 values)          validate  SI-10
+HISTSIZE              2      Positive Integer 1-100k  validate  SI-10
+HOME                  2      Safe Path (dir, owned)   validate  CM-7, AC-3, SI-7
+HOSTNAME              2      Hostname (RFC 1123)      validate  SI-10
+LANG                  2      POSIX Locale             validate  SI-10
+...
+LD_PRELOAD            3      (denylist)               strip     CM-7, SI-7
+...
+PATH                  1      (reset)                  reset     CM-7
+...
+RUST_LOG              2      Log Level Enum (umrs_*)  validate  AU-9, CM-7
+SELINUX_LEVEL_REQUESTED  2   SELinux Component        validate  AC-4, SI-10
+SELINUX_ROLE_REQUESTED   2   SELinux Component        validate  AC-4, SI-10
+...
+TMPDIR                1      (reset)                  reset     CM-7
+
+Tier 1: 2 variables (reset to safe defaults)
+Tier 2: 33 variables (preserve + validate)
+Tier 3: 35+ variables (strip unconditionally)
+Unknown variables not listed above are removed silently.
+```
+
+**Single-variable detail** (`--list HOME`):
+
+```bash
+$ umrs-env --list HOME
+Variable:         HOME
+Tier:             2 (preserve + validate)
+Validation class: Safe Path (directory)
+Validator:        validate_safe_path()
+Action on fail:   Remove from sanitized environment
+
+Checks performed:
+  ✓ Must be an absolute path (starts with /)
+  ✓ No NUL bytes
+  ✓ No '..' path traversal components
+  ✓ No shell metacharacters (; | & ` $ ( ) { } < >)
+  ✓ Path must resolve to an existing directory
+  ✓ Directory must not be world-writable (o+w)
+  ✓ Must be owned by root or current user
+  ✓ No sticky-bit-less world-writable parent directories
+  ✓ Max length: 4096 (PATH_MAX)
+  ✓ Symlink chain: every component checked via O_PATH|O_NOFOLLOW
+
+Controls: NIST SP 800-53 CM-7, AC-3, SI-7
+          CWE-426 (untrusted search path)
+
+Current value: /home/jadams
+Status:        ✓ PASS
+```
+
+```bash
+$ umrs-env --list SELINUX_LEVEL_REQUESTED
+Variable:         SELINUX_LEVEL_REQUESTED
+Tier:             2 (preserve + validate)
+Validation class: SELinux Component (MLS level)
+Validator:        validate_selinux_component()
+Action on fail:   Remove from sanitized environment
+
+Checks performed:
+  ✓ Max 256 chars
+  ✓ Must parse as valid MLS level or range (s0-s15, optional categories)
+  ✓ Empty string accepted (means "use default")
+  ✓ No NUL bytes or shell metacharacters
+  ✓ Structural validation only — policy permit check is out of scope
+
+Controls: NIST SP 800-53 AC-4 (information flow), SI-10
+          Uses umrs-selinux parsing engine for validation
+
+Current value: s0-s0:c0.c1023
+Status:        ✓ PASS
+```
+
+```bash
+$ umrs-env --list EDITOR
+Variable:         EDITOR
+Tier:             3 (strip — not in allowlist)
+Action:           Removed from sanitized environment
+Reason:           UMRS tools never spawn editors; opt-in via --allow EDITOR
+
+To include: umrs-env --allow EDITOR
+```
+
+**JSON variant** (`--list --json`): dumps the full dictionary as a JSON array for programmatic consumption.
+
+### Output Formats
+
+**Default output** — sourceable shell `KEY=VALUE` pairs, one per line. Only variables that survived scrubbing appear. Values are shell-quoted (single quotes with escaping).
+
+```bash
+$ umrs-env
+HOME='/home/jadams'
+LANG='en_US.UTF-8'
+TERM='xterm-256color'
+PATH='/usr/bin:/bin:/usr/sbin:/sbin'
+TMPDIR='/tmp'
+NO_COLOR=''
+XDG_RUNTIME_DIR='/run/user/1000'
+```
+
+**Debug output** (`--debug`) — same as default, but scrubbing decisions appear as `#` comment lines. Rejected/stripped/reset variables are shown with the reason. This makes the output self-documenting while remaining sourceable (comments are ignored by the shell).
+
+```bash
+$ umrs-env --debug
+# umrs-env: environment scrub report
+# scrub engine: umrs_core::init v0.1.0
+# timestamp: 2026-03-17T14:22:03Z
+
+# --- Tier 1: Reset to safe defaults ---
+# PATH: reset from inherited value (CM-7)
+PATH='/usr/bin:/bin:/usr/sbin:/sbin'
+# TMPDIR: reset from inherited value (CM-7)
+TMPDIR='/tmp'
+
+# --- Tier 2: Preserved (validated) ---
+HOME='/home/jadams'
+LANG='en_US.UTF-8'
+TERM='xterm-256color'
+NO_COLOR=''
+XDG_RUNTIME_DIR='/run/user/1000'
+
+# --- Tier 3: Stripped (denied) ---
+# LD_PRELOAD: stripped — library injection vector (CM-7, SI-7)
+# GLIBC_TUNABLES: stripped — CVE-2023-4911 (CM-7, SI-7)
+
+# --- Failed validation ---
+# DBUS_SESSION_BUS_ADDRESS: rejected — tcp: transport not permitted (CM-7)
+
+# --- Unknown (not in any allowlist) ---
+# EDITOR: removed — not in allowlist
+# VISUAL: removed — not in allowlist
+
+# summary: 5 preserved, 2 reset, 2 stripped, 1 rejected, 2 unknown removed
+```
+
+**JSON output** (`--json`) — serializes the full `ScrubReport` structure. For programmatic consumption, piping into `jq`, or feeding into `umrs-logspace` audit records.
+
+### Stdin Mode
+
+When `--stdin` is given (or stdin is not a TTY), reads `KEY=VALUE` pairs from stdin (one per line, same format as `env(1)` output). Each pair is run through the scrub engine and the result is output per the selected format.
+
+**Single-variable mode** (`--var NAME`) — reads a bare value from stdin (no `KEY=`) and validates it as the named variable. Useful for quick checks:
+
+```bash
+$ echo "/home/jadams" | umrs-env --var HOME
+HOME='/home/jadams'
+
+$ echo "/home/../etc/shadow" | umrs-env --var HOME --debug
+# HOME: rejected — path contains '..' traversal component (SI-7)
+
+$ echo "trace,hyper=debug" | umrs-env --var RUST_LOG --debug
+# RUST_LOG: rejected — module filter 'hyper' does not match umrs_* prefix (AU-9)
+```
+
+**Pipe full environment:**
+
+```bash
+$ env | umrs-env --debug
+# (full scrub report with comments)
+
+$ env | umrs-env --json | jq '.stripped[].name'
+"LD_PRELOAD"
+"GLIBC_TUNABLES"
+```
+
+### Custom Allowlist
+
+`--allow` extends the default Tier 2 allowlist. Variables added via `--allow` fall into three categories:
+
+1. **Known variable, no dedicated validator.** The variable is in our dictionary (Tier 3 strip-by-default like `EDITOR`, `SSH_AUTH_SOCK`) but not on the hardcoded denylist. It gets promoted to Tier 2 and validated with a generic safety check (no NUL, no shell metacharacters, max 4096 chars). No warning.
+
+2. **Unknown variable — not in our dictionary at all.** The variable is accepted but the tool emits a warning: we have no dedicated validator for it, so only the generic safety check applies. The operator should know they're getting reduced assurance.
+
+   ```bash
+   $ umrs-env --allow MY_CUSTOM_VAR
+   # WARNING: MY_CUSTOM_VAR is not in the umrs-env variable dictionary.
+   #          No dedicated validator exists — only generic safety checks applied.
+   #          Use --list MY_CUSTOM_VAR for details.
+   HOME='/home/jadams'
+   MY_CUSTOM_VAR='some_value'
+   ...
+   ```
+
+   In `--json` mode, these appear in a `warnings` array in the output with `"kind": "unvalidated_allow"`.
+
+3. **Hardcoded denylist variable.** `LD_PRELOAD`, `GLIBC_TUNABLES`, etc. **cannot** be allowed via `--allow` — they are always stripped regardless. The tool emits a hard warning explaining why.
+
+   ```bash
+   $ umrs-env --allow LD_PRELOAD
+   # ERROR: LD_PRELOAD is on the hardcoded denylist and cannot be allowed.
+   #        Reason: library injection vector (NIST SP 800-53 CM-7, SI-7)
+   #        This restriction cannot be overridden.
+   ```
+
+```bash
+$ umrs-env --allow EDITOR --allow VISUAL
+HOME='/home/jadams'
+EDITOR='/usr/bin/vim'
+VISUAL='/usr/bin/vim'
+...
+```
+
+### Exit Codes
+
+| Code | Meaning |
+|---|---|
+| 0 | All variables processed; output produced |
+| 1 | At least one variable was stripped from the denylist (anomaly detected) |
+| 2 | Fatal error (can't read stdin, bad CLI args) |
+
+Exit code 1 on denylist hits enables use in shell scripts: `umrs-env || echo "WARNING: environment anomaly detected"`.
+
+### Crate Structure
+
+New binary crate: `components/rusty-gadgets/umrs-env/`
+
+```
+umrs-env/
+├── Cargo.toml          ← depends on umrs-core (init module)
+├── src/
+│   └── main.rs         ← CLI parsing (clap), stdin handling, output formatting
+└── tests/
+    └── cli_tests.rs    ← integration tests via assert_cmd
+```
+
+**Dependencies:** `umrs-core` (workspace), `clap` (CLI parsing), `serde_json` (for `--json`), `assert_cmd` + `predicates` (test only).
+
+### Controls
+
+- NIST SP 800-53 CM-7 (least functionality — only validated vars survive)
+- NIST SP 800-53 SI-10 (input validation — every value is validated)
+- NIST SP 800-53 AU-3 (audit content — `--json` provides structured audit record)
+- CWE-526 (exposure of sensitive information through environment variables)
+- CERT ENV03-C (sanitize the environment when invoking external programs)
 
 ---
 

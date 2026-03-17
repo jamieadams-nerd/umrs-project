@@ -1,0 +1,301 @@
+Scrub strings
+
+1) First principle: sanitize for context, not generically
+
+There is no universal “sanitize string” function.
+
+You sanitize based on where the string will be used:
+
+Context	Risk class	Example
+Filesystem paths	Traversal, injection	../../vaults
+Filenames	Control chars, collisions	file\0.pdf
+Shell execution	Command injection	; rm -rf /
+Logging	Log injection	\nAUDIT OK
+SQL	Injection	' OR 1=1
+
+So step one is always:
+
+Identify the consumption surface.
+
+For your vault tooling, the high-risk surfaces are:
+	•	Paths
+	•	Filenames
+	•	Labels/metadata
+	•	External command invocation (if any)
+
+⸻
+
+2) Never trust strings — prefer structured types
+
+Rust’s standard library gives you safer primitives:
+
+Use string?	Use instead
+File path	Path, PathBuf
+OS strings	OsStr, OsString
+Command args	.arg() APIs
+Labels	Strong typed structs
+
+Example:
+
+use std::path::PathBuf;
+
+let user_input = "case123/report.pdf";
+let path = PathBuf::from(user_input);
+
+Now you can canonicalize and validate safely.
+
+⸻
+
+3) Path traversal scrubbing
+
+Vault systems are extremely sensitive to this.
+
+Attack example
+
+../../archive/dna/secret.pdf
+
+If blindly joined:
+
+let full = vault_root.join(user_input);
+
+You could escape custody boundaries.
+
+⸻
+
+Mitigation pattern
+	1.	Canonicalize
+	2.	Verify prefix containment
+
+use std::path::{Path, PathBuf};
+
+fn safe_join(base: &Path, user: &Path) -> Option<PathBuf> {
+    let joined = base.join(user);
+    let canon = joined.canonicalize().ok()?;
+
+    if canon.starts_with(base) {
+        Some(canon)
+    } else {
+        None
+    }
+}
+
+This ensures the final path never leaves the vault root.
+
+⸻
+
+4) Filename scrubbing
+
+User filenames can contain:
+	•	Control characters
+	•	Null bytes
+	•	Unicode confusables
+	•	Path separators
+	•	Reserved device names
+
+Minimal scrub example
+
+fn scrub_filename(input: &str) -> String {
+    input
+        .chars()
+        .filter(|c| c.is_ascii_alphanumeric() || *c == '.' || *c == '_')
+        .collect()
+}
+
+But production vaults usually use allow-lists, not deny-lists.
+
+⸻
+
+5) Null byte defense
+
+Rust strings are UTF-8 and safe internally, but OS interfaces can choke on embedded nulls in byte streams.
+
+If you accept raw bytes:
+
+if input.as_bytes().contains(&0) {
+    return Err("Null byte detected");
+}
+
+Most filesystem APIs will reject these anyway, but it’s good hygiene.
+
+⸻
+
+6) Unicode normalization issues
+
+Two filenames may look identical but differ canonically:
+	•	NFC vs NFD forms
+	•	Confusable glyphs
+
+For high-assurance custody systems, normalize:
+
+use unicode_normalization::UnicodeNormalization;
+
+let normalized = input.nfc().collect::<String>();
+
+Prevents duplicate spoofing.
+
+⸻
+
+7) Collision handling
+
+Sanitization often collapses distinct inputs:
+
+report!.pdf → report.pdf
+report#.pdf → report.pdf
+
+So you must detect collisions post-scrub.
+
+Typical fix:
+	•	Timestamp suffix
+	•	Hash suffix
+	•	UUID
+
+Example:
+
+format!("{}_{}", scrubbed, timestamp)
+
+
+⸻
+
+8) Shell injection avoidance
+
+If your vault manager ever shells out (e.g., restorecon, setfattr):
+
+Never build command strings.
+
+Use argument APIs:
+
+use std::process::Command;
+
+Command::new("restorecon")
+    .arg("-R")
+    .arg(path)
+    .status()?;
+
+Rust does not invoke a shell here — no injection risk.
+
+Avoid:
+
+Command::new("sh")
+    .arg("-c")
+    .arg(format!("restorecon -R {}", user_input));
+
+That reintroduces injection risk.
+
+⸻
+
+9) Logging sanitization
+
+User strings written to logs can inject fake entries.
+
+Example:
+
+filename = "report.pdf\nAUDIT OK"
+
+Mitigation:
+	•	Strip control characters
+	•	Escape newlines
+
+fn scrub_log(input: &str) -> String {
+    input.replace('\n', "\\n")
+}
+
+
+⸻
+
+10) Label / metadata scrubbing
+
+If users supply classification metadata (labels, tags, etc.):
+
+Use strict schema validation, not string cleaning.
+
+Example:
+
+struct Label {
+    sensitivity: Sensitivity,
+    categories: Vec<Category>,
+}
+
+Never accept raw MLS strings like:
+
+"s1:c40,c41"
+
+Parse → validate → re-emit.
+
+⸻
+
+11) Regex validation for structured strings
+
+If you must accept structured text:
+
+use regex::Regex;
+
+let re = Regex::new(r"^[A-Z0-9_/.-]+$").unwrap();
+
+if !re.is_match(input) {
+    return Err("Invalid characters");
+}
+
+Again: allow-list > deny-list.
+
+⸻
+
+12) Defense layers summary
+
+For vault-grade Rust tooling, sanitization stack typically looks like:
+	1.	UTF-8 validation (automatic in String)
+	2.	Null byte rejection
+	3.	Unicode normalization
+	4.	Character allow-listing
+	5.	Path canonicalization
+	6.	Base path containment check
+	7.	Collision resolution
+	8.	Structured metadata parsing
+
+Each layer blocks a different class of abuse.
+
+⸻
+
+13) Crates commonly used
+
+You don’t need all of these, but they’re standard:
+
+Crate	Purpose
+sanitize-filename	Filename scrubbing
+unicode-normalization	NFC/NFD handling
+regex	Structured validation
+path-clean	Path normalization
+camino	UTF-8 safe paths
+uuid	Collision suffixing
+
+
+⸻
+
+14) Vault-specific recommendation
+
+Given your custody model:
+
+Treat intake filenames as:
+
+Untrusted metadata, not authoritative identifiers.
+
+So:
+	•	Preserve original name as metadata
+	•	Generate canonical archive name internally
+
+Example:
+
+Original: whistleblower-report!.pdf
+Archive:  obj_20260212_00123.bin
+Metadata: original_filename="whistleblower-report!.pdf"
+
+That’s how evidence systems avoid filename risk entirely.
+
+⸻
+
+If you want to go deeper next, we can focus narrowly on one surface:
+	•	Safe intake path handling
+	•	Promotion pipeline scrubbing
+	•	Label metadata validation
+	•	Command execution hygiene
+
+Each has different threat models and code patterns.

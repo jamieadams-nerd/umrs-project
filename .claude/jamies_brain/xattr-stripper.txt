@@ -1,0 +1,588 @@
+Xattr stripper
+
+You’re exactly right: xattrs are a “metadata side-channel” that can carry real payloads (especially user.*) and can survive workflows that people assume are “sanitizing.” Modern guidance generally doesn’t single out xattrs by name—but it does require sanitizing all target data on the media, which includes filesystem metadata that can retain sensitive content. NIST’s current anchor is SP 800-88 Rev. 2 (Sept 2025), which supersedes Rev. 1.  
+
+Below is how I’d translate the “RTB/NIST/CMMC mindset” into xattr-specific engineering rules.
+
+⸻
+
+What the standards are effectively saying (translated to xattrs)
+
+1) Media sanitization must account for “hidden”/non-obvious storage
+
+NIST SP 800-88 frames sanitization as rendering “target data” infeasible to recover, and it’s intentionally technology-agnostic—meaning your program must consider where data can persist on the medium (not just file contents).  
+NIST 800-53 MP-6 (“Media Sanitization”) operationalizes this as a control: sanitize media before disposal/reuse using techniques commensurate with the data sensitivity.  
+
+Practical implication: if your threat model includes covert storage, you treat xattrs as data-bearing surfaces that must be inventoried, controlled, and scrubbed.
+
+2) Don’t assume “overwrite the file” or “delete the file” scrubs xattrs
+
+On Linux filesystems, xattrs may be stored in separate blocks referenced by the inode, not inline with file data—so “content overwrite” and many copy/move patterns won’t guarantee removal. (ext4 docs are explicit that xattrs are stored separately and referenced via inode fields.)  
+
+Practical implication: sanitization must be xattr-aware, not content-only.
+
+3) Threat intel explicitly recognizes xattrs as a hiding technique
+
+MITRE ATT&CK tracks abuse of extended attributes to hide artifacts (Linux/macOS).  
+That’s not a compliance doc, but it’s a strong “why you should care” reference for security reviewers.
+
+⸻
+
+Where “hidden data” commonly shows up in xattrs
+	•	user.* — your concern (easy for applications/users; can store arbitrary blobs)
+	•	security.* — SELinux labels (security.selinux), file capabilities (security.capability), IMA/EVM (security.ima, security.evm) depending on stack
+	•	system.* — POSIX ACLs on some FS (system.posix_acl_access, system.posix_acl_default)
+	•	trusted.* — privileged namespace (root-only)
+
+Key point: scrubbing user.* is often safe; scrubbing security.* / system.* can break security posture (SELinux, capabilities, ACLs) unless you’re doing deliberate “declass/reset to baseline.”
+
+⸻
+
+Concrete security guidelines you can adopt (policy + ops)
+
+A) Baseline policy: “xattrs are first-class data”
+	1.	Inventory: your scanning/DLP/forensics pipeline must read xattrs (not just file bodies).
+	2.	Transfer controls: define whether xattrs are allowed to cross trust boundaries (exports, backups, removable media, cross-domain moves).
+	3.	Sanitization requirement: when releasing data outside an enclave, either:
+	•	strip user.* always, or
+	•	whitelist allowed xattrs and strip everything else.
+
+B) Engineering controls (Linux)
+	•	Default-deny creation of user.* on sensitive mounts if feasible:
+	•	Many filesystems support mount options that affect xattr behavior; at minimum, you can harden by policy and by tooling (and ensure your pipeline doesn’t preserve them unintentionally). (xattr classes and behavior overview)  
+	•	Detect: continuous compliance checks: “no unexpected user.* xattrs” under sensitive roots.
+	•	Log: treat xattr writes as audit events where possible (fanotify/audit rules where applicable; or instrument your own tools).
+
+C) Sanitization playbooks (the important part)
+
+Think in two levels:
+
+1) File / tree “release” sanitization (logical):
+	•	Strip xattrs as part of export packaging:
+	•	Avoid tools/options that preserve xattrs unless required (tar --xattrs, rsync -X, cp --preserve=xattr).
+	•	Prefer transforms that produce a “clean” artifact (e.g., re-materialize content into a new filesystem/object store with a strict metadata policy).
+
+2) Media sanitization (physical/crypto):
+	•	If you’re sanitizing for disposal or reuse, NIST SP 800-88 (Rev 2) governs method selection (Clear / Purge / Destroy, including crypto-erase where appropriate).  
+	•	Do not rely on per-file scrubbing to meet media sanitization requirements on modern journaling/COW storage—use approved media methods (often full-disk crypto + crypto erase, or purge/destroy) per your categorization and risk appetite.
+
+⸻
+
+A practical “scrub rule” that reviewers like
+
+For “release/export” workflows (not whole-device disposal):
+	1.	Strip user.* unconditionally.
+	2.	Reset/normalize security metadata to the destination baseline:
+	•	either preserve required SELinux labels and ACLs intentionally, or clear them as part of a formal “relabel to baseline” step in the destination environment.
+	3.	Prove it:
+	•	generate a manifest of xattrs before/after (counts + names; optionally hashes for allowed ones).
+	•	keep the manifest as part of the chain-of-custody record.
+
+This maps nicely to the NIST control intent (you can show a repeatable procedure and evidence).  
+
+⸻
+
+What I’d recommend you implement next (UMRS-flavored, but generally useful)
+	•	A deterministic xattr enumerator + policy engine:
+	•	policy: whitelist/blacklist by namespace + name patterns
+	•	output: signed manifest (paths + xattr names + value digests + size totals)
+	•	A companion scrubber:
+	•	“export mode”: strip user.* + anything not whitelisted
+	•	“reset mode”: strip everything + emit a “needs relabel” marker for SELinux/ACL baselines
+	•	Integrate the above into your vault lifecycle transitions (intake → stage → vault), so “promotion” includes an explicit metadata posture check.
+
+If you tell me your target scenario (exporting files across enclaves? preparing media for reuse? “clean-room” packaging?), I’ll give you a tight, minimal checklist for the exact namespaces to preserve vs strip, and the evidence artifacts to generate so it’s assessable.
+
+Excellent — this is the correct instinct.
+
+You can absolutely enumerate all extended attributes on a file.
+The syscall you’re looking for is:
+
+listxattr()
+llistxattr()
+flistxattr()
+
+The CLI tool that wraps this is:
+
+getfattr -d <file>
+
+But if you want authoritative, syscall-level control (which I strongly recommend in high-assurance contexts), Rust can call the underlying libc interfaces directly.
+
+⸻
+
+🔎 Linux Extended Attribute Enumeration
+
+There are three variants:
+
+Function	Follows symlinks	Works on FD
+listxattr	Yes	No
+llistxattr	No	No
+flistxattr	N/A	Yes
+
+For security tooling, you usually want:
+
+llistxattr()  // avoid symlink traversal
+
+or
+
+flistxattr()  // if you've already opened securely
+
+
+⸻
+
+🦀 Minimal Rust Implementation (Safe + Direct)
+
+This uses libc directly for deterministic control.
+
+Add to Cargo.toml:
+
+[dependencies]
+libc = "0.2"
+
+
+⸻
+
+Example: List All Xattrs (No Symlink Following)
+
+use libc::{c_char, llistxattr};
+use std::ffi::{CString};
+use std::io;
+use std::ptr;
+
+pub fn list_xattrs(path: &str) -> io::Result<Vec<String>> {
+    let c_path = CString::new(path)?;
+
+    // First call: get required buffer size
+    let size = unsafe { llistxattr(c_path.as_ptr(), ptr::null_mut(), 0) };
+    if size < 0 {
+        return Err(io::Error::last_os_error());
+    }
+
+    if size == 0 {
+        return Ok(Vec::new());
+    }
+
+    let mut buffer = vec![0u8; size as usize];
+
+    let ret = unsafe {
+        llistxattr(
+            c_path.as_ptr(),
+            buffer.as_mut_ptr() as *mut c_char,
+            buffer.len(),
+        )
+    };
+
+    if ret < 0 {
+        return Err(io::Error::last_os_error());
+    }
+
+    // Attributes are returned as NULL-separated strings
+    let mut attrs = Vec::new();
+    let mut start = 0;
+
+    for i in 0..buffer.len() {
+        if buffer[i] == 0 {
+            let name = String::from_utf8_lossy(&buffer[start..i]).to_string();
+            attrs.push(name);
+            start = i + 1;
+        }
+    }
+
+    Ok(attrs)
+}
+
+
+⸻
+
+Usage
+
+fn main() -> std::io::Result<()> {
+    let attrs = list_xattrs("TESTFILE")?;
+
+    if attrs.is_empty() {
+        println!("No extended attributes.");
+    } else {
+        for attr in attrs {
+            println!("Found xattr: {}", attr);
+        }
+    }
+
+    Ok(())
+}
+
+
+⸻
+
+🔐 High-Assurance Variant (Preferred Pattern)
+
+If you’re operating in a security tool:
+	1.	Open file with:
+	•	O_NOFOLLOW
+	•	O_CLOEXEC
+	2.	Use flistxattr() on the FD.
+	3.	Verify inode/device before trusting.
+
+This eliminates symlink race attacks.
+
+If you want, I can provide that hardened pattern next.
+
+⸻
+
+📦 If You Prefer a Crate
+
+There is also:
+
+xattr crate
+
+Example:
+
+use xattr;
+
+fn main() -> std::io::Result<()> {
+    for attr in xattr::list("TESTFILE")? {
+        println!("{}", attr.to_string_lossy());
+    }
+    Ok(())
+}
+
+But for RTB-grade tooling, I would personally prefer the direct syscall route so you control:
+	•	symlink behavior
+	•	FD-based enumeration
+	•	error classification
+	•	deterministic parsing
+
+⸻
+
+🧠 Important Notes
+	•	Returned buffer is NULL-delimited.
+	•	Names include full namespace (user.foo, security.selinux, etc.)
+	•	No values are returned — only attribute names.
+	•	Some filesystems have size limits.
+	•	Requires appropriate permissions.
+
+⸻
+
+If you want, next I can show:
+	•	How to read values safely
+	•	How to compute total xattr byte footprint
+	•	How to strip them deterministically
+	•	How to integrate into an integrity manifest pipeline
+
+Given your direction lately, I suspect you’re heading toward a metadata-surface scanner.
+
+Perfect. No libc, no FFI, no unsafe.
+
+We’ll use the pure Rust xattr crate, which wraps the platform syscalls internally but gives you a clean safe API.
+
+⸻
+
+1️⃣ Add Dependency
+
+[dependencies]
+xattr = "1"
+
+
+⸻
+
+2️⃣ List All Extended Attributes (Safe Rust)
+
+use std::io;
+use std::path::Path;
+
+fn list_xattrs<P: AsRef<Path>>(path: P) -> io::Result<Vec<String>> {
+    let mut names = Vec::new();
+
+    for attr in xattr::list(path)? {
+        names.push(attr.to_string_lossy().into_owned());
+    }
+
+    Ok(names)
+}
+
+fn main() -> io::Result<()> {
+    let attrs = list_xattrs("TESTFILE")?;
+
+    if attrs.is_empty() {
+        println!("No extended attributes found.");
+    } else {
+        println!("Extended attributes:");
+        for a in attrs {
+            println!("  {}", a);
+        }
+    }
+
+    Ok(())
+}
+
+
+⸻
+
+What This Does
+	•	Calls listxattr() internally
+	•	Returns an iterator of OsString
+	•	Fully safe
+	•	No manual buffer management
+	•	No null parsing
+	•	No unsafe
+
+⸻
+
+🔎 Also Reading Values
+
+If you want the value for each attribute:
+
+use std::io;
+use std::path::Path;
+
+fn list_xattrs_with_values<P: AsRef<Path>>(path: P) -> io::Result<()> {
+    let path_ref = path.as_ref();
+
+    for attr in xattr::list(path_ref)? {
+        let name = attr.to_string_lossy().into_owned();
+
+        if let Some(value) = xattr::get(path_ref, &attr)? {
+            println!("Attribute: {}", name);
+            println!("Size: {} bytes", value.len());
+
+            match std::str::from_utf8(&value) {
+                Ok(text) => println!("Value (UTF-8): {}", text),
+                Err(_) => println!("Value: <binary data>"),
+            }
+        }
+    }
+
+    Ok(())
+}
+
+
+⸻
+
+🔐 Important Behavioral Notes
+	•	On Linux, this includes:
+	•	user.*
+	•	security.*
+	•	system.*
+	•	trusted.* (if permitted)
+	•	Requires permissions for certain namespaces.
+	•	Will follow symlinks (crate behavior uses normal path semantics).
+
+If you need no symlink following, you must:
+	•	Open file manually
+	•	Use File
+	•	Use xattr::FileExt
+
+⸻
+
+FD-Based Variant (Still No FFI)
+
+use std::fs::OpenOptions;
+use std::io;
+use xattr::FileExt;
+
+fn list_xattrs_fd(path: &str) -> io::Result<()> {
+    let file = OpenOptions::new()
+        .read(true)
+        .open(path)?;
+
+    for attr in file.list_xattr()? {
+        println!("{}", attr.to_string_lossy());
+    }
+
+    Ok(())
+}
+
+This is cleaner if you’re building:
+	•	scanner
+	•	sanitizer
+	•	policy enforcement engine
+
+⸻
+
+🧠 For Your Threat Model
+
+Since you’re concerned about covert storage:
+
+You probably want to:
+	•	enumerate
+	•	record namespace
+	•	compute total xattr storage footprint
+	•	optionally hash values
+	•	optionally strip user.*
+
+If you want, I can show a:
+
+deterministic xattr manifest generator
+(path + namespace + size + sha256)
+
+That’s the next logical security-grade step.
+
+Short answer:
+
+Yes — your intuition is directionally correct.
+shred overwrites the file’s data blocks, not necessarily every storage location that may contain extended attribute (xattr) data or historical copies of it.
+
+But the precise answer depends heavily on filesystem and storage semantics.
+
+Let’s break this down carefully.
+
+⸻
+
+1️⃣ What shred Actually Overwrites
+
+shred:
+	•	Opens the file
+	•	Writes multiple overwrite passes to the file’s data region
+	•	Optionally truncates/unlinks afterward
+
+It overwrites what the inode currently maps as the file’s data blocks.
+
+It does not:
+	•	Enumerate xattrs
+	•	Overwrite xattr value storage
+	•	Touch journal copies
+	•	Touch COW snapshots
+	•	Touch freed blocks
+	•	Touch SSD wear-leveled remapped blocks
+
+So yes — it operates at the data fork level, not metadata forks.
+
+⸻
+
+2️⃣ Where Extended Attributes Live
+
+On Linux filesystems like ext4:
+	•	Small xattrs may be stored inline in the inode.
+	•	Larger ones are stored in separate xattr blocks referenced by the inode.
+	•	Those blocks are not the same blocks as the file’s data region.
+
+Official ext4 documentation confirms xattrs are stored separately and referenced via inode fields.
+
+So if you:
+
+setfattr -n user.secret -v "TOPSECRET" file
+
+That value is stored in:
+	•	the inode (if small), OR
+	•	a dedicated xattr block
+
+Neither is part of the “file data” that shred overwrites.
+
+⸻
+
+3️⃣ What Happens When You Remove an Xattr?
+
+If you do:
+
+setfattr -x user.secret file
+
+The filesystem:
+	•	Updates metadata
+	•	Marks xattr storage blocks as free
+
+It does not securely overwrite those blocks.
+
+They become available for reuse.
+
+That means:
+
+The data is logically discarded, not cryptographically erased.
+
+⸻
+
+4️⃣ Where This Gets Worse (Modern Storage)
+
+On modern systems:
+
+Journaling Filesystems
+
+ext4, xfs:
+	•	Metadata updates (including xattrs) may be journaled.
+	•	Old copies may exist in journal area.
+
+Copy-on-Write Filesystems
+
+btrfs, ZFS:
+	•	Old xattr blocks may persist in previous tree versions.
+
+SSDs
+	•	Wear leveling prevents deterministic overwrite.
+	•	Logical block writes do not equal physical overwrite.
+
+⸻
+
+5️⃣ Therefore — Is Your Statement Correct?
+
+Your statement:
+
+Extended file attribute data may not be overwritten. It’s just discarded.
+
+That is correct in most modern configurations.
+
+More precisely:
+	•	It is unlinked from the inode.
+	•	The storage blocks are marked free.
+	•	They are not guaranteed to be overwritten.
+	•	They may persist until reused.
+
+⸻
+
+6️⃣ Important NIST Angle (This Is Key)
+
+Modern NIST SP 800-88 guidance does not recommend file-level shredding as a sanitization control for modern storage.
+
+The recommended approaches today are:
+	•	Full disk encryption + crypto erase
+	•	Block device purge
+	•	Physical destruction (for high sensitivity)
+
+File-level overwriting (including shred) is considered unreliable on modern storage architectures.
+
+That applies equally to:
+	•	file data
+	•	xattrs
+	•	journals
+	•	snapshots
+
+⸻
+
+7️⃣ Practical Security Conclusion
+
+If your threat model includes:
+	•	forensic disk recovery
+	•	cross-domain sanitization
+	•	release to lower classification
+	•	high-assurance wipe
+
+Then:
+	•	Do not rely on shred
+	•	Do not rely on removing xattrs
+	•	Do not rely on unlink/truncate
+
+Instead:
+	•	Use encrypted storage and destroy keys
+	•	Or sanitize the whole block device
+	•	Or destroy the media
+
+⸻
+
+8️⃣ Where This Matters in Your Work
+
+Given your MLS / vault / chain-of-custody mindset:
+
+The correct pattern is:
+	•	Store sensitive data only on encrypted volumes.
+	•	Treat logical deletion as non-sanitizing.
+	•	When decommissioning storage, perform device-level sanitization.
+	•	Treat xattrs as first-class data surfaces.
+
+⸻
+
+Final Verdict
+
+Your statement is essentially correct:
+
+shred overwrites file data blocks referenced by the inode.
+Extended attribute storage may not be overwritten and is typically only de-referenced and marked free.
+
+And on modern systems, even the data blocks themselves are not guaranteed to be physically overwritten in a recoverability-proof sense.
+

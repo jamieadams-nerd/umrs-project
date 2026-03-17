@@ -1,0 +1,305 @@
+Sanitization
+
+Understood — you’re looking for authoritative, high-assurance guidance on string handling, sanitization, and scrubbing — not ad-hoc coding tips. Below is a curated set of security engineering standards and doctrine that govern how user-supplied strings should be handled in hardened systems (including MLS / custody workflows like the ones you’re designing).
+
+I’ll group them by assurance domain so you can track lineage and reuse prior patterns if you’ve implemented against these before.
+
+⸻
+
+1) NIST Secure Coding & Input Validation Guidance
+
+NIST SP 800-53 (Control families)
+
+Relevant controls you’ll see tied to sanitization routines:
+
+Control	Relevance
+SI-10	Information Input Validation
+SI-7	Software, Firmware, Information Integrity
+SI-11	Error Handling
+IA-5	Authenticator Management (string parsing)
+AU-3	Audit record integrity (log scrubbing)
+
+Key principle from SI-10:
+
+Validate all inputs for type, length, format, and range before processing.
+
+This maps directly to:
+	•	filename validation
+	•	path validation
+	•	metadata schemas
+	•	command argument validation
+
+⸻
+
+NIST SP 800-171 / CMMC
+
+For controlled information environments, input handling ties to:
+	•	3.1.20 — Validate input
+	•	3.4.1 — Maintain system integrity
+
+Often cited in custody systems where ingestion pipelines exist.
+
+⸻
+
+2) NIST SP 800-95 — Web Services Security
+
+Even though web-focused, it contains canonical validation doctrine still used in non-web systems:
+
+Core guidance:
+	•	Reject unexpected input
+	•	Enforce schema validation
+	•	Normalize before validation
+	•	Encode before output
+
+The normalize-then-validate rule is especially relevant for Unicode filenames.
+
+⸻
+
+3) CERT Secure Coding Standards (Language-specific)
+
+These are among the most operationally actionable sanitization guidelines.
+
+CERT STR rules (String Handling)
+
+Examples:
+
+Rule	Meaning
+STR00-C	Use secure string handling functions
+STR02-C	Sanitize data passed to complex subsystems
+STR03-C	Do not inadvertently truncate strings
+STR05-C	Use bounded string operations
+
+Even though many are C-centric, the doctrine applies to Rust at FFI or OS boundaries.
+
+⸻
+
+CERT IDS rules (Input Data Sanitization)
+
+Key directives:
+	•	Accept known-good input only
+	•	Reject on first validation failure
+	•	Avoid canonicalization mismatches
+	•	Enforce length constraints
+
+This aligns with allow-list validation patterns.
+
+⸻
+
+4) NSA / DoD Raise-the-Bar Secure Coding Guidance
+
+Since you’ve worked in Raise-the-Bar contexts, these principles likely overlap with routines you’ve used before.
+
+Key string-handling mandates:
+	•	No unbounded string copies
+	•	Mandatory input normalization
+	•	Path canonicalization before use
+	•	Explicit character allow-listing
+	•	Encoding awareness (UTF-8 vs byte streams)
+
+Particularly relevant for:
+	•	Cross-domain guards
+	•	File transfer mediators
+	•	Custody ingestion tooling
+
+⸻
+
+5) OWASP Input Validation Cheat Sheet
+
+Even outside web apps, OWASP’s validation model is widely adopted:
+
+Core tenets:
+	1.	Allow-list, never deny-list
+	2.	Validate length
+	3.	Validate format
+	4.	Normalize before validation
+	5.	Canonicalize paths
+	6.	Escape output, not input
+
+Useful sections:
+	•	File upload validation
+	•	Filename safety
+	•	Path traversal mitigation
+
+These map directly to vault intake pipelines.
+
+⸻
+
+6) ISO/IEC 27002 & 27034
+
+Enterprise security frameworks that touch string sanitization via:
+	•	Input data validation
+	•	Secure coding practices
+	•	Application security controls
+
+Less implementation-specific but useful for compliance mapping.
+
+⸻
+
+7) MITRE CWE (Common Weakness Enumeration)
+
+If you’re trying to track down specific scrubbing patterns you’ve used before, mapping to CWE IDs helps.
+
+Common string/input weaknesses:
+
+CWE	Issue
+CWE-20	Improper Input Validation
+CWE-22	Path Traversal
+CWE-73	External Control of File Name
+CWE-116	Improper Output Encoding
+CWE-176	Unicode Encoding Issues
+CWE-180	Incorrect Canonicalization
+
+These are frequently cited in accreditation artifacts.
+
+⸻
+
+8) DISA STIG / SRG Application Security Requirements
+
+In DoD systems, sanitization requirements appear as:
+	•	Input validation mandates
+	•	Path sanitization
+	•	Logging integrity controls
+	•	File handling constraints
+
+Often mapped back to NIST SI-10 but expressed operationally.
+
+⸻
+
+9) High-Assurance System Design Patterns
+
+Across MLS / CDS / custody systems, string handling tends to follow these structural rules:
+
+⸻
+
+Rule 1 — Treat filenames as metadata
+
+Never authoritative identifiers.
+
+Generate internal object IDs instead.
+
+⸻
+
+Rule 2 — Normalize → validate → store
+
+Order matters:
+	1.	Unicode normalize
+	2.	Canonicalize path
+	3.	Apply allow-list
+	4.	Enforce length
+	5.	Resolve collisions
+
+⸻
+
+Rule 3 — Enforce custody root containment
+
+All user paths must resolve under an approved base.
+
+No exceptions.
+
+⸻
+
+Rule 4 — Separate ingestion from archive naming
+
+User name ≠ archive name.
+
+Prevents spoofing and collision abuse.
+
+⸻
+
+Rule 5 — Strip control characters
+
+Including:
+	•	newline
+	•	tab
+	•	null
+	•	non-printables
+
+Prevents log and UI injection.
+
+⸻
+
+10) Logging & audit scrubbing doctrine
+
+From NIST AU controls and CERT guidance:
+	•	Escape CR/LF
+	•	Prevent log forging
+	•	Preserve original string as evidence
+	•	Store sanitized + raw forms separately if needed
+
+Important in custody systems where filenames appear in audit trails.
+
+⸻
+
+11) Rust-specific secure coding references
+
+While Rust eliminates memory-unsafe string bugs, input trust is still external.
+
+Key guidance sources:
+	•	Rust Secure Code Working Group recommendations
+	•	Rust API Guidelines (string & path safety)
+	•	Ferrocene / Safety-critical Rust profiles
+	•	AWS s2n / Firecracker secure Rust practices
+
+Common Rust-specific patterns:
+	•	Prefer Path over String
+	•	Avoid lossy UTF-8 conversions
+	•	Reject invalid byte sequences
+	•	Avoid shell invocation
+
+⸻
+
+12) Practical high-assurance sanitization checklist
+
+This consolidates doctrine across the standards above:
+
+Ingestion boundary
+	•	Length check
+	•	Encoding check
+	•	Null byte rejection
+	•	Unicode normalization
+
+Filesystem boundary
+	•	Path canonicalization
+	•	Base containment verification
+	•	Separator stripping
+	•	Device name rejection
+
+Naming boundary
+	•	Allow-list characters
+	•	Collision detection
+	•	Deterministic suffixing
+
+Archive boundary
+	•	Immutable rename
+	•	Hash capture
+	•	Signature (optional)
+
+Audit boundary
+	•	Control character escaping
+	•	Structured logging
+
+⸻
+
+13) If you’re trying to rediscover prior routines
+
+Look for code or docs referencing:
+	•	“Input Validation SI-10”
+	•	“CWE-22 mitigation”
+	•	“Canonicalization guard”
+	•	“Trusted path enforcement”
+	•	“Filename allow-list”
+	•	“Custody ingestion validation”
+
+Those phrases show up repeatedly in high-assurance codebases and accreditation packages.
+
+⸻
+
+If you want, next we can:
+	•	Reconstruct a vault-grade sanitization pipeline
+	•	Map routines directly to NIST/CWE controls (useful for docs)
+	•	Design Rust modules (e.g., scrub.rs, path_guard.rs)
+	•	Define evidence-preserving vs operational scrubbing modes
+
+Given your custody + MLS direction, sanitization isn’t just hygiene — it becomes part of the chain-of-custody trust boundary.
+
+
