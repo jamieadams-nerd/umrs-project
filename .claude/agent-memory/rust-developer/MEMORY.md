@@ -4,13 +4,7 @@
 
 - [Posture module history](posture_module_history.md) — Signal→Indicator rename, Phase 2b architecture, security review findings
 - [SCAP/STIG familiarization](scap_familiarization.md) — CCE mappings for existing IndicatorId variants, new indicator candidates, methodology comparison (Phase 2 of scap-stig-corpus-plan, 2026-03-17)
-
-## WARNING — Rogue .claude Directory
-
-A `.claude/` directory at `components/rusty-gadgets/.claude/` was created by a prior agent
-violating the Single .claude Directory Rule. It contains stale copies of memory files.
-DO NOT READ OR WRITE to `components/rusty-gadgets/.claude/` — use the repo-root `.claude/` only.
-The duplicate has been flagged to Jamie.
+- [Doc placement feedback](feedback_doc_placement.md) — `# Errors` section placement rules and linter race condition pattern
 
 ## Key Architectural Facts
 

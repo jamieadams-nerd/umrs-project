@@ -1306,3 +1306,42 @@ umrs-env/
 - **Standalone crate potential** — The validator set (`validate_safe_path`, `validate_lang`, `validate_path_list`, `validate_term`, `validate_username`, `validate_tz`) plus `scrub_env` is independently valuable to the Rust ecosystem. Environment scrubbing is a long-standing pain point — there is no good Rust crate for it. Consider publishing as a standalone crate (e.g., `env-scrub` or `secure-env`) after the API stabilizes in UMRS.
 - **Configurable strictness levels** — Some deployments may want stricter validation (e.g., reject unknown TERM values entirely). A builder pattern or strictness enum could support this without breaking the simple API.
 - **`/proc/<pid>/environ` watcher** — For long-running daemons, periodically verify that the process environment hasn't been modified externally (defense in depth, not a replacement for scrubbing).
+
+---
+
+## Addendum: Additional Environment Variable Sources (2026-03-17)
+
+Source: `.claude/jamies_brain/more_env_stuff.txt` (Jamie Adams research)
+
+### Additions to incorporate at implementation time
+
+**1. systemd runtime vars → add to Tier 2 allowlist:**
+- `INVOCATION_ID` — systemd invocation UUID (validate: 128-bit hex)
+- `JOURNAL_STREAM` — journald socket (validate: device:inode format)
+- `NOTIFY_SOCKET` — sd_notify path (validate: safe path)
+- `SYSTEMD_EXEC_PID` — PID of the current unit (validate: positive integer)
+
+Rationale: UMRS tools use journald natively. These vars are present in every systemd-managed service and should be recognized, not flagged as unknown.
+
+**2. Container detection vars → informational signals in `ScrubReport`:**
+- `KUBERNETES_SERVICE_HOST`, `KUBERNETES_PORT` — Kubernetes pod indicator
+- Docker-injected `HOSTNAME` override patterns
+- Container engine indicators (`container`, `PODMAN_*`)
+
+Rationale: If these appear, the tool knows it's running in a container. This is a posture signal — containerized UMRS tools may have different trust assumptions. Report as informational, not stripped.
+
+**3. Future research — authoritative env var corpus:**
+- Parse `man 7 environ` + ENVIRONMENT sections from Linux man-pages repo
+- glibc `elf/rtld.c` source for dynamic linker vars
+- systemd `src/basic/env-util.c` for complete systemd var inventory
+- `/proc/self/environ` sampling across shell/systemd/container contexts for spec-vs-reality reconciliation
+
+This corpus work would feed a comprehensive env var classification database. Deferred to after initial implementation stabilizes.
+
+**Pre-implementation researcher task:** Acquire and index the following sources before Rusty begins implementation:
+1. `man 7 environ` full text (Linux man-pages project)
+2. glibc dynamic linker env var list (from `man ld.so` or glibc source)
+3. systemd env var reference (from `man systemd.exec`)
+4. POSIX environment variables section (Open Group Base Specifications)
+
+This gives Rusty an authoritative reference for the Tier 1/2 allowlists rather than hand-curating from memory.

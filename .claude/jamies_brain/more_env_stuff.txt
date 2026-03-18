@@ -1,0 +1,327 @@
+
+⸻
+
+1. Formal Standards (canonical baseline)
+
+These give you the only truly “standardized” env vars.
+
+POSIX / Single UNIX Specification
+	•	The Open Group
+	•	Spec: Base Specifications Issue 7 / POSIX.1-2017
+
+Where to look:
+	•	“Environment Variables” section
+	•	Individual utility specs (many define vars implicitly)
+
+Coverage:
+	•	PATH, HOME, IFS, LANG, LC_*, TZ, etc.
+
+Value:
+	•	Ground truth for standard = POSIX
+	•	Small set, but high assurance
+
+⸻
+
+2. GNU / glibc + dynamic linker (critical real-world surface)
+
+glibc
+
+Where to extract:
+	•	glibc manual → “Environment Variables”
+	•	ld.so / dynamic linker docs
+
+Key goldmine:
+	•	man ld.so
+	•	glibc source: elf/rtld.c, sysdeps/...
+
+Coverage:
+	•	LD_PRELOAD
+	•	LD_LIBRARY_PATH
+	•	LD_AUDIT
+	•	LD_DEBUG
+	•	MALLOC_*
+
+Value:
+	•	Security-critical variables
+	•	Must-have for UMRS classification
+
+⸻
+
+3. Linux man-pages project (aggregated truth)
+
+Linux man-pages project
+
+This is one of your BEST ingestion targets.
+
+Where:
+	•	man 7 environ
+	•	Individual man pages (many define env vars)
+
+Strategy:
+	•	Parse all man* pages for:
+
+ENVIRONMENT
+ENVIRONMENT VARIABLES
+
+
+
+Coverage:
+	•	Cross-cutting: libc, tools, kernel interfaces
+
+Value:
+	•	Broad, semi-authoritative, machine-extractable
+
+⸻
+
+4. systemd (modern Linux runtime authority)
+
+systemd
+
+Where:
+	•	man systemd.exec
+	•	man systemd.service
+	•	man systemd.environment
+
+Also:
+	•	Source: src/basic/env-util.c
+
+Coverage:
+	•	INVOCATION_ID
+	•	JOURNAL_STREAM
+	•	NOTIFY_SOCKET
+	•	SYSTEMD_EXEC_PID
+
+Value:
+	•	Extremely relevant for your journald mediator work
+	•	Strong semantics, well-documented
+
+⸻
+
+5. XDG / freedesktop (desktop + user-space standard)
+
+freedesktop.org
+
+Spec:
+	•	XDG Base Directory Specification
+
+Coverage:
+	•	XDG_CONFIG_HOME
+	•	XDG_DATA_HOME
+	•	XDG_RUNTIME_DIR
+	•	XDG_CACHE_HOME
+
+Value:
+	•	Clean, spec-driven, easy to fully enumerate
+
+⸻
+
+6. Language runtimes (excellent structured families)
+
+These are exactly what you asked for—cohesive, well-defined env sets.
+
+⸻
+
+Python
+
+Python
+
+Where:
+	•	Python docs → “Environment variables”
+	•	CPython source: Python/initconfig.c
+
+Coverage:
+	•	PYTHONPATH
+	•	PYTHONHOME
+	•	PYTHONHASHSEED
+	•	PYTHONWARNINGS
+
+Value:
+	•	Clean namespace (PYTHON*)
+	•	Good for structured ingestion
+
+⸻
+
+Rust / Cargo
+
+Cargo
+
+Where:
+	•	Cargo Book → Environment Variables
+
+Coverage:
+	•	CARGO_HOME
+	•	RUSTFLAGS
+	•	RUST_LOG
+	•	OUT_DIR
+	•	TARGET
+
+Value:
+	•	Directly relevant to your ecosystem
+	•	Build + runtime separation is useful
+
+⸻
+
+Go
+
+Go
+
+Where:
+	•	go help environment
+
+Coverage:
+	•	GOPATH
+	•	GOROOT
+	•	GOOS
+	•	GOARCH
+
+⸻
+
+Node.js / npm
+
+Node.js
+
+Where:
+	•	Node docs
+	•	npm docs
+
+Coverage:
+	•	NODE_ENV
+	•	NODE_PATH
+	•	NPM_CONFIG_*
+
+⸻
+
+7. Compiler toolchains (very rich set)
+
+GCC / Clang
+
+GCC
+
+Clang
+
+Where:
+	•	GCC manual → environment variables
+	•	Clang docs
+
+Coverage:
+	•	CPATH
+	•	LIBRARY_PATH
+	•	C_INCLUDE_PATH
+	•	LD_RUN_PATH
+
+⸻
+
+8. Container / orchestration (modern must-have)
+
+Docker
+
+Docker
+
+Where:
+	•	Docker docs → runtime env
+
+Coverage:
+	•	HOSTNAME
+	•	PATH overrides
+	•	user-defined injection patterns
+
+⸻
+
+Kubernetes
+
+Kubernetes
+
+Where:
+	•	Downward API docs
+
+Coverage:
+	•	KUBERNETES_SERVICE_HOST
+	•	KUBERNETES_PORT
+	•	injected service env vars
+
+⸻
+
+9. Security / privilege systems (important for your use case)
+
+sudo
+
+sudo
+
+Where:
+	•	man sudo
+	•	sudoers docs
+
+Coverage:
+	•	SUDO_USER
+	•	SUDO_UID
+	•	SUDO_COMMAND
+
+⸻
+
+PAM
+
+PAM
+
+Where:
+	•	PAM module docs
+
+⸻
+
+10. Extraction strategy (this is the leverage)
+
+If you want scale:
+
+High-yield automated sources
+	1.	Linux man-pages repo (parse ENVIRONMENT sections)
+	2.	systemd man pages
+	3.	Cargo / Python / Go structured docs
+	4.	glibc + ld.so docs
+
+Medium-yield
+	•	freedesktop specs
+	•	compiler docs
+
+Low-yield but precise
+	•	POSIX
+
+⸻
+
+11. One overlooked goldmine (very important)
+
+/proc/self/environ sampling + corpus building
+
+Not authoritative—but:
+	•	Collect env snapshots across:
+	•	login shells
+	•	systemd services
+	•	containers
+	•	build systems
+
+Then:
+	•	Diff → discover real-world variables
+	•	Backfill with authoritative sources
+
+This gives you:
+
+spec + reality reconciliation, which is very UMRS-aligned
+
+⸻
+
+Bottom line (actionable shortlist)
+
+If you only ingest 5 sources to start:
+	1.	POSIX (Open Group)
+	2.	Linux man-pages (man 7 environ + scrape ENVIRONMENT sections)
+	3.	glibc / ld.so
+	4.	systemd man pages
+	5.	Cargo + Python env docs
+
+That alone will give you ~150–300 high-quality variables with real semantics.
+
+⸻
+
+If you want next step, I can:
+	•	Generate a crawler plan + regex patterns for man-page extraction
+	•	Or produce a “top 200 env vars” seed file deduplicated across these sources with provenance tags
+
+That would plug directly into your existing UMRS ingestion pipeline.

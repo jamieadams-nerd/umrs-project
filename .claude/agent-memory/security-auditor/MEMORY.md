@@ -259,3 +259,11 @@ See [`tui-cli-corpus.md`](tui-cli-corpus.md) for full details. Key audit checkpo
 - `clap` derive API required; hand-rolled arg parsing (current file_stat.rs) should migrate.
 - Ratatui v0.30.0: `frame.area()` not `frame.size()`; `block::Title` removed; use `Line::from()`.
 - Current umrs-tui: no clap, no --json; acceptable for TUI-only binaries but watch for growth.
+
+## Indicator Plain-Language Reference (2026-03-17)
+
+See [`indicator-definitions-plain-language.md`](indicator-definitions-plain-language.md).
+All 37 posture indicators defined with good/bad values, plain English descriptions, and NIST controls.
+TUI group definitions, Trust Evidence tab column meanings, T0-T4 tier definitions, and positive framing
+for "downgrade reasons: none". Source of truth for Rusty and Von Neumann in TUI enhancement phases.
+9 Phase 2b indicators (CPU mitigations + CorePattern) are catalog-complete but not yet rendered in TUI.

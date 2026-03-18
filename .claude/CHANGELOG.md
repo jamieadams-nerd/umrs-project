@@ -33,6 +33,9 @@
 - **SCAP/STIG Phase 3d COMPLETE**: STIG methodology comparison page at `docs/modules/architecture/pages/stig-methodology-comparison.adoc` — documents configured-vs-live advantage over STIG's point-in-time checks with 3 concrete cases and 6-indicator comparison table
 - **CCE provenance rule**: Added to Citation Format Rule in `.claude/rules/rust_design_rules.md` — CCE canonical form, STIG version recording, conflict flagging requirement
 - **Signal→Indicator terminology cleanup**: Fixed all remaining "Signal" references in scap-stig-corpus-plan.md
+- **OS-detect kernel-tab enhancement Phase 0 COMPLETE**: Security-auditor produced authoritative plain-language indicator definitions for all 37 indicators, 6 groups, trust evidence tab (symbol meanings, T0-T4 tiers, positive framing for "all gates passed"), header indicators, and identified 9 Phase 2b indicators not yet rendered in TUI with recommended group names (CPU VULNERABILITY MITIGATIONS, CORE DUMP POLICY)
+- **CPU security corpus Phase 0.5 COMPLETE**: Verified all 10 spec update actions already present in cpu-matrix.md; bumped to v3 with verification checklist; placed researcher-ready spec at `.claude/references/cpu-extensions/cpu-matrix.md`
+- **Tool-init plan addendum**: Incorporated Jamie's env var research (`more_env_stuff.txt`) — systemd runtime vars (INVOCATION_ID, JOURNAL_STREAM, NOTIFY_SOCKET, SYSTEMD_EXEC_PID) for Tier 2 allowlist; container detection vars as informational ScrubReport signals; pre-implementation researcher task to acquire authoritative env var sources (man 7 environ, ld.so, systemd.exec, POSIX)
 
 ### Changed
 - **jamies_brain archive restructuring**: Archived 11 files/directories (`kernel-probe-grouping.txt`, `rusty-optimize.txt`, entire `asm/` subtree, `env-scrubbing.txt`, `path-scrubbing.txt`, `fun/` subtree, `doc-theme/doc-theme.md`) into `.claude/jamies_brain/archive/` with DO NOT DELETE preservation semantics; files already incorporated into completed plans or existing documentation/skills
@@ -42,6 +45,8 @@
 - **Plan status updates**: source-code-comment-cleanup Tasks 1-3 COMPLETE; security-auditor-corpus Phase 3 complete; scap-stig-corpus-plan Phase 1 complete and Phase 3c done; umrs-assessment-engine unblocked (posture probe Phase 2c + auditor corpus both done); high-assurance-writing-guide unblocked (SCAP ingestion done)
 - **Plans closed**: `source-code-comment-cleanup` marked COMPLETE; `security-auditor-corpus` marked COMPLETE; `scap-stig-corpus-plan` marked COMPLETE (all phases done)
 - **scap-stig-corpus-plan**: Signal→Indicator terminology throughout; Phase 2 and Phase 3 status updated to complete
+- **os-detect-kernel-tab-enhancement plan**: Phase 0 marked COMPLETE
+- **cpu-security-corpus-plan**: Phase 0.5 marked COMPLETE, Phase 1A next
 
 ### Fixed
 - **Rogue .claude directories**: Consolidated stray `components/rusty-gadgets/.claude/` with 7 unique memory files and 2 stubs; no duplicate local.settings.json found

@@ -1,7 +1,7 @@
 # CPU Security Extensions Research & Corpus Plan (v2)
 
 **Created:** 2026-03-14
-**Status:** Phase 0 complete, Phase 0.5 next
+**Status:** Phase 0.5 complete (2026-03-17), Phase 1A next
 **Source reviews:** `reports/cpu-matrix-review/rust-developer-review.md`, `reports/cpu-matrix-review/security-auditor-review.md`
 **Supersedes:** Track 1 of the original research corpus expansion plan
 
@@ -212,7 +212,9 @@ Each entry will be documented with all 23 matrix columns.
 
 **Scope:** Update `cpu-matrix.md` to incorporate all Phase 0 findings before research begins
 **Agent:** Main orchestrator (no subagent needed — spec editing)
-**Status:** Not started
+**Status:** COMPLETE (2026-03-17)
+**Deliverable:** `.claude/references/cpu-extensions/cpu-matrix.md` (v3)
+**Verification:** All 10 actions confirmed incorporated; spec bumped to v3 and placed in researcher-consumption location
 
 **Actions:**
 1. Update classification definitions — add Critical/Defensive vs Critical/Operational sub-tiers
