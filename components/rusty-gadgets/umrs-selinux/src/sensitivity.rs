@@ -3,14 +3,14 @@
 // ===========================================================================
 //! # SELinux MLS Sensitivity Level
 //!
-//! This module provides an independent Rust implementation of the `SELinux` MLS
-//! sensitivity level construct. They are strongly-typed Rust primitives.
+//! Strongly-typed Rust primitive modeling SELinux MLS sensitivity levels
+//! (e.g., `s0`–`s15`). Sensitivity levels form the hierarchical portion of an
+//! MLS security label and are combined with `CategorySet` bitmaps to produce
+//! full `MlsLevel` values.
 //!
-//! In SELinux MLS policy, sensitivities are ordinal classification levels forming
-//! the hierarchical portion of a security label.
-//!
-//! They are combined with category bitmaps to form full MLS levels.
-//! Strongly-typed Rust primitive modeling `SELinux` MLS sensitivity levels.
+//! In SELinux MLS policy, sensitivity levels are ordinal — `s3` dominates `s1`.
+//! They participate in dominance comparisons, clearance evaluation, and access
+//! control decisions.
 //!
 //! Kernel / Policy Sources Consulted:
 //!
@@ -18,25 +18,18 @@
 //!   security/selinux/ss/mls.h
 //!   security/selinux/ss/policydb.c
 //!
-//! ## Implementation Lineage & Design Note
+//! No source code has been copied or translated; no line-by-line derivation
+//! has occurred.
 //!
-//! This module provides an independent Rust implementation of the
-//! SELinux MLS sensitivity level construct.
+//! ## Compliance
 //!
-//! Sensitivity levels represent hierarchical classification tiers
-//! within the MLS model. They participate in dominance comparisons,
-//! clearance evaluation, and access control decisions.
-//!
-//! Behavioral semantics were studied from `SELinux` kernel and policydb
-//! implementations to preserve familiarity for experienced MLS system
-//! engineers. However:
-//!
-//! - No source code has been copied or translated.
-//! - No line-by-line derivation has occurred.
-//!
-//! This implementation introduces strong typing, ordering guarantees,
-//! and construction-time validation for improved correctness and
-//! assurance in userland labeling systems.
+//! - **NIST SP 800-53 AC-4**: Information Flow Enforcement — sensitivity level
+//!   ordering implements the hierarchical component of the Bell-LaPadula
+//!   dominance relation.
+//! - **NIST SP 800-53 AC-3**: Access Enforcement — sensitivity is required for
+//!   every MLS access control decision.
+//! - **NSA RTB**: Deterministic Execution — ordinal `u8` representation with
+//!   construct-time range validation; no runtime parsing ambiguity.
 //!
 // =============================================================================
 

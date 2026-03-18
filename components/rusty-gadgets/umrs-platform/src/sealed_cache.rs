@@ -21,7 +21,7 @@
 //! ## FIPS Posture
 //!
 //! FIPS mode is detected at cache construction time (not at seal time) by reading
-//! `/proc/sys/kernel/fips_enabled` via `ProcfsText`. If FIPS is active, the cache is
+//! `/proc/sys/crypto/fips_enabled` via `ProcfsText`. If FIPS is active, the cache is
 //! disabled entirely: every query re-runs the pipeline. HMAC-SHA-256 via the `hmac` +
 //! `sha2` crates is not FIPS 140-3 validated; disabling caching is the correct
 //! fail-closed response.
@@ -404,7 +404,7 @@ impl SealedCache {
     /// Construct a `SealedCache` with the default TTL (30 seconds).
     ///
     /// The FIPS gate is evaluated at construction time via a provenance-verified
-    /// read of `/proc/sys/kernel/fips_enabled`. If FIPS is active or the gate
+    /// read of `/proc/sys/crypto/fips_enabled`. If FIPS is active or the gate
     /// cannot be read, caching is disabled.
     ///
     /// Construction always succeeds — the cache falls back to running the
@@ -662,7 +662,7 @@ impl SealedCache {
 // FIPS gate — read at init time
 // ===========================================================================
 
-/// Read `/proc/sys/kernel/fips_enabled` at cache initialization time.
+/// Read `/proc/sys/crypto/fips_enabled` at cache initialization time.
 ///
 /// Returns `true` if FIPS mode is active OR if the read fails for any reason.
 /// Returns `false` only when the file is successfully read and contains a value
@@ -680,7 +680,7 @@ impl SealedCache {
 /// NIST SP 800-53 SC-13 — FIPS gate prevents use of unvalidated HMAC.
 /// NSA RTB: TOCTOU safety — FIPS state read once at construction, not at each seal.
 fn read_fips_at_init() -> bool {
-    const FIPS_PATH: &str = "/proc/sys/kernel/fips_enabled";
+    const FIPS_PATH: &str = "/proc/sys/crypto/fips_enabled";
 
     let node = match ProcfsText::new(PathBuf::from(FIPS_PATH)) {
         Ok(n) => n,

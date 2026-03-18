@@ -13,7 +13,7 @@
 //!
 //! ## Compliance
 //!
-//! - **NIST SP 800-53 AC-2**: The quit action terminates the session cleanly —
+//! - **NIST SP 800-53 AC-12**: The quit action terminates the session cleanly —
 //!   no half-written state is left behind.
 
 use std::collections::HashMap;
@@ -30,7 +30,7 @@ use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 /// The keymap lookup returns `None` for unbound keys — callers silently
 /// ignore unrecognized input.
 ///
-/// NIST SP 800-53 AC-2 — session lifecycle (Quit) must be cleanly handled.
+/// NIST SP 800-53 AC-12 — session lifecycle (Quit) must be cleanly handled.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Action {
     /// Terminate the event loop and restore the terminal.
@@ -95,7 +95,7 @@ pub enum Action {
 /// Construct via `KeyMap::default()` for the standard bindings, then
 /// use `bind()` to add or override mappings for a specific binary.
 ///
-/// NIST SP 800-53 AC-2 — clean session termination on quit.
+/// NIST SP 800-53 AC-12 — clean session termination on quit.
 pub struct KeyMap {
     map: HashMap<KeyEvent, Action>,
 }

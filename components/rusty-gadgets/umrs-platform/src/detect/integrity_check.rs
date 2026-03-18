@@ -518,7 +518,7 @@ fn no_digest_record(candidate_str: &str) -> EvidenceRecord {
 // FIPS gate
 // ===========================================================================
 
-/// Check whether FIPS mode is active by reading `/proc/sys/kernel/fips_enabled`.
+/// Check whether FIPS mode is active by reading `/proc/sys/crypto/fips_enabled`.
 ///
 /// Returns `true` if FIPS is active and T4 should be blocked. Returns `false`
 /// if FIPS is disabled or the read fails (fail open — missing fips_enabled
@@ -530,7 +530,7 @@ fn fips_mode_active(
     evidence: &mut EvidenceBundle,
     confidence: &mut ConfidenceModel,
 ) -> bool {
-    const FIPS_PATH: &str = "/proc/sys/kernel/fips_enabled";
+    const FIPS_PATH: &str = "/proc/sys/crypto/fips_enabled";
 
     let node = match ProcfsText::new(PathBuf::from(FIPS_PATH)) {
         Ok(n) => n,

@@ -3,8 +3,41 @@
 //
 // ============================================================================
 // UMRS SELINUX: Extended Attribute (xattr) Logic
-// NIST 800-53 AC-3 / NSA RTB (Non-Bypassability & Redundancy)
+// NIST SP 800-53 AC-3 / NSA RTB (Non-Bypassability & Redundancy)
 // ============================================================================
+//!
+//! # SELinux Extended Attribute (xattr) Reader
+//!
+//! Provides `SecureXattrReader` — the primary interface for reading the
+//! `security.selinux` xattr from an open file descriptor.
+//!
+//! ## TPI Guarantee
+//!
+//! All label reads are parsed by two independent paths:
+//!
+//! - **Path A**: `nom` combinator parser
+//! - **Path B**: `FromStr` implementation on `SecurityContext`
+//!
+//! If the paths disagree, `TpiError::Disagreement` is returned and the read
+//! fails closed. A disagreement is treated as a potential integrity event and
+//! logged at ERROR. Single-path failures are code defects and are logged at WARN.
+//!
+//! ## TOCTOU Safety
+//!
+//! Reads are anchored to the file descriptor opened by the caller — no
+//! path-based re-open occurs between open and read. The fd is passed directly
+//! to `fgetxattr` via `rustix`.
+//!
+//! ## Compliance
+//!
+//! - **NIST SP 800-53 AC-3**: Access Enforcement — the security label read here
+//!   is the authoritative source for access control decisions.
+//! - **NIST SP 800-53 SI-7**: Software and Information Integrity — TPI ensures
+//!   parse-path disagreements are surfaced as integrity events, not silently
+//!   resolved.
+//! - **NSA RTB RAIN**: Non-Bypassability — callers cannot receive a label
+//!   without passing the TPI cross-check gate.
+//!
 use nom::{
     IResult,
     bytes::complete::{tag, take_until},
@@ -17,7 +50,7 @@ use std::time::Instant;
 
 use crate::context::{ContextParseError, MlsLevel, SecurityContext};
 
-/// The standard SELinux xattr name (NIST 800-53 AU-3: Source Identifier)
+/// The standard SELinux xattr name (NIST SP 800-53 AU-3: Source Identifier)
 pub const XATTR_NAME_SELINUX: &str = "security.selinux";
 
 // ===========================================================================
@@ -27,7 +60,7 @@ pub const XATTR_NAME_SELINUX: &str = "security.selinux";
 // outcomes.  A single-path failure is a code defect; a disagreement is a
 // potential integrity event.  Callers must not treat these uniformly.
 //
-// NIST 800-53 SI-7: Software and Information Integrity.
+// NIST SP 800-53 SI-7: Software and Information Integrity.
 // NSA RTB RAIN: Non-Bypassability — the cross-check gate must always fire.
 // ===========================================================================
 
@@ -43,25 +76,25 @@ pub const XATTR_NAME_SELINUX: &str = "security.selinux";
 /// event.  Single-path failures are code defects and must never produce an
 /// ERROR log entry.
 ///
-/// NIST 800-53 SI-7: Software and Information Integrity.
+/// NIST SP 800-53 SI-7: Software and Information Integrity.
 /// NSA RTB RAIN: Non-Bypassability.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum TpiError {
     /// Path A (nom parser) failed. Code or validator defect — not a security
     /// event. The reason string contains only the error kind, no raw input.
-    /// NIST 800-53 SI-12: no sensitive data in error messages.
+    /// NIST SP 800-53 SI-12: no sensitive data in error messages.
     PathAFailed(String),
 
     /// Path B (FromStr parser) failed. Code or validator defect — not a
     /// security event. The reason string contains only the error kind.
-    /// NIST 800-53 SI-12: no sensitive data in error messages.
+    /// NIST SP 800-53 SI-12: no sensitive data in error messages.
     PathBFailed(String),
 
     /// Both paths succeeded but produced structurally different results.
     ///
     /// Potential integrity event — an adversary manipulating the xattr byte
     /// stream at the kernel interface could produce this outcome.
-    /// NIST 800-53 SI-7: integrity violation.
+    /// NIST SP 800-53 SI-7: integrity violation.
     /// NSA RTB RAIN: redundancy cross-check failure.
     Disagreement(Box<SecurityContext>, Box<SecurityContext>),
 }
@@ -93,9 +126,9 @@ impl fmt::Display for TpiError {
 // Distinguishes OS-level errors (ENODATA, EACCES, etc.) from TPI-layer
 // failures so callers can set the correct SelinuxCtxState on SecureDirent.
 //
-// NIST 800-53 AU-3: caller must distinguish "unlabeled inode" from
+// NIST SP 800-53 AU-3: caller must distinguish "unlabeled inode" from
 // "parse failure" to produce a complete audit record.
-// NIST 800-53 SI-12: no sensitive data in the error type.
+// NIST SP 800-53 SI-12: no sensitive data in the error type.
 // ===========================================================================
 
 /// Errors returned by [`SecureXattrReader::read_context`].
@@ -104,8 +137,8 @@ impl fmt::Display for TpiError {
 /// read) from `Tpi` (label was present but could not be verified) to produce
 /// correct audit output.
 ///
-/// NIST 800-53 AU-3: audit record completeness requires this distinction.
-/// NIST 800-53 SI-7 / NSA RTB RAIN: TPI integrity.
+/// NIST SP 800-53 AU-3: audit record completeness requires this distinction.
+/// NIST SP 800-53 SI-7 / NSA RTB RAIN: TPI integrity.
 #[derive(Debug)]
 pub enum XattrReadError {
     /// An OS-level error before or during the raw xattr read.
@@ -147,13 +180,13 @@ impl From<TpiError> for XattrReadError {
 /// All reads are fd-anchored (TOCTOU safety). The SELinux context path runs
 /// two independent parsers and cross-checks them before returning a value.
 ///
-/// NIST 800-53 SI-7: integrity before trust.
+/// NIST SP 800-53 SI-7: integrity before trust.
 /// NSA RTB Non-Bypassability: fd-based reads cannot be redirected via path.
 /// NSA RTB Redundancy: dual-path cross-check gate must always fire.
 pub struct SecureXattrReader;
 
 impl SecureXattrReader {
-    /// NIST 800-53 SI-7: High-Assurance xattr retrieval via raw syscalls.
+    /// NIST SP 800-53 SI-7: High-Assurance xattr retrieval via raw syscalls.
     ///
     /// # Errors
     ///
@@ -211,7 +244,7 @@ impl SecureXattrReader {
     /// security context values. Raw input may contain MLS sensitivity levels
     /// or category sets that are security-relevant.
     ///
-    /// NIST 800-53 AC-3 / SI-7 / SI-12.
+    /// NIST SP 800-53 AC-3 / SI-7 / SI-12.
     /// NSA RTB RAIN: redundancy cross-check must always fire.
     ///
     /// # Errors
@@ -255,7 +288,7 @@ impl SecureXattrReader {
                     log::error!(
                         "CRITICAL: TPI disagreement — nom and FromStr produced \
                          different security contexts; type-A={}, type-B={} \
-                         (NIST 800-53 SI-7 / NSA RTB RAIN integrity event)",
+                         (NIST SP 800-53 SI-7 / NSA RTB RAIN integrity event)",
                         context_a.security_type(),
                         context_b.security_type(),
                     );
@@ -331,18 +364,18 @@ impl SecureXattrReader {
 // ErrorKind is a fieldless enum whose Debug output is the variant name only
 // (e.g., "Tag", "TakeUntil"). No user-controlled data is included.
 //
-// NIST 800-53 SI-12: Information Management and Retention
+// NIST SP 800-53 SI-12: Information Management and Retention
 // ===========================================================================
 /// Extracts the nom `ErrorKind` variant name from a parse error.
 ///
 /// Returns a `String` containing only the structural kind (e.g., `"Tag"`,
 /// `"TakeUntil"`) — never the input slice. Used to ensure log entries
-/// satisfy NIST 800-53 SI-12 by excluding raw user-controlled data.
+/// satisfy NIST SP 800-53 SI-12 by excluding raw user-controlled data.
 ///
 /// This function is `pub` to allow verification in integration tests that
 /// its output never contains raw input bytes.
 ///
-/// NIST 800-53 SI-12: Information Management and Retention
+/// NIST SP 800-53 SI-12: Information Management and Retention
 #[must_use]
 pub fn nom_error_kind(e: &nom::Err<nom::error::Error<&str>>) -> String {
     match e {
@@ -362,7 +395,7 @@ pub fn nom_error_kind(e: &nom::Err<nom::error::Error<&str>>) -> String {
 /// already structured (no raw input), but we cap at 60 chars as a
 /// belt-and-suspenders guard against future changes to the error type.
 ///
-/// NIST 800-53 SI-12: Information Management and Retention
+/// NIST SP 800-53 SI-12: Information Management and Retention
 fn context_parse_error_kind(e: &ContextParseError) -> String {
     let s = e.to_string();
     if s.len() > 60 {
@@ -381,7 +414,7 @@ fn context_parse_error_kind(e: &ContextParseError) -> String {
 // To an architect, it is the difference between "string-splitting"
 // (brute force) and "formal grammar" (surgical precision).
 //
-// NIST 800-53 AC-4: Redundant (Path A) MLS Parser
+// NIST SP 800-53 AC-4: Redundant (Path A) MLS Parser
 // ===========================================================================
 fn parse_context_nom(input: &str) -> IResult<&str, SecurityContext> {
     use crate::category::CategorySet;
@@ -467,7 +500,7 @@ fn parse_context_nom(input: &str) -> IResult<&str, SecurityContext> {
 
 // ===========================================================================
 // Shared Category Parser
-// NIST 800-53 AC-4: Helper to parse MCS Category strings (e.g., "c0.c3,c90")
+// NIST SP 800-53 AC-4: Helper to parse MCS Category strings (e.g., "c0.c3,c90")
 // ===========================================================================
 /// Parses MCS Categories
 ///

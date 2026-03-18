@@ -12,7 +12,9 @@
 //! 3. **Snapshot integration** — KernelCmdline indicators have `configured_value`
 //!    when BLS entries are present; gracefully return `None` when absent.
 
-use umrs_platform::posture::bootcmdline::{parse_bls_content, read_configured_cmdline};
+use umrs_platform::posture::bootcmdline::{
+    parse_bls_content, read_configured_cmdline,
+};
 use umrs_platform::posture::indicator::IndicatorId;
 use umrs_platform::posture::snapshot::PostureSnapshot;
 

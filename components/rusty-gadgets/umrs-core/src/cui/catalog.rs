@@ -1,5 +1,20 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 Jamie Adams (a.k.a, Imodium Operator)
+//! # CUI Catalog
+//!
+//! Deserializes the CUI (Controlled Unclassified Information) label catalog
+//! from a JSON file and provides lookup by label key and marking name.
+//!
+//! The catalog maps MCS security ranges (e.g., `s0:c0`) to human-readable
+//! regulatory markings (e.g., `CUI//SP-CTI`) as defined by the NARA CUI
+//! registry and applicable policy.
+//!
+//! ## Compliance
+//!
+//! - **NIST SP 800-53 AC-16**: Security Attributes — catalog entries define
+//!   the canonical mapping between MCS labels and regulatory CUI markings.
+//! - **NIST SP 800-53 AU-3**: Audit Record Content — markings loaded here
+//!   appear in all operator-visible security output.
 
 use serde::Deserialize;
 use std::collections::HashMap;

@@ -2,7 +2,7 @@
 // Copyright (c) 2026 Jamie Adams (Immodium Operator)
 // ===========================================================================
 //!
-//! SELinux Catagories, Category Sets, and dominance semantics
+//! SELinux Categories, Category Sets, and dominance semantics
 //!
 //! Strongly-typed Rust primitives modeling SELinux MLS constructs,
 //! including categories, category sets, and dominance semantics.
@@ -42,6 +42,17 @@
 //! Rust language features such as strong typing, validation at
 //! construction, and memory safety guarantees to improve
 //! correctness and assurance beyond legacy approaches.
+//!
+//! ## Compliance
+//!
+//! - **NIST SP 800-53 AC-3**: Access Enforcement — `CategorySet` membership
+//!   drives compartment access decisions; dominance is verified at the bitmap
+//!   level rather than via string comparison.
+//! - **NIST SP 800-53 AC-4**: Information Flow Enforcement — category-set
+//!   subsumption checks implement the non-hierarchical portion of the MLS
+//!   lattice dominance relation.
+//! - **NSA RTB**: Deterministic Execution — fixed 1024-bit `[u64; 16]` layout
+//!   with construct-time validation; zero allocator influence on layout or timing.
 // ===========================================================================
 
 use std::fmt;

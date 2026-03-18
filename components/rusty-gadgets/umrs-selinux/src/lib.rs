@@ -22,6 +22,39 @@
 //! beyond legacy approaches while preserving semantic compatibility.
 //!
 //!
+//! ## Module Map
+//!
+//! | Module | Contents |
+//! |---|---|
+//! | `context` | `SecurityContext` — full SELinux label with TPI parse architecture |
+//! | `category` | `Category`, `CategorySet` — 1024-bit MLS category bitmask |
+//! | `sensitivity` | `SensitivityLevel` — s0–s15 hierarchical levels |
+//! | `mls` | `MlsLevel`, `MlsRange` — composite MLS label and clearance range |
+//! | `mcs` | MCS translation engine, color coding |
+//! | `status` | `SelinuxStatus`, `SelinuxPolicy` — live kernel state queries |
+//! | `secure_dirent` | `SecureDirent` — TOCTOU-safe, security-enriched directory entry |
+//! | `xattrs` | `SecureXattrReader` — fd-anchored xattr access with TPI gate |
+//! | `posix` | `Uid`, `Gid`, `Inode`, `FileMode`, `LinuxUser`, `LinuxGroup` |
+//! | `observations` | `SecurityObservation`, `ObservationKind` — typed security findings |
+//! | `utils` | Directory listing helpers and file context accessors |
+//!
+//! ## Compliance
+//!
+//! - **NIST SP 800-53 AC-3**: Access Enforcement — `SecurityContext` and
+//!   `CategorySet` carry the label data driving access decisions.
+//! - **NIST SP 800-53 AC-4**: Information Flow Enforcement — MLS dominance
+//!   math and category-set subsumption checks are implemented in `mls/` and
+//!   `category/`.
+//! - **NIST SP 800-53 AU-3**: Audit Record Content — `SecureDirent` and
+//!   `SecurityObservation` ensure security-relevant fields are present in
+//!   every directory entry audit record.
+//! - **NIST SP 800-53 SI-7**: Software and Information Integrity — TPI parse
+//!   architecture in `xattrs.rs` ensures label parse integrity.
+//! - **NIST SP 800-218 SSDF PW.4**: Secure Coding — `#![forbid(unsafe_code)]`
+//!   is a compile-time proof; no unsafe block can exist in this crate.
+//! - **NSA RTB RAIN**: Non-Bypassability — all xattr reads route through
+//!   `SecureXattrReader`; the TPI gate cannot be skipped.
+//!
 //! ## Implementation Lineage & Design Note
 //! This crate provides an independent, original implementation of primitives
 //! conceptually comparable to traditional SELinux userland libraries and MLS

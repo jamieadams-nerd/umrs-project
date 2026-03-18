@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
+//! # Boot Command Line Reader — Configured Kernel Cmdline (Phase 2b)
+//!
 //! Bootloader configured-cmdline reader — Phase 2b.
 //!
 //! Reads the **configured** kernel command line from bootloader entries on
@@ -257,10 +259,7 @@ fn parse_bls_options(entry_path: &Path) -> Option<String> {
 /// NIST SP 800-53 CA-7: enables direct test coverage of the BLS parser logic
 /// in any environment, including CI systems without physical BLS entries.
 #[must_use = "BLS field parse result must be examined"]
-pub fn parse_bls_content<'a>(
-    content: &'a str,
-    field: &str,
-) -> Option<&'a str> {
+pub fn parse_bls_content<'a>(content: &'a str, field: &str) -> Option<&'a str> {
     for line in content.lines() {
         let trimmed = line.trim();
         if trimmed.is_empty() || trimmed.starts_with('#') {

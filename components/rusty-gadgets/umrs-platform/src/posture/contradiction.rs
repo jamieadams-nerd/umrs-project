@@ -2,7 +2,7 @@
 // Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
 //! Contradiction classification for kernel security posture indicators.
 //!
-//! A contradiction arises when the live (kernel-effective) value of a indicator
+//! A contradiction arises when the live (kernel-effective) value of an indicator
 //! disagrees with its configured (sysctl.d or cmdline) value. Contradictions
 //! indicate configuration management problems that may affect security posture
 //! across reboots.

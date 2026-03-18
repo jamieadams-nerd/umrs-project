@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
+//! # Posture Indicators — Core Taxonomy Types
+//!
 //! Core indicator taxonomy types for the Kernel Security Posture Probe.
 //!
 //! Defines the typed vocabulary used throughout the posture module:

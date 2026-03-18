@@ -112,7 +112,7 @@ rusqlite::Error Display can leak paths. Use:
 - Example: `umrs-platform/examples/sealed_cache_demo.rs`
 - Public re-exports from `lib.rs`: `SealedCache`, `CacheStatus`, `DEFAULT_TTL_SECS`, `MAX_TTL_SECS`
 - New deps: `hmac = "0.12"`, `zeroize = { version = "1", features = ["derive"] }`
-- FIPS gate: read at construction via ProcfsText; caching disabled if FIPS active
+- FIPS gate: read at construction via ProcfsText at `/proc/sys/crypto/fips_enabled`; caching disabled if FIPS active
 - Seal covers: TrustLevel byte + SHA-256(EvidenceBundle) + boot_id + os_id + version_id + probe_used
 - Key derivation: SHA-256(boot_id || 0x00 || starttime_ticks_le) — two entropy sources
   - boot_id: /proc/sys/kernel/random/boot_id (session binding)

@@ -87,9 +87,9 @@ pub use self::path::{AbsolutePath, PathError, ValidatedFileName};
 // label outcomes.  A bare Option collapses unlabeled (ENODATA) and parse
 // failures into the same None — producing false-negative audit output.
 //
-// NIST 800-53 AU-3: audit record must accurately reflect the reason a label
+// NIST SP 800-53 AU-3: audit record must accurately reflect the reason a label
 // is absent.
-// NIST 800-53 SI-12: information management — display must not mislead the
+// NIST SP 800-53 SI-12: information management — display must not mislead the
 // operator.
 // ===========================================================================
 
@@ -110,8 +110,8 @@ pub use self::path::{AbsolutePath, PathError, ValidatedFileName};
 /// prevented label verification.  An operator seeing `<parse-error>` should
 /// investigate the parser, not the policy.
 ///
-/// NIST 800-53 AU-3: audit record content.
-/// NIST 800-53 SI-12: accurate information management.
+/// NIST SP 800-53 AU-3: audit record content.
+/// NIST SP 800-53 SI-12: accurate information management.
 /// NSA RTB RAIN: non-bypassability of the integrity gate.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum SelinuxCtxState {
@@ -131,7 +131,7 @@ pub enum SelinuxCtxState {
     ///
     /// The label is on the inode but its structure could not be verified.
     /// This is a code or validator defect — not an integrity attack.
-    /// NIST 800-53 SI-12: do not display as `<unlabeled>`.
+    /// NIST SP 800-53 SI-12: do not display as `<unlabeled>`.
     ParseFailure,
 
     /// Both TPI paths succeeded but produced different security contexts.
@@ -139,7 +139,7 @@ pub enum SelinuxCtxState {
     /// Potential integrity event. The label on disk may have been tampered
     /// with. Treat this object as unverifiable until the discrepancy is
     /// resolved.
-    /// NIST 800-53 SI-7: integrity violation.
+    /// NIST SP 800-53 SI-7: integrity violation.
     /// NSA RTB RAIN: redundancy cross-check failure.
     TpiDisagreement,
 }

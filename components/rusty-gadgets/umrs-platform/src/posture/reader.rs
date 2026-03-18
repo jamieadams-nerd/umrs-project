@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
-//! Live-value readers for kernel security posture signals.
+//! # Posture Reader — Live-Value Readers for Kernel Security Indicators
 //!
-//! Every sysctl signal routes through the existing `SecureReader` engine
+//! Live-value readers for kernel security posture indicators.
+//!
+//! Every sysctl indicator routes through the existing `SecureReader` engine
 //! defined in `kattrs::traits`. Provenance verification (fd-anchored `fstatfs`
 //! against `PROC_SUPER_MAGIC`) is non-bypassable: it is encoded in the
 //! `StaticSource::read()` default method.

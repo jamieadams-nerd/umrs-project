@@ -1,17 +1,53 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Jamie Adams (a.k.a, Imodium Operator)
 //
-//! UMRS SELINUX: Security Context (Security Label)
+//! # Security Context (Security Label)
 //!
-//! This module defines the strongly-typed `SecurityContext` structure used
-//! throughout the UMRS SELinux userland modeling layer.
+//! Defines the strongly-typed `SecurityContext` structure used throughout
+//! the UMRS SELinux userland modeling layer.
 //!
-//! A Security Context represents the canonical SELinux label format:
-//!     user : role : type [:level]
+//! A security context represents the canonical SELinux label format:
 //!
-//! NIST SP 800-53 AC-4 / NSA RTB (Strong Data Modeling & Lattice Math)
-//!   This module enforces the internal representation of security attributes used for
-//!   Information Flow Enforcement.
+//! ```text
+//! user : role : type [:level]
+//! ```
+//!
+//! ## TPI Parse Architecture
+//!
+//! `SecurityContext` is never constructed from a raw string in this module.
+//! The authoritative construction path is `SecureXattrReader::read_context()`
+//! in `xattrs.rs`, which enforces Two-Path Independence (TPI):
+//!
+//! - **Path A**: `nom` combinator parser
+//! - **Path B**: `FromStr` (implemented below)
+//!
+//! Both paths are always run. If they disagree, the read fails closed with
+//! `TpiError::Disagreement`. This module provides `FromStr` as Path B only;
+//! it must not be called as the sole parse path in security-relevant contexts.
+//!
+//! ## Note on `MlsLevel` Duplication
+//!
+//! `MlsLevel` is defined both here (as the type used by `SecurityContext`) and
+//! in `mls/level.rs`. The crate root re-exports `mls::level::MlsLevel` as the
+//! canonical type. The two definitions are structurally equivalent; the
+//! duplication is a known technical debt item. Consumers should import
+//! `umrs_selinux::MlsLevel` from the crate root.
+//!
+//! ## Note on `dominates()`
+//!
+//! `SecurityContext::dominates()` is currently a `todo!()` stub. The lattice
+//! dominance logic is pending integration of the `CategorySet` bitmask
+//! comparison with `SensitivityLevel` ordering. Callers must not rely on this
+//! method returning a meaningful result until the stub is resolved.
+//!
+//! ## Compliance
+//!
+//! - **NIST SP 800-53 AC-4**: Information Flow Enforcement — `SecurityContext`
+//!   is the primary carrier of the MLS label used in flow decisions.
+//! - **NIST SP 800-53 SI-7**: Software and Information Integrity — TPI parse
+//!   architecture ensures label parse integrity; disagreements are integrity events.
+//! - **NSA RTB**: Strong data modeling — all label fields are typed newtypes;
+//!   no raw strings escape the parse boundary.
 
 use std::fmt;
 use std::str::FromStr;

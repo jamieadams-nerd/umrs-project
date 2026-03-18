@@ -1,43 +1,35 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 Jamie Adams (a.k.a, Imodium Operator)
 //
-/// Multi-Category Security (MCS) Rust Module
-///
-/// This module provides functions to bridge betwen the MCS Translation service
-/// and the Controlled Unclassified Information (CUI) catalog contained in the
-/// umrs_core::cui.
-///
-/// If a file (or directory is assigned), s0:c0 and we have this defined in the setrans.conf
-/// file, the MCS daemon will show "CUI" in the directory listings or anytime you query
-/// the file's security context.
-///
-/// This function allows you to lookup more information about the textual label from
-/// the catalog and vice versa.
-///
-/// ===========================================================================
-/// Red Hat Multi-Category Security (MCS) is an SELinux enhancement that enables advanced data
-/// confidentiality by assigning security labels (categories) to files and processes. It works
-/// alongside traditional permissions (DAC) and Type Enforcement (TE), ensuring that a process can
-/// only access files if it holds all necessary, matching categories.
-///
-/// Key details about Red Hat MCS:
-///
-/// Access Control Principle: MCS requires that for a subject (process) to access an object (file),
-/// the subject must be authorized for all categories assigned to the object.
-///
-/// Data Labeling: Users can assign categories (e.g., s0:c0,c1 or custom labels like
-/// CompanyConfidential) to their files.
-///
-/// Purpose: It enforces the "need-to-know" principle, preventing unauthorized processes—even those
-/// run by the same user—from accessing restricted files, such as preventing a web server from
-/// reading personal user files.
-///
-/// Technical Basis: MCS is an adaptation of Multi-Level Security (MLS) and shares the same kernel
-/// infrastructure but is designed to be more flexible and user-friendly.
-///
-/// **Translation Service**: The mcstrans service is often used to map complex category values (c0-c1023)
-/// to human-readable labels.
-///
+//! # MCS Bridge — CUI Catalog Lookup
+//!
+//! Bridges the MCS Translation service and the CUI catalog in `umrs_core::cui`.
+//!
+//! When a file is assigned `s0:c0` and this range is defined in `setrans.conf`,
+//! the MCS daemon renders it as a human-readable label (e.g., `CUI`) in
+//! directory listings and security context queries. This module allows callers
+//! to look up the CUI catalog entry for a given textual marking, and vice versa.
+//!
+//! ## MCS Background
+//!
+//! MCS (Multi-Category Security) is a SELinux mechanism that compartmentalizes
+//! data by assigning non-hierarchical category labels to files and processes.
+//! For a subject to access an object, the subject's category set must subsume
+//! the object's category set (the "need-to-know" principle).
+//!
+//! MCS shares the SELinux MLS kernel infrastructure but operates at a fixed
+//! sensitivity level (`s0`), making it more flexible and user-friendly than
+//! full MLS.
+//!
+//! The `mcstrans` service maps complex category values (e.g., `c0-c1023`) to
+//! human-readable labels defined in `setrans.conf`.
+//!
+//! ## Compliance
+//!
+//! - **NIST SP 800-53 AC-4**: Information Flow Enforcement — MCS category
+//!   containment implements the non-hierarchical compartment access check.
+//! - **NIST SP 800-53 AC-16**: Security Attributes — catalog lookups surface
+//!   the regulatory marking for an MCS label in operator-visible output.
 // ===========================================================================
 //
 use std::fs::File;

@@ -93,21 +93,37 @@ Every crate root must include these elements in order:
 #![allow(clippy::option_if_let_else)]
 #![allow(clippy::module_name_repetitions)]
 #![allow(clippy::redundant_closure)]
-#![allow(clippy::missing_errors_doc)]
-#![allow(clippy::missing_panics_doc)]
 #![allow(clippy::unreadable_literal)]
 #![allow(clippy::doc_markdown)]
 ```
 
-### 4d. Module doc comment
+### 4d. Module doc comment (MANDATORY — see Module Documentation Checklist Rule)
+
+Every crate root and every `.rs` file must have a `//!` block. The crate root
+template is below. Use `secure_dirent.rs` and `posix/primitives.rs` from
+`umrs-selinux` as exemplary models for the style and depth expected.
 
 ```rust
 //! # <Crate Name>
 //!
 //! <One-sentence purpose from pre-flight.>
 //!
-//! NIST SP 800-53 <relevant controls> / NSA RTB <relevant principles>.
+//! <Brief description of key exported types and what they do.>
+//!
+//! ## Compliance
+//!
+//! - `NIST SP 800-53 <control>` — <one-line rationale>
+//! - `NSA RTB <principle>` — <one-line rationale>
+//! - `NIST SP 800-218 SSDF PW.4` — `#![forbid(unsafe_code)]` compile-time proof
 ```
+
+**Do not leave the `## Compliance` section as a placeholder.** Fill in the
+actual controls that apply to this crate. If unsure which controls apply,
+consult the security-auditor agent or reference `secure_dirent.rs` for examples.
+
+For every subsequent `.rs` file created in the crate, the same structure applies:
+purpose, key types, `## Compliance` section. Run `cargo xtask doc-check` to verify
+no files are missing their `//!` block.
 
 ### 4e. For binary crates — journald logging setup
 

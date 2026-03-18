@@ -19,7 +19,7 @@ fn main() {
     println!("=== Sealed Evidence Cache (SEC) Demo ===\n");
 
     // ── Construct the cache ──────────────────────────────────────────────────
-    // SealedCache::new reads /proc/sys/kernel/fips_enabled at construction
+    // SealedCache::new reads /proc/sys/crypto/fips_enabled at construction
     // time (TOCTOU safety — FIPS state is captured once, not at each seal).
     // If FIPS is active, caching_enabled() returns false and every query
     // re-runs the pipeline.
@@ -115,7 +115,7 @@ fn main() {
     );
     println!("  Seal failure     : discard, re-run pipeline, log::warn!");
     println!(
-        "  FIPS gate        : /proc/sys/kernel/fips_enabled (read at init, not at seal)"
+        "  FIPS gate        : /proc/sys/crypto/fips_enabled (read at init, not at seal)"
     );
     println!(
         "  TTL ceiling      : {} seconds",

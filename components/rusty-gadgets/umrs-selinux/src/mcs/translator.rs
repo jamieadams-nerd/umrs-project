@@ -3,13 +3,13 @@
 // ============================================================================
 //! # High-Assurance Vernacular Translation (setrans)
 //!
-//! This crate implements a deterministic, audit-focused translation engine for
+//! This module implements a deterministic, audit-focused translation engine for
 //! converting SELinux MCS/MLS kernel security ranges into human-readable
 //! regulatory markings (e.g., NARA CUI labels).
 //!
 //! UMRS SELINUX: High-Assurance Vernacular Translation
-//! NIST 800-53 AC-4, AU-3
-//! NSA Raise-the-Bar (Determinism, Loud Failure, Audit Fidelity)
+//! NIST SP 800-53 AC-4, AU-3
+//! NSA RTB (Determinism, Loud Failure, Audit Fidelity)
 //!
 //! ---
 //!

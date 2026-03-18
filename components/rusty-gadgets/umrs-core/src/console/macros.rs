@@ -1,6 +1,24 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 Jamie Adams (a.k.a, Imodium Operator)
-//
+//! # Console Messaging Subsystem
+//!
+//! Configures global console state and provides the primary macros and
+//! functions for human-facing terminal output throughout UMRS tool binaries.
+//!
+//! Key responsibilities:
+//!
+//! - `init_console()` — initializes global terminal detection, NO_COLOR
+//!   enforcement, and color availability state.
+//! - Terminal detection: honors `NO_COLOR` environment variable
+//!   unconditionally per the NO_COLOR standard.
+//!
+//! ## Compliance
+//!
+//! - **NIST SP 800-53 AU-3**: Audit Record Content — console output for
+//!   operator-facing messages must be clear and unambiguous; this module
+//!   ensures consistent formatting and color discipline.
+//! - **NSA RTB**: Presentation of security state must be unambiguous; NO_COLOR
+//!   ensures output is usable in audit logging pipelines without escape codes.
 use std::io::IsTerminal;
 use std::sync::OnceLock;
 use std::sync::atomic::AtomicBool;

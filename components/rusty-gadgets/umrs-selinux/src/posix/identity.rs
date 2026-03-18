@@ -1,4 +1,4 @@
-//! posix.rs
+//! # POSIX Linux Identity Types
 //!
 //! Strong types for POSIX Linux usernames, group names, and numeric identity.
 //!
@@ -26,6 +26,15 @@
 //!   - Null bytes never permitted (explicit FFI safety guard)
 //!   - '.' is NOT permitted: not valid in Linux usernames or group names
 //!     despite some secondary sources suggesting otherwise
+//!
+//! ## Compliance
+//!
+//! - **NIST SP 800-53 AC-2**: Account Management — typed username and group
+//!   name newtypes prevent identity confusion in access control paths.
+//! - **NIST SP 800-53 IA-5**: Authenticator Management — construct-time
+//!   validation ensures only well-formed identity values are representable.
+//! - **NSA RTB RAIN**: Validate at construction; invalid identity values
+//!   cannot be constructed and therefore cannot propagate downstream.
 
 use std::convert::TryFrom;
 use std::fmt;

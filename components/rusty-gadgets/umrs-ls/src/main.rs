@@ -1,19 +1,31 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
-//
-// umrs-ls — Security Focused Directory Listing
-//
-// Displays the output of `list_directory()` grouped by (SELinux type,
-// security marking). SELinux type and marking appear in group headers only
-// — they are not repeated in every row.
-//
-// Usage:
-//   umrs-ls [PATH] [--color] [--no-iov] [--no-mtime]
-//           [--with-size] [--with-inode]
-//
-// Default path: current directory. Color is off by default.
-//
-// NIST SP 800-53 AC-3, AC-4, AU-3 / NSA RTB Non-Bypassability & TOCTOU safety.
+//! # umrs-ls — Security-Focused Directory Listing
+//!
+//! Displays directory entries enriched with `SELinux` security context, MCS
+//! marking, POSIX ownership, and security observations. Output is grouped by
+//! `(SELinux type, security marking)` — the type and marking appear in group
+//! headers only and are not repeated for every row.
+//!
+//! ## Usage
+//!
+//! ```text
+//! umrs-ls [PATH] [--color] [--no-iov] [--no-mtime]
+//!         [--with-size] [--with-inode]
+//! ```
+//!
+//! Default path is the current directory. Color output is off by default.
+//!
+//! ## Compliance
+//!
+//! - **NIST SP 800-53 AC-3**: Access Enforcement — every entry displays the
+//!   `SELinux` label used in access decisions.
+//! - **NIST SP 800-53 AC-4**: Information Flow Enforcement — MCS markings and
+//!   security observations surface information flow boundary violations.
+//! - **NIST SP 800-53 AU-3**: Audit Record Content — operator-visible output
+//!   includes all identity, label, and observation fields required for audit.
+//! - **NSA RTB RAIN**: Non-Bypassability and TOCTOU safety — all directory
+//!   reads are fd-anchored via `SecureDirent`.
 
 #![forbid(unsafe_code)]
 #![warn(clippy::pedantic)]

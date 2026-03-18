@@ -1,9 +1,18 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Jamie Adams (a.k.a, Imodium Operator)
-//! Procfs kernel attribute types (`/proc/`).
+//! # Procfs Kernel Attribute Types — `/proc/` Nodes
 //!
-//! All types in this module read from procfs and are verified against
-//! `PROC_SUPER_MAGIC` before any bytes are parsed.
+//! Provides `ProcFips`, `ModuleLoadLatch`, and `ProcfsText` — the three procfs
+//! attribute types used throughout this crate.
+//!
+//! - `ProcFips` — FIPS mode status at `/proc/sys/crypto/fips_enabled`
+//! - `ModuleLoadLatch` — module loading lock at `/proc/sys/kernel/modules_disabled`
+//! - `ProcfsText` — generic single-line text reader for any procfs node; the most
+//!   broadly used type in this module (relied on by `SealedCache`, `PostureSnapshot`,
+//!   and `SecureReader`-based callers throughout the platform)
+//!
+//! All types read from procfs and are verified against `PROC_SUPER_MAGIC` before
+//! any bytes are parsed.
 //!
 //! NIST SP 800-53 CM-7, SC-28, SI-7: Least functionality, protection of
 //! information at rest, and software integrity.

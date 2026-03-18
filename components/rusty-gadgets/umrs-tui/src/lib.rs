@@ -30,9 +30,11 @@
 //! 1. Implement [`app::AuditCardApp`] on your data struct.
 //! 2. Create an [`app::AuditCardState`] with `AuditCardState::new(tab_count)`.
 //! 3. Call [`indicators::read_security_indicators`] once to populate a
-//!    [`app::SecurityIndicators`] snapshot.
+//!    [`app::SecurityIndicators`] snapshot; then call
+//!    [`indicators::build_header_context`] to build the [`app::HeaderContext`]
+//!    from the snapshot and your app data.
 //! 4. Call [`layout::render_audit_card`] inside `terminal.draw(...)`, passing
-//!    the snapshot as `indicators`.
+//!    the app, state, theme, and header context.
 //! 5. Feed [`keymap::KeyMap`] events into `state.handle_action(...)`.
 //!
 //! ## Compliance

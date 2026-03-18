@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Jamie Adams (a.k.a, Imodium Operator)
+//! # Userland Utility Helpers
 //!
 //! Userland utility helpers for umrs-selinux.
 //!
@@ -9,6 +10,22 @@
 //!
 //! Kernel attribute access (formerly `kattrs`) has been promoted to the
 //! `umrs-platform` crate and is re-exported as `umrs_platform::kattrs`.
+//!
+//! ## TPI Routing
+//!
+//! All file context helpers that return a `SecurityContext` route through
+//! `SecureXattrReader::read_context()`, which enforces TPI. Callers do not
+//! invoke the `nom` or `FromStr` parsers directly.
+//!
+//! ## Compliance
+//!
+//! - **NIST SP 800-53 AC-3**: Access Enforcement — file context helpers are
+//!   the primary mechanism for retrieving the security label used in access
+//!   control decisions.
+//! - **NIST SP 800-53 AU-3**: Audit Record Content — PID and self-context
+//!   helpers provide the subject label required in audit records.
+//! - **NSA RTB RAIN**: Non-Bypassability — all label reads route through the
+//!   TPI gate in `xattrs.rs`; no direct parser invocation is permitted here.
 //!
 
 pub mod dirlist;

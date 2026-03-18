@@ -12,8 +12,18 @@
 //!   • Reload on file change (mtime + len)
 //!
 //! NOTE:
-//! Range matching currently uses STRING equality / glob matching.
-//! Dominance math can be feature-gated later if desired.
+//! Range matching currently uses string equality / glob matching, not lattice
+//! dominance math. This is a known limitation: two semantically equivalent
+//! ranges expressed differently will not match. Dominance math can be
+//! feature-gated later when `mls/range.rs` is complete.
+//!
+//! ## Compliance
+//!
+//! - **NIST SP 800-53 AU-3**: Audit Record Content — color coding is derived
+//!   from the security context and rendered in audit-visible directory listings.
+//! - **NIST SP 800-53 SI-7**: Software and Information Integrity — color config
+//!   is parsed from a provenance-checked file path; mtime + len change detection
+//!   ensures stale cache entries are reloaded.
 // ============================================================================
 
 use std::collections::HashMap;
@@ -367,7 +377,7 @@ fn io_err(msg: &str) -> io::Error {
 
 /// Load secolor.conf from the system path for the currently active SELinux policy.
 ///
-/// NIST 800-53 CM-6: Uses the policy type from `/etc/selinux/config` to construct
+/// NIST SP 800-53 CM-6: Uses the policy type from `/etc/selinux/config` to construct
 /// the correct path (`/etc/selinux/{policy}/secolor.conf`), guarding against
 /// hard-coded `targeted`-only assumptions that break MLS deployments.
 ///

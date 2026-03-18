@@ -1,6 +1,35 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Jamie Adams (a.k.a, Imodium Operator)
-//! SELinux runtime status inspection.
+//! # SELinux Runtime Status
+//!
+//! Queries the live SELinux kernel state and, when SELinux is confirmed active,
+//! reads the policy type from `/etc/selinux/config`.
+//!
+//! ## Trust Gate Pattern
+//!
+//! Config-file reads are gated behind kernel confirmation. The file
+//! `/etc/selinux/config` is only consulted when the kernel reports that
+//! SELinux is enabled. If the kernel says SELinux is inactive, `selinux_policy()`
+//! returns `None` — the config file cannot be trusted without kernel corroboration.
+//!
+//! ## Primary Types
+//!
+//! - `SelinuxStatus` — live kernel state: enable/enforce flags and policy name.
+//! - `SelinuxPolicy` — policy type parsed from `SELINUXTYPE=` in the config.
+//!
+//! ## Primary Functions
+//!
+//! - `is_selinux_enabled()` — returns `true` if the kernel confirms SELinux is loaded.
+//! - `is_selinux_mls_enabled()` — returns `true` if the kernel confirms MLS policy.
+//! - `selinux_policy()` — returns the active `SelinuxPolicy` when SELinux is enabled.
+//!
+//! ## Compliance
+//!
+//! - **NIST SP 800-53 CM-6**: Configuration Settings — status checks gate all
+//!   config-file reads; config is never trusted without kernel corroboration.
+//! - **NIST SP 800-53 AC-3**: Access Enforcement — enforcement mode must be
+//!   confirmed at the kernel level before any access decision is made.
+//! - **NSA RTB Trust Gate**: kernel is authoritative; config file is advisory.
 //!
 use std::fs::File;
 use std::io::{BufRead, BufReader};

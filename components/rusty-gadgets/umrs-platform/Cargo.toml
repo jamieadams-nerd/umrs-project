@@ -62,7 +62,7 @@ env_logger = "0.11.9"
 # digest, crypto-common. No unsafe surface exposed to callers.
 # Note: On FIPS systems, the sealed cache is disabled (FIPS gate in SealedCache::new).
 # HMAC-SHA-256 via this crate is not FIPS 140-3 validated; caching is
-# unconditionally disabled when /proc/sys/kernel/fips_enabled = 1.
+# unconditionally disabled when /proc/sys/crypto/fips_enabled = 1.
 # NIST SP 800-53 SC-28, SC-12 — integrity protection and key management.
 hmac = "0.12"
 

@@ -177,7 +177,7 @@ fn caching_enabled_coherent_with_status() {
 /// When the FIPS gate fires, `caching_enabled()` returns `false`.
 ///
 /// This test is environment-sensitive: it only asserts the gate fires on
-/// systems where `/proc/sys/kernel/fips_enabled` reads `1`. On non-FIPS
+/// systems where `/proc/sys/crypto/fips_enabled` reads `1`. On non-FIPS
 /// systems it verifies that caching is enabled.
 ///
 /// We cannot mock procfs in this integration test environment, so we assert
@@ -208,7 +208,7 @@ fn fips_gate_coherent() {
     }
 }
 
-/// Read /proc/sys/kernel/fips_enabled directly for test cross-checking.
+/// Read /proc/sys/crypto/fips_enabled directly for test cross-checking.
 ///
 /// Returns `true` if FIPS is active OR if the read fails. Returns `false`
 /// only when the file is successfully read and contains a value other than `"1"`.
@@ -225,7 +225,7 @@ fn fips_gate_coherent() {
 /// both the SUT and this helper would return `true` (fail-closed), keeping
 /// them coherent. SEC-08 (auditor advisory).
 fn read_fips_from_proc() -> bool {
-    match std::fs::read_to_string("/proc/sys/kernel/fips_enabled") {
+    match std::fs::read_to_string("/proc/sys/crypto/fips_enabled") {
         Ok(s) => s.trim() == "1",
         // Fail-closed: if unreadable, assume FIPS active — matches SUT behavior.
         Err(_) => true,

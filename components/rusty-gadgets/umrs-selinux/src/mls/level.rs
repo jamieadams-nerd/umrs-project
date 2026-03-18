@@ -20,6 +20,15 @@
 //! `range` module and are intentionally out of scope here.
 //!
 //! This type is strongly typed and does not rely on libselinux.
+//!
+//! ## Compliance
+//!
+//! - **NIST SP 800-53 AC-4**: Information Flow Enforcement — `MlsLevel` is the
+//!   typed representation of the label field used in dominance comparisons.
+//! - **NIST SP 800-53 AC-3**: Access Enforcement — sensitivity and category
+//!   values are validated at construction; invalid levels are unrepresentable.
+//! - **NSA RTB**: Deterministic Execution — `FromStr` parse with construct-time
+//!   validation; no partial or ambiguous level values escape the boundary.
 // ===========================================================================
 
 use std::fmt;

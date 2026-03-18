@@ -36,6 +36,32 @@ Mark entries `resolved` when acted on. Do not delete entries.
 
 ---
 
+## [2026-03-17] tech-writer → rust-developer: FIPS path error in sealed_cache.rs and detect/integrity_check.rs
+
+**Status**: open
+
+Module-level comment review (Task 3) found a HIGH-severity factual error in two files.
+
+Both `sealed_cache.rs` and `detect/integrity_check.rs` define private FIPS path constants and document
+them with the wrong path `/proc/sys/kernel/fips_enabled`. The correct path is `/proc/sys/crypto/fips_enabled`,
+as confirmed by `kattrs/procfs.rs` line 48 (`ProcFips::PATH`).
+
+**Affected locations** (both documentation and runtime constants):
+- `sealed_cache.rs` lines 24, 407, 665, 683 — module doc and `FIPS_PATH` constant
+- `detect/integrity_check.rs` lines 521, 533 — inline doc and `FIPS_PATH` constant
+
+**Security impact**: Both modules use these private FIPS reads to gate HMAC-SHA-256 caching behavior.
+With the wrong path, the read silently fails, and both modules treat failure as "FIPS disabled" (fail-open).
+On a FIPS-mode RHEL 10 system, caching is NOT disabled as intended — the HMAC-SHA-256-sealed cache
+operates when it should be bypassed.
+
+**Secondary concern**: Both files implement their own ad hoc procfs reads instead of calling
+`ProcFips::read()`. This bypasses the `SecureReader`/RAIN non-bypassability guarantee that all
+procfs reads in this crate are meant to enforce. Recommend replacing both private reads with
+`ProcFips::read()` calls.
+
+---
+
 ## [2026-03-16] rust-developer → tech-writer: doc-sync: umrs-platform posture — Phase 2b CPU sub-signals + CorePattern
 
 **Status**: resolved — 2026-03-16 by tech-writer

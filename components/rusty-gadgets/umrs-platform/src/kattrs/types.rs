@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Jamie Adams (a.k.a, Imodium Operator)
+//! # Kernel Attribute Value Types — Shared Domain Types
+//!
 //! Shared domain value types used across multiple kernel attribute structs.
 //!
 //! NIST SP 800-53 AC-3: Access Enforcement — `EnforceState` is the canonical

@@ -17,12 +17,15 @@
 //! # umrs-tui — OS Detection Audit Card
 //!
 //! Runs the `umrs-platform` OS detection pipeline and displays the result
-//! as an interactive ratatui audit card. Two tabs present the data:
+//! as an interactive ratatui audit card. Three tabs present the data:
 //!
 //! - **Tab 0 — OS Information**: `os-release` fields, substrate identity,
 //!   boot ID.
 //! - **Tab 1 — Trust / Evidence**: label trust classification, confidence
 //!   tier, downgrade reasons, contradictions, evidence records.
+//! - **Tab 2 — Kernel Security**: live kernel security posture indicators,
+//!   boot integrity state, cryptographic posture (FIPS), and hardening
+//!   assessment from `PostureSnapshot`.
 //!
 //! Key bindings: `Tab`/`Right` = next tab, `Shift-Tab`/`Left` = prev tab,
 //! `j`/`k` = scroll, `q`/`Esc` = quit.

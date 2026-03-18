@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Jamie Adams (a.k.a, Imodium Operator)
-//! Kernel attribute read engine: traits, `SecureReader`, `AttributeCard`.
+//! # Kernel Attribute Read Engine — Traits, `SecureReader`, and `AttributeCard`
 //!
 //! Defines the two foundational traits (`KernelFileSource`, `StaticSource`) and
 //! the mandatory read path (`SecureReader`) for all kernel pseudo-filesystem

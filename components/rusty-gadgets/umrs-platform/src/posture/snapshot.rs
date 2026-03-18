@@ -334,7 +334,7 @@ fn collect_one(
 // read_live — live value dispatch
 // ===========================================================================
 
-/// Read the live value of a indicator and evaluate whether it meets the desired value.
+/// Read the live value of an indicator and evaluate whether it meets the desired value.
 ///
 /// Returns `(Some(value), Some(meets))` on success, `(None, None)` if the
 /// indicator's kernel node is absent or unreadable.
@@ -683,7 +683,7 @@ const fn module_name_for_blacklist_signal(id: IndicatorId) -> &'static str {
 // read_configured — configured value lookup
 // ===========================================================================
 
-/// Look up the configured value for a indicator from the appropriate source.
+/// Look up the configured value for an indicator from the appropriate source.
 ///
 /// - `Sysctl` + `DistroManaged` (sysctl key present): sysctl.d merge tree.
 /// - `DistroManaged` `FipsEnabled`: FIPS cross-check via `FipsCrossCheck`.

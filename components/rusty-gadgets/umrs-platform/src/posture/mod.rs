@@ -20,7 +20,10 @@
 //! println!("{}/{} indicators meet hardened baseline",
 //!     snap.hardened_count(), snap.readable_count());
 //!
-//! // Findings (indicators not meeting desired value)
+//! // Findings — indicators whose live value does not meet the desired
+//! // (hardened) value defined in the catalog. Each report carries the
+//! // indicator's descriptor, its live kernel value, and whether it meets the
+//! // desired baseline.
 //! for report in snap.findings() {
 //!     println!("{}: live={:?}", report.descriptor.id, report.live_value);
 //! }
