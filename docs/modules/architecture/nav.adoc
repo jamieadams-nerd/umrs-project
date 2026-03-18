@@ -2,6 +2,7 @@
 [collapsible]
 * Security Model
 ** xref:kernel-files-tpi.adoc[Two-path independence (TPI)]
+** xref:stig-methodology-comparison.adoc[STIG checks vs. UMRS contradiction detection]
 ** xref:history/five-eyes-interop.adoc[Five Eyes classification interoperability]
 
 * MLS Label Model

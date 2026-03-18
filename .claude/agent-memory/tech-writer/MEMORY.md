@@ -159,6 +159,15 @@ Two reference pages are forward-referenced but do not yet exist:
 (created 2026-03-16 — confirmed exists). Both xrefs use forward references in the
 See Also section to avoid dead xrefs at build time.
 
+## SCAP/STIG Corpus (familiarized 2026-03-17)
+Detailed findings at [scap_familiarization.md](scap_familiarization.md).
+- CCE citation format established (Rust, Antora, CLI/TUI) — see section 2 of that file
+- STIG description patterns: imperative verb phrases ("Ensure X is Y", "Disable X", "Set X")
+- Check method taxonomy: other / audit-rule / file-check / package-check / sysctl / cmdline / service-check
+- Severity levels: High / Medium / Low (title case in UI; lowercase in JSON)
+- Approved terms added (2026-03-17): CCE, SCAP, STIG, RHEL 10 STIG, XCCDF — in approved_terminology.md and glossary/pages/index.adoc
+- Key avoidance: do not write check-step artifacts as descriptions; do not truncate; complete sentences
+
 ## Style Corpus Knowledge Index (familiarized 2026-03-16)
 Artifacts at `.claude/knowledge/tech-writer-corpus/`. RAG collection: `tech-writer-corpus`.
 Four always-on artifacts: concept-index.md, cross-reference-map.md, style-decision-record.md, term-glossary.md.

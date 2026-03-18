@@ -36,6 +36,27 @@ Mark entries `resolved` when acted on. Do not delete entries.
 
 ---
 
+## [2026-03-17] security-engineer → changelog-updater: Phase 3d architecture page written
+
+**Status**: open
+
+SCAP/STIG corpus plan Phase 3d is complete.
+
+New architecture page written:
+`docs/modules/architecture/pages/stig-methodology-comparison.adoc`
+
+Added to `docs/modules/architecture/nav.adoc` under the Security Model section.
+
+Page covers: STIG point-in-time methodology; UMRS configured-vs-live contradiction
+detection; three concrete cases STIG misses (`BootDrift` kexec drift, SELinux
+enforce/config mismatch, `ModulesDisabled` latch vs. `init_module` audit rules);
+CM-6 vs. CA-7 control mapping; six-indicator side-by-side comparison table; known
+UMRS gaps (SELinux enforce configured-vs-live not yet implemented).
+
+Please log in `.claude/CHANGELOG.md` under docs / architecture module.
+
+---
+
 ## [2026-03-17] tech-writer → rust-developer: FIPS path error in sealed_cache.rs and detect/integrity_check.rs
 
 **Status**: open

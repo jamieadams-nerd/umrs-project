@@ -1,0 +1,425 @@
+= STIG Check Methodology vs. UMRS Contradiction Detection
+:toc: left
+:toclevels: 3
+:description: How UMRS configured-vs-live contradiction detection differs from and improves upon STIG point-in-time configuration checks, and why both are necessary for CM-6 and CA-7 compliance.
+
+// NIST SP 800-53 CM-6 — Configuration Settings
+// NIST SP 800-53 CA-7 — Continuous Monitoring
+// NIST SP 800-53 AU-3 — Audit Record Content
+// NIST SP 800-53 SI-7 — Software and Information Integrity
+
+STIG checks and UMRS contradiction detection address the same compliance controls
+but from complementary angles. A STIG scan answers the question: "Is this value
+correct right now?" UMRS asks a different question: "Does the running kernel agree
+with what the system administrator intended?" This distinction is not academic.
+There are concrete failure modes that a STIG scan cannot detect, and concrete
+failure modes that UMRS cannot detect without a STIG scan. Used together, they
+close the gap between point-in-time verification and continuous posture monitoring.
+
+== What STIG Checks Do
+
+A STIG check is a point-in-time probe. The Open Compliance and Configuration
+Assessment (OSCAP) scanner executes a STIG benchmark check rule and reports pass
+or fail based on what it reads at that moment.
+
+For sysctl-based checks, the scanner typically reads from one of two locations:
+
+* The live kernel sysctl value — via `/proc/sys/…` nodes or the `sysctl(8)` command.
+* A configuration file — `/etc/sysctl.conf`, `/etc/sysctl.d/*.conf`,
+  `/usr/lib/sysctl.d/*.conf`.
+
+The CCE-89386-7 (`selinux_state`) check, for example, reads the live
+`/sys/fs/selinux/enforce` node. It passes if the value is `1` (enforcing). It
+fails if the value is `0` (permissive). The check does not examine
+`/etc/selinux/config`. It does not compare the two.
+
+This is the correct behavior for a STIG check. The STIG's job is to answer:
+"Is the system currently in a compliant state?" A system booted with
+`enforcing=0` on the kernel cmdline will fail that check. A system where
+SELinux is properly active will pass. The check does what it is designed to do.
+
+The gap appears when the live value passes but the system's configuration does
+not guarantee that value will survive the next reboot.
+
+=== What a Passing STIG Check Establishes
+
+A passing STIG check establishes that a specific value was observed at a specific
+point in time. It does not establish:
+
+* That the same value will be present after a reboot.
+* That the value is hardened by a durable, persisted configuration.
+* That the configured and live values are consistent with each other.
+* That a one-time runtime override has not placed the system in a state
+  that contradicts its intended configuration.
+
+These properties require a second kind of check: one that reads both the live
+kernel state and the configuration persistence layer, and compares them.
+That is what UMRS contradiction detection provides.
+
+== What UMRS Contradiction Detection Adds
+
+UMRS reads security posture indicators from two independent sources for each
+indicator:
+
+[horizontal]
+Live value::
+The current kernel-effective state, read from `/proc/sys/…` or `/sys/…`
+pseudo-filesystem nodes with provenance verification (`PROC_SUPER_MAGIC`,
+`SYSFS_MAGIC`). This is what the kernel is actually enforcing.
+
+Configured value::
+The intended state, read from the sysctl.d merge tree
+(`/usr/lib/sysctl.d/`, `/run/sysctl.d/`, `/etc/sysctl.d/`, `/etc/sysctl.conf`)
+or from bootloader entries (`/boot/loader/entries/*.conf`). This is what
+the system administrator instructed the kernel to enforce.
+
+When these two values disagree, UMRS classifies the contradiction by type and
+surfaces it as a finding. A STIG scanner observing only the live value would
+see a passing check while a real configuration management problem exists.
+
+=== Contradiction Taxonomy
+
+UMRS identifies three contradiction variants, each with a distinct operational
+interpretation:
+
+`BootDrift`::
+The configured value is hardened; the live value is not. The most significant
+variant. A sysctl.d file says `kernel.kexec_load_disabled = 1`, but the running
+kernel reports `0`. Possible causes: sysctl.d was not applied at boot, a runtime
+override cleared the setting, or the kernel does not support the parameter and
+silently ignores it. A STIG check reading only the live value would fail this
+check and produce a finding — but it would not tell the operator whether the
+failure is due to a missing `sysctl -p` invocation, a conflicting runtime
+override, or an unsupported kernel parameter.
+
+`EphemeralHotfix`::
+The live value is hardened; the configured value is not. A manual `sysctl -w`
+command applied a hardening setting that is not persisted in sysctl.d. The
+system is currently compliant, and a STIG scan will pass. But the hardening will
+be lost on the next reboot. The operator does not know this unless something
+explicitly checks the persistence layer.
+
+`SourceUnavailable`::
+A configured value exists in sysctl.d but the live kernel node is unreadable.
+The kernel may not support the parameter (feature not compiled in, module not
+loaded), or a permissions error prevents the read. The configured intent cannot
+be verified against live state. A STIG check would fail on the unreadable node;
+UMRS adds the context that the administrator's intent was present in sysctl.d.
+
+=== Three Cases STIG Checks Miss
+
+==== Case 1: Sysctl.d Sets a Value the Running Kernel Does Not Reflect
+
+A sysctl.d file contains:
+
+----
+# /etc/sysctl.d/99-hardening.conf
+kernel.kexec_load_disabled = 1
+----
+
+The running kernel reports:
+
+----
+/proc/sys/kernel/kexec_load_disabled: 0
+----
+
+A STIG scan reading the live value (`CCE-89232-3`, `sysctl_kernel_kexec_load_disabled`)
+fails. That is correct. The system is not hardened.
+
+However, the STIG finding tells the operator "this value is wrong." It does not
+tell the operator that the value is present in sysctl.d and was not applied — a
+completely different remediation path than "add the value to sysctl.d." The
+operator needs to run `sysctl -p` or investigate why the setting was overridden
+at runtime. Without contradiction detection, that context is absent.
+
+UMRS surfaces `BootDrift` with both values: configured `1`, live `0`. The
+remediation guidance is specific: the persistence layer is correct; the
+application of that layer to the running kernel failed.
+
+==== Case 2: `/etc/selinux/config` Says Enforcing, `/sys/fs/selinux/enforce` Says Permissive
+
+The `/etc/selinux/config` file contains:
+
+----
+SELINUX=enforcing
+----
+
+The kernel cmdline contains:
+
+----
+enforcing=0
+----
+
+The running system has:
+
+----
+/sys/fs/selinux/enforce: 0
+----
+
+The STIG check `CCE-89386-7` (`selinux_state`) reads the live
+`/sys/fs/selinux/enforce` node and fails: SELinux is permissive. That is correct.
+
+But the failure looks, to an operator without contradiction detection, like a
+misconfigured `/etc/selinux/config`. The remediation attempt — editing the config
+file — does nothing, because the config file is already correct. The actual
+problem is a `enforcing=0` override on the kernel cmdline, which takes precedence
+at boot. Without contradiction detection between the config file and the live
+enforcement state, the operator is working without the information needed to fix
+the problem.
+
+CAUTION: An `enforcing=0` kernel cmdline argument silently overrides
+`/etc/selinux/config` at every boot. A STIG check on the config file alone will
+pass while MAC enforcement is absent from the running system. Always verify the
+live `/sys/fs/selinux/enforce` value in addition to the config file.
+
+NOTE: The STIG check `CCE-89386-7` reads the live value and would catch this
+case. The `selinux_policytype` check (CCE-88366-0) reads only `/etc/selinux/config`.
+Checking both is the correct practice; neither check alone is sufficient.
+
+==== Case 3: `ModulesDisabled` One-Way Latch vs. Auditing `init_module` Syscalls
+
+The STIG includes `audit_rules_kernel_module_loading_init` (CCE-90172-8,
+`AU-12(c)`). This check verifies that the `init_module` syscall is audited.
+Auditing the syscall means that every attempt to load a kernel module generates
+an audit record.
+
+This is a detection control: it tells the operator when a module was loaded.
+It does not prevent module loading.
+
+The `ModulesDisabled` indicator in UMRS reads
+`/proc/sys/kernel/modules_disabled`. When this node reads `1`, the kernel's
+module loading subsystem has been locked by a one-way latch. Writing `1` to
+this node is irreversible without a reboot. No process — regardless of
+`CAP_SYS_MODULE` — can load a kernel module while this latch is set.
+
+This is a prevention control. It is categorically stronger than the STIG audit
+rule:
+
+* The STIG audit rule detects module loading after the fact.
+* `ModulesDisabled = 1` prevents module loading entirely. There is nothing to audit.
+
+The STIG does not have a check for `/proc/sys/kernel/modules_disabled`. The
+UMRS `ModulesDisabled` indicator fills that gap.
+
+NOTE: The two controls are complementary. Auditing `init_module` matters during
+the boot window before the latch is set, and on systems where the latch is not
+used. `ModulesDisabled` matters as a terminal hardening state for systems where
+no further module loading is permitted after initialization. A fully hardened
+system uses both.
+
+== Why This Matters for CM-6 and CA-7 Compliance
+
+NIST SP 800-53 CM-6 (Configuration Settings) requires that organizations
+establish and document configuration settings, monitor them, and correct
+deviations. The control has two distinct requirements:
+
+* *Establish and document*: define the correct values and where they live
+  (sysctl.d, `/etc/selinux/config`, the bootloader cmdline).
+* *Monitor and correct*: detect when the running system deviates from the
+  documented configuration.
+
+STIG checks satisfy the first requirement. A STIG scan run against a system
+answers whether that system's current state matches the benchmark at that
+moment. Many organizations run STIG scans as part of a periodic review or a
+pre-accreditation check. That is appropriate use.
+
+CA-7 (Continuous Monitoring) requires ongoing monitoring of security controls —
+not periodic scans. The control explicitly calls for:
+
+* Ongoing monitoring of organizational systems.
+* Analysis of security-related information collected during monitoring.
+* Response to findings.
+
+A periodic STIG scan satisfies the check requirement for CM-6. It does not satisfy
+the ongoing monitoring requirement of CA-7. A STIG scan run at accreditation time
+and not repeated until the next assessment cycle cannot detect an `EphemeralHotfix`
+that appeared three weeks later when a system administrator applied a manual sysctl
+override that was not persisted to sysctl.d.
+
+UMRS contradiction detection is designed to run at any time — on demand, on a
+schedule, or as part of a CI/CD deployment pipeline. Every execution reads both the
+live kernel state and the configuration persistence layer, classifies any
+contradictions, and surfaces them as typed findings. This is continuous monitoring
+in the CA-7 sense.
+
+=== Control Mapping Summary
+
+[cols="1,2,2"]
+|===
+| Control | STIG Contribution | UMRS Contribution
+
+| CM-6 Configuration Settings
+| Point-in-time compliance check. Verifies the live or configured value matches
+  the benchmark.
+| Detects divergence between the configured and live values. Classifies the
+  divergence type (`BootDrift`, `EphemeralHotfix`, `SourceUnavailable`).
+
+| CA-7 Continuous Monitoring
+| Not addressed — STIG scans are point-in-time.
+| Typed findings producible on demand or on a schedule. Every execution reflects
+  the current live and configured state.
+
+| AU-3 Audit Record Content
+| Audit records are generated by auditd rules; STIG verifies the rules exist.
+| Contradiction findings are typed enums, not log strings. They are
+  programmatically queryable, filterable, and countable.
+
+| SI-7 Software and Information Integrity
+| Verifies configuration file content at check time.
+| Reads live kernel nodes with provenance verification (procfs and sysfs magic
+  numbers) to prevent spoofing via bind-mounts or overlay filesystems.
+|===
+
+== Side-by-Side Indicator Comparison
+
+The following table covers six representative indicators. For each, it shows
+what the STIG check examines, what UMRS adds, and which failure mode each can detect.
+
+[cols="1,2,2,1,1"]
+|===
+| Indicator | STIG Check (CCE) | UMRS Read Path | STIG Detects | UMRS Adds
+
+| `kernel.kexec_load_disabled`
+| CCE-89232-3 reads live `/proc/sys/kernel/kexec_load_disabled`.
+  Pass if `1`.
+| Live: `/proc/sys/kernel/kexec_load_disabled`. Configured:
+  sysctl.d merge tree. Contradiction: `BootDrift` or `EphemeralHotfix`.
+| Live value is `0` (failing). Live value is `1` (passing).
+| `BootDrift` when sysctl.d has `1` but live reads `0`. `EphemeralHotfix`
+  when live is `1` but not persisted.
+
+| `kernel.modules_disabled`
+| No STIG check. Audit rules check `init_module` syscall (CCE-90172-8)
+  as a detection control.
+| Live: `/proc/sys/kernel/modules_disabled` via `ModuleLoadLatch`.
+  One-way latch — `1` means no further module loading is possible.
+| Module load events (via auditd).
+| Whether the latch is set (prevention, not detection). Contradiction
+  detection between sysctl.d and the live latch state.
+
+| SELinux enforcement mode
+| CCE-89386-7 reads live `/sys/fs/selinux/enforce`. Pass if `1`.
+  CCE-88366-0 reads `/etc/selinux/config`. Pass if `SELINUX=enforcing`.
+| Live: `/sys/fs/selinux/enforce` via `SelinuxEnforce`. Provenance:
+  `SYSFS_MAGIC` verified. No UMRS configured-path reader for
+  `/etc/selinux/config` yet — noted as a gap.
+| Live permissive mode (CCE-89386-7). Misconfigured config file
+  (CCE-88366-0).
+| Gap: contradiction between `/etc/selinux/config` and live enforce
+  value (e.g., `enforcing=0` cmdline override) is not yet detected.
+  See planned `SelinuxEnforce` indicator in the posture catalog.
+
+| `kernel.randomize_va_space`
+| CCE-87876-9 reads live value. Pass if `2`.
+| Live: `/proc/sys/kernel/randomize_va_space`. Configured: sysctl.d
+  merge tree. Contradiction: `BootDrift` or `EphemeralHotfix`.
+| Live value is not `2`.
+| `EphemeralHotfix` when a runtime `sysctl -w` set the value to `2`
+  but sysctl.d does not persist it — system passes the STIG check but
+  will fail after next reboot.
+
+| `kernel.unprivileged_bpf_disabled`
+| CCE-89405-5 reads live value. Pass if `1`.
+| Live: `/proc/sys/kernel/unprivileged_bpf_disabled`. Configured:
+  sysctl.d merge tree.
+| Live value is `0`.
+| `BootDrift` when sysctl.d restricts BPF but the live kernel does
+  not — possibly due to a kernel version lacking the parameter or a
+  conflicting package default.
+
+| `crypto.fips_enabled`
+| No direct STIG sysctl check. FIPS is a platform prerequisite; the
+  STIG assumes FIPS-mode RHEL.
+| Live: `/proc/sys/crypto/fips_enabled` via `ProcFips`. Configured:
+  `/etc/system-fips` marker, `/etc/crypto-policies/state/current`,
+  `fips=1` on kernel cmdline (three independent sources).
+| Not directly — FIPS status is assumed rather than checked.
+| Cross-check of all three FIPS persistence sources against the live
+  FIPS state. A system where `fips=1` is present on the cmdline but
+  `/etc/system-fips` is absent produces a finding. The STIG scan
+  would not surface this discrepancy.
+|===
+
+== Limitations and Gaps
+
+UMRS contradiction detection has its own limitations, separate from STIG.
+
+*No policy compliance check.* STIG checks verify that a value matches a specific
+hardened baseline. UMRS verifies that the live and configured values agree. A
+system where both the live and configured values are `0` (unhardened) produces no
+UMRS contradiction — and correctly so: the system is consistently misconfigured.
+A STIG scan is needed to catch that case.
+
+*Configuration file trust.* UMRS reads sysctl.d files and BLS bootloader entries
+without provenance verification. These are regular filesystem files, not pseudo-filesystem
+nodes. A compromised sysctl.d file that matches the live (also compromised) value
+produces no contradiction. Integrity of the configuration layer requires IMA/EVM.
+
+*SELinux config vs. live enforcement gap.* As noted in the table above, UMRS does
+not yet have a configured-value reader for `/etc/selinux/config`. The live value
+is read (`SelinuxEnforce`), but no contradiction is produced when the config file
+and live enforcement state disagree. Adding `SelinuxEnforce` and `SelinuxPolicyType`
+indicators to the posture catalog with full configured-vs-live detection is planned.
+
+*No audit rule verification.* STIG checks verify that auditd rules exist for
+specific syscalls. UMRS has no audit rule coverage. Verifying the presence and
+content of `/etc/audit/rules.d/` is out of scope for the current posture catalog
+and is best handled by a STIG scan.
+
+== Using STIG Scans and UMRS Together
+
+The two mechanisms are not alternatives. They address different layers of the same
+compliance requirement.
+
+Run STIG scans to verify that individual security controls are set to hardened
+values — the benchmark defines what "correct" looks like. Run STIG scans at
+accreditation time, after major configuration changes, and as part of any periodic
+compliance review.
+
+Use UMRS contradiction detection to verify that the system's configuration
+persistence layer and its live kernel state are consistent — and that a passing
+STIG check reflects a durable configuration, not a transient one. Run UMRS
+continuously or on a schedule aligned with the CA-7 monitoring strategy.
+
+When UMRS surfaces an `EphemeralHotfix`, the next STIG scan will still pass. The
+finding is invisible to the scanner. That is exactly when UMRS is providing value
+that the STIG scan cannot.
+
+When UMRS surfaces `BootDrift`, the next STIG scan will fail the affected check.
+The UMRS finding tells the operator what kind of drift occurred and where to look.
+The STIG finding confirms that the live state is non-compliant. Together they give
+the operator a complete picture.
+
+== Compliance Mapping
+
+[cols="1,3"]
+|===
+| Standard | Relationship to This Page
+
+| NIST SP 800-53 CM-6
+| Configuration Settings — STIG checks verify point-in-time compliance; UMRS
+  contradiction detection verifies that configured and live values are consistent
+  and that compliance is durable across reboots.
+
+| NIST SP 800-53 CA-7
+| Continuous Monitoring — UMRS contradiction detection is designed as a CA-7
+  continuous monitoring mechanism. STIG scans satisfy the check requirement of
+  CM-6 but do not satisfy the ongoing monitoring requirement of CA-7 on their own.
+
+| NIST SP 800-53 AU-3
+| Audit Record Content — `ContradictionKind` is a typed enum, not a log string.
+  Audit consumers can programmatically classify, filter, and count contradiction
+  findings.
+
+| NIST SP 800-53 SI-7
+| Software and Information Integrity — UMRS reads live kernel nodes with procfs
+  and sysfs magic number verification, preventing spoofed reads via bind-mounts or
+  overlay filesystems. STIG checks do not verify the provenance of the nodes they read.
+|===
+
+== See Also
+
+* xref:index.adoc[Architecture Overview]
+* xref:kernel-files-tpi.adoc[Two-path independence in kernel file parsing]
+* xref:deployment:rhel/rhel10-openscap.adoc[RHEL 10 OpenSCAP and STIG scanning]
+* xref:reference:compliance-frameworks.adoc[Compliance frameworks registry]

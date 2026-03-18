@@ -1,7 +1,7 @@
 # Plan: Source Code Comment Cleanup
 
 **Date:** 2026-03-15
-**Status:** Tasks 1-3 COMPLETE (2026-03-17); IRS review optional
+**Status:** COMPLETE (2026-03-17)
 **ROADMAP Goals:** G7 (Public Project), G8 (High-Assurance Patterns)
 **Owner:** rust-developer (Rusty)
 **Reviewer:** security-auditor (The IRS), tech-writer (Von Neumann)

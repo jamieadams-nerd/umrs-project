@@ -1,7 +1,7 @@
 ---
 name: Security Auditor Methodology Corpus
 agent: researcher
-status: phase-3-complete — STIG mapping done, coverage report written; RHEL 9 STIG + CIS downloads are optional supplementary
+status: COMPLETE (2026-03-17) — STIG mapping done, coverage report written; RHEL 9 STIG + CIS downloads deferred as optional
 source: .claude/jamies_brain/enhance-sa.txt (Initiative A)
 depends-on: none (independent track)
 ---

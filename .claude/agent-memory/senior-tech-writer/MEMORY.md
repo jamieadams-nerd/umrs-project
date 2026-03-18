@@ -310,3 +310,19 @@ Open questions for Jamie (in plan): Q1 page label disambiguation, Q2 historical 
 ### Remaining gaps
 - GPO Style Manual — cited by MIL-STD for formal TM capitalization/punctuation
 - Google word-list.md (2766 lines) — deferred; query RAG for specific terms
+
+---
+
+## SCAP/STIG Corpus (Phase 2 familiarization complete — 2026-03-17)
+
+Full findings: `.claude/agent-memory/senior-tech-writer/scap_familiarization.md`
+
+Key decisions:
+- CCE cross-reference page → `reference/pages/stig-cce-crossref.adoc` (nav under `* CUI & Policy`)
+- CCE citations inline in `kernel-probe-signals.adoc` for confirmed UMRS signal matches only
+- CCE format: `NIST SP 800-53 CM-6 | CCE-89232-3 (RHEL 10 STIG)` — NIST leads, CCE is the index key
+- CCE never appears in `operations/` or `deployment/` — auditor artifact only
+- `compliance-frameworks.adoc` needs a SCAP/STIG row
+- `compliance-annotations.adoc` needs a section on when to populate `IndicatorDescriptor.cce`
+- Phase 3b work blocked until Phase 3a (rust-developer adds `cce` field) is complete
+- RAG chunking fix (re-generate index files with section headings) should precede Phase 3 integration

@@ -50,6 +50,23 @@ In UMRS documentation, always use `security context` — never the shorthand.
 
 ---
 
+## Compliance and Audit Standards
+
+| Use | Do not use | Note |
+|---|---|---|
+| `CCE` (Common Configuration Enumeration) | `cce`, `CCE_`, bare number | Always uppercase `CCE-` prefix. Format: `CCE-NNNNN-N`. Always include provenance qualifier in citations: `CCE-89386-7 (RHEL 10 STIG)`. |
+| `SCAP` (Security Content Automation Protocol) | "SCAP content" without prior definition | Spell out on first use per page. "SCAP content" is acceptable shorthand after first use. |
+| `STIG` (Security Technical Implementation Guide) | "the STIG" (unqualified) | Spell out on first use per page. Always qualify with the profile name: "RHEL 10 STIG". Never use "STIG check" — use "STIG requirement" or "STIG indicator". |
+| `RHEL 10 STIG` | "STIG", "the STIG", "RHEL STIG" | The full name for the DISA STIG for Red Hat Enterprise Linux 10. Multiple STIGs exist; qualification is required. |
+| `XCCDF` (Extensible Configuration Checklist Description Format) | (no variants) | Developer and tooling documentation only. Not operator-facing. Spell out on first use. |
+
+STIG severity levels in output:
+- Human-readable (TUI, prose): `High`, `Medium`, `Low` (title case)
+- JSON output: `"high"`, `"medium"`, `"low"` (lowercase)
+- `unknown` severity: map to `Unrated` or suppress in operator-facing output
+
+---
+
 ## Abbreviations
 
 | Abbreviation | Expansion | First-use rule |
@@ -65,6 +82,10 @@ In UMRS documentation, always use `security context` — never the shorthand.
 | PQC | Post-Quantum Cryptography | Spell out on first use per page |
 | RTB | Raise the Bar (NSA) | Spell out on first use per page |
 | AVC | Access Vector Cache | Spell out on first use per page |
+| CCE | Common Configuration Enumeration | Spell out on first use per page |
+| SCAP | Security Content Automation Protocol | Spell out on first use per page |
+| STIG | Security Technical Implementation Guide | Spell out on first use per page; always qualify with profile name |
+| XCCDF | Extensible Configuration Checklist Description Format | Spell out on first use; developer docs only |
 
 ---
 

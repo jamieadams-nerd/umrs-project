@@ -234,6 +234,22 @@ that an assessor can use as an Examine object, or does it produce only runtime d
 - Open architectural decisions (CpuSignalId, MAC abstraction, serialization) → Authorize R-1
 - Research corpus (CPU features) → Select S-2 pre-requisite (knowledge base for control tailoring)
 
+## SCAP / STIG Corpus Knowledge (2026-03-17)
+
+See [`scap_familiarization.md`](scap_familiarization.md) for full details. Key audit checkpoints:
+
+- **CCE annotation debt**: all 36 indicators in `catalog.rs` lack CCE cross-references. Confirmed
+  mapping for 12 indicators with direct STIG matches. No CCE available for UMRS-only indicators.
+- **Citation format in catalog.rs**: `nist_controls` strings use `NIST 800-53` (abbreviated); this
+  is permitted per Citation Format Rule for runtime output strings. No violation.
+- **NIST control precision gaps**: DmesgRestrict should cite SI-11(a/b) not SI-7/SC-28;
+  KptrRestrict should cite SC-30/SC-30(2) not SI-7/SC-39; UnprivBpfDisabled should add AC-6.
+- **Tier-1 candidate list**: expanded from 7 to 13 network sysctl indicators. See memory file.
+- **Auditd gap**: 51 STIG rules → 3 composite indicators recommended (AuditdDaemonConfig,
+  AuditRulesIntegrity, AuditRulesSelinux) rather than 51 individual entries.
+- **UMRS exceeds STIG**: 10 CPU mitigation indicators + ModulesDisabled + Lockdown are
+  UMRS-only strengths; document as evidence of above-baseline posture in assessments.
+
 ## TUI/CLI Corpus Knowledge (2026-03-15)
 
 See [`tui-cli-corpus.md`](tui-cli-corpus.md) for full details. Key audit checkpoints:

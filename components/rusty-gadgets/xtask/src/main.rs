@@ -10,7 +10,8 @@ use std::process::{Command, Stdio};
 ///
 /// NIST SP 800-53 SA-11 / NIST SP 800-218 SSDF PW.4.
 fn doc_check() -> Result<()> {
-    let workspace_root = Path::new(env!("CARGO_MANIFEST_DIR")).parent().unwrap();
+    let workspace_root =
+        Path::new(env!("CARGO_MANIFEST_DIR")).parent().unwrap();
     let mut missing = Vec::new();
 
     // Walk each workspace member's src/ directory

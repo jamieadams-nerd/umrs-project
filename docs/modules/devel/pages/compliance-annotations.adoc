@@ -361,6 +361,227 @@ See also xref:cryptography:fips-cryptography-cheat-sheet.adoc[FIPS cryptography 
 
 *NIST SP 800-218 SSDF PW.4.5 / FIPS 140-2 / FIPS 140-3*
 
+== CCE Citation Format
+
+=== What CCE Is
+
+A Common Configuration Enumeration (CCE) identifier is a stable, unique reference to
+a specific configuration guidance item defined in a Security Technical Implementation
+Guide (STIG) or a Security Content Automation Protocol (SCAP) content stream.
+
+CCE identifiers take the form `CCE-NNNNN-N`, where the body is a five-digit number
+and the check digit is a single digit.
+The `CCE-` prefix is always uppercase and always present.
+There are no abbreviated or alternate forms.
+
+Example: `CCE-89386-7`
+
+A CCE identifier alone does not identify which STIG or SCAP profile it belongs to.
+Every CCE citation in UMRS documentation and source code must include a provenance
+qualifier — the profile name in parentheses immediately after the identifier.
+For RHEL 10 content, that qualifier is `(RHEL 10 STIG)`.
+
+=== When to Cite a CCE Identifier
+
+Cite a CCE identifier only when the corresponding STIG requirement has been
+confirmed to map to a UMRS type, function, or indicator.
+
+Do not cite a CCE if:
+
+* The mapping is approximate or aspirational — describe the relationship in prose instead.
+* The CCE belongs to a profile other than RHEL 10 — do not use RHEL 9 or RHEL 8 identifiers
+  in RHEL 10 STIG context.
+* The source is the `cce-nist-crossref.md` index but the control mapping has not been
+  independently verified against the STIG itself.
+
+CCE identifiers are stable, but STIG revisions can change the underlying guidance.
+Record the STIG version when a CCE is first introduced into the codebase.
+
+=== Format in Rust Doc Comments
+
+In Rust `///` and `//!` doc comments, CCE citations follow NIST control citations.
+CCE never appears alone and never precedes the NIST citation.
+
+The format is:
+
+----
+- CCE-NNNNN-N (RHEL 10 STIG) — <imperative description of the requirement>
+----
+
+The description should be the STIG signal description in normalized imperative form.
+Do not copy descriptions that are truncated at a dash or that describe a check step
+rather than a compliance requirement — normalize these to complete sentences that
+state the required configuration state.
+
+.Example — kernel module type with both NIST and CCE citations
+[source,rust]
+----
+/// Controls the kernel module load state for a specific module.
+///
+/// # Compliance
+///
+/// - NIST SP 800-53 CM-7(a) — restrict functionality to the minimum required
+/// - NIST SP 800-53 CM-7(b) — prohibit or restrict use of unnecessary functions
+/// - CCE-87455-2 (RHEL 10 STIG) — Ensure kernel module 'bluetooth' is disabled
+----
+
+.Example — SELinux enforcement state type
+[source,rust]
+----
+/// Models the current SELinux enforcement mode as reported by the kernel.
+///
+/// # Compliance
+///
+/// - NIST SP 800-53 AC-3 — access enforcement; depends on SELinux being in enforcing mode
+/// - NIST SP 800-53 SC-7(21) — boundary protection; SELinux enforces domain isolation
+/// - CCE-89386-7 (RHEL 10 STIG) — Ensure SELinux State is Enforcing
+----
+
+The `# Compliance` section heading is preferred when citing multiple controls.
+For a single short citation, an inline citation after the type description is acceptable.
+
+IMPORTANT: Do not add CCE citations to accessors, Display impls, or any item that does
+not directly implement a compliance requirement. The tiering rules in
+xref:compliance-annotations.adoc#_the_tiered_annotation_requirement[The Tiered Annotation Requirement]
+still apply.
+
+=== Format in Antora Documentation Pages
+
+==== Inline citations in body text
+
+Use parenthetical citation, preserving the exact `CCE-NNNNN-N` format.
+No special markup is required around a CCE cited inline.
+
+----
+The SELinux enforcement check (CCE-89386-7) maps to NIST SP 800-53 AC-3 and SC-7(21).
+----
+
+Do not use code font around an inline CCE citation unless it appears in a code listing.
+CCE identifiers are reference numbers, not code tokens.
+
+==== Compliance cross-reference tables
+
+When presenting multiple CCE mappings in a table (for example, in a compliance registry
+or a posture signal catalog), use this column structure:
+
+[source,asciidoc]
+----
+[cols="1,1,2,2,3", options="header"]
+|===
+|CCE |STIG Profile |Signal Name |NIST Controls |Description
+
+|CCE-89386-7
+|RHEL 10 STIG
+|`selinux_state`
+|AC-3, SC-7(21)
+|Ensure SELinux State is Enforcing
+
+|CCE-88366-0
+|RHEL 10 STIG
+|`selinux_policytype`
+|AC-3, SC-7(21)
+|Ensure SELinux policy type is set to the required profile
+|===
+----
+
+Rules for compliance tables:
+
+* CCE goes in its own column — do not embed it in the description column.
+* Signal names go in monospace (backtick-wrapped in the source).
+* NIST control enhancements use parenthesized form without a space: `CM-7(a)`, not `CM-7 (a)`.
+* Descriptions must be complete sentences. Do not copy truncated STIG descriptions.
+  Normalize check-step artifacts to requirement statements.
+* Always include the STIG Profile column. More than one STIG exists; the profile name
+  disambiguates which body of guidance the CCE belongs to.
+
+=== Format in CLI and TUI Output
+
+==== `--json` output
+
+In structured JSON output, the CCE identifier is a machine-readable field alongside the
+NIST controls and the STIG severity level.
+
+[source,json]
+----
+{
+  "indicator": "kernel_module_bluetooth_disabled",
+  "cce": "CCE-87455-2",
+  "stig_profile": "RHEL 10",
+  "nist_controls": ["CM-7(a)", "CM-7(b)"],
+  "severity": "medium"
+}
+----
+
+The `cce` field preserves the exact `CCE-NNNNN-N` format.
+The `stig_profile` field is always present when `cce` is present.
+The `severity` field uses lowercase: `"high"`, `"medium"`, `"low"`.
+
+==== Human-readable compact view
+
+In human-readable compact output (for example, a posture summary table), suppress the CCE
+identifier. Show it only in expanded detail view.
+
+----
+[MEDIUM] kernel bluetooth module disabled
+----
+
+In expanded or verbose view, present CCE as a secondary detail line:
+
+----
+[MEDIUM] kernel bluetooth module disabled
+         CCE-87455-2 · CM-7(a) CM-7(b)
+----
+
+Do not abbreviate `CCE-NNNNN-N` in any output.
+Do not place the CCE on the primary indicator line — it is reference metadata, not an
+operator-facing status.
+
+NOTE: These CLI and TUI display conventions are forward specifications.
+As of this writing, not all tools have implemented `--json` output or expanded detail views.
+New tool implementations should follow this format.
+
+=== CCE Citations and the RHEL 10 STIG Signal Index
+
+The RHEL 10 STIG signal index is available at
+`.claude/references/scap-security-guide/stig-signal-index.md`.
+The CCE-to-NIST cross-reference is at
+`.claude/references/scap-security-guide/cce-nist-crossref.md`.
+
+These files contain 451 signals derived from the RHEL 10 SCAP Security Guide.
+Use them to identify the correct CCE for a given indicator before adding a citation
+to source code or documentation.
+
+The four SELinux-relevant signals with confirmed CCE mappings:
+
+[cols="2,1,2,3", options="header"]
+|===
+|Signal Name |CCE |NIST Controls |STIG Description
+
+|`selinux_state`
+|CCE-89386-7
+|AC-3, SC-7(21)
+|Ensure SELinux State is Enforcing
+
+|`selinux_policytype`
+|CCE-88366-0
+|AC-3, SC-7(21)
+|Ensure SELinux policy type is set to the required profile
+
+|`configure_crypto_policy`
+|CCE-89085-5
+|SC-13
+|Configure System Cryptography Policy
+
+|`aide_use_fips_hashes`
+|CCE-90260-1
+|SC-13
+|Configure AIDE to Use FIPS 140-2 for Validating Hashes
+|===
+
+NOTE: The STIG description for `selinux_policytype` in the original SCAP content is a
+check-step artifact ("Insert correct line to /etc/selinux/config"). The normalized form
+above is used in UMRS documentation.
+
 '''
 
 == Reference

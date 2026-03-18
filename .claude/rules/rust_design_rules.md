@@ -51,6 +51,10 @@
 - FIPS citations use: `FIPS 140-2` or `FIPS 140-3` (with the dash).
 - CMMC citations use: `CMMC` followed by domain and level (e.g., `CMMC SC.L2-3.13.10`).
 - Runtime output strings (e.g., `nist_controls` fields in catalog entries) may use abbreviated forms for display compactness.
+- CCE citations use the canonical form: `CCE-NNNNN-N` (uppercase, hyphen separator) followed by provenance `(RHEL 10 STIG)`.
+- CCE always follows a NIST control citation — never cite CCE alone.
+- When adding a CCE identifier to source code, include the STIG version and date in a comment on the same line or block. Example: `// CCE-89232-3 (RHEL 10 STIG, scap-security-guide 2026-03-17)`
+- If a CCE's authoritative NIST control mapping conflicts with an existing UMRS citation, flag the conflict for review — do not silently overwrite. Both mappings may be defensible; the decision requires human judgment.
 
 ## Module Documentation Checklist Rule
 

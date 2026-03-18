@@ -1,7 +1,7 @@
 # SCAP/STIG Corpus Ingestion Plan
 
 **Created:** 2026-03-16
-**Status:** Phase 1 COMPLETE. Phase 3c done via security-auditor-corpus plan. Phases 2 (agent familiarization) and 3a/3b/3d pending.
+**Status:** COMPLETE (2026-03-17). All phases done.
 **Source:** `.claude/references/scap-security-guide/rhel10-playbook-stig.yml`
 **ROADMAP Goals:** G2 (Security Posture Assessment), G5 (Security Tools), G8 (High-Assurance Patterns)
 **Agent:** researcher (ingestion), then rust-developer + security-engineer + security-auditor + tech-writer + senior-tech-writer (familiarization)
@@ -38,21 +38,21 @@ re-running ingestion with `--force`.
 
 ### Corpus content summary (researcher familiarization)
 
-**451 unique signals across the following check method categories:**
-- `sysctl` (kernel parameter checks) — ~35 signals, all directly relevant to UMRS posture catalog
-- `audit-rule` (audit framework rules) — ~55 signals covering DAC modification, file deletion, privileged commands, login events
-- `file-check` (file ownership/permissions) — ~120 signals covering /etc/ and system dirs
-- `package-check` (package presence/absence) — ~30 signals
-- `cmdline` (kernel command line arguments) — ~8 signals (grub, audit, pti, vsyscall)
-- `service-check` (systemd service state) — ~5 signals
-- `other` (various — PAM, SSH, SELinux config, crypto policy) — ~200 signals
+**451 unique STIG rules across the following check method categories:**
+- `sysctl` (kernel parameter checks) — ~35 rules, all directly relevant to UMRS indicator catalog
+- `audit-rule` (audit framework rules) — ~55 rules covering DAC modification, file deletion, privileged commands, login events
+- `file-check` (file ownership/permissions) — ~120 rules covering /etc/ and system dirs
+- `package-check` (package presence/absence) — ~30 rules
+- `cmdline` (kernel command line arguments) — ~8 rules (grub, audit, pti, vsyscall)
+- `service-check` (systemd service state) — ~5 rules
+- `other` (various — PAM, SSH, SELinux config, crypto policy) — ~200 rules
 
-**UMRS-relevant signal highlights (sysctl category — directly maps to posture catalog):**
+**UMRS-relevant highlights (sysctl category — directly maps to posture indicator catalog):**
 
-| Signal | CCE | NIST Controls | Relevance to UMRS |
+| STIG Rule | CCE | NIST Controls | Relevance to UMRS |
 |---|---|---|---|
-| `sysctl_kernel_kexec_load_disabled` | CCE-89232-3 | CM-6 | Already cited in plan; maps to kexec signal |
-| `sysctl_kernel_randomize_va_space` | CCE-87876-9 | CM-6(a), SC-30, SC-30(2) | ASLR — likely in posture catalog |
+| `sysctl_kernel_kexec_load_disabled` | CCE-89232-3 | CM-6 | Already cited in plan; maps to kexec indicator |
+| `sysctl_kernel_randomize_va_space` | CCE-87876-9 | CM-6(a), SC-30, SC-30(2) | ASLR — likely in indicator catalog |
 | `sysctl_kernel_dmesg_restrict` | CCE-89000-4 | SI-11(a), SI-11(b) | Kernel log access restriction |
 | `sysctl_kernel_kptr_restrict` | CCE-88686-1 | CM-6(a), SC-30 | Kernel pointer address restriction |
 | `sysctl_kernel_unprivileged_bpf_disabled` | CCE-89405-5 | AC-6, SC-7(10) | Unprivileged BPF access |
@@ -64,16 +64,16 @@ re-running ingestion with `--force`.
 | `sysctl_kernel_core_pattern` | CCE-86714-3 | SC-7(10) | Core dump storage disable |
 | `sysctl_kernel_perf_event_paranoid` | CCE-90142-1 | AC-6 | Unprivileged perf profiling |
 
-**SELinux-specific signals:**
+**SELinux-specific STIG rules:**
 - `selinux_state` (CCE-89386-7): AC-3, AC-3(3)(a), AU-9, SC-7(21) — high severity — UMRS verifies this
 - `selinux_policytype` (CCE-88366-0): AC-3, AC-3(3)(a), AU-9, SC-7(21) — medium — UMRS verifies this
 
-**Audit/kmod signals directly relevant to UMRS:**
+**Audit/kmod STIG rules directly relevant to UMRS:**
 - `audit_rules_kernel_module_loading_init` (CCE-90172-8): AC-6(9), AU-12(c)
 - `audit_rules_kernel_module_loading_finit` (CCE-88638-2): AC-6(9), AU-12(c)
 - `audit_rules_kernel_module_loading_delete` (CCE-89982-3): AC-6(9), AU-12(c)
 
-**FIPS/crypto policy signals (relevant to SC-13, FIPS 140-2 environment):**
+**FIPS/crypto policy STIG rules (relevant to SC-13, FIPS 140-2 environment):**
 - `configure_crypto_policy` (CCE-89085-5): AC-17(2), SC-12(2), SC-12(3), SC-13 — high severity
 - `configure_bind_crypto_policy` (CCE-86874-5): SC-12(2), SC-13 — high
 - `aide_use_fips_hashes` (CCE-90260-1): CM-6(a), SI-7, SI-7(1) — AIDE must use FIPS 140-2 hashes
@@ -97,7 +97,7 @@ into the RAG as the `scap-stig` collection. This corpus provides:
    alongside NIST controls where applicable.
 
 2. **Coverage gap analysis** — identifies STIG-mandated hardening checks we may not yet cover
-   in the `umrs-platform` posture catalog. Some STIG items will be out of scope (GUI, network
+   in the `umrs-platform` indicator catalog. Some STIG items will be out of scope (GUI, network
    services), but kernel/sysctl/audit items are directly relevant.
 
 3. **Descriptive text** — task names contain concise, operator-friendly descriptions of what
@@ -112,21 +112,21 @@ into the RAG as the `scap-stig` collection. This corpus provides:
 
 ## Pre-Ingestion: Preprocessing
 
-The raw YAML is 63K lines with massive repetition (each sysctl signal has 5 nearly identical
+The raw YAML is 63K lines with massive repetition (each sysctl indicator has 5 nearly identical
 task blocks). For effective RAG retrieval, preprocess before ingestion:
 
-### Phase 0 — Extract structured signal index
+### Phase 0 — Extract structured indicator index
 
 Write a preprocessing script that extracts from the YAML:
 
 ```
-signal_name | CCE | NIST controls | severity | description | check method | desired value
+indicator_name | CCE | NIST controls | severity | description | check method | desired value
 ```
 
 Output: `.claude/references/scap-security-guide/stig-signal-index.md` (markdown table)
 
-This index becomes the primary ingestion document — the RAG can retrieve any signal by
-CCE, NIST control, or signal name.
+This index becomes the primary ingestion document — the RAG can retrieve any indicator by
+CCE, NIST control, or name.
 
 ### Phase 0.5 — Extract unique CCE → NIST mapping table
 
@@ -139,7 +139,7 @@ CCE-89232-3 | NIST-800-53-CM-6 | sysctl_kernel_kexec_load_disabled | Disable Ker
 Output: `.claude/references/scap-security-guide/cce-nist-crossref.md`
 
 This is the document that rust-developer and security-auditor will use most — quick lookup
-of CCE identifiers for any signal we already cover.
+of CCE identifiers for any indicator we already cover.
 
 ---
 
@@ -164,7 +164,7 @@ Order is parallel where possible.
 
 | Agent | Focus | Priority |
 |-------|-------|----------|
-| rust-developer | CCE mappings for existing `SignalId` variants; new signal candidates; check methodology comparison | High |
+| rust-developer | CCE mappings for existing `IndicatorId` variants; new indicator candidates; check methodology comparison | High |
 | security-engineer | STIG deployment posture; items affecting SELinux policy, file permissions, audit rules | High |
 | security-auditor | Coverage gap analysis vs. posture catalog; CCE annotation debt in source code | High |
 | tech-writer | Descriptive text patterns; operator-facing terminology; CCE citation format | Medium |
@@ -172,7 +172,7 @@ Order is parallel where possible.
 
 Each agent updates their MEMORY.md with:
 - Key findings from familiarization
-- List of CCEs that map to signals they own or document
+- List of CCEs that map to indicators they own or document
 - Identified gaps or action items
 
 ---
@@ -185,11 +185,11 @@ After familiarization, the following integration work is expected:
 
 **Agent:** rust-developer (implementation), security-auditor (review)
 
-Add CCE identifiers to `SignalDescriptor` entries in `catalog.rs` where the STIG has a
+Add CCE identifiers to `IndicatorDescriptor` entries in `catalog.rs` where the STIG has a
 matching check. New field:
 
 ```rust
-/// CCE identifier from the RHEL 10 STIG, if this signal has a SCAP equivalent.
+/// CCE identifier from the RHEL 10 STIG, if this indicator has a SCAP equivalent.
 pub cce: Option<&'static str>,
 ```
 
@@ -199,7 +199,7 @@ This makes CCE cross-references available at compile time alongside NIST control
 
 **Agent:** tech-writer
 
-When documenting a signal or hardening check that has a CCE mapping, include the CCE
+When documenting an indicator or hardening check that has a CCE mapping, include the CCE
 alongside the NIST control citation. Format: `CCE-89232-3 (NIST SP 800-53 CM-6)`.
 
 ### 3c. Coverage Gap Report
@@ -207,8 +207,8 @@ alongside the NIST control citation. Format: `CCE-89232-3 (NIST SP 800-53 CM-6)`
 **Agent:** security-auditor
 
 Produce a report at `.claude/reports/stig-coverage-gaps.md` listing:
-- STIG items we cover (with our `SignalId` → CCE mapping)
-- STIG items we could cover (relevant kernel/sysctl/audit items not yet in catalog)
+- STIG items we cover (with our `IndicatorId` → CCE mapping)
+- STIG items we could cover (relevant kernel/sysctl/audit items not yet in our indicator catalog)
 - STIG items out of scope (GUI, network services, package management)
 - Items where our check is superior to STIG's (contradiction detection, live vs. configured)
 
@@ -225,20 +225,20 @@ standard SCAP scans miss.
 
 ## Definition of Done
 
-- [x] Phase 0: Signal index and CCE cross-reference tables generated (451 signals, both files in `scap-security-guide/`)
+- [x] Phase 0: Indicator index and CCE cross-reference tables generated (451 STIG rules, both files in `scap-security-guide/`)
 - [x] Phase 1: `scap-stig` collection ingested into RAG (collection: `scap-security-guide`, 7 chunks)
 - [x] Phase 2 (researcher): Corpus familiarization complete — see ingestion notes above
-- [ ] Phase 2 (rust-developer): CCE mappings for existing SignalId variants; new signal candidates
-- [ ] Phase 2 (security-engineer): STIG deployment posture; SELinux policy, file permissions, audit rules
-- [ ] Phase 2 (security-auditor): Coverage gap analysis vs. posture catalog; CCE annotation debt
-- [ ] Phase 2 (tech-writer): Descriptive text patterns; CCE citation format
-- [ ] Phase 2 (senior-tech-writer): Structural integration; CCE citations in Antora modules
-- [ ] Phase 3a: `cce` field added to `SignalDescriptor`; existing signals annotated
-- [ ] Phase 3b: Documentation style for CCE citations established
-- [ ] Phase 3c: Coverage gap report produced at `.claude/reports/stig-coverage-gaps.md`
-- [ ] Phase 3d: Check methodology comparison documented in `docs/modules/architecture/`
-- [ ] All agents using CCE citations in new work where applicable
-- [ ] RAG chunking fix: re-generate index files with section headings; re-ingest with `--force`
+- [x] Phase 2 (rust-developer): 13 CCE mappings confirmed; 20 new indicator candidates in 3 tiers (2026-03-17)
+- [x] Phase 2 (security-engineer): fapolicyd blocking risk identified; 14 Tier-1 audit rules; 3 deployment risks (2026-03-17)
+- [x] Phase 2 (security-auditor): 12 CCE annotations ready; 4 NIST citation divergences; 3 composite auditd indicators (2026-03-17)
+- [x] Phase 2 (tech-writer): CCE citation format defined for Rust/Antora/CLI; 5 new terms proposed (2026-03-17)
+- [x] Phase 2 (senior-tech-writer): CCE table → reference/; inline in kernel-probe-signals.adoc; out of operator content (2026-03-17)
+- [x] Phase 3a: `cce` field added to `IndicatorDescriptor`; 13 indicators annotated; 4 NIST citations updated (2026-03-17)
+- [x] Phase 3b: CCE citation format established in `compliance-annotations.adoc`; 5 terms in glossary (2026-03-17)
+- [x] Phase 3c: Coverage gap report at `refs/reports/stig-signal-coverage.md` (2026-03-17)
+- [x] Phase 3d: Methodology comparison at `docs/modules/architecture/pages/stig-methodology-comparison.adoc` (2026-03-17)
+- [ ] All agents using CCE citations in new work where applicable — ONGOING (rule added to Citation Format Rule)
+- [ ] RAG chunking fix: re-generate index files with section headings; re-ingest with `--force` — DEFERRED (workaround: direct file reads)
 
 ---
 
@@ -259,7 +259,7 @@ standard SCAP scans miss.
 | Phase 0 preprocessing | researcher | **sonnet** | Scripted YAML extraction, no design decisions |
 | Phase 1 RAG ingestion | researcher | **sonnet** | Standard ingestion workflow |
 | Phase 2 familiarization | all 5 agents | **sonnet** | Corpus reading, knowledge extraction |
-| Phase 3a CCE field + annotations | rust-developer | **sonnet** | Follows established `SignalDescriptor` pattern |
+| Phase 3a CCE field + annotations | rust-developer | **sonnet** | Follows established `IndicatorDescriptor` pattern; indicator terminology |
 | Phase 3b doc citation format | tech-writer | **haiku** | Style decision, no code |
 | Phase 3c coverage gap report | security-auditor | **opus** | Cross-referencing two catalogs, judgment calls on scope |
 | Phase 3d methodology comparison | security-engineer | **sonnet** | Technical writing, architecture-level |

@@ -6,6 +6,15 @@ updates, new control mappings, or audit gaps: write an entry to
 `.claude/agent-memory/cross-team/notes.md` (from: security-engineer, to: tech-writer or
 senior-tech-writer). Read the file at session start for entries addressed to you.
 
+## SCAP/STIG Corpus Reference
+- Full familiarization notes: `.claude/agent-memory/security-engineer/scap_familiarization.md`
+- 451 RHEL 10 STIG signals; 13 existing UMRS indicators matched to CCEs (annotations missing — Phase 3a for rust-developer)
+- 51 audit-rule signals with zero UMRS coverage; Tier 1 (14 signals) are xattr/SELinux-management/kmod — highest priority
+- HIGH deployment risks: fapolicyd blocks ~/.local/bin binaries by default; UMRS RPM must include fapolicyd trust entry
+- UMRS adds value STIG cannot: configured-vs-live contradiction detection for sysctl and SELinux enforce state
+- RAG limitation: scap-security-guide collection stores as single chunks; use direct file reads (rg on stig-signal-index.md) not RAG
+- Phase 3d COMPLETE: `docs/modules/architecture/pages/stig-methodology-comparison.adoc` written; added to nav.adoc Security Model section
+
 ## SELinux Type Naming Conventions (umrs-platform)
 - No dedicated SELinux types written yet for the OS detection subsystem.
 - First policy artifact authoring: defer until coder closes F-01/F-02/F-03.

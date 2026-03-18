@@ -3,6 +3,7 @@
 ## Topic Files (linked memory)
 
 - [Posture module history](posture_module_history.md) — Signal→Indicator rename, Phase 2b architecture, security review findings
+- [SCAP/STIG familiarization](scap_familiarization.md) — CCE mappings for existing IndicatorId variants, new indicator candidates, methodology comparison (Phase 2 of scap-stig-corpus-plan, 2026-03-17)
 
 ## WARNING — Rogue .claude Directory
 

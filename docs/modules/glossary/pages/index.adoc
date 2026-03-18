@@ -806,6 +806,121 @@ lattice-based mathematics.
 Signatures are larger than ML-DSA; appropriate where conservative assumptions
 outweigh size constraints.
 
+== Compliance and Audit Standards
+
+=== CCE (Common Configuration Enumeration)
+
+A stable, unique identifier assigned to a specific configuration guidance item in a
+Security Technical Implementation Guide (STIG) or Security Content Automation Protocol
+(SCAP) content stream.
+
+CCE identifiers use the format `CCE-NNNNN-N` — a five-digit body and a single-digit
+check digit, always with the uppercase `CCE-` prefix.
+A CCE identifier is meaningful only in the context of the profile it belongs to.
+In UMRS documentation and source code, every CCE citation includes a provenance qualifier:
+`CCE-89386-7 (RHEL 10 STIG)`.
+
+CCE is defined as part of the SCAP standard.
+The authoritative CCE dictionary is maintained by NIST.
+
+See also: xref:#_scap_security_content_automation_protocol[SCAP];
+xref:#_stig_security_technical_implementation_guide[STIG];
+xref:devel:compliance-annotations.adoc#_cce_citation_format[CCE Citation Format in UMRS].
+
+=== RHEL 10 STIG
+
+The Security Technical Implementation Guide published by DISA for Red Hat Enterprise
+Linux 10.
+
+The RHEL 10 STIG defines specific configuration requirements for operating systems
+handling DoD and federal workloads.
+Requirements are encoded in SCAP content (XCCDF rules with CCE identifiers).
+
+In UMRS, the RHEL 10 STIG is the primary source for CCE cross-references.
+When a UMRS posture indicator corresponds to a STIG requirement, the indicator's
+documentation cites the relevant CCE identifier qualified as `(RHEL 10 STIG)`.
+
+Always use "RHEL 10 STIG" rather than "the STIG" — multiple STIGs exist across
+platforms and operating systems.
+
+NOTE: DISA publishes STIG revisions periodically. CCE mappings recorded in UMRS source
+should note the STIG version at time of recording to aid future verification.
+
+See also: xref:#_stig_security_technical_implementation_guide[STIG];
+xref:#_cce_common_configuration_enumeration[CCE].
+
+=== SCAP (Security Content Automation Protocol)
+
+A NIST-defined framework that standardizes the representation of security configuration
+checklists, vulnerability measurements, and product enumeration data.
+
+SCAP bundles several component standards:
+
+* XCCDF — defines checklists and test procedures
+* CCE — assigns identifiers to configuration guidance items
+* CVE — identifies known vulnerabilities
+* CPE — identifies software and hardware platforms
+* CVSS — scores vulnerability severity
+
+DISA uses SCAP to publish and automate STIG compliance checking.
+The RHEL 10 SCAP Security Guide (`scap-security-guide` package) provides
+machine-readable SCAP content that automated scanners (OpenSCAP) consume.
+
+See also: xref:#_xccdf_extensible_configuration_checklist_description_format[XCCDF];
+xref:#_cce_common_configuration_enumeration[CCE].
+
+=== STIG (Security Technical Implementation Guide)
+
+A configuration standard published by the Defense Information Systems Agency (DISA)
+that specifies how a specific platform, application, or device must be configured for
+use in DoD and federal environments.
+
+STIGs define security requirements as individual rules, each with a severity rating
+(High, Medium, or Low) and a check procedure.
+Each rule maps to one or more NIST 800-53 controls.
+Many rules carry a CCE identifier for automated checking via SCAP tooling.
+
+STIG severity levels:
+
+[cols="1,3", options="header"]
+|===
+|Level |Meaning
+
+|High
+|Configuration weakness that could directly allow unauthorized access or data loss if
+exploited.
+
+|Medium
+|Configuration weakness that could degrade security controls or provide an attack path
+when combined with other weaknesses.
+
+|Low
+|Defense-in-depth enhancement; exploitation requires other significant preconditions.
+|===
+
+In UMRS documentation, severity levels appear as `High`, `Medium`, `Low` (title case)
+in human-readable output and as `"high"`, `"medium"`, `"low"` (lowercase) in JSON output.
+
+Always qualify "STIG" with the specific profile: "RHEL 10 STIG", not "the STIG".
+
+See also: xref:#_rhel_10_stig[RHEL 10 STIG]; xref:#_scap_security_content_automation_protocol[SCAP];
+xref:#_cce_common_configuration_enumeration[CCE].
+
+=== XCCDF (Extensible Configuration Checklist Description Format)
+
+An XML-based language for writing security checklists, benchmarks, and test procedures.
+
+XCCDF is a component of SCAP.
+Each XCCDF rule defines a compliance requirement, its check logic, and its remediation.
+DISA uses XCCDF to encode STIG requirements in machine-readable form.
+
+NOTE: XCCDF is a developer and tooling term.
+Operators do not need to know this term.
+It is relevant when working directly with SCAP content files, writing OpenSCAP tailoring
+files, or extending the signal index from raw SCAP data.
+
+See also: xref:#_scap_security_content_automation_protocol[SCAP].
+
 == UMRS Patterns
 
 === Two-Path Independence (TPI)
