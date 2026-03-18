@@ -1,19 +1,19 @@
-= Kernel Security Posture Signals
-:description: Authoritative reference for every signal probed by the UMRS Kernel Security Posture tool — what each signal measures, what good looks like, and the compliance controls each signal satisfies.
+= Kernel Security Posture Indicators
+:description: Authoritative reference for every indicator probed by the UMRS Kernel Security Posture tool — what each indicator measures, what good looks like, and the compliance controls each indicator satisfies.
 :toc: left
 :toclevels: 3
 
-This reference covers every kernel security posture signal that UMRS probes.
-For each signal you will find the kernel parameter name, a plain language explanation,
+This reference covers every kernel security posture indicator that UMRS probes.
+For each indicator you will find the kernel parameter name, a plain language explanation,
 the hardened value, the insecure/default value, the risk of leaving it unhardened,
 and the applicable compliance controls.
 
-This document is the authoritative input for signal descriptions used by the TUI,
+This document is the authoritative input for indicator descriptions used by the TUI,
 CLI, JSON reports, and any future assessment engine.
 All descriptions are complete sentences, suitable for display, i18n translation,
 and inclusion in operator-facing audit narratives.
 
-== How signals are read
+== How indicators are read
 
 UMRS reads kernel security state from three sources.
 
@@ -38,20 +38,20 @@ The configured value comes from the `modprobe.d` merge tree.
 
 NOTE: The posture probe reads all sources at the same instant and returns an
 atomic `PostureSnapshot`.
-If the kernel node is absent or unreadable, the signal is shown as unknown (`?`)
+If the kernel node is absent or unreadable, the indicator is shown as unknown (`?`)
 rather than as a failure.
 This is intentional: unavailability is different from a policy violation.
 
-== Signal groups
+== Indicator groups
 
-Signals are organized into six groups by security domain.
-Empty groups (all signals unreadable) are not displayed.
+Indicators are organized into six groups by security domain.
+Empty groups (all indicators unreadable) are not displayed.
 
 === BOOT INTEGRITY
 
-Boot integrity signals verify that the system booted into a controlled, verifiable
+Boot integrity indicators verify that the system booted into a controlled, verifiable
 state and that the kernel cannot be silently replaced or weakened at runtime.
-These are the highest-consequence signals: an integrity failure here undermines
+These are the highest-consequence indicators: an integrity failure here undermines
 every other control on the system.
 
 ==== lockdown=
@@ -105,7 +105,7 @@ at boot — Secure Boot, IMA, kernel lockdown — by ensuring that the only path
 to a new kernel goes through the verified boot chain.
 
 *Controls:* NIST SP 800-53 SI-7 (Software and Information Integrity), CM-7
-(Least Functionality); NSA RTB: boot integrity
+(Least Functionality); NSA RTB: boot integrity; CCE-89232-3 (RHEL 10 STIG)
 
 ==== module.sig_enforce
 
@@ -137,8 +137,8 @@ novel kernel code without a valid signing key.
 *What it is:* `mitigations=off` is a kernel command-line flag that disables
 all CPU vulnerability mitigations in a single switch — Spectre, Meltdown, MDS,
 L1TF, RETBLEED, and more.
-This signal checks that the umbrella disable flag is absent.
-Individual per-CVE override signals are covered in the CPU Mitigation sub-signals below.
+This indicator checks that the umbrella disable flag is absent.
+Individual per-CVE override indicators are covered in the CPU Mitigation sub-indicators below.
 
 *What good looks like:* `mitigations=off` absent — all CPU mitigations are active
 at their kernel defaults.
@@ -163,7 +163,7 @@ NSA RTB: CPU vulnerability mitigations
 *What it is:* Page Table Isolation (PTI) is the Meltdown mitigation.
 It maintains separate page tables for user space and kernel space so that a
 speculative memory access from user space cannot read kernel memory.
-This signal checks that PTI is not explicitly disabled.
+This indicator checks that PTI is not explicitly disabled.
 
 *What good looks like:* `pti=off` absent — PTI is active (kernel default on
 affected Intel processors).
@@ -178,11 +178,11 @@ Disabling it removes kernel address space protection on Intel processors that
 do not have hardware-level isolation.
 
 *Controls:* NIST SP 800-53 SI-16 (Memory Protection); NSA RTB: CPU vulnerability
-mitigations
+mitigations; CCE-88971-7 (RHEL 10 STIG)
 
 === CRYPTOGRAPHIC POSTURE
 
-Cryptographic posture signals verify that the system uses validated cryptographic
+Cryptographic posture indicators verify that the system uses validated cryptographic
 primitives and that entropy sources meet standards required for DoD and government
 deployments.
 FIPS mode is a mandatory baseline for CUI systems — its absence is a compliance
@@ -291,7 +291,7 @@ requirements
 
 === KERNEL SELF-PROTECTION
 
-Kernel self-protection signals control whether the kernel makes it harder for
+Kernel self-protection indicators control whether the kernel makes it harder for
 an attacker to exploit memory-corruption vulnerabilities.
 These settings do not prevent bugs — they raise the cost of turning a bug into
 a working exploit.
@@ -321,7 +321,7 @@ Its absence does not cause vulnerabilities, but it makes every memory-corruption
 vulnerability in every running process easier to exploit.
 
 *Controls:* NIST SP 800-53 SI-16 (Memory Protection), SC-39 (Process Isolation);
-NSA RTB: exploit mitigation
+NSA RTB: exploit mitigation; CCE-87876-9 (RHEL 10 STIG)
 
 ==== kernel.kptr_restrict
 
@@ -349,8 +349,8 @@ Kernel pointer exposure through `/proc/` is one of the most common KASLR
 bypass techniques.
 Level 2 closes this channel even for processes running as root.
 
-*Controls:* NIST SP 800-53 SI-7 (Software and Information Integrity), SC-39
-(Process Isolation); NSA RTB: minimized information disclosure
+*Controls:* NIST SP 800-53 CM-6(a), SC-30, SC-30(2), SC-30(5); NSA RTB: minimized
+information disclosure; CCE-88686-1 (RHEL 10 STIG)
 
 ==== kernel.unprivileged_bpf_disabled
 
@@ -376,8 +376,9 @@ kernel privilege escalation CVEs in recent years.
 Restricting BPF to privileged users eliminates unprivileged access to this
 attack surface while preserving its use for legitimate observability tooling.
 
-*Controls:* NIST SP 800-53 CM-7 (Least Functionality), SC-39 (Process Isolation);
-NSA RTB: attack surface reduction
+*Controls:* NIST SP 800-53 AC-6 (Least Privilege), SC-7(10) (Boundary Protection —
+Prevent Discovery of System Components); NSA RTB: attack surface reduction;
+CCE-89405-5 (RHEL 10 STIG)
 
 ==== kernel.perf_event_paranoid
 
@@ -405,7 +406,8 @@ Restricting them to privileged users removes this side channel without affecting
 normal application workloads.
 
 *Controls:* NIST SP 800-53 SC-39 (Process Isolation), SI-7 (Software and
-Information Integrity); NSA RTB: information disclosure prevention
+Information Integrity); NSA RTB: information disclosure prevention;
+CCE-90142-1 (RHEL 10 STIG)
 
 ==== kernel.yama.ptrace_scope
 
@@ -436,8 +438,9 @@ agents, browsers, and password managers.
 process (an SSH agent, a browser, a PAM module) and reading its memory.
 YAMA scope 1 closes this avenue without breaking legitimate debugger use.
 
-*Controls:* NIST SP 800-53 SC-39 (Process Isolation), AC-6 (Least Privilege);
-NSA RTB: process isolation
+*Controls:* NIST SP 800-53 SC-7(10) (Boundary Protection — Prevent Discovery of
+System Components), AC-6 (Least Privilege); NSA RTB: process isolation;
+CCE-88785-1 (RHEL 10 STIG)
 
 ==== kernel.dmesg_restrict
 
@@ -462,12 +465,13 @@ an attacker identify vulnerable software versions and bypass KASLR.
 Restricting it to privileged users closes a low-effort information gathering
 channel that costs nothing to defend.
 
-*Controls:* NIST SP 800-53 SI-7 (Software and Information Integrity), SC-28
-(Protection of Information at Rest); NSA RTB: information disclosure prevention
+*Controls:* NIST SP 800-53 SI-11(a) (Error Handling — Reveal No Sensitive Information
+to Unauthorized Users), SI-11(b) (Error Handling — Reveal No Error Information to
+Unauthorized Users); NSA RTB: information disclosure prevention; CCE-89000-4 (RHEL 10 STIG)
 
 === PROCESS ISOLATION
 
-Process isolation signals control whether the kernel enforces boundaries between
+Process isolation indicators control whether the kernel enforces boundaries between
 user processes.
 Weak process isolation allows a compromised or malicious process to inspect,
 modify, or control sibling processes — even when those processes run under a
@@ -561,7 +565,7 @@ Disabling core dumps for privileged processes removes this exposure path.
 
 === FILESYSTEM HARDENING
 
-Filesystem hardening signals control whether the kernel enforces additional safety
+Filesystem hardening indicators control whether the kernel enforces additional safety
 checks on common filesystem operations.
 These protections block a class of race-condition attacks (TOCTOU — time-of-check
 to time-of-use) that allow attackers to redirect file operations through symlinks
@@ -593,7 +597,7 @@ Enabling symlink protection closes a well-documented TOCTOU attack class with
 no operational impact on correctly written software.
 
 *Controls:* NIST SP 800-53 SI-10 (Information Input Validation), SC-28 (Protection
-of Information at Rest); NSA RTB: filesystem hardening
+of Information at Rest); NSA RTB: filesystem hardening; CCE-88796-8 (RHEL 10 STIG)
 
 ==== fs.protected_hardlinks
 
@@ -620,7 +624,7 @@ Enabling this protection closes the attack at the kernel level with no impact
 on legitimate use cases.
 
 *Controls:* NIST SP 800-53 AC-6 (Least Privilege), SI-10 (Information Input
-Validation); NSA RTB: filesystem hardening
+Validation); NSA RTB: filesystem hardening; CCE-86689-7 (RHEL 10 STIG)
 
 ==== fs.protected_fifos
 
@@ -678,7 +682,7 @@ Functionality); NSA RTB: filesystem hardening
 
 === MODULE RESTRICTIONS
 
-Module restriction signals verify that specific kernel modules are either blacklisted
+Module restriction indicators verify that specific kernel modules are either blacklisted
 (forbidden from loading) or configured securely.
 On hardened servers, modules that provide physical-layer access (Bluetooth, USB,
 FireWire, Thunderbolt) or that expand the network attack surface should be
@@ -706,7 +710,7 @@ operational benefit.
 Blacklisting it eliminates the exposure entirely.
 
 *Controls:* NIST SP 800-53 CM-7 (Least Functionality), SC-39 (Process Isolation);
-NSA RTB: attack surface reduction; CMMC CM.L2-3.4.6
+NSA RTB: attack surface reduction; CMMC CM.L2-3.4.6; CCE-87455-2 (RHEL 10 STIG)
 
 ==== usb_storage (blacklisted)
 
@@ -729,7 +733,7 @@ system without USB storage blacklisted.
 This is a media protection control, not a network control.
 
 *Controls:* NIST SP 800-53 MP-7 (Media Use), CM-7 (Least Functionality);
-NSA RTB: media protection; CMMC MP.L2-3.8.7
+NSA RTB: media protection; CMMC MP.L2-3.8.7; CCE-89301-6 (RHEL 10 STIG)
 
 ==== firewire_core (blacklisted)
 
@@ -789,8 +793,8 @@ The `acct` parameter (accounting) enables per-connection byte and packet counter
 These counters are required by audit and firewall logging tools to produce complete
 per-connection audit trails.
 
-NOTE: This signal is only readable when `nf_conntrack` is loaded.
-If the module is not loaded (no stateful firewall rules active), the signal shows
+NOTE: This indicator is only readable when `nf_conntrack` is loaded.
+If the module is not loaded (no stateful firewall rules active), the indicator shows
 as unknown (`?`), not as a failure.
 
 *What good looks like:* `1` — connection accounting is enabled.
@@ -808,17 +812,17 @@ from logs alone.
 *Controls:* NIST SP 800-53 AU-12 (Audit Record Generation), CM-6 (Configuration
 Settings); NSA RTB: audit trail completeness
 
-=== CPU MITIGATION SUB-SIGNALS
+=== CPU MITIGATION SUB-INDICATORS
 
-These signals complement the umbrella `mitigations=` signal by checking individual
+These indicators complement the umbrella `mitigations=` indicator by checking individual
 per-CVE weakening flags on the kernel command line.
 An operator who disables a specific CPU mitigation without using the umbrella
 `mitigations=off` flag will be detected here.
-Each signal checks that its corresponding weakening override is absent.
+Each indicator checks that its corresponding weakening override is absent.
 If the override is absent, the mitigation is active (or not applicable to this
 CPU).
 
-All sub-signals are read from `/proc/cmdline`.
+All sub-indicators are read from `/proc/cmdline`.
 
 ==== spectre_v2=off
 
@@ -912,7 +916,7 @@ abort events.
 
 *Why it matters:* TAA affects Intel processors with TSX and can leak data across
 VM boundaries in cloud environments.
-On non-Intel hardware this signal is not applicable and will show as absent (not
+On non-Intel hardware this indicator is not applicable and will show as absent (not
 a failure).
 
 *Controls:* NIST SP 800-53 SI-16 (Memory Protection), SC-39 (Process Isolation);
@@ -1046,21 +1050,21 @@ extraction path.
 A managed handler ensures that access to dump files is controlled, logged,
 and subject to the same policies as the original data.
 
-NOTE: This signal is evaluated using Two-Path Independent (TPI) parsing.
+NOTE: This indicator is evaluated using Two-Path Independent (TPI) parsing.
 Both a structural check (first byte is `|`) and a semantic check (handler
-path is a non-empty absolute path) must agree before the signal is reported
+path is a non-empty absolute path) must agree before the indicator is reported
 as hardened.
-If the two parse paths disagree, the signal reports as unhardened (fail-closed).
+If the two parse paths disagree, the indicator reports as unhardened (fail-closed).
 
 *Controls:* NIST SP 800-53 SC-28 (Protection of Information at Rest), CM-6
 (Configuration Settings), AU-9 (Protection of Audit Information); NSA RTB:
-information disclosure prevention; CMMC SC.L2-3.13.10
+information disclosure prevention; CMMC SC.L2-3.13.10; CCE-86714-3 (RHEL 10 STIG)
 
 == Interpreting trust and contradiction evidence
 
 === Hardening status symbols
 
-The TUI uses color and a short status indicator to convey each signal's assessment.
+The TUI uses color and a short status indicator to convey each indicator's assessment.
 
 |===
 | Indicator | Color | Meaning
@@ -1076,7 +1080,7 @@ The TUI uses color and a short status indicator to convey each signal's assessme
 | Unknown / unavailable
 | Dim
 | The kernel node could not be read.
-The signal is absent on this kernel version or this hardware,
+The indicator is absent on this kernel version or this hardware,
 or a read permission error occurred.
 This is not recorded as a failure — unavailability is distinct from a policy violation.
 |===
@@ -1118,9 +1122,9 @@ If the module is not compiled into this kernel, the configured value is
 unreachable.
 |===
 
-=== Signal classes
+=== Indicator classes
 
-The class of a signal determines which configuration layer is authoritative
+The class of an indicator determines which configuration layer is authoritative
 and whether contradiction detection applies.
 
 |===
@@ -1154,7 +1158,7 @@ and whether contradiction detection applies.
 
 === Impact tiers
 
-Each signal carries an impact tier that indicates the severity of a hardening failure.
+Each indicator carries an impact tier that indicates the severity of a hardening failure.
 
 |===
 | Tier | Meaning
@@ -1163,12 +1167,12 @@ Each signal carries an impact tier that indicates the severity of a hardening fa
 | Foundational control.
 Failure directly enables serious attacks: kernel pointer leaks, full ASLR bypass,
 persistent module loading, or FIPS non-compliance.
-These signals should be remediated before all others.
+These indicators should be remediated before all others.
 
 | High
 | Significant hardening gap.
 Failure provides a useful primitive for an attack chain.
-The signal should be hardened on any production server.
+The indicator should be hardened on any production server.
 
 | Medium
 | Meaningful improvement.
@@ -1178,153 +1182,193 @@ Hardening is recommended but may be subject to site-policy exceptions.
 
 == Compliance mapping summary
 
-The following table lists all signals with their primary NIST SP 800-53 controls
-and CMMC practices for quick auditor reference.
+The following table lists all indicators with their primary NIST SP 800-53 controls,
+CMMC practices, and CCE identifiers (where a confirmed STIG mapping exists) for
+quick auditor reference.
+Indicators without a CCE have no direct STIG equivalent — they represent UMRS hardening
+checks that exceed the RHEL 10 STIG baseline.
 
+[cols="2,2,1,1", options="header"]
 |===
-| Signal | NIST SP 800-53 | CMMC
+| Indicator | NIST SP 800-53 | CMMC | CCE (RHEL 10 STIG)
 
 | lockdown=
 | CM-7, SI-7
 | CM.L2-3.4.6
+|
 
 | kernel.kexec_load_disabled
 | SI-7, CM-7
 |
+| CCE-89232-3
 
 | module.sig_enforce
 | SI-7, CM-7
+|
 |
 
 | mitigations=
 | SI-16, SC-39
 |
+|
 
 | pti=
 | SI-16
 |
+| CCE-88971-7
 
 | crypto.fips_enabled
 | SC-13, SC-28
 | SC.L2-3.13.10
+|
 
 | kernel.modules_disabled
 | CM-7, SI-7
+|
 |
 
 | random.trust_cpu
 | SC-12
 |
+|
 
 | random.trust_bootloader
 | SC-12, SI-7
+|
 |
 
 | kernel.randomize_va_space
 | SI-16, SC-39
 |
+| CCE-87876-9
 
 | kernel.kptr_restrict
-| SI-7, SC-39
+| CM-6(a), SC-30, SC-30(2), SC-30(5)
 |
+| CCE-88686-1
 
 | kernel.unprivileged_bpf_disabled
-| CM-7, SC-39
+| AC-6, SC-7(10)
 |
+| CCE-89405-5
 
 | kernel.perf_event_paranoid
 | SC-39, SI-7
 |
+| CCE-90142-1
 
 | kernel.yama.ptrace_scope
-| SC-39, AC-6
+| SC-7(10), AC-6
 |
+| CCE-88785-1
 
 | kernel.dmesg_restrict
-| SI-7, SC-28
+| SI-11(a), SI-11(b)
 |
+| CCE-89000-4
 
 | kernel.unprivileged_userns_clone
 | SC-39, CM-7
+|
 |
 
 | kernel.sysrq
 | AC-3, CM-7
 |
+|
 
 | fs.suid_dumpable
 | SC-28, SI-12
+|
 |
 
 | fs.protected_symlinks
 | SI-10, SC-28
 |
+| CCE-88796-8
 
 | fs.protected_hardlinks
 | AC-6, SI-10
 |
+| CCE-86689-7
 
 | fs.protected_fifos
 | SI-10, CM-7
+|
 |
 
 | fs.protected_regular
 | SI-10, CM-7
 |
+|
 
 | bluetooth (blacklisted)
 | CM-7, SC-39
 | CM.L2-3.4.6
+| CCE-87455-2
 
 | usb_storage (blacklisted)
 | MP-7, CM-7
 | MP.L2-3.8.7
+| CCE-89301-6
 
 | firewire_core (blacklisted)
 | SI-7, CM-7
+|
 |
 
 | thunderbolt (blacklisted)
 | SI-7, CM-7
 | CM.L2-3.4.6
+|
 
 | nf_conntrack acct
 | AU-12, CM-6
+|
 |
 
 | spectre_v2=off
 | SI-16, SC-39
 |
+|
 
 | spectre_v2_user=off
 | SI-16, SC-39
+|
 |
 
 | mds=off
 | SI-16, SC-39
 |
+|
 
 | tsx_async_abort=off
 | SI-16, SC-39
+|
 |
 
 | l1tf=off
 | SI-16, SC-39
 |
+|
 
 | retbleed=off
 | SI-16, SC-39
+|
 |
 
 | srbds=off
 | SI-16, SC-39
 |
+|
 
 | nosmt=off
 | SI-16, SC-39
+|
 |
 
 | kernel.core_pattern
 | SC-28, CM-6, AU-9
 | SC.L2-3.13.10
+| CCE-86714-3
 |===

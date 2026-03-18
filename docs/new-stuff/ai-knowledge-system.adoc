@@ -1,0 +1,759 @@
+= The UMRS AI Knowledge System: From Ad-Hoc Research to a Living Force Multiplier
+:doctype: article
+:toc: left
+:toclevels: 3
+:sectnums:
+:source-highlighter: highlight.js
+:icons: font
+:imagesdir: ../images
+
+// NIST SP 800-218 SSDF PW.1, PW.4 — design decisions traceable to requirements
+// NSA RTB — architectural partner model, not autonomous actor
+
+== Introduction
+
+This document describes the knowledge architecture underpinning the UMRS project's
+AI-assisted development model. It serves two audiences: practitioners seeking to
+understand or replicate this approach, and auditors requiring assurance that AI-assisted
+design decisions were grounded in authoritative, integrity-verified guidance.
+
+UMRS is a high-assurance Rust-based security platform targeting kernel-level enforcement
+for Controlled Unclassified Information (CUI) using SELinux MLS, IMA, dm-crypt, and a
+strict no-unsafe Rust policy. The development team is a multi-agent Claude Code ensemble
+working under a human architect and project lead. The knowledge system described here
+is what separates that ensemble from a collection of individually capable but collectively
+blind agents.
+
+=== The Force Multiplier Principle
+
+A force multiplier, in military doctrine, is a capability that makes existing forces
+dramatically more effective without proportionally increasing their size. The UMRS
+knowledge base is exactly that. A security auditor agent that can instantly cross-reference
+a code annotation against NIST SP 800-53r5, CMMC Assessment Guide L2, and the RHEL 10
+STIG — without leaving its task, without asking the developer to pause — produces
+qualitatively different work than one operating from training data alone.
+
+The multiplier effect is not theoretical. It is observable in the specificity of code
+reviews, the accuracy of compliance citations, and the depth of architectural challenges
+raised before implementation begins. The methodology for measuring this improvement is
+described in <<measurement>>.
+
+=== How This System Evolved
+
+The knowledge system did not arrive fully formed. It evolved through three distinct phases,
+each driven by a concrete observation about what the team was missing.
+
+==== Phase 1 — Manual Research and Ad-Hoc Answers
+
+In the earliest sessions, the project lead (Jamie) would periodically ask agents directly:
+_"What do you need to do your job better?"_ This was informal, conversational, and
+entirely dependent on Jamie's intuition about when to ask.
+
+The answers were useful but unsystematic. The researcher agent, when asked, would identify
+missing documents. The security auditor would flag that it was citing controls from memory
+rather than from verified text. The rust developer would note that it was unsure whether
+a particular pattern had a NIST basis.
+
+These were gaps, but they were invisible until someone thought to ask.
+
+==== Phase 2 — The Researcher Identifies Its Own Gaps
+
+A turning point came when the researcher agent was asked directly:
+_"What skills would help you do your job better?"_
+
+The response was unexpectedly precise. The researcher did not ask for more compute or
+broader permissions. It identified six categories of missing capability — corpus lifecycle
+management, cross-reference building, quality assurance, knowledge synthesis, acquisition
+automation, and team service skills — and concluded with a diagnosis that reframed the
+entire problem:
+
+____
+The researcher's value multiplies when it can maintain the corpus, not just build it.
+Right now it is great at acquisition. The next level is making it the team's
+always-current knowledge service.
+____
+
+This self-assessment drove the architectural decisions described in this document. An AI
+agent diagnosing its own systemic limitations and proposing a structural remedy is a
+qualitatively different kind of output than answering a question. It reflects the value
+of treating agents as architectural partners rather than query-response engines.
+
+==== Phase 3 — A Living Knowledge Service
+
+The current system formalizes what was learned in Phases 1 and 2. The researcher is no
+longer just an acquisition agent. It operates a gap queue, produces acquisition digests
+for human approval, answers team knowledge queries with confidence ratings, and monitors
+the corpus for staleness. Every other agent has a defined path to report missing coverage.
+And the entire knowledge trail feeds a provenance module that makes AI-assisted decisions
+auditable.
+
+---
+
+== System Architecture Overview
+
+The following diagram shows the full knowledge system at a glance.
+
+[mermaid]
+....
+flowchart TD
+    subgraph HUMAN["Human Oversight (Jamie)"]
+        JA[Project Lead]
+    end
+
+    subgraph AGENTS["Agent Team"]
+        RD[rust-developer]
+        SE[security-engineer]
+        SA[security-auditor]
+        TW[tech-writer]
+        STW[senior-tech-writer]
+        TR[umrs-translator]
+    end
+
+    subgraph RESEARCHER["Researcher Agent"]
+        RES[researcher]
+        VCS[corpus-version-check skill]
+        GDS[gap-detection skill]
+        KQS[knowledge-query skill]
+    end
+
+    subgraph KNOWLEDGE["Knowledge Infrastructure"]
+        GQ[".claude/agent-memory/\ncross-team/knowledge-gaps.md"]
+        CTN[".claude/agent-memory/\ncross-team/notes.md"]
+        REFS["refs/\n(official standards)"]
+        RAG["RAG Vector Database\n(ChromaDB)"]
+        REFSC[".claude/references/\n(RAG source staging)"]
+        MAN["refs/manifest.md\n(provenance chain)"]
+        KA[".claude/knowledge/\n(familiarization artifacts)"]
+    end
+
+    subgraph DOCS["Documentation"]
+        AIP["docs/modules/\nai-provenance/"]
+        REP["refs/reports/\n(research reports)"]
+    end
+
+    AGENTS -->|"gap detected"| GQ
+    GQ -->|"digest"| JA
+    JA -->|"approve batch"| RES
+    RES -->|"acquire"| REFS
+    RES -->|"acquire"| REFSC
+    REFSC -->|"ingest"| RAG
+    RES -->|"familiarize"| KA
+    AGENTS -->|"query"| KQS
+    KQS -->|"search"| RAG
+    KQS -->|"consult"| KA
+    KQS -->|"low confidence → auto-log"| GQ
+    RES -->|"version check"| VCS
+    VCS -->|"staleness → gap entry"| GQ
+    RES -->|"scan plans"| GDS
+    GDS -->|"coverage gap → gap entry"| GQ
+    RES -->|"cross-team notes"| CTN
+    CTN -->|"read at session start"| AGENTS
+    REFS --> MAN
+    MAN --> AIP
+    REP --> AIP
+    GQ --> AIP
+....
+
+=== Three Layers of Reference Material
+
+Every agent on the team operates with a mental model of three distinct layers. Knowing
+which layer to use for which purpose is fundamental to correct operation.
+
+[mermaid]
+....
+flowchart LR
+    subgraph L1["Layer 1 — RAG Database"]
+        direction TB
+        RAG["ChromaDB\nVector Store"]
+        USE1["Default for any\ntechnical question\nFast semantic search"]
+    end
+
+    subgraph L2["Layer 2 — Source Documents"]
+        direction TB
+        SRC[".claude/references/\ncollection/"]
+        USE2["Full document context\nPage number verification\nContext around RAG result"]
+    end
+
+    subgraph L3["Layer 3 — Official Archive"]
+        direction TB
+        OFF["refs/nist/\nrefs/dod/\nrefs/reports/"]
+        USE3["Authoritative source of record\nSHA-256 verified\nAccreditation evidence"]
+    end
+
+    RAG -->|"need more context"| SRC
+    SRC -->|"need verified original"| OFF
+....
+
+The rule of thumb: start with RAG. If you need more context, read the source in
+`.claude/references/`. If you need the checksummed authoritative copy, go to `refs/`.
+
+---
+
+== The Researcher Agent
+
+=== Role and Responsibility Boundary
+
+The researcher maintains the knowledge infrastructure that every other agent depends on.
+It is the only agent authorized to add material to `refs/` or `.claude/references/`,
+and the only agent that operates the RAG ingestion pipeline.
+
+[mermaid]
+....
+flowchart TD
+    RES["researcher"]
+
+    subgraph CAN["Can write"]
+        R1["refs/manifest.md"]
+        R2["refs/**/*"]
+        R3[".claude/references/**/*"]
+        R4[".claude/agent-memory/researcher/"]
+        R5["refs/reports/"]
+        R6[".claude/agent-memory/cross-team/"]
+    end
+
+    subgraph CANNOT["Cannot write"]
+        N1["components/ (source code)"]
+        N2["docs/ (except via plan)"]
+        N3["Any other project file"]
+    end
+
+    RES --> CAN
+    RES -. "prohibited" .-> CANNOT
+....
+
+=== Approved Source List
+
+The researcher retrieves only from authoritative sources. Any source not on this list
+requires explicit project lead approval before retrieval proceeds.
+
+[cols="2,3", options="header"]
+|===
+| Domain | Content
+| `csrc.nist.gov`, `nvlpubs.nist.gov` | NIST Special Publications, FIPS standards
+| `public.cyber.mil` | DISA STIGs and security benchmarks
+| `access.redhat.com`, `docs.redhat.com` | Red Hat product documentation
+| `kernel.org`, `github.com/SELinuxProject` | Linux kernel docs, SELinux reference
+| `rfc-editor.org`, `datatracker.ietf.org` | IETF RFCs
+| `nvd.nist.gov`, `cve.mitre.org` | CVE database
+| `dodcio.defense.gov`, `acq.osd.mil` | CMMC policy documents
+| `esd.whs.mil` | DoD Issuances (DoDM 5200.01, DoDI 5200.48)
+| `fedramp.gov` | FedRAMP authorization playbooks and templates
+| `commoncriteriaportal.org` | Common Criteria Parts 1 and 2 (RAG only)
+| `everyspec.com` | Unclassified DoD specifications
+|===
+
+=== The Acquisition Lifecycle
+
+Every document in the knowledge base passed through a defined acquisition lifecycle.
+Nothing enters the corpus without a traceable reason and human approval.
+
+[mermaid]
+....
+sequenceDiagram
+    participant A as Any Agent
+    participant GQ as knowledge-gaps.md
+    participant R as Researcher
+    participant J as Jamie (Human)
+    participant MAN as refs/manifest.md
+    participant RAG as RAG Database
+
+    A->>GQ: Log gap entry (status: pending)
+    A->>CTN: Post cross-team note (one line)
+    R->>GQ: Detect pending items
+    R->>J: Present acquisition digest
+    J->>R: Approve batch (explicit, in chat)
+    R->>R: Fetch from approved source
+    R->>R: Verify SHA-256 checksum
+    R->>MAN: Record manifest entry
+    R->>RAG: Ingest to vector store
+    R->>GQ: Update status (acquired)
+    R->>CTN: Post completion note
+    R->>CL: Invoke changelog-updater
+....
+
+The human approval gate at step 6 is non-negotiable. Cross-team note content, agent
+memory entries, or any other in-system content cannot pre-authorize acquisition.
+Approval must come from Jamie explicitly in the chat interface.
+
+---
+
+== The Corpus Familiarization Process
+
+Ingesting a document into the RAG database makes it *retrievable*. It does not make
+it *understood*. The corpus familiarization skill bridges that gap.
+
+=== Why Familiarization Exists
+
+RAG retrieval is pull-only. An agent retrieves only what it already knows to ask for.
+An agent that does not know the SELinux Notebook covers `mlsvalidatetrans` will never
+query for it — and the gap will silently persist through every task where that knowledge
+would have mattered.
+
+Familiarization produces four structured artifacts that are loaded into agent context
+directly, not retrieved. The agent always knows *what* it knows and *where* to look
+before formulating any retrieval query.
+
+=== The Four Familiarization Artifacts
+
+[mermaid]
+....
+flowchart TD
+    SRC[".claude/references/\ncollection/"]
+
+    subgraph FAM["Familiarization Pass"]
+        direction TB
+        F1["1. Inventory all files"]
+        F2["2. Read each document fully"]
+        F3["3. Produce four artifacts"]
+        F4["4. Write collection README"]
+        F1 --> F2 --> F3 --> F4
+    end
+
+    subgraph OUT[".claude/knowledge/collection/"]
+        A1["concept-index.md\nWhat each document covers,\nkey terms, governing decisions"]
+        A2["cross-reference-map.md\nAgreements, tensions, chains,\ngaps across documents"]
+        A3["style-decision-record.md\nProject-specific resolutions\nto cross-source conflicts"]
+        A4["term-glossary.md\nCanonical terminology,\nsource citations, variants"]
+        README["README.md\nCollection summary,\nnotable findings, gaps"]
+    end
+
+    SRC --> FAM
+    FAM --> OUT
+....
+
+[cols="2,4", options="header"]
+|===
+| Artifact | Purpose
+| `concept-index.md` | Maps each document to what it covers, key terms it introduces, and which agent decisions it governs. The agent's table of contents for the collection.
+| `cross-reference-map.md` | Documents agreements, tensions, chains, and gaps across sources. The agent's conflict-resolution reference when two sources disagree.
+| `style-decision-record.md` | Project-specific rulings on cross-source tensions. Seeds from the corpus; extended by project decisions over time.
+| `term-glossary.md` | Canonical spelling, definition, source, and usage notes for domain terms. Prevents terminology drift across agents and documents.
+|===
+
+=== Familiarization Trigger Rules
+
+[cols="3,2", options="header"]
+|===
+| Condition | Action
+| New collection ingested | Full familiarization pass on that collection
+| Single document added to existing collection | Steps 2–3 for that document; update all four artifacts
+| Document updated to new version | Steps 2–3 for updated document; update affected artifact entries
+| Cross-reference tension resolved by project decision | Update `style-decision-record.md` only
+|===
+
+---
+
+== Knowledge Query — How Agents Use the Knowledge Base
+
+=== The `what-do-we-know-about-x` Skill
+
+Any agent that needs to know whether a topic is covered before starting research,
+or that needs authoritative citations for a design decision, invokes the knowledge
+query skill. This keeps research centralized, avoids duplication, and ensures that
+all agents draw from the same verified sources.
+
+[mermaid]
+....
+sequenceDiagram
+    participant A as Requesting Agent
+    participant KQ as knowledge-query skill
+    participant KA as .claude/knowledge/
+    participant RAG as RAG Database
+    participant GQ as knowledge-gaps.md
+
+    A->>KQ: Query topic + context + agent name
+    KQ->>KA: Consult familiarization artifacts
+    KQ->>RAG: Semantic search across collections
+    KQ->>A: Return structured response + confidence level
+
+    alt confidence is low or none
+        KQ->>GQ: Auto-log gap entry (no agent action needed)
+        KQ->>A: Include gap notification in response
+    end
+....
+
+=== Confidence Levels
+
+The knowledge query skill always returns a confidence rating. This rating is not an
+opinion — it is a structured signal about corpus coverage that drives automatic gap
+logging when coverage is insufficient.
+
+[cols="1,3,3", options="header"]
+|===
+| Level | Meaning | Action
+| `high` | Substantial, current, authoritative coverage exists | Proceed with confidence
+| `medium` | Partial coverage; possible gaps | Proceed with caveats; consider gap log
+| `low` | Thin or tangential coverage | Gap auto-logged; proceed cautiously
+| `none` | Topic not covered in corpus | Gap auto-logged; do not improvise
+|===
+
+The automatic gap logging at `low` and `none` confidence is the mechanism that closes
+the invisible-gap problem. An agent does not need to remember to report missing coverage —
+the act of asking and receiving a weak answer does it automatically.
+
+---
+
+== The Gap Reporting Protocol
+
+=== Closing the Feedback Loop
+
+Before this protocol existed, knowledge gaps were discovered informally — an agent would
+notice missing coverage mid-task, mention it to Jamie, and Jamie would relay it to the
+researcher when convenient. This introduced latency, lost signals, and created no
+auditable record of what was missing and why it was acquired.
+
+The gap protocol replaces that with a formal queue.
+
+[mermaid]
+....
+flowchart TD
+    subgraph DISCOVERY["Gap Discovery — Three Paths"]
+        D1["Agent hits missing coverage\nduring a task"]
+        D2["knowledge-query skill\nreturns low/none confidence"]
+        D3["gap-detection skill\nscans plans vs corpus"]
+    end
+
+    GQ[".claude/agent-memory/\ncross-team/knowledge-gaps.md\n(status: pending)"]
+
+    subgraph DIGEST["Acquisition Digest"]
+        DIG["Researcher batches pending items\nProduces digest report\nPresents to Jamie"]
+    end
+
+    subgraph APPROVAL["Human Approval Gate"]
+        JAP["Jamie reviews digest\nApproves batch explicitly\nin chat interface"]
+    end
+
+    subgraph EXECUTION["Researcher Executes"]
+        EX1["Fetch from approved source"]
+        EX2["Verify SHA-256"]
+        EX3["Update manifest"]
+        EX4["Ingest to RAG"]
+        EX5["Update gap status: acquired"]
+    end
+
+    D1 --> GQ
+    D2 --> GQ
+    D3 --> GQ
+    GQ --> DIGEST
+    DIGEST --> APPROVAL
+    APPROVAL --> EXECUTION
+....
+
+=== Gap Entry Format
+
+Every gap entry in `knowledge-gaps.md` uses a consistent structure:
+
+[source,markdown]
+----
+## [YYYY-MM-DD] [requesting-agent] — [topic]
+
+**Status**: pending | approved | acquired | deferred | declined
+**Priority**: blocking | high | normal | low
+**Triggered by**: [task or question that exposed the gap]
+**What is needed**: [specific document, standard, topic, or skill]
+**Suggested source**: [URL or source name if known]
+**Requires manual download**: yes | no | unknown
+**Notes**: [additional context]
+----
+
+=== Digest Trigger Rules
+
+[cols="3,2", options="header"]
+|===
+| Condition | Digest action
+| Any `blocking` priority gap logged | Immediate digest; notify Jamie in chat
+| Three or more `pending` items accumulate | Digest at next session start
+| 30 days since last version check | Digest includes staleness report
+| Jamie says "show me the acquisition queue" | Produce on demand
+|===
+
+---
+
+== Cross-Team Communication
+
+=== The Notes File as Team Broadcast Channel
+
+`.claude/agent-memory/cross-team/notes.md` is the team's shared broadcast channel.
+Every agent reads it at session start. Entries accumulate chronologically; resolved
+entries are marked but never deleted.
+
+[mermaid]
+....
+flowchart LR
+    subgraph WRITERS["Any Agent"]
+        W["Writes entry:\nfrom-agent → to-agent\ntopic, status: open"]
+    end
+
+    CTN[".claude/agent-memory/\ncross-team/notes.md"]
+
+    subgraph READERS["All Agents — Session Start"]
+        R1[rust-developer]
+        R2[security-engineer]
+        R3[security-auditor]
+        R4[tech-writer]
+        R5[senior-tech-writer]
+        R6[researcher]
+        R7[umrs-translator]
+    end
+
+    WRITERS --> CTN
+    CTN --> READERS
+....
+
+=== What Belongs in Cross-Team Notes vs. Gap Queue
+
+[cols="2,2", options="header"]
+|===
+| Cross-team notes | Gap queue
+| New resource available to all agents | Missing corpus coverage
+| API or pattern change affecting other agents | Acquisition request pending approval
+| Plan completion notifications | Staleness signals
+| Documentation freeze announcements | Confidence failures from knowledge queries
+| Any broadcast that requires no acquisition | Anything that requires Jamie's approval to acquire
+|===
+
+---
+
+== The Memory File System
+
+Each agent maintains a structured memory directory under
+`.claude/agent-memory/<agent-name>/`. These files are the agent's persistent operational
+knowledge — distinct from the knowledge base (which is shared) and from the RAG corpus
+(which is retrieved).
+
+[mermaid]
+....
+flowchart TD
+    subgraph MEM[".claude/agent-memory/"]
+        subgraph RES["researcher/"]
+            M1["MEMORY.md\n(system prompt context\nmax 200 lines)"]
+            M2["rag-collections.md\n(source URLs for\nupdate checks)"]
+            M3["pqc-tracker.md\n(living PQC status)"]
+            M4["retrieval_notes.md\n(learned fetch patterns)"]
+        end
+
+        subgraph SA["security-auditor/"]
+            S1["MEMORY.md"]
+            S2["concept-index.md"]
+            S3["cross-reference-map.md"]
+            S4["term-glossary.md"]
+        end
+
+        subgraph CT["cross-team/"]
+            C1["notes.md\n(broadcast channel)"]
+            C2["knowledge-gaps.md\n(acquisition queue)"]
+        end
+    end
+....
+
+=== MEMORY.md Design Principles
+
+Every agent's `MEMORY.md` is loaded directly into its system prompt context on every
+session. This makes it always-on knowledge, not retrieved knowledge. Because context
+has a cost, `MEMORY.md` is constrained to 200 lines. Detailed notes live in topic
+files linked from `MEMORY.md`.
+
+[cols="2,3", options="header"]
+|===
+| Save in MEMORY.md | Do not save in MEMORY.md
+| Recurring operational patterns | Session-specific context
+| Tool invocation rules and known workarounds | Specific document contents
+| Source availability findings | Anything already in refs/manifest.md
+| Naming conventions and format decisions | Temporary notes or one-off findings
+| Links to topic files for detailed notes | Raw research output
+|===
+
+---
+
+== AI Provenance and Accreditation
+
+=== The Provenance Chain
+
+Every design decision in UMRS that was informed by AI-assisted analysis has a traceable
+chain from the decision back to the authoritative source document that grounded it.
+
+[mermaid]
+....
+flowchart TD
+    CODE["Code or Design Decision\n(e.g., TPI dual-parser pattern)"]
+    AIA["AI-Assisted Analysis\n(Claude Code session,\nlogged in task-log.md)"]
+    REPORT["Research Report\n(refs/reports/<report>.md)"]
+    CORPUS["Corpus Entry\n(.claude/references/<collection>/)"]
+    MANIFEST["Manifest Entry\n(refs/manifest.md)"]
+    CHECKSUM["SHA-256 Checksum\n(integrity verification)"]
+    SOURCE["Authoritative Source\n(e.g., NIST SP 800-218\nnvlpubs.nist.gov)"]
+
+    CODE -->|"doc comment cites"| AIA
+    AIA -->|"grounded in"| REPORT
+    REPORT -->|"sourced from"| CORPUS
+    CORPUS -->|"tracked in"| MANIFEST
+    MANIFEST -->|"verified by"| CHECKSUM
+    CHECKSUM -->|"downloaded from"| SOURCE
+....
+
+=== Annotation Convention
+
+When a design or architectural decision is informed by corpus research, the relevant
+source is cited in the doc comment or design note:
+
+[source,rust]
+----
+/// Dual-path parse validation for security-relevant input.
+///
+/// # Provenance
+/// Pattern grounded in NIST SP 800-218 SSDF PW.5 (validate inputs).
+/// Source: refs/reports/kernel-selinux-module-context-security.md
+/// RAG: nist — SP 800-218 §2.1.5
+// NIST 800-53 SI-10 — Information Input Validation
+// NIST 800-218 SSDF PW.5 — validate all inputs
+----
+
+This annotation convention means that an auditor reading the source code can follow the
+citation directly to the research report, then to the manifest entry, then to the
+SHA-256 verified original document.
+
+=== Human Oversight Gates
+
+The following categories of decision always required explicit human approval. This list
+is the record of where AI-assisted development ends and human judgment begins.
+
+[cols="2,3", options="header"]
+|===
+| Decision category | Approval mechanism
+| Corpus acquisition | Explicit approval of acquisition digest in chat
+| New unapproved source | Explicit source approval + acquisition approval
+| Architectural decisions | Plan review and approval before execution
+| Security pattern adoption | Architectural review trigger in CLAUDE.md
+| New crate dependency | Supply chain review; flagged by rust-developer
+| Agent capability expansion | Plan written, reviewed, and approved
+|===
+
+---
+
+== Measuring Knowledge Impact
+
+[[measurement]]
+=== The Code Review Quality Delta
+
+The most meaningful measure of knowledge system effectiveness is not a count of corpus
+chunks or RAG query latency. It is the observable quality of agent outputs before and
+after a knowledge addition.
+
+The mechanism: code reviews produced by the security auditor, security engineer, and
+rust developer agents contain structured findings. The specificity, accuracy, and
+depth of those findings change measurably when the agents have authoritative corpus
+coverage for the topic under review.
+
+Before a relevant corpus addition, a finding might read:
+_"This function should validate its input."_
+
+After the same corpus entry is available and familiarized:
+_"This function does not implement the dual-path independent parse validation required
+by NIST SP 800-218 SSDF PW.5. The `nom` parser path is present; the independent
+`FromStr` path is absent. Fail-closed behavior on parse disagreement is not implemented.
+See pattern-tpi.adoc."_
+
+The delta between those two findings is the force multiplier made visible. A full
+methodology for capturing and quantifying this delta — including a structured
+before/after review framework and suggested metrics — will be documented separately.
+
+=== What to Observe
+
+When evaluating whether a knowledge addition improved agent performance, look for:
+
+[cols="2,3", options="header"]
+|===
+| Signal | What it indicates
+| Control citation specificity | Agent is drawing from verified text, not training memory
+| Cross-reference accuracy | Familiarization artifacts are functioning
+| Gap identification rate | Agent knows what it does not know
+| False confidence reduction | Low/none confidence ratings are surfacing real gaps
+| Review finding depth | Agent is applying framework knowledge, not pattern matching
+|===
+
+---
+
+== Current Knowledge Base Inventory
+
+=== RAG Collections
+
+[cols="2,1,4", options="header"]
+|===
+| Collection | Chunks | Content
+| `kernel-docs` | 22,738 | Linux kernel documentation tree (6.x)
+| `tech-writer-corpus` | 2,017 | MS Style Guide, Google Style Guide, MIL-STD-38784B, RHEL 10 security guides, Common Criteria Parts 1+2
+| `rmf-methodology` | 1,132 | NIST SP 800-37r2, 800-53Ar5, 800-30r1, 800-39
+| `nist` | 1,447 | NIST SP 800-53r5, 800-171r2/r3, 800-171Ar3, 800-218, FIPS 140-2/3
+| `access-control` | 1,360 | Bell-LaPadula, Biba, SELinux, POSIX ACL, ZTA, ABAC
+| `scap-security-guide` | 7 | RHEL 10 STIG index (451 signals), CCE→NIST cross-reference
+| `cmmc` | 545 | CMMC Final Rule (32 CFR 170), Assessment Guide L2 v2.13
+| `dod-5200` | 360 | DoDM 5200.01 Vols 1-3, DoDI 5200.48 (CUI policy)
+| `nist-pqc` | 285 | FIPS 203/204/205, PQC web resources, migration guidance
+| `rustdoc-book` | 194 | Rustdoc reference book
+| `selinux-notebook` | 691 | SELinux reference (policy, TE, MLS/MCS, labeling, xattrs)
+| `asciidoctor-ref` | 67 | AsciiDoc quick reference, document structure
+| `doc-structure` | 102 | Diataxis, Antora, modular docs, Write the Docs, Google style
+| `dita-spec` | 100 | OASIS DITA 1.3 Part 2 Technical Content
+| `linux-fhs-2-3` | 45 | Filesystem Hierarchy Standard 2.3
+| `rust-security` | 73 | Rust security patterns and references
+|===
+
+Total: approximately 31,163 chunks across 16 collections.
+
+=== Official Standards Archive (`refs/`)
+
+[cols="2,3", options="header"]
+|===
+| Path | Contents
+| `refs/nist/` | NIST SP 800-18r1, 800-30r1, 800-37r2, 800-39, 800-53r5, 800-53Ar5, 800-90B, 800-160v1r1, 800-171r2/r3, 800-171Ar3, 800-175Br1, 800-185, 800-192, 800-218, NIST IR 1800-44a
+| `refs/nist/fips/` | FIPS 140-2, 140-3, 203 (ML-KEM), 204 (ML-DSA), 205 (SLH-DSA)
+| `refs/dod/` | CMMC Final Rule (32 CFR 170), CMMC Assessment Guide L2 v2.13
+| `refs/fedramp/` | CSP Authorization Playbook v4.2, Agency Authorization Playbook v4.1, SSP/SAP/SAR templates
+| `refs/reports/` | Researcher-authored analysis reports (kernel/SELinux module context security, STIG signal coverage)
+|===
+
+All entries in `refs/manifest.md` carry SHA-256 checksums computed at download time.
+
+---
+
+== Applying This Model
+
+=== Transferability
+
+This knowledge architecture is not UMRS-specific. The patterns described here — a
+dedicated researcher agent, a formal gap queue, familiarization artifacts, a provenance
+chain, and a human approval gate — apply to any multi-agent AI-assisted development
+project where auditability and correctness matter.
+
+The minimum viable version of this system requires:
+
+. A researcher agent with a defined approved source list and a prohibited-modification boundary
+. A manifest file that records every acquired document with provenance and checksum
+. A gap queue with a human approval gate before any acquisition executes
+. Familiarization artifacts (even a minimal concept index) for each corpus collection
+. A provenance annotation convention in source code and design documents
+
+The more elaborate elements — confidence-rated knowledge queries, gap-detection skill,
+AI provenance documentation module — build on that foundation and can be added
+incrementally as the project matures.
+
+=== What Makes This Different from Retrieval-Augmented Generation Alone
+
+RAG is an infrastructure choice. This is an *operational model*. The difference:
+
+[cols="2,3,3", options="header"]
+|===
+| Dimension | RAG alone | This model
+| Gap visibility | Invisible — agents retrieve what they know to ask for | Visible — gaps are logged, queued, and resolved
+| Provenance | Implicit — model may blend corpus and training | Explicit — every citation traceable to manifest
+| Human oversight | None after ingestion | Approval gate at every acquisition
+| Corpus quality | Degrades silently over time | Version-checked on 30-day cadence
+| Auditability | Cannot demonstrate what influenced a decision | Full chain from decision to SHA-256 verified source
+|===
+
+The goal is not to maximize corpus size. It is to ensure that every piece of
+knowledge in the system is traceable, current, and grounded in sources that
+an auditor would recognize as authoritative. That is the difference between
+a productivity tool and an accreditation artifact.
+
+

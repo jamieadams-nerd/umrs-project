@@ -540,6 +540,92 @@ NOTE: These CLI and TUI display conventions are forward specifications.
 As of this writing, not all tools have implemented `--json` output or expanded detail views.
 New tool implementations should follow this format.
 
+=== Populating `IndicatorDescriptor.cce`
+
+The `IndicatorDescriptor` struct in `umrs-platform` carries a `cce: Option<&'static str>`
+field for each posture indicator in the catalog. This field links the indicator to its
+authoritative STIG check, enabling automated compliance tools to correlate UMRS
+assessment results with STIG findings (NIST SP 800-53 CA-2).
+
+==== When to populate `cce`
+
+Populate `cce: Some("CCE-NNNNN-N")` only when:
+
+* The STIG check and the UMRS indicator evaluate *the same kernel state* — not a
+  related state, not a higher-level policy that implies the state.
+* The CCE identifier has been verified against the RHEL 10 STIG SCAP content,
+  not just looked up in a cross-reference table.
+* The STIG profile is RHEL 10. Do not use RHEL 9 or RHEL 8 CCE identifiers.
+
+Leave `cce: None` when:
+
+* No STIG check exists for the setting the indicator reads. Many UMRS indicators
+  exceed STIG baseline coverage — this is intentional and is a strength, not a gap.
+* The nearest STIG CCE evaluates the same security objective through a different
+  mechanism (for example, a PAM limits check vs. a kernel sysctl). In this case,
+  add a comment documenting the related CCE and why it does not apply.
+* The mapping is approximate or aspirational. An imprecise CCE misleads automated
+  tools into treating distinct controls as equivalent.
+
+`None` has two legitimate meanings: "no STIG equivalent exists" and "research not
+completed." Distinguish them with an inline comment. The first is a documentation
+record; the second is a work item. An undocumented `cce: None` is ambiguous.
+
+==== Format
+
+The value must be the canonical `CCE-NNNNN-N` form. Always include an inline comment
+on the same line (or immediately before the field) recording the STIG version and date.
+
+[source,rust]
+----
+// CCE-89232-3 (RHEL 10 STIG, scap-security-guide 2026-03-17)
+cce: Some("CCE-89232-3"),
+----
+
+For a near-match where the semantic difference must be documented:
+
+[source,rust]
+----
+// CCE-89085-5 covers configure_crypto_policy (policy layer); UMRS checks
+// the kernel enforcement state directly — nearest STIG anchor, not exact equivalent.
+// (RHEL 10 STIG, scap-security-guide 2026-03-17)
+cce: Some("CCE-89085-5"),
+----
+
+For an indicator with related but non-equivalent CCEs:
+
+[source,rust]
+----
+// No direct STIG CCE for fs.suid_dumpable. Related STIG rules that address
+// coredump prevention via different mechanisms:
+//   CCE-88330-6 (disable_users_coredumps, PAM limits layer)
+//   CCE-88732-3 (coredump_disable_storage, systemd layer)
+// UMRS checks the kernel sysctl directly.
+cce: None,
+----
+
+For a UMRS-only indicator with no STIG analog:
+
+[source,rust]
+----
+// No STIG CCE for kernel.modules_disabled; UMRS proactive enforcement
+// check exceeds STIG baseline. No CCE research pending.
+cce: None,
+----
+
+==== Combined citation format in doc comments
+
+When an indicator type carries both a NIST control citation and a CCE, the CCE
+follows the NIST citation. Use the `| CCE-NNNNN-N (RHEL 10 STIG)` inline separator
+form in single-line citations, or the `# Compliance` block form for multiple controls.
+
+----
+NIST SP 800-53 CM-6 | CCE-89232-3 (RHEL 10 STIG)
+----
+
+The NIST control is always primary. CCE is always secondary. An auditor reading
+a CCE without knowing which NIST control it satisfies has incomplete information.
+
 === CCE Citations and the RHEL 10 STIG Signal Index
 
 The RHEL 10 STIG signal index is available at

@@ -60,6 +60,24 @@ for how to read and write those citations.
  in all production deployments. Any cryptographic primitive used in
  UMRS must be a FIPS-validated algorithm. Drives the prohibition on
  vendoring OpenSSL and the preference for FIPS-compatible Rust crates.
+
+|RHEL 10 STIG / SCAP Security Guide
+|scap-security-guide 2026-03-17
+|The Security Technical Implementation Guide (STIG) for Red Hat
+ Enterprise Linux 10, expressed as machine-readable SCAP content.
+ SCAP (Security Content Automation Protocol) is a NIST-standardized
+ framework for automated configuration assessment. The STIG provides
+ human-readable security guidance; the SCAP profile translates that
+ guidance into a set of automated checks, each identified by a
+ Common Configuration Enumeration (CCE) identifier of the form
+ `CCE-NNNNN-N`. UMRS uses CCE identifiers to link posture indicators
+ in the catalog to the authoritative STIG check that governs the same
+ setting. Where a direct mapping exists, the `IndicatorDescriptor.cce`
+ field carries the CCE identifier, enabling automated compliance tooling
+ to correlate UMRS assessment results with STIG findings. UMRS includes
+ indicators that exceed STIG baseline coverage — those indicators
+ carry `cce: None`. See xref:devel:compliance-annotations.adoc#_cce_citation_format[CCE Citation Format]
+ for how CCE identifiers are used in source code and documentation.
 |===
 
 == CMMC Level Structure

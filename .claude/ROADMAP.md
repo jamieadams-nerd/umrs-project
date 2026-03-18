@@ -162,6 +162,24 @@ applies consistently across all sites.
       - If Linux server is running Samba with labeled files:
         - Use the alternate data stream (ADS) in the file's extended attributes to hold labeling
 
+### M3.5 — Full Deployment (G5, G6)
+
+First release uses `~/.local/bin` to lower the barrier and get people interested.
+Full deployment moves binaries into OS-standard locations with proper access controls.
+
+- [ ] Install to `/usr/local/bin` or `/usr/bin` (RPM-managed)
+- [ ] SELinux type enforcement: define `umrs_exec_t`, domain transitions, file contexts
+- [ ] fapolicyd trust entries (STIG-compliant hosts block `~/.local/bin` by default — CCE-89813-0)
+- [ ] AIDE monitoring rules for UMRS binaries (CCE-86441-3, CCE-90260-1)
+- [ ] CUI custody file contexts (`umrs_cui.fc` path entries — currently empty)
+- [ ] RPM packaging with `semodule -i` in `%post` scriptlet
+- [ ] Ubuntu `.deb` equivalent (no SELinux, graceful degradation)
+- [ ] Deployment documentation in `docs/modules/deployment/`
+
+**Deployment architecture findings are tracked here**, not in current development milestones.
+The security-engineer's policy gap findings (e.g., missing `umrs_exec_t`, fapolicyd) land
+in this milestone when the project moves from user-local to system-installed.
+
 ### M4 — Public Release (G7, G9, G11, G12)
 - [ ] Project structure decided (see G9)
       - May mean different GitHub repositories

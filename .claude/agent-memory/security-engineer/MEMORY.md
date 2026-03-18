@@ -21,10 +21,8 @@ senior-tech-writer). Read the file at session start for entries addressed to you
 
 ## Established DAC/MAC Patterns
 
-### ProcfsText / SysfsText — Mandatory for /proc and /sys reads
-Every read from `/proc/` or `/sys/` MUST use `ProcfsText` or `SysfsText` +
-`SecureReader::read_generic_text`. Raw `File::open` on these paths is PROHIBITED.
-This is enforced consistently in the OS detection subsystem. See `umrs-platform/src/kattrs/`.
+### ProcfsText / SysfsText
+See CLAUDE.md §Critical Coding Rules and agents/rust-developer.md for the mandatory rule.
 
 ### opened_by_fd Flag Discipline
 `EvidenceRecord::opened_by_fd` must be `true` ONLY when the file was actually

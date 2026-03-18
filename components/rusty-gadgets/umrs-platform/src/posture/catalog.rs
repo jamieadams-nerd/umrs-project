@@ -278,6 +278,11 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         rationale: "Disabling core dumps for SUID processes (0) prevents \
                     credential and key material extraction via coredump files.",
         nist_controls: "NIST 800-53 SC-28, SI-12; NSA RTB: information disclosure prevention",
+        // No direct STIG CCE for fs.suid_dumpable. Related STIG rules that address
+        // coredump prevention via different mechanisms:
+        //   CCE-88330-6 (disable_users_coredumps, PAM limits layer)
+        //   CCE-88732-3 (coredump_disable_storage, systemd layer)
+        // UMRS checks the kernel sysctl directly.
         cce: None,
     },
     // ── Boot-time / kernel cmdline ───────────────────────────────────────
@@ -307,6 +312,9 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         rationale: "Enforcing module signatures at boot prevents loading of \
                     unsigned kernel modules, complementing lockdown mode.",
         nist_controls: "NIST 800-53 SI-7, CM-7; NSA RTB: boot integrity",
+        // No direct STIG CCE for module.sig_enforce=1 cmdline enforcement.
+        // UMRS proactive check exceeds STIG baseline (STIG audits reactively via
+        // audit rules CCE-89982-3, CCE-88638-2, CCE-90172-8 instead).
         cce: None,
     },
     IndicatorDescriptor {
@@ -374,7 +382,10 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         rationale: "FIPS 140-2/3 mode enforces validated cryptographic primitives \
                     and is a mandatory baseline for DoD/government deployments.",
         nist_controls: "NIST 800-53 SC-13, SC-28; FIPS 140-2/140-3; CMMC SC.L2-3.13.10",
-        cce: None,
+        // CCE-89085-5 covers configure_crypto_policy (policy layer); UMRS checks
+        // the kernel enforcement state directly — nearest STIG anchor, not exact equivalent.
+        // CCE-89085-5 (RHEL 10 STIG, scap-security-guide 2026-03-17)
+        cce: Some("CCE-89085-5"),
     },
     // ── modprobe.d (Phase 2a) ─────────────────────────────────────────────
     IndicatorDescriptor {

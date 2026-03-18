@@ -27,7 +27,7 @@
 
 * Platform Security
 ** xref:cpu-extensions.adoc[CPU security extensions]
-** xref:kernel-probe-signals.adoc[Kernel probe signals]
+** xref:kernel-probe-indicators.adoc[Kernel probe indicators]
 
 * Language & Style Guides
 ** xref:rust-style-guide.adoc[Rust style guide]

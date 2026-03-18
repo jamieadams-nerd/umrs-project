@@ -1,5 +1,6 @@
 # CPU Corpus Plan — Next Session Preflight Checklist
 
+**Status:** Completed — 2026-03-18. Permissions pre-granted in settings.json; rule promoted to `.claude/rules/agent_behavior_rules.md`.
 **Created:** 2026-03-18
 **Purpose:** Ensure subagent write permissions work before launching any background agents.
 

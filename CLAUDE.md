@@ -37,6 +37,7 @@ cargo doc -p umrs-selinux --no-deps --open
 ## General Workflow
 
 - Planning mode. Decide upon primary features or new components.
+- **Delegate all Rust implementation** to the `rust-developer` agent. Do not write Rust directly.
 - **Before implementing any new type, trait, or module**, search the entire workspace for
   existing equivalents. Duplication requires explicit written justification. Reuse is the default.
 - Identify any opportunities to use high-assurance patterns.
@@ -46,6 +47,8 @@ cargo doc -p umrs-selinux --no-deps --open
 - Documentation updated. This includes rust API documentation and the developer guide in /docs.
   - High-assurance pattern information is applicable.
   - And a use case example to identify its use as a building block.
+- **End of session**: Brief summary of changes, flag anything unusual, then
+  "your turn to review, commit, and push."
 
 ## Claude will NEVER
 
@@ -57,20 +60,6 @@ cargo doc -p umrs-selinux --no-deps --open
 
 - High-assurance platform with SELinux (targeted policy) and future MLS work.
 - Rust is the primary language on RHEL10 with some work on Ubuntu.
-
-## Environment Context
-
-Understanding the deployment environment is essential to making correct architectural decisions:
-
-- **Target OS**: Red Hat Enterprise Linux 10 (SELinux enforcing, MLS or targeted policy)
-- **FIPS mode**: assumed active — `ProcFips` is a first-class kernel attribute in this codebase;
-  any cryptographic operation must use FIPS 140-2/140-3 validated primitives
-- **Network posture**: isolated or near-isolated systems; assume no outbound network access from
-  deployed binaries; no DNS, no TLS client calls from library code
-- **Audit exposure**: code and design decisions are subject to government/DoD review; every
-  choice must be traceable to a requirement (NIST control, RTB rule, or explicit design decision)
-- **Data sensitivity**: handles CUI (Controlled Unclassified Information) and MLS-labeled data;
-  treat any value derived from a security label as potentially sensitive
 
 ---
 
@@ -123,65 +112,8 @@ Example: `ls -lh | tee output.txt` not `ls -lh > output.txt`
 
 ---
 
-## Workspace Layout
-
-```
-components/rusty-gadgets/   ← Cargo workspace root
-  umrs-selinux/             ← PRIMARY CRATE (SELinux MLS reference monitor)
-  umrs-hw/                  ← Hardware timestamp isolation (workspace unsafe boundary)
-  umrs-platform/            ← Low-level OS/kernel layer (depends on umrs-hw only)
-  umrs-core/                ← Shared formatting, i18n, timing utilities
-  umrs-ls/                  ← First tool: security-enriched directory listings
-  umrs-logspace/            ← Audit trail and logging
-  umrs-state/               ← Prototypes: System state introspection
-  cui-labels/               ← CUI label definitions (JSON-serializable)
-  kernel-files/             ← Prototypes: Kernel attribute file parsing
-  mcs-setrans/              ← Prototypes: MCS → human-readable category translation
-  vaultmgr/                 ← Prototypes: Secret/vault management
-  xtask/                    ← Build automation (fmt/clippy/test)
-components/platforms/rhel10/ ← SELinux policy modules (non-Rust)
-components/tools/           ← Shell signing tools
-docs/                       ← Antora documentation (architecture, devel, patterns, operations)
-refs/                       ← Third-party standards (NIST, DoD) — see refs/manifest.md
-```
-
-## Crate Dependency Rules
-
-These dependency directions are **fixed architectural constraints** and must never be violated
-during coding, refactoring, or the addition of new features. Reversing or adding to these
-directions is prohibited without an explicit architectural decision.
-
-| Crate | Allowed dependencies (workspace) |
-|---|---|
-| `umrs-hw` | None — the workspace's unsafe isolation boundary; no workspace deps |
-| `umrs-platform` | `umrs-hw` only — no dependencies on `umrs-selinux` or `umrs-core` |
-| `umrs-selinux` | `umrs-platform` only |
-| `umrs-core` | `umrs-platform` and `umrs-selinux` |
-
-**Enforcement**: Before adding any `path = "../..."` dependency to a `Cargo.toml`, verify it
-does not violate the table above. If a proposed design requires a direction not listed here,
-stop and raise it with the developer before proceeding.
-
----
-
-## umrs-selinux Module Map
-
-Key modules (all under `src/`):
-
-| Module | Purpose |
-|---|---|
-| `context.rs` | `SecurityContext`: full SELinux label with dual-path TPI parsing |
-| `category.rs` | `CategorySet`: 1024-bit `[u64; 16]` bitmask for MLS categories |
-| `sensitivity.rs` | `SensitivityLevel`: s0–s15 hierarchical levels |
-| `mls/` | MLS level + range types; lattice dominance math |
-| `mcs/` | Multi-Category Security translation and color coding |
-| `secure_dirent.rs` | `SecureDirent`: TOCTOU-safe, security-enriched directory entry |
-| `xattrs.rs` | `SecureXattrReader`: fd-anchored xattr access via `rustix` |
-| `posix/` | `Uid`, `Gid`, `Inode`, `FileMode`, Linux identity resolution |
-| `utils/kattrs.rs` | KATTRS: provenance-checked kernel attribute reader |
-| `status.rs` | SELinux kernel enable/MLS-enable status queries |
-
-Integration tests live exclusively in `tests/` — never inline.
+See `.claude/ARCHITECTURE.md` for workspace layout, crate dependency rules, umrs-selinux
+module map, environment context, and architectural review triggers.
 
 ---
 
@@ -212,12 +144,8 @@ on the function rather than rewriting to the "fancy" form.
 
 ## Compliance Annotations
 
-Public items need NIST 800-53, CMMC, or NSA RTB annotations in their doc comments, but the
-requirement is tiered:
-
-- **Modules** — always include relevant control references in the module-level doc comment
-- **Security-critical types and functions** — require explicit control citations (e.g., `NIST 800-53 AC-4`, `NSA RTB RAIN`)
-- **Simple accessors and display impls** — no annotation required if the parent type is already annotated
+See `.claude/rules/rust_design_rules.md` §Tiered Annotation Expectations Rule for the full
+tiered requirement (modules, types, accessors).
 
 ---
 
@@ -230,45 +158,9 @@ lives in `docs/modules/patterns/pages/`. The developer guide at
 Enforcement rules for these patterns are in `.claude/rules/high_assurance_pattern_rules.md`
 and `.claude/rules/assurance_rules.md`.
 
----
-
-## Architectural Review Triggers
-
-When any of the following appear during planning or code review, Claude Code must pause and
-raise the relevant pattern or concern before proceeding:
-
-| Trigger | Pattern to raise |
-|---|---|
-| New external dependency | Supply chain hygiene — justify the crate |
-| Integer arithmetic on a security value | Secure arithmetic — use checked ops |
-| Comparison of tokens, labels, or credentials | Constant-time comparison — use `subtle` |
-| Type that could hold secret or classified data | Zeroize / `secrecy` |
-| New parser for security-relevant input | TPI — two independent parse paths |
-| New file or kernel attribute I/O | TOCTOU safety — fd-anchored access |
-| Reading from `/sys/fs/selinux/` or `/proc/` | Provenance verification — check `statfs` magic |
-| Error message that includes variable data | Error information discipline — no sensitive data |
-| Any cryptographic primitive | FIPS 140-2/3 — confirm the primitive is validated |
-| New public API surface | Compliance annotation — add NIST/RTB control citation |
-| New crate added to workspace | Add `#![forbid(unsafe_code)]` to its crate root immediately |
-| New type, trait, or module proposed | Search workspace for existing equivalents first — duplication requires written justification |
-| Expensive verification result reused across calls | SEC — sealed evidence cache with HMAC + TTL |
-| Security-relevant fn returns Result/Option | `#[must_use]` with message string |
-| New config file read from /etc/ | Trust gate — confirm kernel subsystem is active first |
+Architectural review triggers are in `.claude/ARCHITECTURE.md`.
 
 ---
-
-## Agent Directory
-
-| Agent | Responsibility |
-|---|---|
-| `rust-developer` | New patterns implemented, API changes, doc gaps noticed in source, patterns needed but not yet in library |
-| `security-engineer` | Compliance findings that require doc updates, new control mappings, audit gaps |
-| `security-auditor` | Compliance audits: verifies control citations, identifies annotation debt, produces audit findings and reports |
-| `tech-writer` | Questions about API or pattern intent, requests for source examples |
-| `senior-tech-writer` | Architecture-level doc decisions, cross-module structural changes |
-| `researcher` | RAG pipeline management, reference collection ingestion, standards research, research reports (`refs/reports/`) |
-| `umrs-translator` | Text extractions from i18n-wrapped strings, language translations for active domains |
-| `changelog-updater` | Structured changelog maintenance: tracks additions, changes, and fixes across crates, docs, and infrastructure in `.claude/CHANGELOG.md` |
 
 ## Team Collaboration & Workflow
 
@@ -391,57 +283,15 @@ Every `unsafe { asm!(...) }` block requires:
 If you cannot write these comments completely and correctly,
 you do not understand the ASM well enough to include it.
 
-### Permitted use cases in UMRS
+### Full ASM Guidance
 
-| Use case | Instruction(s) | Justification |
-|----------|---------------|---------------|
-| Serialized cycle timestamps for audit records | RDTSCP | AU-8 — std::time insufficient resolution for kernel event ordering |
-| Hardware entropy for key material | RDSEED | SC-13 — NIST SP 800-90B prefers RDSEED over RDRAND |
-| CPU feature detection | CPUID | SA-8 — must verify hardware capabilities before enabling enforcement paths |
-| Precise memory ordering in MLS enforcement | MFENCE / LFENCE | SC-28 — prevent speculative execution across classification boundaries |
-| AES-NI for CUI encryption paths | Via core::arch intrinsics preferred | SC-28 — use intrinsics first, raw asm only if intrinsics unavailable |
+The `asm-guidance` skill at `.claude/skills/asm-guidance/` provides the complete
+reference: permitted use cases, prohibited patterns, required templates,
+`core::arch` intrinsics map, `options()` selection guide, and verification
+checklists. **Consult it before writing any ASM.**
 
-### Prohibited ASM patterns
-
-- ASM in safe code — always `unsafe`, always justified
-- ASM replacing arithmetic, comparisons, or branching
-- ASM without a `// SAFETY:` block
-- ASM without a NIST/CMMC annotation
-- `global_asm!` defining symbols called via FFI — this combines
-  two restricted patterns and requires explicit senior review
-- AT&T syntax — use Intel syntax (default) for readability
-
-### Required template for every ASM block
-
-```rust
-// SAFETY: [CONTROL-ID] <one sentence: why this is safe and correct>
-// Requires: <CPU feature, e.g., "SSE2, verified by cpuid_check() at startup">
-// Alternative considered: <what was checked and why it was insufficient>
-unsafe {
-    asm!(
-        // instruction(s)
-        options(/* nomem | nostack | pure | readonly | preserves_flags */)
-    );
-}
-```
-
-### Before writing ASM — mandatory check
-
-Run `cargo-asm` or inspect godbolt output to confirm the compiler is
-not already emitting the target instruction. Many "obvious" ASM
-optimizations are already performed by LLVM. If the compiler output
-already contains the instruction you were going to write — do not add ASM.
-
-```bash
-cargo asm <crate>::<module>::<function>
-```
-
-### ASM Guidance Skill
-
-The `asm-guidance` skill at `.claude/skills/asm-guidance/` provides detailed
-implementation guidance: `core::arch` intrinsics map, `options()` selection
-guide, copy-paste templates for all permitted patterns, and verification
-checklists. Consult it before writing any ASM.
+Before writing ASM, run `cargo-asm` or inspect godbolt output to confirm the
+compiler is not already emitting the target instruction.
 
 ---
 

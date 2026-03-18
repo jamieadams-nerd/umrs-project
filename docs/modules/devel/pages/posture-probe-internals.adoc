@@ -66,7 +66,7 @@ umrs-platform/src/posture/
 |===
 
 For the operator-facing description of every indicator, see
-xref:reference:kernel-probe-signals.adoc[Kernel Security Posture Signals].
+xref:reference:kernel-probe-indicators.adoc[Kernel Security Posture Indicators].
 
 == Indicator Taxonomy
 
@@ -566,7 +566,7 @@ xref:patterns:pattern-fail-closed.adoc[Fail-Closed].
 * `umrs-platform/src/posture/reader.rs` — live-value readers, `CorePatternReader`, `classify_core_pattern`
 * `umrs-platform/tests/posture_tests.rs` — integration tests; section 12 for CPU sub-indicators, section 13 for CorePattern TPI
 * xref:posture-probe.adoc[Posture Probe Developer Guide] — architecture, core types, usage examples, how to add an indicator
-* xref:reference:kernel-probe-signals.adoc[Kernel Security Posture Signals] — operator-facing descriptions for all 37 indicators
+* xref:reference:kernel-probe-indicators.adoc[Kernel Security Posture Indicators] — operator-facing descriptions for all 37 indicators
 * xref:update-checklists.adoc[Platform Update Checklists] — procedure for adding a new indicator
 * xref:patterns:pattern-tpi.adoc[Two-Path Independence (TPI)] — the pattern applied to CorePattern classification
 * xref:patterns:pattern-fail-closed.adoc[Fail-Closed] — fail-closed behavior at signal and classification level

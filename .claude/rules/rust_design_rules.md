@@ -56,6 +56,18 @@
 - When adding a CCE identifier to source code, include the STIG version and date in a comment on the same line or block. Example: `// CCE-89232-3 (RHEL 10 STIG, scap-security-guide 2026-03-17)`
 - If a CCE's authoritative NIST control mapping conflicts with an existing UMRS citation, flag the conflict for review — do not silently overwrite. Both mappings may be defensible; the decision requires human judgment.
 
+## Tiered Annotation Expectations Rule
+
+Public items need NIST SP 800-53, CMMC, or NSA RTB annotations in their doc comments, but the
+requirement is tiered:
+
+- **Modules** — always include relevant control references in the module-level doc comment
+- **Security-critical types and functions** — require explicit control citations (e.g., `NIST SP 800-53 AC-4`, `NSA RTB RAIN`)
+- **Simple accessors and display impls** — no annotation required if the parent type is already annotated
+
+Do not flag missing citations on trivial items. Flag only where a citation is actually required
+by the above tiers.
+
 ## Module Documentation Checklist Rule
 
 Every `.rs` source file under `src/` MUST have a `//!` module-level doc block. No exceptions.

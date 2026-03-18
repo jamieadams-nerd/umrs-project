@@ -29,7 +29,7 @@ specifications, configuration examples, compliance mappings, and cryptographic g
 == Platform Security
 
 * xref:cpu-extensions.adoc[CPU security extensions] — x86 and ARM hardware security features
-* xref:kernel-probe-signals.adoc[Kernel probe signals] — every signal probed by the UMRS Kernel Security Posture tool, with hardened values, risk descriptions, and compliance control mappings
+* xref:kernel-probe-indicators.adoc[Kernel probe indicators] — every indicator probed by the UMRS Kernel Security Posture tool, with hardened values, risk descriptions, and compliance control mappings
 
 == Cryptography
 

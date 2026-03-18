@@ -1,7 +1,7 @@
 # CPU Security Extensions Research & Corpus Plan (v2)
 
 **Created:** 2026-03-14
-**Status:** Phase 0.5 complete, Phase 1A COMPLETE (2026-03-18), CET docs COMPLETE, 800-90B acquired. Phases 1C/1D/1E research done — files need writing. Next: fix subagent write perms, then write 1C/1D/1E files + launch 1B/1F/1G/1H.
+**Status:** Phases 0/0.5/1A/1B/1C/1G COMPLETE. 1D/1E research done — files need writing. 1F unblocked (CET docs acquired). Next: write 1D/1E files, then 1F, then 1H.
 **Source reviews:** `reports/cpu-matrix-review/rust-developer-review.md`, `reports/cpu-matrix-review/security-auditor-review.md`
 **Supersedes:** Track 1 of the original research corpus expansion plan
 
@@ -275,7 +275,7 @@ Each entry will be documented with all 23 matrix columns.
 
 **Scope:** RDRAND, RDSEED, ADX, BMI1, BMI2
 **Agent:** researcher
-**Status:** UNBLOCKED (2026-03-18) — 800-90B acquired at `refs/nist/sp800-90B.pdf`. Not started.
+**Status:** COMPLETE (2026-03-18) — 5 files in `.claude/references/cpu-extensions/entropy-bigint/`
 
 **Actions:**
 - RDRAND/RDSEED: full NIST SP 800-90B analysis
@@ -304,7 +304,7 @@ Each entry will be documented with all 23 matrix columns.
 
 **Scope:** SSE family, AVX, AVX2, AVX-512, VAES-on-AVX-512
 **Agent:** researcher
-**Status:** Research COMPLETE (2026-03-18) — files need writing. 4 files for `.claude/references/cpu-extensions/vector/`
+**Status:** COMPLETE (2026-03-18) — 4 files in `.claude/references/cpu-extensions/vector/`
 
 **Actions:**
 - Focus on crypto library usage, not general SIMD
@@ -324,7 +324,7 @@ Each entry will be documented with all 23 matrix columns.
 
 **Scope:** Intel SGX, AMD SEV/SEV-ES/SEV-SNP, Intel TDX, AMD SME, Intel Key Locker, Intel TME, Intel TXT
 **Agent:** researcher
-**Status:** Research COMPLETE (2026-03-18) — files need writing. 12 files for `.claude/references/cpu-extensions/confidential-computing/`
+**Status:** COMPLETE (2026-03-18) — 12 files written in `.claude/references/cpu-extensions/confidential-computing/`
 
 **Actions:**
 - Research each technology: architecture, attestation model, threat model
@@ -409,7 +409,7 @@ Each entry will be documented with all 23 matrix columns.
 
 **Scope:** VMX, SVM, nested paging, VT-d/AMD-Vi IOMMU, MCA, RAS, ECC, SMT topology
 **Agent:** researcher
-**Status:** Not started
+**Status:** COMPLETE (2026-03-18) — 6 files in `.claude/references/cpu-extensions/virt-reliability/`
 
 **Actions:**
 - Research virtualization security features and their CPU exposure
@@ -437,7 +437,7 @@ Each entry will be documented with all 23 matrix columns.
 
 **Scope:** Document `/proc/crypto` interface, driver-to-feature mappings, OpenSSL FIPS chain
 **Agent:** researcher
-**Status:** Not started
+**Status:** COMPLETE (2026-03-18) — 4 files in `.claude/references/cpu-extensions/proc-crypto/`
 
 **Actions:**
 - **`/proc/crypto` format documentation:**

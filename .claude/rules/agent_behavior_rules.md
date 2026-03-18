@@ -48,6 +48,41 @@
 - The agent must not alter repository history.
 - Never modify production configuration unless explicitly instructed.
 
+## Agent Permissions Pre-Grant Rule
+
+- Before launching background agents, pre-grant all Write/Edit/Bash permissions they will need in `.claude/settings.json`.
+- Background agents cannot recover from permission denials — they block silently.
+- This applies to ALL agent launches, not just the first one in a session.
+
+## Output Directory Pre-Creation Rule
+
+- Before launching background agents, run `mkdir -p` on ALL output paths the agent will write to.
+- Background agents cannot create missing directories and will fail silently.
+- Check: reports/, admin-reports/, api-reports/, logs/, agent-memory subdirectories.
+
+## Post-Ingestion Familiarization Rule
+
+- After RAG ingestion of a new collection, the target agent MUST run the `corpus-familiarization` skill before using the material.
+- Do not skip this step — without familiarization, the agent has passive retrieval but no active knowledge of what the collection contains.
+
+## Plan Status Header Rule
+
+- Every plan file in `.claude/plans/` MUST have a `**Status:**` line near the top.
+- At session start, check active plans for missing status headers and add them.
+- Valid statuses: `draft`, `approved`, `in-progress`, `blocked`, `completed`.
+
+## ROADMAP Reference Rule
+
+- Every new plan MUST reference which ROADMAP goals (G1–G10) and milestones (M1–M5) it serves.
+- Plans without ROADMAP alignment require explicit justification.
+- See `.claude/ROADMAP.md` for the current goal and milestone definitions.
+
+## Tool Usage Verification Rule
+
+- Before invoking any script or CLI tool, read its usage/help first.
+- Do not guess CLI arguments — verify syntax from the script source or `--help` output.
+- When delegating to subagents, provide exact invocation syntax rather than letting the agent discover it.
+
 ## Protected Files Rule
 
 The following file patterns must never be edited unless the user explicitly instructs it:

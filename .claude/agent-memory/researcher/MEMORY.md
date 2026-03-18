@@ -75,24 +75,10 @@ PQC status tracker (team-readable): see `pqc-tracker.md` in this directory.
 ```bash
 cd /media/psf/repos/umrs-project/.claude/rag
 RAG_CHROMA_PATH=/media/psf/repos/ai-rag-vdb/chroma python ingest.py --collection <name>
+# No --source flag; auto-discovers via rglob; --force to reprocess; --summary for counts
 ```
 
-NO `--source` flag — the script auto-discovers files from `.claude/references/<collection>/` via `rglob`.
-New subdirectories (e.g., `nist-pqc/web/`) are picked up automatically.
-Without `--force`, only new/changed files are processed — safe for incremental additions.
-
-```bash
-python ingest.py                         # all new/changed collections
-python ingest.py --collection <name>     # one collection
-python ingest.py --force                 # reprocess everything
-python ingest.py --summary               # show chunk counts and exit
-```
-
-### ingest.py known fixes (applied 2026-03-10)
-1. `.txt` moved to PASSTHROUGH — `plain` is pandoc output-only, not input
-2. `SKIP_EXTENSIONS` set added — skips binary/non-text: png, svg, yaml, pdf, etc.
-3. `save_manifest()` now called after each file (was: end of loop) — enables safe interruption
-
+### ingest.py known fixes (2026-03-10): `.txt`→PASSTHROUGH; SKIP_EXTENSIONS for binaries; save_manifest() per-file.
 ### Collection naming: ChromaDB sanitizes `/` → `-`, so `linux-fhs-2.3` becomes `linux-fhs-2-3`
 
 ## Approved Sources (from role instructions)
@@ -193,35 +179,17 @@ On "refresh library" or "check for updates":
 4. Post cross-team note summarizing changes; create tasks for tech-writer if docs are affected
 
 ## Pending Items
-- DISA RHEL 9 STIG v2r5 (ZIP, 2.1MB): needs Bash write permission to `refs/dod/stig/`; URL confirmed OK: `https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_RHEL_9_V2R5_STIG.zip`
-- CIS RHEL 9 Benchmark: requires free registration at cisecurity.org; manual download to `refs/dod/stig/cis-rhel9-benchmark.pdf`
+- DISA RHEL 9 STIG v2r5: URL confirmed; needs write permission to `refs/dod/stig/`
+- CIS RHEL 9 Benchmark: free registration required at cisecurity.org; manual download
 - DISA RHEL 10 STIG: NOT YET PUBLISHED as of 2026-03-17; monitor public.cyber.mil
-- NSA RTB VNSSA and RAIN: referenced in CLAUDE.md but not yet acquired; may be distribution-restricted
-- Clark-Wilson 1987: requires manual download via IEEE Xplore (DOI: 10.1109/SP.1987.10001)
-- Graham-Denning 1972: requires manual download via ACM DL (DOI: 10.1145/361011.361067)
-- HRU 1976: requires manual download via ACM DL (DOI: 10.1145/360051.360056)
-- IEEE 829 (Software Test Documentation): paywalled — requires manual download if desired
+- NSA RTB VNSSA and RAIN: referenced in CLAUDE.md; may be distribution-restricted
+- Classic papers (Clark-Wilson, Graham-Denning, HRU): require manual IEEE/ACM download
 - Version check due 2026-04-12
-- accreditation-artifacts collection: 6 docs downloaded 2026-03-15, .txt conversions done — READY FOR RAG INGESTION
-  - 200-B SAP training and 200-C SAR training PDFs: removed from fedramp.gov (Rev5 reorg), not available
-  - DOCX templates already converted to .txt by pandoc
-  - Run: `cd /media/psf/repos/umrs-project/.claude/rag && RAG_CHROMA_PATH=/media/psf/repos/ai-rag-vdb/chroma python ingest.py --collection accreditation-artifacts`
-- tui-cli collection: Section 2 (cli-ux) complete 2026-03-15 — READY FOR RAG INGESTION
-  - Section 1: 13+ files in ratatui-website/, ratatui-examples/, awesome-ratatui/, backend/, architecture/
-  - Section 2 (cli-ux): clig-guidelines.md, no-color.md, awesome-tuis.md, SOURCE.md (2026-03-15)
-  - Run: `cd /media/psf/repos/umrs-project/.claude/rag && RAG_CHROMA_PATH=/media/psf/repos/ai-rag-vdb/chroma python ingest.py --collection tui-cli`
-  - To add ratatui.rs and docs.rs WebFetch: add to `.claude/settings.json` WebFetch allowlist
-- tech-writer-corpus collection: Phase 3.4 RHEL 10 guides DONE (2026-03-17) — 2017 total chunks
-  - style-guides/microsoft/: 13 files (complete)
-  - style-guides/google/: 10 files — verbatim via curl+pandoc (2026-03-16)
-  - gov-standards/: NIST Author Instructions, MIL-STD-38784B PDF, Plain Language pages (CC0)
-  - domain-refs/CC2022PART1R1.pdf + CC2022PART2R1.pdf: Common Criteria Parts 1+2 (complete)
-  - domain-refs/rhel-security-guide/: 4 RHEL 10 PDFs from docs.redhat.com (complete 2026-03-17)
-  - FederalPLGuidelines.pdf is an INVALID FILE (HTML redirect) — do not use; see SOURCE.md
-  - Remaining Phase 3: NIST SPs (check existing), SELinux Notebook (check existing)
-  - Phase 4+ (Apple, DigitalOcean, Mailchimp, NASA): not yet acquired
+- accreditation-artifacts, tui-cli collections: downloaded, READY FOR RAG INGESTION
+  - Run ingest with: `cd /media/psf/repos/umrs-project/.claude/rag && RAG_CHROMA_PATH=/media/psf/repos/ai-rag-vdb/chroma python ingest.py --collection <name>`
+- tech-writer-corpus: Phase 4+ (Apple, DigitalOcean, Mailchimp, NASA) not yet acquired
+- `ratatui.rs` and `docs.rs`: NOT in WebFetch allowlist; add to settings.json if verbatim fetch needed
 
-## WebFetch Allowlist Note (tui-cli)
-- `ratatui.rs` and `docs.rs` are NOT in the allowlist — content was synthesized via WebSearch
-- Add `WebFetch(domain:ratatui.rs)` and `WebFetch(domain:docs.rs)` to settings.json for future
-  verbatim fetches of the ratatui.rs tutorials and docs.rs API pages
+## CPU Security Corpus
+See `cpu-corpus-state.md` for phase completion, key findings, and new signal proposals.
+Phases 1A + 1B complete. 1C/1D/1E research done, files not yet written. 1F-1K not started.

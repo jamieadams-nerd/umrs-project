@@ -600,8 +600,8 @@ impact, and meets value.
 
 === Step 6: Update documentation
 
-Add the new indicator to `docs/modules/reference/pages/kernel-probe-signals.adoc`
-(the operator-facing signal reference).
+Add the new indicator to `docs/modules/reference/pages/kernel-probe-indicators.adoc`
+(the operator-facing indicator reference).
 
 If the indicator is in a new category or introduces a new reader pattern, update
 this guide as well.
@@ -833,7 +833,7 @@ See xref:patterns:pattern-error-discipline.adoc[Error Information Discipline].
   CorePattern TPI classification detail, and TPI code walk-through
 * xref:update-checklists.adoc[Platform Update Checklists] — step-by-step procedure for
   adding a new indicator when a kernel version update introduces new hardening options
-* xref:reference:kernel-probe-signals.adoc[Kernel Security Posture Signals] — operator-facing
+* xref:reference:kernel-probe-indicators.adoc[Kernel Security Posture Indicators] — operator-facing
   descriptions for all 37 indicators
 * xref:patterns:pattern-tpi.adoc[Two-Path Independence (TPI)] — the pattern applied to
   CorePattern classification

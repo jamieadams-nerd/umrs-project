@@ -462,8 +462,8 @@ and `Vulnerable` (no mitigation active).
 
 The kernel command line parameters `spectre_v2`, `mds`, `l1tf`, `pti`, `mitigations`, and
 related options control whether mitigations are active. The UMRS kernel posture probe
-already monitors several of these through `SignalId::Mitigations` (which checks the
-`mitigations` cmdline parameter) and `SignalId::Pti` (which checks the `pti` parameter).
+already monitors several of these through `IndicatorId::Mitigations` (which checks the
+`mitigations` cmdline parameter) and `IndicatorId::Pti` (which checks the `pti` parameter).
 
 The future `CpuSignalId` system will correlate these cmdline signals with the hardware
 capability flags and the `/sys/devices/system/cpu/vulnerabilities/` status files to

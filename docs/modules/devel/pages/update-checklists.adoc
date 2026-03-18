@@ -11,8 +11,8 @@
 // complete test pass before merging.
 
 `umrs-platform` contains a compile-time catalog of kernel security posture
-signals in `umrs-platform/src/posture/catalog.rs`. Each entry in the
-`SIGNALS` array describes one probed kernel attribute: its path, its desired
+indicators in `umrs-platform/src/posture/catalog.rs`. Each entry in the
+`INDICATORS` array describes one probed kernel attribute: its path, its desired
 hardened value, its security rationale, and applicable NIST control citations.
 
 The catalog is intentionally static — values are bound at compile time, not
@@ -46,8 +46,8 @@ invalidate the catalog.
 The risk is subtle: a node that moves path, changes its numeric scale, or
 acquires a new semantic meaning will continue to return a value that
 `umrs-platform` parses successfully — but the parsed value no longer means
-what the `SignalDescriptor.desired` field expects. The system reports
-"pass" for a signal that may actually be failing. This is a false-negative
+what the `IndicatorDescriptor.desired` field expects. The system reports
+"pass" for an indicator that may actually be failing. This is a false-negative
 in a security posture assessment.
 
 === Step 1: Review the Kernel Changelog
@@ -75,7 +75,7 @@ Specifically look for:
 
 . Search for changes to `/sys/kernel/security/` securityfs nodes.
 +
-These map to `SignalClass::SecurityFs` signals. The `KernelLockdown`
+These map to `IndicatorClass::SecurityFs` indicators. The `KernelLockdown`
 reader in `kattrs/security.rs` is the primary consumer.
 
 . Search for changes to `/proc/cmdline` boot parameters.
@@ -85,7 +85,7 @@ New per-CVE mitigation flags are the most common addition here.
 
 . Search for changes to `/sys/module/` parameters.
 +
-These map to `SignalClass::ModprobeConfig` signals. New kernel modules
+These map to `IndicatorClass::ModprobeConfig` indicators. New kernel modules
 with security-relevant parameters are candidates.
 
 . Search for new or changed LSM features.
@@ -115,10 +115,10 @@ For each change identified in Step 1, determine the required action.
 | Required action
 
 | New sysctl or securityfs node with security relevance
-| Add a new `SignalId` variant and `SignalDescriptor` — see <<add-signal>>
+| Add a new `IndicatorId` variant and `IndicatorDescriptor` — see <<add-signal>>
 
 | Changed default value for an existing node
-| Update `DesiredValue` in the matching `SignalDescriptor` in `catalog.rs` +
+| Update `DesiredValue` in the matching `IndicatorDescriptor` in `catalog.rs` +
   Update `rationale` if the security reasoning changed
 
 | Removed node
@@ -131,12 +131,12 @@ For each change identified in Step 1, determine the required action.
 
 | New LSM or new lockdown level
 | Update `LockdownMode` enum in `kattrs/security.rs` +
-  Update the `Lockdown` signal descriptor if the desired level changes +
-  Add a new signal if the new LSM exposes its own sysfs/securityfs nodes
+  Update the `Lockdown` indicator descriptor if the desired level changes +
+  Add a new indicator if the new LSM exposes its own sysfs/securityfs nodes
 
 | New per-CVE CPU mitigation cmdline flag
-| Add a `SignalId` variant in the `// ── CPU mitigation sub-signals` group +
-  Use `SignalClass::KernelCmdline` and `DesiredValue::CmdlineAbsent` +
+| Add an `IndicatorId` variant in the `// ── CPU mitigation sub-indicators` group +
+  Use `IndicatorClass::KernelCmdline` and `DesiredValue::CmdlineAbsent` +
   Follow the existing pattern for `SpectreV2Off`, `MdsOff`, etc.
 |===
 
@@ -153,19 +153,19 @@ the previous one compiling cleanly.
 | Action
 
 | 3.1
-| Add a `SignalId` variant to `signal.rs`. +
+| Add an `IndicatorId` variant to `indicator.rs`. +
   Place it in the correct group section. Add a doc comment that includes: +
   the sysctl key or path, one sentence on what the node controls, and +
   `NIST SP 800-53` citation if applicable.
 
 | 3.2
-| Add a `label()` match arm to `SignalId::label()` in `signal.rs`. +
+| Add a `label()` match arm to `IndicatorId::label()` in `indicator.rs`. +
   The label must mirror the sysctl key or parameter name exactly +
   (e.g., `"kernel.kptr_restrict"`) to give operators a direct +
   cross-reference to `sysctl -a` output.
 
 | 3.3
-| Add a `SignalDescriptor` entry to the `SIGNALS` array in `catalog.rs`. +
+| Add an `IndicatorDescriptor` entry to the `INDICATORS` array in `catalog.rs`. +
   Populate all fields: `id`, `class`, `live_path`, `sysctl_key`, +
   `desired`, `impact`, `rationale`, and `nist_controls`. +
   When the platform API enrichment plan (Phase 1) is complete, also +
@@ -173,15 +173,15 @@ the previous one compiling cleanly.
 
 | 3.4
 | Implement the reader in `posture/reader.rs`. +
-  Route the signal through the appropriate `SignalClass` arm. +
-  For sysctl signals, use `ProcfsText`; for securityfs signals, +
-  use `KernelLockdown`; for sysfs/modprobe signals, use `SysfsText`. +
+  Route the indicator through the appropriate `IndicatorClass` arm. +
+  For sysctl indicators, use `ProcfsText`; for securityfs indicators, +
+  use `KernelLockdown`; for sysfs/modprobe indicators, use `SysfsText`. +
   All reads must verify filesystem magic via the kattrs `SecureReader` +
   infrastructure — direct `std::fs::read_to_string` on these paths is +
   non-compliant with NSA RTB RAIN.
 
 | 3.5
-| If the signal has a configured value (sysctl.d, modprobe.d, or BLS +
+| If the indicator has a configured value (sysctl.d, modprobe.d, or BLS +
   bootloader entry), implement the configured-value reader. +
   Follow the existing pattern in `posture/configured.rs`. +
   Do not log raw values from sysctl.d files — log the key and path only. +
@@ -189,15 +189,15 @@ the previous one compiling cleanly.
 
 | 3.6
 | Wire contradiction detection if both live and configured values are +
-  available. Add the signal to the evaluation path in +
+  available. Add the indicator to the evaluation path in +
   `posture/contradiction.rs`. Add a test that covers the full path: +
   configured → evaluate → classify → `ContradictionKind`.
 
 | 3.7
 | Add integration tests in `tests/posture_tests.rs`. +
   At minimum: one test that reads the live value and asserts +
-  `SignalReport.live.is_some()`, and one that exercises the +
-  `DesiredValue::meets_*` path for this signal's variant.
+  `IndicatorReport.live.is_some()`, and one that exercises the +
+  `DesiredValue::meets_*` path for this indicator's variant.
 
 | 3.8
 | Run the full build and lint pass: +
@@ -236,13 +236,13 @@ mark a signal addition as complete until all documentation is current.
 | Action
 
 | 5.1
-| Update `docs/modules/reference/pages/kernel-probe-signals.adoc`. +
-  Add a row to the signal table with: `SignalId` variant name, +
+| Update `docs/modules/reference/pages/kernel-probe-indicators.adoc`. +
+  Add a row to the indicator table with: `IndicatorId` variant name, +
   `label()` output, group, impact tier, and NIST control citations. +
-  Note the kernel version where this signal was introduced.
+  Note the kernel version where this indicator was introduced.
 
 | 5.2
-| If a new `SignalClass` variant was added (rare), update the +
+| If a new `IndicatorClass` variant was added (rare), update the +
   developer guide to explain the new class and its read path.
 
 | 5.3
@@ -255,14 +255,13 @@ mark a signal addition as complete until all documentation is current.
 
 |===
 
-NOTE: `docs/modules/reference/pages/kernel-probe-signals.adoc` does not
-exist yet. It should be created on the first signal addition after these
-checklists are published. The reference page tracks the full catalog
-with kernel-version annotations.
+NOTE: `docs/modules/reference/pages/kernel-probe-indicators.adoc` is the
+authoritative reference page for the indicator catalog. It tracks every
+indicator with kernel-version annotations and NIST control mappings.
 
 === Step 6: Review
 
-. Security-auditor reviews the new `SignalDescriptor` for:
+. Security-auditor reviews the new `IndicatorDescriptor` for:
 ** Correct NIST SP 800-53 control citations
 ** `AssuranceImpact` tier appropriate to the signal's threat model
 ** `rationale` text accurate and auditor-readable
@@ -366,7 +365,7 @@ For each security-relevant extension found in Step 1:
 === Step 3: Add a New CPU Extension Signal
 
 CPU extensions use a separate `CpuSignalId` enum (decided 2026-03-16),
-not `SignalId`. This keeps the kernel posture catalog and the CPU
+not `IndicatorId`. This keeps the kernel posture catalog and the CPU
 extension catalog from growing into a single unwieldy type.
 
 [cols="1,4", options="header"]
@@ -456,9 +455,9 @@ the probing code will silently fail. Depending on how the reader is
 written, it may return `None` (graceful) or produce an error that stops
 the posture assessment entirely.
 
-The correct response is never to delete the `SignalId` variant. Deleted
+The correct response is never to delete the `IndicatorId` variant. Deleted
 variants create gaps in the audit trail — historical reports reference
-signal IDs that no longer exist in the codebase, making reports
+indicator IDs that no longer exist in the codebase, making reports
 unverifiable. Deprecation is the only correct path.
 
 [cols="1,4", options="header"]
@@ -467,7 +466,7 @@ unverifiable. Deprecation is the only correct path.
 | Action
 
 | 1
-| Do NOT remove the `SignalId` variant from `signal.rs`. +
+| Do NOT remove the `IndicatorId` variant from `indicator.rs`. +
   Mark it with `#[deprecated(since = "X.Y.Z", note = "kernel removed +
   <path> in kernel <version>")]`. +
   This preserves the variant for historical report matching.
@@ -479,22 +478,22 @@ unverifiable. Deprecation is the only correct path.
   rather than causing the assessment to fail.
 
 | 3
-| Update the `SignalDescriptor.rationale` in `catalog.rs`. +
+| Update the `IndicatorDescriptor.rationale` in `catalog.rs`. +
   Add a note: "Deprecated in kernel <version>. Node removed. +
-  See <replacement signal, if any>."
+  See <replacement indicator, if any>."
 
 | 4
 | If a replacement signal exists, add it using the
   <<add-signal,Add a New Signal>> checklist.
 
 | 5
-| Add a `log::debug!()` call in the reader when the deprecated signal +
-  is absent. Log the `SignalId` label and the path that was not found. +
+| Add a `log::debug!()` call in the reader when the deprecated indicator +
+  is absent. Log the `IndicatorId` label and the path that was not found. +
   Do not log the absent value — there is no value to log.
 
 | 6
-| Update `docs/modules/reference/pages/kernel-probe-signals.adoc`. +
-  Mark the signal row as deprecated, note the kernel version, +
+| Update `docs/modules/reference/pages/kernel-probe-indicators.adoc`. +
+  Mark the indicator row as deprecated, note the kernel version, +
   and link to the replacement if one exists.
 
 | 7
@@ -502,10 +501,10 @@ unverifiable. Deprecation is the only correct path.
 
 |===
 
-CAUTION: Do not mark a signal deprecated prematurely. If the node is
+CAUTION: Do not mark an indicator deprecated prematurely. If the node is
 absent only on some kernel configurations (e.g., compiled without a
-specific option), the signal is optional — not deprecated. Handle
-optional absence in the reader without changing the `SignalId` variant.
+specific option), the indicator is optional — not deprecated. Handle
+optional absence in the reader without changing the `IndicatorId` variant.
 
 IMPORTANT: If you are uncertain whether a node was truly removed or is
 conditionally absent, check the kernel source tree before making any
@@ -531,12 +530,12 @@ Record the validated kernel version in two places:
 ----
 //! ## Catalog Version
 //!
-//! Signal catalog validated against RHEL 10 kernel 6.12.0-211.
+//! Indicator catalog validated against RHEL 10 kernel 6.12.0-211.
 //! Last reviewed: 2026-03-16.
 //! Next review target: next RHEL 10 minor update.
 ----
 
-. In `docs/modules/reference/pages/kernel-probe-signals.adoc`,
+. In `docs/modules/reference/pages/kernel-probe-indicators.adoc`,
   in the document header:
 +
 [source,asciidoc]
@@ -572,35 +571,35 @@ Update the declaration in `catalog.rs` after each review pass.
 | TUI change
 | Doc change
 
-| New sysctl signal
-| `signal.rs`, `catalog.rs`, `reader.rs`, tests
+| New sysctl indicator
+| `indicator.rs`, `catalog.rs`, `reader.rs`, tests
 | Add to group (manual until API enrichment)
-| `kernel-probe-signals.adoc`, `make docs`
+| `kernel-probe-indicators.adoc`, `make docs`
 
-| New cmdline signal
-| `signal.rs`, `catalog.rs`, `reader.rs`, tests
+| New cmdline indicator
+| `indicator.rs`, `catalog.rs`, `reader.rs`, tests
 | Add to Boot Integrity group
-| `kernel-probe-signals.adoc`, `make docs`
+| `kernel-probe-indicators.adoc`, `make docs`
 
-| New modprobe signal
-| `signal.rs`, `catalog.rs`, `reader.rs`, tests
+| New modprobe indicator
+| `indicator.rs`, `catalog.rs`, `reader.rs`, tests
 | Add to Module Restrictions group
-| `kernel-probe-signals.adoc`, `make docs`
+| `kernel-probe-indicators.adoc`, `make docs`
 
 | Changed default value
 | `catalog.rs` — `DesiredValue` only
 | None
-| `kernel-probe-signals.adoc`, `make docs`
+| `kernel-probe-indicators.adoc`, `make docs`
 
 | Changed rationale/semantic
 | `catalog.rs` — `rationale` field
 | None
-| `kernel-probe-signals.adoc`, `make docs`
+| `kernel-probe-indicators.adoc`, `make docs`
 
 | Removed node
-| `signal.rs` — `#[deprecated]`; `reader.rs` — graceful `None`
+| `indicator.rs` — `#[deprecated]`; `reader.rs` — graceful `None`
 | None
-| Mark deprecated in `kernel-probe-signals.adoc`, `make docs`
+| Mark deprecated in `kernel-probe-indicators.adoc`, `make docs`
 
 | New CPU extension
 | `CpuSignalId`, CPU readers
@@ -610,13 +609,13 @@ Update the declaration in `catalog.rs` after each review pass.
 | New lockdown level
 | `LockdownMode` enum, `Lockdown` descriptor
 | None — `KernelLockdown` reader handles it
-| `kernel-probe-signals.adoc`, `make docs`
+| `kernel-probe-indicators.adoc`, `make docs`
 |===
 
 == See Also
 
-* `umrs-platform/src/posture/signal.rs` — `SignalId` enum and `SignalClass`
-* `umrs-platform/src/posture/catalog.rs` — `SIGNALS` static array
+* `umrs-platform/src/posture/indicator.rs` — `IndicatorId` enum and `IndicatorClass`
+* `umrs-platform/src/posture/catalog.rs` — `INDICATORS` static array
 * `umrs-platform/src/kattrs/` — kernel attribute reader infrastructure
 * `.claude/plans/umrs-platform-expansion.md` — platform architecture roadmap
 * `.claude/plans/platform-api-enrichment.md` — signal description and grouping plan
