@@ -1,121 +1,1035 @@
 /*
- * UMRS Documentation Theme
- * Scope: headings, links, sidebar, toolbar, code blocks, admonitions, navbar
- * Everything else inherits Antora defaults.
+ * UMRS Documentation Theme — Wizard Edition
+ * Dark-first, serious craft aesthetic.
+ * Rigorous, precise, built with genuine love for the craft.
  *
- * Colors
- *   Background ............ #ffffff
- *   Sidebar / toolbar ..... #f6f8fa
- *   Primary accent ........ #1f3a5f  (steel blue)
- *   Accent tint ........... #c5d3e0  (for borders and dividers)
- *   Text .................. #1f2933
- *   Code block bg ......... #f6f8fa
- *   Code border ........... #e1e4e8
+ * Design system: green monochrome with warm amber for warnings.
+ * MIL-STD-38784B adapted admonition hierarchy.
+ * Progressive enhancement: vendored fonts with system-ui fallback.
  */
 
-/* ── Navbar ──────────────────────────────────────────────────────────────── */
+/* ── Font Face Declarations ──────────────────────────────────────────────── */
+/* Vendored WOFF2 for network-isolated environments */
+
+/* Inter — variable font (latin subset, all weights in one file) */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url('../fonts/inter-regular.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* Inter — variable font (latin-ext subset) */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url('../fonts/inter-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,
+    U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+    U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* JetBrains Mono — variable font (latin subset, all weights in one file) */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+  src: url('../fonts/jetbrains-mono.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+2000-206F,
+    U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* ── Phase 1: CSS Variables + Base Colors ────────────────────────────────── */
+
+/* Dark theme (default) */
+:root,
+html[data-theme="dark"] {
+  --umrs-bg-deep: #020d05;
+  --umrs-bg-surface: #040f07;
+  --umrs-bg-panel: #071a0a;
+  --umrs-border-dim: #1a3d1f;
+  --umrs-border-mid: #2d8a40;
+  --umrs-green-dim: #1a5c28;
+  --umrs-green-mid: #2d8a40;
+  --umrs-green-bright: #4ade6a;
+  --umrs-green-glow: #7fff8a;
+  --umrs-text-primary: #a8c9aa;
+  --umrs-text-muted: #6aab74;
+  --umrs-amber: #EF9F27;
+  --umrs-amber-bg: #130e03;
+  --umrs-amber-dim: #854F0B;
+  --umrs-amber-muted: #8a6300;
+  --umrs-caution-bg: #0f0c04;
+  --umrs-admonition-text-warm: #d4a96a;
+  --umrs-font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --umrs-font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', 'Fira Code', monospace;
+}
+
+/* Light theme */
+html[data-theme="light"] {
+  --umrs-bg-deep: #f4f7f0;
+  --umrs-bg-surface: #e8f0e3;
+  --umrs-bg-panel: #edf2e8;
+  --umrs-border-dim: #b8d4bc;
+  --umrs-border-mid: #7ab87e;
+  --umrs-green-dim: #4a7a54;
+  --umrs-green-mid: #2d6b3a;
+  --umrs-green-bright: #0f5c38;
+  --umrs-green-glow: #073d24;
+  --umrs-text-primary: #2d4a30;
+  --umrs-text-muted: #4a7a54;
+  --umrs-amber: #854F0B;
+  --umrs-amber-bg: #faeeda;
+  --umrs-amber-dim: #633806;
+  --umrs-amber-muted: #6b4e00;
+  --umrs-caution-bg: #f5eed8;
+  --umrs-admonition-text-warm: #6b4a2a;
+}
+
+/* Base — override default Antora white backgrounds */
+body {
+  background-color: var(--umrs-bg-deep) !important;
+  color: var(--umrs-text-primary);
+  font-family: var(--umrs-font-sans);
+}
+
+/* Content area */
+.doc,
+.doc .content,
+article.doc {
+  background-color: var(--umrs-bg-deep);
+  color: var(--umrs-text-primary);
+}
+
+/* Page container and main content */
+.page,
+.main,
+.main-view,
+.article {
+  background-color: var(--umrs-bg-deep);
+}
+
+/* Example blocks, sidebars, and other content containers */
+.doc .exampleblock > .content,
+.doc details.result > .content {
+  background-color: var(--umrs-bg-panel);
+  border-color: var(--umrs-border-dim);
+  color: var(--umrs-text-primary);
+}
+
+.doc .sidebarblock {
+  background-color: var(--umrs-bg-panel);
+  border-color: var(--umrs-border-dim);
+}
+
+.doc .sidebarblock > .content > .title {
+  color: var(--umrs-green-bright);
+}
+
+/* Quote blocks */
+.doc .quoteblock,
+.doc .quoteblock blockquote {
+  background-color: var(--umrs-bg-surface);
+  border-left-color: var(--umrs-border-mid);
+  color: var(--umrs-text-primary);
+}
+
+/* Keyboard shortcuts */
+.doc kbd {
+  background: var(--umrs-bg-panel);
+  border: 1px solid var(--umrs-border-dim);
+  box-shadow: 0 1px 0 var(--umrs-border-dim);
+  color: var(--umrs-text-primary);
+}
+
+/* Admonition icon backgrounds from default theme */
+.doc .admonitionblock td.icon i {
+  background-color: transparent !important;
+  color: inherit;
+  font-style: normal;
+}
+
+/* Version/component dropdowns — nav panel explore at bottom of sidebar */
+.nav-panel-explore {
+  background-color: var(--umrs-bg-surface) !important;
+}
+
+.nav-panel-explore .components {
+  background-color: var(--umrs-bg-panel) !important;
+  box-shadow: none !important;
+}
+
+.nav-panel-explore .component .title {
+  color: var(--umrs-green-bright);
+}
+
+.nav-panel-explore .component .is-current a {
+  background-color: var(--umrs-bg-panel) !important;
+  color: var(--umrs-text-primary);
+}
+
+.nav-panel-explore .component a {
+  color: var(--umrs-text-muted);
+}
+
+.nav-panel-explore .component a:hover {
+  color: var(--umrs-green-bright);
+}
+
+/* Version selector button and dropdown */
+.nav-panel-explore .context {
+  background-color: var(--umrs-bg-surface) !important;
+  color: var(--umrs-text-primary);
+  border-color: var(--umrs-border-dim) !important;
+}
+
+.nav-panel-explore .context .version {
+  color: var(--umrs-text-muted);
+}
+
+/* Page version selector (top of content area) */
+.page-versions .version-menu {
+  background: var(--umrs-bg-panel) !important;
+  border-color: var(--umrs-border-dim);
+}
+
+.page-versions .version-menu a {
+  color: var(--umrs-text-muted);
+}
+
+.page-versions .version-menu a:hover {
+  color: var(--umrs-green-bright);
+}
+
+.page-versions .version-menu-toggle {
+  background-color: var(--umrs-bg-surface);
+  color: var(--umrs-text-primary);
+  border-color: var(--umrs-border-dim) !important;
+}
+
+/* Navbar overrides for default white backgrounds */
+.navbar-menu {
+  background-color: var(--umrs-bg-surface) !important;
+}
+
+.navbar-dropdown {
+  background-color: var(--umrs-bg-surface) !important;
+  border-color: var(--umrs-border-dim);
+}
+
+.navbar-burger span {
+  background-color: var(--umrs-green-mid) !important;
+}
+
+/* ── Phase 2: Typography ─────────────────────────────────────────────────── */
+
+body,
+.doc {
+  font-family: var(--umrs-font-sans);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.7;
+  color: var(--umrs-text-primary);
+}
+
+.doc h1 {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--umrs-green-glow);
+  border-bottom: none;
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.doc h2 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--umrs-green-bright);
+  border-bottom: 1px solid var(--umrs-border-dim);
+  padding-bottom: 4px;
+  margin-top: 20px;
+  margin-bottom: 8px;
+}
+
+/* h3 — uppercase for scannable hierarchy (auditor-friendly) */
+.doc h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--umrs-green-bright);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 16px;
+  margin-bottom: 6px;
+}
+
+.doc h4 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--umrs-green-mid);
+}
+
+.doc h1,
+.doc h2,
+.doc h3,
+.doc h4,
+.doc h5,
+.doc h6 {
+  font-family: var(--umrs-font-sans);
+}
+
+/* ── Phase 3: Navigation ─────────────────────────────────────────────────── */
+
+.nav-container,
+.nav-panel-menu {
+  background-color: var(--umrs-bg-surface);
+  font-size: 12px !important;
+}
+
+.nav-item,
+.nav-list .nav-item {
+  padding: 1px 0 !important;
+  margin: 0 !important;
+}
+
+.nav-list {
+  list-style: none;
+  padding-left: 12px;
+  margin: 0 !important;
+}
+
+.nav-list .nav-list {
+  padding-left: 12px;
+  margin: 0 !important;
+}
+
+.nav-link {
+  color: var(--umrs-text-muted);
+  font-size: 12px;
+  font-weight: 400;
+  text-decoration: none;
+  padding: 2px 8px;
+  display: block;
+  border-left: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.nav-link:hover {
+  color: var(--umrs-green-bright);
+}
+
+.is-current-page > .nav-link {
+  color: var(--umrs-green-glow);
+  border-left: 2px solid var(--umrs-green-glow);
+  font-weight: 500;
+}
+
+.nav-menu h3.title,
+.nav-panel-menu .context .title {
+  color: var(--umrs-green-mid);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  padding: 8px 12px 4px;
+}
+
+/* ── Phase 4: Content Spacing ────────────────────────────────────────────── */
+
+.doc p {
+  margin: 0 0 12px;
+}
+
+.doc .sect1,
+.doc .sect1 + .sect1,
+#preamble + .sect1 {
+  padding-top: 0;
+  margin-top: 0;
+}
+
+.doc .sect2 {
+  padding-top: 0;
+  margin-top: 0;
+}
+
+/* Lists — small solid green square bullets (vertically centered) */
+.doc ul > li::marker {
+  content: "\25AA\2002";
+  color: var(--umrs-green-mid) !important;
+}
+
+.doc ul > li,
+.doc ol > li {
+  padding: 3px 0;
+}
+
+/* AsciiDoc wraps every list item in <p> — kill excess margin, match body size */
+.doc ul > li > p,
+.doc ol > li > p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.doc ul,
+.doc ol {
+  padding-left: 20px;
+}
+
+/* Tables */
+.doc table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.doc table th {
+  background-color: var(--umrs-bg-panel);
+  color: var(--umrs-green-bright);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 8px 12px;
+  border: 1px solid var(--umrs-border-dim);
+  text-align: left;
+}
+
+.doc table td {
+  padding: 6px 12px;
+  border: 1px solid var(--umrs-border-dim);
+  color: var(--umrs-text-primary);
+}
+
+.doc table tr:nth-child(even) td {
+  background-color: var(--umrs-bg-surface);
+}
+
+/* TOC */
+.toc a {
+  color: var(--umrs-text-muted);
+  text-decoration: none;
+  font-size: 12px;
+}
+
+.toc a:hover {
+  color: var(--umrs-green-bright);
+}
+
+.toc .toc-menu {
+  border-left: 1px solid var(--umrs-border-dim);
+  padding-left: 12px;
+}
+
+/* Links */
+.doc a {
+  color: var(--umrs-green-bright);
+  text-decoration: none;
+}
+
+.doc a:hover {
+  color: var(--umrs-green-glow);
+  text-decoration: underline;
+}
+
+/* ── Phase 5: Code Blocks ────────────────────────────────────────────────── */
+
+/* Code blocks — slightly lighter than page background */
+.doc .listingblock,
+.doc .literalblock {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  background: transparent !important;
+}
+
+.doc .listingblock > .content,
+.doc .literalblock > .content {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  background: transparent !important;
+}
+
+.doc .listingblock pre,
+.doc .listingblock pre:not(.highlight),
+.doc .literalblock pre,
+.doc pre,
+.doc pre.highlight {
+  background-color: #101814 !important;
+  background: #101814 !important;
+  color: var(--umrs-green-bright) !important;
+  border: none !important;
+  border-left: 3px solid var(--umrs-green-mid) !important;
+  border-radius: 3px;
+  box-shadow: none !important;
+  outline: none !important;
+  padding: 12px 16px;
+  font-family: var(--umrs-font-mono);
+  font-size: 12px;
+  line-height: 1.6;
+  overflow-x: auto;
+}
+
+.doc pre.highlight > code {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+.doc .listingblock pre code,
+.doc .literalblock pre code,
+.doc pre code {
+  font-family: var(--umrs-font-mono);
+  font-size: 12px;
+  color: inherit !important;
+  background: none !important;
+  padding: 0;
+  border: none !important;
+}
+
+.doc .listingblock .title {
+  font-family: var(--umrs-font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--umrs-text-muted);
+  margin-bottom: 4px;
+}
+
+/* Inline code — pill-style, !important to beat default theme */
+.doc p code,
+.doc td code,
+.doc li code,
+.doc dt code,
+.doc code {
+  font-family: var(--umrs-font-mono);
+  font-size: 12px;
+  color: var(--umrs-green-bright) !important;
+  background-color: var(--umrs-bg-panel) !important;
+  border: none !important;
+  padding: 2px 5px;
+  border-radius: 3px;
+  box-shadow: none !important;
+}
+
+/* Source toolbox (copy button) */
+.doc .source-toolbox {
+  background-color: transparent;
+  color: var(--umrs-text-muted);
+}
+
+.doc .source-toolbox button {
+  color: var(--umrs-text-muted);
+}
+
+.doc .source-toolbox button:hover {
+  color: var(--umrs-green-bright);
+}
+
+/* ── Phase 6: Admonitions — MIL-STD-38784B Hierarchy ─────────────────────── */
+/* Color-coded per severity: red=WARNING, amber=CAUTION, orange=IMPORTANT, blue=NOTE, green=TIP */
+
+.doc .admonitionblock {
+  margin: 28px 0 16px;
+  border: none !important;
+  background: none;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Nuclear: kill any stray borders/shadows on admonition internals */
+.doc .admonitionblock,
+.doc .admonitionblock table,
+.doc .admonitionblock tbody,
+.doc .admonitionblock tr,
+.doc .admonitionblock td,
+.doc .admonitionblock td.icon,
+.doc .admonitionblock td.content,
+.doc .admonitionblock td.icon i,
+.doc .admonitionblock div,
+.doc .admonitionblock p {
+  border-top: none !important;
+  border-right: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.doc .admonitionblock > table {
+  border-collapse: collapse;
+  table-layout: auto !important;
+  position: static !important;
+  display: block !important;
+  width: 100% !important;
+}
+
+.doc .admonitionblock > table > tbody,
+.doc .admonitionblock > table > tbody > tr {
+  display: block !important;
+  width: 100% !important;
+}
+
+.doc .admonitionblock td.content {
+  padding: 8px 12px;
+  word-wrap: break-word;
+  border-radius: 0 3px 3px 0;
+}
+
+/* Reset all default Antora admonition icon styling */
+.doc .admonitionblock td.icon i {
+  font-style: normal !important;
+  font-family: var(--umrs-font-sans) !important;
+  background: none !important;
+  background-color: transparent !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  height: auto !important;
+  width: auto !important;
+  display: inline !important;
+  filter: none !important;
+  color: inherit !important;
+  position: static !important;
+  transform: none !important;
+  font-size: 0 !important;
+}
+
+/* Label text via ::after (uses title attribute) — restyle it */
+.doc .admonitionblock td.icon i::after {
+  content: attr(title) !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+  color: inherit !important;
+  background: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  display: inline !important;
+  height: auto !important;
+  width: auto !important;
+}
+
+/* Unicode symbols before each label */
+.doc .admonitionblock td.icon i::before {
+  font-family: initial !important;
+  font-size: 13px !important;
+  margin-right: 5px;
+  font-weight: 400;
+}
+
+.doc .admonitionblock.warning td.icon i::before {
+  content: "\26A0" !important;
+}
+.doc .admonitionblock.caution td.icon i::before {
+  content: "\25B2" !important;
+}
+.doc .admonitionblock.important td.icon i::before {
+  content: "\2757" !important;
+}
+.doc .admonitionblock.note td.icon i::before {
+  content: "\2139" !important;
+}
+.doc .admonitionblock.tip td.icon i::before {
+  content: "\2714" !important;
+}
+
+/* IMPORTANT label larger */
+.doc .admonitionblock.important td.icon i::after {
+  font-size: 13px !important;
+  letter-spacing: 0.08em !important;
+}
+
+.doc .admonitionblock td.icon {
+  display: block !important;
+  position: static !important;
+  transform: none !important;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  width: auto !important;
+  padding: 8px 12px 4px 12px;
+  left: auto !important;
+  top: auto !important;
+  line-height: 1 !important;
+  border: none !important;
+  border-radius: 3px 3px 0 0;
+  background: transparent !important;
+}
+
+/* Admonition body text — match document body size */
+.doc .admonitionblock td.content {
+  display: block !important;
+  padding: 6px 12px 10px 12px;
+  word-wrap: break-word;
+  font-size: 14px;
+  line-height: 1.7;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  background: transparent !important;
+}
+
+.doc .admonitionblock td.content p {
+  font-size: 14px;
+  margin: 0 0 6px;
+}
+
+/* WARNING — red */
+.doc .admonitionblock.warning {
+  border-left: 5px solid #d32f2f !important;
+  background: #1c0808 !important;
+}
+.doc .admonitionblock.warning td.content { color: var(--umrs-text-primary); }
+.doc .admonitionblock.warning td.icon { color: #ef5350 !important; }
+
+/* CAUTION — amber */
+.doc .admonitionblock.caution {
+  border-left: 5px solid var(--umrs-amber) !important;
+  background: #181005 !important;
+}
+.doc .admonitionblock.caution td.content { color: var(--umrs-text-primary); }
+.doc .admonitionblock.caution td.icon { color: var(--umrs-amber) !important; }
+
+/* IMPORTANT — orange */
+.doc .admonitionblock.important {
+  border-left: 5px solid #e65100 !important;
+  background: #180e04 !important;
+}
+.doc .admonitionblock.important td.content { color: var(--umrs-text-primary); }
+.doc .admonitionblock.important td.icon {
+  color: #ff8a30 !important;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+}
+
+/* NOTE — blue */
+.doc .admonitionblock.note {
+  border-left: 5px solid #1976d2 !important;
+  background: #060d18 !important;
+}
+.doc .admonitionblock.note td.content { color: var(--umrs-text-primary); }
+.doc .admonitionblock.note td.icon { color: #42a5f5 !important; }
+
+/* TIP — green */
+.doc .admonitionblock.tip {
+  border-left: 5px solid var(--umrs-green-mid) !important;
+  background: #061208 !important;
+}
+.doc .admonitionblock.tip td.content { color: var(--umrs-text-primary); }
+.doc .admonitionblock.tip td.icon { color: var(--umrs-green-bright) !important; }
+
+/* Light theme admonition overrides */
+html[data-theme="light"] .doc .admonitionblock.warning td.content {
+  background: #fdecea;
+}
+html[data-theme="light"] .doc .admonitionblock.warning td.icon {
+  color: #c62828 !important;
+}
+html[data-theme="light"] .doc .admonitionblock.caution td.content {
+  background: var(--umrs-amber-bg);
+}
+html[data-theme="light"] .doc .admonitionblock.important td.content {
+  background: #fff3e0;
+}
+html[data-theme="light"] .doc .admonitionblock.important td.icon {
+  color: #e65100 !important;
+}
+html[data-theme="light"] .doc .admonitionblock.note td.content {
+  background: #e3f2fd;
+}
+html[data-theme="light"] .doc .admonitionblock.note td.icon {
+  color: #1565c0 !important;
+}
+html[data-theme="light"] .doc .admonitionblock.tip td.content {
+  background: var(--umrs-bg-panel);
+}
+
+/* ── Phase 7: NIST Control Tags ──────────────────────────────────────────── */
+
+.nist-tag {
+  display: inline-block;
+  font-family: var(--umrs-font-mono);
+  font-size: 10px;
+  color: var(--umrs-green-mid);
+  background: var(--umrs-bg-surface);
+  border: 1px solid var(--umrs-border-dim);
+  padding: 2px 6px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+/* ── Navbar / Header ─────────────────────────────────────────────────────── */
+
 .header,
 .navbar {
-  background-color: #1f3a5f;
+  background-color: var(--umrs-bg-surface);
+  border-bottom: 1px solid var(--umrs-border-dim);
 }
 
 .navbar-brand .navbar-item,
 .navbar-brand .navbar-item:hover {
-  color: #ffffff;
+  color: var(--umrs-green-glow);
+}
+
+/* Wizard logo — green tint in dark mode, natural in light */
+.wizard-logo {
+  filter: brightness(1.2) drop-shadow(0 0 2px var(--umrs-green-dim));
+}
+
+html[data-theme="light"] .wizard-logo {
+  filter: none;
 }
 
 .site-title {
-  color: #ffffff;
+  color: var(--umrs-green-glow);
+  font-family: var(--umrs-font-sans);
   font-weight: 600;
   font-size: 1rem;
   margin-left: 0.6rem;
   letter-spacing: 0.01em;
 }
 
-/* ── Sidebar ─────────────────────────────────────────────────────────────── */
-.nav-container,
-.nav-panel-menu {
-  background-color: #f6f8fa;
+.site-subtitle {
+  color: var(--umrs-text-muted);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-left: 0.6rem;
+  display: block;
 }
 
-/* Component / module title */
-.nav-menu h3.title {
-  color: #1f3a5f;
+.navbar-menu .navbar-item,
+.navbar-menu .navbar-link {
+  color: var(--umrs-text-muted);
+  font-size: 12px;
 }
 
-/* Nav links */
-.nav-link {
-  color: #3d4852;
+.navbar-menu .navbar-item:hover,
+.navbar-menu .navbar-link:hover {
+  color: var(--umrs-green-bright);
 }
 
-.nav-link:hover {
-  color: #1f3a5f;
+.navbar-burger span {
+  background-color: var(--umrs-green-mid);
 }
 
-/* Active-page indicator: left border + accent color */
-.is-current-page > .nav-link {
-  border-left: 3px solid #1f3a5f;
-  color: #1f3a5f;
-}
+/* ── Breadcrumb / Toolbar ────────────────────────────────────────────────── */
 
-/* ── Breadcrumb toolbar ───────────────────────────────────────────────────── */
 .toolbar {
-  background-color: #f6f8fa;
-  box-shadow: 0 1px 0 #e1e4e8;
+  background-color: var(--umrs-bg-surface);
+  border-bottom: 1px solid var(--umrs-border-dim);
+  box-shadow: none;
 }
 
-/* ── Headings ────────────────────────────────────────────────────────────── */
-.doc h1,
-.doc h2,
-.doc h3,
-.doc h4 {
-  color: #1f2933;
+.toolbar a {
+  color: var(--umrs-text-muted);
 }
 
-/* h2 section divider — steel-blue tint instead of neutral gray */
-.doc h2:not(.discrete) {
-  border-bottom-color: #c5d3e0;
-}
-
-/* ── Links ───────────────────────────────────────────────────────────────── */
-.doc a,
-.toc a {
-  color: #1f3a5f;
-}
-
-.doc a:hover,
-.toc a:hover {
-  color: #2e5490;
-}
-
-/* ── Code blocks ─────────────────────────────────────────────────────────── */
-.doc .listingblock pre,
-.doc .literalblock pre {
-  background-color: #f6f8fa;
-  border: 1px solid #e1e4e8;
-}
-
-/* ── Admonition blocks ───────────────────────────────────────────────────── */
-/* Left-border triage: NOTE/TIP neutral, WARNING/CAUTION amber, IMPORTANT accent */
-.doc .admonitionblock {
-  border-left: 3px solid #c5d3e0;
-}
-
-.doc .admonitionblock.warning,
-.doc .admonitionblock.caution {
-  border-left-color: #8a6300;
-}
-
-.doc .admonitionblock.important {
-  border-left-color: #1f3a5f;
+.toolbar a:hover {
+  color: var(--umrs-green-bright);
 }
 
 /* ── Footer ──────────────────────────────────────────────────────────────── */
+
+footer.footer,
 .footer {
-  background-color: #f6f8fa;
-  border-top: 1px solid #e1e4e8;
-  color: #1f2933;
-  font-size: 0.85rem;
+  background-color: var(--umrs-bg-surface) !important;
+  border-top: 1px solid var(--umrs-border-dim) !important;
+  color: var(--umrs-text-muted) !important;
+  font-size: 11px;
   text-align: center;
-  padding: 1rem;
+  padding: 16px;
+}
+
+.footer p {
+  color: var(--umrs-text-muted) !important;
+  background: none !important;
+  border-top-color: var(--umrs-border-dim) !important;
+}
+
+.footer a {
+  color: var(--umrs-green-mid);
+}
+
+.footer * {
+  color: var(--umrs-text-muted);
+}
+
+/* ── Theme Toggle Button ─────────────────────────────────────────────────── */
+
+.theme-toggle {
+  background: none;
+  border: 1px solid var(--umrs-border-dim);
+  border-radius: 3px;
+  color: var(--umrs-text-muted);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 4px 8px;
+  margin-left: 12px;
+  transition: color 0.15s, border-color 0.15s;
+  line-height: 1;
+}
+
+.theme-toggle:hover {
+  color: var(--umrs-green-bright);
+  border-color: var(--umrs-border-mid);
+}
+
+/* ── Collection Home Tiles (CSS ready — content markup deferred) ─────────── */
+
+.tile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.tile {
+  background-color: var(--umrs-bg-surface);
+  border: 1px solid var(--umrs-border-dim);
+  border-left: 3px solid var(--umrs-green-dim);
+  border-radius: 3px;
+  padding: 16px;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+.tile:hover {
+  border-left-color: var(--umrs-green-bright);
+  background-color: var(--umrs-bg-panel);
+}
+
+.tile h3 {
+  margin: 0 0 6px;
+  font-size: 14px;
+}
+
+.tile p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--umrs-text-muted);
+}
+
+/* ── Search ──────────────────────────────────────────────────────────────── */
+
+#search-input {
+  background-color: var(--umrs-bg-deep);
+  border: 1px solid var(--umrs-border-dim);
+  border-radius: 3px;
+  color: var(--umrs-text-primary);
+  font-family: var(--umrs-font-sans);
+  font-size: 12px;
+  padding: 4px 8px;
+}
+
+#search-input::placeholder {
+  color: var(--umrs-text-muted);
+}
+
+#search-input:focus {
+  border-color: var(--umrs-green-mid);
+  outline: none;
+}
+
+/* ── Accessibility ───────────────────────────────────────────────────────── */
+
+@media (prefers-contrast: high) {
+  :root,
+  html[data-theme="dark"] {
+    --umrs-bg-deep: #000000;
+    --umrs-bg-surface: #0a0a0a;
+    --umrs-bg-panel: #1a1a1a;
+    --umrs-text-primary: #ffffff;
+    --umrs-text-muted: #cccccc;
+    --umrs-green-bright: #66ff88;
+    --umrs-green-glow: #99ffaa;
+    --umrs-border-dim: #444444;
+    --umrs-border-mid: #66ff88;
+  }
+}
+
+@media print {
+  body,
+  .doc,
+  .nav-container,
+  .nav-panel-menu,
+  .toolbar,
+  .header,
+  .footer {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  .doc h1, .doc h2, .doc h3, .doc h4 {
+    color: #000000 !important;
+  }
+
+  .doc a {
+    color: #000000 !important;
+    text-decoration: underline !important;
+  }
+
+  .doc .admonitionblock td.content {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  .doc .admonitionblock.warning td.content {
+    border-left-color: #000000 !important;
+    border-left-width: 4px !important;
+  }
+
+  .doc .admonitionblock.caution td.content {
+    border-left-color: #666666 !important;
+  }
+
+  .doc code {
+    background: #f0f0f0 !important;
+    color: #000000 !important;
+    border-color: #cccccc !important;
+  }
+
+  .doc .listingblock pre,
+  .doc .literalblock pre {
+    background: #f0f0f0 !important;
+    color: #000000 !important;
+    border-color: #cccccc !important;
+  }
+
+  .theme-toggle, .navbar-burger {
+    display: none !important;
+  }
+
+  .nist-tag {
+    color: #000000 !important;
+    background: #f0f0f0 !important;
+    border-color: #cccccc !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* ── Mermaid Diagrams ────────────────────────────────────────────────────── */
+
+.doc .mermaid {
+  background-color: var(--umrs-bg-panel);
+  border: 1px solid var(--umrs-border-dim);
+  border-radius: 3px;
+  padding: 16px;
+  margin: 16px 0;
+  overflow-x: auto;
 }

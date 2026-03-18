@@ -1,3 +1,32 @@
 <footer class="footer">
-  <p>© UMRS Project</p>
+  <p>UMRS &middot; High-Assurance Unclassified MLS Reference System &middot; MIT License</p>
 </footer>
+<script>
+(function() {
+  var toggle = document.getElementById('theme-toggle');
+  var html = document.documentElement;
+  var stored = localStorage.getItem('umrs-theme');
+
+  // Apply stored preference or default to dark
+  if (stored === 'light') {
+    html.setAttribute('data-theme', 'light');
+    toggle.textContent = '\u2600'; // sun
+  } else {
+    html.setAttribute('data-theme', 'dark');
+    toggle.textContent = '\u263E'; // moon
+  }
+
+  toggle.addEventListener('click', function() {
+    var current = html.getAttribute('data-theme');
+    if (current === 'dark') {
+      html.setAttribute('data-theme', 'light');
+      localStorage.setItem('umrs-theme', 'light');
+      toggle.textContent = '\u2600';
+    } else {
+      html.setAttribute('data-theme', 'dark');
+      localStorage.setItem('umrs-theme', 'dark');
+      toggle.textContent = '\u263E';
+    }
+  });
+})();
+</script>

@@ -1,6 +1,6 @@
 # Plan: UMRS Antora Documentation Theme
 
-**Status:** Approved — ready for implementation
+**Status:** Completed (2026-03-18) — all phases implemented, `make docs` builds clean
 
 **ROADMAP alignment:** G8 (Human-Centered Design), G10 (AI Transparency — project identity)
 
