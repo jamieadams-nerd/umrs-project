@@ -79,9 +79,15 @@
       "Write(.claude/**)",
       "Write(docs/**)",
       "Write(components/**)",
+      "Write(refs/**)",
+      "Write(/media/psf/repos/umrs-project/.claude/**)",
+      "Write(/media/psf/repos/umrs-project/refs/**)",
       "Edit(.claude/**)",
       "Edit(docs/**)",
       "Edit(components/**)",
+      "Edit(refs/**)",
+      "Edit(/media/psf/repos/umrs-project/.claude/**)",
+      "Edit(/media/psf/repos/umrs-project/refs/**)",
       "Bash(# Copy unique files from jamies_brain rogue\ncp -n /media/psf/repos/umrs-project/.claude/jamies_brain/.claude/agent-memory/rust-developer/tui_phase*.md /media/psf/repos/umrs-project/.claude/agent-memory/rust-developer/ 2>/dev/null\n\n# Copy unique files from rusty-gadgets rogue \\(security-auditor reviews\\)\ncp -n /media/psf/repos/umrs-project/components/rusty-gadgets/.claude/agent-memory/security-auditor/kernel-tab-content-review.md /media/psf/repos/umrs-project/.claude/agent-memory/security-auditor/ 2>/dev/null\ncp -n /media/psf/repos/umrs-project/components/rusty-gadgets/.claude/agent-memory/security-auditor/three-layer-evaluation-review.md /media/psf/repos/umrs-project/.claude/agent-memory/security-auditor/ 2>/dev/null\n\necho \"Files copied\")",
       "Bash(cd docs:*)",
       "WebFetch(domain:raw.githubusercontent.com)",
@@ -112,7 +118,13 @@
       "Bash(sed -i 's/status: blocked \u2014 waiting on posture probe Phase 2b completion/status: unblocked \u2014 posture probe Phase 2c complete, security-auditor corpus Phase 3 complete/' /media/psf/repos/umrs-project/.claude/plans/umrs-assessment-engine.md)",
       "Bash(sed -i 's/\\\\*\\\\*BLOCKED\\\\*\\\\* \u2014 Do not begin implementation until posture probe Phase 2b is complete and the/\\\\*\\\\*UNBLOCKED\\\\*\\\\* \\(2026-03-17\\) \u2014 posture probe Phase 2c and security-auditor corpus Phase 3 are both complete. The/' /media/psf/repos/umrs-project/.claude/plans/umrs-assessment-engine.md)",
       "Bash(sed -i \"s/\\\\`security-auditor-corpus.md\\\\` plan has been executed. This plan is a vision and architecture/security-auditor corpus is ingested with coverage mapping. This plan is a vision and architecture/\" /media/psf/repos/umrs-project/.claude/plans/umrs-assessment-engine.md)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(xargs -I{} basename {})",
+      "Bash(rm -rf /media/psf/repos/umrs-project/components/rusty-gadgets/.claude/)",
+      "Bash(rm -rf /media/psf/repos/umrs-project/.claude/plans/.claude/)",
+      "Bash(mv /media/psf/repos/umrs-project/.claude/plans/scap-stig-corpus-plan.md /media/psf/repos/umrs-project/.claude/plans/completed/)",
+      "Bash(mv /media/psf/repos/umrs-project/.claude/plans/security-auditor-corpus.md /media/psf/repos/umrs-project/.claude/plans/completed/)",
+      "Bash(mv /media/psf/repos/umrs-project/.claude/plans/source-code-comment-cleanup.md /media/psf/repos/umrs-project/.claude/plans/completed/)"
     ]
   },
   "enabledPlugins": {

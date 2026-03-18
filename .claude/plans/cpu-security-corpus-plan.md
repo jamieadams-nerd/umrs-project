@@ -1,7 +1,7 @@
 # CPU Security Extensions Research & Corpus Plan (v2)
 
 **Created:** 2026-03-14
-**Status:** Phase 0.5 complete (2026-03-17), Phase 1A next
+**Status:** Phase 0.5 complete, Phase 1A COMPLETE (2026-03-18), CET docs COMPLETE, 800-90B acquired. Phases 1C/1D/1E research done — files need writing. Next: fix subagent write perms, then write 1C/1D/1E files + launch 1B/1F/1G/1H.
 **Source reviews:** `reports/cpu-matrix-review/rust-developer-review.md`, `reports/cpu-matrix-review/security-auditor-review.md`
 **Supersedes:** Track 1 of the original research corpus expansion plan
 
@@ -250,7 +250,7 @@ Each entry will be documented with all 23 matrix columns.
 
 **Scope:** AES-NI, VAES, SHA extensions, PCLMULQDQ/CLMUL
 **Agent:** researcher
-**Status:** Not started
+**Status:** COMPLETE (2026-03-18) — 6 files in `.claude/references/cpu-extensions/crypto-accel/`
 
 **Actions:**
 - Research each extension: description, instructions, CPUID detection, Linux flags
@@ -275,7 +275,7 @@ Each entry will be documented with all 23 matrix columns.
 
 **Scope:** RDRAND, RDSEED, ADX, BMI1, BMI2
 **Agent:** researcher
-**Status:** Not started — **BLOCKED on NIST SP 800-90B acquisition**
+**Status:** UNBLOCKED (2026-03-18) — 800-90B acquired at `refs/nist/sp800-90B.pdf`. Not started.
 
 **Actions:**
 - RDRAND/RDSEED: full NIST SP 800-90B analysis
@@ -304,7 +304,7 @@ Each entry will be documented with all 23 matrix columns.
 
 **Scope:** SSE family, AVX, AVX2, AVX-512, VAES-on-AVX-512
 **Agent:** researcher
-**Status:** Not started
+**Status:** Research COMPLETE (2026-03-18) — files need writing. 4 files for `.claude/references/cpu-extensions/vector/`
 
 **Actions:**
 - Focus on crypto library usage, not general SIMD
@@ -324,7 +324,7 @@ Each entry will be documented with all 23 matrix columns.
 
 **Scope:** Intel SGX, AMD SEV/SEV-ES/SEV-SNP, Intel TDX, AMD SME, Intel Key Locker, Intel TME, Intel TXT
 **Agent:** researcher
-**Status:** Not started
+**Status:** Research COMPLETE (2026-03-18) — files need writing. 12 files for `.claude/references/cpu-extensions/confidential-computing/`
 
 **Actions:**
 - Research each technology: architecture, attestation model, threat model
@@ -356,7 +356,7 @@ Each entry will be documented with all 23 matrix columns.
 
 **Scope:** IBRS/eIBRS, IBPB, STIBP, SSBD, MDS/MD_CLEAR, L1D flush, PCID
 **Agent:** researcher
-**Status:** Not started
+**Status:** Research COMPLETE (2026-03-18) — files need writing. 11 files for `.claude/references/cpu-extensions/mitigations/`
 
 **Actions:**
 - Research each mitigation: CPUID detection, microcode requirements, Linux exposure
@@ -382,7 +382,7 @@ Each entry will be documented with all 23 matrix columns.
 
 **Scope:** SMEP, SMAP, CET-SS, CET-IBT, UMIP, NX/XD, PKU
 **Agent:** researcher
-**Status:** Not started
+**Status:** UNBLOCKED (2026-03-18) — CET docs acquired at `.claude/references/cpu-extensions/cet-docs/`. Not started.
 
 **Actions:**
 - Research each control: what attack class it blocks, CPUID location, Linux detection

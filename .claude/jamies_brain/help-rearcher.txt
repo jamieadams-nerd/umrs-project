@@ -1,0 +1,49 @@
+Skills That Would Help the Researcher
+
+    1. Corpus Ingestion & Lifecycle
+
+    - A skill for version-checking tracked documents — given refs/manifest.md, hit source URLs and report which docs
+    have newer versions (NIST revisions, STIG updates, kernel doc changes)
+    - A skill for structured extraction — take a raw PDF/HTML source and produce a standardized 23-column matrix entry
+     (or whatever the current schema is), so every corpus addition follows the same format
+
+    2. Cross-Reference Building
+
+    - A skill for CVE enrichment — given a feature name, query NVD/MITRE for relevant CVEs, produce a standardized CVE
+     table, and flag which ones affect UMRS posture signals
+    - A skill for control mapping — given a technology, find applicable NIST SP 800-53, CMMC, and CCE citations
+    automatically, formatted per the project's citation rules
+
+    3. Corpus Quality Assurance
+
+    - A skill for gap detection — scan the corpus directory structure and compare against the plan's feature
+    inventory, reporting which features lack files, which files are incomplete (missing columns), and which have stale
+     sources
+    - A skill for consistency checking — verify all files follow the same template, all CPUID references use the same
+    notation, all classification rationales are present
+
+    4. Knowledge Synthesis
+
+    - A skill for knowledge index generation — after each phase completes, auto-generate an index file that maps
+    topics → file locations, so other agents (rust-developer, security-engineer) can quickly find what they need
+    - A skill for delta reports — when a source document updates (new STIG, new kernel version), identify what changed
+     and which corpus files need revision
+
+    5. Acquisition Automation
+
+    - A skill for multi-source fetch — given a topic, check NIST, kernel.org, Intel/AMD developer portals, and Red Hat
+     docs in parallel, then produce a consolidated research brief
+    - A skill for manual-download flagging — detect when a URL requires browser-only access (DoD portals) and produce
+    a formatted request for Jamie with exact steps
+
+    6. Team Service Skills
+
+    - A "what do we know about X?" skill — any agent asks a question, the researcher searches the corpus and returns
+    relevant findings with file references
+    - A bibliography generator — given a doc page being written by tech-writer, produce the reference list from corpus
+     material
+
+    The big theme: the researcher's value multiplies when it can maintain the corpus, not just build it. Right now
+    it's great at acquisition — the next level is making it the team's always-current knowledge service.
+
+

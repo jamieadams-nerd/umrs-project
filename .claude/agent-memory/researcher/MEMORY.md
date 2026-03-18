@@ -1,5 +1,5 @@
 # Researcher Agent Memory
-# Last updated: 2026-03-17
+# Last updated: 2026-03-18
 
 ## Critical: Bash Fetch Patterns
 
@@ -26,11 +26,12 @@ Verify PDF: `head -c 4 <file>` must show `%PDF`.
 
 ### refs/ manifest (official security docs)
 - `refs/manifest.md` is the canonical manifest — always read before retrieval tasks
-- `refs/nist/` — NIST SPs (800-218, 800-171r2, 800-171r3, 800-53r5, 800-37r2, 800-53Ar5, 800-30r1, 800-39) + FIPS (140-2, 140-3)
+- `refs/nist/` — NIST SPs (800-218, 800-171r2, 800-171r3, 800-53r5, 800-37r2, 800-53Ar5, 800-30r1, 800-39, 800-90B) + FIPS (140-2, 140-3)
 - `refs/nist/fips/` — FIPS 203, 204, 205 (PQC standards, downloaded 2026-03-13)
 - `refs/dod/` — DoD CMMC docs (Final Rule + Assessment Guide L2, both downloaded 2026-03-12)
 - `refs/fedramp/` — FedRAMP accreditation docs (downloaded 2026-03-15: CSP playbook, Agency playbook, SSP/SAP/SAR templates)
 - `refs/nist/sp800-18r1.pdf` — NIST SP 800-18 Rev 1 (downloaded 2026-03-15)
+- `refs/nist/sp800-90B.pdf` — NIST SP 800-90B (downloaded 2026-03-18; SHA-256: 9b0dd77131ade3617a91cd8457fa09e0dc354c273bb2220a6afeaca16e5defe7)
 - Last version check: 2026-03-12 (next due 2026-04-12)
 
 ### .claude/references/ (technical reference collections for RAG)

@@ -60,7 +60,7 @@ zeroize, bounds-safe indexing), supply chain hygiene (PO.1), and vulnerability t
 | Status | ✓ Downloaded |
 
 **Note**: The previously listed URL (`FR-2023-12-26/pdf/2023-27756.pdf`) was an unrelated
-OMB submission. The proposed rule was 88 FR 89058 (Dec 26, 2023, document 2023-27280);
+ OMB submission. The proposed rule was 88 FR 89058 (Dec 26, 2023, document 2023-27280);
 this is the **final rule** published October 2024.
 
 **Key relevance**: Legal authority for CMMC Level 2 requirements; defines the regulatory
@@ -175,6 +175,29 @@ RHEL 10 ships OpenSSL with a validated FIPS provider — Rust code must route cr
 **Key relevance**: The current standard — supersedes 140-2. New validations are issued under
 140-3. Understand both: contracts often still cite 140-2 validated modules while new modules
 are validated under 140-3.
+
+---
+
+### NIST SP 800-90B — Recommendation for the Entropy Sources Used for Random Bit Generation
+
+| Field | Value |
+|---|---|
+| Full title | Recommendation for the Entropy Sources Used for Random Bit Generation |
+| Issuing authority | NIST |
+| Version | Initial Public Release |
+| Published | January 2018 |
+| Downloaded | 2026-03-18 |
+| Local path | `nist/sp800-90B.pdf` |
+| Source URL | https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-90B.pdf |
+| SHA-256 | `9b0dd77131ade3617a91cd8457fa09e0dc354c273bb2220a6afeaca16e5defe7` |
+| Status | ✓ Downloaded |
+
+**Key relevance**: Defines requirements for entropy sources used in random bit generators
+(RBGs). Directly relevant to `umrs-hw` and any code path that acquires hardware entropy
+(RDSEED, RDRAND, `/dev/random`). SC-13 requires FIPS 140-validated cryptography; 800-90B
+defines how the entropy feeding those algorithms must be validated. Blocking document for
+the CPU security corpus Phase 1B work: governs hardware entropy quality guarantees that
+underpin FIPS-mode key generation on RHEL 10.
 
 ---
 

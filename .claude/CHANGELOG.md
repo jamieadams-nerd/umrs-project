@@ -1,5 +1,22 @@
 # Changelog
 
+## 2026-03-18
+
+### Added
+- **CPU Security Corpus Phase 1A COMPLETE**: 6 reference files written to `.claude/references/cpu-extensions/crypto-accel/` covering AES-NI, VAES, SHA-NI, PCLMULQDQ, ARM crypto equivalents, and phase summary. Full 23-column matrix profiles with CVE tables, /proc/crypto driver mappings, FIPS utilization requirements, and software fallback risk analysis.
+- **CET documentation COMPLETE**: 4 reference files written to `.claude/references/cpu-extensions/cet-docs/` covering Intel CET spec summary, Linux kernel CET support, RHEL 10 CET status (including critical Rust CET gap finding), and binary verification guide. Unblocks Phase 1F.
+- **NIST SP 800-90B acquired**: PDF saved to `refs/nist/sp800-90B.pdf` with manifest entry updated. Unblocks Phase 1B.
+- **Phases 1C, 1D, 1E research COMPLETE**: Comprehensive data gathered on vector extensions (9 features), TEE/confidential computing (10 features + ARM TrustZone), and speculative execution mitigations (8 features). 27 reference files pending write next session.
+- **CPU corpus preflight checklist**: Created `.claude/plans/cpu-corpus-next-session-preflight.md` documenting all pending write operations and memory saves for next session.
+
+### Changed
+- **Settings.json permissions expanded**: Added absolute-path Write and Edit permissions for `.claude/**` and `refs/**` to support subagent compatibility on write operations.
+- **CPU security corpus plan updated**: All phase statuses reflected in `.claude/plans/cpu-security-corpus-plan.md` — Phases 1A, CET, 1C-1E research all marked complete or in-progress.
+- **Agent memory updates**: Saved 3 new memory artifacts (CPU corpus push reminder, pre-create output dirs feedback, CET runtime verification finding) to researcher agent memory.
+
+### Fixed
+- **RHEL 10 Rust CET gap identified**: Found that Rust stable compiler lacks CET support (tracked at rust-lang/rust#93754); UMRS binaries will not have shadow stack protection on RHEL 10. Classified as INFORMATIONAL; Rust memory safety provides alternate CFI mitigation.
+
 ## 2026-03-17
 
 ### Added
