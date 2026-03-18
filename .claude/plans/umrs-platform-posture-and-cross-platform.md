@@ -12,7 +12,7 @@ split: CPU extension probe extracted to .claude/plans/cpu-extension-probe.md (20
 detection and kernel attribute (kattrs) probing. The crate is expanding across three pillars:
 
 1. **OS Detection** — done; `OsDetector` is the public entry point
-2. **Kernel Security Posture Probe** — in progress; `SignalId` catalog, contradiction engine,
+2. **Kernel Security Posture Probe** — in progress; `IndicatorId` catalog, contradiction engine,
    snapshot pipeline
 3. **CPU Extension Detection** — future; **see `.claude/plans/completed/cpu-extension-probe.md`**
 
@@ -218,7 +218,7 @@ Decided by Jamie on 2026-03-16.
 
 | Decision | Choice | Rationale |
 |----------|--------|-----------|
-| `CpuSignalId` enum design | **(A) Separate `CpuSignalId` enum** | Keeps posture catalog and CPU extension catalog from growing into a single unwieldy type. Aligns with rust-developer recommendation. |
+| `CpuIndicatorId` enum design | **(A) Separate `CpuIndicatorId` enum** | Keeps posture catalog and CPU extension catalog from growing into a single unwieldy type. Aligns with rust-developer recommendation. |
 | `MandatoryAccessControl` abstraction | **(B) Phase-level decision table** | A trait is over-engineering for two MAC systems. A decision table (`OsFamily` → MAC check) is concrete and testable. Evolve to a trait only if a third MAC system matters. |
 | `DetectionResult` serialization format | **(C) JSON** | Evidence chain must be human-readable for operators and auditors on CUI/DoD systems. Aligns with the `--json` output standard planned for all tools, the assessment engine's evidence pipeline, and `umrs-logspace` structured events. Size overhead is acceptable for system state snapshots. |
 | Serialization sequencing | **(A) After assessment engine types stabilize** | Type structure is still evolving with posture probe and CPU extension work. Serializing an unstable type creates migration debt. |

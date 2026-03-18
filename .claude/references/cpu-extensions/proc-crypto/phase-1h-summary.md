@@ -150,9 +150,9 @@ hardware-accelerated.
 
 ## Connection to Existing UMRS Signals
 
-### SignalId::ProcFips
+### IndicatorId::ProcFips
 
-`SignalId::ProcFips` is the existing Layer 1 signal for `/proc/sys/crypto/fips_enabled`.
+`IndicatorId::ProcFips` is the existing Layer 1 signal for `/proc/sys/crypto/fips_enabled`.
 
 Phase 1H signals complement `ProcFips` rather than replacing it:
 
@@ -164,7 +164,7 @@ Phase 1H signals complement `ProcFips` rather than replacing it:
 | `ProcCrypto::Sha256HardwareActive` (proposed) | 2 | `/proc/crypto` | SHA hardware active |
 | `ProcCrypto::SelftestAllPassed` (proposed) | 2 | `/proc/crypto` | No driver failures |
 
-### SignalId::RandomTrustCpu
+### IndicatorId::RandomTrustCpu
 
 The `RandomTrustCpu` signal (Phase 1B) is a Layer 1 signal for entropy hardware quality.
 Phase 1H's Layer 2 concept extends similarly: future work could verify that the kernel's

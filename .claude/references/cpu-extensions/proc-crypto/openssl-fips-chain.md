@@ -3,7 +3,7 @@
 **Phase:** 1H
 **Completed:** 2026-03-18
 **Scope:** OpenSSL FIPS provider architecture on RHEL 10, CMVP validation status, hardware
-acceleration path selection, OPENSSL_ia32cap control, and connection to UMRS SignalId::ProcFips.
+acceleration path selection, OPENSSL_ia32cap control, and connection to UMRS IndicatorId::ProcFips.
 
 ---
 
@@ -38,7 +38,7 @@ enable it during installation. Enabling FIPS mode post-installation is not suppo
 10. This is a significant departure from RHEL 9, where `fips-mode-setup` could be run on
 an existing installation.
 
-**UMRS connection:** `SignalId::ProcFips` reads `/proc/sys/crypto/fips_enabled`. This is the
+**UMRS connection:** `IndicatorId::ProcFips` reads `/proc/sys/crypto/fips_enabled`. This is the
 authoritative Layer 1 signal for kernel-level FIPS enforcement. The value here gates whether
 OpenSSL uses the FIPS provider.
 
@@ -160,7 +160,7 @@ back to software if `OPENSSL_ia32cap` masks AES-NI. Both layers need posture ver
 
 | UMRS Signal | Interface | What it verifies |
 |-------------|-----------|-----------------|
-| `SignalId::ProcFips` | `/proc/sys/crypto/fips_enabled` | Kernel-level FIPS enforcement active |
+| `IndicatorId::ProcFips` | `/proc/sys/crypto/fips_enabled` | Kernel-level FIPS enforcement active |
 | Layer 2 (proposed) | `/proc/crypto` driver list | Kernel crypto using hardware acceleration |
 | Layer 2 (proposed) | `openssl speed -evp aes-256-gcm` output | OpenSSL using hardware path (indirect) |
 

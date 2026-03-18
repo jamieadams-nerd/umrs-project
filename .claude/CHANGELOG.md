@@ -8,14 +8,25 @@
 - **NIST SP 800-90B acquired**: PDF saved to `refs/nist/sp800-90B.pdf` with manifest entry updated. Unblocks Phase 1B.
 - **Phases 1C, 1D, 1E research COMPLETE**: Comprehensive data gathered on vector extensions (9 features), TEE/confidential computing (10 features + ARM TrustZone), and speculative execution mitigations (8 features). 27 reference files pending write next session.
 - **CPU corpus preflight checklist**: Created `.claude/plans/cpu-corpus-next-session-preflight.md` documenting all pending write operations and memory saves for next session.
+- **CPU Security Corpus Phases 1E–1F COMPLETE**: Wrote pcid.md + vulnerability-sysfs-reference.md (Phase 1E); wrote cet-shadow-stack.md, cet-ibt.md, umip.md, pku.md, arm-access-controls.md (Phase 1F). RAG ingested `cpu-extensions` collection — 645 chunks from 60 files. Phases 1I/1J/1K actionable items folded into cpu-extension-probe plan.
+- **Rusty CPU probe review**: Plan review at `.claude/reports/cpu-probe-openssl-plan-review.md` — identified 4 gaps in CPU probe, 3 in OpenSSL plan, proposed shared `ElfInspector` abstraction to eliminate duplication.
+- **OpenSSL posture module plan drafted**: `.claude/plans/openssl-posture-module.md` — 3-layer detection (library presence, FIPS mode, algorithm support) with integration into umrs-platform. Approved use of `goblin` crate for ELF parsing.
+- **Long-term plans directory created**: `.claude/plans/long-term/` for distant-horizon plans (project-restructure, assessment-engine, logspace-design).
+- **CPU/crypto artifact absorption**: 4 active scripts moved to `.claude/agent-memory/rust-developer/reference/cpu-crypto/`; 7 analysis docs archived to `.claude/jamies_brain/archive/cpu-experiments/`; cpu-work/ and create_ima_keys.sh removed from jamies_brain.
 
 ### Changed
+- **CPU security corpus plan moved to completed**: Marked COMPLETE and archived to `.claude/plans/completed/cpu-security-corpus-plan.md` after Phases 1E–1F completion and artifact absorption.
+- **umrs-platform-expansion.md split**: Separated into `umrs-platform-posture-and-cross-platform.md` (active focus) and `cpu-extension-probe.md` (active, CPU-specific development).
+- **cpu-extension-probe.md status**: Updated to reflect corpus completion, Rusty review findings, and integration with OpenSSL posture module plan.
 - **Settings.json permissions expanded**: Added absolute-path Write and Edit permissions for `.claude/**` and `refs/**` to support subagent compatibility on write operations.
 - **CPU security corpus plan updated**: All phase statuses reflected in `.claude/plans/cpu-security-corpus-plan.md` — Phases 1A, CET, 1C-1E research all marked complete or in-progress.
-- **Agent memory updates**: Saved 3 new memory artifacts (CPU corpus push reminder, pre-create output dirs feedback, CET runtime verification finding) to researcher agent memory.
+- **Agent memory updates**: Saved 3 new memory artifacts (CPU corpus push reminder, pre-create output dirs feedback, CET runtime verification finding) to researcher agent memory; saved feedback on no-subprocess rule to memory.
+- **Signal → Indicator terminology eradicated**: Removed from all active files — 2 adoc docs, 2 Rust source comments, 3 plans, 1 review report, 1 familiarization doc, 11 reference corpus files. Historical reports preserved as-is.
 
 ### Fixed
 - **RHEL 10 Rust CET gap identified**: Found that Rust stable compiler lacks CET support (tracked at rust-lang/rust#93754); UMRS binaries will not have shadow stack protection on RHEL 10. Classified as INFORMATIONAL; Rust memory safety provides alternate CFI mitigation.
+- **Stray .claude/settings.local.json deleted**: File violated Settings Files Hard Rule; removed from working tree.
+- **Rogue .claude/plans/.claude/ directory removed**: Empty directory eliminated; no content loss.
 
 ## 2026-03-17
 

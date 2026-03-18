@@ -150,7 +150,7 @@ Each MDS-class vulnerability requires its own microcode update. The updates are 
 
 ## UMRS Posture Signal Connection
 
-**SignalId::Mitigations (Critical):**
+**IndicatorId::Mitigations (Critical):**
 - Multiple sysfs files must be checked for comprehensive MDS-class coverage
 - ANY `Vulnerable` value in any MDS-class sysfs file is a CRITICAL finding
 - `Vulnerable: No microcode` is a HIGH finding requiring microcode update
@@ -161,7 +161,7 @@ Each MDS-class vulnerability requires its own microcode update. The updates are 
 - SRBDS specifically compromises RDRAND/RDSEED output -- on FIPS systems, unmitigated SRBDS undermines hardware entropy source trustworthiness
 - GDS could leak vector register contents from crypto operations
 
-**Proposed new signal:** `SignalId::MicrocodeCurrency` -- a composite check that verifies all MDS-class sysfs files show `Mitigation:` or `Not affected`
+**Proposed new signal:** `IndicatorId::MicrocodeCurrency` -- a composite check that verifies all MDS-class sysfs files show `Mitigation:` or `Not affected`
 
 ## Sources
 

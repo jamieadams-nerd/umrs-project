@@ -88,7 +88,7 @@ Mitigation: Enhanced / Automatic IBRS; IBPB: conditional; RSB filling; PBRSB-eIB
 
 ## UMRS Posture Signal Connection
 
-**SignalId::Mitigations (Critical):**
+**IndicatorId::Mitigations (Critical):**
 - IBRS/eIBRS is the primary hardware capability that enables effective Spectre v2 mitigation
 - If `/sys/devices/system/cpu/vulnerabilities/spectre_v2` shows "Retpolines" on a CPU that supports eIBRS, this is a configuration finding -- the more effective hardware mitigation is available but not in use
 - If it shows "None" or "Vulnerable," this is a CRITICAL finding

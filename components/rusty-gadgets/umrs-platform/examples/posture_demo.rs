@@ -2,7 +2,7 @@
 // Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
 //! Kernel Security Posture Probe — demonstration example.
 //!
-//! Collects all kernel security posture signals and displays a formatted
+//! Collects all kernel security posture indicators and displays a formatted
 //! summary report to stdout. Demonstrates both the novice-friendly
 //! `PostureSnapshot` interface and the expert path (individual indicator lookup,
 //! catalog iteration).

@@ -97,7 +97,7 @@ The `spectre_v2_user=` kernel boot parameter controls the default policy:
 
 ## UMRS Posture Signal Connection
 
-**SignalId::Mitigations (Critical):**
+**IndicatorId::Mitigations (Critical):**
 - IBPB availability enables process-level Spectre v2 isolation
 - If `/sys/devices/system/cpu/vulnerabilities/spectre_v2` shows `IBPB: disabled` on a multi-user system, this is a MEDIUM finding -- user-to-user speculative attacks are not mitigated
 - If it shows `IBPB: disabled` on a system running VMs with untrusted guests, this is a HIGH finding

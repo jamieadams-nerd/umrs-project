@@ -25,7 +25,7 @@
 | 19 | Active mitigation status path | `/sys/devices/system/cpu/vulnerabilities/meltdown` — look for "Mitigation: PTI" (PTI active, PCID enabling it). |
 | 20 | Feature accessible vs advertised | PCID cannot be BIOS-disabled. If CPUID reports it, it is available. However, CR4.PCIDE must be set by the OS (kernel does this automatically when available). Early AMD Zen CPUs had incomplete PCID implementations; Linux kernel has explicit quirk checks. |
 | 21 | Guest-vs-host discrepancy risk | Medium. Older hypervisors may not expose PCID to guests. Guest running PTI without PCID suffers severe performance penalty. VM migration from PCID-capable to PCID-incapable host silently degrades PTI performance. |
-| 22 | Notes | PCID is the reason PTI is viable in production. Intel's Meltdown response strategy was: (1) PTI in software, (2) PCID to make it fast. Systems without PCID face a choice between security (PTI on, slow) and performance (PTI off, vulnerable). Connection to existing posture signal: `SignalId::Pti` (High priority). PCID should be a cross-referenced signal — if Pti is active and pcid is absent, flag the performance risk. |
+| 22 | Notes | PCID is the reason PTI is viable in production. Intel's Meltdown response strategy was: (1) PTI in software, (2) PCID to make it fast. Systems without PCID face a choice between security (PTI on, slow) and performance (PTI off, vulnerable). Connection to existing posture signal: `IndicatorId::Pti` (High priority). PCID should be a cross-referenced signal — if Pti is active and pcid is absent, flag the performance risk. |
 | 23 | Sources | Intel SDM Vol 3A Section 4.10.1 (Process-Context Identifiers); AMD APM Vol 2; LWN: "PCID is now a critical performance feature" (2018); Linux kernel TLB management code (arch/x86/mm/tlb.c); KAISER/KPTI patches |
 
 ## Connection to PTI / Meltdown
@@ -82,7 +82,7 @@ On systems without PCID:
 4. If PTI active + PCID present → optimal
 5. If PTI active + PCID absent → flag performance risk (CAUTION)
 6. If PTI disabled (`nopti`) + PCID present → **CRITICAL** finding (Meltdown exposed)
-7. Cross-reference with `SignalId::Pti` posture signal
+7. Cross-reference with `IndicatorId::Pti` posture signal
 
 ## ARM Equivalent
 

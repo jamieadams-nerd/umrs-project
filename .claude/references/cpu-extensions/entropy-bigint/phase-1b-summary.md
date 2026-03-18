@@ -141,7 +141,7 @@ The following signals are not in the current posture catalog but are indicated b
 
 ---
 
-## SignalId::RandomTrustCpu — Connection Summary
+## IndicatorId::RandomTrustCpu — Connection Summary
 
 The existing `IndicatorId::RandomTrustCpu` in `umrs-platform/src/posture/catalog.rs` maps to:
 

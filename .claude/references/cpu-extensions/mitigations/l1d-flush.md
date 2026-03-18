@@ -109,7 +109,7 @@ L1D flush and MDS mitigation interact:
 
 ## UMRS Posture Signal Connection
 
-**SignalId::Mitigations (Critical):**
+**IndicatorId::Mitigations (Critical):**
 - On L1TF-affected CPUs running VMs: check that L1D flush is not disabled
 - If sysfs shows `L1D vulnerable`, this is a CRITICAL finding for VM hosts
 - `L1D conditional cache flushes` is the expected default -- acceptable for most deployments
@@ -117,7 +117,7 @@ L1D flush and MDS mitigation interact:
 
 **Cross-signal dependency:**
 - L1D flush findings are relevant only on Intel CPUs that are L1TF-affected (no RDCL_NO)
-- SMT state (SignalId for SMT) affects the severity of L1D flush findings
+- SMT state (IndicatorId for SMT) affects the severity of L1D flush findings
 - If RDCL_NO is set (newer CPUs), L1TF/L1D flush findings should be suppressed
 
 ## Sources

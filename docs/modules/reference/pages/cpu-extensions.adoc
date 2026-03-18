@@ -10,7 +10,7 @@ This reference documents the CPU extensions and hardware security features that 
 relevant to UMRS platform security evaluation. It is organized around the three-layer
 activation model: hardware availability, OS enablement, and software utilization.
 
-These extensions will be probed by the future `CpuSignalId` system in `umrs-platform`.
+These extensions will be probed by the future `CpuIndicatorId` system in `umrs-platform`.
 The descriptions on this page are written to be i18n-compatible — complete sentences,
 no interpolated fragments.
 
@@ -85,7 +85,7 @@ hardware capability and the software utilization must be confirmed.
 .UMRS assessment principle
 [NOTE]
 ====
-`CpuSignalId` will represent Layer 1 (hardware) and Layer 2 (OS) assertions.
+`CpuIndicatorId` will represent Layer 1 (hardware) and Layer 2 (OS) assertions.
 A future `ContradictionKind::CapabilityUnused` finding will surface cases where
 a cryptographic extension is present at Layer 1 and enabled at Layer 2 but not
 registered in `/proc/crypto` — indicating the software stack is not taking the
@@ -465,7 +465,7 @@ related options control whether mitigations are active. The UMRS kernel posture 
 already monitors several of these through `IndicatorId::Mitigations` (which checks the
 `mitigations` cmdline parameter) and `IndicatorId::Pti` (which checks the `pti` parameter).
 
-The future `CpuSignalId` system will correlate these cmdline signals with the hardware
+The future `CpuIndicatorId` system will correlate these cmdline signals with the hardware
 capability flags and the `/sys/devices/system/cpu/vulnerabilities/` status files to
 produce a complete picture: what the CPU can do, what the kernel has configured, and
 whether the mitigation is actually active.
@@ -568,7 +568,7 @@ as a timing difference by other processes on the same physical core. Code perfor
 constant-time cryptography must account for this if it uses AVX-512 instructions.
 
 *Hypervisor masking:* Many cloud hypervisors and some BIOS configurations disable
-AVX-512 exposure to guests to prevent frequency scaling attacks. `CpuSignalId` will
+AVX-512 exposure to guests to prevent frequency scaling attacks. `CpuIndicatorId` will
 distinguish between a CPU that does not support AVX-512 and a CPU where AVX-512 is
 available but masked.
 
@@ -768,7 +768,7 @@ integrity at the hardware level, complementing software-layer integrity verifica
 inventory by recording what security-relevant hardware capabilities are present.
 
 |NIST SP 800-53 CA-7
-|Continuous Monitoring — the `CpuSignalId` posture probe will surface deviations such as
+|Continuous Monitoring — the `CpuIndicatorId` posture probe will surface deviations such as
 mitigations disabled, SGX present but BIOS-gated, or hardware crypto extensions present
 but not utilized by the software stack.
 
@@ -785,6 +785,6 @@ domain isolation complementary to SELinux mandatory access control.
 * xref:compliance-frameworks.adoc[Compliance Frameworks Registry]
 * xref:reference:index.adoc[Reference Index]
 * xref:devel:os-detection-deep-dive.adoc[OS Detection Deep Dive] — the existing kernel
-  posture probe design, which `CpuSignalId` will parallel
+  posture probe design, which `CpuIndicatorId` will parallel
 * xref:patterns:pattern-provenance.adoc[Provenance Verification Pattern] — detection paths
   use the same statfs-anchored provenance model as the kernel attribute reader

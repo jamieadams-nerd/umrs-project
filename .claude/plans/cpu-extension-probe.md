@@ -2,7 +2,7 @@
 name: CPU Extension Probe
 path: components/rusty-gadgets/umrs-platform
 agent: rust-developer
-status: future — blocked on kernel posture probe completion + CPU corpus validation
+status: future — blocked on kernel posture probe completion (CPU corpus COMPLETE 2026-03-18)
 split-from: umrs-platform-posture-and-cross-platform.md (2026-03-18)
 ---
 
@@ -170,19 +170,60 @@ Cross-ref: `docs/modules/cryptography/pages/openssl-no-vendoring.adoc`
 
 ---
 
-## Proposed `CpuSignalId` Design
+## Proposed `CpuIndicatorId` Design
 
-**Decided (2026-03-16):** Separate `CpuSignalId` enum (not extending `SignalId`). Keeps
+**Decided (2026-03-16):** Separate `CpuIndicatorId` enum (not extending `IndicatorId`). Keeps
 posture catalog and CPU extension catalog from growing into a single unwieldy type.
 
-CPU extension detection will likely produce a result type parallel to `SignalReport` but
-scoped to hardware capability assertions. Design details to be determined after the corpus
-research is complete.
+### Phase 1E/1F Variants (from corpus research)
+
+| Variant | `/proc/cpuinfo` flag | Layer | Platform | Classification |
+|---|---|---|---|---|
+| `CpuIndicatorId::Pcid` | `pcid` | 1 | x86_64 | Important |
+| `CpuIndicatorId::CetShadowStack` | `shstk` | 1 | x86_64 | Critical/Defensive |
+| `CpuIndicatorId::CetIbt` | `ibt` | 1 | x86_64 | Critical/Defensive |
+| `CpuIndicatorId::Umip` | `umip` | 1 | x86_64 | Important |
+| `CpuIndicatorId::Pku` | `pku` + `ospke` | 1 | x86_64 | Important |
+| `CpuIndicatorId::ArmPac` | `paca` | 1 | aarch64 | Important |
+| `CpuIndicatorId::ArmBti` | `bti` | 1 | aarch64 | Important |
+| `CpuIndicatorId::ArmMte` | `mte`/`mte2`/`mte3` | 1 | aarch64 | Important |
+
+All are `/proc/cpuinfo` reads — `ProcfsText` + `SecureReader::read_generic_text`. No new
+routing infrastructure needed.
+
+### Rust CET/PAC Limitation
+
+Stable Rust does not support `-Z cf-protection=full` (rust-lang/rust#93754). UMRS binaries
+will NOT have CET or PAC/BTI ELF notes. Audit classification:
+- **C/C++ binary** without CET on CET-capable system → **HIGH**
+- **Rust binary** without CET → **INFORMATIONAL** (Rust memory safety compensates)
+
+### PCID/Pti Contradiction Logic
+
+- `Pcid` absent + `Pti` active → **CAUTION** (30-50% perf hit, pressure to disable PTI)
+- `Pcid` present + `Pti` disabled → **CRITICAL** (Meltdown mitigation off despite hardware fix)
+
+### Layer 4 — Runtime Mitigation State (Vulnerability Sysfs)
+
+`/sys/devices/system/cpu/vulnerabilities/` is a fourth detection layer orthogonal to the
+three-layer activation model. It answers "are mitigations actually running?" The existing
+`Mitigations` indicator only checks the cmdline umbrella flag.
+
+`VulnerabilityReport` lives in `posture::vulnerability` (sibling to `posture::bootcmdline`),
+not inside the CPU extension probe. See Rusty's review:
+`.claude/reports/cpu-probe-openssl-plan-review.md`
+
+### Shared `ElfInspector`
+
+Binary hardening analysis (CET notes, NEEDED entries, RELRO/PIE/NX) uses a shared
+`umrs-platform::elf_inspect` module backed by `goblin`. Shared between this plan and the
+OpenSSL posture module. See Rusty's review for the full type design.
 
 ### Reference
 
 The full feature inventory (60 features across 15 categories, 9 detection interfaces,
 23-column matrix) is in `.claude/plans/cpu-security-corpus-plan.md`.
+Rusty's implementation review: `.claude/reports/cpu-probe-openssl-plan-review.md`
 
 ---
 
@@ -194,13 +235,23 @@ The full feature inventory (60 features across 15 categories, 9 detection interf
 
 ---
 
+## Pre-Implementation Tasks
+
+- [ ] Generate consolidated detection reference sheet from corpus (all sysfs/procfs paths,
+  value formats, flag names — single lookup table for Rusty during implementation)
+- [ ] Close plan gaps identified in Rusty's review (`.claude/reports/cpu-probe-openssl-plan-review.md`)
+
 ## Definition of Done
 
-- [ ] CPU corpus research complete and validated
-- [ ] `CpuSignalId` enum implemented with three-layer detection
+- [x] CPU corpus research complete and validated (Phases 0–1H, 60 files, 645 RAG chunks)
+- [x] Rusty familiarization and plan review complete
+- [ ] `CpuIndicatorId` enum implemented with three-layer detection
 - [ ] Layer 1 (hardware), Layer 2 (OS), Layer 3 (software) probes implemented
+- [ ] Layer 4 (vulnerability sysfs) — `VulnerabilityReport` in `posture::vulnerability`
+- [ ] Shared `ElfInspector` module (`umrs-platform::elf_inspect`) with `goblin`
+- [ ] Binary hardening evidence: CET/PAC/BTI notes, RELRO, PIE, NX
+- [ ] PCID/Pti contradiction logic in contradiction detector
 - [ ] OpenSSL linkage analysis integrated into binary inspection path
-- [ ] readelf/elfdump binary hardening evidence integrated
 - [ ] `cargo xtask clippy && cargo xtask test` clean on all supported platforms
 
 ---
@@ -209,7 +260,7 @@ The full feature inventory (60 features across 15 categories, 9 detection interf
 
 | Work Item | Agent | Model | Rationale |
 |---|---|---|---|
-| CPU Extension Detection (design) | rust-developer | **opus** | New signal catalog, three-layer model, CpuSignalId design |
+| CPU Extension Detection (design) | rust-developer | **opus** | New signal catalog, three-layer model, CpuIndicatorId design |
 
 ---
 

@@ -85,7 +85,7 @@ AMD provides multiple SSBD mechanisms:
 
 ## UMRS Posture Signal Connection
 
-**SignalId::Mitigations (Critical):**
+**IndicatorId::Mitigations (Critical):**
 - SSBD availability is part of comprehensive speculative execution mitigation
 - If `/sys/devices/system/cpu/vulnerabilities/spec_store_bypass` shows `Vulnerable`, the system lacks Spectre v4 mitigation entirely
 - The per-process model (prctl/seccomp) is the expected default -- `Mitigation: ... via prctl and seccomp` is the normal healthy state

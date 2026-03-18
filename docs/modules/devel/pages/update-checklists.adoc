@@ -362,9 +362,9 @@ For each security-relevant extension found in Step 1:
   Check `OPENSSL_ia32cap` for explicit overrides.
 |===
 
-=== Step 3: Add a New CPU Extension Signal
+=== Step 3: Add a New CPU Extension Indicator
 
-CPU extensions use a separate `CpuSignalId` enum (decided 2026-03-16),
+CPU extensions use a separate `CpuIndicatorId` enum (decided 2026-03-16),
 not `IndicatorId`. This keeps the kernel posture catalog and the CPU
 extension catalog from growing into a single unwieldy type.
 
@@ -374,7 +374,7 @@ extension catalog from growing into a single unwieldy type.
 | Action
 
 | 3.1
-| Add a `CpuSignalId` variant to the CPU signals module. +
+| Add a `CpuIndicatorId` variant to the CPU signals module. +
   Name it after the CPUID flag name (e.g., `AesNi`, `Avx512f`, `Rdrand`).
 
 | 3.2
@@ -424,7 +424,7 @@ report all three.
 
 . Update `docs/modules/reference/pages/cpu-extensions.adoc`.
 +
-Add a row with: `CpuSignalId` variant, vendor-canonical flag name,
+Add a row with: `CpuIndicatorId` variant, vendor-canonical flag name,
 description, security relevance, and detection layer(s) implemented.
 Note vendor-specific naming differences in the Notes column.
 
@@ -602,7 +602,7 @@ Update the declaration in `catalog.rs` after each review pass.
 | Mark deprecated in `kernel-probe-indicators.adoc`, `make docs`
 
 | New CPU extension
-| `CpuSignalId`, CPU readers
+| `CpuIndicatorId`, CPU readers
 | Add to CPU panel (once implemented)
 | `cpu-extensions.adoc`, `make docs`
 

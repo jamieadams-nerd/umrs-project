@@ -13,21 +13,21 @@ type: project
 
 ## 1. Key Types and Detection Paths
 
-### New IndicatorId / CpuSignalId Variants Implied
+### New IndicatorId / CpuIndicatorId Variants Implied
 
 The reference material implies the following new signal-level concepts that do not yet exist
 in `umrs-platform/src/posture/indicator.rs`:
 
 | Concept | Suggested variant | Detection source | Priority |
 |---|---|---|---|
-| PCID present (PTI perf enabler) | `CpuSignalId::Pcid` | `/proc/cpuinfo` `pcid` flag | Medium |
-| CET-SS hardware present | `CpuSignalId::CetShadowStack` | `/proc/cpuinfo` `shstk` flag | High |
-| CET-IBT hardware present | `CpuSignalId::CetIbt` | `/proc/cpuinfo` `ibt` flag | High |
-| UMIP hardware present | `CpuSignalId::Umip` | `/proc/cpuinfo` `umip` flag | Important |
-| PKU hardware present | `CpuSignalId::Pku` | `/proc/cpuinfo` `pku` + `ospke` flags | Informational |
-| ARM PAC present | `CpuSignalId::ArmPac` | `/proc/cpuinfo` `paca` flag | High (ARM targets) |
-| ARM BTI present | `CpuSignalId::ArmBti` | `/proc/cpuinfo` `bti` flag | High (ARM targets) |
-| ARM MTE present | `CpuSignalId::ArmMte` | `/proc/cpuinfo` `mte`/`mte2`/`mte3` | Informational |
+| PCID present (PTI perf enabler) | `CpuIndicatorId::Pcid` | `/proc/cpuinfo` `pcid` flag | Medium |
+| CET-SS hardware present | `CpuIndicatorId::CetShadowStack` | `/proc/cpuinfo` `shstk` flag | High |
+| CET-IBT hardware present | `CpuIndicatorId::CetIbt` | `/proc/cpuinfo` `ibt` flag | High |
+| UMIP hardware present | `CpuIndicatorId::Umip` | `/proc/cpuinfo` `umip` flag | Important |
+| PKU hardware present | `CpuIndicatorId::Pku` | `/proc/cpuinfo` `pku` + `ospke` flags | Informational |
+| ARM PAC present | `CpuIndicatorId::ArmPac` | `/proc/cpuinfo` `paca` flag | High (ARM targets) |
+| ARM BTI present | `CpuIndicatorId::ArmBti` | `/proc/cpuinfo` `bti` flag | High (ARM targets) |
+| ARM MTE present | `CpuIndicatorId::ArmMte` | `/proc/cpuinfo` `mte`/`mte2`/`mte3` | Informational |
 
 Note: These are Layer 1 (hardware capability) signals. Layer 2 (active utilization) is a
 separate detection concern covered by binary analysis (ELF `.note.gnu.property`) and
@@ -159,7 +159,7 @@ The reference establishes a direct dependency: PTI without PCID causes 30-50% pe
 regression, creating operational pressure to add `nopti` to the kernel cmdline.
 
 The existing `IndicatorId::Pti` tracks whether PTI has been disabled via cmdline. A new
-`CpuSignalId::Pcid` signal would complement this: if `Pti` finds PTI active AND PCID is
+`CpuIndicatorId::Pcid` signal would complement this: if `Pti` finds PTI active AND PCID is
 absent from `/proc/cpuinfo`, that is a CAUTION finding (performance risk that may lead to
 future disablement). If `Pti` finds PTI disabled AND PCID is present, that is a CRITICAL
 finding (Meltdown mitigation disabled despite hardware support for the performance fix).
@@ -171,7 +171,7 @@ finding (Meltdown mitigation disabled despite hardware support for the performan
 | Existing `IndicatorId` | New material connection |
 |---|---|
 | `Mitigations` | Umbrella indicator; `VulnerabilityReport` would provide per-file detail backing it |
-| `Pti` | Cross-ref with `CpuSignalId::Pcid` — PCID absent + PTI active = CAUTION; PCID present + PTI disabled = CRITICAL |
+| `Pti` | Cross-ref with `CpuIndicatorId::Pcid` — PCID absent + PTI active = CAUTION; PCID present + PTI disabled = CRITICAL |
 | `SpectreV2Off` | `vulnerability-sysfs-reference.md` documents the spectre_v2 sysfs file — IBPB/STIBP sub-fields provide richer state than the cmdline-off indicator alone |
 | `SpectreV2UserOff` | Same as above |
 | `MdsOff` | `mds` vulnerability sysfs file maps directly |
@@ -290,7 +290,7 @@ When approved for implementation, the following items are prerequisites or co-re
 1. `VulnerabilityStatus` + `VulnerabilityReport` types in `umrs-platform` — reads via
    `SecureReader` (SysfsText path). No new sysfs routing needed; existing infrastructure applies.
 
-2. New `CpuSignalId` variants: `Pcid`, `CetShadowStack`, `CetIbt`, `Umip`, `Pku`, `ArmPac`,
+2. New `CpuIndicatorId` variants: `Pcid`, `CetShadowStack`, `CetIbt`, `Umip`, `Pku`, `ArmPac`,
    `ArmBti`, `ArmMte` — all read from `/proc/cpuinfo` flags via `ProcfsText` path.
 
 3. `goblin` dependency approval required for binary ELF `.note.gnu.property` inspection.
@@ -312,5 +312,5 @@ When approved for implementation, the following items are prerequisites or co-re
 distinct from performance/crypto extension signals and occupy Category 11 in the
 probe's 23-column matrix taxonomy.
 
-**How to apply:** Reference this file when designing `VulnerabilityReport`, new `CpuSignalId`
+**How to apply:** Reference this file when designing `VulnerabilityReport`, new `CpuIndicatorId`
 variants for access controls, and the `goblin`-based binary analysis path.

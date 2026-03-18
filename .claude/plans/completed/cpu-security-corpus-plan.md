@@ -1,7 +1,7 @@
 # CPU Security Extensions Research & Corpus Plan (v2)
 
 **Created:** 2026-03-14
-**Status:** Phases 0/0.5/1A/1B/1C/1D/1E/1F/1G/1H COMPLETE. All research phases done. Next: 1I (matrix synthesis), then 1J (post-research review), then 1K (refinement).
+**Status:** COMPLETE (2026-03-18). All research phases (0–1H) done, 60 files written, RAG ingested (645 chunks), Rusty familiarized. Phases 1I/1J/1K closed — see notes below.
 **Source reviews:** `reports/cpu-matrix-review/rust-developer-review.md`, `reports/cpu-matrix-review/security-auditor-review.md`
 **Supersedes:** Track 1 of the original research corpus expansion plan
 
@@ -202,7 +202,7 @@ Each entry will be documented with all 23 matrix columns.
 | Phase 1G — Virt, Reliability, Topology | researcher | **sonnet** | Research compilation, cross-cutting SMT analysis |
 | Phase 1H — /proc/crypto & Software Util | researcher | **sonnet** | Interface documentation, driver mapping |
 | Phase 1I — Matrix Synthesis | researcher | **opus** | Cross-phase synthesis, 23-column master matrix, knowledge index |
-| Phase 1J — Post-Research Review | rust-developer | **opus** | Data structure proposals, SignalClass design |
+| Phase 1J — Post-Research Review | rust-developer | **opus** | Data structure proposals, IndicatorClass design |
 | Phase 1J — Post-Research Review | security-engineer | **opus** | Classification finalization, detection path verification |
 | Phase 1K — Corpus Refinement | researcher | **sonnet** | Gap filling from review feedback |
 
@@ -281,7 +281,7 @@ Each entry will be documented with all 23 matrix columns.
 - RDRAND/RDSEED: full NIST SP 800-90B analysis
   - Entropy quality assessment requirements
   - Which CPU steppings carry 800-90B-compliant health tests
-  - Connection to existing `SignalId::RandomTrustCpu` signal
+  - Connection to existing `IndicatorId::RandomTrustCpu` signal
   - FIPS 140-3 perspective on hardware RNG trustworthiness
   - CVE history (CVE-2019-11090 AMD RDRAND bug, Intel stepping issues)
   - ARM equivalent: ARMv8.5-RNG extension (`rng` flag)
@@ -365,8 +365,8 @@ Each entry will be documented with all 23 matrix columns.
   - Document all possible text values and their meanings
   - This is more authoritative than `/proc/cpuinfo` for mitigation status
 - Document connection to existing posture signals:
-  - `SignalId::Mitigations` (Critical) — what CPU capabilities make each mitigation possible
-  - `SignalId::Pti` (High) — document PCID and its role in making PTI low-overhead
+  - `IndicatorId::Mitigations` (Critical) — what CPU capabilities make each mitigation possible
+  - `IndicatorId::Pti` (High) — document PCID and its role in making PTI low-overhead
 - Microcode staleness risk: minimum microcode revision per mitigation
 - Microcode version detection: `/proc/cpuinfo` `microcode` field, `/sys/devices/system/cpu/cpu0/microcode/version`
 - All features classified **Critical/Defensive**
@@ -471,7 +471,7 @@ Each entry will be documented with all 23 matrix columns.
 
 **Scope:** Synthesize all Phase 1A-1H material into the 23-column master matrix
 **Agent:** researcher
-**Status:** Not started — requires 1A-1H complete
+**Status:** CLOSED — per-file 23-column matrices serve the same purpose. Consolidated detection reference sheet deferred to cpu-extension-probe.md pre-implementation task.
 
 **Actions:**
 - Build master matrix with all 23 columns
@@ -492,15 +492,15 @@ Each entry will be documented with all 23 matrix columns.
 
 **Scope:** cpu-post-research.md stages 1-9
 **Agents:** security-engineer, rust-developer (parallel)
-**Status:** Not started — requires 1I complete
+**Status:** CLOSED — Rusty completed familiarization + plan review (2026-03-18). See `.claude/reports/cpu-probe-openssl-plan-review.md` and `.claude/agent-memory/rust-developer/cpu_access_controls_familiarization.md`. Security-engineer classification review optional — classifications assigned in Phase 0 security-auditor review.
 
 **Actions:**
 - Each agent reviews the complete corpus (stages 1-5)
 - Gap analysis and feedback (stages 4-6)
 - rust-developer:
-  - Propose `CpuProbe` data structures compatible with existing `SignalId`/posture catalog
+  - Propose `CpuProbe` data structures compatible with existing `IndicatorId`/posture catalog
   - Propose `CpuFeatureDescriptor` type (or `SignalDescriptor` extension)
-  - Propose new `SignalClass` variants: `CpuProcInfo`, `CpuSysfs`, `CpuVulnSysfs`, `TeeDevfs`
+  - Propose new `IndicatorClass` variants: `CpuProcInfo`, `CpuSysfs`, `CpuVulnSysfs`, `TeeDevfs`
   - Propose new `DesiredValue` variants: `FlagPresent`, `DeviceAccessible`
   - Propose new `ContradictionKind` variant: `CapabilityUnused` (Layer 1 yes, Layer 2 no)
   - Stage 7: CPU audit card layout
@@ -519,7 +519,7 @@ Each entry will be documented with all 23 matrix columns.
 
 **Scope:** Address gaps identified in Phase 1J
 **Agent:** researcher
-**Status:** Not started — requires 1J feedback
+**Status:** CLOSED — RAG ingest complete (645 chunks, 60 files). Rusty's review found plan gaps, not corpus gaps. No corpus refinement needed.
 
 **Actions:**
 - Fill gaps identified by reviewing agents

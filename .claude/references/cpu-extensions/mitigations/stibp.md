@@ -97,13 +97,13 @@ When conditional STIBP is active (`spectre_v2_user=prctl` or `spectre_v2_user=se
 
 ## UMRS Posture Signal Connection
 
-**SignalId::Mitigations (Critical):**
+**IndicatorId::Mitigations (Critical):**
 - On SMT-active systems, STIBP availability and enablement is critical for cross-thread isolation
 - If sysfs shows `STIBP: disabled` AND `/sys/devices/system/cpu/smt/active` is `1`, this is a finding
 - On Intel eIBRS systems, explicit STIBP check is unnecessary (eIBRS implies STIBP)
 
 **Cross-signal dependency:**
-- STIBP finding is conditional on SMT state (SignalId for SMT)
+- STIBP finding is conditional on SMT state (IndicatorId for SMT)
 - If SMT is disabled, STIBP finding should be suppressed
 - If eIBRS is active (from spectre_v2 sysfs), STIBP is implicitly covered
 

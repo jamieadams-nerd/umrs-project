@@ -135,23 +135,23 @@ on aarch64. INFORMATIONAL, same rationale.
 the Rust CET limitation, and a decision on whether `goblin` is the parsing mechanism.
 See the shared `ElfInspector` design proposal in Section 3.
 
-### 1.3 `CpuSignalId` Design Needs Expansion
+### 1.3 `CpuIndicatorId` Design Needs Expansion
 
-The plan defers the `CpuSignalId` design to "after corpus research is complete." The corpus
+The plan defers the `CpuIndicatorId` design to "after corpus research is complete." The corpus
 research is now complete. The plan should be updated with the full variant list.
 
-**Proposed additions to `CpuSignalId` (from the Phase 1E/1F material):**
+**Proposed additions to `CpuIndicatorId` (from the Phase 1E/1F material):**
 
 | Variant | `/proc/cpuinfo` flag | Layer | Platform |
 |---|---|---|---|
-| `CpuSignalId::Pcid` | `pcid` | 1 — hardware | x86_64 |
-| `CpuSignalId::CetShadowStack` | `shstk` | 1 — hardware | x86_64 |
-| `CpuSignalId::CetIbt` | `ibt` | 1 — hardware | x86_64 |
-| `CpuSignalId::Umip` | `umip` | 1 — hardware | x86_64 |
-| `CpuSignalId::Pku` | `pku` + `ospke` | 1 — hardware | x86_64 |
-| `CpuSignalId::ArmPac` | `paca` (or `pacg`) | 1 — hardware | aarch64 |
-| `CpuSignalId::ArmBti` | `bti` | 1 — hardware | aarch64 |
-| `CpuSignalId::ArmMte` | `mte` / `mte2` / `mte3` | 1 — hardware | aarch64 |
+| `CpuIndicatorId::Pcid` | `pcid` | 1 — hardware | x86_64 |
+| `CpuIndicatorId::CetShadowStack` | `shstk` | 1 — hardware | x86_64 |
+| `CpuIndicatorId::CetIbt` | `ibt` | 1 — hardware | x86_64 |
+| `CpuIndicatorId::Umip` | `umip` | 1 — hardware | x86_64 |
+| `CpuIndicatorId::Pku` | `pku` + `ospke` | 1 — hardware | x86_64 |
+| `CpuIndicatorId::ArmPac` | `paca` (or `pacg`) | 1 — hardware | aarch64 |
+| `CpuIndicatorId::ArmBti` | `bti` | 1 — hardware | aarch64 |
+| `CpuIndicatorId::ArmMte` | `mte` / `mte2` / `mte3` | 1 — hardware | aarch64 |
 
 All of these are `/proc/cpuinfo` reads — `ProcfsText` + `SecureReader::read_generic_text`.
 No new routing infrastructure needed.
@@ -166,7 +166,7 @@ Meltdown mitigation). The contradiction detector should be extended:
 - `Pcid` present + `Pti` disabled (existing `Pti` indicator flags this) → CRITICAL
   (Meltdown mitigation disabled despite hardware support for the perf fix)
 
-The existing `IndicatorId::Pti` and the new `CpuSignalId::Pcid` are cross-module signals.
+The existing `IndicatorId::Pti` and the new `CpuIndicatorId::Pcid` are cross-module signals.
 The contradiction detector already handles cross-signal logic — this is an extension of
 that established pattern.
 
@@ -228,7 +228,7 @@ already available. For the implementer, the relevant existing infrastructure is:
 
 No new routing infrastructure is needed. The pattern established in `posture::reader.rs`
 (hand-written reference + declarative macro for repetitive sysctl signals) applies here:
-one hand-written `CpuSignalId::CetShadowStack` reader as auditor reference, then a
+one hand-written `CpuIndicatorId::CetShadowStack` reader as auditor reference, then a
 `define_cpuinfo_signal!` macro for the remaining flag-check signals.
 
 ### 1.6 Where Does `VulnerabilityReport` Live?
@@ -238,7 +238,7 @@ is about microarchitectural flaw remediation, not about extension availability o
 utilization. It belongs in `umrs-platform` as `posture::vulnerability` — a sibling to the
 existing `posture::bootcmdline` and `posture::reader` modules.
 
-The CPU extension probe module holds extension availability signals (`CpuSignalId` variants).
+The CPU extension probe module holds extension availability signals (`CpuIndicatorId` variants).
 The vulnerability module holds remediation state (`VulnerabilityReport`). A higher-level
 `CpuPostureSnapshot` type aggregates both. This separation keeps each module's concern clear
 and allows each to have independent test coverage.
@@ -557,7 +557,7 @@ its general utility.
 
 1. **Add "Layer 4 — Runtime Mitigation State" section** covering vulnerability sysfs,
    the `VulnerabilityReport` type design, and the sysfs file inventory.
-2. **Add `CpuSignalId` variant table** with all Phase 1E/1F signals (PCID, CET-SS,
+2. **Add `CpuIndicatorId` variant table** with all Phase 1E/1F signals (PCID, CET-SS,
    CET-IBT, UMIP, PKU, PAC, BTI, MTE) and their detection sources.
 3. **Document the Rust CET limitation** (rust-lang/rust#93754) and specify INFORMATIONAL
    severity for UMRS binaries missing CET/PAC/BTI notes, with the Rust memory-safety
@@ -598,7 +598,7 @@ its general utility.
 |---|---|---|---|
 | Vulnerability sysfs (Layer 4) absent from model | High | CPU probe | Runtime mitigation state is orthogonal to extension activation; entirely missing from plan |
 | Rust CET/PAC limitation undocumented | High | CPU probe | UMRS binaries will not have CET/PAC ELF notes; needs explicit INFORMATIONAL classification |
-| `CpuSignalId` variants not defined | Medium | CPU probe | Plan defers design; corpus research is complete; variants should now be listed |
+| `CpuIndicatorId` variants not defined | Medium | CPU probe | Plan defers design; corpus research is complete; variants should now be listed |
 | OpenSSL identity detection path underspecified | Medium | OpenSSL | "ELF `.rodata` or config files" is too vague for implementation |
 | `ProviderModel` enum not defined | Medium | OpenSSL | Variants named in prose only |
 | RHEL 10 provider directory paths not specified | Medium | OpenSSL | `/usr/lib64/ossl-modules/` not mentioned |

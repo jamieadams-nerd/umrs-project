@@ -819,7 +819,7 @@ impl SealedCache {
     ///
     /// Does not perform seal verification — use `query()` for a full
     /// verified read.
-    #[must_use = "CacheStatus indicates FIPS gate and seal health — discarding it loses the security posture signal"]
+    #[must_use = "CacheStatus indicates FIPS gate and seal health — discarding it loses the security posture indicator"]
     pub fn status(&self) -> CacheStatus {
         if !self.caching_enabled {
             return CacheStatus::Disabled;
