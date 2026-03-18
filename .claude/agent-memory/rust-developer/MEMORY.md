@@ -9,6 +9,18 @@
 - [Detect pipeline reference](detect_reference.md) — dev encoding, RPM fixes, SEC pattern, EvidenceBundle
 - [TUI phases](tui_phase1.md) / [phase2](tui_phase2.md) / [phase3](tui_phase3.md) / [phase45](tui_phase45.md)
 - [Timestamp module](timestamp_module.md) — BootSessionTimestamp/Duration, CLOCK_MONOTONIC_RAW
+- [CPU access controls familiarization](cpu_access_controls_familiarization.md) — Phase 1E/1F: PCID, VulnerabilityReport, CET-SS/IBT, UMIP, PKU, ARM PAC/BTI/MTE, Rust CET limitation
+
+## CPU/Crypto Reference Scripts
+
+`reference/cpu-crypto/` contains Jamie's empirical detection scripts from octopussy (Ubuntu 24.04.3, ARM64):
+- `cpu_info.sh` — Layer 1 + Layer 2: CPU flags, kernel crypto drivers, topology, entropy
+- `umrs-openssl-audit.sh` — Layer 3: OpenSSL version/providers, algorithm surface, ARM CE benchmarks, kernel crypto cross-ref
+- `create_ima_keys.sh` — IMA/EVM key generation (KMK, EVM-key, RSA keypair, X509 DER)
+- `ima-reresh.sh` — IMA/EVM recursive re-signing with evmctl
+
+These are reference implementations for the CPU extension probe's three-layer activation model.
+OpenSSL is a system-wide trust anchor — binary analysis must trace linkage to it.
 
 ## Key Architectural Facts
 

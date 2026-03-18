@@ -1,0 +1,133 @@
+=== UMRS CPU AUDIT (LINUX) ===
+Timestamp: 2026-01-24T16:54:04-05:00
+
+== OS Identity ==
+Linux octopussy 6.14.0-27-generic #27~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Tue Jul 22 17:18:30 UTC 2 aarch64 aarch64 aarch64 GNU/Linux
+
+PRETTY_NAME="Ubuntu 24.04.3 LTS"
+NAME="Ubuntu"
+VERSION_ID="24.04"
+VERSION="24.04.3 LTS (Noble Numbat)"
+VERSION_CODENAME=noble
+ID=ubuntu
+ID_LIKE=debian
+HOME_URL="https://www.ubuntu.com/"
+SUPPORT_URL="https://help.ubuntu.com/"
+BUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"
+PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"
+UBUNTU_CODENAME=noble
+LOGO=ubuntu-logo
+
+== CPU Raw Info (/proc/cpuinfo) ==
+processor	: 0
+BogoMIPS	: 48.00
+Features	: fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm jscvt fcma lrcpc dcpop sha3 asimddp sha512 asimdfhm dit uscat ilrcpc flagm sb paca pacg dcpodp flagm2 frint
+CPU implementer	: 0x41
+CPU architecture: 8
+CPU variant	: 0x0
+CPU part	: 0x000
+CPU revision	: 0
+
+processor	: 1
+BogoMIPS	: 48.00
+Features	: fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm jscvt fcma lrcpc dcpop sha3 asimddp sha512 asimdfhm dit uscat ilrcpc flagm sb paca pacg dcpodp flagm2 frint
+CPU implementer	: 0x41
+CPU architecture: 8
+CPU variant	: 0x0
+CPU part	: 0x000
+CPU revision	: 0
+
+
+== CPU Summary (lscpu) ==
+Architecture:                         aarch64
+CPU op-mode(s):                       64-bit
+Byte Order:                           Little Endian
+CPU(s):                               2
+On-line CPU(s) list:                  0,1
+Vendor ID:                            ARM
+Model name:                           -
+Model:                                0
+Thread(s) per core:                   1
+Core(s) per socket:                   2
+Socket(s):                            1
+Stepping:                             r0p0
+BogoMIPS:                             48.00
+Flags:                                fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm jscvt fcma lrcpc dcpop sha3 asimddp sha512 asimdfhm dit uscat ilrcpc flagm sb paca pacg dcpodp flagm2 frint
+NUMA node(s):                         1
+NUMA node0 CPU(s):                    0,1
+Vulnerability Gather data sampling:   Not affected
+Vulnerability Ghostwrite:             Not affected
+Vulnerability Itlb multihit:          Not affected
+Vulnerability L1tf:                   Not affected
+Vulnerability Mds:                    Not affected
+Vulnerability Meltdown:               Not affected
+Vulnerability Mmio stale data:        Not affected
+Vulnerability Reg file data sampling: Not affected
+Vulnerability Retbleed:               Not affected
+Vulnerability Spec rstack overflow:   Not affected
+Vulnerability Spec store bypass:      Vulnerable
+Vulnerability Spectre v1:             Mitigation; __user pointer sanitization
+Vulnerability Spectre v2:             Mitigation; CSV2, but not BHB
+Vulnerability Srbds:                  Not affected
+Vulnerability Tsx async abort:        Not affected
+
+== CPU Feature Subsets ==
+-- Crypto ISA --
+aes
+atomics
+crc32
+pmull
+sha1
+sha2
+sha3
+sha512
+
+-- SIMD / FP --
+asimd
+asimddp
+asimdfhm
+asimdhp
+asimdrdm
+fcma
+fphp
+jscvt
+
+-- Pointer Auth / Memory Ordering --
+dcpodp
+dcpop
+flagm
+flagm2
+ilrcpc
+lrcpc
+paca
+pacg
+uscat
+
+== Core Topology ==
+2
+CPU(s):                               2
+On-line CPU(s) list:                  0,1
+Thread(s) per core:                   1
+Core(s) per socket:                   2
+Socket(s):                            1
+NUMA node0 CPU(s):                    0,1
+
+== Cache Hierarchy ==
+Cache info not reported by lscpu
+
+== Virtualization Surface ==
+parallels
+
+-- dmesg (hypervisor / rng) --
+[    4.464566] random: crng init done
+
+== Entropy Surface ==
+256
+
+== Kernel Config Hints (crypto) ==
+/proc/config.gz not available
+
+== ELF Auxv HWCAP Flags ==
+getauxval not available
+
+== End of UMRS CPU Audit ==

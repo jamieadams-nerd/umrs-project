@@ -1,0 +1,380 @@
+This is an *excellent* distinction to draw — and it’s exactly how UMRS should be modeled: **runtime/operations baseline ≠ development baseline**.
+
+You’re absolutely right to separate:
+
+* UMRS *operator runtime posture*
+  from
+* UMRS *developer workstation posture*
+
+Below is a **clean, minimal, production-grade UMRS Operations Baseline for Ubuntu**, with explicit notes on what is *real parity* with RHEL 10 and what is *Ubuntu-specific reality*.
+
+No fluff. No IDE junk. No dev tool bleed.
+
+────────────────────────────
+UMRS OPERATIONS BASELINE — UBUNTU
+────────────────────────────
+
+Purpose
+
+* Establish a secure, auditable, high-assurance runtime environment
+* Support UMRS tools (logging, signing, labeling, auditing, crypto)
+* Mirror RHEL 10 operational posture as closely as Ubuntu permits
+* Avoid development bloat
+* Prepare for later SELinux/AppArmor decisions
+* Enable FIPS-like crypto posture (as much as Ubuntu allows)
+
+Assumptions
+
+* Ubuntu 22.04+ or 24.04+
+* No GUI dependency
+* SSH-only administration
+* Firewall already configured
+* Host-only management plane
+* Single operator identity
+* UMRS tools installed from source or packages later
+
+────────────────────────────
+PHASE 1 — Core OS security + auditing
+────────────────────────────
+
+These are non-negotiable for UMRS-style operations.
+
+```bash
+sudo apt update
+
+sudo apt install -y \
+  auditd \
+  audispd-plugins \
+  rsyslog \
+  logrotate \
+  chrony \
+  dbus \
+  policycoreutils-python-utils \
+  apparmor \
+  apparmor-utils \
+  fail2ban \
+  sudo \
+  coreutils \
+  util-linux \
+  procps \
+  psmisc \
+  net-tools \
+  iproute2 \
+  tcpdump \
+  lsof
+```
+
+Notes
+
+* auditd
+  Required for AU controls, event capture, and justification workflows
+* audispd-plugins
+  Enables plugin-style forwarding and secondary logging
+* rsyslog
+  Required for UMRS JSONL logging pipeline
+* logrotate
+  Required for lifecycle segmentation (active/inactive/archive)
+* chrony
+  Required for time-assurance posture
+* dbus
+  Required for systemd + audit integration
+* apparmor + apparmor-utils
+  Ubuntu’s mandatory access control framework
+* fail2ban
+  SSH abuse protection
+* policycoreutils-python-utils
+  Provides audit2allow-style tooling (even though SELinux isn’t active)
+* tcpdump / lsof
+  Operator diagnostics (do NOT install wireshark)
+
+────────────────────────────
+PHASE 2 — Crypto + trust infrastructure
+────────────────────────────
+
+This is your FIPS-adjacent baseline.
+
+```bash
+sudo apt install -y \
+  openssl \
+  libssl-dev \
+  gnutls-bin \
+  gnupg \
+  ca-certificates \
+  haveged \
+  rng-tools5 \
+  tpm2-tools \
+  tpm2-abrmd \
+  softhsm2 \
+  opensc
+```
+
+Notes
+
+* openssl / libssl-dev
+  UMRS signing + hashing primitives
+* gnutls-bin
+  Alternate crypto engine parity
+* gnupg
+  Operator key handling
+* haveged / rng-tools5
+  Entropy assurance on VMs
+* tpm2-tools
+  Required for future attestation workflows
+* tpm2-abrmd
+  TPM resource manager daemon
+* softhsm2
+  HSM abstraction for key lifecycle testing
+* opensc
+  Smartcard + PKCS#11 tooling
+
+────────────────────────────
+PHASE 3 — Filesystem + integrity
+────────────────────────────
+
+This supports UMRS integrity + evidence concepts.
+
+```bash
+sudo apt install -y \
+  aide \
+  attr \
+  acl \
+  inotify-tools \
+  xattr \
+  btrfs-progs \
+  e2fsprogs
+```
+
+Notes
+
+* aide
+  File integrity monitoring (RHEL parity)
+* attr / acl / xattr
+  Extended attributes for labeling + metadata
+* inotify-tools
+  For log rotation detection
+* btrfs-progs
+  Future snapshot-based integrity workflows
+* e2fsprogs
+  Filesystem metadata tooling
+
+────────────────────────────
+PHASE 4 — Network + firewall enforcement
+────────────────────────────
+
+```bash
+sudo apt install -y \
+  ufw \
+  nftables \
+  iptables \
+  conntrack \
+  traceroute \
+  nmap
+```
+
+Notes
+
+* ufw
+  Primary firewall frontend
+* nftables
+  Backend parity with RHEL firewalld
+* conntrack
+  Stateful inspection
+* nmap
+  Local audit + exposure testing only
+
+────────────────────────────
+PHASE 5 — Process confinement + systemd introspection
+────────────────────────────
+
+```bash
+sudo apt install -y \
+  systemd-coredump \
+  systemd-timesyncd \
+  libcap2-bin \
+  seccomp \
+  cgroup-tools \
+  dbus-user-session
+```
+
+Notes
+
+* libcap2-bin
+  Capability auditing
+* seccomp
+  Future syscall confinement
+* cgroup-tools
+  Resource governance
+* dbus-user-session
+  User-scoped service control
+
+────────────────────────────
+PHASE 6 — SELinux parity (OPTIONAL, NOT ENABLED)
+────────────────────────────
+
+Ubuntu does not support SELinux properly.
+But for UMRS tooling parity:
+
+```bash
+sudo apt install -y \
+  selinux-utils \
+  selinux-basics \
+  checkpolicy \
+  setools
+```
+
+Notes
+
+* This is for:
+
+  * UMRS labeling schema dev
+  * setrans.conf mapping tests
+  * Policy authoring experiments
+* Not for real enforcement
+* Do NOT enable SELinux on Ubuntu in production
+
+────────────────────────────
+PHASE 7 — FIPS reality check (IMPORTANT)
+────────────────────────────
+
+Ubuntu FIPS is **not** the same as RHEL FIPS.
+
+Facts:
+
+* Canonical’s FIPS modules require Ubuntu Pro
+* FIPS mode is subscription-gated
+* Kernel crypto is not enforceable without Pro
+* OpenSSL FIPS provider is not system-default
+* No supported FIPS enforcement posture exists for free Ubuntu
+
+Therefore:
+
+**There is no real FIPS mode on Ubuntu without Ubuntu Pro.**
+
+What you *can* do:
+
+```bash
+sudo apt install -y \
+  openssl-fips-module \
+  libssl3-fips
+```
+
+(Availability depends on Ubuntu release + Pro status.)
+
+But this does **not** give you:
+
+* Kernel FIPS
+* System-wide crypto enforcement
+* Compliance posture
+
+So UMRS on Ubuntu is:
+
+**“FIPS-adjacent for development and modeling only.”**
+
+Real FIPS happens on RHEL 10.
+
+────────────────────────────
+MINIMAL UMRS OPERATIONS SCRIPT
+────────────────────────────
+
+Here is the clean single-line install form you asked for:
+
+```bash
+sudo apt update
+
+sudo apt install -y auditd audispd-plugins rsyslog logrotate chrony dbus apparmor apparmor-utils fail2ban sudo coreutils util-linux procps psmisc net-tools iproute2 tcpdump lsof openssl libssl-dev gnutls-bin gnupg ca-certificates haveged rng-tools5 tpm2-tools tpm2-abrmd softhsm2 opensc aide attr acl inotify-tools xattr btrfs-progs e2fsprogs ufw nftables iptables conntrack traceroute nmap systemd-coredump systemd-timesyncd libcap2-bin seccomp cgroup-tools dbus-user-session selinux-utils selinux-basics checkpolicy setools
+```
+
+────────────────────────────
+WHAT THIS GIVES YOU
+────────────────────────────
+
+This baseline gives you:
+
+* AU compliance primitives (auditd)
+* Log lifecycle primitives (rsyslog + logrotate)
+* Time assurance (chrony)
+* Mandatory access control (AppArmor)
+* Crypto primitives (OpenSSL, GnuTLS)
+* Entropy assurance
+* TPM attestation tooling
+* Integrity monitoring (AIDE)
+* Extended attributes for labeling
+* Process confinement building blocks
+* Firewall enforcement
+* Evidence pipeline prerequisites
+* SELinux *modeling* parity (not enforcement)
+
+────────────────────────────
+WHAT IT EXPLICITLY DOES NOT INSTALL
+────────────────────────────
+
+By design, this excludes:
+
+* compilers
+* rustup
+* cargo
+* node
+* prettier
+* antora
+* python-dev
+* build-essential
+* clang
+* cmake
+* make
+* git
+
+So it is:
+
+**a true operations node**, not a dev workstation.
+
+────────────────────────────
+IMPORTANT REALITY CHECK (HONEST)
+────────────────────────────
+
+On Ubuntu, UMRS is:
+
+* Operationally useful
+* Security-modeling useful
+* Evidence-pipeline useful
+* Crypto-workflow useful
+
+But it is NOT:
+
+* FIPS-compliant
+* MLS-enforced
+* SELinux-capable
+* Certifiable
+
+Ubuntu is:
+
+**your modeling + dev + demo platform**
+RHEL 10 is:
+
+**your compliance + enforcement + cert platform**
+
+That separation is correct and should remain.
+
+────────────────────────────
+NEXT LOGICAL STEP
+
+If you want, I can next generate:
+
+1. umrs-ops-setup.sh
+
+   * Non-interactive
+   * Minimal comments
+   * Single-line apt install
+   * Service enablement
+   * Audit rules bootstrap
+   * Chrony hardening
+   * Firewall defaults
+
+2. RHEL 10 UMRS ops parity script
+
+   * Package mapping
+   * FIPS enablement
+   * SELinux policy bootstrap
+   * Audit rules baseline
+
+Tell me which you want first and I’ll keep it in the same tight, operator-grade style as your fixed dev script.
+

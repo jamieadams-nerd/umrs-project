@@ -35404,5 +35404,425 @@
     "chunks_stored": 150,
     "collection": "tech-writer-corpus",
     "ingested_date": "2026-03-17T10:19:55.400057+00:00"
+  },
+  "cpu-extensions/access-controls/arm-access-controls.md": {
+    "hash": "8b75282534ef3ce4",
+    "converted_to": "converted/cpu-extensions/access-controls/arm-access-controls.md",
+    "chunks_stored": 8,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:34.593529+00:00"
+  },
+  "cpu-extensions/access-controls/cet-ibt.md": {
+    "hash": "7d80e8af3487ac7e",
+    "converted_to": "converted/cpu-extensions/access-controls/cet-ibt.md",
+    "chunks_stored": 6,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:35.276402+00:00"
+  },
+  "cpu-extensions/access-controls/cet-shadow-stack.md": {
+    "hash": "2d12ec6d918e46b3",
+    "converted_to": "converted/cpu-extensions/access-controls/cet-shadow-stack.md",
+    "chunks_stored": 9,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:35.641594+00:00"
+  },
+  "cpu-extensions/access-controls/nx-xd.md": {
+    "hash": "2f823ec6d5457a34",
+    "converted_to": "converted/cpu-extensions/access-controls/nx-xd.md",
+    "chunks_stored": 6,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:35.866068+00:00"
+  },
+  "cpu-extensions/access-controls/pku.md": {
+    "hash": "b58453873640f891",
+    "converted_to": "converted/cpu-extensions/access-controls/pku.md",
+    "chunks_stored": 7,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:36.185190+00:00"
+  },
+  "cpu-extensions/access-controls/smep-smap.md": {
+    "hash": "67fdf55de72d056f",
+    "converted_to": "converted/cpu-extensions/access-controls/smep-smap.md",
+    "chunks_stored": 8,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:36.597109+00:00"
+  },
+  "cpu-extensions/access-controls/umip.md": {
+    "hash": "8f895aacc3df47ec",
+    "converted_to": "converted/cpu-extensions/access-controls/umip.md",
+    "chunks_stored": 5,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:36.798764+00:00"
+  },
+  "cpu-extensions/cet-docs/cet-binary-verification.md": {
+    "hash": "6a50f6e05f33ce7a",
+    "converted_to": "converted/cpu-extensions/cet-docs/cet-binary-verification.md",
+    "chunks_stored": 7,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:37.067860+00:00"
+  },
+  "cpu-extensions/cet-docs/intel-cet-spec-summary.md": {
+    "hash": "29b123e1665da496",
+    "converted_to": "converted/cpu-extensions/cet-docs/intel-cet-spec-summary.md",
+    "chunks_stored": 7,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:37.324581+00:00"
+  },
+  "cpu-extensions/cet-docs/linux-cet-support.md": {
+    "hash": "261f1eefdaf581c8",
+    "converted_to": "converted/cpu-extensions/cet-docs/linux-cet-support.md",
+    "chunks_stored": 6,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:37.478726+00:00"
+  },
+  "cpu-extensions/cet-docs/rhel10-cet-status.md": {
+    "hash": "225c2d6b379b6e5f",
+    "converted_to": "converted/cpu-extensions/cet-docs/rhel10-cet-status.md",
+    "chunks_stored": 7,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:37.735108+00:00"
+  },
+  "cpu-extensions/confidential-computing/amd-sev-es.md": {
+    "hash": "2df5ce50e99eb17d",
+    "converted_to": "converted/cpu-extensions/confidential-computing/amd-sev-es.md",
+    "chunks_stored": 11,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:38.166802+00:00"
+  },
+  "cpu-extensions/confidential-computing/amd-sev-snp.md": {
+    "hash": "26fc32a756947f18",
+    "converted_to": "converted/cpu-extensions/confidential-computing/amd-sev-snp.md",
+    "chunks_stored": 15,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:38.738088+00:00"
+  },
+  "cpu-extensions/confidential-computing/amd-sev.md": {
+    "hash": "525726010571efc2",
+    "converted_to": "converted/cpu-extensions/confidential-computing/amd-sev.md",
+    "chunks_stored": 8,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:39.035506+00:00"
+  },
+  "cpu-extensions/confidential-computing/amd-sme.md": {
+    "hash": "4a199db62a9ecc21",
+    "converted_to": "converted/cpu-extensions/confidential-computing/amd-sme.md",
+    "chunks_stored": 8,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:39.380956+00:00"
+  },
+  "cpu-extensions/confidential-computing/arm-trustzone.md": {
+    "hash": "52dc777c09838061",
+    "converted_to": "converted/cpu-extensions/confidential-computing/arm-trustzone.md",
+    "chunks_stored": 10,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:39.746903+00:00"
+  },
+  "cpu-extensions/confidential-computing/cve-summary.md": {
+    "hash": "e4aafacf2029a7aa",
+    "converted_to": "converted/cpu-extensions/confidential-computing/cve-summary.md",
+    "chunks_stored": 10,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:40.084735+00:00"
+  },
+  "cpu-extensions/confidential-computing/intel-key-locker.md": {
+    "hash": "9422924ad61131c4",
+    "converted_to": "converted/cpu-extensions/confidential-computing/intel-key-locker.md",
+    "chunks_stored": 7,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:40.385538+00:00"
+  },
+  "cpu-extensions/confidential-computing/intel-sgx.md": {
+    "hash": "22ea320da393fdbc",
+    "converted_to": "converted/cpu-extensions/confidential-computing/intel-sgx.md",
+    "chunks_stored": 8,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:40.700518+00:00"
+  },
+  "cpu-extensions/confidential-computing/intel-tdx.md": {
+    "hash": "f5ca10814b74c564",
+    "converted_to": "converted/cpu-extensions/confidential-computing/intel-tdx.md",
+    "chunks_stored": 8,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:41.033739+00:00"
+  },
+  "cpu-extensions/confidential-computing/intel-tme.md": {
+    "hash": "c590d035c94bb27a",
+    "converted_to": "converted/cpu-extensions/confidential-computing/intel-tme.md",
+    "chunks_stored": 5,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:41.264475+00:00"
+  },
+  "cpu-extensions/confidential-computing/intel-txt.md": {
+    "hash": "889bb53f90fac964",
+    "converted_to": "converted/cpu-extensions/confidential-computing/intel-txt.md",
+    "chunks_stored": 9,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:41.611124+00:00"
+  },
+  "cpu-extensions/confidential-computing/phase-1d-summary.md": {
+    "hash": "c9144c35ee44fc09",
+    "converted_to": "converted/cpu-extensions/confidential-computing/phase-1d-summary.md",
+    "chunks_stored": 14,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:42.154697+00:00"
+  },
+  "cpu-extensions/cpu-matrix.md": {
+    "hash": "fd2f35d633d4f3cb",
+    "converted_to": "converted/cpu-extensions/cpu-matrix.md",
+    "chunks_stored": 37,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:43.506193+00:00"
+  },
+  "cpu-extensions/crypto-accel/aes-ni.md": {
+    "hash": "fd1f19570499f138",
+    "converted_to": "converted/cpu-extensions/crypto-accel/aes-ni.md",
+    "chunks_stored": 5,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:43.731757+00:00"
+  },
+  "cpu-extensions/crypto-accel/arm-crypto-equivalents.md": {
+    "hash": "ee312c998399d8dd",
+    "converted_to": "converted/cpu-extensions/crypto-accel/arm-crypto-equivalents.md",
+    "chunks_stored": 6,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:43.963068+00:00"
+  },
+  "cpu-extensions/crypto-accel/pclmulqdq.md": {
+    "hash": "ecd54452d8a84e98",
+    "converted_to": "converted/cpu-extensions/crypto-accel/pclmulqdq.md",
+    "chunks_stored": 4,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:44.144030+00:00"
+  },
+  "cpu-extensions/crypto-accel/phase-1a-summary.md": {
+    "hash": "43a0b88f2b1c9054",
+    "converted_to": "converted/cpu-extensions/crypto-accel/phase-1a-summary.md",
+    "chunks_stored": 11,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:44.587296+00:00"
+  },
+  "cpu-extensions/crypto-accel/sha-ni.md": {
+    "hash": "24fd9e3caf9a3da2",
+    "converted_to": "converted/cpu-extensions/crypto-accel/sha-ni.md",
+    "chunks_stored": 4,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:44.767871+00:00"
+  },
+  "cpu-extensions/crypto-accel/vaes.md": {
+    "hash": "87e7b5dcf3087270",
+    "converted_to": "converted/cpu-extensions/crypto-accel/vaes.md",
+    "chunks_stored": 2,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:44.890883+00:00"
+  },
+  "cpu-extensions/entropy-bigint/adx-bmi.md": {
+    "hash": "8c09c96456dcd18f",
+    "converted_to": "converted/cpu-extensions/entropy-bigint/adx-bmi.md",
+    "chunks_stored": 13,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:45.347380+00:00"
+  },
+  "cpu-extensions/entropy-bigint/arm-rng.md": {
+    "hash": "92bfe52319a4535c",
+    "converted_to": "converted/cpu-extensions/entropy-bigint/arm-rng.md",
+    "chunks_stored": 12,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:45.789303+00:00"
+  },
+  "cpu-extensions/entropy-bigint/phase-1b-summary.md": {
+    "hash": "150ad69aa2401ddc",
+    "converted_to": "converted/cpu-extensions/entropy-bigint/phase-1b-summary.md",
+    "chunks_stored": 15,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:46.302815+00:00"
+  },
+  "cpu-extensions/entropy-bigint/rdrand.md": {
+    "hash": "aa5a740c632863a5",
+    "converted_to": "converted/cpu-extensions/entropy-bigint/rdrand.md",
+    "chunks_stored": 16,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:46.895589+00:00"
+  },
+  "cpu-extensions/entropy-bigint/rdseed.md": {
+    "hash": "673f139fb865399d",
+    "converted_to": "converted/cpu-extensions/entropy-bigint/rdseed.md",
+    "chunks_stored": 19,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:47.530496+00:00"
+  },
+  "cpu-extensions/mitigations/ibpb.md": {
+    "hash": "f3a4ea5414154d29",
+    "converted_to": "converted/cpu-extensions/mitigations/ibpb.md",
+    "chunks_stored": 9,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:47.858724+00:00"
+  },
+  "cpu-extensions/mitigations/ibrs-eibrs.md": {
+    "hash": "19c800f8c262130d",
+    "converted_to": "converted/cpu-extensions/mitigations/ibrs-eibrs.md",
+    "chunks_stored": 7,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:48.122874+00:00"
+  },
+  "cpu-extensions/mitigations/l1d-flush.md": {
+    "hash": "263b7001e9eb3fa3",
+    "converted_to": "converted/cpu-extensions/mitigations/l1d-flush.md",
+    "chunks_stored": 10,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:48.491844+00:00"
+  },
+  "cpu-extensions/mitigations/mds-mdclear.md": {
+    "hash": "27c08b3f29ef02a1",
+    "converted_to": "converted/cpu-extensions/mitigations/mds-mdclear.md",
+    "chunks_stored": 13,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:48.951842+00:00"
+  },
+  "cpu-extensions/mitigations/pcid.md": {
+    "hash": "4900e4a89cbee569",
+    "converted_to": "converted/cpu-extensions/mitigations/pcid.md",
+    "chunks_stored": 9,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:49.274183+00:00"
+  },
+  "cpu-extensions/mitigations/ssbd.md": {
+    "hash": "fead20dcdd309ebc",
+    "converted_to": "converted/cpu-extensions/mitigations/ssbd.md",
+    "chunks_stored": 8,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:49.568015+00:00"
+  },
+  "cpu-extensions/mitigations/stibp.md": {
+    "hash": "72e91ccf24f4eb78",
+    "converted_to": "converted/cpu-extensions/mitigations/stibp.md",
+    "chunks_stored": 9,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:49.902562+00:00"
+  },
+  "cpu-extensions/mitigations/vulnerability-sysfs-reference.md": {
+    "hash": "231f08590fc32c75",
+    "converted_to": "converted/cpu-extensions/mitigations/vulnerability-sysfs-reference.md",
+    "chunks_stored": 20,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:50.615846+00:00"
+  },
+  "cpu-extensions/proc-crypto/driver-feature-mapping.md": {
+    "hash": "57b4c21acd54b7a1",
+    "converted_to": "converted/cpu-extensions/proc-crypto/driver-feature-mapping.md",
+    "chunks_stored": 14,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:51.066897+00:00"
+  },
+  "cpu-extensions/proc-crypto/openssl-fips-chain.md": {
+    "hash": "b7064c5240eeda3f",
+    "converted_to": "converted/cpu-extensions/proc-crypto/openssl-fips-chain.md",
+    "chunks_stored": 12,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:51.486981+00:00"
+  },
+  "cpu-extensions/proc-crypto/phase-1h-summary.md": {
+    "hash": "0dcdd5a836598f74",
+    "converted_to": "converted/cpu-extensions/proc-crypto/phase-1h-summary.md",
+    "chunks_stored": 14,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:51.950653+00:00"
+  },
+  "cpu-extensions/proc-crypto/proc-crypto-format.md": {
+    "hash": "f38ffd8a729ed2df",
+    "converted_to": "converted/cpu-extensions/proc-crypto/proc-crypto-format.md",
+    "chunks_stored": 15,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:52.548397+00:00"
+  },
+  "cpu-extensions/proc-crypto/software-fallback-risk.md": {
+    "hash": "a00f88a878a9ddce",
+    "converted_to": "converted/cpu-extensions/proc-crypto/software-fallback-risk.md",
+    "chunks_stored": 10,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:52.918078+00:00"
+  },
+  "cpu-extensions/vector/avx-family.md": {
+    "hash": "261c8f37c5e8fe81",
+    "converted_to": "converted/cpu-extensions/vector/avx-family.md",
+    "chunks_stored": 16,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:53.481744+00:00"
+  },
+  "cpu-extensions/vector/avx512.md": {
+    "hash": "735ff611534b8c56",
+    "converted_to": "converted/cpu-extensions/vector/avx512.md",
+    "chunks_stored": 16,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:54.033929+00:00"
+  },
+  "cpu-extensions/vector/phase-1c-summary.md": {
+    "hash": "9b71786de9b7c0de",
+    "converted_to": "converted/cpu-extensions/vector/phase-1c-summary.md",
+    "chunks_stored": 14,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:54.519717+00:00"
+  },
+  "cpu-extensions/vector/sse-family.md": {
+    "hash": "75e127576758da13",
+    "converted_to": "converted/cpu-extensions/vector/sse-family.md",
+    "chunks_stored": 17,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:55.063741+00:00"
+  },
+  "cpu-extensions/vector/vector-extensions.md": {
+    "hash": "fa145bf1b767648d",
+    "converted_to": "converted/cpu-extensions/vector/vector-extensions.md",
+    "chunks_stored": 1,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:55.158039+00:00"
+  },
+  "cpu-extensions/virt-reliability/iommu.md": {
+    "hash": "847ec57d60cdcdc9",
+    "converted_to": "converted/cpu-extensions/virt-reliability/iommu.md",
+    "chunks_stored": 14,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:55.700402+00:00"
+  },
+  "cpu-extensions/virt-reliability/mca-ras-ecc.md": {
+    "hash": "8623de344727294d",
+    "converted_to": "converted/cpu-extensions/virt-reliability/mca-ras-ecc.md",
+    "chunks_stored": 19,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:56.320892+00:00"
+  },
+  "cpu-extensions/virt-reliability/microcode-tracking.md": {
+    "hash": "75812b55ffae85af",
+    "converted_to": "converted/cpu-extensions/virt-reliability/microcode-tracking.md",
+    "chunks_stored": 12,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:56.788037+00:00"
+  },
+  "cpu-extensions/virt-reliability/nested-paging.md": {
+    "hash": "a4cabf4a8c90cec6",
+    "converted_to": "converted/cpu-extensions/virt-reliability/nested-paging.md",
+    "chunks_stored": 12,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:57.233797+00:00"
+  },
+  "cpu-extensions/virt-reliability/phase-1g-summary.md": {
+    "hash": "40c0488ccde74bf8",
+    "converted_to": "converted/cpu-extensions/virt-reliability/phase-1g-summary.md",
+    "chunks_stored": 17,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:57.870749+00:00"
+  },
+  "cpu-extensions/virt-reliability/smt-topology.md": {
+    "hash": "0623de6c1595776e",
+    "converted_to": "converted/cpu-extensions/virt-reliability/smt-topology.md",
+    "chunks_stored": 12,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:58.295627+00:00"
+  },
+  "cpu-extensions/virt-reliability/vmx-svm.md": {
+    "hash": "5f328374bab9092c",
+    "converted_to": "converted/cpu-extensions/virt-reliability/vmx-svm.md",
+    "chunks_stored": 12,
+    "collection": "cpu-extensions",
+    "ingested_date": "2026-03-18T16:39:58.734290+00:00"
   }
 }

@@ -1,7 +1,7 @@
 # CPU Security Extensions Research & Corpus Plan (v2)
 
 **Created:** 2026-03-14
-**Status:** Phases 0/0.5/1A/1B/1C/1G COMPLETE. 1D/1E research done — files need writing. 1F unblocked (CET docs acquired). Next: write 1D/1E files, then 1F, then 1H.
+**Status:** Phases 0/0.5/1A/1B/1C/1D/1E/1F/1G/1H COMPLETE. All research phases done. Next: 1I (matrix synthesis), then 1J (post-research review), then 1K (refinement).
 **Source reviews:** `reports/cpu-matrix-review/rust-developer-review.md`, `reports/cpu-matrix-review/security-auditor-review.md`
 **Supersedes:** Track 1 of the original research corpus expansion plan
 
@@ -356,7 +356,7 @@ Each entry will be documented with all 23 matrix columns.
 
 **Scope:** IBRS/eIBRS, IBPB, STIBP, SSBD, MDS/MD_CLEAR, L1D flush, PCID
 **Agent:** researcher
-**Status:** Research COMPLETE (2026-03-18) — files need writing. 11 files for `.claude/references/cpu-extensions/mitigations/`
+**Status:** COMPLETE (2026-03-18) — 8 files in `.claude/references/cpu-extensions/mitigations/`
 
 **Actions:**
 - Research each mitigation: CPUID detection, microcode requirements, Linux exposure
@@ -382,7 +382,7 @@ Each entry will be documented with all 23 matrix columns.
 
 **Scope:** SMEP, SMAP, CET-SS, CET-IBT, UMIP, NX/XD, PKU
 **Agent:** researcher
-**Status:** UNBLOCKED (2026-03-18) — CET docs acquired at `.claude/references/cpu-extensions/cet-docs/`. Not started.
+**Status:** COMPLETE (2026-03-18) — 7 files in `.claude/references/cpu-extensions/access-controls/`
 
 **Actions:**
 - Research each control: what attack class it blocks, CPUID location, Linux detection

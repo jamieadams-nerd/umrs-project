@@ -102,6 +102,11 @@
       "Bash(rmdir ../../.claude/jamies_brain/fun/)",
       "Bash(tee /media/psf/repos/umrs-project/.claude/references/xdg-basedir-spec.md echo 'exit: $?')",
       "Bash(tee -a /media/psf/repos/umrs-project/.claude/logs/task-log.md)",
+      "Bash(tee /media/psf/repos/umrs-project/.claude/references/**)",
+      "Bash(tee .claude/references/**)",
+      "Bash(cat *tee /media/psf/repos/umrs-project/.claude/references/**)",
+      "Bash(cat *tee .claude/references/**)",
+      "Bash(cat << *)",
       "Bash(tee /media/psf/repos/umrs-project/components/rusty-gadgets/.claude/agent-memory/researcher/MEMORY.md echo done)",
       "Bash(tee /media/psf/repos/umrs-project/components/rusty-gadgets/.claude/agent-memory/researcher/retrieval_notes.md echo done)",
       "Bash(tee /media/psf/repos/umrs-project/components/rusty-gadgets/.claude/agent-memory/researcher/corpus_conventions.md echo done)",
@@ -124,7 +129,13 @@
       "Bash(rm -rf /media/psf/repos/umrs-project/.claude/plans/.claude/)",
       "Bash(mv /media/psf/repos/umrs-project/.claude/plans/scap-stig-corpus-plan.md /media/psf/repos/umrs-project/.claude/plans/completed/)",
       "Bash(mv /media/psf/repos/umrs-project/.claude/plans/security-auditor-corpus.md /media/psf/repos/umrs-project/.claude/plans/completed/)",
-      "Bash(mv /media/psf/repos/umrs-project/.claude/plans/source-code-comment-cleanup.md /media/psf/repos/umrs-project/.claude/plans/completed/)"
+      "Bash(mv /media/psf/repos/umrs-project/.claude/plans/source-code-comment-cleanup.md /media/psf/repos/umrs-project/.claude/plans/completed/)",
+      "Bash(printf '[2026-03-18 10:30] researcher  Phase 1B Entropy & Big Integer corpus  WebSearch,WebFetch,Read,Write  success  4 files written: rdseed.md \\(AMD-SB-7055 Zen 5 bug, 800-90B noise source analysis\\), arm-rng.md \\(RNDR/RNDRRS HWCAP2_RNG, x86 comparison table\\), adx-bmi.md \\(ADX+BMI1+BMI2 consolidated, PDEP/PEXT timing caveat\\), phase-1b-summary.md \\(cross-feature compliance chain, 4 new signal proposals\\); plan status updated to COMPLETE\\\\n')",
+      "WebFetch(domain:www.redhat.com)",
+      "WebFetch(domain:access.redhat.com)",
+      "WebFetch(domain:www.openssl.org)",
+      "WebFetch(domain:docs.openssl.org)",
+      "WebFetch(domain:github.com)"
     ]
   },
   "enabledPlugins": {
