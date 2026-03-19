@@ -235,5 +235,5 @@ tenants, programs, or enclaves at the same sensitivity level (MCS).
 * xref:reference:selinux/category_set.adoc[Category set reference]
 * xref:reference:selinux/mcs.adoc[MCS overview]
 * xref:cui-structure.adoc[CUI structure and handling]
-* xref:history/five-eyes-interop.adoc[Five Eyes classification interoperability]
-* xref:history/mls-history.adoc[MLS history]
+* xref:ROOT:foundations/history/five-eyes-interop.adoc[Five Eyes classification interoperability]
+* xref:ROOT:foundations/history/mls-history.adoc[MLS history]

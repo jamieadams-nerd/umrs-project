@@ -161,7 +161,7 @@ clearance or write CUI data to a lower-labeled object."
 == See Also
 
 * xref:mls-label-model.adoc[MLS label model and CUI mapping]
-* xref:history/five-eyes-interop.adoc[Five Eyes classification interoperability]
+* xref:ROOT:foundations/history/five-eyes-interop.adoc[Five Eyes classification interoperability]
 * xref:reference:cui/cui-descriptions.adoc[CUI category descriptions (c0–c9)]
 * xref:reference:cui/cui-category-abbreviations.adoc[CUI category abbreviations]
 * xref:reference:compliance-frameworks.adoc[Compliance frameworks registry]

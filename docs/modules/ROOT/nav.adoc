@@ -1,13 +1,29 @@
-* xref:index.adoc[Home]
+.xref:index.adoc[UMRS Project]
 
-* Introduction
-** xref:what-is-umrs.adoc[What Is UMRS?]
-** xref:introduction.adoc[Introduction]
-** xref:what-is-high-assurance.adoc[What is High Assurance?]
+* xref:introduction.adoc[Introduction]
 ** xref:scope-and-audience.adoc[Scope and Audience]
+** xref:release-notes.adoc[Release Notes]
+** xref:legal-notices.adoc[Legal Notices]
 
-* xref:legal-notices.adoc[Legal Notices]
-* xref:release-notes.adoc[Release Notes]
+* High-Assurance
+** xref:what-is-high-assurance.adoc[What is High-Assurance?]
+** xref:foundations/timeline-high-assurance.adoc[Evolution of High-Assurance]
+*** xref:foundations/history/HACAMS.adoc[HACAMS lineage]
+*** xref:foundations/history/high-availability-history.adoc[High availability vs high assurance]
+*** xref:foundations/history/ring-based-security.adoc[Ring Protection model]
+*** xref:foundations/history/trusted-path-orange.adoc[Trusted path (Orange Book)]
+*** xref:foundations/history/microsoft-nt-orange.adoc[Microsoft NT and Orange Book]
+*** xref:foundations/history/selinux-history.adoc[SELinux history]
+*** xref:foundations/history/mls-history.adoc[MLS history]
+*** xref:foundations/history/mls-classified-talk.adoc[MLS and the classified world]
+
+** xref:foundations/timeline-lang-evolution.adoc[High-Assurance Languages]
+** xref:foundations/timeline-cui.adoc[CUI: History of Struggles]
+** xref:foundations/timeline-assurance-pendulum.adoc[High-Assurance Pendulum]
 
 
-//
+** xref:foundations/history/ibm-zos-os390.adoc[IBM z/OS and OS/390]
+** xref:foundations/history/one-way-hashes.adoc[One-way hash algorithms]
+** xref:foundations/history/case-studies.adoc[High-assurance failure case studies]
+** xref:foundations/history/five-eyes-interop.adoc[Five Eyes classification interoperability]
+

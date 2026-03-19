@@ -601,7 +601,7 @@ body,
 /* Label text via ::after (uses title attribute) — restyle it */
 .doc .admonitionblock td.icon i::after {
   content: attr(title) !important;
-  font-size: 11px !important;
+  font-size: 12px !important;
   font-weight: 700 !important;
   text-transform: uppercase !important;
   letter-spacing: 0.06em !important;
@@ -612,14 +612,17 @@ body,
   display: inline !important;
   height: auto !important;
   width: auto !important;
+  vertical-align: middle;
 }
 
-/* Unicode symbols before each label */
+/* Unicode symbols before each label — sized to match td.icon's 16px,
+   vertical-align: middle aligns icon with the label text baseline */
 .doc .admonitionblock td.icon i::before {
   font-family: initial !important;
-  font-size: 13px !important;
+  font-size: 16px !important;
   margin-right: 5px;
   font-weight: 400;
+  vertical-align: middle;
 }
 
 .doc .admonitionblock.warning td.icon i::before {
@@ -648,7 +651,7 @@ body,
   display: block !important;
   position: static !important;
   transform: none !important;
-  font-size: 11px;
+  font-size: 16px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -661,14 +664,17 @@ body,
   border: none !important;
   border-radius: 3px 3px 0 0;
   background: transparent !important;
+  vertical-align: top;
 }
 
-/* Admonition body text — match document body size */
+/* Admonition body text — match document body size.
+   font-size: 1rem resets bleed from td.icon's larger font-size
+   (icon inherits from td.icon, but td.content must not). */
 .doc .admonitionblock td.content {
   display: block !important;
   padding: 6px 12px 10px 12px;
   word-wrap: break-word;
-  font-size: 14px;
+  font-size: 1rem;
   line-height: 1.7;
   border: none !important;
   box-shadow: none !important;
@@ -718,6 +724,7 @@ body,
 }
 .doc .admonitionblock.note td.content { color: var(--umrs-text-primary); }
 .doc .admonitionblock.note td.icon { color: #42a5f5 !important; }
+
 
 /* TIP — green */
 .doc .admonitionblock.tip {

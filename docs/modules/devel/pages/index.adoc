@@ -56,17 +56,89 @@ progressively higher levels of abstraction while preserving strict validation gu
 |===
 |Crate |Purpose
 
+|`umrs-hw`
+|Hardware level libraries like timers and cpu extension information
+
 |`umrs-platform`
 |Low-level platform interrogation, hardened readers, kernel interface access,
 and trusted system ingestion
 
 |`umrs-selinux`
-|Strongly typed abstractions and primitives for interacting with SELinux policy
-and system security state
+|Strongly typed abstractions and primitives for interacting with SELinux policy and 
+system security state. In the future, there will be a mutually exclusive `umrs-apparmor`.
 
 |`umrs-core`
 |Higher-level orchestration utilities, shared abstractions, and reusable platform logic
+
+|`umrs-ui`
+|Provides high-level user interface templates for both Textual User Interface (TUI) and future
+graphical user interface (GUI). Besides, templates it provides several helper functions to make
+humans happy.
 |===
+
+
+[mermaid]
+....
+%%{init: {'theme': 'dark', 'fontSize': '16px', 'flowchart': {'nodeSpacing': 50, 'rankSpacing': 60,
+'padding': 20, 'subGraphTitleMargin': {'top': 10, 'bottom': 20}}, 'themeVariables': {'clusterBkg': '#071a0a', 'clusterBorder': '#071a0a', 'nodeBorder': '#555555', 'mainBkg': '#3a3a3a', 'nodeTextColor': '#ffffff', 'edgeLabelBackground': '#2a2a2a', 'lineColor': '#aaaaaa'}}}%%
+graph BT
+    classDef pkg fill:#1a3a2a,stroke:#2a5a3a,color:#ffffff
+    classDef thirdparty fill:#0a1a2a,stroke:#1a3a4a,color:#aaaaaa
+    classDef tools fill:#2a1a1a,stroke:#5a2a2a,color:#cccccc
+
+
+    subgraph L0["L0 · third-party"]
+        rustix["rustix\nsyscall safety"]:::thirdparty
+        nom["nom\nTPI parsing"]:::thirdparty
+        subtle["subtle\nconst-time ops"]:::thirdparty
+        zeroize["zeroize\nsecret clearing"]:::thirdparty
+        ratatui["ratatui\nTUI framework"]:::thirdparty
+        goblin["goblin\nELF reader"]:::thirdparty
+    end
+
+    subgraph L1["L1 · umrs-hw · standalone"]
+        hw[["umrs-hw\nunsafe isolation boundary / CPU Ext."]]:::pkg
+    end
+
+    subgraph L2["L2 · umrs-platform · standalone"]
+        platform[["umrs-platform\nOS / kernel detection"]]:::pkg
+    end
+
+    subgraph L3["L3 · umrs-selinux"]
+        selinux["umrs-selinux\nSELinux Userland"]
+    end
+
+    subgraph L4["L4 · umrs-core"]
+        core["umrs-core\ni18n · formatting · timing"]
+    end
+
+    subgraph L5["L5 · umrs-ui"]
+        ui["umrs-ui\nTUI / GUI · reports · helpers"]
+    end
+
+    subgraph TOOLS["UMRS Rust Software Stack"]
+        tui_tools[["umrs-ls · umrs-logspace\nTUI-rich tools"]]:::tools
+        cli_tools[["pure CLI · library consumers"]]:::tools
+    end
+
+    rustix  --> platform
+    nom     --> selinux
+    subtle  --> selinux
+    zeroize --> hw
+    goblin  --> platform
+    ratatui --> ui
+
+    hw       --> platform
+    platform --> selinux
+    selinux  --> core
+    platform --> core
+    core     --> ui
+    ui       --> tui_tools
+    core     --> cli_tools
+    selinux  --> ui
+....
+
+
 
 This layered design allows systems to use only the level of functionality required
 while maintaining the same high-assurance design principles.

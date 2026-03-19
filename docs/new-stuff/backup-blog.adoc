@@ -1,0 +1,207 @@
+= Your CUI Policy Is a Sign. Here Is How to Build the Lock.
+:description: Fifteen years of CUI enforcement theater, the assurance pendulum, and what kernel-level enforcement actually looks like in Rust.
+:keywords: SELinux MLS, CUI protection, CMMC compliance, Rust memory safety, high-assurance Linux, mandatory access control, Bell-LaPadula, NIST 800-171
+:author: Jamie Adams
+:revdate: 2026-03-19
+
+// Cross-post targets: dev.to, r/netsec, r/rust, jamieadams.dev
+// Audience: security engineers at defense contractors, Rust practitioners in regulated environments
+
+I have been in this industry long enough to remember when FOUO meant whatever
+the person who printed the document wanted it to mean. Before 2010 there was
+no unified framework for sensitive unclassified information — just a zoo of
+incompatible agency markings, none of them backed by consistent legal or technical
+protection requirements. FOUO, SBU, LES, SENSITIVE. Dozens of variations, none of
+them enforceable in any mechanically verifiable sense.
+
+Then Executive Order 13556 established the Controlled Unclassified Information
+program in 2010 and unified all of that under one framework. It was a real step
+forward. NARA became the executive agent. The markings got standardized.
+NIST SP 800-171 published 110 controls across 14 families. Contractors started
+putting CUI policies in their SSPs.
+
+And then almost nothing changed for the next several years. The policy existed.
+The training got delivered. The information kept leaking.
+
+== The Sign That Replaced the Lock
+
+Here is the thing about the CUI self-attestation era: it was not dishonest
+because contractors were bad actors. It was dishonest because the incentive
+structure made honesty expensive and irrelevant. DFARS 252.204-7012 required
+contractors to attest compliance with NIST SP 800-171 and submit a score to
+the Supplier Performance Risk System. There was no independent verification.
+No third-party assessment. No mechanism to distinguish a contractor who had
+actually implemented the controls from one who had checked the boxes and
+moved on.
+
+The result was predictable. Sensitive defense information — F-35 technical
+specifications, submarine propulsion data, acquisition strategies — flowed
+through contractor systems protected by little more than an optimistic
+SPRS score and a sign on the metaphorical door that read "CUI: authorized
+personnel only."
+
+The classified world solved this problem differently. It solved it in the 1970s.
+The reference monitor concept — introduced in the Anderson Report in 1972 and
+formalized through the Orange Book TCSEC, Bell-LaPadula, and eventually
+SELinux — is built on the recognition that administrative controls fail.
+Humans forget. Humans get tired. Humans make mistakes under time pressure.
+The kernel does not.
+
+Bell-LaPadula's "no read up, no write down" is not a policy you post on the
+wall. It is a formal model implemented in the operating system. When SELinux
+enforces it, no process can read a file above its clearance level regardless
+of what the human at the keyboard wants to do. That is the difference between
+a sign and a lock.
+
+CUI has had fifteen years of signs. CMMC 2.0 is finally demanding locks.
+
+== The Assurance Pendulum Reaches Its Limit
+
+If you have been in security long enough you recognize the pattern. The
+software assurance pendulum has been swinging for fifty years between two
+competing forces: engineering discipline on one side, market velocity on the
+other. The formal methods era of the 1960s and 1970s gave us Ada, SPARK,
+the Orange Book. Then the desktop revolution swung the pendulum hard toward
+"ship fast, patch later." The fast era produced the broken era — the Morris
+Worm, Code Red, SQL Slammer, Solar Sunrise. The broken era produced regulation.
+Regulation without enforcement produced compliance theater.
+
+What feels different about right now — and I do not say this lightly after
+watching the cycle repeat — is that the pendulum may be losing its swing. The
+enforcement mechanisms are becoming structural rather than advisory. CMMC 2.0
+Final Rule effective December 2024 makes CUI compliance a contractual condition,
+not a checkbox. The DFARS acquisition rule that cleared review in August 2025
+integrates it into contract eligibility itself. The FAR CUI rule advancing in
+2025 extends these requirements beyond the defense industrial base to all federal
+contractors.
+
+Simultaneously, the NSA, CISA, and the White House Office of the National Cyber
+Director have declared memory-safe languages a national priority. Not a best
+practice. A priority, with guidance explicitly deprecating C and C++ for new
+security-critical development. The fast-era shortcuts are being encoded out of
+existence by toolchains, contracts, and law at the same time.
+
+== What UMRS Actually Is
+
+I built UMRS in December 2025 as a direct response to this arc. Let me be
+precise about what it is and what it is not, because the difference matters.
+
+UMRS is not a reference monitor. The Linux kernel is the reference monitor.
+The LSM framework and SELinux are the enforcement mechanism. UMRS is the
+system that verifies the reference monitor is correctly configured, active,
+and actually enforcing policy — not just configured to enforce it.
+
+That distinction is not semantic hair-splitting. It is the core of why the
+tool is useful. Configuration files describe intent. The kernel enforces
+reality. Your `/etc/selinux/config` saying `SELINUX=enforcing` does not mean
+SELinux is enforcing. If `/sys/fs/selinux/enforce` reads 0, you are running
+permissive. Your policy exists. Your controls exist on paper. The enforcement
+mechanism is bypassed.
+
+UMRS queries the kernel. Always the kernel. Runtime state over configuration
+artifacts. This is the Runtime Source of Truth principle, and it is why the
+tool can tell you things that your configuration management tooling will not.
+
+The codebase enforces this in Rust with `#![forbid(unsafe_code)]` in every
+crate root. That annotation is not a policy statement. It is a compile-time
+proof. `#![forbid]` cannot be overridden by any inner `#[allow]` — a fact
+mechanically verifiable by any auditor who opens the source. Every memory
+safety guarantee the tool makes is structurally enforced, not aspirationally
+stated.
+
+== Phase 1: The Sign Is Actually Good
+
+Here is where I need to be honest about what Phase 1 delivers versus what
+Phase 2 will deliver — because integrity matters more than marketing.
+
+Phase 1, which is complete, loads CUI category labels into the Multi-Category
+Security translation layer under targeted SELinux policy. Operators see
+human-readable CUI handling requirement labels on files and processes. The
+system makes CUI visible. You know what you are handling. The policy is present.
+The human is informed.
+
+This is awareness enforcement. It is genuinely valuable. Making CUI visible is
+not a trivial problem — most organizations have no operator-facing view of what
+handling requirements apply to the files their processes are touching.
+
+But it is still a sign. The kernel is not yet enforcing the boundary in the
+sense that Bell-LaPadula defines enforcement. A determined or inattentive user
+can still do things the policy says they should not.
+
+Phase 2 is the lock. MLS policy replaces targeted policy. The SELinux reference
+monitor enforces CUI boundaries at the kernel level — no read up, no write down,
+no process bypasses the label regardless of human intent. dm-crypt encrypts CUI
+data at rest. IMA integrity measurement verifies CUI-handling binaries before
+execution. Phase 2 is planned. It is not complete.
+
+I will not tell you Phase 2 is done when it is not. This is a project built on
+fifty years of engineering honesty, and that starts here.
+
+== The Lineage That Justifies the Confidence
+
+Why does a RHEL 10 Rust project have the standing to claim it is doing what
+classified systems do? Because it is implementing the same formal model those
+systems use, on the same kernel infrastructure, with the same enforcement
+philosophy.
+
+James Anderson's 1972 report defined the reference monitor: tamper-proof,
+always invoked, small enough to verify. Bell and LaPadula formalized the
+information flow model in 1973. The Orange Book codified these into evaluation
+criteria. The work that became SELinux at the NSA in the 1990s implemented
+them in a production Linux kernel. RHEL 4 shipped the first commercial SELinux
+in 2005.
+
+UMRS sits at the end of that lineage. It does not invent new ideas about
+mandatory access control. It applies fifty years of proven ideas to the
+specific, current, legally mandated problem of CUI protection on unclassified
+Linux systems — implemented in a memory-safe language with no unsafe code,
+no FFI shortcuts, and every design decision traceable to a requirement.
+
+Every fast-era shortcut UMRS refuses to make has a CVE behind it. Every
+assurance pattern it implements has a regulatory requirement driving it.
+The standards are not arbitrary. The constraints are not bureaucratic
+obstruction. They are the accumulated lessons of engineers who watched what
+happens when software ships without them.
+
+== What You Can Do Right Now
+
+UMRS is open source. The Phase 1 implementation is on GitHub. If you are a
+security engineer dealing with CMMC compliance or CUI handling on Linux, there
+is concrete material to look at:
+
+* The SELinux posture evaluation in the `umrs-selinux` crate — query the
+  kernel runtime state, detect drift between configured and effective SELinux
+  mode, and surface enforcement gaps as typed findings rather than log strings
+* The MCS label integration showing CUI category mapping into the SELinux
+  translation layer
+* The high-assurance pattern library documenting the specific engineering
+  patterns (Two-Path Independence, Fail-Closed, Non-Bypassability) and the
+  NIST SP 800-53 controls they satisfy
+
+If you are a Rust engineer who wants to see what `#![forbid(unsafe_code)]` in
+a security-critical codebase actually looks like in practice — the parsing
+patterns, the typed security contexts, the dual-parser validation — the code
+is readable and the documentation explains the why, not just the what.
+
+If you have been living with compliance theater and want to understand what
+the kernel-enforcement alternative looks like: that is exactly what this
+project is built to show you.
+
+The lock is under construction. The blueprints are open.
+
+---
+
+_UMRS — Unclassified MLS Reference System. Open source, RHEL 10, Rust, no
+unsafe code. Phase 1 complete. Phase 2 in progress._
+
+_GitHub: https://github.com/imodium/umrs-project_ +
+_YouTube: follow for deep-dives on SELinux MLS, CUI engineering, and
+high-assurance Rust patterns_
+
+---
+
+_About the authors: Jamie Adams is a 35-year veteran of high-assurance
+security engineering and the architect of UMRS. Sage is his AI
+collaborator — a specialized agent with access to a provenance-tracked
+corpus of security standards and the standing order to never bullshit
+the public._

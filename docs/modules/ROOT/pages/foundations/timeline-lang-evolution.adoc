@@ -1,0 +1,155 @@
+= Evolution of High-Assurance Programming Languages
+:description: From SPARK Ada to Modern Rust — A Lineage of Safety-Critical Languages
+
+The choice of programming language in a high-assurance system is not a matter of
+preference — it is a security and safety engineering decision with direct impact on
+what guarantees can be formally made about the system's behavior. This lineage traces
+the evolution from early formally-verified Ada subsets through restricted C standards
+to modern memory-safe systems languages, showing why Rust with `#![forbid(unsafe_code)]`
+is the natural heir to fifty years of high-assurance language engineering.
+
+== Formal Foundations
+
+The intellectual roots of high-assurance programming reach back to formal methods
+research in the 1960s and 1970s. Hoare Logic — the precondition/postcondition contract
+model — gave engineers the mathematical tools to reason about program correctness.
+Dijkstra's structured programming principles eliminated the goto-driven spaghetti code
+that made formal reasoning impossible. These were not academic curiosities. They were
+the theoretical foundation that made provably correct software conceivable.
+
+[mermaid]
+....
+%%{init: {'theme': 'dark', 'fontSize': '16px', 'flowchart': {'nodeSpacing': 50, 'rankSpacing': 60, 'padding': 20, 'subGraphTitleMargin': {'top': 10, 'bottom': 20}}, 'themeVariables': {'clusterBkg': '#071a0a', 'clusterBorder': '#071a0a', 'nodeBorder': '#555555', 'mainBkg': '#3a3a3a', 'nodeTextColor': '#ffffff', 'edgeLabelBackground': '#2a2a2a', 'lineColor': '#aaaaaa'}}}%%
+timeline
+    title Formal Foundations
+    section Formal Foundations
+        1969 : Hoare Logic\npre/postcondition contracts
+        1972 : Dijkstra — structured programming\neliminate goto · provable correctness
+        1975 : DoD — language proliferation problem\n450+ languages in defense systems
+        1983 : ↓ Ada Era
+....
+
+== Ada Era
+
+By the late 1970s the U.S. Department of Defense was running over 450 programming
+languages across its defense systems — an unmaintainable, unauditable chaos. The DoD
+commissioned a single replacement language with strong typing, design by contract, and
+built-in concurrency. Ada was the result, standardized in 1983. It was the first
+language designed from the ground up for safety-critical government systems, mandated
+across DoD embedded development.
+
+SPARK emerged as a formally verifiable subset of Ada — restricting the language to
+eliminate the features that made formal proof impossible (side effects, aliasing,
+dynamic dispatch). With SPARK and its associated toolset, engineers could
+mathematically prove the absence of runtime errors. The UK MoD made SPARK its
+preferred language for safety-critical avionics and defense software. For a generation
+of high-assurance engineers, SPARK was the gold standard.
+
+[mermaid]
+....
+%%{init: {'theme': 'dark', 'fontSize': '16px', 'flowchart': {'nodeSpacing': 50, 'rankSpacing': 60, 'padding': 20, 'subGraphTitleMargin': {'top': 10, 'bottom': 20}}, 'themeVariables': {'clusterBkg': '#071a0a', 'clusterBorder': '#071a0a', 'nodeBorder': '#555555', 'mainBkg': '#3a3a3a', 'nodeTextColor': '#ffffff', 'edgeLabelBackground': '#2a2a2a', 'lineColor': '#aaaaaa'}}}%%
+timeline
+    title Ada Era
+    section Ada Era
+        1980 : Ada language designed\nDoD mandate · strong typing · contracts
+        1983 : Ada 83 standardized\nISO/IEC 8652 · replaces 450+ DoD languages
+        1987 : SPARK — Ada subset\nformally verifiable · no side effects · no aliasing
+        1995 : Ada 95\nobject-oriented · annexes for safety
+        1998 : SPARK toolset matures\nUK MoD preferred language · avionics
+        2005 : ↓ Restricted C Era
+....
+
+== Restricted C Era
+
+C's dominance in embedded and systems programming was undeniable — but its
+permissiveness made formal reasoning nearly impossible. Buffer overflows, undefined
+behavior, unchecked casts, and pointer arithmetic were not just bugs; they were
+systematic language-level risks. The industry response was not to abandon C but to
+constrain it into safer subsets enforced by static analysis tools.
+
+MISRA started in the early 1990s as a UK government SafeIT research programme,
+publishing its first automotive software guidelines in November 1994.
+MISRA C appeared in 1998 as a coding standard focused on avoiding error-prone
+programming features of C rather than enforcing a particular style.
+
+The Joint Strike Fighter Air Vehicle C++ standard — JSF AV C++ — took restriction
+further, producing one of the strictest C++ subsets ever written for a production
+system. Developed by Lockheed Martin for the F-35 program, it banned dynamic memory
+allocation after initialization, prohibited exceptions, restricted templates, and
+required every function to have a single return point. It was C++ as it would have
+been designed had safety been the first requirement rather than an afterthought.
+
+[mermaid]
+....
+%%{init: {'theme': 'dark', 'fontSize': '16px', 'flowchart': {'nodeSpacing': 50, 'rankSpacing': 60, 'padding': 20, 'subGraphTitleMargin': {'top': 10, 'bottom': 20}}, 'themeVariables': {'clusterBkg': '#071a0a', 'clusterBorder': '#071a0a', 'nodeBorder': '#555555', 'mainBkg': '#3a3a3a', 'nodeTextColor': '#ffffff', 'edgeLabelBackground': '#2a2a2a', 'lineColor': '#aaaaaa'}}}%%
+timeline
+    title Restricted C Era
+    section Restricted C Era
+        1994 : MISRA guidelines v1\nUK SafeIT · automotive embedded
+        1998 : MISRA C:1998\n127 rules · error-prone features banned
+        2004 : MISRA C:2004\nrevised · 141 rules · industry adoption
+        2004 : HICPP v2.2\nHigh-Integrity C++ · UK MoD
+        2005 : JSF AV C++ Rev C\nF-35 Joint Strike Fighter · Lockheed Martin
+        2008 : MISRA C++:2008\nC++ for critical systems
+        2012 : MISRA C:2012\ncurrent · 16 directives · 143 rules
+        2015 : ↓ Memory-Safe Era
+....
+
+== Memory-Safe Era
+
+The 2010s brought a fundamental shift. Decades of CVEs, exploits, and system
+compromises — the overwhelming majority traceable to memory unsafety in C and C++ —
+made it clear that restricted subsets and static analysis were necessary but not
+sufficient. The industry needed languages where memory safety was a compile-time
+guarantee, not a coding discipline.
+
+Rust emerged as the answer for systems programming. Its ownership and borrowing model
+eliminates use-after-free, buffer overflows, and data races at compile time — not
+through runtime checks but through the type system itself. The `#![forbid(unsafe_code)]`
+attribute provides a mechanically verifiable proof that an entire crate contains no
+unsafe operations — something no C or C++ coding standard could offer.
+
+The NSA's 2022 guidance explicitly recommending memory-safe languages, followed by
+the White House ONCD report in 2024, formalized what high-assurance engineers had
+known for years: the era of trusting programmers to be careful with unsafe languages
+in critical systems was over.
+
+[mermaid]
+....
+%%{init: {'theme': 'dark', 'fontSize': '16px', 'flowchart': {'nodeSpacing': 50, 'rankSpacing': 60, 'padding': 20, 'subGraphTitleMargin': {'top': 10, 'bottom': 20}}, 'themeVariables': {'clusterBkg': '#071a0a', 'clusterBorder': '#071a0a', 'nodeBorder': '#555555', 'mainBkg': '#3a3a3a', 'nodeTextColor': '#ffffff', 'edgeLabelBackground': '#2a2a2a', 'lineColor': '#aaaaaa'}}}%%
+timeline
+    title Memory-Safe Era
+    section Memory-Safe Era
+        2015 : Rust 1.0 stable\nownership · borrowing · no GC
+        2016 : SPARK 2016\nproof of absence of runtime errors
+        2019 : Rust in Linux kernel discussion begins\nmemory safety for kernel code
+        2021 : MISRA C:2012 Amendment 3\nsecurity guidelines expanded
+        2022 : NSA — memory-safe languages guidance\nexplicit recommendation against C/C++
+        2022 : Rust accepted into Linux kernel\nfirst memory-safe kernel language
+        2023 : CISA — memory safety roadmap\nUS government policy direction
+        2024 : White House ONCD report\nmemory safety national priority
+        2024 : UMRS — Rust · forbid unsafe\nkernel-level CUI · mechanically verified
+....
+
+== The Lineage in UMRS
+
+UMRS sits at the end of this lineage. Every design constraint traces back through it:
+
+* `#![forbid(unsafe_code)]` — the Rust equivalent of SPARK's formal subset enforcement.
+  Where SPARK's tools prove absence of runtime errors, `forbid` provides a
+  compile-time, auditor-verifiable proof that no unsafe operations exist in the crate.
+  This is NIST SP 800-218 SSDF PW.4 made mechanical.
+
+* Strong typing with validation at construction — inherited directly from Ada's
+  type system philosophy and Hoare Logic's precondition model.
+
+* No FFI preference — the same principle that drove JSF AV C++ to ban dynamic
+  allocation: eliminate entire classes of risk at the language level rather than
+  managing them through discipline.
+
+* TPI dual-path independent parsing — the formal verification principle applied to
+  security-critical input: two independent implementations must agree, or the
+  system fails closed.
+
+The language changed. The principles did not.
+

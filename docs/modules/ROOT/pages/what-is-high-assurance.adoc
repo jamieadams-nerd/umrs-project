@@ -164,11 +164,11 @@ The concept is the same.
 The standard is the same.
 Only the vocabulary changed.
 
-For deeper background, see xref:architecture:history/HACAMS.adoc[HACAMS: Historical context].
+For deeper background, see xref:foundations/history/HACAMS.adoc[HACAMS: Historical context].
 
 == See Also
 
-* xref:what-is-umrs.adoc[What Is UMRS?] — how these principles are applied in this project
+* xref:introduction.adoc[Introduction to UMRS] — how these principles are applied in this project
 * xref:security-concepts:reference-monitor.adoc[Reference Monitor Design] — the kernel enforcement mechanism
 * xref:architecture:index.adoc[Architecture overview]
 * xref:patterns:index.adoc[High-Assurance Pattern Library]

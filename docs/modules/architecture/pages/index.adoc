@@ -17,7 +17,7 @@ The system is organized around four interlocking capabilities — Data Governanc
 Kernel-Enforced Access Control, Integrity and Cryptographic Assurance, and
 Security-Aware Tooling. Each capability depends on the others; together they close
 the gap between CUI handling requirements on paper and enforced, auditable reality on
-a running system. See xref:ROOT:what-is-umrs.adoc[What Is UMRS?] for the full
+a running system. See xref:ROOT:introduction.adoc[Introduction to UMRS] for the full
 description of these four pillars and the chain of trust they rest on.
 
 == Base OS Layer
@@ -109,7 +109,7 @@ targeted-policy deployments use MCS rather than full MLS. UMRS supports
 both.
 
 See xref:reference:selinux/mcs.adoc[MCS overview] and
-xref:history/mls-history.adoc[MLS history] for background.
+xref:ROOT:foundations/history/mls-history.adoc[MLS history] for background.
 
 == CUI Policy and Multi-National Label Support
 
@@ -128,7 +128,7 @@ maintains its own scheme for marking and handling sensitive-but-unclassified
 information, and interoperability with those schemes is a planned
 architectural objective.
 
-See xref:history/five-eyes-interop.adoc[Five Eyes interoperability] for the
+See xref:ROOT:foundations/history/five-eyes-interop.adoc[Five Eyes interoperability] for the
 design rationale and per-country scheme descriptions.
 
 == Rust Implementation Layer

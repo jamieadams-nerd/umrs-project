@@ -1,0 +1,606 @@
+= Evolution of High-Assurance Security Models
+:description: From TCB to Modern MLS Enforcement
+
+The high-assurance security model underpinning UMRS did not emerge fully formed.
+It is the product of five decades of hard-won engineering, formal research, government
+evaluation programs, and commercial implementation. Understanding this lineage explains
+why every architectural constraint in UMRS exists — and why those constraints matter.
+
+== Formal Foundations
+
+In the earliest days of computing, security was entirely physical. Mainframe computers
+were million-dollar machines housed in locked rooms, operated by batch processing
+supervisors that ran one job at a time. A user submitted punched cards, waited for
+output, and never shared the machine with anyone simultaneously. The machine room door
+*was* the access control policy. There was nothing else to enforce.
+
+That changed the moment time-sharing arrived.
+
+[mermaid]
+....
+%%{init: {'theme': 'dark', 'fontSize': '16px', 'flowchart': {'nodeSpacing': 50, 'rankSpacing': 60, 'padding': 20, 'subGraphTitleMargin': {'top': 10, 'bottom': 20}}, 'themeVariables': {'clusterBkg': '#071a0a', 'clusterBorder': '#071a0a', 'nodeBorder': '#555555', 'mainBkg': '#3a3a3a', 'nodeTextColor': '#ffffff', 'edgeLabelBackground': '#2a2a2a', 'lineColor': '#aaaaaa'}}}%%
+timeline
+    title Formal Foundations
+    section Formal Foundations
+        1950s : Physical security only\nbatch processing · locked machine rooms
+        1961 : CTSS — time-sharing born\naccess control problem created
+        1964 : Multics — first secure OS design\nprotection rings · AIM · DAC
+        1969 : UNIX born from Multics\nsimplified · DAC sophistication lost
+        1972 : Anderson Report — ESD-TR-73-51\nreference monitor concept born
+        1973 : Bell-LaPadula Model\nno read up · no write down
+        1974 : Saltzer — Protection and Control\nDAC formalized from Multics
+        1975 : Saltzer & Schroeder\nleast privilege · complete mediation
+        1977 : Biba Integrity Model\nno write up · no read down
+        1983 : ↓ Orange Book Era
+....
+
+=== The Compatible Time-Sharing System (CTSS)
+
+CTSS was first demonstrated on MIT's modified IBM 709 in November 1961 — the first
+general purpose time-sharing operating system <<ctss1961>>. The name "Compatible" was
+deliberate: it meant compatible with the existing batch processing mode. Users could
+still submit batch jobs while others used the system interactively. It was not a full
+replacement of batch computing but an extension of it, bridging the old world and the new.
+
+That bridging came with an immediate and profound consequence. The moment multiple users
+shared a machine simultaneously, the access control problem was born. For the first time,
+multiple processes owned by different users ran on a single machine — and those processes
+could interfere with one another. A process might alter shared resources another process
+depended on. Worse, with multiple users, information intended for one user might become
+visible to another. The machine room door was no longer sufficient. The operating system
+itself needed to enforce policies determining which privileges each process held and what
+each user could see.
+
+CTSS planted the seed. Multics, begun in 1964, was the first serious attempt to grow it
+into a formal security architecture.
+
+=== Multics and the Birth of Formal Access Control
+
+Multics <<multics1965>> is the first major operating system designed as a secure system
+from the outset. It introduced protection rings — the hardware-enforced privilege
+separation concept that lives in every modern CPU today. Corbató and Vyssotsky's 1965
+paper _Introduction and Overview of the Multics System_ was the first formal description
+of the xref:foundations/history/mls-history.adoc[ring protection model] that underlies modern kernel
+security architecture.
+
+The Multics designers were clear-eyed about the problem they were solving. At that time
+in the mid-1960s, all then-existing computer systems could be cracked — their file access
+controls could be defeated, and any user who could run a program on the machine could take
+the machine over <<multicians-security>>. They wanted to build a system whose access
+controls could not be bypassed. The Access Isolation Mechanism (AIM) provided mandatory
+access control that could be enabled to supplement the discretionary access control Multics
+already possessed — an early implementation of what would become the
+xref:foundations/history/mls-history.adoc[MLS model]. See also
+xref:foundations/history/mls-classified-talk.adoc[MLS and the classified world] for how these
+concepts translated into government deployment.
+
+Two papers that emerged directly from the Multics experience remain foundational
+references in security engineering today:
+
+* Saltzer, 1974 <<saltzer1974>> — _Protection and the Control of Information Sharing in
+  Multics_ — the definitive treatment of discretionary access control, written from direct
+  implementation experience on a production system.
+
+* Saltzer & Schroeder, 1975 <<saltzer-schroeder1975>> — _The Protection of Information
+  in Computer Systems_ — the landmark paper codifying the enduring principles of access
+  control: least privilege, fail-safe defaults, economy of mechanism, complete mediation,
+  and open design. Every one of these principles maps directly to UMRS architectural
+  constraints. Complete mediation in particular — the requirement that every access to
+  every object be checked without exception — is the formal foundation of the reference
+  monitor concept that runs through SELinux, NSA RTB, and UMRS's `#![forbid(unsafe_code)]`
+  policy.
+
+=== The Birth of UNIX
+
+Bell Labs withdrew from the Multics project in 1969 when it became clear the system
+would not deliver a working result in the near term <<unix1974>>. Several of the
+engineers who had worked on Multics — Ken Thompson and Dennis Ritchie among them —
+went on to create UNIX. The influence of Multics on UNIX is evident throughout: the
+hierarchical file system, redirection, the shell. But the design philosophy was
+deliberately different. UNIX prioritized simplicity and small size over security
+sophistication.
+
+In doing so, it left behind much of what Multics had built. The DAC model in early UNIX
+was the simple `rwxrwxrwx` permission bits — a dramatic simplification from Multics
+protection rings. As Dennis Ritchie himself acknowledged in a 1979 document, UNIX was
+not designed with security as a primary concern. The security community spent the next
+thirty years working to add back what was discarded in the name of simplicity. See
+xref:foundations/history/selinux-history.adoc[SELinux history] for the full story of how mandatory
+access control was eventually returned to the Linux kernel.
+
+NOTE: The architectural tension between simplicity and security that UNIX introduced
+in 1969 is directly relevant to UMRS today. Every `unsafe` block in a Rust codebase
+is a small echo of that original tradeoff — a deliberate escape hatch from the safety
+guarantees the language provides. `#![forbid(unsafe_code)]` closes that escape hatch
+permanently.
+
+=== The Anderson Report — Birth of the Reference Monitor
+
+In 1972, while Multics was still in active development and UNIX was barely three years
+old, a civilian contractor named James P. Anderson was commissioned by the U.S. Air
+Force Electronic Systems Division to address a problem that had become acute: how to
+build multi-user computer systems that could simultaneously process various levels of
+classified and unclassified information across terminals in both secure and unsecure
+areas <<anderson1972>>.
+
+The resulting report — _Computer Security Technology Planning Study_, ESD-TR-73-51 —
+is one of the most consequential documents in the history of computer security. Anderson
+and his panel introduced the **reference monitor concept**: the notion that all
+references by any program to any program, data, or device must be validated against a
+list of authorized types of reference. Three properties were defined as necessary for a
+reference monitor to be trustworthy:
+
+. **Complete mediation** — the reference monitor must be invoked on every access
+  attempt without exception. No bypass path may exist.
+. **Tamper resistance** — the reference monitor itself must be protected from
+  modification by the subjects it mediates.
+. **Verifiability** — the reference monitor must be small enough and simple enough
+  to be subject to rigorous analysis and testing.
+
+These three properties — complete mediation, tamper resistance, and verifiability —
+are not historical curiosities. They are directly encoded in NSA's RAIN principle
+(Non-Bypassable, Auditable, Isolated, Non-Deceptive) <<nsartb>>, in the SELinux
+xref:foundations/history/selinux-history.adoc[Linux Security Module architecture], and in UMRS's
+own enforcement model. Every time UMRS uses `#![forbid(unsafe_code)]` to close a bypass
+path, it is implementing Anderson's complete mediation requirement in the Rust type
+system. Every time IMA verifies a binary before execution, it is implementing tamper
+resistance. The lineage from a 1972 Air Force contract to a 2025 Rust security platform
+is direct and unbroken.
+
+NOTE: Anderson's report also introduced the concept of the *malicious user threat* —
+the recognition that the adversary model for multi-user systems must include users of
+the system itself, not just external attackers. This insider threat model remains
+central to xref:foundations/history/HACAMS.adoc[HACAMS] and to every MLS enforcement system
+including UMRS.
+
+=== Formal MAC Models — Bell-LaPadula and Biba
+
+The mathematical basis for mandatory access control was formalized in 1973 when David
+Bell and Leonard LaPadula published their model <<bell-lapadula1973>> under contract
+to the MITRE Corporation and the Air Force Electronic Systems Division — the same
+organization that commissioned Anderson's report the year before. The Bell-LaPadula
+model established the confidentiality lattice: *no read up, no write down*. A subject
+may not read an object at a higher sensitivity level, and may not write to an object at
+a lower sensitivity level. This prevents both unauthorized disclosure and the covert
+downgrading of sensitive information.
+
+Biba's integrity model <<biba1977>> followed in 1977 as the complement — *no write up,
+no read down* — protecting against unauthorized modification of high-integrity data by
+low-integrity subjects. Together Bell-LaPadula and Biba define the formal properties
+that any MLS system must satisfy. See xref:foundations/history/mls-history.adoc[MLS history] for a
+detailed treatment of how these models are implemented in the UMRS security context
+model, and xref:foundations/history/mls-classified-talk.adoc[MLS and the classified world] for
+their application in classified government systems.
+
+== Orange Book Era
+
+The U.S. Department of Defense formalized trusted system evaluation with the
+xref:foundations/history/trusted-path-orange.adoc[TCSEC — the Orange Book] <<tcsec1983>> — in 1983. 
+Anderson's reference monitor concept, the Bell-LaPadula confidentiality model, and the 
+Saltzer-Schroeder principles were all
+codified into a single evaluation framework. For the better part of two decades the
+Rainbow Series was gospel for anyone building or evaluating systems that handled
+sensitive government data.
+
+The Trusted Computing Base (TCB) concept, the evaluation classes D through A1, and the
+requirement for mandatory access control at B1 and above shaped an entire generation of
+security engineers and the commercial systems they built. The TCB was the operational
+instantiation of Anderson's reference monitor — the set of hardware, firmware, and
+software responsible for enforcing the system security policy. See
+xref:foundations/history/ibm-zos-os390.adoc[IBM z/OS and OS/390] for an example of how TCB
+principles were implemented on mainframe platforms, and
+xref:foundations/history/high-availability-history.adoc[High availability vs high assurance] for
+the important distinction between these two frequently confused disciplines.
+
+Commercial vendors responded with B2-evaluated systems that brought trusted path,
+covert channel analysis, and formal MAC enforcement to real deployments. Data General's
+DG/UX B2 was one of the few commercially available B2 systems of its era — alongside
+Trusted Xenix and Honeywell's offerings. For engineers who worked on those systems,
+concepts like trusted path and mandatory integrity were not abstractions. They were
+daily operational realities. See xref:foundations/history/case-studies.adoc[High-assurance failure
+case studies] for documented examples of what happened when these disciplines were
+abandoned or implemented incorrectly.
+
+[mermaid]
+....
+%%{init: {'theme': 'dark', 'fontSize': '16px', 'flowchart': {'nodeSpacing': 50, 'rankSpacing': 60, 'padding': 20, 'subGraphTitleMargin': {'top': 10, 'bottom': 20}}, 'themeVariables': {'clusterBkg': '#071a0a', 'clusterBorder': '#071a0a', 'nodeBorder': '#555555', 'mainBkg': '#3a3a3a', 'nodeTextColor': '#ffffff', 'edgeLabelBackground': '#2a2a2a', 'lineColor': '#aaaaaa'}}}%%
+timeline
+    title Orange Book Era
+    section Orange Book Era
+        1983 : TCSEC — Orange Book\nDoD TCB standard · D through A1
+        1985 : TCSEC updated\nRainbow Series begins
+        1987 : Trusted Solaris origins\nSun Microsystems · MLS for DoD
+        1987 : PitBull CMW\nDIA contract · AT&T System V MLS
+        1989 : DG/UX B2 · Trusted Xenix\ncommercial B2 systems · trusted path
+        1991 : ↓ Transition Era
+....
+
+== Transition Era
+
+By the early 1990s it was clear the Orange Book model had limitations. The evaluation
+process was expensive, slow, and produced certifications that were often obsolete before
+the ink dried. Europe developed ITSEC <<itsec1991>> in parallel. The US and Canada
+collaborated on Federal Criteria <<fc1992>>. Eventually these converged into the Common
+Criteria <<cc1996>> — an international standard that replaced the Rainbow Series and
+introduced the EAL evaluation assurance levels still in use today. When TCSEC was
+formally retired in 1999, it closed a chapter but the core principles it codified
+never went away.
+
+[mermaid]
+....
+%%{init: {'theme': 'dark', 'fontSize': '16px', 'flowchart': {'nodeSpacing': 50, 'rankSpacing': 60, 'padding': 20, 'subGraphTitleMargin': {'top': 10, 'bottom': 20}}, 'themeVariables': {'clusterBkg': '#071a0a', 'clusterBorder': '#071a0a', 'nodeBorder': '#555555', 'mainBkg': '#3a3a3a', 'nodeTextColor': '#ffffff', 'edgeLabelBackground': '#2a2a2a', 'lineColor': '#aaaaaa'}}}%%
+timeline
+    title Transition Era
+    section Transition Era
+        1991 : ITSEC — European standard\nE1-E6 evaluation levels
+        1992 : FC/EPA — Federal Criteria\nUSA/Canada precursor to CC
+        1996 : Common Criteria v1.0\nreplaces Orange Book · EAL1-EAL7
+        1998 : ↓ SELinux Era
+        1999 : TCSEC retired\nCC becomes international standard
+....
+
+== Security-Enhanced Linux (SELinux) Era
+
+While the evaluation framework was transitioning, the NSA was quietly solving the
+implementation problem. The path from Anderson's 1972 reference monitor concept to a
+deployable Linux kernel module took three decades — but the lineage is direct.
+
+=== The Flask Architecture
+
+In 1992 and 1993, NSA researchers working with Secure Computing Corporation began
+developing Distributed Trusted Mach (DTMach) <<dtmach1993>>, integrating type
+enforcement into the Mach microkernel. This work continued as the Distributed Trusted
+Operating System (DTOS) project, which was released to universities for further
+research. Working with the Flux research group at the University of Utah, NSA and
+Secure Computing Corporation produced the Flask architecture — the Flux Advanced
+Security Kernel — implemented as a prototype within Fluke, a research operating
+system <<flask1999>>.
+
+The definitive Flask paper — Spencer, Smalley, Loscocco, Hibler, Andersen, and
+Lepreau, _The Flask Security Architecture: System Support for Diverse Security
+Policies_ <<flask1999>>, presented at the USENIX Security Symposium in August 1999 —
+described an architecture that separated policy from enforcement. The security server
+defined the policy. The object manager enforced it. Neither could be bypassed. Anderson's
+three reference monitor properties — complete mediation, tamper resistance, and
+verifiability — were implemented in a form that could run on commodity hardware. See
+xref:foundations/history/selinux-history.adoc[SELinux history] for the complete technical lineage.
+
+=== The Inevitability of Failure
+
+One year before the Flask paper, NSA researchers published a paper that framed the
+problem in terms that made it impossible to ignore. _The Inevitability of Failure: The
+Flawed Assumption of Security in Modern Computing Environments_ <<loscocco1998>>,
+authored by Loscocco, Smalley, Muckelbauer, Taylor, Turner, and Farrell, and presented
+at the 21st National Information Systems Security Conference in October 1998, made a
+stark argument: current security efforts were unlikely to succeed because they suffered
+from a flawed assumption — that adequate security could be provided in applications
+built on top of mainstream operating systems whose security mechanisms were fundamentally
+insufficient.
+
+The paper was not theoretical. It worked through concrete examples showing how
+application-layer security mechanisms — firewalls, authentication systems, encryption
+— all failed when the underlying operating system provided no mandatory access control
+and no reference monitor. A compromised process with sufficient privilege could bypass
+every application-layer control. The conclusion was direct: without kernel-level MAC
+enforcement, security was theater. This paper was widely circulated in the security
+community and remains a standard reference for anyone arguing for OS-level mandatory
+access controls. Engineers who worked in government security environments in the late
+1990s heard it cited constantly.
+
+This argument maps directly to UMRS. Application-layer CUI controls — access policies,
+training, procedures — are necessary but insufficient. The kernel must enforce the
+boundary. Phase 2 of UMRS delivers exactly what Loscocco and Smalley argued was necessary
+in 1998. See xref:foundations/history/case-studies.adoc[High-assurance failure case studies] for
+documented examples supporting their thesis.
+
+=== SELinux — MAC on Commodity Linux
+
+The transition from Flask research prototype to production-grade enterprise Linux was
+not automatic. It required a coalition of companies — Red Hat, Tresys Technology,
+Network Associates, MITRE, and Trusted Computer Solutions — working alongside the NSA
+to formalize SELinux policy tooling, develop the policy compiler, and harden the
+implementation for real-world deployment. Trusted Computer Solutions and Red Hat brought
+something the other contributors could not: practical, production experience with
+mandatory access control systems already deployed in government environments. TCS's
+Trusted Solaris work and Red Hat's Linux expertise made them uniquely positioned to
+bridge the gap between the Flask research prototype and a shippable enterprise product.
+
+Engineers from the Champaign-Urbana area, among TCS's earliest employees, contributed
+foundational components of what became the SELinux policy infrastructure still in use
+today. In those early days, SELinux policy was written as raw allow rules — every
+permission granted explicitly, line by line, with no macro abstraction. The policy
+compiler and the macro infrastructure that makes modern SELinux policy maintainable
+grew directly from that foundational work. What today requires a single call to
+`manage_files_pattern()` once required dozens of explicit allow lines. Someone had to
+write those lines first to understand what needed to be abstracted. See
+xref:foundations/history/selinux-history.adoc[SELinux history] for the full technical lineage of
+that collaborative effort.
+
+RHEL 4 in 2004 was the visible result of that collective effort — the first mainstream
+enterprise distribution to ship SELinux enabled by default, bringing Orange Book-era
+security principles into commodity hardware at scale. RHEL 5 in 2006 added full MLS
+policy support, enabling the sensitivity level and category enforcement that UMRS builds
+upon today. See xref:foundations/history/five-eyes-interop.adoc[Five Eyes classification
+interoperability] for how SELinux MLS labels map to multinational classification
+frameworks.
+
+
+[mermaid]
+....
+%%{init: {'theme': 'dark', 'fontSize': '16px', 'flowchart': {'nodeSpacing': 50, 'rankSpacing': 60, 'padding': 20, 'subGraphTitleMargin': {'top': 10, 'bottom': 20}}, 'themeVariables': {'clusterBkg': '#071a0a', 'clusterBorder': '#071a0a', 'nodeBorder': '#555555', 'mainBkg': '#3a3a3a', 'nodeTextColor': '#ffffff', 'edgeLabelBackground': '#2a2a2a', 'lineColor': '#aaaaaa'}}}%%
+timeline
+    title SELinux Era
+    section SELinux Era
+        1992 : DTMach — NSA + SCC\ntype enforcement in Mach
+        1995 : DTOS released to universities\ndistributed trusted OS prototype
+        1998 : Loscocco et al. — Inevitability of Failure\nDAC insufficient · MAC necessary
+        1999 : Flask paper — Spencer Smalley et al.\nUSENIX · NSA + Utah + SCC
+        2000 : SELinux open sourced by NSA\nFlask → Linux Security Modules
+        2003 : SELinux merged — Linux 2.6\nmainstream kernel integration
+        2004 : RHEL 4 — SELinux targeted\nfirst mainstream SELinux distro
+        2004 : Trusted Solaris 8 EAL4\nCC certified · LSPP conformant
+        2005 : ↓ Modern Framework Era
+        2006 : RHEL 5 — SELinux MLS policy\nfull MLS enforcement in RHEL
+....
+
+== Modern Framework Era
+
+The modern era consolidates the lessons of fifty years into enforceable frameworks.
+NIST SP 800-53 <<nist800-53r5>> replaced the Orange Book's evaluation-centric model
+with a control-centric model — auditable, mappable, and applicable to any system
+regardless of its evaluation status. CMMC <<cmmc2024>> extended that control catalog
+into a supply chain enforcement mechanism with legal teeth. NSA's Raise the Bar
+initiative <<nsartb>> and the RAIN non-bypassability principle brought Anderson's 1972
+reference monitor concept into contemporary guidance in language that maps directly to
+modern Rust and SELinux implementations.
+
+RAIN — Redundant, Always Invoked, Independent Implementations, Non-Bypassable — is
+Anderson's three reference monitor properties restated for the modern cross-domain
+solution environment. Always Invoked is complete mediation. Non-Bypassable is tamper
+resistance. Independent Implementations is verifiability through redundancy. The
+concepts are identical. Only the vocabulary has changed.
+
+RHEL 10 with SELinux MLS enforcement, combined with IMA, dm-crypt, and a no-unsafe
+Rust policy, is the current state of the art for commodity high-assurance platforms.
+UMRS exists at this intersection — applying fifty years of formal security engineering
+to unclassified CUI protection using tools that were not available to the engineers who
+wrote the Orange Book. See xref:foundations/history/one-way-hashes.adoc[one-way hash algorithms]
+for the cryptographic primitives underpinning IMA integrity measurement, and
+xref:foundations/history/HACAMS.adoc[HACAMS lineage] for the high-assurance certification
+framework context in which UMRS operates.
+
+[mermaid]
+....
+%%{init: {'theme': 'dark', 'fontSize': '16px', 'flowchart': {'nodeSpacing': 50, 'rankSpacing': 60, 'padding': 20, 'subGraphTitleMargin': {'top': 10, 'bottom': 20}}, 'themeVariables': {'clusterBkg': '#071a0a', 'clusterBorder': '#071a0a', 'nodeBorder': '#555555', 'mainBkg': '#3a3a3a', 'nodeTextColor': '#ffffff', 'edgeLabelBackground': '#2a2a2a', 'lineColor': '#aaaaaa'}}}%%
+timeline
+    title Modern Framework Era
+    section Modern Framework Era
+        2005 : Common Criteria v3.0\nISO/IEC 15408 · current framework
+        2013 : NIST SP 800-53 r4\nmodern security control catalog
+        2020 : NIST SP 800-53 r5\ncurrent control framework
+        2019 : RHEL 8 SELinux MLS\nproduction-grade MLS policy
+        2022 : CMMC proposed rule\nDoD supply chain enforcement
+        2024 : CMMC Final Rule\n32 CFR 170 · effective Dec 2024
+        2024 : NSA RTB / RAIN\nRaise the Bar · modern assurance
+        2024 : RHEL 10 · UMRS\nkernel-level CUI enforcement
+....
+
+=== AI-Assisted Development in UMRS
+
+UMRS was developed from its inception in December 2025 using a structured
+AI-assisted development model. This is not AI as an autonomous actor — it is
+AI as a disciplined team member operating under human oversight at every stage.
+The workflow is deliberate, repeatable, and designed to produce auditable
+outcomes.
+
+[mermaid]
+....
+%%{init: {'theme': 'dark', 'fontSize': '14px', 'flowchart': {'nodeSpacing': 40, 'rankSpacing': 50, 'padding': 16, 'subGraphTitleMargin': {'top': 8, 'bottom': 16}}, 'themeVariables': {'clusterBkg': '#071a0a', 'clusterBorder': '#071a0a', 'nodeBorder': '#555555', 'mainBkg': '#3a3a3a', 'nodeTextColor': '#ffffff', 'edgeLabelBackground': '#2a2a2a', 'lineColor': '#aaaaaa'}}}%%
+flowchart TD
+    classDef research fill:#993C1D,stroke:#D85A30,color:#F5C4B3
+    classDef agents fill:#0F6E56,stroke:#1D9E75,color:#9FE1CB
+    classDef impl fill:#185FA5,stroke:#378ADD,color:#B5D4F4
+    classDef human fill:#854F0B,stroke:#BA7517,color:#FAC775
+    classDef docs fill:#534AB7,stroke:#7F77DD,color:#CECBF6
+
+    S1["Stage 1 — Research\nClaude Chat · ChatGPT · Gemini\nprovenance-tracked knowledge base"]:::research
+    S2["Stage 2 — Planning\nClaude Code · scope decisions\nmerge or new plan"]:::agents
+    S3["Stage 3 — Plan review\nsecurity-auditor · security-engineer · rust-developer\nresolve ambiguity before coding"]:::agents
+    S4["Stage 4 — Execution\nrust-developer · no unsafe\nNIST/CMMC/RTB annotations"]:::impl
+    S5["Stage 5 — Developer review ★ human\nquality · readability · simplification · reuse\nguest-coder and guest-admin usability test"]:::human
+    S6["Stage 6 — Multi-agent quality review\ntech-writer · security-engineer · security-auditor\naudit scrutiny · evidence · provenance"]:::agents
+    S7["Stage 7 — Documentation\nAPI docs · guides · patterns\nchangelog-updater · never an afterthought"]:::docs
+
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S7
+    S3 -- "revise plan" --> S2
+    S5 -- "rework" --> S4
+    S6 -- "escalate to human" --> S5
+    S7 -- "new plan" --> S2
+....
+
+_Legend: coral = AI chat tools · teal = Claude Code agents · blue = implementation · amber = ★ human judgment · purple = documentation_
+
+
+
+
+==== The UMRS AI Development Workflow
+
+**Stage 1 — Research**
+
+Complex security domain questions are researched interactively with AI chat
+interfaces — Claude, ChatGPT, and Gemini — deliberately consulting multiple
+models to gain different perspectives and avoid single-source bias. Research
+is grounded in a curated, provenance-tracked knowledge base of authoritative
+sources — NIST SPs, FIPS standards, CMMC guidance, SELinux documentation, and
+DISA STIGs. Every source is SHA-256 verified and manifested. See
+xref:ai-provenance/knowledge-system.adoc[The UMRS AI Knowledge System] for the
+full provenance architecture.
+
+**Stage 2 — Planning**
+
+All subsequent stages are executed using Claude Code — an agentic development
+environment running a specialized multi-agent team. New work enters the system
+as a plan. AI assists in determining whether new requirements fit within existing
+plans, should be merged with current work, or warrant a new plan entirely. Scope
+decisions are explicit and recorded. Nothing is implemented without a plan.
+
+**Stage 3 — Plan Review**
+
+Before execution, specialized Claude Code agents review each plan for clarity,
+correctness, and alignment:
+
+* `security-auditor` — validates compliance alignment and control coverage
+* `security-engineer` — assesses architectural soundness and threat model
+* `rust-developer` — evaluates technical feasibility and implementation approach
+
+Each agent provides structured feedback. Ambiguity and misalignment are resolved
+before a line of code is written.
+
+**Stage 4 — Execution**
+
+The plan is implemented by the `rust-developer` Claude Code agent under the
+project's strict coding rules — no unsafe code, strong typing with validation
+at construction, external test files only, NIST/CMMC/RTB annotations on all
+public items, and readability over cleverness. Coding conventions are maintained
+in `CLAUDE.md` and updated when new patterns emerge.
+
+**Stage 5 — Developer Review**
+
+The project lead reviews all output for:
+
+* Test quality and coverage — are the right things being tested?
+* Tool usability — does the interface serve the operator?
+* Code readability — can a future maintainer understand this without the original author?
+* Simplification opportunities — can this be simpler without sacrificing correctness?
+* Code reuse — is existing infrastructure being leveraged rather than duplicated?
+* Rule compliance — explicit preferences such as `if/then` over closure-style
+  constructs are enforced here
+
+Coding rules are updated when review findings reveal a gap.
+
+**Stage 6 — Multi-Agent Quality Review**
+
+After developer review, three specialized Claude Code agents perform independent
+passes:
+
+* `tech-writer` — reviews source code comments and documentation for clarity,
+  precision, and operator accessibility
+* `security-engineer` — reviews code for correctness, potential bugs, and
+  adherence to high-assurance patterns
+* `security-auditor` — reviews for proper NIST/CMMC/RTB control cross-references,
+  ensures user-facing output meets auditor expectations, validates evidence
+  handling and governance, and assesses whether the implementation would withstand
+  external audit scrutiny
+
+**Stage 7 — Documentation**
+
+Documentation is updated as a first-class deliverable, not an afterthought.
+API documentation, developer guides, architecture pages, and pattern descriptions
+are updated as part of the same work cycle that produced the code. The
+`changelog-updater` Claude Code agent maintains a structured record of every
+change.
+
+==== What This Means for Assurance
+
+This workflow does not replace engineering judgment — it amplifies it. The human
+project lead makes every scope, architecture, and quality decision. AI agents
+execute, review, and challenge. The result is a development process where
+compliance annotations are verified, test coverage is scrutinized, documentation
+stays current, and every decision traces back to an authoritative source.
+
+This is the responsible AI model that the NIST AI RMF <<nist-ai-rmf>> describes
+and that UMRS demonstrates in practice. The full provenance architecture is
+documented in xref:ai-provenance/knowledge-system.adoc[The UMRS AI Knowledge
+System].
+
+
+[bibliography]
+== References
+
+* [[[ctss1961]]] Corbató, F.J., Merwin-Daggett, M., Daley, R.C., _An Experimental
+  Time-Sharing System_, Proceedings of the Spring Joint Computer Conference, 1962.
+  MIT Computation Center.
+
+* [[[multics1965]]] Corbató, F.J. and Vyssotsky, V.A., _Introduction and Overview of
+  the Multics System_, Proceedings of the Fall Joint Computer Conference, 1965.
+
+* [[[multicians-security]]] Van Vleck, T., _Multics Security_,
+  https://multicians.org/security.html
+
+* [[[saltzer1974]]] Saltzer, J.H., _Protection and the Control of Information Sharing
+  in Multics_, Communications of the ACM, 17(7):388-402, July 1974.
+  https://dl.acm.org/doi/10.1145/361011.361067
+
+* [[[saltzer-schroeder1975]]] Saltzer, J.H. and Schroeder, M.D., _The Protection of
+  Information in Computer Systems_, Proceedings of the IEEE, 63(9):1278-1308,
+  September 1975.
+  https://dl.acm.org/doi/10.1145/361011.361067
+
+* [[[unix1974]]] Ritchie, D.M. and Thompson, K., _The UNIX Time-Sharing System_,
+  Communications of the ACM, 17(7):365-375, July 1974.
+
+* [[[anderson1972]]] Anderson, J.P., _Computer Security Technology Planning Study_,
+  ESD-TR-73-51, Volumes I & II, U.S. Air Force Electronic Systems Division,
+  Hanscom Field, Bedford, MA, October 1972.
+  https://csrc.nist.gov/files/pubs/conference/1998/10/08/proceedings-of-the-21st-nissc-1998/final/docs/early-cs-papers/ande72a.pdf
+
+* [[[bell-lapadula1973]]] Bell, D.E. and LaPadula, L.J., _Secure Computer Systems:
+  Mathematical Foundations_, MITRE Technical Report MTR-2547, 1973.
+
+* [[[biba1977]]] Biba, K.J., _Integrity Considerations for Secure Computer Systems_,
+  ESD-TR-76-372, U.S. Air Force Electronic Systems Division, April 1977.
+
+* [[[tcsec1983]]] U.S. Department of Defense, _Trusted Computer System Evaluation
+  Criteria_ (TCSEC — Orange Book), DoD 5200.28-STD, August 1983, updated 1985.
+
+* [[[itsec1991]]] Commission of the European Communities, _Information Technology
+  Security Evaluation Criteria_ (ITSEC), Version 1.2, June 1991.
+
+* [[[fc1992]]] National Institute of Standards and Technology / Communications
+  Security Establishment Canada, _Federal Criteria for Information Technology
+  Security_, Version 1.0, December 1992.
+
+* [[[cc1996]]] Common Criteria for Information Technology Security Evaluation,
+  Version 1.0, January 1996. ISO/IEC 15408.
+  https://www.commoncriteriaportal.org/
+
+* [[[dtmach1993]]] Fine, T. and Minear, S.E., _Assuring Distributed Trusted Mach_,
+  Proceedings IEEE Computer Society Symposium on Research in Security and Privacy,
+  pages 206-218, May 1993.
+
+* [[[loscocco1998]]] Loscocco, P.A., Smalley, S.D., Muckelbauer, P.A., Taylor, R.C.,
+  Turner, S.J., and Farrell, J.F., _The Inevitability of Failure: The Flawed Assumption
+  of Security in Modern Computing Environments_, Proceedings of the 21st National
+  Information Systems Security Conference, pages 303-314, October 1998.
+  https://www.nsa.gov/portals/75/images/resources/everyone/digital-media-center/publications/research-papers/the-inevitability-of-failure-paper.pdf
+
+* [[[flask1999]]] Spencer, R., Smalley, S., Loscocco, P., Hibler, M., Andersen, D.,
+  and Lepreau, J., _The Flask Security Architecture: System Support for Diverse
+  Security Policies_, Proceedings of the 8th USENIX Security Symposium, pages 123-139,
+  August 1999.
+  https://www.cs.utah.edu/flux/papers/flask-usenixsec99-abs.html
+
+* [[[selinux2000]]] National Security Agency, _Security-Enhanced Linux_, first release
+  under GNU GPL, December 22, 2000.
+  https://www.nsa.gov/research/selinux/
+
+* [[[selinux2003]]] Linux kernel 2.6.0-test3, SELinux merged into mainline kernel,
+  August 8, 2003.
+
+* [[[nist800-53r5]]] NIST Special Publication 800-53, Revision 5, _Security and
+  Privacy Controls for Information Systems and Organizations_, September 2020.
+  https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-53r5.pdf
+
+* [[[cmmc2024]]] Department of Defense, _Cybersecurity Maturity Model Certification
+  (CMMC) Program_, Final Rule, 32 CFR Part 170, 89 FR 83092, October 15, 2024.
+  https://dodcio.defense.gov/CMMC/
+
+* [[[nsartb]]] National Security Agency, _Cross Domain Solution Design and
+  Implementation Requirements: Raise the Bar Baseline_, National Cross Domain Strategy
+  & Management Office (NCDSMO), first published 2018, updated 2019.
+  RAIN: Redundant, Always Invoked, Independent Implementations, Non-Bypassable.

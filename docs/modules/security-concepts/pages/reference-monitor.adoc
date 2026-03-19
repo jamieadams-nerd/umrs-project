@@ -332,7 +332,7 @@ documents:
 * xref:rtb-vnssa.adoc[NSA RTB and the RAIN Principle]
 * xref:truth-concepts.adoc[Truth and trust concepts]
 * xref:integrity-and-provenance.adoc[Integrity and provenance]
-* xref:architecture:history/mls-history.adoc[MLS history]
+* xref:ROOT:foundations/history/mls-history.adoc[MLS history]
 
 === Implementation Patterns
 

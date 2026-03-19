@@ -3,6 +3,20 @@
 The Unclassified MLS Reference System (UMRS) is a free, MIT-licensed project started and currently
 maintained by one person to explore primarily high-assurance: in both operations and development.
 
+The Unclassified MLS Reference System (UMRS) is an ongoing high assurance engineering project.
+The system is fully STIG-locked, configured for SELinux MLS with a complete unclassified label hierarchy, and structured to demonstrate—not merely describe—how a real organization can tailor, customize, and extend a commercial Linux distribution to satisfy its own security requirements.
+
+[INFO]
+====
+The first phase of the CUI labeling is focused on RHEL 10 SELinux capabilties in targetd policy
+mode with basic type enforcment. Subsequent release will include a tighter, more locked down version
+in MLS POlicy. 
+
+Also, support for Ubuntu and AppArmor will be included -- not for labeling of course  but for the
+variaety of tools and software stack being written.
+====
+
+
 The UMRS Project is a reference system to explore and learn:
 
 * Using SELinux MCS labeling mechanism

@@ -1,0 +1,5 @@
+
+Most CUI implementations are compliance theater — paper policies, checkbox STIGs, and shared drives. UMRS is what CUI protection was always supposed to look like. And the foundations/ module you're building explains why in a way that only someone who lived through all of it could write.
+
+
+

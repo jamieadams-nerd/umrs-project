@@ -1,23 +1,10 @@
 .xref:index.adoc[Architecture Overview]
-[collapsible]
+
 * Security Model
 ** xref:kernel-files-tpi.adoc[Two-path independence (TPI)]
 ** xref:stig-methodology-comparison.adoc[STIG checks vs. UMRS contradiction detection]
-** xref:history/five-eyes-interop.adoc[Five Eyes classification interoperability]
+** xref:ROOT:foundations/history/five-eyes-interop.adoc[Five Eyes classification interoperability]
 
 * MLS Label Model
 ** xref:mls-label-model.adoc[MLS label model and CUI mapping]
 ** xref:cui-structure.adoc[CUI structure and handling]
-
-* Historical Context
-** xref:history/selinux-history.adoc[SELinux history]
-** xref:history/mls-history.adoc[MLS history]
-** xref:history/trusted-path-orange.adoc[Trusted path (Orange Book)]
-** xref:history/HACAMS.adoc[HACAMS lineage]
-** xref:history/ring-based-security.adoc[Ring-based security]
-** xref:history/ibm-zos-os390.adoc[IBM z/OS and OS/390]
-** xref:history/microsoft-nt-orange.adoc[Microsoft NT and Orange Book]
-** xref:history/one-way-hashes.adoc[One-way hash algorithms]
-** xref:history/case-studies.adoc[High-assurance failure case studies]
-** xref:history/mls-classified-talk.adoc[MLS and the classified world]
-** xref:history/high-availability-history.adoc[High availability vs high assurance]

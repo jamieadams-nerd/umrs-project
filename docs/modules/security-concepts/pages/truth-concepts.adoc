@@ -322,6 +322,6 @@ treatment of trust anchors and provenance verification.
 
 * xref:integrity-and-provenance.adoc[Integrity and provenance]
 * xref:reference-monitor.adoc[Reference monitor design]
-* xref:architecture:history/case-studies.adoc[High-assurance failure case studies]
+* xref:ROOT:foundations/history/case-studies.adoc[High-assurance failure case studies]
 * xref:patterns:pattern-non-bypassability.adoc[Non-Bypassability pattern]
 * xref:patterns:pattern-fail-closed.adoc[Fail-Closed pattern]

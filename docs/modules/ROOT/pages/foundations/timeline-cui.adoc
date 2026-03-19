@@ -1,0 +1,261 @@
+= Controlled Unclassified Information: A Timeline of Good Intentions and Slow Enforcement
+:description: From ad-hoc markings to kernel-level enforcement — the CUI program's long road to accountability
+
+Controlled Unclassified Information (CUI) occupies one of the most frustrating positions
+in the security landscape. It is not classified. It does not carry the weight of Top
+Secret compartments or the institutional infrastructure of the classified world.
+But it is sensitive. It can damage national security, expose acquisition strategies,
+reveal intelligence methods, compromise personnel, and undermine the defense industrial
+base — when it leaks. And it leaks. Repeatedly. Avoidably.
+
+The CUI program was established in 2010 to solve a problem the government had created
+for itself over decades: a chaotic patchwork of inconsistent markings — FOUO, SBU, LES,
+SENSITIVE, and dozens of others — that meant different things to different agencies and
+provided no consistent protection requirements. Fifteen years later, the enforcement
+mechanism that was always supposed to follow is finally arriving.
+
+UMRS was created in December 2025 to demonstrate what CUI protection looks like when
+it is implemented at the kernel level rather than the policy level — applying the same
+formal enforcement discipline the classified world has used for decades to unclassified
+information that deserves the same care.
+
+== The Pre-CUI Era — Marking Chaos
+
+Before 2010 there was no unified framework for unclassified sensitive information.
+Agencies invented their own markings. Contractors received information marked in
+ways that carried no consistent legal or technical protection requirement. The result
+was predictable: sensitive information flowed freely across boundaries it should never
+have crossed, protected by nothing more than informal convention and good intentions.
+
+The intelligence community, defense agencies, and law enforcement each maintained their
+own category systems. A contractor working across multiple agencies faced a maze of
+incompatible requirements with no authoritative reference. The information was
+sensitive. The protection was theater.
+
+[mermaid]
+....
+%%{init: {'theme': 'dark', 'fontSize': '16px', 'flowchart': {'nodeSpacing': 50, 'rankSpacing': 60, 'padding': 20, 'subGraphTitleMargin': {'top': 10, 'bottom': 20}}, 'themeVariables': {'clusterBkg': '#071a0a', 'clusterBorder': '#071a0a', 'nodeBorder': '#555555', 'mainBkg': '#3a3a3a', 'nodeTextColor': '#ffffff', 'edgeLabelBackground': '#2a2a2a', 'lineColor': '#aaaaaa'}}}%%
+timeline
+    title Pre-CUI Era — Marking Chaos
+    section Pre-CUI Era
+        1972 : FOUO — For Official Use Only\nDoD informal marking · no legal basis
+        1988 : Proliferation of ad-hoc markings\nFOUO · SBU · LES · SENSITIVE · dozens more
+        1995 : EO 12958 — classified information\nno equivalent for sensitive unclassified
+        2004 : 9/11 Commission Report\ninformation sharing failures · silos identified
+        2008 : IRTPA — intelligence reform\nunclassified sharing requirements highlighted
+        2010 : ↓ CUI Program established
+....
+
+== Establishment — The Program with No Teeth
+
+Executive Order 13556 <<eo13556>> in November 2010 established the CUI program under
+the National Archives and Records Administration (NARA) as Executive Agent. It
+mandated a single, government-wide framework to replace the chaotic marking zoo.
+It was a genuine step forward — but it contained a critical gap.
+
+The EO established the *framework* but not the *enforcement*. Agencies were directed
+to implement CUI requirements but given no deadline and no penalty for non-compliance.
+Contractors continued operating under inconsistent agency-specific requirements for
+years after the EO was signed. As one legal analysis noted, <citetitle>"the EO did not
+actually implement the CUI program so contractors continued to be uncertain what their
+obligations were"</citetitle> <<far-cui>>.
+
+The program existed on paper. In practice, little changed.
+
+[mermaid]
+....
+%%{init: {'theme': 'dark', 'fontSize': '16px', 'flowchart': {'nodeSpacing': 50, 'rankSpacing': 60, 'padding': 20, 'subGraphTitleMargin': {'top': 10, 'bottom': 20}}, 'themeVariables': {'clusterBkg': '#071a0a', 'clusterBorder': '#071a0a', 'nodeBorder': '#555555', 'mainBkg': '#3a3a3a', 'nodeTextColor': '#ffffff', 'edgeLabelBackground': '#2a2a2a', 'lineColor': '#aaaaaa'}}}%%
+timeline
+    title Establishment Era
+    section Establishment Era
+        2010 : EO 13556 — CUI program established\nNARA as Executive Agent · unified framework
+        2011 : DFARS proposed rule 7000\nsafeguarding unclassified information · DIB
+        2013 : DFARS 252.204-7000\nprotection of sensitive data on non-federal systems
+        2015 : NIST SP 800-171 published\n110 controls · 14 control families · CUI protection
+        2016 : NARA Final Rule 32 CFR Part 2002\nCUI program codified · still no acquisition hook
+        2016 : DFARS 252.204-7012\nDoD contractors must implement NIST 800-171
+        2017 : ↓ Self-Attestation Era — compliance on the honor system
+....
+
+== Self-Attestation Era — Compliance Theater
+
+DFARS 252.204-7012 <<dfars7012>> required DoD contractors to self-attest compliance
+with NIST SP 800-171. There was no independent verification. No third-party assessment.
+No audit mechanism. Contractors submitted scores to the Supplier Performance Risk System
+(SPRS) that were entirely self-reported.
+
+The results were precisely what you would expect. Organizations with poor security
+postures submitted optimistic scores. The incentive was to pass, not to comply.
+Sensitive defense information continued to flow through contractor systems protected by
+little more than a checkmark on a form and an optimistic SPRS score.
+
+Meanwhile, adversaries — particularly nation-state actors — were systematically
+targeting the Defense Industrial Base precisely because CUI in contractor systems was
+a soft target. The F-35 technical specifications. Submarine propulsion data. Acquisition
+strategies. Personnel files. The damage from CUI breaches in this era is documented,
+ongoing, and deeply underreported.
+
+[mermaid]
+....
+%%{init: {'theme': 'dark', 'fontSize': '16px', 'flowchart': {'nodeSpacing': 50, 'rankSpacing': 60, 'padding': 20, 'subGraphTitleMargin': {'top': 10, 'bottom': 20}}, 'themeVariables': {'clusterBkg': '#071a0a', 'clusterBorder': '#071a0a', 'nodeBorder': '#555555', 'mainBkg': '#3a3a3a', 'nodeTextColor': '#ffffff', 'edgeLabelBackground': '#2a2a2a', 'lineColor': '#aaaaaa'}}}%%
+timeline
+    title Self-Attestation Era
+    section Self-Attestation Era
+        2017 : DFARS 7012 compliance required\nself-attestation · no verification · honor system
+        2018 : DIB breach pattern emerges\nnation-state targeting of contractor CUI
+        2019 : CMMC 1.0 announced\nDoD acknowledges self-attestation has failed
+        2020 : NIST SP 800-171 Rev 2\nrevised controls · 110 requirements
+        2020 : DoDI 5200.48 published\nCUI marking requirements for DoD
+        2020 : CMMC 1.0 interim rule\nfive-level model · third-party assessment proposed
+        2021 : CMMC 2.0 announced\nsimplified to three levels · industry feedback
+        2022 : ↓ Enforcement Era begins
+....
+
+== Enforcement Era — Teeth Finally Added
+
+CMMC 2.0 <<cmmc2024>> transformed CUI compliance from a self-reported checkbox into a
+legally binding, third-party assessed condition of contract award. The Final Rule,
+published October 15, 2024 and codified in 32 CFR Part 170, established the regulatory
+foundation. The companion DFARS acquisition rule <<dfars7021>>, which cleared regulatory
+review in August 2025, integrates CMMC into the contracting process itself — making
+certification a condition of contract eligibility.
+
+NIST SP 800-171 Revision 3 <<nist171r3>>, published May 2024, updated the control
+framework while DoD's class deviation maintained Rev 2 as the operative standard for
+existing contracts during the transition. The FAR CUI Rule <<far-cui>>, advancing
+through rulemaking in 2025, extends CUI protection requirements beyond the Defense
+Industrial Base to all federal contractors — the first time CUI enforcement reaches
+the full federal supply chain.
+
+The program established in 2010 is finally acquiring the enforcement infrastructure
+it always needed. Fourteen years later.
+
+[mermaid]
+....
+%%{init: {'theme': 'dark', 'fontSize': '16px', 'flowchart': {'nodeSpacing': 50, 'rankSpacing': 60, 'padding': 20, 'subGraphTitleMargin': {'top': 10, 'bottom': 20}}, 'themeVariables': {'clusterBkg': '#071a0a', 'clusterBorder': '#071a0a', 'nodeBorder': '#555555', 'mainBkg': '#3a3a3a', 'nodeTextColor': '#ffffff', 'edgeLabelBackground': '#2a2a2a', 'lineColor': '#aaaaaa'}}}%%
+timeline
+    title Enforcement Era
+    section Enforcement Era
+        2022 : CMMC proposed rule published\n60-day public comment period
+        2024 : NIST SP 800-171 Rev 3\nupdated controls · organization-defined parameters
+        2024 : CMMC Final Rule — 32 CFR 170\npublished Oct 15 · effective Dec 16 2024
+        2025 : DFARS acquisition rule clears review\nCMMC in contract eligibility · Aug 2025
+        2025 : FAR CUI Rule advancing\nextends to all federal contractors
+        2025 : UMRS Phase 1 complete\nCUI labels in MCS · targeted SELinux · user awareness
+        2026 : ↓ Kernel Enforcement Era — UMRS Phase 2
+....
+
+== Kernel Enforcement Era — What CUI Protection Should Have Always Been
+
+The CUI program's trajectory — from ad-hoc markings, to policy framework, to
+self-attestation, to third-party audit — has consistently treated CUI protection
+as an administrative and procedural problem. Policies, plans, attestations, audits.
+
+The classified world solved this problem differently. It solved it at the kernel level.
+Mandatory access controls. Security labels enforced by the reference monitor.
+Bell-LaPadula no-read-up, no-write-down implemented in hardware and operating system
+policy — not in a training slide or a contractor's self-assessment form.
+
+UMRS applies that same discipline to CUI. Not because the regulatory framework requires
+it yet — but because it is the correct engineering answer to the problem, and because
+the regulatory framework is clearly moving in that direction.
+
+=== UMRS CUI Implementation Status
+
+**Phase 1 — Complete (December 2025)**
+
+CUI category labels are loaded into the Multi-Category Security (MCS) translation
+layer under targeted SELinux policy. Users see human-readable CUI handling requirement
+labels on files and processes. The system makes CUI visible — operators know what they
+are handling and what the requirements are.
+
+This is awareness enforcement. The label is present. The policy is present.
+The human is informed. But the kernel is not yet enforcing the boundary.
+
+**Phase 2 — Planned**
+
+MLS (Multi-Level Security) policy replaces targeted policy. The SELinux reference
+monitor enforces CUI boundaries at the kernel level — no read-up, no write-down,
+no process can bypass the label. dm-crypt encrypts CUI data at rest. IMA measures
+integrity of CUI-handling binaries before execution. The system enforces the boundary
+whether or not the human remembers to.
+
+This is the difference between a sign that says "authorized personnel only" and a
+locked door. Phase 1 installs the sign. Phase 2 installs the lock.
+
+[mermaid]
+....
+%%{init: {'theme': 'dark', 'fontSize': '16px', 'flowchart': {'nodeSpacing': 50, 'rankSpacing': 60, 'padding': 20, 'subGraphTitleMargin': {'top': 10, 'bottom': 20}}, 'themeVariables': {'clusterBkg': '#071a0a', 'clusterBorder': '#071a0a', 'nodeBorder': '#555555', 'mainBkg': '#3a3a3a', 'nodeTextColor': '#ffffff', 'edgeLabelBackground': '#2a2a2a', 'lineColor': '#aaaaaa'}}}%%
+timeline
+    title Kernel Enforcement Era
+    section Kernel Enforcement Era
+        2025 : UMRS Phase 1 complete\nCUI labels in MCS · targeted SELinux
+        2025 : Label awareness deployed\noperators see CUI handling requirements
+        2026 : UMRS Phase 2 — MLS enforcement\nSELinux MLS policy · kernel-level boundaries
+        2026 : dm-crypt CUI encryption\ndata at rest protected · FIPS 140-3 validated
+        2026 : IMA integrity measurement\nCUI binary integrity verified before execution
+        2026 : Full kernel enforcement\nno bypass · no workaround · reference monitor
+....
+
+== Why This Matters
+
+The CUI breach case studies accumulate year after year. Contractor laptops. Unencrypted
+file shares. Misconfigured cloud storage. Email to the wrong recipient. In almost every
+case, the information was marked. The policy existed. The training had been delivered.
+And none of it was enough because none of it was enforced at the level where enforcement
+actually works — the kernel.
+
+The classified world learned this lesson in the 1970s and 1980s. The Orange Book, the
+reference monitor concept, Bell-LaPadula — all of these emerged from the recognition
+that administrative controls fail and technical controls are necessary. Mandatory access
+control at the kernel level is not optional paranoia. It is the correct engineering
+response to the problem of protecting sensitive information on systems that humans
+operate under time pressure with imperfect attention.
+
+CUI deserves the same treatment. The regulatory framework is now demanding it.
+UMRS delivers it.
+
+[bibliography]
+== References
+
+* [[[eo13556]]] Executive Order 13556, _Controlled Unclassified Information_,
+  November 4, 2010. 75 FR 68675.
+  https://www.archives.gov/cui/registry/cui-policy/executive-order-13556.html
+
+* [[[nist171r1]]] NIST Special Publication 800-171 Revision 1, _Protecting Controlled
+  Unclassified Information in Nonfederal Systems and Organizations_, June 2015.
+  https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-171r1.pdf
+
+* [[[nist171r2]]] NIST Special Publication 800-171 Revision 2, _Protecting Controlled
+  Unclassified Information in Nonfederal Systems and Organizations_, February 2020.
+  https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-171r2.pdf
+
+* [[[nist171r3]]] NIST Special Publication 800-171 Revision 3, _Protecting Controlled
+  Unclassified Information in Nonfederal Systems and Organizations_, May 14, 2024.
+  https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-171r3.pdf
+
+* [[[dfars7012]]] Defense Federal Acquisition Regulation Supplement, DFARS Clause
+  252.204-7012, _Safeguarding Covered Defense Information and Cyber Incident Reporting_,
+  October 2016.
+
+* [[[dfars7021]]] Defense Federal Acquisition Regulation Supplement, DFARS Clause
+  252.204-7021, _Cybersecurity Maturity Model Certification Requirements_,
+  cleared regulatory review August 25, 2025, published September 10, 2025.
+
+* [[[cmmc2024]]] Department of Defense, _Cybersecurity Maturity Model Certification
+  (CMMC) Program_, Final Rule, 32 CFR Part 170, 89 FR 83092, October 15, 2024.
+  Effective December 16, 2024.
+  https://dodcio.defense.gov/CMMC/
+
+* [[[nara2016]]] National Archives and Records Administration, Final Rule,
+  32 CFR Part 2002, _Controlled Unclassified Information_, September 14, 2016.
+  81 FR 63324.
+
+* [[[dodi520048]]] Department of Defense Instruction 5200.48, _Controlled Unclassified
+  Information_, March 6, 2020.
+  https://www.esd.whs.mil/Portals/54/Documents/DD/issuances/dodi/520048p.pdf
+
+* [[[far-cui]]] FAR Council, Proposed Rule, FAR Case 2017-016, _Controlled Unclassified
+  Information_, January 2025. Final rule advancing through rulemaking 2025-2026.
+
+

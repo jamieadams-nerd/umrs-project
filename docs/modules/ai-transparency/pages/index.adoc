@@ -82,5 +82,5 @@ For auditors who need more depth, start at xref:auditor-guide.adoc[Auditor's Gui
 
 == See Also
 
-* xref:ROOT:what-is-umrs.adoc[What Is UMRS?] — project context
+* xref:ROOT:introduction.adoc[Introduction to UMRS] — project context
 * xref:ROOT:introduction.adoc[Introduction to UMRS] — onboarding for new contributors

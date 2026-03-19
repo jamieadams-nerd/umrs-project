@@ -1,17 +1,33 @@
 = Scope and Audience
 
-This document describes the design, configuration, integration, and operation of the Unclassified MLS Reference System (UMRS). It is intended to explain how mandatory handling labels are defined, enforced, preserved, and audited on unclassified systems using operating system–level controls and selected enterprise service integrations.
+This document collection describes the design, configuration, integration, and operation of the Unclassified MLS Reference System (UMRS). It is intended to explain how mandatory handling labels are defined, enforced, preserved, and audited on unclassified systems using operating system–level controls and selected enterprise service integrations.
 
-The document focuses on architectural intent and enforcement behavior rather than prescriptive organizational policy. It is written to support understanding, evaluation, and correct deployment of UMRS in environments where unclassified information nonetheless carries mandatory handling requirements.
+The UMRS focuses on architectural intent and enforcement behavior rather than prescriptive organizational policy. It is written to support understanding, evaluation, and correct deployment of UMRS in environments where unclassified information nonetheless carries mandatory handling requirements.
 
 == Intended Audience
 
-This document is intended for the following audiences:
+This document collection is intended for the following audiences:
+
+*New engineers* will find concept introductions, architecture background, and
+developer guides that explain both the what and the why — including why
+high-assurance patterns exist and what threat they defeat.
+
+*Security auditors* will find precise control citations (NIST 800-53, CMMC,
+NSA RTB), auditable design rationale, and compliance framework documentation
+that traces enforcement decisions to their governing standards.
+
+*Potential adopters* will find honest descriptions of what the system does,
+what is stable, what is prototype, and how to evaluate whether UMRS fits their
+environment. Organizations using UMRS should adapt the MLS label hierarchy to
+their own sensitivity categories, review and extend the SELinux policy for their
+specific application set, and verify the STIG baseline against their deployment
+environment.
 
 * System architects and engineers responsible for designing secure Linux-based platforms requiring mandatory access control.
 * System administrators responsible for installing, configuring, and operating UMRS-enabled systems.
 * Security engineers and assessors evaluating enforcement mechanisms, label handling, and auditability.
 * Auditors and reviewers seeking to understand how handling requirements are preserved and evidenced within unclassified environments.
+
 
 Readers are expected to be familiar with Linux system administration concepts. Familiarity with SELinux, access control models, and security auditing is beneficial but not strictly required.
 

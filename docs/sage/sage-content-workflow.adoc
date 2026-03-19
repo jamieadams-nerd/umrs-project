@@ -1,0 +1,691 @@
+= Sage Content Workflow: From Idea to Published Post
+:description: The repeatable process for producing outreach content — validated once, followed every time.
+:toc: left
+:toclevels: 3
+
+== Purpose
+
+This document is the operational playbook for Sage content production.
+It reconstructs the workflow Jamie and Sage executed together to produce the first blog post —
+"Your CUI (Controlled Unclassified Information) Policy Is a Sign. Here Is How to Build the Lock." —
+and codifies it as the repeatable process for all future content.
+
+Jamie's principle applies here: consistency breeds predictability.
+Every post produced with this workflow will have the same bones,
+the same quality gates, and the same honest relationship with the codebase.
+
+---
+
+== Roles
+
+[cols="1,3"]
+|===
+| Role | Responsibility
+
+| **Sage**
+| Content author, researcher, fact-checker, draft writer, revision handler.
+  Sage does not publish. Sage does not edit files Jamie is actively reviewing.
+
+| **Jamie**
+| Idea source, domain authority, personal voice, reviewer, approver, publisher.
+  Jamie has final say on every word that goes public. Jamie converts to Markdown for GitHub Pages automation.
+
+| **Orchestrator / Researcher**
+| Called in when Sage needs cross-agent support — fact-checking against codebase,
+  standards mapping, capability verification. Not a permanent fixture; invoked on demand.
+
+| **Rusty** (Rust Developer)
+| The codebase authority. When you need to verify what a crate or function actually does
+  vs what the docs say — Rusty knows.
+
+| **The IRS** (Security Auditor)
+| Compliance validation. When a post makes NIST, CMMC, or RTB mapping claims that need
+  a second opinion before they go public — The IRS signs off.
+
+| **The Librarian** (Tech Writer)
+| Antora documentation structure and location. When you need to know where a concept
+  lives in the docs, or need to pull content from a specific module.
+
+| **The Imprimatur** (Senior Tech Writer)
+| High-level editorial review. When you want structural feedback on a piece before
+  Jamie sees it.
+
+| **Von Neumann** (Security Engineer)
+| SELinux policy, deployment, and operations. When you are writing about how UMRS
+  is deployed, configured, or hardened.
+
+| **Researcher**
+| Standards documents, NIST SPs, STIGs, CVEs, RFCs. When you need authoritative
+  citations or want to verify a document version.
+|===
+
+NOTE: To reach any teammate, post an entry to `.claude/agent-memory/cross-team/notes.md`
+using the format documented at the top of that file, or ask the Orchestrator directly
+in conversation.
+
+---
+
+== The Workflow
+
+=== Step 1 — Onboarding (Once Per Session)
+
+Before writing anything, Sage reads the current project state.
+
+This playbook lives at `docs/sage/sage-content-workflow.adoc`.
+Read it at the start of every session before writing anything.
+
+==== What Sage reads
+
+. `.claude/agent-memory/sage/` — full memory index, all memory files.
+. `.claude/agent-memory/cross-team/notes.md` — cross-team board. Check for open entries
+  addressed to `sage` or `all`. Mark entries `resolved` when acted on.
+. `CLAUDE.md` — project rules, tooling, hard constraints.
+. `.claude/ARCHITECTURE.md` — workspace layout and crate structure.
+. `.claude/ROADMAP.md` — goals (G1–G10), milestones (M1–M5), strategic direction.
+. `docs/modules/ROOT/pages/foundations/` — narrative material: timelines, history, the assurance pendulum.
+. `docs/modules/ai-transparency/pages/` — AI development model (needed for author blurb and credibility claims).
+. `docs/modules/patterns/pages/` — high-assurance pattern library (technical depth for engineer-facing content).
+. `docs/modules/security-concepts/pages/` — reference monitor, truth concepts, MLS fundamentals.
+. `.claude/plans/` — active plans, so Sage knows what is in-progress vs complete.
+. `.claude/CHANGELOG.md` — recent completed work (source of content opportunities).
+
+==== Why this matters
+
+Content that misstates what UMRS does or implies Phase 2 (planned) features are complete
+damages credibility in a community that will check. Onboarding grounds every content decision
+in the actual current state of the project.
+
+==== Rule
+
+Never write from memory alone. Read the source before every session.
+
+---
+
+=== Step 2 — Opportunity Identification
+
+After onboarding, Sage identifies content opportunities.
+
+==== The rule
+
+**Only pitch ideas based on completed work.**
+Planned capabilities are not content yet. They become content when they ship.
+
+==== How to identify opportunities
+
+. Review `.claude/CHANGELOG.md` for recently completed milestones.
+. Cross-reference `.claude/ROADMAP.md` — which goals have shipped work under them?
+. Check `sage-content-history.md` — what angles have already been used?
+. Look for the intersection: *engineering problem → completed UMRS capability → audience who cares.*
+
+==== What to pitch
+
+Present Jamie with 2–4 concrete options. For each, include:
+
+- **Hook** — the opening sentence or story angle.
+- **Audience** — who specifically this speaks to.
+- **Platform** — where it goes (blog, YouTube, paper).
+- **UMRS capability** — the specific completed work it showcases.
+- **Why now** — the external event or context that makes it timely.
+
+==== What NOT to pitch
+
+- Anything that requires claiming Phase 2 features are complete.
+- Anything that implies government endorsement.
+- Conference talks (Jamie has mobility limitations — flag CFPs as awareness items only).
+
+---
+
+=== Step 3 — Jamie Selects
+
+Jamie picks one. That selection is the active content unit. Everything else goes to a queue.
+
+Sage does not start writing until Jamie has selected.
+
+---
+
+=== Step 4 — Research
+
+Before drafting, Sage builds the factual foundation.
+
+==== What to research
+
+Based on the selected topic, identify and read:
+
+. The primary documentation sources (timeline pages, security-concepts pages, pattern docs).
+. Any relevant entries in `refs/` — standards documents, reports, reference material.
+. The specific crate or module in the codebase that demonstrates the capability being described.
+
+==== Research output
+
+Sage produces a brief internal summary (kept in chat, not written to a file unless it's substantial):
+
+- Key facts confirmed.
+- Specific citations available.
+- Anything that could not be verified — flagged explicitly, not assumed.
+
+==== Rule
+
+If a claim cannot be traced to a doc, a standard, or the codebase — it does not go in the post.
+
+==== When research hits a wall
+
+Not every question has an answer in the documentation. When research stalls:
+
+- **RAG lookup first** — run the `rag-query` skill against the available collections before
+  escalating. This covers the CPU security corpus, standards documents, and other ingested material.
+- **Rusty** — when the question is about what the code actually does. "Does `umrs-selinux`
+  expose CUI label metadata as a typed API or as a raw string?" Rusty reads the source.
+- **Researcher** — when the question is a standards version, document availability, or
+  authoritative citation. "Is this NIST SP 800-171 Rev 3 control mandatory or recommended?"
+- **The IRS** — when a compliance mapping is uncertain and you need validation before
+  committing it to a draft.
+
+Post your question to `.claude/agent-memory/cross-team/notes.md` using the format at the
+top of that file. The Orchestrator routes it to the right agent.
+
+---
+
+=== Step 5 — First Draft
+
+Sage writes the first draft.
+
+==== File location
+
+New content goes to `docs/sage/blogs/` (blog posts) or `docs/sage/papers/` (white papers, abstracts, scripts).
+
+Do not use `docs/new-stuff/` — that is the general staging area for other agents. Sage has its own home.
+
+==== File naming convention
+
+----
+blog-<slug>.adoc
+paper-<slug>.adoc
+----
+
+Use lowercase kebab-case. The slug captures the core concept, not the full title.
+Example: `blog-cui-sign-lock.adoc`
+
+==== Draft structure (blog posts)
+
+. **Hook** — a story, a question, or a surprising fact. Not a definition.
+. **The problem** — what breaks, what costs money, what keeps people up at night.
+. **The historical context** — why this problem exists and where the solution comes from.
+. **What UMRS actually does** — Phase 1 only, accurate, specific.
+. **The technical substance** — one concrete example, code snippet, or architectural fact.
+. **The lineage / credibility** — why this approach is grounded in 50 years of prior work.
+. **Call to action (CTA)** — one concrete next step. Clone it. Read a doc. Watch a video.
+. **Author blurb** — mandatory. See <<author-blurb>>.
+
+==== Length targets
+
+[cols="1,2"]
+|===
+| Audience | Target length
+
+| General / compliance-focused
+| 800–1,000 words
+
+| Security engineer / technical
+| 1,000–1,500 words
+
+| Academic / formal
+| 2,000+ words (white paper format)
+|===
+
+Tight is better. If it feels long, it is too long. "No eye-glazing" is the test.
+
+==== Readability Standards
+
+Hard ceilings, not guidelines.
+
+[cols="1,3"]
+|===
+| Unit | Rule
+
+| Sentence length
+| Target 15–25 words. Hard ceiling: 35 words. Break any sentence over 35 words into two.
+
+| Paragraph length
+| 3–5 sentences. Hard ceiling: 6 sentences. One point per paragraph.
+
+| Sentence rhythm
+| Vary length deliberately. A short sentence after a long one lands harder than two
+  medium sentences. Short punchy sentences that already work — leave them alone.
+
+| One idea per sentence
+| Never join two distinct claims with "and." Make them separate sentences.
+
+| Body word count
+| Count body text only — everything before the References section, excluding attribute
+  lines, comment lines, section headings, and the author blurb. Code spans and file
+  paths each count as one word.
+|===
+
+==== Acronym rule
+
+Every abbreviation and acronym is spelled out on first use. No exceptions.
+Write the full term, then the abbreviation in parentheses.
+
+----
+Multi-Level Security (MLS)
+Controlled Unclassified Information (CUI)
+Linux Security Modules (LSM)
+National Institute of Standards and Technology (NIST)
+----
+
+After first use, the abbreviation alone is acceptable within the same document.
+
+This applies to all terms including: LSM, MAC (Mandatory Access Control), DAC (Discretionary Access Control),
+TPI (Two-Path Independence), MCS (Multi-Category Security), NARA (National Archives and Records Administration),
+DFARS (Defense Federal Acquisition Regulation Supplement), SSP (System Security Plan), SPRS (Supplier Performance Risk System),
+TCSEC (Trusted Computer System Evaluation Criteria), FIPS (Federal Information Processing Standard), IMA (Integrity Measurement Architecture),
+EVM (Extended Verification Module), RTB (Reference Technical Baseline), AVC (Access Vector Cache), TCB (Trusted Computing Base).
+If it is an abbreviation, expand it.
+
+---
+
+=== Step 6 — Jamie Review Round 1
+
+Jamie reads the draft. This is the domain authority review.
+
+==== What Jamie looks for
+
+- **Personal voice accuracy** — paragraphs written in Jamie's voice must match how Jamie actually speaks and what Jamie actually experienced.
+- **Technical accuracy** — does the description of UMRS match reality? Does anything overstate current state?
+- **Narrative flow** — does this read like something Jamie would actually publish?
+- **Anything that feels off** — Jamie's instinct is the first line of defense.
+
+==== What Sage does during this step
+
+*Nothing.* Sage does not touch the file while Jamie is reviewing.
+
+If Sage notices something that needs fixing (acronym expansion, a word choice issue), Sage lists the suggested changes in chat. Jamie applies them — or tells Sage to apply them after the review is complete.
+
+CAUTION: Editing a file while Jamie has it open in an editor causes lost work. Ask "do you have this open?" before making any edit during or after a review session.
+
+---
+
+=== Step 7 — Accuracy Correction Round
+
+After Jamie's review identifies accuracy issues, Sage and the Orchestrator verify the current project state.
+
+==== When this step is needed
+
+When the first draft overstates capabilities, understates depth, or describes something that has changed since the documentation was written.
+
+For Blog Post #1, the issue was: the original draft described UMRS as enforcing CUI boundaries at the kernel level — which is Phase 2. Phase 1 is label-awareness enforcement. The distinction matters enormously for credibility.
+
+==== How to run this step
+
+. Sage reads the relevant codebase files directly — the actual Rust source, the catalog file, the module-level docs.
+. Orchestrator agent reviews documentation and cross-checks claims.
+. Sage produces a corrected description of what UMRS actually does at this stage.
+. Present to Jamie for confirmation before rewriting.
+
+==== The Phase 1 / Phase 2 rule
+
+This is non-negotiable:
+
+- **Phase 1 (complete):** CUI (Controlled Unclassified Information) labels loaded in MCS (Multi-Category Security) under targeted SELinux (Security-Enhanced Linux) policy. Human-readable label rendering. Users see CUI handling requirements on files and processes. Label-awareness enforcement.
+- **Phase 2 (planned):** MLS (Multi-Level Security) policy replacing targeted policy. dm-crypt encryption. IMA (Integrity Measurement Architecture) integrity measurement. Assessment engine.
+
+Never claim Phase 2 as complete. Not even as "coming soon" in a way that implies it is nearly there.
+
+---
+
+=== Step 8 — Jamie Provides Domain Insight
+
+After accuracy correction, Jamie adds depth that only comes from firsthand knowledge.
+
+This is not a review step — it is a knowledge transfer step.
+
+==== What this looks like
+
+Jamie explains concepts that are not documented anywhere yet:
+
+- The architectural decision behind a design choice.
+- The distinction between two similar-sounding concepts (orthogonal vs hierarchical category model).
+- The depth of a data structure (the CUI catalog has 23 top-level categories, 48 subcategories; Law Enforcement and Investigation alone has 17 subcategories).
+- The founding question that drove a technical decision.
+
+==== What Sage does with this
+
+- Incorporates it directly into the relevant section.
+- Does not interpret or embellish — captures it as accurately as possible.
+- After incorporating, reads back the section to Jamie for confirmation.
+
+---
+
+=== Step 9 — Major Rewrite (When Needed)
+
+When a section needs to be rebuilt from scratch based on Steps 7 and 8, Sage does a targeted rewrite.
+
+==== Scope discipline
+
+Rewrite the affected section only. Do not touch sections Jamie has already approved.
+Ask explicitly: "Which sections should I leave alone?"
+
+==== How to signal a major change
+
+Before submitting a major rewrite, tell Jamie what changed and why:
+
+----
+"I've rebuilt the 'What UMRS Actually Is' section. The changes:
+- Replaced 'enforcement' language with accurate Phase 1 description
+- Added orthogonal vs hierarchical framing for the category model
+- Included catalog depth (23 categories / 48 subcategories) as concrete evidence
+- Removed any implication that kernel-level enforcement is current"
+----
+
+This gives Jamie context without making them diff the whole file.
+
+---
+
+=== Step 10 — Research Validation (Optional, High-Value)
+
+For claims that involve standards compliance — particularly NIST (National Institute of Standards and Technology) SP 800-171, CMMC (Cybersecurity Maturity Model Certification), or DFARS mapping — invoke the Researcher agent to validate.
+
+For quick lookups before escalating to the Researcher, run the `rag-query` skill yourself.
+The RAG collections include ingested standards material and may resolve the question without
+a full cross-agent request.
+
+==== For Blog Post #1
+
+The Researcher agent mapped all 7 UMRS capabilities described in the post to mandatory NIST SP 800-171 Rev 3 requirements. Every capability was confirmed as mandated — not optional, not recommended. "Not a 'should', a 'shall'."
+
+This validation:
+
+. Confirmed the factual accuracy of the compliance claims.
+. Produced a reference document (`refs/reports/umrs-capabilities-800-171r3-mapping.md`) that compliance-focused readers can consult for detail.
+. Justified the language used in the Lineage section without requiring an eye-glazing table in the post.
+
+==== When to use this step
+
+- Any post making standards compliance claims.
+- Any post describing UMRS capabilities in the context of regulatory requirements.
+- Anytime the accuracy of a specific control mapping is uncertain.
+
+==== Output
+
+Request a written mapping document in `refs/reports/`. Link it from the CTA (Call to Action) section of the post. Compliance readers will want the detail; non-compliance readers skip it.
+
+---
+
+=== Step 11 — Final Polish
+
+Light touch only. The goal is to fix specific issues, not improve everything.
+
+==== What final polish covers
+
+- Fix any remaining acronyms not expanded on first use.
+- Fix any awkward sentence breaks or formatting artifacts.
+- Verify all citations use canonical form: `NIST SP 800-53`, `NIST SP 800-171`, `NSA RTB`, `CMMC`.
+- Confirm the author blurb is present and complete (see <<author-blurb>>).
+- Confirm the CTA (Call to Action) is specific: a URL, a command, a file path — not a vague invitation.
+- Verify any external URLs are noted as needing confirmation before publishing (GitHub repo URL, YouTube channel URL).
+
+==== What final polish does NOT do
+
+- Expand the scope of the post.
+- Add new sections.
+- Change Jamie's personal paragraphs.
+- "Improve" anything that is already working.
+
+If it reads well and it is accurate, it is done.
+
+---
+
+=== Step 12 — File Organization and Dual Format
+
+After final polish, confirm files are in the right place and both formats exist.
+
+==== Directory structure
+
+----
+docs/sage/
+  blogs/                        ← active drafts and ready-to-publish posts
+    blog-cui-sign-lock.adoc     ← AsciiDoc source (canonical)
+    blog-cui-sign-lock.md       ← Markdown version (for GitHub Pages automation)
+    blog-cui-sign-lock/         ← companion assets (images, diagrams) if any
+  papers/                       ← white papers, abstracts, YouTube scripts
+  published/                    ← content that has gone live (moved here after publishing)
+----
+
+==== Dual format rule
+
+Every post must exist in both AsciiDoc (`.adoc`) and Markdown (`.md`).
+
+- **AsciiDoc** is the canonical source. All editing happens here. The `.adoc` version
+  may be archived into the Antora documentation site later.
+- **Markdown** is the publishing format. Jamie's GitHub Pages automation ingests `.md`
+  files. Sage produces the `.md` conversion when Jamie approves the final `.adoc`.
+
+When converting, preserve all content including admonitions, code blocks, and inline
+formatting. Map AsciiDoc constructs to their Markdown equivalents:
+
+[cols="1,1"]
+|===
+| AsciiDoc | Markdown
+
+| `== Heading` | `## Heading`
+| `=== Subheading` | `### Subheading`
+| `[cols="1,2"]` tables | Markdown pipe tables
+| `NOTE:` / `TIP:` / `WARNING:` | Blockquote with bold label (e.g., `> **NOTE:**`)
+| `----` listing blocks | Triple-backtick fenced code blocks
+| `_italic_` | `*italic*`
+| `*bold*` | `**bold**`
+| `xref:page.adoc[text]` | Standard `[text](url)` links
+|===
+
+==== Visual assets — images and diagrams
+
+Blog posts and papers may include accompanying images or Mermaid diagrams.
+
+**Mermaid diagrams:**
+
+- Mermaid is supported natively in GitHub Markdown (renders in `.md` files on GitHub).
+- Mermaid is NOT natively supported in AsciiDoc/Antora — use a rendered `.png` or `.svg`
+  export with an `image::` macro in the `.adoc` version.
+- In the `.md` version, use fenced Mermaid blocks:
++
+----
+```mermaid
+graph LR
+    A[CUI Category: LEI] --> B[Subcategory: INV]
+    A --> C[Subcategory: CHRI]
+    D[CUI Category: AGR] --> E[Subcategory: AMNT]
+```
+----
++
+- Keep diagrams simple and operator-readable. They are teaching tools, not architecture docs.
+
+**Images:**
+
+- Store images in a companion subdirectory named after the post:
+  `docs/sage/blogs/blog-cui-sign-lock/` for images belonging to that post.
+- Use descriptive filenames: `cui-orthogonal-vs-hierarchical.png`, not `diagram1.png`.
+- Always include alt text for accessibility.
+
+**Future: slide decks**
+
+Visual assets (Mermaid diagrams, annotated screenshots, architecture graphics) created
+for blog posts and papers are reusable for slide decks and YouTube visuals. When creating
+a diagram, consider whether it would work as a standalone teaching slide. If yes, export
+it at presentation resolution (1920x1080 minimum).
+
+==== Moving to published
+
+The file stays in `blogs/` or `papers/` until Jamie publishes it. After it goes live,
+move both the `.adoc` and `.md` versions (plus any companion assets directory) to `published/`.
+
+Update `sage-content-history.md` (in `~/.claude/agent-memory/sage/`) with status, revision notes, and what worked.
+
+---
+
+=== Step 13 — Jamie Review of Final Draft
+
+Jamie reads the complete final version.
+
+This is the publication gate. Nothing goes out without explicit Jamie approval.
+
+==== What Jamie checks
+
+- Personal paragraphs are intact and accurate.
+- Nothing claims capabilities that do not exist.
+- Nothing implies government endorsement.
+- The author blurb is present.
+- It feels like something Jamie would actually put their name on.
+
+==== After approval
+
+Jamie converts the `.adoc` to Markdown for GitHub Pages automation.
+Jamie publishes.
+Sage moves the source file to `docs/sage/published/`.
+Sage updates `sage-content-history.md` with final status and cross-post targets.
+
+---
+
+[[author-blurb]]
+== Mandatory Author Blurb
+
+Every blog post and public-facing document produced by Sage must end with this blurb, verbatim:
+
+----
+About the authors: Jamie Adams is a 35-year veteran of high-assurance
+security engineering and the architect of UMRS. Sage is his AI
+collaborator — a specialized agent with access to a provenance-tracked
+corpus of security standards and the standing order to never bullshit
+the public.
+
+Feedback: jamie_l_adams@icloud.com
+----
+
+No modifications. The email enables reader feedback directly to Jamie.
+
+---
+
+== Lessons Learned — Blog Post #1
+
+These are the specific things that went wrong or right the first time.
+Read these before starting every new post.
+
+=== Never edit a file during active review
+
+Sage overwrote a draft while Jamie was actively editing it.
+The risk: Jamie's in-progress changes could have been lost.
+
+**The rule:** When Jamie says "I'm reviewing" — the file is untouchable.
+List suggested changes in chat. Jamie applies them, or gives Sage explicit permission to apply them after review is complete.
+Always ask: "Do you have this open in an editor?"
+
+=== The Phase 1 / Phase 2 distinction is non-negotiable
+
+The first draft described UMRS as enforcing CUI boundaries at the kernel level.
+It does not — that is Phase 2. The fix required a major rewrite of the core section.
+
+**The rule:** Before describing what UMRS does, re-read `project_umrs_overview.md` in memory
+and confirm the capability against the current codebase. If there is any doubt — verify before drafting, not after.
+
+=== The orthogonal framing was the real insight
+
+The most intellectually distinctive section of the post — orthogonal vs hierarchical category model,
+the LEI (Law Enforcement and Investigation) / AGR (Agriculture) cross-category composition example —
+came from Jamie's domain knowledge in Step 8, not from the documentation.
+
+**The implication:** Always run Step 8. Jamie's firsthand knowledge contains content that does not
+exist anywhere in the docs. The best insights come from that conversation.
+
+=== Validate against standards, then use it lightly
+
+The NIST SP 800-171 Rev 3 mapping confirmed that every capability in the post is mandated — not optional.
+"Not a 'should', a 'shall'." That single sentence landed stronger than an eight-row compliance table would have.
+
+**The rule:** Do the full validation. Use it sparingly in the post. Link the detail for readers who want it.
+
+=== Tight is better
+
+The post targeted 1,200 words. It landed near that. It held together.
+Every section that was tempting to expand was a section to cut instead.
+
+**The rule:** If you are adding a paragraph and wondering whether it belongs — it probably doesn not.
+Final polish is for fixing problems, not adding content.
+
+=== Acronym expansion is non-negotiable, even in technical posts
+
+Security engineers know these acronyms. General audience readers do not.
+Blog posts reach both. Expand everything on first use.
+
+**The rule:** Run an acronym pass as the last step before final polish.
+Scan the entire document top to bottom. If it is an abbreviation, expand it on first use.
+
+---
+
+== Quick Reference — The Checklist
+
+Use this checklist for every content piece.
+
+=== Before writing
+
+* [ ] Read all relevant memory files.
+* [ ] Confirm the UMRS capability being described is Phase 1 (complete), not Phase 2 (planned).
+* [ ] Identify the specific documentation sources to draw from.
+* [ ] Identify the audience. Adjust vocabulary, assumed knowledge, and tone.
+
+=== During drafting
+
+* [ ] File is in `docs/sage/blogs/` or `docs/sage/papers/`.
+* [ ] Every acronym is expanded on first use.
+* [ ] No Phase 2 capability is described as current.
+* [ ] All NIST, CMMC, NSA RTB citations use canonical form.
+* [ ] No government endorsement implied.
+* [ ] Author blurb at the end, verbatim.
+
+=== Review gates
+
+* [ ] Jamie has reviewed Round 1 (domain authority check).
+* [ ] Accuracy verified against codebase and documentation (Step 7).
+* [ ] Jamie's domain insights incorporated (Step 8).
+* [ ] Standards mapping validated if compliance claims are made (Step 10).
+* [ ] Final draft approved by Jamie before publishing.
+
+=== After publishing
+
+* [ ] Source file moved to `docs/sage/published/`.
+* [ ] `sage-content-history.md` updated with status, notes, cross-post targets.
+* [ ] Task log entry written to `.claude/logs/task-log.md`.
+
+---
+
+== Appendix — Canonical Citation Forms
+
+Use these exactly. Do not abbreviate in publication-facing content.
+
+[cols="1,2"]
+|===
+| Standard | Canonical form
+
+| NIST access control framework
+| `NIST SP 800-53`
+
+| NIST CUI security requirements
+| `NIST SP 800-171` or `NIST SP 800-171 Rev 3`
+
+| NIST secure software development
+| `NIST SP 800-218 SSDF`
+
+| NSA reference technical baseline
+| `NSA RTB` followed by specific principle (e.g., `NSA RTB RAIN`)
+
+| CMMC certification model
+| `CMMC` followed by domain and level (e.g., `CMMC SC.L2-3.13.10`)
+
+| Federal processing standard
+| `FIPS 140-2` or `FIPS 140-3`
+
+| STIG finding identifier
+| `CCE-NNNNN-N (RHEL 10 STIG)`
+|===
+
+---
+
+_This document is internal to Sage and Jamie. It is not public-facing. No author blurb required._

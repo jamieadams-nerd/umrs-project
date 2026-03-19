@@ -278,6 +278,18 @@ permanent, stable location — always look here first.
 
 ---
 
+### UMRS Capabilities — NIST SP 800-171 Rev 3 and CMMC Level 2 Mandate Mapping
+
+| Field | Value |
+|---|---|
+| File | `refs/reports/umrs-capabilities-800-171r3-mapping.md` |
+| Date | 2026-03-19 |
+| SHA-256 | `2868468e48e6a49350389014c5e834c2ca0e3fc373084927bfd491983da2165a` |
+| Topics | 800-171r3 mandate mapping, CMMC L2 practice mapping, CUI labeling, handling restrictions, SELinux posture, typed findings, security engineering, memory safety, orthogonal category composition |
+| Relevance | `umrs-selinux`, `umrs-platform`, `cui-labels`, blog post compliance claims, `AC-3`, `AC-4`, `AU-3`, `CM-6`, `CA-7`, `MP-3`, `PL-4`, `SA-8`, `SI-2`, SSDF PW.4 |
+
+---
+
 ---
 
 ## Access Control Reference Collection

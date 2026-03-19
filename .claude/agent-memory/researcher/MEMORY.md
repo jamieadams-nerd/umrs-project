@@ -113,6 +113,9 @@ Existing reports:
 - `refs/reports/stig-signal-coverage.md` (2026-03-17)
   Topics: 36 posture indicators vs 451 STIG rules; 20 direct matches; audit gap (51 rules);
   network gap (19 rules); 7 Tier-1 candidate indicators; CMMC alignment; severity cross-reference
+- `refs/reports/umrs-capabilities-800-171r3-mapping.md` (2026-03-19)
+  Topics: 7 UMRS blog capabilities mapped to 800-171r3 mandatory requirements; all 7 are mandated;
+  3 have above-and-beyond implementation dimensions; MP-03, PL-04, CM-06, CA-07, AU-03, SA-08, AC-03/04
 
 ## Retrieval Patterns (learned 2026-03-11)
 

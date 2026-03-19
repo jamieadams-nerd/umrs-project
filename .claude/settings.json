@@ -135,7 +135,14 @@
       "WebFetch(domain:access.redhat.com)",
       "WebFetch(domain:www.openssl.org)",
       "WebFetch(domain:docs.openssl.org)",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "Bash(cp .claude/agent-memory/sage/user_jamie.md ~/.claude/agent-memory/sage/)",
+      "Bash(cp .claude/agent-memory/sage/project_umrs_overview.md ~/.claude/agent-memory/sage/)",
+      "Bash(cp .claude/agent-memory/sage/feedback_tone_rules.md ~/.claude/agent-memory/sage/)",
+      "Bash(cp .claude/agent-memory/sage/user_jamie_outreach.md ~/.claude/agent-memory/sage/)",
+      "Bash(cp .claude/agent-memory/sage/sage-content-history.md ~/.claude/agent-memory/sage/)",
+      "Bash(rm -rf .claude/agent-memory/sage/)",
+      "Bash(awk ':*)"
     ]
   },
   "enabledPlugins": {

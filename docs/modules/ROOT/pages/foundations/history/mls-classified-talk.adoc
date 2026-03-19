@@ -46,5 +46,5 @@ This page will cover:
   future MLS use without requiring them for CUI baseline operation
 * Design considerations for Five Eyes partner-nation unclassified schemes
 
-See xref:architecture:history/five-eyes-interop.adoc[Five Eyes interoperability] for the
+See xref:foundations/history/five-eyes-interop.adoc[Five Eyes interoperability] for the
 partner-nation scheme design rationale.
