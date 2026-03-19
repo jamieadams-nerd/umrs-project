@@ -66,6 +66,30 @@ Wrap and emit only category + error code. Never forward Display verbatim.
 ### Portfolio-Wide Gap
 All plans: strong Implement, weak Assess/Monitor artifact production. Runtime outputs not connected to SAR-consumable Examine objects. **Check every new plan for output artifact format.**
 
+## Review Format — Jamie-Approved (2026-03-19)
+
+The ACCURATE/CONCERN/ERROR tiered format from the blog-cui-sign-lock audit is the **preferred format for all reviews**. Jamie specifically praised it for enabling prioritization.
+
+**Required elements:**
+- Summary table with category counts (ACCURATE / CONCERN / ERROR)
+- Each finding: ID (A-1, C-1, E-1), descriptive title, explanation
+- CONCERN items: include a **Recommendation** line
+- ERROR items: include **Severity** and **Recommended replacement** text
+- Remediation Owner Summary table with priority ranking at the end
+- **Strengths Worth Preserving** section (positive reinforcement matters)
+
+Use this format for blog reviews, doc reviews, AND code reviews.
+
+## Review Routing (2026-03-19)
+
+Reviews are now stored by category, not in a flat pile:
+
+| Review type | Location |
+|---|---|
+| Blog / whitepaper / outreach | `docs/sage/reviews/YYYY-MM-DD-<type>-<slug>.md` |
+| Documentation | `docs/imprimatur/reviews/YYYY-MM-DD-<module>-<slug>.md` |
+| Code / security audits | `.claude/reports/code/YYYY-MM-DD-<crate>-<description>.md` |
+
 ## Reports Index
 - `2026-03-11-rpm-db-security-audit.md` — RPM findings
 - `2026-03-11-os-detection-umrs-platform-surface-audit.md` — detect pipeline
@@ -74,6 +98,7 @@ All plans: strong Implement, weak Assess/Monitor artifact production. Runtime ou
 - `tui-plan-security-review.md` — TUI audit card review
 - `rmf-plan-review-2026-03-15.md` — RMF portfolio review
 - `security-engineer-phase2b-review.md` — posture Phase 2b
+- `docs/sage/reviews/2026-03-19-blog-cui-sign-lock.md` — blog accuracy audit (first review in new location)
 
 ## TUI Audit Card Patterns
 - IndicatorValue for kernel flags → cite SI-7 + CM-6 (NOT SI-3)

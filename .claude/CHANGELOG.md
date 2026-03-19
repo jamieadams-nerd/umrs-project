@@ -1,5 +1,29 @@
 # Changelog
 
+## 2026-03-19
+
+### Added
+- **Review routing restructure**: Created `docs/sage/reviews/` and `docs/imprimatur/reviews/` directories with naming convention `YYYY-MM-DD-<type>-<slug>.md` for traceability; established `docs/sage/inbox/` and confirmed `docs/imprimatur/inbox/` as content pickup points; archived blog audit from `.claude/reports/` to `docs/sage/reviews/2026-03-19-blog-cui-sign-lock.md`
+- **Team collaboration documentation**: Updated `.claude/team-collaboration.md` with review routing rules, directory ownership, and auditor's tiered review format (ACCURATE/CONCERN/ERROR)
+- **Vale documentation quality plan**: Created `.claude/plans/doc-quality-plan.md` — 5 UMRS Vale styles mapped to existing rule sources (STE, Citations, Terminology, Blog, Admonitions); 7 Vale rule types identified; Phase 1 ruleset bootstrap ready
+- **Researcher knowledge acquisition plan**: Created `.claude/plans/researcher-knowledge-acquisition.md` combining three brain corpora: information theory + graph theory + search foundations (Shannon, MacKay, Edmonds, HNSW); Sage outreach knowledge base (SEO, developer trust, technical branding, content strategy); 12 skills across 6 categories (lifecycle, cross-reference, QA, synthesis, acquisition automation, team service)
+- **UMRS Tool Init plan refactored**: Broke 1,347-line monolith into 8 swim-buddy-safe sub-phases (1a through 3) with execution order table, 45-minute heartbeat rule, and parallel opportunity notes; enriched env var corpus research with authoritative source table; added Appendix on String Sanitization Doctrine
+- **High-assurance library backlog**: Created `.claude/plans/long-term/high-assurance-library-backlog.md` — 15 libraries across 6 domains (Filesystem Trust, Process & Privilege, System Topology, Configuration & Policy, Security Observability, Cryptographic Ops) with problem statements, API shapes, UMRS overlap, and complexity estimates
+- **Rust FIPS cryptography strategies**: Created `docs/modules/cryptography/pages/rust-fips-strategies.adoc` documenting three approaches (OpenSSL FFI, rustls+aws-lc-rs, pure Rust crypto) with UMRS project position
+- **Blog post audit remediation**: Applied all MUST-FIX items from security-auditor review — E-1 `#![forbid(unsafe_code)]` scope qualified with umrs-hw exception, C-1/C-2/C-3 country/compliance annotations qualified, C-6 country profiles labeled as Phase 2, GitHub URL corrected
+- **File cuddling plan**: Created `.claude/plans/umrs-ls-file-cuddling.md` — compact view grouping for umrs-ls (3 phases, implement before TUI)
+- **Xattr sanitization gap plan**: Created `.claude/plans/xattr-sanitization-gap.md` — prove shred doesn't touch xattrs, build stripping tool, document gap (4 phases)
+- **Task created**: `doc-sync: devel guide — document crate dependency rationale` for tech-writer
+
+### Changed
+- **Cryptography module nav**: Updated `docs/modules/cryptography/nav.adoc` to include rust-fips-strategies page
+- **Blog post edits**: Applied security-auditor feedback to `docs/sage/blogs/blog-cui-sign-lock.adoc` — all compliance-level and factual corrections now in place
+- **Settings permissions**: Updated `.claude/settings.json` with expanded access for new subdirectory structure
+
+### Removed
+- **10 jamies_brain files archived**: Moved `install-vale.md`, `info-theory.txt`, `sage-food.txt`, `help-rearcher.txt`, `more_env_stuff.txt`, `sanitization.txt`, `scrub-strings.txt`, `other-possible-features.txt`, `rust-openssl-fips.txt`, `xattr-stripper.txt` to `.claude/jamies_brain/archive/`; `doc-restructure.md` and `file-cuddling-umrs-ls.md` converted to plans
+- **docs/new_stuff retirement**: Transitioned from `docs/new_stuff/` to `docs/imprimatur/inbox/` and `docs/sage/inbox/` routing pattern
+
 ## 2026-03-18
 
 ### Added

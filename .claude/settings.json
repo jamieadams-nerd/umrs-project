@@ -142,7 +142,8 @@
       "Bash(cp .claude/agent-memory/sage/user_jamie_outreach.md ~/.claude/agent-memory/sage/)",
       "Bash(cp .claude/agent-memory/sage/sage-content-history.md ~/.claude/agent-memory/sage/)",
       "Bash(rm -rf .claude/agent-memory/sage/)",
-      "Bash(awk ':*)"
+      "Bash(awk ':*)",
+      "Bash(tee -a .claude/logs/task-log.md)"
     ]
   },
   "enabledPlugins": {

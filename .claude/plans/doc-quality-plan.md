@@ -1,6 +1,6 @@
 # Plan: UMRS Documentation Quality System
 
-**Status:** Draft — not started. Awaiting tooling installation (Vale, write-good, textstat).
+**Status:** Draft — tooling installed (Vale, write-good, textstat all available). Ready for Phase 1 ruleset bootstrap.
 
 ## Purpose
 
@@ -8,6 +8,88 @@ This plan establishes a documentation quality feedback loop for UMRS Antora cont
 The system enforces terminology consistency, STE compliance on procedural content,
 readability standards, and admonition correctness — and produces trend data to measure
 improvement over time.
+
+---
+
+## Vale Capability Assessment (2026-03-19)
+
+After reviewing Vale's documentation (https://vale.sh/docs/), these are the key capabilities
+that make it a strong fit for UMRS and how they map to our needs.
+
+### Why Vale fits UMRS
+
+- **AsciiDoc is natively supported** — no format conversion needed for our Antora docs
+- **Custom styles map directly to our existing rules** — STE mode, admonition hierarchy,
+  citation format, approved verbs, and terminology consistency are all already codified
+  in `.claude/rules/*.md` files. Vale operationalizes them as machine-enforceable checks
+- **It catches mechanical issues before human reviewers spend time** — freeing the auditor,
+  tech-writer, and senior-tech-writer to focus on accuracy, threat model correctness, and
+  narrative flow rather than "you used 'utilize' again"
+- **Rust source comments can be linted** — Vale processes code files, which opens a future
+  path for `///` and `//!` doc comment enforcement (out of scope for now; see Future Expansion)
+
+### Vale style mapping to UMRS rule sources
+
+| Proposed Vale Style | Source of Truth | Scope |
+|---|---|---|
+| `UMRS-STE` | `.claude/rules/ste_mode.md` | Procedural docs — approved verbs, sentence length ≤20 words, active voice, banned ambiguous words |
+| `UMRS-Citations` | `.claude/rules/rust_design_rules.md` §Citation Format Rule | All docs — canonical `NIST SP 800-53` (not `NIST 800-53`), `NSA RTB`, `FIPS 140-3`, `CCE-NNNNN-N` forms |
+| `UMRS-Terminology` | `approved_terminology.md` + glossary module | All docs — one canonical term per concept, substitution rules for forbidden variants |
+| `UMRS-Blog` | Sage feedback memories + outreach style conventions | Blog/whitepaper content — tone, audience accessibility, no unexplained jargon |
+| `UMRS-Admonitions` | `.claude/rules/admonition_hierarchy.md` | All AsciiDoc — WARNING/CAUTION/IMPORTANT/NOTE/TIP hierarchy; no inline `Note:` labels |
+
+### Vale rule types we will use
+
+These are the Vale extension points (rule types) most relevant to our needs:
+
+| Extension | UMRS use case |
+|---|---|
+| `existence` | Detect banned words (utilize, leverage, facilitate), informal admonition labels (`Note:`, `Warning:`), ambiguous terms (appropriate, various, several) |
+| `substitution` | Enforce canonical terminology — "security label" → "security context", "driver" → "kernel module", `NIST 800-53` → `NIST SP 800-53` |
+| `consistency` | Ensure the same term is used throughout a document — not "kernel module" in one paragraph and "driver" in the next |
+| `occurrence` | Enforce sentence length limits on procedural content (≤20 words per STE rule) |
+| `capitalization` | Validate heading conventions, acronym formatting |
+| `spelling` | Custom vocabulary with Accept/Reject lists for UMRS domain terms |
+| `conditional` | Scope-dependent rules — apply STE strictness only to numbered procedure blocks |
+
+### Vocabulary management
+
+Vale's Vocab system maps cleanly to what we need:
+
+- **Accept list:** UMRS-specific terms that spell-checkers would flag as errors — CategorySet,
+  SecurityContext, TPI, CUI, MLS, TOCTOU, SELinux, MCS, umrs-selinux, Bell-LaPadula, etc.
+- **Reject list:** Terms we have explicitly banned — utilize, leverage, facilitate, security label,
+  compartments, MAC policy, plus informal admonition labels
+
+These lists are generated from `approved_terminology.md` and `ste_mode.md`, keeping Vale
+in sync with the authoritative sources.
+
+### Integration model
+
+Vale supports pre-commit hooks, CI/CD, and editor plugins (VS Code, Neovim, Zed). Our
+plan starts in report-only mode (no blocking), with a path to soft-gate and eventually
+hard-gate enforcement as the ruleset matures. The `--no-exit` flag allows pipeline
+continuation during the report phase.
+
+Vale's JSON output mode feeds directly into our `history.json` trend tracking, enabling
+the quality score metrics and trend comparisons the plan already defines.
+
+### Review routing integration
+
+Quality reports and violation reviews are stored in the new review routing structure:
+
+- Documentation quality reports → `docs/imprimatur/reviews/YYYY-MM-DD-quality-report.md`
+- Blog/outreach quality reports → `docs/sage/reviews/YYYY-MM-DD-quality-report.md`
+- Violation review decisions remain in `.claude/metrics/doc-quality/` (operational data)
+
+### Future expansion (not in current scope)
+
+- **`UMRS-SrcComments` style** — lint Rust `///` and `//!` doc comments for module doc
+  checklist compliance, tiered annotation expectations, and internal reference prohibition.
+  Requires custom scoping work for `.rs` files. Decision deferred.
+- **`script` extension** — Vale supports custom Tengo scripts for validation logic that
+  exceeds what YAML rules can express. Potential use: verifying that every `## Compliance`
+  section contains at least one canonical citation.
 
 The system starts in **report-only mode**. Gate enforcement is configurable once the
 ruleset matures through reviewed violation cycles. Every violation review is an
@@ -48,8 +130,8 @@ This plan operationalizes those foundations into an automated quality pipeline.
 
 ### Out of scope
 
-- Source code comments (separate concern, governed by `rules/assurance_rules.md`)
-- `docs/new_stuff/` scratch content (not yet promoted to Antora)
+- Source code comments (separate concern, governed by `rules/assurance_rules.md`; see Future Expansion in Vale assessment)
+- `docs/sage/inbox/` and `docs/imprimatur/inbox/` scratch content (not yet promoted)
 - `refs/` documents (third-party, not authored by UMRS)
 - French translations (umrs-translator scope; separate quality pass if desired later)
 
@@ -66,17 +148,15 @@ This plan operationalizes those foundations into an automated quality pipeline.
 
 ### Installation
 
-```bash
-# Vale
-pip install vale --break-system-packages
-# or: download binary from https://github.com/errata-ai/vale/releases
+| Tool | Root needed? | Install method |
+|---|---|---|
+| Vale | No | `curl -sfL https://install.Vale.sh \| sh -s -- --dir ~/.local/bin` |
+| write-good | Yes (global npm) | `sudo npm install -g write-good` |
+| textstat | Yes (system pip) | `sudo pip install textstat --break-system-packages` |
+| PyYAML (for gen script) | Yes (system pip) | `sudo pip install pyyaml --break-system-packages` |
 
-# write-good
-npm install -g write-good
-
-# textstat
-pip install textstat --break-system-packages
-```
+Vale installs as a standalone binary to `~/.local/bin` — no root, no package manager.
+The other tools require root for global installation.
 
 Verify availability before first run:
 

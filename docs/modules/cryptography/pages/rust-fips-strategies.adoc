@@ -1,0 +1,179 @@
+= Rust FIPS Cryptography Strategies
+:description: Three approaches to FIPS 140-2/3 compliant cryptography in Rust applications, with tradeoffs for high-assurance environments.
+
+// NIST SP 800-53 SC-13 — Cryptographic protection
+// CMMC SC.L2-3.13.11 — CUI encryption
+// FIPS 140-2 / FIPS 140-3
+
+Using a FIPS-validated cryptographic module is mandatory for CUI protection under
+CMMC and NIST SP 800-171. This page documents the three available approaches for
+Rust applications, their compliance posture, and when to use each.
+
+== The Three Approaches
+
+[cols="1,1,1,1"]
+|===
+| Approach | FIPS Compliance | Memory Safety | FFI Required
+
+| OpenSSL 3.x via `openssl` crate
+| High (if FIPS provider activated)
+| C boundary risk
+| Yes
+
+| `rustls` + `aws-lc-rs`
+| High (AWS-LC designed for FIPS)
+| Good (Rust TLS, C crypto core)
+| Yes (aws-lc-rs wraps C)
+
+| Pure Rust crypto (`RustCrypto` crates)
+| Low (mostly non-certified)
+| Highest
+| No
+|===
+
+Each approach involves a fundamental tradeoff between FIPS certification (which
+currently requires C implementations that have been through CMVP validation) and
+Rust memory safety guarantees.
+
+== Approach 1: OpenSSL 3.x via the `openssl` Crate
+
+This is the established path on RHEL and other enterprise Linux distributions.
+The system-provided OpenSSL has been through CMVP validation. Your Rust application
+links against it dynamically and uses the FIPS provider.
+
+=== How It Works
+
+The `openssl` crate provides safe Rust bindings to `libssl` and `libcrypto`.
+The underlying C library performs the actual cryptographic operations. FIPS mode
+is activated by loading the OpenSSL FIPS provider.
+
+=== Activating FIPS Mode in Rust
+
+FIPS mode must be explicitly activated before any cryptographic operations.
+
+[source,rust]
+----
+use openssl::fips;
+
+fn init_fips() {
+    if !fips::enabled() {
+        fips::enable(true)
+            .expect("FIPS mode activation failed — cannot proceed");
+    }
+}
+----
+
+WARNING: If FIPS activation fails, the application must not proceed with
+cryptographic operations. A silent fallback to non-FIPS mode violates SC-13.
+
+=== Verification
+
+Auditors verify FIPS compliance by checking the NIST Cryptographic Module
+Validation Program (CMVP) list for the specific OpenSSL module and version
+deployed on the target system.
+
+See xref:openssl-no-vendoring.adoc[No Vendored OpenSSL] for build verification
+steps that confirm dynamic linking to the system-provided module.
+
+=== When to Use
+
+* Applications deployed on RHEL or other distributions with CMVP-validated OpenSSL
+* When the FIPS provider certificate number must appear in accreditation documentation
+* When the system crypto policy (`update-crypto-policies`) governs algorithm selection
+
+=== Tradeoffs
+
+* FFI boundary — Rust safety guarantees stop at the C interface
+* C vulnerabilities in OpenSSL can compromise the application
+* Build complexity — must ensure no vendoring occurs (see xref:openssl-no-vendoring.adoc[])
+
+== Approach 2: `rustls` with `aws-lc-rs`
+
+The `rustls` crate is a pure Rust TLS implementation with a pluggable cryptographic
+backend. By default it uses `ring`, but it can be configured to use `aws-lc-rs` —
+Rust bindings to AWS-LC (AWS LibCrypto), which is designed for FIPS compliance.
+
+=== How It Works
+
+* TLS protocol handling is pure Rust (`rustls`)
+* Cryptographic primitives are provided by AWS-LC (C library, FIPS-designed)
+* `aws-lc-rs` provides the Rust binding layer
+
+=== When to Use
+
+* Applications that need TLS with FIPS-compliant crypto
+* When avoiding direct OpenSSL dependency is preferred
+* Cloud-native deployments where AWS-LC validation is recognized
+
+=== Tradeoffs
+
+* Still involves FFI to a C crypto library (AWS-LC)
+* AWS-LC FIPS validation status should be verified against CMVP for your deployment
+* Newer ecosystem — less deployment history than OpenSSL on RHEL
+
+== Approach 3: Pure Rust Cryptography
+
+The `RustCrypto` family of crates provides pure Rust implementations of standard
+cryptographic algorithms (SHA-2, AES, ECDSA, etc.). No FFI, no C code.
+
+=== When to Use
+
+* Internal operations where FIPS certification is not required
+* Hash computation for integrity checks (non-compliance-boundary)
+* Development and testing environments
+
+=== Tradeoffs
+
+* Most pure Rust crypto implementations are **not CMVP-certified**
+* Cannot be cited as the validated module in accreditation documentation
+* Highest memory safety — no C boundary risk
+
+CAUTION: Do not use pure Rust crypto for operations that fall within the FIPS
+cryptographic boundary of a CUI system. The algorithms may be correct, but
+without CMVP validation, an auditor cannot accept them as compliant.
+
+== UMRS Project Position
+
+The UMRS project avoids FFI as a design principle (`#![forbid(unsafe_code)]`).
+For the core platform and tools, UMRS does not perform cryptographic operations
+directly — it delegates to the operating system's validated crypto subsystem.
+
+When UMRS tools need cryptographic operations (file hashing, signature verification),
+they use the system OpenSSL via the `openssl` crate with explicit FIPS provider
+activation. This is the one area where FFI is architecturally justified: the
+alternative is reimplementing cryptography, which is worse than an FFI boundary.
+
+The no-vendoring policy (xref:openssl-no-vendoring.adoc[]) ensures the system's
+CMVP-validated module is always used.
+
+For applications built on top of UMRS that need TLS, `rustls` + `aws-lc-rs` is
+an acceptable alternative if the AWS-LC FIPS validation covers the deployment.
+
+== Emerging: `dcrypt` and Pure-Rust FIPS
+
+There are emerging efforts to produce pure-Rust implementations that pursue CMVP
+validation independently. The `dcrypt` project aims to provide NIST-standardized
+algorithms in pure Rust with FIPS certification as a goal.
+
+NOTE: As of this writing, no pure-Rust cryptographic module has completed CMVP
+validation. Monitor the NIST CMVP list for updates. When a validated pure-Rust
+module becomes available, it would eliminate the FFI tradeoff entirely.
+
+== Compliance References
+
+[cols="1,3"]
+|===
+| Standard | Relevance
+
+| FIPS 140-3 | Security Requirements for Cryptographic Modules
+| NIST SP 800-53 SC-13 | Cryptographic protection — use of validated modules
+| NIST SP 800-53 SC-12 | Cryptographic key establishment and management
+| CMMC SC.L2-3.13.11 | CUI encryption requirement
+| NIST SP 800-171 3.13.11 | Employ FIPS-validated cryptography for CUI protection
+|===
+
+== See Also
+
+* xref:openssl-no-vendoring.adoc[No Vendored OpenSSL] — build verification for system OpenSSL
+* xref:fips-cryptography-cheat-sheet.adoc[FIPS Cryptography Quick Reference] — approved algorithms and key sizes
+* xref:crypto-policy-tiers.adoc[Crypto Policy Tiers] — system crypto policy enforcement

@@ -1,6 +1,31 @@
 # Plan: UMRS Tool Initialization API (`umrs-core::init`)
 
-**Status:** Approved — ready for implementation (environment scrubbing, validated env accessors, unified tool startup)
+**Status:** Approved — ready for implementation. Split into 8 sub-phases for manageable agent work units.
+
+## Sub-Phase Execution Order
+
+Each sub-phase is a focused, completable unit. No agent should work on more than one at a time.
+Dependencies are explicit — do not start a phase until its prerequisites are done.
+
+| Sub-Phase | Description | Prerequisites | Estimated scope |
+|---|---|---|---|
+| **1a** | `EnvValidationError` type + simple validators (locale, term, username, tz, integer, hostname, identifier, enum_set, log_level) | None | ~12 files, ~50 tests |
+| **1b** | Complex validators (path safety, path list, dbus, device, selinux) | 1a (uses `EnvValidationError`) | ~6 files, ~25 tests |
+| **1c** | `ScrubReport`, `SanitizedEnv`, `SensitiveValue` types + `scrub_env()` / `scrub_env_with()` | 1a + 1b (uses all validators) | ~2 files, ~14 tests |
+| **1d** | `init_logging()` — journald backend + fallback cascade | None (independent) | ~1 file, ~5 tests |
+| **1e** | `init_i18n()` — auto-domain detection wrapper | None (independent) | ~1 file, ~3 tests |
+| **1f** | `init_tool()` convenience wrapper + `init/mod.rs` re-exports | 1a–1e (combines all) | ~2 files, ~3 tests |
+| **2** | `umrs-env` binary crate — CLI tool | 1f (uses `init_tool`) | New crate, ~3 files, ~10 tests |
+| **3** | Env var corpus research (researcher task) | None (independent, can run in parallel) | Research only |
+
+**Parallel opportunities:**
+- 1a, 1d, 1e, and 3 can all start simultaneously
+- 1b starts after 1a completes
+- 1c starts after 1b completes
+- 1f starts after 1a–1e all complete
+- 2 starts after 1f completes
+
+**Swim buddy rule:** If any sub-phase takes more than ~45 minutes without visible progress (test passing, files committed to working tree), the agent must surface a status update.
 
 **ROADMAP alignment:** G2 (Platform Library), G4 (Tool Ecosystem), G8 (Human-Centered Design)
 
@@ -124,6 +149,63 @@ umrs-core/src/init/
 18. **Symlink chain validation** — `validate_safe_path` must check every directory component in the resolved path using `open(O_PATH | O_NOFOLLOW)` + `fstat()`, not just the leaf. O(depth) cost is acceptable for startup-once validation.
 19. **`RUST_LOG`** — Tier 2 (preserve + validate). Validated as a restricted enum: only `error`, `warn`, `info`, `debug`, `trace` are accepted (case-insensitive). Module-level filters (e.g., `umrs_selinux=debug`) are also accepted but only for `umrs_*` crate prefixes — arbitrary module paths are rejected. This prevents an attacker from enabling verbose logging on third-party dependencies to extract timing or data side-channels. Controls: AU-9 (protection of audit information), CM-7 (least functionality).
 20. **`umrs-env` tool** — New binary crate. Acts like `env(1)` but produces scrubbed/sanitized output. Reads from inherited environment by default, or from stdin (pipe `env | umrs-env` or `echo $HOME | umrs-env`). Uses the `umrs_core::init` scrub engine. See dedicated section below.
+
+---
+
+## Phase 1a: Error Type + Simple Validators
+
+**Scope:** Create `umrs-core/src/init/validate/` module tree. Implement `EnvValidationError` enum and these validators:
+- `validate_lang()` — locale.rs
+- `validate_term()` — term.rs
+- `validate_username()` — username.rs
+- `validate_tz()` — tz.rs
+- `validate_positive_int()` — integer.rs
+- `validate_hostname()` — hostname.rs
+- `validate_safe_identifier()` — identifier.rs
+- `validate_enum()` — enum_set.rs
+- `validate_log_level()` — log_level.rs
+
+**Tests:** `validate_lang_tests.rs`, `validate_term_tests.rs`, `validate_misc_tests.rs`, `validate_log_level_tests.rs`
+
+**Deliverable:** All simple validators pass their tests. `EnvValidationError` is `#[non_exhaustive]` with `thiserror::Error`.
+
+**Files:** `validate/mod.rs`, `validate/locale.rs`, `validate/term.rs`, `validate/username.rs`, `validate/tz.rs`, `validate/integer.rs`, `validate/hostname.rs`, `validate/identifier.rs`, `validate/enum_set.rs`, `validate/log_level.rs` + corresponding test files.
+
+---
+
+## Phase 1b: Complex Validators (Path, D-Bus, Device, SELinux)
+
+**Prerequisites:** Phase 1a complete (uses `EnvValidationError`).
+
+**Scope:** Implement validators that require filesystem access or cross-crate dependencies:
+- `validate_safe_path()` — path.rs (ownership, permissions, symlink chain, traversal)
+- `validate_path_list()` — path.rs (colon-delimited PATH validation)
+- `validate_dbus_address()` — dbus.rs (transport restriction)
+- `validate_device_path()` — device.rs (`/dev/pts/*`, `/dev/tty*`)
+- `validate_selinux_component()` — selinux.rs (role/level syntax via `umrs-selinux`)
+
+**Tests:** `validate_path_tests.rs`, `validate_path_list_tests.rs` + additions to `validate_misc_tests.rs`
+
+**Note:** `rustix` version conflict with `umrs-tui` must be resolved before adding to `umrs-core` Cargo.toml.
+
+**Deliverable:** All path/dbus/device/selinux validators pass. Symlink chain validation confirmed.
+
+---
+
+## Phase 1c: Scrub Engine (`ScrubReport`, `SanitizedEnv`, `scrub_env`)
+
+**Prerequisites:** Phases 1a + 1b complete (uses all validators).
+
+**Scope:** Implement the core scrub engine:
+- `ScrubReport`, `SanitizedEnv`, `SensitiveValue` types in `scrub.rs`
+- `scrub_env()` and `scrub_env_with()` functions
+- Three-tier classification (Reset, Preserve+Validate, Strip)
+- Full denylist
+- Logging behavior (warn/info levels per tier)
+
+**Tests:** `init_scrub_tests.rs` (14 cases)
+
+**Deliverable:** `scrub_env()` produces a correct `ScrubReport` for a real process environment.
 
 ---
 
@@ -682,7 +764,17 @@ We implement this in pure Rust (no FFI to `clearenv()` or `secure_getenv()`) bec
 
 ---
 
-## Phase 2: Logging Initialization (`init_logging`)
+## Phase 1d: Logging Initialization (`init_logging`)
+
+**Prerequisites:** None — can start in parallel with Phase 1a.
+
+**Scope:** `umrs-core/src/init/logging.rs` only. Journald backend + stderr fallback cascade + `LoggingBackend` return type.
+
+**Deliverable:** `init_logging(verbose)` works standalone, returns correct `LoggingBackend` variant.
+
+---
+
+## — Phase 1d Detail —
 
 ### Design
 
@@ -820,7 +912,17 @@ pub fn init_logging(verbose: bool) -> LoggingBackend
 
 ---
 
-## Phase 3: i18n with Auto-Domain (`init_i18n`)
+## Phase 1e: i18n with Auto-Domain (`init_i18n`)
+
+**Prerequisites:** None — can start in parallel with Phase 1a.
+
+**Scope:** `umrs-core/src/init/i18n.rs` only. Wraps existing `umrs_core::i18n::init()` with binary name auto-detection.
+
+**Deliverable:** `init_i18n(None)` auto-detects domain; `init_i18n(Some("umrs-ls"))` uses explicit domain. Warns on fallback.
+
+---
+
+## — Phase 1e Detail —
 
 ### Design
 
@@ -847,7 +949,17 @@ pub fn init_i18n(domain: Option<&'static str>)
 
 ---
 
-## Phase 4: Convenience Wrapper (`init_tool`)
+## Phase 1f: Convenience Wrapper (`init_tool`)
+
+**Prerequisites:** Phases 1a–1e ALL complete.
+
+**Scope:** `umrs-core/src/init/tool.rs` + `umrs-core/src/init/mod.rs` (public re-exports) + update `lib.rs`. Calls scrub → logging → i18n in order.
+
+**Deliverable:** `init_tool(verbose)` runs the full initialization sequence. `umrs_core::init::*` is the public API surface.
+
+---
+
+## — Phase 1f Detail —
 
 ### Signature
 
@@ -889,7 +1001,9 @@ Order matters:
 
 ---
 
-## Phase 5: Tests
+## Phase 1 Tests (distributed across sub-phases)
+
+Each sub-phase includes its own tests. This section is the consolidated test inventory for reference.
 
 Tests split across files by validation class in `umrs-core/tests/`:
 
@@ -1012,7 +1126,17 @@ Tests split across files by validation class in `umrs-core/tests/`:
 
 ---
 
-## `umrs-env` — Scrubbed Environment Tool
+## Phase 2: `umrs-env` — Scrubbed Environment Tool
+
+**Prerequisites:** Phase 1f complete (uses `init_tool` and full scrub engine).
+
+**Scope:** New binary crate `umrs-env/`. CLI parsing, stdin mode, output formatting, `--list` dictionary, `--debug` comments, `--json` mode, `--allow` extension, exit codes.
+
+**Deliverable:** `cargo run -p umrs-env` produces scrubbed environment output. All CLI modes work. Integration tests via `assert_cmd`.
+
+---
+
+## — Phase 2 Detail —
 
 **ROADMAP alignment:** G4 (Tool Ecosystem), G8 (Human-Centered Design)
 
@@ -1309,7 +1433,17 @@ umrs-env/
 
 ---
 
-## Addendum: Additional Environment Variable Sources (2026-03-17)
+## Phase 3: Env Var Corpus Research (Researcher Task)
+
+**Prerequisites:** None — can run in parallel with all other phases.
+
+**Executor:** researcher agent (not rust-developer)
+
+**Scope:** Acquire authoritative env var source material for the Tier 1/2 allowlists. Research only — no code.
+
+---
+
+## — Phase 3 Detail —
 
 Source: `.claude/jamies_brain/more_env_stuff.txt` (Jamie Adams research)
 
@@ -1331,17 +1465,124 @@ Rationale: UMRS tools use journald natively. These vars are present in every sys
 Rationale: If these appear, the tool knows it's running in a container. This is a posture signal — containerized UMRS tools may have different trust assumptions. Report as informational, not stripped.
 
 **3. Future research — authoritative env var corpus:**
-- Parse `man 7 environ` + ENVIRONMENT sections from Linux man-pages repo
-- glibc `elf/rtld.c` source for dynamic linker vars
-- systemd `src/basic/env-util.c` for complete systemd var inventory
-- `/proc/self/environ` sampling across shell/systemd/container contexts for spec-vs-reality reconciliation
 
-This corpus work would feed a comprehensive env var classification database. Deferred to after initial implementation stabilizes.
+The env var allowlist should be built from authoritative sources, not hand-curated from memory.
+Sources are prioritized by signal quality:
 
-**Pre-implementation researcher task:** Acquire and index the following sources before Rusty begins implementation:
-1. `man 7 environ` full text (Linux man-pages project)
-2. glibc dynamic linker env var list (from `man ld.so` or glibc source)
-3. systemd env var reference (from `man systemd.exec`)
-4. POSIX environment variables section (Open Group Base Specifications)
+*High-yield (automated extraction possible):*
 
-This gives Rusty an authoritative reference for the Tier 1/2 allowlists rather than hand-curating from memory.
+| Source | What it provides | Extraction method |
+|---|---|---|
+| POSIX / Open Group Base Specs Issue 7 | Ground truth: `PATH`, `HOME`, `IFS`, `LANG`, `LC_*`, `TZ` — small set, high assurance | Manual (spec text) |
+| Linux man-pages (`man 7 environ`) | Cross-cutting aggregation of libc, tools, kernel interfaces | Parse `ENVIRONMENT` / `ENVIRONMENT VARIABLES` sections from all man pages |
+| glibc / dynamic linker (`man ld.so`, `elf/rtld.c`) | Security-critical: `LD_PRELOAD`, `LD_LIBRARY_PATH`, `LD_AUDIT`, `LD_DEBUG`, `MALLOC_*` | Source extraction |
+| systemd (`man systemd.exec`, `src/basic/env-util.c`) | `INVOCATION_ID`, `JOURNAL_STREAM`, `NOTIFY_SOCKET`, `SYSTEMD_EXEC_PID` — directly relevant to journald work | Man page + source |
+| XDG Base Directory Spec (freedesktop.org) | Clean, spec-driven: `XDG_CONFIG_HOME`, `XDG_DATA_HOME`, `XDG_RUNTIME_DIR`, `XDG_CACHE_HOME` | Spec text |
+
+*Medium-yield (language runtimes, compilers):*
+
+| Source | What it provides |
+|---|---|
+| Cargo Book — Environment Variables | `CARGO_HOME`, `RUSTFLAGS`, `RUST_LOG`, `OUT_DIR`, `TARGET` — directly relevant |
+| Python docs — Environment Variables | `PYTHONPATH`, `PYTHONHOME`, `PYTHONHASHSEED` — clean `PYTHON*` namespace |
+| Go (`go help environment`) | `GOPATH`, `GOROOT`, `GOOS`, `GOARCH` |
+| Node.js / npm docs | `NODE_ENV`, `NODE_PATH`, `NPM_CONFIG_*` |
+| GCC / Clang docs | `CPATH`, `LIBRARY_PATH`, `C_INCLUDE_PATH`, `LD_RUN_PATH` |
+
+*Low-yield but valuable for posture signals:*
+
+| Source | What it provides |
+|---|---|
+| sudo (`man sudo`, `man sudoers`) | `SUDO_USER`, `SUDO_UID`, `SUDO_COMMAND` |
+| PAM module docs | Session-injected vars |
+| Docker / Kubernetes | Container detection signals, downward API vars |
+
+*Empirical validation:*
+
+`/proc/self/environ` sampling across login shells, systemd services, containers, and build
+systems provides **spec-vs-reality reconciliation** — discover real-world variables, then
+backfill with authoritative sources. This is very UMRS-aligned.
+
+Starting with just POSIX + Linux man-pages + glibc + systemd + Cargo/Python gives ~150–300
+high-quality variables with real semantics.
+
+**Pre-implementation researcher task:** Acquire and index these sources before Rusty begins implementation. This gives Rusty an authoritative reference for the Tier 1/2 allowlists.
+
+---
+
+## Appendix: String Sanitization Doctrine (Future Scope)
+
+The environment scrubbing in this plan is one surface of a broader sanitization architecture
+that UMRS will need as vault/custody features develop. This appendix captures the doctrine
+for future reference. It does NOT change the scope of this plan.
+
+### Governing standards
+
+| Standard | Relevant controls |
+|---|---|
+| NIST SP 800-53 SI-10 | Information Input Validation — type, length, format, range |
+| NIST SP 800-53 SI-7 | Software, Firmware, Information Integrity |
+| NIST SP 800-53 SI-11 | Error Handling |
+| NIST SP 800-53 AU-3 | Audit record integrity (log scrubbing) |
+| NIST SP 800-171 3.1.20 | Validate input |
+| NIST SP 800-95 | Normalize → validate → store (canonical order) |
+| CERT STR/IDS rules | Bounded string ops, reject on first failure, allow-list only |
+| OWASP Input Validation | Allow-list > deny-list, canonicalize paths, escape output not input |
+| CWE-20 | Improper Input Validation |
+| CWE-22 | Path Traversal |
+| CWE-73 | External Control of File Name |
+| CWE-116 | Improper Output Encoding |
+| CWE-176 | Unicode Encoding Issues |
+| CWE-180 | Incorrect Canonicalization |
+
+### High-assurance sanitization principles
+
+1. **Sanitize for context, not generically.** No universal "sanitize string" function —
+   the consumption surface (filesystem, shell, log, SQL, label) determines the rules.
+2. **Prefer structured types over strings.** `Path`/`PathBuf` over `String` for paths;
+   typed structs for labels; `.arg()` APIs for command args.
+3. **Normalize → validate → store.** Order matters: Unicode normalize, canonicalize path,
+   apply allow-list, enforce length, resolve collisions.
+4. **Treat filenames as untrusted metadata.** Never authoritative identifiers. Generate
+   internal object IDs; preserve originals as metadata only.
+5. **Allow-list, never deny-list.** Accept known-good input only.
+6. **Strip control characters.** Newline, tab, null, non-printables — prevents log and UI injection.
+7. **Separate ingestion naming from archive naming.** User name ≠ archive name.
+   Prevents spoofing and collision abuse.
+8. **Never shell out with string interpolation.** Use `Command::new().arg()` — Rust does
+   not invoke a shell, eliminating injection risk.
+
+### Sanitization stack for vault-grade Rust tooling
+
+```
+1. UTF-8 validation          (automatic in String)
+2. Null byte rejection
+3. Unicode normalization      (NFC via unicode-normalization crate)
+4. Character allow-listing
+5. Path canonicalization
+6. Base path containment check
+7. Collision resolution
+8. Structured metadata parsing
+```
+
+### Logging sanitization (from NIST AU controls)
+
+- Escape CR/LF in user-supplied strings before logging
+- Prevent log forging (injected fake audit entries)
+- Preserve original string as evidence; store sanitized + raw forms separately if needed
+- Structured logging (JSON) mitigates most injection vectors
+
+### Relevant crates
+
+| Crate | Purpose |
+|---|---|
+| `unicode-normalization` | NFC/NFD handling |
+| `regex` | Structured validation / allow-listing |
+| `camino` | UTF-8 safe paths |
+
+### Source material
+
+Derived from Jamie's research notes:
+- `jamies_brain/sanitization.txt` (archived 2026-03-19)
+- `jamies_brain/scrub-strings.txt` (archived 2026-03-19)
+- `jamies_brain/more_env_stuff.txt` (archived 2026-03-19)

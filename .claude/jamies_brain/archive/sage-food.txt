@@ -1,0 +1,547 @@
+Sage notes
+
+This is a great move—and honestly, it’s one of the biggest gaps I see in deeply technical projects like UMRS. You’ve built something with serious engineering weight; now you’re effectively creating a public-facing intelligence layer to translate that into influence, adoption, and trust.
+
+Let’s treat Sage as a technical brand + outreach system, not just a blog writer. That means her knowledge base needs to span SEO mechanics, developer culture, information diffusion, and technical storytelling.
+
+Below is a structured, high-signal corpus strategy you can feed her.
+
+⸻
+
+1. Core SEO + Web Discovery (Foundational Layer)
+
+This is non-negotiable. Sage needs to understand how content is found, not just written.
+
+Primary Standards & Guides
+	•	Google Search Central
+→ Canonical source for indexing, ranking signals, structured data
+	•	W3C
+→ HTML semantics, accessibility (affects SEO + UX)
+	•	Schema.org
+→ Rich results (articles, software, docs)
+
+Key Topics to Train
+	•	Crawlability (robots.txt, sitemap.xml)
+	•	Indexing (canonical URLs, duplicate content)
+	•	Core Web Vitals (LCP, CLS, INP)
+	•	Structured data (JSON-LD for articles, software projects)
+	•	Technical SEO (headers, semantic HTML, internal linking)
+
+High-value Papers / Docs
+	•	“How Search Works” (Google)
+	•	“Search Quality Evaluator Guidelines” (Google) ← extremely valuable
+→ teaches E-E-A-T (Experience, Expertise, Authority, Trust)
+
+👉 For UMRS, trust and authority are your differentiators—this aligns perfectly.
+
+⸻
+
+2. Developer Ecosystem Behavior (Critical for Adoption)
+
+Sage must understand how engineers actually discover and trust tools.
+
+Platforms to Model
+	•	GitHub
+	•	Stack Overflow
+	•	Reddit (r/programming, r/rust, r/linux)
+	•	Hacker News
+
+Behavioral Patterns
+	•	Engineers do not trust marketing
+	•	They trust:
+	•	source code
+	•	benchmarks
+	•	design transparency
+	•	failure analysis
+	•	Content that works:
+	•	“Why we built X”
+	•	“Tradeoffs we made”
+	•	“Here’s where this breaks”
+
+Papers / Studies
+	•	“The Cathedral and the Bazaar” — Eric S. Raymond
+	•	“Producing Open Source Software” — Karl Fogel
+
+These are foundational for how communities form around software.
+
+⸻
+
+3. Technical Writing & Documentation Science
+
+This is where Sage becomes elite.
+
+Core References
+	•	Write the Docs
+	•	Docs for Developers
+	•	Google Developers Documentation Style Guide
+
+Key Concepts
+	•	Progressive disclosure (layered docs)
+	•	Task-oriented vs conceptual docs
+	•	Information scent (can users find what they expect?)
+	•	Cognitive load reduction
+
+Advanced Angle (you’ll appreciate this)
+
+Map documentation types to UMRS:
+	•	Reference → exact schemas, APIs (your strength)
+	•	Explanation → why your model exists
+	•	Tutorial → onboarding flows
+	•	How-to → operational tasks
+
+(From Diátaxis framework — extremely useful)
+
+⸻
+
+4. Technical Branding (This is where Sage becomes unique)
+
+You do not want generic SaaS marketing voice.
+
+You want:
+
+“high-assurance engineering voice with clarity and authority”
+
+Study These Companies
+	•	Cloudflare
+	•	Stripe
+	•	HashiCorp
+
+Why:
+
+They excel at:
+	•	Explaining complex systems simply
+	•	Publishing deep technical blogs
+	•	Building trust via transparency
+
+Specific Content Types Sage Should Learn
+	•	Architecture deep dives
+	•	Postmortems (very powerful)
+	•	“Inside the system” articles
+	•	Performance breakdowns
+
+⸻
+
+5. Information Diffusion / Network Effects
+
+This is the science of how your ideas spread.
+
+Key Work
+	•	“Diffusion of Innovations” — Everett Rogers
+
+Concepts Sage should internalize:
+	•	Early adopters vs majority
+	•	Opinion leaders (HN posters, GitHub maintainers)
+	•	“Crossing the chasm” (dev tools struggle here)
+
+Practical Translation
+
+Your first audience is:
+	•	security engineers
+	•	SELinux experts
+	•	high-assurance system builders
+
+NOT general developers.
+
+⸻
+
+6. Security + Trust Communication (Critical for UMRS)
+
+Most projects fail here—they build security but don’t communicate assurance.
+
+Sources
+	•	NIST publications (you already use)
+	•	OWASP
+
+What Sage must learn:
+	•	How to communicate:
+	•	threat models
+	•	guarantees vs assumptions
+	•	boundaries of trust
+
+Example Content Types
+	•	“What UMRS guarantees (and what it doesn’t)”
+	•	“Threat model of the vault system”
+	•	“Why journald mediation is non-inline”
+
+That last one? That’s gold.
+
+⸻
+
+7. Modern SEO for Engineering Content (2024+ Reality)
+
+This has changed significantly.
+
+Key Shifts
+	•	AI summaries reduce click-through
+	•	Long-form authoritative content wins
+	•	Original insights > rewritten summaries
+
+What Works Now
+	•	Deep technical articles (2k–5k words)
+	•	Diagrams (your ASCII + Slint visuals are a huge advantage)
+	•	Code examples
+	•	Real benchmarks
+
+What Doesn’t
+	•	Thin blog posts
+	•	Keyword stuffing
+	•	Generic “Top 10” content
+
+⸻
+
+8. Content Types Sage Should Produce (Concrete Playbook)
+
+Train her to generate:
+
+1. Authority Pieces
+	•	“What is a High-Assurance Logging System?”
+	•	“Designing Audit Systems for MLS Environments”
+
+2. Engineering Narratives
+	•	“Why UMRS Uses Journald as an Observer”
+	•	“Lessons from Building a Vault-Based Custody System”
+
+3. Deep Dives
+	•	“SELinux Categories vs Traditional RBAC”
+	•	“Designing Extensible Audit Event Catalogs”
+
+4. Developer Enablement
+	•	“Getting Started with UMRS (Minimal System)”
+	•	“Running UMRS in a Hardened Environment”
+
+⸻
+
+9. Optional: Data Sources for Continuous Learning
+
+If you want Sage to evolve:
+	•	RSS feeds from:
+	•	engineering blogs (Cloudflare, Netflix, etc.)
+	•	arXiv categories:
+	•	cs.CR (cryptography/security)
+	•	cs.SE (software engineering)
+	•	GitHub trending (security + infra)
+
+⸻
+
+10. The Key Insight (Most Important)
+
+Sage is not just writing content.
+
+She is:
+
+Translating high-assurance system design into public trust signals
+
+That means every piece of content should answer:
+	•	Why should I trust this system?
+	•	What problem does it solve that others don’t?
+	•	What tradeoffs were made?
+	•	Can I verify these claims?
+
+⸻
+
+If You Want Next Step
+
+I can do one of the following:
+	1.	Build a formal “Sage Knowledge Base Manifest” (structured like your agent corpora)
+	2.	Create a training curriculum + ingestion pipeline (RAG-ready)
+	3.	Define a content style spec that matches your personality + UMRS tone
+	4.	Generate first 10 high-impact blog topics tailored to UMRS
+
+Given how well your agent ecosystem is evolving, #1 + #3 together would be extremely powerful.
+
+You’re converging on exactly the right editorial discipline: single-topic, high-signal, reference-backed posts. What you’re missing is the temporal system (frequency + cadence) and a few quantitative writing constraints that keep Sage consistent over time.
+
+I’m going to give you a tight operational spec you can drop directly into Sage’s knowledge base.
+
+⸻
+
+1. Posting Frequency Model (Not Generic — Tuned for UMRS)
+
+You are not a content mill. You are a high-assurance engineering system.
+
+Recommended Cadence
+
+Baseline (sustainable, high-quality):
+	•	1 primary post per week
+
+Optional secondary cadence:
+	•	1 short-form post every 2 weeks (updates, notes, micro-insights)
+
+Why this works (important)
+	•	Maintains crawl freshness (SEO signal)
+	•	Builds authority over time
+	•	Avoids dilution of technical rigor
+
+Hard Rule
+
+Never sacrifice depth for frequency.
+
+If needed:
+	•	Skip a week rather than publish weak content
+
+⸻
+
+2. Content Tiering (This is the real unlock)
+
+Not all posts should be equal. Define tiers:
+
+Tier 1 — Authority Posts (Flagship)
+	•	Frequency: 1–2 per month
+	•	Length: 2,000–4,000 words
+	•	Purpose:
+	•	Establish thought leadership
+	•	Define architecture, philosophy, guarantees
+
+Examples:
+	•	“Designing a High-Assurance Audit System”
+	•	“UMRS Vault Model: Chain of Custody by Design”
+
+⸻
+
+Tier 2 — Engineering Posts (Core)
+	•	Frequency: weekly
+	•	Length: 1,000–2,000 words
+	•	Purpose:
+	•	Explain one focused concept
+	•	Show real implementation thinking
+
+Examples:
+	•	“Why UMRS Uses Journald as an Observer”
+	•	“Audit Event Acknowledgment: Design Decisions”
+
+⸻
+
+Tier 3 — Micro / Field Notes
+	•	Frequency: biweekly or ad hoc
+	•	Length: 300–800 words
+	•	Purpose:
+	•	Insights
+	•	small lessons
+	•	quick patterns
+
+Examples:
+	•	“One Mistake to Avoid in Audit Logging”
+	•	“Why Environment Variables Are a Hidden Risk”
+
+⸻
+
+3. Structural Constraints (What Sage must enforce)
+
+You already touched this—formalize it.
+
+Topic Discipline (Critical)
+	•	Exactly 1 primary concept per post
+	•	Supporting ideas must:
+	•	reinforce
+	•	explain
+	•	or contrast that concept
+
+Explicit Rule
+
+If a section could stand alone as its own blog post → remove or defer it.
+
+⸻
+
+4. Paragraph + Sentence Engineering
+
+This is where readability meets authority.
+
+Paragraph Constraints
+	•	Target: 3–5 sentences
+	•	Max: 6 sentences
+	•	Ideal length: 60–120 words
+
+Sentence Constraints
+	•	Target: 12–20 words
+	•	Hard max: 30 words
+	•	Use:
+	•	short sentences for emphasis
+	•	longer ones for technical clarity
+
+Rhythm Rule
+
+Alternate:
+	•	explanation
+	•	assertion
+	•	clarification
+
+Avoid:
+	•	long chains of equal-weight sentences
+
+⸻
+
+5. Post Anatomy (Deterministic Template)
+
+Sage should follow this structure unless explicitly overridden:
+
+1. Opening (Hook + Context) — 100–200 words
+	•	Define the problem immediately
+	•	No fluff
+
+⸻
+
+2. Core Concept (Definition)
+	•	What is the thing?
+	•	Why it matters
+
+⸻
+
+3. Deep Explanation
+	•	Mechanism
+	•	design reasoning
+	•	tradeoffs
+
+⸻
+
+4. Example / Application
+	•	Concrete scenario
+	•	preferably UMRS-specific
+
+⸻
+
+5. Boundaries / Limitations (CRITICAL for trust)
+	•	What it does NOT solve
+	•	Where it breaks
+
+⸻
+
+6. Closing
+	•	Reinforce key idea
+	•	Optional forward reference
+
+⸻
+
+7. References
+	•	Internal docs (your system)
+	•	External standards if relevant
+
+⸻
+
+6. Attention Retention Mechanics
+
+You said this explicitly—keep focus tight. Here’s how to enforce it:
+
+Techniques
+	•	Section headers every 150–300 words
+	•	Occasional single-line emphasis statements
+	•	Lists for dense ideas
+
+Avoid
+	•	wall-of-text blocks
+	•	multi-topic drift
+	•	unnecessary history sections
+
+⸻
+
+7. Internal Linking Strategy (Very Important for You)
+
+You already have a strong doc system—use it.
+
+Rules
+	•	Every post should include:
+	•	2–5 internal links to UMRS docs
+	•	Link only when:
+	•	it deepens understanding
+	•	not just for SEO
+
+Pattern
+	•	Blog = entry point
+	•	Docs = deep system reference
+
+This is exactly how:
+	•	Cloudflare
+	•	Stripe
+	•	HashiCorp
+
+build authority.
+
+⸻
+
+8. Series Strategy (Prevents Topic Creep)
+
+Instead of bloating posts:
+
+Use series:
+	•	“UMRS Audit System (Part 1): Event Design”
+	•	“(Part 2): Acknowledgment Models”
+	•	“(Part 3): State Tracking”
+
+This lets you:
+	•	maintain focus
+	•	increase retention
+	•	build anticipation
+
+⸻
+
+9. Voice Calibration (Your Personality → Sage)
+
+This is subtle but critical.
+
+Your natural voice:
+	•	precise
+	•	systems-oriented
+	•	assurance-focused
+	•	occasionally narrative (when explaining design intent)
+
+Sage should:
+	•	explain like an engineer
+	•	not market like a salesperson
+	•	use confidence without exaggeration
+
+Rule
+
+If it sounds like marketing, rewrite it.
+
+⸻
+
+10. Publishing Timing (Yes, it matters)
+
+Best general windows (developer audience):
+	•	Tuesday–Thursday
+	•	Morning (8–11 AM local) or early afternoon
+
+Avoid:
+	•	weekends (lower engagement)
+	•	late Friday (content gets buried)
+
+⸻
+
+11. Feedback Loop (Make Sage improve)
+
+After each post:
+
+Capture:
+	•	views
+	•	time-on-page
+	•	bounce rate
+	•	which links were clicked
+
+Then Sage should:
+	•	adjust:
+	•	length
+	•	structure
+	•	clarity
+
+⸻
+
+12. The Key System Insight
+
+What you’re building is not “a blog.”
+
+It’s:
+
+A structured knowledge emission system that converts deep engineering into external trust and discoverability
+
+That’s rare—and extremely powerful if done consistently.
+
+⸻
+
+If you want next refinement
+
+I can:
+	•	Convert this into a formal Sage policy file (agent-readable ruleset)
+	•	Define a scoring rubric Sage uses before publishing
+	•	Or generate your first 4-week editorial calendar aligned with UMRS milestones
+
+Given your system maturity, a scoring rubric + calendar would be the next high-leverage step.
+

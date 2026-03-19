@@ -142,19 +142,49 @@ This is the active work queue. Plans are phased. Agents should check here for as
 
 When a plan phase completes, mark it complete and move it to `completed/`.
 
-### `docs/new_stuff/`
+### Content Inboxes
 
-> **Primary audience: `tech-writer` and `senior-tech-writer` only. All other agents ignore this area unless directed by Jamie.**
+Each documentation owner has a dedicated inbox for incoming material:
 
-This directory holds abstract new research that needs a home in the Antora `docs/` structure.
+| Inbox | Owner | Purpose |
+|---|---|---|
+| `docs/imprimatur/inbox/` | `senior-tech-writer` / `tech-writer` | New research, draft content, material needing Antora placement |
+| `docs/sage/inbox/` | `sage` | Blog ideas, outreach material, content requests |
 
-**Senior tech-writer responsibilities for this area:**
+**Senior tech-writer responsibilities for `docs/imprimatur/inbox/`:**
 
 - Read incoming material and determine correct high-level placement (module, section, etc.)
 - If no good location exists, flag it as a resource for later consideration
 - Convert content to correct Antora format and UMRS writing style
 - If the material is duplicate but enhancing — incorporate it into existing documentation
 - Move processed source files to a `used/` subdirectory so stale material can be cleaned up later
+
+### Review Storage — Routing Rules
+
+Reviews are stored separately by category so they can be analyzed for quality trends over time.
+
+| Review type | Location | Naming convention |
+|---|---|---|
+| Blog / whitepaper / outreach reviews | `docs/sage/reviews/` | `YYYY-MM-DD-<type>-<slug>.md` |
+| Documentation reviews | `docs/imprimatur/reviews/` | `YYYY-MM-DD-<module>-<slug>.md` |
+| Code reviews and security audits | `.claude/reports/code/` | `YYYY-MM-DD-<crate>-<description>.md` |
+
+**Naming convention details:**
+
+- `<type>` = blog, whitepaper, abstract, script (what was reviewed)
+- `<slug>` = matches source filename for traceability (e.g., `cui-sign-lock` maps to `blog-cui-sign-lock.adoc`)
+- `<module>` = Antora module name (e.g., deployment, devel, patterns)
+- `<crate>` = Rust crate name (e.g., umrs-selinux, umrs-platform)
+
+**Every review file must include a metadata header** with: audit date, reviewer agent, source file(s) reviewed, and scope.
+
+**Directory ownership:**
+
+- `docs/sage/` — owned by `sage`. Content creation, reviews of Sage's output.
+- `docs/imprimatur/` — owned by `senior-tech-writer`. Documentation lifecycle, reviews of doc quality.
+- `.claude/reports/code/` — owned by `security-auditor` and `security-engineer`. Code quality and compliance audits.
+
+> **Note:** `docs/new_stuff/` is retired. Use `docs/imprimatur/inbox/` instead.
 
 ---
 

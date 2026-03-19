@@ -6,6 +6,7 @@
 ** xref:crypto-policy-tiers.adoc[Cryptographic Policy Tiers]
 ** xref:crypto-cpu-extensions.adoc[CPU Cryptographic Extensions]
 ** xref:openssl-no-vendoring.adoc[OpenSSL Vendoring Policy]
+** xref:rust-fips-strategies.adoc[Rust FIPS Strategies]
 
 * Post-Quantum
 ** xref:crypto-post-quantum.adoc[Post-Quantum Cryptography]

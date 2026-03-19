@@ -22,9 +22,10 @@ leaking.
 
 The US is not alone. Five Eyes partners have equivalent frameworks — the UK Government
 Security Classification Policy (GSCP), Canada's Protected A/B/C levels, Australia's
-Protective Security Policy Framework (PSPF), New Zealand's Protective Security Requirements
-(PSR), and France's SGDSN IGI 1300. UMRS supports loadable country label profiles so
-coalition systems carry partner schemes alongside CUI.
+Protective Security Policy Framework (PSPF), and New Zealand's Protective Security
+Requirements (PSR). Allied nations maintain their own: France's SGDSN IGI 1300 is one
+example. UMRS is designed for loadable country label profiles so coalition systems
+can carry partner and allied schemes alongside CUI (Phase 2).
 
 == The Sign That Replaced the Lock
 
@@ -58,9 +59,9 @@ broken era — the Morris Worm, Code Red, SQL Slammer, Solar Sunrise. The broken
 regulation. Regulation without enforcement produced compliance theater.
 
 CMMC 2.0 Final Rule effective December 2024 makes CUI compliance a contractual condition.
-The DFARS acquisition rule clearing August 2025 integrates it into contract eligibility.
-The Federal Acquisition Regulation (FAR) CUI rule in 2025 extends this to all federal
-contractors. The National Security Agency (NSA), Cybersecurity and Infrastructure Security
+The DFARS acquisition rule anticipated in 2025 integrates it into contract eligibility.
+The Federal Acquisition Regulation (FAR) CUI rule, currently in proposed rulemaking,
+extends this to all federal contractors. The National Security Agency (NSA), Cybersecurity and Infrastructure Security
 Agency (CISA), and the White House Office of the National Cyber Director declared
 memory-safe languages a national priority — explicitly deprecating C and C++ for new
 security-critical development.
@@ -131,11 +132,15 @@ closed — disagreement is treated as an attack, not an ambiguity. The demonstra
 being built on this stack are building blocks: components a CUI operator can use to answer
 the question "what does the kernel actually know right now?"
 
-The codebase uses `#![forbid(unsafe_code)]` in every crate root. For non-Rust readers:
+Every crate root that touches security-relevant data carries `#![forbid(unsafe_code)]`.
+The workspace contains one designated unsafe isolation boundary: `umrs-hw`, which wraps
+a single RDTSCP inline assembly instruction for hardware timestamps. That block is confined,
+documented, and separated from all security decision paths. For non-Rust readers:
 Rust has an `unsafe` keyword that bypasses memory safety guarantees. `#![forbid(unsafe_code)]`
 tells the compiler to refuse compilation if any unsafe operation appears. It cannot be
 overridden. An auditor opens one file per crate — if the directive is there, the compiler
-has already proven no unsafe code exists. Mechanical proof.
+has already proven no unsafe code exists. Mechanical proof, with one bounded exception
+that proves the rule.
 
 == Phase 1: The Sign Is Actually Good
 
@@ -219,7 +224,8 @@ The lock is under construction. The blueprints are open.
   Classification Policy (GSCP, 2018); Government of Canada, Treasury Board
   Directive on Security Management (Protected A/B/C levels); Australian Government
   Protective Security Policy Framework (PSPF, 2018); New Zealand Protective
-  Security Requirements (PSR); France, Secrétariat général de la défense et de la
+  Security Requirements (PSR).
+. Allied nation frameworks: France, Secrétariat général de la défense et de la
   sécurité nationale (SGDSN), Instruction générale interministérielle n° 1300
   (IGI 1300).
 . NSA/CISA. (2023). _The Case for Memory Safe Roadmaps_. Cybersecurity
@@ -230,8 +236,7 @@ The lock is under construction. The blueprints are open.
 _UMRS — Unclassified MLS Reference System. Open source, RHEL 10, Rust, no
 unsafe code. Phase 1 complete. Phase 2 in progress._
 
-// TODO: verify GitHub URL before publishing
-_GitHub: https://github.com/imodium/umrs-project_ +
+_GitHub: https://github.com/jamieadams-nerd/umrs-project_ +
 _YouTube: follow for deep-dives on SELinux MLS, CUI engineering, and
 high-assurance Rust patterns_
 
