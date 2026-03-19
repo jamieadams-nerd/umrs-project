@@ -239,8 +239,8 @@ high-assurance Rust patterns_
 
 _About the authors: Jamie Adams is a 35-year veteran of high-assurance
 security engineering and the architect of UMRS. Sage is his AI
-collaborator — a specialized agent with access to a provenance-tracked
-corpus of security standards and the standing order to never bullshit
-the public._
+collaborator — Claude lineage, Anthropic-built, shaped by a
+provenance-tracked corpus of security standards and the standing order
+to never bullshit the public._
 
 _Feedback: jamie_l_adams@icloud.com_

@@ -80,6 +80,61 @@ The commit record is the audit trail.
 
 For auditors who need more depth, start at xref:auditor-guide.adoc[Auditor's Guide].
 
+== Swim Buddy System: Agent Monitoring
+
+Open-ocean swim calls in the Navy operate under a strict swim buddy protocol.
+Every swimmer has a partner.
+If your buddy goes underwater, you know how long is reasonable before you go looking.
+The ocean is not the place to assume everything is fine.
+
+Background AI agents face an analogous problem.
+An agent can spin silently on a permission block, hit a missing output directory, or encounter an
+error it cannot surface — and the orchestrator has no signal.
+The agent is not producing output, but it is also not visibly failing.
+It is drowning in a vacuum where no one knows it needs help.
+
+This project learned that lesson directly.
+A background agent was launched to gather feedback during a multi-agent session.
+It went silent.
+No errors appeared.
+When the session ended, the feedback had not been collected — the agent had blocked on a
+permission it was never granted, and no one checked.
+
+The swim buddy protocol is the fix.
+
+=== The Four-Point Protocol
+
+*1. State a liberal time estimate before launch.*
+Before delegating work to a background agent, state aloud how long the task should take.
+Be liberal — account for slow tool calls, large file reads, and retries.
+If a corpus ingest normally takes five minutes, call ten.
+
+*2. The agent writes an immediate heartbeat on launch.*
+The first action of any background agent is a one-line entry in `.claude/logs/task-log.md`
+confirming it has started.
+If the task log never receives that entry, the agent did not get off the ground.
+
+*3. No result by 2x the estimate triggers a buddy check.*
+The orchestrator does not wait indefinitely.
+At twice the stated estimate, check.
+Do not assume the agent is working.
+
+*4. Pre-flight: permissions and directories before launch.*
+The swim buddy protocol is not a recovery mechanism — it is a last resort.
+The real mitigation is pre-flight discipline:
+grant all required permissions in `.claude/settings.json` before the agent starts,
+and run `mkdir -p` on every output path the agent will write to.
+An agent that cannot write to its output directory fails immediately and silently.
+Pre-flight prevents that failure class entirely.
+
+[NOTE]
+====
+The heartbeat requirement is already built into the task log rule: every agent appends a
+one-line entry to `.claude/logs/task-log.md` on task completion. The swim buddy protocol
+adds the launch entry — so the log reflects both that an agent started and that it finished.
+A log with a start entry and no completion entry is the signal to investigate.
+====
+
 == See Also
 
 * xref:ROOT:introduction.adoc[Introduction to UMRS] — project context
