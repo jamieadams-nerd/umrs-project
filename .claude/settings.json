@@ -143,7 +143,16 @@
       "Bash(cp .claude/agent-memory/sage/sage-content-history.md ~/.claude/agent-memory/sage/)",
       "Bash(rm -rf .claude/agent-memory/sage/)",
       "Bash(awk ':*)",
-      "Bash(tee -a .claude/logs/task-log.md)"
+      "Bash(tee -a .claude/logs/task-log.md)",
+      "WebFetch(domain:vale.sh)",
+      "Bash(mv .claude/jamies_brain/install-vale.md .claude/jamies_brain/archive/install-vale.md)",
+      "Bash(mv .claude/jamies_brain/info-theory.txt .claude/jamies_brain/archive/info-theory.txt)",
+      "Bash(mv .claude/jamies_brain/sage-food.txt .claude/jamies_brain/archive/sage-food.txt)",
+      "Bash(mv .claude/jamies_brain/more_env_stuff.txt .claude/jamies_brain/archive/more_env_stuff.txt)",
+      "Bash(mv .claude/jamies_brain/sanitization.txt .claude/jamies_brain/archive/sanitization.txt)",
+      "Bash(mv .claude/jamies_brain/scrub-strings.txt .claude/jamies_brain/archive/scrub-strings.txt)",
+      "Bash(mv .claude/jamies_brain/file-cuddling-umrs-ls.md .claude/jamies_brain/archive/file-cuddling-umrs-ls.md)",
+      "Bash(mv .claude/jamies_brain/xattr-stripper.txt .claude/jamies_brain/archive/xattr-stripper.txt)"
     ]
   },
   "enabledPlugins": {
