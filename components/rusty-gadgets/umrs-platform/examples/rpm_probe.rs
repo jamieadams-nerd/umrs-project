@@ -63,8 +63,11 @@ fn main() {
     // ── Package installation check ────────────────────────────────────────────
     println!();
     for pkg in &["bash", "coreutils", "selinux-policy", "nonexistent-xyzzy"] {
-        let installed = is_installed(pkg);
-        println!("is_installed({pkg:<28}) = {installed}");
+        match is_installed(pkg) {
+            Ok(true) => println!("is_installed({pkg:<28}) = installed"),
+            Ok(false) => println!("is_installed({pkg:<28}) = absent"),
+            Err(e) => println!("is_installed({pkg:<28}) = error: {e}"),
+        }
     }
 
     // ── File ownership query ──────────────────────────────────────────────────

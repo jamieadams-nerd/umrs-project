@@ -84,6 +84,16 @@ pub enum Action {
     /// NIST SP 800-53 SC-5 — focus navigation ensures the operator makes a
     /// deliberate choice before confirming a security-affecting action.
     DialogToggleFocus,
+
+    /// Open the in-TUI contextual help overlay for the current tab.
+    ///
+    /// Bound to `?` and `F1` by default. The calling binary is responsible
+    /// for creating a `DialogState::info(...)` with context-appropriate help
+    /// text and displaying it via `render_dialog`.
+    ///
+    /// NIST SP 800-53 SA-5 — system documentation is accessible from within
+    /// the tool; operators do not need an external reference guide.
+    ShowHelp,
 }
 
 // ---------------------------------------------------------------------------
@@ -115,6 +125,7 @@ impl KeyMap {
     /// | `PageDown` | PageDown |
     /// | `PageUp` | PageUp |
     /// | `r` | Refresh |
+    /// | `?` / `F1` | ShowHelp |
     #[must_use = "KeyMap must be used to process events; constructing and discarding it has no effect"]
     pub fn new() -> Self {
         let mut map = HashMap::new();
@@ -151,6 +162,13 @@ impl KeyMap {
             key(KeyCode::Char('r'), KeyModifiers::NONE),
             Action::Refresh,
         );
+
+        // Contextual help overlay
+        map.insert(
+            key(KeyCode::Char('?'), KeyModifiers::NONE),
+            Action::ShowHelp,
+        );
+        map.insert(key(KeyCode::F(1), KeyModifiers::NONE), Action::ShowHelp);
 
         Self {
             map,

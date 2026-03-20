@@ -35824,5 +35824,208 @@
     "chunks_stored": 12,
     "collection": "cpu-extensions",
     "ingested_date": "2026-03-18T16:39:58.734290+00:00"
+  },
+  "info-theory-foundations/analytic-combinatorics-flajolet-sedgewick.md": {
+    "hash": "386801095d91e3b8",
+    "converted_to": "converted/info-theory-foundations/analytic-combinatorics-flajolet-sedgewick.md",
+    "chunks_stored": 21,
+    "collection": "info-theory-foundations",
+    "ingested_date": "2026-03-20T12:46:25.223912+00:00"
+  },
+  "info-theory-foundations/ann-survey-2021.md": {
+    "hash": "fc5ce3ca5626a3ed",
+    "converted_to": "converted/info-theory-foundations/ann-survey-2021.md",
+    "chunks_stored": 22,
+    "collection": "info-theory-foundations",
+    "ingested_date": "2026-03-20T12:46:26.002004+00:00"
+  },
+  "info-theory-foundations/astar-1968.md": {
+    "hash": "947c368835e5d27e",
+    "converted_to": "converted/info-theory-foundations/astar-1968.md",
+    "chunks_stored": 17,
+    "collection": "info-theory-foundations",
+    "ingested_date": "2026-03-20T12:46:26.580693+00:00"
+  },
+  "info-theory-foundations/avis-fukuda-reverse-search.md": {
+    "hash": "a41c2c27ca232419",
+    "converted_to": "converted/info-theory-foundations/avis-fukuda-reverse-search.md",
+    "chunks_stored": 18,
+    "collection": "info-theory-foundations",
+    "ingested_date": "2026-03-20T12:46:27.248737+00:00"
+  },
+  "info-theory-foundations/cross-discipline-bridges.md": {
+    "hash": "aa3eeec4ee41d5ec",
+    "converted_to": "converted/info-theory-foundations/cross-discipline-bridges.md",
+    "chunks_stored": 20,
+    "collection": "info-theory-foundations",
+    "ingested_date": "2026-03-20T12:46:27.987316+00:00"
+  },
+  "info-theory-foundations/dijkstra-1959.md": {
+    "hash": "fb0b75e2980fec83",
+    "converted_to": "converted/info-theory-foundations/dijkstra-1959.md",
+    "chunks_stored": 13,
+    "collection": "info-theory-foundations",
+    "ingested_date": "2026-03-20T12:46:28.425359+00:00"
+  },
+  "info-theory-foundations/edmonds-1965.md": {
+    "hash": "9817c1fa99879675",
+    "converted_to": "converted/info-theory-foundations/edmonds-1965.md",
+    "chunks_stored": 16,
+    "collection": "info-theory-foundations",
+    "ingested_date": "2026-03-20T12:46:28.980356+00:00"
+  },
+  "info-theory-foundations/hnsw-2016.md": {
+    "hash": "0a0894ccc2f0eb53",
+    "converted_to": "converted/info-theory-foundations/hnsw-2016.md",
+    "chunks_stored": 20,
+    "collection": "info-theory-foundations",
+    "ingested_date": "2026-03-20T12:46:29.627682+00:00"
+  },
+  "info-theory-foundations/index.md": {
+    "hash": "c38af92789cf6805",
+    "converted_to": "converted/info-theory-foundations/index.md",
+    "chunks_stored": 10,
+    "collection": "info-theory-foundations",
+    "ingested_date": "2026-03-20T12:46:30.003739+00:00"
+  },
+  "info-theory-foundations/kolmogorov-complexity.md": {
+    "hash": "021d25a595094d56",
+    "converted_to": "converted/info-theory-foundations/kolmogorov-complexity.md",
+    "chunks_stored": 18,
+    "collection": "info-theory-foundations",
+    "ingested_date": "2026-03-20T12:46:30.888077+00:00"
+  },
+  "info-theory-foundations/mackay-itila.md": {
+    "hash": "88535a637ee9a1cf",
+    "converted_to": "converted/info-theory-foundations/mackay-itila.md",
+    "chunks_stored": 13,
+    "collection": "info-theory-foundations",
+    "ingested_date": "2026-03-20T12:46:31.338878+00:00"
+  },
+  "info-theory-foundations/rissanen-mdl.md": {
+    "hash": "96a02e9b78d2bda1",
+    "converted_to": "converted/info-theory-foundations/rissanen-mdl.md",
+    "chunks_stored": 14,
+    "collection": "info-theory-foundations",
+    "ingested_date": "2026-03-20T12:46:31.969117+00:00"
+  },
+  "info-theory-foundations/shannon-1948.md": {
+    "hash": "6ea29b2e8b888c71",
+    "converted_to": "converted/info-theory-foundations/shannon-1948.md",
+    "chunks_stored": 16,
+    "collection": "info-theory-foundations",
+    "ingested_date": "2026-03-20T12:46:32.992604+00:00"
+  },
+  "info-theory-foundations/spectral-clustering-luxburg.md": {
+    "hash": "c19b2c197fdf7ae3",
+    "converted_to": "converted/info-theory-foundations/spectral-clustering-luxburg.md",
+    "chunks_stored": 20,
+    "collection": "info-theory-foundations",
+    "ingested_date": "2026-03-20T12:46:34.090772+00:00"
+  },
+  "sage-outreach-corpus/cathedral-bazaar.md": {
+    "hash": "67490389a2219f00",
+    "converted_to": "converted/sage-outreach-corpus/cathedral-bazaar.md",
+    "chunks_stored": 7,
+    "collection": "sage-outreach-corpus",
+    "ingested_date": "2026-03-20T12:46:55.412999+00:00"
+  },
+  "sage-outreach-corpus/cloudflare-model.md": {
+    "hash": "b699aef5158e5ba5",
+    "converted_to": "converted/sage-outreach-corpus/cloudflare-model.md",
+    "chunks_stored": 6,
+    "collection": "sage-outreach-corpus",
+    "ingested_date": "2026-03-20T12:46:55.664209+00:00"
+  },
+  "sage-outreach-corpus/content-strategy-operational-spec.md": {
+    "hash": "204ef001e85565ec",
+    "converted_to": "converted/sage-outreach-corpus/content-strategy-operational-spec.md",
+    "chunks_stored": 17,
+    "collection": "sage-outreach-corpus",
+    "ingested_date": "2026-03-20T12:46:56.295079+00:00"
+  },
+  "sage-outreach-corpus/developer-trust-patterns.md": {
+    "hash": "5302e8ca0c7d55b5",
+    "converted_to": "converted/sage-outreach-corpus/developer-trust-patterns.md",
+    "chunks_stored": 6,
+    "collection": "sage-outreach-corpus",
+    "ingested_date": "2026-03-20T12:46:56.529844+00:00"
+  },
+  "sage-outreach-corpus/diataxis.md": {
+    "hash": "272100b45cb7f567",
+    "converted_to": "converted/sage-outreach-corpus/diataxis.md",
+    "chunks_stored": 8,
+    "collection": "sage-outreach-corpus",
+    "ingested_date": "2026-03-20T12:46:56.834220+00:00"
+  },
+  "sage-outreach-corpus/diffusion-of-innovations.md": {
+    "hash": "a393267f55ea528c",
+    "converted_to": "converted/sage-outreach-corpus/diffusion-of-innovations.md",
+    "chunks_stored": 10,
+    "collection": "sage-outreach-corpus",
+    "ingested_date": "2026-03-20T12:46:57.198198+00:00"
+  },
+  "sage-outreach-corpus/eeat-framework.md": {
+    "hash": "828dd56ef85849a5",
+    "converted_to": "converted/sage-outreach-corpus/eeat-framework.md",
+    "chunks_stored": 5,
+    "collection": "sage-outreach-corpus",
+    "ingested_date": "2026-03-20T12:46:57.417601+00:00"
+  },
+  "sage-outreach-corpus/google-dev-style.md": {
+    "hash": "02ac49d73bcdfbfd",
+    "converted_to": "converted/sage-outreach-corpus/google-dev-style.md",
+    "chunks_stored": 4,
+    "collection": "sage-outreach-corpus",
+    "ingested_date": "2026-03-20T12:46:57.617162+00:00"
+  },
+  "sage-outreach-corpus/hashicorp-model.md": {
+    "hash": "0a2a63fd7bf96014",
+    "converted_to": "converted/sage-outreach-corpus/hashicorp-model.md",
+    "chunks_stored": 6,
+    "collection": "sage-outreach-corpus",
+    "ingested_date": "2026-03-20T12:46:57.830396+00:00"
+  },
+  "sage-outreach-corpus/index.md": {
+    "hash": "93f7297d1cc9257b",
+    "converted_to": "converted/sage-outreach-corpus/index.md",
+    "chunks_stored": 5,
+    "collection": "sage-outreach-corpus",
+    "ingested_date": "2026-03-20T12:46:57.991087+00:00"
+  },
+  "sage-outreach-corpus/producing-oss.md": {
+    "hash": "bb6e61a4d44be412",
+    "converted_to": "converted/sage-outreach-corpus/producing-oss.md",
+    "chunks_stored": 6,
+    "collection": "sage-outreach-corpus",
+    "ingested_date": "2026-03-20T12:46:58.218825+00:00"
+  },
+  "sage-outreach-corpus/progressive-disclosure.md": {
+    "hash": "3a1935bc6f322df0",
+    "converted_to": "converted/sage-outreach-corpus/progressive-disclosure.md",
+    "chunks_stored": 7,
+    "collection": "sage-outreach-corpus",
+    "ingested_date": "2026-03-20T12:46:58.474316+00:00"
+  },
+  "sage-outreach-corpus/seo-fundamentals.md": {
+    "hash": "c9494ddd2581602c",
+    "converted_to": "converted/sage-outreach-corpus/seo-fundamentals.md",
+    "chunks_stored": 12,
+    "collection": "sage-outreach-corpus",
+    "ingested_date": "2026-03-20T12:46:58.904616+00:00"
+  },
+  "sage-outreach-corpus/stripe-model.md": {
+    "hash": "e60c7d9b2734e3aa",
+    "converted_to": "converted/sage-outreach-corpus/stripe-model.md",
+    "chunks_stored": 6,
+    "collection": "sage-outreach-corpus",
+    "ingested_date": "2026-03-20T12:46:59.114831+00:00"
+  },
+  "sage-outreach-corpus/structured-data.md": {
+    "hash": "5e2819977a701ccf",
+    "converted_to": "converted/sage-outreach-corpus/structured-data.md",
+    "chunks_stored": 8,
+    "collection": "sage-outreach-corpus",
+    "ingested_date": "2026-03-20T12:46:59.372946+00:00"
   }
 }

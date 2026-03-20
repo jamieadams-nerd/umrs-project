@@ -256,3 +256,49 @@ fn default_produces_same_bindings_as_new() {
     assert_eq!(km_new.lookup(&ev_tab), km_default.lookup(&ev_tab));
     assert_eq!(km_new.lookup(&ev_r), km_default.lookup(&ev_r));
 }
+
+// ---------------------------------------------------------------------------
+// Default bindings — ShowHelp
+// ---------------------------------------------------------------------------
+
+#[test]
+fn question_mark_maps_to_show_help() {
+    let km = KeyMap::new();
+    let ev = key(KeyCode::Char('?'), KeyModifiers::NONE);
+    assert_eq!(
+        km.lookup(&ev),
+        Some(Action::ShowHelp),
+        "'?' must map to ShowHelp"
+    );
+}
+
+#[test]
+fn f1_maps_to_show_help() {
+    let km = KeyMap::new();
+    let ev = key(KeyCode::F(1), KeyModifiers::NONE);
+    assert_eq!(
+        km.lookup(&ev),
+        Some(Action::ShowHelp),
+        "F1 must map to ShowHelp"
+    );
+}
+
+// ---------------------------------------------------------------------------
+// ShowHelp is a no-op in AuditCardState
+// ---------------------------------------------------------------------------
+
+#[test]
+fn show_help_does_not_change_state() {
+    use umrs_tui::app::AuditCardState;
+    let mut state = AuditCardState::new(3);
+    state.handle_action(&Action::ShowHelp);
+    assert!(!state.should_quit, "ShowHelp must not quit");
+    assert_eq!(
+        state.active_tab, 0,
+        "ShowHelp must not change the active tab"
+    );
+    assert_eq!(
+        state.scroll_offset, 0,
+        "ShowHelp must not change the scroll offset"
+    );
+}

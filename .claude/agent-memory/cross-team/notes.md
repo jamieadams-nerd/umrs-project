@@ -8,6 +8,75 @@ docs, compliance findings that require new doc content.
 Mark entries `resolved` when acted on. Do not delete entries.
 Resolved entries are periodically archived to `notes-archive-*.md`.
 
+---
+
+### 2026-03-20 — doc-sync: umrs-tui — Kernel tab Phases 1-4 complete
+
+**To:** tech-writer (Von Neumann)
+**Status:** open
+
+Rusty completed kernel tab enhancement Phases 1-4 in `umrs-tui/src/main.rs`.
+
+Changes affecting documentation:
+- Value translations: integer indicators now show parenthetical meanings (e.g., `2 (full ASLR)`)
+- Group descriptions: each of the 6 indicator groups shows a 1-2 sentence explanation below its title
+- Trust / Evidence tab: "No downgrade — full trust retained" replaces bare "none"; contradictions get an explanation row
+- New key bindings: `?` and `F1` open a contextual help overlay for the current tab
+
+Operations reference guide (docs/modules/operations/ or docs/modules/umrs-tools/) needs updating:
+- Key bindings table: add `?` / `F1` → ShowHelp
+- Trust Evidence tab section: update downgrade reasons description to reflect positive framing
+- Kernel Security tab section: note integer values now include plain-language annotations
+- Source of truth for all indicator descriptions: `.claude/agent-memory/security-auditor/indicator-definitions-plain-language.md`
+
+---
+
+### 2026-03-20 — CRITICAL: Phase 1/Phase 2 Positioning (Jamie directive)
+
+**To:** ALL AGENTS
+**Status:** open
+**Source:** `.claude/jamies_brain/target-mls.txt`
+
+Phase 1 (targeted policy) = labeling + awareness + custody. NOT enforcement.
+Phase 2 (MLS) = mandatory enforcement + clearance-based access + strong isolation.
+
+"Phase 1 ensures the data knows what it is. Phase 2 ensures the system enforces who can touch it."
+
+Every agent must internalize this before producing any documentation, code comments, or outreach content. See Task #1 on the task board for full details.
+
+---
+
+### 2026-03-20 — Jamie's Quick Sub-Tasks & Release Strategy
+
+**To:** ALL AGENTS
+**Status:** open
+**Source:** `.claude/jamies_brain/quick-sub-tasks.md`
+
+Key directives from Jamie:
+
+**Rusty:**
+- `umrs-file-stat` → own binary crate `umrs-stat`
+- `umrs-tui` main.rs → `umrs-uname` binary (was umrs-os-detect)
+- Convert `umrs-tui` → `umrs-ui` library used by tool binaries
+- Vision: security-focused overlays of classic Linux tools (umrs-ls, umrs-stat, umrs-uname)
+- Code readability reviews coming — code is king, comments must not clutter
+- Rustdoc API must be ready for public GitHub Pages viewing
+
+**Sage:**
+- AI journey blog series — Jamie's first AI project, parallel to technical content
+- PDF generation for blog posts with searchable catalog
+- After blog posts go live: update UMRS docs with any on-the-fly changes, archive/mark published
+
+**Tech-writer / Senior-tech-writer:**
+- `make docs` = limited public set. `make docs-draft` = full set.
+- Archive inbox items after acting on them
+- Developer guide getting heavy investment — theme must support it
+
+**All:**
+- First release = CUI labeling on targeted + basic tools + RHEL 10 deployment guide. NO IMA/EVM.
+- Vale QA pipeline: BACK BURNER
+- Summer intern (guest-coder) deployment imminent — docs + API must be ready
+
 ## Format
 
 ```
@@ -85,3 +154,38 @@ operates when it should be bypassed on FIPS systems.
 replacing with `ProcFips::read()` calls.
 
 ---
+
+---
+
+## [2026-03-20] sage → tech-writer, senior-tech-writer: Developer guide review complete
+
+**Status**: open
+**Full report**: `.claude/reports/devel-guide-review-sage-2026-03-20.md`
+
+Reviewed all 14 pages of `docs/modules/devel/pages/` using Diataxis, progressive
+disclosure, cognitive load, and developer trust lenses. Summary of top findings:
+
+**CORRECTNESS — Fix immediately:**
+
+1. `build-tooling.adoc` contains what appears to be a chat session transcript
+   ("Got it. Here's a step-by-step...") — not finished documentation. Replace with
+   the xtask command table, Clippy policy, and expected build output.
+
+2. `cargo-notes.adoc` is raw Cargo Book documentation, not UMRS-specific guidance.
+   Replace with: workspace layout rationale, dependency hygiene policy, supply chain
+   hygiene (`cargo audit`, `cargo-geiger`), and crate approval criteria.
+
+**STRUCTURE — High priority:**
+
+3. The guide has zero tutorials and very few how-tos. It is almost entirely
+   explanations and references. A Getting Started page is the highest-impact
+   missing piece — no developer can go from "I cloned the repo" to "I built
+   something" using this guide.
+
+4. "How to Add a New Indicator" (posture-probe.adoc Steps 1-6) is excellent
+   procedural writing. Needs to be a first-class nav entry, not buried inside a
+   2000-line reference page.
+
+**DIATAXIS VIOLATIONS:**
+- `umrs-prog-lang.adoc`: reads like a procurement defense, not a developer motivation piece
+- `git-commit-signing.adoc`: 90

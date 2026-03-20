@@ -1,7 +1,6 @@
 .xref:index.adoc[Security Concepts]
 [collapsible]
 * Foundations
-** xref:security-model.adoc[Security Model Overview]
 ** xref:reference-monitor.adoc[Reference monitor design]
 ** xref:rtb-vnssa.adoc[NSA RTB and RAIN]
 

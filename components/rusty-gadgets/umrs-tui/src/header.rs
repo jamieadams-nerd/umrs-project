@@ -403,11 +403,11 @@ fn single_col_indicator_line<'a>(
 
 /// Extract the display string for an `IndicatorValue`.
 ///
-/// `Active(s)` and `Inactive(s)` return the inner string. `Unavailable`
+/// `Enabled(s)` and `Disabled(s)` return the inner string. `Unavailable`
 /// returns `"unavailable"` — explicit, never empty or misleading.
 fn indicator_text(value: &IndicatorValue) -> String {
     match value {
-        IndicatorValue::Active(s) | IndicatorValue::Inactive(s) => s.clone(),
+        IndicatorValue::Enabled(s) | IndicatorValue::Disabled(s) => s.clone(),
         IndicatorValue::Unavailable => "unavailable".to_owned(),
     }
 }

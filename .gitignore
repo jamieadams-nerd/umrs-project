@@ -5,6 +5,7 @@
 /site/
 /dist/
 /build/site/
+/build/site-draft/
 /build-tools/antora/node_modules/
 
 # Node / Antora (optional)

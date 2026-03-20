@@ -63,6 +63,15 @@ pub struct IndicatorDescriptor {
     pub desired: DesiredValue,
     /// Security impact of this indicator not meeting its desired value.
     pub impact: AssuranceImpact,
+    /// Short human-readable label suitable for column headers and compact display.
+    ///
+    /// Typically 2–4 words. Consumers should prefer `label` over truncating
+    /// `rationale` for space-constrained output such as TUI columns or audit
+    /// report tables.
+    ///
+    /// NIST SP 800-53 AU-3 — audit records must be identifiable by a concise,
+    /// stable label that does not require parsing the full rationale.
+    pub label: &'static str,
     /// One-sentence rationale for the desired value.
     pub rationale: &'static str,
     /// Applicable NIST SP 800-53 and NSA RTB control references.
@@ -97,6 +106,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         sysctl_key: Some("kernel.kptr_restrict"),
         desired: DesiredValue::Exact(2),
         impact: AssuranceImpact::Critical,
+        label: "Kernel Pointer Restriction",
         rationale: "Level 2 blocks kernel pointer exposure in all contexts, \
                     preventing KASLR bypass via /proc leaks.",
         nist_controls: "NIST 800-53 CM-6(a), SC-30, SC-30(2), SC-30(5); \
@@ -110,6 +120,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         sysctl_key: Some("kernel.randomize_va_space"),
         desired: DesiredValue::Exact(2),
         impact: AssuranceImpact::Critical,
+        label: "ASLR",
         rationale: "Full ASLR (level 2) randomises stack, mmap, and heap bases, \
                     making memory-corruption exploits significantly harder.",
         nist_controls: "NIST 800-53 CM-6(a), SC-30, SC-30(2); \
@@ -123,6 +134,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         sysctl_key: Some("kernel.unprivileged_bpf_disabled"),
         desired: DesiredValue::Exact(1),
         impact: AssuranceImpact::High,
+        label: "Unprivileged BPF",
         rationale: "Unprivileged BPF programs have been a recurring source of \
                     kernel exploits; restricting to CAP_BPF/CAP_SYS_ADMIN reduces attack surface.",
         nist_controls: "NIST 800-53 AC-6, SC-7(10); NSA RTB: attack surface reduction",
@@ -135,6 +147,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         sysctl_key: Some("kernel.perf_event_paranoid"),
         desired: DesiredValue::AtLeast(2),
         impact: AssuranceImpact::High,
+        label: "Perf Event Access",
         rationale: "Level >=2 restricts perf_event_open() to privileged users, \
                     blocking side-channel attacks and profiling-based ASLR leaks.",
         nist_controls: "NIST 800-53 AC-6; NSA RTB: information disclosure prevention",
@@ -147,6 +160,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         sysctl_key: Some("kernel.yama.ptrace_scope"),
         desired: DesiredValue::AtLeast(1),
         impact: AssuranceImpact::High,
+        label: "Ptrace Scope",
         rationale: "YAMA scope >=1 restricts ptrace to parent/child relationships, \
                     preventing credential extraction from sibling processes.",
         nist_controls: "NIST 800-53 SC-7(10), AC-6; NSA RTB: process isolation",
@@ -159,6 +173,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         sysctl_key: Some("kernel.dmesg_restrict"),
         desired: DesiredValue::Exact(1),
         impact: AssuranceImpact::Medium,
+        label: "Dmesg Access",
         rationale: "Restricts dmesg to CAP_SYSLOG, preventing unprivileged users \
                     from reading kernel addresses and capability-related messages.",
         nist_controls: "NIST 800-53 SI-11(a), SI-11(b); \
@@ -172,6 +187,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         sysctl_key: Some("kernel.kexec_load_disabled"),
         desired: DesiredValue::Exact(1),
         impact: AssuranceImpact::Critical,
+        label: "Kexec Load",
         rationale: "Disabling kexec_load() prevents runtime kernel replacement \
                     by root, preserving boot-time integrity guarantees (Secure Boot, IMA).",
         nist_controls: "NIST 800-53 CM-6, SI-7; NSA RTB: boot integrity",
@@ -188,6 +204,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         // should document their policy and apply a custom validator.
         desired: DesiredValue::Custom,
         impact: AssuranceImpact::Medium,
+        label: "SysRq Key",
         rationale: "SysRq key can bypass access controls at the console; \
                     fully disabling (0) is safest on production servers.",
         nist_controls: "NIST 800-53 AC-3, CM-7; NSA RTB: attack surface reduction",
@@ -201,6 +218,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         sysctl_key: Some("kernel.modules_disabled"),
         desired: DesiredValue::Exact(1),
         impact: AssuranceImpact::Critical,
+        label: "Module Load Latch",
         rationale: "One-way latch: once set, no further kernel modules can be \
                     loaded, locking the kernel attack surface for the lifetime of the boot.",
         nist_controls: "NIST 800-53 CM-7, SI-7; NSA RTB: minimised attack surface",
@@ -214,6 +232,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         sysctl_key: Some("kernel.unprivileged_userns_clone"),
         desired: DesiredValue::Exact(0),
         impact: AssuranceImpact::High,
+        label: "User Namespaces",
         rationale: "Unprivileged user namespaces are a primary container-escape \
                     vector; blocking them (0) reduces the attack surface significantly.",
         nist_controls: "NIST 800-53 SC-39, CM-7; NSA RTB: process isolation",
@@ -227,6 +246,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         sysctl_key: Some("fs.protected_symlinks"),
         desired: DesiredValue::Exact(1),
         impact: AssuranceImpact::High,
+        label: "Symlink Protection",
         rationale: "Prevents TOCTOU symlink attacks in world-writable sticky \
                     directories (e.g., /tmp); following symlinks owned by others is blocked.",
         nist_controls: "NIST 800-53 AC-6(1), CM-6(a); NSA RTB: filesystem hardening",
@@ -239,6 +259,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         sysctl_key: Some("fs.protected_hardlinks"),
         desired: DesiredValue::Exact(1),
         impact: AssuranceImpact::High,
+        label: "Hardlink Protection",
         rationale: "Prevents creation of hardlinks to files the caller does not \
                     own, blocking privilege escalation via SUID binaries.",
         nist_controls: "NIST 800-53 AC-6(1), CM-6(a); NSA RTB: filesystem hardening",
@@ -251,6 +272,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         sysctl_key: Some("fs.protected_fifos"),
         desired: DesiredValue::Exact(2),
         impact: AssuranceImpact::Medium,
+        label: "FIFO Protection",
         rationale: "Level 2 prevents privileged processes from writing to FIFOs \
                     in world-writable sticky directories that they do not own.",
         nist_controls: "NIST 800-53 SI-10, CM-7; NSA RTB: filesystem hardening",
@@ -263,6 +285,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         sysctl_key: Some("fs.protected_regular"),
         desired: DesiredValue::Exact(2),
         impact: AssuranceImpact::Medium,
+        label: "Regular File Protection",
         rationale: "Level 2 prevents privileged processes from writing to regular \
                     files in world-writable sticky directories that they do not own.",
         nist_controls: "NIST 800-53 SI-10, CM-7; NSA RTB: filesystem hardening",
@@ -275,6 +298,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         sysctl_key: Some("fs.suid_dumpable"),
         desired: DesiredValue::Exact(0),
         impact: AssuranceImpact::High,
+        label: "SUID Core Dumps",
         rationale: "Disabling core dumps for SUID processes (0) prevents \
                     credential and key material extraction via coredump files.",
         nist_controls: "NIST 800-53 SC-28, SI-12; NSA RTB: information disclosure prevention",
@@ -297,6 +321,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         sysctl_key: None,
         desired: DesiredValue::CmdlinePresent("lockdown=integrity"),
         impact: AssuranceImpact::Critical,
+        label: "Kernel Lockdown",
         rationale: "Kernel lockdown at integrity level prevents runtime kernel \
                     modification by root, preserving Secure Boot guarantees.",
         nist_controls: "NIST 800-53 CM-7, SI-7; NSA RTB: boot integrity",
@@ -309,6 +334,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         sysctl_key: None,
         desired: DesiredValue::CmdlinePresent("module.sig_enforce=1"),
         impact: AssuranceImpact::Critical,
+        label: "Module Signature",
         rationale: "Enforcing module signatures at boot prevents loading of \
                     unsigned kernel modules, complementing lockdown mode.",
         nist_controls: "NIST 800-53 SI-7, CM-7; NSA RTB: boot integrity",
@@ -325,6 +351,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         // The hardened check is: `mitigations=off` must be ABSENT.
         desired: DesiredValue::CmdlineAbsent("mitigations=off"),
         impact: AssuranceImpact::Critical,
+        label: "CPU Mitigations",
         rationale: "CPU vulnerability mitigations (Spectre, Meltdown, MDS, etc.) \
                     must not be disabled; `mitigations=off` is a critical weakening flag.",
         nist_controls: "NIST 800-53 SI-16, SC-39; NSA RTB: CPU vulnerability mitigations",
@@ -338,6 +365,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         // Hardened: `pti=off` must be absent (PTI enabled by default).
         desired: DesiredValue::CmdlineAbsent("pti=off"),
         impact: AssuranceImpact::High,
+        label: "Page Table Isolation",
         rationale: "Page Table Isolation (Meltdown mitigation) must not be \
                     explicitly disabled; `pti=off` removes kernel address space protection.",
         nist_controls: "NIST 800-53 SI-16; NSA RTB: CPU vulnerability mitigations",
@@ -354,6 +382,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         // conservative; Phase 2 can integrate FIPS cross-check.
         desired: DesiredValue::CmdlineAbsent("random.trust_cpu=on"),
         impact: AssuranceImpact::Medium,
+        label: "CPU RNG Trust",
         rationale: "Trusting CPU RNG unconditionally may not satisfy NIST SP 800-90B; \
                     RHEL 10 defaults to not trusting it.",
         nist_controls: "NIST 800-53 SC-12; NIST SP 800-90B entropy requirements",
@@ -366,6 +395,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         sysctl_key: None,
         desired: DesiredValue::CmdlineAbsent("random.trust_bootloader=on"),
         impact: AssuranceImpact::Medium,
+        label: "Bootloader RNG Trust",
         rationale: "Trusting bootloader-provided entropy requires a verified \
                     boot chain; absent Secure Boot attestation, the seed is untrusted.",
         nist_controls: "NIST 800-53 SC-12, SI-7; NIST SP 800-90B entropy requirements",
@@ -379,6 +409,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         sysctl_key: Some("crypto.fips_enabled"),
         desired: DesiredValue::Exact(1),
         impact: AssuranceImpact::Critical,
+        label: "FIPS Mode",
         rationale: "FIPS 140-2/3 mode enforces validated cryptographic primitives \
                     and is a mandatory baseline for DoD/government deployments.",
         nist_controls: "NIST 800-53 SC-13, SC-28; FIPS 140-2/140-3; CMMC SC.L2-3.13.10",
@@ -395,6 +426,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         sysctl_key: None,
         desired: DesiredValue::Exact(1),
         impact: AssuranceImpact::Medium,
+        label: "Conntrack Accounting",
         rationale: "Connection tracking accounting (acct=1) enables per-connection \
                     byte/packet counters used by audit and firewall logging tools.",
         nist_controls: "NIST 800-53 AU-12, CM-6; NSA RTB: audit trail completeness",
@@ -407,6 +439,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         sysctl_key: None,
         desired: DesiredValue::Exact(1),
         impact: AssuranceImpact::High,
+        label: "Bluetooth",
         rationale: "The Bluetooth stack is a large attack surface on servers; \
                     blacklisting prevents accidental or malicious module loading.",
         nist_controls: "NIST 800-53 AC-18(3), AC-18(a), CM-6(a), CM-7(a), CM-7(b), MP-7; \
@@ -420,6 +453,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         sysctl_key: None,
         desired: DesiredValue::Exact(1),
         impact: AssuranceImpact::High,
+        label: "USB Storage",
         rationale: "USB mass storage is a primary data exfiltration vector on \
                     classified and government systems; blacklisting prevents \
                     mounting of untrusted external media.",
@@ -434,6 +468,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         sysctl_key: None,
         desired: DesiredValue::Exact(1),
         impact: AssuranceImpact::High,
+        label: "FireWire",
         rationale: "FireWire DMA can bypass memory protection; blacklisting \
                     prevents direct memory access attacks via physical FireWire \
                     ports.",
@@ -448,6 +483,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         sysctl_key: None,
         desired: DesiredValue::Exact(1),
         impact: AssuranceImpact::High,
+        label: "Thunderbolt",
         rationale: "Thunderbolt DMA can bypass IOMMU protections on some hardware; \
                     blacklisting prevents DMA-based attacks via Thunderbolt ports.",
         nist_controls: "NIST 800-53 SI-7, CM-7; NSA RTB: physical attack surface \
@@ -468,6 +504,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         sysctl_key: None,
         desired: DesiredValue::CmdlineAbsent("spectre_v2=off"),
         impact: AssuranceImpact::High,
+        label: "Spectre v2",
         rationale: "Explicitly disabling Spectre v2 mitigation exposes the system to \
                     branch-predictor injection attacks between processes and the kernel.",
         nist_controls: "NIST 800-53 SI-16, SC-39; NSA RTB: CPU vulnerability mitigations",
@@ -480,6 +517,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         sysctl_key: None,
         desired: DesiredValue::CmdlineAbsent("spectre_v2_user=off"),
         impact: AssuranceImpact::Medium,
+        label: "Spectre v2 User",
         rationale: "Disabling user-space Spectre v2 mitigation prevents processes \
                     from opting in to IBPB/STIBP protection via prctl, increasing \
                     cross-process speculation exposure.",
@@ -493,6 +531,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         sysctl_key: None,
         desired: DesiredValue::CmdlineAbsent("mds=off"),
         impact: AssuranceImpact::High,
+        label: "MDS Mitigation",
         rationale: "Disabling MDS mitigation exposes the system to RIDL/Fallout/\
                     ZombieLoad attacks (CVE-2018-12126 et al.) that leak kernel and \
                     hypervisor memory across fill-buffer boundaries.",
@@ -506,6 +545,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         sysctl_key: None,
         desired: DesiredValue::CmdlineAbsent("tsx_async_abort=off"),
         impact: AssuranceImpact::Medium,
+        label: "TSX Async Abort",
         rationale: "Disabling TAA mitigation exposes Intel systems with TSX to \
                     CVE-2019-11135, which leaks data via asynchronous TSX aborts.",
         nist_controls: "NIST 800-53 SI-16, SC-39; NSA RTB: CPU vulnerability mitigations",
@@ -518,6 +558,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         sysctl_key: None,
         desired: DesiredValue::CmdlineAbsent("l1tf=off"),
         impact: AssuranceImpact::High,
+        label: "L1TF Mitigation",
         rationale: "Disabling L1TF mitigation exposes Intel processors to L1 Terminal \
                     Fault (CVE-2018-3615/3620/3646), which leaks L1 cache data across \
                     VM and process boundaries.",
@@ -531,6 +572,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         sysctl_key: None,
         desired: DesiredValue::CmdlineAbsent("retbleed=off"),
         impact: AssuranceImpact::High,
+        label: "RETBLEED",
         rationale: "Disabling RETBLEED mitigation exposes the kernel to \
                     CVE-2022-29900/29901, allowing return-address speculation attacks \
                     that bypass retpoline on affected CPUs.",
@@ -544,6 +586,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         sysctl_key: None,
         desired: DesiredValue::CmdlineAbsent("srbds=off"),
         impact: AssuranceImpact::Medium,
+        label: "SRBDS",
         rationale: "Disabling SRBDS mitigation exposes Intel processors to \
                     CVE-2020-0543, which leaks RNG output from special registers \
                     via sampling attacks.",
@@ -557,6 +600,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         sysctl_key: None,
         desired: DesiredValue::CmdlineAbsent("nosmt=off"),
         impact: AssuranceImpact::Medium,
+        label: "SMT Re-enable",
         rationale: "Re-enabling SMT when the kernel was booted with nosmt weakens \
                     MDS, L1TF, and cross-HT speculation attack mitigations that \
                     depend on SMT being disabled.",
@@ -575,6 +619,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         // in reader.rs implements TPI (two-path independence) for this check.
         desired: DesiredValue::Custom,
         impact: AssuranceImpact::High,
+        label: "Core Pattern",
         rationale: "A core_pattern beginning with `|` routes dumps to a registered \
                     handler (e.g., systemd-coredump), enabling audit, compression, \
                     and access control. A raw path writes process memory directly to \

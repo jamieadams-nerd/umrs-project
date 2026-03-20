@@ -44,7 +44,10 @@ use nix::sys::statfs::statfs;
 use crate::evidence::{EvidenceBundle, EvidenceRecord, SourceKind};
 use crate::os_identity::{Distro, OsFamily, SubstrateIdentity};
 
-use super::{FileOwnership, InstalledDigest, PackageProbe, ProbeResult};
+use super::{
+    FileOwnership, InstalledDigest, PackageProbe, PackageQueryError,
+    ProbeResult,
+};
 
 #[cfg(feature = "rpm-db")]
 use super::rpm_db::RpmDb;
@@ -414,39 +417,52 @@ fn installed_digest_inner(
 /// Check whether a named RPM package is installed on this system.
 ///
 /// Opens `/var/lib/rpm/rpmdb.sqlite` read-only, queries the `Name` table
-/// for an exact match, and returns `true` if found.
+/// for an exact match, and returns the result.
 ///
-/// Returns `false` if the RPM database is absent, unreadable, or the
-/// package is not installed.
+/// `Ok(true)` means installed; `Ok(false)` means not installed. `Err`
+/// means the query could not be completed — callers should treat this as
+/// distinct from a definitive "not installed" result.
 ///
-/// NIST SP 800-53 CM-8 — component inventory query.
+/// A bare `bool` cannot distinguish "package absent" from "query failed";
+/// callers that need to surface database degradation separately from absent
+/// packages must match on the `Err` variant.
+///
+/// NIST SP 800-53 CM-8 — component inventory query; structured error enables
+/// callers to detect degraded database state separately from absent packages.
 /// NIST SP 800-53 SA-12 — supply chain provenance verification.
+///
+/// # Errors
+///
+/// - [`PackageQueryError::DatabaseUnavailable`] — the RPM database could not
+///   be opened (absent, unreadable, or `rpm-db` feature not compiled in).
+/// - [`PackageQueryError::QueryFailed`] — the database opened but the query
+///   itself failed (corruption, schema mismatch).
 #[cfg(feature = "rpm-db")]
-#[must_use]
-pub fn is_installed(pkgname: &str) -> bool {
+#[must_use = "package query result must be examined — Ok(false) and Err differ in meaning"]
+pub fn is_installed(pkgname: &str) -> Result<bool, PackageQueryError> {
     let mut bundle = EvidenceBundle::new();
-    match RpmDb::open(&mut bundle) {
-        Ok(db) => match db.is_installed(pkgname) {
-            Ok(v) => v,
-            Err(e) => {
-                log::debug!("is_installed({pkgname}): query failed: {e}");
-                false
-            }
-        },
-        Err(e) => {
-            log::debug!("is_installed({pkgname}): db open failed: {e}");
-            false
-        }
-    }
+    let db = RpmDb::open(&mut bundle).map_err(|e| {
+        log::debug!("is_installed({pkgname}): db open failed: {e}");
+        PackageQueryError::DatabaseUnavailable
+    })?;
+    db.is_installed(pkgname).map_err(|e| {
+        log::debug!("is_installed({pkgname}): query failed: {e}");
+        PackageQueryError::QueryFailed
+    })
 }
 
-/// Stub — `rpm-db` feature is disabled; always returns `false`.
+/// Stub — `rpm-db` feature is disabled; always returns `DatabaseUnavailable`.
 ///
 /// NIST SP 800-53 CM-8, SA-12.
+///
+/// # Errors
+///
+/// Always returns [`PackageQueryError::DatabaseUnavailable`] when compiled
+/// without the `rpm-db` feature.
 #[cfg(not(feature = "rpm-db"))]
-#[must_use]
-pub fn is_installed(_pkgname: &str) -> bool {
-    false
+#[must_use = "package query result must be examined — Ok(false) and Err differ in meaning"]
+pub fn is_installed(_pkgname: &str) -> Result<bool, PackageQueryError> {
+    Err(PackageQueryError::DatabaseUnavailable)
 }
 
 // ===========================================================================

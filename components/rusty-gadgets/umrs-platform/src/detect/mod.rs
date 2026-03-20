@@ -60,6 +60,7 @@
 pub mod label_trust;
 pub mod substrate;
 
+pub use substrate::PackageQueryError;
 pub use substrate::rpm::is_installed;
 
 mod file_ownership;
@@ -74,7 +75,7 @@ use thiserror::Error;
 
 use crate::confidence::{ConfidenceModel, TrustLevel};
 use crate::evidence::EvidenceBundle;
-use crate::os_identity::SubstrateIdentity;
+use crate::os_identity::{KernelRelease, SubstrateIdentity};
 use crate::os_release::OsRelease;
 use label_trust::LabelTrust;
 
@@ -226,6 +227,17 @@ pub struct DetectionResult {
     /// All evidence in this result is bound to this boot session.
     /// `None` if the kernel anchor phase could not read it.
     pub boot_id: Option<String>,
+
+    /// Kernel release string from `/proc/sys/kernel/osrelease`.
+    ///
+    /// Present on any system where procfs is real (T1+). `None` only if the
+    /// read failed after the kernel anchor was established. The `corroborated`
+    /// field is `false` in Phase 1 — the anchor phase reads a single procfs
+    /// source; corroboration against `uname(2)` is not performed here.
+    ///
+    /// NIST SP 800-53 CM-8 — kernel version is a required component inventory
+    /// field. The release string uniquely identifies the running kernel build.
+    pub kernel_release: Option<KernelRelease>,
 
     /// Final confidence tier and any recorded contradictions or downgrade reasons.
     pub confidence: ConfidenceModel,
@@ -390,7 +402,7 @@ impl OsDetector {
             // we discard the timing. This matches the spec: hard-gate abort has
             // no DetectionResult and no phase_durations.
             let _ = (t0, t1, ev_before, ev_after); // timing captured; may be discarded on Err
-            let boot_id = boot_id_result?;
+            let (boot_id, kernel_release) = boot_id_result?;
             record_phase(
                 DetectionPhase::KernelAnchor,
                 t0,
@@ -544,6 +556,7 @@ impl OsDetector {
                 os_release,
                 label_trust,
                 boot_id,
+                kernel_release,
                 confidence,
                 evidence,
                 phase_durations,

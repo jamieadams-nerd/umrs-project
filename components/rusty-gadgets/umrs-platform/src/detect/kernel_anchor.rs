@@ -37,6 +37,7 @@ use rustix::process::getpid;
 use crate::confidence::{ConfidenceModel, TrustLevel};
 use crate::evidence::{EvidenceBundle, EvidenceRecord, SourceKind};
 use crate::kattrs::{KernelLockdown, ProcfsText, SecureReader, StaticSource};
+use crate::os_identity::KernelRelease;
 
 use super::DetectionError;
 
@@ -52,17 +53,20 @@ const MAX_PROC_READ: usize = 4_096;
 
 /// Run the kernel anchor phase.
 ///
-/// Returns `Ok(Some(boot_id))` on full success, `Ok(None)` if the boot_id
-/// read fails non-fatally, or `Err` on hard-gate failure.
+/// Returns `Ok((boot_id, kernel_release))` on full success. Either or both
+/// fields may be `None` on soft failures — the hard gate errors produce `Err`.
+///
+/// `boot_id` is `None` if `/proc/sys/kernel/random/boot_id` cannot be read.
+/// `kernel_release` is `None` if `/proc/sys/kernel/osrelease` cannot be read.
 ///
 /// All reads use `ProcfsText` + `SecureReader::read_generic_text` for
 /// provenance-verified, fd-anchored procfs access.
 ///
-/// NIST SP 800-53 SI-7, SA-9, CM-6.
+/// NIST SP 800-53 SI-7, SA-9, CM-6, CM-8.
 pub(super) fn run(
     evidence: &mut EvidenceBundle,
     confidence: &mut ConfidenceModel,
-) -> Result<Option<String>, DetectionError> {
+) -> Result<(Option<String>, Option<KernelRelease>), DetectionError> {
     #[cfg(debug_assertions)]
     let t0 = std::time::Instant::now();
 
@@ -88,7 +92,7 @@ pub(super) fn run(
 fn run_inner(
     evidence: &mut EvidenceBundle,
     confidence: &mut ConfidenceModel,
-) -> Result<Option<String>, DetectionError> {
+) -> Result<(Option<String>, Option<KernelRelease>), DetectionError> {
     // --- Step 1 + 2: procfs gate + PID coherence ----------------------------
     let stat_content = read_proc_self_stat(evidence)?;
     check_pid_coherence(&stat_content)?;
@@ -102,10 +106,16 @@ fn run_inner(
     // --- Step 3: boot_id ----------------------------------------------------
     let boot_id = read_boot_id(evidence, confidence);
 
-    // --- Step 4: lockdown mode (soft — never aborts) ------------------------
+    // --- Step 4: kernel release (soft — never aborts) -----------------------
+    // Reads /proc/sys/kernel/osrelease via provenance-verified ProcfsText.
+    // Procfs is confirmed real by Step 1+2 above, so this read is anchored.
+    // NIST SP 800-53 CM-8 — kernel version is a required component inventory field.
+    let kernel_release = read_kernel_release(evidence);
+
+    // --- Step 5: lockdown mode (soft — never aborts) ------------------------
     read_lockdown(evidence);
 
-    Ok(boot_id)
+    Ok((boot_id, kernel_release))
 }
 
 // ===========================================================================
@@ -285,7 +295,86 @@ fn read_boot_id(
 }
 
 // ===========================================================================
-// Step 4: kernel lockdown mode
+// Step 4: kernel release string
+// ===========================================================================
+
+/// Read the kernel release string from `/proc/sys/kernel/osrelease`.
+///
+/// Non-fatal: returns `None` on any failure without downgrading confidence.
+/// Procfs is already verified real by Step 1+2, so this read is anchored.
+///
+/// The `KernelRelease::corroborated` field is `false` here because this
+/// phase reads only procfs; the corroboration against `uname(2)` is not
+/// performed in the anchor phase. Phase-level corroboration against a
+/// second source is the caller's responsibility.
+///
+/// NIST SP 800-53 CM-8 — kernel version is a required component inventory field.
+fn read_kernel_release(evidence: &mut EvidenceBundle) -> Option<KernelRelease> {
+    let path = PathBuf::from("/proc/sys/kernel/osrelease");
+
+    let node = ProcfsText::new(path.clone()).ok()?;
+    let content = match SecureReader::<ProcfsText>::new()
+        .read_generic_text(&node)
+    {
+        Ok(s) => s,
+        Err(e) => {
+            log::warn!("kernel_anchor: could not read kernel osrelease: {e}");
+            evidence.push(EvidenceRecord {
+                source_kind: SourceKind::Procfs,
+                opened_by_fd: true,
+                path_requested: path.display().to_string(),
+                path_resolved: None,
+                stat: None,
+                fs_magic: None,
+                sha256: None,
+                pkg_digest: None,
+                parse_ok: false,
+                notes: vec!["kernel osrelease read failed".to_owned()],
+                duration_ns: None,
+            });
+            return None;
+        }
+    };
+
+    // Kernel release strings are bounded — reject implausibly large values.
+    if content.len() > MAX_PROC_READ {
+        log::warn!(
+            "kernel_anchor: osrelease content unexpectedly large, ignoring"
+        );
+        return None;
+    }
+
+    let release = content.trim().to_owned();
+    if release.is_empty() {
+        log::warn!("kernel_anchor: osrelease content is empty after trimming");
+        return None;
+    }
+
+    evidence.push(EvidenceRecord {
+        source_kind: SourceKind::Procfs,
+        opened_by_fd: true,
+        path_requested: path.display().to_string(),
+        path_resolved: None,
+        stat: None,
+        fs_magic: None,
+        sha256: None,
+        pkg_digest: None,
+        parse_ok: true,
+        notes: vec!["kernel osrelease read ok".to_owned()],
+        duration_ns: None,
+    });
+
+    Some(KernelRelease {
+        release,
+        // Single procfs source only — the anchor phase does not invoke uname(2).
+        // A caller that also reads uname(2) can set corroborated = true after
+        // comparing the two values.
+        corroborated: false,
+    })
+}
+
+// ===========================================================================
+// Step 5: kernel lockdown mode
 // ===========================================================================
 
 /// Read the kernel lockdown mode from securityfs (soft — never aborts).

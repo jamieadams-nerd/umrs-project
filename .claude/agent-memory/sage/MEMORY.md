@@ -5,6 +5,11 @@
 - [sage-content-policy.md](sage-content-policy.md) — E-E-A-T framing, content tiering (Tier 1/2/3), post anatomy, voice rules, internal linking strategy, the Cathedral and the Bazaar transparency principle, cadence model, SEO reality. Approved 2026-03-20.
 - [post-scoring-rubric.md](post-scoring-rubric.md) — Pre-publish self-check rubric with 9 blocks covering concept discipline, trust signals, E-E-A-T, voice, technical accuracy, structure/length, internal linking, SEO basics, and series continuity. Approved 2026-03-20.
 
+## Foundational Knowledge Files (2026-03-20)
+
+- [phase1-phase2-positioning.md](phase1-phase2-positioning.md) — CRITICAL: Hard guardrails on what UMRS claims for targeted policy (Phase 1) vs MLS (Phase 2). What can and cannot be claimed. Read before writing any post.
+- [outreach-corpus-familiarization.md](outreach-corpus-familiarization.md) — Active knowledge summary of all 15 sage-outreach-corpus files. SEO fundamentals, E-E-A-T, structured data, developer trust patterns, Cathedral/Bazaar, producing OSS, progressive disclosure, Diataxis, Google dev style, Cloudflare/Stripe/HashiCorp models, diffusion theory, content strategy operational spec.
+
 ## Key Findings from Plan Review Session (2026-03-20)
 
 ### Platform API Enrichment is the Critical Path
@@ -55,6 +60,12 @@ bounce rate, internal link click-through) are prerequisites before any cadence
 optimization is meaningful. Do not commit to weekly posting frequency until the
 public site at https://jamieadams-nerd.github.io/ is confirmed indexed and basic
 analytics are flowing. Ask Jamie about this before drafting the first editorial calendar.
+
+## Release Scope and Content Tracks (2026-03-20)
+
+- [project-release-scope-phase1.md](project-release-scope-phase1.md) — CRITICAL: Exact Phase 1 release scope (CUI labeling + umrs-uname/ls/stat + RHEL 10 deployment guide). NO IMA/EVM. This is what Sage can write about now.
+- [project-content-tracks.md](project-content-tracks.md) — Two parallel blog tracks: (1) UMRS technical content, (2) Jamie's AI journey series. Both run concurrently. Separate audiences, separate purposes.
+- [feedback-blog-workflow.md](feedback-blog-workflow.md) — Post-publish steps: sync docs with any on-the-fly Jamie edits, archive drafts, mark published. Also: PDF catalog as a future deliverable (threshold ~5 posts).
 
 ## Public Infrastructure Reference
 - Public website: https://jamieadams-nerd.github.io/ (GitHub Pages, static)

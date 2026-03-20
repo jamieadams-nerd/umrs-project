@@ -29,7 +29,7 @@ use crate::keymap::Action;
 /// The state of a single security indicator, as read from the kernel.
 ///
 /// Fail-closed: any read failure or unimplemented source maps to `Unavailable`,
-/// never to a false `Active` or `Inactive` assertion.
+/// never to a false `Enabled` or `Disabled` assertion.
 ///
 /// NIST SP 800-53 SI-7: Software and Information Integrity — indicator values
 /// are derived exclusively from provenance-verified kernel attribute reads.
@@ -38,10 +38,10 @@ use crate::keymap::Action;
 #[derive(Debug, Clone, PartialEq, Eq)]
 #[must_use = "security indicator value must be inspected; discarding it hides the kernel state"]
 pub enum IndicatorValue {
-    /// Kernel attribute confirms the feature is active/enforcing.
-    Active(String),
-    /// Kernel attribute confirms the feature is inactive/permissive.
-    Inactive(String),
+    /// Kernel attribute confirms the feature is enabled/enforcing.
+    Enabled(String),
+    /// Kernel attribute confirms the feature is disabled/permissive.
+    Disabled(String),
     /// Source not yet implemented, or read failed — fail-closed default.
     Unavailable,
 }
@@ -56,7 +56,7 @@ pub enum IndicatorValue {
 /// and passed to the render path. Values are never mutated after construction.
 ///
 /// All fields default to `IndicatorValue::Unavailable` — the fail-closed
-/// baseline. A field becomes `Active` or `Inactive` only when a provenance-
+/// baseline. A field becomes `Enabled` or `Disabled` only when a provenance-
 /// verified kernel attribute read succeeds.
 ///
 /// NIST SP 800-53 SI-7: Software and Information Integrity — all values
@@ -316,7 +316,10 @@ impl TabDef {
 /// `KeyValue` is the standard entry (key: value). `TwoColumn` renders two
 /// independent key-value pairs side-by-side in the left and right half of
 /// the panel area. `GroupTitle` adds a labelled section header (wired up in
-/// Phase 4). `Separator` inserts a blank line.
+/// Phase 4). `Separator` inserts a blank line. `IndicatorRow` is a
+/// multi-line layout for kernel security indicators: key + value on the first
+/// line, description wrapped on subsequent lines (indented to align under the
+/// value), and an implicit blank line after.
 ///
 /// ## Column pairing convention
 ///
@@ -325,6 +328,9 @@ impl TabDef {
 /// Use `KeyValue` for single facts, or facts that have subordinate detail
 /// rows below them. `TwoColumn` is not appropriate when one fact is
 /// subordinate to the other.
+/// Use `IndicatorRow` for kernel security indicators where the description
+/// must appear directly beneath the key-value pair, indented to align under
+/// the value text.
 ///
 /// ## Trust boundary
 ///
@@ -343,6 +349,13 @@ pub enum DataRow {
         value: String,
         /// Visual hint applied to the value column.
         style_hint: StyleHint,
+        /// When `true`, the key label is rendered with the header field style
+        /// (bright cyan) instead of the dim-cyan data key style.
+        ///
+        /// Use for summary rows where the key label should visually match the
+        /// header area labels — e.g., `"Kernel Version"` and `"Indicators"` in
+        /// the kernel security pinned summary. Default is `false`.
+        highlight_key: bool,
     },
 
     /// Two key-value pairs rendered side-by-side.
@@ -385,6 +398,58 @@ pub enum DataRow {
 
     /// Blank separator line.
     Separator,
+
+    /// Multi-line indicator row for the Kernel Security tab.
+    ///
+    /// Rendered as:
+    /// ```text
+    ///   <key padded to max key width> : <value>
+    ///                                   <description line 1 (dim, italic)>
+    ///                                   <description line 2 if wrapped>
+    ///
+    /// ```
+    ///
+    /// The key column width is computed dynamically by the data panel at
+    /// render time by scanning all `IndicatorRow` entries in the row list
+    /// and using the longest key. This guarantees indicator names are never
+    /// truncated regardless of how the catalog grows.
+    ///
+    /// The implicit trailing blank line provides visual separation between
+    /// indicators without requiring the caller to insert `Separator` rows.
+    ///
+    /// ## Trust Boundary
+    ///
+    /// Key, value, and description strings are rendered verbatim. Callers
+    /// must not include security labels, credentials, or classified data
+    /// (NIST SP 800-53 SI-12).
+    ///
+    /// NIST SP 800-53 AU-3 — indicator key, live value, and description are
+    /// all present on the same row group so the assessor has full context.
+    /// NIST SP 800-53 CM-6 — description text explains the security purpose
+    /// of each configuration setting without requiring an external guide.
+    IndicatorRow {
+        /// Indicator name (may include leading spaces for group indentation).
+        key: String,
+        /// Live kernel value string (already translated by the caller).
+        value: String,
+        /// Plain-language description of what this indicator controls.
+        ///
+        /// May be empty; when empty, the description lines are omitted.
+        description: &'static str,
+        /// Recommended setting shown when the indicator is not hardened.
+        ///
+        /// When `Some`, rendered below the description as a dim italic
+        /// `[ Recommended: <value> ]` line so operators know the target
+        /// setting without needing a reference guide. `None` when the
+        /// indicator already meets the hardened baseline — no recommendation
+        /// is shown for green indicators.
+        ///
+        /// NIST SP 800-53 CM-6 — remediation guidance accompanies each
+        /// failing configuration setting.
+        recommendation: Option<&'static str>,
+        /// Visual hint applied to the value string.
+        style_hint: StyleHint,
+    },
 
     /// A fixed three-column table row for structured evidence display.
     ///
@@ -446,6 +511,29 @@ impl DataRow {
             key: key.into(),
             value: value.into(),
             style_hint: hint,
+            highlight_key: false,
+        }
+    }
+
+    /// Construct a `KeyValue` row with a highlighted (bright cyan) key label.
+    ///
+    /// Identical to [`DataRow::key_value`] but renders the key column using
+    /// the header field style (bright cyan) instead of the dim-cyan data key
+    /// style. Use for summary rows where the key should stand out visually to
+    /// match the header area label styling — e.g., `"Kernel Version"` and
+    /// `"Indicators"` in the kernel security pinned summary.
+    #[must_use = "DataRow must be pushed into the row list; discarding it omits \
+                  a labelled field from the audit card"]
+    pub fn key_value_highlighted(
+        key: impl Into<String>,
+        value: impl Into<String>,
+        hint: StyleHint,
+    ) -> Self {
+        Self::KeyValue {
+            key: key.into(),
+            value: value.into(),
+            style_hint: hint,
+            highlight_key: true,
         }
     }
 
@@ -511,6 +599,60 @@ impl DataRow {
                   discarding it omits a section header from the audit card"]
     pub fn group_title(title: impl Into<String>) -> Self {
         Self::GroupTitle(title.into())
+    }
+
+    /// Construct an `IndicatorRow` for a kernel security indicator.
+    ///
+    /// `key` is the indicator name (typically prefixed with two spaces for
+    /// group indentation). `value` is the already-translated live value string.
+    /// `description` is the plain-language security explanation; pass `""` to
+    /// omit description lines. `hint` controls the value foreground color.
+    ///
+    /// The data panel computes the key column width dynamically from all
+    /// `IndicatorRow` entries in the row list — callers do not need to specify
+    /// or coordinate column widths.
+    #[must_use = "DataRow must be pushed into the row list; discarding it omits \
+                  a labelled indicator from the audit card"]
+    pub fn indicator_row(
+        key: impl Into<String>,
+        value: impl Into<String>,
+        description: &'static str,
+        hint: StyleHint,
+    ) -> Self {
+        Self::IndicatorRow {
+            key: key.into(),
+            value: value.into(),
+            description,
+            recommendation: None,
+            style_hint: hint,
+        }
+    }
+
+    /// Construct an `IndicatorRow` with an optional recommended-value annotation.
+    ///
+    /// When `recommendation` is `Some`, a dim italic `[ Recommended: ... ]`
+    /// line is rendered below the description so operators can identify the
+    /// target hardened setting at a glance. Pass `None` for green (already
+    /// hardened) indicators — no recommendation line is shown.
+    ///
+    /// NIST SP 800-53 CM-6 — remediation guidance accompanies each failing
+    /// configuration setting.
+    #[must_use = "DataRow must be pushed into the row list; discarding it omits \
+                  a labelled indicator from the audit card"]
+    pub fn indicator_row_recommended(
+        key: impl Into<String>,
+        value: impl Into<String>,
+        description: &'static str,
+        recommendation: Option<&'static str>,
+        hint: StyleHint,
+    ) -> Self {
+        Self::IndicatorRow {
+            key: key.into(),
+            value: value.into(),
+            description,
+            recommendation,
+            style_hint: hint,
+        }
     }
 
     /// Construct a `TableRow` with three column strings and a style hint.
@@ -687,6 +829,33 @@ pub trait AuditCardApp {
     fn header_fields(&self) -> &[HeaderField] {
         &[]
     }
+
+    /// Pinned (non-scrollable) summary rows rendered at the top of the data panel.
+    ///
+    /// Pinned rows are rendered in a fixed area above the scrollable evidence
+    /// chain. They remain visible at all times regardless of scroll position.
+    /// The scrollable area shrinks by the number of lines occupied by pinned rows.
+    ///
+    /// Use this for per-tab summary information that an operator must always
+    /// be able to see (e.g., trust tier, overall status) while scrolling
+    /// through detailed evidence below.
+    ///
+    /// The default implementation returns an empty `Vec` — tabs without a
+    /// summary section are unaffected. This method allocates only when a tab
+    /// has pinned content.
+    ///
+    /// ## Design note
+    ///
+    /// Pinned rows are rendered using the same `build_row_line` path as scrollable
+    /// rows. They do not support internal scrolling. Keep pinned content concise
+    /// (fewer than 10 rows) so the scrollable area retains sufficient height.
+    ///
+    /// NIST SP 800-53 AU-3 — critical trust classification is always visible,
+    /// ensuring the assessor cannot miss the top-level finding while reviewing
+    /// detailed evidence.
+    fn pinned_rows(&self, _tab_index: usize) -> Vec<DataRow> {
+        Vec::new()
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -765,7 +934,8 @@ impl AuditCardState {
             Action::Refresh
             | Action::DialogConfirm
             | Action::DialogCancel
-            | Action::DialogToggleFocus => {
+            | Action::DialogToggleFocus
+            | Action::ShowHelp => {
                 // These actions have no effect on AuditCardState itself.
                 //
                 // Refresh is application-defined — callers use this signal to
@@ -775,6 +945,11 @@ impl AuditCardState {
                 // The caller owns Option<DialogState> and mutates it directly
                 // (response, focused). AuditCardState has no dialog lifecycle
                 // authority — there is no implicit global modal state.
+                //
+                // ShowHelp is handled by the calling binary's event loop.
+                // The binary creates a DialogState::info(...) with tab-specific
+                // help text and renders it via render_dialog. AuditCardState
+                // has no help-text authority — callers supply the content.
                 //
                 // NIST SP 800-53 AC-2 — explicit lifecycle; no hidden modal state.
             }

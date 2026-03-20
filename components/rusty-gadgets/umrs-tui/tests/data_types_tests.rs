@@ -24,6 +24,7 @@ fn data_row_key_value_sets_key_value_and_hint() {
             key,
             value,
             style_hint,
+            ..
         } => {
             assert_eq!(key, "Hostname");
             assert_eq!(value, "rhel10.example");
@@ -43,6 +44,46 @@ fn data_row_new_is_alias_for_key_value() {
 }
 
 #[test]
+fn data_row_key_value_sets_highlight_key_false_by_default() {
+    let row = DataRow::key_value("Version", "6.12.0", StyleHint::Normal);
+    match row {
+        DataRow::KeyValue {
+            highlight_key,
+            ..
+        } => {
+            assert!(
+                !highlight_key,
+                "key_value must set highlight_key=false by default"
+            );
+        }
+        other => panic!("expected DataRow::KeyValue, got {other:?}"),
+    }
+}
+
+#[test]
+fn data_row_key_value_highlighted_sets_highlight_key_true() {
+    let row = DataRow::key_value_highlighted(
+        "Kernel Version",
+        "6.12.0",
+        StyleHint::Highlight,
+    );
+    match row {
+        DataRow::KeyValue {
+            key,
+            highlight_key,
+            ..
+        } => {
+            assert_eq!(key, "Kernel Version");
+            assert!(
+                highlight_key,
+                "key_value_highlighted must set highlight_key=true"
+            );
+        }
+        other => panic!("expected DataRow::KeyValue, got {other:?}"),
+    }
+}
+
+#[test]
 fn data_row_normal_sets_normal_hint() {
     let row = DataRow::normal("OS", "RHEL 10");
     match row {
@@ -50,6 +91,7 @@ fn data_row_normal_sets_normal_hint() {
             key,
             value,
             style_hint,
+            ..
         } => {
             assert_eq!(key, "OS");
             assert_eq!(value, "RHEL 10");
@@ -314,6 +356,134 @@ fn data_row_table_header_accepts_owned_strings() {
             assert_eq!(col3, c3);
         }
         other => panic!("expected DataRow::TableHeader, got {other:?}"),
+    }
+}
+
+// ---------------------------------------------------------------------------
+// DataRow::IndicatorRow (Round 5 layout)
+// ---------------------------------------------------------------------------
+
+#[test]
+fn data_row_indicator_row_stores_all_fields() {
+    let row = DataRow::indicator_row(
+        "  kexec_load_disabled",
+        "0 (disabled)",
+        "Prevents loading a new kernel image at runtime.",
+        StyleHint::TrustRed,
+    );
+    match row {
+        DataRow::IndicatorRow {
+            key,
+            value,
+            description,
+            recommendation,
+            style_hint,
+        } => {
+            assert_eq!(key, "  kexec_load_disabled");
+            assert_eq!(value, "0 (disabled)");
+            assert_eq!(
+                description,
+                "Prevents loading a new kernel image at runtime."
+            );
+            assert_eq!(recommendation, None);
+            assert_eq!(style_hint, StyleHint::TrustRed);
+        }
+        other => panic!("expected DataRow::IndicatorRow, got {other:?}"),
+    }
+}
+
+#[test]
+fn data_row_indicator_row_empty_description_is_valid() {
+    // Phase 2b CPU indicators supply an empty description — must not panic.
+    let row = DataRow::indicator_row(
+        "  some_cpu_indicator",
+        "enabled",
+        "",
+        StyleHint::TrustGreen,
+    );
+    assert!(
+        matches!(row, DataRow::IndicatorRow { .. }),
+        "indicator_row with empty description must produce IndicatorRow variant"
+    );
+}
+
+#[test]
+fn data_row_indicator_row_accepts_owned_string_key() {
+    let key = String::from("  dynamic_key");
+    let row = DataRow::indicator_row(
+        key.clone(),
+        "1",
+        "Some description.",
+        StyleHint::Normal,
+    );
+    match row {
+        DataRow::IndicatorRow {
+            key: k,
+            ..
+        } => assert_eq!(k, key),
+        other => panic!("expected DataRow::IndicatorRow, got {other:?}"),
+    }
+}
+
+// ---------------------------------------------------------------------------
+// DataRow::IndicatorRow — recommendation field (Round 6)
+// ---------------------------------------------------------------------------
+
+#[test]
+fn data_row_indicator_row_recommended_stores_recommendation() {
+    // When `recommendation` is `Some`, the field is stored and retrievable.
+    let row = DataRow::indicator_row_recommended(
+        "  kptr_restrict",
+        "0 (pointers visible)",
+        "Hides kernel pointer addresses.",
+        Some("2 (hidden from all users)"),
+        StyleHint::TrustRed,
+    );
+    match row {
+        DataRow::IndicatorRow {
+            recommendation,
+            style_hint,
+            ..
+        } => {
+            assert_eq!(recommendation, Some("2 (hidden from all users)"));
+            assert_eq!(style_hint, StyleHint::TrustRed);
+        }
+        other => panic!("expected DataRow::IndicatorRow, got {other:?}"),
+    }
+}
+
+#[test]
+fn data_row_indicator_row_recommended_none_matches_indicator_row() {
+    // Passing `None` for recommendation is equivalent to `indicator_row`.
+    let row_plain = DataRow::indicator_row(
+        "  randomize_va_space",
+        "2 (full ASLR)",
+        "ASLR description.",
+        StyleHint::TrustGreen,
+    );
+    let row_recommended = DataRow::indicator_row_recommended(
+        "  randomize_va_space",
+        "2 (full ASLR)",
+        "ASLR description.",
+        None,
+        StyleHint::TrustGreen,
+    );
+    // Both must produce IndicatorRow with recommendation = None.
+    match (row_plain, row_recommended) {
+        (
+            DataRow::IndicatorRow {
+                recommendation: r1,
+                ..
+            },
+            DataRow::IndicatorRow {
+                recommendation: r2,
+                ..
+            },
+        ) => {
+            assert_eq!(r1, None);
+            assert_eq!(r2, None);
+        }
+        _ => panic!("both rows must be DataRow::IndicatorRow"),
     }
 }
 

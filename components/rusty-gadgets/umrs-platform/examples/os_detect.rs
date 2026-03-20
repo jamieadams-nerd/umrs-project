@@ -455,23 +455,31 @@ fn print_package_query_demo(c: &Colours) {
     print_pkg_result("nonexistent-pkg", c);
     println!();
     println!(
-        "  {}Note:{} on systems without the rpm-db feature or an accessible RPM DB,",
+        "  {}Note:{} is_installed() returns Ok(true/false) when the DB is readable.",
         c.dim, c.reset
     );
-    println!("  is_installed() returns false for all queries.");
+    println!(
+        "  It returns Err(DatabaseUnavailable) when the RPM DB cannot be opened."
+    );
 }
 
 fn print_pkg_result(name: &str, c: &Colours) {
-    if is_installed(name) {
-        println!(
-            "    {}installed{} — package '{}' found in the RPM database.",
-            c.green, c.reset, name
-        );
-    } else {
-        println!(
-            "    {}not installed{} — package '{}' not found in the RPM database.",
-            c.yellow, c.reset, name
-        );
+    match is_installed(name) {
+        Ok(true) => {
+            println!(
+                "    {}installed{} — package '{}' found in the RPM database.",
+                c.green, c.reset, name
+            );
+        }
+        Ok(false) => {
+            println!(
+                "    {}not installed{} — package '{}' not found in the RPM database.",
+                c.yellow, c.reset, name
+            );
+        }
+        Err(e) => {
+            println!("    {}query error{} — {e}", c.red, c.reset);
+        }
     }
 }
 

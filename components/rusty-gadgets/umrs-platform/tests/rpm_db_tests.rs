@@ -121,11 +121,12 @@ mod rpm_db_tests {
             eprintln!("SKIP: {RPM_DB_PATH} not present");
             return;
         }
-        let result = umrs_platform::detect::is_installed("bash");
+        let result = umrs_platform::detect::is_installed("bash")
+            .expect("RPM DB must be queryable on an RHEL system");
         assert!(result, "bash must be installed on an RHEL system");
     }
 
-    /// A definitely-not-installed package must return `false`.
+    /// A definitely-not-installed package must return `Ok(false)`.
     #[test]
     fn is_installed_missing_package() {
         if skip_if_no_rpmdb() {
@@ -134,7 +135,8 @@ mod rpm_db_tests {
         }
         let result = umrs_platform::detect::is_installed(
             "nonexistent-pkg-xyz-umrs-test",
-        );
+        )
+        .expect("RPM DB must be queryable on an RHEL system");
         assert!(!result, "nonexistent package must return false");
     }
 

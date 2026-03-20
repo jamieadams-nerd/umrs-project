@@ -142,6 +142,12 @@ impl OsId {
     }
 }
 
+impl std::fmt::Display for OsId {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(&self.0)
+    }
+}
+
 /// Validated human-readable OS name from `NAME=` or `PRETTY_NAME=`.
 ///
 /// Constraints: non-empty; at most 256 valid UTF-8 characters.
@@ -171,6 +177,12 @@ impl OsName {
     #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
+    }
+}
+
+impl std::fmt::Display for OsName {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(&self.0)
     }
 }
 
@@ -207,6 +219,12 @@ impl VersionId {
     #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
+    }
+}
+
+impl std::fmt::Display for VersionId {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(&self.0)
     }
 }
 

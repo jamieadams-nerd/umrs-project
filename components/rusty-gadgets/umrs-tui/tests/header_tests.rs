@@ -61,10 +61,12 @@ fn line_text(line: &ratatui::text::Line<'_>) -> String {
 fn test_header_context() -> HeaderContext {
     HeaderContext {
         indicators: SecurityIndicators {
-            selinux_status: IndicatorValue::Active("enforcing".to_owned()),
-            fips_mode: IndicatorValue::Active("active".to_owned()),
+            selinux_status: IndicatorValue::Enabled(
+                "Enforcing (Targeted)".to_owned(),
+            ),
+            fips_mode: IndicatorValue::Enabled("Enabled".to_owned()),
             active_lsm: IndicatorValue::Unavailable,
-            lockdown_mode: IndicatorValue::Inactive("none".to_owned()),
+            lockdown_mode: IndicatorValue::Disabled("none".to_owned()),
             secure_boot: IndicatorValue::Unavailable,
         },
         tool_name: "umrs-tui".to_owned(),
@@ -460,8 +462,8 @@ fn two_col_row5_contains_selinux_indicator_value() {
     let lines = build_two_column_lines(&app, &ctx, &theme);
     let text = line_text(&lines[5]);
     assert!(
-        text.contains("enforcing"),
-        "row 5 must contain selinux indicator value 'enforcing'; got: {text:?}"
+        text.contains("Enforcing"),
+        "row 5 must contain selinux indicator value 'Enforcing'; got: {text:?}"
     );
 }
 
@@ -473,8 +475,8 @@ fn two_col_row5_contains_fips_indicator_value() {
     let lines = build_two_column_lines(&app, &ctx, &theme);
     let text = line_text(&lines[5]);
     assert!(
-        text.contains("active"),
-        "row 5 must contain FIPS indicator value 'active'; got: {text:?}"
+        text.contains("Enabled"),
+        "row 5 must contain FIPS indicator value 'Enabled'; got: {text:?}"
     );
 }
 
@@ -499,8 +501,8 @@ fn single_col_row5_contains_selinux_indicator_value() {
     let lines = build_single_column_lines(&app, &ctx, &theme);
     let text = line_text(&lines[5]);
     assert!(
-        text.contains("enforcing"),
-        "single-col row 5 must contain selinux indicator 'enforcing'; got: {text:?}"
+        text.contains("Enforcing"),
+        "single-col row 5 must contain selinux indicator 'Enforcing'; got: {text:?}"
     );
 }
 

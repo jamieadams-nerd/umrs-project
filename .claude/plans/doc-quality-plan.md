@@ -1,6 +1,6 @@
 # Plan: UMRS Documentation Quality System
 
-**Status:** Draft — tooling installed (Vale, write-good, textstat all available). Ready for Phase 1 ruleset bootstrap.
+**Status:** On hold (back burner per Jamie 2026-03-20) — tooling installed but Vale QA is too much distraction right now. Resume after first release.
 
 ## Purpose
 

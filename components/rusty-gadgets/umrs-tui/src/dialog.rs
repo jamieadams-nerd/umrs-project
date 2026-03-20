@@ -327,14 +327,18 @@ impl DialogState {
 /// to blank the region before drawing — content behind the dialog is not
 /// visible through the border.
 ///
-/// ## Width calculation
+/// ## Width and height calculation
 ///
 /// ```text
-/// dialog_width = message.len().max(40).min(area.width as usize - 8)
+/// longest_line  = max line length in message (split on '\n')
+/// dialog_width  = longest_line.max(40).min(area.width - 8)
+/// dialog_height = message_lines + 4 (borders + spacer + button row),
+///                 capped at 80% of terminal height, minimum 6
 /// ```
 ///
 /// The dialog is never narrower than 40 characters and never wider than
 /// the available area minus 8 characters (4-character margin on each side).
+/// Height is computed dynamically so multi-line messages are never clipped.
 ///
 /// ## Button layout
 ///
@@ -383,20 +387,43 @@ pub fn render_dialog(
     };
 
     // --- Compute dialog dimensions ---
-    // Maximum width is terminal width minus 4-char margin on each side (8 total).
-    // `dialog_width` is bounded by `area.width - 8` which is at most u16::MAX,
-    // so the conversion to u16 via `try_from` will always succeed in practice.
-    // The `.unwrap_or` fallback clamps to the safe maximum if somehow exceeded.
+    // Width: terminal width minus 4-char margin on each side (8 total).
+    // Minimum 40, maximum area.width - 8. The message length is used as a
+    // hint but the width is capped so the dialog never overflows the terminal.
     let max_width_u16 = area.width.saturating_sub(8);
     let max_width = max_width_u16 as usize;
-    let dialog_width_usize = state.message.len().max(40).min(max_width.max(40));
+    // Use the longest line in the message (split on '\n') to derive the width
+    // hint, so a multi-line message does not force an unnecessarily wide box.
+    let longest_line = state.message.lines().map(str::len).max().unwrap_or(0);
+    let dialog_width_usize = longest_line.max(40).min(max_width.max(40));
     // The value is bounded by area.width (a u16), so the conversion is safe.
     let dialog_width =
         u16::try_from(dialog_width_usize).unwrap_or(max_width_u16);
 
-    // Height: title (1) + top border (1) + message (1) + blank (1) + buttons
-    // (1) + bottom border (1) = 6 lines total.
-    let dialog_height: u16 = 6;
+    // Height: computed dynamically from the message line count so that
+    // multi-line help text is not clipped. Layout:
+    //   top border + title row = 1 line (counted as part of the Block border)
+    //   message lines          = count_dialog_lines(...)
+    //   spacer                 = 1
+    //   button row             = 1
+    //   bottom border          = 1  (part of the Block border)
+    // Ratatui Block borders consume 2 lines (top + bottom), leaving
+    // `inner.height = dialog_height - 2` for content. The inner layout
+    // allocates: message_lines + 1 (spacer) + 1 (buttons).
+    // Therefore: dialog_height = message_lines + 2 (borders) + 1 (spacer) + 1 (buttons).
+    // Content width = dialog_width - 2 (left/right borders), minimum 1.
+    let content_width = dialog_width_usize.saturating_sub(2).max(1);
+    let message_lines = count_dialog_lines(&state.message, content_width);
+    // Cap at 80 % of terminal height so the dialog never fills the screen.
+    // `area.height` is `u16`; the mul/div are on `u16` values with no overflow
+    // risk because both operands are at most u16::MAX.
+    let max_height = area.height.saturating_mul(4) / 5;
+    let uncapped_height = u16::try_from(
+        message_lines.saturating_add(4), // 2 borders + 1 spacer + 1 button row
+    )
+    .unwrap_or(u16::MAX);
+    // Minimum 6 lines so single-line messages always look reasonable.
+    let dialog_height = uncapped_height.min(max_height).max(6);
 
     // --- Center the dialog in `area` ---
     let dialog_rect = centered_rect(dialog_width, dialog_height, area);
@@ -429,20 +456,28 @@ pub fn render_dialog(
     let inner = block.inner(dialog_rect);
     frame.render_widget(block, dialog_rect);
 
-    // --- Split inner area: message row + spacer + button row ---
+    // --- Split inner area: message block + spacer + button row ---
+    // `message_lines` was computed from count_dialog_lines above; safe cast
+    // because it is bounded by `dialog_height` which is already a `u16`.
+    #[allow(clippy::cast_possible_truncation)] // bounded by dialog_height (u16)
+    let msg_height = message_lines as u16;
     let chunks = Layout::default()
         .direction(Direction::Vertical)
         .constraints([
-            Constraint::Length(1), // message
-            Constraint::Length(1), // spacer
-            Constraint::Length(1), // buttons
+            Constraint::Length(msg_height), // message (dynamic)
+            Constraint::Length(1),          // spacer
+            Constraint::Length(1),          // buttons
         ])
         .split(inner);
 
-    // --- Message line ---
+    // --- Message block — rendered as a `Paragraph` that may span multiple lines ---
+    // The message is stored with '\n' as the line separator (as used by
+    // `help_text_for_tab`). `Paragraph` renders each `\n` as a new line when
+    // the text is passed as a `String`; ratatui does not word-wrap by default,
+    // so lines must be pre-wrapped at the source (see `count_dialog_lines`).
     let msg_para = Paragraph::new(state.message.as_str())
         .style(theme.dialog_message)
-        .alignment(Alignment::Center);
+        .alignment(Alignment::Left);
     frame.render_widget(msg_para, chunks[0]);
 
     // --- Button row ---
@@ -505,6 +540,33 @@ fn render_buttons(
             frame.render_widget(para, area);
         }
     }
+}
+
+/// Count the number of rendered lines a dialog message will occupy.
+///
+/// The message is split on `'\n'` to produce logical lines. Each logical
+/// line is then counted as `ceil(chars / content_width)` rendered lines
+/// (minimum 1 per logical line, even if the line is empty). This matches
+/// how ratatui's `Paragraph` renders a multi-line string without wrapping.
+///
+/// `content_width` is the usable width of the dialog interior (dialog width
+/// minus the two border characters). It must be at least 1 to avoid division
+/// by zero; the caller enforces this via `.max(1)`.
+fn count_dialog_lines(message: &str, content_width: usize) -> usize {
+    debug_assert!(content_width > 0, "content_width must be >= 1");
+    message
+        .lines()
+        .map(|line| {
+            if line.is_empty() {
+                1
+            } else {
+                // ceiling division: (len + width - 1) / width
+                line.len().saturating_add(content_width).saturating_sub(1)
+                    / content_width
+            }
+        })
+        .sum::<usize>()
+        .max(1) // at least one line for an empty message
 }
 
 /// Compute a centered [`Rect`] of the given width and height inside `area`.

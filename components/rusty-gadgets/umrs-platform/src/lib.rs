@@ -3,6 +3,11 @@
 //!
 //! # UMRS Platform — High-Assurance Kernel Attribute Access and OS Detection
 //!
+//! For file-level security context operations (reading SELinux labels, parsing
+//! security contexts, MLS/MCS label handling), see the `umrs-selinux` crate.
+//! This crate handles kernel attribute access and OS detection; `umrs-selinux`
+//! handles the SELinux policy and label layer.
+//!
 //! This crate provides platform-level infrastructure for:
 //!
 //! - Interacting with Linux kernel pseudo-filesystems (`/sys/fs/selinux`,
@@ -81,7 +86,7 @@ pub use evidence::{
 };
 
 // Detection phase timing
-pub use detect::{DetectionPhase, PhaseDuration};
+pub use detect::{DetectionPhase, PackageQueryError, PhaseDuration};
 
 // OS identity (substrate-derived)
 pub use os_identity::{

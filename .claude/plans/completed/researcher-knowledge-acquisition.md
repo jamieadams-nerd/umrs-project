@@ -1,6 +1,6 @@
 # Plan: Researcher Knowledge Acquisition — Information Theory & Sage Outreach Corpus
 
-**Status:** On hold — saved for future execution.
+**Status:** completed — 2026-03-20. Corpus 1 (info-theory, 14 files, 238 RAG chunks) and Corpus 2 (sage-outreach, 15 files, 113 RAG chunks) both acquired, ingested, and familiarized. Corpus 3 (skills) is a separate future effort.
 
 **ROADMAP alignment:** G10 (AI Transparency & Outreach), G9 (Documentation Quality)
 

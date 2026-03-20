@@ -1,5 +1,5 @@
 # Researcher Agent Memory
-# Last updated: 2026-03-18
+# Last updated: 2026-03-20
 
 ## Critical: Bash Fetch Patterns
 
@@ -57,6 +57,7 @@ Collections and status as of 2026-03-15:
 | tui-cli | crossterm, color-eyre, clap, ratatui (v0.30.0), awesome-ratatui | Downloaded — awaiting ingestion | 0 |
 | tech-writer-corpus | MS Style Guide, Google Style Guide, MIL-STD-38784B, Plain Language, NIST Author Instructions, CC Parts 1+2, RHEL 10 security guides (4 PDFs) | Ingested (2026-03-17) | 2017 |
 | scap-security-guide | RHEL 10 STIG playbook preprocessed indexes (451 signals, CCE→NIST table) | Ingested (2026-03-17) | 7 |
+| info-theory-foundations | 12 research summaries: Shannon/MacKay/Rissanen/Kolmogorov/Dijkstra/A*/Avis-Fukuda/Edmonds/HNSW/ANN-survey/spectral/AC + synthesis | Written 2026-03-20 — awaiting ingestion | 0 |
 
 Full source URL list for update checks: see `rag-collections.md` in this directory.
 PQC status tracker (team-readable): see `pqc-tracker.md` in this directory.

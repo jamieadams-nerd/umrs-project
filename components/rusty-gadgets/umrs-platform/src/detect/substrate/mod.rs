@@ -38,8 +38,48 @@ pub(crate) use rpm::RpmProbe;
 
 use std::path::Path;
 
+use thiserror::Error;
+
 use crate::evidence::{DigestAlgorithm, EvidenceBundle, EvidenceRecord};
 use crate::os_identity::SubstrateIdentity;
+
+// ===========================================================================
+// PackageQueryError
+// ===========================================================================
+
+/// Error returned by [`crate::detect::is_installed`] to distinguish failure
+/// modes that a bare `bool` cannot express.
+///
+/// Callers that need to differentiate "package absent" from "database
+/// unreadable" should match on this type. The `bool`-equivalent interpretation
+/// is: `Ok(true)` = installed, `Ok(false)` = not installed,
+/// `Err(_)` = query could not complete.
+///
+/// NIST SP 800-53 CM-8 — component inventory queries must surface read errors
+/// separately from absent-package results so operators can distinguish a
+/// missing package from a degraded database.
+/// NIST SP 800-53 AU-3 — structured error types enable machine-readable audit
+/// trail generation.
+#[derive(Debug, Error)]
+pub enum PackageQueryError {
+    /// The package database could not be opened.
+    ///
+    /// The RPM database file is absent, unreadable, or the `rpm-db` feature
+    /// is not compiled in. The query could not be attempted.
+    #[error(
+        "RPM database unavailable — cannot query package installation status"
+    )]
+    DatabaseUnavailable,
+
+    /// The database opened successfully but the query itself failed.
+    ///
+    /// The database may be corrupt, locked, or the query encountered an
+    /// unexpected schema. The result is indeterminate.
+    #[error(
+        "package installation query failed — database may be corrupt or locked"
+    )]
+    QueryFailed,
+}
 
 // ===========================================================================
 // ProbeResult

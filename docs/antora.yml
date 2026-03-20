@@ -3,15 +3,16 @@ title: Unclassified MLS Reference System
 version: latest
 nav:
   - modules/ROOT/nav.adoc
-  - modules/architecture/nav.adoc
   - modules/security-concepts/nav.adoc
-  - modules/deployment/nav.adoc
-  - modules/devel/nav.adoc
-  - modules/patterns/nav.adoc
-  - modules/umrs-tools/nav.adoc
-  - modules/operations/nav.adoc
-  - modules/logging-audit/nav.adoc
-  - modules/cryptography/nav.adoc
-  - modules/reference/nav.adoc
-  - modules/glossary/nav.adoc
   - modules/ai-transparency/nav.adoc
+  # Uncomment when ready for public review:
+  # - modules/architecture/nav.adoc
+  # - modules/deployment/nav.adoc
+  # - modules/devel/nav.adoc
+  - modules/patterns/nav.adoc
+  # - modules/umrs-tools/nav.adoc
+  # - modules/operations/nav.adoc
+  # - modules/logging-audit/nav.adoc
+  # - modules/cryptography/nav.adoc
+  # - modules/reference/nav.adoc
+  - modules/glossary/nav.adoc

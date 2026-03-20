@@ -3,9 +3,12 @@ SHELL := /bin/sh
 ANTORA_DIR := build-tools/antora
 PLAYBOOK   := antora-playbook.yml
 OUT_DIR    := build/site
+DRAFT_PLAYBOOK := antora-playbook-draft.yml
+DRAFT_OUT_DIR  := build/site-draft
+
 
 .PHONY: help tools docs docs-clean docs-serve clean \
-        i18n i18n-check i18n-setup i18n-build
+        i18n i18n-check i18n-setup i18n-build docs-draft docs-both
 
 help:
 	@printf "%s\n" \
@@ -15,6 +18,8 @@ help:
 	  "  make docs-serve   Serve $(OUT_DIR) locally on http://127.0.0.1:8000" \
 	  "  make docs-clean   Remove generated site output" \
 	  "  make clean        docs-clean + remove node_modules" \
+	  "  make docs-draft    Build draft site (all modules) into $(DRAFT_OUT_DIR)" \
+	  "  make docs-both     Build public site then draft site" \
 	  "  make i18n-setup   Setup i18n directory structure" \
 	  "  make i18n-build   Build i18n message objects (.po -> .mo)" \
 	  "  make i18n         Extract strings, merge .po files, compile .mo files" \
@@ -40,7 +45,20 @@ docs-serve:
 	@cd "$(OUT_DIR)" && python3 -m http.server 8000 --bind 127.0.0.1
 
 docs-clean:
-	@rm -rf "$(OUT_DIR)"
+	@rm -rf "$(OUT_DIR)" "$(DRAFT_OUT_DIR)"
+
+docs-draft: tools
+	@test -f "$(DRAFT_PLAYBOOK)" || (echo "Missing $(DRAFT_PLAYBOOK) at repo root" >&2; exit 1)
+	@mkdir -p "$(DRAFT_OUT_DIR)"
+	@cp docs/antora.yml docs/antora.yml.bak
+	@cp docs/antora-draft.yml docs/antora.yml
+	@cd "$(ANTORA_DIR)" && npx antora --clean --to-dir "../../$(DRAFT_OUT_DIR)" "../../$(DRAFT_PLAYBOOK)" || \
+		(cp docs/antora.yml.bak docs/antora.yml && rm -f docs/antora.yml.bak && exit 1)
+	@cp docs/antora.yml.bak docs/antora.yml
+	@rm -f docs/antora.yml.bak
+
+docs-both: docs docs-draft
+
 
 #i18n-mo:
 #	mkdir -p resources/i18n/umrs-tester/locale/en_US/LC_MESSAGES

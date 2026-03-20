@@ -1,0 +1,193 @@
+= Case Study: Guest-Coder API Ergonomics Pipeline
+:description: How a simulated first-time developer (guest-coder agent) drives API improvements and tutorial quality through iterative cold-start exercises.
+:keywords: API ergonomics, guest-coder, tutorial design, developer experience, iterative improvement
+
+== Overview
+
+This case study documents a repeatable methodology for improving API usability and developer documentation using Claude Code's guest-coder agent as a simulated first-time developer.
+The technique produces three deliverables simultaneously:
+
+1. *API ergonomics findings* — friction points that real developers will hit
+2. *Tutorial content* — the friction map becomes the tutorial spec
+3. *Documentation quality scores* — measurable improvement across passes
+
+The methodology was developed on 2026-03-20 during UMRS development.
+
+== The Method
+
+=== Two-Pass Validation Protocol
+
+*Pass 1 (cold start):* The guest-coder agent attempts a realistic development task using only public documentation (rustdoc, developer guide, blog posts).
+No library source code access.
+Every place the agent gets stuck becomes a documented finding.
+
+*Bridge:* The rust-developer agent fixes the API issues found in Pass 1.
+The tech-writer builds a Getting Started tutorial from the friction map.
+
+*Pass 2 (guided):* The guest-coder repeats the same task with the API fixes and tutorial in place.
+The delta between passes measures tutorial effectiveness and remaining friction.
+
+Additional passes continue the cycle until the developer experience is smooth.
+
+=== Design Inspiration
+
+The tutorial format follows the GTK3/4 Python guide model — widely regarded as excellent developer documentation:
+
+- Show what you will build (finished output first)
+- Show the complete working code
+- Walk through each piece step by step
+- Visual proof at every stage ("after this step, you should see this")
+
+== Pass 1 — Cold Start (2026-03-20)
+
+=== Task Given to Guest-Coder
+
+The guest-coder was instructed to write an example program exercising the `umrs-platform` public API.
+The exact instructions were:
+
+[quote]
+____
+You are a summer intern. This is your first day. You have NEVER seen this codebase before.
+
+You have access to ONLY these resources:
+
+1. The blog post at `docs/sage/published/blog-cui-sign-lock.md`
+2. The rustdoc API documentation — run `cargo doc -p umrs-selinux -p umrs-platform --no-deps` to generate it
+3. Any public-facing documentation in `docs/modules/devel/pages/`
+
+You must NOT read library source code (no reading `src/*.rs` files in library crates).
+
+Write an example program that does the following:
+
+1. Tell me what operating system we are running — detect the OS, version, kernel version
+2. Check if a package is installed — pick a common package like `openssl` or `audit`
+3. Show the security marking (SELinux context) of a particular file
+4. Check if IMA/EVM is enabled for that file
+
+If the rustdoc is unclear, incomplete, or missing, DOCUMENT THAT in your feedback.
+If you cannot figure out how to do something, write a comment `// STUCK: <what I was trying to do and why I could not figure it out>`
+Do NOT look at library source code to figure out the API — if the docs do not explain it, that is a finding.
+____
+
+=== Pass 1 Results
+
+The guest-coder produced a working, compiling example (`umrs-platform/examples/system_summary.rs`) that completed 2 of 4 tasks cleanly and documented precise friction for the other 2.
+
+==== HIGH Findings (blocked the task)
+
+[cols="1,3"]
+|===
+|Finding |Description
+
+|H1 — KernelRelease inaccessible
+|`KernelRelease` is exported and documented but not reachable through `DetectionResult`. The kernel version string is locked behind detection internals with no public accessor.
+
+|H2 — No cross-crate pointer
+|`umrs-platform` rustdoc never mentions `umrs-selinux`. The SELinux file context task was a dead end with no pointer to the right crate.
+
+|H3 — No IMA/EVM indicator
+|All 36 `IndicatorId` variants were scanned. No IMA or EVM indicator exists. Notable gap for a posture tool.
+|===
+
+==== MEDIUM Findings (friction)
+
+[cols="1,3"]
+|===
+|Finding |Description
+
+|M1 — No Display impls
+|`TrustLevel`, `OsName`, `OsId`, `VersionId` have no `Display` implementation. Every consumer writes identical match boilerplate.
+
+|M2 — DetectionError shape unclear
+|`PidCoherenceFailed` struct variant fields not previewed in rustdoc. Caused a compile error.
+
+|M3 — No short label on IndicatorDescriptor
+|Only `rationale` (full sentence) available. No short label for column headers.
+
+|M4 — `is_installed` returns bare bool
+|Cannot distinguish "package absent" from "RPM database unreadable."
+|===
+
+==== Documentation Ratings (Pass 1)
+
+[cols="1,1,2"]
+|===
+|Dimension |Score |Notes
+
+|Discoverability |4/10 |No getting started page, no cross-crate pointers
+|Clarity |6/10 |What exists is clear, but significant gaps
+|Completeness |5/10 |OS detection well-covered; SELinux/IMA invisible
+|Examples |5/10 |`posture_demo` exists; need more task-oriented examples
+|===
+
+== API Fixes Applied (rust-developer, 2026-03-20)
+
+Based on Pass 1 findings, the rust-developer agent implemented:
+
+[cols="1,3"]
+|===
+|Fix |Description
+
+|Display impls
+|`TrustLevel` renders as `"T3 — FullCorroboration"`. `OsName`, `OsId`, `VersionId` delegate to inner validated string. `DetectionError` already had Display via thiserror.
+
+|KernelRelease accessor
+|New `kernel_release` field on `DetectionResult`. Reads from `/proc/sys/kernel/osrelease` via provenance-verified `ProcfsText`.
+
+|`is_installed()` return type
+|Now returns `Result<bool, PackageQueryError>`. New `PackageQueryError` enum distinguishes `DatabaseUnavailable` from `QueryFailed`.
+
+|IndicatorDescriptor labels
+|New `label` field on all 37 catalog entries (`"ASLR"`, `"FIPS Mode"`, `"Kernel Lockdown"`, etc.).
+
+|Cross-crate pointer
+|`umrs-platform` lib.rs module doc now points users to `umrs-selinux` for file security context operations.
+|===
+
+All changes passed `cargo xtask fmt`, `cargo xtask clippy`, and `cargo xtask test` with zero warnings.
+
+The intern's original example was updated to use the new APIs — manual match boilerplate replaced with Display formatting, `kernel_release` field used directly, `is_installed` matches on `Result`.
+
+== Pass 2 — After API Fixes
+
+_Results pending — pass in progress._
+
+== Observations
+
+=== What This Methodology Reveals
+
+The guest-coder agent operates under a genuine constraint: it cannot read library source code.
+This means its friction is authentic — it encounters the same barriers a real first-time developer would.
+The `// STUCK:` comments are precise, actionable, and immediately convertible to either API fixes or documentation improvements.
+
+=== Cost-Benefit
+
+Each pass takes approximately 5-8 minutes of agent time and produces:
+
+- A working (or partially working) example program
+- A structured friction report with severity ratings
+- Documentation quality scores that can be tracked across passes
+- Direct input to both the rust-developer (API fixes) and tech-writer (tutorial content)
+
+The alternative — writing tutorials speculatively and hoping they work — produces documentation that may not match real developer experience.
+
+=== The Phase 1 vs Phase 2 Teaching Moment
+
+The security-engineer agent designed exercises that exploit the guest-coder's naivety about SELinux policy.
+In Exercise 2, the intern labels files with different CUI categories, uses `CategorySet::dominates()` to check access (which reports FAIL), then successfully reads the file anyway because targeted policy does not enforce MCS checks for `unconfined_t`.
+
+This deliberate "wait, why did that work?" moment teaches the most important lesson about UMRS Phase 1: labeling is awareness, not enforcement.
+Phase 2 (MLS policy) adds the kernel enforcement that makes `dominates()` match reality.
+
+== Methodology for Other Projects
+
+This technique is not UMRS-specific.
+Any Rust project (or any project with typed APIs and generated documentation) can use the same approach:
+
+1. Define a realistic task that exercises the public API
+2. Launch a fresh agent with documentation-only access
+3. Collect friction points
+4. Fix the API and documentation
+5. Repeat until the cold-start experience is smooth
+
+The key constraint is *no source code access* — this ensures findings reflect the documentation and API surface, not implementation knowledge.

@@ -94,21 +94,21 @@ pub struct Theme {
     /// Status bar text (bold black on colored background).
     pub status_text: Style,
 
-    /// Indicator badge style for `IndicatorValue::Active` (green, bold).
+    /// Indicator badge style for `IndicatorValue::Enabled` (green, bold).
     pub indicator_active: Style,
 
-    /// Indicator badge style for `IndicatorValue::Inactive` (dark gray).
+    /// Indicator badge style for `IndicatorValue::Disabled` (dark gray).
     pub indicator_inactive: Style,
 
     /// Indicator badge style for `IndicatorValue::Unavailable` (yellow).
     ///
     /// Yellow signals that the kernel source could not be read — the probe
-    /// failed rather than returning a known-inactive state. This is visually
+    /// failed rather than returning a known-disabled state. This is visually
     /// distinct from `indicator_inactive` (dark gray) so that operators can
     /// immediately distinguish "explicitly disabled" from "could not determine".
     ///
     /// NIST SP 800-53 CA-7 — a failed probe must be distinguishable from a
-    /// known-inactive feature during continuous monitoring.
+    /// known-disabled feature during continuous monitoring.
     pub indicator_unavailable: Style,
 
     /// Group title style in the data panel (bold white).
@@ -165,16 +165,16 @@ pub struct Theme {
 impl Theme {
     /// Return the appropriate indicator badge style for the given `IndicatorValue`.
     ///
-    /// Maps `Active` → `indicator_active`, `Inactive` → `indicator_inactive`,
+    /// Maps `Enabled` → `indicator_active`, `Disabled` → `indicator_inactive`,
     /// `Unavailable` → `indicator_unavailable`.
     ///
     /// NIST SP 800-53 AU-3 — security state must be visually unambiguous;
-    /// active, inactive, and unavailable are rendered with distinct styles.
+    /// enabled, disabled, and unavailable are rendered with distinct styles.
     #[must_use = "indicator style is used for rendering; discarding it has no effect"]
     pub const fn indicator_style(&self, value: &IndicatorValue) -> Style {
         match value {
-            IndicatorValue::Active(_) => self.indicator_active,
-            IndicatorValue::Inactive(_) => self.indicator_inactive,
+            IndicatorValue::Enabled(_) => self.indicator_active,
+            IndicatorValue::Disabled(_) => self.indicator_inactive,
             IndicatorValue::Unavailable => self.indicator_unavailable,
         }
     }

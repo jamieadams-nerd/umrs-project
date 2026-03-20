@@ -7,9 +7,6 @@ way it is.
 
 == Topics
 
-* xref:security-model.adoc[Security Model Overview] — mandatory access control, CUI handling,
-  and the three pillars of UMRS enforcement.
-
 * xref:reference-monitor.adoc[Reference monitor design] — the tamperproof, non-bypassable
   access control kernel and its role in UMRS.
 
@@ -26,7 +23,5 @@ way it is.
 
 * xref:patterns:index.adoc[Pattern Library] — the implementation patterns that apply
   these security concepts in code.
-* xref:architecture:index.adoc[Architecture] — design rationale and historical context
-  for the UMRS security model.
 * xref:glossary:index.adoc[Glossary] — precise definitions for provenance, integrity,
   attestation, reference monitor, and related terms.

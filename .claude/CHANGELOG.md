@@ -1,5 +1,37 @@
 # Changelog
 
+## 2026-03-20
+
+### Added
+- **Knowledge corpora**: info-theory-foundations (14 files, 238 RAG chunks) and sage-outreach-corpus (15 files, 113 RAG chunks) acquired, ingested, and familiarized by rust-developer and Sage
+- **Phase 1/Phase 2 positioning**: targeted policy = labeling + awareness + custody, NOT enforcement; MLS = mandatory enforcement. Distributed to all agents
+- **Event acknowledgement architecture** (draft): 3-tier trust-impact system, 7 ack-required event classes for future logging/audit subsystem
+- **Release milestones**: first release = CUI labeling + basic tools (umrs-uname, umrs-ls, umrs-stat) + RHEL 10 deployment guide, no IMA/EVM
+- **Kernel tab Phases 1-4 + 6 rounds of polish**: value translations, group descriptions, trust evidence UX, in-TUI help (?/F1), text wrapping, auto-sized columns, pinned summary split, indicator explanations (37 indicators), IndicatorRow data type, recommended values for red indicators (dim italic brackets), i18n wrapping, evidence type plain-English legend, status bar key legend, curated list note
+- **IndicatorValue::Active→Enabled** deep rename across all TUI code
+- **SELinux header**: shows policy type "Enforcing (Targeted)"
+- **FIPS terminology**: "active" → "Enabled" throughout
+- **"substrate" → "Platform Verified"**: user-facing display only
+- **API ergonomics fixes**: Display impls (TrustLevel, OsName, OsId, VersionId), KernelRelease accessor, is_installed() returns Result, IndicatorDescriptor::label (37 short labels), cross-crate rustdoc pointer
+- **Guest-coder examples**: system_summary.rs (Pass 1), system_check.rs (Pass 2), cui_access_check.rs (Exercise 2 — Phase 1 vs Phase 2 teaching moment)
+- **AI transparency case study**: guest-coder API ergonomics pipeline methodology documented
+- **Intern exercise designs**: 3 SELinux exercises from security-engineer (label audit, cross-label access, policy consistency)
+- **Feature concepts**: preflight check (umrs-uname --preflight), remediation popup with privilege detection, MAC/DAC error diagnosis, SELinux policy query API, TUI app templates (ConfigApp, ViewerApp)
+
+### Reviews
+- Sage developer guide review: 2 broken pages (build-tooling.adoc, cargo-notes.adoc), zero tutorials, structural gaps mapped
+- Guest-admin blog post review: 9/10 trust, 8/10 clarity, 4/10 actionability — needs runnable demo
+- Guest-coder Pass 1→2: discoverability 4→6, examples 5→8 after API fixes
+- Guest-coder Exercise 2: SecurityContext::dominates() is todo!() stub, 5-hop API chain navigable
+
+### Changed
+- os-detect-kernel-tab-enhancement: Phases 0-4 COMPLETE
+- doc-quality-plan: moved to back burner
+- researcher-knowledge-acquisition: COMPLETED, archived to completed/
+- Trust/Evidence tab moved to rightmost (last) position
+- "absent" indicator values → "Not Present"
+- Kernel baseline placeholder added to kernel security summary
+
 ## 2026-03-19
 
 ### Added

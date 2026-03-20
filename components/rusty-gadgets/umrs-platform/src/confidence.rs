@@ -62,6 +62,19 @@ pub enum TrustLevel {
     IntegrityAnchored = 4,
 }
 
+impl std::fmt::Display for TrustLevel {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let label = match self {
+            Self::Untrusted => "T0 — Untrusted",
+            Self::KernelAnchored => "T1 — KernelAnchored",
+            Self::EnvAnchored => "T2 — EnvAnchored",
+            Self::SubstrateAnchored => "T3 — SubstrateAnchored",
+            Self::IntegrityAnchored => "T4 — IntegrityAnchored",
+        };
+        f.write_str(label)
+    }
+}
+
 // ===========================================================================
 // Contradiction
 // ===========================================================================

@@ -57,41 +57,41 @@ fn security_indicators_all_unavailable() {
 /// being distinct discriminants, not aliased via equality.
 #[test]
 fn indicator_value_variants_are_distinct() {
-    let active = IndicatorValue::Active("enforcing".to_owned());
-    let inactive = IndicatorValue::Inactive("permissive".to_owned());
+    let enabled = IndicatorValue::Enabled("Enforcing".to_owned());
+    let disabled = IndicatorValue::Disabled("Permissive".to_owned());
     let unavailable = IndicatorValue::Unavailable;
 
-    assert_ne!(active, inactive);
-    assert_ne!(active, unavailable);
-    assert_ne!(inactive, unavailable);
+    assert_ne!(enabled, disabled);
+    assert_ne!(enabled, unavailable);
+    assert_ne!(disabled, unavailable);
 }
 
 // ---------------------------------------------------------------------------
 // IndicatorValue::Active inner string
 // ---------------------------------------------------------------------------
 
-/// `IndicatorValue::Active` must carry the supplied display string intact.
+/// `IndicatorValue::Enabled` must carry the supplied display string intact.
 ///
 /// The header render path extracts this string for badge text — it must
 /// round-trip without mutation.
 #[test]
-fn indicator_value_active_contains_string() {
-    let value = IndicatorValue::Active("enforcing".to_owned());
-    if let IndicatorValue::Active(ref s) = value {
-        assert_eq!(s, "enforcing");
+fn indicator_value_enabled_contains_string() {
+    let value = IndicatorValue::Enabled("Enforcing".to_owned());
+    if let IndicatorValue::Enabled(ref s) = value {
+        assert_eq!(s, "Enforcing");
     } else {
-        panic!("expected Active variant");
+        panic!("expected Enabled variant");
     }
 }
 
-/// `IndicatorValue::Inactive` must carry the supplied display string intact.
+/// `IndicatorValue::Disabled` must carry the supplied display string intact.
 #[test]
-fn indicator_value_inactive_contains_string() {
-    let value = IndicatorValue::Inactive("permissive".to_owned());
-    if let IndicatorValue::Inactive(ref s) = value {
-        assert_eq!(s, "permissive");
+fn indicator_value_disabled_contains_string() {
+    let value = IndicatorValue::Disabled("Permissive".to_owned());
+    if let IndicatorValue::Disabled(ref s) = value {
+        assert_eq!(s, "Permissive");
     } else {
-        panic!("expected Inactive variant");
+        panic!("expected Disabled variant");
     }
 }
 
@@ -104,23 +104,25 @@ fn indicator_value_inactive_contains_string() {
 #[test]
 fn security_indicators_field_assignment() {
     let indicators = SecurityIndicators {
-        selinux_status: IndicatorValue::Active("enforcing".to_owned()),
-        fips_mode: IndicatorValue::Active("active".to_owned()),
-        lockdown_mode: IndicatorValue::Inactive("none".to_owned()),
+        selinux_status: IndicatorValue::Enabled(
+            "Enforcing (Targeted)".to_owned(),
+        ),
+        fips_mode: IndicatorValue::Enabled("Enabled".to_owned()),
+        lockdown_mode: IndicatorValue::Disabled("none".to_owned()),
         ..SecurityIndicators::default()
     };
 
     assert_eq!(
         indicators.selinux_status,
-        IndicatorValue::Active("enforcing".to_owned())
+        IndicatorValue::Enabled("Enforcing (Targeted)".to_owned())
     );
     assert_eq!(
         indicators.fips_mode,
-        IndicatorValue::Active("active".to_owned())
+        IndicatorValue::Enabled("Enabled".to_owned())
     );
     assert_eq!(
         indicators.lockdown_mode,
-        IndicatorValue::Inactive("none".to_owned())
+        IndicatorValue::Disabled("none".to_owned())
     );
     // Unset fields remain unavailable
     assert_eq!(indicators.active_lsm, IndicatorValue::Unavailable);

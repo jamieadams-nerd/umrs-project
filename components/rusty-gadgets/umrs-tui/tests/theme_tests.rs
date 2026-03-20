@@ -45,36 +45,36 @@ fn theme_default_indicator_unavailable_is_yellow() {
 }
 
 #[test]
-fn theme_default_indicator_inactive_and_unavailable_differ() {
+fn theme_default_indicator_disabled_and_unavailable_differ() {
     let theme = Theme::default();
-    let inactive =
-        theme.indicator_style(&IndicatorValue::Inactive("off".to_owned()));
+    let disabled =
+        theme.indicator_style(&IndicatorValue::Disabled("off".to_owned()));
     let unavailable = theme.indicator_style(&IndicatorValue::Unavailable);
     assert_ne!(
-        inactive, unavailable,
-        "inactive and unavailable must have distinct styles"
+        disabled, unavailable,
+        "disabled and unavailable must have distinct styles"
     );
 }
 
 #[test]
 fn theme_default_all_indicator_styles_differ() {
     let theme = Theme::default();
-    let active =
-        theme.indicator_style(&IndicatorValue::Active("on".to_owned()));
-    let inactive =
-        theme.indicator_style(&IndicatorValue::Inactive("off".to_owned()));
+    let enabled =
+        theme.indicator_style(&IndicatorValue::Enabled("on".to_owned()));
+    let disabled =
+        theme.indicator_style(&IndicatorValue::Disabled("off".to_owned()));
     let unavailable = theme.indicator_style(&IndicatorValue::Unavailable);
     assert_ne!(
-        active, inactive,
-        "active and inactive must have distinct styles"
+        enabled, disabled,
+        "enabled and disabled must have distinct styles"
     );
     assert_ne!(
-        active, unavailable,
-        "active and unavailable must have distinct styles"
+        enabled, unavailable,
+        "enabled and unavailable must have distinct styles"
     );
     assert_ne!(
-        inactive, unavailable,
-        "inactive and unavailable must have distinct styles"
+        disabled, unavailable,
+        "disabled and unavailable must have distinct styles"
     );
 }
 
@@ -83,24 +83,24 @@ fn theme_default_all_indicator_styles_differ() {
 // ---------------------------------------------------------------------------
 
 #[test]
-fn indicator_style_active_returns_active_style() {
+fn indicator_style_enabled_returns_active_style() {
     let theme = Theme::default();
-    let value = IndicatorValue::Active("enforcing".to_owned());
+    let value = IndicatorValue::Enabled("Enforcing".to_owned());
     let style = theme.indicator_style(&value);
     assert_eq!(
         style, theme.indicator_active,
-        "Active variant must return the indicator_active theme style"
+        "Enabled variant must return the indicator_active theme style"
     );
 }
 
 #[test]
-fn indicator_style_inactive_returns_inactive_style() {
+fn indicator_style_disabled_returns_inactive_style() {
     let theme = Theme::default();
-    let value = IndicatorValue::Inactive("permissive".to_owned());
+    let value = IndicatorValue::Disabled("Permissive".to_owned());
     let style = theme.indicator_style(&value);
     assert_eq!(
         style, theme.indicator_inactive,
-        "Inactive variant must return the indicator_inactive theme style"
+        "Disabled variant must return the indicator_inactive theme style"
     );
 }
 

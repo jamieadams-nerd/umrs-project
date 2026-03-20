@@ -1,0 +1,352 @@
+Phase 1 cui
+
+Yes—I know exactly the statement you’re reaching for, and more importantly, the intent behind it. This is a foundational positioning argument for UMRS, especially in the Targeted Policy phase, where you are not claiming full enforcement, but instead delivering authoritative labeling + operator awareness + system custody integrity.
+
+Let me reconstruct and refine it in a way that aligns with your architecture, assurance mindset, and the realities of CUI handling.
+
+⸻
+
+Core Positioning Statement (UMRS – Targeted Policy Phase)
+
+The purpose of the UMRS reference system in its targeted SELinux configuration is not to guarantee end-to-end enforcement of Controlled Unclassified Information (CUI) handling requirements, but rather to provide a high-assurance reference implementation for classification awareness, labeling fidelity, and system-bound custody controls.
+
+At its core:
+	•	The system ensures that all information under its control is explicitly labeled, traceable, and contextually understood.
+	•	It provides continuous, unambiguous signaling to the operator regarding:
+	•	Sensitivity (e.g., CUI categories)
+	•	Handling restrictions (e.g., dissemination controls, caveats)
+	•	Operational expectations
+
+⸻
+
+The Key Principle You Were Reaching For
+
+Here is the distilled version of that idea you described:
+
+While information resides within the UMRS system boundary, the system is responsible for preserving the integrity, visibility, and correctness of its labeling and associated handling metadata. Once that information leaves the system boundary, responsibility for proper handling transfers to the recipient or downstream system.
+
+Let’s tighten that into a more formal version suitable for documentation:
+
+⸻
+
+Formalized Responsibility Model
+
+System Responsibility (In-Boundary):
+	•	Ensure all artifacts are:
+	•	Correctly labeled (CUI categories, markings, caveats)
+	•	Persistently associated with their metadata (xattrs, sidecars, receipts)
+	•	Presented with clear visual and programmatic indicators
+	•	Prevent silent ambiguity (i.e., no unlabeled or contextless data)
+	•	Maintain chain-of-custody signals while under system control
+	•	Enforce minimal but meaningful controls where feasible (e.g., type enforcement, controlled directories, vault flows)
+
+User / Recipient Responsibility (Out-of-Boundary):
+	•	Once exported, copied, transmitted, or otherwise removed:
+	•	The receiving entity assumes responsibility for:
+	•	Interpreting markings
+	•	Applying appropriate handling procedures
+	•	Maintaining or re-establishing controls in their environment
+
+⸻
+
+Why This Matters (Your Justification Argument)
+
+This is the justification you were circling around—and it’s a strong one:
+
+1. Perfect enforcement is not required to provide value
+
+Even without MLS-level enforcement:
+	•	You eliminate unknown data sensitivity
+	•	You reduce accidental mishandling
+	•	You provide consistent, machine-readable semantics
+
+That alone is a huge uplift over typical environments.
+
+⸻
+
+2. Awareness is a control (and often the missing one)
+
+In many real-world environments:
+	•	Data is copied with no markings
+	•	Files lose context immediately
+	•	Operators are forced to guess sensitivity
+
+UMRS fixes that by ensuring:
+
+The operator is never blind to what the data is.
+
+That is a legitimate and meaningful control aligned with:
+	•	NIST expectations around labeling and marking
+	•	CUI program requirements for dissemination awareness
+
+⸻
+
+3. Boundary-based responsibility is how real systems work
+
+Even in high-assurance systems:
+	•	Control is strongest inside the boundary
+	•	Trust degrades across system transitions
+
+Your model explicitly acknowledges that:
+
+UMRS is authoritative within its boundary—not omnipotent beyond it.
+
+That’s not a weakness—that’s an accurate threat model.
+
+⸻
+
+4. It creates a bridge to MLS (your Phase 2)
+
+This is critical for your roadmap:
+	•	Targeted Policy → establishes:
+	•	Labeling semantics
+	•	Operator awareness
+	•	Data hygiene
+	•	MLS Policy → builds on that to add:
+	•	Mandatory enforcement
+	•	Clearance-based access decisions
+	•	Strong isolation
+
+So this statement also becomes:
+
+Phase 1 ensures the data knows what it is.
+Phase 2 ensures the system enforces who can touch it.
+
+⸻
+
+Short Version (If You Need a One-Liner)
+
+If you want something concise for docs:
+
+UMRS ensures that all data within its control is correctly labeled, visible, and contextually understood; once that data leaves the system boundary, responsibility for its proper handling transfers to the receiving entity.
+
+⸻
+
+Even Tighter (Tagline-Level)
+
+“Authoritative labeling within the boundary. Responsible handling beyond it.”
+
+
+
+
+
+
+
+
+
+
+
+##---------------------------------------------
+## This is fore future audigint and logging
+##---------------------------------------------
+This is delaingiwth types of events and which are required to be ackanoldged.. 
+
+
+
+Yes — and I would separate this into “events that must be seen” versus “events that require human acknowledgement.” That distinction matters a lot.
+
+There is not a single universal NIST control that says “these exact events must be acknowledged,” but NIST does require organizations to alert appropriate personnel for certain classes of failures/incidents, monitor incidents, maintain incident handling, and verify integrity. In particular, AU-5 requires alerting on audit logging process failures; IR-4/IR-5 cover incident handling and monitoring; SI-4 covers system monitoring for attacks and indicators of potential attacks; and SI-7 covers software/firmware/information integrity and integrity checks. NIST’s incident guidance also emphasizes detection, analysis, prioritization, and handling rather than treating all events equally.  
+
+So for UMRS, I would recommend a doctrine like this:
+
+An acknowledgement-required event is one that indicates either:
+	1.	a possible loss of trust in the system’s security state,
+	2.	a possible loss of trust in the accuracy or completeness of audit evidence,
+	3.	a security condition requiring a conscious risk decision or documented disposition,
+	4.	or a condition that could materially affect containment, custody, enforcement, or recovery.
+
+That gives you a principled rule instead of a random list.
+
+My recommendation: three tiers
+
+Tier 1 — Must acknowledge
+
+These are the ones I would require a security administrator or designated operator to explicitly acknowledge.
+
+1) Integrity violations
+This was your original instinct, and I think it is absolutely correct. Anything indicating that protected software, policy, configuration, labels, receipts, security metadata, or audit-relevant data may have been altered unexpectedly should require acknowledgement. That is directly aligned with the integrity-oriented purpose of SI-7.  
+
+Examples:
+	•	policy file hash mismatch
+	•	SELinux policy/package mismatch
+	•	signed config verification failure
+	•	receipt/signature verification failure
+	•	evidence or vault checksum mismatch
+	•	unexpected label/xattr divergence
+	•	audit record integrity failure
+	•	tamper indication in protected storage
+
+2) Audit pipeline impairment
+If the logging/audit process itself is impaired, that should almost always require acknowledgement, because now you may be losing evidence or losing confidence in evidence. AU-5 explicitly requires alerts for audit logging process failures and additional defined actions.  
+
+Examples:
+	•	journald/auditd/mediator ingestion failure
+	•	queue overflow / dropped audit events
+	•	disk full affecting log persistence
+	•	signing failure for audit receipts
+	•	clock/time-sync failure severe enough to affect event ordering or evidentiary reliability
+	•	storage corruption affecting retained logs
+
+3) Security state degradation affecting enforcement
+If the platform slips out of its intended assurance posture, somebody should have to consciously acknowledge that degraded state. This fits your whole UMRS philosophy: once the system can no longer guarantee the assumptions under which it was operating, that is not just an FYI. It is an operational condition requiring disposition.
+
+Examples:
+	•	SELinux disabled or permissive when policy requires enforcing
+	•	MLS/targeted policy not loaded as expected
+	•	kernel lockdown unexpectedly disabled
+	•	FIPS posture changed unexpectedly
+	•	critical kernel security setting drift
+	•	mandatory protection service not running
+	•	trusted storage mounted incorrectly or with insecure options
+
+4) Unauthorized or high-impact administrative actions
+Some admin actions are so security-relevant that they should be acknowledged after the fact even if they were allowed. Not because the action failed, but because it materially changes the trust posture and should leave a conscious human breadcrumb.
+
+Examples:
+	•	security policy reload/change
+	•	category/label taxonomy change
+	•	vault promotion override
+	•	emergency bypass / break-glass action
+	•	disabling integrity verification
+	•	changing trust anchors or signing keys
+	•	changing audit retention/signing rules
+
+5) Confirmed or highly credible security incidents
+This is where “marauder-class” really belongs. Not every suspicious event, but events that indicate actual compromise, attempted compromise with meaningful confidence, or direct attacks against custody/integrity boundaries. IR-4, IR-5, and SI-4 support this class of operational response and monitoring.  
+
+Examples:
+	•	repeated denied access suggesting active probing
+	•	successful unauthorized privileged action
+	•	unauthorized access to vault areas
+	•	exfiltration indicator on protected artifacts
+	•	malware detection on a protected host
+	•	tampering with audit components
+	•	suspicious modification of security-critical metadata
+
+⸻
+
+Tier 2 — Must notify, but acknowledgement may be conditional
+
+These are important, but I would not require manual acknowledgement every time unless they cross a threshold.
+
+Examples:
+	•	repeated authentication failures
+	•	account lockouts
+	•	unusually high SELinux AVC volume
+	•	suspicious but unconfirmed access attempts
+	•	failed access to protected data where policy correctly blocked it
+	•	transient monitoring blind spots
+	•	single failed integrity probe that auto-recovers and is explained by maintenance
+
+These should usually become acknowledgement-required when one of these is true:
+	•	the event repeats past threshold,
+	•	it affects a privileged account,
+	•	it touches protected data or protected infrastructure,
+	•	it persists beyond a defined interval,
+	•	or correlation raises confidence of hostile activity.
+
+⸻
+
+Tier 3 — Record only
+
+These should be logged, searchable, and correlatable, but not force a human acknowledgement.
+
+Examples:
+	•	ordinary denials that are expected by policy
+	•	routine policy-conformant access blocks
+	•	normal service restarts
+	•	informational posture snapshots
+	•	expected state transitions in intake/stage/vault flows
+	•	baseline operator actions that already have business justification
+
+If you make humans acknowledge these, they will start acknowledging everything blindly, which destroys the value of acknowledgement as a control.
+
+The key design principle
+
+I would not define acknowledgement around severity alone. I would define it around trust impact.
+
+That is the sharper model for UMRS:
+
+Require acknowledgement when an event threatens one of these trust properties
+	•	Trust in the object — is the data/artifact still what we think it is?
+	•	Trust in the label — is the sensitivity/handling metadata still correct and intact?
+	•	Trust in the control plane — is SELinux/policy/posture still enforcing what we claim?
+	•	Trust in the evidence trail — are logs, receipts, and timestamps still reliable?
+	•	Trust in custody — did data move, change hands, or get exposed outside expected workflow?
+
+That is a very defensible architecture rule.
+
+A practical UMRS acknowledgement taxonomy
+
+I would define acknowledgement-required classes like this:
+	•	INTEGRITY_COMPROMISE
+	•	AUDIT_ASSURANCE_DEGRADED
+	•	SECURITY_POSTURE_DEGRADED
+	•	POLICY_OR_TRUST_CONFIG_CHANGED
+	•	CONFIRMED_OR_HIGH_CONFIDENCE_INTRUSION
+	•	CUSTODY_OR_LABELING_TRUST_VIOLATION
+	•	BREAK_GLASS_OR_OVERRIDE_USED
+
+That is clean, memorable, and matches your platform’s philosophy much better than generic SOC language.
+
+What acknowledgement should mean
+
+Acknowledgement should not mean “I clicked OK.”
+
+It should mean:
+
+A responsible human has reviewed the condition, accepted awareness, and recorded an initial disposition.
+
+Minimum acknowledgement payload:
+	•	who acknowledged it
+	•	when
+	•	role/authority
+	•	event/case ID
+	•	disposition:
+	•	under investigation
+	•	accepted operational risk
+	•	false positive
+	•	maintenance-related
+	•	contained
+	•	escalated
+	•	optional notes / ticket reference
+
+That turns acknowledgement into part of the audit trail, not a UI nuisance.
+
+My blunt recommendation for your system
+
+For UMRS, I would absolutely make these acknowledgement-required from day one:
+	1.	Any integrity verification failure
+	2.	Any audit/logging pipeline failure that risks loss or trust degradation of evidence
+	3.	Any unexpected degradation of security posture or enforcement mode
+	4.	Any break-glass, bypass, or trust-anchor change
+	5.	Any confirmed or high-confidence attempt to tamper with protected data, labels, or vault custody
+
+Then add thresholded acknowledgement for:
+	•	repeated privileged auth failures
+	•	repeated denied access against sensitive areas
+	•	repeated AVCs or policy violations suggesting active probing
+
+The “marauder-class” idea
+
+I think your instinct there is good, but I would rename it in engineering language to something like:
+	•	hostile activity requiring operator disposition
+	•	active adversarial indicators
+	•	high-confidence attack indicators
+	•	security-significant hostile events
+
+“Marauder” is memorable internally, but for documentation/auditor-facing material I would use one of the phrases above.
+
+The clean doctrine statement
+
+Here is a statement you could carry into the architecture docs:
+
+UMRS requires explicit human acknowledgement for security-significant events that call into question the integrity of protected artifacts, the correctness of labels or handling metadata, the reliability of the audit/evidence trail, the effectiveness of enforcement mechanisms, or the trusted custody of information.
+
+And an even tighter version:
+
+Events require acknowledgement when they materially reduce trust in system state, control state, evidence state, or custody state.
+
+That is probably the most “UMRS-native” formulation.
+
+I can turn this next into a concrete acknowledgement decision matrix with columns like event class, example, ack required, escalation target, SLA, disposition codes, and recommended audit fields.

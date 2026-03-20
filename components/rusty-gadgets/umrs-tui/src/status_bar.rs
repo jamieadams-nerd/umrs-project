@@ -29,12 +29,27 @@ use crate::theme::{Theme, status_bg_color};
 // Render
 // ---------------------------------------------------------------------------
 
+/// Key legend shown on the right side of the status bar.
+///
+/// Compact single-line reference for the key bindings most commonly needed
+/// by a new operator. Updated here when new bindings are added.
+///
+/// Must be short enough to coexist with a typical status message on an
+/// 80-column terminal (<=40 characters including leading separator).
+const KEY_LEGEND: &str = "  Tab: tabs | ↑↓/jk: scroll | ?: help | q: quit";
+
 /// Render the status bar from the app's current [`StatusMessage`].
 ///
 /// The full width is filled with the level background color so the bar
-/// reads as a solid block.
+/// reads as a solid block. A compact key legend is right-aligned on the
+/// same line so new operators can discover available actions at a glance.
+///
+/// The legend is elided if the terminal is too narrow to display both the
+/// status message and the legend without overlap (under ~80 columns).
 ///
 /// NIST SP 800-53 AU-3 — security state is always present and typed.
+/// NIST SP 800-53 SA-5 — inline key legend reduces reliance on external
+/// documentation during an assessment.
 pub fn render_status_bar(
     frame: &mut Frame,
     area: Rect,
@@ -45,16 +60,30 @@ pub fn render_status_bar(
     let bg = status_bg_color(status.level);
     let icon = level_icon(status.level);
 
-    let text = format!(" {icon} {} ", status.text);
-
-    // Pad to full width so the background fills the bar.
+    let status_text = format!(" {icon} {} ", status.text);
     let total_width = area.width as usize;
-    let text_chars = text.chars().count();
-    let padded = if text_chars < total_width {
-        let pad = total_width.saturating_sub(text_chars);
-        format!("{text}{}", " ".repeat(pad))
+
+    // Attempt to right-align the key legend. If the status message and legend
+    // together exceed the available width, the legend is omitted entirely so
+    // the status message is never truncated.
+    let legend_chars = KEY_LEGEND.chars().count();
+    let status_chars = status_text.chars().count();
+
+    let combined = status_chars.saturating_add(legend_chars);
+
+    let padded = if combined <= total_width {
+        // There is room for both: pad the status to push the legend right.
+        let pad = total_width
+            .saturating_sub(status_chars)
+            .saturating_sub(legend_chars);
+        format!("{status_text}{}{KEY_LEGEND}", " ".repeat(pad))
+    } else if status_chars < total_width {
+        // No room for the legend — pad the status to fill the bar.
+        let pad = total_width.saturating_sub(status_chars);
+        format!("{status_text}{}", " ".repeat(pad))
     } else {
-        text
+        // Status itself is too long — truncate it to the available width.
+        status_text.chars().take(total_width).collect()
     };
 
     let line = Line::from(vec![Span::styled(

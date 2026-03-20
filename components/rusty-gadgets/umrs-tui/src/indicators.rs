@@ -15,8 +15,8 @@
 //!
 //! ## Fail-Closed Contract
 //!
-//! Every read operation wraps its result: success maps to `Active` or
-//! `Inactive`; any I/O error or unimplemented source maps to `Unavailable`.
+//! Every read operation wraps its result: success maps to `Enabled` or
+//! `Disabled`; any I/O error or unimplemented source maps to `Unavailable`.
 //! System-identification reads (boot ID, system UUID) fall back to the string
 //! `"unavailable"` on failure — never to a fabricated or guessed value.
 //!
@@ -50,6 +50,7 @@ use umrs_platform::kattrs::{
     EnforceState, KernelLockdown, LockdownMode, ProcFips, ProcfsText,
     SecureReader, SelinuxEnforce, StaticSource, SysfsText,
 };
+use umrs_selinux::status::selinux_policy;
 
 use crate::app::{HeaderContext, IndicatorValue, SecurityIndicators};
 
@@ -190,15 +191,39 @@ pub fn build_header_context(
 
 /// Read SELinux enforcement mode from `/sys/fs/selinux/enforce`.
 ///
-/// Returns `Active("enforcing")`, `Inactive("permissive")`, or
-/// `Unavailable` on read failure (SELinux not mounted, kernel error).
+/// Returns `Enabled("Enforcing (Targeted)")`, `Disabled("Permissive (Targeted)")`,
+/// or `Unavailable` on read failure (SELinux not mounted, kernel error).
+///
+/// When SELinux is active, the policy type is read from `/etc/selinux/config`
+/// via `selinux_policy()` — gated behind kernel confirmation (Trust Gate pattern,
+/// NIST SP 800-53 CM-6). If the policy type cannot be read, the mode string
+/// is shown without a parenthetical (e.g., `"Enforcing"`).
 fn read_selinux_status() -> IndicatorValue {
+    // Capitalise the policy name for display (e.g., "targeted" → "Targeted").
+    fn policy_label() -> Option<String> {
+        let p = selinux_policy()?;
+        let raw = p.as_str();
+        let mut chars = raw.chars();
+        let first = chars.next()?.to_uppercase().to_string();
+        Some(format!("{first}{}", chars.as_str()))
+    }
+
     match SelinuxEnforce::read() {
         Ok(EnforceState::Enforcing) => {
-            IndicatorValue::Active("enforcing".to_owned())
+            let label = if let Some(pol) = policy_label() {
+                format!("Enforcing ({pol})")
+            } else {
+                "Enforcing".to_owned()
+            };
+            IndicatorValue::Enabled(label)
         }
         Ok(EnforceState::Permissive) => {
-            IndicatorValue::Inactive("permissive".to_owned())
+            let label = if let Some(pol) = policy_label() {
+                format!("Permissive ({pol})")
+            } else {
+                "Permissive".to_owned()
+            };
+            IndicatorValue::Disabled(label)
         }
         Err(e) => {
             log::warn!("indicators: selinux_status read failed: {e}");
@@ -209,12 +234,12 @@ fn read_selinux_status() -> IndicatorValue {
 
 /// Read FIPS mode from `/proc/sys/crypto/fips_enabled`.
 ///
-/// Returns `Active("active")`, `Inactive("inactive")`, or `Unavailable`
+/// Returns `Enabled("Enabled")`, `Disabled("Disabled")`, or `Unavailable`
 /// on read failure.
 fn read_fips_mode() -> IndicatorValue {
     match ProcFips::read() {
-        Ok(true) => IndicatorValue::Active("active".to_owned()),
-        Ok(false) => IndicatorValue::Inactive("inactive".to_owned()),
+        Ok(true) => IndicatorValue::Enabled("Enabled".to_owned()),
+        Ok(false) => IndicatorValue::Disabled("Disabled".to_owned()),
         Err(e) => {
             log::warn!("indicators: fips_mode read failed: {e}");
             IndicatorValue::Unavailable
@@ -224,12 +249,12 @@ fn read_fips_mode() -> IndicatorValue {
 
 /// Read kernel lockdown level from `/sys/kernel/security/lockdown`.
 ///
-/// Returns `Active("<level>")` for non-None levels, `Inactive("none")`, or
+/// Returns `Enabled("<level>")` for non-None levels, `Disabled("none")`, or
 /// `Unavailable` on read failure.
 fn read_lockdown_mode() -> IndicatorValue {
     match KernelLockdown::read() {
-        Ok(LockdownMode::None) => IndicatorValue::Inactive("none".to_owned()),
-        Ok(mode) => IndicatorValue::Active(mode.to_string()),
+        Ok(LockdownMode::None) => IndicatorValue::Disabled("none".to_owned()),
+        Ok(mode) => IndicatorValue::Enabled(mode.to_string()),
         Err(e) => {
             log::warn!("indicators: lockdown_mode read failed: {e}");
             IndicatorValue::Unavailable
