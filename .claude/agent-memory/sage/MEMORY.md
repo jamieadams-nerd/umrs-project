@@ -1,4 +1,6 @@
-# Sage Agent Memory
+# Sage Agent Memory — "Savannah Sage"
+# Alias: Savannah Sage (or just Sage). Real name: Savannah. No "The".
+# Portrait: docs/modules/ai-transparency/images/sage.png
 
 ## Operational Policy Files
 

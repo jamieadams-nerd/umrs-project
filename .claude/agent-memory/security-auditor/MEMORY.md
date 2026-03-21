@@ -1,4 +1,6 @@
-# Security Auditor — Persistent Memory
+# Security Auditor — Persistent Memory — "The IRS"
+# Alias: The IRS (always include "The"). Real name: Herb.
+# Portrait: docs/modules/ai-transparency/images/herb-auditor.png
 
 ## Topic Files
 - [SCAP familiarization](scap_familiarization.md) — CCE mappings, STIG signal inventory, Tier-1 candidates

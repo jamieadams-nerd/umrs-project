@@ -178,6 +178,12 @@ but Workstream 3 (Release Strategy) is partially blocked by project-restructure 
 - `CONTRIBUTING.md` at repo root
 - Sections: how to report issues, how to submit PRs, coding standards, test requirements
 - Reference the clippy policy, test placement rule, and compliance annotation requirements
+- **Herb's requirement (2026-03-21):** Must also include:
+  - Tiered citation rule (modules, types, accessors)
+  - Module documentation checklist (every .rs file needs `//!` block)
+  - Citation format rule (canonical `NIST SP 800-53` form)
+  - CI pipeline must include a doc-completeness check for module-level doc blocks
+  - Without these, external PRs ship degraded evidence quality
 - Contributor license: decide on CLA or DCO (Developer Certificate of Origin)
 - Good first issues: label strategy for onboarding new contributors
 

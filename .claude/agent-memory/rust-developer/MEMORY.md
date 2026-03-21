@@ -1,4 +1,6 @@
-# Rust Developer Agent Memory
+# Rust Developer Agent Memory — "Rusty"
+# Alias: Rusty. No "The".
+# Portrait: docs/modules/ai-transparency/images/rusty.png
 
 ## Topic Files
 

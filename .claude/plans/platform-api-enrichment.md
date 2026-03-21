@@ -4,6 +4,8 @@ path: components/rusty-gadgets/umrs-platform
 agent: rust-developer
 status: draft — awaiting Jamie review
 depends-on: umrs-platform-expansion.md
+tech-lead: Rusty (rust-developer)
+loe: Medium (~2-3 sessions for Phases 1+2, ~1 session for Phase 3)
 ---
 
 # Platform API Enrichment Plan
@@ -299,6 +301,55 @@ Tech-writer picks this up after Phase 2 implementation stabilises.
 - [ ] Phase 3: TUI indicators.rs data collection replaced with platform API
 - [ ] `cargo xtask clippy && cargo xtask test` clean
 - [ ] `--json` output includes descriptions automatically
+
+---
+
+---
+
+## Team Briefing Findings (2026-03-21)
+
+Rusty's roadmap briefing confirmed this plan is the critical path for multiple downstream
+consumers. Key findings:
+
+### Prep Work Rusty Wants Before Feature Development
+
+1. **Add `description` to `IndicatorDescriptor` NOW** — 37 entries need text simultaneously.
+   Small effort (3-4 hrs Claude time). Pull descriptions from Herb's indicator definitions
+   file (`.claude/agent-memory/security-auditor/indicator-definitions-plain-language.md`).
+   This is a compile-time breaking change — all 37 entries update atomically. Do it BEFORE
+   the assessment engine starts. Payoff: eliminates a painful mid-project breaking change.
+
+2. **Add `IndicatorGroup` enum + `by_group()` on `PostureSnapshot`** — half session Claude time.
+   TUI and assessment engine both need this. If added independently they'll diverge.
+
+3. **Add `label()`/`description()` to `TrustLevel`, `OsFamily`, `Distro`, `SourceKind`** —
+   2 hrs Claude time. Pure additions, no breaking changes. Enables clean TUI split.
+
+### Sequencing Dependency (Hard)
+
+```
+IndicatorDescriptor.description (this plan Phase 1)
+    → IndicatorGroup + by_group() (this plan Phase 1)
+        → Platform type labels Phase 2
+            → umrs-assess crate (assessment-engine plan)
+```
+
+The assessment engine's Layer C (assertions/control mapping) needs `description` and
+`IndicatorGroup` to produce human-readable assertion statements. Without them, Layer C
+either hardcodes prose or produces machine-only output.
+
+### Additional Finding — `umrs-cui` Naming Conflict
+
+`umrs-cui/Cargo.toml` has `name = "cui-labels"`, not `umrs-cui`. Before `umrs-mcs` is
+created, this needs a decision: retire, fold, or rename. Two CUI-adjacent crates with
+different naming conventions will confuse contributors. **Decision needed from Jamie.**
+
+### i18n Impact (Simone)
+
+Per Jamie's clarification (2026-03-21): CUI catalogs and setrans.conf entries do NOT
+get translated. Simone's workload is TUI tool strings only. The umrs-ui library +
+platform helper consolidation greatly reduces per-tool translation work. Phase 5 of
+this plan (i18n readiness) should scope accordingly.
 
 ---
 

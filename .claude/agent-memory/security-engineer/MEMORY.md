@@ -1,4 +1,5 @@
 # Security Engineer — Persistent Memory
+# Alias: Knox (pending Jamie confirmation — alias TBD per cross-team notes 2026-03-21)
 
 ## Cross-Team Channel
 To notify the tech-writer or senior-tech-writer of compliance findings that require doc
@@ -125,3 +126,26 @@ on these paths as provenance violations in future reviews.
 Exception: /proc/sys/kernel/osrelease in bootcmdline.rs is read raw for
 heuristic BLS entry selection. This is safe due to SELinux procfs write
 protection, but the SELinux dependency must be documented (Finding B-01).
+
+## M3.5 Deployment Architecture Context (2026-03-21)
+- M3.5 is the security-engineer's primary milestone: transition from ~/.local/bin to
+  /usr/bin (RPM-managed) with full SELinux type enforcement, fapolicyd, and AIDE.
+- Current binary inventory: umrs-ls, umrs-os-detect-tui, umrs-file-stat
+  (renaming in progress: umrs-file-stat→umrs-stat, umrs-tui main→umrs-uname).
+- Existing policy artifacts in components/platforms/rhel10/umrs-selinux/policy/:
+  umrs.te / umrs.fc / umrs.if — defines data custody types (config/data/log/httpd).
+  umrs_cui.te / umrs_cui.if — CUI custody types hierarchy.
+  cui_lei.te / cui_lei.fc / cui_lei.if — LEI subcategory types.
+  umrs_cui.fc — EMPTY. No file context entries exist for CUI data paths.
+  umrs.fc — covers /usr/share/umrs, /etc/umrs, /var/lib/umrs, /var/log/umrs, /var/www/umrs.
+  CRITICAL GAP: no umrs_exec_t type exists. No binary file contexts exist.
+  No domain transition rules exist. No process domain is defined.
+- Makefile exists and is correct (semodule -i loop, delegates to selinux devel Makefile).
+- fapolicyd integration: zero artifacts exist. HIGH priority for STIG-compliant hosts.
+- AIDE integration: zero artifacts exist.
+- RPM spec: does not exist.
+- Phase 1 = targeted policy, labeling only. Phase 2 = MLS enforcement.
+- umrs-mcs will manage setrans.conf (do not author setrans.conf directly).
+- xattr-sanitization-gap plan exists (draft) — umrs-xattr-strip tool planned;
+  xattr namespace policy table documented in that plan is authoritative for
+  security.* xattr handling rules.

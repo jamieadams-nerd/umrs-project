@@ -1,0 +1,26 @@
+UMRS Cantrip — First Release Codename
+
+In D&D, a cantrip is a level-0 spell. The simplest magic an apprentice learns.
+First release, limited features, the wizard is just getting started. Future
+releases get progressively more powerful spell names. It's fun, it's on-brand,
+and it sets up a naming convention.
+
+"UMRS Cantrip" — the first spell. Labels applied, tools in hand, the wizard
+opens his eyes.
+
+What's in Cantrip:
+- Base CUI labeling (MCS categories, setrans.conf via umrs-mcs)
+- Core tools: umrs-uname, umrs-ls (TUI), umrs-stat
+- Software stack: umrs-selinux, umrs-platform, umrs-core
+- RHEL 10 deployment guide
+- NO IMA/EVM, NO MLS enforcement (that's Phase 2)
+- User-local install (~/.local/bin) — lower the barrier
+
+Naming runway for future releases:
+- Cantrip (first release — labeling + awareness + basic tools)
+- Sigil or Glyph (second release — more tools + env scrubbing)
+- Invocation (MLS enforcement lands — mandatory access control)
+- ...scaling up as the wizard grows in power
+
+The codename for Windows 95 was "Chicago" — like the city, it burned to the
+ground. Let's hope Cantrip ages better than that.

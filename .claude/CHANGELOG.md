@@ -33,6 +33,70 @@
 - Light theme CLI option (--light-theme) for light terminal users
 - Multiple base traits needed as tool portfolio grows
 
+### TUI Phase 6 — Release Assessment & Kernel Baseline Support
+- **KernelVersion type (umrs-platform)**: Parsed major.minor.patch with FromStr (strips distro suffixes like "-86.el10"), Ord for comparison, Display, plus CATALOG_KERNEL_BASELINE constant. 12 new tests (KV-01 through KV-12).
+- **Kernel baseline comparison**: TUI now displays running kernel vs baseline in header — green match, yellow newer, red older.
+- **Security-auditor Phase 6 assessment**: 0 ERROR, 2 MEDIUM, 3 LOW. Tool declared release-ready. Rusty fixed both Medium findings: C-1 (help text CUI gate softened from absolute to advisory), C-2 (IntegrityVerifiedButContradictory truncation fixed with shorter label + secondary detail row).
+- **All xtasks pass clean**: cargo xtask fmt, clippy, test all succeed.
+
+### CUI Labeling Workstream — Major New Initiative
+- **Strategic brief delivered (Sage)**: Five Eyes deferred, umrs-mcs root privilege not over-engineered (dev VM assumption), setrans.conf owned exclusively by umrs-mcs.
+- **DoD CUI registry scraped (Researcher)**: All 113 entries from dodcui.mil using Playwright with stealth mode (bypassed Akamai WAF). Per-entry JSON, master index, NOFORN list produced.
+- **Cross-reference analysis**: Verified against NARA canonical registry. All 6 standalone→grouped mismatches confirmed (DoD and NARA agree). Identified 7 fabricated entries, 7 wrong abbreviations, 1 misclassified (FEDCON = dissemination control, not category).
+- **Catalog cleanup**: Deleted 13 phantom/fabricated entries, renamed 8 (PRIVACY→PRIV), fixed 6 standalone→grouped, corrected 5 wrong parents, added 55 missing DoD entries. Result: 122 verified markings across 19 groups.
+- **CUI Specified categories identified**: 9 categories carry additional handling requirements beyond CUI Basic.
+- **New Antora module (docs/modules/cui-labeling/)**: 5 pages (index, basic-vs-specified, dod-registry, reconciliation, mcs-architecture placeholder). Added to antora.yml, make docs builds clean.
+- **umrs-cui crate bootstrap**: New lib+bin crate with cleaned catalog data (JSON files, example labels.rs). Data mirrored to rhel10 platform directory.
+- **Data files**: 113 per-entry JSON in references/cui-registry/categories/, index.json, reconciliation.json, reconciliation.adoc, noforn-required.json.
+
+### Impact Profile Concept — Architectural Decision
+- **Security-auditor evaluation**: Jamie's "risk domain" concept reworked as "Impact Profile" anchored to NIST SP 800-30 Rev 1, Appendix H, Table H-2.
+- **Five impact types**: OPS (operational), ASSET (asset protection), IND (individual), ORG (organizational), NATION (national).
+- **Architectural split**: impact_profile (human awareness) vs handling_requirements (machine-verifiable by umrs-stat).
+- **Case study linkage**: 12 case studies (OPM, Equifax, Flint, Boeing, etc.) map to CUI category + SP 800-30 impact type.
+- **Fabricated risk domains deleted**: Malformed, unverified ChatGPT output removed (US-CUI-RISK-DOMAINS.json).
+
+### Strategy & Documentation
+- **Sage absorbed braindump**: CUI strategy, case studies, impact profile concept. Content strategy updated with "Failures That Built UMRS" blog series.
+- **CUI design philosophy documented**: Labels are handling instructions, not enforcement locks. Three pillars: labeling + enforcement + guidance.
+- **umrs-cui tool design**: lib+bin crate for catalog lookup (reusable by any workspace consumer).
+- **AI transparency case study planned**: CUI catalog cleanup as worked example of AI-assisted quality improvement with verification mechanisms.
+- **project_doc_build_and_public.md marked COMPLETE**: Doc build/hosting plan done.
+- **Memory updates**: Sage, researcher, and security-auditor agent memories absorbed briefing and strategy.
+
+### Files Modified
+- **Antora**: Added cui-labeling module with 5 pages; updated antora.yml
+- **Platform/Rust**: umrs-platform KernelVersion type + tests, CATALOG_KERNEL_BASELINE; umrs-tui header comparison display
+- **Data**: Cleaned CUI-LABELS.json (122 entries), reconciliation tables, DoD registry extract (113 files)
+- **Plans/Memory**: Sage/researcher/auditor memories updated; doc-build plan marked complete
+- **Settings**: Expanded permissions for new data/module locations
+
+### Team Identity & Mascot Character Finalizations
+- **Three new team members named and portrayed**: Knox (security-engineer, "They named it Fort Knox for a reason. He is the reason."), Simone (umrs-translator, Martinique-based, fine literature degree, i18n operations), Hamlet the Hamster (changelog-updater, team pet, "To log, or not to log — that is never the question.")
+- **Full cast photoshoot**: Jamie's portrait (`jamie.png`) acquired and relocated to `docs/modules/ai-transparency/images/`
+- **Team bios finalized**: All 9 members (Jamie, Claude Code, Rusty, Herb, Librarian, Knox, Simone, Sage, Hamlet) reviewed their bios and portraits — all approved with enthusiastic reactions
+- **Sage updated cast-and-crew review copy**: New member cards + formatting fixes prepared for publication
+
+### First Release Codename — UMRS Cantrip
+- **Release naming runway established**: "Cantrip" (D&D level-0 spell, aligns with wizard theme) → Sigil/Glyph → Invocation (MLS enforcement in Phase 2)
+- **Release announcement ready**: Sage approved tagline "The wizard opens his eyes" for the Cantrip launch narrative
+
+### Full Team Roadmap Briefing & Plan Creation
+- **All 6 agents briefed**: Rusty, Herb, Librarian, Knox, Simone, and Sage reviewed ROADMAP and heard execution order from Jamie. Each agent reported concerns, LOE estimates, and preparation work.
+- **6 new plans created with tech leads**:
+  - `cui-phase1-language-directive.md` — Herb: Never say "enforces" before Phase 2 (MLS). Language discipline for targeted-only content.
+  - `ca7-monitoring-frequency.md` — Herb: NIST SP 800-53 CA-7 ODP table documenting monitoring frequency across all tools.
+  - `pre-release-annotation-audit.md` — Herb: Annotation scope review for M4 (CUI gate, control citations, module doc compliance).
+  - `m35-deployment-security.md` — Knox: Deployment security hardening (SELinux domain, fapolicyd, AIDE, RPM verify).
+  - `research-pipeline-priorities.md` — Librarian: Acquisition order for OSCAL, Five Eyes regulatory framework, CUI legal corpus.
+  - `m3-translation-prep.md` — Simone: i18n preparation with scoped-down Phase 1 workload (core UI strings, CUI Basic only).
+- **3 existing plans updated**:
+  - `platform-api-enrichment.md` — Rusty's prep items, sequencing chain with i18n scope boundaries.
+  - `long-term/umrs-assessment-engine.md` — OSCAL v1.1.2 confirmed, Herb's RMF review perspective, POA&M note for Phase 2.
+  - `sage-outreach-and-release-strategy.md` — Contributor guide annotation requirements added.
+- **Key decisions clarified**: i18n scope excludes CUI catalogs and setrans.conf (except French Canadian CUI program); OSCAL target = v1.1.2; ImageMagick installed for image resizing; Jamie's AI Journey blog needs one revision session.
+- **Swim buddy story documented**: Story from session saved as blog anecdote candidate for future content.
+
 ## 2026-03-20
 
 ### Added

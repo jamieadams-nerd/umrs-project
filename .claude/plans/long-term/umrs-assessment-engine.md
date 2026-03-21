@@ -5,6 +5,10 @@ status: unblocked — posture probe Phase 2c complete, security-auditor corpus P
 depends-on:
   - kernel-security-posture-probe.md
   - security-auditor-corpus.md
+  - platform-api-enrichment.md (Phase 1 — IndicatorDescriptor.description + IndicatorGroup)
+tech-lead: Rusty (rust-developer)
+loe: XL (~8-10 sessions for full v1; Phase 1 core types ~2 sessions)
+reviewers: Herb (security-auditor) after Phase 3, Knox (security-engineer) after Phase 5
 ---
 
 # UMRS Assessment Engine
@@ -463,9 +467,11 @@ These decisions are intentionally deferred. They must be resolved before impleme
 1. **Crate name**: `umrs-assess` vs `umrs-audit` — preference for `umrs-assess` (mirrors RMF
    "assess" phase language), but confirm with Jamie before creating the crate.
 
-2. **OSCAL schema version**: Which version of the OSCAL JSON schema to target? NIST has
-   released 1.0.x and is working toward 1.1.x. FedRAMP has specific version requirements.
-   The researcher agent should confirm the current authoritative version.
+2. **OSCAL schema version**: **RESOLVED (2026-03-21).** Target **OSCAL v1.1.2** (current
+   stable from `github.com/usnistgov/OSCAL`). FedRAMP requires `oscal-version >= 1.1.0`
+   per their automation repo versioning policy. FedRAMP RFC-0024 mandates OSCAL packages
+   by September 2026. The v1.2.0-dev snapshot is not stable — do not target it. The
+   Librarian will build an `oscal-schemas` RAG collection from NIST and GSA GitHub repos.
 
 3. **Evidence bundle serialization**: Which format for on-disk evidence bundles?
    - `postcard` — compact binary, no schema, good for embedded/performance-critical paths
@@ -486,10 +492,48 @@ These decisions are intentionally deferred. They must be resolved before impleme
 
 6. **POA&M ownership model**: POA&M items require an owner field. In the first prototype,
    this will be a free-form string. A future version should link to an identity model. Defer.
+   **Herb's note (2026-03-21):** FedRAMP requires POA&M items to have named, accountable
+   owners. Add to Phase 6 definition of done: "Identity model for POA&M ownership is
+   defined or deferred with written justification." Do not let it slip into v2 undocumented.
 
 7. **Persistence model for bundles**: Is the assessment bundle written to the filesystem, held
    in memory only, or both? For the first vertical slice, write to a user-specified output
    directory. Streaming / daemon mode is a future concern.
+
+---
+
+## Team Briefing Findings (2026-03-21)
+
+### Herb's RMF Accuracy Review
+
+Herb confirms the architecture matches real RMF (SP 800-37 Rev. 2 Step 5). Three observations:
+
+1. **Confidence model is non-standard.** The High/Medium/Low confidence on `Assertion` is
+   simpler than SP 800-53A's "depth" and "coverage" concepts. This is acceptable as a UMRS
+   simplification but must be documented as such. Add a note to the `Assertion` type's doc
+   comment so auditors don't try to map it directly to SP 800-53A depth levels.
+
+2. **Mission-profile overlays need a profile registry.** "External" currently means undefined.
+   Before the assessment engine ships, at least one machine-readable profile definition must
+   exist (even a simple JSON file). Without it, `profile_used` in `BundleManifest` is a
+   free-form string with no validation. **The Librarian or Herb should define the profile
+   schema before Phase 3.**
+
+3. **Pre-release annotation audit scope.** Before M4, Herb needs to define which crates get
+   reviewed, in what order, and what pass/fail criteria are. See the new
+   `pre-release-annotation-audit.md` plan.
+
+### Rusty's Dependency Chain
+
+Platform API enrichment (IndicatorDescriptor.description + IndicatorGroup) is a hard
+prerequisite for this plan's Layer C. Without descriptions and groups, assertion statements
+are either hardcoded prose or machine-only output. See `platform-api-enrichment.md`
+Team Briefing Findings section.
+
+### Librarian's OSCAL Confirmation
+
+OSCAL v1.1.2 confirmed as target. `oscal-schemas` RAG collection to be built from NIST
+GitHub and GSA FedRAMP automation repo. See open architectural decision #2 (now resolved).
 
 ---
 

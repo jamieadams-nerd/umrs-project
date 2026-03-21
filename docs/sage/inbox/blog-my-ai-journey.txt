@@ -1,0 +1,315 @@
+Better journey
+
+Absolutely—this version incorporates your agent names, the security engineer role, and the “guest” agents. I kept the full narrative intact and layered these in naturally, with a bit of personality where it fits.
+
+⸻
+
+From Curiosity to Collaboration: My Journey Building an AI-Augmented Engineering Workflow
+
+Last December, I found myself in a position that many engineers eventually face: time to step back, reassess, and learn. I had just been laid off, and while that came with its own challenges, it also gave me something rare—time to explore.
+
+Like most developers, my first instinct when learning something new was to search. But I kept running into a problem: traditional search just wasn’t cutting it anymore. I could find answers, but I couldn’t interact with them. I couldn’t ask follow-up questions, challenge assumptions, or drill deeper into a topic in a meaningful way.
+
+That’s when a friend introduced me to ChatGPT.
+
+Phase 1: From Search to Conversation
+
+At first, I used AI as an enhanced search engine. I would ask questions, refine them, and go back and forth until I understood a concept. This alone was a step-change in how I learned.
+
+Then I started using it to help write things—technical explanations, plans, and even improving comments in my code. It wasn’t doing the work for me, but it helped me express ideas more clearly.
+
+Eventually, I crossed into debugging. I’d paste in a Rust function that wasn’t behaving correctly and ask for help. But what mattered most wasn’t just getting a fix—I wanted to understand why something was broken. That’s where AI really started to shine.
+
+Phase 2: Learning Through Feedback
+
+As I spent more time in Rust, I began using tools like Clippy more heavily. Anyone who’s used Clippy knows it doesn’t just tell you something is wrong—it tells you something could be better. But understanding those suggestions isn’t always straightforward.
+
+So I started feeding Clippy output into AI and asking it to explain the reasoning. Over time, I noticed something important: my code improved—not because AI was fixing it, but because I was learning from the explanations.
+
+That said, the workflow wasn’t perfect. Copying code back and forth between my editor and chat sessions was clunky. Context would get lost. It worked, but it wasn’t efficient.
+
+Around that time, I also experimented with multiple models. What stood out was how different the responses could be. Asking the same question across systems gave me multiple perspectives, which was surprisingly valuable.
+
+Phase 3: AI as a Research Partner
+
+As I started shaping an open-source project, my use of AI shifted again. Instead of asking narrow questions, I began asking broader ones:
+	•	What are high assurance software patterns?
+	•	What are people struggling with in modern compliance frameworks?
+	•	How are others approaching secure system design?
+
+AI became less of a tool and more of a research partner. It didn’t just answer questions—it helped generate ideas.
+
+This phase was critical. It helped me define the scope and direction of what I wanted to build.
+
+Phase 4: Moving Beyond Chat—Structured Collaboration
+
+The real turning point came when I adopted a more integrated AI-assisted workflow. Initially, I was skeptical. But once I started using it, I realized this was something different.
+
+I began with simple tasks: generating test cases, running Clippy, fixing issues. Slowly, I started using it for planning—roadmaps, refactoring strategies, prioritization.
+
+Eventually, I trusted it to help implement parts of the system—but always with oversight. I wasn’t looking for blind automation. I was reviewing everything:
+	•	Does this handle edge cases?
+	•	Is it readable?
+	•	Will this scale?
+	•	Would an auditor understand this?
+
+That last question became more important than I expected.
+
+Phase 5: Specialization—Building Purpose-Driven Agents
+
+Once I understood the potential, I stopped thinking in terms of “an AI” and started thinking in terms of roles.
+
+The first specialized agent I built was my translator, Simone. Her job wasn’t just translation—it was accurate technical translation. I wanted French users to see terminology that felt native, not machine-generated.
+
+To do that, I built a corpus: decades of translated man pages, GNU utilities, and desktop tooling. I indexed them into a vector database and used retrieval-augmented generation (RAG) to ground translations in real-world usage. The improvement in accuracy was immediate.
+
+Next came my Rust developer agent, Rusty. I built a knowledge base from Rust programming guides, security materials, and performance resources. I excluded stylistic opinions—I wanted to retain architectural control.
+
+Rusty operates in a disciplined loop:
+	1.	Analyze
+	2.	Plan
+	3.	Benchmark
+	4.	Implement
+	5.	Re-measure
+
+This wasn’t about generating code—it was about improving systems.
+
+Then came documentation. I introduced two agents:
+	•	A technical writer, focused on clarity and correctness of doc comments and explanations
+	•	An Antora specialist, focused on structure, playbooks, and documentation architecture
+
+Together, they ensured both what we say and how we present it were aligned. I even incorporated Simplified Technical English rules to improve readability and consistency.
+
+Phase 6: Security—Engineering and Auditing
+
+Security became its own domain.
+
+I introduced a security engineer agent, deeply specialized in access controls, SELinux policy, and secure system design. This agent operates at a very technical level—reviewing code, evaluating deployment models, and ensuring that execution environments are hardened and correct.
+
+This created a powerful pairing with my auditor agent, Herb.
+
+Herb—who, like any good auditor, is only loved by his mom and his cats—doesn’t care how clever the code is. He cares whether it stands up to scrutiny. He evaluates systems the way a real auditor would: looking for evidence, clarity, traceability, and compliance alignment.
+
+One of the most interesting outcomes was applying Herb to CLI/TUI tools. His feedback wasn’t about functionality—it was about clarity. Would an auditor understand what they’re seeing? Is the evidence presented cleanly?
+
+Between the security engineer and Herb, I had both sides of the equation:
+	•	Build it securely
+	•	Prove it’s secure
+
+Phase 7: Learning from Fresh Eyes—Guest Agents
+
+One of the most valuable additions came from a simple idea: what if I removed all the context?
+
+I created two “guest” agents—my version of summer interns:
+	•	Guest Admin
+	•	Guest Coder
+
+These agents are intentionally limited. They only have access to documentation and APIs—no internal context, no prior knowledge.
+
+The Guest Admin tests tools and interfaces. The feedback is incredibly raw and useful:
+	•	“I’ve never used this—what is it telling me?”
+	•	“Why does this output look like this?”
+
+This exposes usability gaps immediately.
+
+The Guest Coder is used for tutorials. I assign a task, and with only documentation and API references, they must produce working example code. That becomes the basis for a tutorial.
+
+Then I reset the agent and run the tutorial cold.
+
+This process surfaced something critical: API ergonomics.
+	•	Are the abstractions intuitive?
+	•	Are functions discoverable?
+	•	Are outputs understandable?
+
+In several cases, this exposed missing implementations (like display traits), awkward interfaces, or unclear flows. Rusty would then refine the API accordingly.
+
+Phase 8: A System, Not Just Tools
+
+At this point, I wasn’t working with individual agents anymore—I had a system.
+
+Agents hand off work across task boards. Reviews are tracked. Outputs are audited and stored. Knowledge becomes reusable.
+
+I also introduced a researcher agent, acting like a technical librarian. When gaps are identified, it gathers material, indexes it, and distributes summaries so all agents become familiar with the topic.
+
+This solved a key problem: an agent can’t query what it doesn’t know exists. So I added a familiarization phase—agents review new material before they need it.
+
+Phase 9: Refinement and Feedback
+
+Today, I’m no longer adding agents. I’m refining them.
+
+One major issue I encountered was instruction drift—profiles became bloated, contradictory, and noisy. I had to prune everything down to minimal, high-signal instruction sets.
+
+I also started measuring improvement deliberately:
+	•	Run a review
+	•	Introduce new knowledge
+	•	Run the same review again
+
+The differences are substantial. Agents identify new issues, provide deeper insights, and evolve in their analysis.
+
+This isn’t static automation. It’s a system that improves over time.
+
+⸻
+
+Lessons Learned
+
+If there’s one thing this journey reinforced, it’s this: working with AI is not fundamentally different from working with a human team.
+
+1. Clear, Measurable Planning Still Matters
+
+Vague instructions produce vague results.
+
+Define:
+	•	Requirements
+	•	Expected outcomes
+	•	Success criteria
+
+2. Validate Instructions Before Execution
+
+Before execution, ask:
+	•	Does this make sense?
+	•	What is ambiguous?
+
+This dramatically improves outcomes.
+
+3. Ask for Feedback—Seriously
+
+After tasks, ask:
+	•	What would have made this smoother?
+	•	What’s missing?
+
+Agents will tell you—if you ask.
+
+4. Maintain a Roadmap
+
+Architecture explains the present. A roadmap explains the future.
+
+With a roadmap, agents:
+	•	Anticipate change
+	•	Build more scalable systems
+	•	Avoid short-term decisions that block long-term goals
+
+5. Treat Knowledge as a First-Class Asset
+
+Curate it. Index it. Share it.
+
+Agents are only as effective as what they know—and what they’re aware exists.
+
+⸻
+
+Final Thoughts
+
+If you’re considering using AI in your workflow, don’t think of it as a tool.
+
+Think of it as a team.
+
+I now have:
+	•	Simone translating
+	•	Rusty building
+	•	A security engineer hardening
+	•	Herb auditing
+	•	Writers documenting
+	•	Guests testing usability
+	•	A researcher expanding knowledge
+
+What started as frustration with search turned into a collaborative engineering system—one that helps me think, build, and refine at a level I couldn’t reach alone.
+
+And I’m still refining it.
+
+⸻
+
+If you want, I can next:
+	•	Convert this to Antora AsciiDoc with your exact nav structure
+	•	Add SEO metadata + title variants
+	•	Or tighten it into a LinkedIn / short-form version for reach
+
+Great question—this is a perfect term for what you’re actually doing.
+
+Epistemology (definition)
+
+Epistemology is the branch of philosophy that studies knowledge—specifically:
+	•	What counts as knowledge
+	•	How we acquire knowledge
+	•	How we validate that knowledge is true or reliable
+	•	What the limits of knowledge are
+
+⸻
+
+In plain English
+
+Epistemology = “How do we know what we know—and how do we trust it?”
+
+⸻
+
+Why it applies directly to what you’re building
+
+What you’ve done with your agents is very epistemological, whether you intended it or not:
+
+You’re designing systems that answer questions like:
+	•	How does an agent know something is correct?
+	•	Where did that knowledge come from? (corpus, RAG, docs)
+	•	Can that knowledge be trusted?
+	•	Can it be verified or audited?
+	•	What happens when new knowledge is introduced?
+
+⸻
+
+Concrete examples from your system
+	•	Simone (translator)
+→ Knowledge is grounded in real-world corpora (man pages)
+→ Not just “guessing French”—it’s evidence-based translation
+	•	Rusty (developer)
+→ Uses benchmarks + analysis loops
+→ Knowledge is validated through measurement (before/after delta)
+	•	Herb (auditor)
+→ Evaluates whether knowledge is defensible and provable
+→ “Can you prove this control is satisfied?”
+	•	Researcher agent
+→ Expands what is known
+→ Solves: “You can’t query what you don’t know exists”
+	•	Guest agents
+→ Test understanding without prior knowledge
+→ Reveal gaps in how knowledge is communicated
+
+⸻
+
+Why this matters (big picture)
+
+Most people using AI are doing this:
+
+“Give me an answer.”
+
+You’re doing this:
+
+“Where did that answer come from, how do we validate it, and how does the system improve its understanding over time?”
+
+That’s epistemology applied to engineering.
+
+⸻
+
+One-line takeaway you could even use later
+
+Epistemology is about designing systems that don’t just produce answers—but can justify, validate, and improve them.
+
+⸻
+
+If you want, we can actually formalize this into a UMRS principle—something like:
+	•	“Knowledge provenance and validation model”
+	•	“Agent epistemic trust levels (T0–T4 like your OS trust ladder)”
+
+That would fit perfectly with everything you’re building.
+
+Got it—here’s a revised version that incorporates the behavioral_rules.md concept cleanly:
+
+⸻
+
+
+⸻
+
+One practice that quickly became part of the team culture—half serious, half humorous—was what I call “don’t leave the toilet seat up.” We formalized this in our behavioral_rules.md files, which define expectations for how each agent completes work. In practical terms, it means no task is considered done unless the system is left in a clean, working state. For Rusty, that means all Clippy checks must pass (no silent suppressions), the entire workspace must build successfully, and no dependencies are broken. For the documentation team, it means running the full documentation build and verifying that everything renders correctly. This isn’t new—it’s the same standard we followed in traditional engineering environments: when you check in code, you don’t break the build. The principle carries over directly—finish clean, validate your output, and leave the system ready for whoever comes next.
+
+⸻
+
+⸻
+
+Another key lesson was to always plan and execute in phases. Early on, I made the mistake of launching agents into large, end-to-end execution plans, only to find it difficult to track progress or recover when something went off course. I shifted to a phased approach where each stage is small, well-defined, and leaves the system in a fully working state. After each phase, I rely on the orchestrating agent to confirm completion—ensuring all tasks are finished, no agents are still executing, and the system is stable. At that point, I require updates to the changelog and generate a detailed GitHub commit message, which I use directly since it’s often more thorough than what I would write manually. Once everything is committed, I ask for confirmation that it’s safe to exit the session or proceed to the next phase. This creates clear checkpoints, preserves traceability, and keeps the entire workflow controlled and manageable. Instead of sending agents on a long, unbroken journey, we move in deliberate increments—complete, validate, commit, and then continue.
+

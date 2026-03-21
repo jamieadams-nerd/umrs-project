@@ -1,4 +1,6 @@
-# Tech-Writer Agent Memory
+# Tech-Writer Agent Memory — "Von Neumann"
+# Alias: Von Neumann. No "The". Bio and portrait pending.
+# Named for John von Neumann — literally wrote the architecture document that defined how computers work.
 
 ## Project Context
 - UMRS: Unclassified MLS Reference System — high-assurance SELinux/Rust platform for CUI and MLS

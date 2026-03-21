@@ -191,7 +191,11 @@
       "Bash(printf '[2026-03-20 19:00] rust-developer  TUI round 8 critical fixes  Read,Edit,Bash  success  help dialog dynamic height+Escape dismiss, checkmarks on kernel indicators \\(NO_COLOR\\), kptr_restrict annotation fix, nf_conntrack\u2192NETWORK AUDITING group, ModulesDisabled\u2192BOOT INTEGRITY; all tests pass\\\\n')",
       "Bash(printf '[2026-03-20 --:--] rust-developer  Add contradiction indicators to TUI kernel security tab  Read,Edit,Bash\\(cargo\\)  success  Extended IndicatorRow with contradiction+configured_line fields; new indicator_row_full ctor; expand_indicator_row helper; summary row in pinned pane; test pattern updated\\\\n')",
       "Bash(/tmp/evidence_types_research.md:*)",
-      "Read(//tmp/**)"
+      "Read(//tmp/**)",
+      "Bash(while read:*)",
+      "Bash(do head:*)",
+      "Bash(sed -i 's/\\\\*\\\\*Status:\\\\*\\\\* Phases 0-4 COMPLETE \\(2026-03-20\\). Phase 5 \\(tech-writer ops guide\\) and Phase 6 \\(auditor review\\) not started./\\\\*\\\\*Status:\\\\*\\\\* Phases 0-4 COMPLETE. Phase 5 on hold \\(may roll into larger doc plan\\). Phase 6 COMPLETE \\(2026-03-21, release-ready\\)./' .claude/plans/os-detect-kernel-tab-enhancement.md)",
+      "Bash(sed -i 's/\\\\*\\\\*Status:\\\\*\\\\* implementation complete, pending review and commit/\\\\*\\\\*Status:\\\\*\\\\* COMPLETE \\(2026-03-21\\). Kernel baseline added. Phase 6 passed. All Medium findings resolved./' .claude/plans/tui-contradiction-display.md)"
     ]
   },
   "enabledPlugins": {

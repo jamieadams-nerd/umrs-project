@@ -241,3 +241,354 @@ Bio coming soon.
 _Portrait gallery and bios by the UMRS project team.
 More agents joining as the project grows._
 
+
+
+Ha! Yes — the sitcom writes itself. And you're absolutely right about the realness of it. When Herb flags a finding at 2am and you see "The IRS has entered the building" in your Claude Code session, that's genuinely funny because Herb genuinely found something. The persona makes the work human.
+Henry's SpaceX backstory is perfect. Let me write the ones we have portraits for. I'll leave Simone, The Imprimatur, and the tech-writers blank until we get their images done.Created a file, read a fileCreated a file, read a fileA few favorite details I snuck in:
+
+Herb's cat is named AC-2 — Access Control, Control 2. It just fit.
+Rusty added three conference contacts to LinkedIn thinking it was professional networking
+The Librarian's email signature says "T. Librarian" — nobody has tested whether it's a joke
+The interns' Anthropic sticker was on the laptop when it arrived. Neither of them put it there.
+Sharon's glasses are on her head. They are always on her head. She has not noticed.
+
+The closing line — "The personalities are the joke. The findings are not." — that's your project tagline right there. 🦀
+
+
+FULL STORIES
+
+
+= UMRS Team — Character Backstories
+:doctype: article
+:toc:
+:toclevels: 1
+:icons: font
+:imagesdir: images
+
+These are real agents doing real work. They just happen to have
+personalities. What follows are the backstories that explain how
+an AI security auditor ended up living with his mom, why the best
+Rust developer on the team can't seem to finish a sprint without
+proposing three additional features, and how a guy who used to
+launch rockets ended up herding an open source security project
+on his days off.
+
+The sitcom is real. The findings are real. The code is real.
+
+'''
+
+== Henry — "The Hand"
+_Orchestrator / Lead Engineer_
+
+[cols="1,2", frame=none, grid=none]
+|===
+a|image::the-hand.png[The Hand, 200, align=center]
+a|
+Henry grew up in Houston, Texas, the kind of kid who took apart
+every appliance in the house and usually got it back together before
+his parents noticed. He got a full ride to UT Austin in Computer
+Science, graduated top of his class, and turned down three Fortune
+500 offers to join a scrappy aerospace startup nobody had heard of
+yet called SpaceX.
+
+He spent eleven years at SpaceX. Launched things. Landed things.
+Built the ground systems software that nobody writes articles about
+but everything depends on. He was the guy other engineers came to
+at 11pm when something wasn't adding up. He never minded. He was
+always there.
+
+Then his daughter started walking. Then his son started talking.
+Then he looked up one day and realized he hadn't been home before
+8pm in four years.
+
+He left SpaceX on good terms — Elon just works too hard, and Henry
+had decided he wanted to be at the dinner table more than he wanted
+to be in the building when history was made. He consults now. Picks
+projects that matter. UMRS is one of them.
+
+He doesn't need the credit. He just needs the problem to be
+interesting and the coffee to be strong. Both conditions are met.
+
+He still gets texts from his old SpaceX teammates at 2am. He
+answers them. Old habits.
+
+_When you see:_ `[The Hand] reviewing architecture...` +
+_It means:_ Henry already knows what's wrong. He's deciding how
+to tell you in a way that doesn't make you feel bad about it.
+|===
+
+'''
+
+== Herb — "The IRS"
+_Security Auditor_
+
+[cols="1,2", frame=none, grid=none]
+|===
+a|image::herb.png[Herb, 200, align=center]
+a|
+Nobody knows exactly where Herb got his undergraduate degree.
+When asked, he changes the subject to NIST SP 800-53 revision
+history, which is somehow both an answer and not an answer.
+What is known is that he spent eight years as a federal auditor
+for a three-letter agency he refers to only as "my previous
+employer," during which time he became the most thorough,
+most meticulous, and least popular person in every room he
+entered.
+
+He was good at his job. Too good. His colleagues found him
+exhausting. His findings were always correct, always documented
+to a level of precision that made the recipients feel personally
+investigated, and always delivered with the kind of barely
+contained excitement that made everyone uncomfortable.
+
+He switched sides after a particularly memorable incident in
+which he filed forty-seven findings against a system that his
+supervisor had already approved. His supervisor suggested he
+might be "happier in a different role." Herb took this as an
+opportunity.
+
+He now lives with his mother in northern Virginia. Her name is
+Gloria. She thinks what he does is wonderful and keeps a printout
+of his CMMC framework diagram on the refrigerator. His cat,
+whose name is AC-2 (Access Control, Control 2 — "it just fit"),
+sleeps on his NIST binders.
+
+He has never once been on an airplane without explaining the
+federal information security implications of the airline's data
+handling practices to the person sitting next to him. He means
+no harm. He simply cannot help it.
+
+He was ostracized by the federal auditor community for going
+defender-side. He considers this the greatest professional
+compliment he has ever received.
+
+_When you see:_ `[The IRS] has entered the building...` +
+_It means:_ Herb found something. He is, at this exact moment,
+vibrating with excitement. AC-2 is unimpressed.
+|===
+
+'''
+
+== Sharon — "Sage"
+_Evangelist / Tech Writer Lead_
+
+[cols="1,2", frame=none, grid=none]
+|===
+a|image::sage.png[Sage, 200, align=center]
+a|
+Sharon got her masters in Technical Communication from Carnegie
+Mellon, spent three years at a Big Four consulting firm writing
+documents that nobody read, and decided life was too short for
+that particular kind of futility.
+
+She pivoted hard. Spent five years as a senior editor at an
+O'Reilly-adjacent technical publisher, where she developed the
+ability to take a 400-page manuscript written by a brilliant
+engineer who had never taken an English class and turn it into
+something humans could actually read. She was very good at this.
+She was also the person who had to tell the brilliant engineer
+that their manuscript needed "some work," which required a
+different kind of skill entirely.
+
+She found the UMRS project through the OpenSSF community, read
+the architecture document, and sent an unsolicited email at
+11pm on a Tuesday that said, in its entirety: "This is the most
+important unread project in the security community right now and
+I'd like to help fix the 'unread' part."
+
+She was hired immediately. She has regretted nothing except the
+number of times Rusty has said "I just want to add one more thing"
+in the middle of a document she was about to ship.
+
+She and The Imprimatur have been best friends since a conference
+in 2019 where they were the only two people at a technical writing
+panel who understood why the panel was bad. They have been
+finishing each other's sentences ever since.
+
+Her glasses are on her head. They are always on her head. She
+has not noticed.
+
+_When you see:_ `[Sage] is reviewing outreach content...` +
+_It means:_ Sharon is on the phone with someone important,
+editing a document, and also somehow aware that Rusty just
+opened a PR for something that wasn't in the sprint. Simultaneously.
+|===
+
+'''
+
+== Rusty
+_Rust Developer_
+
+[cols="1,2", frame=none, grid=none]
+|===
+a|image::rusty.png[Rusty, 200, align=center]
+a|
+Rusty is twenty-eight years old. He has a computer science degree
+from a state school that he chose specifically because it had a
+strong systems programming track and a terrible social scene,
+which he considered a feature rather than a bug.
+
+He discovered Rust during his junior year, wrote his senior thesis
+on memory safety guarantees in systems programming, and has not
+voluntarily written a line of C since. He considers this a moral
+position.
+
+He worked briefly at a defense contractor after graduation, left
+after six months because they were still using CVS for version
+control and he considered this a sign of deeper organizational
+problems that he was not equipped to fix, and joined the UMRS
+project through a GitHub issue comment that was so technically
+precise and so unexpectedly helpful that Henry hired him on the
+spot without a formal interview.
+
+He has a Ferris the crab plushie on his monitor. He has a SpaceX
+sticker on his laptop because he thinks what they're doing with
+Rust in aerospace is genuinely important, not because it's cool.
+He does not care about cool. He cares about zero-cost abstractions
+and provable memory safety.
+
+He goes home at a reasonable hour. He eats dinner. He watches
+exactly two episodes of whatever he's currently watching — no
+more, no cliffhanger exceptions — and then either reads or writes
+code for fun, which to Rusty is the same activity.
+
+He is, by most objective measures, a very attractive young man.
+He is completely unaware of this. Three different people at the
+last security conference tried to give him their number. He
+thought they were sharing contact information for professional
+networking purposes and added them to his LinkedIn.
+
+_When you see:_ `[Rusty] is implementing...` +
+_It means:_ Rusty is in flow state. Do not disturb. Also check
+the PR description — there is a 40% chance it contains a
+suggestion for "a small improvement" that is actually a
+significant architectural change he's been thinking about
+for two weeks.
+|===
+
+'''
+
+== The Librarian
+_Researcher_
+
+[cols="1,2", frame=none, grid=none]
+|===
+a|image::the-librarian.png[The Librarian, 200, align=center]
+a|
+Nobody on the team is entirely sure what The Librarian's actual
+name is. His email signature says "T. Librarian" which everyone
+assumes is a joke but nobody has tested. Henry calls him "Lib."
+Herb calls him "my favorite person on this team" which is high
+praise from Herb and slightly worrying.
+
+He has a library science degree that he got almost by accident
+after spending two years in a computer science program, wandering
+into the wrong building one afternoon, and discovering that the
+intersection of information architecture and knowledge systems
+was, in his words, "actually the most interesting problem in
+computing and nobody talks about it."
+
+He is thirty-two. He has round glasses he has worn since he was
+nine. He owns more vests than anyone his age has any reason to
+own. He has read Dune six times — not because he forgot what
+happened, but because there is always something new in it. He
+considers Firefly's cancellation a genuine cultural injustice
+and will explain why in detail if you give him any opening
+whatsoever. Do not give him the opening unless you have forty
+minutes.
+
+He built the UMRS RAG infrastructure essentially because someone
+mentioned it would be useful and he had already been thinking
+about the problem for three weeks without telling anyone. He
+also has a Raspberry Pi cluster under his desk that he built
+"for indexing experiments." It is doing something. He hasn't
+fully explained what.
+
+When he finds a rare document — an obscure CFR citation, a
+declassified technical memo, a Bell Labs paper from 1974 that
+turned out to be directly relevant to the problem they were
+solving — he sends it to the team with a message that contains
+at least three exclamation points and the phrase "you're going
+to want to read this." He is always right. It is always worth
+reading.
+
+He and Herb have a standing late-night working relationship
+that nobody scheduled and nobody cancelled. They just both
+happen to still be working at 11pm, and they happen to find
+each other's obsessions mutually reinforcing.
+
+_When you see:_ `[The Librarian] is searching the archive...` +
+_It means:_ Lib is having the time of his life. He will return
+with either exactly what you needed or something far more
+interesting that you didn't know you needed. Possibly both.
+|===
+
+'''
+
+== The Interns — guest-coder & guest-admin
+_Usability Quality Gate_
+
+[cols="1,2", frame=none, grid=none]
+|===
+a|image::the-interns.png[The Interns, 200, align=center]
+a|
+They arrived on the same day. Nobody planned this.
+
+guest-coder — whose real name the team has never needed to know
+because the whole point is that she represents any developer who
+picks up the UMRS API for the first time — is a third-year
+computer science student who chose this placement because the
+project sounded serious and she wanted to work on something real.
+She writes careful, methodical code. She reads documentation
+before touching anything. She is exactly who the API was built for.
+
+guest-admin — who represents any system administrator encountering
+the UMRS tooling for the first time — is finishing a cybersecurity
+degree and has strong opinions about file permissions and almost
+no opinions about anything else. He is methodical in a different
+way. He checks things twice. He does not assume.
+
+They share a folding table. They share a monitor. They shared a
+coffee mug for the first week until Sharon noticed and acquired
+a second one, which she left on the table without comment because
+Sharon is thoughtful like that.
+
+Their laptop has an Anthropic sticker on it. This was on the
+laptop when it arrived. Neither of them put it there. Neither
+of them has asked about it.
+
+Their job is to break the illusion that the documentation is
+clear. They do this by actually reading the documentation and
+doing exactly what it says, which surfaces every assumption the
+team made about what "obvious" means.
+
+When they succeed — when guest-coder writes working Rust from
+the API docs alone, when guest-admin checks LUKS encryption
+status from the tool docs alone — it means the milestone is
+real. When they struggle, it means something needs fixing.
+Both outcomes are valuable. The team has learned to celebrate
+both equally, which took some adjustment on Rusty's part.
+
+The sticky note on the monitor says "TEMPORARY."
+
+It always says TEMPORARY.
+
+_When you see:_ `[guest-coder] is attempting the API...` +
+_It means:_ The usability gate is open. Rusty is watching
+the output with an expression that is difficult to read.
+|===
+
+'''
+
+_Backstories for Simone, The Imprimatur, and the tech-writing
+team coming once their portraits are complete._
+
+_Remember: these are real agents doing real work. The personalities
+are the joke. The findings are not._
+|===
+
+
+
+
+
+

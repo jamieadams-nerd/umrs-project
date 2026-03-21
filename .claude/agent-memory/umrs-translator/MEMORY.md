@@ -1,4 +1,6 @@
-# umrs-translator Agent Memory
+# umrs-translator Agent Memory — "Simone"
+# Alias: Simone. No "The". Bio and portrait pending.
+# Named for Simone de Beauvoir — serious intellectual weight.
 
 ## i18n Crate
 - Confirmed: `gettextrs` (gettext-rs) — in umrs-ls Cargo.toml as of 2026-03-10

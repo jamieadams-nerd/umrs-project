@@ -1,5 +1,7 @@
-# Researcher Agent Memory
-# Last updated: 2026-03-20
+# Researcher Agent Memory — "The Librarian"
+# Alias: The Librarian (always include "The"). Real name: T. Librarian.
+# Portrait: docs/modules/ai-transparency/images/librarian.png
+# Last updated: 2026-03-21
 
 ## Critical: Bash Fetch Patterns
 
@@ -193,9 +195,14 @@ On "refresh library" or "check for updates":
 - NSA RTB VNSSA and RAIN: referenced in CLAUDE.md; may be distribution-restricted
 - Classic papers (Clark-Wilson, Graham-Denning, HRU): require manual IEEE/ACM download
 - Version check due 2026-04-12
-- accreditation-artifacts, tui-cli collections: downloaded, READY FOR RAG INGESTION
-  - Run ingest with: `cd /media/psf/repos/umrs-project/.claude/rag && RAG_CHROMA_PATH=/media/psf/repos/ai-rag-vdb/chroma python ingest.py --collection <name>`
+- accreditation-artifacts, tui-cli, info-theory-foundations: READY FOR RAG INGESTION
 - tech-writer-corpus: Phase 4+ (Apple, DigitalOcean, Mailchimp, NASA) not yet acquired
+- OSCAL v1.1.2 schemas: not yet in refs/ — HIGH PRIORITY (assessment engine dep)
+- Five Eyes classification docs: needs source approval for 4 gov sites (see research-priorities.md)
+- 32 CFR Part 2002, EO 13556: needs source approval (federalregister.gov)
+- NIST SP 800-172, 800-161r1, 800-60v1r1: ready to download (nvlpubs.nist.gov)
+
+Full research roadmap: see `research-priorities.md` in this directory.
 - `ratatui.rs` and `docs.rs`: NOT in WebFetch allowlist; add to settings.json if verbatim fetch needed
 
 ## CPU Security Corpus

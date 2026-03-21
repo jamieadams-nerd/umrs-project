@@ -1,7 +1,7 @@
 # Plan: OS Detection Tool & Kernel Security Tab Enhancement
 
 **Date:** 2026-03-15
-**Status:** Phases 0-4 COMPLETE (2026-03-20). Phase 5 (tech-writer ops guide) and Phase 6 (auditor review) not started.
+**Status:** Phases 0-4 COMPLETE. Phase 5 on hold (may roll into larger doc plan). Phase 6 COMPLETE (2026-03-21, release-ready).
 **ROADMAP Goals:** G1 (Platform Awareness), G5 (Security Tools), G8 (High-Assurance Patterns)
 **Owner:** All-team effort
 **Justification:** NIST SP 800-53A (assessment clarity), CLIG guidelines (operator UX),
