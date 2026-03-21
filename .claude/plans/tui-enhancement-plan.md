@@ -979,6 +979,71 @@ log::debug!("Pattern: SecurityIndicators read completed in {} µs", _t.elapsed()
 
 ---
 
+## Future — Additional Base Traits (To Be Designed)
+
+**Status:** placeholder — to be hashed out when first non-AuditCardApp tool is needed
+
+### Problem
+
+`AuditCardApp` is a read-only assessment trait. Not all UMRS tools are read-only viewers.
+Future tools will need different interaction models that don't fit the AuditCardApp contract.
+
+### Candidate Base Traits
+
+These are **not designed yet** — just placeholders for the interaction models we anticipate:
+
+| Trait name (tentative) | Interaction model | Example tool |
+|---|---|---|
+| `AuditCardApp` | Read-only: view, scroll, inspect | umrs-uname, umrs-ls, umrs-stat |
+| `ConfigApp` (TBD) | View + edit: modify settings, save/apply, dirty-state | Configuration management tools |
+| `StateApp` (TBD) | Baseline management: save snapshot, compare, diff view | umrs-state |
+| `MonitorApp` (TBD) | Live updating: streaming data, event feed, auto-refresh | Event viewer, log watcher |
+
+### What They Share (the `umrs-ui` toolkit layer)
+
+All base traits share the common rendering infrastructure — this is the `umrs-ui` library:
+
+- `Theme` (+ `Theme::light()` for light terminal support)
+- `KeyMap` and `Action` enum
+- Dialog system (`DialogState`, `render_dialog`)
+- `DataRow` enum and `data_panel` rendering
+- Header panel (`HeaderContext`, `SecurityIndicators`)
+- Status bar
+- Tab bar
+
+### What Differs Per Trait
+
+Each base trait defines its own interaction contract:
+
+- **`ConfigApp`** — editable field types, save/cancel actions, dirty-state tracking,
+  confirmation dialogs that trigger actual changes, audit logging for modifications
+  (NIST SP 800-53 AU-2: changes to security configuration are auditable events)
+- **`StateApp`** — baseline storage format, three-way diff rendering (live vs config vs
+  saved baseline), snapshot save/load, CQRS read side (umrs-state writes, tools query)
+- **`MonitorApp`** — auto-refresh loop, event stream consumption, pause/resume,
+  ack workflow for security events
+
+### Design Rules (when we get here)
+
+- Design each trait when the first tool that needs it is being built — not speculatively
+- Start by copying `AuditCardApp` and removing what doesn't apply, adding what does
+- The trait must remain object-safe (`&dyn Trait`) for the render path
+- Security-affecting actions (ConfigApp save, StateApp baseline set) require
+  `DialogMode::SecurityWarning` confirmation with audit logging
+- All traits must support `--json` output mode for their data
+- All traits must honor NO_COLOR and support light/dark theme selection
+
+### Open Questions
+
+- Should `ConfigApp` extend `AuditCardApp` (view + edit) or be independent?
+- Should `StateApp` be the CQRS command side only, or does it also query?
+- How does `MonitorApp` interact with the event acknowledgement architecture?
+- Do we need a `DashboardApp` that composes multiple views (split-screen)?
+
+These will be resolved when we start building the first tool that needs them.
+
+---
+
 ## Security-Auditor Review Points
 
 The security-auditor agent should evaluate the following when reviewing implementations

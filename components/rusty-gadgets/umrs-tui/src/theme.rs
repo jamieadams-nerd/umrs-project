@@ -91,7 +91,7 @@ pub struct Theme {
     /// Wizard logo lines (green).
     pub wizard: Style,
 
-    /// Status bar text (bold black on colored background).
+    /// Status bar text (bold white on colored background).
     pub status_text: Style,
 
     /// Indicator badge style for `IndicatorValue::Enabled` (green, bold).
@@ -199,7 +199,7 @@ impl Default for Theme {
             header_field: Style::default().fg(Color::Cyan),
             wizard: Style::default().fg(Color::Green),
             status_text: Style::default()
-                .fg(Color::Black)
+                .fg(Color::White)
                 .add_modifier(Modifier::BOLD),
             indicator_active: Style::default()
                 .fg(Color::Green)

@@ -377,6 +377,8 @@ fn data_row_indicator_row_stores_all_fields() {
             value,
             description,
             recommendation,
+            contradiction,
+            configured_line,
             style_hint,
         } => {
             assert_eq!(key, "  kexec_load_disabled");
@@ -386,6 +388,9 @@ fn data_row_indicator_row_stores_all_fields() {
                 "Prevents loading a new kernel image at runtime."
             );
             assert_eq!(recommendation, None);
+            // New fields default to None when using the basic constructor.
+            assert_eq!(contradiction, None);
+            assert_eq!(configured_line, None);
             assert_eq!(style_hint, StyleHint::TrustRed);
         }
         other => panic!("expected DataRow::IndicatorRow, got {other:?}"),

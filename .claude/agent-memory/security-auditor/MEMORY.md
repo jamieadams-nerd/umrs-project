@@ -98,7 +98,9 @@ Reviews are now stored by category, not in a flat pile:
 - `tui-plan-security-review.md` — TUI audit card review
 - `rmf-plan-review-2026-03-15.md` — RMF portfolio review
 - `security-engineer-phase2b-review.md` — posture Phase 2b
-- `docs/sage/reviews/2026-03-19-blog-cui-sign-lock.md` — blog accuracy audit (first review in new location)
+- `docs/sage/reviews/2026-03-19-blog-cui-sign-lock.md` — blog accuracy audit
+- `security-auditor-tui-review-2026-03-20.md` — TUI v1: 14A/17C/3E
+- `security-auditor-tui-review-2026-03-20-v2.md` — TUI v2: 26A/3C/0E; 3 open (C-15v2 MEDIUM, C-T3-STATUS LOW, C-7v2 LOW)
 
 ## TUI Audit Card Patterns
 - IndicatorValue for kernel flags → cite SI-7 + CM-6 (NOT SI-3)

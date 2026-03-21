@@ -20,6 +20,8 @@
 //! - **NSA RTB**: Security state is represented as typed enum variants
 //!   (`StatusLevel`, `StyleHint`), never as raw strings.
 
+use umrs_platform::posture::ContradictionKind;
+
 use crate::keymap::Action;
 
 // ---------------------------------------------------------------------------
@@ -406,6 +408,9 @@ pub enum DataRow {
     ///   <key padded to max key width> : <value>
     ///                                   <description line 1 (dim, italic)>
     ///                                   <description line 2 if wrapped>
+    ///                                   ⚠ <contradiction message>
+    ///                                   Configured: <raw> (from <source_file>)
+    ///                                   [ Recommended: <value> ]
     ///
     /// ```
     ///
@@ -417,6 +422,14 @@ pub enum DataRow {
     /// The implicit trailing blank line provides visual separation between
     /// indicators without requiring the caller to insert `Separator` rows.
     ///
+    /// ## Contradiction display order
+    ///
+    /// When both a contradiction and a recommendation are present, the
+    /// contradiction appears first — it describes an active disagreement
+    /// between the running kernel and the persisted configuration, which is
+    /// more urgent than a recommendation to harden. The configured-value line
+    /// follows the contradiction so the operator can see what the config says.
+    ///
     /// ## Trust Boundary
     ///
     /// Key, value, and description strings are rendered verbatim. Callers
@@ -427,6 +440,8 @@ pub enum DataRow {
     /// all present on the same row group so the assessor has full context.
     /// NIST SP 800-53 CM-6 — description text explains the security purpose
     /// of each configuration setting without requiring an external guide.
+    /// NIST SP 800-53 CA-7 — live/configured contradictions are surfaced
+    /// continuously so the assessor cannot miss a configuration drift event.
     IndicatorRow {
         /// Indicator name (may include leading spaces for group indentation).
         key: String,
@@ -438,15 +453,37 @@ pub enum DataRow {
         description: &'static str,
         /// Recommended setting shown when the indicator is not hardened.
         ///
-        /// When `Some`, rendered below the description as a dim italic
-        /// `[ Recommended: <value> ]` line so operators know the target
-        /// setting without needing a reference guide. `None` when the
-        /// indicator already meets the hardened baseline — no recommendation
-        /// is shown for green indicators.
+        /// When `Some`, rendered below the configured line (if any) as a dim
+        /// italic `[ Recommended: <value> ]` line. `None` when the indicator
+        /// already meets the hardened baseline.
         ///
         /// NIST SP 800-53 CM-6 — remediation guidance accompanies each
         /// failing configuration setting.
         recommendation: Option<&'static str>,
+        /// Live/configured contradiction detected for this indicator.
+        ///
+        /// When `Some`, a `⚠` marker line is rendered below the description
+        /// and before the configured-value line. The style applied depends on
+        /// the kind: `BootDrift` uses `TrustRed` (security failure — the
+        /// operator expected hardening that is absent at runtime);
+        /// `EphemeralHotfix` uses `TrustYellow` (warning — hardening is
+        /// present but will be lost on reboot); `SourceUnavailable` uses `Dim`
+        /// (verification is impossible but not an immediate security failure).
+        ///
+        /// The `⚠` symbol ensures the marker is visible without relying on
+        /// color alone (WCAG 1.4.1 / NO_COLOR compliance).
+        ///
+        /// NIST SP 800-53 CA-7 — contradiction kind is a typed finding that
+        /// operators can assess without an external reference.
+        contradiction: Option<ContradictionKind>,
+        /// Pre-formatted configured-value line shown below the contradiction.
+        ///
+        /// Format: `"Configured: <raw> (from <source_file>)"`. `None` when no
+        /// persisted configuration was found for this indicator.
+        ///
+        /// NIST SP 800-53 CM-6 — shows what the configuration file says so
+        /// the operator can compare it against the live kernel value above.
+        configured_line: Option<String>,
         /// Visual hint applied to the value string.
         style_hint: StyleHint,
     },
@@ -624,6 +661,8 @@ impl DataRow {
             value: value.into(),
             description,
             recommendation: None,
+            contradiction: None,
+            configured_line: None,
             style_hint: hint,
         }
     }
@@ -631,9 +670,8 @@ impl DataRow {
     /// Construct an `IndicatorRow` with an optional recommended-value annotation.
     ///
     /// When `recommendation` is `Some`, a dim italic `[ Recommended: ... ]`
-    /// line is rendered below the description so operators can identify the
-    /// target hardened setting at a glance. Pass `None` for green (already
-    /// hardened) indicators — no recommendation line is shown.
+    /// line is rendered below any configured-value line. Pass `None` for green
+    /// (already hardened) indicators — no recommendation line is shown.
     ///
     /// NIST SP 800-53 CM-6 — remediation guidance accompanies each failing
     /// configuration setting.
@@ -651,6 +689,47 @@ impl DataRow {
             value: value.into(),
             description,
             recommendation,
+            contradiction: None,
+            configured_line: None,
+            style_hint: hint,
+        }
+    }
+
+    /// Construct an `IndicatorRow` with contradiction and configured-value display.
+    ///
+    /// Extends `indicator_row_recommended` with two additional optional fields:
+    ///
+    /// - `contradiction` — when `Some`, a `⚠` marker line is rendered below
+    ///   the description. `BootDrift` uses `TrustRed`; `EphemeralHotfix` uses
+    ///   `TrustYellow`; `SourceUnavailable` uses `Dim`. The `⚠` symbol ensures
+    ///   visibility without relying on color (WCAG 1.4.1 / NO_COLOR).
+    /// - `configured_line` — when `Some`, a dim line showing the configured
+    ///   value and its source file is rendered below the contradiction marker.
+    ///
+    /// Contradiction is rendered before the recommendation because it describes
+    /// an active kernel/config disagreement — more urgent than a hardening gap.
+    ///
+    /// NIST SP 800-53 CA-7 — contradiction findings surface live/configured
+    /// drift continuously so assessors cannot miss configuration management gaps.
+    /// NIST SP 800-53 CM-6 — configured-value source attribution supports audit.
+    #[must_use = "DataRow must be pushed into the row list; discarding it omits \
+                  a labelled indicator from the audit card"]
+    pub fn indicator_row_full(
+        key: impl Into<String>,
+        value: impl Into<String>,
+        description: &'static str,
+        recommendation: Option<&'static str>,
+        contradiction: Option<ContradictionKind>,
+        configured_line: Option<String>,
+        hint: StyleHint,
+    ) -> Self {
+        Self::IndicatorRow {
+            key: key.into(),
+            value: value.into(),
+            description,
+            recommendation,
+            contradiction,
+            configured_line,
             style_hint: hint,
         }
     }
@@ -703,6 +782,38 @@ impl DataRow {
             col3: col3.into(),
         }
     }
+}
+
+// ---------------------------------------------------------------------------
+// ColumnLayout
+// ---------------------------------------------------------------------------
+
+/// Layout mode for a data panel tab.
+///
+/// Controls whether the tab renders its data in a single full-width column
+/// (the default) or in two independent side-by-side columns. Two-column mode
+/// is intended for tabs that have logically distinct data groups of roughly
+/// equal depth — it makes better use of terminal width and lets operators
+/// compare related information without scrolling.
+///
+/// When `TwoColumn` is returned by [`AuditCardApp::column_layout`], the
+/// data panel calls [`AuditCardApp::data_rows_left`] and
+/// [`AuditCardApp::data_rows_right`] instead of `data_rows`. The two
+/// column slices scroll together using the shared [`AuditCardState::scroll_offset`].
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**: Structured presentation ensures every labelled
+///   field remains visible and legible regardless of layout mode.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum ColumnLayout {
+    /// Single full-width column — default behavior, backward-compatible.
+    #[default]
+    Full,
+
+    /// Two independent vertical columns side-by-side, each 50% of the panel
+    /// width. Left and right rows are supplied by separate trait methods.
+    TwoColumn,
 }
 
 // ---------------------------------------------------------------------------
@@ -854,6 +965,52 @@ pub trait AuditCardApp {
     /// ensuring the assessor cannot miss the top-level finding while reviewing
     /// detailed evidence.
     fn pinned_rows(&self, _tab_index: usize) -> Vec<DataRow> {
+        Vec::new()
+    }
+
+    /// Column layout mode for the given tab index.
+    ///
+    /// When [`ColumnLayout::TwoColumn`] is returned, the data panel renders
+    /// the tab in two independent side-by-side columns. The left column is
+    /// populated by [`Self::data_rows_left`] and the right column by
+    /// [`Self::data_rows_right`]. Both columns scroll together via the shared
+    /// scroll offset in [`AuditCardState`].
+    ///
+    /// The default returns [`ColumnLayout::Full`] — the single-column layout
+    /// used by all existing implementations. Override only for tabs that have
+    /// two logically independent data groups of roughly equal depth.
+    ///
+    /// `data_rows()` is ignored when `column_layout()` returns `TwoColumn`.
+    ///
+    /// NIST SP 800-53 AU-3 — layout mode does not affect data completeness;
+    /// every labelled field is always rendered regardless of column mode.
+    fn column_layout(&self, _tab_index: usize) -> ColumnLayout {
+        ColumnLayout::Full
+    }
+
+    /// Data rows for the left column when the tab uses two-column layout.
+    ///
+    /// Called by the data panel when [`Self::column_layout`] returns
+    /// [`ColumnLayout::TwoColumn`] for this tab. Ignored in single-column mode.
+    ///
+    /// The default returns an empty `Vec` — single-column tabs are unaffected.
+    ///
+    /// NIST SP 800-53 AU-3 — left-column rows are labelled key-value fields;
+    /// no data is rendered as ambiguous free-form text.
+    fn data_rows_left(&self, _tab_index: usize) -> Vec<DataRow> {
+        Vec::new()
+    }
+
+    /// Data rows for the right column when the tab uses two-column layout.
+    ///
+    /// Called by the data panel when [`Self::column_layout`] returns
+    /// [`ColumnLayout::TwoColumn`] for this tab. Ignored in single-column mode.
+    ///
+    /// The default returns an empty `Vec` — single-column tabs are unaffected.
+    ///
+    /// NIST SP 800-53 AU-3 — right-column rows are labelled key-value fields;
+    /// no data is rendered as ambiguous free-form text.
+    fn data_rows_right(&self, _tab_index: usize) -> Vec<DataRow> {
         Vec::new()
     }
 }

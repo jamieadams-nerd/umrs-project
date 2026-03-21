@@ -61,9 +61,9 @@ pub mod theme;
 
 // Convenience re-exports for callers
 pub use app::{
-    AuditCardApp, AuditCardState, DataRow, HeaderContext, HeaderField,
-    IndicatorValue, SecurityIndicators, StatusLevel, StatusMessage, StyleHint,
-    TabDef,
+    AuditCardApp, AuditCardState, ColumnLayout, DataRow, HeaderContext,
+    HeaderField, IndicatorValue, SecurityIndicators, StatusLevel,
+    StatusMessage, StyleHint, TabDef,
 };
 pub use dialog::{DialogFocus, DialogMode, DialogState, render_dialog};
 pub use indicators::{

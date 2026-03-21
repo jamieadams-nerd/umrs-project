@@ -205,3 +205,19 @@ Before library log string wrapping is implemented, confirm with Jamie: should
 `warn!`/`error!` strings in library crates be wrapped at runtime (adds `gettextrs`
 lookup per call) or only at the binary display layer?
 See `resources/i18n/reports/2026-03-11-umrs-platform-unwrapped.md`.
+
+## umrs-tui Domain (added 2026-03-20)
+
+- Domain: `umrs-tui` (binary) — confirmed at `main.rs:1906`: `i18n::init("umrs-tui")`
+- Audit report: `.claude/reports/umrs-tui-i18n-audit-2026-03-20.md`
+- Status: strings identified; no wrapping done yet; xtr not run yet
+- ~55 strings already wrapped; ~45 unwrapped in runtime fns; ~50+ in const fns
+- Key constraint: `indicator_description()`, `indicator_recommended()`,
+  `help_text_for_tab()` are `const fn` — must be converted to regular `fn`
+  before wrapping. Developer action required before extraction can proceed.
+- KEY_LEGEND in `status_bar.rs` is `const` — low priority, defer.
+- Do NOT translate: distro names (RHEL, Fedora, etc.), os-release field names,
+  POSIX API token strings (PROC_MAGIC etc.), log messages.
+- xtr invocation for umrs-tui when ready:
+  `xtr --package-name umrs-tui --output resources/i18n/umrs-tui/umrs-tui.pot`
+  + all .rs files in umrs-tui/src/ (see report for full file list)

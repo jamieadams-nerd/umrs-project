@@ -33,6 +33,13 @@
 //! word-wrapped to the available panel width with 3 characters of right
 //! padding so text never extends beyond the visible area.
 //!
+//! When a tab returns [`ColumnLayout::TwoColumn`] from
+//! [`AuditCardApp::column_layout`], the data area is split horizontally 50/50.
+//! The left half renders [`AuditCardApp::data_rows_left`] and the right half
+//! renders [`AuditCardApp::data_rows_right`]. Both columns share the same
+//! scroll offset from [`AuditCardState`] and each has its own scrollbar when
+//! content overflows. Pinned rows (if any) remain full-width above both columns.
+//!
 //! ## Compliance
 //!
 //! - **NIST SP 800-53 AU-3**: Structured key-value rows ensure every field
@@ -47,7 +54,9 @@ use ratatui::widgets::{
     ScrollbarState,
 };
 
-use crate::app::{AuditCardApp, DataRow, StyleHint};
+use umrs_platform::posture::ContradictionKind;
+
+use crate::app::{AuditCardApp, ColumnLayout, DataRow, StyleHint};
 use crate::theme::{Theme, style_hint_color};
 
 // ---------------------------------------------------------------------------
@@ -90,6 +99,11 @@ const WRAP_RIGHT_PADDING: usize = 3;
 /// When `pinned_rows` is empty, the full area is used for the scrollable
 /// content (the original single-pane layout).
 ///
+/// When [`ColumnLayout::TwoColumn`] is active for the tab, the scrollable
+/// area is split 50/50 horizontally. Each column has its own border and
+/// scrollbar. Both columns share `scroll_offset`. Pinned rows (if any) remain
+/// full-width above both columns.
+///
 /// `scroll_offset` applies only to the scrollable section. The pinned section
 /// always shows from its beginning.
 ///
@@ -103,19 +117,14 @@ pub fn render_data_panel(
     theme: &Theme,
 ) {
     let pinned = app.pinned_rows(active_tab);
-    let rows = app.data_rows(active_tab);
+    let layout = app.column_layout(active_tab);
 
-    if pinned.is_empty() {
-        // Original single-pane layout — no split.
-        render_scrollable_pane(frame, area, &rows, scroll_offset, theme, false);
+    // Compute the scrollable area, splitting off a pinned section when present.
+    let scroll_area = if pinned.is_empty() {
+        area
     } else {
-        // Split layout: pinned summary above, scrollable content below.
-        //
-        // Compute the pinned section height: expand pinned rows to lines
-        // (applying word-wrap) and count them, then add 2 for borders.
-        // Clamp to at most half the available height so the scrollable
-        // section always has room.
-        let inner_width = (area.width as usize).saturating_sub(4); // borders + scrollbar gutter
+        // Compute pinned section height from content, then carve it off the top.
+        let inner_width = (area.width as usize).saturating_sub(4);
         let pinned_line_count: usize = pinned
             .iter()
             .map(|r| expanded_row_line_count(r, inner_width))
@@ -137,23 +146,91 @@ pub fn render_data_panel(
             ])
             .split(area);
 
-        let [pinned_area, scroll_area] = *chunks else {
+        let [pinned_area, remaining] = *chunks else {
             return;
         };
 
-        // Pinned pane — no scrollbar, title border.
         render_pinned_pane(frame, pinned_area, &pinned, inner_width, theme);
+        remaining
+    };
 
-        // Scrollable pane — normal scroll behavior, no title override.
-        render_scrollable_pane(
-            frame,
-            scroll_area,
-            &rows,
-            scroll_offset,
-            theme,
-            true,
-        );
+    // Dispatch on layout mode for the scrollable content area.
+    match layout {
+        ColumnLayout::Full => {
+            let rows = app.data_rows(active_tab);
+            let has_pinned = !pinned.is_empty();
+            render_scrollable_pane(
+                frame,
+                scroll_area,
+                &rows,
+                scroll_offset,
+                theme,
+                has_pinned,
+            );
+        }
+        ColumnLayout::TwoColumn => {
+            let left_rows = app.data_rows_left(active_tab);
+            let right_rows = app.data_rows_right(active_tab);
+            render_two_column_pane(
+                frame,
+                scroll_area,
+                &left_rows,
+                &right_rows,
+                scroll_offset,
+                theme,
+            );
+        }
     }
+}
+
+/// Render two independent side-by-side scrollable column panes.
+///
+/// The `area` is split 50/50 horizontally. Each half is rendered as a
+/// separate bordered pane with its own scrollbar (when content overflows).
+/// Both columns scroll by the same `scroll_offset` — independent scrolling
+/// is deferred to a future enhancement.
+///
+/// Group titles, key-value rows, and separators are supported in both columns.
+/// `IndicatorRow` and `TableRow` types are full-width by design and should not
+/// be placed in two-column tabs; they will render correctly but may appear
+/// cramped at half width.
+///
+/// NIST SP 800-53 AU-3 — column layout does not affect data completeness;
+/// every labelled field is rendered in both columns at all scroll positions.
+fn render_two_column_pane(
+    frame: &mut Frame,
+    area: Rect,
+    left_rows: &[DataRow],
+    right_rows: &[DataRow],
+    scroll_offset: usize,
+    theme: &Theme,
+) {
+    // Split the area 50/50 horizontally.
+    let cols = Layout::default()
+        .direction(Direction::Horizontal)
+        .constraints([Constraint::Percentage(50), Constraint::Percentage(50)])
+        .split(area);
+
+    let [left_area, right_area] = *cols else {
+        return;
+    };
+
+    render_scrollable_pane(
+        frame,
+        left_area,
+        left_rows,
+        scroll_offset,
+        theme,
+        false,
+    );
+    render_scrollable_pane(
+        frame,
+        right_area,
+        right_rows,
+        scroll_offset,
+        theme,
+        false,
+    );
 }
 
 /// Render a non-scrollable pinned summary pane.
@@ -272,9 +349,10 @@ fn render_scrollable_pane(
     let mut visible: Vec<Line<'_>> = Vec::new();
     if let Some(header_row) = sticky_header {
         // Render the header with bold + reverse video so it stands out as the
-        // column label row. All three columns use the header style.
+        // column label row. Uses header_field (bright cyan) rather than
+        // data_key (dim cyan) so the reversed text is readable.
         let header_style = theme
-            .data_key
+            .header_field
             .add_modifier(Modifier::BOLD)
             .add_modifier(Modifier::REVERSED);
         visible.push(build_table_header_line_styled(
@@ -358,7 +436,7 @@ fn build_table_header_line_styled(
     let col2_str = format!(" {}", clip_pad(col2, col2_inner));
     let col3_str = format!(" {col3} ");
     Line::from(vec![
-        Span::raw("  "),
+        Span::raw(" "),
         Span::styled(col1_str, header_style),
         Span::raw(TABLE_COL_GAP),
         Span::styled(col2_str, header_style),
@@ -388,20 +466,27 @@ fn expanded_row_line_count(row: &DataRow, inner_width: usize) -> usize {
         DataRow::IndicatorRow {
             description,
             recommendation,
+            contradiction,
+            configured_line,
             ..
         } => {
             // 1 line for the key+value pair, N lines for wrapped description
-            // (only when description is non-empty), 1 line for recommendation
-            // (when present), and 1 trailing blank line.
+            // (only when description is non-empty), 1 line for contradiction
+            // marker (when present), 1 line for configured value (when present),
+            // 1 line for recommendation (when present), and 1 trailing blank line.
             // This mirrors expand_row_lines exactly so pinned height is correct.
             let desc_lines = if description.is_empty() {
                 0
             } else {
                 word_wrap_count(description, inner_width)
             };
+            let contradiction_lines = usize::from(contradiction.is_some());
+            let configured_lines = usize::from(configured_line.is_some());
             let rec_lines = usize::from(recommendation.is_some());
             1usize
                 .saturating_add(desc_lines)
+                .saturating_add(contradiction_lines)
+                .saturating_add(configured_lines)
                 .saturating_add(rec_lines)
                 .saturating_add(1)
         }
@@ -425,10 +510,8 @@ fn expanded_row_line_count(row: &DataRow, inner_width: usize) -> usize {
 /// Expand a single [`DataRow`] into one or more styled [`Line`]s.
 ///
 /// Description rows (key is empty) are word-wrapped to `inner_width` minus
-/// `WRAP_RIGHT_PADDING`. `IndicatorRow` entries produce a key+value line
-/// followed by wrapped description lines (dim, italic) indented to align
-/// under the value text, followed by a trailing blank line for visual
-/// separation. All other rows produce exactly one line.
+/// `WRAP_RIGHT_PADDING`. `IndicatorRow` entries are delegated to
+/// [`expand_indicator_row`]. All other rows produce exactly one line.
 ///
 /// Description rows use `Modifier::ITALIC` to visually distinguish them from
 /// data rows. This helps the operator quickly identify purpose text vs. values.
@@ -467,75 +550,153 @@ fn expand_row_lines<'a>(
             value,
             description,
             recommendation,
+            contradiction,
+            configured_line,
             style_hint,
-        } => {
-            // Line 1: " " + key padded to indicator_key_col + ": " + value.
-            //
-            // The key column width is computed dynamically from all IndicatorRow
-            // entries by TableWidths::from_rows, so no indicator name is
-            // ever truncated regardless of catalog size.
-            let key_col = widths.indicator_key_col;
-            let key_padded = pad_key(key, key_col);
-            let value_color = style_hint_color(*style_hint);
-            let kv_line = Line::from(vec![
-                Span::raw(" "),
-                Span::styled(key_padded, theme.data_key),
-                Span::styled(value.clone(), theme.data_value.fg(value_color)),
-            ]);
-
-            let mut lines = vec![kv_line];
-
-            // Lines 2+: description wrapped and indented to align under the
-            // value text. Indent = 1 (leading space) + key_col (key) + 2 (": ").
-            // The description uses dim italic to visually subordinate it to
-            // the key-value pair above.
-            let indent_len = 1usize.saturating_add(key_col).saturating_add(2);
-            let desc_indent = " ".repeat(indent_len);
-            if !description.is_empty() {
-                // Compute available width for description text:
-                // inner_width minus indent minus right padding.
-                let available = inner_width
-                    .saturating_sub(indent_len)
-                    .saturating_sub(WRAP_RIGHT_PADDING);
-                let wrap_width = available.max(20);
-                let wrapped = word_wrap(description, wrap_width);
-                let desc_style = theme
-                    .data_value
-                    .fg(style_hint_color(StyleHint::Dim))
-                    .add_modifier(Modifier::ITALIC);
-                for chunk in wrapped {
-                    lines.push(Line::from(vec![
-                        Span::raw(desc_indent.clone()),
-                        Span::styled(chunk, desc_style),
-                    ]));
-                }
-            }
-
-            // Recommendation line: dim + italic "[ Recommended: <value> ]"
-            // shown only for unhardened (red) indicators, aligned under the
-            // description at the same indent as the value column.
-            // Operators can identify the target setting without a reference guide.
-            // NIST SP 800-53 CM-6 — remediation guidance is co-located with the
-            // failing setting.
-            if let Some(rec) = recommendation {
-                let rec_style = theme
-                    .data_value
-                    .fg(style_hint_color(StyleHint::Dim))
-                    .add_modifier(Modifier::ITALIC);
-                lines.push(Line::from(vec![
-                    Span::raw(desc_indent),
-                    Span::styled(format!("[ Recommended: {rec} ]"), rec_style),
-                ]));
-            }
-
-            // Trailing blank line — provides visual separation between
-            // indicators without requiring the caller to insert Separator rows.
-            lines.push(Line::from(""));
-
-            lines
-        }
+        } => expand_indicator_row(
+            key,
+            value,
+            description,
+            *recommendation,
+            *contradiction,
+            configured_line.as_ref(),
+            *style_hint,
+            inner_width,
+            theme,
+            widths,
+        ),
         other => vec![build_row_line(other, theme, widths)],
     }
+}
+
+/// Expand an `IndicatorRow` into its multi-line rendered form.
+///
+/// Rendering order:
+/// 1. Key + live value (line 1 — always present)
+/// 2. Description wrapped at `inner_width` (dim italic, indented)
+/// 3. Contradiction marker with `⚠` symbol (when present — more urgent than recommendation)
+/// 4. Configured-value line (when present — source attribution for the config file)
+/// 5. `[ Recommended: <value> ]` (when present — remediation guidance)
+/// 6. Trailing blank line (visual separation without explicit Separator rows)
+///
+/// The `⚠` symbol ensures the contradiction marker is visible without relying
+/// on color alone (WCAG 1.4.1 / NO_COLOR compliance).
+///
+/// NIST SP 800-53 CA-7 — contradictions surface configuration drift in-line
+/// so the assessor can see a finding without consulting a separate list.
+/// NIST SP 800-53 CM-6 — remediation guidance and configured-value source
+/// attribution are co-located with the failing indicator.
+#[allow(clippy::too_many_arguments)]
+fn expand_indicator_row<'a>(
+    key: &str,
+    value: &str,
+    description: &'static str,
+    recommendation: Option<&'static str>,
+    contradiction: Option<ContradictionKind>,
+    configured_line: Option<&String>,
+    style_hint: StyleHint,
+    inner_width: usize,
+    theme: &'a Theme,
+    widths: TableWidths,
+) -> Vec<Line<'a>> {
+    // Line 1: " " + key padded to indicator_key_col + ": " + value.
+    let key_col = widths.indicator_key_col;
+    let key_padded = pad_key(key, key_col);
+    let value_color = style_hint_color(style_hint);
+    let kv_line = Line::from(vec![
+        Span::raw(" "),
+        Span::styled(key_padded, theme.data_key),
+        Span::styled(value.to_owned(), theme.data_value.fg(value_color)),
+    ]);
+
+    let mut lines = vec![kv_line];
+
+    // Indent shared by description, contradiction, configured, and recommendation.
+    // Indent = 1 (leading space) + key_col + 2 (": ").
+    let indent_len = 1usize.saturating_add(key_col).saturating_add(2);
+    let desc_indent = " ".repeat(indent_len);
+
+    // Description lines: dim italic, wrapped to available width.
+    if !description.is_empty() {
+        let available = inner_width
+            .saturating_sub(indent_len)
+            .saturating_sub(WRAP_RIGHT_PADDING);
+        let wrap_width = available.max(20);
+        let wrapped = word_wrap(description, wrap_width);
+        let desc_style = theme
+            .data_value
+            .fg(style_hint_color(StyleHint::Dim))
+            .add_modifier(Modifier::ITALIC);
+        for chunk in wrapped {
+            lines.push(Line::from(vec![
+                Span::raw(desc_indent.clone()),
+                Span::styled(chunk, desc_style),
+            ]));
+        }
+    }
+
+    // Contradiction marker: shown before the recommendation because a
+    // live/configured disagreement is more urgent than a hardening gap.
+    //
+    // Style by kind:
+    //   BootDrift         → TrustRed    (config says hardened; kernel is not)
+    //   EphemeralHotfix   → TrustYellow (hardened now; lost after reboot)
+    //   SourceUnavailable → Dim         (cannot verify; not an active failure)
+    if let Some(kind) = contradiction {
+        let (marker_text, marker_hint) = match kind {
+            ContradictionKind::BootDrift => (
+                "\u{26A0} DRIFT: config says hardened, kernel is not",
+                StyleHint::TrustRed,
+            ),
+            ContradictionKind::EphemeralHotfix => (
+                "\u{26A0} NOT PERSISTED: hardened now, lost after reboot",
+                StyleHint::TrustYellow,
+            ),
+            ContradictionKind::SourceUnavailable => (
+                "\u{26A0} UNVERIFIABLE: config exists but kernel node unreadable",
+                StyleHint::Dim,
+            ),
+        };
+        let marker_style = theme
+            .data_value
+            .fg(style_hint_color(marker_hint))
+            .add_modifier(Modifier::ITALIC);
+        lines.push(Line::from(vec![
+            Span::raw(desc_indent.clone()),
+            Span::styled(marker_text, marker_style),
+        ]));
+    }
+
+    // Configured-value line: shows what the persisted config says and which
+    // file it came from. Rendered dim so it is clearly subordinate to the
+    // live value on line 1.
+    if let Some(cfg_line) = configured_line {
+        let cfg_style = theme
+            .data_value
+            .fg(style_hint_color(StyleHint::Dim))
+            .add_modifier(Modifier::ITALIC);
+        lines.push(Line::from(vec![
+            Span::raw(desc_indent.clone()),
+            Span::styled(cfg_line.clone(), cfg_style),
+        ]));
+    }
+
+    // Recommendation line: "[ Recommended: <value> ]" for unhardened indicators.
+    if let Some(rec) = recommendation {
+        let rec_style = theme
+            .data_value
+            .fg(style_hint_color(StyleHint::Dim))
+            .add_modifier(Modifier::ITALIC);
+        lines.push(Line::from(vec![
+            Span::raw(desc_indent),
+            Span::styled(format!("[ Recommended: {rec} ]"), rec_style),
+        ]));
+    }
+
+    // Trailing blank line for visual separation between indicators.
+    lines.push(Line::from(""));
+
+    lines
 }
 
 // ---------------------------------------------------------------------------
@@ -822,7 +983,7 @@ fn build_row_line<'a>(
             // remainder of the line so no fixed width needed.
             let col3_color = style_hint_color(*style_hint);
             Line::from(vec![
-                Span::raw("  "),
+                Span::raw(" "),
                 Span::styled(col1_str, theme.data_key),
                 Span::raw(TABLE_COL_GAP),
                 Span::styled(col2_str, theme.data_value),
@@ -837,11 +998,12 @@ fn build_row_line<'a>(
             col3,
         } => {
             // All three columns rendered with the bold key style to signal
-            // that this is a header, not a data row.
+            // that this is a header, not a data row. One-space left padding
+            // matches GroupTitle so the header aligns with group labels above it.
             let col1_str = clip_pad(col1, widths.col1);
             let col2_str = clip_pad(col2, widths.col2);
             Line::from(vec![
-                Span::raw("  "),
+                Span::raw(" "),
                 Span::styled(col1_str, theme.data_key),
                 Span::raw(TABLE_COL_GAP),
                 Span::styled(col2_str, theme.data_key),

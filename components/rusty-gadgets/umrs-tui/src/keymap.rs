@@ -125,6 +125,7 @@ impl KeyMap {
     /// | `PageDown` | PageDown |
     /// | `PageUp` | PageUp |
     /// | `r` | Refresh |
+    /// | `Enter` | DialogConfirm |
     /// | `?` / `F1` | ShowHelp |
     #[must_use = "KeyMap must be used to process events; constructing and discarding it has no effect"]
     pub fn new() -> Self {
@@ -161,6 +162,14 @@ impl KeyMap {
         map.insert(
             key(KeyCode::Char('r'), KeyModifiers::NONE),
             Action::Refresh,
+        );
+
+        // Dialog confirm — Enter dismisses an open dialog via the [OK] button.
+        // The event loop maps DialogConfirm to dialog dismissal; when no dialog
+        // is open this action reaches AuditCardState::handle_action which ignores it.
+        map.insert(
+            key(KeyCode::Enter, KeyModifiers::NONE),
+            Action::DialogConfirm,
         );
 
         // Contextual help overlay

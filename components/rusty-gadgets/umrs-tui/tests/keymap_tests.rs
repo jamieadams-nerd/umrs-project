@@ -258,6 +258,21 @@ fn default_produces_same_bindings_as_new() {
 }
 
 // ---------------------------------------------------------------------------
+// Default bindings — DialogConfirm
+// ---------------------------------------------------------------------------
+
+#[test]
+fn enter_maps_to_dialog_confirm() {
+    let km = KeyMap::new();
+    let ev = key(KeyCode::Enter, KeyModifiers::NONE);
+    assert_eq!(
+        km.lookup(&ev),
+        Some(Action::DialogConfirm),
+        "Enter must map to DialogConfirm so the [OK] button is keyboard-accessible"
+    );
+}
+
+// ---------------------------------------------------------------------------
 // Default bindings — ShowHelp
 // ---------------------------------------------------------------------------
 

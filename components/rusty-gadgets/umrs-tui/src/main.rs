@@ -39,13 +39,14 @@
 use std::time::Duration;
 
 use crossterm::event::{self, Event};
-use std::collections::BTreeMap;
 use umrs_core::i18n;
 
 use umrs_platform::detect::label_trust::LabelTrust;
 use umrs_platform::detect::{DetectionError, DetectionResult, OsDetector};
 use umrs_platform::evidence::{EvidenceRecord, SourceKind};
-use umrs_platform::posture::{IndicatorId, LiveValue, PostureSnapshot};
+use umrs_platform::posture::{
+    ConfiguredValue, ContradictionKind, IndicatorId, LiveValue, PostureSnapshot,
+};
 use umrs_platform::{Distro, OsFamily, OsRelease, TrustLevel};
 use umrs_tui::app::{
     AuditCardApp, AuditCardState, DataRow, HeaderContext, IndicatorValue,
@@ -520,6 +521,13 @@ fn build_trust_summary_rows(result: &DetectionResult) -> Vec<DataRow> {
             i18n::tr("None detected"),
             StyleHint::TrustGreen,
         ));
+        rows.push(DataRow::key_value(
+            "",
+            i18n::tr(
+                "All evidence sources agreed \u{2014} no conflicting identity assertions detected.",
+            ),
+            StyleHint::Dim,
+        ));
     } else {
         rows.push(DataRow::new(
             i18n::tr("Contradictions"),
@@ -582,6 +590,58 @@ fn build_trust_evidence_rows(result: &DetectionResult) -> Vec<DataRow> {
     rows
 }
 
+/// Append the Contradictions row and its one-line explanation to `rows`.
+///
+/// A contradiction on the Kernel Security tab means the running kernel and the
+/// persisted configuration do not agree on a hardening setting. This can
+/// indicate tampering, a missed sysctl apply (`sysctl -p`), or an ephemeral
+/// runtime change that was never persisted to a drop-in file under
+/// `/etc/sysctl.d/`. The explanation row beneath the count tells the operator
+/// what the contradiction type means so they can act without consulting
+/// external documentation.
+///
+/// Always shown — a zero count is a positive signal.
+///
+/// NIST SP 800-53 CA-7 — contradiction count surfaces configuration drift
+/// in the always-visible summary pane so the assessor cannot miss it.
+/// NIST SP 800-53 CM-6 — live/configured disagreements are a configuration
+/// management finding that must be investigated before CUI processing.
+fn append_kernel_contradiction_rows(rows: &mut Vec<DataRow>, count: usize) {
+    rows.push(DataRow::separator());
+    let (value, hint) = if count == 0 {
+        (i18n::tr("None"), StyleHint::TrustGreen)
+    } else {
+        (
+            format!(
+                "{count} \u{2014} configuration/kernel disagreements detected"
+            ),
+            StyleHint::TrustRed,
+        )
+    };
+    rows.push(DataRow::key_value_highlighted(
+        i18n::tr("Contradictions"),
+        value,
+        hint,
+    ));
+    if count == 0 {
+        rows.push(DataRow::key_value(
+            "",
+            i18n::tr("No disagreements between running kernel and persisted configuration."),
+            StyleHint::Dim,
+        ));
+    } else {
+        rows.push(DataRow::key_value(
+            "",
+            i18n::tr(
+                "The running kernel and persisted configuration disagree on one or more \
+                 settings. Drift means intended hardening is not active; hotfixes mean \
+                 current hardening will be lost on reboot.",
+            ),
+            StyleHint::TrustRed,
+        ));
+    }
+}
+
 /// Build the pinned (fixed) summary rows for the Kernel Security tab.
 ///
 /// Displayed in a fixed pane above the scrollable indicator list, always
@@ -604,37 +664,33 @@ fn build_kernel_security_summary_rows(
     snap: &PostureSnapshot,
     kernel_version: &str,
 ) -> Vec<DataRow> {
-    let mut rows = Vec::new();
-
     // Kernel version — always visible without scrolling.
     // Operators correlate posture findings with the specific kernel under
     // assessment. NIST SP 800-53 CM-8: component inventory.
-    rows.push(DataRow::key_value_highlighted(
-        i18n::tr("Kernel Version"),
-        kernel_version.to_owned(),
-        StyleHint::Highlight,
-    ));
-
-    // ── KERNEL BASELINE INDICATOR ─────────────────────────────────────────
-    // Reserved for future baseline comparison message. When the running kernel
-    // differs from the catalog baseline, a message such as:
-    //   "Tested baseline: 6.12.0 — your kernel is newer, indicators may
-    //    have changed"
-    // will appear here. Currently shows the running version only.
-    // NIST SP 800-53 CM-3: Configuration Change Control.
-    rows.push(DataRow::key_value(
-        "",
-        i18n::tr(
-            "Tested baseline: see kernel security catalog for update guidance.",
+    //
+    // Provenance note — makes clear to the operator that every value below
+    // reflects the live running kernel state, not a saved configuration or
+    // cached snapshot. NIST SP 800-53 CA-7: Continuous Monitoring.
+    //
+    // Future: umrs-state will add baseline comparison here (live vs saved
+    // state). Deferred until the state utility is implemented.
+    let mut rows = vec![
+        DataRow::key_value_highlighted(
+            i18n::tr("Kernel Version"),
+            kernel_version.to_owned(),
+            StyleHint::Highlight,
         ),
-        StyleHint::Dim,
-    ));
-    // ── END KERNEL BASELINE INDICATOR ─────────────────────────────────────
-
-    rows.push(DataRow::separator());
+        DataRow::key_value(
+            "",
+            i18n::tr(
+                "All values below are read live from the running kernel via /proc and /sys.",
+            ),
+            StyleHint::Dim,
+        ),
+        DataRow::separator(),
+    ];
 
     let readable = snap.readable_count();
-    let total = snap.reports.len();
 
     let mut hardened: usize = 0;
     let mut not_hardened: usize = 0;
@@ -652,13 +708,14 @@ fn build_kernel_security_summary_rows(
     }
 
     // Single consolidated indicators line — replaces separate Hardened /
-    // Not Hardened rows to save two summary lines. When all indicators that
-    // could be scored are hardened, show an "all hardened" confirmation.
-    // When any are not hardened, show the count and percentage so the
-    // operator has a quick remediation scope at a glance.
+    // Not Hardened rows to save two summary lines. "Readable" is the count
+    // that could actually be probed; the gap to total is already surfaced by
+    // the No Assessment line below, so "X of Y total" is redundant noise.
+    // All-hardened case gets a checkmark. Mixed case shows the split so
+    // the operator immediately knows remediation scope.
     // NIST SP 800-53 CM-6 — posture summary is co-located with the detail.
     let indicators_value = if not_hardened == 0 {
-        format!("{readable} of {total} total, all hardened")
+        format!("{readable} readable \u{2014} all hardened \u{2713}")
     } else {
         // Compute the percentage of readable indicators that are not hardened.
         // Use saturating arithmetic; readable is always >= not_hardened by
@@ -669,7 +726,8 @@ fn build_kernel_security_summary_rows(
             0
         };
         format!(
-            "{readable} of {total} total, {not_hardened} ({pct}%) not hardened"
+            "{readable} readable \u{2014} {hardened} hardened, \
+             {not_hardened} not hardened ({pct}%)"
         )
     };
     let indicators_hint = if not_hardened > 0 {
@@ -690,6 +748,9 @@ fn build_kernel_security_summary_rows(
             StyleHint::Dim,
         ));
     }
+
+    // Contradictions — see helper for display and explanation logic.
+    append_kernel_contradiction_rows(&mut rows, snap.contradictions().count());
 
     rows.push(DataRow::separator());
 
@@ -1236,11 +1297,39 @@ fn indicator_group_rows(
         } else {
             None
         };
-        rows.push(DataRow::indicator_row_recommended(
+
+        // Contradiction: carry the kind to the render layer so it applies
+        // the correct style and ⚠ symbol. Render before recommendation
+        // because a live/configured disagreement is more urgent.
+        //
+        // NIST SP 800-53 CA-7 — contradiction kind is a typed finding;
+        // surfacing it per-indicator lets the assessor pinpoint exactly
+        // which setting has a drift event without scanning a separate list.
+        let contradiction: Option<ContradictionKind> = report.contradiction;
+
+        // Configured-value line: shown when a persisted configured value
+        // exists. Format: "Configured: <raw> (from <source_file>)".
+        // Only shown when Some — never fabricated when absent.
+        //
+        // NIST SP 800-53 CM-6 — source attribution for the configured value
+        // allows the operator to locate and correct the config file.
+        let configured_line: Option<String> =
+            report.configured_value.as_ref().map(
+                |ConfiguredValue {
+                     raw,
+                     source_file,
+                 }| {
+                    format!("Configured: {raw} (from {source_file})")
+                },
+            );
+
+        rows.push(DataRow::indicator_row_full(
             format!("  {label}"),
             display_value,
             indicator_description(*id),
             recommendation,
+            contradiction,
+            configured_line,
             hint,
         ));
     }
@@ -1433,15 +1522,52 @@ fn indicator_to_display(value: &IndicatorValue) -> (String, StyleHint) {
     }
 }
 
+/// Encode a byte slice as a lowercase hexadecimal string.
+///
+/// Uses `write!` with pre-allocated capacity to avoid the per-byte allocation
+/// that `format!("{b:02x}")` + `.collect::<String>()` would incur.
+fn bytes_to_hex(bytes: &[u8]) -> String {
+    use std::fmt::Write as _;
+    let mut hex = String::with_capacity(bytes.len() * 2);
+    for b in bytes {
+        // write! to a String is infallible; the error arm is unreachable.
+        let _ = write!(hex, "{b:02x}");
+    }
+    hex
+}
+
+/// Pipeline execution order for evidence group display.
+///
+/// Groups are emitted in this fixed order so assessors follow the trust-elevation
+/// narrative: kernel runtime checks first (highest trust), then filesystem
+/// identity, configuration files, package database, and finally symlink targets.
+/// Any `SourceKind` variant absent from the collected evidence is silently skipped.
+///
+/// NIST SP 800-53 AU-3 — evidence ordering supports coherent audit trail review.
+const PIPELINE_ORDER: &[SourceKind] = &[
+    SourceKind::Procfs,
+    SourceKind::SysfsNode,
+    SourceKind::StatfsResult,
+    SourceKind::RegularFile,
+    SourceKind::PackageDb,
+    SourceKind::SymlinkTarget,
+];
+
 /// Append evidence records grouped by source kind to the row list.
 ///
-/// Records are collected into a `BTreeMap` keyed by the source-kind display
-/// label so groups are emitted in a stable, deterministic order. Within each
-/// group, records appear in pipeline-append order (the bundle is append-only).
+/// Records are grouped by `SourceKind` and emitted in pipeline execution order
+/// (kernel runtime → kernel attributes → filesystem identity → config files →
+/// package database → symlink targets) so assessors follow the trust-elevation
+/// narrative without needing to reorder rows mentally.
 ///
 /// The `TableHeader` is emitted once at the top of the entire evidence section,
 /// not repeated for every group. Each group is introduced by a `GroupTitle`
 /// followed by `TableRow` entries. Groups are separated by a blank `Separator`.
+///
+/// When a T4 integrity record carries a SHA-256 digest (`EvidenceRecord::sha256`)
+/// or a package-database reference digest (`EvidenceRecord::pkg_digest`), a
+/// supplementary `KeyValue` row is appended immediately below the evidence row
+/// so an assessor recording a T4 finding has the digest reference inline.
 ///
 /// No raw kernel values or security-label data appear in the display strings
 /// (NIST SP 800-53 SI-12). Evidence type labels are plain English
@@ -1449,19 +1575,21 @@ fn indicator_to_display(value: &IndicatorValue) -> (String, StyleHint) {
 /// of internal type names to interpret the evidence chain.
 ///
 /// NIST SP 800-53 AU-3 — evidence rows are labelled and structured.
+/// NIST SP 800-53 SI-7 — SHA-256 and package digests support integrity verification.
 fn append_grouped_evidence(
     rows: &mut Vec<DataRow>,
     evidence: &[EvidenceRecord],
 ) {
-    // Build a BTreeMap<group_label, Vec<record_ref>> for deterministic ordering.
-    let mut groups: BTreeMap<&'static str, Vec<&EvidenceRecord>> =
-        BTreeMap::new();
-    for rec in evidence {
-        groups
-            .entry(source_kind_label(&rec.source_kind))
-            .or_default()
-            .push(rec);
-    }
+    // Collect records into per-kind buckets. SourceKind does not implement Hash,
+    // so we iterate PIPELINE_ORDER for collection — one O(n) pass per kind,
+    // which is acceptable given the small number of kinds (6) and the typical
+    // evidence bundle size (< 30 records).
+    let kind_records: Vec<Vec<&EvidenceRecord>> = PIPELINE_ORDER
+        .iter()
+        .map(|kind| {
+            evidence.iter().filter(|rec| &rec.source_kind == kind).collect()
+        })
+        .collect();
 
     // Single header row at the top of the entire evidence section.
     // Column headers appear once, not once per group, to reduce visual noise.
@@ -1477,12 +1605,16 @@ fn append_grouped_evidence(
     rows.push(DataRow::separator());
 
     let mut first_group = true;
-    for (group_label, records) in &groups {
+    for (kind, records) in PIPELINE_ORDER.iter().zip(kind_records.iter()) {
+        if records.is_empty() {
+            continue;
+        }
         if !first_group {
             rows.push(DataRow::separator());
         }
         first_group = false;
 
+        let group_label = source_kind_label(kind);
         rows.push(DataRow::group_title(i18n::tr(group_label)));
 
         for rec in records {
@@ -1496,10 +1628,47 @@ fn append_grouped_evidence(
                 // clips at clip_pad time if the computed width is exceeded.
                 // NIST SP 800-53 SI-12 — no sensitive data in display strings.
                 rec.path_requested.clone(),
-                // col3: structured verification outcome.
+                // col3: structured verification outcome including magic label.
                 evidence_verification_str(rec),
                 evidence_style_hint(rec),
             ));
+
+            // T4 integrity: surface the SHA-256 digest inline so an assessor
+            // recording a T4 finding has the reference digest without leaving
+            // the TUI. NIST SP 800-53 SI-7 / AU-3.
+            if let Some(digest) = &rec.sha256 {
+                let hex = bytes_to_hex(digest);
+                rows.push(DataRow::key_value(
+                    String::new(),
+                    format!("sha256: {hex}"),
+                    StyleHint::Dim,
+                ));
+            }
+
+            // Package-database reference digest — shows the algorithm and
+            // hex-encoded value stored in the RPM/dpkg database for this path.
+            if let Some(pkg) = &rec.pkg_digest {
+                let alg_label = match &pkg.algorithm {
+                    umrs_platform::evidence::DigestAlgorithm::Sha256 => {
+                        "sha256"
+                    }
+                    umrs_platform::evidence::DigestAlgorithm::Sha512 => {
+                        "sha512"
+                    }
+                    umrs_platform::evidence::DigestAlgorithm::Md5 => {
+                        "md5 (weak)"
+                    }
+                    umrs_platform::evidence::DigestAlgorithm::Unknown(s) => {
+                        s.as_str()
+                    }
+                };
+                let hex = bytes_to_hex(&pkg.value);
+                rows.push(DataRow::key_value(
+                    String::new(),
+                    format!("pkg digest ({alg_label}): {hex}"),
+                    StyleHint::Dim,
+                ));
+            }
         }
     }
 }
@@ -1508,20 +1677,43 @@ fn append_grouped_evidence(
 ///
 /// Returns a minimal, status-code-style string that an assessor can read and
 /// act on. Unicode check (✓ U+2713) and cross (✗ U+2717) mark positive and
-/// negative outcomes. The open-by-fd flag and source kind provide enough
-/// context for independent verification without exposing raw kernel data.
+/// negative outcomes.
+///
+/// When the record was opened by file descriptor, the string includes the
+/// filesystem magic label that was confirmed via `fstatfs(2)` provenance
+/// verification, so an SP 800-53A assessor can identify the exact examination
+/// method without consulting secondary documentation:
+///
+/// - `Procfs` → `"✓ ok (fd, PROC_MAGIC)"` — kernel confirmed `PROC_SUPER_MAGIC`
+/// - `SysfsNode` → `"✓ ok (fd, SYS_MAGIC)"` — kernel confirmed `SYSFS_MAGIC`
+/// - `StatfsResult` → `"✓ ok (fd, statfs)"` — filesystem identity via `statfs(2)`
+/// - `RegularFile`, `PackageDb`, `SymlinkTarget` → `"✓ ok (fd)"` — fd-opened, no magic
+///
+/// Path-opened records (`opened_by_fd = false`) do not receive a magic label
+/// because provenance verification is not performed on path-opened reads.
 ///
 /// NIST SP 800-53 AU-3 — verification strings identify the outcome and method.
 fn evidence_verification_str(rec: &EvidenceRecord) -> String {
-    let open_method = if rec.opened_by_fd {
-        "fd"
+    if rec.opened_by_fd {
+        // Include the provenance verification method so an assessor knows
+        // what filesystem magic check was performed, not just that an fd was used.
+        let method_detail = match rec.source_kind {
+            SourceKind::Procfs => "fd, PROC_MAGIC",
+            SourceKind::SysfsNode => "fd, SYS_MAGIC",
+            SourceKind::StatfsResult => "fd, statfs",
+            SourceKind::RegularFile
+            | SourceKind::PackageDb
+            | SourceKind::SymlinkTarget => "fd",
+        };
+        if rec.parse_ok {
+            format!("\u{2713} ok ({method_detail})")
+        } else {
+            format!("\u{2717} FAIL ({method_detail})")
+        }
+    } else if rec.parse_ok {
+        "\u{2713} ok (path)".to_owned()
     } else {
-        "path"
-    };
-    if rec.parse_ok {
-        format!("\u{2713} ok ({open_method})")
-    } else {
-        format!("\u{2717} FAIL ({open_method})")
+        "\u{2717} FAIL (path)".to_owned()
     }
 }
 
@@ -1643,6 +1835,14 @@ const fn help_text_for_tab(tab_index: usize) -> &'static str {
              \n\
              Red rows require remediation before CUI processing.\n\
              \n\
+             Contradictions (running kernel vs persisted config disagree):\n\
+             \u{26a0} DRIFT         — config says hardened but kernel is not;\n\
+                                  intended hardening is not active\n\
+             \u{26a0} NOT PERSISTED — kernel is hardened now but config will not\n\
+                                  keep it after reboot\n\
+             \u{26a0} UNVERIFIABLE  — config exists but kernel value could not\n\
+                                  be read to confirm\n\
+             \n\
              Press Enter, Esc, or q to close this help."
         }
         2 => {
@@ -1653,6 +1853,11 @@ const fn help_text_for_tab(tab_index: usize) -> &'static str {
              'No downgrade' means all trust checks passed.\n\
              Any contradiction requires manual review — it may indicate\n\
              tampering or a misconfigured system.\n\
+             Contradictions here are OS detection contradictions: two\n\
+             independent sources (e.g., /etc/os-release vs package DB)\n\
+             reported conflicting values for the same fact. This is\n\
+             distinct from kernel/config contradictions on the Kernel\n\
+             Security tab.\n\
              \n\
              Trust tiers: T0=Untrusted  T1=Kernel Anchored  T2=Env Anchored\n\
              T3=Platform Verified  T4=Integrity Anchored\n\
@@ -1668,6 +1873,14 @@ const fn help_text_for_tab(tab_index: usize) -> &'static str {
                Package database          — from RPM/dpkg package DB\n\
                Symlink target            — symlink destination\n\
                Filesystem identity       — from statfs() syscall\n\
+             \n\
+             Verification codes:\n\
+               fd          — file opened by file descriptor (safer than path)\n\
+               PROC_MAGIC  — procfs verified via fstatfs() filesystem magic\n\
+               SYS_MAGIC   — sysfs verified via fstatfs() filesystem magic\n\
+               statfs      — filesystem identity confirmed via statfs()\n\
+             These confirm the source is the real kernel filesystem,\n\
+             not a crafted file at the same path.\n\
              \n\
              Press Enter, Esc, or q to close this help."
         }
