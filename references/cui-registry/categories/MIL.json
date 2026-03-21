@@ -1,0 +1,28 @@
+{
+  "abbreviation": "MIL",
+  "category": "Military Personnel Records",
+  "index_group": "Privacy",
+  "index_group_abbreviation": "PRIV",
+  "cui_marking": "CUI//PRIV/MIL",
+  "dod_detail_url": "https://www.dodcui.mil/Privacy/Military-Personnel-Records/",
+  "category_description": null,
+  "required_warning_statement": null,
+  "required_dissemination_control": null,
+  "authorities": [],
+  "applicable_dod_policies": [],
+  "examples": [
+    "DoD Intelligence Community Components:",
+    "\u200bthe organization or any function of an intelligence agency",
+    "the number of persons employed by or assigned or detailed to any such organization or the name, official title, occupational series, grade, or salary of any such person.",
+    "Personally identifying information regarding\u00a0any member of the armed forces assigned to an overseas unit, a sensitive unit, or a routinely deployable unit",
+    "Link Disclaimer\tDoD Careers",
+    "FOIA\tUSA Jobs",
+    "USA.gov\tPrivacy & Security",
+    "No FEAR Act\tWeb Policy",
+    "DoD Inspector General\tAccessibility/Section 508",
+    "STAY CONNECTED",
+    "Hosted by Department of War Information Activity - WEB.mil"
+  ],
+  "source": "dodcui.mil",
+  "retrieved_date": "2026-03-21"
+}

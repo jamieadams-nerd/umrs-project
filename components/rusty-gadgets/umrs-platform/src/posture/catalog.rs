@@ -34,6 +34,29 @@ use super::indicator::{
 };
 
 // ===========================================================================
+// Catalog baseline version
+// ===========================================================================
+
+/// The kernel release version against which this catalog's indicator
+/// definitions were authored and validated.
+///
+/// This is the `major.minor.patch` prefix of the kernel release string —
+/// no distribution suffix, no architecture suffix. The running kernel's
+/// release string (from `uname(2)`) is compared against this value at
+/// display time so operators can see whether the catalog is current for
+/// their kernel.
+///
+/// Update this constant whenever the catalog is reviewed and updated
+/// against a new kernel release. The value must be a valid semver-style
+/// `"MAJOR.MINOR.PATCH"` string (three dot-separated decimal integers).
+///
+/// NIST SP 800-53 CM-6: Configuration Settings — operators must know
+/// whether the running kernel is covered by the current indicator baseline.
+/// NIST SP 800-53 CA-7: Continuous Monitoring — catalog currency is a
+/// precondition for meaningful posture assessment.
+pub const CATALOG_KERNEL_BASELINE: &str = "6.12.0";
+
+// ===========================================================================
 // IndicatorDescriptor
 // ===========================================================================
 

@@ -1,0 +1,32 @@
+{
+  "abbreviation": "DCRIT",
+  "category": "DoD Critical Infrastructure Security information",
+  "index_group": "Defense",
+  "index_group_abbreviation": "DEF",
+  "cui_marking": "CUI//DEF/DCRIT",
+  "dod_detail_url": "https://www.dodcui.mil/Defense/DoD-Critical-Infrastructure-Security-Information/",
+  "category_description": null,
+  "required_warning_statement": null,
+  "required_dissemination_control": null,
+  "authorities": [],
+  "applicable_dod_policies": [],
+  "examples": [
+    "DoD priority installations",
+    "Security of weapons storage facilities",
+    "Structure vulnerabilities",
+    "NECC TOA/Information",
+    "SAWS inventory",
+    "Site security surveys for DoD assets",
+    "Program assessments for AT, LE, PS equities",
+    "Maps, diagrams, drawings of internal infrastructure",
+    "Link Disclaimer\tDoD Careers",
+    "FOIA\tUSA Jobs",
+    "USA.gov\tPrivacy & Security",
+    "No FEAR Act\tWeb Policy",
+    "DoD Inspector General\tAccessibility/Section 508",
+    "STAY CONNECTED",
+    "Hosted by Department of War Information Activity - WEB.mil"
+  ],
+  "source": "dodcui.mil",
+  "retrieved_date": "2026-03-21"
+}

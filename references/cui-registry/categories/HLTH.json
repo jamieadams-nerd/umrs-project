@@ -1,0 +1,25 @@
+{
+  "abbreviation": "HLTH",
+  "category": "Health Information",
+  "index_group": "Privacy",
+  "index_group_abbreviation": "PRIV",
+  "cui_marking": "CUI//PRIV/HLTH",
+  "dod_detail_url": "https://www.dodcui.mil/Privacy/Health-Information/",
+  "category_description": null,
+  "required_warning_statement": null,
+  "required_dissemination_control": null,
+  "authorities": [],
+  "applicable_dod_policies": [],
+  "examples": [
+    "Records of the identity, diagnosis, prognosis,\u00a0or treatment of any patient or subject\u00a0which are maintained in connection with the\u00a0performance of any program or activity (including\u00a0education, training, treatment, rehabilitation,\u00a0or research) relating to drug abuse, alcoholism\u00a0or alcohol abuse, infection with the\u00a0human immunodeficiency virus, or sickle cell\u00a0anemia",
+    "Link Disclaimer\tDoD Careers",
+    "FOIA\tUSA Jobs",
+    "USA.gov\tPrivacy & Security",
+    "No FEAR Act\tWeb Policy",
+    "DoD Inspector General\tAccessibility/Section 508",
+    "STAY CONNECTED",
+    "Hosted by Department of War Information Activity - WEB.mil"
+  ],
+  "source": "dodcui.mil",
+  "retrieved_date": "2026-03-21"
+}

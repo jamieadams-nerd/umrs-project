@@ -290,6 +290,18 @@ permanent, stable location — always look here first.
 
 ---
 
+### NARA CUI Registry Cross-Reference
+
+| Field | Value |
+|---|---|
+| File | `refs/reports/nara-cui-registry-crossref.md` |
+| Date | 2026-03-21 |
+| SHA-256 | `75f7d3eb4204fbc6f0565db2588b70ce4e105cced323da3418cec3105d3a1f29` |
+| Topics | NARA CUI registry canonical abbreviations vs `cui-labels.json`; standalone-vs-grouped placement for CTI/NNPI/OPSEC/PROT/PSEC/RAIL; 18 OURS_ONLY entries audit; fabricated entries (CHEM, PCI, RECS, LEGL, TRANSPORT, AVIATION, MARITIME, PIPELINE); wrong abbreviations (AMNT→CRITAN, BSA→FSEC, PROC→PROCURE, PRIVACY→PRVCY, HEALTH→HLTH, EXPORT→EXPT, EMERGENCY→EMGT); FEDCON misclassified as category |
+| Relevance | `umrs-cui`, `cui-labels.json`, CUI marking compliance, `AC-4`, CMMC |
+
+---
+
 ---
 
 ## Access Control Reference Collection

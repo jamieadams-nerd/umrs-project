@@ -12,6 +12,8 @@
 //! 6. sysctl.d line parser — key=value extraction and comment handling.
 //! 7. `PostureSnapshot::collect()` — integration smoke test; degrades
 //!    gracefully when procfs nodes are absent.
+//! 8. `KernelVersion` — parse, ordering, display, and catalog baseline
+//!    constant validity.
 
 use umrs_platform::posture::{
     ContradictionKind,
@@ -1479,4 +1481,114 @@ fn read_module_param_rejects_param_path_traversal() {
         std::io::ErrorKind::InvalidInput,
         "error kind must be InvalidInput for param path-traversal rejection"
     );
+}
+
+// ===========================================================================
+// 8. KernelVersion — parse, ordering, display, catalog baseline
+// ===========================================================================
+
+use umrs_platform::KernelVersion;
+use umrs_platform::posture::CATALOG_KERNEL_BASELINE;
+
+/// KV-01: plain MAJOR.MINOR.PATCH parses to the expected triple.
+#[test]
+fn kernel_version_parses_plain_triple() {
+    let v: KernelVersion = "6.12.0".parse().expect("plain triple must parse");
+    assert_eq!(v.major, 6);
+    assert_eq!(v.minor, 12);
+    assert_eq!(v.patch, 0);
+}
+
+/// KV-02: RHEL-style release string (with distro suffix) strips the suffix
+/// and returns only the version triple.
+#[test]
+fn kernel_version_parses_rhel_release_string() {
+    let v: KernelVersion = "6.12.0-211.el10.aarch64"
+        .parse()
+        .expect("RHEL release string must parse");
+    assert_eq!(v.major, 6);
+    assert_eq!(v.minor, 12);
+    assert_eq!(v.patch, 0);
+}
+
+/// KV-03: older RHEL 9 release string with underscore in suffix.
+#[test]
+fn kernel_version_parses_rhel9_release_string() {
+    let v: KernelVersion = "5.14.0-503.23.1.el9_5.x86_64"
+        .parse()
+        .expect("RHEL 9 release string must parse");
+    assert_eq!(v.major, 5);
+    assert_eq!(v.minor, 14);
+    assert_eq!(v.patch, 0);
+}
+
+/// KV-04: version ordering — newer patch beats older.
+#[test]
+fn kernel_version_ordering_patch() {
+    let older: KernelVersion = "6.12.0".parse().unwrap();
+    let newer: KernelVersion = "6.12.1".parse().unwrap();
+    assert!(newer > older);
+    assert!(older < newer);
+}
+
+/// KV-05: version ordering — minor version dominates patch.
+#[test]
+fn kernel_version_ordering_minor() {
+    let older: KernelVersion = "6.11.99".parse().unwrap();
+    let newer: KernelVersion = "6.12.0".parse().unwrap();
+    assert!(newer > older);
+}
+
+/// KV-06: version ordering — major version dominates all.
+#[test]
+fn kernel_version_ordering_major() {
+    let older: KernelVersion = "5.99.99".parse().unwrap();
+    let newer: KernelVersion = "6.0.0".parse().unwrap();
+    assert!(newer > older);
+}
+
+/// KV-07: equal versions compare as equal.
+#[test]
+fn kernel_version_equality() {
+    let a: KernelVersion = "6.12.0".parse().unwrap();
+    let b: KernelVersion = "6.12.0-211.el10.aarch64".parse().unwrap();
+    assert_eq!(a, b);
+}
+
+/// KV-08: Display renders the canonical MAJOR.MINOR.PATCH form with no suffix.
+#[test]
+fn kernel_version_display_canonical() {
+    let v: KernelVersion = "6.12.0-211.el10.aarch64".parse().unwrap();
+    assert_eq!(v.to_string(), "6.12.0");
+}
+
+/// KV-09: non-numeric major component returns Err.
+#[test]
+fn kernel_version_rejects_non_numeric_major() {
+    assert!("abc.1.0".parse::<KernelVersion>().is_err());
+}
+
+/// KV-10: only two components returns Err (patch missing).
+#[test]
+fn kernel_version_rejects_two_components() {
+    assert!("6.12".parse::<KernelVersion>().is_err());
+}
+
+/// KV-11: empty string returns Err.
+#[test]
+fn kernel_version_rejects_empty_string() {
+    assert!("".parse::<KernelVersion>().is_err());
+}
+
+/// KV-12: CATALOG_KERNEL_BASELINE parses as a valid KernelVersion.
+///
+/// Ensures the compile-time constant in catalog.rs is a syntactically valid
+/// MAJOR.MINOR.PATCH string. If this test fails, the constant must be updated.
+#[test]
+fn catalog_baseline_constant_is_valid_kernel_version() {
+    let v = CATALOG_KERNEL_BASELINE.parse::<KernelVersion>().expect(
+        "CATALOG_KERNEL_BASELINE must be a valid MAJOR.MINOR.PATCH string",
+    );
+    // Must have a non-zero major — no kernel has ever shipped as 0.x.y.
+    assert!(v.major > 0, "catalog baseline major version must be > 0");
 }

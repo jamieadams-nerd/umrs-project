@@ -81,7 +81,7 @@ pub mod snapshot;
 // Public API re-exports
 // ---------------------------------------------------------------------------
 
-pub use catalog::{INDICATORS, IndicatorDescriptor};
+pub use catalog::{CATALOG_KERNEL_BASELINE, INDICATORS, IndicatorDescriptor};
 pub use contradiction::ContradictionKind;
 pub use fips_cross::FipsCrossCheck;
 pub use indicator::{

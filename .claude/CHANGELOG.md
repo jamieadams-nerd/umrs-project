@@ -1,5 +1,38 @@
 # Changelog
 
+## 2026-03-21
+
+### TUI Lightning Round — 10 Fixes + 4 Team Reviews
+
+#### Code Fixes (all in umrs-tui)
+- **Contradiction explanations**: Both Kernel Security and Trust/Evidence tabs now explain what contradictions mean in their specific context (kernel/config drift vs OS evidence conflicts)
+- **Help popup**: Enter key now dismisses dialog (was Esc-only); contradiction types explained; PROC_MAGIC/SYS_MAGIC verification codes explained with threat rationale
+- **Evidence verification column**: Now shows provenance method — `✓ ok (fd, PROC_MAGIC)` / `✓ ok (fd, SYS_MAGIC)` / `✓ ok (fd, statfs)` instead of generic `✓ ok (fd)` (auditor C-12)
+- **SHA-256 digest display**: T4 integrity evidence now shows sha256 and pkg_digest when available (auditor O-3)
+- **Evidence pipeline order**: Groups follow trust-elevation order (kernel→sysfs→statfs→config→package→symlink), not alphabetical (auditor C-16)
+- **Indicators summary**: Changed from confusing "34 of 36 total" to "34 readable — all hardened ✓" / "34 readable — 27 hardened, 7 not hardened (20%)"
+- **Status bar text**: Color::Black → Color::White for readability on blue/green/yellow/red backgrounds
+- **Sticky table header**: Fixed flush-left alignment with group titles; brightness improved (header_field instead of dim data_key)
+- **Live kernel provenance note**: "All values below are read live from the running kernel via /proc and /sys." in kernel security summary
+- **Removed**: Unclear "Tested baseline: see kernel security catalog for update guidance" placeholder (deferred to umrs-state)
+
+#### Team Reviews
+- **Security Auditor v2**: 26 ACCURATE / 3 CONCERN / 0 ERROR (up from 14/17/3). All v1 errors resolved. Report: `.claude/reports/security-auditor-tui-review-2026-03-20-v2.md`
+- **Security Engineer**: 0 HIGH / 5 MEDIUM / 5 LOW. Key: magic label accuracy (SYSFS_MAGIC not SYS_MAGIC), dialog quit audit bypass latent risk, SELinux mixed-trust display, blacklist mechanism clarity. Report: `.claude/reports/security-engineer-tui-review-2026-03-20.md`
+- **Guest Admin**: 4 HIGH / 8 MEDIUM / 6 LOW — 6.5/10 usability. Key: no operator docs, error messages use internal jargon, no --help/--json. Contradiction markers praised as strongest operator communication. Report: `.claude/admin-reports/2026-03-20-tui-os-detect.md`
+- **Translator (i18n audit)**: ~55 wrapped, ~45 unwrapped (easy), ~50+ in const fn (need conversion). Priority order documented. Report: `.claude/reports/umrs-tui-i18n-audit-2026-03-20.md`
+
+#### Plan Updates
+- **Future base traits**: Added placeholder section to tui-enhancement-plan for ConfigApp, StateApp, MonitorApp — different interaction models beyond read-only AuditCardApp
+
+#### Decisions & Ideas Captured
+- UMRS tools are daily-driver admin tools (like df/ls/ps), NOT scanners
+- umrs-state saved baseline = third contradiction delta (live vs saved)
+- Cockpit plugin for web-based posture dashboard
+- Wizard mascot color reflects security posture (green/orange/red)
+- Light theme CLI option (--light-theme) for light terminal users
+- Multiple base traits needed as tool portfolio grows
+
 ## 2026-03-20
 
 ### Added

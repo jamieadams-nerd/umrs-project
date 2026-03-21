@@ -117,6 +117,10 @@ Existing reports:
 - `refs/reports/umrs-capabilities-800-171r3-mapping.md` (2026-03-19)
   Topics: 7 UMRS blog capabilities mapped to 800-171r3 mandatory requirements; all 7 are mandated;
   3 have above-and-beyond implementation dimensions; MP-03, PL-04, CM-06, CA-07, AU-03, SA-08, AC-03/04
+- `refs/reports/nara-cui-registry-crossref.md` (2026-03-21)
+  Topics: NARA canonical CUI vs cui-labels.json audit; 6 standalone-vs-group errors (CTI/NNPI/OPSEC/PROT/PSEC/RAIL);
+  18 OURS_ONLY entries: 7 fabricated (CHEM,PCI,RECS,LEGL,AVIATION,MARITIME,PIPELINE), 7 wrong abbreviations,
+  FEDCON misclassified as category (it is a dissemination control), TRANSPORT/GOVT are invented groups
 
 ## Retrieval Patterns (learned 2026-03-11)
 

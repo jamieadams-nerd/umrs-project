@@ -1,0 +1,30 @@
+{
+  "abbreviation": "CONV",
+  "category": "Tax Convention",
+  "index_group": "Tax",
+  "index_group_abbreviation": "TAX",
+  "cui_marking": "CUI//TAX/CONV",
+  "dod_detail_url": "https://www.dodcui.mil/Tax/Tax-Convention/",
+  "category_description": null,
+  "required_warning_statement": null,
+  "required_dissemination_control": null,
+  "authorities": [],
+  "applicable_dod_policies": [],
+  "examples": [
+    "Information arising under treaty obligation",
+    "Agreement entered into with the competent authority of one or more foreign governments pursuant to a tax convention",
+    "Application for relief under a tax convention",
+    "Background information related to such agreement or application",
+    "Documents implementing such agreement",
+    "Other information exchanged pursuant to a tax convention which is treated as confidential or secret under the tax convention.",
+    "Link Disclaimer\tDoD Careers",
+    "FOIA\tUSA Jobs",
+    "USA.gov\tPrivacy & Security",
+    "No FEAR Act\tWeb Policy",
+    "DoD Inspector General\tAccessibility/Section 508",
+    "STAY CONNECTED",
+    "Hosted by Department of War Information Activity - WEB.mil"
+  ],
+  "source": "dodcui.mil",
+  "retrieved_date": "2026-03-21"
+}

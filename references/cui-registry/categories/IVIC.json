@@ -1,0 +1,27 @@
+{
+  "abbreviation": "IVIC",
+  "category": "Victims of Human Trafficking",
+  "index_group": "Immigration",
+  "index_group_abbreviation": "IMMG",
+  "cui_marking": "CUI//IMMG/IVIC",
+  "dod_detail_url": "https://www.dodcui.mil/Immigration/Victims-of-Human-Trafficking/",
+  "category_description": null,
+  "required_warning_statement": null,
+  "required_dissemination_control": null,
+  "authorities": [],
+  "applicable_dod_policies": [],
+  "examples": [
+    "Applicant's name",
+    "Applicant's address",
+    "Applicant's immediate family information",
+    "Link Disclaimer\tDoD Careers",
+    "FOIA\tUSA Jobs",
+    "USA.gov\tPrivacy & Security",
+    "No FEAR Act\tWeb Policy",
+    "DoD Inspector General\tAccessibility/Section 508",
+    "STAY CONNECTED",
+    "Hosted by Department of War Information Activity - WEB.mil"
+  ],
+  "source": "dodcui.mil",
+  "retrieved_date": "2026-03-21"
+}

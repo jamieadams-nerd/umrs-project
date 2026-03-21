@@ -1,0 +1,120 @@
+= CUI Basic vs CUI Specified
+:description: The two handling tiers within the CUI framework and how they affect UMRS labeling and enforcement.
+
+Every CUI category falls into one of two handling tiers: *CUI Basic* or *CUI Specified*.
+The tier determines what safeguarding and dissemination controls apply.
+Understanding this distinction is essential for correct MCS label configuration and operator training.
+
+== CUI Basic
+
+CUI Basic is the default handling level.
+It applies to all CUI unless a specific authority requires something more restrictive.
+The uniform handling requirements come from 32 CFR Part 2002:
+
+* *Access control*: Only authorized individuals with a lawful government purpose may access CUI Basic material.
+* *Marking*: Documents and files must carry CUI markings identifying the category.
+* *Safeguarding*: CUI Basic must be protected from unauthorized access during storage and transmission.
+* *Encryption*: Required when CUI leaves a controlled environment (email, removable media, cloud transfer).
+* *Destruction*: Must be destroyed by methods that preclude reconstruction.
+* *Dissemination*: May be shared with authorized individuals; no additional dissemination restrictions beyond the access control requirement.
+
+The majority of CUI categories are CUI Basic.
+Of the 113 categories in the DoD CUI registry, approximately 104 carry no additional handling requirements beyond the Basic baseline.
+
+In UMRS, CUI Basic categories map to MCS labels with standard kernel enforcement.
+No per-category warning statements or dissemination restrictions are embedded in the label metadata.
+
+== CUI Specified
+
+CUI Specified means a specific law, regulation, or government-wide policy prescribes handling controls that go _beyond_ or _differ from_ CUI Basic.
+The controlling authority -- not 32 CFR Part 2002 -- defines exactly what those additional controls are.
+
+CUI Specified categories may carry:
+
+* *Required warning statements* -- mandatory text that must appear on documents containing this information
+* *Required dissemination controls* -- restrictions such as NOFORN (No Foreign Nationals) that limit who may receive the information
+* *Specific statutory penalties* -- some Specified categories carry criminal penalties for unauthorized disclosure
+
+=== Identified CUI Specified Categories
+
+The following 9 categories were identified from the DoD CUI Registry as carrying additional handling requirements beyond CUI Basic.
+This identification is based on the presence of non-empty `Required Warning Statement` or `Required Dissemination Control` fields on their DoD detail pages.
+
+[cols="1,3,3", options="header"]
+|===
+| Abbreviation | Category | Additional Requirement
+
+| CTI
+| Controlled Technical Information
+| Distribution Statement B through F required
+
+| CVI
+| Chemical-Terrorism Vulnerability Information
+| Mandatory warning statement per 6 CFR Part 27
+
+| DCNI
+| Unclassified Controlled Nuclear Information (Defense)
+| Mandatory DoD UCN marking; exempt from mandatory declassification review
+
+| EXPT
+| Export Controlled
+| ITAR/EAR warning statement required
+
+| NNPI
+| Naval Nuclear Propulsion Information
+| *NOFORN* -- No Foreign Nationals dissemination restriction
+
+| PRIVILEGE
+| Legal Privilege
+| ATTORNEY-CLIENT or ATTORNEY-WP dissemination control
+
+| PROPIN
+| General Proprietary Business Information
+| Notice of Restriction on Disclosure and Use of Data (10 CFR 600.15)
+
+| SSI
+| Sensitive Security Information
+| Mandatory warning statement per 49 CFR Part 1520
+
+| UCNI
+| Unclassified Controlled Nuclear Information (Energy)
+| Mandatory UCN marking; unauthorized disclosure penalties
+|===
+
+WARNING: This list is derived from automated scraping of `dodcui.mil` detail pages.
+Some CUI Specified categories may not have their additional requirements explicitly listed on the DoD site.
+Always verify against the authoritative NARA CUI Registry and the controlling authority citation before making enforcement decisions.
+
+== Implications for UMRS
+
+=== MCS Label Metadata
+
+CUI Specified categories require richer metadata in the MCS label definition.
+The `umrs-mcs` tool must store:
+
+* The warning statement text (for display by `umrs-ls` and TUI tools)
+* The dissemination control (for enforcement logic in Phase 2)
+* The controlling authority citation (for audit trail)
+
+CUI Basic categories need only the category name, abbreviation, and parent group.
+
+=== Operator Display
+
+When an operator views a file labeled with a CUI Specified category, UMRS tools should display the additional requirements.
+For example, `umrs-ls` showing a file with `CUI//DEF/NNPI` should indicate the NOFORN restriction.
+This is an awareness function in Phase 1 and an enforcement function in Phase 2.
+
+=== Phase 2 Enforcement
+
+In MLS policy (Phase 2), CUI Specified dissemination controls become enforceable.
+A process without the NOFORN clearance in its security context cannot access NNPI-labeled files.
+The kernel enforces this -- no application-layer check required.
+
+== Source Data
+
+The CUI Basic/Specified analysis is based on data scraped from the DoD CUI Registry at `https://www.dodcui.mil/CUI-Categories-and-Abbreviations/` on {docdate}.
+Per-category JSON files with full detail page content are stored in `references/cui-registry/categories/`.
+
+The authoritative source for CUI category definitions is the NARA CUI Registry at `https://www.archives.gov/cui/registry/category-list`.
+The DoD registry reflects DoD-specific organizational structure and may differ from NARA in parent group assignments.
+See xref:reconciliation.adoc[Registry Reconciliation] for identified differences.

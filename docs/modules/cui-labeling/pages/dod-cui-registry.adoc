@@ -1,0 +1,91 @@
+= DoD CUI Registry
+:description: Structure and content of the Department of Defense CUI category registry and its relationship to the NARA master registry.
+
+The Department of Defense maintains its own CUI category listing at `https://www.dodcui.mil/CUI-Categories-and-Abbreviations/`.
+This registry contains 113 categories organized into index groups (parent categories).
+Each category links to a detail page with the official description, required markings, authorities, and examples.
+
+== Relationship to NARA
+
+The National Archives and Records Administration (NARA) is the federal executive agent for CUI.
+NARA maintains the authoritative CUI Registry at `https://www.archives.gov/cui/registry/category-list`.
+All federal agencies, including DoD, derive their CUI categories from this registry.
+
+The DoD registry is _not_ a separate standard.
+It is DoD's organizational view of the same NARA categories, with two important differences:
+
+1. *Index Group assignments may differ.* DoD organizes some categories under different parent groups than NARA. For example, NARA may list OPSEC as a standalone category while DoD places it under the Intelligence index group.
+
+2. *DoD-specific categories exist.* Some categories like CTI (Controlled Technical Information), DCNI, DCRIT, and PSI reflect DoD-specific information types that may not appear prominently in civilian NARA listings.
+
+When the DoD and NARA registries disagree on the parent group for a category, the _marking string_ changes.
+`CUI//OPSEC` (NARA standalone) becomes `CUI//INTEL/OPSEC` (DoD under Intelligence).
+This is why reconciliation matters -- the marking string is what gets encoded into MCS labels.
+
+== Terminology Mapping
+
+DoD and NARA use different column names for the same hierarchy:
+
+[cols="1,1,1", options="header"]
+|===
+| DoD Term | NARA Term | Example
+
+| Index Group
+| Category Group (parent)
+| Law Enforcement
+
+| Category
+| Category (leaf)
+| Investigation
+
+| Abbreviation
+| Category Marking
+| INV
+|===
+
+The marking format is identical regardless of terminology:
+`CUI//[Index Group Abbreviation]/[Category Abbreviation]`
+
+== Registry Structure
+
+Each DoD registry entry contains:
+
+[cols="1,3", options="header"]
+|===
+| Field | Description
+
+| Category Abbreviation
+| Short marking code (e.g., `INV`, `NNPI`)
+
+| Category Description
+| Official definition paragraph
+
+| Required Warning Statement
+| Mandatory marking text for CUI Specified categories (empty for CUI Basic)
+
+| Required Dissemination Control
+| Restrictions such as NOFORN (empty for most categories)
+
+| Authorities
+| CFR/USC citations establishing the legal basis for protection
+
+| Applicable DoD Policies
+| DoD-specific policy references
+
+| Examples
+| Representative document types that fall under this category
+|===
+
+== UMRS Registry Data
+
+UMRS maintains a machine-readable copy of the DoD CUI Registry at `references/cui-registry/` in the project repository.
+This data was scraped from `dodcui.mil` on 2026-03-21 and includes:
+
+* `categories/<ABBREV>.json` -- one file per category (113 total)
+* `index.json` -- master flat array of all entries
+* `reconciliation.json` -- machine-readable comparison against our MCS mapping
+* `reconciliation.adoc` -- human-readable reconciliation report
+* `noforn-required.json` -- categories with non-null dissemination controls
+
+This data feeds the `umrs-mcs` tool and CUI label definitions.
+It should be refreshed periodically as DoD updates their registry.

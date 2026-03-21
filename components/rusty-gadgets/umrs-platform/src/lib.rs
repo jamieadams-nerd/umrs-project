@@ -90,7 +90,8 @@ pub use detect::{DetectionPhase, PackageQueryError, PhaseDuration};
 
 // OS identity (substrate-derived)
 pub use os_identity::{
-    CpuArch, Distro, KernelRelease, OsFamily, SubstrateIdentity,
+    CpuArch, Distro, KernelRelease, KernelVersion, KernelVersionParseError,
+    OsFamily, SubstrateIdentity,
 };
 
 // OS release types (validated newtypes + error)

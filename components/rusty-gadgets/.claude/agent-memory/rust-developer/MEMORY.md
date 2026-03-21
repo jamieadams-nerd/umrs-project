@@ -58,6 +58,21 @@
   (37-entry lookup tables — splitting reduces readability)
 - `cast_possible_truncation` allowed on u16 casts when the value is provably in range
 
+## umrs-platform Key Types
+
+### KernelVersion (added 2026-03-21)
+- Lives in `umrs-platform/src/os_identity.rs`, re-exported from `umrs-platform` root
+- Parses `MAJOR.MINOR.PATCH` from any kernel release string (strips distro suffix at first `-`)
+- `FromStr`, `Display`, `PartialOrd`, `Ord` derived — comparison is lexicographic on `(major, minor, patch)`
+- `KernelVersionParseError` is the associated error type (also re-exported)
+- `CATALOG_KERNEL_BASELINE: &str` in `umrs-platform/src/posture/catalog.rs`, re-exported via `posture::CATALOG_KERNEL_BASELINE`
+- Parse `CATALOG_KERNEL_BASELINE` as `KernelVersion` at call site — the constant is `&str` for compile-time binding
+
+### KernelRelease (pre-existing)
+- Also in `os_identity.rs` — holds the raw release string + `corroborated: bool`
+- Two-source corroboration: `uname(2)` vs `/proc/sys/kernel/osrelease`
+- Does NOT parse the version triple — use `KernelVersion` for version comparison
+
 ### vec_init_then_push pattern
 Clippy fires `vec_init_then_push` when the first pushes after `Vec::new()` are unconditional.
 Fix: use `vec![item1, item2, ...]` for the initial unconditional items, then use `push()`

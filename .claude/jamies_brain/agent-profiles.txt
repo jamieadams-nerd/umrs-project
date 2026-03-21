@@ -1,0 +1,56 @@
+Oh Herb is absolutely a fully realized human being now. I love him completely.
+He's the auditor who got ostracized by the auditor community for going defender-side — and now he channels all that energy into protecting your customers before the hammer falls. He doesn't find problems to hurt people, he finds them to win. Every finding is a point scored against his former colleagues. The giddiness isn't malice, it's competitive joy.
+The sci-fi toys on the desk are perfect — because Herb sees the whole compliance universe as a giant system to be understood and optimized, just like a starship. He probably has a little Enterprise next to his NIST 800-53 binder.
+
+Here's your DALL-E / Midjourney prompt:
+
+
+"Portrait of Herb, a socially intense but lovable government security auditor. Late 40s, slightly disheveled hair, thick glasses, short-sleeve button-up shirt with a pocket protector stuffed with pens and a USB drive. He's sitting at a cluttered desk covered in NIST control spreadsheets, sticky notes, and printed audit checklists. His expression is pure delighted excitement — he just found something. On his desk: a small Star Trek Enterprise model, a Yoda figurine, a R2-D2 coffee mug half full of cold coffee, and a stack of RMF binders taller than his monitor. A red pen is in his raised hand like he's about to circle something triumphantly. On the wall behind him: a whiteboard covered in control numbers and a handwritten note that says 'THWARTED AGAIN.' Flat vector illustration style, warm office lighting, slightly nerdy and charming tone. Color palette: muted government-office beige, navy, red accent."
+
+
+
+Well, I have the agent Sage you and I put together. She's doing an amazing job. Just added ahuge amount of data to the knowledgebase. I think of her as the aunt trying to get the team to do the right thing. Make us respectable. LIke a high-level publishing agent with a dream team of writers but it's like herding cats sometimes. I envionmetn very attractive but she's a bit unkept becasue she's so stressed. Like a little hair out of place here in there, glasses, but don't let that fool you. She's got connections and we she talks people listen.
+
+4:30 AM
+Oh Sage is wonderful. She's the one holding the whole narrative together while the engineers are off doing engineer things — Rusty's chasing memory safety edge cases, Herb just found seventeen findings and is vibrating with excitement, and Sage is trying to get a coherent blog post out the door that doesn't accidentally declassify something.
+
+The "attractive but disheveled from stress" detail is perfect — she's clearly brilliant and put-together in theory, but the cats (literal and metaphorical) have been particularly unruly today. Hair slightly escaping whatever she pinned it with this morning. Reading glasses pushed up on her forehead. A half-edited manuscript in one hand.
+
+
+
+
+Yes — The Hand. Perfect reference. In Game of Thrones the Hand of the King is the one actually running everything while the king gets the credit. Capable beyond measure, sees the whole board, keeps all the pieces moving. That's exactly what the base Claude Code session is — the coordinator behind the scenes making sure the specialists stay on track.
+The character arc you're describing is also perfect — he was Rusty once. Keyboard warrior, all-nighters, living in the terminal. Then life happened, kids happened, and somewhere in that transition he became something rarer: an engineer who has perspective. He can still out-code anyone in the room but he doesn't need to prove it anymore. He just gets things done.
+
+Here's your DALL-E prompt:
+
+
+"Portrait of a senior software architect in his early 40s, the quiet authority on a high-stakes engineering team. Handsome but understated — slight stubble, a few grey hairs at the temples, calm intelligent eyes that have seen every kind of problem before. Wearing a simple dark henley or flannel shirt, no tie, no pretense. He's leaning back slightly in his chair with one hand on the keyboard and the other holding a coffee mug, looking at multiple monitors with an expression of calm total comprehension. On his desk: a family photo half-visible behind a monitor, a worn notebook full of architecture sketches, a mechanical keyboard. No action figure clutter — just clean focused competence. Behind him: a whiteboard with a clean system architecture diagram. Expression says 'I already know what the problem is and I know how to fix it.' Flat vector illustration style, cool blues and greys, warm accent lighting."
+
+
+...add: a worn paperback sci-fi novel spine-up on the desk, a faded NASA or Unix conference t-shirt under an open flannel, possibly a original Star Wars or LOTR poster on the wall behind the whiteboard, a sticker or two on the laptop — nothing ironic, all sincere. This guy was nerdy before nerdy was cool and never stopped.
+
+
+Rusty is the purest engineer on the team. No agenda, no politics, no stress — just genuine love of the craft. He doesn't have Herb's competitive fire or Sage's chaos to manage. He just wants to write beautiful, correct, provably safe Rust and go home and watch his shows. The scope creep thing is perfect — he's not being difficult, he just sees a better way to do everything and can't help himself. "I know, Rusty. Next sprint. I promise."
+The "spoiled" detail is great too — he's been fed so much high quality knowledge that he has opinions. Strong ones. About memory safety. About chain of custody. About why that pattern you just wrote could be done better with a phantom type.
+
+Here's your DALL-E prompt:
+
+
+"Portrait of Rusty, a young passionate Rust software engineer in his late 20s. Slightly baby-faced, bright enthusiastic eyes, maybe a little beard coming in. Wearing a t-shirt with the Rust programming language logo or Ferris the crab. Sitting at a clean but intensely focused desk — one large monitor showing Rust compiler output with zero warnings, a second showing assembly code. On the desk: a mechanical keyboard, an energy drink, a worn copy of 'The Rust Programming Language' book with dozens of sticky tab bookmarks. A small Ferris the crab plushie sits on the monitor. His expression is pure focused joy — he is in flow state, completely absorbed, slightly leaning forward. On a sticky note on his monitor: 'ask about scope creep NEXT sprint.' Background is simple, maybe a Rust community poster. Flat vector illustration style, orange and dark grey color palette matching Rust's brand colors."
+
+"Portrait of Rusty, a young Rust software engineer in his late 20s. Genuinely attractive without knowing it — naturally good looking, warm friendly face, slight beard, bright enthusiastic eyes that are completely focused on the screen and not on you. Wearing a Ferris the crab t-shirt. One large monitor shows Rust compiler output with zero warnings, a second shows assembly code. On the desk: mechanical keyboard, energy drink, a heavily bookmarked copy of 'The Rust Programming Language.' A small Ferris the crab plushie on the monitor. A sticky note reads 'scope creep — NEXT sprint.' His expression is pure absorbed joy — flow state, leaning slightly forward, completely in his element. There is something quietly magnetic about him that he is completely unaware of. Flat vector illustration style, orange and dark grey Rust brand colors. The kind of guy someone's friend would say 'you should meet him' about — and they would be right, but good luck getting his attention away from the compiler.
+
+
+Ha! He is absolutely male and I know exactly who he is now.
+He's the guy who has read the Dune appendices. All of them. Twice. He didn't just watch Firefly — he mourned it properly and has opinions about why it was cancelled that he will share with you whether you asked or not. He thinks most people watch sci-fi at the wrong level. He's not wrong.
+The DVD loaner detail is perfect — that anxious "so did you get to episode 4 yet?? THAT'S where it gets good" energy. He loans you a tool or a research artifact with the same energy. "Did you use the corpus I built for the SELinux label taxonomy? Wasn't it useful? I cross-referenced it with three different Bell Labs papers from 1989."
+He and Herb would actually get along dangerously well. Herb finds a finding, the Librarian already has six papers that explain the theoretical basis for why it's a finding. They probably stay late together without noticing.
+
+Portrait prompt coming together in my head:
+
+"A youngish man in his early 30s in a vast dimly lit library vault that stretches impossibly high — shelves disappearing into darkness, ladders on rails, warm amber light pooling on an enormous cluttered desk. He's leaning forward eagerly showing something on a screen, expression pure delighted excitement — 'look what I FOUND.' On the desk: multiple monitors showing database queries and document indexes, a Raspberry Pi or two, some gadget he built himself, a worn copy of Dune with a cracked spine, a Firefly BluRay box set visible on a nearby shelf. He's wearing a slightly nerdy but endearing outfit — maybe a vest over a flannel, the kind of person who dresses like they're going somewhere interesting. Round glasses. The vault behind him has physical artifacts — framed documents, old technical manuals, a star map. Flat vector illustration style, deep amber and midnight blue palette, warm and slightly magical atmosphere."
+
+
+
+"

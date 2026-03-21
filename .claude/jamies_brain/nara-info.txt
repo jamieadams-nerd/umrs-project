@@ -1,0 +1,335 @@
+= Librarian Research Brief: DoD CUI Registry Enrichment
+:doctype: article
+:toc:
+:toclevels: 2
+:icons: font
+
+== Mission
+
+Scrape, parse, and catalog the complete DoD CUI category listing from
+`https://www.dodcui.mil/CUI-Categories-and-Abbreviations/` and enrich
+our existing MCS sensitivity label mapping with the following fields
+from each category's detail page:
+
+* `category_description` — the official definition of the category
+* `required_warning_statement` — mandatory marking text (may be empty)
+* `required_dissemination_control` — e.g., `NOFORN` (may be empty)
+* `authorities` — list of CFR/USC citations (links + text)
+* `examples` — list of document examples from the detail page
+* `dod_detail_url` — the canonical DoD URL for the entry
+
+The goal is a single enriched JSON catalog per CUI category that
+feeds our SELinux MCS label definitions and policy documentation.
+
+== Terminology Clarification
+
+Before starting, understand the DoD column naming versus NARA naming.
+They refer to the same hierarchy with different labels:
+
+[cols="1,1,1", options="header"]
+|===
+| DoD Column | NARA Term | Example
+| Index Group | Category Group (parent) | Law Enforcement
+| Category | Category (leaf) | Investigation
+| Abbreviation | Category Marking | INV
+|===
+
+The standard marking format is unchanged from NARA:
+`CUI//[Index Group Abbrev]/[Category Abbrev]`
+Example: `CUI//LEI/INV`
+
+Our existing MCS mapping is correct. This is purely an enrichment
+exercise, not a restructuring.
+
+== Source
+
+Primary URL: `https://www.dodcui.mil/CUI-Categories-and-Abbreviations/`
+
+The index page contains a three-column table:
+
+* Column 1: Abbreviation (links to detail page)
+* Column 2: Category name (same link as Column 1)
+* Column 3: Index Group (links to group index page)
+
+There are currently *113 entries* in the table.
+
+== Per-Entry Detail Page Structure
+
+Each abbreviation links to a detail page at the pattern:
+`https://www.dodcui.mil/{IndexGroup}/{CategoryName}/`
+
+Example: `https://www.dodcui.mil/Law-Enforcement/Investigation/`
+
+Each detail page contains these fields — extract all of them:
+
+[cols="1,2,1", options="header"]
+|===
+| Field | Description | Notes
+| Category Abbreviation | Short marking code, e.g. `INV` | Always present
+| Category Description | Official definition paragraph | Always present
+| Required Warning Statement | Mandatory marking text | Often empty — record as `null`
+| Required Dissemination Control | e.g. `NOFORN` | Often empty — record as `null`. NNPI is a known example that carries `NOFORN`.
+| Authorities | CFR/USC citations with govinfo.gov links | May be multiple. Capture both the citation text and the URL.
+| Applicable DoD Policies | DoD policy references | May be empty
+| Examples | Bullet list of example documents | May be empty
+|===
+
+== Target JSON Schema
+
+Produce one JSON file per category entry, named
+`{abbreviation}.json`, stored under `cui-registry/categories/`.
+
+Also produce a master index file `cui-registry/index.json` with all
+entries in array form for fast lookup.
+
+.Single entry schema (`INV.json`)
+[source,json]
+----
+{
+  "abbreviation": "INV",
+  "category": "Investigation",
+  "index_group": "Law Enforcement",
+  "index_group_abbreviation": "LEI",
+  "cui_marking": "CUI//LEI/INV",
+  "dod_detail_url": "https://www.dodcui.mil/Law-Enforcement/Investigation/",
+  "category_description": "Related to information obtained during the course of a law enforcement investigation or action, civil or criminal.",
+  "required_warning_statement": null,
+  "required_dissemination_control": null,
+  "authorities": [
+    {
+      "citation": "6 CFR Part 5 Appendix C(a)",
+      "url": "https://www.govinfo.gov/content/pkg/CFR-2019-title6-vol1/pdf/CFR-2019-title6-vol1-part5-appC.pdf"
+    },
+    {
+      "citation": "18 CFR 1b.20",
+      "url": "https://www.govinfo.gov/content/pkg/CFR-2018-title18-vol1/pdf/CFR-2018-title18-vol1-part1b.pdf"
+    }
+  ],
+  "applicable_dod_policies": [],
+  "examples": [
+    "Preliminary Notice of Violation",
+    "Enforcement Letter"
+  ],
+  "source": "dodcui.mil",
+  "retrieved_date": "YYYY-MM-DD"
+}
+----
+
+.Known non-null dissemination control example (`NNPI.json`)
+[source,json]
+----
+{
+  "abbreviation": "NNPI",
+  "category": "Naval Nuclear Propulsion Information",
+  "index_group": "Defense",
+  "index_group_abbreviation": "Defense",
+  "cui_marking": "CUI//NNPI",
+  "dod_detail_url": "https://www.dodcui.mil/Defense/Naval-Nuclear-Propulsion-Information/",
+  "category_description": "Related to the safety of reactors and associated naval nuclear propulsion plants...",
+  "required_warning_statement": null,
+  "required_dissemination_control": "NOFORN",
+  "authorities": [
+    {
+      "citation": "42 USC 2013",
+      "url": "https://www.govinfo.gov/content/pkg/USCODE-2017-title42/..."
+    }
+  ],
+  "applicable_dod_policies": [],
+  "examples": [
+    "Nuclear testing",
+    "Records relating to weapons of mass destruction",
+    "RDT&E of a nuclear deterrent"
+  ],
+  "source": "dodcui.mil",
+  "retrieved_date": "YYYY-MM-DD"
+}
+----
+
+== Suggested Scraping Approach
+
+Use Python with `httpx` (async) and `beautifulsoup4`.
+
+. Fetch the index page and parse the full table to extract all
+  abbreviations, category names, index groups, and detail URLs.
+. For each entry, fetch the detail page and extract all fields
+  listed above.
+. Cross-reference each entry against our existing MCS mapping
+  (see reconciliation task below).
+. Write per-entry JSON files and the master index.
+
+Rate-limit requests to `dodcui.mil` — one request per second
+minimum. This is a `.mil` site; be a good citizen.
+
+.Starter script structure
+[source,python]
+----
+import asyncio
+import httpx
+from bs4 import BeautifulSoup
+import json
+from datetime import date
+from pathlib import Path
+
+BASE_URL = "https://www.dodcui.mil"
+INDEX_URL = f"{BASE_URL}/CUI-Categories-and-Abbreviations/"
+OUTPUT_DIR = Path("cui-registry/categories")
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+async def fetch(client, url):
+    resp = await client.get(url)
+    resp.raise_for_status()
+    return BeautifulSoup(resp.text, "html.parser")
+
+async def parse_index(client):
+    soup = await fetch(client, INDEX_URL)
+    entries = []
+    table = soup.find("table")
+    for row in table.find_all("tr")[1:]:  # skip header
+        cells = row.find_all("td")
+        if len(cells) < 3:
+            continue
+        abbrev_link = cells[0].find("a")
+        group_link  = cells[2].find("a")
+        entries.append({
+            "abbreviation": abbrev_link.text.strip(),
+            "category":     cells[1].text.strip(),
+            "index_group":  group_link.text.strip() if group_link else "",
+            "detail_url":   BASE_URL + abbrev_link["href"]
+                            if abbrev_link["href"].startswith("/")
+                            else abbrev_link["href"],
+        })
+    return entries
+
+async def parse_detail(client, entry):
+    soup = await fetch(client, entry["detail_url"])
+    # Extract fields by label text — structure is consistent
+    # across all pages. Parse paragraphs following each label.
+    # Fields: Category Description, Required Warning Statement,
+    #         Required Dissemination Control, Authorities,
+    #         Applicable DoD Policies, Examples
+    # TODO: implement field extraction
+    pass
+
+async def main():
+    async with httpx.AsyncClient(timeout=30) as client:
+        entries = await parse_index(client)
+        for entry in entries:
+            await asyncio.sleep(1)  # be polite
+            detail = await parse_detail(client, entry)
+            # merge and write JSON
+            pass
+
+asyncio.run(main())
+----
+
+== Reconciliation Task
+
+After scraping, produce a reconciliation report comparing the DoD
+catalog against our existing MCS mapping file. For each DoD entry:
+
+[cols="1,3", options="header"]
+|===
+| Status | Meaning
+| `MATCH` | Abbreviation exists in our mapping with correct index group
+| `MISSING` | DoD entry not in our mapping — needs a new MCS category assignment
+| `MISMATCH` | Entry exists but index group or marking differs
+| `OURS_ONLY` | In our mapping but not in DoD table — may be NARA-only entry not used by DoD
+|===
+
+Output the reconciliation as `cui-registry/reconciliation.json` and
+a human-readable `cui-registry/reconciliation.adoc` summary table.
+
+== Known Suspects — Pre-Identified Discrepancies
+
+The following discrepancies were identified by live inspection of
+`dodcui.mil` before this brief was written. These are *confirmed*
+mismatches between our current NARA-based MCS mapping and the DoD
+site. Address these first — they are not hypothetical.
+
+[cols="1,2,2,1", options="header"]
+|===
+| Abbreviation | Our Current Mapping | DoD Actual | Priority
+
+| `EXPT` / `EXPTR`
+| `CUI//CTI/EXPT` and `CUI//CTI/EXPTR` +
+  (under Controlled Technical Information)
+| DoD places under **Export Control** index group, +
+  not under CTI/Defense. Leaf abbreviation is the same; +
+  parent index group differs.
+| HIGH — affects marking string
+
+| `OPSEC`
+| `CUI//OPSEC` (standalone, no index group)
+| DoD places under **Intelligence** index group: `CUI//INTEL/OPSEC`
+| HIGH — affects marking string
+
+| `CRITAN` / `AMNT`
+| `CUI//AGR/AMNT` (under Agriculture)
+| DoD lists as `CRITAN` under **Critical Infrastructure**, +
+  not Agriculture
+| MEDIUM — abbreviation AND parent differ
+
+| `NNPI`
+| No dissemination control recorded
+| DoD requires `NOFORN` dissemination control — this is +
+  mandatory, not optional. Our MCS policy must enforce this.
+| HIGH — direct policy impact
+|===
+
+For each HIGH priority item: confirm against the NARA canonical
+registry at `https://www.archives.gov/cui/registry/category-list`
+before changing our mapping. DoD is authoritative for DoD systems,
+but NARA is the federal standard. If they differ, flag for Jamie
+to make the call — do not resolve unilaterally.
+
+== Additional Gaps to Watch For
+
+Beyond the known suspects above, the following categories are likely
+present in the DoD table but absent from our current mapping entirely.
+These were built from NARA research that ChatGPT rendered inconsistently
+across sessions — treat anything in this zone as unverified until the
+scrape confirms it:
+
+* Entries under **Defense** index group (`CTI`, `DCNI`, `DCRIT`, `PSI`,
+  `NNPI`) — DoD-specific additions not always present in NARA-focused
+  research
+* All **Financial** subcategories (`BUDG`, `COMPT`, `FINT`, `FSI`,
+  `MERG`, `NETW`, `RTR`, `XFER`) — our mapping has `FNC` (General
+  Financial) but may be missing the subcategories
+* **Immigration** index group entirely (`ADJ`, `ASYL`, `BATT`, `IVIC`,
+  `PROT`, `RESD`, `VISA`) — not present in our current mapping
+* **International Agreements** (`INTL`) — single entry, verify presence
+* **Natural and Cultural Resources** (`ARCHR`, `HISTP`, `NPSR`) —
+  likely absent from our mapping
+* **Nuclear** index group (`NUC`, `RECOMM`, `SGI`, `SRI`, `UCNI`) —
+  we have `NNPI` but not the broader Nuclear group
+* **Statistical** (`CENS`, `PEST`, `STAT`, `SURV`) — likely absent
+* **Transportation** (`RAIL`, `SSI`) — we have `RAIL` mapped, verify
+* Categories with `required_dissemination_control` non-null — build a
+  dedicated `noforn-required.json` list. `NNPI` is confirmed; scan all
+  113 entries for others.
+
+== Output Summary
+
+When complete, deliver:
+
+. `cui-registry/categories/{ABBREV}.json` — one file per entry (113 total)
+. `cui-registry/index.json` — master flat array of all entries
+. `cui-registry/reconciliation.json` — machine-readable diff
+. `cui-registry/reconciliation.adoc` — human-readable summary table
+. `cui-registry/noforn-required.json` — entries where
+  `required_dissemination_control` is non-null
+
+All files committed to the UMRS repository under
+`references/cui-registry/`.
+
+== Priority
+
+Run reconciliation against our existing MCS mapping first — focus on
+`MISMATCH` and `MISSING` status entries. Those are the actionable gaps.
+The enrichment data (descriptions, authorities, examples) is valuable
+but secondary to correctness of the label hierarchy.
+
+_Brief authored for The Librarian by The Hand.
+Cross-reference with Herb before finalizing any MCS label changes._
+----

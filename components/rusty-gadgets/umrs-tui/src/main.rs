@@ -45,9 +45,10 @@ use umrs_platform::detect::label_trust::LabelTrust;
 use umrs_platform::detect::{DetectionError, DetectionResult, OsDetector};
 use umrs_platform::evidence::{EvidenceRecord, SourceKind};
 use umrs_platform::posture::{
-    ConfiguredValue, ContradictionKind, IndicatorId, LiveValue, PostureSnapshot,
+    CATALOG_KERNEL_BASELINE, ConfiguredValue, ContradictionKind, IndicatorId,
+    LiveValue, PostureSnapshot,
 };
-use umrs_platform::{Distro, OsFamily, OsRelease, TrustLevel};
+use umrs_platform::{Distro, KernelVersion, OsFamily, OsRelease, TrustLevel};
 use umrs_tui::app::{
     AuditCardApp, AuditCardState, DataRow, HeaderContext, IndicatorValue,
     SecurityIndicators, StatusLevel, StatusMessage, StyleHint, TabDef,
@@ -465,6 +466,21 @@ fn build_trust_summary_rows(result: &DetectionResult) -> Vec<DataRow> {
     let (lt_label, lt_hint) = label_trust_display(&result.label_trust);
     rows.push(DataRow::new(i18n::tr("Label Trust"), lt_label, lt_hint));
 
+    // For IntegrityVerifiedButContradictory, emit the full contradiction text
+    // as a secondary row. The primary label is shortened to fit on one line;
+    // the complete detail is preserved here for assessment use.
+    // NIST SP 800-53 AU-3 / SI-7 — audit records and integrity findings must be complete.
+    if let LabelTrust::IntegrityVerifiedButContradictory {
+        contradiction,
+    } = &result.label_trust
+    {
+        rows.push(DataRow::key_value(
+            "",
+            contradiction.clone(),
+            StyleHint::TrustRed,
+        ));
+    }
+
     // Confidence level — the numeric trust tier with plain-language description.
     // Note: trust_level_label/description are const fn helpers returning
     // &'static str; the translation wraps the returned value at the call site.
@@ -642,6 +658,58 @@ fn append_kernel_contradiction_rows(rows: &mut Vec<DataRow>, count: usize) {
     }
 }
 
+/// Produce the catalog baseline comparison row for the Kernel Security summary.
+///
+/// Compares the running kernel (`kernel_version` from `uname(2)`) against the
+/// `CATALOG_KERNEL_BASELINE` constant that records which kernel the indicator
+/// catalog targets. Returns a `DataRow` with one of three messages:
+///
+/// - Running newer than baseline → `StyleHint::Warn` advisory.
+/// - Running matches baseline → `StyleHint::TrustGreen` confirmation.
+/// - Running older than baseline (rare) → `StyleHint::TrustRed` warning.
+/// - Either string fails to parse as `MAJOR.MINOR.PATCH` → `StyleHint::Dim`
+///   neutral note; no false alarm on parse failure (fail-open for display).
+///
+/// This comparison is advisory only — it guides the operator in judging
+/// whether the indicator catalog is current for their kernel. It does not
+/// gate access or change the posture score.
+///
+/// NIST SP 800-53 CA-7: Continuous Monitoring — catalog currency is a
+/// precondition for meaningful posture assessment.
+fn catalog_baseline_row(kernel_version: &str) -> DataRow {
+    let running = kernel_version.parse::<KernelVersion>();
+    let baseline = CATALOG_KERNEL_BASELINE.parse::<KernelVersion>();
+
+    match (running, baseline) {
+        (Err(_), _) | (_, Err(_)) => DataRow::key_value(
+            i18n::tr("Catalog Baseline"),
+            format!("baseline {CATALOG_KERNEL_BASELINE}"),
+            StyleHint::Dim,
+        ),
+        (Ok(r), Ok(b)) if r > b => DataRow::key_value(
+            i18n::tr("Catalog Baseline"),
+            format!(
+                "{r} is newer than catalog baseline ({b}) \u{2014} \
+                 some indicators may have changed"
+            ),
+            StyleHint::TrustYellow,
+        ),
+        (Ok(r), Ok(b)) if r == b => DataRow::key_value(
+            i18n::tr("Catalog Baseline"),
+            i18n::tr("Catalog baseline matches running kernel"),
+            StyleHint::TrustGreen,
+        ),
+        (Ok(r), Ok(b)) => DataRow::key_value(
+            i18n::tr("Catalog Baseline"),
+            format!(
+                "{r} is older than catalog baseline ({b}) \u{2014} \
+                 update your kernel"
+            ),
+            StyleHint::TrustRed,
+        ),
+    }
+}
+
 /// Build the pinned (fixed) summary rows for the Kernel Security tab.
 ///
 /// Displayed in a fixed pane above the scrollable indicator list, always
@@ -650,7 +718,7 @@ fn append_kernel_contradiction_rows(rows: &mut Vec<DataRow>, count: usize) {
 ///
 /// Summary contents:
 /// - Kernel version (always visible without scrolling — NIST SP 800-53 CM-8)
-/// - Kernel baseline placeholder (reserved for future baseline comparison)
+/// - Catalog baseline comparison — running kernel vs catalog target version
 /// - Total indicators readable from this kernel
 /// - Count of indicators that meet the hardened baseline
 /// - Count of indicators that do not meet the hardened baseline
@@ -668,18 +736,20 @@ fn build_kernel_security_summary_rows(
     // Operators correlate posture findings with the specific kernel under
     // assessment. NIST SP 800-53 CM-8: component inventory.
     //
+    // Catalog baseline row — immediately below the running version so the
+    // operator can see at a glance whether the indicator definitions are
+    // current for this kernel. NIST SP 800-53 CA-7: Continuous Monitoring.
+    //
     // Provenance note — makes clear to the operator that every value below
     // reflects the live running kernel state, not a saved configuration or
-    // cached snapshot. NIST SP 800-53 CA-7: Continuous Monitoring.
-    //
-    // Future: umrs-state will add baseline comparison here (live vs saved
-    // state). Deferred until the state utility is implemented.
+    // cached snapshot.
     let mut rows = vec![
         DataRow::key_value_highlighted(
             i18n::tr("Kernel Version"),
             kernel_version.to_owned(),
             StyleHint::Highlight,
         ),
+        catalog_baseline_row(kernel_version),
         DataRow::key_value(
             "",
             i18n::tr(
@@ -1745,14 +1815,14 @@ fn label_trust_display(trust: &LabelTrust) -> (String, StyleHint) {
             StyleHint::TrustGreen,
         ),
         LabelTrust::IntegrityVerifiedButContradictory {
-            contradiction,
-        } => {
-            let desc: String = contradiction.chars().take(48).collect();
-            (
-                format!("IntegrityVerifiedButContradictory: {desc}"),
-                StyleHint::TrustRed,
-            )
-        }
+            ..
+        } => (
+            // Shorter display form so the label fits without truncation.
+            // The full contradiction description is emitted as a secondary
+            // row in build_trust_summary_rows — see the call site.
+            "Verified w/ Contradiction — T4 integrity + conflict".to_owned(),
+            StyleHint::TrustRed,
+        ),
     }
 }
 
@@ -1833,7 +1903,9 @@ const fn help_text_for_tab(tab_index: usize) -> &'static str {
              MODULE RESTRICTIONS — blacklisted kernel modules\n\
              NETWORK AUDITING    — nf_conntrack accounting\n\
              \n\
-             Red rows require remediation before CUI processing.\n\
+             Red rows do not meet the hardened baseline — review each\n\
+             indicator's description for risk context and remediation\n\
+             priority before CUI processing.\n\
              \n\
              Contradictions (running kernel vs persisted config disagree):\n\
              \u{26a0} DRIFT         — config says hardened but kernel is not;\n\

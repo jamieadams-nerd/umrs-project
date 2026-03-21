@@ -1,0 +1,24 @@
+{
+  "abbreviation": "OCCMTO",
+  "category": "Ocean Common Carrier and Marine Terminal Operator Agreements",
+  "index_group": "Proprietary Business Information",
+  "index_group_abbreviation": "PROPIN",
+  "cui_marking": "CUI//PROPIN/OCCMTO",
+  "dod_detail_url": "https://www.dodcui.mil/Proprietary-Business-Information/Ocean-Common-Carrier-and-Marine-Terminal-Operator-Agreements/",
+  "category_description": null,
+  "required_warning_statement": null,
+  "required_dissemination_control": null,
+  "authorities": [],
+  "applicable_dod_policies": [],
+  "examples": [
+    "Link Disclaimer\tDoD Careers",
+    "FOIA\tUSA Jobs",
+    "USA.gov\tPrivacy & Security",
+    "No FEAR Act\tWeb Policy",
+    "DoD Inspector General\tAccessibility/Section 508",
+    "STAY CONNECTED",
+    "Hosted by Department of War Information Activity - WEB.mil"
+  ],
+  "source": "dodcui.mil",
+  "retrieved_date": "2026-03-21"
+}

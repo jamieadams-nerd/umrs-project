@@ -1,0 +1,150 @@
+= Registry Reconciliation
+:description: Comparison between the UMRS MCS mapping and the authoritative DoD CUI Registry.
+
+This page documents the reconciliation between our existing CUI-LABELS.json mapping and the DoD CUI Registry at `dodcui.mil`.
+The reconciliation was performed on 2026-03-21 by scraping all 113 DoD registry entries and comparing them against our 72-entry mapping.
+
+== Summary
+
+[cols="1,1,2", options="header"]
+|===
+| Status | Count | Meaning
+
+| MATCH
+| 35
+| Our mapping agrees with DoD on abbreviation and parent group
+
+| MISMATCH
+| 18
+| Entry exists in both but the parent group or marking string differs
+
+| MISSING
+| 60
+| In DoD registry but not in our mapping -- needs new MCS category assignment
+
+| OURS_ONLY
+| 18
+| In our mapping but not in the DoD table -- may be NARA-only or synthetic entries
+|===
+
+== HIGH Priority Mismatches
+
+These entries exist in both registries but with different parent group assignments, which changes the CUI marking string.
+Each must be reviewed against the NARA canonical registry before our mapping is updated.
+
+[cols="1,2,2,2", options="header"]
+|===
+| Abbrev | Our Marking | DoD Marking | Issue
+
+| CONTRACT
+| `CUI//PRIVACY/CONTRACT`
+| `CUI//PRIV/CONTRACT`
+| Group abbreviation differs: PRIVACY vs PRIV
+
+| CTI
+| `CUI//CTI`
+| `CUI//DEF/CTI`
+| We treat as standalone; DoD places under Defense
+
+| DCRIT
+| `CUI//CRIT/DCRIT`
+| `CUI//DEF/DCRIT`
+| We place under CRIT; DoD places under Defense
+
+| DREC
+| `CUI//PRIVACY/DREC`
+| `CUI//PRIV/DREC`
+| Group abbreviation differs: PRIVACY vs PRIV
+
+| EXPT
+| `CUI//CTI/EXPT`
+| `CUI//EXPT`
+| We placed under CTI; DoD treats as standalone Export Control group
+
+| EXPTR
+| `CUI//CTI/EXPTR`
+| `CUI//EXPT/EXPTR`
+| We placed under CTI; DoD places under Export Control
+
+| GENETIC
+| `CUI//PRIVACY/GENETIC`
+| `CUI//PRIV/GENETIC`
+| Group abbreviation differs: PRIVACY vs PRIV
+
+| LMI
+| `CUI//GOVT/LMI`
+| `CUI//LGL/LMI`
+| We placed under GOVT; DoD places under Legal
+
+| MIL
+| `CUI//PRIVACY/MIL`
+| `CUI//PRIV/MIL`
+| Group abbreviation differs: PRIVACY vs PRIV
+
+| NNPI
+| `CUI//NNPI`
+| `CUI//DEF/NNPI`
+| We treat as standalone; DoD places under Defense
+
+| OPSEC
+| `CUI//OPSEC`
+| `CUI//INTEL/OPSEC`
+| We treat as standalone; DoD places under Intelligence
+
+| PERS
+| `CUI//PRIVACY/PERS`
+| `CUI//PRIV/PERS`
+| Group abbreviation differs: PRIVACY vs PRIV
+
+| PRIIG
+| `CUI//PRIVACY/PRIIG`
+| `CUI//PRIV/PRIIG`
+| Group abbreviation differs: PRIVACY vs PRIV
+
+| PROT
+| `CUI//PROT`
+| `CUI//IMMG/PROT`
+| We treat as standalone; DoD places under Immigration
+
+| PSEC
+| `CUI//PSEC`
+| `CUI//PAT/PSEC`
+| We treat as standalone; DoD places under Patent
+
+| RAIL
+| `CUI//RAIL`
+| `CUI//TRANS/RAIL`
+| We treat as standalone; DoD places under Transportation
+
+| STUD
+| `CUI//PRIVACY/STUD`
+| `CUI//PRIV/STUD`
+| Group abbreviation differs: PRIVACY vs PRIV
+
+| BUDG
+| `CUI//GOVT/BUDG`
+| `CUI//FNC/BUDG`
+| We placed under GOVT; DoD places under Financial
+|===
+
+=== Analysis
+
+The mismatches fall into three categories:
+
+1. **Group abbreviation difference (7 entries)**: We used `PRIVACY` as the group abbreviation; DoD uses `PRIV`. This is a naming convention issue, not a structural disagreement. Resolution: adopt DoD's `PRIV` abbreviation.
+
+2. **Standalone vs grouped (7 entries)**: We treated certain categories as top-level; DoD nests them under parent groups (Defense, Intelligence, Immigration, Patent, Transportation). The DoD grouping is authoritative for DoD systems. Resolution: adopt DoD's parent group assignments.
+
+3. **Different parent group (4 entries)**: CTI/EXPT under CTI vs Export Control; DCRIT under CRIT vs Defense; LMI under GOVT vs Legal; BUDG under GOVT vs Financial. These require NARA cross-reference before resolution.
+
+CAUTION: Do not update the MCS mapping unilaterally based on DoD alone.
+Cross-reference each HIGH priority mismatch against the NARA canonical registry at `https://www.archives.gov/cui/registry/category-list`.
+If DoD and NARA disagree, flag for Jamie to make the call.
+
+== Machine-Readable Data
+
+The full reconciliation data is available at:
+
+* `references/cui-registry/reconciliation.json` -- every entry with status, markings, and notes
+* `references/cui-registry/reconciliation.adoc` -- generated summary table
+* `references/cui-registry/index.json` -- all 113 DoD entries with full detail page content

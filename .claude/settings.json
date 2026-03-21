@@ -82,12 +82,15 @@
       "Write(refs/**)",
       "Write(/media/psf/repos/umrs-project/.claude/**)",
       "Write(/media/psf/repos/umrs-project/refs/**)",
+      "Write(/media/psf/repos/umrs-project/references/**)",
       "Edit(.claude/**)",
       "Edit(docs/**)",
       "Edit(components/**)",
       "Edit(refs/**)",
+      "Edit(references/**)",
       "Edit(/media/psf/repos/umrs-project/.claude/**)",
       "Edit(/media/psf/repos/umrs-project/refs/**)",
+      "Edit(/media/psf/repos/umrs-project/references/**)",
       "Bash(# Copy unique files from jamies_brain rogue\ncp -n /media/psf/repos/umrs-project/.claude/jamies_brain/.claude/agent-memory/rust-developer/tui_phase*.md /media/psf/repos/umrs-project/.claude/agent-memory/rust-developer/ 2>/dev/null\n\n# Copy unique files from rusty-gadgets rogue \\(security-auditor reviews\\)\ncp -n /media/psf/repos/umrs-project/components/rusty-gadgets/.claude/agent-memory/security-auditor/kernel-tab-content-review.md /media/psf/repos/umrs-project/.claude/agent-memory/security-auditor/ 2>/dev/null\ncp -n /media/psf/repos/umrs-project/components/rusty-gadgets/.claude/agent-memory/security-auditor/three-layer-evaluation-review.md /media/psf/repos/umrs-project/.claude/agent-memory/security-auditor/ 2>/dev/null\n\necho \"Files copied\")",
       "Bash(cd docs:*)",
       "WebFetch(domain:raw.githubusercontent.com)",
@@ -102,6 +105,8 @@
       "Bash(rmdir ../../.claude/jamies_brain/fun/)",
       "Bash(tee /media/psf/repos/umrs-project/.claude/references/xdg-basedir-spec.md echo 'exit: $?')",
       "Bash(tee -a /media/psf/repos/umrs-project/.claude/logs/task-log.md)",
+      "Write(/tmp/**)",
+      "Write(/media/psf/repos/umrs-project/references/**)",
       "Bash(tee /media/psf/repos/umrs-project/.claude/references/**)",
       "Bash(tee .claude/references/**)",
       "Bash(cat *tee /media/psf/repos/umrs-project/.claude/references/**)",
@@ -184,7 +189,9 @@
       "Bash(printf '[2026-03-20 18:00] rust-developer  TUI round 7 \\(summary consolidation\\)  Read,Edit,Write,Bash  success  consolidated indicator line with percentage \\(red when not hardened\\), bright cyan summary labels, evidence chain title removed; 2 new tests; fmt+clippy+test clean\\\\n')",
       "Bash(printf '[2026-03-20 18:30] security-auditor  TUI kernel+evidence tab review  Read  success  14 accurate, 17 concerns, 3 errors; top finding: verification column needs magic disclosure for SP 800-53A; kernel tab needs checkmarks for NO_COLOR; 2 group misplacements\\\\n[2026-03-20 18:30] guest-admin  TUI operator review  Read  success  usability 5/10; 7 HIGH: help dialog bug, no --help, recommendations need commands, module naming ambiguous; solid foundation\\\\n')",
       "Bash(printf '[2026-03-20 19:00] rust-developer  TUI round 8 critical fixes  Read,Edit,Bash  success  help dialog dynamic height+Escape dismiss, checkmarks on kernel indicators \\(NO_COLOR\\), kptr_restrict annotation fix, nf_conntrack\u2192NETWORK AUDITING group, ModulesDisabled\u2192BOOT INTEGRITY; all tests pass\\\\n')",
-      "Bash(printf '[2026-03-20 --:--] rust-developer  Add contradiction indicators to TUI kernel security tab  Read,Edit,Bash\\(cargo\\)  success  Extended IndicatorRow with contradiction+configured_line fields; new indicator_row_full ctor; expand_indicator_row helper; summary row in pinned pane; test pattern updated\\\\n')"
+      "Bash(printf '[2026-03-20 --:--] rust-developer  Add contradiction indicators to TUI kernel security tab  Read,Edit,Bash\\(cargo\\)  success  Extended IndicatorRow with contradiction+configured_line fields; new indicator_row_full ctor; expand_indicator_row helper; summary row in pinned pane; test pattern updated\\\\n')",
+      "Bash(/tmp/evidence_types_research.md:*)",
+      "Read(//tmp/**)"
     ]
   },
   "enabledPlugins": {

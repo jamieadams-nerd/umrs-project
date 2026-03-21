@@ -61,6 +61,15 @@ optimization is meaningful. Do not commit to weekly posting frequency until the
 public site at https://jamieadams-nerd.github.io/ is confirmed indexed and basic
 analytics are flowing. Ask Jamie about this before drafting the first editorial calendar.
 
+## Case Studies, Impact Profiles, and Content Engine (2026-03-21)
+
+- [project-case-studies-and-impact-profiles.md](project-case-studies-and-impact-profiles.md) — CRITICAL: Full case study inventory (12 cases, CUI categories, failure classes, consequences), SP 800-30 Rev 1 impact profile framework (OPS/ASSET/IND/ORG/NATION), the three-pillar CUI enrichment vision, and why this combination is a novel publishable contribution. Read before writing any CUI-related content.
+- [project-content-angles-case-studies.md](project-content-angles-case-studies.md) — Concrete blog series ("Failures That Built UMRS"), YouTube companion series, conference abstract core, canonical pitch line, and phase guardrails for all content in this series.
+
+## Pre-Release Strategy Context (2026-03-21)
+
+- [project-next-big-steps.md](project-next-big-steps.md) — CRITICAL: Full synthesis of Jamie's next-big-steps.md braindump. CUI labeling workstream (no existing plan), umrs-mcs tool concept, test vault, Five Eyes i18n, YouTube channel status, AI documentation audit, Sage publication role expansion, intern discipline, and gap analysis between new items vs already-covered items. Read before strategy session.
+
 ## Release Scope and Content Tracks (2026-03-20)
 
 - [project-release-scope-phase1.md](project-release-scope-phase1.md) — CRITICAL: Exact Phase 1 release scope (CUI labeling + umrs-uname/ls/stat + RHEL 10 deployment guide). NO IMA/EVM. This is what Sage can write about now.

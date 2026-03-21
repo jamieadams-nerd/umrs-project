@@ -1,0 +1,29 @@
+{
+  "abbreviation": "DCNI",
+  "category": "Unclassified Controlled Nuclear Information - Defense",
+  "index_group": "Defense",
+  "index_group_abbreviation": "DEF",
+  "cui_marking": "CUI//DEF/DCNI",
+  "dod_detail_url": "https://www.dodcui.mil/Defense/Defense-Unclassified-Controlled-Nuclear-Information/",
+  "category_description": null,
+  "required_warning_statement": "Department of Defense Unclassified Controlled Nuclear Information Exempt from mandatory disclosure pursuant to 5 U.S.C. 552(b)(3),\u00a0as authorized by 10 U.S.C. 128",
+  "required_dissemination_control": null,
+  "authorities": [],
+  "applicable_dod_policies": [
+    "DoDI 5210.83"
+  ],
+  "examples": [
+    "Physical protection of DoD SNM facilities and equipment",
+    "In-transit security procedures for SNM",
+    "Material control/accountability of SNM",
+    "Link Disclaimer\tDoD Careers",
+    "FOIA\tUSA Jobs",
+    "USA.gov\tPrivacy & Security",
+    "No FEAR Act\tWeb Policy",
+    "DoD Inspector General\tAccessibility/Section 508",
+    "STAY CONNECTED",
+    "Hosted by Department of War Information Activity - WEB.mil"
+  ],
+  "source": "dodcui.mil",
+  "retrieved_date": "2026-03-21"
+}

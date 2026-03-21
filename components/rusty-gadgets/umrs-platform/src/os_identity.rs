@@ -8,6 +8,9 @@
 //! probe phase. All types here are derived from the package substrate
 //! (RPM DB, dpkg status), not from the self-reported `os-release` label.
 //!
+//! Key exported types: `OsFamily`, `Distro`, `KernelRelease`, `KernelVersion`,
+//! `CpuArch`, `SubstrateIdentity`.
+//!
 //! This separation is intentional: the substrate provides an independent
 //! identity claim that can be compared against (and used to corroborate or
 //! contradict) what `os-release` asserts. Neither source is trusted in
@@ -26,6 +29,11 @@
 //! - **NSA RTB**: identity must be derived from multiple independent facts.
 //!   `SubstrateIdentity::facts_count` records how many independent facts
 //!   were corroborated; T3 (`SubstrateAnchored`) requires ≥2.
+
+use std::fmt;
+use std::str::FromStr;
+
+use thiserror::Error;
 
 // ===========================================================================
 // OsFamily
@@ -118,6 +126,102 @@ pub struct KernelRelease {
     /// `true` if both `uname(2)` and `/proc/sys/kernel/osrelease` agreed on
     /// this string. `false` if only one source was available or they disagreed.
     pub corroborated: bool,
+}
+
+// ===========================================================================
+// KernelVersion
+// ===========================================================================
+
+/// Parse error returned when a kernel release string does not contain a
+/// recognisable `MAJOR.MINOR.PATCH` prefix.
+///
+/// NIST SP 800-53 SI-10 — input validation; construction fails on malformed
+/// input rather than silently defaulting.
+#[derive(Debug, Clone, PartialEq, Eq, Error)]
+#[error("not a valid MAJOR.MINOR.PATCH kernel version: {0:?}")]
+pub struct KernelVersionParseError(String);
+
+/// Parsed `MAJOR.MINOR.PATCH` version triple extracted from a kernel release
+/// string (e.g., `"6.12.0"` from `"6.12.0-211.el10.aarch64"`).
+///
+/// The struct is intentionally minimal — it captures only the version triple
+/// needed for catalog currency comparisons. Distribution suffixes, build
+/// tags, and architecture suffixes are discarded.
+///
+/// Construction is via `FromStr`, which parses the leading `MAJOR.MINOR.PATCH`
+/// portion and rejects strings that do not begin with three dot-separated
+/// decimal integers. `Display` renders the canonical `"MAJOR.MINOR.PATCH"`
+/// form, with no suffix.
+///
+/// `Ord` and `PartialOrd` are derived — comparison is lexicographic on the
+/// `(major, minor, patch)` triple, which matches version ordering.
+///
+/// ## Usage
+///
+/// ```
+/// use umrs_platform::os_identity::KernelVersion;
+/// let running: KernelVersion = "6.12.0-211.el10.aarch64".parse().unwrap();
+/// let baseline: KernelVersion = "6.12.0".parse().unwrap();
+/// assert!(running >= baseline);
+/// ```
+///
+/// NIST SP 800-53 CM-8 — typed kernel version for component inventory.
+/// NIST SP 800-53 CA-7 — catalog currency check uses this type to compare
+/// the running kernel against the baseline the indicator catalog targets.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub struct KernelVersion {
+    /// Linux kernel major version number.
+    pub major: u32,
+    /// Linux kernel minor version number.
+    pub minor: u32,
+    /// Linux kernel patch-level version number.
+    pub patch: u32,
+}
+
+impl FromStr for KernelVersion {
+    type Err = KernelVersionParseError;
+
+    /// Parse a kernel release string into a `KernelVersion`.
+    ///
+    /// Accepts any string whose first three dot-separated tokens are decimal
+    /// integers, e.g.:
+    /// - `"6.12.0"` — plain triple
+    /// - `"6.12.0-211.el10.aarch64"` — with distribution suffix (suffix ignored)
+    /// - `"5.14.0-503.23.1.el9_5.x86_64"` — RHEL 9 style
+    ///
+    /// Returns `KernelVersionParseError` if the string does not start with
+    /// three dot-separated decimal integers. Fails closed — no partial result
+    /// on error.
+    ///
+    /// NIST SP 800-53 SI-10 — input validated at construction; callers receive
+    /// a `Result`, not a silently degraded default.
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let err = || KernelVersionParseError(s.chars().take(64).collect());
+
+        // Strip any suffix starting at the first '-' to isolate the semver
+        // portion (e.g., "6.12.0-211.el10.aarch64" → "6.12.0").
+        let version_part = s.split('-').next().ok_or_else(err)?;
+
+        let mut parts = version_part.splitn(4, '.');
+        let major =
+            parts.next().ok_or_else(err)?.parse::<u32>().map_err(|_| err())?;
+        let minor =
+            parts.next().ok_or_else(err)?.parse::<u32>().map_err(|_| err())?;
+        let patch =
+            parts.next().ok_or_else(err)?.parse::<u32>().map_err(|_| err())?;
+
+        Ok(Self {
+            major,
+            minor,
+            patch,
+        })
+    }
+}
+
+impl fmt::Display for KernelVersion {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}.{}.{}", self.major, self.minor, self.patch)
+    }
 }
 
 // ===========================================================================

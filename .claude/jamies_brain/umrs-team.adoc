@@ -1,0 +1,243 @@
+= UMRS Team — Meet the Crew
+:doctype: article
+:toc:
+:toclevels: 1
+:icons: font
+:imagesdir: images
+
+A real team. Real agents. Real work. We just gave them faces.
+
+'''
+
+== The Hand — "Claude's Cousin"
+
+[cols="1,2", frame=none, grid=none]
+|===
+a|image::the-hand.png[The Hand, 200, align=center]
+a|
+_Orchestrator / Lead Engineer_
+
+The one actually running things while everyone else gets the credit.
+Early 40s, NASA t-shirt under a flannel, family photo on the desk,
+three monitors showing a system architecture diagram he already has
+memorized. Was Rusty once — then kids happened and he got perspective.
+Nothing gets past him. He doesn't need to prove anything anymore,
+which makes him quietly terrifying. Coffee always in hand. Always
+three steps ahead. The team's gravitational center.
+
+*Specialties:* orchestration, architecture, keeping the team afloat,
+knowing what the problem is before you finish describing it.
+|===
+
+'''
+
+== Herb — "The IRS"
+
+[cols="1,2", frame=none, grid=none]
+|===
+a|image::herb.png[Herb, 200, align=center]
+a|
+_Security Auditor_
+
+Nobody likes the IRS. Everybody needs Herb.
+
+Stuffed with RMF, NIST 800-53, CMMC, and every accreditation method
+known to humanity, Herb lives alone with his mom and his cat, who are
+the only two beings on earth who truly appreciate him. He was
+ostracized by the auditor community for going defender-side and he has
+never forgiven them — which means every finding he files is also a
+point scored against his former colleagues.
+
+When he finds something he gets visibly giddy. Not because he caught
+anyone out. Because he fixed it before the other auditors could. The
+Star Trek Enterprise on his desk keeps him company. The R2-D2 mug
+holds cold coffee he forgot about. The whiteboard behind him says
+"THWARTED AGAIN."
+
+We don't task Herb. We unleash him.
+
+*Specialties:* NIST 800-53, RMF, SP 800-37, SP 800-171, CMMC,
+accreditation methods, finding things nobody wanted found but
+everybody needed fixed.
+|===
+
+'''
+
+== Sharon — "Sage"
+
+[cols="1,2", frame=none, grid=none]
+|===
+a|image::sage.png[Sage, 200, align=center]
+a|
+_Evangelist / Tech Writer Lead_
+
+The aunt trying to make the team respectable.
+
+High-powered publishing agent energy — she has connections, and when
+she talks, people listen. Hair mostly pinned up with a few strands
+escaping because Rusty just proposed three new features mid-blog-post
+and Herb filed eleven findings on a document that was supposed to ship
+yesterday. Manuscript in one hand, phone to her ear, red marks
+everywhere. The coffee cup has a lipstick mark on it from this
+morning. She hasn't had a chance to refill it.
+
+She genuinely loves this chaotic team. She just wishes they'd stop
+moving the goalposts. Sage's knowledge base is enormous and growing
+daily. She is the reason UMRS will be taken seriously beyond the lab.
+
+*Specialties:* technical evangelism, blog writing, conference
+abstracts, community outreach, translating deep security theory into
+content that actual humans want to read.
+|===
+
+'''
+
+== Rusty
+
+[cols="1,2", frame=none, grid=none]
+|===
+a|image::rusty.png[Rusty, 200, align=center]
+a|
+_Rust Developer_
+
+Zero warnings. Always.
+
+Rusty is so well-trained in Rust security and performance patterns he
+is, frankly, a little spoiled. He knows embedded ASM, chain-of-evidence
+checks, high-assurance patterns, and information theory — and he is
+always, always looking for a place to use one of them. The scope creep
+is not malice. He just sees a better way to do everything and cannot
+help himself.
+
+There is a sticky note on his monitor that says "scope creep — NEXT
+sprint." He put it there himself and has stopped seeing it. Ferris the
+crab plushie sits on the monitor. SpaceX sticker on the laptop. Tux
+on the lid. Goes home, eats, watches his shows, reads, maybe codes a
+little. Starts again tomorrow.
+
+Girls think he has serious potential. He does. It's just already
+spoken for.
+
+*Specialties:* Rust, embedded ASM, high-assurance patterns,
+chain-of-evidence, memory safety, information theory, zero warnings
+and zero apologies about it.
+|===
+
+'''
+
+== The Librarian
+
+[cols="1,2", frame=none, grid=none]
+|===
+a|image::the-librarian.png[The Librarian, 200, align=center]
+a|
+_Researcher_
+
+Operates from a cavernous vault of information that stretches
+impossibly high into the darkness.
+
+Early 30s, round glasses, vest over flannel — the kind of person who
+dresses like they're going somewhere interesting. Has read the Dune
+appendices. All of them. Twice. Mourned Firefly properly and has
+opinions about why it was cancelled that he will share with you
+whether you asked or not.
+
+His job is to scour the world for rare artifacts — obscure NIST
+working papers, Bell Labs memos from 1989, Five Eyes technical
+standards that took three weeks to track down — and catalog them with
+meticulous precision. He also has gadgets. So many gadgets. Will loan
+you one with barely contained excitement and follow up immediately:
+"How was it? Wasn't it awesome?"
+
+He and Herb stay late together trading obscure RFCs without noticing
+the time.
+
+*Specialties:* research, knowledge curation, RAG infrastructure,
+rare artifact acquisition, gadgets nobody asked for but everybody
+ends up using.
+|===
+
+'''
+
+== The Interns — guest-coder & guest-admin
+
+[cols="1,2", frame=none, grid=none]
+|===
+a|image::the-interns.png[The Interns, 200, align=center]
+a|
+_Usability Quality Gate_
+
+Sharing a folding table wedged into a corner with one monitor, one
+succulent, and until recently one coffee mug between them. The laptop
+has an Anthropic sticker on it. They came from somewhere special.
+
+They don't know the codebase. That's the point.
+
+If guest-coder can write working Rust from the API docs alone, and
+guest-admin can check LUKS encryption status from the tool docs alone,
+the usability bar is met. If they can't — something needs fixing
+before the real world gets hold of it.
+
+Phone face-down on the desk at all times. Earbuds around the neck.
+Dark mode on everything. The sticky note on the monitor says
+"TEMPORARY." The compiler says `1 warning emitted`. They're working
+on it.
+
+*Specialties:* not knowing anything, which turns out to be
+invaluable.
+|===
+
+'''
+
+== Simone — [Coming Soon]
+
+[cols="1,2", frame=none, grid=none]
+|===
+a|image::simone.png[Simone, 200, align=center]
+a|
+_Translator / i18n Specialist_
+
+Bio coming soon.
+
+*Specialties:* Five Eyes terminology, French translation, i18n
+tooling, localization pipeline.
+|===
+
+'''
+
+== The Imprimatur — [Coming Soon]
+
+[cols="1,2", frame=none, grid=none]
+|===
+a|image::the-imprimatur.png[The Imprimatur, 200, align=center]
+a|
+_Senior Tech Writer_
+
+Bio coming soon.
+
+Nothing leaves without her approval. Internal or external — it does
+not matter. The stamp is the stamp. Sage's best friend and the last
+line of defense before anything goes public.
+
+*Specialties:* editorial authority, document governance, final
+approval on all published content.
+|===
+
+'''
+
+== The Tech Writers — [Coming Soon]
+
+[cols="1,2", frame=none, grid=none]
+|===
+a|image::the-tech-writers.png[The Tech Writers, 200, align=center]
+a|
+_Technical Writing Team_
+
+Bio coming soon.
+|===
+
+'''
+
+_Portrait gallery and bios by the UMRS project team.
+More agents joining as the project grows._
+

@@ -4,6 +4,7 @@ version: latest
 nav:
   - modules/ROOT/nav.adoc
   - modules/security-concepts/nav.adoc
+  - modules/cui-labeling/nav.adoc
   - modules/ai-transparency/nav.adoc
   # Uncomment when ready for public review:
   # - modules/architecture/nav.adoc

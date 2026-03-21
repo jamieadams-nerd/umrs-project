@@ -1,0 +1,33 @@
+{
+  "abbreviation": "SGI",
+  "category": "Safeguards Information",
+  "index_group": "Nuclear",
+  "index_group_abbreviation": "NUC",
+  "cui_marking": "CUI//NUC/SGI",
+  "dod_detail_url": "https://www.dodcui.mil/Nuclear/Safeguards-Information/",
+  "category_description": null,
+  "required_warning_statement": null,
+  "required_dissemination_control": null,
+  "authorities": [],
+  "applicable_dod_policies": [],
+  "examples": [
+    "Protective measures",
+    "\u200bInterim compensatory measures",
+    "Composite physical security plan for facility/site",
+    "Site specific design features of plant security communications systems",
+    "Physical security orders and procedures issued by the licensee for members of the security organization detailing duress codes, patrol routes and schedules, or responses to security contingency events",
+    "Lock combinations, mechanical key design, or passwords integral to the physical security system",
+    "Descriptions of security activities which disclose features of the physical security system or response measures Information relating to onsite or offsite response forces, including size, armament of the response forces, and arrival times of such forces committed to respond to security contingency events",
+    "Site specific drawings, diagrams, sketches, or maps that substantially represent the final design features of the physical security system",
+    "Alarm system layouts showing the location of intrusion detection devices, alarm assessment equipment, alarm system wiring, emergency power sources for security equipment, and duress alarms",
+    "Link Disclaimer\tDoD Careers",
+    "FOIA\tUSA Jobs",
+    "USA.gov\tPrivacy & Security",
+    "No FEAR Act\tWeb Policy",
+    "DoD Inspector General\tAccessibility/Section 508",
+    "STAY CONNECTED",
+    "Hosted by Department of War Information Activity - WEB.mil"
+  ],
+  "source": "dodcui.mil",
+  "retrieved_date": "2026-03-21"
+}
