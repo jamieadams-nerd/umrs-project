@@ -1,0 +1,601 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head profile="http://dublincore.org/documents/2007/11/05/dc-html/">
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>Physics Subject Headings (IEKO)</title>
+<link rel="stylesheet" type="text/css" href="../isko.css" />
+<link rel="schema.DCTERMS" href="http://purl.org/dc/terms/" />
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:url" content="https://www.isko.org/cyclo/physh" />
+<meta name="twitter:title" content="Physics Subject Headings (ISKO Encyclopedia of KO)" />
+<meta property="og:image" content="https://www.isko.org/cyclo/smith.jpg" />
+<meta name="twitter:description" content="PhySH (Physics Subject Headings) was developed by the American Physical Society and first used in 2016 as a faceted hierarchical controlled vocabulary for physics, with some basic terms from related fields. It was developed mainly for the purpose of associating subjects with papers submitted to and published in the Physical Review family of journals. This article describes the development, structure, and use of PhySH. The scheme is organized at the top level with a two-dimensional classification, with one dimension (labeled 'Disciplines') representing professional divisions within physics, and the other dimension (labeled 'Facets') providing a conceptual partitioning of terms. PhySH was preceded in use by PACS (Physics and Astronomy Classification Scheme), which was in turn preceded by more ad hoc approaches, and this history and related vocabularies or categorizations will also be briefly discussed." />
+
+<meta name="DCTERMS.title" content="Physics Subject Headings (PhySH)" />
+<meta name="DCTERMS.creator" content="Arthur Smith" />
+<meta name="DCTERMS.issued" content="2019" />
+<meta name="DCTERMS.relation.ispartof" content="ISKO Encyclopedia of Knowledge Organization" />
+<meta name="DCTERMS.ispartof" content="ISKO Encyclopedia of Knowledge Organization" />
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="001.012">
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="025.4">
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="530">
+<meta name="DCTERMS.subject.keyword" content="controlled vocabulary">
+<meta name="DCTERMS.subject.keyword" content="physics">
+<meta name="DCTERMS.type" content="Text" />
+<meta name="DCTERMS.format" content="text/html" />
+<meta name="DCTERMS.identifier" content="https://www.isko.org/cyclo/physh" />
+
+<style>
+a {text-decoration: none;}
+a:hover {text-decoration:underline;}
+table td, table th { padding: 5px; }
+</style>
+</head>
+<body>
+
+<a name="top"></a>
+
+<table>
+
+<tr>
+<td id="isko"><h1>I S K O</h1></td>
+<td id="banner"><h2><a href="index.html" style="text-decoration:none;">Encyclopedia of Knowledge Organization</h2></a></td>
+</tr>
+
+<tr>
+<td id="navigation">
+<a href="../index.php">home</a>
+<a href="../about.html">about ISKO</a>
+<a href="../join.html">join ISKO</a>
+<a href="../ko.html"><cite>Knowledge Organization</cite> journal</a>
+<a href="../events.html">ISKO events</a>
+<a href="../chapters.html">ISKO chapters</a>
+<a href="../people.html">ISKO people</a>
+<a href="../pubs.html">ISKO publications</a>
+<a href="index.html">Encyclopedia</a>
+<a href="../lit.html">KO literature</a>
+<a href="../inst.html">KO institutions</a>
+<a href="http://bartoc.org/" title="link to BARTOC">&#8663; KOS registry</a>
+<a href="https://www.isko-mms.net/" title="access-account required">&#128274; members</a>
+<a href="../contact.html">contact us</a>
+</td>
+<td id="content" rowspan="2">
+
+<a class="menu" href="authors#h">edited by Birger Hj&oslash;rland</a> <a class="menu" href="authors#g">and Claudio Gnoli</a>
+
+<p>&nbsp;
+
+<div itemscope itemtype="http://schema.org/Article">
+<h2 itemprop="headline">Physics Subject Headings (PhySH)</h2>
+</div>
+
+<blockquote>
+by <a href="authors#s" style="text-decoration:underline">Arthur Smith</a></p>
+
+<p>Table of contents:
+<br><a style="text-decoration:none;" href="#1">1.	Introduction</a>
+<br><a style="text-decoration:none;" href="#2">2.	History of knowledge organization in the English physics literature</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#2.1">2.1	Physics classification in the 19th and early 20th centuries</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#2.2">2.2	Physical Review hierarchical index</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#2.3">2.3	Physics and Astronomy Classification Scheme (PACS)</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#2.4">2.4	Other related vocabularies and classification schemes</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#2.5">2.5	Development of PhySH</a>
+<br><a style="text-decoration:none;" href="#3">3.	PhySH structure and usage</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#3.1">3.1	PhySH Concepts</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#3.2">3.2	PhySH Disciplines</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#3.3">3.3	PhySH Facets</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#3.4">3.4	Using PhySH</a>
+<br><a style="text-decoration:none;" href="#4">4.	Governance, updates, and impact</a>
+<br><a style="text-decoration:none;" href="#5">5.	Evaluation and considerations for the future</a>
+<br><a style="text-decoration:none;" href="#6">6.	Conclusions</a>
+<br><a style="text-decoration:none;" href="#ack">Acknowledgments</a>
+<!-- br><a style="text-decoration:none;" href="#end">Endnotes</a -->
+<br><a style="text-decoration:none;" href="#ref">References</a>
+<br><a style="text-decoration:none;" href="#col">Colophon</a>
+
+<p><strong>Abstract</strong>:
+<br>PhySH (Physics Subject Headings) was developed by the American Physical Society and first used in 2016 as a faceted hierarchical controlled vocabulary for physics, with some basic terms from related fields. It was developed mainly for the purpose of associating subjects with papers submitted to and published in the <i>Physical Review</i> family of journals. 
+This article describes the development, structure, and use of PhySH.  The scheme is organized at the top level with a two-dimensional classification, with one dimension (labeled &ldquo;Disciplines&rdquo;) representing professional divisions within physics, and the other dimension (labeled &ldquo;Facets&rdquo;) providing a conceptual partitioning of terms. PhySH was preceded in use by PACS (Physics and Astronomy Classification Scheme), which was in turn preceded by more ad hoc approaches, and this history and related vocabularies or categorizations will also be briefly discussed.</p>
+
+</blockquote>
+
+<!--
+<div align="center"><figure>
+<img src=".jpg" title="Fig. : Caption" width="40%">
+<figcaption>Figure : Caption</figcaption>
+</figure></div>
+
+<blockquote>
+<table border="1">
+<p><caption><i>Table 1: </i></caption><br>&nbsp;</p>
+<tr>
+<td></td>
+<td></td>
+</tr><tr>
+<td></td>
+<td></td>
+</tr>
+</table>
+</blockquote>
+-->
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="1"></a>
+<h3>1. Introduction</h3>
+
+<p>The study of the natural world has been going on since almost the earliest recorded history, but &ldquo;physics&rdquo; as a distinct field, as with most of the other major specializations in science, dates to around the turn of the 19th century. The entities studied by physicists range from the simple to the complex and from real-world objects to highly abstract mathematical theories. Physicists try to understand physical systems through detailed observations, reductionist analysis, and mathematical modeling, with a general (though far from uniform) division of labor between those doing experiments with real systems and those working on theories to explain or predict observational phenomena.</p>
+
+<p>As a significant area of scientific research, physics has received some attention in general knowledge organization or subject classification schemes: section <code>530</code> of the Dewey Decimal Classification (DDC) and the Universal Decimal Classification (UDC), subclass <code>QC</code> in the Library of Congress classification, class <code>C</code> in Ranganathan&rsquo;s &rarr; <a href="colon_classification">Colon Classification</a> (<a href="#refS">Satija 2017</a>), and class <code>B</code> in the Bliss Classification. These all allow for somewhat detailed subdivisions of the field, but (with the exception of the Bliss Classification, discussed later) their main subcategories for physics tend to focus on areas that were of interest 100 years ago which have generally not been major research fields for many decades. Mechanics, for example, is a relatively minor area of current physics research, but occupies sections <code>531</code> to <code>534</code> in the UDC. Condensed matter physics which accounts for close to half of current basic physics research is confined to <code>538.9</code>. Elementary particle or high energy physics is not even mentioned in the UDC summary table (<a href="#refU">UDC Consortium 2012</a>); it is buried deeper in <code>539.1</code> which has the label &ldquo;Nuclear physics. Atomic physics. Molecular physics&rdquo;. These classifications may be sufficient for the relatively small number of books published in the field, but are not nearly comprehensive enough to usefully group the millions of scientific papers. Instead, much more detailed systems for knowledge organization have been developed by physicists themselves, and particularly by the organizations publishing and providing indexes to physics research in recent decades.</p>
+
+<p>This article describes the development and structure of PhySH (Physics Subject Headings), a recently developed controlled vocabulary for physics from the American Physical Society. It also covers some other classification systems from related fields or previously used in physics.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2"></a>
+<h3>2. History of knowledge organization in the English physics literature</h3>
+
+<a name="2.1"></a>
+<h4><br>2.1 Physics classification in the 19th and early 20th centuries</h4>
+
+<p>As with much of the science literature, publications in physics have grown exponentially since at least the 1950s. Forman et al. (<a href="#refF">1975</a>) found the number of articles published annually in the field in the late 1800s was on the order of 2000, with Germany the leading nation for physics research at the time. The size of the English-language literature in the field was less than half that total. The new <i>Physical Review</i> journal begun at Cornell University in 1893 published only 63 papers in the year 1900 (<a href="#refA">American Physical Society 2019</a>), several of which were book reviews.</p>
+
+<p>Even with a much smaller literature size than at present, abstracting and indexing was found to be useful: <i>Science Abstracts</i> started in 1898 (<a href="#refI">Institute of Engineering and Technology 1998</a>) and included a subject index from the first year. By 1902 <i>Science Abstracts</i> had split into a part A (Physics) and B (Electrical Engineering), and after 1941 part A was simply known as <i>Physics Abstracts</i>; the publications formed the basis for the computer-based INSPEC (Information Service in Physics, Electrotechnology and Control)  service in 1967, still with us today.</p>
+
+<p>The <i>Physical Review</i> also had its own end-of-volume indexes before 1900, but these were initially just alphabetized lists of author names and words pulled from article titles. In 1923 the author index and an &ldquo;Analytic Subject Index&rdquo; were separated; the latter was a flat alphabetized list of less than 100 classifying terms across all of physics, with a list of matching articles provided under each term.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2.2"></a>
+<h4>2.2 Physical Review hierarchical index</h4>
+
+<p>By 1964 the <i>Physical Review</i> had grown to about the size of the entire worldwide physics literature of the year 1900, with 1873 published articles. The end-of-volume &rarr; <a href="alphabetization">alphabetic</a> subject lists seemed no longer sufficient, and a new hierarchical classification with decimal &rarr; <a href="notation">notation</a> was introduced by the editors. The ordering and hierarchy imposed by the notation had a logic that physicists would appreciate, with higher numbers corresponding generally to higher energy phenomena.  At the bottom was <code>0</code> (for general physics), and at the top <code>60</code> (for particles and fields). Individual terms had whole number or one-digit-after-the-decimal codes, for example &ldquo;Classical Mechanics&rdquo; was <code>2</code> (under <code>0</code> &ldquo;General&rdquo;), &ldquo;Magnetohydrodynamics&rdquo; was <code>33.4</code> (under <code>33</code> &ldquo;Plasma Physics&rdquo; which was part of <code>30</code> &ldquo;Physics of Fluids&rdquo;), <code>54.9</code> was &ldquo;Nuclear Fission&rdquo; (under <code>54</code> &ldquo;Nuclear Reactions and Scattering&rdquo; and <code>50</code>  &ldquo;Physics of Nuclei&rdquo;), etc. There was also a special classification code above the top subject-related code &mdash; <code>70</code> &mdash; for Errata (articles published as corrections to previously published articles). The decimal format resembled and may have been inspired by the Mathematics Subject Classification codes which had used a 2-digit + 1  or 2-digit + 2 decimal notation starting in 1940 (<a href="#refA">American Mathematical Society 2019</a>).</p>
+
+<p>This subject notation system soon had a profound effect directly on the structure of the journal. The 3377 articles published in 1970 were split among 4 new journals: <i>Physical Review A</i> which covered the topics under headings <code>0</code>, <code>10</code>, <code>20</code> and <code>30</code> (general, atomic, molecular, optical and fluid physics and related topics), <i>Physical Review B</i> had the topics under <code>40</code> (solid state physics), <i>Physical Review C</i> had <code>50</code> (nuclear physics) and <i>Physical Review D </i>had <code>60</code> (particles and fields). These divisions remain today, although in 1995 <i>Physical Review A</i> was further split, adding a new journal <i>Physical Review E</i> to cover some of the general, interdisciplinary, and fluid physics topics. <i>Physical Review Letters</i>, a weekly publication for short high-impact papers that had been started in 1958, also in 1970 started sorting articles according to this decimal notation, with general physics papers at the front and particle physics papers at the back of each issue.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2.3"></a>
+<h4>2.3 Physics and Astronomy Classification Scheme (PACS)</h4>
+
+<p>Since the problem of &rarr; <a href="classification">classification</a>  in physics was not unique to the <i>Physical Review</i> journals published by the American Physical Society, in the early 1970s several organizations got together to develop a more uniform system, which became the Physics and Astronomy Classification Scheme (PACS). The process was described in an editorial by Krumhansl and Trigg in April 1975 in <i>Physical Review Letters</i>:</p>
+
+<blockquote>
+Several years ago, negotiations began between the American Institute of Physics (AIP), the major publishers of physics literature in English, and the Institution of Electrical Engineers (IEE), publishers of the principal English-language abstract journal, <i>Physics Abstracts</i>. Eventually other discussants were brought in, and the whole business was brought under the aegis of the Abstracting Board of the International Council of Scientific Unions (ICSU-AB). [&hellip;] this scheme has been accepted by ICSU-AB, the AIP, and the IEE, as well as some non-English abstracting journals. [&hellip;] Reflecting this change, the grouping of papers in <i>Physical Review Letters</i> will also be changed to incorporate the PACS headings.
+</blockquote>
+
+<p>PACS outwardly resembled the Physical Review Hierarchical Index with hierarchy organized using a decimal notation that at the top level went from <code>00</code> to <code>99</code>, with the ten top headings (<code>00</code>, <code>10</code>, <code>20</code>, etc.) representing the major subject areas. However it was internally significantly more detailed, having two digits after the first <code>.</code>, and then another <code>.</code> character followed by a final <code>+</code> (indicating no further hierarchy) or <code>-</code> (indicating there were additional terms at a lower level), or an upper-case letter for those lower-level terms. All of this was followed by a final lower-case letter used as a checksum (to limit errors in manual retyping of the codes). In the final few editions of PACS an additional layer in the hierarchy was added by abandoning that final checksum letter, using a <code>-</code> character to indicate there were sublevels, and then the lower-level codes were added with a lower-case version of the first letter, and a final lower-case letter that was simply incremented to indicate different sub-classifications. </p>
+
+<p>PACS also largely reversed the orientation of the earlier index, ordering roughly by the distance scale involved rather than by energy, so that <code>10</code> now represented the highest energy &ldquo;elementary particles and fields&rdquo;, <code>20</code> was now &ldquo;nuclear physics&rdquo;, while the burgeoning field of condensed matter physics took both the <code>60</code> and <code>70</code> sections. As suggested by Krumhansl and Trigg in their editorial, this necessitated a substantial reordering of the <i>Physical Review Letters</i> table of contents, from July 1975. Those top-level groupings for physics defined by PACS have had a much broader impact as they have been widely used in other classification and related analysis work on physics, even very recently. For example Desale and Kumbhar (<a href="#refD">2017</a>) base their &ldquo;First order array divisions&rdquo; (table 3.4) largely on those top-level PACS codes. Radicchi and Castellano (<a href="#refR">2011</a>) in their analysis of citation patterns in physics similarly subdivide the analysis according to that top-level PACS code.</p>
+
+<p>Some examples of the PACS codes included <code>52.30.+r</code> &lsquo;Plasma flow; magnetohydrodynamics&rsquo; (under <code>52.</code> &lsquo;The physics of plasmas and electric discharges&rsquo;, and <code>50.</code> &rsquo;Fluids, Plasmas and Electric discharges&rsquo;); <code>24.80.+y</code> &lsquo;Fission&rsquo; (under <code>24.</code> &lsquo;Nuclear reactions and scattering, general&rsquo;, and <code>20.</code> &lsquo;Nuclear physics&rsquo;) and <code>72.10.Jp</code> &lsquo;Thermoelectric effects&rsquo; (under <code>72.10.-d</code> &rsquo;Electronic conduction in metals and alloys&rsquo;, <code>72.</code> &rsquo;Electronic transport in condensed matter&rsquo;, and <code>70. </code> &rsquo;Condensed matter: electronic structure, electric, magnetic, and optical properties&rsquo;).</p>
+
+<p>PACS changed substantially over time. There were at least 23 distinct versions from 1975 to 2010, growing from about 1600 to almost 5300 categories (some were also deleted on the way). The most dramatic year-to-year change was from 1976 to 1977, when there was a slight reordering and about 30% more terms were added at once.</p>
+
+<p>As a classification scheme PACS was designed to allow a single code to characterize the full scope of a work, so the &ldquo;leaf nodes&rdquo; or narrowest classes of the scheme tended to combine multiple aspects or facets of the subject at hand, leading to some combinatorial complexity. As a result the labels were often not unique, with meaning determined not just by the label attached to the code in the scheme, but to the hierarchy in which it sat. For example the 1975 scheme had a second entry with exactly the same &lsquo;Thermoelectric effects&rsquo; label with code <code>72.20.Pa</code>, which placed it under <code>72.20.-i</code> &lsquo;Conductivity phenomena in semiconductors and insulators&rsquo; &mdash; i.e. the same phenomenon but in a different sort of system from the metals and alloys of the other code. PACS was not consistent in whether it was the system or the phenomenon or some other aspect that provided the finest layer of detail within a class; in contrast to the thermoelectric example we can look at the case of fullerenes, first introduced into the scheme with the 1993 edition, and which appeared in 10 different classifications by the 2010 edition &mdash; see Table 1.</p>
+
+<blockquote>
+<table border="1">
+<p><caption><i>Table 1: Fullerenes in the 2010 PACS edition</i></caption></p>
+<tr>
+<th>Code</th>
+<th>Label</th>
+<th>Parent</th>
+</tr><tr>
+<td><code>61.48.-c</code></td>
+<td>Structure of fullerenes and related hollow and planar molecular structures</td>
+<td><code>61.</code> Structure of solids and liquids&hellip;</td>
+</tr><tr>
+
+<td><code>68.35.bp</code></td>
+<td>Fullerenes</td>
+<td><code>68.35.B-</code> Structure of clean surfaces</td>
+</tr><tr>
+
+<td><code>68.55.ap</code></td>
+<td>Fullerenes</td>
+<td><code>68.55.A-</code> Nucleation and growth</td>
+</tr><tr>
+
+<td><code>71.20.Tx</code></td>
+<td>Fullerenes and related materials; intercalation compounds</td>
+<td><code>71.20.-b</code> Electron density of states and band structure of crystalline solids</td>
+</tr><tr>
+
+<td><code>72.80.Rj</code></td>
+<td>Fullerenes and related materials</td>
+<td><code>72.80.-r</code> Conductivity of specific materials</td>
+</tr><tr>
+
+<td><code>73.61.Wp</code></td>
+<td>Fullerenes and related materials</td>
+<td><code>73.61.-r</code> Electrical properties of specific thin films</td>
+</tr><tr>
+
+<td><code>78.30.Na</code></td>
+<td>Fullerenes and related materials</td>
+<td><code>78.30.-j</code> Infrared and Raman spectra</td>
+</tr><tr>
+
+<td><code>78.40.Ri</code></td>
+<td>Fullerenes and related materials</td>
+<td><code>78.40.-q</code> Absorption and reflection spectra: visible and ultraviolet</td>
+</tr><tr>
+
+<td><code>78.66.Tr</code></td>
+<td>Fullerenes and related materials</td>
+<td><code>78.66.-w</code> Optical properties of specific thin films</td>
+</tr><tr>
+
+<td><code>81.05.ub</code></td>
+<td>Fullerenes and related materials</td>
+<td><code>81.05.U-</code> Carbon/carbon-based materials (part of <code>81.05.-t</code> Specific materials: fabrication, treatment, testing, and analysis)</td>
+</tr>
+
+</table>
+</blockquote>
+
+<p>This sort of complexity made PACS difficult for ordinary physicists to use; few practicing researchers could remember even a few of the codes relevant to their research. Full-text search and other electronic capabilities by the early 2000&rsquo;s had made some of the other purposes of the classification no longer relevant, so the owners of the classification at the American Institute of Physics (AIP) decided to make 2010 the last edition of PACS.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2.4"></a>
+<h4>2.4 Other related vocabularies and classification schemes</h4>
+
+<p>The Bliss Classification, one of the general knowledge classification schemes mentioned in the introduction (and widely used by UK libraries), has been undergoing a major revision since 1969 (<a href="#refM">Mills and Broughton 1977</a>) with the new version denoted &lsquo;BC2&rsquo;. Both the original (BC1) and new classifications have a prominent physics class with the physics schedule for BC2 published in 1997 (<a href="#refM">Mills and Broughton 1997</a>). The Bliss classification interestingly uses the same terminology of &ldquo;disciplines&rdquo; and &rarr; &ldquo;<a href="facet_analysis">facets</a>&rdquo; that was (apparently independently) adopted by PhySH, though in BC2 the disciplines are only the highest-level classes (such as &ldquo;Physics&rdquo; itself), and not narrower subject areas. BC2 facets are organized with a technique of &ldquo;inversion&rdquo; and &ldquo;retroactive compounding&rdquo; so that more general groupings appear first, and there are many detailed ordering rules. The notation is strictly ordered but does not reflect the hierarchy which is noted separately. BC2 has nine main facets in its &ldquo;standard citation order&rdquo;, of which the main ones used in physics are &ldquo;Operations &amp; agents of operations&rdquo; (methodology and techniques), &ldquo;Processes &amp; properties&rdquo;, &ldquo;Parts&rdquo;, and &ldquo;Types&rdquo;; for example under particle physics (<code>BM</code>) there are elementary particle types listed such as leptons (<code>BNM</code>) and quarks (<code>BNR</code>) . However, many topics of current interest in physics research are not to be found in the BC2 physics class: examples are &ldquo;quantum information&rdquo;, &ldquo;nonlinear systems&rdquo;, &ldquo;optical trapping&rdquo;, &ldquo;graphene&rdquo;, and &ldquo;nanoscopics&rdquo; or &ldquo;mesoscopics&rdquo; generally. &ldquo;Fullerenes&rdquo; are not listed under physics but can be found in the chemistry (<code>C</code>) section with the rather lengthy notation <code>CGF LMG JQU</code>.</p>
+
+<p>Similar to PACS, the purpose of BC2 as a classification where items can be placed in a logical linear order results in the same subdivisions appearing among a variety of higher-level topics. With BC2 the &ldquo;filing order&rdquo; does appear to be more consistent and useful than the one chosen by PACS, but it leads to a similar combinatorial complexity of the scheme. The full BC2 physics schedule (<a href="#refM">Mills and Broughton 1997</a>) comes to 89 pages with 5231 classifications.</p>
+
+<p>The Institute of Electrical Engineers (IEE, now the &ldquo;Institute of Engineering and Technology&rdquo;, IET) was one of the organizations that helped develop PACS, but soon diverged with what is now their proprietary Inspec classification (<a href="#refI">Institute of Engineering and Technology 1998</a>), which combines a modified version of the PACS codes with additional keywords, providing a controlled vocabulary that their indexers could use to help retrieval of relevant literature. AIP replaced PACS for their own purposes with an internally developed &rarr; <a href="thesaurus">thesaurus</a> with the primary goal of automated classification. This meant a rules-based system to look at abstracts or full text of articles and pick out terms or concepts that were likely to apply.</p>
+
+<p>In closely related fields to physics, while there is conceptual overlap, the focus is often very different. In astronomy (which was nominally covered by PACS in the <code>90</code> section) there are a number of different knowledge organization systems, like the &rarr; <a href="3ks">Three Kingdom System</a>, along different conceptual dimensions exemplified by the faceted search system of the Astrophysics Data System (<a href="#refS">Smithsonian Astrophysical Observatory 2019</a>); one aspect of that is the identifiers for specific celestial objects, (a planet, star, galaxy) but specific objects or locations are not usually important to physics outside of astrophysics and geophysics.</p>
+
+<p>The Mathematics Subject Classification (MSC) codes have been previously mentioned; these have always included many concepts from physics and some physics journals historically used these codes rather than PACS (which they resemble). Examples of physics terms from MSC are <code>81T55</code> (&ldquo;Casimir effect&rdquo;), <code>76W05</code> (&ldquo;Magnetohydrodynamics and electrohydrodynamics&rdquo;), or <code>82D55</code> (&ldquo;Superconductors&rdquo;).</p>
+
+<p>Chemists have established a number of different taxonomies of molecules and compounds and other chemical systems, including the International Union of Pure and Applied Chemistry International Chemical Identifier (InCHI) and the Chemical Entities of Biological Interest&rdquo; (ChEBI). In the life sciences there has been a proliferation of persistent identifiers for concepts, for example with the Identifiers.org database (European Molecular Biology Laboratory 2019) which allows a particular protein, gene, or other item of interest to be identified with a <code>prefix: identifier</code> notation, enabling simpler indexing and searching. The National Library of Medicine&rsquo;s Medical Subject Headings (<a href="#refU">U. S. National Library of Medicine 2018</a>) is a widely used curated vocabulary of biomedical terms.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2.5"></a>
+<h4>2.5 Development of PhySH</h4>
+
+<p>PhySH had its origins in a November 2011 workshop in Boston (<a href="#refS">Smith et al. 2011</a>) where the participants discussed what should follow PACS for classification and knowledge organization in physics, as described by Smith (<a href="#refS">2019</a>). Two basic models stood out: centrally organized and comprehensive classification systems such as what the National Library of Medicine did in the life sciences, or more independent and interoperable &lsquo;vocabularies&rsquo;, often relying on the Simple Knowledge Organization System (SKOS) (<a href="#refM">Miles and Bechhofer 2009</a>) design where each concept has a unique Uniform Resource Identifier (URI). There was also much discussion of hierarchy (<a href="#refS">Smith 2019</a>); the organization of parent-child and other relations depends in large part on the purpose for which the vocabulary is being created, so good clear conceptual terms should be a first priority, with hierarchy a secondary component.</p>
+
+<p>The purpose that the <i>Physical Review</i> journals had in mind was somewhat different than the concerns of other parties who had used PACS, according to Smith (<a href="#ref2">2019</a>). Assigning submitted articles to editors with the right expertise, grouping related articles together when published, and assisting editors in finding referees were viewed as more important than indexing automation or improving search capabilities for end-users. So the new scheme needed to be relatively easy for authors to assign to their papers from the start, and for editors to check and correct if needed. In part that meant the new scheme needed to be openly available to anyone (not proprietary); it was also hoped that the scheme would be easier to use and simpler (ideally smaller) than PACS.</p>
+
+<p>Work on the new vocabulary began in earnest at the American Physical Society in late 2013. The idea of grouping the terms with a faceted structure (such as &lsquo;Physical Systems&rsquo; or &lsquo;Techniques&rsquo;) and filtering based on major research areas of physics (such as &lsquo;Nuclear Physics&rsquo; or &lsquo;Condensed Matter&rsquo;) allowed a reasonable partitioning of the vocabulary so that different groups, including editors and outside consultants, could work on pieces relatively independently. The work was substantially complete by the first half of 2015, at which point serious internal testing began, and after some more feedback the APS started using the new system in late 2015 (with initially only editors tagging papers). There was then an &lsquo;unveiling&rsquo; in January 2016 <!-- [ CITATION Con16 \l 1033 ] --> and the <i>Physical Review</i> journals started requiring authors to supply PhySH terms in the first half of that year. Shortly after that point PhySH had completely replaced PACS in handling of submitted manuscripts.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3"></a>
+<h3>3. PhySH structure and usage</h3>
+
+<a name="3.1"></a>
+<h4><br>3.1 PhySH Concepts</h4>
+
+<p>PhySH uses an adapted version of the SKOS model (<a href="#refM">Miles and Bechhofer 2009</a>) for controlled vocabularies and thesauri, so that every one of the 3079 assignable terms in PhySH is a &lsquo;concept&rsquo; with a unique preferred label and a stable identifying URI. Having a URI identifier allows the label to be modified without any worry about losing assignments or relationships. Concepts may also have alternate labels to allow easier lookup when there are several different words that express the same thing, or when a concept is intended to include several slightly different specializations. The URIs for the concepts in PhySH are actually Digital Object Identifiers of the form:
+
+<blockquote>
+<code>https://doi.org/10.29172/&lt;id&gt;</code>
+</blockquote>
+
+where <code>&lt;id&gt;</code> is an otherwise meaningless string consisting of the letters <code>a-f</code>, digits, and the <code>-</code> character. As a specific example, &ldquo;Fullerenes&rdquo; has the URI <code>https://doi.org/10.29172/b755f66bb30d4ec1a7a12e31e5f675cb</code>.</p>
+
+<p>The hierarchy within the realm of concepts is indicated using the standard <code>skos:broader</code> and <code>skos:narrower</code> relations, with <code>skos:related</code> also used for terms that are related but not in a parent-child manner. Note that the SKOS model allows arbitrary depth of hierarchy and multiple parents for any concept; rather than being a simple tree, the hierarchy is described as a directed acyclic graph, with a partial ordering from the broadest to the narrowest concepts. A concept with multiple parents is viewed as having a single meaning &mdash; it does not matter through what path the concept was located, it should mean the same thing. In general, PhySH concept labels are intended to be clear, unambiguous and independent of their parent or sibling terms.</p>
+
+<p>There are a number of custom RDF predicates that PhySH uses to indicate the special relations between concepts and the &ldquo;disciplines&rdquo; and &ldquo;facets&rdquo; they are assigned to. There is also a special predicate used to identify deprecated concepts. These are concepts that may be duplicative or otherwise considered no longer relevant and are expected to be deleted in a future update. Deprecated concepts are not included in the statistics provided here.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.2"></a>
+<h4>3.2 PhySH Disciplines</h4>
+
+<p>The 17 PhySH disciplines (see Table 2) are also identified by the same kind of URIs with preferred labels, but within the SKOS framework each discipline is treated as a &lsquo;concept scheme&rsquo; rather than a regular &lsquo;concept&rsquo;. Most of the disciplines have a relatively manageable number of concepts of at most a few hundred, but several are quite large. Condensed matter physics has historically been the largest coherent subfield, and as noted earlier was covered by two top-level PACS codes from the start of the PACS scheme in 1975. Some of the disciplines correspond to the other top-level PACS codes (<code>10</code> in PACS is &lsquo;Particles &amp; Fields&rsquo; in PhySH for example) but about half are new to PhySH: &lsquo;Accelerators &amp; Beams&rsquo; and &lsquo;Physics Education Research&rsquo; correspond to relatively new specialty journals in the <i>Physical Review</i> family, while &lsquo;Quantum Information&rsquo; and some of the others represent distinctive areas of recent growth in research activity.</p>
+
+<blockquote>
+<table border="1">
+<p><caption><i>Table 2: The PhySH disciplines, as of version 1.1.1; these counts only include concepts directly listed in the discipline and their narrower terms</i></caption></p>
+<tr>
+<th>PhySH Discipline</th>
+<th>Number of concepts</th>
+</tr><tr>
+<td>Accelerators &amp; Beams</td>
+<td>103</td>
+</tr><tr>
+<td>Atomic, Molecular &amp; Optical</td>
+<td>387</td>
+</tr><tr>
+<td>Biological Physics</td>
+<td>672</td>
+</tr><tr>
+<td>Condensed Matter &amp; Materials Physics</td>
+<td>1139</td>
+</tr><tr>
+<td>Fluid Dynamics</td>
+<td>145</td>
+</tr><tr>
+<td>General Physics</td>
+<td>133</td>
+</tr><tr>
+<td>Gravitation, Cosmology &amp; Astrophysics</td>
+<td>104</td>
+</tr><tr>
+<td>Interdisciplinary Physics</td>
+<td>61</td>
+</tr><tr>
+<td>Networks</td>
+<td>185</td>
+</tr><tr>
+<td>Nonlinear Dynamics</td>
+<td>52</td>
+</tr><tr>
+<td>Nuclear Physics</td>
+<td>134</td>
+</tr><tr>
+<td>Particles &amp; Fields</td>
+<td>239</td>
+</tr><tr>
+<td>Physics Education Research</td>
+<td>19</td>
+</tr><tr>
+<td>Plasma Physics</td>
+<td>338</td>
+</tr><tr>
+<td>Polymers &amp; Soft Matter</td>
+<td>862</td>
+</tr><tr>
+<td>Quantum Information</td>
+<td>43</td>
+</tr><tr>
+<td>Statistical Physics</td>
+<td>549</td>
+</tr>
+</table>
+</blockquote>
+
+<p>The sum of the concept counts in Table 2 (5165) is considerably more than the total number of concepts in this version of PhySH (3079). This is because the disciplines do not in themselves constitute an exclusive partitioning of the concepts &mdash; there is considerable overlap. The physical systems studied in one discipline may be studied in others, and techniques are even more widely shared.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.3"></a>
+<h4>3.3 PhySH Facets</h4>
+
+<p>The facets in PhySH (Table 3) are similarly identified by URIs and preferred labels. However, as common cross-cutting classifications across all the disciplines (SKOS concept schemes), they don't strictly fit within the SKOS framework at all. A SKOS-compatible version of PhySH is provided in which discipline-facet pairs serve as the &lsquo;top concepts&rsquo; for each discipline. For example &ldquo;Nuclear Physics Research Areas&rdquo; and &ldquo;Nuclear Physics Techniques&rdquo; are top concepts within the &ldquo;Nuclear Physics&rdquo; concept scheme, while &ldquo;Fluid Dynamics Research Areas&rdquo; and &ldquo;Fluid Dynamics Techniques&rdquo; are similar top concepts within &ldquo;Fluid Dynamics&rdquo;. These pairs are not strictly part of PhySH itself, rather PhySH uses custom RDF classes and predicates (separate from the SKOS definitions) to define the facets and their relationships to disciplines and concepts.</p>
+
+<blockquote>
+<table border="1">
+<p><caption><i>Table 3: The PhySH facets</i></caption></p>
+<tr>
+<th>PhySH facet label</th>
+<th>Number of disciplines</th>
+<th>Number of concepts</th>
+</tr><tr>
+<td>Physical Systems</td>
+<td>13</td>
+<td>846</td>
+</tr><tr>
+<td>Professional Topics</td>
+<td>2</td>
+<td>12</td>
+</tr><tr>
+<td>Properties</td>
+<td>4</td>
+<td>53</td>
+</tr><tr>
+<td>Research Areas</td>
+<td>17</td>
+<td>1622</td>
+</tr><tr>
+<td>Techniques</td>
+<td>13</td>
+<td>752</td>
+</tr><tr>
+<td>Computational Techniques</td>
+<td>9</td>
+<td>52</td>
+</tr><tr>
+<td>Experimental Techniques</td>
+<td>11</td>
+<td>381</td>
+</tr><tr>
+<td>Theoretical &amp; Computational Techniques</td>
+<td>2</td>
+<td>226</td>
+</tr><tr>
+<td>Theoretical Techniques</td>
+<td>10</td>
+<td>222</td>
+</tr><tr>
+</tr>
+</table>
+</blockquote>
+
+<p>The Techniques facet has been divided into subfacets for the major classes of techniques; in the earliest versions of PhySH there was a three-fold split into &ldquo;Computational&rdquo;, &ldquo;Experimental&rdquo; and &ldquo;Theoretical&rdquo;. The fourth subfacet (&ldquo;Theoretical &amp; Computational&rdquo;) was a partial merger created after finding significant overlap between the &ldquo;Computational&rdquo; and &ldquo;Theoretical&rdquo; subfacets. Aside from these subfacets, at the top level the PhySH facets do almost completely partition the concepts, with the total (using the 752 for Techniques as a whole, rather than the numbers from its subfacets) amounting to 3285, relative to the 3079 distinct concepts. In other words, there is less than 10% overlap of concepts between the top-level facets in PhySH.</p>
+
+<p>The subfacet organization is probably unnecessarily complex. A better organization (perhaps to be considered for a future PhySH release) would replace the &ldquo;Techniques&rdquo; facet and its subfacets with two top-level facets, one for &ldquo;Experimental&rdquo;, and one for the merged &ldquo;Theoretical &amp; Computational&rdquo;. These two subfacets have no overlap in the current version and seem to be sufficient to satisfy the requirements of classification.</p>
+
+<p>The facets in PhySH are in principle similar to the PMEST facets of Ranganathan (<a href="#refS">Satija 2017</a>) but in practice somewhat distinct and perhaps not as generalizable. Desale and Kumbhar (<a href="#refD">2017</a>) in their chapter 5 explicitly use Ranganathan&rsquo;s approach and assign many physics concepts to the &lsquo;P&rsquo;, &lsquo;M&rsquo;, and &lsquo;E&rsquo; facets; these assignments partially align with the PhySH facets, so that &lsquo;E&rsquo; seems to be closely related to PhySH &ldquo;Techniques&rdquo;, &lsquo;M&rsquo; to &ldquo;Properties&rdquo;, and &lsquo;P&rsquo; involves both &ldquo;Research Areas&rdquo; and &ldquo;Physical Systems&rdquo;. This is similar to the facets of the Bliss classification, at least with the BC2 &ldquo;Operations &amp; agents of operations&rdquo; corresponding to PhySH techniques. BC2&rsquo;s &ldquo;Processes &amp; properties&rdquo; overlap more with PhySH &ldquo;Research Areas&rdquo; (and also &ldquo;Properties&rdquo;), and &ldquo;Parts&rdquo; and &ldquo;Types&rdquo; correspond more to the &ldquo;Physical Systems&rdquo; facet in PhySH. So these two distinct library-oriented approaches to a faceted classification of physics show considerable overlap, but also some divergence from what was done with PhySH. Note that all of these approaches avoid use of anything resembling Ranganathan&rsquo;s &ldquo;S&rdquo; and &ldquo;T&rdquo; facets in physics as physical concepts are supposed to be applicable universally in space and time.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.4"></a>
+<h4>3.4 Using PhySH</h4>
+
+<p>PhySH with its labeled concepts should be easier for regular physicists to understand and remember than the alphanumeric codes used by PACS. The disciplines, facets, and hierarchy as a whole are also designed to make browsing fruitful, but textual searching is easy enough and more frequently used in practice. However, it should be noted that more PhySH terms are typically needed to characterize a scientific article than was true for PACS.</p>
+
+<p>PACS was indeed a classification (<a href="#refH">Hj&oslash;rland 2017</a>). That is, in principle there was one best code for each indexed document. That was why different facets were combined, such as with the fullerene examples in Table 1. For example, <code>73.61.Wp</code> on electrical properties of thin-film materials containing fullerenes and related materials combines the concepts of &ldquo;Electrical properties&rdquo;, &ldquo;fullerenes&rdquo; and &ldquo;thin-film materials. In PhySH each of those distinct concepts has their own separate entry: &ldquo;Electrical properties&rdquo; &ldquo;Fullerenes&rdquo; and &ldquo;Thin films&rdquo;. All three (plus anything else applicable) would need to be assigned to the associated document using PhySH, to provide the same level of characterization of the research. But note that both &ldquo;Electrical properties&rdquo; and &ldquo;Thin films&rdquo; have refinements &mdash; narrower terms that could be more applicable, such as &ldquo;Bilayer thin films&rdquo;. The PhySH approach allows for more precision on what effect is being studied, what techniques are being used, or what systems being considered &mdash; but it is at the cost of requiring multiple terms to characterize the research.</p>
+
+<p>Note also that it is accepted and expected for a concept at (almost) any level of the hierarchy to be used in assignments, whereas with classifications one usually only assigns codes from the lowest possible level. There are no concepts labeled as &ldquo;Other xxx&rdquo; in PhySH; in PACS there were many such as <code>61.43.Er</code> &lsquo;Other amorphous solids&rsquo;, catchall categories whose meaning changed over time (narrowing as more subclasses were added to the higher &ldquo;Disordered solids&rdquo; class). With PhySH one just uses the parent term (in PhySH it is &lsquo;Amorphous materials&rsquo;) which encompasses all the various types.</p>
+
+<p>One notable difference between PACS and PhySH is in their ability to define a sorting order for sibling terms (concepts with the same &ldquo;broader&rdquo; or parent concept). With an alphanumeric notation as used by PACS, the notation determines the order, and so if some particular order made sense, it was possible to enforce it through the notation. For PhySH the underlying identifiers are intended to be meaningless strings, so the only natural order is that of alphabetization of the preferred labels for concepts. For the most part the order is not important, but in a few exceptions judicious selection of labels helps to establish a preferred order. One example is within the &ldquo;Physical Systems&rdquo; facet, &ldquo;0-dimensional systems&rdquo;, &ldquo;1-dimensional systems&rdquo; etc. are naturally ordered, but would not be so if the verbal instead of the numeric form were used as the starting word.</p>
+
+<p>With SKOS there is no enforced limit to hierarchy depth or to the number of siblings at one level in the hierarchy. PhySH has a few concepts with paths as deep as nine levels (starting from the disciplines as level 1, the discipline-facet pairs as level 2, and so on). The vast majority of concepts are found at levels 4 and 5 (2 or 3 below the discipline-facet usually set for filtering). Some concepts have 20 or more direct &ldquo;children&rdquo; but usually the count is much less.</p>
+
+<p>PhySH includes a number of terms like <i>fullerenes</i> that refer to specific materials or other specific physical systems, but only those with a high degree of interest to physicists. It was anticipated that more detailed identifiers for specific physical systems &mdash; for example a comprehensive list of elements, isotopes, crystallographic structures, astronomical objects, etc. would be better handled by outside vocabularies built with those domains in mind. So far PhySH has not been combined with these other vocabularies in practice, but the ability is there in principle, and should be relatively straightforward with concepts identified by their unique URIs as is the practice with SKOS.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4"></a>
+<h3>4. Governance, updates, and impact</h3>
+
+<p>PhySH is publicly available from a primary website at <a href="https://physh.org">physh.org</a> and also in a variety of downloadable formats through Github (<a href="#refA">American Physical Society 2018</a>). There have been a number of changes to PhySH since its first use in 2015-2016, including the first public release in 2018 (version 1.0); the latest version as of this writing is 1.1.1. It remains owned and governed by the American Physical Society, but it is available for any other person or organization to use under the Creative Commons CC-0 1.0 license (CC0). Suggestions for improvement are welcome and may be submitted through the Github site as Github &ldquo;issues&rdquo;. The APS also receives suggestions from its authors and editors through online forms linked to the manuscript handling system. Hundreds of suggestions have been acted upon, with many new terms added and over one hundred concepts in the latest version marked as &lsquo;deprecated&rsquo;. Guidelines for suggestions are provided including when a new concept may be added, types of changes allowed for existing concepts, rules for concept labels, and the possibility of structural changes.</p>
+
+<p>An internal group within APS reviews these change requests, generally on a discipline-by-discipline basis. In 2018 the Condensed Matter &amp; Materials and Fluid Dynamics disciplines were reviewed, and some additional minor changes were made in a few of the other disciplines.</p>
+
+<p>So far the only significant publicly known user of PhySH has been the American Physical Society which developed it, and has been using it since 2016 to index all articles published in the <i>Physical Review</i> journals, about 70,000 so far. APS has previously provided the PACS indexing data of published articles for use by researchers (for example Radicchi and Castellano (<a href="#refR">2011</a>) used this in their analysis) and it is expected similar research may be conducted with the PhySH terms in future.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5"></a>
+<h3>5. Evaluation and considerations for the future</h3>
+
+<p>The type of ordering imposed by PACS and the more general classification schemes such as UDC, BC2 or CC was necessary when our knowledge was primarily to be found in paper documents stored on library shelves. The general idea was to file items on similar topics together, and to file more general items before more specific ones if possible. The complexities of assigning one linear position to a document that covered multiple topics is exemplified in the &lsquo;filing order&rsquo; and consequent &lsquo;citation order&rsquo; specifications for the Bliss classification. Many of the detailed classes in PACS or BC2 are the result of combining two, three, or even more elementary concepts from several different facets, or from different arrays in BC2 terminology (logical divisions) within a single facet. This enables grouping of documents on several different dimensions, but it is preferential to only one such possible grouping which the classification designers had some reason to believe would be most helpful.</p>
+
+<p>In the paper-based world the problem of arbitrariness in grouping was handled through indexes which allow alternate paths to find relevant documents. With electronic documents there is no longer any need to maintain a linear sequence and any grouping can be created dynamically. In the BC2 introduction (<a href="#refM">Mills and Broughton 1977</a>) there is a relevant discussion in section 4.8:
+
+<blockquote>
+Virtually all problems of information indexing are problems caused by compound classes. In conventional indexing, the linking (intersection, coordination) of elementary terms to form compound classes is done at the time of indexing. In coordinate indexing, this is done only after receipt of a request. When the question is received then the search is made for the particular combination of elementary terms making up the search prescription. So it may be said that in conventional indexing coordination to form compound classes is done before (pre-) receipt of any particular request whereas in coordinate indexing it is done only after (post-) receipt of a request.
+</blockquote></p>
+
+<p>The label &ldquo;concept&rdquo; for the elementary ingredients of a SKOS vocabulary suggests that these should always be considered as elementary terms, to be combined through such a post-coordination process. PhySH is indeed largely designed this way so that the individual concepts are mostly elementary terms and are intended to be combined dynamically in searches, but even so there are many apparently compound terms in the vocabulary. Some of these, for example &ldquo;Atomic &amp; molecular processes in external fields&rdquo;, are justified as providing a logical grouping for a large number of more specific elementary concepts such as &ldquo;Photoemission&rdquo; or the &ldquo;Stark effect&rdquo;. &ldquo;Photon &amp; charged-lepton interactions with hadrons&rdquo; on the other hand has no narrower terms below it, and perhaps could have been better represented by post-coordinating the two or three elementary concepts involved. Nevertheless, over 50 articles have been published in the <i>Physical Review</i> journals and indexed with this PhySH concept, so it may be justified as a useful pre-coordinated term.</p>
+
+<p>This brings us to the issue of &rarr; <a href="literary_warrant">literary warrant</a>, discussed by Barit&eacute; (<a href="#refB">2018</a>). A term that specifies over 50 relevant documents deserves to be included in the vocabulary. The guidelines for contributions (<a href="#refA">American Physical Society 2018</a>) specify criteria relating to a literary warrant for new terms:
+
+<blockquote>
+Please consider if the concept you&rsquo;re about to suggest is really needed. If a closely related concept already exists, would adding the new proposal as an alias suffice? Adding a new alias to an existing concept is preferred over adding a new concept. [&hellip;] A new concept may be needed where a significant body of work (dozens of papers per year, say) is associated with it, and not distinguished by any existing concept in PhySH.
+</blockquote></p>
+
+<p>Whether these criteria were applied in the creation of PhySH in the first place may be questioned. Over 3000 of the 3079 concepts have been used so far on published articles, leaving about 2.5% of PhySH concepts that have not been used at all. Almost all of these unused concepts (some examples are &ldquo;Leaves&rdquo;, &ldquo;Kinesiology&rdquo;, and &ldquo;Atactic polymers&rdquo;) come from the Biological Physics or Polymers and Soft Matter sections of PhySH. These terms may eventually be justified by articles published in other journals in the field so that the reason for no articles is simply that the <i>Physical Review</i> journals publish relatively few articles in these areas. But at least for now the literary warrant of some of the terms is questionable. Note that another roughly 300 (about 10%) have been used less than five times, while about half the remainder have been used 50 or more times.</p>
+
+<p>The concentration of unused terms in two disciplines also suggests examining other potential inconsistencies between the disciplines in PhySH. The issue of diverging subfacets has already been mentioned (some disciplines have separate &ldquo;Computational Techniques&rdquo; and &ldquo;Theoretical Techniques&rdquo; groupings, while others use a combined subfacet). There is also quite inconsistent treatment of the &ldquo;Properties&rdquo; facet, which is so far not used by many of the disciplines. For example, &ldquo;Symmetries&rdquo; in the &ldquo;Properties&rdquo; facet of the &ldquo;Particles &amp; Fields&rdquo; discipline is closely related to &ldquo;Symmetries in condensed matter&rdquo;, but that has been placed under the &ldquo;Techniques&rdquo; facet in &ldquo;Condensed Matter &amp; Materials Physics&rdquo;. The &ldquo;Research Areas&rdquo; facet in that discipline contains several top-level terms that actually use the word &ldquo;properties&rdquo;: &ldquo;Electrical properties&rdquo;, &ldquo;Structural properties&rdquo;, etc. It is not clear whether this inconsistent placement is deliberate or simply a consequence of different people making different decisions about use of the facets. Perhaps some of these issues will be improved upon in future releases of PhySH.</p>
+
+<p>Smith (<a href="#refS">2019</a>) discusses the potential impact of artificial intelligence on the need for classification and indexing systems like PhySH and counters that rather, the manual work of classification is an essential ingredient to successful automation in scientific research. PhySH was specifically designed to be easy for those with field expertise (the authors and editors) rather than classification experts or automated tools to assign useful indexing concepts to articles. With the scientific literature continuing to grow beyond the capacity of any individual to perceive all of it, good indexing and classification will continue to be important long into the future.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="6"></a>
+<h3>6. Conclusions</h3>
+
+<p>Indexing and classification has a long history in the field of physics. For scientific articles it was largely ad hoc until the advent of PACS in the 1970s, as a classification scheme with decimal/alphanumeric notation. PACS established a widely used standard for both classification and ordering of the subfields of physics for several decades. However, the rigidity and complexity of PACS was not a good fit for the online world of the early 21st century, and in the last few years a new approach following the philosophy of the SKOS knowledge organization system produced PhySH, a publicly available (CC-0) controlled vocabulary and thesaurus for physics managed by the American Physical Society.</p>
+
+<p>PhySH disciplines are like the traditional subdivisions of physics, expanded to include new fields that have developed in recent decades. PhySH facets provide a cross-cutting classification by conceptual type, similar to the facets of Raganathan&rsquo;s Colon Classification. PhySH concepts are identified by unique URIs while their unambiguous labels aid human work in indexing and searching. The vocabulary is still developing and has been made openly available for use and feedback. There are some obvious improvements still needed, particularly in the organization of the facets, but it can be used now for indexing and classification in physics. As the system is largely compatible with the SKOS model for knowledge organization, it will be interesting to see in future how PhySH and other SKOS vocabularies can work together in organizing research in the physical sciences.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="ref"></a>
+<h3>References</h3>
+
+<a name="refA"></a>
+
+<p>American Mathematical Society. &ldquo;MathSciNet&rdquo; MSC Primary field. Accessed June 21, 2019. <a href="https://mathscinet.ams.org/mathscinet/help/field_help.html#mscp">https://mathscinet.ams.org/mathscinet/help/field_help.html#mscp</a></p>
+
+<p>American Physical Society. 2018. &ldquo;PhySH&rdquo;. Main website: <a href="https://physh.org/">https://physh.org/</a>. Github site: <a href="https://github.com/physh-org/PhySH/">https://github.com/physh-org/PhySH/</a>. Contribution guidelines: <a href="https://physh.org/contribute">https://physh.org/contribute</a>.</p>
+
+<p>American Physical Society. Search results for <i>Physical Review</i>. Accessed June 21, 2019. <a href="https://journals.aps.org/search/results?date=custom&amp;journal=pri&amp;start_date=1900&amp;end_date=1900">https://journals.aps.org/search/results?date=custom&amp;journal=pri&amp;start_date=1900&amp;end_date=1900</a></p>
+
+<a name="refB"></a>
+
+<p>Barit&eacute;, Mario. 2018. &ldquo;Literary warrant&rdquo;. <i>Knowledge Organization</i> 45, no. 6: 517-536. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli. <a href="literary_warrant">https://www.isko.org/cyclo/literary_warrant</a></p>
+
+<a name="refC"></a>
+
+<p>Conover, Emily. 2016. "New Physics Classification Scheme Unveiled." <i>APS News</i>, February 1: 3.</p>
+
+<a name="refD"></a>
+
+<p>Desale, Sanjay, and Rajendra Kumbhar. 2017. <i>Methodology to Develop Depth Classification Scheme for Physics.</i> Erfurt: Lambert Academic Publishing.</p>
+
+<a name="refE"></a>
+
+<p>European Molecular Biology Laboratory European Bioinformatics Institute. &ldquo;Identifers.org&rdquo;. Accessed June 24, 2019. <a href="https://registry.identifiers.org/registry">https://registry.identifiers.org/registry</a></p>
+
+<a name="refF"></a>
+
+<p>Forman, Paul, John L. Heilbron, and Spencer Weart. 1975. "Physics circa 1900: Personnel, Funding, and Productivity of the Academic Establishments". <i>Historical Studies in the Physical Sciences</i>, 1-185.</p>
+
+<a name="refG"></a>
+<a name="refH"></a>
+
+<p>Hj&oslash;rland, Birger. 2017. &ldquo;Classification&rdquo;. <i>Knowledge Organization</i> 44, no. 2: 97-128. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli, <a href="classification">https://www.isko.org/cyclo/classification</a></p>
+
+<a name="refI"></a>
+
+<p>Institute of Engineering and Technology. 1998. &ldquo;History of Science Abstracts and Inspec&rdquo;. <a href="https://www.theiet.org/publishing/library-archives/the-iet-archives/iet-history/history-of-science-abstracts-and-inspec/">https://www.theiet.org/publishing/library-archives/ the-iet-archives/iet-history/history-of-science-abstracts-and-inspec/</a></p>
+
+<a name="refJ"></a>
+<a name="refK"></a>
+
+<p>Krumhansl, James A., and George L. Trigg. 1975. "Indexing and Classification". <i>Physical Review Letters</i> (American Physical Society) 34 (17): 1065-1066.</p>
+
+<a name="refL"></a>
+<a name="refM"></a>
+
+<p>Miles, Alistair, and Sean Bechhofer, eds. 2009. <i>SKOS Simple Knowledge Organization System Reference</i>. World Wide Web Consortium. <a href="https://www.w3.org/TR/2009/REC-skos-reference-20090818/">https://www.w3.org/TR/2009/REC-skos-reference-20090818/</a></p>
+
+<p>Mills, Jack, and Vanda Broughton. 1977. <i>Introduction and Auxiliary Schedules (Bliss Bibliographic Classification) 2nd Edition</i>. London: Bowker-Saur. See &ldquo;Overall Introduction&rdquo;, <a href="http://www.blissclassification.org.uk/Class1/introduction.pdf">http://www.blissclassification.org.uk/Class1/introduction.pdf</a>.</p>
+
+<p>Mills, Jack, and Vanda Broughton. 1997. <i>Class AY/B : Science in general &amp; physics</i>. London: Bowker-Saur. The full schedule can be downloaded from <a href="http://www.blissclassification.org.uk/ClassB/B_sched.pdf">http://www.blissclassification.org.uk/ClassB/B_sched.pdf</a>.</p>
+
+<a name="refN"></a>
+<a name="refO"></a>
+<a name="refP"></a>
+<a name="refQ"></a>
+<a name="refR"></a>
+
+<p>Radicchi, Filippo, and Claudio Castellano. 2011. "Rescaling Citations of Publications in Physics". <i>Physical Review E</i> 83: 046116.</p>
+
+<a name="refS"></a>
+
+<p>Satija, Mohinder P. 2017. &ldquo;Colon Classification (CC)&rdquo;. <i>Knowledge Organization</i> 44, no. 4: 291-307. Also available in Hj&oslash;rland, Birger and Gnoli Claudio eds., <i>ISKO Encyclopedia of Knowledge Organization</i>, <a href="colon_classification">https://www.isko.org/cyclo/colon_classification</a>.</p>
+
+<p>Smith, Arthur, Mark Doyle, Paul Dlug, Mark Cassar, and Alison Loudon (organizers). &ldquo;Physics Classification&rdquo;. Workshop. Boston, November 28, 2011. <a href="https://sites.google.com/site/physicsclassification2011/">https://sites.google.com/site/physicsclassification2011/</a>.</p>
+
+<p>Smith, Arthur. 2019. "From PACS to PhySH." <i>Nature Reviews Physics</i>, 1 1: 8-11.</p>
+
+<p>Smithsonian Astrophysical Observatory. &ldquo;The SAO/NASA Astrophysics Data System&rdquo;. Accessed June 21, 2019. <a href="https://ui.adsabs.harvard.edu">https://ui.adsabs.harvard.edu</a>.</p>
+
+<a name="refT"></a>
+<a name="refU"></a>
+
+<p>U. S. National Library of Medicine. &ldquo;Medical Subject Headings&rdquo;. Last modified November 2018. <a href="https://www.nlm.nih.gov/mesh/">https://www.nlm.nih.gov/mesh/</a>.</p>
+
+<p>UDC Consortium. &ldquo;Universal Decimal Classification Summary&rdquo;. Last modified August 2012. <a href="http://www.udcsummary.info">http://www.udcsummary.info</a>.</p>
+
+<a name="refV"></a>
+<a name="refW"></a>
+<a name="refX"></a>
+<a name="refY"></a>
+<a name="refZ"></a>
+
+
+<a name="col"></a>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<p>&nbsp;</p>
+
+<p>Visited   <a href="https://www.digits.net" target="_blank"><img src="https://counter.digits.net/?counter={a0747abe-d88a-c404-01f8-7a51e0619b4e}&template=simple" alt="Hit Counter by Digits" border="0"  /></a> times.</p>
+
+<hr>
+<p>Version 1.0, published 2019-07-31 <!-- version 1.0 published 2019--, this version 2019--, last edited 2019-- --><br>
+Article category: <code><a href="index#KL">KOS, specific (domain specific)</a></code></p>
+
+<p>This article (version 1.0) is also published in <i>Knowledge Organization</i>. How to cite it:
+<br>Smith, Arthur. 2020. &ldquo;Physical Subject Headings (PhySH)&rdquo;. <i>Knowledge Organization</i> 47, no. 3: 257-266. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli, https://www.isko.org/cyclo/physh </p>
+
+<p>&copy;2019 ISKO. All rights reserved.</p>
+
+</td>
+</tr>
+
+<tr>
+<td id="logo">
+</td>
+</tr>
+
+</table>
+</body>
+</html>

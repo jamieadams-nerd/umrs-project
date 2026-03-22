@@ -1,0 +1,615 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>IFLA Library Reference Model (IEKO)</title>
+<link rel="stylesheet" type="text/css" href="../isko.css" />
+<link rel="schema.DCTERMS" href="http://purl.org/dc/terms/" />
+
+<meta name="twitter:url" content="https://www.isko.org/cyclo/lrm" />
+<meta name="twitter:title" content="IFLA Library Reference Model (ISKO Encyclopedia of KO)" />
+
+<meta name="DCTERMS.title" content="IFLA Library Reference Model (LRM)" />
+<meta name="DCTERMS.creator" content="Maja Zumer" />
+<meta name="DCTERMS.issued" content="2019" />
+<meta name="DCTERMS.relation.ispartof" content="ISKO Encyclopedia of Knowledge Organization" />
+<meta name="DCTERMS.ispartof" content="ISKO Encyclopedia of Knowledge Organization" />
+<meta name="DCTERMS:bibliographicCitation" content="ISKO Encyclopedia of Knowledge Organization, eds. Birger Hjorland and Claudio Gnoli" />
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="001.012">
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="025">
+<meta name="DCTERMS.subject.keyword" content="FRBR">
+<meta name="DCTERMS.subject.keyword" content="Functional Requirements for Bibliographic Records">
+<meta name="DCTERMS.type" content="Text" />
+<meta name="DCTERMS.format" content="text/html" />
+<meta name="DCTERMS.identifier" content="https://www.isko.org/cyclo/lrm" />
+
+</head>
+<body>
+
+<a name="top"></a>
+
+<table>
+
+<tr>
+<td id="isko"><h1>I S K O</h1></td>
+<td id="banner"><h2><a href="index.html" style="text-decoration:none;">Encyclopedia of Knowledge Organization</h2></a></td>
+</tr>
+
+<tr>
+<td id="navigation">
+<a href="../index.php">home</a>
+<a href="../about.html">about ISKO</a>
+<a href="../join.html">join ISKO</a>
+<a href="../ko.html"><cite>Knowledge Organization</cite> journal</a>
+<a href="../events.html">ISKO events</a>
+<a href="../chapters.html">ISKO chapters</a>
+<a href="../people.html">ISKO people</a>
+<a href="../pubs.html">ISKO publications</a>
+<a href="index.html">Encyclopedia</a>
+<a href="../lit.html">KO literature</a>
+<a href="../inst.html">KO institutions</a>
+<a href="http://bartoc.org/" title="link to BARTOC">&#8663; KOS registry</a>
+<a href="http://www.isko-mms.net/home/" title="access-account required">&#128274; members</a>
+<a href="../contact.html">contact us</a>
+</td>
+<td id="content" rowspan="2">
+
+<a class="menu" href="authors#h">edited by Birger Hj&oslash;rland</a> <a class="menu" href="authors#g">and Claudio Gnoli</a>
+
+<p>&nbsp;
+
+<h2>IFLA Library Reference Model (LRM)
+<br><small>Harmonisation of the FRBR Family</small></h2>
+
+<blockquote>
+by <a href="authors#z">Maja &#0381;umer</a></p>
+
+<p>Table of contents:
+
+<br><a style="text-decoration:none;" href="#1">1. Introduction</a> 
+<br><a style="text-decoration:none;" href="#2">2. Principles of the consolidation process</a> 
+<br><a style="text-decoration:none;" href="#3">3. User tasks</a> 
+<br><a style="text-decoration:none;" href="#4">4. Entities</a> 
+<br><a style="text-decoration:none;" href="#5">5. Attributes</a> 
+<br><a style="text-decoration:none;" href="#6">6. Relationships</a> 
+<br><a style="text-decoration:none;" href="#7">7. Aggregates</a> 
+<br><a style="text-decoration:none;" href="#8">8. Conclusion</a> 
+<br><a style="text-decoration:none;" href="#ref">References</a>
+<br><a style="text-decoration:none;" href="#col">Colophon</a>
+
+<p><strong>Abstract</strong>:
+<br>The IFLA Library Reference Model (IFLA LRM) consolidates the three models of the FRBR Family. First the major modelling and presentation issues are identified. The main part is the general description of IFLA LRM. Only the most important features are presented, with examples illustrating the modelling approaches.</p>
+
+</blockquote>
+
+<a name="1"></a>
+<h3>1. Introduction</h3>
+
+<p>In 1998 the FRBR model (<a href="#ref">Functional Requirements for Bibliographic Records 1998</a>) was developed under the auspices of the International Federation of Library Associations and Institutions (IFLA). The library domain finally developed its conceptual model of the bibliographic universe and thus the basis for the development of novel bibliographic information systems &mdash; such as library catalogues and bibliographies &mdash; which would better suit the changing environment. FRBR was a revolutionary step forward, influencing the foundations of cataloguing theory and practice. In the following years two complementary models were developed, focusing on authority data: Functional Requirements for Authority Data (<A HREF="#ref">Patton 2009</A>), dealing with name authority and Functional Requirements for Subject Authority Data (<A HREF="#ref">Zeng, &#0381;umer and Salaba 2011</A>), focusing on the &rarr; <a href="subject">subject</a> relationship. The three models, usually referred to as the FRBR Family of models, were developed over a rather long period by different working groups. It is therefore not surprising that some different modelling decisions were made, resulting in some incompatible details. While relatively minor, these differences still present a major barrier for the development of implementations.</p>
+
+<p>FRBR Review Group, the IFLA body responsible for the development and maintenance of the FRBR Family, started the consolidation process in 2011 and, in 2013, formally established the Consolidation Editorial Group (CEG). The task of CEG was to systematically and consistently combine the three models and thus create a unified model of the bibliographic universe. </p>
+
+<p>In the beginning of 2016, CEG finished the first stable draft of the LRM model, which was issued for a two-month world-wide review, according to IFLA practice. All comments were collected and discussed and subsequently the CEG incorporated the revisions into the draft, which was then reviewed by the full FRBR Review Group at its annual meeting in August 2016. The Review Group made decisions on all outstanding issues, leading to a final draft accepted at the FRBR Review Group level by the end of 2016. In accordance with the IFLA standards process, this final draft was submitted for approval to the IFLA Committee on Standards in April 2017 and posted on the IFLA website. IFLA Professional Committee formally adopted IFLA LRM on August 18, 2017.</p>
+
+<p>All figures in this article are from the IFLA LRM document.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2"></a>
+<h3>2. Principles of the consolidation process</h3>
+
+<p>The task of the CEG was to:</p>
+
+<ul>
+<li>Prepare a high-level abstract model</li>
+<li>Use the entity-relationship formalism</li>
+<li>Develop a consistent model consolidating all three models of the FRBR Family</li>
+<li>Consider implementation in the Semantic Web</li>
+</ul>
+
+<p>The development of LRM was informed by user research (such as <a href="#ref">Pisanski and &#0381;umer 2010a; 2010b</a>), the work of FRBR/CRM Harmonisation Group and the resulting FRBRoo (<A HREF="#ref">Bekiari et al. 2015</A>), experiences of FRBR/FRAD/FRSAD implementations and the Semantic Web and Linked Data environment.</p>
+
+<p>The resulting model is described as:</p>
+
+<blockquote>The conceptual model as declared in IFLA LRM is a high-level conceptual model and as such is intended as a guide or basis on which to formulate cataloguing rules and implement bibliographic systems. Any practical application will need to determine an appropriate level of precision, requiring either expansion within the context of the model, or possibly some omissions. However, for an implementation to be viewed as a faithful implementation of the model, the basic structure of the entities and the relationships among them (including the cardinality constraints), and the attachment of those attributes implemented, needs to be respected.  (<A HREF="#ref">(Riva, LeBoeuf, and &#0381;umer 2017</A>, 6)</blockquote>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3"></a>
+<h3>3. User tasks</h3>
+
+<p>The FRBR Family of models as well as LRM all start from the user tasks that need to be enabled and supported by bibliographic information systems. These user tasks provide the boundaries of the model and serve as the starting point for definitions of entities, attributes and relationships. Bibliographic and authority data are of interest to a broad user group &mdash; from library users (readers, researchers, students etc.) to librarians and other members of the information chain, such as publishers and booksellers.  These user groups have different needs and different priorities. LRM follows FRBR in the choice of its primary user group: end-users and librarians acting on their behalf. Librarians creating and maintaining metadata may occasionally perform the same tasks as part of their work activities; they are included in this sense. On the other hand the model does not cover administrative data important for library operations, such as intellectual rights data, preservation data or acquisition processes. It also has to be mentioned that in this sense the scope of FRAD is different from the other two models, because it also models the cataloguing process, which is reflected in the tasks, particularly &lsquo;justify&rsquo;.</p>
+
+<p>LRM defines five user tasks (Table 1) and lists the goals users want to reach when performing the tasks. The term <i>resource</i> is used in its broadest sense, meaning an instance of any entity defined in the model. The tasks are listed in an order that reflects typical user behaviour, which does not mean that all tasks need to be performed and that they cannot be repeated. Particularly <i>identify</i> and <i>obtain</i> often occur in parallel and in interaction.</p>
+
+<blockquote>
+<table border="1">
+
+<p><caption><i>Table 1: A summary of user tasks</i></caption></p>
+<tr>
+<td>Find</td>
+<td>To bring together information about one or more resources of interest by searching on any relevant criteria</td>
+</tr><tr>
+<td>Identify</td>
+<td>To clearly understand the nature of the resources found and to distinguish between similar resources</td>
+</tr><tr>
+<td>Select</td>
+<td>To determine the suitability of the resources found, and to be enabled to either accept or reject specific resources</td>
+</tr><tr>
+<td>Obtain</td>
+<td>To access the content of the resource</td>
+</tr><tr>
+<td>Explore</td>
+<td>To discover resources using the relationships between them and thus place the resources in a context</td>
+</tr>
+
+</table>
+</blockquote>
+
+<p>The first four tasks are the same as in FRBR, with slightly modified and broader definitions; <i>explore</i>, on the other hand, was first introduced by FRSAD. The need for &lsquo;navigation&rsquo; was already mentioned in FRBR and in the following years researchers often emphasised that a modern bibliographic information system needs to support browsing and, consequently, serendipitous discovery of relevant resources.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4"></a>
+<h3>4. Entities</h3>
+
+<p>In an entity-relationship model, entities are defined as key objects of interest. They are abstract categories (also called classes) of conceptual objects, connected by relationships, and their characteristics are described by attributes.</p>
+
+<p>The consolidation process included a detailed analysis of all entities defined by the FRBR Family, since they include virtually identical entities across models (<i>Work, Expression, Manifestation, Item</i>), similar entities (FRSAD <i>Nomen</i> and FRAD <i>Name</i>) or completely different ones (<i>Person</i> in FRBR and in FRAD). The decision was made to include only the entities with specific attributes and relationships. What is new in LRM is also the hierarchical structure of classes and subclasses, usually expressed with the <i>isA</i> relationship in formal modelling. This is a powerful mechanism enabling considerable simplification: attributes and relationships, declared on a higher level, are inherited by all subclasses and do not have to be repeated on lower levels.</p>
+
+<p>The entities of the FRBR Group 1 remain the same; there are some minor differences in definitions and scope notes, though (Table 2).</p>
+
+<blockquote>
+<table border="1">
+
+<p><caption><i>Table 2: Work, Expression, Manifestation, Item</i></caption></p>
+
+<tr>
+<td>Work</td>
+<td>The intellectual or artistic content of a distinct creation</td>
+</tr><tr>
+<td>Expression</td>
+<td>A distinct combination of signs conveying intellectual or artistic content</td>
+</tr><tr>
+<td>Manifestation</td>
+<td>A set of all carriers that are assumed to share the same characteristics as to intellectual or artistic content and aspects of physical form. That set is defined by both the overall content and the production plan for its carrier or carriers.</td>
+</tr><tr>
+<td>Item</td>
+<td>An object or objects carrying signs intended to convey intellectual or artistic content</td>
+</tr>
+</table>
+</blockquote>
+
+<p>By declaring the superclass <i>Agent</i>, a hierarchical structure is introduced in the former FRBR Group 2 of entities. Since they are clearly subsumed in the entity <i>Collective agent</i> and have no specific attributes and relationships, <i>Corporate body</i> and <i>Family</i> are not included as entities in LRM (Table 3).</p>
+
+<blockquote>
+<table border="1">
+<p><caption><i>Table 3: Agents</i></caption></p>
+
+<tr>
+<td>Agent</td>
+<td>An entity capable of deliberate actions, of being granted rights, and of being held accountable for its actions</td>
+</tr><tr>
+<td>Person</td>
+<td>Individual human being</td>
+</tr><tr>
+<td>Collective agent</td>
+<td>A gathering or organization of persons bearing a particular name and capable of acting as a unit</td>
+</tr>
+
+</table>
+</blockquote>
+
+<p>The &ldquo;agent&rdquo; entities can best be presented showing the basic relationships (Fig. 1).</p>
+
+<figure align="center">
+<img src="lrm1.jpg" title="Fig. 1: Relationships between Agent, Person and Collective agent" width="40%">
+<figcaption>Figure 1: Relationships between Agent, Person and Collective agent</figcaption>
+</figure>
+
+<p><i>Agent</i> therefore includes only entities <i>Person</i> and <i>Collective agent</i> and not any other named groups. LRM here follows FRBR in limiting <i>Person</i> to living persons and those who are assumed to have lived. Fictional, literary and legendary persons are therefore not included. They may be subjects of <i>Works</i>, but when they seem to appear as creators, it is in fact a real person or collective agent using this appellation in the context of the creation process. The name used does not change the nature of this person or collective agent.</p>
+
+<p>The FRSAD model introduced two basic entities, <i>Thema</i> and <i>Nomen</i> to model the appellation relationship. LRM keeps both of them, with a change in label. <i>Res</i> is used instead of <i>Thema</i> to avoid the implicit restriction to the subject relationship.</p>
+
+<p><i>Res</i> is the superclass of all entities in the model and <i>Nomen</i> is the appellation used to refer to an instance of <i>Res</i>. Modelling <i>Nomen</i> as an entity enables us to assign specific attributes such as script, language or source vocabulary to appellations and establish relationships between them, such as the relationship between former and later name of a <i>Person</i> (Table 4).</p>
+
+<blockquote>
+<table border="1">
+<p><caption><i>Table 4: Res and Nomen</i></caption></p>
+
+<tr>
+<td>Res</td>
+<td>Any entity in the universe of discourse</td>
+</tr><tr>
+<td>Nomen</td>
+<td>An association between an entity and a designation that refers to it</td>
+</tr>
+
+</table>
+</blockquote>
+
+<p>In order to model more precisely the temporal and spatial aspects, LRM introduces two additional entities, <i>Place</i> and <i>Time-span</i> (Table 5). </p>
+
+
+<blockquote>
+<table border="1">
+<p><caption><i>Table 5: Place and time-span</i></caption></p>
+
+<tr>
+<td>Place</td>
+<td>A given extent of space</td>
+</tr><tr>
+<td>Time-span</td>
+<td>A temporal extent having a beginning, an end and a duration</td>
+</tr>
+</table>
+</blockquote>
+
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5"></a>
+<h3>5. Attributes</h3>
+
+<p>Attributes enable assigning values to characteristics of entities. The FRBR Family of models treated attributes with various levels of detail. Since LRM has to cover all types of library materials, the decision was made to include only the most frequent and general attributes; the list is therefore not exhaustive and none of the attributes are mandatory. In an implementation attributes may be added to record additional relevant characteristics or add more detail to the existing attributes. Cataloguing rules determine how the attributes values are determined and their values: from a controlled vocabulary, as free text in a particular language and script, as a numeric value. Multiple values of attributes are possible.</p>
+
+<p><i>Category</i> and <i>Note</i> are the two attributes declared for <i>Res</i> and are therefore inherited by all entities of the model.</p>
+
+<p>As an illustration, Tables 6 and 7 show attributes of <i>Expression</i> and <i>Manifestation</i> respectively.</p>
+
+<blockquote>
+<table border="1">
+<p><caption><i>Table 6: Attributes of Expression</i></caption></p>
+<tr>
+<td>Extent</td>
+<td>A quantification of the extent of the <i>expression</i></td>
+</tr><tr>
+<td>Intended audience</td>
+<td>A class of users for which the <i>expression </i>is intended</td>
+</tr><tr>
+<td>Use rights</td>
+<td>A class of use restrictions to which the <i>expression </i>is submitted</td>
+</tr><tr>
+<td>Language</td>
+<td>A language used in the <i>expression</i></td>
+</tr><tr>
+<td>Key</td>
+<td>A pitch structure (musical scale, ecclesiastic mode, raga, maqam, etc.), that characterizes the <i>expression</i></td>
+</tr><tr>
+<td>Medium of performance</td>
+<td>A combination of performing tools (voices, instruments, ensembles, etc.) stated, intended, or actually used in the <i>expression</i></td>
+</tr><tr>
+<td>Cartographic scale</td>
+<td>A ratio of distances in a cartographic <i>expression</i> to the actual distances they represent</td>
+</tr>
+
+</table>
+</blockquote>
+
+<blockquote>
+<table border="1">
+<p><caption><i>Table 7: Attributes of Manifestation</i></caption></p>
+
+<tr>
+<td>Category of carrier</td>
+<td>A type of material to which all physical carriers of the <i>manifestation </i>are assumed to belong</td>
+</tr><tr>
+<td>Extent</td>
+<td>A quantification of the extent observed on a physical carrier of the <i>manifestation </i>and assumed to be observable on all other physical carriers of the manifestation as well</td>
+</tr><tr>
+<td>Intended audience</td>
+<td>A class of users for which the physical carriers of the <i>manifestation </i>are intended</td>
+</tr><tr>
+<td>Manifestation statement</td>
+<td>A statement appearing in exemplars of the <i>manifestation </i>and deemed to be significant for users to understand how the resource represents itself</td>
+</tr><tr>
+<td>Access </td>
+<td>Information as to how any of the carriers of the <i>manifestation </i>are likely to be obtained</td>
+</tr><tr>
+<td>Use rights</td>
+<td>A class of use and/or access restrictions to which all carriers of the <i>manifestation </i>are assumed to be submitted</td>
+</tr>
+</table>
+</blockquote>
+
+<p>Two attributes need to be mentioned in particular: <i>Representative expression attribute</i> (<i>Work </i>attribute) and <i>Manifestation statement</i> (<i>Manifestation </i>attribute).</p>
+
+<p><i>Representative expression attributes</i> are the attributes that are deemed essential in characterizing the <i>work </i>and whose values are taken from a representative or canonical expression of the <i>work</i>. According to user studies the key characteristics of a <i>work </i>are associated with the original or canonical <i>expression</i>, which is considered to be the best representation of the <i>work </i>(<a href="#ref">Pisanski and &#0381;umer 2010a; 2010b</a>). The values of these attributes are inferred either from a particular <i>expression </i>considered to best represent the <i>work</i>, or from characteristics abstracted from set of similar <i>expressions</i>. There is no requirement to precisely identify an <i>expression </i>or <i>expressions </i>which serves as source, nor does that <i>expression </i>need to be recorded in the system. </p>
+
+<p><i>Manifestation statement</i> provides a mechanism to record information found on a <i>manifestation</i>, which is important to understand how the resource represents itself. Typical examples are responsibility statements; not always complete, sometimes even fictitious, but nonetheless important to identify a <i>manifestation</i>. LRM thus enables both the transcription from the <i>manifestation </i>itself and relationships to creators (e.g. publishers), places (of publication) and time-spans (dates of publication).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="6"></a>
+<h3>6. Relationships</h3>
+
+<p>Relationships are an essential component of the model, connecting entities and placing them in context. Some relationships (such as between <i>Works, Expressions, Manifestations and Items</i>) are virtually identical in all three models, others differ particularly in the level of detail. In line with other modelling decisions, relationships in LRM are modelled on a general and abstract level. Again, for an implementation, additional relationships may be added within the general framework when needed. Since relationships support exploration, they are essential in every implementation and should be recorded as much as possible.</p>
+
+<p>Relationships between <i>Works, Expressions, Manifestations and Items</i> remain the core of the model and are in essence required. It is also important to mention, though, that while relationships are declared between entity types, they really occur between instances.</p>
+
+<p>Formally a relationship is declared between its domain and range and always in both directions. If the domain and range are the same, the relationship is recursive. When a relationship is the same in both directions, it is called symmetrical.</p>
+
+<p><i>Cardinality</i> is another term that needs to be explained: it specifies the number of instances of the domain and range for each relationship. The cardinality 1 to <i>M</i> (meaning &lsquo;many&rsquo;) means that one instance of domain is related to many instances of range and, consequently for the reverse relationship, many instances are related to one and only one instance of the range.</p>
+
+<p>The relationships between <i>Works, Expressions, Manifestations and Item</i> are shown in Fig. 2.</p>
+
+<figure align="center">
+<img src="lrm2.jpg" title="Fig. 2: Relationships between Works, Expressions, Manifestations and Items" width="40%">
+<figcaption>Figure 2: Relationships between Works, Expressions, Manifestations and Items</figcaption>
+</figure>
+
+<p>As an example, all work-to-work relationships are shown in Table 8.</p>
+
+<blockquote>
+<table border="1">
+<p><caption><i>Table 8: Work-to-work relationships</i></caption></p>
+<tr>
+<th>Domain</th>
+<th>Relationship name</th>
+<th>Inverse name</th>
+<th>Range</th>
+<th>Cardinality</th>
+</tr><tr>
+<td>Work</td>
+<td>has part</td>
+<td>is part of</td>
+<td>Work</td>
+<td>M to M</td>
+</tr><tr>
+<td>Work </td>
+<td>precedes</td>
+<td>succeeds</td>
+<td>Work</td>
+<td>M to M</td>
+</tr><tr>
+<td>Work</td>
+<td>accompanies / complements</td>
+<td>is accompanied / complemented by</td>
+<td>Work</td>
+<td>M to M</td>
+</tr><tr>
+<td>Work</td>
+<td>is inspiration for</td>
+<td>is inspired by</td>
+<td>Work</td>
+<td>M to M</td>
+</tr><tr>
+<td>Work</td>
+<td>is a transformation of</td>
+<td>was transformed into</td>
+<td>Work</td>
+<td>M to 1</td>
+</tr>
+</table>
+</blockquote>
+
+<p>Each instance of an entity in the model has one or more appellations, the relationship between entities <i>Res </i>and <i>Nomen </i>has to be established (Table 9).</p>
+
+<blockquote>
+<table border="1">
+<p><caption><i>Table 9: Appellation relationship</i></caption></p>
+
+<tr>
+<th>Domain</th>
+<th>Relationship name</th>
+<th>Inverse name</th>
+<th>Range</th>
+<th>Cardinality</th>
+</tr><tr>
+<td>Res</td>
+<td>has appellation</td>
+<td>is appellation of</td>
+<td>Nomen</td>
+<td>1 to M</td>
+</tr>
+</table>
+</blockquote>
+
+<p><i>Agent</i> as a new entity enabled a considerably simplified model of responsibility relationships (Table 10).</p>
+
+<blockquote>
+<table border="1">
+<p><caption><i>Table 10: Responsibility relationships</i></caption></p>
+
+<tr>
+<th>Domain</th>
+<th>Relationship name</th>
+<th>Inverse name</th
+<thrange</th>
+<th>Cardinality</th>
+</tr><tr>
+<td>Work</td>
+<td>was created by</td>
+<td>created</td>
+<td>Agent</td>
+<td>M to M</td>
+</tr><tr>
+<td>Expression </td>
+<td>was created by </td>
+<td>created</td>
+<td>Agent</td>
+<td>M to M</td>
+</tr><tr>
+<td>Manifestation</td>
+<td>was created by</td>
+<td>created</td>
+<td>Agent</td>
+<td>M to M</td>
+</tr><tr>
+<td>Manifestation</td>
+<td>was manufactured by</td>
+<td>manufactured</td>
+<td>Agent</td>
+<td>M to M</td>
+</tr><tr>
+<td>Manifestation</td>
+<td>is distributed by</td>
+<td>distributes</td>
+<td>Agent</td>
+<td>M to M</td>
+</tr><tr>
+<td>Item</td>
+<td>is owned by</td>
+<td>owns</td>
+<td>Agent</td>
+<td>M to M</td>
+</tr><tr>
+<td>Item</td>
+<td>was modified by</td>
+<td>modified</td>
+<td>Agent</td>
+<td>M to M</td>
+</tr>
+
+</table>
+</blockquote>
+
+<p>Modelling of the subject relationship, introduced by FRSAD, remains essentially the same (Fig. 3).</p>
+
+<figure align="center">
+<img src="lrm3.jpg" title="Fig. 3: Subject relationship" width="40%">
+<figcaption>Figure 3: Subject relationship</figcaption>
+</figure>
+
+<p>Since <i>Place </i>and <i>Time-span</i> were introduced as entities and any entity in the model may have a temporal and/or spatial component, two general relationships are necessary (Table 11).</p>
+
+<blockquote>
+<table border="1">
+<p><caption><i>Table 11: Temporal and spatial relationships</i></caption></p>
+
+<tr>
+<th>Domain</th>
+<th>Relationship name</th>
+<th>Inverse name</th>
+<th>Range</th>
+<th>Cardinality</th>
+</tr><tr>
+<td>Res</td>
+<td>has association with</td>
+<td>is associated with</td>
+<td>Place</td>
+<td>M to M</td>
+</tr><tr>
+<td>Res </td>
+<td>has association with </td>
+<td>is associated with</td>
+<td>Time-span</td>
+<td>M to M</td>
+</tr>
+</table>
+</blockquote>
+
+<p>An overview of all LRM relationships is shown in Figure 4. The <i>isA</i> relationships between all entities and the entity <i>Res </i>is not shown. For the sake of simplicity, relationships are shown in one direction only.</p>
+
+<figure align="center">
+<img src="lrm4.jpg" title="Fig. Overview of LRM relatioships" width="90%">
+<figcaption>
+Figure 4: Overview of LRM relationships. The implicit <i>isA</i> relationship of all entities to <i>Res </i>is not shown. For simplicity, the relationships are shown in one direction only and cardinality is not specified</figcaption>
+</figure>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="7"></a>
+<h3>7. Aggregates</h3>
+
+<p>Aggregates are <i>manifestations</i>, embodying more than one distinct <i>expression</i>. The FRBR model does not provide clear guidance on how to model such publications, which in general are quite common. According to the Aggregates report (<A HREF="#ref">Working Group on Aggregates 2011</A>), three types of aggregates exist:</p>
+
+<ul>
+<li>Aggregate collections of expressions<br>
+Aggregate collections are <i>manifestations </i>embodying distinct <i>expressions </i>of the same type or genre. Typical examples include collected and selected works and anthologies, but also journals (aggregates of articles), monographs with independently created chapters, compilations of music recordings on a CD, several essays published in a book etc.</li>
+<li>Aggregates resulting from augmentation<br>
+This type of aggregates occur when additional content is added to a distinct <i>expression</i>, such as illustrations, forewords, notes, commentaries</li>
+<li>Aggregates of parallel expressions<br>
+Aggregates of parallel <i>expressions </i>occur, when two or more <i>expressions </i>of the same <i>work </i>are embodied in a <i>manifestation</i>. Typical examples are multilingual manuals and official publications, an original published with a translation, but also multilingual websites.</li>
+</ul>
+
+<p>Cardinality of the &lsquo;<i>Expression </i>is embodied in <i>Manifestation</i>&rsquo; relationship, which is many-to-many, explicitly indicates that a <i>manifestation </i>may include several <i>expressions</i>. Research (<a href="#ref">O&rsquo;Neill, &#0381;umer and Mixter 2015</a>) shows that aggregates are, even as identified from existing bibliographic records, very common. Considering that current cataloguing practice does not particularly encourage systematical recording of components of collections and augmentations such as illustrations or forewords, the actual occurrence of aggregates is likely much higher.</p>
+
+<p>Modelling of aggregates as <i>manifestations </i>embodying several distinct <i>expressions </i>is straightforward, since <i>works </i>and their respective <i>expressions </i>are completely independent of the <i>manifestations </i>they are published in. An <i>expression </i>does not change when embodied on its own or with other <i>expressions </i>in a <i>manifestation</i>.</p>
+
+<p>When modelling aggregates, we need to consider not only the aggregated <i>expressions</i>, but also the intellectual contribution of selecting and arranging the <i>expressions</i>. This intellectual contribution should be considered a <i>work </i>on its own right and it is called &lsquo;aggregating work&rsquo; in the model. It may be rather insignificant in the case of combining two recordings on a CD, but it may also be essential for a publication like an anthology. It has to be emphasized that the aggregating work does not include the <i>works </i>being aggregated. When an aggregating <i>work </i>is not significant enough, it is typically not recorded. The same is true for minor augmentations such as a brief foreword. But if such a foreword is republished as an independent essay, it should also be recorded in the aggregate.</p>
+
+<p>The model of aggregates is shown in Fig. 5. </p>
+
+<figure align="center">
+<img src="lrm5.jpg" title="Fig. 5: Aggregates" width="80%">
+<figcaption>Figure 5: Aggregates</figcaption>
+</figure>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="8"></a>
+<h3>8. Conclusion</h3>
+
+<p>This is a short presentation of the IFLA LRM model. It does not include all the necessary details and is not complete in any way. To understand the model in full, the readers should consult the full model description as published on the IFLA website (<a href="#ref">IFLA LRM 2017</a>). </p>
+
+<p>IFLA LRM presents an important step forward; we now finally have a complete model of the bibliographic universe, which can and should serve as the foundation for the development of cataloguing rules and bibliographic formats. The next steps include the declaration of namespaces, which will enable Semantic Web compliant implementations and mapping to existing namespaces. Important future tasks include extensions for specific material types, different target audiences and other circumstances important for the design of bibliographic information systems.</p>
+
+<p>With IFLA LRM we finally have a modern model, compatible with the Semantic Web. <!-- Finally. --> Only with an immediate development of new library catalogs we can hope to exploit fully the wealth of library data and stop the trend of decreasing use (or even avoidance) of current catalogues. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="ref"></a>
+<h3>References</h3>
+
+<p>Bekiari, C. et al. (Eds.). 2015. <I>Definition of FRBRoo : a conceptual model for bibliographic information
+in object-oriented formalism</I> / International Working Group on FRBR and CIDOC CRM Harmonisation.
+Version 2.4. November 2015. <A HREF="http://www.ifla.org/files/assets/cataloguing/FRBRoo/frbroo_v_2.4.pdf">http://www.ifla.org/files/assets/cataloguing/FRBRoo/frbroo_v_2.4.pdf</A>
+
+<p><I>Final Report of the Working Group on Aggregates</I>. 2011.
+<A HREF="https://www.ifla.org/files/assets/cataloguing/frbrrg/AggregatesFinalReport.pdf">https://www.ifla.org/files/assets/cataloguing/frbrrg/AggregatesFinalReport.pdf</A>
+
+<p><I>Functional requirements for bibliographic records: final report</I>. 1998. M&uuml;nchen: K.G. Saur. (UBCIM
+publications; new series, vol. 19). As amended and corrected through February 2009.
+<A HREF="http://www.ifla.org/files/assets/cataloguing/frbr/frbr_2008.pdf">http://www.ifla.org/files/assets/cataloguing/frbr/frbr_2008.pdf</A>
+
+<p>O&#39;Neill, Ed T., Maja &#0381;umer, and Jeff Mixter. 2015. &ldquo;FRBR aggregates: their types and frequency in
+library collections&rdquo;. <I>Library Resources &amp; Technical Services</I>, 59(3), 120-129.
+
+<p>Patton, Glenn E. (Ed.). 2009. <I>Functional requirements for authority data: a conceptual model</I>.
+München: K.G. Saur. (IFLA series on bibliographic control ; vol. 34). As amended and corrected
+through July 2013. <A HREF="http://www.ifla.org/files/assets/cataloguing/frad/frad_2013.pdf">http://www.ifla.org/files/assets/cataloguing/frad/frad_2013.pdf</A>
+
+<p>Pisanski, Jan and Maja &#0381;umer. 2010a. &ldquo;Mental models of the bibliographic universe: part 1: mental
+models of descriptions&rdquo;. <I>Journal of Documentation</I>, 66(5), 643–667. 
+
+<p>Pisanski, Jan and Maja &#0381;umer. 2010b. &ldquo;Mental models of the bibliographic universe: part 2:
+comparison task and conclusions&rdquo;. <I>Journal of Documentation</I>, 66(5), 668–680.
+
+<p>Riva, Pat, Patrick LeBoeuf, and Maja &#0381;umer. 2017. <I>IFLA Library Reference Model</I>.
+<A HREF="https://www.ifla.org/files/assets/cataloguing/frbr-lrm/ifla-lrm-august-2017.pdf">https://www.ifla.org/files/assets/cataloguing/frbr-lrm/ifla-lrm-august-2017.pdf</A>
+
+<p>Zeng, Marcia Lei, Maja &#0381;umer, and Athena Salaba (Eds.). 2011. <I>Functional requirements for subject
+authority data (FRSAD) : a conceptual model</I>. M&uuml;nchen: De Gruyter Saur. (IFLA series on bibliographic
+control ; vol. 43). <A HREF="http://www.ifla.org/files/assets/classification-and-indexing/functional-requirements-for-subject-authority-data/frsad-final-report.pdf">http://www.ifla.org/files/assets/classification-and-indexing/functional-requirements-for-subject-authority-data/frsad-final-report.pdf</A>. Errata for section 5.4.2, October
+2011, <A HREF="http://www.ifla.org/files/assets/cataloguing/frsad/FRSADerrata2011.pdf">http://www.ifla.org/files/assets/cataloguing/frsad/FRSADerrata2011.pdf</A>
+
+<a name="col"></a>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<p>&nbsp;</p>
+
+<p>Visited <a href="https://www.digits.net" target="_blank"><img src="https://counter.digits.net/?counter={58e2fdc4-6c28-0d24-cd40-e4b0c78f9174}&template=simple" alt="Hit Counter by Digits" border="0"  /></a> times since 2019-11-14 (2 years after first publication).</p>
+
+<hr>Version 1.1 (= version 1.0 with uniformed reference format); published 2017-11-07, last edited 2019-11-14<br>
+Article category: <code><a href="index#KA">KOS general issues</a></code>
+
+<p>This article (version 1.1) is also published in <i>Knowledge Organization</i>. How to cite it:
+<br>&#0381;umer, Maja. 2018. "IFLA Library Reference Model (IFLA LRM): Harmonisation of the FRBR Family". <i>Knowledge Organization</i> 45, no. 4: 310-8. Also available in Hj&oslash;rland, Birger and Gnoli, Claudio eds., <i>ISKO Encyclopedia of Knowledge Organization</i>, http://https://www.isko.org/cyclo/lrm </p>
+
+<p>&copy;2017 ISKO. All rights reserved.</p>
+
+</td>
+</tr>
+
+<tr>
+<td id="logo">
+</td>
+</tr>
+
+</table>
+</body>
+</html>

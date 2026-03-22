@@ -4,12 +4,13 @@
 
 ## Topic Files
 
+- [Coding conventions](coding_conventions.md) — source file headers (SPDX), use ordering, no doc tests, test tags (TEST-ID/REQUIREMENT/COMPLIANCE), i18n coding rule
 - [Phase 1 / Phase 2 positioning](phase1_phase2_positioning.md) — Targeted policy = labeling fidelity + awareness, NOT enforcement; MLS adds enforcement (Phase 2)
 - [Info theory foundations familiarization](info_theory_foundations_familiarization.md) — Shannon, MacKay, MDL, Kolmogorov, Dijkstra, A*, HNSW, spectral clustering, AC; RAG + MLS + posture design implications
 - [Posture module history](posture_module_history.md) — Signal→Indicator rename, Phase 2b architecture, security review findings
 - [SCAP/STIG familiarization](scap_familiarization.md) — CCE mappings, new indicator candidates
 - [Doc placement feedback](feedback_doc_placement.md) — `# Errors` section placement rules
-- [TUI reference](tui_reference.md) — umrs-tui architecture, binaries, tests, i18n, patterns
+- [TUI reference](tui_reference.md) — umrs-ui (was umrs-tui) architecture, binaries, tests, i18n, patterns
 - [Detect pipeline reference](detect_reference.md) — dev encoding, RPM fixes, SEC pattern, EvidenceBundle
 - [TUI phases](tui_phase1.md) / [phase2](tui_phase2.md) / [phase3](tui_phase3.md) / [phase45](tui_phase45.md)
 - [Timestamp module](timestamp_module.md) — BootSessionTimestamp/Duration, CLOCK_MONOTONIC_RAW
@@ -31,9 +32,20 @@ OpenSSL is a system-wide trust anchor — binary analysis must trace linkage to 
 - Primary workspace: `components/rusty-gadgets/` — production crates only
 - Prototype workspace: `components/rust-prototypes/` — out of scope; no xtask
 - Primary crate: `umrs-selinux`; Platform crate: `umrs-platform`
+- UI library crate: `umrs-ui` (renamed from `umrs-tui` 2026-03-22); binary: `umrs-uname`
+- File stat crate: `umrs-stat` (extracted from umrs-tui 2026-03-22); binary: `umrs-stat`
 - HW crate: `umrs-hw` — ONLY crate WITHOUT `#![forbid(unsafe_code)]`
 - All tests in `tests/`, never inline
 - Run via `cargo xtask {fmt,clippy,test}` from `components/rusty-gadgets/`
+
+## posture Catalog — Display Fields (added 2026-03-22 Session 2)
+
+- `IndicatorDescriptor` has two new fields: `description: &'static str` and `recommended: Option<&'static str>`
+- All 37 entries populated: 27 Phase 1/2a indicators have non-empty `description`; Phase 2b sub-indicators use `description: ""` and `recommended: None`
+- `catalog::lookup(id: IndicatorId) -> Option<&'static IndicatorDescriptor>` — re-exported at `posture::lookup`
+- `posture::display` module: `annotate_live_value`, `annotate_integer`, `annotate_signed_integer` — re-exported at posture root
+- TUI main.rs now calls `lookup(id).map_or("", |d| d.description)` and `lookup(id).and_then(|d| d.recommended)` and `annotate_live_value(id, live)` instead of local helpers
+- Tests: `display_tests.rs` (23 tests), `catalog_lookup_tests.rs` (13 tests)
 
 ## Toolchain
 

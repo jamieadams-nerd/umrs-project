@@ -1,0 +1,1017 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>Mathematical theory of classification (IEKO)</title>
+<link rel="stylesheet" type="text/css" href="../isko.css" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:url" content="https://www.isko.org/cyclo/" />
+<meta name="twitter:title" content="Mathematical theory of classification (ISKO Encyclopedia of KO)" />
+<meta property="og:image" content="https://www.isko.org/cyclo/mathematical9.png" />
+<meta name="twitter:description" content="One of the main topics of scientific research, classification, is the operation consisting of distributing objects in classes or groups which are, in general, less numerous than them. From Antiquity to Classical Age, it has a long history where philosophers (Aristotle) and natural scientists (Linnaeus) took a great part. But since the 19th century (with the growth of chemistry and library science) and the 20th century (with the arrival of mathematical models and computer science) mathematics (especially theory of orders and theory of graphs or hypergraphs) allows us to compute all the possible partitions, chains of partitions, covers, hypergraphs or systems of classes we can construct on a domain. In spite of these advances, most of classifications are still based on the evaluation of ressemblances between objects that constitute the empirical data. However, all these classifications remain, for technical and epistemological reasons we detail in this article, very unstable ones. We lack a real algebra of classifications, which could explain their properties and the relations existing between them. Though the aim of a general theory of classifications is surely a wishful thought, some recent conjecture gives the hope that the existence of a metaclassification (or classification of all classification schemes) is possible." />
+
+<meta name="DCTERMS.title" content="Mathematical theory of classification" />
+<meta name="DCTERMS.creator" content="Daniel Parrochia" />
+<meta name="DCTERMS.issued" content="2019" />
+<meta name="DCTERMS.relation.ispartof" content="ISKO Encyclopedia of Knowledge Organization" />
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="001.012">
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="025.4">
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="510">
+<meta name="DCTERMS.type" content="Text" />
+<meta name="DCTERMS.format" content="text/html" />
+<meta name="DCTERMS.identifier" content="https://www.isko.org/cyclo/mathematical_theory_of_classification" />
+
+</head>
+<body>
+
+<a name="top"></a>
+
+<table>
+
+<tr>
+<td id="isko"><h1>I S K O</h1></td>
+<td id="banner"><h2><a href="index.html" style="text-decoration:none;">Encyclopedia of Knowledge Organization</h2></a></td>
+</tr>
+
+<tr>
+<td id="navigation">
+<a href="../index.php">home</a>
+<a href="../about.html">about ISKO</a>
+<a href="../join.html">join ISKO</a>
+<a href="../ko.html"><cite>Knowledge Organization</cite> journal</a>
+<a href="../events.html">ISKO events</a>
+<a href="../chapters.html">ISKO chapters</a>
+<a href="../people.html">ISKO people</a>
+<a href="../pubs.html">ISKO publications</a>
+<a href="index.html">Encyclopedia</a>
+<a href="../lit.html">KO literature</a>
+<a href="../inst.html">KO institutions</a>
+<a href="http://bartoc.org/" title="link to BARTOC">&#8663; KOS registry</a>
+<a href="http://www.isko-mms.net/home/" title="access-account required">&#128274; members</a>
+<a href="../contact.html">contact us</a>
+</td>
+<td id="content" rowspan="2">
+
+<a class="menu" href="authors#h">edited by Birger Hj&oslash;rland</a> <a class="menu" href="authors#g">and Claudio Gnoli</a>
+
+<p>&nbsp;
+
+<h2>Mathematical theory of classification</h2>
+
+<blockquote>
+by <a href="authors#p">Daniel Parrochia</a></p>
+
+<p>Table of contents:
+
+<br><a style="text-decoration:none;" href="#1">1. Introduction</a> 
+<br><a style="text-decoration:none;" href="#2">2. A brief history of mathematical classification</a> 
+<br><a style="text-decoration:none;" href="#3">3. Examples of classifications and the problem of their formalization</a> 
+
+<br><a style="text-decoration:none;" href="#4">4. Extensional structures:</a> 
+<a style="text-decoration:none;" href="#4.1">4.1 From weak to strong structures;</a> 
+<a style="text-decoration:none;" href="#4.2">4.2 The lattice of partitions;</a> 
+<a style="text-decoration:none;" href="#4.3">4.3 The case of covers</a> 
+
+<br><a style="text-decoration:none;" href="#5">5. Methods for building empirical classifications:</a> 
+<a style="text-decoration:none;" href="#5.1">5.1 Distance, metric and ultrametric;</a> 
+<a style="text-decoration:none;" href="#5.2">5.2 Algorithms for chains of partitions</a> 
+(<a style="text-decoration:none;" href="#5.2.1">5.2.1 Bottom-up methods</a>,
+<a style="text-decoration:none;" href="#5.2.2">5.2.2 Top-down methods</a>,
+<a style="text-decoration:none;" href="#5.2.3">5.2.3 Non-hierarchical methods</a>:
+<a style="text-decoration:none;" href="#5.2.3.1">5.2.3.1 <i>k</i>-means classifications</a>, 
+<a style="text-decoration:none;" href="#5.2.3.2">5.2.3.2 Other non hierarchical algorithms</a>);
+<a style="text-decoration:none;" href="#5.3">5.3 Algorithms for covers and weak structures;</a> 
+<a style="text-decoration:none;" href="#5.4">5.4 Unsolved problems</a>
+
+<br><a style="text-decoration:none;" href="#6">6. Intensional methods</a> 
+<br><a style="text-decoration:none;" href="#7">7. Classifications and flows of information</a> 
+<br><a style="text-decoration:none;" href="#8">8. Towards a general theory of classifications:</a> 
+<a style="text-decoration:none;" href="#8.1">8.1 Classifications inside mathematics;</a> 
+<a style="text-decoration:none;" href="#8.2">8.2 Searching for an algebra of classifications;</a> 
+<a style="text-decoration:none;" href="#8.3">8.3 Some candidates among the algebras;</a> 
+<a style="text-decoration:none;" href="#8.4">8.4 A common construction for tree-like classifications and hypercube-like classifications</a> 
+
+<br><a style="text-decoration:none;" href="#9">9. Conclusion:</a> 
+<a style="text-decoration:none;" href="#9.1">9.1 The missing theory;</a> 
+<a style="text-decoration:none;" href="#9.2">9.2 A philosophical view;</a> 
+<a style="text-decoration:none;" href="#9.3">9.3 Final remarks: from continuum to empirical data</a> 
+
+<br><a style="text-decoration:none;" href="#ref">References</a>
+<br><a style="text-decoration:none;" href="#col">Colophon</a>
+
+
+<p><strong>Abstract</strong>:
+<br>
+One of the main topics of scientific research, classification, is the operation consisting of
+distributing objects in classes or groups which are, in general, less numerous than them.
+From Antiquity to Classical Age, it has a long history where philosophers (Aristotle) and
+natural scientists (Linnaeus) took a great part. But since the 19th century (with the growth
+of chemistry and library science) and the 20th century (with the arrival of mathematical
+models and computer science) mathematics (especially theory of orders and theory of
+graphs or hypergraphs) allows us to compute all the possible partitions, chains of
+partitions, covers, hypergraphs or systems of classes we can construct on a domain. In
+spite of these advances, most of classifications are still based on the evaluation of
+ressemblances between objects that constitute the empirical data. However, all these
+classifications remain, for technical and epistemological reasons we detail in this article,
+very unstable ones. We lack a real algebra of classifications, which could explain their
+properties and the relations existing between them. Though the aim of a general theory of
+classifications is surely a wishful thought, some recent conjecture gives the hope that the
+existence of a metaclassification (or classification of all classification schemes) is possible.</p>
+</blockquote>
+
+<!--
+<p><i>Older browsers can be unable to display some <a href="https://www.w3schools.com/charsets/ref_html_utf8.asp">Unicode</a> mathematical symbols.</i></p>
+-->
+
+<a name="1"></a>
+<h3>1. Introduction</h3>
+
+<p>&rarr; <a href="classification">Classification</a> is the operation consisting of sharing, distributing or allocating objects in classes or groups which are, in general, less numerous than them. It is also the result of this operation and one of the main topics of scientific research and organization of knowledge (<a href="#ref">Dahlberg 2014; Hj&oslash;rland 2017</a>). </p>
+
+<p>Inside science, and especially inside mathematics, what we call a <i>classification</i> supposes the existence of an equivalence relation &#8475; defined between the elements of a set <i>E</i>, leading to the quotient set <i>E</i>/&#8475;, the set of equivalent classes that can be, afterall, hierarchised. The various elements of the set <i>E</i> are usually compared by the means of some invariant.</p>
+
+<p>For example, partitioning &#8469;, the set of natural numbers, into odd and even numbers, supposes you take for invariant their classes modulo 2. Now, if you want to classify the abstract sets in general, then you will have to take for invariant their cardinals. In experimental sciences (physics, chemistry, natural sciences...), there are more complex invariants, such as symmetry groups, discrete groups, and so on.</p>
+
+<p>Invariants are in fact kinds of criteria that allow us to tell whether the objects  we compare are similar or not. However, in practical domains, we cannot get always good invariants or indisputable criterias for classifications. Indeed, even in those domains, a simple glance at the problem shows that classification gains by being developed mathematically. Of course we can compare pairs of objects through their attributes, and try to make classifications empirically as, for example, Michel Adanson (1763) did. However, as soon as the number of objects to be classified exceeds a few dozen, processing the operation of classification is very difficult. </p>
+
+<p>Fortunately, since the 1950s, we can use computers. This means that we must previously define the notions of <i>likeness</i> or <i>proximity</i> of two objects, concepts more clearly expressed by a mathematical coefficient of similarity, which is a kind of abstract notion of <i>distance</i>. This latter, in turn, presupposes the notion of <i>metric space</i>. And once we have built <i>sets</i> or <i>classes</i> with some structures defined on them (quasiorder, order, topological space...) in order to make some groupings of the objects, we find ourselves again in pure mathematics. Mathematics are also useful to compare these structures, by the means of powerful tools such as categories and functors. So we get classifications of mathematical structures or, if we make use of logic, especially model theory, classifications of their underlying theories. Finally, we reach foundational problems. Building stable classifications raises a lot of questions that are familiar to a mathematician: the search for invariants, the quest for a metastructure that explains all forms of empirical or formal classifications, finally, the examination of a possible algebra able to reflect the changes of classification schemes and the passage from one classification to another over time. All these facts lead to consider a mathematical theory of classification as a new construction of the continuum (see <a href="#9">section 9</a>). However, we must recognize that, currently, there is no single theory of classification.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2"></a>
+<h3>2. A brief history of mathematical classification</h3>
+
+<p>For a long time (say, from Plato and Aristotle to the 17th and 18th centuries), building classifications remained the work of natural scientists (in zoology, botany, etc.) and, as the number of living beings was not so important, did not require any mathematics at all to be performed. However, many problems raised in the taxonomic operations (see <a href="#ref">Dagognet 1970</a>) and the necessity of a comprehensive theory was already obvious. Indeed, the idea of a general theory of classification, anticipated by Kant's logic (<a href="#ref">1800</a>) when it describes the possible divisions of attributes, only began to appear in France with Augustin-Pyrame de Candolle (<i>Th&eacute;orie &eacute;l&eacute;mentaire de la Botanique</i>, <a href="#ref">1813</a>), who intended to classify the classifications themselves (<a href="#ref">Drouin 1994</a>, 2001), opposing artificial classifications and natural ones. Then Auguste Comte in his <i>Cours de philosophie positive</i> (<a href="#ref">1830</a>, lessons 36, 40 and 42) posed a general theory based on the study of symmetries in nature. He was himself influenced by the work of Gaspard Monge in projective geometry (especially his classification of surfaces). However, during a long time, modernity (with an exception for library science in USA, Europe and India) forgot this problem which appeared again only in the 1960s. At this time, the Belgian logician Leo Apostel (<a href="#ref">1963</a>) and the Polish mathematicians Luszczewska-Romahnowa and Batog (<a href="#ref">1965a; 1965b</a>) published important papers on the subject. This revival was followed by the new publication of Birkhoff's famous book on lattice theory (<a href="#ref">1967</a>), which had a certain resonance. In the 1970s, mathematical models of numerical taxonomy (<a href="#ref">Sokal and Sneath 1973</a>) and hierarchical classifications were developed in the USA and in France with the books of Barbut and Monjardet (<a href="#ref">1970</a>), Lerman (<a href="#ref">1970</a>), and Benz&eacute;cri (<a href="#ref">1973</a>). All these works assumed of course the big last century advances in mathematical order theory: especially the articles of Birkhoff (<a href="#ref">1935; 1949</a>), Dubreil and Jacotin (<a href="#ref">1939</a>), Ore (<a href="#ref">1942; 1943</a>), Krasner (<a href="#ref">1944</a>) and Riordan (<a href="#ref">1958</a>). We must also mention the ancient work of Kurepa (<a href="#ref">1935</a>) on infinite ramified spaces and the numerous (now &gt;1000) papers of Saharon Shelah on <i>classification theory</i> (see <a href="#ref">Shelah 1978; 1990</a>) considered as a part of model theory.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3"></a>
+<h3>3. Examples of classifications and the problem of their formalization</h3>
+
+<p>What we have in mind when we speak of classifications in Western countries is often a rigid diagram like those of the classical Age's natural taxonomies, where organisms were grouped together into <i>taxa</i>, these groups being given a taxonomic rank. These diagrams are, in fact, typical examples of hierarchical classifications: see, for instance, the classification of plants based on sexual organs (<a href="#ref">Linnaeus 1758</a>) (see Fig. 1) or the classification of animals into vertebrates and invertebrates (<a href="#ref">Lamarck 1801</a>). </p>
+
+<figure align="center">
+<img src="mathematical1.png" title="Figure 1: Fig. 1: Key to the sexual system, from Linnaeus 1758" width="300">
+<figcaption>Fig. 1: Key to the sexual system (from <i>Systema naturae</i>, 10th ed., 1758, p. 837)</figcaption>
+</figure>
+
+<p>In life sciences, this hierarchical model, largely inherited from Linnaeus (kingdom, phylum, class, order, family, genus, species), is always the same. From a mathematical viewpoint, these ordered sequences of divisions are named <i>chains of partitions</i>. </p>
+
+<p>But we encounter also in many domains simple partitions, i.e divisions of a set into nonempty classes, such that the intersection of any two of them is empty and their union is the set itself. Such are the classifications of conics in mathematics (circle, ellips, parabola, hyperbola), or what we can call in other domains <i>cross-partitions</i>, because of the superposition of two or more of them: see, for example, the Mendeleev table of elements in chemistry, formed by a partition of the set of chemical substances into periods of growing weights (lines) and, simultaneously, into chemical affinities (columns). On closer examination, we can see that we may get, indeed, a lot of other forms of classifications: pseudo- or quasi-hierarchies (ordering on intersecting classes), or even simple <i>systems of classes</i> (with no ordering on them). The reason for all this is that we cannot get everywhere strong orders from empirical data and that we must often settle for weaker structures. In some domains, we even fail to get non intersecting classes of the same level. It is the case in social sciences where we sometimes encounter complex realities: these ones are often difficult to put into non overlapping classifications. In particular cases, nonempty intersections between classes of the same level are essential. For example, librarians, in order to optimize information retrieval, usually classify a book in different places, because it is needed, for the reader, to be able to access it by several entries. Formally speaking, it means that one and the same document is located at the intersection of multiple classes. This explains why we must build more complicated schemes than simple partitions or hierarchies. In many situations, <i>fuzzy</i> models (in the sense of <a href="#ref">Zadeh 1965</a>) extended now to big relational data bases (<a href="#ref">Meier et al. 2008</a>), or <i>rough sets</i> (in the sense of <a href="#ref">Pawlak 1982</a>) are necessary, because an object may belong <i>more or less</i> to some class. And a <i>cloudy</i> organization is sometimes better than none. In many domains, as well, partial orders (semilattices or lattices) will be closer to the facts than tree structures (see Fig. 2). </p>
+
+<figure align="center">
+<img src="mathematical2.png" width="60%" title="Fig. 2: The difference between a tree and a semi-lattice">
+<figcaption>Fig. 2: The difference between a tree and a semi-lattice</figcaption>
+</figure>
+
+<p>Let us recall here that a (mathematical) tree is a connected graph without any cycle, while a semilattice is just a collection of sets where two overlapping sets belong to the collection, so like the set of elements they have in common. A lattice is just both a upper semilattice and a lower semilattice. These structures are very widespread in social sciences or even urbanism (see <a href="#ref">Alexander 1965</a>). Let us give another example. Look at what the South-american writer J. L. Borges (see <a href="#ref">Borges 2001</a>) call <i>the Chinese classification</i>, which classifies the animals of the world into the following classes: <code>A</code> those that belong to the Emperor; <code>B</code> embalmed ones; <code>C</code> those that are trained; <code>D</code> suckling pigs; <code>E</code> mermaids... etc. The french philosopher Michel Foucault (see <a href="#ref">Foucault 1968</a>) assumes that such a classification is not a rational one and refers to a culture completely different from ours. In fact, we can only say that we are in front of a weak form of classification. However, it can be mathematically expressed, thanks to a model where classes overlap (Fig. 3). So, such a kind of organization is not irrational at all, and does not necessarily belong to some exotic <i>epist&eacute;me</i>.</p>
+
+<figure align="center">
+<img src="mathematical3.png" width="60%" title="Fig. 3: The beginning of the Chinese classification">
+<figcaption>Fig. 3: The beginning of the <i>Chinese classification</i></figcaption>
+</figure>
+
+<p>So we must accept, as modes of organization, different types of classifications and many forms of orderings, sometimes weaker than hierarchies, sometimes more complex (like, for example, <i>n</i>-cubes). In this context, we decide to call <i>classifications in a large sense</i> structures such as systems of classes, partitions, hypergraphs, hierarchies or chains of partitions, semi-lattices, lattices, and so on. Moreover, all these structures may be crossed with another one, and may be also fuzzified.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4"></a>
+<h3>4. Extensional structures</h3>
+
+<p>Let us now give true definitions of all the structures previously mentioned. We shall begin with structures associated to the weakest form of data organization and, from there, go to strong one: mathematics allow us to begin with very few axioms, that define weak general structures. Afterwards, by adding new conditions, we can get other properties and stronger models. In our case, the weakest structure is just a hypergraph, in the sense of Berge (<a href="#ref">1970</a>).</p>
+
+<a name="4.1"></a>
+<h4>4.1 From weak to strong structures</h4>
+
+<p>Let <i>E</i> be a nonempty finite set, <i>P(E)</i> the powerset of <i>E</i>. A hypergraph is a pair <i>H = (E, P)</i>, where <i>E</i> is a set of vertices (or nodes) and <i>P</i> a set of nonempty subsets called (hyper)edges or links. Therefore, <i>P</i> is a subset of <i>P(E)\&empty;</i>. In such a structure, the set of edges does not <i>cover</i> the set <i>X</i>, because some node may have a degree zero, i.e. may have no link to some edge (see Fig. 4). </p>
+
+<figure align="center">
+<img src="mathematical4.png" width="60%" title="Fig. 4: A hypergraph">
+<figcaption>Fig. 4: A hypergraph</figcaption>
+</figure>
+
+<p>Now, suppose we add the following condition: </p>
+
+<blockquote><i>(C<sub>0</sub>)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;E &isin; P</i></blockquote>
+
+<p>In this case, we say that <i>P</i> is a <i>cover</i> (or <i>covering</i>) of the set of vertices <i>E</i>.</p>
+
+<p>Assume now that, for every element, its singleton is in <i>P</i>. In symbols:
+
+<blockquote><i>(C<sub>1</sub>)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&forall;x &isin; P, {x} &isin; P</i></blockquote>
+
+<p>then, we get a <i>system of classes</i>, in the sense of Brucker and Barth&eacute;lemy (<a href="#ref">2007</a>). Let us add now the new following conditions. For every <i>c<sub>i</sub></i> belonging to <i>P</i>:</p>
+
+<blockquote><i>(C<sub>2</sub>)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;c<sub>i</sub> &cap; c<sub>j</sub> = &empty;</i></blockquote>
+
+<blockquote><i>(C<sub>3</sub>)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </i><big>&cup;</big><i>c<sub>i</sub> = E</i></blockquote>
+
+<p>Then <i>P</i> is a <i>partition</i> of <i>E</i> and the <i>c<sub>i</sub></i> are the <i>classes</i> of the partition <i>P</i> (Fig. 5)</p>
+
+<!--
+<blockquote><i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</i></blockquote>
+-->
+
+<figure align="center">
+<img src="mathematical5.png" width="40%" title="Fig. 5: A partition">
+<figcaption>Fig. 5: A partition</figcaption>
+</figure>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.2"></a>
+<h4>4.2. The lattice of partitions</h4>
+
+<p>Call now <i>x P y</i>, the relation "<i>x</i> belongs to the same class as <i>y</i>" and denote <i>P(E)</i> the set of partitions of a set <i>E</i>. A partition <i>P</i> is finer than a partition <i>P'</i> if <i>x P y</i> &rArr; <i>x P' y</i>. This relation allows us to define a partial order on <i>P(E)</i> that we shall denote <i>P &le; P'</i>. We can see immediately that (<i>P(E)</i>, &le;) is a lattice because (1) it is a partial order; and (2) moreover, every pair <i>(P, P')</i> has a greatest lower bound <i>P</i> &and; <i>P'</i> and a least upper bound <i>P</i> &or; <i>P'</i>. The first one is the discrete partition, whose classes are singletons. The second is the partition with one class, say <i>E</i>. One proves that <i>P(E)</i> is complemented, semi-modular and atomic (if the initial data <i>E</i> is a non atomic set, we can, under reasonable conditions, reduce the data to the atomic elements of <i>E</i>).</p>
+
+<p>Example: The lattice of partitions for |<i>E</i>| = 3 (see Fig. 6):</p>
+
+
+<figure align="center">
+<img src="mathematical6.png" width="60%" title="Fig. 6: The lattice of partition for a 3 element set">
+<figcaption>Fig. 6: The lattice of partition for a 3 element set</figcaption>
+</figure>
+
+<p>In this context, a hierarchical classification, i.e a chain <i>C</i> of partitions of the lattice <i>P(E)</i>, is a totally ordered subset of <i>P(E)</i>. We have:  <i>C</i> = {<i>P<sub>1</sub>, P<sub>2</sub>, ..., P<sub>n</sub></i>}  with <i>P<sub>1</sub> &lt; P<sub>2</sub> &lt; ... &lt; P<sub>n</sub></i>  and:
+
+<blockquote><i>P<sub>i</sub> &isin; P(E)</i></blockquote>
+
+&nbsp;<br>
+Example : Correspondence between chains and hierarchical classifications (see Fig. 7):</p>
+
+<figure align="center">
+<img src="mathematical7.png" width="60%" title="Fig. 7: A classification (right) as a chain of partitions (left)">
+<figcaption>Fig. 7: A classification (right) as a chain of partitions (left)</figcaption>
+</figure>
+
+<p>Note that the whole set of chains <i>C(E)</i> has itself a mathematical structure: it is a semilattice for set intersection.</p>
+
+<p>This model allows us to get all the possible partitions of <i>P(E)</i> and all the possible chains of <i>C(E)</i>. The problem is that the partitions are very numerous (Table 1). </p>
+
+<table border="1" align="center" cellpadding="5">
+  <tr>
+    <td align="center">
+    |<i>E</i>]
+    </td>
+    <td align="center">
+    1
+    </td>
+    <td align="center">
+    2
+    </td>
+    <td align="center">
+    3
+    </td>
+    <td align="center">
+    4
+    </td>
+    <td align="center">
+    5
+    </td>
+    <td align="center">
+    6
+    </td>
+    <td align="center">
+    7
+    </td>
+    <td align="center">
+    8
+    </td>
+    <td align="center">
+    9
+    </td>
+  </tr>
+  <tr>
+    <td>
+    |<i>P(E)</i>|
+    </td>
+    <td>
+    &nbsp;1&nbsp;
+    </td>
+    <td>
+    &nbsp;2&nbsp;
+    </td>
+    <td>
+    &nbsp;5&nbsp;
+    </td>
+    <td>
+    &nbsp;15&nbsp;
+    </td>
+    <td>
+    &nbsp;52&nbsp;
+    </td>
+    <td>
+    &nbsp;203&nbsp;
+    </td>
+    <td>
+    &nbsp;877&nbsp;
+    </td>
+    <td>
+    &nbsp;4140&nbsp;
+    </td>
+    <td>
+    &nbsp;21147&nbsp;
+    </td>
+  </tr>
+</table>
+
+
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.3"></a>
+<h4>4.3 The case of covers</h4>
+
+<p>It is not very easy to examine which classification is the best one among, say, several thousands of them. The situation is worse with weaker structures like covers or even minimal covers. Recall that a family <i>F</i> of nonempty subsets of a set <i>E</i>, whose union contains the given set <i>E</i> (and which contains no duplicated subsets), is called a cover (or a covering) of <i>E</i>. A particular kind of cover is the minimal cover. A minimal cover is a cover for which the removal of one member destroys the covering property. Of course, we can make orderings on covers and build hierarchies of covers or minimal covers (<a href="#ref">Parrochia and Neuville 2013</a>). But if the set <i>L(E)</i> of minimal covers is a lattice for the refinement relation, the set <i>R(E)</i> of all covers has no interesting properties: it is only a preorder (or a quasi-order) for the refinement relation (that we define in the same way as for the partition ordering). Moreover, computing the covers of a set leads immediately to big numbers (see Table 2). So it becomes rapidly impossible to examine the very numerous possible chains of covers.</p>
+
+<table align="center" border="1" cellpadding="5">
+  <tr>
+    <td align="center">
+    [<i>E</i>]
+    </td>
+    <td align="center">
+    1
+    </td>
+    <td align="center">
+    2
+    </td>
+    <td align="center">
+    3
+    </td>
+    <td align="center">
+    4
+    </td>
+  </tr>
+  <tr>
+    <td>
+    <i>R(E)</i>
+    </td>
+    <td>
+    &nbsp;1&nbsp;
+    </td>
+    <td>
+    &nbsp;5&nbsp;
+    </td>
+    <td>
+    &nbsp;109&nbsp;
+    </td>
+    <td>
+    &nbsp;32297&nbsp;
+    </td>
+  </tr>
+</table>
+
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5"></a>
+<h3>5. Methods for building empirical classifications</h3>
+
+<p>How can we get classes, partitions, hierarchies, pseudo or quasi-hierarchies and so on? Generally, in the real world, the rough data presents itself as a non structured set <i>E</i> of objects (animals, plants, books, etc.) sharing (or not) some attributes or properties (shape, size, color, etc.). In order to make classes, we must first give a sense to the notion of <i>similarity</i> between two elements of <i>E</i>, the set of objects to be classified. </p>
+
+<a name="5.1"></a>
+<h4>5.1. Distance, metric and ultrametric</h4>
+
+<p>We introduce first a mapping <i>d</i>, from <i>E &times; E</i> into &#8477;<sup>+</sup> which must satisfy some of the following axioms: </p>
+
+<blockquote>
+(1) &nbsp;&nbsp;<i>d(x, y) = d(y, x)</i><br>
+(2) &nbsp;&nbsp;<i>d(x, y) =</i> 0 iff <i>x = y</i><br>
+(3) &nbsp;&nbsp;<i>d(x, z) = d(x, y) + d(y, z)</i><br>
+(4) &nbsp;&nbsp;<i>d(x, z) = Max[d(x, y), d(y, z)]</i>
+</blockquote>
+
+<p>If 1 and 2 are satisfied, <i>d</i> is a distance. If, moreover, 3 is satisfied, <i>d</i> is a metric. And if 4 is also satisfied, then <i>d</i> is an ultrametric. One proves (<a href="#ref">Lerman 1970; Benz&eacute;cri 1973</a>) that it is possible to associate an ultrametric with integer values to any chain of partitions. Now if <i>d</i> is an ultrametric on <i>E</i>, any function <i>f(d)</i> such that:
+
+<blockquote>
+(1) &nbsp;&nbsp;<i>f</i>(0) = 0<br>
+(2) &nbsp;&nbsp;<i>f(&lambda;d) &gt; f(d)</i> if <i>&lambda; &gt; 1</i> and <i>d</i> &ne; 0</p>
+</blockquote>
+
+<p>is also an ultrametric on <i>E</i>. A chain of partitions associated with an ultrametric <i>d' = f(d)</i>, where <i>d</i> is the number of the partitions and <i>f</i> a monotonically increasing function, is named an <i>indexed hierarchy</i>. As said above, any ultrametric is associated with a matrix of distances: the distance between two elements <i>x</i> and <i>y</i> on the tree is the first level where the elements are in the same class. Of course, we have <i>d(x,x)</i> = 0 for all <i>x</i> and <i>d(x,y)</i> &gt; 0 when <i>x &ne; y</i>. So we get a total equivalence between chains of partitions, ultrametrics and matrices of distances.</p>
+
+<p>Example: The chain of partitions in Fig. 6 admits the matrix of distances of Table 3:</p>
+
+<table align="center" border="1" cellpadding="5">
+  <tr>
+    <td>
+     
+    </td>
+    <td>
+    <i>&nbsp;a&nbsp;</i>
+    </td>
+    <td>
+    <i>&nbsp;b&nbsp;</i>
+    </td>
+    <td>
+    <i>&nbsp;c&nbsp;</i>
+    </td>
+  </tr>
+  <tr>
+    <td>
+    <i>&nbsp;a&nbsp;</i>
+    </td>
+    <td>
+    &nbsp;0
+    </td>
+    <td>
+    &nbsp;2
+    </td>
+    <td>
+    &nbsp;1
+    </td>
+  </tr>
+  <tr>
+    <td>
+    <i>&nbsp;b&nbsp;</i>
+    </td>
+    <td>
+    &nbsp;2
+    </td>
+    <td>
+    &nbsp;0
+    </td>
+    <td>
+    &nbsp;2
+    </td>
+  </tr>
+  <tr>
+    <td>
+    <i>&nbsp;c&nbsp;</i>
+    </td>
+    <td>
+    &nbsp;1
+    </td>
+    <td>
+    &nbsp;2
+    </td>
+    <td>
+    &nbsp;0
+    </td>
+  </tr>
+</table>
+
+
+<p>Interpreted as an ultrametric matrix, a chain of partitions is the semi-ring<br>
+
+<blockquote>
+&#10216;<i>R<sup>+</sup></i><big>&cup;</big>{+&infin;},&oplus;,&#149;&#10217;
+</blockquote>
+
+where &oplus; is interpreted by <i>min</i> and &#149; by <i>max</i> (<a href="#ref">Gondran 1976</a>). This structure is named <i>dioid</i> in Gondran and Minoux (<a href="#ref">2002</a>). It may be transposed to the set of all ultrametric matrices (see also <a href="#ref">Gondran et Minoux 1979; 1984</a>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5.2"></a>
+<h4>5.2. Algorithms for chains of partitions</h4>
+
+<p>In order to build concrete hierarchical classifications, we must first carefully define the objects to be classified; second, observe on any individual some variables from which we shall define a distance <i>S(x, y)</i> between them; third, define a new distance &Delta;<i>(x, y)</i> between the classes themselves, such that &Delta;<i>(x, y)</i> gives <i>S(x, y)</i> when those classes are reduced to one element. These tedious calculations are now carried out by computers. In the course of history, three kinds of methods held taxonomist's attention: hierarchical bottom-up methods, hierarchical top-down methods and, finally, non-hierarchical methods (for instance, aggregation around moving centroids). Hierarchical methods imply that relations between classes are ordered. Non hierarchical methods are only concerned with the construction of partitions where classes are unordered (so they keep away from the construction of actual classifications). Top-down methods are necessarily working according to independently specified criteria. Non-hierarchical methods do not use necessarily a notion of distance. Let us examine all that.</p>
+
+<a name="5.2.1"></a>
+<h5>5.2.1. Bottom-up methods</h5>
+
+<p>Usually, one considers that bottom-up methods are those which give the best and most reliable results (<a href="#ref">Roux 1985</a>). Let us see now how these last methods are working in the case of binary chains.</p>
+
+<p>In such a case, we look for a pair <i>(a, b)</i> such that <i>d(a, b)</i> has the smallest value. We aggregate these two elements, that is, the first partition <i>P<sub>1</sub></i> is obtained from the discrete partition <i>P<sub>0</sub></i> by the operation:</p>
+
+<blockquote>
+<i>P<sub>1</sub> = [P<sub>0</sub> - (a, b)]</i> <big>&cup;</big> &alpha;
+</blockquote>
+
+with:
+
+<blockquote>
+&alpha; = <i>a</i> <big>&cup;</big> <i>b</i>
+</blockquote>
+
+<p>To any partition corresponds the aggregation of two particular subsets. This aggregation is represented by a node in the tree (associated with the chain of partitions). We denote <i>n</i>(&alpha;, &beta;) the node corresponding to the aggregation of &alpha; and &beta;. To any node may be associated an index <i>I(n) = D</i>(&alpha;, &beta;). So we get an indexed hierarchy of partitions. In order to define the best among those partitions, one must define on them an objective function. Then we have to maximize the values of this function for all possible partitions, and finally choose the partition corresponding with the greatest value. But nothing assures us that all "optimal" partitions constitute a chain.</p>
+
+<p>Many kinds of distances may be used (<a href="#ref">Lerman 1970</a>; Parrochia and Neuville <a href="#ref">2013</a>, 79-80). But when we have a representation of the elements of <i>E</i> in the form of a cloud of points &mdash; each of them being assigned a certain weight and located in a metric space &mdash;, a center of gravity and an inertia can be calculated for each subcloud. It is then natural to look for pairs of points whose aggregation decreases the less the dispersion of the cloud, that is to say, its inertia. In this case, it is shown that the distance to be used is:</p>
+
+<blockquote>
+<i>d</i><sup>2</sup><i>(x, y) = [m<sub>x</sub> m<sub>y</sub> / (m<sub>x</sub> + m<sub>y</sub>)] ||x - y||</i><sup>2</sup>
+</blockquote>
+
+<p>There exist also different strategies of aggregation (<a href="#ref">Roux 1985; Gordon 1996</a>). For example: nearest neighbour method, diameter hierarchy, average distance. One of the most simple expressions of the average strategy is:</p>
+
+<blockquote>
+&Delta;(<i>x,y</i>) = (1 / <i>CardX.CardY</i>) &sum;<sub><i>x&isin;X y&isin;Y</i></sub>{<i>d(x,y)</i>}
+</blockquote>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5.2.2"></a>
+<h5>5.2.2.Top-down methods</h5>
+
+<p>This type of classification is performed by successive dichotomies, and so, at every step of the algorithm, there are two rules to be applied in order to determine (1) the choice of the class to split; (2) the objects assignment mode in each of the subclasses.  </p>
+
+<p>One of the oldest top-down algorithms is that of Williams and Lambert (<a href="#ref">1959</a>), who choose to split the class with the largest number of objects. Others, like Hubert (<a href="#ref">1973</a>), prefer dividing the class of larger diameter (remember that the diameter of a class is the distance between the two farthest points in it). None of the above processes is really justified and the right answer seems to be taking the class maximum dispersion. But many formulas can still express it.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5.2.3"></a>
+<h5>5.2.3. Non-hierarchical methods</h5>
+
+<p>Non-hierarchical methods are particularly useful in classification problems of pattern recognition issues. In this domain, the main difficulty comes from our ignorance as to the underlying structure of the space. Should we make an assumption of separability, a probabilistic hypothesis, a metric hypothesis? One way to give an answer is to make a classification on a set <i>T</i>, called <i>learning set</i>, ignoring the actual forms <i>&omega;<sub>1</sub>, ..., &omega;<sub>n</sub></i>. So one gets <i>&omega;'<sub>1</sub>, ..., &omega;'<sub>p</sub></i> classes which are only neighboring of classes <i>&omega;<sub>1</sub>, ..., &omega;<sub>n</sub></i>, in order that, in the <i>&omega;'<sub>j</sub></i> classes, one <i>&omega;'<sub>i</sub></i> class is dominant. There will be thus <i>p &ge; n</i>, and <i>&omega;'<sub>1</sub>, ..., &omega;'<sub>p</sub></i> will be called <i>recognizable forms</i>. This classification, that can use several types of metrics, can therefore afford to make a realistic assumption about the structure of the space. The problem is then to use that structure for assigning an individual <i>x</i> to one of the <i>&omega;'<sub>j</sub></i> classes.</p>
+
+<a name="5.2.3.1"></a>
+<h6>5.2.3.1. <i>k</i>-means classifications</h6>
+
+<p>One example of this method is the <i>k-means</i> classification. It helps highlight nuclei <i>A<sub>1</sub>, ..., A<sub>p</sub></i> (symbolic description) for each of the recognizable forms <i>&omega;'<sub>1</sub>, ..., &omega;'<sub>p</sub></i> and distances <i>d(x, A<sub>j</sub>)</i> between individuals and nuclei. Nuclei acting as labeled and the distance <i>d</i> play the role of a membership function. So we are reduced to a fuzzy pattern recognition problem.</p>
+
+<p>The <i>k</i>-means classification was introduced by MacQueen (<a href="#ref">1967</a>). Other similar algorithms were developed by Forgey (<a href="#ref">1965</a>) (see "mobile centers") or by Diday (<a href="#ref">1971</a>) (see <i>dynamic clouds method</i>). This kind of methods has the following advantages: (1) an object can be assigned to a class during an iteration, then changes class to the next iteration. This is not possible with the hierarchical clustering, for which an assignment is irreversible; (2) by multiplying the starting points and repetitions, one can explore several possible solutions. The disadvantage of them is that they do not find out what can be a consistent number of classes, or how to visualize the proximity between classes or objects. The definition of an average between the data, as well as the calculation of the averages, which are very sensitive to outliers, are other limits of this model.</p>
+
+<a name="5.2.3.2"></a>
+<h6>5.2.3.2. Other non hierarchical algorithms</h6>
+
+<p>In order to solve this last problem (the sensibility to outliers), other kinds of algorithms have been developed. One of them is the PAM-algorithm (partition around medioids) (<a href="#ref">Kaufman and Rousseuw 1990</a>). In this method, each class is represented by one of its members named <i>medioid</i>, and not by a centroid, average of the set of its members. After a random choice of initial <i>k</i> medioids, the algorithm reviews all the pairs of individuals such as one is a medioid and the other not, evaluating whether the exchange of the two objects improves the objective function. In the end, the different objects are assigned to the closest medioid class. However, the renunciation of the centroids induces a certain algorithmic complexity and long computational times (each iteration is in <i>O(k(n-k)<sup>2</sup>)</i>). But it is possible to use some variant like CLARANS (Clustering large applications based upon randomized search) to reduce to a complexity in <i>O(n)</i>.</p>
+
+<p>Other methods based on the study of the dispersion of classes, on their density, on the quantification by grid, on the direct construction of dendograms complete the above possibilities. More recently, methods derived from biology (neural networks, genetic algorithms) or physics (super-paramagnetic clustering) have emerged, as well as methods for comparing these classifications (<a href="#ref">Boubou 2007</a>).</p>
+
+<p><i>Peano scans</i>
+<br>Another type of non hierarchical method, sometimes useful in the domain of imagery, is the Peano scan, a general technique for continuous scanning of multidimensional data by a spacefilling curve (see <a href="#ref">Peano 1890</a>). Hilbert (<a href="#ref">1891</a>) presented a simplified version of Peano curves in terms of binary divisions (see examples of Hilbert (left) and Peano (right) curves of order 2 in Fig. 8), and then, generalized algorithms for images of arbitrary size have been invented by many authors. </p>
+
+<figure align="center">
+<img src="mathematical8.png" width="60%" title="Fig. 8: A Peano scan">
+<figcaption>Fig. 8: A Peano scan</figcaption>
+</figure>
+
+<p>These methods immediately apply to classification. Let <i>R<sup>n</sup></i> be an <i>n</i>-dimensional space, i.e. an object represented by <i>n</i> measurements. Assume <i>R<sup>n</sup></i> is divided into <i>r<sup>np</sup></i> hypercubes <i>H</i>, <i>r</i> and <i>p</i> for varying accuracy. One sequentially explores these <i>H</i> with a <i>Peano scan</i> of order <i>p</i>. As we can define it now in a very general way, a Peano scan is indeed an addressing technique built by a recursive procedure on <i>p</i>. In this particular case, it is a technical addressing of the hypercube (1/<i>r<sup>p</sup></i>)<i><sup>n</sup></i> with an address (<i>k<sub>1</sub>, k<sub>2</sub>, ..., k<sub>n</sub></i>). </p>
+
+<p>We may now define what is a <i>r<sup>n</sup></i> neighbouring. Let <i>H</i> and <i>H'</i> be two hypercubes, whose respective addresses are (<i>k<sub>1</sub>, k<sub>2</sub>, ..., k<sub>n</sub></i>) and (<i>k'<sub>1</sub>, k'<sub>2</sub>, ..., k'<sub>n</sub></i>). </p>
+
+<p><i>H</i> and <i>H'</i> are <i>r<sup>p</sup></i>-neighbors means</p>
+
+<blockquote>
+&sum;<sub>i</sub> |<i>k<sub>i</sub> - k'<sub>i</sub></i>| &le; 1
+</blockquote>
+
+<p>
+One shows that two Peano scans are sufficient to get the neigbourings and we do not need any kind of distance to build the classification.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5.3"></a>
+<h4>5.3. Algorithms for covers and weak structures</h4>
+
+<p>Let <i>Q</i> be a cover on a set <i>E</i> and <i>Q<sup>i</sup></i> &sub; <i>P(E)</i> the powerset of <i>E</i>. <i>Q</i> is associated with the binary relation:<br>
+
+<blockquote>
+(&forall;<i>x, y</i> &isin; <i>E</i>) : <i>xQy</i> &hArr; <i>x, y</i> &isin; <i>Q<sup>i</sup></i>
+</blockquote>
+
+<p>A cover <i>Q</i> is said to be finer than a cover <i>Q'</i> if:</p>
+
+<blockquote>
+<i>xQy</i> &rArr; <i>xQ'y</i>
+</blockquote>
+
+for all <i>x,y</i> &isin; <i>E</i>. </p>
+
+<p>Let us now define a sequence <i>Q<sup>1</sup>, Q<sup>2</sup>, ..., Q<sup>h</sup>,...</i> of covers on <i>E</i>, totally ordered by decreasing fineness. This sequence meets the similarities between objects if the first index <i>h</i>, for which any two given objects of <i>E</i> are combined in one part of <i>Q<sup>h</sup></i> is even smaller than the similarity of the two objects is large. An algorithm built by Lerman (<a href="#ref">1970</a>, 73) allows obtaining, naturally, a finite family of totally ordered sequences of covers. Each respects plainly, for a given degree of fineness, the similarities between objects. </p>
+
+<p>Let &omega; be a preorder whose classes are <i>B<sub>1</sub>, B<sub>2</sub>, ..., B<sub>p</sub></i>. Assume we already got a chain of partitions (<i>P<sub>0</sub>, P<sub>1</sub>, ..., P<sub>q</sub></i>). To each partition <i>P<sub>i</sub></i>, we associate now a sequence of covers in the following way: for some <i>h</i>, a member of the cover <i>Q<sup>h</sup></i> will be any class <i>E<sub>&#8467;</sub></i> of partitions <i>P<sub>i</sub></i>, or any class <i>e<sub>m</sub></i> of the partition corresponding to the cover of order <i>h</i>. Since, in practice, we are mainly interested in low-overlapping covers, Lerman proposes to determine, along with the previous sequence (<i>P<sub>0</sub>, P<sub>1</sub>, ..., P<sub>q</sub></i>), the sequence (<i>Q<sup>1</sup><sub>1</sub>, Q<sup>1</sup><sub>2</sub>, ..., Q<sup>1</sup><sub>q-1</sub></i>), the <i>Q<sup>1</sup><sub>i</sub></i> being defined from <i>P<sub>i</sub></i> and <i>B<sub>i</sub></i>. For example, suppose we got the following chain of partitions (<i>P<sub>0</sub>, P<sub>1</sub>, P<sub>2</sub>, P<sub>3</sub></i>), with:</p>
+
+<blockquote><i>
+P<sub>0</sub> = {{f}, {a}, {d}, {c}, {b}, {e}}<br>
+P<sub>1</sub> =  {{f}, {a, d}, {b, c}, {e}}<br>
+P<sub>2</sub> = {{a, d, f}, {b, c, e}}<br>
+P<sub>3</sub> = {{a, b, c, d, e, f}}</p>
+</i></blockquote>
+
+<p>Let us remember that, in a chain of covers, the discrete cover is the discrete partition and the rough cover is the rough partition: so, only the intermediate levels are modified. In this example, we get:</p>
+
+<blockquote><i>
+Q<sup>1</sup><sub>1</sub> = {{f}, {a, d, f}, {b, c}, {b, e}}<br>
+Q<sup>1</sup><sub>2</sub> = {{a, d, f}, {b, c, e}, {d, e}}
+</i></blockquote>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5.4"></a>
+<h4>5.4. Unsolved problems</h4>
+
+<p>Despite the fact that the previous methods are widespread, they are still not convincing because they lead to relatively unstable classifications. There are two kinds of instability: an intrinsic instability, due to the plurality of methods (distances, algorithms...) that can be used to classify the objects, and an extrinsic instability (our knowledge is changing), so the definitions of objects (or attributes) are evolving over time.</p>
+
+<p>Intrinsic instability comes from the possibility of choosing different formulas for expressing the distance between objects and also different kinds of algorithms for aggregating classes. In general, the objects of the world have no ultrametric distances between them. The "rough data" is generally a numeric table which crosses objects and properties (predicates or attributes), these ones presenting sometimes different modalities. Objects can share some common properties, but they can also have specific ones. How may we choose a "good" formula to express this distance (or similarity measure)? In order to compare different similarity measures, Lerman (<a href="#ref">1970</a>) defines the following variables:</p>
+
+<ul>
+<li><i>s</i>: number of attributes which are common to the object <i>x</i> and to the object <i>y</i> (= what <i>x</i> and <i>y</i> are)</li>
+<li><i>t</i>: number of attributes which are not possessed by <i>x</i> and by <i>y</i> (= what <i>x</i> and <i>y</i> are not)</li>
+<li><i>u</i>: number of attributes possessed by the object <i>x</i> and not by the object <i>y</i> (= specificity of <i>x</i>)</li>
+<li><i>v</i>: number of attributes possessed by the object <i>y</i> and not by the object <i>x</i> (= specificity of <i>y</i>)</li>
+<li><i>T</i>: sum of all the attributes (<i>T &le; s + u + v</i>).</p>
+</ul>
+
+<p>Now a <i>similarity measure</i> is a function <i>S</i>, from <i>E &times; E</i> into &#8469;<sup>3</sup>, such that, for all (<i>x,y</i>) of <i>E &times; E</i>, we have <i>S(x,y)</i> = <i>S (s, u, v)</i> &isin; &#8469;<sup>3</sup>. The problem is that we can define <i>S</i> in many ways. In principle, to solve the problem, we would have to compare all the possible distances that can be chosen and measure the proximity of each of them to an ultrametric. Unfortunately, this is not possible, except for very small samples. So we are led to use approximative algorithms, which suppose, at their turn, new more or less arbitrary choices: nearest neighbour, diameter, average link, center of gravity, dispersion of elements within a class, etc. All that give at the end very different results, so the final classification is quite unstable.</p>
+
+<p>Let us say now some words about extrinsic instability. This instability is due either to the quantitative variations of the populations of objects to be classified, or to the qualitative changes concerning the knowledge of their properties in the course of time. For instance, initial objects may be imprecise (<a href="#ref">Apostel 1963</a>); new objects can also arrive (<a href="#ref">Lambert 1984</a>) or old objects can disappear; moreover, unusual or strange objects ("monsters") may appear in the course of time (<a href="#ref">Dagognet 1970</a>); finally, a discovery of new properties for some apparently well-known objects (resp. rejection of old ones) may also happen.</p>
+
+<p>As an answer to intrinsic instability, Lerman (<a href="#ref">1970</a>) proved that, if the number of attributes (or properties) possessed by the objects of a set <I>E</I> is constant, the associated quasi-order given by any "natural" metric is the same. But when the sample variance of the number of attributes is a big one, of course, the stability is lost. Similarly, if we classify the attributes, instead of classifying the objects, the reverse proposition is not true.</p>
+
+<p>For extrinsic instability, the answers are more difficult to find. Of course, we may think to methods used in library decimal classifications (UDC, Dewey, etc.), which make possible infinite ramified extensions: starting with ten big classes, you divide each of them into ten more, and so on. Then, after having used integers, associated with the larger classes, it may be useful to introduce decimal points and to transform the first into decimal numbers. A decimal number being a periodic or aperiodic unlimited symbol, it is always possible to add new indices, and so, new classes, in the classification. But these classifications assume that higher levels are invariant and they have also the disadvantage to be enumerative and to degenerate rapidly into simple lists. Pseudo-complemented structures also exist (see <a href="#ref">Hillman 1965</a>) with some kinds of waiting boxes (or compartments) for indexing things that have not yet been classified. We can get, as well, structures whose transformations obey certain rules that have been fixed in advance. That is the case of Hopcroft 3-2 trees, for instance (see <a href="#ref">Larson and Walden 1979</a>). But these systems are not absolutely convincing: in both cases, the problem of justifying the underlying topology or the transformation rules remains unsolved.</p>
+
+<p>As a consequence, the impossibility of solving the problem of instability of classifications invites us to look for some clear composition laws to be defined on the set of classifications over a set and to a good algebra of classifications, if it may exist one. This search is all the more crucial as a theorem proved by Kleinberg (<a href="#ref">2002</a>) shows that one cannot hope finding a classifying function which would be together scale invariant, rich enough and consistent. This result explains that we cannot find, in fact, any empirical stable classification by using traditional clustering methods, even if computer science produces every year a lot of new algorithms or tries to solve the problem in many ways, including decompositions into subproblems supposed to lead to better approximations (<a href="#ref">Veloso and Meira 2011</a>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="6"></a>
+<h3>6. Intensional methods</h3>
+
+<p>Since its birth, classical logic has always admitted two types of interpretation: extensional and intensional. "All men are mortal" may mean in fact either that the class of men is contained in the class of mortals, or that the predicate of "mortality" is implied by the existence of the predicate of "humanity". For years, this question has divided the logicians, as evidenced by the numerous discussions between Plato and Aristotle, Pascal and Ramus, Jevons and Joseph, etc. More recently, the development of computer science brought this view back, since for declarative languages, and particularly object-oriented ones, pure extensional classes are rather uncommon. In this context, the preference is now given to the intensional approach.</p>
+
+<p>In the intensional interpretation, a class is in correspondence with one or several properties which define its elements. Generally, the way the properties are found is not specified. It may be manually done or by using some technical approach like Galois lattice and conceptual analysis (<a href="#ref">Ganter and Wille 1999</a>). </p>
+
+<p>The requirements that must be satisfied to make a good (hierarchical) classification have been posed by Apostel (<a href="#ref">1963</a>). </p>
+
+<p>A division (or partition) is essential if <!-- is --> there is no individual having one of the <i>Q<sub>i</sub></i>-properties without having property <i>P</i>.</p>
+
+<p>A classification is a sequence of implicative-disjunctive propositions: everything which has the property <i>P</i> also has one of the <i>n</i> properties <i>Q<sub>1</sub> ... Q<sub>n</sub></i>. Everything which has the property <i>Q<sub>r</sub></i> also has the property <i>S</i>, and so on (<a href="#ref">Apostel 1963</a>, 188). </p>
+
+<p>A <i>natural</i> classification is such that the definition of the domain to be classified  determines the criteria's choice of classification in a unique way.</p>
+
+<p>The intensional weight <i>w(P)</i> of a property <i>P</i> is the set of properties' disjunctions that this property implies. A partition immediately follows another one if, for all <i>P</i>-properties of the first and all <i>Q</i>-properties of the second, disjunctively implied by these first, there are no properties <i>R</i> disjunctively implied by <i>P</i> and disjunctively implying <i>Q</i>.</p>
+
+<p>An intensional optimal classification would have to satisfy the following requirements:
+<ol>
+<li>Each level has a partition basis.</li>
+<li>No new partition basis is introduced before the previous one is depleted.</li>
+<li>Each partition is essential.</li>
+<li>The classification tree is regular.</li>
+<li>The succession of partitions is obvious.</li>
+</ol>
+
+<p>In a natural intensional classification, scope definition to classify must determine in one and the same way the choice of classification criteria. Finally, the partition that immediately follows the trivial partition should be essential. The problem is: how to get essential partitions? How to obtain stable classifications, given the constant flow of information generated by an undefinitely growing knowledge?</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="7"></a>
+<h3>7. Classifications and flows of information</h3>
+
+<p>During the 1970s, Barwise and Seligman (<a href="#ref">1997</a>) wanted to create a new theory of information, involving the idea that information flow is made possible by <i>regularities</i> in systems. Rather than developing a machinery for analyzing those regularities, they built instead a mathematical theory based on their mere existence. The starting point is precisely the notion of classification, which thus appears in a new light. For the authors (see <a href="#ref">Devlin 2001</a>), a classification is a structure <i>A</i> = &#10216;<i>A, &Sigma;A</i>,&#8872; <i>A</i>&#10217;</i>, where <i>A</i> is a set of objects to be classified, called the <i>tokens</i> of <i>A</i>. <i>&Sigma;A</i> is a set of objects used to classify the tokens, called the <i>types</i> of <i>A</i>, and &#8872;<i>A</i> is a binary relation between <i>A</i> and <i>&Sigma;A</i> which determines which tokens are classified by which types. A familiar example to logicians is when the types are sentences of first-order logic and the tokens are mathematical structures, <i>a</i> &#8872; &alpha; being the relationship that the structure <i>a</i> is a <i>model</i> of the sentence &alpha;. The authors then develop a machinery for discussing the "logic" by means of which the system can support the flow of information.</p>
+
+<p>What is intesting for us in this project is, first, the notion of <i>informorphism</i> the authors define between two classifications. For example, let <i>A</i> = &#10216;<i>A, &Sigma;A</i>,&#8872; <i>A</i>&#10217;</i>, and <i>C</i> = &#10216;<i>C, &Sigma;C</i>,&#8872; <i>C</i>&#10217;</i> be two classifications. An <i>infomorphism</i> between <i>A</i> and <i>C</i> is a pair <i>f</i> = (<i>f</i>^, <i>f</i><sup>v</sup>') of functions that makes the following diagram commute:</p>
+
+<figure align="center">
+<img src="mathematical13.png" width="25%" title="commuting diagram">
+</figure>
+
+<p>This means that for all tokens <i>c</i> of <i>C</i> and all types &alpha; of <i>A</i>:<br>
+
+<blockquote>
+<i>f</i><sup>v</sup><i>f</i><sup>v</sup><i>(c)</i> &#8872;<i><sub>A</sub></i> &alpha; iff <i>c</i> &#8872;<i>C</i> f^(&alpha;)</p>
+</blockquote>
+
+<p>One usually refers to <i>f</i>^ as "<i>f</i>-up" and <i>f</i><sup>v</sup> as "<i>f</i>-down". One takes account of the fact that the functions <i>f</i>^ and <i>f</i><sup>v</sup> act in opposite directions by writing <i>f: A &#8644; C</i>. It may be <!-- me --> the <!-- fact --> case, for example, of two mathematical theories.</p>
+
+<p>Now an information channel consists of an indexed family <i>C = {f<sub>i</sub>: A<sub>i</sub> &#8644; C} i&isin;I</i> of infomorphisms with a common codomain <i>C</i>, called the <i>core</i> of the channel. The intuition is that <i>A<sub>i</sub></i> are individual components of the larger system <i>C</i>, and it is by virtue of being parts of the system <i>C</i> that the constituents <i>A<sub>i</sub></i> can carry information about one another. Suppose <i>A</i> and <i>B</i> are constituent classifications in an information channel with core <i>C</i>. A token <i>a</i> being of type &alpha; in <i>A</i> carries the information that a token <i>b</i> is of type &beta; in <i>B</i> relative to the channel <i>C</i> if <i>a</i> and <i>b</i> are connected in <i>C</i> and the translation of &alpha; entails the translation of &beta; in <i>Th(C)</i> (<i>Th(C)</i> is the theory of the channel core). It is clear that the types in <i>C</i> provide the logical structure (the regularities) that gives rise to information flow, but information only flows in the context of a particular token <i>c</i> of <i>C</i>, i.e. a particular object.</p>
+
+<p>Then, Barwise and Seligman make use of Category theory, and particularly of the notion of <i>colimit</i>, for getting a method for combining classifications. Given classifications <i>A</i> and <i>B</i>, one defines the colimit <i>A+B</i> as follows. The tokens of <i>A+B</i> consist of pairs (<i>a, b</i>) of tokens from each. The types of <i>A+B</i> consist of the types of both, except that, if there are any types in common, one must make two distinct (indexed) copies in order not to confuse them. There are natural infomorphisms &sigma;<i>A</i>: <i>A</i> &#8644;  <i>[A+B]</i> and &sigma;<i>B</i>: <i>B</i> &#8644; <i>[A+B]</i> defined thus:
+
+<ol>
+<li>&sigma;^<i>A</i>(&alpha;) = &alpha;<i>A</i> (the <i>A</i>-copy of &alpha;), for each type &alpha; of <i>A</i>.</li>
+<li>&sigma;^<i>B</i>(&beta;) = &beta;<i>B</i>, for each type &beta; of <i>B</i>.</li>
+<li>For each token (<i>a,b</i>) of <i>A+B</i>, &sigma;<sup>v</sup><sub>A</sub>((<i>a,b</i>)) = <i>a</i> and &sigma;<sup>v</sup><sub>B</sub>((<i>a,b</i>)) = <i>b</i>.</li>
+</ol>
+
+The classification <i>A+B</i> has the property that, given any classification <i>C</i> and infomorphisms <i>f: A</i> &#8644; <i>C</i>, <i>g: B</i> &#8644; <i>C</i>, there is a unique infomorphism <i>h = f + g</i> such that the following diagram commutes:</p>
+
+<figure align="center">
+<img src="mathematical14.png" width="40%" title="commuting diagram">
+</figure>
+
+<p>All that is good mathematics and explains well how information constraints may translate from a classification to another. However, it supposes we already get some classifications and have a complete theory of domain <i>C</i>. If not, the extended theory is more complicated. In this case, one must use a "local logic" to show how one can catch partial information. Then the theory explains more how the agents reason about information than how the real world actually works. It may be a complement for Shannon theory of information, but not a theory of classifications as such. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="8"></a>
+<h3>8. Towards a general theory of classifications</h3>
+
+<p>When we ask how to build good concrete classifications, the answer also is a mathematical approach to the problem. But the solution does not consist in using computers and running programs without thinking anymore. We have, before all, to get a sound mathematical basis in order to make stable classifications. To this aim, we can first take a glance at mathematical classifications themselves.
+
+<a name="8.1"></a>
+<h5>8.1. Classifications inside mathematics</h5>
+
+<p>Mathematics has dealt with classification for a long time. A quite common situation in this domain is: (1) the existence of a collection of objects <i>X</i>; (2) an equivalence relation &#8475; on <i>X</i>. Now a complete classification of <i>X</i> up to &#8475; consists of: (a) a set of invariants <i>I</i>; (b) a map <i>c: X &rarr; I</i>  such that <i>x</i> &#8475; <i>y</i> &hArr; <i>c(x) = c(y)</i>. We can give a lot of examples where this method is working very well (the most famous case is the classification of finite semisimple groups into 17 infinite families plus the sporadic groups). Most often (<a href="#ref">Kechris 2001</a>), the collection of objects to be classified may be viewed as forming a "nice" space, for example a standard Borel space. In this case, the theory of Borel equivalence relations allows us to study the set-theoretic nature of possible (complete) invariants and to develop a mathematical framework for measuring the complexity of classification problems. This way of approaching these  problems in mathematics has become, for some years, a new area under active investigation. The question of cataloging a class of mathematical objects up to some notion of equivalence by invariants, and the closely related theory of descriptive dynamics, i.e., the theory of definable actions of Polish groups on Polish spaces, have been developed by several authors in a very promising manner (though some impossibile results have been encountered in a few cases). Of course, by the means of category theory and automorphism groups, we can always find a very general method to compare mathematical structures, and so, we should be theoretically able to classify a lot of them (groups, rings, matrices, etc.), as Pierce (<a href="#ref">1970</a>) has already shown. However, in the details, many problems raise, especially concerning big collections of very general structures (graphs, fields, varieties  and so on). One could think it is possible to turn around the problem in using logic. Generally speaking, mathematical structures satisfy some axiomatics and, as such, may be described as logical theories. Model theory &mdash; and in model theory, particularly the so-called "classification theory" created by Shelah (<a href="#ref">1978</a>) &mdash; tries to classify those abstract logical theories by studying the relations existing between them and their mathematical interpretations (or models). But, to pursue this aim, classification theory must often deal with an infinite number of structures, and the way the infinite is defined takes a great importance and very much influences the results we get in the end. Moreover, some theories cannot be classified at all, because they are not stable and have not good structure theorems.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="8.2"></a>
+<h5>8.2 Searching for an algebra of classifications</h5>
+
+<p>So we need an algebra of classifications, which can explain all their transformations. The problem is that such an algebra should be:</p>
+
+<ul>
+<li>commutative (if <i>a</i> and <i>b</i> are classes, <i>a &#149; b = b &#149; a</i>);</li>
+<li>nonassociative (if <i>a &#149; (b &#149; c)</i> is a classification, <i>(a &#149; b) &#149; c</i> is not the same classification). So we have necessarily: a &#149; (b &#149; c) &ne; (a &#149; b) &#149; c.</li>
+</ul>
+
+<p>This recalls nonassociative products of Wedderburn-Etherington (see <a href="#ref">Comtet 1970</a>). We can improve this notation by suppressing parentheses if we write for instance <i>bc&#149;a&#149;</i> instead of <i>a &#149; (b &#149; c)</i> (Reverse Polish Notation or RPN invented by Lukasiewicz in the 1920s). Let us give some examples of classifications written in RPN. In words, we have:
+
+<blockquote>
+<i>a, &nbsp;&nbsp;&nbsp; ab&#149;, &nbsp;&nbsp;&nbsp; ab&#149;c&#149;, &nbsp;&nbsp;&nbsp; ab&#149;cd&#149;&#149;, &nbsp;&nbsp;&nbsp; abc&#149;&#149;de&#149;&#149;.</i>
+</blockquote>
+
+Here are the corresponding diagrams (see Fig. 9).</p>
+
+<figure align="center">
+<img src="mathematical9.png" width="60%" title="Fig. 9: Diagrams of classifications written in RPN">
+<figcaption>Fig. 9: Diagrams of classifications written in RPN</figcaption>
+</figure>
+
+<p>We get the following results (Parrochia and Neuville 2013):</p>
+
+<p><i>Proposition 1</i> (RPN-classification correspondence): A classification can be attached to each RPN sentence but the reverse is false.
+<br>Proof: To prove this, it is sufficient to choose a classification whose partitions are not covering themselves. For instance, let <i>C ={(abcde), (a, bcd, e), (a, b, c, d, e)}</i>. There is no RPN sentence for such a classification. (As usual, in order to simplify writing, we have replaced <i>{{a},{b},{c}}</i> with <i>(a, b, c)</i>.)</p>
+
+<p><i>Definition 1</i> (notion of magma): Let <i>E</i> be a set of variables, representing classes. Let &#149; be an internal law of composition, i.e a mapping from <i>E &times; E</i> into <i>E</i>. According to Bourbaki, <i>(E,&#149;)</i> is a <i>magma</i>.</p>
+
+<p><i>Proposition 2</i> (classification as a magma): Each classification (written in RPN) is a commutative and non associative magma:<br>
+(1) <i>a &isin; E, b &isin; E, a &#149; b = b &#149; a</i>	(commutativity);<br>
+(2) <i>a &isin; E, b &isin; E, c &isin; E: (a &#149; b)&#149;c &ne; a &#149;(b &#149; c)</i> (non associativity).</p>
+
+<p>This structure can be extended to the set of all classifications over a set (which is also a non associative magma).</p>
+
+<p><i>Proposition 3</i> (isomorphic classifications): Two classifications with <i>n</i> elements are <i>isomorphic</i> if their connectors are located in the same place (when we use RPN notation).</p>
+
+<p>Example: <i>ab&#149;c&#149;</i> and  <i>b&#149;ac&#149;</i> are obviously isomorphic. </p>
+
+<p><i>Definition 2</i> (extension of a classification): A classification <i>A</i> with <i>n</i> elements extends a classification <i>B</i> with <i>p</i> elements if <i>B</i> is included in <i>A</i>.</p>
+
+<p>Example: <i>ab&#149;c&#149;d&#149;</i> extends  <i>ab&#149;c&#149;</i>.</p>
+
+<p>
+We need an algebra of classifications because we would like to combine classifications between themselves and to generate complex classifications from more simple ones &mdash; as Barwise and Seligman do in the case of information flows. The problem is that the compound of two classifications is not necessarily a classification, because the order structure on the levels may be lost when we go from one to the other.</p>
+
+<p>Intuitively, in order to be joined with a classification <i>C<sub>1</sub></i>, a classification <i>C<sub>2</sub></i> may have a structure which, even if it extends the structure of <i>C<sub>1</sub></i>, however, must also respect this very structure. So, the operation &oplus; may be admitted as an internal composition law only if <i>C<sub>3</sub> = C<sub>1</sub></i> &oplus; <i>C<sub>2</sub></i> remains a classification. To express that, we need a particular algebra. But it is not, in fact, easy to find.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="8.3"></a>
+<h4>8.3. Some candidates among the algebras</h4>
+
+<p>As we have seen, an algebra of classifications should be commutative and non associative. But there are very few algebras like that. Indeed, most of the algebraic structures are associative ones. Getting such an algebra is a very difficult problem and it is the reason why, for the moment, we get only some candidates but no real answer. Among the well-known existing algebras, we have: K-algebras, Hopf algebras, dendriform algebras, right-symmetric algebras, etc. Some of them are working well on trees, but not necessarily on classification trees. For example, that is the case of the Dzhumadil'daev and Löfwall algebra (<a href="#ref">2002</a>): most of the time, we cannot interpret its tree combinations in the view of taxonomic transformations. However, more recently, Drensky and Holtkamp (<a href="#ref">2008</a>) have connected trees, nonassociative algebras and K-algebras. More precisely, they described free nonassociative algebras in terms of labeled reduced planar rooted trees &mdash; an approach that can certainly be applied to classifications.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="8.4"></a>
+<h4>8.4 A common construction for tree-like classifications and hypercube-like classifications</h4>
+
+<p>Instead of the missing algebra of classifications, let us introduce some elements of graph theory. As Mulder (<a href="#ref">2016</a>) shows, the simplest way to obtain a tree from a smaller one is by adding a pendant vertex (a vertex of degree 1). Suppose we can cover a tree-like classification <i>C</i> with two subtree-like classifications <i>C*<sub>1</sub></i> and <i>C*<sub>2</sub></i> that have exactly a vertex in common. To obtain a larger (tree-like) classification, we take two disjoint copies of these (subtree-like) classifications <i>C<sub>1</sub></i> and <i>C<sub>2</sub></i>, as shown in Fig.7 (right), then join the vertices in these subtree-like classifications that correspond to the common vertex in <i>C*<sub>1</sub></i> and <i>C*<sub>2</sub></i>. We obtain an expansion with respect to the covering tree-like classifications <i>C*<sub>1</sub></i>, and <i>C*<sub>2</sub></i> (see Fig. 10).</p>
+
+<figure align="center">
+<img src="mathematical10.png" width="60%" title="Fig. 10: Expansion of a classification">
+<figcaption>Fig. 10: Expansion of a classification</figcaption>
+</figure>
+
+<p>Each tree-like classification can be obtained by a succession of such expansions from the one-vertex graph <i>K<sub>1</sub></i>. But we also know that hypercubes can be obtained in a similar manner by expansion, as depicted in Fig. 11.</p>
+
+<figure align="center">
+<img src="mathematical11.png" width="60%" title="Fig. 11: Expansion of a hypercube">
+<figcaption>Fig. 11: Expansion of a hypercube</figcaption>
+</figure>
+
+<p>One covers the <i>n</i>-cube on the left by two subcubes, both of which equal to the whole <i>n</i>-cube. One takes two disjoint copies of these two subcubes and join respective vertices in the two copies. Thus one gets a hypercube of dimension <i>n</i>+1. Every hypercube can also be obtained by a finite sequence of such expansions, starting from the one-vertex graph <i>K<sub>1</sub></i>. So this construction is a common property of tree-like classifications and hypercube-like classifications. We shall not give its true formalization although that can be rigorously expressed (see <a href="#ref">Mulder 2016</a>, 155-156).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="9"></a>
+<h3>9. Conclusion</h3>
+
+<a name="9.1"></a>
+<h4>9.1. The missing theory</h4>
+
+<p>At present time, a general algebra of classifications on a set is not known. However, we are invited to search it, for two reasons:  (1) the world is not completely chaotic and our knowledge is evolving according to some laws ; (2) there exists, for sure, quasi-invariant classifications in physics (elementary particle classification), in chemistry (Mendeleev table of elements), in crystallography (the 232 crystallographic groups), etc. Most of these "good" classifications are founded on some mathematical structures (Lie groups, discrete groups, etc.). It is therefore not absolutely unrealistic to think that the "dream" of a general theory for classifications will come true, as anything that has a structure can be explained mathematically.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="9.2"></a>
+<h4>9.2. A philosophical view</h4>
+
+<p>To sum up the question of a classification theory, we may propose the following scheme (see Fig. 12), that we comment below:</p>
+
+<figure align="center">
+<img src="mathematical12.png" width="60%" title="Fig. 12: The whole domain of classification theory">
+<figcaption>Fig. 12: The whole domain of classification theory</figcaption>
+</figure>
+
+<p>(1) When our mathematical tools apply to sense data, we get only <i>phenomenal</i> classifications (by clustering methods).</p>
+
+<p>(2) When our mathematical tools deal with crystallographic or quantum structures, we get <i>noumenal</i> classifications (for instance, by invariance of discrete groups or Lie Groups). Of course noumenons never give "things in themselves". Even for Immanuel Kant, they are only negative or problematic ideas (see <a href="#ref">Kant 1998</a>, 348-9). Let us recall that, for Kant, a noumenon would be the idea of the thing in itself, if this idea existed. But it does not exist, at least in a positive form. However, the French philosopher Gaston Bachelard (<a href="#ref">1936</a>) has further weakened this Kantian notion of noumenon in that of <i>metric noumenon</i>, i.e a noumenon relating to the power of our scientific instruments, or more generally, to the power of our theoretical knowledge: Gaston Bachelard (<a href="#ref">1933</a>, 140) himself used to say that, very often, a scientific instrument is but a reified theorem. Therefore by "noumenal classifications" we mean those classifications that are based on mathematical structures and robust assumptions of our theoretical knowledge.</p>
+
+<p>(3) When we look for a general theory of classifications (finite and infinite), we are in the domain of pure mathematics and face the problem of the construction of the continuum: for example, under the Continuum Hypothesis, one proves that the infinite set of partitions <i>P(E)</i>, defined on a countable set <i>E</i>, is an uncountable set with the same cardinality as &#8477, the set of real numbers. But other hypotheses can be admitted, and there are many ways in mathematics to see the Continuum and to perform its construction.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="9.3"></a>
+<h4>9.3 Final remarks: from continuum to empirical data</h4>
+
+<p>Today, many have forgotten that Cantor's mathematical research on the sets of points debouched on a conception of matter and a classification of everything which was intended as a general theory of the construction of events. His aim was to build a kind of mapping between mathematical elements and natural phenomena through the concept of the <i>power of a set</i> (see <a href="#ref">Cantor 1885</a>, reprinted in <a href="#ref">Cantor 1932</a> and a letter from Cantor to Mittag-Leffler: <a href="#ref">Meschkowski 1967</a>). </p>
+
+<p>At present, of course, we cannot accept Cantor's ideas on classification of natural phenomena anymore. However, it still exists a natural correspondence between mathematics and concrete classifications. A well-known example is Fisher's data set, collecting the morphologic variation of Iris flowers of three related species: Iris setosa, Iris virginica, and Iris versicolor (<a href="#ref">Fisher 1936</a>). It shows that the length (<i>L</i>) and width (<i>W</i>) of sepals and petals, measured in centimetres, were sufficient to classify Iris flowers. If <i>L</i> &lt; 2,45, then they belong to I. setosa. If not, one considers <i>W</i>. If <i>W</i> &lt; 1,75, then the Iris is versicolor. If not, it is virginica. Crucial values of <i>L</i> (2,45) or <i>W</i> (1,75) are real numbers and also indices of classifications.</p>
+
+<p>A recent conjecture (see <a href="#ref">Parrochia and Neuville 2013</a>) is that all classifications on a set (represented by non-intersecting ellipsoids in a <i>n</i>-space) are convergent in one and the same point, which is the index of the classification. So, without any additional hypothesis, the infinite set of all classifications is but the continuum of the real line. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="ref"></a>
+<h3>References</h3>
+
+<p>Adanson, Michel. 1763. <i>Familles des plantes</i>. Paris: Vincent.</p>
+
+<p>Aho, Alfred V., Hopcroft, John E. and Ulmann, Jeffrey D. 1983. <i>Data structures and algorithms</i>. Reading (Mass.): Addison-Wesley Publishing Company.</p>
+
+<p>Alexander, Christopher. 1965. "A city is not a tree". <i>Architectural Forum</i> 122, no. 1: 58-61, and no. 2: 58-62. </p>
+
+<p>Apostel, Leo. 1963. "Le probl&egrave;me formel des classifications empiriques". In <i>La classification dans les sciences</i>, publi&eacute; avec le concours du Centre national de recherches de logique et de la Soci&eacute;t&eacute; belge de logique et de philosophie des sciences. Gembloux: J. Duculot, 157-230. </p>
+
+<p>Bachelard, Gaston, 1933/2016. <i>Les intuitions atomistiques: essai de classification</i>. Paris, Boivin. Reprinted Paris: Vrin, 2016.</p>
+
+<p>Bachelard, Gaston. 1936/1970. "Critique pr&eacute;liminaire du concept de fronti&egrave;re &eacute;pist&eacute;mologique". In <i>Actes du VIII Congr&egrave;s international de philosophie, &agrave; Prague (2-7 septembre 1934)</i>, Prague, Orbis, 1936: 3-9. Reprinted in G. Bachelard, Etudes, Paris: Vrin 1970.</p>
+
+<p>Barbut, Marc and Bernard Montjardet. 1971. <i>Ordre et classification: alg&egrave;bre et combinatoire</i>, tome 1-2. Paris: Hachette.</p>
+
+<p>Barwise, Jon and Jerry Seligman. 1997. <i>Information flow: the logic of distributed systems</i>. Cambridge: Cambridge University Press.  </p>
+
+<p>Benz&eacute;cri, Jean-Paul. 1973. <i>L'analyse des donn&eacute;es, Tome 1: la Taxinomie; Tome 2: L'analyse des correspondances</i>. Paris: Dunod.</p>
+
+<p>Berge, Claude.  1970. <i>Graphes et hypergraphes</i>. Paris: Dunod.</p>
+
+<p>Birkhoff, Garrett. 1935. "On the structure of abstract algebras". <i>Proceedings of the Cambridge Philosophical Socciety</i> 31, 433–54.</p>
+
+<p>Birkhoff, Garrett. 1949. "Th&eacute;orie et application des treillis". <i>Annales de l'Institut Henri Poincar&eacute;</i> 11, no. 5: 227–40.</p>
+
+<p>Birkhoff, Garrett. 1967. <i>Lattice theory</i>. 3rd ed. Providence: American Mathematical Society. </p>
+
+<p>Borges, Jorge Luis. 2001. "John Wilkins' analytical language". In Eliot Weinberger, <i>The total library: non-fiction 1922–86</i>. London: Penguin Books, 229–232.</p>
+
+<p>Boubou, Mounzer. 2007. <i>Contribution aux m&eacute;thodes de classification non supervis&eacute;e via des approches pr&eacute;topologiques et d'agr&eacute;gation d'opinion</i>. Th&egrave;se, sp&eacute;cialit&eacute;: Statistiques-informatique, Universit&eacute; Lyon I, France. (Dissertation).  </p>
+
+<p>Bourbaki, Nicolas. 1959. <i>Th&eacute;orie des ensembles</i>. Paris: Hermann.</p>
+
+<p>Brucker, François and Jean-Pierre Barth&eacute;lemy. 2007. <i>El&eacute;ments de classification: aspects combinatoires et algorithmiques</i>. Paris: Hermes Science.</p>
+
+<p>Candolle, Augustin Pyramus de. 1813. <i>Theorie &egrave;lementaire de la botanique, ou Exposition des principes de la classification naturelle et de l'art de d&eacute;crire et d'&eacute;tudier les v&eacute;g&eacute;taux</i>. Paris: D&eacute;terville. </p>
+
+<p>Cantor, Georg, 1885/1932. "&Uuml;ber verschiedene Theoreme aus der Theorie der Punktmengen in einem <i>n</i>-fach ausgedehntern stetigen Raumen <i>G<sub>n</sub></i>". Zweite Mitteilung, <i>Acta mathematica</i> 7, no. 8, 105-124 (1885), rep. in Georg Cantor, <i>Gesammelte Abhandlungen mathematischen und philosophishen Inhalts</i>, Berlin: Springer, 1932, 261-77.</p>
+
+<p>Comte, Auguste. 1830/1975. "Philosophie premi&egrave;re". <i>Cours de philosophie positive</i>, le&ccedil;ons 1–45 (1830). Reprinted Paris, Hermann, 1975.</p>
+
+<p>Comtet, Louis. 1970. <i>Analyse combinatoire</i>. Paris: Presses Universitaires de France.</p>
+
+<p>Dagognet, François. 1970. <i>Le catalogue de la vie: &eacute;tude m&eacute;thodologique sur la taxinomie</i>. Paris: Presses Universitaires de France.</p>
+
+<p>Dahlberg, Ingetraut. 2014. <i>Wissensorganisation: Entwicklung, Aufgabe, Anwendung, Zukunft</i>. W&uuml;rzburg: Ergon Verlag.</p>
+
+<p>Devlin, Keith. 2001. <i>The Mathematics of Information, Lecture 4: Introduction to Channel Theory</i>. Helsinki: ESSLLI.</p>
+
+<p>Diday, Edwin. 1971. "Une nouvelle m&eacute;thode en classification automatique et reconnaissance des formes: la m&eacute;thode des nu&eacute;es dynamiques". <i>Revue de statistique appliqu&eacute;e</i> 19, no. 2: 19-33.</p>
+
+<p>Drensky, Vesselin and Ralf Holtkamp. 2008. "Planar trees, free nonassociative algebras, invariants, and elliptic integrals". <i>Algebra and Discrete Mathematics</i> 7, no. 2: 1-41.</p>
+
+<p>Drouin, Jean-Marc. 1994. "Classification des sciences et classification des plantes chez Augustin-Pyramus de Candolle". <i>Revue de Synth&egrave;se</i> IVe S, nos. 1-2: 149-65.</p>
+
+<p>Drouin, Jean-Marc. 2001. "Principles and uses of taxonomy in the works of Augustin-Pyramus de Candolle". <i>Studies in history and philosophy of science, Part C</i> 32, no. 2: 255-75.</p>
+
+<p>Dubreil, Paul and Marie-Louise Dubreil-Jacotin. 1939. "Th&eacute;orie alg&eacute;brique des relations d'&eacute;quivalence". <i>Journal de math&eacute;matiques</i> 18: 63–95.</p>
+
+<p>Dzhumadil'daev, Askar and Clas L&ouml;fwall. 2002. "Trees, free right-symmetric algebras, free Novikov algebras and identities". <i>homology, homotopy and applications</i> 4, no. 2: 165-90.</p>
+
+<p>Everitt, Brian S., Sabine Landau and Morven Leese. 2001. <i>Cluster analysis</i>. 4th ed. London: Arnold.  </p>
+
+<p>Fisher, Ronald Aylmer. 1936. "The use of multiple measurements in taxonomic problems". <i>Annals of human genetics</i> 7, no. 2, 179–88. </p>
+
+<p>Forgey, Edward W. 1965. "Cluster analysis of multivariate data: efficiency versus interpretability of classifications". <i>Biometrics</i> 21: 768-9. (Meeting abstract).</p>
+
+<p>Foucault, Michel. 1968. <i>Les mots et les choses</i>. Paris: Gallimard.</p>
+
+<p>Ganter, Bernhard and Rudolf Wille. 1999. <i>Formal concept analysis: mathematical foundations</i>. Berlin: Springer-Verlag.</p>
+
+<p>Girard, Jean-Yves. 1987. <i>Proof theory and logical complexity</i> Volume 1. Napoli: Bibliopolis.</p>
+
+<p>Gondran, Michel. 1976. "La structure alg&eacute;brique des classifications hi&eacute;rarchiques". <i>Annales de l'INSEE</i> 22-23, 181-190. </p>
+
+<p>Gondran, Michel and Michel Minoux. 1979. <i>Graphes et algorithmes</i>. Paris: Eyrolles. </p>
+
+<p>Gondran, Michel and Michel Minoux. 1984. <i>Graphs and algorithms</i>. New York: John Wiley and Sons. </p>
+
+<p>Gondran, Michel and Michel Minoux. 2002. <i>Graphes, dio&iuml;des et semi-anneaux: nouveaux mod&egrave;les et algorithmes</i>. Paris: Tec et Doc-Lavoisier.</p>
+
+<p>Gordon, Allan D., 1996. "Hierarchical classification". In Phipps Arabie, Lawrence J. Hubert, and Geert de Soete (eds.), <i>Clustering and classification</i>. Singapore: World Scientific, 65-121.</p>
+
+<p>Hilbert, David. 1891. Ueber die stetige Abbildung einer Linie auf ein Flikhenstuck. <i>Mathematische Annalen</i> 38: 459-460. </p>
+
+<p>Hillman, Donald J. 1965. Mathematical Classification Techniques for Non-static Document Collections, with Particular Reference to the Problem of Relevance. In Pauline Atherton (ed.), <i>Classification Research: Elsinore Conference Proceedings</i>, Copenhagen: Munksgaard, 177-209.</p>
+
+<p>Hj&oslash;rland, Birger. 2017. "Classification". <i>Knowledge Organization</i> 44, no. 2, 97-128. Also available at: <a href="classification">https://www.isko.org/cyclo/classification</a>.</p>
+
+<p>Hubert, Lawrence J. 1973. "Monotone invariant clustering procedures". <i>Psychometrika</i> 38: 47-62.</p>
+
+<p>Jambu, Michel and Marie-Odile Lebeaux. 1978. <i>Classification automatique pour l'analyse des donn&eacute;es</i>, Volume 2, <i>Logiciels</i>. Paris: Dunod.</p>
+
+<p>Kant, Immanuel. 1800/1963. <i>Introduction to logic</i>. New York: Philosophical Library, 1963. (German original: Gottlob Benjamin J&auml;sche (ed.). <i>Immanuel Kants Logik: ein Handbuch zu Vorlesungen</i>, K&ouml;nigsberg: F. Nicolovius, 1800). </p>
+
+<p>Kant, Immanuel. 1781/1998. <i>Critique of pure reason</i>. Cambridge: Cambridge University Press.</p>
+
+<p>Kaufman, Leonard and Peter J. Rousseuw. 1990. <i>Finding groups in data: an introduction to cluster analysis</i>. New York: John Wiley and Sons.</p>
+
+<p>Kechris, Alexander S. 2001. <i>Actions of Polish groups and classification problems</i>. Analysis and logic: London Math. Soc. lecture note series, Cambridge: Cambridge University Press.</p>
+
+<p>Kleinberg, Jon. 2002. "An impossibility theorem for clustering". <i>Advances in neural information processing systems (NIPS)</i> 15: 446-53.</p>
+
+<p>Krasner, Marc, 1944. Nombres semi-r&eacute;els et espaces ultram&eacute;triques. <i>Comptes Rendus Hebdomadaires des S&eacute;ances de l'Acad&eacute;mie des Sciences</i> 219, no. 2: 433-5.   </p>
+
+<p>Kurepa, Georges. 1935. <i>Ensembles ordonn&eacute;s et ramifi&eacute;s</i>. Belgrade: Publications Math&eacute;matiques de l'Universit&eacute; de Belgrade 4. (Thesis pr&eacute;sent&eacute; a la Facult&eacute; des Sciences de l'Universit&eacute; de Paris). </p>
+
+<p>Lamarck, Jean-Baptiste de. 1801. <i>Syst&egrave;me des animaux sans vert&egrave;bres ou Tableau g&eacute;n&eacute;ral des classes, des ordres et des genres de ces animaux</i>. Paris: D&eacute;terville.</p>
+
+<p>Lambert, Jacques. 1984. "Classer vaut pour d&eacute;couvrir, coder vaut pour inventer". In Francois Dagognet (ed.) <i>Anatomie d'un &eacute;pist&eacute;mologue</i>. Paris: Librairie Philosophique J. Vrin, 23-35.</p>
+
+<p>Larson, James A. and William E. Walden. 1979. "Comparing insertion schemes used to update 3-2 trees". <i>Information systems</i> 4: 127-36.</p>
+
+<p>Lerman, Isra&euml;l C&eacute;sar. 1970. <i>Les bases de la classification automatique</i>. Paris: Gauthier-Villars.</p>
+
+<p>Lerman, Isra&euml;l C&eacute;sar. 1981. <i>Classification et analyse ordinale des donn&eacute;es</i>. Paris: Dunod.</p>
+
+<p>Linnaeus, Carl. 1758. <i>Systema Naturae per regna tria naturae, secundum classes, ordines, genera, species, cum caracteribus, differentiis, synonymis, locis</i>, vol. 2. 10th edition. Holmiae: Impensis direct. Laurentii Salvi.</p>
+
+<p>Luszczewska-Romahnowa, Seweryna and Tadeusz Bat&oacute;g. 1965a. "A generalized classification theory I", <i>Studia logica</i> XVI: 53–70. </p>
+
+<p>Luszczewska-Romahnowa, Seweryna and Tadeusz Bat&oacute;g. 1965b. "A generalized classification theory II", <i>Studia logica</i> XVII: 7–30.</p>
+
+<p>MacQueen, James B. 1967. "Some methods for classification and analysis of multivariate observations". <i>Proceedings of the Fifth Berkeley Symposium on Mathematical Statistics and Probabilty</i> 1: 281-97. University of California Press.</p>
+
+<p>Meier, Andreas, G&uuml;nter Schindler and Nicolas Werro. 2008. "Fuzzy classification on relational databases". In Jos&eacute; Galindo, <i>Handbook of research on fuzzy information processing in databases</i> volume 2. Hershey: Idea Group Publishing, 586-614.</p>
+
+<p>Mendeleev, Dimitri, 1869. "The dependence between the properties of the atomic weights of the elements". <i>Zeitschrift f&uuml;r Chemie</i>, 404-405.</p>
+
+<p>Meschkowski, Herbert. 1967. <i>Probleme des Unendlichen, Werk und Leben Georg Cantors</i>. Berlin: Springer Verlag.</p>
+
+<p>Mulder, Henry Martyn. 2016. "What do trees and hypercubes have in common?" In Ralucca Gera, Stephen Hedetniemi and Craig Larson (eds.), <i>Graph theory, favorite conjectures and open problems</i> I, Cham: Springer-Verlag International, 149-70. </p>
+
+<p>Neuville, Pierre. 1984. <i>Vers des formalisations alg&eacute;briques pour les classifications</i>. Lyon: ENSSIB.</p>
+
+<p>Ore, Oystein. 1942. "Theory of equivalence relations". <i>Duke Mathematical Journal</i> 9, no. 3, 573–627;</p>
+
+<p>Ore, Oystein. 1943. "Some studies on closure relations". <i>Duke Mathematical Journal</i> 10, no. 4, 761–85. </p>
+
+<p>Parrochia, Daniel 2016. "Classification". In James Fieser and Bradley Dowden eds., <i>The Internet encyclopedia of philosophy</i>. Martin, TN: University of Tennessee at Martin. <a href="http://www.iep.utm.edu/classifi/">http://www.iep.utm.edu/classifi/</a>   </p>
+
+<p>Parrochia, Daniel and Pierre Neuville. 2013. <i>Towards a general theory of classifications</i>. Basel: Birkh&auml;user. </p>
+
+<p>Pawlak, Zdzislaw. 1982. "Rough sets". <i>International Journal of Parallel Programming</i> 11, no. 5: 341–56.</p>
+
+<p>Peano, Giuseppe. 1890. "Sur une courbe, qui remplit toute une aire plane". <i>Mathematische Annalen</i> 36, no. 1: 157-60.</p>
+
+<p>Pierce, Russell Stewart. 1970. "Classification problems". <i>Mathematical System Theory</i> 4, no. 1: 65-80.</p>
+
+<p>Rasiowa, Helena. 1974. <i>An algebraic approach to non-classical logics</i>. Amsterdam: North Holland. </p>
+
+<p>Riordan, John. 1958. <i>Introduction to combinatorial analysis</i>. New York: Wiley.</p>
+
+<p>Roux, Maurice. 1985. <i>Algorithmes de classification</i>. Paris: Masson.</p>
+
+<p>Shelah, Saharon. 1978. <i>Classification theory and the number of non-isomorphic models</i>. Amsterdam: North Holland. 2nd ed. 1990.</p>
+
+<p>Sokal, Robert R. and Peter H. A. Sneath. 1973. <i>Principles of numerical taxonomy</i>. San Francisco: Freeman. </p>
+
+<p>Sierpinski W. 1920. "Sur la d&eacute;composition des ensembles de points en parties homog&egrave;nes". <i>Fundamenta Mathematicae</i> 1: 28-34; reprinted in W. Sierpinski, <i>&OElig;uvres choisies</i>, tome 2, Editions scientifiques de Pologne, Warzawa, 1973, 303-7.</p>
+
+<p>Veloso, Adriano and Wagner Meira Jr. 2011. <i>Demand-driven associative classification</i>. Dordrecht: Springer Verlag. </p>
+
+<p>Williams, William Thomas and Joyce M. Lambert. 1959. "Multivariate methods in plant ecology, I: Association-analysis in plant communities". <i>Journal of Ecology</i> 47, no. 1: 83-101.</p>
+
+<p>Zadeh, Lotfi A. 1965. "Fuzzy sets". <i>Information and Control</i> 8, no. 3: 338–53.</p>
+
+<a name="col"></a>
+
+<p>&nbsp;
+
+<p>Visited <a href="http://www.digits.net" target="_blank">
+    <img src="http://counter.digits.net/?counter={2018d832-0255-69b4-9982-110300a7876d}&template=simple" 
+     alt="Hit Counter by Digits" border="0"  /></a>
+times since 2018-04-17 (10 months after first publication).</p>
+
+
+<p>&nbsp;
+
+<hr>Version 1.2 (= 1.0 plus abstract, reference to Adanson 2763 and many minor corrections); published 2017-06-20, this version 2019-06-06<br>
+Article category: <code><a href="index#R">Methods, approaches & philosophies</a></code><br>
+<p>This article (version 1.0) is published in <i>Knowledge Organization</i>, vol. 45 (2018), Issue 2, pp. 184-201.<br>
+How to cite it (version 1.0): Parrochia, Daniel. 2018. &ldquo;Mathematical theory of classification&rdquo;. <i>Knowledge Organization</i> 45, no. 2: 184-201. Also available in Hj&oslash;rland, Birger, ed. <i>ISKO Encyclopedia of Knowledge Organization</i>, https://www.isko.org/cyclo/mathematical_theory_of_classification</p>
+
+<p>&copy;2017 ISKO. All rights reserved.</p>
+
+</td>
+</tr>
+
+<tr>
+<td id="logo">
+</td>
+</tr>
+
+</table>
+</body>
+</html>

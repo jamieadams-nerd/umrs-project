@@ -1,0 +1,1195 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head profile="http://dublincore.org/documents/2007/11/05/dc-html/">
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>International Classification of Diseases (ICD) (IEKO)</title>
+<link rel="stylesheet" type="text/css" href="../isko.css" />
+<link rel="schema.DCTERMS" href="http://purl.org/dc/terms/" />
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:url" content="https://www.isko.org/cyclo/icd" />
+<meta name="twitter:title" content="International Classification of Diseases (ICD) (ISKO Encyclopedia of KO)" />
+<meta property="og:image" content="https://www.isko.org/cyclo/icd3.jpg" />
+<meta name="twitter:description" content="This article presents the history, contents, structures, functions, and applications of the International Classification of Diseases (ICD), which is a global standard maintained by the World Health Organization (WHO). The article aims to present ICD from the knowledge organization perspective and focuses on the current versions, ICD-10 and ICD-11. It also introduces the relationship between ICD and other health knowledge organization systems (KOSs), plus efforts in research and development reported in health informatics. The article concludes that the high-level effort of promoting a unified classification system such as ICD is critical in providing a common language for systematic recording, reporting, analysis, interpretation, and comparison of mortality and morbidity data. It greatly enhances the constancy of coding across languages, cultures, and healthcare systems around the world." />
+
+<meta name="DCTERMS.title" content="International Classification of Diseases (ICD)" />
+<meta name="DCTERMS.creator" content="Yi Hong" />
+<meta name="DCTERMS.creator" content="Marcia Zeng" />
+<meta name="DCTERMS.issued" content="2022" />
+<meta name="DCTERMS.relation.ispartof" content="ISKO Encyclopedia of Knowledge Organization" />
+<meta name="DCTERMS.ispartof" content="ISKO Encyclopedia of Knowledge Organization" />
+<meta name="DCTERMS:bibliographicCitation" content="ISKO Encyclopedia of Knowledge Organization, eds. Birger Hjorland and Claudio Gnoli" />
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="001.012">
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="616">
+<meta name="DCTERMS.subject.keyword" content="diseases">
+<meta name="DCTERMS.subject.keyword" content="disorders">
+<meta name="DCTERMS.subject.keyword" content="KOS">
+<meta name="DCTERMS.type" content="Text" />
+<meta name="DCTERMS.format" content="text/html" />
+<meta name="DCTERMS.identifier" content="https://www.isko.org/cyclo/icd" />
+
+<style>
+a {text-decoration: none;}
+a:hover {text-decoration:underline;}
+table td, table th { padding: 5px; }
+</style>
+
+</head>
+<body>
+
+<a name="top"></a>
+
+<table>
+
+<tr>
+<td id="isko"><h1>I S K O</h1></td>
+<td id="banner"><h2><a href="index.html" style="text-decoration:none;">Encyclopedia of Knowledge Organization</h2></a></td>
+</tr>
+
+<tr>
+<td id="navigation">
+<a href="../index.php">home</a>
+<a href="../about.html">about ISKO</a>
+<a href="../join.html">join ISKO</a>
+<a href="../ko.html"><cite>Knowledge Organization</cite> journal</a>
+<a href="../events.html">ISKO events</a>
+<a href="../chapters.html">ISKO chapters</a>
+<a href="../people.html">ISKO people</a>
+<a href="../pubs.html">ISKO publications</a>
+<a href="index.html">Encyclopedia</a>
+<a href="../lit.html">KO literature</a>
+<a href="../inst.html">KO institutions</a>
+<a href="http://bartoc.org/" title="link to BARTOC">&#8663; KOS registry</a>
+<a href="https://www.isko-mms.net/" title="access-account required">&#128274; members</a>
+<a href="../contact.html">contact us</a>
+</td>
+<td id="content" rowspan="2">
+
+<a class="menu" href="authors#hj">edited by Birger Hj&oslash;rland</a> <a class="menu" href="authors#g">and Claudio Gnoli</a>
+
+<p>&nbsp;
+
+<div itemscope itemtype="http://schema.org/Article">
+
+<h2 itemprop="headline">International Classification of Diseases (ICD)</h2>
+
+<blockquote>
+by <a itemprop="author" href="authors#h" style="text-decoration:underline">Yi Hong</a> and <a itemprop="author" href="authors#z" style="text-decoration:underline">Marcia Lei Zeng</a> 
+
+<p>Table of contents:
+
+<br><a href="#1">1. Introduction</a>
+<br><a href="#2">2. Early development of disease classifications</a>
+<br><a href="#3">3. A brief history of ICD</a>
+<br><a href="#4">4. Current versions of ICD (ICD-10 and ICD-11)</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#4.1">4.1 Content and chapter structure</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#4.2">4.2 Notation system / Code structure</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#4.3">4.3 New features</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#4.4">4.4 Implications of the ICD during pandemics</a>
+<br><a href="#5">5. ICD&rsquo;s KO practices: a short summary</a>
+<br><a href="#6">6. Functions and applications of ICD</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#6.1">6.1 Diagnostic coding with the ICD codes</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#6.2">6.2 Clinical documentation with ICD</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#6.3">6.3 Communication using the ICD codes in Electronic Health Records</a>
+<br><a href="#7">7. ICD and other health KOSs</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#7.1">7.1 ICD and other common health KOSs</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#7.2">7.2 ICD in the WHO Family of International Classifications (WHO-FIC) Network</a>
+<br><a href="#8">8. ICD in health informatics</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#8.1">8.1 Information technology development and application</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#8.2">8.2 Health and clinical data analysis</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#8.3">8.3 Enhancing quality, interoperability, comparability, and the reusability</a>
+<br><a href="#9">9. Conclusion</a>
+<br><a href="#ack">Acknowledgments</a>
+<br><a href="#end">Endnotes</a>
+<br><a href="#ref">References</a>
+<br><a href="#app1">Appendix: List of Health KOS Standards presented in this article</a>
+
+<br><a href="#col">Colophon</a>
+
+
+<p itemprop="abstract"><strong>Abstract</strong>:
+<br>This article presents the history, contents, structures, functions, and applications of the International Classification of Diseases (ICD), which is a global standard maintained by the World Health Organization (WHO). The article aims to present ICD from the knowledge organization perspective and focuses on the current versions, ICD-10 and ICD-11. It also introduces the relationship between ICD and other health knowledge organization systems (KOSs), plus efforts in research and development reported in health informatics. The article concludes that the high-level effort of promoting a unified classification system such as ICD is critical in providing a common language for systematic recording, reporting, analysis, interpretation, and comparison of mortality and morbidity data. It greatly enhances the constancy of coding across languages, cultures, and healthcare systems around the world.</p>
+
+</blockquote>
+
+<span itemprop="articleBody">
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="1"></a>
+<h3 itemprop="articleSection">1. Introduction</h3>
+
+<p>The International Classification of Diseases (ICD) is a global standard maintained by the World Health Organization (WHO) for classifying diseases and reporting health conditions, as well as a foundation for health trends and statistical analysis. It is steeped in history, international cooperation, and improvement over the last 150 years (<A HREF="#refS">Salcido 2015</A>).  As a health &rarr; <a href="kos">knowledge organization system (KOS)</a> that defines diseases, disorders, injuries, and other related health conditions in a classificatory structure, ICD has been gradually developed as a diagnostic classification standard for epidemiology, health management, clinical, and research purposes. Its development has augmented efforts to enhance its coverage and implement a unified &rarr; <a href="notation">notation</a>  system for usage across languages, cultures, and global healthcare systems. &ldquo;The purpose of the ICD is to allow the systematic recording, analysis, interpretation and comparison of mortality and morbidity data collected in different countries or regions and at different times&rdquo; (<A HREF="#refW">World Health Organization 2022a</A>, Sec. 1.1).</p>
+
+<p>Understanding ICD is vital to working with health data since it is used worldwide for classifying diseases and other health problems and encoding diagnoses of diseases in an alphanumeric coding system for all general epidemiological and many health-management purposes. ICD has played a critical role in the exchange of health information, especially during a pandemic (<A HREF="#refT">Tsui et al. 2002</A>; <A HREF="#refM">Moore et al. 2011</A>; <A HREF="#refG">Gerbier-Colomban 2014</A>; <A HREF="#refB">Ben-Ezra et al. 2021</A>). As pointed out by the current <i>ICD-11 Reference Guide </i>(<A HREF="#refW">World Health Organization 2022a</A>, Sec. 1.1), while most widespread use of ICD over time and around the world is for mortality statistics, it is also used for classification of clinical documentation to provide standardized, language independent information for morbidity use, such as resource allocation, casemix, patient safety and quality of care alongside primary care and research. Moreover, ICD and its descriptions are used as a framework in legislation. As the most widely used classification in healthcare systems around the world, ICD has been followed as the standard by other health KOSs, with additional extension (both in depth and width), incorporation (based-on or derived from), crosswalking, and complementary modeling efforts.</p>
+
+<p>This article presents the history, contents, structures, functions, and applications of the ICD, focusing on the current versions, ICD-10 and ICD-11. The article aims primarily to present ICD from the knowledge organization (KO) point of view, facilitating the understanding of IDC foremost, which will then lay the foundation to further apply, analyze, evaluate, and even assist in its development. This article also introduces the relationship between ICD and other health KOSs, involving those considered as the WHO Family of International Classifications (WHO-FIC) and the ones developed and used in different processes and countries. Efforts in research and development reported across health informatics are given at an introductory level. Figures have been created to help with the interpretation of major viewpoints and approaches. Accompanying examples have been used, with sources provided.</p>
+
+<p>With the evolution of ICD from its early versions entitled International List of Causes of Death (ICD-1 to ICD-5) to International Statistical Classification of Diseases, Injuries, and Cause of Death (ICD-6) and onward, the full titles of ICD revisions have been modified while still including &ldquo;International Classification of Diseases&rdquo; in their titles, as shown in Figure 2. Regarding these given various full titles in the printed and online versions, this article follows the WHO&rsquo;s ICD website and uses &ldquo;ICD&rdquo; along with &ldquo;Revision #&rdquo; as the acronym for this classification (<A HREF="#refM">Moriyama et al. 2011</A>; <A HREF="#refW">World Health Organization 2021a</A>). In other words, &ldquo;ICD-#&rdquo; will be consistently used as a pattern regardless of the variance of full titles, parallel to the style used in publications, such as the one by DiChiara (<A HREF="#refD">2015</A>), titled &ldquo;ICD-1 to ICD-11 Timeline Highlights Healthcare&rsquo;s Evolution&rdquo;.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2"></a>
+<h3 itemprop="articleSection">2. Early development of disease classifications</h3>
+
+<p>The concept of ICD is rooted in the theory of nosology, the systematic classification of diseases.
+
+<blockquote>Nosologic classification began in antiquity, resulting out of the need for nurses, physicians, epidemiologists, and public health entities to classify and make sense of cause of death and morbidity; the parallel use of these data can be traced to the 15th century in Italy, as a result of the &ldquo;great pandemics of plague&rdquo;. (<A HREF="#refS">Salcido 2015</A>)</blockquote></p>
+
+<p>The idea that diseases are directly identifiable through their symptomatology was found in the revolutionary work of Paracelsus (1493-1541). Paracelsus' suggestion that natural symptoms may provide direct evidence leading to a probable diagnosis or classification of a disease, despite a potentially unobservable cause of the illness, was evident in practice by the 17th century when nosology took form. Throughout the 18th century, this pathological view was guided by the concept that a specific cause could be identified for all episodes of ill health, and physicians concentrated on the observation of symptoms and the categorization of diseases (<A HREF="#refE">Encyclopedia.com. 2019</A>).</p>
+
+<p><i>Nosologia Methodica</i>, a comprehensive treatise by Fran&ccedil;ois Boissier de la Croix de Sauvages (1706-1767), was credited as the first attempt to classify diseases systematically by the eminent Australian statistician George Knibbs (1929). However, the <i>Synopsis Nosologiae Methodicae</i>, published in 1785 by William Cullen (1710-1790) of Edinburgh, became more popular in general use in the public services at the beginning of the 19th century due to the simplicity and merits of its classification (<A HREF="#refW">World Health Organization 2004</A>; <A HREF="#refM">Moriyama et al. 2011</A>).   </p>
+
+<p>William Farr (1807-1883) conducted constant studies on existing nomenclature and classifications and emphasized the importance of a uniform statistical classification of causes of death. He was the first medical statistician to make the best possible use of the imperfect classifications of diseases available at the time. In 1839, his effort at a statistical classification appeared in the <i>First Annual Report of the Registrar General of Births, Deaths, and Marriages in England</i> (<A HREF="#refE">Eyler 1979</A>).</p>
+
+<p>In 1853, William Farr and Marc d'Espine (1806-1860), who created a statistical nosology in Geneva, were requested to draft an internationally applicable, uniform classification of causes of death at the first International Statistical Congress. Farr and d'Espine presented two different lists following the divergent principles at the next congress in 1855. Farr classified diseases under five groups (epidemic diseases, constitutional [general] diseases, local diseases arranged according to anatomical site, developmental diseases, and diseases directly resulting from violence) while d'Espine classified diseases according to their nature (gouty, herpetic, haematic, etc.) (<A HREF="#refM">Moriyama et al. 2011</A>; <A HREF="#refL">Lewes 1988</A>). The congress accepted a compromise list of 139 rubrics. The 1860 International Statistical Congress meeting in Paris discussed hospital statistics and adopted a complete statistical layout for classifying hospital cases, using a list of causes said to be based on the 1855 Paris list and the same one used by Farr at the General Register Office for England and Wales. Florence Nightingale (1820-1910), who attempted to classify morbidity and mortality using evidence-based technique during the Crimean War (1853-1856) period, was the driving force of this discussion <A HREF="#e1">[1]</A>. She proposed a very elaborate plan aimed at statistically demonstrating how improved sanitary conditions and better schooling reduced mortality, illness, and even criminal behavior (<A HREF="#refM">Moriyama et al. 2011</A>; <A HREF="#refL">Lilienfeld 2007</A>; <A HREF="#refM">McDonald 2001</A>; <A HREF="#refS">Salcido 2015</A>). Acknowledged in the <i>History of the Development of the ICD</i> (<A HREF="#refW">World Health Organization 2004</A>), the list was subsequently revised in accordance with Farr's model in 1864, 1874, 1880, and 1886, therefore prevailing as the basis of the International List of Causes of Death with the principle of classifying diseases by anatomical site <A HREF="#e2">[2]</A>.</p>
+
+<p>In 1869, the <i>Nomenclature of Diseases</i> by the Royal College of Physicians of London was published with a listing of approved names of diseases in English, Latin, German, French, and Italian, including synonyms for English names and definitions. It was the first authoritative source-of-disease KOS that was a nosological grouping rather than a classification (<A HREF="#refR">Robb-Smith 1969</A>). According to Thompson and Hayden (<A HREF="#refT">1961</A>), the Nomenclature of Diseases was revised in 1885, 1896, 1906, 1918, 1931, 1947, and 1959 to provide an authoritative source of medical terminology for British physicians and was followed shortly by the American Medical Association (AMA)&rsquo;s nomenclature of disease. </p>
+
+<p>In 1891, a committee chaired by Jacques Bertillon (1851-1922) was assigned to create a classification of causes of death by the International Statistical Institute (ISI). Bertillon introduced an alphanumeric method of disease classification, which incorporated disease by anatomical site and cause of death (<A HREF="#refS">Salcido 2015</A>). In 1893, the report of the committee chaired by Bertillon was submitted and adopted by ISI at its meeting in Chicago. Publication of this report was the origin of the International List of Causes of Death (<A HREF="#refM">Moriyama et al. 2011</A>). The classification proposed by Bertillon's committee was based on the classification of causes of death used by Paris, which adopted Farr&rsquo;s principle of distinguishing between general diseases and those localized to an organ or anatomical site. The main headings of Bertillon&rsquo;s list are shown in Figure 1.</p>
+
+<div align="center"><figure>
+<img src="icd1.jpg" title="Fig. 1: Main headings of Bertillon&rsquo;s list" width="50%">
+<figcaption>Figure 1: Main headings of Bertillon&rsquo;s list (<A HREF="#refM">Moriyama et al. 2011</A>, 12)</figcaption>
+</figure></div>
+
+<p>The Bertillon classification of causes of death had been embraced across North America (United States, Canada, Mexico), several parts of South America, and in some cities in Europe by the time of ISI&rsquo;s 1899 meeting (<A HREF="#refM">Moriyama et al. 2011</A>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3"></a>
+<h3 itemprop="articleSection">3. A brief history of ICD</h3>
+
+<p>Considering the International List of Causes of Death which the International Statistical Institute adopted in 1893 as the first international classification edition, ICD has since been revised and published in a series of revisions to reflect timely advances in health and medical science. The history of ICD is well carried by a summary, <i>History of the Development of the ICD</i>, provided by the World Health Organization (<A HREF="#refW">2004</A>) and a book, <i>History of the Statistical Classification of Diseases and Causes of Death</i> (<A HREF="#refM">Moriyama et al. 2011</A>), published by the National Center for Health Statistics of the U.S. Centers for Disease Control and Prevention (CDC), comprising the following momentous outcomes. </p>
+
+<p>The International List of Causes of Death, Revision 1 (ICD-1) was released at the first International Conference for the Revision of the International List of Causes of Death in Paris on August 18, 1900. It adopted the same structure as Bertillon&rsquo;s list, except that the first main heading, &ldquo;General diseases&rdquo;, was replaced by two subheadings, one for &ldquo;Epidemic Diseases&rdquo; and the other for &ldquo;Other General Diseases&rdquo;. The diseases were identified and sorted by Arabic numerals, which are integers, except for the entry of <CODE>174.1</CODE> for &ldquo;Other specified diseases&rdquo;, as shown in the digitized document provided by Wolfbane Cybernetic (<A HREF="#refW">2001-</A>) on the Web, at <A CLASS="menu" HREF="http://www.wolfbane.com/icd/icd1h.htm">http://www.wolfbane.com/icd/icd1h.htm</A> <A HREF="#e3">[3]</A>. The usage of ICD-1 quickly spread after it was translated from French into several other languages. By 1909, ICD-1 was in use throughout the world (<A HREF="#refM">Moriyama et al. 2011</A>).</p>
+
+<p>The International List of Causes of Death, Revision 2 (ICD-2) was released in 1909. &ldquo;The translation in English of the Second Decennial Revision, published by the United States Department of Commerce and Labor in 1910, was entitled International Classification of Causes of Sickness and Death&rdquo; (<A HREF="#refW">World Health Organization 2004</A>, 4). The English version used the words &ldquo;nomenclature&rdquo; and &ldquo;classification&rdquo; to describe the disease list for the first time. In addition, the English version contained an expanded alphabetical index, which showed the source of the items and gave the rubric numbers of both the detailed and abridged lists (<A HREF="#refU">U.S. Bureau of the Census 1911</A>). The revisions continued with ICD-3 to ICD-5 released through wider international collaborations (<A HREF="#refW">World Health Organization 1948</A>).</p>
+
+<p>For the sixth revision, the International Health Conference (IHC) held in New York City in June and July 1946 entrusted the Interim Commission of the WHO with the responsibility of reviewing the existing machinery and of undertaking such preparatory work as may be necessary in connection with: (i) the next decennial revision of The International Lists of Causes of Death and (ii) the establishment of International Lists of Causes of Morbidity. Its Expert Committee&rsquo;s resulting work, the sixth revision titled International Classification of Diseases, Injuries, and Causes of Death (<A HREF="#refW">World Health Organization 2004</A>), sought comments and suggestion and was circulated to national governments that were preparing morbidity and mortality statistics. The sixth revision conference endorsed publication of the <i>Manual of the International Classification of Diseases, Injuries and Causes of Death</i>. The International Classification, including the Tabular List <A HREF="#e4">[4]</A> of Inclusions defining the content of the categories, was incorporated together with the form of the medical certificate of cause of death, the rules for classification, and the special lists for tabulation. In 1948, the First World Health Assembly adopted ICD-6, which incorporated morbidity for the first time (<A HREF="#refM">Moriyama et al. 2011</A>; <A HREF="#refW">World Health Organization 2004</A>).</p>
+
+<p>ICD-6 presents a milestone in the history of ICD regarding both content and range of application. As the first version supported morbidity reporting, it was also the first to have the term &ldquo;classification&rdquo; in the title (<A HREF="#refW">World Health Organization 1948</A>). The scope of ICD-6 expanded to apply explicitly to morbidity as well as mortality. Mental disorders were added for the first time to reflect the need for coding mental conditions, while the concept of a primary cause of death for tabulation was refined and operationalized. The legal authority of the classification was strengthened and formalized. Besides the major changes in scope and sections, the notation system was also significantly revised. For the first time, ICD-6 employed three-digit Arabic numerals for class/subclasses and decimal points for subsections, which reflected the hierarchical structure of the classification (see the lower right of Figure 2 below and find components from the website of digitized ICD versions provided by <A HREF="#refW">Wolfbane Cybernetic 2001-</A>).</p>
+
+<p>Figure 2 presents a timeline of ICD&rsquo;s development and implementations. The date ranges listed in the figure are the dates that the various revisions of the ICD were released or adopted and came into effect, as itemized in the book by Moriyama et al. (<A HREF="#refM">2011</A>) and the &ldquo;ICD History&rdquo; (<A HREF="#refW">World Health Organization 2021a</A>) section on the official ICD website.</p>
+
+<div align="center"><figure>
+<img src="icd2.jpg" title="Fig. 2: History of ICD Revisions" width="90%">
+<figcaption>Figure 2: History of ICD Revisions (timeline created by the authors based on <A HREF="#refM">Moriyama et al. 2011</A> and <A HREF="#refW">World Health Organization 2021a</A>, with the supplemental screenshots of partial ICD-5 and ICD-6 taken from <A HREF="#refW">Wolfbane Cybernetic 2001-</A>)</figcaption>
+</figure></div>
+
+<p>The milestone change from the term &ldquo;list&rdquo; to &ldquo;classification&rdquo; can be seen in ICD-6.  Since then, all releases of ICD (ICD-7 to ICD-11) have been from the WHO, and ICD has been used worldwide as a diagnostic classification standard. The title of the ICD has been designated in both the full title as well as the commonly referred to title, International Classification of Diseases. In general, the development of the ICD can be seen in three major portions:
+
+<ul>
+<li>ICD-1 to ICD-5, establishing a common &ldquo;term list&rdquo;</li>
+<li>ICD-6, the turning point, with the title of &ldquo;classification&rdquo; and the WHO&rsquo;s action</li>
+<li>ICD-7 to ICD-11, the WHO&rsquo;s International Classification of Diseases</li>
+</ul>
+
+<p>ICD-6 started a new era in international cooperation for vital and health statistics. The WHO began to lead the ICD revision and coordinating the statistical activities among the national committees of various countries. These national committees served as a link between the national statistical institutions and the WHO: the committees investigated statistical problems within public health records and made their research results available to the WHO. In 1951, the first WHO Center for Classification of Diseases was established at the General Register Office of England and Wales. The center served as a clearinghouse to solve problems in using ICD and assist the WHO Secretariat with ICD development in a setting where data were available for testing revision proposals (<A HREF="#refW">World Health Organization 2004</A>).</p>
+
+<p>ICD-7, ICD-8, and ICD-9 (came into affection in 1958, 1968, and 1979) retained the basic structure of the ICD-6 and continually extending the subcategories or subdivisions. While the adaptations of ICD-7 influenced the development of ICD-8 to meet the needs of hospitals, the use of ICD for indexing hospital medical records increased rapidly. Furthermore, some countries furnished national adaptations that provided additional details for coding hospital and morbidity data during the years that ICD-7 and ICD-8 were in force. For example, the ICD was adapted for indexing of hospital records and operation classification and served as the basis for coding diagnostic data for both official morbidity and mortality statistics in the United States (<A HREF="#refU">U.S. Department of Health, Education and Welfare 1959; 1968</A>). The ICD-9 came into effect in 1993. &ldquo;For the first time, the ninth revision contained guidance on recording and coding for morbidity and specifically for the selection of a single condition for presentation of morbidity statistics&rdquo; (<A HREF="#refW">World Health Organization 2016</A>, Vol. 1, 20). </p>
+
+<p>When ICD-9 was released in 1978, the International Classification of Procedures in Medicine (ICPM) was also published by the WHO (<A HREF="#refW">World Health Organization 1978</A>). Intended as a supplement to ICD-9, ICPM focused on procedures following the structure and system of coding used in ICD and covered diagnostic, laboratory, radiological, preventive, surgical, drug, and other therapeutic or ancillary procedures. The International Classification of Diseases, Ninth Revision, Clinical Modification (ICD-9-CM), an official system of assigning codes to diagnoses and procedures associated with hospital utilization in the United States (<A HREF="#refU">U.S. National Center for Health Statistics 2021</A>), was adapted by the U.S. National Center for Health Statistics (NCHS) and has been updated annually since 1996.</p>
+
+<p>The 10th Revision of the ICD conference, held in 1989, recommended the proposed revised chapters, with their 3-character categories and 4-character subcategories, plus the Short Tabulation Lists for Morbidity and Mortality constitute the ICD-10. The World Health Assembly adopted ICD-10 in May 1990 for making it into force on January 1, 1993. The full title of ICD-10 is <i>International Statistical Classification of Diseases and Related Health Problems</i>. &ldquo;While the title has been amended to make clearer the content and purpose and to reflect the progressive extension of the scope of the classification beyond diseases and injuries, the familiar abbreviation &lsquo;ICD&rsquo; has been retained&rdquo; (<A HREF="#refW">World Health Organization 2016</A>, Vol. 1, 1). ICD-10 was translated into the official languages of the United Nations as well as other languages. The official updates to the published volumes of ICD-10 have been available as annual lists of changes since 1996. The updates are approved annually at the October meeting by the heads of the WHO at Collaborating Centers for the Family of International Classifications (<A HREF="#refW">World Health Organization 1996-</A>). Three volumes comprise the ICD-10 Codebook (<A HREF="#refW">World Health Organization 2016</A>):
+
+<ul>
+<li>Volume 1, the Tabular List, contains the main classifications, including an alphanumeric listing of diseases, disease groups, and health related problems. It also contains inclusion and exclusion notes and some coding rules.</li>
+
+<li>Volume 2, the Instruction Manual, provides guidance and instructions regarding how to use the classification to code death certificates, hospital medical records, and other forms of health information.</li>
+
+<li>Volume 3, the Alphabetical Index, is an alphabetical list of the diseases and conditions which have codes in the Tabular List.</li>
+</ul>
+
+<p>ICD-10, available in 43 languages and used in over 100 countries, also has more than two dozen modifications (<A HREF="#refG">Grove and Jakob 2018</A>). Several national clinical modifications of ICD-10 have been developed, with permission from the WHO, to better suit the needs of morbidity reporting, usually by adding more details. A review by Jett&eacute; et al. (<A HREF="#refJ">2010</A>) contained the following: Australian Modification: ICD-10-AM (in use in Australia, New Zealand, Ireland, Slovenia), Canadian Enhancement (ICD-10-CA), France Clinical Addendum to ICD-10, German Modification (ICD-10-GM), Korean Modification (ICD-10-KM), Thai Modification, Thailand (ICD-10-TM), US Clinical Modification (ICD-10-CM), etc. Other notable modifications were developed for Estonia, the Netherlands, the Philippines, Singapore, Sweden, and Switzerland. All modifications to ICD-10 must conform to WHO conventions for ICD. The WHO applies certain restrictions to limit the types of modifications to ICD to prevent changes in the concepts and meanings of three-digit categories and four-digit codes (<A HREF="#refT">Terron Cuadrado 2019</A>).</p>
+
+<p>The 11th Revision, ICD-11, released in June 2018 (<A HREF="#refW">World Health Organization 2018</A>) was officially endorsed by all WHO members during the 72nd World Health Assembly in May 2019 (<A HREF="#refW">World Health Organization 2019a</A>). ICD-11 is a vast expansion on ICD-10, updated to reflect vital advances in life science and medicine for the 21st century, and enhanced to integrate with electronic health information systems. The definitive version of ICD-11 is available online, from <A CLASS="menu" HREF="https://icd.who.int/browse11/l-m/en">https://icd.who.int/browse11/l-m/en</A>, with the title <i>ICD-11 for Mortality and Morbidity Statistics </i>(ICD-11 MMS). ICD-11 is multipurpose where the structure is defined in a linearization, which incorporates properties and attributes focusing on mortality, morbidity, the degree of primary care, research, and public health (<A HREF="#refW">World Health Organization 2022a</A>, Sec. 1.1). Its new contents and tools provide approaches for reporting, coding, selecting, and tabulating conditions for different use cases, and include more clinical details to improve usability with multilingual support. The ICD-11 ensures consistency with traditional use cases of earlier ICD versions because it has been built with the past revisions in mind. Past data analyses based on older versions of ICD can be linked to analyses of data based on ICD-11.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4"></a>
+<h3 itemprop="articleSection">4. Current versions of ICD (ICD-10 and ICD-11)</h3>
+
+<p>ICD has been published and maintained by the WHO since ICD-6 and is used worldwide for health statistics, disease classification, diagnostic coding, medical billing, reimbursement systems, and automated decision support in healthcare. It is one of the three primary reference classifications maintained by the WHO approved for international reporting and covers the main parameters of health (<A HREF="#refW">World Health Organization 2021a</A>). The 10th Revision, with the full title <i>International Statistical Classification of Diseases and Related Health Problems</i> (ICD-10), was adopted in May 1990, came into effect in 1993 and has been used in healthcare systems worldwide.  The 11th Revision, entitled as <i>ICD-11 for Mortality and Morbidity Statistics </i>(ICD-11 MMS), was adopted in May 2019 and officially started implementation on January 1, 2022, almost three debates after ICD-10&rsquo;s use.  It is referred to as &ldquo;ICD-11&rdquo; (instead of &ldquo;ICD-11 MMS&rdquo;) by the WHO ICD homepage <A CLASS="menu" HREF="https://icd.who.int">https://icd.who.int</A>, the materials provided through its website, and its reference guide. Both ICD-10 and ICD-11 provide very rich reference guides (<A HREF="#refW">World Health Organization 2016; 2022a</A>), which will be used in this section.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.1"></a>
+<h4 itemprop="articleSection">4.1 Content and chapter structure</h4>
+
+<a name="4.1.1"></a>
+<h5 itemprop="articleSection">4.1.1 Content</h5>
+
+<p>In the ICD-10&rsquo;s <i>Instruction Manual</i> (<A HREF="#refW">World Health Organization 2016</A>, Vol. 2), Sec. 2.3 on &ldquo;General principles of disease classification&rdquo; started with this 1856 statement by William Farr:
+
+<blockquote>Classification is a method of generalization. Several classifications may, therefore, be used with advantage; and the physician, the pathologist, or the jurist, each from his own point of view, may legitimately classify the diseases and the causes of death in the way that he thinks best adapted to facilitate his inquiries, and to yield general results.</blockquote></p>
+
+<p>The Manual indicated that a statistical classification of diseases must be confined to a limited number of mutually exclusive categories that are able to encompass the whole range of morbid conditions.</p>
+
+<p>This is consistently addressed within the <i>ICD-11 Reference Guide</i> section 1.2.1 &ldquo;Taxonomy&rdquo; as well (<A HREF="#refW">World Health Organization 2022a</A>, Sec. 1.2.1). As a statistical classification of diseases, ICD follows the parameter that it must be confined to a limited number of mutually exclusive categories which are able to encompass the complete range of morbid conditions. The categories are chosen to facilitate the statistical study of disease phenomena. In determining whether an entity qualifies to become a unique category, the following measures are applied:
+
+<ol>
+<li>Epidemiological evidence: frequency analyses of coded mortality and morbidity data</li>
+<li>Clinical evidence: disease evidence provided by the medical specialties</li>
+<li>Granularity: minimum detail reported and useful in mortality or primary care</li>
+<li>Continuity: preservation of the level of detail pre-existing in ICD</li>
+<li>Parsimony: the need to limit the number of categories for international mandatory reporting</li>
+</ol>
+
+<p>The Content model of ICD-11 is a structured framework that defines each entity found in the ICD in a standard way. The purpose of the Content model is to present the background knowledge that provides the basis for the description of each ICD entity in a systematic way and allows for computerization (Sec. 3.4). Each ICD entity, which might become a grouping, a category, or just a term that is, for example, listed in the index, can be seen from different dimensions. The main properties of the Content model are: (1) ICD Concept Title; (2) Hierarchy, Type and Use; (3) Textual Definition(s), with a description and a definition; (4) Terms, including index terms, Synonyms Inclusion terms, and Exclusion Terms; and (5) Clinical Descriptions, which has the most comprehensive and inclusive perspectives.</p>
+
+<p>For each entity, four levels of descriptor information are given in the ICD-11 Content model (Sec. 3.4) in order to enhance the comparability, consistency, and interpretation of coded information for everyone, everywhere: (1) Fully Specified Term; (2) Short Description; (3) Additional Information; and (4) Clinical or Diagnostic Criteria. Diagnostic Criteria contains the core diagnostic information necessary and sufficient to describe a category and enables the digital representation of the diagnostic algorithms using standardized terminology and other elements as appropriate.</p>
+
+<p>Getting into the Definition of disease, a set of relevant aspects are drawn from the pattern below and are defined as &ldquo;properties&rdquo; (Sec. 1.2.1.1).  A disease is a set of dysfunctions in any body system defined by: (1) Symptomatology or manifestations; (2) Aetiology (an underlying explanatory mechanism); (3) Course and outcome; (4) Treatment response; (5) Linkage to genetic factors; and (6) Linkage to environmental factors.   	</p>
+
+<p>The categories in ICD are mutually exclusive, jointly exhaustive, and linked to a mono-hierarchical tree. When an entity may be correctly classified in two different places, e.g., by site or by aetiology, indications of multiple parenting are provided through notes (&lsquo;Excludes&rsquo; or &lsquo;Code elsewhere&rsquo;) or specially designed displays. Every time an entity is parented elsewhere, it will continue to show the code from the primary parent. All ICD-11 categories include separate information on anatomy, etiology, and other aspects that can be accessed for browsing and searching purposes online through the ICD-11 browser <A CLASS="menu" HREF="https://icd.who.int/browse11/">https://icd.who.int/browse11/</A>. The factsheet (<A CLASS="menu" HREF="#refW">World Health Organization 2021-</A>) indicates that the full online versions in other standard languages of the WHO are available in Arabic, French, Mandarin, and Spanish, while Russian and 20 more languages are underway. </p>
+
+<p>The hierarchical structure of the ICD allows considerable flexibility for other possible tabulations. The special tabulation lists are designed for the aggregation and reporting of coded data, to allow national and international comparisons between different countries or regions (<A CLASS="menu" HREF="World Health Organization 2022a">World Health Organization 2022a</A>, Sec. 2.25). Both ICD-10 and ICD-11 have recommended special tabulation lists. Additional special tabulations can be derived from the new multiple parenting technique, e.g., all WHO notifiable diseases, listing all conditions that are assigned to the relevant section of the infectious diseases chapter (Sec. 3.1).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.1.2"></a>
+<h5 itemprop="articleSection">4.1.2 Chapter structure</h5>
+
+<p>ICD is a variable-axis classification. The term <i>chapter</i> is used for the main classes of the classification. The distinction between the <i>special groups</i> chapters and the <i>body systems</i> chapters has practical implications for understanding the structure of the classification, for coding to it, and for interpreting statistics based on it (<A HREF="#refW">World Health Organization 2022a</A>, Sec. 1.2.2).</p>
+
+<p>In general, the structure was developed from early international discussion on classification structure and of structure that proposed by William Farr: epidemic diseases, constitutional or general diseases, local diseases arranged by site, developmental diseases, and injuries. The structure has stood the test of time and, though in some ways arbitrary, is still regarded as more useful for general epidemiological purposes than any of the alternatives tested (Sec. 1.2.2). The conservation of the structure acknowledges the need for stability while allowing the incorporation of additional sections. These body systems chapters are maintained in the current ICD chapters. Meanwhile, some special groups chapters are also included to bring together conditions that would be inconveniently arranged for epidemiological study if they were to be scattered, such as in a classification arranged primarily by anatomical site. The first three chapters of both ICD-10 and ICD-11, shown in Figure 3, and some other chapters are considered special groups chapters.</p>
+
+<div align="center"><figure>
+<img src="icd3.jpg" title="Fig. 3: Chapters of ICD-10 and ICD-11" width="90%">
+<figcaption>Figure 3: Chapters of ICD-10 and ICD-11 (compiled using the captured screens from the ICD-10 and ICD-11 browsers, with the new ICD-11 chapters underlined)</figcaption>
+</figure></div>
+
+<p>ICD-10 has 22 chapters. To facilitate the statistical study of disease phenomena, every disease or morbid condition must have a well-defined place in the list of categories. Consequently, there are residual categories throughout the classification for other and miscellaneous conditions that cannot be allocated to the more specific categories (<A HREF="#refW">World Health Organization 2016</A>, Vol. 2, 14). </p>
+
+<p>Figure 3 shows the current vision of ICD-10 available online.  Many chapters in ICD-10 are associated with particular body systems. For example, Chapter X is for diseases of the respiratory system, while Chapter XI relates to diseases of the digestive system. Parallel to these body systems chapters, the special groups bring together conditions that would be inconveniently arranged for epidemiological study were they to be scattered, such as in a classification arranged primarily by anatomical site (<A HREF="#refW">World Health Organization 2016</A>, Vol. 2, 13-14). The chapters from I&ndash;XVII cover diseases and other morbid conditions. Chapter XVIII covers symptoms, signs, and abnormal clinical and laboratory findings not elsewhere classified. Chapter XIX relates to injury, poisoning, and certain other consequences of external causes. Chapter XX permits the classification of environmental events and circumstances as the cause of injury, poisoning and other adverse effects. Chapter XXI &ldquo;Factors influencing health status and contact with health services&rdquo; is for the classification of data explaining the reason for contact with health-care services for a person not currently sick, or the circumstances for which the patient is receiving care at that particular time, or otherwise having some relevance to that person&rsquo;s care. Chapter XXII is dedicated to &ldquo;Codes for Special Purposes&rdquo;, and the chapter&rsquo;s imperative functions can be seen during the pandemic (to be discussed in the following <A HREF="#4.4">section 4.4</A>).</p>
+
+<p>ICD-11 maintained all ICD-10 chapters, while also having a vast enlargement on the ICD-10. There are 28 chapters in ICD-11, of which 25 convey health conditions similar to past ICD versions, while one serves to identify external causes of morbidity and mortality, and another includes concepts of traditional medicine (<A HREF="#refW">World Health Organization 2022a</A>, Sec. 3.2). As highlighted in Figure 3 above, chapters <CODE>03</CODE> &ldquo;Diseases of the blood or blood-forming organs&rdquo; and <CODE>04</CODE> &ldquo;Diseases of the immune system&rdquo; were split from a previous unified Chapter III of ICD-10, distinguishing differences in etiology, manifestations, and care (<A HREF="#refH">Harrison et al. 2021</A>). New chapters for 07 &ldquo;Sleep-Wake Disorders&rdquo; and 17 &ldquo;Conditions related to sexual health&rdquo; consolidate more prominent topics since ICD-10. The totally fresh chapter 26 &ldquo;Supplementary Chapter Traditional Medicine Conditions&rdquo; extends the classification to cover traditional medicine concepts, allowing the assessment of functioning and the optional recording of traditional medicine diagnoses.</p>
+
+<p>There are two additional sections for optional use. The new unit V &ldquo;Supplementary section for functioning assessment&rdquo; addresses the need for some national modifications of ICD-10 for recording patient functioning. It is aligned with International Classification of Functioning, Disability and Health (ICF), another reference classification of the WHO Family of International Classifications Network.  An addendum chapter X is called &ldquo;Extension Codes&rdquo; and codes starting with <CODE>X</CODE> indicate an extension code. When linked to a stem code representing a clinical state, the extension codes add significant detail and allow for multidimensional coding. With its extension codes implemented, ICD-11 has the potential to improve precision and evidence-based health care worldwide (<A HREF="#refD">Dr&ouml;sler et al. 2021</A>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.2"></a>
+<h4 itemprop="articleSection">4.2 Notation system / Code structure</h4>
+
+<p>The notation system of the classification is signified as <i>code structure</i> in ICD (<A HREF="#refW">World Health Organization 2022a</A>, Sec. 1.2.4).  The code structures of ICD-10 and ICD-11 are all significantly different from those used in previous versions and from each other. The following Figure (Figure 4) reveals their uniqueness, with examples from ICD-10 on the left side and ICD-11 on the right side. </p>
+
+<p>ICD&rsquo;s chapter numbers are not parts in the ICD notations. ICD-10 uses Roman numerals (I &ndash; XII) as chapter numbers. ICD-11 chapter numbers are Arabic, which use a double-digit pattern for main chapters (01-26), except the supplemental chapters (V and X).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.2.1"></a>
+<h5 itemprop="articleSection">4.2.1 ICD-10 code structure</h5>
+
+<p>The numeric notation system used in ICD-9 and previous revisions was replaced by an alphanumeric code structure in ICD-10 that allows for more than double the size of the coding frame.
+
+<blockquote>The main innovation in the proposals for the 10th revision was the use of an alphanumeric coding scheme of one letter followed by three numbers at the four-character level. This had the effect of more than doubling the size of the coding frame in comparison with the ninth revision and enabled the vast majority of chapters to be assigned a unique letter or group of letters, each capable of providing 100 three-character categories. (<A HREF="#refW">World Health Organization 2016</A>, Vol. 1, 15)</blockquote></code>
+
+<p>The features are observable as the following (<A HREF="#refW">World Health Organization 2016; 2019b; 2022a</a>, Sec. 3.1):
+
+<ol>
+<li>The chapters are subdivided into homogeneous blocks of three-character categories. Each chapter contains sufficient three-character categories to cover its content; however, not all available codes are used, allowing space for future revision and expansion.</li>
+
+<li>The first character of the ICD-10 code is a letter and does not relate to the chapter number. The letter may have been the same for two short chapters (e.g., Chapter VII (<CODE>H00-H5</CODE>) and Chapter VIII (<CODE>H60-H95</CODE>), or two letters may have been used for one long chapter (e.g., Chapter XIX (<CODE>S00-T98</CODE>).</li>
+
+<li>Of the 26 available letters, 25 had been used, the letter <CODE>U</CODE> being left vacant for future additions and changes and for possible interim classifications to solve difficulties arising at the national and international level between revisions. (Refer to Figure 6 &ldquo;Emergency use ICD codes for COVID-19 disease outbreak&rdquo; in <A HREF="#4.4">Section 4.4</A> below, which confirms this important design.)</li>
+
+<li>The range of categories is given in parentheses after each block title (e.g., <CODE>F00-F09</CODE> &ldquo;Organic, including symptomatic, mental disorders&rdquo; under <CODE>V</CODE> &ldquo;Mental and behavioural disorders&rdquo; (showing in Figure 4). It is continued with <CODE>F10-F19</CODE>, <CODE>F20-F29</CODE>, and on).</li>
+
+<li>ICD-10&rsquo;s stem code (category) is 3-characters (e.g., under the range of <CODE>F00-F09</CODE>, there are <CODE>F00</CODE>, <CODE>F01</CODE>, <CODE>F02</CODE>, <CODE>F03</CODE> (showing in Figure 4). It is continued with <CODE>F04</CODE> to <CODE>F09</CODE>).</li>
+
+<li>The decimal point is always placed after the 3rd digit, followed by one digit.</li>
+
+<li>Most of the three-character categories are subdivided by means of a fourth, numeric character (<CODE>0-9</CODE>) after a decimal point, allowing up to 10 subcategories (e.g., <CODE>F00.0</CODE> to <CODE>F00.9</CODE> under <CODE>F00</CODE> in Ch. V, showing in Figure 4). Where a three-character category is not subdivided, it is recommended that the letter <CODE>X</CODE> be used to fill the fourth position, so that the codes are of a standard length for data-processing.</li>
+
+<li>The persistent terminal codes are: <CODE>.8</CODE> for a residual category (&lsquo;other&rsquo; conditions belonging to the three-character category); and <CODE>.9</CODE> for an unspecified category (e.g., <CODE>F00.9</CODE>, shown in Figure 4).</li>
+</ol>
+
+<div align="center"><figure>
+<img src="icd4.jpg" title="Fig. 4: The code structures of ICD-10 and ICD-11" width="90%">
+<figcaption>Figure 4: The code structures of ICD-10 and ICD-11 (compiled using the captured screens from the ICD-10 and ICD-11 browsers)</figcaption>
+</figure></div>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.2.2"></a>
+<h5 itemprop="articleSection">4.2.2 ICD-11 code structure</h5>
+
+<p>ICD-11 wants to ensure that data encoded with ICD-11 will be comparable with data encoded with ICD-10. Some patterns can be seen from these features, according to the <i>ICD-11 Reference Guide</i> section 1.2.4 &ldquo;General features&rdquo; (<A HREF="#refW">World Health Organization 2022a</A>, Sec. 1.2.4,) and Table 1: &ldquo;Major changes from ICD-10 to ICD-11, including rationale&rdquo; in a section on ICD-11&rsquo;s new conventions and terminology (Sec. 3.1), with highlighted parts added, in the following examples. </p>
+
+<ol>
+<li>Higher level entities in ICD-11 (called <i>blocks</i>) do not have category codes as they are not supposed to be used in coding, even though they may be used for reporting aggregated statistics. Blocks have their own URIs (e.g., the URI for Neoplasms is <CODE>[02 Neoplasms]</CODE>). Blocks may also be referred to by block IDs with 11 characters long (e.g., <CODE>BlockL1-1A0</CODE>).</li>
+
+<li>The Stem code (category) in ICD-11 is 4-characters, different from ICD-10 (3-characters). There are two levels of subcategories. </li>
+
+<li>The codes of the ICD-11 are alphanumeric and cover the range from <CODE>1A00.00</CODE> to <CODE>ZZ9Z.ZZ</CODE>. </li>
+
+<li>The letters <CODE>O</CODE> and <CODE>I</CODE> are omitted to prevent confusion with the numbers <CODE>0</CODE> and <CODE>1</CODE>.</li>
+
+<li>The first character of the stem code in ICD-11 always relates to the chapter&rsquo;s order. It may be a number or a letter:
+<ul>
+<li>For the classes in Chapters 1 through 9, a first character of <CODE>1-9</CODE> is used (e.g., <CODE>6A00</CODE> and others under Ch. 06 &ldquo;Mental, behavioural or neurodevelopmental disorders&rdquo;, as partially demonstrated in Figure 4).</li>
+
+<li>For the classes in Chapters 10 through 26, the first character is a letter (e.g., <CODE>AB37</CODE> is in Chapter 10 and <CODE>SA10</CODE> in Chapter 26).  </li>
+
+<li>For the classes in the supplemental chapters V and X, the first character is the same as the one representing the chapter (e.g., <CODE>VD00</CODE> and <CODE>VW8Z</CODE> in Chapter V; <CODE>XS0T</CODE> and <CODE>XH1VJ3</CODE> in Chapter X). Codes starting with <CODE>X</CODE> indicate an extension code.</li>
+
+<li>In the second position of the stem code, there is a consistent letter to distinguish ICD-11 from the codes of ICD-10 (e.g., <CODE>6A00</CODE> under Chapter 06 (showing in Figure 4), <CODE>AB37</CODE> in Chapter 10, and <CODE>SA10</CODE> in Chapter 26).</li>
+</ul>
+
+<li>The inclusion of a forced number at the third character position prevents the spelling of undesirable words.</li>
+
+<li>A category (e.g., <CODE>6A01</CODE>) may have two levels of sub-categories (e.g., its sub-category <CODE>6A01.2</CODE> has further sub-categories, from <CODE>6A01.20</CODE> to <CODE>6A01.23</CODE>, shown in Figure 4).</li>
+
+<li>The decimal point is always placed after the 4th digit.</li>
+
+<li>The persistent terminal codes are: <CODE>Y</CODE> = a residual category (other specified); and <CODE>Z</CODE> = an unspecified category (e.g., <CODE>6A01.Y</CODE> and <CODE>6A01.Z</CODE>, shown in Figure 4, <CODE>6A0Y</CODE> &ldquo;Other specified neurodevelopmental disorders&rdquo;, and <CODE>6A0Z</CODE> &ldquo;Neurodevelopmental disorders, unspecified&rdquo; in Ch. 6).</li>
+
+<li>The linked diagnostic concepts, called a cluster, are supported by ICD-11 through post-coordination.  This new feature enables linking core diagnostic concepts (i.e., stem + stem code concepts) when desired, and/or to add clinical concepts captured in extension codes to primary stem code concepts. </li>
+</ol>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.3"></a>
+<h4 itemprop="articleSection">4.3 New features</h4>
+
+<p>In addition to the continuing content changes, which reflect knowledge and perspectives on diseases and their causes in each ICD version, changes in design and structure are noteworthy in ICD-11. The information framework is comprised of: (1) a semantic knowledge base (referred as the Foundation); (2) a biomedical ontology linked to the Foundation; and (3) classifications derived from the Foundation (<A HREF="#refH">Harrison et al. 2021</A>). The Foundation component contains thousands of entities, which can be diseases, disorders, injuries, external causes, signs and symptoms, or reasons for encounter. Each entity is described by various properties, such as body structure, manifestation properties, causal properties, etc. Entities of the foundation become categories that are jointly exhaustive and mutually exclusive of each other (<A HREF="#refG">Grove and Jakob 2018</A>). The adequate ontological design underlying ICD-11 for the uses and expressions of entities used in the knowledge base allows ICD-11 to represent the relevant domain of knowledge with a more straightforward way to enable incorporating new entities. For example, the SARS-CoV-2 virus, the COVID-19 disease, and various manifestations of the disease, which emerged after the release of ICD-11, were easily incorporated as new instances of relevant dimensions of the ICD-11 content model.</p>
+
+<p>Three decades after the release of ICD-10, the world is now in the digital age. The significant features of ICD-11 include the improved ease and accuracy of coding, that requires less user training than ever before, and the availability of online and offline functioning (<A HREF="#refW">World Health Organization 2021-</A>). ICD-11 comes with an implementation package that includes an online coding tool, an ICD-API that provides web services to enable remote programmatic access to ICD-11, enhanced capability to capture and combine clinically relevant characteristics of cases and integrated support for multiple languages, plus the <i>ICD-11 Implementation or Transition Guide </i>(<A HREF="#refW">World Health Organization 2019c</A>). ICD-10 and ICD-11 mapping tables are provided correspondingly. </p>
+
+<p>ICD-11 is combining the elements of classification and terminology and is designed to be linked to other terminologies that may provide additional detail or serve different purposes. Post-coordination is a notable new feature in ICD-11 that creates the ability to link core diagnostic concepts when desired, and/or to add clinical concepts captured in extension codes to primary stem code concepts. The linked diagnostic concepts are called a cluster (<A HREF="#refW">World Health Organization 2022a</A>, Sec. 1.2.4.5). In ICD-11, aligned with around 17,000 unique codes for the classification, more than 120,000 codable terms are now entirely digital, and the smart coding algorithm now interprets more than 1.6 million terms (<A HREF="#refW">World Health Organization 2022b</A>). For example, when searching on COVID-19 related entries, a significant number of deprecated terms can be found, including those originally used a place name in naming a key variant of the virus that causes COVID-19. These deprecated terms lead to the formal classification entries.</p>
+
+<p>For the first time in ICD, each of the ICD-11 entities has its Foundation URI (Uniform Resource Identifier), as demonstrated in Figure 5.</p>
+
+<div align="center"><figure>
+<img src="icd5.jpg" title="Fig. 5: Examples of ICD-11&rsquo;s Foundation URIs" width="90%">
+<figcaption>Figure 5: Examples of ICD-11&rsquo;s Foundation URIs (compiled by the authors using the captured screens from the ICD-11 online searching and browsing website, with the URIs marked)</figcaption>
+</figure></div>
+
+<p>With the innovative use of the URIs, ICD-11 entities are fully language independent while having a specific place in a hierarchy of groups, categories, and narrower terms. Coding in ICD-11 can draw on statistical codes and on URIs (<A HREF="#refW">World Health Organization 2022a</A>, Sec. 1.1.2). In this way, an international translation base facilitates translations or multilingual browsing. It will also eliminate the semantic conflicts and inconsistency issues when modifications are made to the classification after its worldwide implementation. In addition, since a statistical classification of diseases must be confined to a limited number of mutually exclusive categories that are able to encompass the complete range of morbid conditions, every disease or morbid condition must have a well-defined place in the list of categories. Nevertheless, there are residual categories for other and miscellaneous conditions that do not have their own unique category or cannot be allocated to the more specific categories. Thus, the ICD-11 URIs allow retention of such detail for future analysis as a key component in the taxonomy (Sec. 1.2.1). </p>
+
+<p>As summarized by Grove and Jakob (<A HREF="#refG">2018</A>), ICD-11s&rsquo; revision impetus enables ICD to
+
+<ul>
+<li>Capture advances in health science and medical practice</li>
+
+<li>Make better use of the digital revolution</li>
+
+<li>Better address multiple topics, e.g., quality &amp; safety, traditional medicine, etc.</li>
+
+<li>Address persistent major gaps in basic use for mortality statistics</li>
+
+<li>Improve morbidity statistics</li>
+
+<li>Easier use</li>
+
+<li>Manage national clinical modifications in more effective manner</li>
+
+<li>Improve integration of other classifications and terminologies</li>
+
+<li>Improve comparability of translations</li>
+</ul>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.4"></a>
+<h4 itemprop="articleSection">4.4 Implications of the ICD during pandemics</h4>
+
+<p>During pandemics like COVID-19, it is more challenging to deal with information overload and semantic conflict; these challenges directly impact the whole domain of healthcare, which encompasses prevention, diagnosis, treatment, recovery or cures, illnesses, injuries, and other physical and mental impairments.</p>
+
+<p>For the outbreak of a new viral disease, three very important names must be decided: (1) the disease, (2) the virus, and (3) the species (<A HREF="#refI">International Committee on Taxonomy of Viruses Coronaviridae Study Group 2020</A>).  Establishing a name for a new disease provides a shared understanding for researchers and developers to discuss disease prevention, spread, transmissibility, severity, and treatment. The WHO guidelines ensure that the name does not refer to a geographical location, an animal, an individual, or a group of people, while still being pronounceable and related to the disease (<A HREF="#refW">World Health Organization 2015</A>). An application of these guidelines can be seen in the naming of the disease, COVID-19, in February of 2020 (<A HREF="#refW">World Health Organization 2020a; 2020b</A>) as well as in the labeling of key variants of the virus that causes COVID-19 using letters of the Greek alphabet in May 2021 (<A HREF="#refW">World Health Organization 2021b</A>), in turn negating stigmatization and discrimination by avoiding naming according to the places where they are detected. ICD-10 established new emergency codes immediately after the WHO&rsquo;s officially announced the name of the disease and provided guidance for COVID-19 coding in Feb. 2020. New classification codes have been added during the pandemic by both ICD-10 and ICD-11 (Figure 6).</p>
+
+<div align="center"><figure>
+<img src="icd6.jpg" title="Fig. 6: Emergency use ICD codes for COVID-19 disease outbreak" width="90%">
+<figcaption>Figure 6: Emergency use ICD codes for COVID-19 disease outbreak (<A HREF="#refW">World Health Organization 2021c</A>)
+</figcaption>
+</figure></div>
+
+<p>ICD has been promoting international collaboration in the collection, processing, classification, and analysis of global health data, which allows for easy storage and retrieval of health information as well as sharing of health information among hospitals, regions, and countries. Without the ICD, each country or region would have to use its own disease classifications, which would most likely only be relevant for a specific area. As Bowker and Star (<A HREF="#refB">1999</A>) stated: &ldquo;The ICD, for example, moves information across the globe, over decades, and across multiple conflicting medical belief and practice systems&rdquo;. As reviewed by the authors in early 2020 (<A HREF="#refZ">Zeng et al. 2020</A>), ICD&rsquo;s quick actions have been followed by other standardized health KOSs which have become even more critical to aid the frontline endeavors during devastating historic and worldwide events like the COVID-19 pandemic.    </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5"></a>
+<h3 itemprop="articleSection">5. ICD&rsquo;s KO practices: a short summary</h3>
+
+<p>&rarr; <a href="knowledge_organization">Knowledge organization (KO)</a> may be understood in a broad sense. The conceptual systems, the social fields, and the activity systems exist both inside and outside of KO, and each take place within different approaches and theories in all spheres of society. Therefore, the broader kinds of KOS (e.g., activity systems and scientific theories) are important for information professionals to study and understand (<A HREF="#refH">Hj&oslash;rland 2016</A>).  ICD has not been commonly used or studied by information professionals (<A HREF="#refC">Cervone 2018</A>); however, ICD&rsquo;s utilization of the hierarchical classification structure, positional notations following syntactical rules, and methods in ensuring disambiguation, inclusion, consistency, and continuing extension, as revealed in the brief history of ICD&rsquo;s development and implementations (refer to <A HREF="#3">Sections 3 and 4</A> above), can all be understood following classification theories and practices. This brief summary looks into eight of them.</p>
+
+<h5>1.</h5>
+
+<p>&ldquo;Nosology&rdquo; is the term used in Sauvages&rsquo; <i>Nosologia Methodica,</i> which was credited as the first attempt to classify diseases systematically (<A HREF="#refK">Knibbs 1929</A>). Nosology is the science of defining and classifying diseases. Over the past 200 years, medical science has been very successful in correlating obvious pathological conditions of the human body with patho-anatomical lesions, physiological disturbances, infectious agents (e.g., bacteria), genetic abnormities, etc. (<A HREF="#refS">Severinsen 2001</A>). Besides classifying concrete cases of disease-by-disease mechanisms or causal processes (<i>principle of disease mechanism</i>), other situations have been deeply discussed by philosophers and medical scientists, who have published their views on the fundamental principles behind definitions of diseases. These include modifying existing classification to conform with new information about the underlying mechanisms of diseases (e.g., mental illness), dealing with any still unknown causal structure and the complex causal structures behind diseases, investigating the similarities and differences between cases of disease, etc., as reviewed by Severinsen (<A HREF="#refS">2001</A>), alongside a proposal of a pragmatic alternative and two &ldquo;pragmatic principles&rdquo;. There is also a <i>meta-nosology</i> (<A HREF="#refL">Livingstone-Banks 2018</A>), which is a kind of study focusing on how diseases are defined and classified, what principles nosological practices are based on, the quality of the resulting medical taxonomy, and primarily whether/how diseases can be defined better than they are now.</p>
+
+<h5>2.</h5> 
+
+<p>&ldquo;Classification&rdquo; has been used in the title of ICD since revision #6 <i>International Statistical Classification of Diseases, Injuries, and Causes of Death</i>. Originally, the revisions from #1 to #5 had the title <i>International List of Causes of Death</i>. The change of the title from a &ldquo;list&rdquo; to a &ldquo;classification&rdquo; in ICD-6 and its continual revising by the WHO through ICD-7 to ICD-11 reflects the formal identification and implementation of classificatory structures in knowledge organization. As Hemalata Iyer stated regarding the classical paradigm, &ldquo;[t]he classical theory of concept formation is based on the assumption that the real world is structured in hierarchical groups that share common inherent properties&rdquo; (<A HREF="#refI">Iyer 1995</A>, 41). Aristotle, the founder of this view, developed a theory of classification in which all elements in a given class share at least one characteristic with all other members. Classes should be designed so membership of a class is given by a set of necessary and sufficient characteristics (<A HREF="#refH">Hj&oslash;rland 2017</A>, Sec. 4.1) <A HREF="#e5">[5]</A>. In the newest <i>ICD-11 Reference Guide</i>, the definition of &ldquo;classification&rdquo; is used according to the <i>ISO 17115:2020 Health informatics &mdash; Representation of categorial structures of terminology (CatStructure)</i>: a classification is &ldquo;an exhaustive set of mutually exclusive categories to aggregate data at a pre-prescribed level of specialization for a specific purpose&rdquo; (<A HREF="#refW">World Health Organization 2022a</A>, Sec. 1.1.2). The ICD has been developed as a practical, rather than a purely theoretical, classification in which there are several compromises between classification based on aetiology, anatomical site, circumstances of onset, or other criteria (Sec. 1.2.1).</p>
+
+<h5>3.</h5>
+
+<p>As a statistical classification of diseases, the term &ldquo;categories&rdquo; was chosen by ICD regarding the features of ICD&rsquo;s components, intending to facilitate the statistical study of disease phenomena, since it must be confined to a limited number of mutually exclusive categories and be able to encompass the complete range of morbid conditions (Sec. 1.2.1). The broad meaning of &rarr; <a href="classification">classification</a> is the process of distinguishing and distributing kinds of &ldquo;things&rdquo; into different groups. Specific requirements or restrictions normally are seen in practice, such as that classes should be mutually exclusive and jointly exhaustive (<A HREF="#refH">Hj&oslash;rland 2017</A>). From the classical theory point of view, there are three assumptions (<A HREF="#refS">Smith and Medin 1981</A>, 23-5): (1) concept representation involves summary representation of the class; (2) the defining features for a category are both individually necessary and jointly sufficient to define the category; (3) categories are nested, so that the subordinate categories possess all the features of the superordinate category. Additionally, categories could be formed based on family resemblances, rather than clearly marked definitions (<A HREF="#refW">Wittgenstein 1953</A>, 328-9).</p>
+
+<p>These norms are reflected in the ICD&rsquo;s practices while the specific situations that health KOSs have faced are also considered. For instance, low frequency concepts tend to be grouped, but rare concepts may be individually classified if necessary (<A HREF="#refW">World Health Organization 2022a</A>, Sec. 1.1.2). In this continually revised classification, although the forms of revision are similar to others, including expansion, reduction &amp; discontinuation, and relocation (<A HREF="#refC">Chan and Salaba 2016</A>, 600), the workflow of ICD&rsquo;s revision is dissimilar to other classification&rsquo;s manners. Using ICD-11 as an example, the giant and diverse team (divided into multiple working groups) has involved over 300 specialists from many countries, with an additional 10,000 proposals from people all over the world (<A HREF="#refW">World Health Organization 2019c</A>). More than 90 countries have been involved in production, reviews, testing or commenting (<A HREF="#refG">Grove and Jakob 2018</A>). To determine whether an entity qualifies to become a unique category, ICD has been applying a set of measures, including epidemiological evidence, clinical evidence, granularity, continuity, and parsimony (<A HREF="#refW">World Health Organization 2022a</A>, Sec. 1.1.2). This practical approach aims to retain the dual abilities to identify specific disease entities and to allow statistical presentation of data for broader groups, thus enabling the attainment of useful and understandable information.</p>
+
+<h5>4.</h5> 
+
+<p>The classification notation (code structure) designed for the various ICD revisions, particularly those revisions since ICD-6, revealed the hierarchical structure of the classification. ICD-6, released in 1948, employed three-digit Arabic numerals for class/subclasses and decimal points for subsections (refer to Figure 2 for a set of notations in ICD-6). It is noticeable that the 1940s witnessed the wide adoption of the Dewey Decimal Classification (DDC) in libraries. In a timeline provided by the Dewey Services (<A HREF="#refD">2017</A>), the Library of Congress began to print Dewey numbers on catalog cards in 1930 and the Decimal Classification Committee, a forerunner to the present-day Dewey Decimal Classification Editorial Policy Committee, was established in 1937.  By the 14th edition in 1942, the DDC index was over 1,900 pages in length and was published in two volumes, with around 31,000 entries (<A HREF="#refC">Comaromi 1976</A>).</p>
+
+<p>Notations are systems of written symbols that can be combined according to some set of syntactical rules to represent various meanings in a specialized domain. Its main function is mechanical control of concept ordering (<A HREF="#refG">Gnoli 2018</A>). Classification notation&rsquo;s design is considered to be one of the final steps in the compilation of a classification scheme (<A HREF="#refH">Hunter 2009</A>, 73) or the third level of any classification scheme development process after the conceptual level (choosing the subjects and the way of structuring them) and the terminological level (<A HREF="#refI">Iyer 1995</A>, 30-39). The commonly recognized norms of notations comprise uniqueness, simplicity, brevity, hospitality, flexibility, expressiveness, and retroactivity (<A HREF="#refH">Hunter 2009</A>, 73-84). The distinctive features of the notational plane, when compared to the verbal plane, are uniqueness of the idea represented by an ordinal number and the total absence of homonyms and synonyms (<A HREF="#refR">Ranganathan 1967</A>, 327-8; <A HREF="#refG">Gnoli 2018</A>).</p>
+
+<p>As a daily-used coding standard for health data exchanges in the digital age, the challenges ICD faces are much more significant than bibliographic classifications and thesauri. The requirements for the background and experiences of the classification creators, the length of time in developing, testing, and finalizing any new version, and the official processes such as the formal approval and adoption by the WHO and individual countries, all demonstrate a whole new world that information professionals need to understand. Since ICD-10, substantial changes in both the main classes&rsquo; notations and the rules used in the code structures are significantly observable, as shown in <A HREF="#4">Section 4</A> of this paper. It is also noticeable that the ICD chapter&rsquo;s numbers are not functioning as the way that the common library classifications do, as they are not considered as the stem codes of the basic classes in a classification scheme.</p>
+
+<h5>5.</h5>
+
+<p>An index is a kind of target document, which functions by providing access to information in or about some source documents in two ways: by deriving symbols from the source documents, or by assigning symbols about the source documents, thereby providing users access from a known order of symbols (e.g., A-Z) to an unknown place of information (<A HREF="#refH">Hj&oslash;rland 2018</A>). Started in ICD-2&rsquo;s English version, it contained an expanded alphabetical index, which showed the source of the items and gave the rubric numbers of both the detailed and abridged lists (<A HREF="#refU">U.S. Bureau of the Census 1911</A>).  In the digital age, the index-based search algorithm of the ICD-11 service interprets more than one million terms in ICD services. When using the unified Maintenance Platform of the WHO Family of International Classifications (WHO-FIC), the advanced search allows properties to be selected to include title, synonym, description, inclusion, exclusion, additional information, fully specified name, and narrower term.</p>
+
+<h5>6.</h5>
+
+<p>Foundation URIs are officially implemented in ICD-11. A Uniform Resource Identifier (URI) is a compact string of characters for identifying an abstract or physical resource (<A HREF="#refB">Berners-Lee, Fielding and Masinter 1998</A>). In ICD-11, each entity has a URI which is independent of the classification notations. The URIs can be used in a web browser or the expressions in different languages for an entity. In addition to ensuring the ICD feature of language-independence and maintaining the classification structure, this URI practice will enhance ICD&rsquo;s consistency and interoperability in the implementations, while allowing binding of any desired language to the elements of its foundation component (<A HREF="#refW">World Health Organization 2022a</A>, Sec. 1.2.9).</p>
+
+<h5>7.</h5> 
+
+<p>ICD-11 is more than a revision of previous classifications within ICD; ICD-11 is claimed to be a classification AND terminology. Aligning with its around 17,000 unique codes for the classification, more than 120,000 codable terms are now entirely digital (<A HREF="#refW">World Health Organization 2022d</A>).  Preferred terms and deprecated terms are available in the official WHO standard languages, accumulated from translations of previous revisions of the ICD, with trained translators checking the results.  The entries, complemented by synonyms, can extend to other languages, and align with other ontologies (<A HREF="#refH">Harrison et al. 2021</A>). Post-coordination in ICD-11 brings significant changes compared with previous revisions. The entire ICD meets the four important principles of vocabulary control, defined by <i>ANSI/NISO Z39.19-2005 (R2010) Guidelines for the Construction, Format, and Management of Monolingual Controlled Vocabularies</i>, in design and development: eliminating ambiguity, controlling synonyms, establishing relationships among terms where appropriate, and testing and validation of terms. </p>
+
+<h5>8.</h5> 
+
+<p>After a more than 150 years&rsquo; long adventure, from a list to a comprehensive classification and terminology system, ICD-11 is within mainstream ontology-based design. The migration of its sibling classifications International Classification of Functioning, Disability and Health (ICF) and International Classification of Health Interventions (ICHI) (refer to <A HREF="#7.2">Section 7.2</A> below) to a singular ontological infrastructure has enabled the full integration of terminology and classification in a common platform (<A HREF="#refW">World Health Organization 2022a</A>, Sec. 1.1).  &ldquo;Its electronic architecture allows assignment of unique identifiers to any condition listed &mdash; independently whether the condition is grouped in a statistical class or whether it represents a class of its own&rdquo; (Sec. 1.2.1). The database of ICD-11 is considered a semantic network (<A HREF="#refH">Harrison et al. 2021</A>), with each entry characterizing a disease, syndrome, or health-related phenomenon in a way that not only is descriptive but also specifies its relationships with other entities.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="6"></a>
+<h3 itemprop="articleSection">6. Functions and applications of ICD</h3>
+
+<p>The purpose of the ICD is to allow for the systematic recording, analysis, interpretation, and comparison of mortality and morbidity data collected in different countries or regions at different times. The intended use cases can be seen from a broad range, such as causes of death, morbidity, epidemiology, case-mix (diagnosis-related group), quality and patient safety, primary care, functioning assessment, research, prevention, substance (medication) or device safety, specific surveillance like antimicrobial resistance, cancer registration, injury research, etc. As a standard, it is the key to ensuring semantic interoperability for clinical documentation, decision support, and guidelines or recommendations (<A HREF="#refW">World Health Organization 2022a</A>, Sec. 1.1).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="6.1"></a>
+<h4 itemprop="articleSection">6.1 Diagnostic coding with the ICD codes</h4>
+
+<p>Diagnostic coding is a process to transform written descriptions of diseases, illnesses, or injuries into diagnostic codes. From a medical information processing point of view, one of the important functions that physicians perform in their daily routine is encoding diagnoses using a standard vocabulary such as ICD to overcome the discrepancy between what physicians do and what they document (<A HREF="#refH">Hohnloser and Soltanian 1994</A>). The basic coding steps in an electronic environment are different from that in a paper environment (<A HREF="#refW">World Health Organization 2022a</A>, Sec. 2.6), with the workflow usually including:
+
+<ul>
+<li>Analyzing and abstracting the diagnosis or assessment documented in the medical records.</li>
+<li>Extracting diagnostic statements from medical records.</li>
+<li>Entering the statement or term in an electronic coding tool or look up the term in the Alphabetical Index of an ICD codebook using the conventions, guidelines of the ICD coding manual (<A HREF="#refP">Proctor and Young-Adams 2014</A>).</li>
+<li>Selecting the most appropriate matching term, or the one closest to what you are looking for from amongst the displayed options. Verifying the result in the tabular list of the online browser view or the paper codebook for exclusions, inclusions and notes given at the level of that category, its grouping levels and at the chapter level.</li>
+</ul>
+
+<p>Appropriate use of the ICD is essential for an accurate translation of the medical record&rsquo;s diagnostic statement into standardized codes, as demonstrated by the following two circumstances. (1) ICD includes a chapter classifying mental and behavioral disorders, started with ICD-6 in 1948 when the WHO began to lead the ICD revision and coordinate the statistical activities among the national committees of various countries, entering a new era of international cooperation for vital and health statistics. An international survey of 205 psychiatrists in 66 countries found that ICD-10 was frequently used for clinical diagnosis and coding in mental health (<A HREF="#refM">Mezzich 2002</A>). Phull (<A HREF="#refP">2012</A>) presented a learning guide to use ICD-10 for psychiatry practice of assessment, diagnosis, and management, which is very helpful for anyone interested in learning about diagnostic coding in psychiatry, particularly medical students, psychiatry trainees, and mental health professionals. (2) Since the field of bereavement research and care has been at a tipping point in recent years, ICD-11 introduced prolonged grief disorder (PGD) as a diagnostic category on the international stage. The current definition of PGD for the ICD-11 is the latest iteration following nearly 30 years of research investigating different diagnostic definitions. Previously a disorder of grief has been described and researched under different names, which has led to some confusion amongst clinicians and researchers particularly during the COVID-19 pandemic. The multiple definitions and disorder criteria can lead to different diagnostic thresholds and estimates of incidence. The newest ICD-11 definition of PGD deviates from previous definitions as it seeks to align with the WHO's remit for improved clinical utility and global applicability of mental disorders (<A HREF="#refK">Killikelly et al. 2021</A>; <A HREF="#refE">Eisma at al. 2021</A>).  </p>
+
+<p>During the COVID-19 pandemic, the use of ICD codes is critical. Within two years, the special portal &ldquo;COVID-19 Global Literature on Coronavirus Disease&rdquo; of the WHO (<A CLASS="menu" HREF="https://pesquisa.bvsalud.org/global-literature-on-novel-coronavirus-2019-ncov/">https://pesquisa.bvsalud.org/global-literature-on-novel-coronavirus-2019-ncov/</A>, mainly from MEDLINE and EMBASE, with over 20 resources) reveals more than 750 articles when searching &ldquo;ICD&rdquo; as of March 29, 2022. Nearly 1/6 of them (127 articles) have the main subject &ldquo;COVID-19&rdquo;. Other main subjects of the articles include Pandemics (21), Pneumonia, Viral (15), Hospitalization (15), Coronavirus Infections (14), and SARS-CoV-2 (10).  For the articles focused on ICD (13 articles), the types of studies are categorized as Diagnostic study (7), Prognostic study (5), Risk factors (4), Etiology study (2), Incidence study (2), Observational study (2), Clinical Practice Guide (1), Qualitative research (1), and Screening study (1). Half of these articles concentrated on the validity of ICD-10 codes and accuracy.</p>
+
+<p>Several of these ICD-focused articles brought the processes of auto-recording, predicting, generating data analysis and reports using ICD. The articles also presented new efforts in the development of &rarr; <a href="ontologies">ontologies</a> and applications based on ICD-11. In fact, automated ICD coding has been investigated and developed in the health information community. Since ICD is getting more and more complex, even well-trained medical coders often find accuracy of diagnostic coding challenging with the manual coding process. This is especially true when new ICD codes are supposed to be used immediately and accurately, e.g., when the pandemic started in early 2020, when there was a lack of initial awareness or familiarity with ICD-10 coding for COVID-19 (<A HREF="#refB">Bhatt et al. 2021</A>). Taking advantage of ICD being a diagnostic classification with a hierarchical tree of codes, the diagnosis code assignment modeling would be improved when the hierarchical nature of ICD codes is leveraged. Predicting ICD codes according to the discharge summary content is an example of large-scale modeling applied to a routine healthcare task (<A HREF="#refP">Perotte et al. 2014</A>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="6.2"></a>
+<h4 itemprop="articleSection">6.2 Clinical documentation with ICD</h4>
+
+<p>Clinical documentation includes all clinical notes and reports that relate to patient care. It has numerous benefits for the immediate care of the patient and more advantages for medical practice at large (<A HREF="#refM">Mamykina et al. 2012</A>). Clinical documentation consists of a process in which healthcare providers record the observations, impressions, plans, and other activities arising from episodes of patient care, and generally occurs with each interaction between patients and the healthcare system. This produces an objective record of a patient&rsquo;s medical history, physical findings, medical reasoning, and clinical problem solving (<A HREF="#refR">Rosenbloom et al. 2010</A>). Since a diagnosis is in line with the collection of information about the history, symptoms, and signs of a case, a critical component of clinical problem solving involves gathering and organizing this data in patient records (<A HREF="#refP">Patel et al. 2000</A>). The sources of diagnostic statements are presented with various clinical documents, including encounter forms, history and physical reports, progress and treatment notes, discharge summaries, procedure and operative reports, radiology reports, pathology reports, laboratory reports, etc. The diagnoses and procedures listed in encounter forms, clinical notes, and reports are usually encoded with ICD codes for standardized patient records.</p>
+
+<p>Considering that not every problem or reason for conducting health services can be categorized in diseases and injuries, ICD correspondingly incorporates a wide variety of signs, symptoms, abnormal findings, complaints, and social factors that represent the content from health-related records (<A HREF="#refW">World Health Organization 2016</A>, Vol. 2, 2). The ICD can therefore be used to classify data recorded under headings such as &ldquo;Cause of death&rdquo;, &ldquo;Diagnosis&rdquo;, &ldquo;Reason for admission&rdquo;, &ldquo;Conditions treated&rdquo;, &ldquo;Additional diagnoses&rdquo;, &ldquo;Risk factors&rdquo;, and &ldquo;Reason for consultation&rdquo;, which appear on a wide variety of health records and documents, from which statistics are derived for treatment, prevention, or patient safety (<A HREF="#refW">World Health Organization 2022a</A>, Sec. 1.1).</p>
+
+<p>Thus, the medical conditions, health problems, diagnoses, and procedures in these clinical notes and reports are often encoded with ICD codes. The use of the ICD facilitates accurate clinical documentation and efficient processing of claims for the disease or injury for which a patient was treated, among many benefits.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="6.3"></a>
+<h4 itemprop="articleSection">6.3 Communication using the ICD codes in Electronic Health Records</h4>
+
+<p>Electronic Health Records (EHR), also referred to as Electronic Medical Records (EMR), support the documentation of clinical practice at the point of care. The EHR is a rich source of information on human diseases, but the information is variably structured, fragmented, curated using different coding systems, and collected for purposes other than medical research (<A HREF="#refD">Denaxas et al. 2019</A>). Schiff et al. (<A HREF="#refS">2010</A>) emphasized that electronic clinical documentation with EHR systems may enhance communication among clinicians, reduce error rates, improve documentation efficiency, and help prevent diagnostic errors.</p>
+
+<p>Standardized KOSs are one of the keys to ensure interoperability among EHR systems (refer to <A HREF="#7.1">Section 7.1</A>). Among the KOSs implemented in EHR, the ICD is mainly used to normalize the diagnostic process, health problem lists, and medical procedures. A study by Keck et al. (<A HREF="#refK">2014</A>) using ICD-9 in an EHR-based influenza-like illness (ILI) surveillance system, was developed during the 2009 influenza A (H1N1) virus pandemic for the American Indian and Alaska Native population. It showed strong evidence that the ILI surveillance had increased accuracy and timeliness. The implementation of ICD-9 provided useful information for decision-makers, as indicated by the EHR, and offered the opportunity to transform public health surveillance. Other cases using ICD within EHR in the USA revealed that surveillance using ICD-9 codes might be reliable to determine the burden of a chronic hepatitis B virus (HBV) infection and improved reporting by state and local health departments (<A HREF="#refM">Mahajan et al. 2013</A>).  A different, unique study by Blosnich et al. (<A HREF="#refB">2018</A>) showed that transgender individuals were vulnerable to negative health risks and outcomes. Still, research remains limited because data sources such as the EHR lack standardized collection of gender identity information. Using ICD-defined transgender status can facilitate health services research when self-identified gender identity data are unavailable in EHR.</p>
+
+<p>A typical workflow facilitated by a tool is demonstrated by Horsky, Drucker and Ramelson&rsquo;s (<A HREF="#refH">2017</A>) study. When a clinician starts to add a clinical term to a problem list by typing one or more words into a free-text query field, an ICD-10 code lookup pops up in the EHR. A search engine within the EHR then returns a list of ICD-10 codes and descriptions and ranks them according to their relevance to the search string for complete word or partial word matching. If there are no exactly matched words found with the query, clinicians may find it challenging to choose &ldquo;close enough&rdquo; codes. In addition, this coding process requires accurate documentation of clinical care, made possible with the ICD-10 system.  </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="7"></a>
+<h3 itemprop="articleSection">7. ICD and other health KOSs</h3>
+
+<p>Standardized health KOSs are playing an increasingly larger and more important role in healthcare information systems to facilitate data normalization, which is a fundamental requirement for any subsequent data analysis, information management, and decision-making. ICD and other standardized KOSs allow the world to exchange and share data consistently and in a standard way &mdash; between institutions, across regions and countries, and over time. In addition, they facilitate the collection and storage of data for analysis and evidence-based decision-making.</p>
+
+<p>The world has witnessed the growing development and usage of KOSs in healthcare information systems. In addition to the ICD and the WHO&rsquo;s Family of International Classifications Network, hundreds of biomedical KOS vocabularies can be found in biomedical KOS repositories.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="7.1"></a>
+<h4 itemprop="articleSection">7.1 ICD and other common health KOSs</h4>
+
+<p>With the realities of everyday healthcare, various KOS standards are needed for different processes. This illustration (Figure 7) displays their major usage in EHR, according to practices in the USA. As shown in the figure, ICD and SNOMED CT (Systematized Nomenclature of Medicine--Clinical Terms) are mainly used to normalize the diagnostic process and health problem list. SNOMED CT is the most comprehensive clinical terminology in use around the world and could be used for almost all medical terminology coding processes. There are others that have been developed to mainly encode medical lab tests and clinical observations (e.g., Logical Observation Identifiers Names and Codes, LOINC), medical procedures (e.g., Current Procedural Terminology, CPT), and names for clinical drugs (e.g., RxNorm). They have a crucial role in healthcare information systems to support data normalization and semantic linking and sharing.</p>
+
+<div align="center"><figure>
+<img src="icd7.jpg" title="Fig. 7: Main usages of different standardized health KOSs in EHR, according to practices in the USA" width="70%">
+<figcaption>Figure 7: Main usages of different standardized health KOSs in EHR, according to practices in the USA (image created by authors)</figcaption>
+</figure></div>
+
+<p>The Health Level Seven (HL7) messaging (&ldquo;Level Seven&rdquo; signifies the seventh level (the application level) of the ISO seven-layer communications model for Open Systems Interconnection, OSI) is the workhorse of electronic data exchange in the clinical domain and arguably the most widely implemented standard for healthcare in the world. This messaging standard allows the exchange of clinical data between systems. It is designed to support a central patient care system as well as a more distributed environment where data resides in departmental systems (<A HREF="#refH">HL7 International 2007-2022</A>). HL7 requires the use of standardized terminologies to represent health data. Besides developing its own standardized code sets to identify administrative data such as gender code, data type, and status codes, HL7 has employed existing standardized health KOSs to support the disambiguation of health information exchange. These KOS standards have an essential role in healthcare information systems to support data normalization. Among them, ICD, CPT, SNOMED CT, LOINC, and RxNorm are the most widely used KOS standards in EHR and health information exchange (HIE). (Refer to <A HREF="#app1">Appendix</A> for a list of health KOSs.)</p>
+
+<p>Going beyond those standards listed in Figure 7, which have evolved solely from practices in the USA, more than 200 biomedical KOS vocabularies are included in the Unified Medical Language System (UMLS)&rsquo;s Metathesaurus, which is a large, multi-purpose, and multilingual biomedical vocabulary database. It is organized by concept, with links to similar names for the same concept from over 150 different KOS sources (distinct source families by language) across the world (mainly in English, about 70 non-English, as of June 2022) (<A HREF="#refU">U.S. National Library of Medicine 2022</A>).  Major categories in the Metathesaurus (<A HREF="#refU">U.S. National Library of Medicine 2016-</A>) embrace diagnosis &amp; clinical observations, procedures &amp; supplies, diseases, comprehensive vocabularies/thesauri, and other categories. In addition, some vocabularies fall into more than one category.  </p>
+
+<p>In the UMLS Metathesaurus, ICD-10 is featured under the <CODE>Diseases</CODE> category in the source vocabulary (<A HREF="#refU">U.S. National Library of Medicine 2016-</A>).  Multiple members of the ICD family can be found, incorporating different languages and coverages, for example, ICD-10 German, ICD-10, American English Equivalents, ICD-10, Australian Modification, ICD-10, Australian Modification, American English Equivalents, ICD-10, Dutch Translation, etc. In addition, several specific ones listed in the WHO family of KOSs (refer to <A HREF="#7.2">Section 7.2</A>) are included.  The International Classification of Primary Care (ICPC) alone has 14 languages. There are products derived from the ICD, including ICD-10 Clinical Modification (ICD-10-CM) which are widely used in the USA and other countries.</p>
+
+<p>Another terminology repository, BioPortal, the world&rsquo;s most comprehensive repository of biomedical ontologies developed by the National Center for Biomedical Ontology (<A HREF="#refN">2005-</A>), contains 868 ontologies as of May 6, 2021, and 1,005 as of Aug. 10, 2022. These numbers indicate the need for standardized KOS vocabularies in diverse circumstances and communities alongside cross-vocabulary mappings that facilitate data and knowledge as semantically interoperable across knowledge sources that are developed independently to meet diverse needs.</p>
+
+<p>More than a hundred vocabularies in BioPortal are mapped to ICD-10; nearly 20 of them have mappings with over a thousand classes. The Radiology Gamuts Ontology, for example, mapped 18,501 ontological classes with ICD-10. (Refer to ICD-10 entry at BioPortal: <A CLASS="menu" HREF="https://bioportal.bioontology.org/ontologies/ICD10">https://bioportal.bioontology.org/ontologies/ICD10</A>.) As gender and sexual orientation continue to represent crucial areas of medical practice and research with evolving terminology, a Gender, Sex, and Sexual Orientation (GSSO) ontology released its second version to address this gap by providing a centralized data resource after evaluating and mapping with ICD and other major KOSs (<A HREF="#refK">Kronk and Dexheimer 2020</A>). Many ontologies have been timely released and updated during the COVID-19 pandemic (e.g., The COVID-19 Infectious Disease Ontology; An Ontology for Collection and Analysis of COviD-19 Data; COVID-19 Ontology; and COVID-19 Ontology in Pattern Medicine). They are all mapped to ICD-10, as shown in BioPortal. Countless specific studies on the sufficiency and the needed extensions built on ICD-9 and ICD-10 have been reported, such as in the <i>Journal of the American Medical Informatics Association </i>and the Annual Symposium of the American Medical Informatics Association.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="7.2"></a>
+<h4 itemprop="articleSection">7.2 ICD in the WHO Family of International Classifications (WHO-FIC) Network</h4>
+
+<p>Lead by their mission to improve health through the ongoing development, maintenance, and promotion of an integrated suite of reference health classifications and related products that produce information of value and utility across the world, WHO has a Family of International Classifications (WHO-FIC) Network.
+
+<blockquote>The WHO-FIC provides a standardized common language for coding a wide range of information about health and wellbeing, and about interventions delivered to individuals and populations. The classifications and terminologies have been developed based on sound scientific principles, ensuring that the classifications are internationally and culturally appropriate and can convey information in an unambiguous way across languages, cultures, settings and borders. (<A HREF="#refW">World Health Organization 2021d</A>)</blockquote>
+
+The classifications are categorized into three groups: Reference classifications, Derived classifications, and Related classifications (<A HREF="#refM">Madden, Sykes and Ustun 2007</A>; <A HREF="#refW">World Health Organization 2021d</A>). Among them, ICD is the most important one, as highlighted in Figure 8.</p>
+
+<div align="center"><figure>
+<img src="icd8.jpg" title="Fig. 8: WHO Family of International Classifications (WHO-FIC) Network " width="90%">
+<figcaption>Figure 8: WHO Family of International Classifications (WHO-FIC) Network (Image modified based on <A HREF="#refM">Madden, Sykes and Ustun 2007</A> and <A HREF="#refW">World Health Organization 2021d</A>)</figcaption>
+</figure></div>
+
+<p>The reference classifications (listed in the center column in Figure 8) are developed for the classifications of diseases (ICD), functioning, disability, and health (ICF), and health interventions (ICHI) for international reporting, and cover the main parameters of health. ICD and ICF have been developed to complement each other to capture the full picture of an individual's health status since they offer different coverage of health terms. While the ICD classifies disease and other health conditions for diagnostic coding, ICF, as spelled out in the title, defines domains of functioning and disability in terms of body functions and structures or activities. ICHI (work in progress) has been developed to provide a common language tool for describing, reporting, and analyzing health interventions for statistical purposes. The classification is built around three axes: Target (the entity on which the Action is carried out), Action (a deed done by an actor to a Target) and Means (the processes and methods by which the Action is carried out) (<A HREF="#refW">World Health Organization 2007-</A>). The WHO is responsible for these primary reference classifications. They may be used together, for example, for capturing information on health interventions relevant to people with disabilities, in which the ICHI is used to record investigative and diagnostic interventions conducted along with the therapeutic and supportive interventions subsequently delivered; ICF is used to describe the person&rsquo;s functioning and need for environmental facilitators; and ICD is used to record a diagnosis (<A HREF="#refF">Fortune, Madden and Almborg 2018</A>; <A HREF="#refM">Manchaiah, Swanepoel and Fortune 2020</A>).  A WHO-FIC Maintenance Platform (<A CLASS="menu" HREF="https://icd.who.int/dev11/">https://icd.who.int/dev11/</A>) provides a unified search and browser for unreleased, work in progress versions ICD-11, ICF, ICHI, and several other classifications. The audience for this site is the maintainers, contributors, and translators of the classification.</p>
+
+<p>A set of the derived classifications (right column in Figure 8) are extensions of the core reference classifications that allow for further depth within a particular area or setting. They have been developed based upon the ICD by adopting its structure and categories and providing additional details beyond what is provided by the ICD, involving collaborations with specialist user groups. The focus currently is on the classifications of: the diseases for oncology (ICD-O-3), mental and behavioral disorders, neurology (ICD-NA), dentistry and stomatology (ICD-DA), and reporting of causes of death in low-resource settings (ICD-10-SMoL). There are no semantic conflicts between ICD and these derived classifications since they define diseases and disorders consistently while covering more detailed information in a specific area such as oncology and mental health.</p>
+
+<p>The related classifications (left column in Figure 8) are those that partially refer to or are associated with the reference classification at specific levels of structure (<A HREF="#refM">Madden, Sykes and Ustun 2007</A>). They are included in the WHO-FIC to describe important aspects of health care and functioning of the health system, including primary care, technical aids for persons with disabilities, nursing practices, and other standards that complement reference and derived classifications (<A HREF="#refW">World Health Organization 2021d</A>). One of the classifications listed in this group, International Classification of External Causes of Injury (ICECI), has informed the redesign of the relevant chapter of ICD 11th revision. Hence the different elements of ICECI have been included as extension codes in the ICD-11.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="8"></a>
+<h3 itemprop="articleSection">8. ICD in health informatics</h3>
+
+<p>Parallel to the research articles published in medical journals, health informatics journals have accumulated cross-domain research reports, since clinical reports encoded with ICD codes are good resources for scientists to perform further analyses and develop advanced approaches in the digital age. In 1998, an article entitled &ldquo;Desiderata for controlled medical vocabularies in the twenty-first century&rdquo; expressed the desiderata (Latin: &ldquo;things desired&rdquo;) of standard medical KOSs. Builders of medical informatics applications need controlled medical vocabularies to support their applications, and it is to their advantage to use available standards with multiple purposes including capturing clinical findings, natural language processing, indexing medical records, indexing medical literature, and representing medical knowledge (<A HREF="#refC">Cimino 1998</A>). In 2017, another study assessing content and trends in medical informatics publications over the past two decades discovered a set of continuously growing core and emerging topics that medical informaticians have been dealing with in collaboration with professionals in healthcare and other technological fields (<A HREF="#refW">Wang et al. 2017</A>). As delivered by the selected publications in <i>Journal of the American Medical Informatics Association</i>, <i>Journal of Biomedical Informatics</i>, <i>Biomedical Informatics</i>, <i>International Journal of Medical Informatics</i>, the series <i>Studies in Health Technology and Informatics</i>, and other journals covering health informatics, it is obvious that researchers have developed and implemented various information technologies using particular clinical documents and data while addressing various issues, as shown in the above sections as well as this special section. The multiple dimensions of research in line with the clinical reports encoded with ICD can be seen in diverse topics and methods, as demonstrated below with the major categories across these research papers.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="8.1"></a>
+<h4 itemprop="articleSection">8.1 Information technology development and application</h4>
+
+<p>The assignment of ICD codes to health-related documents has become a focus of academic research. Numerous studies have developed the process of ICD coding from manual to automated work, as summarized by Yan et al. (<A HREF="#refY">2022</A>) for the history of automated ICD coding research (Figure 9). The milestones can be seen in three development stages: Stage 1, Rule-based, Stage 2, Traditional Machine Learning-based, and Stage 3, Neural Network-based.</p>
+
+<div align="center"><figure>
+<img src="icd9.jpg" title="Fig. 9: Developmental history of the automated ICD coding task" width="90%">
+<figcaption>Figure 9: Developmental history of the automated ICD coding task (<A HREF="#refY">Yan et al. 2022</A>)</figcaption>
+</figure></div>
+
+<p>The application of artificial intelligence (AI) and machine learning (ML), along with natural language processing (NLP), may automatically extract information from clinical reports and reduce delays in report processing. However, the complicated content in clinical reports can be difficult for machines to process due to its high variability, including misspellings and missing punctuation, clinical diagnoses interspersed with complex explanations, and different terminology to represent the same disease and condition. Developing an automated solution with high accuracy and consistency across a wide selection of reports is therefore challenging. Use of standard ICD codes with their hierarchical structure is expected to significantly improve the accuracy of extracted health information. Considering the design, implementation, and validation of a novel deep learning (DL) approach, in line with the hierarchical attention networks (HANs), Gao et al. (<A HREF="#refG">2018</A>) performed automate information extraction from unstructured clinical pathology reports. The International Classification of Diseases for Oncology (ICD-O-3) topographical codes were employed for information extraction from 942 deidentified pathology reports that matched to 12 ICD-O-3 topography codes corresponding to 7 breast and 5 lung primary sites. Two cancer pathology report classification tasks demonstrated that HANs could effectively capture the primary information regarding a patient&rsquo;s tumor type, grade, and location from unstructured text.</p>
+
+<p>Brown and S&ouml;nksen (<A HREF="#refB">2000</A>) used a semantic terminological model for clinical findings and measured the strength of agreement between the concepts and records retrieved from a computerized patient database of 106,000 patient problem record entries containing 2,625 unique concepts. The performance of the model was compared with the semantic, free-text, ICD-10, and hierarchic data retrieval against a gold standard in response to a battery of 47 clinical questions. The use of a semantic terminological model in this test scenario provided an effective framework for representing clinical finding concepts and their relationships, which improved information retrieval from a patient database in response to clinically relevant questions.</p>
+
+<p>Increasing use of EHR provides a new way to improve care for patients with chronic pain and other conditions. Tian, Zlateva and Anderson (<A HREF="#refT">2013</A>) analyzed data from the eClinicalWorks EHR system showed that patients' demographics, clinic utilization, patient-reported pain scores, opioid prescription records, diagnostic codes, laboratory results, and referrals played an important role in determining an accurate and reliable method for identifying patients with chronic pain. The ICD codes from patient encounter diagnoses and problem list entries were used to develop an algorithm to accurately identify chronic pain. By developing the algorithm using critical data elements such as ICD diagnosis and procedure codes from EHR, this study enhanced the capability to identify chronic pain in order to address this public health challenge. Another study by Perotte et al. (<A HREF="#refP">2014</A>) presented an automated diagnosis coding model and novel evaluation metrics based on the discharge summaries from the publicly available Multiparameter Intelligent Monitoring in Intensive Care II (MIMIC II) repository. It reflected the distances among gold-standard and predicted codes and their locations in the ICD-9 tree.</p>
+
+<p>Frequent pattern mining of EHR data is critical to identifying potential associations and correlations in EHR data that researchers may not consider or that may have otherwise gone unnoticed. Using a case study regarding characterizing pediatric asthma, Campbell, Bass and Masino (<A HREF="#refC">2020</A>) introduced a temporal condition pattern mining methodology to address the sparse nature of coded condition concept utilization in EHR data after analyzing a large and complex EHR dataset for temporal condition patterns. The SPADE (Sequential Pattern Discovery using Equivalence classes) algorithm was applied to two datasets: one dataset with diagnoses coded using ICD concepts, and another dataset with the ICD codes mapped to their corresponding expanded diagnostic clusters. The analysis revealed strong associations between asthma and several comorbidities and temporal condition patterns, which can be used as hypotheses to explore causality in future pediatric asthma research. The methodology can be applied to identifying temporal patterns in EHR data to investigate conditions and research objectives in numerous contexts outside pediatric asthma.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="8.2"></a>
+<h4 itemprop="articleSection">8.2 Health and clinical data analysis</h4>
+
+<p>Health data are needed to measure performance, improve program decisions, and increase accountability, inform health system financing and resource allocation, and evidence-based practice. Health data are also used in guidelines and decision support, monitoring of health outcomes and access to services, and the assessment of the health of individuals and populations (<A HREF="#refW">World Health Organization 2021d</A>). ICD in health and clinical data analysis are reported in a wide range of informatics discoveries. These studies embrace health data mining with ICD codes in certain types of clinical population or disease cases, diverse drug events, specific epidemics, emerging patterns of inequity, phenotyping performance of EHR components, diagnosis code evaluation, usage of ICD codes, alternative privacy protection, etc. In research by Wei et al. (<A HREF="#refW">2016</A>), the phenotyping performance of three major EHR components (ICD diagnosis codes, primary notes, and specific medications) was evaluated using de-identified Vanderbilt EHR data with ten diseases: atrial fibrillation, Alzheimer&rsquo;s disease, breast cancer, gout, human immunodeficiency virus infection, multiple sclerosis, Parkinson&rsquo;s disease, rheumatoid arthritis, and types 1 and 2 diabetes mellitus. For each disease, patients were classified into seven categories in line with the presence of evidence in diagnosis codes, primary notes, and specific medications. Review results were used to estimate the positive predictive value (PPV), sensitivity, and F-score for each EHR component alone and in combination with one another. It was found that multiple EHR components provided a more consistent and higher performance than a single EHR constituent for the selected phenotypes.</p>
+
+<p>Since ICD codes are important components of national health data sources and EHR systems, evaluation, transformation, and usability of ICD coded data have been documented based on substantial data analyses and experiments. Many research projects have been reported while as many specific articles demonstrate how the data are used.  Boslett et al. (<A HREF="#refB">2019</A>) performed a secondary analysis of the 2014&ndash;2016 Multiple Cause of Death data from the CDC. The team combined various national data sources (mortality, demographic, economic, and geographic) in a multi-method analysis of missing drug classification in the overdose mortality records (as defined using ICD-10 code <CODE>T50.9</CODE> on death certificates). Because the mortality data is a key data source used in measuring the scale of the opioid epidemic, it is indispensable to understand the individual and community inequities underlying the missing data on specific drug involvements. The findings from analyzing opioid-related data with ICD codes demonstrated that knowledge of these inequities could enhance understanding of the opioid crisis and inform data-driven interventions and policies to support public health and epidemiological efforts (<A HREF="#refB">Boslett et al. 2019</A>).  An evaluation study by Wiley et al. (<A HREF="#refW">2013</A>) concentrated on the validity, usage, and potential research applications for ICD tobacco codes in clinical populations using data on cancer cases and cancer-free controls from Vanderbilt&rsquo;s biorepository, BioVU. The utility of ICD-9 tobacco use codes was evaluated to identify ever-smokers in general and high smoking prevalence (lung cancer) clinic populations. The potential biases in documentation were assessed while a temporal analysis relating transitions between smoking codes to smoking cessation attempts was performed. The study team examined the suitability of these codes for use in genetic association analyses and found that ICD-9 tobacco use codes could identify smokers in a general clinic population, there was little evidence of documentation bias, and frequency of code transitions between &lsquo;current&rsquo; and &lsquo;former&rsquo; tobacco use was significantly correlated with initial success at smoking cessation. Furthermore, these ICD codes were suitable for adjustment of smoking status in genetic studies utilizing EHR with some limitations (<A HREF="#refW">Wiley et al. 2013</A>). More ICD codes were involved in adverse drug event data mining. For example, Hohl et al. (<A HREF="#refH">2014</A>) used a comprehensive set of ICD-10 codes along with coding algorithms to identify adverse drug events in administrative health data that was linked with medication dispensing and represented a rich source of health information. Adverse drug event data from this source offered accessible and standardized population-level data over long periods of time, enabling analysis of time trends, prescribing patterns, and comparisons across healthcare settings.</p>
+
+<p>There is a significant interest in leveraging the electronic medical record (EMR) to conduct genome-wide association studies. A biorepository of DNA and plasma was created, and demographic data and laboratory values were extracted from the EMR. Medication use and smoking status were established by natural language processing of clinical notes. Other risk factors and comorbidities were ascertained based on ICD-9-CM codes, medication use, and laboratory data. This study demonstrates the use of the EMR to ascertain phenocopies, phenotype heterogeneity, and relevant covariates to enable genome-wide association studies of peripheral arterial disease. Biorepositories linked to EMR may provide a relatively efficient means of conducting GWAS (<A HREF="#refK">Kullo et al. 2010</A>). On the other hand, the issue of participants' privacy was brought up by a study focused on the disclosure of diagnosis codes. The researchers examined whether released data could be linked with identified clinical records that were accessible via various resources to jeopardize patients' anonymity or the ability of popular privacy protection methodologies to prevent such an attack. By experimentally evaluating the re-identification risk of a de-identified sample of Vanderbilt's patient records involved in a genome-wide association study and measuring the level of protection from re-identification and data utility provided by suppression and generalization, the study (<A HREF="#refL">Loukides, Denny and Malin 2010</A>) concluded that popular privacy protection methods were inadequate to deliver a sufficiently protected and useful result when sharing data derived from complex clinical systems. The development of alternative privacy protection models was thus required.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="8.3"></a>
+
+<h4 itemprop="articleSection">8.3 Enhancing quality, interoperability, comparability, and the reusability</h4>
+
+<p>The nature of everyday healthcare has been leading various KOS vocabularies to be developed and used for different processes, including various KOSs in the WHO-FIC network, the multilingual versions of ICD, the national clinical modifications, the correlated ICD derivations, and other common health KOSs (refer to <A HREF="#7">Section 7</A> and <A HREF="#app1">Appendix</A>). Research and development related to this area commonly involve multiple KOSs, as demonstrated in the following sub-sections.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="8.3.1"></a>
+<h5 itemprop="articleSection">8.3.1 Comparative studies involving ICD and multiple health KOSs</h5>
+
+<p>Comparing different KOSs has been a common method used by researchers. In an evaluation of clinical coding schemes involving medical as well as ample nursing terminology, James Campbell and the research team (<A HREF="#refC">Campbell et al. 1997</A>) considered criteria of completeness, taxonomy, mapping, definitions, and clarity. The authors assembled 1,929 source concept records from a variety of clinical information taken from four medical centers across the United States. Classification system features were compared based on completeness, clarity (coding duplication rate), mapping (fraction of candidate concepts with administrative mapping), compositional, synonyms, attributes and uncertainty, taxonomy (# of first-degree relatives per concept), meaningless identifiers, unique identifiers, definitions (fraction of concepts with definitions provided), language independence, and syntax/grammar. The rich data collected and analyzed points out important priorities for classification scheme developers to pursue in order to improve their products.</p>
+
+<p><i>ISO 1828:2012 Health informatics - Categorial structure for terminological systems of surgical procedures</i> specifies the minimal characteristics of a categorial structure for terminological systems of surgical procedures and the minimal domain constraints. One goal of the standard is to support comparisons between existing classification systems of surgical procedures. It aims to support interoperability, comparability, and the exchange of meaningful information on surgical procedures independently of language, insofar as the significant differences are specified by the system. It is intended to be used as an integrated part of computer-based applications and for electronic health care records (ISO 1828:2012). By comparing several existing national and international classification systems of surgical procedures with the CEN/ISO 1828 Categorial Structure, a collaborative research and development group (<A HREF="#refR">Rodrigues et al. 2011</A>) reported the findings and pointed out that such a comparison of the different existing classification systems based on this ontology framework presented a step towards increased interoperability between biomedical terminologies through conformity to a minimum set of ontological requirements.</p>
+
+<p>In an evaluation of the International Classification of Health Interventions (ICHI), which is one of the reference classifications in the WHO-FIC network, in the coding of common surgical procedures, Fung et al. (<A HREF="#refF">2022</A>) identified the 300 most performed surgical procedures, as represented by their display names in an electronic health record and coded with multiple KOSs. The findings considered that post-coordination (modification of existing codes by adding other codes) could be an effective and efficient means of improving coverage. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="8.3.2"></a>
+<h5 itemprop="articleSection">8.3.2 Making health KOSs sharable and reusable</h5>
+
+<p>In an effort to identify the next set of goals for the development of standards, making controlled vocabularies sharable and reusable, Cimino (<A HREF="#refC">1998</A>) generated a list of the thoughts regarding additional characteristics needed according to the common themes found in the publications by medical informatics researchers. The categories include vocabulary content, concept orientation, concept permanence, non-semantic concept identifiers, poly-hierarchy, formal definitions, rejection of &ldquo;not elsewhere classified&rdquo; terms, multiple granularities, multiple consistent views, context representation, graceful evolution, and recognized redundancy. </p>
+
+<p>Researchers have been discussing the need for a common or shared ontology when handling the KOSs that have differences not only in contents but also in the fundamental structures, such as a classification (ICD) and a clinical reference terminology (SNOMED CT), to ensure seamless re-use and semantic interoperability (<A HREF="#refR">Rodrigues et al. 2013</A>). ICD and SNOMED CT are the two most important and widely used KOSs to normalize the diagnostic process and health problems list in EHR (refer to Figure 7 in <A HREF="#7.1">Section 7.1</A>). The differences are seen in their nature of term coverage (e.g., over 100,000 concepts in SNOMED cover the same area as ICD-10 with the most used terms, according to <A HREF="#refC">Chavis 2013</A>), and compositional nature, such as for hierarchical and associative relationships (<A HREF="#refC">Chute et al. 1996</A>; <A HREF="#refC">Campbell et al. 1997</A>). As Rodrigues et al. (<A HREF="#refR">2015</A>) advised, due to fundamental differences in design and editorial policies, semantic &rarr; <a href="interoperability">interoperability</a> between them requires combining two different approaches: (1) axiom-based, which states logically what is universally true using an ontology language such as OWL, and (2) rule-based, expressed as queries on the axiom-based knowledge.</p>
+
+<p>The nature of multiple KOSs has made the medical terminologies and mappings across them crucial pre-requisites for achieving interoperable eHealth applications (<A HREF="#refH">Hussain et al. 2014</A>). The mapping processes and focuses can vary, as categorized by Iyer and Giguere (<A HREF="#refI">1995</A>), involving: exact matches, specific to general, general to specific, many to one, cyclic mapping strategies, no matches, and specific and broad class mapping. In addition to the processes, a framework was designed by a cross-country team (<A HREF="#refH">Hussain et al. 2014</A>) to enable a more collaborative semantic landscape with providers and consumers of terminology mappings, built upon existing terminology mappings to (i) infer new mappings for different computable semantic interoperability (CSI) use cases, (ii) present provenance of the mappings together with the context information &mdash; an important problem for term mapping utilization, and (iii) perform mapping validation in order to show that inferred mappings can be erroneous.</p>
+
+<p>Based on their prior work, a group of 13 co-authors documented 12 case studies of terminology mappings. In addition to the mappings of different ICD versions, ICD was mapped to others, such as Orpha-codes, SNOMED CT, ICHI, and ICF. Their prior work on mapping these KOSs addressing specific vocabularies, health areas, issues, and tool development has been published in <i>Journal of the American Medical Informatics Association</i>, <i>Journal of Biomedical Informatics</i>, <i>International Journal of Medical Informatics</i>, and the series <i>Studies in Health Technology and Informatics</i>. Their solid studies and experiments led to a technical document released by the WHO Classifications and Terminologies team entitled WHO-FIC Classifications and Terminology Mapping - Principles and Best Practice (<A HREF="#refW">2021</A>). These best practices are grounded in the case study authors' experiences and supplement those top-down principles enumerated in works such as <i>ISO/TR 12300:2014 International Organization for Standardization: Health Informatics  - Principles of Mapping between Terminological Systems</i>.</p>
+
+<p>To address interoperability challenges in heterogeneous data sources, a collaborative study by Ethier et al. (<A HREF="#refE">2013</A>) developed a framework based on the general information model (GIM) ontology, to unify structural models and terminologies together with relevant mapping sets. The modeling infrastructure resides entirely within a terminology server, enabling unification of structural and semantic modeling and operations within this server. Several types of models are present: 1. The GIM (general information model), 2. Models describing each data source (DSM), 3. Mapping sets between the sources and the GIM &mdash; one set per source, 4. Terminologies used to code the data elements (e.g., ICD-10 codes), and 5. Mappings between terminologies. The unified ontology-based knowledge framework has been tested in the context of the EU Framework Program 7 TRANSFoRm project, where it was used to achieve data integration in a retrospective diabetes cohort study. It is obvious that systems using the architecture can rely solely on GIM concepts, abstracting over both the structure and coding specificities of the data sources to facilitate interoperability between heterogeneous sources. </p>
+
+<p>ICD version transition and code conversion is another noticeable theme. ICD&rsquo;s revisions directly impact all health workflows, since any changing processes related to controlled vocabularies must be reconciled with historical patient information, which is coded using those vocabularies and stored in clinical databases. These changes observed in ICD and other controlled vocabularies include adding terms, deleting terms, changing terms, and other special situations such as obsolescence, discovering redundancy, and pre-coordination (<A HREF="#refC">Cimino and Clayton 1994</A>). The effects of vocabulary mapping have been studied from a health informatics perspective, for example, for conditions on phenotype cohorts (<A HREF="#refH">Hripcsak et al. 2018</A>). On the other hand, Nadkarni and Darer (<A HREF="#refN">2010</A>) pointed out that strategies to deal with legacy ICD data must also address the issue of codes created by non-taxonomist users.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="9"></a>
+<h3 itemprop="articleSection">9. Conclusion</h3>
+
+<p>Since many communities, professions, and subject disciplines have developed different ways to classify things and organize knowledge, the high-level effort of promoting a unified classification system such as ICD is critical, as it provides a common language for reporting and monitoring diseases and has been used worldwide for morbidity and mortality statistics. Furthermore, by encoding the diseases and representing the concepts in a standard way, ICD greatly enhances the constancy of coding across languages, cultures, and healthcare systems around the world. The timely actions and guidelines provided by ICD during the COVID-19 pandemic have been followed by other standard health KOSs all over the world (<A HREF="#refZ">Zeng et al. 2020</A>). </p>
+
+<p>The focus of this paper is to present ICD as an important KOS, demonstrated by its wide usage, adaption, extension, revision, translation, and the direct implementations of its updates. The ICD has been developed as a practical, rather than a purely theoretical classification (<A HREF="#refW">World Health Organization 2022a</A>, Sec. 1.2.1). The generation and modification of the ICD revisions has presented significant changes, as visible from the examples presented in this paper, in the current versions ICD-10 and ICD-11. Another noteworthy practice that is somewhat different from normal classifications is its notation systems, which contain different versions for both semantic and ordinal values that could directly impact the functionality, consistency, and accuracy of the administrative data along with its interoperability with other KOSs (<A HREF="#refG">Gnoli 2018</A>; <A HREF="#refI">Iyer 1995</A>). The newest edition, ICD-11, represented multiple innovative approaches to serving semantic interoperability of individual data and reusability of recorded data, in order to allow the systematic recording, analysis, interpretation, and comparison of mortality and morbidity data collected in different countries or regions and at different times (<A HREF="#refW">World Health Organization 2022a</A>, Sec. 1.1).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+</span><!-- articleBody ends -->
+
+<a name="ack"></a>
+<h3>Acknowledgments</h3>
+
+<p>The authors would like to thank the editor-in-chief, <A HREF="authors#hj">Prof. Birger Hj&oslash;rland</A>, and the two anonymous referees for providing their valuable feedback, including detailed, knowledgeable, and fruitful suggestions for improving the original manuscript.</p>
+
+<p></p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="end"></a>
+<h3>Endnotes</h3>
+
+<a name="e1"></a>
+<p><strong>1.</strong> In the full article &ldquo;Florence Nightingale and the early origins of evidence-based nursing&rdquo;, Lynn McDonald (<A HREF="#refM">2001</A>) indicated that &ldquo;McDonald Nightingale returned from the Crimean War with a conviction that the desperate loss of life she witnessed should never occur again. She pressed for the creation of a royal commission to investigate the causes of the high mortality (eg, for every 1 soldier that died from his wounds, 7 died from disease). She worked with a team of &ldquo;sanitary experts,&rdquo; including William Farr, who was Britain's leading social statistician at the time.&rdquo; (<A CLASS="menu" HREF="http://dx.doi.org/10.1136/ebn.4.3.68">http://dx.doi.org/10.1136/ebn.4.3.68</A>)</p>
+
+<a name="e2"></a>
+<p><strong>2.</strong> Classification of diseases by anatomical site is common, and, for example, reflected in medical specialties (such cardiologists, dermatologists, neurologists, ophthalmologists etc.).  But this does not mean that classification of diseases by anatomical site is necessarily the optional classification.  Berman (<A HREF="#refB">2005</A>, 2), for example, wrote: &ldquo;Pathologists typically refer to anatomic tumor classifications when they are more accurately referring to lists of primary tumors that are known to occur at a particular location [references here omitted]. A list of tumors occurring at a body site is not a classification because it includes tumors that are biologically, clinically, and histologically unrelated. Although often referred to as World Health Organization (WHO) "classifications", the WHO accurately titles their organ-based lists of neoplasms as "Histologic Typings" for the different organs&rdquo;.</p>
+
+<a name="e3"></a>
+<p><strong>3.</strong> Wolfbane Cybernetic Ltd (<A CLASS="menu" HREF="http://www.wolfbane.com/">http://www.wolfbane.com/</A>) provides a set of archives on its website, including the archive for ICD, from ICD Revision 1 to 10, based on its own digitized products. It is used in this article for early ICD revision&rsquo;s resources.</p>
+
+<a name="e4"></a>
+<p><strong>4.</strong> The World Health Organization (<A HREF="#refW">2022a</A>) <i>ICD-11 Reference Guide</i> Section 2.2 defines &ldquo;[t]he Tabular list is an alphanumeric listing of diseases and disease groups, inclusion and exclusion notes, and some coding rules&rdquo;. The Glossary of <i>Diagnosis Coding: Using the ICD-10-CM</i>, by Centers for Medicare &amp; Medicaid Services (CMS), defines &ldquo;Tabular List of Diseases and Injuries&rdquo; as: &ldquo;[a] structured list of codes divided into chapters based on body system or condition&rdquo;: <A CLASS="menu" HREF="https://www.cms.gov/Outreach-and-Education/MLN/WBT/MLN6447308-ICD-10-CM/icd10cm/misc/glossary/">https://www.cms.gov/Outreach-and-Education/MLN/WBT/MLN6447308-ICD-10-CM/icd10cm/misc/glossary/</A>.</p>
+
+<a name="e5"></a>
+<p><strong>5.</strong> For Aristotelian framework, consult chapter 2 in a book: Richards, Richard A. 2016. <i>Biological Classification: A Philosophical Introduction</i>. Cambridge: Cambridge University Press. ISBN 978-1107687844.  </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="ref"></a>
+<h3>References</h3>
+
+<span itemprop="citation">
+
+<a name="refA"></a>
+
+<p><i>ANSI/NISO Z39.19-2005 (R2010) Guidelines for the Construction, Format, and Management of Monolingual Controlled Vocabularies</i>. Baltimore, Maryland, USA: National Information Standards Organization.</p>
+
+<a name="refB"></a>
+
+<p>Ben-Ezra, Menachem, Wai Kai Hou, and Robin Goodwin. 2021. &ldquo;Investigating the Relationship between COVID-19-Related and Ristress and ICD-11 Adjustment Disorder: Two Cross-Sectional Studies&rdquo;. <i>BJPsych Open</i> 7, no.1: 1-7. doi: 10.1192/bjo.2020.158</p>
+
+<p>Berman, Jules. 2005. &ldquo;Modern Classification of Neoplasms: Reconciling Differences between Morphologic and Molecular Approaches&rdquo;. <i>BMC Cancer</i> 5:100. doi: 10.1186/1471-2407-5-100.</p>
+
+<p>Berners-Lee, Tim, Roy Fielding, and Larry Masinter. 1998. &ldquo;Uniform Resource Identifiers (URI): Generic Syntax&rdquo;. Retrieved from: <A CLASS="menu" HREF="https://datatracker.ietf.org/doc/html/rfc3986">https://datatracker.ietf.org/doc/html/rfc3986</A>.</p>
+
+<p>Bhatt, Ankeet S., Erin E. McElrath, Brian L. Claggett, Deepak L. Bhatt, Dale S. Adler, Scott D. Solomon, and Muthiah Vaduganathan. 2021. &ldquo;Accuracy of ICD-10 Diagnostic Codes to Identify COVID-19 Among Hospitalized Patients&rdquo;. <i>Journal of General Internal Medicine</i> 36, no. 8: 2532-5.</p>
+
+<p>Blosnich, John R., John Cashy, Adam J. Gordon, Jillian C. Shipherd, Michael R. Kauth, George R. Brown, and Michael J. Fine. 2018. &ldquo;Using Clinician Text Notes in Electronic Medical Record Data to Validate Transgender-Related Diagnosis Codes&rdquo;. <i>Journal of the American Medical Informatics Association</i> 25, no. 7: 905-8.</p>
+
+<p>Boslett, Andrew J., Alina Denham, Elaine L. Hill, and Meredith CB Adams. 2019. &ldquo;Unclassified Drug Overdose Deaths in the Opioid Crisis: Emerging Patterns of Inequity&rdquo;. <i>Journal of the American Medical Informatics Association</i> 26, nos. 8-9: 767-7.</p>
+
+<p>Bowker, Geoffrey and Susan Leigh Star. 1999. <i>Sorting Things Out: Classification and Its Consequences</i>. Cambridge, Massachusetts: MIT Press.</p>
+
+<p>Brown, Philip JB and Peter S&ouml;nksen. 2000. &ldquo;Evaluation of the Quality of Information Retrieval of Clinical Findings from a Computerized Patient Database Using a Semantic Terminological Model&rdquo;. <i>Journal of the American Medical Informatics Association</i> 7, no. 4: 392-403.</p>
+
+<a name="refC"></a>
+
+<p>Campbell, Elizabeth A., Ellen J. Bass, and Aaron J. Masino. 2020. &ldquo;Temporal Condition Pattern Mining in Large, Sparse Electronic Health Record Data: A Case Study in Characterizing Pediatric Asthma&rdquo;. <i>Journal of the American Medical Informatics Association</i> 27, no. 4: 558-66.</p>
+
+<p>Campbell, James R., Paul Carpenter, Charles Sneiderman, Simon Cohn, Christopher G. Chute, and Judith Warren. 1997. &ldquo;Phase II Evaluation of Clinical Coding Schemes: Completeness, Taxonomy, Mapping, Definitions, and Clarity&rdquo;. <i>Journal of the American Medical Informatics Association</i> 4, no. 3: 238-51.</p>
+
+<p>Cervone, H. Frank. 2018. &ldquo;An Overview of ICD Medical Classification for the Information Professional&rdquo;. <i>Digital Library Perspectives </i>34, no. 1: 2-8.</p>
+
+<p>Chan, Lois Mai, and Athena Salaba. 2016. <i>Cataloging and Classification: An Introduction </i>(Fourth ed.). Rowman &amp; Littlefield Publishers.</p>
+
+<p>Chute, Christopher G., Simon P. Cohn, Keith E. Campbell, Diane E. Oliver, James R. Campbell, and Computer-Based Patient Record Institute's Work Group on Codes &amp; Structures. 1996. &ldquo;The Content Coverage of Clinical Classifications&rdquo;. <i>Journal of the American Medical Informatics Association</i> 3, no. 3: 224-33.</p>
+
+<p>Cimino, James J. 1998. &ldquo;Desiderata for Controlled Medical Vocabularies in the Twenty-First Century&rdquo;. <i>Methods of information in medicine</i> 37, nos. 04/05: 394-403.</p>
+
+<p>Cimino, James J. and Paul D. Clayton. 1994. &ldquo;Coping with Changing Controlled Vocabularies&rdquo;. In <i>Proceedings of the Annual Symposium on Computer Application in Medical Care, 1994</i>: 135-9.</p>
+
+<p>CMS Medicare Learning Network. 2009. &ldquo;General Equivalency Mappings &ndash; ICD-9-CM to and from ICD-10-CM and ICD-10-PCS&rdquo;. <A CLASS="menu" HREF="https://www.cms.gov/medicare/coding/icd10/downloads/icd-10_gem_fact_sheet.pdf">https://www.cms.gov/medicare/coding/icd10/downloads/icd-10_gem_fact_sheet.pdf</A>.</p>
+
+<p>Comaromi, John Phillip. 1976. <i>The Eighteen Editions of the Dewey Decimal Classification</i>. Albany, N.Y: Forest Press Division, Lake Placid Education Foundation.</p>
+
+<a name="refD"></a>
+
+<p>Denaxas, Spiros, Arturo Gonzalez-Izquierdo, Kenan Direk, Natalie K. Fitzpatrick, Ghazaleh Fatemifar, Amitava Banerjee, Richard J.B. Dobson, Laurence J. Howe, Valerie Kuan, R. Tom Lumbers, Laura Pasea, Riyaz S. Patel, Anoop D. Shah, Aroon D. Hingorani, Cathie Sudlow, and Harry Hemingway. 2019. &ldquo;UK Phenomics Platform for Developing and Validating Electronic Health Record Phenotypes: CALIBER&rdquo;. <i>Journal of the American Medical Informatics Association</i> 26, no. 12: 1545-59.</p>
+
+<p>Dewey Services. [2017]. &ldquo;A legacy of helping libraries.&rdquo; OCLC. Retrieved from: <A CLASS="menu" HREF="https://www.oclc.org/en/dewey/resources/timeline.html">https://www.oclc.org/en/dewey/resources/timeline.html</A>. </p>
+
+<p>DiChiara, Jacqueline. 2015. &ldquo;ICD-1 to ICD-11 Timeline Highlights Healthcare&rsquo;s Evolution&rdquo;. In: Xtelligent Healthcare Media<i> Policy &amp; Regulation News,</i> August 11, 2015. Retrieved from: <A CLASS="menu" HREF="https://revcycleintelligence.com/news/icd-1-to-icd-11-timeline-highlights-healthcares-evolution">https://revcycleintelligence.com/news/...</A></p>
+
+<p>Dr&ouml;sler, Saskia E., Stefanie Weber, and Christopher G. Chute. 2021. &ldquo;ICD-11 Extension Codes Support Detailed Clinical Abstraction and Comprehensive Classification&rdquo;. <i>BMC Medical Informatics and Decision Making</i> 21, no. 6: 1-9.</p>
+
+<a name="refE"></a>
+
+<p>Eisma, Maarten C., Aerjen Tamminga, Geert E. Smid, and Paul A. Boelen. 2021. &ldquo;Acute Grief after Deaths due to COVID-19, Natural Causes and Unnatural Causes: An Empirical Comparison&rdquo;. <i>Journal of Affective Disorders</i> 278: 54-56.</p>
+
+<p>Encyclopedia.com. 2019. &ldquo;Disease, Concepts and Classification of.&rdquo; <i>Encyclopedia of Population</i>.  Retrieved from: <A CLASS="menu" HREF="https://www.encyclopedia.com/social-sciences/encyclopedias-almanacs-transcripts-and-maps/disease-concepts-and-classification">https://www.encyclopedia.com/social-sciences/...</A>.  </p>
+
+<p>Ethier, Jean-Fran&ccedil;ois, Olivier Dameron, Vasa Curcin, Mark M. McGilchrist, Robert A. Verheij, Theodoros N. Arvanitis, Adel Taweel, Brendan C. Delaney, and Anita Burgun. 2013. &ldquo;A Unified Structural/Terminological Interoperability Framework based on LexEVS: Application to TRANSFoRm&rdquo;. <i>Journal of the American Medical Informatics Association</i> 20, no. 5: 986-94.</p>
+
+<p>Eyler, John M. 1979. <i>Victorian Social Medicine: The Ideas and Methods of William Farr</i>. Baltimore: Johns Hopkins University Press.</p>
+
+<a name="refF"></a>
+
+<p>Fortune, Nicola, Richard Madden, and Ann-Helene Almborg. 2018. &ldquo;Use of a New International Classification of Health Interventions for Capturing Information on Health Interventions Relevant to People with Disabilities&rdquo;. <i>International Journal of Environmental Research and Public Health</i> 15, no. 1: 145. doi:10.3390/ijerph15010145. </p>
+
+<p>Fung, Kin Wah, Julia Xu, Filip Ameye, Lisa Burelle, and Janice MacNeil. 2022. &ldquo;Evaluation of the International Classification of Health Interventions (ICHI) in the Coding of Common Surgical Procedures&rdquo;. <i>Journal of the American Medical Informatics Association</i> 29, no. 1: 43-51.</p>
+
+<a name="refG"></a>
+
+<p>Gao, Shang, Michael T. Young, John X. Qiu, Hong-Jun Yoon, James B. Christian, Paul A. Fearn, Georgia D. Tourassi, and Arvind Ramanthan. 2018. &ldquo;Hierarchical Attention Networks for Information Extraction from Cancer Pathology Reports&rdquo;. <i>Journal of the American Medical Informatics Association</i> 25, no. 3: 321-30.</p>
+
+<p>Gerbier-Colomban, Solweig, V&eacute;ronique Potinet-Pagliaroli, and Marie-H&eacute;l&egrave;ne Metzger. 2014. &ldquo;Can Epidemic Detection Systems at the Hospital Level Complement Regional Surveillance Networks: Case Study with the Influenza Epidemic?&rdquo; <i>BMC Infectious Diseases</i> 14, no. 1: 1-10.</p>
+
+<p>Gnoli, Claudio. 2018. &ldquo;Notation&rdquo;. <i>Knowledge Organization</i> 45, no. 8: 667-684. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli, <A CLASS="menu" HREF="notation">https://www.isko.org/cyclo/notation</A>.</p>
+
+<p>Grove, John and Robert Jakob. 2018. &ldquo;ICD 11th Revision&rdquo;. Member State Information Session, Geneva, 14 May 2018, World Health Organization. <A CLASS="menu" HREF="https://dxrevisionwatch.files.wordpress.com/2018/05/icd11.pdf">https://dxrevisionwatch.files.wordpress.com/2018/05/icd11.pdf</A>.</p>
+
+<a name="refH"></a>
+
+<p>Harrison, James E., Stefanie Weber, Robert Jakob, and Christopher G. Chute. 2021. &ldquo;ICD-11: An International Classification of Diseases for the Twenty-First Century&rdquo;. <i>BMC Medical Informatics and Decision Making</i> 21, no. 6: 1-10.</p>
+
+<p>Hj&oslash;rland, Birger. 2016. &ldquo;Knowledge Organization.&rdquo; <i>Knowledge Organization</i> 43(6): 475-84. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli, <A CLASS="menu" HREF="https://www.isko.org/cyclo/knowledge_organization">https://www.isko.org/cyclo/knowledge_organization</A>.</p>
+
+<p>Hj&oslash;rland, Birger. 2017. &ldquo;Classification.&rdquo; <i>Knowledge Organization</i> 44, no. 2: 97-128. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli, <A CLASS="menu" HREF="https://www.isko.org/cyclo/classification">classification</A>.</p>
+
+<p>Hj&oslash;rland, Birger. 2018. &ldquo;Indexing: Concepts and Theory.&rdquo; <i>Knowledge Organization</i> 45, no. 7: 609-39. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli, <A CLASS="menu" HREF="https://www.isko.org/cyclo/indexing">indexing</A>.</p>
+
+<p>HL7 International. 2007-2022. &ldquo;HL7 Version 2 Product Suite.&rdquo; Retrieved from: <A CLASS="menu" HREF="https://www.hl7.org/implement/standards/product_brief.cfm?product_id=185">https://www.hl7.org/implement/standards/product_brief.cfm?product_id=185</A>.</p>
+
+<p>Hohl, Corinne M., Andrei Karpov, Lisa Reddekopp, and J&uuml;rgen Stausberg. 2014. &ldquo;ICD-10 Codes Used to Identify Adverse Drug Events in Administrative Data: A Systematic Review&rdquo;. <i>Journal of the American Medical Informatics Association</i> 21, no. 3: 547-57.</p>
+
+<p>Hohnloser, J. H., and H. Soltanian. 1994. &ldquo;Positive Efficiency Findings Using Computer Assisted ICD-Encoding: 3.5 Years of Experience with the Computerized Patient Record System PADS (Patient Archiving &amp; Documentation System)&rdquo;. In <i>Proceedings of the Annual Symposium on Computer Application in Medical Care</i>, <i>1994</i>:  965-6.</p>
+
+<p>Horsky, Jan, Elizabeth A. Drucker, and Harley Z. Ramelson. 2017. &ldquo;Accuracy and Completeness of Clinical Coding using ICD-10 for Ambulatory Visits&rdquo;. In <i>AMIA Annual Symposium Proceedings</i>, 2017:912-20. American Medical Informatics Association.</p>
+
+<p>Hripcsak, George, Matthew E. Levine, Ning Shang, and Patrick B. Ryan. 2018. &ldquo;Effect of Vocabulary Mapping for Conditions on Phenotype Cohorts&rdquo;. <i>Journal of the American Medical Informatics Association</i> 25, no. 12:1618-25.</p>
+
+<p>Hunter, Eric J. 2009. <i>Classification Made Simple: An Introduction to Knowledge Organisation and Information Retrieval</i>. 3rd Ed. Farnham, Surrey, UK: Ashgate Publishing.</p>
+
+<p>Hussain, Sajjad, Hong Sun, Anil Sinaci, Gokce Banu Laleci Erturkmen, Charles Mead, Alasdair JG Gray, Deborah L. McGuinness, Eric Prud'Hommeaux, Christel Daniel, and Kerstin Forsberg. 2014. &ldquo;A Framework for Evaluating and Utilizing Medical Terminology Mappings&rdquo;. <i>Studies in Health Technology and Informatics </i>205: 594-8.</p>
+
+<a name="refI"></a>
+
+<p>International Committee on Taxonomy of Viruses Coronaviridae Study Group. 2020. &ldquo;The Species Severe Acute Respiratory Syndrome-related Coronavirus: classifying 2019-nCoV and naming it SARS-CoV-2.&rdquo; <i>Nature Microbiology</i> 5: 536&ndash;544. <A CLASS="menu" HREF="https://doi.org/10.1038/s41564-020-0695-z">https://doi.org/10.1038/s41564-020-0695-z</A>.</p>
+
+<p><i>ISO 17115:2020 Health Informatics &mdash; Representation of Categorial Structures of Terminology (CatStructure)</i>. ISO/TC 215 Health informatics.</p>
+
+<p><i>ISO 1828:2012 Health informatics - Categorial Structure for Terminological Systems of Surgical Procedures (ISO 1828:2012).  </i>ISO/TC 215 Health informatics.</p>
+
+<p><i>ISO/TR 12300:2014</i> <i>International Organization for Standardization. Health Informatics &mdash;Principles of Mapping between Terminological Systems</i>. ISO/TC 215 - Health informatics ISO/TC 215/WG 3 - Semantic Content.</p>
+
+<p>Iyer, Hemalata. 1995. <i>Classificatory Structures: Concepts, Relations and Representation</i>. Frankfurt am Main: Indeks Verlag.</p>
+
+<p>Iyer, Hemalata and Mark Giguere. 1995. &ldquo;Towards Designing an Expert System to Map Mathematics Classificatory Structures&rdquo;. <i>Knowledge Organization</i> 22, nos. 3/4: 141-7.</p>
+
+<a name="refJ"></a>
+
+<p>Jett&eacute;, Nathalie, Hude Quan, Brenda Hemmelgarn, Saskia Dr&ouml;sler, Christina Maass, Lori Moskal, Wansa Paoin, Vijaya Sundararajan, Song Gao, Robert Jakob, Bedihran &Uuml;st&uuml;n, William A. Ghali, and the IMECCHI Investigators. 2010. &ldquo;The Development, Evolution, and Modifications of ICD-10: Challenges to the International Comparability of Morbidity Data.&rdquo; <i>Medical Care</i> 48, no. 12: 1105-10.</p>
+
+<a name="refK"></a>
+
+<p>Keck, James W., John T. Redd, James E. Cheek, Larry J. Layne, Amy V. Groom, Sassa Kitka, Michael G. Bruce, Anil Suryaprasad, Nancy L. Amerson, Theresa Cullen, Ralph T. Bryan, and Thomas W. Hennessy. 2014. &ldquo;Influenza Surveillance Using Electronic Health Records in the American Indian and Alaska Native Population&rdquo;. <i>Journal of the American Medical Informatics Association</i> 21, no. 1: 132-8.</p>
+
+<p>Killikelly, C., G. E. Smid, B. Wagner, and P. A. Boelen. 2021. &ldquo;Responding to the New International Classification of Diseases-11 Prolonged Grief Disorder During the COVID-19 Pandemic: A New Bereavement Network and Three-Tiered Model of Care&rdquo;. <i>Public Health</i> 191: 85-90.</p>
+
+<p>Knibbs, George H. 1929. &ldquo;The International Classification of Disease and Causes of Death and its Revision&rdquo;. <i>Medical Journal of Australia</i> 1: 2-12.</p>
+
+<p>Kronk, Clair A. and Judith W. Dexheimer. 2020. &ldquo;Development of the Gender, Sex, and Sexual Orientation Ontology: Evaluation and Workflow&rdquo;. <i>Journal of the American Medical Informatics Association</i> 27, no. 7: 1110-5.</p>
+
+<p>Kullo, Iftikhar J., Jin Fan, Jyotishman Pathak, Guergana K. Savova, Zeenat Ali, and Christopher G. Chute. 2010. &ldquo;Leveraging Informatics for Genetic Studies: Use of the Electronic Medical Record to Enable a Genome-Wide Association Study of Peripheral Arterial Disease&rdquo;. <i>Journal of the American Medical Informatics Association</i> 17, no. 5: 568-74.</p>
+
+<a name="refL"></a>
+
+<p>Lewes, FM M. 1988. &ldquo;Dr Marc d'Espine's Statistical Nosology&rdquo;. <i>Medical History</i> 32, no. 3: 301-3.</p>
+
+<p>Lilienfeld, David E. 2007. &ldquo;Celebration: William Farr (1807&ndash;1883)&mdash;An Appreciation on the 200th Anniversary of His Birth&rdquo;. <i>International Journal of Epidemiology</i> 36, no. 5: 985-7.</p>
+
+<p>Livingstone-Banks, Jonathan. 2018. &ldquo;The Case for a Meta-Nosological Investigation of Pragmatic Disease Definition and Classification&rdquo;. <i>Journal of Evaluation in Clinical Practice</i> 24, no. 5: 1013-8.</p>
+
+<p>Loukides, Grigorios, Joshua C. Denny, and Bradley Malin. 2010. &ldquo;The Disclosure of Diagnosis Codes can Breach Research Participants' Privacy&rdquo;. <i>Journal of the American Medical Informatics Association</i> 17, no. 3: 322-7.</p>
+
+<a name="refM"></a>
+
+<p>Madden, Richard, Catherine Sykes, and T Bedirhan Ustun. [2007].  &ldquo;World Health Organization Family of International Classifications: Definition, Scope and Purpose.&rdquo; Geneva: World Health Organization <A CLASS="menu" HREF="https://cdn.who.int/media/docs/default-source/classification/who-fic-
+network/familydocument2007.pdf">https://cdn.who.int/media/docs/default-source/classification/who-fic-
+network/familydocument2007.pdf</A>.</p>
+
+<p>Mahajan, Reena, Anne C. Moorman, Stephen J. Liu, Loralee Rupp, R. Monina Klevens, and Chronic Hepatitis Cohort Study (CHeCS) Investigators. 2013. &ldquo;Use of the International Classification of Diseases, 9th Revision, Coding in Identifying Chronic Hepatitis B Virus Infection in Health System Data: Implications for National Surveillance&rdquo;. <i>Journal of the American Medical Informatics Association</i> 20, no. 3: 441-5.</p>
+
+<p>Mamykina, Lena, David K. Vawdrey, Peter D. Stetson, Kai Zheng, and George Hripcsak. 2012. &ldquo;Clinical Documentation: Composition or Synthesis?&rdquo; <i>Journal of the American Medical Informatics Association</i> 19, no. 6: 1025-31.</p>
+
+<p>Manchaiah, Vinaya, De Wet Swanepoel, and Nicola Fortune. 2020. &ldquo;The International Classification of Health Interventions (ICHI) &ndash; A New Tool for Describing and Reporting Interventions in Audiology&rdquo;.  <i>International Journal of Audiology</i> 59, no. 6: 403-5.</p>
+
+<p>McDonald, Lynn. 2001. &ldquo;Florence Nightingale and the Early Origins of Evidence-Based Nursing&rdquo;. <i>Evidence-Based Nursing</i> 4, no. 3: 68-9.</p>
+
+<p>Mezzich, Juan. 2002. &ldquo;International Surveys on the Use of ICD-10 and Related Diagnostic Systems.&rdquo; <i>Psychopatholog</i>y 35, nos. 2-3: 72-5.</p>
+
+<p>Moore, Karen, James Black, Stacey Rowe, and Lucinda Franklin. 2011. &ldquo;Syndromic Surveillance for Influenza in Two Hospital Emergency Departments. Relationships between ICD-10 Codes and Notified Cases, Before and During a Pandemic&rdquo;. <i>BMC Public Health</i> 11, no. 1: 1-7.</p>
+
+<p>Moriyama, Iwao M, Ruth M. Loy, Alastair H. T. Robb-Smith, Harry M. Rosenberg, and Donna L. Hoyert. 2011. <i>History of the Statistical Classification of Diseases and Causes of Death</i>. Hyattsville, MD: National Center for Health Statistics, Centers for Disease Control and Prevention (CDC). <A CLASS="menu" HREF="https://www.cdc.gov/nchs/data/misc/classification_diseases2011.pdf">https://www.cdc.gov/nchs/data/misc/classification_diseases2011.pdf</A>.</p>
+
+<a name="refN"></a>
+
+<p>Nadkarni, Prakash M. and Jonathan A. Darer. 2010. &ldquo;Migrating Existing Clinical Content from ICD-9 to SNOMED&rdquo;. <i>Journal of the American Medical Informatics Association</i> 17, no. 5: 602-7.</p>
+
+<p>National Center for Biomedical Ontology. 2005-. &ldquo;About NCBO.&rdquo; Retrieved from: <A CLASS="menu" HREF="https://ncbo.bioontology.org/about-ncbo">https://ncbo.bioontology.org/about-ncbo</A>.</p>
+
+<a name="refO"></a>
+<a name="refP"></a>
+
+<p>Patel, Vimla L., Andre W. Kushniruk, Seungmi Yang, and Jean-Francois Yale. 2000. &ldquo;Impact of a Computer-based Patient Record System on Data Collection, Knowledge Organization, and Reasoning&rdquo;. <i>Journal of the American Medical Informatics Association</i> 7, no. 6: 569-85.</p>
+
+<p>Perotte, Adler, Rimma Pivovarov, Karthik Natarajan, Nicole Weiskopf, Frank Wood, and No&eacute;mie Elhadad. 2014. &ldquo;Diagnosis Code Assignment: Models and Evaluation Metrics&rdquo;. <i>Journal of the American Medical Informatics Association</i> 21, no. 2: 231-7.</p>
+
+<p>Phull, Jaspreet. 2012. <i>ICD 10 in Psychiatry: A Learning Guide</i>. CRC Press.</p>
+
+<p>Proctor, B. Deborah and Alexandra Patricia Young-Adams. 2014. &ldquo;Basics of Diagnostic Coding.&rdquo; <i>Kinn's the Medical Assistant: An Applied Learning Approach</i>. 12th ed. Chapter 18. St. Louis, Missouri: Elsevier.</p>
+
+<a name="refQ"></a>
+<a name="refR"></a>
+
+<p>Ranganathan, Shiyali Ramamrita. 1967<i>. Prolegomena to Library Classification</i>, 3rd ed. Bombay: Asia.</p>
+
+<p>Robb-Smith, A. H. T. 1969. &ldquo;A History of the College's Nomenclature of Diseases: Its Preparation&rdquo;. <i>Journal of the Royal College of Physicians of London</i> 3, no. 4: 341-58.</p>
+
+<p>Rodrigues, Jean M., Ann Casey, C&eacute;dric Bousquet, Anand Kumar, Pierre Lewalle, and B&eacute;atrice Trombert Paviot. 2011. &ldquo;Comparing Existing National and International Classification Systems of Surgical Procedures with the CEN/ISO 1828 Ontology Framework Standard&rdquo;. In <i>User Centred Networked Health Care</i>, 844-8. IOS Press, 2011.</p>
+
+<p>Rodrigues, Jean-Marie, David Robinson, Vincenzo Della Mea, James Campbell, Alan Rector, Stefan Schulz, Hazel Brear et al. 2015. &ldquo;Semantic Alignment between ICD-11 and SNOMED CT&rdquo;. In <i>MEDINFO 2015: eHealth-enabled Health</i>, Edited by I.N. Sarkar et al. IMIA and IOS Press, 790-4.</p>
+
+<p>Rodrigues, Jean-Marie, Stefan Schulz, Alan Rector, Kent Spackman, Bedirhan &Uuml;st&uuml;n, Christopher G. Chute, Vincenzo Della Mea, Jane Millar, and Kristina Brand Persson. 2013. &ldquo;Sharing Ontology between ICD 11 and SNOMED CT will Enable Seamless Re-use and Semantic Interoperability&rdquo;. In <i>MEDINFO 2013</i>, Edited by C.U. Lehmann et al. IMIA and IOS Press, 343-6.</p>
+
+<p>Rosenbloom, S. Trent, William W. Stead, Joshua C. Denny, Dario Giuse, Nancy M. Lorenzi, Steven H. Brown, and Kevin B. Johnson. 2010. &ldquo;Generating Clinical Notes for Electronic Health Record Systems&rdquo;. <i>Applied Clinical Informatics</i> 1, no. 3: 232-43.</p>
+
+<a name="refS"></a>
+
+<p>Salcido, Richard. 2015. &ldquo;The ABCs of ICD.&rdquo; <i>Advances in Skin &amp; Wound Care</i> 28, no. 2: 53.</p>
+
+<p>Schiff, Gordon D., David W. Bates, P. Hartzband, J. Groopman, and G.D. Schiff. 2010. &ldquo;Can Electronic Clinical Documentation Help Prevent Diagnostic Errors?&rdquo; <i>New England Journal of Medicine</i> 362, no. 12: 1066-9.</p>
+
+<p>Severinsen, Morten. 2001. &ldquo;Principles Behind Definitions of Diseases &ndash; a Criticism of the Principle of Disease Mechanism and the Development of a Pragmatic Alternative.&rdquo; <i>Theoretical Medicine and Bioethics</i> 22, no. 4: 319&ndash;36.</p>
+
+<p>Smith, Edward E. and Douglas L. Medin. 1981. <i>Categories and Concepts</i>. Cambridge, MA: Harvard University Press.</p>
+
+<a name="refT"></a>
+
+<p>Terron Cuadrado, Marta. 2019. &ldquo;National Modifications of WHO ICD&rdquo;.   Last modified on Feb 01, 2019. In <i>eHealth DSI Semantic Community Home &ndash; ASSETS</i>. Retrieved from: <A CLASS="menu" HREF="https://ec.europa.eu/cefdigital/wiki/display/EHSEMANTIC/National+modifications+of+WHO+ICD">https://ec.europa.eu/cefdigital/wiki/...</A>.</p>
+
+<p>Thompson, Edward T. and Adaline C. Hayden, eds. 1961. <i>Standard Nomenclature of Diseases Operations</i>. New York: McGraw-Hill.</p>
+
+<p>Tian, Terrence Y., Ianita Zlateva, and Daren R. Anderson. 2013. &ldquo;Using Electronic Health Records Data to Identify Patients with Chronic Pain in a Primary Care Setting&rdquo;. <i>Journal of the American Medical Informatics Association</i> 20, no. e2: e275-80.</p>
+
+<p>Tsui, Fu-Chiang, Michael M. Wagner, Virginia Dato, and Chung-Chou Ho Chang. 2002. &ldquo;Value of ICD-9-Coded Chief Complaints for Detection of Epidemics&rdquo;. <i>Journal of the American Medical Informatics Association</i> 9, no. Supplement_6: S41-7.</p>
+
+<a name="refU"></a>
+
+<p>U.S. Bureau of the Census. 1911. <i>Manual of the International List of Causes of Death: Based on the Second Decennial Revision by the International Commission, Paris, July 1 to 3, 1909</i>. Washington, D.C.: US Government Printing Office.</p>
+
+<p>U.S. Department of Health, Education and Welfare. 1959. <i>International Classification of Diseases: Adapted for Indexing of Hospital Records and Operation Classification</i>. US Government Printing Office.</p>
+
+<p>U.S. Department of Health, Education and Welfare. 1968. <i>Eighth</i> <i>Revision</i> <i>International Classification of Diseases, Adapted for Use in the United States: Alphabetical index</i>. Vol. 2. US Government Printing Office.</p>
+
+<p>U.S. National Center for Health Statistics. 2021. &ldquo;ICD-9-CM.&rdquo; Retrieved from: <A CLASS="menu" HREF="https://www.cdc.gov/nchs/icd/icd9cm.htm">https://www.cdc.gov/nchs/icd/icd9cm.htm</A>.</p>
+
+<p>U.S. National Library of Medicine. 2016-. &ldquo;Source Vocabularies.&rdquo; In <i>UMLS Basics - Metathesaurus</i>. Retrieved 2022-06-26 from: <A CLASS="menu" HREF="https://www.nlm.nih.gov/research/umls/new_users/online_learning/Meta_002.html">https://www.nlm.nih.gov/research/umls/new_users/online_learning/Meta_002.html</A>.</p>
+
+<p>U.S. National Library of Medicine. 2022. &ldquo;Statistics - 2022AA Release.&rdquo; In UMLS Metathesaurus Release Documentation. Retrieved 2022-06-26 from: <A CLASS="menu" HREF="https://www.nlm.nih.gov/research/umls/knowledge_sources/metathesaurus/release/statistics.html">https://www.nlm.nih.gov/research/umls/knowledge_sources/metathesaurus/release/statistics.html</A></p>
+
+<a name="refV"></a>
+<a name="refW"></a>
+
+<p>Wang, Liqin, Maxim Topaz, Joseph M. Plasek, and Li Zhou. 2017. &ldquo;Content and Trends in Medical Informatics Publications Over the Past Two Decades&rdquo;. <i>MedInfo</i> 245: 968-72.</p>
+
+<p>Wei, Wei-Qi, Pedro L. Teixeira, Huan Mo, Robert M. Cronin, Jeremy L. Warner, and Joshua C. Denny. 2016. &ldquo;Combining Billing Codes, Clinical Notes, and Medications from Electronic Health Records Provides Superior Phenotyping Performance&rdquo;. <i>Journal of the American Medical Informatics Association</i> 23, no. e1: e20-7.</p>
+
+<p><i>WHO-FIC Classifications and Terminology Mapping - Principles and Best Practice</i>. [2021]. <A CLASS="menu" HREF="https://cdn.who.int/media/docs/default-source/classification/who-fic-network/whofic_terminology_mapping_guide.pdf">https://cdn.who.int/media/docs/...</A></p>
+
+<p>Wiley, Laura K., Anushi Shah, Hua Xu, and William S. Bush. 2013. &ldquo;ICD-9 Tobacco Use Codes are Effective Identifiers of Smoking Status&rdquo;. <i>Journal of the American Medical Informatics Association</i> 20, no. 4: 652-8.</p>
+
+<p>Wittgenstein, Ludwig. 1953. Philosophical Investigations. G.E.M. Anscombe and R. Rhees (eds.), G.E.M. Anscombe (trans.), Oxford: Blackwell.</p>
+
+<p>Wolfbane Cybernetic. 2001-. International Classification of Diseases. Updated 7 April 2007. Accessed 2022-06-26 from: <A CLASS="menu" HREF="http://www.wolfbane.com/icd/index.html">http://www.wolfbane.com/icd/index.html</A>.</p>
+
+<p>World Health Organization. ?1948?. <i>Manual of the International Statistical Classification of Diseases, Injuries, and Causes of Death: Sixth Revision of the International Lists of Diseases and Causes of Death, Adopted 1948</i>. World Health Organization. Available from: <A CLASS="menu" HREF="https://apps.who.int/iris/handle/10665/42893">https://apps.who.int/iris/handle/10665/42893</A>.</p>
+
+<p>World Health Organization. 1978. <i>International Classification of Procedures in Medicine. </i>Geneva: World Health Organization. Available from: <A CLASS="menu" HREF="https://apps.who.int/iris/handle/10665/40527">https://apps.who.int/iris/handle/10665/40527</A>.</p>
+
+<p>World Health Organization. [1996-]. &ldquo;List of Official ICD-10 Updates&rdquo;.  Available from: <A CLASS="menu" HREF="https://www.who.int/standards/classifications/classification-of-diseases/list-of-official-icd-10-updates">https://www.who.int/standards/classifications/classification-of-diseases/list-of-official-icd-10-updates</A>.</p>
+
+<p>World Health Organization. [2004].  <i>History of the Development of the ICD</i>. <A CLASS="menu" HREF="https://cdn.who.int/media/docs/default-source/classification/icd/historyoficd.pdf">https://cdn.who.int/media/docs/...</A>. </p>
+
+<p>World Health Organization. 2007-. <i>International Classification of Health Interventions (ICHI)</i>. Geneva: World Health Organization. Retrieved from: <A CLASS="menu" HREF="https://www.who.int/standards/classifications/international-classification-of-health-interventions">https://www.who.int/standards/classifications/international-classification-of-health-interventions</A>.</p>
+
+<p>World Health Organization. 2015. &ldquo;WHO Best Practices for Naming of New Human Infectious Diseases.&rdquo; Retrieved from: <A CLASS="menu" HREF="https://www.who.int/topics/infectious_diseases/naming-new-diseases/en/">https://www.who.int/topics/infectious_diseases/naming-new-diseases/en/</A>.</p>
+
+<p>World Health Organization. 2016. <i>International Statistical Classification of Diseases and Related Health Problems</i>. 10th revision, Fifth edition. Geneva: World Health Organization. Available from: <A CLASS="menu" HREF="https://apps.who.int/iris/handle/10665/246208">https://apps.who.int/iris/handle/10665/246208</A>.</p>
+
+<p>World Health Organization. 2018. &ldquo;WHO Releases New International Classification of Diseases (ICD 11)&rdquo;. News release. Geneva: World Health Organization. Retrieved from: <A CLASS="menu" HREF="https://www.who.int/news/item/18-06-2018-who-releases-new-international-classification-of-diseases-(icd-11)">https://www.who.int/news/item/...</A>.</p>
+
+<p>World Health Organization. 2019a. &ldquo;World Health Assembly Update, 25 May 2019&rdquo;. In WHO <i>News, </i>25 May 2019. Retrieved from: <A CLASS="menu" HREF="https://www.who.int/news-room/detail/25-05-2019-world-health-assembly-update">https://www.who.int/news-room/detail/25-05-2019-world-health-assembly-update</A>.</p>
+
+<p>World Health Organization. 2019b. &ldquo;ICD-10 Version:2019&rdquo;.  <A CLASS="menu" HREF="https://icd.who.int/browse10/2019/en">https://icd.who.int/browse10/2019/en</A>.</p>
+
+<p>World Health Organization. 2019c. <i>ICD-11 Implementation or Transition Guide</i>. <A CLASS="menu" HREF="https://icd.who.int/docs/ICD-11%20Implementation%20or%20Transition%20Guide_v105.pdf">https://icd.who.int/docs/...</A>.</p>
+
+<p>World Health Organization. 2020a. &ldquo;ICD-10-CM Official Coding Guidelines &ndash; Supplement Coding Encounters Related to COVID-19 Coronavirus Outbreak. Effective: February 20, 2020.&rdquo; <A CLASS="menu" HREF="https://www.cdc.gov/nchs/data/icd/ICD-10-CM-Official-Coding-Gudance-Interim-Advice-coronavirus-feb-20-2020.pdf">https://www.cdc.gov/nchs/data/icd/...</A>.</p>
+
+<p>World Health Organization. 2020b. &ldquo;COVID-19 Coding in ICD-10.&rdquo; 25 March 2020. Previously available at: https://www.who.int/classifications/icd/COVID-19-coding-icd10.pdf.</p>
+
+<p>World Health Organization. 2021-. &ldquo;ICD-11 Fact Sheet&rdquo;.  <A CLASS="menu" HREF="https://www.who.int/publications/m/item/icd-11-fact-sheet">https://www.who.int/publications/m/item/icd-11-fact-sheet</A>.</p>
+
+<p>World Health Organization. 2021a. &ldquo;History of ICD&rdquo;.  In &ldquo;International Statistical Classification of Diseases and Related Health Problems (ICD)&rdquo; homepage, retrieved from: <A CLASS="menu" HREF="https://www.who.int/standards/classifications/classification-of-diseases">https://www.who.int/standards/classifications/classification-of-diseases</A>.</p>
+
+<p>World Health Organization. 2021b. &ldquo;WHO Announces Simple, Easy-To-Say Labels for SARS-CoV-2 Variants of Interest and Concern.&rdquo; In WHO<i> News</i>, 31 May 2021. Retrieved from: <A CLASS="menu" HREF="https://www.who.int/news/item/31-05-2021-who-announces-simple-easy-to-say-labels-for-sars-cov-2-variants-of-interest-and-concern">https://www.who.int/news/item/...</A>.</p>
+
+<p>World Health Organization. 2021c. &ldquo;It All Starts With A Code &hellip;&rdquo; <A CLASS="menu" HREF="https://cdn.who.int/media/images/default-source/classifications/icd/covid-flowchart-final-.tmb-1920v.png">https://cdn.who.int/media/images/...</A>. In: &ldquo;Emergency Use ICD Codes for COVID-19 Disease Outbreak&rdquo;. Retrieved from: <A CLASS="menu" HREF="https://www.who.int/standards/classifications/classification-of-diseases/emergency-use-icd-codes-for-covid-19-disease-outbreak">https://www.who.int/standards/classifications/...</A>.</p>
+
+<p>World Health Organization. 2021d. &ldquo;World Health Organization Family of International Classifications 2021&rdquo;. 
+<A CLASS="menu" HREF="https://cdn.who.int/media/docs/default-source/classification/who-fic-network/who-fic-family-paper.pdf">https://cdn.who.int/media/docs/default-source/classification/who-fic-network/who-fic-family-paper.pdf</A>. </p>
+
+<p>World Health Organization. 2022a. <i>ICD-11 Reference Guide</i>. <A CLASS="menu" HREF="https://icd.who.int/icd11refguide/en/index.html">https://icd.who.int/icd11refguide/en/index.html</A>.</p>
+
+<p>World Health Organization. 2022b. &ldquo;ICD-11 2022 Release.&rdquo; In WHO <i>News</i>, 11 February 2022. <A CLASS="menu" HREF="https://www.who.int/news/item/11-02-2022-icd-11-2022-release">https://www.who.int/news/item/11-02-2022-icd-11-2022-release</A>.</p>
+
+<a name="refX"></a>
+<a name="refY"></a>
+
+<p>Yan, Chenwei, Xiangling Fu, Xien Liu, Yuanqiu Zhang, Yue Gao, Ji Wu, and Qiang Li. 2022. &ldquo;A Survey of Automated ICD Coding: Development, Challenges, and Applications&rdquo;. <i>Intelligent Medicine </i>2, doi: <A CLASS="menu" HREF="https://doi.org/10.1016/j.imed.2022.03.003">https://doi.org/10.1016/j.imed.2022.03.003</A>.</p>
+
+<a name="refZ"></a>
+
+<p>Zeng, Marcia Lei, Yi Hong, Julaine Clunis, Shaoyi He, and L. P. Coladangelo. 2020. &ldquo;Implications of Knowledge Organization Systems for Health Information Exchange and Communication During the COVID-19 Pandemic&rdquo;. <i>Data and Information Management</i> 4, no. 3: 148-70.</p>
+
+</span><!-- citation ends -->
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="app1"></a>
+<h3>Appendix: List of health KOS standards presented in this article</h3>
+
+<p>(In alphabetical order)</p>
+
+<blockquote>
+<table border="1">
+<tr>
+<th>KOS</th>
+<th>Full title</th>
+<th>Description</th>
+<th>Edition / Year</th>
+<th>Reference of Full Version; Online Browser </th>
+</tr><tr>
+<td>CPT</td>
+
+<td>Current Procedural Terminology</td>
+
+<td>A uniform language for coding medical services and procedures to streamline reporting, increase accuracy and efficiency, as well as supporting administrative management such as claims processing and developing guidelines for medical care review.</td>
+
+<td>2022</td>
+
+<td>American Medical Association. 2021. <i>CPT 2022</i>. Washington, D.C.: American Medical Association. ISBN 9781640160880 / ISBN 1640160884. 
+
+<A CLASS="menu" HREF="https://www.ama-assn.org/amaone/cpt-current-procedural-terminology">https://www.ama-assn.org/amaone/cpt-current-procedural-terminology</A></td>
+</tr><tr>
+<td>DO</td>
+
+<td>Disease Ontology</td>
+
+<td>A standardized ontology for human disease with the purpose of providing the biomedical community with consistent, reusable, and sustainable descriptions of human disease terms, phenotype characteristics and related medical vocabulary disease concepts.</td>
+
+<td>2022</td>
+
+<td>Institute of Genome Sciences. 2022.  <i>Disease Ontology</i>. Baltimore, MD:  University of Maryland School of Medicine. 
+<A CLASS="menu" HREF="https://disease-ontology.org">https://disease-ontology.org</A></td>
+</tr><tr>
+<td>ICD-9</td>
+
+<td>International classification of diseases, 9th revision</td>
+
+<td>The Ninth Revision of International Classification of Diseases, the international classification standard to define the universe of diseases, disorders, injuries, and other related health conditions.</td>
+
+<td>9th revision / 1977</td>
+
+<td>World Health Organization. 1977. <i>International classification of diseases</i>. Geneva: World Health Organization.</td>
+</tr><tr>
+<td>ICD-9-CM</td>
+
+<td>International classification of diseases, 9th revision, clinical modification</td>
+
+<td>The Clinical Modification of ICD-9, an official classification system for assigning codes to diagnoses and procedures associated with hospital utilization in the United States.</td>
+
+<td>9th revision, Clinical modification / 2012</td>
+
+<td>ICD-9-CM Coordination and Maintenance Committee (U.S.); National Center for Health Statistics (U.S.); Centers for Medicare &amp; Medicaid Services (U.S.). 2012. <i>ICD-9-CM: volumes 1, 2 &amp; 3</i>. (2012). Jackson, WY: Teton Data Systems. <A CLASS="menu" HREF="https://icd.codes/icd9cm">https://icd.codes/icd9cm</A></td>
+</tr><tr>
+<td>ICD-10</td>
+
+<td>International statistical classification of diseases and related health problems, 10th revision</td>
+
+<td>The Tenth Revision of International Classification of Diseases, the international classification standard to define the universe of diseases, disorders, injuries, and other related health conditions.</td>
+
+<td>10th revision, 5th edition / 2016</td>
+
+<td>World Health Organization. 2016: <i>International Statistical Classification of Diseases and Related Health Problems.</i> Geneva: World Health Organization.
+
+<A CLASS="menu" HREF="https://icd.who.int/browse10">https://icd.who.int/browse10</A></td>
+</tr><tr>
+<td>ICD-10-CM</td>
+
+<td>International Statistical Classification of Diseases and Related Health Problems, 10th revision, Clinical Modification</td>
+
+<td>The Clinical Modification of ICD-10, an official classification system for assigning diagnosis codes in the United States of America.</td>
+
+<td>10th revision, Clinical modification / 2022</td>
+
+<td>U.S. Centers for Medicare and Medicaid Services, National Center for Health Statistics. 2022. <i>International Statistical Classification of Diseases and Related Health Problems, 10th revision, Clinical Modification</i>. Baltimore, MD: Centers for Medicare and Medicaid Services; Hyattsville, MD: National Center for Health Statistics. 
+<A CLASS="menu" HREF="https://icd10cmtool.cdc.gov">https://icd10cmtool.cdc.gov</A>
+</td>
+</tr><tr>
+<td>ICD-10-PCS</td>
+
+<td>International classification of diseases, 10th revision, Procedure coding system</td>
+
+<td>The Procedure coding system of ICD-10, an official classification system for inpatient procedure coding.</td>
+
+<td>10th revision, Procedure coding system / 2022</td>
+
+<td>Practice Management Information Corporation. 2022. <i>International classification of diseases, 10th revision, procedural coding system</i>. Los Angeles, CA: Practice Management Information Corporation (PMIC). ISBN 9781570661303 / ISBN 1570661308</td>
+</tr><tr>
+<td>ICD-11</td>
+
+<td>International Classification of Diseases for Mortality and Morbidity Statistics, 11th revision</td>
+
+<td>The Eleventh Revision of International Classification of Diseases, the international standard for systematic recording, reporting, analysis, interpretation and comparison of mortality and morbidity data.</td>
+
+<td>11th revision / 2022</td>
+
+<td>World Health Organization. 2022. <i>ICD-11 International Classification of Diseases for Mortality and Morbidity Statistics, Eleventh Revision</i>. Geneva: World Health Organization.
+ <A CLASS="menu" HREF="https://icd.who.int/browse11">https://icd.who.int/browse11</A></td>
+</tr><tr>
+<td>ICD-O-3</td>
+
+<td>International Classification of Diseases for Oncology, Third Edition</td>
+
+<td>An international classification standard of neoplasms, used principally in tumor or cancer registries for coding the site (topography) and the histology (morphology) of neoplasms.</td>
+
+<td>3rd Edition / 2014</td>
+
+<td>April G., World Health Organization. 2014. <i>International Classification of Diseases for Oncology</i>. Geneva: World Health Organization. ISBN 9789241548496</td>
+</tr><tr>
+<td>ICF</td>
+
+<td>International Classification of Functioning, Disability and Health</td>
+
+<td>An international classification standard of health and health-related domains in functioning and disability for measuring health and disability at both individual and population levels.</td>
+
+<td> 2008</td>
+
+<td>World Health Organization. 2008. <i>International Classification of Functioning, Disability and Health.</i> Geneva: World Health Organization. ISBN 9789241547413 9241547413. <A CLASS="menu" HREF="https://icd.who.int/dev11/l-icf/en">https://icd.who.int/dev11/l-icf/en</A></td>
+</tr><tr>
+<td>ICHI</td>
+
+<td>International Classification of Health Interventions</td>
+
+<td>An international classification standard of health interventions as a common tool for reporting and analyzing health interventions for clinical and statistical purposes.</td>
+
+<td>Beta-3 / 2007-</td>
+
+<td>World Health Organization. 2007-. <i>International Classification of Health Interventions (ICHI). </i>Geneva: World Health Organization. 
+<A CLASS="menu" HREF="https://mitel.dimi.uniud.it/ichi">https://mitel.dimi.uniud.it/ichi</A></td>
+</tr><tr>
+<td>LOINC</td>
+
+<td>Logical Observation Identifiers Names and Codes</td>
+
+<td>An international standard for identifying health measurements, observations, and documents which is a common language for better understanding the clinical measurements and laboratory results.</td>
+
+<td>V2.72 / 2022</td>
+
+<td>Regenstrief Institute. 2022. &ldquo;LOINC Table Files.&rdquo; In: <i>LOINC Table, Reports, and Users&rsquo; Guide</i>. Indianapolis, IN: Regenstrief Institute. <A CLASS="menu" HREF="https://loinc.org/downloads/loinc-table/">https://loinc.org/downloads/loinc-table/</A></td>
+</tr><tr>
+<td>MeSH</td>
+
+<td>Medical Subject Headings</td>
+
+<td>A controlled and hierarchically organized vocabulary used for indexing, cataloging, and searching of biomedical and health-related information.</td>
+
+<td>2022</td>
+
+<td>National Library of Medicine (U.S.), National Institutes of Health (U.S.). 2022. <i>Medical Subject Headings</i>. Bethesda, MD: U.S. Dept. of Health and Human Services, Public Health Service, National Institutes of Health, National Library of Medicine. <A CLASS="menu" HREF="https://meshb.nlm.nih.gov">https://meshb.nlm.nih.gov</A></td>
+</tr><tr>
+<td>RxNorm</td>
+
+<td> RxNorm</td>
+
+<td>A standardized nomenclature for clinical drugs, supporting semantic interoperation between drug terminologies and pharmacy management systems.</td>
+
+<td>2022</td>
+
+<td>National Library of Medicine (U.S.). 2022. <i>RxNorm</i>. Bethesda, MD: U.S. National Institutes of Health, National Library of Medicine.
+ <A CLASS="menu" HREF="https://mor.nlm.nih.gov/RxNav">https://mor.nlm.nih.gov/RxNav</A></td>
+</tr><tr>
+<td>SNOMED CT</td>
+
+<td>Systematized Nomenclature of Medicine &ndash; Clinical Terms</td>
+
+<td>A global common language for clinical terms, the most comprehensive clinical terminology in use around the world as a multilingual resource with comprehensive, scientifically validated clinical content</td>
+
+<td>2022</td>
+
+<td>SNOMED International. 2022. <i>Systematized Nomenclature of Medicine &ndash; Clinical Terms</i>. London: SNOMED International. <A CLASS="menu" HREF="https://browser.ihtsdotools.org">https://browser.ihtsdotools.org</A></td>
+
+</tr>
+</table>
+</blockquote>
+
+
+
+
+<a name="col"></a>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<p> </p>
+
+<p>Visited <a href="https://www.digits.net" target="_blank"><img src="https://counter.digits.net/?counter={c88ae0c6-6e0d-0fa4-6961-eb28de3ad71b}&template=simple" alt="Hit Counter by Digits" border="0"  /></a> times.</p>
+
+<hr>
+<p itemprop="dateCreated">Version 1.0 published 2022-08-29 <!-- last edited 2022-- --><!-- <br>Version 1.1 published 2020--: [changes] -->
+
+<p>Article category: <code><a itemprop="about" href="index#KL">KOS, specific (domain specific)</a></code></p>
+
+<p>This article (version 1.0) is also published in <i>Knowledge Organization</i>. How to cite it:
+<br>Hong, Yi and Marcia Lei Zeng. 2022. 
+&ldquo;International Classification of Diseases (ICD)&rdquo;. 
+<i>Knowledge Organization</i> 49, no. 7: 496-528. 
+Also available in 
+<i><span itemprop="isPartOf">ISKO Encyclopedia of Knowledge Organization</span></i>, 
+eds. <span itemprop="editor">Birger Hj&oslash;rland</span> and <span itemprop="editor">Claudio Gnoli</span>, 
+<span itemprop="url">https://www.isko.org/cyclo/icd </span></p>
+
+<p>&copy;2022 <span itemprop="publisher">ISKO</span>. All rights reserved.</p>
+
+</div><!-- Article ends -->
+
+</td>
+</tr>
+
+<tr>
+<td id="logo">
+</td>
+</tr>
+
+</table>
+</body>
+</html>

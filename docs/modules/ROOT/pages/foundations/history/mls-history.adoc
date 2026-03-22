@@ -49,17 +49,11 @@ In classified environments, this model failed almost immediately, as it placed c
 _Mandatory access control_ (MAC) is the alternative: the system enforces access rules that neither the user nor the application can override.
 MLS systems are MAC systems — the kernel enforces label-based access decisions regardless of user intent.
 
-== 1973: THE ANDERSON REPORT
+== 1973: The Anderson Report
 
-One of the foundational documents in MLS history is:
-[quote]
-----
-“Computer Security Technology Planning Study” (1973)
-Author: James P. Anderson
-Commissioned by: U.S. Air Force
-----
-
-This document, commonly called the Anderson Report, formally identified the need for:
+One of the foundational documents in MLS history is the _Computer Security Technology
+Planning Study_ (1973), authored by James P. Anderson and commissioned by the U.S. Air Force.
+Commonly called the Anderson Report, it formally identified the need for:
 
 * Mandatory access control
 * System-enforced security policy
@@ -67,19 +61,18 @@ This document, commonly called the Anderson Report, formally identified the need
 
 The report made it clear that relying on users or applications to enforce policy was insufficient.
 
+== Mid-1970s: Multics and Early MLS Ideas
 
-== Mid–1970s: MULTICS AND EARLY MLS IDEAS
-MULTICS (Multiplexed Information and Computing Service) was one of the earliest systems to seriously explore strong isolation and security concepts.
-
-MULTICS was developed by MIT, Bell Labs, General Electric. While MULTICS was not a full MLS system in the modern sense, it strongly influenced later secure OS research.
- However, MULTICS introduced ideas that would later become central to MLS, including:
+Multics (Multiplexed Information and Computing Service), developed by MIT, Bell Labs, and
+General Electric, was one of the earliest systems to seriously explore strong isolation and
+security concepts. While Multics was not a full MLS system in the modern sense, it strongly
+influenced later secure OS research. Multics introduced ideas that would become central to MLS:
 
 * Ring-based protection
 * Fine-grained access controls
 * Hardware-assisted isolation
 
-
-== 1980s: FORMAL MODELS AND TRUSTED SYSTEMS
+== 1980s: Formal Models and Trusted Systems
 
 The 1980s saw the formalization of MLS concepts into mathematical security models.
 
@@ -88,17 +81,23 @@ In 1983, David Elliott Bell and Leonard J. LaPadula developed the *Bell–LaPadu
 * Simple Security Property (“no read up”)
 * Star Property (“no write down”)
 
-Bell-LaPadula governs _confidentiality_: it prevents sensitive data from flowing to lower-sensitivity subjects.
-It does not govern _integrity_ — it says nothing about preventing low-integrity data from flowing upward into a high-sensitivity context.
-The complementary integrity model is the *Biba Model* (1977, Kenneth Biba), which inverts the Bell-LaPadula rules: a subject may not read data at a lower integrity level (no read down) and may not write data to a higher integrity level (no write up).
-Bell-LaPadula and Biba together address both the confidentiality and integrity dimensions of information flow control.
+Bell-LaPadula governs _confidentiality_: it prevents sensitive data from flowing to
+lower-sensitivity subjects. It does not govern _integrity_ — it says nothing about preventing
+low-integrity data from flowing upward into a high-sensitivity context.
 
-Bell-LaPadula became the conceptual foundation for many MLS systems.
-During this time, the U.S. Department of Defense introduced the Trusted Computer System Evaluation Criteria (TCSEC), commonly known as the Orange Book (1983).
-TCSEC defined evaluation classes for secure systems, including requirements for MLS enforcement at higher assurance levels (B1, B2, B3, A1).
+The complementary integrity model is the *Biba Model* (1977, Kenneth J. LaPadula), which
+inverts the Bell-LaPadula rules: a subject may not read data at a lower integrity level (no
+read down) and may not write data to a higher integrity level (no write up). Bell-LaPadula and
+Biba together address both the confidentiality and integrity dimensions of information flow
+control.
+
+Bell-LaPadula became the conceptual foundation for many MLS systems. In the same decade, the
+U.S. Department of Defense introduced the Trusted Computer System Evaluation Criteria (TCSEC),
+commonly known as the Orange Book (1983). TCSEC defined evaluation classes for secure systems,
+including requirements for MLS enforcement at higher assurance levels (B1, B2, B3, A1).
 
 
-== Late 1980s–1990s: MLS UNIX SYSTEMS
+== Late 1980s–1990s: MLS UNIX Systems
 
 Several UNIX systems were extended or re-engineered to meet Orange Book requirements:
 
@@ -109,39 +108,30 @@ Several UNIX systems were extended or re-engineered to meet Orange Book requirem
 * Digital UNIX / OSF/1 with trusted variants
 * DG/UX (Data General UNIX)
 
-These systems implemented:
+These systems implemented security labels, mandatory access control, trusted path mechanisms,
+strong auditing, and TCB separation. However, they were expensive, complex, and largely limited
+to government and defense environments.
 
-* Security labels
-* Mandatory access control
-* Trusted path mechanisms
-* Strong auditing
-* TCB separation
+DG/UX and Digital UNIX included trusted operating modes or optional trusted extensions designed
+to meet C2, B1, or higher requirements depending on configuration and evaluation scope.
+Operators on these systems encountered trusted login mechanisms, label-aware tools, restricted
+administrative paths, and MLS-style enforcement as part of daily operations.
 
-However, these systems were expensive, complex, and often limited to government environments.
+== 1990s: FLASK and the Shift to Flexible MAC
 
-DG/UX and Digital UNIX systems often included “trusted” operating modes or optional trusted extensions, designed to meet C2, B1, or higher requirements depending on configuration and evaluation scope. If you worked on DG/UX, it is very likely you encountered:
+One of the most important developments occurred in the mid-to-late 1990s: FLASK (Flux Advanced
+Security Kernel), developed by the University of Utah with NSA involvement.
 
-* Trusted login mechanisms
-* Label-aware tools
-* Restricted administrative paths
-* MLS-style enforcement
+FLASK introduced a critical architectural separation: policy from enforcement. Instead of
+hardcoding MLS logic into the kernel, FLASK defined a framework where:
 
+* The kernel enforces decisions at well-defined hook points
+* A policy engine (running in kernel space) defines the rules
+* Different policies — MLS, type enforcement, RBAC — can coexist without changing the kernel
 
+This design directly influenced SELinux.
 
-== 1990s: FLASK AND THE SHIFT TO FLEXIBLE MAC
-
-One of the most important developments occurred in the mid-to-late 1990s: FLASK (Flux Advanced Security Kernel). This was developed by the University of Utah with NSA involvement.
-
-FLASK introduced a critical idea: Separate security policy from the kernel. Instead of hardcoding MLS logic into the kernel, FLASK defined a framework where:
-
-* The kernel enforces decisions
-* A policy engine defines the rules
-* Different policies (MLS, type enforcement, etc.) can coexist
-
-This was a major architectural shift and directly influenced SELinux.
-
-
-== Late 1990s–Early 2000s: SELINUX
+== Late 1990s–Early 2000s: SELinux
 
 SELinux (Security-Enhanced Linux) began as an NSA research project in the late 1990s.
 
@@ -156,21 +146,16 @@ SELinux was built on FLASK concepts and supported multiple policy models:
 * Type Enforcement (TE)
 * Role-Based Access Control (RBAC)
 * Multi-Level Security (MLS)
-• Multi-Category Security (MCS)
+* Multi-Category Security (MCS)
 
-Importantly, SELinux allowed MLS to exist alongside more operationally friendly policies.
+Importantly, SELinux allowed MLS to exist alongside more operationally friendly policies —
+a pragmatic decision that made broad adoption possible.
 
+== 2000s–2010s: Targeted Policy Becomes the Norm
 
-== 2000s–2010s: TARGETED POLICY BECOMES THE NORM
-
-While full MLS policies existed in SELinux, most distributions adopted the “targeted” policy by default.
-
-Reasons included:
-
-* Lower operational complexity
-* Fewer labeled users
-* Easier administration
-* Incremental confinement of services
+While full MLS policies existed in SELinux, most distributions adopted targeted policy by
+default. Reasons included lower operational complexity, fewer labeled users, easier
+administration, and incremental confinement of services.
 
 Targeted policy still used mandatory access control, but focused on:
 
@@ -206,100 +191,64 @@ However:
 * It is integrated into enterprise security and compliance models
 * The emphasis is on compartmentalization, auditing, and trusted administration, not research purity
 
-In other words: the MLS ideas survived, but they were adapted to enterprise realities.
+In other words: the MLS ideas survived, but they were adapted to enterprise realities. IBM z/OS
+is effectively the mainstream example of MLS-style thinking on mainframe hardware. Other
+proprietary and defense-oriented mainframe OSes — including Honeywell/Bull GCOS variants —
+had strong security models. Most either folded their security concepts into enterprise access
+control frameworks or were discontinued.
 
+== Research Beyond SELinux
 
-== Other Mainframe / Large-System OSes
+SELinux is the most widely deployed general-purpose MLS-capable operating system today. It is
+the last major system where MLS is first-class, policy is explicit and inspectable, the kernel
+enforces information flow rules, and the model is open and extensible. That combination is rare.
 
-Historically, Honeywell/Bull GCOS variants had strong security models. Some proprietary defense-oriented systems have implemented MLS internally. MLS as a formal exposed model is rare on modern mainframes, but mandatory enforcement and trusted paths absolutely still exist.
+Rather than successor MLS operating systems, research focused on applying MLS principles in
+new contexts.
 
-Today:
+=== Microkernels and Formally Verified Systems
 
-* IBM z/OS is effectively the mainstream example
-* Others either folded into enterprise access control or disappeared
+The seL4 microkernel and INTEGRITY-178B (Green Hills Software) provide strong isolation
+guarantees backed by formal verification, and are used in avionics, defense, and
+safety-critical systems. These systems typically enforce information flow implicitly through
+static partitioning rather than dynamic MLS labels. They trade SELinux's flexibility for
+mathematical assurance — a valid engineering choice when the deployment is well-defined and
+the cost of formal verification is justified.
 
-'''
+=== Information Flow Control Research
 
-== Research and Development Beyond SELinux
-SELinux is the most widely deployed general-purpose MLS-capable OS today, but it is not the only system with MLS-inspired enforcement. However, it is the last major system where:
+Academic and experimental systems — HiStar (MIT), Asbestos, Flume, DStar — explored
+language-level and OS-level information flow tracking. The core ideas were compelling: label
+data itself (not just files), track information flow dynamically, and prevent leaks automatically.
 
-* MLS is first-class
-* Policy is explicit and inspectable
-* The kernel enforces information flow rules
-* The model is open and extensible
+These systems were intellectually important but did not survive contact with production
+deployment requirements. They were complex to administer, difficult to integrate with existing
+software, and demanded whole-system adoption. Many ideas influenced later work; the systems
+themselves did not.
 
-That combination is rare. Rather than “next-generation MLS operating systems,” research has focused on applying MLS principles in new places.
+=== Virtualization and Hardware-Enforced Separation
 
-== Microkernels and Formally Verified Systems
+A different approach pushes MLS ideas downward into hardware and virtualization layers. Running
+separate OS instances at different trust levels — each enforcing its own policy — avoids the
+complexity of a shared OS with dynamic label enforcement. This is simpler operationally but
+more expensive in hardware, less flexible for mixed-classification workflows, and harder to
+audit end-to-end data flow across virtual machine boundaries.
 
-* seL4 microkernel and INTEGRITY-178B (Green Hills Software)
-** Strong isolation guarantees
-** Formal verification
-** Partitioned execution environments
-* Used in avionics, defense, safety-critical systems
-* These systems often:
-** Enforce information flow implicitly
-** Use static partitioning instead of dynamic MLS
-** Replace flexibility with mathematical assurance
+Modern reliance on hypervisors, Trusted Execution Environments (TEE), and hardware roots of
+trust (TPM, Secure Boot) reflects this approach.
 
-They are MLS-adjacent in philosophy, but not general-purpose like Linux.
+== Why SELinux Survived
 
+SELinux prevailed because it made several pragmatic choices:
 
-== Information Flow Control (IFC) Research
-Academic and experimental systems explored language-level and OS-level information flow.
+* Policy is separated from the kernel (FLASK architecture).
+* Multiple models are supported — type enforcement, MLS, and MCS can coexist.
+* Incremental deployment is possible — targeted policy allows gradual adoption.
+* It integrated into mainstream Linux distributions with sustained support from Red Hat.
 
-Examples:
-
-* HiStar (MIT)
-* Asbestos
-* Flume
-* DStar
-
-Key ideas:
-
-* Label data, not just files
-* Track information flow dynamically
-* Prevent leaks across security boundaries automatically
-
-These systems are intellectually fascinating, but:
-
-* Very complex
-* Difficult to deploy
-* Poor fit for general-purpose production systems
-
-Many ideas influenced later work, but the systems themselves did not survive.
-
-== Virtualization and Hardware-Enforced Separation
-
-Virtualization and hardware enforced sepration shifts MLS ideas “downward” into hardware and virtualization layers. Modern systems increasingly rely on:
-
-* Hypervisors
-* Virtual machines
-* Trusted Execution Environments (TEE)
-* Hardware roots of trust (TPM, Secure Boot)
-
-Example:
-Instead of enforcing “no write down” in one OS, you run separate OS instances at different trust levels. This is simpler operationally, but:
-
-* More expensive
-* Less flexible
-* Harder to audit end-to-end data flow
-
-
-== SELinux Survivability
-SELinux let administrators apply MLS ideas selectively, which turned out to be the winning strategy. Moreover, SELinux survived because it made several pragmatic choices:
-
-* Policy separated from kernel (FLASK)
-* Multiple models supported (TE, MLS, MCS)
-* Incremental deployment possible (targeted policy)
-* Integrated into mainstream Linux distributions
-* Maintained by Red Hat and others over decades
-
-Most MLS research systems failed because they demanded:
-
-* Whole-system adoption
-* New programming models
-* Significant retraining
-* Perfect discipline
+Most MLS research systems failed because they demanded whole-system adoption, new programming
+models, significant retraining, and perfect operational discipline. SELinux let administrators
+apply MLS ideas selectively, starting with what was tractable and expanding from there.
+That turned out to be the winning strategy.
 
 

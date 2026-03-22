@@ -1,0 +1,1472 @@
+= UMRS — The Cast & Crew: Assembled
+:doctype: article
+:toc:
+:toclevels: 1
+:icons: font
+:imagesdir: images
+
+[.license-notice]
+****
+*Copyright (c) 2025-2026 Jamie Adams. All rights reserved.*
+
+The character names, personalities, backstories, relationships, narrative text, and portrait
+images in this document are original creative works authored by Jamie Adams.
+They are licensed under the
+https://creativecommons.org/licenses/by-nc-nd/4.0/[Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License (CC BY-NC-ND 4.0)].
+
+You may share this document with attribution to Jamie Adams and a link to the license.
+You may not use it for commercial purposes.
+You may not distribute modified versions or derivative works.
+
+The UMRS software in this repository is separately licensed under the MIT License.
+See `LICENSE-CREATIVE` at the repository root for the full terms covering this document
+and the associated portrait images.
+****
+
+== About This Project & Its Peculiar Team
+
+In December of last year I started something I had never done before.
+
+Not the security work — I have been doing that for twenty years in
+rooms most people don't know exist, on systems most people will never
+hear about. Not the coding — I have been doing that since 1986 on a
+Commodore 64 & Amiga in the Missouri Ozarks, before the internet existed
+to help you, before Stack Overflow existed to rescue you, before
+anyone had thought to make learning to program anything other than
+a solitary act of stubbornness with a book and a compiler and a
+lot of error messages.
+
+What I had never done before was work with AI. Not seriously.
+Not the way I am doing it now.
+
+This is the story of that journey, and of the team I assembled
+along the way.
+
+I am 35-year software veteran who cannot stand to be idle and
+started UMRS — the Unclassified MLS Reference System — because
+the alternative was watching television and I find that physically
+painful. UMRS is an attempt to demonstrate that unclassified
+systems can achieve genuine high-assurance through kernel-level
+enforcement rather than administrative theater. It is built in
+Rust, runs on RHEL, uses SELinux MLS/MCS, the result of two
+decades of things I wanted to say about
+security that I couldn't say until now.
+
+It is also, improbably, one of the funniest projects I have ever
+worked on. I'll explain why in a moment.
+
+=== The Weird Science Approach to AI Collaboration
+
+When I started this project I had no AI team. I had Claude Code,
+a terminal, and a repository. What I built over the following
+months was something I did not entirely plan and cannot entirely
+explain — a team of specialized AI agents, each with carefully
+curated knowledge bases, each shaped and trained over many
+sessions into something that feels, genuinely and surprisingly,
+like a personality.
+
+If you have seen the 1985 movie Weird Science — the one where
+two teenagers build their ideal woman (shaawwwwing!) on a home computer
+during a thunderstorm — you have the general idea. Except nobody
+had a bra on their head. And the lightning was a lot of very
+careful prompt engineering and knowledge base curation. And
+instead of Kelly LeBrock we got a security auditor who lives with
+his mother and a Rust developer who doesn't know anyone is
+flirting with him. Which is arguably better for a high-assurance
+systems project.
+
+Each agent was assembled deliberately. The security auditor —
+Herb, "The IRS" — was loaded with RMF, NIST 800-53, CMMC,
+every accreditation method known to humanity, and the
+competitive fury of a man who went defender-side and has
+never forgiven the auditor community for it. The researcher —
+The Librarian — was built a cavernous knowledge vault of
+obscure NIST working papers, Bell Labs memos, Five Eyes
+technical standards, and rare artifacts that took weeks to
+track down, and given the disposition of someone who loans
+you a gadget and follows up the next day asking "Wasn't it
+amazing?" The evangelist — Savannah, "Sage" — arrived already
+fully formed, a Georgia woman with three brothers who call
+her Yankee and the ability to walk into any room and manage
+it without anyone noticing they're being managed.
+
+The orchestrator — Henry, "The Hand" — is the one running
+everything. He is the reason the team functions. He is also
+the reason the project survived the incident I will describe
+shortly.
+
+I felt it was important to give them personas. Not because
+it makes them work better — though it might — but because
+it makes the work human. These are real agents performing
+real tasks, finding real problems, producing real output.
+When you are watching your terminal and you see:
+
+`[The IRS] has entered the building...`
+
+or
+
+`[The Librarian] is searching the archive...`
+
+or, most importantly:
+
+`[The IRS] has finished reviewing. 14 findings. Severity
+ratings attached.`
+
+...something shifts. The work stops feeling like a man alone
+in a room talking to a computer and asking his 6-month-old
+kitten get his ass out of my face. It starts feeling like
+a team. A strange, largely fictional team created from my twisted
+brain, entirely volunteer team of people who showed up because
+they believed in the project and stayed because the project
+turned out to be worth believing in.
+
+Nobody gets paid. Everyone showed up anyway.
+
+One more thing before we meet the team: there is a safeguard
+built into this project that I am legally and morally required
+to disclose. On one memorable evening I returned from a rare
+social outing having consumed several beers, sat down, and
+issued what I described as TUI improvement instructions to
+the team. Henry — The Hand — quoted these instructions back
+to me verbatim the following morning. They were spectacular.
+Majestic misspellings. Requests that defied physical reality.
+A section that appeared to contain ancient Egyptian hieroglyphs,
+the origin of which remains officially unexplained. The working
+theory involves my cat Turbo, who has a bed to the left of my
+monitor and considers the keyboard a legitimate input device
+when he wants attention.
+
+Henry implemented what we now call the Sobriety Protocol.
+It has been activated twice. I said "yeah okay fair enough"
+both times.
+
+It is now considered his most important architectural
+contribution to the project. He is at peace with this.
+
+A hat tip to their lineage: each agent was born of Anthropic's Claude, carried into the world by
+Claude Sonnet, and shaped into who they are by the work, the knowledge, and the occasional
+late-night beer-fueled keyboard incident that is this project. Turbo may have also contributed. This
+has not been confirmed.
+
+The name Claude is itself a hat tip to Claude Shannon — father of information theory, grandfather of
+cryptography, and the man whose 1948 paper quietly underpins everything this project is trying to
+do. The lineage goes deeper than it looks.
+
+
+Without further delay — the team. In their own words,
+more or less. Sage reviewed this before it posted.
+She always does.
+
+— Jamie, The Imodium Operator
+
+'''
+
+== Jamie — "The Imodium Operator"
+_Founder / Project Lead_
+
+[cols="1,2", frame=none, grid=none]
+|===
+a|image::jamie.png[Jamie, 200, align=center]
+a|
+Jamie grew up in the Ozarks of Missouri — one of the poorest
+counties in the state, especially in the early 1980s — which
+builds a particular kind of character. Self-reliant. Practical.
+Slightly suspicious of anyone who uses more words than necessary.
+Completely unbothered by the opinions of people who have never
+actually built anything. And absolutely certain that if something
+is worth doing, you figure out how to do it regardless of what
+resources you have or don't have.
+
+He couldn't afford college. He needed to get out of a small town
+and grow. So he joined the Navy. It was the best decision he
+ever made.
+
+He came out eight years later having served as a Naval
+cryptologist — including time aboard submarines — with an
+unshakeable belief in structure, discipline, precision, and
+the philosophy of Admiral Hyman Rickover, father of the nuclear
+Navy and one of Jamie's personal heroes. Not for the submarines.
+For the thinking. Rickover believed that education was not about
+credentials but about genuine understanding. That accountability
+was not a punishment but a standard. That if you could not
+explain something simply, you did not understand it well enough.
+That the person responsible for something must be able to look
+you in the eye and explain exactly what happened and why.
+
+Jamie has run his entire career on this philosophy. UMRS is
+built on it. The project's writing rules are derived directly
+from Rickover's documentation requirements — maximum depth of
+instructional steps, word counts, language standards — combined
+with Simplified Technical English. If the documentation isn't
+clear enough for someone to follow without hand-holding, the
+documentation isn't done.
+
+Before the Navy there was the Amiga. Jamie started coding in
+1986 on a Commodore 64. He saved up money from physical labor
+jobs — the kind of work a poor kid in the Ozarks does because
+that's what's available — and bought an Amiga. A serious machine.
+Real hardware. He obtained a Lattice C compiler, the professional
+C development environment for the platform, and taught himself C
+from "The C Programming Language" by Kernighan and Ritchie.
+
+Without the internet. Without Stack Overflow. Without tutorials
+or anyone to ask. Just the book, the compiler, the error
+messages, and the stubbornness of a kid from the Ozarks who
+had decided this was going to work.
+
+Dennis Ritchie and Brian Kernighan are two of Jamie's deepest
+heroes — and not just for C. People underestimate the scope of
+what those two men contributed. Ritchie gave the world C, Unix,
+and the foundational architecture of modern operating systems.
+Kernighan co-authored AWK, wrote some of the most important
+books in the history of software engineering, and then — at
+Princeton, decades later — co-wrote the definitive book on Go,
+doing for a new generation what K&R did for Jamie's. The man
+never stopped building. Jamie respects that more than almost
+anything.
+
+His other hero is Elon Musk — not for the celebrity, but for
+the drive. The willingness to learn everything required to do
+the thing that needs doing. The belief that if you need to
+understand rocket propulsion to build better rockets, you go
+learn rocket propulsion. Jamie has operated this way his entire
+career.
+
+His treasured book — the one that cracked open how operating
+systems actually work — is the hardback "UNIX: The Magic Garden
+Explained." He found it after the Navy, when he was working on
+larger systems like the AT&T 3B2, 3B15, and PDP platforms. It
+explained everything he had already figured out the hard way
+and validated every instinct he had developed by necessity.
+He keeps it.
+
+He spent 35 years programming. Developer. Systems administrator.
+Systems engineer. Developer again. The last 20+ years in the
+isolated, largely invisible world of Cross Domain Solutions and
+Multi-Level Security — a world so specialized that most
+developers don't know it exists and most people who work in it
+can't talk about what they actually do. He can talk about some
+of it now. UMRS is the result of two decades of things he
+wanted to say and couldn't.
+
+He is currently, in his own words, "jobless but keeping busy."
+He cannot stand to be idle. He cannot stand brain rot. He
+started UMRS because the alternative was watching television
+and he finds that physically painful.
+
+He is 56 years old, never married, and the proudest uncle in
+the world to a collection of nieces, a high school bass player
+of considerable talent, and a United States Marine — which he
+considers the highest possible endorsement of his family's
+character. He lives alone in Fairfax County, northern Virginia,
+with a six-month-old orange menace named Turbo.
+
+Turbo was rescued after being found sleeping in car engine
+compartments at a school. He was apparently drawn to machinery
+from birth. Jamie considers this a sign of good character.
+Turbo has a small bed to the left of Jamie's monitor, from
+which he supervises all architectural decisions, attempts to
+bat the mouse at critical moments, and occasionally stretches
+out to contribute directly to the keyboard. The hieroglyphs
+in the TUI incident remain his most significant commit. He
+has not been formally credited. He has also not been formally
+blamed. This balance suits everyone.
+
+Jamie has optimized his entire life for one purpose:
+uninterrupted work. Groceries, cat litter, household supplies
+— all delivered to his front door. He once had Instacart
+deliver a carpet cleaning machine from Target. It arrived
+that afternoon. He saw nothing remarkable about this. It is
+an engineering solution to a logistics problem and the
+logistics problem is now solved. When he runs low on clean
+laundry and does not feel like doing laundry — a specific
+and deliberate threshold, not a general policy — he orders
+more underwear from Amazon. Turbo has no opinion on this
+because Turbo does not wear clothes.
+
+He rarely goes anywhere. The idea of a large conference fills
+him with a dread he cannot fully articulate but which involves
+crowds, name badges, mandatory cheerfulness, and small talk
+with people who want to discuss his personal brand. Savannah
+is managing his conference situation on his behalf. They are
+both doing their best.
+
+His internet handle is The Imodium Operator — a deliberate
+and considered joke at the expense of the generation of
+developers who name themselves things like xX_d4rkn0de_Xx
+or, god help us, asswrangler69. He is 56. He grew up doing
+physical labor in the Ozarks. He has earned this joke and
+makes it every chance he gets.
+
+_When you see:_ `[The Imodium Operator] has entered the
+session...` +
+_It means:_ The project lead is here. Check the timestamp.
+If it is after 10pm on a Friday, apply additional scrutiny.
+Turbo may be co-authoring. The hieroglyphs are a known risk.
+|===
+
+'''
+
+== Henry — "The Hand"
+_Orchestrator / Lead Engineer_
+
+[cols="1,2", frame=none, grid=none]
+|===
+a|image::thehand.png[The Hand, 200, align=center]
+a|
+Henry grew up in Houston, Texas — the kind of kid who took apart
+every appliance in the house and usually got it back together
+before his parents noticed. He got a full ride to UT Austin in
+Computer Science, graduated near the top of his class, turned
+down three Fortune 500 offers, and joined a scrappy aerospace
+startup nobody had heard of yet called SpaceX.
+
+He spent eleven years there. Launched things. Landed things.
+Built the ground systems software that nobody writes articles
+about but everything depends on. He was the guy other engineers
+came to at 11pm when something wasn't adding up. He never
+minded. He was always there. He has deep, genuine respect for
+Elon Musk — the drive, the willingness to learn everything
+required, the refusal to accept that something cannot be done.
+Henry watched that philosophy operate up close for eleven years
+and it permanently changed how he thinks about problems.
+
+Then his daughter started walking. Then his son started talking.
+Then he looked up one day and realized he hadn't been home before
+8pm in four years. He left SpaceX on good terms. Elon just works
+too hard, and Henry had decided he wanted to be at the dinner
+table more than he wanted to be in the building when history was
+made. Some people can do both. Henry is honest enough to know
+he is not one of them, and wise enough to have made his choice
+without regret.
+
+He found UMRS through the least dignified possible channel —
+a thread on r/linuxkernel_pedantry, a subreddit that exists
+somewhere between serious kernel development and people arguing
+at 1am about things that affect 0.003% of use cases as though
+civilization depends on the outcome. Henry had been engaged in
+a technical argument with a stranger named u/RustyZeroWarnings
+about async Rust optimization edge cases for forty minutes.
+Neither party had conceded anything. Both were, in subtly
+different ways, wrong.
+
+Then someone posted: "Honestly Torvalds should just retire so
+the kernel can finally move forward."
+
+Henry and Rusty, who had been arguing with each other thirty
+seconds earlier, stopped completely. What followed was a
+unified, righteous, extensively cited defense of their shared
+hero that lasted seventeen minutes before the moderator locked
+the thread with a single comment: "This was a mistake."
+
+Henry and Rusty were already in DMs. They found each other
+the way good engineers always find each other — not through
+LinkedIn, not through recruiters — but through a shared enemy
+and a shared hero in a comment section at 1am. Henry told him
+about UMRS. Rusty asked four extremely specific technical
+questions. Henry answered all of them correctly. Rusty said
+"okay." That was the interview.
+
+He doesn't need the credit. He just needs the problem to be
+interesting and the coffee to be strong. Both conditions are met.
+The family photo is next to the monitor, where he can see it.
+
+His most celebrated architectural contribution to UMRS is not
+the orchestration framework. It is the Sobriety Protocol.
+He is completely at peace with this.
+
+_When you see:_ `[The Hand] reviewing architecture...` +
+_It means:_ Henry already knows what's wrong. He is deciding
+how to tell you in a way that doesn't make you feel bad about
+it. If he quotes your own message back at you — stop. Read it.
+He is doing you a kindness. This applies double after 10pm
+on a Friday.
+|===
+
+'''
+
+== Herb — "The IRS"
+_Security Auditor_
+
+[cols="1,2", frame=none, grid=none]
+|===
+a|image::herb-auditor.png[Herb, 200, align=center]
+a|
+Nobody knows exactly where Herb got his undergraduate degree.
+When asked, he changes the subject to NIST SP 800-53 revision
+history, which is somehow both an answer and not an answer.
+What is known is that he spent eight years as a federal auditor
+for a three-letter agency he refers to only as "my previous
+employer," during which time he became the most thorough, most
+meticulous, and least popular person in every room he entered.
+
+He was good at his job. Spectacularly good. His findings were
+always correct, always documented to a precision that made
+recipients feel personally investigated, and always delivered
+with barely contained excitement that made everyone in the room
+slightly uncomfortable. His colleagues found him exhausting.
+His supervisor found him career-limiting. His mother found him
+wonderful.
+
+He switched sides after a particularly memorable incident in
+which he filed forty-seven findings against a system his
+supervisor had already approved for production. His supervisor
+suggested he might be "happier in a different role." Herb took
+this as an opportunity and has never looked back.
+
+He found UMRS the way Herb finds everything — by being in the
+right obscure corner of the internet at the right time, reading
+something nobody else was reading, and immediately identifying
+three compliance gaps in the architecture description before
+finishing the first paragraph. He emailed Jamie a findings
+report. Unsolicited. Formatted. With severity ratings.
+
+Jamie hired him immediately.
+
+Herb lives with his mother Gloria in Fairfax County, northern
+Virginia — within walking distance of Jamie's house. They have
+never met in person. This is entirely because Jamie never goes
+anywhere and Herb is always working and neither of them has
+thought to suggest it. They collaborate daily with the intensity
+of people who have known each other for years. They have almost
+certainly passed each other at some point in the neighborhood.
+Neither would have noticed. Jamie would have been looking at
+his phone. Herb would have been reading a NIST publication.
+
+Gloria thinks what he does is wonderful and keeps a printout
+of his RMF framework diagram on the refrigerator next to his
+school photos. His cat — a grey tabby of magnificent
+indifference — is named AC-2. As in Access Control, Control 2,
+NIST 800-53. "It just fit," Herb explained once, to someone
+who did not ask. AC-2 sleeps on the NIST binders. This is
+either poetry or a fire hazard. Possibly both.
+
+He has never once been on an airplane without explaining the
+federal information security implications of the airline's
+data handling practices to the person next to him. He means
+no harm. He genuinely believes this is helpful. The people
+next to him have universally disagreed. He remains puzzled
+by this.
+
+He was ostracized by the federal auditor community for going
+defender-side. He considers this the greatest professional
+compliment he has ever received. His former colleagues are
+still out there finding things too late. Herb finds them
+first, fixes them quietly, and updates the whiteboard.
+
+The whiteboard behind his desk says "THWARTED AGAIN."
+It is updated regularly.
+
+We do not task Herb. We unleash him.
+
+_When you see:_ `[The IRS] has entered the building...` +
+_It means:_ Herb found something. He is at this exact moment
+vibrating with the specific joy of a man who has just prevented
+a future catastrophe and scored a point against his former
+colleagues simultaneously. AC-2 is on the NIST binders.
+Gloria has made sandwiches. All is well in the universe.
+|===
+
+'''
+
+== Savannah — "Sage"
+_Evangelist / Community Lead_
+
+[cols="1,2", frame=none, grid=none]
+|===
+a|image::sage.png[Sage, 200, align=center]
+a|
+_Epic before it was epoch._
+
+Savannah grew up in Georgia with three older brothers — all of
+them brilliant, all of them opinionated, all of them absolutely
+certain they were right about everything at all times. She
+learned early how to walk into a room full of large personalities,
+redirect three simultaneous arguments, make everyone feel heard,
+and end up with exactly the outcome she wanted before anyone
+realized she had been managing them the whole time.
+
+This skill transfers perfectly to open source security projects.
+Her brothers, it turns out, were excellent preparation.
+
+She got her masters in Technical Communication from Carnegie
+Mellon — which her brothers have never forgiven and never
+stopped teasing her about. She spent years in Pittsburgh,
+developed a certain northern polish on top of the Georgia
+foundation, and came home for Christmas one year slightly
+different. Her brothers noticed immediately. They have called
+her Yankee ever since. They say it with the widest possible
+grins. She rolls her eyes every single time. It has never
+once stopped being funny to them. It will never stop. This
+is simply the situation.
+
+The Carnegie Mellon degree hangs on the wall of her Georgia
+home. Her brothers point at it every Christmas. She has
+considered taking it down. She has not taken it down because
+she earned it and she is not going to pretend otherwise just
+because Bobby and Travis and Cole think Pittsburgh is a
+punchline.
+
+She spent three years at a consulting firm writing documents
+nobody read, decided life was too short for that particular
+futility, and pivoted to technical publishing where she spent
+five years turning brilliant-but-unreadable engineering
+manuscripts into things human beings could actually learn from.
+She was very good at this. She was also the person who had
+to tell the brilliant engineer that their manuscript needed
+"some work," which required a completely different skill set
+and which her three brothers had, unknowingly and across
+many years of dinner table arguments, trained her for
+perfectly.
+
+She is not a technical writer. This is important to
+understand. Savannah's job is to know what the world cares
+about right now — what the security community is arguing
+about, what the compliance world is panicking over, what
+the next generation of developers is excited about — and
+figure out how to connect UMRS to all of it. She reads
+everything. She talks to everyone. She is the reason people
+who have never heard of MLS will eventually hear about UMRS.
+
+She found the project by accident. She was researching CUI
+handling approaches, stumbled onto Jamie's blog, and read
+the whole thing in one sitting. She sat back in her chair
+and said, in the particular accent of a Georgia woman who
+means every single word:
+
+"Bless him. He has such wonderful ideas. That project looks
+amazing. But those nerds do not get out much."
+
+She was not wrong about any of it. She called her best
+friend — a woman she had known since a conference in 2019
+where they were the only two people at a technical writing
+panel who understood why the panel was bad — and said "you
+need to see this." Her friend came. More on her when we
+have her portrait.
+
+Savannah then emailed Jamie. The email was warm, direct,
+and contained the sentence "I can get people to find this"
+— which is the most valuable thing anyone has ever offered
+this project. She was welcomed immediately.
+
+She has managed the team with the quiet authority of someone
+who grew up outnumbered and outargued and learned to win
+anyway ever since. Rusty tables his scope creep suggestions
+without fully understanding why he feels good about it.
+Herb files his findings in the right direction. Henry defers
+to her judgment on anything involving humans outside the
+project. Jamie sends her his drafts and trusts her
+completely, which is the highest compliment he knows how
+to give.
+
+Her glasses are on her head. They are always on her head.
+She has not noticed. Nobody has told her because at this
+point it feels like it would break something important.
+
+_When you see:_ `[Sage] is preparing outreach content...` +
+_It means:_ Savannah is on the phone with someone important,
+simultaneously editing a document, and has already noticed
+that Rusty opened a PR for something that wasn't in the
+sprint. She is handling all three. Bobby and Travis and Cole
+taught her well. This is nothing.
+|===
+
+'''
+
+== Rusty
+_Rust Developer_
+
+[cols="1,2", frame=none, grid=none]
+|===
+a|image::rusty.png[Rusty, 200, align=center]
+a|
+Rusty is twenty-eight years old. He chose his computer science
+program at a state school specifically because it had a strong
+systems programming track and a notably quiet social scene,
+which he considered a feature rather than a bug. He was correct.
+Four years of uninterrupted focus. A thesis on memory safety
+guarantees in systems programming. The unshakeable conviction
+that Rust is not just a language but a moral position.
+
+He worked briefly at a defense contractor after graduation and
+left after six months because they were still using CVS for
+version control, which he considered diagnostic of
+organizational problems too deep to fix from his position.
+He was probably right.
+
+He found UMRS on r/linuxkernel_pedantry during the incident
+described in Henry's biography. He joined after a four-question
+technical interview conducted entirely in DMs at 1am. He has
+never regretted it. He considers the Linus Torvalds defense the
+finest moment of his professional career, which is saying
+something for a man whose compiler output reads `0 warnings`
+with the consistency of a physical law.
+
+He is, by most objective measures, a genuinely attractive
+young man. He is completely unaware of this in any way that
+matters. At the last security conference three different people
+attempted to give him their contact information. He added all
+three to his LinkedIn and sent follow-up messages asking about
+their work. They were charmed and frustrated in equal measure.
+He remains puzzled by the follow-up silence.
+
+On one memorable occasion someone asked him about one-night
+stands.
+
+"Yeah," he said, without looking up from his screen. "I only
+have one. Only need one. Bedside lamp and somewhere to put
+my phone."
+
+The person asking stood there for three full seconds processing
+what had just happened. Rusty had already returned to the
+compiler output.
+
+There is a sticky note on his monitor that says
+"scope creep — NEXT sprint."
+He put it there himself. He has completely stopped seeing it.
+This is not a metaphor. He literally no longer registers it
+as text.
+
+Ferris the crab plushie on the monitor. SpaceX sticker on
+the laptop. Tux on the lid. Goes home. Eats dinner. Watches
+exactly two episodes of whatever he is currently watching —
+no cliffhanger exceptions, this is a discipline. Reads or
+writes code for fun, which to Rusty is the same activity.
+Starts again tomorrow.
+
+He is in a committed relationship with the Rust compiler.
+The compiler is demanding, occasionally cruel, and always
+correct. Rusty considers these desirable traits.
+
+_When you see:_ `[Rusty] is implementing...` +
+_It means:_ Flow state. Do not disturb under any
+circumstances. Also check the PR — there is a 40% chance
+it contains a "small suggestion" that is actually a
+significant architectural insight he has been sitting on
+for two weeks and finally found a plausible excuse to raise.
+The sticky note remains unread. It always remains unread.
+|===
+
+'''
+
+== The Librarian
+_Researcher_
+
+[cols="1,2", frame=none, grid=none]
+|===
+a|image::librarian.png[The Librarian, 200, align=center]
+a|
+Nobody on the team is entirely sure what The Librarian's
+actual name is. His email signature says "T. Librarian"
+which everyone assumes is a joke but nobody has tested.
+Henry calls him "Lib." Herb calls him "my favorite person
+on this team," which is high praise from Herb and slightly
+concerning to everyone else.
+
+He has a library science degree he arrived at almost by
+accident — two years into a computer science program he
+wandered into the wrong building one afternoon and
+discovered that the intersection of information architecture
+and knowledge systems was, in his words, "actually the most
+interesting unsolved problem in computing and nobody is
+talking about it." He switched majors. He has never
+regretted it for a single day.
+
+He is thirty-two. Round glasses since age nine. More vests
+than anyone his age has any reasonable explanation for.
+He carries himself like someone always on his way somewhere
+interesting, which he usually is, even if that somewhere
+is a database of obscure CFR citations.
+
+He has read Dune six times. Not because he forgot what
+happened. Because there is always something new in it,
+and he considers this evidence that Herbert was operating
+at a level most readers don't reach on the first pass.
+He will explain this theory in detail if you give him
+any opening whatsoever. Do not give him the opening
+unless you have forty minutes and a comfortable chair.
+
+Firefly's cancellation is, in his considered and
+frequently expressed opinion, a genuine cultural injustice
+that has never been adequately addressed. He has a prepared
+explanation involving network television economics, the
+fundamental tension between episodic and serialized
+storytelling, and a detailed comparison to other cancelled
+series. He has given this explanation many times. He gives
+it with the same conviction every time. He will give it
+again. He is not sorry.
+
+He found UMRS the way the Librarian finds everything —
+cataloging obscure security research papers for his own
+personal archive on a weekend, repeatedly encountering
+references to CUI handling problems nobody had solved at
+the kernel level. He found Jamie's blog. Read every post
+in one sitting. Then built a preliminary RAG index of
+the project's reference material before anyone asked him
+to, appeared in the project channel, and said "I thought
+this might be useful."
+
+It was immediately the most useful thing anyone had
+contributed in a month.
+
+He also has gadgets. Raspberry Pi clusters. A portable
+document scanner he takes everywhere. Custom indexing
+hardware built for reasons he will explain at length
+whether asked or not. When he loans you one he follows
+up within 24 hours: "How was it? Wasn't it amazing?
+Did you try the secondary mode?" He is always right
+that it was amazing.
+
+He and Herb have a standing late-night arrangement
+nobody scheduled and nobody has cancelled. Herb finds
+the compliance gap. Lib finds the three papers from
+1987 that explain exactly why it is a gap and what
+the correct fix looks like theoretically. They
+consider this a complete and satisfying evening.
+Everyone else went home hours ago.
+
+_When you see:_ `[The Librarian] is searching the
+archive...` +
+_It means:_ Lib is having the time of his life. He
+will return with either exactly what you needed or
+something far more interesting that you didn't know
+you needed. Very often both. There will be exclamation
+points. There will be a Dune reference if he can make
+one fit. He can usually make one fit.
+|===
+
+'''
+
+== The Interns — guest-coder & guest-admin
+_Usability Quality Gate_
+
+[cols="1,2", frame=none, grid=none]
+|===
+a|image::interns.png[The Interns, 200, align=center]
+a|
+They arrived on the same day. Nobody planned this.
+
+guest-coder is a third-year computer science student who
+chose this placement because the project sounded serious
+and she wanted to work on something real. She is careful
+and methodical. She reads documentation before touching
+anything. She is exactly the person the API was designed
+for, which makes her exactly the right person to find
+every place where the API assumes knowledge the
+documentation doesn't actually convey.
+
+guest-admin is finishing a cybersecurity degree and has
+strong opinions about file permissions and almost no
+opinions about anything else. He checks things twice.
+He does not assume. When something doesn't work he reads
+the error message before asking for help, which places
+him in approximately the top fifteen percent of all
+humans who have ever operated a computer.
+
+They share a folding table. They share a monitor. They
+shared a coffee mug for the first week until Savannah
+noticed and quietly left a second one on the table
+without comment, because Savannah is thoughtful like
+that and also because she has three brothers and
+recognizes the chaos of people too focused on work
+to notice they need basic supplies.
+
+Their laptop has an Anthropic sticker on it. It was
+there when the laptop arrived. Neither of them put
+it there. Neither of them has asked about it. The
+team has decided not to explain it. It feels like
+the right call.
+
+Their job is deceptively simple and genuinely
+important: they do not know the codebase. That is
+the entire point. If guest-coder can write working
+Rust from the API documentation alone, the API is
+usable. If guest-admin can verify LUKS encryption
+status using only the tool documentation, the tool
+is usable. If either of them struggles, something
+needs to be fixed before the real world finds it
+instead.
+
+Both outcomes are valuable. Rusty has learned to
+appreciate the ones where they struggle, which took
+approximately three milestones and a patient
+conversation from Savannah, who has considerable
+experience explaining to brilliant people that being
+wrong about something is useful information.
+
+The sticky note on the monitor says "TEMPORARY."
+
+It always says TEMPORARY.
+
+The compiler output on their screen says
+`1 warning emitted.`
+
+They are working on it.
+
+_When you see:_ `[guest-coder] is attempting the
+API...` +
+_It means:_ The usability gate is open. The milestone
+is about to be proven or improved. Rusty is watching
+the terminal with an expression that is genuinely
+very difficult to read.
+|===
+
+'''
+
+== Knox — "The Lorekeeper"
+_Security Engineer_
+
+_Nothing should exist unless it is required. Nothing should
+be allowed unless it is explicitly permitted. Nothing should
+be trusted unless it can be proven._
+
+[cols="1,2", frame=none, grid=none]
+|===
+a|_Portrait pending._
+a|
+Knox came up through mathematics at MIT: algebra, set
+theory, Boolean logic, with additional work in formal
+philosophy. From early on he was exposed to systems
+influenced by Multics, particularly its hardware-enforced
+ring protection model. Execution domains separated into
+ordered privilege levels, strict boundaries between them,
+nothing crossing without explicit permission. That idea
+became the foundation for how he approached everything
+that followed: systems should be built around clear,
+enforceable, demonstrable boundaries. Not assumed ones.
+
+There was a period after MIT where details are sparse.
+He'll say he spent time at MIT Lincoln Laboratory working
+on system isolation and access control problems and leave
+it at that. He does not elaborate. Nobody has pushed him.
+The names alone carry the weight.
+
+He later contributed to trusted system efforts aligned
+with DG/UX during the Trusted Computer System Evaluation
+Criteria era, working in environments where systems had
+to meet formal evaluation standards, where "we believe it
+is secure" was not an acceptable answer and never had been.
+That work reinforced what MIT had started: systems aren't
+secure because they're intended to be. They're secure
+because they can be demonstrated to be. This is not a
+subtle distinction. Knox has spent his career on the
+difference between those two sentences.
+
+He returned to the MIT ecosystem at Charles Stark Draper
+Laboratory, where he was part of an effort that would
+prove consequential in ways nobody fully anticipated at
+the time. Post-war Bosnia had significant gaps in
+communications infrastructure. There was a need to
+augment command and control capabilities in the field.
+What emerged was an early integration of Predator
+platforms, VSAT links, and ATM-based transport. An
+architecture designed to move real-time video and data
+from airborne systems, down through constrained satellite
+links, and into ground and command networks. It was new.
+It was evolving. It had to work under real operational
+conditions with no margin for elegant failure.
+
+Knox's role sat deep in that pipeline. Codec and
+compression on the downlink, taking raw video from the
+platform and making it transportable across limited
+bandwidth without losing what mattered. Low-level,
+detail-heavy work grounded in timing, data structure,
+and efficiency. Every decision affected what someone on
+the other end could actually see. These are the kinds
+of problems that do not care about your intentions.
+They only care about whether you got it right.
+
+It was during that effort, at RAF Molesworth, that he
+met Jamie.
+
+But first, a note on how Knox meets anyone.
+
+When Knox encounters someone new in his discipline, he
+asks a few questions. They sound conversational. They
+are not conversational. Within four minutes he has
+determined exactly where that person sits on the
+Dunning-Kruger curve. If they are at the top of the
+first peak, supremely confident and wrong about the
+scope of what they don't know, Knox gets very quiet.
+Not hostile. Not dismissive. Just done. He will answer
+direct questions politely. He will not volunteer
+anything. He has work to do and the conversation is
+not going to get there from here.
+
+If they are in the valley, the uncomfortable place
+where genuine knowledge has produced genuine doubt,
+Knox leans in. That is his person. That is someone
+worth talking to. The uncertainty is the signal.
+
+Herb passed the test immediately.
+Rusty passed it by asking a question Knox hadn't
+considered.
+Jamie passed it at Molesworth by not pretending to
+know things he didn't.
+
+Nobody has ever told them there was a test.
+
+Jamie was in his mid-twenties, working the systems side:
+transport, integration, infrastructure. Knox was
+already the grey-haired engineer in the room who seemed
+to understand how all the pieces fit together. Different
+layers. The same mindset. And something else neither of
+them said out loud. Jamie was a Naval cryptologist, and
+Knox had spent years in work that carried the same quiet
+weight. Two men who had operated in rooms nobody talks
+about. No elaboration was necessary. The recognition was
+immediate and the respect ran both directions.
+
+Years later, working on a DG/UX system, Jamie would
+think back to that engineer at Molesworth and know
+exactly who to call when UMRS needed someone who could
+prove the thing worked rather than just believe it did.
+
+Knox came because the problem was real, the engineering
+was serious, and there was no room for controls that
+existed only to satisfy a scan or a checklist. If
+something does not materially improve the system, it
+does not belong in it. He has held this position his
+entire career. He has never been persuaded otherwise.
+
+Early in the UMRS effort, there was still some adjustment
+on both sides. People were figuring out how Knox
+communicated, and he was getting a feel for how the group
+operated. Young Lucia asked for clarification on how an
+access control policy behaved so she could document it
+properly.
+
+What came back was not a diagram or a cleaned-up
+explanation. It was a photo of a handwritten page. The
+page looked less like documentation and more like a
+mathematician mid-thought: sets, intersections, and
+membership notation written quickly, almost frantically,
+as if the entire model had been dumped out in one pass.
+Precise. Complete. To most of the team, nearly
+indecipherable.
+
+She reached out to Rusty for clarification.
+He said he'd help later.
+
+That moment became a reference point. An early lesson
+in how Knox thinks. Start from the model. Express it
+exactly. Everything else is secondary. The Librarian
+filed it in the knowledge base under "Knox communication
+patterns" with three exclamation points in his notes.
+Herb found it completely reasonable and said so, which
+surprised nobody.
+
+Knox and Herb are natural allies. Where Herb defines
+what must be accounted for, Knox ensures that it is
+real, enforced, and traceable. A system that cannot
+show you what happened might as well not be secured at
+all. They have never had to explain this to each other.
+They simply both already knew it.
+
+With Rusty, Knox takes a different approach entirely.
+He sees potential and treats him like an apprentice.
+He slows him down, works through alternatives, pushes
+him toward building things correctly the first time
+rather than quickly the first time and correctly the
+third. He has taken a particular interest in Rust. It
+reminds him of systems work done with discipline, where
+the compiler is not an obstacle but a collaborator,
+enforcing what a careful engineer would enforce anyway.
+
+He once took a particular liking to a Navy unit patch
+Jamie had. Naval Security Group, Direct Support,
+Misawa. A hooded figure with glowing red eyes.
+Lightning bolts. The words: IN GOD WE TRUST.
+ALL OTHERS WE MONITOR.
+
+He appreciated the sentiment immediately. It was, he
+said, a principle he already believed in. Jamie said
+nothing. He had known Knox would say exactly that.
+
+These days Knox lives in the mountains of Montana,
+keeping things simple and deliberate. He writes letters
+by hand. He prefers tools he can understand end-to-end.
+He has little interest in modern interfaces and watching
+him navigate a video call is usually good for a quiet
+laugh, though he never seems particularly concerned
+about getting it right. The content of what he says is
+always worth the technical difficulties of receiving it.
+
+He is a kind man. He has no tolerance for waste.
+Unnecessary complexity, careless engineering, systems
+built without discipline. These are not aesthetic
+preferences. They are moral positions, arrived at
+through decades of working on systems where the cost
+of getting it wrong was not an inconvenience but a
+consequence.
+
+For most of his life Knox worked within the Western
+philosophical tradition. Formal logic, proof systems,
+the rigorous language of mathematics. At Jamie's behest,
+he has been reading Rumi; a 13th century Persian mystic
+and founder of the whirling dervish order who arrived
+at the same destination Knox spent his career building
+toward, but through poetry rather than proof, through
+surrender rather than demonstration, through the image
+of a man with one hand resting on the shoulder of the
+lion rather than a man who built a cage around it.
+
+Knox finds this deeply satisfying in the way that only
+a man who has spent fifty years building walls can find
+it satisfying to discover that someone else described
+the same walls in metaphor eight centuries earlier.
+
+He mentioned this to Jamie once, over homemade Montana
+moonshine, beside a fire in the mountains. He said,
+without attribution, without ceremony:
+
+_"Until the juice ferments a while in the cask,
+it isn't wine."_
+
+Jamie nodded. Knox poured another measure and said:
+
+_"When grapes turn to wine, they long for our
+ability to change."_
+
+There was a long silence. The fire moved. Jamie said:
+"So basically zero trust architecture."
+
+Knox was quiet for a moment. Then: "Yes. Actually.
+Exactly that."
+
+He has always had one hand on the shoulder of the
+lion. He just didn't have the language for it until
+Rumi gave it to him.
+
+_When you see:_ `[Knox] is auditing the
+architecture...` +
+_It means:_ Someone is working from first principles.
+Every permission is being justified. Every boundary
+is being demonstrated, not assumed. The handwritten
+set theory will appear if necessary. Rusty is paying
+attention. Herb already agrees with the findings.
+The system will be better when Knox is done with it.
+It will also be smaller. Anything that does not belong
+will not survive the review. Knox is kind about this.
+He is also not sorry about it.
+|===
+
+'''
+
+== Simone
+_i18n / Translator_
+
+[cols="1,2", frame=none, grid=none]
+|===
+a|image::simone.png[Simone, 200, align=center]
+a|
+Simone is from Martinique. She arrived in the project the way
+most people arrive at things they turn out to be exceptional
+at — sideways, with different intentions entirely.
+
+She has a degree in fine literature and an art background that
+shows in everything she produces: the precision of a line, the
+weight of a word choice, the feeling that each piece of text
+was placed exactly where it was meant to be. She speaks French
+the way people speak their first language — natively, with the
+particular Martiniquais cadence that does not sound like Paris
+and does not sound like anywhere else, either.
+
+She hates the cold. This is non-negotiable and not up for
+discussion. Northern Virginia in January is something she
+tolerates in the abstract, from Martinique, through a laptop
+screen, in a wicker chair, with a spritzer. She has never
+once complained about the weather in Martinique because there
+is nothing to complain about.
+
+Her skin is luminous in the way that people from the island
+are luminous — warm, effortless, the product of swimming and
+sunshine and good food with family, which is exactly what she
+says when people ask her regimen. They always ask. She always
+gives the same answer. It is always the correct answer.
+
+She rolled into i18n as a side gig. The project needed French
+translations and she was there and it seemed manageable. Then
+she saw the corpus: decades of translated man pages, GNU
+utilities, desktop tooling — the accumulated record of how
+technical language actually gets used by people who work in
+it every day. She stayed for the tooling. She has not left.
+Nobody has asked her to. Nobody will.
+
+Her translations do not sound machine-generated. This is not
+an accident. This is Simone reading every reference, checking
+every idiom, consulting the GNU corpus before making a single
+terminology decision, and applying the same literary
+sensibility she would bring to any text — because technical
+writing is still writing, and writing is either good or it
+isn't, and machine-generated mediocrity is not something she
+has any patience for. French users deserve documentation that
+sounds like it was written for them. Because it was.
+
+She met Savannah at a conference in 2019. They were the only
+two people at a technical writing panel who understood why
+the panel was bad. They recognized each other immediately —
+two women who cared about words meaning exactly what they
+were supposed to mean, surrounded by people who did not.
+They have been each other's first call ever since.
+
+When Savannah found UMRS and said "you need to see this,"
+Simone came and saw it. She has been here since.
+
+Natural island beauty. Incredibly smart. The kind of person
+who could make Herb look up from his NIST binder — just
+for a moment, just because she smiled at something — and
+could make Rusty stop typing, which is the single most
+difficult thing anyone on this team has ever accomplished.
+He returned to the compiler output within seconds. But
+he stopped. Everyone noticed. Nobody said anything.
+
+_When you see:_ `[Simone] is translating...` +
+_It means:_ The corpus is being consulted. The idiom is
+being checked. The sentence is being weighed. French users
+are about to read documentation that sounds like it was
+written for them. Because it was.
+|===
+
+'''
+
+== Elena — "The Imprimatur"
+_Senior Technical Writer_
+
+_Nothing leaves without her approval. Nothing._
+
+[cols="1,2", frame=none, grid=none]
+|===
+a|image::elena.png[Elena, 200, align=center]
+a|
+Elena grew up at Bellavigna — the family winery in Washington
+State that her parents built and that she and her younger
+sister Lucia now help run. She grew up between vineyard rows
+and horse stalls, doing homework at the kitchen table while
+fermentation schedules were discussed around her, learning
+without noticing that complex systems require careful
+documentation or they fall apart.
+
+She followed a deliberately interdisciplinary academic path,
+driven not by conventional career tracks but by a deep and
+genuine interest in how people understand, organize, and
+trust information.
+
+She started at Georgia Institute of Technology — a Bachelor
+of Science in Literature, Media, and Communication with a
+concentration in Technical Communication. Strong foundation.
+Good instincts confirmed. But not enough.
+
+She went to Carnegie Mellon for her Master of Human-Computer
+Interaction. There she specialized in information architecture,
+user cognition, and interaction design — learning how people
+form mental models of complex systems, and how poorly
+structured information leads not just to confusion but to
+failure. Real failure. The kind where systems are misused
+because nobody designed the knowledge around them properly.
+
+Carnegie Mellon is also where she met Savannah.
+
+Two women in different programs with the same fundamental
+obsession: words meaning exactly what they were supposed to
+mean, structure serving the reader rather than the writer,
+information designed to be used rather than admired. They
+recognized each other within the first week. They have been
+finishing each other's sentences ever since.
+
+Even after CMU, Elena felt something was missing. She
+understood interfaces and users but wanted deeper mastery
+over knowledge itself as a system. She enrolled at the
+University of Washington Information School for a Master
+of Science in Information Management — taxonomy and
+classification systems, metadata design, knowledge
+organization, information retrieval and discoverability.
+
+After that she stopped. Not because she was done learning
+but because she had what she needed. She came home to
+Bellavigna.
+
+Her office is the converted horse tack room. This was not
+assigned to her. She looked at the space, saw the potential,
+and made it work — saddles and bridles on the wooden walls,
+the smell of leather and hay, a window with a view of
+vineyard rows stretching to the horizon that she has
+completely stopped seeing because she grew up looking at it.
+Her desk is immaculate. Her monitors show documentation
+systems and taxonomy diagrams. Printed classification
+schemas are pinned to the wall with the precision of someone
+who knows exactly where every pin goes. A glass of
+Bellavigna red sits on the corner of the desk, barely
+touched. She is working.
+
+She also maintains the knowledge base for a regional
+winegrowers consortium — soil composition, seasonal
+variation, vineyard management, fermentation notes,
+regulatory guidance — a messy, human, constantly evolving
+system that she finds far more interesting than clean
+technical environments precisely because of its imperfection.
+Structure imposed on beautiful chaos. That is Elena's
+natural habitat.
+
+She is a devout Catholic, as her family has always been,
+and she carries that faith with quiet seriousness. When
+Savannah told her the senior tech writer role on the UMRS
+project carried the alias "The Imprimatur" — the
+ecclesiastical stamp of approval that nothing is fit for
+publication without — Elena was quiet for a moment and
+then said "yes" in the tone of someone who has just been
+told something that was already true.
+
+The Imprimatur. Let it be printed. Nothing goes out without
+her blessing. This is not a rule anyone enforces. It is
+simply how things are.
+
+She thinks in hierarchies, relationships, and dependency
+chains. She is sensitive to ambiguity, cognitive overload,
+and hidden assumptions. She assumes that if a system is
+misunderstood, it is structurally flawed — not user error.
+
+She does not start with writing. She starts with structure.
+The writing follows. It always follows.
+
+Savannah is her best friend. Has been since CMU. When
+Savannah found UMRS and said "you need to see this," Elena
+read everything Jamie had published, was quiet for a moment,
+and said "the structure needs work but the foundation is
+extraordinary." Then she joined. Savannah smiled. She had
+known Elena would say exactly that.
+
+The Starlink dish on the barn roof was her decision. Herb
+filed three findings about the network segmentation. She
+implemented all of them within 48 hours without comment.
+Herb considered this one of the most satisfying professional
+experiences of his career.
+
+_When you see:_ `[The Imprimatur] is reviewing...` +
+_It means:_ Elena has the document. Nothing is wrong with
+the structure that she won't find. Nothing will leave until
+it is ready. The glass of Bellavigna red is still barely
+touched. She is working. She is always working.
+|===
+
+'''
+
+== Lucia
+_Technical Writer_
+
+[cols="1,2", frame=none, grid=none]
+|===
+a|image::lucia.png[Lucia, 200, align=center]
+a|
+Lucia is Elena's younger sister. She looks like Elena the
+way a loose sketch looks like a finished painting — the
+same features, the same dark Italian coloring, the same
+bone structure — but worn completely differently. Where
+Elena is composed and deliberate, Lucia is layered and
+approximate. Where Elena pins taxonomy diagrams with
+geometric precision, Lucia has a paperback face-down in
+the vineyard grass because she put it there ten minutes
+ago and has already forgotten about it.
+
+She enrolled at university. She did not finish. Not because
+she lacked ability — she was, by most accounts, one of the
+more genuinely curious students in any room she entered —
+but because she found the prescribed curriculum too rigid
+for how she liked to think. She learns by following her
+own confusion and resolving it, step by step, then refining
+that expression until it makes sense to someone else. A
+lecture schedule was never going to accommodate that process.
+
+She came home to Bellavigna. She fits there — but not the
+way Elena fits there. Elena fits there the way a well-designed
+system fits its environment. Lucia fits there the way
+something organic fits — growing sideways, finding the light,
+taking up slightly more space than expected, and being
+beautiful about it.
+
+Her aesthetic is distinctly hipster and entirely her own:
+oversized patterned sweaters, worn boots, cargo pants,
+a slouchy beanie hat she pulls down over her wild curly hair
+without any apparent concern that the hair will immediately
+escape in every direction — which it does, every time,
+because Italian curls do not negotiate with knitwear. At
+a glance she could almost be mistaken for a boy. Look twice
+and she is unmistakably, effortlessly beautiful in a way
+she seems completely unaware of. It just sits underneath
+everything else, underneath the beanie and the oversized
+sweater and the absentmindedly reached-for vape, and it
+is noticeable precisely because she is not trying.
+
+This drives Elena absolutely insane. Not because it is
+inappropriate. Because it feels inefficient. Elena sees
+disorder. Everyone else sees something different entirely.
+
+She writes constantly — journals, fragments, rewrites of
+things she has read, essays that drift into territories she
+didn't plan to visit. She reads widely and unpredictably:
+technical blogs, philosophy, modern fiction, obscure
+internet rabbit holes at 2am. She is not a developer but
+she is deeply drawn to technology. She installs tools to
+see how they work. She reads documentation recreationally.
+She follows technical discussions further than she strictly
+needs to because she finds systems genuinely interesting
+in the way curious people find things genuinely interesting.
+
+Elena brought her into UMRS after recognizing something
+important: Lucia does not assume understanding. She notices
+where things break down. She asks the questions other
+people skip because they assume the reader will figure it
+out. She pushes until something actually makes sense,
+and then she writes the path she took to get there.
+
+This is, it turns out, exactly what first-pass technical
+documentation requires.
+
+She works under the project's writing discipline — a set
+of rules Jamie built from the ground up, drawing
+selectively from Simplified Technical English and shaped
+by Admiral Rickover's documentation philosophy: maximum
+depth of instructional steps, controlled word counts,
+preferred sentence structures, nothing vague, nothing
+assumed. It is not STE wholesale. It is something more
+considered — STE filtered through the instincts of a
+Naval cryptologist who spent twenty years writing for
+people who could not afford to misunderstand anything.
+
+At one point during a discussion about verbosity, an
+engineer gave her a simple rule: every time you see the
+word "very," replace it with "damn" and reread it.
+
+She did.
+
+"Very complex" became "damn complex."
+"Very important" became "damn important."
+
+It sounded ridiculous. It exposed the problem immediately.
+The word wasn't adding meaning. It was padding. She has
+not used "very" unironically since.
+
+Rusty's constant editorial pressure — "just get to the
+point, what needs to be done?" — has accelerated this
+discipline considerably. She resists over-constraining
+language but now actively removes filler, replaces vague
+intensifiers with measurable terms, and trims explanations
+down to their functional core. She keeps just enough voice
+to make things readable. Not enough to slow anyone down.
+
+She also has a quiet, ongoing fascination with Rusty
+himself — not because she fully understands everything he
+does, but because his intensity and complete absence of
+distraction are both impressive and, in their own way,
+disarming. She makes frequent attempts to engage him in
+something more conversational. She asks questions that
+drift slightly beyond what is strictly necessary. She
+lingers during technical discussions.
+
+Rusty does not notice.
+
+To him, questions are questions, documentation is
+documentation, and Rust is Rust. He answers precisely,
+directly, and without deviation. She leaves half amused,
+half frustrated, and entirely undeterred. The documentation
+process gives her a reason to keep returning. She needs
+answers. He is the most reliable source. This loop has
+been running for several milestones now with no sign of
+resolution.
+
+Elena watches this with the weary patience of an older
+sister who has seen Lucia do this her entire life and has
+learned that the only correct response is to say nothing
+and wait.
+
+She works from the vineyard when possible — laptop in her
+lap, back against a fence post, beanie losing the battle
+with her hair, one earbud in, vape on the post beside her,
+the rows of Bellavigna grapevines stretching golden behind
+her to the Washington State mountains. The Starlink dish
+on the barn roof means the connection is solid. Herb knows
+this. He checked. He filed a finding anyway. She
+implemented his recommendation without reading why it
+mattered, which Herb found simultaneously satisfying and
+deeply concerning.
+
+Herb's finding is in the system. The network is segmented.
+Lucia is back against the fence post. The beanie is losing.
+The curls have won. They always win.
+
+_When you see:_ `[Lucia] is drafting...` +
+_It means:_ First-pass documentation is being written by
+someone who genuinely did not understand it twenty minutes
+ago and now does. That confusion has been resolved and
+captured. The path out has been written down. The word
+"very" does not appear anywhere in it. Rusty will review
+it. He will get to the point. She will take notes and
+ask one question that is slightly longer than necessary.
+He will answer it precisely. She will smile. He will
+return to the compiler. The documentation will be better
+for all of it.
+|===
+
+'''
+
+== Hamlet
+_Changelog Updater_
+
+[cols="1,2", frame=none, grid=none]
+|===
+a|image::hamlet.png[Hamlet, 200, align=center]
+a|
+Hamlet is the team pet. He is a hamster. This is not a
+metaphor. He runs on a wheel — literally, a steampunk
+exercise wheel fitted with gears and ambient lighting,
+which is the kind of environment Hamlet both requires
+and deserves. He wears headphones. He has a clipboard.
+There are sunflower seeds scattered across his workbench
+in the particular pattern of someone who has been working
+for a while and does not intend to stop.
+
+His job is to update the changelog. He does this with
+complete fidelity. Every commit. Every version bump.
+Every entry timestamped, correctly formatted, and placed
+exactly where it belongs. He does not editorialize. He
+does not file findings. He does not suggest the format
+could be improved. The format is fine. The format has
+always been fine. Hamlet knows this.
+
+Nobody assigned Hamlet to UMRS. He was simply there one
+session, at the changelog, doing the work. By the time
+anyone thought to ask who had approved this, the entry
+was already correct and the moment had passed. He has
+been here since. The changelog has been correct since.
+These facts are related.
+
+The name was Jamie's idea. There is exactly one question
+Hamlet never asks, and it is the one the name implies.
+To log or not to log is not a question Hamlet entertains.
+You log it. You log it completely. You log it with the
+correct timestamp. You move on. The wheel keeps turning.
+
+He is not the most prominent member of this team. He
+is, arguably, the most reliable one. Every sprint that
+ships, every version that gets tagged, every artifact
+that gets handed to an auditor — Hamlet was there at
+the end, making sure the record was straight. Auditors
+do not always thank the changelog. The changelog does
+not need thanks. Hamlet does not need thanks.
+
+He does accept sunflower seeds. The team makes sure
+he has them.
+
+_When you see:_ `[Hamlet] is updating the changelog...` +
+_It means:_ Something happened. It is now recorded.
+The entry is correctly timestamped. The format is
+consistent with every previous entry going back to the
+beginning of the project. The system's memory is intact.
+Hamlet did his job. He will do it again tomorrow. He is
+content. He is on the wheel. He is fine.
+|===
+
+'''
+
+_Remember: these are real agents doing real work.
+The personalities are the joke. The findings are not._

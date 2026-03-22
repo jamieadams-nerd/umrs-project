@@ -1,0 +1,677 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head profile="http://dublincore.org/documents/2007/11/05/dc-html/">
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>Simple Knowledge Organization System (SKOS) (IEKO)</title>
+<link rel="stylesheet" type="text/css" href="../isko.css" />
+<link rel="schema.DCTERMS" href="http://purl.org/dc/terms/" />
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:url" content="https://www.isko.org/cyclo/" />
+<meta name="twitter:title" content="Simple Knowledge Organization System (SKOS) (ISKO Encyclopedia of KO)" />
+<meta property="og:image" content="https://www.isko.org/cyclo/smith.jpg" />
+<meta name="twitter:description" content="SKOS (Simple Knowledge Organization System) is a recommendation from the World Wide Web Consortium (W3C) for representing controlled vocabularies, taxonomies, thesauri, classifications, and similar systems for organizing and indexing information as linked data elements in the Semantic Web, using the Resource Description Framework (RDF). The SKOS data model is centered on concepts, which can have preferred and alternate labels in any language as well as other metadata, and which are identified by addresses on the World Wide Web (URIs). Concepts are grouped into hierarchies through broader and narrower relations, with top concepts at the broadest conceptual level.  Concepts are also organized into concept schemes, also identified by URIs. Other relations, mappings, and groupings are also supported. This article discusses the history of the development of SKOS and provides notes on adoption, uses, and limitations." />
+
+<meta name="DCTERMS.title" content="Simple Knowledge Organization System (SKOS)" />
+<meta name="DCTERMS.creator" content="Arthur Smith" />
+<meta name="DCTERMS.issued" content="2022" />
+<meta name="DCTERMS.relation.ispartof" content="ISKO Encyclopedia of Knowledge Organization" />
+<meta name="DCTERMS.ispartof" content="ISKO Encyclopedia of Knowledge Organization" />
+<meta name="DCTERMS:bibliographicCitation" content="ISKO Encyclopedia of Knowledge Organization, eds. Birger Hjorland and Claudio Gnoli" />
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="001.012">
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="025.0427">
+<meta name="DCTERMS.subject.keyword" content="linked data">
+<meta name="DCTERMS.subject.keyword" content="Semantic Web">
+<meta name="DCTERMS.subject.keyword" content="RDF">
+<meta name="DCTERMS.type" content="Text" />
+<meta name="DCTERMS.format" content="text/html" />
+<meta name="DCTERMS.identifier" content="https://www.isko.org/cyclo/skos" />
+
+<style>
+a {text-decoration: none;}
+a:hover {text-decoration:underline;}
+table td, table th { padding: 5px; }
+</style>
+
+</head>
+<body>
+
+<a name="top"></a>
+
+<table>
+
+<tr>
+<td id="isko"><h1>I S K O</h1></td>
+<td id="banner"><h2><a href="index.html" style="text-decoration:none;">Encyclopedia of Knowledge Organization</h2></a></td>
+</tr>
+
+<tr>
+<td id="navigation">
+<a href="../index.php">home</a>
+<a href="../about.html">about ISKO</a>
+<a href="../join.html">join ISKO</a>
+<a href="../ko.html"><cite>Knowledge Organization</cite> journal</a>
+<a href="../events.html">ISKO events</a>
+<a href="../chapters.html">ISKO chapters</a>
+<a href="../people.html">ISKO people</a>
+<a href="../pubs.html">ISKO publications</a>
+<a href="index.html">Encyclopedia</a>
+<a href="../lit.html">KO literature</a>
+<a href="../inst.html">KO institutions</a>
+<a href="http://bartoc.org/" title="link to BARTOC">&#8663; KOS registry</a>
+<a href="https://www.isko-mms.net/" title="access-account required">&#128274; members</a>
+<a href="../contact.html">contact us</a>
+</td>
+<td id="content" rowspan="2">
+
+<a class="menu" href="authors#hj">edited by Birger Hj&oslash;rland</a> <a class="menu" href="authors#g">and Claudio Gnoli</a>
+
+<p>&nbsp;
+
+<div itemscope itemtype="http://schema.org/Article">
+
+<h2 itemprop="headline">Simple Knowledge Organization System (SKOS)</h2>
+
+<blockquote>
+by <a itemprop="author" href="authors#s" style="text-decoration:underline">Arthur Smith</a>
+
+<p>Table of contents:
+
+<br><a href="#1">1.	Introduction</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#1.1">1.1	Controlled vocabularies to thesauri: the spectrum of knowledge Organization</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#1.2">1.2	ISO standards</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#1.3">1.3	Resource Description Framework (RDF) and the Semantic Web</a>
+<br><a href="#2">2.	SKOS structure</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#2.1">2.1	SKOS concepts and their labels</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#2.2">2.2	SKOS relations and hierarchy</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#2.3">2.3	SKOS concept schemes</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#2.4">2.4	Documentation properties</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#2.5">2.5	Other features of SKOS</a>
+<br><a href="#3">3.	The development of SKOS</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#3.1">3.1	Purpose and history</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#3.2">3.2	Considerations and Limitations</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#3.3">3.3	ISO 25964 and SKOS</a>
+<br><a href="#4">4.	SKOS usage</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#4.1">4.1	Using SKOS</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#4.2">4.2	SKOS tools</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#4.2">4.3	SKOS extensions: SKOS-XL</a>
+<br><a href="#5">5	Impact of SKOS</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#5.1">5.1	Vocabularies and thesauri</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#5.2">5.2	Mappings between vocabularies</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#5.3">5.3	Non-vocabulary contexts</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#5.4">5.4	New and experimental applications</a>
+<br><a href="#6">6.	Considerations for the future</a>
+<br><a href="#7">7.	Conclusions</a>
+<br><a href="#end">Endnotes</a>
+<br><a href="#ref">References</a>
+<br><a href="#col">Colophon</a>
+
+<p itemprop="abstract"><strong>Abstract</strong>:
+<br>SKOS (Simple Knowledge Organization System) is a recommendation from the World Wide Web Consortium (W3C) for representing controlled vocabularies, taxonomies, thesauri, classifications, and similar systems for organizing and indexing information as linked data elements in the Semantic Web, using the Resource Description Framework (RDF). The SKOS data model is centered on <i>concepts</i>, which can have preferred and alternate labels in any language as well as other metadata, and which are identified by addresses on the World Wide Web (URIs). Concepts are grouped into hierarchies through <i>broader</i> and <i>narrower</i> relations, with <i>top concepts</i> at the broadest conceptual level.  Concepts are also organized into <i>concept schemes</i>, also identified by URIs. Other relations, mappings, and groupings are also supported. This article discusses the history of the development of SKOS and provides notes on adoption, uses, and limitations.</p>
+
+</blockquote>
+
+<span itemprop="articleBody">
+
+<!--
+
+<div align="center"><figure>
+<img src=".jpg" title="Fig. : Caption" width="40%">
+<figcaption>Figure : Caption</figcaption>
+</figure></div>
+
+<blockquote>
+<table border="1">
+<p><caption><i>Table 1: </i><br>&nbsp;</caption></p>
+<tr>
+<td></td>
+<td></td>
+</tr><tr>
+<td></td>
+<td></td>
+</tr>
+</table>
+</blockquote>
+
+-->
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="1"></a>
+<h3 itemprop="articleSection">1. Introduction</h3>
+
+<p>The Simple Knowledge Organization System or SKOS (<A HREF="#refM">Miles and Bechhofer 2009</A>) is a recommended standard from the World Wide Web Consortium (W3C) for representing the structure and content of a &rarr; <a href="kos">knowledge organization system (KOS)</a> (<A HREF="#refM">Mazzocchi 2018</A>). Different types of KOS differ in their internal structure, and we will review those differences briefly as they factor into the design of the SKOS recommendation. This introduction will also cover some related standards relevant to understanding SKOS.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="1.1"></a>
+<h4 itemprop="articleSection">1.1 Types of knowledge organization systems</h4>
+
+<p>Specific types of KOS include &rarr; <a href="keyword">keywords</a> (<A HREF="#refL">Lardera and Hj&oslash;rland 2020</A>), &rarr; <a href="thesaurus">thesauri</a> (<A HREF="#refD">Dextre Clarke 2019</A>), classification schemes, and &rarr; <a href="ontology">ontologies</a> (<A HREF="#refB">Biagetti 2021</A>). At the most basic level (keywords) these KOSs are just a non-hierarchical list of selected terms from a language &mdash; a <i>vocabulary</i>, ordered alphabetically. A thesaurus or classification scheme as a KOS adds a hierarchical structure to the terms and fundamentally is concerned with the underlying concepts represented by those terms. The hierarchy relation in a thesaurus may be generic (the higher concept is a more general form of the lower concepts &mdash; <code>human settlement &gt; city</code> for example), instantive (the lower concepts are specific instances of the higher concepts &mdash; <code>city &gt; Paris</code> for example) or partitive (the lower concepts are contained within the higher one &mdash; <code>Paris &gt; Eiffel Tower</code>). In addition to hierarchy, thesauri often also include alternate terms or labels for the concepts and additional structured notes, or other features attached to the concepts; they may also include associative relations between concepts to indicate relatedness aside from hierarchy.</p>
+
+<p>Classification schemes mostly use a &rarr; <a href="notation">notation</a>  or code (as opposed to a verbal sign) for each concept, which is generally used to impose a specific (non-alphabetic) ordering and a hierarchy on the collection of concepts <A HREF="#e1">[1]</A>. Having a code or identifier for the concept also allows a single concept to be labelled with terms in multiple different languages, to easily associate alternative terms, and to allow the specific terms used to change over time (for correction or clarification) while not having to change the underlying identifier for the concept or the indexing of content items with those concepts.</p>
+
+<p>The word <i>ontology</i> has acquired several different definitions but in the context of knowledge organization, ontologies (<A HREF="#refB">Biagetti 2021</A>) can be considered a generalization of all these knowledge organization systems. They may include additional types of relationships between concepts and additional attributes attached to individual concepts or terms. A hypothetical ontology of human settlements might include geographic coordinates for each concept representing a place and a special relation indicating a rail link between places, for example. These special properties are usually very specific to the subject domain, so that these relations and attributes themselves become a significant part of the KOS in addition to the concepts and terms. Ontologies using such special properties are the one type of KOS that is not largely or fully supported by the SKOS standard.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="1.2"></a>
+<h4 itemprop="articleSection">1.2 ISO standards</h4>
+
+<p>There have naturally been attempts to standardize the representation of a KOS with several international standards developing over the years. ISO 2788 for monolingual thesauri (<A HREF="#refI">International Organization for Standardization 1974</A>) and ISO 5964 for multilingual thesauri (<A HREF="#refI">International Organization for Standardization 1985</A>) were developed as guidelines for consistency within or between indexing agencies and established the basic distinction between concepts (the semantically meaningful ideas being indexed) and terms (the specific words used to label these concepts in one or several languages). Both of these ISO standards were withdrawn in 2011 when ISO 25964 part 1 (<A HREF="#refI">International Organization for Standardization 2011</A>) was released on the subject of &ldquo;Thesauri for Information Retrieval&rdquo;. A second part of ISO 25964 was released in 2013 to cover interoperability between vocabularies.</p>
+
+<p>ISO 25964 is covered in more detail in the article on thesauri (<A HREF="#refD">Dextre Clarke 2019</A>). The data model it recommends is quite complex, with about two dozen different types of objects involved. It allows attaching notes and other attributes to each term (text label) in the thesaurus and grouping concepts in unordered or ordered lists which may also be included as part of the concept hierarchy. It distinguishes between preferred and non-preferred terms (one preferred term per concept and language), and between hierarchical and associative relationships between concepts. In principle ISO25964 is sufficiently complete to represent every type of KOS except the general class of ontologies with their domain-specific relations and properties. The relationship between SKOS and these ISO standards will be discussed in detail in <A HREF="#3.3">Section 3.3</A> below.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="1.3"></a>
+<h4 itemprop="articleSection">1.3 Resource Description Framework (RDF) and the Semantic Web</h4>
+
+<p>In a 1999 book chapter (<A HREF="#refB">Berners-Lee and Fischetti 1999</A>) Tim Berners-Lee and Mark Fischetti proposed the next phase of the World Wide Web that Berners-Lee had started in 1993, which they called &ldquo;the Semantic Web&rdquo;. This was a little more substantively described by Berners-Lee, Hendler and Lassila (<A HREF="#refB">2001</A>). The World Wide Web Consortium (W3C) has been steadily developing recommendations for this next phase since then. The Web itself defined <i>Universal Resource Locators</i> (URLs) or more generally a <i>Uniform Resource Identifier</i> (URI) as the syntax and semantics of formalized information for location and access of resources via the Internet. (<i>Internationalised Resource Identifier</i> (IRI) is even more general, but we will stick with URIs in the following). A URI can be considered to represent a concept or entity as long as the owner of the underlying web server wishes to preserve it, so at least a fraction of URIs can be considered persistent identifiers. On the other hand this also means that one cannot always rely on URIs to be stable when linking to them. URIs also share the same semantic problem as any other sign: different people (or even the same person at different times) may attribute different concepts to it <A HREF="#e2">[2]</A>. </p>
+
+<p>The Semantic Web builds on the World Wide Web by defining a <i>Resource Description Framework</i> (RDF) (<A HREF="#refL">Lassila and Swick 1999</A>), that allows use of URIs as identifiers both for entities and for their properties or relationships. The central concept in RDF is the <i>triple</i>, a statement containing a <i>subject</i>, <i>predicate</i>, and <i>object</i> where both subject and predicate generally are URIs, and the object or value of the statement can be a string of text, a date, a number or other type of literal value, or another URI.</p>
+
+<p>RDF, the underlying format for the SKOS standard, has now been used for a wide variety of published Web standards, both from the W3C and from other organizations such as Dublin Core (<A HREF="#refI">International Organization for Standardization 2017</A>) <A HREF="#e3">[3]</A>, FOAF (<A HREF="#refB">Brickley and Miller 2005</A>) <A HREF="#e4">[4]</A> and a variety of ontologies used in the biomedical sciences (<A HREF="#refS">Smith et al. 2007</A>). Semantic Web technologies including RDF and its extensions have found significant use in representing complex models of real-world systems (<A HREF="#refA">Allemang, Hendler and Gandon 2020</A>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2"></a>
+<h3 itemprop="articleSection">2. SKOS structure</h3>
+
+<p>The elements of SKOS are well summarized in the synopsis of the W3C recommendation (<A HREF="#refM">Miles and Bechhofer 2009</A>):
+
+<blockquote>Using SKOS, concepts can be identified using URIs, labeled with lexical strings in one or more natural languages, assigned notations (lexical codes), documented with various types of note, linked to other concepts and organized into informal hierarchies and association networks, aggregated into concept schemes, grouped into labeled and/or ordered collections, and mapped to concepts in other schemes.</blockquote></p>
+
+<p>The language of SKOS is RDF. This means that every subject or predicate is a URI, while objects or values may be URIs or literal values. In the following discussion the <cose>skos:</code> prefix should be understood to represent the first part of a URI in the SKOS standard, namely <code>http://www.w3.org/2004/02/skos/core#</code>. For example, <code>skos:Concept</code> actually represents the full URI <code>http://www.w3.org/2004/02/skos/core#Concept</code>. Also <code>rdf:</code>  similarly represents the standard URI prefix for that namespace, <code>http://www.w3.org/1999/02/22-rdf-syntax-ns#</code>.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2.1"></a>
+<h4 itemprop="articleSection">2.1 SKOS concepts and their labels</h4>
+
+<p>The fundamental entity in SKOS is <code>skos:Concept</code>. This is a unit of meaning that can then be attached to documents or other entities for indexing and classification purposes. Every <code>skos:Concept</code> has a Uniform Resource Identifier (URI) which acts as the identifier for the concept and within the RDF context takes the place of the subject (or sometimes object) of RDF statements. One statement attached to every such concept is to assert that it is an instance of the class <code>skos:Concept</code>:
+
+<blockquote><code>
+&lt;concept URI&gt; rdf:type skos:Concept .
+</code></blockquote>
+
+<p>Attached to every concept are labels which are literal strings with an attached (optional) language tag &mdash; in RDF notation they would look something like <code>"label"@en</code> where the <code>en</code> piece is the 2-letter ISO language code for English. Labels in SKOS are either <i>preferred</i> (<code>skos:prefLabel</code> property), <i>alternate</i> (<code>skos:altLabel</code> property), or <i>hidden</i> (<code>skos:hiddenLabel</code>). These would be encoded for example as:
+
+<blockquote><code>
+&lt;concept URI&gt; skos:prefLabel "label"@en .
+<br>&lt;concept URI&gt; skos:altLabel "string"@en .
+<br>&lt;concept URI&gt; skos:hiddenLabel "lable"@en .
+</code></blockquote></p>
+
+<p>Preferred labels are usually displayed to represent the concept and there should be only one preferred label per language code for a given concept. Within a coherent concept scheme there should be only one concept with a given preferred label (including language tag), so that the preferred labels can uniquely identify concepts, even though they are not the actual identifiers for them (see further <A HREF="#2.3">Section 2.3</A>). Preferred labels may change over time, so they also cannot be used as identifiers for that reason. Labels can be provided in any number of different languages; SKOS is inherently multilingual. Whether preferred labels are provided for every concept in every supported language is up to the maintainers; often this will not be the case so that application software will need a fallback mechanism to display concepts in languages where labels are missing.</p>
+
+<p>Alternate labels are different words or phrases, acronyms, or other terms that should mean the same thing as the preferred label and intended meaning of the concept. They might also be terms commonly searched for which should return this concept. Alternate labels may or may not be displayed to end users in normal usage. Hidden labels are similar, except they are only used for searching, and not displayed to end users &ndash; this is commonly used for mis-spelled forms of the other labels.</p>
+
+<p>While the labels attached to a concept URI may change, the concept represented by the URI should have a single unambiguous meaning. For our hypothetical collection of concepts about cities, a URI with preferred English label <code>"Calcutta"</code> at one point in time might later change to preferred label <code>"Kolkata"</code>, while still representing the same city (<code>"Calcutta"</code> would then be a natural value for an alternate label). The meaning of the concept is more than just this label. Whether this URI represented the city proper, the metropolitan area, the port, or the city in some sense in all those aspects without being more specific would be up to the organization responsible for the URI. This conceptual meaning may not always be correctly interpreted by those using it for indexing purposes, of course.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2.2"></a>
+<h4 itemprop="articleSection">2.2 SKOS relations and hierarchy</h4>
+
+<p>SKOS has two direct &rarr; <a href="hierarchy">hierarchy</a> relations: <code>skos:broader</code> and <code>skos:narrower</code>, which are inverses of one another. To follow the city example mentioned earlier, this could be denoted by:
+
+<blockquote><code>
+&lt;URI for human settlement&gt; skos:narrower &lt;URI for city&gt;
+</code></blockquote>
+
+<p>And similarly, the inverse
+
+<blockquote><code>
+&lt;URI for city&gt; skos:broader &lt;URI for human settlement&gt;
+</code></blockquote>
+
+<p>SKOS does not define the type of broader/narrower relation being invoked in these relationships, so the meaning could be &rarr; <a href="logical_division">generic</a> as in this case, or instantive or partitive. A narrower (child) concept may have multiple broader (parent) concepts since SKOS inherently supports polyhierarchy where needed. No matter under which parent concept a child is found it has the same meaning since it has the same identifier (URI) referring to a single unit of meaning.</p>
+
+<p>SKOS also defines a reflexive associative relation, <code>skos:related</code>. This is intended to link concepts that are not connected by hierarchy but have some conceptual relationship so that a person using one concept for searching or indexing may also have an interest in using the other. That this relation is reflexive means that whenever <code>&lt;A&gt; skos:related &lt;B&gt;</code> we also have <code>&lt;B&gt; skos:related &lt;A&gt;</code>, so the relation can be seen from either direction.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2.3"></a>
+<h4 itemprop="articleSection">2.3 SKOS concept schemes</h4>
+
+<p>In SKOS, every concept should belong to one or more <code>skos:ConceptScheme</code> entities. These are the top-level organizing structures within SKOS. A concept is indicated as belonging to a concept scheme through the <code>skos:inScheme</code> predicate. Continuing with our human settlements example, it could be part of a general <code>Geographic Entities</code> concept scheme, so we would have statements like:
+
+<blockquote><code>
+&lt;URI for city&gt; skos:inScheme &lt;URI for Geographic Entities&gt;
+</code></blockquote>
+
+<p>Note that the URI for the concept scheme is intended to represent the scheme in general, not the concept denoted by its label as for regular concepts &mdash; in SKOS <i>concepts</i> and <i>concept schemes</i> are disjoint. In other words &ldquo;URI for Geographic Entites&rdquo; here represents that collection of concepts and relations, not a particular concept that could otherwise be placed in a hierarchical relation to the rest.</p>
+
+<p>Concept schemes contain <i>top concepts</i>, which should be the broadest concepts in the hierarchy of the scheme &mdash; these are the entry points from the concept scheme to the hierarchy of concepts. These relationships are indicated by the <code>skos:hasTopConcept</code> predicate. Concept schemes are not exclusive: a concept can belong to more than one scheme, and a concept that is a top concept in one scheme may be a lower-down concept in the hierarchy of another.</p>
+
+<p>A SKOS concept scheme does not necessarily correspond with a data file that might be provided for the associated SKOS entities and relationships. There may be several such files provided with different representation formats or at different URL locations to represent the same scheme, and a single file (or its interpretation as a graph of RDF triples) may contain information about multiple concept schemes and all their associated concepts and relationships.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2.4"></a>
+<h4 itemprop="articleSection">2.4 Documentation properties</h4>
+
+<p>SKOS includes a set of documentation properties, subproperties of <code>skos:note</code>, which can be used to annotate concepts. The values for these documentation properties may be literal (a string with optional language tag, as for labels), or alternatively a URI which may have additional associated properties. <code>skos:definition</code> provides a way to clearly explain the meaning of a SKOS concept. <code>skos:scopeNote</code> indicates how the concept should be used in indexing, while <code>skos:example</code> can provide examples of entities that should be indexed with the concept. <code>skos:historyNote</code> and <code>skos:changeNote</code> are to provide information about previous versions of the same concept,  and <code>skos:editorialNote</code> is intended for housekeeping purposes of  those administering the concept scheme, for example to indicate that a future review may be needed.</p>
+
+<p>SKOS includes a provision for notations attached to concepts with the skos:notation property &ndash; this is typically a numeric or alpha-numeric code like the UDC or Bliss codes, or for example the Mathematics Subject Classification (MSC) codes (<A HREF="#refF">Fraser 2020</A>, &rarr; <a href="mathematics#6.2">Section 6.2</a>). An application might use the natural ordering and hierarchy provided by a notation to display the concepts in a concept scheme; this is one alternative to alphabetic ordering by preferred label that is the usual default with SKOS. As literal values <code>skos:notation</code> entries can have a custom datatype but otherwise are simple strings and do not provide a mechanism to describe the internal structure of such classification codes.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2.5"></a>
+<h4 itemprop="articleSection">2.5 Other features of SKOS</h4>
+
+<p>SKOS has some provision for <i>collections</i> of concepts with the <code>skos:Collection</code> and <code>skos:OrderedCollection</code> classes; however these appear to be very rarely used as they are not considered subclasses of <code>skos:Concept</code> and therefore cannot be placed into a concept hierarchy in any natural manner. Concepts within a <code>skos:Collection</code>  are listed with the <code>skos:member</code> property, while concepts in a <code>skos:OrderedCollection</code> are grouped into an <code>rdf:List</code>  that is linked with the <code>skos:memberList</code> property to the ordered collection URI. </p>
+
+<p>SKOS also includes mapping properties to allow relationships similar to the within-scheme relationships discussed previously, but to link between concepts from different concept schemes. Because subjects and objects in RDF are identified by URIs which are universal and unambiguous &mdash; in principle uniquely defined independent of any context &mdash; it is a simple matter to include in a data file associated with one concept scheme these mapping relations linking that scheme to another one (or several) that may be under a completely different domain. For concepts that have the same meaning as far as document indexing is concerned the <code>skos:exactMatch</code> property is provided. Concepts in separately maintained vocabularies are unlikely to be precisely identical in meaning simply because they are maintained separately and, for example, are likely to have distinct and incompatible hierarchical contexts, histories, labels, and so forth. But if the meanings are sufficiently close to be interchangeable for use in applications, this <code>exact match</code> relation is the right choice. For concepts that are similar in meaning but not exactly the same SKOS provides <code>skos:closeMatch</code>. Hierarchical cross-scheme relations can also be described by <code>skos:narrowMatch</code> and <code>skos:broadMatch</code>, while <code>skos:relatedMatch</code> can link concepts that have some associative relation.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3"></a>
+<h3 itemprop="articleSection">3. The development of SKOS</h3>
+
+<a name="3.1"></a>
+<h4 itemprop="articleSection"><br>3.1 Purpose and history</h4>
+
+<p>RDF itself was designed in the context of standardizing the problem of &rarr; <a href="ir">information retrieval</a> across the burgeoning Internet, and it was recognized from the start that representing thesauri and other types of knowledge organization systems would be an important component of helping make resources more easily discoverable (<A HREF="#refB">Baker et al. 2013</A>). The idea of representing a vocabulary using language-independent concepts with labels in multiple languages was initially developed across several European projects &mdash; DESIRE (Development of a European Service for Information on Research and Education, 1997-2000), LIMBER (Language Independent Metadata Browsing of European Resources, 1999-2001) and SWAD (Semantic Web Advanced Development, 2001-2004) which produced the original draft of a &ldquo;Simple Knowledge Organization System&rdquo; (SKOS) (<A HREF="#refM">Miles, Rogers and Beckett 2004</A>). This was taken up by the World Wide Web Consortium (W3C) as a working draft, and in 2006 the Semantic Web Deployment Working Group (SWD) was chartered to conduct the systematic review required to become an official W3C Recommendation.</p>
+
+<p>The SWD collected specific use cases (<A HREF="#refI">Isaac, Phipps and Rubin 2009</A>) to inform the development of the new recommendation. These included examples from the arts and sciences and from potential commercial applications such as the Product Life Cycle Support vocabulary, and even general library classification systems like UDC. From these use cases they derived a collection of requirements that the recommendation could support, and then the group debated and decided on which ones would be accepted and implemented. Some candidate requirements such as the need for a way to coordinate concepts (combining two or more to create a new one) were not accepted or implemented.</p>
+
+<p>In addition to SKOS, SWD (led by Tom Baker and Guus Schreiber) was also responsible for the RDFa standard for embedding RDF in web pages (XHTML format) and for a collection of &ldquo;Best Practice Recipes for Publishing RDF Vocabularies&rdquo; <A HREF="#e5">[5]</A>. All the (240) issues raised by the working group across these three responsibilities are publicly documented  <A HREF="#e6">[6]</A>. Much of the detailed effort of the working group was focused on formalizing the representation of the essential structural elements of a thesaurus using RDF, with definitions, constraints, and inference rules defined using the Web Ontology Language (OWL) in addition to the standard property and class definitions provided by the basic RDFS standard. These formal details and decisions are discussed in depth in Baker et al. (<A HREF="#refB">2013</A>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.2"></a>
+<h4 itemprop="articleSection">3.2 Considerations and limitations</h4>
+
+<p>Those involved quickly noticed that the relationships and nature of terms and concepts in thesauri are generally &lsquo;informal&rsquo;, designed for intuitive human use, not machine logic. Introducing formalizations of their meanings would be too restrictive and not general enough for wide application. The most practical approach was to provide a structure that was as non-specific as possible, a &ldquo;minimal ontological commitment&rdquo; (<A HREF="#refB">Baker et al. 2013</A>) to the nature of concepts and their relationships. The standard does not say what a &ldquo;concept&rdquo; is, other than that it has labels and relations to other concepts and one or more &ldquo;concept schemes&rdquo;. One consequence of this minimum commitment was to drop some of the more complex properties that had been part of early drafts. This included refinements of the broader/narrower relations to specific kinds of hierarchical relations (partitive, instantive, or generic) &mdash; these were dropped from the final SKOS standard.</p>
+
+<p>The question of whether hierarchy relations should be transitive (i.e. does <code>&lt;A&gt; &lt;skos:broader&gt; &lt;B&gt;</code> and <code>&lt;B&gt; &lt;skos:broader&gt; &lt;C&gt;</code> imply <code>&lt;A&gt; &lt;skos:broader&gt; &lt;C&gt;</code>?) was settled by deciding the standard properties would be non-transitive, but transitive superproperties would be logically entailed that do not need to be used directly. In the final standard, <code>&lt;A&gt; &lt;skos:broader&gt; &lt;B&gt;</code> and <code>&lt;B&gt; &lt;skos:broader&gt; &lt;C&gt;</code> does not imply <code>&lt;A&gt; &lt;skos:broader&gt; &lt;C&gt;</code>, but it does imply that <code>&lt;A&gt; &lt;skos:broaderTransitive&gt; &lt;C&gt;</code>. The <code>skos:narrowerTransitive</code> property is an inverse to <code>skos:broaderTransitive</code> with the same implications.</p>
+
+<p>The early SKOS-core draft <A HREF="#e7">[7]</A> also included a <code>skos:subject</code> property for use in indexing; this was dropped from the final recommendation as being outside of the scope of SKOS itself, and able to be handled by established properties provided for example by the Dublin Core standard. However, a <code>skos:subject</code> might have been a useful addition to advise data users that the value is the URI of a SKOS concept rather than some arbitrary resource or string; it would also have brought the question of distinguishing indexing and non-indexing concepts within the scope of the recommendation (<A HREF="#refB">Baker et al. 2013</A>). The draft <code>skos:subject</code> predicate was heavily used in DBPedia for several years.</p>
+
+<p>Concept symbols (in addition to language-specific labels) were also part of the initial draft but dropped in the final recommendation as being duplicative and underspecified. Given that the full range of Unicode characters is available in RDF literal string values this does not seem to be missed. </p>
+
+<p>A number of issues were raised during the development and review process but ultimately never addressed by the recommendation itself. The standard does not specify what the URI corresponding to a SKOS concept or concept scheme should resolve to &mdash; or even that it need necessarily resolve at all. Some de facto standards seem to be developing in this area but it is not part of the original or associated recommendations.</p>
+
+<p>The issue of non-indexing terms and <i>node labels</i> was also never resolved. These are used in thesauri and classification schemes to group narrower concepts in a logical fashion under a heading that is not in itself a concept within the domain of the thesaurus. Our hypothetical thesaurus of human settlements might include a collection of <code>cities by population</code> with narrower concepts <code>over 10 million</code>, <code>2 million to 10 million</code>, <code>500,000 to 2 million</code>, etc. The node label <code>cities by population</code> is there only to group the narrower concepts, not to be used for indexing in itself (i.e., an empty class). There is no way within SKOS to retain the hierarchy of the thesaurus while indicating the concept <code>cities by population</code> is somehow different from other concepts. SKOS does include several options for collections of concepts; however here the ontological commitment of the recommendation is not minimal enough: <code>Collection</code>  and <code>Concept</code> are regarded as disjoint, so that the relation definitions disallow a collection from being a mid-level node in a hierarchy of concepts. Additional application logic or non-SKOS properties are needed to use a collection as a hierarchy node, or to indicate that a concept is a node label and not intended for document indexing. Panzer and Zeng (<A HREF="#refP">2009</A>) suggest creating <code>Assignable</code> and <code>NonAssignable</code>  subclasses of <code>skos:Concept</code> to address the issue of non-indexing terms or node labels, with additional subclasses as needed for more specific cases.</p>
+
+<p>SKOS concept schemes are the top-level organizing entities for the concepts, and the <code>inScheme</code> property relates concepts to the scheme or schemes they belong to. An issue raised during review was whether the hierarchy relationships could also be considered to belong to particular schemes. For example a set of concepts could be structured in one hierarchy when considered part of one scheme, but in a different hierarchy in another. To allow this would require attaching something like the <code>skos:inScheme</code> predicate to each <code>skos:broader/narrower</code> statement, but statements about statements require reification which is far from &ldquo;simple&rdquo;, so this additional level of complexity is not part of the SKOS recommendation. Different concept schemes can provide the RDF for their scheme in separate graphs (individual RDF files) that may partially solve this problem, but that could lead to significant confusion when several such graphs are combined &mdash; the result would be unwanted polyhierarchy that might even include cycles within the hierarchy graph. So in the final SKOS standard concept URIs should be considered to be part of a single hierarchy that is independent of concept scheme.</p>
+
+<p>Thesauri and classification schemes often include phrases: pre-coordinated terms &mdash; two or more concepts linked together for indexing purposes <A HREF="#e8">[8]</A>. This is to indicate that indexed documents are about the concept expressed by the phrase, often with the second concept in the context of the first. Some complex classification schemes have mechanisms for free combination of concepts with syntactically meaningful notation, for example the &rarr; <a href="ilc">Integrative Levels Classification (ILC)</code> (<A HREF="#refB">Binding, Gnoli and Tudhope 2021</A>).  The working group considered adding a mechanism to allow for this sort of joining of concepts with Boolean logic, but it ended up being deferred and there is no specific support for pre-coordination nor for syntactically meaningful &ldquo;free faceting&rdquo; in the SKOS recommendation.</p>
+
+<p>Finally the issue of how to handle deprecation and revision of a vocabulary or individual concepts within it was raised but never addressed specifically by the SKOS team. There are later W3C recommendations, for example, the Data Catalog Vocabulary (DCAT) <A HREF="#e9">[9]</A> that may be considered to cover this, and indeed it does seem out of the main scope of SKOS. Nevertheless, the issue of revision handling is a practical issue faced by just about every maintainer of a vocabulary or thesaurus. One mechanism for handling deprecation could be to include mapping relations between deprecated concepts and their replacements, perhaps treating different versions of a concept scheme as if they were distinct schemes, which might require adding version identifiers to concept or concept scheme URIs. Does a new version of a concept scheme create new concepts (with new URIs), or are these concepts the same as the ones with the same labels in earlier versions? The SKOS standard does not address this question.</p>
+
+<p>While in principle any thesaurus or classification scheme can be readily converted to the SKOS format just as a file format change <A HREF="#e10">[10]</A> some of these issues and the nature of linked data and RDF itself can necessitate some re-thinking of the classification structure. For example, a hierarchy with a lowest level node having a list of different topics and then an &ldquo;Other&rdquo; category (for everything not specifically listed) at least needs a better label than <code>Other</code>, since concepts are defined independently of their placement in a hierarchy and can be reused outside of that context. Migrating to SKOS means asking questions like &mdash; does the same label mean the same thing in different places (in which case it can be one single concept) or different things (so the labels will need to be modified to be distinct and clear about meaning). So even the &ldquo;minimal ontological commitment&rdquo; principle to which SKOS tries to adhere does require the maintainers of what were previously more &ldquo;informal&rdquo; vocabularies to better label and define their concepts for wider usability.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.3"></a>
+<h4 itemprop="articleSection">3.3 ISO 25964 and SKOS</h4>
+
+<p>The W3C recommendation &ldquo;Simple Knowledge Organization System (SKOS)&rdquo;  (<A HREF="#refM">Miles and Bechhofer 2009</A>) was released in 2009 after almost a decade of development. Since this was prior to ISO 25964 it was not directly informed by that standard but rather by the predecessor ISO standards. The SKOS primer (<A HREF="#refI">Isaac and Summers 2009</A>) includes an appendix giving the correspondence between SKOS and those earlier standards (2788/5964). ISO and the SKOS contributors developed an updated correspondence between the new standard and SKOS in 2012 (<A HREF="#refI">ISO TC46/SC9/WG8 working group and Isaac 2012</A>). There is considerable overlap between the two and some areas of difference.</p>
+
+<p>The <code>Concept</code> class in SKOS serves the same purpose as the <i>ThesaurusConcept</i> object in ISO 25964&rsquo;s UML model, and concept schemes in SKOS play essentially the same role as the <i>Thesaurus</i> object in ISO 25964 as the top-level organizing structures for the controlled vocabulary. The mechanism for labeling concepts in SKOS has some similarities but is fundamentally different (and simpler) than the model in ISO 25964, where each label is an object in itself, the <i>ThesaurusTerm</i> (which may be a <i>PreferredTerm</i> or other type), to which a variety of additional properties can be attached. An extension of SKOS known as SKOS-XL (see <A HREF="#4.3">Section 4.3</A> below) allows URIs to be assigned to labels so that they can have additional properties and so be more closely aligned with the ISO 25964 <i>ThesaurusTerm</i> approach.</p>
+
+<p>The SKOS relational properties are similar to but again simpler than the ISO 25964 <i>AssociativeRelationship</i> and <i>HierarchicalRelationship</i> objects, where in both cases a <i>role</i> can be attached to those relations allowing for more precise description of the type of relation. With regard to the SKOS mapping relations, ISO 25964 part 2 (<A HREF="#refI">International Organization for Standardization 2013</A>) covers essentially this topic of mapping between vocabularies. It discusses strategies for mapping and suggests several additional relations that would be useful, particularly &ldquo;compound mappings&rdquo;, where an entry in one vocabulary corresponds to a combination (Boolean &ldquo;AND&rdquo; or &ldquo;OR&rdquo;) of two or more entries in another. See also Zeng (<A HREF="#refZ">2019</A>) on &rarr; <a href="interoperability">interoperability</a> in knowledge organization systems. Here the model SKOS uses is simpler than is perhaps ideal for the purpose of fully addressing relations between different vocabularies and thesauri.</p>
+
+<p>There is a lot of similarity between the SKOS note properties and the <i>Note</i> objects defined by ISO 25964, though there are some small differences in details. For instance, ISO 25964 does not have an <i>Example</i> note, but it does have a <i>CustomNote</i> that can have an arbitrary <i>noteType</i> value. Because ISO 25964 distinguishes concepts and terms (corresponding to the label values in SKOS) as separate objects, it attaches some types of notes to concepts and some to terms (and some are allowed on both). Within ISO 25964 <i>notation</i> is an optional string property within the <i>ThesaurusConcept</i> object. The SKOS approach is slightly more flexible in this case as it allows a data type to be attached to the notation string, so that several different notations could be used within the same concept scheme without conflict.</p>
+
+<p>In ISO 25964 the <i>ConceptGroup</i> and <i>ThesaurusArray</i> objects are similar to the <code>skos:Collection</code> classes; however <i>ThesaurusArray</i> in ISO 25964 can be placed within the hierarchy of the thesaurus, and this sort of construct with &ldquo;node labels&rdquo; is often used in thesauri. This is an area where SKOS is missing support for a commonly used feature.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4"></a>
+<h3 itemprop="articleSection">4. SKOS usage</h3>
+
+<a name="4.1"></a>
+<h4 itemprop="articleSection"><br>4.1 Using SKOS</h4>
+
+<p>SKOS itself does not have a property to relate a document being indexed with the specific concepts from a SKOS vocabulary it is about, although such a property was party of an early version of the SKOS proposal (<A HREF="#refB">Baker et al. 2013</A>) (see <A HREF="#3.2">Section 3.2</A>). The SKOS primer (<A HREF="#refI">Isaac and Summers 2009</A>) recommends using the Dublin Core subject predicate: <code>http://purl.org/dc/terms/subject</code>, i.e. an RDF statement of the form:
+
+<blockquote><code>
+&lt;document URI&gt; dct:subject &lt;concept URI&gt;
+</code></blockquote>
+
+<p>Libraries and museums have published <i>linked open data</i>  (LOD) with these sorts of relations between their collections and thesauri, but often they use their own custom properties instead of the Dublin Core one for this indexing relation. For example, the US Library of Congress developed the BIBFRAME ontology (<A HREF="#refH">Hawkins 2015</A>) <a href="e11">[11]</a> to provide full bibliographic metadata for items in their collection, and BIBFRAME has its own <code>subject</code> property <A HREF="#e12">[12]</A> which the library uses in their linked data to index works with concepts from their vocabularies. A system that indexes documents with a SKOS vocabulary for internal use can alternatively just record the document-URI relations in an internal database rather than creating a public RDF graph.</p>
+
+<p>Naturally, concepts used in such a context need not be limited to a single SKOS concept scheme. Indexers can link their resources to any SKOS scheme with persistent URIs (which in principle they should all have). Applications making use of indexed resources of this sort need to be able to resolve the URIs or find some other lookup mechanism to know what the labels are, if possible in a specific language (i.e. the <code>skos:prefLabel</code> and <code>skos:altLabel</code> properties). Search engines and similar applications will be more useful if they have some understanding of the hierarchy (the <code>skos:broader</code>  and <code>skos:narrower</code> properties) so that for example a search on a particular term could locate all documents indexed not just with that specific term but also any children of the concept represented by that term. Broader filtering could be provided via the <code>skos:ConceptScheme</code> so that only resources indexed within a particular scheme may be considered in a search.</p>
+
+<p>Raw RDF is not particularly easy to understand for end-users; a minimal layer on top is the <i>SPARQL endpoint</i> <A HREF="#e13">[13]</A>, which provides a somewhat standardized interface for querying a graph database using the SPARQL language (<A HREF="#refP">Prud'hommeaux and Seaborne 2008</A>). Users need to know exactly what properties are used in the models in the graph (<code>dct:subject</code> or <code>bibframe:subject</code> or Wikidata&rsquo;s <code>wdt:P921</code> for example) but for a given RDF data model this can be a useful and efficient approach. Again, in practice most presentation of items indexed with SKOS vocabularies involves search engines or more customized applications at the top-most user-interface level.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.2"></a>
+<h4 itemprop="articleSection">4.2 SKOS tools</h4>
+
+<p>A wide variety of both open-source and proprietary tools are available to work with SKOS vocabularies, some of them specifically designed or adapted for the SKOS format. These include tools for developing vocabularies, for validating them, for searching and browsing them and providing a web interface for each concept, and for making use of SKOS in indexing and searching. The following discussion gives a few examples without attempting a comprehensive list.</p>
+
+<p>PoolParty (<A HREF="#refS">Schandl and Blumauer 2010</A>) was designed to support SKOS thesaurus creation from the start and now includes additional components for validation and making use of SKOS vocabularies. The FAO AgroVoc  vocabulary maintainers developed the general open-source SKOS development tool VocBench (<A HREF="#refS">Stellato 2014</A>) <A HREF="#e14">[14]</A>. Many older thesaurus development tools also now include support for export in the SKOS format. Tools to take an existing vocabulary in, for example, a spreadsheet format and convert it to SKOS include SKOSify (<A HREF="#refS">Suominen and Hyv&ouml;nen 2012</A>) and SKOS Play <A HREF="#e15">[15]</A>.</p>
+
+<p>The qSKOS tool (<A HREF="#refM">Mader, Haslhofer and Isaac 2012</A>) <A HREF="#e16">[16]</A> is commonly used for validation and quality checking of SKOS vocabularies; it has been combined with SKOSify (<A HREF="#refS">Suominen and Mader 2013</A>) and is also used by PoolParty, although both of those tools began with their own quality-checking components. The quality checks ensure for example that <code>skos:prefLabel</code> values are unique, that all label values have proper language tags, and that hierarchy is logically structured with no orphan concepts or cycles. Some of these quality checks ensure compliance with the SKOS standard while others are advisory and a matter for vocabulary maintainers to determine compliance. Links for this and other SKOS quality-checking tools are available at <A CLASS="menu" HREF="https://www.w3.org/2001/sw/wiki/SKOS/Validation">https://www.w3.org/2001/sw/wiki/SKOS/Validation</A>.</p>
+
+<p>SKOS Play is designed to render and visualize SKOS vocabularies and provides several output formats including a browsable website or interactive visualization. Skosmos (<A HREF="#refS">Suominen et al. 2015</A>) is user-friendly software for a SKOS vocabulary allowing searching, browsing, and viewing of each concept. Skosmos is used as the front-end for many SKOS concept schemes available online including the AgroVoc vocabulary and the SKOS vocabularies provided by the Basic Register of Thesauri, Ontologies &amp; Classifications (BARTOC). </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.3"></a>
+<h4 itemprop="articleSection">4.3 SKOS extensions: SKOS-XL</h4>
+
+<p>The difference in treatment of term labels from ISO 25964 was noted above; standard SKOS does treats labels as literal values, not as objects with URIs that can have further properties attached. The SKOS standard includes (<A HREF="#refM">Miles and Bechhofer 2009</A>, Appendix B) a SKOS-XL extension (&ldquo;SKOS eXtension for Labels&rdquo;), where each label does become such an object, allowing closer alignment with ISO 25964. With this optional extension every literal string value and language combination becomes a separate member of the <code>skosxl:Label</code> class, with value given by a (single) <code>skosxl:literalForm</code> predicate. SKOS concepts can have <code>skosxl:Label</code> values related through the <code>skosxl:prefLabel</code>, <code>skosxl:altLabel</code>, and <code>skosxl:hiddenLabel</code> predicates, which are the SKOS-XL analogues of the literal-valued <code>skos:prefLabel</code>, etc. predicates discussed earlier.</p>
+
+<p>In addition SKOS-XL defines a predicate to show two labels are related: <code>skosxl:labelRelation</code>. The standard encourages practical use of this through subproperties &mdash; for example defining an <code>acronym</code>  property that allows linking the SKOS-XL label for an organization name to the label for its acronym.</p>
+
+<p>This extension illustrates a general characteristic of knowledge graphs using RDF: they rarely rely on only a single standard to define their classes and properties. Since everything is either a URI or a literal value, and URIs are indeed &ldquo;universal&rdquo;, it is a simple matter to make use of URIs from a wide variety of different sources in creating an information entity. This may present a bit of a problem for users of such RDF graphs, however, in that they need to be prepared to handle much more than just a single standard for entities and their relationships. Software that is designed to handle a SKOS thesaurus may not understand these additional features, so designers of such vocabularies need to be mindful of their tools and end-users in making use of such extensions. Most of the tools mentioned in the previous section now support SKOS-XL in some form, although that support was often added later rather than available from the start.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5"></a>
+<h3 itemprop="articleSection">5. Impact of SKOS</h3>
+
+<a name="5.1"></a>
+<h4 itemprop="articleSection"><br>5.1 Vocabularies and thesauri</h4>
+
+<p>Thousands of vocabularies and thesauri have been made available as linked open data (<A HREF="#refA">Allemang, Hendler and Gandon 2020</A>) and a large fraction of them use SKOS classes and properties to describe their structure. A 2012 survey found 478 SKOS vocabularies available (<A HREF="#refM">Manaf, Bechhofer and Stevens 2012</A>) and the number has grown significantly since then; 1214 SKOS vocabularies are provided just on the BARTOC Skosmos server (<A CLASS="menu" HREF="https://bartoc-skosmos.unibas.ch/">https://bartoc-skosmos.unibas.ch/</A>) at the time of this writing. Specific examples include the US Library of Congress Subject Headings (<A CLASS="menu" HREF="https://id.loc.gov/authorities/subjects.html">https://id.loc.gov/authorities/subjects.html</A>), the UN Food and Agriculture Organization AgroVoc vocabulary (<A CLASS="menu" HREF="https://www.fao.org/agrovoc/linked-data">https://www.fao.org/agrovoc/linked-data</A>), the Getty Art and Architecture thesaurus (AAT) (<A CLASS="menu" HREF="http://www.getty.edu/research/tools/vocabularies/lod/index.html">http://www.getty.edu/research/tools/vocabularies/lod/index.html</A>), the Unified Astronomy Thesaurus (<A CLASS="menu" HREF="https://astrothesaurus.org">https://astrothesaurus.org</A>), PhySH (<A HREF="#refS">Smith 2020</A>), and over four hundred vocabularies provided as Research Vocabularies Australia by the Australian Research Data Commons (<A CLASS="menu" HREF="https://vocabs.ardc.edu.au/">https://vocabs.ardc.edu.au/</A>). Library and information professionals have been encouraged to use SKOS and convert their existing controlled vocabularies to the format (<A HREF="#refF">Frazier 2015</A>). Some traditional classification schemes have provided both their standard format and an official SKOS version for use as Linked Data; an example here is recent releases of the MSC (<A HREF="#refA">Arndt et al. 2021</A>).</p>
+
+<p>In some instances, the vocabularies or thesauri use additional classes and properties to describe their structure, beyond what is available with SKOS (and SKOS-XL). For example the Getty vocabularies use an RDF representation of the ISO 25964 standard to get around the limitations mentioned above regarding the <code>skos:Collection</code> class; their <code>iso:ThesaurusArray</code> is a subclass of <code>skos:Collection</code> but can be placed within the hierarchy using an <code>iso:superOrdinate</code> property. See <A CLASS="menu" HREF="http://vocab.getty.edu/doc/">http://vocab.getty.edu/doc/</A> for more details.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5.2"></a>
+<h4 itemprop="articleSection">5.2 Mappings between vocabularies</h4>
+
+<p>While each URI for a SKOS concept is in principle unambiguous in meaning, the ease with which new URIs can be independently created leads to a natural disorder and incompatibility when such a wide variety of indexing is applied. This is not a new problem for controlled vocabularies and has led some to doubt whether they provide any advantage over natural language search (<A HREF="#refM">Maniez 1997</A>). Even within a single conceptual framework meaning may change as new knowledge is gained &mdash; biological taxa and even the definition of basic terms like &rarr; <a href="species"><i>species</i></a> have changed over time, particularly with the advent of genetic analysis with DNA (<A HREF="#refM">Minelli 2022</A>). At least some of this can be alleviated by publishing mappings between concept schemes. While the SKOS matching properties are not widely used in most published concept schemes as those schemes generally confine their attention just to relating the concepts they contain, a number of mappings between vocabularies that make use of these match properties have been published in recent years, an encouraging sign for mitigating this issue of incompatibility between vocabularies.</p>
+
+<p>The &rarr; <a href="stw">STW Thesaurus for Economics</a> (<A HREF="#refK">Kempf and Neubert 2016</A>) provides an example of a pre-existing thesaurus migrated to SKOS and taking advantage of almost all the features SKOS provides, including the matching properties, which STW uses extensively to map their concepts to equivalent or related concepts in several other online resources, including the German Integrated Authority File (GND), DBPedia, and AgroVoc.</p>
+
+<p>The Global Agricultural Concept Space (<A HREF="#refB">Baker et al. 2019</A>) is planned to provide a common namespace (i.e., a common URI prefix) for concepts in food and agriculture. It includes a central SKOS concept scheme, GACS Core and SKOS mapping relations to AgroVoc and other similar concept schemes which are widely used to index bibliographic records and agriculture-related organizations around the world. GACS Core extends its SKOS concepts with a collection of concept types and some special relations (such as <code>gacs:hasProduct</code> to relate an organism to the associated food product), but this is deliberately lightweight and designed for ease of maintainability, rather than providing a comprehensive ontology. A related project with mappings to other vocabularies is maintained by the US Department of Agriculture as the National Agricultural Library Thesaurus Concept Space (<A CLASS="menu" HREF="https://agclass.nal.usda.gov">https://agclass.nal.usda.gov</A>).</p>
+
+<p>The ARIADNE project engaged in a mapping exercise (<A HREF="#refB">Binding and Tudhope 2016</A>) between a variety of controlled vocabularies used in archeology datasets and the Getty AAT. Many of the concepts were interchangeable or close and could be mapped with <code>skos:exactMatch</code> or <code>skos:closeMatch</code>; others were more precise than the AAT concepts and were mapped with <code>skos:broadMatch</code>. With the Getty AAT as a central linking hub this allowed all these vocabularies to be unified and allowed items indexed with them to be searched as a coherent whole.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5.3"></a>
+<h4 itemprop="articleSection">5.3 Non-vocabulary contexts</h4>
+
+<p>The SKOS label properties can be used in non-SKOS contexts because their definitions are particularly free of ontological commitment (unlike the relation properties which require skos:Concept instances as subject and object). For example Wikidata uses the SKOS labeling properties <code>skos:prefLabel</code> and <code>skos:altLabel</code> in its RDF dumps to indicate the labels on entities in that database but it does not otherwise define its entities to be <code>skos:Concepts</code> (see <A CLASS="menu" HREF="https://www.mediawiki.org/wiki/Wikibase/Indexing/RDF_Dump_Format">https://www.mediawiki.org/wiki/Wikibase/Indexing/RDF_Dump_Format</A>).</p>
+
+<p>In some applications SKOS is used somewhat more thoroughly but as only a small part of a larger ontology. DBPedia (<A HREF="#refB">Bizer et al. 2009</A>) has long used SKOS to represent <i>Wikipedia</i> categories. In this case each category is declared as a <code>skos:Concept</code> and the SKOS label and hierarchy properties are used. However, the vast majority of DBPedia entities are for regular <i>Wikipedia</i> pages and are not part of this SKOS subset; instead, they are represented by other aspects of the DBPedia ontology.</p>
+
+<p>The Quantities, Units, Dimensions and Types (QUDT) ontology (<A CLASS="menu" HREF="http://www.qudt.org/">http://www.qudt.org/</A>) has a concept class of its own (<code>qudt:Concept</code>) which is defined as a subclass of <code>skos:Concept</code>. The ontology then uses <code>skos:altLabel</code>  extensively to provide alternate labels for its entities, uses some of the SKOS matching properties to link them to DBPedia, and also uses some of the SKOS documentation properties. Nevertheless, QUDT is not generally seen as a SKOS vocabulary since the primary purpose of the ontology is in the other relations and attributes of its classes, to precisely define quantitative units for data.</p>
+
+<p>More complex ontologies can often be automatically converted to a SKOS representation by reducing the classes of the ontology to a hierarchical list of labeled concepts. The Financial Industry Business Ontology (FIBO,  <A CLASS="menu" HREF="https://spec.edmcouncil.org/fibo/">https://spec.edmcouncil.org/fibo/</A>) is provided by its curators both in its full form as an OWL ontology and in a simplified SKOS format as the FIBO Vocabulary. In other cases, the SKOS representation may be developed by a third party. To one degree or another SKOS has been found useful in a wide variety of additional contexts beyond the traditional thesaurus or controlled vocabulary systems it was initially designed for.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5.4"></a>
+<h4 itemprop="articleSection">5.4 New and experimental applications</h4>
+
+<p>Indexing documents with a controlled vocabulary is often a labor-intensive process: understanding is needed to determine what topics a piece of text is about. Some automation can be done through string-matching and associated rules but designing such automated indexing systems in a reliable way can be complex. Recent advances in natural language processing and machine learning have shown signs that this sort of automation can be done more routinely, although they still need to start with a manually indexed training corpus. The National Library of Finland has produced a freely available software toolkit, Annif (<A HREF="#refS">Suominen, Inkinen and Lehtinen 2022</A>) &mdash; available at <A CLASS="menu" HREF="https://annif.org">https://annif.org</A> &mdash; that can create such automated indexing tools from SKOS concept schemes, and they and others are actively using it to integrate semi-automated subject indexing into their metadata workflows.</p>
+
+<p>Integrating SKOS with other open interoperable standards is a route taken by Skohub (<A CLASS="menu" HREF="https://skohub.io">https://skohub.io</A>). This experimental software turns each SKOS concept in a concept scheme into a &ldquo;hub&rdquo; for content indexed with that concept, to which social media or other client applications can subscribe. Indexing software publishes the relationships to SKOS concepts to the Skohub service, which then pushes links to newly indexed documents out to clients that have subscribed to the related concepts. There are other techniques for developing topical &ldquo;feeds&rdquo; of interest to readers but this approach via open Web standards holds promise.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="6"></a>
+<h3 itemprop="articleSection">6. Considerations for the future</h3>
+
+<p>The W3C seems to consider SKOS a finished product; there has been no working group assigned to review or update it in the more than a decade since the recommendation was published. Among Semantic Web technologies SKOS has been reasonably successful, with thousands of published vocabularies and thesauri making use of it and a healthy collection of tools for creating, validating, and viewing or using it. The Semantic Web itself however has followed a different path than the original &ldquo;Web 3.0&rdquo; (<A HREF="#refM">Markoff 2006</A>) vision for it. While there are vast and growing quantities of RDF data available online, mechanisms for creating and making use of it have changed. Instead of relying on SPARQL endpoints (though some still operate usefully) RDF data and other information is now collected into larger <i>knowledge graphs</i> (<A HREF="#refH">Hogan 2022</A>) used by major online services such as Google.</p>
+
+<p>But the LOD/Semantic Web ecosystem is not the only place where a SKOS vocabulary can be useful. Documents or other items can be indexed using SKOS concepts simply by entering the URI (and/or other metadata) for the SKOS concept into a relational database or search collection. The fact that the identifier is a URI does not really matter for such purposes &mdash; just having a unique and persistent ID for a concept allows conceptual grouping of items, and the SKOS relationships can be used to create faceted hierarchies of documents or products for browsing purposes. All of this currently requires custom software, so a more consistent standard for indexing with SKOS vocabularies might allow for more general-purpose software tools in this area.</p>
+
+<p>The fact that SKOS identifiers are URIs presents another area where applications could potentially work better with additional standards. URIs in common use are almost always actually URLs, that is they point to a location on the Internet that can be retrieved, so what should the response to retrieving a SKOS concept or concept scheme URI look like? The SKOS recommendation and associated notes from the SWD don&rsquo;t say, or even require that the URI be resolvable. In practice SKOS URIs usually resolve to some sort of concept scheme browser (like Skosmos) that may provide both HTML and RDF (XML, JSON-LD, etc.) representations of the concept scheme or the specific concept. However, at least to this point software using such vocabularies cannot rely on a particular structure for responses from these URIs, and so needs to be tailored to each vocabulary (or at least to each <i>concept space</i>). This may be another area where a more rigid standard or expectation could be set that would be helpful for users of such vocabularies; perhaps the Skosmos design will become a de facto standard here.</p>
+
+<p>As has been noted above, some aspects of SKOS have received only limited use. An update to the recommendation to either improve their usability or remove them would help to keep this standard as &ldquo;simple&rdquo; as possible. On the other hand, some additions to the recommendation could also be helpful, even while trying to avoid the full complexity of ISO 25964 or more complete bibliographic systems like BIBFRAME. The issues left unresolved in the development of SKOS (see <A HREF="#3.2">Section 3.2</A>) have been worked around by implementers in the intervening years but could still benefit from improvements to the standard if that were possible. A standard to indicate non-assignable or non-indexing concepts would be helpful (<A HREF="#refP">Panzer and Zeng 2009</A>); some mechanism for combining concepts (<A HREF="#refB">Binding, Gnoli and Tudhope 2021</A>) would also be welcome. And defining a structure for notes and notation, similar to the SKOS-XL extension for labels, would permit some classification schemes to have their meaning more fully mapped to a semantic web context (<A HREF="#refP">Panzer and Zeng 2009</A>).</p>
+
+<p>SKOS provides a simple data model for a knowledge organization system that could be considered conceptually independent of RDF and the Semantic Web technologies that fostered it. In the longer run no matter how the patterns of RDF usage change it may make sense to contextualize the SKOS data model for other types of computing systems such as search engines and relational databases.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="7"></a>
+<h3 itemprop="articleSection">7. Conclusions</h3>
+
+<p>SKOS has become a widely adopted &ldquo;simple&rdquo; standard in the field of knowledge organization, with its ability to capture and easily share in a standardized form the content of controlled vocabularies, thesauri, classification systems and subject headings, although some traditional features of thesauri and classification systems are not supported. As with most standards in the field of knowledge organization SKOS represents a compromise between different needs and interests, and it cannot solve the problem of incompatibility between different KOS. </p>
+
+<p>For a KOS needing additional capabilities (particularly for some types of ontology) SKOS can act as a basis with custom extensions used to address those missing features. Organizations with standardized thesauri in the arts and sciences and even financial and business domains have adopted and published openly available SKOS concept schemes as linked open data, available for anyone to use.</p>
+
+<p>The relation of SKOS to the Semantic Web and LOD comes from its definition in terms of the Resource Description Framework (RDF); every entity in a SKOS thesaurus is a URI that could in principle be downloaded or viewed in a web browser. A SKOS concept scheme with its concepts and relations is a graph that can be queried with the SPARQL language. But SKOS can also be used in any context where an identifier is needed for the concepts in a vocabulary or thesaurus, the identifiers just happen to be URIs. And there are a wide range of tools for creating and making use of SKOS vocabularies.</p>
+
+<p>SKOS (with the first word in its full name being &ldquo;Simple&rdquo;) does not support every feature needed for thesauri as described in the ISO 25964 standard. The SKOS-XL extension addresses some of those missing pieces, and third-party extensions are available to cover other features if needed. </p>
+
+<p>The benefits of SKOS as a basic standard for representing and publishing vocabularies are clear, and it deserves to be widely understood by those involved in knowledge organization.</p>
+
+</span><!-- articleBody ends -->
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="end"></a>
+<h3>Endnotes</h3>
+
+<a name="e1"></a>
+<p><strong>1</strong>. In the literature of knowledge organization, a distinction is often made between <i>classification systems</i> versus <i>verbal &rarr; <A HREF="#indexing#4.1">indexing languages</a></i>, where the first group contains non-verbal codes, while the second contains verbal codes. There are, however, examples of purely verbal classification systems (see <A CLASS="menu" HREF="ir#4.1">https://www.isko.org/cyclo/ir#4.1</A>) just as there are examples of thesauri using non-verbal codes in addition to the verbal ones (e.g., the NCI-thesaurus of the National Cancer Institute). It should be said, as just as the notations in classification systems can be labeled in different languages, the preferred terms in thesauri can be multilingual and also assigned synonymous to each descriptor.</p>
+
+<a name="e2"></a>
+<p><strong>2</strong>. An anonymous reviewer wrote: &ldquo;In my view, SKOS URIs almost certainly do not represent exactly the same meaning since, in addition to the implicit meanings given by (different) hierarchical structures, different KOS carry different (community and cultural) perspectives and scope notes of what appears at first glance to be the same terms denoting the same concept. Hence the preferred use in the KOS community of the looser semantics of the SKOS matching properties&rdquo;.</p>
+
+<a name="e3"></a>
+<p><strong>3</strong>. See also <A CLASS="menu" HREF="https://dublincore.org/">https://dublincore.org/</A>.</p>
+
+<a name="e4"></a>
+<p><strong>4</strong>. FOAF (an acronym of Friend Of A Friend) is an experimental linked information system describing persons, their activities, and their relations to other people and objects. See, for example, Graves, Constabaris and Brickley (<A HREF="#refG">2007</A>).</p>
+
+<a name="e5"></a>
+<p><strong>5</strong>. &ldquo;Best Practice Recipes for Publishing RDF Vocabularies&rdquo; see <A CLASS="menu" HREF="https://www.w3.org/2006/07/SWD/  and https://www.w3.org/TR/swbp-vocab-pub/">https://www.w3.org/2006/07/SWD/  and https://www.w3.org/TR/swbp-vocab-pub/</A>. </p>
+
+<a name="e6"></a>
+<p><strong>6</strong>. SWD Issue Tracking at <A CLASS="menu" HREF="https://www.w3.org/2006/07/SWD/track/issues/">https://www.w3.org/2006/07/SWD/track/issues/</A>.</p>
+
+<a name="e7"></a>
+<p><strong>7</strong>. The early SKOS-core draft is available at <A CLASS="menu" HREF="https://www.w3.org/TR/swbp-skos-core-spec/">https://www.w3.org/TR/swbp-skos-core-spec/</A>.</p>
+
+<a name="e8"></a>
+<p><strong>8</strong>. ISO 25964-1: 2011(E), &sect;6.3.1 presents two kinds of phrases: adjective phrases (e.g., <code>cold fusion</code>) and prepositional phrases (e.g., <code>hospitals for children</code>). </p>
+
+<a name="e9"></a>
+<p><strong>9</strong>. About the Data Catalog Vocabulary (DCAT) see <A CLASS="menu" HREF="https://www.w3.org/TR/vocab-dcat-2/">https://www.w3.org/TR/vocab-dcat-2/</A>.</p>
+
+<a name="e10"></a>
+<p><strong>10</strong>. SKOSify (<A HREF="#refS">Suominen and Hyv&ouml;nen 2012</A>), for example, is designed to do this, see also <A CLASS="menu" HREF="https://skosify.readthedocs.io/">https://skosify.readthedocs.io/</A>.</p>
+
+<a name="e11"></a>
+<p><strong>11</strong>. See also <A CLASS="menu" HREF="https://www.loc.gov/bibframe/docs/index.html">https://www.loc.gov/bibframe/docs/index.html</A>.</p>
+
+<a name="e12"></a>
+<p><strong>12</strong>. BIBFRAME&rsquo;s <code>subject</code> property is available at <A CLASS="menu" HREF="http://id.loc.gov/ontologies/bibframe/subject">http://id.loc.gov/ontologies/bibframe/subject</A>.</p>
+
+<a name="e13"></a>
+<p><strong>13</strong>. SPARQL is a recursive acronym for &ldquo;SPARQL Protocol and RDF Query Language&rdquo;, a language for querying, retrieving, and updating data in an RDF graph.</p>
+
+<a name="e14"></a>
+<p><strong>14</strong>. See also <A CLASS="menu" HREF="http://vocbench.uniroma2.it">http://vocbench.uniroma2.it</A>.</p>
+
+<a name="e15"></a>
+<p><strong>15</strong>. See also <A CLASS="menu" HREF="https://skos-play.sparna.fr/">https://skos-play.sparna.fr/</A>.</p>
+
+<a name="e16"></a>
+<p><strong>16</strong>. See also <A CLASS="menu" HREF="https://github.com/cmader/qSKOS">https://github.com/cmader/qSKOS</A>.</p>
+
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="ref"></a>
+<h3>References</h3>
+
+<span itemprop="citation">
+
+<a name="refA"></a>
+
+<p>Allemang, Dean, James A. Hendler, and Fabien Gandon. 2020. <i>Semantic Web for the Working Ontologist: Effective Modeling for Linked Data, RDFS, and OWL</i>. 3rd ed. New York: ACM Books.</p>
+
+<p>Arndt, Susanne, Patrick Ion, Mila Runnwerth, Moritz Schubotz, and Olaf Teschke. 2021. &ldquo;10 Years Later: The Mathematics Subject Classification and Linked Open Data&rdquo;. In: <i>Intelligent Computer Mathematics: CICM 2021, </i>eds. Fairouz Kamareddine and Claudio Sacerdoti Coen. <i>Lecture Notes in Computer Science</i>, vol 12833. Cham, Switzerland: Springer. <A CLASS="menu" HREF="https://doi.org/10.1007/978-3-030-81097-9_12">https://doi.org/10.1007/978-3-030-81097-9_12</A>.</p>
+
+<a name="refB"></a>
+
+<p>Baker, Thomas, Sean Bechhofer, Antoine Isaac, Alistair Miles, Guus Schreiber and Ed Summers, 2013. &ldquo;Key Choices in the Design of Simple Knowledge Organization System (SKOS)&rdquo;, <i>Journal of Web Semantics</i> 20:35-49. <A CLASS="menu" HREF="https://doi.org/10.1016/j.websem.2013.05.001">https://doi.org/10.1016/j.websem.2013.05.001</A>.</p>
+
+<p>Baker, Thomas, Brandon Whitehead, Ruthie Musker, and Johannes Keizer. 2019. &ldquo;Global Agricultural Concept Space: Lightweight Semantics for Pragmatic Interoperability&rdquo;. <i>npj Science of Food</i> 3: 16. <A CLASS="menu" HREF="https://doi.org/10.1038/s41538-019-0048-6">https://doi.org/10.1038/s41538-019-0048-6</A>.</p>
+
+<p>Berners-Lee, Tim and Mark Fischetti, 1999. &ldquo;Mind to Mind&rdquo;. In <i>Weaving the Web: The Original Design and Ultimate Destiny of the World Wide Web by Its Inventor</i>. San Francisco, CA: Harper, Chapter 12: 157-76.</p>
+
+<p>Berners-Lee, Tim, James Hendler and Ora Lassila, 2001. &ldquo;The Semantic Web&rdquo;. <i>Scientific American </i>284, no. 5: 34-43</p>
+
+<p>Biagetti, Maria Teresa. 2021. &ldquo;Ontologies as Knowledge Organization Systems&rdquo;.&nbsp;<i>Knowledge Organization</i> 48, no. 2: 152-176. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli, <A CLASS="menu" HREF="ontologies">https://www.isko.org/cyclo/ontologies</A>.</p>
+
+<p>Binding, Ceri and Douglas Tudhope. 2016. &ldquo;Improving Interoperability Using Vocabulary Linked Data&rdquo;. <i>International Journal on Digital Libraries</i> 17: 5&ndash;21. <A CLASS="menu" HREF="https://doi.org/10.1007/s00799-015-0166-y">https://doi.org/10.1007/s00799-015-0166-y</A>.</p>
+
+<p>Binding, Ceri, Claudio Gnoli, and Douglas Tudhope. 2021. &ldquo;Migrating a Complex Classification Scheme to the Semantic Web: Expressing the Integrative Levels Classification using SKOS RDF&rdquo;. <i>Journal of Documentation</i> 77, no. 4: 926-45. <A CLASS="menu" HREF="https://doi.org/10.1108/JD-10-2020-0167">https://doi.org/10.1108/JD-10-2020-0167</A>.</p>
+
+<p>Bizer, Christian, Jens Lehmann, Georgi Kobilarov, S&ouml;ren Auer, Christian Becker, Richard Cyganiak and Sebastian Hellmann. 2009. &ldquo;Dbpedia: A Crystallization Point for the Web of Data&rdquo;. Journal of Web Semantics 7, no. 3: 154-65. <A CLASS="menu" HREF="https://doi.org/10.1016/j.websem.2009.07.002">https://doi.org/10.1016/j.websem.2009.07.002</A>.</p>
+
+<p>Brickley, Dan and Libby Miller. 2005. <i>FOAF Vocabulary Specification</i>, FOAF Project, <A CLASS="menu" HREF="http://xmlns.com/foaf/spec/">http://xmlns.com/foaf/spec/</A>.</p>
+
+<a name="refC"></a>
+<a name="refD"></a>
+
+<p>Dextre Clarke, Stella G. 2019. &ldquo;The Information Retrieval Thesaurus&rdquo;. <i>Knowledge Organization</i> 46, no. 6: 439-59. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli, <A CLASS="menu" HREF="thesaurus">https://www.isko.org/cyclo/thesaurus</A>.</p>
+
+<a name="refE"></a>
+<a name="refF"></a>
+<p>Fraser, Craig. 2020. &ldquo;Mathematics in Library and Review Classification Systems: An Historical Overview&rdquo;. <i>Knowledge Organization</i> 47, no. 4: 334-356. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli, <A CLASS="menu" HREF="mathematics">https://www.isko.org/cyclo/mathematics</A>.</p>
+
+<p>Frazier, Priscilla Jane. 2015. &ldquo;SKOS: A Guide for Information Professionals&rdsquo;, American Library Association, May 18, 2015, <A CLASS="menu" HREF="http://www.ala.org/alcts/resources/z687/skos">http://www.ala.org/alcts/resources/z687/skos</A>.</p>
+
+<a name="refG"></a>
+
+<p>Graves, Mike, Adam Constabaris and Dan Brickley. 2007. &ldquo;FOAF: Connecting People on the Semantic Web&rdquo;. <i>Cataloging & Classification Quarterly</i> 43, nos. 3-4: 191-202. DOI 10.1300/J104v43n03_10.</p>
+
+
+<a name="refH"></a>
+
+<p>Hawkins, Les. 2015. &ldquo;The Semantic Web and the BIBFRAME Initiative&rdquo;. <i>Serials Review</i> 41, no. 2: 106-7.</p>
+
+<p>Hogan, Aidan et al. 2022. &ldquo;Knowledge Graphs&rdquo;. <i>ACM Computing Surveys</i> 54, no. 4: 71:1-37. <A CLASS="menu" HREF="https://doi.org/10.1145/3447772">https://doi.org/10.1145/3447772</A>.</p>
+
+<a name="refI"></a>
+<p>International Organization for Standardization. 1974.  <i>ISO 2788-1974. Documentation - Guidelines for the Establishment and Development of Monolingual Thesauri</i>. 1st ed. Geneva: International Organization for Standardization.</p>
+
+<p>International Organization for Standardization. 1985. <i>ISO 5964-1985. Documentation - Guidelines for the Establishment and Development of Multilingual Thesauri</i>. Geneva: International Organization for Standardization.</p>
+
+<p>International Organization for Standardization. 2011. <i>ISO 25964-1: Information and Documentation - Thesauri and Interoperability with other Vocabularies - Part 1: Thesauri for Information Retrieval</i>. Geneva: International Organization for Standardization.</p>
+
+<p>International Organization for Standardization. 2013. <i>ISO 25964-2: Information and Documentation - Thesauri and Interoperability with other Vocabularies - Part 2: Interoperability with other Vocabularies</i>. Geneva: International Organization for Standardization.</p>
+
+<p>International Organization for Standardization. 2017. <i>ISO 15836-1:2017 Information and Documentation &mdash; The Dublin Core Metadata Element Set &mdash; Part 1: Core Elements</i>. Geneva: International Organization for Standardization.</p>
+
+<p>Isaac, Antoine, Jon Phipps, and Daniel Rubin, 2009. <i>SKOS Use Cases and Requirements</i>, World Wide Web Consortium. <A CLASS="menu" HREF="http://www.w3.org/TR/skos-ucr/">http://www.w3.org/TR/skos-ucr/</A>.</p>
+
+<p>Isaac, Antoine and Ed Summers (eds), 2009. <i>SKOS Simple Knowledge Organization System Primer</i>, World Wide Web Consortium. <A CLASS="menu" HREF="https://www.w3.org/TR/skos-primer/">https://www.w3.org/TR/skos-primer/</A>.</p>
+
+<p>ISO TC46/SC9/WG8 working group and Antoine Isaac, 2012. <i>Correspondence between ISO 25964 and SKOS/SKOS-XL Models</i>, International Organization for Standardization <A CLASS="menu" HREF="https://groups.niso.org/apps/group_public/download.php/12351/Correspondence%20ISO25964-SKOSXL-MADS-2013-12-11.pdf">https://groups.niso.org/apps/group_public/download.php/12351/...</A></p>
+
+<a name="refJ"></a>
+<a name="refK"></a>
+<p>Kempf, A. and J. Neubert. 2016. &ldquo;The Role of Thesauri in an Open Web: A Case Study of the STW Thesaurus for Economics&rdquo;, <i>Knowledge Organization</i>, 43, no. 3: 160-73.</p>
+
+<a name="refL"></a>
+<p>Lardera, Marco and Birger Hj&oslash;rland. 2020. &ldquo;Keyword&rdquo; in <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli, <A CLASS="menu" HREF="keyword">https://www.isko.org/cyclo/keyword</A></p>
+
+<p>Lassila, Ora and Ralph R. Swick (eds.), 1999. <i>Resource Description Framework (RDF) Model and Syntax Specification</i>, World Wide Web Consortium. <A CLASS="menu" HREF="https://www.w3.org/TR/1999/REC-rdf-syntax-19990222/">https://www.w3.org/TR/1999/REC-rdf-syntax-19990222/</A>. Note this has been replaced by updates in 2004 and 2014 that now define the current RDF 1.1 standard.</p>
+
+<a name="refM"></a>
+
+<p>Mader, Christian, Bernhard Haslhofer, and Antoine Isaac. 2012. &ldquo;Finding Quality Issues in SKOS Vocabularies&rdquo;. <i>Proceedings of Theory and Practice of Digital Libraries</i> (TPDL 2012), Lecture Notes in Computer Science 7489. Berlin: Springer-Verlag, 222&ndash;33.</p>
+
+<p>Manaf, Nor Azlinayati, Sean Bechhofer and Robert Stevens. 2012. &ldquo;The Current State of SKOS Vocabularies on the Web&rdquo;. <i>Lecture Notes in Computer Science</i> 7295 Berlin: Springer, 270&ndash;84. <A CLASS="menu" HREF="https://doi.org/10.1007/978-3-642-30284-8_25">https://doi.org/10.1007/978-3-642-30284-8_25</A>.</p>
+
+<p>Maniez, Jacques. 1997. &ldquo;Database Merging and the Compatibility of Indexing Languages&rdquo;. <i>Knowledge Organization</i> 24, no. 4: 213-224.</p>
+
+<p>Markoff, John. 2006. &ldquo;Entrepreneurs See a Web Guided by Common Sense.&rdquo; <i>New York Times</i> November 12 2006. <A CLASS="menu" HREF="https://www.nytimes.com/2006/11/12/business/12web.html">https://www.nytimes.com/2006/11/12/business/12web.html</A>.</p>
+
+<p>Mazzocchi, Fulvio. 2018. &ldquo;Knowledge Organization System (KOS)&rdquo;. <i>Knowledge Organization</i> 45, no. 1: 54-78. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli, <A CLASS="menu" HREF="kos">https://www.isko.org/cyclo/kos</A>.</p>
+
+<p>Miles, Alistair, Nikki Rogers, and Dave Beckett, 2004. <i>SKOS-Core 1.0 guide</i>, World Wide Web Consortium.  <A CLASS="menu" HREF="http://www.w3.org/2001/sw/Europe/reports/thes/1.0/guide/20040504/">http://www.w3.org/2001/sw/Europe/reports/thes/1.0/guide/20040504/</A>.</p>
+
+<p>Miles, Alistair, and Sean Bechhofer, eds. 2009. <i>SKOS Simple Knowledge Organization System Reference</i>, World Wide Web Consortium. <A CLASS="menu" HREF="https://www.w3.org/TR/2009/REC-skos-reference-20090818/">https://www.w3.org/TR/2009/REC-skos-reference-20090818/</A>.</p>
+
+<p>Minelli, Alessandro. 2022. &ldquo;Species&rdquo; in <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli. <A CLASS="menu" HREF="species">https://www.isko.org/cyclo/species</A>.</p>
+
+<a name="refN"></a>
+<a name="refO"></a>
+<a name="refP"></a>
+
+<p>Panzer, Michael and Marcia Lei Zeng. 2009. &ldquo;Modeling Classification Systems in SKOS: Some Challenges and Best-Practice Recommendations&rdquo;. In <i>Proceedings of the International Conference on Dublin Core and Metadata Applications 2009</i>, pp. 3-14. Available at: <A CLASS="menu" HREF="https://dcpapers.dublincore.org/pubs/article/view/974">https://dcpapers.dublincore.org/pubs/article/view/974</A>.</p>
+
+<p>Prud'hommeaux, Eric and Andy Seaborne (eds.), 2008. <i>SPARQL Query Language for RDF</i>, World Wide Web Consortium. <A CLASS="menu" HREF="https://www.w3.org/TR/rdf-sparql-query/">https://www.w3.org/TR/rdf-sparql-query/</A>.</p>
+
+<a name="refQ"></a>
+<a name="refR"></a>
+<a name="refS"></a>
+
+<p>Schandl, Thomas and Andreas Blumauer. 2010. &ldquo;PoolParty: SKOS Thesaurus Management Utilizing Linked Data&rdquo; in <i>The Semantic Web: Research and Applications. ESWC 2010</i>. Lecture Notes in Computer Science, vol 6089. Berlin: Springer. <A CLASS="menu" HREF="https://doi.org/10.1007/978-3-642-13489-0_36">https://doi.org/10.1007/978-3-642-13489-0_36</A>.</p>
+
+<p>Smith, Arthur. 2020. &ldquo;Physical Subject Headings (PhySH)&rdquo;. <i>Knowledge Organization</i> 47, no. 3: 257-266. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli, <A CLASS="menu" HREF="physh">https://www.isko.org/cyclo/physh</A></p>
+
+<p>Smith, Barry, Michael Ashburner, Cornelius Rosse, Jonathan Bard, William Bug, Werner Ceusters, Louis J. Goldberg, Karen Eilbeck, Amelia Ireland, Christopher J. Mungall, OBI Consortium; Neocles Leontis, Philippe Rocca-Serra, Alan Ruttenberg, Susanna-Assunta Sansone, Richard H Scheuermann, Nigam Shah, Patricia L Whetzel, Suzanna Lewis. 2007. &ldquo;The OBO Foundry: Coordinated Evolution of Ontologies to Support Biomedical Data Integration&rdquo;, <i>Nature Biotechnology </i>25, no. 11: 1251-5.  <A CLASS="menu" HREF="https://doi.org/10.1038/nbt1346">https://doi.org/10.1038/nbt1346</A>.</p>
+
+<p>Stellato, Armando. 2014. &ldquo;The History of VocBench, What We have been Doing during the last 15 Months and What the Future Holds&rdquo;. <i>Agricultural Information Management Standards Portal</i>, Food and Agricultural Organization of the United Nations, <A CLASS="menu" HREF="http://aims.fao.org/in-action/interviews/vocbench">http://aims.fao.org/in-action/interviews/vocbench</A>.</p>
+
+<p>Suominen, Osma and Eero Hyv&ouml;nen. 2012. &ldquo;Improving the Quality of SKOS Vocabularies with Skosify&rdquo; <i>Proceedings of the 18th International Conference on Knowledge Engineering and Knowledge Management (EKAW 2012)</i><i> Lecture Notes in Computer Science</i>, vol 7603, Berlin: Springer.</p>
+
+<p>Suominen, Osma and Christian Mader. 2013. &ldquo;Assessing and Improving the Quality of SKOS Vocabularies&rdquo;. <i>Journal on Data Semantics </i>3: 47-73. <A CLASS="menu" HREF="https://doi.org/10.1007/s13740-013-0026-0">https://doi.org/10.1007/s13740-013-0026-0</A>.</p>
+
+<p>Suominen, Osma, Henri Ylikotila, Sini Pessala, Mikko Lappalainen, Matias Frosterus, Jouni Tuominen, Thomas Baker, Caterina Caracciolo and Armin Retterath. 2015. &ldquo;Publishing SKOS vocabularies with Skosmos&rdquo;. See <A CLASS="menu" HREF="https://skosmos.org">https://skosmos.org</A>.</p>
+
+<p>Suominen, Osma, Juho Inkinen, and Mona Lehtinen. 2022. &ldquo;Annif and Finto AI: Developing and Implementing Automated Subject Indexing&rdquo;. <i>JLIS.It</i>, 13(1), 265&ndash;282. <A CLASS="menu" HREF="https://doi.org/10.4403/jlis.it-12740">https://doi.org/10.4403/jlis.it-12740</A>.</p>
+
+<a name="refT"></a>
+<a name="refU"></a>
+<a name="refV"></a>
+<a name="refW"></a>
+<a name="refX"></a>
+<a name="refY"></a>
+<a name="refZ"></a>
+
+<p>Zeng, Marcia Lei. 2019. &ldquo;Interoperability&rdquo;. <i>Knowledge Organization</i> 46, no. 2: 122-146. Also available in Hj&oslash;rland, Birger and Gnoli, Claudio eds. <i>ISKO Encyclopedia of Knowledge Organization</i>, <A CLASS="menu" HREF=".interoperability">https://www.isko.org/cyclo/interoperability</A>.</p>
+
+</span><!-- citation ends -->
+
+<a name="col"></a>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<p>&nbsp;</p>
+
+<p>Visited <a href="https://www.digits.net" target="_blank"><img src="https://counter.digits.net/?counter={75aea5fa-fbe9-aba4-f1c4-2b3654fe35ff}&template=simple" alt="Hit Counter by Digits" border="0"  /></a> times.</p>
+
+<hr>
+<p itemprop="dateCreated">Version 1.0 published 2022-07-18 <!-- last edited 2020-- -->
+<!-- <br>Version 1.1 published 2020--: [changes] -->
+
+<p>Article category: <code><a itemprop="about" href="index#KS">Standards and formats for representing data</a></code></p>
+
+<p>This article (version 1.0) is also published in <i>Knowledge Organization</i>. How to cite it:
+<br>Smith, Arthur. 2022. 
+&ldquo;Simple Knowledge Organization System (SKOS)&rdquo;. 
+<i>Knowledge Organization</i> 49, no. 5 : 371-384. 
+Also available in 
+<i><span itemprop="isPartOf">ISKO Encyclopedia of Knowledge Organization</span></i>, 
+eds. <span itemprop="editor">Birger Hj&oslash;rland</span> and <span itemprop="editor">Claudio Gnoli</span>, 
+<span itemprop="url">https://www.isko.org/cyclo/skos </span></p>
+
+<p>&copy;2022 <span itemprop="publisher">ISKO</span>. All rights reserved.</p>
+
+</div><!-- Article ends -->
+
+</td>
+</tr>
+
+<tr>
+<td id="logo">
+</td>
+</tr>
+
+</table>
+</body>
+</html>

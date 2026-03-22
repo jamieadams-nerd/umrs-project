@@ -1,0 +1,398 @@
+= umrs-uname — System Security Posture Audit Card
+Jamie L. Adams
+:description: Reference page for umrs-uname — an interactive TUI that displays \
+    OS identity, kernel security posture, and platform trust evidence.
+:toc: left
+:toclevels: 3
+
+// NIST SP 800-53 CM-8, CA-7, SI-7, AU-3
+// NSA RTB RAIN — Non-Bypassability, Trust Anchoring
+
+== Purpose
+
+`umrs-uname` is a security overlay of the classic `uname` command.
+Where `uname` tells you the kernel version string, `umrs-uname` tells you
+whether the kernel is running in a hardened, integrity-verified state —
+and shows you the evidence behind that conclusion.
+
+The tool runs the UMRS platform detection pipeline at startup, collects a live
+snapshot of kernel security posture, and displays the results in an interactive
+three-tab audit card.
+It is designed for operators who need a quick, accurate read of system state,
+and for auditors who need to trace the evidence behind a trust classification.
+
+.Primary audiences
+* *Security operators* — verify system posture before CUI processing.
+* *Security auditors* — review the evidence chain behind a trust classification.
+* *Developers* — understand how platform detection and posture probing work in practice.
+
+'''
+
+== Usage
+
+[source,shell]
+----
+umrs-uname
+----
+
+No arguments are required.
+The tool reads from `/proc` and `/sys` only — no arguments, no configuration,
+no network calls.
+
+.Key bindings
+[cols="2,4", options="header"]
+|===
+| Key | Action
+
+| `Tab` / `Right`
+| Next tab
+
+| `Shift-Tab` / `Left`
+| Previous tab
+
+| `j` / `Down`
+| Scroll down
+
+| `k` / `Up`
+| Scroll up
+
+| `?` or `F1`
+| Open contextual help for the current tab
+
+| `q` or `Esc`
+| Quit
+
+|===
+
+NOTE: The `?` and `F1` keys open a contextual help overlay for whichever tab
+is currently active.
+Each tab's help text describes what it shows, how to interpret colors, and
+what action to take on findings.
+
+'''
+
+== Tab Reference
+
+`umrs-uname` presents data in three tabs.
+Tab order is fixed.
+
+=== Tab 0 — OS Information
+
+Displays the platform identity of the running system.
+
+.Fields shown
+[cols="2,4", options="header"]
+|===
+| Field | Source
+
+| `ID` / `NAME` / `VERSION_ID`
+| `/etc/os-release` (parsed via TOCTOU-safe reader)
+
+| `PRETTY_NAME`
+| `/etc/os-release`
+
+| `CPE_NAME`
+| `/etc/os-release` — used for asset inventory correlation
+
+| Platform Family
+| RPM-based, dpkg-based, or pacman-based — derived from package manager detection
+
+| Platform Distro / Version
+| Confirmed via package database cross-check
+
+| Platform Facts
+| Number of independent facts confirmed by the substrate probe
+
+| Probe Used
+| Which detection probe confirmed the platform identity
+
+| `boot_id`
+| `/proc/sys/kernel/random/boot_id` — unique per boot; use for log correlation
+
+|===
+
+The field labeled *Platform Facts* shows how many independent data points the
+detection pipeline confirmed before asserting a platform identity.
+A higher count means more cross-checking — not simply more data.
+
+NOTE: `PRETTY_NAME` is displayed but not used for identity assertions.
+It often includes codenames or release suffixes that vary between otherwise
+identical systems.
+The authoritative fields are `ID`, `NAME`, and `VERSION_ID`.
+
+=== Tab 1 — Kernel Security
+
+Displays live kernel security posture from `/proc` and `/sys`.
+
+Each indicator is read from its kernel source at startup.
+Colors and symbols indicate the hardened state at the time of collection.
+
+.Color and symbol guide
+[cols="1,1,3", options="header"]
+|===
+| Symbol | Color | Meaning
+
+| ✓
+| Green
+| Indicator is in the hardened state
+
+| ✗
+| Red
+| Indicator is not hardened — review required before CUI processing
+
+| ?
+| Dim
+| Value was not readable; kernel node may be absent or permission-denied
+
+|===
+
+Indicators are organized into groups.
+A group is omitted entirely when no indicator in it has a readable value.
+
+.Indicator groups
+[cols="2,4", options="header"]
+|===
+| Group | What it covers
+
+| BOOT INTEGRITY
+| Lockdown mode, kexec load gate, module signature enforcement, live module loading lock.
+A failure here means the running kernel can be replaced or extended without
+detection.
+
+| CRYPTOGRAPHIC POSTURE
+| FIPS mode, entropy source trust (CPU RDRAND, bootloader), module loading lock
+(final gate protecting cryptographic kernel modules from replacement).
+
+| KERNEL SELF-PROTECTION
+| ASLR (`randomize_va_space`), kernel pointer hiding (`kptr_restrict`),
+unprivileged BPF restriction, `ptrace` scope, performance counters access,
+`dmesg` restriction.
+Weakness here gives attackers the memory layout information needed to exploit
+kernel vulnerabilities.
+
+| PROCESS ISOLATION
+| Unprivileged user namespace creation, Magic SysRq functions, SUID core dumps.
+Weakness here allows a compromised process to reach data in sibling processes.
+
+| FILESYSTEM HARDENING
+| Symlink and hardlink following restrictions, FIFO and regular-file write
+protections in sticky directories.
+These close the path-based TOCTOU vectors most privilege escalations rely on.
+
+| MODULE RESTRICTIONS
+| Blacklist status for USB storage, FireWire, Thunderbolt, Bluetooth kernel modules;
+netfilter connection tracking accounting.
+These modules are primary data exfiltration and direct-memory-attack vectors.
+
+|===
+
+==== Reading contradictions
+
+The Kernel Security summary row labeled *Contradictions* compares the live
+kernel value against what the persisted sysctl configuration intends.
+
+A contradiction means the running kernel and the configuration file do not agree.
+This does not always indicate tampering — it can also result from a missed
+`sysctl -p` after a configuration change, or a hotfix applied without persisting
+it to a drop-in file under `/etc/sysctl.d/`.
+
+.Contradiction types
+[cols="2,4", options="header"]
+|===
+| Type | Meaning
+
+| DRIFT
+| The configuration says hardened, but the kernel is not.
+Intended hardening is not active.
+Investigate and apply the intended value before CUI processing.
+
+| NOT PERSISTED
+| The kernel is hardened now, but the configuration will not retain that
+setting after a reboot.
+Persist the value to a `/etc/sysctl.d/` drop-in file.
+
+| UNVERIFIABLE
+| A configuration value exists, but the kernel node could not be read to
+confirm it.
+This may indicate a permission issue or that the sysctl does not exist
+on this kernel.
+
+|===
+
+CAUTION: Any contradiction in the Kernel Security tab is a configuration management finding.
+Resolve each one before asserting that the system meets its intended hardened baseline.
+A contradiction does not automatically prevent operation, but it must be explained
+and resolved in the system's configuration management record.
+(NIST SP 800-53 CM-6, CA-7)
+
+==== Catalog baseline comparison
+
+The summary pane shows a *Catalog Baseline* row that compares the running kernel
+version against the kernel version the indicator catalog was built against.
+
+When the running kernel is newer than the catalog baseline, some indicator
+behavior may have changed.
+Run the xref:devel:update-checklists.adoc[Kernel Update Checklist] to verify
+that the indicator catalog remains accurate for your kernel.
+
+=== Tab 2 — Trust / Evidence
+
+The Trust / Evidence tab is always the last (rightmost) tab.
+It is a two-pane view: the top pane is pinned and always visible; the bottom
+pane scrolls.
+
+==== Top pane — Trust summary
+
+Shows the top-level trust classification and the evidence that produced it.
+
+.Trust tier definitions
+[cols="1,2,4", options="header"]
+|===
+| Tier | Label | What was confirmed
+
+| T0
+| Untrusted
+| No kernel anchor established.
+
+| T1
+| Kernel Anchored
+| `/proc` verified as real procfs via filesystem magic number and PID coherence.
+
+| T2
+| Environment Anchored
+| Mount topology cross-checked: `mountinfo` vs `statfs`.
+
+| T3
+| Platform Verified
+| Platform identity confirmed; two or more independent package database facts agreed.
+
+| T4
+| Integrity Anchored
+| `/etc/os-release` ownership and installed package digest both verified.
+
+|===
+
+The *Downgrade Reasons* field lists each check that would have elevated the
+trust tier but could not be confirmed.
+"No downgrade — full trust retained" means all checks passed.
+A downgrade reason is not a finding that requires remediation; it describes
+the limit of what was verifiable on this system.
+
+The *Contradictions* field lists cases where two independent evidence sources
+asserted different values for the same fact.
+This is distinct from a downgrade reason: a contradiction means active disagreement,
+not merely an unconfirmable fact.
+Any contradiction requires manual review — it may indicate tampering or a
+misconfigured system.
+
+==== Bottom pane — Evidence chain
+
+Lists every file and kernel node read during detection.
+
+.Evidence source types
+[cols="2,4", options="header"]
+|===
+| Source type | What it represents
+
+| Kernel runtime (`/proc`)
+| Data from the procfs pseudo-filesystem
+
+| Kernel attributes (`/sys`)
+| Data from the sysfs pseudo-filesystem
+
+| Configuration file
+| Data from a regular file under `/etc` or the filesystem
+
+| Package database
+| Data from the RPM or dpkg package database
+
+| Symlink target
+| The destination of a symlink
+
+| Filesystem identity
+| Result of a `statfs()` call
+
+|===
+
+.Verification codes in the evidence chain
+[cols="1,4", options="header"]
+|===
+| Code | What it confirms
+
+| `fd`
+| The file was opened by file descriptor rather than re-read by path (TOCTOU safety)
+
+| `PROC_MAGIC`
+| The procfs source was verified as real procfs via `fstatfs()` filesystem magic number
+
+| `SYS_MAGIC`
+| The sysfs source was verified as real sysfs via `fstatfs()` filesystem magic number
+
+| `statfs`
+| Filesystem identity confirmed via `statfs()`
+
+|===
+
+These verification codes confirm that the source data came from the real kernel
+pseudo-filesystem — not from a crafted regular file placed at the same path.
+See xref:devel:posture-probe.adoc[Posture Probe] for the implementation.
+
+'''
+
+== Security Design
+
+`umrs-uname` is one application of the platform detection and posture probing
+system described in xref:devel:os-detection-deep-dive.adoc[OS Detection Deep Dive]
+and xref:devel:posture-probe.adoc[Posture Probe].
+
+The key design properties from that layer that surface in `umrs-uname`:
+
+* *Non-bypassable source verification* — every read from `/proc` and `/sys` is
+  preceded by a filesystem magic number check.
+  The tool cannot be deceived by a bind-mounted regular file at a procfs path.
+
+* *Fail-closed trust* — if the detection pipeline fails a hard gate, the trust
+  tier is T0 (Untrusted) and the failure is shown on the OS Information tab.
+  The Kernel Security tab still displays posture data, because posture collection
+  runs independently of OS detection.
+
+* *Evidence, not assertion* — the trust tier is computed from the evidence chain,
+  not asserted by the tool.
+  The full evidence chain is available for review in Tab 2.
+
+* *Structured contradictions* — contradictions between evidence sources are
+  typed data, not log strings.
+  They can be counted, filtered, and matched programmatically.
+  (NIST SP 800-53 AU-3)
+
+'''
+
+== Compliance
+
+[cols="1,3", options="header"]
+|===
+| Control | How `umrs-uname` satisfies it
+
+| NIST SP 800-53 CM-8
+| Platform identity tab provides component inventory data: distro, version, CPE name, package substrate.
+
+| NIST SP 800-53 CA-7
+| Kernel Security tab provides live posture at any point in time; contradiction detection surfaces configuration drift.
+
+| NIST SP 800-53 SI-7
+| Trust tier is computed from independently verified evidence; T4 requires verified os-release ownership and package digest.
+
+| NIST SP 800-53 AU-3
+| Evidence chain is labelled, grouped, and includes source type and verification code for each record.
+
+|===
+
+'''
+
+== See Also
+
+* xref:devel:os-detection-deep-dive.adoc[OS Detection Deep Dive] — full treatment of the detection pipeline
+* xref:devel:posture-probe.adoc[Posture Probe] — how kernel indicators are collected and classified
+* xref:devel:update-checklists.adoc[Kernel Update Checklist] — keeping the indicator catalog current
+* xref:umrs-tools:umrs-stat.adoc[umrs-stat] — companion tool for file-level security inspection
+* xref:umrs-tools:umrs-ls.adoc[umrs-ls] — directory listing grouped by SELinux label

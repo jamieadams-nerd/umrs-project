@@ -1,0 +1,485 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head profile="http://dublincore.org/documents/2007/11/05/dc-html/">
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>OPACs and discovery systems (IEKO)</title>
+<link rel="stylesheet" type="text/css" href="../isko.css" />
+<link rel="schema.DCTERMS" href="http://purl.org/dc/terms/" />
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:url" content="https://www.isko.org/cyclo/opac" />
+<meta name="twitter:title" content="OPACs and library discovery systems (ISKO Encyclopedia of KO)" />
+<meta property="og:image" content="https://www.isko.org/cyclo/wells.jpg" />
+<meta name="twitter:description" content="This article provides an overview of computer based catalogue systems designed for use by library clients, seeing present day discovery systems on the same trajectory as the older online public access catalogues (OPACs) which they are gradually replacing, both in technical development and their approach to client use scenarios.  It traces the history of the OPAC/discovery system from its origins in the library automation of the 1960s through to the present and discusses the main technical standards which have formed its development.  The article goes on to consider questions relating to the usability of electronic library catalogues and highlights semiotic and ethical issues inherent to their design.  It concludes with reflections on the future of the OPAC/discovery system in an information universe apparently dominated by the Internet search engine." />
+
+<meta name="DCTERMS.title" content="Online public access catalogues and library discovery systems" />
+<meta name="DCTERMS.creator" content="David Wells" />
+<meta name="DCTERMS.issued" content="2020" />
+<meta name="DCTERMS.relation.ispartof" content="ISKO Encyclopedia of Knowledge Organization" />
+<meta name="DCTERMS.ispartof" content="ISKO Encyclopedia of Knowledge Organization" />
+<meta name="DCTERMS:bibliographicCitation" content="ISKO Encyclopedia of Knowledge Organization, eds. Birger Hjorland and Claudio Gnoli" />
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="001.012">
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="025">
+<meta name="DCTERMS.subject.keyword" content="OPAC">
+<meta name="DCTERMS.subject.keyword" content="discovery tools">
+<meta name="DCTERMS.subject.keyword" content="library catalogues">
+<meta name="DCTERMS.subject.keyword" content="library catalogs">
+<meta name="DCTERMS.type" content="Text" />
+<meta name="DCTERMS.format" content="text/html" />
+<meta name="DCTERMS.identifier" content="https://www.isko.org/cyclo/opac" />
+
+<style>
+a {text-decoration: none;}
+a:hover {text-decoration:underline;}
+table td, table th { padding: 5px; }
+</style>
+
+</head>
+<body>
+
+<a name="top"></a>
+
+<table>
+
+<tr>
+<td id="isko"><h1>I S K O</h1></td>
+<td id="banner"><h2><a href="index.html" style="text-decoration:none;">Encyclopedia of Knowledge Organization</h2></a></td>
+</tr>
+
+<tr>
+<td id="navigation">
+<a href="../index.php">home</a>
+<a href="../about.html">about ISKO</a>
+<a href="../join.html">join ISKO</a>
+<a href="../ko.html"><cite>Knowledge Organization</cite> journal</a>
+<a href="../events.html">ISKO events</a>
+<a href="../chapters.html">ISKO chapters</a>
+<a href="../people.html">ISKO people</a>
+<a href="../pubs.html">ISKO publications</a>
+<a href="index.html">Encyclopedia</a>
+<a href="../lit.html">KO literature</a>
+<a href="../inst.html">KO institutions</a>
+<a href="http://bartoc.org/" title="link to BARTOC">&#8663; KOS registry</a>
+<a href="https://www.isko-mms.net/" title="access-account required">&#128274; members</a>
+<a href="../contact.html">contact us</a>
+</td>
+<td id="content" rowspan="2">
+
+<a class="menu" href="authors#h">edited by Birger Hj&oslash;rland</a> <a class="menu" href="authors#g">and Claudio Gnoli</a>
+
+<p>&nbsp;
+
+<div itemscope itemtype="http://schema.org/Article">
+
+<h2 itemprop="headline">Online public access catalogues<br>and library discovery systems</small></h2>
+
+<blockquote>
+by <a itemprop="author" href="authors#w" style="text-decoration:underline">David Wells</a>
+
+<p>Table of contents:
+
+<br><a href="#1">1. Introduction
+<br><a href="#2">2. History and development</a> 
+<br><a href="#3">3. Standards and technical aspects</a> 
+<br><a href="#4">4. Usability</a> 
+<br><a href="#5">5. Ethical considerations</a> 
+<br><a href="#6">6. Conclusion</a> 
+<br><a href="#ref">References</a>
+<br><a href="#col">Colophon</a>
+
+<p itemprop="abstract"><strong>Abstract</strong>:
+<br>This article provides an overview of computer based catalogue systems designed for use by library clients, seeing present day <i>discovery systems</i> on the same trajectory as the older <i>online public access catalogues (OPACs)</i> which they are gradually replacing, both in technical development and their approach to client use scenarios.  It traces the history of the OPAC/discovery system from its origins in the library automation of the 1960s through to the present and discusses the main technical standards which have formed its development.  The article goes on to consider questions relating to the usability of electronic library catalogues and highlights semiotic and ethical issues inherent to their design.  It concludes with reflections on the future of the OPAC/discovery system in an information universe apparently dominated by the Internet search engine.</p>
+
+</blockquote>
+
+<span itemprop="articleBody">
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="1"></a>
+<h3 itemprop="articleSection">1. Introduction</h3>
+
+<p><i>Online public access catalogue (OPAC)</i> was the name given to the computer-based catalogue systems which began to be developed in the late 1960s and early 1970s for use by library clients, and which are still central to the library experience of many users.  In their essential form, OPACs replicated and extended the functionality of the card catalogues they largely replaced in providing a finding aid to the books, journals, audiovisual material and other holdings of a particular library.  The term <i>discovery system</i> has come into use in the early Twenty-first century to describe public-facing electronic catalogues which use the technology of Internet search engines to expand the scope of the OPAC to include not only library-held content, including entries for journal articles and book chapters that were not typically part of traditional library catalogues, but also material held elsewhere which may be of interest to clients.  In terms of both technical development and client-use scenarios, discovery systems are on a trajectory with OPACs, and so it is useful to treat them together, even though there are qualitative differences in their philosophy and approach.  </p>
+
+<p>In its current form the OPAC/discovery system serves several interrelated functions (<a href="#refW">Wells 2007</a>).  It is first of all an index to published or unpublished literature, allowing a user to locate, for example, a particular &rarr; <a href="work">work</a> or identify a set of works on a given topic.  As well as indicating the physical location of items on the library&rsquo;s shelves, it may also provide links to texts or images in electronic format.  (Whereas OPACs were typically restricted to library holdings only, discovery systems may now also include bibliographic data for items not held by the library.)  Secondly, it functions as a portal to non-bibliographic data, including information specific to individual users, who can check for example, what items they have on loan, due dates of loaned items, fines and borrowing history.  It may contain information about the library such as opening hours, and it may include links to help pages and other data considered to be of interest to library users.  Thirdly, the OPAC/discovery system is a promotional artefact which advertises and promotes the library and its services, and at the same time constitutes a source of authority for the information sources to which the library provides access.  A fourth function, which is not yet widely implemented except in specialist functions, but which is likely to become more prevalent in the future, lies in the management of document texts in digital format as well as &rarr; <a href="metadata">metadata</a>, so that the OPAC/discovery system becomes a repository as well as an index.  Within the suite of a library&rsquo;s electronic systems the OPAC/discovery system is situated between the library website of which it often forms a part, but whose functions it is increasingly absorbing, and the library management system from which its data primarily derives.</p>
+
+<p>In actual implementation, OPACs/discovery systems exist at varying levels of functionality depending on the size, resourcing and focus of individual institutions.  The technology of OPACs/discovery systems was from the outset largely driven by institutions in North America and Western Europe (for reasons of practicality this article focuses mostly on the experience of the Anglosphere), and both take-up and the level of sophistication of implemented systems continue to be greater in the developed than the developing world.  Moreover, when electronic catalogues have been introduced into established libraries it has typically been for new stock in the first instance, so that old and new technologies have existed side by side until retrospective conversion programs have been completed.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2"></a>
+<h3 itemprop="articleSection">2. History and development</h3>
+
+<p>When the newly developed computer technoIogies began to be applied to library services in the early 1960s, it was circulation that first received serious attention, followed by acquisitions, serials control and &rarr; <a href="cataloging">cataloguing</a> (<a href="#refR">Reynolds 1985</a>, 23-35).  At first, processing was performed offline in batch mode, but by the late 1960s the first online library applications began to emerge, again beginning with circulation (<a href="#refR">Reynolds 1985</a>, 43-48).  The use of automation in the production of public catalogues was first applied in support of existing manual systems, notably the catalogue on 3 x 5 inch index cards which was the dominant technology of the period.  Since 1901 the Library of Congress Card Distribution Service had been distributing cards to subscribing libraries and thus removing the need for duplication of cataloguing effort (<a href="#refY">Yee 2008</a>).  With the development of the MARC (MAchine Readable Cataloguing) standard for recording complex bibliographic information, bibliographic data began to be distributed on magnetic tape, allowing libraries to print off full sets of cards for the different access points required (author, title, and perhaps also subject and classification).  Similar technology was used for the production of book catalogues, which enjoyed some popularity between the 1940s and 1960s mainly as tools for librarians, and later catalogues printed to microfilm (<a href="#refR">Reynolds 1985</a>, 74-86).</p>
+
+<p>The theoretical idea of a wholly electronic retrieval system was floated at a very early date in the history of library automation, but initially dismissed, as the prospect of applying very precise searches to large amounts of data stored on magnetic tape was not considered sufficiently cost effective (<a href="#refS">Shaw 1962</a>).  Nevertheless, relatively detailed theoretical models of how such a system might work were elaborated in the early 1960s (<a href="#refK">King et al. 1963</a>; <a href="#refS">Swanson 1964</a>; <a href="#refD">Dubester 1964</a>; <a href="#refS">Su 1994</a>).  Computerised subject bibliographies began to appear at this time, with the first large-scale example being the Medical Analysis and Retrieval System (MEDLARS, later Medline) released by the US National Library of Medicine (<a href="#refR">Rogers 1964</a>).  Although databases of this type could be accessed remotely and from 1967 even internationally, their use was limited to specialist librarians and researchers (see <a href="#refH">Hahn 1998</a>; <a href="#refB">Bourne and Hahn 2003</a>).  With the rapid growth of computing capability in the 1960s and 1970s, shared electronic catalogues of general bibliographic data also became a reality, at first on a similar model to the Library of Congress system with a common database being used to create catalogue cards or microfilm catalogues (<a href="#refR">Reynolds 1985</a>, 55-63).  Typically these relied on a central computer linked to terminals at member libraries, whose staff could upload data and order products.  The most prominent of these was the Ohio College Library Center (OCLC), which began production in 1970.  This was followed in the United States notably by the Research Libraries Information Network (RLIN) in 1974, and by the Washington Library Network (WLN) in 1978.  The British Library Automated Information Service (BLAISE) began operations under a similar model in 1977 (<a href="#refH">Holmes 1979</a>), and the Australian Bibliographic Network (ABN) in 1981.</p>
+
+<p>These initiatives were not intended for direct use by library users.  However, the mediation of centralised cataloguing data through card, book and microfilm catalogues necessarily meant that publicly available information about library holdings was not current, and experiments into providing online access to users began in the mid-1960s.  One of the first large-scale projects was the online catalogue made available by Ohio State University Libraries (OSU) from 1975 (<a href="#refM">Miller 1979</a>; <a href="#refR">Reynolds 1985</a>, 96-98).  Like many early systems this grew out of a pre-existing computerised circulation system and thus provided the significant benefit of allowing users to check the loan status of an item from within the catalogue.  The OSU system allowed searching by author, title and call number, with a &rarr; <a href="subject">subject</a> search introduced from 1978.  For reasons of processing economy, author and title searching were provided in a truncated form requiring the first letters of an author&rsquo;s surname plus three letters of the given name or the first four letters of the first word of a title plus the first five letters of the second word.  A combined author-title search was also available using the first four letters of surname plus the first five letters of the title.  Another early implementation took place at Dallas Public Library in 1978 (<a href="#refB">Borgman 1979</a>).</p>
+
+<p>By the early 1980s online public catalogue systems were being designed specifically with public users in view and as part of integrated library systems (ILS), relying first on locally implemented hardware and software and later on commercially produced &lsquo;turnkey&rsquo; systems which aimed to accommodate all library functions, not just circulation.  The first of these was released by the GEAC company.  Other early systems included Dobis/Libis, Libertas and Urica.  The term <i>OPAC</i> itself seems to have come into use in 1981 (<a href="#refY">Yee and Layne 1996</a>, 154).  As OPACs have developed it has become customary to define them loosely in terms of &lsquo;generations&rsquo; according to their characteristic functionality (<a href="#refH">Hildreth 1984; 1987</a>; <a href="#refT">Tedd 1994</a>; <a href="#refH">Husain and Ansari 2006</a>; <a href="#refB">Bowman 2007</a>; <a href="#refG">Gupta 2018</a>).  While this approach is an oversimplification and there is some overlap between &lsquo;generations&rsquo; it nevertheless remains useful as an analytical tool for tracing the conceptual development of public access to library search tools.  </p>
+
+<p>The first-generation OPACs, available on dedicated computer terminals in the library, largely replicated the functionality of the card catalogue by providing pre-coordinated browse access to a sequence of headings for authors, titles, and perhaps classification numbers or subjects.  Like catalogue cards they displayed the bibliographical data required for identification and the shelf mark indicating an item&rsquo;s physical location in the library.  As with the majority of card catalogues the principal strength of these early OPACs was in the finding of known items.</p>
+
+<p>During the 1980s, at the same time as the manufacturers of library management systems gradually expanded their scope beyond circulation to other aspects of library work, including, for example, acquisitions and serials control, they also began to develop OPAC functionality.  In particular, they drew on the information retrieval experience of online search services like Dialog which had developed during the 1970s (see <a href="#refH">Hahn 1998</a>; <a href="#refB">Bourne and Hahn 2003</a>).  The second-generation OPACs thus supplemented browse searching with the ability to search on keywords taken from multiple fields within the bibliographic record and to use these keywords to create post-coordinate searches using Boolean logic (<a href="#refH">Hildreth 1988; 1989</a>).  More sophisticated options included the ability to use wild cards and specify adjacency or proximity of search terms.  This effectively supplemented the focus on known-item searching characteristic of the earlier generation of OPACs with the ability to perform complex searches to identify works on a similar subject or subjects.</p>
+
+<p>By the early 1990s a third generation of OPACs had begun to evolve which moved away from the proprietary hardware and network infrastructure of the earlier systems (<a href="#refA">Anon. 1993b</a>; <a href="#refT">Tedd 1994</a>).  New functionality was added and existing functionality made easier to understand by the introduction of everyday language in search descriptions.  The early menu-driven query screens began to be replaced by graphical user interfaces, and additional search options were added to qualify queries by, for example, language or publication date.  The scope of the OPAC also increased to include additional services including the ability to view borrower information, to place or cancel reservations, to save citations for future reference or printing or saving to disk (<a href="#refA">Anon. 1993a</a>).  The expanded use of the Z39.50 protocol (maintained by the Library of Congress and designed to facilitate communication of database search and retrieval information across computer networks) also allowed library catalogues to link through to the catalogues of partner institutions (<a href="#refH">Harmsen 2000</a>).  From the mid-1990s, the development and dissemination of the technology of the World Wide Web meant that the OPAC could for the first time be made easily available outside the library building.  As a result user interfaces were gradually refined to make them easier to use by clients who did not have immediate access to support from library staff.  </p>
+
+<p>From the second half of the 1990s, as the full texts (as opposed to citations) of information resources and particularly journal content started to become available in electronic format, library OPACs began to be supplemented by additional software services.  <i>Link resolvers</i> provided a connection between catalogue records and the content of remotely hosted databases (<a href="#refM">Munson 2005</a>), while <i>federated search</i> allowed for the possibility of searching simultaneously across multiple external databases (<a href="#refF">Fryer 2004</a>; <a href="#refC">Curtis and Dorner 2005</a>).  <i>Electronic resource management</i> systems allowed the publishing of access and licence conditions for electronic information resources alongside other catalogue data.  Indexing of full-text documents also became available.  By the mid-2000s OPAC design had become increasingly influenced by the example of web browsers, which were widely seen as easier to use and more comprehensive in scope than OPACs (<a href="#refC">Calhoun 2006</a>; <a href="#refM">Markey 2007</a>; <a href="#refS">Sadeh 2007; 2008</a>; <a href="#refC">Calhoun 2009</a>; <a href="#refB">Breeding 2010</a>).  This led to a gradual decoupling of the library public search interface from the ILS as &lsquo;next generation catalogues&rsquo; began to be developed which were intended not to be tied to a specific ILS, but to work with any structured database regardless of vendor, and indeed to harvest metadata from multiple sources (<a href="#refN">Nagy 2011</a>; <a href="#refB">Breeding 2013</a>).  Initially these were additional &lsquo;discovery layers&rsquo; in the form of a supplementary pieces of software which operated in conjunction with existing library applications (see, for example, <a href="#refA">Antelman et al. 2006</a>).  Later, completely separate products were developed, notably Ex Libris Primo, Innovative Interfaces Encore and SirsiDynix Enterprise.  In line with the longstanding overall goal of centralising the library search experience (<a href="#refB">Barton and Mak 2012</a>), these systems were designed to be integrated with databases of journal content, such as Primo Central Index, Summon and EBSCO Discovery, and to extend the scope of the catalogue well beyond the holdings of an individual library by emphasising &lsquo;discovery&rsquo; over &lsquo;location&rsquo; (<a href="#refD">Dempsey 2006</a>).  In doing this, discovery systems are aiming to absorb the role of other bibliographic tools (subject bibliographies, periodical indexes, etc.) which were once separate from the library catalogue.  To distinguish these products from the previously established form of OPAC, the term <i>webscale discovery tool</i> (<a href="#refB">Burke 2010</a>; <a href="#refV">Vaughan 2011</a>) or <i>discovery system</i> (<a href="#refC">Caplan 2011</a>) began to be used.  These systems drew on the information retrieval techniques and design features of Web search engines, including complex and non-transparent relevance algorithms and faceted browsing.  Conceptually the foregrounded search method thus changed to one where large numbers of results are retrieved in the first instance and these are then filtered to achieve the desired level of specificity.  A key design feature has been the replacement of complex search options by a single &lsquo;Google-like&rsquo; search box (<a href="#refP">Prescott and Erway 2011</a>). Discovery systems have also drawn, with rather less success, on features drawn from social media, including the ability to &lsquo;like&rsquo; retrieved records, and to personalise the catalogue database with user-created tags and reviews (<a href="#refT">Tarulli 2012</a>; <a href="#refC">Christensen 2013</a>), and some like Enterprise and Axiell Avena have incorporated content management platforms to allow libraries to manage their entire web presence (<a href="#refB">Breeding 2013</a>).  OCLC Worldcat Local has taken a slightly different tack by facilitating localised subsets of the centralised OCLC bibliographical database for use by individual libraries.  Increasingly, systems have moved to a &lsquo;software as a service&rsquo; model with data stored in the cloud.  At the same time, open source discovery software has been developed, allowing libraries with the appropriate technical expertise to operate independently of the major system vendors (<a href="#refB">Breeding 2008</a>; <a href="#refA">Anurhada et al. 2011</a>, <a href="#refD">Denton and Coysh 2011</a>).  Attention has increasingly been paid to responsive design, allowing users to access discovery systems from mobile devices as well as dektop computers.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3"></a>
+<h3 itemprop="articleSection">3. Standards and technical aspects</h3>
+
+<p>Automation and sharing of library catalogue data requires the bibliographic and other information previously recorded on catalogue cards and in other formats to be encoded for digital manipulation and communication.  In order to achieve this, the Library of Congress developed a set of standards for different formats collectively known as MARC (MAchine Readable Cataloging).  The pilot project was completed in 1968; MARC became a US standard in 1971 and was adopted as an international standard in 1973.  While multiple variations of MARC were developed around the world (<a href="#refL">Long 1984</a>; <a href="#refS">Spicher 1996</a>), the current iteration of the original format, released in 1999 and known as MARC21 to reflect a reworking for the new century, represents a harmonisation of the initial multi-format approach and also a merger of the US standard with the most prominent surviving variations in the English speaking world, notably Canadian MARC, AusMARC (supported by the National Library of Australia until 1991) and UKMARC (supported by the British Library until 2008) (<a href="#refE">Ede 2011</a>).  The MARC21 standard has continued to develop, notably to accommodate changes in standards for bibliographic description (<a href="#refS">Seikel and Steele 2011</a>).  Other parallel MARC standards also continue to exist; notably UniMARC, created by the International Federation of Library Associations and Institutions (IFLA) in 1977, remains widely used in Europe.</p>
+
+<p>The MARC standard as originally conceived had two primary functions: to define specific fields and subfields according to which bibliographic and other metadata is encoded, and to provide a suitable structure for the storage and transmission of the metadata records.  Since at the time of its development computer processing capacity was slow and storage expensive, both of these functions were designed for maximum concision.  MARC communication format, which provides for brevity by creating a directory at the beginning of each record indicating the relative position of the fields and imposes some restrictions on field and record length, has proved insufficiently flexible for more recent Web-based OPAC and discovery system applications and has been largely replaced at least as an internal format in modern systems by the MARCXML schema, developed in 2002 by the Library of Congress using the XML standard, and the library community has been consistently conscious of the need for the standards which underlie bibliographic control to keep pace with changes in technology (<a href="#refO">Ortiz and Moscoso 1999</a>; <a href="#refL"> Library of Congress 2008; 2011</a>).   The Bibliographic Framework Initiative (BIBFRAME), also developed by the Library of Congress, represents a further step towards replacing MARC, and uses a linked data approach to allow maximum interoperability between systems (<a href="#refK">Kroeger 2013</a>).  A draft of the model was released in 2012 and version 2.0 in 2016 (<a href="#refM">McCallum 2017</a>).</p>
+
+<p>Except for a small number of &lsquo;fixed fields&rsquo;, MARC does not itself prescribe the way content is recorded.  Styles of bibliographic description have evolved from pre-electronic cataloguing as it developed in different countries, and implementations have gradually been converging into IFLA&rsquo;s International Standard Bibliographic Description (ISBD), and the Anglo-American Cataloguing Rules (AACR) and its successor Resource Description and Access (RDA) (<a href="#refT">Tillett 2013</a>).  These have been supplemented in the creation of bibliographic records by numerous classification systems and subject thesauri, the most common of which in the English speaking world include the Library of Congress Subject Headings, Library of Congress Classification, Dewey Decimal Classification and Universal Decimal Classification.  These and similar schemas were initially crucial to the provision of comprehensive subject access in electronic catalogues, though &lsquo;subject searching&rsquo; as such, based on &rarr; <a href="kos">knowledge organization systems, KOS</a>, has declined with the growth of keyword searching and as bibliographic databases have increased in size (<a href="#refL">Larson 1991</a>).  Their ongoing value as Google-like semantic information retrieval methods continue to develop has also been questioned (<a href="#refH">Hj&oslash;rland 2016</a>).</p>
+
+<p>One system limitation of early OPACs was their reliance on the limited Roman ASCII character set, which greatly hindered their adoption in countries where the languages make extensive us of diacritics or non-Roman characters.  Complex workarounds began to be developed to accommodate vernacular scripts, notably in Japan (<a href="#refW">Wells 1998</a>).  However, this problem has now largely been overcome with the full incorporation of the Unicode standard into OPAC/discovery system implementations.  Another shortcoming of the established standards for bibliographic control as they were applied to the electronic catalogue was their inability to record and expose relationships between bibliographic entities (related works, editions, imprints, etc.) in a clear and systematic way.  To address this IFLA released its Functional Requirements for Bibliographic Records (FRBR) in 1998 proposing a conceptual model based on a distinction between Work, Expression. Manifestation and Item, and later supplemented this with parallel models for name and subject authorities.  A consolidated framework was published in 2017 as the &rarr; <a href="lrm">IFLA Library Reference Model (LRM)</a> (<a href="#refZ">&#0381;umer 2018</a>).  To date, however, the IFLA LRM has not been substantially incorporated into OPAC/discovery system design.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4"></a>
+<h3 itemprop="articleSection">4. Usability</h3>
+
+<p>From the outset, the library profession has been exercised by questions about the usability of OPACs for their intended audience, library users without specific detailed understanding of the technical aspects of bibliographic control or of library automation (e.g. <a href="#refH">Hildreth 1982</a>; <a href="#refC">Cochrane 1985</a>;  <a href="#refB">Borgman 1986; 1996</a>; <a href="#refT">Tague 1989</a>; <a href="#refS">Schneider 2006</a>; <a href="#refJ">Joc and Chang 2010</a>; <a href="#refD">Denton and Coysh 2011</a>; <a href="#refG">Gross and  Sheridan 2011</a>; <a href="#refJ">Jarrett 2012</a>; <a href="#refK">Kaufman et al. 2012</a>; <a href="#refM">Mahoney and Leach-Murray 2012</a>; <a href="#refC">Christensen 2013</a>; <a href="#refO">Osborne and  Cox 2015</a>; <a href="#refW">Wells 2016</a>).  Successive stages in the development of OPACs have aimed to address perceived deficiencies in earlier systems, but at the same time they have changed the nature of the search relationship between user and catalogue, and consequently introduced new complexities and further challenges for users.</p>
+
+<p>Conceptually, the first OPACs required greater engagement on the part of users than card catalogues with the construction of a search strategy, as they made it impossible to access the catalogue at all without articulating a mental process in terms readable by the OPAC (<a href="#refR">Reynolds 1985</a>, 92).  Moreover, as OPACs developed, the necessary techniques for interrogating the OPAC effectively gradually changed.  When keyword searching (&ldquo;free text searching&rdquo; in natural language fields and/or KOS fields) was introduced, for example, the Boolean logic required to apply it was generally foreign to library users and required a further conceptual and psychological adjustment (<a href="#refA">Anon. 1993a</a>; <a href="#refH">Hildreth 1989</a>).  The transition to discovery system functionality also entailed a perceptual readjustment as the highly structured approach to search encouraged by the developed OPAC gave way to the single search box and reliance on non-transparent retrieval algorithms and relevance ranking characteristic of the web search engines on which the discovery systems have been modelled.</p>
+
+<p>The inherent complexity of OPACs and discovery systems of itself imposes limitations to usability which have often not been fully acknowledged either by libraries or by the vendors of library systems.  Looked at as a communication system OPACs and discovery systems are by their very nature subject to two separate factors which combine to interrupt the message (<a href="#refW">Wells 2007</a>).  The first of these may be called the &lsquo;indeterminacy of the code&rsquo; and results from the cumulative effect of the multiple cataloguing rules and standards which have been used to construct any bibliographic database, the further set of rules which determine the operation of the OPAC or discovery service itself, and the level of understanding of these rules possessed by the catalogue user.  The various standards are often not consistent among themselves, have evolved over time without databases being consistently or systematically upgraded to reflect the changes, and are liable to have been applied inconsistently by cataloguing staff.</p>
+
+<p>The second source of ambiguity, which is more fundamental, particularly for keyword searching, and is general to all forms of bibliographic databases, not just OPACs/discovery systems, results from the fact that although user questions originate in thought, they need to be translated into language in order to create a search term that can be used to interrogate a database, and then in turn the response of the database needs to be translated back into thought in order to be evaluated against the original question (<a href="#refS">Shannon and Weaver 1949</a>; <a href="#refW">Wells 2007</a>).  Because of the inherent ambiguity of the relationship between concept, symbol and referent (the ambiguity of the linguistic sign), the act of communication can never be entirely transparent.</p>
+
+<p>These two sources of ambiguity necessarily intersect within any classification system or subject thesaurus, where the user needs to accept a pre-set ontological structure in order to optimise the communication process (<a href="#refP">Paling 2004</a>).  Even though information scientists have paid a good deal of attention to the practical organization of knowledge (see <a href="#refM">Mazzocchi 2018</a>), users of OPACs/discovery systems cannot in practice be fully aware of the system that applies in any particular implementation &mdash; this represents an indeterminacy of the code.  Inasmuch as the concepts behind the terms of any ontology may not correspond to the user&rsquo;s conceptualisation of the same terms, this is part of the indeterminacy of the sign.  </p>
+
+<p>Much work has been done since the invention of the OPAC in the 1970s to try to reduce the indeterminacy of the code, notwithstanding the difficulty of retrospectively applying changes to large databases.  One case in point is the integration of the USMARC standards for different formats of material which was implemented in the late 1980s.  IFLA&rsquo;s work to provide a detailed conceptual framework through its LRM should eventually provide for a better presentation of the multiple versions of works that is particularly characteristic of publishing in an electronic environment (<a href="#refT">Tillett 2005</a>; <a href="#refC">Coyle 2014</a>; <a href="#refZ">&#0381;umer 2018</a>).  RDA&rsquo;s decision to separate instructions for bibliographic description from guidelines for display should resolve another ambiguity, even though since the replacement of the card catalogue by the OPAC there has is in fact been no generally accepted standard for the online display of bibliographic data.  Good interface design can and has also been directed at reducing the complexity of the user experience &mdash; through, for example, clear delineation and labelling of functions, separation of different types of search, and making explicit what is actually happening at each step of the communication process (<a href="#refC">Comeaux 2012</a>).  This said, optimal design features have not always been supported by the technical capacity of catalogue systems (see <a href="#refY">Yee 2005</a>; <a href="#refC">Christensen 2013</a>).</p>
+
+<p>Addressing the indeterminacy of the sign has proved a more challenging proposition.  This type of indeterminacy is inherent in language and in the process of cognition, and indeed facilitates innovation through allowing new conclusions to be reached from old data.  Nevertheless, some features of discovery system design are beginning to focus on this issue.  Search algorithms now often return results based not simply on the search phrase used but also on the frequency of related combinations of words or phrases in established textual corpora, though this process tends to highlight popular connections rather than necessarily significant ones.  Perhaps more promising, because it highlights both the separateness and connectedness of terms, is the sort of add-on functionality to discovery systems being provided through services like Yewno, which create a visual map of semantic categories and their interrelations derived from data in the catalogue record (<a href="#refG">Gramatica and Pickering 2017</a>; <a href="#refA">Anon. 2016</a>).</p>
+
+<p>Users, particularly beginning users, will probably always find electronic library catalogues to some extent difficult to use given the complexity of their structure and design and the nature of the information universe.  Due attention to the design and functionality of interfaces therefore needs to be combined with an appropriate level of attention by libraries to questions of catalogue literacy alongside broader questions of information literacy.  </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5"></a>
+<h3 itemprop="articleSection">5. Ethical considerations</h3>
+
+<p>It is not only as a communication system that the OPAC/discovery system can be seen as a contested space.  Like all library services, catalogues, their creation and provision have an ethical dimension which determines multiple aspects of the way in which both library staff and library users interact with information (<a href="#refH">Hauptman 2002</a>; <a href="#refB">Blair 2005</a>; <a href="#refF">Ferris 2008</a>;  <a href="#refP">Posner 2012</a>; <a href="#refH">Hongladarom 2016</a>).  If the OPAC/discovery system is an expression of the library&rsquo;s authority in presenting a set of curated resources to the public, this agenda often risks being undermined by factors inherent to the production and presentation of catalogue data.  Notoriously, major tools for subject description and classification have been shown to embody understandings of the world which are firmly rooted in the time and place in which these tools have been created, and may not align to the values of actual communities in the present (<a href="#refR">Reidsma 2019</a>).  Deficiencies of this nature have long been noted, for example, in the Library of Congress Subject Headings (<a href="#refB">Berman 1971</a>; <a href="#refK">Knowlton 2005</a>), and while corrections can and have been made, from certain points of view the issue of bias in classification and subject structures remains inherent to the process of &rarr; <a href="knowledge_organization">knowledge organization</a> and should be acknowledged and exposed rather than corrected (<a href="#refD">Drabinski 2013</a>).</p>
+
+<p>Another issue regarding the appropriateness of data presented through the OPAC/discovery system follows from the practice of collaborative cataloguing and the reuse of records in a context different from that in which they were originally created.  Records created by publishers, for example, may contain abstracts which are more promotional than informational in content: this has been noticeable with descriptions of feature films in particular.  Likewise, if OPACs/discovery systems provide links out to third-party websites to provide supplementary information, as is increasingly the case, libraries have little or no control over the reliability of that information, embedded advertising, or indeed the long term accessibility of the links in question.  The technology of OPACs/discovery systems has from its inception been influenced by the agendas of the IT industry alongside those of the library community.  In recent years, discovery system development has also moved into the orbit of companies whose business focusses on the sale of information resources, thus creating a potential conflict of interest: search algorithms could be used to direct library users to specific sets of publications rather than to provide a vendor-neutral search experience.  The number of commercial providers of OPACs/discovery systems has fallen with recent mergers and acquisitions (<a href="#refB">Breeding 2019</a>), leading to a potentially less competitive marketplace.  Discovery systems in particular also raise questions about the privacy of user data (<a href="#refP">Pekala 2017</a>).  Huge amounts of data about patron transactions are collected within both library-branded systems and the third-party databases to which these frequently link.  This data is certainly valuable for informing the continuous improvement of the discovery experience, but also needs to be managed within an appropriate ethical framework.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="6"></a>
+<h3 itemprop="articleSection">6. Conclusion</h3>
+
+<p>How will the OPAC/discovery system develop in the future?  Many writers have identified an increasing preference for information seekers to use Internet search engines for information discovery (see <a href="#refR">Riyaz 2017</a>; <a href="#refD">Dempsey 2006</a>), and some have speculated that the OPAC/discovery system will not have a future at all, with its role as an intermediary between users and information resources being superseded entirely, in a purely digital environment, by Internet search engines, which will seamlessly link to both library curated material and to open access works (<a href="#refL">Livingston 2012</a>).  This scenario, however, ignores the library&rsquo;s mission in adding value in the information discovery process through its systematised approach to bibliographic control (see <a href="#refM">Miksa 2012</a>; <a href="#refH">Hider 2018a; 2018b</a>), and while it is surely true that &ldquo;the online catalog will never be a finished, perfected product&rdquo; (<a href="#refH">Hildreth 1987</a>, 647), it will also continue to evolve to meet the future needs of library clients.  The OPAC/discovery system is well placed to retain and consolidate a role as a source of authority in an expanding Web universe where the relative weight that should be given to individual objects can be difficult to discern.  </p>
+
+<p>Because it represents a more complete view of the information universe, the discovery system will increasingly drive out the OPAC as the dominant form of online library catalogue, and will get bigger as it comes to include metadata for a larger proportion of the world&rsquo;s information resources.  It may also expand in scope to include an increasing component of user-contributed data in the form of &rarr; <a href="tagging">tags</a> and reviews, statistics about the use of resources and related information connected through the semantic Web.  At the same time the proportion of textual and audiovisual content which can be delivered directly to users through the discovery system will increase, and the distinction between discovery and delivery which is already blurred in the current generation of discovery systems is likely to disappear almost entirely.  To compensate for its vastly increased size and scope, however, as the possibilities of the IFLA LRM framework and RDA are increasingly realised, the discovery experience is likely to become more structured, through linked data initiatives (<a href="#refC">Coyle 2012</a>), emphasising relationships between works, expressions and manifestations, between agents and works, and between agents/works and related data, as well as more clearly distinguishing the RDA conceptual categories of content, media and carrier.  Judicious use of analytics data to inform search options and the relevance ranking of results will moreover allow the discovery experience to be increasingly tailored personally to the interests, purposes and background of individual library users.</p>
+
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="ref"></a>
+<h3>References</h3>
+
+<span itemprop="citation">
+
+<a name="refA"></a>
+
+<p>Anon. 1993a. &ldquo;OPACs: An Overview: Historical Perspective&rdquo;. <i>Vine</i> 23, no. 1: 3-7.</p>
+
+<p>Anon. 1993b. &ldquo;Developments in Library Housekeeping Systems: An Overview&rdquo;. <i>Vine</i> 23, no. 3: 3-6.</p>
+
+<p>Anon. 2016. &ldquo;Yewno: A Truly Original Way to Search&rdquo;. <i>Online Searcher</i> 40, no. 6: 32.</p>
+
+<p>Antelman, Kristin; Lynema, Emily & Pace, Andrew K. 2006. &ldquo;Toward a Twenty-First Century Library Catalog&rdquo;. <i>Information Technology and Libraries</i> 25, no. 3: 128-139.</p>
+
+<p>Anuradha, K.T., Sivakaminathan R., and Kumar, P. Arun. 2011. &ldquo;Open-Source Tools for Enhancing Full-Text Searching of OPACs: Use of Koha, Greenstone and Fedora&rdquo;. <i>Program</i> 45, no. 2: 231-239.</p>
+
+<a name="refB"></a>
+
+<p>Bair, Sheila. 2005. &ldquo;Toward a Code of Ethics for Cataloguing&rdquo;. <i>Technical Services Quarterly</i> 23, no. 1: 13-26.</p>
+
+<p>Barton, Joshua and Mak, Lucas. 2012. &ldquo;Old Hopes, New Possibilities: Next-Generation Catalogues and the Centralization of Access&rdquo;. <i>Library Trends</i> 61, no. 1: 84-106.</p>
+
+<p>Berman, Sanford. 1971. <i>Prejudices and Antipathies: A Tract on the LC Subject Heads Concerning People</i>. Metuchen, N.J.: Scarecow Press.</p>
+
+<p>Bolin, Mary K. 2000. &ldquo;Catalog Design, Catalog Maintenance, Catalog Governance&rdquo;. <i>Library Collections, Acquisitions & Technical Services</i> 24: 53-63.</p>
+
+<p>Borgman, Christine L. 1979. <i>The Role of Technology for the Dallas Public Library in Long Range Planning</i>.  ERIC document no. ED 153 968.</p>
+
+<p>Borgman, Christine L. 1986. &ldquo;Why Are Online Catalogs Hard to Use? Lessons Learned from Information-Retrieval Studies&rdquo;. <i>Journal of the American Society for Information Science</i> 47, no. 6: 387-400.</p>
+
+<p>Borgman, Christine L. 1996. &ldquo;Why Are Online Catalogs <i>Still</i> Hard to Use?&rdquo; <i>Journal of the American Society for Information Science</i> 47, no. 7: 493-503.</p>
+
+<p>Bourne, Charles P. and Hahn, Trudi Bellardo. 2003. <i>A History of Online Information Services, 1963-1976</i>. Cambridge, Mass.: MIT Press.</p>
+
+<p>Bowman, J. H. 2007. &ldquo;OPACs: The Early Years, and User Reactions&rdquo;. <i>Library History</i> 23, no. 4: 317-329.</p>
+
+<p>Breeding, Marshall. 2008. <i>Open Source Integrated Library Systems</i> (<i>Library Technology Reports</i> 44, no. 8). ALA Techsource.</p>
+
+<p>Breeding, Marshall. 2010. <i>Next-Gen Library Catalogs</i>. London: Facet.</p>
+
+<p>Breeding, Marshall. 2013. &ldquo;Next-Generation Discovery: An Overview of the European Scene&rdquo;. In <i>Catalogue 2.0: The Future of the Library Catalogue</i>, edited by Sally Chambers, 37-64. London: Facet.</p>
+
+<p>Breeding, Marshall. 2019. Library Technology Guides. <a href="http://librarytechnology.org">http://librarytechnology.org</a>.</p>
+
+<p>Burke, Jane. 2010. &ldquo;Discovery Versus Disintermediation: The New Reality Driven by Today&rsquo;s End-User&rdquo;. VALA 2010.</p>
+
+<a name="refC"></a>
+
+<p>Calhoun, Karen. 2006. <i>The Changing Nature of the Catalog and its Integration with Other Discovery Tools: Final Report Prepared for the Library of Congress</i>. Washington: Library of Congress.</p>
+
+<p>Calhoun, Karen et al. 2009. Online Catalogs: What Users and Librarians Want: an OCLC Report. Dublin, Ohio: OCLC.</p>
+
+<p>Caplan, Priscilla. 2012. &ldquo;On Discovery Tools, OPACs and the Motion of Library Language&rdquo;. <i>Library Hi Tech</i> 30, no. 1: 108-115.</p>
+
+<p>Christensen, Anne. 2013. &ldquo;Next-Generation Catalogues&rdquo; What do Users Think?&rdquo; In <i>Catalogue 2.0: The Future of the Library Catalogue</i>, edited by Sally Chambers, 1-15. London: Facet.</p>
+
+<p>Cochrane, Pauline Atherton. 1985. <i>Redesign of Catalogs and Indexes for Improved Online Subject Access: Selected Papers f Pauline A. Cochrane.</i> Phoenix, Ariz.: Oryx.</p>
+
+<p>Comeaux, David J. & Coysh, Sarah J. 2012. &ldquo;Usability Testing of a Web-Scale Discovery System at an Academic Library&rdquo;. <i>College & Undergraduate Libraries</i> 19, nos. 2-4: 189-206.</p>
+
+<p>Coyle, Karen. 2012. <i>Linked Data Tools: Connecting on the Web</i>. Chicago: ALA Techsource.</p>
+
+<p>Coyle, Karen. 2014. &ldquo;FRBR, Twenty Years On&rdquo;. <i>Cataloging & Classification Quarterly</i> 53, nos. 3-4: 265-285.</p>
+
+<p>Curtis, AnneMarie & Dorner, Daniel G. 2005. &ldquo;Why federated search?&rdquo; <i>Knowledge Quest</i> 33, no. 3: 35-37.</p>
+
+<a name="refD"></a>
+
+<p>Dempsey, Lorcan. 2006. &ldquo;The Library Catalogue in the New Discovery Environment: Some Thoughts&rdquo;. <i>Ariadne</i> 48. <a href="http://www.ariadne.ac.auk/issue48/demspey">http://www.ariadne.ac.auk/issue48/demspey</a>.</p>
+
+<p>Denton, William & Coysh, Sarah J. 2011. &ldquo;Usability Testing of VuFind at an Academic Library&rdquo;. <i>Library Hi Tech</i> 29, no. 2: 301-319.</p>
+
+<p>Drabinski, E. 2013. &ldquo;Queering the Catalog: Queer Theory and the Politics of Correction&rdquo;. <i>Library Quarterly</i> 83, no. 2: 94-111.</p>
+
+<p>Dubester, Henry J. 1964. &ldquo;Studies Related to Catalog Problems&rdquo;. <i>Library Quarterly</i> 34, no. 1: 97-105.</p>
+
+<a name="refE"></a>
+
+<p>Ede, Stuart. 2001. &ldquo;Harmonisation of MARC and Descriptive Cataloguing Standards&rdquo;. <i>Liber Quarterly</i> 11, no. 4: 345-353.</p>
+
+<a name="refF"></a>
+
+<p>Ferris, Anna M. 2008. &ldquo;The Ethics and Integrity of Cataloguing&rdquo;. <i>Journal of Library Administration</i> 47, nos. 3-4: 173-190.</p>
+
+<p>Fryer, Donna, 2004. &ldquo;Federated Search Engines&rdquo;. <i>Online</i> 28, no. 2: 16-19.</p>
+
+<a name="refG"></a>
+
+<p>Gramatica, Ruggero & Pickering, Ruth. 2017. &ldquo;Start-Up Story: Yewno: An AI-Driven Path to a Knowledge-Based Future&rdquo;. <i>Insights</i> 30, no. 2: 107-111.</p>
+
+<p>Gross, Julia & Sheridan, Lutie. 2011. &ldquo;Web Scale Discovery: The User Experience&rdquo;. <i>New Library World</i> 112, no. 5/6: 236-247.</p>
+
+<p>Gupta, Shweta. 2018. &ldquo;Evaluation of Next Generation Online Public Access Catalogue (OPAC) Features in Library Management System&rdquo;. <i>Library Waves</i> 4, no. 1: 43-50.</p>
+
+<a name="refH"></a>
+
+<p>Hahn, Trudi Bellardo. 1998. &ldquo;Text Retrieval Online: Historical Perspectives on Web Search Engines&rdquo;. <i>Bulletin of the American Society for Information Science</i> 24, no. 4: 7-10.</p>
+
+<p>Harmsen, Bernd. 2000. &ldquo;Adding Value to Web OPACs&rdquo;. <i>Electronic Library</i> 18, no. 2: 109-113.</p>
+
+<p>Hauptman, Robert. 2002. <i>Ethics and Librarianship</i>. Jefferson NC: McFarland.</p>
+
+<p>Hider, Philip. 2018a. &ldquo;The Search Value Added by Subject Indexing to a Bibliographic Database&rdquo;. <i>Knowledge Organization</i> 45, no. 1: 23-32.</p>
+
+<p>Hider, Philip. 2018b. &ldquo;The Retrieval Power Added by Subject Indexing to Bibliographic Databases&rdquo;. In <i>Challenges and Opportunities for Knowledge Organization in the Digital Age: Proceedings of the Fifteenth International ISKO Conference 9-11 July Porto, Portugal</i>, edited by Fernanda Ribeiro and Maria Elisa Cerveira (Advances in Knowledge Organization 16), 426-431. W&uuml;rzburg: Ergon.</p>
+
+<p>Hildreth, Charles R. 1982. <i>Online Public Access Catalogs: The User Interface.</i> Dublin, Ohio, OCLC.</p>
+
+<p>Hildreth, Charles R. 1984. &ldquo;Pursuing the Ideal: Generations of Online Catalogues&rdquo;. In <i>Online Catalogs, Online Reference: Converging Trends: Proceedings of a Library and Technology Association Preconference Institute, June 23-24, 1983, Los Angeles</i>, edited by Brian Aveney & Brett Butler, 31-56. Chicago: American Library Association.</p>
+
+<p>Hildreth, Charles R. 1987. &ldquo;Beyond Boolean: Designing the Next Generation of Library Catalogs&rdquo;. <i>Library Trends</i> 25 no. 4: 647-667.</p>
+
+<p>Hildreth, Charles R. 1988. &ldquo;OPAC Update Report&rdquo;. In <i>OPAC Update</i>, edited by Max W. Borchardt, 3-29. Camberwell, Vic.: CAVAL.</p>
+
+<p>Hidreth, Charles, R. 1989. &ldquo;General Introduction: OPAC Research: Laying the Groundwork for Future OPAC Design&rdquo;. In <i>The Online Catalogue: Developments and Directions</i>, edited by Charles R. Hildreth, 1-24, London: Library Association.</p>
+
+<p>Hj&oslash;rland, Birger. 2016. &ldquo;Does the Traditional Thesaurus Have a Place in Modern Information Retrieval?&rdquo; <i>Knowledge Organization</i> 43, no. 3: 145&ndash;159.</p>
+
+<p>Holmes, P.L. 1979. &ldquo;The British Library Automated Information Service (BLAISE)&rdquo;. <i>Online Review</i> 3, no. 3: 265-274.</p>
+
+<p>Hongladarom, Soraj. 2016. &ldquo;Intercultural Information Ethics: A Pragmatic Consideration&rdquo;. In <i>Information Cultures in the Digital Age: A Festschrift in Honor of Rafael Capurro</i>, edited by Matthew Kelly and Jared Bielby, 191-206, Wiesbaden: Springer.</p>
+
+<p>Husain, Rashid & Ansari, Mehtab Alam. 2006. &ldquo;From Card Catalog to Web OPACs&rdquo;. <i>DESIDOC Bulletin of Information Technology</i> 26, no. 2: 41-47.</p>
+
+<a name="refI"></a>
+<a name="refJ"></a>
+
+<p>Jarrett, Kylie. 2012. &ldquo;Findit@Flinders: User Experiences of the Primo Discovery Search Solution&rdquo;. <i>Australian Academic & Research Libraries</i> 43, no. 4: 278-299.</p>
+
+<p>Joc, Karen & Chang, Kayo. 2010. &ldquo;The Impact of Discovery Platforms on the Information-Seeking Behaviour of EFL Undergraduate Students&rdquo;. VALA 2010.</p>
+
+<a name="refK"></a>
+
+<p>Kaufman, Karen, Larsen, Jeanne & DeSalvo Patricia. 2012. &ldquo;Discovering the Discovery Tool: The Introduction and Impact on Research and Instruction at Seminole State College of Florida&rdquo;. <i>College & Undergraduate Libraries</i> 19, nos. 2-4: 278-296.</p>
+
+<p>King, Gilbert W. et al. 1963. <i>Automation and the Library of Congress</i>. Washington: Library of Congress.</p>
+
+<p>Knowlton, Steven A. 2005. &ldquo;Three Decades since Prejudices and Antipathies: A Study of Changes in the Library of Congress Subject Headings&rdquo;. <i>Cataloging and Classification Quarterly</i> 40, no. 2: 123-145.</p>
+
+<p>Kroeger, Angela. 2013. &ldquo;The Road to BIBFRAME: The Evolution of the Idea of Bibliographic Transition into a Post-MARC Future&rdquo;. <i>Cataloging & Classification Quarterly</i> 51, no. 8: 873-890.</p>
+
+<a name="refL"></a>
+
+<p>Larson, Ray R. 1991. &ldquo;The Decline of Subject Searching: Long-Term Trends and Patterns of Index Use in an Online Catalog&rdquo;. <i>Journal of the American Society for Information Science</i> 42, no. 3: 197-215.</p>
+
+<p>Library of Congress. 2008. <i>On the Record: Report of the Library of Congress Working Group on the Future of Bibliographic Control</i>.</p>
+
+<p>Library of Congress. 2011. &ldquo;A Bibliographic Framework for the Digital Age&rdquo;. <a href="http://www.loc.gov.marc/transition/news/framework-103111.html">http://www.loc.gov.marc/transition/news/framework-103111.html</a>.</p>
+
+<p>Livingston, Helen. 2012. &ldquo;What is the Catalogue?&rdquo; VALA2012 Proceedings. <a href="https://www.vala.org.au/vala2012-proceedings/vala2012-session-8-livingston/">https://www.vala.org.au/vala2012-proceedings/vala2012-session-8-livingston/</a>.</p>
+
+<p>Long, Anthony. 1984. &ldquo;UK MARC and US/MARC: A Brief History and Comparison&rdquo;. <i>Journal of Documentation</i> 40, no. 1: 1-12.</p>
+
+<a name="refM"></a>
+
+<p>Mahoney, Jessica & Leach-Murray, Susan. 2012. &ldquo;Implementation of a Discovery Layer.&rsquo; <i>College & Undergraduate Libraries</i> 19, nos. 2-4: 327-343.</p>
+
+<p>Markey, Karen. 2007. &ldquo;The Online Library Catalog: Paradise Lost and Paradise Regained?&rdquo; <i>D-Lib Magazine</i> 13, no. 1/2. </p>
+
+<p>Mazzocchi, Fulvio. 2018. &ldquo;Knowledge Organization System (KOS)&rdquo;. <i>Knowledge Organization</i> 45, no.1: 54-78. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli, <a href="kos">https://www.isko.org/cyclo/kos</a>.</p>
+
+<p>McCallum, Sally. 2017. &ldquo;BIBFRAME Development&rdquo;. <i>JLIS.it</i> 8, no. 3: 71-85.</p>
+
+<p>Miksa, Francis. 2012. &ldquo;The Legacy of the Library Catalogue for the Present&rdquo;. <i>Library Trends </i>61, no. 1: 7-34.</p>
+
+<p>Miller, S.L. 1979. &ldquo;The Evolution of an On-Line Catalog&rdquo;. In <i>New Horizons for Academic Libraries</i>, edited by R.D. Stueart and R.D. Johnson (eds), 193-204. New York: Saur.</p>
+
+<a name="refN"></a>
+
+<p>Nagy, Andrew. 2011. <i>Analyzing the Next Generation Catalog</i> (<i>Library Technology Reports</i> 44, no. 8). ALA Techsource.</p>
+
+<a name="refO"></a>
+
+<p>Ortiz-Repiso, Virginia & Moscoso, Purificaci&oacute;n. 1999. &ldquo;Web-Based OPACs: Between Tradition and Innovation&rdquo;. <i>Information Technology and Libraries</i> 18, no. 2: 68-76.</p>
+
+<p>Osborne, Hollie M. & Cox, Andrew. 2015. &ldquo;An Investigation into the Perceptions of Academic Librarians and Students towards Next-Generation OPACs and their Features&rdquo;. <i>Program</i> 49, no. 1: 23-45.</p>
+
+<a name="refP"></a>
+
+<p>Paling, Stephen. 2004. &ldquo;Classification, Rhetoric and the Classificatory Horizon&rdquo;. <i>Library Trends</i> 52, no. 3:588-603.</p>
+
+<p>Pekala, Shayna. 2017. &ldquo;Privacy and User experience in 21st century Library Discovery&rdquo;. <i>Information Technology and Libraries</i> June: 48-58.</p>
+
+<p>Posner, Beth. 2012. &ldquo;The Ethics of Library Resource Sharing in the Digital Age&rdquo;. <i>Interlending & Document Supply</i> 40, no. 2: 119-124.</p>
+
+<p>Prescott, Leah & Erway, Ricky. 2011. <i>Single Search: The Quest for the Holy Grail</i>. Dublin, Ohio: OCLC Research. <a href="http://www.oclc.org/research/publications/library/2011/2011-17.pdf">http://www.oclc.org/research/publications/library/2011/2011-17.pdf</a>.</p>
+
+<a name="refQ"></a>
+<a name="refR"></a>
+
+<p>Reidsma, Matthew. 2019. <i>Masked by Truth: Bias in Library Discovery</i>. Library Juice Press.</p>
+
+<p>Reynolds, Dennis. 1985. <i>Library Automation: Issues and Applications</i>. New York: Bowker.</p>
+
+<p>Riyaz, Aminath. 2017. <i>An Investigation into the &lsquo;I can Google it&rsquo; Information Seeking Behaviour of the Academic Communities in the Maldives and Australia</i>.  Ph.D. thesis, Curtin University.</p>
+
+<p>Rogers, Frank B. 1964. &ldquo;The Development of MEDLARS&rdquo;. <i>Bulletin of the Medical Library Association</i> 52, no. 1: 150-151.</p>
+
+<a name="refS"></a>
+
+<p>Sadeh, Tamar. 2007. &ldquo;User-Centric Solutions for Scholarly Research in the Library&rdquo;. <i>Liber Quarterly</i> 17, no. 3/4: 253-268.</p>
+
+<p>Sadeh, Tamar. 2008. &ldquo;User Experience in the Library: A Case Study&rdquo;. <i>New Library World</i> 109, no. 1/2: 7-24.</p>
+
+<p>Schneider, Karen G. 2006. &ldquo;How OPACs suck&rdquo;. Part 1, &ldquo;Relevance Rank (or the Lack of it)&rdquo;. <a href="http://www.ala.org/tools/article/ala-techsource/how-opacs-suck-part-1-relevance-rank-or-lack-it">http://www.ala.org/tools/article/ala-techsource/how-opacs-suck-part-1-relevance-rank-or-lack-it</a>. Part 2, &ldquo;The checklist of shame&rdquo;. <a href=" http://www.ala.org/tools/article/ala-techsource/how-opacs-suck-part-2-checklist-shame"> http://www.ala.org/tools/article/ala-techsource/how-opacs-suck-part-2-checklist-shame</a>. Part 3, &ldquo;The big picture&rdquo;. <a href="http://www.ala.org/tools/article/ala-techsource/how-opacs-suck-part-3-big-picture">http://www.ala.org/tools/article/ala-techsource/how-opacs-suck-part-3-big-picture</a>.</p>
+
+<p>Seikel. Michele & Steel, Thomas. 2011. &ldquo;How MARC Has Changed: The History of the Format and its Forthcoming Relationship to RDA&rdquo;. <i>Technical Services Quarterly</i> 28, no. 3: 322-334. </p>
+
+<p>Shannon, C. & Weaver, W. 1949. <i>The Mathematical Theory of Communication</i>. Urbana, Ill.: University of Illinois Press.</p>
+
+<p>Shaw, Ralph. 1962, &ldquo;Electronic Storage and Searching&rdquo;. <i>Times Literary Supplement</i>. April 6: 235.</p>
+
+<p>Spicher, Karen M. 1996. &ldquo;The Development of the MARC Format&rdquo;. In <i>Cataloging and Classification Standards and Rules</i>, edited by John J. Riemer, 75-90, New York: Haworth.</p>
+
+<p>Su, Shiao-Feng. 1994. &ldquo;Dialogue with an OPAC: How Visionary Was Swanson in 1964?&rdquo; <i>Library Quarterly</i> 64, no. 2: 130-161.</p>
+
+<p>Swanson, Don. R. 1964. &ldquo;Dialogues with a Catalog&rdquo;. <i>Library Quarterly</i> 34, no.1: 113-125.</p>
+
+<a name="refT"></a>
+
+<p>Tague, Jean M. 1989. &ldquo;Negotiation at the OPAC Interface&rdquo;. In <i>The Online Catalogue: Developments and Directions</i>, edited by Charles R. Hildreth, 47-60, London: Library Association.</p>
+
+<p>Tarulli, Laurel. 2012. <i>The Library Catalogue as Social Space: Promoting Patron Driven Collections, Online Communities, and Enhanced Reference and Readers' Services</i>. Santa Barbara, Calif.: Libraries Unlimited.</p>
+
+<p>Tedd, Lucy A. 1994. &ldquo;OPACs through the Ages&rdquo;. <i>Library Review</i> 43, no. 4: 27-37.</p>
+
+<p>Tillett, Barbara B. 2005. &ldquo;What is FRBR? A Conceptual Model for the Bibliographic Universe&rdquo;. <i>Australian Library Journal 54, no. 1: </i>24-30.</p>
+
+<p>Tillett, Barbara B. 2013. &ldquo;The International Development of RDA: Resource Description and Access&rdquo;. <i>Alexandria</i> 24, no. 2: 1-10.</p>
+
+<a name="refU"></a>
+<a name="refV"></a>
+
+<p>Vaughan, Jason. 2011. &ldquo;Web Scale Discovery: What and Why?&rdquo; <i>Library Technology Reports</i> 47, no. 1: 5-11.</p>
+
+<a name="refW"></a>
+
+<p>Wells, David. 1998. &ldquo;Multi-Script and Multi-Language Bibliographic Databases: Some Japanese Perspectives&rdquo;. In <i>Robots to Knowbots: The Wider Automation Agenda: Proceedings of the Victorian Association for Library Automation 9th Biennial Conference and Exhibition</i>, 411-415, Melbourne: VALA.</p>
+
+<p>Wells, David. 2007. &ldquo;What is a Library OPAC?&rdquo; <i>Electronic Library</i> 25, no. 4: 386-394.</p>
+
+<p>Wells, David. 2016. &ldquo;Library Discovery Systems and their Users: A Case Study from Curtin University Library&rdquo;. <i>Australian Academic & Research Libraries</i> 47, no. 2: 92-105.</p>
+
+<a name="refX"></a>
+<a name="refY"></a>
+
+<p>Yee, Martha M. 2005. &ldquo;FRBRization: A Method for Turning Online Public Finding Lists into Online Public Catalogs&rdquo;. <i>Information Technology and Libraries</i> 24, no. 2: 77-95.</p>
+
+<p>Yee, Martha M. 2009. &ldquo; &lsquo;Wholly Visionary&rsquo;: the American Library Association, the Library of Congress, and the Card Distribution Program&rdquo;. <i>Library Resources & Technical Services</i> 53, no. 2: 68-78.</p>
+
+<p>Yee, Martha M. & Layne, Sarah Shatford. 1996. &ldquo;Online Public Access catalogs.&rsquo; In <i>Encyclopedia of Library and Information Science</i> 58, edited by Allen Kent, 149-238. New York: Marcel Dekker.</p>
+
+<a name="refZ"></a>
+
+<p>&#0381;umer, Maja. 2018. &ldquo;IFLA Library Reference Model (IFLA LRM): Harmonisation of the FRBR Family&rdquo;. <i>Knowledge Organization</i> 45, no. 4: 310-8. Also available in Hj&oslash;rland, Birger and Gnoli, Claudio eds., <i>ISKO Encyclopedia of Knowledge Organization</i>, <a href="lrm">https://www.isko.org/cyclo/lrm</a>.</p>
+
+</span><!-- citation ends -->
+
+</span><!-- articleBody ends -->
+
+
+<a name="col"></a>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<p>&nbsp;</p>
+
+<p>Visited <a href="https://www.digits.net" target="_blank"><img src="https://counter.digits.net/?counter={9c7c7725-bc95-5194-6142-dd25e5809836}&template=simple" alt="Hit Counter by Digits" border="0"  /></a> times.</p>
+
+<hr>
+<p itemprop="dateCreated">Version 1.0 published 2020-04-20, last edited 2023-05-17 <!-- this version 2020--, last edited 2020-- --><br>
+Article category: <code><a itemprop="about" href="index#T">KO in contexts and applications</a></code></p>
+
+<p>This article (version 1.0) is also published in <i>Knowledge Organization</i>. How to cite it:
+<br>Wells, David. 2021. 
+&ldquo;Online Public Access Catalogues and  Library Discovery Systems&rdquo;. 
+<i>Knowledge Organization</i> 48, no. 6: 457-466. 
+Also available in 
+<i><span itemprop="isPartOf">ISKO Encyclopedia of Knowledge Organization</span></i>, 
+eds. <span itemprop="editor">Birger Hj&oslash;rland</span> and <span itemprop="editor">Claudio Gnoli</span>, 
+<span itemprop="url">https://www.isko.org/cyclo/opac </span></p>
+
+<p>A Slovenian traslation of version 1.0 by Branka Badovinac is published as: "Online javno dostopni katalogi in sistemi za odkrivanje informacij", <i>Organizacija znanja</i> 28 (2023), n. 1-2, <A CLASS="menu" HREF="https://oz.cobiss.si/en/clanek/wells-online-javno-dostopni-katalogi-in-sistemi-za-odkrivanje-informacij-en/">https://oz.cobiss.si/en/clanek/wells-online-javno-dostopni-katalogi-in-sistemi-za-odkrivanje-informacij-en/</A>.
+
+<p>&copy;2020 <span itemprop="publisher">ISKO</span>. All rights reserved.</p>
+
+</div><!-- Article ends -->
+
+</td>
+</tr>
+
+<tr>
+<td id="logo">
+</td>
+</tr>
+
+</table>
+</body>
+</html>

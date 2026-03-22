@@ -195,7 +195,22 @@
       "Bash(while read:*)",
       "Bash(do head:*)",
       "Bash(sed -i 's/\\\\*\\\\*Status:\\\\*\\\\* Phases 0-4 COMPLETE \\(2026-03-20\\). Phase 5 \\(tech-writer ops guide\\) and Phase 6 \\(auditor review\\) not started./\\\\*\\\\*Status:\\\\*\\\\* Phases 0-4 COMPLETE. Phase 5 on hold \\(may roll into larger doc plan\\). Phase 6 COMPLETE \\(2026-03-21, release-ready\\)./' .claude/plans/os-detect-kernel-tab-enhancement.md)",
-      "Bash(sed -i 's/\\\\*\\\\*Status:\\\\*\\\\* implementation complete, pending review and commit/\\\\*\\\\*Status:\\\\*\\\\* COMPLETE \\(2026-03-21\\). Kernel baseline added. Phase 6 passed. All Medium findings resolved./' .claude/plans/tui-contradiction-display.md)"
+      "Bash(sed -i 's/\\\\*\\\\*Status:\\\\*\\\\* implementation complete, pending review and commit/\\\\*\\\\*Status:\\\\*\\\\* COMPLETE \\(2026-03-21\\). Kernel baseline added. Phase 6 passed. All Medium findings resolved./' .claude/plans/tui-contradiction-display.md)",
+      "Bash(rm /media/psf/repos/umrs-project/docs/sage/inbox/cast-and-crew-sage-review.adoc)",
+      "Bash(rm /media/psf/repos/umrs-project/docs/sage/inbox/simone-elena-lucia.adoc)",
+      "Bash(printf '[2026-03-21 18:30] sage  Integrate Simone/Elena/Lucia bios into final-cast-and-crew  Read,Write,Bash  success  Full bios added; sage-review working draft and source file removed; inbox clean\\\\n')",
+      "Bash(rm /media/psf/repos/umrs-project/docs/sage/inbox/post-template.md)",
+      "Bash(rm /media/psf/repos/umrs-project/docs/sage/inbox/jamie.png)",
+      "Bash(rm /media/psf/repos/umrs-project/docs/sage/inbox/final-cast-and-crew.adoc)",
+      "Bash(printf '[2026-03-21 session] sage  Hamlet portrait + bio update in final-cast-and-crew.adoc; nav wired; inbox cleaned  Read,Edit,Bash  success  hamlet.png added; bio expanded from stub to full entry matching cast quality; post-template.md moved to docs/sage/; jamie.png duplicate removed; blog-my-ai-journey.txt remains \\(active source\\)\\\\n')",
+      "WebFetch(domain:hci.stanford.edu)",
+      "WebFetch(domain:stanfordhci.github.io)",
+      "Bash(printf '[2026-03-21 14:30] researcher  HCI/IA/KO/TechComm knowledge acquisition research  WebSearch,WebFetch,Write,Edit  success  12 Tier-1 open-access resources identified; Stanford CS147 slides confirmed fetchable; ISKO IEKO confirmed open-access; YouTube VTT pipeline logistics documented; report at refs/reports/agent-knowledge-acquisition-plan.md\\\\n')",
+      "Bash(yt-dlp --print title --print description \"https://youtu.be/UxpF21AsxZE\")",
+      "Bash(tee cui-video-info.txt)",
+      "Bash(yt-dlp --write-auto-subs --write-subs --sub-langs \"en*\" --skip-download -o \"cui-banner-markings\" \"https://youtu.be/UxpF21AsxZE\")",
+      "Bash(/usr/local/bin/yt-dlp --print title --print description \"https://youtu.be/UxpF21AsxZE\" 2>&1)",
+      "Bash(/usr/local/bin/yt-dlp --write-auto-subs --write-subs --sub-langs \"en*\" --skip-download -o \"cui-banner-markings\" \"https://youtu.be/UxpF21AsxZE\")"
     ]
   },
   "enabledPlugins": {

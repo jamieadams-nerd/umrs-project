@@ -1,0 +1,1328 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head profile="http://dublincore.org/documents/2007/11/05/dc-html/">
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>Science mapping (IEKO)</title>
+<link rel="stylesheet" type="text/css" href="../isko.css" />
+<link rel="schema.DCTERMS" href="http://purl.org/dc/terms/" />
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:url" content="https://www.isko.org/cyclo/science_mapping" />
+<meta name="twitter:title" content="Science mapping (ISKO Encyclopedia of KO)" />
+<meta property="og:image" content="https://www.isko.org/cyclo/science_mapping7.png" />
+<meta name="twitter:description" content="Science maps are visual representations of the structure and dynamics of scholarly knowledge. They aim to show how fields, disciplines, journals, scientists, publications, and scientific terms relate to each other. Science mapping is the body of methods and techniques that have been developed for generating science maps. This entry is an introduction to science maps and science mapping. It focuses on the conceptual, theoretical, and methodological issues of science mapping, rather than on the mathematical formulation of science mapping techniques. After a brief history of science mapping, we describe the general procedure for building a science map, presenting the data sources and the methods to select, clean, and pre-process the data. Next, we examine in detail how the most common types of science maps, namely the citation-based and the term-based, are generated. Both are based on networks: the former on the network of publications connected by citations, the latter on the network of terms co-occurring in publications. We review the rationale behind these mapping approaches, as well as the techniques and methods to build the maps (from the extraction of the network to the visualization and enrichment of the map). We also present less-common types of science maps, including co-authorship networks, interlocking editorship networks, maps based on patents' data, and geographic maps of science. Moreover, we consider how time can be represented in science maps to investigate the dynamics of science. We also discuss some epistemological and sociological topics that can help in the interpretation, contextualization, and assessment of science maps. Then, we present some possible applications of science maps in science policy. In the conclusion, we point out why science mapping may be interesting for all the branches of meta-science, from knowledge organization to epistemology." />
+
+<meta name="DCTERMS.title" content="Science mapping" />
+<meta name="DCTERMS.creator" content="Eugenio Petrovich" />
+<meta name="DCTERMS.issued" content="2020" />
+<meta name="DCTERMS.relation.ispartof" content="ISKO Encyclopedia of Knowledge Organization" />
+<meta name="DCTERMS.ispartof" content="ISKO Encyclopedia of Knowledge Organization" />
+<meta name="DCTERMS:bibliographicCitation" content="ISKO Encyclopedia of Knowledge Organization, eds. Birger Hjorland and Claudio Gnoli" />
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="001.012">
+<meta name="DCTERMS.subject.keyword" content="science maps">
+<meta name="DCTERMS.subject.keyword" content="information visualization">
+<meta name="DCTERMS.type" content="Text" />
+<meta name="DCTERMS.format" content="text/html" />
+<meta name="DCTERMS.identifier" content="https://www.isko.org/cyclo/science_mapping" />
+
+<style>
+a {text-decoration: none;}
+a:hover {text-decoration:underline;}
+table td, table th { padding: 5px; }
+</style>
+
+</head>
+<body>
+
+<a name="top"></a>
+
+<table>
+
+<tr>
+<td id="isko"><h1>I S K O</h1></td>
+<td id="banner"><h2><a href="index.html" style="text-decoration:none;">Encyclopedia of Knowledge Organization</h2></a></td>
+</tr>
+
+<tr>
+<td id="navigation">
+<a href="../index.php">home</a>
+<a href="../about.html">about ISKO</a>
+<a href="../join.html">join ISKO</a>
+<a href="../ko.html"><cite>Knowledge Organization</cite> journal</a>
+<a href="../events.html">ISKO events</a>
+<a href="../chapters.html">ISKO chapters</a>
+<a href="../people.html">ISKO people</a>
+<a href="../pubs.html">ISKO publications</a>
+<a href="index.html">Encyclopedia</a>
+<a href="../lit.html">KO literature</a>
+<a href="../inst.html">KO institutions</a>
+<a href="http://bartoc.org/" title="link to BARTOC">&#8663; KOS registry</a>
+<a href="https://www.isko-mms.net/" title="access-account required">&#128274; members</a>
+<a href="../contact.html">contact us</a>
+</td>
+<td id="content" rowspan="2">
+
+<a class="menu" href="authors#h">edited by Birger Hj&oslash;rland</a> <a class="menu" href="authors#g">and Claudio Gnoli</a>
+
+<p>&nbsp;
+
+<div itemscope itemtype="http://schema.org/Article">
+
+<h2 itemprop="headline">Science mapping</h2>
+
+<blockquote>
+by <a itemprop="author" href="authors#p" style="text-decoration:underline">Eugenio Petrovich</a>
+
+<p>Table of contents:
+<br><a href="#1">1. Introduction</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#1.1">1.1 Structure of the entry</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#1.2">1.2 Three caveats about this entry</a>
+
+<br><a href="#2">2. A brief history of science mapping</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#2.1">2.1 Ancestors of science maps</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#2.2">2.2 Modern science mapping </a>
+
+<br><a href="#3">3. Building a science map: the general workflow</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#3.1">3.1 Data sources for science mapping</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#3.2">3.2 Field delineation</a> <br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#3.3">3.3 Data cleaning and pre-processing</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#3.4">3.4 Network extraction</a>
+
+<br><a href="#4">4. Types of science maps</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#4.1">4.1 Citation-based maps:</a>  <a href="#4.1.1">4.1.1 The nodes in citation-based maps: publications and aggregates of publications;</a> <a href="#4.1.2">4.1.2 The links in citation-based maps: direct citations, bibliographic coupling, and co-citations;</a> <a href="#4.1.3">4.1.3 Normalization;</a> <a href="#4.1.4">4.1.4 Visualization;</a> <a href="#4.1.5">4.1.5 Enriching the map</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#4.2">4.2 Term-based maps:</a> <a href="#4.2.1">4.2.1 Classic co-word analysis and the strategic diagrams;</a> <a href="#4.2.2">4.2.2 Co-word analysis based on automatically extracted terms</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#4.3">4.3 Other network-based maps:</a> <a href="#4.3.1">4.3.1 Co-authorship networks;</a> <a href="#4.3.2">4.3.2 Interlocking editorship networks</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#4.4">4.4 Other types of science maps:</a> <a href="#4.4.1">4.4.1 Maps based on patents data;</a> <a href="#4.4.2">4.4.2 Geographic maps of science</a>
+
+<br><a href="#5">5. The representation of time in science mapping</a>
+
+<br><a href="#6">6. Interpreting a science map</a>
+
+<br><a href="#7">7. Science maps and the philosophy of science</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#7.1">7.1 On the objectivity of science maps</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#7.2">7.2 Published science vs. science in the making</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#7.3">7.3 The meaning of citations</a>
+
+<br><a href="#8">8. Science maps and science policy</a>
+<br><a href="#9">9. Conclusion</a>
+<br><a href="#ack">Acknowledgments</a>
+<br><a href="#end">Endnotes</a>
+<br><a href="#ref">References</a>
+<br><a href="#app">Appendix: Science mapping tools: (1) CiteSpace; (2) VOSviewer</a>
+<br><a href="#col">Colophon</a>
+
+
+<p itemprop="abstract"><strong>Abstract</strong>:
+<br>Science maps are visual representations of the structure and dynamics of scholarly knowledge. They aim to show how fields, disciplines, journals, scientists, publications, and scientific terms relate to each other. Science mapping is the body of methods and techniques that have been developed for generating science maps. This entry is an introduction to science maps and science mapping. It focuses on the conceptual, theoretical, and methodological issues of science mapping, rather than on the mathematical formulation of science mapping techniques. After a brief history of science mapping, we describe the general procedure for building a science map, presenting the data sources and the methods to select, clean, and pre-process the data. Next, we examine in detail how the most common types of science maps, namely the citation-based and the term-based, are generated. Both are based on networks: the former on the network of publications connected by citations, the latter on the network of terms co-occurring in publications. We review the rationale behind these mapping approaches, as well as the techniques and methods to build the maps (from the extraction of the network to the visualization and enrichment of the map). We also present less-common types of science maps, including co-authorship networks, interlocking editorship networks, maps based on patents&rsquo; data, and geographic maps of science. Moreover, we consider how time can be represented in science maps to investigate the dynamics of science. We also discuss some epistemological and sociological topics that can help in the interpretation, contextualization, and assessment of science maps. Then, we present some possible applications of science maps in science policy. In the conclusion, we point out why science mapping may be interesting for all the branches of meta-science, from knowledge organization to epistemology.</p>
+
+</blockquote>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<span itemprop="articleBody">
+
+<a name="1"></a>
+<h3 itemprop="articleSection">1. Introduction</h3>
+
+<p><i>Science maps</i>, also known as scientographs, bibliometric network visualizations, and knowledge domain maps, are visual representations of the structure and dynamics of scholarly knowledge. They aim to show how &rarr; <a href="discipline">disciplines</a>, fields, specialties, authors, keywords, or publications relate to each other (<a href="#refB">B&ouml;rner, Chen and Boyack 2005</a>; <a href="#refC">Chen 2013</a>; <a href="#refO">Osinska and Malak 2016</a>; <a href="#refR">Rafols, Porter and Leydesdorff 2010</a>; <a href="#refS">Small 1999</a>; <a href="#refV">Van Raan 2019</a>). Science maps are usually generated based on the analysis of large collections of scientific &rarr; <a href="document">documents</a> (<a href="#refB">B&ouml;rner 2010</a>; <a href="#refC">Cobo et al. 2011b</a>).</p>
+
+<p><i>Science mapping</i> is the body of methods and techniques that have been developed to generate science maps. Science mapping has a long tradition in bibliometrics and scientometrics, i.e., the quantitative studies of science (<a href="#refC">Chen 2017</a>; <a href="#refV">Van Raan 2019</a>). In the last decades, it has increasingly become an interdisciplinary area, witnessing important contributions from &rarr; <a href="data">data</a> science, where science mapping belongs to the larger and increasingly important area of information visualization (<a href="#refB">B&ouml;rner, Chen and Boyack 2005</a>). </p>
+
+<p>Science maps have several applications. They help to answer questions such as: What are the main topics within a certain scientific domain? How do these topics relate to each other? How has a certain scientific domain developed over time? Who are the key actors (researchers, institutions, journals) of a scientific field? Science maps help to investigate how the structural units of science relate one another at the micro and macro level (<a href="#refL">Leydesdorff 1987</a>), what factors determine the emergence of new scientific fields and the development of interdisciplinary areas (<a href="#refL">Leydesdorff and Goldstone 2014</a>), and, more generally, how scientific change functions (<a href="#refL">Leydesdorff 2001</a>; <a href="#refL">Lucio-Arias and Leydesdorff 2009</a>). At the same time, the information made accessible by science maps can be highly relevant for <i>science policy</i> purposes. </p>
+
+<p>Science maps, and especially the global maps, also known as &ldquo;atlases of science&rdquo; (see <a href="#3.2">Section 3.2: Field delineation</a>), can help to &rarr; <a href="classification">classify</a> the sciences by showing their mutual relationships (e.g., by showing the citation flows between fields). In this sense, science maps are useful tools in &rarr; <a href="knowledge_organization">knowledge organization</a> and have been used to build classification systems with a bottom-up approach (see e.g., <a href="#refW">Waltman and van Eck 2012</a>). However, standard methods of science mapping are not based on and do not result in <i>semantic relationships between categories</i> (e.g., genus-species relation) but <i>association measures between units of analysis</i> (e.g., co-citation strength between publications, or co-authorship association between authors). The closest to semantic relations that can be produced by standard science mapping approaches is the relation of <i>inclusion</i> obtained by clustering techniques, in which higher-order clusters include lower-order clusters (see <a href="#4.1.5">Section 4.1.5: Enriching the map</a>). Science maps, hence, are not meant to replace taxonomies, classificatory schemes, ontologies, and other classic &rarr; <a href="kos">knowledge organization systems (KOS)</a> (<a href="#refH">Hj&oslash;rland 2013</a>; <a href="#refM">Mazzocchi 2018</a>). Rather, they can integrate them by providing extra information on the structure of science based on the analysis of citation networks and other kinds of scientific networks. At the same time, the application of science maps is not restricted to knowledge organization but extends to the sociology of science and science policy.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<span itemprop="articleBody">
+
+<a name="1.1"></a>
+<h4 itemprop="articleSection">1.1 Structure of the entry</h4>
+
+<p>This article is an introduction to science maps and science mapping methodology. It is structured as follows. <a href="#2">Section 2</a> offers a brief overview of the history of science mapping. <a href="#3">Section 3</a> presents the standard workflow behind a science map and the preliminary steps of science mapping: data collection, field delineation, data pre-processing, and network extraction. <a href="#4">Section 4</a> examines the different types of science maps that can be generated from network data. <a href="#4.1">Section 4.1</a> is devoted to citation-based maps, i.e., those maps that are based on publications (or aggregates of publications) and citations (or citation-based relations) between publications. This section describes in details some procedures that are common also to other science maps, such as the normalization of the raw relatedness scores, and the two most diffused visualization approaches, the graph-based and the distance-based. It also presents some techniques that can be used to complement the results of mapping and ease the interpretation of science maps, such as clustering. <a href="#4.2">Section 4.2</a> discusses term-based maps, i.e., those maps that are based on the analysis of the titles, abstracts, keywords or bibliographic descriptors of scientific publications. We will first present the classic co-word analysis as developed in the sociology of science and then focus on maps based on terms extracted automatically with natural language processing techniques. <a href="#4.3">Section 4.3</a> briefly overviews science maps based on co-authorship and interlocking editorship networks, whereas <a href="#4.4">Section 4.4</a> reviews science maps based on patents and geographic maps of science. <a href="#5">Section 5</a> discusses different strategies to include the dimension of time into science maps. <a href="#6">Section 6</a> is devoted to the last step in the science mapping workflow, namely interpretation, and to discuss some general issues of science mapping, such as the importance of the level of analysis and the applicability of science mapping to the humanities. In <a href="#7">Section 7</a>, some epistemological topics, which bridge across science mapping, sociology of science, and philosophy of science are discussed: the objectivity of science maps, the relationship between the published side of science and the scientific practice, and the meaning of citations. <a href="#8">Section 8</a> overviews the potential applications of science maps in science policy. Lastly, the <a href="#9">Conclusion</a> will sketch how science mapping may be of interest for all the disciplines that compose meta-science. In the <a href="#app">Appendix</a>, two tools currently available for producing science maps, CiteSpace and VOSviewer, are briefly reviewed. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="1.2"></a>
+<h4 itemprop="articleSection">1.2 Three caveats about this entry</h4>
+
+<p>This entry focuses on conceptual, theoretical, and methodological issues of science mapping rather than on the rigorous mathematical formulation of science mapping techniques, as the basic ideas behind the techniques can often be understood without reference to the formal machinery. Relevant technical literature will be pointed out in the references.</p>
+
+<p>Secondly, we will focus on the <i>methodology</i> of science mapping, rather than on specific <i>exemplars</i> of science maps. We aim to provide the readers with the tools to understand and independently assess the science maps they will encounter (or produce!), rather than offer our opinion on existing maps. A wonderful collection of science maps can be found in the <i>Atlas of Science</i> by Katy B&ouml;rner (<a href="#refB">B&ouml;rner 2010</a>) and in the exhibit <i>Places and Spaces: Mapping Science</i>, which popularizes the topic of science mapping to the large public all over the world since 2005 <a href="#e1">[1]</a>.</p>
+
+<p>Lastly, science mapping is not a static research field, but it is constantly moving forward. New mapping methods are developed, old algorithms are dismissed, science mapping tools are refined, larger maps are built as higher computing capacity becomes available. Therefore, it is not uncommon to find disagreement in the current science maps literature (e.g. <a href="#refB">Boyack and Klavans 2010</a>). In this article, we will try as far as possible to remain neutral concerning these discussions, presenting to the reader the different options without taking a position.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2"></a>
+<h3 itemprop="articleSection">2. A brief history of science mapping</h3>
+
+<p>Modern science mapping relies on the data provided by large, multidisciplinary databases that index vast portions of the scientific literature (see <a href="#3.1">Section 3.1: Data sources for science mapping</a>). Before the creation of these databases in the 1960s, it was virtually impossible to generate science maps in the modern sense. The idea of representing the structure of human knowledge by visual aids, however, dates far back in history. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2.1"></a>
+<h4 itemprop="articleSection">2.1 Ancestors of science maps</h4>
+
+<p>Already in the Middle Age, the relationships between the seven liberal arts, comprising the <i>trivium </i>and <i>quadrivium</i>, were visually represented by allegories <a href="#e2">[2]</a>. However, the most popular visual metaphor in history for visualizing knowledge has been the <i>tree </i>(<a href="#refL">Lima 2014</a>). Its origins can be traced back to Aristotle, and to the <i>Isagoge</i>, an introduction to Aristotle&rsquo;s logic written by Porphyry in the 3rd Century. In the 13th Century, Ramon Llull depicted a tree of the sciences in his <i>Arbor Scientiae</i> (1295). Descartes, in the <i>Principia Philosophiae </i>(1644), used the same image to explain the relationship between metaphysics, physics, and the applied sciences. During the Enlightenment, the famous <i>Encyclop&eacute;die</i> of Diderot and d&rsquo;Alambert contained a tree-like taxonomy of human knowledge (&ldquo;Syst&egrave;me figur&eacute; des connaissances humaines&rdquo;). Similar structures can be found also in the 19th Century, in philosophical treaties on the classification and organization of the sciences <a href="#e3">[3]</a>. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2.2"></a>
+<h4 itemprop="articleSection">2.2 Modern science mapping</h4>
+
+<p>The tree-like representations of the sciences in the past had usually a philosophical aim. They served to reflect on the most general principles that underlie human knowledge. At the same time, they aimed at organizing scientific and scholarly disciplines, by creating hierarchies between them. Often, they were proposed with a normative spirit: more than describing the actual organization of knowledge, they wanted to reform and improve it. What they all shared was a &ldquo;top-down&rdquo; approach. Starting from a certain idea of human knowledge and a certain set of classificatory categories, a taxonomy was devised, which was then used to categorize the individual items of knowledge, such as books or scientific papers. The Dewey Decimal Classification, a &rarr; <a href="library_classification">library classification</a> system developed in 1876, epitomizes such a top-down approach.</p>
+
+<p>The creation of the Science Citation Index (SCI) in the 1960s by Eugene Garfield at the Institute for Scientific Information, allowed for a first time a <i>bottom-up</i> approach. As we will see better in the next sections (see <a href="#3.4">Section 3.4: Network extraction</a>), the SCI indexed the citation-links between the articles published in scientific journals. In this way, it allowed to reconstruct the <i>network</i> in which each scientific article is embedded, and, by connecting all these networks, to reconstruct the structure of entire scientific areas. In this way, a new method to map human knowledge became possible. The historian of science Derek De Solla Price was the first to suggest such an idea in 1965 (<a href="#refP">Price 1965</a>). Garfield himself proposed the method of historiographs to reconstruct the temporal development of scientific ideas by analyzing the citation links between publications (<a href="#refG">Garfield 1973</a>) (see <a href="#5">Section 5: The representation of time in science mapping</a>). </p>
+
+<p>In the 1960s and 1970s, two new techniques, both based on citations, were developed to measure the association of scientific papers: bibliographic coupling (<a href="#refK">Kessler 1963</a>) and co-citation (<a href="#refS">Small 1973</a>; <a href="#refM">Marshakova 1973</a>). They soon became standard techniques for science mapping (see <a href="#4.1.2">Section 4.1.2: The links in citation-based maps</a>). Henry Small started to use co-citation analysis to map scientific areas and study their evolution over time. He generated the first science maps based on co-citation analysis in 1977 to study the field of collagen research (<a href="#refS">Small 1977</a>). </p>
+
+<p>In the 1980s, new methods of analysis were developed, such as author co-citation analysis (<a href="#refW">White and Griffith 1981</a>) and co-word analysis (<a href="#refC">Callon et al. 1983</a>). At the same time, the technical aspects of science mapping were discussed and sometimes disputed (<a href="#refL">Leydesdorff 1987</a>). The 1990s saw important advancements in computer visualization techniques and, in 1991, the first science mapping program for the personal computer, SCI-map, was made available. In the 2000s, the improvement of computer capacity allowed to produce the first global maps of science, based on the analysis of thousands of journals and millions of publications. New user-friendly science mapping tools, such as CiteSpace and VOSviewer, were launched in the 2010s, so that nowadays also the non-experts can generate their own science maps. In the last twenty years, science mapping has become an increasingly interdisciplinary area, with important contributions from computer scientists and experts in information visualization, and the last ten years have seen what has been called a &ldquo;Cambrian explosion of science maps&rdquo; (<a href="#refB">B&ouml;rner, Theriault and Boyack 2015</a>) <a href="#e4">[4]</a>.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3"></a>
+<h3 itemprop="articleSection">3. Building a science map: the general workflow</h3>
+
+<p>The construction of a science map follows a general workflow that comprises the following steps (<a href="#refB">B&ouml;rner, Chen and Boyack 2005</a>; <a href="#refC">Cobo et al. 2011b</a>):
+
+<ol>
+<li>Data collection. Based on the research question of the analyst, the data for the mapping are collected. In principle, any relational feature of the scientific activity can be collected by different methods. In practice, however, most science mapping studies are based on data stored in bibliographic data sources. Hence, the data collection consists in individuating appropriate queries to extract bibliographic data from those sources.</li>
+
+<li>Pre-processing. The raw data are cleaned and, if needed, further selected (for instance, only publications cited over a certain threshold are retained). This step is crucial since the goodness of the mapping depends on the quality of the underlying data.</li>
+
+<li>Network extraction. Depending on the chosen unit of analysis (publication, term, author, journal, institution, etc.) and the kind of analysis (direct linkage, co-citation, bibliographic coupling, co-word analysis, etc.) the corresponding network is extracted from the data. </li>
+
+<li>Normalization. Usually, the relatedness scores (e.g., the raw number of co-citations between publications) are not directly used to generate the science maps because experience and experimentation have shown that they can create distortions due to the different sizes of the items (<a href="#refB">Boyack and Klavans 2019</a>). It is thus a common practice to perform normalization on the raw values using similarity measures.</li>
+
+<li>Visualization. There are different options to visualize the network. In graph-based visualizations, graph drawing algorithms are used. In distance-based visualizations, dimensionality reduction techniques are used to plot the data into a two-dimensional (or, more rarely, three-dimensional) layout, so that the distances between the points on the map reflect the similarity of the units of analysis. </li>
+
+<li>Enrichment. The elements of the map can be enriched to provide more information. Frequently, clustering techniques are used to find groups of similar nodes and colors are used to distinguish nodes belonging to different clusters.</li>
+
+<li>Interpretation. The science map is interpreted, usually with the help of experts in the mapped domain. The visual nature of the map enables the recognition of patterns and structures, which can provide an answer to research questions or help in addressing science policy issues. </li>
+</ol>
+
+<p>In the next sections, we focus on the first three steps of science mapping: data collection, data pre-processing, and network extraction. Based on the type of network extracted, different types of science maps can be generated. In <a href="#4">Section 4</a>, each type is examined in detail. Note that citation-based maps will allow us to describe the steps of normalization, visualization, and enrichment that recur also in the generation of other types of science maps. <a href="#5">Section 5</a> is an excursus on how time can be represented in science maps, whereas <a href="#6">Section 6</a> discusses the last phase of science mapping, i.e., the interpretation.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.1"></a>
+<h4 itemprop="articleSection">3.1 Data sources for science mapping</h4>
+
+<p>Science mapping is a methodology that can be applied, in principle, to a variety of data regarding the scientific enterprise. In practice, however, the main data sources for science mapping are bibliographic databases. Other types of data must be collected by the analysts.</p>
+
+<p>Bibliographic databases used to this purpose are large multi-disciplinary databases that collect the &rarr; <a href="metadata">metadata</a> of academic publications (authors, title, abstract, keywords, affiliation of the authors, publication year, etc.) along with their citations (hence their name of <i>citation indexes</i>). The main citation indexes are Clarivate&rsquo;s Web of Science (WoS), Elseviers&rsquo; Scopus, and Google Scholar.  </p>
+
+<p>Recently, two open bibliographic databases have joined Google Scholar: Microsoft Academic (launched in 2006, it stopped being updated in 2012 and was relaunched in 2016 <a href="#e5">[5]</a>) and Dimensions (launched in 2019 <a href="#e6">[6]</a>). Moreover, in 2017 Crossref, a not-for-profit organization of publishers, has made its citation data openly available. Comparisons between the coverage of these new databases and the coverage of traditional databases are currently being undertaken by the bibliometric community (<a href="#refV">Visser, van Eck and Waltman 2020</a>; <a href="#refH">Harzing 2019</a>). </p>
+
+<p>In addition to multi-disciplinary databases, there are also specialized databases, focusing on specific disciplines (e.g., PubMed for medicine, and PsycInfo for psychology). Patent data can be retrieved from specific data sources such as the United States Patent and Trademark Office <a href="#e7">[7]</a>, Google patents <a href="#e8">[8]</a> and the database of the European Patent Office <a href="#e9">[9]</a>. </p>
+
+<p>More detailed information about these databases can be found in &rarr; <a href="citation">the dedicated entry</a> of this encyclopedia (<a href="#refA">Ara&uacute;jo, Castanha and Hj&oslash;rland 2020</a>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.2"></a>
+<h4 itemprop="articleSection">3.2 Field delineation</h4>
+
+<p>To produce a science map, we first need to individuate a set of publications that reasonably represent the target of the mapping. In bibliometrics, this step is often called <i>field delineation</i>. Field delineation is the collection of documents that are both relevant and specific for the purpose of the mapping (<a href="#refZ">Zhao 2009</a>). </p>
+
+<p>At this point, an important difference can be made between global and local maps of science. Global maps of science (also known as &ldquo;atlases of science&rdquo;) aim to map the <i>whole</i> science (<a href="#refB">B&ouml;rner et al. 2012</a>; Boyack, Klavans and B&ouml;rner 2005; <a href="#refB">Boyack and Klavans 2019</a>). To produce such maps, the main criteria is to maximize coverage. Local maps of science, on the other hand, focus on a limited portion of the scientific literature (<a href="#refR">Rafols, Porter and Leydesdorff 2010</a>). Such a portion can be a scientific field, a specialty, a research topic, or the publication output of a university. In all these cases, the accurate selection of the target publications is a crucial step since an unrepresentative or wrong set of publications will produce a misrepresentation of the target. </p>
+
+<p>Following Zitt and colleagues, we distinguish three general strategies for field delineation: (A) rely on external formalized resources, such as ready-made science classifications; (B) create ad hoc information retrieval searches; (C) use network exploration resources (i.e., science mapping itself) (<a href="#refL">Laurens, Zitt and Bassecoulard 2010</a>; <a href="#refZ">Zitt et al. 2019</a>; <a href="#refZ">Zitt and Bassecoulard 2006</a>).</p>
+
+<p>The first strategy is based on ready-made classifications, such as the ones used by Web of Science or Scopus to classify their records. Other classificatory schemes are produced in institutional settings (e.g., by research evaluation agencies or by research councils) and, clearly, by libraries. Note that sometimes the journal, rather than the individual article, is the unit of classification, with the articles inheriting the category of the journals where they are published. Following this first strategy, representative literature is retrieved by using these ready-made classifications at different levels of granularity (scientific field, specialty, sub-area, etc.). An evident shortcoming of this strategy is that it heavily relies on the goodness of the chosen classifications.</p>
+
+<p>The second strategy is based on creating, usually in close interaction with domain experts, ad hoc searches to query the databases. These queries can potentially include any searchable part of the bibliographic records: words in titles and abstracts, keywords, authors, affiliations, journals, dates, references, and so on. A typical query combines a search for specialized journals and a lexical search in complement. Note that the starting queries can be refined, for instance by citation analysis. Once a core set of publications, journals or even key authors is determined, new records are added by following the citations (articles citing the core set) or the references (articles cited by the core set), in an iterative process.</p>
+
+<p>The third strategy relies on science mapping methods and, in particular, on clustering. The basic idea is to use bottom-up clustering techniques that group publications based not on a classificatory scheme, but on their reciprocal relations (for instance, their co-citation strength, see <a href="#4.1.2">Section 4.1.2: The links in citation-based maps</a>). Techniques of network analysis, as well as experts&rsquo; knowledge, are then used to select the relevant clusters. By iterating this procedure, an increasingly precise field delineation is obtained. </p>
+
+<p>All these approaches involve the double risk of losing relevant publications and introducing noise (not relevant publications) in the dataset  (<a href="#refZ">Zitt et al. 2019</a>). In fact, there is no fit-to-all solution to field delineation. From an operative point of view, a good strategy is to combine recursively the different approaches, checking each time the set of retrieved publications and refining accordingly the queries (an example of this approach can be found in <a href="#refC">Chen 2017</a>). </p>
+
+<p>However, it is important to remember that, from a theoretical point of view, there is no ground truth basis for defining research domains in a &ldquo;purely objective&rdquo; way. As the ongoing discussion about research areas definition and classification shows, research classification should be conceived as a <i>social process</i> involving multiple actors, from researchers to journals to research evaluation agencies, rather than as a static photograph of the structure of science. Classificatory schemes as well as the boundaries between areas are constantly negotiated and reshaped under the pressure of different social systems and infrastructures (<a href="#refS">Sugimoto and Weingart 2015</a>). As these systems serve different purposes and are governed by different logics, frictions and inconsistences between the classificatory schemes they produce are to be expected (<a href="#refA">&Aring;str&ouml;m, Hammarfelt and Hansson 2017</a>). For instance, an article can be classified as belonging to research area <i>X</i> based on the institutional affiliation of its authors and to research area <i>Y</i> based on the topic of the journal where it is published. Even if field delineation is the first step in many bibliometric analyses, including science mapping, its theoretical stakes should not be underestimated.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.3"></a>
+<h4 itemprop="articleSection">3.3 Data cleaning and pre-processing</h4>
+
+<p>When the field delineation is completed and the datasets are retrieved from bibliographic databases, the data consist basically of large tables, in which each row corresponds to a publication and the columns represent the available meta-data of that publication (e.g., title, authors, abstract, publication year, journal, cited references, etc.). Retrieved data usually contain errors, for instance, misspelling of author names, errors in the cited references, journal titles, and so on. Cleaning the data is a pivotal step in the science mapping workflow because the quality of the results depends on the quality of the data. This task, however, can be highly time-consuming and can present difficult issues, such as the disambiguation of authors with homonym names and the merging of authors with multiple names (<a href="#refS">Strotmann and Zhao 2012</a>).</p>
+
+<p>After the cleaning, the data can be pre-processed. They can be divided into different time sub-periods to carry out longitudinal studies (see <a href="#5">Section 5: The representation of time in science mapping</a>), or a portion of the retrieved data can be furtherly selected based on some measure, such as the most cited articles, the most productive authors, or the journals with the highest performance metrics.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.4"></a>
+<h4 itemprop="articleSection">3.4 Network extraction</h4>
+
+<p>In general, a network is a structure made of <i>nodes</i> (also called <i>vertices</i>) and <i>links</i> (also called <i>edges</i>). It can be represented as a <i>graph</i> or as a <i>matrix</i>. Networks are valuable tools to represent and study a great variety of natural and social phenomena, from the lineage of a family to patterns of contracts among firms, to the spreading of a virus (<a href="#refB">Barab&aacute;si 2014</a>). </p>
+
+<p>In science mapping, we are interested in those networks that can capture the structure of science at different levels and from different points of view. In fact, these networks are the basic structure on which science maps are built.</p>
+
+<p>From the same set of bibliographic records, it is possible to generate different networks, depending on the type of nodes and links we decide to focus on. The nodes will represent the <i>unit of analysis</i> of the final map, whereas the links will represent the type of <i>relationship </i>displayed. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4"></a>
+<h3 itemprop="articleSection">4. Types of science maps</h3>
+
+<p>Science maps can be classified into different types depending on the kind of data, and hence the kind of network, they are based on. In principle, any feature of the scientific enterprise that can be represented in relational terms, i.e., as a network of nodes and links, can be used to generate a science map. In <i>citation-based maps</i>, the units of analysis (the nodes) are publications or aggregates of publications (e.g., journals or authors), and the relationships between them (the links) are citations or association measures based on citations (bibliographic coupling and co-citation). In <i>term-based maps</i>, the units of analysis are textual items (themes, keywords or terms) and the relationships are co-occurrence frequencies (e.g., the number of times two keywords are used together in a set of publications). In <i>co-authorship maps</i>, the units are the authors and the links are the number of co-authored publications. In <i>interlocking editorship maps</i>, the units are the journals and the links are the number of persons who are shared between the editorial boards of two journals). In addition to these, there are also science maps based on patents data and geographic maps of science, which will be the topic of <a href="#4.4">Section 4.4</a>. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.1"></a>
+<h4 itemprop="articleSection">4.1 Citation-based maps</h4>
+
+<a name="4.1.1"></a>
+<h5 itemprop="articleSection"><p>4.1.1 The nodes in citation-based maps: publications and aggregates of publications</h5>
+
+<p>In the most basic citation-based map, the nodes represent individual publications and the links the citations (reference-links) among them. An example of citation network is provided in Fig. 1, where it is visualized as a <i>directed network</i> in which nodes represent publications and arrows represent the reference-links (citations) between them. Some publications are both citing and cited (e.g., publication <i>a</i>), some publications are only cited (e.g., publication <i>f</i>), and some publications cite without being cited (e.g., publication <i>e</i>).</p>
+
+<div align="center"><figure>
+<img src="science_mapping1.png" title="Fig. 1: Example of citation network" width="60%">
+<figcaption>Figure 1: Example of citation network. Nodes represent document and arrows the citations between them</figcaption>
+</figure></div>
+
+<p>The same information can be represented as an<i> adjacency matrix</i>, whose elements indicate whether pairs of nodes are connected (&ldquo;adjacent&rdquo;) in the network or not. When the publication in the row cites a publication in the column, the corresponding element in the matrix is 1, 0 otherwise <a href="#e10">[10]</a>.</p>
+
+<blockquote>
+<table border="1">
+<!-- p><caption><i>Table 1</i><br>&nbsp;</caption></p -->
+<tr>
+<th></th>
+<th><i>a</i></th>
+<th><i>b</i></th>
+<th><i>c</i></th>
+<th><i>d</i></th>
+<th><i>e</i></th>
+<th><i>f</i></th>
+<th><i>g</i></th>
+<th><i>h</i></th>
+</tr><tr>
+<th><i>a</i></th>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr><tr>
+<th><i>b</i></th>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+</tr><tr>
+<th><i>c</i></th>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+</tr><tr>
+<th><i>d</i></th>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr><tr>
+<th><i>e</i></th>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+</tr><tr>
+<th><i>f</i></th>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr><tr>
+<th><i>g</i></th>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr><tr>
+<th><i>h</i></th>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+</table>
+</blockquote>
+
+
+<p>Since publications are provided with meta-data, such as their authors or the journals in which they are published, it is possible to build <i>aggregates of publications</i> sharing the same meta-data (<a href="#refR">Radicchi, Fortunato and Vespignani 2012</a>). By aggregating publications at a higher and higher level, we can reach higher units of the analysis and networks based on new types of nodes. </p>
+
+<p>To understand this mechanism, we show how to build a <i>journal citation network</i> (<a href="#refL">Leydesdorff 2004</a>; <a href="#refM">McCain 1991</a>) starting from the document citation network of Fig. 1. We start by coloring the nodes according to the journals where they are published, and the citation links according to the journal to which they point (Fig. 2). </p>
+
+<div align="center"><figure>
+<img src="science_mapping2.png" title="Fig. 2: Citation network with document-nodes colored based on the journal they were published in" width="60%">
+<figcaption>Figure 2: Citation network with document-nodes colored based on the journal they were published in. The color of the arrows corresponds to the color of the citing journal</figcaption>
+</figure></div>
+
+
+<p>The journal citation network is obtained by substituting each article with its journal of publication and then using the journals as nodes of the network. A link between two journals is drawn when they exchange at least one citation.  Note that in this new network, it is possible to provide links with <i>weight</i>, that is the number of citations that each journal receives from other journals (or from itself). In the previous network, there was not a proper weight but only an on/off relationship (presence of a reference-link or not). There are also some loops, produced by articles citing articles published in the same journal (these loops correspond to journal self-citations). The resulting journal citation network is shown in Fig. 3.</p>
+
+
+<div align="center"><figure>
+<img src="science_mapping3.png" title="Fig. 3: Example of journal citation network" width="70%">
+<figcaption>Figure 3: Example of journal citation network. Out-citations, in-citations, and self-citations between journals are colored, respectively, in green, orange, and violet</figcaption>
+</figure></div>
+
+
+<p>By the same aggregation process, we can construct author citation networks (e.g., <a href="#refM">McCain 1990</a>; <a href="#refR">Radicchi et al. 2009</a>), or reach higher units of analysis, such as institutions and even countries (e.g., <a href="#refG">Gl&auml;nzel 2001</a>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.1.2"></a>
+<h5 itemprop="articleSection">4.1.2 The links in citation-based maps: direct citations, bibliographic coupling, and co-citations</h5>
+
+<p>Until now, we considered only citations as links in the citation network. The presence of a reference-link between two publications usually attests that they are somehow associated, for instance, that they share the same topic or research method (see <a href="#7.3">Section 7.3: The meaning of citations</a>). Maps in which the links are direct citations are called &ldquo;direct-linkage&rdquo; or &ldquo;cross-citations&rdquo; or &ldquo;inter-citation&rdquo; maps (<a href="#refW">Waltman and van Eck 2012</a>). In science mapping, however, there are two other common techniques used to measure the relatedness or strength of association of publications (or their aggregates): bibliographic coupling (<a href="#refK">Kessler 1963</a>) and co-citation (<a href="#refS">Small 1973</a>; <a href="#refM">Marshakova 1973</a>).</p>
+
+<p>In <i>bibliographic coupling</i>, a link between two publications is established when they share at least one publication in their respective bibliographies, i.e. when they have at least one reference in common. The weight of the link is proportional to the number of shared references. <i>Co-citation</i> is, in a certain sense, the reverse of bibliographic coupling. In a co-citation network, a link is drawn between two publications if they are cited together at least by a third publication, and the weight of the link (the so-called co-citation strength) is proportional to the number of common citations they gather (i.e., the number of co-citations). </p>
+
+<p>Fig. 4 shows the bibliographic coupling network generated from the citation network of Fig. 1. Note that publication <i>f</i> has no link with other publications because, in our example, it did not have any cited reference (i.e., no out-going link).</p>
+
+
+<div align="center"><figure>
+<img src="science_mapping4.png" title="Fig. 4: Bibliographic coupling network generated based on the citation network in Fig. 1" width="60%">
+<figcaption>Figure 4: Bibliographic coupling network generated based on the citation network in Fig. 1. Nodes are publications, links show bibliographic coupling between publications. Note that publication <i>f</i> has no bibliographic coupling links with other publications in the network</figcaption>
+</figure></div>
+
+<p>Fig. 5 shows the co-citation network. Analogously, publication <i>e</i> has no link with other publications because it had no citations (i.e., no incoming link).</p>
+
+<div align="center"><figure>
+<img src="science_mapping5.png" title="Fig. 5: Co-citation network generated based on the citation network in Fig. 1" width="70%">
+<figcaption>Figure 5: Co-citation network generated based on the citation network in Fig. 1. Nodes are publications, links show co-citation between publications. Note that publication <i>e</i> has no co-citation links with other publications in the network</figcaption>
+</figure></div>
+
+
+<p>Note that citations are directed links because we can distinguish between a sender and a receiver of the citation. In network theory terminology, they are called <i>arcs</i> (<a href="#refW">Wasserman and Faust 1994</a>). In contrast, bibliographic coupling and co-citation links are un-directed links because bibliographic couplings and co-citations are symmetrical. In network theory terminology, they are called <i>edges</i> (<a href="#refW">Wasserman and Faust 1994</a>).</p>
+
+<p>Starting from a matrix whose rows are the citing publications and columns are the cited publications, it is possible to derive by matrix algebra operations the two <i>co-occurrence matrices</i> representing the bibliographic coupling network or the co-citation network (<a href="#refV">Van Raan 2019</a>).</p>
+
+<p>Note that direct citations, bibliographic coupling, and co-citation analysis can be applied not only to single publications, but also to aggregates of publications. For instance, if authors are used as units in co-citation analysis, we have <i>author co-citation analysis</i> (e.g., <a href="#refW">White and McCain 1998</a>; <a href="#refK">Kreuzman 2001</a>), if journals are used as units, we have <i>journal co-citation analysis</i> (e.g., <a href="#refM">McCain 1991</a>). By combining in this way methods and units of analysis, several types of bibliometric networks can be generated (<a href="#refW">Waltman and van Eck 2014</a>). Fig. 6 shows an example of co-citation map using individual publications as units of analysis.</p>
+
+
+<div align="center"><figure>
+<a href="science_mapping6.png"><img src="science_mapping6.png" title="Fig. 6: Example of co-citation map (click to enlarge)" width="90%"></a>
+<figcaption>Figure 6: Example of co-citation map (click to enlarge). The field mapped is analytic philosophy. The nodes represent documents. A link is drawn between two nodes when they are co-cited. Size of the nodes is proportional to the number of citations gathered by the document; thickness of the links is proportional to the co-citation strength; nodes&rsquo; colors indicate the cluster to which they are attributed by the clustering algorithm. Nodes are positioned according to their co-citation strength, so that the more frequently they are cited together, the closer they appear on the map. The visualization was produced with VOSviewer.</figcaption>
+</figure></div>
+
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.1.3"></a>
+<h5 itemprop="articleSection">4.1.3 Normalization</h5>
+
+<p>Usually, the raw frequencies of citations, bibliographic couplings or co-citations are not directly used as input of the visualization process that leads to the final form of the science map. This is because the raw frequencies do not properly reflect the similarity between the items (<a href="#refv">van Eck and Waltman 2009</a>). To understand why, suppose that department AA and department BB publish comparable articles, but department AA, having more researchers than department BB, publishes 10 times more articles. Other things being equal, one would expect that the articles from department AA will receive in total about ten times as many citations as the articles from department BB and thus to have about ten times as many co-citations with other departments in the same discipline as department BB. However, the fact that department AA has more co-citations with other departments than department BB does not indicate that it is more similar to other departments than department BB. It only shows that department AA publishes more articles than <!-- journal --> department BB because it is bigger. To correct such a distortion due to the different <i>size</i> of the units of analysis, we need to transform the raw co-citation scores, adjusting them by some stable quantity, an operation called &ldquo;normalization&rdquo; (<a href="#refE">Eck et al. 2010</a>). </p>
+
+<p>In science mapping, <i>similarity measures</i> are used to perform such a normalization. Following Ahlgren and colleagues, we distinguish two main approaches to calculating these similarities: the <i>local or direct</i> and the <i>global or indirect</i> (<a href="#refA">Ahlgren, Jarneving and Rousseau 2003</a>). In the former approach, the focus is on the co-occurrence frequencies of the items, that are then adjusted for different quantities. Examples include the cosine (the most popular one), the association strength (used in VOSviewer, see the <a href="#app">Appendix</a>), the inclusion index, and the Jaccard index (<a href="#refE">Eck and Waltman 2009</a>). In the latter approach, the focus is on the way two items are related to <i>all the other items</i> in the dataset under study. This means that what is compared to obtain the similarity between two items are their entire <i>profiles</i>, i.e., the entire rows (or columns) of the co-occurrence matrix, and not their simple co-occurrence frequency. Pearson&rsquo;s correlation coefficient (<i>r</i>), the cosine <a href="#e11">[11]</a>, and the chi-squared distance are examples of indirect similarity measure based on the global approach (<a href="#refM">McCain 1990</a>; <a href="#refW">White and Griffith 1981</a>). However, the reliability of Pearson&rsquo;s <i>r</i> as a similarity measure has been contested (<a href="#refA">Ahlgren, Jarneving and Rousseau 2003</a>; <a href="#refE">Eck and Waltman 2008</a>). </p>
+
+<p>In general, there is no agreement on what the best normalization procedure is and on what similarity measures should be used in science mapping (<a href="#refB">Boyack and Klavans 2019</a>; <a href="#refL">Leydesdorff 2008</a>; <a href="#refV">Van Raan 2019</a>). In the scientometric community, the discussion still goes on after 35 years (e.g., <a href="#refZ">Zhou and Leydesdorff 2016</a>). However, it is important to remember that, depending on the chosen procedure, the resulting science maps can be rather different (<a href="#refB">Boyack, Klavans, and B&ouml;rner 2005</a>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.1.4"></a>
+<h5 itemprop="articleSection">4.1.4 Visualization</h5>
+
+<p><i>Visualization</i> is the step in the science mapping process in which the information contained in the network is displayed in a visual layout comprehensible to human understanding. Following Waltman and van Eck (<a href="#refW">2014</a>), we distinguish two basic types of visualizations: graph-based and distance-based. They are not the only approaches available but are probably the most common in science mapping <a href="#e12">[12]</a>.</p>
+
+<p>In graph-based visualization, the network is visualized as a <i>graph</i> made of nodes and edges (Fig. 1, 2, 3, 4, and 5 are examples of graph-based visualizations). The edges (links between nodes) are displayed to indicate the relatedness of nodes. The most common technique for creating such graphs are <i>force-directed graph drawing algorithms</i>, such as the Kamada and Kawai and the Fruchterman and Reingold (<a href="#refC">Chen 2013</a>). </p>
+
+<p>To understand the underlying mechanism of these algorithms, imagine the network as a physical system, in which the nodes are little balls electrically charged and the links are springs that connect them. The electric charge creates a repulsive force between the balls, counterbalanced by the attractive force generated by the springs. The algorithms basically simulate the network as such a physical system made of balls and springs and apply two opposite forces to the nodes, one attractive (proportional to the weight of the link between two nodes) and the other repulsive, until the system comes to a state of mechanical equilibrium. The final layout is the one corresponding to such an equilibrium state. Note that several configurations are possible since usually there is no unique equilibrium state.</p>
+
+<p>Force-directed graph drawing algorithms are implemented in software for network analysis and visualization, such as Gephi <a href="#e13">[13]</a> and Pajek <a href="#e14">[14]</a>. An example of a graph-based science map created with Pajek and visualized with the Kamada and Kawai algorithm can be found in (<a href="#refL">Leydesdorff and Rafols 2009</a>, fig. 4). An example of a graph-based science map created with Gephi can be found in (<a href="#refW">Weingart 2015</a>, fig. 4)</p>
+
+<p>The other visualization approach is distance-based. In distance-based visualizations, the distance of nodes on the map reflects their similarity, so that similar nodes are placed closer and dissimilar nodes far away. Note that in graph-based visualization, on the other hand, the position of the nodes is not directly related to their similarities, but it is a product of the &ldquo;pull and push&rdquo; mechanism of the drawing algorithm. In distance-based visualizations, links can be shown or not.</p>
+
+<p>Distance-based visualizations are conceptually closer to geographic maps than graph-based visualizations. Geographic maps represent relationships in space by placing objects that are close in the physical space near on the maps and objects that are distant in the physical space further apart on the map. Distance-based maps have the same goals, but instead of being based on physical distances, they are based on similarities between objects. </p>
+
+<p>To produce a distance-based visualization, therefore, the similarities between the nodes must be transformed into distances <a href="#e15">[15]</a>. The distance matrix that is thus obtained is conceptually analogous to the table reporting the distances between pairs of cities in a geographic atlas. The task consists of reconstructing from the relative distances the positions of the items on the map, i.e., in finding the coordinates of the items in a two-dimensional space starting from their reciprocal distances.</p>
+
+<p>To fulfill this task several statistical techniques have been developed. The most important belong to the family of multi-dimensional scaling (MDS) methods (<a href="#refB">Borg and Groenen 2010</a>). They aim to find the coordinates of the points in a lower-dimensional space (usually, a plane) such that the distances of the points on the lower-dimensional space reflect as accurately as possible the original distances of the points. The average difference between the distances on the map and the original distances tells us how much the map <i>distorts</i> the original configuration. The amount of distortion is used to calculate the <i>stress </i>of the map. The various algorithms for MDS essentially adjust the positions of the points until a minimum value of stress is reached <a href="#e16">[16]</a>.</p>
+
+<p>It is important to underlie that distance-based visualizations can be rotated, flipped, and mirrored. Since the output of MDS is not a set of fixed coordinates but a set of <i>relative distances</i> between the points, any geometrical transformations that leave them unaltered can be applied. An example of distance-based visualization can be found in (<a href="#refW">White and McCain 1998</a>, fig. 2).</p>
+
+<p>When interpreting the output of MDS, that is usually a two-dimensional map, is it very important to be aware that the algorithms can generate <i>visual artifacts</i>, i.e., structures or patterns that are visible on the map but that are not present in the original data. For instance, Eck and co-authors (<a href="#refE">2010</a>) note that variants of MDS tend to produce quasi-circular layout when used on big matrices and that they tend to locate items with a high number of co-occurrences toward the center of the map. </p>
+
+<p>However, the trickiest artifacts have to do with the issue of <i>dimensionality reduction</i>, i.e. with the very core of MDS. Imagine that we have four points in a three-dimensional space, each one located at the same distance from the others, like the vertices of a three-sided pyramid, all sides of equal length (<a href="#refB">Borg and Groenen 2010</a>, chap. 13.3). When we try to place the four points in a two-dimensional plane, we can respect the equal distance only for three points out of four. The fourth point will lie almost at the center of a bi-dimensional triangle (as if we were looking at the pyramid from the above) so that its distance from the other points will always be <i>shorter</i> than the distances between the three points themselves <a href="#e17">[17]</a>. Without knowing the original three-dimensional structure and by looking only at the two-dimensional map, we would wrongly conclude that the fourth point is closer to the other three. The wrong conclusion raises from the fact that the <i>two</i>-dimensional map <i>necessarily distorts</i> the <i>three</i>-dimensional structure because it suppresses the third dimension, which however carries essential information (the equal distance between the fourth point and the other three points). By losing such information, it introduces an artifact. Interestingly, MDS can generate also the opposite artifact: points that are placed far away in the map can be however connected by &ldquo;tunnels&rdquo; in hidden dimensions (<a href="#refL">Leydesdorff and Rafols 2009</a>). Imagine a paper sheet with two distant points on it: if we bend the sheet, we can make the two points very close <i>in the third dimension</i>, realizing a &ldquo;tunnel&rdquo; between them. If we consider only their distance on the two dimensions of the sheet, however, they will appear to be distant.</p>
+
+<p>In sum, dimensionality reduction techniques do allow us to obtain significant insights into the structure of bibliometric networks because they reveal the main features of such a structure. At the same time, since those features may lie in more than two dimensions, one must be aware of the inevitable distortions introduced by the dimensionality reduction itself.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.1.5"></a>
+<h5 itemprop="articleSection">4.1.5 Enriching the map</h5>
+
+<p>With the visualization of the network, we reach the basic form of the science map. At this point, the interpretation of the map can already begin. However, it is common to <i>enrich</i> the basic form by displaying further information on it.</p>
+
+<p>A first option is to use the size of the nodes and the width of the links to convey their properties. In a co-citation map, for instance, the size of the nodes can be used to represent the number of citations collected by the units of analysis (publication, journal, author, etc.) and the links can be drawn thicker or darker to express the strength of the connections (e.g., number of co-citations between two nodes). Alternatively, the size of the nodes can be used to represent the <i>centrality</i> of the nodes, using one of the different notions of centrality defined in network theory. The most common include degree centrality, betweenness centrality, closeness centrality, and eigenvector centrality (<a href="#refW">Wasserman and Faust 1994</a>). The <i>degree</i> centrality of a node is proportional to the number of its links so that it is higher for highly connected nodes. <i>Betweenness</i> is a measure of brokerage of gatekeeping, that is of how much a node is an &ldquo;obligatory passage&rdquo; in the network. In science mapping, it is sometimes used to measure interdisciplinarity (<a href="#refL">Leydesdorff 2007</a>). <i>Closeness</i> measures how close a node is to the other nodes in the network. Nodes with high closeness are the ones that can be reached with few steps <a href="#e18">[18]</a> from any other node in the network. Lastly, <i>eigenvector</i> centrality is a measure of the influence of a node in the network. The underlying idea of eigenvector centrality is that the influence of a node depends on the influence of the nodes to which it is connected, so that a node connected with other central nodes increases its centrality. </p>
+
+<p>A further option to enrich the map is to use colors to distinguish visually different <i>clusters</i> of nodes. Networks typically display an internal organization in clusters or communities, that is groups of highly interconnected nodes (<a href="#refR">Radicchi, Fortunato and Vespignani 2012</a>). In distance-based visualizations, clusters result as sets of close points, separated from other clusters by blank space. The techniques of <i>cluster analysis</i> can be used to detect such communities. One common method is hierarchical agglomerative clustering (<a href="#refC">Chen 2013</a>). All the units of the map (the nodes) begin alone in groups of size one, then, at each iteration of the clustering algorithm, similar groups are merged, until all the nodes belong to one super-cluster. A resolution parameter controls the granularity of the clustering, i.e., the size of the communities. Different agglomerative methods are characterized by the definition of distance between clusters they use and by the metric employed to calculate the distances (there are lots of options besides the familiar Euclidian distance). In single-linkage clustering, the distance between two clusters is set equal to the distance between their <i>closest</i> nodes. In complete-linkage clustering, on the other hand, it is equal to the distance between the <i>most distant</i> nodes in the two clusters. Lastly, in centroid linkage clustering, it is equal to the distance between the &ldquo;centers&rdquo; or average points (centroids) of the clusters. These clustering procedures, however, are only a small fraction of the available techniques and algorithms for clustering and community detection. In the last years, the techniques based on modularity, originally developed in physics, are becoming increasingly popular (<a href="#refT">Thijs 2019</a>) <a href="#e19">[19]</a>.</p>
+
+<p>Clusters can be labelled automatically by extracting terms from the titles, abstracts, and keywords of the publications in the clusters (<a href="#refC">Chen 2006</a>) (see <a href="#4.2.2">Section 4.2.2: Co-word analysis based on automatically extracted terms</a>). Each cluster is thus provided with a word-profile and its most relevant words can be superimposed on the map to facilitate the interpretation of the clusters (<a href="#refC">Chen, Ibekwe-SanJuan and Hou 2010</a>).</p>
+
+<p>A last method for enriching the science map is to use the overlay (<a href="#refR">Rafols, Porter and Leydesdorff 2010</a>). In science overlay maps, the results of the mapping are laid over a background, that can be, for instance, a global map of science. The background serves as a reference system that facilitates the interpretation of the results. For instance, the scientific output of a university can be overlaid on a global map of science to get an insight into the scientific coverage of the university or its impact (see <a href="#8">Section 8: Science maps and science policy</a>). </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.2"></a>
+<h4 itemprop="articleSection">4.2 Term-based maps</h4>
+
+<p><i>Term-based science maps</i> are used to extract and visualize the intellectual content of a corpus of publications based on the analysis of the terms associated with those publications (<a href="#refB">B&ouml;rner, Chen and Boyack 2005</a>). These terms can be the keywords or descriptors of the publications, or they can be extracted automatically from titles and abstracts or even the full texts of articles. Term-based science maps allow to explore at a fine-grained level the intellectual content of publications since titles, abstracts, and keywords are meant to report the main topics, concepts, and results of scientific articles (<a href="#refH">He 1999</a>; <a href="#refV">Van Raan and Tijssen 1993</a>).</p>
+
+<p>An important advantage of term-based mapping compared to citation-based mapping is that it applies to fields characterized by the scarce presence of citations, such as applied research and technology (<a href="#refC">Callon et al. 1983</a>). </p>
+
+<p>Depending on the method by which the terms characterizing a publication are extracted, we can distinguish two types of term-based maps. Classic co-word analysis, developed by Callon and colleagues, is based on human-assigned keywords. Natural language processing (NLP)-based co-word analysis, on the other hand, is based on terms that are automatically extracted from the texts by natural language processing techniques. </p>
+
+<p>Independently of the method, however, co-word analysis rests on some assumptions that have been contested. The main one is that words and terms have a stable <i>meaning</i> across fields and over time so that they can be used as reliable proxies of scientific concepts and ideas (<a href="#refL">Leydesdorff 1997</a>). However, this assumption may be false, and historians of science have shown that the phenomenon of meaning-shift indeed occurs in science (<a href="#refK">Kuhn 2000</a>). A possible reply to this criticism is that words in co-word analysis are not used as carriers of meaning but as simple links between texts (<a href="#refC">Courtial 1998</a>). From an operative point of view, meaning shift can be avoided by restricting the time scope of the analysis to a relatively short period and semantically homogeneous areas (<a href="#refM">Mutschke and Quan-Haase 2001</a>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.2.1"></a>
+<h5 itemprop="articleSection">4.2.1 Classic co-word analysis and the strategic diagrams</h5>
+
+<p>The first term-based maps were developed in the 1980s by a team of sociologists of science based at the Centre de sociologie de l&rsquo;innovation at the &Eacute;cole des mines in Paris. They were designed to study the interaction between scientific knowledge and technological innovation, and, more generally, the relations between science and society (<a href="#refC">Callon et al. 1983</a>). It is important to point out that the theoretical foundation of co-word analysis developed by Callon and others lies in the tradition of the science and technology studies, and in particular in the actor-network theory developed by Bruno Latour and others (<a href="#refC">Callon, Law and Rip 1998</a>; <a href="#refL">Latour 2003</a>). However, as a mapping method, co-word analysis can be employed without endorsing such a theoretical framework. </p>
+
+<p>Callon and colleagues focused in particular on the <i>descriptors</i> employed by documentation services to index the content of scientific and technological publications (<a href="#refC">Callon, Courtial and Laville 1991</a>). The method of co-word analysis, then, consists first in collecting all the descriptors of the target documents. After a process of cleaning, in which variants and synonyms are merged and not relevant descriptors removed (see <a href="#3.3">Section 3.3: Data cleaning and pre-processing</a>), the co-occurrence frequency of each pair of descriptors is calculated. Two descriptors co-occur if they are used together in the description of a single document. A co-occurrence matrix reporting the co-occurrence frequencies of each pair of descriptors is thus produced, and the raw values are then normalized (see <a href="#4.1.3">Section 4.1.3: Normalization</a>). </p>
+
+<p>In the classic co-word methodology, as described by Callon and colleagues, the visualizations produced by co-word analysis are <i>strategic diagrams</i> (sometimes called <i>cognitive maps</i>), which are a special kind of science map that should not be confused with distance-based visualizations. To create a strategic diagram, clusters of frequently co-occurring descriptors or keywords are created by some clustering technique. Such clusters are called <i>themes</i> and are described by two characteristics: centrality and density. The centrality of a cluster is given by its external link, i.e., the number of links it has with other clusters. The density of a cluster is defined as the proportion between the links that are present in the keywords cluster and the number of possible links. Each theme is thus defined by two variables, centrality and density, that constitute its coordinates in the strategic diagram (<a href="#refH">He 1999</a>). Then, the strategic diagram is divided into four quadrants (<a href="#refM">Mutschke and Quan-Haase 2001</a>). The themes in the first quadrant are characterized by high density and high centrality and constitute the <i>mainstream</i> of the scientific field. The themes in the second quadrant, characterized by high centrality and low density, are unstructured themes that may be described as &ldquo;bandwagon&rdquo; themes. The themes in the third quadrant are characterized by high density and low centrality: they have a well-developed maturity but lacks ties to other themes in the field. They are the &ldquo;ivory tower&rdquo; themes. Lastly, the themes in the fourth quadrant, characterized by low centrality and low density, comprise both topics that are fading away and new topics that are emerging. In longitudinal analysis, the trajectory of a theme can be followed through the quadrants of the strategic diagram. An example of a strategic diagram can be found in (<a href="#refC">Cobo et al. 2011a</a>, fig. 6).</p>
+
+<p>The method of co-word analysis based on descriptors or other kinds of keywords may suffer from the so-called &ldquo;indexer effect&rdquo; (<a href="#refL">Law and Whittaker 1992</a>). &rarr; <a href="indexing">Indexing</a> may reflect the prejudices or points of view of the human indexers and may be inconsistent between different indexers or change over time. The indexer effect is a problem common to all human-based classifications. The study of research classification systems reveals that they cannot be taken at face value as they are the result of complex disciplinary negotiations in which both intellectual and academic interests are involved <a href="#e20">[20]</a>.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.2.2"></a>
+<h5 itemprop="articleSection">4.2.2 Co-word analysis based on automatically extracted terms</h5>
+
+<p>The indexer effect can be partially avoided by recurring to the <i>automatic extraction of terms</i> from titles, abstracts, or even the full texts of articles. However, even if this method does not rely on the choices of an indexer, it is not free of human intervention. In fact, it shifts from the choices of the indexer to the choices of the <i>authors</i> of scientific publications, who decide what words should be included in the titles and abstracts. The issue of meaning shift, therefore, is not solved.</p>
+
+<p>NLP techniques are used to extract terms from the textual data (<a href="#refT">Taheo 2018</a>). In general, terms are <i>n-grams</i>, i.e., sequences of <i>n</i> items (usually words). A special category of n-grams are noun-phrases, i.e., sequences that consist exclusively of nouns and adjectives and that end with a noun (e.g., <code>text mining</code>, <code>network analysis</code>). Algorithms for term detection usually comprise several steps: first, the text is split up into sentences and sentences split up into single words (tokenization), then so-called stop-words are removed (words such as &ldquo;and&rdquo;, &ldquo;or&rdquo;, etc.), and the remaining words are assigned to a part of speech, such as verb, noun, adjective, etc. (part-of-speech tagging). Noun-phrases are then identified, and, lastly, variants (e.g., plurals) are merged into one form. Once the list of noun-phrases is obtained, a fraction of them is retained. A common strategy is to select only the most <i>relevant</i> noun-phrases. It is important not to confuse relevance with frequency: frequency is a brute measure of the occurrences of a term, whereas relevance can be conceived as a measure of how specific a term is (<a href="#refS">Sp&auml;rck Jones 1972</a>). To understand the difference between the two, take a term such as <code>method</code>. In the scientific literature, it is denoted by a high frequency; however, it is scarcely relevant to characterize a scientific article, since is occurs probably in most scientific articles. Knowing that an article contains the term <code>method</code> is a very thin indication of its content. Because of its being too generic, <code>method</code> therefore has a low relevance. A term such as <code>cardiovascular</code>, on the other hand, is less frequent than <code>method</code> but conveys more information about the specific topic of an article. Therefore, it has a high relevance. Relevance scores serve to discriminate generic from specific terms. A common metric used in text mining to calculate relevance scores is TF-IDF, short for &ldquo;term frequency-inverse document frequency&rdquo; (<a href="#refS">Salton and McGill 1983</a>). The underlying idea is that the relevance of a term is proportional to its occurrences and inversely proportional to the number of documents in which it occurs. Terms that occur very frequently in a few documents will score higher on TF-IDF than terms that occur very frequently in most of the documents. From this basic idea, more refined metrics to calculate the TF-IDF have been developed (<a href="#refT">Thijs 2019</a>). </p>
+
+<p>After the selection step, the number of documents in which each pair of terms appear is calculated and the corresponding co-occurrence matrix generated. The process is then the same as citation-based maps. Usually, the raw co-occurrence frequencies are normalized (see <a href="#4.1.3">Section 4.1.3: Normalization</a>), and then the term map is obtained in the form of a distance- or graph-based visualization (see <a href="#4.1.4">Section 4.1.4: Visualization</a>). Further techniques, such as clustering, can be applied to enrich the map (see <a href="#4.1.5">Section 4.1.5: Enriching the map</a>). Note that term-based maps thus obtained are different from the strategic diagrams produced by classic co-word methodology. They represent the <i>topics </i>recurring in the set of publications analyzed, rather than the properties of their themes.</p>
+
+<p>An example of term-based map is shown in Fig. 7.</p>
+
+<div align="center"><figure>
+<a href="science_mapping7.png"><img src="science_mapping7.png" title="Fig. 7: Example of term-based map (click to enlarge)" width="90%"></a>
+<figcaption>Figure 7: Example of term-based map (click to enlarge). The field mapped is human geography. The nodes represent the most occurring terms in the field. Size of the nodes is proportional to the term&rsquo;s occurrence. A link is drawn between two terms if they co-occur in the same title or abstract. The thickness of the link between two nodes is proportional to the number of co-occurrences of the terms. The color of the nodes corresponds to the cluster they are attributed to by the clustering algorithm. Nodes are positioned in the map based on their co-occurrences, so that terms frequently occurring together are closer on the map. The visualization was produced with VOSviewer.</figcaption>
+</figure></div>
+
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.3"></a>
+<h4 itemprop="articleSection">4.3 Other network-based maps</h4>
+
+<p>Besides citation networks and term networks, several other networks can be used to generate science maps. In this section, we briefly present co-authorship networks and interlocking editorship networks.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.3.1"></a>
+<h5 itemprop="articleSection">4.3.1 Co-authorship networks</h5>
+
+<p>Co-authorship networks are science maps in which the nodes represent authors and the links the relation of co-authorship, i.e., the number of articles authored together by each pair of authors (<a href="#refN">Newman 2001</a>). Since co-authorship usually implies a strong relationship of collaboration (<a href="#refK">Katz and Martin 1997</a>; <a href="#refL">Liu et al. 2005</a>), co-authorship networks are used to reconstruct and investigate the social networks of researchers, the so-called &ldquo;invisible colleges&rdquo; (<a href="#refC">Crane 1972</a>). It must be remembered, however, that co-authorship is only a <i>proxy</i> of scientific collaboration and that some type of collaborative work occurring in research (e.g., the work of laboratory technicians) do not lead automatically to the authorship (<a href="#refL">Laudel 2002</a>). More generally, the practice of authorship and the requirements for being awarded authorship varies in different areas (<a href="#refL">Larivi&egrave;re et al. 2016</a>). Further issues that complicate the interpretation of co-authorship data are &ldquo;ghost&rdquo; and &ldquo;honorary&rdquo; authorship, as well as the phenomenon of &ldquo;hyper-authorship&rdquo; (<a href="#refC">Cronin 2001</a>). Especially in bio-medical fields, there is evidence that sometimes scientists are included as co-authors of articles even if they did not contribute to the research process (&ldquo;gift&rdquo; or &ldquo;honorary&rdquo; authorship), while others are denied legitimately earned authorship (&ldquo;ghost&rdquo; authorship) (<a href="#refW">Wislar et al. 2011</a>). Honorary authorship can artificially inflate the relevance of some researchers in the co-authorship network, whereas the ghost authors remain simply invisible to standard co-authorship analysis. Furthermore, in some areas such as high-energy physics and again biomedicine, the last years have witnessed massive levels of co-authorship. Cronin has coined the term <i>hyper-authorship</i> to describe such a growing phenomenon of publications with hundreds, if not thousands of co-authors. For instance, in 2015, a publication in high-energy physics counted 5000 co-authors. Hyper-authorship does not only challenge the standard conception of authorship but also raises several issues about responsibility and accountability, which have been widely discussed by editors of biomedical journals (see e.g., <a href="#refI">ICMJE 2019</a>). The presence of hyper-authorship is an important factor that must be considered when a field is investigated by of co-authorship networks.</p>
+
+<p>In sum, co-authorship networks are useful tools to investigate scientific collaboration, but, since they are based on formal authorship, they should be interpreted in the light of detailed knowledge of the authorship practices of the area under investigation, taking into consideration also possible distortions due to ghost, honorary and hyper-authorship.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.3.2"></a>
+<h5 itemprop="articleSection">4.3.2 Interlocking editorship networks</h5>
+
+<p>Interlocking editorship is a method to map relationships between journals. Two journals are connected in the interlocking editorship network when they have at least one member of the editorial board in common (<a href="#refB">Baccini and Barabesi 2010</a>). The editors of a scientific journal play a relevant role as &ldquo;gatekeepers&rdquo; of scientific disciplines since they manage the peer review process and make the final decision on the publication of articles (<a href="#refC">Crane 1967</a>). Therefore, interlocking editorship networks can be used to reveal groups of journals whose editors endorse similar policies. Interlocking editorship networks seem to be highly correlated with journal co-citation networks, showing that similar editorial policies may reflect similar intellectual approaches to the discipline (<a href="#refB">Baccini et al. 2019</a>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.4"></a>
+<h4 itemprop="articleSection">4.4 Other types of science maps</h4>
+
+<p>In a broader sense of the term, we can include into the category of science maps also other visual representations of science that are not directly based on networks of scientific publications or that integrate network data with other types of data. Maps based on the analysis of patents belong to the first category and geographic maps of science to the second.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.4.1"></a>
+<h5 itemprop="articleSection">4.4.1 Maps based on patents data</h5>
+
+<p>Several maps can be generated from the analysis of patents, which are especially interesting for studying the dynamics of technology systems and the interaction between science and technology (<a href="#refJ">Jaffe and Trajtenberg 2002</a>). A first kind of patent map is based on the patents&rsquo; meta-data stored in patent databases. Patents, like publications, have several meta-data, such as the applications, the region where a patent is in force, the classification category, the application year, etc. Moreover, patents frequently include references to the scientific literature and other patents as well. All these meta-data can be used to generate networks of patents or networks of patent features (<a href="#refF">Federico et al. 2017</a>). For instance, Boyack and Klavans created a map of patents based on the International Patent Classification (IPC). The map shows the relations between patents based on their co-classification: patents that are classified in the same category form clusters (<a href="#refB">Boyack and Klavans 2008</a>). Other patent maps can be generated based on the citation network of patents, applying the equivalents of the direct linkage, bibliographic coupling, and co-citation methods to patents  (<a href="#refW">Wartburg, Teichert and Rost 2005</a>). Analyzing the references to scientific publications contained in patents allows tracing the links between scientific knowledge and technological applications (<a href="#refM">Meyer 2000</a>), whereas, by studying the scientists that are both authors of scientific publications and inventors of patents, it is possible to map the overlap between scientific and technological literature (<a href="#refM">Murray 2002</a>). In the last years, text-mining techniques (see <a href="#4.2.2">Section 4.2.2: Co-word analysis based on automatically extracted terms</a>) have increasingly been applied to patent mapping (<a href="#refR">Ranaei et al. 2019</a>). These methods allow us to automatically extract keywords from patent documents and then built patent maps or term-maps of patents (<a href="#refL">Lee, Yoon and Park 2009</a>; <a href="#refT">Tseng, Lin and Lin 2007</a>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.4.2"></a>
+<h5 itemprop="articleSection">4.4.2 Geographic maps of science</h5>
+
+<p>The science maps we presented so far focused on the <i>abstract</i> spaces of science, such as citation, term, and collaboration spaces. Classic science maps aim at visualizing patterns and trajectories occurring in these abstract dimensions. Science, however, is also a concrete activity occurring in specific places on our planet (<a href="#refF">Finnegan 2015</a>). In fact, science is produced in geographic sites that are not equally distributed on the Earth but are concentrated in few, highly developed areas. From those sites, scientific knowledge travels, as publications and researchers move around the globe. Geographic maps of science aim at describing the spatial diffusion of scientific activities and the circulation of scientific knowledge in the geographic space. They are a key research topic in spatial scientometrics (<a href="#refF">Frenken, Hardeman and Hoekman 2009</a>) and an important tool in the geography of science (<a href="#refL">Livingstone 2003</a>). By showing the unequal spatial distribution of science and research in different countries, they offer interesting insights into the structure of the global research system (<a href="#refW">Wichmann Matthiessen, Winkel Schwarz and Find 2002</a>).</p>
+
+<p>Geographic maps of science are created by locating on a geographic map, e.g., a map of the Earth, the nodes of the network we focus on. For instance, the authors of a co-authorship network can be placed on the map based on the coordinates of their research institutions. Or a network of cities collaborating in the production of scientific papers can be constructed and plotted on a map (<a href="#refL">Leydesdorff and Persson 2010</a>). Or citation flows between universities can be geographically visualized (<a href="#refB">B&ouml;rner et al. 2006</a>). The tool CiteSpace (see the <a href="#app">Appendix</a>) provides a specific utility to generate geographic maps of science.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5"></a>
+<h3 itemprop="articleSection">5. The representation of time in science mapping</h3>
+
+<p>There are different options to include the dimension of <i>time</i> into science maps. A first option consists in <i>longitudinal mapping </i>(<a href="#refC">Cobo et al. 2011a</a>; <a href="#refP">Petrovich and Buonomo 2018</a>; <a href="#refP">Petrovich and Tolusso 2019</a>): based on the publication year of the bibliographic records, subsets of publications belonging to different timespans are created and each of them is mapped separately. Note that any mapping technique can be used, from co-citation analysis to co-word analysis. Each map will represent a sort of &ldquo;photograph&rdquo; of the field under investigation in a certain timespan. The sequence of maps allows visualizing the temporal dynamics of the field. A second option consists in representing on the same map the <i>trajectories</i> of the units that change their relative position is subsequent maps (<a href="#refW">White and McCain 1998</a>). A third option is <i>animating</i> the map: instead of a static visualization, a short movie is created interpolating the layouts of the network in different moments (<a href="#refL">Leydesdorff and Schank 2008</a>).</p>
+
+<p>The first maps including the temporal dimension, however, used a timeline to represent time. Garfield called them &ldquo;historiographs&rdquo; (<a href="#refG">Garfield 2004</a>). In the timeline-based approach, each node of the network (classically, a publication in a citation network) is linked to a specific point in time (e.g., the publication year). The visualization, then, uses two dimensions: the vertical one is the timeline, whereas the horizontal one is used to represent the relatedness of the items (<a href="#refW">Waltman and van Eck 2014</a>). The result is a citation network spread over a timeline. Garfield tested the validity of the historiographs as tools for reconstructing the history of science by comparing the narration of the discovery of the DNA written by Asimov with the historiograph based on the bibliographies of the corresponding publications (<a href="#refG">Garfield 1973</a>). He found a good overlap between the two: the key events in the discovery according to Asimov appeared also in the historiograph.</p>
+
+<p><i>Alluvial maps</i> are another form of timeline-based visualizations. Starting from different phases in the evolution of a network, the networks relative to each phase are divided into different clusters, and then the trajectories of corresponding clusters in subsequent networks are visualized as a stream. The fusions and fissions of clusters over time is visualized as multiple streams flow over time (<a href="#refR">Rosvall and Bergstrom 2010</a>) <a href="#e21">[21]</a>.</p>
+
+<p>By combining co-citation mapping and temporal visualization, an amazing visualization of the temporal development of the journal <i>Nature </i>in the last 150 years was recently produced (<a href="#refG">Gates et al. 2019</a>) <a href="#e22">[22]</a>.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="6"></a>
+<h3 itemprop="articleSection">6. Interpreting a science map</h3>
+
+<p>Interpreting a science map means linking the visual and geometrical properties of the map to substantive features of the mapped area or field. For instance, clusters of co-cited publications can be mapped to scientific sub-specialties or research topics, bibliographic coupling networks can be interpreted as the research fronts of scientific specialties, co-authorship networks as invisible colleges of scientists, and clusters of journals sharing many editors as structures of academic power. The interpretation of science maps typically involves close interaction with <i>experts</i> of the mapped domain, i.e., experienced researchers that have a deep, albeit qualitative, knowledge of the structure of the target field (<a href="#refT">Tijssen 1993</a>). Good science maps, however, should not be mere quantitative counterimages of the qualitative knowledge of the domain experts. They should provide also new insights and useful knowledge for science policy purposes. </p>
+
+<p>An important aspect to consider in the interpretation is the <i>level of analysis</i> of the science map, i.e., the units of analysis and the type of relationship displayed by the map. Units and relations do not only affect the scale of the map, but also the dimension of the scientific enterprise that is captured. Term-based maps and citation-based maps using the document as unit of analysis highlight the epistemic or cognitive dimension of science, what philosophers of science call the &ldquo;context of justification&rdquo; (<a href="#refL">Lucio-Arias and Leydesdorff 2009</a>). They show the shared epistemic base of a field (<a href="#refP">Persson 1994</a>). However, they can overemphasize the stability of scientific knowledge, overshadowing the continuous social negotiation of scientific claims (<a href="#refK">Knorr-Cetina 2003</a>). Co-authorship maps. author co-citation analysis, and interlocking editorship maps, on the other hand, shed light on the social network underlying science, i.e., the &ldquo;context of discovery&rdquo; in philosophical terms. When the journal is selected as unit of analysis, the communication system is highlighted (<a href="#refC">Cozzens 1989</a>). Hence, the different methodologies of science mapping offer a partial representation of the multi-dimensional nature of science and scholarship, that should be considered during the interpretative phase.</p>
+
+<p>General theories and models of the structure and dynamics of science can also help in the interpretation of science maps, providing general interpretative insights (<a href="#refB">Boyack and Klavans 2019</a>; <a href="#refC">Chen 2017</a>; <a href="#refS">Scharnhorst, B&ouml;rner and Besselaar 2012</a>). At the same time, however, it is pivotal to consider the specific academic and epistemic cultures of the field under study. The interpretation of a science map of a social scientific area, for instance, cannot be based on exactly the same concepts than the interpretation of a science map of a biomedical area, as the social sciences and biomedicine differ in terms of research methods, epistemic culture, specialized terminology, use of the references, centrality of the journal system, and so on. </p>
+
+<p>The humanities are a good case in point to highlight the importance of the specificity of research areas. Science mapping and, more generally, scientometrics and bibliometrics have mainly focused on the sciences since the times of Price and Garfield (<a href="#refF">Franssen and Wouters 2019</a>). Bibliometric methods such as citation analysis were tailored to the citation norms and practices of the sciences. In the humanities, however, citations are frequently used not only to refer to other scholars&rsquo; work but also to point out sources and primary materials, the equivalent of experimental data for the sciences (<a href="#refH">Hellqvist 2009</a>). Negative or contradictory citations of the works of other scholars are relatively more common than in the sciences. In fields such as philosophy, where argumentation is the key epistemic practice, critical citations play a central role (<a href="#refP">Petrovich 2018</a>). These field-specific citation practices must be considered in the interpretation of  citation-based science maps of humanistic areas (<a href="#refH">Hammarfelt 2016</a>). Moreover, publications in the humanities frequently do not target (only) fellow scholars, but also the wider public audience (<a href="#refN">Nederhof 2006</a>). This changes the level of specialized and standardized terminology used and, consequently, affect the capacity of term-based science maps to capture themes and topics <a href="#e23">[23]</a>. To these interpretive caveats, one should add the limitations of the existing databases to adequately capture publications in the humanities, as they are often published as monographs and in national languages (<a href="#refH">Hammarfelt 2017</a>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="7"></a>
+<h3 itemprop="articleSection">7. Science maps and the philosophy of science</h3>
+
+<p>In this section, we deal with some epistemological and sociological topics related to science mapping. We start by asking in what sense science maps offer objective representations of science, then, we discuss the difference between the published side of science and science in the making, and, lastly, we examine in more detail the meaning of citations.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="7.1"></a>
+<h4 itemprop="articleSection">7.1 On the objectivity of science maps</h4>
+
+<p>Are science maps an <i>objective</i> representation of the structure and dynamics of science? Clearly, the answer greatly depends on the definition of objectivity we endorse (<a href="#refD">Daston and Galison 2007</a>; <a href="#refR">Reiss and Sprenger 2017</a>). </p>
+
+<p>In the previous sections, we saw how the creation of a science map involves several methodological and technical decisions from the science cartographer, such as the unit of analysis, the mapping technique, the normalization method, the visualization approach, the clustering algorithm, and so on (see <a href="#3">Section 3: Building a science map</a>). Each decision affects the results and lead to different science maps. Therefore, science maps, even when they are generated by computer software, should not be conceived as free of human intervention. Human choices occur frequently in the science map workflow and should be made transparent in order to warrant the <i>reproducibility</i> of science maps (<a href="#refR">Rafols, Porter and Leydesdorff 2010</a>). Therefore, if we equate objectivity with the &ldquo;lack of human intervention&rdquo; (the so-called mechanical objectivity), then science maps, like any other map, are not &ldquo;objective&rdquo;. Rather, they result from a combination of the features of the mapped field, on the one hand, and the methodological decisions of the science cartographer on the other hand. However, we should acknowledge that <i>no map</i> &mdash; including geographic maps &mdash; is &ldquo;objective&rdquo; in this sense. On the other hand, if objectivity is intended as <i>inter-subjective agreement</i>, then science maps are objective in so far as they can be <i>reproduced</i> by different researchers, as long as that they follow the same methodology. </p>
+
+<p>A further sense of objectivity has not to do with a lack of human interventions but a lack of <i>human biases</i>. According to some authors, science maps are more objective than classic literature reviews precisely in the sense that science maps would avoid the potential biases of human experts (e.g., <a href="#refC">Catherine and Doehne 2018</a>; <a href="#refK">Kreuzman 2001</a>; <a href="#refS">Small and Griffith 1974</a>; <a href="#refW">Weingart 2015</a>). The idea is that the expert&rsquo;s knowledge of a research field is inevitably constrained by his or her reading capacity: for how many papers one can read, they will always represent no more than a tiny portion of the literature available in most of the scientific fields. Even if such limitations can be mitigated by recurring to teamwork and by integrating the knowledge of many experts, the view of scientific fields that can be achieved in this way will always be partial. Thus, there is the potential risk that the representations of the scientific fields are distorted by the experts&rsquo; viewpoint (if not prejudices). By contrast, the networks on which science maps are based are the result of millions of <i>micro-actions </i>performed by the scientific community itself, such as the choice of certain references or words. Science maps allow keeping track of this myriad of micro-actions. Consider for instance the bibliography of a research article. Since the authors cite other publications that are relevant to their work, the bibliography can be conceived as a (very partial) representation of the field to which the paper belongs. In so far as each new contribution must be related, by references, to the existing body of knowledge (the field), each paper can be compared to a mirror that reflects &mdash; albeit partially &mdash; the entire field (<a href="#refA">Amsterdamska and Leydesdorff 1989</a>). It is a sort of &ldquo;photograph&rdquo; taken from a certain viewpoint. Hence, the aggregation of the bibliographies of thousands of articles that is performed to produce a citation-based map can be compared to the merging of thousands of partial photographs to make up a single, overall picture. In this aggregation process, different publications are related to one another &ldquo;unwittingly&rdquo; by the scientific community itself. According to some authors, when enough large aggregates of publications are considered, the biases occurring in the individual bibliographies <i>cancel out</i> and a balanced picture is obtained (<a href="#refV">Van Raan 1998</a>). The underlying assumption is that, at least on average, the citation behavior of scientists follows a normative model, i.e., that citations are given because of the scientific content of the cited reference and not because of non-scientific motives (see <a href="#7.3">Section 7.3: The meaning of citations</a>).</p>
+
+<p>By the same token, the networks of words visualized in term-based maps allow reconstructing the terminology of a scientific field because they reflect thousands of terminological micro-choices made by the researchers when drafting the titles and abstracts of their papers. The relations between the different terms are the results of these choices. Idiosyncratic and non-standard terminological would again choices cancel out when enough publications are considered.</p>
+
+<p>In sum, science maps would be more objective than classic reviews because they are the result of a <i>bottom-up approach </i>(<a href="#refP">Petrovich 2019b</a>). Instead of the traditional top-down approach that can potentially introduce biases in the field representation, science maps allow to represent &ldquo;the point of view of the scientific community on itself&rdquo; (<a href="#refS">Small 1973</a>; <a href="#refS">Small and Griffith 1974</a>). Once again, science maps are not objective because free of human choices. Rather, they are objective because they are based on thousands of human (micro)choices. The key difference between these micro-choices and the decisions taken by the experts in the top-down approach lies in the large number of the former. It is such a large amount that potentially guarantees the cancelling out of the biases and, thus, a more balanced representation of scientific fields. Far from being the &ldquo;view from nowhere&rdquo; on science, science maps are the collection of multiple, situated viewpoints on science. </p>
+
+<p>A last point about the objectivity of science maps is worth stressing: even if science maps provide bottom-up representations of science, nonetheless they remain partial from some points of view. First, a science map cannot represent more than what is contained in the data on which it is based. Since the scope of data depends on the scope of the bibliographic databases, science mapping techniques will deliver very partial representations for those scholarly fields that are scarcely covered by current databases, such as some areas in the social sciences and humanities or scholarly production in national languages (<a href="#refF">Franssen and Wouters 2019</a>; <a href="#refN">Nederhof 2006</a>). This does not mean that science maps provide false or distorted representations: rather that they ultimately depend on the scope and limits of the data on which they are generated. The second reason why science maps are partial is subtler, and it has to do with the <i>nature</i> of the bibliographic data and how they represent the scientific activity. We discuss this topic in the next paragraph. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="7.2"></a>
+<h4 itemprop="articleSection">7.2 Published science vs. science in the making</h4>
+
+<p>A defining trait of standard science maps is that they are generated based on the meta-data of scientific <i>publications</i>, as they are stored in bibliographic databases. However, publications (research articles, reviews, conference proceedings, patents, etc.) are only the final stage of a long and often rough research process. They are not meant and should not be considered as simple mirrors of the research practices themselves (<a href="#refH">Hyland and Salager-Meyer 2009</a>; <a href="#refW">Wouters 1999a</a>). The writing of a scientific paper involves the construction of a <i>justificatory structure</i> in which each experiment and analysis contribute to the justification of the paper&rsquo;s claims (<a href="#refG">Gross et al. 2002</a>). As sociological and anthropological studies have revealed, real research practices can be a lot less smooth than the accounts we find in the scientific papers (<a href="#refK">Knorr-Cetina 2003</a>; <a href="#refL">Latour and Woolgar 1986</a>; <a href="#refT">Townsend and Burgess 2009</a>). Real research is full of false starts, blind alleys, and mistakes. Discoveries may occur because of serendipity or intuition, the order of the experiments can be different both from the research plan and from the methodology described in the final paper, research targets may be affected by changes in funding, availability of materials and expertise, even academic circumstances. Moreover, scientific writing is a literary <i>genre</i> that follows precise rules, ranging from the format (e.g., the division of a research article into standard sections, such as Introduction, Methods, Results, and Discussion), to the writing style (in some fields, an impersonal style is recommended to increase the &ldquo;objectivity&rdquo; of the results) (<a href="#refB">Bazerman 1988</a>; <a href="#refH">Hyland and Salager-Meyer 2009</a>; <a href="#refS">Swales 2004</a>). Journals&rsquo; guidelines and peer-review reports can further affect the final form of a paper.</p>
+
+<p>Since standard science maps are based on the <i>published side</i> of science, they cannot be used to investigate any research practice that is not recorded in publications. Most of what Bruno Latour has called the &ldquo;science-in-action&rdquo;, thus, remains out of the reach of standard science mapping based on bibliographic databases. Note, however, that science mapping <i>as a method</i> can be potentially applied to any relational feature of the scientific enterprise. Other relational features, describing the science-in-action, could be mapped by new science mapping techniques (for instance, informal exchanges between scientists at scientific congresses, e-mail flows between laboratories, informal collaboration networks not resulting in co-authorship, etc.). However, new ad-hoc databases must be built to map these features, a costly and time-consuming enterprise (<a href="#refB">Boyack and Klavans 2019</a>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="7.3"></a>
+<h4 itemprop="articleSection">7.3 The meaning of citations</h4>
+
+<p>Citations are pivotal in science mapping: without the reference links connecting scientific publications, citation-based maps would be simply impossible. However, citations are a human product: they are the result of the choices made by the authors during the writing of their scientific papers. Why do scientists choose some references instead of others? Do they cite only because of the scientific merit of the cited works? How does the citation behavior of scientists change in different scientific fields? In traditional citation analysis and in standard science mapping, citations are treated equally, i.e., all have the same value. However, some cited papers are widely discussed, while others are perfunctorily cited. Some papers are even negatively cited. How can we capture the different functions and values of citations? </p>
+
+<p>Questions like these are discussed in scientometrics and sociology of science under the label of <i>citation theory</i> (<a href="#refB">Bornmann and Daniel 2008</a>; <a href="#refC">Cronin 1984</a>; <a href="#refW">Wouters 1999b</a>). Most of them are discussed since the dawn of citation analysis and still do not have received definite answers. A complete overview of citation theories is out of the scope of the present article <a href="#e24">[24]</a>. In this section, we will limit to present the two main approaches, in so far as they can help to interpret and contextualize the results of science mapping: the normative theory and the socio-constructivist theory.</p>
+
+<p>The normative theory was proposed within the framework of the normative sociology of science developed by Robert K. Merton and his school from the 1960s (<a href="#refE">Elkana et al. 1978</a>; <a href="#refK">Kaplan 1965</a>; <a href="#refM">Merton 1974</a>). According to this theory, scientists cite to pay their intellectual debts: when they use the results obtained by other scientists in their research, the norms of science demand them to acknowledge the debt by explicitly citing the relevant papers. Citations count as &ldquo;pellets of peer recognition&rdquo; and play a fundamental role in the reward system of science: they serve to distribute <i>prestige</i> among scientists. An important consequence of the normative theory is that citations can be considered as reliable proxies of scientific quality or impact. Thus, the normative theory provides a theoretical justification for the use of citations in evaluative contexts. However, the main claim of the normative theory (i.e., that the citation reflects the scientific merit of the cited document, author, or journal) rests upon several assumptions, e.g.,  that citations are made to the best possible works, that all citations have equal weight, and that the citation of a document implies the use of the document by the citing author (<a href="#refN">Nicolaisen 2007</a>). Both the main claim and the underlying assumptions have been criticized.</p>
+
+<p>The socio-constructivist approach to citations is grounded in the socio-constructivist sociology of science, a sociological paradigm that raised in different forms in the 1970s partly as a reaction to the normative school (<a href="#refB">Bloor 1991</a>; <a href="#refK">Knorr-Cetina 2003</a>; <a href="#refL">Latour 2003</a>). According to socio-constructivists, scientific facts are the result of an intricate process of <i>social negotiation</i> among different actors. In the social arena of science, scientists use <i>any means necessary</i> to advance their claims and achieve a high status in the scientific community. No normative system, such as the one described by Merton, governs their actions. Socio-constructivists maintain that citations play a key role in the social negotiation of scientific facts. In particular, they are used as means of <i>persuasion</i>: scientists trade on the authority of the cited authors to strengthen their claims. Citations are rhetorical devices that can be compared to &ldquo;defense lines&rdquo; prepared by the scientists to defend their results from criticisms of adversary scientists. Socio-constructivists note also that scientists often <i>distort</i> the content of the documents they cite, in order to show agreement with authoritative sources even when no such an agreement exists. The reason is that scientists would be more interested in <i>who</i> they cite, rather than in <i>what</i> the cited documents say. Citations, therefore, would reflect the social dynamics of the scientific community, rather than the accumulation of scientific knowledge. An important consequence is that they cannot be used as proxies of scientific quality (<a href="#refM">MacRoberts and MacRoberts 2018</a>).</p>
+
+<p>Empirical research has shown that neither the normative nor the socio-constructivist theory offer, alone, complete explanations of the citation behavior of scientists. The motivations for citing are complex and multi-dimensional: sometimes they reflect purely scientific reasons, as the normative theory holds, and sometimes obey to social-networking purposes, as the socio-constructivist theory holds (<a href="#refT">Tahamtan and Bornmann 2018</a>). Besides the motivations of scientists, also the characteristics of the communication system of science (journals, publishers, and so on) affect the probability of receiving citations (<a href="#refC">Cozzens 1989</a>). For instance, publications in languages different from English tend to receive, on average, fewer citations, whereas review articles tend to attract more citations than research articles (<a href="#refB">Bornmann and Daniel 2008</a>). The citation links between documents and authors, therefore, are affected by many different factors, of which scientific merit is only one. </p>
+
+<p>When interpreting the results of citation-based science mapping, we should not overlook the complexity of the citation practices that determine the links in the citation network. An understanding of the &ldquo;citation culture&rdquo; (<a href="#refW">Wouters 1999a</a>) of the mapped field helps to interpret correctly a science map.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="8"></a>
+<h3 itemprop="articleSection">8. Science maps and science policy</h3>
+
+<p>Since the first experiments in science mapping in the 1970s, science maps have been presented recurrently as helpful devices for science policy and research management. The idea is that, since science maps offer a panoramic viewpoint of the research landscape, they can also help to navigate it. Science maps would offer for the abstract space of science the same service of <i>orientation</i> that geographic maps provide for the physical space (<a href="#refS">Small 1999</a>). </p>
+
+<p>Possible science policy topics that can be addressed with the help of science maps include (<a href="#refB">Boyack, Klavans and B&ouml;rner 2005</a>; <a href="#refR">Rafols, Porter and Leydesdorff 2010</a>):
+
+<ol>
+
+<li>Benchmarking: How is an organization performing compared to competitors?</li>
+
+<li>Collaboration strategy: Who are the potential collaborators that can complement the research mission of the organization?</li>
+
+<li>Development analysis: How do the research themes of an organization develop over time?</li>
+
+<li>&ldquo;Hot areas&rdquo; detection: What are the scientific areas that are growing faster? What is their potential for technological transfer?</li>
+
+</ol>
+
+<p>One important advantage of science maps compared to classic reviews is that they allow also the non-experts to grasp easily and quickly the main features of a scientific field because they rely on the recognition of visual patterns rather than on deep scientific expertise. Therefore, they can be used as a <i>common base</i> between researchers, science managers, analysts, and policymakers to discuss strategic decisions, such as the allocation of resources (<a href="#refB">B&ouml;rner et al. 2012</a>; <a href="#refN">Noyons and Calero-Medina 2009</a>).</p>
+
+<p>Nonetheless, science maps should be used in science policy contexts with a clear understanding of their limits: science maps can help the decision-making, but they do not provide automatic answers. From this point of view, science maps are not different from any scientometric indicator: they provide <i>partial representations</i> of science whose correct interpretation should take into account many different factors (see <a href="#7.1">Section 7.1: On the objectivity of science maps</a>) <a href="#e25">[25]</a>. Not only science maps are error-prone (e.g., if they are generated based on an incorrect field delineation procedure, see <a href="#3.2">Section 3.2: Field delineation</a>), but, as we saw above, their production involves several technical decisions that can deeply influence the final maps (see <a href="#4.1.3">Section 4.1.3: Normalization</a> and <a href="#4.1.4">Section 4.1.4: Visualization</a>). It is pivotal that such decisions should be made transparent, and their consequences clear to the analysts and the policymakers, so that science maps do not turn into &ldquo;black boxes&rdquo; (<a href="#refR">Rafols, Porter and Leydesdorff 2010</a>).</p>
+
+<p>Fortunately, science maps are usually perceived as more complex objects, compared to mono-dimensional scientometric indicators such as citation counts or the Journal Impact Factor. Thus, they tend to stimulate a higher level of <i>reflexivity</i> in their users compared to sheer numbers. Such reflexivity should always be preserved in science policy contexts, where science maps must not be treated as &ldquo;oracles&rdquo;, even when science politicians and research managers desire simple and straightforward answers. When using science maps, it must be remembered that science is a complex system, where simple, ready-made answers can be given very rarely. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="9"></a>
+<h3 itemprop="articleSection">9. Conclusion</h3>
+
+<p>In this entry, we have seen how the visual representation of science by science maps takes different forms, depending on the kind of data, the unit of analysis, the type of relation examined, and the overall mapping approach used. A science map can take both the form of a bibliometric network and that of a geographic map or of a patent map. Even artistic representations of the sciences have been called, in a derivate way, &ldquo;science maps&rdquo; (<a href="#refB">B&ouml;rner 2010</a>). Science maps find application in different domains, from sociology of science to science policy, from scientometrics to information visualization. As we have seen, science mapping, as a body of techniques, stands at the crossroad of numerous disciplines: scientometrics, &rarr; <a href="lis">library and information science</a>, citation analysis, text analysis, statistics, network analysis, among others. </p>
+
+<p>Given this manifold of methods, disciplines, and uses, it is difficult to find a common trait that identifies the uniqueness of science mapping. Perhaps, what most if not all science maps share is a <i>bottom-up approach</i> to the investigation of the structure and dynamics of science (<a href="#refP">Petrovich 2019b</a>). Compared with <i>top-down</i> KOSs, science maps aim at representing science starting from the scientific products themselves rather than from more or less a priori conceptual schemes. In this sense, they may capture those <i>structuration forces</i> that shape the overall configuration of the scientific system and that may remain invisible to top-down KOSs. Science mapping may be valuable to shed light on the <i>self-organizing properties</i> of the scientific enterprise (<a href="#refL">Lucio-Arias and Leydesdorff 2009</a>). Hence, we think that science maps can be of interest for all the branches of meta-science, from library and information science to sociology of science, from knowledge organization to epistemology. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="ack"></a>
+<h3>Acknowledgments</h3>
+
+<p>I am grateful to Alberto Baccini, Emiliano Tolusso, two anonymous reviewers, and the <a href="authors#h">editor</a> for helpful comments and suggestions on a previous version of this entry. I gratefully acknowledge financial support from the Institute for New Economic Thinking (INET) under grant n. INO19-00023.</p>
+
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="end"></a>
+<h3>Endnotes</h3>
+
+<a name="e1"></a>
+<p><strong></strong> 
+
+<a name="e1"></a>
+<p><strong>1</strong>. <a class="menu" href="http://scimaps.org/home.html">http://scimaps.org/home.html</a>.</p>
+
+<a name="e2"></a>
+<p><strong>2</strong>. <a class="menu" href="https://en.wikipedia.org/wiki/Liberal_arts_education#/media/File:Hortus_Deliciarum,_Die_Philosophie_mit_den_sieben_freien_K%C3%BCnsten.JPG">https://en.wikipedia.org/wiki/Liberal_arts_education#/media/ File:Hortus_Deliciarum,_Die_Philosophie_mit_den_sieben_freien_K%C3%BCnsten.JPG</a>.</p>
+
+<a name="e3"></a>
+<p><strong>3</strong>. Numerous examples of classifications and visual representations of the sciences over the centuries can be found and explored in the <i>Interactive Atlas of the Disciplines </i>(<a class="menu" href="http://atlas-disciplines.unige.ch/">http://atlas-disciplines.unige.ch/</a>).</p>
+
+<a name="e4"></a>
+<p><strong>4</strong>. A detailed timeline with key milestones in science mapping history can be found in the Part 2 of B&ouml;rner (<a href="#refB">2010</a>).</p>
+
+<a name="e5"></a>
+<p><strong>5</strong>. <a class="menu" href="https://academic.microsoft.com/">https://academic.microsoft.com/</a>.</p>
+
+<a name="e6"></a>
+<p><strong>6</strong>. <a class="menu" href="https://www.dimensions.ai/">https://www.dimensions.ai/</a>.</p>
+
+<a name="e7"></a>
+<p><strong>7</strong>. <a class="menu" href="https://www.uspto.gov/">https://www.uspto.gov/</a>.</p>
+
+<a name="e8"></a>
+<p><strong>8</strong>. <a class="menu" href="http://www.google.com/patents">http://www.google.com/patents</a>. </p>
+
+<a name="e9"></a>
+<p><strong>9</strong>. <a class="menu" href="http://www.epo.org/patents/patent-information.html">http://www.epo.org/patents/patent-information.html</a>. </p>
+
+<a name="e10"></a>
+<p><strong>10</strong>. This is the adjacency matrix we obtain when we consider the network as directed, i.e., when we distinguish between the sender and the receiver of the citation. It is also possible to consider the citation network as <i>undirected</i>. In this case, the elements of the matrix will be set to 1 when there is a link between the publications, independently whether it is a citation (in-coming link) or a reference (out-going link), obtaining a symmetrical matrix: 
+
+<blockquote>
+<table border="1">
+<!-- p><caption><i>Table 1</i><br>&nbsp;</caption></p -->
+<tr>
+<th></th>
+<th><i>a</i></th>
+<th><i>b</i></th>
+<th><i>c</i></th>
+<th><i>d</i></th>
+<th><i>e</i></th>
+<th><i>f</i></th>
+<th><i>g</i></th>
+<th><i>h</i></th>
+</tr><tr>
+<th><i>a</i></th>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr><tr>
+<th><i>b</i></th>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+</tr><tr>
+<th><i>c</i></th>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+</tr><tr>
+<th><i>d</i></th>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+</tr><tr>
+<th><i>e</i></th>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+</tr><tr>
+<th><i>f</i></th>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+</tr><tr>
+<th><i>g</i></th>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+</tr><tr>
+<th><i>h</i></th>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+</table>
+</blockquote>
+
+<a name="e11"></a>
+<p><strong>11</strong>. Note that there are two different similarity measures, a direct and an indirect, both called &ldquo;cosine&rdquo;. The indirect cosine &mdash; that corresponds to the original cosine introduce by Salton and McGill (<a href="#refS">Salton and McGill 1983</a>) &mdash; is based on the angular distance between two vectors and it is calculated from the inner product of the vectors (<a href="#refJ">Jones and Furnas 1987</a>). The direct cosine is a simplified version of the indirect cosine and it corresponds to a variant of the Ochiai coefficient (<a href="#refZ">Zhou and Leydesdorff 2016</a>).</p>
+
+<a name="e12"></a>
+<p><strong>12</strong>. An interesting alternative visualization, closely modelled on geographic maps, is based on the so-called <i>self-organizing maps (SOM)</i>. We refer to Skupin, Biberstine and B&ouml;rner (<a href="#refB">2013</a>) for a detailed explanation of this technically advanced visualization method.</p>
+
+<a name="e13"></a>
+<p><strong>13</strong>. <a class="menu" href="https://gephi.org/">https://gephi.org/</a></p>
+
+<a name="e14"></a>
+<p><strong>14</strong>. <a class="menu" href="http://mrvar.fdv.uni-lj.si/pajek/">http://mrvar.fdv.uni-lj.si/pajek/</a>.</p>
+
+<a name="e15"></a>
+<p><strong>15</strong>. Note that not all the similarity measures fulfill the requirements of a distance metric. For instance, negative similarity measures (such as the ones produced by Pearson&rsquo;s <i>r</i>) cannot be used as distances because a negative distance is meaningless. The other conditions to be satisfied are that the distance of an object from itself should be zero, that the distance between A and B should be equal to the distance between B and A (symmetry), and that the distance from A to B is at most as large as the sum of the distance from A to C and the distance from C to B (triangle inequality).</p>
+
+<a name="e16"></a>
+<p><strong>16</strong>. A technical but very clear explanation of MDS can be found in Borg and Groenen (<a href="#refB">2010</a>, chaps 1&ndash;3) and in Eck et al. (<a href="#refE">2010</a>).</p>
+
+<a name="e17"></a>
+<p><strong>17</strong>. It is easy to see that it is a consequence of the triangle inequality mentioned in the note above.</p>
+
+<a name="e18"></a>
+<p><strong>18</strong>. More precisely, shortest paths.</p>
+
+<a name="e19"></a>
+<p><strong>19</strong>. Hennig et al. (<a href="#refH">2016</a>) offers an overview and technical discussion of clustering techniques.</p>
+
+<a name="e20"></a>
+<p><strong>20</strong>. From this point of view, the history of the JEL codes used in economics is very instructive (<a href="#refC">Cherrier 2017</a>).</p>
+
+<a name="e21"></a>
+<p><strong>21</strong>. A tool for generating  alluvial maps starting  from network data is available at <a class="menu" href="https://www.mapequation.org/alluvial/">https://www.mapequation.org/alluvial/</a>.</p>
+
+<a name="e22"></a>
+<p><strong>22</strong>. The map can be explored at <a class="menu" href="https://www.nature.com/immersive/d41586-019-03165-4/">https://www.nature.com/immersive/d41586-019-03165-4/</a>. A video explaining the structure of the map is available at <a class="menu" href="https://www.youtube.com/watch?v=GW4s58u8PZo">https://www.youtube.com/watch?v=GW4s58u8PZo</a>.</p>
+
+<a name="e23"></a>
+<p><strong>23</strong>. I am grateful to an anonymous reviewer for pointing me out this difference in the use of specific terminology between the sciences and humanities.</p>
+
+<a name="e24"></a>
+<p><strong>24</strong>. See Tahamtan and Bornmann (<a href="#refT">2018; 2019</a>) for an updated overview and Petrovich (<a href="#refP">2019a</a>) for a systematization of the different theories.</p>
+
+<a name="e25"></a>
+<p><strong>25</strong>. As it is well known, the use of scientometrics for evaluative purpose is a controversial topic that continue to raise heated discussions among researchers and policy makers. The presentation of this topic, however, falls beyond the scope of this article. See Aksnes, Langfeldt, and Wouters (<a href="#refA">2019</a>) for an introduction.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="ref"></a>
+<h3>References</h3>
+
+<span itemprop="citation">
+
+<a name="refA"></a>
+
+<p>Ahlgren, Per, Bo Jarneving, and Ronald Rousseau. 2003. &lsquo;Requirements for a Cocitation Similarity Measure, with Special Reference to Pearson&rsquo;s Correlation Coefficient&rsquo;. <i>Journal of the American Society for Information Science and Technology</i> 54 no. 6: 550&ndash;60. <a class="menu" href="https://doi.org/10.1002/asi.10242">https://doi.org/10.1002/asi.10242</a>.</p>
+
+<p>Aksnes, Dag W., Liv Langfeldt, and Paul Wouters. 2019. &lsquo;Citations, Citation Indicators, and Research Quality: An Overview of Basic Concepts and Theories&rsquo;. <i>SAGE Open</i> 9 no. 1: 215824401982957. <a class="menu" href="https://doi.org/10.1177/2158244019829575">https://doi.org/10.1177/2158244019829575</a>.</p>
+
+<p>Amsterdamska, Olga, and L. Leydesdorff. 1989. &lsquo;Citations: Indicators of Significance?&rsquo; <i>Scientometrics</i> 15 no. 5&ndash;6: 449&ndash;71. <a class="menu" href="https://doi.org/10.1007/BF02017065">https://doi.org/10.1007/BF02017065</a>.</p>
+
+<p>Ara&uacute;jo, Paula Carina de, Renata Cristina Gutierres Castanha and Birger Hj&oslash;rland. 2020. &ldquo;Citation Indexing and Indexes&rdquo;. <i>Knowledge Organization</i>, in press. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli, <a href="citation">https://www.isko.org/cyclo/citation</a>.</p>
+
+<p>&Aring;str&ouml;m, Fredrik, Bj&ouml;rn Hammarfelt, and Joachim Hansson. 2017. &lsquo;Scientific Publications as Boundary Objects: Theorising the Intersection of Classification and Research Evaluation&rsquo;. <i>Information Research</i> 22 no. 1: colis1623. <a class="menu" href="http://informationr.net/ir/22-1/colis/colis1623.html">http://informationr.net/ir/22-1/colis/colis1623.html</a>.</p>
+
+<a name="refB"></a>
+
+<p>Baccini, Alberto, and Lucio Barabesi. 2010. &lsquo;Interlocking Editorship. A Network Analysis of the Links between Economic Journals&rsquo;. <i>Scientometrics</i> 82 no. 2: 365&ndash;89. <a class="menu" href="https://doi.org/10.1007/s11192-009-0053-7">https://doi.org/10.1007/s11192-009-0053-7</a>.</p>
+
+<p>Baccini, Alberto, Lucio Barabesi, Yves Gingras, and Mahdi Kalfaoui. 2019. &lsquo;Intellectual and Social Similarity among Scholarly Journals: An Exploratory Comparison of the Networks of Editors, Authors and Co-Citations&rsquo;.</p>
+
+<p>Barab&aacute;si, Albert-L&aacute;szl&oacute;. 2014. <i>Linked: How Everything Is Connected to Everything Else and What It Means for Business, Science, and Everyday Life</i>. New York: Basic Books.</p>
+
+<p>Bazerman, Charles. 1988. <i>Shaping Written Knowledge: The Genre and Activity of the Experimental Article in Science</i>. Rhetoric of the Human Sciences. Madison, Wis.: University of Wisconsin Press.</p>
+
+<p>Bloor, David. 1991. <i>Knowledge and Social Imagery</i>. 2nd ed. Chicago: University of Chicago Press.</p>
+
+<p>Borg, Ingwer, and Patrick J. F Groenen. 2010. <i>Modern Multidimensional Scaling: Theory and Applications</i>. New York; London: Springer.</p>
+
+<p>B&ouml;rner, Katy. 2010. <i>Atlas of Science: Visualizing What We Know</i>. Cambridge, Mass.: MIT Press.</p>
+
+<p>B&ouml;rner, Katy, Chaomei Chen, and Kevin W. Boyack. 2005. &lsquo;Visualizing Knowledge Domains&rsquo;. <i>Annual Review of Information Science and Technology</i> 37 no. 1: 179&ndash;255. <a class="menu" href="https://doi.org/10.1002/aris.1440370106">https://doi.org/10.1002/aris.1440370106</a>.</p>
+
+<p>B&ouml;rner, Katy, Richard Klavans, Michael Patek, Angela M. Zoss, Joseph R. Biberstine, Robert P. Light, Vincent Larivi&egrave;re, and Kevin W. Boyack. 2012. &lsquo;Design and Update of a Classification System: The UCSD Map of Science&rsquo;. Edited by Neil R. Smalheiser. <i>PLoS ONE</i> 7 no. 7: e39464. <a class="menu" href="https://doi.org/10.1371/journal.pone.0039464">https://doi.org/10.1371/journal.pone.0039464</a>.</p>
+
+<p>B&ouml;rner, Katy, Shashikant Penumarthy, Mark Meiss, and Weimao Ke. 2006. &lsquo;Mapping the Diffusion of Scholarly Knowledge among Major U.S. Research Institutions&rsquo;. <i>Scientometrics</i> 68 no. 3: 415&ndash;26. <a class="menu" href="https://doi.org/10.1007/s11192-006-0120-2">https://doi.org/10.1007/s11192-006-0120-2</a>.</p>
+
+<p>B&ouml;rner, Katy, Todd N. Theriault, and Kevin W. Boyack. 2015. &lsquo;Mapping Science Introduction: Past, Present and Future: Mapping Science Introduction: Past, Present and Future&rsquo;. <i>Bulletin of the Association for Information Science and Technology</i> 41 no. 2: 12&ndash;16. <a class="menu" href="https://doi.org/10.1002/bult.2015.1720410205">https://doi.org/10.1002/bult.2015.1720410205</a>.</p>
+
+<p>Bornmann, Lutz, and Hans-Dieter Daniel. 2008. &lsquo;What Do Citation Counts Measure? A Review of Studies on Citing Behavior&rsquo;. <i>Journal of Documentation</i> 64 no. 1: 45&ndash;80. <a class="menu" href="https://doi.org/10.1108/00220410810844150">https://doi.org/10.1108/00220410810844150</a>.</p>
+
+<p>Boyack, Kevin W., and Richard Klavans. 2008. &lsquo;Measuring Science&ndash;Technology Interaction Using Rare Inventor&ndash;Author Names&rsquo;. <i>Journal of Informetrics</i> 2 no. 3: 173&ndash;82. <a class="menu" href="https://doi.org/10.1016/j.joi.2008.03.001">https://doi.org/10.1016/j.joi.2008.03.001</a>.</p>
+
+<p>Boyack, Kevin W., and Richard Klavans. 2010. &lsquo;Co-Citation Analysis, Bibliographic Coupling, and Direct Citation: Which Citation Approach Represents the Research Front Most Accurately?&rsquo; <i>Journal of the American Society for Information Science and Technology</i> 61 no. 12: 2389&ndash;2404. <a class="menu" href="https://doi.org/10.1002/asi.21419">https://doi.org/10.1002/asi.21419</a>.</p>
+
+<p>Boyack, Kevin W., and Richard Klavans. 2019. &lsquo;Creation and Analysis of Large-Scale Bibliometric Networks&rsquo;. In <i>Springer Handbook of Science and Technology Indicators</i>, edited by Wolfgang Gl&auml;nzel, Henk F. Moed, Ulrich Schmoch, and Mike Thelwall, 187&ndash;212. Springer Handbooks. Cham: Springer International Publishing. <a class="menu" href="https://doi.org/10.1007/978-3-030-02511-3_8">https://doi.org/10.1007/978-3-030-02511-3_8</a>.</p>
+
+<p>Boyack, Kevin W., Richard Klavans, and Katy B&ouml;rner. 2005. &lsquo;Mapping the Backbone of Science&rsquo;. <i>Scientometrics</i> 64 no. 3: 351&ndash;74. <a class="menu" href="https://doi.org/10.1007/s11192-005-0255-6">https://doi.org/10.1007/s11192-005-0255-6</a>.</p>
+
+<a name="refC"></a>
+
+<p>Callon, Michel, J. P. Courtial, and F. Laville. 1991. &lsquo;Co-Word Analysis as a Tool for Describing the Network of Interactions between Basic and Technological Research: The Case of Polymer Chemsitry&rsquo;. <i>Scientometrics</i> 22 no. 1: 155&ndash;205. <a class="menu" href="https://doi.org/10.1007/BF02019280">https://doi.org/10.1007/BF02019280</a>.</p>
+
+<p>Callon, Michel, J.-P. Courtial, W. A. Turner, and S. Bauin. 1983. &lsquo;From Translations to Problematic Networks: An Introduction to Co-Word Analysis&rsquo;. <i>Social Science Information</i> 22 no. 2: 191&ndash;235. <a class="menu" href="https://doi.org/10.1177/053901883022002003">https://doi.org/10.1177/053901883022002003</a>.</p>
+
+<p>Callon, Michel, John Law, and Arie Rip, eds. 1998. <i>Mapping the Dynamics of Science and Technology: Sociology of Science in the Real World</i>. Transferred to digital printing. Houndmills: Macmillan.</p>
+
+<p>Catherine, Herfeld, and Malte Doehne. 2018. &lsquo;Five Reasons for the Use of Network Analysis in the History of Economics&rsquo;. <i>Journal of Economic Methodology</i> 25 no. 4: 311&ndash;28. <a class="menu" href="https://doi.org/10.1080/1350178X.2018.1529172">https://doi.org/10.1080/1350178X.2018.1529172</a>.</p>
+
+<p>Chen, Chaomei. 2006. &lsquo;CiteSpace II: Detecting and Visualizing Emerging Trends and Transient Patterns in Scientific Literature&rsquo;. <i>Journal of the American Society for Information Science and Technology</i> 57 no. 3: 359&ndash;77. <a class="menu" href="https://doi.org/10.1002/asi.20317">https://doi.org/10.1002/asi.20317</a>.</p>
+
+<p>Chen, Chaomei. 2013. <i>Mapping Scientific Frontiers: The Quest for Knowledge Visualization</i>. Second Edition. London: Springer.</p>
+
+<p>Chen, Chaomei. 2017. &lsquo;Science Mapping: A Systematic Review of the Literature&rsquo;. <i>Journal of Data and Information Science</i> 2 no. 2: 1&ndash;40. <a class="menu" href="https://doi.org/10.1515/jdis-2017-0006">https://doi.org/10.1515/jdis-2017-0006</a>.</p>
+
+<p>Chen, Chaomei, Fidelia Ibekwe-SanJuan, and Jianhua Hou. 2010. &lsquo;The Structure and Dynamics of Cocitation Clusters: A Multiple-Perspective Cocitation Analysis&rsquo;. <i>Journal of the American Society for Information Science and Technology</i> 61 no. 7: 1386&ndash;1409. <a class="menu" href="https://doi.org/10.1002/asi.21309">https://doi.org/10.1002/asi.21309</a>.</p>
+
+<p>Cherrier, Beatrice. 2017. &lsquo;Classifying Economics: A History of the JEL Codes&rsquo;. <i>Journal of Economic Literature</i> 55 no. 2: 545&ndash;79. <a class="menu" href="https://doi.org/10.1257/jel.20151296">https://doi.org/10.1257/jel.20151296</a>.</p>
+
+<p>Cobo, M.J., A.G. L&oacute;pez-Herrera, E. Herrera-Viedma, and F. Herrera. 2011a. &lsquo;An Approach for Detecting, Quantifying, and Visualizing the Evolution of a Research Field: A Practical Application to the Fuzzy Sets Theory Field&rsquo;. <i>Journal of Informetrics</i> 5 no. 1: 146&ndash;66. <a class="menu" href="https://doi.org/10.1016/j.joi.2010.10.002">https://doi.org/10.1016/j.joi.2010.10.002</a>.</p>
+
+<p>Cobo, M.J., A.G. L&oacute;pez-Herrera, E. Herrera-Viedma, and F. Herrera. 2011b. &lsquo;Science Mapping Software Tools: Review, Analysis, and Cooperative Study among Tools&rsquo;. <i>Journal of the American Society for Information Science and Technology</i> 62 no. 7: 1382&ndash;1402. <a class="menu" href="https://doi.org/10.1002/asi.21525">https://doi.org/10.1002/asi.21525</a>.</p>
+
+<p>Courtial, J. P. 1998. &lsquo;Comments on Leydesdorff&rsquo;s Article&rsquo;. <i>Journal of the American Society for Information Science</i> 49 no. 1: 98.</p>
+
+<p>Cozzens, Susan E. 1989. &lsquo;What Do Citations Count? The Rhetoric-First Model&rsquo;. <i>Scientometrics</i> 15 no. 5&ndash;6: 437&ndash;47. <a class="menu" href="https://doi.org/10.1007/BF02017064">https://doi.org/10.1007/BF02017064</a>.</p>
+
+<p>Crane, Diana. 1967. &lsquo;The Gatekeepers of Science: Some Factors Affecting the Selection of Articles for Scientific Journals&rsquo;. <i>The American Sociologist</i> 2 no. 4: 195&ndash;201.</p>
+
+<p>Crane, Diana. 1972. <i>Invisible Colleges; Diffusion of Knowledge in Scientific Communities</i>. Chicago: University of Chicago Press.</p>
+
+<p>Cronin, Blaise. 1984. <i>The Citation Process: The Role and Significance of Citations in Scientific Communication</i>. London: T. Graham.</p>
+
+<p>Cronin, Blaise. 2001. &lsquo;Hyperauthorship: A Postmodern Perversion or Evidence of a Structural Shift in Scholarly Communication Practices?&rsquo; <i>Journal of the American Society for Information Science and Technology</i> 52 no. 7: 558&ndash;69. <a class="menu" href="https://doi.org/10.1002/asi.1097">https://doi.org/10.1002/asi.1097</a>.</p>
+
+<a name="refD"></a>
+
+<p>Daston, Lorraine, and Peter Galison. 2007. <i>Objectivity</i>. New York-Cambridge, Mass.: Zone Books; Distributed by the MIT Press.</p>
+
+<a name="refE"></a>
+
+<p>Eck, Nees Jan van, and Ludo Waltman. 2008. &lsquo;Appropriate Similarity Measures for Author Co-citation Analysis&rsquo;. <i>Journal of the American Society for Information Science and Technology</i> 59 no. 10: 1653&ndash;61. <a class="menu" href="https://doi.org/10.1002/asi.20872">https://doi.org/10.1002/asi.20872</a>.</p>
+
+<p>Eck, Nees Jan van, and Ludo Waltman. 2009. &lsquo;How to Normalize Cooccurrence Data? An Analysis of Some Well-Known Similarity Measures&rsquo;. <i>Journal of the American Society for Information Science and Technology</i> 60 no. 8: 1635&ndash;51. <a class="menu" href="https://doi.org/10.1002/asi.21075">https://doi.org/10.1002/asi.21075</a>.</p>
+
+<p>Eck, Nees Jan van, and Ludo Waltman. 2010. &lsquo;Software Survey: VOSviewer, a Computer Program for Bibliometric Mapping&rsquo;. <i>Scientometrics</i> 84 no. 2: 523&ndash;38. <a class="menu" href="https://doi.org/10.1007/s11192-009-0146-3">https://doi.org/10.1007/s11192-009-0146-3</a>.</p>
+
+<p>Eck, Nees Jan van, Ludo Waltman, Rommert Dekker, and Jan van den Berg. 2010. &lsquo;A Comparison of Two Techniques for Bibliometric Mapping: Multidimensional Scaling and VOS&rsquo;. <i>Journal of the American Society for Information Science and Technology</i> 61 no. 12: 2405&ndash;16. <a class="menu" href="https://doi.org/10.1002/asi.21421">https://doi.org/10.1002/asi.21421</a>.</p>
+
+<p>Elkana, Yehuda, Joshua Laderberg, Robert K. Merton, Arnold Thackray, and Harriet Zuckerman, eds. 1978. <i>Toward a Metric of Science: The Advent of Science Indicators</i>. Science, Culture, and Society. New York: Wiley.</p>
+
+<a name="refF"></a>
+
+<p>Federico, Paolo, Florian Heimerl, Steffen Koch, and Silvia Miksch. 2017. &lsquo;A Survey on Visual Approaches for Analyzing Scientific Literature and Patents&rsquo;. <i>IEEE Transactions on Visualization and Computer Graphics</i> 23 no. 9: 2179&ndash;98. <a class="menu" href="https://doi.org/10.1109/TVCG.2016.2610422">https://doi.org/10.1109/TVCG.2016.2610422</a>.</p>
+
+<p>Finnegan, Diarmid. 2015. &lsquo;Science, Geography Of&rsquo;. In <i>International Encyclopedia of the Social &amp; Behavioral Sciences</i>, 21:236&ndash;40.</p>
+
+<p>Franssen, Thomas, and Paul Wouters. 2019. &lsquo;Science and Its Significant Other: Representing the Humanities in Bibliometric Scholarship&rsquo;. <i>Journal of the Association for Information Science and Technology</i>, March. <a class="menu" href="https://doi.org/10.1002/asi.24206">https://doi.org/10.1002/asi.24206</a>.</p>
+
+<p>Frenken, Koen, Sjoerd Hardeman, and Jarno Hoekman. 2009. &lsquo;Spatial Scientometrics: Towards a Cumulative Research Program&rsquo;. <i>Journal of Informetrics</i> 3 no. 3: 222&ndash;32. <a class="menu" href="https://doi.org/10.1016/j.joi.2009.03.005">https://doi.org/10.1016/j.joi.2009.03.005</a>.</p>
+
+<a name="refG"></a>
+
+<p>Garfield, Eugene. 1973. &lsquo;Historiographs, Librarianship, and the History of Science&rsquo;. In <i>Toward a Theory of Librarianship</i>, edited by Conrad H. Rawski, 380&ndash;402. Metuchen, NJ: Scarecrow Press.</p>
+
+<p>Garfield, Eugene. 2004. &lsquo;Historiographic Mapping of Knowledge Domains Literature&rsquo;. <i>Journal of Information Science</i> 30 no. 2: 119&ndash;45. <a class="menu" href="https://doi.org/10.1177/0165551504042802">https://doi.org/10.1177/0165551504042802</a>.</p>
+
+<p>Gates, Alexander J., Qing Ke, Onur Varol, and Albert-L&aacute;szl&oacute; Barab&aacute;si. 2019. &lsquo;Nature&rsquo;s Reach: Narrow Work Has Broad Impact&rsquo;. <i>Nature</i> 575 no. 7781: 32&ndash;34. <a class="menu" href="https://doi.org/10.1038/d41586-019-03308-7">https://doi.org/10.1038/d41586-019-03308-7</a>.</p>
+
+<p>Gl&auml;nzel, Wolfgang. 2001. &lsquo;National Characteristics in International Scientific Co-Authorship Relations&rsquo;. <i>Scientometrics</i> 51 no. 1: 69&ndash;115. <a class="menu" href="https://doi.org/10.1023/A:1010512628145">https://doi.org/10.1023/A:1010512628145</a>.</p>
+
+<p>Gross, Alan G., Alan G. Gross, Joseph E. Harmon, and Michael S. Reidy. 2002. <i>Communicating Science: The Scientific Article from the 17th Century to the Present</i>. Oxford-New York: Oxford University Press.</p>
+
+<a name="refH"></a>
+
+<p>Hammarfelt, Bj&ouml;rn. 2016. &lsquo;Beyond Coverage: Toward a Bibliometrics for the Humanities&rsquo;. In <i>Research Assessment in the Humanities</i>, edited by Michael Ochsner, Sven E Hug, and Hans-Dieter Daniel, 115&ndash;31. Springer.</p>
+
+<p>Hammarfelt, Bj&ouml;rn. 2017. &lsquo;Four Claims on Research Assessment and Metric Use in the Humanities&rsquo;. <i>Bulletin of the Association for Information Science and Technology</i> 43 no. 5: 33&ndash;38.</p>
+
+<p>Harzing, Anne-Wil. 2019. &lsquo;Two New Kids on the Block: How Do Crossref and Dimensions Compare with Google Scholar, Microsoft Academic, Scopus and the Web of Science?&rsquo; <i>Scientometrics</i> 120 no. 1: 341&ndash;49. <a class="menu" href="https://doi.org/10.1007/s11192-019-03114-y">https://doi.org/10.1007/s11192-019-03114-y</a>.</p>
+
+<p>He, Qin. 1999. &lsquo;Knowledge Discovery through Co-Word Analysis&rsquo;. <i>Library Trends</i> 48 no. 1: 133.</p>
+
+<p>Hellqvist, Bj&ouml;rn. 2009. &lsquo;Referencing in the Humanities and Its Implications for Citation Analysis&rsquo;. <i>Journal of the American Society for Information Science and Technology</i> 61 no. 2: 310-318. <a class="menu" href="https://doi.org/10.1002/asi.21256">https://doi.org/10.1002/asi.21256</a>.</p>
+
+<p>Hennig, Christian M., Marina Meila, Fionn Murtagh, and Roberto Rocci, eds. 2016. <i>Handbook of Cluster Analysis</i>. Chapman &amp; Hall/CRC Handbooks of Modern Statistical Methods 9. Boca Raton: CRC Press, Taylor &amp; Francis Group.</p>
+
+<p>Hj&oslash;rland, Birger. 2013. &lsquo;Citation Analysis: A Social and Dynamic Approach to Knowledge Organization&rsquo;. <i>Information Processing &amp; Management</i> 49 no. 6: 1313&ndash;25. <a class="menu" href="https://doi.org/10.1016/j.ipm.2013.07.001">https://doi.org/10.1016/j.ipm.2013.07.001</a>.</p>
+
+<p>Hyland, Ken, and Fran&ccedil;oise Salager-Meyer. 2009. &lsquo;Scientific Writing&rsquo;. <i>Annual Review of Information Science and Technology</i> 42 no. 1: 297&ndash;338. <a class="menu" href="https://doi.org/10.1002/aris.2008.1440420114">https://doi.org/10.1002/aris.2008.1440420114</a>.</p>
+
+<a name="refI"></a>
+
+<p>ICMJE, International Committee of Medical Journal Editors. 2019. &lsquo;Recommendations for the Conduct, Reporting, Editing, and Publication of Scholarly Work in Medical Journals&rsquo;. <a class="menu" href="http://www.icmje.org/icmje-recommendations.pdf">http://www.icmje.org/icmje-recommendations.pdf</a>.</p>
+
+<a name="refJ"></a>
+
+<p>Jaffe, Adam B., and Manuel Trajtenberg. 2002. <i>Patents, Citations, and Innovations: A Window on the Knowledge Economy</i>. Cambridge, Mass: MIT Press.</p>
+
+<p>Jones, William P, and George W Furnas. 1987. &lsquo;Pictures of Relevance: A Geomatric Analysis of Similarity Measures&rsquo;. <i>Journal of the American Society for Information Science</i> 38 no. 6: 420&ndash;42.</p>
+
+<a name="refK"></a>
+
+<p>Kaplan, N. 1965. &lsquo;The Norms of Citation Behavior. Prolegomena to the Footnote&rsquo;. <i>American Documentation</i> 16 no. 3: 179&ndash;87.</p>
+
+<p>Katz, J.Sylvan, and Ben R. Martin. 1997. &lsquo;What Is Research Collaboration?&rsquo; <i>Research Policy</i> 26 no. 1: 1&ndash;18. <a class="menu" href="https://doi.org/10.1016/S0048-7333(96)00917-1">https://doi.org/10.1016/S0048-7333(96)00917-1</a>.</p>
+
+<p>Kessler, M.M. 1963. &lsquo;Bibliographic Coupling Extended in Time: Ten Case Histories&rsquo;. <i>Information Storage and Retrieval</i> 1 no. 4: 169&ndash;87. <a class="menu" href="https://doi.org/10.1016/0020-0271(63)90016-0">https://doi.org/10.1016/0020-0271(63)90016-0</a>.</p>
+
+<p>Knorr-Cetina, K. 2003. <i>Epistemic Cultures: How the Sciences Make Knowledge</i>. Cambridge Mass. [etc.]: Harvard University Press.</p>
+
+<p>Kreuzman, Henry. 2001. &lsquo;A Co-Citation Analysis of Representative Authors in Philosophy: Examining the Relationship between Epistemologists and Philosophers of Science&rsquo;. <i>Scientometrics</i> 51 no. 3: 525&ndash;39.</p>
+
+<p>Kuhn, Thomas S. 2000. <i>The Road since Structure: Philosophical Essays, 1970-1993, with an Autobiographical Interview</i>. Edited by James Conant and John Haugeland. Chicago: University of Chicago Press.</p>
+
+<a name="refL"></a>
+
+<p>Larivi&egrave;re, Vincent, Nadine Desrochers, Beno&icirc;t Macaluso, Philippe Mongeon, Ad&egrave;le Paul-Hus, and Cassidy R. Sugimoto. 2016. &lsquo;Contributorship and Division of Labor in Knowledge Production&rsquo;. <i>Social Studies of Science</i> 46 no. 3: 417&ndash;35. <a class="menu" href="https://doi.org/10.1177/0306312716650046">https://doi.org/10.1177/0306312716650046</a>.</p>
+
+<p>Latour, Bruno. 2003. <i>Science in Action: How to Follow Scientists and Engineers through Society</i>. 11. print. Cambridge, Mass: Harvard University Press.</p>
+
+<p>Latour, Bruno, and Steve Woolgar. 1986. <i>Laboratory Life: The Construction of Scientific Facts</i>. Princeton, N.J: Princeton University Press.</p>
+
+<p>Laudel, Grit. 2002. &lsquo;What Do We Measure by Co-Authorships?&rsquo; <i>Research Evaluation</i> 11 no. 1: 3&ndash;15. <a class="menu" href="https://doi.org/10.3152/147154402781776961">https://doi.org/10.3152/147154402781776961</a>.</p>
+
+<p>Laurens, Patricia, Michel Zitt, and Elise Bassecoulard. 2010. &lsquo;Delineation of the Genomics Field by Hybrid Citation-Lexical Methods: Interaction with Experts and Validation Process&rsquo;. <i>Scientometrics</i> 82 no. 3: 647&ndash;62. <a class="menu" href="https://doi.org/10.1007/s11192-010-0177-9">https://doi.org/10.1007/s11192-010-0177-9</a>.</p>
+
+<p>Law, J., and J. Whittaker. 1992. &lsquo;Mapping Acidification Research: A Test of the Co-Word Method&rsquo;. <i>Scientometrics</i> 23 no. 3: 417&ndash;61. <a class="menu" href="https://doi.org/10.1007/BF02029807">https://doi.org/10.1007/BF02029807</a>.</p>
+
+<p>Lee, Sungjoo, Byungun Yoon, and Yongtae Park. 2009. &lsquo;An Approach to Discovering New Technology Opportunities: Keyword-Based Patent Map Approach&rsquo;. <i>Technovation</i> 29 no. 6&ndash;7: 481&ndash;97. <a class="menu" href="https://doi.org/10.1016/j.technovation.2008.10.006">https://doi.org/10.1016/j.technovation.2008.10.006</a>.</p>
+
+<p>Leydesdorff, Loet. 1987. &lsquo;Various Methods for the Mapping of Science&rsquo;. <i>Scientometrics</i> 11 no. 5&ndash;6: 295&ndash;324. <a class="menu" href="https://doi.org/10.1007/BF02279351">https://doi.org/10.1007/BF02279351</a>.</p>
+
+<p>Leydesdorff, Loet. 1997. &lsquo;Why Words and Co-words Cannot Map the Development of the Sciences&rsquo;. <i>Journal of the American Society for Information Science</i> 48 no. 5: 418.</p>
+
+<p>Leydesdorff, Loet. 2001. <i>The Challenge of Scientometrics: The Development, Measurement, and Self-Organization of Scientific Communications</i>. 2. ed. Parkland, Ill.: Universal Publ.</p>
+
+<p>Leydesdorff, Loet. 2004. &lsquo;Clusters and Maps of Science Journals Based on Bi-connected Graphs in Journal Citation Reports&rsquo;. <i>Journal of Documentation</i> 60 no. 4: 371&ndash;427. <a class="menu" href="https://doi.org/10.1108/00220410410548144">https://doi.org/10.1108/00220410410548144</a>.</p>
+
+<p>Leydesdorff, Loet. 2007. &lsquo;Betweenness Centrality as an Indicator of the Interdisciplinarity of Scientific Journals&rsquo;. <i>Journal of the American Society for Information Science and Technology</i> 58 no. 9: 1303&ndash;19. <a class="menu" href="https://doi.org/10.1002/asi.20614">https://doi.org/10.1002/asi.20614</a>.</p>
+
+<p>Leydesdorff, Loet. 2008. &lsquo;On the Normalization and Visualization of Author Co-Citation Data: Salton&rsquo;s Cosine versus the Jaccard Index&rsquo;. <i>Journal of the American Society for Information Science and Technology</i> 59 no. 1: 77&ndash;85. <a class="menu" href="https://doi.org/10.1002/asi.20732">https://doi.org/10.1002/asi.20732</a>.</p>
+
+<p>Leydesdorff, Loet, and Robert L. Goldstone. 2014. &lsquo;Interdisciplinarity at the Journal and Specialty Level: The Changing Knowledge Bases of the Journal Cognitive Science&rsquo;. <i>Journal of the Association for Information Science and Technology</i> 65 no. 1: 164&ndash;77. https://doi.org/10.1002/asi.22953.</p>
+
+<p>Leydesdorff, Loet, and Olle Persson. 2010. &lsquo;Mapping the Geography of Science: Distribution Patterns and Networks of Relations among Cities and Institutes&rsquo;. <i>Journal of the American Society for Information Science and Technology</i> 61 no. 8: 1622-1634. <a class="menu" href="https://doi.org/10.1002/asi.21347">https://doi.org/10.1002/asi.21347</a>.</p>
+
+<p>Leydesdorff, Loet, and Ismael Rafols. 2009. &lsquo;A Global Map of Science Based on the ISI Subject Categories&rsquo;. <i>Journal of the American Society for Information Science and Technology</i> 60 no. 2: 348&ndash;62. <a class="menu" href="https://doi.org/10.1002/asi.20967">https://doi.org/10.1002/asi.20967</a>.</p>
+
+<p>Leydesdorff, Loet, and Thomas Schank. 2008. &lsquo;Dynamic Animations of Journal Maps: Indicators of Structural Changes and Interdisciplinary Developments&rsquo;. <i>Journal of the American Society for Information Science and Technology</i> 59 no. 11: 1810&ndash;18. <a class="menu" href="https://doi.org/10.1002/asi.20891">https://doi.org/10.1002/asi.20891</a>.</p>
+
+<p>Lima, Manuel. 2014. <i>The Book of Trees: Visualizing Branches of Knowledge</i>. First edition. New York: Princeton Architectural Press.</p>
+
+<p>Liu, Xiaoming, Johan Bollen, Michael L. Nelson, and Herbert Van de Sompel. 2005. &lsquo;Co-Authorship Networks in the Digital Library Research Community&rsquo;. <i>Information Processing &amp; Management</i> 41 no. 6: 1462&ndash;80. <a class="menu" href="https://doi.org/10.1016/j.ipm.2005.03.012">https://doi.org/10.1016/j.ipm.2005.03.012</a>.</p>
+
+<p>Livingstone, David N. 2003. <i>Putting Science in Its Place: Geographies of Scientific Knowledge</i>. Science.Culture. Chicago: University of Chicago Press.</p>
+
+<p>Lucio-Arias, Diana, and Loet Leydesdorff. 2009. &lsquo;The Dynamics of Exchanges and References among Scientific Texts, and the Autopoiesis of Discursive Knowledge&rsquo;. <i>Journal of Informetrics</i> 3 no. 3: 261&ndash;71. <a class="menu" href="https://doi.org/10.1016/j.joi.2009.03.003">https://doi.org/10.1016/j.joi.2009.03.003</a>.</p>
+
+<a name="refM"></a>
+
+<p>MacRoberts, Michael H., and Barbara R. MacRoberts. 2018. &lsquo;The Mismeasure of Science: Citation Analysis&rsquo;. <i>Journal of the Association for Information Science and Technology</i> 69 no. 3: 474&ndash;82. <a class="menu" href="https://doi.org/10.1002/asi.23970">https://doi.org/10.1002/asi.23970</a>.</p>
+
+<p>Marshakova, Irena. 1973. &lsquo;System of Document Connections Based On References&rsquo;. <i>Nauchno-Tekhnicheskaya Informatsiya Seriya 2-Informatsionnye Protsessy I Sistemy</i> 2 no. 6: 3&ndash;8.</p>
+
+<p>Mazzocchi, Fulvio. 2018. &lsquo;Knowledge Organization System (KOS)&rsquo;. <i>Knowledge Organization</i> 45 no. 1: 54&ndash;78. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli, <a class="menu" href="kos">https://www.isko.org/cyclo/kos</a>.</p>
+
+<p>McCain, Katherine W. 1990. &lsquo;Mapping Authors in Intellectual Space: A Technical Overview&rsquo;. <i>Journal of the American Society for Information Science</i> 41 no. 6: 433&ndash;43.</p>
+
+<p>McCain, Katherine W. 1991. &lsquo;Mapping Economics through the Journal Literature: An Experiment in Journal Cocitation Analysis&rsquo;. <i>Journal of the American Society for Information Science</i> 42 no. 4: 290&ndash;96. <a class="menu" href="https://doi.org/10.1002/(SICI)1097-4571(199105)42:4<290::AID-ASI5">3.0.CO;2-9">https://doi.org/10.1002/(SICI)1097-4571(199105)42:4<290::AID-ASI5>3.0.CO;2-9</a>.</p>
+
+<p>Merton, Robert K. 1974. <i>The Sociology of Science: Theoretical and Empirical Investigations</i>. 4. Dr. Chicago: Univ. of Chicago Pr.</p>
+
+<p>Meyer, Martin. 2000. &lsquo;Does Science Push Technology? Patents Citing Scientific Literature&rsquo;. <i>Research Policy</i> 29 no. 3: 409&ndash;34. <a class="menu" href="https://doi.org/10.1016/S0048-7333(99)00040-2">https://doi.org/10.1016/S0048-7333(99)00040-2</a>.</p>
+
+<p>Moral-Munoz, Jose A., Antonio G. L&oacute;pez-Herrera, Enrique Herrera-Viedma, and Manuel J. Cobo. 2019. &lsquo;Science Mapping Analysis Software Tools: A Review&rsquo;. In <i>Springer Handbook of Science and Technology Indicators</i>, edited by Wolfgang Gl&auml;nzel, Henk F. Moed, Ulrich Schmoch, and Mike Thelwall, 159&ndash;85. Springer Handbooks. Cham: Springer International Publishing. <a class="menu" href="https://doi.org/10.1007/978-3-030-02511-3_7">https://doi.org/10.1007/978-3-030-02511-3_7</a>.</p>
+
+<p>Murray, Fiona. 2002. &lsquo;Innovation as Co-Evolution of Scientific and Technological Networks: Exploring Tissue Engineering&rsquo;. <i>Research Policy</i> 31 no. 8&ndash;9: 1389&ndash;1403. <a class="menu" href="https://doi.org/10.1016/S0048-7333(02)00070-7">https://doi.org/10.1016/S0048-7333(02)00070-7</a>.</p>
+
+<p>Mutschke, Peter, and Anabel Quan-Haase. 2001. &lsquo;Collaboration and Cognitive Structures in Social Science Research Fields. Towards Socio-Cognitive Analysis in Information Systems.&rsquo; <i>Scientometrics</i> 52 no. 3: 487&ndash;502.</p>
+
+<a name="refN"></a>
+
+<p>Nederhof, Anton J. 2006. &lsquo;Bibliometric Monitoring of Research Performance in the Social Sciences and the Humanities: A Review&rsquo;. <i>Scientometrics</i> 66 no. 1: 81&ndash;100. <a class="menu" href="https://doi.org/10.1007/s11192-006-0007-2">https://doi.org/10.1007/s11192-006-0007-2</a>.</p>
+
+<p>Newman, M. E. 2001. &lsquo;Scientific Collaboration Networks. I. Network Construction and Fundamental Results&rsquo;. <i>Physical Review. E, Statistical, Nonlinear, and Soft Matter Physics</i> 64 no. 1: 16131.</p>
+
+<p>Nicolaisen, Jeppe. 2007. &lsquo;Citation Analysis&rsquo;. <i>Annual Review of Information Science and Technology</i> 41 no. 1: 609&ndash;41. <a class="menu" href="https://doi.org/10.1002/aris.2007.1440410120">https://doi.org/10.1002/aris.2007.1440410120</a>.</p>
+
+<p>Noyons, Ed C. M., and Clara Calero-Medina. 2009. &lsquo;Applying Bibliometric Mapping in a High Level Science Policy Context: Mapping the Research Areas of Three Dutch Universities of Technology&rsquo;. <i>Scientometrics</i> 79 no. 2: 261&ndash;75. <a class="menu" href="https://doi.org/10.1007/s11192-009-0417-z">https://doi.org/10.1007/s11192-009-0417-z</a>.</p>
+
+<a name="refO"></a>
+
+<p>Osinska, Veslava and Piotr Malak. 2016. &ldquo;Maps and Mapping in Scientometrics&rdquo;. In Metody i narze&#808;dzia badan&#769; pis&#769;miennictwa cyfrowego i jego uz&#775;ytkowniko&#769;w [Methods and Tools for Researching Digital Writing and Its Users]. Eds. Malgorzata G&oacute;ralska and Agnieszka Wandel. Wroc&#322;aw: Wroc&#322;aw University, 59-72.</p>
+
+<a name="refP"></a>
+
+<p>Pan, Xuelian, Erjia Yan, Ming Cui, and Weina Hua. 2018. &lsquo;Examining the Usage, Citation, and Diffusion Patterns of Bibliometric Mapping Software: A Comparative Study of Three Tools&rsquo;. <i>Journal of Informetrics</i> 12 no. 2: 481&ndash;93. <a class="menu" href="https://doi.org/10.1016/j.joi.2018.03.005">https://doi.org/10.1016/j.joi.2018.03.005</a>.</p>
+
+<p>Persson, Olle. 1994. &lsquo;The Intellectual Base and Research Fronts of JASIS 1986&ndash;1990&rsquo;. <i>Journal of the American Society for Information Science</i> 45 no. 1: 31&ndash;38.</p>
+
+<p>Petrovich, Eugenio. 2018. &lsquo;Accumulation of Knowledge in Para-Scientific Areas: The Case of Analytic Philosophy&rsquo;. <i>Scientometrics</i> 116 no. 2: 1123&ndash;51. <a class="menu" href="https://doi.org/10.1007/s11192-018-2796-5">https://doi.org/10.1007/s11192-018-2796-5</a>.</p>
+
+<p>Petrovich, Eugenio. 2019a. &lsquo;The Fabric of Knowledge: Towards a Documental History of Late Analytic Philosophy&rsquo;. Ph.D. Dissertation, Milan: University of Milan. <a class="menu" href="https://air.unimi.it/handle/2434/613334">https://air.unimi.it/handle/2434/613334</a>.</p>
+
+<p>Petrovich, Eugenio. 2019b. &lsquo;The Structure of Scientific Disciplines. Some Notes on the Epistemology of Algorithmic Representations of Disciplines&rsquo;. In <i>STOREP 2019</i>. University of Siena. <a class="menu" href="http://conference.storep.org/index.php?conference=storep-annual-conference&amp;schedConf=2019&amp;page=paper&amp;op=view&amp;path%5B%5D=635">http://conference.storep.org/&hellip;</a>.</p>
+
+<p>Petrovich, Eugenio, and Valerio Buonomo. 2018. &lsquo;Reconstructing Late Analytic Philosophy. A Quantitative Approach&rsquo;. <i>Philosophical Inquiries</i> 6 no. 1. <a class="menu" href="https://doi.org/10.4454/philinq.v6i1.184">https://doi.org/10.4454/philinq.v6i1.184</a>.</p>
+
+<p>Petrovich, Eugenio, and Emiliano Tolusso. 2019. &lsquo;Exploring Knowledge Dynamics in the Humanities. Two Science Mapping Experiments&rsquo;. <i>Journal of Interdisciplinary History of Ideas</i> 8 no. 16: 1&ndash;30. <a class="menu" href="http://dx.doi.org/10.13135/2280-8574/4304">http://dx.doi.org/10.13135/2280-8574/4304</a>.</p>
+
+<p>Price, Derek J. de Solla. 1965. &lsquo;Networks of Scientific Papers&rsquo;. <i>Science</i> 149 no. 3683: 510&ndash;15. <a class="menu" href="https://doi.org/10.1126/science.149.3683.510">https://doi.org/10.1126/science.149.3683.510</a>.</p>
+
+<a name="refQ"></a>
+<a name="refR"></a>
+
+<p>Radicchi, F., S. Fortunato, and A Vespignani. 2012. &lsquo;Citation Networks&rsquo;. In <i>Models of Science Dynamics: Encounters between Complexity Theory and Information Sciences</i>, edited by Andrea Scharnhorst, Katy B&ouml;rner, and Peter van den Besselaar. Understanding Complex Systems. Heidelberg-New York: Springer.</p>
+
+<p>Radicchi, F., Santo Fortunato, Benjamin Markines, and Alessandro Vespignani. 2009. &lsquo;Diffusion of Scientific Credits and the Ranking of Scientists&rsquo;. <i>Physical Review E</i> 80 no. 5: 056103. <a class="menu" href="https://doi.org/10.1103/PhysRevE.80.056103">https://doi.org/10.1103/PhysRevE.80.056103</a>.</p>
+
+<p>Rafols, Ismael, Alan L. Porter, and Loet Leydesdorff. 2010. &lsquo;Science Overlay Maps: A New Tool for Research Policy and Library Management&rsquo;. <i>Journal of the American Society for Information Science and Technology</i> 61 no. 9: 1871&ndash;87. <a class="menu" href="https://doi.org/10.1002/asi.21368">https://doi.org/10.1002/asi.21368</a>.</p>
+
+<p>Ranaei, Samira, Arho Suominen, Alan Porter, and Tuomo K&auml;ssi. 2019. &lsquo;Application of Text-Analytics in Quantitative Study of Science and Technology&rsquo;. In <i>Springer Handbook of Science and Technology Indicators</i>, edited by Wolfgang Gl&auml;nzel, Henk F. Moed, Ulrich Schmoch, and Mike Thelwall, 957&ndash;82. Springer Handbooks. Cham: Springer International Publishing. <a class="menu" href="https://doi.org/10.1007/978-3-030-02511-3_39">https://doi.org/10.1007/978-3-030-02511-3_39</a>.</p>
+
+<p>Reiss, Julian, and Jan Sprenger. 2017. &lsquo;Scientific Objectivity&rsquo;. In <i>The Stanford Encyclopedia of Philosophy</i>, edited by Edward N. Zalta, Winter 2017. Metaphysics Research Lab, Stanford University. <a class="menu" href="https://plato.stanford.edu/archives/win2017/entries/scientific-objectivity/">https://plato.stanford.edu/archives/win2017/entries/scientific-objectivity/</a>.</p>
+
+<p>Rosvall, Martin, and Carl T. Bergstrom. 2010. &lsquo;Mapping Change in Large Networks&rsquo;. Edited by Fabio Rapallo. <i>PLoS ONE</i> 5 no. 1: e8694. <a class="menu" href="https://doi.org/10.1371/journal.pone.0008694">https://doi.org/10.1371/journal.pone.0008694</a>.</p>
+
+<a name="refS"></a>
+
+<p>Salton, Gerard, and Michael J. McGill. 1983. <i>Introduction to Modern Information Retrieval</i>. McGraw-Hill Computer Science Series. New York: McGraw-Hill.</p>
+
+<p>Scharnhorst, Andrea, Katy B&ouml;rner, and Peter van den Besselaar, eds. 2012. <i>Models of Science Dynamics: Encounters between Complexity Theory and Information Sciences</i>. Understanding Complex Systems. Heidelberg-New York: Springer.</p>
+
+<p>Skupin, Andr&eacute;, Joseph R. Biberstine, and Katy B&ouml;rner. 2013. &lsquo;Visualizing the Topical Structure of the Medical Sciences: A Self-Organizing Map Approach&rsquo;. Edited by Matthias Dehmer. <i>PLoS ONE</i> 8 no. 3: e58779. <a class="menu" href="https://doi.org/10.1371/journal.pone.0058779">https://doi.org/10.1371/journal.pone.0058779</a>.</p>
+
+<p>Small, Henry. 1973. &lsquo;Co-Citation in the Scientific Literature: A New Measure of the Relationship between Two Documents&rsquo;. <i>Journal of the American Society for Information Science</i> 24 no. 4: 265&ndash;69. <a class="menu" href="https://doi.org/10.1002/asi.4630240406">https://doi.org/10.1002/asi.4630240406</a>.</p>
+
+<p>Small, Henry. 1977. &lsquo;A Co-Citation Model of a Scientific Specialty: A Longitudinal Study of Collagen Research&rsquo;. <i>Social Studies of Science</i> 7 no. 2: 139&ndash;66. <a class="menu" href="https://doi.org/10.1177/030631277700700202">https://doi.org/10.1177/030631277700700202</a>.</p>
+
+<p>Small, Henry. 1999. &lsquo;Visualizing Science by Citation Mapping&rsquo;. <i>Journal of the American Society for Information Science</i> 50 no. 9: 799&ndash;813. <a class="menu" href="https://doi.org/10.1002/(SICI)1097-4571(1999)50:9<799::AID-ASI9">3.0.CO;2-G">https://doi.org/10.1002/(SICI)1097-4571(1999)50:9<799::AID-ASI9>3.0.CO;2-G</a>.</p>
+
+<p>Small, Henry, and Belver C. Griffith. 1974. &lsquo;The Structure of Scientific Literatures I: Identifying and Graphing Specialties&rsquo;. <i>Science Studies</i> 4 no. 1: 17&ndash;40. <a class="menu" href="https://doi.org/10.1177/030631277400400102">https://doi.org/10.1177/030631277400400102</a>.</p>
+
+<p>Sp&auml;rck Jones, Karen. 1972. &lsquo;A statistical interpretation of term specificity and its application to retrieval&rsquo;. <i>Journal of Documentation</i> 28 no. 1: 11&ndash;21. <a class="menu" href="https://doi.org/10.1108/eb026526">https://doi.org/10.1108/eb026526</a>.</p>
+
+<p>Strotmann, Andreas, and Dangzhi Zhao. 2012. &lsquo;Author Name Disambiguation: What Difference Does It Make in Author-Based Citation Analysis?&rsquo; <i>Journal of the American Society for Information Science and Technology</i> 63 no. 9: 1820&ndash;33. <a class="menu" href="https://doi.org/10.1002/asi.22695">https://doi.org/10.1002/asi.22695</a>.</p>
+
+<p>Sugimoto, Cassidy R., and Scott Weingart. 2015. &lsquo;The Kaleidoscope of Disciplinarity&rsquo;. <i>Journal of Documentation</i> 71 no. 4: 775&ndash;94. <a class="menu" href="https://doi.org/10.1108/JD-06-2014-0082">https://doi.org/10.1108/JD-06-2014-0082</a>.</p>
+
+<p>Swales, John M. 2004. <i>Research Genres: Explorations and Applications</i>. Cambridge Applied Linguistics Series. Cambridge, UK?; New York: Cambridge University Press.</p>
+
+<a name="refT"></a>
+
+<p>Tahamtan, Iman, and Lutz Bornmann. 2018. &lsquo;Core Elements in the Process of Citing Publications: Conceptual Overview of the Literature&rsquo;. <i>Journal of Informetrics</i> 12 no. 1: 203&ndash;16. <a class="menu" href="https://doi.org/10.1016/j.joi.2018.01.002">https://doi.org/10.1016/j.joi.2018.01.002</a>.</p>
+
+<p>Tahamtan, Iman, and Lutz Bornmann. 2019. &lsquo;What Do Citation Counts Measure? An Updated Review of Studies on Citations in Scientific Documents Published between 2006 and 2018&rsquo;. <i>Scientometrics</i> 121 no. 3: 1635&ndash;84. <a class="menu" href="https://doi.org/10.1007/s11192-019-03243-4">https://doi.org/10.1007/s11192-019-03243-4</a>.</p>
+
+<p>Taheo, Jo. 2018. <i>Text Mining: Concepts, Implementation, and Big Data Challenge</i>. Vol. 45. Studies in Big Data. New York, NY: Springer Science+Business Media.</p>
+
+<p>Thijs, Bart. 2019. &lsquo;Science Mapping and the Identification of Topics: Theoretical and Methodological Considerations&rsquo;. In <i>Springer Handbook of Science and Technology Indicators</i>, edited by Wolfgang Gl&auml;nzel, Henk F. Moed, Ulrich Schmoch, and Mike Thelwall, 213&ndash;33. Springer Handbooks. Cham: Springer International Publishing. <a class="menu" href="https://doi.org/10.1007/978-3-030-02511-3_9">https://doi.org/10.1007/978-3-030-02511-3_9</a>.</p>
+
+<p>Tijssen, R. J. W. 1993. &lsquo;A Scientometric Cognitive Study of Neural Network Research: Expert Mental Maps versus Bibliometric Maps&rsquo;. <i>Scientometrics</i> 28 no. 1: 111&ndash;36. <a class="menu" href="https://doi.org/10.1007/BF02016288">https://doi.org/10.1007/BF02016288</a>.</p>
+
+<p>Townsend, Keith, and John (K John) Burgess, eds. 2009. <i>Method in the Madness? Research Stories You Won&rsquo;t Find in a Textbook</i>. Oxford: Chandos.</p>
+
+<p>Tseng, Yuen-Hsien, Chi-Jen Lin, and Yu-I Lin. 2007. &lsquo;Text Mining Techniques for Patent Analysis&rsquo;. <i>Information Processing &amp; Management</i> 43 no. 5: 1216&ndash;47. <a class="menu" href="https://doi.org/10.1016/j.ipm.2006.11.011">https://doi.org/10.1016/j.ipm.2006.11.011</a>.</p>
+
+<a name="refU"></a>
+<a name="refV"></a>
+
+<p>Van Raan, Anthony F. J. 1998. &lsquo;In Matters of Quantitative Studies of Science the Fault of Theorists Is Offering Too Little and Asking Too Much&rsquo;. <i>Scientometrics</i> 43 no. 1: 129&ndash;39. <a class="menu" href="https://doi.org/10.1007/BF02458401">https://doi.org/10.1007/BF02458401</a>.</p>
+
+<p>Van Raan, Anthony F. J. 2019. &lsquo;Measuring Science: Basic Principles and Application of Advanced Bibliometrics&rsquo;. In <i>Springer Handbook of Science and Technology Indicators</i>, edited by Wolfgang Gl&auml;nzel, Henk F. Moed, Ulrich Schmoch, and Mike Thelwall, 237&ndash;80. Springer Handbooks. Cham: Springer International Publishing. <a class="menu" href="https://doi.org/10.1007/978-3-030-02511-3_10">https://doi.org/10.1007/978-3-030-02511-3_10</a>.</p>
+
+<p>Van Raan, Anthony F. J., and R. J. W. Tijssen. 1993. &lsquo;The Neural Net of Neural Network Research: An Exercise in Bibliometric Mapping&rsquo;. <i>Scientometrics</i> 26 no. 1: 169&ndash;92. <a class="menu" href="https://doi.org/10.1007/BF02016799">https://doi.org/10.1007/BF02016799</a>.</p>
+
+<p>Visser, Martijn, Nees Jan van Eck, and Ludo Waltman. 2020. &lsquo;Large-Scale Comparison of Bibliographic Data Sources: Scopus, Web of Science, Dimensions, Crossref, and Microsoft Academic&rsquo;. <i>ArXiv:2005.10732 [Cs]</i>, May. <a class="menu" href="http://arxiv.org/abs/2005.10732">http://arxiv.org/abs/2005.10732</a>.</p>
+
+<a name="refW"></a>
+
+<p>Waltman, Ludo, and Nees Jan van Eck. 2012. &lsquo;A New Methodology for Constructing a Publication-Level Classification System of Science&rsquo;. <i>Journal of the American Society for Information Science and Technology</i> 63 no. 12: 2378&ndash;92. <a class="menu" href=""></a>https://doi.org/10.1002/asi.22748.</p>
+
+<p>Waltman, Ludo, and Nees Jan van Eck. 2014. &lsquo;Visualizing Bibliometric Networks&rsquo;. In <i>Measuring Scholarly Impact: Methods and Practice</i>, 285&ndash;320. Springer.</p>
+
+<p>Waltman, Ludo, Nees Jan van Eck, and Ed C.M. Noyons. 2010. &lsquo;A Unified Approach to Mapping and Clustering of Bibliometric Networks&rsquo;. <i>Journal of Informetrics</i> 4 no. 4: 629&ndash;35. <a class="menu" href="https://doi.org/10.1016/j.joi.2010.07.002">https://doi.org/10.1016/j.joi.2010.07.002</a>.</p>
+
+<p>Wartburg, Iwan von, Thorsten Teichert, and Katja Rost. 2005. &lsquo;Inventive Progress Measured by Multi-Stage Patent Citation Analysis&rsquo;. <i>Research Policy</i> 34 no. 10: 1591&ndash;1607. <a class="menu" href="https://doi.org/10.1016/j.respol.2005.08.001">https://doi.org/10.1016/j.respol.2005.08.001</a>.</p>
+
+<p>Wasserman, Stanley, and Katherine Faust. 1994. <i>Social Network Analysis: Methods and Applications</i>. Structural Analysis in the Social Sciences 8. Cambridge-New York: Cambridge University Press.</p>
+
+<p>Weingart, Scott B. 2015. &lsquo;Finding the History and Philosophy of Science&rsquo;. <i>Erkenntnis</i> 80 no. 1: 201&ndash;13. <a class="menu" href="https://doi.org/10.1007/s10670-014-9621-1">https://doi.org/10.1007/s10670-014-9621-1</a>.</p>
+
+<p>White, Howard D., and Belver C. Griffith. 1981. &lsquo;Author Cocitation: A Literature Measure of Intellectual Structure&rsquo;. <i>Journal of the American Society for Information Science</i> 32 no. 3: 163&ndash;71. <a class="menu" href="https://doi.org/10.1002/asi.4630320302">https://doi.org/10.1002/asi.4630320302</a>.</p>
+
+<p>White, Howard D., and Katherine W. McCain. 1998. &lsquo;Visualizing a Discipline: An Author Co-Citation Analysis of Information Science, 1972 - 1995&rsquo;. <i>Journal of the American Society for Information Science</i> 49 no. 4: 327.</p>
+
+<p>Wichmann Matthiessen, Christian, Annette Winkel Schwarz, and S&oslash;ren Find. 2002. &lsquo;The Top-Level Global Research System, 1997-99: Centres, Networks and Nodality. An Analysis Based on Bibliometric Indicators&rsquo;. <i>Urban Studies</i> 39 no. 5&ndash;6: 903&ndash;27. <a class="menu" href="https://doi.org/10.1080/00420980220128372">https://doi.org/10.1080/00420980220128372</a>.</p>
+
+<p>Wislar, J. S., A. Flanagin, P. B. Fontanarosa, and C. D. DeAngelis. 2011. &lsquo;Honorary and Ghost Authorship in High Impact Biomedical Journals: A Cross Sectional Survey&rsquo;. <i>BMJ</i> 343 no. oct25 1: d6128&ndash;d6128. <a class="menu" href="https://doi.org/10.1136/bmj.d6128">https://doi.org/10.1136/bmj.d6128</a>.</p>
+
+<p>Wouters, Paul. 1999a. <i>The Citation Culture</i>. Unpublished PhD thesis.</p>
+
+<p>Wouters, Paul. 1999b. &lsquo;Beyond the Holy Grail: From Citation Theory to Indicator Theories&rsquo;. <i>Scientometrics</i> 44 no. 3: 561&ndash;80. <a class="menu" href="https://doi.org/10.1007/BF02458496">https://doi.org/10.1007/BF02458496</a>.</p>
+
+<a name="refX"></a>
+<a name="refY"></a>
+<a name="refZ"></a>
+
+<p>Zhao, Dangzhi. 2009. &lsquo;Mapping Library and Information Science: Does Field Delineation Matter?&rsquo; <i>Proceedings of the American Society for Information Science and Technology</i> 46 no. 1: 1&ndash;11. <a class="menu" href="https://doi.org/10.1002/meet.2009.1450460279">https://doi.org/10.1002/meet.2009.1450460279</a>.</p>
+
+<p>Zhou, Qiuju, and Loet Leydesdorff. 2016. &lsquo;The Normalization of Occurrence and Co-Occurrence Matrices in Bibliometrics Using Cosine Similarities and Ochiai Coefficients&rsquo;. <i>Journal of the Association for Information Science and Technology</i> 67 no. 11: 2805&ndash;14. <a class="menu" href="https://doi.org/10.1002/asi.23603">https://doi.org/10.1002/asi.23603</a>.</p>
+
+<p>Zitt, Michel, and Elise Bassecoulard. 2006. &lsquo;Delineating Complex Scientific Fields by an Hybrid Lexical-Citation Method: An Application to Nanosciences&rsquo;. <i>Information Processing &amp; Management</i> 42 no. 6: 1513&ndash;31. <a class="menu" href="https://doi.org/10.1016/j.ipm.2006.03.016">https://doi.org/10.1016/j.ipm.2006.03.016</a>.</p>
+
+<p>Zitt, Michel, Alain Lelu, Martine Cadot, and Guillaume Cabanac. 2019. &lsquo;Bibliometric Delineation of Scientific Fields&rsquo;. In <i>Springer Handbook of Science and Technology Indicators</i>, edited by Wolfgang Gl&auml;nzel, Henk F. Moed, Ulrich Schmoch, and Mike Thelwall, 25&ndash;68. Springer Handbooks. Cham: Springer International Publishing. <a class="menu" href="https://doi.org/10.1007/978-3-030-02511-3_2">https://doi.org/10.1007/978-3-030-02511-3_2</a>.</p>
+
+</span><!-- citation ends -->
+
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="app"></a>
+<h3 itemprop="articleSection">Appendix: Science mapping tools</h3>
+
+<p>Science maps can be generated by any general software of graph analysis and visualization, such as Pajek and Gephi. However, in the last years, several dedicated tools have been developed specifically for science mapping, such as VOSviewer, CiteSpace, HistCite, Sci2 Tool, SciMAT, Bibexcel, and CitNetExplorer. In this section, we briefly present CiteSpace and VOSviewer, the two most popular science mapping tools (<a href="#refP">Pan et al. 2018</a>). They are both free, constantly updated, and provided with extended user-guides. A full description of these and other tools can be found in (<a href="#refM">Moral-Munoz et al. 2019</a>).</p>
+
+<h4>CiteSpace</h4>
+
+<p>CiteSpacei was developed by Chaomei Chen in 2004 at Drexel University (USA) (<a href="#refC">Chen 2006</a>). Since its first version, it has a special focus on the <i>temporal dynamics</i> of scientific networks. Its primary goal is to detect emerging trends and bursts of interest in a knowledge domain. Therefore, the visualizations it produces pay special attention to the dynamical aspects of the mapped domain: for instance, the number of citations received by an article is visualized as &ldquo;citation tree rings&rdquo;, in which the thickness of each ring is proportional to the number of citation received in a given time slice. CiteSpace also highlights &ldquo;pivotal points&rdquo; in the emergence of new specialties, i.e., articles denoted by high betweenness centrality  that bridge across different co-citation clusters.</p>
+
+<p>After the dataset is downloaded from Web of Science, Scopus, or other compatible bibliographic databases, CiteSpace allows to manage the entire workflow of science mapping. The network can be extracted from the data choosing different entities as nodes (author, institution, journal, country, cited publication, terms, keywords, etc.). The dataset can be split into time slices and the most relevant items according to some threshold can be selected (e.g., top-cited papers in each time slice). CiteSpace offers different methods to normalize the raw values and to &ldquo;prune&rdquo; the network in order to retain the most relevant links. Maps can be generated both in the form of graph-based visualizations, and timeline-based visualizations. The visualization tool allows controlling each feature of the map, from the layout to the labels of nodes, links, and clusters, to navigate the map, and to select specific nodes by clicking on them. Tools for clustering, automatic extraction of clusters&rsquo; labels, citation burst detection, and other analyses are included. </p>
+
+<p>CiteSpace is a very powerful software and it produces aesthetically impressive visualizations. However, it needs some expertise to fully take advantage of all its features. We suggest it to advanced users who already have some skills in science mapping.</p>
+
+<h4>VOSviewer</h4>
+
+<p>VOSviewerii was developed by Nees Jan van Eck and Ludo Waltman in 2010 at the Center for Science and Technology Studies (CWTS) in Leiden (The Netherlands) (<a href="#refE">Eck and Waltman 2010</a>). If the first versions of the tool focused only on the visualization of bibliometric networks, the new versions allow to manage the entire workflow of science mapping.  A special feature of VOSviewer is that it produces only distance-based visualizations, using a dedicated technique called VOS mapping technique, where VOS stands for &ldquo;visualization of similarity&rdquo; (<a href="#refE">Eck et al. 2010</a>). Such a technique is a variant of multi-dimensional scaling that avoids some visual artifacts generated by classic MDS methods (see <a href="#4.1.4">Section 4.1.4: Visualization</a>). </p>
+
+<p>VOSviewer can create maps based on any network data (e.g., Pajek network files) but it can also extract the network from bibliometric data. It supports data from Web of Science, Scopus, PubMed, and other databases. The &ldquo;Create map wizard&rdquo; allows the user to extract from the data several kinds of networks. Possible nodes include publications, journals, authors, research organizations, countries, keywords, terms. Links can be co-authorship, co-occurrence, direct citation, bibliographic coupling or co-citation links. Moreover, VOSviewer uses a dedicated clustering technique, based on modularity, to find groups of similar nodes (<a href="#ref">Waltman, van Eck and Noyons 2010</a>). The nodes are then colored according to the cluster they belong to. The size of the nodes and links is used to show some nodes or links property, such as the number of citations and co-occurrences. VOSviewer offers three visualizations of a map: the network visualization, the overlay visualization, and the density visualization. Zooming and scrolling functionalities allow exploring in detail the map. In the overlay visualization, properties of the nodes different from their cluster (e.g., the Impact Factor of a journal in a journal map), can be shown in different colors.</p>
+
+<p>Compared to CiteSpace, VOSviewer is less focused on the dynamical aspects of knowledge domains and offers fewer tools for the analysis of science maps. However, it is very easy to use, the create map wizard is intuitive, and the distance-based visualization facilitates the interpretation of the maps. We suggest it to the novices and to professionals who need a user-friendly tool for science mapping.</p>
+
+</span><!-- articleBody ends -->
+
+
+<a name="col"></a>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<p>&nbsp;</p>
+
+<p>Visited <a href="https://www.digits.net" target="_blank"><img src="https://counter.digits.net/?counter={e00519f3-0a21-4864-8db3-c9791e9ac870}&template=simple" alt="Hit Counter by Digits" border="0"  /></a> times.</p>
+
+<hr>
+<p itemprop="dateCreated">Version 1.0 published 2020-06-10 
+<br>Version 1.1 published 2021-04-26: reference to Osinska and Malak added
+
+<p>Article category: <code><a itemprop="about" href="index#T">KO in different contexts and applications</a></code></p>
+
+<p>This article (version 1.0) is also published in <i>Knowledge Organization</i>. How to cite it:
+<br>Petrovich, Eugenio. 2021. 
+&ldquo;Science mapping and science maps&rdquo;. 
+<i>Knowledge Organization</i> 48, no. 7-8: 535–562.
+Also available in 
+<i><span itemprop="isPartOf">ISKO Encyclopedia of Knowledge Organization</span></i>, 
+eds. <span itemprop="editor">Birger Hj&oslash;rland</span> and <span itemprop="editor">Claudio Gnoli</span>, 
+<span itemprop="url">https://www.isko.org/cyclo/science-mapping </span></p>
+
+<p>&copy;2020 <span itemprop="publisher">ISKO</span>. All rights reserved.</p>
+
+</div><!-- Article ends -->
+
+</td>
+</tr>
+
+<tr>
+<td id="logo">
+</td>
+</tr>
+
+</table>
+</body>
+</html>

@@ -1,0 +1,391 @@
+= umrs-stat — File Security Audit Card
+Jamie L. Adams
+:description: Reference page for umrs-stat — an interactive TUI that displays \
+    the security attributes of a file: SELinux label, inode flags, observations, \
+    and identity.
+:toc: left
+:toclevels: 3
+
+// NIST SP 800-53 AC-3, AU-3, CA-7, SC-28, SI-7
+// NSA RTB RAIN — Non-Bypassability, TOCTOU Safety
+
+== Purpose
+
+`umrs-stat` is a security overlay of the classic `stat` command.
+Where `stat` shows timestamps, permissions, and inode metadata, `umrs-stat` shows
+the security attributes that matter for a CUI or high-assurance system:
+the SELinux security context, inode integrity flags, encryption source, and
+typed security observations derived from what the tool actually sees.
+
+The tool opens the file once and performs all subsequent attribute reads through
+that single file descriptor.
+This inode-anchored approach eliminates the TOCTOU (Time-of-Check/Time-of-Use)
+window that path-based tools are exposed to — a file cannot be swapped between
+the open and the metadata read.
+
+.Primary audiences
+* *Security operators* — verify that a file carries the expected security label
+  before processing it as CUI.
+* *Security auditors* — inspect integrity flags, encryption source, and SELinux
+  label state as part of a file-level audit.
+* *Developers* — understand how `SecureDirent` exposes security attributes
+  and how findings are typed and classified.
+
+'''
+
+== Usage
+
+[source,shell]
+----
+umrs-stat <PATH>
+umrs-stat <PATH> --json
+umrs-stat --help
+umrs-stat --version
+----
+
+`PATH` is required.
+The tool inspects the file at the given path and displays the result as an
+interactive audit card.
+
+.Options
+[cols="2,4", options="header"]
+|===
+| Option | Effect
+
+| `<PATH>`
+| Path to the file to inspect. Must be valid UTF-8.
+
+| `--json`
+| Accepted now for forward compatibility; JSON output is a planned future feature.
+
+| `--help`
+| Print usage and exit.
+
+| `--version`
+| Print version and exit.
+
+|===
+
+.Key bindings
+[cols="2,4", options="header"]
+|===
+| Key | Action
+
+| `Tab` / `Right`
+| Next tab
+
+| `Shift-Tab` / `Left`
+| Previous tab
+
+| `j` / `Down`
+| Scroll down
+
+| `k` / `Up`
+| Scroll up
+
+| `q` or `Esc`
+| Quit
+
+|===
+
+NOTE: Non-UTF-8 paths are rejected at startup with a clear error message.
+The tool operates on labeled paths that must be displayable in the audit card.
+
+'''
+
+== Tab Reference
+
+`umrs-stat` presents data in three tabs.
+Tab order is fixed.
+
+=== Tab 0 — Identity
+
+Shows the static identity of the file.
+
+.Fields shown
+[cols="2,4", options="header"]
+|===
+| Field | Content
+
+| Path
+| Absolute path as provided on the command line
+
+| Filename
+| Terminal component of the path
+
+| File type
+| Regular file, directory, symbolic link, block device, character device, FIFO, or socket
+
+| Link target
+| Destination of a symbolic link (symlinks only); displayed as `-\-> <target>`
+
+| MIME type
+| Content type detected from file content (e.g., `application/x-elf`, `text/plain`)
+
+| Binary format
+| `ELF64` or `ELF32` — for ELF regular files only
+
+| Binary type
+| `Executable`, `Shared object (DSO/PIE)`, `Relocatable`, or `Core dump` — for ELF files
+
+| Size
+| Raw byte count; human-readable suffix appended for files ≥ 1024 bytes
+
+| Mode
+| Octal permission string (e.g., `0644`, `4755`)
+
+| Inode
+| Inode number
+
+| Device
+| Device identifier
+
+| Hard links
+| Number of hard links; shown yellow when > 1 on a non-directory (potential security finding)
+
+| Owner
+| UID and username; yellow if the username could not be resolved
+
+| Group
+| GID and group name; yellow if the group name could not be resolved
+
+| Mount point
+| Whether this file is a filesystem mount point
+
+| Filesystem / Device node / Mounted on
+| From `/proc/mounts`; longest-prefix mount point match for the file's path
+
+|===
+
+NOTE: The MIME type is determined by reading file content (via `tree_magic_mini`).
+This is display-only — it is not a trust-relevant assertion and does not affect
+any policy decision.
+
+=== Tab 1 — Security
+
+Shows the security attributes of the file.
+
+==== SELinux Context
+
+The SELinux context section shows the full security context when the file is labeled.
+
+.SELinux context fields
+[cols="2,4", options="header"]
+|===
+| Field | Content
+
+| SELinux Context
+| Summary row — color reflects label state (green = labeled, red = unlabeled or failed)
+
+| SELinux user
+| User component of the security context (e.g., `system_u`, `unconfined_u`)
+
+| SELinux role
+| Role component (e.g., `object_r`)
+
+| SELinux type
+| Type component — the primary policy enforcement identifier (e.g., `etc_t`, `shadow_t`)
+
+| Raw label
+| The raw MLS level string (e.g., `s0`, `s0:c0,c1`)
+
+| Label state
+| `Labeled`, `Unlabeled`, `ParseFailure`, or `TpiDisagreement`
+
+| Marking
+| Human-readable classification marking derived from the MCS translation table
+  (e.g., `UNCLASSIFIED//FOUO`)
+
+|===
+
+.Label state values
+[cols="1,4", options="header"]
+|===
+| State | Meaning
+
+| `Labeled`
+| File carries a valid, parseable SELinux security context.
+
+| `Unlabeled`
+| File has no SELinux label — not covered by the policy.
+
+| `ParseFailure`
+| A label string was present but could not be parsed.
+
+| `TpiDisagreement`
+| Two independent parsers (`nom` and `FromStr`) produced different results for the same label string.
+This indicates a malformed label that passes one parser but not the other.
+(NIST SP 800-53 SI-10)
+
+|===
+
+WARNING: A `TpiDisagreement` label state indicates the file's security context is malformed.
+Do not rely on the label for access control decisions.
+The file should be relabeled via `restorecon` and the source of the malformed label investigated.
+
+==== Inode security flags
+
+[cols="2,1,4", options="header"]
+|===
+| Flag | Good state | Meaning
+
+| Immutable
+| Yes (green)
+| File cannot be modified, renamed, or deleted even by root until the flag is cleared.
+  (NIST SP 800-53 SI-7)
+
+| IMA/EVM
+| Yes (green)
+| An IMA integrity hash is present for this file.
+  Access is denied if the content no longer matches.
+  (NIST SP 800-53 SI-7)
+
+| Append-only
+| Yes (green)
+| File can only be extended, not overwritten or truncated.
+  Relevant for audit log files.
+  (NIST SP 800-53 AU-9)
+
+| POSIX ACL
+| Present (yellow)
+| An extended POSIX ACL is in effect.
+  Standard mode bits alone do not describe the full access policy.
+  Verify that the ACL matches the intended policy.
+  (NIST SP 800-53 AC-3)
+
+| Access denied
+| No (normal)
+| The tool was denied access to at least one attribute during inspection.
+  The card displays what was readable; denied attributes are flagged, not silently omitted.
+
+|===
+
+==== Encryption source
+
+[cols="1,4", options="header"]
+|===
+| Value | Meaning
+
+| None
+| No filesystem-level encryption detected for this file's mount path.
+
+| LUKS (dm-crypt)
+| File resides on a LUKS-encrypted block device.
+  (NIST SP 800-53 SC-28)
+
+| Encrypted filesystem (`<type>`)
+| File resides on a filesystem with native encryption (e.g., `ext4` encrypt, `fscrypt`).
+
+|===
+
+NOTE: Encryption source is determined by examining `/proc/mounts` for the file's
+mount path and identifying the underlying device or filesystem type.
+It does not verify that encryption is correctly configured or that the key
+strength meets policy requirements.
+
+=== Tab 2 — Observations
+
+Shows typed security findings for the file.
+
+Observations are structured data — each is an enum variant with a polarity
+(good, warning, or risk), not a free-form log string.
+This allows callers to count, filter, and match findings programmatically.
+(NIST SP 800-53 AU-3, CA-7)
+
+.Observation polarities
+[cols="1,1,3", options="header"]
+|===
+| Polarity | Color | Meaning
+
+| Good
+| Green
+| A positive security property was confirmed.
+
+| Warning
+| Yellow
+| A condition that requires attention but does not constitute a definite risk.
+
+| Risk
+| Red
+| A condition that is a known security concern on this system.
+
+|===
+
+The status bar at the bottom of the card reflects the highest-severity observation:
+red for any risk finding, yellow for warnings with no risks, green for no concerns.
+
+'''
+
+== Security Design
+
+`umrs-stat` is built on `SecureDirent` — the UMRS inode-anchored file inspection
+primitive.
+The key design properties:
+
+* *Single-open, fd-anchored reads* — the file is opened once.
+  All subsequent reads (xattr for SELinux label, `ioctl` for inode flags) operate
+  through the resulting file descriptor.
+  The path is never re-resolved after the initial open.
+  This eliminates the TOCTOU race window present in path-based tools.
+  See xref:devel:high-assurance-patterns.adoc[TOCTOU Safety] for the full pattern description.
+
+* *Two-path independence (TPI) for label parsing* — the SELinux label string is
+  parsed independently by two parsers (`nom` and `FromStr`).
+  If they disagree, the label state is `TpiDisagreement` and the discrepancy
+  is surfaced as a finding.
+  A label that passes only one parser cannot be used for policy decisions.
+  (NIST SP 800-53 SI-10)
+
+* *Findings as typed data* — `SecurityObservation` variants are enum values,
+  not log strings.
+  The Observations tab renders them; the status bar summarizes them by severity.
+  No security finding can be silently lost.
+  (NIST SP 800-53 AU-3)
+
+* *Fail-visible, not fail-silent* — when an attribute cannot be read (permission
+  denied, kernel node absent), the card shows the field as unavailable.
+  Nothing is silently omitted.
+
+'''
+
+== Compliance
+
+[cols="1,3", options="header"]
+|===
+| Control | How `umrs-stat` satisfies it
+
+| NIST SP 800-53 AC-3
+| Displays the full MAC label and permission mode;
+  POSIX ACL presence is flagged when extended DAC is in effect.
+
+| NIST SP 800-53 AU-3
+| Every audit card is self-identifying (report name + subject path);
+  observations are typed and structured, not free-form text.
+
+| NIST SP 800-53 CA-7
+| Observations surface findings as typed data that can be counted and matched
+  without parsing log output.
+
+| NIST SP 800-53 SC-28
+| Encryption source is displayed for every file; absence of encryption is
+  explicit, not left unaddressed.
+
+| NIST SP 800-53 SI-7
+| TOCTOU-safe fd-anchored reads prevent path-swap attacks;
+  IMA/EVM flag is surfaced on every file inspection;
+  TPI parsing catches malformed labels.
+
+| NIST SP 800-53 SI-10
+| TPI disagreement is surfaced as a `TpiDisagreement` finding,
+  not silently resolved in favor of either parser.
+
+|===
+
+'''
+
+== See Also
+
+* xref:devel:high-assurance-patterns.adoc[High-Assurance Coding Patterns] — TOCTOU safety, TPI, findings-as-data
+* xref:security-concepts:integrity-and-provenance.adoc[Integrity and Provenance] — conceptual background on TOCTOU, IMA/EVM, and provenance
+* xref:umrs-tools:umrs-uname.adoc[umrs-uname] — companion tool for system-level posture inspection
+* xref:umrs-tools:umrs-ls.adoc[umrs-ls] — directory listing with SELinux label grouping

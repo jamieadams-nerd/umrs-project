@@ -1,0 +1,1828 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head profile="http://dublincore.org/documents/2007/11/05/dc-html/">
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>PRECIS (IEKO)</title>
+<link rel="stylesheet" type="text/css" href="../isko.css" />
+<link rel="schema.DCTERMS" href="http://purl.org/dc/terms/" />
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:url" content="https://www.isko.org/cyclo/precis" />
+<meta name="twitter:title" content="Preserved Context Index System (PRECIS) (ISKO Encyclopedia of KO)" />
+<meta property="og:image" content="https://www.isko.org/cyclo/precis1.jpg" />
+<meta name="twitter:description" content="This article discusses the genesis and development of PRECIS indexing system, its syntax and semantics, different formats and structure, and the primary notions underlying the system. It further explains how index entries are generated through a simple mechanical process called shunting. The merits and criticisms of the system and its application across countries, across languages and across media have also been discussed. Finally, its relevance and workability in the online environment have been examined." />
+
+<meta name="DCTERMS.title" content="Preserved Context Index System (PRECIS)" />
+<meta name="DCTERMS.creator" content="Amitabha Chatterjee" />
+<meta name="DCTERMS.issued" content="2022" />
+<meta name="DCTERMS.relation.ispartof" content="ISKO Encyclopedia of Knowledge Organization" />
+<meta name="DCTERMS.ispartof" content="ISKO Encyclopedia of Knowledge Organization" />
+<meta name="DCTERMS:bibliographicCitation" content="ISKO Encyclopedia of Knowledge Organization, eds. Birger Hjorland and Claudio Gnoli" />
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="001.012">
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="025.4">
+<meta name="DCTERMS.subject.keyword" content="subject indexing">
+<meta name="DCTERMS.subject.keyword" content="subject headings">
+<meta name="DCTERMS.subject.keyword" content="Derek Austin">
+<meta name="DCTERMS.type" content="Text" />
+<meta name="DCTERMS.format" content="text/html" />
+<meta name="DCTERMS.identifier" content="https://www.isko.org/cyclo/precis" />
+
+<style>
+a {text-decoration: none;}
+a:hover {text-decoration:underline;}
+table td, table th { padding: 5px; }
+</style>
+
+</head>
+<body>
+
+<a name="top"></a>
+
+<table>
+
+<tr>
+<td id="isko"><h1>I S K O</h1></td>
+<td id="banner"><h2><a href="index.html" style="text-decoration:none;">Encyclopedia of Knowledge Organization</h2></a></td>
+</tr>
+
+<tr>
+<td id="navigation">
+<a href="../index.php">home</a>
+<a href="../about.html">about ISKO</a>
+<a href="../join.html">join ISKO</a>
+<a href="../ko.html"><cite>Knowledge Organization</cite> journal</a>
+<a href="../events.html">ISKO events</a>
+<a href="../chapters.html">ISKO chapters</a>
+<a href="../people.html">ISKO people</a>
+<a href="../pubs.html">ISKO publications</a>
+<a href="index.html">Encyclopedia</a>
+<a href="../lit.html">KO literature</a>
+<a href="../inst.html">KO institutions</a>
+<a href="http://bartoc.org/" title="link to BARTOC">&#8663; KOS registry</a>
+<a href="https://www.isko-mms.net/" title="access-account required">&#128274; members</a>
+<a href="../contact.html">contact us</a>
+</td>
+<td id="content" rowspan="2">
+
+<a class="menu" href="authors#hj">edited by Birger Hj&oslash;rland</a> <a class="menu" href="authors#g">and Claudio Gnoli</a>
+
+<p>&nbsp;
+
+<div itemscope itemtype="http://schema.org/Article">
+
+<h2 itemprop="headline">Preserved Context Index System (PRECIS)</h2>
+
+<blockquote>
+by <a itemprop="author" href="authors#c" style="text-decoration:underline">Amitabha Chatterjee</a>
+
+<p>Table of contents:
+
+<br><a href="#1">1.       Introduction
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#1.1">1.1 Genesis of PRECIS</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#1.2">1.2   Type of indexing system</a>
+<br><a href="#2">2.       Relationships between terms</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#2.1">2.1 Syntactical relationships</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#2.2">2.2 Semantic relationships:</a> <a href="#2.2.1">2.2.1 Relevance of thesaurus;</a> <a href="#2.2.2">2.2.2 PRECIS as a dual system </a>
+<br><a href="#3">3.       Format and structure</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#3.1">3.1 Primary notions</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#3.2">3.2 Approach term</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#3.3">3.3 Three-part format</a>
+<br><a href="#4">4.       Generation of entries </a>
+<br><a href="#5">5.       Aids for term organization</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#5.1">5.1 Role operators:</a> <a href="#5.1.1">5.1.1 Kinds of role operators</a> 
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#5.2">5.2 Codes</a>
+<br><a href="#6">6.       String making</a>
+<br><a href="#7">7.       Final entries</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#7.1">7.1 Arrangement of entries</a>
+<br><a href="#8">8.       Treatment of compound terms</a>
+<br><a href="#9">9.       Variant formats</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#9.1">9.1 Inverted format</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#9.2">9.2 Predicate transformation</a>
+<br><a href="#10">10.     Merits of PRECIS </a>
+<br><a href="#11">11.     Criticism of PRECIS</a>
+<br><a href="#12">12.     Applications of PRECIS</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#12.1">12.1 Applications across languages</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#12.2">12.2 Applications for different media</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#12.3">12.3 Other applications</a>
+<br><a href="#13">13.     PRECIS in online environment </a>
+<br><a href="#14">14.     Conclusion</a>
+<br><a href="#end">Endnotes</a>
+<br><a href="#ref">References</a>
+<br><a href="#app1">Appendix 1: PRECIS index sample page</a>
+<br><a href="#app2">Appendix 2: A bibliography on PRECIS</a>
+<br><a href="#col">Colophon</a>
+
+<p itemprop="abstract"><strong>Abstract</strong>:
+<br>This article discusses the genesis and development of PRECIS indexing system, its syntax and semantics, different formats and structure, and the primary notions underlying the system. It further explains how index entries are generated through a simple mechanical process called <i>shunting</i>. The merits and criticisms of the system and its application across countries, across languages and across media have also been discussed. Finally, its relevance and workability in the online environment have been examined.</p>
+
+</blockquote>
+
+<span itemprop="articleBody">
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="1"></a>
+<h3 itemprop="articleSection">1.    Introduction</h3>
+
+<p>PREserved Context Index System (PRECIS) was developed by Derek Austin around the later part of 1960s as an alternative procedure for deriving the subject index entries for <i>British National Bibliography</i> (BNB). Almost since its very inception, BNB had been using chain procedure or chain indexing <a href="#e1">[1]</a>, propounded by Dr. &rarr; <a href="ranganathan">S. R. Ranganathan</a> (<a href="#refR">Ranganathan 1938</a>, 79-174), for the preparation of its alphabetical subject index, but when it got involved with MARC (Machine Readable Catalogue) project, some difficulties cropped up in generating the subject index entries directly from the machine-readable records <a href="#e2">[2]</a>. So, an investigation was started for an alternative method for generating alphabetical subject index &rarr; <a href="sap">entries</a> directly from the computer instead of through an indexer as was being done in chain procedure <a href="#e3">[3]</a>. PRECIS is, obviously, the outcome of that investigation (Chatterjee 1983, 55). The investigation had been carried out keeping the following objectives in view (<a href="#refA">Austin 1977; 1982</a>; <a href="#refS">Sarkhel 1998</a>):
+
+<ul>
+<li>The original indexing will be intellectual, but all subsequent operations, will have to be done by the computer. That means, the indexer&rsquo;s responsibility will be only to prepare the input string and to give necessary instructions to the computer to generate index entries according to definite formats.</li>
+
+<li>There should be an entry for each approach term and each entry should express the complete thought content / full context of the document unlike chain indexing where only one entry is fully coextensive with the subject and the others are cross references showing only one aspect of the complete content of the document.</li>
+
+<li>Each entry should be meaningful to the user, preferably without the need for explanation, which in practice means that the language used should be close to natural language, and relationships that are not explicit should be made so by use of natural language devices such as prepositions rather than any neutral set of symbols.</li>
+
+<li>Indexers should, for the sake of consistency and collocation, work within the framework of a common set of indexing rules. These rules should be applicable irrespective of the subject-field or medium.</li>
+
+<li>The system should be based on the concept of open-ended vocabulary, which means that the terms can be admitted into the index at any time as soon as they have been encountered in the literature. </li>
+
+<li>There should be a system of cross references for semantically related terms generated by the computer from a machine held thesaurus.</li>
+
+</ul>
+
+<p>After trial application of the system in indexing some 95000 documents in <i>British National Bibliography</i> from 1971 to 1973, the definitive version of the system was introduced in 1974, in which year the first edition of the <i>PRECIS Manual</i> was also published (<a href="#refC">Curwen 1985</a>). In the light of the experience gained through the application of PRECIS in different countries of Europe, as also in China, Austin brought out the second edition of the manual in 1984, in which some new codes were introduced, and some existing codes were modified by making more generalized and simpler coding of the PRECIS input string (<a href="#refA">Austin 1984</a>; <a href="#refS">Sarkhel 1998</a>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="1.1"></a>
+<h4 itemprop="articleSection">1.1 Genesis of PRECIS</h4>
+
+<p>Nevertheless, the genesis of PRECIS may also be traced to the research carried out by Classification Research Group in UK in 1960s for a new general faceted classification. Austin, who was actively associated with this project, devised a system of operators. The system was considerably influenced by other members of CRG. This eventually formed the basis of PRECIS (<a href="#refH">Hancox and Smith 1985</a>, 122; <a href="#refM">McIlwaine 2003</a>, 207). Austin has himself admitted that &ldquo;PRECIS evolved out of research originally aimed at &rarr; <a href="ilc#2">a new shelf-order classification</a>&rdquo; (<a href="#refA">Austin 1998</a>, 29). Naturally, &ldquo;PRECIS has as its framework the principles of &rarr; <a href="facet_analysis">analytico-synthetic</a> classification. In other words, PRECIS incorporates rules for both analysis and synthesis of concepts&rdquo; (<a href="#refD">Dykstra 1989</a>, 89). An indexer, following PRECIS, has to first analyse the contents of a document and then synthesize the concepts expressing the content in the form of a string in context dependent order, on the basis of which index entries are generated by a computer by applying <i>shunting</i> process (see <a href="#3">Sections 3&ndash;7</a>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="1.2"></a>
+<h4 itemprop="articleSection">1.2.    Type of indexing system</h4>
+
+<p>According to its creator Derek Austin (<a href="#refA">1984</a>, 1), &ldquo;A PRECIS index is usually produced by a computer, but the system does not belong to the class of automatic indexes, in which terms, intended for use as keywords in retrieval, are extracted from texts entirely by a computer. The production of a PRECIS index can be considered in two stages, the first performed by a human indexer, and the second by a machine. The indexer is responsible for intellectual tasks, such as examining the document, selecting appropriate indexing terms, and deciding how these terms are interrelated. The terms selected by the indexer are recorded in the form of an <i>input string</i>, where each term is prefixed by a code that indicates, for example, whether or not the term should function as a user's access point, a <i>lead</i>, in the printed index. These strings are inputs to the computer, which then takes over the various clerical jobs which indexers tend to find irksome for the same reason that computers do them so well: they consist of repetitive, step-by-step routines which can be described in algorithms and translated into programs&rdquo;. Hence Austin has often termed PRECIS as &ldquo;a computer assisted [indexing] system&rdquo; (<a href="#refA">Austin 1998</a>, 43). Tonta (<a href="#refT">1992</a>, 6) has found the system &ldquo;akin to a natural language-based subject indexing system&rdquo;. It allows for &ldquo;a very specific, syntactically meaningful, natural language representation of the subject content&rdquo; (<a href="#refB">Bidd et al. 1986</a>, 177-178). The various aspects of the system are described below.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2"></a>
+<h3 itemprop="articleSection">2.     Relationships between terms and concepts</h3>
+
+<p>A common distinction in language is between syntactical and semantic relations, where <i>syntactical</i> relationships are related to grammar such as the relation between adjectives and nouns, while <i>semantic</i> relations are about word senses, meanings, and the concepts they refer to. Semantic relations in a broad sense include, for example, the generic relation <a href="#e4">[4]</a> or the part-whole relation and lexical relations such as synonymy <a href="#e5">[5]</a>. Both syntax and semantics are wide fields influenced by different philosophies, which also concern the relations between them. As G&auml;rdenfors (<a href="#refG">1999</a>, electronic source, no pages) wrote:
+
+<blockquote>For Chomsky and his followers, Individuals are Turing machines that process syntactic structures according to some, partly innate, recursive system of grammatical rules. Questions concerning the meaning of the words, let alone problems related to the use of language in communication, were seen as not properly belonging to a cognitive theory of linguistics. [&hellip;] On the other hand, a second tradition turns the study programme up-side-down: actions are seen as the most basic entities; pragmatics consists of the rules for linguistic actions; semantics is conventionalised pragmatics; and finally, syntax adds grammatical markers to help disambiguate when the context does not suffice to do so. This tradition connects with several other research areas like anthropology, psychology, and situated cognition.</blockquote></p>
+
+<p>Such different theories about syntax and semantics have, as also argued by Frohmann (<a href="#refF">1983</a>), important implications for classification and knowledge organization as well as for any &rarr; <a href="ir">information retrieval (IR)</a> system, and therefore also for the view underlying the PRECIS system. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2.1"></a>
+<h4 itemprop="articleSection">2.1     Syntactical relationships</h4>
+
+<p>Syntax means grammatical arrangement of words or terms in a phrase or sentence. It is studied both in relation to natural language, to programming languages and to IR languages <a href="#e6">[6]</a> such as classification and indexing systems. In 1957 linguist Noam Chomsky published <i>Syntactic Structures</i>, which was very influential (also in establishing the interdisciplinary field &ldquo;cognitive science&rdquo;). It represents a view that there exists a universal grammar (UG) underlying the specific grammars of specific language, and that this UG is innate and thus hard-wired in the human brain, and this idea has also corresponding views in information science, for example, Ranganathan&rsquo;s &ldquo;principle of absolute syntax&rdquo; <a href="#e7">[7]</a> (<a href="#refR">Ranganathan 1967</a>, 579-582). At this point it is important to say that theories like those of Chomsky&rsquo;s have today been challenged by more pragmatic theories, such as functional grammar and functional discourse grammar (as also indicated in the above quote from <a href="#refG">G&auml;rdenfors 1999</a>).  We shall return to the implications of such different syntactic theories for PRECIS (and IR languages in general) in <a href="#11">Section 11</a>. </p>
+
+<p>In relation to PRECIS, syntax refers to organization or sequence of terms in an input string, which together express the contents of a specific &rarr; <a href="document">document</a>, and that in entries generated by a computer out of that string. Syntactical relationships are thus the relationships between the terms appearing in an input string and between the terms appearing in index entries generated from that string. Syntactical relationships of PRECIS are handled by means of a set of logical rules and a schema of <i>role operators</i> and that of <i>codes</i>. According to Curwen (<a href="#refC">1985</a>, 247), these rules help an indexer to:
+
+<ul>
+
+<li>select appropriate terms from the thesaurus (or add them to it, if necessary);</li>
+
+<li>organize them into a subject statement which is a &lsquo;context-dependent&rsquo; string (that is, each term is read in the light of those which precede it in the string);</li>
+
+<li>assign codes (&lsquo;operators&rsquo;) which both fix that statement and also signify the syntactical function of each term (e.g., action, agent, property);</li>
+
+<li>decide which terms are to appear in the lead or other positions in the index entries and assign further codes to achieve these results; and </li>
+
+<li>add any further prepositions or phrases which will help the final output to be read clearly and unambiguously.</li>
+</ul>
+
+<p>The use of role operators and codes is shown in <a href="#5">Section 5</a>.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2.2"></a>
+<h4 itemprop="articleSection">2.2    Semantic relationships</h4>
+
+<p>Semantics refers to the meaning and the interpretation of words and concepts. In the context of controlled vocabularies (such as classification systems, subject heading systems, &rarr; <a href="thesaurus">thesauri</a> and other kinds of &rarr; <a href="kos">knowledge organization systems (KOS)</a>, semantic and lexical relations have been established before indexing, they are pre-established relative to indexing (but this is not the same as saying that they represent a priori <a href="#e8">[8]</a> relationships between terms in the KOS as it is sometimes claimed, including by S&oslash;rensen and Austin (<a href="#refS">1976</a>, 109). (See <a href="#refH">Hj&oslash;rland 2015</a> for a criticism of the view that semantic relations in IR languages are a priori.) </p>
+
+<p>In PRECIS, the semantic relations are regulated by a machine-held thesaurus that serves as sources of &lsquo;see&rsquo; and &lsquo;see also&rsquo; references in the index (<a href="#refB">Biswas 1988</a>; <a href="#refS">Sarkhel 1998</a>). Nevertheless, there is no pre-constructed thesaurus for PRECIS. An indexer or an organization can create its own thesaurus according to the rules of the system and depending on the need of literature and that of the organization concerned (<a href="#refC">Curwen 1985</a>, 247). In fact, the thesaurus is gradually created during actual indexing work. As an indexer encounters a new term, it is inducted into the thesaurus. The indexer then looks for synonyms, generic terms, and associated terms of the newly inducted term. This process (<a href="#refF">Ferrier 1978</a>, 164): (1) guarantees that the terms chosen are meaningful to the study and practice of the subject; (2) solves the problem of marginal domains, while working in a specialized domain, by avoiding too rigidly delimiting the field of the thesaurus; and (3) leaves the thesaurus open for new entries as and when required. &ldquo;Each accepted term is assigned a number identifying its address in the machine file. Each type of semantic relation (equivalence relation, generic or associative) is associated with a code which is specific to it. The network of relationships is established once and for all, when a term appears. The references will be reproduced automatically in the index each time the term appears again in a chain&rdquo; (<a href="#refF">Ferrier 1978</a>, 164). Thus, the three main factors which form the basic components of the semantic aspect of PRECIS are (<a href="#refB">Biswas 1988</a>, 104):
+
+<ul>
+
+<li><i>Indexing Terms</i>: when building the thesaurus, only lead terms are taken into consideration. Any new term, as soon as it appears into the lead position of an entry, is admitted into the network; that is to say, the vocabulary is open-ended.</li>
+
+<li><i>Reference Indicator Number (RIN)</i>: each of such terms is assigned to an address in a random-access file in the computer and is identified by a seven-digit number (called <i>reference indicator number</i> or RIN) which specifies this address. </li>
+
+<li><i>Relational Codes</i>: the various kinds of relationship between terms held at different addresses (RINs) are indicated by a set of codes. These codes are: Equivalence relationship (code <code>$m</code>), &rarr; <a href="hierarchy">Hierarchical</a> relationship (code <code>$o</code>), and Associative relationship (code <code>$n</code>, <code>$x</code> and <code>$y</code>). These codes form part of the data associated with each term.</li>
+</ul>
+
+<p>The <i>PRECIS Manual</i> (<a href="#refA">Austin 1984</a>) discusses in detail how online input records can be created for machine-readable thesaurus. Incidentally, the British Library compiled an internal thesaurus for PRECIS indexing of the <i>British National Bibliography</i>, which is available on microfiche. Similarly, UTLAS (University of Toronto Library Automation System), which now functions as a computer-based service unit under International Thompson Organization, had also compiled such a thesaurus. In both the cases, thesaurus was built up according to the international standard <i>Guidelines for the Establishment and Development of Monolingual Thesauri </i> (ISO 2788-1986 OE) (<a href="#refD">Dykstra 1989</a>, 86).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2.2.1"></a>
+<h5 itemprop="articleSection">2.2.1    Relevance of thesaurus</h5>
+
+<p>Since, as Wellisch (<a href="#refW">1995</a>, 475) has mentioned, &ldquo;thesauri are primarily intended for indexing as well as for searching and retrieval from post-coordinated systems&rdquo;, a question may arise as to why PRECIS has a provision for construction of a thesaurus though it is considered as a pre-coordinate indexing system because of the fact that the input string that is created by the indexer represents pre-coordinated terms. The simple answer may be that it ensures use of same term to denote same idea throughout the index and that it facilitates creation of &lsquo;see&rsquo; and &lsquo;see also&rsquo; references making searching more effective and accurate. Wellisch has also mentioned that although not the primary purpose, thesauri may also be used for pre-coordinate indexing (<a href="#refW">Wellisch 1995</a>, 475). &ldquo;When this is done, users of the pre-coordinate index are not expected to consult a thesaurus (since cross-references to synonyms etc. may be embedded within the index)&rdquo; (<a href="#refD">Dextre Clarke 2019</a>, 446, Section 3.3).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2.2.2"></a>
+<h5 itemprop="articleSection">2.2.2     PRECIS as a dual system</h5>
+
+<p>There is also another reason for provision in PRECIS for development of a thesaurus &mdash; duality of the system, as pointed out by Dykstra (<a href="#refD">1985b</a>), who has worked with and written extensively on PRECIS (<a href="#refD">Dykstra 1985a</a>). According to her, while being a pre-coordinate system, PRECIS also incorporates several features of a post-coordinate one. She has pointed out that &ldquo;each index entry generated by the computer is the result of the analysis and the synthesis by an indexer of all the terms or descriptors which comprise and are utilized in the expression of a particular subject&rdquo; and that &ldquo;the individual terms thus generated by the system are as amenable to thesaurus construction as is the vocabulary of any post-coordinate system&rdquo; (<a href="#refD">Dykstra 1989</a>, 87).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3"></a>
+<h3 itemprop="articleSection">3.     Format and structure</h3>
+
+<p>As indicated earlier, format and structure of entries represent the syntax and syntactic relationships of an indexing system. Format means the size, form or shape in which the components or parts of an entry are written, while the structure indicates the relationship existing between the components just as the relationship between component words in a sentence. For understanding the format and structure of PRECIS, let us take up the following example of a compound subject consisting of four components as cited by Austin himself (<a href="#refA">Austin 1975</a>).
+
+<blockquote>Training of skilled personnel in the Indian textile industries</blockquote></p>
+
+<p>A close analysis of the above subject reveals that in India there are textile industries; and within textile industries there are skilled personnel and training is given to them. So the four components of the subject can easily be written as:
+
+<blockquote><code>India &ndash; Textile industries &ndash; Skilled personnel &ndash; Training</code></blockquote>
+
+<p>This arrangement of components of a compound subject is called a <i>string</i>.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.1"></a>
+<h4 itemprop="articleSection">3.1     Primary notions</h4>
+
+<p>The string thus arrived at, manifests two special characteristics:
+
+<ul>
+<li>The terms representing components or concepts in a string are arranged in such a way that they are <i>context dependent</i>. That means, the meaning of each term in the string depends upon the meaning of its preceding term in the string and taken together they all represent a single context. For example, the term <code>India</code> gives the geographical context, in which textile industries exist; and <code>Skilled personnel</code>, being a part of <code>Textile industries</code>, are being given <code>Training</code>.</li>
+
+<li>The four components of the string have <i>one-to-one relationship</i> to each other; that means each term is directly related to the next term in the string.</li>
+
+<li>These two special characteristics, the first of which is called <i>context dependency</i> and the second <i>one-to-one relationship</i>, are the primary notions or principles on which the whole idea of PRECIS is based. Incidentally, both these notions are also recognizable features of any natural language.</li>
+</ul>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.2"></a>
+<h4 itemprop="articleSection">3.2     Approach term</h4>
+
+<p>One of the most important characteristics of a good indexing system is its ability to retrieve a document from every point of approach. For this, each component term in a string must be able to work as an approach term for the user, and the entries derived out of an approach term must be able to specify the clear context of the document.  In the above example, the first term <code>India</code> and the last term <code>Training</code> can easily be approach terms, such as
+
+<blockquote><code>India &ndash; Textile industries &ndash; Skilled personnel &ndash; Training</code></blockquote>
+
+<p>Or in the reverse way
+
+<blockquote><code>Training &ndash; Skilled personnel &ndash; Textile industries &ndash; India</code></blockquote>
+
+<p>Both of these give the same context and preserve the one-to-one relationship of the component terms. But difficulty arises when the middle order terms <code>Textile industries</code> and <code>Skilled personnel</code> are made the approach terms. Definitely, bringing those terms to the beginning of the string as approach terms in the following manner:
+
+<blockquote><code>Skilled personnel/India &ndash; Textile industries &ndash; Training</code></blockquote>
+
+or
+
+<blockquote><code>Textile industries/India &ndash; Skilled personnel &ndash; Training</code></blockquote>
+
+do not give the clear context of the document, and the one-to-one relationship between the components of the string is also lost.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.3"></a>
+<h4 itemprop="articleSection">3.3 Three-part format</h4>
+
+<p>Therefore, in PRECIS a special two-line and three-part entry format is used to preserve these important characteristics. This is illustrated in Figure 1.</p>
+
+<div align="center"><figure>
+<img src="precis1.jpg" title="Fig. 1" width="40%">
+<figcaption>Figure 1</figcaption>
+</figure></div>
+
+<p>Here the components of the entry format are named as:
+
+<ul>
+<li><i>Lead</i>: the term which acts as an approach term;</li>
+<li><i>Qualifier</i>: the term/terms which qualifies/qualify the lead term or bring the lead term into its proper context; and</li>
+<li><i>Display</i>: the remaining term/terms which also helps/help preserve the context.</li>
+</ul>
+
+<p>Lead and qualifier are together called <i>heading</i>. It may be mentioned that in the index entry, heading starts from the left-hand margin and continuation of the heading in the next line begins after leaving eight-letter space and display starts from left-hand margin leaving two-letter space and its continuation in the next line starts after leaving four-letter space.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4"></a>
+<h4 itemprop="articleSection">4.     Generation of entries</h4>
+
+<p>Adoption of this two-line three-part structure helps in generating a set of different index entries from a single string through simple mechanical process called <i>shunting</i>. For example, in the string <code>India &ndash; Textile industries &ndash; Skilled personnel &ndash; Training</code>, the first term <code>India</code> is shunted out of the linear structure into the lead automatically by the computer giving us the following entry.</p>
+
+<blockquote><code>
+<b>India</b>
+<br>&nbsp;&nbsp;Textile industries. Skilled personnel. Training
+</code></blockquote>
+
+<p>As any term moves into the lead position, it is printed automatically in bold font. The rest of the terms are printed in normal font except in a few cases. At the next step, the term in the lead is shunted across into the qualifier, and the lead position is then occupied by the next term in the string. By this process we get the following entry:
+
+<blockquote><code>
+<b>Textile industries. India</b>
+<br>&nbsp;&nbsp;Skilled personnel. Training
+</code></blockquote>
+
+<p>By repeating the same procedure, we further get the following two entries:
+
+<blockquote><code>
+<b>Skilled personnel. Textile industries. India</b>
+<br>&nbsp;&nbsp;Training
+</code></blockquote>
+
+<blockquote><code>
+<b>Training. Skilled personnel. Textile industries. India</b>
+</code></blockquote>
+
+<p>Thus, all the four component terms become lead terms by turn keeping the context intact. According to Austin, &ldquo;the <i>lead </i>is always set into its wider context by the <i>qualifier</i> (if any), and itself then establishes a context for the terms in the <i>display</i>. This is the property which named the system: the PREserved Context Index System.&rdquo; (<a href="#refA">Austin 1998</a>, 39). It may, however, be mentioned that the generation of lead terms is not entirely mechanized; it is under the control of a human indexer who indicates his choice of leads. All clerical operations are handled by a computer: it &ldquo;processes the coded index strings to make the required number of entries in specified layouts and typographical styles, extracts the requisite references from the thesaurus, and merges and files them&rdquo; (<a href="#refC">Curwen 1985</a>, 247).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5"></a>
+<h3 itemprop="articleSection">5.     Aids for term organization</h3>
+
+<p>As indicated earlier, PRECIS has developed a schema of <i>role operators </i>and also that of <i>codes</i>, which help in organization of terms in input strings and their manipulation to generate index entries.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5.1"></a>
+<h4 itemprop="articleSection">5.1     Role operators</h4>
+
+<p>A role operator is a code or symbol which specifies the grammatical role or function of the term to which it is prefixed and determines the term&rsquo;s position in the input string. Role operators thus help in writing of the input string by regulating the order of terms in the string. These operators and their associated rules also serve as computer instructions for determining the format, typography and punctuations associated with each index entry. The role operators do not, however, appear in the index entry. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5.1.1"></a>
+<h5 itemprop="articleSection">5.1.1    Kinds of role operators</h5>
+
+<p>There are two kinds of role operators:
+
+<ul>
+<li><i>Primary Operators</i>: earlier known as mainline operators, these operators control the sequence of terms in the input string and also determine the format of entries in the printed index. Primary operators consist of numbers in the range of 0 to 6 having built in filing value. Certain conditions must be satisfied while writing the input string and these will be checked by the computer at the time of input. These conditions have been mentioned under Arrangement in <a href="#6">Section 6</a>.</li>
+
+<li><i>Secondary Operators</i>: earlier known as interposed operators, these operators can be introduced into a string at any point to raise its level of exhaustivity, but these operators cannot be used to start a string. A secondary operator is always to be preceded by a primary operator to which it relates. </li>
+</ul>
+
+<p>The schema of role operators is given in Figure 2 (<a href="#refA">Austin 1984</a>).
+
+<div align="center"><figure>
+<img src="precis2.jpg" title="Fig. 2: Schema of role operators" width="60%">
+<figcaption>Figure 2: Schema of role operators</figcaption>
+</figure></div>
+
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5.2"></a>
+<h4 itemprop="articleSection">5.2     Codes</h4>
+
+<p>The revised version of <i>PRECIS Manual </i>has made provision of three types of codes &mdash; primary, secondary and typographic &mdash; for bringing expressiveness in the index entries. Besides, some more codes and techniques have been provided for manipulation of string to derive index entries. The schema of codes is given below (<a href="#refA">Austin 1984</a>):</p>
+
+<div align="center"><figure>
+<img src="precis3.jpg" title="Fig. 3: Schema of codes" width="60%">
+<figcaption>Figure 3: Schema of codes</figcaption>
+</figure></div>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="6"></a>
+<h3 itemprop="articleSection">6.     Input string making</h3>
+
+<p>As indicated, an input string is a set of terms arranged according to the role operators which act as instructions to the computer for generating index entries. A fully expressive input string is constructed in the following manner according to PRECIS (<a href="#refC">Chatterjee 2016</a>):
+
+<ul>
+<li><i>Subject Analysis</i>: like all other systems of &rarr; <a href="indexing">indexing</a> and &rarr; <a href="classification">classification</a>, the first step in the preparation of a string is the analysis of the subject content of the document to be indexed. By analyzing the subject of the example mentioned above the following title like phrase may be formulated.
+
+<blockquote>
+Training of skilled personnel in the Indian textile industries</blockquote>
+</li>
+
+<li><i>Search for &lsquo;Action&rsquo;</i>: the next step is to find out whether a term denoting an action is present in the phrase or not. If present, the action will usually determine how the rest of the subject should be handled. Here the word &ldquo;training&rdquo; denotes an action. This term should, therefore, be prefixed by the role operator 2 in the following manner:
+
+<blockquote><code>(2) training</code><blockquote>
+</li>
+
+<li><i>Kind of Action</i>: the next step is to find out the kind of action represented by the term, that is, whether the action is transitive or intransitive. If it is a transitive action, it will take an object according to the principles of English grammar. In the present example, <code>Training</code> is a transitive action. So it has taken an object <code>skilled personnel</code> who are being trained. The concept of <code>skilled personnel</code>, therefore, is the key system which should be prefixed by the role operator <code>1</code>. Thus
+
+<blockquote><code>(1)   skilled personnel
+<br>(2)   training</code></blockquote>
+</li>
+
+<li><i>Part Concepts</i>: but a close examination of the term <code>skilled personnel</code>  shows that at least in the present context, it is a part of some other concept, viz., <code>textile industries</code> and, therefore, the term <code>textile industries</code> should be made the key system indicating <code>skilled personnel</code> as a part of the key system by prefixing the secondary operator <code>p</code> which introduces a part or property to a concept. The revised input string, thus, will be:
+
+<blockquote><code>(1) textile industries
+<br>(p)     skilled personnel
+<br>(2) training</code></blockquote>
+</li>
+
+<li><i>Environment</i>: the remaining concept in the subject, viz., <code>India</code> clearly functions as the environment in which the author has considered the whole subject. Therefore, this should be prefixed with the role operator <code>0</code>. The final input string now becomes:
+
+<blockquote><code>(0)     &#10003;India
+<br>(1)     &#10003;textile industries
+<br>(p)     &#10003;skilled personnel
+<br>(2)     &#10003;training</code></blockquote>
+
+<p>Note: In the input string, each term, except a proper name (e.g. <code>India</code> in the above string), begins with a lower case letter, while in an index entry the same term begins with corresponding upper case letter. Tick mark (&#10003;) is provided for each term which shall appear as lead (access point), as shown above, in the index entry.</li>
+
+<li><i>Arrangement</i>: the arrangement of the component terms in the input string is guided by the following principles:
+
+<ul>
+<li>the numbered or primary operators are arranged according to their ordinal value;</li>
+<li>all other operators are attached to the concept with which they are related;</li>
+<li>every string must begin with a term prefixed with a primary operator in the range 0 to 2; and</li>
+<li>every string must also contain a term which is prefixed by the operator 1 and/or 2.</li>
+</ul>
+</li></ul>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="7"></a>
+<h4 itemprop="articleSection">7.     Final entries</h4>
+
+<p>In the above input string, each term that should come as lead has been duly tick marked. Now through the process of shunting the following entries can be generated:
+
+<blockquote><code>
+
+<p><b>India</b>
+<br>&nbsp;&nbsp;Textile industries. Skilled personnel. Training</p>
+
+<p><b>Textile industries. India</b>
+<br>&nbsp;&nbsp;Skilled personnel. Training</p>
+
+<p><b>Skilled personnel. Textile industries. India</b>
+<br>&nbsp;&nbsp;Training</p>
+
+<p><b>Training. Skilled personnel. Textile industries. India</b>
+</code></blockquote>
+
+<p>Note: The lead term in each entry is rendered in <!-- Roman -->bold, while the qualifier is rendered in light face<!-- Roman -->. Display is rendered in light face <!-- Roman -->or italics depending on the role operator (e.g. the term coded with <code>(q)</code> or <code>(5)</code> in inverted format is rendered in italics). </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="7.1"></a>
+<h4 itemprop="articleSection">7.1     Arrangement of entries</h4>
+
+<p>In a printed index all the entries generated through the above process are arranged alphabetically by headings. Under common headings, displays are arranged alphabetically.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="8"></a>
+<h3 itemprop="articleSection">8.      Treatment of compound terms</h3>
+
+<p>The order of components of a compound term (such as <code>trained</code>, <code>female</code> and <code>pilots</code> in case of <code>Trained female pilots</code>), has been a genuine problem since the days of Cutter. Different indexing experts have tried to solve this problem in different manner. According to Austin, &ldquo;the terms in PRECIS are always printed in natural language order &mdash; there are no inverted headings&rdquo; (<a href="#refA">Austin 1984</a>, 46). Access can, however, be provided under any of the component terms in a compound term without losing or distorting the meaning of the whole term. This is accomplished by a technique called <i>differencing</i>. A compound term usually consists of a <i>focus</i> and one or more <i>differences</i>. Focus consists of a noun or substantive element which indicates the general class of things, properties or phenomena to which the term as a whole refers, e.g. <code>Pilots</code> in the above example. Difference modifies or qualifies the focus thereby creating a sub-class of focus, e.g. <code>female</code> and <code>trained</code> in the above example. Differences are of two types from the point of view of the strength of their relationship with the focus &mdash; <i>direct</i> and <i>indirect</i>. In the above example, <code>female</code> directly qualifies the focus <code>pilots</code>, while <code>trained</code> does so indirectly. Further, two main structural types of differences, each with sub-divisions, have also been distinguished in PRECIS (<a href="#refB">Biswas 1988</a>, 63):
+
+<ul>
+<li><i>Preceding Difference</i>, where the difference precedes its focus, either as a separate adjective (as in <code>Compact discs</code>) or as the component of a concatenated word (as in <code>Videodiscs</code>);</li>
+<li><i>Following Difference</i>, where the difference is printed after its focus, either as an adjective (as in <code>Attorney general</code>), or as a noun or nominal phrase following a preposition (as in <code>Economies with uncertainties</code>).</li>
+</ul>
+
+<p>While coding for the purpose of computer processing, three characters are used for differences. The first character is the <code>$</code> (dollar) sign, which serves as an instruction code. It enables the computer program to identify the boundaries of each data element. The instruction code is followed by two digits. The first digit is selected from the following decision matrix or grid:
+
+<div align="center"><figure>
+<img src="precis4.jpg" title="Fig. 4" width="60%">
+<figcaption>Figure 4
+<br>(see Schema of Codes in <a href="#5.2">Section 5.2</a>)</figcaption>
+</figure></div>
+
+(See Schema of Codes in <a href="#5.2">Section 5.2</a>)</p>
+
+<p>A digit between 0 and 3, as shown in the above matrix, indicates two commands &mdash; first, that the difference is to be a lead or non-lead, and second, whether the difference, when printed in the natural language order is to be separated by a space or is to be closed up to the end of the difference. The second and final digit indicates the level of differences, i.e. its distance from the focus &mdash; 1 indicates first level difference or <i>direct difference</i>, while digits 2&ndash;9 indicate the successive levels of <i>indirect differences</i>. For example, <code>Trained female pilots</code> will be coded as <code>(1) Pilots $21 Female $22 Trained</code>.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="9"></a>
+<h4 itemprop="articleSection">9.     Variant formats</h4>
+
+<p>The format in which the entries have been generated above is called standard format. Thus it can be said that index entries in the standard format are generated when any of the primary operators i.e. <code>(0)</code> or <code>(1)</code> or <code>(2)</code> or any of its dependent elements appears in the lead. There are two other formats of PRECIS, viz., <i>inverted format</i> and <i>predicate transformation</i>. Some specific rules have been formulated for each of these formats.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="9.1"></a>
+<h4 itemprop="articleSection">9.1    Inverted format</h4>
+
+<p>Index entries in this format are generated whenever a term coded by an operator in the range of <code>(4)</code> to <code>(6)</code> or its dependent element appears in the lead. When a lead is generated under any of these terms, the display consists of the earlier terms in the string selected in their input order. For terms in this group, a special type of font, viz., italics, is used when it appears in display. An input string of this kind is shown below:
+
+<blockquote>A report on child marriage in India</blockquote>
+</p>
+
+<p>Input string:
+
+<blockquote><code>
+(0) &#10003;India<br>
+(2) &#10003;child marriage<br>
+(6) &#10003;reports
+</code></blockquote>
+
+The index entries for the above string will be:
+
+<blockquote><code>
+
+<p><b>India</b><br>
+&nbsp;&nbsp;Child marriage &ndash; <i>Reports </i></p>
+
+<p><b>Child marriage</b>. India<br>
+&nbsp;&nbsp;&ndash; <i>Reports  </i></p>
+
+<p><b>Reports</b><br>
+&nbsp;&nbsp;India. Child marriage</p>
+</code></blockquote>
+
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="9.2"></a>
+<h4 itemprop="articleSection">9.2     Predicate transformation</h4>
+
+<p>Predicate transformation format is generated when a subject deals with a transitive action related to its performer and the performer term appears in the lead (<a href="#refA">Austin 1987</a>). In other words, when an entry is generated under a term coded by <code>(3)</code> which immediately follows a term coded either by <code>(2)</code> or <code>(s)</code> or <code>(t)</code> &mdash; each of which introduces an action of one kind or another &mdash; the predicate transformation takes place. An input string of this kind is shown below.
+
+<blockquote>Designing of libraries by architect</blockquote>
+
+Input string:
+
+<blockquote><code>
+(1)   &#10003;Libraries<br>
+(2)   &#10003;designing $v by $w of<br>
+(3)   &#10003;architects
+</code></blockquote>
+
+<p>In order to bring expressiveness in the resulting index entries, the connective codes (<code>$v</code> and <code>$w</code>) are attached to the term representing action and it results in a compound phrase. The rule for predicate transformation is that when the term coded <code>(3)</code> goes to the lead, the computer checks the operator assigned to the next preceding term. If that operator is <code>(2)</code> or <code>(s)</code> or <code>(t)</code>, the term coded with any one of these operators and the term accompanied by the code <code>$w</code> (i.e., upward reading connectives, if any) are printed in the display position instead of qualifier position (<a href="#refS">Sarkhel 1998</a>). Accordingly, the index entries for the aforesaid input string will be:
+
+<blockquote><code>
+
+<b>Libraries</b><br>
+&nbsp;&nbsp;Designing by architects</p>
+
+<p><b>Designing</b>. Libraries<br>
+&nbsp;&nbsp;By architects</p>
+
+<p><b>Architects.</b><br>
+&nbsp;&nbsp;Designing of libraries</p>
+</code></blockquote>
+
+<p>Predicate transformation ensures that (<a href="#refB">Biswas 1988</a>, 91):
+
+<ul>
+<li>the actions in which an entity is engaged are collocated, together with the names of its parts and properties (and to some kinds) in the display; and</li>
+<li>it is possible to retain one-to-one relationships between concepts which may have become separated in the input strings, due to their different syntactical roles.</li>
+</ul>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="10"></a>
+<h3 itemprop="articleSection">10.     Merits of PRECIS</h3>
+
+<p>The merits of PRECIS are (<a href="#refC">Craven 1986</a>; <a href="#refF">Foskett 1996</a>; <a href="#refC">Chatterjee 2016</a>) the following.
+
+<ol>
+<li>Since indexing is not dependent on class number, as in chain procedure, any deficiency in classification scheme cannot influence indexing in any manner.</li>
+<li>Indexing is done by analyzing the subject content of the document and all aspects of the subject are included in the subject string.</li>
+<li>It gives a complete subject statement at each entry point and search through any aspect of the subject retrieves the required document.</li>
+<li>Since the subject string is formulated following some definite rules, subject string formulation is not likely to change with change of personnel doing the indexing job.</li>
+<li>Shunting system ensures lead position to every component of the subject string and permutation of components is not required.</li>
+<li>The complete set of operators of PRECIS can deal with compound words (such as <code>armchair</code>, where &ldquo;chair&rdquo; is effectively lost) and &ldquo;portmanteau&rdquo; words.</li>
+<li>PRECIS guides indexers to express certain types of link as also adjectives through codes; the result tends to be a mixture of different grammatical constructions in index strings which aids comprehension in a way similar to that of good style in ordinary language.</li>
+<li>Since context is preserved in every index entry, selection of pertinent document during search becomes easy.</li>
+<li>The user of one PRECIS index will find that all other PRECIS indexes can be searched in very much the same way. Likewise, a PRECIS indexer approaching a new collection does not have to work out, or become familiar with, a new set of rules.</li>
+<li>Within a single index, searchers may become used to one kind of collocation of index strings and one kind of meaningful order of terms, and indexers find decision-making less worrisome.</li>
+<li>Use of full-stops in PRECIS before qualifying terms in the qualifier part of an index string largely avoids the sort of dilemma created by prepositions.</li>
+<li>PRECIS can be adapted for indexing documents in languages other than English too, which has been proved by experiments in several languages.</li>
+</ol>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="11"></a>
+<h3 itemprop="articleSection">11.    Criticism of PRECIS</h3>
+
+<p>In spite of the above merits, the system has been criticized on different grounds. The main criticisms against PRECIS according to Craven (<a href="#refC">1986</a>), Curwen (<a href="#refC">1985</a>), Foskett (<a href="#refF">1996</a>) and Sarkhel (<a href="#refS">1997</a>) are the following.
+
+<ol>
+<li>The syntactic structure of PRECIS is complex and time consuming. It is insuperably difficult for an indexer to keep nearly 200 rules in mind every moment. Its complex system of role operators served to provide the output string for printing but was not otherwise utilized &ndash; though there is no reason why it should not have been.</li>
+<li>PRECIS appears to be imprecise in some aspects; for example, in many instances it does not appear to make any difference whether a concept is coded <code>(1)</code> or <code>(2)</code>, which suggests that the operators would not be of much help in searching a computer file, where they might be included. </li>
+<li>Place name has been treated in several ways as part of the subject string. Depending on the sense, a place name is coded by the operator <code>(0)</code> or <code>(1)</code> or <code>(5)</code> or occasionally <code>(3)</code>. </li>
+<li>The author information may be of value, if an individual or a corporate body is closely associated with a particular subject. Persons as subjects, for example of biographies, also form part of the PRECIS subject string. As a result, entries for an individual may be found in both the author/title file and the subject file. Common practice for many years has been for libraries to file such entries in the author/title file, making this a name file. Of course, if a record is being searched online, it is to some extent immaterial where in the records a piece of information occurs, so long as it is there to be found.</li>
+<li>PRECIS allows very long headings. For example,
+
+<blockquote><code>
+<b>Acquisition</b>. Books. Stock. Libraries. Universities. United States.<br>
+&nbsp;&nbsp;Selection. Approach plans &ndash; <i>Reports</i>
+</code></blockquote>
+
+Long headings like this are not likely to be shared by more than one index element, and the main purpose of distinguishing headings from subheadings seems to be thwarted. Even when more than 100 index elements begin with <code>Acquisition</code>, a PRECIS index display will repeat this term each time if the other component terms of the heading are different. By contrast, in a system in which the lead term alone always forms the heading, the lead term <code>Acquisition</code> could be displayed once for a large number of index elements. </li>
+<li>User of the PRECIS manual (be he a student, a teacher, or a practicing indexer) is too often confronted by the fine distinctions and interpretations which sometimes seem incomprehensible and inconsistent.</li>
+</ol>
+
+<p>More philosophical criticisms have also been raised against PRECIS. Swift, Winn and Bramer (<a href="#refS">1973</a>) examined PRECIS&rsquo; suitability for the indexing of documents within the sociology of education. They conclude that PRECIS was not able to satisfy the requirements of professionals in respect to precision and validity of the indexing because PRECIS&rsquo; formal characteristics and presuppositions prevented a satisfactory indexing. PRECIS assumed an agreement between authors in a domain and did not allow to cope with multi-paradigmatic research <a href="#e9">[9]</a>. Alternatively, they proposed &ldquo;a multi-modal approach to indexing and classification (<a href="#refS">Swift, Winn and Bramer 1977</a>). This criticism of PRECIS is related to the distinction between theories related to &ldquo;absolute syntax&rdquo; on the one side and more pragmatic theories of languages, presented in <a href="#2">Section 2</a>. As Svenonius (<a href="#refS">2000</a>, 184-185) wrote: &ldquo;S&oslash;rensen and Austin [<a href="#refS">1976</a>] construe the PRECIS syntax as also conforming to this principle [of absolute syntax, cited above] and, further, on its basis argue the adaptability of PRECIS to multilingual information organization&rdquo;. It can be added that S&oslash;rensen and Austin (<a href="#refS">1976</a>) directly refer to Chomsky&rsquo;s theory.</p>
+
+<p>Further, Bernd Frohmann (<a href="#refF">1983</a>) made a distinction between a priori semantics and a posteriori semantics. The last position is related to Ludwig Wittgenstein (<a href="#refW">1979</a>), who argued that the meaning of words must be found in their use, in human social activities, and Frohmann found that also early work (1955&ndash;1960) by researchers in the Classification Research Group (<a href="#refC">1955</a>) had adopted this a posteriori semantics by demanding that classification and indexing must be based on the examination on the literature in the field, but that the works by Derek Austin on PRECIS ignored these arguments and adopted the a priori view, which implicates that semantic relations are neutral as to subject fields. Frohmann showed how Austin thereby suggested that &ldquo;any source about semantic relations can be used, one do not have to examine the literature in a given field in order to determine the relations in that field&rdquo;, which Frohmann (supported by Wittgenstein) found to be an unfruitful basis for classification and indexing.  </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="12"></a>
+<h3 itemprop="articleSection">12.    Applications of PRECIS</h3>
+
+<p>PRECIS was basically designed as an alternative method for generating subject index entries for <i>British National Bibliography</i>. Two most important factors which played significant role in search for an alternative method of indexing were: (i) the dependence of chain indexing, which was being used in BNB, on class numbers of documents; and (ii) the decision of the British Library to generate computer-produced BNB with all the indexes. The new system was successfully applied in BNB for more than a decade. But when in 1990 it was decided to revise UKMARC, the need was felt to have a more simplified system of subject indexing for BNB. Consequently, a new Computer Aided Subject System (COMPASS) was introduced for producing subject index entries in BNB in 1991. Nevertheless, the new system used the same kind of basic principles as those of PRECIS. Incidentally, in 1996 COMPASS was also terminated and BNB started using Library of Congress Subject Headings.In UK many other organizations made independent use of PRECIS for their catalogues and indexes. PRECIS was also used in British Education Index (<a href="#refB">Bakewell 1975</a>, 165). It is, however, not known how many, if any, organizations are still using PRECIS in UK. The first important user of PRECIS outside UK was <i>Australian National Bibliography </i>in 1972 and in most respects, it became a replica of BNB. But it discontinued use of the system in 1985 &ldquo;on the grounds that it is no longer justified in devoting resources to the production of a PRECIS index to the bibliography when libraries are otherwise hardly making use of the data&rdquo; (<a href="#refC">Curwen 1985</a>, 254). PRECIS has been the most widely used indexing system in Canadian libraries and institutions. A number of organizations, including the National Library of Canada, adopted PRECIS for their printed catalogues (<a href="#refT">Tonta 1992</a>, 7). In Germany, a revised and simplified version of PRECIS was brought out by Deutsches Bibliothek (German Library) for use in German libraries (<a href="#refM">Maa&szlig;en 1983</a>), while in USA Phyllis Richmond brought out a book <i>Introduction to PRECIS for North American usage</i>  (<a href="#refR">Richmond 1981</a>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="12.1"></a>
+<h4 itemprop="articleSection">12.1     Applications across languages</h4>
+
+<p>According to Austin, natural curiosity had prompted experiments on application of PRECIS in non-English languages from the first adoption of PRECIS in 1971 in BNB (<a href="#refA">Austin 1998</a>, 49). This led to inclusion of an exemplary string in ten languages in the second edition of <i>PRECIS Manual </i>(<a href="#refA">Austin 1984</a>). This exercise demonstrated that the order of terms in a string (as organized by the role operators) need not change between languages (<a href="#refH">Hancox and Smith 1985</a>, 122). Foskett commented that &ldquo;PRECIS appears to be the only indexing language with real possibilities for multi-lingual indexing and the number of languages in which it has proved successful is impressive&rdquo; (<a href="#refF">Foskett 1982</a>, 139). Austin himself demonstrated in his PhD thesis that PRECIS was a multilingual system, being neutral as to the language from which it drew its vocabulary (<a href="#refA">Austin 1982</a>). The system was tested for its application across languages like French, German, Swedish, Danish, etc. and solutions were found for most, if not all, of the syntactical and thesaural problems (<a href="#refC">Curwen 1985</a>; <a href="#refH">Hancox and Smith 1985</a>). &ldquo;There was pressure to expand the set of role operators to address particular issues with certain languages. For example, codes to handle Komposita (compound words) in German were devised but never added to the core set. However, even if extra codes for special situations with certain languages had been added to PRECIS, these would never have complicated the majority of indexing which would have used the core operators&rdquo; (<a href="#refP">Poulter 2013</a>, 56). The British Library took up an ambitious project &mdash; PRECIS Translingual Project &mdash; in 1976 with the aim &ldquo;to create a set of routine and computer programs which will add a translingual component to the PRECIS system. This will enable the computer to convert the input string into a series of language-independent codes and translate these later into appropriate terms in a target language. These terms will then be manipulated into index entries in the target language without further intervention by the indexer&rdquo; (<a href="#refB">BLRDD 1976</a>, 2). But due to non-availability of computer support, the research team could only design detailed specifications for all translingual procedures (<a href="#refV">Verdier 1980</a>). Incidentally, the British Library had also compiled <i>PRECIS Multilingual Terminology</i> to facilitate application of PRECIS in different languages (<a href="#refB">British Library 1975</a>). In Canada it was used to produce a bilingual bibliography (<a href="#refF">Foskett 1982</a>, 139). PRECIS was also actively studied in countries as linguistically and culturally far apart as Denmark, Poland, India and China (<a href="#refC">Curwen 1985</a>, 253). PRECIS was also studied in relation to the Portuguese language by Fujita (<a href="#refF">1989</a>) and in the Italian context by Maltese and Petrucciani (<a href="#refM">1990</a>). Experiments in using PRECIS in different Indian languages showed that it worked well in some languages like Tamil and Telugu (<a href="#refV">Venkatachari 1982</a>, 103&ndash;124). </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="12.2"></a>
+<h4 itemprop="articleSection">12.2     Applications for different media	</h4>
+
+<p>&ldquo;PRECIS has been applied to many different types of media including films, filmstrips, video, stock shots, maps, and realia, such as puppets and other theatrical materials&rdquo; (<a href="#refD">Dykstra 1989</a>, 84). For example, PRECIS was used in <i>The British National Film Catalogue</i> (BNFC), but it was abandoned after four years (<a href="#refC">Curwen 1985</a>, 255). At the invitation of National Film Board of Canada (NFB), Christine Jacobs, an expert in PRECIS, prepared a simplified version of PRECIS (PRECIS-MO i.e., modified PRECIS) for use by the board. It was found that PRECIS-MO framework ensured good coverage of all aspects of the subject(s), and the subject analysis was as precise as necessary. This prompted NFB to take up PRECIS in 1978 for indexing films and videos (<a href="#refJ">Jacobs and Arsenault 1994</a>, 88&ndash;89). PRECIS was also used in <i>British Catalogue of Music</i> in 1984 (<a href="#refC">Curwen 1985</a>, 259). </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="12.3"></a>
+<h4 itemprop="articleSection">12.3    Other applications</h4>
+
+<p>PRECIS was manually applied for preparing the subject catalogue at Aurora High School in Ontario, Canada, during 1972&ndash;1975 and the collected evidence showed significant increase in the use of the subject catalogue by students. Consequently, a model for a computer-based catalogue for an Ontario-wide Information Network for School Libraries using PRECIS was developed in Canada in 1978 (<a href="#refB">Burnham et al. 1978</a>). Several other schools also adopted PRECIS for their subject catalogues eliciting response from the users that supported the claim that &ldquo;a PRECIS subject catalogue not only responds well to the curriculum needs of students and teachers, but also has applications as a learning tool&rdquo; (<a href="#refT">Taylor 1984</a>, 85).Besides, PRECIS was also used for producing back of the book indexes, including those of the second edition of the <i>PRECIS Manual</i> (<a href="#refA">Austin 1984</a>) and <i>IFLA UNIMARC Manual </i>(<a href="#refH">Holt 1987</a>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="13"></a>
+<h3 itemprop="articleSection">13    PRECIS in the online environment</h3>
+
+<p>As indicated, PRECIS was basically designed and developed for generation of printed subject index with the help of computer, especially the subject index of the <i>British National Bibliography</i>, during late 1960s and early 1970s. Obviously, Derek Austin did not think about its possible application in searching &rarr; <a href="opac">online catalogues</a> or databases as these were only at their infancy at that time and their future development was beyond anybody&rsquo;s imagination. Despite its original purpose, it &ldquo;has attributes which make it easily manipulated by machine,&rdquo; asserted Williamson (<a href="#refW">1984</a>, 83). Dykstra pointed out that &ldquo;PRECIS has been used in online catalogues with very impressive results&rdquo; (<a href="#refD">Dykstra 1989</a>, 81). She further stated that &ldquo;several years of experience (both in England and in Canada) have made it clear that PRECIS online works both effectively and efficiently, taking advantage of the technology presently [i.e. in 1980s] available. Even more, the use of PRECIS so far in online retrieval has revealed avenues for further investigation and research&rdquo; (<a href="#refD">Dykstra 1989</a>, 92). She felt that &ldquo;the classification and indexing concepts, which Derek Austin used to create a state-of-the-art indexing system for the technological environment of those years, still hold enormous potential for the improvement of subject access in the online catalogues of today and tomorrow.&rdquo; (<a href="#refD">Dykstra 1989</a>, 81). She also felt that &ldquo;because of the building blocks of PRECIS are terms, the system is as adaptable to online searching as any post-coordinate system. One simply devises a search strategy using the Boolean operators&rdquo; (<a href="#refD">Dykstra 1989</a>, 90). Incidentally, Butcher and Trotter worked on developing strategies for online subject access using PRECIS in the British Library (<a href="#refB">Butcher and Trotter 1989</a>).</p>
+
+<p>Initially, some studies were made on retrieval effectiveness of PRECIS in online searching as compared to that of Library of Congress Subject Headings and some other subject access systems (<a href="#refS">Schabas 1977; 1979; 1982</a>; <a href="#refD">DeHart and Glazier 1984</a>). But PRECIS certainly had more potentials than that. Tonta felt that &rdquo;although PRECIS offers great potential in online subject retrieval, a great deal of experimental research needs to be conducted in order to see how this potential can be used to best advantage and to find out the relative merits of PRECIS in an online environment&rdquo; (<a href="#refT">Tonta 1992</a>, 11). Dykstra pointed out that 
+
+<blockquote>the duality of PRECIS as a pre-coordinate and a post-coordinate system has opened the way for the investigation into the possibility of replacing or enhancing a standard Boolean search with a search based upon the grammatical or syntactic role of a particular term &mdash; a search, for example on the term &ldquo;teacher&rdquo; <i>as agent</i> AND the term &ldquo;Student&rdquo; <i>as object</i>. Any or all these research and development activities could lead to even more powerful subject retrieval capabilities. In the longer term, the development of these more powerful and effective retrieval capabilities, based upon what PRECIS has to offer, would most logically pave the way for major multidisciplinary research in complex semantic information processing and the development of expert systems for textual analysis and retrieval (<a href="#refD">Dykstra 1989</a>, 93).</blockquote></p> 
+
+<p>Dykstra herself made a &lsquo;Logico-Linguistic Study of PRECIS as a Possible Model in the Shift from Indexing to Automated Text Analysis&rsquo; (<a href="#refD">Dykstra 1986</a>), while another valuable study was made by Hancox on &lsquo;Machine Translation of String Indexing Languages between English and French using PRECIS&rsquo; (<a href="#refH">Hancox 1983</a>). But full potentials of PRECIS in online environment do not seem to have been investigated. </p>
+
+<p>Explaining how PRECIS input strings can be utilized for online subject retrieval Dykstra said: 
+
+<blockquote>each term (or each single word in a compound term) in a PRECIS string is individually searchable using the standard Boolean operators. In other words, the search is post-coordinate, with PRECIS terms used as keywords. The terms in PRECIS strings, however, are of course pre-coordinate, having been synthesized by an indexer by means of the syntactic operators and codes. Thus, each search on two or more individual terms in Boolean combinations yields the various syntactical arrangements in which those terms occur in the database. (<a href="#refD">Dykstra 1985a</a>, 235).</blockquote></p>
+
+<p>Explaining the process to be followed for PRECIS in online system, she said: 
+
+<blockquote>PRECIS in online system provides an intermediate step, in which the searcher is able to screen the various term configurations retrieved <i>before</i> an actual display or printout of titles. Or, if this step were considered unnecessary in a particular system, one could proceed immediately to a title display or printout which would provide as additional information in the PRECIS entry for each title, as a kind of &lsquo;mini-abstract&rsquo;. In either type of system, increased relevance is achieved with no loss of recall. Once individual terms in PRECIS strings are retrieved, there is of course no need for the computer to go through all the shunting procedures to place these terms in the lead position as would be required for access in a printed index. (<a href="#refD">Dykstra 1989</a>, 91)</blockquote></p>
+
+<p>Despite these positive evaluations about the potentials of PRECIS in the online environment, there is no indication that PRECIS has ever played an important role in online searching. The criticism raised by Swift, Winn and Bramer and by Frohmann (see <a href="#11">Section 11</a>) may also indicate that its use for online searching may not fulfill the expectations that Dykstra had expressed. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="14"></a>
+<h3 itemprop="articleSection">14.     Conclusion</h3>
+
+<p>PRECIS was evolved to meet a specific need, but it was adopted for producing several indexes in UK and elsewhere, besides <i>British National Bibliography</i> and <i>Australian National Bibliography</i>. Some studies were made to assess the reaction of indexers using the system (<a href="#refH">Higgins 1991</a>; <a href="#refP">Peters 1981</a>; <a href="#refP">Peters and Bakewell 1981; 1984</a>). In most cases mixed reaction from its users was reported. Some problems were also identified, which helped Austin and his associates to improve the system. Nevertheless, indexing performance of the system, as found during studies and experiments with PRECIS by different agencies, showed that its performance &ldquo;was one of the best in terms of indexing rates (i.e., string writing), search time, recall and precision, etc.&rdquo; (<a href="#refS">Sarkhel 1998</a>, 186). But unfortunately, the system was later abandoned in many cases citing one reason or another without even fully assessing its capabilities and potentials. And since the demise of its innovator, Derek Austin, in 2001, nothing much has been heard about the system. Nevertheless, it should be recognized that &ldquo;PRECIS was a turning point in the indexing field for a variety of reasons, and that its influence was wide-ranging and powerful&rdquo; (<a href="#refH">Higgins 1991</a>, ii). </p>
+
+<p>It may be mentioned here that Svenonius (<a href="#refS">2000</a>, 177, italics in original) has summarized the fate of syntax-based &ldquo;subject languages&rdquo; thus: 
+
+<blockquote>
+Kaiser&rsquo;s <i>Systematic Indexing</i> is now a period piece; Ranganathan&rsquo;s Colon Classification is used infrequently, even in India; and the heyday of PRECIS is over. Nevertheless, the languages, particularly in the development of their syntax, have served as prototypes in guiding the ongoing development of other languages with better economic backing and survival power.
+</blockquote></p>
+
+<p>Svenonius then continues describing the scene today, where older and less research-based systems, like the Library of Congress Subject Headings (LCSH), the Dewey Decimal Classification (DDC), the Library of Congress Classification (LCC) and the Universal Decimal Classification (UDC) dominate the picture. This picture is, unfortunately, rather unrelated to intellectual developments in philosophy, linguistics, and social sciences on the one hand, and information technology (with, for example, ontology construction) on the other hand. The evaluation of PRECIS and its influence must be done on a more overall consideration of the intellectual foundations of knowledge organization.  </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="end"></a>
+<h3>Endnotes</h3>
+
+<a name="e1"></a>
+<p><strong>1</strong>. The principles of chain indexing (or chain procedure) are described, for example, by Batty (<a href="#refB">1979</a>) and Chatterjee (<a href="#refC">2016</a>, 179&ndash;184). This procedure is about deriving alphabetical subject entries from records with class numbers in hierarchical systems. Originally developed by S.R. Ranganathan for deriving subject headings for alphabetical part of a classified catalogue and incorporated in his <i>Classified Catalogue Code</i> (CCC), it has been improved by other researchers, and applied to a range of other bibliographical classification systems, besides Colon Classification. (<a href="#refB">Batty 1970</a>, 425, italics in original) wrote: &ldquo;It is often attributed solely to him [Ranganathan], but like his theory of classification, it is really a brilliant restatement and recognition of undiscovered potential of ideas implicit in the often <i>ad hoc</i> developments of predecessors&rdquo;). Batty (ibid.) described it as a semi-mechanical process: &ldquo;By relying on the hierarchy of the classification, by using its terminology as a foundation, and by making mostly <i>negative</i> decisions (i.e., decisions only to delete or to alter), the indexer&rsquo;s task is made easier&rdquo;. Chatterjee provided examples, including the following: A document entitled <i>Treatment of Heart Diseases in India</i>, has got the following class number according to CC (sixth edition): <code>L32:4:6.44</code>. In CC these symbols stand for (here simplified):
+<br><code>L</code>	  Medicine
+<br><code>L3</code>	  Circulatory system
+<br><code>L32</code>	  Heart 
+<br><code>L32:4</code>	  Disease
+<br><code>L32:4:6</code>	  Asia
+<br><code>L32:4:44</code> India
+<br>Relatively automatically this classification number can therefore produce the following description of the document: India, Treatment, Disease, Heart, Medicine (supplemented by cross-references such as <code>Circulatory system, Medicine</code> <i>See also</i> <code>India, Treatment, Disease, Heart, Medicine</code>, and similar cross references for each term in the description). The technique is obviously strongly dependent of the nature and quality of the classification system and should therefore not be considered an independent indexing of the document, but a mechanical translation of its classification (but it is not totally mechanical as an indexer is required to identify the nature of links (sought links, unsought links, false links, and missing links, which have not been presented in this simplified example). Only one specific subject entry is created, and that subject entry can only answer a specific query formulation that corresponds to it.
+<br>Among the writings on chain indexing: Ranganathan (<a href="#refR">1964</a>, 287-289 and passim); Coates (<a href="#refC">1960</a>, Chapter IX) and Mills (<a href="#refM">1955</a>, 143-148) can be added. </p>
+
+<a name="e2"></a>
+<p><strong>2</strong>. At the same time the development of PRECIS started in England, Ranganathan&rsquo;s team started to develop another system to deal with some of the problems of chain indexing. This system was called Postulate-based Permuted Subject Indexing (POPSI). This system is based on analyzing the subject matter of a document through the first six steps of classification as propounded by Ranganathan. (See further <a href="#refC">Chatterjee 2016</a>, 192&ndash;197).</p>
+
+<a name="e3"></a>
+<p><strong>3</strong>. Dutta (<a href="#refD">2017</a>, 346): &ldquo;Up to that time the BNB had three parts:
+<br>a. Classified main part in which entries were organized according to DDC number;
+<br>b. An alphabetical index of authors, titles etc. (i.e. Name index); and
+<br>c. An alphabetical subject index derived according to the chain procedure.
+<br>It was possible to produce (a) and (b) directly from the MARC tape. But no satisfactory source of subject index data was available in MARC. The chain indexing procedure so long being considered as the most versatile and logical method for deriving subject heading and used worldwide had to face certain disadvantages particularly in the context of mechanization. These are as follow &ndash;
+<br>a. Unsuitability for machine &ndash; The formation of &lsquo;chain&rsquo; is very much a human intellectual process which is logically absurd for the computer to manipulate;
+<br>b. Very much depends on classification scheme;
+<br>c. In most cases access to specific subject heading was possible at the cost of running from pillar to post since only one entry is specific subject entry and others are cross references.
+<br>That is why, a research for a suitable alternative for generating subject indexes was undertaken by British Library&rdquo;.</p>
+
+<a name="e4"></a>
+<p><strong>4</strong>. ISO 1087:2019, 3.2.13: &ldquo;generic relation, generic concept relation, genus-species relation: <i>concept relation</i> (3.2.11) between a <i>generic concept</i> (3.2.19) and a <i>specific concept</i> (3.2.20) where the <i>intension</i> (3.2.6) of the <i>specific concept</i> (3.2.20) includes the intension of the <i>generic concept</i> (3.2.19) plus at least one additional <i>delimiting characteristic</i> (3.2.5)
+<br>EXAMPLE:
+<br>A generic relation exists between the concepts (3.2.7) &lsquo;word&rsquo; and &lsquo;noun&rsquo;, &lsquo;vehicle&rsquo; and &lsquo;car&rsquo;, and &lsquo;person&rsquo; and &lsquo;child&rsquo;.
+<br>Note 1 to entry: Outside the terminology community, &ldquo;type-of relation&rdquo; and &ldquo;is-a relation&rdquo; are also used instead of &ldquo;generic relation&rdquo;.
+<br>Note 2 to entry: In a generic relation the <i>subordinate concept </i>(3.2.16) is a <i>specific concept </i>(3.2.20) and the <i>superordinate concept </i>(3.2.15) is a <i>generic concept</i> (3.2.19)&rdquo;.</p>
+
+<a name="e5"></a>
+<p><strong>5</strong>. WordNet 3.1: &ldquo;synonym, equivalent word (two words that can be interchanged in a context are said to be synonymous relative to that context)&rdquo;.</p>
+
+<a name="e6"></a>
+<p><strong>6</strong>. IR languages are sometimes called <i>indexing languages</i>, <i>documentation languages</i> or <i>information languages</i>. Svenonius (<a href="#refS">2000</a>, 127) called them <i>subject languages</i> (which she in other chapters contrasted with <i>document languages</i> and <i>work languages</i> (87): &ldquo;The present chapter [6] deals with work languages, which are used to identify and structure information. Chapter 7 deals with document languages, which are used to describe particular space-time embodiments of information. Chapters 8 through 10 deal with the subject languages used to characterize the content of information&rdquo;. Chapter 10 &ldquo;Subject-Language Syntax&rdquo; presents PRECIS among other &ldquo;languages&rdquo;. This distinction between three languages as well as their names is, however, highly idiosyncratic and has not been used by other authors.</p>
+
+<a name="e7"></a>
+<p><strong>7</strong>. Svenonius (<a href="#refS">2000</a>, 184, italics in original): &ldquo;<i>Principle of absolute syntax</i> - Another Ranganathan principle, this one prescribes that the order of terms in a subject string should mirror the seminal or deep structure underlying syntactic constructions common to all natural languages. A function of hard-wiring in the human brain, absolute syntax parallels the process of thinking, irrespective of the language in which these thoughts are expressed&rdquo;.</p>
+
+<a name="e8"></a>
+<p><strong>8</strong>. A priori knowledge (or relations) is knowledge that is independent from experience, for example, mathematical and logical knowledge. A posteriori knowledge is knowledge that depends on empirical evidence. When we classify, for example, a square as a parallelogram (generic relation), by a priori, logical means, without any empirical study of quadrilaterals. However, when we classify a common blackbird (<i>Turdus merula</i>) as a &ldquo;True thrush&rdquo; (also a generic relation) this is due to empirical (a posterior) study of birds (and recent empirical studies based on DNA-analysis have changed the classification radically, see <a href="#refF">Fjelds&aring; 2013</a>, 141). That means that semantic relations (such as the generic relation) in KOSs not necessarily are a priori, as sometimes claimed. On the contrary, they are mostly a posteriori. </p>
+
+<a name="e9"></a>
+<p><strong>9</strong>. An anonymous reviewer suggested that PRECIS&rsquo; &ldquo;viewpoint role&rdquo; might be suitable to cope with multi-paradigmatic research and referred to Kleineberg (<a href="#refK">2018</a>) about viewpoint analysis in indexing.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="ref"></a>
+<h3>References</h3>
+
+<span itemprop="citation">
+
+<a name="refA"></a>
+
+<p>Austin, Derek. 1975. &ldquo;PRECIS&rdquo;. <i>Library Science with a Slant to Documentation </i>12, no. 4: 89-126.</p>
+
+<p>Austin, Derek. 1977. &ldquo;The Development of PRECIS and Introduction to its Syntax.&rdquo; In<i> The PRECIS Index System: Principles, Applications, and Prospects: Proceedings of the International PRECIS Workshop, October 15-17, 1976</i>, ed. Hans H. Wellisch. New York: Wilson: 3&ndash;28.</p>
+
+<p>Austin, Derek. 1982. &ldquo;PRECIS as a Multilingual System: A Search for Language Independent Explanations&rdquo;. PhD thesis, University of Sheffield.</p>
+
+<p>Austin, Derek. 1984.  <i>PRECIS: A Manual of Concept Analysis and Subject Indexing.</i> 2nd ed. London: British Library Bibliographic Services Division. (Prepared with the assistance from Mary Dykstra).</p>
+
+<p>Austin, Derek. 1987. &ldquo;PRECIS: Introduction&rdquo;. In <i>Encyclopaedia of Library and Information Science</i>. Volume 42, Supplement 7, ed. Allen Kent. New York: Marcel Dekker: 375&ndash;422.</p>
+
+<p>Austin, Derek. 1998. &ldquo;Developing PRECIS, Preserved Context Indexing System&rdquo;. In <i>Portraits in Cataloguing and Classification</i>, eds. C. Myall and R. V. Carter. New York: Haworth Press. 23&ndash;66. </p>
+
+<a name="refB"></a>
+
+<p>Bakewell, Kenneth Graham Bartlett. 1975. "The PRECIS Indexing System". <i>The Indexer</i> 9: 160&ndash;166.</p>
+
+<p>Batty, C. David. 1970. &ldquo;Chain Indexing&rdquo;. In <i>Encyclopedia of Library and Information Science</i> volume 4, eds. Allen Kent and Harold Lancour. New York: Marcel Dekker: 423-434.  </p>
+
+<p>Bidd, Donald, Louise de Chevigny, and Margo Marshall. 1986. &ldquo;PRECIS for Subject Access in a National Audiovisual Information System&rdquo;. <i>Canadian Library Journal</i> 43, no. 3: 177 &ndash; 184.</p>
+
+<p>Biswas, Subal Chandra. 1988. &ldquo;Efficiency and Effectiveness of Deep Structure based Subject Indexing: PRECIS vs. DSIS&rdquo;. PhD thesis, Loughborough University of Technology. <a class="menu" href="https://hdl.handle.net/2134/7280">https://hdl.handle.net/2134/7280</a>.</p>
+
+<p>British Library. 1975. Bibliographic Services Division. Subject Systems Office (BLBSD-SSO). <i>PRECIS Multilingual Terminology</i>. London: BLBSD-SSO. </p>
+
+<p>British Library. Research and Development Department (BLRDD). 1976. &ldquo;Development of PRECIS as an Indexing System for Multilingual Use&rdquo;. <i>BLRDD Newsletter</i> 6: 2.</p>
+
+<p>Burnham, Brian, Irene McCordick and Audrey Taylor. 1978. <i>A Computer-based Catalogue Linking the PRECIS Subject Indexing System to School Library Materials: Building a Model for an Ontario-wide Information Network for School Libraries using PRECIS</i> (a developmental research project). Aurora:  York County Board of Education.</p>
+
+<p>Butcher, J E and R Trotter. 1989. &ldquo;Building on PRECIS: Strategies for Online Subject Access in British Library.&rdquo; Paper presented at IFLA General Conference and Council Meeting, 55th, Paris, August 1989.</p>
+
+<a name="refC"></a>
+
+<p>Chatterjee, Amitabha. 1983. <i>Elements of Documentation</i>. Calcutta: The Author.</p>
+
+<p>Chatterjee, Amitabha. 2016. <i>Elements of Information Organization and Dissemination.</i> Oxford: Chandos Publishing.</p>
+
+<p>Chomsky, Noam. 1957. <i>Syntactic Structures</i>. The Hague, Netherlands: Mouton. </p>
+
+<p>Classification Research Group (CRG). 1955. &ldquo;The Need for a Faceted Classification as the basis of all Methods of Information Retrieval&rdquo;. UNESCO document 320/5515, International Advisory Committee for Documentation and Terminology in Pure and Applied Science. Paris: UNESCO. (Reprinted in <i>Proceedings of the International Study Conference on Classification for Information Retrieval</i>, Dorking, 1957. London: Aslib, 137&ndash;147).  </p>
+
+<p>Coates, Eric James. 1960. <i>Subject Catalogues, Headings and Structure</i>. London: Library Association. </p>
+
+<p>Craven, Timothy C. 1986. <i>String Indexing</i>. Orlando, USA: Academic Press. </p>
+
+<p>Curwen, Anthony G. 1985. &ldquo;A Decade of PRECIS, 1974&ndash;84&rdquo;. <i>Journal of Librarianship</i> 17, no. 4: 244 &ndash; 267.</p>
+
+<a name="refD"></a>
+
+<p>DeHart, Florence E. and J. Glazier. 1984. &ldquo;Computer Searching on PRECIS: An Exploration of Measuring Comparative Retrieval Effectiveness&rdquo;. <i>International Classification</i> 11, no. 1: 3 &ndash; 8.</p>
+
+<p>Dextre Clarke, Stella G. 2019. &ldquo;The Information Retrieval Thesaurus&rdquo;. <i>Knowledge Organization</i> 46, no. 6: 439 &ndash; 459. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli, <a class="menu" href="thesaurus">https://www.isko.org/cyclo/thesaurus</a>.</p>
+
+<p>Dutta, Anirban. 2017. &ldquo;A Journey from Cutter to Austin: Critical Analysis of their Contribution in Subject Indexing&rdquo;. <i>International Journal of Library and Information Studies</i> 7, no. 4: 338-50. <a class="menu" href="https://www.ijlis.org/articles/a-journey-from-cutter-to-austin-critical-analysis-of-their-contribution-in-subject-indexing.pdf">https://www.ijlis.org/articles/...</a></p>
+
+<p>Dykstra, Mary. 1985a. <i>PRECIS: A Primer</i>. London: BLBSD.</p>
+
+<p>Dykstra, Mary. 1985b. &ldquo;PRECIS as a Dual System.&rdquo; Paper presented at the <i>Symposium on Subject Analysis, North Carolina Central University, School of Library Science, Durham, North Carolina, March 29 &ndash; 30</i>, Contact: Dr. D. McAllister-Harper. (This seems to be an unpublished paper). </p>
+
+<p>Dykstra, Mary. 1986. &ldquo;The Structural Encoding of Document Content: A Logico-Linguistic Study of PRECIS as a Possible Model in the Shift from Indexing to Automated Text Analysis&rdquo;. PhD thesis, University of Sheffield. </p>
+
+<p>Dykstra, Mary. 1989. &ldquo;PRECIS in the Online Catalogue&rdquo;. In <i>Subject Control in Online Catalogues</i>, ed. Robert P. Holley. New York: The Haworth Press: 81&ndash;94.</p>
+
+<a name="refE"></a>
+<a name="refF"></a>
+
+<p>Ferrier, Anna-Marie. 1978. &ldquo;Pr&eacute;sentation du syst&egrave;med&rsquo; indexation &ldquo;PRECIS&rdquo; bas&eacute; sur l&rsquo;Exp&eacute;rience du D&eacute;partement des arts de la sc&egrave;ne de la Biblioth&egrave;que nationale&rdquo; (Presentation of the "PRECIS" Indexing System based on the Experience of the Performing Arts Department of the National Library). <i>Bulletin des Biblioth&egrave;ques de France</i> (Bulletin of the Libraries of France) 23, no. 2: 161 &ndash; 169. (In French) <a class="menu" href="https://bbf.enssib.fr/consulter/bbf-1978-03-0161-001">https://bbf.enssib.fr/consulter/bbf-1978-03-0161-001</a>.</p>
+
+<p>Fjelds&aring;, Jon. 2013. &ldquo;Avian Classification in Flux&rdquo;. In <i>Handbook of the Birds of the World,Special Volume: New Species and Global Index</i>, eds. Joseph del Hoyo, Andrew Elliot, Jordi Sargatal and David A. Christi. Barcelona: Lynx Edicions, 77&ndash;146 and 493-501.  </p>
+
+<p>Foskett, Antony Charles. 1982. <i>The Subject Approach to Information</i>. 5th ed. London: Facet Publishing.</p>
+
+<p>Frohmann, Bernard P. 1983. &ldquo;An Investigation of the Semantic Bases of Some Theoretical Principles of Classification Proposed by Austin and the CRG&rdquo;. <i>Cataloging &amp; Classification Quarterly</i> 4, no. 1: 11 &ndash; 27.</p>
+
+<p>Fujita, Mari&acirc;ngela Spotti Lopes. 1989. <i>Precis na L&iacute;ngua Portuguesa: Teoria e Pr&aacute;tica de Indexa&ccedil;&atilde;o</i> (PRECIS in Portuguese Language: Theory and Practice of Indexing). Bras&iacute;lia:  UnB/ABDF.</p>
+
+<a name="refG"></a>
+
+<p>G&auml;rdenfors, Peter. 1999. &ldquo;Cognitive Science: From Computers to Anthills as Models of Human Thought&rdquo;. <i>Human IT: Journal for Information Technology Studies as a Human Science</i> 3, no. 2: 9 &ndash; 36. <a class="menu" href="https://humanit.hb.se/article/view/214/269">https://humanit.hb.se/article/view/214/269</a>.</p>
+
+<a name="refH"></a>
+
+<p>Hancox, Peter J. 1983. &ldquo;On the Machine Translation of String Indexing Languages between English and French using PRECIS as an Example&rdquo;. PhD thesis, Loughborough University of Technology. </p>
+
+<p>Hancox, Peter and Frederick Smith. 1985. &ldquo;A Case System Processor for PRECIS Indexing Language&rdquo;.  In <i>Advances in Intelligent Retrieval (Informatics 8): Proceedings of a conference, Oxford</i>. 120 &ndash; 147.  <a class="menu" href="https://www.cs.bham.ac.uk/~pjh/publications/archive/1985_informatics_8.pdf">https://www.cs.bham.ac.uk/~pjh/publications/archive/1985_informatics_8.pdf</a>.</p>
+
+<p>Higgins, Peter 1991. The Rise and Fall of PRECIS as an Indexing System. Master&rsquo;s thesis, Loughborough University of Technology. <a class="menu" href="https://repository.lboro.ac.uk/articles/educational_resource/The_rise_and_fall_of_PRECIS_as_an_indexing_system/14884338/1">https://repository.lboro.ac.uk/articles/educational_resource/The_rise_and_fall_of_PRECIS_as_an_indexing_system/14884338/1</a>.</p>
+
+<p>Hj&oslash;rland, Birger. 2015. &ldquo;Are Relations in Thesauri &lsquo;Context-Free, Definitional, and True in All Possible Worlds&rsquo;?&rdquo;. <i>Journal of the Association for Information Science and Technology</i> 66, no. 7: 1367&ndash;1373. </p>
+
+<p>Holt, Brian P. 1987. <i>UNIMARC Manual.</i> London: British Library for IFLA.</p>
+
+<p>Hunt, Roslyn. 1978. &ldquo;The Subject Catalogue in Australian Academic Libraries: PRECIS, LCSH and KWOC and the Findings of the Wollongong University Subject Catalogue Study&rdquo;. <i>Australian Academic and Research Libraries</i> 9, no. 2: 61-70.</p>
+
+<a name="refI"></a>
+
+<p>International Organization for Standardization (ISO). <i>ISO 1087:2019. Terminology Work and Terminology Science &mdash; Vocabulary</i>. Geneva, Switzerland: ISO.</p>
+
+<p>International Organization for Standardization (ISO). ISO <i>2788-1986 OE. Guidelines for the Establishment and Development of Monolingual Thesauri</i>. Geneva, Switzerland: ISO. (Status: Withdrawn, this standard has been revised by ISO 25964-1:2011 and ISO 25964-2:2013).</p>
+
+<a name="refJ"></a>
+
+<p>Jacobs, Christine and Clement Arsenault. 1994. &ldquo;Words can&rsquo;t describe it: Streamlining PRECIS just for laughs!&rdquo; <i>The Indexer</i> 19, no. 2: 88 &ndash; 92.</p>
+
+<a name="refK"></a>
+
+<p>Kleineberg, Michael. 2018. &ldquo;Reconstructionism: A Comparative Method for Viewpoint Analysis and Indexing using the Example of Kohlberg&rsquo;s Moral Stages&rdquo;. In <i>Advances in Knowledge Organization</i> 16, eds. Fernanda Ribeiro and Maria Elisa Cerveira. Baden-Baden: Ergon: 400-408. </p>
+
+<a name="refL"></a>
+<a name="refM"></a>
+
+<p>Maa&szlig;en, Bernd. 1983. <i>PRECIS Theory and Practice. 2: The PRECIS Project at the Deutsche Bibliothek Frankfurt am Main</i>. Paper presented at IFLA General Conference, 49th, Munich, 1983. (Also published in <i>International Cataloguing</i>, 1984, 13, no. 2, 15 &ndash; 17.)</p>
+
+<p>Maltese, Diego and Alberto Petrucciani. 1990. <i>Un'esperienza di indicizzazione per soggetto: materiali per la versione italiana del PRECIS</i> (An Experience of Indexing by Subject: Materials for the Italian Version of
+PRECIS.) Roma: Associazione Italiana Biblioteche (Italian Library Association). (In Italian).</p>
+
+
+<p>McIlwaine, Ia C. 2003. &ldquo;Indexing and the Classification Research Group.&rdquo; <i>The Indexer</i> 23, no. 4: 204 &ndash; 208.</p>
+
+<p>Mills, Jack. 1955. &ldquo;Chain Indexing and the Classified Catalogue&rdquo;. <i>Library Association Record</i> 57, no. 4: 141-8. </p>
+
+<a name="refN"></a>
+<a name="refO"></a>
+<a name="refP"></a>
+
+<p>Peters, Helen Jane. 1981. &ldquo;User Reaction to PRECIS in the British Education Index&rdquo;. <i>Education Libraries Bulletin</i> 24, no. 2: 20&ndash;31.</p>
+
+<p>Peters, Helen Jane and Kenneth Graham Bartlett Bakewell. 1981. <i>User Reactions to PRECIS Indexes</i>. BLRD Report No. 5659. Liverpool: Liverpool Polytechnic, School of Librarianship and Information Studies.</p>
+
+<p>Peters, Helen Jane and Kenneth Graham Bartlett Bakewell. 1984. &ldquo;User Reactions to PRECIS Indexes&rdquo;. In <i>New trends in international librarianship: S R Ranganathan festschrift to mark the platinum jubilee of Madras University Library</i>, edited by P. Mohanrajan. New Delhi: Allied Publishers: 1&ndash;19. </p>
+
+<p>Poulter, Alan. 2013. &ldquo;Filling in the Blank in RDA or Remaining Blank? The strange case of FRASAD&rdquo;. In <i>New Directions in Information Organization</i>, eds. Jung-Ran Park and Lynne C Howarth. Bingley, UK: Emerald Group Publishing. 43&ndash;60. (Also available at <a class="menu" href="https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.451.776&amp;rep=rep1&amp;type=pdf">https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.451.776&amp;rep=rep1&amp;type=pdf</a>).</p>
+
+<p><i>Proceedings of the International Study Conference on Classification for Information Retrieval held at Beatrice Webb House, Dorking, England, May 13&ndash;17, 1957</i>. London: ASLIB, 1957. </p>
+
+<a name="refQ"></a>
+<a name="refR"></a>
+
+<p>Ranganathan, S. R. 1938. <i>Theory of Library Catalogue</i>. Madras India: Madras Library Association. </p>
+
+<p>Ranganathan, S. R. 1964. <i>Classified Catalogue Code with Additional Rules for a Dictionary Catalogue</i>. 5th. ed. Bombay, India: Asia Publishing House. </p>
+
+<p>Ranganathan, S. R. 1967. <i>Prolegomena to Library Classification</i>. Vol. 1, 3rd ed. Bombay, India: Asia Publishing House.</p>
+
+<p>Richmond, Phyllis A. 1981. <i>Introduction </i><i>to PRECIS for North American Usage</i>. Westport, Connecticut: Libraries Unlimited.</p>
+
+<a name="refS"></a>
+
+<p>Sarkhel, Juran Krishna. 1998. &ldquo;Subject Indexing by PRECIS&rdquo;. In <i>Subject Indexing Systems: Concepts, Methods and Techniques</i>, eds. S. B. Ghosh and J. N. Satpathi. Calcutta, India: Indian Association of Special Libraries and Information Centres (IASLIC), 140&ndash;187.</p>
+
+<p>Schabas, Ann H. 1977. &ldquo;Machine Searching of UK MARC on Title, LCSH and PRECIS for Selective Dissemination of Information&rdquo;. In<i> The PRECIS Index System: Principles, Applications, and Prospects: Proceedings of the International PRECIS Workshop, University of Maryland, October 15 &ndash; 17, 1976</i>, edited by Hans H Wellisch. New York: Wilson, 149-156. </p>
+
+<p>Schabas, Ann H. 1979. &ldquo;A Comparative Evaluation of the Retrieval Effectiveness of Titles: Library of Congress Subject Headings and PRECIS Strings for Computer Searching of UK MARC Data&rdquo;. PhD dissertation, University of London. </p>
+
+<p>Schabas, Ann H. 1982. &ldquo;Post-coordinate Retrieval: A Comparison of two Indexing Languages.&rdquo; <i>Journal of American Society for Information Science</i> 33, no. 1: 32&ndash;37.</p>
+
+<p>S&oslash;rensen, Jutta and Derek Austin. 1976. &ldquo;PRECIS in a Multilingual Context, Part 2: A Linguistic and Logical Explanation of the Syntax&rdquo;. <i>Libri</i> 26, no. 2: 108-39. </p>
+
+<p>Svenonius, Elaine. 2000. <i>The Intellectual Foundation of Information Organization</i>. Cambridge, MA: The MIT Press. </p>
+
+<p>Swift, Donald F, Viola A Winn and Dawn A Bramer. 1973. A Case Study in Indexing and Classification in the Sociology of Education. Milton Keynes (Bletchley), Open University, 2 vols. (OSTI Report no. 5171). <a class="menu" href="https://files.eric.ed.gov/fulltext/ED086258.pdf">https://files.eric.ed.gov/fulltext/ED086258.pdf</a>.</p>
+
+<p>Swift, Donald F., Viola A. Winn and Dawn A. Bramer. 1977. &ldquo;A Multi-Modal Approach to Indexing and Classification&rdquo;. <i>International Classification</i> 4, no. 2: 90-94. </p>
+
+<a name="refT"></a>
+
+<p>Taylor, Audrey. 1984. &ldquo;But I have Promises to Keep &ndash; PRECIS, an Alternative for Subject Address.&rdquo; <i>Technical Services Quarterly</i> 2: 75&ndash;90.</p>
+
+<p>Tonta, Yasar. 1992. &ldquo;LCSH and PRECIS in Library and Information Science: A Comparative Study&rdquo;. Occasional Papers, No. 194. Urbana-Champaign: University of Illinois Graduate School of Library and Information Science.</p>
+
+<a name="refU"></a>
+<a name="refV"></a>
+
+<p>Venkatachari, P N. 1982. &ldquo;Application of PRECIS to Indian Languages: A Case Study&rdquo;. In<i> Perspectives in Library and Information Science</i>, eds S.N. Agarwal, R.K. Khan and N.R. Satyanarayana. Lucknow, India: Print House: 182 &ndash; 186</p>
+
+<p>Verdier, Veronica. 1980. <i>Final Report of the PRECIS/Translingual Project</i>. London: British Library Research and Development Department.</p>
+
+<a name="refW"></a>
+
+<p>Wellisch, Hans H. 1995.&nbsp;<i>Indexing from A to Z</i>. New York: H. W. Wilson.</p>
+
+<p>Williamson Nancy J. 1984. &ldquo;Subject Access in the On-line Environment&rdquo;. In <i>Advances in Librarianship</i> 13, ed. Wesley Simomton. New York: Academic Press: 49-97. </p>
+
+<p>Wittgenstein, Ludwig. 1979. &ldquo;TheYellow Book&rdquo;. In <i>Wittgenstein&rsquo;s Lectures, Cambridge, 1932-1935</i>. Ed.  Alice Ambrose. Oxford, UK: Basil Blackwell: 43-76.</p>
+
+<p>WordNet3.1 &ldquo;Synonym&rdquo;. Princeton, New Jersey: Princeton University. <a class="menu" href="http://wordnetweb.princeton.edu/perl/webwn?s=synonym&amp;sub">http://wordnetweb.princeton.edu/perl/webwn?s=synonym&amp;sub</a>.</p>
+
+<a name="refX"></a>
+<a name="refY"></a>
+<a name="refZ"></a>
+
+</span><!-- citation ends -->
+
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="app1"></a>
+<h3>Appendix 1: PRECIS index sample page</h3>
+
+<p>Source: Austin, Derek. 1976. &ldquo;The Role of Indexing in Subject Retrieval&rdquo;. In <i>Major
+Classification Systems: The Dewey Centennial</i>, ed. Kathryn Luthar Henderson. Illinois:
+University of Illinois Graduate School of Library Science: 134.</p>
+
+<div align="center"><figure>
+<img src="precisa1.jpg" title="Appendix 1: PRECIS index sample page" width="95%">
+</figure></div>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="app2"></a>
+<h3>Appendix 2: A bibliography on PRECIS</h3>
+
+<p>Abbott, George L., Comp.  1979. <i>Card Catalogs: Alternative Futures: A Selected Bibliography on Closing Card Catalogs and Alternative Catalog Formats with Separate Sections on AACR 2 and PRECIS</i>. Syracuse, New York: Information Yield. </p>
+
+<p>Adams, M. D. 1975. &ldquo;Application of the Dewey Decimal Classification at the British National Bibliography&rdquo;. <i>Library Resources and Technical Services</i> 19, no. 1: 35 &ndash; 40. (Includes a discussion on how PRECIS was being used in British National Bibliography).</p>
+
+<p>Anne Cousins, S. 1992. "Enhancing Subject Access to OPACs: Controlled Vocabulary vs. Natural Language". <i>Journal of Documentation</i> 48, no. 3: 291&ndash;309. (Demonstrates the ability of PRECIS and LCSH to represent users' information needs)</p>
+
+<p>Assuncao, J. B. 1989. &ldquo;PRECIS en Portugues: em Busca uma Adaptacao&rdquo; (PRECIS in Portuguese: Looking for an Adaptation). <i>Revista da Escola Biblioteconomia da UFMG</i> <i>(Journal of the UFMG Library School)</i> 18, no. 2: 153 &ndash; 365. (In Portuguese)</p>
+
+<p>Austin, Derek.1970a. &ldquo;Development of a Computer Produced Subject Index and General Thesaurus.&rdquo; <i>OSTI Newsletter.</i> September 1970: 4 &ndash; 5.</p>
+
+<p>Austin, Derek. 1970b. &ldquo;An Information Retrieval Language for MARC&rdquo;. <i>Aslib Proceedings</i> 22, no. 10: 481 &ndash; 491. </p>
+
+<p>Austin, Derek. 1970c. &ldquo;Subject Retrieval in UKMARC&rdquo;. In <i>UK MARC Project: Proceedings of the Seminar on UK MARC Project, March 28 &ndash; 30, 1969</i>, eds. A. E. Jeffreys and Thomas D. Wilson. New Castle upon Tyne: Oriel Press: 30 &ndash; 52. (Contains first ever public mention of PRECIS)</p>
+
+<p>Austin, Derek. 1971a. &ldquo;A Conceptual Approach to the Organization of Machine-held Files for Subject Retrieval&rdquo;. In <i>Conceptual Basis of the Classification of Knowledge: Proceedings of the Ottawa Conference on the Conceptual Basis of the Classification of Knowledge, October 1&ndash;5, 1971</i>, ed. J. A. Wojciechowskij. Munchen: Verlag Dokumentation: 371 &ndash; 398. (Discusses research that led to development of PRECIS and the prospects of the new system)</p>
+
+<p>Austin, Derek. 1971b. &ldquo;PRECIS Indexing&rdquo;. <i>Information Scientist</i> 5, no. 3: 95&ndash;114. </p>
+
+<p>Austin, Derek. 1971c. &ldquo;The PRECIS System for Computer-Generated Indexes and its Use in the British National Bibliography&rdquo;. In <i>Subject Retrieval in the Seventies: New Directions: Proceedings of an Internal Symposium, College Park May 14&ndash;15</i>, <i>1971</i>,<i> </i>eds. Hans H. Wellisch and Thomas D. Wilson. College Park: Greenwood Publications:  99&ndash;114.</p>
+
+<p>Austin, Derek. 1972. &ldquo;Commentary: PRECIS &ndash; An Analysis&rdquo;. <i>Canadian Library Journal</i> 29, no. 6: 469&ndash;473.</p>
+
+<p>Austin, Derek. 1973. &ldquo;Classification and Subject Indexing at the British National Bibliography&rdquo;. <i>Canadian Library Journal</i> 30, no. 2: 122&ndash;130.</p>
+
+<p>[Austin, Derek]. 1973b. &ldquo;PRECIS (Preserved Context Index System)&rdquo;. London: The British Library, Research &amp; Development Department, Subject System Office. (A handout giving a preview of PRECIS II)</p>
+
+<p>Austin, Derek. 1974a. "The Development of PRECIS: A Theoretical and Technical History". <i>Journal of Documentation</i> 30, no. 1: 47&ndash;102.</p>
+
+<p>Austin, Derek. 1974b. <i>PRECIS: A Manual of Concept Analysis and Subject Indexing</i>. London: Council of the British National Bibliography. (See Austin 1984b for 2nd ed.)</p>
+
+<p>[Austin, Derek]. 1974c. <i>Study of Computer-produced Indexes in the Public Records Office: Survey of Currently available Machine-produced Index Systems</i>. London: Public Records Office. (PRECIS has been considered as an alternative indexing system)</p>
+
+<p>Austin, Derek. 1975a. &ldquo;Difference between Library Classification and Machine-based Subject Retrieval System: Some Inferences drawn from Research in Britain 1963&ndash;1973&rdquo;. In <i>Ordering System for Global Information Networks: Proceedings of International Study Conference on Classification Research, Bombay, January 6&ndash;11, 1975, </i>ed. A. Neelameghan<i>.</i> Bangalore: FID/CR and Sarada Ranganathan Endowment for Library Science, 1975. (Discusses how the results of research by CRG have been applied during development of PRECIS)</p>
+
+<p>Austin, Derek. 1975b. &ldquo;PRECIS&rdquo;. <i>Library Science with a Slant to Documentation </i>12, no. 4: 89&ndash;101.</p>
+
+<p>Austin, Derek. 1975c. &ldquo;Management Aspect of PRECIS, and Current Research &amp; Development&rdquo;. <i>Library Science with a Slant to Documentation</i>. 12, no. 4: 114&ndash;125.</p>
+
+<p>Austin, Derek. 1975d. &ldquo;PRECIS&rdquo; (Letter to the Editor). <i>Journal of Documentation</i> 31, no. 2: 118&ndash;120.</p>
+
+<p>Austin, Derek. 1975e. &ldquo;The Semantics of PRECIS Vocabulary Control and the RIN System&rdquo;. <i>Library Science with a Slant to Documentation</i>. 12, no. 4: 101&ndash;113. </p>
+
+<p>Austin, Derek. 1976a. &ldquo;The CRG Research into a Freely Faceted Scheme&rdquo;. In <i>Classification in the 1970s: A Second Look.</i> Revised edition, ed. Arthur Maltby. London: Clive Bingley: 158&ndash;194.  (Describes the background and early development of PRECIS)</p>
+
+<p>Austin, Derek. 1976b. &ldquo;Citation Order and Linguistic Structure&rdquo;. In <i>The Variety of Librarianship: Essays in Honour of John Wallace Metcalf</i>, ed. W. B. Rayward. Sydney: The Library Association of Australia: 19&ndash;46. (Includes a discussion on PRECIS)</p>
+
+<p>Austin, Derek. 1976c. &ldquo;PRECIS in a Multilingual Context. Pt.1: PRECIS&ndash;An Overview&rdquo;.  <i>Libri</i> 26, no. 1: 1&ndash;37.</p>
+
+<p>Austin, Derek. 1976d. &ldquo;PRECIS&rdquo;, ed. Hans H. Wellisch. College Park, Maryland: Library Training Consultants. Videotapes (two one-hour video lectures.)</p>
+
+<p>Austin, Derek. 1976e. &ldquo;The Role of Indexing in Subject Retrieval&rdquo;. In <i>Major Classification Systems: The Dewey Centennial</i>, ed. Kathryn Luthar Henderson. Illinois: University of Illinois Graduate School of Library Science: 134&ndash;156. (Discusses development of PRECIS)</p>
+
+<p>Austin, Derek. 1977a. &ldquo;The Development of PRECIS and Introduction to its Syntax&rdquo;. In<i> The PRECIS Index System: Principles, Applications, and Prospects: Proceedings of the International PRECIS Workshop, University of Maryland,</i> <i>October 15&ndash;17, 1976</i>, ed. Hans H. Wellisch. New York: Wilson, 1977: 3&ndash;28. </p>
+
+<p>Austin, Derek. 1977b. &ldquo;Management Aspects of PRECIS, and Current Research and Development&rdquo;. In<i> The PRECIS Index System: Principles, Applications, and Prospects: Proceedings of the International PRECIS Workshop, University of Maryland,</i> <i>October 15&ndash;17, 1976</i>, ed. Hans H. Wellisch. New York: Wilson, 1977: 55&ndash;80.</p>
+
+<p>Austin, Derek. 1977c. &ldquo;Perspective Paper: Library Science&rdquo;. In <i>Natural Language in Information Science: Perspectives and Directions for Research</i>, eds. Donald E Walker, Hans Karlgren and Martin Kay. Stockholm: Skriptor AB: 45&ndash;56. (Includes a short account of PRECIS)</p>
+
+<p>Austin, Derek. 1977d. &ldquo;The Semantics of PRECIS: Vocabulary Control and the RIN System&rdquo;. In<i> The PRECIS Index System: Principles, Applications, and Prospects: Proceedings of the International PRECIS Workshop, University of Maryland,</i> <i>October 15&ndash;17, 1976</i>, ed. Hans H. Wellisch. New York: Wilson, 1977: 29&ndash;54.</p>
+
+<p>Austin, Derek. 1982. &ldquo;PRECIS as a Multilingual System: A Search for Language Independent Explanations&rdquo;. PhD thesis, University of Sheffield. </p>
+
+<p>Austin, Derek. 1983.  <i>PRECIS: Grundprinzipien, Funktion und Anwendung </i>(<i>PRECIS: Basic Principles, Function and Application</i>). Paper presented at IFLA General Conference, 49th, Munich, August 21&ndash;27, 1983. (In German)</p>
+
+<p>Austin, Derek. 1984a. &ldquo;Automatisierung in der Sacherschlie&szlig;ung der British Library&rdquo;<i> </i>(Automation in Subject Indexing at the British Library). <i>Bibliothek: Forschung und Praxis</i> (<i>Library: Research and Practice</i>) 8, no. 1: 45&ndash;57. (In German)</p>
+
+<p>
+Austin, Derek. 1984b. <i>PRECIS: A Manual of Concept Analysis and Subject Indexing</i>. 2nd ed. London: British Library Bibliographic Services Division. (Prepared with the assistance from Mary Dykstra. See Austin 1974b for 1st ed.). </p>
+
+<p>
+Austin, Derek. 1984c. &ldquo;PRECIS: Basic Principles, Functions and Use&rdquo;. <i>INSPEL International Journal of Special Libraries</i> 18, no. 2: 107&ndash;121.</p>
+
+<p>
+Austin, Derek. 1984d. &ldquo;PRECIS: Theory and Practice 1: PRECIS: Basic Principles, Functions and Use&rdquo;. <i>International Cataloguing</i> 13, no. 1: 9&ndash;12.</p>
+
+<p>Austin, Derek. 1985. <i>British Catalogue of Music Code of Practice for the Application of PRECIS</i>. London: British Library Bibliographic Services Division.</p>
+
+<p>Austin, Derek. 1987. &ldquo;PRECIS: Introduction&rdquo;. In <i>Encyclopaedia of Library and Information Science</i> Volume 42, Supplement 7, ed. Allen Kent. New York: Marcel Dekker: 375&ndash;422.</p>
+
+<p>
+Austin, Derek. 1998. &ldquo;Developing PRECIS, Preserved Context Indexing System&rdquo;. <i>Cataloguing &amp; Classification Quarterly</i> 25, nos. 2/3: 23&ndash;66. (Also published in <i>Portraits in Cataloguing and Classification</i>, eds. Carolynne Myall and Ruth C. Carter. V. 2. New York: Haworth Press: 23&ndash;66). </p>
+
+<p>
+Austin, Derek. 2009. &ldquo;PRECIS&rdquo;. In <i>Encyclopaedia of Library and Information Science</i>. 3rd ed., eds. Marcia J. Bates and Mary Niles Maack. London: Tailor &amp; Francis: 4251&ndash;4271.</p>
+
+<p>
+Austin, Derek and Jeremy A. Digger. 1975. &ldquo;PRECIS: The Preserved Context Index System&rdquo;. <i>Indian Journal of Library Science</i> 1, nos. 3/4: 3&ndash;20.</p>
+
+<p>
+Austin, Derek and Jeremy A. Digger. 1977. &ldquo;PRECIS: the Preserved Context Index System&rdquo;. <i>Library Resources and Technical Services</i> 21, no. 1: 13&ndash;30. (Also published in <i>Theory of Subject Analysis: A Sources Book</i>, eds. Lois Mai Chan, Phyllis Richmond and Elaine Svenonius. 1985. Littleton, Colorado: Libraries Unlimited: 369&ndash;389).  </p>
+
+<p>Austin, Derek and Jutta S&oslash;rensen. 1978. &ldquo;Zusammenarbeit in der Entwicklung and Anwendung von PRECIS&rdquo; (Cooperation in the Development and Application of PRECIS). In<i> Kooperation in der Klassifikation II. Proc. der Sekt.4&ndash;6 der 2. </i><i>Fachtagung der Gesellschaft f&uuml;r Klassifikation</i>,<i> Frankfurt-Hoechst, April 6&ndash;7, 1978 </i>(<i>Cooperation in Classification II: Proceedings of Sect. 4&ndash;6 of the 2nd Symposium of the Society for Classification, Frankfurt-Hoechst, April 6&ndash;7, 1978</i>)<i>, </i>ed. W. Dahlberg. Frankfurt: Gesellschaft f&uuml;r Klassifikation (Society for Classification): 1&ndash;26. (In German)</p>
+
+<p>
+Austin, Derek and Peter Butcher. 1969. <i>PRECIS: A Rotated Subject Index System</i>. London: Council of the British National Bibliography.</p>
+
+<p>
+Austin, Derek and Peter Butcher. [1970]. <i>Supplement to PRECIS: A Rotated Subject Indexing System</i>. London: Council of the British National Bibliography. </p>
+
+<p>
+Austin, Derek and Veronica Verdier. 1977. &ldquo;PRECIS: Introduction and Indexing&rdquo;. In <i>String Indexing</i>, <i>V. 2</i>, ed. Elaine Svenonius. London, Ontario, Canada: School of Library and Information Science, University of Western Ontario.</p>
+
+<p>
+Bakewell, Kenneth Graham Bartlett 1975a. "The PRECIS Indexing System". <i>The Indexer</i> 9, no. 4: 160&ndash;166.</p>
+
+<p>
+Bakewell, Kenneth Graham Bartlett. 1975b. Review of <i>PRECIS: A Manual of Concept Analysis and Subject Indexing</i>, by Derek Austin. <i>Library Association Record</i> 77, no. 7: 175&ndash;176.</p>
+
+<p>
+Bakewell, Kenneth Graham Bartlett. 1979. &ldquo;Indexers&rsquo; Reaction to PRECIS&rdquo;. <i>Journal of Documentation</i> 35, no. 3: 164&ndash;178.</p>
+
+<p>
+Bakewell, Kenneth Graham Bartlett and Eric J. Hunter. 1975. &ldquo;Teaching PRECIS at Liverpool&rdquo;. <i>Catalogue and Index</i> 36, no. 1: 3&ndash;6. </p>
+
+<p>
+Bakewell, Kenneth Graham Bartlett and Helen J. Peters. 1981. Review of <i>PRECIS: A Workbook for Students of Librarianship</i>, by Michael J. Ramsden. <i>Journal of Librarianship and Information Science </i>13, no. 4: 269&ndash;270.</p>
+
+<p>
+Bakewell, Kenneth Graham Bartlett, with the assistance of Joan M. Bibby, Eric J. Hunter and Vincent de P. Roper.  1978. <i>A Study of Indexers&rsquo; Reaction to the PRECIS Indexing System: Final Report</i> (British Library R &amp; D Report 5433). Liverpool: Department of Library and Information Studies, Liverpool Polytechnic.</p>
+
+<p>
+Balanza, A, F. Foschi, and A. M. Lorenzi. 1987. &ldquo;Contributo bibliografico su PRECIS&rdquo; (Bibliographic Contribution on PRECIS).<i> </i><i>Indicizzazione</i> (<i>Indexing</i>) 2, no. 1: 20&ndash;46. (In Italian)</p>
+
+<p>
+Balling, Eigil.1975. &ldquo;Misforstaelser Omkring PRECIS&rdquo; (Misunderstanding Surrounding PRECIS). <i>Bibliotek 70</i>, 5: 118&ndash;119. (In Danish)</p>
+
+<p>
+Balnaves, John. 1973. &ldquo;PRECIS in ANB&rdquo;. <i>Australian Academic and Research Libraries</i> 4, no. 3: 101&ndash;104.</p>
+
+<p>
+Balnaves, John. 1974. &ldquo;Is PRECIS worth the Price?&rdquo; <i>LASIE: Information Bulletin of the Library Automated Systems Information Exchange</i> 5, no. 1: 3&ndash;9.</p>
+
+<p>
+Balnaves, John. 1975. &ldquo;Qccam and PRECIS&rdquo;. Paper presented at the <i>Annual Conference of the Library Association of Australia</i>, 1975.</p>
+
+<p>
+Batty, Charles David. 1977. Review of <i>Traitement automatis&eacute; des documents multim&eacute;dias avec les syst&egrave;mes unifi&eacute;s ISBD, Lamy-Rousseau et PRECIS propositions du SILP</i> (<i>Automated Processing of Multimedia Documents with the UNIFIED ISBD, Lamy-Rousseau and PRECIS Systems Proposals from SILP</i>) by F. Lamy-Rousseau. <i>The  Library Quarterly</i> 47, no.1: 98&ndash;99. (In French)</p>
+
+<p>
+Beck, Helmut, 1978. &ldquo;Klassification und Informationswiedergewinnung. Zu aktuellen Problemen aus Bibliothekarischer Sicht. Teil VI&rdquo; (Classification and Information Retrieval: Current Problems from the Librarian&rsquo;s Viewpoint. Part. VI). <i>Zentralblatt f&uuml;r Bibliothekswesen</i> (<i>Central Journal for Libraries</i>) 98, no. 4: 170&ndash;176. (In German; includes a discussion on theoretical basis of PRECIS) </p>
+
+<p>
+Beck, Helmut. 1986. &ldquo;PRECIS: eine Computerunterst&uuml;tzte Verbale Sacherschlie&szlig;ungsmethode auf Linguistischer Grundlage.T.1-2&rdquo;. (PRECIS: A Computer-aided Verbal Subject Indexing Method on a Linguistic Basis.T.1-2) <i>Zentralblatt f&uuml;r Bibliothekswesen</i> (<i>Central Journal for Libraries</i>) 100, no. 6: 264&ndash;267, 333&ndash;339. (In German)</p>
+
+<p>
+Beck, Helmut. 1988. Review of <i>PRECIS: A Manual of Concept Analysis and Subject Indexing. 2</i><i>nd</i><i> ed.</i> <i>1984</i>, by Derek Austin with assistance from Mary Dykstra. <i>International Classification</i> 15, no. 1: 37&ndash;38. </p>
+
+<p>
+Beck, Helmut and Wolfgang Korlu&szlig;. 1989. &ldquo;Deep Structure Indexing System (DSIS)&ndash;eine Akternative zu PRECIS?&rdquo; (Deep Structure Indexing System (DSIS)&ndash;an alternative to PRECIS?). <i>Zentralblatt f&uuml;r Bibliothekswesen</i><i> </i>(<i>Central Journal for Libraries</i>) 103, no. 7: 318&ndash;321. (In German) </p>
+
+<p>Bertrand, Annie. 1976. Review of <i>PRECIS: A Manual of Concept Analysis and Subject Indexing, </i>by Derek Austin<i>. </i><i>Bulletin des Biblioth&egrave;ques de France (Bulletin of the Libraries of France)</i> 21, no. 6: 507. (In French)<i> </i></p>
+
+<p>Bett, C. E. 1975. &ldquo;Project to Automate the Canadian Education Index: Looking for a Language&rdquo;. In <i>Proceedings of the Third Open Conference on Information Science, Ottawa, </i>eds. E. Marshall and M. Pare: 134&ndash;140. </p>
+
+<p>
+Bett, C. E. 1979. "The Subject Access Project: A Comparison with PRECIS." <i>The Indexer</i> 11, no. 3: 145-148.</p>
+
+<p>
+Bhattacharya, K. K. 1981. &ldquo;POPSI and PRECIS: A Comparison of Concept Analysis and Structuring of Subject Headings&rdquo;. In <i>Indexing Systems: Concepts, Models and Techniques</i>, ed. T. N. Rajan. Calcutta: IASLIC: 125&ndash;134.</p>
+
+<p>
+Bidd, Donald, Louise de Chevigny, and Margo Marshall. 1984. &ldquo;PRECIS pour L'acc&egrave;s Sujet d'un Syst&egrave;me d'Information National pour l'Audiovisuel&ndash;L'Exp&eacute;rience de FORMAT&rdquo; (PRECIS for Retrieval by Subject in a National Information System for Audiovisual Material &mdash; the Experience of FORMAT). <i>Documentation et biblioth&egrave;ques</i> (<i>Documentation and Libraries</i>) 30, no. 4: 121&ndash;131. (In French)</p>
+
+<p>
+Bidd, Donald, Louise de Chevigny, and Margo Marshall.  1986. "PRECIS for Subject Access in a National Audiovisual Information System". <i>Canadian Library Journal</i> 43, no. 3: 177&ndash;184.</p>
+
+<p>
+Biswas, Subal Chandra. 1988. &ldquo;Efficiency and Effectiveness of Deep Structure based Subject Indexing Languages: PRECIS vs. DSIS&rdquo;. PhD thesis, Loughborough University of Technology. <A CLASS="menu" HREF="https://repository.lboro.ac.uk/articles/thesis/Efficiency_and_
+effectiveness_of_deep_structure_based_subject_indexing_languages_PRECIS_vs_DSIS/9415331/1">https://repository.lboro.ac.uk/articles/thesis/.../9415331/1</A>.</p>
+
+<p>Biswas, Subal Chandra and Fred Smith. 1991. &ldquo;Efficiency and Effectiveness of Deep Structure based Subject Indexing Languages: PRECIS vs. DSIS.&rdquo; <i>International Forum on Information and Documentation </i>16, no. 3: 6&ndash;21.</p>
+
+<p>
+Bonnici, N. 1980. "PRECIS and LCSH in the British Library: Problems of Consistency and Equivalence". <i>Catalogue &amp; Index</i> 56, no. 1: 9&ndash;11.</p>
+
+<p>
+Britain, Ian C. 1975. Review of <i>PRECIS: A Manual of Concept Analysis and Subject Indexing</i>, by Derek Austin. <i>Australian Library Journal</i> 24, no. 11: 504&ndash;505. </p>
+
+<p>
+British Library. Bibliographic Services Division. Subject Systems Office (BLBSD-SSO). 1975. <i>PRECIS Multilingual Terminology</i>. London: BLBSD-SSO. </p>
+
+<p>
+British Library. Research and Development Department (BLRDD). 1976. &ldquo;Development of PRECIS as an Indexing System for Multilingual Use&rdquo;. <i>BLRDD Newsletter</i> 6: 2</p>
+
+<p>
+British Library. Working Party on Classification and Indexing. 1975. <i>Final Report (Report No. 5233)</i>. London: British Library. (Includes report of work done in the field of PRECIS)</p>
+
+<p>
+Broxis, P. F. 1976. &ldquo;Syntactic and Semantic Relationships or: A Review of PRECIS: A Manual of Concept Analysis and Subject Indexing, by Derek Austin&rdquo;. <i>The Indexer</i> 10, no. 2: 54&ndash;59.</p>
+
+<p>
+Burket, Susan G. 1974. &ldquo;Strings or Chains?&rdquo; <i>Australian Academy of Research Libraries</i> 5, no. 2: 195&ndash;200. (Compares and contrasts Chain Indexing and PRECIS)</p>
+
+<p>
+Burnham, Brian and Audrey Taylor. 1982. <i>PRECIS Indexing: Development of a Working Model for a School Library Cataloguing/Information Retrieval Network</i>. Toronto: Ontario Ministry of Education and Ministry of Colleges and Universities.</p>
+
+<p>
+Burnham, Brian, Irene McCordick and Audrey Taylor. 1978. <i>A Computer-based Catalogue linking the PRECIS Subject Indexing System to School Library Materials: Building a Model for an Ontario-wide Information Network for School Libraries using PRECIS</i> (a developmental research project). Aurora:  York County Board of Education.</p>
+
+<p>
+Burtis, Alyce R. 1977. &ldquo;PRECIS: An Alternative to Library of Congress Subject Headings&rdquo;. <i>New Jersey Library</i> 10, no. 5: 21&ndash;22.</p>
+
+<p>
+Butcher, J. E. and R. Trotter. 1989. &ldquo;Building on PRECIS: Strategies for Online Subject Access in British Library&rdquo;. Paper presented at IFLA General Conference and Council Meeting, 55th, Paris, August 1989.</p>
+
+<p>
+Cain, Jack. 1984. &ldquo;PRECIS at UTLAS&rdquo;.  In <i>Proceedings of the ACRL Third National Conference, Seattle, April 4&ndash;7, 1984</i>, eds.  S. C. Dodson and G. L. Menges. Chicago: ACRL: 165&ndash;176. (Also published in <i>PRECIS: Recent Applications</i>, ed. Mary Dykstra. Occasional Papers Series, 39. 1986. Halifax, Nova Scotia, Canada: Dalhousie University Libraries and Dalhousie School of Library Service: 1&ndash;19).</p>
+
+<p>Campbell, A. 1977. &ldquo;PRECIS RIN and RIN/SIN Fiches&rdquo;.  <i>The British Library Bibliographic Services Division Newsletter</i> 7: 4&ndash;5.</p>
+
+<p>
+Canada. National Film Board of Canada. 1982. <i>PRECIS Index to 16mm Films</i>. Montreal: National Film Board of Canada.</p>
+
+<p>Chatterjee, Amitabha. 2016. &ldquo;PRECIS&rdquo; In <i>Elements of Information Organization and Dissemination</i>. Oxford: Chandos Publishing: 184&ndash;192.</p>
+
+<p>
+Cheti, Alberto. 1984. &ldquo;Sistemi d'indicizzazione precoordinati: indicizzazione a catena, PRECIS, POPSI, NEPHIS&rdquo; (Pre-coordinated Indexing Systems: Chain Indexing, PRECIS, POPSI, NEPHIS). <i>Bollettino d'informazioni</i> (Associazione Italiana Biblioteche) (<i>Information Bulletin</i> (Italian Library Association) 24, no. 1: 19&ndash;44.  (In Italian)</p>
+
+<p>
+Chor, L. 1986. &ldquo;PRECIS: Report on Chinese Entries&rdquo;. In <i>PRECIS: Recent Applications</i>, ed. Mary Dykstra. Occasional Papers Series, 39. Halifax, Nova Scotia, Canada: Dalhousie University Libraries and Dalhousie School of Library Service: 20&ndash;42. </p>
+
+<p>
+Chowdhury, G. G. 1995. <i>PRECIS: A Workbook</i>. Calcutta: Indian Association of Special Libraries and Information
+Centres (IASLIC).</p>
+
+<p>
+Christensen, Lone Vibeke. 1977. <i>Teoretisk og Anvendt PRECIS&ndash;Med Pr</i><i>&oslash;</i><i>ve-Indexer pa Englsk og Dansk (PRECIS in Theory and Practice&ndash;with Test Indexes in English and Danish).</i> Aalborg: Danmarks Biblioteksskole (Danish Library School). (In Danish)</p>
+
+<p>
+Classification Research Group, UK. 1973. &ldquo;Classification Research Group Bulletin No. 10&rdquo;. <i>Journal of Documentation</i> 29, no. 1: 51&ndash;71. (Discusses PRECIS on pages 66 to 68)</p>
+
+<p>
+Clement, Hope E. A. 1971. Review of <i>UK MARC Project: Proceedings of the Seminar on UK MARC Project, March 28&ndash;30, 1969</i>, eds. Alan E. Jeffreys and Thomas D. Wilson. 1970. <i>Canadian Library Journal</i> 28, no. 2: 134&ndash;137. (See
+Austin 1970c)</p>
+
+<p>
+Coates, Eric James. 1976. Review of <i>PRECIS: A Manual of Concept Analysis and Subject Indexing</i>, by Derek Austin. <i>Journal of Documentation</i> 32, no. 1: 85&ndash;96.     </p>
+
+<p>
+Congreve, Juliet. 1985. &ldquo;Research Initiatives: UK 3: Enhancement by PRECIS&rdquo;. <i>MARC Users&rsquo; Group Newsletter</i> 1985, no. 1: 57&ndash;75.</p>
+
+<p>
+Congreve, Juliet. 1986. &ldquo;Browsing through PRECIS: Structured Subject Access in an Online Catalogue&rdquo;. In <i>Online Public Access to Library Files: Second National Conference</i>, ed.  Janet Kinsella. Oxford: Elsevier International Bulletins: 67&ndash;77. </p>
+
+<p>
+Cook, C Donald. 1977. &ldquo;The Practical Possibilities of PRECIS in North America&rdquo;. In<i> The PRECIS Index System: Principles, Applications, and Prospects: Proceedings of the International PRECIS Workshop, </i><i>University of Maryland,</i> <i>October 15&ndash;17, 1976</i>, ed. Hans H. Wellisch. New York: Wilson, 1977: 187&ndash;194.</p>
+
+<p>
+Cote, Jean-Pierre. 1979. "PRECIS et le Systeme de Vedettes-matiere de la Library of Congress:  Vers une etude Comparative Globale" (PRECIS and the Library of Congress Subject Heading System: Towards a Global Comparative Study). <i>Documentation et Bibliotheques</i> (<i>Documentation and Libraries</i>) 25, no.  1: 11&ndash;21. (In French)</p>
+
+<p>
+Courrier,Yves. 1977. &ldquo;L&rsquo;indexation automatique: &eacute;tat de la question et perspectives d&rsquo;avenir&rdquo; (Automatic Indexing: State of the Art and Future Prospects). <i>Documentation et biblioth&egrave;ques </i>(<i>Documentation and Libraries</i>) 23, no. 2: 59&ndash;72. (In French)</p>
+
+<p>
+Coward, R. E. 1975. &ldquo;BL (i.e. British Library) Indexing: A Proposal for an Investigation into Certain Features of PRECIS&rdquo;. Paper presented to British Library Working Party on Classification and Indexing (BLWPCI). (Microfilm copy attached to Final Report of BLWPCI (Report No. 5233), 1975). </p>
+
+<p>
+Coward, R. E. 1975. &ldquo;PRECIS: R &amp; D within the context of the BL (i.e. British Library)&rdquo;. Paper presented to British Library Working Party on Classification and Indexing (BLWPCI). (Microfilm copy attached to Final Report of BLWPCI (Report No. 5233), 1975). </p>
+
+<p>
+Craven, Timothy C. 1986. <i>String Indexing</i>. Orlando, USA: Academic Press. </p>
+
+<p>
+Crews, A. D. 1975. &ldquo;Comparison of PRECIS Derived Subject Headings with those in BM Subject Index&rdquo;. Paper presented to British Library Working Party on Classification and Indexing (BLWPCI). (Microfilm copy attached to Final Report of BLWPCI (Report No. 5233), 1975).</p>
+
+<p>
+Crews, A. D. 1975. &ldquo;Comparison of PRECIS Derived Subject Headings System with RSL Subject Treatment of Document&rdquo;. Paper presented to British Library Working Party on Classification and Indexing (BLWPCI). (Microfilm copy attached to Final Report of BLWPCI (Report No. 5233), 1975). </p>
+
+<p>
+Crews, A. D. 1975. &ldquo;Report of an Investigation into the Machine Manipulation of PRECIS Strings to Produce Subject Headings&rdquo;. Paper presented to British Library Working Party on Classification and Indexing (BLWPCI). (Microfilm copy attached to Final Report of BLWPCI (Report No. 5233), 1975). </p>
+
+<p>
+Curwen, Anthony G. 1976. &ldquo;PRECIS&ndash;Again!&rdquo; <i>Bibliotek</i> 70: 337&ndash;338. (In Danish)</p>
+
+<p>
+Curwen, Anthony G. 1985. &ldquo;A Decade of PRECIS, 1974&ndash;84&rdquo;. <i>Journal of Librarianship</i> 17, no. 4: 244&ndash;267. </p>
+
+<p>
+DeBruin, Valentine. 1977. &ldquo;PRECIS in a University Library&rdquo;. In<i> The PRECIS Index System: Principles, Applications, and Prospects: Proceedings of the International PRECIS Workshop, University of Maryland,</i> <i>October 15&ndash;17, 1976</i>, ed. Hans H. Wellisch. New York: Wilson, 1977: 141&ndash;148.</p>
+
+<p>
+DeHart, Florence E. 1984. &ldquo;PRECIS and Visual Materials&rdquo;. <i>International Bulletin for Photographic Documentation of the Visual Arts</i> 11, no. 1: 9&ndash;11.</p>
+
+<p>
+DeHart, Florence E. and J. Glazier. 1984. &ldquo;Computer Searching on PRECIS: An Exploration of Measuring Comparative Retrieval Effectiveness&rdquo;. <i>International Classification</i> 11, no. 1: 3&ndash;8.</p>
+
+<p>&ldquo;Derek Austin Develops the PRECIS Preserved Context Index System 1969 to 1984&rdquo;.
+<A CLASS="menu" HREF="https://www.historyofinformation.com/detail.php?entryid=4853">https://www.historyofinformation.com/detail.php?entryid=4853</A>.
+
+<p>
+Detemple, S. 1982. &ldquo;PRECIS: ein Computerunterst&uuml;tztes System zur Herstellung Alphabetischer Sachregister und Schlagwortkataloge&rdquo; (PRECIS: A Computer-aided System for Creating Alphabetical Subject Registers and Subject Indexes). <i>Bibliothek: Forschung und Praxis</i> (<i>Library: Research and Practice</i>) 6, nos. 1/2: 4&ndash;46. (In German)</p>
+
+<p>
+Digger, Jeremy A. 1976. &ldquo;A Note on the Growth and Development of PRECIS&rdquo;. <i>The British Library Bibliographic Services Division Newsletter </i>1: 4</p>
+
+<p>
+Dionne, Guy. 1975. &ldquo;PRECIS I: Preserved Context Indexing System&rdquo;. <i>Documentation et biblioth&egrave;ques </i>(<i>Documentation and Libraries</i>) 21, no. 1: 9&ndash;21. (In French). https://www.erudit.org/en/journals/documentation/1975-v21-n1-documentation04232/1055515ar.pdf</p>
+
+<p>
+Douglas, Kimberly and Don Wismer 1980. &ldquo;Computer-based Indexing on a Small-scale: Bibliography&rdquo;. <i>Bibliogrsaphy prepared for Special Library Group of the Maine Library Association&rsquo;s Workshop on Small-scale Indexing by Computer, Augusta, January 14, 1980</i>: 12&ndash;13. (Includes a section on PRECIS). <a class="menu" href="https://files.eric.ed.gov/fulltext/ED198831.pdf">https://files.eric.ed.gov/fulltext/ED198831.pdf</a>.</p>
+
+<p>
+Dutta, Anirban. 2017. &ldquo;A journey from Cutter to Austin: Analysis of their Contribution in Subject Indexing&rdquo;. <i>International Journal of Library and Information Science</i> 7, no. 4: 338&ndash;350. </p>
+
+<p>Dutta, S. and P. K. Sinha. 1984. &ldquo;Pragmatic Approach to Subject Indexing: A New Concept&rdquo;. <i>Journal of the American Society for Information Science </i>35, no. 6: 325-331. https://doi.org/10.1002/asi.4630350604 (Makes a critical study of previously developed indexing systems, including PRECIS, and proposes a new system called PASI)</p>
+
+<p>Dykstra, Mary. 1977a. <i>Access to Film Information: An Indexing and Retrieval System for the National Film Board of Canada</i>. Dalhousie University Libraries and Dalhousie University School of Library Service Occasional Paper No. 15. Halifax: Dalhousie University. (The system is based on PRECIS)</p>
+
+<p>
+Dykstra, Mary. 1977b. &ldquo;The National Film Board of Canada Project&rdquo;. In<i> The PRECIS Index System: Principles, Applications, and Prospects: Proceedings of the International PRECIS Workshop, University of Maryland, October 15&ndash;17, 1976</i>, ed. Hans H. Wellisch. New York: Wilson, 1977: 175&ndash;186.</p>
+
+<p>
+Dykstra, Mary. 1978a. &ldquo;A Complete Delivery Service for Canadian Non-print Media&rdquo;. <i>Canadian Journal of Information Science</i>/RCSI 3, no. 2:190&ndash;198.   (Discusses the information distribution system being developed by National Film Board of Canada which provides subject access to its collection using PRECIS)</p>
+
+<p>
+Dykstra, Mary. 1978b. &ldquo;The Lion that Squeaked: A Plea to the Library of Congress to adopt the PRECIS System and reconsider the decision to overhaul the LC Subject Headings&rdquo;. <i>Library Journal </i>103, no. 15: 1570&ndash;1572. </p>
+
+<p>
+Dykstra, Mary. 1985a. <i>PRECIS: A Primer</i>. London: The British Library Bibliographic Services Division. (For revised reprint see Dykstra1987a)</p>
+
+<p>
+Dykstra, Mary. 1985b. &ldquo;PRECIS as a Dual System&rdquo;. Paper presented at the <i>Symposium on Subject Analysis, North Carolina Central University, Durham, March 29&ndash;30, 1985</i>. </p>
+
+<p>
+Dykstra, Mary. 1986a. &ldquo;FORMAT: Connecting Canada&rsquo;s Audio-visual Information&rdquo;. In <i>PRECIS: Recent Applications</i>, ed. Mary Dykstra. Occasional Papers Series, 39. Halifax: Dalhousie University Libraries and Dalhousie School of Library Service: 43&ndash;63.</p>
+
+<p>
+Dykstra, Mary. 1986b. &ldquo;Introduction&rdquo;. In<i> PRECIS: Recent Applications</i>, ed. Mary Dykstra.<i> </i>Occasional Papers Series, 39.  Halifax: Dalhousie University Libraries and Dalhousie School of Library Service: i&ndash;ix.</p>
+
+<p>
+Dykstra, Mary, ed. 1986c.<i> PRECIS: Recent Applications. Occasional Papers Series, 39. </i>Halifax: Dalhousie University Libraries and Dalhousie School of Library Service.  </p>
+
+<p>
+Dykstra, Mary. 1986d. &ldquo;The Structural Encoding of Document Content: A Logico- Linguistic Study of PRECIS as a Possible Model in the shift from Indexing to Automated Text Analysis&rdquo;. PhD thesis, University of Sheffield, 1986. </p>
+
+<p>
+Dykstra, Mary. 1987a. <i>PRECIS: A Primer.</i>. Rev. Reprint. Metuchen, NJ: Scarecrow Press. (For original edition see Dykstra 1985a)</p>
+
+<p>
+Dykstra, Mary. 1987b. &ldquo;Subject Indexing and Retrieval: What more can Technology do?&rdquo;  <i>Canadian Library Journal</i> 44, no. 3: 187&ndash;189. (Shows that the classificatory aspects of PRECIS are of more potential relevance for future machine manipulation than the linguistic aspects).</p>
+
+<p>
+Dykstra, Mary. 1989. &ldquo;PRECIS in the Online Catalogue&rdquo;. <i>Cataloguing &amp; Classification Quarterly</i> 10, nos. 1/2: 81&ndash;94. (Also published in <i>Subject Control in Online Catalogues</i>, ed. Robert P. Holley. New York: The Haworth Press: 81&ndash;94).</p>
+
+<p>
+Evans, Jana. 1976. &ldquo;Computer based Production of British Education Index&rdquo;. <i>British Library Bibliographic Services Division Newsletter</i> 3: 5&ndash;6. (Describes the use of PRECIS in British Education Index)<i> </i></p>
+
+<p>
+Eyre, J. J. 1974. &ldquo;Computer-based Indexing Systems: Implications for the Book Indexer&rdquo;. <i>The Indexer</i> 9, no. 2: 53&ndash;57. (Covers a discussion on PRECIS).</p>
+
+<p>
+Farradane, Jason. 1977. &ldquo;A Comparison of Some Computer-produced Permuted Alphabetical Subject Indexes&rdquo;. <i>International Classification</i> 4, no. 2: 94&ndash;101. (Compares alphabetical subject indexes produced using five indexing systems, including PRECIS)</p>
+
+<p>
+Ferrier, Anna-Marie. 1978. &ldquo;Pr&eacute;sentation du Syst&egrave;me d&rsquo;Indexation &ldquo;PRECIS&rdquo; bas&eacute; sur l&rsquo;Exp&eacute;rience du D&eacute;partement des Arts de la Sc&egrave;ne de la Biblioth&egrave;que Nationale&rdquo; (Presentation of the "PRECIS" Indexing System based on the Experience of the Performing Arts Department of the National Library). <i>Bulletin des Biblioth&egrave;ques de France</i> (<i>Bulletin of the Libraries of France</i>) 23, no. 3: 161&ndash;169. (In French) https://bbf.enssib.fr/consulter/bbf-1978-03-0161-001 </p>
+
+<p>
+Ferrier, Anna-Marie and Joanna Sanders. 1977. &ldquo;PRECIS Experimental Index for the Department of the Performing Arts at the Bibliotheque Nationale&rdquo;. <i>The British Library Bibliographic Services Division Newsletter</i> 4: 8&ndash;9.</p>
+
+<p>
+Fjallbrant, Nancey, Sven Westberg and Jutta S&oslash;rensen. 1977. &ldquo;PRECIS: ett Indexeringssystem att Rakna Med i Framtiden&rdquo; (PRECIS: An Indexing System to be reckoned with in the Future). <i>Biblioteksbladet</i> (<i>Library Page</i>) 62, no. 6: 97&ndash;100. (In Swedish)</p>
+
+<p>
+Foskett, Anthony Charles. 1996. &ldquo;PRECIS&rdquo;. In <i>The Subject Approach to Information, </i>by Anthony Charles Foskett. 5th ed. London: Facet Publishing: 132&ndash;139. </p>
+
+<p>
+Fujita, Mari&acirc;ngela Spotti Lopes. 1988. &ldquo;Sistema de Indexa&ccedil;&atilde;o PRECIS 1&ndash;PRECIS: Perspectiva Hist&oacute;rica e T&eacute;cnica do seu Desenvolvimento e Aplica&ccedil;&atilde;o&rdquo; (PRECIS Indexing System 1&ndash;PRECIS: Historical and Technical Perspective of its Development and Application). <i>Revista  Brasileira de  Biblioteconomia e Documentacao </i>(<i>Brazilian Journal of Library and Documentation</i>) 21, nos. 1/2: 21&ndash;45. (In Portuguese)</p>
+
+<p>
+Fujita, Mari&acirc;ngela Spotti Lopes. 1989a. &ldquo;Avalia&ccedil;&atilde;o da Efic&aacute;cia de Recupera&ccedil;&atilde;o do Sistema de Indexa&ccedil;&atilde;o PRECIS&rdquo; (Evaluation of the Recovery Efficiency of the PRECIS Indexing System). <i>Ci&ecirc;ncia da Informa&ccedil;&atilde;o </i>(<i>Information Science</i>) 18, no. 2: 120&ndash;134. (In Portuguese)</p>
+
+<p>Fujita, Mari&acirc;ngela Spotti Lopes. 1989b.  <i>Precis na L&iacute;ngua Portuguesa: Teoria e Pr&aacute;tica de Indexa&ccedil;&atilde;o</i> (PRECIS in Portuguese Language: Theory and Practice of Indexing). Bras&iacute;lia:  UnB/ABDF. (In Portuguese)</p>
+
+<p>Gabbard, Paula Beversdof. 1985. "LCSH and PRECIS in Music: A Comparison". <i>The Library Quarterly</i> 55, no. 2: 192&ndash;206.</p>
+
+<p>
+Gold, Jack A. 1972. &ldquo;PRECIS: An Analysis&rdquo;. <i>Canadian Library Journal </i>29, no. 6: 460&ndash;469.</p>
+
+<p>
+Greal, Jacqueline. 1985. <i>PRECIS: f&uuml;r die Antvendung in Deutschen Bibliotheken Uberarbeitete und Vereinfachte form des Syntaktischen Indexierungsverfahrens der British Library</i> (<i>PRECIS: Revised and Simplified form of the British Library's Syntactic Indexing Method for Use in German Libraries</i>). dbi-materialen 35 (DB-materials 35).  Berlin: Deutsches Bibliotheksinstitut (German Library Institute). (In German)</p>
+
+<p>
+Groenewegen, Hans W. 1973. &ldquo;The Australian National Bibliography: Some Comments about the Theory underlying its Physical Arrangement with special reference to PRECIS&rdquo;. Paper presented at the <i>Round Table Discussion on Australian National Bibliography</i>, October 29, 1973.</p>
+
+<p>
+Gr&oslash;nbech, Johnny. 1975. &ldquo;Ottovar og PRECIS&ndash;eller Praecise Ottovar&rsquo; (Ottovar  and PRECIS&ndash;or Precise Ottovar) (letter to the editor). <i>Bibliotek</i> 70, no. 22: 564. (In Danish)</p>
+
+<p>
+Guha, B. 1974. &ldquo;Recent Advances in Document Description and Representation: ISBD and PRECIS&rdquo;. <i>Annals of Library Science and Documentation</i> 21, nos. 1/2: 68&ndash;73. </p>
+
+<p>
+Hancox, Peter J. 1983. &ldquo;On the Machine Translation of String Indexing Languages between English and French using PRECIS as an Example&rdquo;. PhD thesis, Loughborough University of Technology, 1983.   </p>
+
+<p>
+Hancox, Peter J. and Frederick Smith. 1985. &ldquo;A Case System Processor for PRECIS Indexing Language&rdquo;. In <i>Advances in Intelligent Retrieval (Informatics 8): Proceedings of a Conference, Oxford.</i> 120&ndash;147. 
+<A CLASS="menu" HREF="https://www.cs.bham.ac.uk/~pjh/publications/archive/1985_informatics_8.pdf">https://www.cs.bham.ac.uk/~pjh/publications/archive/1985_informatics_8.pdf</A>.</p>
+
+<p>
+Harris, Jessica L. 1977. Review of <i>The PRECIS Index System: Principles, Applications, and Prospects: Proceedings of the International PRECIS Workshop, University of Maryland, October 15&ndash;17, 1976</i>, ed. Hans H. Wellisch. <i>College and Research Libraries</i> 38, no. 6: 549&ndash;550.</p>
+
+<p>
+Hendrix, Frances and Stephen Wilson. 1981. &ldquo;The Provision of a Subject Index at Preston Polytechnic Library and Learning Resources Service: Use of an Adaptation of PRECIS at Preston Polytechnic&rdquo;. <i>Program</i> 15, no. 2: 73&ndash;90.</p>
+
+<p>
+Henrichs, N. 2014 (Print), 2017 (Online). &ldquo;PRECIS (Preserved Context Index System)&rdquo;.  In <i>Lexikon des Gesamten Buchwesens Online </i>(<i>Lexicon of the entire Book Industry Online</i>). (In German). <A CLASS="menu" HREF="http://dx.doi.org/10.1163/9789004337862__COM_161012">http://dx.doi.org/10.1163/9789004337862__COM_161012</A>.</p>
+
+<p>
+Higgins, Peter. 1991. &ldquo;The Rise and fall of PRECIS as an Indexing System&rdquo;. Master&rsquo;s thesis, Loughborough University, 1991. <a class="menu" href="https://repository.lboro.ac.uk/articles/educational_ resource/The_rise_and_fall_of_PRECIS_as_an_indexing_system/14884338/1">https://repository.lboro.ac.uk/articles/...</a> </p>
+
+<p>
+Hj&oslash;rland, Birger. 2007. "PRECIS (Preserved Context Index System)". <i>Lifeboat for Knowledge Organization.</i><a class="menu" href="http://arkiv.iva.ku.dk/kolifeboat/SPECIFIC%20SYSTEMS/precis.htm">http://arkiv.iva.ku.dk/kolifeboat/SPECIFIC%20SYSTEMS/precis.htm</a>.</p>
+
+<p>
+Hoey, Michael. 1978. &ldquo;PRECIS goes to L C&rdquo;. <i>The British Library Bibliographic Services Division Newsletter</i> 9: 1&ndash;2.</p>
+
+<p>
+Hsueh, Li-Kuei. 1990. &ldquo;The Use of PRECIS in Indexing Chinese Documents: An Experimental Study.&rdquo; PhD thesis, Longhborough University.</p>
+
+<p>
+Hsueh, Li-Kuei. 1993. &ldquo;PRECIS z&agrave;i Suoyin Zhongw&eacute;n W&eacute;nd&agrave;ng Zhong de Shiy&ograve;ng: Yi Xi&agrave;ng Sh&iacute;y&agrave;n Y&aacute;njiu&rdquo; (The Use of PRECIS in Indexing Chinese Documents: An Experimental Study). <i>T&uacute;shu q&iacute;ngb&agrave;o xu&eacute; z&aacute;zh&igrave;, </i>t&aacute;ibei (<i>Journal of Library and Information Science</i>, Taipei) 19, no. 1: 40&ndash;75. (In Chinese)</p>
+
+<p>
+Hsueh, Li-Kuei and J. D. White. 1989. &ldquo;Application of PRECIS in Processing Chinese Documents&rdquo;. In <i>Proceedings of 11</i><i>th</i><i> BCS-IRSG Research Colloquium on Information Retrieval, Huddersfield, July 5&ndash;6, 1989.</i> Huddersfield: Information Retrieval Specialist Group, British Computer Society: 154&ndash;176.</p>
+
+<p>
+Hunt, Roslyn. 1978. &ldquo;The Subject Catalogue in Australian Academic Libraries: PRECIS, LCSH and KWOK and the Findings of the Wollongong University Subject Catalogue Study&rdquo;. <i>Australian Academic and Research Libraries</i> 9, no. 2: 61&ndash;70.</p>
+
+<p>
+Hunt, Roslyn, C. Horne, Lucille Boone, Lyndal Dennis and Helen Whelan. 1976&ndash;1978. <i>PRECIS, LCSH and KWOC: Report of a Research Project Designed to Examine the Applicability of PRECIS to the Subject Catalogue of an Academic Library</i>. 4 parts. Wollongong, Australia: University of Wollongong.</p>
+
+<p>
+Hunter, Eric J. 1987. &ldquo;The United Kingdom&rsquo;s Contribution to Subject Cataloguing and Classification since 1945&rdquo;. <i>International Cataloguing</i> 16, no. 3: 31&ndash;34. (Covers development of PRECIS)</p>
+
+<p>
+Jacobs, Christine and Clement Arsenault. 1994. &ldquo;Words can&rsquo;t describe it: Streamlining PRECIS just for laughs!&rdquo; <i>The Indexer</i> 19, no. 2: 88&ndash;92. </p>
+
+<p>
+Jeffreys, Alan E. and Wilson, Thomas D, ed. 1970. <i>UK MARC Project: Proceedings of the Seminar on the UK MARC Project, University of Southampton, March 28&ndash;30, 1969.</i> New Castle upon Tyne: Oriel Press.<i> </i>(Discussions covered PRECIS)</p>
+
+<p>
+Kanakachari, M. and M. Saraswati. 1994. &ldquo;Preserved Context Indexing System: State of the Art Report&rdquo;. <i>Indian Library Movement</i> 16, no. 3, 115&ndash;123.</p>
+
+<p>
+Keen, Edward Michael. 1978. <i>On the Performance of Nine Printed Subject Index Entry Types: A Selective Report of EPSILON</i>. Aberystwyth: College of Librarianship. (Includes a report on performance of PRECIS)</p>
+
+<p>
+Kemp, D. A. R. 1971. &ldquo;PRECIS Indexing: A Short Note on the Method&rdquo;. <i>Catalogue &amp; Index</i> 21, no. 1: 10&ndash;12.</p>
+
+<p>
+Kohli, B. L. and K. Bedi. 1988. &ldquo;PRECIS Indexing System&rdquo;. <i>Herald of Library Science</i> 27, nos. 3/4: 195&ndash;202.</p>
+
+<p>Krarup, K. and I. Boserup. 1982. <i>Reader-oriented Indexing: An Investigation into the extent to which Subject Specialists should be used for the Indexing of Documents by and for Professional Readers, based on a sample of Sociological Documents indexed with the help of the PRECIS Indexing System</i>. Copenhagen: The Royal Library.</p>
+
+<p>Kr&ouml;mmelbein, Uschi. 1983. <i>Linguistische und Fachwissenschaftliche Gesichtspunkte. Eine Vergleichende Untersuchung der Regeln f&uuml;r die Schlagwortvergabe der Deutschen Bibliothek, RSWK, Voll-PRECIS und Kurz-PRECIS: Schlagwort-Syntax</i>. (<i>Linguistic and Scientific Aspects. A Comparative Study of the Rules for Assigning Subject Headings in the </i><i>Deutschen Bibliothek</i><i>, RSWK, Full PRECIS and Short PRECIS: Subject Syntax</i>). K&ouml;ln: FHBD (Cologne: FHBD). (Also published in <i>Bibliothek: Forschung und Praxis</i> (<i>Library Research and Practice</i>) 8, no. 3, 1984: 159&ndash;202). (In German) </p>
+
+<p>Kwasnik, B. 2004a. <i>Revisiting Preserved Context Index System</i>. Power Point presentation. <a class="menu" href="https://slideplayer.com/slide/676629/">https://slideplayer.com/slide/676629/</a>.</p>
+
+<p>Kwasnik, B. 2004b. <i>Revisiting Preserved Context Index System (PRECIS): The Bridge between Hierarchically Structured Thesauri and Faceted Classifications</i>. <a class="menu" href="https://repository.arizona.edu/bitstream/handle/10150/105262/SIG-CR2004Kwasnik.pdf?sequence=1&amp;isAllowed=y">https://repository.arizona.edu/bitstream/handle/10150/105262/SIG-CR2004Kwasnik.pdf?sequence=1&amp;isAllowed=y</a>.</p>
+
+<p>Lalibert&eacute;, Madeleine A.  1977a. &ldquo;Quelques Probl&egrave;mes Rencontr&eacute;s dans l'Application de PRECIS &agrave; la Langue Fran&ccedil;aise&rdquo; (Some Problems Encountered in the Application of PRECIS to the French Language). <i>Canadian Journal of Information Science</i> 2, no. 1: 79&ndash;92. (In French)</p>
+
+<p>
+Lalibert&eacute;, Madeleine A. 1977b. &ldquo;Selected Grammatical and Syntactical Problems in Adapting PRECIS to the French Language&rdquo;. PhD thesis, Case Western Reserve University.</p>
+
+<p>
+Lambert, Germaine. 1976. &ldquo;PRECIS in a Multilingual Context Pt. 4: The Application of PRECIS in French&rdquo;. <i>Libri</i> 26, no. 4: 302&ndash;324.</p>
+
+<p>
+Lambert, Germaine. 1978. Le <i>Systeme d&rsquo;Indexation Multilingue PRECIS: PREserved Context Index System: Application a l&rsquo;Indexation de Documents  en Langue Francaise</i> (The Multilingual Indexing System PRECIS: PREserved  Context Index System: Application in Indexing Documents in French). Memoire en vue de l&rsquo;Obtention du Diploma de 2 Cycle de l&rsquo;Institut national des techniques de la documentation (Dissertation submitted for obtaining the 2-Cycle Diploma of the National Institute of Documentation Techniques). Paris: Conservatoire national de arts et m&eacute;tiers des techniques de la documentation. (In French)</p>
+
+<p>
+Lamy-Rousseau, F. 1974. <i>Traitement Automatis&eacute; des Documents Multim&eacute;dias avec les Syst&egrave;mes UNIFI&Eacute;S ISBD, Lamy-Rousseau et PRECIS Propositions du SILP</i> (<i>Automated Processing of Multimedia Documents with the UNIFIED ISBD, Lamy-Rousseau and PRECIS Systems Proposals from SILP</i>). Montr&eacute;al: Minist&egrave;re de l&rsquo;&Eacute;ducation du Qu&eacute;bec (Montreal: Quebec Ministry of Education). (In French)</p>
+
+<p>
+Langridge, Derek Wilton. 1976. Review of <i>PRECIS: A Manual of Concept Analysis and Indexing</i>, by Derek Austin.  <i>Journal of Librarianship</i> 8, no. 3: 210&ndash;212.</p>
+
+<p>
+Larsen, Poul Steen (comp). 1976. <i>A Bibliography of PRECIS</i>. Copenhagen: The Royal School of Librarianship. (See S&oslash;rensen 1979 for 2nd ed.)</p>
+
+<p>
+Lewis, Peter. 1975. &ldquo;Factors in the Selection of Classification Scheme for a Large General Library&rdquo;. Paper presented at the <i>21st Allerton Park Institute, 1975, Urbana, Illinois</i>. (Discusses the recommendations contained in the final report of the British Library Working Party on Classification and Indexing, including recommendation for adoption of PRECIS for use in the Reference Division of the British Library)</p>
+
+<p>
+Library of Congress Processing Department. &ldquo;Freezing the Library of Congress Catalog&rdquo;. <i>Library of Congress Information Bulletin</i> 37, no. 9: 152&ndash;156. (Considers PRECIS from the viewpoint of LC management)</p>
+
+<p>
+Maa&szlig;en, Bernd. 1982. &ldquo;PRECIS: ein Englisches Indexierungsverfahren f&uuml;r Deutsche Bibliotheken&rdquo; (PRECIS: An English Indexing Method for German Libraries). <i>DBV-Info</i> 4, no. 2: 46&ndash;69. (In German)</p>
+
+<p>Maa&szlig;en. Bernd. 1983a. &ldquo;PRECIS: Erfahrungen mit einem Projekt&rdquo; (PRECIS: Experience with a Project). <i>Zeitschrift f&uuml;r Bibliothekswesen und Bibliographie </i>(<i>Journal of Librarianship and Bibliography</i>) 30, no. 4: 293&ndash;301. (In German)</p>
+
+<p>
+Maa&szlig;en, Bernd. 1983b. &ldquo;PRECIS Theory and Practice 2: The PRECIS Project at the Deutsche Bibliothek Frankfurt am Main&rdquo;. Paper presented at <i>IFLA Conference, 49</i><i>th,</i><i> Munich, 1983.</i> (Also published in <i>International Cataloguing</i>, 13, no. 2, 1984: 15&ndash;17)</p>
+
+<p>
+Maa&szlig;en, Bernd. 1984a. &ldquo;Das PRECIS-Projekt der Deutschen Bibliothek&rdquo; (The German Library&rsquo;s PRECIS Project). In <i>New Rules for the Keyword Catalog: Introduction to RSWK and PRECIS: Texts of Lectures delivered at the Continuing Education Programme of FHBD, Cologne, July 9&ndash;10, 1984</i>: 113&ndash;151 (In German)</p>
+
+<p>
+Maa&szlig;en, Bernd, ed. 1984b.   <i>PRECIS: F&uuml;r die Anwendung in Deutschen Bibliotheken &Uuml;berarbeitete u. Vereinfachte Form des Syntaktischen Indexierungsverfahrens der British Library</i>, bearbeitet von B Maa&szlig;en, Projektleiter (<i>PRECIS: </i><i>Revised and Simplified form of the British Library's Syntactic Indexing Procedure for use in German Libraries</i>, ed. Bernd Maa&szlig;en, Project Leader). Berlin: Deutsches Bibliotheksinstitut (German Library Institute). (In German)</p>
+
+<p>
+Mabey, W. H. 1975. &ldquo;PRECIS&rdquo; (Letter to the Editor). <i>Library Association Record</i> 77, no. 10: 254&ndash;255. </p>
+
+<p>
+Madelung, Hans-Ole. 1982. &ldquo;Subject Indexing in Social Sciences: A Comparison of PRECIS and KWIC Indexes to Newspaper Articles&rdquo;. <i>Journal of Librarianship and Information Science</i> 14, no. 1: 45&ndash;58</p>
+
+<p>
+Mahapatra, Manoranjan. 1978. &ldquo;Syntactical Difference between POPSI and PRECIS&rdquo;. <i>Libri</i> 28, no. 3: 235&ndash;245. </p>
+
+<p>
+Mahapatra, Manoranjan and Subal Chandra Biswas. 1983. &ldquo;PRECIS: Its Theory and Application&ndash;An Extended State-of-the-Art Review from the Beginning to 1982&rdquo;. <i>Libri</i> 33, no. 4: 315&ndash;330.</p>
+
+<p>
+Mahapatra, Manoranjan and Subal Chandra Biswas. 1984. &ldquo;Efficiency of PRECIS Role Operators&rdquo;. <i>International Library Review</i> 16, no. 3: 299&ndash;307.</p>
+
+<p>
+Mahapatra, Manoranjan and Subal Chandra Biswas 1985. &ldquo;Concept Specification by PRECIS Role Operators: Some Technical Problems with Social Science and Humanities Literature&rdquo;. <i>Library &amp; Information Science Research</i> 7, no. 1: 53&ndash;73. </p>
+
+<p>
+Mahapatra, Manoranjan and Subal Chandra Biswas. 1986. &ldquo;Interdependence of PRECIS Role Operators: A Quantitative Analysis of their Associations&rdquo;. <i>Journal of the American Society for Information Science and Technology</i> 37, no. 1: 20&ndash;25.</p>
+
+<p>Maltese, Diego and Alberto Petrucciani. 1990. Un'esperienza di indicizzazione per soggetto: materiali per la versione
+italiana del PRECIS (An Experience of Indexing by Subject: Materials for the Italian Version of PRECIS.) Roma:
+Associazione Italiana Biblioteche (Italian Library Association). (In Italian)
+
+<p>
+Matter, R. 1979. &ldquo;PRECIS als Zwischensprachliches System&rdquo; (PRECIS as an Inter-lingual System). <i>Nachrichten f&uuml;r Dokumentation</i> (<i>News for Documentation</i>) 30, no. 3: 117&ndash;122. (In German)</p>
+
+<p>
+Mckinlay, J. 1977. Review of <i>Final Report (Report No. 5233) </i>of British Library Working Party on Classification and Indexing. 1975. <i>Australian Academic and Research Libraries</i> 8, no. 2: 111.</p>
+
+<p>
+Mcllwaine, Ia C. 2003. &ldquo;Indexing and the Classification Research Group&rdquo;. <i>The Indexer </i>23, no. 4: 204&ndash;208. (Briefly traces origin and development of PRECIS)</p>
+
+<p>
+Metcalfe, John. &ldquo;British National Bibliography, Old and New&rdquo;. <i>Australian Library Journal</i> 20, no. 4: 30&ndash;33. (Compares use of Chain Indexing and PRECIS in BNB)</p>
+
+<p>
+Micco, H. Mary. 1980. <i>An Exploratory Study of three Subject Access Systems in Medicine: LCSH, MeSH, PRECIS</i>. PhD thesis, University of Pittsburgh.  </p>
+
+<p>
+Micco, H. Mary. 1985. &ldquo;A Comparison of Subject Access Systems in Medicine: LCSH, MeSH, PRECIS&rdquo;.  In <i>ASIS </i><i>'85: </i><i>Proceedings of the 48th </i><i>ASIS </i><i>Annual Meeting</i><i>. </i><i>Las Vegas, </i><i>New York, </i><i>October 20&ndash;24 </i><i>1985</i>; ed. C. A. Parkhurst. White Plains, New York: Knowledge Industry Publications: 41-53.</p>
+
+<p>
+Michell, G. 1979. &ldquo;Does PRECIS have Feet of Clay?: Problems with the Universality of the Role Operators&rdquo;. In <i>Sharing Resources, Sharing Costs: Proceedings of the 7th Annual Canadian Conference on Information Science, Banff, May 12&ndash;15, 1979</i>:<i> </i>123&ndash;129.</p>
+
+<p>
+Mineur, B. W. 1973. &ldquo;Relations in Chains&rdquo;. <i>Journal of Librarianship</i> 5, no. 3: 175&ndash;202. (Reviews criticisms against chain indexing and considers PRECIS as its possible substitute)</p>
+
+<p>
+M&oslash;ller, S&oslash;ren. <i>Demonstration af PRECIS pa Dansk med udledning og Diskussion af Nogle Prolemner, Samt en Gennemgang af Centrale Klassifikationsbegrgrebr)</i> (Demonstration of PRECIS in Danish with Introduction and Discussion of Some Issues as well as Review of Key Classification Concepts). Aalborg: Danmarks Biblioteksskole. (In Danish)</p>
+
+<p>
+Moradi, Nurollah. 1977 &ldquo;PRECIS Indexing System [Part-1]&rdquo;. <i>Iranian Library Association Bulletin</i> 10, no. 3. (In Persian)</p>
+
+<p>
+Moradi, Nurollah.  1978. &ldquo;PRECIS Indexing System [Part-2]&rdquo;. <i>Iranian Library Association Bulletin</i> 10, no. 4. (In Persian)</p>
+
+<p>
+Moss, R. 1975. &ldquo;PRECIS&rdquo; (letter to the editor). <i>Journal of Documentation</i> 31, no. 2: 116&ndash;117.</p>
+
+<p>
+Moss, R. 1975. &ldquo;PRECIS&rdquo; (letter to the editor). <i>Journal of Documentation</i> 31, no. 4: 301&ndash;303.</p>
+
+<p> </p>
+
+<p>Ottovar, Annagrethe. 1975. &ldquo;L&oslash;ser PRECIS vores Emnekatalog- problemer?&rdquo; (Will PRECIS solve our Subject Index Problems). <i>Bibliotek</i> 70, no. 20: 504&ndash;505. (In Danish)</p>
+
+<p>
+Ottovar, Annagrethe. 1976a. &ldquo;PRECIS og Samfundsvidenskaberne&rdquo; (PRECIS and the Social Sciences). <i>Bibliotek</i> 70, no. 11: 247&ndash;248. (In Danish)</p>
+
+<p>
+Ottovar, Annagrethe. 1976b. &ldquo;Replik til en Planlaegger&rdquo; (Reply to a Planner). <i>Bibliotek </i>70, no. 10: 227&ndash;228. (A reply to Eigil Balling&rsquo;s article on PRECIS) (In Danish)</p>
+
+<p>
+Parameswaran, M. 2001. &ldquo;Classification and Indexing: Impact of Classification Theory on PRECIS&rdquo;. In <i>National Seminar on Classification in the Digital Environment, Bangalore: Papers</i>, eds. A. Neelameghan and K. N. Prasad. Bangalore: Sarada Ranganathan Endowment for Library Science: 121&ndash;132.</p>
+
+<p>
+Peters, Helen Jane. 1981. &ldquo;User Reactions to PRECIS in the British Education Index&rdquo;. <i>Education Libraries Bulletin</i> 24, no. 2: 20&ndash;31.</p>
+
+<p>
+Peters, Helen Jane and Bakewell, Kenneth Graham Bartlett. 1981. <i>User Reactions to PRECIS Indexes.</i> BLRD Report No. 5659. Liverpool: School of Librarianship and Information Studies, Liverpool Polytechnic.</p>
+
+<p>
+Peters, Helen Jane and Kenneth Graham Bartlett. 1984. &ldquo;User Reactions to PRECIS Indexes&rdquo;. In <i>New Trends in International Librarianship: S R Ranganathan Festschrift to mark the Platinum Jubilee of Madras University Library</i>, ed. P. A. Mohanrajan. New Delhi: Allied Publishers: 1&ndash;19. </p>
+
+<p>
+Petrucciani, Alberto. 1987.  &ldquo;PRECIS: Un sistema di indicizzazione che si sta sperimentando in Italia&rdquo; (PRECIS: An Indexing System which is being experimented with in Italy). <i>Indicizzazione</i> (<i>Indexing</i>) 2, no. 1: 9&ndash;19. (In Italian)</p>
+
+<p>
+Phukan, Alaka. 1976. PRECIS&ndash;How far from Cutter&rsquo;s Subject Headings in RDC. <i>Herald of Library Science</i> 15, nos. 3/4: 317&ndash;325.</p>
+
+<p>
+[Porotnikoff, Olga]. &ldquo;1975. Words&hellip;&hellip;Words&hellip;&hellip;PRECIS-Seminar pa Danmarks Biblioteksskole&rdquo; (Words&hellip;&hellip;Words&hellip;&hellip;PRECIS Seminar at Danmarks Biblioteksskole), Oktober 22&ndash;24, 1975. <i>Statsbibliotekets Interne Meddelelser</i> <i>(State Library&rsquo;s Internal Announcements)</i> 13, no. 20: 274&ndash;275. (In Danish)</p>
+
+<p>
+Preschel, B. M. 1977. "A US Indexer Attends a PRECIS Indexing Workshop".  <i>The Indexer</i> 10, no. 3: 111&ndash;115. (Briefly describes PRECIS's aims and its two aspects, the syntax and the semantics). </p>
+
+<p>
+Rajan, T. N. 1976a. &ldquo;The Handling of Compound Terms in Indexing Systems&rdquo;. <i>Journal of Library and Information Science </i>1, no. 2: 169&ndash;190. (Compares handling of compound terms in POPSI, BTI and PRECIS)</p>
+
+<p>
+Rajan, T. N. 1976b. Review of <i>PRECIS: A Manual of Concept Analysis and Subject Indexing</i>, by Derek Austin. <i>Annals of Library Science and Documentation</i> 23, no. 202&ndash;203. </p>
+
+<p>
+Rajan, T. N. 1981/1982. &ldquo;From Chain to String Indexing&rdquo;. <i>Library Herald</i> 20, nos. 2/4: 105&ndash;110.</p>
+
+<p>
+Rajan, T. N. and B. Guha. 1975. "A Comparative Study of Subject Heading Structuring according to POPSI and PRECIS". In <i>Ordering Systems for Global Information Networks: Proceedings of the 3</i><i>rd</i><i> International Study Conference on Classification Research, Bombay</i>, <i>January 6&ndash;11, 1975</i>, ed. A. Neelameghan. Bangalore: FID/CR and  Sarada Ranganathan Endowment for Library Science, 1979: 369&ndash;381.</p>
+
+<p>
+Ramsden, Michael J. 1981. <i>PRECIS: A Workbook for Students of Librarianship</i>. London: Clive Bingley.</p>
+
+<p>
+Ravn, Anders. 1977. <i>Emneregistrering i Dansk Artikelindeks: Et Oplaeg</i> (Subject Registration in Danish Article Index: A Presentation). Copenhagen: Bibliotekscentralen (Danish Library Centre).  (Stresses on use of PRECIS for indexing in proposed Danish Article Index) (In Danish)</p>
+
+<p>Reinhard, Supper. 1978. <i>Neuere Methoden der Intellektuellen Indexierung: brit. </i><i>Systeme unter bes. Ber&uuml;cks. von PRECIS</i> (Recent Methods of Intellectual Indexing: British Systems with special reference to PRECIS). M&uuml;nchen: Verlag Dokumentation Saur. (In German)</p>
+
+<p>
+Richmond, Phyllis A. 1971. Review of <i>PRECIS: A Rotated Subject Index System</i>, by Derek Austin and Peter Butcher. 1969.  <i>Library Resources and Technical Services</i> 15, no. 4: 553&ndash;555. </p>
+
+<p>
+Richmond, Phyllis A. 1975. Review of <i>PRECIS: A Manual of Concept Analysis and Subject Indexing</i>, by Derek Austin<i>.</i>1974. <i>International Classification</i> 2, no. 2: 116&ndash;117.</p>
+
+<p>
+Richmond, Phyllis A. 1976a. &ldquo;Classification from PRECIS: Some Possibilities&rdquo;. <i>Journal of American Society for Information Science</i> 27, no. 4: 240&ndash;247.</p>
+
+<p>
+Richmond, Phyllis A. 1976b. Review of <i>PRECIS: A Manual of Concept Analysis and Subject Indexing</i>, by Derek Austin. <i>The Library Quarterly</i> 46, no. 1: 77&ndash;79. http://www.jstor.org/stable/4306608<i>.</i></p>
+
+<p>
+Richmond, Phyllis A. 1977. &ldquo;PRECIS Compared with other Indexing Systems&rdquo;. In<i> The PRECIS Index System: Principles, Applications, and Prospects: Proceedings of the International PRECIS Workshop, University of Maryland, October 15&ndash;17, 1976</i>, ed. Hans H. Wellisch. New York: Wilson, 1977: 101&ndash;140.</p>
+
+<p>
+Richmond, Phyllis A. 1979. Review of <i>String Indexing</i>, 3 vols., ed. Elaine Svenonius. College &amp; Research Libraries 40, no. 3: 293-294. (Vol. 2 of <i>String Indexing</i> covers PRECIS, See Austin and Verdier 1977)
+
+
+String Indexing, ed. Elaine Svenonius. Vol. 1:  NEPHIS by Timothy C. Craven; Vol. 2: PRECIS by Derek Austin and Veronica Verdler; Vol. 3: Relational Indexing by Jason Farradane. <i>College &amp; Research Libraries</i> 40, no. 3: 293&ndash;294. </p>
+
+<p>
+Richmond, Phyllis A. 1981. <i>Introduction to PRECIS for North American Usage</i>. Westport, Connecticut: Libraries Unlimited.</p>
+
+<p>Robinson, Christopher Derek. 1973a. &ldquo;Indexing the Film Catalogue: with comparisons between LC Subject Headings and PRECIS Entries&rdquo;. <i>College</i> <i>Bibliocentre Newsletter</i> no. 8: 7&ndash;13.</p>
+
+<p>Robinson, Christopher Derek. 1973b. &ldquo;PRECIS: An Introduction&rdquo;. <i>College</i> <i>Bibliocentre Newsletter</i> no. 7: 10&ndash;16. </p>
+
+<p>Robinson, Christopher Derek, ed. 1975. <i>PRECIS Authority File</i>. Toronto: College Bibliocentre. </p>
+
+<p>
+Robinson, Christopher Derek. 1976a. &ldquo;PRECIS&rdquo; (letter to the editor). <i>Journal of Documentation</i> 32, no. 2: 147.</p>
+
+<p>
+Robinson, Christopher Derek (comp)<i>.</i> 1976b. <i>PRECIS: An Annotated Bibliography 1969&ndash;1975</i>. Toronto: The Compiler.</p>
+
+<p>
+Robinson, Christopher Derek. 1977a. &ldquo;Indexing Non-book Materials by PRECIS&rdquo;. In<i> The PRECIS Index System: Principles, Applications, and Prospects: Proceedings of the International PRECIS Workshop, University of Maryland, October 15&ndash;17, 1976</i>, ed. Hans H Wellisch. New York: Wilson, 1977: 169&ndash;174. </p>
+
+<p>
+Robinson, Christopher Derek, (comp)<i>.</i>1977b. <i>PRECIS: An Annotated Bibliography</i>, <i>2</i><i>nd</i><i> ed. 1969&ndash;1977</i>. Toronto: The Compiler.</p>
+
+<p>
+Robinson Christopher Derek. 1978. &ldquo;Teaching PRECIS at Toronto&rdquo;. <i>Catalogue and Index </i>48, Spring: 5&ndash;6.</p>
+
+<p>
+Robinson, Christopher Derek. 1979. &ldquo;PRECIS Canada: Achievements and Prospects&rdquo;. <i>Canadian Journal of Information Science</i> 4: 105&ndash;114.</p>
+
+<p>
+Salu, L. 1977. &ldquo;PRECIS (Preserved Context Index System)&rdquo;. <i>Open</i> 9, no. 1: 19&ndash;29. (In Dutch) </p>
+
+<p>
+Sanders, Joanna, 1977. &ldquo;PRECIS goes to Poland&rdquo;. <i>The British Library Bibliographic Services Division Newsletter</i> 6: 5</p>
+
+<p>Sandison, A. 1975. &ldquo;An Experiment Using PRECIS Strings in SRL Classification&rdquo;. Paper presented to British Library Working Party on Classification and Indexing (BLWPCI). (Microfilm copy attached to Final Report of BLWPCI (Report No. 5233), 1975). </p>
+
+<p>
+Sarkhel, J. K. 1997. &ldquo;A Journey from PRECIS to COMPASS&rdquo;. <i>Vidyasagar University Journal of Library and Information Science</i> 2: 10&ndash;16.</p>
+
+<p>
+Sarkhel, J. K. 1998. &ldquo;Subject Indexing by PRECIS&rdquo;. In <i>Subject Indexing Systems: Concepts, Methods and Techniques</i>, eds. S. B. Ghosh and J. N. Satpathi.  Calcutta: Indian Association of Special Libraries and Information Centres (IASLIC): 140&ndash;187.</p>
+
+<p>
+Scardellato, Kathleen Ann Dixon. 1979. &ldquo;Articulated Subject Indexing and Current Awareness Services: A Comparison with KWOC and PRECIS Indexing in Library Studies&rdquo;.  MLS diss., Loughborough University of Technology. </p>
+
+<p>
+Schabas, Ann H. 1970. PRECIS: &ldquo;A Bibliographical Indexing Developed for the British National Bibliography&rdquo;. MA thesis, University of London.</p>
+
+<p>
+Schabas, Ann H. 1971. <i>PRECIS: A Bibliographical Indexing Technique Developed for the British National Bibliography</i>. London: Council of British National Bibliography. </p>
+
+<p>
+Schabas, Ann H. 1977. &ldquo;Machine Searching of UK MARC on Title, LCSH and PRECIS for Selective Dissemination of Information&rdquo;. In<i> The PRECIS Index System: Principles, Applications, and Prospects: Proceedings of the International PRECIS Workshop, University of Maryland, October 15&ndash;17, 1976</i>, ed. Hans H. Wellisch. New York: Wilson, 1977: 149&ndash;156.</p>
+
+<p>
+Schabas, Ann H. 1979. &ldquo;A Comparative Evaluation of the Retrieval Effectiveness of Titles: Library of Congress Subject Headings and PRECIS Strings for Computer Searching of UK MARC Data&rdquo;. PhD dissertation, University of London. </p>
+
+<p>
+Schabas, Ann H. 1982. &ldquo;Post-coordinate Retrieval: A Comparison of two Indexing Languages&rdquo;. <i>Journal of the American Society for Information Science</i> 33, no. 1: 32&ndash;37. (Compares post-coordinate retrieval effectiveness of LCSH and PRECIS)</p>
+
+<p>
+Schnelling, H. 1988. Review of <i>PRECIS: A Primer. London: British Library Bibliographic Service Division</i>,<i> </i>by Mary Dykstra. 1985. <i>International Classification</i> 15, no. 1: 38&ndash;39.</p>
+
+<p>
+Scott, Aldyth. 1975. &ldquo;PRECIS&rdquo; (letter to the editor). <i>Library Association Record</i> 77, no. 12: 289.</p>
+
+<p>
+Sharma, A. K. and M. Kanakachari. 1991. &ldquo;Preserved Context Indexing System&rdquo;. <i>Library Progress International</i> 11, no. 1: 9&ndash;15.</p>
+
+<p>
+Sharp, J. R. 1975. &ldquo;Natural Language&rdquo;. <i>Journal of Documentation</i> 31, no. 3: 191&ndash;195. (Includes a discussion on the value of PRECIS as an artificial retrieval language structure) </p>
+
+<p>
+Shaw, Christine. 1974. &ldquo;The British Education Index: Current Practice and Future Possibilities&rdquo;. <i>Education Libraries Bulletin</i> 17, no. 3: 1&ndash;10. (Includes details of work being carried out on possible new arrangement based on PRECIS indexing)</p>
+
+<p>
+Shaw, Christine. 1976. &ldquo;Om PRECIS, Indeks&oslash;rer og Samfundsvidenskaberne&rdquo; (About PRECIS, Indexers and the Social Sciences), translated from English by J&oslash;rgen Nielsen. <i>Bibliotek</i> 70, no. 1: 20&ndash;21.  (Translated in Danish)</p>
+
+<p>
+Shuiqing, H. and H. Hanqing. 1991.<i> </i>&ldquo;The Realizing of Chinese PRECIS on Computer&rdquo;. <i>Chinese  Librarianship</i> Issue no. 3: 20&ndash;25.</p>
+
+<p>
+Simpson, I. S. 1975. &ldquo;PRECIS&rdquo; (Letter to Editor). <i>Library Association Record</i> 77, no. 12: 289.</p>
+
+<p>
+Sive, Mary. R. 1979-80. &ldquo;PRECIS: A Better Way to Index Films&rdquo;. <i>Sightlines </i>13, Winter: 14&ndash;17.</p>
+
+<p>
+Smith, F. 1986. &ldquo;An In-house PRECIS System for Support in Instruction&rdquo;. In PRECIS: Recent Applications</i>, ed. Mary Dykstra. Occasional Papers Series, 39. Halifax: Dalhousie University Libraries and Dalhousie School of Library Service: 64&ndash;80.</p>
+
+<p>
+Smith, F. and I. A. Smith. 1986. <i>PRECIS: Indexing Course Workbook</i>. Rev. ed. Department of Library and Information Studies, Loughborough University, UK.</p>
+
+<p>
+Soergel, D. 1979. Review of <i>String Indexing</i>, 3 vols. ed. Elaine Svenonius. <i>The Library Quarterly</i> 49, no. 4: 465-466. (Vol. 2 of <i>String Indexing</i> covers PRECIS, See Austin and Verdier 1977)</p>
+
+<p>S&oslash;rensen, Jutta. 1974. <i>Dansk PRECIS: Rapport Vedr&oslash;rende Muligheden for Anvendelse af PRECIS i Danmark (Danish PRECIS: A Report on the Possibilities of Using PRECIS in Danish). </i>Aalborg: [Danmarks Biblioteksskole]. (In Danish)</p>
+
+<p>
+S&oslash;rensen, Jutta. 1975a. <i>Dansk PRECIS&ndash;Hvorfor og Hvordan: Oversigter til Dansk PRECIS Forskning (Danish PRECIS&ndash;Why and How: Plans for Danish PRECIS Research)</i>.  PRECIS Seminar Handout. Aalborg: [Danmarks Biblioteksskole]. (In Danish)</p>
+
+<p>
+S&oslash;rensen, Jutta. 1975b. &ldquo;PRECIS&ndash;et Emneindexerings System. 1. del. (PRECIS&ndash;A Subject Indexing System. Part 1)&rdquo;. <i>Bogens Verden</i> (<i>The World of Books</i>) 57, no. 4: 111&ndash;115. (In Danish)</p>
+
+<p>
+S&oslash;rensen, Jutta. 1975c. &ldquo;PRECIS&ndash;et Emneindexerings System. 2. del. (PRECIS - a Subject Indexing System. Part 2)&rdquo;. <i>Bogens Verden</i> (<i>The World of Books</i>) 57, no. 5: 152&ndash;206. (In Danish)</p>
+
+<p>
+S&oslash;rensen, Jutta. 1976a. &ldquo;Om en hel del Aktiviteter, der aldering har fundet sted, og Om Planer, der aldering har vaeret lavet&ndash;og lidt om virkeligheden&rdquo; (About a lot of  Activities that have been taking place, and about Plans that have been made&ndash;and a little about reality). <i>Bibliotek</i> 70, no. 1: 22&ndash;23. (In Danish)</p>
+
+<p>
+S&oslash;rensen, Jutta. 1976b. &ldquo;PRECIS i Danmark? Eftertanker i Forbindelse med Danmarks Biblioteksskoles PRECIS-Seminar&rdquo; (PRECIS in Denmark? Reflections in Connection with Danish Library School&rsquo;s PRECIS Seminar). <i>Bogens Varden</i> 1976, no. 1: 29&ndash;32. (In Danish)</p>
+
+<p>
+S&oslash;rensen, Jutta. 1976c. &ldquo;PRECIS Skal Videreudvikles&rdquo; (PRECIS is being further developed). <i>Bibliotek </i>70, no. 1: 21 (In Danish)</p>
+
+<p>
+S&oslash;rensen, Jutta. 1977a. &ldquo;Multilingual Aspects of PRECIS&rdquo;. In<i> The PRECIS Index System: Principles, Applications, and Prospects: Proceedings of the International PRECIS Workshop, University of Maryland, October 15&ndash;17, 1976</i>, ed. Hans H. Wellisch. New York: Wilson, 1977: 81&ndash;97.</p>
+
+<p>S&oslash;rensen, Jutta. 1977b. &ldquo;PRECIS as a Multilingual System&rdquo;. In <i>Overcoming the Language Barrier: Proceedings of the Third European Congress on Information Systems and Networks, Luxembourg, May 3&ndash;6, 1977. V.1</i>. Munich: Verlag Dokumentation: 293&ndash;321.</p>
+
+<p>S&oslash;rensen, Jutta (comp). 1979. <i>A Bibliography of PRECIS. </i>2nd ed. Copenhagen: Royal School of Librarianship. (Contains 164 entries in systematic order with abstracts and references to book reviews. See Larsen1976 for 1st ed.)</p>
+
+<p>S&oslash;rensen, Jutta and Derek Austin. 1976a. &ldquo;PRECIS in a Multilingual Context, Pt.2: A Linguistic and Logical Explanation of the Syntax&rdquo;. <i>Libri</i> 26, no. 2: 108&ndash;139.</p>
+
+<p>S&oslash;rensen, Jutta and Austin, Derek. 1976b. &ldquo;PRECIS in a Multilingual Context, Pt.3: PRECIS: Multilingual Experiments, Proposed Codes and Procedures for the Germanic Languages&rdquo;. <i>Libri  </i>26, no. 3: 181&ndash;215.</p>
+
+<p>Supper, Reinhard. 1975. &ldquo;PRECIS: Ein Computerstutztes, Alphabetisches Indexierungen&rdquo; (PRECIS: A Computerized, Alphabetical Indexing). <i>Nachrichten </i>f&uuml;r<i> Documentation</i> (<i>News for Documentation</i>) 26: 156&ndash;162. (In German)</p>
+
+<p>Supper, Reinhard. 1978. <i>Neuere Methoden der Intellektuellen Indexierung Britische Systeme unter Besonderer Beruckichtigung von PRECIS (</i><i>Recent Methods of Intellectual Indexing: British Systems with Special Reference to PRECIS)</i>. Munchen: Verlag Dokumentation Saur. (In German)</p>
+
+<p>
+Supper, Reinhard. 1984. &ldquo;Entwicklung und Grundprinzipien von PRECIS, einem Computergest&uuml;tztem Indexierungs System&rdquo; (Development and Basic Principles of PRECIS, a Computerized Indexing System). In <i>Neue Regelwerke zum Schlagwortkatalog: Einf&uuml;hrung in RSWK u. PRECIS</i> (New Rules for the Subject Catalog: Introduction to RSWK and PRECIS). <i>Vortr&auml;ge e. Fortbildungsveranstaltung der FHBD (Lectures at FHBD Advanced Training Event), K&ouml;ln, July 9&ndash;10, 1984. </i>K&ouml;ln: Greven, 1985: 95&ndash;111.  (In German)</p>
+
+<p>Svenonius, Elaine. 1979. Review of <i>The PRECIS Index System: Principles, Applications and Prospects:</i> <i>Proceedings of the International PRECIS Workshop, University of Maryland, October 15&ndash;17, 1976</i>, ed. Hans H. Wellisch. <i>The Library Quarterly</i> 49, no. 1: 97&ndash;99.</p>
+
+<p>Swift, Donald F. 1974. &ldquo;PRECIS&rdquo; (Letter to the Editor). <i>Journal of Documentation </i>30, no. 4: 433&ndash;434.</p>
+
+<p>Swift, Donald F. 1975. &ldquo;PRECIS&rdquo; (Letter to the Editor). <i>Journal of Documentation</i> 31, no. 2: 117&ndash;118.</p>
+
+<p>Swift, Donald F., Viola A. Winn and Dawn A. Bramer. 1973. <i>A Case Study in Indexing and Classification in the Sociology of Education: Development of Ideas concerning the Organization of Material for Literature Searching</i> (Report for the period September 1970&ndash;June 1973. Vol.1) Walton, UK: Open University. (Contains a section on Experimentation with PRECIS, 59&ndash;86)</p>
+
+<p>Swift, Donald F., Viola A. Winn and P. Jackson. 1970. <i>Investigation into Sociology of Education Abstracts. V.1: Report on first stage of project</i> (OSTI Report no. 5074). Oxford. (Reports results of performance test of two indexing systems&ndash;Articulated Subject Indexing and PRECIS)</p>
+
+<p>Taylor, Audrey. 1977. &ldquo;Manual Application of PRECIS in a High School Library&rdquo;. In <i>The PRECIS Index System: Principles, Applications, and Prospects: Proceedings of the International PRECIS Workshop, University of Maryland, October 15&ndash;17, 1976</i>, ed. Hans H. Wellisch. New York: Wilson, 1977: 157&ndash;168.<i> </i></p>
+
+<p>Taylor, Audrey. 1982. &ldquo;PRECIS Indexing in School Libraries: A Tool for Tomorrow.&rdquo; In <i>Sharing: A Challenge for All: Proceedings of the 11</i><i>th</i><i> Annual Conference of the International Association of School Librarianship, Red Deer, Alberta, Canada, August 1&ndash;6, 1982:</i> 372&ndash;385.</p>
+
+<p>Taylor, Audrey. 1985. &ldquo;But I have Promises to Keep&ndash;PRECIS: An Alternative for Subject Address&rdquo;. <i>Technical Services Quarterly</i> 2, nos. 1/2: 75&ndash;90. (Also published in <i>Subject Cataloging: Critiques and Innovations</i>, ed. Sanford Berman. New York: Haworth Press: 75-90)</p>
+
+<p>Taylor, Audrey and Irene McCordick. 1976. &ldquo;PRECIS: Indexing to Revolutionize Subject Access to Information in School Resource Centres&rdquo;. <i>Canadian Library Journal</i> 33, no. 6: 523&ndash;528.</p>
+
+<p>Tonta, Yasar Ahmet. 1992. <i>LCSH and PRECIS in Library and Information Science: A Comparative Study</i>. Occasional Papers, No. 194. Champaign: Graduate School of Library and Information Science, University of Illinois. </p>
+
+<p>Trotter, Ross. 1976. &ldquo;The Use of Dewey in BNB&rdquo;. <i>Catalogue and Index</i> 41, Summer: 3&ndash;6. (Describes the interrelationship between DDC and PRECIS in the methods of operation at BNB)</p>
+
+<p>Venkatachari, P. N. 1980. &ldquo;PRECIS&rdquo;. In <i>Indexing Systems: Concept, Models and Techniques</i>, ed. T. N. Rajan. Kolkata, India: IASLIC: 103&ndash;124.  </p>
+
+<p>Venkatachari, P. N. 1982. &ldquo;Application of PRECIS to Indian Languages: A Case Study&rdquo;, eds. S. N. Agarwal, R. R. Khan and N. R. Satyanarayana. In<i> Perspectives in Library and Information Science</i>, ed. S. N. Agarwal. Lucknow, India: Print House: 182&ndash;186.</p>
+
+<p>Verdier, Veronica. 1976. &ldquo;PRECIS Translingual Project&rdquo;. <i>British Library Bibliographic Services Division Newsletter</i> 2: 4&ndash;5. (Provides a description of the project)</p>
+
+<p>Verdier, Veronica. 1978. &ldquo;PRECIS Translingual Project&rdquo;. <i>British Library Bibliographic Services Division Newsletter</i> 10, no. 1: 2&ndash;3. (Describes switching procedure establish so far)</p>
+
+<p>Verdier, Veronica. 1979. &ldquo;The Use of Translation Categories in the PRECIS/Translingual Project&rdquo;. In <i>The Analysis of Meaning: Informatics 5: Proceeding of a Conference</i>, eds. M. MacCafferty and K. Gray. London: Aslib: 180&ndash;192.</p>
+
+<p>Verdier, Veronica. 1980. <i>Final Report of the PRECIS/Translingual Project.</i> London: British Library Research and Development Department.</p>
+
+<p>Verdier, Veronica. 1984. <i>An Abridged Version of the Final Report of the PRECIS Translingual Project</i>. BLRDR 5830. London: British Library Research and Development Department. </p>
+
+<p>Verdier, Veronica and Derek Austin. 1977. &ldquo;Research into the Translingual Potential of PRECIS&rdquo;. In <i>Third European Congress on Information Systems and Network: Overcoming the Language Barrier, Luxembourg, May 3&ndash;6. </i><i>V.1</i>. Munich: Verlag Documentation: 332&ndash;337.</p>
+
+<p>Verdier, Veronica, Rosmarie Matter, Joanna Sanders and Madeleine Laliberte. 1978. &ldquo;Commentaires au Sujet de l'Application du Systeme PRECIS &hellip; la Langue Franchaise&rdquo; (Comments on the Application of the PRECIS System in the French Language). <i>Canadian Journal of Information Science</i> 3, no. 2: 181&ndash;189. (In French)</p>
+
+<p>Vickery, Brian Campbell. 1975. Review of <i>PRECIS: A Manual of Concept Analysis and Subject Indexing</i>, by Derek Austin. <i>Catalogue &amp; Index</i> 38, no. 1: 10&ndash;11.</p>
+
+<p>Vickery, Brian Campbell. 1985. &ldquo;Systematic Subject Indexing&rdquo;. In <i>Theory of Subject Analysis: A Sourcebook</i>, eds. Lois Mai Chan, Phyllis A. Richmond and Elaine Svenonius. Littleton: Libraries Unlimited: 125&ndash;135. (Includes a discussion on the background of the development of PRECIS)</p>
+
+<p>Walton, Jenny. 1977. &ldquo;Notes on Miss Walton&rsquo;s talk&rdquo;. <i>British Computer Society, Natural Language Translation Specialists Group Newsletter </i>5: 9&ndash;12 (Contains a short description of PRECIS)</p>
+
+<p>Weintraub, D. K. 1979. &ldquo;An Extended Review of PRECIS&rdquo;. <i>Library Resources and Technical Services</i> 23, no. 2: 101&ndash;115.</p>
+
+<p>Wellisch, Hans H. 1977a. &ldquo;International PRECIS Workshop in Maryland&rdquo;. <i>International Classification</i> 4, no. 2: 38&ndash;39. (Report of workshop)</p>
+
+<p>Wellisch, Hans H, ed. 1977b. &ldquo;The PRECIS Index System: Principles, Applications, and Prospects: Proceedings of the International PRECIS Workshop, University of Maryland, October 15&ndash;17, 1976&rdquo;. New York: Wilson, 1977.</p>
+
+<p>Winters, C. 1984. &ldquo;Subject Access to Urban Studies Monographs.&rdquo; <i>Cataloguing &amp; Classification Quarterly</i> 5, no. 1: 61&ndash;82. (Makes comparison of LCSH and PRECIS in the field of urban studies)</p>
+
+<p>Yerkey, A. Neil. &ldquo;A Preserved Context Indexing System for Microcomputers: PERMDEX&rdquo;. <i>Information Processing &amp; Management</i> 19, no. 3: 165&ndash;171. <a class="menu" href="https://doi.org/10.1016/0306-4573(83)90070-5">https://doi.org/10.1016/0306-4573(83)90070-5</a> (Discusses PERMINDEX program, which was inspired by PRECIS and uses PRECIS role operators)</p>
+
+<p>Yi, Hong. 1995. &ldquo;Indexing Languages: New Progress in China.&rdquo; <i>Knowledge Organization</i> 22, no. 1: 30&ndash;32. (Includes an introduction to Chinese PRECIS)</p>
+
+
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+</span><!-- articleBody ends -->
+
+
+<a name="col"></a>
+
+<p> </p>
+
+<p>Visited <a href="https://www.digits.net" target="_blank"><img src="https://counter.digits.net/?counter={d61016d7-1003-a954-79ce-be58cd0f959f}&template=simple" alt="Hit Counter by Digits" border="0"  /></a> times.</p>
+
+<hr>
+<p itemprop="dateCreated">Version 1.0 published 2022-03-21
+<br>Version 1.1 published 2022-04-12: "Indexing" changed to "Index" in title and elsewhere; minor corrections and additions to bibliography
+<br>Version 1.2 published 2022-04-19: source of Appendix 1 added; minor corrections to bibliography
+<br>last edited 2023-08-30
+
+<p>Article category: <code><a itemprop="about" href="index#KG">KOS, specific (general/universal)</a></code></p>
+
+<p>This article (version 1.2) is also published in <i>Knowledge Organization</i>. How to cite it:
+<br>Chatterjee, Amitabha. 2024. 
+&ldquo;Preserved Context Index System (PRECIS)&rdquo;. 
+<i>Knowledge Organization</i> 51, no. 2: 127-145. 
+Also available in 
+<i><span itemprop="isPartOf">ISKO Encyclopedia of Knowledge Organization</span></i>, 
+eds. <span itemprop="editor">Birger Hj&oslash;rland</span> and <span itemprop="editor">Claudio Gnoli</span>, 
+<span itemprop="url">https://www.isko.org/cyclo/precis </span></p>
+
+<p>&copy;2022 <span itemprop="publisher">ISKO</span>. All rights reserved.</p>
+
+</div><!-- Article ends -->
+
+</td>
+</tr>
+
+<tr>
+<td id="logo">
+</td>
+</tr>
+
+</table>
+</body>
+</html>

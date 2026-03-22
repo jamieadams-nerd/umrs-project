@@ -1,0 +1,430 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head profile="http://dublincore.org/documents/2007/11/05/dc-html/">
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>STW Thesaurus for Economics (IEKO)</title>
+<link rel="stylesheet" type="text/css" href="../isko.css" />
+<link rel="schema.DCTERMS" href="http://purl.org/dc/terms/" />
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:url" content="https://www.isko.org/cyclo/stw" />
+<meta name="twitter:title" content="STW Thesaurus for Economics (ISKO Encyclopedia of KO)" />
+<meta property="og:image" content="https://www.isko.org/cyclo/stw1.jpg" />
+<meta name="twitter:description" content="The STW Thesaurus for Economics is an ISO-25964-compliant thesaurus in German and English, applicable and freely reusable in the broader field of economics. This paper relates the history of the STW, describes its structure and usage, and illustrates the possibilities of its reuse. The article covers the entire development of the STW from the early stages, when it was primarily a subject-indexing tool, to its use in newer applications, such as web services, and its integration into research-based approaches for the automation of subject indexing." />
+
+<meta name="DCTERMS.title" content="STW Thesaurus for Economics" />
+<meta name="DCTERMS.creator" content="Andreas Oskar Kempf" />
+<meta name="DCTERMS.creator" content="Joachim Neubert" />
+<meta name="DCTERMS.issued" content="2021" />
+<meta name="DCTERMS.relation.ispartof" content="ISKO Encyclopedia of Knowledge Organization" />
+<meta name="DCTERMS.ispartof" content="ISKO Encyclopedia of Knowledge Organization" />
+<meta name="DCTERMS:bibliographicCitation" content="ISKO Encyclopedia of Knowledge Organization, eds. Birger Hjorland and Claudio Gnoli" />
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="001.012">
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="025.4">
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="330">
+<meta name="DCTERMS.subject.keyword" content="STW Thesaurus for Economics">
+<meta name="DCTERMS.subject.keyword" content="Standard-Thesaurus Wirtschaft">
+<meta name="DCTERMS.type" content="Text" />
+<meta name="DCTERMS.format" content="text/html" />
+<meta name="DCTERMS.identifier" content="https://www.isko.org/cyclo/stw" />
+
+<style>
+a {text-decoration: none;}
+a:hover {text-decoration:underline;}
+table td, table th { padding: 5px; }
+</style>
+
+</head>
+<body>
+
+<a name="top"></a>
+
+<table>
+
+<tr>
+<td id="isko"><h1>I S K O</h1></td>
+<td id="banner"><h2><a href="index.html" style="text-decoration:none;">Encyclopedia of Knowledge Organization</h2></a></td>
+</tr>
+
+<tr>
+<td id="navigation">
+<a href="../index.php">home</a>
+<a href="../about.html">about ISKO</a>
+<a href="../join.html">join ISKO</a>
+<a href="../ko.html"><cite>Knowledge Organization</cite> journal</a>
+<a href="../events.html">ISKO events</a>
+<a href="../chapters.html">ISKO chapters</a>
+<a href="../people.html">ISKO people</a>
+<a href="../pubs.html">ISKO publications</a>
+<a href="index.html">Encyclopedia</a>
+<a href="../lit.html">KO literature</a>
+<a href="../inst.html">KO institutions</a>
+<a href="http://bartoc.org/" title="link to BARTOC">&#8663; KOS registry</a>
+<a href="https://www.isko-mms.net/" title="access-account required">&#128274; members</a>
+<a href="../contact.html">contact us</a>
+</td>
+<td id="content" rowspan="2">
+
+<a class="menu" href="authors#hj">edited by Birger Hj&oslash;rland</a> <a class="menu" href="authors#g">and Claudio Gnoli</a>
+
+<p>&nbsp;
+
+<div itemscope itemtype="http://schema.org/Article">
+
+<h2 itemprop="headline">STW Thesaurus for Economics</h2>
+
+<blockquote>
+by <a itemprop="author" href="authors#k" style="text-decoration:underline">Andreas Oskar Kempf</a>
+and <a itemprop="author" href="authors#n" style="text-decoration:underline">Joachim Neubert</a>
+
+<p>(This article is an updated version of an article from 2016, see <a href="#col">colophon</a>).</p>
+
+<p>Table of contents:
+
+<br><a href="#1">1. Introduction</a>
+<br><a href="#2">2. A brief history of the STW</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#2.1">2.1 Precursors of the STW</a>
+<br><a href="#3">3. The STW in its current form</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#3.1">3.1 Web publication</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#3.2">3.2 Maintenance</a>
+<br><a href="#4">4. Design and structure</a>
+<br><a href="#5">5. Interoperability</a>
+<br><a href="#6">6. Usage</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#6.1">6.1 Subject indexing</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#6.2">6.2 Retrieval</a>
+<br><a href="#7">7. Reuse</a>
+<br><a href="#8">8. Considerations for the future</a>
+<br><a href="#end">Endnotes</a>
+<br><a href="#ref">References</a>
+<br><a href="#col">Colophon</a>
+
+<p itemprop="abstract"><strong>Abstract</strong>:
+<br>The STW Thesaurus for Economics is an ISO-25964-compliant thesaurus in German and English, applicable and freely reusable in the broader field of economics. This paper relates the history of the STW, describes its structure and usage, and illustrates the possibilities of its reuse. The article covers the entire development of the STW from the early stages, when it was primarily a subject-indexing tool, to its use in newer applications, such as web services, and its integration into research-based approaches for the automation of subject indexing.</p>
+
+</blockquote>
+
+<span itemprop="articleBody">
+
+<!--
+
+<blockquote>
+<table border="1">
+<p><caption><i>Table 1: </i><br>&nbsp;</caption></p>
+<tr>
+<td></td>
+<td></td>
+</tr><tr>
+<td></td>
+<td></td>
+</tr>
+</table>
+</blockquote>
+
+-->
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="1"></a>
+<h3 itemprop="articleSection">1. Introduction</h3>
+
+<p><i>STW</i> is an acronym for &ldquo;Standard-Thesaurus Wirtschaft&rdquo;. The STW Thesaurus for Economics <a href="#e1">[1]</a> is the world&rsquo;s most comprehensive bilingual &rarr; <a href="thesaurus">thesaurus</a> for economics, developed as a general &rarr; <a href="indexing">indexing</a> and retrieval tool for subject-specific information in economics. With almost 6,000 subject headings in English and German and more than 20,000 synonyms, it covers all economics-related subject areas and, on a broader level, the most important related subject fields. The ZBW - Leibniz Information Centre for Economics, Germany&rsquo;s National Library of Economics, publishes and continuously updates the STW to keep current with the latest changes in economics terminology. </p>
+
+<p><a href="#2">Section 2</a> provides a brief history of the STW, while <a href="#3">section 3</a> presents the STW in its current form, referring to its publication on the web, and describes its maintenance and development. <a href="#4">Section 4</a> presents an example to illustrate the STW&rsquo;s structure and its specific construction principles. <a href="#5">Section 5</a> discusses how the STW interlinks with other vocabularies via mappings since interoperability and integration into linked data applications are becoming increasingly important. <a href="#6">Section 6</a> describes how the STW is used with regard to subject indexing and information retrieval. <a href="#7">Section 7</a> shows how third parties utilize the STW. Finally, <a href="#8">section 8</a> concludes with considerations for the future. This article leans on a more detailed <i>KO</i> article (<a href="#refK">Kempf and Neubert 2016</a>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2"></a>
+<h3 itemprop="articleSection">2. A brief history of the STW</h3>
+
+<p>The STW resulted from the need for a common standardized indexing and search language for business information and economic literature. During the 1990s, leading German providers of business and economics information services maintained their own documentation languages. When information technology made it possible to bring together the content of different library catalogs and databases and to publish it on CD-ROM, users were disappointed to find that integrated content search was unsupported.</p>
+
+<p>Four leading public and private German providers of business and economics information services jointly developed the STW in a project funded in part by the German Federal Ministry of Economics, during the years 1995-1997. The Library of the Kiel Institute of the World Economy (IfW Kiel), founded in 1919, and the Information Centre of the Hamburg Institute for the International Economy (HWWA), founded in 1908 as information center of the Hamburg Colonial Institute, were the two predecessors of today&rsquo;s ZBW - Leibniz Information Centre for Economics <a href="#e2">[2]</a>. The different indexing languages ranged from a simple &rarr; <a href="keyword">keyword</a> list to two fully-fledged thesauri, as in the case of the two predecessor institutions of today&rsquo;s ZBW. Each indexing language reflected the specific collection focus of the participating institutions, whether based on empirical or theoretical literature, on economics or on business economics and practice. Depending on the history of the individual institutions involved, the collection focus could also change significantly. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2.1"></a>
+<h4 itemprop="articleSection">2.1 Precursors of the STW</h4>
+
+<p>The history of the STW, in fact, reaches back much further. In the 1970s, the situation in other countries convinced West German authorities at the federal level of the importance of information and documentation. This triggered the launch of several large-scale funding programs to establish specialized information centers all over the country. In addition, it became obvious that subject catalogs and classifications, which also existed, no longer were satisfactory solutions for subject indexing and access, due to increasing specialization and changes in the content structure of publications. </p>
+
+<p>The IfW Kiel had begun developing its subject catalogs in the 1950s, and the HWWA as far back as the 1920s. In order to combine the ordering principles of subject catalogs and classifications, both predecessors of today&rsquo;s ZBW undertook extensive preparatory work to convert their subject catalogs into thesauri. </p>
+
+<p>The vocabularies of the two precursor thesauri, Sachkatalog (<a href="#refB">Bibliothek des Instituts f&uuml;r Weltwirtschaft an der Universit&auml;t Kiel 1980</a>) and Thesaurus Wirtschaft (<a href="#refH">HWWA-Institut f&uuml;r Wirtschaftsforschung 1987</a>), formed the basis of the STW. The thesaurus published by the library of IfW Kiel in 1980 consisted of more than 6,000 concepts, both in German and English. The conversion of the subject catalog into a thesaurus set the stage for a future standardization project. Even at that time, there was a strong national and international demand for a common standardized documentation language in economics.</p>
+
+<p>In 1987, the information center of the HWWA published its thesaurus, which was based on its former subject catalog of about 13,000 subject headings. Taking into consideration the core standards and guidelines of that time, the structure and essential principles of the later STW were already recognizable in this predecessor thesaurus. </p>
+
+<p>The conversion of the subject indexing tools was also accompanied by far-reaching institutional transformations. Both institutions initially developed independently from institute libraries to supra-regional subject libraries. This meant not only an increase in the number of staff, but also the establishment of separate scientific services with specialized scholarly staff, partly with a doctorate in economics who developed and maintained the thesauri. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3"></a>
+<h3 itemprop="articleSection">3. The STW in its current form</h3>
+
+<p>At first, the standardization of content description in business and economics information primarily addressed a German-speaking scientific community. As a result, the first version of the STW, published in 1998, was available only in German. With this essentially German-speaking user group in mind, the STW claimed to serve as a standard, as reflected in the German name of the thesaurus. As with other disciplines, however, the scientific discourse within sub-disciplines of the economic sciences increasingly became more international. In 2007, the ZBW exclusively assumed responsibility for the maintenance and development of the STW and consequently directed its information services towards an international, English-speaking, scientific community and a greater level of interoperability in the modeling of concepts. As of version 8.02, released in 2007, all descriptors in the STW are bilingual, in German and English.</p>
+
+<p>In addition, the publication of the STW on the Web and its first complete overhaul decisively shaped the current appearance of the thesaurus.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.1"></a>
+<h4 itemprop="articleSection">3.1 Web publication</h4>
+
+<p>The goal of the web-based version of the STW in 2009 was its reusability by people as well as by machines (<a href="#refN">Neubert 2009</a>). The web version applied two main technologies: SKOS, the Simple Knowledge Organization System for defining concepts and their interrelations, and RDFa, a technique for embedding machine-readable data into human-readable web pages, as described in <a href="#4">section 4</a>. At the time that both technologies were in their final states of standardization by the World Wide Web Consortium, the Linked Open Data on the web movement was just emerging. A few extensions (e.g., for the category system of the STW) were added to cover all semantic structures of the STW. The web pages and all related services derive from one set of publicly available SKOS files obtained and converted from the maintenance system. This ensures consistency across diverse methods of content publication. </p>
+
+<p>The highly interlinked and completely bilingual web site provides persistent identifiers (URI) for each concept, independent of language and version. When new versions of the STW are published, all older versions remain accessible <a href="#e3">[3]</a>. The STW maintains obsolete concepts as &ldquo;deprecated&rdquo;, and frequently points to a replacement, so institutional users can trust that once-published concept identifiers remain resolvable. The STW web version includes a change tracking functionality, which provides users with news and updates. The underlying framework, while developed for the STW, can be transferred to any other SKOS vocabulary (<a href="#refN">Neubert 2015</a>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.2"></a>
+<h4 itemprop="articleSection">3.2 Maintenance</h4>
+
+<p>The editorial board of the STW consists of four subject librarians with qualified expertise in economics and a knowledge organization specialist serving as editor-in-chief. The editorial board regularly verifies and decides on changes and updates to the vocabulary and the structure of the thesaurus. Suggestions for new descriptors come from ZBW&rsquo;s subject librarians as well as from colleagues from other institutions that use the STW for subject indexing. A new version is released annually.</p>
+
+<p>Editorial procedures for updating correspond to those depicted in ISO 25964-1 (see clauses 13.6.2 and 13.6.3). An easy mechanism for suggesting changes is provided for all subject indexers and for external users. The procedures cover all types of changes as listed in ISO 25964-1 (see clause 13.6.4). The decision to include a concept in the STW is primarily based on the subject-specific relevance and the frequency with which this concept is made a topic in the literature. Other decision criteria include currency, the need for a concept, provenance, &rarr; <a href="interoperability">interoperability</a>, unambiguousness, and the level of specificity. The ability to form a concept by post-coordination is also a decision criterion, in order not to let the thesaurus become too extensive. In particular, in the sub-thesauri for &ldquo;Economic Sectors&rdquo; (W) and for &ldquo;Commodities&rdquo; (P) preferred terms often need to be combined with other preferred terms. However, to keep the number of results for some concepts manageable and to avoid false associations, sometimes a pre-combined form is used, e.g. <code>Waste trade</code>.</p>
+
+<p>Over the last more than 20 years, the STW has undergone constant revision due to profound changes in the field of economics, as for example developments in the financial sector, as well as new methods applied in economics. After more than 15 years of permanent updating, the STW had been completely revised over a period of several years. These changes resulted in the addition of over 750 concepts and the elimination of nearly 1,100 concepts. Other changes consisted of new and updated entry terms and enhancements to the category system. </p>
+
+<p>More recently, the ZBW undertook a pilot study to identify which additional sources are best suited for the further development of the thesaurus. The study considered the following sources: publication titles, author keywords, abstracts, and log files of search queries in ZBW&rsquo;s search portal <i>EconBiz</i> <a href="#e4">[4]</a>. The text material underwent various filtering processes before a subset was recommended to the editorial board as candidates for new descriptors. The pilot study showed that author keywords were best suited as an additional source for descriptor candidates, followed by search queries and publication titles, both almost equal in ranking with each other. The results also showed that abstracts were the least suitable (<a href="#refP">Prange 2016</a>). In the near future, the next steps will be to apply the results of this study to include other sources in addition to the existing ones for new descriptor candidates.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4"></a>
+<h3 itemprop="articleSection">4. Design and structure</h3>
+
+<p>The STW is compliant with the latest ISO-thesaurus standard, i.e. ISO 25964 (<a href="#refI">2011</a>). Some core construction principles of this standard characterize the STW in particular. </p>
+
+<p>The STW is very user-friendly, which is evident by the considerable number of entry terms. Synonyms and quasi-synonyms are selected for their efficiency in guiding the choice of terms for indexing and searching and by anticipating the degree of discrimination required at the time of searching (see <a href="#refI">ISO 25964-1 2011</a>, Clause 8.3). Specific terms might be subsumed by a broader concept, especially in the Related subject areas (see <a href="#refI">ISO 25964-1 2011</a>, Clause 8.4). </p>
+
+<p>Furthermore, the STW consists of an elaborate systematic structure in the form of domain-specific subject categories on as many as four different hierarchical levels. These categories, as well as the descriptors, are concepts according to the definitions of ISO and SKOS. (Different from ISO terminology, &rarr; <a href="keyword#1.3">&ldquo;descriptor&rdquo;</a>, here, is not used as a synonym for a preferred term.) A navigation tree on the web page (see Figure 1) allows STW users to browse the descriptors of a certain subject field thematically. While terminological control and semantic relations of a descriptor indicate the narrower content-specific relationships of that descriptor, the connected subject categories point to the larger domain-specific context.</p>
+
+<p>The first level of the subject categories consists of seven main subject groups or sub-thesauri. They are divided according to the sub-disciplines and sub-areas in the economic sciences. In addition to the usual continental European subdivision of the economic sciences between economics and business economics, the STW contains a sub-thesaurus for &ldquo;Economic sectors&rdquo; and one for &ldquo;Commodities&rdquo;. The latter two rely on current classifications of products and economic sectors used in official statistics. Subject categories within universal authority files usually do not meet these highly domain-specific requirements of specialized information demands. As well as having a sub-thesaurus &ldquo;General descriptors&rdquo; and &ldquo;Geographic names&rdquo;, the STW is supplemented by a sub-thesaurus for &ldquo;Related subject areas&rdquo;. The selection of descriptors from these subject areas reflects the perspective of the economic sciences, with, for example, a particular focus on statistical and mathematical methods used across their subfields.</p>
+
+<p>The &rarr; <a href="notation">notation</a> code for subject categories consists of letters and numbers. The capital letter denotes the sub-thesaurus of the STW; the number refers to the partial subject field to which the descriptor belongs. A descriptor can be assigned to more than one subject category. Each subject category also has its own page. Numerous subject category pages contain links to the notation of other classification schemes, in particular to the Journal of Economic Literature Classification Scheme (JEL).</p>
+
+
+<div align="center"><figure>
+<img src="stw1.jpg" title="Fig. 1: Navigation tree and descriptors" width="75%">
+<figcaption>Figure 1: On the left, the subject categories navigation tree allows for systematic browsing. On the right, the subject category page lists all the descriptors assigned to the corresponding subject category, and it contains all relevant information about it.</figcaption>
+</figure></div>
+
+<p>All concepts in the STW, represented by terms, are subject to terminological control. All of the information required for this is summarized on the corresponding descriptor page, as shown in Figure 2. The preferred term appears at the top of each descriptor page in English and German. Usually, the most common term is the preferred term. &ldquo;Used for&rdquo; lists the synonyms and quasi-synonyms that serve as lead-in entries. In some cases, a scope note in italics follows to define or clarify the semantic boundaries of a concept. Where necessary, an additional note may serve to clarify further by showing what is excluded from the concept.</p>
+
+<p>Further down, the page lists descriptors in a hierarchical or associative relationship to the corresponding descriptor. The indication of broader and narrower terms allows users to navigate semantically to more general or to more specific terms and vice versa and to trigger a search with the corresponding terms in <i>EconBiz</i>.</p>
+
+<p>The category Related Terms contains terms with a content-related relationship to the respective descriptor but which do not have a hierarchical relationship to it.</p>
+
+<p>The descriptor is then assigned to one or more subject categories, which are represented by the corresponding notation codes. Below are links to descriptors of other thesauri or entries to other vocabularies. </p>
+
+<div align="center"><figure>
+<img src="stw2.jpg" title="Fig. 2: Navigation tree and descriptor page" width="75%">
+<figcaption>Figure 2: On the left, the subject categories navigation tree allows for systematic browsing. On the right, the descriptor page contains all relevant information about a descriptor. The &ldquo;EB&rdquo; icon triggers a search for publications in <i>EconBiz</i> with the corresponding descriptor. Links to mapped thesauri (e.g., to Eurovoc or the Thesaurus for the Social Sciences) are indicated in the lower right corner.</figcaption>
+</figure></div>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5"></a>
+<h3 itemprop="articleSection">5. Interoperability</h3>
+
+<p>The STW interlinks with various other vocabularies via mappings to STW descriptors as well as STW subject categories. The mappings can be differentiated according to the different mapping approaches that were used, e.g. intellectual, semi-automatic, automatic (<a href="#refK">Kempf and Neubert 2016</a>). More importantly, different parties created the mappings either as a one-sided and one-time-approach, in the case of Agrovoc, or in the form of continuous updates by a joint editorial team, in the case of the mapping to the German Integrated Authority File (GND) <a href="#e5">[5]</a>. This results in different levels of maintenance. In addition, institutions involved in the mapping process can choose to only consider and display the mappings to a certain extent, depending on the particular subject focus of the institution. In order to facilitate interoperability, the STW development team created a method to overwrite individual relationships in a third-party mapping and apply it to externally created mappings to the STW.</p>
+
+<p>More recently, descriptors of individual sub-thesauri have been mapped to the community-driven knowledge base <i>Wikidata</i>, which not only supports many language-specific editions of <i>Wikipedia</i>, but has also evolved to be a global data hub, linking to more than 5,000 external databases by identifier. This includes thesauri and classifications, for which a specific mapping to the STW would not be feasible. A derived mapping, via bilaterally linked <i>Wikidata</i> items, could prove useful.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="6"></a>
+<h3 itemprop="articleSection">6. Usage</h3>
+
+<p>The STW facilitates &rarr; <a href="knowledge organization">knowledge organization</a> and supports information retrieval in a variety of ways.</p>
+
+<a name="6.1"></a><br>
+<h4 itemprop="articleSection">6.1 Subject indexing</h4>
+
+<p>Besides the institutions that jointly developed the STW, various other institutions use the STW for subject indexing (see <a href="#ref7">section 7</a>). In the academic search portal <i>EconBiz</i>, provided by the ZBW, a significant portion of its nearly eleven million textual resources is annotated intellectually with descriptors from the STW, according to in-house rules. A large percentage of the full text within the ZBW&rsquo;s digital repository <i>EconStor</i> (<a class="menu" href="http://econstor.eu">http://econstor.eu</a>) is also annotated by descriptors taken from the STW. </p>
+
+<p>In recent years, new indexing approaches using the STW have emerged due to digitization, as the number of publications has increased and personnel resources have decreased. Apart from intellectual subject indexing, the STW is also used for &rarr; <a href="automatic">automatic subject indexing</a> at the ZBW. </p>
+
+<p>Efforts to automate the subject indexing process began around the year 2000. After initial experience with commercial systems, the ZBW decided to initiate an individual non-commercial in-house project to develop machine learning solutions for subject indexing. In a research-based project (AutoIndex) undertaken between 2014 and 2018, a ZBW-specific solution for subject indexing was developed based on open source machine learning solutions. This combines several associative and lexical methods in a fusion approach, which leads to improved performance. The solution inputs resource titles and author keywords and generates suggestions for descriptors from the STW that adequately summarize the resource in question. Various rule-based, post-processing routines ensure the quality of the metadata. So far, several data releases have been issued. The ZBW developed a web-based reviewing tool to evaluate the data intellectually (<a href="#refT">Toepfer and Seifert 2017</a>). Currently under investigation is to what extent neural networks are suitable for optimizing the coordination between the individual methods in the fusion approach.</p>
+
+<p>In addition, the STW is currently integrated within a commercial web-based tool for machine-assisted support of intellectual verbal and classificatory subject indexing for testing purposes. In testing situations, the tool facilitates the process of subject indexing by presenting suggestions from other data sources that already contain subject-specific information for the resource in question. These suggestions are based on the previously mentioned vocabulary mappings to the STW (see <a href="#5">section 5</a>). In production scenarios, suggestions will also come from those in-house research-based automated subject indexing solutions as outlined above (<a href="#refK">Kasprzik 2020</a>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="6.2"></a>
+<h4 itemprop="articleSection">6.2 Retrieval</h4>
+
+<p>The STW supports a variety of classical retrieval functions. The STW web pages can trigger a direct search via the &ldquo;EB&rdquo; icons on the page for the appropriate concept; this enables the semantic network of descriptors and the subject category system to create a high-level entry point into the publications of the <i>EconBiz</i> portal to explore and identify relevant subjects.</p>
+
+<p>Enhancements to the search engine index improves search functionality within the EB portal. For the STW controlled fields, index entries are produced with the English and German preferred terms, all synonyms of the descriptors, all preferred terms, and synonyms of exact matches from the various mappings to STW descriptors. The data and code for generating these enhancement lists are freely available <a href="#e6">[6]</a>.</p>
+
+<p>This index enhancement results in quick retrieval and works well for large document collections. (EB comprises nearly 11 million documents.) It is also inflexible, so users have very little influence on the outcome. Another search interface was implemented within the smaller collection of scientific papers in the ZBW repository <i>EconStor</i> <a href="#e7">[7]</a>. This search interface uses the &ldquo;econ-ws&rdquo; web service to match the query against the full text index of the STW and identifies thesaurus descriptors within the query. This enhances the identified descriptors dynamically with their direct and indirect synonyms upon user request. The search interface also displays narrower and related descriptors for (parts of) the query, for the selection of thematically related search terms, again including synonyms (see Figure 3).</p>
+
+<div align="center"><figure>
+<img src="stw3.jpg" title="Fig. 3: EconStor search results page" width="75%">
+<figcaption>Figure 3: An &ldquo;Extended Search Terms&rdquo; section in the <i>EconStor</i> search results page offers users a thesaurus-enhanced search for matching query terms. By clicking on the <code>Deindustrialization</code> link, the user may enhance the search by all available synonyms, increasing the number of results from 85 to 130. <code>Old industrial region</code> is another related concept suggested by the STW, which can be searched with multiple synonyms.</figcaption>
+</figure></div>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="7"></a>
+<h3 itemprop="articleSection">7. Reuse</h3>
+
+<p>The number of institutions using the STW is steadily growing. The library of the of the German Institute for Economic Research and the Swiss Economic Archive are two such institutions <a href="#e8">[8]</a>. The STW&rsquo;s free and easily accessible web version has led to increased usage. The STW&rsquo;s liberal license (since 2014 ODbL) authorizes free use for any purpose, provided the ZBW is attributed and that the resulting publication is openly available under the same conditions. All SKOS files of the thesaurus and its mappings can be downloaded from the web site. The free web service <a href="#e9">[9]</a> provides an API for use in programs, and a SPARQL endpoint <a href="#e10">[10]</a> allows unrestricted experimental queries. Additionally, a MARC-XML dump of the STW from the catalog system can be provided on request; the downloaded data may differ from the web publication and will not include the category system or the English scope notes.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="8"></a>
+<h3 itemprop="articleSection">8. Considerations for the future</h3>
+
+<p>For many years, the STW was used exclusively for subject indexing. Over time, it was integrated into retrieval processes. Currently, the STW is getting more and more integrated into processes of automated subject indexing. This will result in new requirements for maintenance, further development, and data management of the vocabulary.  </p>
+
+<p>In the near future, maintenance and the further development of the vocabulary will be much more &rarr; <a href="data">data</a>-driven. Data from additional sources will need to be considered systematically in order to enrich the existing vocabulary with additional synonyms and to get extension proposals for terms that represent new concepts. This includes the filtering, clustering, and systematic evaluation of uncontrolled keywords, which subject indexers always already assign to a document in case they cannot find a suitable descriptor in the STW. It also includes the matching of author keywords with the STW and their technically supported analysis and evaluation. The pilot study and the results of the latest review of the different automatic subject indexing approaches used show the potential of this text type, on the one hand to generate new descriptors from it, on the other hand to achieve good automated subject indexing when using the STW as background knowledge. Data that is already available in machine-readable form needs to be systematically incorporated into the further development of the vocabulary.</p>
+
+<p>Another important task will be to develop an effective indexing suggestion system that takes into account different sources of already existing third-party subject-specific data.</p>
+
+<p>As the STW becomes more integrated into automated subject indexing solutions, enhanced interoperability will be an important goal for the future. As a result of the mapping to <i>Wikidata</i>, additional semantics and information about a concept become available, and indirect mapping relationships to concepts in third-party vocabularies can be derived. This leads to methods for pattern recognition in texts that, combined with technologies for evaluating explicit semantics, will improve the results of automated subject indexing solutions. </p>
+
+</span><!-- articleBody ends -->
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="end"></a>
+<h3>Endnotes</h3>
+
+<a name="e1"></a>
+<p><strong>1</strong>. <a class="menu" href="http://zbw.eu/stw">http://zbw.eu/stw</a>.</p>
+
+<a name="e2"></a>
+<p><strong>2</strong>. The other two institutions that participated in the cooperation project were GBI Gesellschaft f&uuml;r Betriebswirtschaftliche Information (now: GBI-GENIOS, <a class="menu" href="http://genios.de">http://genios.de</a>) and the ifo Institute (<a class="menu" href="https://www.ifo.de/en">https://www.ifo.de/en</a>). </p>
+
+<a name="e3"></a>
+<p><strong>3</strong>. <a class="menu" href="http://zbw.eu/version">http://zbw.eu/version</a>.</p>
+
+<a name="e4"></a>
+<p><strong>4</strong>. <a class="menu" href="http://econbiz.eu">http://econbiz.eu</a>.</p>
+
+<a name="e5"></a>
+<p><strong>5</strong>. <a class="menu" href="https://zbw.eu/stw/mapping/">https://zbw.eu/stw/mapping/</a>.</p>
+
+<a name="e6"></a>
+<p><strong>6</strong>. <a class="menu" href="https://github.com/zbw/sparql-queries">https://github.com/zbw/sparql-queries</a>.</p>
+
+<a name="e7"></a>
+<p><strong>7</strong>. <a class="menu" href="https://www.econstor.eu/">https://www.econstor.eu/</a>.</p>
+
+<a name="e8"></a>
+<p><strong>8</strong>. For a selection of institutions using the STW see <a class="menu" href="http://zbw.eu/en/stw-info/uses">http://zbw.eu/en/stw-info/uses</a>.</p>
+
+<a name="e9"></a>
+<p><strong>9</strong>. <a class="menu" href="http://zbw.eu/beta/econ-ws">http://zbw.eu/beta/econ-ws</a>.</p>
+
+<a name="e10"></a>
+<p><strong>10</strong>. <a class="menu" href="https://zbw.eu/beta/sparql-lab/about/#stw">https://zbw.eu/beta/sparql-lab/about/#stw</a>.</p>
+
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="ref"></a>
+<h3>References</h3>
+
+<span itemprop="citation">
+
+<a name="refA"></a>
+<a name="refB"></a>
+
+<p>Bibliothek des Instituts f&uuml;r Weltwirtschaft an der Universit&auml;t Kiel, Zentralbibliothek der Wirtschaftswissenschaften in der Bundesrepublik Deutschland. 1980.<i> Sachkatalog</i>. Kiel: Bibliothek des Instituts f&uuml;r Weltwirtschaft an der Universit&auml;t Kiel.</p>
+
+<a name="refC"></a>
+<a name="refD"></a>
+<a name="refE"></a>
+<a name="refF"></a>
+<a name="refG"></a>
+<a name="refH"></a>
+
+<p>HWWA-Institut f&uuml;r Wirtschaftsforschung. 1980. <i>Thesaurus Wirtschaft</i>. Hamburg: Verlag Weltarchiv GmbH.</p>
+
+<a name="refI"></a>
+
+<p>ISO (International Organization for Standardization). 2011. <i>Thesauri for Information Retrieval: Information and Documentation</i>. Part 1 of <i>Thesauri and Interoperability with Other Vocabularies: ISO 25964-1</i>. Geneva: International Organization for Standardization.<br>
+
+<a name="refJ"></a>
+<a name="refK"></a>
+
+<p>Kasprzik, Anna. 2020. &ldquo;Putting research-based machine learning solutions for subject indexing into practice&rdquo;. In <i>Proceedings of the Conference on Digital Curation Technologies (Qurator 2020), Berlin, Germany. January 20th to 21st 2020</i>, eds. Adrian Paschke et. al. <a class="menu" href="http://nbn-resolving.de/urn:nbn:de:0074-2535-7">http://nbn-resolving.de/urn:nbn:de:0074-2535-7</a>.</p>
+
+<p>Kempf, Andreas Oskar and Joachim Neubert. 2016. &ldquo;The role of thesauri in an open Web: a case study of the STW Thesaurus for Economics&rdquo;. <i>Knowledge Organization</i> 43 no. 3: 160-173. <a class="menu" href="https://doi.org/10.5771/0943-7444-2016-3-160">https://doi.org/10.5771/0943-7444-2016-3-160</a>.</p>
+
+<a name="refL"></a>
+<a name="refM"></a>
+<a name="refN"></a>
+
+<p>Neubert, Joachim. 2009. &ldquo;Bringing the &lsquo;Thesaurus for Economics&rsquo; on to the Web of linked data&ldquo;. In <i>Proceedings of the WWW2009 Workshop on Linked Data on the Web (LDOW 2009), Madrid, Spain, April 20, 2009</i>. Eds. Christian Bizer, Tom Heath, Tim Berners-Lee and Kingsley Idehen. Aachen, Germany: CEUR Workshop Proceedings, paper 7.  <a class="menu" href="http://ceur-ws.org/Vol-538/ldow2009_paper7.pdf">http://ceur-ws.org/Vol-538/ldow2009_paper7.pdf</a>.</p>
+
+<p>Neubert, Joachim. 2015. &ldquo;Leveraging SKOS to trace the overhaul of the STW Thesaurus for Economics&ldquo;. In <i>Proceedings of the International Conference on Dublin Core and Metadata Applications (DC-2015), S&atilde;o Paulo, Brazil, 1-4 September 2015</i>. Published by the Dublin Core Metadata Initiative. <a class="menu" href="http://dcevents.dublincore.org/IntConf/dc-2015/paper/view/332">http://dcevents.dublincore.org/IntConf/dc-2015/paper/view/332</a>.</p>
+
+<a name="refO"></a>
+<a name="refP"></a>
+
+<p>Prange, Alexander. 2016. <i>Evaluierung verschiedener Quellen zur Anreicherung kontrollierter Vokabulare durch Generierung von Vorschl&auml;gen</i>. Master thesis. Kiel: Christian-Albrechts-Universit&auml;t zu Kiel, Leibniz-Informationszentrum Wirtschaft.</p>
+
+<a name="refQ"></a>
+<a name="refR"></a>
+<a name="refS"></a>
+<a name="refT"></a>
+
+<p>Toepfer, Martin and Christin Seifert. 2017. &ldquo;Descriptor-invariant fusion fusion architecture for automatic subject indexing&rdquo;. In <i>Proceedings of Joint Conference on Digital Libraries (JCDL)</i>. IEEE Computer Society. Washington, D.C.: 31-40.</p>
+
+<a name="refU"></a>
+<a name="refV"></a>
+<a name="refW"></a>
+<a name="refX"></a>
+<a name="refY"></a>
+<a name="refZ"></a>
+
+</span><!-- citation ends -->
+
+<a name="col"></a>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<p>&nbsp;</p>
+
+<p>Visited <a href="https://www.digits.net" target="_blank"><img src="https://counter.digits.net/?counter={3061c5ec-ec46-a874-8111-e37ffc0193da}&template=simple" alt="Hit Counter by Digits" border="0"  /></a> times.</p>
+
+<hr>
+<p itemprop="dateCreated">Version 1.0 published 2021-01-07 <!-- last edited 2021-- --><!-- <br>Version 1.1 published 2021--: [changes] -->
+
+<p>Article category: <code><a itemprop="about" href="index#KL">KOS, specific (domain specific)</a></code></p>
+
+<p>The present article is an updated version of Kempf and Neubert (<a href="#refK">2016</a>). <a class="menu" href="https://doi.org/10.5771/0943-7444-2016-3-160">https://doi.org/10.5771/0943-7444-2016-3-160</a></p>
+
+<!--
+<p>This article (version 1.0) is also published in <i>Knowledge Organization</i>. How to cite it:
+<br>Surname, Name. 2020. 
+&ldquo;Title&rdquo;. 
+<i>Knowledge Organization</i> 4_, no. : -. 
+Also available in 
+<i><span itemprop="isPartOf">ISKO Encyclopedia of Knowledge Organization</span></i>, 
+eds. <span itemprop="editor">Birger Hj&oslash;rland</span> and <span itemprop="editor">Claudio Gnoli</span>, 
+<span itemprop="url">https://www.isko.org/cyclo/ </span></p>
+-->
+<!--
+<p>This editorial article is not peer-reviewed and is not being published in the journal <i>Knowledge Organization</i>.</p>
+-->
+
+<p>&copy;2020 <span itemprop="publisher">ISKO</span>. All rights reserved.</p>
+
+</div><!-- Article ends -->
+
+</td>
+</tr>
+
+<tr>
+<td id="logo">
+</td>
+</tr>
+
+</table>
+</body>
+</html>

@@ -7,6 +7,7 @@
 ** xref:why-transparency.adoc[Why We Document the AI Pipeline]
 ** xref:what-ai-does-and-does-not-do.adoc[What AI Does and Does Not Do]
 * Team and Workflow
+** xref:final-cast-and-crew.adoc[The Cast and Crew]
 ** xref:agent-roles.adoc[Agent Roles and Responsibilities]
 ** xref:workflow-mechanics.adoc[How Work Flows Through the Team]
 ** xref:feedback-and-standing-rules.adoc[How Feedback Becomes Permanent Rules]

@@ -1,0 +1,1266 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head profile="http://dublincore.org/documents/2007/11/05/dc-html/">
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>Semantic primitives (IEKO)</title>
+<link rel="stylesheet" type="text/css" href="../isko.css" />
+<link rel="schema.DCTERMS" href="http://purl.org/dc/terms/" />
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:url" content="https://www.isko.org/cyclo/primitives" />
+<meta name="twitter:title" content="Semantic primitives (ISKO Encyclopedia of KO)" />
+<meta property="og:image" content="https://www.isko.org/cyclo/hjorland.jpg" />
+<meta name="twitter:description" content="The term semantic primitives refers to a set of basic, atomic concepts from which all other (compound) concepts are constructed. It presupposes the principle of compositionality &mdash; the idea that complex items or expressions can be formed by combining simpler constituents. Both notions are of particular relevance to knowledge organization (KO), where concepts are understood to be the primary objects of organization in knowledge organization systems (KOS). Semantic primitives, therefore, may be viewed as candidates for foundational units in such systems. Moreover, these concepts play important roles in fields such as automatic language processing, lexicography, word sense disambiguation, and artificial intelligence. In KO, they relate to methods such as semantic factoring and facet analysis, while in linguistics they parallel componential analysis. Nevertheless, semantic primitives and compositionality remain controversial, with strong arguments both for and against their very existence. The philosophical assumptions underlying these debates have significant implications for information science and knowledge organization." />
+
+<meta name="DCTERMS.title" content="Semantic primitives" />
+<meta name="DCTERMS.creator" content="Birger Hjorland" />
+<meta name="DCTERMS.issued" content="2025" />
+<meta name="DCTERMS.relation.ispartof" content="ISKO Encyclopedia of Knowledge Organization" />
+<meta name="DCTERMS.ispartof" content="ISKO Encyclopedia of Knowledge Organization" />
+<meta name="DCTERMS:bibliographicCitation" content="ISKO Encyclopedia of Knowledge Organization, eds. Birger Hjorland and Claudio Gnoli" />
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="001.012">
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="025.4">
+<meta name="DCTERMS.subject.keyword" content="compositionality">
+<meta name="DCTERMS.subject.keyword" content="factoring">
+<meta name="DCTERMS.subject.keyword" content="_">
+<meta name="DCTERMS.type" content="Text" />
+<meta name="DCTERMS.format" content="text/html" />
+<meta name="DCTERMS.identifier" content="https://www.isko.org/cyclo/primitives" />
+
+<style>
+a {text-decoration: none;}
+a:hover {text-decoration:underline;}
+table td, table th { padding: 5px; }
+</style>
+
+</head>
+<body>
+
+<a name="top"></a>
+
+<table>
+
+<tr>
+<td id="isko"><h1>I S K O</h1></td>
+<td id="banner"><h2><a href="index.html" style="text-decoration:none;">Encyclopedia of Knowledge Organization</h2></a></td>
+</tr>
+
+<tr>
+<td id="navigation">
+<a href="../index.php">home</a>
+<a href="../about.html">about ISKO</a>
+<a href="../join.html">join ISKO</a>
+<a href="../ko.html"><cite>Knowledge Organization</cite> journal</a>
+<a href="../events.html">ISKO events</a>
+<a href="../chapters.html">ISKO chapters</a>
+<a href="../people.html">ISKO people</a>
+<a href="../stac/">SciTech Adv. Council</a>
+<a href="../pubs.html">ISKO publications</a>
+<a href="index.html">Encyclopedia</a>
+<a href="../lit.html">KO literature</a>
+<a href="../inst.html">KO institutions</a>
+<a href="http://bartoc.org/" title="link to BARTOC">&#8663; KOS registry</a>
+<a href="https://isko.wildapricot.org/" title="access-account required">&#128274; members</a>
+<a href="../contact.html">contact us</a>
+</td>
+<td id="content" rowspan="2">
+
+<a class="menu" href="authors#hj">edited by Birger Hj&oslash;rland</a> <a class="menu" href="authors#g">and Claudio Gnoli</a>
+
+<p>&nbsp;
+
+<div itemscope itemtype="http://schema.org/Article">
+
+<h2 itemprop="headline">Semantic primitives</h2>
+
+<blockquote>
+by <a itemprop="author" href="authors#hj" style="text-decoration:underline">Birger Hj&oslash;rland</a>
+
+<p>(This is a version of an article published in JASIST, see <a href="#col">colophon</a>.)
+
+<p>Table of contents:
+
+<br><a href="#1">1. Introduction: levels of part-whole relations</a> 
+<br><a href="#2">2. Semantic primitives</a>
+<br><a href="#3">3. Compositionality and componential analysis</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#3.1">3.1 Compositionality</a> 
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#3.2">3.2 Componential analysis</a> 
+<br><a href="#4">4. Theoretical perspectives</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#4.1">4.1 Empiricism</a> 
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#4.2">4.2 Rationalism</a> 
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#4.3">4.3 Historicism</a> 
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#4.4">4.4 Pragmatism</a> 
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#4.5">4.5 Atomism versus holism</a> 
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#4.6">4.6 The analogy with the periodic system</a> 
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#4.7">4.7 Further arguments against primitives</a>
+<br><a href="#5">5. Compositionality and semantic primitives in information science</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#5.1">5.1 Facet analysis and semantic factoring</a> 
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#5.2">5.2 Szostak and basic concepts</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#5.3">5.3 Thesauri and Sp&auml;rck Jones</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#5.4">5.4 Other examples and issues</a>
+<br><a href="#6">6. Conclusion</a>
+<br><a href="#ack">Acknowledgments</a>
+<br><a href="#end">Endnotes</a>
+<br><a href="#ref">References</a>
+<br><a href="#col">Colophon</a>
+
+
+<p itemprop="abstract"><strong>Abstract</strong>:
+<br>The term <i>semantic primitives</i> refers to a set of basic, <i>atomic</i> concepts from which all other (compound) concepts are constructed. It presupposes the principle of <i>compositionality</i> &mdash; the idea that complex items or expressions can be formed by combining simpler constituents. Both notions are of particular relevance to knowledge organization (KO), where concepts are understood to be the primary objects of organization in knowledge organization systems (KOS). Semantic primitives, therefore, may be viewed as candidates for foundational units in such systems. Moreover, these concepts play important roles in fields such as automatic language processing, lexicography, word sense disambiguation, and artificial intelligence. In KO, they relate to methods such as semantic factoring and facet analysis, while in linguistics they parallel componential analysis. Nevertheless, semantic primitives and compositionality remain controversial, with strong arguments both for and against their very existence. The philosophical assumptions underlying these debates have significant implications for information science and knowledge organization.</p>
+<p>&nbsp;</p>
+
+</blockquote>
+
+<span itemprop="articleBody">
+
+<!--
+
+<div align="center"><figure>
+<img src=".jpg" title="Fig. : Caption" width="40%">
+<figcaption>Figure : Caption</figcaption>
+</figure></div>
+
+<blockquote>
+<table border="1">
+<p><caption><i>Table 1: </i><br>&nbsp;</caption></p>
+<tr>
+<td></td>
+<td></td>
+</tr><tr>
+<td></td>
+<td></td>
+</tr>
+</table>
+</blockquote>
+
+-->
+
+<a name="1"></a>
+<h3 itemprop="articleSection">1. Introduction: levels of part&ndash;whole relations</h3>
+
+<p><i>Primitives</i> are elements that can be combined to form wholes. According to the <i>semiotic triangle</i>, three levels of such part&ndash;whole relations may be distinguished: (A) the ontological level, (B) the conceptual or semantic level, and (C) the linguistic/semiotic level <A HREF="#e1">[1]</A>.</p>
+
+<p>Re A: Things (objects, wholes) may consist of parts or elements. A person, for example, consists of arms, which include hands, which in turn include fingers, and so on. This exemplifies the level of <i>ontological</i> relations between wholes and their parts. An example from chemistry is that all matter is composed of approximately 118 chemical elements. This level concerns <i>compositionality at the level of reality</i>. Part&ndash;whole relationships such as these are studied in individual sciences like anatomy and chemistry, and on a more general level in fields such as <i>mereology</i> (<A HREF="#refV">Varzi 2019</A>). However, as argued in the next section, any knowledge of things is necessarily achieved through the conceptualization of those things.</p>
+
+<p>Re B: Things and their parts are also conceptualized &mdash; for example, the concepts [hand], [finger], [water], and [hydrogen] <A HREF="#e2">[2]</A>. The relations between such concepts are called <i>conceptual</i> or <i>semantic</i> relations. We often assume that our concepts represent reality unambiguously, but this presupposes a form of na&iuml;ve realism (i.e., the belief that the world is as we perceive it to be). An alternative view is that we necessarily view reality from a perspective, a conceptualization, or a paradigm <A HREF="#e3">[3]</A>. For example, most conceptualizations of [finger] include the thumb, but not all do; modern science conceptualizes water as composed of oxygen and hydrogen, whereas ancient science regarded water as an indivisible element. From this latter perspective, all things and all relations are known to us only as concepts and through their semantic relations <A HREF="#e4">[4]</A>. We cannot avoid concepts when speaking about reality, but we must critically consider which conceptualizations best represent reality for a given purpose, and which epistemologies allow us to construct the most fruitful theories and concepts. In chemistry, conceptualizations include those of chemical elements and their compounds. This level concerns <i>compositionality at the level of mental representation</i>. Contemporary chemistry employs concepts of elements and compounds that differ fundamentally from the ancient four elements (fire, air, water, and earth), once believed to be composed of Platonic solids (cf. <A HREF="#refS">Scerri 2020</A>, 3). This implies that our concepts and their semantic relations &mdash; including part&ndash;whole relations &mdash; are theory-dependent and dynamic. The conceptual level is of particular importance to knowledge organization (KO), where concepts are understood to be the entities organized in &rarr; <a href="kos">knowledge organization systems (KOS)</a> (cf. <A HREF="#refD">Dahlberg 2009</A>; <A HREF="#refH">Hj&oslash;rland 2021</A>) <A HREF="#e5">[5]</A>. <i>Semantic primitives</i> may thus be of interest as candidates for basic units in KOSs.</p>
+
+<p>Re C: Concepts may or may not be represented in a language or in another sign system, such as chemical notation. When they are, the concepts are said to be <i>lexicalized</i> <A HREF="#e6">[6]</A>. Relations between compound signs and their components are referred to as <i>lexical</i> or <i>semiotic</i> relations. Lexical and semantic relations are often confused in the literature, and they can sometimes be difficult to distinguish. Prominent linguists (e.g., <A HREF="#refM">Murphy 2003</A>, 3) argue that there is no consensus on whether a lexical&ndash;conceptual boundary exists at all. As Murphy writes: &ldquo;We thus need to look at how words, or word meanings are related &mdash; not just how things in the world are related&rdquo; (<A HREF="#refM">Murphy 2003</A>, 11). This perspective contrasts with a common view in KO, in which semantic and lexical relations are treated as distinct. Soergel (<A HREF="#refS">1998</A>, 2&ndash;3), for instance, described lexical relations as linking individual words, while conceptual&ndash;semantic relations link concepts &mdash; a &ldquo;commonly accepted distinction&rdquo;.</p>
+
+<p>Soergel (<A HREF="#refS">1998</A>) also demonstrated how this distinction was confused by the prominent cognitive scientist George Miller, who claimed in the book reviewed &ldquo;the basic semantic relation in WordNet is synonymy&rdquo;. In &rarr; <a href="thesaurus">thesauri</a>, however, synonymy &mdash; represented by the symbols <i>USE</i> and <i>UF</i> (used for) &mdash; is treated as a <i>lexical</i> relation, as it refers to different terms denoting the same concept. In contrast, <i>semantic</i> relations such as hypernymy &mdash; represented by the symbol <i>BT</i> (broader term) &mdash; link different concepts. There can be no synonymous relation between concepts because the idea of identical concepts is wrong, as they would be one <i>and the same</i> concept <A HREF="#e7">[7]</A>. Thus, Soergel's criticism of Miller appears well founded.</p>
+
+<p>Primitives at the linguistic/semiotic level are understood as <i>terms</i> (or signs) that are used to explain other terms, concepts, or expressions, but which themselves cannot be defined using other terms or signs. Chemical formulas, for example, represent the composition of chemical compounds &mdash; for example, H<sub>2</sub>O denotes water as consisting of hydrogen (H) and oxygen (O) in a specific quantitative relation <A HREF="#e8">[8]</A>. Yet, there is not necessarily a direct correspondence between complex concepts and compound words or phrases. For example, the term <i>greenhouse</i> is not to be analyzed as [green] + [house], but rather as expressing the concepts [glass building] + [to grow plants].</p>
+
+<p>Unlike chemical formulas, natural languages do not systematically represent ontological or conceptual relations based on scientific theories. Nevertheless, Wierzbicka (<A HREF="#refW">2006</A>) proposed that all natural languages contain a universal set of semantic primitives &mdash; lexicalized in every language &mdash; from which all other concepts are derived, albeit differently across languages. This level concerns <i>compositionality at the level of linguistic or semiotic representation</i> (although Wierzbicka's theory is at the same time also a theory about the conceptual level).</p>
+
+<p>The present article examines different views on compositionality and semantic primitives, with a focus on their epistemological implications and their application in information science. It provides a broad reviews of the literature, drawing on multiple fields including linguistics, cognitive science, philosophy, and knowledge organization. The discussion spans developments from Aristotle to the present day.</p>
+
+<p><A HREF="#2">Section 2</A> introduces the notion of semantic primitives in relation to perspectives from artificial intelligence and contemporary linguistic research. <A HREF="#3">Section 3</A> addresses compositionality and componential analysis: Section <A HREF="#3.1">3.1</A> discusses compositionality as a prerequisite for working with semantic primitives, while Section <A HREF="#3.2">3.2</A> focuses on componential analysis as a method for decomposing complex concepts. <A HREF="#4">Section 4</A> presents theoretical perspectives and is subdivided into seven parts: <A HREF="#4.1">4.1</A> Empiricism, <A HREF="#4.2">4.2</A> Rationalism, <A HREF="#4.3">4.3</A> Historicism, <A HREF="#4.4">4.4</A> Pragmatism, <A HREF="#4.5">4.5</A> Atomism versus holism, <A HREF="#4.6">4.6</A> The analogy with the periodic system, and <A HREF="#4.7">4.7</A> Further arguments against primitives.</p>
+
+<p><A HREF="#5">Section 5</A> explores the application of semantic primitives and semantic decomposition in information science, organized into four subsections: <A HREF="#5.1">5.1</A> Facet analysis and semantic factoring, <A HREF="#5.2">5.2</A> Szostak and basic concepts, <A HREF="#5.3">5.3</A> Thesauri and Sp&auml;rck Jones, and <A HREF="#5.4">5.4</A> Other examples and issues. Finally, <A HREF="#6">Section 6</A> offers the overall conclusion of the study.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2"></a>
+<h3 itemprop="articleSection">2. Semantic primitives</h3>
+
+<p>Semantic primitives may also be termed &ldquo;semantic primes&rdquo;, &ldquo;primes&rdquo;, &ldquo;conceptual primitives&rdquo;, &ldquo;atomic concepts&rdquo;, or &ldquo;basic sense-components&rdquo;. They are opposed to complex concepts, which are decomposable concepts composed of simpler concepts. A famous example is &rarr; <a href="logical_division.htm#3">Aristotle's definition</a> by genus and differentia, such as [man] defined as [animal] + [rational]. Aristotle imagined that the concepts [rational] and [animal] themselves could be analyzed further, until everything would be defined in terms of a set of primitive concepts, which could not be further analyzed. In <i>Categories</i> (<A HREF="#refA">Aristotle 1984</A>, 3&ndash;24) Aristotle called the ultimate primitives &ldquo;categories&rdquo;, of which he suggested 10: substance, quantity, quality, relation, place, time, situation, condition, action, and passion. However, in other writings, Aristotle listed different sets of categories and, according to Sowa (<A HREF="#refS">1984</A>, 14&ndash;15), he never gave a definite set of primitives. As we shall see, it is important that Aristotle did not depend on these primitives in his biological classification <A HREF="#e9">[9]</A>.</p>
+
+<p>The concept of semantic primes has played important roles in relation to automatic language processing, lexicography, meaning disambiguation, knowledge organization, artificial intelligence, etc. Sowa (<A HREF="#refS">1984</A>, 14) wrote about the first mechanical systems based on primes:
+
+<blockquote>The AI [artificial intelligence] goal of mechanically reducing concepts to primitives was first proposed by Ramon Lull [Llull] in the thirteenth century. His <i>Ars Magna</i> [1305&ndash;1308] was a system of disks inscribed with primitive concepts, which could be combined in various ways by rotating the disks. Under the influence of Lull's system, Leibniz (1679, <A HREF="#refL">1903</A>) developed his <i>Universal Characteristic</i>. He represented primitive concepts by prime numbers and compound concepts by products of primes. Then statements of the form <i>All A is B</i> are verified by checking whether the number for A is divisible by the number for B. If PLANT is represented by 17 and DECIDUOUS by 29, their product 493 would represent DECIDUOUS-PLANT. If BROAD-LEAFED-PLANT is represented by 20,213 and wine by 1,192,567, the statement <i>All vines are broad-leafed plants</i> is judged to be true because 1,192,567 is divisible by 20,213. Leibniz envisioned a universal dictionary for mapping concepts to numbers and a calculus of reasoning that would automate the syllogism. To simplify the computations, he invented the first calculating machine that could do multiplication and division. With the advent of electronic computers, computational linguistics set out to implement Leibniz's universal dictionary.</blockquote></p>
+
+<p>There have been many suggestions of sets of semantic primitives, but there have also been serious arguments about the very idea of their existence <A HREF="#e10">[10]</A>, and even the meaning of the term is not generally agreed. One of the most influential researchers today in this field is the Polish linguist Anna Wierzbicka (<A HREF="#refW">2006</A>, 134), who defined semantic primitives this way:
+
+<blockquote>&ldquo;Semantic primitives&rdquo; (or primes) are hypothetical elementary building blocks from which all meanings and all human thoughts are built &mdash; rather like chemical elements discovered by Mendeleev are elementary building blocks of all chemical substances <A HREF="#e11">[11]</A>.</blockquote></p>
+
+<p>Wierzbicka's theory, called Natural Semantic Metalanguage (NSM), was by Goddard (<A HREF="#refG">1998</A>, 129) appointed &ldquo;the most resilient and well-developed theory of semantic primitives&rdquo;. Wierzbicka refers to Leibniz's theory &ldquo;alphabet of human thoughts&rdquo;, and found that she, based on contemporary linguistic knowledge, has produced what Leibniz attempted, but did not fulfill (and which he, in her opinion, could not fulfill lacking the adequate linguistic tools). Wierzbicka's definition includes the following claims:
+
+<blockquote>
+a. Primes are undefinable concepts,<br>
+b. All other concepts are derived from primes (and, by implication, that any concept can be reduced to these primes or &ldquo;kernels&rdquo;).<br>
+c. Primes are universal in all human languages and<br>
+d. Analogy with chemical elements is appropriate.
+</blockquote>
+
+<p>In addition, Wierzbicka suggests (although not in this quote):
+
+<blockquote>
+e. Primes are innate in human beings.
+</blockquote>
+
+<p>Wierzbicka's definition seems to be a theory rather than a definition, which is common to all theories of semantic primitives. Therefore, it may be fruitful to consider these theoretical claims, rather than to take them as given. Wierzbicka (<A HREF="#refW">1996</A>) identified primes by first defining the concepts, then applying componential analysis (see <A HREF="#3.2">Section 3.2</A>), and, as the third step, comparing the meanings of the elements with corresponding elements in other languages, and only accepting as primes those that can be universally identified. In the process of defining concepts, she uses a broad spectrum of sources about their ordinary understanding (as contrasted with their scholarly understanding). In contrast to most other scholars, who tend to base their identification of primitives exclusively on logic and common sense, Wierzbicka's method also involves cultural studies.</p>
+
+<p>Wierzbicka has identified a set of 65 primes, a number that grew from an initial 14 (<A HREF="#refW">Wierzbicka 1972</A>), but, according to Wierzbicka (<A HREF="#refW">2021</A>), it has remained relatively stable since 2014 (Table 1) <A HREF="#e12">[12]</A>.</p>
+
+<blockquote>
+<table border="1">
+<p><caption><i>Table 1: Wierzbicka's list of 65 semantic primes</i><br>(adapted from <A HREF="#refL">Levisen and Waters 2017</A>, 12 and <A HREF="#refG">Goddard and Wierzbicka 2014</A>)<br>&nbsp;</caption></p>
+
+<tr>
+<th>Category</th>
+<th>Primes</th>
+</tr><tr>
+<td>Substantives</td>
+<td>I~me, you, someone, people, something/thing, body</td>
+</tr><tr>
+<td>Relational substantives</td>
+<td>Kind, part</td>
+</tr><tr>
+<td>Determiners</td>
+<td>This, the same, other~else~another</td>
+</tr><tr>
+<td>Quantifiers</td>
+<td>One, two, some, all, much/many, little/few</td>
+</tr><tr>
+<td>Evaluators</td>
+<td>Good, bad</td>
+</tr><tr>
+<td>Descriptors</td>
+<td>Big, small</td>
+</tr><tr>
+<td>Mental predicates</td>
+<td>Think, know, want, don't want, feel, see, hear</td>
+</tr><tr>
+<td>Speech</td>
+<td>Say, words, true</td>
+</tr><tr>
+<td>Actions, events, movement</td>
+<td>Do, happen, move</td>
+</tr><tr>
+<td>Existence, possession</td>
+<td>Be (somewhere), there is, be (someone/something), (is) mine</td>
+</tr><tr>
+<td>Life and death</td>
+<td>Live, die</td>
+</tr><tr>
+<td>Time</td>
+<td>When/time, now, before, after, a long time, a short time, for some time, moment</td>
+</tr><tr>
+<td>Space</td>
+<td>Where/place, here, above, below, far, near, side, inside, touch (contact)</td>
+</tr><tr>
+<td>Logical concepts</td>
+<td>Not, maybe, can, because, if</td>
+</tr><tr>
+<td>Intensifier, augmentor</td>
+<td>Very, more</td>
+</tr><tr>
+<td>Similarity</td>
+<td>Like/as/way</td>
+</tr>
+</table>
+</blockquote>
+
+<p>Wierzbicka approaches this theory from the standpoint of linguistics, basing her analysis on natural language rather than on subject-specific vocabularies or scientific theories. As noted earlier, her view    implies that the distinction between conceptual relations and lexical/semiotic relations collapses: the same primitives serve both semantic and lexical functions. She argues that a universal set of semantic primitives exists across all human languages. While these primes are lexicalized differently across languages, the corresponding words share the same meanings.</p>
+
+<p>According to Wierzbicka, all complex concepts are ultimately derived from this set of approximately 65 primitives. This claim, however, poses interpretive challenges. Take the example of the ordinary concept [sugar]. As neither [mouth] nor [sweet] is included among the 65 primes, one would need to define sugar using only the approved primitives &mdash; for example, [a kind of thing], [this thing is small], [people can do something with this thing], [when people eat it, they feel something good]. Such a definition appears inadequate, particularly for use in contexts such as thesauri for information retrieval. It seems doubtful that complex and specialized concepts can be satisfactorily reduced to a small, fixed set of primitives without significant loss of meaning or practical usefulness.</p>
+
+<p>We will consider more arguments that have been raised against Wierzbicka's theory in <A HREF="#ref4">Section 4</A>.</p>
+
+<p>We conclude this section by presenting an alternative definition of semantic primitives proposed by the British computer scientist Yorick Wilks (<A HREF="#refW">2007</A>, 106). His formulation is, in some respects, less restrictive and more directly useful for applications in information science:
+
+<blockquote>A PRIMITIVE (or rather a set of primitives plus a syntax etc.) is a reduction device which yields a semantic representation for a natural language via a translation algorithm and which is not plausibly explicated in terms of or reducible to other entities of the same type.</blockquote>
+
+<p>This definition leaves open, as it is intended to, the serious question of whether or not primitives are explicable in terms of, or reducible to, entities of some quite other type. This is a serious question because most attacks on the use of primitives take the form of demands that they be explicated in terms of some other type of entity altogether; just as most bad defenses of primitives take the form of offering some very weak equivalence between primitives and other types of entity.</p>
+
+<p>As we shall see, there are several ways of defining and understanding <i>prime</i> and related terms. We will also encounter the term <i>basic concept</i>, which is sometimes defined differently from prime (cf. <A HREF="#5.2">Section 5.2</A>). The theoretical perspectives of researchers employing the term <i>semantic primitive</i> significantly influence how the term is understood, and the reported number of semantic primitives in the literature varies widely. Elkin & Brown (<A HREF="#refE">2023</A>, 222) note that, for the clinical domain alone, the estimated number of primitives ranges from 20,000 to 1,000,000 &mdash; though it has not been possible to verify this claim in their cited sources.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3"></a>
+<h3 itemprop="articleSection">3. Compositionality and componential analysis</h3>
+
+<p>The idea of combinable elements is central to the concept of <i>compositionality</i>, which plays an important role in linguistics, faceted classification, and other areas. Montague (<A HREF="#refM">1970</A>) argued that natural languages are theoretically very similar to artificial logical languages (which are prototypical examples of compositional systems). This claim has sparked sustained interest in linguistic work on compositionality.</p>
+
+<p>The method for analyzing complex concepts is often referred to as <i>componential analysis</i> or <i>semantic factoring</i>. These approaches are also widely discussed in the literature on computational linguistics, information science, and knowledge organization.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.1"></a>
+<h4 itemprop="articleSection">3.1 Compositionality</h4>
+
+<p>Compositionality is a concept that is presupposed in theories involving semantic primitives: for such primitives to exist, they must be capable of combining into more complex concepts. As Goldberg (<A HREF="#refG">2016</A>, 419) explains:
+
+<blockquote>A principle of compositionality is generally understood to entail that the meaning of every expression in a language must be a function of the meaning of its immediate constituents and the syntactic rules used to combine them.</blockquote>
+
+<p>Compositionality thus implies a <i>building-block model of meaning</i>. It is a widely held &mdash; though highly contested &mdash; view that natural languages operate on this principle. Pelletier (<A HREF="#refP">1994</A>) surveyed the literature and found approximately 318 arguments raised against compositionality, while only three or four arguments were offered in its favor.</p>
+
+<p>Costello and Keane (<A HREF="#refC">2000</A>, 337) emphasized four reasons in support of the principle of compositionality, which they argue is central to theories of language:
+
+<blockquote>
+<ol>
+<li>First, compositionality is important in theories of language because it allows communication between people who have different knowledge. Under compositionality two language users will be able to understand each other as long as they both know the meaning of words in their language. Any differences in any other knowledge they have is irrelevant.</li>
+
+<li>Second, compositionality is important because it provides for the generative nature of language. An almost infinite number of new expressions can be produced by combining the words in a language in novel ways; under compositionality, all new expressions can be understood by anybody who knows the meaning of words in the language. If language is noncompositional, even someone who knows the words in the language could nevertheless be unable to understand some new expressions, if they lack the further specific information necessary for those expressions.</li>
+
+<li>Third, compositionality is important for accounts of language learning (<A HREF="#refB">Butler, 1995</A>). Under compositionality, once a learner has grasped the meaning of the words in a language they will be able to understand any complex expression they come across, without needing to learn any further information. If language is noncompositional, a learner's task may never be complete: before understanding any complex expression they would have [to] learn not only its constituent words, but also any further specific information necessary for understanding that expression.</li>
+
+<li>Finally, compositionality is important for accounts of access to information in comprehension. Under compositionality, the information accessed in understanding a complex expression is exactly that information accessed in understanding the constituent words of that expression. The same information is accessed in comprehending a word no matter what complex expression it occurs in. If language is noncompositional, different information will be accessed in comprehending a word when it occurs in different complex expressions.</li>
+</ol>
+</blockquote>
+
+<p>These arguments illustrate the theoretical and practical significance often attributed to compositionality &mdash; despite the numerous objections raised in the literature.</p>
+
+<p>Pagin (<A HREF="#refP">1997</A>, 14) wrote: &ldquo;Compositionality seems to imply that the meaning of a complex expression is determined locally, by nothing else than what is internal to it, i.e. the meaning of its parts and its mode of composition. So the parts must have a meaning prior to the complex expression itself&rdquo;. As we will see in <A HREF="#4.5">Section 4.5</A>, this assumption is directly challenged by theories of semantic holism.</p>
+
+<p>More recently, systems based on artificial intelligence &mdash; such as ChatGPT &mdash; have introduced new perspectives on compositionality. As Nefdt and Potts (<A HREF="#refN">2024</A>) observe:
+
+<blockquote>Perhaps the most striking finding is that modern large language models seem to induce partial compositional analysis just from training on large quantities of text, using learning objectives that simply push the model to imitate those texts. In other words, these models seem, at least in some instances, to arrive at process compositional analyses, and this may explain how they are able to successfully generalize to novel expressions. This is an exciting new opportunity for interdisciplinary collaboration, as linguists and computer scientists can collaborate on assessing models using compositional phenomena and on studying the ways in which models perform highly abstract compositional analyses.</blockquote>
+
+<p>In <A HREF="#4">Section 4</A>, we will turn to the main arguments that have been raised against the principle of compositionality.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.2"></a>
+<h4 itemprop="articleSection">3.2 Componential analysis</h4>
+
+<p>Geeraerts (<A HREF="#refG">2005</A>, 709) defined <i>componential analysis</i> (also known as decomposition analysis or semantic factoring) as follows:
+
+<blockquote>Componential analysis is an approach that describes word meanings as a combination of elementary meaning components called semantic features or semantic components. The set of basic features is supposed to be finite [i.e., forming a set of semantic primitives] <A HREF="#e13">[13]</A>.</blockquote>
+
+<p>These features can either be present or absent in a given word and serve to define the word's meaning. For example, the word <i>father</i> can be analyzed into the semantic features [male] and [parent]. Similarly, Sowa (<A HREF="#refS">2003</A>) defined <i>semantic factoring</i> as &ldquo;the process of analyzing some or all of the categories of an ontology into a collection of primitives&rdquo;.</p>
+
+<p>More generally, <I>componential analysis</I>, <I>decomposition analysis</I>, and <I>semantic factoring</I> are variant terms for the method of analyzing the meaning of specific concepts by identifying the more general features or concepts they instantiate. The inverse process is referred to as <i>conceptual combination</i> (cf. <A HREF="#refC">Costello and Keane 2000</A>), in which concepts are combined to form more complex ones.</p>
+
+<p>In bibliographic classification, the processes of semantic factoring and conceptual combination are typically termed <i>analysis</i> and <i>synthesis</i>, respectively. Their combination constitutes the principle of <i>analytico-synthetic classification</i> (cf. <A HREF="#refH">Hj&oslash;rland 2013</A>, 547).</p>
+
+<p>Lyons (<A HREF="#ref">1977</A>, 317) pointed out an important precondition for componential analysis:
+
+<blockquote>[Componential analysis] rests upon the thesis that the sense of every lexeme can be analyzed in terms of a set of more general sense-components* (or semantic features*), some or all of which will be common to several different lexemes in the vocabulary. [&hellip;]
+<br>Componential analysis, interpreted this way, can be related to the idea of Leibniz and &rarr; <a href="ideal_language#2.6">Wilkins</a>, which, as we saw earlier, served as an inspiration to Roget in the compilation of his thesaurus. <A HREF="#e14">[14]</A></blockquote>
+
+<p>Lyons's reference to Leibniz highlights the historical and conceptual connection between componential analysis and Wierzbicka's theory of semantic primitives. The connection to thesauri will be further discussed in <A HREF="#5.3">Section 5.3</A>.</p>
+
+<p>According to the theory of componential analysis, every word can be decomposed into minimal, distinctive units of meaning &mdash; referred to as <i>semantemes</i>, <i>semantic features</i>, or <i>semantic components</i>. These minimal units form the theoretical basis for comparing meanings across lexical items and for modeling semantic structure.</p>
+
+<p>One well-known application of componential analysis involves kinship terms, as demonstrated by Henning (<A HREF="#refH">2020</A>) (Table 2).</p>
+
+<blockquote>
+<table border="1" width="400">
+<p><caption><i>Table 2: Example of componential analysis</i><br>(adapted from <A HREF="#refH">Henning 2020</A>, 68)<br>&nbsp;</caption></p>
+<tr>
+<th>Word</th>
+<th>Semantemes</th>
+</tr><tr>
+<td>Father</td>
+<td>male + parent</td>
+</tr><tr>
+<td>Mother</td>
+<td>female + parent</td>
+</tr><tr>
+<td>Son</td>
+<td>male + offspring</td>
+</tr><tr>
+<td>Daughter</td>
+<td>female + offspring</td>
+</tr><tr>
+<td>Brother</td>
+<td>male + sibling</td>
+</tr><tr>
+<td>Sister</td>
+<td>female + sibling</td>
+</tr><tr>
+</tr>
+</table>
+</blockquote>
+
+<p>In this example, six kinship terms are analyzed using five semantemes: <i>male</i>, <i>female</i>, <i>parent</i>, <i>offspring</i>, and <i>sibling</i>. As the number of kinship terms analyzed increases, the relative efficiency of the method becomes more apparent, since a relatively small set of semantemes can represent a large vocabulary of relational terms. Kinship terms such as those shown above may also be analyzed using three abstract components: <i>sex</i>, <i>generation</i>, and <i>lineage</i>. <i>Sex</i> is specified as <i>male</i> or <i>female</i>; <i>generation</i> can be represented numerically, with 0 denoting the proband's generation, -1 the previous generation, and +1 the next; and <i>lineage</i> can be classified as <i>direct</i>, <i>colineal</i> (as in siblings), or <i>ablineal</i> (as in uncles and aunts).</p>
+
+<p>Geeraerts (<A HREF="#refG">2005</A>, 712) observed &ldquo;that there is widespread agreement in linguistics about the usefulness of componential analysis as a descriptive and heuristic tool, but the associated epistemological view that there is a primitive set of basic features is generally treated with much more caution&rdquo;. This skepticism is also found in information science, as will be discussed in <A HREF="#5">Section 5</A>.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4"></a>
+<h3 itemprop="articleSection">4. Theoretical perspectives</h4>
+
+<a name="4.1"></a>
+<h4 itemprop="articleSection"><br>4.1 Empiricism</h4>
+
+<p>Empiricism is an epistemological position that holds that all knowledge originates from sense experience, from which more general knowledge is drawn by inductive methods. For empiricists, simple perceptual experiences &mdash; for example, an observational report such as &ldquo;this thing is red&rdquo; &mdash; form the atomic basis from which more complex concepts can be constructed (e.g., &ldquo;this thing is a tomato&rdquo;).</p>
+
+<p>Quine (<A HREF="#refQ">1951</A>, 36) characterized this view as a form of reductionism:
+
+<blockquote>Every meaningful statement is held to be translatable into a statement (true or false) about immediate experience. Radical reductionism, in one form or another, well antedates the verification theory of meaning explicitly so-called. Thus Locke and Hume held that every idea must either originate directly in sense experience or else be compounded of ideas thus originating.</blockquote>
+
+<p>This view also underlies the logical atomism proposed by Russell and Wittgenstein (see <A HREF="#refO">Oliver 1998</A>, 773), which similarly envisions perceptual facts as the building blocks of knowledge.</p>
+
+<p>Empiricism thus aligns well with the idea of semantic primitives as derived from simple sense experiences that can be combined into increasingly complex concepts. This alignment was explored in detail by Miller and Johnson-Laird (<A HREF="#refM">1976</A>), whose psychological research attempted to derive semantic primitives from perceptual features. For example, the concept of <i>table</i> was decomposed into primitives such as <i><SMALL>OBJECT</SMALL></i>, <i><SMALL>CONNECTED</SMALL></i>, <i><SMALL>RIGID</SMALL></i>, <i><SMALL>TOP</SMALL></i>, <i><SMALL>FLAT FACE</SMALL></i>, <i><SMALL>HORIZONTAL</SMALL></i>, and <i><SMALL>VERTICAL</SMALL></i>. However, their project encountered significant difficulties. As Aitchison (<A HREF="#refA">2012</A>, 94) summarized:
+
+<blockquote>In brief, they [<A HREF="#refM">Miller and Johnson-Laird 1976</A>] concluded, first, that even words for straightforward objects such as tables had elements of meaning which were not perceptually based. Second, there were an enormous number of vocabulary items whose meaning could not be tied down to a perceptual foundation. They therefore came to the reluctant conclusion that &ldquo;much of the lexicon is based on primitive concepts that are not perceptual&rdquo; [ibid., 688]. It seems, then, that even if semantic primitives exist, they cannot be based purely on perception.</blockquote>
+
+<p>This conclusion challenges the core empiricist assumption that semantic primitives can be grounded in perceptual input. It suggests that the empiricist model of concept formation is insufficient to explain the full structure of meaning in language.</p>
+
+<p>Importantly, empiricism should not be confused with empirical research. The critique of empiricism concerns foundational assumptions about observation &mdash; particularly the belief that observations are neutral and independent of the observer's cultural, historical, and scientific background. On the contrary, as many critics argue, all observations are theory-laden and embedded in paradigmatic frameworks.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.2"></a>
+<h4 itemprop="articleSection">4.2 Rationalism</h4>
+
+<p>Rationalism is an epistemological position that prioritizes logic, deduction, and the axiomatic method as the primary means of attaining knowledge. While it emphasizes reasoning, rationalism does not wholly deny the role of sense experience in forming certain types of knowledge. Rationalists generally assume that any field of knowledge can be constructed from a set of fundamental principles or axioms &mdash; principles that are either self-evident or derived through rational intuition. From these foundations, further knowledge is generated through systematic and logical deduction. A model for rationalism is Euclidean geometry, which is generalized to all fields of knowledge.</p>
+
+<p>The rationalist view often treats language and cognition as <i>representational systems</i>, analogous to systems of formal logic. In this framework, meaning is determined by the structure and combinatorial properties of symbols. As Weiskopf (<A HREF="#refW">n.d.</A>, Section 5b) explains:
+
+<blockquote>A representational system is compositional if the properties of complex symbols are completely determined by the properties of the simpler symbols that make them up, plus the properties of their mode of combination. So predicate logic is compositional, since the semantic value of &ldquo;Fa&rdquo; is determined by the semantic values of the predicate &ldquo;F&rdquo; and the individual constant &ldquo;a&rdquo;. Similarly &ldquo;Fa & Fb&rdquo; is semantically determined as a function of &ldquo;Fa&rdquo;, &ldquo;Fb&rdquo;, and the interpretation of conjunction. Many have argued that thought is compositional as well (<A HREF="#refF">Fodor 1998</A>), which entails that the properties of complex concepts derive wholly from the properties of their constituents.</blockquote></p>
+
+<p>This rationalist conception of thought and meaning &mdash; particularly its reliance on compositionality and formal representation &mdash; has strongly influenced semantic theories, artificial intelligence, and cognitive science. We have already met the rationalist philosopher Leibniz, who in 1666 in <i>Dissertatio de arte combinatoria</i> claimed that a proper philosophical language [=scientific language] should analyze all concepts into their simplest elements, that is, into &ldquo;the alphabet of thought&rdquo;. Ducheyne (<A HREF="#refD">2005</A>, 113) wrote:
+
+<blockquote>A proper symbol should indicate a thing's nature, in other words, it needs to define it by means of its appearance. Leibniz's attempt presupposed that (1) ideas can be analyzed into primitive notions, that (2) ideas can be represented symbolically, and that (3) it is further possible to represent the relations between these ideas (<A HREF="#refR">Rossi, [1983] 2001</A>, 177). Paolo Rossi (<A HREF="#refR">[1983] 2001</A>, 159&ndash;160) remarks that the seventeenth-century attempt to construct a universal philosophical language presupposed that a complete enumeration of human knowledge could be given.</blockquote></p>
+
+<p>The very idea of such a universal language is characterized, from the perspective of semiotics, by Eco (<A HREF="#refE">1995</A>) as a utopian dream, which he traces from the Bible over the Enlightenment philosophers to recent attempts to create a natural language for artificial intelligence.</p>
+
+<p>Influential rationalists from the 20th and 21st centuries include Noam Chomsky, Jerry Fodor, Stephen Laurence, and Eric Margolis. Chomsky was one of the pioneers in cognitive science, a field that partly replaced behaviorism (which was dominated by empiricism). While Chomsky strongly argued for the existence of innate concepts, he based his view on empirical arguments, not on a priori methods. (However, according to Laurence & Margolis (<A HREF="#refL">2024</A>, 10) Chomsky's research focused on language, but not on concepts.) Fodor's notorious view was that virtually all lexical concepts are innate, which Laurence & Margolis (<A HREF="#refL">2024</A>, 533) characterized as &ldquo;really is an extreme outlier&rdquo; among rationalist theories <A HREF="#e15">[15]</A>.</p>
+
+<p>Laurence and Margolis (<A HREF="#refL">2024</A>) offer the most comprehensive and up-to-date defense of the rationalist view of concepts, including the claim that some concepts are innate and universal among humans. This is especially evident in their treatment of logical concepts such as [or], [all], and [not], which they argue are human universals. As they note (<A HREF="#refL">2024</A>, 326): &ldquo;Our claim is that children universally interpret disjunction in natural language in just one way despite considerable evidence from adult speech for contrary interpretations&rdquo;. They further argue that:
+
+<blockquote>Empiricists, then, are committed to the existence of innate primitives in exactly the same sense as rationalists and for exactly the same reasons that rationalists are. (<A HREF="#refL">Laurence and Margolis 2024</A>, 132)</blockquote></p>
+
+<p>Rationalism, therefore &mdash; like empiricism &mdash; may appear at first glance to support the idea of semantic primitives. It is closely linked to the position known as <i>conceptual nativism</i>, which holds that at least some concepts are inborn. Wierzbicka's theory of semantic primes aligns with this view in its claim that such primitives are objective, neutral, and culture-independent (<A HREF="#refW">Wierzbicka 1999</A>, 16). She describes these primes as capturing &ldquo;people's fundamental conceptual models&rdquo; (<A HREF="#refW">1999</A>, 10), and refers to them as &ldquo;presumably innate &lsquo;indefinables&rsquo;&rdquo;. Wierzbicka also claimed to have empirically validated Leibniz's hypothesis of an &ldquo;alphabet of human thoughts&rdquo; <A HREF="#e16">[16]</A>.</p>
+
+<p>Laurence & Margolis (<A HREF="#refL">2024</A>, 131) acknowledge that rationalists are indeed committed to conceptual primitives but argue that these should be understood as innate psychological structures involved in concept acquisition, rather than as primitives in an absolute or metaphysical sense. As they write (<A HREF="#refL">2024</A>, 130), &ldquo;the building blocks must themselves be built&rdquo;, meaning that such primitives are relative, not absolute. While they accept some of Wierzbicka's proposed primes, they do not endorse a specific inventory of semantic primitives.</p>
+
+<p>Still, as with empiricism, the rationalist view faces major challenges. Although it is uncontroversial that something in the human mind must be innate, attempts to specify a definite set of building blocks &mdash; and to show how complex concepts are systematically constructed from them &mdash; have not succeeded. As Aitchison (<A HREF="#refA">2012</A>, 95&ndash;96) notes:
+
+<blockquote>So far, then, we have noted, first, that a number of linguists believe in the existence of a universal store of &lsquo;semantic primitives&rsquo;, small components of meaning out of which words are built. Second, no one agrees what these components are, and no one has been able to find them.</blockquote></p>
+
+<p>All this is still not proof that semantic primitives are non-existent: &ldquo;The problem is that it is very difficult to show conclusively that something does <i>not</i> exist&rdquo;. (<A HREF="#refP">Pulman 1983</A>, 31)</p>
+
+<p>Aitchison concludes her chapter with the following assessment: &ldquo;We conclude, therefore, that atomic globules do not exist in the mind&rdquo; (<A HREF="#refA">Aitchison 2012</A>, 97).</p>
+
+<p>Rationalism shares a central weakness with empiricism: both are individual epistemologies that do not adequately recognize that the mind, its observations, and its conceptual processes are shaped by the socio-cultural and paradigmatic contexts in which individuals are raised. As the following sections will show, other, more context-sensitive perspectives offer alternative understandings of semantic primitives and compositionality.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.3"></a>
+<h4 itemprop="articleSection">4.3 Historicism</h4>
+
+<p>Historicism refers to a family of views that emphasize knowledge and cognition as historically shaped and contextually embedded. Under this label, we include a range of perspectives, the most prominent of which is <i>hermeneutics</i>. Historicism stresses that knowledge, ideas, and cultural practices cannot be fully understood apart from their temporal, social, and situational development. According to this view, methods for studying and producing knowledge must account for the social, cultural, and historical embeddedness of concepts and theories.</p>
+
+<p>In linguistics, historicism is associated with <i>relativism</i>, the idea that different languages express different world views and influence the cognitive processes of their speakers. Language, on this view, is not a neutral medium but shapes how people conceptualize and classify reality. In contrast to empiricism and rationalism &mdash; which often assume reductionist or atomistic foundations &mdash; historicism shifts the focus from isolated facts to broader contexts (see <A HREF="#4.5">Section 4.5 Atomism versus holism</A>).</p>
+
+<p>With respect to semantics and semantic primitives, historicism generally holds either that primitives do not exist or that they are relative to specific historical and disciplinary contexts. In any given domain of knowledge, different sets of primitives (<i>atoms</i> or <i>elements</i>) may be identified or constructed depending on the prevailing theoretical framework (as discussed earlier in relation to the term <i>chemical element</i>). From this perspective, concepts are not derived from raw sense impressions (as in empiricism), nor are they innately structured in the brain (as in rationalism). Thomas Kuhn's theory of scientific paradigms is a well-known example of a historicist position (see further in <A HREF="#4.5">Section 4.5</A>).</p>
+
+<p>Linguists mostly focus on <i>general languages</i> (such as English) rather than <i>special languages</i>, such as scientific terminologies and semiotic systems. This is also true of Wierzbicka, who aims to distinguish the semantics of natural languages like English from domain-specific or encyclopedic knowledge. While scientific and everyday languages may be partially distinct systems of meaning, scientific concepts frequently migrate into general discourse and reshape it over time. As Andersen (<A HREF="#refA">1997</A>, 73) notes (see <A HREF="#4.4">Section 4.4</A>), &ldquo;the content system of the national language no longer appears as a homogeneous entity, but as a conglomerate of possibly different sublanguages&rdquo;. These sublanguages develop their own semantic structures based on specific disciplinary needs, with the more dominant sublanguages exerting greater influence on general language use.</p>
+
+<p>Whorf (<A HREF="#refW">1956</A>, 252) probably formulated the most influential cultural position in linguistics, which he described as &ldquo;new to Western science&rdquo; but based on &ldquo;unimpeachable evidence&rdquo;:
+
+<blockquote>[E]very language is a vast pattern-system, different from others, in which are culturally ordained the forms and categories by which the personality not only communicates, but also analyzes nature, notices or neglects types of relationship and phenomena, channels his reasoning, and builds the house of his consciousness.</blockquote></p>
+
+<p>Whorf's position was grounded in empirical studies, such as his research on the Hopi language, which led him to conclude that basic concepts &mdash; such as [time] &mdash; differ across languages and are thus shaped by cultural frameworks <A HREF="#e17">[17]</A>.</p>
+
+<p>Goddard (<A HREF="#refG">2003</A>) has compared the views of Whorf and Wierzbicka on language, meaning, and cognition. While he found some of Wierzbicka's work to be &ldquo;neo-Whorfian&rdquo;, he also identified aspects of her program that run counter to Whorf's perspective. As Goddard (<A HREF="#refG">2003</A>, 427) summarized:
+
+<blockquote>The main affinities between the work of Whorf and that of Wierzbicka are that they both see linguistic semantics as fundamental to human cognition, that they both recognise that natural languages differ hugely in their semantic organisation, and that they have both sought to demonstrate and explore semantic differences through empirical studies of non-English languages. [&hellip;]
+<br>On the other hand, NSM [Natural Semantic Metalanguage] research indicates that there is a very small &lsquo;core&rsquo; of simple meanings and grammatical constructions which all languages share; and that this universal core can be used as a kind of semantic bridge between the vastly different conceptual worlds embodied in full natural languages. This contention could be seen as &lsquo;counter-Whorfian&rsquo;.</blockquote></p>
+
+<p>One of the clearest examples of a historicist approach to semantic primitives is found in the work of Blumczynski (<A HREF="#refB">2013; 2016</A>). Although he acknowledges a strong intellectual debt to Wierzbicka, he distances himself from the NSM framework. Blumczynski (<A HREF="#refB">2016</A>, 12) writes (indented listing added):
+
+<blockquote>While I gratefully acknowledge a significant inspiration by Wierzbicka's work in conceptual semantics and cross-cultural pragmatics [&hellip;]. My method differs radically from NSM in several important aspects:
+<br>First, NSM postulates a finite set of semantic primitives (even though it has been expanding over the years). In contrast, the set of primitive concepts suggested here is open and flexible [&hellip;]
+<br>Secondly, NSM employs semantic primitives in explications that are meant to be reductive, i.e. that aspire to exhausting the entire semantic content of a word or expression. My theoretical position is radically different: Since words are protean in nature, their semantic contribution will depend on the context, which can never be fully predicted or explicated, which invalidates any attempts of decontextualized semantic explications.
+<br>Thirdly, NSM claims that the set of semantic primitives is language-independent, that is, translatable into any language without loss or gain; the various language versions of semantic primitives are claimed to be isomorphic. I certainly do not share this axiom of fully reversible equivalence and stress that my set of primitive concepts is inevitably bound to the English language. [&hellip;]
+<br>Fourthly, NSM, despite its claims to derive its semantic primitives from natural language, nevertheless uses them in a technical way (namely, as terms) by stripping them of their natural polysemy. I am stressing that they are concepts, prone to interpersonal and contextual variation in interpretation and use.</blockquote></p>
+
+<p>Blumczynski thus promotes a view of semantic primitives as historically and linguistically embedded, rejecting the NSM framework's claims of universality, reducibility, and semantic invariance.</p>
+
+<p>Riemer (<A HREF="#refR">2016</A>, 312) adds a broader epistemological critique of decomposition approaches in semantics. While he acknowledges their &ldquo;considerable heuristic utility&rdquo;, he notes that these methods face &ldquo;no less significant problems&rdquo; as theories of underlying semantic structure. Riemer recommends an epistemological shift in semantics toward hermeneutics, thereby supporting the present article's emphasis on epistemological positions in this area.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.4"></a>
+<h4 itemprop="articleSection">4.4 Pragmatism</h4>
+
+<p>Whereas empiricism emphasizes data derived from observation, rationalism emphasizes logical intuitions, and historicism emphasizes the historical embeddedness of knowledge, <i>pragmatism</i> emphasizes the consequences and implications of beliefs. At its core, pragmatist epistemology examines how interests, purposes, goals, values, and political contexts shape the development and function of knowledge.</p>
+
+<p>Peirce (<A HREF="#refP">1877</A>, 293) formulated the canonical <i>pragmatist maxim</i>:
+
+<blockquote>Consider what effects, which might conceivably have practical bearings, we conceive the object of our conception to have. Then, our conception of these effects is the whole of our conception of the object.</blockquote></p>
+
+<p>Pragmatism shares important assumptions with historicism, particularly its orientation as a social epistemology. Both emphasize that knowledge is not context-free and must be examined regarding its historical embeddedness. In this sense, pragmatism challenges abstract and ahistorical accounts of meaning, including universalist claims about semantic primitives.</p>
+
+<p>Feminist epistemology &mdash; alongside critical theory and related traditions &mdash; exemplifies the pragmatic approach to knowledge. As Grasswick (<A HREF="#refG">2018</A>, 1) writes:
+
+<blockquote>Motivated by the political project of eliminating the oppression of women, feminist epistemologists are interested in how the norms and practices of knowledge production affect the lives of women and are implicated in systems of oppression. Feminist epistemologists seek to understand not only how our social relations of gender have shaped our knowledge practices, but also whether and how these relations should play a role in good knowing.</blockquote></p>
+
+<p>A significant consequence of the pragmatist position for the theory of semantic primitives is illuminated by Legg (<A HREF="#refL">2007</A>, 424):
+
+<blockquote>His [Charles Sanders Peirce's] philosophical pragmatism led him to see any attempt to formalize the entire meaning of a body of knowledge as impossible. In his   view, an irreducible dimension of the meaning of any term (such as &ldquo;hard&rdquo; or &ldquo;magnetic&rdquo;) is constituted by the effects that an agent situated in the world would experience in relevant situations and the sum total of such effects can never be known in advance (or there would be no need for scientific inquiry). (<A HREF="#refP">Peirce 1940</A>)</blockquote></p>
+
+<p>This does not mean that pragmatically oriented scholars cannot work with the idea of semantic primitives. However, pragmatism &mdash; like historicism &mdash; is skeptical toward any claim that primitives can be captured in a single, finite, and context-independent set. Pragmatists emphasize that meanings are contingent on perspective, interest, and function, and therefore resist attempts to formalize universal meanings divorced from human practice.</p>
+
+<p>Andersen (<A HREF="#refA">1997</A>, 72&ndash;73), writing under the heading &ldquo;A materialist view of language&rdquo;, articulated this position by contrasting biological and functional explanations for language universals <A HREF="#e18">[18]</A>:
+
+<blockquote>The materialistic point of view may also contribute to our general understanding of language. Why is language as it is? If there are universals of language, what are the reasons for them? Chomsky [e.g. <A HREF="#refC">Chomsky 1968</A>, section 3] believes that our cognitive apparatus determines the limits on possible language, and that, conversely, a study of language universals may be used to characterize the cognitive faculties of man. True as it may be, there are other explanations of language universals, namely that anything that functions as a human language must be able to perform certain functions [see e.g. <A HREF="#refH">Halliday 1978</A>]. Thus, universals of language do not necessarily express biological properties of the human brain but may simply reflect basic constraints on human societies. For example, any society involves some kind of division of labor, some kind of cooperation, some kind of commodity exchange, and some kind of reproduction. These activities are impossible without language, and conversely, any human language must be able to work in these activities.
+<br>If this line of thought is pursued to its conclusion, the content system of the national language no longer appears as a homogeneous entity, but as a conglomerate of possibly different sublanguages [&hellip;].</blockquote></p>
+
+<p>Here, Andersen positions Chomsky's view within the rationalist tradition &mdash; grounded in the search for general psychological mechanisms, but Zwicky (<A HREF="#refZ">1973</A>, 474) notes that Chomsky acknowledged a functional explanation for semantic universals, namely that all languages must fulfill core communicative functions across human cultures. Nevertheless, Chomsky largely ignored sociocultural studies as explanations, making it reasonable to associate him with the rationalist tradition.</p>
+
+<p>The final sentence of Andersen's quote is especially important: while most linguists treat a national language as a coherent semantic system, the pragmatic view instead sees it as a <i>conglomerate of different sublanguages</i>. This perspective aligns with Bakhtin's (<A HREF="#refB">1981</A>) theory of <i>heteroglossia</i>, which emphasizes the coexistence of multiple discourses and semantic frameworks within any living language. This insight is crucial for the present article, as it challenges the assumption of a uniform conceptual base across domains and cultures &mdash; a key presupposition behind many theories of semantic primitives.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.5"></a>
+<h4 itemprop="articleSection">4.5 Atomism versus holism</i></h4>
+
+<p>As noted earlier, Pagin (<A HREF="#refP">1997</A>, 14) asserts a foundational assumption of compositional systems: that the parts must have a meaning prior to the complex expression itself. In other words, elements are assumed to retain their meanings across combinations and contexts. From this assumption follows one of the central philosophical arguments against semantic primitives: <i>meaning holism</i> <A HREF="#e19">[19]</A>.</p>
+
+<p>Jackman (<A HREF="#refJ">2020</A>, &sect;1) defines <i>meaning holism</i> in contrast to atomism and molecularism <A HREF="#e20">[20]</A>:
+
+<blockquote>The label &ldquo;meaning holism&rdquo; is generally applied to views that treat the meanings of all of the words in a language as interdependent. Meaning holism is typically contrasted with atomism about meaning (where each word's meaning is independent of every other word's meaning), and molecularism about meaning (where a word's meaning is tied to the meanings of some comparatively small subset of other words in the language).</blockquote></p>
+
+<p>Holism and the principle of <i>contextuality</i> thus stand in opposition to atomistic models of meaning. Early 20th-century philosophy saw <i>logical atomism</i> emerge as a dominant position, particularly in the work of Russell and the early Wittgenstein. According to Proops (<A HREF="#refP">2022</A>, &sect;1):
+
+<blockquote>Although it has few adherents today, logical atomism was once a leading movement of early twentieth-century analytic philosophy. Different, though related, versions of the view were developed by Bertrand Russell and Ludwig Wittgenstein. Russell's logical atomism is set forth chiefly in his 1918 work &ldquo;The Philosophy of Logical Atomism&rdquo; (<A HREF="#refR">Russell, 1956</A>), Wittgenstein's in his <i>Tractatus Logico-Philosophicus</i> of 1921 (<A HREF="#refW">Wittgenstein, 1981</A>). The core tenets of Wittgenstein's logical atomism may be stated as follows:
+<br>&nbsp;&nbsp;&nbsp;&nbsp;i. Every proposition has a unique final analysis which reveals it to be a truth-function of elementary propositions (Tractatus 3.25, 4.221, 4.51, 5);
+<br>&nbsp;&nbsp;&nbsp;&nbsp;ii. These elementary propositions assert the existence of atomic states of affairs (3.25, 4.21);
+<br>&nbsp;&nbsp;&nbsp;&nbsp;iii. Elementary propositions are mutually independent &mdash; each one can be true or false independently of the others (4.211, 5.134);
+<br>&nbsp;&nbsp;&nbsp;&nbsp;iv. Elementary propositions are immediate combinations of semantically simple symbols or &ldquo;names&rdquo; (4.221);
+<br>&nbsp;&nbsp;&nbsp;&nbsp;v. Names refer to items wholly devoid of complexity &mdash; so-called &ldquo;objects&rdquo; (2.02 & 3.22);
+<br>&nbsp;&nbsp;&nbsp;&nbsp;vi. Atomic states of affairs are combinations of these objects (2.01).</blockquote></p>
+
+<p>Wittgenstein later rejected this atomistic model and developed a use-oriented perspective centered on <i>language games</i>. As Heal (<A HREF="#refH">2011</A>) explains:
+
+<blockquote>Wittgenstein came to think that the idea that words name simple objects was incoherent, and instead introduced the idea of &ldquo;language games&rdquo;. We teach language to children by training them in practices in which words and actions are interwoven. To understand a word is to know how to use it in the course of the projects of everyday life. We find our ways of classifying things and interacting with them so natural that it may seem to us that they are necessary and that in adopting them we are recognizing the one and only possible conceptual scheme. But if we reflect, we discover that we can at least begin to describe alternatives which might be appropriate if certain very general facts about the world were different or if we had different interests.</blockquote></p>
+
+<p>Wittgenstein's development thus illustrates a shift from supporting atomism and compositionality toward a rejection of these views in favor of a context-sensitive, pragmatic understanding of meaning <A HREF="#e21">[21]</A>.</p>
+
+<p>A particularly influential form of meaning holism is found in Kuhn's (<A HREF="#refK">1962</A>) theory of scientific paradigms. According to Kuhn, the meaning of a term is relative to the paradigm in which it functions. He famously illustrated this through the transformation of astronomical terms during the Copernican revolution. Prior to Copernicus, the geocentric model (with Earth at the center) shaped the meanings of terms like <i>star</i> and <i>planet</i>; after the paradigm shift to the heliocentric model, the same terms were redefined:
+
+<ol>
+<li>In paradigm one, Ptolemaic astronomers might learn the concepts [star] and [planet] by having the Sun, the Moon, and Mars pointed out as instances of the concept [planet] and some fixed stars as instances of the concept [star].</li>
+<li>In paradigm two, Copernicans might learn the concepts [star], [planet] and [satellites] by having Mars and Jupiter pointed out as instances of the concept [planet], the Moon as an instance of the concept [satellite] and the Sun and some fixed stars as instances of the concept [star].</li>
+</ol>
+
+<p>Thus, the terms <i>planet</i>, <i>star</i>, and <i>satellite</i> acquired new meanings, and astronomy adopted a new classification of celestial bodies. In Kuhn's model, the ontology of science (its image of reality) is primary; when it changes, so too do the concepts. Meaning, then, is not determined by all of language but rather by a set of core terms within a given theoretical system. This provides a concrete criterion for determining meaning in scientific discourse.</p>
+
+<p>A Kuhn-inspired theory of concepts offers further critique of the idea of fixed semantic primitives. As Gopnik et al. (<A HREF="#refG">1996</A>) explain:
+
+<blockquote>Children seem to understand the meaning of the words they hear in terms of the theories they have; they treat the words of natural language the way that scientists treat theoretical terms. Moreover, rather than reflecting some fixed set of semantic primitives, children's understanding of words changes in parallel with their changing theoretical understanding of the world. Finally, language itself seems to play an important role in theory-formation. We have also shown empirically that the words children hear influence the development of their theories. <A HREF="#e22">[22]</A></blockquote></p>
+
+<p>While linguists typically take a natural language and its lexicon as the point of departure, Kuhn's model begins with scientific paradigms. <i>Theory theory</i> generalizes this approach, showing how both adults and children build and revise conceptual structures in tandem with their evolving theoretical understandings <A HREF="#e23">[23]</A>.</p>
+
+<p>In sum, this section has introduced contextuality and semantic holism as serious challenges to the principle of semantic primitives. <A HREF="#4.7">Section 4.7</A> will present further arguments against this principle.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.6"></a>
+<h4 itemprop="articleSection">4.6 The analogy with the periodic system</h4>
+
+<p>As noted in the introduction, Wierzbicka (<A HREF="#refW">2006</A>, 134) compared semantic primitives to chemical elements, writing that they are &ldquo;like chemical elements discovered by Mendeleev are elementary building blocks of all chemical substances&rdquo;. Other linguists have drawn similar analogies, for example, Baker (<A HREF="#refB">2001</A>) and Zwicky (<A HREF="#refZ">1973; 1980</A>).</p>
+
+<p>As stated in <A HREF="#1">Section 1</A>, we distinguished between ontological and conceptual part&ndash;whole relations. Although both natural language and the periodic system consist of concepts and conceptual relations, they differ significantly in their structure and function. In particular, chemical names &mdash; unlike expressions in natural language &mdash; explicitly reflect the composition of chemical compounds according to contemporary chemical theory.</p>
+
+<p>The periodic system, along with chemical nomenclature and conceptual frameworks, represents the cumulative results of centuries of chemical and physical research. While questions about how best to classify the elements remain, there is broad consensus about the main structure of the periodic system and its deep entwinement with chemical and physical theory <A HREF="#e24">[24]</A>. This classification was not imposed by external classificationists; rather, it emerged from within the field of chemistry itself. As Bawden (<A HREF="#refB">2017</A>), referring to Brock (<A HREF="#refB">2016</A>), observed:
+
+<blockquote>[T]o someone like myself who studied chemistry, it is interesting to reflect on the extent to which information representation and communication has gone hand-in-hand with the development of concepts and theories in chemistry, so that it is difficult to tell where the one ends and the other begins.</blockquote></p>
+
+<p>In ideal cases of scientific development, scientists construct both theories and the sign systems used to represent them &mdash; including nomenclatures and sign systems &mdash; and these mutually support further conceptual and theoretical refinement. This point has important implications for the theory of semantic primitives. As Rast (<A HREF="#refR">2023</A>, 69) noted, since decompositions depend on world-level theories, they may ultimately be mistaken if those underlying theories are revised or refuted.</p>
+
+<p>The lesson from the periodic system is that the very definition of chemical elements is theory-dependent and historically situated &mdash; and so are any attempts to classify them. In this context, the symbols of the chemical elements can be seen as a kind of semantic primitives. However, these &ldquo;primes&rdquo; differ from Wierzbicka's linguistic primitives in several fundamental respects. They are not universal across languages or semiotic systems; they cannot be discovered through linguistic, psychological, or sociological methods; and they are certainly not accessible via introspection, intuition, or formal logic alone.</p>
+
+<p>A crucial difference between Wierzbicka's linguistic primes and the elements of the periodic system lies in their epistemic foundations. Wierzbicka holds that linguistic semantics can be distinguished from world knowledge or encyclopedic knowledge <A HREF="#e25">[25]</A>. In contrast, scientific classifications &mdash; such as those found in chemistry &mdash; are explicitly based on theoretical world knowledge and constructed representational systems designed to best express that knowledge.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.7"></a>
+<h4 itemprop="articleSection">4.7 Further arguments against primitives</h4>
+
+<p>We have already encountered arguments challenging Wierzbicka's semantic primes in <A HREF="#4.3">Section 4.3</A>, particularly through Blumczynski's relativist approach, and in <A HREF="#4.5">Section 4.5</A> with Kuhn's theory of paradigms and conceptual holism. This section expands the critical perspective by introducing additional objections rooted in contemporary cognitive and philosophical theories <A HREF="#e26">[26]</A>.</p>
+
+<p>From the standpoint of the theory theory of concepts, Weiskopf (<A HREF="#refW">n.d.</A>, &sect;5b) raises a significant challenge: if concepts are compositional, then the broader theories in which these concepts are embedded must also be compositional &mdash; a requirement he argues is implausible. Weiskopf concludes that even if individual concepts have internal structure grounded in domain-specific theories, new compound concepts (&ldquo;pet fish&rdquo; is given as an example) often involve emergent properties not derivable from those theories in isolation. This undermines the notion of strong compositionality and, by extension, the presupposition of stable semantic primitives.</p>
+
+<p>A different but related argument stems from Goodman's analysis of primitives in formal systems. Goodman noted (<A HREF="#refG">1951</A>, 57):
+
+<blockquote>It is not because a term is indefinable that it is chosen as primitive; rather, it is because a term has been chosen as primitive for a system that it is indefinable in that system. No term is absolutely indefinable. And if indefinability is taken to mean incomprehensibility, incomprehensible terms have no place at all in a system. [&hellip;]. There is no absolute primitive, and no one correct selection of primitives.</blockquote></p>
+
+<p>According to Goodman, then, primitives are not <i>discovered</i> but <i>stipulated</i> &mdash; defined by their role within a specific theoretical or formal framework. There is no such thing as an absolute semantic primitive; what counts as primitive is relative to the structure of the system in question. Wierzbicka (<A HREF="#refW">1996</A>, 11&ndash;13) acknowledged this critique but argued that Goodman's relativism only applies to artificial languages and not to natural languages, which she claimed have an objective and universal semantic core. However, even if Wierzbicka is right that natural languages may permit absolute primitives, this argument still does not apply to knowledge organization systems, which are by nature artificial. Therefore, Goodman's relativism remains highly relevant for discussions in information science and classification theory.</p>
+
+<p>A final critique concerns the division between linguistic and encyclopedic knowledge, which Wierzbicka attempts to maintain in support of her semantic primes. The idea is that linguistic meaning can be captured independently of factual or encyclopedic content. However, this distinction appears increasingly untenable. As scientific knowledge advances, it frequently reshapes the meanings of even the most basic terms in ordinary language. The interpenetration of language and evolving knowledge systems undermines the assumption that linguistic meaning forms a stable and autonomous system, isolated from epistemic and conceptual development.</p>
+
+<p>Together, these criticisms &mdash; based in theory-based compositional failure, conceptual relativism, and the inseparability of linguistic and world knowledge &mdash; converge to cast doubt on the coherence, applicability, and utility of the notion of stable, universal semantic primitives, at least outside highly constrained domains.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5"></a>
+<h3 itemprop="articleSection">5. Compositionality and semantic primitives in information science</h3>
+
+<a name="5.1"></a>
+<h4 itemprop="articleSection">5.1 Facet analysis and semantic factoring</h4>
+
+<p>In knowledge organization, the approach known as <i>faceted classification</i> has had a dominant influence (cf. <A HREF="#refB">Broughton 2023</A>). The basic philosophy of semantic primitives appears to correspond closely with the theoretical foundation of &rarr; <a href="facet_analysis">facet analysis</a>. Both approaches assume that a basic list of elements can be defined through logical analysis and then used to synthesize any complex concept.</p>
+
+<p>&rarr; <a href="ranganathan">S. R. Ranganathan</a> (1892&ndash;1972) was a major contributor to this approach. According to Raghavan (<A HREF="#refR">2019</A>, section 8), he found inspiration for a new method of classification in observing a Meccano toy set composed of a few basic components that could be combined to construct various toys. A central idea in faceted classification is that concepts from different facets can be combined to classify a document. As Mills, Broughton and Lang (<A HREF="#refM">1980</A>, xviii) explained:
+
+<blockquote>In principle, a faceted classification consists of facets and arrays of relatively elementary terms; all compounds are formed by the classifier assigning classmarks to them by means of synthesis. So compound classes are not usually to be found enumerated in the schedules.</blockquote></p>
+
+<p>Hj&oslash;rland (<A HREF="#refH">2013</A>, 548), however, argued &mdash; contrary to Ranganathan &mdash; that the fundamental theory in knowledge organization is shared by both enumerative and faceted classifications. Although faceted systems are more flexible, they cannot represent all new subjects as combinations of a basic set of preexisting elements.</p>
+
+<p>Foskett (<A HREF="#refF">1996</A>, 78) described <i>semantic factoring</i> as follows:
+
+<blockquote>During the 1950s a team at Case Western Reserve University worked on a system of analysis known as semantic factoring (<A HREF="#refP">Perry & Kent, 1958</A>). The objective was to break down every concept into a set of fundamental concepts called semantic factors. Because of their fundamental nature, there would only be a limited number of these factors. A concept would be denoted by the appropriate combination of semantic factors, and the use of a complex set of roles and links enabled the indexer to write a &ldquo;telegraphic abstract&rdquo;, which would represent the subject of a document in a computer file.</blockquote></p>
+
+<p>The method is clearly a powerful one, but is open to some doubts and objections. Exactly how far does one carry such an analysis? Heat and temperature, for example, could be specified as movement of molecules. Again, it is possible to specify a concept by using only some of its attributes; or perhaps more significantly, is it ever possible to specify all the attributes for a given concept?</p>
+
+<p>Soergel (<A HREF="#refS">1985</A>, 256&ndash;261) presents concept combination, semantic factoring, and their relation to facet analysis. He shows how the concept [ship] can be analyzed as [vehicle]:[water transport]; these concepts may be further analyzed as [vehicle] = [means]:[transportation]:[mobile]; and [water transport] = [water]:[transport]. We arrive at:
+
+<blockquote>[ship] = [means]:[transportation]:[mobile]:[water]</blockquote></p>
+
+<p>Soergel (<A HREF="#refS">1985</A>, 257) wrote: &ldquo;Carrying this process to the end leads to elementary concepts that cannot be factored further&rdquo;. It is not clear whether he meant that [ship] cannot be factored further than just shown (which seems questionable, as [water], e.g., may be broken down into H<sub>2</sub>O). Soergel discusses the application of this semantic factoring for indexing languages. He presents two options:
+
+<ol>
+<li>to use [ship] as a subject descriptor and then show its relations to semantic factors for the benefit of the searcher;</li>
+
+<li>to omit [ship] from the index language and instruct the indexer instead to use one or another of the two levels of semantic factoring.</li>
+</ol>
+
+<p>Soergel (<A HREF="#refS">1985</A>, 258) found: &ldquo;Facet analysis is helpful for finding all semantic factors and for solving difficult cases. Facets are aspects or   points from which entities &mdash; such as food products or subjects (topics, themes) in an area such as education &mdash; can be analyzed&rdquo;. (Examples are given in the book.)</p>
+
+<p>Soergel presented arguments in favor of semantic factoring (<A HREF="#refS">Soergel 1985</A>, 280&ndash;281), but he did not discuss the potential disadvantages of carrying the analysis too far. Therefore, the question arises: should the ideal for indexing languages such as thesauri be to proceed all the way to semantic primitives (if such primitives exist)? <A HREF="#refI">ISO 25964-1:2011</A>, section 7.3, under the heading &ldquo;Deciding whether or not to admit a complex concept&rdquo;, addresses this issue, noting that the decision is often difficult and subjective. This reflects the understanding that there are limits to the use of semantic factoring, even if no formal criteria exist for determining these limits. This appears to be the current situation regarding semantic factoring for indexing languages. A likely way forward is to consider how concepts are used within subject domains and to avoid construing an indexing language too far from that use.</p>
+
+<p>Soergel (<A HREF="#refS">2017</A>) presents a range of concepts &mdash; including compositionality, entity&ndash;relationship (ER) modeling, and description logic &mdash; thus placing faceted classification within a broader theoretical context. He wrote (<A HREF="#refS">2017</A>, 43&ndash;44):
+
+<blockquote>The paper illustrates this principle [compositionality] through a number of examples for (1) simple composition, such as Chinese characters, sign language, and other systems from linguistics and knowledge organization, and (2) more structured systems, including entity&ndash;relationship modeling, facets (including facets in the UDC), and frames and record structures, introduced by the faceted arrangement of the Semitic&ndash;Greek alphabet. These examples show that:
+<ol>
+<li>The idea of facets has been around for a long time.</li>
+<li>Following the principle of compositionality through many contexts will improve our understanding of faceted classification.</li>
+</ol></blockquote>
+
+<p>It seems important, as noted by both Soergel (<A HREF="#refS">2017</A>) and Kashyap (<A HREF="#refK">2003</A>), to connect facet analysis with related approaches. A substantial literature exists on entity&ndash;relationship modeling, and a review article offering a critical examination of this approach in the context of knowledge organization is still needed.</p>
+
+<p>Three important questions arise in relation to facet analysis:
+
+<ol>
+<li>The issue raised by ISO 25964-1:2011 concerning the difficult and subjective nature of deciding when to apply semantic factoring, and how far this process should go &mdash; there is a clear need for principled guidelines on this point;</li>
+
+<li>The challenge posed by the principle of semantic holism (see <A HREF="#4.5">Section 4.5</A>), which suggests that a concept cannot be assumed to retain the same meaning across different contexts &mdash; does this limit the utility of analytico-synthetic classification?</li>
+
+<li>Whether a specific way of specifying a document in facets necessarily introduces a bias toward a particular perspective. For instance, Hj&oslash;rland and Barros (<A HREF="#refB">2024</A>) ask whether the treatment of medicine in &rarr; <a href="bc2">Bliss Bibliographic Classification, 2nd ed. (BC2)</a> reflects a traditional (reductionist) biomedical model at the expense of, for example, a biopsychosocial model. In other words, are facet analysis and semantic factoring neutral techniques, or do they imply an (often unconscious) theoretical prioritization?</li>
+</ol>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5.2"></a>
+<h4 itemprop="articleSection">5.2 Szostak and basic concepts</h4>
+
+<p>Szostak (<A HREF="#refS">2011</A>) advocates the construction of classification systems based on the decomposition of &ldquo;complex concepts&rdquo; into &ldquo;basic concepts&rdquo;, aiming to identify concepts that (<A HREF="#refS">2011</A>, 2247) &ldquo;can be understood in a similar way across disciplines and cultures&rdquo;. These &ldquo;basic concepts&rdquo; are then proposed as the foundation for universal classification systems. Szostak argued:
+
+<blockquote>Interdisciplinary communication, and thus the rate of progress in scholarly understanding, would be greatly enhanced if scholars had access to a universal classification of documents or ideas &rarr; <a href="phenomenon">not grounded in particular disciplines</a> or cultures. Such a classification is feasible if complex concepts can be understood as some combination of more basic concepts.</blockquote></p>
+
+<p>Szostak here assumes that basic concepts, in contrast to complex ones, are universally intelligible, and that classifications based on such concepts would be free from cultural, disciplinary, or theoretical biases. In this section, we shall examine how Szostak supports this assumption.</p>
+
+<p>The first point to address is Szostak's notion that &ldquo;basic concepts&rdquo; are better understood &mdash; also in interdisciplinary contexts &mdash; than more complex ones. Here, an argument by Riemer (<A HREF="#refR">2006</A>, 355) is pertinent. He contended that intelligibility is not primarily a matter of using &ldquo;simpler&rdquo; words in any universal sense but rather depends on the learner's prior knowledge. Similarly, Hajibayova (<A HREF="#refH">2013</A>, 685) found that &ldquo;basic-level categories vary across individuals and cultures because of differences in the everyday experiences and activities of individuals&rdquo;.</p>
+
+<p>These perspectives challenge Szostak's assumption that decomposed concepts form a conceptual level at which general interdisciplinary and cross-cultural understanding is naturally achieved. Moreover, Szostak does not offer substantial argumentation or empirical support for his position; rather, his view appears to be based primarily on intuitive reasoning.</p>
+
+<p>If the goal is to create a classification system that is broadly intelligible, one option would be to ground it in the study of &rarr; <a href="folk">folk classifications</a> (see <A HREF="#refH">Hj&oslash;rland & Gnoli 2021</A>) or in the theory of &ldquo;basic-level categories&rdquo; developed by Rosch et al. (<A HREF="#refR">1976</A>), which suggests a pragmatic understanding of categories: that ordinary people tend to organize concepts in terms of their practical interaction with objects, and that basic-level categories are those most cognitively salient and widely shared. By contrast, both more general (superordinate) and more specific (subordinate) categories are often less well developed and less consistently understood across communities.</p>
+
+<p>Rather than adopting such views, Szostak does the opposite. For example, &ldquo;fish&rdquo; and &ldquo;bird&rdquo; are well-established and broadly understood categories in both folk classification and traditional biological taxonomy. However, in 2021, Szostak revised flora and fauna in his classification (<A HREF="#refS">Szostak 2013</A>) to reflect a cladistic view. The most commonly recognized animal classes, including &ldquo;fish&rdquo; and &ldquo;bird&rdquo;, were not retained as classes but subsumed under the category <code>FH</code> &ldquo;Hypothesized Species&rdquo;. How does this correspond to cladistics? Contemporary cladistics does not recognize &ldquo;fish&rdquo; as a taxonomic group (whereas &ldquo;bird&rdquo; is a recognized taxon) <A HREF="#e27">[27]</A>, which is not to say that fish are hypothesized species, but as formulated by Weitzman and Parenti (<A HREF="#refW">2025</A>): &ldquo;The term fish is applied to a variety of vertebrates of several evolutionary lines. It describes a life-form rather than a taxonomic group&rdquo;. (But still, it seems inappropriate for a system aiming to offer broad intelligibility to avoid the concept &ldquo;fish&rdquo;, which also raises practical difficulties for indexing, retrieving and interdisciplinary communication of subjects such as fish farming, fish economics, fish as pets, or fishing industries.) In the case of &ldquo;bird&rdquo;, Szostak's classification is demonstrably incorrect, as &ldquo;bird&rdquo; is a valid clade also according to cladistics.</p>
+
+<p>While I share Szostak's commitment to grounding bibliographic classifications in scientific knowledge &mdash; rather than folk classifications or psychological studies &mdash; this does not entail that narrower, highly specific terms are always better understood than broader, established ones. Moreover, Szostak's interpretation of cladistics and its application to bibliographic classification needs theoretical justification <A HREF="#e28">[28]</a>.</p>
+
+<p>A second point concerns Szostak's (<A HREF="#refS">2011</A>, 2248, 2249, 2254) arguments against requiring excessive conceptual precision in classification design. But how much precision is enough? A too-relaxed attitude toward conceptual definition may result in low standards for both scholarly discourse and professional practice in information science. Notably, Szostak (<A HREF="#refS">2024</A>, 314), in a different context, argues that classification does, in fact, require precision.</p>
+
+<p>A third issue is illustrated by Szostak's example of decomposing &rarr; <a href="ddc">Dewey Decimal Classification (DDC)</a> entries into basic concepts. He writes (<A HREF="#refS">Szostak 2011</A>, 2247):
+
+<blockquote>Can we take the subject entries in existing universal but discipline-based classifications, and break these into a set of more basic concepts that can be applied across disciplinary classes? The author performs this sort of analysis for Dewey classes <code>300</code> to <code>339.9</code>. This analysis will serve to identify the sort of &lsquo;basic concepts&rsquo; that would lie at the heart of a truly universal classification.</blockquote></p>
+
+<p>Szostak's first example is DDC <code>303.376</code> [Censorship] that he analyzes as [preventing] [publication], which he claims may be treated as basic concepts. However firstly, this interpretation seems too narrow. Censorship, broadly understood, involves the control, suppression, or restriction of information, ideas, expression, or access to knowledge &mdash; often by an authority seeking to maintain power, enforce norms, or prevent dissent. For example, the prohibition against slaves learning to read or write in the United States during the 18th and 19th centuries is a clear instance of censorship, yet it would be difficult to accommodate this case within Szostak's analysis. Secondly, [publication] may not qualify as a basic concept in either of Szostak's senses: it is unlikely to be interpreted uniformly across user communities, and it may be decomposed into constituent ideas such as [document] and [made public] &mdash; both of which are themselves ambiguous.</p>
+
+<p>Our final point concerns Szostak's (<A HREF="#refS">2011</A>, 2247) argument that he finds support for his position in each of the five prominent theories of concepts he identifies:
+
+<blockquote>[These theories] provide some support for the idea of breaking complex into basic concepts that can be understood across disciplines or cultures, but each has detractors. None of these criticisms represents a substantive obstacle to breaking complex concepts into basic concepts within information science.</blockquote></p>
+
+<p>He continues (<A HREF="#refS">2011</A>, 2248):
+
+<blockquote>The purpose is to identify what sort of classification projects &mdash; with particular emphasis on the possibility of a truly universal classification &mdash; might be justified with respect to all major concept theories in philosophy. I will argue that that is the appropriate stance for the information science community to take toward the philosophical literature.</blockquote></p>
+
+<p>Szostak's emphasis on the relevance of concept theories to the question of compositionality is a valuable and commendable contribution. However, his argumentative strategy appears to be backward: rather than coordinating his theory of classification with one particular theory of concepts, he instead tries to show that none of the five theories contradicts his position. A more coherent approach would be to develop and justify his classification model by explicitly grounding it in a specific theory of concepts and coordinating its assumptions accordingly.</p>
+
+<p>A full discussion of the five concept theories lies beyond the scope of this article, although such a discussion would be highly worthwhile. It may be claimed here, however, that only the so-called <i>classical theory</i> of concepts unequivocally supports compositionality in the strong, universal sense Szostak assumes. According to the classical theory, concepts are defined by sets of necessary and sufficient features (e.g., [bachelor] = [unmarried] + [man]). In contrast, the remaining four theories &mdash; including the &ldquo;theory theory of concepts&rdquo; discussed in <A HREF="#4.5">Section 4.5</A>, which the present author endorses &mdash; pose significant challenges to the notion of strict compositionality. Szostak does not demonstrate how the theory theory of concepts supports his proposal for a universal classification system; on the contrary, he offers a critical appraisal of this theory and of Hj&oslash;rland's (<A HREF="#refH">2009</A>) application of it.</p>
+
+<p>Crucially, Szostak's argument overlooks the historical and theoretical development of scientific concepts and how this development is often reflected in everyday language. As scientific knowledge progresses, so do its conceptual systems. For example, we now understand the [sun] to be a [star], in contrast to ancient classifications, and recent taxonomic revisions &mdash; such as the reclassification of birds (see <A HREF="#refF">Fjelds&aring; 2013</A>) &mdash; have already been adopted by amateur ornithologists and are gradually permeating educational curricula and common usage.</p>
+
+<p>Szostak's approach implies that concepts can be defined and classified from a position of neutrality &mdash; what Nagel (<A HREF="#refN">1986</A>) famously called &ldquo;the view from nowhere&rdquo;. Yet this idea has been widely challenged; Metzinger (<A HREF="#refM">2003</A>, 582), among others, argues that such a view is epistemologically untenable.</p>
+
+<p>In conclusion, it is difficult to accept Szostak's assertion that each of the five concept theories provides meaningful support for the idea of decomposing complex concepts into universally understood basic ones. Different epistemological approaches &mdash; rationalist, empirical, historicist, or pragmatic &mdash; may all involve analyzing concepts into constituent elements, but they diverge in how they understand this process. Rationalist epistemologies tend to treat such analysis as value-neutral, performed from a &ldquo;God's eye&rdquo; perspective, whereas pragmatic epistemologies emphasize that all conceptual analysis is situated and interest-laden, serving particular purposes and potentially privileging certain perspectives over others.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5.3"></a>
+<h4 itemprop="articleSection">5.3 Thesauri and Sp&auml;rck Jones</h4>
+
+<p>Karen Sp&auml;rck Jones was a pioneer in the field of &rarr; <a href="ir">information retrieval</a> and natural language processing. She observed (<A HREF="#refS">Sp&auml;rck Jones 1992</A>, 1609) that the theory of semantic primitives was influential in early thesaurus construction:
+
+<blockquote>Thesaurus classes in IR [information retrieval] define generic indexing descriptors, and the thesaurus has been envisaged as having a similar function in NLP [natural language processing], that of providing semantic primitives. This connection was explicitly recognized in early work on the use of a thesaurus for NLP, and specifically for machine translation (MT). Early workers on MT, attempting general text translation, say of research papers, were immediately faced with the problem of word sense identification and, wherever direct links between input sentences and their output equivalents were not, or could not be, provided, with the problem of output word (sense) selection as well. A thesaurus was seen as providing a set of general-purpose, domain-independent semantic primitives allowing the specification, or at least an indication, of the essential semantic concepts expressed by, or relating to, a text, and hence allowing sense determination.</blockquote></p>
+
+<p>In this passage, semantic primitives are equated with generic terms. While such equivalence may hold in specific instances where a generic term denotes a concept basic enough to function as a primitive, this is not universally the case. Moreover, by not exploring the underlying nature of concepts, Sp&auml;rck Jones missed a crucial theoretical dimension.</p>
+
+<p>In the introductory remark to the published version of her dissertation &mdash; originally written in 1964 but first published in 1986 &mdash; Sp&auml;rck Jones (<A HREF="#refS">1986</A>,  1) claimed that it offered &ldquo;a characterization of, and a basis for deriving, semantic primitives, that is, the general concepts under which natural language words and messages are categorized&rdquo;. However, Wilks and Tait (<A HREF="#refW">2006</A>, 5) questioned this retrospective claim:
+
+<blockquote>Perhaps the most striking feature of her retrospective, as compared to the original SSC [the dissertation, published in <A HREF="#refS">Sp&auml;rck Jones 1986</A>], is the emphasis on semantic primitives and the explicit opening claim [cited above]. This view of SSC is not one that a reader of the original thesis would necessarily come to from its text, although it makes perfect sense if we take semantic primitives to mean the topic markers that are the 1000 or so Roget heads, such as 324 SOFTNESS. However, and as noted in the previous section there are some problems with reconciling this notion of predefined primitives and truly emergent ones.</blockquote></p>
+
+<p>Wilks and Tait (<A HREF="#ref">2006</A>, 6) point to a tension in Sp&auml;rck Jones's approach. On the one hand, she &ldquo;shies away from putting forward anything which cannot be directly observed in text&rdquo; relying on statistical methods to identify emergent semantic primitives (i.e., she adheres to an empiricist philosophy). On the other hand, she makes use of the overarching a priori structure of Roget's Thesaurus &mdash; a framework derived from intuition and consistent with a rationalist philosophy. Wilks and Tait concluded that &ldquo;Sparck Jones was accepting a great deal of decoration beyond the words themselves&rdquo;, which caused her supposed primitives to mirror Roget's thematic headings.</p>
+
+<p>We shall not delve further into Sp&auml;rck Jones' (<A HREF="#refS">1986</A>) treatment of semantic primitives, but note that while her dissertation was rightly praised as a pioneering work, its treatment of semantic primitives remains ambiguous. Despite the retrospective emphasis on primitives, the dissertation's explicit focus &mdash; according to its title and substantive content &mdash; is synonymy. While it offers a rigorous account of theories of synonymy, it does not engage deeply with theories of semantic primitives, making the later claim about its focus rather surprising.</p>
+
+<p>A later article by Sp&auml;rck Jones (<A HREF="#refS">2007</A>) explicitly addressed semantic primitives, but her views remain unclear. The conclusion of that article (<A HREF="#refS">2007</A>, 251) &mdash; &ldquo;while you can't make a language processor without semantic primitives somewhere, you choose your semantic primitive cloth, and tailor it, to suit your processor climate&rdquo; &mdash; might be interpreted as aligning with the pragmatic perspective on semantic primitives discussed in <A HREF="#4.4">Section 4.4</A>. However, Halpin (<A HREF="#refH">2013</A>, 190) noted that Sp&auml;rck Jones eventually abandoned the notion of semantic primitives, even in its most open-ended formulation.</p>
+
+<p>Sp&auml;rck Jones is not a central representative of the main tradition in thesaurus construction, which is more accurately represented by works such as Aitchison et al. (<A HREF="#refA">2000</A>), Dextre Clarke (<A HREF="#refD">2019</A>), and ISO 25964-1 (<A HREF="#refI">2011</A>). This mainstream tradition has been discussed elsewhere in the present article, for example, in <A HREF="#5.1">Section 5.1</A>. Nevertheless, Sp&auml;rck Jones provided the most explicit connection between semantic primitives and thesaurus theory and has therefore been examined in this section.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5.4"></a>
+<h4 itemprop="articleSection">5.4 Other examples and issues</h4>
+
+<p>Issues related to the reduction of semantic complexity are widespread in the literature, although the discussions are often scattered and lack coherence. This section presents a few additional examples that illustrate the diversity of approaches involved.</p>
+
+<p>In the biomedical domain, more than 730,000 concepts have been identified in the Unified Medical Language System&reg; (UMLS). These have been grouped into 134 semantic types, which McCray et al. (<A HREF="#refM">2001</A>) further reduced into 15 high-level groupings, as a way to manage conceptual complexity in large-scale systems:
+
+<ol>
+<li>Activities and Behaviors</li>
+<li>Anatomy</li>
+<li>Chemicals and Drugs</li>
+<li>Concepts and Ideas</li>
+<li>Devices</li>
+<li>Disorders</li>
+<li>Genes and Molecular Sequences</li>
+<li>Geographic Areas</li>
+<li>Living Beings</li>
+<li>Objects</li>
+<li>Occupations</li>
+<li>Organizations</li>
+<li>Phenomena</li>
+<li>Physiology</li>
+<li>Procedures</li>
+</ol>
+
+<p>While this grouping helps manage complexity, it arguably lacks a consistent logical structure. For example, &ldquo;disorders&rdquo; and &ldquo;living beings&rdquo; are themselves &ldquo;phenomena&rdquo;, yet they are listed as separate categories. A more logically coherent classification of medical knowledge can be found in BC2, as discussed by Mills (<A HREF="#refM">2004</A>, 552&ndash;553).</p>
+
+<p>A related effort to define foundational concepts is found in the development of upper &rarr; <a href="ontologies">ontologies</a> (also called <i>top-level ontologies</i>) <A HREF="#e29">[29]</A>. These aim to provide highly general, domain-independent concepts that serve as the basis for more specific domain ontologies. Thus, they function &mdash; if the task is feasible at all &mdash; as sets of &ldquo;semantic universals&rdquo;, akin to semantic primitives. As discussed in <A HREF="#5.2">Section 5.2</A>, such attempts presume a &ldquo;view from nowhere&rdquo;, which has been critiqued in philosophy.</p>
+
+<p>Kausch (<A HREF="#refK">2024</A>, 387) made the following claim in support of such upper ontologies:
+
+<blockquote>The use of a top-level ontology composed of semantic primitives could not only aid in interoperability, but also contribute to the long-term preservation of knowledge organization systems, and by extension, the resilience of the scientific project, where resilience is defined as the ability of future generations to understand the original intention and spirit of a knowledge organization system.</blockquote></p>
+
+<p>While Kausch explicitly refers to Wierzbicka's research, the fundamental difference between linguistic approaches (like hers) and the epistemological and ontological strategies used in scientific ontology design is not addressed. It should be emphasized that Wierzbicka's 65 semantic primitives are qualitatively different from the concepts employed in well-known upper ontologies such as those by Sowa, Cyc, or the Suggested Upper Merged Ontology (SUMO) (cf. <A HREF="#refG">G&oacute;mez-P&eacute;rez et al. 2004</A>, 71&ndash;78).</p>
+
+<p>These examples illustrate attempts &mdash; beyond semantic primitives and semantic factoring &mdash; to manage semantic complexity in knowledge organization systems.</p>
+
+<p>It should also be noted that compositionality has received substantial attention in applied fields such as computational linguistics, information retrieval, and medical informatics. Studies by Amigo et al. (<A HREF="#refA">2022</A>), Wang et al. (<A HREF="#refW">2019</A>), McKnight et al. (<A HREF="#refM">1999</A>), Elkin et al. (<A HREF="#refE">1998</A>), and Elkin and Brown (<A HREF="#refE">2023</A>) investigate compositionality from a computational perspective, often testing specific algorithms or formal representations. These works rarely incorporate the theoretical insight &mdash; central to the present article &mdash; that concepts are (or are individuated by) theories. In particular, the Kuhnian view that meaning is paradigm-dependent (e.g., the reclassification of &ldquo;star&rdquo; and &ldquo;planet&rdquo;) seems to be entirely absent in such research, despite its potential significance for understanding semantic dynamics in applied systems.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="6"></a>
+<h3 itemprop="articleSection">6. Conclusion</h3>
+
+<p>This article took its point of departure in knowledge organization, classification research, and information science, but has drawn upon interdisciplinary research to achieve a deeper level of understanding. It has shown that questions concerning semantic primitives and componential analysis are deeply connected to a fundamental problem in information science. Consequently, the notions of semantic primes and compositionality are important for the theoretical foundations of this field.</p>
+
+<p>The nature of compositionality has been shown to relate to broader philosophical frameworks, here broadly classified as rationalist, empiricist, historicist, and pragmatic. The latter two, which represent versions of social epistemology, view human cognition and perception as shaped by socio-cultural contexts. From these perspectives, both semantic primitives and compositionality are seen as relative to cultural, social, and theoretical contexts &mdash; as well as to scientific paradigms. This article has argued in favor of such a social epistemological view, which assumes a relativistic, holistic, and anti-essentialist conception of meaning. This aligns with Kuhn's view that ontological categories and relations are theory-dependent, as illustrated by an example involving the terms <i>star</i> and <i>planet</i>, and supported by contemporary examples from biological systematics.</p>
+
+<p>The facet-analytic approach to knowledge organization is closely tied to the concepts of semantic primitives and compositional theory. This approach has been hailed as one of the most important innovations in the field (e.g. <A HREF="#refF">Furner & Hj&oslash;rland 2023</A>). However, it is important to consider a development from a rationalist to a pragmatic interpretation. Ranganathan postulated five facets, about which his student Gopinath (<A HREF="#refG">1976</A>, 60) wrote:
+
+<blockquote>[facet analysis] has led to the conjecture that there may be an &ldquo;absolute syntax&rdquo; among the constituents of the subjects within a basic subject, perhaps parallel to the sequence of thought process itself, irrespective of the language in which the ideas may be expressed, irrespective of the cultural background or other differences in the environments in which the specialists, as creators as well as the users of the subject, may be placed.</blockquote></p>
+
+<p>This clearly expresses a rationalist position. However, Vickery (<A HREF="#refV">1960</A>, 23) suggested 13 facets, and Broughton expanded this number <A HREF="#e30">[30]</A>. Such expansions support a more pragmatic understanding: that facets are neither eternal nor universal but are discovered or constructed as new domains of knowledge evolve and require classification. Aristotle, for instance, could not depend on his pre-established set of categories when he made his biological classification.</p>
+
+<p>Semantic building blocks should not be assumed, as done by Wierzbicka, to represent elements common to all languages &mdash; or even to a single language such as English. From the perspective of knowledge organization, they are better understood as domain-specific elements (e.g., chemical or kinship concepts), embedded within models and theories of particular fields.</p>
+
+<p>The most important conclusion is that the philosophy of science &mdash; which is largely absent in contemporary research on compositionality and semantic primitives &mdash; needs to play a more central role. As Rast (<A HREF="#refR">2023</A>, 69) emphasized: because decompositions rest on world-level theories in one way or another, they may be wrong if the underlying theory turns out to be false. All texts are produced by someone for particular purposes and on the basis of certain assumptions &mdash; what might be called &ldquo;theories&rdquo; or &ldquo;paradigmatic views&rdquo;. These provide the foundation for the meaning of the words and signs used. To identify those meanings, and the semantic relations between them, it is necessary to identify the relevant contexts &mdash; implying the need to map the (often hidden) paradigms within the information being represented.</p>
+
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+</span><!-- articleBody ends -->
+
+<a name="ack"></a>
+<h3>Acknowledgments</h3>
+
+<p>Thanks to the anonymous peer reviewers and to the ARIST editorial team. Their feedback has contributed to improving this article.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="end"></a>
+<h3>Endnotes</h3>
+
+<a name="e1"></a>
+<p><strong>1</strong>. The most influential illustration of the semiotic triangle is found in Ogden and Richards (<A HREF="#refO">1923</A>, 11), but it has a long history that includes Aristotle, Gottlob Frege, and Charles Sanders Peirce (cf. <A HREF="#refS">Sowa 2000</A>, 58&ndash;59).</p>
+
+<a name="e2"></a>
+<p><strong>2</strong>. In this article, square brackets are used to indicate concepts (as opposed to words or signs).</p>
+
+<a name="e3"></a>
+<p><strong>3</strong>. The philosophical view that we see things mediated by our conceptions was argued by Kant (<A HREF="#refK">1997</A>); in the 20th century, it was taken up in a modified form by, among others, Einstein and Kuhn. Einstein (<A HREF="#refE">1949</A>, 674) described his theoretical attitude as &ldquo;distinct from that of Kant only by the fact that we do not conceive of the &lsquo;categories&rsquo; as unalterable (conditioned by the nature of the understanding) but as (in the logical sense) free conventions. They appear to be a priori only insofar as thinking without the positing of categories and of concepts in general would be as impossible as is breathing in a vacuum&rdquo;. Kuhn (<A HREF="#refK">2000</A>, 264) said: &ldquo;I go around explaining my own position saying I am a Kantian with moveable categories&rdquo;. This view may be called &ldquo;the mediated view&rdquo; and is also subscribed to by the present author.</p>
+
+<a name="e4"></a>
+<p><strong>4</strong>. Mitchell and Panzer (<A HREF="#refM">2013</A>, 192) wrote: &ldquo;GeoNames (like many other ontologies) does not contain descriptions of or identifiers for concepts of places; it contains descriptions of and identifiers for the places themselves&rdquo;. This quote represents the na&iuml;ve-realist view that a KOS can represent reality rather than a conception of reality. For a further discussion of this point, see Hj&oslash;rland (<A HREF="#refH">2021</A>).</p>
+
+<a name="e5"></a>
+<p><strong>5</strong>. It is almost universally accepted that KOSs organize concepts. For a detractor, see Smith (<A HREF="#refS">2004</A>); for a rebuttal, see Hj&oslash;rland (<A HREF="#refH">2021</A>).</p>
+
+<a name="e6"></a>
+<p><strong>6</strong>. An example that demonstrates that not all concepts are lexicalized in all natural languages is [the succession of one day and one night], which in Danish is lexicalized as <i>et d&oslash;gn</i> but is not lexicalized in English.</p>
+
+<a name="e7"></a>
+<p><strong>7</strong>. The terms <i>happiness</i> and <i>joy</i> are often understood as synonymous words, meaning that they refer to the same concept. (If somebody considers [happiness] and [joy] as different concepts the terms are not synonyms, but possible near synonyms.) &ldquo;Synonymous concepts&rdquo; is a contradiction in terms, concepts rather have degrees of semantic similarity, relative to perspective and theories. Biological taxonomies have claimed, based on DNA analysis, that of the three concepts [salmon], [lungfish], and [cow], [lungfish] and [cow] are more closely related, sharing a more recent common ancestor than either does with [salmon]. Although this claim is debated (see <A HREF="#refW">Williams and Ebach 2020</A>, 401&ndash;403), it shows that we should not take our received understanding of semantic similarities as given.</p>
+
+<a name="e8"></a>
+<p><strong>8</strong>. Whether modern science represents an objective picture of reality is debated among, for example, scientific realists and social constructivists. On the view of water as H<sub>2</sub>O see Chang (<A HREF="#refC">2012</A>).</p>
+
+<a name="e9"></a>
+<p><strong>9</strong>. The term <i>category</i> is related to the concept of &rarr; <a href="facet">facet</a> in knowledge organization (see <A HREF="#refM">Moss 1964</A>) and to the idea of a fundamental set of categories which, according to Mazzocchi and Gnoli (<A HREF="#refM">2010</A>, 137), &ldquo;should permit the analysis and classification of any phenomenon or object&rdquo;.</p>
+
+<a name="e10"></a>
+<p><strong>10</strong>. Richard (<A HREF="#refR">1998</A>, 477), for example, concluded: &ldquo;Whether natural languages have compositional semantics, and whether the meanings of their sentences are determined simply by the meaning of their parts and syntax, is still not settled&rdquo;; Pagin and Westerst&aring;hl (<A HREF="#refP">2010</A>, 279) likewise concluded, &ldquo;All in all, it seems that the issue of compositionality in natural language will remain live, important and controversial for a long time to come&rdquo;.</p>
+
+<a name="e11"></a>
+<p><strong>11</strong>. The cited quote is from the HTML version of Wierzbicka (<A HREF="#refW">2006</A>); the PDF version of this article differs (!) by not providing a definition but just started referring Leibniz's view.</p>
+
+<a name="e12"></a>
+<p><strong>12</strong>. Matthewson (<A HREF="#refM">2003</A>, 263) found, however: &ldquo;Indeed, there may not be a single proposed semantic primitive which fails to strike formal semanticists as extremely complex. Thus, it is difficult for us to accept the NSM claim that primitives such as I, YOU, SOMEONE, THIS, THINK, and WANT are &lsquo;simple words&rsquo; and that they are &lsquo;intuitively comprehensible and self-explanatory&rsquo; (<A HREF="#refD">Durst, 2003</A>, p. 2)&rdquo;.</p>
+
+<a name="e13"></a>
+<p><strong>13</strong>. Semantic markers are a specific type of semantic feature used in componential analysis. Katz and Fodor (<A HREF="#refK">1963</A>) introduced semantic markers in linguistics with combination rules called &ldquo;projection rules&rdquo;. They are theoretical units of meaning-holding components used to represent word meaning. According to Sowa (<A HREF="#refS">1984</A>, 15), they only support either-or dichotomies, not concepts with slightly different shades of meaning. An updated presentation and criticism of this concept is given by Pitt (<A HREF="#refP">2003</A>).</p>
+
+<a name="e14"></a>
+<p><strong>14</strong>. An anonymous reviewer wrote: &ldquo;[Wilkins'] artificial language as documented in <i>Essay towards a real character and a philosophical language</i> [<A HREF="#refW">1668</A>] is very close in nature to a faceted classification, and some of his examples are very similar to those in the figure from Henning [<A HREF="#refH">2020</A>, 68]&rdquo;. For a critical discussion of Wilkins see Borges (<A HREF="#refB">1964</A>) and Mai (<A HREF="#refM">2016</A>).</p>
+
+<a name="e15"></a>
+<p><strong>15</strong>. Pulman (<A HREF="#refP">2005</A>, 165&ndash;166) wrote: &ldquo;However, the actual sense in which all concepts are innate turns out to be rather weak. Faced with the absurd possibility that concepts like &lsquo;doorknob&rsquo; or &lsquo;spade&rsquo; might be innate, Fodor claims instead that what is innate is the ability to form concepts of that kind on the basis of rapid and variable exposure to instances&rdquo;.</p>
+
+<a name="e16"></a>
+<p><strong>16</strong>. In relation to complex concepts, however, Wierzbicka is not a rationalist. Although she understands these as built on the primes, this is done in culturally specific ways. In this respect, her theory aligns with historicist linguists such as Benjamin Lee Whorf, and she investigates complex concepts in their cultural embeddedness.</p>
+
+<a name="e17"></a>
+<p><strong>17</strong>. Whorf did believe, however, that there is a common basis for language in human psychology, especially the psychology of perception. However, contemporary philosophers of science tend to embrace the theory-ladenness of observation (see <A HREF="#refB">Boyd and Bogen 2021</A>) and thereby undermine this basis for a universalist view of language.</p>
+
+<a name="e18"></a>
+<p><strong>18</strong>. Andersen developed his &ldquo;materialist&rdquo; view following the student revolt in Denmark in the 1970s, with a strong focus on sociological differences between groups of people. He conducted empirical work on the language of mechanics at a car workshop. However, I find that the terms <i>functional</i> and, especially, <i>pragmatic</i> cover the same view but are broader, which is why I prefer the latter.</p>
+
+<a name="e19"></a>
+<p><strong>19</strong>. According to Riemer (<A HREF="#refR">2016</A>, 226) also Gestalt psychology contrasts with theoretical assumptions in research about semantic primitives.</p>
+
+<a name="e20"></a>
+<p><strong>20</strong>. Linguists often reject meaning holism. For example, Vall&eacute;e (<A HREF="#refV">2006</A>) concluded: &ldquo;Wherever one looks, one finds only implausible consequences of SH [semantic holism]. As a consequence, it never served as the basis for a detailed research program in semantics. However, it did bring the analytic philosopher one step closer to the Hermeneutic tradition. Hermeneutics is thoroughly holistic&rdquo;.</p>
+
+<a name="e21"></a>
+<p><strong>21</strong>. However, Butler (<A HREF="#refB">1995</A>) argued that not all varieties of sensitivity to context pose difficulties for the compositionality principle.</p>
+
+<a name="e22"></a>
+<p><strong>22</strong>. Gopnik (<A HREF="#refG">2003</A>) wrote further on &ldquo;theory theory&rdquo;: &ldquo;Since semantics, by definition, relates linguistic expressions to our understanding of the world, and I have argued that our everyday understanding of the world is theory-like, this is not surprising [that &lsquo;rather than reflecting some fixed set of semantic primitives, children's understanding of words changes in parallel with their changing theoretical understanding of the world&rsquo;]&rdquo;.</p>
+
+<a name="e23"></a>
+<p><strong>23</strong>. <i>Theory</i> is an ambiguous word. Influenced by &ldquo;theory theory&rdquo;, Hj&oslash;rland (<A HREF="#refH">2015</A>, 116&ndash;117) argued that a theory is a statement or conception that is considered open to question and connected with background assumptions.</p>
+
+<a name="e24"></a>
+<p><strong>24</strong>. It is interesting to see that even today researchers participate in a &ldquo;periodic debate&rdquo;, and tend to divide between those who are more rationalist-oriented versus those, who are more pragmatic-oriented (cf. <A HREF="#refS">Stewart 2011</A>, in comment to <A HREF="#refB">Bradley 2011</A>).</p>
+
+<a name="e25"></a>
+<p><strong>25</strong>. In <i>Semantics: Primes and Universals</i>, Wierzbicka (<A HREF="#refW">1996</A>, 14) states: &ldquo;The meaning of a word is not the same as what people know or believe about the thing or situation that the word refers to. Semantics is not encyclopedic knowledge&rdquo;. This distinction is foundational to her methodology, which attempts to isolate core semantic content using a small set of universal semantic primes, avoiding the conflation of semantics with contingent cultural or factual knowledge. Wierzbicka's analogy to the periodic table strengthens rather than weakens the case that semantic analysis must rest on an extensive base of world knowledge, cultural context, and theory-laden interpretation. Thus, her attempt to isolate &ldquo;pure linguistic meaning&rdquo; from encyclopedic knowledge seems problematic &mdash; even internally inconsistent.</p>
+
+<a name="e26"></a>
+<p><strong>26</strong>. Sp&auml;rck Jones and Kay (<A HREF="#refS">1973</A>, 124) wrote that some linguists dismissed the notion of semantic primitives, but did not develop or discuss these views: &ldquo;There are some linguists who, with Lyons (<A HREF="#refL">1968</A>), attempt to avoid the problems associated with a notation based on semantic primitives by dismissing the notion altogether&rdquo;. However, Lyons did discuss &ldquo;basic sense-components&rdquo; in both his 1968 and 1977 books (<A HREF="#refL">Lyons 1968</A>, 470&ndash;481: &ldquo;Componential analysis and universal semantics&rdquo;; <A HREF="#refL">Lyons 1977</A>, 317&ndash;335: &ldquo;Componential analysis&rdquo;). Goldberg (<A HREF="#refG">2016</A>, 430) described unresolved issues, including whether the principle of compositionality is based on empirical evidence, as some researchers claim (<A HREF="#refF">Fodor 2001</A>; <A HREF="#refP">Pelletier 1994</A>), or whether it is a methodological assumption, as others claim (<A HREF="#refB">Barker and Jacobson 2007</A>; <A HREF="#refD">Dowty 2007</A>; <A HREF="#refG">Groenendijk and Stokhof 2005</A>; <A HREF="#refJ">Janssen 1983</A>; <A HREF="#refP">Partee 1995</A>). Goldberg further argued that there are empirical questions that need to be addressed for the principle of compositionality to be upheld.</p>
+
+<a name="e27"></a>
+<p><strong>27</strong>. &ldquo;Fish&rdquo; is a paraphyletic group of animals, meaning they do not include all descendants of their most recent common ancestor. &ldquo;Birds&rdquo;, however, is a valid clade, as birds form a monophyletic group since all modern birds descend from a common ancestor. It therefore seems even more strange that birds are also classified by Szostak as <CODE>FH</CODE> &ldquo;Hypothesized Species&rdquo;.</p>
+
+<a name="e28"></a>
+<p><strong>28</strong>. The two approaches to cladistics, &ldquo;process cladistics&rdquo; and &ldquo;pattern cladistics&rdquo; agree in rejecting paraphyletic groups like &ldquo;fish&rdquo; and in accepting birds as a valid clade, but process cladistics is more willing to make historical and evolutionary statements about these taxa, for example, that birds are dinosaurs, while pattern cladistics understands birds as part of Dinosauria.</p>
+
+<a name="e29"></a>
+<p><strong>29</strong>. For a comparison of selected upper ontologies, see Mascardi et al. (<A HREF="#refM">2007</A>).</p>
+
+<a name="e30"></a>
+<p><strong>30</strong>. For example, Mills et al. (<A HREF="#refM">1993</A>), when classifying mathematics for BC2, added a new facet: <i>relation</i>.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="ref"></a>
+<h3>References</h3>
+
+<span itemprop="citation">
+
+<a name="refA"></a>
+
+<p>Aitchison, J. 2012. <i>Words in the mind: An introduction to the mental lexicon</i>, 4th ed. John Wiley & Sons.</p>
+
+<p>Aitchison, J., Gilchrist, A., and Bawden, D. 2000. <i>Thesaurus construction and use: A practical manual</i>, 4th ed. Aslib.</p>
+
+<p>Amigo, E., Ariza-Casabona, A., Fresno, V., and Mart&iacute;, M. A. 2022. Information theory&ndash;based compositional distributional semantics. <i>Computational Linguistics</i>, 48(4), 907&ndash;948. <A CLASS="menu" HREF="https://doi.org/10.1162/coli_a_00454">https://doi.org/10.1162/coli_a_00454</A>.</p>
+
+<p>Andersen, P. B. 1997. A theory of computer semiotics. In <i>Semiotic approaches to construction and assessment of computer systems</i>. Cambridge University Press.</p>
+
+<p>Aristotle. 1984. In J. Barnes (Ed.), <i>The complete works of Aristotle</i>. The revised Oxford translation, vol. 1. Princeton University Press.</p>
+
+<a name="refB"></a>
+
+<p>Baker, M. C. 2001. <i>The atoms of language: The mind's hidden rules of grammar</i>. Oxford University Press.</p>
+
+<p>Bakhtin, M. 1981. Discourse in the novel. In Holquist and C. Emerson (Eds.), <i>The dialogic imagination: Four essays by M.M. Bakhtin</i>, 239&ndash;422. University of Texas Press. (Original work published 1934.)</p>
+
+<p>C. Barker, and P. I. Jacobson (Eds.). 2007. <i>Direct compositionality</i>. Oxford University Press.</p>
+
+<p>Bawden, D. 2017. Chemistry and its (information) history. In <i>The occasional informationist: Irregular thoughts on the information sciences</i> (blog). <A CLASS="menu" HREF="https://theoccasionalinformationist.com/2017/09/03/chemistry-and-its-information-history/">https://theoccasionalinformationist.com/2017/09/03/</A>.</p>
+
+<p>Blumczynski, P. 2013. Turning the tide: A critique of natural semantic metalanguage from a translation studies perspective. <i>Translation Studies</i>, 6(3), 261&ndash;276. <A HREF="#ehttps://doi.org/10.1080/14781700.2013.781484">[https://doi.org/10.1080/14781700.2013.781484]</A>.</p>
+
+<p>Blumczynski, P. 2016. <i>Ubiquitous translation</i>. Routledge.</p>
+
+<p>Borges, J. L. 1964. <i>Other inquisitions (1937&ndash;1952)</i>. Translated by Ruth L. C. Simms. University of Texas Press. (Original work published 1942.) <A CLASS="menu" HREF="https://www.crockford.com/wilkins.html">https://www.crockford.com/wilkins.html</A>.</p>
+
+<p>Boyd, N. M., and Bogen, J. 2021. Theory and observation in science. In E. N. Zalta (Ed.), <i>The Stanford encyclopedia of philosophy</i>. Stanford University. <A CLASS="menu" HREF="https://plato.stanford.edu/archives/win2021/entries/science-theory-observation/">https://plato.stanford.edu/archives/win2021/entries/science-theory-observation/</A>.</p>
+
+<p>Bradley, D. 2011. At last, a definitive periodic table? <i>Chemistry views: The Magazine of Chemistry Europe</i>. <A CLASS="menu" HREF="https://doi.org/10.1002/chemv.201000107">https://doi.org/10.1002/chemv.201000107</A>.</p>
+
+<p>Brock, W. H. 2016. <i>The history of chemistry: A very short introduction</i>. Oxford University Press.</p>
+
+<p>Broughton, V. 2023. Facet analysis: The evolution of an idea. <i>Cataloging & Classification Quarterly</i>, 61(5&ndash;6), 411&ndash;438. <A CLASS="menu" HREF="https://doi.org/10.1080/01639374.2023.2196291">https://doi.org/10.1080/01639374.2023.2196291</A>.</p>
+
+<p>Butler, K. 1995. Content, context and compositionality. <i>Mind & Language</i>, 10(1&ndash;2), 3&ndash;24. <A CLASS="menu" HREF="https://doi.org/10.1111/j.1468-0017.1995.tb00003.x">https://doi.org/10.1111/j.1468-0017.1995.tb00003.x</A>.</p>
+
+<a name="refC"></a>
+
+<p>Chang, H. 2012. <i>Is water H<sub>2</sub>O? Evidence, realism and pluralism</i>. Springer Nature. <A CLASS="menu" HREF="https://doi.org/10.1007/978-94-007-3932-1">https://doi.org/10.1007/978-94-007-3932-1</A>.</p>
+
+<p>Chomsky, N. 1968. <i>Language and mind</i>. Harcourt, Brace & World.</p>
+
+<p>Costello, F. J., and Keane, M. T. 2000. Efficient creativity: Constraint-guided conceptual combination. <i>Cognitive Science</i>, 24(2), 299&ndash;349.</p>
+
+<a name="refD"></a>
+
+<p>Dahlberg, I. 2009. Brief communication: Concepts and terms &mdash; ISKO's major challenge. <i>Knowledge Organization</i>, 36(2&ndash;3), 169&ndash;177. <A CLASS="menu" HREF="https://doi.org/10.5771/0943-7444-2009-2-3-169">https://doi.org/10.5771/0943-7444-2009-2-3-169</A>.</p>
+
+<p>Dextre Clarke, S. G. 2019. The information retrieval thesaurus. <i>Knowledge organization</i>, 46, 439&ndash;459. Also in B. Hj&oslash;rland and C. Gnoli (Eds.), <I>ISKO Encyclopedia of Knowledge Organization</I>. <A CLASS="menu" HREF="https://www.isko.org/cyclo/thesaurus">https://www.isko.org/cyclo/thesaurus</A></p>
+
+<p>Dowty, D. 2007. Compositionality as an empirical problem. In C. Barker and P. Jacobson (Eds.), <i>Direct compositionality</i> (pp. 23&ndash;101). Oxford University Press.</p>
+
+<p>Ducheyne, S. 2005. Paul Otlet's theory of knowledge and linguistic objectivism. <i>Knowledge Organization</i>, 32(3), 110&ndash;116.</p>
+
+<p>Durst, U. 2003. The natural semantic metalanguage approach to linguistic meaning. <i>Theoretical Linguistics</i>, 29(3), 157&ndash;200. <A CLASS="menu" HREF="https://doi.org/10.1515/thli.29.3.157">https://doi.org/10.1515/thli.29.3.157</A>.</p>
+
+<a name="refE"></a>
+
+<p>Eco, U. 1995. <i>The search for the perfect language</i>. Blackwell Publishing. (Original work published 1993.)</p>
+
+<p>Einstein, A. 1949. Remarks concerning the essays brought together in this co-operative volume. In P. A. Schilpp (Ed.), <i>Albert Einstein: Philosopher-scientist</i> (pp. 665&ndash;688). The Library of Living Philosophers.</p>
+
+<p>Elkin, P. L., and Brown, S. H. 2023. Compositionality. In P. L. Elkin (Ed.), <i>Terminology, ontology and their implementations</i>, 2nd ed. Springer. <A CLASS="menu" HREF="https://doi.org/10.1007/978-3-031-11039-9_7">https://doi.org/10.1007/978-3-031-11039-9_7</A>.</p>
+
+<p>Elkin, P. L., Tuttle, M. S., Keck, K., Campbell, K. C., Atkin, G. E., and Chute, C. G. 1998. The role of compositionality in standardized problem list generation. <i>Studies in health technology and informatics</i>, 52(1), 660&ndash;664.</p>
+
+<a name="refF"></a>
+
+<p>Fjelds&aring;, J. 2013. Avian classification in flux. In J. Hoyo, A. Elliott, J. Sargatal, and D. A. Christie (Eds.), <i>Handbook of the birds of the world</i>, vol. 17, pp. 77&ndash;146. Lynx Edicions.</p>
+
+<p>Fodor, J. A. 1998. <i>Concepts: Where cognitive science went wrong</i>. Oxford University Press.</p>
+
+<p>Fodor, J. A. 2001. Language, thought and compositionality. <i>Mind & Language</i>, 16(1), 1&ndash;15. <A CLASS="menu" HREF="https://doi.org/10.1111/1468-0017.00153">https://doi.org/10.1111/1468-0017.00153</A>.</p>
+
+<p>Foskett, A. C. 1996. <i>The subject approach to information</i>, 4th ed. Library Association.</p>
+
+<p>Furner, J., and Hj&oslash;rland, B. 2023. The coverage of information science and knowledge organization in the Library of Congress Subject Headings (LCSH). <i>Journal of Documentation</i>, 79(5), 1265&ndash;1284. <A CLASS="menu" HREF="https://doi.org/10.1108/JD-11-2022-0256">https://doi.org/10.1108/JD-11-2022-0256</A>.</p>
+
+<a name="refG"></a>
+
+<p>Geeraerts, D. 2005. Componential analysis. In K. Brown (Ed.), <i>Encyclopedia of language and linguistics</i>, 2nd ed., pp. 709&ndash;712. Elsevier. <A CLASS="menu" HREF="https://doi.org/10.1016/B0-08-044854-2/01029-4">https://doi.org/10.1016/B0-08-044854-2/01029-4</A>.</p>
+
+<p>Goddard, C. 1998. Bad arguments against semantic primitives. <i>Theoretical Linguistics</i>, 24(2&ndash;3), 129&ndash;156. <A CLASS="menu" HREF="https://doi.org/10.1515/thli.1998.24.2-3.129">https://doi.org/10.1515/thli.1998.24.2-3.129</A>.</p>
+
+<p>Goddard, C. 2003. Whorf meets Wierzbicka: Variation and universals in language and thinking. <i>Language Sciences</i>, 25(4), 393&ndash;432. <A CLASS="menu" HREF="https://doi.org/10.1016/S0388-0001(03)00002-0">https://doi.org/10.1016/S0388-0001(03)00002-0</A>.</p>
+
+<p>Goddard, C., and Wierzbicka, A. 2014. <i>Words and meanings: Lexical semantics across domains, languages and cultures</i>. Oxford University Press.</p>
+
+<p>Goldberg, A. E. 2016. Compositionality. In N. Riemer (Ed.), <i>Routledge handbook of semantics</i>, 419&ndash;433. Routledge.</p>
+
+<p>G&oacute;mez-P&eacute;rez, A., Fern&aacute;ndez-L&oacute;pez, M., and Corcho, O. 2004. <i>Ontological engineering: With examples from the areas of knowledge management, e-commerce and the semantic web</i>. Springer.</p>
+
+<p>Goodman, N. 1951. <i>The structure of appearance</i>. Harvard University Press.</p>
+
+<p>Gopinath, M. A. 1976. Colon classification. In A. Maltby (Ed.), <i>Classification in the 1970s: A second look</i>, 51&ndash;80. Clive Bingly.</p>
+
+<p>Gopnik, A. 2003. The theory theory as an alternative to the innateness hypothesis. In L. M. Antony and N. Hornstein (Eds.), <i>Chomsky and his critics</i> (pp. 238&ndash;254). Basil Blackwell. <A CLASS="menu" HREF="https://doi.org/10.1002/9780470690024.ch10">https://doi.org/10.1002/9780470690024.ch10</A>.</p>
+
+<p>Gopnik, A., Choi, S., and Baumberger, T. 1996. Cross-linguistic differences in early semantic and cognitive development. <i>Cognitive Development</i>, 11(2), 197&ndash;227. <A CLASS="menu" HREF="https://doi.org/10.1016/S0885-2014(96)90003-9">https://doi.org/10.1016/S0885-2014(96)90003-9</A>.</p>
+
+<p>Grasswick, H. 2018. Feminist social epistemology. In E. N. Zalta (Ed.), <i>The Stanford encyclopedia of philosophy (fall 2018 edition)</i>. Stanford University. <A CLASS="menu" HREF="https://plato.stanford.edu/archives/fall2018/entries/feminist-social-epistemology/">https://plato.stanford.edu/archives/fall2018/entries/feminist-social-epistemology/</A>.</p>
+
+<p>Groenendijk, J., and Stokhof, M. 2005. Why compositionality? In G. N. Carlson and F. J. Pelletier (Eds.), <i>Reference and quantification: The partee effect</i> (pp. 83&ndash;106). CSLI Publications.</p>
+
+<a name="refH"></a>
+
+<p>Hajibayova, L. 2013. Basic-level categories: A review. <i>Journal of Information Science</i>, 39(5), 676&ndash;687. <A CLASS="menu" HREF="https://doi.org/10.1177/0165551513481443">https://doi.org/10.1177/0165551513481443</A>.</p>
+
+<p>Halliday, M. A. K. 1978. Language as social semiotics. In <i>The social interpretation of language and meaning</i>. Edward Arnold.</p>
+
+<p>Halpin, H. 2013. Social semantics. In H. Halpin (Ed.), <i>Social semantics: The search for meaning on the web</i> (pp. 187&ndash;203). Springer. <A CLASS="menu" HREF="https://doi.org/10.1007/978-1-4614-1885-6_7">https://doi.org/10.1007/978-1-4614-1885-6_7</A>.</p>
+
+<p>Heal, J. 2011. Wittgenstein, Ludwig Josef Johann (1889&ndash;1951). In E. Craig (Ed.), <i>Routledge encyclopedia of philosophy</i>. Taylor and Francis. <A CLASS="menu" HREF="https://doi.org/10.4324/9780415249126-DD072-2">https://doi.org/10.4324/9780415249126-DD072-2</A>.</p>
+
+<p>Henning, J. 2020. <i>Langmaker: Celebrating Conlangs [Language maker: Celebrating constructed languages]</i>. Yonagu.</p>
+
+<p>Hj&oslash;rland, B. 2009. Concept theory. <i>Journal of the American Society for Information Science and Technology</i>, 60(8), 1519&ndash;1536. <A CLASS="menu" HREF="https://doi.org/10.1002/asi.21082">https://doi.org/10.1002/asi.21082</A>.</p>
+
+<p>Hj&oslash;rland, B. 2013. Facet analysis: The logical approach to knowledge organization. <i>Information Processing and Management</i>, 49(2), 545&ndash;557. <A CLASS="menu" HREF="https://doi.org/10.1016/j.ipm.2012.10.001">https://doi.org/10.1016/j.ipm.2012.10.001</A>.</p>
+
+<p>Hj&oslash;rland, B. 2015. Theories are knowledge organizing systems (KOS). <i>Knowledge Organization</i>, 42(2), 113&ndash;128. <A CLASS="menu" HREF="https://doi.org/10.5771/0943-7444-2015-2-113">https://doi.org/10.5771/0943-7444-2015-2-113</A>.</p>
+
+<p>Hj&oslash;rland, B. 2021. Information retrieval and knowledge organization: A perspective from the philosophy of science. <i>Information</i> (Basel), 12(3), 135. <A CLASS="menu" HREF="https://doi.org/10.3390/info12030135">https://doi.org/10.3390/info12030135</A>.</p>
+
+<p>Hj&oslash;rland, B., and Barros, T. H. B. 2024. Domain analysis versus facet analysis. <i>Knowledge Organization</i>, 51(1), 19&ndash;25. <A CLASS="menu" HREF="https://doi.org/10.5771/0943-7444-2024-1-19">https://doi.org/10.5771/0943-7444-2024-1-19</A>.</p>
+
+<p>Hj&oslash;rland, B., and Gnoli, C. 2021. Folk classification. In B. Hj&oslash;rland and C. Gnoli (Eds.), <i>ISKO encyclopedia of knowledge organization</i>. International Society for Knowledge Organization. <A CLASS="menu" HREF="https://www.isko.org/cyclo/folk">https://www.isko.org/cyclo/folk</A>.</p>
+
+<a name="refI"></a>
+
+<p>ISO 25964-1. 2011. <i>Information and documentation: Thesauri and interoperability with other vocabularies, Part 1: Thesauri for information retrieval</i>. International Organization for Standardization.</p>
+
+<a name="refJ"></a>
+
+<p>Jackman, H. 2020. Meaning holism. In E. N. Zalta (Ed.), <i>The Stanford encyclopedia of philosophy (winter 2020 edition)</i>. Stanford University. <A CLASS="menu" HREF="https://plato.stanford.edu/archives/win2020/entries/meaning-holism/">https://plato.stanford.edu/archives/win2020/entries/meaning-holism/</A>.</p>
+
+<p>Janssen, T. 1983. <i>Foundations and applications of Montague grammar</i>. PhD thesis, Department of Mathematics, University of Amsterdam.</p>
+
+<a name="refK"></a>
+
+<p>Kant, I. 1997. <i>The critique of pure reason</i>. P. Guyer and A. W. Wood (Trans.). Cambridge University Press. (Original work published 1781 and 1787.) <A CLASS="menu" HREF="https://cpb-us-w2.wpmucdn.com/u.osu.edu/dist/5/25851/files/2017/09/kant-first-critique-cambridge-1m89prv.pdf">https://cpb-us-w2.wpmucdn.com/...</A></p>
+
+<p>Kashyap, M. M. 2003. Likeness between Ranganathan's postulations based approach to knowledge classification and entity relationship data modelling approach. <i>Knowledge Organization</i>, 30(1), 1&ndash;19.</p>
+
+<p>Katz, J. J., and Fodor, J. A. 1963. The structure of semantic theory. <i>Language</i>, 39(2), 170&ndash;210. <A CLASS="menu" HREF="https://doi.org/10.2307/411200">https://doi.org/10.2307/411200</A>.</p>
+
+<p>Kausch, J. 2024. Nuclear semiotics and knowledge organization: Five design heuristics for semantic primitives. <i>Advances in Knowledge Organization</i>, 20, 385&ndash;391.</p>
+
+<p>Kuhn, T. S. 1962. <i>The structure of scientific revolutions</i>. University of Chicago Press.</p>
+
+<p>Kuhn, T. S. 2000. In J. Conant and J. Haugeland (Eds.), <i>The road since Structure: Philosophical essays, 1970&ndash;1993, with an autobiographical interview</i>. University of Chicago Press.</p>
+
+<a name="refL"></a>
+
+<p>Laurence, S., and Margolis, E. 2024. <i>The building blocks of thought: A rationalist account of the origins of concepts</i>. Oxford University Press. <A CLASS="menu" HREF="https://doi.org/10.1093/9780191925375.001.0001">https://doi.org/10.1093/9780191925375.001.0001</A>.</p>
+
+<p>Legg, C. 2007. Ontologies on the semantic web. <i>Annual Review of Information Science and Technology</i>, 41, 407&ndash;452. <A CLASS="menu" HREF="https://doi.org/10.1002/aris.2007.1440410116">https://doi.org/10.1002/aris.2007.1440410116</A>.</p>
+
+<p>Leibniz, G. W. 1903. Elementa characteristica universalis. In L. Couturat (Ed.), <i>Opuscules et fragments in&eacute;dits de Leibniz, extraits des manuscrits de la Biblioth&egrave;que royale de Hanovre</i> (pp. 42&ndash;92). Ancienne Librairie Germer Balliere. (Original work published 1679.)</p>
+
+<p>Levisen, C., and Waters, S. 2017. How words do things with people. In C. Levisen and S. Waters (Eds.), <i>Cultural keywords in discourse</i>, 8&ndash;35. John Benjamins.</p>
+
+<p>Llull, R. 1305&ndash;1308. Ars generalis ultima, In <i>Raimundi Lulli Opera Latina</i> XIV/Corpus Christianorum Continuatio Mediaevalis 75 1986, 4&ndash;527. Available in English from <i>Mnemonic Arts of Blessed Raymond Lull</i>. <A CLASS="menu" HREF="https://lullianarts.narpan.net/ArsGeneralisUltima.pdf">https://lullianarts.narpan.net/ArsGeneralisUltima.pdf</A>.</p>
+
+<p>Lyons, J. 1968. <i>Introduction to theoretical linguistics</i>. Cambridge University Press.</p>
+
+<p>Lyons, J. 1977. <i>Semantics</i> (Vol. 1). Cambridge University Press.</p>
+
+<a name="refM"></a>
+
+<p>Mai, J. E. 2016. Marginalization and exclusion: Unraveling systemic bias in classification. <i>Knowledge Organization</i>, 43, 324&ndash;330. <A CLASS="menu" HREF="https://doi.org/10.5771/0943-7444-2016-5-324">https://doi.org/10.5771/0943-7444-2016-5-324</A></p>
+
+<p>Mascardi, V., Cord&igrave;, V., and Rosso, P. 2007. A comparison of upper ontologies. In <i>WOA 2007: From objects to agents. Agents and industry: Technological applications of software agents, 24&ndash;25 September 2007</i>, 55&ndash;64. Universit&agrave; di Genova. Seneca.</p>
+
+<p>Matthewson, L. 2003. Is the meta-language really natural? <i>Theoretical Linguistics</i>, 29(3), 263&ndash;274. <A CLASS="menu" HREF="https://doi.org/10.1515/thli.29.3.263">https://doi.org/10.1515/thli.29.3.263</A>.</p>
+
+<p>Mazzocchi, F., and Gnoli, C. 2010. S.R. Ranganathan's PMEST categories: Analyzing their philosophical background and cognitive function. <i>Information Studies</i> [Ranganathan Centre for Information Studies], 16(3), 133&ndash;147.</p>
+
+<p>McCray, A. T., Burgun, A., and Bodenreider, O. 2001. Aggregating UMLS semantic types for reducing conceptual complexity. <i>Studies in Health Technology and Informatics</i>, 84(1), 216&ndash;220. <A CLASS="menu" HREF="https://doi.org/10.3233/978-1-60750-928-8-216">https://doi.org/10.3233/978-1-60750-928-8-216</A>.</p>
+
+<p>McKnight, L. K., Elkin, P. L., Ogren, P. V., and Chute, C. G. 1999. Barriers to the clinical implementation of compositionality. <i>Proceedings of the AMIA Symposium</i>, 2, 320&ndash;324. <A CLASS="menu" HREF="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2232608/pdf/procamiasymp00004-0357.pdf">https://www.ncbi.nlm.nih.gov/...</A></p>
+
+<p>Metzinger, T. 2003. <i>Being no one: The self-model theory of subjectivity</i>. MIT Press.</p>
+
+<p>Miller, G. A., and Johnson-Laird, P. N. 1976. <i>Language and perception</i>. Cambridge University Press.</p>
+
+<p>Mills, J. 2004. Faceted classification and logical division in information retrieval. <i>Library Trends</i>, 52(3), 541&ndash;570.</p>
+
+<p>Mills, J., Broughton, V., and Lang, V. 1980. <i>Bliss Bibliographic Classification, 2nd ed. Class H: Anthropology, human biology, health sciences</i>. Butterworth.</p>
+
+<p>Mills, J., Broughton, V., and Lievesley, N. 1993. <i>Bliss Bibliographic Classification, 2nd ed. Class AM/AX: Mathematics, statistics, and probability</i>. Bowker Saur.</p>
+
+<p>Mitchell, J. S., and Panzer, M. 2013. Dewey linked data: Making connections with old friends and new acquaintances. <i>JLIS.it</i>, 4(1), 177&ndash;199. <A CLASS="menu" HREF="https://doi.org/10.4403/jlis.it-5467">https://doi.org/10.4403/jlis.it-5467</A>.</p>
+
+<p>Montague, R. 1970. Universal grammar. <i>Theoria</i>, 36(3), 373&ndash;398. <A CLASS="menu" HREF="https://doi.org/10.1111/j.1755-2567.1970.tb00434.x">https://doi.org/10.1111/j.1755-2567.1970.tb00434.x</A>.</p>
+
+<p>Moss, W. R. 1964. Categories and relations: Origins of two classification theories. <i>American Documentation</i>, 15(4), 296&ndash;301. <A CLASS="menu" HREF="https://doi.org/10.1002/asi.5090150408">https://doi.org/10.1002/asi.5090150408</A>.</p>
+
+<p>Murphy, M. L. 2003. <i>Semantic relations and the lexicon: Antonymy, synonymy, and other paradigms</i>. Cambridge University Press.</p>
+
+<a name="refN"></a>
+
+<p>Nagel, T. 1986. <i>The view from nowhere</i>. Oxford University Press.</p>
+
+<p>Nefdt, R. M., and Potts, C. 2024. Compositionality. In M. C. Frank and A. Majid (Eds.), <i>Open encyclopedia of cognitive science</i>. MIT Press. <A CLASS="menu" HREF="https://doi.org/10.21428/e2759450.494deacd">https://doi.org/10.21428/e2759450.494deacd</A>.</p>
+
+<a name="refO"></a>
+
+<p>Ogden, C. K., and Richards, I. A. 1923. <i>The meaning of meaning: A study of the influence of language upon thought and of the science of symbolism</i>. Kegan Paul.</p>
+
+<p>Oliver, A. 1998. Logical atomism. In E. Craig (Ed.), <i>Routledge encyclopedia of philosophy</i>, Vol. 5, pp. 772&ndash;775. Routledge. <A CLASS="menu" HREF="https://doi.org/10.4324/9780415249126-N030-1">https://doi.org/10.4324/9780415249126-N030-1</A>.</p>
+
+<a name="refP"></a>
+
+<p>Pagin, P. 1997. Is compositionality compatible with holism? <i>Mind & Language</i>, 12(1), 11&ndash;33. <A CLASS="menu" HREF="https://doi.org/10.1111/j.1468-0017.1997.tb00060.x">https://doi.org/10.1111/j.1468-0017.1997.tb00060.x</A>.</p>
+
+<p>Pagin, P., and Westerst&aring;hl, D. 2010. Compositionality II: Arguments and problems. <i>Philosophy Compass</i>, 5(3), 265&ndash;282. <A CLASS="menu" HREF="https://doi.org/10.1111/j.1747-9991.2009.00229.x">https://doi.org/10.1111/j.1747-9991.2009.00229.x</A>.</p>
+
+<p>Partee, B. H. 1995. Lexical semantics and compositionality. In L. R. Gleitman and M. Liberman (Eds.), <i>Language: An invitation to cognitive science</i>, 311&ndash;360. MIT Press.</p>
+
+<p>Peirce, C. S. 1877. Illustration of the logic of science: Second paper. How to make our ideas clear. <i>Popular Science Monthly</i> January 1878, pp. 286&ndash;302. <A CLASS="menu" HREF="http://archive.org/details/popularsciencemo12newy">http://archive.org/details/popularsciencemo12newy</A>.</p>
+
+<p>Peirce, C. S. 1940. In J. Buchler (Ed.), <i>The philosophy of Peirce: Selected writings</i>. Routledge and Kegan Paul.</p>
+
+<p>Pelletier, F. J. 1994. The principle of semantic compositionality. <i>Topoi</i>, 13(1), 11&ndash;24. <A CLASS="menu" HREF="https://doi.org/10.1007/BF00763644">https://doi.org/10.1007/BF00763644</A>.</p>
+
+<p>Perry, J. W., and Kent, A. 1958. <i>Tools for machine literature searching: Semantic code dictionary, equipment, procedures</i>. Interscience.</p>
+
+<p>Pitt, D. 2003. On Markerese. <i>The Philosophical Forum</i>, 34(3 & 4), 267&ndash;300. <A CLASS="menu" HREF="https://doi.org/10.1111/1467-9191.00139">https://doi.org/10.1111/1467-9191.00139</A>.</p>
+
+<p>Proops, I. 2022. Wittgenstein's logical atomism. In E. N. Zalta and U. Nodelman (Eds.), <i>The Stanford encyclopedia of philosophy (Fall 2022 edition)</i>. Stanford University. <A CLASS="menu" HREF="https://plato.stanford.edu/archives/fall2022/entries/wittgenstein-atomism/">https://plato.stanford.edu/archives/fall2022/entries/wittgenstein-atomism/</A>.</p>
+
+<p>Pulman, S. G. 1983. <i>Word meaning and belief</i>. Croom Helm.</p>
+
+<p>Pulman, S. G. 2005. Lexical decomposition: For and against. In J. I. Tait (Ed.), <i>Charting a new course: Natural language processing and information retrieval: Essays in honour of Karen Sp&auml;rck Jones</i>, 155&ndash;173. Springer. <A CLASS="menu" HREF="https://doi.org/10.1007/1-4020-3467-9_10">https://doi.org/10.1007/1-4020-3467-9_10</A>.</p>
+
+<a name="refQ"></a>
+
+<p>Quine, W. V. O. 1951. Two dogmas of empiricism. <i>The Philosophical Review</i>, 60(1), 20&ndash;43.</p>
+
+<a name="refR"></a>
+
+<p>Raghavan, K. S. 2019. Shiyali Ramamrita Ranganathan. In B. Hj&oslash;rland and C. Gnoli (Eds.),  <i>ISKO encyclopedia of knowledge organization</i>. <A CLASS="menu" HREF="https://www.isko.org/cyclo/ranganathan">https://www.isko.org/cyclo/ranganathan</A>.</p>
+
+<p>Rast, E. 2023. Metalinguistic disputes, semantic decomposition, and externalism. <i>Linguistics and Philosophy</i>, 46(1), 65&ndash;85. <A CLASS="menu" HREF="https://doi.org/10.1007/s10988-022-09357-y">https://doi.org/10.1007/s10988-022-09357-y</A>.</p>
+
+<p>Richard, M. 1998. Compositionality. In E. Craig (Ed.), <i>Routledge encyclopedia of philosophy</i>, Vol. 2, 476&ndash;477. Routledge. <A CLASS="menu" HREF="https://doi.org/10.4324/9780415249126-U007-1">https://doi.org/10.4324/9780415249126-U007-1</A>.</p>
+
+<p>Riemer, N. 2006. Reductive paraphrase and meaning: A critique of Wierzbickian semantics. <i>Linguistics and Philosophy</i>, 29(3), 347&ndash;379. <A CLASS="menu" HREF="https://doi.org/10.1007/s10988-006-0001-4">https://doi.org/10.1007/s10988-006-0001-4</A>.</p>
+
+<p>Riemer, N. 2016. Lexical decomposition. In N. Riemer (Ed.), <i>The Routledge handbook of semantics</i>, 213&ndash;232. Routledge.</p>
+
+<p>Rosch, E., Mervis, C. B., Gray, W. D., Johnson, D. M., and Boyes-Braem, P. 1976. Basic objects in natural categories. <i>Cognitive Psychology</i>, 8(3), 382&ndash;439. <A CLASS="menu" HREF="https://doi.org/10.1016/0010-0285(76)90013-X">https://doi.org/10.1016/0010-0285(76)90013-X</A>.</p>
+
+<p>Rossi, P. 2001. <i>Logic and the art of memory: The quest for a universal language</i>, 2nd ed. Athlone Press. (Original work published 1983.)</p>
+
+<p>Russell, B. 1956. The philosophy of logical atomism. In R. C. Marsh (Ed.), <i>Russell: Logic and knowledge: Essays 1901&ndash;1950</i>, 175&ndash;281. George Allen & Unwin. (Original work published 1918.)</p>
+
+<a name="refS"></a>
+
+<p>Scerri, E. 2020. <i>The periodic table: Its story and significance</i>, 2nd ed. Oxford University Press.</p>
+
+<p>Smith, B. 2004. Beyond concepts: Ontology as reality representation. In A. C. Varzi and L. Vieu (Eds.), <i>Proceedings of the FOIS 2004. International conference on formal ontology and information systems, Turin, Italy, 4&ndash;6 November 2004</i>, 73&ndash;84. IOS Press. <A CLASS="menu" HREF="https://philpapers.org/archive/SMIBCO.pdf">https://philpapers.org/archive/SMIBCO.pdf</A>.</p>
+
+<p>Soergel, D. 1985. <i>Organizing information: Principles of database and retrieval systems</i>. Academic Press.</p>
+
+<p>Soergel, D. 1998. WordNet [review of the book <i>WordNet</i> by Fellbaum, C., Ed.]. <i>D-Lib Magazine</i>, 4(10), 1&ndash;7. <A CLASS="menu" HREF="https://www.dlib.org/dlib/october98/10bookreview.html">https://www.dlib.org/dlib/october98/10bookreview.html</A>.</p>
+
+<p>Soergel, D. 2017. The principle of compositionality and entity-relationship modelling: Faceted classification in a broader context. In A. Slavic and C. Gnoli (Eds.), <i>Faceted classification today: Theory, technology and end users. Proceedings of the International UDC Seminar 14&ndash;15 September 2017 London, United Kingdom</i>, 43&ndash;60. Ergon.</p>
+
+<p>Sowa, J. F. 1984. <i>Conceptual structures: Information processing in mind and machine</i>. Addison-Wesley.</p>
+
+<p>Sowa, J. F. 2000. Ontology, metadata, and semiotics. In <i>Lecture notes in computer science</i>, Vol. 1867, 55&ndash;81. Springer.</p>
+
+<p>Sowa, J. F. 2003. Ontology. In <i>Glossary</i>. <A CLASS="menu" HREF="http://www.jfsowa.com/ontology/gloss.htm">http://www.jfsowa.com/ontology/gloss.htm</A></p>
+
+<p>Sp&auml;rck Jones, K. 1986. <i>Synonymy and semantic classification</i>. Edinburgh University Press.</p>
+
+<p>Sp&auml;rck Jones, K. 1992. Thesaurus. In S. C. Shapiro (Ed.), <i>Encyclopedia of artificial intelligence</i>, Vol. 2, 2nd ed., pp. 1605&ndash;1613. Wiley.</p>
+
+<p>Sp&auml;rck Jones, K. 2007. Semantic primitives: The tip of the iceberg. In K. Ahmad, C. Brewster, and M. Stevenson (Eds.), <i>Words and intelligence II: Essays in honour of Yorick Wilks</i>, 235&ndash;253. Springer.</p>
+
+<p>Sp&auml;rck Jones, K., and Kay, M. 1973. <i>Linguistics and information science</i>. Academic Press.</p>
+
+<p>Stewart, P. 2011. Comment to Bradly 2011. <i>Chemistry  s: The Magazine of Chemistry Europe</i>. <A CLASS="menu" HREF="https://doi.org/10.1002/chemv.201000107">https://doi.org/10.1002/chemv.201000107</A>.</p>
+
+<p>Szostak, R. 2011. Complex concepts into basic concepts. <i>Journal of the American Society for Information Science and Technology</i>, 62(11), 2247&ndash;2265. <A CLASS="menu" HREF="https://doi.org/10.1002/asi.21635">https://doi.org/10.1002/asi.21635</A>.</p>
+
+<p>Szostak, R. 2013. <i>Basic concepts classification</i> (web site, updated since 2013). <A CLASS="menu" HREF="https://sites.google.com/ualberta.ca/rick-szostak/Basic-Concepts-Classification">https://sites.google.com/ualberta.ca/rick-szostak/Basic-Concepts-Classification</A>.</p>
+
+<p>Szostak, R. 2024. Knowledge organization. In F. Darbellay (Ed.), <i>Elgar encyclopedia of interdisciplinarity and transdisciplinarity</i>, 314&ndash;317. Edward Elgar.</p>
+
+<a name="refT"></a>
+<a name="refU"></a>
+<a name="refV"></a>
+
+<p>Vall&eacute;e, R. 2006. Holism, semantic and epistemic. In K. Brown (Ed.), <i>Encyclopedia of language and linguistics</i>, 2nd. ed., 374&ndash;377. Elsevier. <A CLASS="menu" HREF="https://doi.org/10.1016/B0-08-044854-2/01175-5">https://doi.org/10.1016/B0-08-044854-2/01175-5</A>.</p>
+
+<p>Varzi, A. 2019. Mereology. In E. N. Zalta (Ed.), <i>The Stanford encyclopedia of philosophy (spring 2019 edition)</i>. Stanford University. <A CLASS="menu" HREF="https://plato.stanford.edu/archives/spr2019/entries/mereology/">https://plato.stanford.edu/archives/spr2019/entries/mereology/</A>.</p>
+
+<p>Vickery, B. C. 1960. <i>Faceted classification: A guide to the construction and use of special schemes</i>. Aslib.</p>
+
+<a name="refW"></a>
+
+<p>Wang, D., Li, Q., Lima, L. C., Simonsen, J. G., and Lioma, C. 2019. Contextual compositionality detection with external knowledge bases and word embeddings. In L. Liu and R. White (Eds.), <i>The Web Conference 2019 &mdash; Companion of the World Wide Web Conference, WWW 2019</i> (pp. 317&ndash;323). Association for Computing Machinery. <A CLASS="menu" HREF="https://doi.org/10.1145/3308560.3316584">https://doi.org/10.1145/3308560.3316584</A>.</p>
+
+<p>Weiskopf, D. A. n.d. The theory-theory of concepts. In J. Fieser and B. Dowden (Eds.), <i>The Internet encyclopedia of philosophy</i>. <A CLASS="menu" HREF="https://iep.utm.edu/theory-theory-of-concepts/">https://iep.utm.edu/theory-theory-of-concepts/</A>.</p>
+
+<p>Weitzman, S. H., and Parenti, L. R. 2025. Fish. In <i>Encyclop&aelig;dia Britannica</i>. Encyclop&aelig;dia Britannica. <A CLASS="menu" HREF="https://www.britannica.com/animal/fish">https://www.britannica.com/animal/fish</A>.</p>
+
+<p>Whorf, B. L. 1956. In J. B. Carroll (Ed.), <i>Language, thought, and reality: Selected writings of Benjamin Lee Whorf</i>. MIT Press. (Original work published 1941.) <A CLASS="menu" HREF="https://ia601605.us.archive.org/12/items/languagethoughtr00whor/languagethoughtr00whor.pdf">https://ia601605.us.archive.org/...</A></p>
+
+<p>Wierzbicka, A. 1972. <i>Semantic primitives</i>. Athen&auml;um.</p>
+
+<p>Wierzbicka, A. 1996. <i>Semantics: Primes and universals</i>. Oxford University Press.</p>
+
+<p>Wierzbicka, A. 1999. <i>Emotions across languages and cultures: Diversity and universals</i>. Cambridge University Press. <A CLASS="menu" HREF="https://doi.org/10.1017/CBO9780511521256">https://doi.org/10.1017/CBO9780511521256</A>.</p>
+
+<p>Wierzbicka, A. 2006. Semantic primitives. In K. Brown (Ed.), <i>Encyclopedia of language and linguistics</i> ( 2nd ed., pp. 134&ndash;137). Elsevier. <A CLASS="menu" HREF="https://doi.org/10.1016/B0-08-044854-2/01073-7">https://doi.org/10.1016/B0-08-044854-2/01073-7</A>.</p>
+
+<p>Wierzbicka, A. 2021. &rsquo;Semantic primitives', fifty years later. <i>Russian Journal of Linguistics</i>, 25(2), 317&ndash;342. <A CLASS="menu" HREF="https://doi.org/10.22363/2687-0088-2021-25-2-317-342">https://doi.org/10.22363/2687-0088-2021-25-2-317-342</A>.</p>
+
+<p>Wilkins, J. (1668. <i>An essay towards a real character, and a philosophical language</i>. Printed for Sa: Gellibrand, and for John Martyn printer to the Royal Society. <A CLASS="menu" HREF="https://archive.org/details/AnEssayTowardsARealCharacterAndAPhilosophicalLanguage/page/n1/mode/2up">https://archive.org/...</A></p>
+
+<p>Wilks, Y. 2007. Good and bad arguments about semantic primitives. In K. Ahmad, C. Brewster, and M. Stevenson (Eds.), <i>Words and intelligence I: Selected papers by Yorick Wilks</i>, 103&ndash;139. Springer. (Original work published 1977.) <A CLASS="menu" HREF="https://doi.org/10.1007/1-4020-5285-5_6">https://doi.org/10.1007/1-4020-5285-5_6</A>.</p>
+
+<p>Wilks, Y., and Tait, J. 2006. A retrospective view of synonymy and semantic classification. In J. I. Tait (Ed.), <i>Charting a new course: Natural language processing and information retrieval: Essays in honour of Karen Sp&auml;rck Jones</i>, 1&ndash;11. Springer. <A CLASS="menu" HREF="https://doi.org/10.1007/1-4020-3467-9_1">https://doi.org/10.1007/1-4020-3467-9_1</A>.</p>
+
+<p>Williams, D. M., and Ebach, M. C. 2020. <i>Cladistics: A guide to biological classification</i>, 3rd ed. Cambridge University Press.</p>
+
+<p>Wittgenstein, L. 1981. <i>Tractatus Logico-Philosophicus</i>. C. K. Ogden (Trans.). Routledge and Kegan Paul. (Original work published 1921.)</p>
+
+<a name="refX"></a>
+<a name="refY"></a>
+<a name="refZ"></a>
+
+<p>Zwicky, A. M. 1973. Linguistics as chemistry: The substance theory of semantic primes. In S. R. Anderson and P. Kiparsky (Eds.), <i>A festschrift for Morris Halle</i> (pp. 467&ndash;485). Holt.</p>
+
+<p>Zwicky, A. M. 1980. The analogy of linguistics with chemistry. In M. Key (Ed.), <i>The relationship of verbal and nonverbal communication</i>, 319&ndash;326. De Gruyter Mouton. <A CLASS="menu" HREF="https://doi.org/10.1515/9783110813098.319">https://doi.org/10.1515/9783110813098.319</A>.</p>
+
+</span><!-- citation ends -->
+
+<a name="col"></a>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<p>&nbsp;</p>
+
+<p>Visited <a href="https://www.digits.net" target="_blank"><img src="https://counter.digits.net/?counter={b101f571-fa92-b624-e1f5-290726c92a00}&template=simple" alt="Hit Counter by Digits" border="0"  /></a> times.</p>
+
+<hr>
+<p itemprop="dateCreated">Version 1.0 published 2025-08-27- <!-- last edited 2025-- -->
+<!-- <br>Version 1.1 published 2020--: [changes] -->
+
+<p>Article category: <code><a itemprop="about" href="index#CC">Theoretical concepts</a></code></p>
+
+<p>This article (version 1.0) was first published open access in <i>JASIST</i>. How to cite it: 
+<br>Hj&oslash;rland, Birger. In press. 
+&ldquo;Semantic primitives and compositionality: An Annual Review of Information Science and Technology (ARIST) paper&rdquo;. 
+<i>Journal of the Association for Information Science and Technology</i>. <A CLASS="menu" HREF="https://doi.org/10.1002/asi.70011">https://doi.org/10.1002/asi.70011</A>.
+Also available in 
+<i><span itemprop="isPartOf">ISKO Encyclopedia of Knowledge Organization</span></i>, 
+eds. <span itemprop="editor">Birger Hj&oslash;rland</span> and <span itemprop="editor">Claudio Gnoli</span>, 
+<span itemprop="url">https://www.isko.org/cyclo/primitives</span>.
+<br>To quote text edited in a later version, you should save it in the <i><a href="https://web.archive.org/">Wayback Machine</a></i> and cite the saved version.</p>
+
+<p><a href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND</a>.</p>
+
+</div><!-- Article ends -->
+
+</td>
+</tr>
+
+<tr>
+<td id="logo">
+</td>
+</tr>
+
+</table>
+</body>
+</html>

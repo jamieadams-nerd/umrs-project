@@ -1,0 +1,616 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head profile="http://dublincore.org/documents/2007/11/05/dc-html/">
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>Document retrieval (IEKO)</title>
+<link rel="stylesheet" type="text/css" href="../isko.css" />
+<link rel="schema.DCTERMS" href="http://purl.org/dc/terms/" />
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:url" content="https://www.isko.org/cyclo/document_retrieval" />
+<meta name="twitter:title" content="Document_retrieval (ISKO Encyclopedia of KO)" />
+<meta property="og:image" content="https://www.isko.org/cyclo/hjorland.jog" />
+<meta name="twitter:description" content="ChatGPT and related technologies have revived an old issue in information science (IS) concerning information retrieval (IR) versus document retrieval. Since 1950, the term IR has primarily been used as a misnomer for document retrieval. This problematic terminology reflects a desire to go beyond documents and provide, in response to user queries, not lists of documents but direct answers. Only with the emergence of large language models such as ChatGPT has the goal of directly informing users appeared to many as justifiable in relation to IR. Such models, however, still depend on input in the form of documents. A basic problem with large language models is their inability to establish a valid connection between their answers and the sources on which they are based. Whereas scholarly norms dictate that all claims be explicitly supported by the sources and arguments used, this cannot be done satisfactorily by ChatGPT, which represents a fundamental limitation of this technology. Neglecting the documentary basis in all forms of IR is na&iuml;ve, and the core concept in IS should be understood as document retrieval. Recognizing this distinction is essential for enabling users to maintain control over the search and to perform source criticism." />
+
+<meta name="DCTERMS.title" content="Document retrieval" />
+<meta name="DCTERMS.creator" content="Birger Hjorland" />
+<meta name="DCTERMS.issued" content="2026" />
+<meta name="DCTERMS.relation.ispartof" content="ISKO Encyclopedia of Knowledge Organization" />
+<meta name="DCTERMS.ispartof" content="ISKO Encyclopedia of Knowledge Organization" />
+<meta name="DCTERMS:bibliographicCitation" content="ISKO Encyclopedia of Knowledge Organization, eds. Birger Hjorland and Claudio Gnoli" />
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="001.012">
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="025.4">
+<meta name="DCTERMS.subject.keyword" content="documents">
+<meta name="DCTERMS.subject.keyword" content="information retrieval">
+<meta name="DCTERMS.subject.keyword" content="generative artificial intelligence">
+<meta name="DCTERMS.type" content="Text" />
+<meta name="DCTERMS.format" content="text/html" />
+<meta name="DCTERMS.identifier" content="https://www.isko.org/cyclo/document_retrieval" />
+
+<style>
+a {text-decoration: none;}
+a:hover {text-decoration:underline;}
+table td, table th { padding: 5px; }
+</style>
+
+</head>
+<body>
+
+<a name="top"></a>
+
+<table>
+
+<tr>
+<td id="isko"><h1>I S K O</h1></td>
+<td id="banner"><h2><a href="index.html" style="text-decoration:none;">Encyclopedia of Knowledge Organization</h2></a></td>
+</tr>
+
+<tr>
+<td id="navigation">
+<a href="../index.php">home</a>
+<a href="../about.html">about ISKO</a>
+<a href="../join.html">join ISKO</a>
+<a href="../ko.html"><cite>Knowledge Organization</cite> journal</a>
+<a href="../events.html">ISKO events</a>
+<a href="../chapters.html">ISKO chapters</a>
+<a href="../people.html">ISKO people</a>
+<a href="../stac/">SciTech Adv. Council</a>
+<a href="../pubs.html">Advances in KO</a>
+<a href="index.html">Encyclopedia</a>
+<a href="../lit.html">KO literature</a>
+<a href="../inst.html">KO institutions</a>
+<a href="http://bartoc.org/" title="link to BARTOC">&#8663; KOS registry</a>
+<a href="https://isko.wildapricot.org/" title="access-account required">&#128274; members</a>
+<a href="../contact.html">contact us</a>
+</td>
+<td id="content" rowspan="2">
+
+<a class="menu" href="authors#hj">edited by Birger Hj&oslash;rland</a> <a class="menu" href="authors#g">and Claudio Gnoli</a>
+
+<p>&nbsp;
+
+<div itemscope itemtype="http://schema.org/Article">
+
+<h2 itemprop="headline">Document retrieval</h2>
+
+<blockquote>
+by <a itemprop="author" href="authors#hj" style="text-decoration:underline">Birger Hj&oslash;rland</a>
+
+<p>Table of contents:
+
+<br><a href="#1">1. Introduction</a> 
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#1.1">1.1 Terminological issues;</a> 
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#1.2">1.2 Theoretical developments in information science</a> 
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#1.3">1.3 Methodological approach</a> 
+<br><a href="#2">2. The epistemological importance of the concepts &laquo;document&raquo; and &raquo;literature&raquo;</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#2.1">2.1 The epistemic importance of documents</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#2.2">2.2 Epistemology of fact retrieval</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#2.3">2.3 Source criticism</a>
+<br><a href="#3">3 ChatGPT as an information provider</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#3.1">3.1 Case 1: The application of logical division in the sciences</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#3.2">3.2 Case 2: The Flakpanzer Gepard and drone warfare in Ukraine</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#3.3">3.3 Case 3: Functional classification</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#3.4">3.4 Case 4: Theory of knowledge in the Dewey Decimal Classification</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#3.5">3.5 Lessons learned about ChatGPT's relation to documents</a>
+<br><a href="#4">4. Conclusion</a>
+<br><a href="#ack">Acknowledgments</a>
+<br><a href="#end">Endnotes</a>
+<br><a href="#ref">References</a>
+<br><a href="#col">Colophon</a>
+
+<p itemprop="abstract"><strong>Abstract</strong>:
+<br>ChatGPT and related technologies have revived an old issue in information science (IS) concerning information retrieval (IR) versus document retrieval. Since 1950, the term <i>IR</i> has primarily been used as a misnomer for document retrieval. This problematic terminology reflects a desire to go beyond documents and provide, in response to user queries, not lists of documents but direct answers. Only with the emergence of large language models such as ChatGPT has the goal of directly informing users appeared to many as justifiable in relation to IR. Such models, however, still depend on input in the form of documents. A basic problem with large language models is their inability to establish a valid connection between their answers and the sources on which they are based. Whereas scholarly norms dictate that all claims be explicitly supported by the sources and arguments used, this cannot be done satisfactorily by ChatGPT, which represents a fundamental limitation of this technology. Neglecting the documentary basis in all forms of IR is na&iuml;ve, and the core concept in IS should be understood as document retrieval. Recognizing this distinction is essential for enabling users to maintain control over the search and to perform &ldquo;source criticism&rdquo;.</p>
+
+</blockquote>
+
+<span itemprop="articleBody">
+
+<a name="1"></a>
+<h3 itemprop="articleSection">1. Introduction</h3>
+
+<a name="1.1"></a>
+<br><h4 itemprop="articleSection">1.1 Terminological issues</h4>
+
+<p>Mooers (<A HREF="#refM">1950</A>, 5) coined the term &rarr; <a href="ir"><i>information retrieval</i> (IR)</a> at almost the same time as the term &rarr; <a href="lis"><i>information science</i> (IS)</a> and related phrases were introduced <A HREF="#e1">[1]</A>. He defined IR as &ldquo;finding information whose location or very existence is a priori unknown&rdquo;. However, two senses of &ldquo;finding information&rdquo; are conflated in this definition and should be distinguished:
+
+<ol>
+<li>Finding concrete answers to queries (i.e., information recorded in documents) <A HREF="#e2">[2]</A>. This may be termed IR. Near synonyms and associated terms include <i>fact retrieval</i> <A HREF="#e3">[3]</A>, <i>question answering</i>, <i>chatbots</i> <A HREF="#e4">[4]</A>, and <i>lookup searches</i> <A HREF="#e5">[5]</A>.</li>
+<li>Finding &rarr; <a href="document">documents</a> that contain answers to queries (or rather, that with some probability contain such answers). This is better termed document retrieval. Synonyms include <i>searching information sources</i>, and near-synonyms include <i>literature searching</i>, <i>reference retrieval</i>, or the retrieval of <i>document surrogates</i> such as abstracts or extracts.</li>
+</ol>
+
+<p>The idea and desirability of &ldquo;fact retrieval&rdquo; predate the establishment of IS, as it was advocated, for example, by Paul Otlet and Julius Otto Kaiser, as documented by information researcher Dousa (<A HREF="#refD">2010</A>) <A HREF="#e6">[6]</A>. Distinguished researchers in IS have also regarded fact retrieval as the ultimate goal of the discipline. Karen Sp&auml;rck Jones (<A HREF="#refS">1987</A>, 9), for instance, claimed: &ldquo;we are concerned with access and, more materially, indirect access to the information the user wants: he wants the information in the documents, but the system only gives him the documents&rdquo;.</p>
+
+<p>Despite this aim of moving from providing documents to providing answers, many researchers in the early development of IR realized that the field was in practice about document retrieval. Lancaster (<A HREF="#refL">1968</A>), for example, wrote:
+<blockquote>An information retrieval system does not inform (i.e., change the knowledge of) the user on the subject of his inquiry. It merely informs on the existence (or non-existence) and whereabouts of documents relating to his request.</blockquote></p>
+
+<p>Kochen (<A HREF="#refK">1974</A>, 1) formulated it this way: &ldquo;When an information technologist speaks of an information retrieval (IR) system, he usually means a way of providing people with documents they need&rdquo;. Similarly, Rijsbergen and Lalmas (<A HREF="#refR">1996</A>, 386) wrote: &ldquo;In the early days of information retrieval (<A HREF="#refR">van Rijsbergen, 1979</A>), people used to qualify their statements about IR by saying that really they were working on document retrieval. It was denied strenuously that information was being retrieved&rdquo;.</p>
+
+<p>Over time, the distinction between document retrieval and IR, as expressed by Lancaster and others, was largely neglected, and the terms were often used in the same ambiguous way as by Mooers. However, in 1996 the issue was revisited by Rijsbergen and Lalmas, who provided a defense of the term IR as contrasted with document retrieval. This is the only well-developed defense found in the literature. I interpret their article as part of a long tradition in IS of seeking to replace document retrieval with IR and shall return to it in <A HREF="#2.2">Section 2.2</A> on the epistemology of fact retrieval.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="1.2"></a>
+<h4 itemprop="articleSection">1.2 Theoretical developments in information science</h4>
+
+<p>The issue discussed in this article involves broader aspects of the development of IS. When this discipline was introduced, &ldquo;information&rdquo; often replaced &ldquo;document&rdquo;, and the former term <i>documentation</i> was largely replaced by <i>IS</i>, as indicated by the name change in 1968 of the American Documentation Institute to the American Society for Information Science. However, this downplaying of the term <i>document</i> has met a countermovement, sometimes termed the neo-documentary turn <A HREF="#e7">[7]</A>. A notable contribution is Buckland's &ldquo;information-as-thing&rdquo; (<A HREF="#refB">1991</A>), which argued that &rarr; <a href="information">information</a> has multiple meanings, but that the most important within library and information science (LIS) is &ldquo;information-as-thing&rdquo; (i.e. document) <A HREF="#e8">[8]</A>. This is crucial because, as Buckland noted (<A HREF="#refB">1991</A>, 358), &ldquo;information storage and retrieval systems can deal directly only with &lsquo;information-as-thing&rsquo;&rdquo;.</p>
+
+<p>The neo-documentary movement, however, has not engaged deeply with specific information technologies such as recent large language model (LLM)-based systems. This paper therefore addresses the conflict between the dominant understanding of IR and the document perspective for understanding the limitations of technologies such as ChatGPT.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="1.3"></a>
+<h4 itemprop="articleSection">1.3 Methodological approach</h4>
+
+<p><A HREF="#1.1">Section 1.1</A> documented that the term <i>IR</i> has often been used as a misnomer for document retrieval. A core argument in this article is that the importance of document retrieval is primarily based on epistemological arguments. Therefore, <A HREF="#2">Section 2</A> examines the epistemological implications of neglecting the concepts document and literature, divided into the following subsections: <A HREF="#2.1">2.1</A>, the epistemic importance of documents; <A HREF="#2.2">2.2</A>, the epistemology of fact retrieval; and <A HREF="#2.3">2.3</A>, source criticism.</p>
+
+<p><A HREF="#3">Section 3</A> discusses ChatGPT as an information provider. Today, artificial intelligence (AI) &mdash; more precisely, generative AI, which creates new content, such as text, images, audio, video, and code, by learning patterns from large datasets &mdash; has become increasingly pervasive and is heavily promoted by the information technology industry. LLMs are a specific type of generative AI focused on generating human-like text, and one of the well-known examples thereof is ChatGPT. They do not retrieve text verbatim but create new output by statistically modeling patterns, structures, and associations found in the data. Their behavior thus reflects the limitations of probabilistic pattern modeling rather than conceptually based understanding. Well-known problems with LLM technology are that such systems &ldquo;encounter challenges like hallucination, outdated knowledge, and non-transparent, untraceable reasoning processes&rdquo; (cf. <A HREF="#refG">Gao et al. 2024</A>). In contrast to traditional bibliographical databases and search engines, they provide concrete answers rather than lists of documents, and it is not possible to specify which specific documents have contributed to a given answer, although newer versions often cite specific sources. <A HREF="#3">Section 3</A> presents four case studies illustrating ChatGPT's dependence on input documents as well as on the user's subject knowledge. The study focuses not on user trust but on the epistemic validity and justifiability of AI-generated information. It thus points to an inherent weakness in the fused and opaque processing of document retrieval and information synthesis, that is, not separating the discovery of documents that contain answers from the provision of interpretations and syntheses from these documents.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2"></a>
+<h3 itemprop="articleSection">2. The epistemological importance of the concepts &ldquo;document&rdquo; and &ldquo;literature&rdquo;</h3>
+
+<a name="2.1"></a>
+<br><h4 itemprop="articleSection">2.1 The epistemic importance of documents</h4>
+
+<p>Information scientist Henning Spang-Hanssen (<A HREF="#refS">2001</A>) provided an important analysis of documentary provenance as an essential element of any piece of information:
+<blockquote>Information about some physical property of a material is actually incomplete without information about the precision of the data and about the conditions under which these data were obtained. Moreover, various investigations of a property have often led to different results that cannot be compared and evaluated apart from information about their background. An empirical fact always has a history and a perhaps not too certain future. This history and future can be known only through information from particular documents, i.e., by document retrieval.
+<br>The so-called fact retrieval centers seem to me to be just information centers that keep their information sources&mdash;i.e., their documents&mdash;exclusively to themselves.</blockquote></p>
+
+<p>Public norms for documenting knowledge claims have evolved. A hallmark of academic work is to provide sources for all claims, either by referring to one's own observations and reflections or to those of others as documented in public sources. It is well known, for example, that <i>Wikipedia</i> often calls for documentation by inserting &ldquo;[citation needed]&rdquo;.</p>
+
+<p>Providing proper bibliographic references is not merely a formalistic academic procedure. The hallmark of scholarship is to provide relevant and authoritative references that support the claims made. This may be irritating to some, but without such documentation, errors, myths, confusions, and problematic claims flourish.</p>
+
+<p>As Spang-Hanssen argued, a given claim may have been contradicted in the literature, and it is na&iuml;ve to consider &ldquo;the universe of knowledge&rdquo; to consist only of verified statements. As information researcher Mai (<A HREF="#refM">2009</A>, 1) wrote:
+<blockquote>The notion that there is such a thing as the universe of knowledge has been challenged many times in modern philosophy, and most recent work in classification rejects the notion. Most scholars accept that there are multiple universes of knowledge, that people come to the world from different perspectives, view the world differently, and understand the world differently.
+<br>Further, most scholars today accept that things and topics cannot be classified independently from their function, interpretation, or relation to other things and topics &mdash; it is generally accepted that things and topics do not have innate essences. In this line of thought, things and topics make sense only in context, and they are always understood from a particular epistemic standpoint.</blockquote></p>
+
+<p>Consequently, the term <i>universe of knowledge</i> should either be avoided or replaced, or it should be made explicit that it refers to a universe encompassing different claims, perspectives, theories, and viewpoints on given subject matters &mdash; and indeed different views of what counts as knowledge, and thereby of what the universe of knowledge is and what it contains.</p>
+
+<p>According to philosopher Gelfert (<A HREF="#refG">2010</A>, 90), Immanuel Kant emphasized the role of documents in science:
+<blockquote>According to Kant, science, with its goal of &ldquo;exactly determining the phenomena through observations and experiments&rdquo;, established a new &ldquo;accuracy in the reporting of experience&rdquo;, which &ldquo;was then transferred from natural science to history&rdquo;. Improvements in the publication and communication of reports contributed to this development: &ldquo;The printing presses, and also the gazettes, immediately reveal where someone has erred in his writings&rdquo;; unlike in ancient times, &ldquo;one can no longer get away with telling merely anecdotal stories&rdquo;.</blockquote></p>
+
+<p>Further:
+<blockquote>Kant believes in the capacity of the social world to furnish objective grounds for knowledge, even in cases where direct first-hand experience of the facts concerned is out of our reach.</blockquote></p>
+
+<p>Placing the role of public documents &mdash; that is, publications &mdash; in the perspective of social epistemology, Gelfert shows how Kant generalizes Spang-Hanssen's point by emphasizing that the public nature of scientific communication contributes to eliminating errors and overcoming the subjectivity of individual scientists.</p>
+
+<p>The role of disciplinary literature is all too often underestimated. The literature of a field is the alpha and omega of research: all research should take its starting point in the literature, identify unsolved or problematic issues, and contribute to improving and clarifying them. In other words, research should both begin and end in the literature. Recorded knowledge is what scientists and scholars must draw upon to become professionals; it is the intellectual heritage passed down to future scholars and practitioners in each field. Of course, many other elements matter, such as the mastery of various skills. However, the knowledge recorded in the disciplinary literature represents the core. Therefore, it is an important &mdash; though often under-prioritized &mdash; task to nurture the scientific literature, correct errors, provide conceptual clarity, and synthesize its most important knowledge.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2.2"></a>
+<h4 itemprop="articleSection">2.2 Epistemology of fact retrieval</h4>
+
+<p>In the positivist background of IS, the aim of recording pure facts has long prevailed, as pointed out by information researcher Sundin (<A HREF="#refS">2025</A>, 293&ndash;294):
+<blockquote>Otlet wanted to create what he called a &lsquo;Universal book of knowledge&rsquo;, with all possible facts extracted from books, journals, statistics and so on. These facts &lsquo;will be recorded on separate leaves or cards rather than being confined in volumes&rsquo; and organised according to a standardised classification system (Universal Decimal Classification) (Otlet in <A HREF="#refF">Frohmann, 2008, p. 79</A>). Otlet's idea of extracting facts from documents conveys an understanding of facts as abstract, neutral, and decontextualised from authors as well as from a specific volume (or similar).</blockquote></p>
+
+<p>Otlet referred to this process of extracting facts from documents by professional documentalists as &ldquo;documentation&rdquo;. In this process, new, highly standardized, short documents were created. The positivist attitude is especially clear in what Frohmann (<A HREF="#refF">2008</A>, 82) described as Otlet's wish &ldquo;to eliminate authorial subjectivity&rdquo; (i.e., the opposite of providing signed articles). This reveals a na&iuml;ve, positivist view in IS, opposed to the hermeneutical position, in which the objectivity of claimed facts is questioned, and which considers their extraction not as a mechanical activity but as contextualized and theory-dependent <A HREF="#e9">[9]</A>.</p>
+
+<p>Sp&auml;rck Jones and Kay (<A HREF="#refS">1973</A>, 175) wrote: &ldquo;The difference [between document retrieval and fact retrieval] is not one of principle because, clearly, a document retrieval system is nothing more than a fact retrieval system restricted to operate on facts about documents&rdquo; <A HREF="#e10">[10]</A>. The authors further found that the main difference between the two types of retrieval is that fact retrieval to a much higher degree must be able to find facts in a file on the basis of inferring correct answers from facts given in the file, for example, if the file contains the information that the <i>Mona Lisa</i> is in the Louvre and that the Louvre is in Paris, the system should be able to infer that the <i>Mona Lisa</i> is in Paris. I shall not here discuss whether this difference is a principal one (or whether document retrieval may also demand such inference) <A HREF="#e11">[11]</A>. Of interest here is that Sp&auml;rck Jones and Kay (<A HREF="#refS">1973</A>, 177) concluded that research on fact retrieval must be based on human psychology:
+<blockquote>This is to say that the intellectual capabilities of the machine would have to be precisely those of a human being. [&hellip;] The argument that such a machine was a valid psychological model would be immensely compelling. It is for this reason that work on fact retrieval systems is usually said to belong to the discipline of artificial intelligence, and hence to psychology.</blockquote></p>
+
+<p>While many commentators hold, as Sparck Jones and Kay did, that psychology contributed to &mdash; and is a precondition for &mdash; the development of AI (e.g., by the idea of &ldquo;neural networks&rdquo;), this concept seems to have been more metaphorical and formal than it has been psychologically realistic. Modern AI (with LLMs) is, at its engineering core, independent of psychology and brain research. It is based on statistics, linear algebra, optimization methods, and scalable data infrastructures. However, it is outside the scope of the present article to discuss the relation between AI and psychology in general, and this does not seem necessary either, as it is difficult to understand the relevance of a universal psychological model for research on fact retrieval. Clearly, people's ability to ask questions depends on the knowledge they possess, including their ability to infer a correct answer from implicit information. Therefore, what is required is a socio-cultural or epistemological research perspective rather than one based on experimental psychology, assuming a universal psychological model.</p>
+
+<p>Information researcher Furner (<A HREF="#refF">2016</A>, 288) observed that the relation between &rarr; <a href="data">data</a> (i.e., facts) and documents is often confused in the literature:
+<blockquote>There is little consensus on the precise nature of the conceptual relationship between &lsquo;data&rsquo; and &lsquo;document&rsquo;. The default position appears to be the view that all documents are in some sense made up of data [&hellip;]. The position I wish to develop in this paper, however, is that it is not in fact the case that documents are made up of data. On the contrary, it is the other way round: datasets are made up of documents.</blockquote></p>
+
+<p>Furner's point can be understood in the context of the debate between &rarr; <a href="primitives#4.5">atomism and holism</a> (see <A HREF="#refH">Hj&oslash;rland 2025</A>, 11&ndash;13). Atomists understand data and facts as independent statements, whereas holists regard them as relative to contexts. Holism and hermeneutics thus correspond to Spang-Hanssen's view that a fact always has a history and an uncertain future and therefore must be considered in the context of the document in which it is published &mdash; and, more broadly, in the literature of which it forms a part.</p>
+
+<p>A relatively late article by Rijsbergen and Lalmas (<A HREF="#refR">1996</A>, 386), however, defends the view that IR concerns information rather than documents:
+<blockquote>We believe that the purpose of an information retrieval system is to provide information about a request and that a request is a representation of an information need that an IR system attempts to satisfy. Hence, a fundamental problem is how to compute the information contained in one object (e.g., a document) about another (e.g., a query). Thus, if a user states a query then it behooves the IR system to find the objects that contain information about that query.</blockquote></p>
+
+<p>Rijsbergen and Lalmas treat information as that which informs one document (or information object) about another (the query) and seek the solution to IR to be in semantic similarity between the two. Two basic objections to their view are: (1) the informativeness of a document in relation to a query is not objective but theory-dependent, and (2) the query itself is also shaped by the &ldquo;paradigm&rdquo; of its author and must therefore be interpreted before an answer can be provided.</p>
+
+<p>As philosopher A.F. Chalmers (<A HREF="#refC">1982</A>, 92) wrote from the history of science: prior to Newton, there was no agreement about which observations (or documents reporting those observations) were relevant to understanding and guiding research on the nature of light. In other words, there was no agreement on which documents were informative for this problem. This means that Rijsbergen and Lalmas are wrong in assuming the existence of a fixed relationship between two documents in which one objectively contains information about the other. The example shows that informativeness is theory-dependent. Different theories of a subject &mdash; for instance, bedwetting (nocturnal enuresis) &mdash; make different investigations and documents informative in relation to queries on the topic. At one time, psychoanalytic theories of bedwetting prevailed, but today they have been replaced by other theories, which in turn provide new criteria for what studies to consult. This perspective is completely absent from Rijsbergen and Lalmas (<A HREF="#refR">1996</A>) and from much of the IR literature.</p>
+
+<p>In addition, as physicist and philosopher Kuhn (<A HREF="#refK">1962</A>) pointed out, a paradigm influences how researchers view the world and the kinds of queries they pose. As information researcher Kwon (<A HREF="#refK">2016</A>, ii) emphasized:
+<blockquote>If &lsquo;information&rsquo; is a central concept for library and information science, then &lsquo;questions&rsquo; are fundamental, for information &lsquo;informs&rsquo; relative to the question. But research focusing on questions as a central theoretical concept has been stymied by the paradox of the question, which observes that in order to ask one must know enough to know what one does not know.</blockquote></p>
+
+<p>Rather than relying on the traditional methodology in IS, where users are asked which documents they consider relevant, it seems preferable to examine how advanced students and researchers receive feedback from advisors and peer reviewers, and how different views of relevance are connected to paradigms in the research field. Such feedback does not take a student's or researcher's assumptions as given but may suggest alternative perspectives. It can highlight the relevance of new documents and problematize the use of others. This shifts the question of relevance (or informativeness) from psychological studies of users to philosophical studies of subject fields.</p>
+
+<p>Based on Spang-Hanssen's analysis and the considerations in this section, the wish to replace document retrieval with IR, as expressed by Sp&auml;rck Jones and others, appears na&iuml;ve and philosophically problematic. I shall consider this further in the remainder of this article.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2.3"></a>
+<h4 itemprop="articleSection">2.3 Source criticism</h4>
+
+<p>As noted in <A HREF="#2.1">Section 2.1</A>, many users may be irritated by retrieving sets of references rather than direct answers to their queries. This reaction is understandable and even logical because it places an additional workload on the users: they must extract information from a set of sources, evaluate and select what is true and relevant, synthesize the information, and formulate an answer to the query. (For example, we commonly rely on our doctor's diagnosis and prescriptions without performing the work of searching, interpreting, and concluding on the basis of the medical literature.) Systems like ChatGPT carry out this work for us, whereas document-retrieval systems do not. An important task, therefore, is to justify this workload &mdash; or more precisely, to specify when it is justified. (For instance, it seems seldom justified for patients to search and read the medical literature, but it is important for medical specialists, and particularly for researchers.) This question involves the issue of when a given information source should be trusted and when its claims should be questioned. In other words, it involves source criticism, which, in a broad interdisciplinary sense, concerns evaluating whether a given source is reliable for the intended use and whether it provides valid knowledge (cf. <A HREF="#refH">Hj&oslash;rland 2012</A>).</p>
+
+<p>Fact-retrieval and question-answering systems and services are not problematic in themselves. There has always been a rich variety of such systems and services, including statistical databases, directories, dictionaries, encyclopedias, maps, and databases providing scientific and mathematical constants and tables. Such information sources vary in their degree of &ldquo;cognitive authority&rdquo; <A HREF="#e12">[12]</A>, which plays a role in their use, and sometimes multiple sources are compared to check the validity of the information received. In the case of encyclopedias, one quality norm is that entries are written and signed by experts, thereby enabling a certain kind of source criticism. The point here is not that fact-retrieval systems are inherently problematic, but that the term <i>IR</i> has typically been applied in IS to document-retrieval systems. Moreover, this misnomer has been associated with the idea that document retrieval is a poor substitute for &ldquo;real&rdquo; IR and with a positivist view that seeks to eliminate authorial subjectivity.</p>
+
+<p>The need for source criticism is also associated with the problem that consensus in science is often overrated, as is the view that synthesizing knowledge from different documents can be done objectively and free of authorial subjectivity. Regarding consensus, philosopher Broadfield (<A HREF="#refB">1946</A>, 69&ndash;70) wrote:
+<blockquote>Consensus is most likely to appear among the unenlightened, of whom it is characteristic to be unanimous on the truth of what is false. In intellectual matters agreement is rare, especially in live issues.</blockquote></p>
+
+<p>By implication, different documents often represent disagreements and diverse perspectives. If the first seemingly relevant document is used uncritically, the user risks being poorly informed, perhaps even becoming a victim of &ldquo;fake news&rdquo;. As part of academic training, students are taught methodology and how to evaluate studies and claims (which itself is a field with multiple perspectives). The process of moving from the literature (i.e., identifying a set of documents deemed sufficient to provide authoritative answers) to answering questions must be as explicit, traceable, and transparent as possible. This is at the core of the problem with attempts to substitute document retrieval with IR. Sundin (<A HREF="#refS">2025</A>, 296) presented this point of view, writing:
+<blockquote>[T]his increasing invisibility of sources [documents used to provide answers] is important and likely consequential.</blockquote></p>
+
+<p>Further (<A HREF="#refS">2025</A>, 298):
+<blockquote>Increasing inbuilt AI support for searching and drawing conclusions from information sources may lead to de-skilling of searching for and evaluating information. Such de-skilling of information literacy transfers some of the previously required analytical skills from the user to the system. As a result, this transfer can also be seen as a transfer of agency in which the user has less control and becomes increasingly more dependent on the functions of the system&mdash;not only in the search as such, but also in evaluating and analysing the results.</blockquote></p>
+
+<p>Users' control of the search process is important for their ability to perform source criticism. As we shall see in the next section on ChatGPT, the way queries are formulated influences the answers. We thus face a hermeneutical circle: the quality of the answers depends on the knowledge of the user, and his or her knowledge depends on prior answers. When users have limited subject knowledge, ChatGPT and related technologies may therefore provide poor answers.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3"></a>
+<h3 itemprop="articleSection">3. ChatGPT as an information provider</h3>
+
+<p>A bit of background information about ChatGPT was given in <A HREF="#1.3">Section 1.3</A>. In keeping with the topic of this article, this section focuses on providing information depending on documents that contain the desired information. Systems based on LLMs obviously depend heavily on the input used for their training and fine-tuning. The base GPT models (including GPT-5) are trained on large static datasets, which are not updated in real time. However, beginning in 2023, ChatGPT could import external information during a chat session through a web search function (a kind of &ldquo;RAG [retrieval-augmented generation]-like behavior&rdquo;) <A HREF="#e13">[13]</A>, where retrieved web content may be incorporated into the generation process. At the time of writing, users of ChatGPT do not have direct control over whether web-browsing or retrieval functions are enabled and from the user's perspective this retrieval is non-transparent, non-persistent, and not documentable. Consequently, it is not possible for an author to state with certainty whether a given response relied solely on the model's training data or incorporated live web retrieval.</p>
+
+<p>To examine the quality and trustworthiness of ChatGPT's answers, four cases are here presented as illustrative examples <A HREF="#e14">[14]</A>. Three of these studies relate to my own research in knowledge organization, while case 2 was added to illustrate a non-academic example.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.1"></a>
+<h4 itemprop="articleSection">3.1 Case 1: The application of logical division in the sciences</h4>
+
+<p>When I asked ChatGPT-4o (July 21, 2025) <A HREF="#e15">[15]</A> about the application of &rarr; <a href="logical_division">logical division</a> in the sciences, it produced a rather comprehensive and detailed answer. Part of this response was that Linnaean classification was based on morphological traits and logical division, assuming essential characteristics for each group (e.g., &ldquo;birds have feathers&rdquo;). This answer could only have been generated from sources on the history and philosophy of biology, which ChatGPT had access to. Indeed, a large amount of literature exists that explains why ChatGPT produced this answer, for example, Cain (<A HREF="#refC">1958</A>). However, when I pointed out to the system that more recent literature considers this view insufficient or wrong and labels it &ldquo;the essentialism story&rdquo; (cf. <A HREF="#refR">Richards 2016</A>, 38), ChatGPT produced a qualified summary of this criticism of essentialism and logical division, thereby correcting its initial response.</p>
+
+<p>This case demonstrates that, to obtain fully adequate answers, the user must already possess detailed knowledge about the subject of the query.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.2"></a>
+<h4 itemprop="articleSection">3.2 Case 2: The Flakpanzer Gepard and drone warfare in Ukraine</h4>
+
+<p>On September 26, 2025, I asked ChatGPT-5: &ldquo;The German Flakpanzer Gepard was some time ago a very effective weapon for Ukraine to shoot down Russian/Iranian drones. Is this still the case?&rdquo; ChatGPT concluded:
+<blockquote>Final take: Yes&mdash;the Gepard is still an effective counter-drone solution for Ukraine. Its proven record, cost-efficiency, and ongoing refreshes keep it valuable, although sustaining operations hinges on addressing spare parts and maintenance challenges.</blockquote></p>
+
+<p>I then commented: &ldquo;As far as I have heard, Russia has changed strategy and now uses high-altitude drone attacks (&gt;2 km altitude). Machine guns cannot shoot this high, and Ukraine is now developing and (until now on a small scale) using interceptor drones. How does the Gepard fit into this problem?&rdquo;</p>
+
+<p>ChatGPT revised its response:
+<blockquote>The Gepard remains a vital asset &mdash; but its optimal use is increasingly restricted to lower altitudes and terminal drone phases.</blockquote></p>
+
+<p>Again, this case illustrates the need for subject knowledge to obtain a sufficient answer. (This example is included to show that the problem is not confined to academic discourse.) It cannot be determined whether the first answer drew on the webpages of Rheinmetall, the manufacturer of the Gepard, and the revised answer on other sources, but this remains a plausible hypothesis.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.3"></a>
+<h4 itemprop="articleSection">3.3 Case 3: Functional classification</h4>
+
+<p>In a query on functional classification (August 1, 2025), ChatGPT-4o claimed that classification researcher Ingetraut Dahlberg's concept theory was about functional classification and even supplied references and quotes, the most precise being:
+<blockquote>Dahlberg (<A HREF="#refD">1993</A>, p. 36): &ldquo;Functional concepts denote actions, processes, or roles which objects or subjects fulfill in given contexts&rdquo;.</blockquote></p>
+
+<p>After a futile search, I told the system that I could not verify this quotation. ChatGPT then conducted a search and responded:
+<blockquote>You're absolutely right to question that reference. I wasn't able to locate the exact quote attributed to Dahlberg (&lsquo;Functional concepts denote actions, processes, or roles&hellip;&rsquo;); neither my prior publications nor other reliable summaries seem to contain it verbatim.</blockquote></p>
+
+<p>This is not simply an error in bibliographic referencing. Even after acknowledging the problem, ChatGPT continued to link Dahlberg with functional classification, which I consider incorrect and probably due to &ldquo;personalization&rdquo; <A HREF="#e16">[16]</A>. &rarr; <a href="dahlberg">Dahlberg</a>'s theory should not be labeled &ldquo;functional&rdquo; <A HREF="#e17">[17]</A>, which ChatGPT-5 admitted in another chat on 16 August 2025:
+<blockquote>There is a fundamental tension &mdash; and possibly even an incompatibility &mdash; between Ingetraut Dahlberg's formalist concept theory and a genuinely functionalist point of view, especially if we understand functionalism in its pragmatic, context-sensitive, and goal-relative sense (as often emphasized in fields like archival science, cognitive science, and pragmatist epistemology).</blockquote></p>
+
+<p>This example also demonstrates that deep subject knowledge is needed to obtain good answers. In addition, it illustrates bias due to &ldquo;personalization&rdquo;.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.4"></a>
+<h4 itemprop="articleSection">3.4 Case 4: Theory of knowledge in the Dewey Decimal Classification</h4>
+
+<p>My question on August 19, 2025, was: &ldquo;The &rarr; <a href="ddc">DDC</a> makes a distinction between Theory of knowledge (001.01) and Philosophical theory of knowledge (epistemology) (121). Which theories of knowledge are not philosophical?&rdquo;</p>
+
+<p>ChatGPT's first answer was:
+<blockquote>Dewey (and librarianship more generally) conceives epistemology versus more applied or disciplinary theories of knowledge [&hellip;] In other words, 001.01 covers &ldquo;theories of knowledge&rdquo; developed within the sciences, social sciences, or applied fields&mdash;often empirical or pragmatic rather than explicitly philosophical <A HREF="#e18">[18]</A>. Thus, non-philosophical theories of knowledge are those in psychology, sociology, information science, cybernetics, AI, and science studies. They are concerned with knowledge but are not treated as philosophy per se.</blockquote></p>
+
+<p>I then commented: &ldquo;I wonder if you are right in putting those non-philosophical theories in 001.01. Is the sociology of knowledge not placed under sociology, and domain analysis under library and information sciences?&rdquo;</p>
+
+<p>ChatGPT answered: &ldquo;Excellent point &mdash; you are absolutely right to challenge my quick placement&rdquo;. After citing some DDC Manual notes &mdash; which, upon my comments, it later acknowledged were incorrect <A HREF="#e19">[19]</A> &mdash; the final conclusion of ChatGPT was:<BR>
+<blockquote>The distinction between general/non-disciplinary &ldquo;theory of knowledge&rdquo; (sometimes put in 001.01) and philosophical epistemology (in 121) emerges from editorial decisions or in-house practice, rather than from an explicit Manual note. Librarians often infer this separation based on standard classification logic &mdash; 121 is strictly philosophical, while 001.01 would only be used for works that are general or interdisciplinary &mdash; but these are ad hoc decisions rather than codified instructions.</blockquote></p>
+
+<p>This case again demonstrates that ChatGPT tends to provide incorrect answers, which it can revise if challenged by the user. But this requires detailed subject knowledge, in which case the revised answer is often less informative, because the user already knew the most important part.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.5"></a>
+<h4 itemprop="articleSection">3.5 Lessons learned about ChatGPT's relation to documents</h4>
+
+<p>The preceding four case studies of ChatGPT's treatment of documentary information allow us to formulate the following six points about its relation to documents:
+
+<ol>
+<li>A system (and a person) can only provide answers to questions about the empirical world based on information sources available to it. If we disregard systems that make their own observations, such information sources are documents in the broad sense of the term (including secondary sources such as <i>Wikipedia</i>, meaning that system outputs also depend on the quality of those secondary sources). As information scientist Donner (<A HREF="#refD">2025</A>, 802) wrote: &ldquo;the truthfulness of the model output would have to be discussed at the level of the model's primary data first, which could then have an impact on the LLM output. If the model's primary data is not truthful, how could the model's output be truthful?&rdquo;</li>
+
+<li>The total accumulated documents and literature in the world are, of course, only partially represented in any given system, including ChatGPT, even though its database is extremely comprehensive. This limits the answers it can provide. Imagine a document that has not been cited elsewhere: it may or may not be included in full text within the system's database. If it is included, the system may say something about it based on derived information. If not, the system cannot, in principle, answer questions about it. In such cases, it may &ldquo;hallucinate&rdquo; and provide incorrect answers based on generalizations of information in the query. In general, the fewer sources available to the system, the poorer its performance compared to cases where abundant sources exist. This issue can be termed domain-dependent reliability, and a major problem is that users cannot know about this for the subject inquired about.</li>
+
+<li>Donner (<A HREF="#refD">2025</A>, 795) wrote: &ldquo;While the printing press produces a more or less accurate copy of human testimony, LLMs' mostly coherent text outputs are based on mixed-up and blended testimony&rdquo;. This means that answer quality depends not only on input but also on the specific technology that selects and processes parts of the input to produce an output. In the case of the logical division mentioned above, the system had to manage conflicting views (the essentialist version and the revisionist version). This leads to the next point.</li>
+
+<li>The &ldquo;universe of knowledge&rdquo; should not be conceived in a positivist way&mdash;as if it were a universe of verified statements&mdash;but rather in a pluralist way, as a universe offering different perspectives, theories, and viewpoints on subject matters. In the first case above, it contains documents based on the essentialist story as well as documents opposing this myth <A HREF="#e20">[20]</A>. In such cases, the system may miss one of the perspectives and provide a one-sided (or incorrect) answer, as it initially did. A crucial point is that this can only be corrected if the user recognizes the problem, which requires detailed subject knowledge.</li>
+
+<li>Donner (<A HREF="#refD">2025</A>, 795) noted: &ldquo;LLMs operate by predicting the likelihood of a sequence of words based on statistical patterns learned from large text datasets&rdquo;. This technique means that LLMs do not normally base their answers on specific sources, but on a static sample of mixed sources. ChatGPT-5 often provides bibliographic references and now has the ability to verify them (e.g., in WorldCat and ERIC), though it does not always use this feature. In principle, bibliographic accuracy is therefore less of a problem due to its RAG-like capabilities, which we must expect to be improved in the future. Therefore, the central issue is not whether the references are verifiable but whether the claims in its answers correspond directly to the contents of the cited sources. Case 3 on functional classification clearly demonstrated that this is not always the case. The linking process is non-transparent, based on untraceable reasoning processes, and references are often inappropriate for the answer, unsupported, or may even be contradictory to the sources. This contrasts with scholarly literature, where linking is based on direct quotes or paraphrases with precise analysis, interpretation, and references (though even scholarly practice sometimes fails here). This seems to be a fundamental problem with the technique and suggests that the dream of providing information rather than documents may be deeply mistaken.</li>
+
+<li>A comment should be made about &ldquo;cognitive authority&rdquo; in relation to the references. An anonymous reviewer wrote: &ldquo;It seems to me, however, that the leveraging of cognitive authority is the primary raison d'&ecirc;tre for the use of references to indicate sources of information in documents&rdquo;. This is correct if we, following Kuhn (<A HREF="#refK">1962</A>), recognize that cognitive authorities are theory- and paradigm-dependent, a view which is unfortunately absent in the literature on cognitive authority. Therefore, simplistic or mechanical solutions, such as demanding references derived from, for example, journals with high journal impact factors (JIF) or highly respected encyclopedias like the <i>Stanford Encyclopedia of Philosophy</i>, are not sufficient. References must be used precisely to support the claims made and recognizing their wider theoretical context. In the examples above, ChatGPT is often referring to &ldquo;cognitive authorities&rdquo; in the meaning of well-known researchers in the field of inquiry but still fails to provide sufficient support for the claims made.</li>
+</ol>
+
+<p>The four cases provided above do not compare ChatGPT's performance to a human-produced strategy for document retrieval. In cases involving explicit search strategies, such as systematic reviews in evidence-based medicine, it is possible to ask ChatGPT to apply a predefined list of inclusion and exclusion criteria. Such searches are more &ldquo;mechanical&rdquo; and therefore easier for LLMs to learn. In medical informatics, there is today a focus on examining LLMs' performance in doing systematic reviews (or assisting researchers in doing them) but results so far support the claims in the present article <A HREF="#e21">[21,</A> <A HREF="#e22">22,</A> <A HREF="#e23">23]</A>.</p>
+
+<p>A final consideration is that the coverage of ChatGPT&mdash;its indexed sources&mdash;is not published, not even broadly described <A HREF="#e24">[24]</A>. Users and researchers therefore cannot know ChatGPT's omissions and weaknesses, which adds to its nature as a &ldquo;black box&rdquo;. This contrasts with the scholarly database tradition of publishing lists of indexed journals and sources (with exceptions such as <i>Google Scholar</i>), which allows users to adapt their search strategies to the database's coverage.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4"></a>
+<h3 itemprop="articleSection">4. Conclusion</h3>
+
+<p>Why has the IS community so stubbornly adhered to a problematic terminology? Spang-Hanssen (<A HREF="#refS">2001</A>) suggested that professional prestige, rather than theoretical arguments, may be the reason:
+<blockquote>The word information &mdash; and combinations like information retrieval, information center &mdash; definitely contributed to raising the public opinion of library and documentation work, which is generally held to be a little dull, dusty, and distant from what is actually going on in society.</blockquote></p>
+
+<p>If Spang-Hanssen is right, terms such as <i>information</i> and <i>IR</i>, and the associated goal of providing direct answers, may have been selected to increase the status of the profession, with efforts to define their meaning only coming afterward <A HREF="#e25">[25]</A>. This would also explain why, for a long time and across most applications of these terms, it was not considered a major issue to clarify Mooers's ambiguity &mdash; namely, the distinction between finding information recorded in documents and finding documents that contain information. This ambiguity has led to confusion, and as White (<A HREF="#refW">2017</A>, 3927) observed: &ldquo;When IS [information science] is defined as the study of literature-based answering, much else falls into place&rdquo;.</p>
+
+<p>This article allies itself to a neo-documentalist movement in IS and, as such, argues that the document perspective is important for understanding modern front-end technologies such as LLMs. The main argument has been that the input to such systems are documents containing many &ldquo;paradigms&rdquo; or &ldquo;voices&rdquo; that are important to distinguish. However, the theoretical basis of systems such as ChatGPT makes the quality of the output dependent on both the systems' training documents and queries from the users and requires appropriate expertise. This means that only users with deep subject knowledge can recognize problematic outputs and prompt the system to modify them.</p>
+
+<p>What are the practical implications of this paper, and how may future research or system design operationalize its conceptual insights? Most importantly, document retrieval and knowledge synthesis from sets of documents should be distinguished as two different processes, each of which contains its own difficulties and its own sources of bias. To provide users with control over the outcome, each process must be made as transparent as possible, which, however, is not possible in ChatGPT, where these processes are fused and opaque.</p>
+
+<p>The essential difference between document retrieval and IR is, as shown in this article, that in IR with ChatGPT the user has insufficient control over which documents are retrieved and how their information has been synthesized, thereby abdicating a significant part of his or her responsibility as an agent (e.g., as a researcher).</p>
+
+</span><!-- articleBody ends -->
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="ack"></a>
+<h3>Acknowledgments</h3>
+
+<p>I thank three anonymous peer reviewers who have contributed significantly to the improvement of this article.</p>
+
+<a name="end"></a>
+<h3>Endnotes</h3>
+
+<a name="e1"></a>
+<p><strong>1</strong>. Proffitt (<A HREF="#refP">2010</A>) wrote that <i>information retrieval</i> dated from 1950, followed by <i>information scientist</i> in 1953, and <i>information science</i> in 1955.</p>
+
+<a name="e2"></a>
+<p><strong>2</strong>. Vickery (<A HREF="#refV">1961</A>, 2&ndash;3) provided the expressions finding &ldquo;information recorded in documents&rdquo; versus &ldquo;information about documents&rdquo;.</p>
+
+<a name="e3"></a>
+<p><strong>3</strong>. The term <i>fact retrieval</i> is unfortunate, because what is retrieved is not necessarily something known or proved to be true or relevant. It shares with terms such as <i>question answering</i>, <i>information extraction</i>, <i>knowledge-based querying</i>, and others the underlying goal of returning contents from documents rather than the documents containing this content.</p>
+
+<a name="e4"></a>
+<p><strong>4</strong>. A chatbot is an artificial intelligence program designed to simulate conversation with human users, especially over the Internet (cf. <A HREF="#refA">Adamopoulou and Moussiades 2020</A>, 1).</p>
+
+<a name="e5"></a>
+<p><strong>5</strong>. Lookup searches are described by Marchionini (<A HREF="#refM">2006</A>, 42).</p>
+
+<a name="e6"></a>
+<p><strong>6</strong>. Dousa (<A HREF="#refD">2010</A>, 20) provides a quote from Kaiser (<A HREF="#refK">1911</A>) strongly similar to the one cited from Sp&auml;rck Jones: &ldquo;Because, Kaiser argued, men of affairs are interested in the information contained in documents rather than in the documents themselves, &lsquo;we must try to dissociate information from literature&rsquo; and so render it more accessible to its potential users [<A HREF="#refK">Kaiser 1911</A>, &sect;83]&rdquo;.</p>
+
+<a name="e7"></a>
+<p><strong>7</strong>. The first documentation movement was developed in the late 19th and early 20th centuries and led by figures such as Paul Otlet and Henri La Fontaine (first generation) and Suzanne Briet (second generation). The neo-documentalist movement is a contemporary development, initiated in the 1990s, with Michael Buckland as a leading figure.</p>
+
+<a name="e8"></a>
+<p><strong>8</strong>. Buckland (<A HREF="#refB">1991</A>, 351) wrote: &ldquo;The term &lsquo;information&rsquo; is also used attributively for objects, such as data and documents, that are referred to as &lsquo;information&rsquo; because they are regarded as being informative&rdquo;.</p>
+
+<a name="e9"></a>
+<p><strong>9</strong>. The hermeneutic circle is a process of interpretation in which we continually move between smaller and larger units of meaning to determine the meaning of both. For a hermeneutical understanding of facts, see Caputo (<A HREF="#refC">2018</A>, 4&ndash;10).</p>
+
+<a name="e10"></a>
+<p><strong>10</strong>. Sp&auml;rck Jones and Kay's (<A HREF="#refS">1973</A>) view that a document-retrieval system is nothing more than a kind of fact-retrieval system does not correspond to the way these terms were expressed in Section 1. The authors overlook Spang-Hanssen's point that fact retrieval centers keep their information sources exclusively to themselves.</p>
+
+<a name="e11"></a>
+<p><strong>11</strong>. Turtle and Croft (<A HREF="#refT">1990</A>, 1) wrote: &ldquo;Recent work suggests that significant improvements in retrieval performance will require techniques that, in some sense, &lsquo;understand&rsquo; the content of documents and queries [<A HREF="#refR">Rijsbergen 1986</A>; <A HREF="#refC">Croft 1987</A>] and can be used to infer probable relationships between documents and queries&rdquo;.</p>
+
+<a name="e12"></a>
+<p><strong>12</strong>. Wilson (<A HREF="#refW">1983</A>) argued that all people know about the world outside their own lives is what others have told them. However, people do not consider all rumors to be equally reliable; only those who are considered to &ldquo;know what they are talking about&rdquo; become cognitive authorities.</p>
+
+<a name="e13"></a>
+<p><strong>13</strong>. A family of technologies known as retrieval-augmented generation (RAG) enables LLMs to retrieve relevant documents from an external knowledge source at query time and use those documents as context for generating answers (see <A HREF="#refG">Gao et al. 2024</A>). ChatGPT itself does not use RAG but can be said to exhibit RAG-like behavior.</p>
+
+<a name="e14"></a>
+<p><strong>14</strong>. In contrast to bibliometric studies, the cases provided here cannot be replicated by other researchers because (1) ChatGPT produces personalized answers and (2) ChatGPT models are continuously updated, often silently, so that a specific version, say 4.1, is a model family rather than a static database. The case studies do not claim to be representative, also because of domain-dependent reliability, as presented in Section 3.</p>
+
+<a name="e15"></a>
+<p><strong>15</strong>. ChatGPT-5 was released on August 7, 2025. On August 9, I made the same query using the new ChatGPT-5. Again, I first received one answer, but after I informed it about the debate on the &ldquo;essentialism story&rdquo;, the system modified its answer.</p>
+
+<a name="e16"></a>
+<p><strong>16</strong>. In a ChatGPT-5 chat on November 9, 2025, I asked: &ldquo;I would like you to expand on (1) how you use personalization/customization. [&hellip;] For example, when I asked about functional classification, you mentioned Ingetraut Dahlberg. I have a feeling that this was because I am connected to the community that she established&rdquo;. ChatGPT confirmed that this answer was given because it knew that I was a knowledge organization scholar, but that it could also answer from the perspective of a biologist or an archival scholar if asked to (or if asked not to use the information it has stored about me). Also, prior prompts within the same chat session may influence subsequent responses, insofar as ChatGPT maintains conversational context. However, the nature and extent of such influence are not transparent to the user and cannot be systematically controlled or documented.</p>
+
+<a name="e17"></a>
+<p><strong>17</strong>. It is outside the scope of this paper to present and discuss Dahlberg's concept theory (there was a comprehensive discussion of it in German in 1996 in the journal <i>Ethik und Sozialwissenschaften</i>, which unfortunately has not been considered in the English-language literature). Dahlberg (<A HREF="#refD">1978</A>) used the phrase &ldquo;referent-oriented, analytic concept theory&rdquo;, which is a better characterization of her theoretical position.</p>
+
+<a name="e18"></a>
+<p><strong>18</strong>. Among the theories listed by ChatGPT as belonging to <code>001.01</code> are theories of knowledge in library and information science (e.g., Hj&oslash;rland's domain analysis, facet analysis, information-seeking models), Mannheim's sociology of knowledge, science and technology studies (STS), Kuhn's paradigms, and Latour's actor-network theory.</p>
+
+<a name="e19"></a>
+<p><strong>19</strong>. ChatGPT wrote: &ldquo;Upon reviewing available official documentation of DDC 23, including the printed volumes of schedules and the Manual (Volume 1 and its guidance sections), there is no explicit note in the Manual that directly compares 001.01 with 121 in the way I described&rdquo;.</p>
+
+<a name="e20"></a>
+<p><strong>20</strong>. The essentialism story was especially popularized by Ernst Mayr in the mid-20th century (<A HREF="#refM">Mayr 1976; 1982</A>). Critiques of the essentialism story were raised by Mary P. Winsor (<A HREF="#refW">2003; 2006</A>), Staffan M&uuml;ller-Wille (<A HREF="#refM">2007; 2011; 2013</A>), and others.</p>
+
+<a name="e21"></a>
+<p><strong>21</strong>. Bourgeois and Ellingson (<A HREF="#refB">2025</A>) found: &ldquo;[LLMs] should not be given agency to complete complex tasks, such as generating systematic review search strategies, independently. As shown by our research, which corroborates an already robust body of scholarly literature, the results tend to be simplistic and incomplete. We do not use the trendy term &lsquo;slop,&rsquo; though any review published using only AI search strategies would clearly have major issues&rdquo;.</p>
+
+<a name="e22"></a>
+<p><strong>22</strong>. Chen et al. (<A HREF="#refC">2025</A>) found: &ldquo;We found that the LLM-FA [fully automated] approach retrieved less than 30% of papers in the original studies, while the LLM-SA [assisted semi-automated] approach retrieved over 80%. In addition, LLM-SA correctly excluded 92.2% of irrelevant papers. These findings highlight that although LLMs are not yet capable of autonomously and independently selecting papers in systematic reviews, the LLM-SA approach shows considerable promise in enhancing and streamlining the systematic review process&rdquo;.</p>
+
+<a name="e23"></a>
+<p><strong>23</strong>. Pratte et al. (<A HREF="#refP">2026</A>) found that discrepancies between results from SRMAs [systematic reviews and meta-analyses] and LLMs were due to differences in study selection rather than to model hallucination or misinterpretation and concluded (<A HREF="#refP">2026</A>, 7): &ldquo;We are at the beginning of a new era in medical research, where LLMs have shown early potential to rapidly and accurately synthesize clinical evidence. While they are not yet ready to replace SRMAs, their speed, scalability, and emerging accuracy suggest a valuable role as adjunctive tools&rdquo;.</p>
+
+<a name="e24"></a>
+<p><strong>24</strong>. The public has some idea of the sources used by systems like ChatGPT through copyright owners' lawsuits against AI companies, for example, the one raised by <i>The New York Times</i> against OpenAI and Microsoft.</p>
+
+<a name="e25"></a>
+<p><strong>25</strong>. Shannon's (<A HREF="#refS">1948</A>) so-called information theory was also an important background for the strong influence of the information concept (cf. <A HREF="#e1">endnote 1</A>). Although this theory later lost influence in information science, it is an important prerequisite for the development of systems like ChatGPT.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="ref"></a>
+<h3>References</h3>
+
+<span itemprop="citation">
+
+<a name="refA"></a>
+
+<p>Adamopoulou, E. and Moussiades, L. (2020). Chatbots: History, technology, and applications. <I>Machine Learning with Applications</I>, 2, 100006. <A CLASS="menu" HREF="https://doi.org/10.1016/j.mlwa.2020.100006">https://doi.org/10.1016/j.mlwa.2020.100006</A></p>
+
+<a name="refB"></a>
+
+<p>Bourgeois, J. P. and Ellingson, H. (2025). Ability of ChatGPT to generate systematic review search strategies compared to a published search strategy. <I>Medical Reference Services Quarterly</I>, 44(3), 279&ndash;291. <A CLASS="menu" HREF="https://doi.org/10.1080/02763869.2025.2537075">https://doi.org/10.1080/02763869.2025.2537075</A></p>
+
+<p>Broadfield, A. (1946). <I>The philosophy of classification</I>. Grafton.</p>
+
+<p>Buckland, M. K. (1991). Information as thing. <I>Journal of the American Society for Information Science</I>, 42(5), 351&ndash;360. <A CLASS="menu" HREF="https://doi.org/10.1002/(SICI)1097-4571(199106)42:5&lt;351::AID-ASI5&gt;3.0.CO;2-3">https://doi.org/10.1002/(SICI)1097-4571(199106)42:5&lt;351::AID-ASI5&gt;3.0.CO;2-3</A></p>
+
+<a name="refC"></a>
+
+<p>Cain, A. J. (1958). Logic and memory in Linnaeus's system of taxonomy. <I>Proceedings of the Linnean Society of London</I>, 169(1&ndash;2), 144&ndash;163. <A CLASS="menu" HREF="https://doi.org/10.1111/j.1095-8312.1958.tb00819.x">https://doi.org/10.1111/j.1095-8312.1958.tb00819.x</A></p>
+
+<p>Caputo, J. D. (2018). <I>Hermeneutics: Facts and interpretation in the age of information</I>. Penguin Random House.</p>
+
+<p>Chalmers, A. F. (1982). <I>What is this thing called science? An assessment of the nature and status of science and its methods</I> (2nd ed.). Hackett Publishing Company.</p>
+
+<p>Chen, H., Jiang, Z., Liu, X., Xue, C. C., Yew, S. M. E., Sheng, B., Zheng, Y. F., Wang, X., Wu, Y., Sivaprasad, S., Wong, T. Y., Chaudhary, V., & Tham, Y. C. (2025). Can large language models fully automate or partially assist paper selection in systematic reviews? <I>British Journal of Ophthalmology</I>, 109(8), 962&ndash;966. <A CLASS="menu" HREF="https://doi.org/10.1136/bjo-2024-326254">https://doi.org/10.1136/bjo-2024-326254</A></p>
+
+<p>Croft, W. B. (1987). Approaches to intelligent information retrieval. <I>Information Processing & Management</I>, 23(4), 249&ndash;254. <A CLASS="menu" HREF="https://doi.org/10.1016/0306-4573(87)90016-1">https://doi.org/10.1016/0306-4573(87)90016-1</A></p>
+
+<a name="refD"></a>
+
+<p>Dahlberg, I. (1978). A referent-oriented, analytical concept theory for INTERCONCEPT. <I>International Classification</I>, 5(3), 142&ndash;151. <A CLASS="menu" HREF="https://doi.org/10.5771/0943-7444-1978-3-142">https://doi.org/10.5771/0943-7444-1978-3-142</A></p>
+
+<p>Donner, S. (2025). What kind of documents can AI language model outputs be? The concept of artificially blended testimony. <I>Journal of Documentation</I>, 81(3), 788&ndash;809. <A CLASS="menu" HREF="https://doi.org/10.1108/JD-11-2024-0271">https://doi.org/10.1108/JD-11-2024-0271</A></p>
+
+<p>Dousa, T. M. (2010). Facts and frameworks in Paul Otlet's and Julius Otto Kaiser's theories of knowledge organization. <I>Bulletin of the American Society for Information Science and Technology</I>, 36(2), 19&ndash;25. <A CLASS="menu" HREF="https://doi.org/10.1002/bult.2010.1720360208">https://doi.org/10.1002/bult.2010.1720360208</A></p>
+
+<a name="refE"></a>
+<a name="refF"></a>
+
+<p>Frohmann, B. (2008). The role of facts in Paul Otlet's modernist project of documentation. In W. B. Rayward (Ed.), <I>European modernism and the information society: Informing the present, understanding the past</I> (pp. 75&ndash;88). Ashgate.</p>
+
+<p>Furner, J. (2016). &ldquo;Data&rdquo;: The data. In M. Kelly & J. Bielby (Eds.), <I>Information cultures in the digital age: A festschrift in honor of Raphael Capurro</I> (pp. 287&ndash;306). Springer.</p>
+
+<a name="refG"></a>
+
+<p>Gao, Y., Xiong, Y., Gao, X., Jia, K., Pan, J., Bi, Y., Dai, Y., Sun, J., Wang, M., & Wang, H. (2024). Retrieval-augmented generation for large language models: A survey. <I>arXiv</I>: 1&ndash;21. <A CLASS="menu" HREF="https://arxiv.org/abs/2312.10997">https://arxiv.org/abs/2312.10997</A></p>
+
+<p>Gelfert, A. (2010). Kant and the Enlightenment's contribution to social epistemology. <I>Episteme</I>, 7(1), 79&ndash;99. <A CLASS="menu" HREF="https://doi.org/10.3366/E1742360009000823">https://doi.org/10.3366/E1742360009000823</A></p>
+
+<a name="refH"></a>
+
+<p>Hj&oslash;rland, B. (2012). Methods for evaluating information sources: An annotated catalogue. <I>Journal of Information Science</I>, 38(3), 258&ndash;268. <A CLASS="menu" HREF="https://doi.org/10.1177/0165551512439178">https://doi.org/10.1177/0165551512439178</A></p>
+
+<p>Hj&oslash;rland, B. (2025). Semantic primitives and compositionality: An annual review of information science and technology (ARIST) paper. <I>Journal of the Association for Information Science and Technology</I>, 77, 198&ndash;223. <A CLASS="menu" HREF="https://doi.org/10.1002/asi.70011">https://doi.org/10.1002/asi.70011</A>. Also in <i>ISKO Encyclopedia of Knowledge Organization</i>, <A CLASS="menu" HREF="https://www.isko.org/cyclo/primitives.htm">https://www.isko.org/cyclo/primitives.htm</A>. </p>
+
+<a name="refI"></a>
+<a name="refJ"></a>
+<a name="refK"></a>
+
+<p>Kaiser, J. (1911). <I>Systematic indexing</I>. Isaac Pitman & Sons.</p>
+
+<p>Kochen, M. (1974). <I>Principles of information retrieval</I>. Melville.</p>
+
+<p>Kuhn, T. S. (1962). <I>The structure of scientific revolutions</I>. University of Chicago Press.</p>
+
+<p>Kwon, H. (2016). <I>On the social epistemological nature of questions: A comparison of knowledge domain's question formulations on the topic &ldquo;memory&rdquo;</I> (Doctoral dissertation, Rutgers University). Rutgers University Libraries. <A CLASS="menu" HREF="https://rucore.libraries.rutgers.edu/rutgers-lib/50032/">https://rucore.libraries.rutgers.edu/rutgers-lib/50032/</A></p>
+
+<a name="refL"></a>
+
+<p>Lancaster, F. W. (1968). <I>Information retrieval systems: Characteristics, testing and evaluation</I>. Wiley.</p>
+
+<a name="refM"></a>
+
+<p>Mai, J.-E. (2009). The boundaries of classification. <I>Advances in Classification Research Online</I>, 20, 1&ndash;7. <A CLASS="menu" HREF="https://doi.org/10.7152/acro.v20i1.12887">https://doi.org/10.7152/acro.v20i1.12887</A></p>
+
+<p>Marchionini, G. (2006). Exploratory search: From finding to understanding. <I>Communications of the ACM</I>, 49(4), 41&ndash;46. <A CLASS="menu" HREF="https://doi.org/10.1145/1121949.1121979">https://doi.org/10.1145/1121949.1121979</A></p>
+
+<p>Mayr, E. (1976). <I>Evolution and the diversity of life: Selected essays</I>. Belknap Press of Harvard University Press.</p>
+
+<p>Mayr, E. (1982). <I>The growth of biological thought: Diversity, evolution, and inheritance</I>. Belknap Press of Harvard University Press.</p>
+
+<p>Mooers, C. N. (1950). The theory of digital handling of non-numerical information and its implications to machine economics (Zator Technical Bulletin no. 48). <A CLASS="menu" HREF="https://babel.hathitrust.org/cgi/pt?id=mdp.39015034570583&seq=4">https://babel.hathitrust.org/cgi/pt?id=mdp.39015034570583&seq=4</A></p>
+
+<p>M&uuml;ller-Wille, S. (2007). Collection and collation: Theory and practice of Linnaean botany. <I>Studies in History and Philosophy of Biological and Biomedical Sciences</I>, 38(3), 541&ndash;562. <A CLASS="menu" HREF="https://doi.org/10.1016/j.shpsc.2007.06.010">https://doi.org/10.1016/j.shpsc.2007.06.010</A></p>
+
+<p>M&uuml;ller-Wille, S. (2011). Making sense of essentialism. <I>Critical Quarterly</I>, 53(4), 61&ndash;67. <A CLASS="menu" HREF="https://doi.org/10.1111/j.1467-8705.2011.02022.x">https://doi.org/10.1111/j.1467-8705.2011.02022.x</A></p>
+
+<p>M&uuml;ller-Wille, S. (2013). Systems and how Linnaeus looked at them in retrospect. <I>Annals of Science</I>, 70(3), 305&ndash;317. <A CLASS="menu" HREF="https://doi.org/10.1080/00033790.2013.783109">https://doi.org/10.1080/00033790.2013.783109</A></p>
+
+<a name="refN"></a>
+<a name="refO"></a>
+<a name="refP"></a>
+
+<p>Pratte, M., Thirukumar, S., Zhang, C., Slessarev, M., Basmaji, J. and Prager, R. (2026). Can large language models approximate the results of meta-analyses in critical care? A meta-research study. <I>Journal of Critical Care</I>, 92, 155358. <A CLASS="menu" HREF="https://doi.org/10.1016/j.jcrc.2025.155358">https://doi.org/10.1016/j.jcrc.2025.155358</A></p>
+
+<p>Proffitt, M. (2010). Information. In Word stories, Oxford English Dictionary. Oxford University Press. https://www.oed.com/discover/information/</p>
+
+<a name="refQ"></a>
+<a name="refR"></a>
+
+<p>Richards, R. A. (2016). <I>Biological classification: A philosophical introduction</I>. Cambridge University Press.</p>
+
+<p>Rijsbergen, C. J. van (1979). Information retrieval (2nd ed.). Butterworths. <A CLASS="menu" HREF="https://openlib.org/home/krichel/courses/lis618/readings/rijsbergen79_infor_retriev.pdf">https://openlib.org/...</A></p>
+
+<p>Rijsbergen, C. J. van (1986). A non-classical logic for information. <I>The Computer Journal</I>, 29(6), 481&ndash;485. <A CLASS="menu" HREF="https://doi.org/10.1093/comjnl/29.6.481">https://doi.org/10.1093/comjnl/29.6.481</A></p>
+
+<p>Rijsbergen, C. J. van, & Lalmas, M. (1996). Information calculus for information retrieval. <I>Journal of the American Society for Information Science</I>, 47(5), 385&ndash;398. <A CLASS="menu" HREF="https://doi.org/10.1002/(SICI)1097-4571(199605)47:5&lt;385::AID-ASI6&gt;3.0.CO;2-S">https://doi.org/10.1002/(SICI)1097-4571(199605)47:5&lt;385::AID-ASI6&gt;3.0.CO;2-S</A></p>
+
+<a name="refS"></a>
+
+<p>Shannon, C. E. (1948). A mathematical theory of communication. <I>The Bell System Technical Journal</I>, 27(379&ndash;423), 623&ndash;656. <A CLASS="menu" HREF="https://people.math.harvard.edu/~ctm/home/text/others/shannon/entropy/entropy.pdf">https://people.math.harvard.edu/~ctm/home/text/others/shannon/entropy/entropy.pdf</A></p>
+
+<p>Spang-Hanssen, H. (2001). How to teach about information as related to documentation. <I>Human IT</I>, 5(1), 125&ndash;143. <A CLASS="menu" HREF="http://etjanst.hb.se/bhs/ith/1-01/hsh.htm">http://etjanst.hb.se/bhs/ith/1-01/hsh.htm</A></p>
+
+<p>Sp&auml;rck Jones, K. (1987). Architecture problems in the construction of expert systems for document retrieval. In I. Wormell (Ed.), <I>Knowledge engineering: Expert systems and information retrieval</I> (pp. 7&ndash;33). Taylor Graham.</p>
+
+<p>Sp&auml;rck Jones, K., & Kay, M. (1973). <I>Linguistics and information science</I>. Academic Press.</p>
+
+<p>Sundin, O. (2025). Theorising notions of searching, (re)sources and evaluation in the light of generative AI. <I>Information Research</I>, 30(CoLIS), 291&ndash;302. <A CLASS="menu" HREF="https://doi.org/10.47989/ir30CoLIS52258">https://doi.org/10.47989/ir30CoLIS52258</A></p>
+
+<a name="refT"></a>
+
+<p>Turtle, H., & Croft, W. B. (1990). Inference networks for document retrieval. In <I>Proceedings of the 13th annual international ACM SIGIR conference on research and development in information retrieval</I> (pp. 1&ndash;24). ACM. <A CLASS="menu" HREF="https://doi.org/10.1145/96749.98006">https://doi.org/10.1145/96749.98006</A></p>
+
+<a name="refU"></a>
+<a name="refV"></a>
+
+<p>Vickery, B. C. (1961). <I>On retrieval system theory</I>. Butterworths.</p>
+
+<a name="refW"></a>
+
+<p>White, H. D. (2017). Relevance in theory. In J. D. McDonald & M. Levine-Clark (Eds.), <I>Encyclopedia of library and information sciences</I> (Vol. 6, 4th ed., pp. 3926&ndash;3939). CRC Press.</p>
+
+<p>Wilson, P. (1983). <I>Second-hand knowledge: An inquiry into cognitive authority</I>. Greenwood Press.</p>
+
+<p>Winsor, M. P. (2003). Non-essentialist methods in pre-Darwinian taxonomy. <I>Biology and Philosophy</I>, 18(3), 387&ndash;400. <A CLASS="menu" HREF="https://doi.org/10.1023/A:1024139523966">https://doi.org/10.1023/A:1024139523966</A></p>
+
+<p>Winsor, M. P. (2006). The creation of the essentialism story: An exercise in metahistory. <I>History and Philosophy of the Life Sciences</I>, 28(2), 149&ndash;174.</p>
+
+<a name="refX"></a>
+<a name="refY"></a>
+<a name="refZ"></a>
+
+</span><!-- citation ends -->
+
+<a name="col"></a>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<p>&nbsp;</p>
+
+<p>Visited <a href="https://www.digits.net" target="_blank"><img src="https://counter.digits.net/?counter={6cea9cdd-74bf-01b4-bdfe-f5f3cd8f2f41}&template=simple" alt="Hit Counter by Digits" border="0"  /></a> times.</p>
+
+<hr>
+<p itemprop="dateCreated">Version 1.0 published 2026-03-16 <!-- last edited 2025-- -->
+<!-- <br>Version 1.1 published 2020--: [changes] -->
+
+<p>Article category: <a href="index.html#CC"><code>Theoretical concepts</code></a></p>
+
+<p>This article (version 1.0) is also published in <i>JASIST</i>. How to cite it:
+<br>Hj&oslash;rland, Birger. 2026. 
+&ldquo;Information retrieval or document retrieval? Terminological confusions and unrealistic goals in information science, exemplified in relation to generative artificial intelligence&rdquo;. 
+<i>Journal of the Association for Information Science and Technology</i> 63, in press. <A CLASS="menu" HREF="https://doi.org/10.1002/asi.70057">https://doi.org/10.1002/asi.70057</A>. 
+Also available in 
+<i><span itemprop="isPartOf">ISKO Encyclopedia of Knowledge Organization</span></i>, 
+eds. <span itemprop="editor">Birger Hj&oslash;rland</span> and <span itemprop="editor">Claudio Gnoli</span>, 
+<span itemprop="url">https://www.isko.org/cyclo/document_retrieval </span>.
+<br>To quote text edited in a later version, you should save it in the <i><a href="https://web.archive.org/">Wayback Machine</a></i> and cite the saved version.</p>
+
+<p><a href="https://www.imrpress.com/page/copyright-license">CC BY 4.0</a></p>
+
+</div><!-- Article ends -->
+
+</td>
+</tr>
+
+<tr>
+<td id="logo">
+</td>
+</tr>
+
+</table>
+</body>
+</html>

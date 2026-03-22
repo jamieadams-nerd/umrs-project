@@ -1,0 +1,284 @@
+RAG database : /media/psf/repos/ai-rag-vdb/chroma
+Collections to process: ['knowledge-organization']
+
+Loading embedding model (all-MiniLM-L6-v2)...
+First run downloads ~90MB to ~/.cache/huggingface/ — cached after.
+
+[knowledge-organization] 123 source file(s) found
+  NEW:              3ks.html
+    → 1 chunks stored
+  NEW:              SOURCE.md
+    → 2 chunks stored
+  NEW:              alphabetization.html
+    → 27 chunks stored
+  NEW:              anzsrc.html
+    → 19 chunks stored
+  NEW:              archaeology.html
+    → 1 chunks stored
+  NEW:              art.html
+    → 45 chunks stored
+  NEW:              automatic.html
+    → 1 chunks stored
+  NEW:              bc2.html
+    → 113 chunks stored
+  NEW:              bcc.html
+    → 1 chunks stored
+  NEW:              bibliography.html
+    → 1 chunks stored
+  NEW:              bisac.html
+    → 19 chunks stored
+  NEW:              bliss.html
+    → 1 chunks stored
+  NEW:              boolean.html
+    → 1 chunks stored
+  NEW:              brown.html
+    → 21 chunks stored
+  NEW:              cataloging.html
+    → 1 chunks stored
+  NEW:              citation.html
+    → 54 chunks stored
+  NEW:              citation_analysis.html
+    → 1 chunks stored
+  NEW:              classification.html
+    → 1 chunks stored
+  NEW:              colon_classification.html
+    → 54 chunks stored
+  NEW:              colour.html
+    → 1 chunks stored
+  NEW:              content_analysis.html
+    → 1 chunks stored
+  NEW:              control.html
+    → 1 chunks stored
+  NEW:              crdc.html
+    → 1 chunks stored
+  NEW:              crg.html
+    → 1 chunks stored
+  NEW:              dahlberg.html
+    → 1 chunks stored
+  NEW:              data.html
+    → 1 chunks stored
+  NEW:              data_documents.html
+    → 52 chunks stored
+  NEW:              ddc.html
+    → 1 chunks stored
+  NEW:              description.html
+    → 1 chunks stored
+  NEW:              dikw.html
+    → 1 chunks stored
+  NEW:              discipline.html
+    → 1 chunks stored
+  NEW:              document.html
+    → 1 chunks stored
+  NEW:              document_retrieval.html
+    → 1 chunks stored
+  NEW:              domain_analysis.html
+    → 1 chunks stored
+  NEW:              dsm.html
+    → 1 chunks stored
+  NEW:              education.html
+    → 1 chunks stored
+  NEW:              facet.html
+    → 1 chunks stored
+  NEW:              facet_analysis.html
+    → 20 chunks stored
+  NEW:              fictional.html
+    → 1 chunks stored
+  NEW:              flickr.html
+    → 1 chunks stored
+  NEW:              folk.html
+    → 1 chunks stored
+  NEW:              foskett.html
+    → 1 chunks stored
+  NEW:              genealogical.html
+    → 1 chunks stored
+  NEW:              genre.html
+    → 1 chunks stored
+  NEW:              greco-roman.html
+    → 1 chunks stored
+  NEW:              grolier.html
+    → 1 chunks stored
+  NEW:              hierarchy.html
+    → 1 chunks stored
+  NEW:              hornbostel.html
+    → 1 chunks stored
+  NEW:              hypertext.html
+    → 1 chunks stored
+  NEW:              icd.html
+    → 1 chunks stored
+  NEW:              ideal_language.html
+    → 61 chunks stored
+  NEW:              ilc.html
+    → 1 chunks stored
+  NEW:              indexing.html
+    → 1 chunks stored
+  NEW:              information.html
+    → 1 chunks stored
+  NEW:              integrative_levels.html
+    → 1 chunks stored
+  NEW:              interoperability.html
+    → 66 chunks stored
+  NEW:              ir.html
+    → 1 chunks stored
+  NEW:              islamic.html
+    → 1 chunks stored
+  NEW:              jel.html
+    → 1 chunks stored
+  NEW:              kdc.html
+    → 28 chunks stored
+  NEW:              keyword.html
+    → 82 chunks stored
+  NEW:              kis.html
+    → 1 chunks stored
+  NEW:              knowledge_organization.html
+    → 1 chunks stored
+  NEW:              kos.html
+    → 1 chunks stored
+  NEW:              lam.html
+    → 1 chunks stored
+  NEW:              lbc.html
+    → 1 chunks stored
+  NEW:              lcsh.html
+    → 17 chunks stored
+  NEW:              literary_warrant.html
+    → 1 chunks stored
+  NEW:              logical_division.html
+    → 1 chunks stored
+  NEW:              lrm.html
+    → 10 chunks stored
+  NEW:              maniez.html
+    → 1 chunks stored
+  NEW:              mathematical_theory_of_classification.html
+    → 1 chunks stored
+  NEW:              mathematics.html
+    → 32 chunks stored
+  NEW:              metadata.html
+    → 68 chunks stored
+  NEW:              ndc.html
+    → 1 chunks stored
+  NEW:              nomenclature.html
+    → 1 chunks stored
+  NEW:              notation.html
+    → 1 chunks stored
+  NEW:              ontologies.html
+    → 1 chunks stored
+  NEW:              opac.html
+    → 1 chunks stored
+  NEW:              paratext.html
+    → 33 chunks stored
+  NEW:              peirce.html
+    → 1 chunks stored
+  NEW:              periodization.html
+    → 1 chunks stored
+  NEW:              phenomenon.html
+    → 26 chunks stored
+  NEW:              physh.html
+    → 22 chunks stored
+  NEW:              political.html
+    → 1 chunks stored
+  NEW:              precis.html
+    → 1 chunks stored
+  NEW:              primitives.html
+    → 77 chunks stored
+  NEW:              provenance.html
+    → 1 chunks stored
+  NEW:              psychology.html
+    → 1 chunks stored
+  NEW:              purposefulness.html
+    → 1 chunks stored
+  NEW:              ranganathan.html
+    → 1 chunks stored
+  NEW:              research.html
+    → 1 chunks stored
+  NEW:              review.html
+    → 1 chunks stored
+  NEW:              ric.html
+    → 1 chunks stored
+  NEW:              rilm.html
+    → 45 chunks stored
+  NEW:              sap.html
+    → 1 chunks stored
+  NEW:              science.html
+    → 1 chunks stored
+  NEW:              science_mapping.html
+    → 1 chunks stored
+  NEW:              se.html
+    → 1 chunks stored
+  NEW:              skos.html
+    → 1 chunks stored
+  NEW:              social.html
+    → 1 chunks stored
+  NEW:              social_sciences.html
+    → 1 chunks stored
+  NEW:              soil.html
+    → 1 chunks stored
+  NEW:              species.html
+    → 1 chunks stored
+  NEW:              statistical.html
+    → 1 chunks stored
+  NEW:              stw.html
+    → 1 chunks stored
+  NEW:              subject.html
+    → 1 chunks stored
+  NEW:              subject_analysis.html
+    → 1 chunks stored
+  NEW:              systems.html
+    → 1 chunks stored
+  NEW:              tagging.html
+    → 1 chunks stored
+  NEW:              terminology.html
+    → 1 chunks stored
+  NEW:              theory.html
+    → 32 chunks stored
+  NEW:              thesaurus.html
+    → 1 chunks stored
+  NEW:              toc.html
+    → 1 chunks stored
+  NEW:              user_based.html
+    → 1 chunks stored
+  NEW:              vickery.html
+    → 1 chunks stored
+  NEW:              viniti.html
+    → 1 chunks stored
+  NEW:              web_archive.html
+    → 1 chunks stored
+  NEW:              wilson.html
+    → 1 chunks stored
+  NEW:              work.html
+    → 1 chunks stored
+  NEW:              SOURCE.md
+    → 2 chunks stored
+  NEW:              hjorland-theories-of-ko.pdf
+    → 24 chunks stored
+  NEW:              svenonius-intellectual-foundation-ch5.pdf
+    → 18 chunks stored
+
+--- Database Summary ---
+  rust-security: 73 chunks
+  nist-pqc: 285 chunks
+  rustdoc-book: 194 chunks
+  access-control: 1360 chunks
+  information-architecture: 241 chunks
+  accreditation-artifacts: 405 chunks
+  scap-security-guide: 7 chunks
+  sage-outreach-corpus: 113 chunks
+  doc-structure: 102 chunks
+  dod-5200: 360 chunks
+  cpu-extensions: 645 chunks
+  asciidoctor-ref: 67 chunks
+  dita-spec: 100 chunks
+  knowledge-organization: 1164 chunks
+  nist: 1447 chunks
+  cmmc: 545 chunks
+  tech-writer-corpus: 2017 chunks
+  performance-corpus: 549 chunks
+  selinux-notebook: 691 chunks
+  technical-communication: 17 chunks
+  info-theory-foundations: 238 chunks
+  tui-cli: 262 chunks
+  rmf-methodology: 1132 chunks
+  hci-courses: 1228 chunks
+  kernel-docs: 22738 chunks
+  linux-fhs-2-3: 45 chunks
+
+  Database : /media/psf/repos/ai-rag-vdb/chroma
+  Manifest : /media/psf/repos/umrs-project/.claude/rag/manifest.json

@@ -6,13 +6,13 @@ The UMRS focuses on architectural intent and enforcement behavior rather than pr
 
 == Intended Audience
 
-This document collection is intended for the following audiences:
+This document collection is written for the following audiences:
 
 *New engineers* will find concept introductions, architecture background, and
 developer guides that explain both the what and the why — including why
 high-assurance patterns exist and what threat they defeat.
 
-*Security auditors* will find precise control citations (NIST 800-53, CMMC,
+*Security auditors* will find precise control citations (NIST SP 800-53, CMMC,
 NSA RTB), auditable design rationale, and compliance framework documentation
 that traces enforcement decisions to their governing standards.
 
@@ -23,11 +23,12 @@ their own sensitivity categories, review and extend the SELinux policy for their
 specific application set, and verify the STIG baseline against their deployment
 environment.
 
+More specifically, this documentation serves:
+
 * System architects and engineers responsible for designing secure Linux-based platforms requiring mandatory access control.
 * System administrators responsible for installing, configuring, and operating UMRS-enabled systems.
 * Security engineers and assessors evaluating enforcement mechanisms, label handling, and auditability.
 * Auditors and reviewers seeking to understand how handling requirements are preserved and evidenced within unclassified environments.
-
 
 Readers are expected to be familiar with Linux system administration concepts. Familiarity with SELinux, access control models, and security auditing is beneficial but not strictly required.
 
@@ -38,7 +39,7 @@ UMRS explicitly addresses the following areas, which are considered in scope for
 
 * Unclassified systems requiring mandatory handling markings, such as controlled unclassified information (CUI), privacy-related data, proprietary information, or similar handling regimes.
 * Definition and management of human-readable handling labels and their mapping to system-enforced representations.
-* Although less lofty goal, Mandatory enforcement of access control using SELinux MLS or MCS mechanisms.
+* Mandatory enforcement of access control using SELinux MLS or MCS mechanisms.
 * Label-driven separation of data and services at the operating system and filesystem levels.
 * Preservation of handling labels within the system and across controlled egress paths.
 * Integration with selected enterprise services, including web serving, electronic mail, and file sharing, to maintain label continuity during data access and transmission.
@@ -46,8 +47,7 @@ UMRS explicitly addresses the following areas, which are considered in scope for
 * Generation of operational and audit evidence demonstrating system posture and enforcement behavior.
 * Least-privilege system design, including controlled delegation of administrative capabilities.
 
-Finally, UMRS is responsible for ensuring that handling requirements are consistently represented, enforced, and observable within its defined operational boundaries.
-
+UMRS is responsible for ensuring that handling requirements are consistently represented, enforced, and observable within its defined operational boundaries.
 
 == Out-of-Scope Capabilities and Non-Goals
 
@@ -65,15 +65,13 @@ The following capabilities and responsibilities are intentionally out of scope f
 
 UMRS does not attempt to prevent all forms of data leakage. Instead, it ensures that handling requirements are preserved, enforced, and auditable within the system and during supported egress paths.
 
-
 == Relationship to Other Security Controls
 
 UMRS is designed to complement, not replace, existing organizational security controls. It assumes the presence of baseline system hardening, network protections, and encryption practices appropriate to the deployment environment.
 
 The system focuses specifically on mandatory handling enforcement and label continuity, providing mechanisms that are often absent or inconsistently implemented in unclassified environments.
 
-
 == Scope Summary
 
-In summary, UMRS provides a reference architecture for enforcing and preserving mandatory handling labels on unclassified systems using operating system–level controls and enterprise service integration. It defines clear enforcement boundaries and produces auditable evidence of system behavior, while deliberately avoiding responsibilities better handled by other security technologies or organizational processes.
+UMRS provides a reference architecture for enforcing and preserving mandatory handling labels on unclassified systems using operating system-level controls and enterprise service integration. It defines clear enforcement boundaries and produces auditable evidence of system behavior, while deliberately avoiding responsibilities better handled by other security technologies or organizational processes.
 

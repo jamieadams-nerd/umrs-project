@@ -224,6 +224,17 @@ ls -Z /data/cui/
 These commands produce evidence that enforcement is active and that specific objects
 are covered by the integrity policy.
 
+For a consolidated view of all security attributes on a single file — SELinux
+security context, IMA/EVM flag state, encryption source, and typed findings —
+use xref:umrs-tools:umrs-stat.adoc[umrs-stat].
+It reads these attributes through a TOCTOU-safe fd-anchored path, surfaces them
+in a structured audit card, and emits any findings as typed data that can be
+counted and filtered without parsing log output.
+
+For directory-level label inspection, xref:umrs-tools:umrs-ls.adoc[umrs-ls]
+groups entries by SELinux type and security marking using the same fd-anchored
+approach.
+
 == Why This Matters in Practice
 
 Unclassified systems fail because they treat important data like ordinary files. The

@@ -1,0 +1,942 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>Notation (IEKO)</title>
+<link rel="stylesheet" type="text/css" href="../isko.css" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:url" content="https://www.isko.org/cyclo/notation" />
+<meta name="twitter:title" content="Notation (ISKO Encyclopedia of KO)" />
+<meta property="og:image" content="https://www.isko.org/cyclo/notation3.jpg" />
+</head>
+
+<meta name="DCTERMS.title" content="Notation" />
+<meta name="DCTERMS.creator" content="Claudio Gnoli" />
+<meta name="DCTERMS.issued" content="2018" />
+<meta name="DCTERMS.relation.ispartof" content="ISKO Encyclopedia of Knowledge Organization" />
+<meta name="DCTERMS.ispartof" content="ISKO Encyclopedia of Knowledge Organization" />
+<meta name="DCTERMS:bibliographicCitation" content="ISKO Encyclopedia of Knowledge Organization, eds. Birger Hjorland and Claudio Gnoli" />
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="001.012">
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="025.4">
+<meta name="DCTERMS.subject.keyword" content="classification codes">
+<meta name="DCTERMS.subject.keyword" content="symbols">
+<meta name="DCTERMS.subject.keyword" content="digits">
+<meta name="DCTERMS.type" content="Text" />
+<meta name="DCTERMS.format" content="text/html" />
+<meta name="DCTERMS.identifier" content="https://www.isko.org/cyclo/notation" />
+
+<style>
+a {text-decoration: none;}
+a:hover {text-decoration:underline;}
+table td, table th { padding: 5px; }
+</style>
+<body>
+
+<a name="top"></a>
+
+<table>
+
+<tr>
+<td id="isko"><h1>I S K O</h1></td>
+<td id="banner"><h2><a href="index.html" style="text-decoration:none;">Encyclopedia of Knowledge Organization</h2></a></td>
+</tr>
+
+<tr>
+<td id="navigation">
+<a href="../index.php">home</a>
+<a href="../about.html">about ISKO</a>
+<a href="../join.html">join ISKO</a>
+<a href="../ko.html"><cite>Knowledge Organization</cite> journal</a>
+<a href="../events.html">ISKO events</a>
+<a href="../chapters.html">ISKO chapters</a>
+<a href="../people.html">ISKO people</a>
+<a href="../pubs.html">ISKO publications</a>
+<a href="index.html">Encyclopedia</a>
+<a href="../lit.html">KO literature</a>
+<a href="../inst.html">KO institutions</a>
+<a href="http://bartoc.org/" title="link to BARTOC">&#8663; KOS registry</a>
+<a href="http://www.isko-mms.net/home/" title="access-account required">&#128274; members</a>
+<a href="../contact.html">contact us</a>
+</td>
+<td id="content" rowspan="2">
+
+<a class="menu" href="authors#hj">edited by Birger Hj&oslash;rland</a> <a class="menu" href="authors#g">and Claudio Gnoli</a>
+
+<p>&nbsp;
+
+<h2>Notation</h2>
+
+<blockquote>
+by <a href="authors#g" style="text-decoration:underline">Claudio Gnoli</a></p>
+
+<p>Table of contents:
+
+<br><a style="text-decoration:none;" href="#1">1. Introduction</a> 
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#1.1">1.1 Historical precedents</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#1.2">1.2 Notation in modern knowledge organization systems</a>
+<br><a style="text-decoration:none;" href="#2">2. Representing notation</a>
+<br><a style="text-decoration:none;" href="#3">3. Notational bases</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#3.1">3.1 Positional notation</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#3.2">3.2 Number of sibling classes in one array</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#3.3">3.3 Pronounceable notations</a>
+<br><a style="text-decoration:none;" href="#4">4. Functions of notation</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#4.1">4.1 Concept identification</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#4.2">4.2 Ordering</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#4.3">4.3 Expressivity</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#4.4">4.4 Mnemonicity</a>
+<br><a style="text-decoration:none;" href="#5">5. Allocation of notation to concepts</a>
+<br><a style="text-decoration:none;" href="#6">6. Syntax</a>
+<br><a style="text-decoration:none;" href="#7">7. Digital applications</a>
+<br><a style="text-decoration:none;" href="#8">8. Conclusion</a>
+<br><a style="text-decoration:none;" href="#term">Terminological index</a>
+<br><a style="text-decoration:none;" href="#ack">Acknowledgments</a>
+<br><a style="text-decoration:none;" href="#end">Endnote</a>
+<br><a style="text-decoration:none;" href="#ref">References</a>
+<br><a style="text-decoration:none;" href="#col">Colophon</a>
+
+<p><strong>Abstract</strong>:
+<br>Notations are systems of symbols that can be combined according to syntactical rules to represent meanings in a specialized domain. In knowledge organization, they are systems of numerals, letters and punctuation marks associated to a concept that mechanically produce helpful sequences of them for arranging books on shelves, browsing subjects in directories and displaying items in catalogues. Most bibliographic classification systems, like Dewey Decimal Classification, use a positional notation allowing for expression of increasingly specific subjects by additional digits. However, some notations like that of Bliss Bibliographic Classification are purely ordinal and do not reflect the hierarchical degree of a subject. Notations can also be expressive of the syntactical structure of compound subjects (common auxiliaries, facets etc.) in various ways. In the digital media, notation can be recorded and managed in databases and exploited to provide appropriate search and display functionalities.</p>
+
+</blockquote>
+
+<a name="1"></a>
+<br><h3>1. Introduction</h3>
+
+<p>Notations are systems of written symbols that can be combined according to some set of syntactical rules to represent various meanings in a specialized domain. Familiar examples include mathematical or logical formulas using numbers, variables and operators; formulas denoting chemical compounds by the kind, number and bonds of their atoms; and successions of notes forming a musical score. Such systems can be understood as special languages, that is languages for special purposes, and as artificial languages (<a href="#refS">Sammet and Tabory 1968</a>). They are typically alternative to the expression of equivalent contents in words, which was more common in former literature; occasionally, words themselves may be used as in the "verbal notation" for music (<a href="#refW"><i>Word Event</i> 2011</a>).</p>
+
+<p>Several more specialized domains, including &rarr; <a href="knowledge_organization">knowledge organization</a>, have also developed their own notations. For example, the Pfafstetter Coding System allows for ordering of river basins and their branches by a decimal positional notation (<a href="#refV">Verdin and Verdin 1999)</a>; the International Phonetic Alphabet allows for precise representation of phonemes and their sequences in any natural language; programming languages for computers use various symbols for instructions and variables; the Laban notation is used to represent successions of movements of the human body in physical activity or in dance; chess matches are recorded by an algebraic notation indicating pieces and coordinates in the gameboard; pacenotes are recorded by special symbols in a notebook then read to rally drivers in order to anticipate the coming bends, junctions and optimal gears. Hull (<A HREF="#refH">1966</A>) proposed a notation for zoological taxonomy, that would assign three numbers to each taxon: an identifier, a positional number expressing hierarchy, and a link to immediate ancestor's positional number; this seems to be the only way to provide information on both classification and &rarr; <a href="genealogical">genealogical</a> relationships.</p>
+
+<p>Bawden (<a href="#refB">2017</a>) considers "the extent to which information representation and communication [of molecular structures by notation] has gone hand-in-hand with the development of concepts and theories in chemistry, so that it is difficult to tell where the one ends, and the other begins". He echoes Grolier (<a href="#refG">1991</a>, 99-100) where he observed that "[h]istorians of science repeatedly assert that progress in such sciences as logics, mathematics and chemistry was largely conditioned by important innovations in notation (symbolization). The same judgment could be valid for classification". </p>
+
+<p>&rarr; <a href="library_classification">Bibliographic classification systems</a> are indeed another important domain where notation is applied. This article discusses notation in classification systems and, more generally, &rarr; <a href="kos">knowledge organization systems (KOS)</a>.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="1.1"></a>
+<h4>1.1 Historical precedents</h4>
+
+<p>Although detailed notational systems for knowledge organization have been developing especially since the 19th century, various precedents may be found in the earlier history of culture, that must have been influential for at least the very idea of representing and organizing concepts according to numerical or literal symbols. Only a very short mention of some of them is given here.</p>
+
+<p>The ancient Judaic tradition of Kabbalah already associated concepts to letters, words and numbers mentioned in the <i>Bible</i>. This may have influenced such folk traditions as the Southern Italian association between objects or persons dreamed and the numbers 1 to 90 to be taken out in the lotto gambling. In an oral tradition of Naples, the meanings of numbers taken out progressively in the game can in turn be combined by a gay man (<i>femminiello</i>) to create and develop a story. Association between numbers and concepts is also reflected in nursery rhymes listing relevant phenomena (one is the Sun, two are the eyes...) that can be seen as classifications ante litteram.</p>
+
+<p>French scholar Richart de Fournival (1201-1260) already organized his personal library by a simple notation representing subject with single letters, colours and different calligraphic forms (&rarr; <a href="#refD">Dousa 2018</a>, <a href="library_classification#2.4.2">section 2.4.2</a>). Some late Medieval monasteries (14th-15th century) used alphanumeric notation in their catalogs; in 1595, Latin, Greek and Hebrew letters were used in P. Bert's early printed library catalogue in Leiden (<a href="#refK">Kerv&eacute;gant 1962</a>, 65).</p> 
+
+<p>Medieval systems of knowledge organization used some forms of notation also for purposes of mnemotechnics and learning of wisdom (<a href="#refR">Rossi 2000</a>; <a href="#refL">Laporte 2018</a>, &rarr; <a href="ideal_language#3.1">section 3.1</a>). Ramon Llull's <i>Arbre de filosofia desiderat</i> (1290) described a tree of knowledge including nine "flower" categories represented by letters <code>B</code> to <code>K</code>: e.g. <code>B</code> "goodness, difference, power", <code>C</code> "magnitude, concordance, object", <code>D</code> "duration, contrariness, memory", etc. By rotating a wheel where such categories are written (Fig. 1), these can be combined with nine more "branch" categories represented by letters <code>L</code> to <code>U</code> to give such combinations as <code>DP</code> "memory: unity or plurality" and <code>DS</code> "memory: similarity or dissimilarity".</p>
+
+<br><div align="center"><figure>
+<img src="notation1.jpg" title="Fig. 1: Notation from categories in Llull's wheel" width="30%">
+<figcaption>Figure 1: Notation from categories in Llull's wheel (from Wikimedia Commons)</figcaption>
+</figure></div><br>
+
+<p>Such tools for artificial memory and representation were cultivated again by Giordano Bruno (1548-1600) then by Johann Heinrich Bisterfeld (<a href="#refB">1661</a>), who developed a "philosophical alphabet" associated to tables of terms and concepts of all sciences, including general categories and a "tabula primitiva" of what we would call today common auxiliaries. In Cave Beck's Universal Character (1657) the terms of language were listed and notated by digits <code>0</code> to <code>9</code> and combinations of them, to produce a "numeric dictionary" and an "alphabetical dictionary" each referring to the other much like in the relative index of a modern classification scheme. John Wilkins's Real Character (1668) famously used letters to identify elementary concepts listed in the hierarchical schedules of his "philosophical language", briefly described in a famous essay by J.L. Borges (<a href="#refB">1952</a>) and discussed the next year by information scientist Brian Vickery (<a href="#refV">1953</a>). A similar classification system with a literal notation that made it a true artificial language was George Dalgarno's Ars Signorum (1661):</p>
+
+<blockquote>
+<code>Skam</code>	&nbsp;&nbsp; grace<br>
+<code>Skan</code>	&nbsp;&nbsp; happiness<br>
+<code>Skaf</code>	&nbsp;&nbsp; to worship<br>
+<code>Skab</code>	&nbsp;&nbsp; to judge<br>
+<code>Skad</code>	&nbsp;&nbsp; to pray<br>
+...<br>
+</blockquote>
+
+G.W. Leibniz's <i>Dissertatio de arte combinatoria</i> (1666), influenced by Bisterfeld (<a href="#refL">Loemeker 1961</a>), suggested to associate numbers to elementary concepts (<code>1</code> point, <code>2</code> space, <code>3</code> between, <code>4</code> contiguous...) and to combine them into an algebra of all possible subjects, the Characteristica Universalis, although he did not develop it into a full system (<A HREF="#refL">Laporte 2018</A>, &rarr; <a href="ideal_language#3.2">section 3.2</a>). Leibniz's ideas have been studied by logician and linguist Louis Couturat (1868-1914) who also developed Ido, an international auxiliary language.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="1.2"></a>
+<h4>1.2 Notation in modern knowledge organization systems</h4>
+
+<p>In the context of modern knowledge organization, notations are systems of symbols that identify the concepts of a KOS (<a href="#refV">Vickery 1952-1959</a>; <a href="#refD">Daily 1956; 1976</a>, 194 ff.; <a href="#refG">Grolier 1956</a>; <a href="#refC">Coates 1957<!-- ; 1959 --></a>; <a href="#refD">Dobrowolski 1962</a>; <a href="#refM">Mills 1967</a>; <a href="#refF">A.C. Foskett 1996</a>). Bliss (<a href="#refB">1940</a>) described notation as "a system of symbols for maintaining the structural order of a classification and for locating terms, or subjects, in the classification", and Ranganathan (<a href="#refR">1945</a>) as "an artificial language of ordinal numbers for the specific purpose of mechanizing arrangement". Ranganathan also makes a clear distinction between:
+
+<ul>
+<li>the <i>idea plane</i>, that is the concepts and relationships in a KOS, </li>
+<li>the <i>verbal plane</i>, that is their expression in terms of some natural language, and </li>
+<li>the <i>notational plane</i>, that is their translation into the symbols of some notation:</li>
+</ul>
+
+<blockquote>
+<p>Along with the capacity to create ideas, came also the capacity to develop an articulate language as medium for communication. [...] But, language is more lethargic than idea. Homonyms and Synonyms, therefore, grow like weeds. Undertones and overtones grow in abundance.<br>
+Therefore, attemps are continually in progress to make a language precise &mdash; at least among those creating ideas in a specific discipline. It is so at least for newly created ideas. Further, words are often replaced by symbols pregnant with precise meaning. When arrangement is found necessary, ordinal numbers are used as helpful symbols. A distinctive contribution of classification, as found and as being cultivated in the field of Library Science, is the Notational Plane. Uniqueness of the idea represented by an ordinal number and the total absence of homonyms and synonyms are the distinctive features of the notational plane, when compared to the verbal plane. (<a href="#refR">Ranganathan 1967</a>, 327-8)</p>
+</blockquote>
+
+<p>Notation is typical of classification schemes, while in such verbal KOSs as subject heading lists, &rarr; <a href="thesaurus">thesauri</a>, taxonomies and ontologies concepts are primarily identified on the verbal plane through controlled <i>terms</i> formed with one or more words. However, notations can sometimes be used as well to represent concepts that are also identified by terms, for example as language-neutral identifiers in multilingual thesauri, or as record identifiers: e.g., in Medical Subject Headings (MeSH) the term <code>retina</code> can also be represented by its notation <code>A09.371.729</code>, a subdivision of <code>A09.371</code> which represents the broader term <code>eye</code>.</p>
+
+<p>Homonymy and synonymy can also be managed on the verbal plane (unlike the quote above appears to suggest) in thesauri; but terms representing concepts do not include information on their ordinal and hierarchical position in the structure of the system. Indeed, in verbal systems terms are usually presented in alphabetical order, which makes them easy to be searched only when the appropriate term is known in advance. On the other hand, as users do not always know an  appropriate term by which their information need is expressed, a systematic arrangement according to some principle can also be useful to guide them across the collection of available documents. For some kinds of concepts, systematic arrangement is even required by common sense, as it would be unconvenient to list e.g. <code>Friday</code>, <code>Monday</code>, <code>Sathurday</code>, <code>Sunday</code>, <code>Thursday</code>, <code>Tuesday</code>, <code>Wednesday</code>, or <code>divorce</code>, <code>engagement</code>, <code>marriage</code>, <code>separation</code> in alphabetical order only.</p>
+
+<p>In classification schemes, a systematic order is the preferred way of displaying concepts, while an alphabetical index (commonly known as the <i>Relative Index</i> in the Dewey Decimal Classification, DDC) is only an auxiliary tool for finding the place of a concept in the systematic schedules. In order to control the systematic sorting of items indexed by a classification scheme, some notation is required (<a href="#refR">Ranganathan 1967</a>, chapter HA). This feature may even be seen as the most typical to distinguish classification schemes from such other KOS types as taxonomies (where concepts also form hierarchical trees, but sibling branches are listed alphabetically) or thesauri (where concepts are primarily listed alphabetically and hierarchical trees can only be inferred through series or BT/NT relationships). Unlike one may believe at first sight, the most important function of notation (see <a href="#3">section 3</a>) is not to represent the corresponding concepts in a short form, but to record the appropriate sequence in which they are presented, both in the schedules and in any set of information resources. This makes the notational system adopted in a KOS, with its peculiar properties, less trivial than the bare use of any set of abbreviations.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2"></a>
+<h3>2. Representing notation</h3>
+
+<p>Within a document, numerical notations (see <a href="#3">section 3</a>) such as those of the DDC or the Universal Decimal Classification (UDC) can usually be distinguished from bulk text as they consist (mostly) of numerals rather than letters. However, ambiguities may occur as numerals can also be used to represent quantities, document sections or other information. This is even more the case with notations that mainly use letters, such as that of Bliss Bibliographic Classification (BC).</p>
+
+<p>To avoid ambiguity and express the nature of notation, then, this can be represented in a font different from bulk text. In some card catalogues subject-related headings were written in red, a heritage of <i>rubrication</i> (from Latin <i>rubrum</i> "red") of emphasized parts of old manuscripts. In modern digital-based printing and visualization on screen, no standard use has spread yet. Easy options are italics or bold (as used for subject headings in the documentation about Nuovo Soggettario) as opposed to regular font. We recommend use of a monospaced font (such as Courier), as commonly adopted for representing code in computer science literature and for rendering the content of the <code>&lt;code&gt;</code> HTML element. This choice expresses the fact that notation is a special technical language other than natural language which forms the bulk of a text. An example of this use follows:</p>
+
+<blockquote>
+<p>the facet <code>mqvtn2</code> "whales, in <i>area</i>" is seen as both a subclass of <code>mqvtn</code> "whales" and a subclass of <code>2</code> "in <i>place</i>". [...] Also notice that the facet name, <i>"area"</i>, has been recorded here as an alternative label. An alternative approach for facets could be the use of <code>skos:collection</code> classes (<a href="#refG">Gnoli et al. 2011</a>, 201)</p>
+</blockquote>
+
+<p>We adopt this use in the present article and the whole <i>ISKO Encyclopedia of Knowledge Organization</i>; the same style is adopted throughout ISKO 2010 proceedings (<a href="#refG">Gnoli and Mazzocchi 2010</a>). In controlled vocabularies the function of identifying concepts is played by controlled terms, so these can also be represented in a monospaced font. For the verbal captions that illustrate the meaning of a class notation, no standard use has spread either. To avoid ambiguity, these should also be distinguished from bulk text in some way. Vickery (<a href="#refV">1956</a>) uses small capitals; brackets or quotation marks, as in the example above, are other easy options.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3"></a>
+<h3>3. Notational bases</h3>
+
+<p>In principle, any set of written symbols may be adopted as a notation. A binary system, for example, may adopt only <code>0</code> and <code>1</code>, or a red dot and a blue dot, or &#9866; and &#9867; like in the <i>I Ching</i> classic Chinese text.  However, only letters and numerals have conventional orders that are widely known, which has obvious advantages for the ordering function often played by notation.</p>
+
+<p>As many important modern classifications have been developed in Western culture, Roman letters or Hindu-Arabic numerals are the most common choices. Roman numbers have also been common since the 12th century to mark shelves and books contained in them. Additional symbols like punctuation marks are sometimes added, especially since the development of UDC and &rarr; <a href="colon_classification">Colon Classification (CC)</a>, although their standard sequence is less obvious and needs to be defined explicitly by developers then learned by users. </p>
+
+<p>In general, exceedingly complex notational bases are considered to be a hindrance to users, as parodied in the character of Sariette, a family librarian from a tale by Anatole France (<a href="#refF">1914</a>) who devised so complex shelfmarks that they could only be understood by himself (<a href="#refG">Gnoli 2006</a>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.1"></a>
+<h4>3.1 Positional notation</h4>
+
+<p>DDC took its very name from the adoption of Hindu-Arabic numerals <code>0</code> to <code>9</code>. They make it a "decimal" system not just in the sense that classes are subdivided into arrays of ten subclasses; but especially in the sense that the resulting numbers must be read and interpreted in the same way as decimal numbers, according to the <i>positional notation</i> used in mathematics (as opposed to <i>sign-value notation</i> like in Roman numerals) extended to the <i>radix fractions</i> that can follow the decimal point. That is, despite 123 is greater than 14, <code>0.123</code> precedes <code>0.14</code> because 2 precedes 4.</p>
+
+<p>This practice opens the room for indefinite expansion of notation and of classification schedules themselves, as more characters specify more detailed &rarr; <a href="logical_division">subdivisions</a> of a field of knowledge (<a href="#refV">Visintin 2005</a>). Positionality allowing for indefinite expansion of subjects can be considered to be a major technical innovation in the history of bibliographic classification. </p>
+
+<blockquote>
+<p>Every day, in libraries throughout the world, cataloguers perform a feat of dazzling intellectual audacity. They classify books and other materials. In other words, they reduce the infinite dimensions of knowledge to a straight line from <code>000</code> to <code>999</code> or <code>A</code> to <code>Z</code>. There is an old cartoon of a gamekeeper and a fisherman. The first says "You can't fish here" to which the fisherman replies "I <i>am</i> fishing here". Classification, the thing that cannot be done, is done all the time by librarians. The amazing thing is that it works &mdash; classification numbers, those dots on the straight line, enable library users to locate materials and groups of materials with great ease and are used more and more in online systems to provide sophisticated subject access. (<a href="#refG">Gorman 1998</a>, 106)</p>
+</blockquote>
+
+<p>The positional principle is usually adopted already for notating the main classes of a scheme and their immediate subdivisions, although DDC requires that a class number has at least three digits, with the digit characteristic of every main class followed by <code>00</code> (e.g. <code>300</code> rather than just <code>3</code> for "social sciences") and the two digits of their hundred subdivisions followed by <code>0</code> (e.g. <code>380</code> rather than just <code>38</code> for "commerce"); however, this horror vacui is only a graphic convention with no effect on the system structure, and has indeed been successfully abolished in UDC. If more than three degrees of subdivision are expressed, the first three digits are followed by a dot, then by further digits in any number according to the subject specificity:</p>
+
+<blockquote>
+<code>300&nbsp;&nbsp;&nbsp;</code>social sciences<br>
+<code>380&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>commerce, communication, transportation<br>
+<code>386&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>inland waterway & ferry transportation<br>
+<code>386.4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>canal transportation<br>
+<code>386.40&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>[special subdivisions of canal transportation]<br>
+<code>386.404&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>special subjects in canal transportation<br>
+<code>386.4042&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>activities and services [in canal trasportation]<br>
+<code>386.40424&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>freight services [in canal trasportation]</p>
+</blockquote>
+
+<p>Such further digits used to be written in DDC by groups of three separated by a blank space for the sake of readability (<code>386.404&nbsp;24</code>), but in the digital environment blank spaces tend to be abandoned (<code>386.40424</code>).</p>
+
+<p>DDC was also an application of the principle of <i>relative location</i>, as shelfmarks were now assigned to books themselves rather than to shelves (Figure 2). A book could now be assigned a shelfmark according to its subject, and keep it regardless of its material position in shelves and rooms. This makes it possible interpolation of shelfmarks expressing more specific subjects,  indefinite addition of new books by moving the adjacent books to the next shelf, or even move of a whole collection to a new place without changing its shelfmarks. Classmarks can also be detached from the shelving function, to denote the subject of a book in an abstract sense, be it used to define its position in a shelf or not, for example in a catalogue or a bibliography; importantly, this also means that the same classmarks can be reused by several libraries (<a href="#refG">Green 2009</a>). Unlike commonly believed, relative location was not invented by Dewey himself, but was common in German libraries during the 19th Century, e.g. at the Ducal Library of Hessia-Darmstadt which used Andreas Schleiermacher's Bibliographisches System, also featuring common auxiliaries (<a href="#refS">Stevenson 1978</a>, 4).</p>
+
+<br><div align="center"><figure>
+<img src="notation2.jpg" title="Fig. 2: Monographs arranged by DDC shelfmarks at UniUD" width="40%">
+<figcaption>Figure 2: Monographs in multiple languages arranged by DDC shelfmarks from classes <code>658</code> "management" and <code>659</code> "advertising and public relations" at the Humanities and Education Library, University of Udine, Italy (photo by Carlo Bianchini)</figcaption>
+</figure></div><br>
+
+<p>As mentioned above, the notational base of DDC was also adopted by UDC, which was originally created as a special version of DDC. UDC additionally introduced punctuation marks to specify common auxiliaries such as places, time periods, languages, forms of the document etc. Thus a <i>pure</i> notation of digits evolved into a <i>mixed</i> notation of digits and punctuation marks. While pure notations use only one kind of symbols, mixed ones use several of them, e.g. both literals and numerals.</p>
+
+<p>Apart from possible ambiguities in the filing order of punctuation marks, the notational base of DDC and UDC is regarded as optimal, because Hindu-Arabic numerals are more widely known across the world than Roman letters, which are exclusive of some alphabets. Indeed numerals are also adopted by the &rarr; <a href="kdc">Korean Decimal Classification</a> (KDC, see <a href="#refO">Oh 2012</a>) and the Nippon Decimal Classification (NDC), which are derived from DDC, and the &rarr; <a href="lbc">Library-Bibliographical Classification</a> (LBC or BBK) changed its Cyrillic letters to numerals for the sake of internationalization (<a href="lbc#2.5.6">Sukiasyan 2017, section 2.5.6</a>). UDC numeral notation is widely used as a common language in the libraries of many Eastern European countries, where national alphabetical subject headings would be less effective as the local languages are spoken by a relatively low number of users, making the development and maintenance of subject heading lists economically disadvantageous. A pure numeral notation representing a completely different ordering of knowledge is adopted in Dahlberg's Information Coding Classification (ICC) (<a href="#refD">Dahlberg 2008</a>).</p>
+
+<p>The main alternative to numerals are letters of the Roman alphabet, in the filing order <code>A</code> to <code>Z</code>. Letters identified main classes already in Medieval cloister libraries, then in Frederik Rostgaard's <i>Projet d'une nouvelle m&eacute;thode pour dresser le catalogue d'une biblioth&egrave;que selon les mati&egrave;res</i> published in 1697 (<A HREF="#refS">Stevenson 1978</A>, 7). This base is adopted for the main classes of Charles Ammi Cutter's Expansive Classification (EC) and for the first two divisions of the Library of Congress Classification (LCC) derived from EC. In both these systems letters are followed by numerals for further subdivisions, although LCC numerals occupy a fixed length of four digits rather than having a positional function:</p>
+
+<blockquote>
+<code>L&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>education (general)<br>
+<code>LB&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>theory and practice of education<br>
+<code>LB1705-2286&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>education and training of teachers and administrators <br>
+<code>LB1771-1773&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>certification of teachers</p>
+</blockquote>
+
+<p>Other important general classifications using letters for their first subdivisions are Bliss BC, where capital letters form the majority of classmarks with only some numerals used to indicate common auxiliaries; and Ranganathan's CC, where main classes are expressed by capital Roman letters and combined with small case letters, Greek letters, numerals and punctuation marks to produce very expressive but complex classmarks. The developing &rarr; <a href="ilc">Integrative Levels Classification (ILC)</a> uses lower-case letters for main classes and their subdivisions, capital letters for deictics and numerals for facet indicators (cfr. <a href="#4.3">section 4.3</a>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.2"></a>
+<h4>3.2 Number of sibling classes in one array</h4>
+
+<p>While being a practical solution, the adoption of Hindu-Arabic numerals or the Roman alphabet also entails important effects on the structure of a classification scheme. Notations based on numerals or letters have different <i>capacity</i> (<a href="#ref">Mills 1967</a>, 42), so that systems may have up to 10 or 26 main classes, 100 or 676 subclasses etc. depending on their notational base. But after all, why should every concept be always subdivided into 10 or 26 specifications like in a Procrustean bed? Clearly, DDC main disciplinary classes are ten rather than eight or fifteen as an effect of the  notational base, rather than for any intrinsic property of knowledge fields. This problem of "not following the path of nature, but adapting plants to author's own prescribed method" was noticed already by botanist John Ray (1627-1705) while commenting Robert Morison's classification of plants <a href="#end">[1]</a> (<a href="#refR">Ray 1848</a>, cited in <a href="#refR">Rossi 2000</a>, 252). Experts in library classification have stated it again:</p>
+
+<blockquote>
+<p>Sayers says the classificationist takes the whole field of knowledge and "first divides it into a number of broad convenient areas, which he calls his main classes". "Convenience" seemed at one time to mean "notational convenience", so that having decided to use 9 digits the classificationist aimed at dividing knowledge into 9 or more or less equal and distinguishable fields; or, having decided to use the alphabet he sought for roughly 26 divisions. (<a href="#refK">Kyle 1959</a>, 19, reference omitted)</p>
+
+<p>Notation should reflect order, not determine it. Bliss has said that it is "correlative and subsidiary". The systematic sequence of topics is the essence of library classification. Notation is only the mechanism which maintains that sequence; it should be considered only after the problems of sequence have been decided. (<a href="#refM">Mills 1967</a>, 38)</p>
+
+</blockquote>
+
+<p>While developing classification schemes, editors try to mediate between practical requirements of notation and instrinsic requirements of subjects structure in various ways, for example by not using all available symbols when a lesser number of subdivisions has to be expressed. Three technical devices have also been adopted in various systems to make a notational base better reflect knowledge structures: telescopization, centesimal notation and sectorizing digits.</p>
+
+<p><i>Telescopic notation</i> is the conscious squeezing of two degrees of subdivision into a single notational array, like in the following example (<a href="#refB">Bhattacharyya and Ranganathan 1978</a>, 139):  </p>
+
+<blockquote>
+<code>I1&nbsp;&nbsp;&nbsp;</code>Cryptogamia<br>
+<code>I2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>Thallophyta<br>
+<code>I3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>Bryophyta<br>
+<code>I4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>Pteridophyta<br>
+<code>I5&nbsp;&nbsp;&nbsp;</code>Phanerogamia<br>
+<code>I6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>Gymnosperm<br>
+<code>I7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>Monocotyledon<br>
+<code>I8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>Dicotyledon
+</blockquote>
+
+<p>or in DDC:</p>
+
+<blockquote>
+<code>722-724&nbsp;&nbsp;&nbsp;&nbsp;&nbsp</code>architecture schools and styles<br>
+<code>722&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>architecture from origins to 300 AD<br>
+<code>723&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>architecture 300 to 1499 AD<br>
+<code>724&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>architecture after 1400<br>
+<code>725-728&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>specific structure types<br>
+<code>725&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>public structures<br>
+<code>726&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>building for religious purposes<br>
+<code>727&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>buildings for education and research<br>
+<code>728&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>residential and related buildings
+</blockquote>
+
+<p>On the other side, a class may occasionally need to be divided into more than 10 or 26 subclasses. A common case is a list of the twelve months in a year represented in a numeral notation: <code>1</code> "January", <code>2</code> "February", ..., <code>8</code> "August", <code>??</code> "September", ... 
+<p>One solution is <i>centesimal notation</i>, that is the use of two numerals instead of a single one to identify sibling classes belonging to one and the same array, so that the base is expanded from ten to one hundred (or, in principle, to one thousand etc., or to 26<sup>2</sup>, 26<sup>3</sup> etc.); however, this hampers expressivity (<a href="#4.3">section 4.3</a>) and makes notation longer. It is adopted in LBC:</p>
+
+<blockquote>
+<code>5	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>health care, medical sciences<br>
+<code>53.0/57.8  	&nbsp;&nbsp;&nbsp;</code>clinical medicine<br>
+...<br>
+<code>55.5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>rheumatology <br>
+<code>55.6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>oncology <br>
+<code>55.8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>dermatovenerology <br>
+<code>56.1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>neuropathology, neurosurgery, psychiatry <br>
+<code>56.6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>stomatology <br>
+<code>56.7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>ophthalmology <br>
+<code>56.8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>otorhinolaryngology <br>
+<code>56.9&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>urology <br>
+<code>57.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>medical sexology <br>
+<code>57.1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>gynecology <br>
+<code>57.3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>pediatrics<br>
+...
+</blockquote>
+
+<p>and occasionally in other systems, for such arrays consisting of many subclasses as plant families in UDC:</p>
+
+<blockquote>
+<code>582.7/8</code>	&nbsp;Rosidae<br>
+...<br>
+<code>582.73&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code> 		Fabales<br>
+<code>582.74&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code> 		Sapindales<br>
+<code>582.75&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code> 		Geraniales<br>
+<code>582.77&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code> 		Myrtales<br>
+<code>582.79&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code> 		Apiales<br>
+<code>582.82&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code> 		Vitales
+</blockquote>
+
+<p>To deal with such problems, Ranganathan also defined the practice of <i>sectorizing digits</i> or <i>empty digits</i>, consisting in keeping the first and/or last digit of a notational base for expansion of the preceding notation (<a href="#refR">Ranganathan 1967</a>, 312-313, cross references omitted):</p>
+
+<blockquote>
+Another method of satisfying the Canon [of extrapolation in array] is to postulate the first and the last digits to be empty&mdash;for use as sectorizing digits. This method will admit of extrapolation at the beginning and at the end respectively of the array.<br>
+In DC and UDC, the digit <code>0</code> and the digit <code>9</code>&mdash;the first and the last digits of the pure base of Indo-Arabic numerals&mdash;are used as sectorizing digits in some arrays. [...] <br>
+CC uses a mixed base. Each species of digits forms a Zone in an Array. There is a sectorizing digit for each zone&mdash;<code>z</code> for Roman smalls, <code>9</code> for Indo-Arabic numerals, and <code>Z</code> for Roman capitals. Thus, it provides for any number of extrapolations at the end of each zone of an array. Further, extrapolation at the end is also possible by using packet notation. This amounts to extrapolating a whole zone at the end. [...] Example in Zone (Z&mdash;1)
+<blockquote>
+<code>R6&nbsp;&nbsp;&nbsp;</code>	Indian philosophy<br>
+<code>R68&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code> 		Dvaita philosophy (Dualism)<br>
+<code>R691&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>		Charvaka philosophy (Materialism)
+</blockquote>
+</blockquote>
+
+<p>While empty digits expand an array at its end, <i>emptying digits</i> allow for "interpolation of a new number between any two existing class numbers or isolate numbers" (<a href="#refR">Ranganathan 1967</a>, 314). This can be observed even in CC main classes, where main class <code>KX</code> "animal husbandry" has been interpolated between <code>K</code> "zoology" and <code>L</code> "medicine". A similar device has been proposed by Farradane (<a href="#refF">1952</a>), consisting in expanding notation by introducing a different kind of symbol in the same array, e.g. <code>J</code>, <code>K</code>, <code>K1</code>, <code>K2</code>, <code>L</code>, <code>M</code>..., just like Latin terms <i>bis</i>, <i>ter</i> etc. are sometimes added to a number to interpolate further items in a list. Of course this makes notation less consistent and elegant.</p>
+
+<p>While the exact number of symbols available for subclasses depends on the historical accidents of writing systems, the general fact that subclasses are associated to one or few tens of symbols may have natural bases. Indeed, all humans tend to group items into sets of manageable size for cognitive and practical purposes. The very fact that we categorize phenomena by a finite number of words, grouping them into classes instead of using a different symbol for every individual phenomenon, is a basic cognitive function. Miller (<a href="#refM">1956</a>) famously identified "the magical number seven, plus or minus two" as the average number of items that can be processed by working memory. Within library and information science, Blair (<a href="#refB">1980</a>) introduced the important notion of <i>futility point</i>, that is the maximum number of items that the average user is willing to browse before changing her search strategy. Wiberley, Daugherty and Danowski (<a href="#refW">1990</a>) found that most users of library catalogues examine some 30 to 35 items when displaying lists of search results. Bates (<a href="#refB">1998</a>) notices that this agrees with the Resnikoff-Dolby Rule, according to which the average ratio between a book title and the corresponding table of contents, that between the table of contents and the back-of-the-book index, that between this and the full text, and those between several other information units all are very close to 29.55 (<a href="#refR">Resnikoff and Dolby 1972</a>).</p>
+
+<p>The fact that these values approach 30, a number not very different from that of letters in many alphabets, also suggests that alphabets themselves may have originally developed as tools helping to organize words and concepts into manageable groups. "The Resnikoff and Dolby research also clearly needs to be related to the research on menu hierarchies in the human computer interaction literature" (<a href="#refB">Bates 1998</a>). Therefore an alphabetical or numerical notational base is afterall not a completely arbitrary device in epistemological terms. The matter looks different in ontological terms, as there seems to be no special reason why phenomena should occur in arrays of few tens &mdash; known chemical elements are about one hundred, nitrogenous bases forming DNA are just four, spoken languages are several thousands, etc.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.3"></a>
+<h4>3.3 Pronounceable notations</h4>
+
+<p>Being designed for the prior purpose of controlling class order, in most cases notation is unsuitable for direct pronounciation, even when letters are used as the resulting sequences often include many adjacent consonants. Still, a pronounceable notation can be useful for oral communication of subjects and easier memorization (<a href="#refC">Cordonnier 1944; 1951</a>, 27-29; <a href="#refG">Grolier 1953; 1956</a>; <a href="#refV">Vickery 1956</a>, 78-79). Pronounceable notations have sometimes been suggested, already in the last years of the 19th century by Verner (<a href="#refV">1897</a>) and by Ricci (<a href="#refR">1898</a>; cf. <a href="#refK">Kerv&eacute;gant 1962</a>, 75-76; <a href="#refD">Dobrowolski 1964</a>, 140-143), reminding of the philosophical languages of the past. D.J. Foskett and J. Foskett (<a href="#refF">1974</a>) designed a special faceted classification for education where consonants and vowels always alternate, so that notation can directly be pronounced:</p>
+
+<blockquote>
+<p>
+<code>L&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>teaching method<br>
+<code>Lim&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>direct method</p>
+
+<p><code>M-P&nbsp;&nbsp;&nbsp;&nbsp;</code>curriculum<br>
+<code>Men&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>French</p>
+
+<p><code>R-S&nbsp;&nbsp;&nbsp;&nbsp;</code>educands and schools<br>
+<code>Rid&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>secondary modern school</p>
+
+<p><code>Rid Men Lim&nbsp;&nbsp;</code>direct method, French, secondary modern school	</p>
+</blockquote>
+
+<p>However, this requires a notational base only consisting of letters and tends to produce long classmarks that are only reasonable in simple, domain-specific schemes. The alternative solution is to establish rules by which symbols, even including numerals and punctuation marks, can be pronounced. Dobrowolski (<a href="#refD">1964</a>, 141) proposes that the same digit is pronounced differently according to its position, so that sequences of consonants followed by vowels are always produced; clearly this requires users to learn the rules. Recently, ILC has adopted pronounciation rules as a secondary feature not influencing the sequence of digits in notation itself (<a href="#refG">Gnoli 2018</a>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4"></a>
+<h3>4. Functions of notation</h3>
+
+<p>Notations usually perform several functions at one and the same time. These are sometimes described as the "qualities" of a good notation (<a href="#refK">Kerv&eacute;gant 1962</a>, 68-76). In this section the different functions are discussed separately, starting with the most fundamental ones.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.1"></a>
+<h4>4.1. Concept identification </h4>
+
+<p>Using a notation means to identify a concept within a KOS in a precise, concise way, independently from the vocabulary of any natural language. Indeed, as in Ranganathan's quote above, "[u]niqueness of the idea represented by an ordinal number and the total absence of homonyms and synonyms are the distinctive features of the notational plane".</p>
+
+<p>The notation for a concept usually is shorter, although more cryptic, than its formulation in words: this makes notation useful for representing the concept in contexts where a limited space is available, like the spine of a book. Brevity indeed is often a desired quality in notation. Vickery (<a href="#refV">1956; 1957</a>) developed sophisticated calculations to estimate the average length of different types of notations, concluding that the briefest notations should be purely ordinal rather than expressive (<a href="#4.2">section 4.2</a>), should be retroactive (<a href="#4.3">section 4.3</a>) unless the numbers of concepts per facet exceeds a certain limit, and should have distinctive symbols for main classes. However, in the contemporary digital context, expressivity has become more important than brevity (<a href="#7">section 7</a>).</p>
+
+<p>In synthetic systems, notation can identify a concept that is combined with others, such as a common auxiliary (<code>=14</code> always means "Greek language" in UDC classmarks) or an isolate used as a facet. Classifications often adopt <i>parallel divisions</i> where two different classes can be divided into the same subclasses, like with geography of countries and history of the same countries, or with zoology of mammal groups and palaeontology of the same groups. For example, in DDC:</p>
+
+<blockquote>
+<code>562	&nbsp;</code>fossil invertebrates<br>
+<code>563	&nbsp;</code>various marine and coastal fossil invertebrates<br>
+<code>564	&nbsp;</code>fossil Mollusca and Molluscoidea<br>
+<code>565	&nbsp;</code>fossil Arthropoda<br>
+...<br>
+<code>592	&nbsp;</code>(living) invertebrates<br>
+<code>593	&nbsp;</code>various marine and coastal (living) invertebrates<br>
+<code>594	&nbsp;</code>(living) Mollusca and Molluscoidea<br>
+<code>595	&nbsp;</code>(living) Arthropoda<br>
+...
+</blockquote>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.2"></a>
+<h4>4.2. Ordering</h4>
+
+<p>As explained in <a href="#1.2">section 1.2</a>, a primary function of notation is to produce meaningful systematic orders of the concepts it represents. While positional notation (<a href="#3.1">section 3.1</a>) does produce a meaningful order, the latter can also be obtained without the former (<a href="#refC">Coates 1956</a>). Such a case has been described as a <i>purely ordinal</i> notation (Vickery) or <i>group</i> notation (Ranganathan). For example, in both the first (BC1) and the faceted second (BC2) edition of Bliss Classification notation is devised in such a way that, while subclasses and their facets get sorted in a standard citation order from general to specific, not always are the modulation of degrees of subdivisions and the articulation of facets reflected in the notation structure; indeed, some classes have the same number of letters than their subclasses &mdash; an extensive use of telescopization &mdash; or even a greater number (<a href="#refF">D.J. Foskett and J. Foskett 1991</a>):</p>
+
+<blockquote>
+<code>JC&nbsp;&nbsp;&nbsp;&nbsp;</code>administration of educational institutions<br>
+<code>JCC&nbsp;&nbsp;			&nbsp;&nbsp;&nbsp;</code>buildings & equipment & services <br>
+<code>JCC E				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>planning & design, architecture<br>
+<code>JCC P				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>maintenance, repair<br>
+<code>JCC Q					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>cleaning<br>
+<code>JCC R					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>decorating <br>
+<code>JCC T				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>renewal, conversion <br>
+<code>JCC V				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>security<br>
+<code>JCC Y				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>site & buildings, campus<br>
+<code>JCD&nbsp;&nbsp;					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>buildings</p>
+</blockquote>
+
+<p>The production of an optimal systematic order of documents, by applying rules of general-before-specific, decreasing concreteness of facets, their inverted citation order (<a href="#6">section 6</a>), anteriorizing common isolates (<a href="#7">section 7</a>) etc. plays a very important function in allowing users to browse a collection in effective ways. Either by going directly to library shelves or by first searching in a catalogue, a user will arrive to some point in the linear sequence of documents. If notation has produced a good systematic order, the adjacent documents will deal with the same subject or with subjects related to the first one, thus allowing the user to continue exploration and to discover unknown resources of interest through serendipity. Ranganathan conceptualized this in his APUPA model, where a central <i>umbral</i> (U) document is surrounded on both sides by partly-relevant <i>penumbral</i> (P) ones, with a gradual transition to irrelevant <i>alien</i> (A) ones (&rarr; <a href="colon_classification#4.3.11">Satija 2017, section 4.3.11</a>; <a href="#refG">Giusti 2018</a>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.3"></a>
+<h4>4.3. Expressivity</h4>
+
+<p>In <i>expressive</i> notations, unlike purely ordinal ones, the structure of the KOS is reflected largely in the structure of classmarks (<a href="#refB">Broughton 1999</a>):
+
+<ul>
+<li>the number of digits in a class symbol corresponds to the degree of specificity of the represented concept, as in DDC and systems derived from it; </li>
+<li>synthetic combination of concepts is reflected in synthesis of notation pieces, as in UDC and CC; </li>
+<li>the categories to which concepts belong have a stable notational representation (e.g. energy facets are always introduced by a colon in CC; deictic classes are always represented by capital letters in ILC).</li>
+</ul>
+
+<p>Already Otlet was aware of such advantages while discussing ante-litteram facets in UDC: 
+
+<blockquote>a condition <i>sine qua non</i> of the autonomy of the numerical elements is that they should always be characterized by a distinctive sign. This has been done for the first auxiliary indices that have been proposed; the <code>0</code> for indices of form, the parenthesis <code>()</code> for geographical indices, and the <code>:</code> for the principal modifier. (<A HREF="#refO">Otlet 1895-6</A>, 54)</blockquote></p>
+
+<p>While not being mandatory as the previous section illustrates, expressivity of the KOS structure often is a desirable quality in notation. It can work as a cognitive guide for users paying attention to notation:</p>
+
+<blockquote>
+It seems that many people, not librarians, automatically assume that a notation should be expressive. If told, say, that <code>SE</code> is English Law (as it is in the BC) they will assume that any divisions of English Law begin with <code>SE</code> and are surprised to find that English Commercial Law, say, is <code>SL</code>. (<a href="#refM">Mills 1967</a>, 40)</p>
+</blockquote>
+
+<p>As combined with concept identification, expressivity is especially useful in digital information retrieval, as the same concept is always identified and retrievable by the same notation whatever its position within synthesized combinations. Furthermore, right truncation will allow for simultaneous search of a class together with all its subclasses, as these share the same initial characters: searching DDC class <code>386</code> "inland waterway & ferry transportation" will also retrieve <code>386.4</code> "canal transportation"; this is not possible with non-expressive notations, as searching for BC2 class <code>JCCY</code> "site & buildings, campus" will not retrieve its subclass <code>JCD</code> "buildings" (cf. the examples above).</p>
+
+<p>Expressivity of syntax can be obtained by using special digits to mark the articulation point of a compound: in DDC <code>599.094</code> "mammals of Europe", the <code>0</code> marks the point where a common subdivision is appended and the following <code>9</code> indicates that it is a historical-geographical subdivision; in UDC, the symbols <code>:</code> and <code>+</code> mean that the following notation is meant to be, respectively, in some relation or in coordination with the preceding one, as in <code>1+2</code> "philosophy and religion"; in CC, the specific punctuation marks work as <i>facet indicators</i>, that is stand for the fundamental category to which the subsequent facet belong (Personality, Matter, Energy, Space or Time) and expressive symbols are also available for phase relationships (bias, comparison, etc.). </p>
+
+<p>This kind of notation is a good illustration of Ranganathan's original idea of facet analysis as the combination of pieces by means of bolts and screws like in a Meccano toy: indeed, bolts and screws are expressed by punctuation marks or other symbols. As notation should always produce a "helpful sequence" of faceted classes, facet indicators themselves should be devised in such a way that they produce a meaningful order of facets, e.g. of "increasing concreteness" in CC (Time &lt; Space &lt; Energy &lt; Matter &lt; Personality). To this purpose, within a faceted classmark, facets have to be cited in the inverted order of schedules (<i>principle of inversion</i>), that is P, M, E, S, T in CC (&rarr; <a href="colon_classification#4.3.7">Satija 2017, section 4.3.7</a>). </p>
+
+<br><div align="center"><figure>
+<img src="notation4.jpg" title="Fig. 3: Faceted CC classmarks at Friuli Natural History Museum" width="60%">
+<figcaption>Figure 3: Faceted CC classmarks at Friuli Natural History Museum, Udine, Italy <A HREF="http://opac.sbhu.it/">http://opac.sbhu.it</A> (retrieved 2018-06-26).</figcaption>
+</figure></div><br>
+
+<p>While the order of punctuation marks may look ambiguous, numerals or letters are more effective. The FAKTS draft faceted classification of humanities (<a href="#refB">Broughton and Slavic 2007</a>) represents a classical faceted structure by an expressive notation, where numerals stand for subclasses and capital letters are facet indicators; letters are chosen in such a way to produce the standard inverted citation order Thing, Part, Property, Process, Operation, Patient, Agent, Place, Time, Theory, as required by facet analytical theory:</p>
+
+<blockquote>
+<code>590&nbsp;&nbsp;&nbsp;</code>religion<br>
+<code>590A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>theory and philosophy of religion<br>
+<code>590A4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>God, gods<br>
+<code>590E&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>persons and objects in religion<br>
+<code>590E3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>persons in religion	<br>
+<code>590E31&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>originator, founder<br>
+<code>5904&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>Buddhism<br>
+<code>5904A4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>gods in Buddhism<br>
+<code>5904A443&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>physical form, appearance<br>
+<code>5904E31&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>founder of Buddhism, the Buddha<br>
+<code>5904E31A443&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>Trikaya, doctrine of three bodies of the Buddha</p>
+</blockquote>
+
+<p>Expressivity often comes at a price: synthesized classmarks can get very long and clumsy, even redundant, as in <code>617.231:615.2-021.473</code> "carcinoid hearth disease" in UDC draft revision of medicine (<a href="#refM">McIlwaine and Williamson 2008</a>, 11). Some concepts of very common use may have a longish notation as an effect of their logical position in the systematic schedules. A public library may have more documents on DDC <code>599.6655</code> "horses" than on its superclass <code>599.66</code> "perissodactyla". To manage this problem, it has been suggested that classes of middle specificity should have a shorter rather than a longer classmark than their parent classes, just as in natural languages frequently occurring words tend to be shorter. This requirement has been achieved in the original notational systems devised by Zygmunt Dobrowolski where, unlike classical systems, notation for the most general classes is synthesized from the first and the last of their subclasses (<i>symboles jumel&eacute;es</i>, "twin symbols"). In this way, the middle degrees of specificity are represented by the shortest classmarks, while both their parent classes and their son classes have longer classmarks. </p>
+
+<blockquote>
+<p>As the classmarks of degree 1 and 2 are seldom used, the twin symbols will not be hindering for the practical use of the schedule indexed in such a way (<a href="#refD">Dobrowolski 1964</a>, 145, translated from French).</p>
+</blockquote>
+
+<p>This can be illustrated with classmarks from a tree diagram by Dobrowolski (<a href="#refD">1964</a>, 144), where main classes <code>0/3</code> and <code>4/6</code> have subdivisions with such shorter symbols as <code>1</code>, <code>10</code> etc.:</p>
+
+<blockquote>
+<code>0/6&nbsp;&nbsp;</code>most general class<br>
+<code>0/3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>first subclass of degree 1<br>
+<code>0/1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>first subclass of degree 2<br>
+<code>0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>first subclass of degree 3 [subclasses omitted]			<br>
+<code>1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>second subclass of degree 3<br>
+<code>10&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>first subclass of degree 4<br>
+<code>11&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>second subclass of degree 4<br>
+<code>2/3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>second subclass of degree 2<br>
+<code>2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>first subclass of degree 3 [subclasses omitted]<br>
+<code>3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>second subclass of degree 3<br>
+<code>30&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>first subclass of degree 4<br>
+<code>31&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>second subclass of degree 4<br>
+<code>4/6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>second subclass of degree 1<br>
+<code>4/5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>first subclass of degree 2<br>
+<code>4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>first subclass of degree 3<br>
+<code>5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>second subclass of degree 3<br>
+<code>50&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>first subclass of degree 4<br>
+<code>500&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>first subclass of degree 5<br>
+<code>501&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>second subclass of degree 5<br>
+<code>51&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>second subclass of degree 4<br>
+<code>6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>third subclass of degree 3</p>
+</blockquote>
+
+<p>Another way of achieving brevity at the expense of expressivity is dropping the initial characters of a class when it is used in a canonical combination with another one. ILC special facets allow this, as those initial characters are recorded in the schedules rather than expressed in the combined classmark; for example, <code>g</code> "continuum bodies" may have their colour specified by facet <code>g96</code>: foci for this facet are taken from class <code>darll</code>, which notation is implied in the compound subject <code>g96i</code> "green bodies", that only keeps the <code>i</code> from <code>darlli</code> "green":</p>
+
+<blockquote>
+<code>darll&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>visible light<br>
+<code>darlli&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>green<br>
+<br>
+<code>g&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>continuum bodies<br>
+<code>g96 [darll]&nbsp;&nbsp;&nbsp;</code>colour<br>
+<code>g96i&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>green bodies</p>
+</blockquote>
+
+<p>Finally, if one completely renounces expressivity, a purely ordinal notation can be adopted, which is known to be brief from Vickery's calculations (<a href="#4.1">section 4.1</a>). In this case, articulation between different parts of a compound notation, e.g. facets, can still be expressed by <i>retroactive</i> notation, a technique introduced by Barbara Kyle (<a href="#refK">1958</a>, 171), &rarr; <a href="coates#3">Eric Coates</a> and other members of the Classification Research Group and adopted systematically in BC2. In retroactive notation, apart from the first character which expresses the main class, all subsequent characters must have an increasing ordinal value, e.g. a concept can have notation <code>JBFH</code> (as <code>B</code> &lt; <code>F</code> &lt; <code>H</code>) and another <code>JDLR</code> (as <code>D</code> &lt; <code>L</code> &lt; <code>R</code>). When these are combined, as in <code>JBFHDLR</code>, the point of articulation can be identified as the only place (...<code>HD</code>...) where the ordinal value decreases instead of increasing (<code>H</code> &gt; <code>D</code>). This produces an elegant notation consisting in a single series of symbols. </p>
+
+<p>One disadvantage of retroactive notation is that only a fraction of a notational zone is available for allocating concepts, e.g. class <code>JDL</code> can only be expanded by appending letters <code>M</code> to <code>Z</code>, as earlier letters would be confused with another concept in compounds. Vickery (<a href="#refV">1957</a>, 77; <a href="#refV">1958b</a>, 73) seems to consider retroactive notation to be the best option, as opposed to the expressive classical <i>signposted</i> notation, and Mills has indeed adopted it in BC2; on the other hand, this choice is exactly what makes this KOS unsuitable for exploitment in digital applications due to the lack of expressivity of its notation. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.4"></a>
+<h4>4.4. Mnemonicity</h4>
+
+<p>Notation can be mnemonic when a symbol suggests its own meaning in the schedules. Clearly this could easily conflict with the previously mentioned functions, so it is only implemented where it does not. Indeed, mnemonicity is usually not regarded as a primary function of notation. An exception is the Basic Concepts Classification (<a href="#refS">Szostak 2012</a>), where main classes are represented by the first letter of the corresponding captions, thus renouncing even ordinality and producing a non-systematic order of classes: <code>A</code> "art", <code>C</code> "culture", <code>E</code> "economy", <code>G</code> "genetic predisposition"... BC2 makes a more moderate use of this, as notation for "chemistry" is <code>C</code> and that for "physical anthropology, human biology, health sciences" is <code>H</code>, but most other main classes have classmarks unrelated to their captions; the same happens in subclasses.</p>
+
+<p>This association between notation and the first letter of its caption is not possible in classifications using numeral notations; still some numerals can also be associated more or less constantly to some meanings, as in Ranganathan's <i>seminal mnemonics</i>. This can be observed already in DDC, where e.g. <code>4</code> often (but far from always) means "France", "French" etc. Perhaps the most pervasive use of mnemonics (and expressivity of categories) is that found in ICC, where digits after the first one always correspond to one of the ten categories of the "Systematifier" by which a field of knowledge is divided into subfields (<a href="#refD">Dahlberg 2008</a>):</p>
+
+<blockquote>
+...<code>0&nbsp;&nbsp;&nbsp;</code>	general form concepts<br>
+...<code>1&nbsp;&nbsp;&nbsp;</code>	theories, principles<br>
+...<code>2&nbsp;&nbsp;&nbsp;</code>	objects, components<br>
+...<code>3&nbsp;&nbsp;&nbsp;</code>	activities, processes<br>
+...<code>4&nbsp;&nbsp;&nbsp;</code>	properties, or 1st kind of field speciality<br>
+...<code>5&nbsp;&nbsp;&nbsp;</code>	persons, or 2nd kind of field speciality<br>
+...<code>6&nbsp;&nbsp;&nbsp;</code>	institutions, or 3rd kind of field speciality<br>
+...<code>7&nbsp;&nbsp;&nbsp;</code>	technology & production<br>
+...<code>8&nbsp;&nbsp;&nbsp;</code>	application in other fields, determination<br>
+...<code>9&nbsp;&nbsp;&nbsp;</code>	distribution & synthesis
+</blockquote>
+
+<p>For example, <code>823</code> "information handling" is an activity (...<code>3</code>) on the objects (...<code>2</code>) of science and information (<code>8</code>...). A similar recursive use of categories can also be found in ILC facet indicators.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5"></a>
+<h3>5. Allocation of notation to concepts</h3>
+
+<p>In developing a classification, once the conceptual structure and a notational base are defined, concepts have to be assigned to arrays of symbols (<i>apportionment</i> or <i>allocation</i>: <a href="#refM">Mills 1967</a>, 40). </p>
+
+<p>The first decisions concern the ordering of main classes. This depends on the dimensions privileged by the system (e.g. disciplines or phenomena), the delimitation of the system domain (e.g. general or special) and the inspiring philosophies (e.g. based on epistemological criteria as in DDC and LCC, or on ontological criteria as in BC2 and ICC). Choices clearly have philosophical implications on the resulting ordering of knowledge items, both in the broad outline of classes and in their deeper subdivisions. For example, Ranganathan opted for an original order of main classes based on a bell-shaped sequence of "increasing concreteness" peaking at <code>&Delta;</code> "spiritual experience" then continuing downwards with "increasing artificiality" (<a href="#refB">Bianchini et al. 2017</a>; &rarr; <a href="colon_classification#4.2.3">Satija 2017, sections 4.3.2-4.3.3</a>).</p>
+
+<p>The distribution of symbols can also be performed mechanically by algorithms populating the available arrays, thus avoiding unconscious biases towards some symbols: "a Distribution Dictionary is a predefined structured code list for each character based on frequency of occurrence; its purpose is to make notation short and evenly distributed" (<a href="#refL">Liu 1990</a>, 18).</p>
+
+<p>As knowledge evolves, and new subjects emerge (<A HREF="#refS">Satija, Madalli and Dutta 2014</A>), every KOS needs to be updated from time to time. The internal organization of a class may change depending on the evolution of a domain, of its structure and of its terminology, which are studied as <i>subject ontogeny</i> (e.g.<a href="#refT"> Tennis 2017</a>). Also, new classes may emerge and become more important (<a href="#refR">Richmond 1958</a>): an outstanding example is the explosion of literature on computer science, that has persuaded DDC editors to allocate more classes (<code>004-006</code>) for it, instead of just very specific subclasses as before. </p>
+
+<p>While the choice of notation for new classes should depend on their logical relationships with the  existing ones, in longstanding classifications it is also biased by limitations in available notation. Expansion of classes according to progress and change in knowledge should always be possible in a <i>hospitable</i> notation, either at the extremes of an array (<i>extrapolation</i>) of within it (<i>interpolation</i>). This was indeed one way how Ranganathan wanted to improve DDC solutions (<a href="#refT">Tunkelang 2009</a>, side 7). Pragmatic requirements and editors' experience often suggest some strategies, like leaving some symbols unused here and there (<i>springende Nummern</i>, <A HREF="#refH">Hanson 1929</A>) or always leaving the first symbol in an array unassigned (<code>A</code> if using letters, <code>0</code> if using numerals) as it can later turn out to be useful for special purposes including extrapolation of new classes: otherwise, it will never be possible to interpose new classes before the first one, thus forcing editors to allocate them further down, which may not reflect the desired knowledge structure. Various devices can also be availaible to adapt notation to structure, such as emptying digits described in <a href="#3.2">section 3.2</a>. </p>
+
+<p>Classes can also be regrouped if a field is subsumed under a more general one or to improve consistence. A famous example is UDC class <code>4</code>, which is empty after language (which was <code>400</code> in the original DDC source) has been unified with <code>8</code> literature. UDC editors and advisors often discuss about possible new uses of <code>4</code>, and very diverse hypotheses have been submitted. In the literature on DDC, sections of notation that once had a meaning but are now free are known as <i>phoenix schedules</i>, as they have died but can arise from their own ashes again, like the mythological bird, when a new edition is published; however, editors usually wait many years before using a phoenix schedule again, to prevent confusion in old collections still classed with the original meaning.</p>
+
+<p>Some classes may be allocated in a position different from their logical structure even on purpose. This may be the case of subclasses that are considered to be especially important because of their frequent use or their relevance to a local situation. In the Sovietic &rarr; <a href="lbc">LBC</a>, as well as the &rarr; <a href="clc">Chinese Library Classification (CLC)</a> derived from it, the first main class <code>A</code> is for Marxism-Leninism. In CC, some digits are reserved in all arrays to express the favoured host class (<code>0</code>), the mother country (<code>2</code>, usually India in most applications of this scheme, but potentially a different country) and the favoured country (<code>3</code>, usually UK in Indian libraries, but could e.g. be USA in a UK library) (<a href="#refR">Ranganathan 1967</a>, 130-131; <a href="#refG">Gatto 2006</a>). ILC generalizes this use by reserving all capital letters <code>A</code> to <code>T</code> for main classes of locally favoured concepts.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="6"></a>
+<h3>6. Syntax</h3>
+
+<p>As notation can be composed of several parts, syntactical issues emerge. They are especially interesting with expressive notations (<A HREF="#4.3">section 4.3</A>), which can be exploited to manipulate concepts in automatic ways.  </p>
+
+<p>When combining two concepts, the second concept is usually interpreted as a specification of the first one. For example, philosophy of science can be expressed in UDC as either <code>5:1</code>, literally meaning science in some relation with (e.g. treated in the perspective of) philosophy, or as <code>1:5</code>, meaning philosophy in some relation with (e.g. dealing with) science. The choice has effects on the arrangement of concepts, as documents classed under the former combination will be filed together with other documents on science, but documents classed under the latter will be filed together with documents on philosophy. Therefore choice should depend on which aspect is prior in the document itself, although local preferences may also affect it. UDC also provides a <code>::</code> symbol to specify that the order of the combination is relevant and cannot be inverted. Similar combinations are possible in CC: <code>Z(Q7)</code> "Islamic law", <code>Z&gQ7</code> "law influenced by Islamic religion". The first component of such combinations has been described in alphabetical subject indexing as the <i>base theme</i> of the document, while further connected components can be <i>particular themes</i> (<a href="#refC">Cheti 1996</a>); Gnoli (<a href="#refG">2018</a>) applies these notions to classification and its notation.</p>
+
+<p>In faceted systems, notation for the facets should usually be expressed according to the <i>facet formula</i> of the class, following a standard citation order (<a href="#refW">Wali and Koul 1972</a>). In CC this famously is "PMEST", that is personality facets should be cited first, followed by matter facets, then energy facets, space facets and time facets. As mentioned, notation should be devised in such a way that, in the schedules, the inverted order will appear, that is classes specified by a time facet only should be listed before these with a space facet, then those with an energy facet etc. This is implemented in a clear way in the FATKS example of <a href="#4.3">section 4.3</a> above. Vickery (<a href="#refV">1958a</a>, 10) proposes a general citation order of the structural elements of a synthetic classification, which should be reflected in the order produced by notation.</p>
+
+<p>While revising UDC class <code>2</code> for religion, Vanda Broughton has identified a notational "<i>Genesis </i>problem". This deals with concepts that are subdivisions of a faceted concept, like the book of <i>Genesis</i> should be a subdivision of the <i>Bible</i> in Judaism and other religions. UDC notation allows to express the concept "<i>Bible</i>" as a faceted combination <code>26-23</code> "Judaism, sacred books". Now, notation for "<i>Genesis</i>" should be a subdivision of the whole faceted compound <code>26-23</code>, rather than a subdivision of <code>-23</code> sacred books in general, so that just adding a digit after <code>-23</code> would be inappropriate; UDC editors agreed that the system, like other known classifications, lacks a notational symbol to express this, and that one could possibly be introduced to give e.g. <code>26-23,11</code> "<i>Genesis</i>".</p>
+
+<p>Very complex combinations of concepts in synthetic notations may produce ambiguities in their interpretation, of the kind <i>a:(b:c)</i> vs. <i>(a:b):c</i>. To deal with this, some systems may use punctuation marks to properly group components of synthesized subjects. Clearly these punctuation marks have to be different from all other components of the notation; for example, UDC uses square brackets for grouping, which are different from parentheses used for common auxiliaries of form, place and ethnic group. The effect of such punctuation marks on the proper sorting of classmarks has to be considered in practical applications.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="7"></a>
+<h3>7. Digital applications</h3>
+
+<p>While popular in traditional collections of printed books, notation tends to be less prominent in digital catalogues and digital libraries, as retrieval of terms from any position in a text string can replace browsing of concepts in a systematic order (<a href="#refM">Markey, Mitchell and Vizine-Goetz 2006</a>). Classification systems and their notation are still researched, but involve fewer scholars as compared to such KOSs typical of the digital age as taxonomies, folksonomies and ontologies. Some authors even believe that the transition to the digital has made notation obsolete:</p>
+
+<blockquote>
+The principles for the construction of bibliographic thesauri and classification systems often advise that a notation is created to connect the different parts of the thesaurus or classification system. A notation is superfluous on the Web since the access mechanism and the documents are part of the same system. (<a href="#refM">Mai 2004</a>)</p>
+</blockquote>
+
+<p>However, notation can still be useful in digital media for controlling display of subjects and of corresponding document descriptions in a systematic order (Figure 3), which is a cognitively important function (<a href="#refS">Slavic 2006</a>). Although concepts can be retrieved from any position of a subject heading, the choice of the theme cited first in a compound determines how the document will be grouped with others sharing the first cited theme, when listed in browsable interfaces or in search  results displayed in systematic order (<a href="#refG">Gnoli and Cheti 2013</a>).</p>
+
+<br><div align="center"><figure>
+<img src="notation3.jpg" title="Fig. 4: Book records sorted by BC2 at Fitzwilliam College" width="70%">
+<figcaption>Figure 4: Display of book records sorted by BC2 shelfmarks (in the red oval) in the online catalogue of Fitzwilliam College Library, Cambridge, UK, <A HREF="http://library.fitz.cam.ac.uk/">http://library.fitz.cam.ac.uk/</A> (retrieved 2018-01-16).</figcaption>
+</figure></div><br>
+
+<p>It is not clear to what extent the diminished use of notation is due to a lesser need for it, rather than to poor investments in interfaces exploiting its full meaning. Indeed, most online library catalogues do not yet provide adequate ways to browse documents by subject, to explore relationships between subjects, to sort results by subject, or to navigate from an identified document to others sharing the same subject with it (<a href="#refB">Bland 2008</a>; <a href="#refC">Casson, Fabbrizzi and Slavic 2011</a>). This situation contrasts with IFLA's acknowledgment that <i>explore</i>, that is "[t]o discover resources using the relationships between them and thus place the resources in a context", is one of the five basic user tasks in the &rarr; <a href="lrm#3">Library Reference Model</a> (<a href="#refZ">&#0381;umer 2017</a>, section 3). </p>
+
+<p>For example, displaying notation alone without the corresponding captions, as it happens in many OPACs, is hardly useful to the majority of users. As what matters to users is the meaning of notation rather than its technical details, it is captions that should be displayed with more prominence. Notation can even be hidden and only work in the background as a mechanical device controlling items sorting. However, displaying notation will provide users with an additional hint of how the system works, like in transparent-case watches, which can be productive in the long term if not in quick searches. Only some catalogues have invested more in visualizing classification in their interfaces: a well-known example is the OPAC of the Polytechnic of Zurich (ETH), which displays UDC notation and captions in three different languages (<a href="#refP">Pika and Pika-Biolzi 2015</a>), thus implementing the function of classification as a conceptual bridge in multilingual contexts mentioned in <a href="#3.1">section 3.1</a>.</p>
+
+<p>As notation is a sophisticated device, to be understood and fully exploited by its users it needs to be modeled adequately in the architecture of databases and presented accordingly in interfaces. Slavic (<a href="#refS">2008</a>) has discussed how it should be managed and maintaned properly in relational databases, including provision of fields to record information about hierarchical and associative relationships between classes, mapping with classes of similar meaning in previous editions, editing dates, etc.</p>
+
+<p>In synthetic classification systems, the captions of compound classes are usually not listed in the schedules, but have to be obtained dynamically by interpreting notation for every occurrence of a compound subject. This requires that synthetic notation is parsed and divided into its components, so that the appropriate caption for each of them can be obtained from the schedules. Several algorithms and procedures have been developed to this purpose in the past decades, especially for UDC (<a href="#refB">Buxton 1990</a>); a recent example is by Piros (<a href="#refP">2017</a>).</p>
+
+<p>Bibliographic databases, in turn, should import data from KOS databases, including notation, captions and the scheme and edition to which they belong, and keep them in separate fields. The MARC formats indeed provide for such fields (<a href="#refW">Wajenberg 1983</a>; <a href="#refL">Library of Congress 2000</a>), although in many applications these are not used. SKOS, the format conceived to represent KOSs in the Semantic Web, has been conceived primarily for thesauri and enumerative classifications used in the USA, such as LCC and DDC. Although SKOS does allow for recording notation in the <code>skos:notation</code> element, such syntactical components of analytico-synthetic systems as facets, foci, sources of foci etc. cannot be represented and exploited adequately with it (<a href="#refG">Gnoli et al. 2011</a>). Some have suggested that the greater flexibility of the OWL format could be used instead (<a href="#refZ">Zeng, Panzer and Salaba 2010</a>), but no standard OWL application for synthetic notation has been developed yet.</p>
+
+<p>As for visualization, most computer systems sort strings by default according to character encoding based on the American Standard Code for Information Interchange (ASCII), also reproduced in ANSI character set, Microsoft's WGL4 character set and the Unicode international standard. This means that blank space (ASCII hexadecimal code 20) will precede every digit, then some punctuation marks will precede numerals <i>0</i> to <i>9</i>, which in turn will be followed by other punctuation marks, capital letters <i>A</i> to <i>Z</i> and lower-case letters <i>a</i> to <i>z</i>. In case a classification system prescribes a different order, this needs to be produced by a special script that is capable of processing notation strings. For example, a class span such as UDC <code>1/2</code> "philosophy to religion" has a more general meaning than its first term <code>1</code> "philosophy", therefore it should be displayed before it according to the basic principle that general concepts precede specific concepts. However, in ASCII order <i>1</i> will precede <i>1/</i> thus producing the reverse order. A similar problem occurs in CC with <i>anteriorizing common isolates</i>, by which bibliographies, synopses, histories or glossaries on a subject, like "bibliographies of Indian literature", should be listed before the simple subject itself, like "Indian literature", as they are supposed to have an introductory function for users (&rarr; <a href="colon_classification#4.3.11">Satija 2017, section 4.3.11</a>): again, appended notation expressing the anteriorizing common isolate will be filed in automatic applications after the simple subject, despite what was intended by the classification designer.</p>
+
+<p>Script languages able to process strings are widely available (e.g. JSP, PHP), and may be used to create algorithms that produce the correct sequences. Alternatively, the ordinal value of simple and combined classes can be specified in a special field of the database and processed. However, these solutions introduce the additional requirements that (1) a programmer develops a suitable code or compile a database field, (2) the code or field interpreter is incorporated in the information system. Such resources may not be available in such contexts as small indexing projects or sharing of metadata across multiple instititutions and platforms. To prevent this kind of problems, notation for new classification systems can be developed considering the ASCII value of digits used in notation since its origin. For example, ILC adopts capital letters to represent favoured classes to be filed before standard classes represented by lower-case letters, because of their position in ASCII.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="8"></a>
+<h3>8. Conclusion</h3>
+
+<p>Notation is a fundamental component of classification systems, and sometimes an auxiliary component of other KOS types. Its main function is mechanical control of concept ordering. Such ordering has important cognitive consequences for users, even in the digital media. Additionally, expressive notations can allow control, both mechanical and digital (querying, extraction, sorting), of individual structural components of a classification system. </p>
+
+<p>To these purposes, a notation should be devised in such a way to respect the principle of general before specific, both within structural components and between them. In general, class spans and anteriorizing common isolates should precede simple classes; phase relationships should precede facets, and these in turn should precede subclasses; locally favoured classes should precede standard classes. </p>
+
+<p>In modern digital applications, notation requires special database fields, scripts and interface design, in order to produce the optimal sequence of its structural elements for effective browsing of knowledge items arranged in systematic order.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="term"></a>
+<h3>Terminological index</h3>
+
+<ul>
+<li><a style="text-decoration:none;" href="#5">allocation</a>
+</li><li><a style="text-decoration:none;" href="#7">anteriorizing common isolate</a>
+</li><li><a style="text-decoration:none;" href="#5">apportionment</a>
+</li><li><a style="text-decoration:none;" href="#6">base theme</a>
+</li><li><a style="text-decoration:none;" href="#3.2">capacity</a>
+</li><li><a style="text-decoration:none;" href="#3.2">centesimal notation</a>
+</li><li><a style="text-decoration:none;" href="#3.2">empty digit</a>
+</li><li><a style="text-decoration:none;" href="#3.2">emptying digit</a>
+</li><li><a style="text-decoration:none;" href="#4.3">expressive notation</a>
+</li><li><a style="text-decoration:none;" href="#5">extrapolation</a>
+</li><li><a style="text-decoration:none;" href="#6">facet formula</a>
+</li><li><a style="text-decoration:none;" href="#4.3">facet indicator</a>
+</li><li><a style="text-decoration:none;" href="#5">favoured host class</a>
+</li><li><a style="text-decoration:none;" href="#3.2">futility point</a>
+</li><li><a style="text-decoration:none;" href="#6"><i>Genesis</i> problem</a>
+</li><li><a style="text-decoration:none;" href="#4.2">group notation</a>
+</li><li><a style="text-decoration:none;" href="#5">hospitable notation</a>
+</li><li><a style="text-decoration:none;" href="#1.2">idea plane</a>
+</li><li><a style="text-decoration:none;" href="#5">interpolation</a>
+</li><li><a style="text-decoration:none;" href="#3.1">mixed notation</a>
+</li><li><a style="text-decoration:none;" href="#3">notational base</a>
+</li><li><a style="text-decoration:none;" href="#1.2">notational plane</a>
+</li><li><a style="text-decoration:none;" href="#4.1">parallel division</a>
+</li><li><a style="text-decoration:none;" href="#6">particular theme</a>
+</li><li><a style="text-decoration:none;" href="#5">phoenix schedule</a>
+</li><li><a style="text-decoration:none;" href="#3.1">positional notation</a>
+</li><li><a style="text-decoration:none;" href="#4.3">principle of inversion</a>
+</li><li><a style="text-decoration:none;" href="#3.1">pure notation</a>
+</li><li><a style="text-decoration:none;" href="#4.2">purely ordinal notation</a>
+</li><li><a style="text-decoration:none;" href="#3.1">radix fraction</a>
+</li><li><a style="text-decoration:none;" href="#1.2">relative index</a>
+</li><li><a style="text-decoration:none;" href="#3.1">relative location</a>
+</li><li><a style="text-decoration:none;" href="#4.3">retroactive notation</a>
+</li><li><a style="text-decoration:none;" href="#2">rubrication</a>
+</li><li><a style="text-decoration:none;" href="#3.2">sectorizing digit</a>
+</li><li><a style="text-decoration:none;" href="#4.4">seminal mnemonics</a>
+</li><li><a style="text-decoration:none;" href="#3.1">sign-value notation</a>
+</li><li><a style="text-decoration:none;" href="#4.3">signposted notation</a>
+</li><li><a style="text-decoration:none;" href="#5">springende Nummern</a>
+</li><li><a style="text-decoration:none;" href="#5">subject ontogeny</a>
+</li><li><a style="text-decoration:none;" href="#3.2">telescopic notation</a>
+</li><li><a style="text-decoration:none;" href="#1.2">term</a>
+</li><li><a style="text-decoration:none;" href="#4.3">twin symbol</a>
+</li><li><a style="text-decoration:none;" href="#1.2">verbal plane</a>
+</li></ul>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="ack"></a>
+<h3>Acknowledgments</h3>
+
+<p>Considerations on the relationship between notation and classification structure benefit from previous conversations with Eugenio Gatto (Polytechnic of Turin) and with Tom Pullman (University of Cambridge Research Office). <i>Encyclopedia</i> editor-in-chief <a href="authors#h">Birger Hj&oslash;rland</a> has suggested some improvements and references. Jacqueline Marlyse Bisse has pointed me to the term <i>positional notation</i>.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="end"></a>
+<h3>Endnote</h3>
+
+<p><strong>1</strong>. "Dr. Morison in opusculo nuper edito, cui Praeludia Botanica titulum fecit, illas, illarumque tacito nomine autorem, an pro meritis an indignis modis excepit, aliorum judicium esto. Nec tamen mirum tabulas confusas erroneas et imperfectas esse, cum trium tantum hebdomadum opus fuerint, ego vero nihil antea ejusmodi destinaveram, nec de eo unquam cogitaveram. Praeterea in iis ordinandis coactus sum non naturae ductum sequi, sed ad autoris methodum praescriptam plantas accommodare, quae exegit ut herbas in tres turmas seu tria genera quamproxime aequalia distribuerem, singulas deinde turmas in novem differentias illi dictas h. e. genera subalterna dividerem, ita tamen ut singulis differentiis subordinatae plantae certum numerum non excederent: tandem ut plantas una binas copularem seu in paria disponerem. Quae jam spes est methodum hanc absolutam fore et non potius imperfectissimam et absurdam?" (<a href="#refR">Ray 1848</a>, 41-42)</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="ref"></a>
+<h3>References</h3>
+
+<a name="refA"></a>
+<a name="refB"></a>
+
+<p>Bates, Marcia. 1998. Indexing and access for digital libraries and the internet: human, database, and domain factors. <i>Journal of the American Society for Information Science and Technology</i> 49, no. 13: 1185&ndash;1205.</p>
+
+<p>Bawden, David. 2017. "Chemistry and its (information) history". <i>The occasional informationist: irregular thoughts on the information sciences [blog]</i>. <a href="https://theoccasionalinformationist.com/2017/09/03/chemistry-and-its-information-history/">https://theoccasionalinformationist.com/2017/09/03/chemistry-and-its-information-history/</a>, accessed 13 February 2018.</p>
+
+<p>Bhattacharyya, G. and Ranganathan, S.R. 1978. "From knowledge classification to library classification". In: <i>Conceptual basis of the classification of knowledge: proceedings of the Ottawa conference, October 1st to 5th 1971</i>. Ed. Jerzy A. Wojciechowski. New York-M&uuml;nchen-Paris: Saur, 119-143.</p>
+
+<p>Bianchini, Carlo, Luca Giusti and Claudio Gnoli. 2017. "The APUPA bell curve: Ranganathan's visual pattern for knowledge organization". <i>Les cahiers du num&eacute;rique</i> 13, no. 1: 49-68.</p>
+
+<p>Bisterfeld, Johann Heinrich. 1661. "Alphabeti philosophici libri tres". In <i>Bisterfeldius redivivus, seu operum Joh. Bisterfeldii</i>. Hagas Comitus.</p>
+
+<p>Blair, D. C. 1980. "Searching biases in large interactive document-retrieval systems". <i>Journal of the American Society for Information Science</i> 31, no. 4: 271-277.</p>
+
+<p>Bland, Robert N. and Stoffan, Mark A. 2008. "Returning classification to the catalog". <i>Information Technology and Libraries</i> 27, no. 3: 55-60.</p>
+
+<p>Bliss, Henry E. 1940. <i>A Bibliographic Classification</i>, vol. 1. New York: Wilson.</p>
+
+<p>Borges, Jorge Luis. 1952. "El idioma analitico de John Wilkins". In <i>Otras inquisiciones (1937-1952)</i>. Buenos Aires: Sur.</p>
+
+<p>Broughton, Vanda. 1999. "Notational expressivity: the case for and against the representation of internal subject structure in notational coding". <i>Knowledge Organization</i> 26, no. 3: 140-148.</p>
+
+<p>Broughton, Vanda and Aida Slavic. 2007. "Building a faceted classification for the humanities: principles and procedures". <i>Journal of Documentation</i> 63, no. 5: 727-754.</p>
+
+<p>Buxton, Andrew B. (1990). "Computer searching of UDC numbers". <i>Journal of Documentation</i> 46, no. 3: 193-217.</p>
+
+<a name="refC"></a>
+
+<p>Cheti, Alberto. 1996. <i>Manuale ipertestuale di analisi concettuale</i>. A cura di Serena Spinelli. Universit&agrave; di Bologna, Centro interfacolt&agrave; per le biblioteche. <a href="http://biblioteche.unibo.it/manuals/html_1/HOME.HTML">http://biblioteche.unibo.it/manuals/html_1/HOME.HTML</a>, accessed 28 April 2017.</p>
+
+<p>Coates, Eric J. 1956. "Ordinal and hierarchical notation". <i>Classification Research Group Bulletin</i> 1: 15-19.</p>
+
+<p>Coates, Eric J. 1957. "Notation in classification". <i>Classification Research Group Bulletin</i> 2, D1-D19. Reprinted in <i>Proceedings of International Study Conference on Classification for Information Retrieval</i>. London: ASLIB 1957, 51-64. </p>
+
+<!--
+<p>Coates, Eric J. 1959. "Notation in classification". <i>Journal of Documentation</i> 15, no. 1: 74-76.</p>
+-->
+
+<p>Cordonnier, G&eacute;rard. 1944. "Classification et classement". <i>Bulletin d'information scientifique et technique</i> 6: 41.</p>
+
+<p>Cordonnier, G&eacute;rard. 1951. "Classification, classement, ragement, et s&eacute;lection". <i>C.N.O.F.: revue mensuel de l'organisation</i> 25, no. 5-6: 19-31.</p>
+
+<a name="refD"></a>
+
+<p>Dahlberg, Ingetraut. 2008. "The Information Coding Classification (ICC): a modern, theory-based fully-faceted, universal system of knowledge fields". <i>Axiomathes</i> 18, no. 2: 161-176.</p>
+
+<p>Daily, Jay E. 1956. "A notation for subject retrieval files". <i>American Documentation</i> 7, no. 3: 210-214.</p>
+
+<p>Daily, Jay E. 1976. "Natural classification". In <i>Encyclopedia of library and information science</i>. Eds. Allen Kent, Harold Lancour and Jay E. Daily. New York: Dekker, v. 19, 186-206.</p>
+
+<p>Dobrowolski, Zygmunt. 1964. <i>&Eacute;tude sur la construction des syst&egrave;mes de classification</i>. Paris: Gauthier-Villars; Varsovie: &Eacute;ditions scientifiques de Pologne.</p>
+
+<p>Dousa, Thomas M. 2018. "Library classification, part 1: Introduction and premodern classification". In <i>ISKO Encyclopedia of Knowledge Organization</i>. Ed. Birger Hj&oslash;rland, coed. Claudio Gnoli. Available at <a href="library_classification">https://www.isko.org/cyclo/library_classification</a>.</p>
+
+
+<a name="refE"></a>
+<a name="refF"></a>
+
+<p>Farradane, Jason E. L. 1952. "Scientific theory of classification". <i>Journal of Documentation</i> 8: 73-92.</p>
+
+<p>Foskett, Anthony C. 1996. "Notation". In <i>The subject approach to information</i>, 5th ed. London: Library Association, 183-199.</p>
+
+<p>Foskett, Douglas J. and Joy Foskett. 1974. "The London Education Classification: a thesaurus/classification of British educational terms, 2nd ed." <i>Educational Libraries Bulletin. Supplement 6</i>. London: University of London Institute of Education. </p>
+
+<p>Foskett, Douglas J. and Joy Foskett. 1991. <i>Bliss Bibliographic Classification, 2nd edition. Class J: Education</i>. Revised edition. London: Bowker-Saur. Also available at <a href="http://www.blissclassification.org.uk/ClassJ/J_sched.pdf">http://www.blissclassification.org.uk/ClassJ/J_sched.pdf</a>, accessed 14 February 2018.</p>
+
+<p>France, Anatole. 1914. <i>La r&eacute;volte des anges</i>. Paris: Calmann-L&eacute;vy.</p>
+
+<a name="refG"></a>
+
+<p>Gatto, Eugenio. 2006. "Variazione locale e comunicabilit&agrave; globale". In <i>Classificare la documentazione locale: giornata di studio; San Giorgio di Nogaro (UD), 17 dicembre 2005</i>. Eds.  Lorena Zuccolo and Claudio Gnoli. ISKO Italia. <a href="http://www.iskoi.org/doc/locale4.htm">http://www.iskoi.org/doc/locale4.htm</a>, accessed 14 February 2018.</p>
+
+<p>Giusti, Luca. 2018. "The penumbra-line: Ranganathan's journeys and the genesis of APUPA pattern". In: <i>Challenges and opportunities for knowledge organization in the digital age: proceedings of Fifteenth international ISKO conference, Porto, 9-11 July 2018</i>. W&uuml;rzburg: Ergon, in press.</p>
+
+<p>Gnoli, Claudio. 2006. "L'alfabeto e la sindrome di Sariette". <i>AIDA informazioni</i> 24, no. 3-4: 111-116. Also available at <a href="http://www.iskoi.org/doc/rubrica2.htm">http://www.iskoi.org/doc/rubrica2.htm</a>, accessed 14 February 2018.</p>
+
+<p>Gnoli, Claudio. 2018. "Classifying phenomena, part 4: Themes and rhemes". <i>Knowledge Organization</i> 45, no. 1: 43-53. </p>
+
+<p>Gnoli, Claudio and Fulvio Mazzocchi, eds. 2010. <i>Paradigms and conceptual systems in knowledge organization: proceedings of the Eleventh ISKO conference, Rome, Italy, February 23rd-26th, 2010</i>. W&uuml;rzburg: Ergon.</p>
+
+<p>Gnoli, Claudio, Philippe Cousson, Tom Pullman, Gabriele Merli and Rick Szostak. 2011. "Representing the structural elements of a freely faceted classification". In <i>Classification & ontology: formal approaches and access to knowledge: proceedings of the International UDC Seminar, 19-20 September 2011, The Hague, Netherland</i>. Eds. Aida Slavic and Edgardo Civallero. W&uuml;rzburg: Ergon, 193-205.</p>
+
+<p>Gorman, Michael. 1998. "The impossibilty of classification". In <i>Our singular strenghts: meditations for librarians</i>. Chicago; London: American Library Association.</p>
+
+<p>Green, Rebecca. 2009. "Melvil Dewey's ingenious notational system". In <i>Proceedings from North American Symposium on Knowledge Organization</i> 2. Available at <a href="http://journals.lib.washington.edu/index.php/nasko/article/view/12811/11293">http://journals.lib.washington.edu/index.php/nasko/article/view/12811/11293</A>.</p>
+
+<p>Grolier, &Eacute;ric de. 1953. "L'&eacute;tude des probl&egrave;mes de classification documentaire sur le plan international". <i>Revue de la documentation</i> 20: 105-116.</p>
+
+<p>Grolier, &Eacute;ric de. 1956. "Nouvelles recherches sur la symbolisation". <i>Revue de la documentation</i> 23: 13-21.</p>
+<i>
+<p>Grolier, &Eacute;ric de. 1991. "Some notes on the question of so-called 'unified classification'". In Tools for knowledge organization and the human interface: proceedings 1st International ISKO Conference, Darmstadt, 14-17 August 1990</i>, vol. 2. Ed. Robert Fugmann. Frankfurt M.: Indeks, 85-108.</p>
+
+<a name="refH"></a>
+
+<p>Hanson, James C. M. 1929. "The Library of Congress and its new catalogue: some unwritten history". In <i>Essays offered to Herbert Putnam by his colleagues and friends on his thirtieth anniversary as librarian of Congress: 5 April 1929</i>. Eds. William W. Bishop and Andrew Keogh. New Haven: Yale University Press, 186-187.</p>
+
+<p>Hull, David L. 1966. "Phylogenetic numericlature". <i>Systematic Zoology</i> 15, no. 1:14-17.</p>
+
+<a name="refI"></a>
+<a name="refJ"></a>
+<a name="refK"></a>
+
+<p>Kerv&eacute;gant, D&eacute;sir&eacute;. 1962. "Introduction &agrave; la documentation agrononomique. La classification bibliographique". <i>Annales de l'Institut national de la recherche agronomique</i> no. hors s&eacute;rie. Paris: Institut national de la recherche agronomique.</p>
+
+<p>Kyle, Barbara. 1958. "Towards a classification for social science literature". <i>Journal of the Association for Information Science and Technology</i> 9, n. 3, p. 168-183.</p>
+
+<p>Kyle, Barbara. 1959. "Examination of some problems involved in drafting general classification and some proposals for their solution". <i>Revue de la documentation</i> 26: 17-21.</p>
+
+<a name="refL"></a>
+
+<p>Laporte, Steven. 2018. "Ideal language". In <i>ISKO encyclopedia of knowledge organization</i>. Ed. by Birger Hj&oslash;rland. <A HREF="#ref">https://www.isko.org/cyclo/ideal_language</A>.
+
+<p>Library of Congress. 2000. <i>MARC 21 Format for Classification Data. Update no. 1 (October 2000) through Update no. 24 (May 2017)</i>. <a href="https://www.loc.gov/marc/classification/">https://www.loc.gov/marc/classification/</a>, accessed 14 February 2018.</p>
+
+<p>Liu, Songqiao. 1990. "Online classification notation: proposal for a Flexible Faceted Notation System (FFNS)". <i>International Classification</i> 17, no. 1: 14-20.</p>
+
+<p>Loemeker, Leroy E. (1961). "Leibniz and the Herborn encyclopedists". <i>Journal of the History of Ideas</i> 22: 323-338.</p>
+
+<a name="refM"></a>
+
+<p>Mai, Jens-Erik. 2004. "Classification of the Web: challenges and inquiries". <i>Knowledge Organization</i> 31, no. 2: 92-97.</p>
+
+<p>Markey, Karen, Joan Mitchell and Diane Vizine-Goetz. 2006. "Forty years of classification online: final chapter or future unlimited?" <i>Cataloging and Classification Quarterly</i> 42, no. 3-4: 1-63.</p>
+
+<p>McIlwaine, Ia C. and Williamson, Nancy J. "Medicine and the UDC: the process of restructuring class 61". <i>Extensions and Corrections to the UDC</i> 30: 9-16.</p>
+
+<p>Miller, G. A. (1956). "The magical number seven, plus or minus two: some limits on our capacity for processing information". <i>Psychological Review</i> 63, no. 2: 81&ndash;97. </p>
+
+<p>Mills, Jack. 1967. "Notation". Chapter 5 in <i>A modern outline of library classification</i>. London: Chapman & Hall.</p>
+
+<a name="refN"></a>
+<a name="refO"></a>
+
+<p>Oh, Dong-Geun. 2012. "Developing and maintaining a national classification system: experience from Korean Decimal Classification". <i>Knowledge Organization</i> 39, no. 2: 72-82.</p>
+
+<p>Otlet, Paul. 1895-6. "Sur la structure des nombres classificateurs", <i>IIB Bulletin</i> 1: 230-243. English translation: "On the structure of classification numbers". In: <i>International Organisation and Dissemination of Knowledge: selected essays of Paul Otlet</i>, edited by W. Boyd Rayward. Amsterdam-New York: Elsevier, 1990, 51-62. Available at: <A CLASS="menu" HREF="http://www.mondotheque.be/wiki/images/1/16/Rayward_International_organisation_and_dissemination_of_knowledge.pdf">http://www.mondotheque.be/wiki/images/1/16/ Rayward_International_organisation_and_dissemination_of_knowledge.pdf</A>.</p>
+
+<a name="refP"></a>
+
+<p>Pika, Jir&iacute; and Pika-Biolzi, Milena. 2015. "Multilingual subject access and classification-based browsing through authority control: the experience of ETH-Bibliothek, Z&uuml;rich". In <i>Classification & authority control: expanding resource discovery: proceedings of the International UDC Seminar 2015, 29-30 October 2015, Lisbon, Portugal</i>. Eds. Aida Slavic and Maria In&ecirc;s Cordeiro. W&uuml;rzburg: Ergon, 99-110.</p>
+
+<p>Piros, Attila. 2017. "The thought behind the symbol: about the automatic interpretation and representation of UDC numbers". In <i>Faceted classification today: theory, technology and end users: proceedings of the International UDC Seminar 2017, London (UK), 14-15 September</i>. Eds. Aida Slavic and Claudio Gnoli. W&uuml;rzburg: Ergon, 203-218.</p>
+
+<a name="refQ"></a>
+<a name="refR"></a>
+
+<p>Ranganathan, S. R. 1945. <i>Elements of library classification</i>. Poona: N.K.</p>
+
+<p>Ranganathan, S. R. 1967. <i>Prolegomena to library classification</i>, 3rd ed. Bombay: Asia.</p>
+
+<p>Ray, John. 1848. <i>The correspondence of John Ray</i>. Ed. E. Lankester. London: Ray Society.</p>
+
+<p>Resnikoff, H. L., & Dolby, J. L. 1972. <i>Access: a study of information storage and retrieval with emphasis on library information systems</i>. Washington, DC: U.S. Department of Health Education and Welfare, Office of Education, Bureau of Research.</p>
+
+<p>Richmond, Phillis A. 1958. "A simple mnemonic large-base number system for notational purposes". <i>Journal of Documentation</i> 14, no. 4: 208-211.</p>
+
+<p>Ricci, G. 1898. "Sur la num&eacute;ration progressive des sujets dans les catalogues par mati&egrave;res". <i>Bulletin de l'Institut international de bibiographie</i> 3: 183-189.</p>
+
+<p>Rossi, Paolo. 2000. <i>Clavis universalis: arti della memoria e logica combinatoria da Lullo a Leibniz</i>, 3a ed. Bologna: il Mulino. English translation of 2nd ed.: <i>Logic and the art of memory: the quest for a universal language</i>. Chicago: the University of Chicago Press, 2000.</p>
+
+<a name="refS"></a>
+
+<p>Sammet, Jean E. and Robert Tabory. 1968. "Artificial languages". In <i>Encyclopedia of library and information science</i>. Eds. Allen Kent and Harold Lancour. New York: Dekker, v. 1, 632-657.</p>
+
+<p>Satija, Mohinder P. 2017. "Colon Classification (CC)". <i>Knowledge Organization</i> 44, no. 4: 291-307. Also available in ISKO Encyclopedia of Knowledge Organization. Ed. Birger Hj&oslash;rland.  <a href="colon_classification">https://www.isko.org/cyclo/colon_classification</a>. </p>
+
+<p>Satija, Mojinder P., Devika P. Madalli and Biswanath Dutta. 2014. "Modes of growth of subjects". <i>Knowledge organization</i> 41, no. 3: 195-204.</p>
+
+<p>Slavic, Aida. 2006. "Interface to classification: some objectives and options". <i>Extensions and Corrections to the UDC</i> 28: 24-45. Also available at <a href="http://www.ukrbook.net/UDC_n/st_26.pdf">http://www.ukrbook.net/UDC_n/st_26.pdf</a>, accessed 14 February 2018.</p>
+
+<p>Slavic, Aida. 2008. "Faceted classification: management and use". <i>Axiomathes</i> 18, no. 2: 257-271. Also available in <i>ArXiv</i>, <a href="https://arxiv.org/abs/1705.07047">https://arxiv.org/abs/1705.07047</a>, accessed 14 February 2018.</p>
+
+<p>Stevenson, Gordon. 1978. "Andreas Schleiermacher's Bibliographic Classification and its relationship to the Dewey Decimal and Library of Congress Classifications". <i>Occasional Papers</i>. Urbana: University of Illinois Graduate School of Library Science. also available at <a href="https://www.ideals.illinois.edu/handle/2142/3798">https://www.ideals.illinois.edu/handle/2142/3798</a>.</p>
+
+<p>Sukiasyan, Eduard. 2017. "Library-Bibliographical Classification (LBC)". In <i>ISKO Encyclopedia of Knowledge Organization</i>. Ed. Birger Hj&oslash;rland. <a href="lbc">https://www.isko.org/cyclo/lbc</a>.</p>
+
+<p>Szostak, Rick. 2012. &ldquo;The Basic Concepts Classification&rdquo;. In <i>Categories, contexts and relations in knowledge organization: Proceedings of the Twelfth International ISKO Conference, 6-9 August 2012, Mysore, India</i>. Ed. A. Neelameghan and K.S. Raghavan. W&uuml;rzburg: Ergon, 24-30.</p>
+
+<a name="refT"></a>
+
+<p>Tennis, Joseph T. 2017. Facets and change: design requirements for analytico-synthetic schemes in light of subject ontogeny research. In <i>Faceted classification today: theory, technology and end users: proceedings of the International UDC Seminar 2017, London (UK), 14-15 September</i>. Eds. Aida Slavic and Claudio Gnoli. W&uuml;rzburg: Ergon, 163-168.</p>
+
+<p>Tunkelang, Daniel. 2009. <i>Faceted search</i>. San Rafael: Morgan & Claypool.</p>
+
+<a name="refU"></a>
+<a name="refV"></a>
+
+<p>Verner, K. A. 1897. "Vorschlag zu einer ver&auml;nderten Signiermethode f&uuml;r Bibliotheken". <i>Zeitschrift f&uuml;r Biblioth.</i> 14: 253-263.</p>
+
+<p>Verdin, K. L. and Verdin, J. P. 1999. "A topological system for delineation and codification of the Earth's river basins". <i>Journal of Hydrology</i> 218, no. 1-2: 1-12.</p>
+
+<p>Vickery, Brian C. 1952. "Notational symbols in classification". <i>Journal of Documentation</i> 8, no. 1: 14-32.</p>
+
+<p>Vickery, Brian C. 1953. "The significance of John Wilkins in the history of bibliographical classification". <i>Libri</i> 2: 326-343.</p>
+
+<p>Vickery, Brian C. 1956. "Notational symbols in classification. Part 2: Notation as an ordering device". <i>Journal of Documentation</i> 12, no. 2: 73-87.</p>
+
+<p>Vickery, Brian C. 1957. "Notational symbols in classification. Part 3: Further comparisons of brevity". <i>Journal of Documentation</i> 13, no. 2: 72-77.</p>
+
+<p>Vickery, Brian C. 1958a. "Notational symbols in classification. Part 4: Ordinal values of symbols". <i>Journal of Documentation</i> 14, no.1: 1-11.</p>
+
+<p>Vickery, Brian C. 1958b. "Notation for the classified catalogue". Chapter 3 in <i>Classification and indexing in science</i>. London: Butterworths.</p>
+
+<p>Vickery, Brian C. 1959. "Notational symbols in classification. Part 5: Signposted and retroactive notation, and Part 6: Pronounceable retroactive ordinal notation". <i>Journal of Documentation</i> 15, no. 1: 12-16.</p>
+
+<p>Visintin, Giulia. 2005. "Punti su una retta, porte sull'iperspazio". In<i> AIB-WEB. Contributi</i>. <a href="http://www.aib.it/aib/contr/visintin5.htm">http://www.aib.it/aib/contr/visintin5.htm</a>, accessed 14 February 2018.</p>
+
+<a name="refW"></a>
+
+<p>Wajenberg, Arnold S. 1983. "MARC coding of DDC for subject retrieval". <i>Information Technology & Libraries</i> 2, no. 3: 246-251.</p>
+
+<p>Wali, M. L. and R. K. Koul. 1972. "Development of notation in freely faceted classification: a case study". <i>Herald of Library Science</i> 11, no. 1, 30-43.</p>
+
+<p>Wiberley, S. E., R. A. Daugherty and J. A. Danowski. 1990. "User persistence in scanning postings of a computer-driven information system: LCS". <i>Library and Information Science Research</i> 12: 341-353.</p>
+
+<p><i>Word Event</i>. 2011. "Verbal notation". In <i>Word Event: a verbal notation symposium, Bath Spa University, 21 September 2011</i>. <a href="https://wordevent.wordpress.com/home/verbal-notation/">https://wordevent.wordpress.com/home/verbal-notation/</a>, accessed 14 February 2018.</p>
+
+<a name="refX"></a>
+<a name="refY"></a>
+<a name="refZ"></a>
+
+<p>Zeng, Marcia Lei, Michael Panzer and Athena Salaba. 2010. "Expressing classification schemes with OWL 2: exploring issues and opportunities based on experiments using OWL 2 for three classification schemes". In <a href="#refG">Gnoli and Mazzocchi 2010</a>: 356-362.</p>
+
+<p>&#0381;umer, Maja. 2017. "IFLA Library Reference Model (LRM): harmonisation of the FRBR family". In <i>ISKO Encyclopedia of Knowledge Organization</i>. Ed. Birger Hj&oslash;rland. <a href="lrm">https://www.isko.org/cyclo/lrm</a>. </p>
+
+<a name="col"></a>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<p>&nbsp;</p>
+
+<p>Visited   <a href="https://www.digits.net" target="_blank">
+    <img src="https://counter.digits.net/?counter={7d6236f8-b46d-7cf4-f14f-85faf480c38d}&template=simple" alt="Hit Counter by Digits" border="0"  /></a> times since 2018-11-28 (9 months after first publication).</p>
+
+<hr>
+<p>Version 1.13 (= <a href="notation-12">1.2</a> plus Fig. 3, references to Satija et al. 2014, Hanson 1929, Laporte 2018, Green 2009, Dousa 2018, Hull 1966, Ricci, Verner, Nuovo Soggettario, Otlet 1895-6 with quotation, link to Coates and more careful account of Stevenson 1978); version 1.0 published 2018-02-15, this version 2025-09-15</p>
+
+<p>Article category: <code><a href="index#KA">KOS general issues</a></code></p>
+
+<p>This article (version 1) is also published in <i>Knowledge Organization</i>. How to cite it (version 1): Gnoli, Claudio. 2018. &ldquo;Notation&rdquo;. <i>Knowledge Organization</i> 45, no. 8: 667-684. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli, https://www.isko.org/cyclo/notation.
+<br>To quote text edited in a later version, you should save it in the <i><a href="https://web.archive.org/">Wayback Machine</a></i> and cite the saved version.</p></p>
+
+<p>&copy;2018 ISKO. All rights reserved.</p>
+
+</td>
+</tr>
+
+<tr>
+<td id="logo">
+</td>
+</tr>
+
+</table>
+</body>
+</html>

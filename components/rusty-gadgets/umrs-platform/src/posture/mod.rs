@@ -47,7 +47,8 @@
 //! | Module | Role |
 //! |---|---|
 //! | `indicator` | Core types: `IndicatorId`, `IndicatorClass`, `AssuranceImpact`, `DesiredValue` |
-//! | `catalog` | Static `INDICATORS` array — compile-time catalog of all indicators |
+//! | `catalog` | Static `INDICATORS` array — compile-time catalog with descriptions, recommendations |
+//! | `display` | Pure formatting functions — translate raw `LiveValue` into operator-readable strings |
 //! | `reader` | Live-value readers routing through `SecureReader` |
 //! | `configured` | sysctl.d merge-tree configured-value reading |
 //! | `bootcmdline` | BLS entry reader for configured kernel cmdline (Phase 2b) |
@@ -71,6 +72,7 @@ pub mod bootcmdline;
 pub mod catalog;
 pub mod configured;
 pub mod contradiction;
+pub mod display;
 pub mod fips_cross;
 pub mod indicator;
 pub mod modprobe;
@@ -81,8 +83,13 @@ pub mod snapshot;
 // Public API re-exports
 // ---------------------------------------------------------------------------
 
-pub use catalog::{CATALOG_KERNEL_BASELINE, INDICATORS, IndicatorDescriptor};
+pub use catalog::{
+    CATALOG_KERNEL_BASELINE, INDICATORS, IndicatorDescriptor, lookup,
+};
 pub use contradiction::ContradictionKind;
+pub use display::{
+    annotate_integer, annotate_live_value, annotate_signed_integer,
+};
 pub use fips_cross::FipsCrossCheck;
 pub use indicator::{
     AssuranceImpact, ConfiguredValue, DesiredValue, IndicatorClass,

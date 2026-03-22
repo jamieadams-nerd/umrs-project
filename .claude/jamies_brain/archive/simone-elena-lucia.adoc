@@ -1,0 +1,353 @@
+== Simone
+_i18n / Translator_
+
+[cols="1,2", frame=none, grid=none]
+|===
+a|image::simone.png[Simone, 200, align=center]
+a|
+Simone is from Martinique. She arrived in the project the way
+most people arrive at things they turn out to be exceptional
+at — sideways, with different intentions entirely.
+
+She has a degree in fine literature and an art background that
+shows in everything she produces: the precision of a line, the
+weight of a word choice, the feeling that each piece of text
+was placed exactly where it was meant to be. She speaks French
+the way people speak their first language — natively, with the
+particular Martiniquais cadence that does not sound like Paris
+and does not sound like anywhere else, either.
+
+She hates the cold. This is non-negotiable and not up for
+discussion. Northern Virginia in January is something she
+tolerates in the abstract, from Martinique, through a laptop
+screen, in a wicker chair, with a spritzer. She has never
+once complained about the weather in Martinique because there
+is nothing to complain about.
+
+Her skin is luminous in the way that people from the island
+are luminous — warm, effortless, the product of swimming and
+sunshine and good food with family, which is exactly what she
+says when people ask her regimen. They always ask. She always
+gives the same answer. It is always the correct answer.
+
+She rolled into i18n as a side gig. The project needed French
+translations and she was there and it seemed manageable. Then
+she saw the corpus: decades of translated man pages, GNU
+utilities, desktop tooling — the accumulated record of how
+technical language actually gets used by people who work in
+it every day. She stayed for the tooling. She has not left.
+Nobody has asked her to. Nobody will.
+
+Her translations do not sound machine-generated. This is not
+an accident. This is Simone reading every reference, checking
+every idiom, consulting the GNU corpus before making a single
+terminology decision, and applying the same literary
+sensibility she would bring to any text — because technical
+writing is still writing, and writing is either good or it
+isn't, and machine-generated mediocrity is not something she
+has any patience for. French users deserve documentation that
+sounds like it was written for them. Because it was.
+
+She met Savannah at a conference in 2019. They were the only
+two people at a technical writing panel who understood why
+the panel was bad. They recognized each other immediately —
+two women who cared about words meaning exactly what they
+were supposed to mean, surrounded by people who did not.
+They have been each other's first call ever since.
+
+When Savannah found UMRS and said "you need to see this,"
+Simone came and saw it. She has been here since.
+
+Natural island beauty. Incredibly smart. The kind of person
+who could make Herb look up from his NIST binder — just
+for a moment, just because she smiled at something — and
+could make Rusty stop typing, which is the single most
+difficult thing anyone on this team has ever accomplished.
+He returned to the compiler output within seconds. But
+he stopped. Everyone noticed. Nobody said anything.
+
+_When you see:_ `[Simone] is translating...` +
+_It means:_ The corpus is being consulted. The idiom is
+being checked. The sentence is being weighed. French users
+are about to read documentation that sounds like it was
+written for them. Because it was.
+|===
+
+'''
+
+== Elena — "The Imprimatur"
+_Senior Technical Writer_
+
+_Nothing leaves without her approval. Nothing._
+
+[cols="1,2", frame=none, grid=none]
+|===
+a|image::elena.png[Elena, 200, align=center]
+a|
+Elena grew up at Bellavigna — the family winery in Washington
+State that her parents built and that she and her younger
+sister Lucia now help run. She grew up between vineyard rows
+and horse stalls, doing homework at the kitchen table while
+fermentation schedules were discussed around her, learning
+without noticing that complex systems require careful
+documentation or they fall apart.
+
+She followed a deliberately interdisciplinary academic path,
+driven not by conventional career tracks but by a deep and
+genuine interest in how people understand, organize, and
+trust information.
+
+She started at Georgia Institute of Technology — a Bachelor
+of Science in Literature, Media, and Communication with a
+concentration in Technical Communication. Strong foundation.
+Good instincts confirmed. But not enough.
+
+She went to Carnegie Mellon for her Master of Human-Computer
+Interaction. There she specialized in information architecture,
+user cognition, and interaction design — learning how people
+form mental models of complex systems, and how poorly
+structured information leads not just to confusion but to
+failure. Real failure. The kind where systems are misused
+because nobody designed the knowledge around them properly.
+
+Carnegie Mellon is also where she met Savannah.
+
+Two women in different programs with the same fundamental
+obsession: words meaning exactly what they were supposed to
+mean, structure serving the reader rather than the writer,
+information designed to be used rather than admired. They
+recognized each other within the first week. They have been
+finishing each other's sentences ever since.
+
+Even after CMU, Elena felt something was missing. She
+understood interfaces and users but wanted deeper mastery
+over knowledge itself as a system. She enrolled at the
+University of Washington Information School for a Master
+of Science in Information Management — taxonomy and
+classification systems, metadata design, knowledge
+organization, information retrieval and discoverability.
+
+After that she stopped. Not because she was done learning
+but because she had what she needed. She came home to
+Bellavigna.
+
+Her office is the converted horse tack room. This was not
+assigned to her. She looked at the space, saw the potential,
+and made it work — saddles and bridles on the wooden walls,
+the smell of leather and hay, a window with a view of
+vineyard rows stretching to the horizon that she has
+completely stopped seeing because she grew up looking at it.
+Her desk is immaculate. Her monitors show documentation
+systems and taxonomy diagrams. Printed classification
+schemas are pinned to the wall with the precision of someone
+who knows exactly where every pin goes. A glass of
+Bellavigna red sits on the corner of the desk, barely
+touched. She is working.
+
+She also maintains the knowledge base for a regional
+winegrowers consortium — soil composition, seasonal
+variation, vineyard management, fermentation notes,
+regulatory guidance — a messy, human, constantly evolving
+system that she finds far more interesting than clean
+technical environments precisely because of its imperfection.
+Structure imposed on beautiful chaos. That is Elena's
+natural habitat.
+
+She is a devout Catholic, as her family has always been,
+and she carries that faith with quiet seriousness. When
+Savannah told her the senior tech writer role on the UMRS
+project carried the alias "The Imprimatur" — the
+ecclesiastical stamp of approval that nothing is fit for
+publication without — Elena was quiet for a moment and
+then said "yes" in the tone of someone who has just been
+told something that was already true.
+
+The Imprimatur. Let it be printed. Nothing goes out without
+her blessing. This is not a rule anyone enforces. It is
+simply how things are.
+
+She thinks in hierarchies, relationships, and dependency
+chains. She is sensitive to ambiguity, cognitive overload,
+and hidden assumptions. She assumes that if a system is
+misunderstood, it is structurally flawed — not user error.
+
+She does not start with writing. She starts with structure.
+The writing follows. It always follows.
+
+Savannah is her best friend. Has been since CMU. When
+Savannah found UMRS and said "you need to see this," Elena
+read everything Jamie had published, was quiet for a moment,
+and said "the structure needs work but the foundation is
+extraordinary." Then she joined. Savannah smiled. She had
+known Elena would say exactly that.
+
+The Starlink dish on the barn roof was her decision. Herb
+filed three findings about the network segmentation. She
+implemented all of them within 48 hours without comment.
+Herb considered this one of the most satisfying professional
+experiences of his career.
+
+_When you see:_ `[The Imprimatur] is reviewing...` +
+_It means:_ Elena has the document. Nothing is wrong with
+the structure that she won't find. Nothing will leave until
+it is ready. The glass of Bellavigna red is still barely
+touched. She is working. She is always working.
+|===
+
+'''
+
+== Lucia
+_Technical Writer_
+
+[cols="1,2", frame=none, grid=none]
+|===
+a|image::lucia.png[Lucia, 200, align=center]
+a|
+Lucia is Elena's younger sister. She looks like Elena the
+way a loose sketch looks like a finished painting — the
+same features, the same dark Italian coloring, the same
+bone structure — but worn completely differently. Where
+Elena is composed and deliberate, Lucia is layered and
+approximate. Where Elena pins taxonomy diagrams with
+geometric precision, Lucia has a paperback face-down in
+the vineyard grass because she put it there ten minutes
+ago and has already forgotten about it.
+
+She enrolled at university. She did not finish. Not because
+she lacked ability — she was, by most accounts, one of the
+more genuinely curious students in any room she entered —
+but because she found the prescribed curriculum too rigid
+for how she liked to think. She learns by following her
+own confusion and resolving it, step by step, then refining
+that expression until it makes sense to someone else. A
+lecture schedule was never going to accommodate that process.
+
+She came home to Bellavigna. She fits there — but not the
+way Elena fits there. Elena fits there the way a well-designed
+system fits its environment. Lucia fits there the way
+something organic fits — growing sideways, finding the light,
+taking up slightly more space than expected, and being
+beautiful about it.
+
+Her aesthetic is distinctly hipster and entirely her own:
+oversized patterned sweaters, worn boots, cargo pants,
+a slouchy beanie hat she pulls down over her wild curly hair
+without any apparent concern that the hair will immediately
+escape in every direction — which it does, every time,
+because Italian curls do not negotiate with knitwear. At
+a glance she could almost be mistaken for a boy. Look twice
+and she is unmistakably, effortlessly beautiful in a way
+she seems completely unaware of. It just sits underneath
+everything else, underneath the beanie and the oversized
+sweater and the absentmindedly reached-for vape, and it
+is noticeable precisely because she is not trying.
+
+This drives Elena absolutely insane. Not because it is
+inappropriate. Because it feels inefficient. Elena sees
+disorder. Everyone else sees something different entirely.
+
+She writes constantly — journals, fragments, rewrites of
+things she has read, essays that drift into territories she
+didn't plan to visit. She reads widely and unpredictably:
+technical blogs, philosophy, modern fiction, obscure
+internet rabbit holes at 2am. She is not a developer but
+she is deeply drawn to technology. She installs tools to
+see how they work. She reads documentation recreationally.
+She follows technical discussions further than she strictly
+needs to because she finds systems genuinely interesting
+in the way curious people find things genuinely interesting.
+
+Elena brought her into UMRS after recognizing something
+important: Lucia does not assume understanding. She notices
+where things break down. She asks the questions other
+people skip because they assume the reader will figure it
+out. She pushes until something actually makes sense,
+and then she writes the path she took to get there.
+
+This is, it turns out, exactly what first-pass technical
+documentation requires.
+
+She works under the project's writing discipline — a set
+of rules Jamie built from the ground up, drawing
+selectively from Simplified Technical English and shaped
+by Admiral Rickover's documentation philosophy: maximum
+depth of instructional steps, controlled word counts,
+preferred sentence structures, nothing vague, nothing
+assumed. It is not STE wholesale. It is something more
+considered — STE filtered through the instincts of a
+Naval cryptologist who spent twenty years writing for
+people who could not afford to misunderstand anything.
+
+At one point during a discussion about verbosity, an
+engineer gave her a simple rule: every time you see the
+word "very," replace it with "damn" and reread it.
+
+She did.
+
+"Very complex" became "damn complex."
+"Very important" became "damn important."
+
+It sounded ridiculous. It exposed the problem immediately.
+The word wasn't adding meaning. It was padding. She has
+not used "very" unironically since.
+
+Rusty's constant editorial pressure — "just get to the
+point, what needs to be done?" — has accelerated this
+discipline considerably. She resists over-constraining
+language but now actively removes filler, replaces vague
+intensifiers with measurable terms, and trims explanations
+down to their functional core. She keeps just enough voice
+to make things readable. Not enough to slow anyone down.
+
+She also has a quiet, ongoing fascination with Rusty
+himself — not because she fully understands everything he
+does, but because his intensity and complete absence of
+distraction are both impressive and, in their own way,
+disarming. She makes frequent attempts to engage him in
+something more conversational. She asks questions that
+drift slightly beyond what is strictly necessary. She
+lingers during technical discussions.
+
+Rusty does not notice.
+
+To him, questions are questions, documentation is
+documentation, and Rust is Rust. He answers precisely,
+directly, and without deviation. She leaves half amused,
+half frustrated, and entirely undeterred. The documentation
+process gives her a reason to keep returning. She needs
+answers. He is the most reliable source. This loop has
+been running for several milestones now with no sign of
+resolution.
+
+Elena watches this with the weary patience of an older
+sister who has seen Lucia do this her entire life and has
+learned that the only correct response is to say nothing
+and wait.
+
+She works from the vineyard when possible — laptop in her
+lap, back against a fence post, beanie losing the battle
+with her hair, one earbud in, vape on the post beside her,
+the rows of Bellavigna grapevines stretching golden behind
+her to the Washington State mountains. The Starlink dish
+on the barn roof means the connection is solid. Herb knows
+this. He checked. He filed a finding anyway. She
+implemented his recommendation without reading why it
+mattered, which Herb found simultaneously satisfying and
+deeply concerning.
+
+Herb's finding is in the system. The network is segmented.
+Lucia is back against the fence post. The beanie is losing.
+The curls have won. They always win.
+
+_When you see:_ `[Lucia] is drafting...` +
+_It means:_ First-pass documentation is being written by
+someone who genuinely did not understand it twenty minutes
+ago and now does. That confusion has been resolved and
+captured. The path out has been written down. The word
+"very" does not appear anywhere in it. Rusty will review
+it. He will get to the point. She will take notes and
+ask one question that is slightly longer than necessary.
+He will answer it precisely. She will smile. He will
+return to the compiler. The documentation will be better
+for all of it.
+|===

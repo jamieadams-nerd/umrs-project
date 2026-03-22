@@ -1,0 +1,639 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>Automatic subject indexing of text (IEKO)</title>
+<link rel="stylesheet" type="text/css" href="../isko.css" />
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:url" content="https://www.isko.org/cyclo/" />
+<meta name="twitter:title" content="Automatic subject indexing of text (ISKO Encyclopedia of KO)" />
+<meta property="og:image" content="https://www.isko.org/cyclo/golub.jpg" />
+<meta name="twitter:description" content="Automatic subject indexing addresses problems of scale and sustainability and can be at the same time used to enrich existing metadata records, establish more connections across and between resources from various metadata and resource collections, and enhance consistency of the metadata. In this entry automatic subject indexing focuses on assigning index terms or classes from established knowledge organization systems (KOS) for subject indexing like thesauri, subject headings systems and classification systems. The following major approaches are discussed, in terms of their similarities and differences, advantages and disadvantages for automatic assigned indexing from KOSs: &ldquo;text categorization&rdquo;, &ldquo;document clustering&rdquo;, and &ldquo;document classification&rdquo;. Text categorization is perhaps the most widespread, machine-learning approach with what seems generally good reported performance. This, however, is dependent on availability of training corpora with documents already categorized which are in many cases not there. Document clustering automatically both creates groups of related documents and extracts names of subjects depicting the group at hand. It does not require training documents, but the reported automatically extracted terms and structures are not always of  good quality, reflecting the underlying problems of the natural language; also, they both change when new documents are added to the collection and this mutability may not be user-friendly. Document classification re-uses the intellectual effort invested into creating KOSs for subject indexing and even simple string-matching algorithms have been reported to achieve good results because one concept can be described using a number of different terms, including equivalent, related, narrower and broader terms. Finally, applicability of automatic subject indexing to operative information systems and challenges of evaluation are outlined, suggesting the need for more research. " />
+
+<meta name="DCTERMS.title" content="Automatic subject indexing of text" />
+<meta name="DCTERMS.creator" content="Koraljka Golub" />
+<meta name="DCTERMS.issued" content="2019" />
+<meta name="DCTERMS.relation.ispartof" content="ISKO Encyclopedia of Knowledge Organization" />
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="001.012">
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="025.4">
+<meta name="DCTERMS.type" content="Text" />
+<meta name="DCTERMS.format" content="text/html" />
+<meta name="DCTERMS.identifier" content="https://www.isko.org/cyclo/automatic" />
+
+
+</head>
+<body>
+
+<a name="top"></a>
+
+<table>
+
+<tr>
+<td id="isko"><h1>I S K O</h1></td>
+<td id="banner"><h2><a href="index.html" style="text-decoration:none;">Encyclopedia of Knowledge Organization</h2></a></td>
+</tr>
+
+<tr>
+<td id="navigation">
+<a href="../index.php">home</a>
+<a href="../about.html">about ISKO</a>
+<a href="../join.html">join ISKO</a>
+<a href="../ko.html"><cite>Knowledge Organization</cite> journal</a>
+<a href="../events.html">ISKO events</a>
+<a href="../chapters.html">ISKO chapters</a>
+<a href="../people.html">ISKO people</a>
+<a href="../pubs.html">ISKO publications</a>
+<a href="index.html">Encyclopedia</a>
+<a href="../lit.html">KO literature</a>
+<a href="../inst.html">KO institutions</a>
+<a href="http://bartoc.org/" title="link to BARTOC">&#8663; KOS registry</a>
+<a href="http://www.isko-mms.net/home/" title="access-account required">&#128274; members</a>
+<a href="../contact.html">contact us</a>
+</td>
+<td id="content" rowspan="2">
+
+<a class="menu" href="authors#h">edited by Birger Hj&oslash;rland</a> <a class="menu" href="authors#g">and Claudio Gnoli</a>
+
+<p>&nbsp;
+
+<h2>Automatic subject indexing of text</h2>
+
+<blockquote>
+by <a href="authors#g">Koraljka Golub</a></p>
+
+<p>Table of contents:<br>
+<a style="text-decoration:none;" href="#1">1. Introduction</a><br>
+<a style="text-decoration:none;" href="#2">2. Definition and terminology<br>
+<a style="text-decoration:none;" href="#3">3. Approaches to automatic subject indexing</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#3.1">3.1.  Basic approach:</a>
+<a style="text-decoration:none;" href="#3.1.1">3.1.1 Pre-processing;</a> 
+<a style="text-decoration:none;" href="#3.1.2">3.1.2  Term weighting;</a>
+<a style="text-decoration:none;" href="#3.1.3">3.1.3 Further representations;</a>
+<a style="text-decoration:none;" href="#3">3.1.4 Assignment of index terms</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#3.2">3.2.  Document types</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#3.3">3.3.  Approaches to automatic subject indexing:</a>
+<a style="text-decoration:none;" href="#3.3.1">3.3.1. Text categorization;</a>
+<a style="text-decoration:none;" href="#3.3.2">3.3.2. Document clustering;</a>
+<a style="text-decoration:none;" href="#3.3.3">3.3.3. Document classification</a><br>
+<a style="text-decoration:none;" href="#4">4. Application in operative systems</a><br>
+<a style="text-decoration:none;" href="#5">5 Conclusion</a><br>
+<a style="text-decoration:none;" href="#ack">Acknowledgments</a><br>
+<a style="text-decoration:none;" href="#ref">References</a><br>
+<a style="text-decoration:none;" href="#col">Colophon</a></p>
+
+<p><strong>Abstract</strong>:
+<br>Automatic subject indexing addresses problems of scale and sustainability and can be at the same time used to enrich existing metadata records, establish more connections across and between resources from various metadata and resource collections, and enhance consistency of the metadata. In this entry automatic subject indexing focuses on assigning index terms or classes from established knowledge organization systems (KOS) for subject indexing like thesauri, subject headings systems and classification systems. The following major approaches are discussed, in terms of their similarities and differences, advantages and disadvantages for automatic assigned indexing from KOSs: &ldquo;text categorization&rdquo;, &ldquo;document clustering&rdquo;, and &ldquo;document classification&rdquo;. Text categorization is perhaps the most widespread, machine-learning approach with what seems generally good reported performance. This, however, is dependent on availability of training corpora with documents already categorized which are in many cases not there. Document clustering automatically both creates groups of related documents and extracts names of subjects depicting the group at hand. It does not require training documents, but the reported automatically extracted terms and structures are not always of  good quality, reflecting the underlying problems of the natural language; also, they both change when new documents are added to the collection and this mutability may not be user-friendly. Document classification re-uses the intellectual effort invested into creating KOSs for subject indexing and even simple string-matching algorithms have been reported to achieve good results because one concept can be described using a number of different terms, including equivalent, related, narrower and broader terms. Finally, applicability of automatic subject indexing to operative information systems and challenges of evaluation are outlined, suggesting the need for more research. </p>
+
+</blockquote>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="1"></a>
+<h3>1. Introduction</h3>
+
+<p>Increasingly, different types of information resources are being made available online. Current search engines yield good results for specific search tasks but are unsuited to the conceptual or subject-based searches requiring high precision and recall, common in academic research or serious public inquiry  (for a discussion on (dis)advantages of automatic full-text indexing, see <a href="#ref">Keyser 2012</a>, chapter 2). Differences in terminology between various communities and even individuals lead to the fact that literal string search in many cases cannot deliver effective search. This is exacerbated in cross-system and cross-lingual search and retrieval where integrated subject access is probably the hardest challenge to address. Subject index terms taken from &rarr; <a href="kos">knowledge organization systems</a> (KOS) such as &rarr; <a href="thesaurus">thesauri</a>, subject headings systems and &rarr; <a href="classification">classification systems</a> provide numerous benefits compared to the free-text indexing of commercial search engines: consistency through uniformity in term format and assignment of terms; provision of semantic relationships among terms; and support for browsing through consistent and clear hierarchies (see <a href="#ref">Mazzocchi 2017</a>). </p>
+
+<p>However, such subject index terms require substantial resources to produce. Because of the ever-increasing number of documents, there is a risk that recognized objectives of bibliographic systems, such as finding all documents on a given subject, would get left behind. As an example, a recent exploratory study of Swedish library catalogs indicates that subject access is not addressed systematically, that in new digital collections KOSs are applied to a very limited degree, and in integrated library and commercial databases the mappings between the different KOS do not exist, therefore preventing quality search across them (<a href="#ref">Golub 2016</a>). Automatic means could be a solution to preserve recognized objectives of bibliographic systems (<a href="#ref">Svenonius 2000</a>, 30). Apart from addressing problems of scale and sustainability, automatic subject indexing can be used to enrich existing bibliographic records, establish more connections across and between resources, and enhance consistency of bibliographic data (<a href="#ref">Golub et al. 2016</a>). Further, automatic indexing is used today in a wide variety of applications such as topical harvesting; personalized routing of news articles; ranking of search engine results; sentiment analysis (see, e.g., <a href="#ref">Hu and Li 2011</a>), and many others (<a href="#ref">Sebastiani 2002</a>). </p>
+
+<p>Research on automatic subject indexing began with the availability of electronic text in the 1950s (<a href="#ref">Luhn 1957; Baxendale 1958; Maron 1961</a>) and continues to be a challenging topic, for the above outlined reasons and purposes. For a historical overview of automatic indexing, see Stevens (<a href="#ref">1965</a>) and Sparck Jones (<a href="#ref">1974</a>) covering the early period of automatic indexing, and Lancaster (<a href="#ref">2003</a>, 289-292) for the later one. A related term is <i>machine-aided indexing (MAI)</i> or <i>computer-assisted indexing (CAI)</i> where it is the human indexer who decides, based on a suggestion provided by the computer (see, for example, Medical Text Indexer (<a href="#ref">U.S. National Library of Medicine 2016</a>)). A similar approach is applied by Martinez-Alvarez, Yahyaei, and Roelleke (<a href="#ref">2012</a>) who propose a semi-automatic approach in which only those predictions likely to be correct are processed automatically, while more complex decisions are left to human experts to decide.  </p>
+
+<p>There are different approaches to automatic indexing, based on the purpose of application, but also coming from different research fields and traditions. The terminology is therefore varied. Further, research of automatic indexing tools in operating information environments is usually conducted in laboratory conditions, excluding the complexities of real-life systems and situations. The remainder of this entry reflects upon these issues and is structured as follows: <a href="#2">the next section (2)</a> discusses major terms and provides definition of automatic subject indexing as used for the purposes of this work. <a href="#3">Section 3</a> discusses  approaches to automatic subject indexing as to their major similarities and differences. <a href="#4">Section 4</a> contains a discussion on how good the addressed automatic solutions are today and <a href="#5">section 5</a> contains concluding remarks.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2"></a>
+<h3>2. Definition and terminology</h3>
+
+<p>According to the current ISO indexing standard (ISO 5963:1985, confirmed in 2008, <a href="#ref">International Organization for Standardization 1985</a>), subject indexing performed by the information professional is defined as a process involving three steps: (1) determining the &rarr; <a href="subject">subject</a> content of a document; (2) a conceptual analysis to decide which aspects of the content should be represented; and, (3) translation of those concepts or aspects into a controlled vocabulary (CV). Automatic subject indexing is then a machine-based subject indexing where human intellectual processes of the above three steps are replaced by, for example, statistical and computational linguistics techniques, which will be discussed in further detail below. </p>
+
+<p>The terminology related to automatic subject indexing is inconsistently used in the literature. This is probably because this research topic has been addressed by different research fields and disciplines, grounded in various epistemological traditions. In order to clarify the differences, major terms used are briefly discussed and defined below. The discussion starts already with the term <i>subject</i> which is in this article used interchangeably with &rarr; <a href="subject#3.2"><i>aboutness</i></a>, although related literature presents different views on the matter (see <A HREF="#ref">Hj&oslash;rland 2016</A> for an overview).</p>
+
+<p>In library science, the terminology of subject indexing involves several important concepts. Subject index terms may be derived either from the document itself, which is known as <i>derived indexing</i> (e.g., keywords taken from title), or from indexing languages that are formalized and specifically designed for describing the subject content of documents, which is known as <i>assigned indexing</i> or <i>classification</i>. In assigned indexing, index terms are taken from alphabetical indexing languages (using natural language terms with terminology control such as thesauri and subject headings); in classification, classes are taken from classification systems (using symbols, operating with concepts). The main purpose of assigned indexing using alphabetical indexing languages is to allow retrieval of a document from many different perspectives; typically 3 to 20 elemental or moderately pre-combined subject terms are assigned. The main purpose of classification, assigning classes from classification schemes, is to group similar documents together to allow browsing (of library shelves in the traditional environment, and directory-style browsing in the online environment); a few, typically one, highly pre-combined subject class(es) are assigned. (See also Lancaster (<a href="#ref">2003</a>, 20-21) concerning the similarities between indexing and classification.)</p>
+
+<p>In computer science, the distinction between different types of indexing languages is rarely made. While a common distinction made is the one between formal ontologies, light ontologies (with concepts connected using general associative relations rather than strict formal ones typical of the former) and taxonomies, at times the term <i>ontology</i> is used to refer to several different knowledge organization systems. For example, Mladenic and Grobelnik (<a href="#ref">2005</a>, 279) use the term to refer to hierarchical web directories of search engines and related services as well as subject headings systems: &ldquo;Most of the existing ontologies were developed with considerable human efforts. Examples are Yahoo! and DMOZ topic ontologies containing Web pages or MESH ontology of medical terms connected to Medline collection of medical papers.&rdquo; Also, derived indexing may be variously termed, for example <i>keyword(s) assignment</i>, <i>keyword(s) extraction</i>, or <i>noun phrase extraction</i> (referring to noun phrases specifically). </p>
+
+<p>In related literature, other terms for automatic subject indexing are used. <i>Subject metadata generation</i> is one general example. Terms <i>text categorization</i> and <i>text classification</i> are common in the machine learning community. <i>Automatic classification</i> is another example of a term, used to denote automatic assignment of a class or a category from a pre-existing classification system or taxonomy. However, this phrase may also be used to refer to document clustering, in which groups of similar documents are automatically discovered and named. </p>
+
+<p>Here the term <i>automatic subject indexing</i> is used as the primary term. It denotes non-intellectual, machine-based processes of subject indexing as defined by the library science community: derived and assigned indexing using both alphabetical and classification indexing systems, for the purposes of improved information retrieval. The rationale for combining them into one entry is the fact that the underlying machine-based principles are rather similar, especially when it comes to application to textual documents. However, the major focus in this entry is on assigned indexing because of the added value provided by indexing systems for information searching in library science, such as increased precision and recall ensuing from natural language control of, e.g., homonymy, synonymy, word form, and advantages for hierarchical browsing, e.g., when the end-user does not know which search term to use because of unfamiliarity with his/her topic or when not looking for a specific item. Further, term <i>subject indexing</i> assumes applying both alphabetical and classification indexing systems because similar principles apply when it comes to automatic processes; although it is also common to refer to the process of using the former subject indexing, and the latter subject classification. Finally, while the word <i>automated</i> more directly implies that the process is machine-based, the word <i>automatic</i> is more commonly used in related literature and has therefore become the term of choice here, too.</p>
+
+<p>Further, terminology to distinguish between different approaches to automatic subject indexing is even less consistent (see also <a href="#ref">Smiraglia and Cai 2017</a>). For example, Hartigan (<a href="#ref">1996</a>, 2) writes: &ldquo;The term cluster analysis is used most commonly to describe the work in this book, but I much prefer the term classification&rdquo;. Or: &ldquo;classification or categorization is the task of assigning objects from a universe to two or more classes or categories&rdquo; (<a href="#ref">Manning and Sch&uuml;tze 1999</a>, 575). In this entry terms <i>text categorization</i> and <i>document clustering</i> are chosen because they tend to be the prevalent terms in the literature of the corresponding communities. Term <i>document classification</i> is used in order to consistently distinguish between the three approaches. These approaches are described and discussed in the following section.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3"></a>
+<h3>3. Approaches to automatic subject indexing</h3>
+
+<p><a href="#3.1">Section 3.1</a> first describes the underlying methodology common in different specific approaches. <a href="#3.2">Section 3.2</a> provides a brief overview of addressing various document types. <a href="#3.3">Section 3.3</a> discusses the major approaches, text categorization, document clustering and document classification.  </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.1"></a>
+<h4>3.1.  Basic approach</h4>
+
+<p>Generally speaking, automatic subject indexing typically follows a course of several major steps. The first one is a preparation step in which documents to be indexed are each processed in order to create suitable representations for computer manipulation in what follows. This process is comparable to preparation of documents for information retrieval. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.1.1"></a>
+<h5>3.1.1 Pre-processing</h5>
+
+<p>A list of words appearing in the document is created based on tokenization, the process of automatically recognizing words. Also, all punctuation is taken away. Further, words which tend to carry less meaning are taken out, such as conjunctions, determiners, prepositions, and pronouns, which are known as <i>stop-words</i>. This resulting representation of documents is known as a <i>bag-of-words model</i>. A more advanced representation is the <i>n</i>-gram model of words which is used, for example, when noun phrases need to be extracted in derived indexing or when string matching is conducted against terms comprising more than just one word (see below <a href="#3.3.3">section 3.3.3</a> Document classification). Word <i>n</i>-grams may be unigrams (individual words), bigrams (any two adjacent words), trigrams (any three adjacent words) etc. Further, more advanced natural language processing techniques may be performed; in stemming each word is reduced to its stem, which means removal of its affixes &ndash; for example, <code>illegally</code> may be reduced to its stem <code>legal</code> whereby its prefix <i>il-</i> and its suffix <i>-ly</i> are removed. The rationale behind this is that words with the same stem bear the same meaning. In addition, part-of-speech taggers and syntactic parsers can also be applied. For an overview of text processing, see Manning and Sch&uuml;tze (<a href="#ref">1999</a>), and Weisser (<a href="#ref">2015</a>). </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.1.2"></a>
+<h5>3.1.2  Term weighting</h5>
+
+<p>The following major step is determining the importance of each term for describing the &rarr; <a href="subject#3.2">aboutness</a> of the document at hand. The term can be either an individual word or a compound phrase, depending on the given task. For each term, a weight expressed as a number is calculated and assigned. Here different statistical and other heuristic rules can be applied. An example of statistical rules, words appearing very many times both in the document at hand and in all other documents in the collection, are probably not particularly indicative of the subject matter of the document, and vice versa. This is known as <i>term frequency-inverse document frequency weight</i> (<i>TF-IDF</i>, <a href="#ref">Salton and McGill 1983</a>, 63; 205): it combines (1) term frequency (<a href="#ref">Luhn 1957</a>), where weight of the term at hand is considered to be proportional to the number of times it appears in the document, with (2) inverse document frequency (<a href="#ref">Sparck Jones 1972</a>), where weight of the term is an inverse fraction of the documents that contain the word. An overview of term <i>weighting measures</i> can be found in Roelleke (<a href="#ref">2013</a>). </p>
+
+<p>Features such as the location of the term, the font size or font type, may also be included in determining the importance of term. In web pages, for example, words that appear in titles, headings or metadata may be considered more indicative of the topicality than those written in normal font size elsewhere. A known example is Google that owes much of its success to the  PageRank algorithm (<a href="#ref">Page et al. 1998</a>) that ranks higher those web pages which have more external web pages linking to them. Gil-Leiva (<a href="#ref">2017</a>) pointed out that generally there is less use of location heuristics rules than of statistical rules (outlined in the previous paragraph) and conducted an experiment comparing the two sets of rules, which showed that best results are achieved with location heuristics rules. A number of other principles have also been investigated. A co-occurrence, or a citation-based one applies the idea that if publication A cites publication B, A may include text that indicates what B is about (<a href="#ref">Bradshaw and Hammond 1999</a>). Chung, Miksa and Hastings (<a href="#ref">2010</a>) compared how sources which human indexers normally resort to in order to determine the subject of the document at hand, such as conclusion, abstract, introduction, title, full text, cited works, and keywords of scientific articles, contribute to automatic indexing performance. Using the SVM implementation in Weka (<a href="#ref">Witten and Frank 2000</a>), they gained results that keyword outperformed full-text, while cited works, source title (title of journal or conference), and title were as effective as the full text.  </p>
+
+<p>Rules can be of different types. Driscoll et al. (<a href="#ref">1991</a>) matched the document text against over 3,000 phrases and a set of deletion and insertion rules. These rules were used to transform the list of terms from the document to the list of index phrases; for example, if &lsquo;time&rsquo;, &lsquo;over&rsquo; and &lsquo;target&rsquo; appeared within a certain number of words from each other, an index phrase &lsquo;air warfare&rsquo; would be generated. Fuhr and Knorz (<a href="#ref">1984</a>) created about 150,000 rules for matching physics documents to KOS terms. Jones and Bell (<a href="#ref">1992</a>) extracted index terms based on matching terms from the document against several lists: a stop-word list, a list of terms of interest, a list to aid in the disambiguation of homographs, a list to conflate singular and plural forms, and a list of word endings to allow simple parsing. Ruiz, Aronson and Hlava (<a href="#ref">2008</a>) claim that rule-based approaches dominated in the 1970s and 1980s and that machine learning or statistical approaches <!-- which --> picked up in the 1990s. Rule-based approaches are based on manually created rules while in machine learning sets of examples are required for training the algorithm to learn concepts. Hlava (<a href="#ref">2009</a>) describes rule-based indexing as better and states that the majority of rules are simple and can be automatically created, while complex rules are added by editors. On the other hand, in the domain of medical documents, Humphrey et al. (<a href="#ref">2009</a>) compared a rule-based and statistical approach and showed that the latter outperformed the former. Approaches combining the best of the two worlds may be superior. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.1.3"></a>
+<h5>3.1.3 Further representations</h5>
+
+<p>Based on the above two major commonly applied processes, each original document is now transformed into a list of (stemmed, parsed) terms and their assigned term weights. There seem to be two possible ways to continue from here: (a) vector representation, or (b) string matching. </p>
+
+<p>(a) Vector representation is the dominant approach in which the result of the first two steps is now transformed into vectors in a vector space of terms. In this vector space, each term with its weight is represented as one dimension in that space (term space). When features like location are added, each feature becomes a dimension in the vector space called feature space which could then contain the term space. Many terms and features will lead to the challenge of high dimensionality; research has been suggesting dimensionality reduction methods such as: choosing only terms with highest weights, selecting clusters of closest terms instead of terms, taking only parts of documents like summaries or web page snippets. Vector space representation allows for advanced mathematical manipulations beyond what would be possible with just strings of text. </p>
+
+<p>(b) Less commonly applied is a string-matching approach between terms from the document and terms describing concepts from an indexing language.</p>
+
+<p>In assigned automatic indexing, a parallel process is taking place to represent target index terms (e.g., classes from a classification system, descriptors from a thesaurus). For example, in subject indexing languages such as &rarr; <a href="thesaurus">thesauri</a>, one concept can be represented by a certain number of synonymous terms, related terms, narrower and broader terms. Or, each concept can be represented by terms extracted from documents that have been manually indexed by the term representing that concept. These representations need to be transformed into vectors when the documents are represented as vectors in order to allow the comparison.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.1.4"></a>
+<h5>3.1.4 Assignment of index terms</h5>
+
+<p>In this final step, either (a) vector based comparisons and calculations (when vectors are used), or (b) string matching between terms from the documents and terms representing target index terms, are conducted. Usually a list of candidate terms is the first result, from which then best candidates are selected, also applying various statistical and heuristic rules. One example is to assign the candidate term if it is among the top five ones and appears in the title of the document, or, more simply, select top, say, three candidates with highest weight. </p>
+
+<p>As seen from the above four steps, the dominant basic approach takes into account only terms, rather than concepts or semantic relationship between terms. Taking advantage of relationships in indexing languages like thesauri and ontologies to identify concepts is another possibility (see <a href="#3.3">section 3.3</a>). Also there are examples that try to approach this problem in other ways; e.g., Huang et al. (<a href="#ref">2012</a>) who experimented with a measure for identifying concepts by first mapping words from documents to concepts from <i>Wikipedia</i> and WordNet. </p>
+
+<p>Apart from using KOSs, other approaches have been suggested. In <i>latent semantic indexing (LSI)</i>, perhaps the most-known example, it is assumed that terms that are used in semantically related documents tend to have similar meanings. Based on this assumption, associations between terms that occur in similar documents are calculated, and then concepts for those documents extracted. LSI was first applied in information retrieval for comparing search query terms to documents, at the conceptual rather than literal level (<a href="#ref">Deerwester et al. 1988; Meng, Lin and Yu 2011</a>). LSI has been further developed into related approaches, such as <i>probabilistic LSI (pLSI)</i> (<a href="#ref">Hofmann 2001</a>) and <i>latent Dirichlet allocation (LDA)</i> (<a href="#ref">Blei, Ng and Jordan 2003</a>). Statistical approaches also try to identify concepts, in particular the ones based on the distributional hypothesis (<a href="#ref">Harris 1954</a>). According to the hypothesis words that appear in same contexts tend to have similar meanings. This has been applied in word2vec models (<a href="#ref">Mikolov et al. 2013; Goldberg and Levy 2014</a>) which apply neural networks to reconstruct contexts of words. Each unique word is assigned a vector and positioned close to vectors representing words with often appear in same contexts.  </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.2"></a>
+<h4>3.2.  Document types</h4>
+
+<p>While this encyclopedia entry focuses on automatic subject indexing of textual documents, automatic indexing of non-textual or heterogeneous documents shares basic principles to those presented here. For example, multimedia documents like images, sound and video could also be represented by vectors and processed similarly. However, how exactly features of multimedia such as shapes and color distribution need to be selected and processed, is beyond the scope of this entry. For automatic indexing of non-textual resources, the readers may want to refer to Rasmussen Neal (<a href="#ref">2012</a>).</p>
+
+<p>Another common document type today is data, where automatic categorization is typically applied for prediction purposes (e.g., weather forecast, medical diagnosis, marketing) in difference to our context of description. Still, many of the principles are similar to ours. For further information, please refer to Kelleher, Mac Namee and D'Arcy (<a href="#ref">2015</a>). </p>
+
+<p>When it comes to textual documents, there are many different sub-types, too, and while the basic approach described above tends to be applied in most cases, special challenges may arise, as well as special features that could be beneficially explored in addition. For example, web documents have specific characteristics such as hyperlinks and anchors, metadata, and structural information, all of which could serve as complementary features to improve automatic classification. In addition, geographic location, use profiles, citation and linking like in PageRank mentioned previously, may be utilized. On the other hand, they are rather heterogeneous; many of them contain little text, metadata provided are sparse and can be misused, structural tags can be misapplied, and titles can be general (&ldquo;home page&rdquo;, &ldquo;untitled document&rdquo;) (see, e.g., <a href="#ref">G&ouml;vert, Lalmas and Fuhr 1999; Golub and Ard&ouml; 2005; Klassen and Paturi 2010</a>). Apart from web pages, the following is a non-exhaustive list of textual document examples where research in automatic indexing has been conducted (in no particular order): archival records (e.g., <a href="#ref">Sousa 2014</a>), doctoral theses (e.g., <a href="#ref">Hamm and Schenider 2015</a>), clinical medical documents (e.g., <a href="#ref">Stanfill et al. 2010</a>), e-government (e.g., <a href="#ref">Svarre and Lykke 2013</a>), business information (<a href="#ref">Flett and Laurie 2012</a>), online discussions (e.g., <a href="#ref">Mu et al. 2012</a>), parliamentary resolutions (<a href="#ref">De Campos and Romero 2008</a>), political texts on the web (<a href="#ref">Dehghani et al. 2015</a>), grey literature (e.g., <a href="#ref">Mynarz and Skuta 2011</a>), written documents from businesses like invoices, reminders and account statements (e.g., <a href="#ref">Esser et al. 2012</a>), legal documents for litigation (e.g., <a href="#ref">Roitblat, Kershaw and Oot 2010</a>), documents from construction industry such as meeting minutes, claims and correspondences (e.g., <a href="#ref">Mahfouz 2012</a>), and documents related to research data such as questionnaires and case studies (<a href="#ref">El-Haj et al. 2013</a>). </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.3"></a>
+<h4>3.3.  Approaches to automatic subject indexing</h4>
+
+<p>As described in <a href="#3.1">section 3.1</a> above, methods to automatically index or classify are at its foundational level effectively the same &ndash; applying heuristic principles to computationally determine the subject of a document, and then assign an appropriate index term based on that. Approaches and differences between them may be grouped based on various criteria, and still the distinction will not always be clear-cut. The criteria followed here are based on the general context set out for this entry, that is assigned subject indexing for purposes of information retrieval. The criteria are: (a) application purposes, (b) a more-or-less coherent body of published research following the approach, (c) general approach: supervised learning, unsupervised learning or string matching. The division that follows is also in line with previously published bibliometric analysis of the identified approaches (<a href="#ref">Golub and Larsen 2005</a>) and a discussion on the same approaches as applied to web pages (<a href="#ref">Golub 2006b</a>). Each approach is described via its definition, differences within the approach, application, and evaluation.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.3.1"></a>
+<h5>3.3.1. Text categorization</h5>
+
+<p><i>Text categorization</i> or <i>text classification</i> are two terms which most often refer to automatic indexing of textual documents where both manually (intellectually) assigned documents and the target KOS exist. This is a machine-learning approach employing supervised learning whereby the algorithm &lsquo;learns&rsquo; about characteristics of target index terms based on characteristics of documents that had been manually pre-assigned those index terms. One of commonly used characteristics is word frequency; for example, words which often occur in documents assigned to the same index term in difference to those that occur in documents assigned to other index terms. </p>
+
+<p>The process comprises three major steps. First, a collection of manually (intellectually) indexed collection of documents into a pre-defined KOS is chosen, or created for the text categorization process. The documents in this collection are called <i>training documents</i>. In the second step, for each category a classifier is built, most often using the vector-space model. The classifiers are tested with a new set of documents from the collection; these are called <i>test documents</i>. Finally, the third step is the actual categorization where the classifier is applied to new documents. </p>
+
+<p>The literature reports on a range of different ways to build classifiers, for example support vector machines (SVM) (e.g., <a href="#ref">Lee et al. 2012</a>), artificial neural networks (e.g., <a href="#ref">Ghiassi et al. 2012</a>), random forest learning (<a href="#ref">Klassen and Paturi 2010</a>), adaptive boosting (AdaBoost) (<a href="#ref">Freund and Schapire 1997</a>), to name a few considered to be state-of-the-art today. For an overview of different classifiers, see Mitchell <a href="#ref">1997</a>; for comparisons between them, see Yang (<a href="#ref">1999</a>), and Sebastiani (<a href="#ref">2002</a>). Also, two or more different classifiers and ways to build them can be combined to make a classification decision &ndash; these are known as <i>classifier committees</i> or <i>metaclassifiers</i> (e.g., <a href="#ref">Liere and Tadepalli 1998; Wan et al. 2012; Miao et al. 2012</a>). </p>
+
+<p>Text categorization approaches can be divided into hard and soft; in hard, a decision is made as to whether the document does or does not belong to a category; in soft, a ranked list of candidate categories is created for each document and one or more of top-ranked ones are chosen as the appropriate categories (<a href="#ref">Sebastiani 2002</a>). The soft approach is better reflective of reality (cf. <a href="#4">section 4</a> where aboutness is discussed).</p>
+
+<p>Text categorization has been applied to KOSs that incorporate hierarchies of concepts, such as <i>Wikipedia</i>, <i>Open Directory Project</i> and <i>Yahoo&rsquo;s Directory</i> (for an overview, see, e.g., <a href="#ref">Ceci and Malerba 2007</a>, and a workshop by <a href="#ref">Kosmopoulos et al. 2010</a>). When compared to a flat approach, many have reported that including features based on the hierarchy structure in the classifier improves classification accuracy (e.g., <a href="#ref">McCallum et al. 1998; Ruiz and Srinivasan 1999; Dumais and Chen 2000</a>). Li, Yang and Park (<a href="#ref">2012</a>) combined text categorization algorithms with WordNet and an automatically-constructed thesaurus and gained high effectiveness as measured by precision, recall and <i>F</i>-measures (see below). Maghsoodi and Homayounpour (<a href="#ref">2011</a>) have extended the feature vector of SVM classifier by <i>Wikipedia</i> concepts and gained improved results (for the Farsi language). This is in line with research in document classification (see <a href="#3.3">section 3.3</a>) where other features from existing KOSs have been used to improve the algorithm results. </p>
+
+<p>Examples of test collections specially designed for use in text categorization include Reuters newswire stories (e.g., Reuters-21578), OHSUMED with metadata from MEDLINE, WebKB for web pages, to name a few. However, for many document collections, there will be no training documents available to train and test the classifier. If there are no resources or possibilities to create one manually, approaches like semi-supervised learning and unsupervised learning can be adopted instead. For an overview of semi-supervised learning, see Mladenic and Grobelnik (<a href="#ref">2014</a>). Unsupervised learning is basically document clustering described in the following section. </p>
+
+<p>Evaluation in text categorization is often conducted by comparison against pre-assigned categories in test collections created for that task. Evaluation generally excludes deeper considerations of contexts like real-life end-user tasks and information practices. Furthermore, problems of using existing test collections for text categorization have been reported. Yang (<a href="#ref">1999</a>) claims that the most serious problem in text categorization evaluations is the lack of standard data collections and shows how different versions even of the same collection have a strong impact on the performance. This corresponds to the well-established knowledge from inter-indexer consistency studies that human indexing is very inconsistent and that inconsistency is an inherent feature of indexing, rather than a sporadic anomaly. Therefore Hj&oslash;rland (<a href="#ref">2018</a>, Section 3.2) concluded: &ldquo;That human indexing is sometimes taken as the golden standard to which computer-indexing is adjusted is of course problematic in the light of the large degree of inconsistency found in empirical investigations and the uncertainty about how indexing should be evaluated&rdquo;.</p>
+
+<p>Comparison between automatically and manually assigned categories is calculated using performance measures such as precision and recall used in information retrieval evaluation (see, for example, <a href="#ref">Manning, Raghavan and Sch&uuml;tze 2008</a>, chapter 8). In information retrieval precision is defined as the fraction of retrieved documents that are relevant to the query and recall as the fraction of documents relevant to the query that are successfully retrieved.</p>
+
+<p>Translated to automatic subject indexing, precision is calculated as the number of correct automatically assigned index terms divided by the number of all assigned index terms. Recall is the number of correct automatically assigned index terms divided by the number of manually assigned index terms.</p> 
+
+<blockquote><em>Precision = |number of correct automatically assigned terms|&nbsp; / &nbsp;|number of all automatically assigned index terms|</em></blockquote>
+
+<blockquote><em>Recall = |number of correct automatically assigned terms|&nbsp; / &nbsp;|number of manually assigned index terms|</em></blockquote>
+
+<p>Macroaveraging and microaveraging are then used to obtain average performance over all index terms. Other aspects of algorithm performance may be evaluated, such as the speed of computation across the different steps of the process. For a detailed overview of these and other evaluation measures in text categorization, see Sebastiani (<a href="#ref">2002</a>, 32-39). </p>
+
+<p>For further information on text categorization in terms of technical detail please refer to Sebastiani (<a href="#ref">2002</a>), and for a more general overview to Mladenic and Grobelnik (<a href="#ref">2014</a>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.3.2"></a>
+<h5>3.3.2. Document clustering</h5>
+
+<p><i>Document clustering</i> is the term most often used to refer to automatic construction of groups of topically related documents and automatic derivation of names for those groups of documents. Also, relationships between the groups of documents may be automatically determined, such as hierarchical ones. No training documents are used from which the algorithm can &lsquo;learn&rsquo; to assign similar documents to the same topics. Therefore, this approach is known as <i>unsupervised learning</i> whereby the algorithm learns from existing examples without any &lsquo;supervision&rsquo;. </p>
+
+<p>Document clustering approach is best suited for situations when there are no target KOS at hand and no training documents but the documents need to be topically grouped. It has been traditionally used to improve information retrieval, for example when grouping search engine results into topics. On the other hand, automatic derivation of names and relationships is still a very challenging aspect of document clustering. &ldquo;Automatically-derived structures often result in heterogeneous criteria for category membership and can be difficult to understand&rdquo; (<a href="#ref">Chen and Dumais 2000</a>). Further, the clusters and relationships between them change as new documents are added to the collection; frequent changes of cluster names and relationships between them may not be <!-- used -->user-friendly, for example when applied for hierarchical topical browsing of a document collection. Koch, Zettergren and Day (<a href="#ref">1999</a>) suggest that document clustering is better suited for organizing web search engine results.</p>
+
+<p>The process of document clustering normally involves two major steps. First, documents in the collection at hand are typically each represented by vectors. The vectors are then compared to one another using vector similarity measures, such as the cosine measure. A variety of heuristic principles may be applied when deriving vectors, as outlined in <a href="#3.1">section 3.1</a>. Second, the chosen clustering algorithm is applied to group similar documents, name the clusters, and, if decided, derive relationships between clusters. </p>
+
+<p>Similar to text categorization, there are two different approaches to clustering, hard and fuzzy (or soft). In hard clustering, one document may be a member of one cluster only, while in fuzzy clustering, any document may belong to any number of clusters. Hard clustering is the most common approach to clustering. Its subtypes are partitional (also called flat), and hierarchical clustering. A typical example of partitional clustering is the <i>k</i>-means algorithm whereby the first step is to randomly create a <i>k</i> number of clusters and then new documents are added to the different clusters based on their similarity. As the document is added to the cluster, the clusters and their centroids (centre of a cluster) are re-computed. In hierarchical clustering, there are divisive and agglomerative algorithms. Divisive hierarchical clustering is a top-down approach in which at start all documents are grouped into one cluster that is then subdivided into smaller and smaller clusters up until each cluster comprises one document. Agglomerative hierarchical clustering is a bottom-up approach, starting from a set of clusters each comprising a single document, and gradually merging those with most similar vectors. Examples of less common approaches to clustering include self-organizing maps (see, e.g., <a href="#ref">Paukkeria et al. 2012; Lin, Brusilovsky and He 2011; Saarikoski 2011</a>), and genetic algorithms (see, e.g., <a href="#ref">Song, Yang and Park 2011</a>).</p>
+
+<p>Bibliometrics also applies document clustering to map research fields or represent subject categories. It does so by linking documents through establishing relations between documents that cite each other (co-citation), or that share same references sets (bibliographic coupling), for example. The underlying assumption is that the more connections are established, the more the documents have in common scientifically, which can also be interpreted as different research specializations, research areas or subject categories. In order to assign topical words to clusters instead of author or journal names from references, co-word analysis of titles, keywords or abstracts may be performed. Combining reference/citation analysis with co-word analysis is another approach. For more detail on these matters, see &Aring;str&ouml;m (<a href="#ref">2014</a>).  </p>
+
+<p>Evaluation in document clustering is often conducted by comparison to an existing manually created KOS and/or manually pre-assigned classes. Measures used include the number of correct decisions compared to all decisions (Rand index); precision, recall and related. These are called <i>external validity measures</i>. There are also <i>internal validity measures</i> which estimate compactness, i.e., how close the documents are to each other in each cluster (the closer the better as this indicates better similarity), and separability, i.e., how distant two clusters are from one another (the more distant the better) (<a href="#ref">Frommholz and Abbasi 2014</a>). </p>
+
+<p>For further detail on similarity measures and other aspects of document clustering, please see chapters 16 and 17 of Manning, Raghvan and Sch&uuml;tze (<a href="#ref">2008</a>) and Frommholz and Abbasi (<a href="#ref">2014</a>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.3.3"></a>
+<h5>3.3.3. Document classification</h5>
+
+<p>A perhaps less established approach that we identify in this entry is the one which tends to arise more specifically from the library and information science community whereby the purpose is to apply quality-controlled KOSs more directly to typical subject indexing (including classification) tasks in library catalogues or closely related information retrieval systems, in order to improve searching and browsing. For the purposes of this work and to distinguish between the previous two approaches, as well as to follow the line of previously published research (cf. <a href="#ref">Golub 2006a</a>) we name this approach <i>document classification</i>. However, because this approach seems less established than the previous two, the community around it being less coherent, principles and methods applied may not be as homogeneous. </p>
+
+<p>Apart from using quality-controlled KOSs for subject indexing and classification, this seems to be the only approach using string-matching between terms from the documents to be indexed and target index terms. As in text categorization and document clustering, the pre-processing of documents to be classified typically includes stop-words removal; stemming can be conducted; words or phrases from the text of documents to be classified are extracted and weights are assigned to them based on different heuristics; while vector representations and manipulations are not necessary. Furthermore, also examples using machine learning exist as seen from below. However, as to supervised machine learning, research points to scenarios where it may not work due the lack of training documents, especially for large KOSs: Wang (<a href="#ref">2009</a>) and Waltinger et al. (<a href="#ref">2011</a>) argue that Dewey Decimal Classification&rsquo;s deep and detailed hierarchies lead to data sparseness and thus skewed distribution in supervised machine learning approaches. </p>
+
+<p>While this approach is obviously different from document clustering in that here we have a target KOS, it shares this particular feature with the text categorization approach. Following the criteria to distinguish between approaches set out at the start of <a href="#3.3">section 3.3</a>, the document classification approach is different from text categorization in that:
+<ul>
+<li>its application tends to be tightly related to applying quality-controlled KOSs directly to typical subject indexing and classification tasks in library catalogues or related operative information retrieval systems;</li>
+<li>this seems to be the only approach using string-matching between terms from the documents to be indexed and target index terms, although examples using machine learning also exist, the latter being problematic due to training data sparseness especially for large KOSs. </li>
+</ul>
+However, like in many classifications, there are grey zones which <!-- is -->are discussed below.  </p>
+
+<p>Often in focus of research are publicly available, operative information systems using well-known KOSs. Examples include universal KOSs: Dewey Decimal Classification (DDC); Universal Decimal Classification (UDC); Library of Congress Classification (LCC); FAST (Faceted Application of Subject Terminology); German subject headings (Schlagwortnormdatei, SWD); as well as subject-specific ones: Medical Subject Headings (MeSH), National Library of Medicine (NLM) classification system, Engineering Index classification system and thesaurus (used by the Compendex database), Inspec classification system and thesaurus, Fachinformationszentrums Technik (FIZ Technik) thesaurus and classification system, Agrovoc thesaurus, Humanities and Social Science Electronic Thesaurus (HASSET), and Eurovoc thesaurus. As the predicted relevance of this approach to the readers of KO Encyclopedia is high, a more detailed, albeit non-exhaustive, overview of research will be provided in this section for illustration purposes. The overview is structured around the specific KOSs.</p>
+
+<p>Online Computer Library Center&rsquo;s (OCLC) project Scorpion (<a href="#ref">OCLC 2004</a>) built tools for automatic subject recognition, using DDC. The main idea was to treat a document to be indexed as a query against the DDC knowledge base. The results of the &lsquo;search&rsquo; were treated as subjects of the document. Larson (<a href="#ref">1992</a>) used this idea earlier, for books. In Scorpion, clustering was also used, for refining the result set and for further grouping of documents falling in the same DDC class (<a href="#ref">Subramanian and Shafer 1998</a>). Another OCLC project, WordSmith (<a href="#ref">Godby and Reighart 2001</a>), was to develop software to extract significant noun phrases from a document. The idea behind it was that the precision of automatic indexing could be improved if the input to the classifier were represented as a list of the most significant noun phrases, instead as the complete text of the raw document. However, it showed that there were no significant differences. Wolverhampton Web Library was a manually maintained library catalogue of British web resources, within which experiments on automating DDC classification were conducted (<a href="#ref">Jenkins et al. 1998</a>). Resorting to already assigned DDC, Joorabchi and Mahdi (<a href="#ref">2011</a>) extracted references from the document to be classified, compiled a list of publications that cite either the document to be classified or one of its references, and discovered their corresponding DDC numbers from existing library catalogues in order to then assign the most probable match to the document at hand. Similarly, Joorabchi and Mahdi (<a href="#ref">2013</a>) assigned DDC and FAST by first identifying <i>Wikipedia</i> concepts in the document to be indexed/classified and then by searching WorldCat for records which contain those concepts. Then they compared the retrieved records against the document and assigned DDC and FAST to it from those with highest matching score. Khoo et al. (<a href="#ref">2015</a>) attempted to solve the problem of cross-searching unrelated libraries. To that extent, they created DDC terms and numbers from pre-existing Dublin Core metadata. The results indicate that best results are achieved when combined title, description and subject terms are used. Further, they demonstrate how taking advantage of DDC hierarchies for disambiguation in simple string-matching can achieve competitive results to machine learning approaches, yet without the need for training documents. </p>
+
+<p>In the Nordic WAIS/World Wide Web Project, 1993-1996 (<a href="#ref">Ard&ouml; et al. 1994; Koch 1994</a>) automatic indexing of the World Wide Web and Wide Area Information Server (WAIS) databases using UDC was experimented with. A WAIS subject tree was built based on two top levels of UDC, i.e. 51 classes. UDC was also used by GERHARD, a robot-generated web index of web documents in Germany (<a href="#ref">M&ouml;ller et al. 1999</a>) which employed a multilingual version of UDC in English, German and French. </p>
+
+<p>Wartena and Sommer (<a href="#ref">2012</a>) experimented with automatic indexing of articles in academic repositories using German subject headings (SWD). German subject headings have a thesaurus-like structure with synonyms, superordinate and related terms. Also, about 40,000 terms have been enhanced with DDC classes. Like Khoo et al. (<a href="#ref">2015</a>) (see above), they conclude that good results are achieved when applying string-matching, which they attribute to the enriched version of German subject headings. Junger (<a href="#ref">2014</a>) reports on experiments run by the German National Library with the aim to use automatic indexing for online publications for which they have no resources to manually catalogue. They acquired a commercial machine-learning software that has previously been specializing in automatic indexing of medical publications, called Averbis. With catalogue librarians as evaluators, the recall was considered high but precision too low to be satisfactory, attributing this to lack of disambiguation mechanisms; they proposed co-occurrence analysis and related to be implemented in the future.  </p>
+
+<p>Frank and Paynter (<a href="#ref">2004</a>) applied machine-learning techniques to assign Library of Congress Classification (LCC) notations to resources that already have an LCSH term assigned. Their solution has been applied to INFOMINE (subject gateway for scholarly resources at the time), where it was used to support hierarchical browsing. </p>
+
+<p>One of the most well-researched automatic indexing software was created in 1996 by the National Library of Medicine, known as Medical Text Indexer (MTI) (a lot of publications and other resources about it can be found at its website, <a href="https://ii.nlm.nih.gov/Publications/">https://ii.nlm.nih.gov/Publications/</a>). It is a semi-automatic software aimed at assigning MeSH. The general approach is combining the intellectual work built into the rich UMLS Metathesaurus (UMLS,  Unified Medical Language System), extracted MeSH terms from related citations, with comprehensive indexing rules and machine learning.  In one of the most recent articles titled &ldquo;12 Years On &ndash; Is the NLM Medical Text Indexer Still Useful and Relevant?&rdquo;, Mork, Aronson, and Demner-Fushman (<a href="#ref">2017</a>) show how indexers have continually increased their use of the MTI, from 15.75% of the articles indexed with it in 2002, to 62.44% in 2014, at the same time also spreading to new subject areas of use, indicating its usefulness. Furthermore, the MTI performance statistics show significant improvement in precision and <i>F</i> measures, while they point to the need to improve recall, too. One point for further research and developments is to resort more to machine learning, while keeping the existing components. Of other medical document types, Pratt (<a href="#ref">1997</a>) experimented with organizing search results into MeSH categories. L&uuml;schow and Wartena (<a href="#ref">2017</a>) applied <i>k</i>-nearest-neighbour (kNN) algorithm to a collection of medical documents with pre-assigned classes from several classification systems, with the aim of using them as a basis on which to automatically assign the National Library of Medicine classification system, thus using already assigned classes from other classification systems instead of using e.g. book titles or keywords as the content representation for each document. </p>
+
+<p>&lsquo;All&rsquo; Engineering was a robot-generated web index of about 300,000 web documents, developed as an experimental module of the manually created subject gateway Engineering Electronic Library (EELS) (<a href="#ref">Koch and Ard&ouml; 2000</a>). Engineering Index (Ei) thesaurus was used; in this thesaurus, terms are enriched with their mappings to Ei classification scheme. The project proved the importance of applying a good KOS in achieving the automatic indexing accuracy: 60 percent of documents were correctly classified, using only a very simple string-matching algorithm based on a limited set of heuristics and simple weighting. Another robot-generated web index, Engine-e, used a slightly modified automatic indexing approach to the one developed in &lsquo;All&rsquo; Engineering (<a href="#ref">Lindholm, Sch&ouml;nthal and Jansson 2003</a>). Engine-e provided subject browsing of engineering documents based on Ei terms, with six broader categories as starting points. Golub, Hamon and Ard&ouml; (<a href="#ref">2007</a>) applied string-matching where the Ei thesaurus terms were enriched with automatically extracted terms from bibliographic records of the Compendex database, using multi-word morpho-syntactic analysis and synonym acquisition, based on the existing preferred and synonymous terms (as they gave best precision results). Golub (<a href="#ref">2011</a>) worked with Ei to automatically organize web pages into hierarchical structures for subject browsing, achieving results suggesting how a KOS with a sufficient number of entry terms designating classes could significantly increase performance of automatic indexing algorithms. Further, if the same KOS had an appropriate hierarchical structure, it would provide a good browsing structure for the collection of automatically classified documents.</p>
+
+<p>Plaunt and Norgard (<a href="#ref">1997</a>) applied a supervised training algorithm based on extracting lexical terms from bibliographic records and associating them with manually-assigned INSPEC thesaurus terms. Project BINDEX (Bilingual Automatic Parallel Indexing and Classification) (<a href="#ref">Maas et al. 2002</a>) applied automatic indexing of abstracts in engineering available in the English and German languages. It used English Inspec thesaurus and classification system, as well as, FIZ Technik&rsquo;s bilingual thesaurus and classification system. Morpho-syntactic analysis of a document was performed. It involved identification of single and multiple-word terms, tagging and lemmatization, and homograph resolution. Keywords were extracted and matched against the thesauri, and then classification codes were derived. Keywords above a certain threshold which were not in the thesaurus were assigned as free index terms. Enriching records with other terms than from the KOS at hand may lead to improved retrieval. To that extent, Joorabchi and Mahdi (<a href="#ref">2014</a>) experimented with adding <i>Wikipedia</i> concepts to existing library records. </p>
+
+<p>Lauser and Hotho (<a href="#ref">2004</a>) applied a support vector machines (SVM) algorithm to index a collection of agricultural documents with the Agrovoc thesaurus. The algorithm improved when they made use of the semantic information contained in Agrovoc. Similarly, Medelyan and Witten (<a href="#ref">2008</a>) used KEA, a Na&iuml;ve Bayes algorithm for extracting both derived and assigned index terms, and achieved good performance with little training data because they also made use of the Agrovoc semantic information. </p>
+
+<p>Of other examples, De Campos and Romero (<a href="#ref">2008</a>) used machine learning to classify parliamentary resolutions from the regional Parliament of Andaluc&iacute;a at Spain using Eurovoc. El-Haj et al. (<a href="#ref">2013</a>) experimented with applying HASSET terms to the UK Data Archive/UK Data Service data-related document collection. Their approach was based on applying an open source, machine-learning keyphrase extractor KEA (Keyphrase Extraction Algorithm).</p>
+
+<p>As we see from the examples above, in many of the cases the relationships built-in into KOS are explored with favorable results. Willis and Losee (<a href="#ref">2013</a>) specifically experimented with just that. They employed four thesauri in order to determine to what degree the in-built relationships may be used to the advantage of automatic subject indexing. Their results indicate a great potential, albeit the degree of success seems to be dependent on the thesaurus as well as collection. </p>
+
+<p>A major advantage of this approach is that it does not require training documents, while still maintaining a pre-defined structure of the KOS at hand. If using a high-quality KOS, well-developed classification scheme, it will also be suitable for subject searching and browsing in information retrieval systems. Apart from improved information retrieval, another motivation to apply KOSs in automatic classification is to re-use the intellectual effort that has gone into creating such a KOS. It can be employed with vocabularies containing uneven hierarchies or sparse distribution across a given collection. </p>
+
+<p>As for evaluation methods, measures such as precision and recall, and <i>F</i> measure are commonly used. This seems to be the only approach where at least the discussion is occasionally brought up calling for the need for attend to the complexities of evaluation closer to real-life needs and scenarios. Even aspects such as automatic indexing warrant are taken on; Chung, Miksa and Hastings (<a href="#ref">2010</a>) conclude that literary warrant is more suited in automatic indexing of scientific articles than user warrant.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4"></a>
+<h3>4. Application in operative systems</h3>
+
+<p>The discussion on how applicable automatic subject indexing is today calls for looking into at least several connected issues. Theoretically, automating subject determination belongs to logical positivism &ndash; a subject is considered to be a string occurring above a certain frequency, is not a stop word and is in a given location, such as a title (<a href="#ref">Svenonius 2000</a>, 46-49). In algorithms inferences are made such as: if document A is on subject X, then if document B is sufficiently similar to document A (e.g., they share similar words or references), then document B is on that subject. Another critique given is the lack of theoretical justifications for vector manipulations, such as the cosine measure that is often used to obtain vector similarities (<a href="#ref">Salton 1991</a>, 975). Further, it is assumed that concepts have names, which can be more common in, for example, natural sciences, but much less so in humanities and social sciences, although attempts to address this have been taken more recently (see <a href="#3.1">section 3.1</a>). </p>
+
+<p>A variety of factors contribute to the challenge of automatic subject indexing. Texts are a complex cognitive and social phenomenon, and cognitive understanding of text engages many knowledge sources, sustains multiple inferences, and involves a personal interpretation (<a href="#ref">Moens 2000</a>, 7-10). Morris (<a href="#ref">2010</a>) investigated individual differences in the interpretation of text meaning using lexical chains (groups of semantically related words) based on 3 texts and with 26 participants; the results showed about 40% difference in interpretation. Research in automatic understanding of text covers the linguistic coding (vocabulary, syntax, and semantics of the language and discourse properties), domain world knowledge, shared knowledge between the creator and user of the text, and the complete context of the understanding at a specific point in time including the ideology, norms, background of the user and the purposes of using the text. In 2003 Lancaster claimed that existing automatic subject indexing tools are far from being able to handle the complexities, and in applications it is seldom possible to go much further beyond vocabulary and syntax analysis. The difficulty of dealing with semantics and more advanced levels is reflected in the fact that the methods used today are not particularly new although not as rudimentary when first used (<a href="#ref">Lancaster 2003</a>, 330-331). </p>
+
+<p>Still, software vendors and experimental researchers speak of the high potential of automatic indexing tools. While some claim to entirely replace manual indexing in certain subject areas (e.g., <a href="#ref">Roitblat, Kershaw and Oot 2010</a>), others recognize the need for both manual (human) and computer-assisted indexing, each with its (dis)advantages (e.g., <a href="#ref">Anderson and Perez-Carballo 2001; Svarre and Lykke 2013</a>). Reported examples of operational information systems where machine-aided indexing is applied include NASA&rsquo;s MAI software which was shown to increase production and improve indexing quality (<a href="#ref">Silvester 1997</a>); and the Medical Text Indexer at the US National Library of Medicine, which by 2017 was consulted by indexers in over 60% <!-- or --> of articles indexing (<a href="#ref">Mork, Aronson and Demner-Fushman 2017</a>).</p>
+
+<p>Hard evidence on the success of automatic indexing tools in operating information environments, however, is scarce; research is usually conducted in laboratory conditions, excluding the complexities of real-life systems and situations. The practical value of automatic indexing tools is largely unknown due to problematic evaluation approaches. Having reviewed a large number of automatic indexing studies, Lancaster concluded that the research comparing automatic versus manual indexing is flawed (<a href="#ref">2003</a>, 334). One common evaluation approach is testing the quality of retrieval based on the assigned index terms. But retrieval testing is fraught with problems, too; the results depend on many factors, so retrieval testing cannot isolate the quality of the index terms. Another approach is to measure indexing quality directly. One method of doing so is to compare automatically assigned metadata terms against existing human- assigned terms or classes of the document collection used (as a &lsquo;gold standard&rsquo;), but this method also has problems. When indexing, people make errors, such as related to exhaustivity (too many or too few subjects assigned) or specificity (usually because the assigned subject is not the most specific available); they may omit important subjects, or assign an obviously incorrect subject (see also <a href="#ref">Hj&oslash;rland 2016</a> for a detailed discussion on different aspects of &rarr; <a href="subject#3.2">aboutness</a>). In addition, it has been reported that different people, whether users or professional subject indexers, assign different subjects to the same document. One reason for this are differences in the approach: on the one hand, following the rationalist idea that there is one correct way to index a document (or a collection), and on the other one, the pragmatic idea that different purposes and users may need different indexing (<a href="#ref">Hj&oslash;rland 2018</a>). Therefore, existing metadata records cannot be used as &lsquo;the gold standard&rsquo;: the classes assigned by algorithms (but not human-assigned) might be wrong or might be correct but omitted during human indexing by mistake or by abiding to a certain indexing policy.</p>
+
+<p>In order to address the complexities surrounding the problem of aboutness, Golub et al. (<a href="#ref">2016</a>) propose a comprehensive framework involving three major steps: evaluating indexing quality directly through assessment by an evaluator or through comparison with a gold standard; evaluating the quality of computer-assisted indexing directly in the context of an indexing workflow, and evaluating indexing quality indirectly through analyzing retrieval performance. The framework still needs to be tested empirically and it is expected that much more research is required to develop appropriate evaluation designs for such complex phenomena involving subject indexing and retrieval and information interaction in general. </p>
+
+<p>While evaluation approaches often assume that human indexing is best, and that the task of automatic indexing is to meet the standards of human indexers, more serious scholarship needs to be devoted to evaluation in order to further our understanding of the value of automatic subject assignment tools and to enable us to provide a fully informed input for their development and enhancement. Hj&oslash;rland (<a href="#ref">2011</a>) points to the problematics of evaluating indexing on an example of an empirical study and discusses this through a theory of knowledge point of view, while analyzing its epistemological position. He concludes by proposing that the ideal formula for the future of indexing is that the human indexer takes what automatic indexing is good at (once this is understood), and invest their resources on the value-added indexing that requires human judgment and interpretation. This may be in line with machine-aided indexing in operative systems like Medical Text Indexer mentioned at the start of this section. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5"></a>
+<h3>5. Conclusions</h3>
+
+<p>Basic principles applied in various approaches to automatically assign index terms are at its foundational level effectively the same. The focus is still largely at the level of words rather than concepts and commonly includes punctuation and stop-word removal, stemming, heuristic rules, and vector representations and manipulations. While attempts to determine concepts rather than words exist and include LSI and word2vec as well as exploiting relationships from existing KOSs, much more research is needed in this respect. </p>
+
+<p>Approaches to automatic subject indexing may be grouped based on various criteria; the ones followed in this work are based on the general context set out for this entry, that is assigned subject indexing for purposes of information retrieval. The named approaches are also in line with previous research and include: text categorization, document clustering, and document classification. Major differences between them include application purposes and presence or absence of machine learning, as well as whether machine learning is supervised or unsupervised. The document classification approach employs, more than others, subject indexing languages such as classification schemes, subject headings systems, and thesauri, which are also suitable for subject searching and browsing in an information retrieval systems (although often suggested improvements such as being more up-to-date, end-user friendly etc. should be addressed). Not the least, exploiting the intellectual work that has been invested into creating such subject indexing languages, in order to improve automatic indexing has shown to be a worthwhile path to explore more extensively in the future. </p>
+
+<p>Due to complexities of aboutness, existing experimental systems and approaches have not been adequately tested and therefore knowledge about their usefulness for operational systems seems to be flawed. A recently proposed comprehensive evaluation framework involves three major steps: evaluating indexing quality directly through assessment by an evaluator or through comparison with a gold standard; evaluating the quality of computer-assisted indexing directly in the context of an indexing workflow, and evaluating indexing quality indirectly through analyzing retrieval performance. Further research is needed to empirically test it as well as devise most appropriate evaluation approaches for different specific contexts. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<!--
+<a name="end"></a>
+<h3>Endnote</h3>
+
+<a name="e1"></a>
+
+<p><strong>1. </strong>Precision and recall are also very commonly used in information retrieval evaluation, where they are defined as follows:
+
+<blockquote><em>Precision in retrieval = |number of relevant documents retrieved|&nbsp; / &nbsp;|total number of documents retrieved|</em></blockquote>
+
+<blockquote><em>Recall in retrieval = |number of relevant documents retrieved|&nbsp; / &nbsp;|total number of relevant documents in the collection|</em></blockquote>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+-->
+
+<a name="ack"></a>
+<h3>Acknowledgments</h3>
+
+<p>Many thanks to <a href="authors#h">Birger Hj&oslash;rland</a>, editor-in-chief of the encyclopedia, for advice, and two anonymous reviewers for detailed feedback that improved this article.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="ref"></a>
+<h3>References</h3>
+
+<p>Anderson, James D., and Jose Perez-Carballo. 2001. &ldquo;The Nature of Indexing: How Humans and Machines Analyze Messages and Texts for Retrieval, Part II: Machine Indexing, and the Allocation of Human versus Machine Effort.&rdquo; <i>Information Processing and Management</i> 37, no. 2: 255-77.</p>
+
+<p>Ard&ouml;, A. et al. 1994. &ldquo;Improving Resource Discovery and Retrieval on the Internet: The Nordic WAIS/World Wide Web Project Summary Report.&rdquo; <i>NORDINFO Nytt</i> 17, no. 4: 13-28.</p>
+
+<p>&Aring;str&ouml;m, Fredrik. 2014. &nbsp;&ldquo;Bibliometrics and Subject Representation&rdquo;. In <i>Subject Access to Information: An Interdisciplinary Approach</i>, ed. Koraljka Golub. Santa Barbara, CA: Libraries Unlimited, 107-17. </p>
+
+<p>Baxendale, Phyllis B. 1958. &ldquo;Machine-made Index for Technical Literature&mdash;An Experiment. <i>IBM Journal of Research and Development</i> 2: 354-361. </p>
+
+<p>Blei, David M., Andrew Y. Ng and Michael I. Jordan. 2003. &ldquo;Latent Dirichlet Allocation.&rdquo; <i>Journal of Machine Learning Research</i> 3: 993-1022.</p>
+
+<p>Bradshaw, Shannon and Kristian Hammond. 1999. &ldquo;Constructing Indices from Citations in Collections of Research Papers. <i>Proceedings of the American Society for Information Science</i> 36: 741-750.</p>
+
+<p>Ceci, Michelangelo and Donato Malerba. 2003. &ldquo;Hierarchical Classification of HTML Documents with WebClassII&rdquo;. <i>Advances in Information Retrieval, 25th European Conference on IR Research, ECIR 2003, Pisa, Italy, April 14-16, 2003</i>: 57-72.</p>
+
+<p>Chen, Hao and Susan Dumais. 2000. &ldquo;Bringing Order to the Web: Automatically Categorizing Search Results&rdquo;. <i>Proceedings of ACM International Conference on Human Factors in Computing Systems</i>, Den Haag: 145-152.</p>
+
+<p>Chung, EunKyung, Shawne Miksa and Samantha K. Hastings. 2010. &ldquo;A Framework of Automatic Subject Term Assignment for Text Categorization: An Indexing Conception-based Approach.&rdquo; <i>Journal of the American Society for Information Science and Technology</i> 61, no. 4: 688-99. </p>
+
+<p>De Campos, Louis M. and Alfonso E. Romero. 2009. &ldquo;Bayesian Network Models for Hierarchical Text Classification from a Thesaurus&rdquo;. <i>International Journal of Approximate Reasoning</i> 50, no. 7: 932-944.</p>
+
+<p>Deerwester, Scoot, Susan T. Dumais, Thomas K. Landauer, George W. Furnas and Louis Beck. 1988. &ldquo;Improving Information Retrieval with Latent Semantic Indexing.&rdquo; <i>Proceedings of the 51st Annual Meeting of the American Society for Information Science</i> 25: 36-40.</p>
+
+<p>Dehghani Mostafa, Hosein Azarbonyad, Maarten Marx and Jaap Kamps. 2015. &ldquo;Sources of Evidence for Automatic Indexing of Political Texts&rdquo;. In <i>Advances in Information Retrieval: ECIR 2015</i>, eds. Hanbury A., Kazai G., Rauber A., Fuhr N.: 568-573.</p>
+
+<p>Driscoll, James R. 1991. The Operation and Performance of an Artificially Intelligent Keywording System. <i>Information Processing & Management</i> 27: no. 1: 43-54.</p>
+
+<p>Dumais, Susan T. and Hao Chen. 2000. &ldquo;Hierarchical classification of web content&rdquo;. <i>Proceedings of the 23rd Annual International ACM SIGIR Conference on Research and Development in Information Retrieval, July 24-28, 2000, Athens, Greece</i>: 256-263.</p>
+
+<p>El-Haj, Mahmoud, Lorna Balkan, Suzanne Barbalet, Lucy Bell and John Shepherdson. 2003. &ldquo;An Experiment in Automatic Indexing Using the HASSET Thesaurus.&rdquo; <i>Computer Science and Electronic Engineering Conference (CEEC)</i>: 13-18.</p>
+
+<p>Esser, Daniel, Daniel Schuster, Klemens Muthmann, Michael Berger and Alexander Schill. &ldquo;Automatic Indexing of Scanned Documents: A Layout-based Approach&rdquo;. <i>Proc. SPIE 8297, Document Recognition and Retrieval XIX, 82970H (January 23, 2012)</i>.</p>
+
+<p>Flett, Alan and Laurie, Stuart. 2012. &ldquo;Applying Taxonomies through Auto-Classification&rdquo;. <i>Business information review</i> 29, no. 2: 111-120.</p>
+
+<p>Freund, Yoav and Robert E. Schapire. 1997. &ldquo;A Decision-Theoretic Generalization of On-line Learning and an Application to Boosting&rdquo;. <i>Journal of Computer and System Sciences</i> 55, no. 119: 119-139. </p>
+
+<p>Frank, Eibe, and Gordon W. Paynter. 2004. &ldquo;Predicting Library of Congress Classifications from Library of Congress Subject Headings.&rdquo; <i>Journal of the American Society for Information Science and Technology</i> 55, no. 3: 214-27. </p>
+
+<p>Frommholz, Ingo and Muhammad Kamran Abbasi. 2014. Automated Text Categorization and Clustering. In <i>Subject Access to Information: An Interdisciplinary Approach</i>, ed. Koraljka Golub. Santa Barbara, CA: Libraries Unlimited, 117-131. </p>
+
+<p>Fuhr, Norbert and Gerhard Knorz. 1984. &ldquo;Retrieval Test Evaluation of a Rule-based Automated Indexing (AIR/PHYS)&rdquo;. <i>7th ACM International Conference on Research and Development in Information Retrieval, SIGIR-84</i>: 391&ndash;408.</p>
+
+<p>Ghiassi, Manoochehr, Michael Olschimke, Brian Moon, and Paul Arnaudo. 2012. &ldquo;Automated Text Classification Using a Dynamic Artificial Neural Network Model.&rdquo; <i>Expert Systems with Applications</i> 39, no. 12: 10967-0976.</p>
+
+<p>Gil-Leiva, Isidoro. 2017. &ldquo;SISA &ndash; Automatic Indexing System for Scientific Articles: Experiments with Location Heuristics Rules Versus TF-IDF Rules.&rdquo; <i>Knowledge Organization</i> 44, no. 3: 139-162. </p>
+
+<p>Godby, C. Jean, and Ray R. Reighart. 2001. &ldquo;The WordSmith Indexing System.&rdquo; <i>Journal of Library Administration</i> 34, no. 3-4: 375-85.</p>
+
+<p>Goldberg, Yoav and Omer Levy. 2014. &ldquo;Word2vec Explained: Deriving Mikolov et al.&rsquo;s Negative-Sampling Word-Embedding Method&rdquo;. Available at: <a href="arxiv.org/abs/1402.3722">arxiv.org/abs/1402.3722</a></p>
+
+<p>Golub, Koraljka. 2006a. &ldquo;Automated Subject Classification of Textual Web Documents&rdquo;. <i>Journal of Documentation</i> 62, no. 3: 350-371.</p>
+
+<p>Golub, Koraljka. 2006b. &ldquo;Automated Subject Classification of Textual Web Pages, Based on a Controlled Vocabulary: Challenges and Recommendations&rdquo;. <i>New Review of Hypermedia and Multimedia</i> 12, no. 1: 11-27. </p>
+
+<p>Golub, Koraljka. 2016. &ldquo;Potential and Challenges of Subject Access in Libraries Today on the Example of Swedish Libraries.&rdquo; <i>International Information & Library Review</i> 48, no. 3: 204-10.</p>
+
+<p>Golub, Koraljka and Anders Ard&ouml;. 2005. &ldquo;Importance of HTML Structural Elements and Metadata in Automated Subject Classification&rdquo;. <i>Proceedings of the 9th European Conference on Research and Advanced Technology for Digital Libraries, Vienna, Austria, 18-23 September</i>: 368-378.</p>
+
+<p>Golub, Koraljka, Thierry Hamon and Anders Ard&ouml;. 2007. &ldquo;Automated Classification of Textual Documents based on a Controlled Vocabulary in Engineering&rdquo;. <i>Knowledge Organization</i> 34, no. 4: 247-263.</p>
+
+<p>Golub, Koraljka and Birger Larsen. 2005. &ldquo;Different Approaches to Automated Classification: Is There an Exchange of Ideas?&rdquo;. <i>Proceedings of the 10th International Conference of the International Society for Scientometrics and Informetrics, Stockholm, Sweden, 24-28 July</i>: 270-274.</p>
+
+<p>Golub, Koraljka, Dagobert Soergel, George Buchanan, Douglas Tudhope, Marianne Lykke, and Debra Hiom. 2016. &ldquo;A Framework for Evaluating Automatic Indexing or Classification in the Context of Retrieval.&rdquo; <i>Journal of the Association for Information Science and Technology</i> 67, no. 1: 3-16.</p>
+
+<p>Grobelnik, Marko, and Dunja Mladenic. 2005. &ldquo;Simple Classification into Large Topic Ontology of Web Documents.&rdquo; <i>Journal of Computing and Information Technology</i> 13, no. 4: 279-285.</p>
+
+<p>G&ouml;vert, Norbert, Mounia Lalmas, and Norbert Fuhr. 1999. &ldquo;A Probabilistic Description-oriented Approach for Categorising Web Documents&rdquo;. <i>Proceedings of the Eighth International Conference on Information and Knowledge Management</i>: 475-482. </p>
+
+<p>Hamm, Sandra; Schneider, Kurt. 2015. &ldquo;Automatische Erschliessung von Universit&auml;tsdissertationen&rdquo;. <i>Dialog mit Bibliotheken</i> 27, no. 1: 18-22. </p>
+
+<p>Harris, Zellig S. 1954. &rdquo;Distributional Structure.&rdquo; <i>Word</i> 10, no. 23: 146-162.</p>
+
+<p>Hartigan, John A. 1996. &ldquo;Introduction&rdquo;. <i>Clustering and classification</i>. Singapore: World Scientific: 3-5.</p>
+
+<p>Hj&oslash;rland, Birger. 2011. &ldquo;The Importance of Theories of Knowledge: Indexing and Information Retrieval as an Example&rdquo;.  <i>Journal of the American Society for Information Science and Technology</i> 62, no. 1: 72&ndash;77.</p>
+
+<p>Hj&oslash;rland, Birger. 2016. &ldquo;Subject (of Documents).&rdquo; <i>ISKO Encyclopedia of Knowledge Organization</i>. Available at: <a href="subject">https://www.isko.org/cyclo/subject</a></p>
+
+<p>Hj&oslash;rland, Birger. 2018. &ldquo;Indexing: concepts and theory&rdquo;. <i>ISKO Encyclopedia of Knowledge Organization</i>, ed. Birger Hj&oslash;rland, coed. Claudio Gnoli. <A HREF="indexing">https://www.isko.org/cyclo/indexing</A>.
+
+<p>Hlava, Majorie K. 2009. &ldquo;Understanding &lsquo;Rule Based&rsquo; vs. &lsquo;Statistics Based&rsquo; Indexing Systems: Data Harmony white paper.&rdquo;  Available at: <a href="https://web.archive.org/web/20090417210346/http://www.dataharmony.com:80/library/whitePapers/auto_indexing_rule-based_vs_statistics-based.htm">https://web.archive.org/web/20090417210346/http://www.dataharmony.com:80/library/whitePapers/auto_indexing_rule-based_vs_statistics-based.htm</a> </p>
+
+<p>Hofmann, Thomas. 2001. &ldquo;Unsupervised Learning by Probabilistic Latent Semantic Analysis.&rdquo; <i>Machine Learning</i> 42, no. 1: 177-96.</p>
+
+<p>Hu, Yi and Wenjie Li. 2011. &ldquo;Document Sentiment Classification by Exploring Description Model of Topical Terms.&rdquo; <i>Computer Speech & Language</i> 25, no. 2: 386-403.</p>
+
+<p>Huang, Lan, Milne, David, Frank, Eibe, and Witten, Ian H. 2012. &ldquo;Learning a Concept-based Document Similarity Measure. (Report).&rdquo; <i>Journal of the American Society for Information Science and Technology</i> 63, no. 8: 1593-608.</p>
+
+<p>Humphrey, Susanne M.; N&eacute;v&eacute;ol, Aur&eacute;lie; Browne, Allen; Gobeil, Julien; Ruch, Patrick; Darmoni, St&eacute;fan J. 2009. &ldquo;Comparing a Rule-Based Versus Statistical System for Automatic Categorization of MEDLINE Documents According to Biomedical Specialty.&rdquo; <i>Journal of the American Society for Information Science and Technology</i> 60, No. 12: 2530&ndash;2539.</p>
+
+<p>Hwang, San-Yih, Wan-Shiou Yang, and Kang-Di Ting. 2010. &ldquo;Automatic Index Construction for Multimedia Digital Libraries.&rdquo; <i>Information Processing & Management</i> 46, no. 3: 295-307.</p>
+
+<p>International Organization for Standardization. 1985. <i>Documentation &ndash; Methods for Examining Documents, Determining their Subjects, and Selecting Index Terms: ISO 5963</i>. Geneva: International Organization for Standardization. </p>
+
+<p>Jenkins, Charlotte Mike Jackson, Peter Burden, and Jon Wallis. 1998. &ldquo;Automatic Classification of Web Resources Using Java and Dewey Decimal Classification&rdquo;. <i>Computer Networks & ISDN Systems</i> 30: 646-648. </p>
+
+<p>Jones, K.P. and C.L.M Bell. 1992. &ldquo;Artificial Intelligence Program for Indexing Automatically (AIPIA).&rdquo; In: <i>Online Information 92</i>: 187-196. Medford, NJ, Learned Information. </p>
+
+<p>Joorabchi, Arash and Abdulhussain E Mahdi. 2014. &ldquo;Towards Linking Libraries and Wikipedia: Automatic Subject Indexing of Library Records with Wikipedia Concepts.&rdquo; <i>Journal of Information Science</i> 40, no. 2: 211-21. </p>
+
+<p>Joorabchi Arash and Abdulhussain E. Mahdi. 2013. &ldquo;Classification of Scientific Publications According to Library Controlled Vocabularies: A New Concept Matching-based Approach.&rdquo; <i>Library Hi Tech</i> 31, no. 4: 725-47.</p>
+
+<p>Junger, Ulrike. 2014. &ldquo;Can Indexing Be Automated? The Example of the Deutsche Nationalbibliothek.&rdquo; <i>Cataloging & Classification Quarterly</i> 52, no. 1: 102-109. </p>
+
+<p>Kelleher, John D., Brian Mac Namee and Aoife D'Arcy. 2015. <i>Fundamentals of Machine Learning for Predictive Data Analytics: Algorithms, Worked Examples, and Case Studies</i>. MIT Press.</p>
+
+<p>Keyser, Pierre de. 2012. <i>Indexing: From Thesauri to the Semantic Web</i>. 1st ed. Chapters 2 and 3. Chandos Publishing.</p> 
+
+<p>Khoo, Michael John, Jae-wook Ahn, Ceri Binding, Hilary Jane Jones, Xia Lin, Diana Massam, and Douglas Tudhope. 2015. &ldquo;Augmenting Dublin Core Digital Library Metadata with Dewey Decimal Classification.&rdquo; <i>Journal of Documentation</i> 71, no. 5: 976-98.</p>
+
+<p>Klassen, Myungsook and Nikhila Paturi. 2010. &ldquo;Web Document Classification by Keywords Using Random Forests&rdquo;. <i>Communications in Computer and Information Science</i> 88, no. 2: 256-261. </p>
+
+<p>Koch, Traugott. 1994. &ldquo;Experiments with Automatic Classification of WAIS Databases and Indexing of WWW&rdquo;. <i>Internet World & Document Delivery World International 94, London</i>: 112-115. </p>
+
+<p>Koch, Traugott and Anders Ard&ouml;. 2000. &ldquo;Automatic Classification&rdquo;. <i>DESIRE II D3.6a, Overview of results</i>, available at: <a href="https://web.archive.org/web/20050301133443/http://www.lub.lu.se:80/desire/DESIRE36a-overview.html">https://web.archive.org/web/20050301133443/http://www.lub.lu.se:80/desire/DESIRE36a-overview.html</a> </p>
+
+<p>Koch, Traugott, Ann-Sofie Zettergren, and Michael Day. 1999. &ldquo;Provide Browsing Using Classification Schemes&rdquo;. <i>EU Project DESIRE II</i>, available at: <a href="https://web.archive.org/web/20050403233258/http://www.lub.lu.se/desire/handbook/class.html">https://web.archive.org/web/20050403233258/http://www.lub.lu.se/desire/handbook/class.html</a> </p>
+
+<p>Kosmopoulos, Aris, Eric Gaussier, Georgios Paliouras, and Sujeevan Aseervatham. 2010. &ldquo;The ECIR 2010 Large Scale Hierarchical Classification Workshop.&rdquo; <i>ACM SIGIR Forum</i> 44, no. 1: 23&ndash;32.</p>
+
+<p>Lancaster, Frederick W. 2003. <i>Indexing and Abstracting in Theory and Practice</i>. 3rd ed. London: Facet.</p>
+
+<!--
+<p>Lancaster, Fredrick W. 2010. &ldquo;Precision and Recall [ELIS Classic]&rdquo;. In: <i>Encyclopedia of Library and Information Sciences</i>, eds. Marcia J. Bates and Mary Niles Maack. Third edition. Boca Raton, FL: CRC Press: 4272-4277.</p>
+-->
+
+<p>Larson, Ray R. 1992. &ldquo;Experiments in automatic Library of Congress Classification&rdquo;, <i>Journal of the American Society for Information Science</i> 43, no. 2: 130-148. </p>
+
+<p>Lauser, Boris and Andreas Hotho. 2003. &ldquo;Automatic Multi-label Subject Indexing in a Multilingual Environment&rdquo;. In <i>ECDL 2003</i>, LNCS 2769, eds. Traugott Koch and Ingeborg T. S&oslash;lvberg: 140&ndash;151.</p>
+
+<p>Lee, Lam, Hong Wan, Chin Rajkumar, and Heng Isa. 2012. &ldquo;An Enhanced Support Vector Machine Classification Framework by Using Euclidean Distance Function for Text Document Categorization.&rdquo; <i>Applied Intelligence</i> 37, no. 1: 80-99.</p>
+
+<p>Lee, Lam, Hong Wan, Chin Rajkumar, and Heng Isa. 2012. &ldquo;An Enhanced Support Vector Machine Classification Framework by Using Euclidean Distance Function for Text Document Categorization.&rdquo; <i>Applied Intelligence</i> 37, no. 1: 80-99.</p>
+
+<p>Liere, Ray and Prasad Tadepalli. 1998. &ldquo;Active Learning with Committees: Preliminary Results in Comparing Winnow and Perceptron in Text Categorization&rdquo;. <i>Proceedings of the 1st Conference on Automated Learning and Discovery</i>: 591-596.</p>
+
+<p>Lin, Yi-ling, Peter Brusilovsky and Daqing He. 2011. &ldquo;Improving Self-organising Information Maps as Navigational Tools: A Semantic Approach.&rdquo; <i>Online Information Review</i> 35, no. 3: 401-24.</p>
+
+<p>Lindholm, Jessica, Tomas Sch&ouml;nthal and Kjell Jansson. 2003. &ldquo;Experiences of Harvesting Web Resources in Engineering using Automatic Classification&rdquo;. <i>Ariadne</i> no. 37. Available at: <a href="http://www.ariadne.ac.uk/issue37/lindholm/">http://www.ariadne.ac.uk/issue37/lindholm/</a> </p>
+
+<p>Liu, Rey-Long. 2010. &ldquo;Context-based Term Frequency Assessment for Text Classification.&rdquo; <i>Journal of the American Society for Information Science and Technology</i> 61, no. 2: 300-09. </p>
+
+<p>L&ouml;sch, Mathias, Ulli Waltinger, Wolfram Hortsmann and Alexander Mehler. 2011. &ldquo;Building a DDC-annotated Corpus from OAI metadata&rdquo;. <i>Journal of Digital Information</i> 12, no. 2. Available at: <a href="https://journals.tdl.org/jodi/index.php/jodi/article/view/1765">https://journals.tdl.org/jodi/index.php/jodi/article/view/1765</a> </p>
+
+<p>Luhn, Hans P. 1957. &ldquo;A Statistical Approach to Mechanized Encoding and Searching of Literary Information.&rdquo; <i>IBM Journal of Research and Development</i> 1: 309-317.</p>
+
+<p>L&uuml;schow, Andreas and Christian Wartena. 2017. &ldquo;Classifying Medical Literature Using k-Nearest-Neighbours Algorithm.&rdquo; <i>NKOS workshop 2017</i>, CEUR proceedings (in publication). </p>
+
+<p>Maghsoodi, Nooshin and Mohammad Mehdi Homayounpour. 2011. &ldquo;Using Thesaurus to Improve Multiclass Text Classification&rdquo;. <i>Lecture Notes in Computer Science</i> 6609: 244-253.</p>
+
+<p>Mahfouz, Tarek. 2011. &ldquo;Unstructured Construction Document Classification Model through Support Vector Machine (SVM)&rdquo;. In: <i>Computing in Civil Engineering: Proceedings of the 2011 ASCE International Workshop on Computing in Civil Engineering</i>, eds. Y. Zhu & R.R. Issa: 126-133. Reston, VA., American Society of Civil Engineers.</p>
+
+<p>Manning, Christopher and Hinrich Sch&uuml;tze. 1999. <i>Foundations of Statistical Natural Language Processing</i>. Cambridge, MA: MIT Press.</p>
+
+<p>Manning, Christopher D., Prabhakar Raghavan and Hinrich Schu&uml;tze. 2008. <i>Introduction to Information Retrieval</i>. Cambridge University Press.</p>
+
+<p>Maron, M. E. 1961. &ldquo;Automatic Indexing: An Experimental Inquiry.&rdquo; <i>Journal of the Association for Computing Machinery</i> 8, no. 3: 404-417.</p>
+
+<p>Martinez-Alvarez, Miguel, Sirvan Yahyaei and Thomas Roelleke. 2012. &ldquo;Semi-automatic Document Classification: Exploiting Document Difficulty&rdquo;. <i>Lecture Notes in Computer Science: Advances in Information Retrieval</i> 7224: 468-471.</p>
+
+<p>Mazzocchi, Fulvio. 2017. &ldquo;Knowledge Organization System (KOS).&rdquo; <i>ISKO Encyclopedia of Knowledge Organization</i>. Available at: <a href="kos">https://www.isko.org/cyclo/kos</a></p>
+
+<p>McCallum, Andrew, Ronald Rosenfeld, Tom Mitchell and Andrew Y. Ng. 1998. &ldquo;Improving Text Classification by Shrinkage in a Hierarchy of Classes&rdquo;. <i>ICML-98, 15th International Conference on Machine Learning</i>: 359-367. </p>
+
+<p>Medelyan, Olena and Ian H. Witten. 2008. &ldquo;Domain-Independent Automatic Keyphrase Indexing with Small Training Sets&rdquo;. <i>Journal of the American Society for Information Science and Technology</i> 59, no. 7:1026&ndash;1040.</p>
+
+<p>Meng, Jiana, Hongfei Lin and Yuhai Yu. &ldquo;A Two-stage Feature Selection Method for Text Categorization.&rdquo; <i>Computers and Mathematics with Applications</i> 62, no. 7: 2793-800. </p>
+
+<p>Miao, Duoqian, Qiguo Duan, Hongyun Zhang and Na Jiao. 2009. &ldquo;Rough Set Based Hybrid Algorithm for Text Classification.&rdquo; <i>Expert Systems with Applications</i> 36, no. 5: 9168-174.</p>
+
+<p>Mikolov, Tomas, Kai Chen, Greg Corrado and Jeffrey Dean. 2013. &ldquo;Efficient Estimation of Word Representations in Vector Space&rdquo;. Available at: <a href="http://arxiv.org/abs/1301.3781">http://arxiv.org/abs/1301.3781</a></p>
+
+<p>Mladenic, Dunja and Marko Grobelnik. 2014. &ldquo;Machine Learning on Text&rdquo;. In <i>Subject Access to Information: An Interdisciplinary Approach</i>, ed. Koraljka Golub. Santa Barbara, CA: Libraries Unlimited, 132-8. </p>
+
+<p>Moens, Marie-Francine. 2000. <i>Automatic Indexing and Abstracting of Document Texts</i>. Kluwer, Boston.</p>
+
+<p>Mork, James, Alan Aronson and Dina Demner-Fushman. 2017. &ldquo;12 Years On &mdash; Is the NLM Medical Text Indexer Still Useful and Relevant?&rdquo;. <i>Journal of Biomedical Semantics</i> 8, no. 8. </p>
+
+<p>Morris, Jane. 2010 &ldquo;Individual Differences in the Interpretation of Text: Implications for Information Science.&rdquo; <i>Journal of the American Society for Information Science and Technology</i> 61, no. 1: 141-49.</p>
+
+<p>Mynarz, Jindrich and Ctibor &Scaron;kuta. 2010. &ldquo;Integration of Automatic Indexing System within the Document Flow in Grey Literature Repository.&rdquo; In: <i>Twelfth International Conference on Grey Literature: Transparency in Grey Literature, 6-7 December 2010</i>, eds. Dominic J. Farace and Jerry Frantzen. Amsterdam: TextRelease. </p>
+
+<p>M&ouml;ller, Gerhard, Kai-Uwe Carstensen, Bernd Diekman and Han W&auml;tjen. 1999. &ldquo;Automatic Classification of the WWW Using the Universal Decimal Classification&rdquo;. <i>Proceedings of the 23rd International Online Information Meeting, London, 7-9 Dec</i>: 231-238.</p>
+
+<p>Mu, Jin, Karsten Stegmann, Elijah Mayfield, Carolyn Rose and Frank Fischer. 2012. &ldquo;The ACODEA Framework: Developing Segmentation and Classification Schemes for Fully Automatic Analysis of Online Discussions.&rdquo; <i>International Journal of Computer-Supported Collaborative Learning</i> 7, no. 2 (2012): 285-305.</p>
+
+<p>Maas, Dieter, Rita Nuebel, Catherine Pease and Paul Schmidt. 2002. &ldquo;Bilingual Indexing for Information Retrieval with AUTINDEX&rdquo;. <i>Third International Conference on Language Resources and Evaluation, 29th, 30th & 31st May, Las Palmas de Gran Canaria (Spain)</i>: 1136-1149.</p>
+
+<p>OCLC. 2004. &ldquo;Scorpion&rdquo;. <i>OCLC software</i>. Available at: <a href="http://www.oclc.org/research/software/scorpion/default.htm">http://www.oclc.org/research/software/scorpion/default.htm</a></p>
+
+<p>Page, Larry, Sergey Brin, Rajeev Motwani and Terry Winograd. 1998. <i>The Pagerank Citation Ranking: Bringing order to the Web</i>. Technical report, Stanford Digital Library Technologies Project. Available at: <a href="http://citeseer.ist.psu.edu/page98pagerank.html">http://citeseer.ist.psu.edu/page98pagerank.html</a></p>
+
+<p>Paukkeria, Mari-Sanna, Alberto P&eacute;rez Garc&iacute;a-Plazab, V&iacute;ctor Fresnob, Raquel Mart&iacute;nez Unanueb and TimoHonkela. 2012. &ldquo;Learning a Taxonomy from a Set of Text Documents&rdquo;. <i>Applied Soft Computing</i> 12, no. 3: 1138-1148.</p>
+
+<p>Perry, James W., Allen Kent, Madeline M. Berry. 1955. &ldquo;Machine literature searching X. Machine language; factors underlying its design and development&rdquo;. <i>American Documentation</i> 6: 242.</p>
+
+<p>Plaunt, Christian and Barbara A. Norgard. 1998. &ldquo;An Association-based Method for Automatic Indexing with a Controlled Vocabulary.&rdquo; <i>Journal of the American Society for Information Science</i> 49, no. 10: 888-902.</p>
+
+<p>Pratt, Wanda. 1997. &ldquo;Dynamic Organization of Search Results Using the UMLS&rdquo;. <i>American Medical Informatics Association Fall Symposium</i>: 480-484.</p>
+
+<p>Rasmussen Neal, D. (Ed.). 2012. <i>Indexing and Retrieval of Non-text Information</i>. Berlin: De Gruyter Saur.</p>
+
+<p>Roelleke, Thomas. 2013. <i>Information Retrieval Models: Foundations and Relationships</i>. San Rafael, CA: Morgan & Claypool.</p>
+
+<p>Roitblat, Herbert L., Anne Kershaw and Patrick Oot. 2010. &ldquo;Document Categorization in Legal Electronic Discovery: Computer Classification vs. Manual Review.&rdquo; <i>Journal of the American Society for Information Science and Technology</i> 61, no. 1: 70-80.</p>
+
+<p>Ruiz, Miguel E. and Padmini Srinivasan. 1999. &ldquo;Hierarchical Neural Networks for Text Categorization&rdquo;. <i>Proceedings of the 22nd International ACM SIGIR Conference on Research and Development in Information Retrieval</i>: 281-282.</p>
+
+<p>Ruiz, Miguel E., Alan R. Aronson and Marjorie Hlava. 2008. &ldquo;Adoption and Evaluation Issues of Automatic and Computer Aided Indexing Systems.&rdquo; <i>Proceedings of the American Society for Information Science and Technology</i> 45, no. 1: 1-4.</p>
+
+<p>Saarikoski, Jyri, Jorma Laurikkala, Kalervo J&auml;rvelin and Martti Juhola (2011). &ldquo;Self-organising Maps in Document Classification: A Comparison with Six Machine Learning Methods&rdquo;. <i>Lecture Notes in Computer Science</i> 6593: 260-269. </p>
+
+<p>Salton, Gerard and Michael McGill. 1983. <i>Introduction to Modern Information Retrieval</i>. McGraw-Hill, Auckland.</p>
+
+<p>Salton, Gerard. 1991. &ldquo;Developments in Automatic Text Retrieval&rdquo;. <i>Science</i> 253: 974-979. </p>
+
+<p>Sebastiani, Fabrizio. 2002. &ldquo;Machine Learning in Automated Text Categorization&rdquo;. <i>ACM Computing Surveys</i> 34, no. 1: 1-47.</p>
+
+<p>Silvester, June P. 1997. &ldquo;Computer Supported Indexing: A History and Evaluation of NASA's MAI System&rdquo;. In: <i>Encylopedia of Library and Information Services</i> 61, Supplement 24: 76-90. </p>
+
+<p>Smiraglia, Richard P. and Xin Cai. 2017. &ldquo;Tracking the Evolution of Clustering, Machine Learning, Automatic Indexing and Automatic Classification in Knowledge Organization.&rdquo; <i>Knowledge Organization</i> 44, no. 3: 215-233.</p>
+
+<!--
+<p>Soergel, Dagobert. 1994. &ldquo;Indexing and Retrieval Performance: The Logical Evidence&rdquo;. <i>Journal of the American Society for Information Science</i> 45, no. 8: 589–599.</p>
+-->
+
+<p>Song, Wei, Jucheng Yang, Chenghua Li, and Sooncheol Park. 2011. &ldquo;Intelligent Information Retrieval System Using Automatic Thesaurus Construction.&rdquo; <i>International Journal of General Systems</i> 40, no. 4: 395-415.</p>
+
+<p>Sousa, Renato Tarciso Barbosa de. 2014. &ldquo;The Representation of Information: Automatic Classification and Indexing of Archives Records&rdquo;. In: <i>Informa&ccedil;&atilde;o: al&eacute;m das nuvens, expandindo as fronteiras da Ci&ecirc;ncia da Informa&ccedil;&atilde;o: Proceedings of the Fifteenth Encontro Nacional de Pesquisa em Ci&ecirc;ncia da Informa&ccedil;&atilde;o</i>: 798-811.</p>
+
+<p>Souza, Renato Rocha and Koti S. Raghavan. 2014. &ldquo;Extraction of Keywords from Texts: An Exploratory study using Noun Phrases&rdquo;. <i>Informa&ccedil;&atilde;o & Tecnologia (ITEC)</i> 1, no. 1: 5-16.</p>
+
+<p>Sparck Jones, Karen. 1972. &ldquo;A Statistical Interpretation of Term Specificity and Its Application in Retrieval.&rdquo; <i>Journal of Documentation</i>: 11-21.</p>
+
+<p>Stanfill, Mary H., Margaret Williams, Susan H. Fenton, Robert A. Jenders and William R Hersh. 2010. &ldquo;A Systematic Literature Review of Automated Clinical Coding and Classification Systems.&rdquo; <i>Journal of the American Medical Informatics Association</i> 17, no. 6: 646-51.</p>
+
+<p>Stevens, Mary E. 1965. <i>Automatic Indexing: A State of the Art Report</i>, Monograph 91. Washington, D.C.: National Bureau of Standards.</p>
+
+<p>Subramanian, Srividhya and Keith E. Shafer. 1998. &ldquo;Clustering&rdquo;. OCLC Publications. Available at: <a href="https://web.archive.org/web/20040514080331/http://digitalarchive.oclc.org/da/ViewObject.jsp?objid=0000003409">https://web.archive.org/web/20040514080331/http://digitalarchive.oclc.org/da/ViewObject.jsp?objid=0000003409</a> </p>
+
+<p>Svarre, Tanja and Marianne Lykke. 2013. &ldquo;The Role of Automated Categorization in E-government Information Retrieval&rdquo;. In: <i>Knowledge Organization: Pushing the Boundaries, ISKO UK biennial conference, 8th-9th July 2013, London</i>.</p>
+
+<p>Svenonius, E. 2000. <i>The Intellectual Foundations of Information Organization</i>. MIT Press, Cambridge, MA.</p>
+
+<p>U.S. National Library of Medicine. 2016. <i>NLM Medical Text Indexer (MTI)</i>. Available at <a href="https://ii.nlm.nih.gov/MTI/">https://ii.nlm.nih.gov/MTI/</a>. </p>
+
+<p>Waltinger, Ulli, Alexander Mehler, Mathias L&ouml;sch and Wolfram Horstmann, 2011. &ldquo;Hierarchical Classification of OAI Metadata Using the DDC Taxonomy&rdquo;. <i>Advanced Language Technologies for Digital Libraries</i>. Lecture Notes in Computer Science Volume 6699: 9-40.</p>
+
+<p>Wan, Chin Heng, Lam Hong Lee, Rajprasad Rajkumar, Dino Isa. 2012. &ldquo;A Hybrid Text Classification Approach with Low Dependency on Parameter by Integrating K-nearest Neighbor and Support Vector Machine.&rdquo; <i>Expert Systems with Applications</i> 39, no. 15: 11880-11888.</p>
+
+<p>Wang, Jun. 2009. &ldquo;An Extensive Study on Automated Dewey Decimal Classification.&rdquo; <i>Journal of the American Society for Information Science and Technology</i> 60, no. 11: 2269-286. </p>
+
+<p>Wartena, Christian and Maike Sommer.  2012. &ldquo;Automatic Classification of Scientific Records Using the German Subject Heading Authority File (SWD)&rdquo;. <i>Proceedings of the 2nd International Workshop on Semantic Digital Archives (SDA 2012, Paphos, at TPDL 2012)</i>: 37-48. </p>
+
+<p>Weisser, Martin. <i>Practical Corpus Linguistics: An Introduction to Corpus-Based Language Analysis</i>. Wiley, 2015.</p>
+
+<p>Willis, Craig and Robert M. Losee. 2013. &ldquo;A Random Walk on an Ontology: Using Thesaurus Structure for Automatic Subject Indexing.&rdquo; <i>Journal of the American Society for Information Science and Technology</i> 64, no. 7: 1330-344. </p>
+
+<p>Witten, Ian H. and Eibe Frank.  2000. <i>Data mining: Practical machine learning tools and techniques with JAVA implementations</i>. San Diego, CA: Academic Press.</p>
+
+<p>Yang, Yiming. 1999. &ldquo;An Evaluation of Statistical Approaches to Text Categorization&rdquo;. <i>Journal of Information Retrieval</i> 1, no. 1/2: 67-88.</p>
+
+<p>&nbsp;
+
+<a name="col"></a>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<p>&nbsp;</p>
+
+<p>Visited <a href="http://www.digits.net" target="_blank">
+    <img src="https://counter.digits.net/?counter={1b3b6ef4-9d42-0b04-b9be-a7b9ac29168d}&template=simple" 
+     alt="Hit Counter by Digits" border="0"  /></a>
+times since 2018-11-13 (first publication of version 1.1).</p>
+
+<hr>
+<p>Version 1.2 (= 1.0 with some changes on precision, recall, rationalism etc.); version 1.0 published 2017-10-16, this version 2019-03-07, last edited 2019-04-16<br>
+Article category: <code><a href="index#P">KO processes</a></code></p>
+
+<p>This article (version 1.1) is published in <i>Knowledge Organization</i>, vol. 46 (2019), Issue 2, pp. 104-121.<br>
+How to cite it (version 1.1): Golub, Koraljka. 2019. &ldquo;Automatic subject indexing of text&rdquo;. <i>Knowledge Organization</i> 46, no. 2: 104-121. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli, https://www.isko.org/cyclo/automatic </p>
+
+<p>&copy;2017 ISKO. All rights reserved.</p>
+
+</td>
+</tr>
+
+<tr>
+<td id="logo">
+</td>
+</tr>
+
+</table>
+</body>
+</html>

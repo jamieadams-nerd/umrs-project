@@ -2,14 +2,17 @@
 :toc: left
 :description: Real-world failure examples that demonstrate the cost of missing integrity, provenance, and access control in unclassified systems — and how high-assurance design would have changed outcomes.
 
-// NIST 800-53 AC-4, AC-6, AU-9, SI-7
+// NIST SP 800-53 AC-4, AC-6, AU-9, SI-7
 // NSA RTB RAIN
 
-IMPORTANT: The case summaries below are based on publicly available reporting,
+[IMPORTANT]
+====
+The case summaries below are based on publicly available reporting,
 government press releases, and court documents. Numerical figures (dollar amounts,
 record counts, durations) are estimates or ranges from public sources and may not
 reflect final adjudicated facts. They are presented to illustrate the pattern of
 failure, not as verified statistics.
+====
 
 The dominant failure in unclassified systems is not sophisticated external attack.
 It is _too much legitimate access_, _informal integrity controls_, and _no enforceable

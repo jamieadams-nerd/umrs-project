@@ -1,0 +1,952 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head profile="http://dublincore.org/documents/2007/11/05/dc-html/">
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>Ontologies as KOSs (IEKO)</title>
+<link rel="stylesheet" type="text/css" href="../isko.css" />
+<link rel="schema.DCTERMS" href="http://purl.org/dc/terms/" />
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:url" content="https://www.isko.org/cyclo/" />
+<meta name="twitter:title" content="Ontologies as knowledge organization systems (ISKO Encyclopedia of KO)" />
+<meta property="og:image" content="https://www.isko.org/cyclo/ontologies6" />
+<meta name="twitter:description" content="This contribution presents the principal features of ontologies, drawing special attention to the comparison between ontologies and the different kinds of knowledge organization systems (KOS). The focus is on the semantic richness exhibited by ontologies, which allows the creation of a great number of relationships between terms. That establishes ontologies as the most evolved type of KOS. The concepts of &ldquo;conceptualization&rdquo; and &ldquo;formalization&rdquo; and the key components of ontologies are described and discussed, along with upper and domain ontologies and special typologies, such as bibliographical ontologies and biomedical ontologies. The use of ontologies in the digital libraries environment, where they have replaced thesauri for query expansion in searching, and the role they are playing in the Semantic Web, especially for  semantic interoperability, are sketched." />
+
+<meta name="DCTERMS.title" content="Ontologies (as knowledge organization systems)" />
+<meta name="DCTERMS.creator" content="Maria Teresa Biagetti" />
+<meta name="DCTERMS.issued" content="2020" />
+<meta name="DCTERMS.relation.ispartof" content="ISKO Encyclopedia of Knowledge Organization" />
+<meta name="DCTERMS.ispartof" content="ISKO Encyclopedia of Knowledge Organization" />
+<meta name="DCTERMS:bibliographicCitation" content="ISKO Encyclopedia of Knowledge Organization, eds. Birger Hjorland and Claudio Gnoli" />
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="001.012">
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="005.7">
+<meta name="DCTERMS.subject.keyword" content="Ontology">
+<meta name="DCTERMS.subject.keyword" content="OWL">
+<meta name="DCTERMS.type" content="Text" />
+<meta name="DCTERMS.format" content="text/html" />
+<meta name="DCTERMS.identifier" content="https://www.isko.org/cyclo/ontologies" />
+
+<style>
+a {text-decoration: none;}
+a:hover {text-decoration:underline;}
+table td, table th { padding: 5px; }
+</style>
+
+</head>
+<body>
+
+<a name="top"></a>
+
+<table>
+
+<tr>
+<td id="isko"><h1>I S K O</h1></td>
+<td id="banner"><h2><a href="index.html" style="text-decoration:none;">Encyclopedia of Knowledge Organization</h2></a></td>
+</tr>
+
+<tr>
+<td id="navigation">
+<a href="../index.php">home</a>
+<a href="../about.html">about ISKO</a>
+<a href="../join.html">join ISKO</a>
+<a href="../ko.html"><cite>Knowledge Organization</cite> journal</a>
+<a href="../events.html">ISKO events</a>
+<a href="../chapters.html">ISKO chapters</a>
+<a href="../people.html">ISKO people</a>
+<a href="../pubs.html">ISKO publications</a>
+<a href="index.html">Encyclopedia</a>
+<a href="../lit.html">KO literature</a>
+<a href="../inst.html">KO institutions</a>
+<a href="http://bartoc.org/" title="link to BARTOC">&#8663; KOS registry</a>
+<a href="https://www.isko-mms.net/" title="access-account required">&#128274; members</a>
+<a href="../contact.html">contact us</a>
+</td>
+<td id="content" rowspan="2">
+
+<a class="menu" href="authors#hj">edited by Birger Hj&oslash;rland</a> <a class="menu" href="authors#g">and Claudio Gnoli</a>
+
+<p>&nbsp;
+
+<div itemscope itemtype="http://schema.org/Article">
+
+<h2 itemprop="headline">Ontologies (as knowledge organization systems)</h2>
+
+<blockquote>
+by <a itemprop="author" href="authors#b" style="text-decoration:underline">Maria Teresa Biagetti</a>
+
+<p>Table of contents:
+
+<br><a href="#1">1. Introduction</a>
+<br><a href="#2">2. Definition and terminological issues</a>
+<br><a href="#3">3. Ontologies and knowledge organization systems (KOS)</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#3.1">3.1 The issue of KOS spectra with respect to ontologies</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#3.2">3.2 The machine-processing ability of KOSs</a>
+<br><a href="#4">4. Key features of ontologies</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#4.1">4.1 Key components of ontologies</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#4.2">4.2 Similarities and contrasting features of thesauri and ontologies</a>
+<br><a href="#5">5. Types of ontologies: upper ontologies and domain ontologies</a>
+<br><a href="#6">6. Large domains ontologies</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#6.1">6.1 Bibliographic ontologies</a> 
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#6.2">6.2 Ontologies for the cultural heritage</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#6.3">6.3 Biomedical ontologies</a>
+<br><a href="#7">7. Ontologies in digital libraries</a>
+<br><a href="#8">8. The role played by ontologies in the Semantic Web</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#8.1">8.1 Ontologies and linked open data</a>
+<br><a href="#9">9. Languages for ontologies</a>
+<br><a href="#10">10. Ontology building and editors</a>
+<br><a href="#11">11. Conclusion</a>
+<br><a href="#ack">Acknowledgments</a>
+<br><a href="#end">Endnotes</a>
+<br><a href="#ref">References</a>
+<br><a href="#col">Colophon</a>
+
+<p itemprop="abstract"><strong>Abstract</strong>:
+<br>This contribution presents the principal features of ontologies, drawing special attention to the comparison between ontologies and the different kinds of knowledge organization systems (KOS). The focus is on the semantic richness exhibited by ontologies, which allows the creation of a great number of relationships between terms. That establishes ontologies as the most evolved type of KOS. The concepts of &ldquo;conceptualization&rdquo; and &ldquo;formalization&rdquo; and the key components of ontologies are described and discussed, along with upper and domain ontologies and special typologies, such as bibliographical ontologies and biomedical ontologies. The use of ontologies in the digital libraries environment, where they have replaced thesauri for query expansion in searching, and the role they are playing in the Semantic Web, especially for  semantic interoperability, are sketched.</p>
+
+</blockquote>
+
+<span itemprop="articleBody">
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="1"></a>
+<h3 itemprop="articleSection">1. Introduction</h3>
+
+<p>As a philosophical discipline, ontology (etymology: &tau;&#940; &#8004;&nu;&tau;&alpha;, or &#8004;&nu;&tau;&omicron;&sigmaf; &lambda;&#972;&gamma;&omicron;&sigmaf;) is the branch of metaphysics that studies the nature of being, defines fundamental categories and the structures of reality and tries to classify entities in all spheres of being. In information systems, ontologies are engineering artifacts <a href="#e1">[1]</a>, or shared conceptual schemes that define relevant entities, concepts, objects, relationships between them, and their properties, which are increasingly used to represent a field of knowledge or the structure of systems using an unambiguous and machine-readable language (<a href="#refG">Guarino, Oberle and Staab 2009</a>, 2). </p>
+
+<p>At the end of the 1950s, ontologies arose in the context of computer science, and studies were developed in the databases community to identify tools useful for defining entities in the creation of more sophisticated databases (<a href="#refL">Legg 2007</a>, 425). Taxonomies of entities and shared dictionaries of terms, also provided with axioms, came to be used to solve the terminological difficulties that arise in building databases from using different labels to define identical entities, or the difficulties that appear from using different names for the same meaning (<a href="#refS">Smith 2003</a>, 158-159). Computer scientists became interested in the use of ontologies in the subfields of database management systems, of software engineering and of conceptual modelling. They began to consider the creation of a shared robust ontology of entities advantageous for their aims.</p>
+
+<p>The step from each of these three starting-points to ontology is then relatively easy. The knowledge engineer, conceptual modeler, or domain modeler realizes the need for declarative representations which should have as much generality as possible to ensure reusability but would at the same time <i>correspond to the things and processes they are supposed to represent</i> (<a href="#refS">Smith and Welty 2001</a>, 3).</p>
+
+<p>Moreover, artificial intelligence developed more computational models to sustain automated reasoning. Languages for knowledge representation with the support of artificial intelligence were developed during the second half of the 1900s, and the adoption of description logics (<a href="#refN">Nardi and Brachman 2003</a>; <a href="#refB">Baader, Harrocks and Sattler 2009</a>) indicated a significant evolution for ontologies. Ontology became more closely interconnected to artificial intelligence, which increasingly focused attention on automated reasoning systems and tried to develop sets of terms with axioms to constrain and disambiguate meanings. As it is asserted by Smith and Welty (<a href="#refW">2001</a>), &ldquo;the field of knowledge engineering was born&rdquo;. </p>
+
+<p>The relationships between philosophical and technological ontologies have been the objects of important analysis. Poli and Obrst (<a href="#refP">2010</a>) argue that the philosophical perspective of studying ontologies as systems of categories and the technological perspective of computer science creating artifacts to help software make inferences are not radically distinct. On the contrary, they suggest that the two fields are complementary and should collaborate. The two perspectives are dependent on each other, as technological ontologies aim to create models used by software that need the help of philosophical ontology in describing the real world; whereas philosophical ontologies may benefit from software engineering products. Of course, what a computational ontology should include, or what should be the boundaries of a domain ontology, is a philosophical issue (<a href="#refP">Poli and Obrst 2010</a>, 11). Moreover, as it has been highlighted by Sowa (<a href="#refS">1995</a>), philosophical strategies have assumed an important position in practical applications that aim to build object-oriented systems and knowledge bases in artificial intelligence. For instance, Sowa suggested applying top-level categories that follow systems of categories developed by philosophers, such as &rarr; <a href="peirce">Charles S. Peirce</a> and Alfred N. Whitehead.</p>
+
+<p>The relevance of philosophical ontologies in the modern age, as Nicola Guarino and Roberto Poli (<a href="#refG">1995</a>) stressed, lies in that, in knowledge engineering, the definitions of categories and concepts used in the databases are crucial. As in knowledge engineering the principal aim is to integrate and reuse portions of knowledge bases, the transparency of its commitments to the external world is required. Therefore, ontology as a philosophical discipline that deals with the nature of reality can support this mission. </p>
+
+<p>Since the end of the 1990s, the directories of web sites by Web services providers have helped users explore the Internet and discover information. From 1994 to 2002, Yahoo! provided a directory of sites based on subject categories and subcategories, similar to a classification system. From 1998 to 2017 DMOZ, thanks to a volunteer editing community, provided a taxonomy of top-level categories and other lower-level categories to organize searching. At present it has been moved to Curlie (&ldquo;The Collector of URLs&rdquo;), the largest Web directory. </p>
+
+<p>One of the goals of the Semantic Web, devised by Tim Berners-Lee (<a href="#refB">Berners-Lee, Hendler and Lassila 2001</a>), was to make a more fruitful &rarr; <a href="document">document</a> (<a href="#refB">Buckland 2018</a>) search possible and to more easily locate &rarr; <a href="data">data</a> (<a href="#refH">Hj&oslash;rland 2018c</a>) through the use of stronger and more refined research tools that go beyond a simple search based on the presence of words in titles, abstracts or full-texts and to search semantically based on content. Traditional Web searching by means of keywords leads to unsatisfactory results and noise. However, the most ambitious aim of the Semantic Web was to extend the Web by automatically integrating data and information from many sources online, by implementing software able to perform automatic reasoning (<a href="#refF">Fensel et al. 2003</a>). In the original concept of the Semantic Web, software agents would have processed contents, found information from different sources, reasoned about data, and produced output. </p>
+
+<p>According to this conceptualization, ontologies have been considered the most suitable tools to go beyond the boundaries of the traditional strategies to find and access information. Their relevance appears in machine-to-machine communication, in the exchange of data among systems and in the possibility of facilitating &rarr; <a href="interoperability">interoperability</a> (<a href="#refZ">Zeng 2019</a>) across heterogeneous systems (see <a href="#8">section 8</a>). </p>
+
+<p>Albeit more simple, something like the Semantic Web envisioned by Berners-Lee in his first formulation was accomplished in 2010, in the development of digital assistants such as Siri, Alexa, Cortana and Google Assistant, that is, software agents that are able to interpret the human speech. Alexa Voice Service, for instance, is an artificial intelligence technology based in the Cloud, developed by Amazon in 2014. It works as a vocal assistant, able to reply to a vocal order to search the Web, find information and interact with services useful for a smart home. A central computing system receives queries and manages them using natural language processing procedures. The most important feature is the ability to parse queries expressed in many different ways and using different words, to capture the underlying concepts and to reply to what is the most likely request (<a href="#refH">Hoy 2018</a>, 82-83).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2"></a>
+
+<h3 itemprop="articleSection">2. Definition and terminological issues</h3>
+
+<p>Our first concern lies in offering an accurate definition of <i>ontology</i>. In the context of computer science, ontologies are considered artifacts provided for a purpose. They define primitives, that is, classes, properties and relations among the members of classes that are relevant to model the knowledge of a domain (<a href="#refG">Gruber 2009</a>). Within the knowledge engineering community, as has been stressed by Guarino and Giaretta (<a href="#refG">1995</a>), ontologies are considered either a conceptual, semantic-level framework, or a concrete artifact provided for a specific purpose. From this double approach arises terminological ambiguity, and Guarino and Giaretta suggest separating the two levels by using the term <i>conceptualization</i> as an intensional structure to define the semantic structure of a conceptual system, and the term <i>ontological theory</i> to denote the artifact or the base of knowledge to be used and shared, providing always true sentences according to a certain conceptualization (about &ldquo;conceptualization&rdquo;, see <a href="#4">section 4</a>). </p>
+
+<p>Focusing on ontologies as a philosophical categorical analysis, Grenon and Smith (<a href="#refG">2004</a>, 143) provide the following definition of <i>ontology</i>:
+
+<blockquote>An ontology is captured by depiction of the entities which exist within a given portion of the world at a given level of generality. It includes a taxonomy of the types of entities and relations which exist in the world under a given perspective.</blockquote>
+
+<p>The focus is on the entities that exist in the world at a given level of granularity. Considering the form of ontologies, Grenon and Smith (<a href="#refG">2004</a>) distinguished two types of ontologies: <i>SNAP ontologies</i>, that is, ontologies for continuants such as entities, physical, or mental objects; and <i>SPAN ontologies</i> for occurrents, that is, events and processes, etc. In their opinion, an ontology should be indexed according to a perspective and considering the time: SNAP ontologies, for continuants, deal with a single instant in time; whereas SPAN ontologies, for occurrents, deal with a time interval.</p>
+
+<p>On the contrary, Roberto Poli (<a href="#refP">1996</a>) suggested considering ontologies not a catalogue of the world or a list of objects, but rather an organizational framework for catalogues, taxonomies and terminologies. </p>
+
+<blockquote>An ontology is not a catalogue of the world, a taxonomy, a terminology or a list of objects, things or whatever else. If anything, an ontology is the general framework (= structure) within which catalogues, taxonomies, terminologies may be given suitable organization. This means that somewhere a boundary must be drawn between ontology and taxonomy. (<a href="#refP">Poli 1996</a>, 313)</blockquote>
+
+<p>This indicates the need for drawing boundaries between, for instance, ontologies and taxonomies. As a matter of fact, in &rarr; <a href="lis">library and information science</a> (<a href="#refH">Hj&oslash;rland 2018a; 2018b</a>), a widespread opinion considers the term <i>ontology</i> as just a new name used in computer science to define tools developed in the field of knowledge organization, such as taxonomies or &rarr; <a href="library_classification">library classification systems</a> (<a href="#refH">Hj&oslash;rland 2017</a>).</p>
+
+<p>&rarr; <a href="dahlberg">Ingetraut Dahlberg</a> (<a href="#refD">1996</a>, 129) claimed that the computer science community was using the term <i>ontology</i> to mean what knowledge organization has always called &ldquo;taxonomy&rdquo; or &ldquo;classification&rdquo;, and that &ldquo;ontology has indeed something to do with classification systems in the sense that what we need to organize are our concepts about reality, about which we face and know of or learn about, thus creating our knowledge units, our concepts and our concept systems&rdquo;. </p>
+
+<p>A similar opinion was expressed by Dagobert Soergel (<a href="#refS">1999</a>, 1120), who considered ontologies similar to classifications, asserting that, although libraries and information systems have long been using classification schemes, recently other fields such as artificial intelligence, linguistics and software engineering &ldquo;have discovered the need for classification, leading to the rise of what these fields call ontologies&rdquo;. Therefore, in his opinion, ontologies are considered similar to other kinds of KOS.</p>
+
+<p>On the contrary, following Poli&rsquo;s suggestion (<a href="#refP">1996</a>, see above), it is essential to accurately distinguish ontologies from taxonomies and other kinds of KOS.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3"></a>
+<h3 itemprop="articleSection">3. Ontologies and knowledge organization systems (KOS)</h3>
+
+<p>To offer a presentation and discussion of ontologies, first the relationship between ontologies and KOSs must be addressed. In the broad field of &rarr; <a href="knowledge_organization">knowledge organization</a> (<a href="#refH">Hj&oslash;rland 2008; 2016a</a>), &rarr; <a href="kos">knowledge organization systems</a> (<a href="#refM">Mazzocchi 2018</a>) are tools for describing resources and aiding in the access and retrieval of documents and information. A comprehensive and still useful definition, offered by Hodge (<a href="#refH">2000</a>, 1), related to the framework of digital libraries, considers KOSs &ldquo;all types of schemes for organizing information and promoting knowledge management&rdquo;. Broadly speaking, KOSs range from authority files, classification systems and subject headings to &rarr; <a href="thesaurus">thesauri</a> and, according to some scholars, to ontologies. As proposed by Marcia L. Zeng (<a href="#refZ">2008</a>, 161), KOSs may be categorized according to their structure and function. Their structures can range from flat to two-dimensional to multiple-dimensional, and their functions include eliminating ambiguities, controlling synonyms, establishing hierarchical and associative relationships, and presenting properties. Based on this categorization, Zeng presents a taxonomy of KOSs including simpler KOSs, such as dictionaries, glossaries and authority files, and more complicated structures, such as classification schemes, subject headings, and thesauri used in libraries and information centres, and, finally, ontologies. </p>
+
+<p>According to Souza, Tudhope and Almeida (<a href="#refS">2012</a>, 181, based on <a href="#refS">Souza, Tudhope and Almeida 2010</a>), different KOSs are representations &ldquo;based on concepts and with different degrees of relationships among them&rdquo;. In addition to classification schemes, folksonomies, dictionaries, taxonomies, thesauri, data models, etc., it also includes different kinds of ontologies, ranging from informal to formal, which allow representation of all types of relationships.</p>
+
+<p>Comparably, in the computer science community, Smith and Welty (<a href="#refS">2001</a>), following a previous report by Welty et al. (<a href="#refW">1999</a>), present a wide spectrum of artifacts, that they classify under the rubric of &ldquo;ontologies&rdquo;, as all satisfy Gruber&rsquo;s definition (see <a href="#ref4">section 4</a>). These range from catalogues, glossaries, thesauri, frame-based systems, to more expressive ontologies that use axioms. In this case, the characteristics concern the increasing complexity of the information artifacts and the artifacts are distinguished between those that possess the ability for automated reasoning based on formal logic, and those that do not (Fig. 1)</p>
+
+<div align="center"><figure>
+<img src="ontologies1.jpg" title="Fig. 1: Ontology types according to Smith and Welty (2001)" width="70%">
+<figcaption>Figure 1: Ontology types according to Smith and Welty (<a href="#refS">2001</a>)</figcaption>
+</figure></div>
+
+<p>McGuinnes (<a href="#refM">2003</a>, based on <a href="#refL">Lassila and McGuinnes 2001</a>) too proposed a particularly broad notion of ontology that ranges from so-called simple ontologies, such as controlled vocabularies, glossaries, taxonomies and thesauri, to complex ontologies, that is the tools that present properties and restrictions of values (Fig. 2).</p>
+
+<div align="center"><figure>
+<img src="ontologies2.jpg" title="Fig. 2: An ontology spectrum according to McGuinnes (2003)" width="50%">
+<figcaption>Figure 2: An ontology spectrum according to McGuinnes (<a href="#refM">2003</a>)</figcaption>
+</figure></div>
+
+<p>In the literature produced by the aforementioned community, the term <i>lightweight ontology</i> is used essentially to mean simple taxonomies of concepts organized hierarchically based on the genera/species relationship, which can be employed to reach semantic interoperability if users take part in groups that share terminology and concepts (<a href="#refZ">Zhu 2006</a>). Classification systems and taxonomies may be transformed into formal systems written in a formal language instead of being written in natural language. In fact, natural language is ambiguous, leaves room for subjective opinions, and is barely capable of being automated. A formal classification is the formalized copy of a classification, encoded in a language of the family of description logics. As emphasized by Giunchiglia et al. (<a href="#refG">2006</a>, 85), &ldquo;a [formal classification] has the same structure as the classification, but it encodes the classification's labels in a formal language, capable of encapsulating, at the best possible level of approximation, their classification semantics&rdquo;. Therefore, taxonomies, thesauri, faceted classification systems, and Web directories are defined as informal lightweight ontologies, that is, &ldquo;prototypes of formal lightweight ontologies&rdquo; (<a href="#refG">Giunchiglia and Zaihrayeu 2007</a>).</p>
+
+<p>The distinction between lightweight and <i>heavyweight ontologies</i> is that the latter primarily use axioms to model knowledge in order to define the semantic interpretation of the presented entities, rules, and class constraints and present multiple relations between concepts. Based on highly expressive formal logic languages to specify entities and relationships, heavyweight ontologies espouse search engines to make inferences and automatically reason. Description logics provides tools to express propositions about objects, about the attributes that the objects may have in common, and about the relations among objects. Descriptive formalisms include conjunction, negation and concepts intersection, value restriction, and existential quantification. The systems based on description logics allow human and automatic agents to realize inferences, that is, to infer new knowledge from a knowledge base. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.1"></a>
+
+<h4 itemprop="articleSection">3.1 The issue of KOS spectra with respect to ontologies</h4>
+
+<p>Some scholars have presented spectra of KOSs to explicate their features, often considering a simple criterion each time, as Souza, Tudhope and Almeida (<a href="#refS">2012</a>) highlighted, remarking on their disagreement with this approach, as it neglects alternative criteria. One of the criteria considered is semantic richness, that is, the number of semantic relations between concepts, universals or particulars that KOSs exhibit. In fact, the &ldquo;semantic staircase&rdquo; presented by Olensky (<a href="#refO">2010</a>) (Fig. 3) (and suggested earlier by <a href="#refB">Blumauer and Pellegrini 2006</a>), shows a spectrum of KOSs based on the &ldquo;semantic richness&rdquo; that increases from glossaries to ontologies, with ontologies showing the highest degree of richness and allowing an unlimited set of semantic relations. Ontologies, thus, are considered as the most evolved form of KOS.</p>
+
+<div align="center"><figure>
+<img src="ontologies3.jpg" title="Fig. 3: The semantic staircase (Olenski 2010)" width="70%">
+<figcaption>Figure 3: The semantic staircase (<a href="#refO">Olenski 2010</a>)</figcaption>
+</figure></div>
+
+<p>On the contrary, in the realm of knowledge engineering, Guarino (<a href="#refG">2006</a>) emphasizes the concept of &ldquo;precision&rdquo; to define formal ontologies in comparison with traditional knowledge organization systems. Precision defines the exactness of the representation of a domain in a formal ontological environment compared to traditional KOSs, and Guarino considers &ldquo;ontological precision&rdquo; the key concept to represent the axis along which to arrange the different artifacts (Fig. 4).</p>
+
+<div align="center"><figure>
+<img src="ontologies4.jpg" title="Fig. 4: The ontological precision (Guarino 2006)" width="70%">
+<figcaption>Figure 4: The ontological &ldquo;precision&rdquo; (<a href="#refG">Guarino 2006</a>)</figcaption>
+</figure></div>
+
+<p>In the perspective offered by Marcia L. Zeng (<a href="#refZ">2008</a>) (Fig. 5), like that presented by Olensky, KOSs are arranged in a spectrum with increasing semantic richness. Thesauri, semantic networks and ontologies are presented as members of the category &ldquo;relationship models&rdquo;, as they can represent many relationships. Though both thesauri and ontologies present semantic relationships, Zeng identifies the characteristics of ontologies by their ability to present, among major functions, &ldquo;properties&rdquo; for each class. Properties (attributes), that is, object-properties (see <a href="#4.1">section 4.1</a>) specify &ldquo;how the individuals relate to other individuals&rdquo; (<a href="#refO">OWL 2 Web Ontology Language Primer 2009</a>). Ontologies, thus, have in particular the characteristic of representing attributes for each class, and differentiate from other kinds of KOS, such as classification systems and thesauri.</p>
+
+<div align="center"><figure>
+<img src="ontologies5.jpg" title="Fig. 5: An overview of the structures and functions of KOSs (Zeng 2008)" width="85%">
+<figcaption>Figure 5: An overview of the structures and functions of KOSs (<a href="#refZ">Zeng 2008</a>)</figcaption>
+</figure></div>
+
+<p>Therefore, taking into consideration the relationships with other KOSs, we could suggest the following definition of <i>ontology</i>: </p>
+
+<blockquote>
+ontologies are a kind of KOS that present the highest degree of semantic richness, as they allow to establish a great number of relations between terms.</blockquote>
+
+<p>Whether we should consider properties as semantic relations that characterize ontologies is an open question. Taking into account the suggestion by Zeng (<a href="#refZ">2008</a>), we should include in the definition of ontologies the distinguishing feature of presenting &ldquo;properties&rdquo; that are not completely similar to semantic relationships (associative). Therefore, we instead suggest the following more complete definition:
+
+<blockquote>ontologies are a kind of KOS that present the highest degree of semantic richness, as they allow to establish a great number of relations between terms, and provide attributes for each class.</blockquote>
+
+<p>However, the focus of the discussion is not only the number and the kind of relations allowed to be included in ontologies, but also the underlying view of semantics. Semantics is the study of meaning, and it has spread into the fields of linguistics and logics. In information technology, and notably in the Semantic Web, semantics concerns the possibility of increasing the semantic power of descriptive &rarr; <a href="metadata">metadata</a>, of improving knowledge representation, and thus retrieval on the Web. Consequently, it is important to wonder what kind of semantics is involved in the construction of the Semantic Web. In the Semantic Web, only formal semantics is relevant (<a href="#refA">Almeida, Souza and Fonseca 2011</a>). Formal semantics encompasses theories that originated from philosophical logic, and is mainly founded on the principle of the &ldquo;truth-condition&rdquo; of sentences. It considers the meaning of a sentence equivalent to knowing its truth-condition in order to bypass the ambiguity of natural languages. Formal semantics may be involved in human-oriented systems, as well as in machine-oriented systems. In their explanation, Almeida, Souza and Fonseca (<a href="#refA">2011</a>) argue that the Semantic Web aims to improve the inferences based on logics; whereas, the realm of meaning is much more comprehensive and complex.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.2"></a>
+
+<h4 itemprop="articleSection">3.2  The machine-processing ability of KOSs</h4>
+
+<p>Many scholars claim that ontologies are understandable by machines, in contrast with other systems that are only understandable by humans, and that on this characteristic lies the relevance of ontologies. On the other hand, it is worth noting that this ability has also been shown by thesauri, for instance. Thesauri may be built following a logical principle that allows narrower terms to inherit the characteristics of the broader terms to which they are connected. The command &ldquo;explode&rdquo; may be provided within the searching interface and allow users to include all the narrower terms linked to a top term used for searching. The PsycINFO database, for instance, available through EBSCO Discovery Services, can launch a query while adding all narrower and related terms that are part of the semantic object of searching, supported by the Thesaurus of Psychological Index Terms and its hierarchical structure. Also, thesauri have been developed following logical principles that allow computers to process data.</p>
+
+<p><p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4"></a>
+<h3 itemprop="articleSection">4. Key features of ontologies</h3>
+
+<p>In computer science, the most cited definitions of ontologies are those focused on the notions of conceptualization and of shared meanings, by Thomas R. Gruber: &ldquo;An ontology is an explicit specification of a conceptualization&rdquo; (<a href="#refG">Gruber 1993</a>, 199) and by Rudi Studer &ldquo;An ontology is a formal, explicit specification of shared conceptualization&rdquo; (<a href="#refS">Studer, Benjamins and Fensel 1998</a>).</p>
+
+<p>A conceptualization is a synthetic view of the world according to some purposes, a conceptual representation of a specific field of knowledge that represents concepts, entities, objects and relations among them by specifying the links between those concepts, objects, events and entities, pertaining to a field of interest. The better strategy to specify a conceptualization in ontologies is to adopt the intentional logics that considers abstract concepts and relations that are unchanging if the world changes, and to make axioms. On the contrary, a conceptualization based on an extensional notion could not fit our needs, because it depends on a specific state of the world (<a href="#refG">Guarino, Oberle and Staab 2009</a>, 5-6).</p>
+
+<p>Some computer scientists emphasized more the notion of ontologies as artifacts that allow formal modelling of the entities and the relations in a system and are expressed in a formal, machine-readable format that computers can process (<a href="#refG">Guarino, Oberle and Staab 2009</a>). The meaning of &ldquo;formal&rdquo; is crucial. In the conceptualization of the knowledge engineering community, &ldquo;formal&rdquo; means that &ldquo;the expressions must be machine readable, hence natural language is excluded&rdquo; (<a href="#refG">Guarino, Oberle and Staab 2009</a>, 8). The informal approach concerns glossaries, hierarchies (and &rarr; <a href="tagging">folksonomies</a>), and thesauri; whereas, the formal approach uses logical languages (first order logics, description logics) to represent ontologies (<a href="#refG">Guarino, Oberle and Staab 2009</a>, 13). Poli and Obrst (2010, 4) suggest adopting the name &ldquo;formalized ontologies&rdquo; to mean the formal codification for the constructs acquired in a logical language such as first order logic or in a description logics-based language, such as OWL.</p>
+
+<p>A clear definition of formal ontologies comes from Sowa (<a href="#refS">2009</a>):
+
+<blockquote>A terminological ontology whose categories are distinguished by axioms and definitions stated in logic or in some computer-oriented language that could be automatically translated to logic. </blockquote>
+
+<p>It is debatable whether thesauri could also be considered formal structures, as they show formally defined relationships based on internationally shared guidelines, and are processable by computers. Thesauri may be considered an example of a conceptualization formally defined, even though the standards do not always clearly distinguish between concepts and terms, as Dextre Clarke and Zeng (<a href="#refD">2012</a>) have highlighted. Moreover, thesauri can be used to support the techniques of query expansion, as is usual with ontologies. Computational ontologies present a formal conceptualization of a field of knowledge if they adopt a formal logic language. However, the most important feature of ontologies in relation to thesauri is not the use of formal languages, but rather that they can express all semantic relations as needed. </p>
+
+<p>A considerable debate about the formal aspect of ontologies and the relationships between formal language-based systems and natural language-based systems has been ongoing in the first ten years of the 2000s. John Sowa&rsquo;s (<a href="#refS">2006</a>) point of view is notable for highlighting that the precision of formal languages does not fit the needs of users: &ldquo;A precise, finished ontology stated in a formal language is as unrealistic as a finished computer system&rdquo; (<a href="#refS">Sowa 2006</a>, 204). Unlike formal languages, natural languages present vagueness, ambiguity and flexibility, as words may have different senses according to the different contexts or uses. Following Wittgenstein&rsquo;s proposal of a multiplicity of &ldquo;language games&rdquo; and Peirce&rsquo;s semiotics along with his view of &ldquo;interpretant&rdquo;, Sowa envisaged a modular approach using a dynamic collection of formal ontologies including all possible combinations through &ldquo;systematic mappings to formal concept types and informal lexicons of natural language terms&rdquo; (<a href="#refS">Sowa 2006</a>, abstract). In this case, the richness of natural language would not be lost. Hj&oslash;rland (<a href="#refH">2007</a>) stressed the relevance of semantic relations in devising thesauri, taxonomies, classification schemas and ontologies as well as bibliometric maps and bibliographical databases. The relevance lies in that semantic tools cannot be based on neutral criteria or shared meanings; on the contrary, they are biased toward different paradigms represented in the literature of the field that they serve. &ldquo;Any semantic tool may be more or less in harmony, or in conflict, with the views represented in the literature&rdquo; (<a href="#refH">Hj&oslash;rland 2007</a>, 389). </p>
+
+<p>As it is well known, one unique and correct way to model a domain does not exist; a domain may be modelled following different perspectives or considering the applications in which the ontology may be used (<a href="#refN">Noy and McGuinnes 2001</a>, 4). In addition, it is worth noting that the description of domains may evolve, and some scholars consider computational ontologies as &ldquo;dynamic&rdquo; artifacts that may be implemented and populated manually, semi-automatically or automatically, following updates in the fields of knowledge (<a href="#refB">Buckner, Niepert and Allen 2011</a>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.1"></a>
+<h4 itemprop="articleSection">4.1 Key components of ontologies</h4>
+
+<p>The key components of an ontology are classes, instances, relationships, properties (or attributes), restrictions, and axioms. In knowledge representation, concepts are defined as classes or sets of individual objects (<a href="#refN">Nardi and Brachman 2003</a>). Classes group individuals (instances) that show something in common and  they represent sets of individuals. In concept modelling, classes may be used also to denote &ldquo;the set of objects comprised by a concept of human thinking, like the concept person or the concept woman&rdquo; (<a href="#refO">OWL 2 Web Ontology Language Primer 2012</a>, &sect; 4.1). </p>
+
+<p>Relationships are shown specifying class hierarchies, often offering subclass axioms to enable reasoners to make inferences about instances. The basic hierarchical relationship is <code>is-a</code>, for instance, <code>Mother is-a Parent</code> where <code>is-a</code> defines a hierarchy and allows <code>Mother</code> to inherit the properties (or attributes) from <code>Parent</code>. The subsumption is a fundamental mechanism that allows representation of the hierarchical relationship between concepts, along with the whole-part relationship.</p>
+
+<p>Properties characterize the instances that make up a class and define the way in which the individuals are related. Properties connect individuals belonging to one class or to different classes; they use restrictions of domain <a href="#e2">[2]</a> and range <a href="#e3">[3]</a> to precisely define the class of individuals that can be connected by the property, and restrictions of existential quantification (cardinality) to define the maximum and minimum of individuals that can be connected. Properties are subdivided into <i>object properties</i>, which connect an individual to another individual, defining how the individuals are correlated, and <i>datatype properties</i>&rdquo; <a href="#e4">[4]</a>, which are used to ascribe data values to objects, such as an age or a role to a person, or a date of publication to a bibliographical resource. To define the values, XML Schema DataTypes (<a href="#refX">2012</a>) may be used.</p>
+
+<p>Axioms make statements and definitions that are considered to be true, such as the definitions of classes and subclasses, within ontologies.</p>
+
+<p>Description logics, a logic modeling language, allows relationships to be established between concepts to represent other relationships based on attributes; relationships between classes, for instance, equivalence and disjointedness; and to establish axioms.  It allows the use of some logic operators, such as intersection, union, and complement of concepts, along with value restrictions and existential quantifications. </p>
+
+<p>So far, we have considered ontologies as based on concepts. However, according to some scholars, the terms <i>concept</i> and <i>conceptualization</i> used in describing ontologies are ambiguous and subject to different interpretations. In their opinions, having concepts as subject matter means to assume that knowledge exists only in the minds of human beings and that it is known through our own concepts. Most important is the realistic perspective embraced by Barry Smith (<a href="#refS">2004</a>), who underlines that in natural sciences, the ontologies developed in support of research should not be based on concepts, but rather on &ldquo;the universals and particulars which exist in reality and are captured in scientific laws&rdquo; (<a href="#refS">Smith 2004</a>, 73), that is, what we know about reality from the work of scientists. </p>
+
+<p>Smith defines two kinds of ontologies:  SNAP ontologies concern all the entities in the universe, everything and its parts; SPAN ontologies concern the entities that happen in successive parts (cf. above). The ontological foundation to classify entities lies in &ldquo;material universals&rdquo;, which are not concepts, but real entities to which our concepts correspond and are multiply instantiated (<a href="#refG">Grenon and Smith 2004</a>, 144). The instantiation is a relation between universals and particulars <a href="#e5">[5]</a>. The ontologies in natural sciences, indeed, should present the world as including universals (or types), &ldquo;counterparts in reality of (some of) the general terms used in the formulation of scientific theories&rdquo;, and particulars (or instances) that exist in time and space as concrete entities and can be depicted on the basis of observation (<a href="#refS">Smith and Ceusters 2010</a>, 141). Instances are not repeatable, whereas universals are repeatable. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.2"></a>
+<h4 itemprop="articleSection">4.2 Similarities and contrasting features of thesauri and ontologies</h4>
+
+<p>Since the 1960s, a thesaurus (<a href="#refD">Dextre Clarke 2019</a>) offers the map of concepts, terms, and relationships between them for any disciplinary field. Based on the linguistic conception of &ldquo;semantic field&rdquo;, thesauri constitute a structure that allows the control of synonyms and homonyms. Three kinds of relationships are provided: an equivalence relation between terms (<i>UF</i>, Use for); hierarchical relations (<i>BT</i> Broader Term, <i>NT</i>, Narrower Term) and associative relations (<i>RT</i>, Related Term) between concepts. </p>
+
+<p>Some scholars claim that the most important feature of ontologies is that they present a formal conceptualization of a field of knowledge as they adopt a formal logic language. However, the most relevant characteristic of ontologies in relation to thesauri is not the use of formal languages, but rather that they express all semantic relations as needed whereas thesauri provide a limited number of pre-defined semantic relations between concepts.</p>
+
+<p>The debate about the role of thesauri in modern information retrieval was recently renewed thanks to the meeting held in February 2015 by the ISKO-UK chapter (&ldquo;This House believes that the traditional thesaurus has no place in modern information retrieval&rdquo;). The meeting was followed by the publication of a special issue of <i>Knowledge Organization</i> in 2016 (<a href="#refD">Dextre Clarke 2016</a>).</p>
+
+<p>Although in the context of computer science statistical and algorithmic power has challenged traditional information retrieval systems in which thesauri played a substantial role, thesauri could still have great potential in bibliographical databases (such as Medline, PsychInfo), as asserted by Hj&oslash;rland (<a href="#refH">2016b</a>). One prominent problem is whether a type of KOS may be transformed into another, for instance, a thesaurus into an ontology, and whether thesauri would improve their functionality, providing a more consistent number of relations in the style of an ontology (<a href="#refH">Hj&oslash;rland 2015b</a>, 118-122; <a href="#refH">2016b</a>, 150). For instance, thesauri should provide different kinds of semantic relationships by offering more precise &ldquo;related terms&rdquo;. As Hj&oslash;rland (<a href="#refH">2015b</a>) argues, the characteristics and the form of thesauri with limited relationships have never been discussed or justified in theory or in practice. The <i>RT</i> relationship or, better, the &ldquo;unspecified semantic relations&rdquo; in thesaurus construction encompasses antonyms, cause-effect relations, sequences of facts, which, instead, are offered with more precise definitions in ontologies (<a href="#refH">Hj&oslash;rland 2015a</a>, 1369). </p>
+
+<p>In their traditional form, in fact, thesauri have no place in modern information retrieval. However, Hj&oslash;rland (<a href="#refH">2016b</a>, 151) suggests an &ldquo;open approach to any kind of semantic relations useful for a given task in a given domain&rdquo;, as every field needs specific relationships and thesauri should be grounded on domain-specific characteristics rather than on standardized methods.</p>
+
+<p>In contrast, Tudhope and Binding (<a href="#refT">2016</a>) underline the relevance of thesauri in the Linked Open Data (LOD) environment, which has overtaken formal ontologies and logic-driven applications for the first time. Semantic Web applications use the SKOS data model (see <a href="#ref8">section 8</a>), based on the RDF data model (2004). Thesauri may be published in LOD format and may be accessible to applications that can process data in RDF. In recent years, some cultural portals moved from the initial applications based on logics to the use of SKOS vocabularies for browsing collections, as an URI is added for each concept. Mapping and connecting a thesaurus to other thesauri allows us to retrieve results in many languages (<a href="#refT">Tudhope and Binding 2016</a>, 177).</p>
+
+<p>Information scientists have mostly pursued the reengineering of thesauri in ontologies as a strategy in order to provide structured hierarchies of concepts and connections among them using relations and attributes, with the support of the terminology offered by a thesaurus that is used for an extended time (<a href="#refS">Soergel et al. 2004</a>).</p>
+
+<p>For instance, the contents of the AGROVOC thesaurus, which provides a standardised multilingual terminology in the agricultural field, has been represented in a more suitable way for searching the Semantic Web, using the modelling ontology languages (OWL) in order to create a structure based on semantic relationships, which will allow automatic inference. The restructuring work started in 2001 (<a href="#refS">Sini et al. 2008</a>). The conversion of the AGROVOC thesaurus into an ontology model has expanded the <i>NT</i>, <i>BT</i> and <i>RT</i> relations into more defined relations, such as inclusion, spatial inclusion, membership, and inheritance. Moreover, the relations such as genus/species and whole/part have been extended providing more specific semantic relationships, including, for instance, the relations of cause, similarity and difference, and processes (<a href="#refS">Soergel et al. 2004</a>). The richer types of relationships offered will allow systems to provide access to documents and advanced functionalities such as information discovery and reasoning.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5"></a>
+<h3 itemprop="articleSection">5. Types of ontologies: upper ontologies and domain ontologies</h3>
+
+<p><i>Upper ontologies</i> (<i>top-level</i> or <i>foundational ontologies</i>) represent universal concepts and properties, independent from single scientific fields, such as event, space, time, dimension, substance, phenomenon, identity, process, quantity, etc., on which a general consensus of large user communities should be achieved. The main aim of foundational ontologies is to allow multiple artificial agents to cooperate with each other and with humans. To achieve this, foundational ontologies &ldquo;negotiate meaning&rdquo; and help for &ldquo;establishing consensus in a mixed society&rdquo; (<a href="#refG">Gangemi et al. 2002</a>).</p>
+
+<p>In philosophy, Husserl (<i>Logical Investigations</i>, 1900) used the term <i>formal</i> ontology meaning categories that characterize aspects or types of reality; basically, they correspond to upper ontologies in technical and engineering fields (<a href="#refP">Poli and Obrst 2010</a>, 3). Upper or top-level ontologies may be employed in building specialized concepts of different domain ontologies.</p>
+
+<p><i>Domain ontologies</i> conceptualize the specific realm of a field of knowledge or a particular task specifying the contents of the general categories provided by a top-level ontology. Domain ontologies offer a model of detailed knowledge, on which there may be substantial sharing of meanings already. </p>
+
+<p>Poli and Obrst (<a href="#refP">2010</a>, 8) suggest a third kind of ontology, <i>middle ontologies</i>, which may be also defined as &ldquo;domain-specific upper ontologies&rdquo; and cover multiple domains. The domain-specific upper ontology presents general enough constructs to encompass an entire science that presents many sub-domains, which, in their own right, may be considered domains.</p>
+
+<p>Suggested Upper Merged Ontology (SUMO) is the upper level ontology developed in 2000 by the Teknowledge Corporation (at present under copyright of the Institute of Electrical and Electronics Engineers, IEEE), that has been proposed by the Standard Upper Ontology Working Group as a candidate to be a standard for upper ontologies and to act as a foundational ontology for domain ontologies. This top-level ontology includes general and abstract entities coming from already existing upper ontologies, such as the upper ontologies of John Sowa and Russel-Norwig (<a href="#refN">Niles and Pease 2001</a>; <a href="#refS">&Scaron;evcenko 2003</a>). The physical world, which includes objects and processes, is distinguished from the abstract world, which includes classes, relationships, statements, quantities and attributes. In addition to the top-level ontology, SUMO includes a set of domain ontologies, for communication, geography, economics, engineering, etc.</p>
+
+<p>Descriptive Ontology for Linguistic and Cognitive Engineering (DOLCE) is a prominent upper-level ontology developed within the international WonderWeb project (2001-2004) of foundational ontologies, by Nicola Guarino at the Laboratory for Applied Ontology (LOA) of ISTC-CNR (Italy). It provides ontological categories that reflect the structures of common languages and of cognitive human activity, with the aim of supporting interoperability among other domain ontologies. The first categorization concerns the distinction between endurants or continuants (physical: objects; nonphysical: social or mental objects) and perdurants or occurrents (events, processes, phenomena, activities, etc.). The distinction is based on the way they are present in time: endurants are completely present in every instant of their existence; perdurants occur in time and are only partially present at any time they are present (<a href="#refG">Gangemi et al. 2002</a>). </p>
+
+<p>Basic Formal Ontology (BFO) is an upper-level ontology (initially covering biomedicine) that was developed starting in 2002 by Barry Smith and Pierre Grenon. According to Grenon and Smith, philosophically, a good ontology should account for reality, considering reality both as it exists in a moment and as it happens through time. BFO is a formal ontology according to Husserl and presents basic structures of reality. It aims to represent a template for material ontologies (in Husserl&rsquo;s sense), that is, ontologies of broad domains such as the domain of a society, of organisms, or of physical things. The philosophical dichotomy concerns the modes of existence of the entities during time. On one hand, entities exist that endure (continue) during time, even with some changes, that is, material and immaterial entities. On the other hand, entities exist that perdure in time, such as processes, events and activities (<a href="#refS">Spear, Ceusters and Smith 2016</a>). BFO presents a two-component structure, representing SNAP (entities) and SPAN (processes): thus, both endurants and perdurants are represented in BFO (<a href="#refG">Grenon and Smith 2004</a>).</p>
+
+<p>An upper ontology level equipped with an engine for inferences is provided by Cyc, which is the largest formal ontology and the most ambitious of ontology system projects. The upper ontology level (Upper Cyc) defines approximately 3000 concepts related to temporal and spatial relationships, logical concepts and mathematical entities, concepts such as quantity, sets, and groups. The development of Cyc started in 1994, and in 2002 Cycorp released the first open-source version of the ontology OpenCyc equipped with a knowledge base of &ldquo;common sense&rdquo; and with fundamental concepts related to the fields of science, society, culture, environment and finance, and an engine able to make inferences and rules to allow reasoning about real-world objects. The Cyc technology allows access to data stored in external databases and web sites, to integrate data coming from heterogeneous sources, and create a single consistent set. It is worth noting that the Cyc ontology shows the characteristics of content organization highlighted by Sowa (<a href="#refS">2006</a>), who stressed the opportunities offered by natural language, its flexibility, and the fact that the meaning of words dynamically evolves in contrast to the precision and clarity of formal languages. Cyc, thus, is provided with several thousands of microtheories, each one focalized on a specific field of knowledge or devoted to a particular context. Also Cyc, the most relevant formal ontology, chose the strategy of the multiplicity of modules. As Sowa declared (<a href="#refS">2006</a>, 212) &ldquo;The largest ontology project ever attempted began with a globally consistent set of axioms, but later divided it into a multiplicity of independently developed microtheories. That evidence does not prove that global consistency is impossible, but it suggests that a modular approach is easier to implement&rdquo;.</p>
+
+<p>Whereas top-level (or upper) ontologies represent general entities and properties, domain ontologies represent the concepts and objects of single scientific or applicative fields or of specific tasks. Domain ontologies conceptually describe the vocabulary of terms (and concepts or objects) of a field of knowledge, specifying concepts presented at the top-level and offering detailed knowledge concerning the domain based on the consensus of users, also in order to support automatic reasoning. Task ontologies and application ontologies offer a vocabulary of terms concerning a specific task or a particular activity, in the latter case including the ways used to realize events, processes and actions in a specific application field. Important issues in the development of domain ontologies encompass the coverage of the domain (either a considerable or small number of concepts), the possibility of re-use, and the purpose of the ontology, as a domain may be described following different points of view. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="6"></a>
+<h3 itemprop="articleSection">6. Large domains ontologies</h3>
+
+<a name="6.1"></a>
+
+<h4 itemprop="articleSection"><br>6.1 Bibliographic ontologies</h4>
+
+<p>A particular attention must be paid to bibliographic ontologies, which enable the description of entities that belong to the bibliographic set, such as textual publications (e.g., articles, monographs, and series) and web pages, datasets, films etc., and define the relationships among these bibliographic entities (<a href="#refN">Nurmikko-Fuller et al. 2015; 2016</a>). Besides, bibliographic ontologies have been built to define specific relationships, such as authorship, editorship, and aboutness among entities, as well as the relationships that connect &rarr; <a href="work">works</a> (<a href="#refS">Smiraglia 2019</a>) and their abridgments, adaptations, and translations. They can underline the relationships between a serial and the transformations it may have had over time, such as supplements or successors. </p>
+
+<p>Bibo, the Bibliographic Ontology developed by Bruce D&rsquo;Arcus and Fr&eacute;d&eacute;rick Giasson in 2009, is the first OWL ontology that provides main concepts and properties for describing bibliographic entities and citations. Bibo&rsquo;s properties have been used since 2011 in the BNB Linked Data Platform, which provides access to the British National Bibliography published as linked open data. The Linked Data Service of the Deutsche Nationalbibliothek also has used Bibo since 2010. Bibo includes five principal classes and 34 subclasses, 32 object properties and 20 sub-properties, 20 datatype properties (10 of which are OWL equivalent properties) and 26 sub-properties. Bibo presents a variety of entities related to the bibliographic world, organized into five principal classes: <code>Agent</code>, <code>Collection</code>, <code>Document</code>, <code>Document Status</code>, <code>Event</code>, and 34 subclasses. The classes <code>Document</code> and <code>Collection</code> accommodate most of the bibliographic sub-entities. Among the subclasses of <code>Document</code>, there are <code>Article</code>, <code>Book</code>, <code>Image</code>, <code>Legal Document</code>, <code>Manuscript</code>, <code>Report</code>, <code>Web page</code>, etc. Among the subclasses of <code>Collection</code>, there are <code>Periodical</code>, <code>Series</code>, and <code>Web site</code>. </p>
+
+<p>Even though the developers of Bibo curated sound definitions of the classes that belong to the bibliographic field, it is worth mentioning that this ontology is not very detailed with respect to the properties required in a bibliographic environment. Although it represents the translations of bibliographic resources, the properties that concern derivative, merging, and absorbed resources, which are provided instead by BIBFRAME, are not represented in Bibo. The aforementioned properties refer to two different categories of relationships very relevant in the bibliographic field:  derivative relationships, which concern different editions of the same work and works derived from a pre-existing work, and sequential relationships that include sequels of a monograph, the logical continuation of, or the transformation of another work (<a href="#refT">Tillett 1989</a>; <a href="#refG">Green 2001</a>; <a href="#refI">IFLA 2017</a>, 69-78).</p>
+
+<p>FaBiO (The FRBR-aligned Bibliographic Ontology) was developed by Silvio Peroni and David Shotton as part of the project SPAR - Semantic Publishing and Referencing Ontologies, a set of complementary and orthogonal ontologies developed in OWL 2 DL by Bologna University and Oxford University (2009) <a href="#e6">[6]</a>. SPAR ontologies participate in the Semantic Publishing project, which deals with the use of Semantic Web technologies to describe the different aspects of the publishing domain and semantically linking scientific literature to facilitate discovery. FaBiO (<a href="#refP">Peroni and Shotton 2012</a>) is based on the &rarr; <a href="lrm">FRBR entities</a> (<a href="#refI">IFLA 1998; 2009</a>): <code>Work</code>, <code>Expression</code>, <code>Manifestation</code>, <code>Item</code>. The <code>Work</code> class in FaBiO is restricted to entities published or printable: textual publications, such as articles, books, series, and journals, etc., but the entities also include Web pages, datasets, computer algorithms, catalogues, etc. </p>
+
+<p>FaBio includes seven super-classes, one equivalent class, and 237 subclasses (for a total of 245 classes), only 28 object properties <a href="#e7">[7]</a>, 65 datatype properties <a href="#e8">[8]</a> and 15 named individuals. FaBiO does not show the properties that concern derivative, merging, and absorbed resources, which are provided instead by BIBFRAME.</p>
+
+<p>FaBiO uses FRBR categories to describe a document considering its different Expressions. For example, an academic paper could be published as a journal article first, later as a paper in conference proceedings, or as a book chapter (<a href="#refP">Peroni and Shotton 2012</a>, 36; <a href="#refP">Peroni, Shotton and Vitali 2012</a>). It is worth mentioning here that IFLA (<a href="#refI">2017</a>), defining the levels of bibliographic description, established a strict connection between <code>Work</code>, <code>Expression</code>, <code>Manifestation</code> and <code>Item</code>: a <code>Manifestation</code> is a <code>Manifestation</code> of an <code>Expression</code> of a <code>Work</code>. Moreover, IFLA (<a href="#refI">2017</a>) highlighted that a <code>Work</code> consists of the intellectual or artistic creation and that it includes all the various <code>Expressions</code> of the <code>Work</code> (<a href="#refI">IFLA 2017</a>, 20). FaBiO uses the FRBR categories in order to define the different types of bibliographical entities or objects that belong to the publishing world. The presentation of bibliographical entities in a classified way, offering each of them as a subclass of <code>Work</code> or of <code>Expression</code>, produces some confusion. While the FRBR properties are correctly used in FaBiO to link a <code>Work</code> to an <code>Expression</code> or a <code>Manifestation</code> in abstract, without mentioning any particular bibliographical entity, bibliographical entities are offered each time as sub-class of <code>Work</code> or of <code>Expression</code>. Each bibliographical entity, instead, may be a <code>Work</code> or an <code>Expression</code>, depending on the situation (<a href="#refB">Biagetti 2018</a>). The reasoning behind the decision is not clear for classifying as a <code>Work</code>, for instance, an essay, report, research paper, and, on the contrary, as an <code>Expression</code>, for example, an article, brief report, chapter, and proceedings paper <a href="#e9">[9]</a>. An essay, an article, a report, a chapter, may be considered a <code>Work</code> or an <code>Expression</code> depending on the situation.</p>
+
+<p>Bibframe 2.0 presents &ldquo;three core levels of abstraction: Work, Instance, and Item&rdquo; and &ldquo;additional key concepts that have relationships to the core Classes&rdquo; such as <code>Agents</code>, <code>Subjects</code>, and <code>Events</code> (associated with <code>Works</code> or <code>Instances</code>). BIBFRAME&rsquo;s vocabulary offers 75 classes and 112 subclasses (plus two FOAF classes), 194 properties, out of which 131 are object properties (and sub-properties), and 63 are datatype properties (and sub-properties). In particular, the cataloging resource relationships (general, specific and detailed), mainly sub-properties of the property <code>relatedTo</code>, may be relevant for analysis. BIBFRAME provides properties that concern derivative, merging, and absorbed resources, which, on the contrary, have been less scrutinized in Bibo and FaBiO. BIBFRAME offers sub-properties of the property <code>relatedTo</code>, such as <code>accompaniedBy</code>, which allows definition of a supplement or index added to a resource, and <code>derivativeOf</code>, to express translations and different editions of a work. The replacement of a resource with another, the merging of two or more resources to form a new resource, the continuation of a resource under a new title, and the incorporation of a resource into another, may be described using the property <code>precededBy.</code> Additionally, the property <code>suceededBy</code> allows definition of a resource that supersedes another and the division of a resource into two different resources. These properties are relevant to connect entities that belong to the bibliographic field, and they are lacking in other ontologies, such as FaBiO and BIBO.</p>
+
+<p>In BIBFRAME 2.0, special attention has been paid to derivative, added and merged resources; however, the same attention has not been paid to the properties that belong to continuing resources, such as serials. The recently developed formal ontology PRESSoo (2016), an extension of FRBRoo (<a href="#refI">IFLA 2016</a>), addresses the problems of absorption, continuation, replacement, separation, and merging, also provided by BIBFRAME 2.0. Moreover, in PRESSoo, the cases of a temporary replacement of a serial with another serial, the reprint of a dead serial as a new monograph, the enhancing of a series by monographs, the launch and the end of a periodical, the issuing rules (for instance, regularity, frequency, etc.), and the partial continuation of a serial, are also added. </p>
+
+<p>The Dublin Core Element Set, developed in 1995, has been maintained by the Dublin Core Metadata Initiative in order to facilitate the description of resources on the Web by the way of a limited shared set of elements. It has been described in official documents as &ldquo;a very simple ontology&rdquo;, as the up-to-date version of Dublin Core metadata terms (DCMI Metadata Terms) issued in 2019 shows the features of ontological schemas and includes the fifteen terms of the original version and classes, properties, datatypes that represent the extension vocabularies. Classes and properties are identified by URI to be used in linked data. The schema, a DCMI Recommendation 2020, shows 55 properties that notably derive from the Elements Refinements of the previous versions, and 20 classes (previously &ldquo;elements&rdquo;).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="h4"></a>
+<h4 itemprop="articleSection">6.2 Ontologies for the cultural heritage</h4>
+
+<p>The most significant computational ontological model for the cultural heritage area is CIDOC-CRM (<a href="#refI">ICOM-CIDOC 2020</a>), suggested by ICOM (International Council of Museums) since 1996 and at present internationally shared. CIDOC is a domain ontology that allows sharing of information among heterogeneous institutions that manage cultural heritage and research; it covers a wide field that includes archaeological sites, museums collections, monuments and the scientific documentation kept in libraries and archives, already described using different metadata systems. The CIDOC ontology is a formal language that can express cultural content, in particular information concerning historical-geographical contexts that different management systems may have in common. It represents a model for integration and sharing and allows different cultural sources to become global resources. Moreover, CIDOC-CRM offers a top-level ontology made up of general classes also applicable to other domains, such as Temporal entities, Period, Activity, Modification, Conceptual object. It has been approved as ISO 21127 standard in 2006 (revised in 2014). The latest version, in progress, is version 6.2.9 of April 2020 (<a href="#refD">Doerr 2003</a>; 2009)</p>
+
+<p>The model offers an event-centric vision: events connect persons, places, activities, ideas, and objects. The guiding principle for integration of information that comes from different institutional sources is the explicit representation of events in a historical context. Temporal entities assume therefore the central role, as they are directly connected to space and time. The aim of the ontology is to accommodate historical contents and to provide a model that can also represent content and data that contradict each other. </p>
+
+<p>Following monotonic reasoning <a href="#e10">[10]</a>, this ontology allows merging broad knowledge bases without conflict. However, the choice of monotonic reasoning may be a limitation. Actually, abductive and scientific reasoning is oriented towards the revision of acquired knowledge if there are new facts that open a discussion about events previously considered. For instance, p-Logic (probabilistic logics) (<a href="#refJ">Johnson-Laird, Khemlani and Goodwin 2015</a>) is not founded on monotonic logics. The possibility to make mistakes and to correct the results considering new elements in contrast with the previous statements is offered by the non-monotonic logics (<a href="#refS">Strasser and Antonelli 2015</a>), which allows for conclusions that may be beyond the meanings involved in the premises. Defeasible reasoning (<a href="#refK">Koons 2014</a>) allows wrong conclusions to follow a true premise.</p>
+
+<p>In the last draft version (2020), CIDOC-CRM offers 100 classes and 196 properties. Main characteristics of CIDOC-CRM:
+
+<ol>
+<li>based on two fundamental categories that concern the conservation of identity during the time: persistent items (endurants), which maintain their identity beyond the single events, and temporal entities (perdurants), which occur over time; </li>
+
+<li>provides the multiple instantiation that allows an instance of a class to occur at the same time as an instance of other classes. For example, an object may be an instance of <code>E20</code> Biological Object and at the same time an instance of <code>E22</code> Man-Made Object.</li>
+
+<li>provides multiple inheritance: a class may be a subclass of two or more super-classes and inherits the properties of different super-classes. For instance, Person is subclass of Actor and of Biological Object and inherits the properties of each one.</li>
+</ol>
+
+<p>The strength of CIDOC lies in the great number of properties that allow the definition of the relationships between the entities. The core properties of the ontology permit the definition of the relations between agents, activities and places that meet in a single event. It is necessary to observe that the most relevant properties concern Participation (for instance, <code>P11</code> and <code>P12</code>), which permits the highlighting of interactions among persons, places, and actions that occurred in one event. The set of relations defined by the concept of Influence (for instance, <code>P15</code> and <code>P17</code>), and by the concept of Purpose (for instance, <code>P20</code> and <code>P21</code>) allows the emphasis of the mutual influences between each entity and activity belonging to the universe of discourse of CIDOC. </p>
+
+<p>CIDOC has been widely used in artistic cultural heritage: since 2000, Claros served as a system for searching archaeological and art collections; since 2012 Die Deutsche Digitale Bibliothek allows consultation of the digital collections by way of CIDOC; and Arches allows mapping of information about archaeological sites, historical buildings and areas of cultural relevance <a href="#e11">[11]</a>.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="6.3"></a>
+<h4 itemprop="articleSection">6.3 Biomedical ontologies</h4>
+
+<p>In biological and medical domain, controlled vocabularies of terms and relations are used to share information and several domain ontologies have been developed. A consortium of ontology developers &mdash; The Open Biological and Biomedical Ontology (OBO) Foundry &mdash; was founded in 2001 to define shared principles for developing interoperable ontologies in biomedicine. The principles include the collaborative development of ontologies and the use of a common syntax (RDF/XML); use based on most prominent models such as the Gene Ontology; and the provision of open access. The library of ontologies encompasses the BFO upper ontology and domain ontologies such as the Gene Ontology, the Disease Ontology, the Plant Ontology, the Protein Ontology, the Cell Ontology, the Coronavirus Ontology and so on. The Gene Ontology (GO), developed in 1998, describes the biological domain considering three aspects: cellular components, that is, the parts of the cell; biological processes, such as chemical reactions or metabolism; and molecular functions. Thus, the GO consists of three ontologies, each one devoted to one aspect. The GO is a dynamic vocabulary that allows description of the functions and activities performed by the gene products, that is, the macromolecules, across different organisms, enabling the analysis of genomic data. The three ontologies may be used to query a database of gene product functions.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="7"></a>
+<h3 itemprop="articleSection">7. Ontologies in digital libraries</h3>
+
+<p>The use of ontologies as tools for knowledge organization provides integrated access to the use of digital objects that can be distributed and managed by different systems. Ontologies allow semantic interoperability, performing a mediation function between the meanings attributed to documents managed by different repositories, each one set up following non shared strategies for knowledge organization. </p>
+
+<p>Among the problems related to the use of ontologies in systems for managing research functionalities in digital libraries, the selection of the preferable ontology is the most important. In specialized scientific fields, the selection of an ontology does not present relevant problems; on the contrary, in the case of broad digital libraries that manage digital objects concerning a great number of disciplines, it is crucial to choose suitable ontologies, and this may cause differences in the settings of the research functionalities.</p>
+
+<p>Advanced management systems in digital libraries allow the addition of basic functions for research such as the expansion of search terms, the application of such KOSs as classification systems and thesauri, and the inclusion of ontologies and annotations by users in a collaborative environment (<a href="#refS">Soergel 2009</a>).</p>
+
+<p>Query expansion enhances the results of a search in digital libraries  (<a href="#refE">Efthimiadis 1996</a>). Users may add variant words to the search terms; otherwise, they can manually or automatically add other words to those selected for searching. Historically, manual query expansion procedures have been based on the use of thesauri, especially in bibliographic databases. An example is PsycInfo, a database in existence since 1967 created by the American Psychological Association (APA), whose specialists index documents with the support of the Thesaurus of Psychological Index Terms. The thesaurus helps the users select terms and allows them to expand their query based on broader and narrower terms. Automatic query expansion, on the contrary, is based on the probability calculus of closeness of terms.</p>
+
+<p>At present, query expansion in digital libraries is offered with ontology support to allow for the formal disambiguation of meanings, managed by machines (<a href="#refB">Bhogal, McFarlane and Smith 2007</a>). The aim is to contextualize terms used in research. The use of general ontologies such as Cyc, or of domain ontologies, allows representation of the terms within their contexts. If the techniques of query expansion are based on the use of a broad domain ontology, the search results can be expanded by hundreds of terms, and the recall level increases. In digital libraries, the use of query expansion techniques can be limited to the use of the synonyms of the terms selected at the beginning, or of the terms belonging to a class; in this case the precision of the search  increases (<a href="#refF">Frosterus and Hyv&ouml;nen 2009</a>).</p>
+
+<p>Mapping the terms in documents to the terms in ontologies allows searches to be conducted with an ontological basis by expanding the terms for searches using all the terms declared by an ontology to belong to a class. However, query expansion techniques do not allow searching that considers different perspectives or the different points of view by which a monograph debates a topic, in particular in social sciences and humanities. Traditional indexing, instead, highlights these peculiarities.</p>
+
+<p>In addition to the use of domain ontologies, query expansion in digital libraries is usually performed using lexical databases built on semantic networks, such as WordNet, developed for the English language in 1985 by the Cognitive Science Laboratory of Princeton University, under the supervision of George Miller. As Miller and Fellbaum (<a href="#refF">2007</a>, 210) highlighted, WordNet is not an ontology, but rather a dictionary based on semantic structure. It was built adopting as a model, at least partly, such linguistic thesauri and thematic dictionaries as Roget&rsquo;s Thesaurus (<a href="#refW">WordNet 1998</a>), which organizes English terms into semantic fields. In WordNet, nouns, adjectives and adverbs are organized into <i>synsets</i>, or sets of synonym terms. Each synset is devoted to a concept and expresses the semantic networks through the relationships of meronymy, hyperonymy, antonymy and hyponymy. WordNet is made up of about 117,000 synsets, sets of synonyms and quasi-synonyms that accommodate about 150,000 words and glosses. Nouns and verbs are organized in semantic sets, and the hierarchies based on the relationships of hyponymy and hyperonymy are made explicit. Adjectives are organized in clusters with a central synset comprised of a couple of antonyms (<code>fast</code>/<code>slow</code>; <code>wet</code>/<code>dry</code>) enriched with glosses and examples, and &ldquo;satellites&rdquo; synsets, each one devoted to a related concept. At the beginning of the 1990s, Piek Vossen of Amsterdam University began a project to extend WordNet to some European languages such as German, French, Italian, and Spanish. </p>
+
+<p>In 2000, to create guidelines for the development of WordNets in each language and set up a free platform for discussing and sharing information about WordNets for all languages and connecting different WordNets to guarantee interoperability and sharing, Piek Vossen and Christiane Fellbaum founded the Global WordNet Association (GWA).</p>
+
+<p>A prominent tool devised by GWA is the Inter-Lingual-Index, a standard, universal index of meaning for inter-linking the WordNets in different languages. The Inter-Lingual-Index connects the new WordNets to each other and navigates through words with the same meaning in different languages. The Index is a repository of all concepts expressed in one language in the EuroWordNet; it is a significant tool for multilingual information retrieval. Domain ontologies have been developed for each set of concepts, and a top-level ontology has also been developed that shows the general concepts of the WordNets devoted to the different languages, with the aim of guaranteeing interoperability among different WordNets. The top ontology is made of 63 semantic sets that represent the common semantic structure for all the languages managed in the Index and are used to classify about 1024 concepts. The top-ontology distributes the entities in three areas: (1) objects and perceptible matter (classified according to their form, origin, function, and purposes); (2) situations and events (classified according to the type of elements that compose the situations); (3) the entities related to knowledge and mental states.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="8"></a>
+<h3 itemprop="articleSection">8. The role played by ontologies in the Semantic Web</h3>
+
+<p>In Tim Berners-Lee&rsquo;s vision, the Semantic Web represents the extension of the traditional Web and transforms it into a network of documents connected to a network of knowledge elements. Ontologies represent the &ldquo;core&rdquo; of the transformation, allowing machines to query, reason and manipulate meanings and knowledge.</p>
+
+<p>The RDF data model offers the syntax to describe the resources; however, to define the meanings of resources, it was essential to develop a new language: RDFS (2014), or RDF Schema, which defines the vocabulary of the RDF resources in a specific domain. The resource description made up using RDF along with RDF Schema may be managed by machines, which, then, might be able to make inferences and deductions. In order to achieve this, the use of RDF datastores, such as Sesame or OpenLink Virtuoso, is required. The bases of knowledge can save data in RDF, and the ontologies and the reasoners are used by machines to query the data using the SPARQL language. </p>
+
+<p>Ontologies are the core of Berners-Lee&rsquo;s original vision of the Semantic Web. Web agents cannot work without ontologies, in particular in multiagent systems devoted to Web searching where heterogeneous agents cooperate, and systems might use different languages. In this case ontologies constitute a common vocabulary (<a href="#refC">Costantini and Tocchio 2002</a>).</p>
+
+<p>However, many scholars have criticized the basic ideas on which both the Semantic Web and ontologies are based. Catherine Legg (<a href="#refL">2007</a>, 438), for instance, underlined that none of the present ontologies deliver a &ldquo;machine-understandable theory of meanings&rdquo;. In order to achieve more efficient results, formulating axiomatic assertions and inferencing rules would be needed, and, in doing this, new problems would arise, such as the need to &ldquo;determine [&hellip;] formal semantics [of the language used], and the inferential tractability, scalability, and brittleness of applications built using it&rdquo; (<a href="#refL">Legg 2007</a>, 438).</p>
+
+<p>Ontologies are considered tools that allow computers to understand information, whereas other kinds of KOS seem not able to achieve this aim, as they are built for humans. However, the functions related to artificial intelligence are not the only relevant considerations. In fact, applications in library and information science may benefit from a richer set of high-level semantic relations that ontologies may provide in order to improve, for instance, subject analysis, in cooperation with philosophers and information scientists.  </p>
+
+<p>The Sekt Project (Semantically Enabled Knowledge Technologies, 2002-2006) proposed by an association of 12 European partners, managed by John Davies and financed within the 6th Framework Program of the European Commission, aimed to develop technologies for the Semantic Web and testing methodologies and tools that allow the identification of the meanings of the informative resources and of the contexts in which these are included, e.g., ontologies in combination with metadata. Moreover, ontologies may be used to manage the users&rsquo; profiles linked to systems for the retrieval of information. </p>
+
+<p>Particular attention must also be paid to the use of ontologies in annotations. To equip documents with annotations to highlight entities such as persons, events, or places and identify them with persistent identifiers is a fulfilment that the evolution of the Web allows. Semi-automatic, ontology-based annotations may be created by authors during the text formulation, or a posteriori by the users&rsquo; community. Really, annotations related to contents may be created by users classifying the texts with the help of classes defined by ontologies managed by the system. </p>
+
+<p>Another main concern is interoperability (<a href="#refZ">Zeng 2019</a>). It involves the aggregation and the exchange of data, along with the expansion of searching across networks of data repositories. Also, KOSs should support interoperability that is needed in the following situations, as reported by Marcia L. Zeng (<a href="#refZ">2019</a>, 123) quoting from NISO Z39.19-2005 Appendix A 10.1:
+
+<blockquote>
+
+<p>Metasearching of multiple content resources using the searcher&rsquo;s preferred query vocabulary;</p>
+
+<p>Indexing of content in a domain using the controlled vocabulary from another domain;</p>
+
+<p>Merging of two or more databases that have been indexed using different controlled vocabularies;</p>
+
+<p>Merging of two or more controlled vocabularies to form a new controlled vocabulary that will encompass all the concepts and terms contained in the originals; and</p>
+
+<p>Multiple language searching, indexing, and retrieval.</p>
+
+</blockquote>
+
+<p>Ontologies support semantic interoperability, by way of which the meanings of terminology may be understood by applications. As underlined by Zeng (<a href="#refZ">2019</a>, 124), &ldquo;semantic interoperability can be defined as the ability of different agents, services, and applications to communicate (in the form of transfer, exchange, transformation, mediation, migration, integration, etc.) data, information, and knowledge &mdash; while ensuring accuracy and preserving the meaning of that same data, information, and knowledge&rdquo;. The interoperability of thesauri with other kinds of KOS, such as classification systems, subject headings and ontologies, has been recommended by the ISO standard 25964-2: 2013. </p>
+
+<p>Turning attention now to ontologies, it must be noted that upper ontologies come especially into play in semantic interoperability; however, other kinds of ontologies may serve as shared concept schemes to integrate existing vocabularies. As reported by Zeng (<a href="#refZ">2019</a>), quoting from Fritzsche et al. (<a href="#refF">2017</a>), ontologies as &ldquo;bridged schemes&rdquo; are tools used to mediate between specific concepts of ontologies in the same domain such as the Global Agricultural Concept Scheme (GACS) project, whereas &ldquo;reference ontologies&rdquo; are not strictly connected to specific use cases of an application but may facilitate integration across systems and sources of data: &ldquo;Rather than serving as an upper ontology that helps mediate between other ontologies, a reference ontology serves as a means for mapping the terminology of multiple information systems and data to a common set of shared concepts&rdquo; (<a href="#refZ">Zeng 2019</a>, 134). </p>
+
+<p>Mapping KOS vocabularies is another strategy to achieve semantic interoperability among existing vocabularies. Relations between concepts in vocabularies may be established, but with many challenges, as vocabularies may present different structures and languages, or different vocabularies may reflect different cultures. ISO 25964 recommends two models for mapping: the direct-linked model, which allows different vocabularies to be linked to each other, and the hub structure, which allows many vocabularies to map to a single vocabulary that serves as hub (reported in <a href="#refZ">Zeng 2019</a>, 138-139).</p>
+
+<p>To improve the interoperability of current KOSs in 2009 the World Wide Web Consortium developed the standard SKOS (Simple Knowledge Organization Systems 2009), a concept-centric data model based on RDF that identifies concepts using URIs to make already available knowledge organization systems public on the Web in machine-readable formats and ease the reuse of thesauri, classification systems, and subject headings lists. SKOS uses the RDF data model and allows data to be linked and merged with other data in RDF with software for the Semantic Web. SKOS envisaged a link between different communities of practice within library and information science. It serves as a connection between LIS communities and the Semantic Web, allowing the reuse of current KOSs such as the Library of Congress Subject Headings and, for instance, UN Food and Agriculture Organization&rsquo;s AGROVOC thesaurus, in the Semantic Web environment in a machine-understandable format, using the RDF data model. However, some drawbacks to the transformation in machine-readable format using SKOS have been highlighted, especially with reference to the issues that concern the representation of tables and indexes of classification schemes and the inconsistency of the SKOS model in representing the relationships between topics and classes (<a href="#refP">Panzer and Zeng 2009</a>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="8.1"></a>
+<h4 itemprop="articleSection">8.1 Ontologies and linked open data</h4>
+
+<p>Ontologies play an essential role in the process of building linked open data (LOD) to enhance the Semantic Web, as they offer a tool to express suitable and semantically qualified relationships in the form of RDF triples (<a href="#refR">RDF Resource Description and Framework Primer 2004</a>). Ontologies, thus, offer the contents of the object properties that constitute significant links among subjects and objects of RDF triples; data are linked using meaningful connections. The creation of LOD allows the connection of data within the Web and enriches information by interlinking structured data from different sources (<a href="#refB">Berners-Lee 2006</a>). In the process of interlinking data, ontologies such as FOAF (<a href="#refF"><i>FOAF Friend Of a Friend Ontology</i> 2000</a>) are frequently used that enable the definition of biographic profiles and relations among persons and groups, and as Organization Ontology (<a href="#refO">2014</a>), which allows expression of organizational structures, including governmental institutions. In the large domain of cultural heritage, the CIDOC-CRM ontology is broadly used, as it provides about 200 properties suitable to describe the attributes of the field. Bibliographic ontologies, such as Bibo (see <a href="#6.1">section 6.1</a>) have used to provide the consultation of data in LOD format since 2010 by the Deutsche Nationalbibliothek and since 2011 by the British National Bibliography.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="9"></a>
+<h3 itemprop="articleSection">9. Languages for ontologies</h3>
+
+<p>An ontology language should describe meanings formally and in a machine-readable way to allow for automated reasoning. Traditional ontology languages are based on first-order logics, like in the case of Knowledge Interchange Format (KIF), or on description logics. Web-based ontology languages are Web standard compatible or based on a particular Web standard, such as OWL, which is based on RDF (<a href="#refK">Kalibatiene and Vasilecas 2011</a>, 126-127). Ontology languages allow the building of ontologies, the encoding of knowledge and the inclusion of rules for processing.</p>
+
+<p>KIF is a knowledge representation language created by the DARPA knowledge-sharing effort in order to allow the interchange of knowledge among different computer programs written in different languages and at different times. Its primary role is not to communicate with human users, but rather to allow computer systems to communicate. Its semantics are based on a conceptualization of the world; that is, it is based on abstract (such as concepts) and concrete objects, fictional objects (such as a unicorn), primitive and composite objects, and the words along with the things they represent, as well as on relationships among them (<a href="#refG">Genesereth et al. 1992</a>). KIF is a declarative representation language and shows declarative semantics, richness of representation and human readability. </p>
+
+<p>Resource Description Framework is a general-purpose language, a data model for the conceptual description defined to represent information about resources (<a href="#refR"><i>RDF Resource Description and Framework Primer</i> 2004</a>). Resources may be described by statements about them that specify each thing as an entity that has properties and values, which are identified by URIs. The statements are in the form <i>subject-predicate-object</i>, where the subject represents the resource, the predicate denotes one aspect of the resource and expresses the relationship between the resource and the value of the property (object). Predicates may be defined by an URI from an ontology; the objects may be defined by URIs or literals that humans may read. RDF triples specify the relationships between entities using a propositional structure, but allow a low-level logic expressiveness, as they do not specify the meaning of annotations, do not resolve problems of polysemy and synonymy, and do not allow deductions and inferences on data.</p>
+
+<p>An ontological language was requested that adds logical rules and allows systems to &ldquo;reason&rdquo; and make inferences. First order logics was assumed as a framework to define ontological languages, as it allows expression of multiple relationships between resources using a multiplicity of operators. Description logics expresses statements about objects, relations among them, and on properties that objects may share. It allows the use of formalisms for conjunction, disjunction, negation, existential quantification, value restriction, and number restriction (cardinality). Systems based on description logics allow users (humans and software) to make inferences using algorithms of subsumption, instance, and consistency.</p>
+
+<p>Description logics offers operators for intersection, union and complement of concepts to define complex concepts (such as, for instance, persons that are not male), and quantified role restrictions such as value restrictions and cardinality. To produce inferences, algorithms of instance are used to determine whether an individual belongs to a class, algorithms of subsumption are used to establish hierarchical relationships among concepts, and algorithms of consistency are used to analyse logical consistency among concepts.</p>
+
+<p>In 2000, DARPA (Defense Advanced Research Projects Agency) developed the DAML language (Darpa Agent Markup Language program) in the areas of interest of DARPA High Performance Knowledge Base; subsequently the OIL language (Ontology Inference Layer) was built. The Web Ontology Working Group, in the framework of the W3C Semantic Web Activity, finally developed OWL, Web Ontology Language (<a href="#refO"><i>OWL Web Ontology Language Overview </i>2004</a>). OWL can be used in applications that manage the content of information, the meanings of terms and the relationships among terms. It uses the syntax of RDF, extends RDF Schema, defines classes, instances, hierarchies of classes, individuals and properties, and allows definition of a greater number of relationships among classes: disjunction, cardinality, symmetry, etc. It presents three sublanguages: Lite, Description Logics, and Full. A second edition, OWL2 (<a href="#refO"><i>OWL Web Ontology Language Overview</i> 2009</a>), was developed in 2009. </p>
+
+<p>Restriction on properties permit software to automatically reason. OWL allows the definition of restrictions on properties using range and domain restrictions (already used in RDF):
+
+<blockquote><pre>
+&lt;owl:ObjectProperty rdf:about="#author"&gt;
+&nbsp; &lt;rdfs:range rdf:resource="#Person" /&gt; 
+&nbsp; &lt;rdfs:domain rdf:resource="#Publication" /&gt; 
+&lt;/owl:ObjectProperty&gt;
+</pre>
+(<a class="menu" href="http://swat.cse.lehigh.edu/resources/onto/dblp.owl">http://swat.cse.lehigh.edu/resources/onto/dblp.owl</a>)
+</blockquote>
+
+<p>OWL permits a new kind of restriction on properties, for instance, in relation to classes: the restriction on properties <i>allValuesFrom</i> requires that for each individual of the class to which a property is applied, all the values are members of the class declared in the restriction:
+
+<blockquote><pre>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;owl:Restriction&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;owl:onProperty rdf:resource="#hasMaker" /&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;owl:allValuesFrom rdf:resource="#Winery" /&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/owl:Restriction&gt;
+&nbsp;&nbsp;&nbsp;&lt;/rdfs:subClassOf&gt;
+</pre>
+
+(<i>OWL Web Ontology </i><i>L</i><i>anguage Guide</i> 2004)</blockquote>
+
+<p>Property cardinality restriction specifies the number of individuals involved in the restriction and allows the definition of the minimum and maximum number of individuals. The mutual exclusiveness of classes is defined using <i>owl:disjointWith</i> that permits the declaration that the extension of a class is sharing no members with the extension of another class and to form an axiom:
+
+<blockquote><pre>
+&lt;owl:Class rdf:about="#Musical"&gt;
+&nbsp;&nbsp;&lt;rdfs:subClassOf rdf:resource="#MusicDrama"/&gt;
+&nbsp;&nbsp;&lt;owl:disjointWith rdf:resource="#Opera"/&gt;
+&nbsp;&nbsp;&lt;owl:disjointWith rdf:resource="#Operetta"/&gt;
+&lt;/owl:Class&gt;
+</pre>
+(<a href="#refO"><i>OWL Web Ontology Language Reference</i> 2004</a>)</blockquote>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="10"></a>
+<h3 itemprop="articleSection">10. Ontology building and editors</h3>
+
+<p>The most popular editor for building ontologies in OWL is Prot&eacute;g&eacute;. Developed by the Center for Biomedical Informatics Research at the School of Medicine at Stanford University in the 1980s, Prot&eacute;g&eacute; is software for creating, developing and maintaining ontologies on the Web and in knowledge bases, and in its last versions it supports OWL and OWL2 specifications (<a href="#refM">Musen et al. 2015</a>). A Web-based version, WebProt&eacute;g&eacute;, is a free, open-source tool that provides support to develop, discuss, edit and share lightweight domain ontologies. The interface allows the definition of classes, class hierarchies, individuals, object properties, data properties and annotation properties, supporting the OWL ontology language (Fig. 6). In addition to the possibility for users to link to entities provided by successful knowledge bases, such as Schema.org, Wikidata, and DBpedia, an important feature is the collaborative functionality that allows the creation of threaded comments (<a href="#refH">Horridge et al. 2019</a>). WebProt&eacute;g&eacute; currently hosts around 68,000 OWL ontology projects, and the interface allows users to build complex queries and to see the visualization of subclasses and relations created in ontologies. </p>
+
+<div align="center"><figure>
+<img src="ontologies6.jpg" title="Fig. 6: Lightweight editing with auto-completion support" width="90%">
+<figcaption>Figure 6: Lightweight editing with auto-completion support (<a class="menu" href="https://protegewiki.stanford.edu/wiki/WebProtegeUsersGuide">https://protegewiki.stanford.edu/wiki/WebProtegeUsersGuide</a>)</figcaption>
+</figure></div>
+
+<p>Other prominent ontology editors:
+
+<ul>
+<li>NeOn Toolkit is an open source editor developed by the NeOn Foundation within a project funded by the European Commission&rsquo;s Sixth Framework Programme. It is suitable for heavyweight projects, such as multi-modular and multi-lingual ontologies and for ontology integration.</li>
+
+<li>Fluent Editor, free for academic researchers and a limited number of others, allows the editing of semantic models and complex ontologies that use controlled natural languages. It is OWL compatible, interoperable with Prot&eacute;g&eacute; and supports referencing other ontologies.</li>
+
+<li>OBO Edit, open-source, was developed by Berkeley Bioinformatics and Open Source Projects and is funded by the Gene Ontology Consortium and it is optimized for biological ontologies. At the present date, it is not working.</li>
+</ul>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="11"></a>
+<h3 itemprop="articleSection">11. Conclusion</h3>
+
+<p>This article has provided a presentation of ontologies, drawing attention to their emergence in the context of computer science and their subsequent interconnection with the artificial intelligence that has sustained automated reasoning in the context of the Semantic Web, to share contents and allow agents to make deductions.</p>
+
+<p>The focus of the article, however, has been on the definition of the relations between ontologies and KOSs, which are schemes for organizing information and making retrieval easier. Although some scholars (e.g. <a href="#refS">Smith and Welty 2001</a>; <a href="#refM">McGuinness 2003</a>) have determined a single category of KOSs including ontologies, the purpose of the article was to clarify the differences between KOSs and ontologies. Machine-processing ability does not characterize ontological artifacts, as thesauri, being built on logical principles, could also allow computers to process data. The real feature that differentiates ontologies from (other) KOSs is the ability to represent a greater number of semantic relations, and, as it has been suggested by Zeng, to offer attributes for each class.</p>
+
+<p>The concept of &ldquo;formal&rdquo; ontologies expressed in formal, machine-readable formats using logic languages (first order logics, description logics) has been discussed considering a knowledge engineering perspective and also the view that prefers to maintain the richness of natural languages (Sowa). The alternative views of considering ontologies grounded on concepts (Gruber) or on real entities (Smith) have been highlighted. Finally, the role that ontologies played in the realization of the Semantic Web in the original vision by Berners-Lee has been addressed, the relevance of ontologies as semantic interoperability schemes, and their use in the building of linked open data starting from 2006.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+</span><!-- articleBody ends -->
+
+<a name="ack"></a>
+<h3>Acknowledgments</h3>
+
+<p>The author thanks the editor-in-chief, <a href="authors#hj">Birger Hj&oslash;rland</a>, for the helpful support and the relevant suggestions, <a href="authors#g">Claudio Gnoli</a> for the careful proof-reading and editing, as well as the two anonymous reviewers for the useful advices and recommendations. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="end"></a>
+<h3>Endnotes</h3>
+
+<a name="e1"></a>
+<p><strong>1</strong>. &ldquo;The term ontology has a complex history both in and out of computer science, but we use it to mean a certain kind of computational artifact &ndash; i.e., something akin to a program, an XML schema, or a web page &ndash; generally presented as a document. An ontology is a set of precise descriptive statements about some part of the world (usually referred to as the domain of interest or the subject matter of the ontology). Precise descriptions satisfy several purposes: most notably, they prevent misunderstandings in human communication, and they ensure that software behaves in a uniform, predictable way and works well with other software&rdquo;. (<a href="#refO"><i>OWL 2 Web Ontology Language Primer</i> 2009</a>).</p>
+
+<a name="e2"></a>
+<p><strong>2</strong>. A domain is a set of classes such that &ldquo;any resource that has a given property is an instance of one or more classes&rdquo; (RDFS, <a class="menu" href="https://www.w3.org/TR/rdf-schema/">https://www.w3.org/TR/rdf-schema/</a>).</p>
+
+<a name="e3"></a>
+<p><strong>3</strong>. A range is a set of classes such that &ldquo;the values of a property are instances of one or more classes&rdquo; (RDFS, <a class="menu" href="https://www.w3.org/TR/rdf-schema/">https://www.w3.org/TR/rdf-schema/</a>).</p>
+
+<a name="e4"></a>
+<p><strong>4</strong>. &ldquo;Properties in OWL 2 are further subdivided. Object properties relate objects to objects (like a person to their spouse), while datatype properties assign data values to objects (like an age to a person)&rdquo; (<a href="#refO"><i>OWL 2 Web Ontology Language Primer</i> 2009</a>, &sect; 3).</p>
+
+<a name="e5"></a>
+<p><strong>5</strong>. &ldquo;Material universals [&hellip;] exist in toto at different places and different times in the different particulars which instantiate them [&hellip;] For instance, the material universal mountain is instantiated by Mont Blanc in France and by Grossglockner in Austria. The two mountains are numerically distinct entities, but it is the very same universal which exists in these two different places&rdquo; (<a href="#refG">Grenon and Smith 2004</a>, 144).</p>
+
+<a name="e6"></a>
+<p><strong>6</strong>. The twelve SPAR ontologies: FRBR-aligned Bibliographic Ontology (FaBiO); Citation Typing Ontology (CiTO); Bibliographic Reference Ontology (BiRO); Citation Counting and Context Characterisation Ontology (C4O); Document Components Ontology (DoCO); Publishing Status Ontology (PSO); Publishing Roles Ontology (PRO); Publishing Workflow Ontology (PWO); Scholarly Contributions and Roles Ontology (SCoRO); DataCite Ontology (DataCite); Bibliometric Data Ontology (BiDO);Five Stars of Online Research Articles Ontology (Five) (<a class="menu" href="http://www.sparontologies.net/">http://www.sparontologies.net/</a>).</p>
+
+<a name="e7"></a>
+<p><strong>7</strong>. They are organized into the following groups: Top Object Property, Has embodiment, Has exemplar, Has subject term, Related endeavor, Has part, Has realization, Is embodiment of, Is exemplar of, Is part of, Is realization of, Is representation of, Is scheme of. </p>
+
+<a name="e8"></a>
+<p><strong>8</strong>. They are organized into the following super-properties: Top data properties, Has title, Has identifier, Has date.</p>
+
+<a name="e9"></a>
+<p><strong>9</strong>. Among the subclasses of <code>Work</code>: artistic work, critical edition, essay, image, reference work, report, research paper, review, and vocabulary; but also dataset, metadata, and grant application. Among the subclasses of <code>Expression</code> there are abstract, article, book, brief report, chapter, comment, conference poster, index, letter, manuscript, metadata document, movie, periodical issue, proceedings paper, report document, repository, and supplement, as well as web content, computer program, database, and e-mail. </p>
+
+<a name="e10"></a>
+<p><strong>10</strong>. &ldquo;Monotonic reasoning is a term from knowledge representation. A reasoning form is monotonic if an addition to the set of propositions making up the knowledge base never determines a decrement in the set of conclusions that may be derived from the knowledge base via inference rules. In practical terms, if experts enter subsequently correct statements to an information system, the system should not regard any results from those statements as invalid, when a new one is entered&rdquo; (ICOM-CIDOC 2018<a href="#ref"></a>, XI).</p>
+
+<a name="e11"></a>
+<p><strong>11</strong>. Since 2000 Claros (Classical Art Research Online Services) served as a system for searching archaeological and art collections of Koln, Paris, Basel, Heidelberg, W&uuml;rzburg and the collections of the museums of Athens, managed by the centre for research of Oxford, OeRC and at present is no longer functioning. The German national cultural portal, Die Deutsche Digitale Bibliothek (<a class="menu" href="https://www.deutsche-digitale-bibliothek.de/">https://www.deutsche-digitale-bibliothek.de/</a>), since 2012 allows users to consult the digital collections of a large number of archives and scientific institutions serving as conveyor that favours Europeana Collections, and harvests digital resources using the schema LIDO (<a class="menu" href="http://network.icom.museum/cidoc/arbetsgrupper/lido/L/11/">http://network.icom.museum/cidoc/arbetsgrupper/lido/L/11/</a>), based on CIDOC-CRM, providing a single point of access with homogeneous functionalities for searching. Arches (<a class="menu" href="https://www.archesproject.org">https://www.archesproject.org</a>), an open-source software developed by the Getty Conservation Institute and the World Monuments Fund, builds an informative system based on GIS for the tangible cultural heritage, which allows mapping of information about archaeological sites, historical buildings and areas of cultural relevance. CIDOC-CRM ontology has been adopted for the architecture of data, in particular with the aim of modelling the relationships among entities. In archaeology, CIDOC-CRM has also been used in the infrastructure Ariadne (<a class="menu" href="https://ariadne-infrastructure.eu/">https://ariadne-infrastructure.eu/</a>) funded by the European Commission within the 7th Framework Programme.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="ref"></a>
+<h3>References</h3>
+
+<span itemprop="citation">
+
+<a name="refA"></a>
+
+<p>AGROVOC http://aims.fao.org/vest-registry/vocabularies/agrovoc</p>
+
+<p>Almeida, Mauricio, Renato Souza and Fred Fonseca. 2011. &ldquo;Semantics in the Semantic Web: A Critical Evaluation&rdquo;. <i>Knowledge Organization</i> 38, no. 3: 187-203.</p>
+
+<a name="refB"></a>
+
+<p>Baader, Franz, Ian Horrocks and Ulrike Sattler. 2009. &ldquo;Description Logics&rdquo;. In <i>Handbook on Ontologies</i>. 2nd ed., eds. Steffen Staab and Rudi Studer. Berlin: Springer, 21-43.</p>
+
+<p>Berners-Lee, Tim, James Hendler and Ora Lassila. 2001. &ldquo;The Semantic Web&rdquo;. <i>Scientific American</i> May: 34-43.</p>
+
+<p>Berners-Lee, Tim. 2006. &ldquo;Linked<i> </i>Data&rdquo;, 2006-07-27, last change 2009-06-18, available at <a class="menu" href="https://www.w3.org/DesignIssues/LinkedData.html">https://www.w3.org/DesignIssues/LinkedData.html</a>.</p>
+
+<p>Bhogal, Jagdev, Andrew MacFarlane and P. Smith. 2007. &ldquo;A Review of Ontology Based Query Expansion&rdquo;. <i>Information</i> <i>Processing &amp; Management</i> 43, no. 4: 866-86, <a class="menu" href="https://www.sciencedirect.com/science/article/abs/pii/S0306457306001476">https://www.sciencedirect.com/science/article/abs/pii/S0306457306001476</a>.</p>
+
+<p>Biagetti,<i> </i>Maria Teresa. 2018. &ldquo;A Comparative Analysis and Evaluation of Bibliographic Ontologies&rdquo;. In <i>Challenges and Opportunities for Knowledge Organization in the Digital Age: Proceedings of the fifteenth International ISKO conference, Porto, July 9-11 2018</i>, eds. Fernanda Ribeiro and Maria Elisa Cerveira. Baden-Baden: Ergon, 501-05.</p>
+
+<p><i>Bibframe 2.0</i>, <a class="menu" href="https://www.loc.gov/bibframe/">https://www.loc.gov/bibframe/</a>.</p>
+
+<p><i>Bibframe 2.0 Model</i>, <a class="menu" href="https://www.loc.gov/bibframe/docs/bibframe2-model.html">https://www.loc.gov/bibframe/docs/bibframe2-model.html</a>.</p>
+
+<p><i>Bibframe 2.0 Vocabulary</i>, <a class="menu" href="http://id.loc.gov/ontologies/bibframe-category.html">http://id.loc.gov/ontologies/bibframe-category.html</a>.</p>
+
+<p><i>Bibo: The Bibliographic Ontology</i>, <a class="menu" href="https://www.dublincore.org/specifications/bibo/bibo/bibo.rdf.xml">https://www.dublincore.org/specifications/bibo/bibo/bibo.rdf.xml</a>. </p>
+
+<p>Blumauer, Andreas and Tassilo Pellegrini. 2006. &ldquo;Semantic Web und semantische Technologien: Zentrale Begriffe und Unterscheidungen&rdquo;. In <i>Semantic Web</i>, eds. Tassilo Pellegrini and Andreas Blumauer. Berlin: Springer, 9-29.  <A CLASS="menu" HREF="https://doi.org/10.1007/3-540-29325-6_2">https://doi.org/10.1007/3-540-29325-6_2</A>.</p>
+
+<p><i>BNB Linked Data Platform</i>, <a class="menu" href="http://www.bl.uk/bibliographic/pdfs/publishing_bnb_as_lod.pdf">http://www.bl.uk/bibliographic/pdfs/publishing_bnb_as_lod.pdf</a>.</p>
+
+<p>Buckland, Michael. 2018. &ldquo;Document theory&rdquo;. <i>Knowledge Organization</i> 45, no. 5: 425-36. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli, <a class="menu" href="document">http://https://www.isko.org/cyclo/document</a>.</p>
+
+<p>Buckner, Cameron, Mathias Niepert and Colin Allen. 2011. &ldquo;From Encyclopedia to Ontology: Toward Dynamic Representation of the Discipline of Philosophy&rdquo;. <i>Synthese</i> 182: 205-33.</p>
+
+<a name="refC"></a>
+
+<p>CNR-ISTC. 2001. <i>DOLCE - Descriptive Ontology for Linguistic and Cognitive Engineering</i>, Laboratory for Applied Ontology, Istituto di Scienze e Tecnologie della Cognizione of the CNR, Trento (Italy). Ed. Nicola Guarino. The abridged version: <a class="menu" href="http://www.loa.istc.cnr.it/ontologies/DUL.owl">http://www.loa.istc.cnr.it/ontologies/DUL.owl</a>.</p>
+
+<p>Costantini, Stefania and Arianna Tocchio. 2002. &ldquo;A Logic Programming Language for Multi-agent Systems&rdquo;. In <i>Logics in Artificial Intelligence</i>. <i>Proceedings of the European Conference, JELIA 2002, Cosenza, Italy, September, 23-26, 2002</i>, eds. Sergio Flesca, Sergio Greco, Nicola Leone and Giovambattista Ianni. Berlin, Heidelberg, Springer: 1-13.</p>
+
+<p><i>Curlie</i>, <a class="menu" href="https://curlie.org/">https://curlie.org/</a>.</p>
+
+<a name="refD"></a>
+
+<p>Dahlberg, Ingetraut. 1996. &ldquo;Ontology, Logic, and Knowledge Organization&rdquo; (editorial). <i>Knowledge Organization</i> 23, no. 3: 129. <a class="menu" href="https://www.nomos-elibrary.de/10.5771/0943-7444-1996-3-129/editorial-volume-23-1996-issue-3?page=1">https://www.nomos-elibrary.de/10.5771/0943-7444-1996-3-129/editorial-volume-23-1996-issue-3?page=1</a>.</p>
+
+<p><i>DCMI Metadata Terms</i>, <a class="menu" href="https://www.iso.org/standard/71341.html">https://www.iso.org/standard/71341.html</a>.</p>
+
+<p><i>DCMI Recommendation 2020</i>, <a class="menu" href="https://www.dublincore.org/specifications/dublin-core/dcmi-terms/">https://www.dublincore.org/specifications/dublin-core/dcmi-terms/</a>. </p>
+
+<p>Dextre Clarke, Stella G. 2016. &ldquo;Origins and Trajectory of the Long Thesaurus Debate&rdquo;. Special Issue &ldquo;This House Believes that the Traditional Thesaurus has no Place in Modern Information Retrieval&rdquo;. <i>Knowledge Organization</i> 43, no. 3: 138-144.</p>
+
+<p>Dextre Clarke, Stella G. 2019. &ldquo;Thesaurus (for Information Retrieval)&rdquo;. Available in <i>ISKO Encyclopaedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli, <a class="menu" href="thesaurus">https://www.isko.org/cyclo/thesaurus</a>.</p>
+
+<p>Dextre Clarke, Stella G. and Marcia Lei Zeng. 2012. &ldquo;From ISO 2788 to ISO 25964: The Evolution of Thesaurus Standards towards Interoperability and Data Modeling&rdquo;. <i>ISQ Information Standard Quarterly</i> 24, no. 1: 20-6.</p>
+
+<p>Doerr, Martin. 2003. &ldquo;The CIDOC Conceptual Reference Module: An Ontological Approach to Semantic Interoperability of Metadata&rdquo;. <i>AI</i> <i>Magazine</i> 24, no. 3: 75&ndash;92. </p>
+
+<p>Doerr Martin. 2009. &ldquo;Ontologies for Cultural Heritage&rdquo;. In <i>Handbook on Ontologies.</i> 2nd ed., eds. Steffen Staab, Rudi Studer. Berlin: Springer, 463&ndash;86, <a class="menu" href="http://link.springer.com/chapter/10.1007/978-3-540-92673-3_21">http://link.springer.com/chapter/10.1007/978-3-540-92673-3_21</a>.</p>
+
+<a name="refE"></a>
+
+<p>Efthimiadis, Efthimis N. 1996. &ldquo;Query expansion&rdquo;. <i>Annual Review of Information Science and Technology</i> 31: 121-87. </p>
+
+<a name="refF"></a>
+
+<p><i>FaBiO: The FRBR-aligned Bibliographic Ontology</i>, <a class="menu" href="http://purl.org/spar/fabio">http://purl.org/spar/fabio</a>.</p>
+
+<p>Fensel, Dieter, Jim Hendler, Henry Lieberman, and Wolfgang Wahlster (eds.). 2003.<i> Spinning the Semantic Web: Bringing the World Wide Web to Its Full Potential.</i> 2003. Cambridge: MIT Press.</p>
+
+<p><i>Fluent Editor</i>, <a class="menu" href="https://www.cognitum.eu/Semantics/FluentEditor/">https://www.cognitum.eu/Semantics/FluentEditor/</a>.</p>
+
+<p><i>FOAF: Friend of a Friend ontology</i>. 2000. <a class="menu" href="http://www.foaf-project.org/">http://www.foaf-project.org/</a>. </p>
+
+<p>Fritzsche Donna, Michael Gr&uuml;ninger, Ken Baclawski, et al. 2017. &ldquo;Ontology Summit 2016 Communiqu&eacute;: Ontologies Within Semantic Interoperability Ecosystems&rdquo;. <i>Applied Ontology</i> 12: 91-111.</p>
+
+<p>Frosterus, Matias and Eero Hyv&ouml;nen. 2009. &ldquo;Bridging the Search Gap Between the Web of Pages and Web of Data by Combining Ontological Document Expansion with Text Search&rdquo;<i>.</i> In <i>ICSD International Conference for Digital Libraries and the Semantic Web: Proceedings: Trento, September</i>: 90-104 <a class="menu" href="https://seco.cs.aalto.fi/publications/2009/frosterus-hyvonen-airo-icsd-2009.pdf">https://seco.cs.aalto.fi/publications/2009/frosterus-hyvonen-airo-icsd-2009.pdf</a>.</p>
+
+<a name="refG"></a>
+
+<p>Gangemi, Aldo, Nicola Guarino, Claudio Masolo et al. 2002. &ldquo;Sweetening ontologies with DOLCE&rdquo;: <i>Proceedings of the 13th European Conference on Knowledge Engineering and Knowledge Management</i> 2473: 166-181. DOI: 10.1007/3-540-45810-7_18.</p>
+
+<p><i>The Gene Ontology Handbook</i>. 2017. Eds. Christophe Dessimoz and Nives &Scaron;kunca. Methods in Molecular Biology, vol 1446. New York, Humana Press (Springer Nature), <a class="menu" href="https://doi.org/10.1007/978-1-4939-3743-1_21">https://doi.org/10.1007/978-1-4939-3743-1_21</a>.</p>
+
+<p>Genesereth Michael R., Richard E. Fikes, Daniel Bobrow, et alii. 1992. &ldquo;Knowledge Interchange Format&rdquo;. Version 3.0 Reference Manual. Logic Group Computer Science Department, Standford, Stanford University, <a class="menu" href="https://www.cs.auckland.ac.nz/courses/compsci367s2c/resources/kif.pdf">https://www.cs.auckland.ac.nz/courses/compsci367s2c/resources/kif.pdf</a>.</p>
+
+<p>Giunchiglia, Fausto, Maurizio Marchese and Ilya Zaihrayeu. 2006. &ldquo;Encoding Classifications into Lightweight Ontologies&rdquo;. In <i>The Semantic Web: Research and Applications</i>, <i>Proceedings of the 3rd European Semantic Web Conference, ESWC 2006, Budva, Montenegro, June 11-14</i>. Eds. York Sure and John Domingue, 80-94, <a class="menu" href="http://www.science.unitn.it/~marchese/pdf/P4_eswc06_Encoding.pdf">http://www.science.unitn.it/~marchese/pdf/P4_eswc06_Encoding.pdf</a>.</p>
+
+<p>Giunchiglia, Fausto and Ilya Zaihrayeu. 2007. &ldquo;Lightweight ontologies&rdquo;. Technical Report DIT-07-071 University of Trento Department of Information and communication technology,  <a class="menu" href="https://www.researchgate.net/publication/30531092_Lightweight_Ontologies">https://www.researchgate.net/publication/30531092_Lightweight_Ontologies</a>.</p>
+
+<p>Global WordNet Association (GWA), <a class="menu" href="http://globalwordnet.org/">http://globalwordnet.org/</a>.</p>
+
+<p><i>Good Ontologies. </i>W3C, <a class="menu" href="https://www.w3.org/wiki/Good_Ontologies#The_Dublin_Core_.28DC.29_ontology">https://www.w3.org/wiki/Good_Ontologies#The_Dublin_Core_.28DC.29_ontology</a>.</p>
+
+<p>Green, Rebecca. 2001. &ldquo;Relationships in the Organization of Knowledge: an Overview&rdquo;. In <i>Relationships in the Organization of Knowledge</i>, eds. Carol A. Bean and Rebecca Green. Dordrecht etc.: Kluwer, 3-18.</p>
+
+<p>Grenon Pierre and Barry Smith. 2004. &ldquo;SNAP and SPAN: Towards Dynamic Spatial Ontology&rdquo;. <i>Spatial Cognition and Computation</i> 4, 1: 69-103.</p>
+
+<p>Gruber, Thomas R. 1993. &ldquo;A Translation Approach to Portable Ontology Specifications&rdquo;. <i>Knowledge Acquisition</i> 5, no. 2: 199-220.</p>
+
+<p>Gruber, Thomas R. 2009. &ldquo;Ontology&rdquo;. In <i>Encyclopedia of Database Systems</i>, eds. Liu, Ling, &Ouml;zsu, M. Tamer, Heidelberg, Springer, available at  <a class="menu" href="https://tomgruber.org/writing/ontology-in-encyclopedia-of-dbs.pdf">https://tomgruber.org/writing/ontology-in-encyclopedia-of-dbs.pdf</a>.</p>
+
+<p>Guarino, Nicola. 2006. &ldquo;Ontology and Terminology: how can formal ontology help concept modeling and terminology?&rdquo; in <i>EAFTNordTerm on Terminology, Concept Modeling and Ontology</i>, Vaasa, February 10th, 2006, slide no 13.</p>
+
+<p>Guarino, Nicola and Pierdaniele Giaretta. 1995. &ldquo;Ontologies and Knowledge Bases. Toward a terminological clarification&rdquo;. In <i>Towards Very Large Knowledge Bases: Knowledge Building and Knowledge Sharin,</i> ed. Nicolaas J. I. Mars. Amsterdam: IOS Press: 25-32.</p>
+
+<p>Guarino, Nicola and Roberto Poli. 1995. &ldquo;Editorial: The Role of Formal Ontology in the Information Technology&rdquo;. <i>International Journal of Human-Computer Studies</i> 43, 623-624.</p>
+
+<p>Guarino, Nicola, Daniel Oberle and Steffen Staab<i>. </i>2009. &ldquo;What is an Ontology?&rdquo; In <i>Handbook on Ontologies</i>, 2nd  ed., eds. Steffen Staab and Rudi Studer. Dordrecht etc.: Springer, 1-17.</p>
+
+<a name="refH"></a>
+
+<p>Hj&oslash;rland, Birger. 2007. &ldquo;Semantics and Knowledge Organization&rdquo;. <i>Annual Review of Information Science and Technology</i> 41: 367-405.</p>
+
+<p>Hj&oslash;rland, Birger. 2008. &ldquo;What is Knowledge Organization (KO)?&rdquo; <i>Knowledge</i> <i>Organization</i> 35, nos. 2-3: 86-101.</p>
+
+<p>Hj&oslash;rland, Birger. 2015a. &ldquo;Are Relations in Thesauri &lsquo;Context-Free, Definitional, and True in All Possible Worlds&rsquo;?&rdquo; <i>Journal of the Association for Information Science and Technology</i> 66, no. 7: 1367-73.</p>
+
+<p>Hj&oslash;rland, Birger. 2015b. &ldquo;Theories are knowledge organizing systems (KOS)&rdquo;. <i>Knowledge</i> <i>Organisation</i> 42, no. 2, 113-28.</p>
+
+<p>Hj&oslash;rland, Birger. 2016a. &ldquo;Knowledge Organization&rdquo;. <i>Knowledge Organization</i> 43, no. 6: 475-84. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli, <a class="menu" href="knowledge_organization">https://www.isko.org/cyclo/knowledge_organization</a>.</p>
+
+<p>Hj&oslash;rland, Birger. 2016b. &ldquo;Does the Traditional Thesaurus Have a Place in Modern Information Retrieval?&rdquo; <i>Knowledge Organization</i> 43, no. 3: 145-59.</p>
+
+<p>Hj&oslash;rland, Birger. 2017. &ldquo;Classification&rdquo;. <i>Knowledge</i> <i>Organization</i> 44, no. 2: 97-128. Also available in ISKO Encyclopedia of Knowledge Organization, eds. Birger Hj&oslash;rland and Claudio Gnoli, <a class="menu" href="classification">https://www.isko.org/cyclo/classification</a>.</p>
+
+<p>Hj&oslash;rland, Birger. 2018a. &ldquo;Library and Information Science (LIS). Part 1&rdquo;. <i>Knowledge Organization</i> 45, no. 3: 232-54. Also available in ISKO <i>Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli, <a class="menu" href="lis">https://www.isko.org/cyclo/lis</a>.</p>
+
+<p>Hj&oslash;rland, Birger. 2018b. &ldquo;Library and Information Science (LIS). Part 2&rdquo;. <i>Knowledge Organization</i> 45, no. 4: 319-38. Also available in ISKO <i>Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli, <a class="menu" href="lis">https://www.isko.org/cyclo/lis</a>.</p>
+
+<p>Hj&oslash;rland, Birger. 2018c. &ldquo;Data (with big data and database semantics)&rdquo;. <i>Knowledge Organization</i> 45, no. 8: 685-708. Also available in ISKO Encyclopedia of Knowledge Organization, ed. Birger Hj&oslash;rland, coed. Claudio Gnoli, <a class="menu" href="data">https://www.isko.org/cyclo/data</a>.</p>
+
+<p>Hodge, Gail. 2000. <i>Systems of Knowledge Organization for Digital Libraries: Beyond Traditional Authority Files.</i> Washington: The Digital Library Federation, <a class="menu" href="http://www.clir.org/pubs/abstract/pub91abst.html">http://www.clir.org/pubs/abstract/pub91abst.html</a>.</p>
+
+<p>Horridge Matthew, Rafael S. Gon&ccedil;alves, Csongor I. Nyulas et al. 2019. &ldquo;WebProt&eacute;g&eacute;: A Cloud-Based Ontology Editor&rdquo;. In <i>Companion Proceedings of the 2019 World Wide Web Conference (WWW&rsquo;19 ACM, New York, NY, Companion), May 13&ndash;17, San Francisco, CA, USA</i>,<i> </i>686-89. <a class="menu" href="https://doi.org/10.1145/3308560.3317707">https://doi.org/10.1145/3308560.3317707</a>.</p>
+
+<p>Hoy, Matthew B. 2018. &ldquo;Alexa, Siri, Cortana, and More: An Introduction to Voice Assistants&rdquo;. <i>Medical Reference Services Quarterly</i> 37, no. 1: 81-8, DOI: 10.1080/02763869.2018.1404391.</p>
+
+<a name="refI"></a>
+
+<p>ICOM-CIDOC. 2020. Version 6.2.9. Current main editors: Martin Doerr, George Bruseker, Chryssoula Bekiari, Christian Emil Ore, Thanasis Velios, Stephen Stead. <a class="menu" href="http://www.cidoc-crm.org/sites/default/files/CIDOC%20CRM_v6.2.9%2030-4-2020%20.pdf">http://www.cidoc-crm.org/sites/default/files/CIDOC%20CRM_v6.2.9%2030-4-2020%20.pdf</a>.</p>
+
+<p>IFLA. 1998. <i>Functional requirements for bibliographic records: final report</i>. M&uuml;nchen: K. G. Saur.</p>
+
+<p>IFLA. 2009. <i>Functional requirements for bibliographic records: final report</i>. Approved by the Standing Committee &hellip; as amended and corrected through February 2009.</p>
+
+<p>IFLA. 2016.  <i>Definition of FRBRoo: A Conceptual Model for Bibliographic Information in Object-oriented Formalism.</i> Version 2.4. Prepared by Working Group on FRBR/CRM Dialogue, eds. Chryssoula Bekiari, Martin Doerr, Patrick Le Boeuf, Pat Riva, <a class="menu" href="https://www.ifla.org/files/assets/cataloguing/FRBRoo/frbroo_v_2.4.pdf">https://www.ifla.org/files/assets/cataloguing/FRBRoo/frbroo_v_2.4.pdf</a>.</p>
+
+<p>IFLA. 2017. <i>Library Reference Model</i>. Consolidation Editorial Group of the IFLA FRBR Review Group &hellip;, eds. Pat Riva, Patrick Le Boeuf, and Maja &#0381;umer, revised after world-wide review, not yet endorsed by the IFLA Professional Committee or Governing Board.</p>
+
+<a name="refJ"></a>
+
+<p>Johnson-Laird, P. N., Sangeet S. Khemlani and Geoffrey P. Goodwin. 2015. &ldquo;Logic, Probability, and Human Reasoning&rdquo;. <i>Trends in Cognitive Sciences</i> 19, no. 4: 201-14. </p>
+
+<a name="refK"></a>
+
+<p>Kalibatiene Diana and Olegas Vasilecas. 2011. &ldquo;Survey on Ontology Languages&rdquo;. In <i>Perspectives in Business Informatics Research: BIR 2011</i>.Lecture Notes in Business Information Processing, vol. 90. Eds. J. Grabis and M. Kirikova, Berlin, Heidelberg: Springer, 124-41. <a class="menu" href="https://doi.org/10.1007/978-3-642-24511-4_10">https://doi.org/10.1007/978-3-642-24511-4_10</a>.</p>
+
+<p>Koons, Robert. 2014. &ldquo;Defeasible Reasoning&rdquo;. In <i>The Stanford Encyclopedia of Philosophy</i>, ed. Edward N. Zalta. Spring Edition.</p>
+
+<a name="refL"></a>
+
+<p>Lassila, Ora and Deborah L. McGuiness. 2001. &ldquo;The Role of Frame-Based Representation on the Semantic Web&rdquo;. <i>Knowledge Systems Laboratory Report KSL-01-02.</i> Stanford University, available at <a class="menu" href="http://www.ksl.stanford.edu/people/dlm/etai/lassila-mcguinness-fbr-sw.html">http://www.ksl.stanford.edu/people/dlm/etai/lassila-mcguinness-fbr-sw.html</a>.</p>
+
+<p>Legg, Catherine. 2007. &ldquo;Ontologies on the Semantic Web&rdquo;. <i>Annual Review of Information Science and Technology</i> 41: 407-51.</p>
+
+<a name="refM"></a>
+
+<p>Mazzocchi, Fulvio. 2018. &ldquo;Knowledge Organization Systems&rdquo;. <i>Knowledge Organization</i> 45, no.1: 54-78. Also available in ISKO Encyclopedia of Knowledge Organization, eds. Birger Hj&oslash;rland and Claudio Gnoli, <a class="menu" href="kos.htm">https://www.isko.org/cyclo/kos.htm</a>.</p>
+
+<p>McGuinnes Deborah L. 2003. <i>Ontologies Come of Age</i>. In <i>Spinning the Semantic Web. Bringing the World Wide Web to Its Full Potential</i>, eds. Dieter Fensel, James Hendler, Henry Lieberman and Wolfgang Wahlster, Cambridge, MA,: MIT Press, 171&ndash;96. <a class="menu" href="https://www.researchgate.net/publication/221024668_Ontologies_Come_of_Age">https://www.researchgate.net/publication/221024668_Ontologies_Come_of_Age</a>.</p>
+
+<p>Miller, George A. and Christiane Fellbaum. 2007. &ldquo;WordNet then and now&rdquo;. <i>Lang Resources &amp; Evaluation</i> 41: 209-14.</p>
+
+<p>Musen, Mark A. and the Prot&eacute;g&eacute; Team. 2015. &ldquo;The Prot&eacute;g&eacute; Project: A Look Back and a Look Forward&rdquo;. <i>AI Matters</i>. Jun, 1, 4: 4&ndash;12. doi: 10.1145/2757001.2757003</p>
+
+<a name="refN"></a>
+
+<p>Nardi, Daniele and Ronald J. Brachman. 2003. &ldquo;An Introduction to Description Logics&rdquo;<i>.</i> In <i>The Description Logic Handbook: Theory, Implementation, Applications</i>, eds. Franz Baader, Diego Calvanese, Deborah L. McGuiness et al. Cambridge: Cambridge University Press, 1-40.</p>
+
+<p><i>NeOn Toolkit</i>, <a class="menu" href="http://neon-toolkit.org/wiki/Main_Page.html">http://neon-toolkit.org/wiki/Main_Page.html</a>.</p>
+
+<p>Niles, Ian and Adam Pease. 2001. &ldquo;Towards a Standard Upper Ontology&rdquo;. <i>Proceedings of the 2nd International Conference on Formal Ontology in Information Systems (FOIS-2001)</i>, eds. Chris Welty and Barry Smith. Ogunquit, Maine, October 17-19, 2001. <a class="menu" href="http://home.earthlink.net/~adampease/professional/FOIS.pdf">http://home.earthlink.net/~adampease/professional/FOIS.pdf</a>.</p>
+
+<p>Noy Natalya F. and Deborah L. McGuinnes. 2001. &ldquo;Ontology Development 101: A Guide to Creating Your First Ontology&rdquo;. <i>Stanford Medical Informatics Technical Report 880</i>. Available at
+<a class="menu" href="https://protege.stanford.edu/publications/ontology_development/ontology101.pdf">https://protege.stanford.edu/publications/ontology_development/ontology101.pdf</a>.</p>
+
+<p>Nurmikko-Fuller, Terhi, Colleen Fallaw, Jacob Jett et alii. 2015. <i>Bibliographic Ontologies Comparative Features Dataset</i>. Champaign, IL: University of Illinois, <a class="menu" href="http://hdl.handle.net/2142/88356">http://hdl.handle.net/2142/88356</a>. </p>
+
+<p>Nurmikko-Fuller, Terhi, Jacob Jett, Timothy W. Cole et alii. 2016. &ldquo;A Comparative Analysis of Bibliographic Ontologies: Implications for Digital Humanities&rdquo;. In <i>Digital Humanities 2016: Conference Abstracts</i>. Krak&oacute;w: Jagiellonian University and Pedagogical University, 639-42. </p>
+
+<a name="refO"></a>
+
+<p><i>OBO Edit, </i>http://oboedit.org/</p>
+
+<p>Olensky, Marlies. 2010. &ldquo;Semantic interoperability in Europeana: An Examination of CIDOC CRM in Digital Cultural Heritage Documentation&rdquo;. <i>Bulletin of IEEE Technical Committee on Digital Libraries</i> 6, no. 2,   <a class="menu" href="https://web.archive.org/web/20130620181231/https://www.ieee-tcdl.org/Bulletin/v6n2/Olensky/olensky.html">https://web.archive.org/web/20130620181231/https://www.ieee-tcdl.org/Bulletin/v6n2/Olensky/olensky.html</a>.</p>
+
+<p>Open Biological and Biomedical Ontology (OBO) Foundry, <a class="menu" href="http://www.obofoundry.org/">http://www.obofoundry.org/</a>.</p>
+
+<p>OpenCyc, <a class="menu" href="http://www.opencyc.org">http://www.opencyc.org</a>.</p>
+
+<p><i>Organization Ontology. </i>2014. (W3C Recommendation 16 January 2014). <a class="menu" href="http://www.w3.org/TR/vocab-org/">http://www.w3.org/TR/vocab-org/</a>.</p>
+
+<p><i>OWL Web Ontology Language Guide.</i> 2004. (W3C Recommendation 10 February 2004). <a class="menu" href="http://www.w3.org/TR/owl-guide/">http://www.w3.org/TR/owl-guide/</a></p>
+
+<p><i>OWL Web Ontology Language Overview. </i>2004.<i> </i>(W3C Recommendation 10 February 2004). <a class="menu" href="http://www.w3.org/TR/owl-features/">http://www.w3.org/TR/owl-features/</a>)<i>. </i></p>
+
+<p><i>OWL Web Ontology Language Reference</i>. 2004.<i> </i>(W3C Recommendation 10 February 2004). <a class="menu" href="http://www.w3.org/TR/owl-ref">http://www.w3.org/TR/owl-ref</a>/ </p>
+
+<p><i>OWL 2 Web Ontology Language New Features and Rationale.</i> 2009. (W3C Recommendation 27 October 2009). <a class="menu" href="http://www.w3.org/TR/2009/REC-owl2-new-features-20091027/">http://www.w3.org/TR/2009/REC-owl2-new-features-20091027/</a></p>
+
+<p><i>OWL</i> <i>2</i> <i>Web Ontology Language Overview</i>. 2009. (W3C Recommendation 27 October 2009). <a class="menu" href="http://www.w3.org/TR/owl2-overview/">http://www.w3.org/TR/owl2-overview/</a></p>
+
+<p><i>OWL 2 Web Ontology Language Primer.</i> 2009. (W3C Recommendation 27 October 2009). <a class="menu" href="http://www.w3.org/TR/2009/REC-owl2-primer-20091027/">http://www.w3.org/TR/2009/REC-owl2-primer-20091027/</a></p>
+
+<p><i>OWL 2 Web Ontology Language Profiles.</i> 2009. (W3C Recommendation 27 October 2009). <a class="menu" href="http://www.w3.org/TR/2009/REC-owl2-profiles-20091027/">http://www.w3.org/TR/2009/REC-owl2-profiles-20091027/</a>.</p>
+
+<p><i>OWL 2 Web Ontology Language. New Features and Rationale.</i> 2012. 2nd ed. (W3C Recommendation 11 December 2012).  <a class="menu" href="https://www.w3.org/TR/owl2-new-features/">https://www.w3.org/TR/owl2-new-features/</a>.</p>
+
+<p><i>OWL 2 Web Ontology Language Primer.</i> 2012. 2nd ed. (W3C Recommendation 11 December 2012). <a class="menu" href="https://www.w3.org/TR/2012/REC-owl2-primer-20121211/">https://www.w3.org/TR/2012/REC-owl2-primer-20121211/</a></p>
+
+<a name="refP"></a>
+
+<p>Panzer, Michael and Marcia L. Zeng, 2009. &ldquo;Modeling Classification Systems in SKOS: Some Challenges and Best-Practice Recommendations&rdquo;. <i>Proceedings DCMI International Conference on Dublin Core and Metadata Applications</i>, Seoul, 12-16 October 2009, 3-14.</p>
+
+<p>Peroni, Silvio and David Shotton. 2012. &ldquo;FaBiO and CiTO: Ontologies for Describing Bibliographic Resources and Citations&rdquo;. <i>Web Semantics: Science, Services and Agents on the WWW</i> 17: 33&ndash;43. </p>
+
+<p>Peroni, Silvio, David Shotton and Fabio Vitali. 2012<i>. &ldquo;</i>Scholarly Publishing and Linked Data: Describing Roles, Statuses, Temporal and Contextual Extents&rdquo;. In <i>I-SEMANTICS 2012: Proceedings of the 8th International Conference on Semantic Systems. Held at Graz, Austria, 5-7 September 2012</i>. </p>
+
+<p>Poli, Roberto. 1996. &ldquo;Ontology for Knowledge Organization&rdquo;. In <i>Knowledge organization and change:</i> <i>Proceedings of the 4th lnternational ISKO Conference, 15-18 July 1996, Washington</i><i>,</i><i> DC</i>. Ed. Rebecca Green,. Frankfurt: INDEKS Verlag 313-19.</p>
+
+<p>Poli Roberto and Leo Obrst. 2010. &ldquo;The Interplay Between Ontology as Categorial Analysis and Ontology as Technology&rdquo;. In <i>Theory and Applications of Ontology: Computer Applications</i>,<i> </i>eds. Roberto Poli, Michael Healy and Achilles Kameas, Dordrecht: Springer, 1-26. doi:10.1007/978-90-481-8847-5_1</p>
+
+<p><i>PRESSoo</i>. 2016. <i>Extension of CIDOC CRM and FRBRoo for the Modelling of Bibliographic Information Pertaining to Continuing Resources</i>. Version 1.2, January 2016. Approved by CIDOC CRM-SIG, ed. Patrick Le Boeuf. </p>
+
+<p>Prot&eacute;g&eacute;, <a class="menu" HREF="https://protege.stanford.edu/">https://protege.stanford.edu/</A>.</p>
+
+<p>PsycINFO, <a class="menu" HREF="https://www.apa.org/pubs/databases/psycinfo">https://www.apa.org/pubs/databases/psycinfo</A>.</p>
+
+<a name="refQ"></a>
+<a name="refR"></a>
+
+<p><i>RDF </i><i>Resource Description and Framework</i><i> Primer.</i> 2004. (W3C Recommendation 10 February 2004). <a class="menu" href="http://www.w3.org/TR/rdf-primer/">http://www.w3.org/TR/rdf-primer/</a>.</p>
+
+<p><i>RDFS Resource Description Framework Schema 1.1</i>. 2014. (W3C Recommendation 25 February 2014). <a class="menu" href="https://www.w3.org/TR/rdf-schema/">https://www.w3.org/TR/rdf-schema/</a>.</p>
+
+<p><i>Roget&rsquo;s Thesaurus</i>. 1868. 24th edition. London: Longmans (first edition, 1850).</p>
+
+<a name="refS"></a>
+
+<p>The Sekt Project. 2002. <i>Semantically Enabled Knowledge Technologies</i>, <a class="menu" href="https://cordis.europa.eu/programme/rcn/711_en.html">https://cordis.europa.eu/programme/rcn/711_en.html</a>.</p>
+
+<p>&Scaron;evcenko, Michal. 2003. &ldquo;Online Presentation of an Upper Ontology&rdquo;. <i>Proceedings of Znalosti 2003, Ostrava, Czech Republic, February 19-21</i>, <a class="menu" href="http://www.ontologyportal.org/pubs/Sevcenko.pdf">http://www.ontologyportal.org/pubs/Sevcenko.pdf</a>.</p>
+
+<p><i>SKOS Simple Knowledge Organization Systems Primer</i>. 2009. (W3C Working Group Note 18 August 2009). <a class="menu" href="https://www.w3.org/TR/2009/NOTE-skos-primer-20090818/">https://www.w3.org/TR/2009/NOTE-skos-primer-20090818/</a>.</p>
+
+<p>Sini, Margherita, Boris Lauser, Gauri Salokhe, Johannes Keizer and Stephen Katz. 2008. &ldquo;The AGROVOC Concept Server: rationale, goals and usage&rdquo;. <i>Library</i> <i>Revie</i><i>w</i><i> </i>57 no. 3: 200-12.</p>
+
+<p>Smiraglia, Richard P. 2019. &ldquo;Work&rdquo;. <i>Knowledge</i> <i>Organization</i> 46, no. 4: 308-19. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli, <a class="menu" href="work">https://www.isko.org/cyclo/work</a>. </p>
+
+<p>Smith, Barry. 2003. &ldquo;Ontology&rdquo;. In <i>Blackwell Guide to the Philosophy of Computing and Information.</i> Ed. Luciano Floridi. Oxford: Blackwell, 155-166. <a class="menu" href="https://philpapers.org/archive/SMIO-11.pdf">https://philpapers.org/archive/SMIO-11.pdf</a>.</p>
+
+<p>Smith, Barry. 2004. &ldquo;Beyond Concepts: Ontology as Reality Representation&rdquo;. <i>Proceedings of FOIS 2004: International Conference on Formal Ontology and Information Systems, Turin, 4-6 November 2004</i>, eds. Achille Varzi and Laure Vieu, 73-84. <a class="menu" href="http://ontology.buffalo.edu/bfo/BeyondConcepts.pdf">http://ontology.buffalo.edu/bfo/BeyondConcepts.pdf</a></p>
+
+<p>Smith, Barry and Christopher Welty. 2001. &ldquo;Ontology: Towards a New Synthesis&rdquo;. <i>FOIS&rsquo;01, October 17-19</i>, Ogunquit, Maine, USA: 3-9. <a class="menu" href="https://philpapers.org/archive/SMIOTA-9.pdf">https://philpapers.org/archive/SMIOTA-9.pdf</a>.</p>
+
+<p>Smith, Barry and Werner Ceusters. 2010. &ldquo;Ontological Realism: A Methodology for Coordinated Evolution of Scientific Ontologies&rdquo;. <i>Applied Ontology</i> 5, nos. 3-4: 139-88.</p>
+
+<p>Soergel, Dagobert. 1999. &ldquo;The Rise of Ontologies or the Reinvention of Classification&rdquo;. <i>Journal of The American Society for Information Science</i> 50, no. 12: 1119-1120.</p>
+
+<p>Soergel, Dagobert. 2009. &ldquo;Digital Libraries and the Semantic Web: A conceptual Framework and an Agenda for Research and Practice&rdquo;. Invited paper. <i>International Conference for Digital Libraries and the Semantic Web (ICSD) Trento, 10-11 September  2009.</i></p>
+
+<p>Soergel, Dagobert, Boris Lauser, Anita Liang et al. 2004. &ldquo;Reengineering Thesauri for New Applications: the AGROVOC Example&rdquo;. <i>Journal of Digital Information</i> 4, no. 4.</p>
+
+<p>Souza, Renato R., Douglas Tudhope and Mauricio B. Almeida. 2010. &ldquo;The KOS spectra: a tentative faceted typology of knowledge organization systems&rdquo;. <i>Proceedings 11th International Conference of the International Society for Knowledge Organization, Rome</i>. W&uuml;rzburg: Ergon, 122-28.</p>
+
+<p>Souza, Renato R., Douglas Tudhope and Mauricio B. Almeida. 2012. &ldquo;Towards a taxonomy of KOS: Dimensions for classifying Knowledge Organization Systems&rdquo;.<i> Knowledge Organization</i> 39: 179&ndash;192.</p>
+
+<p>Sowa, John F. 1995.  &ldquo;Top-level ontological categories&rdquo;. <i>International Journal of Human-Computer Studies</i> 43, 669-85.</p>
+
+<p>Sowa, John F.  2006. &ldquo;A dynamic theory of ontology&rdquo;. <i>Formal Ontology in Information Systems:</i> <i>Proceedings of the Fourth International Conference (FOIS 2006)</i>, eds. B. Bennett &amp; C. Fellbaum, Amsterdam: IOS Press, 204-13.</p>
+
+<p>Sowa, John F. 2009. &ldquo;Building, Sharing, and Merging Ontologies&rdquo;. <a class="menu" href="http://www.jfsowa.com/ontology/ontoshar.htm">http://www.jfsowa.com/ontology/ontoshar.htm</a>.</p>
+
+<p>Spear, Andrew D., Werner Ceusters and Barry Smith. 2016. &ldquo;Functions in Basic Formal Ontology&rdquo;. <i>Applied Ontology</i> 11: 103&ndash;128.</p>
+
+<p>Strasser, Christian and G. Aldo Antonelli. 2015. &ldquo;Non-monotonic Logic&rdquo;. In <i>The Stanford Encyclopedia of Philosophy</i>, ed. Edward N. Zalta, Fall. <a class="menu" href="http://plato.stanford.edu/archives/fall2015/entries/logic-nonmonotonic/">http://plato.stanford.edu/archives/fall2015/entries/logic-nonmonotonic/</a>.</p>
+
+<p>Studer, Rudi, V. Richard Benjamins and Dieter Fensel. 1998. &ldquo;Knowledge Engineering: Principles and Methods&rdquo;. <i>Data &amp; Knowledge Engineering</i> 25, nos. 1-2: 161-98.</p>
+
+<p>SUMO Suggested Upper Merged Ontology, <a class="menu" href="http://www.adampease.org/OP/">http://www.adampease.org/OP/</a>.</p>
+
+<a name="refT"></a>
+
+<p>Tillett, Barbara B. 1989. &ldquo;Bibliographic Structures: the Evolution of Catalog Entries, References, and Tracings&rdquo;. In <i>The Conceptual Foundations of Descriptive Cataloging,</i> ed. Elaine Svenonius. San Diego: Academic Press Inc., 149-65.</p>
+
+<p>Tudhope, Douglas and Ceri Binding. 2016. &ldquo;Still Quite Popular After all Those Years: The Continued Relevance of the Information Retrieval Thesaurus&rdquo;. <i>Knowledge</i> <i>Organization</i> 43, no. 3: 174-9.</p>
+
+<a name="refU"></a>
+<a name="refV"></a>
+<a name="refW"></a>
+
+<p><i>WordNet: an Electronic Lexical Database</i>. 1998. Ed. Christiane Fellbaum. Cambridge (Mass), London: MIT Press. </p>
+
+<p><i>WordNet</i> in European languages, <a class="menu" href="http://projects.illc.uva.nl/EuroWordNet/">http://projects.illc.uva.nl/EuroWordNet/</a>; <a class="menu" href="http://projects.illc.uva.nl/EuroWordNet/database.html">http://projects.illc.uva.nl/EuroWordNet/database.html</a></p>
+
+<p><i>WordNet</i> version 3.1, <a class="menu" href="http://wordnetweb.princeton.edu/perl/webwn">http://wordnetweb.princeton.edu/perl/webwn</a>.</p>
+
+<a name="refX"></a>
+
+<p>XML Schema DataTypes. 2012. (W3C Recommendation 5 April 2012). <a class="menu" href="https://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/">https://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/</a>.</p>
+
+<a name="refY"></a>
+<a name="refZ"></a>
+
+<p>Zeng, Marcia Lei. 2008. &ldquo;Knowledge Organization Systems&rdquo;. <i>Knowledge Organization</i> 35, nos. 2-3: 160-82.</p>
+
+<p>Zeng, Marcia Lei. 2019. &ldquo;Interoperability&rdquo;. <i>Knowledge</i> <i>Organization</i> 46, no. 2: 122-46. Also available in <i>I</i><i>SKO Encyclopaedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland, and Claudio Gnoli, <a class="menu" href="interoperability">https://www.isko.org/cyclo/interoperability</a>.</p>
+
+<p>Zhu, Hongwei and Stuart E. Madnick. 2006. <i>A Lightweight Ontology Approach to Scalable Interoperability</i>. MIT Sloan Working Paper 4621-06. Working Paper CISL &ndash; Composite Information Systems Laboratory &ndash; June.</p>
+
+
+
+</span><!-- citation ends -->
+
+<a name="col"></a>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<p>&nbsp;</p>
+
+<p>Visited <a href="https://www.digits.net" target="_blank"><img src="https://counter.digits.net/?counter={29dbb163-6209-27c4-b982-25496c59ba59}&template=simple" alt="Hit Counter by Digits" border="0"  /></a> times.</p>
+
+<hr>
+<p itemprop="dateCreated">Version 1.0 published 2020-08-31, last edited 2021-10-21
+<!-- <br>Version 1.1 published 2020--: [changes] -->
+
+<p>Article category: <code><a itemprop="about" href="index#KD">KOS kinds</a></code></p>
+
+<p>This article (version 1.0) is also published in <i>Knowledge Organization</i>. How to cite it:
+<br>Biagetti, Maria Teresa. 2021. 
+&ldquo;Ontologies as knowledge organization systems&rdquo;. 
+<i>Knowledge Organization</i> 48, no. 2: 152-176. 
+Also available in 
+<i><span itemprop="isPartOf">ISKO Encyclopedia of Knowledge Organization</span></i>, 
+eds. <span itemprop="editor">Birger Hj&oslash;rland</span> and <span itemprop="editor">Claudio Gnoli</span>, 
+<span itemprop="url">https://www.isko.org/cyclo/ontologies </span></p>
+
+<p>&copy;2020 <span itemprop="publisher">ISKO</span>. All rights reserved.</p>
+
+</div><!-- Article ends -->
+
+</td>
+</tr>
+
+<tr>
+<td id="logo">
+</td>
+</tr>
+
+</table>
+</body>
+</html>

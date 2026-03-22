@@ -4,7 +4,7 @@ members = [
     "umrs-apparmor",
     "umrs-core", "umrs-crypto", "umrs-hw",
     "umrs-logspace", "umrs-ls", "umrs-platform", "umrs-selinux",
-    "umrs-state", "umrs-tui",
+    "umrs-stat", "umrs-state", "umrs-ui", "umrs-uname",
     "xtask",
 ]
 

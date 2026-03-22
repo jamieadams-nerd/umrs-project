@@ -25,7 +25,7 @@ Shell scripting is used for tasks that are:
 
 *Security posture*
 
-Shell scripts are intentionally kept small, explicit, and defensive. They are not used for complex parsing, cryptography, or long-running logic. UMRS uses Bash where simplicity reduces risk, not where complexity would amplify it. Authors of these scripts should consider using the writing guidelines offered in this documentation or the bash library developed by the UMRS project.
+Shell scripts are intentionally kept small, explicit, and defensive. They are not used for complex parsing, cryptography, or long-running logic. UMRS uses Bash where simplicity reduces risk, not where complexity would amplify it.
 
 
 
@@ -144,6 +144,17 @@ The selection of Rust aligns with a broader industry trend:
 * Government and large vendors are encouraging Rust for new development
 
 UMRS reflects this direction while remaining pragmatic and administrator-friendly.
+
+
+=== Recommended Secure Coding Reference
+
+Developers writing Rust for UMRS should obtain and read the
+https://anssi-fr.github.io/rust-guide/[Secure Rust Guidelines] published by ANSSI
+(Agence nationale de la sécurité des systèmes d'information — France's national
+cybersecurity agency). This is the recognized authoritative reference for writing
+security-conscious Rust. It covers memory safety invariants, integer arithmetic
+discipline, FFI safety boundaries, error handling patterns, and supply chain hygiene
+in the context of high-assurance development.
 
 
 === Summary

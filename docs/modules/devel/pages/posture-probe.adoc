@@ -829,6 +829,9 @@ See xref:patterns:pattern-error-discipline.adoc[Error Information Discipline].
 
 == See Also
 
+* xref:umrs-tools:umrs-uname.adoc[umrs-uname] — the primary operator-facing tool built
+  on `PostureSnapshot`; displays all 37 indicators, contradiction detection, and the
+  catalog baseline comparison in an interactive audit card
 * xref:posture-probe-internals.adoc[Posture Probe Internals] — CPU mitigation sub-indicators,
   CorePattern TPI classification detail, and TPI code walk-through
 * xref:update-checklists.adoc[Platform Update Checklists] — step-by-step procedure for

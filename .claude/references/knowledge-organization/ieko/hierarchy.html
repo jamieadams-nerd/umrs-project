@@ -1,0 +1,2434 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head profile="http://dublincore.org/documents/2007/11/05/dc-html/">
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>Hierarchy (IEKO)</title>
+<link rel="stylesheet" type="text/css" href="../isko.css" />
+<link rel="schema.DCTERMS" href="http://purl.org/dc/terms/" />
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:url" content="https://www.isko.org/cyclo/hierarchy" />
+<meta name="twitter:title" content="Hierarchy (ISKO Encyclopedia of KO)" />
+<meta property="og:image" content="https://www.isko.org/cyclo/hierarchy1.jpg" />
+<meta name="twitter:description" content="Hierarchies - real or artificial - abound to help us organize our world. A hierarchy places items into a general order, where more general is also more abstract. The etymology of the word hierarchy is grounded in notions of religious and social rank. This article, after a broad historical review, focuses on knowledge systems, an interloper of the term hierarchy since at least the 1800s. Hierarchies in knowledge systems include taxonomies, classification systems, or thesauri in library and information science, and systems for representing information and knowledge to computers, notably ontologies, knowledge graphs, and knowledge representation languages. Hierarchies are the logical underpinning of inference and reasoning in these systems, as well as the scaffolding for classification and inheritance. Hierarchies in knowledge systems express subsumption relations that have many flexible variants, which we can represent algorithmically, and thus computationally. This article dissects the dimensions of that variability, leading to a proposed typology of hierarchies useful to knowledge systems. The article argues through a perspective informed by Charles Sanders Peirce that natural hierarchies are real, can be logically determined, and are the appropriate basis for knowledge systems. Description logics and semantic language standards such as RDF or OWL reflect this perspective, importantly through their open-world logic and vocabularies for generalized subsumption hierarchies. Recent research suggests possible mechanisms for the emergence of natural hierarchies involving the nexus of chance, evolution, entropy, free energy, and information theory.">
+
+<meta name="DCTERMS.title" content="Hierarchy" />
+<meta name="DCTERMS.creator" content="Michael K. Bergman" />
+<meta name="DCTERMS.issued" content="2021" />
+<meta name="DCTERMS.relation.ispartof" content="ISKO Encyclopedia of Knowledge Organization" />
+<meta name="DCTERMS.ispartof" content="ISKO Encyclopedia of Knowledge Organization" />
+<meta name="DCTERMS:bibliographicCitation" content="ISKO Encyclopedia of Knowledge Organization, eds. Birger Hjorland and Claudio Gnoli" />
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="001.012">
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="025.4">
+<meta name="DCTERMS.subject.keyword" content="classification">
+<meta name="DCTERMS.subject.keyword" content="subsumption">
+<meta name="DCTERMS.subject.keyword" content="inheritance">
+<meta name="DCTERMS.type" content="Text" />
+<meta name="DCTERMS.format" content="text/html" />
+<meta name="DCTERMS.identifier" content="https://www.isko.org/cyclo/hierarchy" />
+
+<style>
+a {text-decoration: none;}
+a:hover {text-decoration:underline;}
+table td, table th { padding: 5px; }
+</style>
+
+</head>
+<body>
+
+<a name="top"></a>
+
+<table>
+
+<tr>
+<td id="isko"><h1>I S K O</h1></td>
+<td id="banner"><h2><a href="index.html" style="text-decoration:none;">Encyclopedia of Knowledge Organization</h2></a></td>
+</tr>
+
+<tr>
+<td id="navigation">
+<a href="../index.php">home</a>
+<a href="../about.html">about ISKO</a>
+<a href="../join.html">join ISKO</a>
+<a href="../ko.html"><cite>Knowledge Organization</cite> journal</a>
+<a href="../events.html">ISKO events</a>
+<a href="../chapters.html">ISKO chapters</a>
+<a href="../people.html">ISKO people</a>
+<a href="../pubs.html">ISKO publications</a>
+<a href="index.html">Encyclopedia</a>
+<a href="../lit.html">KO literature</a>
+<a href="../inst.html">KO institutions</a>
+<a href="http://bartoc.org/" title="link to BARTOC">&#8663; KOS registry</a>
+<a href="https://www.isko-mms.net/" title="access-account required">&#128274; members</a>
+<a href="../contact.html">contact us</a>
+</td>
+<td id="content" rowspan="2">
+
+<a class="menu" href="authors#hj">edited by Birger Hj&oslash;rland</a> <a class="menu" href="authors#g">and Claudio Gnoli</a>
+
+<p>&nbsp;
+
+<div itemscope itemtype="http://schema.org/Article">
+
+<h2 itemprop="headline">Hierarchy</h2>
+
+<blockquote>
+by <a itemprop="author" href="authors#b" style="text-decoration:underline">Michael K. Bergman</a>
+
+<p>Table of contents:
+
+<br><a href="#1">1. Introduction</a> 
+<br><a href="#2">2. Etymology and history</a> 
+<br><a href="#3">3. Perspectives on knowledge hierarchies</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#3.1">3.1 Theories of hierarchy</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#3.2">3.2 Hierarchical objects and relations</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#3.3">3.3 Subsumption in knowledge representation</a>
+<br><a href="#4">4. Insights from Peirce</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#4.1">4.1 Peirce, the classifier</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#4.2">4.2 Trichotomies in logic, signs, and reality</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#4.3">4.3 Fallibility, the scientific method, and pragmatism</a>
+<br><a href="#5">5. A typology of knowledge system hierarchies</a> 
+<br><a href="#6">6. Conclusion</a> 
+<br><a href="#ack">Acknowledgments</a>
+<br><a href="#end">Endnotes</a>
+<br><a href="#ref">References</a>
+<br><a href="#">Appendix: Some definitions related to hierarchy in ISO standards </a>
+<br><a href="#col">Colophon</a>
+
+<p itemprop="abstract"><strong>Abstract</strong>:
+<br>Hierarchies &mdash; real or artificial &mdash; abound to help us organize our world. A hierarchy places items into a general order, where more &lsquo;general&rsquo; is also more &lsquo;abstract&rsquo;. The etymology of the word <i>hierarchy</i>  is grounded in notions of religious and social rank. This article, after a broad historical review, focuses on knowledge systems, an interloper of the term <i>hierarchy</i> since at least the 1800s. Hierarchies in knowledge systems include taxonomies, classification systems, or thesauri in library and information science, and systems for representing information and knowledge to computers, notably ontologies, knowledge graphs, and knowledge representation languages. Hierarchies are the logical underpinning of inference and reasoning in these systems, as well as the scaffolding for classification and inheritance. Hierarchies in knowledge systems express subsumption relations that have many flexible variants, which we can represent algorithmically, and thus computationally. This article dissects the dimensions of that variability, leading to a proposed typology of hierarchies useful to knowledge systems. The article argues through a perspective informed by Charles Sanders Peirce that natural hierarchies are real, can be logically determined, and are the appropriate basis for knowledge systems. Description logics and semantic language standards such as RDF or OWL reflect this perspective, importantly through their open-world logic and vocabularies for generalized subsumption hierarchies. Recent research suggests possible mechanisms for the emergence of natural hierarchies involving the nexus of chance, evolution, entropy, free energy, and information theory.</p>
+</blockquote>
+
+<span itemprop="articleBody">
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="1"></a>
+<h3 itemprop="articleSection">1. Introduction</h3>
+
+<p>Humans have a propensity to organize and categorize things as a way to make sense of the world. We see complex things built from simpler things. We recognize similarities of shape and form between different things and judge some more closely related than others. We group individuals and find generalities or abstractions to derive new types or categories. Our intuition tells us that some of these groupings make better sense than others, which causes us to wonder about whether our groupings are artifices or reflect some underlying reality or truth. As we extend these &rarr; <a href="classification">classifications</a> to more things with more diversity, we can see levels or gradations in how the characters by which we categorize these things diverge. Such step-changes inform what we now call <i>hierarchies</i>. We readily recognize hierarchies and have a commonsense view of what they are. Still, we lack consensus on a formal definition of hierarchy across disciplines. We see great disparities in how to construct hierarchies and what relations between things they represent. Our understanding of hierarchies is imprecise.</p>
+
+<p>While the etymology of the word <i>hierarchy</i> discussed in <a href="#2">Section 2</a> begins with notions of religious and social rank and power, our focus here will be on knowledge systems. As used herein, <i>knowledge systems</i> are the subset of &rarr; <a href="kos">knowledge organization systems</a>  (<a href="#refH">Hj&oslash;rland 2016</a>) that may be logically represented to and manipulated by computers, such as taxonomies, classification systems, &rarr; <a href="thesaurus">thesauri</a>, or &rarr; <a href="ontologies">ontologies</a>, as well as knowledge representation languages. This focus is not to deny the importance of the concept of hierarchy in social and political contexts. But these are not central to the role of knowledge systems, and also reflect initial groundings of the term often inconsistent with the sense of <i>hierarchy</i>  applied to knowledge and information. Nonetheless, &ldquo;the way we do classification is not only a reflection of our mainstream culture, it is a tool of that culture, both reflecting and reinforcing it&rdquo; (<a href="#refO">Olson 1999</a>, 65). Various perspectives on what hierarchies are in a knowledge system context and how we construct them are reviewed in <a href="#3">Section 3</a>.</p>
+
+<p>The thematic importance of classification and hierarchical structure in knowledge systems can best be illustrated using a consistent perspective. Many thinkers could provide such consistency. I have chosen to use the great 19th Century American logician, scientist and polymath, &rarr; <a href="peirce">Charles Sanders Peirce</a>, as our guide. He was perhaps the most coherent thinker on knowledge representation to have lived and very relevant to the representation issues of today (<a href="#refB">Bergman 2018</a>). <a href="#4">Section 4</a> specifically refers to his theories of signs, logic, pragmatism, and universal categories as we weave this narrative. </p>
+
+<p>These discussions set the basis for a proposed typology of hierarchies in knowledge systems in <a href="#5">Section 5</a>. This typology is grounded in the logical methods that Peirce articulated in how to distinguish and separate items using prescission as well as the extensional breadth and intensional depth of information (<a href="#refP">Peirce 1998b</a>). We argue a &lsquo;natural&rsquo; classification reflects an appropriate balance of both parts. Peirce shows how we can define the real without redress to psychologism, how continuity can co-exist with classification, and how we have ways to determine subsumption relations that are real and independent of subjectivity. </p>
+
+<p>The article concludes in <a href="#6">Section 6</a>. While we can and should strive for &lsquo;natural&rsquo; hierarchies in knowledge systems, so long as our subsumption relations are logical, we can still conduct meaningful inferences across our knowledge system hierarchies, whether real or artificial. How we classify and the logical and consistent use of subsumption relations are the keys to coherent hierarchies in knowledge systems.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2"></a>
+<h3 itemprop="articleSection">2. Etymology and history</h3>
+
+<p>Hierarchies &mdash; real and artificial &mdash; abound throughout nature and human affairs. Some believe everything in the universe is of a hierarchical nature (<a href="#refA">Annila and Kuismanen 2009</a>; <a href="#refK">Kulish 2002</a>). A hierarchy places items into a general order. The context of this ordering may vary widely, but the items in this order gradate from the more specific to the more general. In linguistics, this ordering is from hyponym to hypernym <a href="#e1">[1]</a>. Computer scientist John F. Sowa (<a href="#refS">2001</a>) has defined a hierarchy as &ldquo;a partial ordering of entities according to some relation&rdquo;. In set notation, the more general level subsumes the more specific level. </p>
+
+<p>Hierarchies thus express subsumption relations. To subsume is to &ldquo;include, absorb, incorporate&rdquo; (<i><a href="#refO">Oxford English Dictionary</a></i>, sense 6c). The subsumption relation, also called the inclusion relation, means that one item, say <i>A</i>, is more general (or subsumes) its paired item, say <i>B</i>. Hierarchies may, for example, take the form of:
+
+<ul>
+<li>classification systems <a href="#e2">[2]</a>,</li>
+
+<li>dendrograms, </li>
+
+<li>genealogies, </li>
+
+<li>graphs,</li>
+
+<li>Hasse diagrams (a mathematical diagram for partially ordered sets),</li>
+
+<li>ladders, </li>
+
+<li>levels, </li>
+
+<li>taxonomies, </li>
+
+<li>trees.</li>
+</ul>
+
+<p>These uses suggest the <i>hierarchy</i> term also has many possible synonyms <a href="#e3">[3]</a> and antonyms <a href="#e4">[4]</a>. Hierarchies are the logical undergirding of inference and reasoning in knowledge systems. Hierarchies, used in classifications, bring organization to our world. Some may view hierarchies in some social contexts as inequitable or oppressive; in other contexts as ranks of skill or accomplishment or power or authority <a href="#e5">[5]</a>. In our knowledge system context, hierarchies are logical orderings of generality.</p>
+
+<p>Most scholars place the foundations of the concept and etymology of hierarchy with the ancient Greeks. The etymology of the word <i>hierarchy</i> comes from the Greek, &#7985;&#949;&#961;&#945;&#961;&#967;&#943;&#945; (<i>hierarchia</i>, or &ldquo;rule of a high priest&rdquo;), composed of the roots &#7985;&#949;&#961;&#949;&#973;&#962; (<i>hiereus</i>, or &ldquo;priest, sacrificer, diviner&rdquo;) and &#7936;&#961;&#967;&#942; (<i>arche</i>, or &ldquo;beginning, origin&rdquo; and other broad meanings) (<a href="#refL">Liddell and Scott 1897</a>; <a href="#refV">Van Hove 1910</a>). Parmenides (ca 475 BC) paired the root concept of hierarchies, the &lsquo;is-a&rsquo; relation, with the &lsquo;is-not&rsquo; relation, thereby introducing exclusive categories to logic and the idea that a concept may be defined by what it is not (<a href="#refO">Olson 1999</a>). Plato (ca 360 BC) put forward a method of dividing a general kind into two (dichotomous classification), continuing through further divisions, until finding the exact kind of the thing at hand. Aristotle (ca 300 BC), his student, adopted this approach, however, limiting its application in an important way, as explicated by Parry and Hacker on Aristotelian division and classification logic (<a href="#refP">1991</a>, 137):
+
+<blockquote>As a process of knowledge, division is characteristically an a priori process based on meaning. Classification, however, is primarily inductive, and may require empirical knowledge. [Often, however, division is considered a kind of classification, see <a href="#refH">Hj&oslash;rland 2017</a>]. In a less technical language, this means that a table of pure division can be constructed solely from the meanings of the terms in the table; no recourse to experience is necessary. I know, for example, that squares are a subclass of parallelograms, not from experience, but from the meanings of the terms &ldquo;square&rdquo; and &ldquo;parallelogram&rdquo;. On the other hand, if I were engaged in the process of classifying plants, I would have to observe the similarities and dissimilarities of actual plants. I could not construct a useful classification of plants unless I had observed the plants I wish to classify.
+<br>In the natural sciences, classification is far more important than division, since the principal analyses and relationships are based on empirical data.</blockquote></p>
+
+<p>Concerning Aristotle&rsquo;s classification of animals see Pellegrin (<a href="#refP">1986</a>). </p>
+
+<p>Aristotle&rsquo;s scala naturae continues to profoundly affect thinking about nature and classification. In about 300 AD Porphyry expressed Aristotle&rsquo;s categories in dichotomous divisions. This enabled illustration of the categories as a tree structure, a visual form that has an old and rich history (<a href="#refG">Gontier 2011</a>; <a href="#refL">Lima 2014</a>) and remains a common metaphor. We often refer to knowledge domains or taxonomic splits as branches, the top-level node shown as a trunk the root, with the (most specific) terminal items in the structure called leaves. (The &lsquo;tree of life&rsquo; metaphor known, for example, from Darwin&rsquo;s <i>Origin of Species</i> (<a href="#refD">1859</a>), has a different meaning in &rarr; <a href="genealogical">genealogical classification</a>, though not all biologists agree it is a model metaphor for development, cf., <a href="#refM">Mazzocchi 2013</a> and <a href="#refQ">Quammen 2018</a>.)</p>
+
+<p>Binary classification was termed <i>divisio</i> through Medieval times. The reasons for division were becoming nuanced. Scholars were recognizing part-whole and member-of (instance) relations, and that divisions may be based on either intrinsic (intensional) or external (extensional) means, most notably by the Port Royal logicians as expounded by Hamilton (<a href="#refP">Peirce 1867</a>). The idea of &rarr; <a href="logical_division">logical division</a> arose to capture the top-down process of splitting higher classes into smaller sub-classes in a descending reduction (<a href="#refF">Frick&eacute; 2018</a>). These logical methods informed the classification efforts of Linnaeus and many others (an interpretation questioned by some recent historians, cf., <a href="#refW">Witteveen 2020</a>), and still informs logical division in knowledge organization today (<a href="#refF">Frick&eacute; 2018</a>) <a href="#e6">[6]</a>.</p>
+
+<p>Pseudo-Dionysius the Areopagita first used and explained the term <i>hierarchia</i> in his 6th Century works &ldquo;The Celestial Hierarchy&rdquo; and &ldquo;The Ecclesiastical Hierarchy&rdquo; (<a href="#refP">Patrides 1974</a>; <a href="#refV">Van Hove 1910</a>). These works, as also commented upon by St. Maximus of Constantinople and Pachymeres, explained the graded responsibility of &lsquo;hierarchs&rsquo; for sacred things. Hierarchs at different grades took actual care of some sacred things, both obeying and commanding, but did not obey those they commanded. A graded celestial hierarchy applied to God at the pinnacle and angels of various orders below; the ecclesiastical hierarchy &mdash; that is, humans as a community of believers &mdash; was modeled on this structure. &ldquo;The hierarchy, therefore, connotes the totality of powers established in the Church for the guiding of man to his eternal salvation, but divided into various orders or grades, in which the inferior are subject to and yield obedience to the higher ones&rdquo; (<a href="#refV">Van Hove 1910</a>, 1). Over centuries the idea of &lsquo;hierarchy&rsquo; was getting more informed though its basis less certain. </p>
+
+<p>These influential works guided the thinking about hierarchy for a millennium (<a href="#refP">Patrides 1974</a>) <a href="#e7">[7]</a>. From the 1300s, treatises were published over the next 500 years that extended religious hierarchies into conceptions of the natural order of things. These extensions were a continuation of Aristotle&rsquo;s ideas regarding elements, grades, and natural classes. Ideas of &lsquo;celestial order&rsquo; were adopted and expanded under Aristotle&rsquo;s notion of scala naturae. The biblical Jacob&rsquo;s vision of a ladder that extended from heaven to earth (<i>Genesis</i> 28:10-15) sparked the idea of multiple hierarchical ladders throughout medieval times (<a href="#refP">Patrides 1974</a>). By the early 1800s, this &lsquo;scale of perfection&rsquo; was becoming known as the Great Chain of Being (<a href="#refL">Lovejoy 1971</a>; <a href="#refM">Mayr 1982</a>; <a href="#refS">Snyder 2014</a>). By the dawn of scientific awakening, the cosmos and the religious order had become organized around the same hierarchical principles. </p>
+
+<p>&ldquo;Thus it clearly appears that in Europe at the end of the 17th Century the usage of the word <i>hierarchy</i> had shifted from a limited theological register to other registers outside the field of theology, at the same time undergoing certain alterations&rdquo; (<a href="#refV">Verdier 2006</a>, 15). Verdier&rsquo;s historical treatment of &lsquo;hierarchy&rsquo; is strong across the 14th to 19th Centuries, with an emphasis on religion and society. Yet, notably after the emergence of encyclopedias in the 1700s in France and Spain, Auguste Comte in the 1830s began to split areas of knowledge into &rarr; <a href="discipline">disciplines</a>, arguing hierarchies as systems and a general manner of apprehending the organization of knowledge (<a href="#refV">Verdier 2006</a>).</p>
+
+<p>The attempt to equate the organization of religion with social order and nature was bound to surface inconsistencies where they exist. The Reformation was also undercutting the tight religious hierarchy advocated by the Catholic Church. The extension of a religious hierarchy to all of nature meant that any contradiction found in nature would erode that bond. The schism came to a head in the 1800s, foreshadowed by philosophers such as Leibniz and scientific discoveries like those of Copernicus and Galileo, which removed the Earth from the center of the universe. </p>
+
+<p>An important hierarchical knowledge innovation was Linnaeus&rsquo; binomial nomenclature and classification system for organisms, <i>Systema Naturae</i>, in 1735 <a href="#e8">[8]</a>. The ensuing period was one of innovation and ferment for knowledge systems. Roget published the first hierarchical classification of words into a thesaurus in 1852. Darwin published the <i>Origin of Species</i> in 1859, devoting an entire chapter to classification <a href="#e9">[9]</a>, with his theory of evolution sundering the faultlines over divinity that had been cracking for hundreds of years (<a href="#refM">Mayr 1982</a>). Though the great chain was breaking in the 1800s, the importance of hierarchy to natural classification and science was only being enhanced. There was truth in some hierarchies, but not in others. In freeing classification from the divine, interest in hierarchies in knowledge and information was able to return to many of its Greek foundations. Dmitri Mendeleev grouped and organized the chemical elements by atomic number into the periodic table in 1869. Melvil Dewey innovated a <!-- the first --> modern hierarchical library classification system in 1876 <a href="#e10">[10]</a>; the Library of Congress classification (1897) and Universal Decimal Classification (1904) followed <a href="#e11">[11]</a>. </p>
+
+<p>The term <i>level</i> has been examined in many of philosopher Mario Bunge&rsquo;s works. Bunge (<a href="#refB">1960</a>, 404) defined levels as &ldquo;grades of being ordered, not in arbitrary ways, but in one or more evolutionary series&rdquo; (see <a href="#refB">Bunge 1969</a> for a longer, formal definition and discussion). Joseph Needham (<a href="#refN">1937</a>) popularized the phrase &rarr; <i><a href="integrative_levels">integrative levels</a></i> in a lecture honoring the philosopher Herbert Spencer, based at least in part on the earlier 18th and 19th Century classifications of science by Comte and Spencer (<a href="#refK">Kleineberg 2017</a>) <a href="#e12">[12]</a>. The objective was to discern a hierarchical structure of levels from molecules to cells to organizations and, ultimately, societies, ecological systems, and the cosmos. The way to determine hierarchical levels should be more synthetic, less reductionist, and recognize they may be more emergent and complex than their predecessors (<a href="#refK">Kleineberg 2017</a>). This approach has also been expressed as &lsquo;levels of organization&rsquo; (<a href="#refB">Brooks 2015</a>) and many other kinds of levels (<a href="#refY">Yao 2009</a>, Table 1). However, there remains no consensus as to what constitutes an integrative level, how it is defined, nor how to sequence or model it (<a href="#refK">Kleineberg 2017</a>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3"></a>
+<h3 itemprop="articleSection">3. Perspectives on knowledge hierarchies</h3>
+
+<p>Knowledge, like information, is inherently open world and multi-level; it requires a logic that can accommodate the truth that much information is unknown to the community, and current information is fallible (<a href="#refB">Bergman 2018</a>). Seemingly every knowledge discipline has its own examples or forms of hierarchy <a href="#e13">[13]</a>. Hierarchies may occur at all levels in knowledge systems within and between classes, instances, and attributes. Hierarchies are the organizing framework for some of the most important knowledge structures. Classification systems and controlled vocabularies are principal structures within, among other fields, libraries and the information sciences. Taxonomies and typologies are common classification structures for natural, physical, and artifactual realms, as well as for words and language morphology. These multi-level hierarchies often express a tree-like structure. Dendrograms are tree-like representations which are mostly based on matrices of correlation coefficients. Biologists Mayr, Linsley and Usinger (<a href="#refM">1953</a>, iii) defined a dendrogram as a &ldquo;diagrammatic illustration of degree of relationship based on degree of similarity (morphological and otherwise)&rdquo;. Many of these approaches, plus more interconnected versions that take on the form of ontologies or graphs, provide the hierarchical backbones to knowledge representation (KR) systems that support inference and logical reasoning (<a href="#refB">Bergman 2018</a>).</p>
+
+<p>It is not surprising, then, that the diversity of definitions and historical changes in use raise epistemological questions among those who research knowledge hierarchies and classification. &ldquo;Has the world one unique structure (&lsquo;taxonomic monism&rsquo;), or is there more than one structural entity and process (&lsquo;taxonomic pluralism&rsquo;)? Are the structures of the world mind-independent (realism), or are they artefacts projected into the world (idealism)? Can our classifications be natural, or are they always artificial? These are core issues in the metaphysics of classification&rdquo; (<a href="#refH">Hj&oslash;rland 2017</a>, 110). In the remainder of this section, we explore these questions from theoretical aspects to the nature of the hierarchical expression and the subsumption relation.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.1"></a>
+<h4 itemprop="articleSection">3.1 Theories of hierarchy</h4>
+
+<p>Many different classifications of &lsquo;hierarchies&rsquo; exist. One prominent dimension is whether hierarchies are artificial or real with classification based on &lsquo;natural kinds&rsquo; (<a href="#refB">Bird and Tobin 2018</a>; <a href="#refP">Peirce 1998b</a>; <a href="#refB">Brakel 1998</a>), discussed below. Some allow &lsquo;natural classification&rsquo; in science, but not in concepts or theoretical objects (<a href="#refW">Wilkins and Ebach 2014</a>). Another dimension is whether hierarchies are constructed or result from a &lsquo;top-down&rsquo; or &lsquo;bottom-up&rsquo; manner (<a href="#refC">Cz&eacute;gel and Palla 2016</a>; <a href="#refE">Ellis 2004</a>; <a href="#refL">Lane 2006</a>; <a href="#refS">Salthe 2012</a>; <a href="#refW">Walker 2014</a>; <a href="#refY">Yao 2009</a>). Some believe distinct boundaries are necessary to distinguish things (<a href="#refD">Durkheim and Mauss 2009</a>), but information theory may help clarify previously blurred distinctions (<a href="#refE">Ellis 2004</a>; <a href="#refW">Wu 2013</a>). Some discuss hierarchies of purpose (<a href="#refH">Herrmann-Pillath and Salthe 2011</a>), another topic to which we will return. Some include concepts such as &lsquo;flow hierarchies&rsquo; (<a href="#refL">Luo et al. 2009</a>), but these are sequential, and not subsumptive.</p>
+
+<p>Pumain recognized specific hierarchical objects and methods in different disciplines but also asked common or transversal questions (<a href="#refP">2006</a>, 7). She posed three hypotheses for why hierarchical organizations are so frequent in the natural or social systems that we observe, which are not necessarily mutually exclusive:
+
+<ol>
+
+<li>Hierarchies are just our way of perceiving and understanding our environment. </li>
+
+<li>Hierarchies are spontaneous attractors in unconstrained dynamic random processes.</li>
+
+<li>Hierarchies represent the best solution for many optimization problems. </li>
+
+</ol>
+
+<p>The first may be termed the <i>idealist/constructivist</i> view on hierarchies; the second the <i>realist</i> perspective; and the third a <i>pragmatic realist</i> perspective. Hj&oslash;rland poses a refinement with four hierarchical methods: (1) empirical properties; (2) logical principles; (3) historical consensus; or (4) pragmatic purpose (<a href="#refH">2017</a>). (<a href="#refA">Ahl and Allen 1996</a> described a related epistemological issue between definitional versus empirical entities and defended an antirealist position.) What I argue in the remainder of this article is that &lsquo;natural&rsquo; hierarchies contain most of these elements. We begin by idealizing what we observe in the real world, but then refine these nascent observed relations into natural ones by testing their intrinsic and extrinsic qualities. We try to adhere to terminology based on &lsquo;scientific&rsquo; consensus, broadly and pragmatically construed.</p>
+
+<p>A &lsquo;natural&rsquo; classification is grounded in the &lsquo;real&rsquo;, something that exists independent of what a mind might conceive. However, if we consider the development of, say, biological classifications, it is obvious that many different hierarchies have their adherents (see e.g., <a href="#refB">Bruce 2003</a> about the history of classifying birds). Geologist Francis Bather (<a href="#refB">1927</a>, 71) observed, &ldquo;not a single naturalist had a clear idea of what he meant by &lsquo;natural&rsquo;. All he knew was that the other fellow&rsquo;s classification was unnatural&rdquo;. </p>
+
+<p>For centuries, a view has been that there is no &lsquo;real&rsquo; independent of the mind, a proposition first expounded by Descartes (<a href="#refM">Mayr 1982</a>; <a href="#refT">Tobin 2010</a>). Another criticism is observers classify phenomena using their own interpretations, which may distort the underlying truth (<a href="#refD">Durkheim and Mauss 2009</a>; <a href="#refH">Hj&oslash;rland 2018</a>). A pragmatic view reliant on intuition, the scientific method, and the interpretation of signs holds that &mdash; while truth is fallible yet still correcting &mdash; knowledge of the real can be obtained sufficient to act and to classify (<a href="#refP">Peirce 1877</a>). Practically, Brakel (<a href="#refB">1998</a>) suggested Peirce supported pluralist interpretations of natural kinds since, in Peirce&rsquo;s words, &ldquo;we cannot be quite sure that the community ever will settle down to an unalterable conclusion upon any given question&rdquo; (CP 2.655, 1878) <a href="#e14">[14]</a>.</p>
+
+<p>Under a logical classification system, we can see a thing like a car participating in a hierarchy of vehicle products in one context or mechanical devices or prized possessions in others. Even in a bloodline genealogy, each child has two parents. There is nothing inherent to a knowledge hierarchy that limits the number of parents or branches under which an item is subsumed so long as the relationship is real, and the connections are logical. However, for a classification to be &lsquo;natural&rsquo; in addition to logical, it should be updated to reflect new consensus knowledge as it arises and should be based on the complete breadth and depth of available information. Classifications and their scope and determination cannot exist independently of their purpose or interpretant. Labels alone are unable to convey how or why we classify things, some more &lsquo;natural&rsquo; than others. <a href="#ref4">Section 4</a> expands further on these Peircean insights.</p>
+
+<p>If some hierarchies are real and a reflection of nature, what is the force that causes them to arise? The economist and systems theorist Herbert Simon (<a href="#refS">1962</a>) tackled this question in a seminal article, &ldquo;The Architecture of Complexity&rdquo;. His argument was that hierarchy arose from complexity in a system of interrelated subsystems, and he defined hierarchy in this way (<a href="#refS">1962</a>, 468; italics in original):
+
+<blockquote>By a <i>hierarchical system</i>, or hierarchy, I mean a system that is composed of interrelated subsystems, each of the latter being, in turn, hierarchic in structure until we reach some lowest level of elementary subsystem. In most systems in nature, it is somewhat arbitrary as to where we leave off the partitioning, and what subsystems we take as elementary.</blockquote></p>
+
+<p>In Simon's view (<a href="#refS">1962</a>, 477), &ldquo;hierarchies have the property of near decomposability. Intracomponent linkages are generally stronger than intercomponent linkages. This fact has the effect of separating the high-frequency dynamics of a hierarchy &mdash; involving the internal structure of the components &mdash; from the low-frequency dynamics &mdash; involving interaction among components&rdquo;. His argument used a now-famous analogy of two watchmakers, both interrupted by customers. One watchmaker made his watches with individual and separate parts, the other with a series of pre-assembled modules. When interrupted by customers, the watchmakers would need to return to their last completed step. The watchmaker with independent parts needed to return to the beginning; the other needed only return to the previous sub-assembly. Simon saw this resulting greater productivity and faster assembly as the driving force for hierarchies, similar to how emergent structures may arise in evolution or how problems are solved. &ldquo;The fact then that many complex systems have a nearly decomposable, hierarchic structure is a major facilitating factor enabling us to understand, describe, and even &lsquo;see&rsquo; such systems and their parts&rdquo; (<a href="#refS">Simon 1962</a>, 477). &ldquo;How complex or simple a structure is depends critically upon the way in which we describe it. Most of the complex structures found in the world are enormously redundant, and we can use this redundancy to simplify their description. But to use it, to achieve the simplification, we must find the right representation&rdquo; (<a href="#refS">Simon 1962</a>, 481). </p>
+
+<p>This marriage of &lsquo;near-decomposability&rsquo; and description became the cornerstone of a field known as hierarchy theory (<a href="#refA">Ahl and Allen 1996</a>). The theory is a general one that simplifies complexity using this common property of  complex systems &mdash; near decomposability (<a href="#refW">Wu 2013</a>). Besides the economist Simon, other roots of the field arose from the chemist, Ilya Prigogine, and the psychologist, Jean Piaget (<a href="#refA">Allen 2001</a>). One view within the field, held by Simon and most scientific adherents, is that descriptions of hierarchy are a faithful capturing of the true, underlying structure in nature. At the other extreme, description and, thus, understanding of the process are limited by the contexts of the observers (<a href="#refP">Pattee 1973a</a>) <a href="#e15">[15]</a>. Pattee (<a href="#refP">1973b</a>, 75-76) also saw a distinction between structural and control hierarchies, the latter implying an &ldquo;active authority of the upper level over the elements of the lower levels&rdquo;, reminiscent of the earliest senses of hierarchy, but without the divinity. </p>
+
+<p>Ecologists and biologists, while recognizing and accommodating hierarchies, also began to appreciate the interconnectedness of nature and its underlying structure in networks (<a href="#refA">Allen 2001</a>). In particular, Salthe (<a href="#refS">2012</a>), who initially focused on hierarchy theory, proposed splitting hierarchies into subsumptive and compositional branches, and looked for mechanisms of what causes hierarchy in natural forces as explained by information theory (<a href="#refS">Salthe 2002; 2009; 2011</a>). Many hierarchies are natural and thus an expression of the real (<a href="#refA">Annila and Kuismanen 2009</a>). The graph and network metaphors have become prevalent in much thinking about hierarchies. Complexity and hierarchy emerge from the evolution of the entity and its connected network (<a href="#refC">Corominas-Murtra et al. 2013</a>) or directed acyclic graph (<a href="#refH">Harmer and Oshurko 2020</a>). </p>
+
+<p>These efforts have not gone without criticism. We have already noted the lack of consensus on scope and definitions for hierarchy. Simon&rsquo;s approach to complexity has been criticized as ignoring interactions of evolutionary significance (<a href="#refW">Wimsatt 1972</a>) or proposing a &ldquo;mysterious&rdquo; form of it (<a href="#refL">Lane 2006</a>). What constitutes a &lsquo;level&rsquo; is ambiguous with conflicting definitions based on perspective (<a href="#refE">Eronen 2015</a>). The proxy of complexity might focus too much on material composition in the biological and ecological arena, perhaps better replaced with ideas of scale (<a href="#refP">Potochnik and McGill 2012</a>).</p>
+
+<p>Anderson (<a href="#refA">1972</a>) tackled the questions of scale and reductionism in the hierarchy of science in his influential &ldquo;More is Different&rdquo; paper in <i>Science</i>. Like Simon, Anderson saw complexity as central to hierarchy (<a href="#refL">Lane 2006</a>). Anderson endorsed the reductionist hypothesis, generally accepted by scientists, that animate and inanimate matter are controlled by the same set of fundamental laws (<a href="#refA">Anderson 1972</a>). But he saw the reverse, which he termed a &lsquo;constructionist hypothesis&rsquo;, as breaking down when faced with scale or complexity. &ldquo;Instead, at each level of complexity entirely new properties appear, and the understanding of the new behaviors requires research which I think is as fundamental in its nature as any other&rdquo; (<a href="#refA">Anderson 1972</a>, 393). He speculated that at growing scale the symmetry of the collection must break because of the tension between two inherent properties, determinism and randomness. These broken symmetries lead to hierarchies, specialized functions, or both. Broken symmetries lead to the emergence of new forms of symmetry with new laws and properties. The &lsquo;rigid&rsquo; information of the new level is contained in regular spatial or temporal structures such as crystals, DNA, or language. The emergent level need not have all of the laws that govern its constituents and generally has fewer (<a href="#refL">Lane 2006</a>). Models of various interactions based on simple rules were shown to produce hierarchical organization &mdash; one of the &ldquo;landmarks&rdquo; of &lsquo;emergence&rsquo; &mdash; wherein complexity, new properties, and new functions may arise from simple elements (<a href="#refH">Holland 1998</a>).</p>
+
+<p>Rather than complexity, Patrides&rsquo; (<a href="#refP">1974</a>) learned historical view of hierarchy was to equate the concept with the idea of &lsquo;order.&rsquo; Kauffman (<a href="#refK">1993</a>) much expanded the theme of order into concepts related to self-organization and evolution (<a href="#refK">1993</a>). Within computer science, a new era of interest in hierarchies was also emerging driven by general-purpose languages and artificial intelligence. Doyle provided one of the first investigations of how to capture hierarchy within a knowledge representation language (<a href="#refD">Doyle 1977</a>). Hierarchies, and the algorithms to represent them, were understood as keys to representing logic, to learning, and to reasoning over knowledge bases. Abductive inferences promised the ability to generate and test hypotheses. Decidability &mdash; that is, the ability for computer evaluation programs to run to completion &mdash; became a criterion for efficiency and language design. Generalized subsumption and description logics emerged as a strong model (<a href="#refB">Buntine 1988</a>). How to treat part-of (mereological) relations in a hierarchical manner was added to the mix (<a href="#refP">Padgham and Lambrix 1994</a>). Description logics, which are the basis for current leading semantic technology languages such as RDF or OWL, generalized the use of hierarchies through subsumption, and are now a central part of knowledge representation languages (<a href="#refB">Baader et al. 2003</a>; <a href="#refB">Brachman and Levesque 2004</a>; <a href="#refM">McGuinness and Borgida 1995</a>; <a href="#refN">Napoli 1995</a>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.2"></a>
+<h4 itemprop="articleSection">3.2 Hierarchical objects and relations</h4>
+
+<p>Though rarely stated, everything having to do with hierarchies is informational. A hierarchy is an expression of a relation &mdash; superordinate or subordinate &mdash; that is an assertion, so thus information, between two paired objects, <i>A</i> and <i>B</i>. By convention, <i>A</i> is at a higher (more general) level in the hierarchy; that is, closer to the root. In a genealogical context, <i>A</i> is the parent and <i>B</i> is the child. Either <i>A</i> or <i>B</i> may be one of the following kinds:
+
+<ul>
+
+<li><i>generals</i> - which may be known as classes, sets or types;</li>
+
+<li><i>instances</i> - which may be known as individuals, particulars, or members;</li>
+
+<li><i>parts of</i> - which may be standalone parts in assemblages or differentiated integral parts, and may also be (reciprocally) known as <i>containers</i>; or</li>
+
+<li><i>properties</i> - relations which have a subsumptive character.</li>
+</ul>
+
+<p>However, of course, depending on the relation specified, not all kinds of <i>A</i> may be associated with any kind of <i>B</i> or vice versa. The subsumption relationship stated for the relation needs to assert the proper super- or subordination <a href="#e16">[16]</a>.</p>
+
+<p>Further, not all <i>A</i> &harr; <i>B</i> relations have a hierarchical nature. Associations, label or name assignments, descriptions, and non-directional actions are all non-hierarchical relations <a href="#e17">[17]</a>. An entry within a hierarchy is connected to items at next adjacent levels in the hierarchy by one or more relations <a href="#e18">[18]</a>. Hierarchical relations may be internal or external in outlook, a major division as we will soon see. The particular nature of the hierarchical relation may be unstated in some cases, but those found in knowledge systems are often explicit to improve inferencing power.</p>
+
+<p>One method, widely employed since the students of Socrates, is to recognize the differentia within intensional attributes to distinguish a genus from a species, with the prototypical example being &lsquo;man is a rational animal&rsquo; (<a href="#refB">Burek 2004</a>). An <i>intensional</i> definition is one that has a delimiting characteristic (<a href="#refR">Roche 2016</a>), in this case the essential differentiator of rationality. Linnaeus applied this method in his plant and animal classifications, but has been criticized for proposing an artificial system, despite <!-- his stated intention to the contrary and --> the provisional nature of his phylogenies, criticisms further compounded by confusing uses of the intensional and extensional terms (<a href="#refV">Vasilyeva and Stephenson 2008</a>). As another example, <i>extensional</i> definitions are often and confusedly treated differently in information science and mathematical sets (<a href="#refR">Roche 2016</a>). Further, some systems change the meaning of classification methods depending on context (<a href="#refQ">Quinn 2017</a>). We also see conflicting terms for when we are trying to compose intensional <!-- original: intentional --> or extensional definitions as opposed to specifying the logical relation (<a href="#refK">Kublikowski 2016</a>).</p>
+
+<p>To help clarify these matters, let&rsquo;s first look at an extensional hierarchical relation, one which is external in outlook. The extensions of an object are those things to which it applies. The relationship of an instance or member to a set or class of other instances that share (mostly) the same characteristics is an extensional one. <i>Denotation</i> is a synonym. A hierarchical relation based on extension is the enumeration of instances with these shared same characteristics. To illustrate this, let&rsquo;s look at how we might classify the concept of &lsquo;color&rsquo; by assembling up all of the colors we can name, like emptying all of the individual sticks from a crayon box:
+
+<div align="center"><figure>
+<img src="hierarchy1.jpg" title="Fig. 1: Extensional hierarchy" width="60%">
+<figcaption>Figure 1: Extensional hierarchy</figcaption>
+</figure></div>
+
+<p>This &lsquo;color&rsquo; class is logical as it is built from an enumeration of its group members, that is the sticks contained in our crayon box. Group instances of an extensional hierarchy share many descriptive characters. Bigger boxes of crayons lead to the enumeration of more colors (or sticks) for these instances with their shared attributes. For example, peach &lsquo;is-a&rsquo; color. (It is also a fruit, which reinforces the need to not use simple labels and to disambiguate them for knowledge systems.) All instances of the crayon sticks share the broader &lsquo;color&rsquo; concept, and as crayon sticks, share sibling characteristics that qualify them as instances. Extensional subsumptions are more common between classes or classes and members but are not limited to them.</p>
+
+<p>Still, there is an &lsquo;essence&rsquo; to color, to use Aristotle&rsquo;s criteria for natural classes, that we can argue is based on something inherent to color, intrinsic to it, what makes up its essential character. It is what the Port Royal logicians called comprehension, later re-labeled intension (<A HREF="#refP">Peirce 1867</A>) <A HREF="#e19">[19]</A>. In the case of our &lsquo;color&rsquo; example, one essence we can surmise is the idea of primary colors, more-or-less centroids of the colors we can see <A HREF="#e20">[20]</A>, keyed to our visual cones, as arrayed in Figure 2.
+
+<div align="center"><figure>
+<img src="hierarchy2.jpg" title="Fig. 2: Simple intensional hierarchy" width="40%">
+<figcaption>Figure 2: Simple intensional hierarchy</figcaption>
+</figure></div>
+
+<p>We now have a &lsquo;color&rsquo; class constructed from an essential character or attribute, which is a primary color. This diagram is an example of <i>intensional</i> subsumption. Attributes are inherent, internal, integral, or intrinsic to the thing at hand. </p>
+
+<p>A well-chosen intensional schema may bring additional advantages. In the case of the intensional &lsquo;color&rsquo;, the essential differing character of primary color gives us the power to combine attributes into blends, which give us a multiple-level hierarchy with some secondary colors as well. 
+
+<div align="center"><figure>
+<img src="hierarchy3.jpg" title="Fig. 3: Multiple intensional hierarchy" width="40%">
+<figcaption>Figure 3: Multiple intensional hierarchy</figcaption>
+</figure></div>
+
+<p>Though the essence of primary colors arose from Newton&rsquo;s determination in 1665 that color was an inherent character of the visible light spectrum (<a href="#refG">Gleick 2004</a>), it was not until about 1800 that Herschel and Ritter discovered infrared and ultraviolet wavelengths, respectively (<a href="#refN">Newman 2013</a>). By the end of the 1800s, intensional colors as seen by humans were understood as the wavelengths of electromagnetic radiation between the infrared and ultraviolet, with a blend of secondary colors. Today, however, we know that both bees and birds can see in the ultraviolet, while humans can not, and we can see red, while other mammals can not. We might now revise our understanding of intensional color for all animals to be the wavelengths of the electromagnetic spectrum between the infrared and far-ultraviolet. New knowledge or changes in extensional scope may change our understanding of a what is a &lsquo;natural&rsquo; class. </p>
+
+<p>We can take any two bubbles in the figures above and their connecting link and present them as a &lsquo;triple&rsquo; subject-predicate-object statement &mdash; that is, a basic assertion &mdash; in the World Wide Web Consortium (W3C) vocabularies (<a href="#refW">2008</a>). The key logical statements made in a KR language assert these subsumptive relationships <a href="#e">[21]</a>. In this manner we can see a small, direct portion of the immediate hierarchies, only now turned from a section of a vertical tree into a horizontal &lsquo;triple&rsquo; statement.
+
+<div align="center"><figure>
+<img src="hierarchy4.jpg" title="Fig. 4: Basic KR triple" width="40%">
+<figcaption>Figure 4: Basic KR triple</figcaption>
+</figure></div>
+
+<p>This tuple approach is a fairly universal form, reflective, for example, of entity-relationship or entity-attribute-value (EAV) data models (<a href="#refC">Chen 1976</a>), in addition to those from the W3C and description logics. In this manner, we can include hierarchical statements in broader assemblages of other assertions in our knowledge systems.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.3"></a>
+<h4 itemprop="articleSection">3.3 Subsumption in knowledge representation</h4>
+
+<p>Library and information scientists perhaps view knowledge systems through the initial lens of thesauri or classification. Knowledge representation (KR) occupies the most developed end of the scale of knowledge systems since the objective is to instruct computers in how to capture and coherently model knowledge. Doyle (<a href="#refD">1977</a>, 3), in the first comprehensive study of KR languages, noted: &ldquo;Hierarchy is an important concept. It allows economy of description, economy of storage and manipulation of descriptions, economy of recognition, efficient planning strategies, and modularity in design&rdquo;. </p>
+
+<p>Perhaps the best description of hierarchies in a KR context is from description logics (DL) (<a href="#refB">Baader et al. 2003</a>). The subsumption relation is the basic inference or reasoning relation in DL (<a href="#refB">Baader et al. 2003</a>; <a href="#refG">Guarino and Welty 2002</a>). In part, DL grew out of Peirce&rsquo;s early work in predicate logic (<a href="#refB">Brink, Britz and Schmidt 1994</a>). DL is the logical basis for the semantic languages such as RDF or OWL standardized by the W3C (<a href="#refW">2008</a>); they have an open-world logical premise well-suited to knowledge <a href="#e">[22]</a>. KR systems can certainly classify, often with useful automation, but their greater power arises from their ability to conduct reasoning and inference, chiefly due to their hierarchical subsumption relations, the essential backbone to KR systems (<a href="#refB">Burek 2004</a>; <a href="#refD">Doyle 1977</a>).</p>
+
+<p>We create a chain of inheritance when we connect hierarchical levels to adjacent ones using the same subsumption relation (or predicate) using an <i>s-p-o</i> statement such as in Figure 4 wherein the object of a first assertion is the subject of a second (or vice versa). For example, the logical consequence, or entailment, of asserting that a person is a mammal, which is an animal, and which is a living thing thus enables us to deductively reason that a person is a living thing. A deductively sound argument is where we base the conclusion on truthful premises. On the other hand, we could ask if a given living thing is a person or not. Inductively, we can trace the hierarchy back from living thing to person to determine if it is possible for a person to be a living thing, but our inductive power would be weak because there are many potential kinds of living things. To strengthen the argument, we would need to improve the likelihood by adding more lines of evidence, such as the living thing under consideration walks bipedally, is dimorphic, is of a certain size, bears live young, nurses them with milk, is hairy, and manipulates symbols.</p>
+
+<p>Sometimes the <i>is-a</i> relation is equated with the subsumption relation, but it is only an important subset; all of the relations we discuss in our later typology are subsumptive in nature. The common <i>is-a</i> relation masks at least four different sub-types of subsumption <a href="#e23">[23]</a> subject to different logical inferences and entailments (<a href="#refJ">Johansson 2006</a>). Brachman (<a href="#refB">1983</a>) made a logical analysis of <i>is-a</i> and its types in the beginning years of description logics. We can further subset partitive subsumptions using the <i>part-of</i> and <i>has-part</i> relations. </p>
+
+<p>The work we can extract from KR systems with hierarchical subsumption relations extends beyond reasoning and inferencing. For example, much can be done with basic text. Hearst (<a href="#refH">1992</a>) demonstrated that lexico-syntactic patterns could indicate hyponym relationships. Heuristics were used to identify these initial patterns and has remained a useful approach. At roughly the same time, however, particularly through the understanding of hierarchical structures in text, an alternate approach was to treat the semantics of a terminology in algebraic form (<a href="#refB">Brink and Schmidt 1992</a>). These computational approaches have continued to be refined, initially to inform cluster analysis (<a href="#refC">Cimiano and Staab 2005</a>). In the last decade, word embeddings, which convert natural language text into vectors of numeric representations, have shown the ability to distinguish semantic similarities and differences through vector comparison. The growing sophistication of word embeddings led about five years ago to their use in the discovery of hypernym-hyponym relations (<a href="#refF">Fu et al. 2014</a>). The present state of development has moved beyond text snippets and documents associated with specific nodes to embrace the entire graph structure, with subsumption relations playing a prominent role. The intersection of text, hierarchy, graph structure, and adjacency features is leading to an explosion of graph embedding approaches that promise to improve on virtually all KR tasks (<a href="#refH">Hogan et al. 2020</a>).</p>
+
+<p>In other work areas, we can check instances using subsumption, though we may need to add some further steps (<a href="#refD">Donini et al. 1994</a>). We may leverage hierarchies to inform different clustering algorithms, including for formal concept analysis (<a href="#refC">Cimiano and Staab 2005</a>). When building our knowledge structures, we can test for &lsquo;satisfiability&rsquo;,  which means that our assertions are &lsquo;true&rsquo; and consistent with other assertions, a key qualification criterion. Subsumptive relations are the basis for these tests (<a href="#refH">Horrocks and Patel-Schneider 1999</a>). The subsumption hierarchies are also useful structures for aligning our knowledge systems, which we need to do when merging or adding large chunks to them (<a href="#refS">Spiliopoulos, Vouros and Karkaletsis 2010</a>). Hierarchies can inform the automatic creation of metadata facets (<a href="#refS">Stoica and Hearst 2004</a>; <a href="#refS">Stoica, Hearst and Richardson 2007</a>). Given these interactions, we can also apply hierarchical clustering to our existing structures, which can surface natural data representations that may be better ways to arrange (and thus refine) our knowledge structures going forward (<a href="#refG">Greenberg et al. 2020</a>). Subsumption relations also add meaningful features over which machine learners can inductively reason for creating more effective artificial intelligence (AI) models.</p>
+
+<p>High-quality subsumption relations confirm that broader and narrower relations are stronger than those among sibling concepts, that superclasses exhibit commonalities among their sub-classes, and that there are abstract features in a superclass not exhibited by any sub-class (<a href="#refS">Solskinnsbakk et al. 2010</a>). Crutchfield (<a href="#refC">2012</a>) used Shannon&rsquo;s (<a href="#refS">1948</a>) information theory to further explicate the emergence of natural hierarchies. His analysis showed how a &lsquo;higher&rsquo; level may emerge from the properties of a &lsquo;lower&rsquo; level. Note how those findings relate to Anderson&rsquo;s (<a href="#refA">1972</a>) earlier <i>Science</i> paper. The proliferation of &lsquo;triples&rsquo; throughout a KR system also leads to the formation of a network or graph structure, significantly aided by the presence of a hierarchical organization (<a href="#refC">Cz&eacute;gel and Palla 2016</a>). Graph structures themselves are sources of additional features for machine learners, and leverage the potential to extract meaningful information from the natural language contained within the knowledge structure.</p>
+
+<p>The use of &lsquo;hierarchy&rsquo; in the sciences and, now, also knowledge professions, has thus both narrowed and shifted from its historical senses over time <a href="#e24">[24]</a>. The narrowing occurs by focusing on subsumption relations for natural observations and conceptual generalizations. The shift occurs to computable logic tests and algorithms. Hierarchies, in the sense of knowledge systems, are now the reasoning basis for understanding the real world, as opposed to expressions of control or social rank <a href="#e25">[25]</a>. Yet, as these broad surveys have shown, considerable diversity exists as to the nature and classification of knowledge hierarchies. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4"></a>
+<h3 itemprop="articleSection">4. Insights from Peirce</h3>
+
+<p>Charles Sanders Peirce (1839&ndash;1914, pronounced &lsquo;purse&rsquo;) belongs to the pantheon of great thinkers in knowledge representation (<a href="#refB">Bergman 2018</a>). Peirce made significant contributions in logic, mathematics, the physical sciences, scientific notations, philosophy, dictionary definitions, and many practical fields over a nearly sixty-year period, including thirty years as a practicing scientist and inventor (<a href="#refB">Burch 2017</a>). While widely recognized and feted as a younger man, he died penniless and somewhat in obscurity; 80,000 handwritten manuscript pages are still awaiting editorial attention to join his more than 12,000 published ones (<a href="#refB">Burch 2017</a>). Among his signal contributions are the philosophy of pragmatism (different from, but a stimulant to, the similar advocacies of his friends and colleagues, William James and John Dewey), his semeiotic theory of signs (different than the linguistic efforts of Ferdinand de Saussure), the algebraic logic of relatives, algebraic geometry and topology, explications of the scientific method, diagrammatic logic using existential graphs <a href="#e26">[26]</a>, and a third method of logical inference, abduction [27]. In a more contemporary vein, Peirce has contributed a triadic logic to formal concept analysis (<a href="#refW">Wille 1995</a>) <a href="#e28">[28]</a>, presaged key aspects of category theory (<a href="#refZ">Zalamea 2012</a>), and has stimulated practical applications in hypothesis testing, grammars, cluster analysis, artificial intelligence, and other areas of computer science (<a href="#refB">Burch 2017</a>), including description logics as noted earlier.</p>
+
+<p>Peirce&rsquo;s background as a classifier derives from his reliance on the universal categories of Firstness, Secondness, and Thirdness; his understanding of everything being represented as signs, subject to interpretation, fallibility, and community understanding; his fierce (and idealistic) belief in reality; and his logics. Infused in these perspectives is his embrace of the scientific method, indeed even extended to his notion of pragmatism, wherein we find guidance as to what practical questions to ask and how to act under uncertainty. I expand on each of these areas in the sub-sections to follow.</p>
+
+<p>There are also strong linkages in Peirce&rsquo;s insights to evolution and Shannon&rsquo;s information theory (<a href="#refB">Bergman 2018</a>). His simultaneous beliefs in non-deterministic chance (which he termed &lsquo;tychism&rsquo;) and continuity and generality (which he termed &lsquo;synechism&rsquo;) bracket the actual, all three of which he viewed as real. While the idea of &lsquo;hierarchy&rsquo; in knowledge systems will likely remain imprecise, the use of a consistent perspective such as what Peirce provides can give us a coherent approach for representing information of all forms and levels to our knowledge systems.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.1"></a>
+<h4 itemprop="articleSection">4.1. Peirce, the classifier</h4>
+
+<p>Peirce was a classifier and a keen student of classification. At Harvard, Peirce studied under the renowned taxonomist Louis Agassiz, and greatly admired his natural classification system and used animal lineages in many of his examples (<a href="#refB">Bergman 2018</a>). Peirce largely adhered to Plato&rsquo;s Socrates in arguing for &lsquo;natural classes&rsquo;, whose ideal for dividing classes was &ldquo;where the natural joints are, and not trying to break any part&rdquo; (<a href="#refP">Plato 1925</a>). Peirce also embraced Aristotle&rsquo;s idea of a &lsquo;final cause&rsquo; of a thing, which he likened to the purpose or the reason for the thing&rsquo;s existence, over Aristotle&rsquo;s &lsquo;essence&rsquo; (<a href="#refH">Hulswit 1997</a>). Peirce referred to a natural class as a &ldquo;family whose members are the sole offspring and vehicles of one idea, from which they derive their peculiar faculty&rdquo; (<a href="#refP">Peirce 1998b</a>, 125). His recognized means for natural classification was &ldquo;only an enumeration of tests by which the class may be recognized in any one of its members&rdquo; (CP 1.223, <a href="#refP">1902</a>). Peirce&rsquo;s concept of &lsquo;natural classes&rsquo; was not limited to things only found in nature but included social classes, the sciences, concepts, ideas, thoughts, and human-made products (<a href="#refB">Bergman 2018</a>; <a href="#refB">Brakel 1998</a>; <a href="#refH">Hulswit 1997</a>). Peirce denied that a &lsquo;final cause&rsquo; was static, meaning the referent was not unchangeable, and he was attentive to remove the psychological from classification, grounding it instead in logic and observed phenomena. </p>
+
+<p>Peirce&rsquo;s most notable classification was that of the sciences (<a href="#refM">Midtgarden 2019</a>), which he broadly defined to include philosophy, logic and the humanities <a href="#e29">[29]</a>. He worked on this system for nearly 40 years until he produced his final &lsquo;perennial&rsquo; one in 1903, having iterated and refined his classification at least 20 different times with minor versions in between (<a href="#refK">Kent 1987</a>). The perennial classification had the three main branches of mathematics, cenoscopy (philosophy), and idioscopy (the special sciences of traditional science and the humanities). The classification is hierarchical in design. Another major classification by Peirce was on &lsquo;Logic&rsquo; as reflected in his Carnegie grant application of 1905 and related papers (<a href="#refP">Peirce 1998e</a>), though a myriad of classifications is common across his five decades of writings. He applied the tree metaphor in classification and logic (<a href="#refA">Anellis and Abeles 2016</a>; <a href="#refP">Peirce 1976</a>).</p>
+
+<p>To Peirce, any logical inquiry needed to be grounded in a &lsquo;speculative grammar&rsquo; that defines the qualities, objects and rules resident to the domain. In one of Peirce&rsquo;s first papers, read before the AAAS, he presented his views on comprehension (intension) and extension, which he labeled depth and breadth respectively (<a href="#refP">Peirce 1867</a>). In this paper Peirce examined the logical underpinnings of these concepts reaching back to the Greeks, the scholastics of the Middle Ages, the Port Royal logicians, and more recent philosophers and logicians, noting many confusions and inexactitudes. Peirce maintained that depth and breadth multiplied together consists of the total information, or area, of the concept or object, positions which he continued to hold for at least the next 40 years (<a href="#refP">Peirce 1998b</a>). He assigned degrees to this possible information, including what is essential and what is substantial (absolute truth). Peirce likened comprehension (intension), or depth, to &lsquo;internal qualities&rsquo; (Kant), forms (DeMorgan), particulars, or connotations. Depth consists of the necessary internal attributes common to the item. On the other hand, extension, or breadth, is an external quality (Kant) or scope (DeMorgan), that denotes something and is applicable to generals and universals. In extension, all group members are brought in relation to one another via their shared characteristics (<a href="#refP">Peirce 1867</a>). In a classificatory structure, what is most general has the greatest breadth and little depth; what is individual and particular has the greatest depth and little breadth. </p>
+
+<p>Peirce therefore presents a logical means for assigning subsumption relationships. Classifications are more natural when they distinguish items by virtue of their essential internal qualities, and when they are combined into classes with a common &lsquo;final cause&rsquo;. The final cause goes beyond essentiality to capture the &lsquo;purpose&rsquo; or directionality for the item at hand as reflected by its continuous evolutionary tendencies to certain forms of generality. This viewpoint is sometimes confused with the teleology of Aristotle, but instead reflects a more subtle and rational aspect of natural science; it is a &ldquo;type for which selection is made&rdquo; (<a href="#refS">Short 2007</a>, 138). </p>
+
+<p>A natural classification for Peirce is thus logical and both intensional and extensional. (We can still have logical classifications that are artificial.) It is intensional when particulars are properly distinguished based on essential, internal characters. It is extensional when we bring those particulars together in an appropriate scope based on their &lsquo;final cause&rsquo; as exemplified by their evolutionary directionality or purpose. Further, given the fallibility of knowledge, a natural classification is provisional and subject to change and refinement as new knowledge arises <a href="#e30">[30]</a>.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.2"></a>
+<h4 itemprop="articleSection">4.2. Trichotomies in logic, signs, and reality</h4>
+
+<p>Most researchers of Peirce soon see his penchant for threes (<a href="#refB">Bergman 2018</a>; <a href="#refB">Burch 2017</a>). The fount for Peirce&rsquo;s insights seems to reside in his abiding interest in logics and relations, going back to his earliest writings. His &lsquo;reduction thesis&rsquo;, much studied by Burch (<a href="#refB">1991</a>), maintained that all <i>n</i>-ary relations beyond an <i>n</i> of three may be constructed from triadic relations alone, and no true triadic relation (&lsquo;Mike gives the ball to Jim&rsquo;) may be constructed by monadic or dyadic relations. A number of parties has now claimed proof of Peirce&rsquo;s reduction thesis (<a href="#refB">Burch 1991</a>; <a href="#refD">Dau and Correia 2006</a>; <a href="#refH">Hereth and P&ouml;schel 2011</a>). My reading of Peirce suggests he used triadic approaches in his own thinking to question prevalent dichotomous arguments and to be explicit about the use of logic, analysis and synthesis when tackling a new problem. We certainly see evidence of this in Peirce&rsquo;s systems thinking regarding logic, signs and reality, or any &ldquo;intellectual concept&rdquo; to use his term (<a href="#refP">Peirce 1998d</a>). This kind of triadic thinking can also aid classification and hierarchies in knowledge systems.</p>
+
+<p>From his earliest papers, Peirce challenged the then-current notion of only two forms of inferential logic, namely deduction for necessary inferences and induction for probable ones (<a href="#refB">Burch 2017</a>). He explicated these two forms much during his career, for example identifying classification as the first of three stages of induction (<a href="#refP">Peirce 1998g</a>), but also felt there was a third kind of logic, employed when generating hypotheses and deciding how to select among them, what he initially called &lsquo;abduction&rsquo; (later &lsquo;retroduction&rsquo;, then &lsquo;abduction&rsquo; again) <a href="#e27">[27]</a>. Peirce worked much on abduction given its role in the complete logic of the scientific method, and he refined his view of it over his career. The growth of new knowledge, and the stimulus for classification, comes from a &ldquo;surprising fact&rdquo; that causes us to question premises or understand new emerging or discovered phenomena, which compels abductive reasoning to pick a candidate hypothesis for why the &ldquo;surprise&rdquo; has occurred. Multiple factors weigh on that choice among an infinitude, including economy, practicality, probability, and even instinct. Then, &ldquo;that which is to be done with the hypothesis is to trace out its consequences by deduction, to compare them with results of experiment by induction, and to discard the hypothesis [if refuted], and try another&rdquo; (<a href="#refP">Peirce 1998c</a>, 107).</p>
+
+<p>The three inferential forms of abduction, deduction and induction constitute the &lsquo;critic&rsquo;, the actual methods of logical inference, which along with &lsquo;speculative grammar&rsquo; (noted above) and &lsquo;methodeutic&rsquo;, comprise Peirce&rsquo;s broader triadic logic. Methodeutic (which Peirce also called &lsquo;speculative rhetoric&rsquo;) deals with all methods of representation, inquiry, and verification, and is closely aligned with the apparatus and thinking of science (<a href="#refB">Burch 2017</a>); it is what also led Peirce into the study of signs. Peirce held the triadic system of logic to be universally true (<a href="#refZ">Zalamea 2013</a>). </p>
+
+<p>Peirce equated logic in its broadest (triadic) sense with his theories of semeiosis of sign-making and interpretation (<a href="#refB">Burch 2017</a>), distinct from the more linguistic interpretation of &lsquo;semiosis&rsquo; (de Saussure) with which it is often conflated. The trichotomy of the sign consists of the immediate object (2ns), its signal (1ns), and its interpretation (3ns). The immediate object is a facsimile of the full, dynamic object, since how it can be signaled and represented can never be complete. The signal can extend from an icon or index or pointer to the object to a symbol of it (such as a word). The interpretation of the sign is based on the context and capabilities of the interpretant. According to Peirce, the interpretant is that to which the sign represents the object, which he often called mind or &lsquo;effete mind&rsquo;, which we perhaps can more generally understand as the receiver of the information. Signs build upon signs through a process of accretion and community consensus, often from the coining and acceptance of new terms based on the understanding of new emergent properties or aspects of the object. Science and the application of logic enable us to continually add to our language and to test and refine these understandings.</p>
+
+<p>Peirce organized these various classifications, as with most other aspects of his work, into a trichotomy of universal categories, most often referred to as Firstness, Secondness, and Thirdness. Peirce articulated more than 60 different variants of these categories over his career, from logic to signs to language symbols and other classifications, varying the actual content of each category depending on the context (<a href="#refB">Bergman 2018</a>, Table 6-2, 118-120). The universal categories are the primitives that comprise all things, ideas, logic, and concepts, since nothing is as irreducible as one, two, and three, with all higher-order structures combinations of these constructs. The groundings for the categories are: Firstness (1ns) - monads which are the possibilities for a given context; Secondness (2ns) - the actual things within that context, specifically including events and entities; and Thirdness (3ns) - the generalities, laws, or abstractions that provide continuity across things (<a href="#refB">Bergman 2018</a>). For example, a mode of signs from possible to actual to necessary was termed by Peirce &lsquo;mark&rsquo; (1ns), &lsquo;token&rsquo; (2ns), and &lsquo;type&rsquo; (3ns) (CP 8.364, 1908). Similarly, we can relate Shannon&rsquo;s (<a href="#refS">1948</a>) information model of sender (2ns), message (1ns), and receiver (3ns) to Peirce&rsquo;s triadic categories.</p>
+
+<p>Peirce came to believe that all three universal categories &mdash; possibilities, actualities, and generalities &mdash; are real, becoming what Fisch (<a href="#refF">1967</a>) called a &lsquo;three-category realist&rsquo;. The actual things of the world (2ns) exist independent of what we think of them. Peirce saw generalities (3ns) and &lsquo;natural classes&rsquo; as real because general principles (such as the law of gravity) are operative in nature, they are essentially predicative, and their representations (such as words) can have real effects (<a href="#refP">Peirce 1998h</a>) <a href="#e31">[31]</a>. Firstness was the last universal category that Peirce accepted as real in about 1897 (<a href="#refF">Fisch 1967</a>). Peirce based his assertion, in part, on the &ldquo;perceptual judgment of qualities&rdquo; (1ns) that are &ldquo;utterly beyond control&rdquo; of the interpretant (<a href="#refP">Peirce 1998d</a>, 191). That is, &ldquo;perceptual judgments [which he elsewhere calls &lsquo;Qualities of Feeling&rsquo;] are the first premisses of all of our reasonings and that they can not be called into question&rdquo; (<a href="#refP">Peirce 1998d</a>, 191). Thus, in two fundamental ways &mdash; a trichotomous vs.  dichotomous basis and a complete belief in an external reality &mdash; Peirce contradicted Descartes&rsquo; view of the world.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.3"></a>
+<h4 itemprop="articleSection">4.3. Fallibility, the scientific method, and pragmatism</h4>
+
+<p>As a practical physical scientist, Peirce understood well that knowledge and science are fallible, and measurements are not perfectly reproducible, no matter the scale or how many taken. Historical and emerging notions of natural order are not inviolate. For example, we see the scientific understanding of the taxonomic ordering of living things has progressed from the use of morphology and external appearances to internal ones based on genealogy and, now, genetics (<a href="#refM">Mayr 1982</a>). The role of evolution in these orderings has been fundamental, such that some observers suggest that &ldquo;various evolutionary processes naturally emerge with hierarchical organization&rdquo; (<a href="#refA">Annila and Kuismanen 2009</a>). Peirce&rsquo;s insights triangulate a central role for evolution consistent with semeiosis and the 2nd law of thermodynamics (<a href="#refA">Annila and Kuismanen 2009</a>; <a href="#refA">Annila and Salthe 2010</a>; <a href="#refH">Herrmann-Pillath 2010</a>; <a href="#refH">Herrmann-Pillath and Salthe 2011</a>; <a href="#refL">Lehmonen and Annila 2017</a>; <a href="#refS">Salthe 2012</a>; <a href="#refS">Short 2007</a>).</p>
+
+<p>Peirce saw absolute truth as something that can only be approached as a limit function. The aim of science is to employ keen observation, logic, and sound methods to strive toward those limits. Peirce&rsquo;s insight with pragmatism was to provide a scope, and practical and economic ways to gain the necessary knowledge sufficient for us to be able to act and make progress (<a href="#refP">Peirce 1905a; 1905b; 1906; 1998d; 1998e</a>). Of all four methods of inquiry, only knowledge gained through the scientific method provides the means for us to fix belief sufficient to act (<a href="#refP">Peirce 1877</a>).</p>
+
+<p>The integration of the three logical tests of abduction, deduction, and induction into what he called the &ldquo;scientific method&rdquo; is one of Peirce&rsquo;s signal achievements (<a href="#refB">Burch 2017</a>). The methodology is error-correcting (<a href="#refM">Mayo 2005</a>) and acknowledges that &ldquo;probability is actually a notion with clear empirical content and that there are clear empirical procedures for ascertaining that content&rdquo; (<a href="#refB">Burch 2017</a>). The nature of knowledge and truth as limit functions means there should be no absolutes in intellectual discourse. If a system or approach, including one of classification, is in the main truthful and respectful of the scientific method, then whole systems should not be rejected based on a minority of falsities; instead, the errors should be corrected and the system revised. Given the broad scope that Peirce ascribed to knowledge and the sciences, these guidances apply to all disciplines, including philosophy and the humanities, as well as questions of practical conduct. Mathematics was the sole branch of knowledge he held apart.</p>
+
+<p>We can and do reach consensus or belief on many aspects of how the world is and how it works, sufficient for us to &lsquo;know&rsquo; things to act upon them. Peirce embedded this belief in his philosophy of pragmatism (<a href="#refP">Parker 1998</a>). The act of classification or the placement into hierarchies is, of course, not always a natural one. Peirce recognized that &ldquo;there are artificial classifications in profusion, but [there is] only one natural classification&rdquo; (CP 1.275, <a href="#refP">1902</a>). Peirce makes the practical point that, &ldquo;All classification, whether artificial or natural, is the arrangement of objects according to ideas. A natural classification is the arrangement of them according to those ideas from which their existence results&rdquo; (CP 1.231, <a href="#refP">1902</a>). And, further, &ldquo;All natural classification is then essentially, we may almost say, an attempt to find out the true genesis of the objects classified. But by genesis must be understood, not the efficient action which produces the whole by producing the parts, but the final action which produces the parts because they are needed to make the whole. Genesis is production from ideas. [&hellip;] A science is defined by its problem; and its problem is clearly formulated on the basis of abstracter science&rdquo; (CP 1.227, <a href="#refP">1902</a>). </p>
+
+<p>Peirce&rsquo;s worldview is one where logic and the application of the scientific method intersects with a Nature that is continuously evolving in particular contexts within chance and the limits of its possibilities. What we know about this Nature is incomplete and fallible. How we perceive and communicate these realities are imperfect. The depth and breadth of our information space are constantly changing, and so should our systems of classification within it. The wonderful thing about picking Peirce as our guide is the remarkable coherence and completeness his &lsquo;architectonic&rsquo; (<a href="#refP">Peirce 1891</a>) brings.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5"></a>
+<h3 itemprop="articleSection">5. A typology of knowledge system hierarchies</h3>
+
+<p>The foregoing points to the importance of logic and the striving for &lsquo;natural&rsquo; classes within both intensional and extensional viewpoints in formulating our hierarchical knowledge systems. This section proposes a typology of knowledge system hierarchies based on these points and guided by Peirce. Our proposed typology for hierarchical relations should in all cases be logical, and then strive for naturalness within a subsumptive framework. However, to bootstrap this process, we first need to introduce a logical relation called prescission that was employed by Peirce and is hierarchical, but does not have most of the entailments of subsumption. </p>
+
+<p>Every hierarchical statement can be seen as a pair of objects connected by a super- or suborienting relation (as reflected in Figure 4). In accordance with his universal categories, Peirce defines three distinct kinds of separation for any pair in thought; that is, ways in which we assign conceptual or intellectual relations between a pair. As paraphrased, <i>dissociation</i> (1ns) consists in imagining one of the two separands without the other, complete or incomplete. <i>Prescission</i> (2ns) consists in supposing a state of things in which one element is present without the other, the one being logically possible without the other. <i>Discrimination</i> (3ns) consists in representing one of the two separands without representing the other (EP 2:270, <a href="#refP">1903</a>). Note that all hierarchical subsumptions are 2ns; that is, prescissive in nature. Prescission captures the most fundamental expression of a hierarchical relationship, stated as the relation, <i>prescind</i> <a href="#e32">[32]</a>. We can understand the relation &lsquo;<i>B</i> prescinds <i>A</i>&rsquo; as equivalent to &lsquo;<i>B</i> may be supposed without <i>A</i>&rsquo;; the more common form is &lsquo;<i>B</i> can be prescinded from <i>A</i>&rsquo;. Other ways to understand the relation is that <i>B</i> may ignore, be presupposed without, or can be considered separately from, <i>A</i>. It is a logical process absent any psychologism to distinguish a subordinate concept from a superordinate one (CP 2.248, <a href="#refP">1903</a>):
+
+<blockquote>But prescission, if accurately analyzed, will be found not to be an affair of attention. We cannot prescind, but can only distinguish, color from figure. But we can prescind the geometrical figure from color; and the operation consists in imagining it to be so illuminated that its hue cannot be made out (which we easily can imagine, by an exaggeration of the familiar experience of the indistinctness of hues in the dusk of twilight). In general, prescission is always accomplished by imagining ourselves in situations in which certain elements of fact cannot be ascertained. This is a different and more complicated operation than merely attending to one element and neglecting the rest.</blockquote></p>
+
+<p>Prescission is an asymmetrical separation of two elements objectively considered; it is a logical operation that does not make any ontological assumptions about the two elements (<a href="#refH">Houser 2010</a>). Prescission carries no connotation of meaning. It can determine logical precedence between two concepts, and therefore a level, but not an exact relation between them. It carries no entailment other than prescission <a href="#e33">[33]</a>. Though Peirce does not state such, in all cases a particular can be prescinded from a general. However, Peirce does state that Firstness prescinds Secondness, which prescinds Thirdness, though none of the reciprocals hold true (<a href="#refP">Peirce 1998e</a>). This means that prescission is the most general relation for establishing a hierarchy, useful for abstract concepts or monads. For these reasons, we put precission at the top of our typology hierarchy.</p>
+
+<p>The next major level in the hierarchy is subsumption. All subsequent hierarchical relations are sub-types underneath the rubric of the subsumption relation. The subsumption relation may involve classes, instances, parts or properties, and may be extensional, intensional (comprehensive), or &lsquo;natural&rsquo; embracing both (<a href="#refP">Peirce 1867</a>; <a href="#refV">Vasilyeva and Stephenson 2008</a>), consistent with the <i>breadth</i> and <i>depth</i> terms employed by Peirce. The most restrictive subsumption level in the typology is the &lsquo;natural&rsquo; one. Again, consistent with Peirce, a &lsquo;natural&rsquo; subsumption has both a defined (defensible) scope for its parent class (its breadth, or extension), and a set of essential intrinsic attributes for its object (its depth, or intension).</p>
+
+<p>Table 1 now weaves these threads into a typology for hierarchy relations useful to knowledge systems. Consistent with our guidance from Peirce and our desire to maintain inheritance across subtypes of subsumption, we agree with Linnebo and Rayo (<a href="#refL">2012</a>) who argue that hierarchies should be expressed through types that exhibit characteristics of absolute generality and inferencing [<a href="#e34">34</a>]. I have organized the remainder of the typology by subsumption relations, split into its major extensional, intensional, and &lsquo;natural&rsquo; branches. I further organize each of these splits to embrace the common hierarchical relations drawn from: (1) the American National Standards Institute as developed by the National information Standards Organization (ANSI/NISO 2005); (2) semantic language standards for knowledge systems from the World Wide Web Consortium (<a href="#refW">W3C 2008</a>); and (3) other researchers with interests in typing hierarchical relations.</p>
+
+
+<!--
+<blockquote>
+
+<table border="0">
+<p><caption><i>Table 1: Typology of hierarchical types</i><br>&nbsp;</caption></p>
+<tr>
+<th>Type of Hierarchy</th>
+<th width="8%"></th>
+<th>Illustrative Relation</th>
+<th></th>
+<th>Notes</th>
+</tr><tr>
+<td>Precission</td>
+<td>B</td>
+
+<td>prescinds</td>
+
+<td>A</td>
+
+<td>1</td>
+</tr><tr>
+
+<td>
+</td>
+
+<td>B</td>
+
+<td><i>can be supposed without</i></td>
+
+<td>A</td>
+
+<td>1</td>
+</tr><tr>
+<td>
+</td>
+
+<td>B</td>
+
+<td><i>is logically possible without</i></td>
+
+<td>A</td>
+
+<td>1</td>
+</tr><tr>
+<td>Subsumption</td>
+
+<td>A</td>
+
+<td>is more general</td>
+
+<td>B</td>
+
+<td>
+</td>
+</tr><tr>
+<td>
+</td>
+
+<td>A</td>
+
+<td><i>subsumes</i></td>
+
+<td>B</td>
+
+<td>
+</td>
+</tr><tr>
+
+<td>
+</td>
+
+<td>
+
+A</td>
+
+<td><i>includes</i></td>
+
+<td>B</td>
+
+<td>
+</td>
+</tr><tr>
+<td>
+</td>
+
+<td>
+
+A</td>
+
+<td><i>broader than</i></td>
+
+<td>B</td>
+
+<td>3</td>
+</tr><tr>
+
+<td>
+</td>
+
+<td>A</td>
+
+<td><i>broader term</i></td>
+
+<td>B</td>
+
+<td>4</td>
+</tr><tr>
+
+<td>
+</td>
+
+<td>B</td>
+
+<td><u>narrower than</u></td>
+
+<td>A</td>
+
+<td>3</td>
+</tr><tr>
+
+<td>
+</td>
+
+<td>B</td>
+
+<td><u>narrower term</u></td>
+
+<td>A</td>
+
+<td>4</td>
+</tr><tr>
+
+<td>
+</td>
+
+<td>
+
+B</td>
+
+<td><u>nests within</u></td>
+
+<td>A</td>
+
+<td>2</td>
+</tr><tr>
+
+<td>
+Extensional Subsumption</td>
+
+<td>
+
+B</td>
+
+<td>is a</td>
+
+<td>A</td>
+
+<td>2,5,6</td>
+</tr><tr>
+
+<td>is-a [class]</td>
+
+<td>
+
+B</td>
+
+<td>subClassOf</td>
+
+<td>A</td>
+
+<td>3</td>
+</tr><tr>
+
+<td>
+</td>
+
+<td>A</td>
+
+<td><u>superClassOf</u></td>
+
+<td>B</td>
+
+<td>7</td>
+</tr><tr>
+
+<td>
+</td>
+
+<td>A</td>
+
+<td><u>broader term (generic)</u></td>
+
+<td>B</td>
+
+<td>4</td>
+</tr><tr>
+
+<td>
+</td>
+
+<td>B</td>
+
+<td><i>narrower term (generic)</i></td>
+
+<td>A</td>
+
+<td>4</td>
+</tr><tr>
+
+<td>
+
+determinable-subsumption</td>
+
+<td>
+
+B</td>
+
+<td>subPropertyOf</td>
+
+<td>A</td>
+
+<td>3,8</td>
+</tr><tr>
+
+<td>
+
+specialization</td>
+
+<td>
+
+B</td>
+
+<td>is specialization of</td>
+
+<td>A</td>
+
+<td>8</td>
+</tr><tr>
+
+<td>is-a [instance]</td>
+
+<td>
+
+B</td>
+
+<td>type</td>
+
+<td>A</td>
+
+<td>3</td>
+</tr><tr>
+
+<td>
+</td>
+
+<td>A</td>
+
+<td><u>has member</u></td>
+
+<td>B</td>
+
+<td>7</td>
+</tr><tr>
+
+<td>
+</td>
+
+<td>B</td>
+
+<td><i>instance of</i></td>
+
+<td>A</td>
+
+<td>
+</td>
+</tr><tr>
+
+<td></td>
+
+<td>
+
+A</td>
+
+<td><u>broader term (instance)</u></td>
+
+<td>B</td>
+
+<td>4</td>
+</tr><tr>
+
+<td>
+</td>
+
+<td>B</td>
+
+<td><i>narrower term (instance)</i></td>
+
+<td>A</td>
+
+<td>4</td>
+</tr><tr>
+
+<td>
+</td>
+
+<td>A</td>
+
+<td><u>has an instance of</u></td>
+
+<td>B</td>
+
+<td>7</td>
+</tr><tr>
+
+<td>
+Intensional Subsumption</td>
+
+<td>
+</td>
+
+<td>
+</td>
+
+<td>
+</td>
+
+<td>
+
+6,9</td>
+</tr><tr>
+
+<td>
+</td>
+
+<td>
+
+A</td>
+
+<td>contains</td>
+
+<td>B</td>
+
+<td>2</td>
+</tr><tr>
+<td>
+</td>
+
+<td>
+</td>
+
+<td>is-a [class]</td>
+
+<td>
+
+As above</td>
+
+<td>
+</td>
+</tr><tr>
+
+<td>
+genus-subsumption</td>
+
+<td>
+
+A</td>
+
+<td>is parent of</td>
+
+<td>B</td>
+
+<td>8</td>
+</tr><tr>
+
+<td>
+</td>
+
+<td>B</td>
+
+<td><u>is child of</u></td>
+
+<td>A</td>
+
+<td>
+</td>
+</tr><tr>
+
+<td>
+specification</td>
+
+<td>
+
+B</td>
+
+<td>is way of</td>
+
+<td>A</td>
+
+<td>8</td>
+</tr><tr>
+
+<td>
+</td>
+
+<td>B</td>
+
+<td><i>is method for</i></td>
+
+<td>A</td>
+
+<td>
+</td>
+</tr><tr>
+
+<td>
+
+part-of</td>
+
+<td>
+
+A</td>
+
+<td>has part</td>
+
+<td>B</td>
+
+<td>2,6,7</td>
+</tr><tr>
+
+<td>
+</td>
+
+<td>A</td>
+
+<td><i>broader term (partitive)</i></td>
+
+<td>B</td>
+
+<td>4</td>
+</tr><tr>
+
+<td>
+</td>
+
+<td>B</td>
+
+<td><u>narrower term (partitive)</u></td>
+
+<td>A</td>
+
+<td>4</td>
+</tr><tr>
+
+<td>
+</td>
+
+<td>B</td>
+
+<td><i>is region of</i></td>
+
+<td>A</td>
+
+<td>
+</td>
+</tr><tr>
+
+<td>
+</td>
+
+<td>
+
+B</td>
+
+<td><i>is time slice of</i></td>
+
+<td>A</td>
+</tr><tr>
+
+<td>
+
+has-a</td>
+
+<td>
+
+A</td>
+
+<td>has attribute</td>
+
+<td>B</td>
+
+<td>
+</td>
+</tr><tr>
+
+<td>
+</td>
+
+<td>
+
+A</td>
+
+<td><i>[property]</i></td>
+
+<td>B</td>
+
+<td>3,10</td>
+</tr><tr>
+
+<td>
+
+defeasible</td>
+
+<td>
+
+A</td>
+
+<td><i>usually has attribute</i></td>
+
+<td>B</td>
+
+<td>11</td>
+</tr><tr>
+
+<td>
+&lsquo;Natural&rsquo; Subsumption</td>
+<td>
+</td>
+
+
+<td>
+
+See text</td>
+
+<td>
+</td>
+
+<td>
+</td>
+
+</tr>
+</table>
+</blockquote>
+
+<p><br>
+<i>Table Notes:</i> Synonym relations are italicized; reciprocal relations are underlined in relation to first given instance; <b>1</b>: see text; <b>2</b>: (<a href="#refH">&ldquo;Hierarchy&rdquo; 2020</A>); <b>3</b>: W3C predicate (<a href="#refW">W3C 2008</a>); <b>4</b>: (<a href="#refA">ANSI/NISO 2005</a>); <b>5</b>: Tbox in DL; &lsquo;levels of organization&rsquo; (<a href="#refA">Ahl and Allen 1996</a>); <b>6</b>; &rsquo;compositional hierarchy&rsquo; and &lsquo;specification hierarchy&rsquo; are extensional and intensional, respectively (<a href="#refS">Salthe 2012</a>); <b>7</b>: (<a href="#refI">ISO 2011</a>); <b>8</b>: (<a href="#refJ">Johansson 2006</a>); <b>9</b>: Abox in DL; &lsquo;levels of observation&rsquo; (<a href="#refA">Ahl and Allen 1996</a>); <b>10</b>: in W3C sense, individually specified properties (<a href="#refW">W3C 2008</a>); <b>11</b>: (<a href="#refB">Britz and Varzinczak 2017</a>).</p>
+
+-->
+<!-- begin Mike's table -->
+
+  <blockquote>
+      <div style="margin:10px auto">
+        <table style="width:740px" border="0">
+          <caption>
+            <i>Table 1: Typology of hierarchical types (The sources used are provided as table notes)</i>
+            <br>&nbsp;<br>
+          </caption>
+          <tbody>
+            <tr>
+              <td colspan="5" rowspan="1" style="vertical-align:top;text-align:center;font-weight:bold">Type of
+              Hierarchy</td>
+              <th>
+                <br>
+              </th>
+              <th>Illustrative Relation</th>
+              <th>
+                <br>
+              </th>
+              <th>Notes</th>
+            </tr>
+            <tr>
+              <td colspan="5" rowspan="1">Prescission
+              <br></td>
+              <td style="text-align:center">B</td>
+              <td>prescinds</td>
+              <td style="text-align:center">A</td>
+              <td>1</td>
+            </tr>
+            <tr>
+              <td><br>
+</td>
+              <td><br></td>
+              <td>
+              <br></td>
+              <td>
+              <br></td>
+              <td>
+                <br>
+              </td>
+              <td style="text-align:center">B</td>
+              <td>
+                <i>can be supposed without</i>
+              </td>
+              <td style="text-align:center">A</td>
+              <td>1</td>
+            </tr>
+            <tr>
+              <td style="width:45px">
+                <br>
+              </td>
+              <td style="width:45px">
+                <br>
+              </td>
+              <td style="width:45px">
+                <br>
+              </td>
+              <td style="width:45px">
+                <br>
+              </td>
+              <td style="width:180px">
+                <br>
+              </td>
+              <td style="width:45px;text-align:center">B</td>
+              <td style="width:200px">
+                <i>is logically possible without</i>
+              </td>
+              <td style="width:45px;text-align:center">A</td>
+              <td style="width:90px">1</td>
+            </tr>
+            <tr>
+              <td>
+                <br>
+              </td>
+              <td colspan="4" rowspan="1">Subsumption</td>
+              <td style="text-align:center">A</td>
+              <td>is more general</td>
+              <td style="text-align:center">B</td>
+              <td>
+                <br>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td style="text-align:center">A</td>
+              <td>
+                <i>subsumes</i>
+              </td>
+              <td style="text-align:center">B</td>
+              <td>
+                <br>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td style="text-align:center">A</td>
+              <td>
+                <i>includes</i>
+              </td>
+              <td style="text-align:center">B</td>
+              <td>
+                <br>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td style="text-align:center">A</td>
+              <td>
+                <i>broader than</i>
+              </td>
+              <td style="text-align:center">B</td>
+              <td>3</td>
+            </tr>
+            <tr>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td style="text-align:center">A</td>
+              <td>
+                <i>broader term</i>
+              </td>
+              <td style="text-align:center">B</td>
+              <td>4</td>
+            </tr>
+            <tr>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td style="text-align:center">B</td>
+              <td>
+                <u>narrower than</u>
+              </td>
+              <td style="text-align:center">A</td>
+              <td>3</td>
+            </tr>
+            <tr>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td style="text-align:center">B</td>
+              <td>
+                <u>narrower term</u>
+              </td>
+              <td style="text-align:center">A</td>
+              <td>4</td>
+            </tr>
+            <tr>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td style="text-align:center">B</td>
+              <td>
+                <u>nests within</u>
+              </td>
+              <td style="text-align:center">A</td>
+              <td>2</td>
+            </tr>
+            <tr>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td colspan="3" rowspan="1">Extensional Subsumption</td>
+              <td style="text-align:center">B</td>
+              <td>is a</td>
+              <td style="text-align:center">A</td>
+              <td>2,5,6</td>
+            </tr>
+            <tr>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td colspan="2" rowspan="1">is-a [class]</td>
+              <td style="text-align:center">B</td>
+              <td>subClassOf</td>
+              <td style="text-align:center">A</td>
+              <td>3</td>
+            </tr>
+            <tr>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td style="text-align:center">A</td>
+              <td>
+                <u>superClassOf</u>
+              </td>
+              <td style="text-align:center">B</td>
+              <td>7</td>
+            </tr>
+            <tr>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td style="text-align:center">A</td>
+              <td>
+                <u>broader term (generic)</u>
+              </td>
+              <td style="text-align:center">B</td>
+              <td>4</td>
+            </tr>
+            <tr>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td style="text-align:center">B</td>
+              <td>
+                <i>narrower term (generic)</i>
+              </td>
+              <td style="text-align:center">A</td>
+              <td>4</td>
+            </tr>
+            <tr>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>determinable-subsumption</td>
+              <td style="text-align:center">B</td>
+              <td>subPropertyOf</td>
+              <td style="text-align:center">A</td>
+              <td>3,8</td>
+            </tr>
+            <tr>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>specialization</td>
+              <td style="text-align:center">B</td>
+              <td>is specialization of</td>
+              <td style="text-align:center">A</td>
+              <td>8</td>
+            </tr>
+            <tr>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td colspan="2" rowspan="1">is-a [instance]</td>
+              <td style="text-align:center">B</td>
+              <td>type</td>
+              <td style="text-align:center">A</td>
+              <td>3</td>
+            </tr>
+            <tr>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td style="text-align:center">A</td>
+              <td>
+                <u>has member</u>
+              </td>
+              <td style="text-align:center">B</td>
+              <td>7</td>
+            </tr>
+            <tr>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td style="text-align:center">B</td>
+              <td>
+                <i>instance of</i>
+              </td>
+              <td style="text-align:center">A</td>
+              <td>
+                <br>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td style="text-align:center">A</td>
+              <td>
+                <u>broader term (instance)</u>
+              </td>
+              <td style="text-align:center">B</td>
+              <td>4</td>
+            </tr>
+            <tr>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td style="text-align:center">B</td>
+              <td>
+                <i>narrower term (instance)</i>
+              </td>
+              <td style="text-align:center">A</td>
+              <td>4</td>
+            </tr>
+            <tr>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td style="text-align:center">A</td>
+              <td>
+                <u>has an instance of</u>
+              </td>
+              <td style="text-align:center">B</td>
+              <td>7</td>
+            </tr>
+            <tr>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td colspan="3" rowspan="1">Intensional Subsumption</td>
+              <td>
+              <br></td>
+              <td>
+                <br>
+              </td>
+              <td>
+              <br></td>
+              <td>6,9</td>
+            </tr>
+            <tr>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td style="text-align:center">A</td>
+              <td>contains</td>
+              <td style="text-align:center">B</td>
+              <td>2</td>
+            </tr>
+            <tr>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td colspan="2" rowspan="1">is-a [class]
+              <br></td>
+              <td style="text-align:center;width:193px;font-weight:bold" colspan="3" rowspan="1">As above</td>
+              <td>
+                <br>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>genus-subsumption</td>
+              <td style="text-align:center">A</td>
+              <td>is parent of</td>
+              <td style="text-align:center">B</td>
+              <td>8</td>
+            </tr>
+            <tr>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td style="text-align:center">B</td>
+              <td>
+                <u>is child of</u>
+              </td>
+              <td style="text-align:center">A</td>
+              <td>
+                <br>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>specification</td>
+              <td style="text-align:center">B</td>
+              <td>is way of</td>
+              <td style="text-align:center">A</td>
+              <td>8</td>
+            </tr>
+            <tr>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td style="text-align:center">B</td>
+              <td>
+                <i>is method for</i>
+              </td>
+              <td style="text-align:center">A</td>
+              <td>
+                <br>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td colspan="2" rowspan="1">part-of</td>
+              <td style="text-align:center">A</td>
+              <td>has part</td>
+              <td style="text-align:center">B</td>
+              <td>2,6,7</td>
+            </tr>
+            <tr>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td style="text-align:center">A</td>
+              <td>
+                <i>broader term (partitive)</i>
+              </td>
+              <td style="text-align:center">B</td>
+              <td>4</td>
+            </tr>
+            <tr>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td style="text-align:center">B</td>
+              <td>
+                <u>narrower term (partitive)</u>
+              </td>
+              <td style="text-align:center">A</td>
+              <td>4</td>
+            </tr>
+            <tr>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td style="text-align:center">B</td>
+              <td>
+                <i>is region of</i>
+              </td>
+              <td style="text-align:center">A</td>
+              <td>
+                <br>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td style="text-align:center">B</td>
+              <td>
+                <i>is time slice of</i>
+              </td>
+              <td style="text-align:center">A</td>
+              <td>
+                <br>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td colspan="2" rowspan="1">has-a</td>
+              <td style="text-align:center">A</td>
+              <td>has attribute</td>
+              <td style="text-align:center">B</td>
+              <td>
+                <br>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td style="text-align:center">A</td>
+              <td>
+                <i>[property]</i>
+              </td>
+              <td style="text-align:center">B</td>
+              <td>3,10</td>
+            </tr>
+            <tr>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td>defeasible</td>
+              <td style="text-align:center">A</td>
+              <td>
+                <i>usually has attribute</i>
+              </td>
+              <td style="text-align:center">B</td>
+              <td>11</td>
+            </tr>
+            <tr>
+              <td>
+                <br>
+              </td>
+              <td>
+                <br>
+              </td>
+              <td colspan="3" rowspan="1">‘Natural’ Subsumption</td>
+              <td style="text-align:center" colspan="3" rowspan="1">
+                <span style="font-weight:bold">See text</span><br>
+              </td>
+              <td>
+                <br>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    <p>
+    <br>
+    <i>Table Notes:</i> Synonym relations are italicized; reciprocal relations are underlined in relation to first
+    given instance; 
+    <b>1</b>: see text; 
+    <b>2</b>: (<a href="#refH"">“Hierarchy” 2020</a>); 
+    <b>3</b>: W3C predicate (<a href="#refW"">W3C 2008</a>); 
+    <b>4</b>: (<a href="#refA"">ANSI/NISO 2005</a>); 
+    <b>5</b>: Tbox in DL; ‘levels of organization’ (<a href="#refA"">Ahl and Allen 1996</a>); 
+    <b>6</b>; ’compositional hierarchy’ and ‘specification hierarchy’ are extensional and intensional,
+    respectively (<a href="#refS"">Salthe 2012</a>); 
+    <b>7</b>: (<a href="#refI"">ISO 2011</a>); 
+    <b>8</b>: (<a href="#refJ"">Johansson 2006</a>); 
+    <b>9</b>: Abox in DL; ‘levels of observation’ (<a href="#refA"">Ahl and Allen 1996</a>); 
+    <b>10</b>: in W3C sense, individually specified properties (<a href="#refW"">W3C 2008</a>); 
+    <b>11</b>: (<a href="#refB"">Britz and Varzinczak 2017</a>).    </blockquote></p>
+
+
+<!-- end Mike's table -->
+
+
+
+<p><br>Each classification, as indicated by an entry under &lsquo;Type of Hierarchy&rsquo; in Table 1, may be illustrated by one or more relational expressions (predicates). The first entry for each classification is the standard or common one; synonym relations are italicized and reciprocal relations are underlined if there are multiple illustrations. <i>A</i> and <i>B</i> are the paired hierarchy objects for each illustrated relation; by convention, <i>A</i> is taken to be the more general object closer to the root of the tree. More general and abstract hierarchical relations tend toward the top of the table, more particular toward the bottom. Realize there are many nuances to these examples within actual deployments <a href="#e35">[35]</a>.  Note as one progresses deeper into the hierarchy that the relations become more constrained and the entailments fewer. The most general <i>A-B</i> assertions with the broadest entailments occur at the higher (top) levels of the hierarchy. Also, note there can be difficulties assuming equivalence of terms between different classification systems; refer to the cited sources for nuances.</p>
+
+<p>All of these relations, if used consistently, may each be assembled into a logical hierarchical chain across multiple levels. That chain may be tested for consistency and, if it is, may be used to trace inheritance or make inferences up and down the chain. Beyond this logical construction, the aim is to strive for &lsquo;natural&rsquo; subsumptions. The tests that get applied are the same abductive, deductive, and inductive ones defined by Peirce, embedded in his broader logic triad including properly scoped grammar and methods. A &lsquo;natural&rsquo; hierarchical placement is one where the scope of the extension captures the purpose or &lsquo;final cause&rsquo; of the class and where instances are qualified based on shared, essential characters. A &lsquo;natural&rsquo; hierarchy is one where the placements are natural, and the structure reflects greater generality at the top and greater depth at the bottom. A &lsquo;natural&rsquo; knowledge hierarchy is aspirational since its inputs are fallible, and warrants updates as new knowledge arises.</p>
+
+<p>We can contrast the typology in Table 1 to other classifications. For example, the English <i>Wikipedia</i> entry on &lsquo;hierarchy&rsquo; lists four types of hierarchy: nested; containment; subsumptive containment; and compositional containment (<a href="#refH">&ldquo;Hierarchy 2020&rdquo;</a>). The nested example is like Russian matryoshka dolls where each doll neatly fits within a larger one <a href="#e36">[36]</a>. The last two types are themselves subtypes of containment, which is subsumed under subsumption. The <i>Wikipedia</i>  classification is not widely used and appears to be a mostly semantic variant. Another proposed but unused classification is from the earlier cited hierarchy book, wherein Pumain posited three types of hierarchical meaning: (1) order and subordination; (2) taxonomy; or (3) ordered set of elements (<a href="#refP">Pumain 2006</a>). </p>
+
+<p>One widely used scheme is the generic, whole-part and instance relationships common to library classification hierarchies (<a href="#refZ">Zeng 2005</a>) (see also the <a href="#app">Appendix</a>). This classification has continued through ISO standards in 2011 (<a href="#refI">ISO 25964-1: 2011</a>) and 2017 (<a href="#refI">ISO 5127: 2017</a>). A family of schemes are widely used in biology based on the genus subsumption, though with varying bases for evidence and internal or external viewpoints. In spirit the closest to our proposed typology &mdash; at least from the standpoints of embracing notions of natural classification, information and reality &mdash; is the model hierarchical system proposed by Cottam et al. (<a href="#refC">Cottam, Ranson and Vounckx 2016</a>), somewhat informed by Peirce. They recognize similar concepts and drivers to what we propose. However, they unduly rely upon the concept of scale, do not relate their approach to the historical use and understanding of hierarchies, and therefore introduce terminology and aggregations too foreign to legacy understandings. In contrast, the typology proposed in Table 1 can be seen as a synthesis across the disciplines of information science, computer science, and knowledge representation, generally faithful to historical terminology and concepts, and consistent with the logic of C.S. Peirce.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="6"></a>
+<h3 itemprop="articleSection">6. Conclusion</h3>
+
+<p>This article has covered many historical and epistemological aspects of the concept of hierarchy, which remains imprecise. We have seen there are multiple relations covered by the concept of hierarchy, with <i>is-a</i>, <i>part-of</i>, <i>has-a</i>, and <i>member-of</i> being prominent ones. We have seen, over more than two thousand years, that the logic applied to hierarchies has come to recognize scientific facts and this diversity of relations. We have the sense that some (perhaps the exemplary) hierarchies are natural and based in reality. There is something real and cognizable with the pattern of hierarchies, but we are still seeking explanatory mechanisms.</p>
+
+<p>To somewhat deal with this imprecision, we have narrowed our view to hierarchy in knowledge systems, which has the advantage of a tractable and understandable scope of theories and approaches. We have used the insights of the 19th Century logician and philosopher, Charles Sanders Peirce, to help guide our inquiries. Peirce&rsquo;s commitment to realism is itself an expression of his idealism. His commitment to logic includes separation in thought (<a href="#refP">Peirce 1998a</a>) &mdash; that is, dissociation, prescission, and discrimination &mdash; which is a handy aid to evaluating the knowledge landscape and the process of categorization (which we barely explored herein), and a logical triad of signs, inference methods, and methodologies that we did explore directly related to hierarchical classifications. Peirce anticipated much in our current discourse, so much so that he would likely have appreciated today&rsquo;s topical areas like computers, ontologies and knowledge graphs (<a href="#refB">Burch 2017</a>). </p>
+
+<p>This background has enabled us to create a typology of hierarchical relations for knowledge systems. We have suggested a logical way to organize hierarchical relations that are varied and have different entailments, so that we need to choose which to apply in a given context carefully. Our first order of business with this typology is a logical hierarchy so that we can do inference and reasoning. That consideration has included description logics, themselves outgrowths from Peirce&rsquo;s logic, as the core formalism for capturing subsumption relations in hierarchies with an open world viewpoint consistent with the nature of knowledge. The knowledge system languages and vocabularies from the W3C are grounded in these logics.</p>
+
+<p>Peirce&rsquo;s guidance has emphasized that truth is fallible, and continued application of the scientific method is the best way to keep our assignments current and relevant. We should expect our typology of &lsquo;hierarchy&rsquo; to evolve. Further, there are ways to strengthen knowledge systems and their subsumption relations to improve reasoning and inference power. For example, we can distinguish different kinds of subsumption relations more akin to the types shown in Table 1. Or, we can classify and better distinguish different kinds of things subject to those relations. The split between relations and things is one example, as are classing things into different populations such as &lsquo;parts&rsquo; and &lsquo;wholes&rsquo; and being consistent in how we treat those sub-classes. Depending on the KR language used, we may have other options <a href="#e37">[37]</a>.</p>
+
+<p>But logic is only the starting point, the essential foundation to hierarchical classification. We need to embrace the Peircean viewpoint that natural hierarchies are real, and should be the extensional purpose of our inquiry, what Peirce likened to a &lsquo;final cause&rsquo;. We investigated a realistic combination of driving factors, consistent with these viewpoints, that can explain both the rationale and modes of unfolding of natural hierarchies. Evolution is central to these viewpoints, which acts contextually and is constrained by history and chance.</p>
+
+<p>We have matched Peirce&rsquo;s views on the meaning of information with Claude Shannon&rsquo;s theories on the entropy and communication of information messages (<a href="#refK">Kraskov et al. 2005</a>). In local situations where the influx of external energy is great &mdash; such as exists on biotic Earth due to solar radiation &mdash; favored hierarchical structures are those through chance recombinations that maximize entropy production from free energy (<a href="#refA">Annila and Kuismanen 2009</a>; <a href="#refA">Annila and Salthe 2010</a>; <a href="#refS">Salthe 2012</a>). The glue that mediates this interplay of information and structure, on the one hand, with energy gradients, on the other, is evolution. Random variations in varying contexts create the favored functions or structures that maximize the energy flux. It is not unreasonable to associate the drivers of natural hierarchies in reality (including chance) (1ns), information (2ns) and evolution (3ns), as consistent with Peirce&rsquo;s universal categories and his general theories of logic and semeiosis.</p>
+
+<p>One way to test this thesis is further critical inquiry into the concepts and methods involved, the Firstness of the speculative grammar and the Thirdness of the methodeutic in Peirce&rsquo;s triadic logic. We also need to probe further the idea of abductive reasoning, part of the Secondness of that triad. One ensuing prediction is that abductive reasoning will support a better understanding of &lsquo;final cause&rsquo; via pragmatic ways to screen attribute and evolutionary context. We should also be able to compile and critically evaluate embedded information for components using methods like pairwise mutual information or information entropy at various levels of natural hierarchies, similar to what Chaisson (<a href="#refC">2001</a>) has demonstrated for energy rate densities. Since our objective in this article has been knowledge systems, we should also be able to develop computer programs and algorithms that explicitly express these Peircean concepts. Working and testable systems are the next logical step.</p>
+
+<p>How we construct our hierarchies, this article has argued, should be subject to tests of logic, science, and coherence. Hierarchical classifications do not have magic breakpoints between generals and particulars. Rather, there is a gradation as fine-grained as the depth in the hierarchy and as wide as the broadest level, just as Peirce asserted. Change is natural, which means revision of hierarchies should be as well. Untended knowledge hierarchies are as unwanted as false assertions. </p>
+
+</span><!-- articleBody ends -->
+
+<a name="ack"></a>
+<h3>Acknowledgments</h3>
+
+<p>I would like to thank an anonymous reviewer for supporting comments. I would especially like to thank <a href="authors#hj">the editor</a> for detailed review, hard questions, and suggestions for additional useful citations.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="end"></a>
+<h3>Endnotes</h3>
+
+<a name="e1"></a>
+<p><strong>1</strong>. WordNet 3.1 defines: &ldquo;<i>hyponym</i>, subordinate, subordinate word (a word that is more specific than a given word)&rdquo; and &ldquo;<i>hyponymy</i>, subordination (the semantic relation of being subordinate or belonging to a lower rank or class)&rdquo; opposed to &ldquo;<i>hypernymy</i>, superordination (the semantic relation of being superordinate or belonging to a higher rank or class)&rdquo;. &lsquo;Hyponymy&rsquo;and &lsquo;hypernymy&rsquo;are inverse to one another. A specific item in one of these relationships is a &lsquo;hyponym&rsquo; or &lsquo;hypernym&rsquo;, respectively.</p>
+
+<a name="e2"></a>
+<p><strong>2</strong>. This list is not exhaustive and many of the terms have overlapping meanings (for example, dendrograms are kinds of trees, and taxonomies are often considered synonyms for classification systems, cf., <a href="#refH">Hj&oslash;rland 2017</a>, &sect;3.4). Each of these terms &mdash; and others not listed &mdash; appears in italics in the text where it is first used and defined. The exception is Hasse diagrams, defined in the listing. The historical use of some of these terms in biology is presented by Archibald (<a href="#refA">2014</a>). Wilson (<a href="#refW">1969</a>), after discussing various definitions, distnguishes three kinds of hierarchy in nature: (1) physical (fundamental particles, molecules, crystals and cosmic aggregates); (2) biological (from virus structures to the human nervous system); (3) geometrical; and five kinds of hierarchy in artifact: (1) software (such as codes, languages, programs and search strategies); (2) hardware (including computers, transportation systems and cities); (3) organizations (e.g., files, management schemes and social systems); (4) cognition (e.g., levels of knowing); (5) epistemology, which cites works on the classification of knowledge and disciplines. </p>
+
+<a name="e3"></a>
+<p><strong>3</strong>. Depending on context (see text), possible noun synonyms for <i>hierarchy</i> include <i>absorption, abstraction, categorization, classification, composition, containment, echelon, embodiment, embracement, generalization, gradation, grouping, inclusion, ladder, level, minor premise, nest, order, partial order, pecking order, rank, scale, schema, stratification, subset, subsumption, subtype, superordination/subordination, taxonomy</i>, or <i>vertical</i>.</p>
+
+<a name="e4"></a>
+<p><strong>4</strong>. Depending on context (see text), possible antonyms for <i>hierarchy</i> include <i>absence, anarchy, disorder, equal, equivalent, exclusion, flat, same, unclassifiable, unordered, unranked</i>, and other negations of synonyms.</p>
+
+<a name="e5"></a>
+<p><strong>5</strong>. Material in this article was heavily drawn from (<a href="#refB">Bergman 2018</a>); the author thanks the publisher, Springer, for allowing use of this material.</p>
+
+<a name="e6"></a>
+<p><strong>6</strong>. Note the clade-oriented International Code of Phylogenetic Nomenclature (PhyloCode) (cf., <a href="#refB">Benton 2000</a>; <a href="#refS">Sluys, Martens and Schram 2004</a>) allows a rank-free representation in addition to the rank-based classification known from Linnaeus (e.g., displaying the following ranks: domain, kingdom, phylum, class, order, family, genus, and species).</p>
+
+<a name="e7"></a>
+<p><strong>7</strong>. Patrides provides an impressive survey of history up through the Renaissance. Unfortunately, he too easily equates <i>order</i> as synonymous with <i>hierarchy</i>, which does have an important overlap in the mathematical sense, but which diminishes somewhat the power of the arguments strictly related to hierarchy.</p>
+
+<a name="e8"></a>
+<p><strong>8</strong>. I am excluding the largely alphabetical organization systems of the first library catalog (ca 275 BC), English library catalog (ca 800 AD), dictionaries (1604), or encyclopedias (1728) (<a href="#refB">Bergman 2016</a>).</p>
+
+<a name="e9"></a>
+<p><strong>9</strong>. Chapter 13 in the first edition of <i>On the Origin of Species</i> (p. 411-458) is devoted to classification, including morphology and embryology (<a href="#refD">Darwin 1859</a>).</p>
+
+<a name="e10"></a>
+<p><strong>10</strong>. The first hierarchical library classification is reported for China sometime before AD 1 (<a href="#refM">Miksa 1994</a>); by &lsquo;modern&rsquo; we agree with Miksa the 19th Century classifiers provided broader and deeper subcategories geared to knowledge.</p>
+
+<a name="e11"></a>
+<p><strong>11</strong>. This expansion of the scope of knowledge systems continued when Claude Shannon published his information theory in 1948, and the structure of DNA was elucidated in 1953. The first computer database dates from 1962 (<a href="#refB">Bergman 2016</a>).</p>
+
+<a name="e12"></a>
+<p><strong>12</strong>. Kleineberg (<a href="#refK">2017</a>) provides a historical treatment much richer than here, a useful compilation of &lsquo;levels&rsquo; from various authors, and more than 200 references.</p>
+
+<a name="e13"></a>
+<p><strong>13</strong>. A diversity of examples in alphabetic order include animal behavior (<a href="#refP">Paine and Tani 2005</a>), astronomical objects (<a href="#refS">Shapley 1958</a>), chemical compounds (<a href="#refS">Simon 1962</a>), classification of the sciences (<a href="#refP">Peirce 1998a</a>), controlled vocabularies (<a href="#refA">ANSI/NISO 2005</a>), dendrograms (tree diagrams) (<a href="#refK">Kraskov et al. 2005</a>), design methodologies (<a href="#refA">Alexander 1964</a>), Earth processes (<a href="#refK">Kleidon 2010</a>), ecological systems (<a href="#refA">Allen 2001</a>), electrocardiograms (<a href="#refK">Kraskov et al. 2005</a>), emergence of life (<a href="#refW">Walker 2014</a>; <a href="#refW">Walker and Davies 2013</a>), fractals (<a href="#refC">Cottam, Ranson and Vounckx 2013</a>), genetic inheritance (<a href="#refS">Simon 1962</a>), hadronic collision jets (particle physics) (<a href="#refC">Cacciari, Salam and Soyez 2008</a>), human needs (<a href="#refM">Maslow 1954</a>), human social organization (<a href="#refS">Simon 1962</a>), industry sectors (<a href="#refL">Luo et al. 2009</a>), living organisms (phylogenetic trees) (<a href="#refK">Kraskov et al. 2005</a>; <a href="#refS">Simon 1962</a>), natural languages (<a href="#refC">Chomsky 1956</a>), physical-material-biological-sociocultural levels (<a href="#refS">Salthe 2009</a>), primitive social classifications (<a href="#refD">Durkheim and Mauss 2009</a>), subtypes of cancer (<a href="#refS">S&oslash;rlie et al. 2001</a>), taxonomies of concepts (<a href="#refC">Cimiano and Staab 2005</a>; <a href="#refD">Di Beneditto and de Barros 2004</a>), and word relationships (<a href="#refM">G. A. Miller 1995</a>). Donna Wilson (<a href="#refW">1968</a>) also provided a much longer (but older) listing of examples in a bibliography to a hierarchical structure symposium.</p>
+
+<a name="e14"></a>
+<p><strong>14</strong>. We base the general method for citing direct Peirce quotes on his <i>Collected Papers</i> (<a href="#refP">Peirce 1931</a>) followed by volume, page, and year (e.g., &ldquo;CP 1.425, 1903&rdquo;), except as otherwise cited.</p>
+
+<a name="e15"></a>
+<p><strong>15</strong>. Again, we see this tension for the role of observers in the assessment of the reality of hierarchies, a topic Peirce informs through his theory of signs, or semeiosis, discussed in <a href="#4">Section 4</a>.</p>
+
+<a name="e16"></a>
+<p><strong>16</strong>. Though it is possible to express a sequential order via the specific <i>preceeds</i> time relation to obtain a so-called &lsquo;flow&rsquo; hierarchy applicable to events or processes (<a href="#refL">Luo et al. 2009</a>), this is a special edge case that we exclude from further consideration.</p>
+
+<a name="e17"></a>
+<p><strong>17</strong>. See further Peirce&rsquo;s classification of signs, &ldquo;Nomenclature and Divisions of the Triadic Relations, as Far as They Are Determined&rdquo; (<a href="#refP">Peirce 1998f</a>), and <a href="#4">Section 4</a>.</p>
+
+<a name="e18"></a>
+<p><strong>18</strong>. As part of a decade-long effort to improve best practices in subject referencing (<a href="#refM">D. Miller, Olson and Layne 2005</a>), the American Library Association assembled a listing of nearly 30 hierarchical pairs based on Michel (<a href="#refM">1997</a>) that recognized class-instance, whole-part, compositional, anatomical, topical, and other relationships.</p>
+
+<a name="e19"></a>
+<p><strong>19</strong>. Peirce preferred the term <i>comprehension</i> and disliked the term <i>intension</i>, believing it too easily confused with &lsquo;intensity&rsquo; (<a href="#refP">Peirce 1867</a>). Nonetheless, we use <i>intension</i> herein because of its accepted usage.</p>
+
+<a name="e20"></a>
+<p><strong>20</strong>. J.W. von Goethe (1749-1832) first proposed the standard 3-color scheme. Today, most designers use a 4-color scheme from Ewald Hering (1834-1918).</p>
+
+<a name="e21"></a>
+<p><strong>21</strong>. Some knowledge representation languages allow <i>n</i>-ary relationships. Some knowledge representation languages may also allow specification for how a property behaves, including symmetry, transitivity, reflexivity, commutativity, or cardinality. The <i>is-a</i> relation, for example, is commonly understood to be both transitive and reflexive (<a href="#refN">Nilsson 2006</a>). See further Zadeh&rsquo;s paper on similarity relations (<a href="#refZ">Zadeh 1971</a>).</p>
+
+<a name="e22"></a>
+<p><strong>22</strong>. Description logics data models are easier to expand and update than conventional transaction data systems because they follow an &lsquo;open world&rsquo; formal logic assumption (<a href="#refB">Bergman 2009</a>). The open-world assumption (OWA) conforms to Peirce&rsquo;s views of knowledge and truth. We can add missing values without altering the data schema. OWA is limited to inferences and deductions from what is known to be true (or deemed likely true), in keeping with the open-ended nature of knowledge. &ldquo;OWA is useful when we represent knowledge within a system as we discover it, and where we cannot guarantee that we have discovered or will discover complete information&rdquo; (<a href="#refB">Bergman 2018a</a>, 161).</p>
+
+<a name="e23"></a>
+<p><strong>23</strong>. These four kinds of &lsquo;is-a&rsquo; relationship are genus-subsumption, determinable-subsumption, specification, and specialization (<a href="#refJ">Johansson 2006</a>); see Table 1 in text.</p>
+
+<a name="e24"></a>
+<p><strong>24</strong>. Again, recognizing the split with social and political perspectives on the concept of hierarchy.</p>
+
+<a name="e25"></a>
+<p><strong>25</strong>. A fourth major dictionary sense emerged in the 1800s that defined &lsquo;hierarchy&rsquo; as &ldquo;A body of persons or things ranked in grades, orders, or classes, one above another; spec. in Natural Science and Logic, a system or series of terms of successive rank (as classes, orders, genera, species, etc.), used in classification&rdquo; (<i>Oxford English Dictionary</i>, sense 4).</p>
+
+<a name="e26"></a>
+<p><strong>26</strong>. In logic, besides his insights and proving of theorems, Peirce invented and developed dozens of logical operators, syntax, and diagrammatic systems for expressing and proving logic concepts (<a href="#refB">Burch 2017</a>).</p>
+
+<a name="e27"></a>
+<p><strong>27</strong>. Peirce specifically rejected <i>abduction</i> in favor of <i>retroduction</i> in 1898 believing the initial translation of Aristotle to be in error (<a href="#refP">Peirce 1992b</a>), but had returned to using <i>abduction</i> by the time of his 1903 Harvard <i>Lectures on Pragmatism</i> (<a href="#refP">Peirce 1997</a>). <i>Abduction</i> remains the more commonly used.</p>
+
+<a name="e28"></a>
+<p><strong>28</strong>. Rudolf Wille, the initial formulator of formal concept analysis, extended this logic to embrace the trichotomies of Charles Peirce (<a href="#refW">Wille 1995</a>). In formal concept analysis, a rigorous mathematical approach, formal concepts consist of two parts: an <i>extent</i>, which is a subset of objects to which it belongs; and, an <i>intent</i>, which is a subset of attributes shared by sibling concepts (<a href="#refS">Stumme 1999</a>). These notions correspond exactly to the idea of <i>extensional</i> and <i>intensional </i>subsumptions as used herein.</p>
+
+<a name="e29"></a>
+<p><strong>29</strong>. Peirce&rsquo;s conception (and definition) of science was close to the German term <i>Wissenschaft</i> (<a href="#refB">Burch 2017</a>).</p>
+
+<a name="e30"></a>
+<p><strong>30</strong>. The provisional nature of knowledge and science is a constant theme throughout Peirce&rsquo;s writings.</p>
+
+<a name="e31"></a>
+<p><strong>31</strong>. According to Peirce, continuity &ldquo;is shown by the logic of relatives to be nothing but a higher type of that which we know as generality. It is relational generality&rdquo; (<a href="#refP">Peirce 1992a</a>, 258).</p>
+
+<a name="e32"></a>
+<p><strong>32</strong>. Peirce also termed this concept <i>precission</i>, <i>prescisive abstraction</i>, <i>prescision</i>, or <i>precisive abstraction</i> (CP 4.235, 1902). It comes from the same root as precision in measurements but has a different meaning as described in the text, which is one reason we prefer the spelling of prescission to distinguish it as much as possible.</p>
+
+<a name="e33"></a>
+<p><strong>33</strong>. However, <i>prescind</i> may also be usefully employed as a logical operator to restrict the relevant population of consideration for a given inquiry.</p>
+
+<a name="e34"></a>
+<p><strong>34</strong>. This paper also makes strides in bringing conventional set theory into conformance with description logics (<a href="#refL">Linnebo and Rayo 2012</a>).</p>
+
+<a name="e35"></a>
+<p><strong>35</strong>. Cottam et al. (<a href="#refC">2016</a>), who believe hierarchies are basic in knowledge systems, have also proposed a model abstraction over hierarchical relation types, different than the typology presented in Table 1. Their approach is also based on Peirce&rsquo;s universal categories but also adds Ivan Havels&rsquo; &lsquo;three levels of reality&rsquo;.</p>
+
+<a name="e36"></a>
+<p><strong>36</strong>. In Peirce&rsquo;s existential graphs, nesting is a very important operator that is best left to a separate discussion (<a href="#refZ">Zalamea 2003</a>).</p>
+
+<a name="e37"></a>
+<p><strong>37</strong>. For some KR languages such as either RDFS (the schema extension to RDF) or OWL, we can sub-class properties, meaning we can boost the inferencing power of our predicates. We can add domain or range restrictions to our properties that establish the subjects or objects, respectively, to which the predicate may apply. For OWL, we can further specify the logical behavior we want our relations to exhibit, such as transitivity or reflexivity, or we can take advantage of its &lsquo;punning&rsquo;, which enables us to metamodel a class as also being an instance depending on its context, helpful when we want to treat a class as an instance unto itself. We may also use extension or intension to assign instances to classes, or may create hierarchies of properties through the subPropertyOf predicate.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="ref"></a>
+<h3>References</h3>
+
+<span itemprop="citation">
+
+<a name="refA"></a>
+
+<p>Ahl, Valerie, and Timothy F. Allen. 1996. <i>Hierarchy Theory: A Vision, Vocabulary, and Epistemology</i>. New York, NY: Columbia University Press.</p>
+
+<p>Alexander, Christopher. 1964. Vol 5, <i>Notes on the Synthesis of Form</i>. Harvard University Press.</p>
+
+<p>Allen, Timothy F. 2001. &ldquo;A Summary of the Principles of Hierarchy Theory&rdquo;. International Society for the Systems Sciences. <a class="menu" href="https://web.archive.org/web/20011218001638/http://isss.org/hierarchy.htm">https://web.archive.org/web/20011218001638/http://isss.org/hierarchy.htm</a> (March 4, 2020).</p>
+
+<p>Anderson, Philip W. 1972. &ldquo;More Is Different: Broken Symmetry and Nature of Hierarchical Structure of Science&rdquo;. <i>Science</i> 177, no. 4047: 393&ndash;96.</p>
+
+<p>Anellis, Irving H., and Francine F. Abeles. 2016. &ldquo;The Historical Sources of Tree Graphs and the Tree Method in the Work of Peirce and Gentzen&rdquo;. In <i>Modern Logic 1850-1950, East and West: Studies in Universal Logic</i>, eds. Francine F. Abeles and Mark E. Fuller. Cham: Springer International Publishing, 35&ndash;97. <a class="menu" href="http://link.springer.com/10.1007/978-3-319-24756-4_3">http://link.springer.com/10.1007/978-3-319-24756-4_3</a> (January 12, 2021).</p>
+
+<p>Annila, Arto, and Esa Kuismanen. 2009. &ldquo;Natural Hierarchy Emerges from Energy Dispersal&rdquo;. <i>Biosystems</i> 95, no. 3: 227&ndash;33.</p>
+
+<p>Annila, Arto, and Stanley Salthe. 2010. &ldquo;Physical Foundations of Evolutionary Theory&rdquo;. <i>Journal of Non-Equilibrium Thermodynamics</i> 35, no. 3: 301&ndash;21.</p>
+
+<p>ANSI/NISO. 2005. <i>Guidelines for the Construction, Format, and Management of Monolingual Controlled Vocabularies</i>. Baltimore, Maryland: National Information Standards Organization. <a class="menu" href="https://groups.niso.org/apps/group_public/download.php/12591/z39-19-2005r2010.pdf">https://groups.niso.org/apps/group_public/download.php/12591/z39-19-2005r2010.pdf</a>.</p>
+
+<p>Archibald, J. David. 2014. <i>Aristotle's Ladder, Darwin's Tree: The Evolution of Visual Metaphors for Biological Order</i>. New York: Columbia University Press. </p>
+
+<a name="refB"></a>
+
+<p>Baader, Franz, Diego Calvanese, Deborah L. McGuinness, Danielle Nardi and Peter F. Patel-Schneider (eds.). 2003. <i>The Description Logic Handbook: Theory, Implementation and Applications</i>. New York, NY: Cambridge University Press.</p>
+
+<p>Bather, Francis Arthur. 1927. "Biological Classification: Past and Future". An Address to the Geological Society of London at Its Anniversary Meeting on the Eighteenth of February 1927. <i>Quarterly Journal of the Geological Society of London</i> 83, no. 1-5: 62-104. </p>
+
+<p>Benton, Michael J. 2000. &ldquo;Stems, Nodes, Crown Clades, and Rank-Free Lists: Is Linnaeus Dead?&rdquo; <i>Biological Reviews</i> 75, no. 4: 633-48. <a class="menu" href="https://doi.org/10.1111/j.1469-185X.2000.tb00055.x">https://doi.org/10.1111/j.1469-185X.2000.tb00055.x</a>.</p>
+
+<p>Bergman, Michael K. 2009. &ldquo;The Open World Assumption: Elephant in the Room&rdquo;. <i>AI3: Adaptive Information, Adaptive Innovation, Adaptive Infrastructure</i> (blog). <a class="menu" href="http://www.mkbergman.com/852/the-open-world-assumption-elephant-in-the-room/">http://www.mkbergman.com/852/the-open-world-assumption-elephant-in-the-room/</a> (September 18, 2017).</p>
+
+<p>Bergman, Michael K. 2016. &ldquo;A Timeline of Information History&rdquo;. <i>AI3: Adaptive Information, Adaptive Innovation, Adaptive Infrastructure</i> (blog). <a class="menu" href="http://www.mkbergman.com/temp-exhibit/">http://www.mkbergman.com/temp-exhibit/</a> (March 3, 2020).</p>
+
+<p>Bergman, Michael K. 2018. <i>A Knowledge Representation Practionary: Guidelines Based on Charles Sanders Peirce</i>. Cham: Springer International Publishing. <a class="menu" href="http://link.springer.com/10.1007/978-3-319-98092-8">http://link.springer.com/10.1007/978-3-319-98092-8</a> (October 10, 2019).</p>
+
+<p>Bergman, Michael K. 2018a. &ldquo;KR Vocabulary and Languages&rdquo;. In <i>A Knowledge Representation Practionary: Guidelines Based on Charles Sanders Peirce</i>, ed. Michael K. Bergman. Cham: Springer International Publishing, 151&ndash;80. <a class="menu" href="https://doi.org/10.1007/978-3-319-98092-8_8">https://doi.org/10.1007/978-3-319-98092-8_8</a>.</p>
+
+<p>Bird, Alexander, and Emma Tobin. 2018. &ldquo;Natural Kinds&rdquo;. In <i>The Stanford Encyclopedia of Philosophy</i>, ed. Edward N. Zalta. Metaphysics Research Lab, Stanford University. <a class="menu" href="https://plato.stanford.edu/archives/spr2018/entries/natural-kinds/">https://plato.stanford.edu/archives/spr2018/entries/natural-kinds/</a> (December 30, 2020).</p>
+
+<p>Brachman, Ronald J. 1983. &ldquo;What Is-a Is and Isn&rsquo;t: An Analysis of Taxonomic Links in Semantic Networks&rdquo;. <i>Computer</i> 16, no. 10: 30&ndash;36.</p>
+
+<p>Brachman, Ronald J., and Hector J. Levesque. 2004. <i>Knowledge Representation and Reasoning</i>. Morgan Kaufmann. <a class="menu" href="https://www.elsevier.com/books/knowledge-representation-and-reasoning/brachman/978-1-55860-932-7">https://www.elsevier.com/books/knowledge-representation-and-reasoning/brachman/978-1-55860-932-7</a> (October 3, 2017).</p>
+
+<p>Brakel, Jaap van. 1998. &ldquo;Peirce's Natural Kinds&rdquo;. In <i>C.S. Peirce: Categories to Constantinople: Proceedings of the International Symposium on Peirce, Leuven, 1997</i>, eds. J. van Brakel and M. van Heerden, Leuven, Belgium: Leuven University Press, 31-45. Preprint available at <a class="menu" href="https://www.researchgate.net/publication/318878227_Peirce&rsquo;s_natural_kinds">https://www.researchgate.net/publication/318878227_Peirce&rsquo;s_natural_kinds</a>.</p>
+
+<p>Brink, Chris, Katarina Britz, and Renate A. Schmidt. 1994. &ldquo;Peirce Algebras&rdquo;. <i>Formal Aspects of Computing</i> 6, no. 3: 339&ndash;58.</p>
+
+<p>Brink, Chris, and Renate A. Schmidt. 1992. &ldquo;Subsumption Computed Algebraically&rdquo;. <i>Computers &amp; Mathematics with Applications</i> 23, no. 2&ndash;5: 329&ndash;42.</p>
+
+<p>Britz, Katarina, and Ivan Jos&eacute; Varzinczak. 2017. &ldquo;Context-Based Defeasible Subsumption for DSROIQ&rdquo;. In <i>Proceedings of the Thirteenth International Symposium on Commonsense Reasoning (Commonsense-2017), Nov 6-8, 2017</i>, eds., Andrew S. Gordon, Rob Miller, and Gy&ouml;rgy Tur&aacute;n, CEUR Workshop Proceedings, Vol. 2052, London, UK: 1-7.</p>
+
+<p>Brooks, Daniel Stephen. 2015. &ldquo;The Concept of Levels of Organization in the Biological Sciences&rdquo;. Ph.D. Bielefeld University. <a class="menu" href="https://pub.uni-bielefeld.de/download/2786539/2786540/DSBrooks_Diss_2014._rev.2015.pdf">https://pub.uni-bielefeld.de/download/2786539/2786540/DSBrooks_Diss_2014._rev.2015.pdf</a> (March 6, 2020).</p>
+
+<p>Bruce, Murray (2003). &ldquo;Foreword: A Brief History of Classifying Birds&rdquo;. In <i>Handbook of the birds of the world</i> Vol. 8, eds. Josep Del Hoyo, Andrew Elliott and David Christie. Barcelona: Lynx Edicions, 11-43. </p>
+
+<p>Bunge, Mario. 1960. &ldquo;Levels: A Semantic Preliminary&rdquo;. <i>The Review of Metaphysics</i> 13, no. 3: 396-406. </p>
+
+<p>Bunge, Mario. 1969. &ldquo;The Metaphysics, Epistemology, and Methodology of Levels&rdquo;. In <i>Hierarchical Structures: Proceedings of a Symposium, Douglas Advanced Research Laboratories</i>, eds. Lancelot Law Whyte, Albert George Wilson, and Donna M. Wilson. Douglas Advanced Research Laboratories, Huntington Beach, CA: Elsevier Publishing Company, 17&ndash;28.</p>
+
+<p>Buntine, Wray. 1988. &ldquo;Generalized Subsumption and Its Applications to Induction and Redundancy&rdquo;. <i>Artificial Intelligence</i> 36, no. 2: 149&ndash;76.</p>
+
+<p>Burch, Robert. 1991. A Peircean Reduction Thesis: The Foundations of Topological Logic. Lubbock, TX: Texas Tech University Press.</p>
+
+<p>Burch, Robert. 2017. &ldquo;Charles Sanders Peirce&rdquo;. In <i>The Stanford Encyclopedia of Philosophy</i>, ed. Edward N. Zalta. Metaphysics Research Lab, Stanford University. <a class="menu" href="https://plato.stanford.edu/archives/fall2017/entries/peirce/">https://plato.stanford.edu/archives/fall2017/entries/peirce/</a> (October 23, 2017).</p>
+
+<p>Burek, Patryk. 2004. &ldquo;Adoption of the Classical Theory of Definition to Ontology Modeling&rdquo;. In <i>Artificial Intelligence: Methodology, Systems, and Applications</i>, Lecture Notes in Computer Science, eds. Christoph Bussler and Dieter Fensel. Berlin, Heidelberg: Springer Berlin Heidelberg, 1&ndash;10. <a class="menu" href="http://link.springer.com/10.1007/978-3-540-30106-6_1">http://link.springer.com/10.1007/978-3-540-30106-6_1</a> (December 30, 2020).</p>
+
+<a name="refC"></a>
+
+<p>Cacciari, Matteo, Gavin P. Salam, and Gregory Soyez. 2008. &ldquo;The Anti-Kt Jet Clustering Algorithm&rdquo;. <i>Journal of High Energy Physics</i> 2008, no. 4: 63&ndash;63.</p>
+
+<p>Chaisson, Eric J. 2001. <i>Cosmic Evolution: The Rise of Complexity in Nature</i>. Cambridge, MA. Harvard University Press. </p>
+
+<p>Chen, Peter Pin-Shan. 1976. &ldquo;The Entity-Relationship Model &mdash; Toward a Unified View of Data&rdquo;. <i>ACM Transactions on Database Systems (TODS)</i> 1, no. 1: 9&ndash;36.</p>
+
+<p>Chomsky, Noam. 1956. &ldquo;Three Models for the Description of Language&rdquo;. <i>IRE Transactions on Information Theory</i> 2, no. 3: 113&ndash;24.</p>
+
+<p>Cimiano, Philipp, and Steffen Staab. 2005. &ldquo;Learning Concept Hierarchies from Text with a Guided Agglomerative Clustering Algorithm&rdquo;. In <i>Proceedings of the ICML 2005 Workshop on Learning and Extending Lexical Ontologies with Machine Learning Methods, Bonn, Germany</i>. ICML, 1&ndash;10.</p>
+
+<p>Corominas-Murtra, B., J. Goni, R. V. Sole, and C. Rodriguez-Caso. 2013. &ldquo;On the Origins of Hierarchy in Complex Networks&rdquo;. <i>Proceedings of the National Academy of Sciences</i> 110, no. 33: 13316&ndash;21.</p>
+
+<p>Cottam, Ron, Willy Ranson, and Roger Vounckx. 2013. &ldquo;A Framework for Computing Like Nature&rdquo;. In <i>Computing Nature, Studies in Applied Philosophy, Epistemology and Rational Ethics</i>, eds. Gordana Dodig-Crnkovic and Raffaella Giovagnoli. Berlin, Heidelberg: Springer Berlin Heidelberg, 23&ndash;60. <a class="menu" href="http://link.springer.com/10.1007/978-3-642-37225-4_2">http://link.springer.com/10.1007/978-3-642-37225-4_2</a> (March 13, 2020).</p>
+
+<p>Cottam, Ron, Willy Ranson, and Roger Vounckx. 2016. &ldquo;Hierarchy and the Nature of Information&rdquo;. <i>Information</i> 7, no. 1: 1&ndash;10.</p>
+
+<p>Crutchfield, James P. 2012. &ldquo;Between Order and Chaos&rdquo;. <i>Nature Physics</i> 8, no. 1: 17&ndash;24.</p>
+
+<p>Cz&eacute;gel, D&aacute;niel, and Gergely Palla. 2016. &ldquo;Random Walk Hierarchy Measure: What Is More Hierarchical, a Chain, a Tree or a Star?&rdquo; <i>Scientific Reports</i> 5, no. 1: 17994.</p>
+
+<a name="refD"></a>
+
+<p>Darwin, Charles. 1859. <i>On the Origin of Species by Means of Natural Selection, or the Preservation of Favoured Races in the Struggle for Life</i>. London: J. Murray. (A facsimile was published 1964 by Harvard University Press.) </p>
+
+<p>Dau, Frithjof, and Joachim Hereth Correia. 2006. &ldquo;Two Instances of Peirce's Reduction Thesis&rdquo;. In <i>Proceedings of Formal Concept Analysis: 4th International Conference (ICFCA 2006)Dresden, Germany, February 13-17, 2006</i>, , eds. Rokia Missaoui and J&uuml;rg Schmid. LNAI 3874. Springer-Verlag Berlin Heidelberg: 105–18.</p>
+
+<p>Di Beneditto, Marco Eug&ecirc;nio Madeira, and Leliane Nunes de Barros. 2004. &ldquo;Using Concept Hierarchies in Knowledge Discovery&rdquo;. In <i>Advances in Artificial Intelligence &ndash; SBIA 2004</i>, eds. Ana L. C. Bazzan and Sofiane Labidi. Berlin, Heidelberg: Springer Berlin Heidelberg, 255&ndash;65. <a class="menu" href="http://link.springer.com/10.1007/978-3-540-28645-5_26">http://link.springer.com/10.1007/978-3-540-28645-5_26</a> (February 13, 2020).</p>
+
+<p>Donini, Francesco M., Maurizio Lenzerini, Daniele Nardi, and Andrea Schaerf. 1994. &ldquo;Deduction in Concept Languages: From Subsumption to Instance Checking&rdquo;. <i>Journal of Logic and Computation</i> 4, no. 4: 423&ndash;52.</p>
+
+<p>Doyle, Jon. 1977. <i>Hierarchy in Knowledge Representations</i>. MIT Artificial Intelligence Laboratory. Working Paper. <a class="menu" href="http://dspace.mit.edu/handle/1721.1/41988">http://dspace.mit.edu/handle/1721.1/41988</a> (October 24, 2017).</p>
+
+<p>Durkheim, Emile, and Marcel Mauss. 2009. <i>Primitive Classification</i>. (Routledge Revivals). London: Routledge.</p>
+
+<a name="refE"></a>
+
+<p>Ellis, George F. R. 2004. &ldquo;True Complexity and Its Associated Ontology&rdquo;. In <i>Science and Ultimate Reality</i>, eds. John D. Barrow, Paul C. W. Davies, and Charles L. Harper, Jr. Cambridge University Press, 607&ndash;36. <a class="menu" href="https://www.cambridge.org/core/product/identifier/CBO9780511814990A044/type/book_part ">https://www.cambridge.org/core/product/identifier/CBO9780511814990A044/type/book_part </a>(February 22, 2020).</p>
+
+<p>Eronen, Markus I. 2015. &ldquo;Levels of Organization: A Deflationary Account&rdquo;. <i>Biology &amp; Philosophy</i> 30, no. 1: 39&ndash;58.</p>
+
+<a name="refF"></a>
+
+<p>Fisch, Max. 1967. &ldquo;Peirce&rsquo;s Progress From Nominalism Toward Realism:&rdquo; <i>The Monist</i> 51, no. 2: 159&ndash;78.</p>
+
+<p>Frick&eacute;, Martin. 2018. &ldquo;Logical Division&rdquo;. <i>Knowledge Organization</i> 43, no. 7: 539&ndash;49. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli, <a class="menu" href="logical_division">https://www.isko.org/cyclo/logical_division</a>.</p>
+
+<p>Fu, Ruiji et al. 2014. &ldquo;Learning Semantic Hierarchies Via Word Embeddings&rdquo;. In <i>Proceedings of the 52nd Annual Meeting of the Association for Computational Linguistics</i> (Volume 1: Long Papers), Stroudsburg, PA: Association for Computational Linguistics, 1199&ndash;1209.</p>
+
+<a name="refG"></a>
+
+<p>Gleick, James. 2004. <i>Isaac Newton</i>. New York, NY: Vintage.</p>
+
+<p>Gontier, Nathalie. 2011. &ldquo;Depicting the Tree of Life: The Philosophical and Historical Roots of Evolutionary Tree Diagrams&rdquo;. <i>Evolution: Education and Outreach</i> 4: 515&ndash;38. DOI 10.1007/s12052-011-0355-0.</p>
+
+<p>Greenberg, Craig S., Sebastian Macaluso, Nicholas Monath, Ji-Ah Lee, Patrick Flaherty, Kyle Cranmer, Andrew McGregor and Andrew Mccallum. 2020. &ldquo;Compact Representation of Uncertainty in Hierarchical Clustering&rdquo;. <a class="menu" href="http://arxiv.org">arXiv:2002.11661</a> [physics, stat]: 1&ndash;21.</p>
+
+<p>Guarino, Nicola, and Christopher Welty. 2002. &ldquo;Identity and Subsumption&rdquo;. In <i>The Semantics of Relationships, Information Science and Knowledge Management</i>, eds. Rebecca Green, Carol A. Bean, and Sung Hyon Myaeng. Dordrecht: Springer Netherlands, 111&ndash;26. <a class="menu" href="http://link.springer.com/10.1007/978-94-017-0073-3_7">http://link.springer.com/10.1007/978-94-017-0073-3_7</a> (March 14, 2020).</p>
+
+<a name="refH"></a>
+
+<p>Harmer, Russ, and Eugenia Oshurko. 2020. &ldquo;Knowledge Representation and Update in Hierarchies of Graphs&rdquo;. <a class="menu" href="http://arxiv.org">arXiv:2002.01766</a> [cs]: 1&ndash;25.</p>
+
+<p>Hearst, Marti A. 1992. &ldquo;Automatic Acquisition of Hyponyms from Large Text Corpora&rdquo;. In <i>Proceedings of the 14th Conference on Computational Linguistics, Nantes, France</i>. Association for Computational Linguistics, 539. <a class="menu" href="http://portal.acm.org/citation.cfm?doid=992133.992154">http://portal.acm.org/citation.cfm?doid=992133.992154</a> (February 29, 2020).</p>
+
+<p>Hereth, Joachim, and Reinhard P&ouml;schel. 2011. &ldquo;Peircean Algebraic Logic and Peirce&rsquo;s Reduction Thesis&rdquo;. <i>Semiotica</i> 2011, no. 186: 141&ndash;67. DOI: <a class="menu" href="https://doi.org/10.1515/semi.2011.050">https://doi.org/10.1515/semi.2011.050</a>.</p>
+
+<p>Herrmann-Pillath, Carsten. 2010. &ldquo;Entropy, Function and Evolution: Naturalizing Peircian Semiosis&rdquo;. <i>Entropy</i> 12, no. 2: 197&ndash;242.</p>
+
+<p>Herrmann-Pillath, Carsten, and Stanley N. Salthe. 2011. &ldquo;Triadic Conceptual Structure of the Maximum Entropy Approach to Evolution&rdquo;. <i>Biosystems</i> 103, no. 3: 315&ndash;30.</p>
+
+<p>&ldquo;Hierarchy&rdquo;. 2020. <i>Wikipedia</i>. <a class="menu" href="https://en.wikipedia.org/wiki/Hierarchy">https://en.wikipedia.org/wiki/Hierarchy</a>.</p>
+
+<p>Hj&oslash;rland, Birger. 2016. &ldquo;Knowledge Organization&rdquo;. <i>Knowledge Organization</i> 43, no. 6: 475-84. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli, <a class="menu" href="knowledge_organization">https://www.isko.org/cyclo/knowledge_organization</a>.</p>
+
+<p>Hj&oslash;rland, Birger. 2017. &ldquo;Classification&rdquo;. <i>Knowledge Organization</i> 44, no. 2: 97&ndash;128. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli, <a class="menu" href="classification">https://www.isko.org/cyclo/classification</a>.</p>
+
+<p>Hj&oslash;rland, Birger. 2018. &ldquo;Epistemology of Classification with Emphasis on Emile Durkheim and Marcel Mauss&rdquo;. In <i>Fondements &eacute;pist&eacute;mologiques et th&eacute;oriques de la science de l&rsquo;information-documentation</i>. London: ISTE Group, 3.</p>
+
+<p>Hogan, Aidan et al. 2020. &ldquo;Knowledge Graphs&rdquo;. <a href="http://arxiv.org">arXiv:2003.02320</a> [cs]: 1&ndash;130.</p>
+
+<p>Holland, John H. 1998. <i>Emergence: From Chaos to Order</i>. First Edition. Reading, MA: Perseus.</p>
+
+<p>Horrocks, Ian, and Peter F. Patel-Schneider. 1999. &ldquo;Optimizing Description Logic Subsumption&rdquo;. <i>Journal of Logic and Computation</i> 9, no. 3: 267&ndash;93.</p>
+
+<p>Houser, Nathan. 2010. &ldquo;Peirce, Phenomenology, and Semiotics&rdquo;. In <i>The Routledge Companion to Semiotics</i>, Routledge companions, ed. Paul Cobley. London; New York: Routledge, 89&ndash;100.</p>
+
+<p>Hulswit, Menno. 1997. &ldquo;Peirce&rsquo;s Teleological Approach to Natural Classes&rdquo;. <i>Transactions of the Charles S. Peirce Society</i>: 722&ndash;72.</p>
+
+<a name="refI"></a>
+
+<p>ISO 25964-1: 2011 (E). <i>Information and Documentation - Thesauri and Interoperability with Other Vocabularies - Part 1: Thesauri for Information Retrieval</i>. Geneva: International Organization for Standardization.</p>
+
+<p>ISO 5127: 2017(E). <i>Information and Documentation: Foundation and Vocabulary. 2nd edition</i>. Geneva, Switzerland: International Organization for Standardization.</p>
+
+<a name="refJ"></a>
+
+<p>Johansson, Ingvar. 2006. &ldquo;Four Kinds of Is_A Relations: Genus-Subsumption, Determinable-Subsumption, Specification, and Specialization&rdquo;. In <i>Contributions to the Third International Workshop on Philosophy and Informatics (WSPI2006), Saarbr&uuml;cken, Germany</i>, eds. B. Klein, I. Johansson and T. Roth-Berghofer. IFOMIS Reports: 47–62.</p>
+
+<a name="refK"></a>
+
+<p>Kaufmann, Stuart. 1993. <i>The Origins of Order: Self-Organization and Selection in Evolution</i>. New York: Oxford University Press.</p>
+
+<p>Kent, Beverley E. 1987. <i>Charles S. Peirce: Logic and the Classification of the Sciences</i>. Kingston: McGill-Queen&rsquo;s University Press.</p>
+
+<p>Kleidon, Axel. 2010. &ldquo;Life, Hierarchy, and the Thermodynamic Machinery of Planet Earth&rdquo;. <i>Physics of Life Reviews</i> 7, no. 4: 424&ndash;60.</p>
+
+<p>Kleineberg, Michael. 2017. &ldquo;Integrative Levels&rdquo;. <i>Knowledge Organization</i> 44, no. 5: 349&ndash;79. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli, <a class="menu" href="integrative_levels">https://www.isko.org/cyclo/integrative_levels</a>.</p>
+
+<p>Kraskov, Alexander, Harald St&ouml;gbauer, Ralph G. Andrzejak, and Peter Grassberger. 2005. &ldquo;Hierarchical Clustering Using Mutual Information&rdquo;. <i>EPL (Europhysics Letters)</i> 70, no. 2: 278-84. DOI: <a class="menu" href="https://doi.org/10.1209/epl/i2004-10483-y">https://doi.org/10.1209/epl/i2004-10483-y</a>.</p>
+
+<p>Kublikowski, Robert. 2016. &ldquo;Definitions and the Growth of Knowledge: The Main Ideas&rdquo;. <i>Summarium</i> 1, no. 65: 45&ndash;57. </p>
+
+<p>Kulish, Victor V. 2002. <i>Hierarchical Methods: Hierarchy and Hierarchical Asymptotic Methods in Electrodynamics</i>. Springer Science &amp; Business Media.</p>
+
+<a name="refL"></a>
+
+<p>Lane, David. 2006. &ldquo;Hierarchy, Complexity, Society&rdquo;. In <i>Hierarchy in Natural and Social Sciences</i>, ed. Denise Pumain. Dordrecht: Springer Netherlands, 81&ndash;119. <a class="menu" href="http://link.springer.com/10.1007/1-4020-4127-6_5">http://link.springer.com/10.1007/1-4020-4127-6_5</a> (March 1, 2020).</p>
+
+<p>Lehmonen, Lauri, and Arto Annila. 2017. &ldquo;Natural Classes and Natural Classification&rdquo; (unpublished manuscript). <a class="menu" href="http://www.helsinki.fi/~aannila/arto/classes.pdf">http://www.helsinki.fi/~aannila/arto/classes.pdf</a> (October 12, 2017).</p>
+
+<p>Liddell, Henry George, and Robert Scott. 1897. <i>A Greek-English Lexicon</i>. New York: American Book Company.</p>
+
+<p>Lima, Manuel. 2014. <i>The Book of Trees: Visualizing Branches of Knowledge</i>. New York: Princeton Architectural Press.</p>
+
+<p>Linn&aelig;us, Carolus. 1735. <i>Systema naturae, sive Regna tria naturae, systematice proposita per classes, ordines, genera, &amp; species</i>. Lugduni Batavorum: Apud T. Haak.</p>
+
+<p>Linnebo, O., and A. Rayo. 2012. &ldquo;Hierarchies Ontological and Ideological&rdquo;. <i>Mind</i> 121, no. 482: 269&ndash;308.</p>
+
+<p>Lovejoy, Arthur O. 1971. <i>The Great Chain of Being: A Study of the History of an Idea</i>. Cambridge, Mass.: Harvard University Press. <a class="menu" href="https://www.hup.harvard.edu/catalog.php?isbn=9780674361539">https://www.hup.harvard.edu/catalog.php?isbn=9780674361539</a>.</p>
+
+<p>Luo, Jianxi, Daniel E Whitney, Carliss Y. Baldwin, and Christopher L. Magee. 2009. &ldquo;Measuring and Understanding Hierarchy as an Architectural Element in Industry Sectors&rdquo;. Working Paper 09-144, May 2009, Harvard Business School, Chicago, Illinois: 47 pp. <A CLASS="menu" HREF="https://www.hbs.edu/ris/Publication%20Files/09-144.pdf">https://www.hbs.edu/ris/Publication%20Files/09-144.pdf</A>.</p>
+
+<a name="refM"></a>
+
+<p>Maslow, Abraham Harold. 1954. <i>Motivation and Personality</i>. ed. Gardner Murphy. New York, NY: Harper &amp; Bros.</p>
+
+<p>Mayo, Deborah G. 2005. &ldquo;Peircean Induction and the Error-Correcting Thesis&rdquo;. <i>Transactions of the Charles S. Peirce Society</i> 41, no. 2: 299&ndash;319.</p>
+
+<p>Mayr, Ernst, Gorton Linsley and Robert L. Usinger. 1953. <i>Methods and Principles of Systematic Zoology</i>. New York: McGraw-Hill.</p>
+
+<p>Mayr, Ernst. 1982. <i>The Growth of Biological Thought: Diversity, Evolution, and Inheritance</i>. Cambridge, Mass: Belknap Press.</p>
+
+<p>Mazzocchi, Fulvio. 2013. &ldquo;Images of Thought and Their Relation to Classification: The Tree and the Net&rdquo;. <i>Knowledge Organization</i> 40, no. 6: 366-74.</p>
+
+<p>McGuinness, Deborah L. and Alex Borgida. 1995. &ldquo;Explaining Subsumption in Description Logics&rdquo;. In <p>Proceedings of the 14th International Joint Conference on Artificial Intelligence, Montreal, Quebec</i>, ed. Ron Kohavi. Morgan Kaufmann: 816-21.</p>
+
+<p>Michel, Dee. 1997. &ldquo;Appendix B: Taxonomy of Subject Relationships&rdquo;. In <i>Final Report to the ALCTS/CCS Subject Analysis Committee</i>, ALA Report, ed. J. Greenberg. American Library Association, 18.</p>
+
+<p>Midtgarden, Torjus. 2019. &ldquo;Peirce&rsquo;s Classification of the Sciences&rdquo;. <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli, <a class="menu" href="peirce">https://www.isko.org/cyclo/peirce</a>.</p>
+
+<p>Miksa, Francis. 1994. &ldquo;Classification&rdquo;. In <i>Encyclopedia of Library History</i>, eds. Wayne A. Wiegand and Donald G. Davis, Jr. New York: Garland Publishing, 144-53. </p>
+
+<p>Miller, David, Tony Olson, and Sara Shatford Layne. 2005. &ldquo;Promoting Research and Best Practices in Subject Reference Structures&rdquo;. <i>Library Resources &amp; Technical Services</i> 49, no. 3: 154&ndash;66.</p>
+
+<p>Miller, George A. 1995. &ldquo;WordNet: A Lexical Database for English&rdquo;. <i>Communications of the ACM</i> 38, no. 11: 39&ndash;41.</p>
+
+<a name="refN"></a>
+
+<p>Napoli, Amedeo. 1995. &ldquo;Objects, Classes, Specialization and Subsumption&rdquo;. In <i>Proceedings of the 1995 International Workshop on Description Logics, University of Rome, June 2-3, 1995</i> (Technical Report 07.95), eds. Alex Borgida, Maurizio Lenzerini , Daniele Nardi and Bernhard Nebel. Rome: University of Rome: 52&ndash;55. <a class="menu" href="http://citeseerx.ist.psu.edu/viewdoc/download;jsessionid=91AEB063C0587E522C6BCB06F3D182C6?doi=10.1.1.43.8298&amp;rep=rep1&amp;type=pdf">http://citeseerx.ist.psu.edu/...</a>.</p>
+
+<p>Needham, Joseph. 1937. &ldquo;Integrative Levels: A Revaluation of the Idea of Progress&rdquo;. In <i>Time: The Refreshing River (Essays and Addresses, 1932-1942), Herbert Spencer Lecture at Oxford University</i>. London, UK: George Allen &amp; Unwin Ltd., 233&ndash;72. <a class="menu" href="https://archive.org/details/timerefreshingri00need/page/232/mode/2up">https://archive.org/details/timerefreshingri00need/page/232/mode/2up</a> (March 6, 2020).</p>
+
+<p>Newman, Phil. 2013. &ldquo;Discovering the Electromagnetic Spectrum&rdquo;. NASA Goddard Space Flight Center. <a class="menu" href="https://imagine.gsfc.nasa.gov/science/toolbox/history_multiwavelength1.html">https://imagine.gsfc.nasa.gov/science/toolbox/history_multiwavelength1.html</a> (March 14, 2020).</p>
+
+<p>Nilsson, J&oslash;rgen Fischer. 2006. &ldquo;Ontological Constitutions for Classes and Properties&rdquo;. In <i>Conceptual Structures: Inspiration and Application</i>. Lecture Notes in Computer Science, eds. Henrik Sch&auml;rfe, Pascal Hitzler, and Peter &Oslash;hrstr&oslash;m. Aalborg, Denmark: Springer, 35&ndash;53.</p>
+
+<a name="refO"></a>
+
+<p>Olson, H. A. 1999. &ldquo;Exclusivity, Teleology and Hierarchy: Our Aristotelean Legacy&rdquo;. <i>Knowledge Organization</i> 26, no. 2: 65&ndash;73.</p>
+
+<p><i>Oxford English Dictionary: The Definitive Record of the English Language. (OED)</i>. Oxford, UK: Oxford University Press. OED online: <a class="menu" href="https://www.oed.com/">https://www.oed.com/</a> (Toll access; visited 2021-01-29).</p>
+
+<a name="refP"></a>
+
+<p>Padgham, Lin, and Patrick Lambrix. 1994. &ldquo;A Framework for Part-of Hierarchies in Terminological Logics&rdquo;. In <i>Principles of Knowledge Representation and Reasoning</i>, eds. Bernhard Nebel, Charles Rich, and William Swartout. San Mateo, CA: Elsevier, 485&ndash;96.</p>
+
+<p>Paine, Rainer W., and Jun Tani. 2005. &ldquo;How Hierarchical Control Self-Organizes in Artificial Adaptive Systems&rdquo;. <i>Adaptive Behavior</i> 13, no. 3: 211&ndash;25.</p>
+
+<p>Parker, Kelly A. 1998. <i>The Continuity of Peirce&rsquo;s Thought</i>. Nashville: Vanderbilt University Press.</p>
+
+<p>Parry, William T. and Edward A. Hacker. 1991. <i>Aristotelian Logic</i>. New York, NY: State University of New York Press.</p>
+
+<p>Patrides, Constantinos A. 1974. &ldquo;Hierarchy and Order&rdquo;. In <i>Dictionary of the History of Ideas: Studies of Selected Pivotal Ideas, Volume II (Despotism - Law, Common)</i>, ed. Philip P. Wiener. New York, NY: Scribner. <a class="menu" href="http://xtf.lib.virginia.edu/xtf/view?docId=DicHist/uvaGenText/tei/DicHist2.xml;chunk.id=dv2-50;toc.depth=1;toc.id=dv2-50;brand=default">http://xtf.lib.virginia.edu/...</a>.</p>
+
+<p>Pattee, Howard H. 1973a. &ldquo;Postscript: Unsolved Problems and Potential Applications of Hierarchy Theory&rdquo;. In <i>Hierarchy Theory: The Challenge of Complex Systems</i>, ed. Howard H. Pattee. New York, NY: George Brazilller, 131&ndash;56.</p>
+
+<p>Pattee, Howard H. 1973b. &ldquo;The Physical Basis and Origin of Hierarchical Control&rdquo;. In <i>Hierarchy Theory: The Challenge of Complex Systems</i>, ed. Howard H. Pattee. New York, NY: George Brazilller, 72&ndash;108.</p>
+
+<p>Peirce, Charles Sanders. 1867. &ldquo;Upon Logical Comprehension and Extension&rdquo;. In <i>Proceedings of the American Academy of Arts and Sciences</i>, ed. American Academy of Arts and Sciences. Metcalf and Company, 416&ndash;32.</p>
+
+<p>Peirce, Charles Sanders. 1877. &ldquo;The Fixation of Belief&rdquo;. <i>Popular Science Monthly</i> 12, no. 1: 1&ndash;15.</p>
+
+<p>Peirce, Charles Sanders. 1891. &ldquo;The Architecture of Theories&rdquo;. <i>The Monist</i> 1, no. 2: 161&ndash;76.</p>
+
+<p>Peirce, Charles Sanders. 1905a. &ldquo;Issues of Pragmaticism&rdquo;. <i>The Monist</i> 15, no. 4: 481&ndash;99.</p>
+
+<p>Peirce, Charles Sanders. 1905b. &ldquo;What Pragmatism Is&rdquo;. <i>The Monist</i> 15, no. 2: 161&ndash;81.</p>
+
+<p>Peirce, Charles Sanders. 1906. &ldquo;Prolegomena to an Apology for Pragmaticism&rdquo;. <i>The Monist</i> 16, no. 4: 492&ndash;546.</p>
+
+<p>Peirce, Charles Sanders. 1931. <i>The Collected Papers of Charles Sanders Peirce</i>, 8 Volumes. eds. Charles Hartshorne, Paul Weiss, and Arthur W Burks. Cambridge, MA: Harvard University Press.</p>
+
+<p>Peirce, Charles Sanders. 1976. <i>The New Elements of Mathematics</i>. Four vols. (in five books), ed. Carolyn Eisele. The Hague: Mouton.</p>
+
+<p>Peirce, Charles Sanders. 1992a. &ldquo;The Logic of Continuity&rdquo;. In <i>Reasoning and the Logic of Things: The Cambridge Conferences Lectures of 1898</i>, ed. Kenneth Laine Ketner. Harvard University Press, 242&ndash;63.</p>
+
+<p>Peirce, Charles Sanders. 1992b. &ldquo;Types of Reasoning&rdquo;. In <i>Reasoning and the Logic of Things: The Cambridge Conferences Lectures of 1898</i>, ed. Kenneth Laine Ketner. Harvard University Press, 121&ndash;42.</p>
+
+<p>Peirce, Charles Sanders. 1997. <i>Pragmatism as a Principle and Method of Right Thinking: The 1903 Harvard Lectures on Pragmatism</i>, ed. Patricia Ann Turrisi. State University of New York Press.</p>
+
+<p>Peirce, Charles Sanders. 1998a. &ldquo;An Outline Classification of the Sciences&rdquo;. In <i>The Essential Peirce: Selected Philosophical Writings</i>, Volume 2 (1893-1913), ed. The Peirce Edition Project. Bloomington, Indiana: Indiana University Press, 258&ndash;62.</p>
+
+<p>Peirce, Charles Sanders. 1998b. &ldquo;On Science and Natural Classes&rdquo;. In <i>The Essential Peirce: Selected Philosophical Writings</i>, Volume 2 (1893-1913), ed. The Peirce Edition Project. Bloomington, Indiana: Indiana University Press, 115&ndash;32.</p>
+
+<p>Peirce, Charles Sanders. 1998c. &ldquo;On the Logic of Drawing History from Ancient Documents, Especially the Testimonies&rdquo;. In <i>The Essential Peirce: Selected Philosophical Writings</i>, Volume 2 (1893-1913), ed. The Peirce Edition Project. Bloomington, Indiana: Indiana University Press, 75&ndash;114.</p>
+
+<p>Peirce, Charles Sanders. 1998d. &ldquo;Pragmatism&rdquo;. In <i>The Essential Peirce: Selected Philosophical Writings</i>, Volume 2 (1893-1913), ed. The Peirce Edition Project. Bloomington, Indiana: Indiana University Press, 398&ndash;433.</p>
+
+<p>Peirce, Charles Sanders. 1998e. &ldquo;Sundry Logical Conceptions&rdquo;. In <i>The Essential Peirce: Selected Philosophical Writings</i>, Volume 2 (1893-1913), ed. The Peirce Edition Project. Bloomington, Indiana: Indiana University Press, 269&ndash;88.</p>
+
+<p>Peirce, Charles Sanders. 1998f. &ldquo;The Basis of Pragmaticism in the Normative Sciences&rdquo;. In <i>The Essential Peirce: Selected Philosophical Writings</i>, Volume 2 (1893-1913), ed. The Peirce Edition Project. Bloomington, Indiana: Indiana University Press, 371&ndash;97.</p>
+
+<p>Peirce, Charles Sanders. 1998g. <i>The Essential Peirce: Selected Philosophical Writings</i>, Vol 2 (1893-1913). ed. Peirce Edition Project. Bloomington, Indiana: Indiana University Press.</p>
+
+<p>Peirce, Charles Sanders. 1998h. &ldquo;The Neglected Argument for the Reality of God&rdquo;. In <i>The Essential Peirce: Selected Philosophical Writings</i>, Volume 2 (1893-1913), ed. The Peirce Edition Project. Bloomington, Indiana: Indiana University Press, 434&ndash;50.</p>
+
+<p>Pellegrin, Pierre. 1986. <i>Aristotle's Classification of Animals: Biology and the Conceptual Unity of the Aristotelian Corpus</i>. (Translated from &ldquo;Classification des animaux chez Aristote: Statut de la biologie et unit&eacute; de l'aristot&eacute;lisme&raquo; (Paris, Les Belles Lettres, 1982) by Anthony Preus. Berkeley: University of California Press. </p>
+
+<p>Plato. 1925. <i>Phaedrus</i>, Section 265e&rdquo;. <a class="menu" href="http://www.perseus.tufts.edu/hopper/text?doc=Perseus:text:1999.01.0174:text=Phaedrus:section=265e">http://www.perseus.tufts.edu/...</a> (December 28, 2020).</p>
+
+<p>Potochnik, Angela, and Brian McGill. 2012. &ldquo;The Limitations of Hierarchical Organization&rdquo;. Philosophy of Science 79, no. 1: 120&ndash;40.</p>
+
+<p>Pumain, Denise. 2006. &ldquo;Introduction&rdquo;. In <i>Hierarchy in Natural and Social Sciences</i>, ed. Denise Pumain. Dordrecht: Springer Netherlands, 1&ndash;12. <a class="menu" href="https://link.springer.com/chapter/10.1007/1-4020-4127-6_1">https://link.springer.com/chapter/10.1007/1-4020-4127-6_1</a> (March 1, 2020).</p>
+
+<a name="refQ"></a>
+
+<p>Quammen, David. 2018. <i>The Tangled Tree: A Radical New History of Life</i>. London: William Collins. </p>
+
+<p>Quinn, Aleta. 2017. &ldquo;When Is a Cladist Not a Cladist?&rdquo; <i>Biology &amp; Philosophy</i> 32, no. 4: 581&ndash;98.</p>
+
+<a name="refR"></a>
+
+<p>Roche, Christophe. 2016. &ldquo;Should Terminology Principles Be Re-Examined?&rdquo; <a href="http://arxiv.org">arXiv:1609.05170</a> [cs]. http://arxiv.org/abs/1609.05170 (December 30, 2020).</p>
+
+<a name="refS"></a>
+
+<p>Salthe, Stanley N. 2002. &ldquo;Summary of the Principles of Hierarchy Theory&rdquo;. <i>General Systems Bulletin</i> 31: 13&ndash;17.</p>
+
+<p>Salthe, Stanley N. 2009. &ldquo;A Hierarchical Framework for Levels of Reality: Understanding Through Representation&rdquo;. <i>Axiomathes</i> 19, no. 1: 87&ndash;99.</p>
+
+<p>Salthe, Stanley N. 2011. &ldquo;Naturalizing Information&rdquo;. <i>Information</i> 2, no. 3: 417&ndash;25.</p>
+
+<p>Salthe, Stanley N. 2012. &ldquo;Hierarchical Structures&rdquo;. <i>Axiomathes</i> 22, no. 3: 355-83.</p>
+
+<p>Shannon, Claude E. 1948. &ldquo;A Mathematical Theory of Communication&rdquo;. <i>Bell System Technical Journal</i> 27, no. 3: 379&ndash;423. <a class="menu" href="https://doi.org/10.1002/j.1538-7305.1948.tb01338.x">https://doi.org/10.1002/j.1538-7305.1948.tb01338.x</a></p>
+
+<p>Shapley, Harlow. 1958. <i>Of Men and Stars: Human Response to an Expanding Universe</i>. Boston, MA: Beacon Press.</p>
+
+<p>Short, Thomas Lloyd. 2007. <i>Peirce&rsquo;s Theory of Signs</i>. Cambridge University Press.</p>
+
+<p>Simon, Herbert A. 1962. &ldquo;The Architecture of Complexity&rdquo;. <i>Proceedings of the American Philosophical Society</i> 105, no. 6: 467&ndash;82.</p>
+
+<p>Sluys, Ronald, Koen Martens and Frederick R. Schram. 2004. &ldquo;The PhyloCode: Naming of Biodiversity at a Crossroads&rdquo;. <i>Trends in Ecology and Evolution</i> 19, no. 6: 280-1. DOI: 10.1016/j.tree.2004.04.001cal.</p>
+
+<p>Snyder, Steve. 2014. &ldquo;The Great Chain of Being&rdquo;. <i>Grand View University Faculty Pages</i>. <a class="menu" href="https://web.archive.org/web/20170728101006/http://faculty.grandview.edu/ssnyder/121/121 great chain.htm">https://web.archive.org/web/20170728101006/http://faculty.grandview.edu/ssnyder/121/121 great chain.htm</a>.</p>
+
+<p>Solskinnsbakk, Geir et al. 2010. &ldquo;Quality of Subsumption Hierarchies in Ontologies&rdquo;. In <i>Natural Language Processing and Information Systems</i>, eds. Helmut Horacek, Elisabeth M&eacute;tais, Rafael Mu&ntilde;oz, and Magdalena Wolska. Berlin, Heidelberg: Springer Berlin Heidelberg, 258&ndash;68. <a class="menu" href="https://link.springer.com/chapter/10.1007/978-3-642-12550-8_21">https://link.springer.com/chapter/10.1007/978-3-642-12550-8_21</a> (February 20, 2020).</p>
+
+<p>S&oslash;rlie, Therese et al. 2001. &ldquo;Gene Expression Patterns of Breast Carcinomas Distinguish Tumor Subclasses with Clinical Implications&rdquo;. <i>Proceedings of the National Academy of Sciences</i> 98, no. 19: 10869&ndash;74.</p>
+
+<p>Sowa, John. 2001. &ldquo;Glossary&rdquo;. <i>Ontology</i>. <a class="menu" href="http://www.jfsowa.com/ontology/gloss.htm">http://www.jfsowa.com/ontology/gloss.htm</a> (February 23, 2020).</p>
+
+<p>Spiliopoulos, Vassilis, George A. Vouros, and Vangelis Karkaletsis. 2010. &ldquo;On the Discovery of Subsumption Relations for the Alignment of Ontologies&rdquo;. <i>Journal of Web Semantics</i> 8, no. 1: 69&ndash;88.</p>
+
+<p>Stoica, Emilia, and M. Hearst. 2004. &ldquo;Nearly-Automated Metadata Hierarchy Creation&rdquo;. <i>HLT-NAACL &lsquo;04, Companion Volume</i>. <a class="menu" href="http://acl.ldc.upenn.edu/hlt-naacl2004/shorts/pdf/253_Paper.pdf">http://acl.ldc.upenn.edu/hlt-naacl2004/shorts/pdf/253_Paper.pdf</a>.</p>
+
+<p>Stoica, Emilia, Marti A. Hearst, and Megan Richardson. 2007. &ldquo;Automating Creation of Hierarchical Faceted Metadata Structures&rdquo;. In <i>Human Language Technologies 2007, Proceedings of the Main Conference</i>.  Rochester, NY: Association for Computational Linguistics, 244&ndash;51.</p>
+
+<p>Stumme, Gerd. 1999. &ldquo;Hierarchies of Conceptual Scales&rdquo;. In <i>Proceedings of the 12th Workshop on Knowledge Acquisition, Modeling and Management (KAW'99)</i>, eds. T. B. Gaines, R. Kremer and M. Musen. Banff, volume 2: 78–95.</p>
+
+<a name="refT"></a>
+
+<p>Tobin, Emma. 2010. &ldquo;Crosscutting Natural Kinds and the Hierarchy Thesis&rdquo;. In <i>The Semantics and Metaphysics of Natural Kinds</i>, eds. Helen Beebee and Nigel Sabbarton-Leary. New York, NY: Routledge, 187&ndash;99. <a class="menu" href="https://www.taylorfrancis.com/books/9780203852330">https://www.taylorfrancis.com/books/9780203852330</a>.</p>
+
+<a name="refU"></a>
+<a name="refV"></a>
+
+<p>Van Hove, Alphonse. 1910. &ldquo;Hierarchy&rdquo;. In <i>Catholic Encyclopedia</i>. New York: Robert Appleton Company. Retrieved from New Advent: <a class="menu" href="http://www.newadvent.org/cathen/07322c.htm">http://www.newadvent.org/cathen/07322c.htm</a> (January 22, 2021).</p>
+
+<p>Vasilyeva, Larissa N., and Steven L. Stephenson. 2008. &ldquo;The Linnaean Hierarchy and &lsquo;Extensional Thinking&rsquo;&rdquo;. <i>The Open Evolution Journal</i> 2, no. 1: 55&ndash;65. <a class="menu" href="https://benthamopen.com/DOWNLOAD-PDF/TOEVOLJ-2-55/">https://benthamopen.com/DOWNLOAD-PDF/TOEVOLJ-2-55/</a> (January 22, 2021).</p>
+
+<p>Verdier, Nicolas. 2006. &ldquo;Hierarchy: A Short History of a Word in Western Thought&rdquo;. In <i>Hierarchy in Natural and Social Sciences</i>, ed. Denise Pumain. Dordrecht: Springer Netherlands, 13&ndash;37. <a class="menu" href="https://link.springer.com/chapter/10.1007/1-4020-4127-6_2">https://link.springer.com/chapter/10.1007/1-4020-4127-6_2</a> (March 1, 2020).</p>
+
+<a name="refW"></a>
+
+<p>W3C. 2008. &ldquo;Vocabularies&rdquo;. <i>W3C Standards - Semantic Web</i>. <a class="menu" href="https://www.w3.org/standards/semanticweb/ontology">https://www.w3.org/standards/semanticweb/ontology</a> (March 15, 2020).</p>
+
+<p>Walker, Sara Imari. 2014. &ldquo;Top-Down Causation and the Rise of Information in the Emergence of Life&rdquo;. <i>Information</i> 5, no. 3: 424&ndash;39.</p>
+
+<p>Walker, Sara Imari, and Paul C. W. Davies. 2013. &ldquo;The Algorithmic Origins of Life&rdquo;. <i>Journal of The Royal Society Interface</i> 10, no. 79: 1-9. <a class="menu" href="https://doi.org/10.1098/rsif.2012.0869">https://doi.org/10.1098/rsif.2012.0869</a>.</p>
+
+<p>Wilkins, John S. and Malte C. Ebach. 2014. <i>The Nature of Classification: Relationships and Kinds in the Natural Sciences</i>. New York: Palgrave MacMillan. </p>
+
+<p>Wille, Rudolf. 1995. &ldquo;The Basic Theorem of Triadic Concept Analysis&rdquo;. <i>Order</i> 12, no. 2: 149&ndash;58.</p>
+
+<p>Wilson, Donna M. 1968. &ldquo;Forms of Hierarchy: A Selected Bibliography&rdquo;. In <i>Hierarchical Structures: Proceedings of a Symposium</i>, Douglas Advanced Research Laboratories, eds. Lancelot Law Whyte, Albert George Wilson, and Donna M. Wilson. Douglas Advanced Research Laboratories, Huntington Beach, CA: Elsevier Publishing Company, 287&ndash;314.</p>
+
+<p>Wimsatt, William C. 1972. &ldquo;Complexity and Organization&rdquo;. In <i>PSA: Proceedings of the Biennial Meeting of the Philosophy of Science Association</i>. Dordrecht: D. Reidel Publishing, 67&ndash;86. <a class="menu" href="https://www.jstor.org/stable/3698961">https://www.jstor.org/stable/3698961</a>.</p>
+
+<p>Witteveen, Joeri. 2020. &ldquo;Linnaeus, the Essentialism Story, and the Question of Types&rdquo;. <i>Taxon</i> 69, no. 6: 1141-9. DOI <a class="menu" href="https://doi.org/10.1002/tax.12346">https://doi.org/10.1002/tax.12346</a>.</p>
+
+<p><i>WordNet 3.1: A Lexical Database for English</i>. <a class="menu" href="http://wordnetweb.princeton.edu/perl/webwn">http://wordnetweb.princeton.edu/perl/webwn</a> (Visited 2021-01-29).</p>
+
+<p>Wu, Jianguo. 2013. &ldquo;Hierarchy Theory: An Overview&rdquo;. In <i>Linking Ecology and Ethics for a Changing World</i>, eds. Ricardo Rozzi et al. Dordrecht: Springer Netherlands, 281&ndash;301. <a class="menu" href="http://link.springer.com/10.1007/978-94-007-7470-4_24">http://link.springer.com/10.1007/978-94-007-7470-4_24</a> (February 22, 2020).</p>
+
+<a name="refX"></a>
+<a name="refY"></a>
+
+<p>Yao, Yiyu. 2009. &ldquo;Integrative Levels of Granularity&rdquo;. In <i>Human-Centric Information Processing Through Granular Modelling</i>, eds. Andrzej Bargiela and Witold Pedrycz. Berlin: Springer Science &amp; Business Media, 31&ndash;48.</p>
+
+<a name="refZ"></a>
+
+<p>Zadeh, Lotfi Asker. 1971. &ldquo;Similarity Relations and Fuzzy Orderings&rdquo;. <i>Information Sciences: An International Journal</i> 3, no. 2: 177&ndash;200. <a class="menu" href="https://doi.org/10.1016/S0020-0255(71)80005-1">https://doi.org/10.1016/S0020-0255(71)80005-1</a>.</p>
+
+<p>Zalamea, Fernando. 2003. &ldquo;Peirce&rsquo;s Logic of Continuity: Existential Graphs and Non-Cantorian Continuum&rdquo;. <i>The Review of Modern Logic</i> 9, no. 1&ndash;2: 115&ndash;62.</p>
+
+<p>Zalamea, Fernando. 2012. <i>Peirce&rsquo;s Continuum: A Methodological and Mathematical Approach</i>. Boston, MA: Docent Press.</p>
+
+<p>Zalamea, Fernando. 2013. &ldquo;Plasticity and Creativity in the Logic Notebook&rdquo;, eds. Mats Bergman and Sami Paavola. <i>European Journal of Pragmatism and American Philosophy</i> 5, no. 1: 1-14. <a class="menu" href="http://journals.openedition.org/ejpap/593">http://journals.openedition.org/ejpap/593</a> (January 1, 2021).</p>
+
+<p>Zeng, Marcia Lei. 2005. &ldquo;Construction of Controlled Vocabularies, a Primer (Based on Z39. 19)&rdquo;. Based on ANSI/NISO Z39.19-2005: Guidelines for the Construction, Format, and Management of Monolingual Controlled Vocabularies 3919. <a class="menu" href="https://marciazeng.slis.kent.edu/Z3919/index.htm">https://marciazeng.slis.kent.edu/Z3919/index.htm</a>.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+
+</span><!-- citation ends -->
+
+<a name="app"></a>
+<h3>Appendix: Some definitions related to hierarchy in ISO standards</h3>
+
+<p>ISO 5127: 2017, definition 3.1.7.01: &ldquo;semantic relation (semantic relationship): relation (3.1.1.12) between concepts (3.1.1.02) and between class (3.8.5.03) symbols (3.1.4.17) and their meanings (3.1.8.03)&rdquo;. </p>
+
+<p>ISO 5127: 2017, definition 3.1.7.12: &ldquo;hierarchical relation: semantic relation (3.1.7.01) between a pair of concepts (3.1.1.02) of which one has a scope falling completely within the scope of the other&rdquo;. </p>
+
+<p>ISO 25964-1: 2011, Section 10.2 writes: &ldquo;The hierarchical relationship should be established between a pair of concepts when the scope of one of them falls completely within the scope of the other. It should be based on degrees or levels of superordination and subordination, where the superordinate concept represents a class or whole, and subordinate concepts refer to its members or parts&rdquo;. And: &ldquo;The hierarchical relationship may be one of three types, corresponding to three logically different situations as follows:
+<br>a) the generic relationship.
+<br>b) the hierarchical whole-part relationship.
+<br>c) the instance relationship.
+<br>Each of these leads to hierarchies which are amenable to a logical test through reference to the types of concept involved&rdquo;. </p>
+
+<p>ISO 5127: 2017, definition 3.1.7.05: &ldquo;generic relation: relation (3.1.1.12) between two concepts (3.1.1.02) where the intension (3.1.2.24) of one of the concepts includes that of the other concept and at least one additional delimiting characteristic (3.1.1.04).</p>
+
+<p>ISO 25964-1: 2011, Section 10.2.2 writes: &ldquo;The generic relationship is the link between a class or category and its members or species. In addition to the test for validity described in 10.2.1, this relationship is also amenable to a logical "all and-some test" [&hellip; <i>Some birds are parrots and all parrots are birds</i> satisfy the all-and-some test, whereas <i>some pets are parrots and some parrots are pets</i> do not satisfy the definition of the generic relation, but exceptions may apply to a specialist thesaurus devoted to domestic animals]&rdquo;.</p>
+
+<p>ISO 5127: 2017, definition 3.1.7.06: &ldquo;partitive relation (part-whole relation): relation (3.1.1.12) between two concepts (3.1.1.02) where one of the concepts constitutes the whole and the other concept a part of that whole&rdquo;. </p>
+
+<p>ISO 25964-1: 2011, Section 10.2.3 writes (examples omitted): &ldquo;The hierarchical whole-part relationship covers a limited range of situations in which a part of an entity or system belongs uniquely to a particular possessing whole. This applies to four main classes of terms: &ldquo;a) systems and organs of the body; b) geographical locations; c) disciplines or fields of discourse; d) hierarchical social structures. </p>
+
+<p>Most other cases of the whole-part relationship are not eligible for a hierarchical linkage because the part could belong to more than one whole. For example, a BT/NT relationship should not be established between "bicycles" and "wheels" because a wheel may be part of a motor car or a wheelbarrow or many other artefacts. An exploded search for bicycles would retrieve much unwanted material if it were extended to all types of wheel. It is sometimes the case, however, that the parts of an artefact are unique to that artefact, at least in the field of application of the thesaurus&rdquo;.</p>
+
+<p>ISO 5127: 2017, definition 3.1.7.09: &ldquo;instance relationship (instantive relationship): relationship (3.1.1.12) between a general concept (3.1.2.15) such as a class (3.8.5.03) of things or events, and an individual instance (3.1.13.28) of that class, which is often represented by a proper name (3.1.5.28)&rdquo;. </p>
+
+<p>ISO 25964-1: 2011, Section 10.2.4 writes: &ldquo;The instance relationship links a general concept such as a class of things or events, and an individual instance of that class, often represented by a proper name&rdquo;.</p>
+
+<p>ISO 25964-1: 2011, Section 10.2.5 writes: &ldquo;Some concepts can belong, on logical grounds, to more than one group or class at the same time, in which case they are said to possess polyhierarchical relationships&rdquo;. (The term <code>organs</code>, for example, has both <code>keybord instruments</code> and <code>wind instruments</code> as generic broader terms; the term <code>biochemistry</code> has both <code>biology</code> and <code>chemistry</code> as whole-part broader terms; the term <code>skull</code> is both a kind of <code>bones</code> and a part of <code>head</code>, thus forming a polyhierarchical with mixed kinds of relations). </p>
+
+<a name="col"></a>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<p>&nbsp;</p>
+
+<p>Visited <a href="https://www.digits.net" target="_blank"><img src="https://counter.digits.net/?counter={6a489acd-a3f9-6dc4-317b-3e38f35e23d6}&template=simple" alt="Hit Counter by Digits" border="0"  /></a> times.</p>
+
+<hr>
+<p itemprop="dateCreated">Version 1.0 published 2021-02-21 <!-- last edited 2020-- --><!-- <br>Version 1.1 published 2020--: [changes] -->
+
+<p>Article category: <code><a itemprop="about" href="index#CC">Core concepts in KO</a></code></p>
+
+<p>This article (version 1.0) is also published in <i>Knowledge Organization</i>. How to cite it:
+<br>Bergman, Michael K. 2022. 
+&ldquo;Hierarchy in knowledge systems&rdquo;. 
+<i>Knowledge Organization</i> 49, no. 1: 40-66. 
+Also available in 
+<i><span itemprop="isPartOf">ISKO Encyclopedia of Knowledge Organization</span></i>, 
+eds. <span itemprop="editor">Birger Hj&oslash;rland</span> and <span itemprop="editor">Claudio Gnoli</span>, 
+<span itemprop="url">https://www.isko.org/cyclo/hierarchy </span></p>
+
+<p>&copy;2021 <span itemprop="publisher">ISKO</span>. All rights reserved.</p>
+
+</div><!-- Article ends -->
+
+</td>
+</tr>
+
+<tr>
+<td id="logo">
+</td>
+</tr>
+
+</table>
+</body>
+</html>

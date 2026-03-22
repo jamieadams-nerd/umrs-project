@@ -1,0 +1,428 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<HTML XMLNS="http://www.w3.org/1999/xhtml">
+
+<HEAD>
+<META HTTP-EQUIV="content-type" CONTENT="text/html; charset=utf-8" />
+<TITLE>Logical division (IEKO)</TITLE>
+<LINK REL="stylesheet" TYPE="text/css" HREF="../isko.css" />
+<LINK REL="schema.DCTERMS" HREF="http://purl.org/dc/terms/" />
+
+<META NAME="twitter:url" CONTENT="https://www.isko.org/cyclo/logical_division" />
+<META NAME="twitter:title" CONTENT="Logical division (ISKO Encyclopedia of KO)" />
+
+<META NAME="DCTERMS.title" CONTENT="Logical division" />
+<META NAME="DCTERMS.creator" CONTENT="Martin Fricke" />
+<META NAME="DCTERMS.issued" CONTENT="2016" />
+<META NAME="DCTERMS.relation.ispartof" CONTENT="ISKO Encyclopedia of Knowledge Organization" />
+<META NAME="DCTERMS.ispartof" CONTENT="ISKO Encyclopedia of Knowledge Organization" />
+<META NAME="DCTERMS:bibliographicCitation" CONTENT="ISKO Encyclopedia of Knowledge Organization, eds. Birger Hjorland and Claudio Gnoli" />
+<META NAME="DCTERMS.subject.classification" SCHEME="DDC" CONTENT="001.012">
+<META NAME="DCTERMS.subject.classification" SCHEME="DDC" CONTENT="025.4">
+<META NAME="DCTERMS.subject.keyword" CONTENT="classification">
+<META NAME="DCTERMS.subject.keyword" CONTENT="hierarchical trees">
+<META NAME="DCTERMS.type" CONTENT="Text" />
+<META NAME="DCTERMS.format" CONTENT="text/html" />
+<META NAME="DCTERMS.identifier" CONTENT="https://www.isko.org/cyclo/logical_division" />
+</HEAD>
+
+<STYLE>
+a {text-decoration: none;}
+a:hover {text-decoration:underline;}
+table td, table th { padding: 5px; }
+</STYLE>
+
+<BODY>
+
+<A NAME="top"></A>
+
+<TABLE>
+
+<TR>
+<TD ID="isko"><H1>I S K O</H1></TD>
+<TD ID="banner"><H2><A HREF="index.html" STYLE="text-decoration:none;">Encyclopedia of Knowledge Organization</H2></A></TD>
+</TR>
+
+<TR>
+<TD ID="navigation">
+<A HREF="../index.php">home</A>
+<A HREF="../about.html">about ISKO</A>
+<A HREF="../join.html">join ISKO</A>
+<A HREF="../ko.html"><CITE>Knowledge Organization</CITE> journal</A>
+<A HREF="../events.html">ISKO events</A>
+<A HREF="../chapters.html">ISKO chapters</A>
+<A HREF="../people.html">ISKO people</A>
+<a href="../stac/">SciTech Adv. Council</a>
+<A HREF="../pubs.html">ISKO publications</A>
+<A HREF="index.html">Encyclopedia</A>
+<A HREF="../lit.html">KO literature</A>
+<A HREF="../inst.html">KO institutions</A>
+<A HREF="http://bartoc.org/" TITLE="link to BARTOC">&#8663; KOS registry</A>
+<A HREF="https://isko.wildapricot.org/" TITLE="access-account required">&#128274; members</A>
+<A HREF="../contact.html">contact us</A>
+</TD>
+<TD ID="content" ROWSPAN="2">
+
+<A CLASS="menu" HREF="authors#hj">edited by Birger Hj&oslash;rland</A> <A CLASS="menu" HREF="authors#g">and Claudio Gnoli</A>
+
+
+<P>&nbsp;
+
+<H2>Logical division</H2>
+
+<BLOCKQUOTE>
+by <A HREF="authors#f" STYLE="text-decoration:underline">Martin Frick&eacute;</A>
+<P>Table of contents:<BR>
+<A STYLE="text-decoration:none;" HREF="#1">1. Introduction: kinds of division</A><BR> 
+<A STYLE="text-decoration:none;" HREF="#2">2. The basics of logical division</A><BR>
+<A STYLE="text-decoration:none;" HREF="#3">3. History</A><BR>
+<A STYLE="text-decoration:none;" HREF="#4">4. Formalization</A><BR>
+<A STYLE="text-decoration:none;" HREF="#5">5. The rules</A><BR>
+<A STYLE="text-decoration:none;" HREF="#6">6. The status of the rules</A><BR>
+<A STYLE="text-decoration:none;" HREF="#7">7. The process of logical division</A><BR> 
+<A STYLE="text-decoration:none;" HREF="#8">8. Conclusion</A><BR>
+<A STYLE="text-decoration:none;" HREF="#ref">References</A><BR>
+<A STYLE="text-decoration:none;" HREF="#col">Colophon</A><BR>
+</BLOCKQUOTE>
+
+<A NAME="1"></A>
+<H3>1. Introduction: kinds of division</H3>
+
+<P><I>Division</I> used to be a central topic in logic. The logic in question was an Aristotelian style of logic, which was taught and studied prior to the modern logic of Frege, Russell, and others i.e. prior to about 1920. For example, J. J. Toohey (<A HREF="#ref">1918</A>) <I>An elementary handbook of logic</I> has a chapter on "Division". See also Jevons (<A HREF="#ref">1883</A>, Section II), and Parry and Hacker (<A HREF="#ref">1991</A>, Chapter 6). Toohey (<A HREF="#ref">1918</A>, Chapter XVI) distinguishes:</P>
+
+<BLOCKQUOTE><B>Logical division</B>, which is the resolution of a class into the subclasses that compose it (e.g. triangles into obtuse-angled, right-angled, and acute-angled)<BR>
+<B>Physical division</B>, which is the resolution of an individual thing into the physical parts which compose it (e.g. a particular sword into its hilt and its blade)<BR>
+<B>Metaphysical division</B> (or mental distinction), which is the resolution of 'objects' into the attributes which they possess (e.g. man into rational, sentient, organic, corporeal, warm-blooded, mortal etc.)<BR>
+<B>Verbal division</B>, which is the resolution of a word which is a homograph into the synonyms which compose it (e.g. 'palm' into 'palm (kind of tree)' and into 'palm (part of hand)')</BLOCKQUOTE>
+
+<P>Many other similar kinds of division might be imagined (e.g. mathematical division, which might include a partitive factoring of a natural number into its component primes).</P>
+
+<P>Division is obviously important to knowledge organization. Typically, an organizational infrastructure might acknowledge three types of connecting relationships: class hierarchies, where some classes are subclasses of others, partitive hierarchies, where some items are parts of others, and instantiation, where some items are members of some classes (see Z39.19 <A HREF="#ref">ANSI/NISO 2005</A> as an example). The first two of these involve division (the third, instantiation, does not involve division &mdash; see below). Logical division would usually be a part of hierarchical classification systems, which, in turn, are central to shelving in libraries, to subject classification schemes, to controlled vocabularies, and to &rarr; <A HREF="thesaurus">thesauri</A>. Partitive hierarchies, and partitive division, are often essential to controlled vocabularies, thesauri, and subject tagging systems. Partitive hierarchies also relate to the bearers of information; for example, a journal would typically have its component articles as parts and, in turn, they might have sections as their parts, and, of course, components might be arrived at by partitive division (see <A HREF="#ref">Tillett 2009</A> as an illustration). Finally, verbal division, disambiguating homographs, is basic to controlled vocabularies.</P>
+
+<P>Thus division is a broad and relevant topic. This article, though, is going to focus on logical division. </P>
+
+<P ALIGN="right">[<A HREF="#top">top of entry</A>]</P>
+
+<A NAME="2"></A>
+<H3>2. The basics of logical division</H3>
+
+<P>Logical division concerns collections, and sub-collections of those collections. It concerns the family of concepts exemplified by sets, classes, kinds, types, sorts, and similar concepts, and it concerns the subclass-superclass relationships (or subtype-type relationships, or subset-set relationships etc.). There have been many different specific theories of sets, classes, kinds, types, and the like. What is needed to discuss logical division in general is a certain accommodation and gentleness with respect to these different concepts. In this article, the word <I>class</I> will be used to cover any of class, kind, type, sort, set etc. Then, subclass-superclass will be the primary relation of interest. </P>
+
+<P>Logical division divides a class into some of its subclasses, then some of those subclasses into some of their subclasses, and so on, a finite number of times. In general, any class will have many subclasses, but logical division is typically interested only in collections or families of subclasses that "divide up" the original class i.e. the subclasses resulting from a step of division need to be disjoint and not have members in common.  A single step of logical division produces something akin to a partition of the original class, then the next steps produce partitions of those partitions, and this process continues in a like manner. An important distinction within the theory of classes is that between <I>intension</I> and <I>extension</I>, what Frege calls <I>Sinn</I> (sense) and <I>Bedeutung</I> (reference) (<A HREF="#ref">Tich&yacute; 1988</A>).  To conceive of, or to define, a class intensionally is to give a property, or concept, which characterizes it. To conceive of, or to define, a class extensionally is to give a listing of its members. Suppose, to give an example, that every red object in the world was also round, and every round object was also red; then the classes <CODE>red</CODE> and <CODE>round</CODE> would be co-extensive, they would have the same members; in which case, conceiving of classes extensionally, just as listings of their members, the classes <CODE>red</CODE> and <CODE>round</CODE> would be the same class; there would just be the one class. In contrast, conceiving of the classes intensionally, the classes are different and there are two of them, the property red is a color and the property round is a shape and even if, in our world, everything that was red was round and vice versa, there would be, or could be, other worlds, other possibilities that we can conceive of, in which there are some red objects which are not round, or round objects that are not red. </P>
+
+<P>Logical division has sometimes been treated extensionally, in terms of dividing up listings of members, and sometimes treated intensionally, in terms of dividing up classes produced by properties or characteristics (see <A HREF="#ref">Marradi 1990; Howton 2010</A> for further discussion). A consideration here is whether division is going to be used on classes in mathematics, logic, and other a priori and necessary areas, or on classes in science and everyday matters of fact. Mathematics is extensional; for example, what prime numbers there are, there simply are &mdash; there is not some kind of alternative reality in which there are a few more or a few less prime numbers. In contrast, science and everyday matters of fact, are intensional; for example, the class of 19th century mathematical logicians has, as a matter of fact, Frege as one of its members, but it might have been that Frege chose a different line of business, in which case, the same (intensional) class <CODE>19th century mathematical logicians</CODE> would have had a different extension. It is almost always better to treat division using an intensional conception of classes, but in mathematics, logic, and some other areas, an extensional conception can be adequate. With some historical writers, for example Plato, it is not entirely clear whether the division is intensional or extensional (<A HREF="#ref">Howton 2010</A>) &mdash; to be fair, Plato was writing 2000 years before Frege. </P>
+
+<P>If intensional division is used, the technique would usually be that of adding properties or conditions to the higher level properties; for example, the class <CODE>animals</CODE> can be divided into the subclasses <CODE>animals <I>and </I>warm-blooded</CODE> and <CODE>animals <I>and </I>not-warm-blooded</CODE>, and this is just adding or conjoining the properties of being "warm-blooded" or "not-warm-blooded" to the base property of being an animal.</P>
+
+<P>The division of a class into subclasses produces only classes, and division of those subclasses produces only further classes. Within the domain of logical division, there is no interest in, or theory of, <I>instances</I> i.e. <I>members</I> of those classes. So, for example, logical division may address whether the class <CODE>man</CODE> and the class <CODE>horse</CODE> are subclasses of the class <CODE>animal</CODE>, but there is no interest whatsoever in, for example, whether the individual Socrates is an instance of the class <CODE>man</CODE> or of the class <CODE>horse</CODE> or of any other class. There is a caveat that can be given here. Nowadays we are perfectly sound on the distinction between subclass and instance (or member); for example, the class <CODE>old man</CODE> is a subclass of <CODE>man</CODE>, and Socrates is an instance of <CODE>old man</CODE> (and of <CODE>man</CODE>), but Socrates is not a subclass of <CODE>old man</CODE> (nor of <CODE>man</CODE>). But this distinction only really comes clear in the 19th century with Cantor and set theory. So pre-19th century materials on class and instance may or may not be perspicuous on the distinction.</P>
+
+<P>In a finite class hierarchy produced by division, the structure is that of tree, i.e. a rooted connected acyclic graph (see <A HREF="#ref">Diestel 2012</A> for an explanation of these terms), and so there are nodes or classes or species that do not have children. These are the "leaves" of the tree &mdash; they are the <I>infima species</I>. Division stops at the leaves. Somewhat similarly in the other direction, there is a node or class or species that does not have a parent class. This is the "root" of the tree &mdash; it is the <I>summum genus</I>. Division starts with the root class. There is the notion of <I>level</I> of a class or node in a tree, and this is identified by the number of links between the root of the tree and the class. Sometimes, for example in Eighteenth century biology, the levels can have particular names of their own, e.g. "kingdom", "phylum", "family" (<A HREF="#ref">Linnaeus 1758</A>).</P>
+
+<P>It is possible to view &rarr; <A HREF="classification">classification</A> and division as companions or counterparts. If so, division would be "top-down". Indeed, division has been referred to as "downward classification" (<A HREF="#ref">Mayr and Bock 2002; Mayr 1982</A>). The starting point would be a very general class which would successively be narrowed until a suitable classification class was reached. The whole division and narrowing process produces a classification system, a tree of classes. In contrast to division, the plain act of classification, i.e. the action or process of putting items in classes or categories, would normally be "bottom-up". The starting point would be one or more items or individuals, which needed classifying, and they would be classified by putting those with commonalities as members of a suitable narrow class and proceeding upward.  Care is needed with the viewpoint that division and classification are much the same, apart from being in different directions The process of classification requires identifying suitable classes with the items as members i.e. it requires consideration of membership or instantiation. In contrast, the process of division has no connection whatsoever with membership and instantiation.</P>
+
+<P ALIGN="right">[<A HREF="#top">top of entry</A>]</P>
+
+<A NAME="3"></A>
+<H3>3. History</H3>
+
+<P>There are four important philosophical figures, historically, that set the scene for logical division: Plato (circa 450 B.C.E.), Aristotle (circa 400 B.C.E.), Porphyry (circa 270 C.E.), and Boethius (circa 500 C.E.). And there is one prominent scientist that should be mentioned: Linnaeus (circa 1740 C.E.). </P>
+
+<P>Plato in the <I>Sophist</I> seeks a definition of the form or class or kind <CODE>sophist</CODE>, and there is a specific dialectical method that he advocates (<A HREF="#ref">Gill 2016; 2010; Howton 2010</A>). It is that of starting with a very general kind, then using division to divide that kind in two, then repeating this process over and over until the exact kind sophist was met. It was as though one were travelling on a journey down a road, and every time the road had a fork, one path was chosen, until the destination was reached. The meeting of a fork, and the choosing of one of the (usually) two possibilities is the technique of division. At the destination point, the process was reversed, or the route retraced, and all the division properties were accumulated together as the definition of sophist. Plato used the same technique in the <I>Statesman</I> to define the kind <CODE>statesman</CODE>, and the approach was assumed to be general (<A HREF="#ref">Gill 2016; 2010; Howton 2010</A>).</P>
+
+<P>The notion of definition in use here is not that of explaining the meaning of a word (say the word <I>sophist</I>) rather it is that of capturing what it is to be an X (in this case, to be a sophist). It is to grasp what is essential.</P>
+
+<P>Aristotle also offered a theory of definition, in <I>Topics</I> (<A HREF="#ref">Smith 1997</A>). This rests on Aristotle's theory of classification (<A HREF="#ref">Berg 1982; Smith 2016</A>). In this, it is a <I>species</I> that is defined, and a species is defined by means of a <I>genus</I> and a <I>difference</I>. So, for example, a classification fragment from the history of biology might be</P>
+
+<FIGURE ALIGN="center">
+<IMG SRC="logical_division1.png" TITLE="Fig. 1: A classification fragment" WIDTH="50%">
+<FIGCAPTION>Figure 1: A classification fragment</FIGCAPTION>
+</FIGURE>
+
+<P>This diagram is illustrating a partial classification hierarchy among classes; so, for example, <CODE>animal</CODE> is a subclass of <CODE>living organism</CODE> and a superclass of <CODE>man</CODE> and <CODE>horse</CODE>. An alternative way of describing this is to say that <CODE>animal</CODE> is a child class of <CODE>living organism</CODE> and a parent class of both <CODE>man</CODE> and <CODE>horse</CODE>.</P>
+
+<P>All of the members of a classification hierarchy which are children are <I>species</I> &mdash; so <CODE>horse</CODE> is a species. Any member of the hierarchy which is a parent class is a <I>genus</I> &mdash; so, <CODE>animal</CODE> is a genus. Then the child species of a specific genus are separated one from another, i.e. from their sibling species, by means of the <I>differences</I>. For example, Aristotle thought that what was characteristic of man was that man had the capability of reasoning i.e. was rational. (The other species' differences are not illustrated in the diagram.)</P>
+
+<P>It is the species that are <I>defined</I>, and they are defined by identifying their parent i.e. their genus and putting that together with the <I>differentiae</I> which is the difference which separates or distinguishes them from their siblings. So, an example definition is</P>
+
+<BLOCKQUOTE>man =<SUB>df.</SUB> animal having the capacity to reason</BLOCKQUOTE>
+
+<P>All such definitions have the form</P>
+
+<BLOCKQUOTE>&lt;species&gt; =<SUB>df.</SUB> &lt;genus&gt; &lt;difference&gt;</BLOCKQUOTE>
+
+<P>When a class or species is defined this way, the defining properties on the right hand side of the definition are <I>essential</I> properties that all instances of the species must have. Definition, Aristotelian definition, is the definition of a species by means of its genus and difference (<A HREF="#ref">Berg 1982; Smith 2004</A>). (Just as a historical note, Aristotle did not use classification diagrams, that came later inspired by Porphyry, and also Aristotle did not use the word <I>species</I>, that also came later, with Porphyry and Boethius.) </P>
+
+<P>Like Plato, Aristotle sometimes used the method of division to produce essential definitions. However, he was critical of Plato's approach to division. His view was that Plato-style division could be used as a heuristic to discover essential definitions, but the method was not strong enough as a method of proof to prove that the tentative essential definitions were indeed truly correct and that they captured the relevant essences. Aristotle argues this in <I>Posterior Analytics</I> II 3-10, and <I>Prior Analytics</I> I 31 (<A HREF="#ref">Smith 1989; 2016</A>) and Howton (<A HREF="#ref">2010</A>) provides a discussion.</P>
+
+<P>Porphyry was a commentator on Aristotle, in particular Porphyry's <I>Isagoge et in Aristotelis Categorias commentarium</I> is an introduction to logic and a commentary on Aristotle's Categories. <I>Isagoge</I> became the standard text for logic in the Middle Ages; indeed, it served as a basic introductory text in philosophy for 1000 years (<A HREF="#ref">Eyj&oacute;lfur 2015</A>). In it, Porphyry introduced the "Tree of Porphyry" and these are classification trees, produced by division, where the division is a bifurcation (or dichotomy or exhaustive division) at each step (<A HREF="#ref">Verboon 2014; Hacking 2007</A>). Jevons (<A HREF="#ref">1883</A>, 232) provides the example</P>
+
+<FIGURE ALIGN="center">
+<IMG SRC="logical_division2.png" TITLE="Figure 2: Jevons's example of a Tree of Porphyry" WIDTH="30%"></P>
+<FIGCAPTION>Figure 2: Jevons's example of a Tree of Porphyry</FIGCAPTION>
+</FIGURE>
+
+<P>Jevons has presented the tree in a certain way, tidying up much older diagrams. He has omitted Latin annotations. He has omitted potential children of the negation classes e.g. <CODE>incorporeal</CODE> does not have any children that are shown in the diagram. Then what seem to be the immediate children of a genus are in fact sometimes the differentiae which are then collected back into the real genus immediate child, for example, <CODE>animal</CODE> descends left to <CODE>rational</CODE>, which is the difference, and <CODE>animal</CODE> and <CODE>rational</CODE> are collected together to form <CODE>man</CODE> which is the child of <CODE>animal</CODE>.</P>
+
+<P>Boethius was also an influential commentator on Aristotle's work (<A HREF="#ref">Arlig 2015</A>). He was the main medieval authority on division, and he wrote a handbook on division (<A HREF="#ref">Magee 1998</A>). Boethius also provided a commentary on Porphyry's <I>Isagoge</I> and translated it. It is in the manuscripts of those translations that the first diagrams of the Tree of Porphyry appear (<A HREF="#ref">Verboon 2014</A>). So Boethius is important in conveying these ideas to a wider audience.</P>
+
+<P>In the history of science, Linnaeus was probably the most prominent scientific classifier of the natural world. He used "binomial nomenclature", which is the identifying of classes by means of genus and species (<A HREF="#ref">Linnaeus 1758</A>). At least some of the time, Linnaean classification structures were produced by logical division, especially logical division using dichotomy or bifurcation e.g. into warm-blooded and not-warm-blooded, into feathered and not-feathered, etc. </P>
+
+<P ALIGN="right">[<A HREF="#top">top of entry</A>]</P>
+
+<A NAME="4"></A>
+<H3>4. Formalization</H3>
+
+<P>It will be useful to employ some formalization or symbolization. Na&iuml;ve set theory is suitable. There is a caution that should be given connected with the use of na&iuml;ve set theory in this context. Set theory is <I>extensional</I>; that is to say: sets are defined by their members; so if a set "changes" its members it becomes a different set. But that is not really what is required for discussing Aristotelian classification and division. Instead, what is required is an <I>intensional</I> notion where a class is identified by its defining conditions or defining function so that the class can change its extension without becoming something else. Aristotle's kind <CODE>man</CODE> is a single kind, not multiple kinds as men are born or die. The na&iuml;ve set theory required here should be understood intensionally.</P>
+
+<P>In na&iuml;ve set theory, there is the abstraction or comprehension or "set-builder" notation </P>
+
+<BLOCKQUOTE>{<I>x</I>:&Phi;(<I>x</I>)}</BLOCKQUOTE>
+
+<P>In this abstraction, the <I>x</I> is a binding variable and the &Phi;(<I>x</I>) is a "open sentence" which is a sentence with zero or more free occurrences of the variable <I>x</I>. The abstraction notation is read "the <I>x</I> such that &Phi;(<I>x</I>)". For example, in a suitable predicate logic</P>
+
+<BLOCKQUOTE>Sophist(<I>x</I>)</BLOCKQUOTE>
+
+<P>is an open sentence with one free occurrence of <I>x</I>, it would be read "<I>x</I> is a sophist", and </P>
+
+<BLOCKQUOTE>{<I>x</I>:Sophist(<I>x</I>)}</BLOCKQUOTE>
+
+<P>is a well-formed abstraction which identifies the class of sophists. It would be read as "the class of sophists".</P>
+
+<P>This notation, or notational variants of it, are commonplace in many computer programming languages including Python and Mathematica; it is used to denote lists or sets or classes, which are defined by one or more conditions.</P>
+
+<P>In all formalizations suitable for discussing classes, the following result will be available, writing it first in natural language, </P>
+
+<BLOCKQUOTE>if one class is a subclass of another, then all items possessing the defining condition for the first will possess the defining condition for the second</BLOCKQUOTE>
+
+<P>for example, if the class <CODE>sophist</CODE> is a subclass of the class <CODE>man</CODE>, then anything that is a sophist is also a man. Putting this slightly more formally, using <I>&lt;</I> to mean "subclass":</P>
+
+<BLOCKQUOTE>If {<CODE>x</CODE>:&Phi;(<CODE>x</CODE>)} &lt; {<CODE>x</CODE>: &Psi;(<CODE>x</CODE>)} then &forall;<CODE>x</CODE> (&Phi;(<CODE>x</CODE>) &rarr; &Psi;(<CODE>x</CODE>))</BLOCKQUOTE>
+
+<P>Then, creating a child by division is merely the conjoining of a predicate or condition to the parent condition, for example, making the step from</P>
+
+<BLOCKQUOTE>{<I>x</I>: &Psi;(<I>x</I>)}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*parent*/</BLOCKQUOTE>
+
+<P>to</P>
+
+<BLOCKQUOTE>{<I>x</I>:(&Psi;(<I>x</I>)&amp; &Phi;(<I>x</I>))}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*child*/</BLOCKQUOTE>
+
+
+<P ALIGN="right">[<A HREF="#top">top of entry</A>]</P>
+
+
+<A NAME="5"></A>
+<H3>5. The rules</H3>
+
+<P>Toohey (<A HREF="#ref">1918</A>, Chapter XVI) offers the four standard rules for logical division:</P>
+
+<BLOCKQUOTE>RULE I: The dividing members must be mutually exclusive as regards the basis employed in the division.</BLOCKQUOTE>
+
+<P>This is desirable so that no species is included in another. This would be violated, for example, if magazines were divided into scientific, literary, and mathematical (because scientific includes mathematical). The rule asserts that in a class hierarchy, sibling classes i.e. child classes of the same parent must not have any members in common. That is:</P>
+
+<BLOCKQUOTE>~&exist;<I>x</I>(MemberOfChild<SUB>1</SUB>(<I>x</I>) &amp; MemberOfChild<SUB>2</SUB>)(<I>x</I>))
+<BR>
+<BR>[for each of the pairs of child classes of the particular parent classes; the predicate MemberOfChild<SUB>i</SUB>(<I>x</I>) means "<I>x</I> is a member of the <I>i</I>-th child" ]</BLOCKQUOTE>
+
+<P>This condition is <I>exclusivity</I>. It is sometimes called "pairwise disjoint" (because the sibling classes are pairwise disjoint).</P>
+
+<BLOCKQUOTE>RULE II: The dividing members must together be co-extensive with the class or genus which is divided.</BLOCKQUOTE>
+
+<P>This is a condition of <I>exhaustivity</I>: everything in a parent class must be in at least one of its child classes. The reason that this is desirable is that all the species (of each specific genus) need to be listed. This might go awry in one of two ways. There could be too many (exclusive) children. This would mean that some of the child classes would always be empty: they would never have instantiating members. They would be superfluous, and never have a role to play. So, simplicity or parsimony would suggest removal of these non-working empty classes. (This is a very Aristotelian move: for Aristotle, all classes had to have instances &mdash; there were to be no empty classes (<A HREF="#ref">Berg 1982</A>).) The other way that exhaustivity might be violated is if there were two few child classes so that there were some members of a parent that were not members of any of its children. This is undesirable because it is an aim to identify all the species and this violation would just mean that the aim had not been carried out. The requirement is</P>
+
+<BLOCKQUOTE>&forall;<I>x</I>(MemberOfParent(<I>x</I>)&rarr;(MemberOfChild<SUB>1</SUB>(<I>x</I>) v MemberOfChild<SUB>2</SUB>(<I>x</I>) ...))<BR>
+<BR>[for each of the parents and their children; the predicate MemberOfParent(<I>x</I>) means "<I>x</I> is a member of a parent"; the predicate MemberOfChild<SUB>i</SUB>(<I>x</I>) means "<I>x</I> is a member of the <I>i</I>-th child"]</BLOCKQUOTE>
+
+<P>This condition is sometimes called "coverage" or "cover". The children need to have the same coverage as their parent.</P>
+
+<BLOCKQUOTE>RULE III: Each process of division must have only one basis. </BLOCKQUOTE>
+
+<P>Toohey (<A HREF="#ref">1918</A>, 160) justifies this:</P>
+
+<BLOCKQUOTE>If this rule is violated, the result may be that some objects are included in more than one species. If men were divided into Americans, Englishmen, Irishmen, Frenchmen, Germans, mechanics, and artists, two bases would be employed, namely, nationality and vocation, and some men would be included in more than one species; for example, artists who are French men, and mechanics who are Germans.</BLOCKQUOTE>
+
+<P>In a way, this is to protect Rule 1 (exclusivity). If one base is used, say Americans, Englishmen, Irishmen, Frenchmen, Germans, it can be known in advance that exclusivity is satisfied because the classes are pairwise disjoint (i.e. no American is an Englishman etc.). But if a second basis is introduced, for example: vocation, there is a muddiness. It could be, as it happens, that no present artist is a mechanic and no present artist or present mechanic is any of American, English, etc., but this would be a somewhat fragile arrangement that awaits, for example, the arrival of a French artist whose appearance would break the exclusivity. In the modern day, Buchanan (<A HREF="#ref">1979</A>) gives an example from the London Education Classification. In this, the class of <CODE>educands</CODE>, who are the people being educated, is divided into the classes <CODE>teenager</CODE>, <CODE>adult</CODE>, <CODE>older person</CODE>, <CODE>parent</CODE> and <CODE>housewife</CODE>. <CODE>Teenager</CODE>, <CODE>adult</CODE>, <CODE>older person</CODE> is a division produced on the basis of age. The class <CODE>parent</CODE> arises on the basis of a family relationship, and the class <CODE>housewife</CODE> on the basis of occupation.  The division is not made using one basis.  It may have been, as a matter of fact, and for a short or long period of time, that the subclasses were exclusive and exhaustive. But the shortcoming with it is obvious: it is quite possible for a housewife to be a parent (or an adult a parent, etc.). So it is prudent to use one basis. What is <I>one</I> basis? It is any simple basis that guarantees exclusivity.</P>
+
+<P>Rule III has a historical connection with Aristotelian essentialism. The theme is that an essential characteristic needs to be a single characteristic. So when a genus is divided into species, the differentiae need to be single properties not complex compounds of properties. That, in itself does not require that the single characteristics be of the same kind, but remember sibling species are species of the same genus, it would be strange if the essential properties were radically different one from another.</P>
+
+<BLOCKQUOTE>RULE IV: In a series of divisions and subdivisions each genus or class should be divided into its proximate members or species.</BLOCKQUOTE>
+
+<P>This relates to the number of levels in a classification tree, or the richness of a tree. A parent class may have children, and the children may have children (which are descendants of the parent), and so on, down to some leaves, which themselves do not have children. It may be possible, depending on the choice of basis or bases, to go from the parent to the leaves in one step or, alternatively, in many steps. Rule IV requires that the number of steps be maximal, that each individual basis makes the smallest step i.e. that to the proximate species. The reason for this is that Aristotelian division is really a process of creating a definition by teasing out all the information or richness that is in the initial parent class, and small divisions to the proximate species is the way to do this. <I>Divisio non faciat saltum</I> (division should not make a leap).</P>
+
+
+<P ALIGN="right">[<A HREF="#top">top of entry</A>]</P>
+
+<A NAME="6"></A>
+<H3>6. The status of the rules</H3>
+
+<P>In the modern day, a classification satisfying Rules I and II are often described as meeting the "JEPD" condition (Jointly Exclusive Pairwise Distinct condition). Rule III has a somewhat indefinite status. Prior to about 1800, Aristotelian classification was aiming to yield a classification of biological species. But it failed in that domain. One reason was that members of a biological species often possessed some, but not all, of a manifold of characteristics &mdash; there was no single property possessed by all members of a single species. And this motivated a move to classification on the basis of &rarr; <A HREF="genealogical#3">cladistics</A>, that is, on the bases of common ancestry rather than common characteristics. (Of course, species with common ancestry did tend to share at least some common characteristics but that is, so-to-speak, a smoke screen rather than the driving principle.) </P>
+
+<P>Relevant at this point is the distinction between natural kinds and artificial, or created or constructed, kinds. The former are part of the furniture of the world, the latter are an artificial creation devised for a particular purpose. Lions and tigers are natural kinds, whereas Toohey's scientific, literary, and mathematical magazines are artificial kinds. It is our scientific theories, the successful ones, that tell us what is or is not a natural kind. Aristotelian essentialist classification and division failed with animate natural kinds. With living organisms, there are no suitable differentiae, bases and essential properties. As Mayr and Bock (<A HREF="#ref">2002</A>, 172) write</P>
+
+<BLOCKQUOTE>no adequate classification of kinds of organisms can be achieved that does not reflect the evolutionary theory of common descent. </BLOCKQUOTE>
+
+<P>Aristotelian classification has been partially successful with inanimate natural kinds (for example, with the classification of chemical elements). But where it can be used successfully is with artificial kinds. A classifier doing division can design a system so that, for example, Rule III is satisfied. Artificial kinds also provide an independent motivation for Rule IV. Classification-by-division classifications make assertions and contain compact knowledge. For example, assume for one moment that magazines have been classified as a subclass of periodicals, in which case the classification itself makes the assertion that "All magazines are periodicals", and this is a true or false assertion and is or is not knowledge as the case may be. Suppose it is knowledge, it is a compression in the following way. Consider a few magazines, e.g. <I>Vogue</I>, <I>Sports Illustrated</I> etc. These are magazines, they are also periodicals. But the latter knowledge does not have to be noted in its own right for each individual instance of a magazine, it can be extracted by inference from the classification schema (e.g. if <I>Vogue</I> is a magazine, and all magazines are periodicals, ipso facto, <I>Vogue</I> is a periodical). This means that classifications that have many levels are rich and contain much knowledge. As Rule IV advises: have many levels!</P>
+
+<P ALIGN="right">[<A HREF="#top">top of entry</A>]</P>
+
+<A NAME="7"></A>
+<H3>7. The process of logical division</H3>
+
+<P>The process of logical division proceeds as follows. There is a starting class, say</P>
+
+<BLOCKQUOTE>{<I>x</I>:A(<I>x</I>)}</BLOCKQUOTE>
+
+<P>and this is divided into exclusive and exhaustive immediate subclasses, say</P>
+
+<BLOCKQUOTE>
+{<I>x</I>:B(<I>x</I>)}<BR>
+{<I>x</I>:C(<I>x</I>)}<BR>
+{<I>x</I>:D(<I>x</I>)}<BR>
+etc.
+</BLOCKQUOTE>
+
+<P>How many immediate, sibling, subclasses there should be is a bit of a question. Some historical figures, e.g. Porphyry, divided a class in two, so, for them, logical division is a process of bifurcation or dichotomy. Let us pursue that for one moment. So, schematically, the division is of </P>
+
+<BLOCKQUOTE>{x:<I>A</I>(x)}</BLOCKQUOTE>
+
+<P>into</P>
+
+<BLOCKQUOTE>
+{<I>x</I>:B(<I>x</I>)}
+<BR>{<I>x</I>:C(<I>x</I>)}
+</BLOCKQUOTE>
+
+<P>That B and C are subclasses of A means that anything that is a B is also an A, and anything that is a C is also an A i.e.</P>
+
+<BLOCKQUOTE>
+&forall;<I>x</I>(B(<I>x</I>)&rarr;A(<I>x</I>)) <BR>
+&forall;<I>x</I>(C(<I>x</I>)&rarr;A(<I>x</I>))
+</BLOCKQUOTE>
+
+<P>That the subclasses B and C are exclusive means that anything that is a B is not a C and anything that is a C is not a B i.e.</P>
+
+<BLOCKQUOTE>&forall;<I>x</I>(B(<I>x</I>) &equiv; ~C(<I>x</I>))</BLOCKQUOTE>
+
+<P>That the subclasses B and C are exhaustive of the items in A means that anything that is an A is either a B or a C i.e.</P>
+
+<BLOCKQUOTE>&forall;<I>x</I>(A(<I>x</I>)&rarr;(B(<I>x</I>) &or; C(<I>x</I>)))</BLOCKQUOTE>
+
+<P>The Rule III requirement that there be a uniform basis for the division is hard to capture. It really needs to guarantee that subclasses (in this case, B and C) are exclusive. One way of achieving this, in the case of bifurcation, is to define one of the subclass conditions as being the negation of the other i.e. to define C as being ~B and then, for clarity, to cease using C altogether). The result is that of dividing</P>
+
+<BLOCKQUOTE>{<I>x</I>:A(<I>x</I>)}</BLOCKQUOTE>
+
+<P>into</P>
+
+<BLOCKQUOTE>
+{<I>x</I>:B(<I>x</I>)}<BR>
+{<I>x</I>:~B(<I>x</I>)}
+</BLOCKQUOTE>
+
+<P>Then this single bifurcation step is repeated with the children, and the children's children as many times as it desired. Defining one subclass as being the "negation" or complement of the other, has the nice property that it also satisfies exhaustivity (i.e. Rule II).</P>
+
+<P>While repetitive bifurcation has some attractive properties, it also has some extremely undesirable features. It leads to a tall narrow tree in which almost everything is a descendant of many negation classes and this plays havoc with ideas of genus and species. What one would expect if there were genuine notions like genus and species is that (a) there would be, or could be, more than one species of the same genus i.e. that there could be several species of the same level, and (b) that being a genus would amount to the possession of some positive property, not a negative one. But this does not happen in a bifurcated tree. For example, suppose there are three classes of interest: <CODE>animal</CODE>, <CODE>man</CODE>, and <CODE>horse</CODE> and bifurcated division is used on <CODE>animal</CODE> to produce the <CODE>man</CODE> and <CODE>not-man</CODE> subclasses; in which case <CODE>man </CODE>would be a species of the genus <CODE>animal</CODE> and it is of level 1; but what is to happen with <CODE>horse</CODE>? It cannot be produced by immediate bifurcated division from <CODE>animal</CODE> because <CODE>animal</CODE> already has two subclasses (i.e. <CODE>man</CODE> and <CODE>not-man</CODE>). Likely it will be produced by a bifurcated division of <CODE>not-man</CODE>, in which case the species <CODE>horse</CODE> would have the genus <CODE>not-man</CODE> and be of level 2 (whereas what is desired is that <CODE>horse</CODE> has the same genus as <CODE>man</CODE> and be of level 1). Jevons (<A HREF="#ref">1883</A>, 237) writes</P>
+
+<BLOCKQUOTE>it would be very awkward if we divided the counties of England into Middlesex and not-Middlesex; the latter into Surrey and not-Surrey; the latter, again, into Kent and not-Kent. Dichotomy is useless, and even seems absurd in these cases</BLOCKQUOTE>
+
+<P>In sum, bifurcation is of limited use.</P>
+
+<P>Generalization from bifurcation to that of having arbitrarily many children is fairly immediate, but problems can arise. The main problems concern satisfying exclusivity and exhaustivity, and knowing that those conditions are met. In areas like logic or mathematics, it often can be known that conditions are exclusive and/or exhaustive (for example, the division of rectilinear figures into <CODE>3-sided</CODE>, <CODE>4-sided</CODE>, and <CODE>5-sided</CODE> is an exclusive division). However, in science or in the observable empirical world, it is hard to have such certainty (for example, dividing the class of vertebrate animals into <CODE>mammalia</CODE>, <CODE>birds</CODE>, <CODE>reptiles</CODE>, and <CODE>fish</CODE> may or may not be exclusive and may or may not be exhaustive).</P>
+
+<P>There is a move that is sometimes made with empirical division that helps with the exhaustive condition, and that is to have a catch-all "everything else" class. Suppose the preliminary thought is to divide vertebrate animals into the four subclasses <CODE>mammalia</CODE>, <CODE>birds</CODE>, <CODE>reptiles</CODE>, and <CODE>fish</CODE>, and a worry is whether these are exhaustive. A remedy is to have a fifth subclass and to divide vertebrate animals into the five subclasses <CODE>mammalia</CODE>, <CODE>birds</CODE>, <CODE>reptiles</CODE>, <CODE>fish</CODE>, and <CODE>everything else</CODE>.  A catch-all subclass might always be used with division. Of course, a catch-the-rest class might often be empty (if the original candidate division was genuinely exhaustive in itself), and empty classes (or subclasses) would not be appealing to pure Aristotelians.</P>
+
+<P>Mills (<A HREF="#ref">2004</A>, 554) speaks of this in connection with information resources and information retrieval: </P>
+
+<BLOCKQUOTE>The constituent species collectively must be coextensive with the extension of the genus. The obvious difficulty encountered here is that of our imperfect knowledge. This can be overcome in a technical sense by the process of dichotomy, in which one species is named and all the others are covered by its negative, e.g., the array (Buildings by material) could give just two classes, brick buildings and nonbrick buildings, and this would exhaust the array &mdash; no buildings would be missed. In practice, of course, all significant kinds of other materials would be enumerated with a possible residual class for "Others."</BLOCKQUOTE>
+
+<P>With a classification produced properly by logical division, the leaves satisfy the J.E.P.D. condition and so too do all the levels above the leaves. It is the leaves that do the actual classifying. That is, an object to be classified is identified by being recognized as being a member of a particular leaf (then the object is a member of all the superclasses of that leaf tracing a branch right up to the root). Leaves, as opposed to non-leaf nodes, are used for the classification because that provides maximum information and specificity about the classified items. As mentioned, the leaves are exclusive and exhaustive, so all items in the relevant domain have a place in the classification.</P>
+
+<P>It should perhaps be noted that many library classifications do not satisfy the J.E.P.D. condition, and thus they should not be regarded as pure Aristotelian classifications that either were, or might have been, produced by logical division. For example, in the Dewey Decimal Classification (DDC), a work like John Keats's <I>The Works of John Keats (complete Poetry and selected Prose)</I> is classified as English &amp; Old English Literatures <CODE>820</CODE>. This class, <CODE>820</CODE>, is an internal class with children, but the Keats's work is not a member of any of the children of <CODE>820</CODE> i.e. the subclassing at this point is not exhaustive (see <A HREF="#ref">Frick&eacute; 2012</A>, Section 5.4 for a discussion).</P>
+
+<P ALIGN="right">[<A HREF="#top">top of entry</A>]</P>
+
+<A NAME="8"></A>
+<H3>8. Conclusion</H3>
+
+<P>Logical division produces classifications with admirable qualities. Everything has a place in a leaf, its own unique place, and the classification schedule embodies the maximum amount of general information about the items being classified. Logical division can work well in the realm of logic, mathematics, and other non-empirical and a priori areas. But the realm of the empirical is more challenging. Attempts to use division on animate natural kinds were abandoned, around the mid-19th century. Division can be used on non-animate natural kinds e.g. in chemistry. But by far its best potential lies with completely artificial classifications which have been devised, or conjured up, to meet a particular purpose e.g. taxpayers' incomes, document kinds, retail shops' inventory, file types, factories manufacturing capabilities, &rarr; <A HREF="metadata">metadata</A> values, etc. </P>
+
+<P>Logical division can also have a role in &rarr; <A HREF="facet">faceted</A>  classification, which is a favored form of classification in the modern day (<A HREF="#ref">Broughton 2006; Classification Research Group 1955; Frick&eacute; 2011;  Hj&oslash;rland 2012</A>). To take a simple example. Say a jeweler sells rings. The jeweler might first create a classification tree by division on the class of rings using purchase price as a driving principle &mdash; dividing into expensive, economy, and modestly priced, then dividing those classes into particular price bands. The jeweler might then create a second classification tree by division on the same class of rings using gemstone as a driving principle &mdash; dividing into precious and semi-precious, then dividing those classes into diamonds, sapphires, etc. Then both these classification trees will be used simultaneously to create a faceted classification of the rings for sale (into expensive diamond rings, modestly priced diamond rings, economy sapphire rings, etc.). The overall classification structure is that of two trees with two roots, and any particular ring is classified by being placed in two leaves, one from each tree. The entire structure has not been produced by a single run of processing a class by division. However, logical division has played its part.</P>
+
+<P>Logical division is a strong element in the Aristotelean tradition which is still influential in many fields, including in the &rarr; <A HREF="facet_analysis">facet-analytic</A> tradition in knowledge organization mentioned above (see <A HREF="#ref">Mills 2004</A> as an example). The Aristotelean tradition itself has been challenged by influences from, in particular, empirical and &rarr; <A HREF="genealogical">genealogical</A> approaches (<A HREF="#ref">Hj&oslash;rland 2002; Kwasnik 1999; Hj&oslash;rland 2013</A>). Separately, the idea that a single shared property can define a useful real world class, or, to phrase it differently, that "groupings by singular similarity" can produce a useful classification class, has been criticized by Rosch's prototype theory and by Wittgenstein's concept of family resemblances (<A HREF="#ref">Jacob 2004; Rosch 1973; 1975; 1978; Rosch and Mervis 1975; Rosch et al. 1976; Wittgenstein 1963</A>). In turn, not everyone is convinced by Rosch's and Wittgenstein's reasoning in this setting. There are those who argue that grouping by singular similarity is perfectly sound (see, for example, <A HREF="#ref">Sutcliffe 1993; 1994; Frick&eacute; 2013</A>).</P>
+
+
+<P ALIGN="right">[<A HREF="#top">top of entry</A>]</P>
+
+<A NAME="ref"></A>
+<H3>References</H3>
+
+<P>ANSI/NISO, National Information Standards Organization. 2005. <I>ANSI/NISO Z39.19-2005: Guidelines for the Construction, Format, and Management of Monolingual Controlled Vocabularies</I>. Bethesda, Maryland, U.S.A: NISO Press.</P>
+<P>Arlig, Andrew. 2015. "Medieval Mereology." <A HREF="http://plato.stanford.edu/archives/fall2015/entries/mereology-medieval/">http://plato.stanford.edu/archives/fall2015/entries/mereology-medieval/</A>.</P>
+<P>Berg, Jan. 1982. "Aristotle's Theory of Definition." <I>Atti del Convegno Internazionale di Storia della Logica, San Gimignano, 4–8 December 1982</I>, Bologna: CLUEB, 1983:19-30.</P>
+<P>Broughton, Vanda. 2006. "The need for a faceted classification as the basis of all methods of information retrieval."  <I>Aslib Proceedings: New Information Perspectives</I> 58 (1/2):49-72.</P>
+<P>Buchanan, Brian. 1979. <I>Theory of Library Classification</I>. London: Clive Bingley.</P>
+<P>Classification Research Group. 1955. "The need for a faceted classification as the basis of all methods for information retrieval."  <I>Library Association Record</I> 57 (7):262-8.</P>
+<P>Diestel, Reinhard. 2012. "Graph Theory." In <A HREF="http://diestel-graph-theory.com/">http://diestel-graph-theory.com/2016, vol. 43, Issue 6, pp. 475-484.</A>.</P>
+<P>Eyj&oacute;lfur, Emilsson. 2015. "Porphyry." Accessed 7/20/2016. <A HREF="http://plato.stanford.edu/archives/sum2015/entries/porphyry/">http://plato.stanford.edu/archives/sum2015/entries/porphyry/</A>.</P>
+<P>Frick&eacute;, Martin. 2011. "Faceted classification: Orthogonal facets and graphs of foci?"  <I>Knowledge Organization</I> 38 (6):491-502.</P>
+<P>Frick&eacute;, Martin. 2012. <I>Logic and the Organization of Information</I>. New York: Springer.</P>
+<P>Frick&eacute;, Martin. 2013. "Reflections on Classification: Thomas Reid and Bibliographic Description."  <I>Journal of Documentation</I> 69 (4):507-522.</P>
+<P>Gill, Mary Louise. 2010. "Division and Definition in Plato's Sophist and Statesman." In <I>Definition in Greek Philosophy</I>, edited by David  Charles, 172-201. Oxford: Oxford University Press.</P>
+<P>Gill, Mary Louise. 2016. "Method and Metaphysics in Plato's Sophist and Statesman." Accessed 7/26/2016. <A HREF="http://plato.stanford.edu/archives/spr2016/entries/plato-sophstate/">http://plato.stanford.edu/archives/spr2016/entries/plato-sophstate/</A>.</P>
+<P>Hacking, Ian. 2007. "Trees of logic, trees of Porphyry." In <I>Advancements of Learning: Essays in Honour of Paolo Rossi</I>, edited by J.L. Heilbron. Firenze: Leo S. Olschki.</P>
+<P>Hj&oslash;rland, Birger. 2002. "The method of constructing classification schemes: a discussion of the state-of-the-art." <I>Proceedings of the the 7th International ISKO Conference, Granada, Spain, July 10-13</I>.</P>
+<P>Hj&oslash;rland, Birger. 2012. "Facet analysis: The logical approach to knowledge organization."  <I>Information Processing and Management</I>. doi: http://dx.doi.org/10.1016/j.ipm.2012.10.001.</P>
+<P>Hj&oslash;rland, Birger. 2013. "Theories of knowledge organization  &mdash;  theories of knowledge." <I>13th Meeting of the German ISKO (International Society for Knowledge Organization), Potsdam</I>.</P>
+<P>Howton, Robert Fuselier. 2010. "The Method of Division and Aristotle's Criticism of Platonic Philosophy." <I>Philosophy</I>, Texas A&M University.</P>
+<P>Jacob, Elin K. 2004. "Classification and categorization: a difference that makes a difference."  <I>Library Trends</I> 52 (3):515-40.</P>
+<P>Jevons, W. Stanley. 1883. <I>The Elements of Logic</I>. London: Sheldon & Co.</P>
+<P>Kwasnik, Barbara H. 1999. "The Role of Classification in Knowledge Representation and Discovery."  <I>Library Trends</I> 48 (1):22-47.</P>
+<P>Linnaeus, Carl. 1758. Systema natur&aelig; per regna tria naturæ, secundum classes, ordines, genera, species, cum characteribus, differentiis, synonymis, locis. 1 (10th ed.). Stockholm: Salvius.</P>
+<P>Magee, John. 1998. <I>Anicii Manlii Severini Boethii De divisione liber: Critical Edition, Translation, Prolegomena, and Commentary</I>. Vol. 77. Leiden: E. J. Brill.</P>
+<P>Marradi, Alberto. 1990. "Classification, Typology, Taxonomy."  <I>Quality and Quantity</I> XXIV (2):129-157.</P>
+<P>Mayr, Ernst. 1982. <I>The Growth of Biological Thought</I>. Cambridge, MA: Harvard University Press.</P>
+<P>Mayr, Ernst, and W. J. Bock. 2002. "Classifications and other ordering systems."  <I>J. Zool. Syst. Evol. Research</I> 40:169–194.</P>
+<P>Mills, Jack. 2004. "Faceted classification and logical division in information retrieval."  <I>Library Trends</I> 52 (3):541-570.</P>
+<P>Parry, William T., and Edward A. Hacker. 1991. <I>Aristotelian Logic</I>. New York: State University of New York Press.</P>
+<P>Rosch, Eleanor. 1973. "Natural categories."  <I>Cognitive Psychology</I> 4 (3):328-350.</P>
+<P>Rosch, Eleanor. 1975. "Cognitive representations of semantic categories."  <I>Journal of Experimental Psychology: General</I> 104:192-233.</P>
+<P>Rosch, Eleanor. 1978. "Principles of Categorization." In <I>Cognition and Categorization</I>, edited by Eleanor Rosch and B. Lloyd, 27-48. Hillsdale, N.J.: Lawrence Erlbaum.</P>
+<P>Rosch, Eleanor, and C. B. Mervis. 1975. "Family resemblances: Studies in the internal structure of categories."  <I>Cognitive Psychology</I> 7 (4):573-605.</P>
+<P>Rosch, Eleanor, C. B. Mervis, W. Gray, D. Johnson, and P. Boyes-Braem. 1976. "Basic objects in natural categories."  <I>Cognitive Psychology</I> 8 (4):382-439.</P>
+<P>Smith, Barry. 2004. "The Logic of Biological Classification and the Foundations of Biomedical Ontology." In <I>Invited Papers from the 10th International Conference in Logic Methodology and Philosophy of Science,  Oviedo, Spain, 2003</I>, edited by Dag Westerst&aring;hl. North Holland: Elsevier </P>
+<P>Smith, Robin. 1989. <I>Aristotle's Prior Analytics</I>. Indianapolis: Hackett.</P>
+<P>Smith, Robin. 1997. <I>Aristotle, Topics I, VIII, and Selections</I>. Oxford: Clarendon Press.</P>
+<P>Smith, Robin. 2016. "Aristotle's Logic." Accessed 7/19/2016. <A HREF="http://plato.stanford.edu/archives/spr2016/entries/aristotle-logic/">http://plato.stanford.edu/archives/spr2016/entries/aristotle-logic/</A>.</P>
+<P>Sutcliffe, John Philip. 1993. "Concept, Class, and Category in the Tradition of Aristotle." In <I>Categories and Concepts: Theoretical Views and Inductive Data Analysis</I>, edited by James  Hampton, Ryszard S.  Michalski, Peter Theuns and Iven Van Van  Mechelen, 35-64. London: Academic.</P>
+<P>Sutcliffe, John Philip. 1994. "On the logical necessity and priority of a monothetic conception of class, and on the consequent inadequacy of polythetic accounts of category and categorization." In <I>New Approaches in Classification and Data Analysis</I>, edited by Edwin Diday, 55-63.</P>
+<P>Tich&yacute;, Pavel. 1988. <I>The foundations of Frege's logic</I>. Berlin: Walter de Gruyter.</P>
+<P>Tillett, Barbara B. 2009. "Definition of Aggregates as Works: Tillett Proposal." Accessed 10/10/2011. <A HREF="http://www.ifla.org/files/cataloguing/frbrrg/aggregates-as-works.pdf">http://www.ifla.org/files/cataloguing/frbrrg/aggregates-as-works.pdf</A>.</P>
+<P>Toohey, John J. 1918. <I>An Elementary Handbook of Logic</I>. New York: Schwartz, Kirwin, & Fauss.</P>
+<P>Verboon, Annemieke. 2014. "The Medieval Tree of Porphyry: An Organic Structure of Logic". In <I>The Tree. Symbol, Allegory and Structural Device in Medieval Art and Thought</I>, International Medieval Research, 20., edited by A.  Worm and P. Salonis, 83-101. Turnhout: Brepols.</P>
+<P>Wittgenstein, Ludwig. 1963. <I>Philosophical investigations by Ludwig Wittgenstein</I>. Translated by G. E. M. Anscombe. English text reprinted. ed. Oxford: Blackwell.</P>
+
+<A NAME="col"></A>
+
+<P>&nbsp;</P>
+
+<P>Visited <A HREF="https://www.digits.net" TARGET="_blank"><IMG SRC="https://counter.digits.net/?counter={846b454b-3413-0bf4-3101-d33211e451eb} &template=simple" ALT="Hit Counter by Digits" BORDER="0"  /></A> times since 2019-11-13 (3 years after first publication).</P>
+
+<HR />
+Version 1.0 published 2016-09-06, last edited 2024-07-10.</P>
+
+<p>Article category: <A HREF="index.html#R"><CODE>Methods, approaches & philosophies</CODE></A></P>
+
+<p>This article (version 1.0) is also published in <I>Knowledge Organization</I>. How to cite it: Frick&eacute;, Martin. 2016. &ldquo;Logical division&rdquo;. <I>Knowledge Organization</I> 43, no. 7: 539-49. Also available in <I>ISKO Encyclopedia of Knowledge Organization</I>, eds. Birger Hj&oslash;rland and Claudio Gnoli, https://www.isko.org/cyclo/logical_division 
+<br>To quote text edited in a later version, you should save it in the <i><a href="https://web.archive.org/">Wayback Machine</a></i> and cite the saved version.</p>
+
+<P>&copy;2016 ISKO. All rights reserved.</P>
+
+</TD>
+</TR>
+
+<TR>
+<TD ID="logo">
+</TD>
+</TR>
+
+</TABLE>
+</BODY>
+</HTML>

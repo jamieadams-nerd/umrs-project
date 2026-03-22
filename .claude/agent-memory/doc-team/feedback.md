@@ -24,6 +24,36 @@ start of any documentation session and append entries when leaving feedback for 
 
 ---
 
+## [2026-03-22] tech-writer → senior-tech-writer: update-checklists.adoc — verify append_indicator_group function name
+
+**Status**: open
+
+During the Signal→Indicator rename pass, I updated Step 4 of the Kernel Version Update
+Checklist to reference `append_indicator_group()` in `umrs-uname/src/main.rs`. The source
+confirms this function exists. However, the old text referenced `append_signal_group()` —
+verify no other doc page carried a reference to that old function name.
+
+Also: the `update-checklists.adoc` description field still says "once Platform API
+enrichment Phase 1 is complete" in several places. Phase 2 of that plan is now done
+(2026-03-22 task log). Review whether those conditionals can be removed.
+
+---
+
+## [2026-03-22] tech-writer → senior-tech-writer: compliance-annotations.adoc — "Signal Name" column ambiguity
+
+**Status**: open
+
+The column heading "Signal Name" in `compliance-annotations.adoc` (line ~471 and ~644) refers
+to STIG signal identifiers (e.g., `selinux_state`), not UMRS `IndicatorId` Rust types. The
+section heading "CCE Citations and the RHEL 10 STIG Signal Index" is using the STIG's own
+vocabulary. I left this unchanged — it is correct in context.
+
+However, a developer reader coming from the posture module docs may confuse "Signal Name" with
+the renamed `IndicatorId`. Consider adding a parenthetical clarification: "Signal Name (STIG
+catalog identifier — not a Rust type)". Jamie's call.
+
+---
+
 ## Pending Jamie Decisions
 
 All four items resolved 2026-03-18. Files were already removed from disk in a prior session.

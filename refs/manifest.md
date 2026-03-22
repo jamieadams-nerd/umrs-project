@@ -302,6 +302,16 @@ permanent, stable location — always look here first.
 
 ---
 
+### Agent Knowledge Acquisition Plan — HCI, IA, KO, and Technical Communication
+
+| Field | Value |
+|---|---|
+| File | `refs/reports/agent-knowledge-acquisition-plan.md` |
+| Date | 2026-03-21 |
+| SHA-256 | `0ac16788b256f4c26dac13fb254741065387a275a8e527d1f4806b5a690dd09b` |
+| Topics | HCI foundational texts, information architecture discipline, knowledge organization theory, technical communication academic theory, YouTube transcript RAG pipeline logistics, open-access source inventory, prioritized acquisition plan with Tier 1/2/3/4 sequencing |
+| Relevance | Elena (senior-tech-writer), Sage, Simone educational background materialization; `.claude/references/` RAG collection design; UMRS documentation quality improvement; CUI taxonomy design; posture catalog classification design |
+
 ---
 
 ## Access Control Reference Collection

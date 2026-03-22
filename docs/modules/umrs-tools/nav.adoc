@@ -1,5 +1,7 @@
 .xref:index.adoc[UMRS Tools]
 [collapsible]
+* xref:umrs-uname.adoc[umrs-uname — System Security Posture]
+* xref:umrs-stat.adoc[umrs-stat — File Security Audit Card]
 * xref:umrs-ls.adoc[umrs-ls — High-Assurance Directory Listing]
 
 * Prototype Crates

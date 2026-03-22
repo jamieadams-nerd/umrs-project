@@ -1,0 +1,1884 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head profile="http://dublincore.org/documents/2007/11/05/dc-html/">
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>Information retrieval (IEKO)</title>
+<link rel="stylesheet" type="text/css" href="../isko.css" />
+<link rel="schema.DCTERMS" href="http://purl.org/dc/terms/" />
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:url" content="https://www.isko.org/cyclo/ir" />
+<meta name="twitter:title" content="Information retrieval (ISKO Encyclopedia of KO)" />
+<meta property="og:image" content="https://www.isko.org/cyclo/ir3.jpg" />
+<meta name="twitter:description" content="Information retrieval (IR) is about making systems for finding documents or information. Knowledge organization (KO) is the field concerned with indexing, classification, and representing documents for IR, browsing, and related processes, whether performed by humans or computers. The field of IR is today dominated by search engines like Google. An important difference between KO and IR as research fields is that KO attempts to reflect knowledge as depicted by contemporary scholarship, in contrast to IR, which is based on, for example, &ldquo;match&rdquo; techniques, popularity measures or personalization principles. The classification of documents in KO mostly aims at reflecting the classification of knowledge in the sciences. Books about birds, for example, mostly reflect (or aim at reflecting) how birds are classified in ornithology. KO therefore requires access to the adequate subject knowledge; however, this is often characterized by disagreements. At the deepest layer, such disagreements are based on philosophical issues best characterized as &ldquo;paradigms&rdquo;. No IR technology and no system of knowledge organization can ever be neutral in relation to paradigmatic conflicts, and therefore such philosophical problems represent the basis for the study of IR and KO." />
+
+<meta name="DCTERMS.title" content="Information retrieval" />
+<meta name="DCTERMS.creator" content="Birger Hjorland" />
+<meta name="DCTERMS.issued" content="2021" />
+<meta name="DCTERMS.relation.ispartof" content="ISKO Encyclopedia of Knowledge Organization" />
+<meta name="DCTERMS.ispartof" content="ISKO Encyclopedia of Knowledge Organization" />
+<meta name="DCTERMS:bibliographicCitation" content="ISKO Encyclopedia of Knowledge Organization, eds. Birger Hjorland and Claudio Gnoli" />
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="001.012">
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="025.04">
+<meta name="DCTERMS.subject.keyword" content="ontologies">
+<meta name="DCTERMS.subject.keyword" content="Kuhnian paradigm theory">
+<meta name="DCTERMS.subject.keyword" content="pragmatism">
+<meta name="DCTERMS.type" content="Text" />
+<meta name="DCTERMS.format" content="text/html" />
+<meta name="DCTERMS.identifier" content="https://www.isko.org/cyclo/ir" />
+
+<style>
+a {text-decoration: none;}
+a:hover {text-decoration:underline;}
+table td, table th { padding: 5px; }
+</style>
+
+</head>
+<body>
+
+<a name="top"></a>
+
+<table>
+
+<tr>
+<td id="isko"><h1>I S K O</h1></td>
+<td id="banner"><h2><a href="index.html" style="text-decoration:none;">Encyclopedia of Knowledge Organization</h2></a></td>
+</tr>
+
+<tr>
+<td id="navigation">
+<a href="../index.php">home</a>
+<a href="../about.html">about ISKO</a>
+<a href="../join.html">join ISKO</a>
+<a href="../ko.html"><cite>Knowledge Organization</cite> journal</a>
+<a href="../events.html">ISKO events</a>
+<a href="../chapters.html">ISKO chapters</a>
+<a href="../people.html">ISKO people</a>
+<a href="../pubs.html">ISKO publications</a>
+<a href="index.html">Encyclopedia</a>
+<a href="../lit.html">KO literature</a>
+<a href="../inst.html">KO institutions</a>
+<a href="http://bartoc.org/" title="link to BARTOC">&#8663; KOS registry</a>
+<a href="https://www.isko-mms.net/" title="access-account required">&#128274; members</a>
+<a href="../contact.html">contact us</a>
+</td>
+<td id="content" rowspan="2">
+
+<a class="menu" href="authors#hj">edited by Birger Hj&oslash;rland</a> <a class="menu" href="authors#g">and Claudio Gnoli</a>
+
+<p>&nbsp;
+
+<div itemscope itemtype="http://schema.org/Article">
+
+<h2 itemprop="headline">Information retrieval</h2>
+
+<blockquote>
+by <a itemprop="author" href="authors#hj" style="text-decoration:underline">Birger Hj&oslash;rland</a>
+
+<p>(This article is a version of an article published in the same year, see <a href="#col">colophon</a>.)
+
+<p>Table of contents:
+
+<br><a href="#1">1. Introduction</a> 
+<br><a href="#2">2. The field of knowledge organization</a>
+<br><a href="#3">3. Challenges from IR</a>
+<br><a href="#4">4. Knowledge organization systems and the semantic staircase</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#4.1">4.1. Classification systems</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#4.2">4.2. Thesauri</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#4.3">4.3. Ontologies</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#4.4">4.4. The semantic staircase</a>
+<br><a href="#5">5. Concept theory and realism</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#5.1">5.1. Challenges from &ldquo;Smithian realism&rdquo;</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#5.2">5.2. What are concepts?</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#5.3">5.3. Does a KOS need to contain universals and symbolic structures in addition to concepts?</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#5.4">5.4. Pragmatic realism</a>
+<br><a href="#6">6. Conclusions</a>
+<br><a href="#ack">Acknowledgments</a>
+<br><a href="#ref">References</a>
+<br><a href="#col">Colophon</a>
+
+<p itemprop="abstract"><strong>Abstract</strong>:
+<br>Information retrieval (IR) is about making systems for finding documents or information. Knowledge organization (KO) is the field concerned with indexing, classification, and representing documents for IR, browsing, and related processes, whether performed by humans or computers. The field of IR is today dominated by search engines like Google. An important difference between KO and IR as research fields is that KO attempts to reflect knowledge as depicted by contemporary scholarship, in contrast to IR, which is based on, for example, &ldquo;match&rdquo; techniques, popularity measures or personalization principles. The classification of documents in KO mostly aims at reflecting the classification of knowledge in the sciences. Books about birds, for example, mostly reflect (or aim at reflecting) how birds are classified in ornithology. KO therefore requires access to the adequate subject knowledge; however, this is often characterized by disagreements. At the deepest layer, such disagreements are based on philosophical issues best characterized as &ldquo;paradigms&rdquo;. No IR technology and no system of knowledge organization can ever be neutral in relation to paradigmatic conflicts, and therefore such philosophical problems represent the basis for the study of IR and KO.</p>
+
+</blockquote>
+
+<span itemprop="articleBody">
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="1"></a>
+<h3 itemprop="articleSection">1. Introduction</h3>
+
+<p>Information retrieval (IR) and &rarr; <a href="knowledge_organization">knowledge organization (KO)</a> are two research fields
+that, on the one hand, are separate fields of study, but on the other hand, have the same
+aim: to facilitate the findability of documents, knowledge, and information. Anderson and P&eacute;rez-Carballo&rsquo;s (<a href="#refA">2005</a>) handbook of KO has the title <i>Information Retrieval Design</i>, which indicates the close connection between KO and IR, where IR is about search processes, while KO is about designing optimal structures for IR (in addition to other purposes KO may serve).</p>
+
+<p>Today, the field of IR has mainly migrated from information science to computer
+science and has developed systems used in search engines such as Google, which are
+extremely successful. There is, however, a surprisingly simple objection to the underlying
+principles in mainstream IR research: they are not based on scientific or scholarly norms on
+which documents or knowledge claims have the best scientific or scholarly foundation and
+correspond to our best theories and findings. It seems obvious that users need to retrieve
+what is regarded as true knowledge (or to be more precise, what is considered our best
+substantiated knowledge claims). The main approaches in IR are discussed in <a href="#ref3">Section 3</a>.
+In this respect, the field of KO has often had the goal, at the least implicitly, to
+classify and represent documents and knowledge in accordance with updated scientific
+knowledge (e.g., to classify books about birds in accordance with the classification of birds in ornithology). Despite this aim, the theory of KO has lacked an adequate toolset of
+conceptualization to cope with it (and often, approaches have dominated that do not deal
+adequately with the problems. This is discussed in <a href="#2">Section 2</a>).</p>
+
+<p>The purpose of this article is to provide arguments and conceptualization for creating
+methods and principles to develop systems and processes in IR and KO that aim at providing users with our best substantiated knowledge. To do so, this article argues, we
+need to base IR on KO, and we need to base KO on insights derived from the philosophy
+of science.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2"></a>
+<h3 itemprop="articleSection">2. The field of knowledge organization</h3>
+
+<p>KO is sometimes termed &ldquo;information organization&rdquo; and Salaba (<a href="#refS">2020, 391</a>) found that
+&ldquo;information organization&rdquo; is now by far the most used name for courses in educational
+programs in North American ALA-accredited programs. It is also sometimes termed
+&ldquo;knowledge representation&rdquo;, as in the subtitle of the official journal of ISKO, <i>Knowledge
+Organization</i>: &ldquo;International Journal devoted to Concept Theory, Classification, Indexing
+and Knowledge Representation&rdquo;. KO is about knowledge organizing processes such as
+&rarr; <a href="indexing">indexing</a>, &rarr; <a href="tagging">tagging</a>, &rarr; <a href="classification">classifying</a>, describing, and organizing documents and information, and
+about &rarr; <a href="kos">knowledge organization systems (KOS)</a> such as classification systems, &rarr; <a href="thesaurus">thesauri</a>, and &rarr; <a href="ontologies">ontologies</a>. KO has a practical aim. Although it is also a theoretical field, the aim of both
+practical activities and empirical and theoretical research is to support practical activities.
+The practical aims are the sole justification for KO. It has been claimed, for example,
+that KOSs such as thesauri and controlled vocabularies are obsolete today, cf. Salton (<a href="#refS">1996</a>). KO must
+show that its processes and systems are necessary. If, for example, search engines such
+as Google can fulfill all practical needs without relying on KO, there is no need for this
+field. KO must always consider itself in relation to all possible alternative approaches,
+whether they have been developed inside or outside the field itself. Specifically, we must
+demonstrate, why, for example, Google is not enough (cf. <a href="#refH">Hj&oslash;rland 2012</a>). This article contains arguments about the necessity of KO.</p>
+
+<p>The KOSs developed for organizing documents and information are primarily about
+organizing concepts. The conceptual structures used in KOSs are to a large degree derived
+from specific domains of knowledge. Documents about birds, for example, are often
+organized according to how ornithologists organize the birds themselves. This principle
+was recognized by Henry Bliss, who argued (<a href="#refB">1933</a>, 37): &ldquo;To make the [bibliographic]
+classification conform to the scientific and educational organization of knowledge is to
+make it the more practical&rdquo;, and this is probably the main reason the field was and still is named KO.</p>
+
+<p>The roots of KO lie in the following:
+
+<ol>
+<li>the practical classification and indexing of books and other kinds of documents in
+libraries and bibliographical databases;</li>
+<li>philosophical principles, including Aristotle&rsquo;s logic and Francis Bacon&rsquo;s classification of knowledge, among many others; (the reader should be warned, however, that
+there are many misunderstandings about philosophical issues, including Aristotle&rsquo;s
+role in classification. What is commonly attributed to Aristotle is a myth (see, e.g., <a href="#refR">Richards 2016</a>, Chapter 2: &ldquo;The Aristotelian Framework&rdquo;);</li>
+<li>scientific and scholarly contributions, including, for example, the contributions of
+Aristotle, Carl Linnaeus, Charles Darwin and many other scientists to the classification
+of living organisms and all other things in the world;</li>
+<li>developments in information technology (IT), such as databases, communication
+networks and social media.</li>
+</ol>
+
+<p>The connections between these four fields are important for the development of KO
+as a field of study and practice but have often been neglected.</p>
+
+<p>This article argues that subject knowledge and its foundation in the philosophy of
+science is the most important perspective for KO, but this perspective has so far not been
+very influential in KO. Alternatively, influential perspectives have been:
+
+<ul>
+<li>To consider KO an intuitive process that does not need deeper justification. The
+original classification of journals in the &rarr; <a href="citation">citation indexes</a>  published by the Institute for
+Scientific Information, for example, was just intuitive (cf. <a href="#ref7">Leydesdorff 2006</a>, 602). In practice,
+many KO activities have been driven by this view: you simply start constructing a
+classification and stop when it seems to suit the purpose. A criticism of this perspective may state that any classification is always serving some interests at the expense of
+other interests, and if unanalyzed, it cannot be optimized for the purpose it is going to
+serve (cf. <a href="#refH">Hj&oslash;rland 2020</a>). Of course, this view challenges the whole idea of KO as a needed field of study.</li>
+
+<li>To claim that since only the individual user knows their own &ldquo;information need&rdquo;, they
+are the only person qualified to set principles of what should be found in IR and how
+documents should be indexed or classified. This is the view underlying &rarr; <a href="user_based">user-oriented
+and cognitive approaches</a> in information science and KO and is discussed a little in
+the present article and more detailed in Hj&oslash;rland (<a href="#refH">2013</a>).</li>
+
+<li>To say that the best way, both economically and qualitatively, is to base KO on user
+tagging or related &ldquo;social technologies&rdquo;, implying that a deeper theoretical understanding of KO is unnecessary. User tagging is by some both seen as &ldquo;democratic&rdquo; and economically preferrable, while there are also critical voices (for a discussion, see <a href="#refR">Rafferty 2018</a>).</li>
+
+<li>To claim that KO is basically a technological problem, that, for example, when enough
+computer power and optimal algorithms are available, the problems of IR will be
+solved without a deeper theoretical understanding of KO. A version of this view is that
+the principles underlying systems such as Google are sufficient. This view dominates
+the IR tradition in computer science and shall be discussed further in <a href="#3">Section 3</a>. (Computer science is, however, also dominating in knowledge representation and ontology
+development; therefore, a simple dichotomy between knowledge organization and
+computer science cannot be made.)</li>
+</ul>
+
+<p>Approaches to KO have mostly been dominated by the dichotomy between psychological, cognitive understandings on the one hand, and technological understandings
+on the other. It has been claimed, for example, that there are two kinds of &ldquo;relevance&rdquo;:
+human based relevance assessment and computer-based assessments. This dichotomy was
+criticized by Hj&oslash;rland (<a href="#refH">2010</a>) who argued that &ldquo;systems relevance&rdquo; is an oxymoron because systems are made by humans who have determined the criteria of relevance used by the systems. Relevance in the user-oriented school considers &ldquo;real users&rdquo; (as opposed to subject expert) to be best to evaluate the relevance of documents and information. In the next section, we
+consider a thought experiment of searching for cities in Sweden and here it is claimed that
+the relevant information may be found in a map or gazetteer constructed by some experts,
+not what the user believes are Swedish cities. Both the &ldquo;systems approach&rdquo; and the &ldquo;user
+approach&rdquo; (as well as the dichotomy itself) are therefore problematic positions, and a third
+way is needed.</p>
+
+<p>A third way is the &rarr; <a href="domain_analysis">domain analytical approach</a> (<a href="#refH">Hj&oslash;rland 2017</a>), according to which both human
+information needs and technological approaches are understood as influenced by the
+understanding and background knowledge of the actors (including the computer programmers and mediators), which is shaped by the social and disciplinary contexts, the traditions,
+and the paradigms in which the actors have been socialized.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3"></a>
+<h3 itemprop="articleSection">3. Challenges from IR</h3>
+
+<p>Search engines such as Google represent an impressing technology and its importance
+as aid to find relevant documents and information can hardly be overrated. We should
+acknowledge that both IR in general and search engines like Google have, in many ways,
+turned deeply rooted beliefs within library and information science and KO upside down.
+Nonetheless, everything has its limitations, and it is the job of research to suggest new ways forward. In this connection, it is important to consider the purposes of searching. Most
+users are probably not interested in exhaustive searches, but in high precision, and this
+may be one of the reasons for the popularity of Google. However, for some purposes, in
+particular academic purposes, exhaustive searches are often necessary, and it is important
+that tools are available for such purposes, and this may well be one of the weaknesses of
+Google and related systems.</p>
+
+<p>When you search a system like Google, you typically type in a few words and study
+the first part of the result list (we shall not here consider, for example, picture or music retrieval, but we consider the fundamental principles to be the same). This principle, that
+the system as a response to an input retrieves a set of documents, was by Warner (<a href="#refW">2010</a>) termed
+&ldquo;query transformation&rdquo; and was by him opposed to a principle that is far older but less
+influential today, which he called &ldquo;selection power&rdquo;, which is about the user&rsquo;s ability to
+make relevant distinctions during a search (these principles are further discussed in <a href="#refH">Hj&oslash;rland 2015</a>).
+The principle of query transformation implies that you typically must know the words (or
+other symbols) that correspond to the words (symbols) in documents you would like to
+retrieve. This poses a theoretical problem, because it seems impossible to select terms from
+documents you do not know (since, following Socrates (<a href="#refP">Plato 380 BCE</a>), if you already knew them, you
+would not be making a subject search for them). This has been interpreted as a claim about
+the principal impossibility for searching in general. In library and information science
+the distinction between &ldquo;known item search&rdquo; and &ldquo;subject search&rdquo; is well established.
+Sokrates/Plato&rsquo;s argument is clearly not about known item searching, which obviously is unproblematic. In relation to subject searching this seems also unproblematic, as everyone is doing this on Google every day. There is an important point, however. Unknown
+documents of relevance for a given inquiry may have to be searched in a context and with
+concepts as well as symbolic systems unknown for the searcher. This is particularly the
+case if there have been paradigm shifts in the field of enquiry. Don Swanson is perhaps
+the only information scientists who have ever expressed the depth of this problem. He
+concluded (<a href="#refS">1986</a>, 114): &ldquo;Any search function is necessarily no more than a conjecture and
+must remain so forever&rdquo;. The problem of knowing relevant search terms is, of course,
+made smaller because an initial search may provide hits containing further potential words
+to search (related to technologies known as &ldquo;query expansion&rdquo;, which often depends partly
+on KOSs for identifying synonyms, narrower terms, etc.). This means that iterative searches
+partly remedy the problem of identifying relevant search terms. Still, however, the initial
+conceptualization of the topic of the search is important. The main difference in relation to searches based on KOSs is that the latter provides conceptual structures to help navigate
+and thereby identify relevant terms, symbols, and concepts.</p>
+
+<p>A KOS may, for example, be a classification of cities according to geography, as done,
+for example, on a map or in a geographical classification system (a gazetteer), in which you
+are informed about a conceptual structure and may make adequate selections as you go. If
+you are interested in information about, for example, Swedish cities (including, perhaps,
+towns, villages and other settlements classified as such), this can be carried out about
+Sweden in general or about a region of Sweden; you do not have to know their names
+beforehand but can just use the classification.</p>
+
+<p>This is probably the basic difference between mainstream IR and KO. In IR, you
+typically depend on a match between a search term and documents containing this term
+in title, abstract, full text, etc. IR may of course also apply information such as descriptors,
+classification codes, etc., from KOSs, but the main approaches in IR is about information from
+the document itself, not about value-added information. The utilization of reference lists in
+documents for IR mostly form part of the field of bibliometrics, rather than in mainstream
+IR (see <a href="#refH">Hj&oslash;rland 2013</a>; <a href="#refA">Ara&uacute;jo et al. 2021</a>). The study of how different parts of both the documents themselves and
+information added in bibliographical records contribute as &ldquo;subject access points&rdquo; for IR
+is discussed by <a href="#refH">Hj&oslash;rland and Kyllesbech Nielsen 2001</a>). Contrasting to IR, KO typically is about KOSs  containing semantic
+relations between concepts and providing, for example, a full list of cities in a particular
+part of Sweden. In IR, there is a technique known as &ldquo;relevance feedback&rdquo; in which users
+may indicate whether a found item is relevant or not, and the system may modify its search
+by including words from items that the user has marked as relevant (a possible technique for
+&ldquo;query expansion&rdquo;). The search may also eliminate words from items marked as  nonrelevant,
+and thus increase the precision of the search. This technique still presupposes, however,
+that the searcher knows which words are relevant. In our geographical example, if a user
+does not know whether a given city name suggested by the system is about a Swedish or a
+Norwegian city, they may not be able to provide useful feedback, and the feedback may
+be harmful by making the system suggest Norwegian cities rather than Swedish. If a user is searching for Swedish town, then &ldquo;Stockholm&rdquo; is a relevant hit, whereas &ldquo;Oslo&rdquo; is an
+incorrect hit. Therefore, criteria for what should be found (i.e., what is relevant) are not
+to be found in the searcher&rsquo;s belief (or in psychological studies 
+as suggested by an influential school in information science). Criteria for what should
+be found must be based on KOSs containing the best existing descriptions of the realities,
+often derived from scientific and scholarly studies. We recognize that the objectivity of
+science is an issue being debated in science studies. Still, however, this does not make
+any view as good as any other, and our geographical example demonstrates a relatively
+uncontroversial case.</p>
+
+<p>Looking at the principle underlying Google&rsquo;s search engine, we find that four main
+principles are (a) &ldquo;exact match&rdquo;, (b) &ldquo;best match&rdquo;, (c) popularity measures, and (d) personalization (we shall not consider other issues such as the contents of the database and the
+influence of advertising, which are separate questions, less connected to the core theory of
+IR and KO).</p>
+
+<p>(a) If you type in a sentence, such as: &ldquo;It seems to be based on the problematic assumption
+that relations between concepts are a priori&rdquo;, Google will retrieve the one article (and
+its possible copies and versions) that contains this exact sentence. This exact match
+is obtained because the search applies proximity operators and thereby can retrieve
+documents identical to the query. This is not, however, what is generally understood
+by &ldquo;exact match&rdquo; techniques (or &ldquo;set-retrieval&rdquo;), which were defined by Turtle and Croft (<a href="#refT">1992</a>, 284):
+
+<blockquote>Exact-match retrieval models use matching functions that, given a query, partition
+the document collection into two sets, those that match the query and those that do not.
+Documents in the matching set are generally not ranked (although they may be ordered by
+date, alphabetically, or some other criterion). Exact-match models are generally simple and
+efficient and form the basis of most commercial retrieval packages [in 1992, not in 2021]. By
+far the most common exact-match model is the Boolean model.
+</blockquote>
+
+(It is no longer true that retrieved sets are not ranked. In 2019, &ldquo;best match&rdquo; replaced &ldquo;most recent&rdquo; as the default sort order for search results in PubMed, cf. <a href="#refF">Fiorini et al. 2018</a>; <a href="#refS">Sampson et al. 2021</a>).</p>
+
+<p>Exact match techniques allow searchers to use a &ldquo;building blocks search strategy&rdquo;,
+in which well-defined search sets are constructed and combined by the searcher (see <a href="#refH">Harter 1986</a>, 242). Exact match systems may or may not be combined with one or more KOS, but the principles behind exact match should be considered separately from the principles of KOSs.
+A disadvantage by exact match search techniques &mdash; if not combined with one or more KOS, as they usually are in &ldquo;classical databases&rdquo; &mdash; is, as we have seen, that the search is vulnerable about the users knowing the right terms, why the search may not be effective in terms of recall and precision. &ldquo;Classical databases&rdquo;, such as MEDLINE, are based on exact match techniques, and this seems important for serious searches, where high recall is important (e.g., in evidence-based medicine, cf. <a href="#refH">Hj&oslash;rland 2015</a>). (<a href="#refF">Frei and Qiu  1993</a> found that &ldquo;the main
+problem of Boolean searching is not its performance. For many users the main obstacle
+is being able to use Boolean logic effectively in order to formulate queries in the way a
+commercial retrieval system requires&rdquo;.)</p>
+
+<p>(b) If you type in a number of terms such as &ldquo;concepts&rdquo;, &ldquo;relations&rdquo; and &ldquo;a priori&rdquo; from
+the example in point a, Google will make a so-called &ldquo;best match&rdquo; search (also called &ldquo;partial match&rdquo;, &ldquo;relevance ranking&rdquo; or &ldquo;weighted retrieval&rdquo;) and retrieve millions of
+documents in a ranked order according to some principles, which are more or less
+business secrets. (The one article retrieved in point a is not among the top results.) 
+To a large degree, the principles used are well established principles from IR research
+(see, e.g., <a href="#refB">Baeza-Yates and Ribeiro-Neto 2011</a>; <a href="#refM">Manning et al. 2009</a>; <a href="#refR">Roelleke 2013</a>). These principles are mainly based on the relative frequency of terms in
+the whole database or collection, in the single documents and in the queries, in addition
+to issues such as the lengths of documents and the proximity of query terms within a
+document. Well-known examples of best match technologies are &ldquo;vector space&rdquo; (<a href="#refS">Salton et al. 1975</a>) and
+&ldquo;probabilistic&rdquo; models (<a href="#refR">Robertson and Jones 1976</a>). Additionally, kinds of artificial intelligence (machine learning
+techniques) are used, in which algorithms learn to distinguish relevant documents and rank them accordingly (see, e.g., <a href="#refF">Fiorini et al. 2018</a>). Such technologies are considered superior in computer
+science. As Robertson (<a href="#refR">2008</a>) wrote: &ldquo;statistical approaches won, simply. They were overwhelmingly more successful&rdquo; compared to other approaches such as thesauri.</p>
+
+<p>The disadvantages of best match technologies are (1) that the searcher does not have full
+control over the research process (but saves time if they choose to trust the algorithms), and
+(2) that the system ranks documents according to &ldquo;relevance&rdquo;, as if relevance is an objective
+concept, which clearly is a problematic assumption because different scientific perspectives
+and paradigms have different criteria for relevance (see <a href="#refH">Hj&oslash;rland 2002; 2010</a>). Best match techniques are
+often based on similarity measures, but &ldquo;similar&rdquo; is a relative concept: Anything is similar
+with any other thing, depending on criteria, and it is easy to demonstrate that similarity
+based on words can be problematic because that means that a given text will by this
+criterion not be considered similar to its translation; (3) the techniques work on words or
+symbol structures (as opposed to concepts), which are associated with different meanings
+in different contexts. However, finding documents about a given subject is different from
+finding documents containing given words, and even containing given concepts (see <a href="#refH">Hj&oslash;rland 2017</a>, Section 3). Furthermore, because the principles behind best match are statistical, there is an
+element of popularity measure in this. If a given term is associated with a given meaning
+in a given context, that meaning cannot be separately identified; instead, the dominating
+meaning influences what is found. In other words, the principle disregards the insight
+from Kuhn that terms change meaning after scientific revolutions, or, said differently, in a
+way, it considers signs to be independent of context, which is a problematic assumption.
+Today, best match techniques represent the dominating IR paradigm, as applied
+in search engines. It challenges the techniques applied in &ldquo;classical databases&rdquo; such as
+MEDLINE. Paris and Tibbo (<a href="#refP">1998</a>) wrote: 
+
+<blockquote>The results from this study, then, support Robertson and
+Thompson&rsquo;s (<a href="#refR">1990</a>) conclusion that there is little difference in the levels of efficiency between
+weighted and Boolean retrieval mechanisms, but directly contradict the statements made by
+Belkin and Croft (<a href="#refB">1987</a>) and Turtle and Croft (<a href="#refT">1992</a>) about the superior performance
+of partial match techniques over exact match techniques. These results do not in any way
+prove the superiority of exact match techniques over partial match techniques, but they do
+suggest that different queries demand different retrieval mechanisms. Further studies and
+analyses are needed to determine which elements of a query make it best suited for partial
+match or exact match retrieval.</blockquote></p> 
+
+<p>In evidence-based medicine (EBM), the use of classical
+databases still represents the dominating approach but is increasingly being challenged by
+best match techniques. Hj&oslash;rland (<a href="#refH">2015</a>) presents  arguments for set-based techniques for purposes for which high recall is important (such as EBM).</p>
+
+<p>The change in the dominating search paradigm from selection power to query transformation implied a dequalification of professional searchers (information specialists) and of
+competent users. It is characteristic for professional searchers that they master a wide range
+of strategies to increase recall (finding more relevant documents) as well as to increase
+precision (avoiding more non-relevant documents). Robertson (<a href="#refR">2000</a>, 4&ndash;5, italics in original) pointed
+out, however, that with the best match technologies used by search engines, not only has
+this mastering disappeared, but even the concepts have lost their meaning:
+
+<blockquote>To make a more direct statement: the concept of a precision-enhancing device has
+one meaning in the context of set-based retrieval, and another and quite different meaning
+in the context of ranked-output retrieval. The &lsquo;same&rsquo; device (such as &lsquo;using phrases&rsquo;) might
+very well be a precision device in one context and not in the other. The term precision
+device itself was coined in the former context: whether it is a valid concept for the latter is
+not obvious.
+<br>To put it even more directly, in accordance with the status of old IR hand which I
+suppose the Salton award means I must have acquired: Precision devices aren&rsquo;t what they
+used to be!</blockquote></p>
+
+<p>The same is the case for recall devices (<a href="#refR">2000</a>, 5): 
+
+<blockquote>Just to pursue the same line of
+argument a little further, recall devices are also problematic, despite their logical (rather than statistical) status in the set-retrieval context. Again, in the TREC tradition, we tend
+to measure recall at some arbitrary large cutoff (say 1000 documents). This immediately destroys any claim to logical status for a recall-enhancing device. Even if we do something
+which (logically speaking) can only increase the size of the retrieved set, such as expanding
+the query with a lot of synonyms, it might still reduce recall at 1000 documents.</blockquote></p>
+
+<p>It seems that we, in the new context, have not only lost the professional ability to make
+qualified searching, but even in our research have lost important concepts and thereby part
+of the ability to understand what is going on in terms of optimizing IR.</p>
+
+<p>(c) It is well known that Google also uses a kind of popularity measure; the more in-links
+a certain document has, the greater the weight it is given and the higher it is listed in
+the ranked order shown to the user. This is often, if not in most cases, working very
+well because people often want the same as the majority. However, in searching for
+rare diseases, for example, this has proven a bad principle because rare diseases are,
+by definition, not a majority issue (for empirical demonstration of the failure of this
+principle for IR about rare diseases, see Dragusin et al. (<a href="#refD">2013a; 2013b</a>).</p>
+
+<p>(d) The fourth major principle in search engines is personalization; Google can identify
+users&rsquo; IP address and thereby their physical location as well as their search history on Google, and may adapt, not just the advertisements, but also the so-called &ldquo;organic
+results&rdquo; in the ranked list presented to the user. This provides an element of subjectivity and randomness into the search and harms the ability to make conscious search
+strategies. It is also a double-edged sword; sometimes, it works well, but other times,
+you may want to eliminate this element, you may want more objective searches, you
+may have changed interests, or you may be searching on behalf of others. This is why
+the focus on past search interests may be harmful rather than fruitful.</p>
+
+<p>A major problem in Google&rsquo;s principles is that scientific and scholarly criteria are absent in the four principles presented above. In our former example, we considered a search for
+all Swedish cities in a certain region of Sweden. Given a quality map, or gazetteer, such a
+query can be answered based on cartography or geographical research. This is just a simple
+example of the main view presented in this article, that what should be found by IR, and
+what should be represented in KOSs, is what is considered true knowledge according to our
+best research and scientific theories about the content or subject matter. Although other
+examples may be more difficult than our geographical one, this does not invalidate the
+principle, but raises the philosophical problem about how science and scholarship obtain
+knowledge, how robust that knowledge is, and whether it reflects an objective reality. The
+principle that IR should find documents according to their scientific trustworthiness (rather
+than, for example, according to the searcher&rsquo;s guess on which words relevant documents
+must contain or according to popularity measures) seems to be an obvious demand, and
+it is surprising that this line or research in IR and KO seems to be almost entirely absent.
+Of course, academic quality and trustworthiness may be correlated with, for example,
+popularity measures and journal impact factors, but these are only indirectly associated
+with quality, and such correlations must be investigated before they should be relied on.
+For now, we leave the question on how science and scholarship discover or construe
+knowledge, but shall consider how the scientific and scholarly quality of search results
+may be considered in IR. There are different strategies for doing so, including:
+
+<ol>
+<li>building specialized search engines rather than general ones (e.g., <a href="#refD">Dragusin et al. 2013a; 2013b</a>).</li>
+
+<li>Selecting high-quality sources (e.g., journals with high impact factors); (see <a href="#refA">Ara&uacute;jo et al. 2021</a>,
+Section 6 about the quality of indexed documents. Some citation indexes such as the
+<i>Web of Science</i> cover more limited amounts of indexed sources (based on journal
+impact factors), compared to, for example, Google Scholar, and use this to argue for
+a higher quality in the retrieved documents. This is, however, an open hypothesis,
+which seems to have been challenged by Acharya et al. (<a href="#refA">2014</a>), who found that important papers are
+more and more published in non-elite journals. For a criticism of the journal impact factor, see, for example, Picard et al. (<a href="#refP">2019</a>).</li>
+
+<li>Selecting documents based on principles used in so-called evidence-based research
+(e.g., studies based on double blind clinical trials); In evidence-based medicine (or
+evidence-based practice in general, EBP) the trustworthiness of claims about the effectiveness of a given treatment are classified according to the quality of the research
+methods employed. Explicit norms should be made for investigations that are most
+relevant, and a hierarchy of the value of different kinds of research methods as
+evidence should be made (where randomized controlled trials are considered to be a
+high level of evidence, while, for example, evidence from expert committee reports is
+considered to be a low level of evidence). There has been criticism of such views, and
+there is an example of two different systematic reviews based on this procedure that
+provide very different conclusions (cf. <a href="#refH">Hj&oslash;rland 2011</a>). Regarding IR, the EBP model provides
+clear criteria for prioritizing information sources, although, as already said, they are
+not uncontroversial.</li>
+
+<li>Selecting documents based on their influence measures, e.g., their number of citations,
+in general or within some specifications (e.g., papers highly cited within leading
+journals in the field).
+These possibilities are here only treated very shortly, while the focus in this article
+is about:</li>
+
+<li>basing IR on quality KOS (such as our thought experiment with Swedish cities).
+In addition to such KOS, it is necessary that each document is assigned to the most
+relevant classes in the KOS, which is not a trivial issue, but depends both on the
+specific qualifications by the indexer and by the indexing philosophy used by the
+system, e.g., the operationalization of the concept &ldquo;subject&rdquo; (cf. <a href="#refH">Hj&oslash;rland 2017</a>). Lardera and Hj&oslash;rland (<a href="#refH">2020</a>, 
+Section 5.2) put forward the hypothesis, that indexing done by MEDLINE, one of the
+most important bibliographical databases in the world, may be based on principles
+that are too mechanical.)</li>
+</ol>
+
+<p>To conclude this section, the working hypothesis behind this paper is that the dominating computer science approaches mainly focus on statistical relations between terms
+in single documents, terms in collections of documents and terms in queries, in addition
+to issues such as the lengths of documents and the proximity of query terms within a
+document. For example, a document that has all of the query terms occurring many times
+would be displayed first, followed by other documents where the query terms appear less.
+In addition, kinds of IR are used to identify &ldquo;relevant&rdquo; documents, often based on similarity
+measures. Although these approaches have so far been extremely successful, there is a
+need for alternatives based on knowledge of scholarly documentation and communication,
+including scholarly conceptions, traditions, and &ldquo;paradigms&rdquo; and the basis in the philosophy of science. This implies a more overall, top-down approach to IR. Such an approach is,
+among other things, about the construction of KOS, which is an interdisciplinary field in
+which computer science is also active, but which seems to be conflicting with dominating
+approaches to search engines.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4"></a>
+<h3 itemprop="articleSection">4. Knowledge organization systems and the semantic staircase</h3>
+
+<p>There are many kinds of KOS (cf. <a href="#refM">Mazzocchi 2018</a>). Here, we just look at three kinds: classification
+systems, thesauri, and ontologies. It is the hypothesis that KOSs can be classified according
+to the semantic staircase (Figure 1), and that this model is the most important characteristic 
+distinguishing kinds of KOS. Our sole aim in the description of these three kinds is to make
+this hypothesis clear to the reader. Therefore, many other issues concerning these KOSs are
+not dealt with in the following presentation.</p>
+
+<div align="center"><figure>
+<img src="ir1.jpg" title="Fig. 1: The semantic staircase: Increasing semantic richness in kinds of knowledge organization
+systems" width="70%">
+<figcaption>Figure 1: The semantic staircase: Increasing semantic richness in kinds of knowledge organization
+systems (after <a href="#refO">Olenski 2010</a>)</figcaption>
+</figure></div>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.1"></a>
+<h4 itemprop="articleSection">4.1. Classification systems</h4>
+
+<p>Knowledge organization is primarily about bibliographic classification systems, which
+are systems for classifying documents and document representations. Documents are, however, about things in the world, e.g., about animals, celestial bodies, musical instruments,
+etc., and therefore bibliographical classifications to a high degree reflect classifications of things in the world. We may call such systems <i>scientific classifications</i> to distinguish
+them from bibliographic classifications, but scientific classifications in this sense include
+classifications made by scholars (e.g., &rarr; <a href="hornbostel">musical instruments</a>  or literary genres) and &rarr; <a href="folk">folk
+classifications</a> (e.g., genres of popular music). &ldquo;Scientific classification&rdquo; is here used as a 
+generic concept for all kinds of classifications that bibliographic classifications may rely on.
+So, a bibliographic classification such as the Dewey Decimal Classification relies on how, for
+example, plants and animals have been classified by zoologists (although library classification systems in particular often are very conservative in updating, and unfortunately often
+reflect outdated knowledge, cf. <a href="#refB">Blake 2011</a>,  469&ndash;470). The present article is written on the
+assumption that to serve important functions for IR, KOSs must be concerned with updated
+and trustworthy knowledge, rather than with outdated or problematic knowledge.</p>
+
+<p>Figure 2 shows an example of a classification system. The intention of this classification
+example is to illustrate two points: The first point is that the dominating kind of relation
+in classifications is the generic relation (or &ldquo;is a&rdquo; relation); a bird is a vertebrate, and
+a vertebrate is an animal (although other &rarr; <a href="hierarchy">hierarchical</a>  relations can also be used). The
+second point is that class names are also concepts: &ldquo;birds&rdquo;, &ldquo;vertebrates&rdquo; and &ldquo;animals&rdquo;
+are classes as well as concepts. We may therefore say that a classification system organizes
+concepts (this claim is not generally accepted; however, the main spokesman for the view
+that KOSs do not represent concept is Barry Smith, and we shall return to this point in
+<a href="#5">Section 5</a>). Finally, <i>animal</i>, <i>vertebrate</i> and <i>bird</i> are also words (or terms or symbols),
+and concepts having verbal expressions are said to be lexicalized. KOSs often, for example,
+list synonyms, which are relations between words rather than between concepts. Thus,
+classifications or KOSs also display lexical relations between words (or, more broadly,
+between signs since other kinds of &rarr; <a href="notation">notations</a> may be used). This is important because a
+major function of many KOSs is to serve as controlled vocabularies. </p>
+
+<div align="center"><figure>
+<img src="ir2.jpg" title="Fig. 2: Aristotle's classification of animals" width="70%">
+<figcaption>Figure 2: Aristotle's classification of animals</a></figcaption>
+</figure></div>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+
+<a name="4.2"></a>
+<h4 itemprop="articleSection">4.2. Thesauri</h4>
+
+<p>Thesauri are defined in <a href="#refI">ISO 2011</a> (ISO 25964-1; clause 2.62) as: &ldquo;controlled and structured 
+vocabulary in which concepts are represented by terms, organized so that relationships
+between concepts are made explicit, and preferred terms are accompanied by lead-in
+entries for synonyms or quasi-synonyms&rdquo;.</p>
+
+<p>A problem with this and related definitions in other standards is, however, that they
+fail to distinguish thesauri from ontologies. The solution suggested here is to define a
+thesaurus as a KOS with the limited and predefined set of semantic relations it displays.
+If that set is expanded, we are no longer dealing with thesauri but with ontologies. Figure 3
+shows an example from a thesaurus.</p>
+
+
+<div align="center"><figure>
+<img src="ir3.jpg" title="Fig. 3: An example from UNESCO Thesaurus" width="50%">
+<figcaption>Figure 3: An example from UNESCO Thesaurus <a href="#refU">2021</a>)</figcaption>
+</figure></div>
+
+<p>A thesaurus may also contain a classification system, and this is the case with the
+UNESCO Thesaurus (the terms are then organized hierarchically rather than alphabetically).
+This also points to the narrow relations between kinds of KOS.</p>
+
+<p>Explicitly, the ISO (<a href="#refI">2011</a>) definition of thesauri as well as the UNESCO thesaurus organizes
+concepts. Mostly, thesauri also have lead-in terms (or synonyms) and thus also organize
+terms. We see again the generic relation between concepts (broader, narrower), but now also
+another relation: &ldquo;related concepts&rdquo;. Thus, thesauri contain more explicit semantic relations
+than classification systems. (The UNESCO thesaurus is, by the way, not without problems.
+For example, zoology is normally not considered a broader concept in relation to birds, but
+a broader concept in relation to ornithology, and <code>vertebrates</code> and <code>animals</code> are broader concepts in relation to birds.)</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.3"></a>
+<h4 itemprop="articleSection">4.3. Ontologies</h4>
+
+<p>Ontologies are kinds of KOS that are used in relation to front-end information technologies such as &ldquo;the semantic Web&rdquo;, but which are also used &mdash; in line with traditional
+KOSs &mdash; for IR/literature searching (see e.g. <a href="#refW">W&auml;chter et al. 2008</a>). Compared to classification systems and
+thesauri, they mostly have a much higher level of granularity and are closely related to
+actual scientific research in the domain. In practice, they tend to be more explicit and
+precise in their definitions. The Foundational Model of Anatomy ontology (<a href="#refR">Rosse and Mejino 2008</a>) describes
+the difference between an anatomical ontology and other anatomical tools such as atlases,
+textbooks, dictionaries, thesauri, or term lists. In relation to thesauri, it is written that:
+
+<blockquote>Thesauri organize their content according to the meaning of their terms. However, since these terms are not explicitly defined, the meanings have to be implied by each user on
+the basis of perceived similarities and differences between terms. The FMA, by contrast
+explicitly defines the classes of its taxonomy, and links all these classes through an inheritance hierarchy to a single root: <code>Anatomical Entity</code>.</blockquote>
+
+Compare, however, this quote with the following by Aitchison et al. (<a href="#refA">2000</a>, 34): 
+
+<blockquote>The symbol SN is used [in thesauri] to represent scope notes,
+which sometimes include definitions [&hellip;]. As the trend is now toward the blurring of
+the difference between thesauri and terminological databanks, the tendency appears to be
+towards the increase in the number of definitions in thesauri. Svenonius (<a href="#refS">1997</a>) advocates
+the inclusion of as much definitional material as possible. More attention appears to be
+given to the form of definitions. For example, a model is suggested (<a href="#refH">Hudon 1996</a>) for
+preparing logical definitions for indexing and retrieval thesauri.</blockquote></p>
+
+<p>The inclusion of more or less definitions should not be taken as a definitional difference,
+since this is a quality issue that varies widely among individual KOSs. Ontologies are also
+mostly constructed by using formal languages, and many authors consider the use of such
+formal languages a necessary condition for a KOS to be an ontology.</p>
+
+<p>Gruber (<a href="#refG">1993</a>, 199) wrote: 
+
+<blockquote>A body of formally represented knowledge is based on
+a conceptualization: the objects, concepts, and other entities that are presumed to exist
+in some area of interest and the relationships that hold among them (<a href="#refG">Genesereth and
+Nilsson 1987</a>). A conceptualization is an abstract, simplified view of the world that we wish to represent for some purpose. Every knowledge base, knowledge-based system, or knowledge-level agent is committed to some conceptualization, explicitly or implicitly.</blockquote>
+
+Thereafter followed a widely cited definition:
+
+<blockquote>An ontology is an explicit specification of a shared conceptualization.</blockquote></p>
+
+<p>The same definition seems, however, to be valid for, for example, classification systems
+such as the periodic table in physics and chemistry. Colomb (<a href="#refC">2007</a>, 42) actually uses the
+periodic table as an example of an ontology and writes: &ldquo;This example is interesting
+because it is an ontology with several facets of subclasses, and because it includes a system
+of instances as well as classes&rdquo;). Gruber&rsquo;s definition also seems to fit biological taxonomies,
+and is therefore unspecific. It is a fundamental ambiguity in the use of the term <i>ontology</i> in information science in that it is both used (as in the semantic staircase, Figure 1) as one
+specific kind of KOS with some specific requirements (see, e.g., <a href="#refS">Soergel et al. 2004</a>), and as a generic term
+for other kinds of KOS. Following the idea of the semantic staircase, it is here suggested to define ontologies as kinds of KOS with the largest number of semantic relations between
+the concepts. It is typical of ontologies, however, that they often represent connections
+between entities and properties. The Fish Ontology architecture (<a href="#refA">Ali et al. 2017</a>, 6), for example,
+provides links between the property <code>extinct</code>, the property category <code>fish status</code>, and the entity <code>fish</code>.</p>
+
+<p>Another aspect of Gruber&rsquo;s definition is the already mentioned controversy about
+whether &ldquo;concepts&rdquo; and &ldquo;conceptualizations&rdquo; should be considered the units in ontologies,
+a problem that will be discussed later in this article. One issue related to this problem
+should, however, be mentioned here. Ontologies are often supposed to be tools from which
+any new tools needed in the future might be produced. Rosse and Mejino (<a href="#refR">2008</a>, 59) wrote: &ldquo;The
+Foundational Model of Anatomy (FMA) ontology is being developed to fill the need for a
+generalizable anatomy ontology, which can be used and adapted by any computer-based
+application that requires anatomical information&rdquo;. They also wrote, however, that FMA &ldquo;is
+both a theory of anatomy and an ontology artifact&rdquo;. As such, it is a conceptualization in
+Gruber&rsquo;s sense, and as such its application has inbuilt limitations in relation to applications
+based on other conceptualizations, an issue we come back to in the discussion of concepts
+and realism.</p>
+
+<p>Smith et al. (<a href="#refS">2005</a>) suggested the following relations as the most important ones for biomedical ontologies:
+
+<ul>
+<li><code>is_a</code></li>
+<li><code>part_of</code></li>
+<li><code>located_in</code></li>
+<li><code>contained_in</code></li>
+<li><code>adjacent_to</code></li>
+<li><code>transformation_of</code></li>
+<li><code>derives_from</code></li>
+<li><code>preceded_by</code></li>
+<li><code>has_participant</code></li>
+<li><code>has_agent</code></li>
+</ul></p>
+
+<p>We observe the <!-- waste --> expansion of semantic relations compared to classification
+systems and thesauri. There seems to be no limit to the number of relations that may be
+used, and new kinds are discovered (or constructed) when ontologies are constructed for
+new domains. Ontologies therefore differ from classifications and thesauri by providing
+many more kinds of semantic relations between concepts.</p>
+
+<p>(An anonymous reviewer suggested that this list by <a href="#refS">Smith et al. 2005</a> &ldquo;is just making up reality, an illusion of reality for the sake of efficiency and consistency&rdquo;. Perhaps it is
+better to say that it is one selection among other possible selections, the fruitfulness of
+which represents a theoretical assumption in need of justification.)</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.4"></a>
+<h4 itemprop="articleSection">4.4. The semantic staircase</h4>
+
+<p>The semantic staircase is a classification of KOSs according to how many kinds of
+semantic relations they display. According to Olensky (<a href="#refO">2010</a>), the term <i>semantic staircase</i> was first used in German by Blumauer and Pellegrini (<a href="#refB">2006</a>, 16) as &ldquo;Semantische Treppe&rdquo;. Obrst (<a href="#refO">2010</a>, 30&ndash;35) presented a related term &ldquo;The ontology spectrum&rdquo; which is a
+classification, not of KOSs, but of &ldquo;ontologies&rdquo;, which considers, for example, classification systems and thesauri as kinds of ontologies.</p>
+
+<p>In our descriptions from classification systems over thesauri to ontologies, we showed
+that the number of semantic relations did indeed increase. Regarding Figure 1, it should
+be noted that a glossary typically is an alphabetic listing that does not provide semantic
+relations between the concepts, and that we consider <i>taxonomy</i> and  <i>classification</i> to be synonyms.</p>
+
+<p>The verification of the hypothesis of the semantic staircase requires that it can be
+shown that the higher forms of KOS are able to represent the lower forms. More research
+on this is needed, but some supporting views are:
+
+<p>Garshol (<a href="#refG">2004</a>) suggested that topic maps (which he says are based on an ontology framework) can represent other kinds of KOS:
+
+<blockquote>The relationship between topic maps and traditional classification schemes might
+be that topic maps are not so much an extension of the traditional schemes as on a higher
+level. That is, thesauri extend taxonomies, by adding more built-in relationships and
+properties. Topic maps do not add to a fixed vocabulary but provide a more flexible model
+with an open vocabulary. A consequence of this is that topic maps can actually represent
+taxonomies, thesauri, faceted classification, synonym rings, and authority files, simply by
+using the fixed vocabularies of these classifications as a topic map vocabulary.</blockquote></p>
+
+<p>Another supporting view is the idea that it is possible to transform a classification
+system into a thesaurus (without related terms). Aitchison (<a href="#refA">1986</a>) examined if the second edition of
+the Bliss Bibliographic Classification can be used as a source for thesaurus terms and structure (i.e., concepts and their semantic relations). Although she described some problems,
+these problems seem not to refuse the idea that a classification can be transformed into a
+thesaurus, but just to point out some issues in the specific classification used (one could
+say some problems in its quality).</p>
+
+<p>A third supporting view is that it seems to be evident, that if it can be established, for
+example, that a bird is a vertebrate (or in general that <i>X</i> is an <i>A</i>), then this is a building block
+that can be used in both classifications, in thesauri and in ontologies, or in any other kind of
+KOS. By implication, it seems unfruitful to continue studying, for example, classifications
+and thesauri, as separate objects. We should rather be studying KOSs in general, i.e.,
+concepts, conceptual systems, and conceptual/-semantic relations. (Nevertheless, of course,
+anything we have learned about, for example, classification schemes and thesauri, is still
+useful in this generalized context.)</p>
+
+<p>Different kinds of KOS are different in relation to the kinds of semantic relations they
+can display. However, a central issue is not about kinds of KOS but about determining the
+relevant/fruitful/true relations. An anonymous reviewer wrote: 
+
+<blockquote>In fact another interpretation [&hellip;] could be that ontologies impose the constraints (sometimes simplifications) required by computer logic and the definition of classes, inheritance and hierarchy that are proper of object-oriented programming, while the scope notes and the &ldquo;logical inconsistencies&rdquo; of thesauri could present a more flexible opportunity to explain and represent the complexities of science in a more humanistic/verbal way.</blockquote> 
+
+This quote raises some deep and very interesting problems. In this connection it can be mentioned that Temmerman (<a href="#refT">1997</a>) wrote about &ldquo;Questioning the Univocity Ideal&rdquo; in terminology studies and that Deemter (<a href="#refD">2010</a>) from a general philosophical point of view, wrote about praising vagueness. Such references support the question addressed by the reviewer, which, to my knowledge, never has been seriously addressed in knowledge organization. If fruitful, this view challenges the idea of the semantic staircase.</p>
+
+<p>There are also more traditional issues about scientific and scholarly criteria for IR and
+KO. For example, how do we determine whether <i>X</i> is a kind of <i>A</i>? It has been claimed
+by Svenonius (<a href="#refS">2004</a>, 583) that &ldquo;paradigmatic relationships are those that are context-free, definitional, and true in all possible worlds&rdquo;. At the same time, the literature demonstrates a common understanding that paradigmatic relations are the kinds of semantic relations used in
+thesauri and other knowledge organization systems (including equivalence relations,
+hierarchical relations, and associative relations). It is a strange claim. Relations between
+species of birds, for example, are, as discussed in <a href="#5.2">Section 5.2</a> determined in ornithology
+and subject to different theories and paradigm shifts (see further <a href="#refH">Hj&oslash;rland 2015</a>).  To a large degree,
+this must be done, of course, by scientific research. So, a good KOS is one that is based in
+solid subject knowledge, while a bad KOS is not. The view expressed by Svenonius (<a href="#refS">2004</a>) discourages
+information specialists to consider the scholarly literature. If KOSs shall be used and serve
+their functions, they must be trusted by the users. Unfortunately, there are indications
+that this need not be the case (cf. <a href="#refF">Fidel 1991</a>, 511 who wrote: &ldquo;Over half the time searchers
+neglected to consult a thesaurus, they did so either because they did not trust the quality of the thesaurus, because the thesaurus was not available, or because they had to search
+several databases for a request&rdquo;).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5"></a>
+<h3 itemprop="articleSection">5. Concept theory and realism</h3>
+
+<p>So far, we have assumed that concepts are the elements in KOSs, but also said that this
+view is not without its detractors. The view that KOSs are primarily about the organization
+of concepts and that concepts are units of knowledge, has been expressed by, among
+others, <a href="#refD">Dahlberg 2009</a>; <a href="#refH">Hj&oslash;rland 2003</a>; <a href="#refS">Sowa 1984</a>; <a href="#refP">Patel et al. 2019</a>. There are, however, reasons here to reconsider these claims. As formerly
+indicated, Barry Smith is probably the leading detractor, but also Machado et al. (<a href="#refM">2020</a>) asked if KO can do without concepts and Herre (<a href="#refH">2010</a>), although disagreeing with Smith by considering concepts important, has also saw universals as a necessary category in KOSs. As we consider this
+discussion of high importance, we shall address it in some depth. The questions to be
+addressed in the subsections of this section are: <a href="#5.1">Section 5.1</a>: Challenges from &ldquo;Smithian
+realism&rdquo;, should concepts be replaced by &ldquo;universals&rdquo; as the units in KOSs? <a href="#5.2">Section 5.2</a>:
+What are concepts? The semiotic triangle. Are concepts units of knowledge? <a href="#5.3">Section 5.3</a>:
+Does a KOS need to contain universals and symbolic structures in addition to concepts as
+claimed by Herre (<a href="#refH">2010</a>, 301)? Finally, in <a href="#5.4">Section 5.4</a>: Pragmatic realism.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5.1"></a>
+<h4 itemprop="articleSection">5.1. Challenges from &ldquo;Smithian realism&rdquo;</h4>
+
+<p>Smith and co-authors (<a href="#refS">Smith 2004</a>; <a href="#refS">Smith and Ceusters 2007</a>; <a href="#refA">Arp et al. 2015</a>) discuss ontologies and criticize the conceptualist understanding. Arp et al. (<a href="#refA">2015</a>, 7) write: 
+
+<blockquote>The code assigned to France, for example, is ISO 3166-2:FR and the code is assigned
+to France itself &mdash; to the country that is otherwise referred to as Frankreich or Ranska. It is
+not assigned to the concept of France (whatever that might be).</blockquote></p>
+
+<p>This example is somewhat atypical for concepts and a bit difficult because (1) France
+is an individual concept rather than a general concept; (2) the meaning of the concept
+&ldquo;France&rdquo; is determined by publicly available conventions: we know how the borders
+and the definition of a particular country is decided &mdash; typically following wars (whereas
+scientific concepts typically are developed by research). Nonetheless, even in this case,
+it can be argued that the ISO code 3166-2:FR is assigned to a part of reality determined
+by a conception, as we shall see when we introduce the semiotic triangle in <a href="#5.2">Section 5.2</a>.
+(The related term <code>Europe</code> was by Leclercq (<a href="#refL">1978</a>) considered to represent many concepts.) We shall
+also consider concepts as dynamically changed to cope with the problems of their use. A
+concept such as France has been changed, e.g., by defining its territory in terms of maritime
+boundaries and airspace, when fishery, oil interests and airplanes made this important.
+Works and classification systems on &ldquo;France&rdquo; may vary in what is included and what is
+excluded under that term or symbol (they need not follow the legal concept. The Danish
+library classification system DK5, for example, in class <code>46</code>, Denmark, includes some former
+Danish positions in the subclass <code>46.8</code> and thereby conflicts with the legal definition of
+Denmark). However, even the legal concepts &ldquo;Denmark&rdquo; and &ldquo;France&rdquo; are interpretations
+or conceptualizations that may be challenged in courts.</p>
+
+<p>As the alternative for concepts, Smith, in many writings, has argued that &ldquo;universals&rdquo;
+or &ldquo;types&rdquo; are the units in KOSs. Smith and Ceusters (<a href="#refS">2010</a>) presented some definitions of realism, antirealism, nominalism and conceptualism, but then declared (140&ndash;141):
+
+<blockquote>Since 2002 we have been attempting to move beyond such disputes by developing
+a methodology, which we call &lsquo;ontological realism&rsquo;, that will capture what we believe to be a kernel of practical significance in these debates by addressing the question what it
+is to which the terms used in ontologies should be seen as referring. Because ontological
+realism is a methodology, and not a doctrine, it stands in no logical relation to any of the
+metaphysical doctrines specified above.</blockquote></p>
+
+<p>This capitulated attempt to base the realist methodology in deep philosophical arguments looks like a weakness; is it perhaps a partial retreat from earlier realist claims?</p>
+
+<p>Types and universals are explained in this way. Smith and Ceusters (<a href="#refS">2010</a>, 141): 
+
+<blockquote>Types or universals &mdash; 
+we shall always use these terms synonymously in what follows &mdash; are to be understood as counterparts in reality of (some of) the general terms used in the formulation of scientific
+theories. Particulars are concrete individual entities (entities that exist in space and time
+and that exist only once); types or universals are to be understood as repeatable. This means
+that, for each given type, we can in principle discover of indefinitely many particulars that
+they are its instances.</blockquote></p>
+
+<p>It has been agued by Herre (<a href="#refH">2010</a>) that Smith and followers are wrong, that KOSs cannot
+do without concepts. He wrote (<a href="#refH">2010</a>, 303) that Smith&rsquo;s position (described in, among other
+places, <a href="#refS">Smith 2004</a>; <a href="#refS">Smith and Ceusters 2007</a>) is:
+
+<ul>
+<li>Universals have an observer-independent objective existence; they are invariants of
+reality.</li>
+<li>Bad ontologies are those whose general terms lack a relation to corresponding universals in reality, and thereby also to corresponding instances.</li>
+<li>Good ontologies are representations of reality. A good ontology must be based on
+universals instead of concepts.</li>
+</ul>
+
+<p>Herre (<a href="#refH">2010</a>, 303&ndash;304) found that the problem in Smith&rsquo;s argument is that in relation
+to condition 3, no definition for reality representation is provided and that there is no representation of reality without concepts. This is not seen as a problem for realism in general, only for what he <a href="#refH">2010</a>, 303) termed &ldquo;Smithian realism&rdquo; in contrast to his own &ldquo;integrative realism&rdquo;.</p>
+
+<p>Arp, Smith and Spear (<a href="#refA">2015</a>, 7) further wrote:
+
+<blockquote>The goal of ontology for the realist is not to describe the concepts in people&rsquo;s heads.
+Rather, ontology is an instrument of science, and the ontologist, like the scientist, is interested in terms or labels or codes&mdash;all of which are seen as linguistic entities &mdash; only insofar
+as they represent entities in reality. The goal of ontology is to describe and adequately
+represent those structures of reality that correspond to the general terms used by scientists.</blockquote></p>
+
+<p>This quote is important because KOSs should be based on knowledge developed by
+scientists and not &mdash; as assumed by cognitive theories &mdash; by psychological studies of people,
+which clearly seems a kind of idealism and opposed to realism. Still, however, we need
+to consider concepts. There are two levels involved in discussing concepts in KOSs: (1) the
+researchers doing the research are influenced by different paradigms, which make scientists&rsquo;
+use of general terms concepts, rather than passive registrations of reality; (2) at the level of
+KOS construction, the information scientists must consider the scientific literature. Again,
+this cannot be just as passive registrations of reality, selections and decisions are made. All
+this is missing in &ldquo;Smithian realism&rdquo;, but is well-captured by Leonelli (<a href="#refL">2016</a>, 32&ndash;33), who made a description for the real-life problems interpreting the scientific literature for metadata construction:
+
+<blockquote>TAIR curators wishing to collect data on a given gene (say the Unknown Flowering
+Object [UFO] gene in Arabidopsis thaliana) could not compile data from each relevant
+publication, as it would be too time consuming: even just a keyword search on PubMed
+for &ldquo;UFO Arabidopsis&rdquo; results in over fifty journal articles, only one or two of which are
+used as a reference for an annotation. Hence curators chose what they saw as the most
+up-to-date and accurate publications, which as a consequence became &ldquo;representative&rdquo;
+publications for that entity [&hellip;]. These choices are impossible to regulate through fixed and
+objective standards. Indeed, bioinformaticians have been trying to automate the process
+of extraction for years, with little success. The very reasons why the process of extraction
+requires manual curation are the reasons why it is hard to divorce it from subjective
+judgment: the choices involved are informed by a curator&rsquo;s expertise and her ability to
+bridge between the original context of data production and that of data dissemination.</blockquote></p>
+
+<p>To conclude this Section: &ldquo;Smithian realism&rdquo; represents important arguments about
+finding the warrant of KOSs in the scholarly literature rather than in the heads of people.
+Still, however, its insistence on &ldquo;universals&rdquo; and a na&iuml;ve approach to reality representation
+is problematic; we cannot do without concepts.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5.2"></a>
+<h4 itemprop="articleSection">5.2. What are concepts?</h4>
+
+<p>To understand concepts, we shall first have a look at the semiotic triangle (or &ldquo;the
+triangle of meaning&rdquo;). The version used here was produced by Ogden and Richards (<a href="#refO">1923</a>, 14) in a discussion
+of the relations between thoughts, words, and things. The triangle has, however, a long
+history (see <a href="#refS">Sowa 2000</a>, 58&ndash;59). The &ldquo;referent&rdquo; in Figure 4 is in some versions of the semiotic
+triangle called &ldquo;object&rdquo;, &ldquo;symbol&rdquo; is sometimes termed &ldquo;sign vehicle&rdquo;, and &ldquo;thought or
+reference&rdquo; may be termed &ldquo;concept&rdquo; or &ldquo;sense&rdquo;. The broken line at the base of the triangle
+indicates that there is not a direct relationship between the symbol and the referent: A
+given symbol is only related to a referent by somebody (or a system) knowing this sense of
+the symbol (e.g., the term <i>cat</i> is only understood as referring to a cat by people or systems
+with this knowledge of English). The Danish structural linguist Louis Hjelmslev (<a href="#refH">1943</a>, 81) demonstrated that a term in one language often does not correspond exactly to
+the equivalent term in another language. <i>Cat</i> may have a slightly different meaning
+in relation to the German <i>Katze</i>: Each natural language is a classification system that
+classifies the world differently. Another way to express this is that the model involves
+mediation: the object is related to the sign vehicle via the mediation of the concept/sense.
+This understanding of the mediated nature of terms is in opposition to the view presented
+above as &ldquo;Smithian realism&rdquo; and to the corresponding suggestion to use universals as
+units in KOSs. The mediated view relates to a broad range of philosophies. It is implied, for
+example, in Kant&rsquo;s philosophy, in Peirce&rsquo;s and other pragmatists&rsquo; thinking, in hermeneutics (in the hermeneutic circle), and in Thomas Kuhn&rsquo;s philosophy of science, to which we now turn.</p>
+
+<div align="center"><figure>
+<img src="ir4.jpg" title="Fig. 4: The Semiotic triangle" width="60%">
+<figcaption>Figure 4: The Semiotic triangle <a href="#ref81">[81]</a> (p. 14)</figcaption>
+</figure></div>
+
+<p>Kuhn (<a href="#refK">1962</a>) wrote about scientific revolutions, for example, how the Copernican theory
+that the Earth revolves around the Sun replaced the former theory of Ptolemy that the Sun
+revolves around the Earth. Kuhn found that in such &ldquo;paradigm shifts&rdquo;, the terms involved
+in the theories gained new meanings. Kuhn highlighted the issue of conceptual changes
+in science and has had a huge influence on the thinking about concepts and conceptual
+changes. Thagard (<a href="#refT">2003</a>, 666&ndash;667) wrote:
+
+<blockquote>[T]he acceptance of the Copernican theory that the earth revolves around the sun
+required the rejection of the Ptolemaic theory that the sun revolved around the earth.
+Replacement was not merely a matter of one theory being substituted for another, but
+also involved shifts in meaning of the concepts used in the theories. In the Copernican
+revolution, for example, the concept &ldquo;planet&rdquo; shifted to include the earth and exclude the sun and moon&rdquo;.</blockquote></p>
+
+<p>Kuhn thus exemplified changes in the meaning of terms:
+
+<blockquote>
+Paradigm one: Ptolemaic astronomers might learn the concepts "star" and "planet" by
+having the Sun, Moon, and Mars pointed out as instances of the concept "planet" and some
+fixed stars as instances of the concept "star".</p>
+
+<p>Paradigm two: Copernicans might learn the words <i>star</i>, <i>planet</i>, and <i>satellites</i> by having Mars and Jupiter pointed out as instances of the concept "planet", the Moon as an instance of the concept "satellite", and the Sun and some fixed stars as instances of the concept "star".
+</blockquote></p>
+
+<p>Thus, the terms <i>star</i> and <i>planet</i> gained a new meaning and astronomy gained a
+new classification of celestial bodies. A given KOS may organize concepts such as "star"
+and "planet" and such an organization necessarily represents a given paradigm. There is
+no way to define or organize <i>star</i> and <i>planet</i> independent of paradigm/interpretation.</p>
+
+<p>This example fits the semiotic triangle very well: there are no direct connections between a
+part of reality and the symbol used for it, the connection depends on the concepts, which
+again depends on conceptions/paradigms.</p>
+
+<p>Some readers may argue that this example is not of much relevance because today
+we know that Copernicus was right. This is established knowledge and is no longer just
+considered a theory. Therefore, contemporary science need not consider "star" and "planet" 
+as concepts based on a conception or a paradigm. We can just follow Smith and say that
+we are referring to universals or types understood as observer-independent invariants
+of reality. This is wrong, however (although typical for what Kuhn termed &ldquo;normal
+science&rdquo;). Contemporary science depends also on concepts that are based on underlying
+conceptualizations, and it is important to understand concepts as embedded in theories.
+Only one example shall be given here:</p>
+
+<p>In 1992, the first volume of the <i>Handbook of the Birds of the World</i> (<a href="#refD">Del Hoyo et al. 1997</a>) was published
+and volume 17, the most recent volume, was published in 2013. During the 21-year period
+of publishing this handbook, the classification of birds changed substantially (cf. <a href="#refF">Fjelds&aring; 2013</a>).
+There are indications that the shift in bird classification suggested by Fjelds&aring; in the last volume represents a paradigm shift in the sense of Kuhn compared to the classification
+used in the work, decided before the first volume was published.</p>
+
+<p>This shift of classification in ornithology is part of broader paradigm of developments
+in biological taxonomy during the 20th Century. However, in opposition to Kuhn&rsquo;s
+description in the physical sciences, these biological paradigms tend to exist in parallel.
+This issue, whether paradigms only exist one at a time or at the same time as competing
+programs, is a point where many philosophers disagree with Kuhn. This is also the case
+with the present author, as reflected in definition of concepts as cited in the present article.
+Among these biological paradigms are numerical taxonomy (or phenetics), which uses the
+overall likeness of organisms as a classification criterion and &rarr; <a href="genealogical">genealogical classification</a> which uses common ancestry as the basis of classification. The development of molecular
+techniques in biological taxonomy has of course also had a huge influence the development
+towards the new classification suggested by Fjelds&aring;. The question for us is: has this
+revolution in classification changed the concepts used in ornithology, e.g., in the name of
+species and families of birds? Mayr and Bock (<a href="#refM">1994</a>, 12, italics in original) provided the following example:
+
+<blockquote>When reviewing the manuscript of an excellent new ornithological text, one of us
+was startled to read the comment &lsquo;the Yellow-throated Longclaw (<i>Macronyx croceus</i>), a
+member of the pipit family (Passeridae)&rsquo;. Every ornithologist knows that the pipit family is the Motacillidae and that the Passeridae (the Old World sparrows), if recognized as a separate family, is composed of the sparrows of the genera <i>Passer</i>, <i>Petronia</i>, <i>Carpospiza</i> and <i>Montifringilla</i>. After recovering from our shock, we realized that the authors of this text
+were following the newly proposed classification by Sibley and  Ahlquist (<a href="#refS">1990</a>), in which
+the pipits and their relatives are placed as a subfamily, Motacillinae, together with the
+Passerinae, Prunellinae, Ploccinae and Estrildinae, in an expanded family Passeridae. The
+point is not whether Sibley and Ahlquist are correct in allying these taxa into a single family
+but rather a matter of case of communication among all ornithologists. Even as specialists in avian systematics, we had difficulty understanding the quoted expression and required
+several minutes to realize what the authors meant.</blockquote></p>
+
+<p>One of the characteristics of Kuhn&rsquo;s paradigms is the taxonomic incommensurability thesis that makes communication difficult between researchers working in different
+paradigms. Therefore, the quote by Mayr and Bock (<a href="#refM">1994</a>) can be taken as an indication
+that a Kuhnian paradigm shift has taken place in ornithology, and that the concepts indeed changed.
+What, then, are concepts?</p>
+
+<p>Whereas concepts are often understood as internal representations in individuals,
+Kuhn&rsquo;s theory considers their public, social nature as primary. Only secondarily concepts
+become internal representations as something individuals learn by participating in a
+culture, subculture, disciplinary tradition, or paradigm. On this basis, Hj&oslash;rland (<a href="#refH">2009</a>, 1522&ndash;1523) suggested the following definition:
+
+<blockquote>Concepts are dynamically constructed and collectively negotiated meanings that
+classify the world according to interests and theories. Concepts and their development
+cannot be understood in isolation from the interests and theories that motivated their
+construction, and, in general, we should expect competing conceptions and concepts to be
+at play in all domains at all times.</blockquote></p>
+
+<p>This definition partly provides an answer to the problem formulated in the start of
+this Section 4: are concepts units of knowledge? Kuhn&rsquo;s claim that concepts have different
+meanings in different paradigms can be considered a version of &ldquo;meaning holism&rdquo; or
+&ldquo;semantic holism&rdquo;. The concept &ldquo;information&rdquo; seems to be a clear example in library and
+information studies (LIS), where, for example, Shannon&rsquo;s information theory, the cognitive
+view, semiotic and social-oriented views seem to provide incommensurable concepts of
+&ldquo;information&rdquo;. We may still say that concepts are units of knowledge in the sense that
+any sentence expressing knowledge (or knowledge claims) are built on terms representing
+concepts. In relation to concept analysis, however, it seems necessary to consider the
+theories of which concepts form parts (e.g., one cannot answer the question &ldquo;what is
+information&rdquo; without considering the different theories and interests for which this concept is considered important).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5.3"></a>
+<h4 itemprop="articleSection">5.3. Does a KOS need to contain universals and symbolic structures in addition to concepts?</h4>
+
+<p>Herre (<a href="#refH">2010</a>, 301) wrote: 
+&ldquo;We hold that any reasonable foundational ontology must
+include these three types of categories [universals, concepts, and symbol structures]&rdquo;.
+Because ontologies are kinds of KOSs (cf. <a href="#refB">Biagetti 2020</a>), we shall here not limit the discussion to
+(foundational) ontologies but consider this problem as a general issue for all kinds of KOS.
+Herre&rsquo;s discussion is theoretically advanced, but nonetheless, there is a need to consider
+his definitions briefly. He defined these concepts as follows:
+
+<ul>
+<li>Concept (<a href="#refH">Herre 2010</a>, 301&ndash;302): &ldquo;Concepts are categories that are expressed by linguistic expressions and which are represented as meanings in someone&rsquo;s mind. Concepts are a result of common intentionality which is based on communication and society (<a href="#refS">Searle 1995</a>)&rdquo;. (<a href="#refH">Herre 2010</a>, 302, footnote 7: &ldquo;The mental representation of
+a concept allows us to understand a linguistic expression. Concepts are outside of
+individual minds, but they are anchored, on the one hand, in individual minds by
+the concepts&rsquo; mental representation, and on the other hand, in society as a result of
+communication and usage of language&rdquo;.)</li>
+
+<li>Category (<a href="#refH">Herre 2010</a>, 301): &ldquo;Categories are entities that are expressed by predicative
+terms of a formal or natural language that can be predicated of other entities. [&hellip;]
+We distinguish at least three kinds of categories: universals, concepts, and symbol
+structures. We hold that any reasonable foundational ontology must include these
+three types of categories&rdquo;.
+<br>(It is difficult to understand Herre&rsquo;s difference between categories and concepts. Both
+categories and concepts may be expressed by linguistic expressions and predicative
+terms and may be represented in somebody&rsquo;s mind. Wardy (<a href="#refW">1998</a>) wrote: &ldquo;Categories are hard to describe, and even harder to define. This is in part a consequence of their
+complicated history, and in part because category theory must grapple with vexed
+questions concerning the relation between linguistic or conceptual categories on the
+one hand, and objective reality on the other&rdquo;. Concepts and categories are often
+defined in ways that make them synonyms, but categories may also, and probably
+better, be used about the highest kinds or genera, such as Aristotle&rsquo;s 10 categories:
+substance, quantity, quality, relation, place, date, posture, state, action, and passion.
+This way of understanding categories has its own philosophical history (see, e.g., <a href="#refT">Thomasson 2019</a>).
+For more detail about the relation to Ranganathan&rsquo;s categories in KO, see <a href="#refM">Moss 1964</a>.</li>
+
+<li>Symbol/symbol structure (<a href="#refH">Herre 2010</a>, 302): &ldquo;Symbols are signs or texts that can be instantiated by tokens. There is a close relation between these three kinds of categories: a universal is captured by a concept which is individually grasped by a mental representation, and the concept and its representation is denoted by a symbol structure being
+an expression of a language. Texts and symbolic structures may be communicated by
+their instances that a[re] physical tokens&rdquo;. Further (<a href="#refH">2010</a>, 304): &ldquo;One must distinguish between symbols and tokens. Only tokens, being physical instances of symbols, can
+be perceived and transmitted through space and time&rdquo;.<br>
+Furner <a href="#refF">2016</a>, 120): &ldquo;Tokens are said to instantiate types: they exemplify, embody,
+manifest, fall under, belong to types; they&rsquo;re occurrences, instances, members of
+types. Tokens are treated as individuals, singles, particulars, substances, objects;
+they&rsquo;re concrete, real, material. Types, on the other hand, are like sorts, kinds, forms,
+properties, classes, sets, universals; they&rsquo;re said to be abstract, ideal, immaterial.&rdquo;</li>
+
+<li>Universal (<a href="#refH">Herre 2010</a>, 301): &ldquo;Universals are constituents of the real world, they are associated to invariants of the spatio-temporal real world, they are something abstract that is in the things&rdquo;.</li>
+</ul>
+
+<p>A few objections to Herre&rsquo;s definitions are:
+
+<ol>
+<li>It seems unnecessary to define categories and concepts as entities that are expressed
+by terms or linguistic expression. We might conversely say that concepts may be
+expressed by words, and that concepts that have a linguistic or symbolic expression
+are lexicalized. Fellbaum (<a href="#refF">2010</a>, 237) wrote that WordNet introduced the non-lexicalized
+concept &ldquo;wheeled vehicle&rdquo;: &ldquo;The argument is that people distinguish between the
+category of wheeled vehicles and vehicles moving on runners independently of
+whether this distinction is lexically encoded in their language&rdquo;.</li>
+
+<li>As already presented in <a href="#4.1">Section 4.1</a>, there is a discussion in the ontological literature
+between a realistic position that rejects concepts as units for KOSs and another realist
+position (like Herre and the present author), which defends concepts as units in
+KOSs. Herre&rsquo;s statement that concepts are &ldquo;represented as meanings in someone&rsquo;s
+mind&rdquo; may, however, make it more difficult to see his position as representing realism
+(although his argument is partly saved by his addition that concepts are a result of a
+common intentionality, that they are social). We shall return to this problem about
+realism in <a href="#5.4">Section 5.4</a>.</li>
+
+<li>Herre finds that ontologies/KOSs must include universals, but his position on this
+point seems not to be crystal clear. On the one hand, he writes (<a href="#refH">2010</a>, 305): 
+
+&ldquo;In sum,
+the nodes in an ontology are labeled by terms that denote concepts. Some of these
+concepts, notably natural concepts, are related to invariants of material reality&rdquo;. This
+is in line with the semiotic triangle and in accordance with the view expressed by
+the present author. However, he (<a href="#refH">2010</a>, 326&ndash;327) also speaks of facts, defined as
+&ldquo;The simplest combinations of relators and relata&rdquo;. Perhaps Herre&rsquo;s view is opposed
+to that of Caputo (<a href="#refC">2018</a>, 4): &ldquo;In hermeneutics, we defend the idea that there are no pure facts. Behind every interpretation lies another interpretation. We never reach an
+understanding of anything that is not an interpretation&rdquo;. If we follow this view, it
+seems that universals are not elements in ontologies since we can only know them as
+interpretations and concepts. This is further discussed in <a href="#5.4">Section 5.4</a>.</li>
+</ol>
+
+<p>Words, terms, symbols, and symbolic structures are often used in KOSs to represent
+concepts. In addition, KOSs may contain other words that do not refer to concepts but
+just to other words. A KOS can be a pure conceptual structure (e.g., classifying animals
+as in Figure 2) and the relation between concepts are semantic relations. However, very
+often, a KOS is also constructed as a controlled vocabulary, which includes synonyms for
+each concept. The concept "city" may be represented by, for example, the terms <i>city</i> and
+<i>metropolis</i>. In thesauri, synonyms are displayed as &ldquo;lead in terms&rdquo; to the &ldquo;preferred
+terms&rdquo;. We may distinguish between the pure conceptual or semantic structure itself
+(e.g., the kinds of animals and their relations) and the lexical (or lexical semantic relations)
+between terms, e.g., which terms are considered synonyms. The distinction made here
+between semantic relations and lexical relation is not common in the linguistic literature,
+which seems to be unclear on this point. This distinction represents, however, a tradition in
+knowledge organization. Soergel (<a href="#refS">1998</a>, 2&ndash;3), for example, wrote &ldquo;WordNet makes the commonly
+accepted distinction between conceptual-semantic relations, which link concepts, and
+lexical relations, which link individual words&rdquo;. And: &ldquo;Synonymy is, of course, a lexical relation, and terminology relations are relations between words or between words and
+concepts, but not relations between concepts&rdquo;.</p>
+
+<p>In this context, it should be emphasized that synonymity is not an intrinsic quality of words but is the characteristics that two or more signs are considered replaceable/interchangeable by somebody, in a given context. An example: The Thesaurus of Psychological Index Terms (visited 8 February 2021) lists <code>burnout</code> as a lead-in term for <code>occupational stress</code>, i.e., it treats the two terms as synonyms. Should they be considered
+synonyms? How should we decide this question? By considering these two terms as
+synonyms, the thesaurus makes it impossible to discriminate them (of course, one may
+search titles or other free text options, but then the thesaurus makes itself superfluous).
+The literature about these subjects is very large in 2019 alone, 426 titles in the PsycINFO
+database contained the word &ldquo;burnout&rdquo;, while only 24 documents used the term &ldquo;occupational stress&rdquo; in the title, a total of 981 documents were found using this term in &ldquo;all
+text&rdquo; and the union set of the two terms in &ldquo;all text&rdquo; was 23,679 documents in 2019 alone.
+Whether or not these two terms should be considered synonyms depends on whether two
+distinct literatures may be distinguished so that searchers would find such a distinction
+useful when exploring this enormous literature. This example shows what is meant by
+saying that homonymy is not an inherent quality but a human choice, the usefulness of
+which may depend on the size and characteristics of the literature represented in a given
+database and thus is relative. Two words are not synonyms but may be considered synonyms, although synonyms
+often are published in special dictionaries and seemingly appear to be independent of contexts.</p>
+
+<p>The conclusion concerning words or symbolic structures is that they often are parts of
+KOSs, but not necessarily. We have also claimed that universals (as defined by Herre) cannot
+form part of KOSs, as there is no way to include the corresponding universals as something
+in addition to concepts. This will be explored in more detail in the following Section.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5.4"></a>
+<h4 itemprop="articleSection">5.4. Pragmatic realism</h4>
+
+<p>So far, we have encountered two different kinds of realism: &ldquo;Smithian realism&rdquo; and
+Herre&rsquo;s &ldquo;integrative realism&rdquo; and we saw that &ldquo;Smithian realism&rdquo; was an attempt to avoid
+forms of psychologism and idealism. Herre refers to Searle (<a href="#refS">1995</a>) and his claim of realism being based on the construct &ldquo;common intentionality&rdquo; which is a result of communication
+and society. However, as Kuhn (<a href="#refK">1962</a>)  demonstrated, it is not enough that a given group of people connects the same meaning to something (e.g., define the term &ldquo;planet&rdquo; in the same way) because after a paradigm shift, the term is defined in a new way, and the former view is now understood as subjective. As we cannot exclude the possibility of yet another paradigm shift, we cannot guarantee that the new understanding is realist, as opposed to a collective subjectivism. Therefore, universals cannot be represented, only concepts (and symbols).</p>
+
+<p>How can this view be called &ldquo;realism&rdquo; or &ldquo;materialism&rdquo; as opposed to &ldquo;subjectivism&rdquo;
+and &ldquo;idealism&rdquo;? It is certainly not a claim that there exist specific scientific methods that can
+guarantee objective representations in KOSs (if this was the case, we should have defended
+universals rather that concepts as the units). Pragmatic realism is the view that paradigms
+overall develop toward better representations of reality, that science makes progress (a view
+conflicting with Kuhn&rsquo;s) and that good science is more than observation and logic: it is also
+about values and social interests. Research reflects reality and social interests at the same
+time, as argued, for example, by Barnes et al. (<a href="#refB">1996</a>), and the better this is considered, the more realist
+research can be. The realism of science is not given by a well-defined methodology, but
+by self-correcting mechanisms and by the role of pragmatic factors in theory-acceptance.
+While Kuhn (<a href="#ref101">1970</a>, 263) emphasizes how our ontologies are implied by our theories and
+paradigms, he nevertheless emphasizes that we cannot freely invent arbitrary structures:
+&ldquo;Though different solutions have been received as valid at different times, nature cannot be
+forced into an arbitrary set of conceptual boxes. On the contrary [&hellip;] the history of the
+developed sciences shows that nature will not indefinitely be confined in any set which
+scientists have constructed so far&rdquo;. The world provides resistance to our conceptualizations
+in the form of anomalies, that is, situations in which it becomes clear that something is
+wrong with the structures given to the world by our concepts. In this way, Kuhn&rsquo;s view
+may be interpreted as (pragmatic) realist.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="6"></a>
+<h3 itemprop="articleSection">6. Conclusions</h3>
+
+<p>When people seek documents, information, or knowledge to answer or clarify questions, they should be given the knowledge that corresponds to our best scientific or scholarly
+theories and findings. Processes and systems for providing such knowledge developed
+in IR and KO should provide &ldquo;relevant&rdquo; documents to users. There has, however been a
+problematic tendency in information science to understand &ldquo;relevance&rdquo; as either based
+in user studies and cognitive science (in &ldquo;the cognitive paradigm&rdquo;) or in technological
+issues (in &ldquo;the systems view&rdquo;). The neglected third position is to base relevance in subject
+knowledge and, ultimately, in the philosophy of science (cf. <a href="#refH">Hj&oslash;rland 2010</a>).</p>
+
+<p>Because Kuhn (<a href="#refK">1962</a>) refused the positivist idea of &ldquo;incrementalism&rdquo; (that there is a
+continuous accumulation of an ever-increasing stock of truths), the identification of the
+most qualified and relevant documents is difficult. The literature (or &ldquo;the universe of
+recorded knowledge&rdquo;) in which we perform IR cannot just be considered bits of true
+knowledge in which each bit is as good as any other. On the contrary, the literature
+must be understood as a mixture of different voices, some of which conflict with each
+other. The relevance of a given search set of documents (or a given relevance ranking of
+documents) is therefore a hypothesis, the answer to which concerns the conflict between
+different paradigms in the subject area. This is step deeper than the problem raised by
+Swanson (<a href="#refS">1986</a>) that any search function forever must remain a conjecture, because it makes
+the adequacy of search functions &mdash; and thereby search engines and knowledge organization
+systems &mdash; depending on paradigms in the subject area.</p>
+
+<p>Based on this insight, Hj&oslash;rland (<a href="#refH">2017</a>; this conclusion is only in the online version 1.4) suggested that the domain analytic approach to classification and KO can be summarized in this way:
+
+<ul>
+<li>Go to a given domain,</li>
+<li>Look at how it is classified according to contemporary knowledge (including different
+views),</li>
+<li>Discuss the basis, the epistemological assumptions and which interests are served by
+proposed classifications,</li>
+<li>Suggest a motivated classification.</li>
+</ul>
+
+<p>Research in ontologies as KOSs is today the field, in which subject specialists and
+philosophers are working together with computer and information scientists. As has been
+demonstrated in the present article, conflicting philosophies are also at play in this domain, and we have demonstrated the need of an approach related to Kuhn&rsquo;s theory of paradigms
+in addition to pragmatic and critical theories acknowledging the role of goals, interests,
+and consequences in knowledge.</p>
+
+<p>The article has thus provided the arguments and conceptualizations put forward in
+the introduction for rethinking IR and KO to provide documents and knowledge that are
+in accordance with our best substantiated knowledge claims.</p>
+
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="ack"></a>
+<h3>Acknowledgments</h3>
+
+<p>The author thanks the three anonymous reviewers of the original journal for fine reviews, two of which increased the quality of the article. The journal uses "open reviews", they are published at <a class="menu" href="https://www.mdpi.com/2078-2489/12/3/135/review_report">https://www.mdpi.com/2078-2489/12/3/135/review_report</a>. <a class="menu" href="authors#g">Claudio Gnoli</a> was guest editor of the original special issue.</p> 
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="ref"></a>
+<h3>References</h3>
+
+<span itemprop="citation">
+
+<!-- Citations according to MDPI system
+
+<a name="ref1"></a>
+<p>1. Anderson, J.D.; P&eacute;rez-Carballo, J. <i>Information Retrieval Design: Principles and Options for Information Description, Organization, Display and
+Access in Information Retrieval Databases, Digital Libraries, Catalogs, and Indexes</i>; Ometeca Institute: St. Petersburg, FL, USA, 2005.</p>
+
+<a name="ref2"></a>
+<p>2. Salaba, A. Knowledge Organization Requirements in LIS Graduate Programs. In <i>Knowledge Organization at the Interface</i>. 2020, 384&ndash;393. </p>
+
+<a name="ref3"></a>
+<p>3. Salton, G. Letter to the Editor. A New Horizon for Information Science? <i>J. Am. J. Inf. Sci.</i> 1996, 47, 333. </p>
+
+<a name="ref4"></a>
+<p>4. Hj&oslash;rland, B. Is classification necessary after Google? <i>J. Doc.</i> 2012, 68, 299&ndash;317. </p>
+
+<a name="ref5"></a>
+<p>5. Bliss, H.E. <i>The Organization of Knowledge in Libraries and the Subject Approach to Books</i>; Henry Holt: New York, NY, USA, 1933.</p>
+
+<a name="ref6"></a>
+<p>6. Richards, R.A. <i>Biological Classification: A Philosophical Introduction</i>; Cambridge University Press: Cambridge, UK, 2016.</p>
+
+<a name="ref7"></a>
+<p>7. Leydesdorff, L. Can scientific journals be classified in terms of aggregated journal-journal citation relations using the Journal
+Citation Reports? <i>J. Am. Soc. Inf. Sci. Technol.</i> 2006, 57, 601&ndash;613. </p>
+
+<a name="ref8"></a>
+<p>8. Hj&oslash;rland, B. Political Versus Apolitical Epistemologies in Knowledge Organization. <i>Knowl. Organ.</i> 2020, 47, 461&ndash;485. </p>
+
+<a name="ref9"></a>
+<p>9. Hj&oslash;rland, B. User-based and Cognitive Approaches to Knowledge Organization: A Theoretical Analysis of the Research Literature.
+KO <i>Knowl. Organ.</i> 2013, 40, 11&ndash;27. </p>
+
+<a name="ref10"></a>
+<p>10. Rafferty, P. Tagging. <i>Knowl. Organ.</i> 2018, 45, 500&ndash;516. </p>
+
+<a name="ref11"></a>
+<p>11. Hj&oslash;rland, B. The foundation of the concept of relevance. <i>J. Am. Soc. Inf. Sci. Technol.</i> 2010, 61, 217&ndash;237. </p>
+
+<a name="ref12"></a>
+<p>12. Hj&oslash;rland, B. Domain Analysis. <i>Knowl. Organ.</i> 2017, 44, 436&ndash;464. </p>
+
+<a name="ref13"></a>
+<p>13. Warner, J. <i>Human Information Retrieval</i>; The MIT Press: Cambridge, MA, USA, 2010.</p>
+
+<a name="ref14"></a>
+<p>14. Hj&oslash;rland, B. Classical Databases and Knowledge Organization: A Case for Boolean Retrieval and Human Decision-making
+During Searches. <i>J. Assoc. Inf. Sci. Technol.</i> 2015, 66, 1559&ndash;1575. </p>
+
+<a name="ref15"></a>
+<p>15. Plato. 380 B.C.E. <i>Meno.</i> Translated by Benjamin Jowett. Available online: <a class="menu" href="https://www.gutenberg.org/files/1643/1643-h/1643
+-h.htm#link2H_4_0003">https://www.gutenberg.org/files/1643/1643-h/1643
+-h.htm#link2H_4_0003</a> (accessed on 17 March 2021).</p>
+
+<a name="ref16"></a>
+<p>16. Swanson, D.R. Undiscovered Public Knowledge. <i>Libr. Q.</i> 1986, 56, 103&ndash;118. </p>
+
+<a name="ref17"></a>
+<p>17. Hj&oslash;rland, B. Citation analysis: A social and dynamic approach to knowledge organization. <i>Inf. Process. Manag.</i> 2013, 49,
+1313&ndash;1325. </p>
+
+<a name="ref18"></a>
+<p>18. Ara&uacute;jo, P.C.D.; Castanha, R.C.G.; Hj&oslash;rland, B. Citation Indexing and Indexes. <i>Knowl. Organ.</i> 2021, 48, 58&ndash;87.</p>
+
+<a name="ref19"></a>
+<p>19. Hj&oslash;rland, B.; Nielsen, L.K. Subject Access Points in Electronic Retrieval. <i>Annu. Rev. Inf. Sci. Technol.</i> 2001, 35, 249&ndash;298.</p>
+
+<a name="ref20"></a>
+<p>20. Turtle, H.R.; Croft, W.B. A Comparison of Text Retrieval Models. <i>Comput. J.</i> 1992, 35, 279&ndash;290. </p>
+
+<a name="ref21"></a>
+<p>21. Fiorini, N.; Canese, K.; Starchenko, G.; Kireev, E.; Kim, W.; Miller, V.; Osipov, M.; Kholodov, M.; Ismagilov, R.; Mohan, S.; et al.
+Best Match: New relevance search for PubMed. <i>PLoS Biol.</i> 2018, 16, e2005343. </p>
+
+<a name="ref22"></a>
+<p>22. Sampson, M.; Nama, N.; O&rsquo;Hearn, K.; Murto, K.; Nasr, A.; Katz, S.L.; Macartney, G.; Momoli, F.; McNally, J.D. Creating enriched
+training sets of eligible studies for large systematic reviews: The utility of PubMed&rsquo;s Best Match algorithm. <i>Int. J. Technol. Assess.
+Health Care</i> 2021, 37, 1&ndash;6. </p>
+
+<a name="ref23"></a>
+<p>23. Harter, S.P. <i>Online Information Retrieval: Concepts, Principles, and Techniques</i>; Academic Press: New York, NY, USA, 1986.</p>
+
+<a name="ref24"></a>
+<p>24. Frei, H.-P.; Qiu, Y. Effectiveness of Weighted Searching in an Operational IR Environment. In <i>Information Retrieval &rsquo;93, von der
+Modellierung zur Anwendung; Proceedings der 1. Tagung Information Retrieval &rsquo;93</i>; Universit&auml;t Verlag Konstanz: Konstanz, Germany,
+1993; pp. 41&ndash;54. Available online: <a class="menu" href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.56.7021&amp;rep=rep1&amp;type=pdf">http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.56.7021&amp;rep=rep1&amp;type=pdf</a>
+(accessed on 17 March 2021).</p>
+
+<a name="ref25"></a>
+<p>25. Baeza-Yates, R.; Ribeiro-Neto, B. <i>Modern Information Retrieval: The Concepts and Technology behind Search</i>, 2nd ed.; Addison Wesley:
+New York, NY, USA, 2011.</p>
+
+<a name="ref26"></a>
+<p>26. Manning, C.D.; Raghavan, P.; Sch&uuml;tze, H. An Introduction to Information Retrieval; Cambridge University Press: Cambridge, UK,
+2009. Available online: <a class="menu" href="http://nlp.stanford.edu/IR-book/pdf/irbookonlinereading.pdf">http://nlp.stanford.edu/IR-book/pdf/irbookonlinereading.pdf</a> (accessed on 17 March 2021).</p>
+
+<a name="ref27"></a>
+<p>27. Roelleke, T. Information Retrieval Models: Foundations and Relationships. <i>Synth. Lect. Inf. Concepts Retr. Serv.</i> 2013, 5, 1&ndash;163.
+</p>
+
+<a name="ref28"></a>
+<p>28. Salton, G.; Wong, A.; Yang, C.-S. A vector space model for automatic indexing. <i>Commun. ACM</i> 1975, 18, 613&ndash;620. </p>
+
+<a name="ref29"></a>
+<p>29. Robertson, S.E.; Jones, K.S. Relevance weighting of search terms. <i>J. Am. Soc. Inf. Sci. 1976</i>, 27, 129&ndash;146. 
+Information 2021, 12, 135 23 of 25</p>
+
+<a name="ref30"></a>
+<p>30. Robertson, S.E. The State of Information Retrieval. ISKO-UK. 2008. Available online: <a class="menu" href="https://web.archive.org/web/2019051212
+3726/http://event-archive.iskouk.org/sites/default/files/robertson.pdf">https://web.archive.org/web/2019051212
+3726/http://event-archive.iskouk.org/sites/default/files/robertson.pdf</a> (accessed on 17 March 2021).</p>
+
+<a name="ref31"></a>
+<p>31. Hj&oslash;rland, B. Epistemology and the socio-cognitive perspective in information science. <i>J. Am. Soc. Inf. Sci. Technol.</i> 2002, 53,
+257&ndash;270. </p>
+
+<a name="ref32"></a>
+<p>32. Hj&oslash;rland, B. Subject (of Documents). <i>Knowl. Organ.</i> 2017, 44, 55&ndash;64. </p>
+
+<a name="ref33"></a>
+<p>33. Paris, L.A.H.; Tibbo, H.R. Freestyle vs. Boolean: A Comparison of Partial and Exact Match Retrieval Systems. <i>Inf. Process. Manag.</i>
+1998, 34, 175&ndash;190. </p>
+
+<a name="ref34"></a>
+<p>34. Robertson, S.E.; Thompson, C.L. Weighted Searching: The CIRT Experiment. In <i>Lnformatics 10: Prospects for Intelligent Retrieval,
+Proceedings of the Conference Jointly Sponsored by Aslib, the Aslib Informatics Group and the Information Retrieval Specialist Group of the
+British Computer Society, King&rsquo;s College, Cambridge, UK, 21&ndash;23 March 1989</i>; Karen, S.J., Ed.; Aslib: London, UK, 1990; pp. 153&ndash;165.</p>
+
+<a name="ref35"></a>
+<p>35. Belkin, N.J.; Croft, W.C. Retrieval Techniques. <i>Annu. Rev. Inf. Sci. Technol.</i> 1987, 22, 109&ndash;145.</p>
+
+<a name="ref36"></a>
+<p>36. Robertson, S.E. Salton Award Lecture on theoretical argument in information retrieval. <i>ACM Sigir Forum</i> 2000, 34, 1&ndash;10. </p>
+
+<a name="ref37"></a>
+<p>37. Dragusin, R.; Petcu, P.; Lioma, C.; Larsen, B.; J&oslash;rgensen, H.L.; Cox, I.J.; Hansen, L.K.; 
+Ingwersen, P.; Winther, O. FindZebra: A
+search engine for rare diseases. <i>Int. J. Med Inform.</i> 2013, 82, 528&ndash;538. </p>
+
+<a name="ref38"></a>
+<p>38. Dragusin, R.; Petcu, P.; Lioma, C.; Larsen, B.; J&oslash;rgensen, H.L.; Cox, I.J.; Hansen, L.K.; Ingwersen, P.; Winther, O. Specialized tools
+are needed when searching the web for rare disease diagnoses. <i>Rare Dis.</i> (Austin) 2013, 1, e25001. </p>
+
+<a name="ref39"></a>
+<p>39. Acharya, A.; Verstak, A.; Suzuki, H.; Henderson, S.; Iakhiaev, M.; Lin, C.C.Y.; Shetty, N. Rise of the Rest: The Growing Impact of
+Non-Elite Journals. <i>arXiv</i> 2014. Available online: <a class="menu" href="http://arxiv.org/pdf/1410.2217v1.pdf">http://arxiv.org/pdf/1410.2217v1.pdf</a> (accessed on 17 March 2021).</p>
+
+<a name="ref40"></a>
+<p>40. Picard, C.-F.; Durocher, S.; Gendron, Y. Desingularization and Dequalification: A Foray Into Ranking Production and Utilization
+Processes. <i>Eur. Acc. Rev.</i> 2019, 28, 737&ndash;765. </p>
+
+<a name="ref41"></a>
+<p>41. Hj&oslash;rland, B. Evidence-based practice: An analysis based on the philosophy of science. <i>J. Am. Soc. Inf. Sci. Technol.</i> 2011, 62,
+1301&ndash;1310. </p>
+
+<a name="ref42"></a>
+<p>42. Lardera, M.; Hj&oslash;rland, B. Keyword. In <i>ISKO Encyclopedia of Knowledge Organization</i>; Hj&oslash;rland, B., Gnoli, C., Eds.; International
+Society for Knowledge Organization (ISKO): Toronto, ON, Canada, 2020. Available online: <a class="menu" href="keyword">https://www.isko.org/cyclo/keyword</a> (accessed on 17 March 2021).</p>
+
+<a name="ref43"></a>
+<p>43. Mazzocchi, F. Knowledge organization system (KOS). <i>Knowl. Organ.</i> 2018, 45, 54&ndash;78. </p>
+
+<a name="ref44"></a>
+<p>44. Olensky, M. Semantic Interoperability in Europeana: An Examination of CIDOC CRM in Digital Cultural Heritage Documentation.
+<i>Bull. IEEE Tech. Comm. Digit. Libr.</i> 2010, 6. Available online: <a class="menu" href="https://web.archive.org/web/20130620181231/https://www.ieeetcdl.org/Bulletin/v6n2/Olensky/olensky.html">https://web.archive.org/web/20130620181231/https://www.ieeetcdl.org/Bulletin/v6n2/Olensky/olensky.html</a> (accessed on 17 March 2021).</p>
+
+<a name="ref45"></a>
+<p>45. Blake, J. Some Issues in the Classification of Zoology. <i>Knowl. Organ.</i> 2011, 38, 463&ndash;472.</p>
+
+<a name="ref46"></a>
+<p>46. ISO 25964-1: 2011 (E). <i>Information and Documentation: Thesauri and Interoperability with Other Vocabularies. Part 1: Thesauri for
+Information Retrieval</i>; International Organization for Standardization: Geneva, Switzerland, 2011.</p>
+
+<a name="ref47"></a>
+<p>47. UNESCO Thesaurus. Available online: <a class="menu" href="http://vocabularies.unesco.org/browser/thesaurus/en/">http://vocabularies.unesco.org/browser/thesaurus/en/</a> (accessed on 17 March 2021).</p>
+
+<a name="ref48"></a>
+<p>48. W&auml;chter, T.; Alexopoulou, D.; Dietze, H.; Hakenberg, J.; Schroeder, M. Searching Biomedical Literature with Anatomy Ontologies.
+<i>Anatomy Ontologies for Bioinformatics</i>; Springer: London, UK, 2008; Volume 6, pp. 177&ndash;194.</p>
+
+<a name="ref49"></a>
+<p>49. <i>The Foundational Model of Anatomy ontology (FMA)</i>. Available online: <a class="menu" href="http://sig.biostr.washington.edu/projects/fm/
+AboutFM.html">http://sig.biostr.washington.edu/projects/fm/
+AboutFM.html</a> (accessed on 17 March 2021).</p>
+
+<a name="ref50"></a>
+<p>50. Aitchison, J.; Gilchrist, A.; Bawden, D. <i>Thesaurus Construction and Use: A Practical Manual</i>, 4th ed.; Aslib: London, UK, 2000.</p>
+
+<a name="ref51"></a>
+<p>51. Svenonius, E. Definitional Approaches in the Design of Classification and Thesauri and Their Implications for Retrieval and
+Automatic Classification. In <i>Knowledge Organization for Information Retrieval</i>; McIlwaine, I.C., Ed.; International Federation for
+Information and Documentation: The Hague, The Netherlands, 1997; pp. 12&ndash;16.</p>
+
+<a name="ref52"></a>
+<p>52. Hudon, M. Preparing Terminological Definitions for Indexing and Retrieval Thesauri: A Model. <i>Adv. Knowl. Organ.</i> 1996, 5,
+363&ndash;369.</p>
+
+<a name="ref53"></a>
+<p>53. Gruber, T.R. A Translation Approach to Portable Ontology Specifications. <i>Knowl. Acquis.</i> 1993, 5, 199&ndash;220. </p>
+
+<a name="ref54"></a>
+<p>54. Genesereth, M.R.; Nilsson, N.J. <i>Logical Foundations of Artificial Intelligence</i>; Morgan Kaufmann: Los Altos, CA, USA, 1987.</p>
+
+<a name="ref55"></a>
+<p>55. Colomb, R.M. <i>Ontology and the Semantic Web</i>; IOS Press: Amsterdam, The Netherlands, 2007.</p>
+
+<a name="ref56"></a>
+<p>56. Soergel, D.; Lauser, B.; Liang, A.; Fisseha, F.; Keizer, J.; Katz, S. Reengineering Thesauri for New Application: The AGROVOC
+Example. <i>J. Digit. Inf.</i> 2004, 4. Available online: <a class="menu" href="https://journals.tdl.org/jodi/index.php/jodi/article/view/112/111">https://journals.tdl.org/jodi/index.php/jodi/article/view/112/111</a> (accessed on 17 March 2021).</p>
+
+<a name="ref57"></a>
+<p>57. Ali, N.M.; Khan, H.A.; Amy, Y.; Then, H.; Ching, C.V.; Gaur, M.; Dhillon, S.K. Fish Ontology framework for taxonomy-based fish
+recognition. <i>PeerJ</i> 2017, 5, e3811.  [PubMed]</p>
+
+<a name="ref58"></a>
+<p>58. Rosse, C.; Mejino, J.L.V. The Foundational Model of Anatomy Ontology. In <i>Anatomy Ontologies for Bioinformatics: Principles and
+Practice</i>; Albert, B., Duncan, D., Richard, B., Eds.; Springer: London, UK, 2008; pp. 59&ndash;117.</p>
+
+<a name="ref59"></a>
+<p>59. Smith, B.; Ceusters, W.; Klagges, B.; K&ouml;hler, J.; Kumar, A.; Lomax, J.; Mungall, C.; Neuhaus, F.; Rector, A.L.; Rosse, C. Relations in
+biomedical ontologies. <i>Genome Biol.</i> 2005, 6, R46.  [PubMed]</p>
+
+<a name="ref60"></a>
+<p>60. Blunauer, A.; Pellegrini, T. <i>Semantic Web und Semantische Technologien: Zentrale Begriffe und Unterscheidungen</i>. In Tassilo
+Pellegrini and Andreas Blumauer; Springer: Berlin, Germany, 2006; pp. 9&ndash;25.</p>
+
+<a name="ref61"></a>
+<p>61. Obrst, L. Ontological Architectures. <i>Theory and Applications of Ontology: Computer Applications</i>; Springer: Dordrecht, The Netherlands,
+2010; pp. 27&ndash;66. Information 2021, 12, 135 24 of 25</p>
+
+<a name="ref62"></a>
+<p>62. Garshol, L.M. Metadata? Thesauri? Taxonomies? Topic Maps! Making Sense of It All. <i>J. Inform. Sci.</i> 2004, 30, 378&ndash;391. </p>
+
+<a name="ref63"></a>
+<p>63. Aitchison, J. A Classification as a Source for a Thesaurus: The Bibliographic Classification of H. E. Bliss as a source of Thesaurus
+Terms and Structure. <i>J. Doc.</i> 1986, 42, 160&ndash;181. </p>
+
+<a name="ref64"></a>
+<p>64. Temmerman, R. Questioning the univocity ideal. The difference between socio-cognitive Terminology and traditional Terminology.
+<i>Hermes J. Lang. Commun. Bus.</i> 1997, 18, 51&ndash;90. Available online: <a class="menu" href="https://tidsskrift.dk/her/article/view/25412/22333">https://tidsskrift.dk/her/article/view/25412/22333</a> (accessed
+on 17 March 2021). </p>
+
+<a name="ref65"></a>
+<p>65. Van Deemter, K. <i>Not Exactly: In Praise of Vagueness</i>; Oxford University Press: Oxford, UK, 2010.</p>
+
+<a name="ref66"></a>
+<p>66. Svenonius, E. The Epistemological Foundations of Knowledge Representations. <i>Libr. Trends</i> 2004, 52, 571&ndash;587.</p>s
+
+<a name="ref67"></a>
+<p>67. Hj&oslash;rland, B. Are Relations in Thesauri &lsquo;Context-Free, Definitional, and True in all Possible Worlds&rsquo;? <i>J. Assoc. Inf. Sci. Technol.</i> 2015,
+66, 1367&ndash;1373. </p>
+
+<a name="ref68"></a>
+<p>68. Fidel, R. Searchers&rsquo; Selection of Search Keys: II. Controlled Vocabulary or Free-Text Searching. <i>J Am Soc Inform Sci.</i> 1991, 42,
+501&ndash;514. </p>
+
+<a name="ref69"></a>
+<p>69. Dahlberg, I. Brief Communication: Concepts and Terms&mdash;ISKO&rsquo;s Major Challenge. <i>Knowl. Organ.</i> 2009, 36, 169&ndash;177. </p>
+
+<a name="ref70"></a>
+<p>70. Hj&oslash;rland, B. Fundamentals of Knowledge Organization. <i>Knowl. Organ.</i> 2003, 30, 87&ndash;111.</p>
+
+<a name="ref71"></a>
+<p>71. Sowa, J.F. <i>Conceptual Structures: Information Processing in Mind and Machine</i>; Addison-Wesley: 
+Reading, MA, USA, 1984.</p>
+
+<a name="ref72"></a>
+<p>72. Patel, A.; Jain, S.; Shandilya, S.K. Data of Semantic Web as Unit of Knowledge. <i>J. Web Eng.</i> 2019, 17, 647&ndash;674. </p>
+
+<a name="ref73"></a>
+<p>73. Machado, L.; Sim&otilde;es, G.; Gnoli, C.; Souza, R. Can an Ontologically-Oriented KO Do Without Concepts? <i>Knowledge Organization at the Interface</i>.
+2020, 17, 502&ndash;506. </p>
+
+<a name="ref74"></a>
+<p>74. Herre, H. General Formal Ontology (GFO): A Foundational Ontology for Conceptual Modelling. In <i>Theory and Applications of
+Ontology: Computer Applications</i>; Poli, R., Michael, H., Kameas, A., Eds.; Springer: Dordrecht, The Netherlands, 2010; pp.
+297&ndash;345. </p>
+
+<a name="ref75"></a>
+<p>75. Smith, B. Beyond Concepts: Ontology as Reality Representation. In <i>Proceedings of the FOIS 2004. International Conference on
+Formal Ontology and Information Systems, Turin, Italy, 4&ndash;6 November 2004</i>; Achille, C.V., Laure, V., Eds.; IOS Press: Amsterdam, The
+Netherlands, 2004. Available online: <a class="menu" href="https://www.researchgate.net/publication/244107491_Beyond_Concepts_Ontology_as_
+Reality_Representation">https://www.researchgate.net/publication/244107491_Beyond_Concepts_Ontology_as_
+Reality_Representation</a> (accessed on 7 February 2021).</p>
+
+<a name="ref76"></a>
+<p>76. Smith, B.; Ceusters, W. Ontology as the Core Discipline of Biomedical Informatics. In <i>Computing, Philosophy, and Cognitive Science:
+The Nexus and the Liminal</i>; Susan, A.J.S., Gordana, D.C., Eds.; Cambridge Scholars Press: Newcastle, UK, 2007; pp. 104&ndash;122.</p>
+
+<a name="ref77"></a>
+<p>77. Arp, R.; Smith, B.; Spear, A.D. <i>Building Ontologies with Basic Formal Ontology</i>; The MIT Press: Cambridge, MA, USA, 2015.</p>
+
+<a name="ref78"></a>
+<p>78. Leclercq, H. Europe: Term for Many Concepts. <i>Int. Classif.</i> 1978, 5, 156&ndash;162. </p>
+
+<a name="ref79"></a>
+<p>79. Smith, B.; Ceusters, W. Ontological realism: A methodology for coordinated evolution of scientific ontologies. <i>Appl. Ontol.</i> 2010,
+5, 139&ndash;188. </p>
+
+<a name="ref80"></a>
+<p>80. Leonelli, S. <i>Data-Centric Biology: A Philosophical Study</i>; University of Chicago Press: Chicago, IL, USA, 2016.</p>
+
+<a name="ref81"></a>
+<p>81. Ogden, C.K.; Richards, I.A. <i>The Meaning of Meaning: A Study of the Influence of Language Upon Thought and of the Science of Symbolism</i>;
+Routledge &amp; Kegan Paul: London, UK, 1923.</p>
+
+<a name="ref82"></a>
+<p>82. Sowa, J.F. Ontology, Metadata, and Semiotics. In <i>Lecture Notes in Computer Science</i>; Springer: Berlin, Germany, 2000; Volume 1867,
+pp. 55&ndash;81.</p>
+
+<a name="ref83"></a>
+<p>83. Hjelmslev, H. <i>Omkring Sprogteoriens Grundl&aelig;ggelse</i>; B. Lunos bogtrykkeri: Copenhagen, Denmark, 1943.</p>
+
+<a name="ref84"></a>
+<p>84. Kuhn, T.S. <i>The Structure of Scientific Revolutions</i>; University of Chicago Press: Chicago, IL, USA, 1962.</p>
+
+<a name="ref85"></a>
+<p>85. Thagard, P. Conceptual Change. In <i>Encyclopedia of Cognitive Science</i>; Nadel, L., Ed.; Macmillan: London, UK, 2003; Volume 1, pp.
+666&ndash;670. Available online: <a class="menu" href="http://cogsci.uwaterloo.ca/Articles/conc.change.pdf">http://cogsci.uwaterloo.ca/Articles/conc.change.pdf</a> (accessed on 17 February 2021).</p>
+
+<a name="ref86"></a>
+<p>86. Del Hoyo, J.; Elliott, A.; Sargatal, J.V. (Eds.) <i>Handbook of the Birds of the World</i>; Lynx Edicions: Barcelona, Spain, 1997; Volume 1.</p>
+
+<a name="ref87"></a>
+<p>87. Fjelds&aring;, J. Avian Classification in Flux. In <i>Handbook of the Birds of the World</i>; Lynx Edicions: Barcelona, Spain, 2013; Special Volume
+17, pp. 77&ndash;146.</p>
+
+<a name="ref88"></a>
+<p>88. Mayr, E.; Bock, W.J. Provisional Classifications v Standard Avian Sequences: Heuristics and Communication in Ornithology. <i>Ibis</i>
+1994, 136, 12&ndash;18. </p>
+
+<a name="ref89"></a>
+<p>89. Sibley, C.; Ahlquist, J.E. <i>Phylogeny and Classification of Birds: A Study in Molecular Evolution</i>; Yale University Press: New Haven, CT,
+USA, 1990.</p>
+
+<a name="ref90"></a>
+<p>90. Hj&oslash;rland, B. Concept Theory. <i>J. Am. Soc. Inf. Sci. Technol.</i> 2009, 60, 1519&ndash;1536. </p>
+
+<a name="ref91"></a>
+<p>91. Biagetti, M.T. Ontologies (as Knowledge Organization Systems). <i>ISKO Encycl. Knowl. Organ.</i> 2020. Available online: <a class="menu" href="ontologies">https://www.isko.org/cyclo/ontologies</a> (accessed on 17 March 2021).</p>
+
+<a name="ref92"></a>
+<p>92. Searle, J. <i>The Construction of Social Reality</i>; Free Press: New York, NY, USA, 1995.</p>
+
+<a name="ref93"></a>
+<p>93. Wardy, R. Categories. In <i>Routledge Encyclopedia of Philosophy</i>; Edward, C., Ed.; Routledge: 
+London, UK, 1998; Volume 1&ndash;10.</p>
+
+<a name="ref94"></a>
+<p>94. Thomasson, A. Categories. In <i>The Stanford Encyclopedia of Philosophy</i>; Zalta, E.N., Ed.; 2019. Available online: <a class="menu" href="https://plato.
+stanford.edu/archives/sum2019/entries/categories/">https://plato.
+stanford.edu/archives/sum2019/entries/categories/</a> (accessed on 17 March 2021).</p>
+
+<a name="ref95"></a>
+<p>95. Moss, W.R. Categories and Relations: Origins of Two Classification Theories. <i>Am. Doc.</i> 1964, 15, 296&ndash;301. </p>
+
+<a name="ref96"></a>
+<p>96. Furner, J. Type&ndash;Token Theory and Bibliometrics. In <i>Theories of Informetrics and Scholarly Communication</i>; De Gruyter Saur: Berlin,
+Germany, 2016; pp. 119&ndash;147.</p>
+
+<a name="ref97"></a>
+<p>97. Fellbaum, C. WordNet. In <i>Theory and Applications of Ontology: Computer Applications</i>; Springer: Dordrecht, The Netherlands, 2010;
+pp. 231&ndash;243. <i>Information</i> 2021, 12, 135 25 of 25</p>
+
+<a name="ref98"></a>
+<p>98. Caputo, J.D. <i>Hermeneutics: Facts and Interpretation in the Age of Information</i>; Penguin: London, UK, 2018.</p>
+
+<a name="ref99"></a>
+<p>99. Soergel, D. WordNet [Book Review]. D-Lib Mag. 1998, 4, 1&ndash;7. Available online: <a class="menu" href="http://www.dlib.org/dlib/october98/10
+bookreview.html">http://www.dlib.org/dlib/october98/10
+bookreview.html</a> (accessed on 17 March 2021).</p>
+
+<a name="ref100"></a>
+<p>100. Barnes, B.; Bloor, D.; Henry, J. <i>Scientific Knowledge: A Sociological Analysis</i>; The University of Chicago Press: Chicago, IL, USA,
+1996.</p>
+
+<a name="ref101"></a>
+<p>101. Kuhn, T.S. Reflections on My Critics. In <i>Criticism and the Growth of Knowledge</i>; Lakatos, I., Musgrave, A., Eds.; Cambridge
+University Press: Cambridge, UK, 1970; pp. 231&ndash;278.</p>
+
+-->
+
+<a name="refA"></a>
+
+<p>Acharya, Anurag, Alex Verstak, Helder Suzuki, Sean Henderson, Mikhail Iakhiaev, Cliff Chiung Yu Lin and Namit Shetty. 2014. &ldquo;Rise of the Rest: The Growing Impact of Non-Elite Journals&rdquo;. <A CLASS="menu" HREF="http://arxiv.org/pdf/1410.2217v1.pdf">http://arxiv.org/pdf/1410.2217v1.pdf</A>.</p>
+
+<p>Aitchison, Jean, Alan Gilchrist and David Bawden. 2000. <i>Thesaurus Construction and Use: A Practical Manual</i>, 4th. Ed. London: Aslib</p>
+
+<p>Aitchison, Jean. 1986. &ldquo;A Classification as a Source for a Thesaurus: The Bibliographic Classification of H. E. Bliss as a Source of Thesaurus Terms and Structure&rdquo;. <i>Journal of Documentation</i> 42, no.3: 160-81.</p>
+
+<p>Ali, Najib M., Haris A. Khan, Amy Y-Hui Then, Chong Ving Ching, Manas Gaur and Sarinder Kaur Dhillon. 2017. &ldquo;Fish Ontology Framework for Taxonomy-based Fish Recognition&rdquo;. <i>PeerJ</i> 5: e3811; DOI 10.7717/peerj.3811</p>
+
+<p>Anderson, James D. and José Pérez-Carballo. 2005. <i>Information Retrieval Design: Principles and Options for Information Description, Organization, Display and Access in Information Retrieval Databases, Digital Libraries, Catalogs, and Indexes</i>. St. Petersburg, Fl: Ometeca Institute. Available as HTML at: <A CLASS="menu" HREF="https://web.archive.org/web/20050427201926/http://www.scils.rutgers.edu/publications/ir-design/">https://web.archive.org/...</A>.</p>
+
+<p>Ara&uacute;jo, Paula Carina de, Renata Cristina Gutierres Castanha and Birger Hj&oslash;rland. 2019. &ldquo;Citation Indexing and Indexes&rdquo;. <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli. <A CLASS="menu" HREF="citation">https://www.isko.org/cyclo/citation</A></p>
+
+<p>Arp, Robert, Barry Smith and Andrew D. Spear. 2015. <i>Building Ontologies with Basic Formal Ontology</i>. Cambridge, MA: The MIT Press.</p>
+
+<a name="refB"></a>
+
+<p>Baeza-Yates, Ricardo and Berthier Ribeiro-Neto. 2011. <i>Modern Information Retrieval: The Concepts and Technology behind Search</i> (2nd ed.). New York: Addison Wesley.</p>
+
+<p>Barnes, Barry, David Bloor and John Henry. 1996. <i>Scientific Knowledge: A Sociological Analysis</i>. Chicago: The University of Chicago Press. </p>
+
+<p>Belkin, Nicholas J. and William Bruce Croft. 1987. &ldquo;Retrieval Techniques&rdquo;. <i>Annual Review of Information Science and Technology</i> 22, 109-45.</p>
+
+<p>Biagetti, Maria Teresa. 2020. &ldquo;Ontologies (as knowledge organization systems)&rdquo;. In <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli.  <A CLASS="menu" HREF="ontologies">https://www.isko.org/cyclo/ontologies</A></p>
+
+<p>Blake, James. 2011. &ldquo;Some Issues in the Classification of Zoology&rdquo;. <i>Knowledge organization</i> 38, no. 6: 463-72.</p>
+
+<p>Bliss, Henry Evelyn. 1933. <i>The Organization of Knowledge in Libraries and the Subject Approach to Books</i>. New York: Henry Holt.</p>
+
+<p>Blumauer, Andreas and Tassilo Pellegrini. 2006. &ldquo;Semantic Web und semantische Technologien: Zentrale Begriffe und Unterscheidungen&rdquo;. In <i>Semantic Web</i>, eds. Tassilo Pellegrini and Andreas Blumauer. Berlin: Springer, 9-29.  <A CLASS="menu" HREF="https://doi.org/10.1007/3-540-29325-6_2">https://doi.org/10.1007/3-540-29325-6_2</A>.</p>
+
+<a name="refC"></a>
+
+<p>Caputo, John D. 2018. <i>Hermeneutics: Facts and Interpretation in the Age of Information</i>. London, UK: Penguin. </p>
+
+<p>Colomb, Robert M. 2007. <i>Ontology and the Semantic Web</i>. Amsterdam, Netherlands: IOS Press.</p>
+
+<a name="refD"></a>
+
+<p>Dahlberg, Ingetraut. 2009. &ldquo;Brief Communication: Concepts and Terms – ISKO's Major Challenge&rdquo;. <i>Knowledge Organization</i> 36, no. 2/3: 169-77. </p>
+
+<p>Deemter, Kees van. 2010. <i>Not Exactly: In Praise of Vagueness</i>. Oxford, UK: Oxford University Press. </p>
+
+<p>Del Hoyo, Josep, Andrew Elliott and Jordi Sargatalet Vicens (eds). (1992-2013). <i>Handbook of the Birds of the World</i>. Vol. 1-17. Barcelona: Lynx Edicions.  </p>
+
+<p>Dragusin, Radu, Paula Petcu, Christina Lioma, Birger Larsen, Henrik L. J&oslash;rgensen, Ingemar J. Cox, Lars Kai Hansen, Peter Ingwersen and Ole Winther. 2013a. &ldquo;FindZebra: A Search Engine for Rare Diseases&rdquo;. <i>International Journal of Medical Informatics</i> 82, no. 6: 528-38. <A CLASS="menu" HREF="http://www.sciencedirect.com/science/article/pii/S1386505613000166">http://www.sciencedirect.com/science/article/pii/S1386505613000166</A></p>
+
+<p>Dragusin, Radu, Paula Petcu, Christina Lioma, Birger Larsen, Henrik L. J&oslash;rgensen, Ingemar J. Cox, Lars Kai Hansen, Peter Ingwersen and Ole Winther. 2013b. &ldquo;Specialised Tools are Needed when Searching the Web for Rare Disease Diagnoses&rdquo;. <i>Rare Diseases</i> 1, no. 1: Article: e25001. doi:10.4161/rdis.25001. <A HREF="#refh">http://www.tandfonline.com/doi/full/10.4161/rdis.25001</A></p>
+
+<a name="refE"></a>
+<a name="refF"></a>
+
+<p>Fellbaum, Christiane. 2010. &ldquo;WordNet&rdquo;. In <i>Theory and Applications of Ontology: Computer Applications</i>, eds. Roberto Poli, Michael Healy and Achilles Kameas. Dordrecht: Springer, 231-43. DOI 10.1007/978-90-481-8847-5_10.</p>
+
+<p>Fidel, Raya. 1991. &ldquo;Searchers&rsquo; Selection of Search Keys: II. Controlled Vocabulary or Free-Text Searching&rdquo;. <i>Journal of the American Society for Information Science</i> 42: 501–14. </p>
+
+<p>Fiorini, Nicolas, Kathi Canese, Grisha Starchenko, Evgeny Kireev, Won Kim, Vadim Miller, Maxim Osipov, Michael Kholodov, Rafis Ismagilov, Sunil Mohan, James Ostell and Zhiyong Lu. 2018. &ldquo;Best Match: New Relevance Search for PubMed&rdquo;. <i>PLoS Biology</i> 16, no. 8: e2005343. <A CLASS="menu" HREF="https://doi.org/10.1371/journal.pbio.2005343">https://doi.org/10.1371/journal.pbio.2005343</A>.</p>
+
+<p>Fjelds&aring;, Jon. 2013. &ldquo;Avian Classification in Flux&rdquo;. In <i>Handbook of the Birds of the World</i>. Special volume 17 (pp. 77-146 + references, pp. 493-501). Barcelona: Lynx Edicions.  </p>
+
+<p>Frei, Hans-Peter and Yonggang Qiu. 1993. &ldquo;Effectiveness of Weighted Searching in an Operational IR Environment&rdquo;. In <i>Information Retrieval &rsquo;93, von der Modellierung zur Anwendung; Proceedings der 1. Tagung Information Retrieval '93</i>. Konstanz: Universit&auml;t Verlag Konstanz, 41-54. Preprint available at: <A CLASS="menu" HREF="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.56.7021&amp;rep=rep1&amp;type=pdf">http://citeseerx.ist.psu.edu/...</A></p>
+
+<p>Furner, Jonathan. 2016. &ldquo;Type–Token Theory and Bibliometrics&ldquo;. in <i>Theories of Informetrics and Scholarly Communication</i>, ed. Cassidy R. Sugimoto. Berlin: De Gruyter Saur, 119–47. DOI: <A CLASS="menu" HREF="https://doi.org/10.1515/9783110308464-009">https://doi.org/10.1515/9783110308464-009</A>.</p>
+
+<a name="refG"></a>
+
+<p>Garshol, Lars Marius. 2004. "Metadata? Thesauri? Taxonomies? Topic maps! Making sense of it all". <i>Journal of Information Science</i> 30, no. 4: 378-391. Available online at: <A CLASS="menu" HREF="http://www.ontopia.net/topicmaps/materials/tm-vs-thesauri.html">http://www.ontopia.net/topicmaps/materials/tm-vs-thesauri.html</A>.</p>
+
+<p>Genesereth, Michael R. and Nils John Nilsson. 1987. <i>Logical Foundations of Artificial Intelligence</i>. Los Altos, CA: Morgan Kaufmann.</p>
+
+<p>Gruber, Thomas R. 1993 "A Translation Approach to Portable Ontology Specifications". <i>Knowledge Acquisition</i> 5, no. 2: 199–220.</p>
+
+<a name="refH"></a>
+
+<p>Harter, Stephen P. 1986. <i>Online Information Retrieval: Concepts, Principles, and Techniques</i>. New York: Academic Press.</p>
+
+<p>Herre, Heinrich. 2010. &ldquo;General Formal Ontology (GFO): A Foundational Ontology for Conceptual Modelling&rdquo;. In <i>Theory and Applications of Ontology: Computer Applications</i>, eds. Roberto Poli, Michael Healy and Achilles Kameas. Dordrecht: Springer, 297-345. DOI 10.1007/978-90-481-8847-5_14.</p>
+
+<p>Hjelmslev, Louis. 1943. <i>Omkring Sprogteoriens Grundl&aelig;ggelse</i>. Copenhagen, Denmark B. Lunos bogtrykkeri.  </p>
+
+<p>Hj&oslash;rland, Birger. 2002. &ldquo;Epistemology and the Socio-Cognitive Perspective in Information Science&rdquo;. <i>Journal of the American Society for Information Science and Technology</i> 53, no. 4: 257–70.</p>
+
+<p>Hj&oslash;rland, Birger. 2003. &ldquo;Fundamentals of Knowledge Organization&rdquo;. <i>Knowledge Organization</i> 30, no 2: 87-111.</p>
+
+<p>Hj&oslash;rland, Birger. 2009. &ldquo;Concept Theory&rdquo;. <i>Journal of the American Society for Information Science and Technology</i> 60, no. 8: 1519–36.</p>
+
+<p>Hj&oslash;rland, Birger. 2010. &ldquo;The Foundation of the Concept of Relevance&rdquo;. <i>Journal of the American Society for Information Science and Technology</i> 61, no. 2: 217-37.  DOI: 10.1002/asi.21261</p>
+
+<p>Hj&oslash;rland, Birger. 2011. &ldquo;Evidence Based Practice: An Analysis Based on the Philosophy of Science&rdquo;. <i>Journal of the American Society for Information Science and Technology</i> 62, no. 7: 1301-1310.</p>
+
+<p>Hj&oslash;rland, Birger. 2012. &ldquo;Is Classification Necessary after Google?&rdquo; <i>Journal of Documentation</i> 68, no. 3:  299-317.</p>
+
+<p>Hj&oslash;rland, Birger. 2013a. &ldquo;Citation Analysis: A social and Dynamic Approach to Knowledge Organization&rdquo;. <i>Information Processing and Management</i> 49: 1313–13. DOI <A CLASS="menu" HREF="http://dx.doi.org/10.1016/j.ipm.2013.07.001">http://dx.doi.org/10.1016/j.ipm.2013.07.001</A>. An HTML version with small updates of a preprint appears in ISKO Encyclopedia of Knowledge Organization at: <A CLASS="menu" HREF="citation_analysis">https://www.isko.org/cyclo/citation_analysis</A>.</p>
+
+<p>Hj&oslash;rland, Birger. 2013b. &ldquo;User-based and Cognitive Approaches to Knowledge Organization: A Theoretical Analysis of the Research Literature&rdquo;. <i>Knowledge Organization</i> 40, no. 1: 11-27. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli.  <A CLASS="menu" HREF="user_based">https://www.isko.org/cyclo/user_based</A>.</p>
+
+<p>Hj&oslash;rland, Birger. 2015a. &ldquo;Are relations in thesauri &lsquo;context-free, definitional, and true in all possible worlds&rsquo;?&rdquo; <i>Journal of the Association for Information Science and Technology</i> 66, no. 7: 1367-1373. </p>
+
+<p>Hj&oslash;rland, Birger. 2015b. &ldquo;Classical Databases and Knowledge Organization: A Case for Boolean Retrieval and Human Decision-making During Searches&rdquo;. <i>Journal of the Association for Information Science and Technology</i> 66, no. 8: 1559-1575.</p>
+
+<p>Hj&oslash;rland, Birger. 2017b. &ldquo;Domain Analysis&rdquo;.  <i>Knowledge Organization</i> 44, no. 6: 436-464. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli. <A CLASS="menu" HREF="domain_analysis">https://www.isko.org/cyclo/domain_analysis</A></p>
+
+<p>Hj&oslash;rland, Birger. 2017c. &ldquo;Subject (of Documents)&rdquo;. <i>Knowledge Organization</i> 44, no. 1: 55-64. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli, <A CLASS="menu" HREF="subject">https://www.isko.org/cyclo/subject</A>.</p>
+
+<p>Hj&oslash;rland, Birger. 2020. &ldquo;Political versus Apolitical Epistemologies in Knowledge Organization&rdquo;. <i>Knowledge Organization</i> 47(6): 461-485. DOI:10.5771/0943-7444-2020-6-461.</p>
+
+<p>Hj&oslash;rland, Birger and Lykke Kyllesbech Nielsen. 2001. &ldquo;Subject Access Points in Electronic Retrieval&rdquo;. <i>Annual Review of Information Science and Technology</i> 35, 249-298. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>,   eds. Birger Hj&oslash;rland and Claudio Gnoli. <a href="sap">https://www.isko.org/cyclo/sap</a>.</p>
+
+<p>Hudson, Mich&egrave;le. 1996. &ldquo;Preparing Terminological Definitions for Indexing and Retrieval Thesauri: A Model&ldquo;. <i>Advances in Knowledge Organization</i> 5: 363-9.</p>
+
+<a name="refI"></a>
+
+<p><i>ISO 25964-1: 2011 (E). Information and Documentation—Thesauri and Interoperability with Other Vocabularies—Part 1: Thesauri for Information Retrieval</i>. Geneva, Switzerland: International Organization for Standardization.</p>
+
+<a name="refJ"></a>
+<a name="refK"></a>
+
+<p>Kuhn, Thomas S.  1970. &ldquo;Reflections on My Critics&rdquo;. In <i>Criticism and the Growth of Knowledge</i>, eds.  Imre Lakatos and Alan Musgrave. Cambridge: Cambridge University Press, 231-78.</p>
+
+<p>Kuhn, Thomas S. 1962. <i>The Structure of Scientific Revolutions</i>. Chicago, IL: University of Chicago Press.</p>
+
+<a name="refL"></a>
+
+<p>Lardera, Marco and Birger Hj&oslash;rland. 2020. &ldquo;Keyword&rdquo;.  <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli. <A CLASS="menu" HREF="keyword">https://www.isko.org/cyclo/keyword</A>.</p>
+
+<p>Leclercq, Henri. 1978. &ldquo;Europe: Term for Many Concepts&rdquo;. <i>International Classification</i> 5, no. 3: 156-62. </p>
+
+<p>Leonelli, Sabina. 2016. <i>Data-Centric Biology: A Philosophical Study</i>. Chicago, IL: University of Chicago Press.</p>
+
+<p>Leydesdorff, Loet (2006). &ldquo;Can Scientific Journals be Classified in terms of Aggregated Journal-Journal Citation Relations using the Journal Citation Reports?&rdquo; <i>Journal of the American Society for Information Science and Technology</i> 57, no. 5: 601-13.</p>
+
+<a name="refM"></a>
+
+<p>Machado, Luís, Graça Sim&otilde;es, Claudio Gnoli and Renato Souza. 2020. &ldquo;Can an Ontologically-Oriented KO Do Without Concepts?&rdquo; <i>Advances in Knowledge Organization</i> 17: 502-6.  </p>
+
+<p>Manning, Christopher D., Prabhakar Raghavan and Heinrich Sch&uuml;tze. 2009. <i>An Introduction to Information Retrieval</i>. Cambridge, UK: Cambridge University Press. Retrieved from <A CLASS="menu" HREF="http://nlp.stanford.edu/IR-book/pdf/irbookonlinereading.pdf">http://nlp.stanford.edu/IR-book/pdf/irbookonlinereading.pdf</A>.</p>
+
+<p>Mayr, Ernst and Walter J. Bock. 1994. &ldquo;Provisional Classifications v Standard Avian Sequences: Heuristics and Communication in Ornithology&rdquo;. <i>Ibis</i> 136, no. 1: 12–18.</p>
+
+<p>Mazzocchi, Fulvio. 2018. &ldquo;Knowledge organization system (KOS)&rdquo;. <i>Knowledge Organization</i> 45, no.1: 54-78. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli, <A CLASS="menu" HREF="kos">https://www.isko.org/cyclo/kos</A>.</p>
+
+<p>Moss, Wilfred Raymond. 1964. &ldquo;Categories and Relations: Origins of Two Classification Theories&rdquo;. <i>American Documentation</i> 15, no. 4: 296-301.</p>
+
+<a name="refN"></a>
+<a name="refO"></a>
+
+<p>Obrst, Leo. 2010. &ldquo;Ontological Architectures&rdquo;. In <i>Theory and Applications of Ontology: Computer Applications</i>, eds. Roberto Poli, Michael Healy and Achilles Kameas. Dordrecht: Springer, 27-66. DOI 10.1007/978-90-481-8847-5_2.</p>
+
+<p>Ogden, Charles Kay and Ivor Armstrong Richards. 1923. <i>The Meaning of Meaning: A Study of the Influence of Language Upon Thought and of the Science of Symbolism</i>.  London: Routledge &amp; Kegan Paul. </p>
+
+<p>Olensky, Marlies. 2010. &ldquo;Semantic Interoperability in Europeana: An Examination of CIDOC CRM in Digital Cultural Heritage Documentation&rdquo;. <i>Bulletin of IEEE Technical Committee on Digital Libraries</i> 6, no. 2, <A CLASS="menu" HREF="https://web.archive.org/web/20130620181231/https://www.ieee-tcdl.org/Bulletin/v6n2/Olensky/olensky.html">https://web.archive.org/web/20130620181231/https://www.ieee-tcdl.org/Bulletin/v6n2/Olensky/olensky.html</A>.</p>
+
+<a name="refP"></a>
+
+<p>Paris, Lee Anne H. and Helen R. Tibbo. 1998. &ldquo;Freestyle vs. Boolean: A Comparison of Partial and Exact Match Retrieval Systems&rdquo;. <i>Information Processing &amp; Management</i> 34, nos. 2-3: 175-90. </p>
+
+<p>Patel, Archana, Sarika Jain and Shishir K. Shandilya. 2019. &ldquo;Data of Semantic Web as Unit of Knowledge&rdquo;. <i>Journal of Web Engineering</i> 17, no. 8: 647–74. doi: 10.13052/jwe1540-9589.1783</p>
+
+<p>Picard, Claire-France, Sylvain Durocher and Yves Gendron. 2019. &ldquo;Desingularization and Dequalification: A Foray into Ranking Production and Utilization Processes&rdquo;. <i>European Accounting Review</i> 28, no. 4: 737-65.  DOI: 10.1080/09638180.2018.1535323.</p>
+
+<p>Plato. 380 B.C.E. <i>Meno</i>. Translated by Benjamin Jowett.  <A CLASS="menu" HREF="https://www.gutenberg.org/files/1643/1643-h/1643-h.htm#link2H_4_0003">https://www.gutenberg.org/files/1643/1643-h/1643-h.htm#link2H_4_0003</A>.</p>
+
+<a name="refQ"></a>
+<a name="refR"></a>
+
+<p>Rafferty, Pauline. 2018. &ldquo;Tagging&rdquo;. <i>Knowledge Organization</i> 45, no. 6: 500-516. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli. <A CLASS="menu" HREF="tagging">https://www.isko.org/cyclo/tagging</A>.</p>
+
+<p>Richards, Richard A. 2016. <i>Biological Classification: A Philosophical Introduction</i>. Cambridge, UK Cambridge University Press. </p>
+
+<p>Robertson, Stephen E. 2000. &ldquo;Salton award lecture: On theoretical arguments in information retrieval&rdquo;. Talk given at SIGIR 2000, Athens, July 2000. <i>ACM SIGIR Forum</i> 34, no. 1: 1–10. <A CLASS="menu" HREF="https://web.archive.org/web/20130323060107/http://www.sigir.org/forum/S2000/salton_lecture.pdf">https://web.archive.org/web/20130323060107/http://www.sigir.org/forum/S2000/salton_lecture.pdf</A>.</p>
+
+<p>Robertson, Stephen E. 2008. &ldquo;The State of Information Retrieval&rdquo;. ISKO-UK. Presentation available at <A CLASS="menu" HREF="https://web.archive.org/web/20190512123726/http://event-archive.iskouk.org/sites/default/files/robertson.pdf">https://web.archive.org/web/20190512123726/http://event-archive.iskouk.org/sites/default/files/robertson.pdf</A>.</p>
+
+<p>Robertson, Stephen E. and C. L. Thompson. 1990. &ldquo;Weighted Searching: The CIRT Experiment&rdquo;. In <i>lnformatics 10: Prospects for Intelligent Retrieval, Proceedings of a Conference Jointly Sponsored by Aslib, the Aslib Informatics Group and the Information Retrieval Specialist Group of the British Computer Society, King's College, Cambridge, 21-23 March 1989</i>, ed. Karen Sp&auml;rck Jones. London: Aslib, 153-65. </p>
+
+<p>Robertson, Stephen E. and Karen Sp&auml;rck Jones. 1976. &ldquo;Relevance Weighting of Search Terms&rdquo;. <i>Journal of the American Society for Information Science</i> 27, no. 3: 129–46. doi:10.1002/asi.4630270302.</p>
+
+<p>Roelleke, Thomas. 2013. <i>Information Retrieval Models: Foundations and Relationships</i>. Synthesis Lectures on Information Concepts, Retrieval, and Services 27. San Rafael, CA: Morgan &amp; Claypool. </p>
+
+<p>Rosse, Cornelius and José L. V. Mejino. 2008. &ldquo;The Foundational Model of Anatomy Ontology&rdquo;. In <i>Anatomy Ontologies for Bioinformatics: Principles and Practice</i>, eds. Albert Burger, Duncan Davidson and Richard Baldock. London: Springer, 59-117. </p>
+
+<a name="refS"></a>
+
+<p>Salaba, Athena. 2020. &ldquo;Knowledge Organization Requirements in LIS Graduate Programs&rdquo;. <i>Advances in Knowledge Organization</i> 17, 384-93.</p>
+
+<p>Salton, Gerald, Anita Wong and Chung-Shu Yang. 1975. &ldquo;A Vector Space Model for Automatic Indexing&rdquo;. <i>Communications of the ACM</i> 18, no. 11: 613–20. </p>
+
+<p>Salton, Gerald. 1996. &ldquo;Letter to the Editor. A New Horizon for Information Science?&rdquo; <i>Journal of the American Journal for Information Science</i> 47, no. 4: 333. </p>
+
+<p>Sampson, Margaret, Nassr Nama, Katharine O&rsquo;Hearn, Kimmo Murto, Ahmed Nasr, Sherri L. Katz , Gail Macartney, Franco Momoli and J. Dayre McNally. 2021. &ldquo;Creating Enriched Training Sets of Eligible Studies for Large Systematic Reviews: The Utility of PubMed&rsquo;s Best Match algorithm&rdquo;. <i>International Journal of Technology Assessment in Health Care</i> 37, e7: 1–6. <A CLASS="menu" HREF="https://doi.org/10.1017/S0266462320002159">https://doi.org/10.1017/S0266462320002159</A>.</p>
+
+<p>Searle, John 1995. <i>The Construction of Social Reality</i>. New York, NY: Free Press.</p>
+
+<p>Sibley, Charles and Jon E. Ahlquist. 1990. <i>Phylogeny and Classification of Birds: A Study in Molecular Evolution</i>. New Haven: Yale University Press. </p>
+
+<p>Smith, Barry and Werner Ceusters. 2010. &ldquo;Ontological Realism: A Methodology for Coordinated Evolution of Scientific Ontologies&rdquo;.  <i>Applied Ontology</i> 5, nos. 3-4: 139–88. DOI 10.3233/AO-2010-0079.</p>
+
+<p>Smith, Barry, and Werner Ceusters. 2007. &ldquo;Ontology as the Core Discipline of Biomedical Informatics&rdquo;. In <i>Computing, Philosophy, and Cognitive Science: The Nexus and the Liminal</i>, eds. Susan Alice Jane Stuart and Gordana Dodig Crnkovic. Newcastle: Cambridge Scholars Press, 104-22.</p>
+
+<p>Smith, Barry, Werner Ceusters, Bert Klagges, Jacob K&ouml;hler, Anand Kumar, Jane Lomax, Chris Mungall, Fabian Neuhaus, Alan L. Rector and Cornelius Rosse. 2005. &ldquo;Relations in Biomedical Ontologies&rdquo;. <i>Genome Biology</i> 6: R46.1-R46.15. doi:10.1186/gb-2005-6-5-r46. Available at: <A CLASS="menu" HREF="https://genomebiology.biomedcentral.com/articles/10.1186/gb-2005-6-5-r46">https://genomebiology.biomedcentral.com/articles/10.1186/gb-2005-6-5-r46</A>.</p>
+
+<p>Smith, Barry. 2004. &ldquo;Beyond Concepts: Ontology as Reality Representation&rdquo;. In <i>Proceedings of FOIS 2004: International Conference on Formal Ontology and Information Systems, Turin, 4-6 November 2004</i>, edited by Achille C. Varzi and Laure Vieu. Amsterdam: IOS Press. <A CLASS="menu" HREF="https://philpapers.org/archive/SMIBCO">https://philpapers.org/archive/SMIBCO</A>; available from: <A CLASS="menu" HREF="https://www.researchgate.net/publication/244107491_Beyond_Concepts_Ontology_as_Reality_Representation">https://www.researchgate.net/publication/244107491_Beyond_Concepts_Ontology_as_Reality_Representation</A> [accessed Feb 07 2021].</p>
+
+<p>Soergel, Dagobert, Boris Lauser, Anita Liang, Frehiwot Fisseha, Johannes Keizer and Stephen Katz. 2004. &ldquo;Reengineering Thesauri for New Application: The AGROVOC Example&rdquo;. <i>Journal of Digital Information</i> 4, no. 4. <A CLASS="menu" HREF="https://journals.tdl.org/jodi/index.php/jodi/article/view/112/111">https://journals.tdl.org/jodi/index.php/jodi/article/view/112/111</A>.</p>
+
+<p>Soergel, Dagobert. 1998. &ldquo;WordNet&rdquo; [Book Review]. <i>D-Lib Magazine</i> 4, no. 10: 1-7. <A CLASS="menu" HREF="http://www.dlib.org/dlib/october98/10bookreview.html">http://www.dlib.org/dlib/october98/10bookreview.html</A>.</p>
+
+<p>Sowa, John F. 1984. <i>Conceptual Structures: Information Processing in Mind and Machine</i>. Reading, MA: Addison-Wesley.</p>
+
+<p>Sowa, John F. 2000. &ldquo;Ontology, Metadata, and Semiotics&rdquo;. In <i>Conceptual Structures: Logical, Linguistic, and Computational Issues: ICCS 2000</i>, eds. Bernhard Ganter and Guy W. Mineau. Lecture Notes in Computer Science, vol 1867. Berlin: Springer, 55-81. <A CLASS="menu" HREF="https://doi.org/10.1007/10722280_5">https://doi.org/10.1007/10722280_5</A>.</p>
+
+<p>Structural Informatics Group. &ldquo;The Foundational Model of Anatomy ontology (FMA)&rdquo;. University of Washington, WA  (Website).  Available online: <A CLASS="menu" HREF="http://sig.biostr.washington.edu/projects/fm/AboutFM.html">http://sig.biostr.washington.edu/projects/fm/AboutFM.html</A> (accessed on 17 March 2021).</p>
+
+<p>Svenonius, Elaine. 1997. &rdquo;Definitional Approaches in the Design of Classification and Thesauri and Their Implications for Retrieval and Automatic Classification&rdquo;. In <i>Knowledge Organization for Information Retrieval</i>, ed. I. C. McIlwaine. The Hague, Netherlands: International Federation for Information and Documentation, 12-16.</p>
+
+<p>Svenonius, Elaine. 2004. &ldquo;The Epistemological Foundations of Knowledge Representations&rdquo;. <i>Library  Trends</i> 52: 571–87. </p>
+
+<p>Swanson, Don R. 1986. &ldquo;Undiscovered Public Knowledge&rdquo;. <i>The Library Quarterly</i> 56, no. 2: 103-18.</p>
+
+<a name="refT"></a>
+
+<p>Temmerman, Rita. 1997. &ldquo;Questioning the Univocity Ideal: The Difference between Socio-Cognitive Terminology and Traditional Terminology&rdquo;. <i>Hermes Journal of Linguistics</i> 18, 51–90. Available online: <A CLASS="menu" HREF="https://tidsskrift.dk/her/article/view/25412/22333">https://tidsskrift.dk/her/article/view/25412/22333</A> (accessed on 17 March 2021).  </p>
+
+<p>Thagard, Paul. 2003. &ldquo;Conceptual Change&rdquo;. In <i>Encyclopedia of Cognitive Science</i>, ed. Lynn Nadel. London: Macmillan, Vol. 1: 666–70. Retrieved February 17, 2021 from <A CLASS="menu" HREF="http://cogsci.uwaterloo.ca/Articles/conc.change.pdf">http://cogsci.uwaterloo.ca/Articles/conc.change.pdf</A>.</p>
+
+<p>Thomasson, Amie. 2019. &ldquo;Categories&rdquo;. In <i>The Stanford Encyclopedia of Philosophy</i> (Summer 2019 Edition), ed. Edward N. Zalta. <A CLASS="menu" HREF="https://plato.stanford.edu/archives/sum2019/entries/categories/">https://plato.stanford.edu/archives/sum2019/entries/categories/</A>.</p>
+
+<p>Turtle, Howard R. and William Bruce Croft. 1992. &ldquo;A Comparison of Text Retrieval Models&rdquo;. <i>The Computer Journal</i> 35, no. 3: 279-90.</p>
+
+<a name="refU"></a>
+
+<p><i>UNESCO Thesaurus</i>. Paris: United Nations Educational, Scientific and Cultural Organization. Available online: <A CLASS="menu" HREF="http://vocabularies.unesco.org/browser/thesaurus/en/">http://vocabularies.unesco.org/browser/thesaurus/en/</A> (accessed on 17 March 2021).</p>
+
+<a name="refV"></a>
+<a name="refW"></a>
+
+<p>W&auml;chter, Thomas, Dimitra Alexopoulou, Heiko Dietze, J&ouml;rg Hakenberg and Michael Schroeder. 2008. &ldquo;Searching Biomedical Literature with Anatomy Ontologies&rdquo;. In <i>Anatomy Ontologies for Bioinformatics: Principles and Practice</i>, eds. Albert Burger, Duncan Davidson and Richard Baldock. London: Springer, 177-94. </p>
+
+<p>Wardy, Robert. 1998. &ldquo;Categories&rdquo;. In <i>Routledge Encyclopedia of Philosophy</i> Vol. 1-10, ed. Edward Craig. London: Routledge (electronic version, no. pagination). </p>
+
+<p>Warner, Julian. 2010. <i>Human Information Retrieval</i>. Cambridge, MA: MIT Press.
+
+<a name="refX"></a>
+<a name="refY"></a>
+<a name="refZ"></a>
+
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+</span><!-- articleBody ends -->
+
+
+</span><!-- citation ends -->
+
+<a name="col"></a>
+
+<p>&nbsp;</p>
+
+<p>Visited <a href="https://www.digits.net" target="_blank"><img src="https://counter.digits.net/?counter={76dde669-1bb8-fe84-cd42-5f6a3a495b47}&template=simple" alt="Hit Counter by Digits" border="0"  /></a> times.</p>
+
+<hr>
+<p itemprop="dateCreated"><a class="menu" href="ir-1">Version 1.0</a> published 2021-06-01 
+<br>Version 1.1 published 2021-11-04: references standardized to IEKO system
+
+<p>Article category: <code><a itemprop="about" href="index#AD">Disciplines </a></code></p>
+
+<p>This IEKO article, version 1.0 is a <a href="https://www.mdpi.com/openaccess">reprint</a>  of an open access article published 20 Mar 2021 at <a class="menu" href="https://www.mdpi.com/2078-2489/12/3/135">https://www.mdpi.com/2078-2489/12/3/135</a>.
+
+<p>How to cite it:
+<br>Hj&oslash;rland, Birger. 2021. "Information Retrieval and Knowledge Organization: A Perspective from the Philosophy of Science". <i>Information</i> 12, no. 3: article 135; https://doi.org/10.3390/info12030135. Also published as "Information retrieval" in <i><span itemprop="isPartOf">ISKO Encyclopedia of Knowledge Organization</span></i>, 
+eds. <span itemprop="editor">Birger Hj&oslash;rland</span> and <span itemprop="editor">Claudio Gnoli</span>, 
+<span itemprop="url">https://www.isko.org/cyclo/ir</span></p>
+
+<p>&copy;2021 <span itemprop="publisher">ISKO</span>. All rights reserved.</p>
+
+</div><!-- Article ends -->
+
+</td>
+</tr>
+
+<tr>
+<td id="logo">
+</td>
+</tr>
+
+</table>
+</body>
+</html>

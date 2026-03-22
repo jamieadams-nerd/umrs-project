@@ -1,126 +1,109 @@
-= IBM Z and zOS 
+= IBM Z, z/OS, and Linux on Z
 Jamie L. Adams
+:description: The IBM mainframe platform, z/OS security architecture, and how Linux on IBM Z relates to UMRS high-assurance concepts.
+:toc: left
+:toclevels: 2
 
+IBM Z is a hardware platform — a mainframe family. It can run multiple, very different operating
+systems simultaneously on the same physical machine. Understanding which software layer you are
+talking about matters because z/OS and Linux on Z are fundamentally different systems that happen
+to share the same hardware.
 
-IBM Z
-	•	Hardware platform (mainframes)
-	•	Formerly called zSeries
-	•	Can run multiple, very different operating systems
+== IBM Z Platform
 
-z/OS
-	•	Not Linux
-	•	IBM’s flagship mainframe operating system
-	•	Descended from OS/360 → MVS → OS/390 → z/OS
-	•	Completely different kernel, APIs, tooling, and security model
-	•	Optimized for:
-	•	Massive batch processing
-	•	Transaction processing (CICS)
-	•	High-reliability enterprise workloads
-	•	Uses things like:
-	•	JCL (Job Control Language)
-	•	RACF (or equivalent) for security
-	•	EBCDIC internally (historically significant)
+IBM Z (formerly called the zSeries) is a mainframe hardware platform. It supports:
 
+* Multiple logical partitions (LPARs) running on the same physical machine
+* Both z/OS and Linux workloads, sometimes on the same hardware simultaneously
+* Mainframe-specific I/O and virtualization infrastructure (z/VM, KVM on Z)
+* Hardware cryptographic accelerators relevant to high-assurance deployment
 
-Linux on IBM Z (often called “Linux on Z” or “s390x Linux”)
-	•	This is Linux
-	•	Standard Linux kernel ported to IBM Z hardware
-	•	Same Linux userspace concepts you know:
-	•	systemd
-	•	GNU tools
-	•	Bash
-	•	SELinux
-	•	Architecturally:
-	•	Runs on the s390x CPU architecture
-	•	Supports RHEL, SLES, Ubuntu, etc.
-	•	Often runs alongside z/OS on the same physical mainframe using virtualization (LPARs, z/VM)
+The hardware itself provides strong isolation guarantees between LPARs — a form of hardware
+partition that predates modern hypervisors.
 
-So the relationship looks like this:
-	•	IBM Z → hardware
-	•	z/OS → proprietary IBM mainframe OS (not Linux)
-	•	Linux on Z → real Linux, just on mainframe hardware
+== z/OS
 
-Why people get confused
-	•	IBM Z can run Linux
-	•	z/OS can host UNIX-like environments (z/OS UNIX)
-	•	Both coexist on the same machine
-	•	But z/OS ≠ Linux, not even close internally
+z/OS is IBM's flagship mainframe operating system. It is not Linux, and it is not UNIX in the
+traditional sense. It is descended from OS/360 through MVS and OS/390, and it is optimized for:
 
-High-assurance parallel (why this matters in your world)
-z/OS security concepts (RACF, dataset controls, job classes) feel more like:
-	•	MLS systems
-	•	Mandatory access control
-	•	Strong operational separation
+* Massive batch processing
+* Transaction processing via CICS and IMS
+* High-reliability enterprise workloads
 
-Linux on Z, by contrast, behaves like:
-	•	RHEL on x86
-	•	Same SELinux concepts
-	•	Same hardening practices
+z/OS uses EBCDIC internally rather than ASCII, operates with JCL (Job Control Language) for
+batch job submission, and has a fundamentally different kernel, API surface, and security model
+than Linux.
 
-So if someone says:
-	•	“IBM mainframe runs Linux” → sometimes true
-	•	“z/OS is Linux” → false
+=== z/OS Security Architecture
 
+z/OS implements mandatory-style access controls through the Resource Access Control Facility
+(RACF), or through equivalent third-party security managers. Key security characteristics:
 
-## Linux on IBM Z
+* Security labels (SECLABELs) that function similarly to MLS labels
+* Compartments and categories that parallel MCS category-based separation
+* Trusted execution paths for administrative operations
+* Mandatory access controls enforced at the resource manager level
 
-There isn’t one Linux flavor on IBM Z — it supports multiple standard Linux distributions, built specifically for the s390x architecture.
+z/OS security is not marketed as "Bell-LaPadula MLS" in the academic sense, but the underlying
+concepts — labeled subjects and objects, access decisions based on dominance relationships,
+trusted administration paths — are recognizably MLS-adjacent. The emphasis is on
+compartmentalization, strong auditing, and trusted administration rather than formal
+research-model purity.
 
-The primary, officially supported ones are:
+In short: z/OS represents decades of MLS-style engineering adapted to enterprise production
+realities. The concepts survived, even as the terminology evolved.
 
-Red Hat Enterprise Linux (RHEL) for IBM Z
-	•	Architecture: s390x
-	•	Fully supported by Red Hat and IBM
-	•	Same RHEL you know:
-	•	systemd
-	•	SELinux
-	•	DNF/YUM
-	•	FIPS mode
-	•	Very common in regulated and enterprise environments
+== Linux on IBM Z
 
-SUSE Linux Enterprise Server (SLES) for IBM Z
-	•	Architecture: s390x
-	•	Longstanding IBM partnership
-	•	Strong presence in banking and finance
-	•	Also supports SELinux (and AppArmor)
+Linux on IBM Z is standard Linux — not a fork or an IBM-specific variant. It is:
 
-Ubuntu Server for IBM Z
-	•	Architecture: s390x
-	•	Supported by Canonical
-	•	Often used for cloud-native and dev workloads
-	•	Same Ubuntu userspace, just a different CPU architecture
+* The standard Linux kernel, compiled for the s390x architecture
+* Standard enterprise distributions (RHEL, SLES, Ubuntu) repackaged for s390x
+* Architecturally identical to RHEL or Ubuntu on x86_64 or aarch64 — same kernel,
+  same userspace tools, same SELinux support
 
-Others (more limited / community / historical)
-	•	Debian (s390x) — community supported
-	•	Fedora (s390x) — exists but not typically used in production on Z
-	•	Rocky / Alma — not commonly supported on IBM Z as of now (ecosystem focus is RHEL/SLES/Ubuntu)
+IBM provides hardware enablement, crypto accelerators, I/O drivers, and virtualization
+layers. The distribution itself — Red Hat, SUSE, or Canonical — remains the standard product.
 
-Key point (important for your world)
-Linux on IBM Z is not a fork or special IBM Linux.
+=== Supported Linux Distributions on IBM Z
 
-It is:
-	•	The standard Linux kernel
-	•	Standard distributions
-	•	Recompiled for the s390x architecture
-	•	With mainframe-specific drivers and virtualization support
+[cols="1,2,2"]
+|===
+| Distribution | Architecture | Notes
 
-Conceptually:
-	•	RHEL on x86_64
-	•	RHEL on aarch64
-	•	RHEL on s390x (IBM Z)
+| Red Hat Enterprise Linux
+| s390x
+| Full support, SELinux, FIPS mode, DNF/YUM — common in regulated environments
 
-Same distro, different CPU.
+| SUSE Linux Enterprise Server
+| s390x
+| Long-standing IBM partnership; strong presence in banking and finance; SELinux and AppArmor
 
-What IBM adds
-IBM provides:
-	•	Hardware enablement
-	•	Crypto accelerators
-	•	I/O drivers
-	•	Virtualization layers (LPAR, z/VM, KVM on Z)
+| Ubuntu Server
+| s390x
+| Supported by Canonical; common for cloud-native and development workloads
 
-But the OS distribution itself is still Red Hat / SUSE / Canonical.
+| Debian, Fedora
+| s390x
+| Community-supported; not typically used in production on IBM Z
+|===
 
-So if you were writing UMRS docs, the correct phrasing would be:
+Rocky Linux and AlmaLinux are not commonly supported on IBM Z at this time. The ecosystem
+focuses on RHEL, SLES, and Ubuntu for regulated environments.
 
-“Linux on IBM Z runs standard enterprise Linux distributions (such as RHEL, SLES, or Ubuntu) built for the s390x architecture.”
+== Relationship to UMRS Concepts
 
+For UMRS purposes, IBM Z matters as an architectural reference point in two ways.
+
+First, z/OS demonstrates that MLS-style thinking can survive at scale in production environments
+spanning decades. RACF with SECLABELs, compartmentalization, and trusted administrative paths
+are the same ideas that UMRS applies to RHEL 10 — adapted to a different operating system and
+a different era.
+
+Second, Linux on IBM Z is a supported target for RHEL-compatible deployments. UMRS components
+that run on RHEL on x86_64 run on RHEL on s390x with the same SELinux policy, the same MCS
+labeling mechanism, and the same high-assurance tooling. The s390x hardware provides additional
+cryptographic accelerators and hardware isolation that strengthen the platform posture.
+
+The correct framing for any UMRS deployment on IBM Z is: "Linux on IBM Z runs standard RHEL
+built for the s390x architecture." The underlying UMRS mechanisms are identical.

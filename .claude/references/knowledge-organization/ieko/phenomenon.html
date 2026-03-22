@@ -1,0 +1,941 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<HTML XMLNS="http://www.w3.org/1999/xhtml">
+
+<HEAD PROFILE="http://dublincore.org/documents/2007/11/05/dc-html/">
+<META HTTP-EQUIV="content-type" CONTENT="text/html; charset=utf-8" />
+<TITLE>Phenomenon-based classification (IEKO)</TITLE>
+<LINK REL="stylesheet" TYPE="text/css" HREF="../isko.css" />
+<LINK REL="schema.DCTERMS" HREF="http://purl.org/dc/terms/" />
+
+<META NAME="twitter:card" CONTENT="summary" />
+<META NAME="twitter:url" CONTENT="https://www.isko.org/cyclo/phenomenon" />
+<META NAME="twitter:title" CONTENT="Phenomenon-based classification (ISKO Encyclopedia of KO)" />
+<META PROPERTY="og:image" CONTENT="https://www.isko.org/cyclo/gnoli.jpg" />
+<META NAME="twitter:description" CONTENT="While bibliographic classifications are traditionally based on disciplines, the logical alternative is phenomenon-based classification. Although not prevalent, this approach has been explored in the 20th century by J.D. Brown, the Classification Research Group, and others. Its principles have been stated in the Leon Manifesto (2007) and are currently represented by such general schemes as the Basic Concepts Classification and the Integrative Levels Classification. A phenomenon-based classification lists classes of phenomena, including things and processes irrespective of the discipline studying them (which can optionally be specified as an additional facet). Facets can work in a phenomenon-based system much as in a disciplinary one. This kind of system will promote the identification of potential relationships between research in different disciplines, and will especially benefit interdisciplinary work. The paper reviews the theory, history, structure, advantages, applications, and evaluation of phenomenon-based classification systems." />
+
+<META NAME="DCTERMS.title" CONTENT="Phenomenon-based classification" />
+<META NAME="DCTERMS.creator" CONTENT="Claudio Gnoli" />
+<META NAME="DCTERMS.creator" CONTENT="Rick Szostak" />
+<META NAME="DCTERMS.creator" CONTENT="Richard P. Smiraglia" />
+<META NAME="DCTERMS.issued" CONTENT="2024" />
+<META NAME="DCTERMS.relation.ispartof" CONTENT="ISKO Encyclopedia of Knowledge Organization" />
+<META NAME="DCTERMS.ispartof" CONTENT="ISKO Encyclopedia of Knowledge Organization" />
+<META NAME="DCTERMS:bibliographicCitation" CONTENT="ISKO Encyclopedia of Knowledge Organization, eds. Birger Hjorland and Claudio Gnoli" />
+<META NAME="DCTERMS.subject.classification" SCHEME="DDC" CONTENT="001.012">
+<META NAME="DCTERMS.subject.classification" SCHEME="DDC" CONTENT="025.4">
+<META NAME="DCTERMS.subject.keyword" CONTENT="Disciplines">
+<META NAME="DCTERMS.subject.keyword" CONTENT="Phenomena">
+<META NAME="DCTERMS.subject.keyword" CONTENT="Interdisciplinarity">
+<META NAME="DCTERMS.type" CONTENT="Text" />
+<META NAME="DCTERMS.format" CONTENT="text/html" />
+<META NAME="DCTERMS.identifier" CONTENT="https://www.isko.org/cyclo/phenomenon" />
+
+<STYLE>
+a {text-decoration: none;}
+a:hover {text-decoration:underline;}
+table td, table th { padding: 5px; }
+</STYLE>
+
+</HEAD>
+<BODY>
+
+<A NAME="top"></A>
+
+<TABLE>
+
+<TR>
+<TD ID="isko"><H1>I S K O</H1></TD>
+<TD ID="banner"><H2><A HREF="index.html" STYLE="text-decoration:none;">Encyclopedia of Knowledge Organization</H2></A></TD>
+</TR>
+
+<TR>
+<TD ID="navigation">
+<A HREF="../index.php">home</A>
+<A HREF="../about.html">about ISKO</A>
+<A HREF="../join.html">join ISKO</A>
+<A HREF="../ko.html"><CITE>Knowledge Organization</CITE> journal</A>
+<A HREF="../events.html">ISKO events</A>
+<A HREF="../chapters.html">ISKO chapters</A>
+<A HREF="../people.html">ISKO people</A>
+<A HREF="../pubs.html">ISKO publications</A>
+<A HREF="index.html">Encyclopedia</A>
+<A HREF="../lit.html">KO literature</A>
+<A HREF="../inst.html">KO institutions</A>
+<A HREF="http://bartoc.org/" TITLE="link to BARTOC">&#8663; KOS registry</A>
+<A HREF="https://www.isko-mms.net/" TITLE="access-account required">&#128274; members</A>
+<A HREF="../contact.html">contact us</A>
+</TD>
+<TD ID="content" ROWSPAN="2">
+
+<A CLASS="menu" HREF="authors#hj">edited by Birger Hj&oslash;rland</A> <A CLASS="menu" HREF="authors#g">and Claudio Gnoli</A>
+
+<P>&nbsp;
+
+<DIV ITEMSCOPE ITEMTYPE="http://schema.org/Article">
+
+<H2 ITEMPROP="headline">Phenomenon-based classification</H2>
+
+<BLOCKQUOTE>
+by 
+<A ITEMPROP="author" HREF="authors#g" STYLE="text-decoration:underline">Claudio Gnoli</A>, 
+<A ITEMPROP="author" HREF="authors#s" STYLE="text-decoration:underline">Richard P. Smiraglia</A> and
+<A ITEMPROP="author" HREF="authors#s" STYLE="text-decoration:underline">Rick Szostak</A>
+
+<P>(This article, version 1.0, is a version of an article published in 2024, see <A HREF="#col">colophon</A>.)
+
+<P>Table of contents:
+
+<BR><A HREF="#1">1. Introduction</A> 
+<BR><A HREF="#2">2. Defining <I>phenomenon</I></A> 
+<BR><A HREF="#3">3. Phenomenon-based bibliographic classifications in time</A> 
+<BR><A HREF="#4">4. The structure of a phenomenon-based classification</A> 
+<BR><A HREF="#5">5. Domain analysis and theories of phenomena</A> 
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;<A HREF="#5.1">5.1 Disciplines and domains</A>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;<A HREF="#5.2">5.2 Domain analysis and general classification</A>
+<BR><A HREF="#6">6. Phenomenon-based classification and interdisciplinarity</A> 
+<BR><A HREF="#7">7. Phenomenon-based classification and the Semantic Web</A> 
+<BR><A HREF="#8">8. Phenomenon-based classification across GLAMs</A> 
+<BR><A HREF="#9">9. Further advantages of phenomenon-based classification</A> 
+<BR><A HREF="#10">10. Some applications</A> 
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;<A HREF="#10.1">10.1 Musical phenomena</A>
+<BR>&nbsp;&nbsp;&nbsp;&nbsp;<A HREF="#10.2">10.2 Application in education</A>
+<BR><A HREF="#11">11. Empirical analysis of phenomenon-based classification</A> 
+<BR><A HREF="#12">12. Understanding the domain of phenomenon-based classification</A> 
+<BR><A HREF="#13">13. Concluding remarks</A> 
+<BR><A HREF="#ack">Acknowledgments</A>
+<BR><A HREF="#ref">References</A>
+<BR><A HREF="#col">Colophon</A>
+
+<P ITEMPROP="abstract"><STRONG>Abstract</STRONG>:
+<BR>While bibliographic classifications are traditionally based on disciplines, the logical alternative is phenomenon-based classification. Although not prevalent, this approach has been explored in the 20th century by J.D. Brown, the Classification Research Group, and others. Its principles have been stated in the Le&oacute;n Manifesto (2007) and are currently represented by such general schemes as the Basic Concepts Classification and the Integrative Levels Classification. A phenomenon-based classification lists classes of phenomena, including things and processes irrespective of the discipline studying them (which can optionally be specified as an additional facet). Facets can work in a phenomenon-based system much as in a disciplinary one. This kind of system will promote the identification of potential relationships between research in different disciplines, and will especially benefit interdisciplinary work. The paper reviews the theory, history, structure, advantages, applications, and evaluation of phenomenon-based classification systems.</P>
+
+</BLOCKQUOTE>
+
+<SPAN ITEMPROP="articleBody">
+
+<P ALIGN="right">[<A HREF="#top">top of entry</A>]</P>
+
+<A NAME="1"></A>
+<H3 ITEMPROP="articleSection">1. Introduction</H3>
+
+<P>For centuries, &rarr; <A HREF="library_classification">bibliographic classifications</A> have been based on sets of traditional &rarr; <A HREF="discipline">disciplines</A>. In old libraries, we can indeed see solid-wooden shelves having on their top such signs as &ldquo;Philosophy&rdquo;, &ldquo;History&rdquo;, or &ldquo;English Literature&rdquo;. Librarians acquired a book, examined it, and decided it was a philosophy book rather than a literature book; they then assigned it a code meaning that it was, say, the 123rd book of the eighth shelf of the philosophy section. Such a procedure is intrinsically arbitrary: why, after all, is Montaigne in literature while Pascal is in philosophy? Should Augustine be shelved in philosophy, in theology, or in literature?&hellip;</P>
+
+<P>The advent of such detailed schemes as Dewey's Decimal Classification or the Library of Congress Classification has improved precision, but these schemes are still based on a rigid grid of disciplines as the primary divisions. Dewey's main classes ultimately derive from the disciplines listed in the arts of memory, the arts of imagination and the arts of reason as devised by Juan Huarte, Francis Bacon and William Torrey Harris (<A HREF="#refS">Sales and Pires 2017</A>). Thus, a book on the structure of bridges has to be filed either with architecture books or books on building, or civil engineering, or physics, despite the fact that all four of these perspectives have some relevance to its content: with these systems you cannot express the notion of a book on bridges as such.</P>
+
+<P>The International Society for Knowledge Organization (ISKO)'s Classification System for Knowledge Organization Literature has two different classes for &ldquo;subjects classifications and thesauri&rdquo;, including the classical disciplinary bibliographic schemes, and for &ldquo;objects classifications (taxonomies)&rdquo; (<A HREF="#refD">Dahlberg 1993</A>, 213). Indeed, scientific taxonomies like those developed in biology or linguistics directly list objects of knowledge, that is phenomena &mdash; minerals, plants, languages &mdash; as opposed to the subjects of documents dealing with them, which are covered in bibliographic systems. Of course, each document deals with manifold phenomena and with relationships among them, which could be represented as such (see below); but traditional bibliographic classifications assume that these are best represented by selecting a specific disciplinary perspective, and are indeed described as &ldquo;aspect classifications&rdquo; (<A HREF="#refS">Svenonius 2000</A>; <A HREF="#refS">Slavic 2007</A>, 585). While this is the mainstream approach in bibliographic classification theory, an increasing number of authors is questioning it and supporting the alternative approach of classifying phenomena irrespective of disciplines. This article is an account of their work.</P>
+
+<P>Krishnamurthy et al. (<A HREF="#refK">2023</A>) survey classification systems. Of phenomenon-based classification, they say
+
+<BLOCKQUOTE>
+This is an important new trend in classification for the electronic environment and the Semantic web as they deal with interdisciplinarity, and that can bring new possibilities for authority control, the establishment of relationships, mappings of Linked Open Data (LOD), as well as to develop generic principles of indexing.
+</BLOCKQUOTE>
+
+We will explore these various implications in what follows.</P>
+
+<P>Before proceeding we should briefly note that classification remains important in a world of sophisticated &rarr; <A HREF="ir">information retrieval</A> systems and artificial intelligence (e.g., <A HREF="#refB">Broughton 2006</A>; <A HREF="#refG">Glushko 2013</A>; <A HREF="#refH">Hj&oslash;rland 2012; 2021</A> among others urges a rapprochement between the fields of classification and information retrieval). While these other techniques can often guide us to important bits of information, they often lack accuracy: they do not guide us to the specific information we need (in large part because different authors use different terminology for the same thing). This is especially the case with academic research, where the researcher may need very specific information. The &ldquo;bag of words&rdquo; hypothesis &mdash; that searches for combinations of terms could treat these as independent &mdash; that has guided much research in information retrieval is recognized to be a poor fit for a world in which users often seek information about complex relationships (<A HREF="#refM">Mengle and Goharian 2010</A>). These other techniques may also lead us to biased or misleading types of information. Classification systems allow us to see information in context, and appreciate how any piece of information fits within a broader structure of information. This allows us not only to find what we need but to identify related paths of investigation. Though it is not the main purpose of this paper to justify classification in general, we will touch on some of these issues in what follows: we note in particular our discussion of the Semantic Web, itself an appreciation that classification of information is essential to drawing connections across information repositories, and our discussion of the educational value of classification.</P>
+
+<P ALIGN="right">[<A HREF="#top">top of entry</A>]</P>
+
+<A NAME="2"></A>
+<H3 ITEMPROP="articleSection">2. Defining <I>phenomenon</I></H3>
+
+<P>The word <I>phenomenon</I> as employed in this article has a simple but significant meaning. Phenomena are the objects that scholars study: rocks, trees, atoms, institutions, values, numbers, and more. Notice that the word covers things as well as processes, properties and abstract entities. Phenomena are thus &ldquo;entities that we can observe&rdquo;, though in practice some phenomena such as subatomic particles can only be observed indirectly with special machinery, and others such as cultural attitudes are only imperfectly observable. Our use of the word is thus similar to one common understanding of the term. (Yet there is another usage of the term in which &ldquo;phenomenon&rdquo; signifies something unusual: &ldquo;That band is a phenomenon!&rdquo;) Nor does it imply any particular relationship with phenomenology as a philosophical school. We instead employ <I>phenomenon</I> to mean the many entities of which our natural and social worlds are composed. Our equation of phenomena with objects of study also reflects a long tradition in the knowledge organization literature (cf. <A HREF="#refB">Beghtol 1998</A>; <A HREF="#refM">Mills and Broughton 1977</A>).</P>
+
+<P>As mentioned, a phenomenon-based classification can be distinguished from the discipline-based classifications employed in most of the world's libraries. The Library of Congress Classification, Dewey Decimal Classification, Universal Decimal Classification, and many others take disciplines as their main classes. They each include phenomena within their schedules for particular disciplines. Indeed, the same phenomenon will often appear in the schedules of multiple disciplines. A phenomenon-based classification does not treat disciplines as main classes but instead develops hierarchical schedules of phenomena: a hierarchical classification of living species is developed but is not forced into a main class of &ldquo;biological science&rdquo;. One key implication of this approach is that each phenomenon is treated just once in the schedules, although it can be combined with phenomena listed in other places.</P>
+
+<P>In Medieval philosophy, a discipline had to be about one central <I>subject</I> and consisted in the description of all its properties and relations (<A HREF="#refS">Saccon 2008</A>). This partly happens still today: ornithology is the science of birds, numismatics is the science of currency, and so on. In this sense, classifying phenomena is not very different from classifying the disciplines having them as their core subject (their &ldquo;personality&rdquo; as Ranganathan calls it). However, there are such disciplines as history, philosophy, or education that do not focus on any particular class of phenomena; rather, they can consider many kinds of phenomena in their particular perspective, and largely overlap as to the phenomena studied. Mills and Broughton (<A HREF="#refM">1977</A>, 36) argue that these are the true disciplines or, in Derek Langridge's (<A HREF="#refL">1992</A>) words, &ldquo;forms of knowledge&rdquo;, while their subdivisions according to their subject, such as ornithology and numismatics, should be termed &ldquo;sub-disciplines&rdquo;.</P>
+
+<P ALIGN="right">[<A HREF="#top">top of entry</A>]</P>
+
+<A NAME="3"></A>
+<H3 ITEMPROP="articleSection">3. Phenomenon-based bibliographic classifications in time</H3>
+
+<P>It was especially towards the end of the 19th century that bibliographic classification systems were developed to cover subjects in greater detail. While the disciplinary approach was the norm, the Scottish librarian &rarr; <A HREF="brown">James Duff Brown</A> proposed an early alternative. Brown also authored conventional schemes based on disciplines (<A HREF="#refS">Sales et al. 2021</A>) and studies about classifications in general. However, he later devised a Subject Classification (SC) (<A HREF="#refB">Brown 1906</A>) where subjects should be expressed by privileging their &ldquo;concrete&rdquo; component, then combining it with other components: for example, <CODE>L800W72.10</CODE> &ldquo;commerce, Brazil, history&rdquo;. Main classes in the SC schedules still have disciplinary names (&ldquo;economic biology&rdquo;, &ldquo;social and political science&rdquo;), but Brown recommended that all works dealing with a given concrete be listed under what Farradane would later call its place of unique definition. That is, all works dealing with roses from any viewpoint should be shelved under botany rather than decoration, horticulture, poetry, and so forth, for grouping them would have been more convenient for users. The idea of listing a concept in a single place makes Brown a pioneer in questioning disciplinary viewpoint as the primary criterion of classification, as emphasized by Beghtol (<A HREF="#refB">2004</A>). Satija and Kyrios (<A HREF="#refS">2023</A>, 43, footnote) present this alternative to disciplinary classification in scathing terms, claiming that Brown 
+
+<BLOCKQUOTE>
+tried the other way and failed. He attempted to gather all aspects of a topic in one place. [&hellip;] The resulting collocations were outlandish and often jumbled. For instance, at iron would be gathered iron oxides, iron trains, iron tools, iron industry, clothes irons and tea strainers.
+</BLOCKQUOTE>
+
+However, this example is clearly a caricature: in a real phenomenon-based classification, iron oxides would file under oxides, not iron; iron trains would file under trains as an artifact class well separated from the class of oxides, and so on; not to speak of clothes irons, where the term has a different sense. That is, iron will work as a material facet, cited after the key phenomenon, but use of a consistent notation for iron will allow for retrieval of all its occurrences in any combinations.</P>
+
+<P>Some members of the Classification Research Group (CRG) carried out substantial work on non-disciplinary classification in England during the 1960s. The Group had developed a number of special classifications by applying facet analysis as introduced by &rarr; <A HREF="ranganathan">S.R. Ranganathan</A>. As reported by McIlwaine (<A HREF="#refM">1993</A>), 
+
+<BLOCKQUOTE>
+Barbara Kyle moved away from the traditional approach to classification, depending upon a basis of disciplines or main classes, but she retained Ranganathan's fundamental categories of Personality and Energy, analyzing the Social Sciences under these two major categories and organizing the containing concepts on the principle of &lsquo;levels of integration&rsquo; or &lsquo;levels of complexity&rsquo;.
+</BLOCKQUOTE>
+
+Kyle also participated in an Idea-Systems Group led by biologist Julian Huxley, pursuing &ldquo;his insistence that a new synthesis of knowledge was needed to transcend traditional disciplines and subject boundaries&rdquo; (<A HREF="#refO">Oakley 2011</A>). At the famous conference held in Dorking, UK, where basic discussion on the faceted approach to classification took place
+
+<BLOCKQUOTE>Miss Kyle said that we should start our classifications with specific things, not with disciplines. Disciplines arose for professional not intellectual reasons. We must ignore them and classify the objects of study, introducing division by disciplines only at a secondary stage. (<A HREF="#refP">Proceedings... 1957</A>, 96)
+</BLOCKQUOTE>
+
+Related views had been expressed at the same conference by &rarr; <A HREF="vickery">Brian Vickery</A> (<A HREF="#refV">1957</A>, 43): &ldquo;the use as main classes of conventional, heterogeneous, overlapping academic &lsquo;disciplines&rsquo; is to me unsatisfactory. A new basis for dividing up knowledge into more homogeneous &lsquo;subject fields&rsquo; is needed&rdquo;; Vickery would return to this subject many years later (<A HREF="#refG">Gnoli 2012</A>).</P>
+
+<P>The CRG approach was discussed especially by &rarr; <A HREF="foskett">Douglas Foskett</A> (<A HREF="#refF">1961; 1970</A>) and tested in the draft of a new general classification for a NATO-funded project, involving Derek Austin and others (<A HREF="#refA">Austin 1969; 1976</A>). Before that, the CRG had only produced faceted classifications for special domains or macro-domains. The NATO draft of a general scheme lists general relative terms like &ldquo;very&rdquo;, positional terms like &ldquo;atmosphere&rdquo;, properties like &ldquo;weight&rdquo;, activities like &ldquo;increase&rdquo; and finally entities sorted by &rarr; <A HREF="integrative_levels">integrative levels</A>: <CODE>A</CODE> &ldquo;general systems&rdquo;, <CODE>B</CODE> &ldquo;phenomena and energy&rdquo;, <CODE>C</CODE> &ldquo;matter&rdquo;, <CODE>D</CODE> &ldquo;mineral systems&rdquo;, <CODE>E</CODE> &ldquo;life support systems&rdquo;, <CODE>G</CODE> &ldquo;astonomical universe&rdquo;, <CODE>H</CODE> &ldquo;Earth&rdquo;, <CODE>J</CODE> &ldquo;atmosphere&rdquo;, <CODE>K</CODE> &ldquo;liquid layers&rdquo;, <CODE>L</CODE> &ldquo;land forms&rdquo;, <CODE>M</CODE> &ldquo;geo-centered living systems&rdquo;, <CODE>N</CODE> &ldquo;viruses&rdquo;, <CODE>P</CODE> &ldquo;organisms sharing characteristics of animals and plants&rdquo;, <CODE>Q</CODE> &ldquo;plants&rdquo;, <CODE>R</CODE> &ldquo;animals&rdquo;, <CODE>S</CODE> &ldquo;man&rdquo;. These allow the production of such compounds as <CODE>G45(3)r16</CODE> &ldquo;galaxies, evolution&rdquo; (<A HREF="#refC">Classification Research Group 1969</A>, 129). As can be seen, classes for the social and human sciences were not developed, making some commentators to believe that CRG's approach was only suitable for the natural sciences (despite Kyle's previous work on &rarr; <A HREF="social_sciences">social sciences</A>).</P>
+
+<P>The NATO project was not continued, but stands as a key experiment and would later inspire the &rarr; <A HREF="ilc">Integrative Levels Classification</A>. Several features were soon applied by Austin in the structure of &rarr; <A HREF="precis">PRECIS</A>, the verbal indexing system developed for the British National Bibliography. Other CRG members were more inclined to the development of a disciplinary scheme, which became the second edition of Bliss Bibliographic Classification (BC2). Still it is interesting to see that BC2 provides for an initial class of phenomena viewed in an interdisciplinary way, which is unfortunately not developed in the schedules (<A HREF="#refG">Gnoli 2005</A>). The BC2 introduction says that 
+
+<BLOCKQUOTE>
+[t]he phenomena in the BC constitute a new feature which has not been attempted before in a general classification, although studies undertaken by the Classification Research Group in London looked closely at the problems involved (<A HREF="#refC">Classification Research Group 1969</A>). These phenomena classes are designed to take that literature on a given concept (entity, attribute, process) which treats it from the viewpoint of several or all disciplines. (<A HREF="#refM">Mills and Broughton 1977</A>, 52)
+</BLOCKQUOTE>
+
+A similar class <CODE>088</CODE> for &ldquo;phenomena &amp; entities from a multi or non-disciplinary point of view&rdquo; is listed in &rarr; <A HREF="coates">Eric Coates</A>' Broad System of Ordering, and could be combined with disciplinary classes. One would imagine that its subclasses can be filled by the NATO scheme of phenomena.</P>
+
+<P>As often happens, at about this same time a separate enterprise generated a phenomenon-based geographical classification. Devised as the ontological basis of the first edition of the <I>Worldmark Encyclopedia of the Nations</I> (1960), the Sachs Classification was first outlined in 1965 (<A HREF="#refS">Sachs and Smiraglia 2004</A>). Departing from disciplinarity, the classification claimed to use &ldquo;academic warrant&rdquo;, meaning that it purports to trace the development of thought as it evolves in academe. Further &ldquo;The Sachs Classification (SC) targets direct access to details rather than to subject areas and titles&rdquo; (<A HREF="#refS">Sachs and Smiraglia 2004</A>, 168). Although no notation was ever developed, the SC used a numerical hierarchy to identify individual geographic phenomena, which then could be combined to express complex concepts: 
+
+<BLOCKQUOTE>Thus, for example, materials generated by the United Nations on the question of the Law of the Sea might traditionally be classified under Law and its subdivision Admiralty Law. When classified by SC it will be intra- and interdisciplinary and appear under Law, Admiralty Law, Nutrition, Plankton, Fish, Mining, Metallurgy, Military Uses, Common Heritage, Sovereignty, and other specific items discussed during the meeting of the UN Law of the Sea Commission. Essentially, SC uses a system of domain-specific facet formulas generated from the appropriate information ecologies. (<A HREF="#refS">Sachs and Smiraglia 2004</A>, 170&ndash;171)</BLOCKQUOTE></P>
+
+<P>Ingetraut Dahlberg's Information Coding Classification (ICC) (<A HREF="#refD">Dahlberg 1982</A>) also claims to avoid disciplines as primary classes, and is based on nine &ldquo;object areas&rdquo; including &ldquo;shapes and structures, energy and matter, cosmos and earth, organic, human-sphere animated being, social, economics and technology, products of human activity, cultural area&rdquo;. These, however, can only be divided by such categories as &ldquo;theory&rdquo;, &ldquo;methods&rdquo;, &ldquo;applications&rdquo;, giving a matrix of fields of knowledge rather than one of phenomena (ideally, by using <CODE>0</CODE> as the second digit to express the objects of an area, one could express phenomena; but Dahlberg did not react to this suggestion).</P>
+
+<P>Interest in phenomenon-based classification has been reviving and has become more explicit since the 2000s, as two projects have been developed in parallel and partly in collaboration. The Integrative Levels Classification (ILC) resumed CRG studies to develop, as expressed in its name, a general scheme of levels of phenomena that can be combined by &ldquo;free facets&rdquo; as well as specified by &ldquo;bound facets&rdquo; (<A HREF="#refG">Gnoli 2016&ndash;2018; 2020</A>). Started in 2004 and led by Claudio Gnoli, the project has involved in time researchers from several countries, including Enzo Cesanelli, Hong Mei, Rick Szostak, Rodrigo de Santis, Ziyoung Park, Douglas Tudhope, Ceri Binding, Michael Kleineberg, Marcin Trzmielewski, Patr&iacute;cia de Almeida, and Emanuela Valenzano among others. Szostak is also the author of the &rarr; <A HREF="bcc">Basic Concepts Classification (BCC)</A> (<A HREF="#refS">Szostak 2020</A>). The BCC first fleshed out classifications of human science phenomena developed in Szostak (<A HREF="#refS">2003</A>) and Szostak (<A HREF="#refS">2004</A>), and classifications of methods and theory types from Szostak (<A HREF="#refS">2004</A>); the natural science schedules were fleshed out with the help of Hannah Friesen. The BCC has devoted considerable attention to classifying causal (and other types of) relators so that most documents (or objects or ideas) could receive a subject heading of a form such as &ldquo;phenomenon X&rdquo;, &ldquo;exerts effect N on&rdquo;, &ldquo;phenomenon Y&rdquo;. Since most documents make causal arguments of this type, such a subject heading best captures the essence of the work. Smiraglia and Szostak have in several works investigated the precision of BCC subject headings (see <A HREF="#refS">Smiraglia and Szostak 2018</A>). Renwick and Szostak (<A HREF="#refR">2020</A>) developed the prototype of a thesaural interface that could be employed with the BCC.</P>
+
+<P>Ideas common to both ILC and BCC were made explicit just after the 8th ISKO Spain conference held in Le&oacute;n in 2007, which was devoted to the interdisciplinarity and transdisciplinarity of knowledge. Gnoli, Szostak, Mela Bosch, Maria L&oacute;pez-Huertas, Blanca Rodr&iacute;guez Bravo, Philippe Cousson, and others subscribed and discussed a &ldquo;Le&oacute;n Manifesto&rdquo; published on the Web (<A CLASS="menu" HREF="http://www.iskoi.org/ilc/leon.php">http://www.iskoi.org/ilc/leon.php</A>) then in <I>Knowledge Organization</I> 34, no. 1: 6&ndash;8. The manifesto consists of five points:
+
+<UL>
+<LI>The current trend towards an increasing interdisciplinarity of knowledge calls for essentially new &rarr; <A HREF="kos">knowledge organization systems (KOS)</A>, based on a substantive revision of the principles underlying the traditional discipline-based KOS.</LI>
+<LI>This innovation is not only desirable, but also feasible, and should be implemented by actually developing some new KOS.</LI>
+<LI>Instead of disciplines, the basic units of the new KOS should be phenomena of the real world as it is represented in human knowledge.</LI>
+<LI>The new KOS should allow users to shift from one perspective or viewpoint to another, thus reflecting the multidimensional nature of complex thought. In particular, it should allow them to search independently for particular phenomena, for particular theories about phenomena (and about relations between phenomena), and for particular methods of investigation.</LI>
+<LI>The connections between phenomena, those between phenomena and the theories studying them, and those between phenomena and the methods to investigate them can be expressed and managed by analytico-synthetic techniques already developed in faceted classification.
+</LI>
+</UL></P>
+
+<P>Based on the aforementioned studies and schemes, we now turn to considering how any phenomenon-based classification may be structured.</P>
+
+<P ALIGN="right">[<A HREF="#top">top of entry</A>]</P>
+
+<A NAME="4"></A>
+<H3 ITEMPROP="articleSection">4. The structure of a phenomenon-based classification</H3>
+
+<P>The main feature of a phenomenon-based classification is that its main classes consist in a list of phenomena types. These may be limited to some kind of phenomena, for example, social phenomena in Kyle's system, or encompass all possible subjects. As compared to a disciplinary faceted classification, like Ranganathan's Colon Classification or BC2, a phenomenon-based classification lacks the initial specification for the discipline (&ldquo;botany&rdquo;) and directly starts with the equivalent of the personality/thing facet (&ldquo;plants&rdquo;), possibly followed by other facets.</P>
+
+<P>Clearly, plant classes and their subclasses will be listed hierarchically in a way similar to that of the thing facet of botany in a disciplinary system. However, defining classes as sets of phenomena has important consequences for the logic of facets and concept combinations (<A HREF="#refG">Gnoli 2006; 2024</A>). Indeed, while &ldquo;botany of conifers&rdquo; may have a &ldquo;method&rdquo; facet, &ldquo;conifers&rdquo; cannot, as they just represent a natural phenomenon having no method. Also, &ldquo;conifers&rdquo; may occur as the object illustrated in a &ldquo;decoration&rdquo;, like in Brown's previous example, while there are no decorations illustrating the botany of conifers. (Colon's &ldquo;subject device&rdquo; does allow one to combine, e.g., &ldquo;literature&rdquo; and &ldquo;zoology&rdquo; to classify literary works about animals, but the resulting combination is logically inconsistent, as it would literally mean &ldquo;literature dealing with the discipline of zoology&rdquo; &mdash; an unlikely document subject.)</P>
+
+<P>Lists of phenomena may be more enumerative or more synthetic, two options explored already in 17th-century philosophical languages by John Wilkins and George Dalgarno, respectively (<A HREF="#refM">Maat 2004</A>). As suggested in its name, the Basic Concepts Classification is very synthetic, for example, &ldquo;persuade&rdquo; is obtained by combining the notation for &ldquo;control&rdquo; and &ldquo;talk&rdquo; [control by talk]; in this respect, ILC is more enumerative. A synthetic notation tends to increase recall in information retrieval, as searching for &ldquo;control&rdquo; will also yield documents about &ldquo;persuade&rdquo;; on the other hand, exceeding synthesis will reduce precision, as one probably does not want documents about oxygen when searching for water supply. Cross-references (&ldquo;water&rdquo;, see also &ldquo;oxygen&rdquo;) in information systems may then suggest related concepts without including them in search by default.</P>
+
+<P>The next problem in structuring a phenomenon-based system is how phenomena should be ordered. Disciplinary classifications have followed traditional orders, such as the sequence of the arts of reason, of imagination and of memory (Dewey), or gradation by speciality (Bliss), or increasing artificiality (Colon). However, these principles hardly make sense in the case of phenomena. As we have seen, the known examples of phenomenon-based classifications rather follow a sequence of integrative levels of increasingly organized entities, which is acknowledged to roughly correspond to gradation in speciality (<A HREF="#refM">Mills and Broughton 1977</A>). Indeed, the sequence of atoms, molecules, cells, and so forth is quite parallel to that of physics, chemistry, biology, and so forth, although there are such disciplines as philosophy, history, and education that do not correspond to any particular class of phenomena.</P>
+
+<P>Besides entities, a phenomenon-based classification needs to express some entity properties, such as &ldquo;big&rdquo;, &ldquo;red&rdquo;, or &ldquo;ancient&rdquo;. As mentioned, the NATO draft lists some of these as &ldquo;relative terms&rdquo;, &ldquo;positional terms&rdquo;, &ldquo;properties&rdquo;, and &ldquo;activities&rdquo; that can be combined with entities. A similar approach is found in BCC that has a class for &ldquo;properties&rdquo;, all beginning with <CODE>Q-</CODE>. This structure is similar to that of &rarr; <A HREF="thesaurus">thesauri</A> and <A HREF="ontologies">ontologies</A> where properties, processes, and so forth are top terms and all possible properties and processes are listed under them. A different approach is adopted in ILC, where properties that are specific to certain entities are listed under their entities as a special &rarr; <A HREF="facet">facet</A>: thus, for example, <CODE>j8</CODE> &ldquo;latitude&rdquo; is a special facet of <CODE>j</CODE> &ldquo;land; regions&rdquo;, as regions have latitude but, say, emotions do not; there are also properties common to all entities such as <CODE>86u</CODE> &ldquo;much&rdquo;. In modern classifications, synthesis often takes the form of combining such property facets to specify the attributes of a given class, so that a classmark may consist of a basic class followed by one or more facets.</P>
+
+<P>Entities and their properties can then be combined with other entities by relators. This is a special strength of phenomenon-based classification: indeed, defining classes as phenomena allows for free combination of any of them, while this is not always possible or makes sense with disciplines. Plants can take the role of a building material or of the subject of a painting, but the concept of botany hardly makes combinations with that of engineering reasonable, even in such disciplinary systems as Colon that allow this, as remarked above (in other disciplinary systems, like Dewey, this is simply not allowed).</P>
+
+<P>Austin devised general &ldquo;operators&rdquo; for the NATO system that are expressed by numerals in brackets, like <CODE>(4)</CODE> &ldquo;active subsystem&rdquo;. These are found again in his PRECIS, and seem to work in the same way as facet indicators introducing the role of the following entity. A similar function is performed in ILC by &ldquo;free facets&rdquo;, as this classification generalizes the notion of facet to mean any property or relationship. BCC connects entities by &ldquo;relators&rdquo; expressed by various symbols, especially arrows standing for causal relationships that are considered to be especially important.</P>
+
+<P>According to Vickery, activities meant as human operations and purposes are a separate dimension that can be combined with classes of phenomena: plants can be treated in agriculture, or in commerce, and so forth (<A HREF="#refG">Gnoli 2012</A>). Vickery acknowledged that such activities are cognate to traditional disciplines. This idea introduces a further kind of classmark components, called &ldquo;dimensions&rdquo; by Gnoli (<A HREF="#refG">2016&ndash;2018</A>, part 1), that can in turn be combined much in the same way as the Le&oacute;n Manifesto recommends to combine phenomena, theories, and methods. While phenomena and their properties have priority in citation order, it may be worthwhile to specify after them the particular perspective under which they are treated, including theory, method, Vickery's activity or discipline itself (&ldquo;plants, studied in agronomy&rdquo;). In this way, information on the disciplinary approach is recuperated though kept separated from information on phenomena. Further additional dimensions may be features of the document where the phenomena are discussed, such as its form, &rarr; a <A HREF="genre">genre</A>, medium and size; and the institutions where they are collected, such as library, archive, museum, Web, and so forth. The last point in the Le&oacute;n Manifesto claims that such connections &ldquo;can be expressed and managed by analytico-synthetic techniques already developed in faceted classification&rdquo;: ILC indeed expresses them by dimensional facets beginning with <CODE>0</CODE>-, giving, for example, <CODE>mp07tu007cu</CODE> for plants (<CODE>mp</CODE>), studied in (<CODE>07</CODE>) agronomy (-<CODE>tu</CODE>), as in (<CODE>007</CODE>) atlases (-<CODE>cu</CODE>).</P>
+
+<P>As can be seen, synthetic techniques are largely employed in phenomenon-based classifications, although some of them were available already in disciplinary systems since the times of Otlet (1868&ndash;1944), the creator of the Universal Decimal Classification (cf. <A HREF="#refO">Otlet 1990</A>). Synthesis seems to be particularly suitable for the phenomenon-based approach, as it enables classifiers to represent in an explicit way the relationships between different phenomena, which are the most substantial content of most research and documents.</P>
+
+<P ALIGN="right">[<A HREF="#top">top of entry</A>]</P>
+
+<A NAME="5"></A>
+<H3 ITEMPROP="articleSection">5. Domain analysis and theories of phenomena</H3>
+
+<P>One objection to phenomenon-based classification is that concepts of phenomena are <I>theory-laden</I>, to use Hanson's (<A HREF="#refH">1958</A>) expression. As emphasized in the famous book by Kuhn (<A HREF="#refK">1962</A>), any scientific concept depends on the theory that describes it: the phenomenon of gravitational waves depends on a particular theory of physics that assumes their existence, but its status can be different in a different theory. This makes it questionable whether phenomena can be separated by the perspective dimension: that is, whether the concept of elephants can exist outside zoology (<A HREF="#refG">Gnoli et al. 2016</A>).</P>
+
+<P>No doubt, even a phenomenon-based classification reflects knowledge at the time of its creation and needs to be updated from time to time. Indeed, ongoing research may find that some phenomenon concepts, such as &ldquo;continental drift&rdquo;, need to be abandoned or amended (<A HREF="#refT">Thagard 1993</A>), while other concepts are corroborated by experimental results, as happened with &ldquo;gravitational waves&rdquo; when they were observed directly in 2015. Most medium-scale phenomena, such as &ldquo;volcanoes&rdquo; or &ldquo;insurance companies&rdquo;, are defined in a more stable way, making them a useful unit of knowledge. In any case, there generally is a quite clear distinction between a postulated phenomenon, such as &ldquo;gravitational waves&rdquo;, and the theory discussing it, such as general relativity. The main point of the phenomenon-based approach is that the former should be given priority, whatever its future evolution as a concept.</P>
+
+<P>Dependence of a concept on a particular theory is especially emphasized in &rarr; <A HREF="domain_analysis">domain analysis</A>. Domain analysis is a methodological paradigm developed for the extraction of ontological data from specific named and bounded knowledge environments. The objective of domain analysis is to provide a contextual setting for a specific array of phenomena. Domain analysis was first proposed as a methodological paradigm in information science in 1995 by Hj&oslash;rland and Albrechtsen (<A HREF="#refH">1995</A>). Their proposal was extended to the knowledge organization community in 1998 (<A HREF="#refH">Hj&oslash;rland and Albrechtsen 1998</A>). Individual methodological approaches were expounded by Hj&oslash;rland (<A HREF="#refH">2002</A>). Evolution of the paradigm in the knowledge organization community was rapid. In 2003 Tennis refined &ldquo;axes&rdquo; of domains &mdash; their intension or depth, and extension or external boundaries (<A HREF="#refT">Tennis 2003</A>).</P>
+
+<P>The emergence of domain analysis was connected to a turn towards post-modernity and thus away from &ldquo;universal&rdquo; approaches to the organization of knowledge. Mai (<A HREF="#refM">1999</A>) outlined this shift, pointing out the necessity for knowledge organization systems to be epistemologically grounded, which thus presented a rationale for divergent solutions for divergent domains.</P>
+
+<P>Individual domain analytical studies covered a large variety of domains, and thus of phenomena associated with them. In 2012 and 2015, Smiraglia analyzed the progress of the paradigm in knowledge organization from Hj&oslash;rland's (<A HREF="#refH">2002</A>) catalytic paper and produced a refined list of specific methods (<A HREF="#refS">Smiraglia 2015</A>, 97):
+
+<UL>
+<LI>Subject pathfinders</LI>
+<LI>Special classifications and thesauri</LI>
+<LI>Empirical user studies</LI>
+<LI>Informetric studies</LI>
+<LI>Historical studies</LI>
+<LI>Document and genre studies</LI>
+<LI>Epistemological and critical studies</LI>
+<LI>Terminological studies</LI>
+<LI>Database semantics</LI>
+<LI>Discourse analyses</LI>
+<LI>Cognition, expert knowledge and AI</LI>
+</UL>
+
+<P>The methods used most are informetric analysis and discourse analyses, both of which are heavily reliant on context.</P>
+
+<P>The definition of domain comes from Smiraglia's meta-analysis (<A HREF="#refS">Smiraglia 2012</A>, 114):
+
+<BLOCKQUOTE>
+A domain is best understood as a unit of analysis for the construction of a KOS. That is, a domain is a group with an ontological base that reveals an underlying teleology, a set of common hypotheses, epistemological consensus on methodological approaches, and social semantics. If, after the conduct of systematic analysis, no consensus on these points emerges, then neither intension nor extension can be defined, and the group thus does not constitute a domain.
+</BLOCKQUOTE></P>
+
+<P>The notion of &ldquo;a group with an ontological base that reveals an underlying teleology&rdquo; is derived from a synthesis of the 11 approaches to domain analysis cited by Hj&oslash;rland (<A HREF="#refH">2002</A>) and Hj&oslash;rland's exposition on the fundamentals of knowledge organization (<A HREF="#refH">Hj&oslash;rland 2003</A>). Effectively, he asserts the importance of &ldquo;shared activity as the center of ontological development of a community&rdquo; (<A HREF="#bib">Smiraglia 2012</A>, 113). Hj&oslash;rland sees the products of scholarship as teleological, which means:
+
+<BLOCKQUOTE>
+The social activity of a community of scholars is both goal-directed and boundary-driven &mdash; in order to produce knowledge the community must erect an intellectual fortress that protects its members from external influence. Paradigms then arise to defend these [&hellip;] borders [&hellip;] by continually testing and re-testing a set of common hypotheses.
+</BLOCKQUOTE></P>
+
+<P>The idea of social semantics arises from studies of &ldquo;invisible colleges&rdquo; (see <A HREF="#ref">Zuccala 2006</A>), which asserts the importance of the social interaction of scholars in a research community, in particular with regard to the common terminology they generate.</P>
+
+<P>Not surprisingly, domain analysis has been used the most in the knowledge organization arena for the study of the evolution of the knowledge organization domain itself. Guimar&atilde;es et al. (<A HREF="#refG">2014</A>) and Guimar&atilde;es and Tognoli (<A HREF="#refG">2015</A>) introduced the use of Bardinian content analysis and also extended the paradigm into archival knowledge organization (<A HREF="#refG">Guimar&atilde;es and Tognoli 2015</A>). L&oacute;pez-Huertas was among the most prolific domain analysts to use informetric techniques; her 2015 approach (<A HREF="#refL">L&oacute;pez-Huertas 2015</A>) to domain analysis for interdisciplinarity brings us full circle to the concept of the extraction of indexable phenomena from an ontological domain. The most recent summary of domain analysis is found in Hj&oslash;rland (<A HREF="#refH">2017</A>).</P>
+
+<P ALIGN="right">[<A HREF="#top">top of entry</A>]</P>
+
+<A NAME="5.1"></A>
+<H4 ITEMPROP="articleSection">5.1 Disciplines and domains</H4>
+
+<P>Are disciplines necessarily domains (cf. <A HREF="#refB">Barit&eacute; and Rauch 2022</A>)? That is, do disciplines generate understandings of key terminology that will be opaque to scholars from other disciplines? One key reason to think otherwise is that disciplines often borrow concepts from another discipline. Bal (<A HREF="#refB">2002</A>), indeed, described the importance of &ldquo;traveling concepts&rdquo; for interdisciplinary research. To be sure, the meaning of concepts might subtly change as they move across disciplines. Yet Bal was quite clear that scholars both could and should seek clarity in definition. Interdisciplinary communication was facilitated only if scholars shared an understanding of the meaning of particular concepts. Interdisciplinary researchers still strive to establish commonalities in understanding across disciplines (<A HREF="#refD">Diphoorn et al. 2023</A>; <A HREF="#refR">Repko and Szostak 2020</A>). Indeed, interdisciplinary scholarship itself might be viewed as a domain (<A HREF="#refS">Szostak et al. 2016</A>, 70).</P>
+
+<P>Szostak (<A HREF="#refS">2011</A>) observed that the greatest problems occur with complex concepts such as &ldquo;globalization&rdquo;. Economists might think of globalization primarily in terms of trade or investment flows, while political scientists think of international organizations and sociologists worry about the effect of American movies on other cultures. Yet economists, political scientists, and sociologists might easily share understandings of trade flows, international organizations, and American movies. Szostak argued that complex concepts could be broken into &ldquo;basic concepts&rdquo; that could be understood in a similar manner across disciplinary boundaries. A phenomenon-based classification should employ basic concepts wherever possible (providing clear definitions where there might be misunderstandings, and explaining how complex concepts are disambiguated).</P>
+
+<P>Szostak (<A HREF="#refS">2011</A>) noted that most, though not quite all, philosophical concept theories pointed to the possibility of shared understandings across both disciplines and cultural groups. The most pessimistic of philosophical concept theories, &ldquo;theory-theory&rdquo; (see <A HREF="#refT">Theory-theory of concepts n.d.</A>) argues that scientific concepts are embedded within theories, and can only be appreciated within the theories of which they form part. Yet it would seem that we have a broadly shared understanding of a concept such as &ldquo;atom&rdquo; or &ldquo;gene&rdquo; without being experts in atomic or genetic theory. It should be possible, then, to understand concepts in a broadly similar manner across disciplines.</P>
+
+<P>In sum, the literature in interdisciplinary studies suggests that concepts can be understood similarly across disciplines (see <A HREF="#refO">O'Rourke et al. 2013</A> in particular). The philosophical literature largely points in the same direction. Szostak (<A HREF="#refS">2011</A>) suggested that a phenomenon-based classification could largely be composed of basic concepts that could be understood similarly across disciplines. We should be careful, then, of assuming that domain analysis requires us to classify each discipline separately. Instead, we should empirically investigate (see below) the degree to which the concepts employed in a phenomenon-based classification can be understood similarly by users from diverse backgrounds.</P>
+
+<P ALIGN="right">[<A HREF="#top">top of entry</A>]</P>
+
+<A NAME="5.2"></A>
+<H4 ITEMPROP="articleSection">5.2 Domain analysis and general classification</H4>
+
+<P>Though domain analysis has often been seen as antithetical to the pursuit of universal classification (<A HREF="#refH">Hj&oslash;rland 2017</A>), if we accept that concepts can be understood in a broadly similar way across disciplines then the pursuit of domain analysis and of a comprehensive phenomenon-based classification can be seen as complements (<A HREF="#refK">Kleineberg 2013</A>). Indeed, domain analysis can usefully inform the development of a phenomenon-based classification. By carefully identifying the key terminology of different fields, and the meanings associated with these terms, domain analysis can inform the efforts of the classificationist to identify and clarify the concepts employed in a phenomenon-based classification. &ldquo;[W]e first identify the terms and their competing definitions from the many branches of knowledge, and then work consensually towards acceptance of the fundamental ones such that they are sharable and applicable across interdisciplinary domains&rdquo; (<A HREF="#refD">Dervos and Coleman 2006</A>). Szostak, Gnoli, and L&oacute;pez-Huertas (<A HREF="#refS">2016</A>, ch. 6) show how such an effort might be pursued, using the domain analysis of gender studies as an example.</P>
+
+<P>We can close this section by revisiting Bal (<A HREF="#refB">2002</A>) above. She stressed that interdisciplinarity required a shared understanding of terminology (see also <A HREF="#refP">Palmer 2010</A>). Lambe (<A HREF="#refL">2011</A>) has appreciated that classification systems can serve to clarify concepts; indeed, he asserts that this is the first duty of classification. A phenomenon-based classification may thus be important not only for aiding researchers in finding relevant research but in clarifying scholarly terminology. Note that a logical hierarchical classification serves to identify what are the subclasses or superior classes of any concept and also what are not. There are thousands of different definitions of culture in the literature, with important differences across the many disciplines that study culture. A universal phenomenon-based classification can identify precisely which phenomena are subsumed under culture, and which are not (BCC treats art separately, for example). A scholar might still wish to argue for a different definition but at least would have a common starting point from which to deviate.</P>
+
+<P ALIGN="right">[<A HREF="#top">top of entry</A>]</P>
+
+<A NAME="6"></A>
+<H3 ITEMPROP="articleSection">6. Phenomenon-based classification and interdisciplinarity</H3>
+
+<P>The vast bulk of interdisciplinary research involves the study of interactions among phenomena studied in different disciplines. Interdisciplinary research may also &mdash; or sometimes instead &mdash; involve the use of theories or methods or concepts employed in different disciplines. One of the major barriers to interdisciplinary research is ascertaining the state of relevant literatures in different disciplines. Existing classification systems often employ different terminology and different organizing structures for different disciplines. A phenomenon-based classification would instead allow an interdisciplinary researcher to identify quickly all research on a particular phenomenon. Importantly, it should also allow the researcher to identify previous research on the interactions between any pair of phenomena, whatever disciplines might study these. If a researcher is interested in the effect of A on B, being directed to works on the link between A and B will save them from sifting through works on A to find reference to B, and works on B that might mention A (a Boolean search for A and B may help, but will uncover works that do not discuss a causal relationship. Moreover, note that the problems of identifying the relevant terminology multiply if searching for combinations of phenomena).</P>
+
+<P>Theories and methods are also phenomena. It is thus also quite feasible within a phenomenon-based classification to indicate which theories and methods were applied in particular pieces of research, by dimensional facets as shown above. The interdisciplinary researcher can then easily ascertain not only which causal relationships have received attention, but with what theories and methods. The interdisciplinary researcher might then compare results of different theories or methods, and reflect on whether to apply additional theories or methods.</P>
+
+<P>It would be hard to exaggerate the degree to which a phenomenon-based classification could encourage and facilitate interdisciplinary research. At present, researchers are often unsure about which disciplines have investigated particular topics (<A HREF="#refR">Repko and Szostak 2020</A>). They then often have to develop different search strategies for each discipline (note that full text searching will fail to uncover works employing different terminology). The disciplinary structure of knowledge organization systems serves as an active barrier that prevents researchers from finding relevant information in other disciplines (<A HREF="#refP">Palmer 2010</A>). Identifying works that study relationships between particular pairs or sets of phenomena is particularly challenging. Identifying the theories or methods applied requires close reading of particular pieces of research. A phenomenon-based classification can potentially put all of this critical information at a researcher's fingertips. They can quickly identify what has been done in the past and this makes it far easier to identify strategies for further research (<A HREF="#refS">Szostak et al. 2016</A>).</P>
+
+<P>Widespread adoption of a phenomenon-based classification could enhance the rate of advance in scholarly understanding. Root-Bernstein (<A HREF="#refR">1989</A>) showed that the major advances in science have usually reflected interdisciplinary approaches, and cites several Nobel laureates. The literature on &ldquo;undiscovered public knowledge&rdquo; (now often termed &ldquo;literature-based discovery&rdquo;) argues that there are many pieces of understanding strewn across disciplines that if combined would yield surprising and important advances (<A HREF="#refD">Davies 1989</A>; <A HREF="#refS">Swanson et al. 2001</A>). Swanson (<A HREF="#refS">2008</A>) emphasizes the combination of works on how phenomenon A influences B with how B influences C, but also appreciates the value of combining evidence from multiple fields regarding a single causal relationship. The distinct but related literature on serendipity reaches similar conclusions about the value of linking understandings from different disciplines into a causal chain (<A HREF="#refW">Workman et al. 2014</A>). A phenomenon-based classification would juxtapose research in diverse fields involving the same phenomena, making it far more likely that combinations will be uncovered. We tend to evaluate information retrieval in terms of whether users find what they are looking for; we should also care very much about whether users are alerted to related paths of exploration (<A HREF="#refW">Warner 2000</A>).</P>
+
+<P ALIGN="right">[<A HREF="#top">top of entry</A>]</P>
+
+<A NAME="7"></A>
+<H3 ITEMPROP="articleSection">7. Phenomenon-based classification and the Semantic Web</H3>
+
+<P>It is well known that the Semantic Web suffers from a lack of interoperability. A great deal of effort has gone into coding information repositories, but this has not occurred in terms of shared terminology. The Semantic Web aspires to connect information across repositories. If one repository says that birds have wings, and another that penguins are birds, a computer can conclude that penguins have wings. This is only possible, though, if the two repositories use the same term for &ldquo;bird&rdquo;.</P>
+
+<P>The Semantic Web requires coding by RDF triples. These take the form subject/predicate/object, with the predicate constituting either a property or a relationship. The subjects and objects may be understood as phenomenon classes, and predicates as the relators/facets that connect them. This can make the representation of a phenomenon-based system more logically consistent than the idiosyncratic structure of a disciplinary system, and its automatic exploitation easier. A phenomenon-based classification can also contain schedules of predicates and properties (see <A HREF="#refS">Szostak 2014; 2020</A> for BCC). Binding et al. (<A HREF="#refB">2021</A>) describe the representation of ILC second edition as SKOS RDF. Phenomena have been expressed as SKOS classes and their special facets as properties. Interestingly, these are sub-properties of general categories, for example, <CODE>j8</CODE> &ldquo;latitude&rdquo; is a sub-property of <CODE>8</CODE> &ldquo;quantity&rdquo;. The decision has been taken not to list compound classmarks involving several facets in the SKOS release, as these go beyond triples and have innumerable combinations; this may be also an issue for compounds of the &ldquo;control-talk&rdquo; type.</P>
+
+<P>A phenomenon-based classification might provide a basis for achieving interoperability across the Semantic Web if repositories were either coded using terminology from that classification, or if other terminologies were translated into the terminology of the classification (<A HREF="#refM">Marcondes 2013</A>).</P>
+
+<P ALIGN="right">[<A HREF="#top">top of entry</A>]</P>
+
+<A NAME="8"></A>
+<H3 ITEMPROP="articleSection">8. Phenomenon-based classification across GLAMs</H3>
+
+<P>As art galleries and museums have developed an online presence in recent decades, they have sought to classify their holdings in a manner that facilitates search by diverse users. They have not found library classifications particularly useful for this purpose since these have been designed for bibliographic resources and contain many complex concepts.</P>
+
+<P>We have defined phenomena above as the things we study, and noted that most phenomena are things that we can observe. It should not be surprising, then, that a phenomenon-based classification might be useful for galleries and museums. These want to classify objects, which are (examples of) observable phenomena. Some of the objects are important for their typicality (the type of plow used by Egyptian peasants) while others are important for their uniqueness (a particular king's crown). In both cases, a synthetic subject heading that combines multiple phenomena (peasant, king, plow, crown) will be ideal for identifying a particular object and its importance. Note here that works of art can be classified by subject among other things, and that this will also be best facilitated by combining multiple phenomena synthetically (see <A HREF="#refS">Szostak 2016; 2017</A>).</P>
+
+<P>Though archives, like libraries, deal with &rarr; <A HREF="document">documents</A>, they have not found library classifications congenial. As with museums and galleries, archives have also been expanding their online presence in recent decades. They thus have an interest in moving beyond classifying documents by &rarr; <A HREF="provenance">provenance</A> (i.e., who produced them and when) to also classify by subject. Though archives often provide broad advice on the range of subjects addressed in particular collections, they have not generally provided subject access to particular documents. If archivists were guided to do so, they would wish for a controlled vocabulary that employed basic concepts. Since archival documents often discuss the decisions made by organizations to do something about something, they might also be treated by a synthetic approach that can describe the type of decision being made (e.g., law against littering).</P>
+
+<P>Many researchers, both disciplinary and interdisciplinary, seek information from &rarr; <A HREF="lam">museums, archives, galleries, and libraries</A>. Just as scholars would benefit from being able to follow their curiosity across disciplines, they would benefit from being able to explore similar questions across multiple sources of information (<A HREF="#refG">Gnoli 2010</A>). A phenomenon-based approach to classification would make this possible.</P>
+
+<P ALIGN="right">[<A HREF="#top">top of entry</A>]</P>
+
+<A NAME="9"></A>
+<H3 ITEMPROP="articleSection">9. Further advantages of phenomenon-based classification</H3>
+
+<P>We can briefly list some further advantages that are associated with phenomenon-based classification:
+
+<UL>
+<LI>It alleviates the challenge of &ldquo;scatter&rdquo; as outlined by Hood and Wilson (<A HREF="#refH">2001</A>). Donovan (<A HREF="#refD">1991</A>) notes that general users expect all documents about, say, birds, to be located in one place, and thus a system that scatters these does not serve their needs. (We can note, though, that librarians could choose to prioritize any term in a synthetic subject heading for shelving purposes to suit the needs of their users.)</LI>
+<LI>It can instantiate a &ldquo;web-of-relations&rdquo; approach to classification as recommended by Olson (<A HREF="#refO">2007</A>): users should be able to follow their curiosity to related phenomena.</LI>
+<LI>It is thus well suited to a visual user interface that can both alert users to related relationships and allow them to move up and down in logical hierarchies.<BR>
+This in turn facilitates exploratory search.</LI>
+<LI>The schedules in a phenomenon-based classification are both shorter and more logical, since they need not force complex concepts into a hierarchy. This in turn makes it much easier to understand the classification.</LI>
+<LI>The classification is inherently hospitable as many new insights are novel combinations of existing phenomena.</LI>
+<LI>It better captures the nature of documents. Smiraglia (<A HREF="#refS">2001</A>) showed that the nature of a work was the key ideas that a document contained. We have argued above that most documents (at least across most scholarly fields) make causal arguments of the type &ldquo;A has effect N on B&rdquo;. A synthetic phenomenon-based approach to classification represents these core ideas in subject headings.</LI>
+<LI>Humans tend to think naturally in sentences (<A HREF="#refK">Keyton and Beck 2010</A>). Synthetic subject headings sound like sentence fragments. They are thus easier to both understand and remember. As noted above, phenomenon-based classifications encourage a synthetic approach to subject classification.</LI>
+<LI>It can classify ideas as well as documents and objects.</LI>
+</UL>
+
+<P ALIGN="right">[<A HREF="#top">top of entry</A>]</P>
+
+<A NAME="10"></A>
+<H3 ITEMPROP="articleSection">10. Some applications</H3>
+
+<P>Since the beginning of its development, ILC has been tested with some small collections of bibliographic records or digital documents. The very first tests were done by Lorena Zuccolo and Claudio Gnoli on the bibliographic catalogue of Laboratorio Regionale di Educazione Ambientale (LAREA) of Friuli Venezia Giulia. More practice was done with a bibliography on citizen journalism by Enzo Cesanelli, another bibliography focused on a region in Northern Italy, a gateway to Internet Resources for Chemical Research, and the Dandelion Bibliography of Facet Analysis (<A HREF="#refG">Gnoli and Hong 2006</A>; <A HREF="#refH">Hong 2005</A>). As a novel system, ILC evolved quickly and applications had to be updated as a consequence. Such a feedback process allows classificationists to improve both the system and its applications, which is only possible with small collections of some hundreds or thousands of items. Automatic procedures do not seem a good solution in the case of such experimentations, as what is needed is to understand the conceptual structure of the system and its consequences; &rarr; <A HREF="automatic">automatic classification</A> can probably be considered at a later stage.</P>
+
+<P>A more advanced application of ILC was with the BioAcoustic Reference Database (BARD), where faceted classmarks were assigned to scientific articles dealing with research on animal sounds and its methodology kept at a research center of the University of Pavia (<A HREF="#refG">Gnoli et al. 2010</A>). The application included a faceted search interface, automatic parsing of faceted classmarks for caption display, and an interface helping the indexer to quickly identify appropriate classes in the ILC schedules. Such functionalities are important to promote the construction and leveraging of complex classmarks, without discouraging users by the intricacies of sophisticated notation. More recently, this approach is being applied to the more popular domain of traditional feasts as shown in a selection of <I>YouTube</I> videos, so that users can grasp the function of classification in immediate ways (<A HREF="#refG">Gnoli et al. 2023</A>).</P>
+
+<P>It has to be mentioned that ILC notation can also be used in a lighter form, by simply juxtaposing the symbols standing for each relevant theme without connecting them by faceted relationships. This approach is adopted in the Basic Register of Thesauri, Ontologies and Classifications (BARTOC), where what is classified are KOSs themselves rather than documents. The subject scope of KOSs registered in BARTOC is specified by DDC, and part of them also is by ILC, which allows for some comparison of classification by discipline vs. by phenomena (<A HREF="#refG">Gnoli et al. 2018</A>).</P>
+
+<P ALIGN="right">[<A HREF="#top">top of entry</A>]</P>
+
+<A NAME="10.1"></A>
+<H4 ITEMPROP="articleSection">10.1 Musical phenomena</H4>
+
+<P>Music presents an especially intriguing example of the promise of classifying by phenomenon. Music classification has a long and distinguished history (<A HREF="#refM">McKnight 2002</A>; <A HREF="#refS">Smiraglia 1989</A>; <A HREF="#refS">Smiraglia and Young 2006</A>). Music classification schemes have always been created for the organization of musical documents, including recordings; books about music are included in most general bibliographic classifications. The very substantial distinction between the two is that books about music require topical classification, but musical documents are rarely amenable to topical description but rather, must be represented by a cluster of musical characteristics &mdash; in other words, musical phenomena. In academic and performance environments the priority has been on organization of musical documents by medium of performance. That is, primary classes are &ldquo;vocal&rdquo; and &ldquo;instrumental&rdquo;, which in turn are divided by number, usually distinguishing between &ldquo;solo&rdquo; and &ldquo;ensemble&rdquo;, and with only occasional attribution of forms such as &ldquo;cantata&rdquo; or &ldquo;symphony&rdquo;. Many schemas also allow for the representation of physical format such as &ldquo;score&rdquo; (full score, miniature score, conductor score, etc.), and &ldquo;part(s)&rdquo; with occasional combinations of the two. Arguably the most impressive and detailed classification of music in this manner is the scheme created by Dickinson (<A HREF="#refD">2002</A>), which allowed faceted combination of medium and form elements. On the other hand, public libraries circulating LP sound recordings found more amenable the broad classes of the ANSCR (Alpha-Numeric System for Classification of Sound Recordings) classification (<A HREF="#refS">Saheb-Ettaba and McFarland 1969</A>), which could mimic the open bin gatherings of a record shop with such groupings as &ldquo;Operas&rdquo;, &ldquo;Soundtrack Music &hellip;&rdquo;, and &ldquo;Holiday Music&rdquo;. In the 1980s the music schedules of the Dewey Decimal Classification were completely revised to introduce a faceted approach to synthesis of medium and form (<A HREF="#refD">Dewey et al. 1980</A>; <A HREF="#refS">Sweeney 1990</A>); the Universal Decimal Classification had always employed that approach. Thus, at the dawn of the Semantic Web era music classifications, however enmeshed in the organization of performance documents, had essentially collectively exhaustively enumerated the phenomena of musical documents most desired for bibliographic organization (<A HREF="#refL">Lee 2017a</A>; <A HREF="#refS">Smiraglia and Young 2006</A>).</P>
+
+<P>However, the dawn of the Semantic Web coincided not surprisingly with the rise of the music information retrieval (MIR) movement and its swiftly successful creation of systems for music recognition (<A HREF="#refD">Downie 2003</A>). Thus arose an entirely new (to the music bibliographic world) cascade of essential musical phenomena for classification of sound in the Semantic Web. These new phenomena include everything from descriptive metadata about sound capture and replay (duration, date, and place of capture) to otherwise subjective aspects such as &ldquo;mood&rdquo; or &ldquo;emotion&rdquo; and &ldquo;theme&rdquo;, as well as elements identified by user needs surveys as desirable but which have been considered undefinable by musicologists, such as &ldquo;melody&rdquo; or &ldquo;genre&rdquo;.</P>
+
+<P>Thus, recent scholarship has sought to revisit musical phenomena for classification in the Semantic Web, deliberately apart from the classification of musical documents. Lee (<A HREF="#refL">2011; 2015; 2017a; 2017b</A>; <A HREF="#refL">Lee and Robinson 2017</A>) has been the most prolific analyst of musical phenomena, producing detailed analyses of concepts of medium of performance, musical reception, and musical ensembles. Lee et al. (<A HREF="#refL">2018</A>) describe the situation of relationships among phenomena between &ldquo;scientific&rdquo; and &ldquo;bibliographic&rdquo; classifications of musical phenomena. Following on experiments in the use of the BCC for music as part of the &ldquo;Digging Into the Knowledge Graph&rdquo; project (Scharnhorst et al. 2016), further analysis has been underway of how to identify new facets for the classification of musical phenomena and especially to search for a grammar for synthesis of elements of mood or emotional response with aspects of historical period, genre or theme, as well as the more detailed representation of medium of performance (<A HREF="#refG">Griscom et al. 2024</A>; <A HREF="#refL">Lee and Szostak 2022</A>; <A HREF="#refS">Smiraglia and Szostak 2020</A>; <A HREF="#refS">Szostak 2019</A>; <A HREF="#refS">Szostak and Smiraglia 2019</A>). One important insight of this research is that many important aspects of music, including genre (see <A HREF="#refL">Lee and Szostak 2022</A>), purpose (e.g., national anthem), and emotion, can be captured synthetically by linking to other schedules in a general phenomenon-based scheme. Current research is ongoing into the harmonization of musical phenomena with those represented in Semantic Web ontologies such as Polifonia (<A CLASS="menu" HREF="https://polifonia-project.eu/">https://polifonia-project.eu</A>), Musicmoz (<A CLASS="menu" HREF="https://musicmoz.org/">https://musicmoz.org</A>), and so forth.</P>
+
+<P ALIGN="right">[<A HREF="#top">top of entry</A>]</P>
+
+<A NAME="10.2"></A>
+<H4 ITEMPROP="articleSection">10.2 Application in education</H4>
+
+<P>Another important application of the phenomenon-based approach is in educational contexts. Similar to bibliographic services, school programs are traditionally organized in sets of subject matters such as &ldquo;history&rdquo;, &ldquo;literature&rdquo;, &ldquo;science&rdquo;, and so forth. Even more detailed are class names as part of university curricula. However, an increasing number of experts recommend that students are encouraged to identify interdisciplinary connections in knowledge across subject matters, and that education focus on the phenomena studied rather than on disciplines. This has even become a national policy in Finland's education programming since the 2016&ndash;2017 academic year (<A HREF="#refL">Lonka 2018</A>).</P>
+
+<P>Knowledge organization should reflect such interdisciplinarity by providing conceptual schemes that can be used in textbooks as well as in school and public libraries used by students (<A HREF="#refN">Novak 2012</A>; <A HREF="#refS">Soergel 2014</A>). Indeed, several school librarians have proposed that such disciplinary schemes as DDC or UDC are reinterpreted in a non-disciplinary way (e.g., <A HREF="#refC">Cousson 2009</A>). One way to emphasize relationships between concepts is by semantic networks of terms, that can make students aware of hierarchies and associations to be navigated freely, rather than being constrained in the limited logic of each single discipline. It seems that there is a broad field open to new applications, where phenomenon-based classification can work as a guide to explore knowledge.</P>
+
+<P ALIGN="right">[<A HREF="#top">top of entry</A>]</P>
+
+<A NAME="11"></A>
+<H3 ITEMPROP="articleSection">11. Empirical analysis of phenomenon-based classification</H3>
+
+<P>As applications are not numerous yet, opportunities for empirical analyses that have a statistical significance are still limited. What can be done already are qualitative considerations based on experience with applications as described in the previous section. One can also map a phenomenon-based classification to a disciplinary one and consider the more abundant data obtained by using the latter as a bridge. However, phenomena can only be mapped to some &ldquo;interdisciplinary number&rdquo; of the disciplinary system, which will not necessarily convey the same meaning as intended by the original indexers, as these worked in specific disciplinary contexts.</P>
+
+<P>One approach for evaluation is to compare data about resources classified by both a disciplinary and a phenomenon-based system. Szostak et al. (<A HREF="#refS">2016</A>, 104&ndash;106) discuss an initial sample of books on nature conservation held at the University of Pavia ecology library that were classified by both ILC and DDC. Smiraglia and Szostak (<A HREF="#refS">2018</A>) analyzed a random set of 382 documents classified in the Universal Decimal Classification. Each of these was provided with synthetic subject headings using the Basic Concepts Classification. The BCC subject headings were found to be more precise on average. Though BCC subject headings on average involved more distinct terms (3.5 versus 1.5), the notation for BCC subject headings was only slightly longer (10.5 characters versus 7.1). The compact BCC schedules allow each term to be represented concisely.</P>
+
+<P>In a similar vein, Gnoli et al. (<A HREF="#refG">2018</A>) compared the use of ILC and of DDC. They found that 
+
+<BLOCKQUOTE>
+while both DDC and ILC may be used in a post-coordinate way to assign a plurality of classes to each knowledge item, for example, to each KOS listed in BARTOC, the general ordering of items and the display of search results are very different if phenomena are considered as primary grouping criteria instead of disciplines. The same can be observed in the schedules of DDC and ILC main classes if arranged by one or the other system.</BLOCKQUOTE></P>
+
+<P>More data from applications are needed before significant evaluations can be performed. What is expected is that phenomenon-based grouping of items will be especially productive in making interdisciplinary relationships evident, while some groupings under a traditional discipline will be broken, thus challenging some thought habits (<A HREF="#refM">Mills and Broughton 1977</A>, 37, sect. 5.553).</P>
+
+<P ALIGN="right">[<A HREF="#top">top of entry</A>]</P>
+
+<A NAME="12"></A>
+<H3 ITEMPROP="articleSection">12. Understanding the domain of phenomenon-based classification</H3>
+
+<P>Domain analytical techniques, as described above, are very useful for comprehending the depth, breadth, and coherence of an emergent research domain. We have analyzed the literature cited in this paper to present a domain-analytical description of the work from which our interpretation is drawn.</P>
+
+<P>We have cited 119 works in this paper; these works form the data-set for the present analysis. The range of dates of publication spans a little more than a century from 1906 to the present. The mean age of work cited is 12.9 years; the median is 11 years and the mode is 6 years. Another way to look at the chronology is to see that most of the works cited are from 2003 to 2017. The work from 1906 is Brown's <I>Subject Classification</I> that employed the use of &ldquo;concretes&rdquo; instead of discipline-based hierarchies. The majority of the work in this study is work from the current decade by Szostak and Gnoli. Figure 1 shows the distribution of dates of publication.</P>
+
+<div align="center"><figure>
+<img src="phenomenon1.jpg" title="Fig. 1" width="60%">
+<figcaption>Figure 1</figcaption>
+</figure></div>
+
+<P>The drop from 2017 onward does not signal an end to discovery or development of the domain, but represents the effects of the COVID pandemic on research that is highly dependent on conference presentations for forward motion.</P>
+
+<P>The domain, as it were, of phenomenon-based classification is quite focused but the research front, such as it is, clearly centers around Szostak and Gnoli. Twelve first-named authors of 60 papers are cited twice or more; these are shown in Table 1.</P>
+
+<BLOCKQUOTE>
+<TABLE BORDER="1">
+<P><CAPTION><I>Table 1: Authors cited twice or more</I><BR>&nbsp;</CAPTION></P>
+<TR><TD>
+11 Gnoli, Smiraglia<BR>
+10 Szostak<BR>
+7 Lee<BR>
+6 Hj&oslash;rland<BR>
+3 Swanson<BR>
+2 Austin, Beghtol, Dahlberg, Foskett, Guimar&atilde;es, Sales	
+</TD></TR></TABLE>
+</BLOCKQUOTE></P>
+
+<P>The table also shows how clearly the classification of phenomena is centered in the domain of knowledge organization, which in this data set is dominated by Hj&oslash;rland, Beghtol, Dahlberg, and Foskett. Note that the works by Smiraglia cited here are predominantly about domain analysis (or are domain-analytical studies) and those by Lee are predominantly about the classification of music; neither set of papers is directly about the classification of phenomena.</P>
+
+<P>Fifty-one of the works cited appear in 19 journals (including in this case ARIST); these are shown in Table 2.</P>
+
+<BLOCKQUOTE>
+<TABLE BORDER="1">
+<P><CAPTION><I>Table 2: Journal productivity</I><BR>&nbsp;</CAPTION></P>
+<TR>
+<TD>
+21 <I>Knowledge Organization</I><BR>
+5 <I>Journal of Documentation</I><BR>
+5 <I>Journal of the Association for Information Science &amp; Technology</I><BR>
+2 <I>Cataloging &amp; Classification Quarterly</I><BR>
+2 <I>El profesional de la informaci&oacute;n</I><BR>
+2 <I>IKOS Bulletin</I><BR>
+2 <I>Library Trends</I><BR>
+1 <I>Annual Review of Information Science and Technology</I><BR>
+1 <I>ASLIB Proceedings</I><BR>
+1 <I>Bliss Classification Bulletin</I><BR>
+1 <I>Human Factors</I><BR>
+1 <I>Information</I><BR>
+1 <I>International Classification</I><BR>
+1 <I>Journal of Interdisciplinary Studies in Education</I><BR>
+1 <I>Journal of Librarianship</I><BR>
+1 <I>Library Quarterly</I><BR>
+1 <I>Library Review</I><BR>
+1 <I>New Review for Hypermedia &amp; Multimedia</I><BR>
+1 <I>Notes: The Quarterly Journal of the Music Library Association</I><BR>
+</TD>
+</TR>
+</TABLE>
+</BLOCKQUOTE>
+
+<P>The distribution of journals also shows how this domain is anchored in traditional knowledge organization, where journal and conference publications are roughly equivalent venues for research promulgation. Almost half of the journal articles cited occur in <I>Knowledge Organization</I> or its predecessor <I>International Classification</I>. Table 3 shows the 20 conference proceedings cited.</P>
+
+<BLOCKQUOTE>
+<TABLE BORDER="1">
+<P><CAPTION><I>Table 3: Conference papers</I><BR>&nbsp;</CAPTION></P>
+<TR>
+<TD>
+10 ISKO international conferences	10:<BR> 
+&nbsp;&nbsp;&nbsp;2022 (1); 2020 (2); 2018 (3); 2014 (1); 2006 (2); 2004 (1)	<BR>
+5 ISKO regional chapters:<BR>
+&nbsp;&nbsp;&nbsp;ISKO UK 2023 (1), 2011 (2); ISKO Canada/US 2017 (1); ISKO Germany 2008 (1)<BR>
+7 Other:<BR>
+&nbsp;&nbsp;&nbsp;UDC Seminar 2009	<BR>
+&nbsp;&nbsp;&nbsp;Japan Society of Library and Information Science 2005	<BR>
+&nbsp;&nbsp;&nbsp;International Study Conference on Classification for Information Retrieval 1957 (2)	<BR>
+&nbsp;&nbsp;&nbsp;American Society for Information Science 1999	<BR>
+&nbsp;&nbsp;&nbsp;Museums and the Web 2016	<BR>
+&nbsp;&nbsp;&nbsp;Canadian Association for Information Science 2019	<BR>
+</TD>
+</TR>
+</TABLE>
+</BLOCKQUOTE>
+
+<P>Fifteen of the 22 conference papers are from ISKO international or regional chapter conferences. If we consider the 1957 Dorking conference on classification for information retrieval and the UDC seminar to be proximate we can say that 17 of the conference papers cited are situated in the knowledge organization domain. Together with the journal articles cited we see how clearly this work is anchored in KO.</P>
+
+<P>Ten works cited are chapters in anthologies shown in Table 4.</P>
+
+<BLOCKQUOTE>
+<TABLE BORDER="1">
+<P><CAPTION><I>Table 4: Anthologies cited</I><BR>&nbsp;</CAPTION></P>
+<TR>
+<TD>
+<I>The Sayers memorial volume: Essays in librarianship in memory of William Charles Berwick Sayers</I>. Library Association, 1961<BR>
+<I>Cultural frames of knowledge</I>. Ergon, 2012<BR>
+<I>Dimensions of knowledge: Facets for knowledge organization</I>. Ergon, 2017<BR>
+<I>Libraries and information services: Studies in honour of Douglas Foskett</I>. University of London, 1993<BR>
+<I>A critical woman: Barbara Wootton, social science and public policy in the Twentieth century</I>. Bloomsbury Academic, 2011<BR>
+<I>The Oxford handbook of interdisciplinarity</I>. Oxford University Press, 2010<BR>
+<I>Storia dell'ontologia</I>. Bompiani, 2008<BR>
+<I>Literature based discovery</I>. Springer, 2008<BR>
+<I>In celebration of revised 780: Music in the Dewey Decimal Classification edition 20.</I> Music Library Association, 1990<BR>
+<I>The future of classification</I>. Gower, 2000<BR>
+</TD>
+</TR>
+</TABLE>
+</BLOCKQUOTE>
+
+<P>Six could be classified as anthologies centered in knowledge organization, the rest are diverse.</P>
+
+<P>Twenty-nine citations are made to monographs, each is cited once. Five are to classifications (shown in Table 5).</P>
+
+<BLOCKQUOTE>
+<TABLE BORDER="1">
+<P><CAPTION><I>Table 5: Classifications cited as monographs</I><BR>&nbsp;</CAPTION></P>
+<TR>
+<TD>
+Saheb-Ettaba, C. and McFarland, R. B. (1969). <I>ANSCR: The alpha-numeric system for classification of recordings</I>. Bro-Dart<BR>
+Brown, J. D. (1906). <I>Subject Classification: With tables, indexes, etc., for the sub-division of subjects</I>. Library Supply Company<BR>
+Dickinson, G. S. ([1938] 2002). <I>Classification of musical compositions: A decimal-symbol system</I>. Vassar College. HathiTrust digitized by Univ. of Michigan. <A CLASS="menu" HREF="https://hdl.handle.net/2027/mdp.39015040124524">https://hdl.handle.net/2027/mdp.39015040124524</A><BR>
+Dewey, M., Sweeney, R., Clews, J., and Matthews, W. E. (1980). <I>DDC: Dewey Decimal Classification: Proposed revision of 780 music based on Dewey Decimal Classification and relative index</I>. Forest Press<BR>
+Mills, D., and Broughton, V. (1977). <I>Bliss classification. Introduction and auxiliary tables</I>. 2nd. Ed. Butterworth
+</TD>
+</TR>
+</TABLE>
+</BLOCKQUOTE>
+
+<P>The classifications include the earliest work cited, Brown's (<A HREF="#refB">1906</A>) <I>Subject Classification</I>, and three classifications of music.</P>
+
+<P>The remaining monographs are arrayed in Table 6.</P>
+
+<BLOCKQUOTE>
+<TABLE BORDER="1">
+<P><CAPTION><I>Table 6: Monographs cited</I><BR>&nbsp;</CAPTION></P>
+<TR>
+<TD>
+Bal, M. (2002). <I>Traveling concepts in the Humanities</I>. University of Toronto Press<BR>
+Foskett, D. J. (1970). <I>Classification for a general index language: A review of recent research by the Classification Research Group</I>. Library Association<BR>
+Glushko, R. J. (ed.). (2013). <I>The discipline of organizing</I>. Cambridge, MA: MIT Press<BR>
+Hanson, N. R. (1958). <I>Patterns of discovery</I>. Cambridge: Cambridge University Press<BR>
+Kuhn, T. S. (1962). <I>The structure of scientific revolutions</I>. University of Chicago Press<BR>
+Langridge, D. (1992). <I>Classification: Its kinds, elements, systems and applications</I>. Bowker<BR>
+Lonka, K. (2018). <I>Phenomenal learning from Finland</I>. Edita<BR>
+Maat, J. (2004). <I>Philosophical languages in the Seventeenth century: Dalgarno, Wilkins, Leibniz</I>. Springer<BR>
+McKnight, M. (2002). <I>Music classification systems</I>. Music Library Association Basic manual series no. 1. Scarecrow Press and the Music Library Association<BR>
+Novak, J. D. (2012). <I>Learning, creating, and using knowledge: Concept maps as facilitative tools in schools and corporations</I>. 2nd ed. Routledge<BR>
+Repko, A. and Szostak, R. (2020). <I>Interdisciplinary research: Process and theory</I>, 4th ed. Sage<BR>
+Root-Bernstein, R. (1989). <I>Discovery</I>. Harvard University Press<BR>
+Satija, M. P. and Kyrios, A. (2023). <I>A handbook of history, theory and practice of the Dewey Decimal Classification</I>. Facet<BR>
+Smiraglia, R. P. (1989). <I>Music cataloging: The bibliographic control of printed and recorded music in libraries</I>. Libraries Unlimited<BR>
+Smiraglia, R. P. (2001). <I>The nature of &ldquo;a Work&rdquo;: Implications for the organization of knowledge</I>. Scarecrow Press<BR>
+Smiraglia, R. P. (2015). <I>Domain analysis for knowledge organization: Tools for ontology extraction</I>. Chandos Information Professional Series. Elsevier/Chandos<BR>
+Smiraglia, R. P., and Young, J. B. (2006). <I>Bibliographic control of music</I>, 1897&ndash;2000. Scarecrow Press<BR>
+Svenonius, E. (2000). <I>The intellectual foundation of information organization</I>. MIT Press<BR>
+Szostak, R. (2003). <I>A Schema for Unifying Human Science: Interdisciplinary perspectives on culture</I>, Susquehanna University Press<BR>
+Szostak, R. (2004). <I>Classifying science: Phenomena, data, theory, method, practice</I>. Springer<BR>
+Szostak, R., Gnoli, C., and L&oacute;pez-Huertas, M. (2016). <I>Interdisciplinary Knowledge Organization</I>. Springer<BR>
+Thagard, P. (1993). <I>Conceptual revolutions</I>. Princeton University Press<BR>
+</TD>
+</TR>
+</TABLE>
+</BLOCKQUOTE>
+
+<P>The earliest monograph is the 1958 <I>Patterns of discovery</I> by Hanson; the latest are the 2017 work by Szostak, Gnoli and L&oacute;pez-Huertas <I>Interdisciplinary knowledge organization</I> and the 2018 <I>Phenomenal learning from Finland</I> by Lonka. Three apiece are from Smiraglia or Szostak. There is an interesting intermingling of concepts of phenomena from knowledge organization and other disciplines.</P>
+
+<P>Three works cited fit none of the categories described above; one is a PhD. Dissertation, one is an online encyclopedia and one is a set of working notes.</P>
+
+<P>The analysis is consistent with other analyses of the literature of knowledge organization (see, e.g., <A HREF="#refS">Smiraglia 2020; 2023a; 2023b</A>); the majority of references are to journal articles and research conference proceedings, indicating the outline of a cumulative science. In this particular instance, the core aligns with knowledge organization but is surrounded by a fairly broad smattering of interdisciplinarity. The relative prominence of music-related work is an artifact of ongoing research in the representation of musical phenomena. There is a semblance of a growth trend in the evolution of work on phenomenon-based classification peaking just prior to the compilation of the present article.</P>
+
+<P ALIGN="right">[<A HREF="#top">top of entry</A>]</P>
+
+<A NAME="13"></A>
+<H3 ITEMPROP="articleSection">13. Concluding remarks</H3>
+
+<P>Phenomenon-based classification has been pursued for well over a century. It has many potential advantages and may be particularly well-suited to the contemporary world of digital interfaces, widespread interdisciplinarity, the desire to search across multiple databases, and the pursuit via the Semantic Web of the possibility of computerized linking of databases. This paper has described the history and structure of phenomenon-based classification, and suggested some paths for further development, application, and evaluation.</P>
+
+<P>The existing classification systems currently employed in the world's libraries have dedicated institutional support, and benefit from a century of careful revision. It is difficult for a new system to supplant these, no matter how wonderful it may be (see <A HREF="#refK">Knapp 2012</A>). The digital revolution may create some opportunities for a system designed with computers in mind to supplant classifications designed for use with card catalogs. As noted above, museums, galleries, and archives may provide a market for a new classification system.</P>
+
+<P>One possibility is to translate or transform existing classification systems. Cousson (<A HREF="#refC">2009</A>) suggested that the Universal Decimal Classification could be organized around phenomena rather than disciplines. Szostak (<A HREF="#refS">2011</A>) showed how several schedules of the Dewey Decimal Classification could be translated into the terminology of a phenomenon-based classification.</P>
+
+<P>Phenomenon-based classification holds the promise of order, and therefore disambiguated access, to knowledge in the current Semantic Web and beyond. It is, at long last, the answer to Swanson's (<A HREF="#refS">1986</A>) challenge to discover &ldquo;undiscovered public knowledge&rdquo;. It is an ontological breakthrough envisaged over a century ago by Brown (<A HREF="#refB">1906</A>). It seems that now is the time for phenomenon-based classifications to blossom, as did discipline-based classifications in the late 19th and early 20th centuries.</P>
+
+<P>In knowledge organization we live now in a post-modern reality of a diverse mixture of solutions all harmonized to each other in the hope of interoperability. There is clearly usefulness for disciplinary classifications. But there also is a critical need in a global society, connecting a global economy, in a time of challenges as great as climate change and as perverse as increasing rejection of democracy, to create venues for scholarship to penetrate arenas of commonality that have been siloed into silence.</P>
+
+<P>The Semantic Web is promising; the promulgation of knowledge graphs is enticing. But they rely on web-based data coded in a specific way and linked with SPARQL endpoints. As the &ldquo;Digging into the Knowledge Graph&rdquo; project demonstrated, often there is no there there at the endpoints. What is required is a means of classifying raw knowledge itself. Linking phenomena is a critically important advance.</P>
+
+<P>Our analysis demonstrates a thriving movement that began with experiments and had as of 2018 concretized with the evolution of operational classification systems and the appearance of monographs devoted to it. ILC and BCC have arisen in the same years in parallel; they need not compete, both are important advances towards demonstrating the importance of linking phenomena. The case of music is perhaps the clearest, because it liberates us from the notion of classification as shelf-parking and allows us to understand, instead, the virtue of classification as realized ontology.</P>
+
+</SPAN><!-- articleBody ends -->
+
+<P ALIGN="right">[<A HREF="#top">top of entry</A>]</P>
+
+<A NAME="ack"></A>
+<H3>Acknowledgments</H3>
+
+<P>We thank the ARIST editors and anonymous referees for very useful advice.</P>
+
+<P ALIGN="right">[<A HREF="#top">top of entry</A>]</P>
+
+<A NAME="ref"></A>
+<H3>References</H3>
+
+<SPAN ITEMPROP="citation">
+
+<A NAME="refA"></A>
+
+<P>Austin, D. (1969). <I>Prospects for a new general classification. Journal of Librarianship</I>, 1(3), 149&ndash;169.</P>
+
+<P>Austin, D. (1976). The CRG research into a freely faceted scheme. In A. Maltby (Ed.), <I>Classification in the 1970s: A second look</I> (pp. 158&ndash;194). Bingley.</P>
+
+<A NAME="refB"></A>
+
+<P>Bal, M. (2002). <I>Traveling concepts in the humanities</I>. University of Toronto Press.</P>
+
+<P>Barit&eacute;, M., and Rauch, M. (2022). Revisiting domain: Phases of evolution, typology, classification. In D. Aalborg and M. Lykke (Eds.), <I>Knowledge organization across disciplines, domains, services and technologies: Proceedings of the seventeenth international ISKO conference, 6&ndash;8 July 2022</I> (pp. 11&ndash;22). Ergon.</P>
+
+<P>Beghtol, C. (1998). Knowledge domains: Multidisciplinarity and bibliographic classification systems. <I>Knowledge Organization</I>, 25(1/2), 1&ndash;12.</P>
+
+<P>Beghtol, C. (2004). Exploring new approaches to the organization of knowledge: The subject classification of James Duff Brown. <I>Library Trends</I>, 52(4), 702&ndash;718.</P>
+
+<P>Binding, C., Gnoli, C., and Tudhope, D. (2021). Migrating a complex classification scheme to the Semantic Web: Expressing the Integrative Levels Classification using SKOS RDF. <I>Journal of Documentation</I>, 77(4), 926&ndash;945.</P>
+
+<P>Broughton, V. (2006). The need for a faceted classification as the basis of all methods of information retrieval. <I>ASLIB Proceedings</I>, 58(1/2), 49&ndash;72.</P>
+
+<P>Brown, J. D. (1906). <I>Subject classification: With tables, indexes, etc., for the sub-division of subjects</I>. Library Supply Company.</P>
+
+<A NAME="refC"></A>
+
+<P>Classification Research Group. (1969). <I>Classification and information control</I>. Library Association.</P>
+
+<P>Cousson, P. (2009). UDC as a non-disciplinary classification for a high school library. <I>Extensions &amp; Corrections to the UDC</I>, 31, 243&ndash;252.</P>
+
+<A NAME="refD"></A>
+
+<P>Dahlberg, I. (1982). ICC &ndash; Information coding classification: Principles, structure and application possibilities. <I>International Classification</I>, 9(2), 87&ndash;93.</P>
+
+<P>Dahlberg, I. (1993). Knowledge organization: Its scope and possibilities. <I>Knowledge Organization</I>, 20(4), 211&ndash;222.</P>
+
+<P>Davies, R. (1989). The creation of new knowledge by information retrieval and classification. <I>Journal of Documentation</I>, 5(4), 273&ndash;301.</P>
+
+<P>Dervos, D., and Coleman, A. (2006). A common sense approach to defining data, information, and metadata. In G. Budin, C. Schwerz, and K. Mitgutsch (Eds.), <I>Knowledge organization for a global learning society: Proceedings of the Ninth International ISKO conference</I> (pp. 51&ndash;58). Ergon.</P>
+
+<P>Dewey, M., Sweeney, R., Clews, J., and Matthews, W. E. (1980). <I>DDC: Dewey Decimal Classification. Proposed revision of 780 music based on Dewey Decimal Classification and relative index</I>. Forest Press.</P>
+
+<P>Dickinson, G. S. (2002). <I>Classification of musical compositions: A decimal-symbol system</I>. Vassar College, HathiTrust digitized by University of Michigan. Retrieved from <A CLASS="menu" HREF="http://hdl.handle.net/2027/mdp.39015040124524">http://hdl.handle.net/2027/mdp.39015040124524</A>.</P>
+
+<P>Diphoorn, T., Leyh, B. M., Knittel, S. C., Huysmans, M., and Van Goch, M. (2023). Traveling concepts in the classroom: Experiences in interdisciplinary education. <I>Journal of Interdisciplinary Studies in Education</I>, 12(S1), 1&ndash;14.</P>
+
+<P>Donovan, J. M. (1991). Patron expectations about collocation: Measuring the difference between the psychologically real and the really real. <I>Cataloging and Classification Quarterly</I>, 13(2S), 23&ndash;43.</P>
+
+<P>Downie, J. S. (2003). Music information retrieval. <I>Annual Review of Information Science and Technology</I>, 37, 295&ndash;340. <A CLASS="menu" HREF="https://doi.org/10.1002/aris.1440370108">https://doi.org/10.1002/aris.1440370108</A>.</P>
+
+<A NAME="refE"></A>
+<A NAME="refF"></A>
+
+<P>Foskett, D. J. (1961). Classification and integrative levels. In D. J. Foskett and B. I. Palmer (Eds.), <I>The Sayers memorial volume: Essays in librarianship in memory of William Charles Berwick Sayers</I> (pp. 136&ndash;150). Library Association. Republished in <I>Theory of subject analysis: A sourcebook</I>, eds. L.M. Chan, P.A Richmond and E. Svenonius. Libraries Unlimited, 1985, pp. 210&ndash;220.</P>
+
+<P>Foskett, D. J. (1970). <I>Classification for a general index language: A review of recent research by the Classification Research Group</I>. Library Association.</P>
+
+<A NAME="refG"></A>
+
+<P>Glushko, R. J. (Ed.). (2013). <I>The discipline of organizing</I>. MIT Press.<BR>
+View</P>
+
+<P>Gnoli, C. (2005). BC2 classes for phenomena: An application of the theory of integrative levels. <I>Bliss Classification Bulletin</I>, 47, 17&ndash;21.</P>
+
+<P>Gnoli, C. (2006). The meaning of facets in nondisciplinary classifications. In G. Budin, C. Swertz, and K. Mitgutsch (Eds.), <I>Knowledge organization for a global learning society: Proceedings of the ninth international ISKO conference, Vienna, July 4th&ndash;7th, 2006</I> (pp. 11&ndash;18). Ergon.</P>
+
+<P>Gnoli, C. (2010). Classification transcends library business. <I>Knowledge Organization</I>, 37(3), 223&ndash;229.</P>
+
+<P>Gnoli, C. (2012). Vickery's late ideas on classification by phenomena and activities. In A. Gilchrist and J. Vernau (Eds.), <I>Facets of knowledge organization: Proceedings of the ISKO UK second biennial conference, 4th&ndash;5th July 2011, London</I> (pp. 11&ndash;24). Emerald-Aslib.</P>
+
+<P>Gnoli, C. (2016&ndash;2018). Classifying phenomena. Part 1: Dimensions. <I>Knowledge Organization</I>, 43(6), 403&ndash;415; Part 2: Types and levels. <I>Knowledge Organization</I>, 44(1), 37&ndash;54. Part 3: Facets. In R. Smiraglia and H.-L. Lee (Eds.), <I>Dimensions of knowledge: Facets for knowledge organization</I> (pp. 55&ndash;67). Ergon; Part 4: Themes and rhemes. <I>Knowledge Organization</I>, 45(1), 43&ndash;53.</P>
+
+<P>Gnoli, C. (2020). Integrative Levels Classification (ILC). In B. Hj&oslash;rland and C. Gnoli (Eds.), <I>ISKO encyclopedia of knowledge organization</I>. International Society for Knowledge Organization. Retrieved from <A CLASS="menu" HREF="ilc">https://www.isko.org/cyclo/ilc</A></P>
+
+<P>Gnoli, C. (2024). Ranganathan's principles and a fully 'freely faceted' classification. <I>Annals of Library and Information Studies</I>, 71(14), 113-120. Retrieved from <A CLASS="menu" HREF="https://or.niscpr.res.in/index.php/ALIS/article/view/8996">https://or.niscpr.res.in/index.php/ALIS/article/view/8996</A>.</P>
+
+<P>Gnoli, C., and Hong M. (2006). Freely faceted classification for web-based information retrieval. <I>New Review for Hypermedia & Multimedia</I>, 12(1), 61&ndash;63.</P>
+
+<P>Gnoli, C., Kleineberg, M., Ridi, R., and Szostak, R. (2016). The blind knowledge organizers and the elephant: Working notes on Kleineberg's levels of knowing. Retrieved from <A CLASS="menu" HREF="http://www.iskoi.org/ilc/elephant.php">http://www.iskoi.org/ilc/elephant.php</A>.</P>
+
+<P>Gnoli, C., Ledl, A., Park, Z., and Trzmielewski, M. (2018). Phenomenon-based vs. disciplinary classification: Possibilities for evaluating and for mapping. In F. Ribeiro and M. E. Cerveira (Eds.), <I>Challenges and opportunities for knowledge organization in the digital age: Proceedings of the Fifteenth International ISKO conference, Porto, Portugal</I> (pp. 653&ndash;662). Ergon.<BR>
+View</P>
+
+<P>Gnoli, C., Merli, G., Pavan, G., Bernuzzi, E., and Priano, M. (2010). Freely faceted classification for a web-based bibliographic archive: The BioAcoustic reference database. In <I>Wissensspeicher in digitalen R&auml;umen: Nachhaltigkeit, Verf&uuml;gbarkeit, semantische Interoperabilit&auml;t: Proceedings der 11. Tagung der Deutschen Sektion der Internationalen Gesellschaft f&uuml;r Wissenorganisation, Konstanz, 20. bis 22. Februar 2008</I>, eds. Sieglerschmidt, J., Ohly, H.-P. and Mitgutsch, K. Ergon, pp. 124&ndash;134. Retrieved from <I>DLIST</I>: <A CLASS="menu" HREF="http://dlist.sir.arizona.edu/2274/">http://dlist.sir.arizona.edu/2274/</A>.</P>
+
+<P>Gnoli, C., Tudhope, C., Almeida, P., Barbui, R., Binding, C., and Blot, V. (2023). Simpler search in a complex world: Browsing ethnographic videos by freely faceted classmarks. ISKO UK conference 2023, Glasgow. <I>CEUR Workshops</I>. Retrieved from <A CLASS="menu" HREF="https://ceur-ws.org/Vol-3661/06-SHORT-CGnoli-ISKOUK2023.pdf">https://ceur-ws.org/Vol-3661/06-SHORT-CGnoli-ISKOUK2023.pdf</A>.</P>
+
+<P>Griscom, R., Henry, J., Lee, D., Smiraglia, R. P., Szostak, R., and Young, B. (2024). Classifying musical medium of performance. <I>Notes: The Quarterly Journal of the Music Library Association</I> (in press), 80(3), 455&ndash;472.</P>
+
+<P>Guimar&atilde;es, J. A. C., and Tognoli, N. Bolfarini (2015). Provenance as a domain-analysis approach in archival knowledge organization. <I>Knowledge Organization</I>, 42(8), 562&ndash;569.</P>
+
+<P>Guimar&atilde;es, J. A. C., Sales, R., Mart&Iacute;nez-&Aacute;vila, D., and Alenca-Fernandes, M. (2014). The conceptual dimension of knowledge organization in the ISKO proceedings domain: A Bardinian content analysis. In W. Babik (Ed.), <I>Knowledge organization in the 21st century: Between historical patterns and future prospects: Proceedings of the thirteenth international isko conference 19&ndash;22 May 2014, Krak&oacute;w, Poland</I>. Advances in knowledge organization (Vol. 14, pp. 101&ndash;116). Ergon.</P>
+
+<A NAME="refH"></A>
+
+<P>Hanson, N. R. (1958). <I>Patterns of discovery</I>. Cambridge University Press.</P>
+
+<P>Hj&oslash;rland, B. (2002). Domain analysis in information science: Eleven approaches, traditional as well as innovative. <I>Journal of Documentation</I>, 58, 422&ndash;462.</P>
+
+<P>Hj&oslash;rland, B. (2003). Fundamentals of knowledge organization. <I>Knowledge Organization</I>, 30, 87&ndash;111.</P>
+
+<P>Hj&oslash;rland, B. (2012). Is classification necessary after Google? <I>Journal of Documentation</I>, 68, 299&ndash;317.</P>
+
+<P>Hj&oslash;rland, B. (2017). Domain analysis. <I>Knowledge Organization</I>, 44(6), 436&ndash;464. Also available in Hj&oslash;rland, B., and Gnoli, C. (Eds.), <I>ISKO encyclopedia of knowledge organization</I>. Retrieved from <A CLASS="menu" HREF="domain_analysis">https://www.isko.org/cyclo/domain_analysis</A>.</P>
+
+<P>Hj&oslash;rland, B. (2021). Information retrieval and knowledge organization: A perspective from the philosophy of science. <I>Information</I>, 12(3), 135.</P>
+
+<P>Hj&oslash;rland, B., and Albrechtsen, H. (1995). Toward a new horizon in information science: Domain analysis. <I>Journal of the American Society for Information Science</I>, 46, 400&ndash;425.</P>
+
+<P>Hj&oslash;rland, B., and Albrechtsen, H. (1998). An analysis of some trends in classification research. <I>Knowledge Organization</I>, 26, 131&ndash;139.</P>
+
+<P>Hong M. (2005). A phenomenon approach to faceted classification. In Conference of Japan Society of Library and Information Science, Keio University Campus, 22&ndash;23 October 2005. Keio University (in Japanese). English extended abstract at <A CLASS="menu" HREF="http://www.iskoi.org/ilc/phenomenon.php">http://www.iskoi.org/ilc/phenomenon.php</A></P>
+
+<P>Hood, W. W., and Wilson, C. S. (2001). The scatter of documents over databases in different subject domains: How many databases are needed? <I>Journal of the American Society for Information Science and Technology</I>, 52(14), 1242&ndash;1254.</P>
+
+<A NAME="refI"></A>
+<A NAME="refJ"></A>
+<A NAME="refK"></A>
+
+<P>Keyton, J., and Beck, S. J. (2010). Perspectives: Imagining communication as macrocognition in STS. <I>Human Factors</I>, 52(2), 335&ndash;339.</P>
+
+<P>Kleineberg, M. (2013). The blind men and the elephant: Towards an organization of epistemic contexts. <I>Knowledge Organization</I>, 40(5), 340&ndash;362.</P>
+
+<P>Knapp, J. A. (2012). Plugging the &ldquo;Whole&rdquo;: Librarians as interdisciplinary facilitators. <I>Library Review</I>, 61(3), 199&ndash;214.<BR>
+View</P>
+
+<P>Krishnamurthy, M., Satija, M. P., and Mart&iacute;nez-&Aacute;vila, D. (2023). Classification of classifications: Species of library classifications. <I>Cataloging &amp; Classification Quarterly</I>, 61(1), 228&ndash;248. <A CLASS="menu" HREF="https://doi.org/10.1080/01639374.2023.2209068">https://doi.org/10.1080/01639374.2023.2209068</A>.</P>
+
+<P>Kuhn, T. S. (1962). <I>The structure of scientific revolutions</I>. University of Chicago Press.</P>
+
+<A NAME="refL"></A>
+
+<P>Lambe, P. (2011). KOS as enablers to the conduct of science. Paper presented at the ISKO-UK conference. Retrieved from <A CLASS="menu" HREF="https://www.iskouk.org/conf2011/papers/lambe.pdf">https://www.iskouk.org/conf2011/papers/lambe.pdf</A>.</P>
+
+<P>Langridge, D. (1992). <I>Classification: its kinds, elements, systems and applications</I>. Bowker.</P>
+
+<P>Lee, D. (2011). Classifying musical performance: The application of classification theories to concert programmes. <I>Knowledge Organization</I>, 38, 530&ndash;540.</P>
+
+<P>Lee, D. (2015). Consumption, criticism and Wirkung: Reception-infused analysis of classification schemes. <I>Knowledge Organization</I>, 42, 508&ndash;521.</P>
+
+<P>Lee, D. (2017a). <I>Modelling music: A theoretical approach to the classification of notated Western art music</I> (doctoral dissertation). University of London, London. Retrieved from <A CLASS="menu" HREF="http://openaccess.city.ac.uk/17445/">http://openaccess.city.ac.uk/17445/</A>.</P>
+
+<P>Lee, D. (2017b). Numbers, instruments and hands: The impact of faceted analytical theory on classifying music ensembles. <I>Knowledge Organization</I>, 44, 405&ndash;415.</P>
+
+<P>Lee, D., and Robinson, L. (2017). The heart of music classification: Toward a model of classifying musical medium. <I>Journal of Documentation</I>, 74, 258&ndash;277.</P>
+
+<P>Lee, D., Robinson, L., and Bawden, D. (2018). Global knowledge organization, &ldquo;super-facets&rdquo; and music: Universal music classification in the digital age. In F. Ribeiro and M. E. Cerveira (Eds.), <I>Challenges and opportunities for knowledge organization in the digital age: Proceedings of the fifteenth international ISKO conference 9&ndash;11 July 2018, Porto, Portugal</I>. Advances in knowledge organization (Vol. 16, pp. 248&ndash;255). Ergon.</P>
+
+<P>Lee, D., and Szostak, R. (2022). Classifying musical genres: Building musical form and genre into BCC: Repurposing LCGFT terms for music into the basic concepts classification. <I>Knowledge Organization</I>, 49(4), 257&ndash;272.</P>
+
+<P>Lonka, K. (2018). <I>Phenomenal learning from Finland</I>. Edita.</P>
+
+<P>L&oacute;pez-Huertas, M. J. (2015). Domain analysis for interdisciplinary knowledge domains. <I>Knowledge Organization</I>, 42, 570&ndash;580.</P>
+
+<A NAME="refM"></A>
+
+<P>Maat, J. (2004). <I>Philosophical languages in the seventeenth century: Dalgarno, Wilkins, Leibniz</I>. Springer.</P>
+
+<P>Mai, J.-E. (1999). A postmodern theory of knowledge organization. <I>Information Today</I>, 62, 547&ndash;556.</P>
+
+<P>Marcondes, C. H. (2013). Knowledge Organization and representation in digital environments. <I>Knowledge Organization</I>, 40(2), 115&ndash;122.</P>
+
+<P>McIlwaine, I. C. (1993). The work of the classification research group. In M. Humby (Ed.), <I>Libraries and information services: Studies in honour of Douglas Foskett</I> (pp. 11&ndash;20). Institute of Education Library, University of London.</P>
+
+<P>McKnight, M. (2002). <I>Music classification systems</I>. Music Library Association basic manual series no. 1. Scarecrow Press and the Music Library Association.</P>
+
+<P>Mengle, S. S. R., and Goharian, N. (2010). Detecting relationships among categories using text classification. <I>Journal of the American Society for Information Science and Technology</I>, 61, 1046&ndash;1061.</P>
+
+<P>Mills, D., and Broughton, V. (1977). <I>Bliss classification. Introduction and auxiliary tables</I> (2nd ed.). Bliss Classification Association.</P>
+
+<A NAME="refN"></A>
+
+<P>Novak, J. D. (2012). <I>Learning, creating, and using knowledge: Concept maps as facilitative tools in schools and corporations</I> (2nd ed.). Routledge.</P>
+
+<A NAME="refO"></A>
+
+<P>Oakley, A. (2011). High barn, and the other Barbara. In <I>A critical woman: Barbara Wootton, social science and public policy in the twentieth century</I> (pp. 235&ndash;248). Bloomsbury Academic. Retrieved from <A CLASS="menu" HREF="http://www.elisarolle.com/queerplaces/a-b-ce/Barbara%20Kyle.html">http://www.elisarolle.com/queerplaces/a-b-ce/Barbara%20Kyle.html</A>.</P>
+
+<P>Olson, H. (2007). How we construct subjects: A feminist analysis. <I>Library Trends</I>, 56(2), 509&ndash;541.</P>
+
+<P>O'Rourke, M., S. Crowley, S. D. Eigenbrode, and J. D. Wulfhorst (Eds.). (2013). <I>Enhancing communication and collaboration in interdisciplinary research</I>. Sage.</P>
+
+<P>Otlet, P. (1990). On the structure of classification numbers. In W. B. Rayward (Ed.), <I>International organisation and dissemination of knowledge: Selected essays of Paul Otlet</I>(pp. 53 ff). Elsevier.</P>
+
+<A NAME="refP"></A>
+
+<P>Palmer, C. (2010). Information research on interdisciplinarity. In R. Frodeman, J. T. Klein, and K. Mitcham (Eds.), <I>The Oxford handbook of interdisciplinarity</I> (pp. 174&ndash;188). Oxford University Press.</P>
+
+<P><I>Proceedings of the International study conference on classification for information retrieval</I>. (1957). Dorking, 13&ndash;17 May 1957. Aslib.</P>
+
+<A NAME="refQ"></A>
+<A NAME="refR"></A>
+
+<P>Renwick, T., and Szostak, R. (2020). A thesaural interface for the Basic Concepts Classification. In M. Lykke, T. Svarre, M. Skov, D. Mart&iacute;nez-&Aacute;vila (Eds.), <I>Knowledge Organization at the Interface: Proceedings of the International Society for Knowledge Organization conference</I> (pp. 527&ndash;531). Ergon.</P>
+
+<P>Repko, A., and Szostak, R. (2020). <I>Interdisciplinary research: Process and theory</I> (4th ed.). Sage.</P>
+
+<P>Root-Bernstein, R. (1989). <I>Discovery</I>. Harvard University Press.</P>
+
+<A NAME="refS"></A>
+
+<P>Saccon, A. (2008). Metafisica. In M. Ferraris (Ed.), <I>Storia dell'ontologia</I>. Bompiani.</P>
+
+<P>Sachs, M. Y., and Smiraglia, R. P. (2004). From encyclopedism to domain-based ontology for knowledge management: The evolution of the SachsClassification (SC). In I. McIlwaine (Ed.), <I>Knowledge Organization and the Global Information Society; Proceedings of the Eighth International ISKO conference 13&ndash;16 July, London, UK</I>. Advances in knowledge organization (Vol. 9, pp. 167&ndash;172). Ergon.</P>
+
+<P>Saheb-Ettaba, C., and McFarland, R. B. (1969). <I>ANSCR: The alpha-numeric system for classification of recordings</I>. Bro-Dart.</P>
+
+<P>Sales, R., Mart&iacute;nez-&Aacute;vila, D., and Chaves Guimar&atilde;es, J. A. (2021). James Duff Brown: A librarian committed to the public library and the subject classification. <I>Knowledge Organization</I>, 48(5), 375&ndash;396. Also in Hj&oslash;rland, B. and Gnoli, C. (Eds.) <I>ISKO encyclopedia of knowledge organization</I>. Retrieved from <A CLASS="menu" HREF="brown">https://www.isko.org/cyclo/brown</A>.</P>
+
+<P>Sales, R., and Pires, T. B. (2017). The classification of Harris: Influences of Bacon and Hegel in the universe of library classification. <I>North American Symposium on Knowledge Organization</I>, 6, 56&ndash;66.</P>
+
+<P>Satija, M. P., and Kyrios, A. (2023). <I>A handbook of history, theory and practice of the Dewey Decimal Classification</I>. Facet.</P>
+
+<P>Scharnhorst, A., Smiraglia, R., and Szostak, R. (2016). <I>Digging into data</I>. <A CLASS="menu" HREF="https://diggingintodata.org/awards/2016/project/digging-knowledge-graph">https://diggingintodata.org/awards/2016/project/digging-knowledge-graph</A>.
+
+<P>Slavic, A. (2007). On the nature and typology of documentary classifications and their use in a networked environment. <I>El Profesional de la Informaci&oacute;n</I>, 16(6), 580&ndash;589.</P>
+
+<P>Smiraglia, R., and Szostak, R. (2018). Converting UDC to BCC: Comparative approaches to interdisciplinarity. In F. Ribeiro and M. E. Cerveira (Eds.), <I>Challenges and opportunities for Knowledge Organization in the digital age: Proceedings of the fifteenth international ISKO conference 9&ndash;11 July 2018 Porto, Portugal</I>. Advances in knowledge organization series no. 16. Ergon.</P>
+
+<P>Smiraglia, R. P. (1989). Classification. In R. P. Smiraglia (Ed.), <I>Music cataloging: The bibliographic control of printed and recorded music in libraries</I> (pp. 91&ndash;120). Libraries Unlimited.</P>
+
+<P>Smiraglia, R. P. (2001). <I>The nature of &ldquo;a Work&rdquo;: Implications for the organization of knowledge</I>. Scarecrow Press.</P>
+
+<P>Smiraglia, R. P. (2012). Epistemology of domain analysis. In R. P. Smiraglia and H.-L. Lee (Eds.), <I>Cultural frames of knowledge</I> (pp. 111&ndash;124). Ergon.</P>
+
+<P>Smiraglia, R. P. (2015). <I>Domain analysis for knowledge organization: Tools for ontology extraction</I>. Chandos information professional series. Elsevier/Chandos.</P>
+
+<P>Smiraglia, R. P. (2020). ISKO 16's bookshelf: Knowledge organization on the verge of the pandemic&mdash;An editorial. <I>Knowledge Organization</I>, 47(8), 619&ndash;630.</P>
+
+<P>Smiraglia, R. P. (2023a). ISKO's bookshelf 2022: Mysteries of a pandemic, part 1. <I>IKOS Bulletin</I>, 4(1), 54&ndash;64.</P>
+
+<P>Smiraglia, R. P. (2023b). ISKO's bookshelf 2022: Mysteries of a pandemic, part 2. <I>IKOS Bulletin</I>, 4(3), 77&ndash;106.</P>
+
+<P>Smiraglia, R. P., and Szostak, R. (2020). Identifying and classifying the phenomena of music. In M. Lykke, T. Svarre, M. Skov, and D. Mart&Iacute;nez-&Aacute;vila (Eds.), <I>Knowledge Organization at the interface: Proceedings of the sixteenth international ISKO conference, 2020, Aalborg, Denmark</I>. Advances in knowledge organization series 17 (pp. 421&ndash;427). Ergon.</P>
+
+<P>Smiraglia, R. P., and Young, J. B. (2006). <I>Bibliographic control of music</I>, 1897&ndash;2000. Scarecrow Press.</P>
+
+<P>Soergel, D. (2014). Unleashing the power of data through organization: Structure and connections for meaning, learning, and discovery. <I>Knowledge Organization</I>, 42(6), 401&ndash;427.</P>
+
+<P>Svenonius, E. (2000). <I>The intellectual foundation of information organization</I>. MIT Press.</P>
+
+<P>Swanson, D. R. (1986). Undiscovered public knowledge. <I>Library Quarterly</I>, 56(2), 103&ndash;118.</P>
+
+<P>Swanson, D. R. (2008). Literature based discovery: The very idea. In P. Bruza and M. Weeber (Eds.), <I>Literature based discovery</I> (pp. 3&ndash;11). Springer.</P>
+
+<P>Swanson, D. R., Smalheiser, N. R., and Bookstein, A. (2001). Information discovery from complementary literatures: Categorizing viruses as potential weapons. <I>Journal of the American Society for Information Science and Technology</I>, 52, 797&ndash;812.</P>
+
+<P>Sweeney, R. (1990). Grand Messe des 780's (with apologies to Berlioz). In R. B. Wursten (Ed.), <I>Celebration of revised 780: Music in the Dewey Decimal Classification edition 20</I> (pp. 28&ndash;38). Music Library Association.</P>
+
+<P>Szostak, R. (2003). <I>A schema for unifying human science: Interdisciplinary perspectives on culture</I>. Susquehanna University Press.</P>
+
+<P>Szostak, R. (2004). <I>Classifying science: Phenomena, data, theory, method, practice</I>. Springer.</P>
+
+<P>Szostak, R. (2011). Complex concepts into basic concepts. <I>Journal of the American Society for Information Science and Technology</I>, 62(11), 2247&ndash;2265.</P>
+
+<P>Szostak, R. (2014). The Basic Concepts Classification as a bottom-up strategy for the Semantic Web. <I>International Journal of Knowledge Content Development and Technology</I>, 4, 39&ndash;51.</P>
+
+<P>Szostak, R. (2016). Synthetic classification of museum artifacts using basic concepts. Presented at the Museums and the Web conference, Los Angeles, April 2016.</P>
+
+<P>Szostak, R. (2017). A grammatical approach to subject classification in museums. <I>Knowledge Organization</I>, 44(7), 494&ndash;505.</P>
+
+<P>Szostak, R. (2019). A synthetic approach to the classification of music. <I>El Profesional de la Informaci&oacute;n</I>, 29(1), e290105. <A CLASS="menu" HREF="https://doi.org/10.3145/epi.2020.ene.05">https://doi.org/10.3145/epi.2020.ene.05.</A></P>
+
+<P>Szostak, R. (2020). The Basic Concepts Classification (BCC). <I>Knowledge Organization</I>, 47(3), 231&ndash;243. Also in Hj&oslash;rland, B. and Gnoli, C. (Eds.), ISKO encyclopedia of knowledge organization. Retrieved from <A CLASS="menu" HREF="bcc">https://www.isko.org/cyclo/bcc</A>.</P>
+
+<P>Szostak, R., Gnoli, C., and L&oacute;pez-Huertas, M. (2016). <I>Interdisciplinary knowledge organization</I>. Springer.</P>
+
+<P>Szostak, R., and Smiraglia, R. P. (2019). Classifying music within the Basic Concepts Classification. Presented at proceedings of the annual conference of the Canadian Association for Information Science. <A CLASS="menu" HREF="https://doi.org/10.29173/cais1064">https://doi.org/10.29173/cais1064</A>.</P>
+
+<A NAME="refT"></A>
+
+<P>Tennis, J. T. (2003). Two axes of domains for domain analysis. <I>Knowledge Organization</I>, 30, 191&ndash;195.</P>
+
+<P>Thagard, P. (1993). <I>Conceptual revolutions</I>. Princeton University Press.</P>
+
+<P>Theory-theory of concepts. (n.d.). <I>Internet encyclopedia of philosophy</I>. Retrieved from <A CLASS="menu" HREF="https://iep.utm.edu/theory-theory-of-concepts/">https://iep.utm.edu/theory-theory-of-concepts/</A>.</P>
+
+<A NAME="refU"></A>
+<A NAME="refV"></A>
+
+<P>Vickery, B. C. (1957). Relations between subject fields: Problems of constructing a general classification. In <I>Proceedings of the international study conference on classification for information retrieval, Dorking, 13&ndash;17 May 1957</I> (pp. 43&ndash;49). Aslib.</P>
+
+<A NAME="refW"></A>
+
+<P>Warner, J. (2000). Can classification yield an evaluative procedure for information retrieval? In R. Marcella and A. Maltby (Eds.), <I>The future of classification</I>. Gower.</P>
+
+<P>Workman, T. E., Ficzman, M., and Rindflesch, T. C. (2014). Framing serendipitous information-seeking behavior for facilitating literature-based discovery: A proposed model. <I>Journal of the American Society for Information Science and Technology</I>, 65(3), 501&ndash;512.</P>
+
+<A NAME="refX"></A>
+<A NAME="refY"></A>
+<A NAME="refZ"></A>
+
+<P>Zuccala, A. (2006). Modeling the invisible college. <I>Journal of the American Society for Information Science and Technology</I>, 57, 152&ndash;168.</P>
+
+</SPAN><!-- citation ends -->
+
+<A NAME="col"></A>
+
+<P ALIGN="right">[<A HREF="#top">top of entry</A>]</P>
+
+<P>&nbsp;</P>
+
+<P>Visited <A HREF="https://www.digits.net" TARGET="_blank"><IMG SRC="https://counter.digits.net/?counter={af89adc5-0e80-d5f4-fdf9-c76cc4207d4b}&template=simple" ALT="Hit Counter by Digits" BORDER="0"  /></A> times.</P>
+
+<HR>
+<P ITEMPROP="dateCreated">Version 1.0 published 2024-05-23 
+<br>Version 1.1 published 2024-05-23: reference to Gnoli 2024 added
+
+<P>Article category: <CODE><A ITEMPROP="about" HREF="index#R">Methods, approaches and philosophies</A></CODE></P>
+
+<P>This IEKO article, version 1.0 is a reprint of an open access article published at <A CLASS="menu" HREF="https://asistdl.onlinelibrary.wiley.com/doi/10.1002/asi.24865">https://asistdl.onlinelibrary.wiley.com/doi/10.1002/asi.24865</A>.</P>
+
+<P>How to cite it:
+<BR>Gnoli, Claudio, Richard P. Smiraglia and Rick Szostak. 2024. 
+&ldquo;Phenomenon-based classification: An <I>Annual Review of Information Science and Technology (ARIST)</I> paper&rdquo;. 
+<I>Journal of the Association for Information Science and Technology</I> 75, no. 3: 324-343. 
+Also available in 
+<I><SPAN ITEMPROP="isPartOf">ISKO Encyclopedia of Knowledge Organization</SPAN></I>, 
+eds. <SPAN ITEMPROP="editor">Birger Hj&oslash;rland</SPAN> and <SPAN ITEMPROP="editor">Claudio Gnoli</SPAN>, 
+<SPAN ITEMPROP="url">https://www.isko.org/cyclo/phenomenon </SPAN></P>
+
+<P><A HREF="http://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC-ND</A></P>
+
+</DIV><!-- Article ends -->
+
+</TD>
+</TR>
+
+<TR>
+<TD ID="logo">
+</TD>
+</TR>
+
+</TABLE>
+</BODY>
+</HTML>

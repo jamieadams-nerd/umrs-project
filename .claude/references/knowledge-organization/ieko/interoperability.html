@@ -1,0 +1,949 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>Interoperability (IEKO)</title>
+<link rel="stylesheet" type="text/css" href="../isko.css" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:url" content="https://www.isko.org/cyclo/interoperability" />
+<meta name="twitter:title" content="Interoperability (ISKO Encyclopedia of KO)" />
+<meta property="og:image" content="https://www.isko.org/cyclo/interoperability2.jpg" />
+<meta name="twitter:description" content="Interoperability&nbsp;refers to the ability of two or more systems or components to exchange information and to use the information that has been exchanged. This encyclopedia article presents the major viewpoints of interoperability, with the focus on semantic interoperability.  It discusses the approaches to achieving interoperability as demonstrated in standards and best practices, projects, and products in the broad domain of knowledge organization." />
+
+<meta name="DCTERMS.title" content="Interoperability" />
+<meta name="DCTERMS.creator" content="Marcia Zeng" />
+<meta name="DCTERMS.issued" content="2019" />
+<meta name="DCTERMS.relation.ispartof" content="ISKO Encyclopedia of Knowledge Organization" />
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="001.012">
+<meta name="DCTERMS.type" content="Text" />
+<meta name="DCTERMS.format" content="text/html" />
+<meta name="DCTERMS.identifier" content="https://www.isko.org/cyclo/interoperability" />
+
+</head>
+<body>
+
+<a name="top"></a>
+
+<table>
+
+<tr>
+<td id="isko"><h1>I S K O</h1></td>
+<td id="banner"><h2><a href="index.html" style="text-decoration:none;">Encyclopedia of Knowledge Organization</h2></a></td>
+</tr>
+
+<tr>
+<td id="navigation">
+<a href="../index.php">home</a>
+<a href="../about.html">about ISKO</a>
+<a href="../join.html">join ISKO</a>
+<a href="../ko.html"><cite>Knowledge Organization</cite> journal</a>
+<a href="../events.html">ISKO events</a>
+<a href="../chapters.html">ISKO chapters</a>
+<a href="../people.html">ISKO people</a>
+<a href="../pubs.html">ISKO publications</a>
+<a href="index.html">Encyclopedia</a>
+<a href="../lit.html">KO literature</a>
+<a href="../inst.html">KO institutions</a>
+<a href="http://bartoc.org/" title="link to BARTOC">&#8663; KOS registry</a>
+<a href="http://www.isko-mms.net/home/" title="access-account required">&#128274; members</a>
+<a href="../contact.html">contact us</a>
+</td>
+<td id="content" rowspan="2">
+
+<a class="menu" href="authors#h">edited by Birger Hj&oslash;rland</a> <a class="menu" href="authors#g">and Claudio Gnoli</a>
+
+<p>&nbsp;
+
+<h2>Interoperability</h2>
+
+<blockquote>
+by <a href="authors#z">Marcia Lei Zeng</a></p>
+
+<p>Table of contents:
+
+<br><a style="text-decoration:none;" href="#1">1. Introduction</a>
+<br><a style="text-decoration:none;" href="#2">2. Definitions</a>
+<br><a style="text-decoration:none;" href="#3">3. Standards and recommendations</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#3.1">3.1 System layer</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#3.2">3.2 Syntactic layer</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#3.3">3.3 Structural layer</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#3.4">3.4 Semantic layer</a>
+<br><a style="text-decoration:none;" href="#4">4. Interoperability approaches in KOS vocabulary development:</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#4.1">4.1 Derivation:</a>
+<a style="text-decoration:none;" href="#4.1.1">4.1.1 Derived vocabularies;</a>
+<a style="text-decoration:none;" href="#4.1.2">4.1.2 Microthesaurus</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#4.2">4.2 Expansion:</a>
+<a style="text-decoration:none;" href="#4.2.1">4.2.1 Leaf nodes;</a>
+<a style="text-decoration:none;" href="#4.2.2">4.2.2 Satellite vocabularies;</a>
+<a style="text-decoration:none;" href="#4.2.3">4.2.3 Open umbrella structure</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#4.3">4.3 Integration/Combination:</a>
+<a style="text-decoration:none;" href="#4.3.1">4.3.1 Metathesaurus;</a>
+<a style="text-decoration:none;" href="#4.3.2">4.3.2 Heterogeneous meta-vocabulary</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#4.4">4.4 Interoperation/Shared/Harmonization:</a>
+<a style="text-decoration:none;" href="#4.4.1">4.4.1 Shared/bridge scheme;</a>
+<a style="text-decoration:none;" href="#4.4.2">4.4.2 Reference ontologies;</a>
+<a style="text-decoration:none;" href="#4.4.3">4.4.3 Virtual harmonization through linking</a>
+<br><a style="text-decoration:none;" href="#5">5. Mapping</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#5.1">5.1 Major challenges</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#5.2">5.2 Models of mapping process</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#5.3">5.3 Encoding the alignment degrees</a>
+<br><a style="text-decoration:none;" href="#6">6. Harmonization through terminology services</a>
+<br><a style="text-decoration:none;" href="#7">7. Conclusion</a>
+<br><a style="text-decoration:none;" href="#app1">Appendix 1. BioPortal, a typical example of terminology service</a>
+<br><a style="text-decoration:none;" href="#app2">Appendix 2. A list of vocabulary repositories and registries</a>
+<br><a style="text-decoration:none;" href="#ack">Acknowledgment</a>
+<br><a style="text-decoration:none;" href="#ref">References</a>
+<br><a style="text-decoration:none;" href="#col">Colophon</a>
+
+<p><strong>Abstract</strong>:
+<br>Interoperability&nbsp;refers to the ability of two or more systems or components to exchange information and to use the information that has been exchanged. This encyclopedia article presents the major viewpoints of interoperability, with the focus on semantic interoperability.  It discusses the approaches to achieving interoperability as demonstrated in standards and best practices, projects, and products in the broad domain of knowledge organization.   </p>
+</p>
+
+</blockquote>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="1"></a>
+<h3>1. Introduction</h3>
+
+<p>Interoperability had been a topic discussed in information processing and exchange communities long before the arrival of the Internet; yet, it has never been so critical or of such great concern among so many communities as it is in today&rsquo;s digital information environment. The digital age has encouraged the emergence of many &rarr; <a href="kos">knowledge organization systems (KOS)</a> and new KOS types. It has also brought a demand for interoperability to underpin activities along with emerging technologies, such as Web services; the publishing, aggregation, and exchange of KOS data via multiple media and formats; and behind-the-scenes exploitation of controlled vocabularies in navigation, filtering, and expansion of searches across networked repositories (<A HREF="#refC">Clarke and Zeng 2012</A>). On a much broader landscape, systems that provide or support data and information management have been created everywhere. They are built based on the prevailing needs of a domain, organization, or application, embedding different contexts, purposes, and scope decisions by different institutional sponsors. Integration has become a way of life for many organizations, and interoperation of systems across departments and organizations has become essential (<A HREF="#refO">Ontolog 2018</A>). </p>
+
+<p>Fundamentally, the ability to exchange services and data with and among components of distributed systems or silos is contingent on agreements between requesters and providers who need to have a common understanding of the meanings of the requested services and data (<A HREF="#refH">Heiler 1995</A>). A receiver of information needs to be able to interpret or understand the contents in a manner relatively consistent with the sender's intended interpretation/meaning to meet (common) operational objectives (i.e., the context for and of the information) (<A HREF="#refF">Fritzsche et al. 2017</A>). Such cooperative agreements are sought after at three levels:</p>
+
+<ul>
+<li><b>Technical agreements</b> cover, among other things: formats, protocols, and security systems so that messages can be exchanged.</li>
+<li><b>Content agreements</b> cover data and metadata and include semantic agreements on the interpretation of information.</li>
+<li><b>Organizational agreements</b> cover group rules for access, preservation of collections and services, payment, authentication, and so on (<A HREF="#refA">Arms et al. 2002</A>).</li>
+</ul>
+
+<p>In the digital information environment, interoperability between systems remains an ubiquitous need and expectation, not only for professions dealing with information resources, but also businesses, organizations, research groups, and individuals who seek to create optimal experiences, minimize operational overhead, reduce costs, and drive future innovations utilizing new technologies and resources (<A HREF="#refF">Fritzsche et al. 2017</A>). </p>
+
+<p>Knowledge organization systems and services have been the key for understanding and bridging these contextual differences. Taking cases of information retrieval across different systems, the expression in question may be either a search query or part of the metadata associated with a document. In both cases, inter-concept mapping is the fundamental step. An expression formulated using one KOS vocabulary would need to be converted to (or supplemented by) a corresponding expression in one or more other vocabularies (<A HREF="#refI">ISO 25964-1:2011</A>). &ldquo;Vocabularies can support interoperability by including mappings to other vocabularies, by presenting data in standard formats and by using systems that support common computer protocols&rdquo; (<A HREF="#refI">ISO 25964-2</A>, Section 3: Terms and definitions). The need can be seen from any of these situations (<A HREF="#refN">NISO Z39.19-2005</A>, Appendix A 10.1):
+
+<ul>
+<li>Metasearching of multiple content resources using the searcher's preferred query vocabulary;</li>
+<li>Indexing of content in a domain using the controlled vocabulary from another domain;</li>
+<li>Merging of two or more databases that have been indexed using different controlled vocabularies;</li>
+<li>Merging of two or more controlled vocabularies to form a new controlled vocabulary that will encompass all the concepts and terms contained in the originals; and</li>
+<li>Multiple language searching, indexing, and retrieval.</li>
+</ul>
+
+<p>Meanwhile, existing KOS vocabularies differ with regard to structure, domain, language, or granularity. The incompatibilities that occur at structural, conceptual, and terminological levels of KOSs directly impact the multiple resource searching (<A HREF="#refI">Iyer and Giguere 1995</A>). KOS interoperability forms an essence for overall interoperability research and practices, as determined by ISO 25964 <i>Thesauri and Interoperability with other Vocabularies</i> and other standards prior to it.</p>
+
+<p>This encyclopedia article presents the major viewpoints of interoperability, with the focus on semantic interoperability.  After presenting the definitions and introducing standards, it discusses the approaches to achieve interoperability as demonstrated in standards and best practices, projects, and products in the broad domain of knowledge organization. Figures and tables are created and used to help the interpretation of the major interoperability approaches. Additional examples are used, with sources provided. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2"></a>
+<h3>2. Definitions</h3>
+
+<p>ISO 25964 <i>Thesauri and Interoperability with other Vocabularies</i> defines interoperability as the &ldquo;ability of two or more systems or components to exchange information and to use the information that has been exchanged&rdquo; (<A HREF="#refI">ISO 25964-2:2013</A>). Addressing the involved components and results, Guenther and Radebaugh (<A HREF="#refG">2004</A>) state that &ldquo;[i]nteroperability is the ability of multiple systems with different hardware and software platforms, data structures, and interfaces to exchange data with minimal loss of content and functionality&rdquo;. Other definitions note &ldquo;use&rdquo; in addition to &ldquo;exchange&rdquo;; thus, interoperability is considered as the ability of two or more systems or components to exchange information and data, and use the exchanged information and data without special effort by either system, or without any special manipulation (<A HREF="#refC">CC:DA 2000</A>; <A HREF="#refT">Taylor 2004</A>).</p>
+
+<p>Witnessing the Web and distributed computing infrastructures gaining in popularity as a means of communication, Sheth (<A HREF="#refS">1998</A>) brought attention to the changing focus on interoperability in information systems since the mid 1980s: from system, syntax, and structure to semantics. Ouksel and Sheth (<A HREF="#refO">1999</A>) further laid out four types of heterogeneity corresponding to four types of potential interoperability issues:
+
+<ul>
+<li>System: incompatibilities between hardware and operating systems.</li>
+<li>Syntactic: differences in encodings and representation.</li>
+<li>Structural: variances in data models, data structures, and schemas.</li>
+<li>Semantic: inconsistencies in terminology and meanings.</li>
+</ul>
+
+<p>In the KO related domains, interoperability panoramas are normally highlighted on three of these four types: syntactic, structural, and semantic (<A HREF="#refM">Moen 2001</A>; <A HREF="#refO">Obrst 2003</A>). In the book <i>The Organization of Information</i>, Taylor and Joudrey expressed that &ldquo;[w]ithout interoperability on all three levels, metadata cannot be shared effortlessly, efficiently, or profitably&rdquo; (<A HREF="#refJ">Joudrey and Taylor 2017</A>, 189).  Without syntactic interoperability, data and information cannot be handled properly with regard to formats, encodings, properties, values, and data types; and therefore, they can neither be merged nor exchanged. Without semantic interoperability, the meaning of the language, terminology, and metadata values used cannot be negotiated or correctly understood (<A HREF="#refK">Koch 2006</A>). Varying degrees of semantic expressivity can be matched with different types: low at syntactic interoperability, medium at structural interoperability, and high/very high at semantic interoperability (<A HREF="#refO">Obrst 2003</A>). </p>
+
+<p>With semantic interoperability, the expanded notion of data includes semantics and context, thereby transforming &rarr; <a href="dikw">data into information</a>. This transition both broadens and deepens the foundation for all other integration approaches, blending semantic interoperability within various levels of interoperability: data, process, services/interface, applications, taxonomy, policies and rules, and social networks (<A HREF="#refP">Pollock and Hodgson 2004</A>). Based on the characterizations specified by previous researchers, semantic interoperability can be defined as the ability of different agents, services, and applications to communicate (in the form of transfer, exchange, transformation, mediation, migration, integration, etc.) data, information, and knowledge &mdash; while ensuring accuracy and preserving the meaning of that same data, information, and knowledge (<A HREF="#refZ">Zeng and Chan 2010/2015</A>). </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3"></a>
+<h3>3. Standards and recommendations</h3>
+
+<p>Standards and best practice recommendations have been developed globally. This section presents selected standards and recommendations that address interoperability issues, corresponding to the four layers that have been highlighted by researchers and communities (refer to <A HREF="#2">Section 2</A> definitions above; <A HREF="#refO">Ouksel and Sheth 1999</A>; <A HREF="#refA">Adebesin et al. 2013</A>; <A HREF="#refO">Obrst 2003</A>; <A HREF="#refO">Ontolog 2018</A>) (Figure 1).</p>
+
+<div align="center"><figure>
+<img src="interoperability1.jpg" title="Fig. 1: Standards and recommendations addressing interoperability issues" width="75%">
+<figcaption>Figure 1: Standards and recommendations addressing interoperability issues (image created by author)</figcaption>
+</figure></div>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.1"></a>
+<h4>3.1 System layer</h4>
+
+<p>Starting from the base, interoperability at the system layer addresses issues on incompatibilities between hardware and operating systems, for the technical exchange of data through networks, computers, applications, and web services. A few examples of recommendations developed in the 2010s and which are closely connected to information providers are introduced here:
+
+<ul>
+<li>The IIIF (International Image Interoperability Framework) Consortium has defined a set of common API (application programming interfaces) specifications that support interoperability between image repositories. The four APIs developed in the 2010s are: (1) Image API, (2) Presentation API, (3) Authentication API, and (4) Search API (<A HREF="http://iiif.io/technical-details/">http://iiif.io/technical-details/</A>). Major software of image viewers and image servers support IIIF APIs.</li>
+<li>The Research Data Alliance (RDA) is a community-driven international organization established in 2013. RDA&rsquo;s Research Data Repository Interoperability Working Group released its Final Recommendations recently (review period 26 June, 2018 to 26 July, 2018). The major components are: (1) a general exchange format based on the well-known specification of BagIt (a hierarchical file packaging format for storage and transfer of arbitrary digital content) and complemented with BagIt Profiles; (2) a specification defining how to describe the internal structure of BagIt-based packages (<A HREF="https://www.rd-alliance.org/group/research-data-repository-interoperability-wg/outcomes/research-data-repository-0">https://www.rd-alliance.org/group/research-data-repository-interoperability-wg/outcomes/research-data-repository-0</A>).</li>
+<li><i>Data on the Web Best Practices</i> (W3C Recommendation 31 January 2017) presents the best practices related to the publication and usage of data on the Web. &ldquo;Interoperability&rdquo; is one of the benchmarks of benefits that data publishers will gain. The recommendation aligns interoperability with eight best practices (summarized at Section 11 in this W3C Recommendation). It also emphasizes that, to promote the interoperability among datasets, it is important to adopt data vocabularies and standards (<A HREF="https://www.w3.org/TR/dwbp/">https://www.w3.org/TR/dwbp/</A>).</li>
+</ul>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.2"></a>
+<h4>3.2 Syntactic layer</h4>
+
+<p>Syntactic issues that directly impact any interoperability effort are the differences in encoding, decoding, and representation of data. The most important data language standards that enable the exchange of data through common data formats are the W3C (World Wide Web Consortium) official recommendations developed for the Semantic Web.</p>
+
+<p>The widely applied W3C standards in KOS vocabularies and data exchanges in the Semantic Web include:
+<ul>
+<li>Resource Description Framework (RDF), a standard model for data interchange on the Web (<A HREF="https://www.w3.org/RDF/">https://www.w3.org/RDF/</A>)</li>
+<li>RDF Schema (RDFS), a semantic extension of RDF. RDFS provides mechanisms for describing groups of related resources and the relationships between these resources (<A HREF="https://www.w3.org/TR/rdf-schema/">https://www.w3.org/TR/rdf-schema/</A>)</li>
+<li>Web Ontology Language (OWL), a Semantic Web language designed to represent rich and complex knowledge about things, groups of things, and relations between things. OWL documents are known as ontologies (<A HREF="https://www.w3.org/OWL/">https://www.w3.org/OWL/</A>).</li>
+<li>Simple Knowledge Organization Systems (SKOS), a common data model for sharing and linking KOSs via the Semantic Web. SKOS became a W3C Recommendation in 2009.  Its development was based on the ISO guidelines for developing monolingual thesauri (ISO-2788 1974 and 1986) and multilingual thesauri (ISO 5964 1985). In developing SKOS, &ldquo;Correspondences between ISO-2788/5964 and SKOS constructs&rdquo; were developed. (<A HREF="https://www.w3.org/2004/02/skos/">https://www.w3.org/2004/02/skos/</A>)</li>
+<li>SKOS eXtension for Labels (SKOS-XL), released in 2009, defines an extension for SKOS, providing additional support for describing and linking lexical entities (<A HREF="https://www.w3.org/TR/skos-reference/skos-xl.html">https://www.w3.org/TR/skos-reference/skos-xl.html</A>).</li>
+<li>After the publishing of ISO 25964 <i>Thesauri and Interoperability with other Vocabularies</i> Part 1 in 2011, an ISO 25964 SKOS extension (<code>iso-thes</code>) was initiated. A correspondence table between ISO 25964 (which replaces ISO 2788 and 5964) and SKOS/SKOS-XL models was generated. In addition, a set of extensions (e.g., a class of <code>iso-thes:CompoundEquivalence</code>, a number of sub-classes of <code>skos-xl:Label</code>, and properties for provenance and management use) were proposed (<A HREF="Isaac 2013">Isaac 2013</A>; ISO 25964) (<A HREF="https://www.niso.org/schemas/iso25964">https://www.niso.org/schemas/iso25964</A>).</li>
+</ul>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.3"></a>
+<h4>3.3 Structural layer</h4>
+
+<p>Information architectural variances in data frameworks, data models, data structures, and schemas add another layer of interoperability challenges. In the efforts to enable the exchange of data through pre-defined structures, conceptual models have been established by LAM (library, archive, and museum) communities in the digital age. Conceptual models are independent of any particular encoding syntax and application systems. These are best seen from community standards developed for creating structured data and providing access to information resources in various LAM communities. Since other articles in <I>ISKO Encyclopedia of Knowledge Organization</i> provide details of them, only a brief list is provided in this section.
+
+<ul>
+<li>&rarr; <a href="lrm">IFLA LRM (Library Reference Model)</a>, a model formally adopted by IFLA Professional Committee in August 2017 that consolidated three IFLA FRBR family models and covers all aspects of bibliographic data (refer to <A HREF="#refZ">&#0381;umer 2017</A>) (<A HREF="https://www.ifla.org/publications/node/11412">https://www.ifla.org/publications/node/11412</A>)</li>
+<li>DCMI Abstract Model, a Dublin Core Metadata Initiative (DCMI) Recommendation (2007) specifying the components and constructs used in Dublin Core metadata (<A HREF="#refP">Powell et al. 2007</A>) (<A HREF="http://dublincore.org/documents/abstract-model/">http://dublincore.org/documents/abstract-model/</A>)</li>
+<li>BibFrame (Bibliographic Framework), a new model (version 2.0, 2016) initiated by the Library of Congress for describing bibliographic data (<A HREF="http://www.loc.gov/bibframe/">http://www.loc.gov/bibframe/</A>)</li>
+<li>CIDOC-CRM, the Conceptual Reference Model (CRM) produced by the International Committee for Documentation (CIDOC) of the International Council of Museums (ICOM) for describing the implicit and explicit concepts and relationships used in cultural heritage documentation (version 6.2.3, 2018). (<A HREF="http://www.cidoc-crm.org/">http://www.cidoc-crm.org/</A>) </li>
+<li>RiC-CM (Records in Context conceptual model), first draft released in September 2016 by the International Council on Archives&rsquo; Experts Group on Archival Description (refer to <A HREF="#refB">Bountouri 2017</A>, Chapter 6) (<A HREF="#refh">https://www.ica.org/en/egad-ric-conceptual-model</A>)</li>
+<li>Many domain models and profiles have been developed under the umbrella of a conceptual model in order to ensure consistency and comprehension as well as interoperability across domains of LAMs and go beyond the restricted silos. A significant effort is a streamlined profile of CIDOC-CRM, named Linked Art Profile of CIDOC-CRM (<A HREF="#refh">https://linked.art/model/profile/</A>).</li>
+</ul>
+</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.4"></a>
+<h4>3.4 Semantic layer</h4>
+
+<p>Semantic interoperability/integration is basically driven by the communication of coherent purpose. In the practice of integration and achieving interoperability, multiple contexts (including but not limited to time, spatial frame, trust, and terminology) have to be addressed. Their similarities, differences, and relationships must be understood. In general, a context is commonly understood to be the circumstances that form the setting for an event, statement, process, or idea, and in terms of which the event, statement, process, or idea can be understood and assessed. While diverse and complicated in defining what &ldquo;contexts&rdquo; means, there could be guidelines to help make explicit some aspects of a context when using a particular development methodology (<A HREF="#refO">Ontolog 2018</A>). </p>
+
+<p>ISO 25964 <i>Thesauri and Interoperability with other Vocabularies</i> contains two parts; Part 2 (ISO 25964-2:2013) is devoted to the interoperability of thesauri with other types of KOS. The principles and practice of mapping are its prime focus. The scope includes interoperability of thesauri with classification schemes, taxonomies, subject heading schemes, ontologies, terminologies, name authority lists, and synonym rings. The specification covers the details of the features and functions of thesauri and other common types of KOS, which then lead to the best practice guides of mapping between thesauri and other types of KOS vocabularies (Table 1). In the standard, semantic components and relationships of each of these types are compared with thesaurus components (refer to <A HREF="#refI">ISO 25964-2:2013</A>, Sections 17 to 24).</p>
+
+<blockquote><table align="center">
+<caption><i>Table 1: Coverage of ISO 25964-2's recommendations for interoperability between thesauri and other types of KOS (based on ISO 25964-2)</i></caption><br>&nbsp;
+<tr><td align="center">
+<img src="interoperabilityt1.png" width="75%" title="Coverage of ISO 25964-2's recommendations for interoperability between thesauri and other types of KOS">
+</tr></td>
+</table></blockquote>
+
+<p>Having standards and best practice recommendations does not imply that every KOS would be created with a global consistency. Achieving a balance between ensuring semantic interoperability and addressing particular (e.g., local) information needs is a reality. Confronting the global consistency vs. a multiplicity of modules, John Sowa (<A HREF="#refS">2006</A>) explained Wittgenstein&rsquo;s theory of language games which allow words to have different senses in different contexts, applications, or modes of use. Meanwhile, Sowa indicated newer developments in lexical semantics based on the recognition that words have an open-ended number of dynamically changing and context-dependent <i>microsenses</i>. Thus, a lattice of theories would be able to accommodate both: supporting modularity by permitting the development of independent modules, while including all possible generalizations and combinations. The resulting flexibility enables natural languages to adapt to any possible subject from any perspective for any humanly conceivable purpose (<A HREF="#refS">Sowa 2006</A>). Comparably, Svenonius (<A HREF="#refS">2004</A>) looked at the epistemological foundations of knowledge representations embodied in retrieval languages and considered questions such as the validity of knowledge representations and their effectiveness for the purposes of retrieval and automation. The representations of knowledge she considered were derived from three theories of meaning, all have dominated 20th century philosophy: operationalism, the referential or picture theory of meaning, and the contextual or instrumental theory of meaning. Her conclusion is that, in the design of a retrieval language, a trade-off exists between the degree to which the language is to be formalized and the degree to which it is to be reflective of language use (<A HREF="#refS">Svenonius 2004</A>). Focusing on &rarr; <a href="thesaurus">thesauri</a> structure and functional designs, Mazzocchi (<A HREF="#refM">2016</A>) provided a comprehensive analysis of different theoretical approaches to meaning, as presented by important scholars, ranging from Wittgenstein to Svenonius, Sowa, Hj&oslash;rland, Soergel, and others. The different perspectives on the nature and representation of meaning could lead to different ways of designing the semantic structures of thesauri.</p>
+
+<p>The Ontology Summit 2016 Communiqu&eacute; pointed out that &ldquo;[b]oth syntactic and semantic interoperability across systems and applications are necessary. In practice, however, Semantic Interoperability (SI) is difficult to achieve&rdquo; (<A HREF="#refF">Fritzsche et al. 2017</A>). There is a need to maximize the amount of semantics that can be utilized and to make it increasingly explicit (<A HREF="#refO">Obrst 2003</A>). Knowledge organization systems have been recognized as prerequisites to enhanced semantic interoperability (<A HREF="#refP">Patel et al. 2005</A>). The approaches to be discussed in the following sections mainly aim at the semantic interoperability level. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4"></a>
+<h3>4. Interoperability approaches in KOS vocabulary development</h3>
+
+<p>Establishing and improving semantic interoperability in the whole information life cycle always requires the use of KOS (<A HREF="#refT">Tudhope and Binding 2004</A>). Sometimes new vocabularies need to be created (or extracted) first. In other cases, existing vocabularies need to be transformed, mapped, or merged (<A HREF="#refP">Patel et al. 2005</A>). &rarr; <a href="kos"><i>KOS</i></a> is a generic term used for referring to a wide range of types, including classification schemes, gazetteers, lexical databases, taxonomies, thesauri, ontologies, and other types of schemes, all designed to support the organization of knowledge and information in order to make their management and retrieval easier (<A HREF="#refM">Mazzocchi 2018</A>). Individual KOS instances are referred as <i>KOS vocabularies</i> (to differentiate from <i>metadata vocabularies</i>) in this article. Using the terminology of the Linked Open Data (LOD) communities, KOS vocabularies are used as <i>value vocabularies</i> (which are distinguished from the <i>property vocabularies</i> like metadata element sets). This term refers to its usage in the RDF-based models where the <i>resource, property-type, property-value</i> triples benefit from a controlled list of allowed values for an element in structured data (<A HREF="#refI">Isaac et al. 2011</A>).</p>
+
+<p>In the following sub-sections, KOS vocabulary development is the focus. The projects mentioned in this section are examples only (longer discussions can be found in <A HREF="#refZ">Zeng and Chan 2004</A>; <A HREF="#refZ">2010</A>). &nbsp;The various approaches are not exclusive, and in fact, can be complementary.  </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.1"></a>
+<h4>4.1 Derivation</h4>
+
+<a name="4.1.1"></a>
+<h5>4.1.1 Derived vocabularies</h5>
+
+<p>A new vocabulary may be derived from an existing vocabulary which is seen as a <i>source</i> or <i>model</i> vocabulary. This ensures a similar basic structure and context, while allowing different components to vary in both depth and detail for the individual vocabularies. Specific derivation methods may include <i>adaptation</i>, <i>modification</i>, <i>expansion</i>, <i>partial adaptation</i>, and <i>translation</i>. In each case, the new vocabulary is dependent upon the source vocabulary (see Figure 2).</p> 
+<p>Examples:
+
+<ul>
+<li>Faceted Application of Subject Terminology (FAST) (<A HREF="http://fast.oclc.org/">http://fast.oclc.org/</A>), a joint vocabulary effort of OCLC and Library of Congress, derives its contents from the Library of Congress Subject Headings (LCSH) and modifies the syntax to enable a post-coordinate mechanism (<A HREF="#refC">Chan et al. 2001</A>).</li>
+
+<li>In addition to the multilingual Art and Architecture Thesaurus (AAT) master version, multiple translated versions are hosted at different countries (Refer to &#34269;&#34899;&#33287;&#24314;&#31689;&#32034;&#24341;&#20856; <A HREF="http://aat.teldap.tw">http://aat.teldap.tw</A>; The Dutch Art & Architecture Thesaurus&reg; (AAT-Ned) <A HREF="http://website.aat-ned.nl/home">http://website.aat-ned.nl/home</A>; AAT Deutsch, <A HREF="http://www.aat-deutsch.de/">http://www.aat-deutsch.de/</A>; and El Tesauro de Arte & Arquitectura, <A HREF="http://www.aatespanol.cl/taa/publico/buscar.htm">http://www.aatespanol.cl/taa/publico/buscar.htm</A>). Variations could exist in the coverage, updates, candidate concepts and terms, as well as semantic relationships.</li>
+
+<li>The Dewey Decimal Classification (DDC) system has been translated into more than 30 languages and serves library users in 135+ countries worldwide. Some are partial adaptations or partial translations (<A HREF="https://www.oclc.org/en/dewey/features/summaries.html">https://www.oclc.org/en/dewey/features/summaries.html</A>).</li>
+</ul>
+
+<p>A variation might include the adaptation of an existing vocabulary, with slight modifications to accommodate local or specific needs. A derived vocabulary could also become the source of a new vocabulary (as in the case of some translated vocabularies) (Figure 2).</p>
+
+<div align="center"><figure>
+<img src="interoperability2.jpg" title="Fig. 2: Derivation of new vocabularies from a source vocabulary" width="75%">
+<figcaption>Figure 2: Standards and recommendations addressing interoperability issues (<a href="#refZ">Zeng and Chan 2010</a>)</figcaption>
+</figure></div>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.1.2"></a>
+<h5>4.1.2 Microthesaurus</h5>
+
+<p>A designated subset of a thesaurus&nbsp;that is capable of functioning as a complete thesaurus is called a microthesaurus (<A HREF="#refI">ISO 25964-2:2013</A>). It is different from the <i>derived vocabularies</i> that are made through adaptation, modification, expansion, and translation, as discussed in the previous section. Depending on the original design, the answer to the question, &ldquo;Can a microthesaurus be made from an existing thesaurus?&rdquo; could be: yes, maybe, no, or not directly. The alphabetically organized vocabularies that were initially designed with a flat structure, even having some broader and narrower context, may not be easily used to generate microthesauri. In general, KOS vocabularies that are good resources for generating microthesauri would have: a classificatory structure (e.g., EuroVoc), a faceted structure (e.g., AAT, FAST), or deep hierarchies (e.g., AAT, NASA Thesaurus, STW Thesaurus for Economics).</p>
+
+<p>Examples:
+
+<ul>
+<li>EuroVoc, the multilingual, multidisciplinary thesaurus covering the activities of the EU, is split into 21 domains and 127 microthesauri in its 4.4 (2015) version. A microthesaurus is considered by EuroVoc as a concept scheme with a subset of the concepts that are part of the complete EuroVoc thesaurus (<A HREF="http://eurovoc.europa.eu/drupal/?q=node/555">http://eurovoc.europa.eu/drupal/?q=node/555</A>).</li>
+<li>The CHIN Guide to Museum Standards (2017) of the Canadian Heritage Information Network (CHIN) comprises a section of &ldquo;Vocabulary (Data Value Standards)&rdquo; which lists dozens of recommended vocabularies. Individual vocabularies listed under various domains contain those from AAT facets (e.g., <code>Objects</code>, <code>Agents</code>, <code>Styles and Periods</code>, <code>Materials</code>, and <code>Physical Attributes</code>) and AAT Hierarchies (e.g., <code>Processes and Techniques</code> hierarchy and <code>Disciplines</code> hierarchy). These can be considered as microthesauri (<A HREF="https://www.canada.ca/en/heritage-information-network/services/collections-documentation-standards/chin-guide-museum-standards/vocabulary-data-value.html">https://www.canada.ca/en/heritage-information-network/services/collections-documentation-standards/chin-guide-museum-standards/vocabulary-data-value.html</A>).</li>
+<li>Since 2014, AAT&rsquo;s Linked Data SPARQL endpoint (<A HREF="http://vocab.getty.edu/">http://vocab.getty.edu/</A>) makes it possible for anyone to generate a microthesaurus dataset (e.g., <code>Object Genres</code> or a smaller unit of <code>Object Genres by Function</code>) easily in just a few seconds, encompassing concept URIs, labels, and semantic relationships represented as linked data datasets and downloadable in multiple formats. Such a function opens the door for any digital collection that needs standardized controlled vocabularies in linked data format. (Instructions of how to obtain data using SPARQL for creating a microthesaurus can be found in <A HREF="#refZ">Zeng 2018</A>.)</li>
+</ul>
+
+<p>It should be acknowledged that, creating derived vocabularies and microthesauri have become widely used approaches today as LOD gains its momentum.  The demand can be seen from these scenarios: many projects for digital humanities are able to create LOD datasets using existing unstructured and structured data resources. The linking points are primarily the concepts and named entities, i.e., identifiable things including people, organizations, places, events, objects, concepts, and virtually anything that can be represented in structured data, as demonstrated by the examples from Binding and Tudhope (<A HREF="#refB">2016</A>). In the RDF triples (subject-predicate-object), these concepts and named entities occupy the positions of subject and object. Nevertheless, for a dataset to be qualified as LOD, identified entities need to be named with URIs. Thus, KOS that have been released/published as LOD are popular resources for the LOD dataset producers to use. Depending on the situation, the usage of LOD KOS might involve multiple choices and steps. In general, making a new vocabulary through the derivation method or creating a microthesaurus from a LOD KOS is common (<A HREF="#refZ">Zeng and Mayr 2018</A>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.2"></a>
+<h4>4.2 Expansion</h4>
+
+<p>Even within a particular information community, there are different user requirements and distinctive local needs. The details provided in a particular vocabulary may not meet the needs of all user groups. Two practical approaches to expansions are highlighted below: leaf nodes and satellite vocabularies (Figure 3).</p>
+
+<div align="center"><figure>
+<img src="interoperability3.jpg" title="Fig. 3: Leaf node linking and satellites" width="60%">
+<figcaption>Figure 3: Leaf node linking and satellites (<A HREF="#refZ">Zeng and Chan 2010</A>, with updates)</figcaption>
+</figure></div>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.2.1"></a>
+<h5>4.2.1 Leaf nodes</h5>
+ 
+<p>In thesaurus and classification development, a method known as <i>leaf nodes</i> has been used in which extended schemes for subtopics are presented as the nodes of a tree structure in an upper vocabulary. When a leaf node (e.g., <code>wetlands</code>) is in one thesaurus, and more specific subtopics of that concept exist in a specialized vocabulary or classification system (e.g., wetlands classification scheme), then the leaf node can refer to that specialized scheme (<A HREF="#refZ">Zeng and Chan 2004</A>). On the other hand, a new vocabulary can be built on the basis of more than one existing vocabulary. A major task of the developers is to not be unnecessarily redundant. Rather, their primary role is to extend from the &ldquo;nodes&rdquo; and grow localized vocabulary &ldquo;leaves&rdquo; (see Figure 3). The leaf nodes approach can be used in small vocabularies or very large domains, and the specialized portion can have different languages or nomens.  By definition, <i>Nomen</i> (defined as &ldquo;an association between an entity and a designation that refers to it&rdquo;) is the appellation used to refer to an instance of <i>Res</i> (defined as &ldquo;any entity in the universe of discourse&rdquo;) (refer to &rarr; <a href="lrm">IFLA LRM model</a>). To explain, a <i>Nomen</i> can be any sign or sequence of signs (alphanumeric characters, symbols, sound, etc.) that a <i>Res</i> is known by, referred to, or addressed as (<A HREF="#refZ">Zeng, &#0381;umer, and Salaba 2010</A>). Example:
+
+<ul>
+<li>DDC, when used by various countries, may have extensions in a non-English edition for certain class(es) in order to meet the local needs, as demonstrated in a figure in the article of Mitchell et al. (<A HREF="#refM">2014</A>). Each subclass is represented by edition-specific nomens. The nomens are valid within the edition with the expanded hierarchy only (Figure 4).</li>
+</ul>
+</p>
+
+<div align="center"><figure>
+<img src="interoperability4.jpg" title="Fig. 4: Example of leaf nodes, as demonstrated by a non-English edition of DDC" width="70%">
+<figcaption>Figure 4: Example of leaf nodes, as demonstrated by a non-English edition of DDC (<A HREF="#refM">Mitchell, Zeng, and &#0381;umer 2014</A>)</figcaption>
+</figure></div>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.2.2"></a>
+<h5>4.2.2 Satellite vocabularies</h5>
+
+<p>With careful collaboration and management, <i>satellite vocabularies</i> can be developed around a superstructure in order to meet the needs of managing specialized materials or areas. Satellites under a superstructure are usually developed deliberately as an integrated unit and require top-down collaboration for management.</p>
+
+<p>Examples:
+
+<ul>
+<li>LCSH-based vocabularies include the Legislative Indexing Vocabulary (LIV), the Thesaurus for Graphic Materials (TGM), the Global Legal Information Network (GLIN) Thesaurus, LC Medium of Performance Thesaurus for Music, LC Children's Subject Headings, etc. A significant satellite vocabulary of LCSH is the Library of Congress Genre/Form Terms for Library and Archival Materials (LCGFT) which assumed its title in June 2010 (<A HREF="http://id.loc.gov/">http://id.loc.gov/</A>).</li>
+<li>The Forum on Information Standards in Heritage (FISH) Thesauri of the Historic England are composed of several separate online thesauri for monument types: Archaeological Objects, Building Materials, Defense of Britain, Components, Maritime Place Names, Maritime Craft Types, Maritime Cargo, Evidence Thesaurus, Archaeological Sciences, Event types, Resource Description Thesaurus, and Historic Aircraft Types. These thesauri are displayed in an integrated space on the FISH Thesauri Web site. Terms are grouped by <!-- CLASSes -->classes rather than by broadest terms (Top Term) and are cross-linked within each thesaurus. The classes are not part of a normal thesaurus hierarchy structure (<A HREF="http://thesaurus.historicengland.org.uk/newuser.htm">http://thesaurus.historicengland.org.uk/newuser.htm</A>).</li>
+</ul>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.2.3"></a>
+<h5>4.2.3 Open umbrella structure</h5>
+
+<p>An alternative approach that has products similar to satellite vocabularies moves from a different direction, aiming to plug-in different pieces to an existing <i>open umbrella structure</i>. The reason is that, in the example of ontology development, the upper level of an ontology (i.e., the more general concepts) is more fundamental for information integration. Automatic methods may be used for the semantic organization of lower-level terminology. The responsibility of ensuring interoperability is that of the developers who will create the plug-ins to coordinate under the umbrella. </p>
+
+<p>Putting the ontologies of special interest aside, Patel et al. (<A HREF="#refP">2005</A>) established a three-tier structure of upper/core/domain ontologies:
+<ol>
+<li><i>Upper ontologies</i> define basic, domain-independent concepts as well as relationships among them.</li>
+<li><i>Core</i> (or <i>intermediate</i>) <i>ontologies</i> are essentially the upper ontologies for broad application domains (e.g., the audiovisual domain). They may help in making real-world decisions for which upper ontologies may fall short for certain problem domains.</li>
+<li><i>Domain ontologies</i>, in which concepts and relationships used in specific application domains are defined (e.g., a <code>goal</code> in the soccer video domain). Patel et al. (<A HREF="#refP">2005</A>) explain that the concepts defined in domain ontologies would correspond to the concepts and relationships established in both upper and core ontologies, which may be extended with the addition of domain knowledge (Figure 5).</li>
+</ol>
+
+<div align="center"><figure>
+<img src="interoperability5.jpg" title="Fig. 5: Intermediate and domain vocabularies plugged-in under an open umbrella structure" width="60%">
+<figcaption>Figure 5: Intermediate and domain vocabularies plugged-in under an open umbrella structure (<A HREF="#refZ">Zeng and Chan 2010</A>)</figcaption>
+</figure></div>
+
+<p>The UK Digital Curation Center&rsquo;s Digital Curation Manual: Installment on &ldquo;Ontologies&rdquo; (<A HREF="#refD">Doerr 2008</A>) recommends that the editors of KOSs first agree on a common upper-level ontology across disciplines in order to guarantee interoperability at the fundamental and functional levels. On the other hand, Tudhope and Binding (<A HREF="#refT">2008</A>) advise that it is important to fully grasp the conditions and cost-benefit ratio of connecting an upper ontology and domain KOS: (1) the intended purpose &mdash; indexing and retrieval vs. automatic inferencing; (2) the alignment of the ontology and domain KOS; (3) the number of different KOS structures intended to be modeled; and (4) the use cases to be supported.</p>
+
+<p>Examples of upper ontologies:
+<ul>
+<li>The Upper Cyc&reg; Ontology was released in 1996 (<A HREF="http://www.silverbulletinc.com/dm2/File_Browser_2/data/files/IDEAS/References/Cyc/Upper%20Cyc/Upper%20Cyc%20-%20Cover.htm">http://www.silverbulletinc.com/dm2/File_Browser_2/data/files/IDEAS/References/Cyc/Upper%20Cyc/Upper%20Cyc%20-%20Cover.htm</A>) based on a giant knowledge base developed in the past two decades. It covers approximately 3,000 terms capturing the most general concepts of human consensus reality, that satisfies two important criteria: universal and articulate (i.e., necessary and sufficient).</li>
+<li>Suggested Upper Merged Ontology (SUMO) (<A HREF="http://www.adampease.org/OP/">http://www.adampease.org/OP/</A>), released in Dec. 2000 as an open source, was focused on meta-level concepts (i.e., general entities that do not belong to a specific problem domain).  It has been mapped to all of the WordNet lexicon and provides not only the largest open formal ontology but also multilingual language generation template and navigation tools.</li>
+<li>Basic Formal Ontology (BFO) (<A HREF="http://ifomis.uni-saarland.de/bfo/">http://ifomis.uni-saarland.de/bfo/</A>), though considered a smaller genuine upper ontology, has been used by more than 250 ontology-driven endeavors throughout the world. </li>
+</ul>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.3"></a>
+<h4>4.3 Integration/Combination</h4>
+
+<p>New KOS vocabularies with supporting services can be created with multiple resources combined in a new KOS while the original sources and definitions are maintained.  Such an approach is bottom-up, as demonstrated by the following examples. The Unified Medical Language System&reg; (UMLS) Metathesaurus has its scope determined by the combined scope of its source vocabularies. The TaxMeOn meta-vocabulary enables the management of heterogeneous biological name collections and is not tied to a single &ldquo;authority&rdquo; system (Figure 6).</p>
+
+<div align="center"><figure>
+<img src="interoperability6.jpg" title="Fig. 6: Multiple source vocabularies lead to a meta-vocabulary" width="40%">
+<figcaption>Figure 6: Multiple source vocabularies lead to a meta-vocabulary (image created by author)</figcaption>
+</figure></div>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.3.1"></a>
+<h5>4.3.1 Metathesaurus</h5>
+
+<p>A name used by the UMLS, a metathesaurus represents a kind of interoperability approach in which the scope of the KOS vocabulary and system is determined by the combined scope of its source vocabularies. An important step is to assign several types of unique and permanent identifiers to the concepts, concept names, and relationships between concepts, thus the meanings, concept names, and relationships from each vocabulary are preserved while unified in the metathesaurus. Example:
+
+<ul>
+<li>Metathesaurus of UMLS, started in 1986 at the U.S. National Library of Medicine (NLM), is one of the three major UMLS products: Metathesaurus, the Semantic Network, and the SPECIALIST Lexicon and Lexical Tools.  Metathesaurus is a large biomedical thesaurus with links to similar names for the same concept from more than 100 different KOS vocabularies in the world, including over 130 English and 19 non-English KOS vocabularies as of June 2018. Many relationships (primarily for synonyms), concept attributes, and some concept names are added by the NLM during Metathesaurus creation and maintenance, but essentially all the concepts themselves come from one or more of the source vocabularies. Generally, if a concept does not appear in any of the source vocabularies, it will also not appear in the Metathesaurus (<A HREF="#refN">NLM 2009</A>, section 2.1.1). It is a pioneer of using <i>identifiers</i> for the concepts and concept names it contains, in addition to retaining all identifiers that are present in the source vocabularies. It also identifies useful relationships between concepts and preserves the meanings, concept names, and relationships from each vocabulary (refer to the webpage <A HREF="https://www.nlm.nih.gov/research/umls/knowledge_sources/metathesaurus/">https://www.nlm.nih.gov/research/umls/knowledge_sources/metathesaurus/</A> and the UMLS Reference Manual on Metathesaurus for details from Chapter 2, <A HREF="#refN">NLM 2009</A>).</li>
+</ul>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.3.2"></a>
+<h5>4.3.2 Heterogeneous meta-vocabulary</h5>
+
+<p>Similar to the Metathesaurus discussed above, sometimes the situation involves creating a heterogeneous meta-vocabulary that supports the representation of changes and differing opinions of certain concepts. Taking biology as an example, the positions of species and the nomenclature in scientific taxonomies involve a lot of changes, which directly impact the access to the publications and data associated with them in different time periods. Example:
+
+<ul>
+<li>TaxMeOn is a heterogeneous meta-vocabulary for biological names built by Tuominen, Laurenne, and Hyv&ouml;nen (<A HREF="#refT">2011</A>). The datasets utilized in the study consist of 20 published species checklists that cover mainly northern European mammals, birds and several groups of insects, resulting in about 78,000 taxon names. The TaxMeOn ontology schema contains 12 ontological classes with 49 subclasses. The representation of the dataset encompasses these contents: (1) the different conceptions of a taxon; (2) the temporal order of the changes; and (3) the references to scientific publications whose results justify these changes (refer to TaxMeOn site for an example: <A HREF="http://onki.fi/onkiskos/cerambycids/">http://onki.fi/onkiskos/cerambycids/</A>)</li>
+</ul>
+
+<p>The direct application of the taxon meta-ontology model that allows multilingual, different opinions for the biological taxonomy concept and nomenclature in a unified view can be beneficial to the researchers of biology. The detailed data can be further linked to other datasets with less taxonomic information, such as species checklists, and provide users with more precise information. The data model enables managing heterogeneous biological name collections and is not tied to a single database system (<A HREF="#refT">Tuominen et al. 2011</A>). More importantly, this modeling method and the model itself can be extended in a flexible way and integrated with other data sources. This design and product is another pioneer in the KOS vocabulary and service development embracing interoperability.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.4"></a>
+<h4>4.4 Interoperation/Shared/Harmonization</h4>
+
+<p>The functions of a <i>shared concept scheme</i> or <i>bridge scheme</i> will be discussed in this section. While somewhat overlapping with the integration/combination approach presented above, activities discussed below would lead to a new scheme that is NOT constrained by the details and coverages of the sources. A final product may have its own structure and scope, and will function as an interoperation facilitator. This section also discusses virtual harmonization through linking, another kind of practice which became widely adopted along with the growth of the Semantic Web.  The effective implementations rely on interoperation with other target resources outside of the base vocabulary itself, where each of the target resources is controlled and maintained by the original provider. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.4.1"></a>
+<h5>4.4.1 Shared/bridge scheme</h5>
+
+<p>Open data is a trend that has resulted in an incredible number of high quality open datasets from government and international institutions in various domains. Yet, open data needs common semantics for linking diverse information. One of the strategies is to create a shared/bridge concept scheme via integrating existing standard vocabularies used by the dataset providers in related fields or domains. As usual, the existing KOSs involved would vary in the structure, language, scope, and culture, maintained by different institutions. It would not be realistic to select any as the &ldquo;hub&rdquo; or &ldquo;source&rdquo; vocabulary and map others to it, nor applicable to create a new &ldquo;authority&rdquo; vocabulary to unify them.  As reported by Baker et al., in searching across large databases in agriculture and environment, a shared concept scheme would improve the semantic reach of these databases by supporting queries that freely draw on terms from any mapped vocabulary, and achieving economies of scale from joint maintenance (<A HREF="#refB">Baker et al. 2016a</A>). In the ontology community, <i>bridge ontologies</i> (vs. <i>reference ontologies</i>) are typically used to mediate between specific concepts of multiple ontologies. They capture the commonalities between various applications and local ontologies within the same domain (<A HREF="Fritzsche et al. 2017">Fritzsche et al. 2017</A>) (Figure 7). Example:
+<ul>
+<li>The Global Agricultural Concept Scheme (GACS) project of Agrisemantics (a community network of semantic assets relevant to agriculture and food security) initiated the creation of a shared concept scheme by integrating existing standard vocabularies in agriculture and environment (<A HREF="#refB">Baker et al. 2016a</A>). GACS functions as a multilingual KOS hub that includes interoperable concepts related to agriculture from several large KOSs, including AGROVOC of the Food and Agriculture Organization of the UN, the CAB Thesaurus by CAB International of UK, and the U.S. National Agricultural Library (NAL) Thesaurus, all maintained independently. The latest GACS beta version provides mappings for 15,000 concepts and over 350,000 terms in 28 languages (<A HREF="#refB">Baker et al. 2016a</A>). The processes&rsquo; unique points are: (1) The mappings focused on three sets of frequently used concepts (10,000) from each of the three partners (which are only a portion of an original vocabulary); (2) Mappings were automatically extracted and then manually evaluated and corrected; (3) A classification scheme that was developed jointly in the 1990s was revised to tag concepts by thematic group (chemical, geographical, organisms, products, or topics); and (4) Alongside generic thesaurus relations to broader, narrower, and related concepts, organisms will be related to relevant products (<A HREF="#refB">Baker et al. 2016b</A>). </li>
+</ul>
+</p>
+
+<div align="center"><figure>
+<img src="interoperability7.jpg" title="Fig. 7: Shared/bridge scheme built on the selected sets of source vocabularies" width="40%">
+<figcaption>Figure 7: Shared/bridge scheme built on the selected sets of source vocabularies (image created by author)</figcaption>
+</figure></div>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.4.2"></a>
+<h5>4.4.2 Reference ontologies</h5>
+
+<p><i>Reference ontologies</i> is a term used in the formal ontology community. These ontologies are intended to be reused and are not rigidly tied to an application&rsquo;s specific use cases and requirements (<A HREF="#refF">Fritzsche et al. 2017</A>), which differentiate them from the shared/bridge schemes discussed in the previous sub-section. Explained in the Ontology Summit 2016 Communiqu&eacute; (<A HREF="#refF">Fritzsche et al. 2017</A>), reference ontologies reflect the base-level knowledge of a broad domain or the semantic consensus an industry sector. By design, they are created to facilitate integration across systems, repositories and data sources. Rather than serving as an upper ontology that helps mediate between other ontologies, a reference ontology serves as a means for mapping the terminology of multiple information systems and data to a common set of shared concepts. Properly conceived, a collection of reference ontologies can be viewed as orthogonal (non-overlapping), interoperable resources.</p> 
+
+<p>Examples:
+
+<ul>
+<li>The Foundational Model of Anatomy (FMA) is an ontology that represents the structure of the human body and is one of the largest computer-based knowledge sources in the biomedical sciences.  It is among of the information resources integrated in the distributed framework of the Anatomy Information System developed and maintained by the Structural Informatics Group at the University of Washington. Anatomy is considered fundamental to all biomedical sciences. Comprised of roughly 75,000 classes, 120,000 terms, and 168 relationship types, FMA represents a coherent body of explicit declarative knowledge about human anatomy. Its ontological framework can be applied and extended to all other species. The computer-based knowledge source distinguishes itself from other traditional sources of anatomical information, such as atlases, textbooks, dictionaries, thesauri or term lists (<A HREF="http://sig.biostr.washington.edu/projects/fm/AboutFM.html">http://sig.biostr.washington.edu/projects/fm/AboutFM.html</A>).</li>
+<li>Financial Industry Business Ontology&trade; (FIBO) is an ontology created by Enterprise Data Management Council and the Object Management Group (OMG). FIBO&reg; specifies the definitions, synonyms, structure, and contractual obligations of financial instruments, legal entities and financial processes. It is an industry initiative to define financial industry terms, definitions and synonyms using semantic web principles, aiming to contribute to transparency in the global financial system, aid industry firms (<A HREF="https://www.omg.org/hot-topics/finance.htm">https://www.omg.org/hot-topics/finance.htm</A>).</li>
+</ul>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.4.3"></a>
+<h5>4.4.3 Virtual harmonization through linking</h5>
+
+<p>The Semantic Web encourages the sharing and reuse of data, including the components of KOS vocabularies, such as a concept in the definition, a parallel appellation/nomen, a visual representation, etc. Around the world, activities of virtual harmonization through linking as well as generating multilingual labels by using SKOS-XL, have proven to be successful.</p>
+
+<p>Examples:
+
+<ul>
+<li>Thesaurus of Plant Characteristics (TOP) (<A HREF="http://www.top-thesaurus.org/">http://www.top-thesaurus.org/</A>) is committed to the harmonization and formalization of concepts for plant characteristics widely used in ecology. An entry of TOP presenting the definition with multiple sources of the concepts, coded with the URI from the original namespaces (e.g., PO, PATO, EFO, and Mayr) (Figure 8.1).</li>
+</ul>
+
+<div align="center"><figure>
+<img src="interoperability81.jpg" title="Fig. 8.1: An example from Thesaurus of Plant Characteristics showing the virtual harmonization of multiple sources of the concepts" width="70%">
+<figcaption>Figure 8.1: An example from Thesaurus of Plant Characteristics showing the virtual harmonization of multiple sources of the concepts (screen captured from TOP at www.top-thesaurus.org)</figcaption>
+</figure></div>
+
+<ul>
+<li>The Art & Architecture Thesaurus (AAT) Online includes links to representative images of a concept hosted by outside collaborators (Figure 8.2).</li>
+</ul>
+
+<div align="center"><figure>
+<img src="interoperability82.jpg" title="Fig. 8.2: An example from AAT showing the links to representative images managed at collaborators&rsquo; sites" width="70%">
+<figcaption>Figure 8.2: An example from AAT showing the links to representative images managed at collaborators&rsquo; sites (screen captured through AAT ID: 300198841)</figcaption>
+</figure></div>
+
+<ul>
+<li>
+Faceted Application of Subject Terminology (FAST) (<A HREF="http://experimental.worldcat.org/fast/">http://experimental.worldcat.org/fast/</A>) reported using <code>foaf:focus</code> to allow FAST&rsquo;s controlled terms (representing instances of <code>skos:Concept</code>) to be connected to URIs that identify real-world entities specified at VIAF, GeoNames, and DBpedia. With the correct coding of properties, machines can understand (reason) that a FAST&rsquo;s controlled term is related to a real-world entity and allows humans to gather more information about the entity that is being described (<A HREF="#refO">O&rsquo;Neill and Mixter 2013</A>) (Figure 8.3).</li>
+</ul>
+
+<div align="center"><figure>
+<img src="interoperability83.jpg" title="Fig. 8.3: Examples from FAST showing the machine understandable coding of linkages to external vocabularies" width="70%">
+<figcaption>Figure 8.3: Examples from FAST showing the machine understandable coding of linkages to external vocabularies (based on <A HREF="#refO">O&rsquo;Neill and Mixter 2013</A>, with screenshots from FAST, July 2018)</figcaption>
+</figure></div>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5"></a>
+<h3>5. Mapping</h5>
+
+<p>Many KOS vocabularies have been independently developed and/or have already been applied to collections. Mapping, a process of establishing relationships between the concepts of one vocabulary and those of another, is a widely used approach to achieve the semantic interoperability of existing KOS vocabularies. The term <i>mapping</i> might be used to refer to a process of establishing relationships between the contents of one vocabulary and those of another, or as a product of mapping process, a statement of the relationships between the terms, notations or concepts of one vocabulary and those of another. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5.1"></a>
+<h4>5.1 Major challenges</h4>
+
+<p>For achieving interoperability among existing KOS vocabularies, challenges of mapping arise when existing KOS vocabularies differ with regard to structure, domain, language, or granularity. The foremost problem might be the number and variety of problems to be encountered in any mapping process.</p>
+
+<p>Special challenges and controversial opinions have always overshadowed the projects that have attempted to map <b>multilingual</b> vocabularies. For example, equivalence correlation must be dealt with not only within each original language (intra-language equivalence), but also among the different languages (inter-language equivalence) involved. Intra-language homonymy and inter-language homonymy are also problematic semantic issues (<A HREF="#refI">IFLA Classification and Indexing Section 2005</A>). Hudon (<A HREF="#refH">1997</A>) pointed out that while various textbooks and guidelines provided many details on the "conceptual equivalence" issue, when discussing semantic solutions, display options, management issues, or use of technology, the guidelines seldom go as far as commenting on whether or not a particular option is truly respectful of a language and its speakers. The issue of &ldquo;language equality&rdquo; must be taken into account in the analysis and eventual selection of a solution to a specific problem.</p>
+
+<p>Further complications arise when perspectives of <b>different cultures</b> need to be integrated. With the assumption that all languages are equal in a crosswalk table, the central question is whether the unique qualities of a particular culture expressed through a KOS vocabulary can be appropriately transferred during the mapping process. Gilreath (<A HREF="#refG">1992</A>) suggests that there are four basic requirements that must be harmonized in terminology work: concepts, concept systems, definitions, and terms. </p>
+
+<p>In addition to language and cultural variants, KOS vocabularies have <b>different microstructures and macrostructures</b>: they represent different subject domains or have different scope and coverage; they have semantic differences caused by variations in conceptual structuring; their degrees of specificity and use of terminology vary; and the syntactic features (such as word order of terms and the use of inverted headings) are also different. Discussing the unification of languages and the unification of indexing formulas, Maniez (<A HREF="#refM">1997</A>) pointed out that paradoxically the information languages increase the difficulties of cooperation between the different information databases, confirming what Lancaster observed earlier: &ldquo;Perhaps somewhat surprisingly, vocabularies tend to promote internal consistency within information systems but reduce intersystem compatibility&rdquo; (<A HREF="#refL">Lancaster 1986</A>, p.181).</p>
+
+<p>In reality, during the transforming, mapping, and merging of concept equivalencies, certain specific nomens that represent the concepts, formed with definite syntaxes, are sought. While experimenting with an expert system to map mathematics classificatory structures and test the &ldquo;convertibility&rdquo;, Iyer and Giguere (<A HREF="#refI">1995</A>) identified several kinds of semantic relations between DDC and Mathematics Subject Classification, comprising these situations: exact matches, specific to general, general to specific, many to one, cyclic mapping strategies, no matches, and specific and broad class mapping. <b>Different types of equivalencies</b> have also been defined by various important manuals and standards, identified as: <i>exact equivalence</i>, <i>inexact equivalence</i> (or <i>near-equivalence</i>), <i>partial equivalence</i>, <i>single to multiple equivalence</i>, and <i>non-equivalence</i> (<A HREF="#refA">Aitchison, Gilchrist and Bawden 1997</A>; <A HREF="#refI">ISO 25964-2:2013</A>) (Figure 9).</p>
+
+<div align="center"><figure>
+<img src="interoperability9.jpg" title="Fig. 9: Degrees of equivalence" width="60%">
+<figcaption>Figure 9: Degrees of equivalence (<A HREF="#refA">Aitchison et al. 1997</A>)</figcaption>
+</figure></div>
+
+<p>The <b>complex requirements and processes</b> for matching terms, which are often imprecise, may have a significant impact on several aspects of vocabulary mapping: browsing structure, display, depth, non-topical classes, and the balance between consistency, accuracy, and usability (<A HREF="#refZ">Zeng and Chan 2010</A>). Various levels of mapping/linking can coexist in the same project, such as those identified by the Multilingual Access to Subjects (MACS) project: terminological level (subject heading), semantic level (authority record), and syntactic level (application) (<A HREF="#refF">Freyre and Naudi 2003</A>). </p>
+
+<p>Even with the advancement of information technologies, there are still many mapping processes done at <b>syntax level</b> (word, phrase, and context), rather than at the <b>semantics level</b>. The issues of incorrect mapping of homographs for concepts belonging to different domains can be found in the mapping services and individual vocabulary&rsquo;s published mapping results (e.g., <code>recruitment</code> as a biological process and as a personnel management process). The concept mapping according to the semantics will be a major and much-needed service; it is still a challenge for those dependent on machine mapping. </p>
+
+<p>New AI (artificial intelligence) with machine learning does present great potential to reduce all such conflicts and improve interoperability at all layers, especially semantic interoperability. In archaeological communities, ARIADNE, which consortium consists of 24 partners in 16 countries, has reported extensive research and development activities, including using rule-based and machine learning mechanisms. For example, rule-based techniques have been employed with available archaeological vocabularies from Historic England (HE) and Rijksdienst Cultureel Erfgoed (RCE). A study on semantic integration of data extracted from archaeological datasets with information extracted via natural language processing (NLP) across different languages demonstrated the feasibility of connecting and semantic cross-searching of the integrated information. The semantic linking of textual reports and datasets opens new possibilities for integrative research across diverse resources (<A HREF="#refA">Aloia et al. 2017</A>; <A HREF="#refB">Binding et al. 2018</A>). </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5.2"></a>
+<h4>5.2 Models of mapping process</h4>
+
+<p>The <i>direct mapping</i> and <i>hub structure mapping</i> models, recommended by the ISO 25964-2:2013 (see Table 2 below), addresses the mapping of contents between two or more vocabularies that do not share the same structure, differ in scope and/or language, and may belong to different types (e.g., thesauri, classification schemes, name authority lists, etc.). Note that syntax differences of encoding languages or expressions are not addressed. The mappings should always be established between the concepts (i.e., not the appellations representing the concepts). </p>
+
+<p>In both direct mapping and hub structure models (Table 2), the double-headed arrows indicate that the mappings are intended to work in dual directions. Each double-headed arrow represents a pair of mappings, one in each direction. When two-way mappings are not necessary, alternative models can be used in which one of the vocabularies is used as the <i>source</i> and the other one as the <i>target</i>. The un-matched members of the vocabularies need to be treated with additional strategies. Between any pair of vocabularies, the mapping quality that can be achieved is best when the target vocabulary has equal specificity as well as the same breadth of coverage as the source vocabulary (<A HREF="#refI">ISO 25964-2:2013</A>, Section 6) (Table 2).</p>
+
+<blockquote><table align="center">
+<caption><i>Table 2: Mapping models recommended by ISO 25964 (based on <A HREF="#refI">ISO 25964-2:2013</A>, 6.3 and 6.4)</i><br>&nbsp;</caption>
+<tr><td align="center">
+<img src="interoperabilityt2.png" width="80%" title="Mapping models recommended by ISO 25964">
+</td></tr>
+</table></blockquote>
+
+<p><b>Direct-linked model</b>, as illustrated in Table 2, indicates that direct mappings should be established between the concepts of each vocabulary and those of each other vocabulary. The mapping may be initiated by either end of the involved vocabularies.&nbsp;This may be extended to any number of vocabularies by establishing direct mappings from each vocabulary to each other one. As more vocabularies become involved, the number of mapping processes will increase dramatically. A mapping cluster, defined as a &ldquo;coordinated set of mappings between the concepts of three or more vocabularies&rdquo; (<A HREF="#refI">ISO 25964-2:2013</A>, Section 3.42) is generally maintained and published with a particular publishing or application objective. For example, a cluster of mappings between four different thesauri might be maintained so that a user of any one of them can easily search document collections indexed with any of the four.</p>
+
+<p>With more KOS vocabularies publishing their whole datasets as linked data and opening for free use, more and more direct mapping results have become available. Often the mapping results of each concept can be found on its entry page. Example:
+
+<ul>
+<li>Each entry of the LCSH can be viewed and downloaded in various RDF formats, while the mapping of the subject heading to other national libraries&rsquo; subject headings (e.g., from The Biblioth&egrave;que nationale de France) are listed as &ldquo;Closely Matching Concepts from Other Schemes&rdquo; (see an example for <code>Smartphones</code> at <A HREF="http://id.loc.gov/authorities/subjects/sh2007006251.html">http://id.loc.gov/authorities/subjects/sh2007006251.html</A>). </li>
+</ul>
+
+<p>The <b>Hub Structure</b> uses a <i>cross-switching</i> approach, normally applied to reconcile multiple vocabularies. In this model, one of the vocabularies is used as the switching mechanism between the multiple vocabularies. Such a switching system can be a new system (e.g., UMLS Metathesaurus, introduced in Section 4.3) or an existing system (e.g., AGROVOC). The hub need to be comprehensive enough in the required subject area(s), at least at high levels. The following examples are, again, from the well-known KOS interoperability efforts.</p>
+
+<p>Examples:
+
+<ul>
+<li>AGROVOC thesaurus, developed and maintained by the Agricultural Information Management Standards (AIMS) division of of the Food and Agriculture Organization (FAO) of the United Nations, is the switching vocabulary of 15 important KOS vocabularies used worldwide plus DBpedia (as seen June 2018). Global vocabularies such as LCSH, DDC, EuroVoc and specialized vocabularies in a variety of related domains (involving multiple natural languages) are all mapped through machine-assisted human mapping process. AGROVOC and the mapping results are completely encoded with SKOS, with mapping degrees indicated by SKOS <code>exactMatch</code>, <code>closeMatch</code>, <code>broadMatch</code> and <code>narrowMatch</code> (refer to   <A HREF="http://aims.fao.org/standards/agrovoc/linked-data">http://aims.fao.org/standards/agrovoc/linked-data</A> for the current status of the mapping; see an example for the concept of <code>tuna</code> at <A HREF="http://aims.fao.org/aos/agrovoc/c_8003.html">http://aims.fao.org/aos/agrovoc/c_8003.html</A>.) </li>
+<li>Information Coding Classification (ICC) was designed by the founder of ISKO, Dr. &rarr; <a href="dahlberg">Ingetraut Dahlberg</a>, as a theoretical superstructure of a universal system. It consists of nine general object areas according to the principle of evolution. The over 6500 knowledge fields were defined with the combination of concepts of ontical level objects (<i>ontical</i> refers to a particular area of being), categorical concepts, and their subdivisions (<A HREF="Dahlberg 2017">Dahlberg 2017</A>). In 1996, the author proposed its use as a switching mechanism between the five widely used classification systems: Dewey Decimal Classification (DDC), Universal Decimal Classification (UDC), Library of Congress Classification (LCC), The Bliss Bibliographic Classification (BC) and Colon Classification (CC). The encouraging results of top-level comparison was reported in 1998 with DDC and UDC had almost matched; and the total matching to 5 classifications was 52, among 81 subject groups of ICC. The types of mapping fall into four groups: equivalence, inclusion, &ldquo;is about&rdquo;, and union (<A HREF="#refD">Dahlberg 1998</A>).</li>
+</ul>
+
+<p><b>Selective mapping</b>. Models showing in the Table 2 all require significant work to build and maintain. In the circumstance that it is unnecessary to map the entire vocabularies, mappings can be established only for the concepts that have been used or are likely to be used within the application in question. This model could be applied when there are relatively few concepts common to two or more vocabularies. In such a case, only a limited number of mappings can and should be established. Another case is to conduct the mapping among the products that applied the vocabularies, e.g., in the indexes or catalogues. While this reduces the initial mapping effort, it can increase updating maintenance tasks when changes are made in the collection (<A HREF="#refI">ISO 25964-2:2013</A>, Section 6.5).</p>
+
+<p>Examples:
+
+<ul>
+<li>MACS Multilingual Access to Subjects was a pioneer project aimed to enable users to simultaneously search the catalogues of the project's partner libraries in the languages of their choice (English, French, German). It mapped subject headings used in three monolingual subject authority files: Schlagwortnormdatei/Regeln f&uuml;r den Schlagwortkatalog (SWD/RSWK), R&eacute;pertoire d&rsquo;autorit&eacute;-mati&egrave;re encyclop&eacute;dique et alphab&eacute;tique unifi&eacute; (RAMEAU), and Library of Congress Subject Headings (LCSH) (<A HREF="#refF">Freyre and Naudi 2003</A>). </li>
+</li>
+<li>SciGator (<A HREF="http://scigator.unipv.it">http://scigator.unipv.it</A>) is a new tool developed at University of Pavia, Italy, a well-known institution of Medieval origins. Its nine main libraries have the tradition of using local schemes to organize their collections to satisfy their specific needs. With the efforts of standardizing the shelfmarks among a number of libraries by adopting a single scheme based on DDC as well as the action of a number of other libraries to supplement DDC as additional subject access points, SciGator has been developed to allow users to browse the DDC classes used in different libraries at the University of Pavia. Besides navigation of DDC hierarchies, SciGator suggests &ldquo;see-also&rdquo; relationships with related classes and maps equivalent classes in local shelving schemes, thus allowing the expansion of search queries to include subjects contiguous to the initial one (<a href="#refL">Lardera et al. 2017</a>).</li>
+</ul>
+
+<p><b>Co-occurrence mapping</b> works at the application level, e.g., in metadata records that have assigned subject terms from more than one vocabulary (e.g., MeSH and LCSH subject headings assigned to the same publication). Instead of preparing a completely mapped work at the source vocabulary level (Table 2), the group of subject terms can actually result in loosely-mapped terms (<A HREF="#refZ">Zeng and Chan 2004</A>). A new study reported a different kind of co-occurrence mapping, using a social network approach that leverages online social platform information (i.e., research activities and social activities) for mapping. The underlying assumption behind the approach is that &ldquo;two classes/terms in different KOS are related if their corresponding research objects are connected to similar researchers&rdquo; (<A HREF="#refD">Du et al. 2017</A>). </p>
+
+<p><b>Blended mapping</b> models. In mapping between two vocabularies, multiple models might be used in the same case, as summarized by the AAT-Taiwan team for a study on the conceptual structures of concepts for Chinese art in the Taiwan National Palace Museum (NPM) Vocabulary (treated as the source) and AAT (treated as target) (<A HREF="#refC">Chen et al. 2016</A>). Patterns found in this project might represent many similar cases of vocabulary mapping, such as: concepts are completely covered, incompletely covered, or not covered by the target vocabulary; and specific category can be found or does not exist in the target. Each model, simply interpreted in the following table, specifies whether a vocabulary is selected as the &ldquo;base,&rdquo; supplemented by the other vocabulary; or if the vocabulary is &ldquo;fully adopted&rdquo;. All depend on the situations encountered (Table 3).</p>
+
+<blockquote><table align="center">
+<caption><i>Table 3: Blended mapping models: four models used in mapping the National Palace Museum (NPM) vocabulary (treated as the source) and AAT (treated as target) (based on <A HREF="#refC">Chen et al. 2016</A>)</i><br></caption>
+<tr><td align="center">
+<img src="interoperabilityt3.png" width="70%" title="Blended mapping models: four models used in mapping the NPM vocabulary and AAT">
+</td></tr>
+</table></blockquote>
+
+<p>Ontology matching is a global interest, as reflected by <A HREF="#refO">Otero-Cerdeira et al.&rsquo;s 2015</A> paper, &ldquo;Ontology matching: A literature review&rdquo; of more than 1600 papers.  A classification framework by Euzenat and Shvaiko (<A HREF="#refE">2013</A>) was used in the study (Figure 10). which can be followed top-down (focusing on the interpretation that the different techniques offer to input information) or bottom-up (focusing on the type of input that the matching techniques use), while both meet at the &ldquo;Concrete techniques&rdquo; tier. </p>
+
+<div align="center"><figure>
+<img src="interoperability10.jpg" title="Fig. 10: Matching techniques classification" width="60%">
+<figcaption>Figure 10: Matching techniques classification (<A HREF="#refE">Euzenat and Shvaiko 2013</A>; <A HREF="#refO">Otero-Cerdeira et al. 2015</A>)</figcaption>
+</figure></div>
+
+<p>On top of all the surveys conducted on complex ontology matching, Thi&eacute;blin et al. (<A HREF="#refT">2018</A>) carried out a study of these surveys. The paper indicates that there still is no benchmark on which complex ontology matching approaches can be systematically evaluated and compared. With a proposed definition of complex correspondences (and alignments), a classification of these approaches based on their specificities is proposed in the paper. The specificities of the complex matching approaches rely on their output (type of correspondence) and their process (guiding structure) (<A HREF="#refT">Thi&eacute;blin et al. 2018</A>). </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5.3"></a>
+<h4>5.3 Encoding the alignment degrees</h4>
+
+<p>Encoding the alignment degrees is a prominent process called upon by the LOD movement. The mashups, crosswalks, and interlinking all rely heavily on the alignment of the components in RDF triples. The requirement for the precision of mapping is more important than that in the previous non-LOD environment. ISO 25964-2 enumerates scenarios of mappings and categorized them in three groups: <i>equivalence mappings</i> (including simple equivalence (one-to-one) and compound (one-to-many) equivalence mappings), <i>hierarchical mappings</i>, and <i>associative mappings</i>. It also discusses in detail about exact, inexact and partial equivalence. </p>
+
+<p>To encode and represent the mapping degrees when multiple vocabularies are involved, RDFS, OWL, and SKOS have provided guidance and properties, including:
+<ul>
+<li>between ontological classes: <code>owl:equivalentClass</code> and <code>rdfs:subClassOf</code></li>
+<li>between properties: <code>owl:equivalentProperty</code> and <code>rdfs:subPropertyOf</code> </li>
+<li>between concepts from concept schemes: <code>skos:exactMatch</code>, <code>skos:closeMatch</code>, <code>skos:relatedMatch</code>, and the reciprocal pair <code>skos:broadMatch</code> and <code>skos:narrowMatch</code> (Figure 11, left)</li>
+<li>for transitive super-properties of <code>skos:broader</code> and <code>skos:narrower</code>, <code>skos:broaderTransitive</code> and <code>skos:narrowerTransitive</code> (Figure 11, right)</li>
+</ul>
+
+<div align="center"><figure>
+<img src="interoperability11.jpg" title="Fig. 11: Demonstration of matching results encoded with SKOS properties" width="60%" border="1">
+<figcaption>Figure 11: Demonstration of matching results encoded with SKOS properties (<A HREF="#refI">Isaac 2010</A>; <A HREF="#refI">Isaac and Summers 2009</A>)</figcaption>
+</figure></div>
+
+<p>It should be remembered that, in mapping concepts, an exact match of two concepts found from different vocabularies is rare, even though sometimes the labels read the same and the scope notes or definitions are similar. Their pre-defined constraints should be able to reveal the equivalency or similarity of the two concepts or classes to be mapped. A <code>skos:closeMatch</code> is more appropriate than a <code>skos:exactMatch</code> in the majority of situations.</p>
+
+<p>Other designed schemas are also available. UMBEL (Upper Mapping and Binding Exchange Layer, <A HREF="http://umbel.org/">http://umbel.org/</A>) is designed to help content interoperate on the Web and has mapped OpenCyc, DBpedia, PROTON, GeoNames, and Schema.org. This is enabled through its UMBEL Vocabulary, which contains three classes and 38 properties for describing domain ontologies, providing expressions of likelihood relationships distinct from exact identity or equivalence.
+
+<ul>
+<li>UMBEL Classes: Reference Concept (for more broadly understood concept), Super Type (for a higher-level of clustering and organization of Reference Concepts), and Qualifier (a set of descriptions that indicate the method used to establish an <code>isAbout</code> or <code>correspondsTo</code> relationship between an UMBEL reference concept (RC) and an external entity).</li>
+<li>UMBEL Properties: 38 properties provide the mapping basis for the vocabulary: <code>correspondsTo</code>, <code>isAbout</code>, <code>isRelatedTo</code>, <code>relatesToXXX</code> (31 variants), <code>isLike</code>, <code>hasMapping</code>, <code>hasCharacteristic</code> and <code>isCharacteristicOf</code>  (<A HREF="http://techwiki.umbel.org/index.php/UMBEL_Vocabulary">http://techwiki.umbel.org/index.php/UMBEL_Vocabulary</A>).</li>
+</ul>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="6"></a>
+<h3>6. Harmonization through terminology services</h3>
+
+<p>Thousands of KOS vocabularies have been developed and are in use in every field. Even with the same or similar concept scope, concepts in vocabularies that are in isolation from one another might be represented in different terms, use different formats and formalisms, and are published and stored with different access methods. Vocabulary harmonization is needed not only for those existing vocabularies, but also for the initiations of new vocabulary developments. </p>
+
+<p><i>Terminology services</i> is a broad term referring to the <i>repositories</i> and <i>registries</i> of vocabularies (including both value vocabularies and property vocabularies). A group of <i>services</i> are used to host and present vocabularies, member concepts, terms, classes, relationships, and detailed explanations of terms which facilitate semantic interoperability. Powered by semantic technologies and enabled by RDF, SKOS, and OWL, they have emerged during the last decade. In addition to registering, hosting, publishing, and managing diverse vocabularies and machine-processable schemas, these services also aim to enable searching, browsing, discovery, translation, mapping, semantic reasoning, automatic classification and indexing, harvesting, and alerting. </p>
+
+<p>Terminology services can be interactive machine-to-machine or between human and machine. User-interfacing services can also be applied at all stages of the search process. For example, in supporting the needs of searching for concepts and the terms representing the concepts, services can assist in resolving search terms, disambiguation, browsing access, and mapping between vocabularies. As a search support for queries, services facilitate query expansion, query reformulation, and combine browsing and search. These can be applied as immediate elements of the end user interface, or they can act in underpinning services behind the scenes, depending upon the context. Technologically, Web services can be used effectively to interact with controlled vocabularies. Terminology services represent an entirely new dimension in KOS research and development (<A HREF="Tudhope, Koch and Heery 2006">Tudhope, Koch and Heery 2006</A>; <A HREF="Golub et al. 2014">Golub et al. 2014</A>). </p>
+
+<p>Variations of these terminology services can be found in terms of: 
+
+<ul>
+<li>The natural languages involved: monolingual, bilingual (mainly involving an original language and English), or multi-lingual;</li>
+<li>The number of KOS vocabularies contained in a service;</li>
+<li>Vocabulary version information&rsquo;s availability: current version only or all versions, with or without descriptive, technical, and administrative metadata of a vocabulary;</li>
+<li>Provenance data&rsquo;s availability: As more KOS vocabularies are released and updated online, the provenance data might emphasis at a different level, e.g., vocabulary, entry, or even concept- and term-specific level;</li>
+<li>Scope of the services: registration of vocabularies only, or accessing to all KOS vocabularies hosted; onsite searching, browsing, displaying, and navigating, direct linking to data values, etc. The highest-level service would be the alignment among vocabularies (e.g., BioPortal).</li>
+</ul>
+
+<p>The scope of the services mentioned above indicate two major types of terminology services to be referenced: repositories vs. registries (<A HREF="#refZ">Zeng and Mayr 2018</A>).
+<ul>
+<li>Vocabulary <i>repositories</i> are used for those services hosting full content of a KOS vocabulary as well as the management data for each component updated regularly. A typical example, BioPortal (<A HREF="https://bioportal.bioontology.org/">https://bioportal.bioontology.org/</A>), is presented in <A HREF="#app1">Appendix 1</A>.</li>
+<li>Vocabulary <i>registries</i> differ from repositories because they offer information <i>about</i> vocabularies (i.e., metadata) instead of the vocabulary contents themselves; they are the fundamental services for locating KOS products. The metadata for vocabularies usually contain both the descriptive contents and the management and provenance information. The registry may provide the data about the reuse of ontological classes and properties among the vocabularies, as presented by Linked Open Vocabularies (LOV) (<A HREF="https://lov.linkeddata.es/dataset/lov/">https://lov.linkeddata.es/dataset/lov/</A>).</li>
+</ul>
+
+<p>During the last 20 years, there have been well-funded projects which could be seen as pioneers in terminology services. Information about these experimental projects can be found in a previous encyclopedia article by Zeng and Chan (<A HREF="#refZ">2010/2015</A>). A list containing truly functional services as of July 2018 can be found in <A HREF="#app2">Appendix 2</A> of this article.  It is based on a recent review by Zeng and Mayr (<A HREF="#refZ">2018</A>) with updates after May 2018 (e.g., changes of the EU vocabularies and LOV).</p>
+
+<p>Registering KOS vocabularies and services would need to begin with a set of common attributes that describe them. Metadata of KOS vocabularies, including descriptions of a vocab&rsquo;s data model, type, protocol, status, responsible body, available format, affectivity, and other features, are very important to terminology services, vocabulary users (machine or human), and retrieval systems. At a minimum, metadata for KOS resources will describe specific characteristics of a KOS, facilitate the discovery of KOS resources, assist in the evaluation of such resources for a particular application or use, and facilitate sharing, reusing, and collaboration of the KOS resources. A Dublin Core Application Profile for KOS Resources (NKOS AP) was released in 2014, which was developed based on the work begun in 1998 by members of the Networked Knowledge Organization Systems (NKOS). The specification, known as NKOS AP (<A HREF="http://nkos.slis.kent.edu/nkos-ap.html">http://nkos.slis.kent.edu/nkos-ap.html</A>) defines the set of RDF classes and properties that can be used to describe any KOS resource.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="7"></a>
+<h3>7. Conclusion</h3>
+
+<p>This encyclopedia article attempts to bring together the major approaches and standards in the semantic interoperability dimension through reported cases and available real services. The selected examples are only demonstrations of the approaches, and each actually could represent more than one method. Tools and technologies are not discussed in this entry but certainly can be labeled as groundbreaking at the current stage of the Web.  <A HREF="#refI">ISO 25964-2:2013</A> has a dedicated section (Section 14) on the techniques for identifying candidate mappings, including computer-assisted direct mapping.</p>
+
+<p>Following the linked data principles that benefit from the data-driven, shared editing and publishing workflow, as well as an increasing number of KOSs published in machine-understandable formats, the reusability of any of the existing and new KOS vocabularies is greatly increased. Mapping the semantics promotes cooperation and reduces duplication. Coherent semantics benefit research, innovation systems, and value chains (<A HREF="#refB">Baker et al. 2016b</A>).</p>
+
+<p>The author would like to conclude this article by using a statement from the recent Communiqu&eacute; of the Ontology Summit. &ldquo;Each system, organization, community, database or message format is thus defined in its own, too often implicit, context which might, in turn, depend on other contexts [&hellip;] While these systems are defined and built independently, systematic integration of their information and processes is essential for collaboration, shared services, information sharing and analytics. These capabilities are not optional in today&rsquo;s world; they are essential for the continued existence of commercial enterprises and the effectiveness of government&rdquo; (<A HREF="#refO">Ontolog 2018</A>, 5-6). </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="app1"></a>
+<h3>Appendix 1. BioPortal, a typical example of terminology service</h3>
+
+<p>BioPortal, the world&rsquo;s most comprehensive repository of biomedical ontologies, represents a high-level service of KOS products that is relevant to biomedicine, developed by the U.S. National Center for Biomedical Ontology. In addition to those designed as ontologies, conventional term/code lists, classifications, and thesauri that have been widely accepted in the biomedical domain are all converted into ontology structure and are considered as ontologies. Users may access the BioPortal content (over 700 ontologies as of 2018-06) interactively via Web browsers or programmatically via Web services. Users can search for content within a specific ontology, a group of ontologies, or across all ontologies in the repository with a variety of advanced search functions. With its biomedicine focus, the search for a matching concept among resources that have been mapped yields a higher accuracy than other cross-domain repositories. Other repositories based on BioPortal have been developed, such as Marine Metadata Interoperability Ontology Registry and Repository (MMI ORR) (<A HREF="https://mmisw.org/">https://mmisw.org/</A>) and Earth Science Information Partners (ESIP) Ontology Repository (<A HREF="http://cor.esipfed.org/ont/">http://cor.esipfed.org/ont/</A>) (Figure A1).</p>
+
+<div align="center"><figure>
+<img src="interoperabilitya1.jpg" title="Fig. A1: Options of search and browsing provided by BioPortal" width="80%">
+<figcaption>Figure A1: Options of search and browsing provided by BioPortal (screen captured from https://bioportal.bioontology.org/ 2018-06-04)</figcaption>
+</figure></div>
+
+<p>Alongside details of each vocabulary, BioPortal also engages users by asking for feedback on individual vocabulary according to its usability, coverage, quality, formality, correctness, and documentation (Figure A2).</p>
+
+<div align="center"><figure>
+<img src="interoperabilitya2.jpg" title="Fig. A2: Example of an individual vocabulary&rsquo;s page provided by BioPortal" width="80%">
+<figcaption>Figure A2: Example of an individual vocabulary&rsquo;s page provided by BioPortal (screen captured from https://bioportal.bioontology.org/ontologies/NCIT 2018-06-04)</figcaption>
+</figure></div>
+
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="app2"></a>
+<h3>Appendix 2. A list of vocabulary repositories and registries</h3>
+
+<p>There are two major types of terminology services: repositories vs. registries. The following list contains the truly functional services as of May 2018, taken from a review by Zeng and Mayr (<A HREF="#refZ">2018</A>), with updated information since May 2018: 
+
+<h4>Vocabulary repositories</h4>
+
+<p>Vocabulary repositories are used for those services hosting full content of a KOS vocabulary as well as the management data for each component updated regularly on time.</p>
+
+<ul>
+<li>Individual vocabulary&rsquo;s provider.
+<ul>
+<li>E.g., EuroVoc (<A HREF="http://eurovoc.europa.eu/">http://eurovoc.europa.eu/</A>) website before May 2018, offering the multilingual thesaurus of the European Union (EU). Terms in EU languages and alignments with eight other KOS are available on its website and dump. It is moved to the new EU Vocabularies in 2018.</li>
+</ul></li>
+<li>Individual institution as the provider of all vocabularies produced in the institution.
+<ul>
+<li>E.g., EU Vocabularies (<A HREF="https://publications.europa.eu/en/web/eu-vocabularies">https://publications.europa.eu/en/web/eu-vocabularies</A>) launched in May 2018 has the purpose of facilitating the discovery, access and reuse of EU related vocabularies, ranging from controlled vocabularies, such as EuroVoc and the authority tables, to ontologies, including the European Legislation Identifier ontology, and other reference data assets.</li>
+<li>E.g., Library of Congress Linked Data Services &ndash; Authorities and Vocabularies (<A HREF="http://id.loc.gov/">http://id.loc.gov/</A>) provides access to all vocabularies promulgated by the Library of Congress including the LC Subject Headings, LC Classification, and LC Name Authority File, plus the many smaller value vocabularies such as various code lists and schemas from the MARC documentation standard, preservation vocabularies, ISO language codes, and other standards.</li>
+<li>E.g., Getty LOD Vocab (<A HREF="http://vocab.getty.edu/">http://vocab.getty.edu/</A>) provides multiple Getty vocabularies, the Art & Architecture Thesaurus (AAT), the Getty Thesaurus of Geographic Names (TGN), and the Union List of Artist Names (ULAN), through both data dump and a SPARQL endpoint, plus a comprehensive list of query templates and documentation. The contents are directly linked to the website of the vocabularies. The Cultural Objects Name Authority (CONA) is on its way to becoming LOD.</li>
+</ul></li>
+<li>Unified portal for a country&rsquo;s KOS vocabularies produced by multiple units in the country.
+<ul>
+<li>E.g., The Finnish thesaurus and ontology service FINTO (<A HREF="http://finto.fi/en/">http://finto.fi/en/</A>) enables both the publication and browsing of dozens of vocabularies produced in Finland. In addition, the service offers interfaces for integrating the thesauri and ontologies into other applications and systems.</li>
+</ul></li>
+<li>Domain-oriented portal for collected vocabularies produced by multiple units.
+<ul>
+<li>E.g., BioPortal (<A HREF="http://www.bioportal.bioontology.org">http://www.bioportal.bioontology.org</A>) provides a Web portal enabling biomedical researchers to access, review, and integrate disparate ontological resources in all aspects of biomedical investigation and clinical practice (over 700). Extra features include mapping among the involved vocabularies, usage data, and reviews.</li>
+<li>Other examples are: Ontobee (biomedical) (<A HREF="http://www.ontobee.org/">http://www.ontobee.org/</A>); Planteome (plants) (<A HREF="http://planteome.org/">http://planteome.org/</A>); Ontology Lookup Service (OLS) (biomedical) (<A HREF="http://www.ebi.ac.uk/ols/index">http://www.ebi.ac.uk/ols/index</A>); GFBio terminology service (biological) (<A HREF="https://terminologies.gfbio.org/">https://terminologies.gfbio.org/</A>), and Heritage Data (cultural heritage) (<A HREF="http://www.heritagedata.org/blog/vocabularies-provided/">http://www.heritagedata.org/blog/vocabularies-provided/</A>).</li>
+</ul></li>
+<li>Middleware that provides tools for end-users to use/reuse published vocabularies.
+<ul>
+<li>E.g., Skosprovider (<A HREF="http://skosprovider.readthedocs.io">http://skosprovider.readthedocs.io</A>) provides an interface that can be included in an application to allow it to talk to different SKOS vocabularies. These vocabularies could be defined locally or accessed remotely through web services. Examples include the Getty vocabularies and vocabularies published by EH, RCAHMS and RCAHMW at <A HREF="http://heritagedata.org">http://heritagedata.org</A>.</li>
+</ul></li>
+<li>Upper ontology that facilitates multiple vocabularies&rsquo; concept- and entity-mapping.
+<ul>
+<li>E.g., Linked Open Ontology cloud KOKO (<A HREF="https://finto.fi/koko/en/">https://finto.fi/koko/en/</A>) supports the management and publication of a set of interlinked Finnish core vocabularies; and enables the users to use multiple ontologies as a single, interoperable, cross-domain representation instead of individual ontologies.</li>
+<li>E.g., Upper Mapping and Binding Exchange Layer (UMBEL, <A HREF="http://umbel.org/">http://umbel.org/</A>) provides an UMBEL vocabulary that is designed for mapping ontologies and external vocabularies (OpenCyc, DBpedia, PROTON, GeoNames, and schema.org), and provides linkages to more than 2 million Wikipedia entities.</li>
+</ul></li>
+</ul>
+
+<h4>Vocabulary registries</h4>
+
+<p>Vocabulary registries differ from repositories because they offer information about vocabularies (i.e., metadata) instead of the vocabulary contents themselves; they are the fundamental services for locating KOS products. The metadata for vocabularies usually contain both the descriptive contents and the management and provenance information. The registry may provide the data about the reuse of ontological classes and properties among the vocabularies.</p>
+<ul>
+<li>Registry of KOSs.
+<ul>
+<li>E.g., BARTOC (Basel Register of Thesauri, Ontologies & Classifications) (<A HREF="https://bartoc.org/">https://bartoc.org/</A>) currently has over 2740 KOS&rsquo;s metadata in the registry, including active, inactive, or historical vocabularies. 315 of these are available in RDF format.  Furthermore, BARTOC includes the metadata of over 80 other registries.</li>
+</ul></li>
+<li>Registry of any vocabularies that are published with Semantic Web languages. 
+<ul>
+<li>E.g., LOV (Linked Open Vocabularies, <A HREF="https://lov.linkeddata.es/dataset/lov/">https://lov.linkeddata.es/dataset/lov/</A>) currently has over 600 registered vocabularies; all went through certain quality verification processes. Many of the vocabularies are property vocabularies. In addition to the descriptive metadata about a vocabulary, the usage metadata about properties&rsquo; reuse among vocabularies, the administrative metadata showing the most recent updates, and the technical metadata regarding the expressivity in terms of RDF, OWL, and RDFS are provided. The details of a vocabulary are exposed through statistics, such as the total number of classes, properties, data types, and instances.</li>
+</ul></li> 
+<li>Registry of any LOD products, including KOSs.
+<ul>
+<li>E.g., DataHub&rsquo;s (<A HREF="https://old.datahub.io/dataset">https://old.datahub.io/dataset</A>) previous version (as of Sept. 2017) is still the largest registry, with over 11,270 datasets registered. Searching for various KOS types resulted with over 1000 datasets, after verification by the authors of the paper.</li>
+</ul></li>
+</ul>
+
+<p>Although there is no official recognition or definition regarding the relationships between conventional KOS and ontologies (particularly formal ontologies), there are ontology repositories that host formal ontologies and other KOS converted to ontology using required formats such as OWL. An Open Ontology Repository (OOR) initiative planning meeting was conducted in January 2008 by Ontolog, an open, international, virtual community of practice. Ontolog&rsquo;s annual International Ontology Summits have produced communiqu&eacute;s that document theoretical issues and solutions, best practices, and visions for reaching these goals. The Ontohub (<A HREF="https://github.com/ontohub/ontohub">https://github.com/ontohub/ontohub</A>) of the OOR was reported to have 2810 ontologies and 54 repositories as of early 2015, and now reached 21,842 ontologies and 126 repositories (as of 2018-06-07). The ontologies are mainly in the sciences, engineering, and technologies domains.</p>
+
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="ack"></a>
+<h3>Acknowledgement</h3>
+
+<p>The author would like to thank the two anonymous referees and Julaine Clunis for providing their valuable feedback.</p>
+
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="ref"></a>
+<h3>References</h3>
+
+<a name="refA"></a>
+
+<p>Adebesin, Funmi, Paula Kotze, Rosemary Foster, and Darelle Van Greunen. 2013. "A Review of Interoperability Standards in E-health and Imperatives for their Adoption in Africa". <I>South African Computer Journal</I> 50, no. 1: 55-72.</p>
+
+<p>Aitchison, Jean, Alan Gilchrist, and David Bawden. 1997. <I>Thesaurus construction and use: a practical manual</I>. 3rd. Ed. London: ASLIB.</p>
+
+<p>Aloia, Nicola. et al. 2017. "Enabling European Archaeological Research: The ARIADNE E-Infrastructure". <I>Internet Archaeology</I> 43. <A HREF="https://doi.org/10.11141/ia.43.11">https://doi.org/10.11141/ia.43.11</A></p>
+
+<p>Arms, William A., Diane Hillman, Carl Lagoze, Dean Krafft, Richard Marisa, John Saylor, Carol Terrizzi, and Herbert van de Sompel. 2002. "A Spectrum of Interoperability, The Site for Science Prototype for the NSDL". <I>D-Lib magazine</I>, 8, no. 1. doi:10.1045/january2002-arms</p>
+
+<a name="refB"></a>
+
+<p>Baker, Thomas, Caterina Caracciolo, Anton Doroszenko, Lori Finch, Osma Suominen, and Sujata Suri. 2016a. "The global agricultural concept scheme and agrisemantics". In <I>Proceedings of the 2016 International Conference on Dublin Core and Metadata Applications</I>, pp. 14-15. Dublin Core Metadata Initiative. <A HREF="http://dcevents.dublincore.org/IntConf/dc-2016/schedConf/presentations">http://dcevents.dublincore.org/IntConf/dc-2016/schedConf/presentations</A>.</p>
+
+<p>Baker, Thomas, Caterina Caracciolo, Anton Doroszenko, and Osma Suominen. 2016b. "GACS Core: Creation of a Global Agricultural Concept Scheme". In <I>Metadata and Semantics Research: 10th International Conference, MTSR 2016, G&ouml;ttingen, Germany, November 22-25, 2016, Proceedings</I>. Springer, 2016.</p>
+
+<p>Binding, Ceri, and Douglas Tudhope. 2016. "Improving interoperability using vocabulary linked data". <I>International Journal on Digital Libraries</I> 17, no. 1: 5-21.</p>
+
+<p>Binding, Ceri, Tudhope Douglas, and Vlachidis Andreas. 2018. "A study of semantic integration across archaeological data and reports in different languages". <I>Journal of Information Science</I>. <A HREF="http://eprints.uwe.ac.uk/36897/3/Archaeology-integration-JISauthorversion.pdf">http://eprints.uwe.ac.uk/36897/3/Archaeology-integration-JISauthorversion.pdf</A> </p>
+
+<p>Bountouri, Lina. 2017. <I>Archives in the Digital Age: Standards, Policies and Tools</I>. Chandos Publishing.</p>
+
+<a name="refC"></a>
+
+<p>Canadian Heritage Information Network (CHIN). 2017. &ldquo;CHIN Guide to Museum Standards.&rdquo; (Last updated 2017-08-27). <A HREF="http://canada.pch.gc.ca/eng/1443536694304">http://canada.pch.gc.ca/eng/1443536694304</A></p>
+
+<p>CC:DA. 2000. "Task Force on Metadata: Final Report.&rdquo; Association for Library Collections & Technical Services (ALCTS) Committee on Cataloging: Description & Access (CC:DA), June 16, 2000. <A HREF="https://www.libraries.psu.edu/tas/jca/ccda/tf-meta6.html">https://www.libraries.psu.edu/tas/jca/ccda/tf-meta6.html</A>.</p>
+
+<p>Chan, Lois Mai, Eric Childress, Rebecca Dean, Edward T. O'Neill, and Diane Vizine-Goetz. 2001. "A faceted approach to subject data in the Dublin Core metadata record". <I>Journal of Internet Cataloging</I> 4, no. 1-2: 35-47.</p>
+
+<p>Chen, Shu-jiun, Marcia Lei Zeng, and Hsueh-hua Chen. 2016. "Alignment of conceptual structures in controlled vocabularies in the domain of Chinese art: a discussion of issues and patterns". <I>International Journal on Digital Libraries</I> 17, no. 1: 23-38.</p>
+
+<p>Clarke, Stella G. Dextre, and Marcia Lei Zeng. 2012. &ldquo;From ISO 2788 to ISO 25964: the evolution of thesaurus standards towards interoperability and data modeling.&rdquo; <I>Information Standards Quarterly</I> 24, no.1:20-26. <A HREF="http://eprints.rclis.org/16818/">http://eprints.rclis.org/16818/</A>.</p>
+
+<a name="refD"></a>
+
+<p>Dahlberg, Ingetraut. 1998. "Classification Structure Principles: Investigations, Experiences and Conclusions". In <I>Structures and Relations in Knowledge Organization: Proceedings of the 5th International ISKO Conference 25-29 August 1998 Lille, France</I>. (pp. 79-87.) Advances in Knowledge Organization 6. W&uuml;rzburg: Ergon Verlag.</p>
+
+<p>Dahlberg, Ingetraut. 2017. "Brief Communication: Why a New Universal Classification System is Needed". <I>Knowledge Organization</I> 44, no. 1: 65-71.</p>
+
+<p><I>Data on the Web Best Practices</I>. W3C Recommendation 31 January 2017. <A HREF="https://www.w3.org/TR/dwbp/">https://www.w3.org/TR/dwbp/</A></p>
+
+<p>Doerr, Martin. 2008. "DCC Digital Curation Manual: Instalment on Ontologies". <A HREF="http://www.dcc.ac.uk/resources/curation-reference-manual">http://www.dcc.ac.uk/resources/curation-reference-manual</A></p>
+
+<p>Du, Wei, Xusen Cheng, Chen Yang, Jianshan Sun, and Jian Ma. 2017. "Establishing interoperability among knowledge organization systems for research management: a social network approach". <I>Scientometrics</I> 112, no. 3: 1489-1506.</p>
+
+<a name="refE"></a>
+
+<p>Euzenat, J&eacute;r&ocirc;me, and Pavel Shvaiko. 2013. <I>Ontology matching</I>. Springer Science & Business Media.</p>
+
+<p>Freyre, Elisabeth, and Max Naudi. 2003. "MACS: Subject access across languages and networks". In <I>Subject retrieval in a networked environment: proceedings of the IFLA Satellite Meeting held in Dublin, OH, 14-16 August 2001</I> (pp 3-10.) McIlwaine, I.C., Ed.; K. G. Saur: M&uuml;nchen</p>
+
+<a name="refF"></a>
+
+<p>Fritzsche, Donna, Michael Gr&uuml;ninger, Ken Baclawski, Mike Bennett, Gary Berg-Cross, Todd Schneider, Ram Sriram, Mark Underwood, and Andrea Westerinen. 2017. "Ontology Summit 2016 Communiqu&eacute;: Ontologies within semantic interoperability ecosystems". <I>Applied Ontology</I> 12, no. 2: 91-111.</p>
+
+<a name="refG"></a>
+
+<p>Gilreath, C. T. 1992. "Harmonization of terminology?an overview of principles". <I>International classification</I> 19, no. 3: 135-139.</p>
+
+<p>Golub, Koraljka, Douglas Tudhope, Marcia Lei Zeng, and Maja &#0381;umer. 2014. "Terminology registries for knowledge organization systems: Functionality, use, and attributes". <I>Journal of the Association for Information Science and Technology</I> 65, no. 9: 1901-1916.</p>
+
+<p>Guenther, Rebecca, and Jacqueline Radebaugh. 2004. <I>Understanding metadata</I>. Bethesda, MA: National Information Standard Organization (NISO) Press.</p>
+
+<a name="refH"></a>
+
+<p>Heiler, Sandra. 1995. "Semantic interoperability". <I>ACM Computing Surveys (CSUR)</I> 27, no. 2: 271-273. </p>
+
+<p>Hudon, Mich&egrave;le. 1997. "Multilingual thesaurus construction: Integrating the views of different cultures in one gateway to knowledge and concepts". <I>Knowledge organization</I> 24, no. 2: 84-91.</p>
+
+<a name="refI"></a>
+
+<p>IFLA Classification and Indexing Section. 2005. &ldquo;Guidelines for Multilingual Thesauri (Draft)&rdquo;. <A HREF="http://www.ifla.org/VII/s29/pubs/Draft-multilingualthesauri.pdf">http://www.ifla.org/VII/s29/pubs/Draft-multilingualthesauri.pdf</A>.</p>
+
+<p>Isaac, Antoine. 2010. "SKOS and Linked Data". Presentation at <I>ISKO-UK Linked Data: The Future of Knowledge Organization on the Web conference, 2010-09-14</I>. <A HREF="https://www.slideshare.net/antoineisaac/skos-and-linked-data">https://www.slideshare.net/antoineisaac/skos-and-linked-data</A>.</p>
+
+<p>Isaac, Antoine. 2013. <I>Correspondence between ISO 25964 and SKOS/SKOS-XL models</I>. 
+<A HREF="https://groups.niso.org/apps/group_public/download.php/12351/CorrespondenceISO25964-SKOSXL-MADS-2013-12-11.pdf">https://groups.niso.org/apps/group_public/download.php/12351/CorrespondenceISO25964-SKOSXL-MADS-2013-12-11.pdf</A>.</p>
+
+<p>Isaac, Antoine, and Ed Summers. 2009. "SKOS: Simple Knowledge Organization System primer". Primer, World Wide Web Consortium (W3C). <A HREF="https://www.w3.org/TR/skos-primer/">https://www.w3.org/TR/skos-primer/</A>.</p>
+
+<p>Isaac, Antoine, William Waites, Jeff Young, and Marcia Zeng. 2011. &ldquo;Library Linked Data Incubator Group: Datasets, Value Vocabularies, and Metadata Element Sets.&rdquo; W3C Incubator Group Report, World Wide Web Consortium (W3C). <I>http://www.w3.org/2005/Incubator/lld/XGR-lld-vocabdataset-20111025/</I>.</p>
+
+<p>ISO 25964-1:2011. <I>Thesauri and Interoperability with Other Vocabularies, Part 1: Thesauri for Information Retrieval</I>. ISO/TC 46/SC 9, 2011.</p>
+
+<p>ISO 25964-2:2013. <I>Thesauri and Interoperability with Other Vocabularies, Part 2: Interoperability with Other Vocabularies</I>. ISO/TC 46/SC 9, 2013.</p>
+
+<p>Iyer, Hermalata, and Mark Giguere. 1995. "Towards designing an expert system to map mathematics classificatory structures". <I>Knowledge Organization</I> 22, no. 3-4: 141-147.</p>
+
+<a name="refJ"></a>
+
+<p>Joudrey, Daniel N., and Arlene G. Taylor. 2017. <I>The organization of information</I>. 4th Ed., Libraries Unlimited.</p>
+
+<a name="refK"></a>
+
+<p>Koch, Traugott. 2006. "Electronic thesis and dissertations services: Semantic interoperability, subject access, multilinguality". In <I>Background paper for the E-Thesis Workshop (JISC, CURL, SURF), Amsterdam, Netherlands</I>. <A HREF="http://www.ukoln.ac.uk/ukoln/staff/t.koch/publ/e-thesis-200601.html">http://www.ukoln.ac.uk/ukoln/staff/t.koch/publ/e-thesis-200601.html</A>.</p>
+
+<a name="refL"></a>
+
+<p>Lancaster, Frederick Wilfrid. 1986. <I>Vocabulary control for information retrieval</I>. 2nd. Ed. Info Resources Press,</p>
+
+<p>Lardera, Marco, Claudio Gnoli, Clara Rolandi and Marcin Trzmielewski. 2017. "Developing SciGator, a DDC-based Library Browsing Tool". <I>Knowledge Organization</I> 44, No.8: 638-643.</p>
+
+<a name="refM"></a>
+
+<p>Maniez, Jacques. 1997. "Database merging and the compatibility of indexing languages". <I>Knowledge Organization</I> 24, no. 4: 213-224.</p>
+
+<p>Mazzocchi, Fulvio. 2017. "Relations in KOS: is it possible to couple a common nature with different roles?" <I>Journal of Documentation</I>, 73, no. 2: 368-383, https://doi.org/10.1108/JD-05-2016-0063 </p>
+
+<p>Mazzocchi, Fulvio. 2018. &ldquo;Knowledge organization system (KOS): an introductory critical account&rdquo;. <I>Knowledge Organization</I> 45, no. 1: 54-78. Also available in Hj&oslash;rland, Birger, ed. <I>ISKO Encyclopedia of Knowledge Organization</I>, <A HREF="https://www.isko.org/cyclo/kos">https://www.isko.org/cyclo/kos</A>.</p>
+
+<p>Mitchell, Joan S., Marcia Lei Zeng, and Maja &#0381;umer. 2014. "Modeling Classification Systems in Multicultural and Multilingual Contexts". <I>Cataloging & Classification Quarterly</I> 52, no. 1: 90-101.</p>
+
+<p>Moen, William E. 2001".Mapping the interoperability landscape for networked information retrieval". In <I>Proceedings of the 1st ACM/IEEE-CS joint conference on Digital libraries</I> (pp. 50-51). ACM.</p>
+
+<a name="refN"></a>
+
+<p>NLM: National Library of Medicine. 2009. &ldquo;UMLS&reg; Reference Manual [Internet].&rdquo; Bethesda, MD: National Library of Medicine (US). Chapter 2. <A HREF="https://www.ncbi.nlm.nih.gov/books/NBK9684/">https://www.ncbi.nlm.nih.gov/books/NBK9684/</A></p>
+
+<p>NISO Z39.19-2005. <I>Guidelines for the Construction, Format, and Management of Monolingual Controlled Vocabularies</I>. NISO, ANSI.</p>
+
+<a name="refO"></a>
+
+<p>Obrst, Leo. 2003. "Ontologies for semantically interoperable systems". In <I>Proceedings of the twelfth international conference on Information and knowledge management</I> (pp. 366-369). ACM. </p>
+
+<p>Ontolog. 2018. &ldquo;Ontology Summit 2018 Communiqu&eacute;. Contexts in Context&rdquo;. <A HREF="http://ontologforum.org/index.php/OntologySummit2018">http://ontologforum.org/index.php/OntologySummit2018</A></p>
+
+<p>O&rsquo;Neill, Ed, and Jeff Mixter. 2013. &ldquo;(1) The case for faceting (2) FAST Linked Data mechanics.&rdquo; In <I>76th Annual Meeting of the American Society for Information Science and Technology (ASIS&T), Montreal, Canada, Nov. 2-6, 2013</I>. <A HREF="http://nkos.slis.kent.edu/ASIST2013/ONeill-Mixter.pptx">http://nkos.slis.kent.edu/ASIST2013/ONeill-Mixter.pptx</A>.</p>
+
+<p>Otero-Cerdeira, Lorena, Francisco J. Rodr&iacute;guez-Mart&iacute;nez, and Alma G&oacute;mez-Rodr&iacute;guez. 2015. "Ontology matching: A literature review". <I>Expert Systems with Applications</I> 42, no. 2: 949-971.</p>
+
+<p>Ouksel, Aris M., and Amit Sheth. 1999. "Semantic interoperability in global information systems". <I>ACM Sigmod Record</I> 28, no. 1: 5-12.</p>
+
+<a name="refP"></a>
+
+<p>Patel, Manjula, Traugott Koch, Martin Doerr, and Chrisa Tsinaraki. 2005. "Semantic interoperability in digital library systems". <I>DELOS Network of Excellence on Digital Libraries, European Union, Sixth Framework Programme; Deliverable D5.3.1, 2005</I>.  <A HREF="http://opus.bath.ac.uk/23606/1/SI_in_DLs.pdf">http://opus.bath.ac.uk/23606/1/SI_in_DLs.pdf</A>.</p>
+
+<p>Pollock, Jeffrey T., and Ralph Hodgson. 2004. "The promise of adaptive information". <I>Adaptive information: improving business through semantic interoperability, grid computing, and enterprise integration</I>. (Vol. 50. Chapter 3.) John Wiley & Sons. </p>
+
+<p>Powell, Andy, Mikael Nilsson, Ambj&ouml;rn Naeve, Pete Johnston, and Tom Baker. 2007. "DCMI Abstract Model. Dublin Core Metadata Initiative". <A HREF="http://dublincore.org/documents/abstract-model/">http://dublincore.org/documents/abstract-model/</A>.</p>
+
+<a name="refQ"></a>
+<a name="refR"></a>
+
+<p>Research Data Alliance (RDA). 2018. <I>Research Data Repository Interoperability WG Final Recommendations</I>. <A HREF="https://www.rd-alliance.org/group/research-data-repository-interoperability-wg/outcomes/research-data-repository-0">https://www.rd-alliance.org/group/research-data-repository-interoperability-wg/outcomes/research-data-repository-0</A>.</p>
+
+<a name="refS"></a>
+
+<p>Sheth, Amit P. 1999. "Changing focus on interoperability in information systems: from system, syntax, structure to semantics". In <I>Interoperating geographic information systems</I> (pp. 5-29). Springer, Boston, MA.</p>
+
+<p>Sowa, John F. 2006. &ldquo;A dynamic theory of ontology&rdquo;, in Bennett, Brandon, and Christiane Fellbaum (Eds.) <I>Formal Ontology in Information Systems: Proceedings of the Fourth International Conference (FOIS 2006</I>). (Vol. 150. 204-213). IOS Press. <A HREF="http://www.jfsowa.com/pubs/dynonto.htm">http://www.jfsowa.com/pubs/dynonto.htm</A>.</p>
+
+<p>Svenonius, Elaine. 2004. "The epistemological foundations of knowledge representations". <I>Library Trends</I> 52, no. 3: 571-587.</p>
+
+<a name="refT"></a>
+
+<p>Taylor, Arlene G. 2004. <I>The Organization of Information</I>, 2nd Ed., Westport, CN: Libraries Unlimited. </p>
+
+<p>Thi&eacute;blin Elodie, Ollivier Haemmerl&eacute;, Nathalie Hernandez, and Cassia Trojahn dos Santos. 2018. &ldquo;Survey on complex ontology matching.&rdquo; <I>Semantic Web Journal</I>, submitted 2018-04. <A HREF="http://www.semantic-web-journal.net/content/survey-complex-ontology-matching">http://www.semantic-web-journal.net/content/survey-complex-ontology-matching</A>.</p>
+
+<p>Tudhope, Douglas, and Ceri Binding. 2004. &ldquo;A case study of a faceted approach to knowledge organisation and retrieval in the cultural heritage sector&rdquo;. <I>DigiCULT</I> Thematic Issue no. 6: 28-33. </p>
+
+<p>Tudhope, Douglas, and Ceri Binding. 2008. "Machine Understandable Knowledge Organization Systems". DELOS Network of Excellence on Digital Libraries, Project no. 507618 report.</p>
+
+<p>Tudhope, Douglas, Traugott Koch, and Rachel Heery. 2006. "Terminology services and technology: JISC state of the art review". <A HREF="http://www.ukoln.ac.uk/terminology/JISC-review2006.html">http://www.ukoln.ac.uk/terminology/JISC-review2006.html</A>.</p>
+
+<p>Tuominen, Jouni, Nina Laurenne, and Eero Hyv&ouml;nen. 2011. "Biological names and taxonomies on the semantic web&ndash;managing the change in scientific conception". In <I>The Semantic Web: Research and Applications, 8th Extended Semantic Web Conference, ESWC 2011, Heraklion, Crete, Greece, May 29 &ndash; June 2, 2011, Proceedings, Part II</I>. Lecture Notes in Computer Science, (pp. 255-269) Springer, Berlin, Heidelberg.</p>
+
+<a name="refU"></a>
+<a name="refV"></a>
+<a name="refW"></a>
+<a name="refX"></a>
+<a name="refY"></a>
+<a name="refZ"></a>
+
+<p>Zeng, Marcia Lei, and Lois Mai Chan. 2004. "Trends and issues in establishing interoperability among knowledge organization systems". <I>Journal of the Association for Information Science and Technology</I> 55, no. 5: 377-395.</p>
+
+<p>Zeng, Marcia Lei, and Lois Mai Chan. 2010. (Updated 2015). &ldquo;Semantic interoperability.&rdquo; In: <I>Encyclopedia of Library and Information Sciences</I> 3rd edition. 1: 1, (pp. 4645-4662). Edited by Marcia J. Bates and Mary Niles Maack. New York, NY: Dekker Encyclopedias, Taylor and Francis Group. </p>
+
+<p>Zeng, Marcia Lei. 2018. &ldquo;Hands-on (Details) Obtain Data Using SPARQL -- Demo: Using AAT&rdquo;. <I>Learning, Understanding, and Using Linked Data, Workshop at 2018 Digital Initiatives Symposium, April 23, 2018, San Diego, California</I>. <A HREF="http://metadataetc.org/LOD/6hands-on-Microthesauri-from-AAT.pdf">http://metadataetc.org/LOD/6hands-on-Microthesauri-from-AAT.pdf</A>.</p>
+
+<p>Zeng, Marcia Lei, and Philipp Mayr. 2018. "Knowledge Organization Systems (KOS) in the Semantic Web: A multi-dimensional review". <I>International Journal on Digital Libraries</I>. Online version May <A HREF="https://rdcu.be/PgZW https://doi.org/10.1007/s00799-018-0241-2">https://rdcu.be/PgZW https://doi.org/10.1007/s00799-018-0241-2</A>.</p>
+
+<p>Zeng, Marcia Lei, Maja &#0381;umer, and Athena Salaba (Eds.). 2010. <I>Functional requirements for subject authority data (FRSAD): a conceptual model</I>. M&uuml;nchen: De Gruyter Saur. (IFLA series on bibliographic control ; vol. 43). <A HREF="http://www.ifla.org/files/assets/classification-and-indexing/functional-requirements-for-subject-authority-data/frsad-final-report.pdf">http://www.ifla.org/files/assets/classification-and-indexing/functional-requirements-for-subject-authority-data/frsad-final-report.pdf</A>.</p>
+
+<p>&#0381;umer, Maja. 2017. &ldquo;IFLA Library Reference Model (LRM) Harmonisation of the FRBR Family.&rdquo; <I>ISKO Encyclopedia of Knowledge Organization</I>. <A HREF="lrm">https://www.isko.org/cyclo/lrm</A>.</p>
+
+<a name="col"></a>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<p>&nbsp;</p>
+
+<p>Visited <a href="http://www.digits.net" target="_blank">
+    <img src="http://counter.digits.net/?counter={2a7b0284-aad4-3cc4-5540-74cdc48afba9}&template=simple" 
+     alt="Hit Counter by Digits" border="0"  /></a>
+times since 2018-08-08.</p>
+
+<hr>
+<p>Version 1.0; published 2018-08-08, last edited 2019-04-16 <!-- version 1.0 published 2018- -, this version 2018- - - --><br>
+Article category: <code><a href="index#KS">Standards and formats for representing data</a></code></p>
+
+<p>This article (version 1.0) is published in <i>Knowledge Organization</i>, vol. 46 (2019), Issue 2, pp. 122-146.<br>
+How to cite it (version 1.0): Zeng, Marcia Lei. 2019. &ldquo;Interoperability&rdquo;. <i>Knowledge Organization</i> 46, no. 2: 122-146. Also available in Hj&oslash;rland, Birger and Gnoli, Claudio eds. <i>ISKO Encyclopedia of Knowledge Organization</i>, https://www.isko.org/cyclo/interoperability</p>
+
+<p>&copy;2018 ISKO. All rights reserved.</p>
+
+</td>
+</tr>
+
+<tr>
+<td id="logo">
+</td>
+</tr>
+
+</table>
+</body>
+</html>

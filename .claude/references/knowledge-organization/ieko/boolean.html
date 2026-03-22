@@ -1,0 +1,1131 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head profile="http://dublincore.org/documents/2007/11/05/dc-html/">
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>Boolean logic (IEKO)</title>
+<link rel="stylesheet" type="text/css" href="../isko.css" />
+<link rel="schema.DCTERMS" href="http://purl.org/dc/terms/" />
+
+<style>
+a {text-decoration: none;}
+a:hover {text-decoration:underline;}
+table td, table th { padding: 5px; }
+</style>
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:url" content="https://www.isko.org/cyclo/boolean" />
+<meta name="twitter:title" content="Boolean logic (ISKO Encyclopedia of KO)" />
+<meta property="og:image" content="https://www.isko.org/cyclo/boolean4.jpg" />
+<meta name="twitter:description" content="The article describes and explains Boolean logic (or Boolean algebra) in its two principle forms: that of truth-values and the Boolean connectives AND, OR, and NOT, and that of set membership and the set operations of intersection, union and complement. The main application areas of Boolean logic to knowledge organization, namely post-coordinate indexing and search, are introduced and discussed. Some wider application areas are briefly mentioned, such as: propositional logic, the Shannon-style approach to electrical switching and logic gates, computer programming languages, probability theory, and database queries. An analysis is offered of shortcomings that Boolean logic has in terms of potential uses in knowledge organization." />
+
+<meta name="DCTERMS.title" content="Boolean logic" />
+<meta name="DCTERMS.creator" content="Martin Fricke" />
+<meta name="DCTERMS.issued" content="2020" />
+<meta name="DCTERMS.relation.ispartof" content="ISKO Encyclopedia of Knowledge Organization" />
+<meta name="DCTERMS.ispartof" content="ISKO Encyclopedia of Knowledge Organization" />
+<meta name="DCTERMS:bibliographicCitation" content="ISKO Encyclopedia of Knowledge Organization, eds. Birger Hjorland and Claudio Gnoli" />
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="001.012">
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="511.324">
+<meta name="DCTERMS.subject.keyword" content="Boole">
+<meta name="DCTERMS.subject.keyword" content="and">
+<meta name="DCTERMS.subject.keyword" content="or">
+<meta name="DCTERMS.subject.keyword" content="not">
+<meta name="DCTERMS.type" content="Text" />
+<meta name="DCTERMS.format" content="text/html" />
+<meta name="DCTERMS.identifier" content="https://www.isko.org/cyclo/boolean" />
+
+</head>
+<body>
+
+<a name="top"></a>
+
+<table>
+
+<tr>
+<td id="isko"><h1>I S K O</h1></td>
+<td id="banner"><h2><a href="index.html" style="text-decoration:none;">Encyclopedia of Knowledge Organization</h2></a></td>
+</tr>
+
+<tr>
+<td id="navigation">
+<a href="../index.php">home</a>
+<a href="../about.html">about ISKO</a>
+<a href="../join.html">join ISKO</a>
+<a href="../ko.html"><cite>Knowledge Organization</cite> journal</a>
+<a href="../events.html">ISKO events</a>
+<a href="../chapters.html">ISKO chapters</a>
+<a href="../people.html">ISKO people</a>
+<a href="../pubs.html">ISKO publications</a>
+<a href="index.html">Encyclopedia</a>
+<a href="../lit.html">KO literature</a>
+<a href="../inst.html">KO institutions</a>
+<a href="http://bartoc.org/" title="link to BARTOC">&#8663; KOS registry</a>
+<a href="https://www.isko-mms.net/" title="access-account required">&#128274; members</a>
+<a href="../contact.html">contact us</a>
+</td>
+<td id="content" rowspan="2">
+
+<a class="menu" href="authors#h">edited by Birger Hj&oslash;rland</a> <a class="menu" href="authors#g">and Claudio Gnoli</a>
+
+<p>&nbsp;
+
+<div itemscope itemtype="http://schema.org/Article">
+<h2 itemprop="headline">Boolean logic</h2>
+</div>
+
+<blockquote>
+by <a href="authors#f">Martin Frick&eacute;</a></p>
+
+<p>Table of contents:
+
+<p><a style="text-decoration:none;" href="#1">1. Introduction</a>
+<br><a style="text-decoration:none;" href="#2">2. Boolean logic</a>
+<br><a style="text-decoration:none;" href="#3">3. Some facts or results about Boolean logic</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#3.1">3.1 The adequacy of the connective set</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#3.2">3.2 Is the connective set minimal? NAND and NOR</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#3.3">3.3 Standard equivalences or common theorems</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#3.4">3.4 Proofs and axioms systems</a>
+<br><a style="text-decoration:none;" href="#">4. More on using natural language to motivate the properties of the connectives</a>
+<br><a style="text-decoration:none;" href="#5">5. Boolean algebras</a>
+<br><a style="text-decoration:none;" href="#6">6. Some application areas</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#6.1">6.1 Classification and search:
+<a style="text-decoration:none;" href="#6.1.1">6.1.1 Venn diagrams;</a>
+<a style="text-decoration:none;" href="#6.1.2">6.1.2 Regular expressions</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#6.2">6.2 Faceting</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#6.3">6.3 Computer programming languages</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#6.4">6.4 Database queries and query languages</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#6.5">6.5 Propositional logic</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#6.6">6.6 Probability theory</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#6.7">6.7 Switching and computers </a>
+<br><a style="text-decoration:none;" href="#7">7. The shortcomings of Boolean logic for use in knowledge organization</a>
+<br><a style="text-decoration:none;" href="#ack">Acknowledgments</a>
+<br><a style="text-decoration:none;" href="#ref">References</a>
+<br><a style="text-decoration:none;" href="#col">Colophon</a>
+
+<p><strong>Abstract</strong>:
+<br>The article describes and explains Boolean logic (or Boolean algebra) in its two principle forms: that of truth-values and the Boolean connectives <i>and</i>, <i>or</i>, and <i>not</i>, and that of set membership and the set operations of <i>intersection</i>, <i>union</i> and <i>complement</i>. The main application areas of Boolean logic to knowledge organization, namely post-coordinate indexing and search, are introduced and discussed. Some wider application areas are briefly mentioned, such as: propositional logic, the Shannon-style approach to electrical switching and logic gates, computer programming languages, probability theory, and database queries. An analysis is offered of shortcomings that Boolean logic has in terms of potential uses in knowledge organization.</p>
+
+</blockquote>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="1"></a>
+<h3>1. Introduction</h3>
+
+<p>Boolean logic was proposed by George Boole, principally in two books: <i>The Mathematical Analysis of Logic</i> (1847) and <i>An Investigation of The Laws of Thought on Which are Founded the Mathematical Theories of Logic and Probabilities</i> (1854) (<a href="#refB">Boole 1847; 1854</a>; <a href="#refB">Burris 2018</a>). The innovation here was definitive. It represents a step forward and away from Aristotelian logic, which had dominated logic for two thousand years; and it pre-dates and anticipates both modern logic (of which Boolean logic is a part) and abstract algebras (of which Boolean algebra is a part).</p>
+
+<p>The main application areas of &lsquo;Boolean logic&rsquo; in knowledge organization are those of post-coordinate indexing and of search. We are all very familiar with back-of-the-book indexes. An index would typically consist of a number of entries; each entry would itself consist of a heading, perhaps with subheadings, and one or more locators (i.e. references, page numbers, URLs, DOIs, ISBNs, etc.); the entries would usually be presented in alphabetical order of headings. In post-coordinate indexing, there might be separate entries with the headings <code>French</code> and <code>cooking</code>, and then a pseudo or virtual entry for the compound heading <code>French cooking</code> would be constructed on demand using as its locators a Boolean <i>and-combination</i> of the locators for <code>French</code> and <code>cooking</code>. The Boolean <i>and-operation</i> here amounts to that of <i>set-intersection</i> between the separate locator sets for <code>French</code> and <code>cooking</code>. A compound heading <code>Benelux royalty</code> might be constructed from (<code>Belgium</code> <i>or</i> <code>Netherlands</code> <i>or</i> <code>Luxembourg</code>) <i>and</i> <code>royalty</code>. The Boolean <i>or-operation</i> is that of <i>set-union</i> between the sets of references. An entry for <code>French non-Provencal cooking</code> might be <code>French</code> <i>and not</i> <code>Provencal</code> <i>and</i> <code>cooking</code>. The Boolean <i>not-operation </i>in this setting is that of <i>set-complement</i>. So, <i>and</i>, <i>or</i>, and <i>not</i> are being used as the glue, or the connectors, to construct the compounds from the atoms or other compounds.</p>
+
+<p>The idea of pre- and post-coordinate indexing comes from Mortimer Taube, in the 1950s (<a href="#refT">Taube 1951; 1953; Taube and Thompson 1951</a>). But post-coordinate indexing was nearly impossible to do before the advent of computers (simply because, for example, working out the intersection of two or more large finite sets on demand, using just pencil and paper, was not practical). Computers changed the terrain. Finite set operations became trivial. Also, separately, the need for pre-emptively creating index entries, even atomic ones became less pressing. In some cases, the index entries could be produced real time. Computer search, of documents, and wide regions of the Web, became immensely powerful. With many e-books, it is the practice now to omit an index. The reasoning being that the books include computerized full text search which makes an index unnecessary. So, for example, there could be a full text search of &lsquo;French&rsquo; and of &lsquo;cooking&rsquo; in the blink of an eye, and the results could be combined if need be. (What this reasoning misses, of course, is that at least some sought for terms or potential index entries do not exist verbatim in the text &mdash; that might be the case with synonyms &mdash; so a full-text search might miss the relevant references. But that is another story.)</p>
+
+<p>This Boolean combination of terms or atoms (or atomic concepts) fits well with faceted classification or faceted search. In mainstream faceted systems, there will be a small number of &rarr; <a href="facet">facets</a>; for example, the Faceted Application of Subject Terminology (FAST) system uses as facets Topical, Geographic, Form (genre), Chronological, Personal names, Corporate names, Conferences/Meetings, and Uniform titles (<a href="#refC">Chan and O&rsquo;Neill 2010</a>; <a href="#refO">OCLC 2011</a>). For our purposes we can imagine that there are just two facets: place and time. Each facet will have its own set of values (or foci). For example, the place facet might have the values {<code>England</code>, <code>France</code>, <code>Germany</code>, &hellip; &lt;and more&gt;}, and the time facet might have the values {<code>16th Century</code>, <code>17th Century</code>, <code>18th Century</code>, &hellip; &lt;and more&gt;}. The facets are independent of each other <!-- A HREF="#e1">[1]</A -->. This means that any value from one facet can be combined with any value from another. For example, <code>England</code> can be combined with <code>17th Century</code> to produce <code>England <i>and</i> 17th Century</code> (or, in real English, 17th Century England). The values within a single facet are usually taken to be dependent, indeed mutually exclusive (<a href="#refF">Foskett 1977</a>). So, for example, if <code>England</code> is chosen then <code>Germany</code> cannot be chosen at the same time &mdash;  it is excluded. However, this within-facet-mutual-exclusivity possible requirement does not seem quite right. What essentially is &lsquo;multi-select&rsquo; within a facet seems perfectly acceptable (16th <i>or</i> 17th Century seems fine either as part of a heading or as part of a faceted search). At the end of the day, the Boolean operations of <i>and</i>, <i>or</i>, and <i>not</i>, used within and across facets, are useful for faceted classification and faceted search. For example, the Library of Congress Subject Headings (LCSH) is primarily a pre-coordinated system. Yet a 2007 report of theirs writes:
+
+<blockquote>LCSH is a system in which untold numbers of headings can be constructed from individual elements that represent facets, such as topic, place, time, form, and language, and various aspects of topics. Although LCSH is primarily a pre-coordinate system, practice with many complex or multi-element topics requires post-coordination in order to achieve coverage. There are numerous cases in which elements cannot be combined in single headings, even with subdivisions. In those situations, an array of headings may be assigned, that, taken together, are coextensive with the topic of an item.<br>
+So, LCSH itself requires some degree of post-coordination of the pre-coordinated strings to bring out specific topics of works.  (<a href="#refL"><i>Library of Congress Subject Headings: Pre- vs. Post-Coordination and Related Issues</i> 2007</a>, 5)
+</blockquote></p>
+
+<p>The Medical Subject Heading list (MeSH), largely inspired by Frank Rogers, is another example of a &rarr; <a href="kos">knowledge organization system</a> which makes use of faceting and post-coordination (<a href="#refR">Rogers 1953; 1960a; 1960b</a>; <a href="#refA">Adams 1972</a>; <a href="#refC">Coletti and Bleich 2001</a>). Rogers was following Taube in emphasizing the construction of complex ideas by conjoining other ideas (<a href="#refR">Rogers 1960b</a>, 381):
+
+<blockquote>
+[&hellip;] define coordinate indexing as a system of subject cataloging which capitalizes on the concept of the logical conjunction of ideas (the phrase comes from symbolic logic) [&hellip;]. Taube is simply stressing the fact that complex ideas are often best expressed, or even solely expressed, by the intersection of two or more widely separated ideas, and by the intersection, or conjunction, of their separate word symbols when an attempt is made to catalog those ideas.
+</blockquote></p>
+
+<p>We are treating &rarr; <a href="indexing">indexing</a> and &rarr; <a href="classification">classification</a> as being very similar operations. Indexing produces a data structure which is an <i>association list</i> or a <i>dictionary</i>. It is a structure that links identifiers (or names or headings) with lists (or sets) of values (or locators). These can be <i>inverted</i> so that for any locator the lists (or sets) of headings (or identifiers) that have that value can be produced. Classification is much the same, with one proviso. With subject classification, any book or page or web page may relate to multiple subjects (this is similar to plain indexing). With shelving classification, any book can have only one place in the classification, because it can have only one place on a shelf (this is different to indexing). Usually, there will be hierarchies within the schemes, to permit the movement to and from broader and narrow topics or index entries (or to have books on similar subjects contiguous with each other on shelves). Indexes would also usually be presented in alphabetical order of headings, whereas classification systems might be entirely hierarchical. However, this small potential difference has no significance in the context of Boolean logic.</p>
+
+<p>With subject indexing, to develop an example, the headings (subject identifiers) essentially are tags which are used to tag the references (or locators). The headings themselves will often be from a controlled vocabulary &mdash;  LCSH and MeSH are &mdash;  and sometimes those controlled vocabularies will have a grammar that permits the construction of new headings using some Boolean connectives, especially <i>and</i>, either explicitly or implicitly. LCSH, a partially faceted system, allows the attachment of place and time to many headings &mdash;  this is implicitly to join place and time to the heading using <i>and</i>. The other Boolean connectives <i>or</i> and <i>not </i>are not so often seen in the post-coordinated construction of headings. However, they are common in pre-coordinated components of a controlled vocabularies, and also in settings that do not use a controlled vocabulary at all e.g. in the pervasive free &rarr; <a href="tagging">tagging</a> in social media (e.g. <code>#not-funny</code>), or, separately, in many keyword systems. </p>
+
+<p>Search is similar to and, in many cases, symbiotic with, indexing and classification. Indexing is itself highly non-trivial (see, for example, <a href="#refV">Vickery 1953; 1975</a>; <a href="#refW">Weinberg 2009</a>; <a href="#refW">Wellisch 1991</a>; <a href="#refZ">Zafran 2010</a>; <a href="#refH">Hj&oslash;rland 2018</a>). We will assume here that the indexes are available of the requisite quality. Search, in its simplest form, might consist merely of looking through an index in the back of a book. The User in this setting will be trying to make a match, complete or approximate, on available headings (i.e. on the pre-coordinated headings). Computerized search engines can do more. Let us assume that they also can match, completely or approximately, on any pre-coordinated headings in the search system as a whole (the software will use &rarr; <a href="thesaurus">thesauri</a>  and similar devices to be able to do this). Then the <code>French cooking</code> heading mentioned earlier might not even exist as a heading until someone somewhere types into a search engine a string like &lsquo;French and cooking&rsquo;. Once search creates that heading, it may disappear immediately, it may be cached for one minute, one hour, or for one day, or it may be added sui generis as a heading in its own right. If thousands of Users search for &lsquo;French and cooking&rsquo; likely the heading <code>French cooking</code> will be added as a pre-coordinate pre-emptively indexed entry (and cease to be processed in a post-coordinated fashion).</p>
+
+<p>At the core here are manipulations with <i>set-intersection</i>, <i>set-union</i>, and <i>set-complement</i>, and parallel to these are Boolean operations of <i>and</i>, <i>or</i> and <i>not</i>. Of course, ordinary folk are not familiar with set theory and are not going to be able to launch, say, an online search with &lsquo;French <i>set-intersect</i> cooking&rsquo;. But Boolean operations put a human face on this: &lsquo;French <i>and</i> cooking&rsquo;.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2"></a>
+<h3>2. Boolean logic</h3>
+
+<p>Boolean logic is the logic of the truth-values <i>True</i> and <i>False</i> and the three functions <i>not</i>, <i>and</i>, and <i>or</i>. A convenient entry into understanding the syntax and common writing practices of Boolean logic is provided by our experiences with elementary arithmetic and algebra. In such fields, there are expressions like
+
+<blockquote>(3+4) &times; -(<i>y</i> + <i>z</i>)</blockquote>
+
+<p>In this, there are values (the numbers), there are variables (the <i>y</i> and <i>z</i>), there are two-place functions written infix (the + and &times;), there is a one-place function written prefix (the -), the functions are applied to values or variables or a mixture of the two, and there are parentheses to disambiguate expressions. Moving to our main topic, an example expression in Boolean logic is
+
+<blockquote>(True &or; False) & ~(<i>P</i> &or; <i>Q</i>)</blockquote>
+
+<p>There is the same mix here of values, variables, infix and prefix functions, and parentheses. In mathematics and computer science, functions that are written infix (i.e. between their arguments) are often called &lsquo;operators&rsquo;. In straight out logic or philosophy, Boolean functions are often called &lsquo;connectives&rsquo;. So, &lsquo;Boolean functions&rsquo;, &lsquo;Boolean operators&rsquo;, and &lsquo;Boolean connectives&rsquo; are more-or-less synonyms.</p>
+
+<p>In Boolean logic, True and False are often abbreviated T and F (and, in some settings, 1 and 0). It is common to use symbols to represent the connectives, but, unfortunately, there is no complete standardization and there is a variation in the symbols that might be used. Here are some choices that might be encountered:
+
+<blockquote>
+<i>not</i> : ~ (symbol name: 'tilde')<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &not; (symbol name: &lsquo;not&rsquo;)<br>
+
+<i>and</i> : &and; (symbol name: &lsquo;and&rsquo;)<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; & (symbol name: &lsquo;ampersand&rsquo;)<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; . (symbol name: &lsquo;period&rsquo;)<br>
+
+<i>or</i> : 	&nbsp;&nbsp;&or; (symbol name: &lsquo;vel&rsquo;)<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; + (symbol name: &lsquo;plus&rsquo;)
+</blockquote></p>
+
+<p>Then formulas are constructed using these symbols, and sometimes parentheses also to resolve ambiguities. Here are some examples:
+
+<blockquote>
+True<br>
+False<br>
+~ True<br>
+False & True<br>
+~ False &and; True<br>
+~(False & True)<br>
+True + ~ False<br>
+True & (False &or; &not; False)<br>
+</blockquote>
+
+<p>As illustrated in the earlier example above, there are often also variables. Quite what would be used as variables depends on the context and application, but upper-case letters would be common e.g. <i>P</i>, <i>Q</i>, <i>R</i>, &hellip;</p>
+
+<p>The connective <i>not</i> applies to just one argument, and it is written prefix (i.e. before the formula it applies to).  The connectives <i>and</i> and <i>or</i> apply to two arguments, and they are written infix (i.e. between the arguments they apply to). The arguments, or components, can be atomic formulas, but they can also be compound formulas. The usual practice, and it is a prudent one, is to use parentheses liberally. <i>Not</i> i.e. ~ is applied to the formula immediately following it (it is the connective with highest precedence). Parentheses are not necessary for this, but they can be used optionally. But with formulas with several <i>ands</i> and <i>ors </i>parentheses are pretty much a necessity. Some writers give <i>and</i> a higher &lsquo;precedence&rsquo; than <i>or</i>. This would mean that a formula like
+
+<blockquote>True & False &or; True</blockquote>
+
+should be read
+
+<blockquote>(True & False) &or; True</blockquote>
+
+not
+
+<blockquote>True & (False &or; True)</blockquote>
+
+<p>However, assigning precedence to <i>and</i> and <i>or</i> is by no means universal &mdash;  it is not even common.  Ergo, parentheses should be used in complex formulas. </p>
+
+<p>True and False &mdash;  the truth values &mdash;  are the core of Boolean logic. However, Boolean logic applies in many areas. That is, its inherent &lsquo;logic&rsquo; applies widely. One central example, useful for illustration, concerns propositional logic, an elementary form of reasoning using propositions. Indicative sentences in a natural language, English, for instance, are either true or false. For example, &lsquo;The Eiffel Tower is in Paris.' is an indicative sentence (which happens to be true). Such sentences express statements or propositions. Not all pieces of language express propositions. For example, the question 'What day is it today?' is not either true or false (although reasonable answers to it will be either true or false); again, the greeting 'Have a nice day!' is not either true or false. Statements or propositions or sentences can be atomic or compound. &lsquo;The Eiffel Tower is in Paris.&rsquo; expresses an atomic proposition; whereas &lsquo;The Eiffel Tower is in Paris and the Eiffel Tower is 25 kilometers from the nearest ocean.' expresses a compound proposition composed of two atomic propositions (one true one and one false one). There are many ways to construct compound propositions from atomic propositions and other compound propositions, but propositional logic focusses on five connectives only: &lsquo;<i>not</i>&rsquo;, &lsquo;<i>and</i>&rsquo;, &lsquo;<i>or</i>&rsquo;, &lsquo;<i>if&hellip;then&rsquo;</i>, and &lsquo;<i>if and only if</i>&rsquo;. There is a larger set of connectives here than is in use in basic Boolean logic, but it turns out that Boolean logic can model propositional logic very well.</p>
+
+<p>In propositional logic, propositions, statements, or indicative sentences are the &lsquo;bearers&rsquo; of truth i.e. each of them has a truth value of either True or False. We will not be looking here at what conditions are required for a proposition to be true &mdash;  we will just take it that each of the propositions either is true or is false. For example, we take it that the proposition &lsquo;The Eiffel Tower is in Paris' either is true or is false. Notice here that from the point of view of logic we are not concerned whether anyone knows it to be true or knows it to be false, or believes it to be true, or believes it to be false. We just want there to be the two possibilities &mdash;  that it is true, that it is false &mdash;  and that the proposition is one of them. Then, in a particular context, instead of writing out the sentences or propositions in natural language, perhaps several times over, propositional variables, perhaps <i>P</i>, <i>Q</i>, <i>R</i> &hellip; are used to stand for the propositions. The results are examples like
+
+<blockquote>~<i>P</i> (in English, &lsquo;not-<i>P</i>&rsquo;)<br>
+<i>P</i> & <i>Q</i> (in English, &lsquo;<i>P</i> and <i>Q</i>&rsquo;)<br>
+~<i>R</i> &or; <i>Q</i> (in English, &lsquo;not-<i>R</i> or <i>Q</i>&rsquo;)</blockquote>
+</p>
+
+<p>Propositional variables stand for propositions, atomic or compound. So, it would be possible to use <i>P</i> to stand for the atomic &lsquo;The Eiffel Tower is in Paris' or, alternatively, for the compound &lsquo;The Eiffel Tower is in Paris and the Eiffel Tower is 25 kilometers from the nearest ocean.' However, it would be unusual and idiosyncratic to adopt the second alternative. The heuristic reason being: it wise to analyze with the finest granularity available so as to reveal logical structure. The second alternative ignores the Boolean connective &lsquo;and&rsquo; and that would not be good. </p>
+
+<p>There is an assumption about the atomic truth bearers. It is that they are independent. This means that all combinations of truth values are possible. So, for example, if <i>P</i> and <i>Q</i> are atomic propositions then it must be possible for <i>P</i> to be true while <i>Q</i> is also true, <i>P</i> true while <i>Q</i> is false, <i>P</i> false while <i>Q</i> is true and <i>P</i> false while <i>Q</i> false. As an example where independence is <i>violated, </i>consider the propositions &lsquo;All swans are white&rsquo;, <i>P</i> say, and &lsquo;All swans in New Zealand are white&rsquo;, <i>Q</i> say; in this case, it is not possible for <i>P</i> to be true and <i>Q</i> false; <i>P</i> and <i>Q</i> are not independent and are thus not suitable as atomic truth bearers.</p>
+
+<p>The connectives are functions. They take as input, or arguments, the truth values of their components, and they have as output, or value, exactly one of the truth values True or False. The behavior of the connectives can be laid out in truth-tables. These describe the function values for the different function arguments. To assist with this, we will use <i>A</i>, <i>B</i>, <i>C</i>, etc. as variables to stand for entire formulas in the Boolean logic.</p>
+
+<p>Consider a formula with the form ~<i>A</i>. If the formula <i>A</i> is true, then the compound formula ~<i>A</i> is false. If the formula <i>A</i> is false, then the compound formula ~<i>A</i> is true. Summing this up in a table:
+
+<blockquote>
+<table width="300" border="1">
+<caption><i>Table 1: Truth-table for ~</i><br>&nbsp;</caption>
+<tr>
+<th><i>A</i></th>
+<th>~<i>A</i></th>
+</tr><tr>
+<td>True</td>
+<td>False</td>
+</tr><tr>
+<td>False</td>
+<td>True</td>
+</tr>
+</table>
+</blockquote>
+
+<p>Similar considerations apply to the other connectives. If <i>A</i> is true and <i>B</i> is true, then (<i>A</i>&<i>B</i>) is true. If <i>A</i> is true and <i>B</i> is false, then (<i>A</i>&<i>B</i>) is false. If <i>A</i> is false and <i>B</i> is true, then (<i>A</i>&<i>B</i>) is false. If <i>A</i> is false and <i>B</i> is false, then (<i>A</i>&<i>B</i>) is false. Summing this up in a table:
+
+<blockquote>
+<table width="300" border="1">
+<caption><i>Table 2: Truth-table for &</i><br>&nbsp;</caption>
+<tr>
+<th><i>A</i></th>
+<th><i>B</i></th>
+<th><i>A</i>&<i>B</i></th>
+</tr><tr>
+<td>True</td>
+<td>True</td>
+<td>True</td>
+</tr><tr>
+<td>True</td>
+<td>False</td>
+<td>False</td>
+</tr><tr>
+<td>False</td>
+<td>True</td>
+<td>False</td>
+</tr><tr>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+</tr>
+</table>
+</blockquote>
+
+<p>If <i>A</i> is true and <i>B</i> is true, then (<i>A</i>&or;<i>B</i>) is true. If <i>A</i> is true and <i>B</i> is false, then (<i>A</i>&or;<i>B</i>) is true. If <i>A</i> is false and <i>B</i> is true, then (<i>A</i>&or;<i>B</i>) is true. If <i>A</i> is false and <i>B</i> is false, then (<i>A</i>&or;<i>B</i>) is false. Summing this up in a table:
+
+<blockquote>
+<table width="300" border="1">
+<caption><i>Table 3: Truth-table for &or;</i><br>&nbsp;</caption>
+<tr>
+<th><i>A</i></th>
+<th><i>B</i></th>
+<th><i>A</i>&or;<i>B</i></th>
+</tr><tr>
+<td>True</td>
+<td>True</td>
+<td>True</td>
+</tr><tr>
+<td>True</td>
+<td>False</td>
+<td>True</td>
+</tr><tr>
+<td>False</td>
+<td>True</td>
+<td>True</td>
+</tr><tr>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+</tr>
+</table>
+</blockquote>
+
+<p>Our interest is with Boolean logic itself so we will omit truth-tables for <i>if&hellip; then</i> and <i>if and only if</i>.</p>
+
+<p>The truth value of compound formulas, or propositions, is fixed entirely by the truth value of their (immediate) constituents; and the truth value of the constitutions is fixed by the truth value of their constituents, and so on, decomposing down to atomic formulas or propositions. </p>
+
+<p>In a standard truth-table for an expression, there are columns for each atomic formula in the expression, and a column for the expression itself. So, for example, if the expression has three different atomic formulas in it, there will be four columns. Each row is a different combination of truth-values for the atomic formulas. So, an expression with three atomic formulas will have eight rows. (Sometimes truth-tables will contain extra columns for non-atomic subexpressions of an expression. This is just to facilitate the evaluation of the formulas.)</p>
+
+<p>Truth-tables extend to more complicated cases. We just work our way out from the atomic formulas to the ever more complex compound formulas. Consider the formula ~(~(~<i>A</i>)). There are two possibilities for <i>A</i> itself, that it is true, and that it is false. Let us follow them through in turn. If <i>A</i> is true, ~(~(~<i>A</i>)) amounts to ~(~(~True)) which amounts to ~(~(False)) which amounts to ~(True) which amounts to False. If <i>A</i> is false, ~(~(~<i>A</i>)) amounts to ~(~(~False)) which amounts to ~(~(True)) which amounts to ~(False) which amounts to True. Summing this up in a table:
+
+
+<blockquote>
+<table width="300" border="1">
+<caption><i>Table 4: Truth-table for ~~~A</i><br>&nbsp;</caption>
+<tr>
+<th><i>A</i></th>
+<th>~<i>A</i></th>
+<th>~~<i>A</i></th>
+<th>~~~<i>A</i></th>
+</tr><tr>
+<td>True</td>
+<td>False</td>
+<td>True</td>
+<td>False</td>
+</tr><tr>
+<td>False</td>
+<td>True</td>
+<td>False</td>
+<td>True</td>
+</tr>
+</table>
+</blockquote>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3"></a>
+<h3>3. Some facts or results about Boolean logic</h3>
+
+<a name="3.1"></a>
+<h4><br>3.1 The adequacy of the connective set</h4>
+
+<p>Boolean formulas are functions from the truth-values of their (atomic) constituents to the truth-values {True, False}. A question is: are the formulas, in particular their connective set {~, &, &or;}, rich enough to be able to portray all such functions? They are indeed, and this can be proved by <i>conjunctive normal forms</i>. (As a matter of terminology: formulas with main connective <i>and</i> are often called &lsquo;conjuncts&rsquo;, and formulas with main connective <i>or</i> are often called &lsquo;disjuncts&rsquo;.)</p>
+
+<p>To focus our thinking, consider how many such functions there are. Suppose there were three atomic constituents <i>A</i>, <i>B</i>, <i>C</i>, and each of these might have the values True or False, then there would be eight lines or rows in an individual truth-table; for each of these lines or combinations a function itself might have the value True or False; so there are 2<sup>8</sup> = 256 different functions. More generally, for <i>n</i> atomic constituents there are 2<sup><i>r</i></sup> functions, where <i>r</i> = 2<sup><i>n</i></sup>.</p>
+
+<p>We can construct a formula for any of these functions as follows. Define a <i>literal</i> to be either <i>A</i> or ~<i>A</i>, where <i>A</i> is atomic. (Note that a literal is False either if it has the form <i>A</i> and <i>A</i> is False, or if it has the form ~<i>A</i> and <i>A</i> is True.) Then define a <i>clause</i> to be a disjunct of literals. So, for example, a clause might be
+
+<blockquote>(A &or; ~<i>B</i> &or; <i>C</i>)</blockquote></p>
+
+<p>Notice that a clause is False only if all of the literals in it are themselves False, otherwise the clause will be True. Finally, a formula is in conjunctive normal form if it is a conjunct of clauses. So, for example,
+
+<blockquote>(<i>A</i> &or; ~<i>B</i> &or; <i>C</i>) & (~<i>A</i> &or; <i>B</i> &or; <i>C</i>)</blockquote>
+
+is in conjunctive normal form. And note here that a formula in conjunctive normal form is false only it at least one of the conjuncts in it is False; otherwise it is True.</p>
+
+<p>Now, a disjunct, or clause, is False only if <i>all</i> of its literals are False. So, for example, (<i>A</i> &or; ~<i>B</i> &or; <i>C</i>) is False only if <i>A</i> is False and <i>B</i> is True and <i>C</i> is False. Then a conjunct of clauses is False only if <i>at least one</i> of its clauses is False. So, for example, (<i>A</i> &or; ~<i>B</i> &or; <i>C</i>) & (~<i>A</i> &or; <i>B</i> &or; <i>C</i>) is False only if either (<i>A</i> &or; ~<i>B</i> &or; <i>C</i>) is False or (~<i>A</i> &or; <i>B</i> &or; <i>C</i>).</p>
+
+<p>This allows us to produce from any truth-function a formula that represents it. We do that by direct construction from the &lsquo;False&rsquo; lines. To give an example. Consider the function
+
+<blockquote>
+<table width="400" border="1">
+<caption><i>Table 5: Table for an example truth-function</i><br>&nbsp;</caption>
+<tr>
+<th><i>A</i></th>
+<th><i>B</i></th>
+<th><i>C</i></th>
+<th>?</th>
+<th>&nbsp;</th>
+</tr><tr>
+<td>True</td>
+<td>True</td>
+<td>True</td>
+<td>False</td>
+<td>1</td>
+</tr><tr>
+<td>True</td>
+<td>True</td>
+<td>False</td>
+<td>True</td>
+<td>2</td>
+</tr><tr>
+<td>True</td>
+<td>False</td>
+<td>True</td>
+<td>True</td>
+<td>3</td>
+</tr><tr>
+<td>True</td>
+<td>False</td>
+<td>False</td>
+<td>True</td>
+<td>4</td>
+</tr><tr>
+<td>False</td>
+<td>True</td>
+<td>True</td>
+<td>True</td>
+<td>5</td>
+</tr><tr>
+<td>False</td>
+<td>True</td>
+<td>False</td>
+<td>True</td>
+<td>6</td>
+</tr><tr>
+<td>False</td>
+<td>False</td>
+<td>True</td>
+<td>False</td>
+<td>7</td>
+</tr><tr>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>True</td>
+<td>8</td>
+</tr>
+</table>
+</blockquote>
+
+<p>When constructing, our interest is only in the lines which have the value False, namely lines 1 and 7. The clause
+
+<blockquote>(~<i>A</i> &or; ~<i>B</i> &or; ~<i>C</i>)</blockquote>
+
+will give us line 1 as False. The clause
+
+<blockquote>(<i>A</i> &or; <i>B</i> &or; ~<i>C</i>)</blockquote>
+
+will give us line 7 as False. And the conjunctive normal form formula
+
+<blockquote>(~<i>A</i> &or; ~<i>B</i> &or; ~<i>C</i>) & (<i>A</i> &or; <i>B</i> &or; ~<i>C</i>)</blockquote>
+
+will give us the entire function or truth-table, True lines and False lines. Any line that we have not constructed to be False is True.</p>
+
+<p>Some functions do not have any False lines at all in their truth-tables. Every line has the value True. A conjunctive normal form for such functions can be produced merely by putting the two different literals of the same atomic variable into a single clause (no conjunctions needed) e.g.
+
+<blockquote>(<i>A</i> &or; ~<i>A</i>)</blockquote>
+
+<p>This construction technique is completely general. This means that all truth functions can be represented as formulas in Boolean logic.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.2"></a>
+<h4>3.2 Is the connective set minimal? NAND and NOR</h4>
+
+<p>Formulas using {~, &, &or;} are rich enough to represent any Boolean truth-function. But might a smaller number of connectives be able to do the same job? The answer to that is that it can be done even by a single connective, and there are two such single connectives that can do it: NAND and NOR. This was discovered by Charles Peirce and Henry Sheffer, about the beginning of the 19th century. Roughly, NAND amounts to <i>and</i> with a <i>negation</i> in front of it, and NOR amounts to <i>or</i> with a <i>negation</i> in front of it. NAND, <span style="text-decoration: overline">&</span>, has the truth-table
+
+<blockquote>
+<table width="300" border="1">
+<caption><i>Table 6: Truth-table for <i>A</i><span style="text-decoration: overline">&</span><i>B</i></i><br>&nbsp;</caption>
+<tr>
+<th><i>A</i></th>
+<th><i>B</i></th>
+<th><i>A</i><span style="text-decoration: overline">&</span><i>B</i></th>
+</tr><tr>
+<td>True</td>
+<td>True</td>
+<td>False</td>
+</tr><tr>
+<td>True</td>
+<td>False</td>
+<td>True</td>
+</tr><tr>
+<td>False</td>
+<td>True</td>
+<td>True</td>
+</tr><tr>
+<td>False</td>
+<td>False</td>
+<td>True</td>
+</tr>
+</table>
+</blockquote>
+
+<p>Then our original Boolean connectives <i>not</i>, <i>and</i>, and <i>or</i> can be define in terms of this. For example, ~<i>A</i> amounts to <i>A</i><span style="text-decoration: overline">&</span><i>A</i> i.e. <i>A</i> NAND <i>A</i>.</p>
+
+<blockquote>
+<table width="400" border="1">
+<caption><i>Table 7: The NAND counterpart of ~<i>A</i></i><br>&nbsp;</caption>
+<tr>
+<th><i>A</i></th>
+<th><i>A</i></th>
+<th><i>A</i><span style="text-decoration: overline">&</span><i>A</i></th>
+<th>~<i>A</i></th>
+</tr><tr>
+<td>True</td>
+<td>True</td>
+<td>False</td>
+<td>False</td>
+</tr><tr>
+<td>False</td>
+<td>False</td>
+<td>True</td>
+<td>True</td>
+</tr>
+</table>
+</blockquote>
+
+<p>NAND (and NOR) do not lend themselves to intuitive reasoning in the same way that <i>not</i>, <i>and</i> and <i>or</i> do. However, they are extremely important. Boolean logic has become the basis of modern digital computers and the fact that one style of fabrication of transistors (say, for a NAND gate) could do everything effected a great simplification.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.3"></a>
+<h4>3.3 Standard equivalences or common theorems</h4>
+
+<p>Some formulas are logical truths; that is, they evaluate to true no matter what the truth values of their constituents. Most prominent among these is:
+
+<blockquote><i>A</i> &or; ~<i>A</i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The law of excluded middle</blockquote>
+
+<p>The Aristotelian law of excluded middle or <i>Tertium non datur</i> (the third is not given) means that every proposition either is true or is false. This law or principle is part of Boolean logic (but it is not uncontroversial in a wider setting; for example, it is denied by intuitionistic propositional logic). Then there is Aristotle&rsquo;s law of non-contradiction:
+
+<blockquote>~(<i>A</i> & ~<i>A</i>)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The law of non-contradiction</blockquote>
+
+<p>Some formulas are logical falsehoods; that is, they evaluate to false no matter what the truth values of their constituents. A plain contradiction:
+
+<blockquote><i>A</i> & ~<i>A</i></blockquote>
+
+is an example of a logical falsehood.</p>
+
+<p>Some pairs of formulas are logically equivalent to other; that is, the truth-table for one of them is identical to the truth-table for the other. We can use the triple-bar symbol &equiv; to indicate equivalence. Here are some important equivalences:
+
+<blockquote>
+<p><i>A</i> & True &equiv; <i>A</i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Identity for &
+<br>True & <i>A</i> &equiv; <i>A</i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Identity for &</p>
+
+<p><i>A</i> &or; False &equiv; <i>A</i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Identity for &or;
+<br>False &or; <i>A</i> &equiv; <i>A</i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Identity for &or;</p>
+
+<p><i>A</i> &equiv; ~~<i>A</i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Double negation</p>
+
+<p><i>A</i> & ~<i>A</i>  &equiv; False&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Complement for &
+<br><i>A</i> &or; ~<i>A</i>  &equiv; True&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Complement for &or;</p>
+
+<p><i>A</i> &equiv; <i>A</i> & <i>A</i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Idempotence for &
+<br><i>A</i> &equiv; <i>A</i> &or; <i>A</i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Idempotence for &or;</p>
+
+<p><i>A</i> & <i>B</i> &equiv; <i>B</i> & <i>A</i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Commutativity of &
+<br><i>A</i> &or; <i>B</i> &equiv; <i>B</i> &or; <i>A</i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Commutativity of &or;</p>
+
+<p><i>A</i> & (<i>B</i> & <i>C</i>) &equiv; (<i>A</i> & <i>B</i>) & <i>C</i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Associativity of &
+<br><i>A</i> &or; (<i>B</i> &or; <i>C</i>) &equiv; (<i>A</i> &or; <i>B</i>) &or; <i>C</i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Associativity of &or;</p>
+
+<p><i>A</i> & (<i>B</i> &or; <i>C</i>) &equiv; (<i>A</i> & <i>B</i>) &or; (<i>A</i> & <i>C</i>)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Distributivity of & over &or;
+<br><i>A</i> &or; (<i>B</i> & <i>C</i>) &equiv; (<i>A</i> &or; <i>B</i>) & (<i>A</i> &or; <i>C</i>)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Distributivity of &or; over &</p>
+
+<p>~(<i>A</i> & <i>B</i>) &equiv; ~<i>A</i> &or; ~<i>B</i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;De Morgan law 1
+<br>~(<i>A</i> &or; <i>B</i>) &equiv; ~<i>A</i> & ~<i>B</i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;De Morgan law 2</p>
+
+</blockquote>
+
+<p>These equivalences can be proved using many different proof techniques. But truth-tables themselves bear witness to their soundness. For example, here is a truth-table for the left-hand side of De Morgan law 1 (including values for the sub-expressions to show how the evaluation is carried out):
+
+<blockquote>
+<table width="600" border="1">
+<caption><i>Table 8: Truth-table for L.H.S. of De Morgan law 1</i><br>&nbsp;</caption>
+<tr>
+<th><i>A</i></th>
+<th><i>B</i></th>
+<th><i>A</i>&<i>B</i></th>
+<th>~(<i>A</i>&<i>B</i>)</th>
+</tr><tr>
+<td>True</td>
+<td>True</td>
+<td>True</td>
+<td>False</td>
+</tr><tr>
+<td>True</td>
+<td>False</td>
+<td>False</td>
+<td>True</td>
+</tr><tr>
+<td>False</td>
+<td>True</td>
+<td>False</td>
+<td>True</td>
+</tr><tr>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+<td>True</td>
+</tr>
+</table>
+</blockquote>
+
+<p>And here is a truth-table for the right-hand side of De Morgan Law 1</p>
+
+<blockquote>
+<table width="600" border="1">
+<caption><i>Table 9: Truth-table for R.H.S. of De Morgan law 1</i><br>&nbsp;</caption>
+<tr>
+<th><i>A</i></th>
+<th><i>B</i></th>
+<th>~<i>A</i></th>
+<th>~<i>B</i></th>
+<th>~<i>A</i> &or; ~<i>B</i></th>
+</tr><tr>
+<td>True</td>
+<td>True</td>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+</tr><tr>
+<td>True</td>
+<td>False</td>
+<td>False</td>
+<td>True</td>
+<td>True</td>
+</tr><tr>
+<td>False</td>
+<td>True</td>
+<td>True</td>
+<td>False</td>
+<td>True</td>
+</tr><tr>
+<td>False</td>
+<td>False</td>
+<td>True</td>
+<td>True</td>
+<td>True</td>
+</tr>
+</table>
+</blockquote>
+
+<p>The truth-table values for ~(A&B) and ~A &or; ~B are the same, which means that the expressions or formulas are equivalent.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.4"></a>
+<h4>3.4 Proofs and axioms systems</h4>
+
+<p>Some arguments, using truth-tables, were given above for the soundness or logical truth of various equivalences. Alternatively, some formulas, either from these equivalences or from other formulas, could be adopted as &lsquo;axioms&rsquo; and various theorems proved from them. For example, the commutativity of & could be taken as an axiom i.e.
+
+<blockquote><i>A</i> & <i>B</i> &equiv; <i>B</i> & <i>A</i></blockquote>
+
+then theorems like
+
+<blockquote>(<i>A</i> & <i>B</i>) & (<i>C</i> & <i>D</i>) &equiv; (<i>D</i> & <i>C</i>) & (<i>B</i> & <i>A</i>)</blockquote>
+
+are available. Once axioms enter, then questions arise to what the axioms should be? Is there a minimal number? Are convenient axioms independent? And so on.</p>
+
+<p>These questions have been studied, especially the question of what is the absolute minimum. Within this realm it is often usual to use only the NAND connective i.e. <span style="text-decoration: overline">&</span>.  This gives a convenient count in as much as the axioms can be counted, and the NANDs can be counted. Henry Sheffer produced a 3 axiom system in 1913; in 1967, Carew Meredith proposed his final 2 axiom system. Then, in 2000, Stephen Wolfram discovered a single axiom solution (<a href="#refW">Wolfram 2018</a>):
+
+<blockquote>((<i>A</i> <span style="text-decoration: overline">&</span> <i>B</i>) <span style="text-decoration: overline">&</span> <i>C</i>) <span style="text-decoration: overline">&</span> (<i>A</i> <span style="text-decoration: overline">&</span> ((<i>A</i> <span style="text-decoration: overline">&</span> <i>C</i>) <span style="text-decoration: overline">&</span> <i>A</i>)) &equiv; <i>C</i> &nbsp;&nbsp;&nbsp;One single axiom for Boolean logic</blockquote>
+
+<p>There is here one axiom with 6 NANDs. Wolfram asserts &lsquo;this one little axiom was enough to generate all of logic&rsquo;. Well, perhaps more accurately, it is enough to generate all of Boolean logic. We can get all of Boolean logic from this by simple algebraic transformations. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4"></a>
+<h3>4. More on using natural language to motivate the properties of the connectives</h3>
+
+<p>While the <i>and</i>, <i>or</i>, and <i>not </i>of Boolean logic are similar to central use cases of <i>and</i>, <i>or</i>, and <i>not </i>in natural language, they are not exactly the same. For example, the <i>and</i> in natural language can often have a temporal element in it. &lsquo;He fell off his bike <i>and</i> he went to hospital&rsquo; is not the same as &lsquo;He went to hospital<i> and</i> he fell off his bike.&rsquo;. This means that the &lsquo;and&rsquo; in natural language is often not commutative (as it is in Boolean logic).</p>
+
+<p>The <i>or </i>in natural language really has two senses: <i>inclusive-or</i> and <i>exclusive-or.</i> The first means <i>one-or-the-other-or-both</i> and the second means <i>one-or-the-other-and-not-both</i>. An example of the first is &lsquo;(From the wild celebrations we can tell that) Jane passed the exam or Jim passed the exam.&rsquo;; an example of the second is &lsquo;The getaway car took the left fork in the road or the getaway car took the right fork in the road.&rsquo; Latin has separate words for these connectives &lsquo;vel&rsquo;, for the <i>inclusive-or</i>, and &lsquo;aut&rsquo;, for the <i>exclusive-or</i>. Boolean logic, plain and simple, uses the <i>inclusive-or. </i>However, in computer science and electrical engineering there is application for the <i>exclusive-or.</i> In those contexts, often an <i>exclusive-or</i> connective, XOR, or &oplus;, will be defined with the truth-table
+
+<blockquote>
+<table width="300" border="1">
+<caption><i>Table 10: Truth-table for XOR</i><br>&nbsp;</caption>
+<tr>
+<th><i>A</i></th>
+<th><i>B</i></th>
+<th><i>A</i>&oplus;<i>B</i></th>
+</tr><tr>
+<td>True</td>
+<td>True</td>
+<td>False</td>
+</tr><tr>
+<td>True</td>
+<td>False</td>
+<td>True</td>
+</tr><tr>
+<td>False</td>
+<td>True</td>
+<td>True</td>
+</tr><tr>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+</tr>
+</table>
+</blockquote>
+
+<p>XOR is not something new in as much as it can be defined as (<i>A</i> &or; <i>B</i>) & ~(<i>A</i> & <i>B</i>).</p>
+
+<p>In sum, many of the laws or equivalences of Boolean logic do not hold universally in natural language. One consequence of this is that Boolean searches using a search engine need some care. Of course, the underlying software to a search engine will have some sophisticated algorithms and tuning to ferret out what the searchers might mean as opposed to what they actually say in terms of Boolean logic.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5"></a>
+<h3>5. Boolean algebras</h3>
+
+<p>The structure of the expressions in Boolean logic form an algebra, in the sense of abstract algebras. This means that their structure can be studied as an advanced mathematic topic, in a similar way to the study of algebraic structures like groups, rings, modules, vector spaces, lattices, or fields. It would be usual in these settings to drop the use of True and False and use 1 and 0 instead. Then some of the equivalences above (identity, commutativity, associativity, and distributivity) can be used as axioms to define an algebra, namely: Boolean algebra. There are many examples of Boolean algebras in abstract mathematics (the algebra of sets, mentioned above, with set-intersection, set-union, etc. is one). There are some profound theorems about Boolean algebras; the Stone representation theorem is one example (<a href="#refS">Stone 1936</a>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="6"></a>
+<h3>6. Some application areas</h3>
+
+<a name="6.1"></a>
+<h4><br>6.1 Classification and search</h4>
+
+<a name="6.1.1"></a>
+<h5>6.1.1 Venn diagrams</h5>
+
+<p>As explained above, Boolean connectives are often used in knowledge organization as a front-end to set theoretic operations. Also useful in this context are the familiar Venn diagrams (<a href="#refB">Bednarek 1970</a>). These can be used to illustrate <i>set-complement</i>, <i>set-intersection</i>, and <i>set-union</i>.</p>
+
+<div align="center"><figure>
+<img src="boolean1.jpg" title="Fig. 1: Venn diagram for sets A and B with the set A shaded" width="30%">
+<figcaption>Figure 1: Venn diagram for sets <i>A</i> and <i>B</i> with the set <i>A</i> shaded</figcaption>
+</figure></div>
+
+<p>The rectangle as a whole represents the Universe. The circle labeled &lsquo;A&rsquo; represents the set of <i>A</i>s (i.e. the set of those items in the Universe that have the property <i>A</i>). Outside the circle, i.e. outside the shaded area, but inside the rectangle, represents the <i>complement</i>, or complement set, of <i>A</i> i.e. ~<i>A</i>. The conventions are similar for <i>B</i>: the circle labeled &lsquo;B&rsquo; represents the set of <i>B</i>s. The common intersection area represents those items which are both <i>A</i> and <i>B</i> i.e. <i>A</i> & <i>B</i>. The contents inside either of the two circles represents the union of <i>A</i> and <i>B</i> i.e. <i>A</i> &or; <i>B</i>. There is also the notion of relative complement, which are items in one set but not the other e.g. <i>A</i> & ~<i>B</i>. In sum, diagrams like the following may be used to depict the relevant areas:
+
+<div align="center"><figure>
+<img src="boolean2.jpg" title="Fig. 2: Venn diagrams for Complement, Union, Intersection, and Relative Complement" width="60%">
+<figcaption>Figure 2: Venn diagrams for Complement, Union, Intersection, and Relative Complement</figcaption>
+</figure></div>
+
+<p>This schematic can be extended to three or more sets (i.e. to three or more circles or elliptic boundaries).</p>
+
+<p>There is an important point of interpretation here. In Boolean logic, the values are True and False and a formula like <i>P</i> & <i>Q</i> denotes, say, True & False which, in this case, would have the value False. In a Venn diagram, the circles represent sets. The <i>A</i>s and <i>B</i>s represent properties which may or may not be possessed by items in the set universe as a whole. For example, consider the universe of people. There are the properties <i>A</i> = &lsquo;<i>x</i> is agreeable&rsquo; and <i>B</i> = &lsquo;<i>x</i> is benevolent&rsquo;. Then, the circle labeled <i>A</i> can be used to depict the people that are agreeable, and outside the circle <i>A</i> depicts the people that are not agreeable. A similar convention can be used for <i>B</i>. Then the intersection area labeled &lsquo;<i>A</i> & <i>B</i>&rsquo; represents the people who are both agreeable and benevolent. So, the actual formula <i>A</i>&<i>B</i> is not a formula of Boolean logic, rather it is the <i>anding</i> of two properties. This can be done formally in predicate logic, but not in propositional logic or Boolean logic. In set theory, there is the axiom or principle of comprehension which states that a property, atomic or compound, can be used to define a set. That is what is happening here. Na&iuml;ve set theory has a &lsquo;set-builder&rsquo; notation, usually
+
+<blockquote>
+{<i>x</i>: &Phi;(<i>x</i>)} or<br>
+{<i>x</i>| &Phi;(<i>x</i>)}
+</blockquote>
+
+where &Phi;(<i>x</i>) is an &lsquo;open sentence&rsquo; (which is a sentence with free variable <i>x</i>). So the areas in the Venn diagrams of Figures 1 and 2 would be described as {<i>x</i>: <i>A</i>(<i>x</i>)}, {<i>x</i>: <i>B</i>(<i>x</i>)}, {<i>x</i>: <i>A</i>(<i>x</i>) & <i>B</i>(<i>x</i>)}, {<i>x</i>: <i>A</i>(<i>x</i>) &or; ~<i>B</i>(<i>x</i>)}, etc. Notice here the use of the Boolean connectives ~, & and &or; within the set-builder notation. Set theory has its own notation, typically &lsquo;-&rsquo; for <i>complemen</i>t, &lsquo;&cap;&rsquo; for <i>intersection</i> and &lsquo;&#8899;&rsquo; <!-- or &cup; --> &nbsp;for <i>union</i>. So, the set operations, and the use of Boolean connectives, within set-builder notation, are related as follows:
+
+<blockquote>
+&nbsp;<i>A</i> 	=  {<i>x</i>: <i>A</i>(<i>x</i>)}<br>
+-<i>A</i>	=  {<i>x</i>: ~<i>A</i>(<i>x</i>)}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;complement<br>
+<i>A</i> &cap; <i>B</i> 	=  {<i>x</i>: <i>A</i>(<i>x</i>) & <i>B</i>(<i>x</i>)}	&nbsp;intersection<br>
+<i>A</i> &#8899; <i>B</i> 	=  {<i>x</i>: <i>A</i>(<i>x</i>) &or; <i>B</i>(<i>x</i>)}	&nbsp;union
+</blockquote>
+
+<p>There is also the characteristic function which can be used to produce True or False statements from set membership or the application of properties. Without going into any more detail, Venn diagrams and Boolean logic can be used to mimic parts of each other. When post-coordination, or search, puts together the terms <code>French</code> and <code>cooking</code> to produce <code>French <i>and</i> cooking</code> i.e. <code>French cooking</code>, really it is doing set operations rather than strict Boolean logic operations.</p>
+
+<p>It is fairly standard, and mainstream, to maintain that there are at least two prototypical examples of Boolean logic or Boolean algebra. The first uses the truth-functional operations of <i>and</i>, <i>or</i>, and <i>not</i>, together with the truth values True and False; and the second uses the set-theoretic operations of <i>intersection</i>, <i>union</i>, and <i>complement</i>, together with the Universe set and the Null set.</p>
+
+<p>In the case of knowledge organization, the universe of discourse for Venn diagrams, or the set-theoretic operations, is that of references or identifiers or locators such as ISBNs of books, page numbers, URLs, DOIs, etc. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="6.1.2"></a>
+<h5>6.1.2 Regular expressions</h5>
+
+<p>There is more that can be said about search and Boolean logic. One question that arises in a search framework is what is desirable as the form of the input for a search? An initial thought is that it should be a single word, or expression, say &lsquo;house&rsquo; or a Boolean combination of single words, say &lsquo;house or apartment&rsquo;. This overlays Venn diagrams neatly. A search for &lsquo;house or apartment&rsquo; produces the locators for &lsquo;house&rsquo; and the locators for &lsquo;apartment&rsquo; and adds the two locator sets together i.e. it uses their <i>union</i>. Other cases will be similar.</p>
+
+<p>But then everyone with some familiarity of knowledge organization, indexing, and thesaurus construction will be aware of stemming, wild cards, and other manipulations. It is possible for a search, with a single atomic input, to retrieve locators for {<i>house, houses, housing, farmhouse, lighthouse, farmhouses, lighthouses</i>, etc.} (see, for example, <a href="#refS">Stock and Stock 2013a</a>). Now the input form is going to be a <i>pattern</i> (which perhaps might be a literal). The next step is to be aware of regular expressions (<a href="#refG">Goyvaerts 2020</a>) and text search algorithms. Regular expressions (regexs) come from the logician Stephen Kleene, and they were brought into Unix and computer programs by Ken Thompson (<a href="#refK">Kleene 1956</a>; <a href="#refT">Thompson 1968</a>). More-or-less every modern text search algorithm by computer is going to use regular expressions as its input. To give an example
+
+<blockquote><code>[A-Za-z]*(House|house)[a-z]*</code></blockquote>
+
+is a regular expression, a pattern, that will match zero or more upper- or lower-case letters, followed by &lsquo;House&rsquo; or &lsquo;house&rsquo;, followed by zero or more lower case letters. So, for example, this pattern will match &lsquo;house&rsquo;, &lsquo;houses&rsquo;, &lsquo;House&rsquo;, &lsquo;lighthouse&rsquo; etc. But it will not match &lsquo;housing&rsquo; (if we would like to match &lsquo;housing&rsquo; as well, we would use a different regular expression). Then
+
+<blockquote><code>/[A-Za-z]*(House|house)[a-z]*/g</code></blockquote>
+
+would find all of the matches in the text i.e. find &lsquo;globally&rsquo;. Now, regular expressions are much more powerful in forming patterns than are plain Boolean operators, and regular expressions do not themselves make extensive use of Boolean operators (they can use <i>or</i>, and, to a lesser extent, <i>not</i>). </p>
+
+<p>This means that behind the scenes, with programmers and text processing experts, there is no such thing as Boolean search. With everyday folk, it is a different story, although Boolean search is very hard to do competently. In sum, Boolean search is for experts, but experts rarely, if ever, use it. Experts would use some variation of the more powerful regex search.</p>
+
+<p>A plain Boolean search is not going to be able to retrieve the collective locators for {<i>house, houses, housing, farmhouse, lighthouse, farmhouses, lighthouses</i>, etc.}. It is true that a Boolean search for &lsquo;house or houses or housing or farmhouse or lighthouse or farmhouses or lighthouses&rsquo; should return a set of locators. However, this type of search, and its success, is limited to what the User or searcher can envisage when launching the search. Imagine that the user never even thought of &lsquo;outhouses&rsquo; as a possibility. If that literal were not among the Boolean input, its locators would not be retrieved. But the corresponding regex search would capture locators for &lsquo;outhouses&rsquo;.</p>
+
+<p>We should perhaps be a little more sensitive to the scale of the expertise of the searcher. It is not the case that there are just experts and beginners. There are shades of grey in between. Correspondingly, a search engine might have ordinary search, allowing Boolean search, but perhaps not much more. Then it might have &lsquo;Advanced search&rsquo; perhaps exposing wildcards etc. as a human friendly interface to parts of regex search. Then it might even allow full-blown regex search.</p>
+
+<p>Another consideration here is how the text is processed or indexed in the first place. Regex search processes explicit text. It can do that real time, or it can do it in advance preemptively to produce an index. To a limited degree it can deal with challenges like synonyms, if the programmers are smart. For example, it can be set up to retrieve locators for the concept &lsquo;automobile&rsquo; where the text does not have instances of that word at all but instead has occurrences of the word &lsquo;car&rsquo;. But human indexers can improve on computers and regex searches in challenging cases. The human indexers understand the text and this, for example, might allow them to say that an entire book is on <code>unrequited love</code>. Regex search would fail at this, if &lsquo;unrequited love&rsquo;, or its synonyms, did not appear explicitly in the text.</p>
+
+<p>Plenty of material is indexed by humans. The Library of Congress Subject Headings (LCSH) are attached to most print books by humans. The Medical Subject Headings (MESH) are also assigned by humans. There are many more examples. In these areas, pure Boolean search makes something of a comeback intellectually. In essence, the searches are for those items tagged with <code>heading1</code> or those items tagged with (<code>heading1</code> or <code>heading2</code>), etc. Regex search can be used here also. For example, a regex input can easily search through 300,000 or so LCSH headings and find all the locators, maybe books, within a particular library&rsquo;s collection. But LCSH is a controlled vocabulary, and a good librarian will know most of what is there, i.e. most of the headings, verbatim. So, a good librarian will be able search effectively in settings like these using just Boolean search.</p>
+
+<p>In sum, where there is search or indexing of large quantities of free text, where the focus tends to be on the explicit, and the searchers are experts, likely there will be regex search and little use for Boolean operators. In cases where humans have intermediated and added value to the indexing or classification, and the searchers either are experts on the indexing or at least understand Boolean search, likely Boolean search will still have a role.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="6.2"></a>
+<h4>6.2 Faceting</h4>
+
+<p>There is insight to be gained by looking at faceting in terms of, on the one hand, the headings or search strings it permits, and, on the other, the sets of locators that it produces and their interactions. Almost all traditional classification systems that have faceting (e.g. LCSH, MeSH, &rarr; <a href="colon_classification">Colon</a>, Universal Decimal Classification (UDC), Art and Architecture Thesaurus (AAT), etc.) use controlled vocabularies with a defining grammar (<a href="#refL"><i>Library of Congress Subject Headings</i> 2020</a>; <a href="#refM"><i>MeSH</i> 2010</a>; <a href="#refR">Ranganathan 1952</a>; <a href="#refM">McIlwaine 1997</a>; <a href="#refW">Whitehead 1989</a>). They do use, for example, <i>and</i>,<i> </i>between foci across facets. (This use may be implicit, of course.) Earlier, in the Introduction, we saw the imagined example of an England focus being combined with a 17th Century focus to produce the composite 17th Century England. But real cases of classification systems (LCSH, MeSH, etc.) will often have a grammar that prevents these cross-facet uses from being commutative. For example, the grammar may permit a heading with &lt;place&gt; and &lt;time&gt; in that order, but then not a similar heading with &lt;time&gt; and &lt;place&gt; in that order. Also, as mentioned, <i>or</i> would be pretty rare across facets, as would <i>not</i>. In sum, it is a bit of a stretch to assert that familiar controlled vocabulary headings, with facets, permit the construction of new headings using Boolean logic. In contrast, if the headings are not from a controlled vocabulary &mdash;  as might be the case with social media tagging &mdash;  anything goes. Search strings, offered as input to a normal search engine, would usually be allowed to have any form (any vocabulary, any grammar, and, sometimes, even in many different natural languages). Most modern search engines would also accept a composite of component strings appended together by Boolean connectives (mostly with full commutativity, distributivity etc.). They also would be able to take the components sequentially to narrow or broaden on the results obtained to that point &mdash;  making a search into a process with feedback. This is important, especially for search by experts (<a href="#refH">Hj&oslash;rland 2015</a>).  Search engines, as described, do use something akin to Boolean logic on the search strings. Faceting is not much in evidence here (after all, the user has much freedom with the search strings and is not constrained by faceting). </p>
+
+<p>However, many web sites, for example, for online retailers, like Amazon, do provide faceted search for their goods and services. For example, the user may search under a facet of &lsquo;gifts&rsquo; (and be offered a menu choice among such foci as <code>wedding gifts</code>, <code>birthday gifts</code>, <code>xmas gifts</code> etc.) and combine this with a menu choice from a facet of &lsquo;price&rsquo; (and be offered <code>inexpensive</code>, <code>moderate cost</code>, <code>expensive</code>, etc.). This kind of faceted search for goods and services does have the characteristics of a Boolean logic. Whether the topic of faceted search for goods and services is properly a part of the discipline of knowledge organization is an open question. It can be remarked, though, that the much-admired Art and Architecture Thesaurus covers much more than locators or references. It covers &lsquo;art, architecture, and material culture&rsquo; i.e. it includes goods and services.</p>
+
+<p>Also, many modern online public access catalogs (OPACs) offer faceted search; for example, WorldCat, the world&rsquo;s largest catalog, does (<a href="#refW"><i>WorldCat.Org</i> 2020</a>). Systems like these often offer narrowing by choice of facet (e.g. keyword, subject, title, author, year, audience, etc.). Some of the facets, such as keyword, subject, and title, accept free-text; others require a choice among fixed values (with WorldCat, the facet &lsquo;Content&rsquo; requires a choice of a single focus from {<code>Fiction</code>, <code>Non-fiction</code>, <code>Biography</code>, <code>Thesis/dissertation</code>}). Typically, what is happening here is that there are extensive bibliographical records in the background (WorldCat has access to 2 billion records). Then these records have extensive metadata fields (e.g. author, subject, title, ISBN, accession number, etc.) What a faceted search interface does is to allow access to these metadata fields in a semi-structured and rational way. Before the widespread use of computers in libraries, there would have been card catalogs perhaps with separate &lsquo;entry points&rsquo; to provide access and search by author, title, and subject. But computers have the potential to offer as an entry point any field that is among the metadata. Some OPACs may accept and process Boolean operations within a facet (e.g. author: Dickens or Austen); practices on this are unclear and probably not uniform. The systems often take free text, so &lsquo;author: Dickens or Austen&rsquo; would be accepted as input; but what processing would be done, and what the output would be, would likely vary from system to system.</p>
+
+<p>The interactions of sets of locators produced by faceted, or indeed, by plain Boolean search, is as has been described earlier. Providing the sets come from the same underlying Universe (in this case locators), then <i>set-intersection</i>, <i>set-union</i>, and <i>set-complement</i> are sufficient. However, if faceted classification, in combination with Boolean logic, is going to be used with &lsquo;goods and services&rsquo; issues arise. Imagine that a web site sells socks. It sells long socks and short socks, and cotton socks and wool socks. The set-theoretic Universe here is well-defined (i.e. socks), as are the various subsets and set-operations, and a search, for example, for &lsquo;long, and not cotton&rsquo; is perfectly sound in terms of Boolean logic. But most classification theorists want to go a lot further with their faceting than this. Julius Kaiser, to use a historical example, wanted to have the kind (i.e. facet) &lsquo;concretes&rsquo; and the kind &lsquo;processes&rsquo; and to combine these to form, for example, &lsquo;the rusting of iron&rsquo; (i.e. <code>iron</code> <i>and</i> <code>rusting</code>) (<a href="#refK">Kaiser 1911</a>). Something very different is going on here. No doubt Kaiser himself had his eye on locators. So, roughly speaking, he would form an index heading for &lsquo;the rusting of iron&rsquo; and expect that the locators (i.e. page numbers) for that heading within a given book would approximate the intersection of the set of locators for <code>iron</code> and the set of locators for <code>rusting</code>. This is absolutely fine. But it does not work so well if taken away from locators into the actual world of things and processes. Suppose a modern-day Kaiser left librarianship, opened a foundry, and started selling the concrete <code>iron</code> and, additionally, services including processes like <code>smelting</code>. A universe that includes both concretes and processes has items of different kinds. Then a label like &lsquo;the smelting of iron&rsquo; does not seem to denote the set-theoretic <i>intersection</i> of iron and smelting. Any intersection of two sets is also subset of the two sets individually (in the Venn diagram above <i>A</i>&<i>B</i> is a subset of <i>A</i> and a subset of <i>B</i>). This would mean that &lsquo;the smelting of iron&rsquo; is a member of the concretes. The original Kaiser surely would not have said that.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="6.3"></a>
+<h4>6.3 Computer programming languages</h4>
+
+<p>Almost all computer programming languages have Booleans i.e. {True, False} as a datatype. Then Boolean operators are often used in expressions or in control statements. For example, using an imaginary programming language schematic:
+
+<blockquote><code>
+If ((<i>not</i> password has at least six characters) <i>or</i><br>
+&nbsp;&nbsp;&nbsp;&nbsp;(<i>not</i> passwords uses at least one special character) <i>or</i><br>
+&nbsp;&nbsp;&nbsp;&nbsp;(<i>not</i> (password has one upper case character <i>and</i><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;password has one lower case character)) <i>or</i><br>
+&nbsp;&nbsp;&nbsp;&nbsp;(<i>not</i> password has a numeric character))<br>
+then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;writeln &lsquo;Passwords need to be at least six characters long and include upper and lower case characters, a special character, and a numeric character.&rsquo;
+</code></blockquote>
+
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="6.4"></a>
+<h4>6.4 Database queries and query languages</h4>
+
+<p>Many databases expose their data to searchers at large. Then, often, a search query would be able to use the Boolean operators of <i>and</i>, <i>or</i> and <i>not. </i>The resulting query language would amount to a formal or semi-formal Boolean query language. The PubMed database is an example of this (<a href="#refP"><i>PubMed</i> 2020</a>). This use is similar to online search using a search engine in a web browser. It is not exactly the same because ordinary folk use web browsers, and they may struggle with Boolean operators. Whereas Users querying databases using query languages usually have some expertise and will be comfortable with Boolean operators. This difference between ordinary folk and expert searchers has some significance. For example, Hj&oslash;rland argues powerfully that experts using Boolean searches are the match of any other technique, if not actually superior to other techniques; this would not be true of neophytes (<a href="#refH">Hj&oslash;rland 2015</a>; <a href="#refH">Hearst 2011</a>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="6.5"></a>
+<h4>6.5 Propositional logic</h4>
+
+<p>
+<br>
+This application area has been described in <a href="#2">section 2</a>.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="6.6"></a>
+<h4>6.6 Probability theory</h4>
+
+<p>Boolean logic is central to probability theory. It is possible to set up probability theory either in terms of true or false propositions or in terms of sets of events and their unions, intersections etc. (<a href="#refH">Howson and Urbach 1993</a>). Either way Boolean logic is right at the heart of it (<a href="#refH">Hailperin 1986</a>). This reliance on Boolean logic in probability theory can be traced back to Boole himself. Theodore Hailperin writes (<a href="#refH">Hailperin 1984</a>, 199):
+
+<blockquote>
+Boole, more than anyone before him, realized and exploited the close relationship between the logic of <i>not</i>, <i>and</i>, and <i>or</i> and the formal properties of probability. He forced this relationship to be closer than it really is by restricting himself to <i>or</i> in the exclusive sense (so that probabilities of an <i>or</i>-compound added) and by believing that all events were expressible ultimately in terms of independent events (so that the probabilities of an a<i>nd</i>-compound multiplied) [&hellip;]. Boole believed [&hellip;] that he had solved the central problem [of probability theory.]
+</blockquote></p>
+
+<p>Plenty of work has been done on probability since Boole&rsquo;s time, but certainly Boolean logic still has a major role in the field.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="6.7"></a>
+<h4>6.7 Switching and computers</h4>
+
+<p>In 1938, Claude Shannon made extensive using of &lsquo;switching algebra&rsquo; in his analysis of electric circuits (<a href="#refS">Shannon 1938</a>). This was part of his Master of Science degree. Switching algebra was basically Boolean algebra. Shannon writes (p. 2):
+
+<blockquote>
+This calculus is shown to be exactly analogous to the Calculus of Propositions used in the symbolic study of logic.</blockquote>
+
+And (p. 8):
+
+<blockquote>
+We are now in a position to demonstrate the equivalence of this calculus with certain elementary parts of the calculus of propositions. The algebra of logic [&hellip;] originated by George Boole, is a symbolic method of investigating logical relationships.</blockquote>
+
+<p>The core ideas are fairly simple. Two switches in series will light a lamp, or allow electricity to flow, if and only if both are switched on (i.e. <i>and</i>).</p>
+
+<div align="center"><figure>
+<img src="boolean3.jpg" title="Fig. 3: Switch arrangement for &" width="40%">
+<figcaption>Figure 3: Switch arrangement for &</figcaption>
+</figure></div>
+
+<p>Two switches in parallel will allow electricity to flow if and only if at least one of them switched on (i.e. <i>or</i>).</p>
+
+<div align="center"><figure>
+<img src="boolean4.jpg" title="Fig. 4: Switch arrangement for OR" width="40%">
+<figcaption>Figure 4: Switch arrangement for &or;</figcaption>
+</figure></div>
+
+<p>Producing a schematic for <i>not </i>is a little more challenging. An easy way is just to posit a <i>not</i> switch, which when the switch is &lsquo;on&rsquo; no current flows and when the switch is &lsquo;off&rsquo; current actually does flow. (Those of a Rube Goldberg turn of mind can produce a negation switch as follows. There is an electromagnet which when &lsquo;on&rsquo; holds another switch open (by magnetism), then, when the electromagnet is &lsquo;off&rsquo; the other switch is closed by a spring (there is no magnetic force holding it open). The result is, when the electromagnetic is on, the other switch is off, and when the electromagnetic is off, the other switch is on &mdash;  that is negation or <i>not</i>.)</p>
+
+<p>Then these &lsquo;switches&rsquo; can be wired together to produce an instantiation of any Boolean formula or combination e.g. <i>P</i>&<i>Q</i>&~<i>R</i>. For more detail, please see Enderton (<a href="#refE">2001</a>, 54-ff.)</p>
+
+<p>This starts to become very important with arrival of computers and the use of binary (i.e. 0 and 1) to represent numbers (and then from numbers to everything else that could be represented in digital e.g. text, images, videos, film etc.). So-called &lsquo;logic gates&rsquo; for <i>and</i>, <i>or</i>, <i>nand</i>, <i>nor</i>, etc. were devised to implement the Boolean Operations e.g. the XOR-gate (Figure 5).</p>
+
+<div align="center"><figure>
+<img src="boolean5.jpg" title="Fig. 5: XOR gate" width="40%">
+<figcaption>Figure 5: XOR gate</figcaption>
+</figure></div>
+
+<p>To give an example of how this works. The addition of two single binary digits is as follows:
+
+<blockquote>
+0 + 0 = 0<br>
+1 + 0 = 1<br>
+0 + 1 = 1<br>
+1 + 1 = 0 (carry 1)
+</blockquote>
+
+and the truth-table for exclusive-or is:
+
+<blockquote>
+<table width="400" border="1">
+<caption><i>Table 11: Truth-table for XOR</i><br>&nbsp;</caption>
+<tr>
+<th><i>A</i></th>
+<th><i>B</i></th>
+<th><i>A</i>&oplus;<i>B</i></th>
+</tr><tr>
+<td>True</td>
+<td>True</td>
+<td>False</td>
+</tr><tr>
+<td>True</td>
+<td>False</td>
+<td>True</td>
+</tr><tr>
+<td>False</td>
+<td>True</td>
+<td>True</td>
+</tr><tr>
+<td>False</td>
+<td>False</td>
+<td>False</td>
+</tr>
+</table>
+</blockquote>
+ 
+which is the same (writing '1' for True and '0' for False and keeping in mind the need to look after the carry digit).</p>
+
+<p>It is but a short step from there to computers being ruled by Boolean logic (or Boolean algebra). We should perhaps acknowledge that a modern computer might have a billion, or more, logic gates in it. There is a little more to computers than one or two truth-tables.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="7"></a>
+<h3>7. The shortcomings of Boolean logic for use in knowledge organization</h3>
+
+<p>Boolean logic is not strong enough for every potential use in knowledge organization.</p>
+
+<p>In post-coordination, there are the familiar examples of the pairs &lsquo;Venetian blind&rsquo; and &lsquo;blind Venetian&rsquo;, and &lsquo;school library&rsquo; and &lsquo;library school&rsquo;. So, for example, if <code>school</code> and <code>library</code> are headings for pre-coordinated index entries, then either of &lsquo;school library&rsquo; or &lsquo;library school&rsquo;, assembled post-coordinately, are going to produce many false positives. The problem here is that words like &lsquo;blind&rsquo;, &lsquo;library&rsquo;, &lsquo;school&rsquo; and &lsquo;Venetian&rsquo; are each individually both nouns and adjectives and can be assembled in different ways. Essentially, &lsquo;library&rsquo;, for example, is a homograph of itself. Problems like these can be partially resolved by paying attention either to word order and proximity, or to the grammar and grammatical parts of speech. But Boolean logic on its own cannot solve this. Also, as alluded to earlier, the match between natural language and the Boolean connectives can be loose. As another example, if we invite friends <i>and</i> colleagues to our party, we would usually be inviting friends <i>or</i> colleagues (not just those individual folk who are <i>both</i> friends <i>and</i> colleagues i.e. in the intersection area of a Venn diagram) &mdash;  so <i>and</i> means <i>or</i> in cases like these. There is evidence that ordinary Users basically do not understand Boolean operations in the context of search (e.g. they think that a search for &lsquo;cats and dogs&rsquo; will produce locators for cats together with locators for dogs (i.e. <i>set-union</i> not <i>set-intersection</i>)) (<a href="#refH">Hearst 2011</a>). Also, Users simply do not use Boolean operations in their searches (except <i>and</i> very occasionally) (<a href="#refL">Lowe et al. 2018</a>). Most university libraries offer incoming freshmen instruction in Boolean search, as part of preparation for college life. But, really, once you have to instruct intelligent people how to use a basic, and presumed user-friendly, feature of a web-browser, the mission is lost. The conclusion here is that Boolean logic needs to be kept in the background for the designers and constructors of knowledge organization system, or for use by moderately expert users, and for it not to be exposed to ordinary end users (<a href="#refH">Hearst 2011</a>).</p>
+
+<p>Search engines typically rank the results they return. There is an order to the links or items returned. It may be unreasonable to expect that Boolean logic be able to rank the returns of a single search item, say &lsquo;French&rsquo;. But, if there is already a pre-coordinated, or indexed, ranking of both &lsquo;French&rsquo; and &lsquo;cooking&rsquo; separately, should Boolean logic be able to help with the ranking of the Boolean combination of &lsquo;French and cooking&rsquo;? This is related to another point. All the sets discussed earlier are perfectly definite as to what is in them and what is not. Boolean logic works well with this: it has two values True/False, 1/0, Yes/No, is-a-member/is-not-a-member. But there is the view that relevance admits of degrees. So that, for example, some items returned by a search for &lsquo;French&rsquo; are more relevant to the User&rsquo;s interest, and some less relevant. This means that the associated sets of locators are not definite in their boundaries, they are &lsquo;fuzzy&rsquo;. Boolean logic, with its 0s and 1s leads to &lsquo;crisp&rsquo; sets. If, indeed, relevance in knowledge organization needs to be fuzzy, if it needs fuzzy sets, Boolean logic is not appropriate. There have been initiatives to extend Boolean logic, for example, to weighted Boolean logic (<a href="#refS">Stock and Stock 2013b</a>). The idea here is the indexer, or index process, attaches a number or weight to the index terms and locators; for example, a particular page in a book might be indexed <code>French 0.75</code> and <code>cooking 0.25</code>. Then the searcher attaches numbers to the search input; for example, search for &lsquo;French 0.3 and cooking 0.7&rsquo; and mathematics on the index and input produces an ordered set of locators ranked by relevance. This proposal does not seem to have got very far, and it is easy to find potential reasons why. Indexing itself is unreliable (<a href="#refW">Weinberg 2009</a>). Adding numbers to that unreliability is not going to help. Searchers struggle to use ordinary Boolean search. Burdening them with additional numbers for the search task is not going to be lightening their load. Then the mathematics is akin to Ptolemy adding epicycles. It is done after the case <i>ad hoc</i> and it does not anticipate the requirements by clear theoretical insight.</p>
+
+<p>But there are deeper problems though. In logic itself, Boolean logic is not &lsquo;fine-grained&rsquo; enough to show that many valid arguments are indeed valid. This shortcoming led to the development of predicate logic by Frege, Peirce, and others (<a href="#refF">Frege 1879</a>; <a href="#refP">Peirce 1931</a>). Also, there was the proposal of lambda calculus, the calculus of anonymous functions, by Alonzo Church (<a href="#refC">Church 1940</a>). Now, the validity of arguments is not a central concern of knowledge organization. However, to engage with validity there has to be an analysis of the concepts within the propositions and arguments (indeed, Frege&rsquo;s main book has the title <i>Begriffsschrift</i>, which means &lsquo;concept writing&rsquo;).  And concepts are absolutely central to knowledge organization.  Concepts are used to classify. Concepts are the underlying structure to headers in indexing. Concepts are the meanings of search strings in search. So, knowledge organization needs adequate tools for the analysis of concepts. Boolean logic may be among those tools, but, really, it is the rather more powerful tools of lambda calculus and predicate calculus that are needed.</p>
+
+<p>This shortcoming of Boolean logic for the purposes of knowledge organization was well known to some of the pioneers of knowledge organization. Ranganathan, for example, knew that concepts, topics, subjects, or headings like &lsquo;A comparison of tropical forests with temperate forests&rsquo; could not be produced by Boolean operations. (He used &lsquo;loose assemblages&rsquo; for these (<a href="#refR">Ranganathan 1937</a>)). Ranganathan devised many connectors for combining subjects including, dissection, lamination, denudation, loose assemblage, and superimposition. This is to go further than Boolean logic.</p>
+
+<p>The conclusions urged here that are that Boolean logic is not strong enough for every potential use
+in knowledge organization, and that it is not the best for plain untrained end users. However, we
+should note that it does still remain relevant for researchers. For example, Kraft et al. (<A HREF="#refK">2015</A>, 270) write
+
+<blockquote>It has been speculated that Boolean logic is pass&eacute;, out of vogue. Yet, researchers have
+employed p-norms in the vector space model or Bayesian inference nets in the probabilistic
+model to incorporate Boolean logic. In addition, the use of Boolean logic to separate a
+collection of records into two disjoint classes has been considered, e.g., using the one-
+clause-at-a time (OCAT) methodology [<A HREF="#refS">Sp&auml;rck Jones 1971</A>]. Even now retrieval systems such
+as Dialog and web search engines such as Google allow for Boolean connectives.</blockquote></p>
+
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<!-- Endnote to be dropped according to co-editor:
+There is a mistake here made by almost all writers on the topic. Many writers assert that the facets are ‘mutually exclusive’ (across facets). They are not.  They are independent. The foci of the different facets form disjoint sets. ‘Mutually exclusive’ entails that choice of one excludes the choice of some others. That is exactly what facets do not do. For example, any place can be combined with any time. An analog is provided by the x and y coordinates on an x-y graph. Any x can be combined with any y— they are independent. It is not the case that a choice of x precludes various choices of y. The coordinates are not mutually exclusive.
+-->
+
+<a name="ack"></a>
+<h3>Acknowledgements</h3>
+
+<p>I thank the referees. They have provided insightful and valuable suggestions.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="ref"></a>
+<h3>References</h3>
+
+<a name="refA"></a>
+
+<p>Adams, Scott. 1972. &ldquo;The Way of the Innovator: Notes Toward a Prehistory of MEDLARS&rdquo;. Bulletin of the Medical Library Association 60 (October): 7.</p>
+
+<a name="refB"></a>
+
+<p>Bednarek, Alexander R. 1970. &ldquo;Boolean Algebras&rdquo;. In <i>Encyclopedia of Library and Information Science</i> DOI: 10.1081/E-ELIS 120008970, 3:369&ndash;74. Marcel Dekker.</p>
+
+<p>Boole, George. 1847. <i>The Mathematical Analysis of Logic, Being an Essay Towards a Calculus of Deductive Reasoning</i>. Originally published in Cambridge by Macmillan, Barclay, Macmillan. Reprinted in Oxford by Basil Blackwell, 1951.</p>
+
+<p>Boole, George. 1854. <i>An Investigation of The Laws of Thought on Which Are Founded the Mathematical Theories of Logic and Probabilities</i>. Originally published by Macmillan, London. Reprint by Dover, 1958.</p>
+
+<p>Burris, Stanley. 2018. &ldquo;George Boole&rdquo;. In <i>The Stanford Encyclopedia of Philosophy</i> (Summer 2018 Edition), Edward N. Zalta (Ed.), <a href="https://plato.stanford.edu/archives/sum2018/entries/boole/">https://plato.stanford.edu/archives/sum2018/entries/boole/</a>.</p>
+
+<a name="refC"></a>
+
+<p>Chan, Lois Mai, and Edward T. O&rsquo;Neill. 2010. <i>FAST: Faceted Application of Subject Terminology: Principles and Application</i>. Libraries Unlimited.</p>
+
+<p>Church, Alonzo. 1940. &ldquo;A Formulation of the Simple Theory of Types&rdquo;. <i>The Journal of Symbolic Logic</i> 5: 56&ndash;68.</p>
+
+<p>Coletti, Margaret H., and Howard L. Bleich. 2001. &ldquo;Medical Subject Headings Used to Search the Biomedical Literature&rdquo;. <i>Journal of the American Medical Informatics Association</i> 8: 317&ndash;23.</p>
+
+<a name="refD"></a>
+<a name="refE"></a>
+
+<p>Enderton, Herbert B. 2001. <i>Mathematical Introduction to Logic</i>. 2nd ed. Harcourt Academic Press.</p>
+
+<a name="refF"></a>
+
+<p>Foskett, Anthony C. 1977. <i>Subject Approach to Information</i>. 3rd ed. London: Clive Bingley.</p>
+
+<p>Frege, Gottlob. 1879. <i>Begriffsschrift</i>. Translated in Jean van Heijenoort, ed. <i>From Frege to G&ouml;del</i>. Cambridge, MA: Harvard University Press.</p>
+
+<a name="refG"></a>
+
+<p>Goyvaerts, Jan. 2020. <i>Regular-Expressions.Info</i>. 2020. <a href="https://www.regular-expressions.info/">https://www.regular-expressions.info/</a>.</p>
+
+<a name="refH"></a>
+
+<p>Hailperin, Theodore. 1984. &ldquo;Probability Logic&rdquo;. <i>Notre Dame Journal of Formal Logic</i> 25, no. 3, July 1984: 198&ndash;212.</p>
+
+<p>Hailperin, Theodore. 1986. <i>Boole&rsquo;s Logic and Probability</i>. Amsterdam: North-Holland.</p>
+
+<p>Hearst, Marti. 2011. &ldquo;10: User Interfaces and Visualization&rdquo;. In <i>Modern Information Retrieval</i>, eds. Ricardo Baeza-Yates, Berthier Ribeiro-Neto. New York: Addison-Wesley. <a href="http://people.ischool.berkeley.edu/~hearst/irbook/10/chap10.html">http://people.ischool.berkeley.edu/~hearst/irbook/10/chap10.html</a>.</p>
+
+<p>Hj&oslash;rland, Birger. 2015. &ldquo;Classical Databases and Knowledge Organization: A Case for Boolean Retrieval and Human Decision-Making During Searches&rdquo;. <i>Journal of the Association for Information Science and Technology</i> 66: 1559&ndash;1575.</p>
+
+<p>Hj&oslash;rland, Birger. 2018. &ldquo;Indexing: concepts and theory&rdquo;. <i>Knowledge Organization</i> 45, no. 7: 609-39. Also available in ISKO Encyclopedia of Knowledge Organization, eds. Birger Hj&oslash;rland and Claudio Gnoli, <a href="indexing">https://www.isko.org/cyclo/indexing</a>.</p>
+
+<p>Howson, Colin, and Peter Urbach. 1993. <i>Scientific Reasoning?: The Bayesian Approach</i>. 2nd ed. Chicago: Open Court.</p>
+
+<a name="refI"></a>
+<a name="refJ"></a>
+<a name="refK"></a>
+
+<p>Kaiser, Julius Otto. 1911. <i>Systematic Indexing</i>. London: Pitman.</p>
+
+<p>Kleene, Stephen C. 1956. &ldquo;Representation of Events in Nerve Nets and Finite Automata&rdquo;. In <i>Automata Studies</i>, 34:3&ndash;41. Annals of Mathematics Studies. Princeton, NJ: Princeton University Press.</p>
+
+<p>Kraft, Donald, Erin Colvin, Gloria Bordogna and Gabriella Pasi. 2015. &ldquo;Fuzzy Information Retrieval
+Systems: A Historical Perspective&rdquo;. In <i>Fifty Years of Fuzzy Logic and its Applications</i>, eds. Dan E.
+Tamir, Naphtali D. Rishe and Abraham Kandel. Cham: Springer, 67-96. DOI:
+10.1007/978-3-319-19683-1_15.</p>
+
+<a name="refL"></a>
+
+<p><i>Library of Congress Subject Headings</i>. 2020. <a href="http://id.loc.gov/authorities/subjects.html">http://id.loc.gov/authorities/subjects.html</a>.</p>
+
+<p><i>Library of Congress Subject Headings: Pre- vs. Post-Coordination and Related Issues</i>. 2007. <a href="https://www.loc.gov/catdir/cpso/pre_vs_post.pdf">https://www.loc.gov/catdir/cpso/pre_vs_post.pdf</a>.</p>
+
+<p>Lowe, M. Sara, Bronwen K. Maxson, Sean M. Stone, Willie Miller, Eric Snajdr, and Kathleen Hanna. 2018. &ldquo;The Boolean Is Dead, Long Live the Boolean! Natural Language versus Boolean Searching in Introductory Undergraduate Instruction". <i>College & Research Libraries</i> 79: 517-34&rdquo;. <a href="https://doi.org/10.5860/crl.79.4.517">https://doi.org/10.5860/crl.79.4.517</a>.</p>
+
+<a name="refM"></a>
+
+<p>McIlwaine, Ia. C. 1997. &ldquo;The Universal Decimal Classification: Some Factors Concerning Its Origins, Development, and Influence&rdquo;. <i>Journal of the American Society for Information Science</i> 48: 331&ndash;39.</p>
+
+<p><i>MeSH</i>. 2010. &ldquo;Medical Subject Headings - Home Page&rdquo;. 2010. <a href="https://www.nlm.nih.gov/mesh/meshhome.html">https://www.nlm.nih.gov/mesh/meshhome.html</a>.</p>
+
+<a name="refN"></a>
+<a name="refO"></a>
+
+<p>OCLC. 2011. &ldquo;Faceted Application of Subject Terminology (FAST)&rdquo;. 2011. <a href="https://www.oclc.org/research/themes/data-science/fast.html">https://www.oclc.org/research/themes/data-science/fast.html</a>.</p>
+
+<a name="refP"></a>
+
+<p>Peirce, Charles Sanders. 1931. <i>Collected Papers of C. S. Peirce</i>. 8 vols. Ed. Cambridge, MA: Harvard University Press.</p>
+
+<p><i>PubMed</i>. 2020. <a href="https://www.ncbi.nlm.nih.gov/pubmed">https://www.ncbi.nlm.nih.gov/pubmed</a>.</p>
+
+<a name="refQ"></a>
+<a name="refR"></a>
+
+<p>Ranganathan, Shiyali R. 1937. <i>Prolegomena to Library Classification</i>. 3rd ed. 1967; 1st ed. 1937. Madras: The Madras Library Association.</p>
+
+<p>Ranganathan, Shiyali R. 1952. <i>Colon Classification</i>. 4th ed. Bombay: Asia Publishing House.</p>
+
+<p>Rogers, Frank B. 1953. &ldquo;Applications and Limitations of Subject Headings: The Pure and Applied Sciences&rdquo;. In <i>The Subject Analysis of Library Materials</i>, edited by Maurice F. Tauber, 73&ndash;82. New York: Columbia University.</p>
+
+<p>Rogers, Frank B. 1960a. &ldquo;Medical Subject Headings. Preface and Introduction&rdquo;. In <i>Medical Subject Headings</i>, 1st ed., i&ndash;xix. Washington D.C.: National Library of Medicine U.S. Department of Health, Education, and Welfare.</p>
+
+<p>Rogers, Frank B. 1960b. &ldquo;Review of Taube, Mortimer. Studies in Coordinate Indexing&rdquo;. <i>Bulletin of the Medical Library Association</i> 42: 380&ndash;84.</p>
+
+<a name="refS"></a>
+
+<p>Shannon, Claude E. 1938. &ldquo;A Symbolic Analysis of Relay and Switching Circuits&rdquo;. <i>Transactions of the American Institute of Electrical Engineers</i> 57: 713&ndash;23. https://doi.org/10.1109/T-AIEE.1938.5057767.</p>
+
+<p>Sp&auml;rck Jones, Karen A. 1971. <i>Automatic Keyword Classification for Information Retrieval</i>. London:
+Butterworths.</p>
+
+<p>Stock, Wolfgang G., and Mechtild Stock. 2013a. &ldquo;Boolean Retrieval&rdquo;. In <i>Handbook of Information Science</i>, 241&ndash;52. Berlin: Walter de Gruyter.</p>
+
+<p>Stock, Wolfgang G., and Mechtild Stock. 2013b. &ldquo;Weighted Boolean Retrieval&rdquo;. In <i>Handbook of Information Science</i>, 266&ndash;73. Berlin: Walter de Gruyter.</p>
+
+<p>Stone, Marshall H. 1936. &ldquo;The Theory of Representations of Boolean Algebras&rdquo;. <i>Transactions of the American Mathematical Society</i> 40: 37&ndash;111.</p>
+
+<a name="refT"></a>
+
+<p>Taube, Mortimer. 1951. &ldquo;Functional Approach to Bibliographic Organization: A Critique and a Proposal&rdquo;. In <i>Bibliographic Organization: Fifteenth Annual Conference of the Graduate Library School, 24-29 July 1950</i>, edited by Jesse H. Shera and Margaret Egan, 57&ndash;71. Chicago: University of Chicago Press.</p>
+
+<p>Taube, Mortimer. 1953. <i>Studies in Coordinate Indexing</i>. Washington, D.C.: Documentation Incorporated.</p>
+
+<p>Taube, Mortimer, and Alberto F. Thompson. 1951. &ldquo;The Coordinate Indexing of Scientific Fields&rdquo;. Unpublished Paper Read before the Symposium on Mechanical Aids to Chemical Documentation of the Division of Chemical Literature of the American Chemical Society, Sept 4, 1951.</p>
+
+<p>Thompson, Ken. 1968. &ldquo;Programming Techniques: Regular Expression Search Algorithm&rdquo;. <i>Communications of the ACM</i> 11: 419&ndash;422. <a href="https://doi.org/10.1145/363347.363387">https://doi.org/10.1145/363347.363387</a>.</p>
+
+<a name="refU"></a>
+<a name="refV"></a>
+
+<p>Vickery, Brian C. 1953. &ldquo;Systematic Subject Indexing&rdquo;. <i>Journal of Documentation</i> 9: 48&ndash;57.</p>
+
+<p>Vickery, Brian C. 1975. <i>Classification and Indexing in Science</i>. 3rd ed. London: Butterworths.</p>
+
+<a name="refW"></a>
+
+<p>Weinberg, Bella Hass. 2009. &ldquo;Indexing: History and Theory&rdquo;. <i>Encyclopedia of Library and Information Sciences</i>, Third Edition, 2277&ndash;90.</p>
+
+<p>Wellisch, Hans H. 1991. <i>Indexing from A to Z</i>. H. W. Wilson Co.</p>
+
+<p>Whitehead, C. 1989. &ldquo;Faceted Classification in the Art and Architecture Thesaurus&rdquo;. <i>Art Documentation</i> 8: 175&ndash;77.</p>
+
+<p>Wolfram, Stephen. 2018. &ldquo;Logic, Explainability and the Future of Understanding &mdash; Stephen Wolfram Writings&rdquo;. 2018. <a href="https://writings.stephenwolfram.com/2018/11/logic-explainability-and-the-future-of-understanding/">https://writings.stephenwolfram.com/2018/11/...</a>.</p>
+
+<p><i>WorldCat.Org: The World&rsquo;s Largest Library Catalog</i>. 2020. <a href="https://www.worldcat.org/">https://www.worldcat.org/</a>.</p>
+
+<a name="refX"></a>
+<a name="refY"></a>
+<a name="refZ"></a>
+
+<p>Zafran, Enid. 2010. &ldquo;Indexing Advice (&lsquo;From A to Zafran&rsquo;)&rdquo;. <a href="http://www.indexingpartners.com/about/indexing-advice-from-a-to-zafran.html">http://www.indexingpartners.com/about/indexing-advice-from-a-to-zafran.html</a>.</p>
+
+
+
+<a name="col"></a>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<p>&nbsp;</p>
+
+<p>Visited <a href="https://www.digits.net" target="_blank"><img src="https://counter.digits.net/?counter={4d6cf964-eed9-eb54-d1b9-5e12993deea0}&template=simple" alt="Hit Counter by Digits" border="0"  /></a> times.</p>
+
+<hr>
+<p>Version 1.0, published 2020-02-25
+<br>Version 1.1 published 2022-09-06-: quote by Kraft et al. 2015 added.
+
+<p>Article category: <code><a href="index#R">Methods, approaches & philosophies</a></code></p>
+
+<p>This article (version 1.0) is also published in <i>Knowledge Organization</i>. How to cite it:
+<br>Frick&eacute;, Martin. 2021. &ldquo;Boolean logic&rdquo;. <i>Knowledge Organization</i> 48, no. 2: 177-191. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli, https://www.isko.org/cyclo/boolean </p>
+
+<p>&copy;2020 ISKO. All rights reserved.</p>
+
+</td>
+</tr>
+
+<tr>
+<td id="logo">
+</td>
+</tr>
+
+</table>
+</body>
+</html>

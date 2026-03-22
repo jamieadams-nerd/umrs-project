@@ -11,6 +11,34 @@ toc::[]
 * Review any failed checks.
 * Preserve logs according to your retention policy.
 
+=== Checking system security posture
+
+Use xref:umrs-tools:umrs-uname.adoc[umrs-uname] to verify the security posture
+of a running system.
+The tool displays live kernel security indicators, platform identity, and the
+evidence chain behind the platform trust classification — all in one interactive
+audit card.
+
+Run it before CUI processing to confirm the kernel is in the expected hardened state.
+Any red indicator or contradiction in the Kernel Security tab is a finding that
+must be resolved before asserting compliance.
+
+=== Inspecting file security attributes
+
+Use xref:umrs-tools:umrs-stat.adoc[umrs-stat] to inspect the security attributes
+of a specific file: SELinux security context, IMA/EVM integrity flag state,
+encryption source, and typed security observations.
+
+[source,shell]
+----
+umrs-stat /etc/shadow
+umrs-stat /data/cui/document.pdf
+----
+
+The Observations tab on the resulting audit card lists any security findings as
+typed data — not log strings — so they can be counted and acted on without
+parsing output.
+
 == Change control
 * Apply changes intentionally.
 * Record what changed, why, and who authorized it.

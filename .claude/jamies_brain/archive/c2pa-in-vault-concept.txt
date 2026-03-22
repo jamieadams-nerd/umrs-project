@@ -1,0 +1,351 @@
+C2pa image
+
+Absolutely—here is the authoritative, direct specification you’re looking for:
+
+⸻
+
+📘 Official C2PA Specification (current working spec)
+
+👉 C2PA Technical Specification (latest)
+	•	This is the primary spec portal
+	•	Includes:
+	•	Core spec (Content Credentials / Manifest model)
+	•	Security considerations
+	•	Implementer guidance
+	•	UX + threat modeling docs
+	•	You can download PDF versions directly from the page header  
+
+⸻
+
+🧾 If you want the raw technical deep dive
+
+👉 C2PA Specification (full architecture + data model)
+
+This is the one you want for engineering-level understanding. It defines:
+	•	Manifest structure (JUMBF-based container)
+	•	Assertions → Claims → Manifest chain
+	•	Digital signature model
+	•	Binding to media (hard vs soft binding)
+	•	Trust model (identity of signing actor)
+
+At its core, the spec describes:
+
+A system for “cryptographically verifiable information… enabling tamper-evidence and trust”  
+
+⸻
+
+🧠 Key sections you’ll care about (given your UMRS mindset)
+
+If you’re reading it like a systems/security engineer, focus here:
+
+1. Data Model (this is your “evidence record” layer)
+	•	Assertions (events)
+	•	Claims (bundled assertions)
+	•	Manifest (signed container)
+
+2. Manifest Store
+	•	Embedded in asset (JPEG, MP4, etc.)
+	•	Uses JUMBF (ISO/IEC 19566-5) boxes
+
+3. Cryptographic Binding
+	•	Hash binding to content
+	•	X.509-style cert chains
+	•	Signature per lifecycle step
+
+4. Trust Model
+	•	Trust = identity of signer + validation of chain
+	•	Not truth—only integrity + provenance validation
+
+5. Lifecycle / Chain-of-Custody
+	•	Capture → edit → publish
+	•	Each step = new signed manifest
+
+⸻
+
+🔍 One more useful entry point (overview)
+
+👉 C2PA Overview / entry page
+
+This gives you the ecosystem context and links out to all spec documents.
+
+⸻
+
+⚠️ One insight you’ll appreciate (very UMRS-aligned)
+
+C2PA explicitly states:
+
+It does not judge truth, only whether provenance is valid  
+
+That’s exactly the same philosophical boundary you’ve been drawing:
+	•	UMRS → enforceable, observable, auditable system state
+	•	C2PA → verifiable, tamper-evident content history
+
+They are structurally the same class of system, just applied to different domains.
+
+⸻
+
+If you want next, I can break down the actual binary layout (JUMBF boxes, manifest store, hashing strategy) or map it directly into a UMRS “evidence receipt / chain-of-custody” schema—that translation is extremely clean.
+
+
+Absolutely—let’s walk this cleanly and precisely. What you’re really asking is:
+
+What does a C2PA “Content Credential” actually look like internally?
+
+I’ll break this down in a way that maps directly to your UMRS / evidence / chain-of-custody mental model.
+
+⸻
+
+🧾 1. High-Level Structure (Mental Model)
+
+At its core, a C2PA asset contains a Manifest Store embedded inside the file:
+
+[ Media File (JPEG / MP4 / etc.) ]
+        │
+        └── [ Manifest Store (JUMBF container) ]
+                ├── Manifest #1 (capture)
+                ├── Manifest #2 (edit)
+                ├── Manifest #3 (publish)
+                └── ...
+
+Each Manifest is:
+	•	Self-contained
+	•	Cryptographically signed
+	•	Linked to prior manifests
+
+👉 Think: append-only forensic log embedded in the file
+
+⸻
+
+🧱 2. Core Components Inside a Manifest
+
+Each manifest is made up of three primary layers:
+
+(A) Assertions — “What happened”
+
+These are structured records describing events or metadata.
+
+Examples:
+	•	Capture info (camera, lens, timestamp)
+	•	Edit operations (crop, resize, color adjust)
+	•	AI generation flags
+	•	Location data
+	•	Author identity
+
+Example (conceptual JSON):
+
+{
+  "assertions": [
+    {
+      "type": "c2pa.capture",
+      "device": "Canon EOS R5",
+      "timestamp": "2026-03-22T14:01:22Z"
+    },
+    {
+      "type": "c2pa.edit.crop",
+      "parameters": { "x": 100, "y": 50, "w": 800, "h": 600 }
+    }
+  ]
+}
+
+
+⸻
+
+(B) Claim — “This is the statement being signed”
+
+The claim is the critical unit:
+	•	References all assertions
+	•	Includes hashes of the asset
+	•	Includes hashes of previous manifest(s)
+
+{
+  "claim": {
+    "assertion_refs": [...],
+    "asset_hash": "SHA256:abcd1234...",
+    "parent_manifest": "prev_manifest_hash"
+  }
+}
+
+👉 This is your chain-of-custody link
+
+⸻
+
+(C) Signature — “Who attests to this”
+
+Each manifest is signed:
+
+{
+  "signature": {
+    "algorithm": "ES256",
+    "certificate": "X.509 cert",
+    "signature_value": "base64..."
+  }
+}
+
+	•	Uses standard PKI (X.509)
+	•	Verifiable trust chain
+	•	Tied to device, org, or software
+
+⸻
+
+🔗 3. The Chain (This is the powerful part)
+
+Each new manifest:
+	•	References the previous one
+	•	Includes updated asset hash
+	•	Is independently signed
+
+Manifest 1 (Camera Capture)
+   ↓
+Manifest 2 (Photoshop Edit)
+   ↓
+Manifest 3 (Publish System)
+
+If anything changes:
+	•	Hash mismatch ❌
+	•	Signature fails ❌
+	•	Chain breaks ❌
+
+👉 This is tamper evidence, not prevention
+
+⸻
+
+📦 4. How It’s Stored (JUMBF Container)
+
+C2PA uses:
+
+JUMBF (JPEG Universal Metadata Box Format)
+
+This is an ISO standard container embedded in media files.
+
+Inside JUMBF:
+
+[JUMBF Superbox]
+   ├── Manifest Store
+   ├── Binary blobs (CBOR encoded)
+   ├── Signatures
+   └── Metadata blocks
+
+Important details:
+	•	Binary encoded (often CBOR, not JSON)
+	•	Structured, not ad-hoc metadata
+	•	Supports multiple manifests cleanly
+
+⸻
+
+🧬 5. Types of Assertions You’ll See
+
+This is where it gets interesting for your system design mindset.
+
+Common assertion classes:
+
+Capture Assertions
+	•	Device ID
+	•	Firmware version
+	•	Timestamp
+	•	Sensor info
+
+Action Assertions
+	•	Crop
+	•	Rotate
+	•	Filter applied
+	•	AI generation / modification
+
+Identity Assertions
+	•	Creator
+	•	Organization
+	•	Software agent
+
+Ingredient Assertions
+	•	“This image includes another asset”
+	•	Think: compositing / layering
+
+Rights Assertions
+	•	Copyright
+	•	Usage restrictions
+
+⸻
+
+🔐 6. Hash Binding (Critical Detail)
+
+C2PA binds manifests to content using:
+	•	Whole-file hashes OR
+	•	Segment-based hashing (for video, etc.)
+
+Example:
+
+hash = SHA256(media_bytes)
+
+This hash is:
+	•	Stored in the claim
+	•	Signed
+	•	Verified during validation
+
+⸻
+
+🧠 7. What This Means Conceptually (Your Domain)
+
+This is the key translation into your world:
+
+C2PA Concept	UMRS Equivalent
+Manifest	Evidence receipt / audit record
+Assertion	Event payload
+Claim	Signed audit envelope
+Signature	Provenance attestation
+Manifest chain	Chain-of-custody log
+JUMBF container	Embedded vault / sidecar
+
+
+⸻
+
+⚠️ 8. Important Constraints (Engineering Reality)
+
+You’ll appreciate these immediately:
+
+1. Metadata stripping risk
+	•	If JUMBF removed → chain gone
+	•	Mitigation: watermark linkage
+
+2. Trust ≠ truth
+	•	Valid signature ≠ truthful content
+	•	Only proves who said what happened
+
+3. Large assets (video)
+	•	Uses partial hashing strategies
+	•	More complex validation
+
+⸻
+
+🧾 9. Minimal Conceptual Example (End-to-End)
+
+Here’s a simplified lifecycle:
+
+[Capture]
+  Assertion: camera + timestamp
+  Claim: hash(image_v1)
+  Signature: Canon device key
+
+[Edit]
+  Assertion: crop
+  Claim: hash(image_v2) + link to v1
+  Signature: Photoshop key
+
+[Publish]
+  Assertion: export metadata
+  Claim: hash(image_v3) + link to v2
+  Signature: publisher cert
+
+
+⸻
+
+🚀 Final Takeaway
+
+C2PA is essentially:
+
+A cryptographically signed, append-only, embedded audit log for digital media
+
+Not conceptually different from what you’re building—just:
+	•	Standardized
+	•	Media-focused
+	•	Interoperable across vendors
+
+⸻

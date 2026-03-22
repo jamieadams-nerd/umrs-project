@@ -2,23 +2,136 @@
 :toc: left
 :toclevels: 2
 
-== Current Milestone
+UMRS follows a named-release model. The first public release is codenamed *Cantrip* — the
+smallest repeatable unit of power. Every crate in the workspace is currently at v0.1.0.
+APIs are not stable. Expect changes.
 
-What is working now:
+== Current State — v0.1.0 Pre-Release
 
-// Document the capabilities that are stable and available in the current milestone.
-// Include: tool names, crate status, supported platforms, key APIs.
+The workspace is under active development. The crates below are functional and testable
+today. No formal release artifact has been cut.
 
-== Planned Features
+=== Library Crates
 
-What is coming in the next milestone:
+`umrs-selinux`::
+The most mature crate. Provides clean-room, strongly-typed Rust bindings for SELinux
+security contexts, MLS/MCS labels, `CategorySet` set-theory enforcement, `SecureDirent`
+provenance-verified directory traversal, and posture assessment. Thirteen integration test
+files, eight examples.
 
-// Document features that are in progress or scheduled for the next milestone.
-// Include: crates under development, planned API surface, operational capabilities.
+`umrs-platform`::
+OS trust-tier detection, kernel posture probing, CPU extension detection (AES-NI, SHA-NI,
+CET, SMEP/SMAP, and others), and security signal evaluation. Nine integration test files,
+eight examples.
+
+`umrs-core`::
+Shared types, error infrastructure, and common utilities used by all UMRS crates. Two
+integration test files, seven examples.
+
+`umrs-ui`::
+Shared terminal UI library built on `ratatui`. Provides the audit-card template, theme
+support, key mapping, and dialog infrastructure used by interactive tools. Nine integration
+test files, one example.
+
+`umrs-hw`::
+Hardware capability detection — CPU features and cryptographic hardware support. One test
+file, one example. Early-stage.
+
+`umrs-crypto`::
+Cryptographic posture detection. Stub. No tests or examples yet.
+
+`umrs-apparmor`::
+AppArmor support. Stub. No tests or examples yet.
+
+=== Tool Binaries
+
+`umrs-ls`::
+Security-enriched directory listing. Displays SELinux labels, extended attributes, and
+security observations alongside standard file metadata. Functional CLI, no formal packaging.
+
+`umrs-uname`::
+OS detection and kernel security posture audit card. Runs the `umrs-platform` detection
+pipeline and displays OS identity, kernel security indicators, and trust evidence in an
+interactive ratatui audit card. Replaces the prototype `umrs-state` TUI.
+
+`umrs-stat`::
+File security audit card. Reads a file's security attributes via `SecureDirent` and displays
+identity, SELinux label, inode security flags, and typed security observations. Supports
+`--json` output (reserved for a future implementation phase).
+
+`umrs-state`::
+System state introspection tool. Prototype — being superseded by `umrs-uname`. Interface
+and output format will change.
+
+`umrs-logspace`::
+Audit trail and structured logging infrastructure. Prototype. API and output format will
+change.
+
+=== Documentation
+
+A full Antora documentation site ships with the source tree. Modules include:
+
+* **ROOT** — project history and foundations
+* **security-concepts** — Bell-LaPadula, reference monitor, MLS/MCS, CUI handling
+* **devel** — developer guide, high-assurance patterns, API documentation
+* **operations** and **deployment** — operator runbooks and platform setup
+* **reference** — control mappings, glossary, catalog
+* **cryptography** — FIPS posture and cryptographic design
+* **ai-transparency** — agent roles, knowledge provenance, workflow documentation
+* **cui-labeling** — CUI category registry, MCS architecture, enforcement model (in progress)
+
+== Cantrip — First Named Release
+
+Cantrip is the first public milestone. Work is in progress. No release date is set.
+
+Cantrip will deliver:
+
+* CUI labeling on RHEL 10 using SELinux MCS in *targeted policy* mode
+* `umrs-ls` — security-enriched directory listing, release-quality
+* `umrs-state` — renamed, polished, and stabilized system state tool
+* `umrs-stat` — file security report card (renamed from the current `umrs-file-stat` prototype)
+* RHEL 10 deployment guide
+* Contributor guide with annotation requirements
+
+NOTE: IMA/EVM integrity measurement and MLS policy mode are not included in Cantrip.
+Those capabilities are planned for later named releases.
 
 == Known Limitations
 
-Current limitations to be aware of:
+The following limitations apply today and will carry forward until explicitly noted as
+resolved in future release notes.
 
-// Document gaps, prototype status, unsupported configurations, and anything
-// an operator or developer needs to know before relying on current functionality.
+All v0.1.0 — no stable API::
+Every crate is pre-1.0. Types, function signatures, and module paths will change without
+notice. Do not take a dependency on any UMRS crate for production use yet.
+
+SELinux is required for most features::
+`umrs-selinux`, `umrs-ls`, and `umrs-state` require a system with SELinux present and
+enabled. On systems where SELinux is absent or disabled, the crates fail closed and return
+`None` or an appropriate error — they do not guess or silently degrade.
+
+Targeted policy only — no MLS enforcement::
+CUI labeling uses SELinux MCS within targeted policy mode. MLS policy mode, which provides
+full Bell-LaPadula enforcement at the kernel level, is planned but not yet implemented.
+Category-based separation works now. Multi-level clearance enforcement does not.
+
+Ubuntu support is platform detection only::
+`umrs-platform` can detect OS trust tier, CPU extensions, and cryptographic hardware on
+Ubuntu. CUI labeling and SELinux-dependent features are not available on Ubuntu. Ubuntu is
+the modeling and development platform; RHEL 10 is the compliance target.
+
+No RPM or deb packaging::
+Installation is user-local via `~/.local/bin` and XDG paths. Native packages are planned
+but not yet built.
+
+No CI/CD pipeline::
+Automated build, test, and release pipelines are planned. Currently, all builds and tests
+are run manually using `cargo xtask`.
+
+No assessment engine::
+The planned assessment engine — which will compare observed posture against a saved baseline
+and flag deviations as findings — is in design. It is not implemented in any release.
+
+CAUTION: Do not use any v0.1.0 crate as a compliance artifact. UMRS provides visibility
+and evidence tooling, not a certifying authority. Posture data from UMRS tools supports
+human review — it does not substitute for it.

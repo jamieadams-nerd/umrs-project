@@ -1,0 +1,956 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head profile="http://dublincore.org/documents/2007/11/05/dc-html/">
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>Nippon Decimal Classification (IEKO)</title>
+<link rel="stylesheet" type="text/css" href="../isko.css" />
+<link rel="schema.DCTERMS" href="http://purl.org/dc/terms/" />
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:url" content="https://www.isko.org/cyclo/ndc" />
+<meta name="twitter:title" content="Nippon Decimal Classification (ISKO Encyclopedia of KO)" />
+<meta property="og:image" content="https://www.isko.org/cyclo/fujikura.jpg" />
+<meta name="twitter:description" content="The Nippon Decimal Classification (NDC) is a standard library classification in Japan and is adopted by almost all kinds of libraries. The NDC was originally developed by Kiyoshi Mori (1906-1990), and it has been maintained and revised by the Committee of Classification of the Japan Library Association since 1948. Following a brief history of the NDC, describes characteristics of schedules, notation and classification codes. Two electronic versions of the NDC, i.e., Machine Readable Data File (MRDF) and Linked Data format are explained." />
+
+<meta name="DCTERMS.title" content="Nippon Decimal Classification (NDC)" />
+<meta name="DCTERMS.creator" content="Keiichi Fujikura" />
+<meta name="DCTERMS.issued" content="2020" />
+<meta name="DCTERMS.relation.ispartof" content="ISKO Encyclopedia of Knowledge Organization" />
+<meta name="DCTERMS.ispartof" content="ISKO Encyclopedia of Knowledge Organization" />
+<meta name="DCTERMS:bibliographicCitation" content="ISKO Encyclopedia of Knowledge Organization, eds. Birger Hjorland and Claudio Gnoli" />
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="001.012">
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="025.4">
+<meta name="DCTERMS.subject.keyword" content="Kiyoshi Mori">
+<meta name="DCTERMS.subject.keyword" content="Japan">
+<meta name="DCTERMS.subject.keyword" content="bibliographic classification">
+<meta name="DCTERMS.type" content="Text" />
+<meta name="DCTERMS.format" content="text/html" />
+<meta name="DCTERMS.identifier" content="https://www.isko.org/cyclo/ndc" />
+
+<style>
+a {text-decoration: none;}
+a:hover {text-decoration:underline;}
+table td, table th { padding: 3px; }
+</style>
+
+</head>
+<body>
+
+<a name="top"></a>
+
+<table>
+
+<tr>
+<td id="isko"><h1>I S K O</h1></td>
+<td id="banner"><h2><a href="index.html" style="text-decoration:none;">Encyclopedia of Knowledge Organization</h2></a></td>
+</tr>
+
+<tr>
+<td id="navigation">
+<a href="../index.php">home</a>
+<a href="../about.html">about ISKO</a>
+<a href="../join.html">join ISKO</a>
+<a href="../ko.html"><cite>Knowledge Organization</cite> journal</a>
+<a href="../events.html">ISKO events</a>
+<a href="../chapters.html">ISKO chapters</a>
+<a href="../people.html">ISKO people</a>
+<a href="../pubs.html">ISKO publications</a>
+<a href="index.html">Encyclopedia</a>
+<a href="../lit.html">KO literature</a>
+<a href="../inst.html">KO institutions</a>
+<a href="http://bartoc.org/" title="link to BARTOC">&#8663; KOS registry</a>
+<a href="https://www.isko-mms.net/" title="access-account required">&#128274; members</a>
+<a href="../contact.html">contact us</a>
+</td>
+<td id="content" rowspan="2">
+
+<a class="menu" href="authors#h">edited by Birger Hj&oslash;rland</a> <a class="menu" href="authors#g">and Claudio Gnoli</a>
+
+<p>&nbsp;
+
+<div itemscope itemtype="http://schema.org/Article">
+
+<h2 itemprop="headline">Nippon Decimal Classification (NDC)</h2>
+
+<blockquote>
+by <a itemprop="author" href="authors#f" style="text-decoration:underline">Keiichi Fujikura</a>
+
+<p>Table of contents:
+<br><a href="#1">1. Introduction</a>
+<br><a href="#2">2. Brief history</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#2.1">2.1 Early editions (1929-1949)</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#2.2">2.2 JLA editions (1950-1986)</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#2.3">2.3 Present day (1986-)</a>
+<br><a href="#3">3. Classification schedules</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#3.1">3.1 Main classes</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#3.2">3.2 Division, section and subsection</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#3.3">3.3 Auxiliary tables:</a> <a href="#3.3.1">3.3.1 General division tables</a>; <a href="#3.3.2">3.3.2 Proper division tables</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#3.4">3.4 Alternative locations</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#3.5">3.5 Disused entry</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#3.6">3.6 Relative Index</a>
+<br><a href="#4">4. Notation system</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#4.1">4.1 Irregular hierarchical structure</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#4.2">4.2 Number building</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#4.3">4.3 Classification code</a>
+<br><a href="#5">5. Electronic versions</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#5.1">5.1 MRDF</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#5.2">5.2 NDC-LD (Linked Data) and NDC Data</a>
+<br><a href="#6">6. Conclusion</a>
+<br><a href="#ack">Acknowledgments</a>
+<br><a href="#ref">References</a>
+<br><a href="#col">Colophon</a>
+
+<p itemprop="abstract"><strong>Abstract</strong>:
+<br>The Nippon Decimal Classification (NDC: &#26085;&#26412;&#21313;&#36914;&#20998;&#39006;&#27861;) is a standard library classification in Japan and is adopted by almost all kinds of libraries. The NDC was originally developed by Kiyoshi Mori (1906-1990), and it has been maintained and revised by the Committee of Classification of the Japan Library Association since 1948. Following a brief history of the NDC, describes characteristics of schedules, notation and classification codes. Two electronic versions of the NDC, i.e., Machine Readable Data File (MRDF) and Linked Data format are explained.</p>
+
+</blockquote>
+
+<span itemprop="articleBody">
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="1"></a>
+<h3 itemprop="articleSection">1. Introduction</h3>
+
+<p>The Nippon Decimal Classification (NDC: &#26085;&#26412;&#21313;&#36914;&#20998;&#39006;&#27861; in Japanese; pronounced as &ldquo;Nihon-Jisshin-Bunruiho&rdquo;) is regarded as a standard &rarr; <a href="library_classification">library classification system</a> in Japan. The first edition was developed in 1929 by Kiyoshi Mori (1906-1990), and the latest is the &ldquo;Newly 10th edition&rdquo; of 2014 revised by the Committee of Classification of the Japan Library Association (JLA) (<a href="#refM">Mori and JLA 2014</a>).</p>
+
+<p>Before the advent of NDC or sometime after it, almost all of libraries in Japan had used their own classifications. When the NDC became standardized after World War II, the number of users began to increase. <a href="#2">Section 2</a> introduces a brief history of the NDC (and other classifications used in Japan).</p>
+
+<p>The NDC is an enumerative classification with decimal &rarr; <a href="notation">notation</a>, but the system allows number buildings in places using auxiliary tables for subdivision. The notation possesses mnemonic qualities about forms, geographic treatments, languages, periods and so on. As a decimal notation system the NDC is akin to the Dewey Decimal Classification (DDC), but the order of main classes stemmed from Cutter's Expansive Classification (EC). The NDC was a product of the deviser&rsquo;s careful study of foreign classification at the time. <a href="#3">Section 3</a> explains the structure of the NDC and its divisions. <a href="#4">Section 4</a> explains its notation and classification codes.</p>
+
+<p>Today, the NDC have two kinds of electronic version. One is the Machine-Readable Data File (MRDF) format and the other is the Linked Data format (NDC-LD and NDC Data) for experimental use. <a href="#5">Section 5</a> gives an outline of these two versions.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2"></a>
+<h3 itemprop="articleSection">2. Brief history</h3>
+
+<p>The history of the NDC and its usage at that time will be explained in three periods (<a href="#refF">Fujikura 2018</a>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2.1"></a>
+<h4 itemprop="articleSection">2.1 Early editions (1929-1949)</h4>
+
+<p>In August 1929 Kiyoshi Mori published the first edition of <i>The Nippon Decimal Classification</i> (<a href="#refM">Mori 1929</a>) with the help of the Mamiya-shoten (F. Mamiya &amp; Company: &#38291;&#23470;&#21830;&#24215;) where he worked as a staff member at the time. It based on the draft in 1928 (<a href="#refM">Mori 1928a; 1928b</a>). Mori revised the NDC in cooperation with experts on each subject. During about 15 years from the 1st edition, the NDC became the 5th edition (1942).</p>
+
+<p>The statistics about users of those editions only appeared in introduction to each edition. The NDC2 shows 25 libraries adopt the NDC (<a href="#refM">Mori 1931</a>), and "over 100 and more" in the NDC3 (<a href="#refM">Mori 1935</a>). But what is written in the NDC5: &ldquo;Today, we think perhaps the numbers of libraries using the NDC for organization of books are more than 1,000&rdquo; (<a href="#refM">Mori 1942</a>) is a little suspicious.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2.2"></a>
+<h4 itemprop="articleSection">2.2 JLA editions (1950-1986)</h4>
+
+<p>After World War II, the Japanese library world reconstructed under advices by CIE (Civil Information and Educational Section) of the GHQ/SCAP. From 1947 to 1948, CIE discussed with Japanese librarians about standardizing library classification and reached two decisions. (1) CIE&rsquo;s Library Officer Paul J. Burnette decided to adopt outline of the NDC to <i>The Guideline to School Libraries</i> (<a href="#refM">Ministry of Education 1948</a>). (2) CIE&rsquo;s Special Consultant Robert B. Downs recommended the use of the NDC for the classification of Japanese books in the National Diet Library on his report (<a href="#refD">Downs 1948</a>). As a result, the NDC has acquired the status of a standard classification in Japan. In responding to those discussions, the Japan Library Association (JLA) set up the Committee of Classification in 1948 and Shuko Kato (1895-1981), the president of the National Library became the first chairman. Mori too became a member of the committee, and often advised the revision of the NDC.</p>
+
+<p>The newly 6th edition of the NDC was published by the JLA in 1950 (<a href="#refM">Mori and JLA 1950</a>). The word "newly" capped for revised edition by the JLA, and it continues to today. The NDC was revised to the 7th (1961) and 8th (1978).</p>
+
+<p>From the 1950s to the 1970s, Japanese libraries (public-, school- and academic libraries) had increased in number, and many of them adopted the NDC (containing old editions).</p>
+
+<p>According to surveys from the JLA in 1964, 92% public libraries, 68% university libraries, and 89% college libraries adopted the NDC (<a href="#refM">Mori 1966</a>), and in 1972, 95% public libraries and 83% university libraries, and 98% college libraries adopted the NDC (<a href="#refM">Mori 1982</a>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2.3"></a>
+<h4 itemprop="articleSection">2.3 Present day (1986-)</h4>
+
+<p>In 1986, Mori retired from the committee at the age of 80, and he died in 1990. At the time, JLA had begun to revise the 9th edition (1995). And in 2014, the latest 10th edition was published.</p>
+
+<p>Presently, almost all Japanese library use the NDC. In public libraries 99.4% use all books in any languages. In university, 92.1% use the NDC, because some libraries using the DDC or other classification systems for foreign books (<a href="#refO">Omagari 2008</a>).</p>
+
+<p>School libraries have no complete survey of libraries, but a survey on sample libraries shows using the NDC in most schools&rsquo; libraries (<a href="#refJ">Japan School Library Association 2008</a>). This survey shows the usage of the NDC in primary schools reaching 89.7%, in junior high schools 92.7% and high schools 99.3%.</p>
+
+<p>There are no statistical surveys for special libraries, but directories show many libraries using the NDC (<a href="#refJ">Japan Special Libraries Association 2018</a>). Libraries not using the NDC uses (1) their own classifications (2) DDC (especially for holding many foreign books) (3) UDC (especially at special libraries or collections), and (4) specialized classification system for specific subjects or collections (e.g. medical library).</p>
+
+<p>The NDC is given to students at a lecture on classification at most universities&rsquo; course for librarians in Japan.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3"></a>
+<h3 itemprop="articleSection">3. Classification schedules</h3>
+
+<p>The NDC uses three-digit Arabic numerals to classify subjects, and for specific subdivisions a decimal point is inserted between the third and the fourth digits as the DDC does.</p>
+
+<p>The first division level (classes into ten) is called <i>class</i> or <i>main class</i>, the second level (hundred) is <i>division</i>, and the third (thousand) is <i>section</i>. A subdivision following a decimal point is called <i>subsection</i>.</p>
+
+<blockquote>
+<table>
+<tr><td>Class</td><td><code>0</code></td><td>General Works</td></tr>
+<tr><td>Division</td><td><code>01</code></td><td>&nbsp;&nbsp;&nbsp;Library and information science</td></tr>
+<tr><td>Section</td><td><code>014</code></td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Technical processes in libraries</td></tr>
+<tr><td>Subsection</td><td><code>014.4</code></td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Indexing: Classification, Subject headings, Subject analysis</td></tr>
+<tr><td></td><td><code>014.45</code></td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Standard classification</td></tr>
+</table>
+</blockquote>
+
+<!-- Fig. 1: Example of a hierarchical structure of the NDC -->
+
+<p>The NDC schedules and tables are expressed in Japanese, but captions of main classes, divisions and sections are accompanied by English ones (or other languages for the name of persons or nations).</p>
+
+<p>In the example above, captions of <code>0</code> to <code>014</code> are quoted from the original NDC 10th edition (abbreviated to &ldquo;NDC10&rdquo;), and those of <code>014.4</code> to <code>.45</code> are translated by the author of this article.</p>
+
+<p>In the 1920s the original editor Mori studied classification schemes used abroad, such as the EC, the DDC (Mori used the 12th edition), the Library of Congress Classification, and the Universal Classification (by Du Dingyou in China, 1922). He concluded that the order of main classes of the EC was the best. He also valued the device of mnemonics, auxiliary tables and relative index recognized in the DDC. Thus, the idea occurred to him that arrangement of subjects based on Cutter&rsquo;s EC with a decimal notation system would be possible.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.1"></a>
+<h4 itemprop="articleSection">3.1 Main Classes</h4>
+
+<p>Below is a comparison of main classes among the DDC (<a href="#refD">Dewey 1927</a>), the EC (<a href="#refC">Cutter 1891-1893</a>) and the NDC.</p>
+
+<p>The first ten main classes of the NDC are derived from those of Cutter&rsquo;s EC. The class <code>0</code> means &ldquo;General works&rdquo; but contains some interdisciplinary subjects. In the first draft of 1928 Mori placed literature at class <code>8</code> and language at <code>9</code>, but he inverted the order in the NDC 1st edition as in the EC. The order of main classes of the NDC has been kept unchanged through all editions, but class names were sometimes changed either in Japanese terms or in English ones.</p>
+
+<blockquote>
+<table>
+<tr>
+<td>DDC12 (1927)
+<p>
+<code>000</code> General Works<br>
+<code>100</code> Philosophy<br>
+<code>200</code> Religion<br>
+<code>300</code> Sociology<br>
+<code>400</code> Philology<br>
+<code>500</code> Pure Science<br>
+<code>600</code> Useful Arts<br>
+<code>700</code> Fine Arts<br>
+<code>800</code> Literature<br>
+<code>900</code> History</p>
+</td><td>
+EC (1891)
+<p>
+<code>A&nbsp;&nbsp;</code> General works<br>
+<code>B-D</code> Philosophy/Religions<br>
+<code>E-G</code> History/Geography<br>
+<code>H-K</code> Social sciences<br>
+<code>L-Q</code> Natural sciences<br>
+<code>R-U</code> Arts<br>
+<code>V-W</code> Music/Graphic<br>
+<code>X&nbsp;&nbsp;</code> Language<br>
+<code>Y&nbsp;&nbsp;</code> Literature<br>
+<code>Z&nbsp;&nbsp;</code> Book arts</p>
+</td><td>
+NDC1 (1929)
+<p>
+<code>0</code> General Works<br>
+<code>1</code> Spiritual sciences <br>
+<code>2</code> Historical sciences <br>
+<code>3</code> Social sciences<br>
+<code>4</code> Natural science<br>
+<code>5</code> Technology <br>
+<code>6</code> Productive arts <br>
+<code>7</code> Fine arts <br>
+<code>8</code> Science of Language<br>
+<code>9</code> Literature</p>
+</td><td>
+NDC10 (2014)
+<p>
+<code>0</code> General works<br>
+<code>1</code> Philosophy<br>
+<code>2</code> History<br>
+<code>3</code> Social sciences<br>
+<code>4</code> Natural sciences<br>
+<code>5</code> Technology<br>
+<code>6</code> Industry<br>
+<code>7</code> The arts<br>
+<code>8</code> Language<br>
+<code>9</code> Literature</p>
+</td></tr>
+</table></blockquote>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.2"></a>
+<h4 itemprop="articleSection">3.2 Division, section and subsection</h4>
+
+<p>The order of classes in the first division is similar to that of the EC, but subclasses are arranged by giving priority to matters in Japan (e.g., Japan is located first in the fields of history, geography and language). In addition, subclasses are divided according to conditions of Japanese society, custom and culture. For example, Buddhism in the DDC is located at <code>294</code> as a section, while in the case of EC it is not found even in the most detailed &ldquo;Sixth classification&rdquo; table (but one can find Buddhism under <code>Bz</code> &ldquo;local religion&rdquo; by using the index). The NDC locates Buddhism at <code>180</code> in its division.</p>
+
+<p>The second outline of NDC10 follows (English class names are used as they stand in the main NDC10 schedule).</p>
+
+<blockquote>
+
+<p>
+<code>000</code> General works<br>
+<code>010</code> &nbsp;&nbsp;&nbsp;Libraries. Library and information sciences<br>
+<code>020</code> &nbsp;&nbsp;&nbsp;Books. Bibliography<br>
+<code>030</code> &nbsp;&nbsp;&nbsp;General encyclopedias<br>
+<code>040</code> &nbsp;&nbsp;&nbsp;General collected essays<br>
+<code>050</code> &nbsp;&nbsp;&nbsp;General serial publications<br>
+<code>060</code> &nbsp;&nbsp;&nbsp;General societies<br>
+<code>070</code> &nbsp;&nbsp;&nbsp;Journalism. Newspapers<br>
+<code>080</code> &nbsp;&nbsp;&nbsp;General collections<br>
+<code>090</code> &nbsp;&nbsp;&nbsp;Rare books. Local collections. Special collections</p>
+
+<p><code>100</code>	Philosophy<br>
+<code>110</code> &nbsp;&nbsp;&nbsp;Special treatises on philosophy<br>
+<code>120</code> &nbsp;&nbsp;&nbsp;Oriental thought<br>
+<code>130</code> &nbsp;&nbsp;&nbsp;Western philosophy<br>
+<code>140</code> &nbsp;&nbsp;&nbsp;Psychology<br>
+<code>150</code> &nbsp;&nbsp;&nbsp;Ethics. Morals</br>
+<code>160</code>	Religion<br>
+<code>170</code> &nbsp;&nbsp;&nbsp;Shinto<br>
+<code>180</code> &nbsp;&nbsp;&nbsp;Buddhism<br>
+<code>190</code> &nbsp;&nbsp;&nbsp;Christianity</p>
+
+<p>
+<code>200</code>	General history<br>
+<code>210</code> &nbsp;&nbsp;&nbsp;General history of Japan<br>
+<code>220</code> &nbsp;&nbsp;&nbsp;General history of Asia<br>
+<code>230</code> &nbsp;&nbsp;&nbsp;General history of Europe<br>
+<code>240</code> &nbsp;&nbsp;&nbsp;General history of Africa<br>
+<code>250</code> &nbsp;&nbsp;&nbsp;General history of North America<br>
+<code>260</code> &nbsp;&nbsp;&nbsp;General history of South America<br>
+<code>270</code> &nbsp;&nbsp;&nbsp;General history of Oceania. General history of Polar regions<br>
+<code>280</code> &nbsp;&nbsp;&nbsp;General biography<br>
+<code>290</code> &nbsp;&nbsp;&nbsp;General geography. Description and travel</p>
+
+<p>
+<code>300</code>	Social sciences<br>
+<code>310</code> &nbsp;&nbsp;&nbsp;Political science<br>
+<code>320</code> &nbsp;&nbsp;&nbsp;Law<br>
+<code>330</code> &nbsp;&nbsp;&nbsp;Economics<br>
+<code>340</code> &nbsp;&nbsp;&nbsp;Public finance<br>
+<code>350</code> &nbsp;&nbsp;&nbsp;Statistics<br>
+<code>360</code> &nbsp;&nbsp;&nbsp;Society<br>
+<code>370</code> &nbsp;&nbsp;&nbsp;Education<br>
+<code>380</code> &nbsp;&nbsp;&nbsp;Customs,folklore and ethnology<br>
+<code>390</code> &nbsp;&nbsp;&nbsp;National defence. Military science</p>
+
+<p>
+<code>400</code>	Natural sciences<br>
+<code>410</code> &nbsp;&nbsp;&nbsp;Mathematics<br>
+<code>420</code> &nbsp;&nbsp;&nbsp;Physics<br>
+<code>430</code> &nbsp;&nbsp;&nbsp;Chemistry<br>
+<code>440</code> &nbsp;&nbsp;&nbsp;Astronomy. Space sciences<br>
+<code>450</code> &nbsp;&nbsp;&nbsp;Earth sciences<br>
+<code>460</code> &nbsp;&nbsp;&nbsp;Biology<br>
+<code>470</code> &nbsp;&nbsp;&nbsp;Botany<br>
+<code>480</code> &nbsp;&nbsp;&nbsp;Zoology<br>
+<code>490</code>	Medical sciences</p>
+
+<p>
+<code>500</code>	Technology. Engineering<br>
+<code>510</code> &nbsp;&nbsp;&nbsp;Construction. Civil engineering<br>
+<code>520</code> &nbsp;&nbsp;&nbsp;Architecture. Building<br>
+<code>530</code> &nbsp;&nbsp;&nbsp;Mechanical engineering<br>
+<code>540</code> &nbsp;&nbsp;&nbsp;Electrical engineering<br>
+<code>550</code> &nbsp;&nbsp;&nbsp;Maritime engineering<br>
+<code>560</code> &nbsp;&nbsp;&nbsp;Metal and mining engineering<br>
+<code>570</code> &nbsp;&nbsp;&nbsp;Chemical technology<br>
+<code>580</code> &nbsp;&nbsp;&nbsp;Manufactures<br>
+<code>590</code> Domestic arts and sciences</p>
+
+<p>
+<code>600</code>	Industry and commerce<br>
+<code>610</code> &nbsp;&nbsp;&nbsp;Agriculture<br>
+<code>620</code> &nbsp;&nbsp;&nbsp;Horticulture<br>
+<code>630</code> &nbsp;&nbsp;&nbsp;Sericulture. Silk industry<br>
+<code>640</code> &nbsp;&nbsp;&nbsp;Animal husbandry<br>
+<code>650</code> &nbsp;&nbsp;&nbsp;Forestry<br>
+<code>660</code> &nbsp;&nbsp;&nbsp;Fishing industry. Fisheries<br>
+<code>670</code> &nbsp;&nbsp;&nbsp;Commerce<br>
+<code>680</code> &nbsp;&nbsp;&nbsp;Transportation services<br>
+<code>690</code> &nbsp;&nbsp;&nbsp;Communication services</p>
+
+<p>
+<code>700</code>	The arts. Fine arts<br>
+<code>710</code> &nbsp;&nbsp;&nbsp;Sculpture. Plastic arts<br>
+<code>720</code> &nbsp;&nbsp;&nbsp;Painting. Pictorial arts<br>
+<code>730</code> &nbsp;&nbsp;&nbsp;Engraving<br>
+<code>740</code> &nbsp;&nbsp;&nbsp;Photography and photographs<br>
+<code>750</code> &nbsp;&nbsp;&nbsp;Industrial arts<br>
+<code>760</code> &nbsp;&nbsp;&nbsp;Music<br>
+<code>770</code> &nbsp;&nbsp;&nbsp;Theater<br>
+<code>780</code> Sports and physical training<br>
+<code>790</code> Accomplishments and amusements</p>
+
+<p>
+<code>800</code>	Language<br>
+<code>810</code> &nbsp;&nbsp;&nbsp;Japanese<br>
+<code>820</code> &nbsp;&nbsp;&nbsp;Chinese<br>
+<code>830</code> &nbsp;&nbsp;&nbsp;English<br>
+<code>840</code> &nbsp;&nbsp;&nbsp;German<br>
+<code>850</code> &nbsp;&nbsp;&nbsp;French<br>
+<code>860</code> &nbsp;&nbsp;&nbsp;Spanish<br>
+<code>870</code> &nbsp;&nbsp;&nbsp;Italian<br>
+<code>880</code> &nbsp;&nbsp;&nbsp;Russian<br>
+<code>890</code> &nbsp;&nbsp;&nbsp;Other languages</p>
+
+<p>
+<code>900</code>	Literature<br>
+<code>910</code> &nbsp;&nbsp;&nbsp;Japanese literature<br>
+<code>920</code> &nbsp;&nbsp;&nbsp;Chinese literature<br>
+<code>930</code> &nbsp;&nbsp;&nbsp;English and American literature<br>
+<code>940</code> &nbsp;&nbsp;&nbsp;German literature<br>
+<code>950</code> &nbsp;&nbsp;&nbsp;French literature<br>
+<code>960</code> &nbsp;&nbsp;&nbsp;Spanish literature<br>
+<code>970</code> &nbsp;&nbsp;&nbsp;Italian literature<br>
+<code>980</code> &nbsp;&nbsp;&nbsp;Russian literature<br>
+<code>990</code> &nbsp;&nbsp;&nbsp;Literatures of other languages</p>
+
+</blockquote>
+
+<p>Some class numbers have mnemonic qualities. For example, the number <code>1</code> often stands for Japan such as: <code>210</code> History of Japan; <code>910</code> Japanese literature; <code>051</code> Japanese serial publications; and <code>721</code> Japanese painting.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.3"></a>
+<h4 itemprop="articleSection">3.3 Auxiliary tables</h4>
+
+<p>Like many other book classification systems, the NDC has some auxiliary tables for subdivisions. In the NDC10, they are divided into two groups: (1) general division tables and (2) proper division tables.</p>
+
+<p>Those subdivision numbers are added after any class number or instructed. If the last digit of the class number to which a subdivision is to be made ends with <code>0</code> (at main class or division), remove the <code>0</code> and then add the subdivision number.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.3.1"></a>
+<h5 itemprop="articleSection">3.3.1 General division tables</h5>
+
+<p>General divisions comprise 4 tables: form division (Table I); geographic division (Table I-a); sea division (Table II); and language division (Table III). </p>
+
+<p>The form division needs to add <code>-0</code> and something after any class number. </p>
+
+<p>The geographic division needs to add after a form division number <code>-02</code> historic/geographic treatment&rdquo; (or add it directly when instructed). For example:</p>
+
+<blockquote>
+
+<p><code>143</code> Developmental psychology + <code>-<u>033</u></code> Dictionary. Glossary
+<br>= <code>143.<u>033</u></code> Dictionary of developmental psychology</p>
+
+<p><code>140</code> Psychology &rarr; (remove <code>0</code>) &rarr; <code>14</code> Psychology + <code>-<u>033</u></code> Dictionary. Glossary
+<br>= <code>14<u>0.33</u></code> Dictionary of psychology</p>
+
+<p><code>013.1</code> Librarian + <code>-<u>02</u></code> (from form division number) + <code>-<u>1</u></code> Japan
+<br>= <code>013.1<u>021</u></code> Librarians in Japan</p>
+
+<p><code>016.2</code> Public Library (*add geographic division) + <code>-<u>136</u></code> Tokyo
+<br>= <code>016.2<u>136</u></code> Public libraries in Tokyo</p>
+
+</blockquote>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.3.2"></a>
+<h5 itemprop="articleSection">3.3.2 Proper division tables</h5>
+
+<p>Proper divisions comprise 10 tables: e.g., subdivisions for religious topics of Buddhism sects (under <code>188</code>) as Table 2; Subdivision of individual languages (under <code>810/890</code>) as Table 9; and Subdivision of individual literatures (under <code>910/990</code>) as Table 10.</p>
+
+<p>The usage of these tables is simple as a subdivision number has only to be added to the end of the class number. For example:
+
+<blockquote>
+
+<p><code>188.8</code> Zen + <code>-<u>5</u></code> Temple, monk, commandment (from Table 2)
+<br>= <code>188.8<u>5</u></code> Temple of Zen (or Monks of Zen)</p>
+
+<p><code>800</code> Language + <code>-<b>1</b></code> Japanese (from language division) + <code>-3</code> Dictionary (from Table 9)
+<br>= <code>8<u><b>1</b>3</u></code> Japanese dictionary</p>
+
+<p><code>800</code> Language + <code>-<u><b>493</b></u></code> Dutch + <code>-<u>3</u></code> Dictionary
+<br>= <code>8<u><b>49.3</b>3</u></code> Dutch dictionary</p>
+
+<p><code>900</code> Literature + <code>-<u><b>1</b></u></code> Japanese (from language division) + <code>-<u>1</u></code> Poetry (from Table 10)
+<br>= <code>9<u><b>1</b>1</u></code> Japanese poetry
+<br>NB: <code>911</code> has some more subdivisions, e.g., <code>911.3</code> Haiku; <code>911.33</code> Haiku in Genroku period (1688-1704).</p>
+
+<p><code>900</code> Literature + <code>-<u><b>493</b></u></code> Dutch + <code>-<u>1</u></code> Poetry
+<br>= <code>9<u><b>49.3</b>1</u></code> Dutch poetry</p>
+
+</blockquote>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.4"></a>
+<h4 itemprop="articleSection">3.4 Alternative locations</h4>
+
+<p>Requests made mainly by special libraries or collections caused the preparation of alternative locations as to some classes and subclasses. This kind of locations is indicated by using the symbols <code>[ ]</code> and &rarr;.</p>
+
+<blockquote>
+<code>143</code>  Developmental psychology<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<code>.1</code>   Gender psychology<br>
+&nbsp;&nbsp;&nbsp;<code>[.2]</code>   Infant psychology    &rarr;<code>376.11</code><br>
+&nbsp;&nbsp;&nbsp;<code>[.3]</code>   Child psychology    &rarr;<code>371.45</code><br>
+&nbsp;&nbsp;&nbsp;<code>[.4]</code>   Adolescent psychology    &rarr;<code>371.47</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<code>.5</code>   &nbsp;Female psychology</p>
+</blockquote>
+
+<!-- p>Fig. 4: Examples of alternative locations of subsections (translated: 143.1/.5)</p -->
+
+<p>In the example above, the entry &ldquo;Child psychology&rdquo; is an alternative location, and the class number is given as <code>[.3]</code> (<code>143.3</code>) and referred as &ldquo;&rarr;<code>371.45</code>&rdquo; (it means &ldquo;see <code>371.45</code>&rdquo;).</p>
+
+<p>In <code>371</code> below, &ldquo;Child psychology&rdquo; is located at <code>371.45</code>, and there is an asterisked scope note on the use of the alternative (and <code>371.47</code> is also same as <code>.45</code>).</p>
+
+<p>Also, in the example, <code>371.45</code> refers to <code>367.6</code> (&ldquo;&rarr;:<code>367.6</code>&rdquo;, it means &ldquo;see also <code>367.6</code>&rdquo;), and <code>371.44</code> is again an alternative location (same example as <code>143.2</code>).</p>
+
+<blockquote>
+<code>371</code>    Theory of education<br>
+<code>&nbsp;&nbsp;&nbsp;.4</code>    Educational psychology. Educational environment<br>
+<code>&nbsp;&nbsp;[.44]</code>     Infant psychology  &rarr;<code>376.11</code><br>
+<code>&nbsp;&nbsp;&nbsp;.45</code>      Child psychology. Child research  &rarr;: <code>367.6</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*Alternative into <code>143.3</code><br>
+<code>&nbsp;&nbsp;&nbsp;.47</code>      Adolescent psychology. Adolescent research  &rarr;: <code>367.6</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*Alternative into <code>143.4</code></p>
+</blockquote>
+
+<!-- p>Fig. 5: Examples of scope note on alternative locations (at 371.45, translated: 371.4/.47)</p -->
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.5"></a>
+<h4 itemprop="articleSection">3.5 Disused entry</h4>
+
+<p>As a result of the revision procedure, it is decided that some class numbers and/or names should be deleted or relocated. These unusable numbers or names are given in brackets in the revised edition and will be deleted in the next one. Examples of disused entries in the NDC10 are as below:
+
+<blockquote>
+(<code>017.6</code>    College library &rarr; <code>017.8</code>)<br>
+(<code>547.458</code>    Telex)
+</blockquote>
+
+<p>The symbol &rarr; in the first example means "see" reference, so it refers the user to the new class number (<code>017.8</code> College library. Technical college library). When both a class number and a name are deleted altogether as in the second example, it is advised to use next generic class, i.e., a book on Telex should be classified at <code>547.45</code> Telegram.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.6"></a>
+<h4 itemprop="articleSection">3.6 Relative Index</h4>
+
+<p>Schedules of the NDC have been supplemented with a subject index from its inception. The original editor Mori recognized the necessity and effectiveness of subject index, though other most classifications employed in Japan at that time did not have indexes. Even the first draft of the NDC published as a journal article (see <a href="#2.1">section 2.1</a>) had indexes comprising 3,050 terms and including subject index of over 2,600 terms and indexes of geographic names, language and so on. The 1st edition of the NDC had indexes comprising 5,500 terms and including a subject index of about 5,000 terms. Until the 5th edition, the index was called &ldquo;Relative Subject Index&rdquo; (&#30456;&#38306;&#20214;&#21517;&#32034;&#24341; in Japanese), and indexes for geographic names, languages etc. were separated as mentioned above. Indexes of foreign geographic names and languages were given in English, so they were useful for Japanese librarians at that time.</p>
+
+<p>When the revision work with the NDC6 was handed over the JLA, the index was renamed &ldquo;Relative Index&rdquo; (&#30456;&#38306;&#32034;&#24341; in Japanese). The number of the index terms continued to increase: there were about 21,800 terms in the NDC8; about 29,500 in the NDC9; and about 33,000 in the NDC10. The index terms were sorted by Romanization before the NDC7, but now sorted by the Japanese syllabary.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4"></a>
+<h3 itemprop="articleSection">4. Notation system</h3>
+
+<p>The NDC uses three-digit Arabic numerals for class/subclasses and decimal point (period) for subsections. No other symbols are used. The decimal notation reflects the hierarchical structure.</p>
+
+<a name="4.1"></a>
+<h4 itemprop="articleSection"><br>4.1 Irregular hierarchical structure</h4>
+
+<p>As this example shows, class numbers usually reflect the hierarchical structure.</p>
+
+<blockquote>
+<code>6</code>    Industry<br>
+<code>67</code>&nbsp;&nbsp;&nbsp;     Commerce<br>
+<code>675</code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;      Marketing<br>
+<code>675.1</code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;      Merchandise. Merchandising<br>
+<code>675.18</code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;       Commodity packaging. Label
+</blockquote>
+
+<!-- p>Fig. 6: Example of regular hierarchical structure (translated: 675.1/.18)</p -->
+
+<p>However, an irregular case occurs owing to &rarr; <a href="notation#3.2">the number of subdivisions</a>, which does not fit decimal system. If there are fewer or more subdivisions than 10, notation cannot reflect the hierarchical structure faithfully and vice versa.</p>
+
+<p>Next example shows that <code>012.2</code> and <code>012.28/.29</code> are arrayed on the equal level, and that <code>012.3</code> and <code>012.4/.7</code> form a single hierarchal structure (<code>012.4</code> means &ldquo;design&rdquo; of &ldquo;stack room&rdquo;).</p>
+
+<blockquote>
+<code>012</code> Library buildings<br>
+<code>.1</code>&nbsp;&nbsp;&nbsp;&nbsp; 	Plan of buildings: Substructure planning, location, site<br>
+<code>.2</code>&nbsp;&nbsp;&nbsp;&nbsp; 	Materials and structure<br>
+<code>.28</code>&nbsp;&nbsp; 	Repair or reconstruction<br>
+<code>.29</code>&nbsp;&nbsp; 	Maintenance. Protection. Fire-prevention. Watertight<br>
+<code>.3</code>&nbsp;&nbsp;&nbsp;&nbsp; 	Design and draft<br>
+<code>.4</code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;     Stack room. Bookshelf<br>
+<code>.5</code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;     Rooms for users: Reading room, children's room, catalogue room<br>
+<code>.6</code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;     Auditorium. Meeting room. Exhibition room. Audio visual room<br>
+<code>.7</code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;     Office. Other rooms for management<br>
+<code>.8</code>&nbsp;&nbsp;&nbsp;&nbsp; 	Library equipment: Sanitary facilities, mechanical equipment, electric   equipment</p>
+</blockquote>
+
+<!-- p>Fig. 7: Example of an irregular hierarchal structure (translated: 012.1/.8)</p -->
+
+<p>In another case, when there are many subdivisions, a kind of skip-numbering procedure is adopted by using the symbol <code>[ ]</code> in which an unusable number is given, and subdivisions are enumerated with two-digit notation respectively. Next example means that <code>619</code> Agricultural technology has many subsections and it is difficult to group <code>619.11/.18</code> into the same one category. Therefore, <code>619.1</code> is skipped as <code>[.1]</code>, and <code>619.11/.18</code> are enumerated as direct subdivisions under <code>619</code>.</p>
+
+<blockquote>
+<code>619</code>    Agricultural technology<br>
+<code>[.1]</code><br>
+<code>.11&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>     Agricultural water. Drainage<br>
+<code>.12&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>     Fuel. Power<br>
+<code>.15&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>     Operation<br>
+<code>.16&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>     Microzyme: Mold, yeast, bacterium<br>
+<code>.18&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code>  Agricultural manufacturing machine: Rice mill, barley cleaning 	machine, grinding mill, noodle making machine<br>
+<code>.2&nbsp;&nbsp;&nbsp;&nbsp;</code>    Grain cleaning. Cataclasis
+</blockquote>
+
+<!-- p>Fig. 8: Example of a skipped number [.1] and two-digit subdivisions (translated: 619.11/.2)</p -->
+
+<p>Sometimes the 9th subdivision may be used as &ldquo;others&rdquo;. Next example shows that <code>880</code> Russian (language) is divided in accordance with subdivision of individual languages as <code>881/888</code>. The 9th subdivision of <code>889</code> is used for &ldquo;other&rdquo; Slavic languages collectively and divided according to individual languages, e.g., <code>889.1</code> Bulgarian.</p>
+
+<blockquote>
+<code>880</code> Russian<br>
+<code>881/888</code> (linguistic topics of Russian: vocabularies, grammar, readers, etc.)<br>
+<code>889</code>  Other Slavic languages<br>
+<code>.1&nbsp;&nbsp;&nbsp;</code> Bulgarian. Macedonian<br>
+<code>.2&nbsp;&nbsp;&nbsp;</code> Serbian. Croatian. Bosnian. Montenegrin<br>
+<code>.3&nbsp;&nbsp;&nbsp;</code> Slovene ...
+</blockquote>
+
+<!-- p>Fig. 9: Example of 9th subdivision for "others" (at 889)</p -->
+
+<p>It was the NDC9 that employed the device of so-called &ldquo;centered entry&rdquo; using the symbol &lt; &gt;. As showed in next example, the purpose of the device is to insert a range of different applications of characteristics into regular hierarchical structure.</p>
+
+<blockquote>
+<code>311</code>  Political theory and thought<br>
+<code>.1</code>&nbsp;&nbsp;&nbsp; Political philosophy<br>
+<code>.2</code>&nbsp;&nbsp;&nbsp; History of political theory and thought<br>
+&lt;<code>.3/.9</code>&nbsp;&nbsp;&nbsp;  Specific kinds of political thought&gt;<br>
+<code>.3</code>&nbsp;&nbsp;&nbsp; Ultranationalism. Nationalism. Racialism<br>
+<code>.4</code>&nbsp;&nbsp;&nbsp; Conservatism<br>
+<code>.5</code>&nbsp;&nbsp;&nbsp; Absolutism ...</p>
+</blockquote>
+
+<!-- p>Fig. 10: Example of a centered entry (at &lt;311.3/.9&gt;, translated 311.1/.5)</p -->
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.2"></a>
+<h4 itemprop="articleSection">4.2 Number building</h4>
+
+<p>The method of number building in the NDC is limited in its number and relatively simple. Instructions are given by as scope notes.</p>
+
+<ol>
+<li>Using auxiliary tables (see <a href="#3.3">section 3.3</a>)</li>
+
+<li>Simple addition of a two-digit subclass number (100 division; see <a href="#3.2">section 3.2</a>) to specify a kind of something as below:
+
+<blockquote>
+<code>018</code> Special libraries (*add to division for kinds of library) + <code>49</code> Medical sciences
+<br>= <code>018.49</code> Medical library</p>
+</li>
+
+<li>Two kinds of geographic divisions for use in interaction between two countries.
+
+<p>Next example instructs that <code>678.2</code> + <code>-1</code> &ldquo;Japan&rdquo; forms <code>678.21</code> &ldquo;Trade history of Japan&rdquo;, and that addition of <code>0</code> + <code>-53</code> &ldquo;United States&rdquo; results in <code>678.21053</code> &ldquo;Japan-US trade&rdquo;.</p>
+
+<blockquote>
+<code>678.2</code>    Trade history<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* add geographic division<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* for bilateral trade, add a zero after geographic division, and add geographic division of a partner country e.g., <code>678.21053</code> Japan-US trade
+</blockquote>
+
+<!-- p>Fig. 11: Example of use of geographic divisions for interaction (translated: 678.2 and its scope notes)</p -->
+
+</li>
+</ol>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.3"></a>
+<h4 itemprop="articleSection">4.3 Classification code</h4>
+
+<p>Regarding early editions of the NDC, Mori did not prepare any code for the NDC users. Shuko Kato (see also <a href="#2.2">section 2.2</a>) made a draft of a classification code for the NDC (<a href="#refK">Kato 1931</a>). The draft was based on his translation of W.S. Merrill&rsquo;s <i>Code for classifiers</i> into Japanese (<a href="#refM">Merrill 1928</a>) and was welcomed gladly. In 1950 the NDC6 included its classification code for the first time, which was largely based on Kato&rsquo;s work. It can be said that the NDC&rsquo;s classification code stemmed from the works of Kato, Merrill and Dewey, the last of whom was the origin of modern library classification and its code. The following are main code rules of the NDC10 (<a href="#refK">Kanise 2015</a>; <a href="#refK">Kobayashi 2017</a>):</p>
+
+<ol>
+<li>Classification by aspects
+<br>The NDC is an aspect classification from the viewpoints of various &rarr; <a href="discipline">disciplines</a>. Accordingly, a work should be classified under the subject aspect of a discipline. If a work is treated from more than two aspects, it should be classified under the central or most basic subject.</li>
+
+<li>Subject and form
+<br>A work should be classified first by subject and next by its form using auxiliary tables (see <a href="#2.3">section 2.3</a>). Exceptions are class <code>0</code> (general works) and class <code>9</code> (literature). In class <code>0</code>, a work should be classified first by its form (e.g., encyclopedias or serials). In class <code>9</code>, a work should be classified first by language and next by its literary form (see <a href="#3.3.2">section 3.3.2</a>).</li>
+
+<li>Original and related works
+<br>Works that relate to the original, such as translations or remakes, should be classified at the same place that the original has been placed.</li>
+
+<li>Polytopical works
+<br>A work consisting of several topics independently should be classified under the subject of the main or central topic. But when the work has no main or central topic, the decision is made according to the number of topics. If the work has 2 or 3 topics, it should be classified under the subject of the first topic. If the work has 4 or more topics, it should be classified under the upper class.</li>
+
+<li>Relations between two subjects
+<br>Several codes are prepared for the treatment of those subjects which result from relations between two independent subjects. The above subjects to be treated are usually called &ldquo;complex subjects&rdquo;, and relations between two independent subjects, such as Influence, Causation, Comparison, etc., are called &ldquo;phase relations&rdquo;. The NDC employs the passive voice. For example, a work studying the relation between &ldquo;an action&rdquo; and &ldquo;action applied&rdquo; should be classified under the subject of &ldquo;action applied&rdquo;.</li>
+
+<li>New subjects or topics
+<br>A work that treats a new subject or topic which is not established should be located at the close subject or under the superordinate one.</li>
+
+</ol>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5"></a>
+<h3 itemprop="articleSection">5. Electronic versions</h3>
+
+<p>At present, two kinds of electronic version of the NDC exist. One is the MRDF (Machine Readable Data File), which can be alternative to printed version. The other is the Linked Data format which can be used for web services or database systems.</p>
+
+<a name="5.1"></a>
+<h4 itemprop="articleSection"><br>5.1 MRDF</h4>
+
+<p>In 1989 the MRDF of the NDC 8th edition (MRDF NDC8; or MRDF8) was published. The MRDF was comprised of tagged main schedules and tagged relative index, both of which were simple structure. The MRDF9 (1996) took the same format as the MRDF8.</p>
+
+<p>After the NDC10 published, the JLA committee discussed the format of the new MRDF. They discussed a small change of the format and a relative index which had omitted terms on print version (e.g., different characters, rare terms and old concepts), and the MRDF10 was published in 2020.</p>
+
+<p>Though the MRDFs are not major files, they are sometimes used in OPACs of libraries, or for experiments by library and information science researchers. The MRDF9 was used also as basic data for the revision of the 10th edition.</p>
+
+<p>An example of the MRDF10 tags and descriptions follows.
+
+<blockquote><table cellpadding="0">
+<tr><td><code>00017100A010</code></td><td><code>00010&#22259;&#26360;&#39208;&#65294;&#22259;&#26360;&#39208;&#24773;&#22577;&#23398;</code></td></tr>
+<tr><td><code>00017200A010</code></td><td><code>00020Libraries.Library and information sciences</code></td></tr>
+<tr><td><code>00017300A010</code></td><td><code>00040&#38651;&#23376;&#22259;&#26360;&#39208;&#12399;&#65292;&#12371;&#12371;&#12395;&#21454;&#12417;&#12427;</code></td></tr>
+<tr><td><code>00017400A010</code></td><td><code>00060&rarr;:007,020</code></td></tr>
+<tr><td><code>00017500A010.1</code></td><td><code>00010&#22259;&#26360;&#39208;&#35542;&#65294;&#22259;&#26360;&#39208;&#12398;&#33258;&#30001;</code></td></tr>
+<tr><td><code>00017600A010.1</code></td><td><code>00040&#22259;&#26360;&#39208;&#12398;&#29702;&#24565;&#12399;&#65292;&#12371;&#12371;&#12395;&#21454;&#12417;&#12427</code></td></tr>
+<tr><td><code>00017700A010.13</code></td><td><code>01010&#22259;&#26360;&#39208;&#32887;&#21729;&#12398;&#20523;&#29702;</code></td></tr>
+<tr><td><code>00017800A010.13</code></td><td><code>01060&rarr;013.1</code></td></tr>
+</table></blockquote>
+
+<!-- p>Fig. 12: Example of the MRDF10 tags and descriptions</p -->
+
+<p>An example of schedule descriptions in the same class of the NDC10 follows.
+
+<!-- div align="center"><figure>
+<img src="ndc1.jpg" title="Example of schedule descriptions in the NDC10" width="90%">
+</figure></div -->
+
+<!-- p>Fig. 13: Example of schedule descriptions in the same class of the NDC10</p -->
+
+<blockquote><table>
+<tr><td valign="top"><code>010&nbsp;&nbsp;</code></td><td><b>&#22259;&#26360;&#39208;&#65294;&#22259;&#26360;&#39208;&#24773;&#22577;&#23398;&nbsp;&nbsp;Libraries. Library and information sciences</b><br>
+&nbsp;&nbsp;&rarr;:<code> 007 ; 020</code><br>
+&nbsp;&nbsp;&#65290;&#38651;&#23376;&#22259;&#26360;&#39208;&#12399;&#65292;&#12371;&#12371;&#12395;&#21454;&#12417;&#12427;</td></tr>
+
+<tr><td valign="top">
+<code>&nbsp;&nbsp;&nbsp;.1</code></td>
+<td>&nbsp;&nbsp;&#22259;&#26360;&#39208;&#35542;&#65294;&#22259;&#26360;&#39208;&#12398;&#33258;&#30001;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#65290;&#22259;&#26360;&#39208;&#12398;&#29702;&#24565;&#12399;&#65292;&#12371;&#12371;&#12395;&#21454;&#12417;&#12427</td></tr>
+
+<tr><td valign="top">
+<code>&nbsp;&nbsp;[.13]</code></td>
+<td>&nbsp;&nbsp;&nbsp;&nbsp;&#22259;&#26360;&#39208;&#32887;&#21729;&#12398;&#20523;&#29702;  &rarr;<code>013.1</code></td></tr>
+</table></blockquote>
+
+<p>In the above examples, <!-- the original schedule was given as Fig.13 and the corresponding MRDF format was as Fig.12. T --> the meanings of each tag and code are as follows.</p>
+
+<blockquote><table>
+<tr><td>00017100</td><td>code number</td></tr>
+<tr><td>A</td><td>flag of table/index</td></tr>
+<tr><td>010</td><td>class number</td></tr>
+<tr><td>010.1	</td><td>class number</td></tr>
+<tr><td>010.13</td><td>class number</td></tr>
+<tr></tr>
+<tr><td>00010</td><td>name of entry</td></tr>
+<tr><td>00020</td><td>name in English</td></tr>
+<tr><td>00040</td><td>scope note</td></tr>
+<tr><td>00060</td><td>see also reference</td></tr>
+<tr><td>01010</td><td>alternative name</td></tr>
+<tr><td>01060</td><td>alternative (see) reference</td></tr>
+</table></blockquote>
+
+
+<!-- p>Fig. 14: Meanings of codes used in Fig.12 (translated: all)</p -->
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5.2"></a>
+<h4 itemprop="articleSection">5.2 NDC-LD (Linked Data) and NDC Data</h4>
+
+<p>In 2015, the National Diet Library and the JLA implemented a cooperative research project to create Linked Data for the NDC (<a href="#refN">Nakai et al. 2016</a>).</p>
+
+<p>This pilot project contained: (1) conversion from MRDF8 and 9 to a Linked Data format (2) development of hierarchical structure model for NDC classes, metadata schema for the NDC semantics and a label for contexts. The project named the "NDC-LD" ended in August 2016.</p>
+
+<p>Then the JLA decided on a simplified model of the NDC-LD, and open to public use named the &ldquo;NDC Data (ndc8 and 9)&rdquo; in March 2019. The NDC Data is licensed under Creative Commons &ldquo;CC-BY&rdquo;. The NDC Data can be downloaded as RDF/XML, Turtle, JSON and original format (<a class="menu" href="https://www.jla.or.jp/committees/bunrui//tabid/789/Default.aspx">https://www.jla.or.jp/committees/bunrui//tabid/789/Default.aspx</a>).</p>
+
+<p>As a user example, the developer company Calil is providing an API and open source data converted from the NDC Data (<a class="menu" href="https://ndc.dev/">https://ndc.dev/</a>). The Japan Search (beta version) as a digital archives portal by National Diet Library adopted the NDC-LD based NDC9 (<a class="menu" href="https://jpsearch.go.jp/">https://jpsearch.go.jp/</a>).</p>
+
+<p>An example follows of RDF/XML format from the NDC data (ndc9).</p>
+
+<blockquote><code>
+&lt;rdf:RDF&gt;<br>&nbsp;&nbsp;&nbsp;
+&lt;skos:Concept rdf:about="http://jla.or.jp/data/ndc9#010"&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;skos:narrower rdf:resource="http://jla.or.jp/data/ndc9#016"/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;skos:note&gt;&#22259;&#26360;&#39208;&#24773;&#22577;&#23398;&#12399;&#65292;&#12371;&#12371;&#12395;&#21454;&#12417;&#12427;&lt;/skos:note&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;rdfs:label&gt;&#22259;&#26360;&#39208;&#65294;&#22259;&#26360;&#39208;&#23398;&lt;/rdfs:label&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;skos:narrower rdf:resource="http://jla.or.jp/data/ndc9#016.9"/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;skos:relatedMatch rdf:resource="http://id.ndl.go.jp/auth/ndlsh/00573404"/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;skos:relatedMatch rdf:resource="http://id.ndl.go.jp/auth/ndlsh/00617035"/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;skos:relatedMatch rdf:resource="http://id.ndl.go.jp/auth/ndlsh/00831135"/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;ndcv:indexedTerm rdf:parseType="Resource"&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;dcndl:transcription&gt;&#12488;&#12471;&#12519;&#12459;&#12531;&#12460;&#12463;&lt;/dcndl:transcription&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;skosxl:literalForm&gt;&#22259;&#26360;&#39208;&#23398;&lt;/skosxl:literalForm&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;/ndcv:indexedTerm&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;skos:relatedMatch rdf:resource="http://id.ndl.go.jp/auth/ndlsh/00573385"/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;skos:related rdf:resource="http://jla.or.jp/data/ndc9#007"/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;skos:relatedMatch rdf:resource="http://id.ndl.go.jp/auth/ndlsh/00573401"/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;skos:relatedMatch rdf:resource="http://id.ndl.go.jp/auth/ndlsh/001209171"/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;skos:narrower rdf:resource="http://jla.or.jp/data/ndc9#019"/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;skos:inScheme rdf:resource="http://jla.or.jp/data/ndc9#"/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;dcterms:isVersionOf rdf:resource="http://jla.or.jp/data/ndc#010"/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;ndcv:indexedTerm rdf:parseType="Resource"&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;dcndl:transcription&gt;&#12488;&#12471;&#12519;&#12459;&#12531;&lt;/dcndl:transcription&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;skosxl:literalForm&gt;&#22259;&#26360;&#39208;&lt;/skosxl:literalForm&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;/ndcv:indexedTerm&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;skos:prefLabel xml:lang="en"&gt;Libraries.Library and information sciences&lt;/skos:prefLabel&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;skos:narrower rdf:resource="http://jla.or.jp/data/ndc9#013"/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;skos:narrower rdf:resource="http://jla.or.jp/data/ndc9#011"/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;skos:narrower rdf:resource="http://jla.or.jp/data/ndc9#010.6"/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;skos:relatedMatch rdf:resource="http://id.ndl.go.jp/auth/ndlsh/00573391"/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;ndcv:indexedTerm rdf:parseType="Resource"&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;dcndl:transcription&gt;&#12488;&#12471;&#12519;&#12459;&#12531; &#12472;&#12519;&#12454;&#12507;&#12454;&#12460;&#12463;&lt;/dcndl:transcription&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;skosxl:literalForm&gt;&#22259;&#26360;&#39208;&#24773;&#22577;&#23398;&lt;/skosxl:literalForm&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;/ndcv:indexedTerm&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;skos:narrower rdf:resource="http://jla.or.jp/data/ndc9#014"/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;skos:narrower rdf:resource="http://jla.or.jp/data/ndc9#012"/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;skos:notation&gt;010&lt;/skos:notation&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;skos:prefLabel xml:lang="ja"&gt;&#22259;&#26360;&#39208;&#65294;&#22259;&#26360;&#39208;&#23398;&lt;/skos:prefLabel&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;rdf:type rdf:resource="http://jla.or.jp/vocab/ndcvocab#Section"/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;skos:narrower rdf:resource="http://jla.or.jp/data/ndc9#010.7"/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;skos:narrower rdf:resource="http://jla.or.jp/data/ndc9#015"/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;skos:narrower rdf:resource="http://jla.or.jp/data/ndc9#010.21"/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;skos:broader rdf:resource="http://jla.or.jp/data/ndc9#01"/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;skos:narrower rdf:resource="http://jla.or.jp/data/ndc9#010.1"/&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;skos:related rdf:resource="http://jla.or.jp/data/ndc9#020"/&gt;<br>&nbsp;&nbsp;&nbsp;
+&lt;/skos:Concept&gt;<br>
+&lt;/rdf:RDF&gt;
+</code></blockquote>
+
+<!-- p>Fig. 15: Example of RDF/XML format from the NDC data (ndc9) -->
+
+<p>
+</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="6"></a>
+<h3 itemprop="articleSection">6. Conclusion</h3>
+
+<p>The growth of the NDC has kept in step with the expansion of Japanese library world. During the period while revision was carried out by Mori with the help of his supporters, the NDC came to be used by many libraries. And after the war the NDC became a standard classification system under the aegis of the JLA. However, as the number of libraries using the NDC increased, the pressure that a drastic revision was needed increased.</p>
+
+<p>In the late of the 20th Century, the DDC and some other classifications started to adopt &rarr; <a href="facet_analysis">facet analysis</a> and faceted notations. But NDC remains a simple enumerative system. Also, the NDC10 is still faced with the problem of its crampedness, old-fashioned subdivisions and strange categories. For this reason, the system suffers from imbalance and is unable to cope with new social problems or events.</p>
+
+<p>As a standard library classification in Japan, the NDC will cope with the problems mentioned above. The NDC must be forced to carry out a bold revision, including the way of &ldquo;phoenix schedules&rdquo; which the DDC adopted. The Committee of Classification of the JLA has already started discussion about the coming 11th edition.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="ack"></a>
+<h3>Acknowledgments</h3>
+
+<p>I thank <a href="authors#k">Dr. Keiichi Kawamura</a> for encouraging me to write this article and introducing me to the editors. I received the cooperation of the Committee of Classification of the Japan Library Association (JLA) to write the article. The opinions expressed in the article do not necessarily reflect the views of the committee or of the JLA.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="ref"></a>
+<h3>References</h3>
+
+<span itemprop="citation">
+
+<a name="refA"></a>
+<a name="refB"></a>
+<a name="refC"></a>
+
+<p>Cutter, Charles Ammi. 1891-1893. <i>Expansive Classification. Part I: The First Six Classifications</i>. Boston, Mass.: C. A. Cutter.</p>
+
+<a name="refD"></a>
+
+<p>Dewey, Melvil. 1927. <i>Decimal Clasification and Relativ Index: For Libraries and Personal use in Arranging for Immediate Reference Books, Pamflets, Clippings, Pictures, Manuscript Notes and Other Material</i>. New York: Forest Press: Lake Placid Club.</p>
+
+<p>Downs, Robert B. 1948. <i>Report on Technical Processes, Bibliographical Services and General Organization</i>. Tokyo: The National Diet Library. [Both in English and in Japanese.]</p>
+
+<a name="refE"></a>
+<a name="refF"></a>
+
+<p>Fujikura, Keiichi. 2018. <i>Establishment and Development of the Nippon Decimal Classification: Road to &ldquo;Standard&rdquo; Classification in Japan, 1928-1949</i> (&#26085;&#26412;&#21313;&#36914;&#20998;&#39006;&#27861;&#12398;&#25104;&#31435;&#12392;&#23637;&#38283;: &#26085;&#26412;&#12398;&#12300;&#27161;&#28310;&#12301;&#12408;&#12398;&#36947;&#31243; 1928-1950). Tokyo: Jusonbo. [In Japanese.]</p>
+
+<a name="refG"></a>
+<a name="refH"></a>
+<a name="refI"></a>
+<a name="refJ"></a>
+
+<p>Japan School Library Association. 2008. &ldquo;Way of Book Classification (&#22259;&#26360;&#12398;&#20998;&#39006;&#26041;&#27861;)&rdquo;. <i>School library</i> (&#23398;&#26657;&#22259;&#26360;&#39208;) no.697: 55-57. [In Japanese.]</p>
+
+<p>Japan Special Libraries Association ed. 2018. <i>Directory of Special Libraries, Japan</i> (&#23554;&#38272;&#24773;&#22577;&#27231;&#38306;&#32207;&#35239;). Tokyo: Japan Special Libraries Association. [In Japanese.]</p>
+
+<a name="refK"></a>
+
+<p>Kanise, Tomohiro. 2015 <i>An Invitation for NDC:Technics and Practice of Book Classification</i> (NDC&#12408;&#12398;&#25307;&#24453; : &#22259;&#26360;&#20998;&#39006;&#12398;&#25216;&#34899;&#12392;&#23455;&#36341;). Tokyo: Jusonbo. [In Japanese.]</p>
+
+<p>Kato, Shuko. 1931. &ldquo;Tentative Draft of Classification Code (&#20998;&#39006;&#35215;&#31243;&#35430;&#26696;)&rdquo;. <i>Library Journal </i>(&#22259;&#26360;&#39208;&#38609;&#35468;) 25, no.4: 146-158. [In Japanese.]</p>
+
+<p>Kobayashi, Yasutaka. 2017. <i>NDC Guidebook: An Introduction to the Nippon Decimal Classification newly rev. 10th ed.</i> (NDC&#12398;&#25163;&#24341;&#12365; &#12300;&#26085;&#26412;&#21313;&#36914;&#20998;&#39006;&#27861;&#12301;&#26032;&#35330;10&#29256;&#20837;&#38272;). Tokyo: Japan Library Association. [In Japanese.]</p>
+
+<a name="refL"></a>
+<a name="refM"></a>
+
+<p>Merrill, William Stetson, translated by Kato, Shuko. 1928. <i>Code for Classifiers by Merrill</i>(Merrill&#12494;&#20998;&#39006;&#35215;&#31243;). Osaka: Mamiya shoten. [In Japanese.]</p>
+
+<p>Ministry of Education, Science and Culture ed. 1948. The Guideline to School Libraries (&#23398;&#26657;&#22259;&#26360;&#39208;&#12398;&#25163;&#24341;). Tokyo: Ministry of Education, Science and Culture. [In Japanese.]</p>
+
+<p>Mori, Kiyoshi. 1928a. &ldquo;The Draft of Decimal Classification Scheme for Japanese-Foreign Books (&#21644;&#27915;&#22259;&#26360;&#20849;&#29992;&#21313;&#36914;&#20998;&#39006;&#34920;&#26696;)&rdquo;. <i>Toshokan kenkyu</i> (&#22293;&#30740;&#31350;) 1, no.2: 121-161.</p>
+
+<p>Mori, Kiyoshi. 1928b. &ldquo;The Draft of Decimal Classification Scheme for Japanese-Foreign Books II (&#21644;&#27915;&#22259;&#26360;&#20849;&#29992;&#21313;&#36914;&#20998;&#39006;&#34920;&#26696; II)&rdquo;. <i>Toshokan kenkyu</i> (&#22293;&#30740;&#31350;) 1, no.3: [380]-426. [In Japanese.]</p>
+
+<p>Mori, Kiyoshi. 1929. <i>Nippon Decimal Classification: A Classification and Index for Japanese, Chinese and Foreign Books</i> (&#26085;&#26412;&#21313;&#36914;&#20998;&#39006;&#27861; : &#21644;&#28450;&#27915;&#26360;&#20849;&#29992;&#20998;&#39006;&#34920;&#21450;&#32034;&#24341;). Osaka: Mamiya-shoten. [In Japanese.]</p>
+
+<p>Mori, Kiyoshi. 1931. <i>Nippon Decimal Classification: A Classification and Index for Japanese, Chinese and Foreign Books. </i>Revised and enlarged second edition (&#26085;&#26412;&#21313;&#36914;&#20998;&#39006;&#27861; : &#21644;&#28450;&#27915;&#26360;&#20849;&#29992;&#20998;&#39006;&#34920;&#21450;&#32034;&#24341;. &#35330;&#27491;&#22679;&#35036;&#31532;2&#29256;). Osaka: Mamiya-shoten. [In Japanese.]</p>
+
+<p>Mori, Kiyoshi. 1935. <i>Nippon Decimal Classification: A Classification and Index for Japanese, Chinese and Foreign Books. </i>Revised and enlarged third edition (&#26085;&#26412;&#21313;&#36914;&#20998;&#39006;&#27861; : &#21644;&#28450;&#27915;&#26360;&#20849;&#29992;&#20998;&#39006;&#34920;&#21450;&#32034;&#24341;. &#35330;&#27491;&#22679;&#35036;&#31532;3&#29256;). Osaka: Mamiya-shoten. [In Japanese.]</p>
+
+<p>Mori, Kiyoshi. 1942. <i>Nippon Decimal Classification: A Classification and Index for Japanese, Chinese and Foreign Books. </i>Revised and enlarged fifth edition (&#26085;&#26412;&#21313;&#36914;&#20998;&#39006;&#27861; : &#21644;&#28450;&#27915;&#26360;&#20849;&#29992;&#20998;&#39006;&#34920;&#21450;&#32034;&#24341;. &#35330;&#27491;&#22679;&#35036;&#31532;5&#29256;). Osaka: Mamiya-shoten. [In Japanese.]</p>
+
+<p>Mori, Kiyoshi ed. 1966. <i>How to use the NDC</i> (NDC&#12398;&#12388;&#12363;&#12356;&#26041;). Tokyo: Japan Library Association. [In Japanese.]</p>
+
+<p>Mori, Kiyoshi ed. 1982. <i>A Guide to the Nippon Decimal Classification</i> (NDC&#20837;&#38272;). Tokyo: Japan Library Association. [In Japanese.]</p>
+
+<p>Mori, Kiyoshi compiled, The Committee of Classification of the Japan Library Association revised. 1950. <i>Nippon Decimal Classification</i>. Newly 6th edition (&#26085;&#26412;&#21313;&#36914;&#20998;&#39006;&#27861;. &#26032;&#35330;6&#29256;). Tokyo: The Japan Library Association. [In Japanese.]</p>
+
+<p>Mori, Kiyoshi compiled, The Committee of Classification of the Japan Library Association revised. 2014. <i>Nippon Decimal Classification</i>. Newly 10th edition (&#26085;&#26412;&#21313;&#36914;&#20998;&#39006;&#27861;. &#26032;&#35330;10&#29256;). Tokyo: The Japan Library Association. [In Japanese.]</p>
+
+<a name="refN"></a>
+
+<p>Nakai, Machiko [et al.]. 2016. &ldquo;The Nippon Decimal Classification Linked Data Project: Utilizing semantic web technologies (&#26085;&#26412;&#21313;&#36914;&#20998;&#39006;&#27861;&#12398;Linked Data&#21270; : &#12475;&#12510;&#12531;&#12486;&#12451;&#12483;&#12463;Web&#12408;&#12398;&#23550;&#24540;&#12434;&#30446;&#25351;&#12375;&#12390;)&rdquo;. <i>Information &amp; documentation</i> (&#24773;&#22577;&#31649;&#29702;) 59, no.4:209-217. <a class="menu" href="https://doi.org/10.1241/johokanri.59.209">https://doi.org/10.1241/johokanri.59.209</a>. [In Japanese.]</p>
+
+<a name="refO"></a>
+
+<p>Omagari, Toshio. 2010. &ldquo;A survey of the use of classification schedules in Japan (&#12431;&#12364;&#22269;&#12395;&#12362;&#12369;&#12427;&#22259;&#26360;&#20998;&#39006;&#34920;&#12398;&#20351;&#29992;&#29366;&#27841;&#65306;&#26085;&#26412;&#22259;&#26360;&#39208;&#21332;&#20250;&#12300;&#22259;&#26360;&#12398;&#20998;&#39006;&#12395;&#38306;&#12377;&#12427;&#35519;&#26619;&#12301;&#32080;&#26524;&#12424;&#12426;)&rdquo;. <i>Libraries Today</i> (&#29694;&#20195;&#12398;&#22259;&#26360;&#39208;) 48, no.2: 129-141. [In Japanese.]</p>
+
+<a name="refP"></a>
+<a name="refQ"></a>
+<a name="refR"></a>
+<a name="refS"></a>
+<a name="refT"></a>
+<a name="refU"></a>
+<a name="refV"></a>
+<a name="refW"></a>
+<a name="refX"></a>
+<a name="refY"></a>
+<a name="refZ"></a>
+
+</span><!-- citation ends -->
+
+</span><!-- articleBody ends -->
+
+<a name="col"></a>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<p>&nbsp;</p>
+
+<p>Visited <a href="https://www.digits.net" target="_blank"><img src="https://counter.digits.net/?counter={f9cc72a6-b3da-be84-a94f-9f63e1d887a3}&template=simple" alt="Hit Counter by Digits" border="0"  /></a> times.</p>
+
+<hr>
+<p itemprop="dateCreated">Version 1.0 published 2020-06-24, last edited 2020-08-03
+<!-- <br>Version 1.1 published 2020--: [changes] -->
+
+<p>Article category: <code><a itemprop="about" href="index#KG">KOS, specific (general/universal)</a></code></p>
+
+<!--
+<p>This article (version 1.0) is also published in <i>Knowledge Organization</i>. How to cite it:
+<br>Surname, Name. 2020. 
+&ldquo;Title&rdquo;. 
+<i>Knowledge Organization</i> 4_, no. : -. 
+Also available in 
+<i><span itemprop="isPartOf">ISKO Encyclopedia of Knowledge Organization</span></i>, 
+eds. <span itemprop="editor">Birger Hj&oslash;rland</span> and <span itemprop="editor">Claudio Gnoli</span>, 
+<span itemprop="url">https://www.isko.org/cyclo/ndc </span></p>
+-->
+
+<p>&copy;2020 <span itemprop="publisher">ISKO</span>. All rights reserved.</p>
+
+</div><!-- Article ends -->
+
+</td>
+</tr>
+
+<tr>
+<td id="logo">
+</td>
+</tr>
+
+</table>
+</body>
+</html>

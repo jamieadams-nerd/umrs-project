@@ -1,0 +1,1006 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>Thesaurus for IR (IEKO)</title>
+<link rel="stylesheet" type="text/css" href="../isko.css" />
+
+<meta name="DCTERMS.title" content="Thesaurus (for information retrieval)" />
+<meta name="DCTERMS.creator" content="Stella Dextre Clarke" />
+<meta name="DCTERMS.issued" content="2017" />
+<meta name="DCTERMS.relation.ispartof" content="ISKO Encyclopedia of Knowledge Organization" />
+<meta name="DCTERMS.ispartof" content="ISKO Encyclopedia of Knowledge Organization" />
+<meta name="DCTERMS:bibliographicCitation" content="ISKO Encyclopedia of Knowledge Organization, eds. Birger Hjorland and Claudio Gnoli" />
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="001.012">
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="025.4">
+<meta name="DCTERMS.subject.keyword" content="thesauri">
+<meta name="DCTERMS.type" content="Text" />
+<meta name="DCTERMS.format" content="text/html" />
+<meta name="DCTERMS.identifier" content="https://www.isko.org/cyclo/thesaurus" />
+
+<style>
+a {text-decoration: none;}
+a:hover {text-decoration:underline;}
+table td, table th { padding: 5px; }
+</style>
+
+</head>
+<body>
+
+<a name="top"></a>
+
+<table>
+
+<tr>
+<td id="isko"><h1>I S K O</h1></td>
+<td id="banner"><h2><a href="index.html" style="text-decoration:none;">Encyclopedia of Knowledge Organization</h2></a></td>
+</tr>
+
+<tr>
+<td id="navigation">
+<a href="../index.php">home</a>
+<a href="../about.html">about ISKO</a>
+<a href="../join.html">join ISKO</a>
+<a href="../ko.html"><cite>Knowledge Organization</cite> journal</a>
+<a href="../events.html">ISKO events</a>
+<a href="../chapters.html">ISKO chapters</a>
+<a href="../people.html">ISKO people</a>
+<a href="../pubs.html">ISKO publications</a>
+<a href="index.html">Encyclopedia</a>
+<a href="../lit.html">KO literature</a>
+<a href="../inst.html">KO institutions</a>
+<a href="http://bartoc.org/" title="link to BARTOC">&#8663; KOS registry</a>
+<a href="http://www.isko-mms.net/home/" title="access-account required">&#128274; members</a>
+<a href="../contact.html">contact us</a>
+</td>
+<td id="content" rowspan="2">
+
+<a class="menu" href="authors#h">edited by Birger Hj&oslash;rland</a> <a class="menu" href="authors#g">and Claudio Gnoli</a>
+
+<p>&nbsp;
+
+<h2>Thesaurus (for information retrieval)</h2>
+
+<blockquote>
+by <a href="authors#d">Stella G. Dextre Clarke</a></p>
+
+<p>Table of contents:
+
+<br><a style="text-decoration:none;" href="#1">1. Introduction and clarification of scope</a> 
+<br><a style="text-decoration:none;" href="#2">2. What is a thesaurus?</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#2.1">2.1 Purpose</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#2.2">2.2 Content and structure</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#2.3">2.3 Definitions</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#2.4">2.4 Why the confusion?</a>
+<br><a style="text-decoration:none;" href="#3">3. How a thesaurus is used</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#3.1">3.1 For post-coordinate indexing and searching</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#3.2">3.2 Networked uses, especially in the Semantic Web</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#3.3">3.3 Other uses</a>
+<br><a style="text-decoration:none;" href="#4">4. History of thesaurus development and use</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#4.1">4.1 Origins</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#4.2">4.2 Period of ascendancy</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#4.3">4.3 Systematization</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#4.4">4.4 Maturity, senescence or rejuvenation?</a>
+<br><a style="text-decoration:none;" href="#5">5. Types and styles of thesaurus</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#5.1">5.1 Overview</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#5.2">5.2 The bare minimum</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#5.3">5.3 Different styles for different communities</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#5.4">5.4 Electronic thesauri</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#5.5">5.5 Multilingual vs monolingual thesauri</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#5.6">5.6 Macro- and micro-thesauri</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#5.7">5.7 The search thesaurus</a>
+<br><a style="text-decoration:none;" href="#6">6. Performance and evaluation</a>
+<br><a style="text-decoration:none;" href="#7">7. The future of thesauri</a>
+<br><a style="text-decoration:none;" href="#8">8. Further reading</a>
+<br><a style="text-decoration:none;" href="#end">Endnotes</a>
+<br><a style="text-decoration:none;" href="#ref">References</a>
+<br><a style="text-decoration:none;" href="#col">Colophon</a>
+
+<p><strong>Abstract</strong>:
+<br>In the post-war period before computers were readily available, urgent demand for scientific and industrial development stimulated Research and Development (R&D) that led to the birth of the information retrieval thesaurus. This article traces the early history, speciation and progressive improvement of the thesaurus to reach the state now conveyed by guidelines in international and national standards. Despite doubts about the effectiveness of the thesaurus throughout this period, and notwithstanding the dominance of Google and other search engines in the information retrieval (IR) scene today, the thesaurus still plays a complementary part in the organization of knowledge and information resources. Success today depends on interoperability, and is opening up opportunities in Linked Data applications. At the same time the IR demand from workers in the Knowledge Society drives interest in hybrid forms of KOS that may pool the genes of thesauri with those of ontologies and classification schemes.</p>
+
+</blockquote>
+
+<a name="1"></a>
+<h3>1. Introduction and clarification of scope</h3>
+
+<p>This article is about thesauri intended for use in information retrieval (IR) <a href="#e1">[1]</a>, rather than literary thesauri, which are generally designed for the different purpose of helping and inspiring the choice of words and phrases in normal discourse. The first edition of <I>Roget's Thesaurus</I>, that very well known literary thesaurus, came out long before the first IR thesaurus and probably inspired the invention of the latter. For this reason there is some reference to literary thesauri in the <a href="#4">History section</a> of this article. In other sections, however, the term <i>thesaurus</i> invariably refers to the information retrieval thesaurus.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2"></a>
+<h3>2. What is a thesaurus?</h3>
+
+<a name="2.1"></a>
+<h4>2.1 Purpose</h4>
+
+<p>The prime function of a thesaurus is to support information retrieval by guiding the choice of terms for indexing and searching. According to ISO 25964-1 (<A HREF="#ref">International Organization for Standardization 2011</A>, Clause 4.1):</p>
+
+<blockquote>The traditional aim of a thesaurus is to guide the indexer and the searcher to choose the same term for the same concept [...] a thesaurus should first list all the concepts that might be useful for retrieval purposes in a given domain. The concepts are represented by terms, and for each concept, one of the possible representations is selected as the preferred term [...] Secondly, a thesaurus should present the preferred terms in such a way that people will easily identify the one(s) they need. This is achieved by establishing relationships between terms &mdash; and/or between concepts &mdash; and using the relationships to present the terms in a structured display.</blockquote>
+
+<p>Foskett (<A HREF="#ref">1980</A>) lists seven purposes for a thesaurus, of which six could be considered subdivisions or sub-aspects of the main purpose cited above. (As for his seventh purpose, a means of standardizing the use of terms in a given subject field, Foskett acknowledges that this is desirable rather than realistic.) While the ISO 25964 description dates from 2011, it follows principles established long before. For example Lancaster (<A HREF="#ref">1972</A>, 25) explains:</p>
+
+<blockquote>Schultz (<A HREF="#ref">1967</A>) has distinguished the functions of the information retrieval thesaurus from a thesaurus of the Roget type as follows. Roget's purpose was to give an author a choice of alternative words to express one concept; to display a set of words of similar meanings to allow an author to choose one that best suits his need. The information retrieval thesaurus tends to be more prescriptive. The thesaurus compiler chooses one term from among several possible, and directs the user to employ this one by means of references from synonyms and other alternative forms.</blockquote>
+
+<p>The use of preferred terms rather than language-independent codes or character strings is a key feature distinguishing the thesaurus from the classification schemes that were commonly used for IR before the advent of the thesaurus. Retrieval may seem simpler, to the layman, if it can be expressed in words rather than codes. But there is an ambiguity challenge to overcome &mdash; in the language of normal discourse one concept can be expressed in many different ways, and conversely one term can have many different meanings. To achieve the aim of always choosing the same term for the same concept an artificial indexing language has to be established, in which synonyms are controlled, homographs are disentangled, and each preferred term is allowed only one meaning (although some may have very broad meanings). The thesaurus conveys that artificial language.</p>
+
+<p>This modus operandi for the thesaurus became established in the 1960s. The computer was then in its infancy: small, primitive, and almost entirely unavailable to the communities of researchers and practitioners needing to retrieve information. Without computers to help, trained human intermediaries were needed at two critical stages of the best IR systems: to index and/or &rarr; <a href="classification">classify</a> the source documents, and (in the second stage) to perform searches of the same.</p>
+
+<p>Several classic texts of this period, such as Gilchrist (<A HREF="#ref">1971</A>), Lancaster (<A HREF="#ref">1972</A>), Aitchison and Gilchrist (<A HREF="#ref">1972</A>), and Soergel (<A HREF="#ref">1974</A>), make it clear that the thesaurus is just one component in the whole IR system comprising a set of tools and procedures, all of which have to be designed in harmony. In those days the IR system typically operated in isolation. While modern technology enables many more possibilities, needing even greater attention to compatibility among system components, today's standards still respect and support the original design principles.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2.2"></a>
+<h4>2.2 Content and structure</h4>
+
+<p>The components of a thesaurus are most succinctly laid out in the UML (Unified Modelling Language) model shown in ISO 25964-1 and reproduced as Figure 1 below. (The model may also be seen on the official website at <A HREF="http://www.niso.org/schemas/iso25964/">www.niso.org/schemas/iso25964/</A> and downloaded from
+<A HREF="http://www.niso.org/schemas/iso25964/Model_2011-06-02.jpg">http://www.niso.org/schemas/iso25964/Model_2011-06-02.jpg</A>. Key features are explained in Will (<A HREF="#ref">2012</A>).)</p>
+
+<figure align="center">
+<img src="thesaurus1.jpg" title="Fig. 1: Thesaurus data model as recommended in ISO 25964-1" width="80%">
+<figcaption>Figure 1: Thesaurus data model as recommended in ISO 25964-1</figcaption>
+</figure>
+
+<p>Thus the essential core of a thesaurus is a collection of concepts represented by terms and interlinked by relationships, of which the three main types are equivalence (between terms), hierarchical (between concepts) and associative (also between concepts). By long established convention, the tags <CODE>USE</CODE> and <CODE>UF</CODE> (Use For) precede preferred and non-preferred terms respectively, and the equally characteristic tags <CODE>BT</CODE>, <CODE>NT</CODE> and <CODE>RT</CODE> indicate broader, narrower and associatively related concepts respectively. Figure 2 illustrates how these simple elements are traditionally displayed. A great many in-house thesauri are built in this minimal way, without calling upon the many optional extras provided for in the data model. The alphabetical display in Figure 2 may optionally be supplemented by other types of presentation, as discussed in <A HREF="#4.3">section 4.3</A> below on "Systematization". </p>
+
+<!--
+<figure>
+
+<blockquote>
+<pre>
+pesticides
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;UF:	fumigants
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BT:	agrochemicals
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NT:	fungicides
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;herbicides
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;insecticides
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;RT:	pests
+
+pests
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NT:	pest insects
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;plant pests
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;RT:	pesticides
+
+<p>pigs
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;UF:	hogs
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;porkers
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sows
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BT:	livestock
+
+<p>plant pests
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BT:	pests
+
+<p>plant products
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NT:	cereals
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fruits
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;spices
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;vegetables
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;RT:	plants
+
+<p>plants
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;RT:	plant products
+
+<p>porkers
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;USE:	pigs
+
+<p>poultry
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BT:	livestock
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NT:	chickens
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ducks
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;geese
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;turkeys
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;RT:	eggs
+
+<p>sheep
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BT:	livestock
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;RT:	wool
+
+</pre>
+</blockquote>
+
+<figcaption>Figure 2: Brief extract from a minimal monolingual thesaurus</figcaption>
+</figure>
+-->
+
+<figure align="center"><br>
+<img src="thesaurus2.jpg" title="Fig. 2: Brief extract from a minimal monolingual thesaurus">
+<figcaption>Figure 2: Brief extract from a minimal monolingual thesaurus</figcaption>
+</figure>
+
+<p>The thesaurus can also be visualized as a complex web of interlinked concepts, in which each concept is labelled by one or more terms, in one or more languages. It has these main features:</p>
+
+<ul>
+<li>The semantic scope of a concept is indicated partly by the totality of terms labelling it, partly by the hierarchical relationships linking it to broader and/or narrower concepts, and where this is not enough, by a scope note and sometimes term definitions</li>
+
+<li>Admissible hierarchical relationships are of three types: generic, instantial or partitive (subject to some restrictions on the eligible types of partitive link). It is optionally possible to distinguish these types, using the tags <CODE>BTG/NTG</CODE>, <CODE>BTI/NTI</CODE>, <CODE>BTP/NTP</CODE> respectively</li>
+
+<li>Admissible associative relationships apply to non-hierarchical situations wherever two concepts are so associated that an indexer or a searcher should consider using one of them as well as, or instead of, the other</li>
+
+<li>Concepts may be presented and ordered in arrays with node labels, following the principles of facet analysis</li>
+
+<li>Concepts may also be grouped in loose structures to suit particular domains or applications</li>
+
+<li>Concepts not explicitly included in the thesaurus may be represented by combinations of preferred terms (in situations known as "compound equivalence" &mdash; for example: <CODE>coal mining  USE coal + mining</CODE>)</li>
+
+<li>It is also possible to add metadata to terms, to concepts, to relationships and to the thesaurus as a whole, such as dates of introduction or change, version history, housekeeping data, copyright information, etc.</li>
+</ul>
+
+<p>It should be stressed that many of these features are optional, enabling a variety of sophisticated uses, and should not deter straightforward use of the basics in simple applications. Detailed advice on all of them may be found in national and international standards &mdash; principally ISO 25964 and ANSI/NISO Z39.19 (<A HREF="#ref">National Information Standards Organization 2005</A>) &mdash; and are further explicated in Aitchison et al. (<A HREF="#ref">2000</A>), Broughton (<A HREF="#ref">2006a</A>) and Will (<A HREF="#ref">2012</A>).</p>
+
+<p>Despite availability of the guidance cited above, few current or past thesauri comply with the standards in every detail. Difficulties and divergences commonly occur in the following aspects:</p>
+
+<ul>
+<li>Rigorous conformity with guidelines for hierarchical relationships</li>
+
+<li>Rigorous facet analysis</li>
+
+<li>In a multilingual thesaurus, when and how to establish equivalence across languages</li>
+
+<li>When and how to admit complex concepts designated by compound terms</li>
+
+<li>Adoption of the data model</li>
+</ul>
+
+<p>Surmounting such difficulties demands considerable expertise and time, adding to the expense of thesaurus construction and to doubts about cost-effectiveness, as noted in Sections <A HREF="#4.4">4.4</A> and <A HREF="#6">6</A> below.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2.3"></a>
+<h4>2.3 Definitions</h4>
+
+<p>An authoritative definition of <i>thesaurus</i> may be found in the international standard ISO 25964-1 (Clause 2.62):</p>
+
+<blockquote>controlled and structured vocabulary in which concepts are represented by terms, organized so that relationships between concepts are made explicit, and preferred terms are accompanied by lead-in entries for synonyms or quasi-synonyms.</blockquote></p>
+
+<p>Although phrased differently, a broadly compatible definition is that in the American standard ANSI/NISO Z39.19-2005 (R2010) (<A HREF="#ref">National Information Standards Organization 2005</A>, Clause 4.1):</p>
+
+<blockquote>A controlled vocabulary arranged in a known order and structured so that the various relationships among terms are displayed clearly and identified by standardized relationship indicators. Relationship indicators should be employed reciprocally.</blockquote>
+
+<p>The above definitions derive their authority from the process of drafting and approving a standard, which requires agreement by a committee of experts and extensive consultation among the user community. But copious alternative definitions exist in a variety of texts, illustrating the extent of confusion that surrounds the thesaurus. Many are intended to counteract loose use of the term <i>thesaurus</i>, which is commonly applied to any sort of &rarr; <a href="kos">knowledge organization system (KOS)</a>, such as a subject headings list, or to a set of synonym rings. Conversely, some vocabularies that could properly be described as thesauri may instead be called an "ontology", or a "taxonomy".</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2.4"></a>
+<h4>2.4 Why the confusion?</h4>
+
+<p>Some of the current confusion may be explained by developments that emulate thesaural conventions in other types of KOS. In the 1990s, for example, a "thesaurification" project explored adaptation of some schedules of the UDC (Universal Decimal Classification) (<A HREF="#ref">Riesthuis and Bliedung 1991</A>). This did not interfere with the primary function of the UDC as a classification scheme. Around the same time the Library of Congress Subject Headings (LCSH) began to adopt thesaurus tags such as <CODE>BT</CODE>, <CODE>NT</CODE> and <CODE>RT</CODE> in its display. (Thesaural use of these tags is illustrated in Figure 2.) Today (3 August 2016) a Wikipedia entry for the LCSH claims that "The Library of Congress Subject Headings (LCSH) comprise a thesaurus  [...] of subject headings, maintained by the United States Library of Congress, for use in bibliographic records." The use of thesaural conventions and <CODE>BT/NT</CODE> tags, however, does not make the LCSH a thesaurus, as pointed out long ago by Rolland-Thomas (<A HREF="#ref">1993</A>) and illustrated more recently by Spero (<A HREF="#ref">2008; 2012</A>). The LCSH is fundamentally a subject headings list (defined as a "structured vocabulary comprising terms available for subject indexing, plus rules for combining them into pre-coordinated strings of terms where necessary" &mdash; ISO 25964, clause 2.57) rather than a thesaurus. Differences between the way subject headings and thesauri are used are discussed in De Keyser (<A HREF="#ref">2012</A>).</p>
+
+<p>Another explanation is that all the national and international standards for thesauri take the form of guidelines rather than mandatory instructions. Adopters therefore have a great deal of liberty to cherry-pick only the recommendations that suit the circumstances of their own thesaurus and ignore the rest. </p>
+
+<p>A third part of the explanation is that very often the person charged with sorting out an organization's information assets has little or no training in knowledge organization. If the decision is to develop an in-house indexing language or a filing structure, it may be built in whatever way comes easiest, and randomly named a "classification scheme" or a "thesaurus" or an "ontology" to suit the fashion of the day. The misnomer <i>thesaurus</i> has spread easily this way, leading to much confusion.</p>
+
+<p>Even for the trained information professional, distinguishing between the different types of KOS can be hard. Over the years many attempts at clarification have been made (e.g. <A HREF="#ref">Fast et al. 2002; Garshol 2004; Hodge 2000; Kless et al. 2012</A>). Useful definitions of several KOS types may be found in ANSI/NISO Z39.19 and ISO 25964; ISO 25964-2 (<A HREF="#ref">International Organization for Standardization 2013</A>) also brings out the similarities and the differences to provide for in the context of &rarr; <a href="interoperability">interoperability</a>. Zeng (<A HREF="#ref">2008</A>) casts further light by analysing and comparing features of many different types of KOS.</p>
+
+<p>A different sort of confusion surrounds the basic roles of terms versus concepts. From the early days of thesaurus R&amp;D, the basic aim was to index the semantic content of documents rather than the terminological content. Concepts useful for indexing were collected in a thesaurus, where they were organized and their inter-relationships were established.  When a hierarchical relationship was established, the reciprocal links between the broader and narrower concepts might usefully have been designated <CODE>BC</CODE> (Broader Concept) and <CODE>NC</CODE> (Narrower Concept). In practice, however, they were named <CODE>BT</CODE> (Broader Term)  and <CODE>NT</CODE> (Narrower Term), and this practice was adopted widely. The I974 edition of ISO 2788 (<A HREF="#ref">International Organization for Standardization 1974</A>) attempted to clarify by explaining "the hierarchical relation is represented by the references BROADER TERM (BT), representing the relation of a concept being superordinated, and NARROWER TERM (NT), indicating the reciprocal relation" (clause 3.4.3). But it was too late &mdash; the misnomers have stuck, to this day.</p>
+
+<p>Over the decades this confusion has led to much misunderstanding among thesaurus users. Also the software developed for thesaurus management has often adopted a data model in which the hierarchical and associative relationships are established between terms rather than between concepts, and this has impeded thesaurus interoperability. See discussion in Dextre Clarke and Zeng (<A HREF="#ref">2012</A>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3"></a>
+<h3>3. How a thesaurus is used </h3>
+
+<a name="3.1"></a>
+<h4>3.1 For post-coordinate indexing and searching</h4>
+
+<p>The original thesaurus purpose and mode of use as declared in the standards is confirmed in many texts, such as Wellisch (<A HREF="#ref">1995</A>, 475) "thesauri are primarily intended for indexing as well as for searching and retrieval from post-coordinated systems, in which an indexer may assign several descriptors to documents, while users may combine those descriptors to form search statements". For more background on post-coordinated systems and their underpinning with controlled vocabularies and &rarr; <a href="boolean">Boolean logic</a>, see Sharp (<A HREF="#ref">1967</A>), Lancaster (<A HREF="#ref">1972</A>) or Dextre Clarke (<A HREF="#ref">2008</A>). Today's continuing demand for quality bibliographic databases supporting Boolean retrieval is upheld by Hj&oslash;rland (<A HREF="#ref">2015</A>).</p>
+
+<p>As originally conceived, the act of consulting the thesaurus either for indexing or for searching can be time-consuming. When the user has worked out key concepts of the document to be indexed or the query to be investigated, he or she needs to find an entry point among the terms and/or groups available, and follow the network of relationships to establish the closest possible match in the thesaurus. Skill as well as patience and subject knowledge are needed, since thesauri vary greatly in quality and in format (See <A HREF="#5">Section 5</A> below). Nowadays it is hard to find indexers with the requisite training, while trained end-users are very rare indeed. Therefore modern systems tend to automate both indexing and searching, using an electronic version of the thesaurus.</p>
+
+<p>Thesaurus-based indexing functions may be needed in situations such as library cataloguing, compilation of bibliographic databases, and tagging/indexing of image collections. Generally a software package designed for that application is used, with indexing support capabilities that vary from (at the simple end) speeding up the task of thesaurus navigation to (at the sophisticated end) delivering totally automatic indexing. In between are systems that validate and/or switch the indexer's terms, that select candidate terms for the human indexer to accept or reject, and "suggester" systems for social tagging. </p>
+
+<p>Forty years ago Caplan (<A HREF="#ref">1978</A>) reported a number of failures in trials of thesaurus-based automatic indexing. More recently Lancaster (<A HREF="#ref">1998</A>) provided a more promising account of the techniques available, but concluded (p. 294) "even the most sophisticated of current automatic indexing procedures compare unfavourably with skilled human indexing". Eight years later Tudhope et al. (<A HREF="#ref">2006</A>) were still calling for more research. Ten years later, research into metadata enrichment with thesaurus terms was outlined in Tudhope and Binding (<A HREF="#ref">2016</A>). Kempf and Neubert (<A HREF="#ref">2016</A>) describe several modes of implementation, including one that exploits inter-KOS mappings. Clause 16 of ISO 25964-1 advises on the thesaurus features needed to enable such functions. </p>
+
+<p>Meantime, as described in <A HREF="#7">Section 7</A> below, a new breed of KOS is emerging in the enterprise search sector, loosely named "taxonomy", and stimulating a demand for automatic categorization tools. Since some taxonomies share some features with thesauri (See ISO 25964-2, clause 19), the associated R&amp;D effort is already yielding progress that can be applied to thesaurus-based indexing. Unfortunately a great many in-house applications go unreported in the research literature, including research by the vendors of software for automatic categorization. In the experience of this author, the support for thesaurus-based indexing in off-the-shelf library management packages is rarely as effective or user-friendly as it could be. Likewise the quality of automatic or semi-automated indexing tools varies greatly and much care is needed to obtain reliable outputs. Further discussion of automatic indexing is outside the scope of this article, particularly since most cases do not use a thesaurus.</p>
+
+<p>Turning now to search applications, here too the electronic medium speeds up thesaurus navigation.  Furthermore, with suitable software it enables broadening or narrowing a search at will. Consider, for example, a search for "packaging AND fruit". Relevant results would include any items dealing with the packaging of any of potentially hundreds of different types of fruit. The technique known as <i>search explosion</i> exploits the hierarchical relationships in a thesaurus to expand the search statement automatically and cover all those hundreds of fruit types. It is similarly possible to extend a search via associative relationships, and this is usually termed <i>search expansion</i>. These and other search functions are reviewed in Shiri et al. (<A HREF="#ref">2002</A>), and further discussed in Shiri (<A HREF="#ref">2012</A>). The case study of the <I>STW Thesaurus for Economics</I> by Kempf and Neubert (<A HREF="#ref">2016</A>) illustrates similar techniques, and other ways in which a thesaurus can be used to enhance retrieval, even when the user is unaware of its support.</p>
+
+<p>Evidently indexing and searching have moved on from the early days, when a thesaurus and its IR system could operate usefully in isolation, and even without a computer. Thesaurus use in today's IR applications relies on electronic manipulation, involving transfer of data from one subsystem to another. Success depends on interoperability, i.e. the ability of systems and/or components to exchange information and to use the information that has been exchanged. There are now at least two main contexts for thesaurus interoperability: </p>
+
+<ol>
+<li>"Vertical integration" of the thesaurus with software for indexing or searching or occasionally some other IR function, as already described;</li>
+
+<li>"Horizontal engagement" of the thesaurus with another KOS (perhaps another thesaurus, or a subject headings list, or a classification scheme), typically requiring conversion of indexing and search expressions between the languages of the different KOSs.</li>
+</ol>
+
+<p>The vertical context sees a thesaurus transformed from a static map of concepts, terms and relationships to a functioning system. The horizontal context crosses a different boundary, to be described next.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.2"></a>
+<h4>3.2 Networked uses, especially in the Semantic Web</h4>
+
+<p>A single search across multiple databases would be relatively straightforward if all used the same natural language, the same machine protocols, and the same indexing language. To overcome the disparities found in real life, two approaches to interoperability are especially relevant for KOSs, namely inter-vocabulary mappings and Linked Data.</p>
+
+<p>A mapping is defined as a "relationship between a concept in one vocabulary and one or more concepts in another" (ISO 25964-2, clause 3.41). For example, an equivalence mapping between the concepts labelled <CODE>instant coffee</CODE> in one thesaurus and <CODE>soluble coffee</CODE> in another, would establish that they are viewed as identical for semantic purposes. Existence of mappings like this makes it easy to "translate" search queries for use in the corresponding IR systems, and/or to augment the metadata of resources indexed with either thesaurus. When sets of mappings are available between many KOSs, it opens the prospect of extending searches widely and multilingually. </p>
+
+<p>The value of such mappings is demonstrated in the "Metathesaurus" of the Unified Medical Language System (UMLS) &lt;<A HREF="http://www.nlm.nih.gov/research/umls/">www.nlm.nih.gov/research/umls/</A>&gt;, a semantic tool serving research in biomedicine, health care and related fields. It contains concepts from more than 100 KOSs as well as relationships from within the KOSs and many mappings between their respective concepts. Andrade and Lopes Gines de Lara (<A HREF="#ref">2016</A>) assess its usefulness in retrieval from relevant databases. The influence of this construct has led some authors to speak of a <i>metathesaurus</i> wherever existing thesauri are integrated, linked or mapped together (<A HREF="#ref">Shiri 2012</A>) &mdash; and a variety of ways is possible.</p>
+
+<p>Not all mappings are as simple as equivalence. Dextre Clarke (<A HREF="#ref">2011a</A>) enumerates a variety of mapping types investigated in research projects such as Renardus, MACS (Multilingual ACcess to Subjects), CrissCross and KoMoHe. ISO 25964-2 (<A HREF="#ref">International Organization for Standardization 2013</A>) provides for hierarchical and associative mappings as well as equivalence. Hierarchical mappings are directional &mdash; either broader or narrower. Equivalence mappings subdivide into simple or compound; compound equivalence has two subtypes (intersecting or cumulative) while simple equivalence can be qualified as exact or inexact. Figure 3 shows the range of mapping types, with an example of each. Mapping statements should be expressed using the conventional tags (<CODE>EQ</CODE>, <CODE>BM</CODE>, <CODE>NM</CODE> etc.) and the symbols shown.</p>
+
+<figure align="center">
+<img src="thesaurus3.jpg" title="Fig. 3: Mapping types in ISO 25964-2, with examples of mapping statements" width="80%">
+<figcaption>Figure 3: Mapping types in ISO 25964-2, with examples of mapping statements (in green)</figcaption>
+</figure>
+
+<p>Even more subtlety is possible in applications that need to distinguish between subtypes of hierarchical mapping. See Figure 4.</p>
+
+<figure align="center">
+<img src="thesaurus4.jpg" title="Fig. 4: Mapping statements that distinguish between subtypes of hierarchical mapping" width="80%">
+<figcaption>Figure 4: Mapping statements that distinguish between subtypes of hierarchical mapping</figcaption>
+</figure>
+
+<p>While thesaurus mapping projects have a much longer history (see, for example, <A HREF="#ref">Horsnell 1975</A> or <A HREF="#ref">Hood and Eberman 1990</A>, or <A HREF="#ref">Hoppe 1996</A> reporting on UMLS work that began in 1986), the growth of the Internet and the WWW has made them more widely applicable. Thus Zeng and Chan (<A HREF="#ref">2004</A>) drew attention to opportunities emerging in the Internet context and Vizine-Goetz et al. (<A HREF="#ref">2004</A>) described a labour-saving methodology.  Mayr and Petras (<A HREF="#ref">2008</A>) illustrated the possibilities. Several other mapping projects were reported in Proceedings of the Cologne Conference on Interoperability and Semantics in Knowledge Organization (<A HREF="#ref">Boteram et al. 2011</A>).</p>
+
+<p>Doerr (<A HREF="#ref">2000</A>) analysed perceived semantic problems of thesaurus mapping. Confusingly for us today, his use of the term <i>mapping</i> differs from the ISO 25964 definition, applying to relationships <u>within</u> one vocabulary rather than between different ones.  Thus he deplored the weakness of thesaurus semantics for hierarchical relationships when compared with class subsumption in an ontology.  Subsequent release of SKOS <a href="#end">[2]</a> seems to have overcome or at least eased such problems (<A HREF="#ref">Tudhope and Binding 2016</A>). According to Isaac and Baker (<A HREF="#ref">2015</A>, 2)</p>
+
+<blockquote>The lack of a way to express less formal semantics hindered many early projects that tried to apply Semantic Web technology in the cultural sector by massaging existing knowledge organization systems into formal ontologies. Given the scope of the artifacts considered, this effort required considerable ontological debugging that was ultimately of dubious value. Indeed, most information retrieval scenarios using KOS for searching or browsing collections do not require more than the information that one concept is broader than another.</blockquote>
+
+<p>Establishment of the World Wide Web (WWW) has brought new opportunities and challenges for IR in general, and for KOS use in particular. On the one hand, vast resources have come within our reach; on the other hand, individual resources may be expressed in a multiplicity of languages, like the Tower of Babel. As pointed out in the context of the <I>STW Thesaurus for Economics</I>, "The Web changes everything" (<A HREF="#ref">Kempf and Neubert 2016</A>, 162).</p>
+
+<p>A particular breakthrough for KOS linkage was approval and release of the W3C recommendation <I>SKOS Reference</I> (<A HREF="#ref">Miles and Bechhofer 2009</A>), with specific guidance on how to publish mappings between KOSs. SKOS publication followed on from a research report by Miles (2006, 1) aiming "to develop a formal theory of retrieval using controlled vocabularies that have a simple and intuitive structure [such as thesauri, classification schemes, subject heading systems, taxonomies and other types of structured vocabulary], to provide the necessary theoretical foundations for the development of Semantic Web languages and design patterns for distributed retrieval applications". Since 2009 a number of extensions have been added to SKOS to support interoperability in particular contexts; work on some mapping tools for thesauri is described in <a href="#e2">Endnote 2</a>.</p>
+
+<p>Turning to the other main interoperability opportunity, the principles of Linked Data are set out in Tim Berners-Lee's 2006 paper at <A HREF="http://www.w3.org/DesignIssues/LinkedData.html">www.w3.org/DesignIssues/LinkedData.html</A>. As he explains (p. 1), "The Semantic Web  [...]  is about making links, so that a person or machine can explore the web of data.  With linked data, when you have some of it, you can find other, related, data. Like the web of hypertext, the web of data is constructed with documents on the web. However,  unlike the web of hypertext,  where links are relationships anchors in hypertext documents written in HTML, for data they links [sic] between arbitrary things described by RDF".  For a KOS (such as a classification scheme or a thesaurus) the essential starting point is to publish the whole scheme on the Web using Resource Description Framework (RDF) syntax and giving each concept or class a Uniform Resource Identifier (URI). Once that is in place, anyone anywhere can set up a direct link to any concept or class. For example, if a web page or a bibliographic record in a database on the Web has been indexed with the thesaurus concept <CODE>renewable energy</CODE>, the person interested in that concept can move directly from the thesaurus to those and other relevant pages. This opens up the prospect for any thesaurus published on the Web to act as a connecting hub for an immense literature in the subject field concerned, without any need to assemble the disparate documents in one collection or database. See <a href="#e2">Endnote 2</a> re tools for hand-in-hand application of ISO 25964 and SKOS. </p>
+
+<p>A vision of Wikipedia as the connecting linked data hub for hundreds of thesauri and other KOSs is outlined in a speculative paper from Garcia-Marco (<A HREF="#ref">2016</A>). Kempf and Neubert (<A HREF="#ref">2016</A>) show how the use of Linked Open Data (LOD) is already paying off for the <I>STW Thesaurus for Economics</I>. Baca and Gill (<A HREF="#ref">2015</A>) describe the challenges and long development path at the Getty Research Institute leading up to publication on the Web of three KOSs that are very influential and widely used in the cultural heritage sector: The <I>Art &amp; Architecture Thesaurus</I>, the <I>Union List of Artist Names</I> and the <I>Getty Thesaurus of Geographic Names</I>. They hope thereby to enable potential universal access to information in different formats and languages, about the works of art and countless other exhibits in museums, libraries and galleries around the world. The 2017 release by the European Commission of a new European Interoperability Framework (EIF) &lt;<A HREF="http://ec.europa.eu/isa2/eif">ec.europa.eu/isa2/eif</A>&gt; further emphasizes the opportunities for public administrations to put linked data to work across the countries of Europe. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.3"></a>
+<h4>3.3 Other uses</h4>
+
+<p>Although not the primary purpose, thesauri may also be used for precoordinate indexing (<A HREF="#ref">Wellisch 1995; International Organization for Standardization 1996</A>). When this is done, users of the precoordinate index (typically found at the back of a book) are not expected to consult a thesaurus (since cross-references to synonyms etc. may be embedded within the index).</p>
+
+<p>Conversely, a thesaurus may be used not for indexing but only for searching. This removes the need for compliance with the standards. See <A HREF="#5.7">Section 5.7</A> below.</p>
+
+<p>Educationalists sometimes argue that a thesaurus is valuable in its own right, for &rarr; <a href="domain_analysis">domain analysis</a>, as a conceptual and terminological guide to a domain, and for development of the mind. Lykke Nielsen (<A HREF="#ref">2001</A>, 778) states that "the thesaurus is a tool that helps individual users to get an understanding of the collective knowledge domain". Broughton (<A HREF="http://www.iskouk.org/sites/default/files/ISKOUKGreatDebate-Broughton_0.pptx">www.iskouk.org/sites/default/files/ISKOUKGreatDebate-Broughton_0.pptx</A>, slide 6) argues "the thesaurus teaches us to take a critical and analytical approach to the domain. It makes us think about the nature of concepts, the form of their labels [and about] their relationships" and (slide 9) "there's something fundamental about this approach to modelling information domains that should not be lightly abandoned". More generally Soergel (<A HREF="#ref">2014</A>) has argued that the construction of any sort of knowledge organization schema, particularly with entity-relationship modelling, facet analysis and a graphical presentation of concepts, is a useful learning discipline. </p>
+
+<p>Still more uses are emerging as the Internet pervades the office and everyday living. To satisfy these new uses, however, the standard thesaurus model may need to evolve.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4"></a>
+<h3>4. History of thesaurus development and use</h3>
+
+<a name="4.1"></a>
+<h4>4.1 Origins</h4>
+
+<p>To Peter Mark Roget, working in the middle of the 19th century, we owe the insight that it would be valuable to supply "a collection of the words [the English language] contains and of the idiomatic combinations peculiar to it, arranged, not in alphabetical order, as they are in a dictionary, but according to the <I>ideas</I> which they express" (<A HREF="#ref">Roget 1952</A>, 559). His aim, rather than information retrieval, was to help "find the word, or words, by which [an] idea may be most fitly and aptly expressed" (<A HREF="#ref">ibid.</A>, 559).</p>
+
+<p>An expanding volume of scientific and other scholarly literature in the first half of the twentieth century brought challenges for &rarr; <a href="classification">classification</a>, the orthodox retrieval technology of the times. It led to developments such as faceted classification, post-coordinate indexing, and experiment with various sorts of cards, all of which were to prove helpful when the idea of an IR thesaurus was conceived.</p>
+
+<p>According to Roberts (<A HREF="#ref">1984</A>) the first suggestion of using a thesaurus in the context of IR came from Calvin Mooers in 1947. At around the same time C.L. Bernier and E.J. Crane made a similar, independent suggestion, but "expressed the view that a general thesaurus was not an appropriate form for retrieval purposes" (<A HREF="#ref">Roberts 1984</A>, 272). Much experiment followed over the next decade, but none of the various thesaurus approaches described by Joyce and Needham (<A HREF="#ref">1958</A>) &mdash; e.g. "term lattices" &mdash; seems to have prospered, nor come close to the style of thesaurus that was to emerge in 1959. It was after this gestation period that "the first full-scale, operational in-house retrieval thesaurus [was produced] to solve pressing practical problems at E.I. Du Pont Nemours and Co., Inc., Wilmington, U.S.A." (<A HREF="#ref">Roberts 1984</A>, 281). Krooks and Lancaster (<A HREF="#ref">1993</A>) credit Eugene Wall with developing the principles that determined the shape of this pioneering compilation.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.2"></a>
+<h4>4.2 Period of ascendancy</h4>
+
+<p>More research and development (R&amp;D) followed the 1959 birth of the IR thesaurus, one of the driving forces being the post-war preoccupation of the US military with a need for effective information management. Progress came with publication of the <I>Thesaurus of ASTIA Descriptors</I> (<A HREF="#ref">Armed Services Technical Information Agency 1960</A>) and of the  <I>Chemical Engineering Thesaurus</I> (<A HREF="#ref">American Institute of Chemical Engineers 1961</A>), followed in 1967 by the landmark <I>Thesaurus of Engineering and Scientific Terms</I> (<A HREF="#ref">Office of Naval Research 1967</A>), commonly known as <I>TEST</I>. A fuller description of these works can be found in Krooks and Lancaster (<A HREF="#ref">1993</A>), and in Aitchison and Dextre Clarke (<A HREF="#ref">2004</A>).</p>
+
+<p>Widespread use of thesauri continued throughout the 1960s, 1970s and 1980s, in IR systems that mostly relied on cards of various types, sizes and materials, including some that were sorted by machines (<A HREF="#ref">Dextre Clarke 2008; Sharp 1967</A>). These were post-coordinate systems, which require each document to be indexed by selecting relevant terms from a controlled vocabulary such as a thesaurus. A thesaurus was used too by many of the bibliographic databases that were hosted online by services such as Lockheed's Dialog system, followed later by CD-ROM distribution. Notable pioneers of construction methodology included Jean Viet, Jean Aitchison and Donald Leatherdale, who each produced a number of influential thesauri. Dextre Clarke (<A HREF="#ref">2008</A>) provides a vivid account of how the tools and technology of those times were used. </p>
+
+<p>Further impetus came from development of national and international standards for thesaurus construction, indicating the extent of interest from the information-using community. The most influential, listed in chronological order of their first editions, included:</p>
+
+<ul>
+
+<li>Deutsches Institut für Normung. DIN 1463 Guidelines for the establishment and development of monolingual thesauri [translated title] 1972 (now withdrawn, with ISO 25964-1 recommended in its place)</li>
+
+<li>International Organization for Standardization. ISO 2788-1974 Documentation - Guidelines for the establishment and development of monolingual thesauri. 1st ed. International Organization for Standardization: Geneva, 1974 (now superseded by ISO 25964-1)</li>
+
+<li>American National Standards Institute. ANSI Z39.19-1974 American National Standard Guidelines for thesaurus structure, construction and use. American National Standards Institute: New York, 1974 (now superseded by ANSI/NISO Z39.19-2005)</li>
+
+<li>International Organization for Standardization. ISO 5964-1985. Documentation - Guidelines for the establishment and development of multilingual thesauri. International Organization for Standardization: Geneva, 1985 (now superseded by ISO 25964-1)</li>
+</ul>
+
+<p>These and other  KOS standards are discussed in Dextre Clarke (<A HREF="#ref">2011b</A>), although this article pre-dates publication of the two parts of ISO 25964, in 2011 and 2013 respectively (<A HREF="#ref">International Organization for Standards 2011; 2013</A>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.3"></a>
+<h4>4.3 Systematization</h4>
+
+<p>As noted by Dextre Clarke (<A HREF="#ref">2001</A>, 86) "standardisation has not brought uniformity". Having the status of guidelines rather than mandatory requirements, all the standards left plenty of scope for continuing experiment. While nearly all published thesauri include an alphabetical list of terms (which may be as simple as the extract in Figure 2, or can show additional attributes and relationships) very often the alphabetical list is complemented by other types of display. </p>
+
+<p>The great weakness of any alphabetical list is the need to know a term before one can find the corresponding concept(s). Thus an alphabetical list does not respect Roget's vision that it would be useful to arrange terms systematically according to the ideas or concepts they represent. His literary insight applies equally in the context of information retrieval. A search concerning <CODE>wood</CODE> for example, could equally be expressed using the term <CODE>timber</CODE>, and an alphabetical list would place these terms far apart even though the underlying concept may well be the same. </p>
+
+<p>The classic <I>TEST</I> thesaurus addressed this weakness by providing three Indexes: permuted, hierarchical and by subject category. A derived style, slightly more elaborate, was followed in several thesauri designed by Jean Viet, including the influential <I>Macrothesaurus</I> from the Organization for Economic Cooperation and Development (OECD). A different approach was adopted by Aitchison, Gomersall and Ireland in their ground-breaking 1969 vocabulary <I>Thesaurofacet</I>, comprising a faceted classification fully integrated with a thesaurus. This approach relies on concept-based analysis from the very start, enabling elaboration of the faceted classification and subsequent derivation of a thesaurus. Aitchison and Dextre Clarke (<A HREF="#ref">2004</A>) describe how Aitchison progressively refined and enhanced this technique over the decades to follow, designing a long line of thesauri such as the <I>UNESCO Thesaurus</I> (<A HREF="#ref">Aitchison 1977</A>), the <I>BSI ROOT Thesaurus</I> (<A HREF="#ref">British Standards Institution 1981</A>), and the <I>International thesaurus of refugee terms</I> (<A HREF="#ref">Aitchison 1996</A>). Biswas and Smith (<A HREF="#ref">1989</A>) review a number of other efforts to combine a classification scheme with a thesaurus, especially the "Classaurus" and its variants developed in India by Bhattacharyya, Devadason and others. Broughton (<A HREF="#ref">2006a</A>) also advocates facet analysis as the soundest basis for thesaurus construction, and claims that "the generation of a thesaurus from its equivalent faceted classification is almost as automatic a process as thesaurus construction can ever hope to be" (<A HREF="#ref">Broughton 2006b</A>, 60).</p>
+
+<p>Rather than a full-blooded classification, the systematic listing of preferred terms in <I>MeSH (Medical Subject Headings)</I> was a set of extensive hierarchical "Tree Structures" with an elaborate expressive notation that served both as a vocabulary look-up device and as a search key in the databases of MEDLARS (Medical Literature Analysis and Retrieval System) and later Medline. The first (1982) edition of the multilingual thesaurus <I>AGROVOC</I> (<A HREF="#ref">Leatherdale 1982</A>), taking a different approach, avoided the need for a separate hierarchical section by embedding the complete upper and lower hierarchical context of each concept within the alphabetical display. See Figure 5.</p>
+
+<!--
+<figure>
+
+<blockquote>
+<pre>
+HORSES
+&nbsp;&nbsp;&nbsp;UF     equus caballus
+&nbsp;&nbsp;&nbsp;BT1    equidae
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BT2    perissodactyla
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BT3    mammals
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BT4    vertebrates
+&nbsp;&nbsp;&nbsp;BT1    livestock
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BT2    domestic animals
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BT3    animals
+&nbsp;&nbsp;&nbsp;NT1    draught horses
+&nbsp;&nbsp;&nbsp;NT1    foals
+&nbsp;&nbsp;&nbsp;NT1    mares
+&nbsp;&nbsp;&nbsp;NT1    racehorses
+&nbsp;&nbsp;&nbsp;NT1    saddle horses
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NT2    ponies
+&nbsp;&nbsp;&nbsp;NT1    stallions
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NT2    geldings
+&nbsp;&nbsp;&nbsp;RT        meat animals
+</pre>
+</blockquote>
+
+<figcaption>Figure 5: Entry for a preferred term in the English version of AGROVOC's 1982 edition</figcaption>
+</figure>
+-->
+
+<figure align="center"><br>
+<img src="thesaurus5.jpg" title="Fig. 5: Entry for a preferred term in the English version of AGROVOC's 1982 edition">
+<figcaption>Figure 5: Entry for a preferred term in the English version of AGROVOC's 1982 edition</figcaption>
+</figure>
+
+<p>Throughout the 1960s, 1970s and 1980s much of the experiment was constrained by the need to provide users with printed copies of the thesaurus, and update them regularly. Even after bibliographic databases such as Medline and AGRIS became available online through host services such as Dialog, or on CD-ROM discs, the corresponding thesauri were still widely distributed in hard copy. As late as 1990 the first edition of the influential <I>Art &amp; Architecture Thesaurus</I>  was published conventionally, and even followed in 1994 by a second edition (<A HREF="#ref">Getty Art History Information Program 1994</A>) in 5 weighty volumes, each over 500 pages. But after that only the electronic version has been maintained. From the 1990s onwards, most new thesauri have been published in electronic media only.</p>
+
+<p>If the focus is on an electronic version, not only are the costs and hassle of printed distribution eliminated, but also there is greater freedom to change the presentation frequently in response to feedback, and develop features that support indexing and searching of any associated databases. For example the <I>STW Thesaurus for Economics</I> is nowadays published on the Web (see <A HREF="http://zbw.eu/stw/version/latest/about.en.html">zbw.eu/stw/version/latest/about.en.html</A>), enabling immediate searching of the EconBiz database and at the same time supporting Linked Open Data applications. Similarly <I>AGROVOC</I> has in the twenty-first century undergone huge redevelopment, exploiting SKOS to enable Linked Data applications and incorporating some new relationship types in its "agrontology" (<A HREF="#ref">Caracciolo and Keizer 2014</A>). Figure 6 shows how an entry in <I>AGROVOC</I> looks in 2017, with simultaneous views of hierarchy and all the language equivalents, etc., on one screen, plus easy hyperlinks to all related concepts. </p>
+
+<figure align="center">
+<img src="thesaurus6.jpg" title="Fig. 6: Online display of the entry for 'horses' in AGROVOC, January 2017" width="80%">
+<figcaption>Figure 6: Online display of the entry for <code>horses</code> in AGROVOC, January 2017</figcaption>
+</figure>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.4"></a>
+<h4>4.4 Maturity, senescence or rejuvenation?</h4>
+
+<p>A tailing-off in the popularity of thesauri has occurred from approximately the end of the 1980s, probably due to increasing availability of desktop computers, as well as the rise of the Internet (<A HREF="#ref">Dextre Clarke 2008</A>). The new technologies have enabled alternative retrieval methods that for most applications appear less expensive than post-coordinate indexing plus thesaurus development and maintenance. From that time onwards, while a good thesaurus works no less effectively than before, its role has been relegated to relatively fewer search applications (<A HREF="#ref">Dextre Clarke 2016</A>), such as retrieval from image collections (<A HREF="#ref">MacFarlane 2016</A>), cultural heritage collections and bibliographic databases. In these situations it still brings benefits, especially when implemented in linked data mode (<A HREF="#ref">Tudhope and Binding 2016</A>). Shiri (<A HREF="#ref">2012</A>) paints an optimistic picture of the opportunities.</p>
+
+<p>Latest versions of the standards Z39-19, ISO 25964-1 and ISO 25964-2 are dated 2005 (reaffirmed 2010), 2011 (confirmed 2017) and 2013 respectively. While in them the basic principles of thesaurus design show little change from previous versions, it's clear the context in which a thesaurus operates has changed markedly. Interoperability is now the key to success &mdash; and is reflected in the content of the standards. See <a href="#e3">Endnote 3</a> for some clarification of the differences between these standards.</p>
+
+<p>Some authors believe the way relationships are treated in a thesaurus could usefully evolve. Alexiev et al. (<A HREF="#ref">2014</A>) suggest that interoperability, inferencing capabilities and the reliability of search explosion would all be improved by more rigorous discrimination between the three types of hierarchical relationship allowed by the standards. Hj&oslash;rland (<A HREF="#ref">2016</A>) asks why thesauri "bundle" different kinds of semantic relations into one relationship type &mdash; the associative &mdash; and suggests that "thesauri would probably be improved" if they adopted some attributes from ontologies, in particular the avoidance of "standardized limitations on the kind of semantic relations used" (p. 151). He points out further that the most useful types of relationship to specify may vary from one domain to another. Vernau &lt;<A HREF="#ref">http://www.iskouk.org/sites/default/files/190215Debate_1-JudiVernau.mp3</A>&gt; too has called for changes in the approach to relationships.</p>
+
+<p>Enthusiasts for change may like to note that the current standards are already permissive of developments e.g. the inclusion of new customized relationships, that do not transgress the existing rules. All international standards are reviewed on a five-year cycle, enabling proponents to make the case for revision as soon as such developments have proved their worth.</p>
+
+<p>The passage of time will tell whether the thesaurus continues as before in its relatively few niche applications, or whether it blossoms into new networked opportunities, perhaps revitalised by an infusion of ideas from ontologies and other types of KOS. <A HREF="#7">Section 7</A> below summarizes the challenges and opportunities for continuing exploitation and evolution. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5"></a>
+<h3>5. Types and styles of thesaurus</h3>
+
+<a name="5.1"></a>
+<h4>5.1 Overview</h4>
+
+<p>The <I>Basel Register of Thesauri, Ontologies &amp; Classifications (BARTOC)</I> &lt;<A HREF="http://bartoc.org">bartoc.org</A>&gt; and the <I>Taxonomy Warehouse</I> &lt;<A HREF="http://taxonomywarehouse.com">taxonomywarehouse.com</A>&gt; list hundreds of thesauri among other types of KOS. Despite their astonishing variability in aspects such as subject scope, size, specificity, function, format, layout, language, quality of construction, etc., it is hard to divide them into distinct species or types. Much of the variation seems stylistic rather than fundamental, with one style borrowing features from another and a proliferation of hybrids. This section will therefore start by describing the "bare minimum" that can be expected in any IR thesaurus, and  continue with some discussion of frequently observed differences in style, before discussing some categories of thesaurus that might or might not be considered distinct types. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5.2"></a>
+<h4>5.2 The bare minimum</h4>
+
+<p>These features are indispensable in a traditional functioning thesaurus:</p>
+
+<ul>
+<li>For every concept deemed worth indexing/searching, inclusion of as many as possible of the terms that might represent it, with one of these selected as <i>preferred</i>;</li>
+
+<li>Any hierarchical or close associative relationships between the concepts should be shown;</li>
+
+<li>Some kind of display or index must enable users to look up the terms and concepts.</li>
+</ul>
+
+<p>Taken together these three requirements typically lead to a list of all terms and relationships, with entries alphabetically arranged, in the style of the extract in Figure 2. Alongside these traditional requirements it is worth noting a trend towards applications in which the thesaurus is implemented behind the scenes; this reduces or obviates the need for any kind of display, or indeed for designating the preferred term for a concept.</p>
+
+<p>While the vocabulary illustrated in Figure 2 complies with the standards, a more ambitious thesaurus would also incorporate Scope Notes, History Notes, faceted arrays introduced by node labels, concept groups and other optional features. The data model in Figure 1 points to very many opportunities for enhancing a thesaurus in ways that are standards-compliant and supportive of interoperability in networked applications. As to format, the alphabetic list is often supplemented by other displays to help users find the right term, such as a classified display, a set of hierarchical trees, a permuted index, or even a graphical display. Thesauri that were developed to serve a particular database sometimes show extras, such as the number of postings for each term. In lieu of explicit display, some of the extra features may be hidden, invoked only as functions of a retrieval system. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5.3"></a>
+<h4>5.3 Different styles for different communities</h4>
+
+<p>In this section we discuss presentational differences, which may not be fundamental to thesaurus operation but can still influence user acceptance and hence retrieval effectiveness.  In certain domains a particularly influential thesaurus has influenced the development of subsequent vocabularies. For example, <I>MeSH</I> (the <I>Medical Subject Headings list</I> of the National Library Medicine, first issued in 1960) early on developed a set of “Tree Structures” having a distinctive style of notation directly functional in database retrieval (and still visible in today's <I>MeSH</I> online, see <A HREF="https://meshb.nlm.nih.gov/#/treeSearch">https://meshb.nlm.nih.gov/#/treeSearch</A>). Both the trees and the notation were emulated in later thesauri for medical applications, such as <I>EMTREE</I>, the thesaurus of Elsevier's <I>Excerpta Medica</I> database. Similarly the <I>Art &amp; Architecture Thesaurus</I> first published in 1990, with a very distinctive style of facet-driven hierarchical display incorporating "guide terms", has inspired much thesaurus development work in the heritage sector worldwide. </p>
+
+<p>Other historical influences have been thesaurus maintenance software and preferences of the original designers. Thus thesauri managed with the CAIRS or the TIKIT package characteristically presented "Stop terms" and "Go terms", and some user communities still look for these in every new thesaurus. Many thesauri funded in the twentieth century by the Commission of the European Communities used the ASTUTE software, which generated alphabetical displays with entries in the style of Figure 5. The style and conceptual approach of pioneers Jean Viet and Jean Aitchison (see <A HREF="#4.3">4.3</A> above) inspired many followers to apply the principles of classification to thesaurus development.</p>
+
+<p>A good many other variations on format and layout of printed thesauri, including some graphical representations, are described and/or illustrated in Foskett (<A HREF="#ref">1980</A>). Shiri (<A HREF="#ref">2012</A>) provides an update, including screen layouts for electronic thesauri, to be discussed next.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5.4"></a>
+<h4>5.4 Electronic thesauri</h4>
+
+<p>Arguably an electronic format is just another stylistic variation, not affecting the fundamentals. Electronic thesauri have been around from the early days of online bibliographic databases such as AGRIS, CAB Abstracts, INSPEC, Engineering Index, ERIC, etc., that chose to  provide their search vocabularies as a printed thesaurus and as an electronic version of the same, integrated to greater or lesser degree with the search functions of the database. In such cases the underlying content and structure of both online and printed versions are the same. </p>
+
+<p>That said, the electronic medium offers enhanced opportunities for thesaurus design, maintenance, presentation and implementation, enabling interactive retrieval functions for the users as described in <A HREF="#3">Section 3</A> above. To exploit linked data and other Semantic Web applications, the electronic thesaurus should be published on the Web in the format of the  W3C standard <I>SKOS Simple Knowledge Organization System Reference</I> (see <A HREF="https://www.w3.org/TR/skos-reference/">https://www.w3.org/TR/skos-reference/</A>). ISO 25964-2 (<A HREF="#ref">International Organization for Standardization 2013</A>) gives further advice on semantic interoperability between thesauri and other KOSs. Shiri (<A HREF="#ref">2012</A>) discusses several examples and offers guidelines for the design of thesaurus-enhanced search interfaces. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5.5"></a>
+<h4>5.5 Multilingual vs monolingual thesauri</h4>
+
+<p>All the stylistic variations described so far can apply to monolingual or to multilingual thesauri. The inclusion of more than one language is not just another variable &mdash; it makes a big difference to design, maintenance and use. Compare the illustration in Figure 2 with that in Figure 7, for a bilingual thesaurus (English/Spanish). The display illustrated is for use by speakers of English; an alternative, language-inverted display for speakers of Spanish would show all the terms and relationships for that language. </p>
+
+<!--
+<figure>
+
+<blockquote>
+<pre>
+pesticides
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;es: 	plaguicidas
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;UF:	fumigants
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BT:	agrochemicals
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NT:	fungicides
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;herbicides
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;insecticides
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;RT:	pests
+
+pests
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;es: 	plagas
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NT:	pest insects
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;plant pests
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;RT:	pesticides
+
+pigs
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;es: 	cerdos
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;UF:	hogs
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;porkers
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sows
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BT:	livestock
+
+plant pests
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;es:    plagas de plantas
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BT:	pests
+
+plant products
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;es: 	productos de origen vegetal
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NT:	cereals
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fruits
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;spices
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;vegetables
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;RT:	plants
+
+plants
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;es: 	plantas
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;RT:	plant products
+
+porkers
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;USE:	pigs
+
+poultry
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;es: 	aves de corral
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BT:	livestock
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NT:	chickens
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ducks
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;geese
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;turkeys
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;RT:	eggs
+
+sheep
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;es: 	ovinos
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BT:	livestock
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;RT:	wool</p>
+</pre>
+</blockquote>
+
+<figcaption>Figure 7: Extract from one Alphabetical display of a Spanish/English thesaurus</figcaption>
+</figure>
+-->
+
+<figure align="center">
+<img src="thesaurus7.jpg" title="Extract from one Alphabetical display of a Spanish/English thesaurus">
+<figcaption>Figure 7: Extract from one Alphabetical display of a Spanish/English thesaurus</figcaption>
+</figure>
+
+<p>Multilingual thesauri can be subdivided into two types &mdash; symmetrical or not. In a symmetrical thesaurus, every concept has a preferred term in each of the languages, and the scope and relational structure is identical in each. In a non-symmetrical thesaurus not every concept need be represented in all the languages, and the hierarchical structure may vary from one language to another to accommodate cultural differences. See more discussion and examples in Working Group on Guidelines for Multilingual Thesauri of IFLA Classification and Indexing Section (<A HREF="#ref">2009</A>) and Hudon (<A HREF="#ref">2001</A>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5.6"></a>
+<h4>5.6 Macro- and micro-thesauri</h4>
+
+<p>An original aim of the OECD's <I>Macrothesaurus </I>published in 1972 was to "create a documentary language for processing information in the broad field of economic and social development, while striving for compatibility with sectoral thesauri serving agriculture, industry, labour, education, population, science, technology, culture communication, health and the environment" (<A HREF="#ref">Viet 1972</A>, v). Both the name and the aim were popular, and so years later the term <i>macrothesaurus</i> with a small <i>m</i> was borrowed as a generic name for any broad-level thesaurus that either contains or is aligned with a number of <i>microthesauri</i> having greater specificity in a more limited field. </p>
+
+<p>The normal situation according to Aitchison et al. (<A HREF="#ref">2000</A>, 177) is for built-in compatibility, with the specialized "microthesaurus" being "mapped onto, and entirely integrated within, the hierarchical structure of some broader thesaurus, the macrothesaurus". They acknowledge, however, that sometimes the macrothesaurus is a separate entity, managed independently of any corresponding microthesauri. </p>
+
+<p>In practice it is not easy to maintain alignment between specialized thesauri used by different communities, unless management is centralized. Among the successful examples today is <I>EUROVOC</I>, the Multilingual Thesaurus of the European Union, which is structured into 21 "domains", each of which is subdivided into a number of "microthesauri". Concepts belong to more than one microthesaurus if appropriate. Each microthesaurus contains a hierarchically structured list of concepts, terms and relationships, and can be downloaded separately (see and browse at <A HREF="http://eurovoc.europa.eu/drupal/">eurovoc.europa.eu/drupal/</A>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5.7"></a>
+<h4>5.7 The search thesaurus</h4>
+
+<p>The search thesaurus is one designed for use, not in indexing, but only at the search stage (see more discussion in <A HREF="#ref">Aitchison et al. 2000</A> and <A HREF="#ref">Lykke Nielsen 2004</A>). At first glance this would not seem to make it very different. And indeed, sometimes a normal standards-compliant thesaurus is applied only at the search stage, and then described as a "search thesaurus".</p>
+
+<p>A deeper study, however, reminds us of the way a standard thesaurus is designed to work: "The concepts are represented by terms, and for each concept, one of the possible representations is selected as the preferred term" (ISO 25964-1, clause 4.1). In the case of the thesaurus shown in Figure 2, for example, an indexer would assign the term <CODE>pigs</CODE> to every item in the collection that deals with pigs or sows, or hogs, or porkers. The searcher would use only the term <CODE>pigs</CODE> to retrieve all these items. But if the same tool was being used as a search thesaurus, indexing would not have taken place. The searcher would have to look for "pigs OR sows OR hogs OR porkers".</p>
+
+<p>Thus the notion of a <i>preferred term</i> is inapplicable to a search thesaurus designed as such. Standards such as ISO 25964 become irrelevant, allowing even greater freedom of content, style and structure. Lopez-Huertas (<A HREF="#ref">1997</A>) proposes one example, structured very differently from the standard thesaurus. Another fully worked example is Knapp's <I>The contemporary thesaurus of social science terms and synonyms</I> which attempts to remind readers of many alternative ways of expressing the same idea, using a layout quite different from the standard (see Fig. 8). In practice not many such works have been published. </p>
+
+<figure>
+
+<table align="center" border="1" width="60%"><tr><td>
+<code>
+<p><b>Pioneers</b>. Pioneer(s). Early settler(s). Pilgrim(s). Frontiers(man,men). Backwoods(man,men). Early colonist(s). Homesteader(s). Early immigrant(s). <I>Consider also:</I> discoverer(s), explorer(s), pathfinder(s), scout(s), trailblazer(s), leader(s). <I>See also:</I> Explorers; Pioneering; Scientists.</p>
+</code>
+</td></tr></table>
+
+<figcaption align="center">Figure 8: Sample entry from Knapp's search thesaurus (<A HREF="#ref">Knapp 1993</A>)</figcaption>
+</figure>
+
+<p>The converse of the search thesaurus is the <i>indexing thesaurus</i>, to be used for indexing and not for search. While applications are sometimes found in which indexing is enhanced automatically with the help of a thesaurus, a standard thesaurus is usually applied, rather than one designed for indexing alone.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="6"></a>
+<h3>6. Performance and evaluation</h3>
+
+<p>While the criteria presented by Mader and Haslhofer (<A HREF="#ref">2015</A>) apply to a range of KOSs and not specifically thesauri, they do help evaluate interoperability in the context of SKOS use, for any controlled vocabulary. Much earlier, Owens and Cochrane (<A HREF="#ref">2004</A>) described four approaches &mdash; structural, formative, observational and comparative &mdash; to thesaurus evaluation. None of these directly measures the effectiveness with which a thesaurus succeeds in the purpose for which it was intended &mdash; retrieving information. Such a measure is difficult if not impossible to devise, partly because the thesaurus is only one of several components in the retrieval system, and partly because there are so many variables in the context of use. Lengthy experiments in the 1960s and 1970s studied the effects on precision and recall as different features of indexing languages were tested, but ultimately failed to provide conclusive support for the use of any controlled vocabulary (<A HREF="#ref">Keen 1973; Soergel 1994; Svenonius 1986; Dextre Clarke 2001</A>). Despite efforts over many years, we still do not have definitive proof that development and use of a thesaurus is a worthwhile investment. Dextre Clarke (<A HREF="#ref">2016</A>) provides an account of the continuing debate.</p>
+
+<p>The long debate was highlighted at an event run by the UK Chapter of ISKO in February 2015 (see proceedings at <A HREF="http://www.iskouk.org/content/great-debate">www.iskouk.org/content/great-debate</A>), with a subsequent issue of <I>Knowledge Organization</I> (2016) devoted wholly to questioning the future of thesauri. Despite reservations expressed by Hj&oslash;rland (<A HREF="#ref">2016</A>), that depiction of the future makes it clear the context of KOS use is changing, and the thesaurus evolving to occupy new roles and opportunities. Although quantitative proof of efficacy may be lacking, there is plenty of qualitative evidence of thesauri prospering and supporting users in some key areas of a changing environment. Modes of evaluation may have to adapt to reflect the new context.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="7"></a>
+<h3>7. The future of thesauri</h3>
+
+<p>The thesaurus as conceived by the current national and international standards is still based on the assumption "that human intellect is usually involved in the selection of indexing terms and in the selection of search terms. If both the indexer and the searcher are guided to choose the same term for the same concept, then relevant documents will be retrieved. This is the main principle underlying thesaurus design" (ISO 25964-1, "Introduction", vi). Nowadays opportunities to apply the thesaurus may shrink because the trained indexer and searcher are increasingly scarce. End-users are largely unaware of thesauri (this is confirmed, for example, by <A HREF="#ref">Greenberg 2004</A>); trained indexers and searchers are usually deemed unaffordable. Areas where the thesaurus seems most likely to survive and flourish include:</p>
+
+<ul>
+<li>Applications where no other IR technology is effective (e.g. indexing of still images)</li>
+
+<li>Applications with an income to pay the costs of indexing and thesaurus maintenance (e.g. profitable bibliographic databases)</li>
+
+<li>Applications with new benefits to spread the costs over more outcomes (e.g. via Linked Data and/or mapping services)</li>
+
+<li>Enhanced implementation behind the scenes, so that users get the benefits without the discomforts of look-up (e.g. with automatic–aided indexing)</li>
+
+<li>Evolved or hybrid KOSs, with new characteristics that are now in demand (e.g. by incorporation of domain-specific relationships)</li>
+
+</ul>
+
+<p>Examples of developments like these may be found in the special issue of <I>Knowledge Organization</I> (2016) mentioned above, and in Shiri (<A HREF="#ref">2012</A>).</p>
+
+
+<p>Simultaneously as true thesauri still thrive in the types of application just listed, a parallel future may lie in their gradual transformation under the banner <i>taxonomy</i>. This term, long applied to the practice and science of classification and especially the Linnaean classification of biological organisms, has been widely applied since the 1990s to a variety of KOSs found in electronic media. Applications include corporate intranets, online retail sales outlets, digital libraries, public sector advice websites, as well as displacement of the thesaurus in some of its traditional occupations. White (<A HREF="#ref">2016</A>) points to the value of KO tools and techniques in some of these contexts. </p>
+
+<p>There's still little uniformity among the "taxonomies" being developed for such applications, which may be simple heading lists, or may be complex hybrids that combine features from thesauri, traditional classification schemes, faceted schemes, ontologies and other types of KOS. In comparison with the widespread adoption of web search engines, their value is barely recognized. But there certainly is a very large need and opportunity for the principles of knowledge organization to be applied towards helping millions of workers in the knowledge society to find information resources of all kinds. The names we shall find for the emerging hybrid vocabularies are hard to predict, but we can safely say that the thesaurus will pass some of its genes into new tools for searching the cyberworld to come. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="8"></a>
+<h3>8. Further reading</h3>
+
+<p>(a) Useful registers of thesauri (among other types of KOS) may be found in the <I>Basel Register of Thesauri, Ontologies &amp; Classifications</I> at <A HREF="http://bartoc.org">bartoc.org</A>  and the <I>Taxonomy Warehouse</I> at <A HREF="http://taxonomywarehouse.com">taxonomywarehouse.com</A>. The latter site also lists relevant events, blogs, publishers and links to some associated products such as software.</p>
+
+<p>(b) Two guides to thesaurus construction are recommended:</p>
+
+<ul>
+<li>Aitchison, Gilchrist and Bawden (<A HREF="#ref">2000</A>). <I>Thesaurus construction: a practical manual</I>.</li>
+
+<li>Broughton (<A HREF="#ref">2006</A>). <I>Essential thesaurus construction</I>.</li>
+</ul>
+
+<p>The first of these also carries an extensive bibliography. Both guides draw heavily on the then current national and international standards for thesauri: ISO 2788, ISO 5964, BS8723 and ANSI/NISO Z39.19 (of which the first three have since been withdrawn, superseded by ISO 25964). </p>
+
+<p>(c) Specialist software is needed for thesaurus construction and maintenance. While ISO 25964-1 and ANSI/NISO Z39.19 both advise on the functionality required, see also the following article and its list of references:</p>
+
+<ul>
+<li>Will (<A HREF="#ref">2010</A>). Thesaurus Management Software.
+</ul>
+
+<p>(d) A special issue of <I>Cataloging &amp; Classification Quarterly</I> (<A HREF="#ref">Roe and Thomas 2004</A>) was devoted to "The thesaurus: review, renaissance and revision", in which all the articles have useful reference lists.  Contents include:</p>
+
+<ul>
+<li>Aitchison and Dextre Clarke (<A HREF="#ref">2004</A>). The thesaurus: a historical viewpoint, with a look to the future.</li>
+
+<li>Greenberg (<A HREF="#ref">2004</A>). User comprehension and searching with information retrieval thesauri.</li>
+
+<li>Johnson (<A HREF="#ref">2004</A>). Distributed thesaurus web services.</li>
+
+<li>Landry (<A HREF="#ref">2004</A>). Multilingual subject access: the linking approach of MACS.</li>
+
+<li>Lykke Nielsen (<A HREF="#ref">2004</A>). Thesaurus construction: key issues and selected readings.</li>
+
+<li>Owens and Cochrane (<A HREF="#ref">2004</A>). Thesaurus evaluation.</li>
+
+<li>Riesland  (<A HREF="#ref">2004</A>). Tools of the Trade: Vocabulary Management Software.</li>
+
+<li>Shearer (<A HREF="#ref">2004</A>). A practical exercise in building a Thesaurus.</li>
+
+<li>Thomas (<A HREF="#ref">2004</A>). Teach yourself thesaurus: exercises, readings, resources.</li>
+
+<li>Will (<A HREF="#ref">2004</A>). Thesaurus consultancy.</li>
+</ul>
+
+<p>(e) A special issue of <I>Knowledge Organization</I> (2016, 43 no. 3) was devoted to a continuation of the ISKO-UK debate "This house believes that the traditional thesaurus has no place in modern information retrieval". All the articles have useful reference lists.  Contents include:</p>
+
+<ul>
+
+<li>Dextre Clarke (<A HREF="#ref">2016</A>). Origins and trajectory of the long thesaurus debate.</li>
+
+<li>Dextre Clarke and Vernau (<A HREF="#ref">2016</A>). Guest editorial: the thesaurus debate continues.</li>
+
+<li>Dextre Clarke and Vernau (<A HREF="#ref">2016</A>). Questions and answers on current developments inspired by the thesaurus tradition.</li>
+
+<li>Garcia-Marco (<A HREF="#ref">2016</A>). Enhancing the visibility and relevance of thesauri in the Web: searching for a hub in the linked data environment.</li>
+
+<li>Hj&oslash;rland (<A HREF="#ref">2016</A>). Does the traditional thesaurus have a place in modern information retrieval?</li>
+
+<li>Kempf and Neubert (<A HREF="#ref">2016</A>). The role of thesauri in an open Web: a case study of the STW Thesaurus for Economics.</li>
+
+<li>MacFarlane (<A HREF="#ref">2016</A>). Knowledge Organisation and its role in multimedia information retrieval.</li>
+
+<li>Tudhope and Binding (<A HREF="#ref">2016</A>). Still quite popular after all those years: the continued relevance of the information retrieval thesaurus.</li>
+
+<li>White (<A HREF="#ref">2016</A>). The value of taxonomies, thesauri and metadata in enterprise search.</li>
+</ul>
+
+<p>(f) The interest group NKOS (Networked Knowledge Organization Systems/Services/Structures) runs projects and activities enabling all sorts of KOS as networked interactive information services, especially through the Internet. On its website at <A HREF="http://nkos.slis.kent.edu">nkos.slis.kent.edu</A> are links to many relevant publications and the proceedings of past events. The presentations from the NKOS workshops in USA and Europe are especially helpful in pointing to the future of thesauri and other KOSs. For an overview, see Tudhope and Lykke Nielsen (<A HREF="#ref">2006</A>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="end"></a>
+<h4>Endnotes</h4>
+
+<a name="e1"></a>
+<p><strong>1</strong>. <I>Information retrieval</I> is used here broadly to mean "the activity of obtaining information resources relevant to an information need from one or more collections of information resources" (definition adapted from Wikipedia). It is not limited to use in systems held on computer.  </p>
+
+<a name="e2"></a>
+<p><strong>2</strong>. As explained on the W3C (World Wide Web Consortium) website, "SKOS [Simple Knowledge Organization Systems]  is an area of work developing specifications and standards to support the use of knowledge organization systems (KOS) such as thesauri, classification schemes, subject heading systems and taxonomies within the framework of the Semantic Web". A key product of this programme is the <I>SKOS Simple Knowledge Organization System Reference</I> (<A HREF="#ref">Miles and Bechhofer 2009</A>), a common data model for sharing and linking knowledge organization systems via the Web. Development work on this specification took place around the same time as the development of BS 8723 and ISO 25964, with regular communication between the corresponding teams, so that a high degree of compatibility was achieved. The main difference between them can be summarized as follows: While ISO 25964-1 serves as a standard for <u>construction</u> of thesauri, SKOS is a standard for <u>publishing</u> thesauri and other types of KOS on the Web. Likewise ISO 25964-2 recommends the sort of mappings that can be established between one KOS and another; SKOS presents a way of expressing these when published to the Web.</p>
+
+<p>The data models of these two standards are not identical, because ISO 25964 must provide for the needs of all sorts of thesauri (whether for Web use or for other applications) while SKOS <!-- [29] -->must provide for all sorts of KOS (including classification schemes and many others that do not comply with ISO 25964). Good alignment between the two made possible a set of correspondences &lt;ISO25964-SKOSXL-MADS-2013-12-11.pdf&gt; between components of the data models, developed by the same teams of authors. Where the basic SKOS data model lacked a construct corresponding to a feature of the ISO 25964 model, the SKOS-XL &lt;<A HREF="http://www.w3.org/TR/skos-reference/skos-xl.html">www.w3.org/TR/skos-reference/skos-xl.html</A>&gt; model was used, supplemented by additional proposals where necessary. Care was taken to avoid incompatibility with another project to align SKOS with MADS &lt;<A HREF="http://www.loc.gov/standards/mads/">www.loc.gov/standards/mads/</A>&gt;. Based on the documented correspondence table, an RDF schema that provides a machine-readable version for these mappings as well as for the elements from the ISO 25964 model was developed and made available at <A HREF="http://purl.org/iso25964/skos-thes">http://purl.org/iso25964/skos-thes</A>. At the time of writing (July 2017) this latter site is unavailable but work is in hand to restore it. More background on all the above developments is provided at <A HREF="http://www.niso.org/schemas/iso25964/#skos">www.niso.org/schemas/iso25964/#skos</A>.</p>
+
+<p>It should be noted that exploitation of these interoperability standards and opportunities demands skill and attention to detail. Some practical examples and cautionary tales are provided in De Smedt (<A HREF="#ref">2012</A>) and Lindenthal (<A HREF="#ref">2012</A>).</p>
+
+<a name="e3"></a>
+<p><strong>3</strong>. The American standard ANSI/NISO Z39.19 and the International standard ISO 25964 are broadly aligned. Here are some key points of similarity or difference:</p>
+
+<ul>
+<li>The latest version of Z39.19 is a single document, issued in 2005 and reaffirmed in 2010; whereas ISO 25964 is a two-part standard, of which the first part (ISO 25964-1) was issued in 2011 and confirmed in 2017 while the second (ISO 25964-2) was issued in 2013.</li>
+
+<li>The scope of Z39.19 is broadly comparable with that of ISO 25964-1, but Z39.19 covers several types of monolingual controlled vocabulary &mdash; lists of controlled terms, synonym rings, taxonomies and thesauri &mdash; while ISO 25964-1 deals only with thesauri, both monolingual and multilingual.</li>
+
+<li>ISO 25964-1 provides a data model but Z39.19 does not.</li>
+
+<li>The whole of ISO 25964-2 (99 pages) deals with interoperability between thesauri and other types of KOS, including classification schemes, taxonomies, subject heading schemes, ontologies, terminologies, name authority lists, synonym rings. The treatment of interoperability in Z39.19 is contained in one clause of eight pages (plus a five-page appendix), in which multilingual thesauri are treated as a special case of interoperability.</li>
+
+<li>Z39.19 may be downloaded free of charge from the NISO website, whereas each part of ISO 25964 currently (2017) costs 198 Swiss francs, from the ISO store.</li>
+</ul>
+
+<p>In view of the relatively wider scope of ISO 25964 in respect of thesauri, including in-depth treatment of interoperability and provision of a data model, it has been referenced more often than Z39.19 in this article.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="ref"></a>
+<h4>References </h4>
+
+<p>Aitchison, Jean. 1977. <I>UNESCO Thesaurus</I>. Paris: UNESCO.</p>
+
+<p>Aitchison, Jean. 1996. <I>International thesaurus of refugee terms.</I> 2nd ed. New York and Geneva: United Nations High Commissioner for Refugees.</p>
+
+<p>Aitchison, Jean and Stella Dextre Clarke. 2004. The thesaurus: a historical viewpoint, with a look to the future. <I>Cataloging &amp; Classification Quarterly</I> 37, no. 3/4: 5-21.</p>
+
+<p>Aitchison, Jean and Alan Gilchrist. 1972. <I>Thesaurus construction: a practical manual</I>. 1st ed. London: Aslib.</p>
+
+<p>Aitchison, Jean, Alan Gilchrist and David Bawden. 2000. <I>Thesaurus construction and use: a practical manual</I>. 4th ed. London: Aslib.</p>
+
+<p>Aitchison, Jean, Alan Gomersall and Ralph Ireland. 1969. <I>Thesaurofacet: a thesaurus and faceted classification for engineering and related subjects</I>. Whetstone, Leicester: English Electric Company, Ltd.</p>
+
+<p>Alexiev, Vladimir, Antoine Isaac and Jutta Lindenthal. 2014. On Compositionality of ISO 25964 Hierarchical Relationships (BTG, BTP, BTI). 13th European Networked Knowledge Organization Systems (NKOS) Workshop held during the DL2014 Conference in London. <A HREF="https://at-web1.comp.glam.ac.uk/pages/research/hypermedia/nkos/nkos2014/content/NKOS2014-abstract-alexiev-isaac-lindenthal.pdf">https://at-web1.comp.glam.ac.uk/pages/research/hypermedia/nkos/nkos2014/content/NKOS2014-abstract-alexiev-isaac-lindenthal.pdf</A></p>
+
+<p>American Institute of Chemical Engineers. 1961. <I>Chemical Engineering Thesaurus: a wordbook for use with the concept coordination system of information storage and retrieval</I>. New York: American Institute of Chemical Engineers.</p>
+
+<p>American National Standards Institute. 1974. <I>American National Standard Guidelines for thesaurus structure, construction and use</I>. ANSI Z39.19-1974. American National Standards Institute, New York.</p>
+
+<p>Andrade, Julietti de and Marilda Lopes Ginez de Lara. 2016. Interoperability and mapping between Knowledge Organization Systems: Metathesaurus - Unified Medical Language System of the National Library of Medicine. <I>Knowledge Organization</I> 43, no. 2: 107-12.</p>
+
+<p>Armed Services Technical Information Agency. 1960. <I>Thesaurus of ASTIA Descriptors</I>. Arlington, VA: Armed Services Technical Information Agency.</p>
+
+<p>Baca, Murtha and Melissa Gill. 2015. Encoding multilingual knowledge systems in the digital age: the Getty vocabularies. <I>Knowledge Organization</I> 42, no. 4: 232-43.</p>
+
+<p>Berners-Lee, Tim. 2006. "Linked Data." Web page. Available at <A HREF="http://www.w3.org/DesignIssues/LinkedData.html">www.w3.org/DesignIssues/LinkedData.html</A>.</p>
+
+<p>Biswas, Subal C and Fred Smith. 1989. Classed thesauri in indexing and retrieval: a literature review and critical evaluation of online alphabetic classaurus. <I>Library and Information Science Research</I> 11, no. 2: 109-41.</p>
+
+<p>Boteram, Felix, Winfried Goedert and Jessica Hubrich, Eds. 2011. <I>Concepts in Context: Proceedings of the Cologne Conference on Interoperability and Semantics in Knowledge Organization</I>. Wuerzburg, Germany: Ergon Verlag.</p>
+
+<p>British Standards Institution. 1981. <I>BSI ROOT Thesaurus</I>. 1st ed. Milton Keynes, England: British Standards Institution.</p>
+
+<p>Broughton, Vanda. 2006a. <I>Essential thesaurus construction</I>. London: Facet publishing.</p>
+
+<p>Broughton, Vanda. 2006b. The need for a faceted classification as the basis of all methods of information retrieval. <I>Aslib Proceedings</I> 58, no. 1/2: 49-72.</p>
+
+<p>Caplan, Priscilla Louise. 1978. <I>Thesaurus-based automatic indexing: a study of indexing failure</I>. Chapel Hill, North Carolina University.</p>
+
+<p>Caracciolo, Caterina and Johannes Keizer. 2014. What KOS can do, with the proper tools available. About AGROVOC, edited in VocBench and used in the AGRIS web application. Knowledge Organization - making a difference: ISKO UK biennial conference. <A HREF="http://www.iskouk.org/sites/default/files/CaraccioloSlidesISKO-UK2015.pdf">http://www.iskouk.org/sites/default/files/CaraccioloSlidesISKO-UK2015.pdf</A></p>
+
+<p>De Keyser, Pierre. 2012. Introduction to subject headings and thesauri. <i>Indexing: from thesauri to the Semantic Web</i>. Pierre De Keyser, 1-37. Chandos Publishing (Oxford), Limited.</p>
+
+<p>De Smedt, Johan. 2012. Exchanging ISO 25964-1 thesauri data using RDF, SKOS and SKOS-XL. Presentation in 11th European Networked Knowledge Organization Systems (NKOS) Workshop, Sept 2012. <A HREF="https://at-web1.comp.glam.ac.uk/pages/research/hypermedia/nkos/nkos2012/presentations/ISO25964-mapping-to-SKOS-XL_TPDL-2012-09-27v6.pdf">https://at-web1.comp.glam.ac.uk/pages/research/hypermedia/nkos/nkos2012/presentations/ISO25964-mapping-to-SKOS-XL_TPDL-2012-09-27v6.pdf</A>.
+
+<p>Dextre Clarke, Stella G. 2001. Organising access to information by subject.  <I>Handbook of information management</I> (previously <I>Handbook of special librarianship and information work</I>). 8th edition ed., Editor Alison Scammell. London: Aslib, 72-110.</p>
+
+<p>Dextre Clarke, Stella G. 2008. The last 50 years of knowledge organization: a journey through my personal archives. <I>Journal of Information Science</I> 34, no. 4: 427-37.</p>
+
+<p>Dextre Clarke, Stella G. 2011a. In Pursuit of Interoperability: Can We Standardize Mapping Types? Concepts in Context: <I>Proceedings of the Cologne Conference on Interoperability and Semantics in Knowledge Organization</I>, eds Felix Boteram, Winfried Goedert and Jessica Hubrich. Wuerzburg, Germany: Ergon Verlag, 91-109.</p>
+
+<p>Dextre Clarke, Stella G. 2011b. Knowledge Organization System Standards.  <I>Encyclopedia of Library and Information Science</I>. 3rd ed., Taylor and Francis. <A HREF="http://www.tandfonline.com/doi/abs/10.1081/E-ELIS3-120044538">http://www.tandfonline.com/doi/abs/10.1081/E-ELIS3-120044538</A>.</p>
+
+<p>Dextre Clarke, Stella G. 2016. Origins and trajectory of the long thesaurus debate. <I>Knowledge Organization</I> 43, no. 3: 138-44.</p>
+
+<p>Dextre Clarke, Stella G. and Marcia Lei Zeng. 2012. From ISO 2788 to
+ISO 25964: the evolution of thesaurus standards towards interoperability
+and data modeling. <i>Information Standards Quarterly</i>, 24, no. 1 (Winter): 20-26. <A HREF="http://www.niso.org/publications/isq/2012/v24no1/clarke/">http://www.niso.org/publications/isq/2012/v24no1/clarke/</A>. DOI 10.3789/isqv24n1.2012.04. </p>
+
+<p>Doerr, Martin. 2000. Semantic Problems of Thesaurus Mapping. <I>Journal of Digital Information</I> 1, no. 8. <A HREF="http://jodi.ecs.soton.ac.uk/Articles/v01/i08/Doerr/">http://jodi.ecs.soton.ac.uk/Articles/v01/i08/Doerr/</A>.</p>
+
+<p>Elsevier Science. <I>EMTREE : The life science thesaurus</I>. Amsterdam: Elsevier Science.</p>
+
+<p>Fast, Karl, Leise, Fred and Steckel, Mike. 2002. "Controlled vocabularies: a glosso-thesaurus". Web page [accessed February 2017]. Available at <A HREF="http://boxesandarrows.com/controlled-vocabularies-a-glosso-thesaurus/">http://boxesandarrows.com/controlled-vocabularies-a-glosso-thesaurus/</A>.</p>
+
+<p>Foskett, Douglas J. 1980. Thesaurus.  <I>Encyclopaedia of library and information science</I>, eds. A. Kent, H. Lancour and J.E. Daily, 416-62. Vol. 30. New York: Marcel Dekker.</p>
+
+<p>Garcia-Marco, Francisco Javier. 2016. Enhancing the visibility and relevance of thesauri in the Web: searching for a hub in the linked data environment. <I>Knowledge Organization</I> 43, no. 3: 193-202.</p>
+
+<p>Garshol, Lars Marius. 2004. "Metadata? Thesauri? Taxonomies? Topic Maps!  Making sense of it all." Web page [accessed June 2017]. Available at <A HREF="http://www.ontopia.net/topicmaps/materials/tm-vs-thesauri.html">http://www.ontopia.net/topicmaps/materials/tm-vs-thesauri.html</A>. Also published in <I>Journal of Information Science</I> Vol 30(4), 2004, pp378-391.</p>
+
+<p>Getty Art History Information Program. 1994. <I>Art &amp; Architecture Thesaurus</I>. 2nd ed. Oxford and New York: Oxford University Press.</p>
+
+<p>Gilchrist, Alan. 1971. <I>The thesaurus in retrieval</I>. London: Aslib.</p>
+
+<p>Greenberg, Jane. 2004. User comprehension and searching with information retrieval thesauri. <I>Cataloging &amp; Classification Quarterly</I> 37, no. 3/4: 103-20.</p>
+
+<p>Hj&oslash;rland, Birger. 2015. Classical databases and knowledge organization: a case for Boolean retrieval and human decision-making during searches. <I>Journal of the Association for Information Science and Technology</I> 66, no. 8: 1559-75.</p>
+
+<p>Hj&oslash;rland, Birger. 2016. Does the traditional thesaurus have a place in modern information retrieval? <I>Knowledge Organization</I> 43, no. 3: 145-59.</p>
+
+<p>Hodge, Gail. 2000. <I>Systems of Knowledge Organization for Digital Libraries: beyond traditional authority files</I>. Washington DC: Digital Library Federation. Also available at: <A HREF="http://www.clir.org/pubs/reports/pub91/contents.html">http://www.clir.org/pubs/reports/pub91/contents.html</A></p>
+
+<p>Hood, Martha W. and Christine Ebermann. 1990. Reconciling the CAB Thesaurus and AGROVOC. <I>IAALD Quarterly Bulletin</I> 35, no. 3: 181-85.</p>
+
+<p>Hoppe, Stephan. 1996. The UMLS: a model for knowledge integration in a subject field. In: <I>Compatibility and Integration of Order Systems: Research Seminar Proceedings of the TIP/ISKO Meeting</I>, eds. Ingetraut Dahlberg and Krystyna Siwek. Warsaw: International Society for Knowledge Organization, 97-110.</p>
+
+<p>Horsnell, Verina. 1975. The Intermediate Lexicon: an aid to international co-operation. <I>Aslib Proceedings</I> 27, no. 2: 57-66.</p>
+
+<p>Hudon, Michele. 2001. Relationships in multilingual thesauri.  <I>Relationships in the organization of knowledge</I>, eds. Carol A. Bean and Rebecca Green. Dordrecht: Kluwer, 67-80.</p>
+
+<p>International Organization for Standardization. 1974.  <I>ISO 2788-1974. Documentation - Guidelines for the establishment and development of monolingual thesauri</I>. 1st ed. Geneva: International Organization for Standardization.</p>
+
+<p>International Organization for Standardization. 1985. <I>ISO 5964-1985. Documentation - Guidelines for the establishment and development of multilingual thesauri</I>. Geneva: International Organization for Standardization.</p>
+
+<p>International Organization for Standardization. 1996. <I>ISO 999:1996  Information and documentation - Guidelines for the content, organization and presentation of indexes</I>. Geneva: International Organization for Standardization.</p>
+
+<p>International Organization for Standardization. 2011. <I>ISO 25964-1: Information and documentation - thesauri and interoperability with other vocabularies - Part 1: Thesauri for information retrieval</I>. Geneva: International Organization for Standardization.</p>
+
+<p>International Organization for Standardization. 2013. <I>ISO 25964-2: Information and documentation - thesauri and interoperability with other vocabularies - Part 2: Interoperability with other vocabularies</I>. Geneva: International Organization for Standardization.</p>
+
+<p>Isaac, Antoine and Thomas Baker. 2015. Linked Data Practice at Different Levels of Semantic Precision: The Perspective of Libraries, Archives and Museums. <I>ASIS&amp;T Bulletin</I>. <A HREF="http://www.asis.org/Bulletin/Apr-15/AprMay15_Isaac_Baker.html">http://www.asis.org/Bulletin/Apr-15/AprMay15_Isaac_Baker.html</A></p>
+
+<p>Joyce, T. and R.M. Needham. 1958. The thesaurus approach to information retrieval. <I>American Documentation</I> 9: 192-97.</p>
+
+<p>Keen, E. Michael. 1973. The Aberystwyth index languages test. <I>Journal of Documentation</I> 29, no. 1: 1-35.</p>
+
+<p>Kempf, Andreas Oscar and Joachim Neubert. 2016. The role of thesauri in an open Web: a case study of the STW Thesaurus for Economics. <I>Knowledge Organization</I> 43, no. 3: 160-173.</p>
+
+<p>Kless, Daniel, Simon Milton and Edmund Kazmierczak. 2012. Relationships and relata in ontologies and thesauri: Differences and similarities. <I>Applied Ontology</I> 7, no. 4: 401-28.</p>
+
+<p>Knapp, Sara D. 1993. <I>The contemporary thesaurus of social science terms and synonyms. A guide for natural language computer searching</I>. Arizona: Oryx.</p>
+
+<p>Krooks D A and Lancaster F W. 1993. The evolution of guidelines for thesaurus construction. <I>Libri</I> 43, no. 4: 326-42.</p>
+
+<p>Lancaster, F W. 1972. <I>Vocabulary control for information retrieval</I>. Washington, D.C.: Information Resources Press.</p>
+
+<p>Lancaster, F W. 1998. <I>Indexing and abstracting in theory and practice</I>. London: LA Publishing.</p>
+
+<p>Lindenthal, Jutta. 2012. Ambiguities in representing thesauri using extended SKOS – examples from real life. Presentation in 11th European Networked Knowledge Organization Systems (NKOS) Workshop, Sept 2012. <A HREF="https://at-web1.comp.glam.ac.uk/pages/research/hypermedia/nkos/nkos2012/presentations/TPDL2012_NKOS_Ambiguities_R1.pdf">https://at-web1.comp.glam.ac.uk/pages/research/hypermedia/nkos/nkos2012/presentations/TPDL2012_NKOS_Ambiguities_R1.pdf</A>.
+
+<p>Leatherdale, Donald. 1982. <I>AGROVOC</I>. 1st ed. Collaborators G Eric Tidbury and Roy Mack. Rome, Italy: Food and Agriculture Organization of the United Nations and Commission of the European Communities.</p>
+
+<p>Lopez-Huertas, M. J. 1997. Thesaurus structure design: a conceptual approach for improved interaction. <I>Journal of Documentation</I> 53, no. 2: 139-77.</p>
+
+<p>Lykke Nielsen, Marianne. 2001. A framework for work task based thesaurus design. <I>Journal of Documentation</I> 57, no. 6: 774-97.</p>
+
+<p>Lykke Nielsen, Marianne. 2004. Thesaurus construction: key issues and selected readings. <I>Cataloging &amp; Classification Quarterly</I> 37, no. 3/4: 57-74.</p>
+
+<p>MacFarlane, Andrew. 2016. Knowledge Organisation and its role in multimedia information retrieval. <I>Knowledge Organization</I> 43, no. 3: 180-183.</p>
+
+<p>Mader, Christian and Haslhofer, Bernard. 2015. Quality criteria for controlled web vocabularies" Web page. Available at <A HREF="https://www.researchgate.net/publication/267832936_Quality_Criteria_for_Controlled_Web_Vocabularies">https://www.researchgate.net/publication/267832936_Quality_Criteria_for_Controlled_Web_Vocabularies</A>.</p>
+
+<p>Mayr, Philipp and Vivien Petras. 2008. Building a terminology network for search: the KoMoHe project. Metadata for Semantic and Social Applications. <I>Proceedings of the International Conference on Dublin Core and Metadata Applications</I>, eds. Jane Greenberg and Wolfgang Klas. Dublin Core Metadata Initiative and Universitaetsverlag Goettingen, 177-82.</p>
+
+<p>Miles, Alistair. 2006. <I>Retrieval and the Semantic Web: incorporating A Theory of Retrieval Using Structured Vocabularies</I>. Oxford Brookes University. <A HREF="https://www.researchgate.net/publication/30410464_Retrieval_and_the_Semantic_Web_incorporating_A_Theory_of_Retrieval_Using_Structured_Vocabularies">https://www.researchgate.net/publication/ 30410464_Retrieval_and_the_Semantic_Web_incorporating_A_Theory_of_Retrieval_Using_Structured_Vocabularies</A></p>
+
+<p>Miles, Alistair and Bechhofer, Sean, Editors. 2009. <I>SKOS Simple Knowledge Organization System Reference</I>. W3C Recommendation. Web page. Available at  <A HREF="http://www.w3.org/TR/skos-reference">http://www.w3.org/TR/skos-reference</A>.</p>
+
+<p>National Information Standards Organization 2005. <I>Guidelines for the construction, format, and management of monolingual controlled vocabularies. ANSI/NISO Z39.19-2005 (R2010)</I>. National Information Standards Organization, Maryland, USA.</p>
+
+<p>National Library of Medicine. <I>Medical Subject Headings (MeSH)</I>. Annually updated in print until 2007; thereafter maintained online only. Bethesda, Maryland: National Library of Medicine.</p>
+
+<p>Office of Naval Research. 1967. <I>Thesaurus of engineering and scientific terms (TEST)</I>. New York: Engineers Joint Council and US Department of Defense.</p>
+
+<p>Owens, Lesley Ann and Pauline Atherton Cochrane. 2004. Thesaurus evaluation. <I>Cataloging &amp; Classification Quarterly</I> 37, no. 3/4: 87-102.</p>
+
+<p>Riesthuis, Gerhard JA and Steffi Bliedung. 1991. Thesaurification of the UDC. Tools for knowledge organization and the human interface. Proceedings of the 1st International ISKO Conference, Editor Robert Fugmann. Frankfurt/Main: Indeks Verlag, Vol 2, 109-17.</p>
+
+<p>Roberts, N. 1984. The pre-history of the information retrieval thesaurus. <I>Journal of Documentation</I> 40, no. 4: 271-85.</p>
+
+<p>Roe, Sandra K. and Alan R. Thomas, eds. 2004. <I>Cataloging &amp; Classification Quarterly</I>. Vol. 37 (3/4). Haworth.</p>
+
+<p>Roget, Peter. 1952. <I>Everyman's Thesaurus of English words and phrases</I>. Reviser D.C. Browning. London: J.M. Dent &amp; Sons.</p>
+
+<p>Rolland-Thomas, P. 1993. Thesaural codes: an appraisal of their use in the Library of Congress Subject Headings. <I>Cataloging &amp; Classification Quarterly</I> 16, no. 2: 71-91.</p>
+
+<p>Sharp, J. R. 1967. Information retrieval.  <I>Handbook of special librarianship and information work</I>. 3rd ed., editor Wilfred Ashworth, 141-232. London: Aslib.</p>
+
+<p>Shiri, Ali. 2012. <I>Powering search: the role of thesauri in new information environments</I>. Medford, New Jersey: Information Today, Inc.</p>
+
+<p>Shiri, Ali Asghar, Crawford Revie and Gobinda Chowdhury. 2002. Thesaurus-enhanced search interfaces. <I>Journal of Information Science</I> 28, no. 2: 111-22.</p>
+
+<p>Smiraglia, Richard, ed. 2016. <I>Knowledge Organization</I>. Vol. 43 (3). Ergon Verlag.</p>
+
+<p>Soergel, Dagobert. 1974. <I>Indexing languages and thesauri: construction and maintenance</I>. Los Angeles, California: Melville.</p>
+
+<p>Soergel, Dagobert. 1994. Indexing and retrieval performance: the logical evidence. <I>Journal of the American Society for Information Science</I> 45, no. 8: 589-99.</p>
+
+<p>Soergel, Dagobert 2014. Knowledge organization for learning. In: <I>Knowledge organization in the 21st Century: Between historical patterns and future prospects. Proceedings of the Thirteenth International ISKO Conference</I>. Ergon Verlag. 22-32.</p>
+
+<p>Spero, Simon E. 2008. LCSH is to Thesaurus as Doorbell is to Mammal: Visualizing Structural Problems in the Library of Congress Subject Headings. DCMI International Conference on Dublin Core and Metadata Applications. <A HREF="http://dcpapers.dublincore.org/pubs/article/view/937">http://dcpapers.dublincore.org/pubs/article/view/937</A>.</p>
+
+<p>Spero, Simon E. 2012. What, if anything, is a subdivision? in: <I>Facets of Knowledge Organization: Proceedings of the ISKO UK Second Biennial Conference</I>, editors Alan Gilchrist and Judi Vernau. Bingley, UK: Emerald Group Publishing Ltd. 69-83.</p>
+
+<p>Svenonius, Elaine. 1986. Unanswered questions in the design of controlled vocabularies. <I>Journal of the American Society for Information Science</I> 37, no. 5: 331-40.</p>
+
+<p>Tudhope, Douglas and Ceri Binding. 2016. Still quite popular after all those years: the continued relevance of the information retrieval thesaurus. <I>Knowledge Organization</I> 43, no. 3: 174-79.</p>
+
+<p>Tudhope, Douglas, Traugott Koch and Rachel Heery. 2006. <I>Terminology Services and Technology: JISC state of the art review</I>. Available at: <A HREF="http://www.ukoln.ac.uk/terminology/JISC-review2006.html">http://www.ukoln.ac.uk/terminology/JISC-review2006.html</A>. JISC.</p>
+
+<p>Tudhope, Douglas and Marianne Lykke Nielsen. 2006. Introduction to Knowledge Systems and Services. <I>New Review of Hypermedia and Multimedia</I> 12, no. 1: 3-9.</p>
+
+<p>Viet, Jean. 1972. <I>Macrothesaurus for information processing in the field of economic and social development</I>. 1st ed. Paris: OECD Development Centre.</p>
+
+<p>Vizine-Goetz, Diane, Carol Hickey, Andrew Houghton and Roger Thompson. Vocabulary Mapping for Terminology Services. <I>Journal of Digital Information</I> 4, no. 4 (2004): Article No. 272.</p>
+
+<p>Wellisch, Hans H. 1995. <I>Indexing from A to Z</I>. New York, Dublin: H W Wilson.</p>
+
+<p>White, Martin. 2016. The value of taxonomies, thesauri and metadata in enterprise search. <I>Knowledge Organization</I> 43, no. 3: 184-92.</p>
+
+<p>Will, Leonard. 2010. Thesaurus Management Software. <I>Encyclopedia of Library and Information Sciences</I>. Third ed., 5238-46. Taylor and Francis. <A HREF="http://www.tandfonline.com/doi/abs/10.1081/E-ELIS3-120044528">http://www.tandfonline.com/doi/abs/10.1081/E-ELIS3-120044528</A>.</p>
+
+<p>Will, Leonard. 2012. The ISO 25964 data model for the structure of an information retrieval thesaurus. <i>Bulletin of the American Society for Information Science and Technology</i> 38, no. 4. <A HREF="https://asistdl.onlinelibrary.wiley.com/doi/epdf/10.1002/bult.2012.1720380413">https://asistdl.onlinelibrary.wiley.com/doi/epdf/10.1002/bult.2012.1720380413</A>. DOI 10.1002/bult.2012.1720380413.</p>
+
+<p>Working Group on Guidelines for Multilingual Thesauri of IFLA Classification and Indexing Section chaired by Gerhard J. A. Riesthuis and Patrice Landry. 2009. "Guidelines for multilingual thesauri". Web page. Available at <A HREF="http://archive.ifla.org/VII/s29/pubs/Profrep115.pdf">http://archive.ifla.org/VII/s29/pubs/Profrep115.pdf</A>.</p>
+
+<p>Zeng, Marcia Lei. 2008. Knowledge Organization Systems (KOS). <I>Knowledge Organization</I> 35, no. 2-3: 160-182.</p>
+
+<p>Zeng, Marcia Lei and Lois Mai Chan. 2004. Trends and issues in establishing interoperability among Knowledge Organization Systems. <I>Journal of the American Society for Information Science and Technology</I> 55, no. 5: 377-95.</p>
+
+<a name="col"></a>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<p>&nbsp;</p>
+
+<p>Visited <a href="https://www.digits.net" target="_blank"><img src="https://counter.digits.net/?counter={51f85b41-ec23-c874-490a-37873f0391fa}&template=simple" alt="Hit Counter by Digits" border="0"  /></a> times since 2019-03-07 (one year and a half after first publication).</p>
+
+<hr>Version 1.2 (= 1.0 plus additional references and minor corrections); version 1.0 published 2017-09-07, this version 2019-03-07, last edited 2024-12-17<br>
+Article category: <code><a href="index#KD">KOS Kinds</a></code><br>
+This article (version 1.0) is also published in <i>Knowledge Organization</i>. How to cite it: Dextre Clarke, Stella G. 2019. "The Information Retrieval Thesaurus". <i>Knowledge Organization</i> 46, no. 6: 439-59. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli, https://www.isko.org/cyclo/thesaurus.</p>
+
+
+
+<p>&copy;2017 ISKO. All rights reserved.</p>
+
+</td>
+</tr>
+
+<tr>
+<td id="logo">
+</td>
+</tr>
+
+</table>
+</body>
+</html>

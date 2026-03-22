@@ -1,5 +1,5 @@
 = UMRS Platform Update Checklists
-:description: Step-by-step checklists for updating umrs-platform when kernel versions change, new CPU extensions are introduced, or existing signals are removed.
+:description: Step-by-step checklists for updating umrs-platform when kernel versions change, new CPU extensions are introduced, or existing indicators are removed.
 :toc: left
 :toclevels: 3
 
@@ -24,7 +24,7 @@ These checklists cover the three events that require catalog maintenance:
 
 * <<kernel-version,A new kernel version is released>>
 * <<cpu-extension,A new CPU extension is announced>>
-* <<signal-removal,An existing signal is removed or deprecated>>
+* <<signal-removal,An existing indicator is removed or deprecated>>
 
 A fourth section covers <<version-tracking,version tracking>> — recording
 which kernel version the catalog was validated against.
@@ -52,7 +52,7 @@ in a security posture assessment.
 
 === Step 1: Review the Kernel Changelog
 
-Identify changes relevant to the signal catalog. Scan the following
+Identify changes relevant to the indicator catalog. Scan the following
 locations:
 
 . Read the kernel changelog for the target version. For RHEL, check:
@@ -115,14 +115,14 @@ For each change identified in Step 1, determine the required action.
 | Required action
 
 | New sysctl or securityfs node with security relevance
-| Add a new `IndicatorId` variant and `IndicatorDescriptor` — see <<add-signal>>
+| Add a new `IndicatorId` variant and `IndicatorDescriptor` — see <<add-signal,Step 3: Add a New Indicator>>
 
 | Changed default value for an existing node
 | Update `DesiredValue` in the matching `IndicatorDescriptor` in `catalog.rs` +
   Update `rationale` if the security reasoning changed
 
 | Removed node
-| Mark the signal deprecated — see <<deprecate-signal>>
+| Mark the indicator deprecated — see <<deprecate-signal>>
 
 | Changed semantic meaning (same path, different interpretation)
 | Update `rationale`, `description`, and `DesiredValue` as needed +
@@ -141,9 +141,9 @@ For each change identified in Step 1, determine the required action.
 |===
 
 [[add-signal]]
-=== Step 3: Add a New Signal
+=== Step 3: Add a New Indicator
 
-For each new signal identified in Step 2, complete all items in this
+For each new indicator identified in Step 2, complete all items in this
 checklist in the order shown. Do not skip ahead — each step depends on
 the previous one compiling cleanly.
 
@@ -212,23 +212,22 @@ read bypasses provenance verification entirely.
 
 === Step 4: Update the TUI
 
-When `platform-api-enrichment` Phase 1 is complete, new signals
+When `platform-api-enrichment` Phase 1 is complete, new indicators
 automatically appear in `PostureSnapshot::by_group()`. The TUI rendering
-layer requires no changes for the signal to appear in the correct group.
+layer requires no changes for the indicator to appear in the correct group.
 
-Until Phase 1 is complete, add the signal manually:
+Until Phase 1 is complete, add the indicator manually:
 
-. Open `umrs-tui/src/main.rs` (or wherever `build_kernel_security_rows()`
-  lives).
-. Add the new signal to the appropriate `append_signal_group()` call,
-  matching the group the signal belongs to.
-. Build the TUI binary and verify the signal renders correctly.
-. Verify that `NO_COLOR` mode produces readable output for the new signal.
+. Open `umrs-uname/src/main.rs`, specifically `build_kernel_security_rows()`.
+. Add the new indicator to the appropriate `append_indicator_group()` call,
+  matching the group the indicator belongs to.
+. Build the `umrs-uname` binary and verify the indicator renders correctly.
+. Verify that `NO_COLOR` mode produces readable output for the new indicator.
 
 === Step 5: Update Documentation
 
-The following documentation must be updated for every new signal. Do not
-mark a signal addition as complete until all documentation is current.
+The following documentation must be updated for every new indicator. Do not
+mark an indicator addition as complete until all documentation is current.
 
 [cols="1,4", options="header"]
 |===
@@ -263,12 +262,12 @@ indicator with kernel-version annotations and NIST control mappings.
 
 . Security-auditor reviews the new `IndicatorDescriptor` for:
 ** Correct NIST SP 800-53 control citations
-** `AssuranceImpact` tier appropriate to the signal's threat model
+** `AssuranceImpact` tier appropriate to the indicator's threat model
 ** `rationale` text accurate and auditor-readable
 
 . Tech-writer reviews `description` (once Phase 1 of platform API
   enrichment is complete) for:
-** Clarity to an operator unfamiliar with the signal
+** Clarity to an operator unfamiliar with the indicator
 ** i18n readiness — complete sentences, no embedded interpolation
 ** Consistency with approved terminology
 
@@ -448,7 +447,7 @@ If the CPU security corpus plan has a collection for the relevant vendor:
 '''
 
 [[signal-removal]]
-== Signal Removal and Deprecation Checklist
+== Indicator Removal and Deprecation Checklist
 
 When the kernel removes or renames a sysctl, securityfs, or sysfs node,
 the probing code will silently fail. Depending on how the reader is
@@ -474,7 +473,7 @@ unverifiable. Deprecation is the only correct path.
 | 2
 | Update the reader in `reader.rs` to handle graceful absence. +
   The reader must return `(None, None)` when the node is absent, +
-  not an error. The signal appears in reports as "unavailable" +
+  not an error. The indicator appears in reports as "unavailable" +
   rather than causing the assessment to fail.
 
 | 3
@@ -483,8 +482,8 @@ unverifiable. Deprecation is the only correct path.
   See <replacement indicator, if any>."
 
 | 4
-| If a replacement signal exists, add it using the
-  <<add-signal,Add a New Signal>> checklist.
+| If a replacement indicator exists, add it using the
+  <<add-signal,Add a New Indicator>> checklist.
 
 | 5
 | Add a `log::debug!()` call in the reader when the deprecated indicator +
@@ -516,7 +515,7 @@ creates a compliance gap that is difficult to explain.
 [[version-tracking]]
 == Version Tracking
 
-The signal catalog must declare which kernel version it was validated
+The indicator catalog must declare which kernel version it was validated
 against. Without this, a reviewer cannot determine whether the catalog
 is current or whether it predates significant kernel changes.
 
@@ -618,7 +617,7 @@ Update the declaration in `catalog.rs` after each review pass.
 * `umrs-platform/src/posture/catalog.rs` — `INDICATORS` static array
 * `umrs-platform/src/kattrs/` — kernel attribute reader infrastructure
 * `.claude/plans/umrs-platform-expansion.md` — platform architecture roadmap
-* `.claude/plans/platform-api-enrichment.md` — signal description and grouping plan
+* `.claude/plans/platform-api-enrichment.md` — indicator description and grouping plan
 * xref:os-detection-deep-dive.adoc[OS Detection Pipeline — Deep Dive]
 * xref:patterns:pattern-toctou.adoc[TOCTOU Safety Pattern]
 * xref:patterns:pattern-provenance.adoc[Provenance Verification Pattern]

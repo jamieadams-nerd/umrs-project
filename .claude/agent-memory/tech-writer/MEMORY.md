@@ -199,6 +199,18 @@ Four always-on artifacts: concept-index.md, cross-reference-map.md, style-decisi
 
 **Pending corpus gaps:** Common Criteria SFR prose, GPO Style Manual, AsciiDoc/Antora-specific rules (carried in agent memory and CLAUDE.md instead)
 
+## ROOT Module Editorial Notes (added 2026-03-22)
+
+See [feedback_raw_notes_in_pages.md](feedback_raw_notes_in_pages.md) for the key finding.
+
+- `foundations/history/` contains 3 pages that were raw AI transcripts — fully rewritten 2026-03-22:
+  `trusted-path-orange.adoc`, `microsoft-nt-orange.adoc`, `ibm-zos-os390.adoc`
+- `foundations/NOTE-TO-JAMIE.txt` — not an AsciiDoc page, flagged for Jamie to remove
+- `foundations/history/mls-classified-talk.adoc` — placeholder stub, content pending
+- architecture module xrefs from ROOT are all valid as of 2026-03-22 (dissolution not yet complete)
+- All other xrefs from ROOT pages verified valid as of 2026-03-22
+- "targeted policy" is the consistent term (not "targeted mode") — enforce going forward
+
 ## AI Transparency — Agent Aliases (added 2026-03-15)
 Section "== Agent Aliases" added to `ai-transparency/agent-roles.adoc`.
 Table maps alias → agent → rationale.

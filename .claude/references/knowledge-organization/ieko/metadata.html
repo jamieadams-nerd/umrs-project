@@ -1,0 +1,879 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head profile="http://dublincore.org/documents/2007/11/05/dc-html/">
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>Metadata (IEKO)</title>
+<link rel="stylesheet" type="text/css" href="../isko.css" />
+<link rel="schema.DCTERMS" href="http://purl.org/dc/terms/" />
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:url" content="https://www.isko.org/cyclo/" />
+<meta name="twitter:title" content="Metadata (ISKO Encyclopedia of KO)" />
+<meta property="og:image" content="https://www.isko.org/cyclo/mayernik.jpg" />
+<meta name="twitter:description" content="Metadata in various forms pervades our institutions, technologies, and daily lives. Metadata is a distinct focus of academic research and professional practice for many people within the library and information sciences (LIS). This article is an exploration of the concept of metadata. It presents a high-level introduction to the topic, with analysis of key research problems and practical challenges. The paper discusses varying understandings of what 'metadata' means, the origin and evolution of metadata as an important topic within information and data fields, and the central characteristics of that which gets called 'metadata'. Metadata can be understood as both process and product, and can result from both human effort and computational techniques. Given the central role metadata have in the establishment of knowledge, evidence, and truth, it is necessary for researchers and professionals within LIS to think critically about our metadata practices and systems." />
+
+<meta name="DCTERMS.title" content="metadata" />
+<meta name="DCTERMS.creator" content="Matthew Mayernik" />
+<meta name="DCTERMS.issued" content="2020" />
+<meta name="DCTERMS.relation.ispartof" content="ISKO Encyclopedia of Knowledge Organization" />
+<meta name="DCTERMS.ispartof" content="ISKO Encyclopedia of Knowledge Organization" />
+<meta name="DCTERMS:bibliographicCitation" content="ISKO Encyclopedia of Knowledge Organization, eds. Birger Hjorland and Claudio Gnoli" />
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="001.012">
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="025.04">
+<meta name="DCTERMS.subject.keyword" content="_">
+<meta name="DCTERMS.subject.keyword" content="_">
+<meta name="DCTERMS.subject.keyword" content="_">
+<meta name="DCTERMS.type" content="Text" />
+<meta name="DCTERMS.format" content="text/html" />
+<meta name="DCTERMS.identifier" content="https://www.isko.org/cyclo/metadata" />
+
+<style>
+a {text-decoration: none;}
+a:hover {text-decoration:underline;}
+table td, table th { padding: 5px; }
+</style>
+
+</head>
+<body>
+
+<a name="top"></a>
+
+<table>
+
+<tr>
+<td id="isko"><h1>I S K O</h1></td>
+<td id="banner"><h2><a href="index.html" style="text-decoration:none;">Encyclopedia of Knowledge Organization</h2></a></td>
+</tr>
+
+<tr>
+<td id="navigation">
+<a href="../index.php">home</a>
+<a href="../about.html">about ISKO</a>
+<a href="../join.html">join ISKO</a>
+<a href="../ko.html"><cite>Knowledge Organization</cite> journal</a>
+<a href="../events.html">ISKO events</a>
+<a href="../chapters.html">ISKO chapters</a>
+<a href="../people.html">ISKO people</a>
+<a href="../pubs.html">ISKO publications</a>
+<a href="index.html">Encyclopedia</a>
+<a href="../lit.html">KO literature</a>
+<a href="../inst.html">KO institutions</a>
+<a href="http://bartoc.org/" title="link to BARTOC">&#8663; KOS registry</a>
+<a href="https://www.isko-mms.net/" title="access-account required">&#128274; members</a>
+<a href="../contact.html">contact us</a>
+</td>
+<td id="content" rowspan="2">
+
+<a class="menu" href="authors#h">edited by Birger Hj&oslash;rland</a> <a class="menu" href="authors#g">and Claudio Gnoli</a>
+
+<p>&nbsp;
+
+<div itemscope itemtype="http://schema.org/Article">
+<h2 itemprop="headline">Metadata</h2>
+</div>
+
+<blockquote>
+by <a href="authors#m">Matthew Mayernik</a>
+
+<p>Table of contents:
+<br><a style="text-decoration:none;" href="#1">1. Introduction</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#1.1">1.1 Goals of the paper</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#1.2">1.2 Topics beyond the scope of this paper</a>
+<br><a style="text-decoration:none;" href="#2">2. <i>Metadata</i> within library and information science</a>
+<br><a style="text-decoration:none;" href="#3">3. Metadata definitions, conceptions, and relations</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#3.1">3.1 Definitions</a> 
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#3.2">3.2 Categorizations and conceptions</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#3.3">3.3 Relation to other concepts:</a> <a style="text-decoration:none;" href="#3.3.1">3.3.1 Data;</a> <a style="text-decoration:none;" href="#3.3.2">3.3.2 Document;</a> <a style="text-decoration:none;" href="#3.3.3">3.3.3 Context</a>
+<br><a style="text-decoration:none;" href="#4">4. Characteristics of metadata
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#4.1">4.1 Structured vs. unstructured</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#4.2">4.2 Metadata-as-product and metadata-as-process</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#4.3">4.3 Metadata and description</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#4.4">4.4 Search, discovery, and understanding</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#4.5">4.5 Relationships</a>
+<br><a style="text-decoration:none;" href="#5">5. Where does metadata come from?</a> 
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#5.1">5.1 Professional metadata creators</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#5.2">5.2 Automatic metadata generation</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#5.3">5.3 Metadata creation in everyday life</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a style="text-decoration:none;" href="#5.4">5.4 Metadata collaborations</a>
+<br><a style="text-decoration:none;" href="#6">6. Metadata futures: conclusions and research questions</a>
+<br><a style="text-decoration:none;" href="#ack">Acknowledgments</a>
+<!-- <br><a style="text-decoration:none;" href="#end">Endnotes</a> -->
+<br><a style="text-decoration:none;" href="#ref">References</a>
+<br><a style="text-decoration:none;" href="#col">Colophon</a>
+
+
+<p><strong>Abstract</strong>:
+<br>Metadata in various forms pervades our institutions, technologies, and daily lives. Metadata is a distinct focus of academic research and professional practice for many people within the library and information sciences (LIS). This article is an exploration of the concept of &ldquo;metadata&rdquo;. It presents a high-level introduction to the topic, with analysis of key research problems and practical challenges. The paper discusses varying understandings of what &ldquo;metadata&rdquo; means, the origin and evolution of metadata as an important topic within information and data fields, and the central characteristics of that which gets called &ldquo;metadata&rdquo;. Metadata can be understood as both process and product, and can result from both human effort and computational techniques. Given the central role metadata have in the establishment of knowledge, evidence, and truth, it is necessary for researchers and professionals within LIS to think critically about our metadata practices and systems.</p>
+
+</blockquote>
+
+<!--
+
+<div align="center"><figure>
+<img src=".jpg" title="Fig. : Caption" width="40%">
+<figcaption>Figure : Caption</figcaption>
+</figure></div>
+
+<blockquote>
+<table border="1">
+<p><caption><i>Table 1: </i><br>&nbsp;</caption></p>
+<tr>
+<td></td>
+<td></td>
+</tr><tr>
+<td></td>
+<td></td>
+</tr>
+</table>
+</blockquote>
+
+-->
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="1"></a>
+<h3>1. Introduction</h3>
+
+<blockquote>
+The future province of metadata is grand. (<a href="#refG">Greenberg and Garoufallou 2013</a>, 2)</blockquote>
+
+<p>For many people within the &rarr; <a href="lis">library and information sciences (LIS)</a>, metadata is a distinct focus of academic research and professional practice. LIS is unique in putting such a lens on metadata as a matter of disciplinary emphasis, but as indicated by the epigraph above, the scope of the people and institutions who are interested in, or work with, metadata is indeed grand. </p>
+
+<p>Outside of LIS, metadata has traditionally been a prototypical infrastructural phenomenon: essential yet mundane, and ubiquitous yet often invisible (<a href="#refB">Borgman 2003</a>; <a href="#refE">Edwards 2010</a>; <a href="#refP">Pomerantz 2015</a>). In the past decade, however, metadata has emerged as a critical topic in many contexts. Metadata become a topic of political and legal intrigue with the publishing of stories about the US National Security Agency eavesdropping on digital communications (<a href="#refS">Schneier 2014</a>; <a href="#refM">Mayernik and Acker 2018</a>), and the use and manipulation of metadata gathered by social media platforms (<a href="#refA">Acker 2018</a>). Online streaming services for music, movies, and other forms of personal entertainment rely on metadata of various kinds to provide recommendations, personalization, and categorizations to their users (<a href="#refM">Madrigal 2014</a>; <a href="#refM">Maron and Carter 2017</a>; <a href="#refS">Sisario 2019</a>). And anything described as involving &ldquo;big data&rdquo;, whether in the academic or business contexts, also inevitably involves &ldquo;big metadata&rdquo; (<a href="#refG">Greenberg 2017</a>). </p>
+
+<p>When viewed under a &rarr; <a href="knowledge_organization">knowledge organization (KO)</a> lens, metadata can be either (or both) something to be organized and something to use to achieve organization. As Richard Gartner (<a href="#refG">2016</a>, 109) noted in a recent book on metadata, &ldquo;Metadata is in many ways an attempt to develop a science for organizing ideas and so creating knowledge&rdquo;. Many of the long-term research questions in knowledge organization outlined by Gnoli (<a href="#refG">2008</a>) have implications for metadata principles and practices, including &ldquo;How can KO be adapted to local collection needs?&rdquo;, &ldquo;How can KO deal with changes in knowledge?&rdquo;, &ldquo;How can software and formats be improved to better serve KO needs?&rdquo;, and &ldquo;Who should do KO?&rdquo; Similarly, Hj&oslash;rland&rsquo;s (<a href="#refH">2008</a>) list of approaches to KO, including &rarr; <a href="classification">classification systems</a>, &rarr; <a href="facet_analysis">facet analysis</a>, information retrieval, bibliometric approaches, and the &rarr; <a href="domain_analysis">domain analytic</a> approach, all often involve and/or manifest as some form of metadata. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="1.1"></a>
+<h4>1.1 Goals of the paper</h4>
+
+<p>This article is an exploration of the concept of &ldquo;metadata&rdquo;. It presents a high-level introduction to the topic, with analysis of key research problems and practical challenges. The theoretical view taken is of metadata as a sociotechnical phenomenon. Metadata, like &rarr; <a href="data">data</a>, comes from somewhere (<a href="#refG">Gitelman 2013</a>). They have origins, histories, and journeys (<a href="#refL">Leonelli 2016</a>). The intention of this paper is to discuss varying understandings of what &lsquo;metadata&rdquo; means, the origin and evolution of metadata as an important topic within information and data fields, and the central characteristics of that which gets called &ldquo;metadata&rdquo;. The article discusses metadata as both process and product, illustrating how metadata is created and used within different kinds of contexts. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="1.2"></a>
+<h4>1.2 Topics beyond the scope of this paper</h4>
+
+<p>This article is not a &ldquo;how to&rdquo; document that will guide readers through particular metadata schemas or standards. There are many helpful book-length guides that provide in-depth instruction on many specific metadata languages, including those by Caplan (<a href="#refC">2003</a>), Foulonneau and Riley (<a href="#refF">2008</a>), Sicilia (<a href="#refS">2014</a>), Zeng and Qin (<a href="#refZ">2016</a>), and Haynes (<a href="#refH">2017</a>). The discussion in this article is complementary to those works, as well as to earlier overviews of metadata by Jane Greenberg (<a href="#refG">2005; 2009</a>), by discussing metadata in the context of the people, technologies, and institutions with which they are connected. The article also does not focus on any particular technologies or intellectual domains, as many of the characteristics discussed below manifest across a range of technical infrastructures and institutions.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2"></a>
+<h3>2. <i>Metadata</i> within library and information science</h3>
+
+<p>Although the exact origins of the term <i>metadata</i> have been recounted in different ways over the past couple of decades (cf. <a href="#refG">Greenberg 2005</a>; <a href="#refG">Giles 2011</a>; <a href="#refG">Gartner 2016</a>), the generally accepted view seems to be that the term originated in the late 1960s in the context of computer system design to refer to the use of one data element to describe or represent some characteristic of another data element. A search of the <i>Web of Science</i> citation indexes in Dec. 2019 shows that usage of the term <i>metadata</i> first appears in 1982, with rare and idiosyncratic usage through the 1980s. It started to become a term of niche usage in the early 1990s in discussions of information management systems, geographical information systems, and database design. Aside from sporadic early use, the term entered the discourse of the library and information sciences in the mid-1990s, particularly in relation to the development of digital library systems and the emergence of the Internet and the World Wide Web as major social forces. </p>
+
+<p>The term <i>metadata</i> became widely used during the mid-1990s to refer to approaches to information description, management, and discovery that differed from conventional cataloging approaches using library-focused structure and content standards like Machine Readable Cataloging (MARC) and the Anglo-American Cataloging Rules, second edition (AACR2). The development of the Dublin Core metadata element set in 1995 exemplifies this turn toward &ldquo;metadata&rdquo; within the LIS communities, both in concept and terminology. The Dublin Core, so named because it was formulated in a workshop in Dublin, Ohio, in March of 1995, was explicitly motivated by a desire to develop a common approach to describing electronic resources that would enable better discovery and collection of resources on the Web (<a href="#refW">Weibel 1995</a>; <a href="#refS">Sugimoto, Baker and Weibel 2002</a>). Keeping track of web pages and other digital information resources with traditional library cataloging practices proved to be difficult, despite the best efforts of library professionals, because of the malleable nature of Internet-based materials.</p>
+
+<blockquote>
+<table border="1">
+<p><caption><i>Table 1: Dublin Core metadata standard</i><br>&nbsp;</caption></p>
+<tr>
+<th>Metadata subtag</th>
+<th>Definition</th>
+</tr><tr>
+<td>Title</td>
+<td>A name given to the resource</td>
+</tr><tr>
+<td>Creator</td>
+<td>A person primarily responsible for making the content of the resource</td>
+</tr><tr>
+<td>Subject</td>
+<td>The topic of the content of the resource</td>
+</tr><tr>
+<td>Description</td>
+<td>An account of the content of the resource</td>
+</tr><tr>
+<td>Publisher</td>
+<td>An organization or person responsible for making the resource available</td>
+</tr><tr>
+<td>Contributor</td>
+<td>A person responsible for making contributions to the content of the resource</td>
+</tr><tr>
+<td>Date</td>
+<td>The date that the resource was published or copyrighted</td>
+</tr><tr>
+<td>Type</td>
+<td>The nature or genre of the content of the resource</td>
+</tr><tr>
+<td>Format</td>
+<td>The physical or digital manifestation of the resource</td>
+</tr><tr>
+<td>Identifier</td>
+<td>String or number used to uniquely identify the object, e.g., the object identifier (OID)</td>
+</tr><tr>
+<td>Source</td>
+<td>A reference to a resource from which the present resource is derived</td>
+</tr><tr>
+<td>Language</td>
+<td>The language of the intellectual content of the resource</td>
+</tr><tr>
+<td>Relation</td>
+<td>A reference to a related resource</td>
+</tr><tr>
+<td>Coverage</td>
+<td>The extent or scope of the content of the resource</td>
+</tr><tr>
+<td>Rights</td>
+<td>Information about rights held in and over the resource for rights management</td></p>
+</tr>
+</table>
+</blockquote>
+
+
+<p><br>The Dublin Core element set included thirteen fields (later expanded to fifteen by including Description and Rights), as stated by Weibel (<a href="#refW">1995</a>, n.p.) to be &ldquo;the minimum number of metadata elements required to facilitate the discovery of document-like objects in a networked environment such as the Internet. The syntax was deliberately left unspecified as an implementation detail. The semantics of these elements was intended to be clear enough to be understood by a wide range of users&rdquo;.</p>
+
+<p>Weibel&rsquo;s quote displays a couple of important points of debate that existed at the time (<a href="#refL">Lagoze 1996</a>), and continue to manifest in relation to metadata developments today.
+
+<ul>
+<li>First, there is tradeoff in the extent of the metadata that is needed (e.g. minimal vs. comprehensive description) in relation the goals of the effort (document discovery, in the case of the Dublin Core).</li>
+<li>Second, metadata initiatives often face challenges in defining an appropriate degree of standardization. In the case of the Dublin Core, it solved a certain kind of interoperability challenge by standardizing the names of the metadata elements, but opened new interoperability challenges by not specifying the syntax of the information held by those elements.</li>
+<li>Third, in declaring that the Dublin Core was intended to be clear enough to be used by &ldquo;a wide range of users&rdquo;, the developers were explicitly going against prevailing approaches in which metadata standards and practices were targeted towards professional experts.</li>
+</ul></p>
+
+<p>The Dublin Core thus exemplifies how the move toward &ldquo;metadata&rdquo; assumed and asserted that metadata descriptions for resources in the web environment would be created by a range of individuals, from expert to novice.</p>
+
+<p>This last point particularly illustrates how early discussions explicitly centered on the ways that &ldquo;metadata&rdquo; existed as a counterpoint to conventional approaches to library cataloging (<a href="#refG">Greenberg 2005</a>). Michael Gorman, editor of the Anglo-American Cataloging Rules (AACR) for many years, was a noted critic of the move toward metadata (<a href="#refG">Gorman 1999</a>). In a later article simply titled &ldquo;Metadata Dreaming&rdquo;, Gorman (<a href="#refG">2006</a>) stated that the approach to metadata development and implementation exemplified by the Dublin Core was based on a failed utopian dream of a &ldquo;third way&rdquo; of description (with the bibliographic description approach and the free-text &ldquo;Google search&rdquo; approach being the other two ways). In a subsequent memoir, Gorman has called metadata &ldquo;an inferior, unstandardized species of cataloging done by amateurs&rdquo; (<a href="#refG">2011</a>, 191) that is targeted towards the &ldquo;philosopher&rsquo;s stone of bibliography &mdash; high-quality cataloging with no or little expense&rdquo; (203). Gorman was perhaps one of the more visible and vocal critics, but was by no means the only voice that argued that metadata projects that lose the more structured and complex approaches used in the library and archival community would struggle to be successful over the long term (<a href="#refH">Howarth 2005</a>). </p>
+
+<p>Such criticisms failed to slow the momentum of the &ldquo;metadata&rdquo; movement. The Dublin Core itself is the center of a dynamic metadata research and application community, and is now a common reference point for many approaches to define &ldquo;minimal metadata sets&rdquo; for various purposes (<a href="#refA">Arakaki et al. 2018</a>). It was also integrated into the Open Archives Initiative Protocol for Metadata Harvesting (OAI-PMH) as a way to facilitate harvesting of resources from diverse online sources (<a href="#refV">Van de Sompel et al 2004</a>). The tensions noted above regarding metadata completeness, standardization, and consistency have not disappeared (cf. <a href="#refL">Lagoze et al 2006</a>; <a href="#refU">Urban 2014</a>), but it is fair to say that the trends that motivated the development of the Dublin Core have held true. Namely, as most information and data systems have moved online and new types of Internet-based information and communication technologies have emerged, the numbers of people, information types, and standards at play in the metadata space have increased correspondingly (<a href="#refL">Lagoze 2010</a>).</p>
+
+<p>The term <i>metadata</i> is now generally used in an expansive fashion to refer to descriptive and organizational schemes and practices broadly, regardless of whether they take place within information and data institutions or in other contexts. Like its close relative <i>data</i>, the term <i>metadata</i> has been used to function as a plural or a collective singular noun (<a href="#refR">Rosenberg 2013</a>). <i>Metadata</i> is commonly used now as a blanket term for a range of practices, many of which pre-existed the term <i>metadata</i> itself, including library cataloging, archival description, and scientific data documentation, along with more recent phenomena, such as automatically generated information associated with digital images or social media streams (cf. <a href="#refP">Pomerantz 2015</a>; <a href="#refG">Gartner 2016</a>; <a href="#refH">Haynes 2017</a>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3"></a>
+<h3>3. Metadata definitions, conceptions, and relations</h3>
+
+<p>As the term <i>metadata</i> has spread, it has been defined and redefined in numerous ways. Many scholars and professionals have moved past the most common definition of metadata, the literal &ldquo;data about data&rdquo;, to more nuanced and pragmatic discussions of requirements and functions.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.1"></a>
+<h4>3.1 Definitions</h4>
+
+<p>The following list provides a handful of definitions of metadata to illustrate how such definitions range from fairly specific to quite broad.
+<ul>
+<li>Greenberg (<a href="#refG">2003</a>, 1876): &ldquo;structured data about an object that supports functions associated with the designated object&rdquo;.</li>
+<li>Greenberg (<a href="#refG">2005</a>, 20): &ldquo;data attributes that describe, provide context, indicate the quality, or document other object (or data) characteristics&rdquo;.</li>
+<li>Smiraglia (<a href="#refS">2005</a>, 2): &ldquo;structured descriptors of information resources, designed to promote information retrieval&rdquo;.</li>
+<li>Gilliland (<a href="#refG">2008</a>, n.p.): &ldquo;the sum total of what one can say about any information object at any level of aggregation&rdquo;.</li>
+<li>Pomerantz (<a href="#refP">2015</a>, 26): &ldquo;Metadata is a statement about a potentially informative object&rdquo;.</li>
+</ul>
+
+<p>Within particular application areas or academic communities, more targeted definitions appear, as, for example, in the following set of definitions of metadata by experts in geo- and environmental science data.
+<ul>
+<li>Michener, et al. (<a href="#refM">1997</a>, 331): &ldquo;higher level information or instructions that describe the content, context, quality, structure, and accessibility of a specific data set&rdquo;.</li>
+<li>Fegraus et al. (<a href="#refF">2005</a>, 159): &ldquo;the information that describes &lsquo;who, what, where, when, why, and how&rsquo; an ecological data-set was collected&rdquo;.</li>
+<li>Danko (<a href="#refD">2012</a>, 360): &ldquo;data that describes the information so that it will be useful and have value, be understandable, and enable collaboration&rdquo;.</li>
+<li>Gordon and Habermann (<a href="#refG">2018</a>, 38): &ldquo;well-defined content in structured representations that make it easier to share and discover&rdquo;.</li>
+</ul>
+
+<p>Jonathan Furner recently demonstrated how definitions of metadata also vary within standards established by ISO, the International Organization for Standardization (<a href="#refF">Furner 2020</a>). Furner found that 96 ISO standards include definitions of <i>metadata</i> ranging from &ldquo;data about data&rdquo; to much more detailed definitions. Furner concludes that while one interpretation of these findings is that the ISO standards represent a problematic inconsistency in what &ldquo;metadata&rdquo; refers to within the information and data worlds, another interpretation is that these varying definitions represent community-centric interpretations of the &ldquo;metadata&rdquo; concept as appropriate for their applications. </p>
+
+<blockquote>
+Perhaps it is actually more important for different domains, or even subdomains as represented by individual standards, to develop and to record their own particular definitions of terms, and thereby to make explicit the otherwise possibly overlooked differences in the ways in which the same terms are used in different contexts by different groups of specialists for different purposes. (<a href="#refF">Furner 2020</a>, 9).
+</blockquote></p>
+
+<p>One may argue that definitions in standards should take precedence over literature-based definitions. These two types of documents, however, tend to reach different audiences, and therefore serve different purposes. Standards tend to be read and used by professionals, while literature tends to be read by scholars and students. Therefore, neither source is more definitive. Rather, specific genres of documents (and specific individual documents) are more prominent within specific institutional situations. It is true that standards-based definitions are often developed by committees of individuals representing a variety of stakeholders. As Furner&rsquo;s study shows, however, differences between standards-making bodies and committees themselves are a source of variation among definitions of <i>metadata</i>.</p>
+
+<p>Definitions in both the research literature and standards, however, tend to focus on the use of metadata. This leads to the next topic, specifically, the ways that &ldquo;metadata&rdquo; have been categorized and conceptualized. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.2"></a>
+<h4>3.2 Categorizations and conceptions</h4>
+
+<p>If the notion of &ldquo;metadata&rdquo; has been defined in a variety of ways, it has been categorized and conceptualized in an even more diverse fashion. Categorizations of metadata reflect the different conceptions and motivations of the people who generate them, and manifest in a variety of metadata typologies. Gilliland (<a href="#refG">2008</a>), for example, in an overview article on metadata for library and information professionals, breaks the term <i>metadata</i> down into five types: <i>administrative</i>, <i>descriptive</i>, <i>preservation</i>, <i>use</i>, and <i>technical</i>. Other works, however, present different categorizations. A full explication and comparison of all of the categorizations that can have been proposed is beyond the scope of this article, but looking across a selection of metadata-focused works (<a href="#refG">Greenberg 2001; 2005</a>; <a href="#refL">Lawrence et al. 2009</a>; <a href="#refP">Pomerantz 2015</a>; <a href="#refG">Gartner 2016</a>; <a href="#refH">Habermann 2018</a>), the following categories appear at least once:
+
+<blockquote>
+access, <br>
+administrative, <br>
+archive, <br>
+authentication, <br>
+browse, <br>
+character, <br>
+descriptive, <br>
+discovery, <br>
+finding, <br>
+identification, <br>
+linking, <br>
+preservation, <br>
+provenance, <br>
+relationships, <br>
+rights, <br>
+structural, <br>
+technical, <br>
+understanding, <br>
+use.
+</blockquote></p>
+
+<p>Clearly some of these terms are related. But the variety of these categories indicates the generally broad understanding of what &ldquo;metadata&rdquo; might encompass.</p>
+
+<p>Many of these categories represent particular tasks or actions that might be facilitated by metadata, such as authenticating, browsing, discovery/finding, preserving, or understanding information/data resources. This is perhaps the one commonality among these various definitions and categorizations of metadata: that metadata is created to be used, for some purpose(s), by people or computer applications. Karen Coyle (<a href="#refC">2010</a>, 6) outlines how metadata is
+constructed, constructive, and actionable:
+
+<ul>
+<li>Metadata is constructed: It is an artificial creation not found in nature.</li>
+<li>Metadata is constructive: It is created for a purpose, activity, or to solve a problem.</li>
+<li>Metadata is actionable: It is intended to be useful in some way.</li>
+</ul>
+
+<p>Richard Gartner (<a href="#refG">2016</a>, 4) provides a useful summation that encompasses this conceptualization of metadata as being designed and implemented for the purposes of particular uses:
+
+<blockquote>
+The shape of metadata is designed by human beings for a particular purpose or to solve a particular problem, and the form it takes is indelibly stamped with its origins. There is nothing objective about metadata: it always makes a statement about the world, and this statement is subjective is what it includes, what it omits, where it draws its boundaries and in the terms it uses to describe it.</blockquote></p>
+
+<p>These characteristics of metadata hold across technologies, institutions, and decades. As one example, Mar&iacute;a Montenegro (<a href="#refM">2019</a>) illustrates how the design of the Dublin Core metadata schema reflects the cultural assumptions of the people who were involved in its creation, particularly around notions of authorship and ownership of information resources. Information and knowledge that originate in other cultural contexts, such as within indigenous communities, may not fit within the Dublin Core&rsquo;s framework. As Montenegro (<a href="#refM">2019</a>, 737) notes:
+
+<blockquote>
+Two DC [Dublin Core] elements in particular perpetuate colonial practices of exclusion. Specifically, the Rights and Creator fields conflict directly with Indigenous epistemologies and protocols defining the access, circulation and use of TK [Traditional Knowledge]. [&hellip;] Both fields &mdash; rights and creator &mdash; are formed upon and replicate legal frameworks that have embedded relations of exclusion. The definition provided by DC for the rights element presumes that IP [Intellectual Property] laws are universal, however, legal regimes of IP and copyright are culturally specific and the types of rights they specify, by definition, exclude all types of Indigenous TK.
+</blockquote></p>
+
+<p>In another example, Fidler and Acker (<a href="#refF">2016</a>) depict some of the decisions that were at play in the design of the protocols for information exchange that underlie the Internet. The designers of the Internet protocols engaged in a range of debates about what metadata needed to be associated with each &ldquo;packet&rdquo; of information that was transmitted over the network. Discussions took place about the importance of socket numbers, network addresses of the computers at each end of the transmissions, as well identifiers for specific computer processes that were to be invoked by the transmissions. Other pieces of metadata were discussed, but ultimately not included in the protocol&rsquo;s requirements, including metadata related to the specific users who were doing the transmissions. These discussions were targeted toward particular purposes, ranging from the technical functionalities that were desired, to the need to potentially gather information for billing users for their usage of the network. </p>
+
+<p>Such metadata can be found in the design of any networked information system, indeed, such systems cannot function without internal metadata that support the networks&rsquo; communications and functions (<a href="#refM">Mayernik and Acker 2018</a>). This makes problematic the notion of metadata (or data) as being &lsquo;exhaust&rsquo; within technical systems. This &ldquo;exhaust&rdquo; metaphor has become increasingly common in discussions of metadata within digital systems (cf. <a href="#refM">Mayer-Schonberger and Cukier 2013</a>; <a href="#refS">Schneier 2015</a>; <a href="#refE">Edwards 2017</a>). Pomerantz (<a href="#refP">2015</a>, 126) for example, states that: &ldquo;Up to this point, &lsquo;metadata&rsquo; has meant data that was created deliberately; data exhaust, on the contrary, is produced incidentally as a result of doing other things&rdquo;. As we see from the Gartner quote above and the example from Fidler and Acker, any metadata created automatically within digital/networked information systems is a designed feature. There is nothing incidental about its creation. Using such metaphors as &ldquo;exhaust&rdquo;, &ldquo;smog&rdquo;, or &ldquo;waste&rdquo; when talking about metadata &ldquo;implies that these traces are inevitable, a by-product of human and technical activities that cannot be avoided, and once produced are out of human control&rdquo; (<a href="#refM">Mayernik and Acker 2018</a>, 178). These metaphors serve to obscure understanding of metadata, rather than illuminate it.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.3"></a>
+<h4>3.3 Relation to other concepts</h4>
+
+<p>This section provides brief overviews of how the concept of &ldquo;metadata&rdquo; relates to other important concepts within the library and information sciences. </p>
+
+<a name="3.3.1"></a>
+<h5><br>3.3.1 Data</h5>
+
+<p>If we take the literal &ldquo;data about data&rdquo; definition of metadata, then it is straightforward to say that &ldquo;metadata&rdquo; is simply a sub-category of &ldquo;data&rdquo;. This is useful in that it allows us to characterize metadata as having certain properties that prior analyses have denoted for things classed as &ldquo;data&rdquo;. Two definitions of <i>data</i> are provided here as illustrations. Furner (<a href="#refF">2017</a>, 66) defines data as &ldquo;concrete instantiations of symbolic representations of descriptive propositions, informed by empirical observation, about the quantitative and qualitative properties of real-world phenomena&rdquo;.  Hj&oslash;rland (<a href="#refH">2018</a>) builds on Kaase (<a href="#refK">2001</a>, 3251) to provide a more streamlined and generalized formulation: &ldquo;Data are information on properties of units of analysis&rdquo;. Both definitions note that &ldquo;data&rdquo; refers to entities that represent or contain information (&ldquo;symbolic representations of descriptive propositions&rdquo; in Furner&rsquo;s terms) about other entities, whether &ldquo;quantitative and qualitative properties of real-world phenomena&rdquo; or &ldquo;units of analysis&rdquo;. Put more simply, Furner refers to data as &ldquo;representational concreta&rdquo;, that is, something concrete (i.e. materially manifesting via some real-world entity) that represents something else.</p>
+
+<p>In this sense, it is straightforward to consider &ldquo;metadata&rdquo; to be a kind of &ldquo;data&rdquo;. The idea that &ldquo;metadata&rdquo; refers to &ldquo;a statement about a potentially informative object&rdquo; (<a href="#refP">Pomerantz 2015</a>, 26), or other more specific definitions given above, fits well within the broad category of &ldquo;data&rdquo; as &ldquo;representational concreta&rdquo;.</p>
+
+<p>Simply considering metadata to be a sub-class of data in this way is unsatisfactory, however, in that it does not provide any insight into why one might call a given entity &ldquo;metadata&rdquo; instead of &ldquo;data&rdquo;.  Common distinctions within KO contexts, where metadata such as classifications or subject terms are greatly distilled representations or descriptions of informational resources, do not hold in some technical systems where the &ldquo;metadata&rdquo; stored by the system can be much bigger than the &ldquo;data&rdquo; (<a href="#refK">Klensin 1995</a>; <a href="#refB">Brunton 2016</a>). </p>
+
+<p>Additionally, many pieces of information that are conventionally called &ldquo;metadata&rdquo; are in fact used by researchers and professionals as evidence to make particular claims. Think of the field of bibliometrics, for example, or the recent discussion of &ldquo;bibliographic data science&rdquo; by Lahti et al. (<a href="#refL">2019</a>). Using something as evidence for specific claims is a key definition of &ldquo;data&rdquo; in the context of scholarly research, according to multiple recent scholars (<a href="#refB">Borgman 2015</a>; <a href="#refL">Leonelli 2016</a>). Mayernik (<a href="#refM">2019</a>) argued that the distinction between data and metadata may be related to what is foregrounded and what is backgrounded in the context of a knowledge claim. In particular, metadata, &ldquo;however instantiated in local situated activities of scientific research, are central to enabling something to serve an evidentiary role, that is, to <i>serve as</i> data. In particular, if data are entities used as evidence, then metadata are the processes and products that enable those entities to be accountable as evidence&rdquo; (<a href="#refM">Mayernik 2019</a>, 734-735, italics in original).</p>
+
+<p>In sum, calling something &ldquo;metadata&rdquo; as opposed to &ldquo;data&rdquo; is a culturally contextual classification that rarely has a self-evident rationale (<a href="#refB">Boellstorff 2013</a>). Data and metadata are often designated in contradistinction to each other, depending on the specific situations of origin and use (<a href="#refB">Borgman, Wallis, and Mayernik 2012</a>; <a href="#refM">Mayernik and Acker 2018</a>). </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.3.2"></a>
+<h5>3.3.2 Document</h5>
+
+<p>The notion of a &rarr; <a href="document">document</a> is central to library and information science. Library and information work, including knowledge organization, centrally involves the creation, processing, and organization of documents. Library and information science scholars have thus developed sophisticated understandings of what it means to call something a &ldquo;document&rdquo;. Michael Buckland (<a href="#refB">1997; 2014</a>) outlines how particular entities can be <i>made as</i>, <i>made into</i>, and <i>considered as</i> documents. These three views, which are progressively more inclusive, reflect how: (1) particular things may be deliberately designed to serve documentary purposes (<i>made as documents</i>), (2) human artifacts may be used as documentary resources even if that wasn&rsquo;t their original purpose (<i>made into documents</i>), or (3) naturally occurring objects such as rocks or animals may be used for documentary purposes (<i>considered as documents</i>). In these senses, almost any object could be used as a document depending on their evidentiary value in particular circumstances. Being a &ldquo;document&rdquo; is therefore a role that particular things play, rather than an inherent property of those things.</p>
+
+<p>Furner (<a href="#refF">2016</a>, 303) argues that all datasets are documents, stating that &ldquo;the dataset is a species of document&rdquo;. Thus if metadata are a special kind of data, as noted above, then metadata likewise exist as documents, not abstract concepts or information that exists without material form. As such, metadata can be analyzed via the same conceptual apparatus as documents. See Buckland (<a href="#refB">2018</a>) for a recent overview on this topic. </p>
+
+<p>If metadata is a sub-species of both data and document, it might be worth asking the question about the relationship among all three concepts. In other words, using Venn diagram terminology, one possible view is that the three terms are completely hierarchical, with <i>metadata</i> being completely encircled by <i>data</i> which is in turn completely encircled by <i>document</i>. An alternate view is that <i>data</i> and <i>metadata</i> are partially overlapping circles within the larger <i>document</i> set. This latter view is a better fit with the discussion in the previous section of the culturally contextual ways in which data and metadata are distinguished. In other words, documents can be data, metadata, both, or neither depending on their usage as such in particular situations. Stated more concretely in relation to Buckland&rsquo;s conception of &ldquo;documents&rdquo; as being roles rather than properties, being metadata is a role that some documents (or types of documents) have in particular circumstances (<a href="#refR">Renear and Wickett 2010</a>). </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.3.3"></a>
+<h5>3.3.3 Context</h5>
+
+<p>A couple of the definitions of metadata presented in <a href="#3.1">section 3.1</a> referred to metadata as describing or providing context for informational/data resources. &ldquo;Context&rdquo; is itself a potentially slippery concept, generally referring to the setting or situation in which an action or event takes place, and the factors that influence the action or event as it happens. Contexts can be important in how metadata is designed or in how it is interpreted (<a href="#refW">Wickett 2015</a>). Dervin (<a href="#refD">1997</a>, 14) notes that context is typically conceptualized, &ldquo;usually implicitly, as a kind of container in which the phenomenon resides&rdquo;. Talja, Keso and Pietilainen (<a href="#refT">1999</a>, 754) approach context from a metatheoretical viewpoint, saying &ldquo;context is the site where a phenomenon is constituted as an object to us&rdquo;. They describe context as the &ldquo;crossroads between researcher and data&rdquo;. Dourish (<a href="#refD">2004</a>) describes how what is usually referred to as &ldquo;context&rdquo; can be better conceived as being rooted in &ldquo;practices&rdquo;. Shifting from &ldquo;context&rdquo; to &ldquo;practices&rdquo; allows us to focus on the &ldquo;engaged action around artefacts and information that make those artefacts meaningful and relevant to people&rdquo; (<a href="#refD">Dourish 2004</a>, 26). Using this view, &ldquo;context&rdquo; exists both (1) independently from the situated actions, and (2) co-produced by people via their situated actions. Metadata thus serve to create the context around information/data resources as much as they serve to describe that context. </p>
+
+<p>As more metadata is produced automatically via computing systems, context is something that &ldquo;must be reckoned in both architectural and institutional terms&rdquo; (<a href="#refA">Agre 2001a</a>, 194). In other words, &ldquo;context&rdquo;, in the context of computing systems, includes considerations of both the operations of the computing hardware and software &mdash; from bit-level to infrastructure-level &mdash; as well as considerations of institutional settings in which those computing systems were designed, created, and operated. Metadata associated with digital objects may be designed to reflect different parts of these details, depending on the application or situation.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4"></a>
+<h3>4. Characteristics of metadata</h3>
+
+<p>As the diversity of the definitions, functions, and roles given above illustrates, metadata is not a definite and singular concept. Rather, it is a fluid, multiple, and fractional concept (<a href="#refL">Law 2004</a>). Metadata is &ldquo;fluid&rdquo; in that file naming conventions, catalog records, data descriptions in repositories, user tags on YouTube, notes in personal Excel spreadsheets, email headers, and HTML tags can all be called &ldquo;metadata&rdquo;. Metadata, as a concept, is also characterized by &ldquo;multiplicity&rdquo; in that it is enacted differently in different social settings and situations, from Dublin Core records created by information professionals to descriptions in lab notebooks created by scientists to document their data. </p>
+
+<p>Despite this diversity, some characteristics and points of debate are common across metadata of different kinds. This section discusses some of the central characteristics of that which gets called &ldquo;metadata&rdquo;. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.1"></a>
+<h4>4.1 Structured vs. unstructured</h4>
+
+<p>A primary point of distinction in some discussions of metadata is between structured and unstructured information. A number of the definitions quoted in <a href="#3.1">section 3.1</a> explicitly call out metadata as being &ldquo;structured&rdquo;. Many structures for metadata have been formalized into standards, ranging from general purpose metadata standards such as the Dublin Core to discipline-specific standards for particular kinds of resources, e.g. geospatial information (<a href="#refD">Danko 2012</a>; <a href="#refB">Brodeur et al 2019.</a>). Standardized schemas and structures facilitate the interoperability of metadata between systems and applications (<a href="#refZ">Zeng 2019</a>). Metadata standards are commonly organized around a set of elements (such as &ldquo;title&rdquo;, &ldquo;author&rdquo;, &ldquo;date&rdquo;) that manifest as computer-readable documents in one of an alphabet-soup set of formats and mark-up languages, such as MARC, XML, JSON, and YAML. </p>
+
+<p>Structured metadata can be differentiated from other forms of unstructured metadata, which might also be called &ldquo;documentation&rdquo; (<a href="#refH">Habermann 2018</a>). Unstructured metadata could include any range of traces and practices that achieve some or most of the same goals as structured metadata, namely to create documentation, descriptions, and annotations for the purposes of managing, discovering, accessing, using, sharing, and preserving informational/data resources. As one example, in the context of data archives, it is common to include one or more narrative documents that describe various aspects of the data in more detail than is possible through standardized metadata structures. </p>
+
+<p>It is important to keep in mind that structured and unstructured metadata can be hard to fully disentangle. Metadata standards commonly include a mix of controlled and uncontrolled elements. Controlled elements may require the information therein to conform to a specified syntax (e.g. &ldquo;year-month-day&rdquo; syntax in a date field) or to be chosen from a pre-determined set of values (i.e. controlled vocabularies). Uncontrolled fields, on the other hand, may allow any value to be present. Thus, even within highly structured metadata standards, there can be significant amounts of unstructured metadata. This characteristic can challenge attempts to aggregate or discover metadata, even if it is all structured according to a common standard (<a href="#refA">Arms et al. 2002</a>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.2"></a>
+<h4>4.2. Metadata-as-product and metadata-as-process</h4>
+
+<p>The use of standards to create structured metadata results in what can be characterized as &ldquo;metadata products&rdquo;. Edwards et al. (<a href="#refE">2011</a>), in a discussion of metadata in the context of scientific research, describe how metadata products almost always involve corresponding &ldquo;metadata processes&rdquo;, namely, practices that help people overcome or bypass frictions that occur in the creation and use of metadata.</p>
+
+<blockquote>
+Well-codified metadata products increase the precision with which a dataset can be fitted to purposes for which it was not originally intended, or can be reused by people who did not participate in creating it. At the same time, ephemeral, incomplete, ad hoc metadata processes act as lubricants in disjointed, imprecise scientific communication. This latter category of metadata frequently appears alone, in the case of datasets for which no metadata products exist, but it also frequently appears in the actual use of metadata products. (<a href="#refE">Edwards et al. 2011</a>, 684)
+</blockquote>
+
+<p>Some of the examples provided by Edwards et al. (<a href="#refE">2011</a>) and other related works (<a href="#refM">Mayernik 2019</a>) discuss how &ldquo;metadata processes&rdquo; effectively serve to facilitate data discovery, sharing, and use in situations where standardized &ldquo;metadata products&rdquo; have not or cannot be created due to time constraints or the lack of expertise available.  As noted in the last sentence of this quote, however, metadata processes are also important in situations where standardized metadata products are being created. As one example, starting in 1988 and extending into the 2010s, the US Library of Congress published a set of &ldquo;rule interpretations&rdquo; for use by catalogers within libraries across the world who were creating catalog records via the Anglo-American Catalog Rules, 2nd edition (AACR2). AACR2 provided hundreds of rules for cataloging library resources of all kinds. Applying these rules when cataloging particular items, however, involved interpretive decision making regarding their fit to the details of the item in hand. The Library of Congress rule interpretations gave catalogers more detailed guidance on how to apply cataloging rules than was contained in the AACR2 cataloging code itself. These rule interpretations covered common cases, such as how to enter author names when there was more than one author of a resource, and rare cases, such as how to designate authorship for a conference proceedings where no individuals were named as authors or editors. As Barbara Tillett, former head of the Library of Congress&rsquo;s cataloging division, noted:
+
+<blockquote>
+These rule interpretations lead to greater consistency in applying the rules, which is important for a very large institution and for its partners who help create compatible bibliographic and authority records. These guidelines are not appropriate for a cataloging code, but are needed for training and daily guidance to catalogers seeking to provide bibliographic description and access in a consistent way. (<a href="#refT">Tillett 2003</a>, 113)
+</blockquote></p>
+
+<p>The Library of Congress Rule Interpretations (LCRI) were thus a kind of metadata process that facilitated the creation of more standardized metadata products. The implementation of any metadata standard is tied up in local interpretations and processes (<a href="#refP">Park and Maszaros 2009</a>). This interpretive flexibility is a characteristic of every metadata standard or schema (<a href="#refF">Feinberg 2017</a>). Looking closely at the production of other metadata products would likely show similar couplings with attendant metadata processes.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.3"></a>
+<h4>4.3 Metadata and description</h4>
+
+<p>In a recent work, Michael Buckland (<a href="#refB">2017</a>, 113) states that the &ldquo;first and original use of metadata is to describe documents&rdquo;. It is thus important to discuss briefly what &ldquo;descriptions&rdquo; are, and what characteristics they pass on to metadata. The word <i>description</i>, like other similar words such as <i>communication</i>, <i>illustration</i>, and, yes, <i>information</i>, can be used to discuss both things and activities. When talking about metadata, descriptions are most commonly discussed as things, e.g. descriptions of library resources, archival materials, or data sets that are held in information systems and made accessible through catalogs. Decades of sociological research, however, has focused on description as an activity. This literature cannot be fully detailed here, but it provides important insight into how descriptions created and used as metadata should be understood.</p>
+
+<p>Descriptions, whether verbal or written, are &ldquo;only more or less reliable by virtue of their being treated that way for the practical purposes at hand&rdquo; (<a href="#refW">Woolgar 1981</a>, 509). In this sense, metadata encompasses negotiated shared meanings. Metadata is typically created with the expectation that readers or users of the descriptions will have knowledge of how to read and interpret them. As Heritage (<a href="#refH">1984</a>, 150-151, italics in original) states, however, &ldquo;no description is strictly <i>compelled</i> by the state of affairs it describes. Any description is thus inherently <i>selective</i> in relation to the state of affairs it depicts. [&hellip; C]hoices which underlie any description [&hellip;] are all sources of clues concerning how the description is to be interpreted&rdquo;. This characteristic, that metadata is inevitably selective, relates to the point in <a href="#3.2">section 3.2</a> above about metadata being created for specific purposes. Analysis of the metadata creation process should thus view metadata description, whether catalog records, classifications, labels, or technical traces, as a kind of action situated in social settings. In fact, as noted in the last sentence of the Heritage quote above, the metadata that does exist in some information system or social setting can itself be studied as a way to gather insight into the priorities, expectations, and accountabilities that exist in relation to those systems or settings (<a href="#refM">Mayernik 2019</a>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.4"></a>
+<h4>4.4 Search, discovery, and understanding</h4>
+
+<p>Beyond description, Buckland (<a href="#refB">2017</a>, 118) notes that an additional use of metadata is to enable searching. Metadata can be used to provide structures that support consistent search and discovery of information across broad ranges of documents. Metadata can also potentially enable distinctions to be made among similar kinds of documents or resources. A search in a library catalog for &ldquo;Hamlet&rdquo; or a search in a scientific data catalog for &ldquo;climate data&rdquo; can result in hundreds or thousands of relevant results. Metadata that is useful for search and discovery may not be useful in distinguishing the differences among such large numbers of results. Users will likely need additional metadata that allows them to understand the resources, not just discover them (<a href="#refH">Habermann 2018</a>). Providing metadata for understanding is certainly a role of the descriptions noted in the previous section. For example, annotated bibliographies of the various editions of <i>Hamlet</i> (<a href="#refB">Bevington 2019</a>) and comparative guides for climate data (<a href="#refS">Schneider et al. 2013</a>) exist specifically to go beyond search and discovery to enable understanding. Metadata is not the only way to move beyond searching to understanding. Interface design and better search capabilities also have impact (<a href="#refM">Marchionini 2006</a>). But additional and novel metadata kinds and structures are central to this goal.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.5"></a>
+<h4>4.5 Relationships</h4>
+
+<p>One critical characteristic of metadata is that they are often the carrier of information about relationships within, among, and between informational/data resources. Many information and data systems manage and leverage relationships of a variety of kinds, including relationships among vocabulary terms and content structures (<a href="#refB">Bean and Green 2001</a>), and relationships between documents and networks of documents (<a href="#refM">Mayernik 2018</a>). Research in knowledge organization centers heavily on how to understand and represent relationships, both of a conceptual and a documentary nature (<a href="#refG">Green 2008</a>; <a href="#refS">Szostak 2012</a>), and has defined canonical types of relationships that obtain in the information arena, including hierarchical, associative, and equivalence relationships (<a href="#refB">Bean and Green 2001</a>). </p>
+
+<p>Yet, this aspect of metadata is often underappreciated. As Geoffrey Bowker (<a href="#refB">2016</a>, n.p.) noted, &ldquo;we don&rsquo;t build our archives around relationships, we build them around things (if there is one fundamental flaw in our generic archival practices, it is this)&rdquo;. Gary Marchionini (<a href="#refG">2012</a>), in an acceptance speech upon winning the &ldquo;Award of Merit&rdquo; from the Association for Information Science and Technology (ASIS&amp;T) in 2011, suggested that &ldquo;information science is in search of a theory of relationships&rdquo; (20), and stated that the community would benefit from paying attention &ldquo;to the nature of relations in general rather than only identifying specific new relations&rdquo; (21). </p>
+
+<p>Rebecca Green (<a href="#refG">2008</a>) discussed a variety of ways in which relationships manifest in &rarr; <a href="kos">knowledge organization systems</a>. Relationships might be expressed via classification systems, vocabularies and &rarr; <a href="thesaurus">thesauri</a>, subject headings, or via specific relationship-focused elements in bibliographic records. Recent developments in the Semantic Web centrally involve the precise specification of relationships between entities (<a href="#refA">Allison-Cassin 2012</a>; <a href="#refD">Dunsire, Hillmann and Phipps 2012</a>). All of these manifest as metadata in some kind of document and/or information system. When relationship metadata exists in defined and structured form, they can be leveraged within information systems to enable information discovery and understanding, as well as to allow properties of one item to be transferred or inferred to another (<a href="#refW">Wickett 2018</a>). When relationship metadata exists as unstructured information, e.g. as components of narrative metadata, they can enable keyword-based searching, or be used by users to better understand the item(s) in hand. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5"></a>
+<h3>5. Where does metadata come from?</h3>
+
+<p>As noted in the introduction, metadata comes from somewhere (<a href="#refG">Gitelman 2013</a>). The social settings in which metadata are created have a large impact on what form metadata takes, and on who or what creates metadata. Metadata can be created through both automated and manual processes. Both of these methods present challenges. This section outlines different people and technologies that have roles and responsibilities related to metadata creation.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5.1"></a>
+<h4>5.1 Professional metadata creators</h4>
+
+<p>In libraries and archives the creation of metadata is an institutionalized task. Catalogers, archivists, and professionals with titles like &ldquo;metadata librarian&rdquo; (<a href="#refH">Han and Hswe 2010</a>) are assigned responsibility for creating metadata. Within these kinds of institutions, metadata work is also frequently conducted by paraprofessionals who have knowledge, experience, and training with the relevant systems and standards (<a href="#refM">Moulaison Sandy and Dykas 2016</a>). Metadata creation is also a key responsibility for people working as data managers within data repositories (<a href="#refP">Palmer et al. 2014</a>; <a href="#refR">Rasmussen 2014</a>). </p>
+
+<p>Researchers and professionals from the library and information sciences (LIS) often approach their work through developing and applying defined sets of principles. Principles are discussed at professional meetings and in the literature, debated in standard-writing committees, and taught as part of professional education curricula. Principles offer directives for how information systems and the languages they use should be designed (<a href="#refS">Svenonius 2000</a>). Principles depict how things should be, or would be in optimal circumstances (<a href="#refG">Gnoli 2012</a>).</p>
+
+<p>The articulation of principles has been a central activity (and point of debate) within the library cataloging community for decades. Cataloging codes since the 1960s have been based in community-accepted principles, starting with the &ldquo;Paris Principles&rdquo;, which resulted from an international meeting held in Paris in 1961 (<a href="#refI">International Conference on Cataloguing Principles 1971</a>). In the mid-1990s, when new cataloging code revisions were being debated, no fewer than three international conferences were held that focused either in whole or in part on the fundamental principles that should underlie the next code (<a href="#refW">Weihs 1998</a>; <a href="#refS">Schottlaender 1998</a>; <a href="#refH">Harkness Connell and Maxwell 2000</a>). Individual contributions to these conferences debated the implementation of principles in past codes, and presented new principles for a variety of specific issues, such as principles for cataloging relationships between resources and principles for cataloging serial materials. The cataloging code that resulted from these debates, titled Resource Description and Access, includes a statement of principles in the introductory chapter, and notes at the beginning of each subsequent chapter how each section of rules relates to the stated principles (<a href="#refJ">JSC 2014</a>). The development of archival practices and institutions since the 19th century has been likewise driven by principle-based approaches (<a href="#refG">Gilliland 2014</a>), as was the development of the Dublin Core Metadata Schema in the 1990s and early 2000s (<a href="#refW">Weibel 1995</a>; <a href="#refA">Arakaki et al. 2018</a>).</p>
+
+<p>Information and data professionals are far from having a monopoly on metadata creation, however, especially if the scope of what &ldquo;metadata&rdquo; entails is taken broadly.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5.2"></a>
+<h4>5.2 Automatic metadata generation</h4>
+
+<p>As noted above, digital systems are inherently dependent on metadata that is automatically created for a variety of purposes (<a href="#refM">Mayernik and Acker 2018</a>). The more structured the digital workflow, the easier it is to automate the creation of metadata, for example, to record &rarr; <a href="provenance">provenance</a> information about how information or data have been derived or changed over time. Beyond the use of automation to generate technical metadata, however, automation can also be applied to generate descriptive or topical metadata. Jane Greenberg (<a href="#refG">2004</a>) described how automated metadata creation techniques typically follow one of two approaches, extraction or harvesting. In metadata extraction, &ldquo;an algorithm automatically extracts metadata from a resource&rsquo;s content&rdquo; (<a href="#refG">Greenberg 2004</a>, 62). Common applications of the extraction approach include automatic abstract generation for publications and summary displays of web pages given by web search systems. Metadata harvesting, on the other hand, involves compiling metadata automatically from distributed resources, such as collecting standardized metadata from metadata feeds or web site HTML. As Greenberg (<a href="#refG">2004</a>, 63) notes, &ldquo;the &lsquo;harvesting process&rsquo; relies on the metadata produced by humans or by full or semi-automatic processes supported by software&rdquo;.</p>
+
+<p>&rarr; <a href="automatic">Automated</a> metadata extraction and harvesting methods are most robust for text-based documents, for time- and geotagging of digital photos, and the like. But new technologies and techniques for extracting information from audio recordings, video, and images also have promise for the purposes of metadata creation (<a href="#refR">Riley 2017</a>). Facial recognition software could be used, for example, to create metadata about the people that are shown in digital video or image collections maintained by libraries and archives. Given the explosion of digital media and the growth of digital archives, these kinds of techniques may be the only tractable way for such metadata to be produced (see for example <a href="#refM">M&uuml;hling et al. 2019</a>). The use of facial recognition and other similar algorithmic metadata extraction techniques must be coupled, however, with strong awareness of the notable ethical implications that arise when creating information about people without their awareness (<a href="#refA">Agre 2001b</a>; <a href="#refS">Seeman 2012</a>; <a href="#refC">Crawford 2019</a>; <a href="#refP">Padilla 2019</a>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5.3"></a>
+<h4>5.3 Metadata creation in everyday life</h4>
+
+<p>Outside of information/data institutions and structured technological workflows, metadata creation can take on various forms, with many opportunities and challenges. Many of the computational techniques noted in the previous section are either in nascent form or are not effective when applied to unstructured or very diverse informational resources. They may also require specific technical skills to implement. In day-to-day life, people may create metadata for information and data in the context of work or home settings. People may create metadata via folder structures and files names for personal images, or create one-off notes documents for particular tasks or resources. All of these are acts of metadata creation in the general sense. </p>
+
+<p>Internet-based tools for sharing photos, videos, and other kinds of information commonly enable users to add metadata as tags to text or objects. &rarr; <a href="tagging">Tags</a> are also common within social media systems, where users of Twitter, Facebook, or Instagram include hashtags to connect their posts with other discussions within the platforms, such as <code>#WomensHistoryMonth</code>, <code>#EmployeeAppreciationDay</code>, or <code>#data</code>. Library and information science researchers have studied how the aggregation of such tags can create folksonomies that reflect the vocabularies and language usage of everyday people, in contrast to the structured and pre-determined taxonomies created and used by information professionals. Folksonomies have been studied and implemented as ways to bridge between expert and non-expert vocabularies (<a href="#refC">Cairns 2013</a>), and potentially to feed into the creation of formal taxonomies or ontologies (<a href="#refG">Gil et al. 2017</a>). Such &ldquo;crowdsourcing&rdquo; of metadata has benefits and drawbacks. Enabling users to add metadata via their own terminologies tend to better support information browsing than searching (<a href="#refS">Sinclair and Cardew-Hall 2007</a>), but can be very effective at accommodating and celebrating multiple voices and perspectives on the resources being described (<a href="#refS">Srinivasan et al. 2009</a>). </p>
+
+<p>Metadata created for everyday tasks should be expected to have different characteristics than metadata created by professionals for institutional purposes. Such metadata tends to be idiosyncratic, varying in content and structure from individual to individual, and from situation to situation for the same individual. The aforementioned discussion of principles for metadata do not apply. As Chamberlain and Crabtree (<a href="#refC">2016</a>, 569) note in a study of how metadata is created and used in the context of personal music collections:
+
+<blockquote>
+Relevance is a key factor to understanding the nature of metadata, what is relevant in one context may rapidly change as different artifacts, reasons and results are employed indifferent emerging contexts &ndash; metadata is not always a static &ldquo;entity&rdquo;, in many respects it consists of different physical modalities, relates to people (trusted) and has different perceived and actual temporal qualities. Our fieldwork shows that the emergence and use of metadata is both part of, and yet can be separated from the workflow.
+</blockquote></p>
+
+<p>Creating metadata in everyday situations is often a task that has implicit or explicit moral implications (<a href="#refV">Vertesi et al. 2016</a>). People feel morally responsible for keeping track of important documents and information, such as family pictures, yearly tax documents, or vaccination records for children. These types of documents may exist in a variety of digital and analog formats, and in multiple technical environments (e.g. email, personal computers, mobile phones). Creating metadata and organization systems for these kinds of things can thus be a source of emotional and interpersonal stress. People thus make context-specific choices about what metadata to create, and in what forms and systems.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5.4"></a>
+<h4>5.4 Metadata collaborations</h4>
+
+<p>Metadata creation often involves collaborations between people with varied expertise and knowledge. People with special domain or disciplinary knowledge may seek out metadata experts for help in the creation of specialized collections of resources on a particular topic. Or libraries and archives may bring in experts on a particular topic to provide consulting or specialized knowledge for particular collections. Additionally, as more libraries and archives are collecting born-digital resources, such as digital datasets, software packages, and other kinds of materials, they often have multi-step workflows where the contributor of the resource is required to create metadata for their asset(s), with professional librarians or metadata experts providing review and quality control for the resulting metadata. </p>
+
+<p>Such collaborations can be challenging. People with different perspectives will bring different expectations about technologies, workflows, and outcomes (<a href="#refK">Khoo and Hall 2013</a>). The time, energy, and attention involved in creating, collecting, assembling, checking, and/or understanding metadata can be significant, particularly for people without experience in creating structured or non-structured metadata. For example, scholarly research data repositories commonly experience difficulty in getting data creators to create metadata, and the metadata that is created can be of minimal quality (<a href="#refJ">Jones et al. 2006</a>; <a href="#refB">Bhandary et al 2018</a>). In some cases, researchers will refrain from sharing data because it takes too much effort to produce the data and associated documentation necessary for its use (<a href="#refT">Tenopir et al. 2011</a>).</p>
+
+<p>The benefits of such collaborations, on the other hand, center on being able to take advantage of the different sets of expertise that different people may bring. For example, disciplinary topic experts have firsthand knowledge about how resources related to their areas of expertise are created and used, and thus can provide useful insight into what metadata should be created, and how the metadata may be optimally structured to support use and re-use (<a href="#refW">White 2010</a>). In the best circumstances, metadata experts and non-experts work together (<a href="#refG">Gazan 2003</a>). Information and data professionals may serve as intermediaries (<a href="#refM">Mayernik 2016</a>) to support the optimal usage of the applicable metadata standards, vocabularies, while topical experts provide relevant metadata content and guidance on usage.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="6"></a>
+<h3>6. Metadata futures: conclusions and research questions</h3>
+
+<p>This paper begins with a quote stating that the future of metadata is grand. The subsequent sections illustrated how metadata in various forms pervades our institutions, technologies, and daily lives. The ongoing digitization of our societies is, if anything, accelerating this trend. As noted by Richard Gartner (<a href="#refG">2016</a>, 96):
+
+<blockquote>
+The growth of the digital seems to need more metadata not less. Google and its peers make it possible to discover new material in ways which we could not have conceived of before but they need to be complemented by human thought and the metadata by which it is focussed.
+</blockquote></p>
+
+<p>Going forward, researchers and professionals will continue to grapple with long-lasting challenges related to metadata creation and use, including questions about how to negotiate cost/benefit trade-offs between structured and unstructured metadata, and between human and machine generated metadata. But it is also clear that each new generation of information and data technology produce and require different kinds of metadata than systems that existed before. Social media technologies demonstrate a trend toward what Ronald E. Day (<a href="#refD">2019</a>) has called &ldquo;a posteriori&rdquo; metadata generation. Day uses this term to contrast with &ldquo;a priori&rdquo; metadata generation, as in library cataloging and &rarr; <a href="library_classification">classification</a>, Semantic Web ontologies, and scientific data catalogs, where the generation of metadata tends to come at the beginning of the life cycle of information/data use. In systems based on &ldquo;a posteriori&rdquo; metadata, the metadata that get generated, stored, and used within the systems are less focused on the properties of the entities within those systems, instead focusing more on what those entities do (or what is done to them by other entities). Twitter, for example, may collect metadata about particular Twitter users, but they monetize metadata that reflects what those users do. Likewise, Twitter generates metadata about each post, but they monetize metadata that reflects how those posts travel (how many likes, retweets, and replies are generated), and the social networks connected to those interactions.</p>
+
+<p>Information and data researchers and professionals who have expertise in the &ldquo;a priori&rdquo; metadata approach have much to consider in this trend toward &ldquo;a posteriori&rdquo; metadata. As Day (<a href="#refD">2019</a>, 138, italics in original) suggests, &ldquo;<i>A priori </i>categories, such as those that result from classification structures, can be heuristics for investigating entities, but they are only that&rdquo;. What does knowledge organization consist of if the value and meaning of particular information and data resources is &ldquo;based on statistical calculations of the use and the relations of data&rdquo; (141) instead of a priori decisions about subjects, classes, and categorizations based on inherent properties of those resources? Open research questions on this point relate to the relative value of both approaches to metadata creation in relation to the goals of the metadata being produced. In <a href="#3.2">section 3.2</a>, I listed 19 different types of metadata that have been identified in prior literature (administrative, descriptive, discovery, preservation, provenance, technical, etc.). Some of these metadata types are obviously conducive to the &ldquo;a posteriori&rdquo; approach, such as provenance metadata, but with other types, such as descriptive and discovery metadata, the relative value of the &ldquo;a priori&rdquo; vs &ldquo;a posteriori&rdquo; approach to metadata creation is still an open question. </p>
+
+<p>Day&rsquo;s reflections likewise provide important considerations for the future of metadata and knowledge organization in relation to evidence and evidentiariness in the digital age. In a time of &ldquo;fake news&rdquo; and &ldquo;deepfakes&rdquo;, that which is considered knowledge is tied to the kinds of evidence that exist to buttress knowledge claims, and to the ways that that evidence is marshalled. The use of documents as evidence has always been tied up with assessments of the authenticity of the documents involved. Authenticity assessments in the digital age rely on metadata to provide (and create) context and accountability for evidence. When the metadata necessary for these authenticity assessments is itself subject to manipulation and/or capitalization, the grounds for using particular documents or traces as evidence can be eroded (<a href="#refA">Acker 2018</a>). Metadata can serve as a kind of capital (<a href="#refG">Greenberg et al. 2014</a>), that is, economic assets that take time, energy, and money to create, compile, and leverage, and provide value to those who control and use them. Thus, open research questions exist about the epistemology of metadata, namely, how metadata comes to exist, how people and technologies can learn about their origins, how metadata relates to economic and political interests, and how such interests can also be known and made transparent, potentially through the very metadata that is under question. What is the role of metadata in supporting evidentiary claims in the digital age? Tracing and documenting of relationships is a key challenge in relation to this question. In digital systems and applications, metadata moves around, being transmitted, transformed, aggregated, or pulled apart based on the needs and interests of various stakeholders. Sometimes such metadata journeys are pre-defined, but they can also occur opportunistically (<a href="#refL">Leonelli 2016</a>). Documenting these journeys involves a kind of reflexivity, where metadata, its origins, histories, and journeys, must be documented through (and as) metadata. Open questions exist about how metadata journeys and relationships can reflect the &ldquo;fluid&rdquo; nature of our societies and cultural practices (<a href="#refS">Srinivasan and Huang 2005</a>).</p>
+
+<p>As the kinds of metadata that are created, and the sites of metadata creation, continue to expand, these challenges of authenticity of documentary evidence and therefore knowledge generation and organization will continue to grow. As stated by Day (<a href="#refD">2019</a>, 49), &ldquo;truth is not transcendental, but rather is revealed by performative practices. Truth becomes evident at indexical points of revelation made possible through technologies of informational inscription&rdquo;. Metadata thus have a central role in the establishment of knowledge, evidence, and truth. Going forward, thinking critically about our metadata practices and systems will be essential for the ongoing evolution of our information-centric technologies and societies (<a href="#refF">Feinberg 2018</a>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="ack"></a>
+<h3>Acknowledgments</h3>
+
+<p>I thank <i>ISKO Encyclopedia of Knowledge Organization</i> editor-in-chief <a href="authors#h">Birger Hj&oslash;rland</a> for the invitation to write this article, and for comments on previous versions. I also thank the anonymous peer reviewers for very insightful comments. This material is based upon work supported by the National Center for Atmospheric Research (NCAR), which is a major facility sponsored by the US National Science Foundation (NSF) under Cooperative Agreement No. 1852977. Any opinions, findings, and conclusions or recommendations expressed in this publication are those of the author and do not necessarily reflect the views of NCAR or the NSF.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="ref"></a>
+<h3>References</h3>
+
+<a name="refA"></a>
+
+<p>Acker, Amelia. 2018. <i>Data Craft: The Manipulation of Social Media Metadata</i>. New York: Data &amp; Society Research Institute. <a class="menu" href="https://datasociety.net/output/data-craft/">https://datasociety.net/output/data-craft/</a></p>
+
+<p>Agre, Philip E. 2001a. &ldquo;Changing Places: Contexts of Awareness in Computing&rdquo;. <i>Human-Computer Interaction</i> 16, no. 2-4: 177-192. <a class="menu" href="https://doi.org/10.1207/S15327051HCI16234_04">https://doi.org/10.1207/S15327051HCI16234_04</a></p>
+
+<p>Agre, Philip E. 2001b. &ldquo;Your Face is Not a Bar Code: Arguments Against Automatic Face Recognition in Public Places&rdquo;. <i>Whole Earth</i> 106: 74-77.</p>
+
+<p>Allison-Cassin, Stacy. 2012. &ldquo;The Possibility of the Infinite Library: Exploring the Conceptual Boundaries of Works and Texts of Bibliographic Description&rdquo;. <i>Journal of Library Metadata</i> 12, no. 2-3: 294-309. <a class="menu" href="https://doi.org/10.1080/19386389.2012.700606">https://doi.org/10.1080/19386389.2012.700606</a></p>
+
+<p>Arakaki, Felipe Augusto, Vesu Alves, Rachel Cristina, Amorim da Costa Santos, Placida Leopoldina Ventura. 2018. &ldquo;Dublin Core: State of Art (1995 to 2015)&rdquo;. Informacao & Sociedade-estudos. Campina Grande Pb: Univ Federal Campina Grande 28, no. 2: 7-20. <a class="menu" href="http://hdl.handle.net/11449/166289">http://hdl.handle.net/11449/166289</a>.</p>
+
+<p>Arms, William Y., Diane Hillmann, Carl Lagoze, Dean Krafft, Richard Marisa, John Saylor, Carol Terrizzi, and Herbert Van de Sompel. 2002. &ldquo;A Spectrum of Interoperability: The Site for Science Prototype for the NSDL&rdquo;. <i>D-Lib Magazine</i> 8, no. 1). <a class="menu" href="https://doi.org.10.1045/january2002-arms">https://doi.org.10.1045/january2002-arms</a></p>
+
+<a name="refB"></a>
+
+<p>Bhandary, Priyanka, Arun S. Seetharam, Zebulun W. Arandsee, Manhoi Hur, and Eve Syrkin Wurtle. 2018. &ldquo;Raising Orphans from a Metadata Morass: A Researcher&rsquo;s Guide to Re-Use of Public &rsquo;omics Data&rdquo;. <i>Plant Science</i> 267: 32&ndash;47. <a class="menu" href="https://doi.org/10.1016/j.plantsci.2017.10.014">https://doi.org/10.1016/j.plantsci.2017.10.014</a></p>
+
+<p>Bean, Carol A. and Rebecca Green. (Eds). 2001. <i>Relationships in the Organization of Knowledge</i>. Boston, MA: Kluwer.</p>
+
+<p>Bevington, David (Ed). 2019.<i> Hamlet: By William Shakespeare</i>. Internet Shakespeare Editions. <a class="menu" href="https://internetshakespeare.uvic.ca/Library/Texts/Ham/">https://internetshakespeare.uvic.ca/Library/Texts/Ham/</a></p>
+
+<p>Boellstorff, Tom. 2013. &ldquo;Making Big Data, in Theory&rdquo;. <i>First Monday</i> 18, no. 10). <a class="menu" href="http://journals.uic.edu/ojs/index.php/fm/article/view/4869/3750">http://journals.uic.edu/ojs/index.php/fm/article/view/4869/3750</a></p>
+
+<p>Borgman, Christine L. 2003. &ldquo;The Invisible Library: Paradox of the Global Information Infrastructure&rdquo;. <i>Library Trends</i> 51, no. 4: 652-674. <a class="menu" href="http://hdl.handle.net/2142/8487">http://hdl.handle.net/2142/8487</a></p>
+
+<p>Borgman, Christine L. 2015. <i>Big Data, Little Data, No Data: Scholarship in the Networked World</i>. Cambridge, MA: MIT Press.</p>
+
+<p>Borgman, Christine L., Jillian C. Wallis, and Matthew S. Mayernik. 2012. &ldquo;Who&rsquo;s Got the Data? Interdependencies in Science and Technology Collaborations&rdquo;. <i>Computer Supported Cooperative Work</i> 21, no. 6: 485-523. <a class="menu" href="https://doi.org/10.1007/s10606-012-9169-z">https://doi.org/10.1007/s10606-012-9169-z</a></p>
+
+<p>Bowker, Geoffrey. 2016. &ldquo;Just What are we Archiving?&rdquo; <i>Limn</i> Issue 6. <a class="menu" href="http://limn.it/just-what-are-we-archiving/">http://limn.it/just-what-are-we-archiving/</a></p>
+
+<p>Brodeur, Jean, Serena Coetzee, David Danko, Stephane Garcia, and Jan Hjelmager. 2019. &ldquo;Geographic Information Metadata: An Outlook from the International Standardization Perspective&rdquo;. <i>ISPRS International Journal of Geo-Information</i> 8: 280. <a class="menu" href="https://doi.org/10.3390/ijgi8060280">https://doi.org/10.3390/ijgi8060280</a></p>
+
+<p>Brunton, Finn. 2016. &ldquo;Keeping the Books&rdquo;. <i>Limn</i> Issue 6. <a class="menu" href="https://limn.it/articles/keeping-the-books/">https://limn.it/articles/keeping-the-books/</a></p>
+
+<p>Buckland, Michael K. 1997. &ldquo;What is a &lsquo;Document&rsquo;?&rdquo; <i>Journal of the American Society for Information Science </i>48, no. 9: 804-809. 
+<a class="menu" href="https://doi.org/10.1002/(SICI)1097-4571(199709)48:9<804::AID-ASI5>3.0.CO;2-V">https://doi.org/10.1002/(SICI)1097-4571(199709)48:9<804::AID-ASI5>3.0.CO;2-V</a>
+ </p>
+
+<p>Buckland, Michael. 2014. &ldquo;Documentality Beyond Documents&rdquo;. <i>Monist</i> 97, no. 2: 179-186. <a class="menu" href="https://doi.org/10.5840/monist201497212">https://doi.org/10.5840/monist201497212</a></p>
+
+<p>Buckland, Michael. 2017. <i>Information and Society</i>. Cambridge, MA: MIT Press.</p>
+
+<p>Buckland, Michael. 2018. &ldquo;Document Theory&rdquo;. <i>Knowledge Organization</i> 45, no. 5: 425-436. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli, <a class="menu" href="document">https://www.isko.org/cyclo/document</a></p>
+
+<a name="refC"></a>
+
+<p>Cairns, Susan. 2013. &ldquo;Mutualizing Museum Knowledge: Folksonomies and the Changing Shape of Expertise&rdquo;. <i>Curator: The Museum Journal</i> 56, no. 1: 107-119. <a class="menu" href="https://doi.org/10.1111/cura.12011">https://doi.org/10.1111/cura.12011</a></p>
+
+<p>Caplan, Priscilla. 2003. <i>Metadata Fundamentals for All Librarians</i>. Chicago: American Library Association.</p>
+
+<p>Chamberlain, Alan, and Andy Crabtree. 2016. &ldquo;Searching for Music: Understanding the Discovery, Acquisition, Processing and Organization of Music in a Domestic Setting for Design&rdquo;. <i>Personal and Ubiquitous Computing</i> 20, no. 4: 559-571. <a class="menu" href="https://doi.org/10.1007/s00779-016-0911-2">https://doi.org/10.1007/s00779-016-0911-2</a></p>
+
+<p>Coyle, Karen. 2010. &ldquo;Library Data in a Modern Context&rdquo;. <i>Library Technology Reports</i> 46, no. 1: 5-13. <a class="menu" href="https://journals.ala.org/index.php/ltr/article/view/4630">https://journals.ala.org/index.php/ltr/article/view/4630</a></p>
+
+<p>Crawford, Kate. 2019. &ldquo;Halt the Use of Facial-Recognition Technology Until it is Regulated&rdquo;. <i>Nature</i> 572, no. 7771: 565. <a class="menu" href="https://doi.org/10.1038/d41586-019-02514-7">https://doi.org/10.1038/d41586-019-02514-7</a></p>
+
+<a name="refD"></a>
+
+<p>Danko, David M. 2012. &ldquo;Geospatial Metadata&rdquo;. In <i>Springer Handbook of Geographic Information, 1st ed,</i> eds. Wolfgang Kresse and David M. Danko. Springer: Berlin/Heidelberg, Germany,  359-391. <a class="menu" href="https://doi.org/10.1007/978-3-540-72680-7_12">https://doi.org/10.1007/978-3-540-72680-7_12</a></p>
+
+<p>Day, Ronald E. 2019. <i>Documentarity: Evidence, Ontology, and Inscription</i>. Cambridge, MA: MIT Press.</p>
+
+<p>Dervin, Brenda. 1997. &ldquo;Given a Context by Any Other Name: Methodological Tools for Taming the Unruly Beast&rdquo;. In <i>Information Seeking in Context,</i> eds. P. Vakkari, R. Savolainen and B. Dervin. London: Taylor Graham: pp. 13-38.</p>
+
+<p>Dourish, Paul. 2004. &ldquo;What We Talk About When We Talk About Context&rdquo;. <i>Personal and Ubiquitous Computing</i>, 8, no. 1: 19-30. <a class="menu" href="https://doi.org/10.1007/s00779-003-0253-8">https://doi.org/10.1007/s00779-003-0253-8</a></p>
+
+<p>Dunsire, Gordon, Hillmann, Diane, and Phipps, Jon. 2012. &ldquo;Reconsidering Universal Bibliographic Control in light of the Semantic Web&rdquo;. <i>Journal of Library Metadata</i>, 12, no. 2-3: 164-176. <a class="menu" href="https://doi.org/10.1080/19386389.2012.699831">https://doi.org/10.1080/19386389.2012.699831</a></p>
+
+<a name="refE"></a>
+
+<p>Edwards, Paul N. 2010. <i>A Vast Machine: Computer Models, Climate Data, and the Politics of Global Warming</i>. Cambridge, MA: MIT Press.</p>
+
+<p>Edwards, Paul N. 2017. &ldquo;Knowledge Infrastructures for the Anthropocene&rdquo;. <i>The Anthropocene Review</i> 4, no. 1: 34-43. <a class="menu" href="https://doi.org/10.1177/2053019616679854">https://doi.org/10.1177/2053019616679854</a>.</p>
+
+<p>Edwards, Paul N., Mayernik, M.S., Batcheller, A.L., Bowker, G.C., and Borgman, C.L. 2011. Science Friction: Data, Metadata, and Collaboration&rdquo;. <i>Social Studies of Science</i> 41, no. 5: 667-690. <a class="menu" href="https://doi.org/10.1177/0306312711413314">https://doi.org/10.1177/0306312711413314</a></p>
+
+<a name="refF"></a>
+
+<p>Fegraus, Eric H., Andelman, S., Jones, M.B., and Schildhauer, M. 2005. &ldquo;Maximizing the Value of Ecological Data With Structured Metadata: An Introduction to Ecological Metadata Language (EML) and Principles for Metadata Creation&rdquo;. <i>Bulletin of the Ecological Society of America</i> 86, no. 3: 158-168. <a class="menu" href="http://doi.org/10.1890/0012-9623(2005)86[158:MTVOED]2.0.CO;2">http://doi.org/10.1890/0012-9623(2005)86[158:MTVOED]2.0.CO;2</a></p>
+
+<p>Feinberg, Melanie. 2017. &ldquo;The Value of Discernment: Making Use of Interpretive Flexibility in Metadata Generation and Aggregation&rdquo;. <i>Information Research</i> 22, no. 1), CoLIS paper 1649. <a class="menu" href="http://informationr.net/ir/22-1/colis/colis1649.html">http://informationr.net/ir/22-1/colis/colis1649.html</a></p>
+
+<p>Feinberg, Melanie. 2018. &ldquo;Factotem: What is Information Access for?&rdquo; <i>Cataloging &amp; Classification Quarterly</i> 56(8: 665&ndash;682. <a class="menu" href="https://doi.org/10.1080/01639374.2018.1494654">https://doi.org/10.1080/01639374.2018.1494654</a></p>
+
+<p>Fidler, Bradley and Amelia Acker. 2016. &ldquo;Metadata, Infrastructure, and Computer-Mediated Communication in Historical Perspective&rdquo;. <i>Journal of the Association for Information Science and Technology</i> 68, no. 2: 412-422. <a class="menu" href="https://doi.org/10.1002/asi.23660">https://doi.org/10.1002/asi.23660</a> </p>
+
+<p>Foulonneau, Muriel and Jenn Riley. 2008. <i>Metadata for Digital Resources: Implementation, Systems Design and Interoperability</i>. Oxford: Chandos.</p>
+
+<p>Furner, Jonathan. 2016. &ldquo;&rsquo;Data&rsquo;: The Data.: In: <i>Information Cultures in the Digital Age: a Festschrift in honor of Rafael Capurro</i>, eds. M. Kelly and J. Bielby. Wiesbaden Springer, pp. 287-306.</p>
+
+<p>Furner, Jonathan. 2017. &ldquo;Philosophy of Data: Why?&rdquo; <i>Education for Information</i> 33, no. 1: 55-70. <a class="menu" href="https://doi.org/10.3233/EFI-170986">https://doi.org/10.3233/EFI-170986</a>.</p>
+
+<p>Furner, Jonathan. 2020. &ldquo;Definitions of &lsquo;Metadata&rsquo;: A Brief Survey of International Standards&rdquo;. <i>Journal of the Association for Information Science and Technology</i> 71, no. 6: E33–E42. <a class="menu" href="https://doi.org/10.1002/asi.24295">https://doi.org/10.1002/asi.24295</a>.</p>
+
+<a name="refG"></a>
+
+<p>Gartner, Richard. 2016. <i>Metadata: Shaping Knowledge from Antiquity to the Semantic Web</i>. Springer International Publishing. <a class="menu" href="https://doi.org/10.1007/978-3-319-40893-4">https://doi.org/10.1007/978-3-319-40893-4</a>.</p>
+
+<p>Gazan, Rich. 2003. &ldquo;Metadata as a Realm of Translation: Merging Knowledge Domains in the Design of an Environmental Information System&rdquo;. <i>Knowledge Organization</i> 30, no. 3-4: 182-190.</p>
+
+<p>Gil, Yolanda, Daniel Garijo, Varun Ratnakar, Deborah Khider, Julien Emile-Geay, and Nicholas McKay. 2017. "A Controlled Crowdsourcing Approach for Practical Ontology Extensions and Metadata Annotations." In Lecture Notes in Computer Science, pp. 231-246. <a class="menu" href="https://doi.org/10.1007/978-3-319-68204-4_24">https://doi.org/10.1007/978-3-319-68204-4_24</a></p>
+
+<p>Giles, Jeremy R.A. 2011. &ldquo;Geoscience Metadata&mdash;No Pain, No Gain&rdquo;. <i>Geological Society of America Special Papers</i>, vol. 482, Geological Society of America, pp. 29-33. <a class="menu" href="https://doi.org/10.1130/2011.2482(03)">https://doi.org/10.1130/2011.2482(03)</a></p>
+
+<p>Gilliland, Anne J. 2008. &ldquo;Setting the Stage&rdquo;. In <i>Introduction to Metadata: Pathways to Digital Information, Online Edition, Version 3.0</i>. ed. Murtha Baca. Los Angeles, CA: Getty Information Institute. <a class="menu" href="http://www.getty.edu/research/publications/electronic_publications/intrometadata/setting.html">http://www.getty.edu/research/publications/electronic_publications/intrometadata/setting.html</a></p>
+
+<p>Gilliland, Anne J. 2014. <i>Conceptualizing 21st-Century Archives</i>. Chicago, IL: Society of American Archivists.</p>
+
+<p>Gitelman, Lisa (Ed.). 2013. <i>"Raw Data" is an Oxymoron</i>. Cambridge, MA: MIT Press.</p>
+
+<p>Gnoli, Claudio. 2008. &ldquo;Ten Long-Term Research Questions in Knowledge Organization&rdquo;. <i>Knowledge Organization</i> 35, no. 2-3: 137-149. <a class="menu" href="https://doi.org/10.5771/0943-7444-2008-2-3-137">https://doi.org/10.5771/0943-7444-2008-2-3-137</a></p>
+
+<p>Gnoli, Claudio. 2012. &ldquo;Metadata About What? Distinguishing Between Ontic, Epistemic, and Documental Dimensions in Knowledge Organization&rdquo;. <i>Knowledge Organization</i> 39, no. 4: 268-275. <a class="menu" href="https://doi.org/10.5771/0943-7444-2012-4-268">https://doi.org/10.5771/0943-7444-2012-4-268</a></p>
+
+<p>Gordon, Sean and Ted Habermann. 2018. &ldquo;The Influence of Community Recommendations on Metadata Completeness&rdquo;. <i>Ecological Informatics</i> 43: 38-51. <a class="menu" href="https://doi.org/10.1016/j.ecoinf.2017.09.005">https://doi.org/10.1016/j.ecoinf.2017.09.005</a></p>
+
+<p>Gorman, Michael. 1999. &ldquo;Metadata or Cataloguing?: A False Choice&rdquo;. <i>Journal of Internet Cataloging</i> 2, no. 1: 5-22. <a class="menu" href="https://doi.org/10.1300/J141v02n01_03">https://doi.org/10.1300/J141v02n01_03</a></p>
+
+<p>Gorman, Michael. 2006. &ldquo;Metadata Dreaming&rdquo;. <i>The Serials Librarian</i> 51, no. 2: 47-54.</p>
+
+<p>Gorman, Michael. 2011. <i>Broken Pieces: A Library Life, 1941-1978</i>. Chicago, IL: American Library Association.</p>
+
+<p>Green, Rebecca. 2008. &ldquo;Relationships in Knowledge Organization&rdquo;. <i>Knowledge Organization</i> 35, no. 2-3: 150-159. h<a class="menu" href="ttps://doi.org/10.5771/0943-7444-2008-2-3-150">ttps://doi.org/10.5771/0943-7444-2008-2-3-150</a></p>
+
+<p>Greenberg, Jane. 2001. &ldquo;A Quantitative Categorical Analysis of Metadata Elements in Image-Applicable Metadata Schemas&rdquo;. <i>Journal of the American Society for Information Science and Technology</i> 52, no. 11: 917-914. <a class="menu" href="https://doi.org/10.1002/asi.1170">https://doi.org/10.1002/asi.1170</a></p>
+
+<p>Greenberg, Jane. 2003. &ldquo;Metadata and the World Wide Web&rdquo;. In <i>Encyclopedia of Library and Information Science, 2</i><i>nd</i><i> Edition</i>. ed. Miriam A. Drake. New York: Marcel Dekker, 1876-1888.</p>
+
+<p>Greenberg, Jane. 2004. &ldquo;Metadata Extraction and Harvesting: A Comparison of Two Automatic Metadata Generation Applications&rdquo;. <i>Journal of Internet Cataloging</i> 6, no. 4: 59-82. <a class="menu" href="https://doi.org/10.1300/J141v06n04_05">https://doi.org/10.1300/J141v06n04_05</a></p>
+
+<p>Greenberg, Jane. 2005. &ldquo;Understanding Metadata and Metadata Schemes&rdquo;. <i>Cataloging &amp; Classification Quarterly</i> 40, no. 3: 17-36. <a class="menu" href="http://dx.doi.org/doi:10.1300/J104v40n03_02">http://dx.doi.org/doi:10.1300/J104v40n03_02</a></p>
+
+<p>Greenberg, Jane. 2009. &ldquo;Metadata and Digital Information&rdquo;. In <i>Encyclopedia of Library and Information Sciences, 3</i><i>rd</i><i> Edition</i>, eds. Marcia J. Bates and Mary Niles Maack. Taylor &amp; Francis, 3610-3623.</p>
+
+<p>Greenberg, Jane. 2017. &ldquo;Big Metadata, Smart Metadata, and Metadata Capital: Toward Greater Synergy Between Data Science and Metadata&rdquo;. <i>Journal of Data and Information Science</i> 2, no. 3: 19-36. <a class="menu" href="https://doi.org/10.1515/jdis-2017-0012">https://doi.org/10.1515/jdis-2017-0012</a></p>
+
+<p>Greenberg, Jane and Emmanouel Garoufallou. 2013. &ldquo;Change and a Future for Metadata&rdquo;. In <i>Metadata and Semantics Research. MTSR 2013,</i> eds. Emmanouel Garoufallou and Jane Greenberg, Communications in Computer and Information Science, vol 390. Springer, Cham, 1-5. <a class="menu" href="https://doi.org/10.1007/978-3-319-03437-9_1">https://doi.org/10.1007/978-3-319-03437-9_1</a></p>
+
+<p>Greenberg, Jane, Angela Murillo, Adrian Ogletree, Rebecca Boyles, Negin Martin, and Charles Romeo. 2014. &ldquo;Metadata Capital: Automating Metadata Workflows in the NIEHS Viral Vector Core Laboratory&rdquo;. In <i>Metadata and Semantics Research</i>, eds. Sissi Closs, Rudi Studer, Emmanouel Garoufallou, Miguel-Angel Sicilia, vol. 478. Springer International Publishing, 1-13. <a class="menu" href="https://doi.org/10.1007/978-3-319-13674-5_1">https://doi.org/10.1007/978-3-319-13674-5_1</a></p>
+
+<a name="refH"></a>
+
+<p>Habermann, Ted. 2018. &ldquo;Metadata Life Cycles, Use Cases and Hierarchies&rdquo;. <i>Geosciences</i> 8, no. 5: 179. <a class="menu" href="https://doi.org/10.3390/geosciences8050179">https://doi.org/10.3390/geosciences8050179</a></p>
+
+<p>Han, Myung-Ja, and Patricia Hswe. 2010. &ldquo;The Evolving Role of the Metadata Librarian&rdquo;. <i>Library Resources &amp; Technical Services</i> 54, no. 3: 129-141. <a class="menu" href="https://doi.org/10.5860/lrts.54n3.129">https://doi.org/10.5860/lrts.54n3.129</a></p>
+
+<p>Harkness Connell, T. and R.L. Maxwell (Eds.). 2000. <i>The Future of Cataloging: Insights from the Lubetzky Symposium</i>. Chicago, IL: American Library Association.</p>
+
+<p>Haynes, David. 2017. <i>Metadata for Information Management and Retrieval, 2nd Edition</i>. London: Facet Publishing.</p>
+
+<p>Heritage, John. 1984. <i>Garfinkel and Ethnomethodology</i>. Cambridge, MA: Polity Press.</p>
+
+<p>Hj&oslash;rland, Birger. 2008. &ldquo;What is Knowledge Organization (KO)?&rdquo; <i>Knowledge Organization</i> 35, no. 2-3: 86-101. <a class="menu" href="https://doi.org/10.5771/0943-7444-2008-2-3-86">https://doi.org/10.5771/0943-7444-2008-2-3-86</a></p>
+
+<p>Hj&oslash;rland, Birger. 2018. &ldquo;Data (With Big Data and Database Semantics)&rdquo;. <i>Knowledge Organization</i> 45, no. 8: 685-708. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, eds Birger Hj&oslash;rland and Claudio Gnoli, <a class="menu" href="https://www.isko.org/cyclo/data">https://www.isko.org/cyclo/data</a></p>
+
+<p>Howarth, Lynne C. 2005. &ldquo;Metadata and Bibliographic Control: Soul-Mates or Two Solitudes?&rdquo; <i>Cataloging &amp; Classification Quarterly</i> 40, no. 3-4: 37-56. <a class="menu" href="https://doi.org/10.1300/J104v40n03_03">https://doi.org/10.1300/J104v40n03_03</a></p>
+
+<a name="refI"></a>
+
+<p>International Conference on Cataloguing Principles. 1971. <i>Statement of Principles: Adopted at the International Conference on Cataloguing Principles, Paris, October 1961</i>. Annotated ed., with commentary and examples, E. Verona (Ed.). London: British Museum; International Federation of Library Associations (Committee on Cataloguing).</p>
+
+<a name="refJ"></a>
+
+<p>Joint Steering Committee for Development of RDA (JSC). 2014. <i>Resource Description &amp; Access: RDA</i>.  2014 Revision. Chicago, IL: American Library Association.</p>
+
+<p>Jones, Matthew B., Schildhauer, Mark P., Reichman, O.J., and Bowers, Shawn. 2006. &ldquo;The New Bioinformatics: Integrating Ecological Data from the Gene to the Biosphere&rdquo;. <i>Annual Review of Ecology, Evolution, and Systematics</i> 37: 519-544. <a class="menu" href="https://doi.org/10.1146/annurev.ecolsys.37.091305.110031">https://doi.org/10.1146/annurev.ecolsys.37.091305.110031</a></p>
+
+<a name="refK"></a>
+
+<p>Kaase, Max. 2001. "Databases, Core: Political Science and Political Behavior". In International Encyclopedia of the Social and Behavioral Sciences, edited by Neil J. Smelser and Paul B. Baltes. Amsterdam: Elsevier, Vol. 5, 3251&ndash;3255.</p>
+
+<p>Khoo, Michael, and Catherine Hall. 2013. &ldquo;Managing Metadata: Networks of Practice, Technological Frames, and Metadata Work in a Digital Library&rdquo;. <i>Information and Organization</i> 23, no. 2: 81-106. <a class="menu" href="https://doi.org/10.1016/j.infoandorg.2013.01.003">https://doi.org/10.1016/j.infoandorg.2013.01.003</a></p>
+
+<p>Klensin, John C. 1995. &ldquo;When the Metadata Exceed the Data: Data Management with Uncertain Data&rdquo;. <i>Statistics and Computing</i> 5, no. 1: 73-84. <a class="menu" href="https://doi.org/10.1007/BF00140667">https://doi.org/10.1007/BF00140667</a></p>
+
+<a name="refL"></a>
+
+<p>Lagoze, Carl.  1996. &ldquo;The Warwick Framework: A Container Architecture for Aggregating Sets of Metadata&rdquo;. <i>D-Lib Magazine</i>, 2, no. 7). 
+<a class="menu" href="http://www.dlib.org/dlib/july96/lagoze/07lagoze.html">http://www.dlib.org/dlib/july96/lagoze/07lagoze.html</a></p>
+
+<p>Lagoze, Carl J. 2010. <i>Lost Identity: The Assimilation of Digital Libraries into the Web</i>. Ph.D. Dissertation, Cornell University. </p>
+
+<p>Lagoze, Carl, Dean Krafft, Tim Cornwell, Naomi Dushay, Dean Eckstrom, and John Saylor. 2006. &ldquo;Metadata Aggregation and &lsquo;Automated Digital Libraries&rsquo;: A Retrospective on the NSDL Experience&rdquo;. <i>Proceedings of the 6th ACM/IEEE-CS Joint Conference on Digital Libraries - JCDL &rsquo;06.</i> ACM Press, 230-239. <a class="menu" href="https://doi.org/10.1145/1141753.1141804">https://doi.org/10.1145/1141753.1141804</a></p>
+
+<p>Lahti, Leo, Jani Marjanen, Hege Roivainen, and Mikko Tolonen. 2019. &ldquo;Bibliographic Data Science and the History of the Book (c. 1500-1800)&rdquo;. <i>Cataloging &amp; Classification Quarterly</i> 57, no. 1: 5-23. <a class="menu" href="https://doi.org/10.1080/01639374.2018.1543747">https://doi.org/10.1080/01639374.2018.1543747</a></p>
+
+<p>Law, John. 2004. <i>After Method: Mess in Social Science Research</i>. New York: Routledge.</p>
+
+<p>Lawrence, B.N., R. Lowry, P. Miller, H. Snaith, and A. Woolf. 2009. &ldquo;Information in Environmental Data Grids&rdquo;. <i>Philosophical Transactions of the Royal Society A: Mathematical, Physical and Engineering Sciences</i> 367, no. 1890: 1003-1014. <a class="menu" href="https://doi.org/10.1098/rsta.2008.0237">https://doi.org/10.1098/rsta.2008.0237</a></p>
+
+<p>Leonelli, Sabina. 2016. <i>Data-Centric Biology: A Philosophical Study</i>. Chicago IL: University of Chicago Press.</p>
+
+<a name="refM"></a>
+
+<p>Madrigal, Alexis C. 2014. &ldquo;How Netflix Reverse Engineered Hollywood&rdquo;. <i>The Atlantic</i>, Jan. 2, 2014. <a class="menu" href="https://www.theatlantic.com/technology/archive/2014/01/how-netflix-reverse-engineeredhollywood/282679/">https://www.theatlantic.com/technology/archive/2014/01/how-netflix-reverse-engineeredhollywood/282679/</a></p>
+
+<p>Marchionini, Gary. 2006. &ldquo;Exploratory Search: From Finding to Understanding&rdquo;. <i>Communications of the ACM</i> 49, no. 4: 41-46. <a class="menu" href="https://doi.org/10.1145/1121949.1121979">https://doi.org/10.1145/1121949.1121979</a></p>
+
+<p>Marchionini, Gary. 2012. &ldquo;Award of Merit Acceptance Speech: Bridges, Linchpins and Membranes: From I to We&rdquo;. <i>Bulletin of the American Society for Information Science and Technology</i> 38, no. 2: 19-21. <a class="menu" href="https://doi.org/10.1002/bult.2012.1720380206">https://doi.org/10.1002/bult.2012.1720380206</a>.</p>
+
+<p>Maron, Deborah and Erin Carter. 2017. &ldquo;'More Than What It Seems': How Critical Theory, Popular Engagement and Apps Like Tinder can Help Us Reframe Metadata and its Consequences&rdquo;. <i>DCMI'17: Proceedings of the 2017 International Conference on Dublin Core and Metadata Applications</i>. 1-12. <a class="menu" href="https://dcpapers.dublincore.org/pubs/article/view/3849">https://dcpapers.dublincore.org/pubs/article/view/3849</a></p>
+
+<p>Mayer-Schonberger, Viktor and Kenneth Cukier. 2013. <i>Big Data: A Revolution That Will Transform How We Live, Work, and Think</i>. Boston: Houghton Mifflin Harcourt. </p>
+
+<p>Mayernik, Matthew S. 2016. &ldquo;Research Data and Metadata Curation as Institutional Issues&rdquo;. <i>Journal of the Association for Information Science and Technology</i> 67, no. 4: 973-993. <a class="menu" href="https://doi.org/10.1002/asi.23425">https://doi.org/10.1002/asi.23425</a></p>
+
+<p>Mayernik, Matthew S. 2018. &ldquo;Scholarly Resource Linking: Building Out a &ldquo;Relationship Life Cycle&rdquo;. In <i>Proceedings of the 81st Annual Meeting of the Association for Information Science and Technology (ASIS&amp;T)</i>, Ed. Luanne Freund. Somerset, NJ: Wiley, 337-346. <a class="menu" href="https://doi.org/10.1002/pra2.2018.14505501037">https://doi.org/10.1002/pra2.2018.14505501037</a></p>
+
+<p>Mayernik, Matthew S. 2019. &ldquo;Metadata Accounts: Achieving Data and Evidence in Scientific Research&rdquo;. <i>Social Studies of Science</i> 49, no. 5: 732-757. <a class="menu" href="https://doi.org/10.1177/0306312719863494">https://doi.org/10.1177/0306312719863494</a></p>
+
+<p>Mayernik, Matthew S. and Amelia Acker. 2018. &ldquo;Tracing the Traces: The Critical Role of Metadata Within Networked Communications&rdquo;. <i>Journal of the Association for Information Science and Technology</i> 69, no. 1: 177-180. <a class="menu" href="https://doi.org/10.1002/asi.23927">https://doi.org/10.1002/asi.23927</a></p>
+
+<p>Michener, William K., James W. Brunt, John J. Helly, T.B. Kirchner, and Susan G. Stafford. 1997. &ldquo;Nongeospatial Metadata for the Ecological Sciences&rdquo;. <i>Ecological Applications</i> 7, no. 1: 330-342. <a class="menu" href="https://doi.org/10.1890/1051-0761(1997)007[0330:NMFTES]2.0.CO;2">https://doi.org/10.1890/1051-0761(1997)007[0330:NMFTES]2.0.CO;2</a></p>
+
+<p>Montenegro, Mar&iacute;a. 2019. "Subverting the Universality of Metadata Standards: The TK Labels as a Tool to Promote Indigenous Data Sovereignty." Journal of Documentation, 75, no. 4: 731-749. <a class="menu" href="https://doi.org/10.1108/JD-08-2018-0124">https://doi.org/10.1108/JD-08-2018-0124</a></p>
+
+<p>Moulaison Sandy, Heather and Felicity Dykas. 2016. &ldquo;High-Quality Metadata and Repository Staffing: Perceptions of United States-Based OpenDOAR Participants&rdquo;. <i>Cataloging &amp; Classification Quarterly</i> 54, no. 2: 101-116. <a class="menu" href="https://doi.org/10.1080/01639374.2015.1116480">https://doi.org/10.1080/01639374.2015.1116480</a></p>
+
+<p>M&uuml;hling, Markus, Manja Meister, Nikolaus Korfhage, J&ouml;rg Wehling, Angelika H&ouml;rth, Ralph Ewerth, and Bernd Freisleben. 2019. &ldquo;Content-Based Video Retrieval in Historical Collections of the German Broadcasting Archive&rdquo;. <i>International Journal on Digital Libraries</i> 20, no. 2: 167-183. <a class="menu" href="https://doi.org/10.1007/s00799-018-0236-z">https://doi.org/10.1007/s00799-018-0236-z</a></p>
+
+<a name="refN"></a>
+<a name="refO"></a>
+<a name="refP"></a>
+
+<p>Padilla, Thomas. 2019. <i>Responsible Operations: Data Science, Machine Learning, and AI in Libraries</i>. Dublin, OH: OCLC Research. <a class="menu" href="https://doi.org/10.25333/xk7z-9g97">https://doi.org/10.25333/xk7z-9g97</a></p>
+
+<p>Palmer, Carole L., Cheryl A. Thompson, Karen S. Baker, and Megan Senseney. 2014. &ldquo;Meeting Data Workforce Needs: Indicators Based on Recent Data Curation Placements&rdquo;. In <i>iConference 2014 Proceedings</i>. 522-537. <a class="menu" href="https://doi.org/10.9776/14133">https://doi.org/10.9776/14133</a></p>
+
+<p>Park, Jung-ran, and Susan Maszaros. 2009. &ldquo;Metadata Object Description Schema (MODS) in Digital Repositories: An Exploratory Study of Metadata Use and Quality&rdquo;. <i>Knowledge Organization</i> 36, no. 1: 46-59. <a class="menu" href="https://doi.org/10.5771/0943-7444-2009-1-46">https://doi.org/10.5771/0943-7444-2009-1-46</a></p>
+
+<p>Pomerantz, Jeffrey. 2015. <i>Metadata</i>. Cambridge, MA: MIT Press.</p>
+
+<a name="refQ"></a>
+<a name="refR"></a>
+
+<p>Rasmussen, Karsten Boye. 2014. &ldquo;Social Science Metadata and the Foundations of the DDI&rdquo;. <i>IASSIST Quarterly</i> 37, no. 1-4: 28-35. <a class="menu" href="https://doi.org/10.29173/iq499">https://doi.org/10.29173/iq499</a></p>
+
+<p>Renear, Allen H. and Karen M. Wickett. 2010. &ldquo;There are No Documents&rdquo;. In <i>Proceedings of Balisage: The Markup Conference 2010</i>. Balisage Series on Markup Technologies, vol. 5. <a class="menu" href="https://doi.org/10.4242/BalisageVol5.Renear01">https://doi.org/10.4242/BalisageVol5.Renear01</a></p>
+
+<p>Riley, Jenn. 2017. <i>Understanding Metadata: What is Metadata, and What is it For?: A Primer</i>. Baltimore, MD: National Information Standards Organization (NISO). 
+<a class="menu" href="https://www.niso.org/publications/understanding-metadata-2017">https://www.niso.org/publications/understanding-metadata-2017</a></p>
+
+<p>Rosenberg, Daniel. 2013. &ldquo;Data Before the Fact&rdquo;. In <i>&ldquo;Raw Data&rdquo; Is an Oxymoron</i>, ed. Lisa Gitelman. Cambridge, MA: MIT Press, 15-40.</p>
+
+<a name="refS"></a>
+
+<p>Schneider, David P., Deser, Clara, Fasullo, John, and Trenberth, Kevin E. 2013. &ldquo;Climate Data Guide Spurs Discovery and Understanding&rdquo;. <i>Eos, Transactions American Geophysical Union</i> 94, no. 13: 121-122. <a class="menu" href="https://doi.org/10.1002/2013EO130001">https://doi.org/10.1002/2013EO130001</a></p>
+
+<p>Schneier, Bruce. 2014. &ldquo;Metadata = Surveillance&rdquo;. <i>IEEE Security &amp; Privacy</i> 12, no. 2: 84. <a class="menu" href="https://doi.org/10.1109/MSP.2014.28">https://doi.org/10.1109/MSP.2014.28</a></p>
+
+<p>Schneier, Bruce. 2015. <i>Data and Goliath: The Hidden Battles to Collect Your Data and Control Your World</i>. New York: Norton.</p>
+
+<p>Schottlaender, Brian E.C. (Ed.). 1998. <i>The Future of the Descriptive Cataloging Rules: Papers from the ALCTS Preconference, AACR2000, American Library Association Annual Conference, Chicago, June 22, 1995</i>. Chicago, IL: American Library Association.</p>
+
+<p>Seeman, Dean. 2012. &ldquo;Naming Names: The Ethics of Identification in Digital Library Metadata&rdquo;. <i>Knowledge Organization</i>,39, no. 5: 325-31. <a class="menu" href="https://doi.org/10.5771/0943-7444-2012-5-325">https://doi.org/10.5771/0943-7444-2012-5-325</a></p>
+
+<p>Sicilia, Miguel-Angel (Ed.). 2014. <i>Handbook of Metadata, Semantics and Ontologies</i>. Singapore: World Scientific Publishing. </p>
+
+<p>Sinclair, James and Michael Cardew-Hall. 2007. &ldquo;The Folksonomy Tag Cloud: When is it Useful?&rdquo; <i>Journal of Information Science</i> 34, no. 1: 15-29. <a class="menu" href="https://doi.org/10.1177/0165551506078083">https://doi.org/10.1177/0165551506078083</a></p>
+
+<p>Sisario, Ben. 2019. &ldquo;In Streaming Age, Classical Music Gets Lost in the Metadata&rdquo;. <i>New York Times</i>, June 23, 2019. <a class="menu" href="https://www.nytimes.com/2019/06/23/business/media/stream-classical-music-spotify.html">https://www.nytimes.com/2019/06/23/business/media/stream-classical-music-spotify.html</a></p>
+
+<p>Smiraglia, Richard P. 2005. &ldquo;Introducing Metadata&rdquo;. In <i>Metadata: A Cataloger's Primer, </i>ed. R.P. Smiraglia. New York: Routledge, 1-15.</p>
+
+<p>Srinivasan, Ramesh, Robin Boast, Jonathan Furner, and Katherine Becvar. 2009. &ldquo;Digital Museums and Diverse Cultural Knowledges: Moving Past the Traditional Catalog&rdquo;. <i>The Information Society</i> 25, no. 4: 265-278. <a class="menu" href="https://doi.org/10.1080/01972240903028714">https://doi.org/10.1080/01972240903028714</a></p>
+
+<p>Srinivasan, Ramesh and Jeffrey Huang. 2005. &ldquo;Fluid Ontologies for Digital Museums&rdquo;. International Journal on Digital Libraries, 5, no. 3: 193-204. <a class="menu" href="https://doi.org/10.1007/s00799-004-0105-9">https://doi.org/10.1007/s00799-004-0105-9</a></p>
+
+<p>Sugimoto, Shigeo, Thomas Baker, and Stuart L. Weibel. 2002. &ldquo;Dublin Core: Process and Principles&rdquo;. In <i>Digital Libraries: People, Knowledge, and Technology, Proceedings</i>, eds. E. P. Lim, S. Foo, C. Khoo, S. Urs, T. Costantino, E. Fox and H. Chen. Berlin: Springer-Verlag, 25-35. <a class="menu" href="https://doi.org/10.1007/3-540-36227-4_3">https://doi.org/10.1007/3-540-36227-4_3</a></p>
+
+<p>Svenonius, Elaine. 2000. <i>The Intellectual Foundation of Information Organization</i>. Cambridge, MA: MIT Press.</p>
+
+<p>Szostak, Rick. 2012. &ldquo;Toward a Classification of Relationships&rdquo;. <i>Knowledge Organization</i> 39, no. 2: 83-94. <a class="menu" href="https://doi.org/10.5771/0943-7444-2012-2-83">https://doi.org/10.5771/0943-7444-2012-2-83</a></p>
+
+<a name="refT"></a>
+
+<p>Talja, Sanna, Heidi Keso, and Tarja Pietil&auml;inen. 1999. &ldquo;The Production of &lsquo;Context&rsquo; in Information Seeking Research: A Metatheoretical View&rdquo;. <i>Information Processing &amp; Management</i> 35, no. 6: 751-763. <a class="menu" href="https://doi.org/10.1016/S0306-4573(99)00024-2">https://doi.org/10.1016/S0306-4573(99)00024-2</a></p>
+
+<p>Tenopir, Carol, Suzie Allard, Kimberly Douglass, Arsev Umur Aydinoglu, Lei Wu, Eleanor Read, Maribeth Manoff, and Mike Frame. 2011. &ldquo;Data Sharing by Scientists: Practices and Perceptions&rdquo;. <i>PLoS ONE</i> 6, no. 6: e21101. <a class="menu" href="https://doi.org/10.1371/journal.pone.0021101">https://doi.org/10.1371/journal.pone.0021101</a></p>
+
+<p>Tillett, Barbara B. 2003. &ldquo;AACR2 and Metadata: Library Opportunities in the Global Semantic Web&rdquo;. <i>Cataloging &amp; Classification Quarterly</i> 36, no. 3-4: 101-119. <a class="menu" href="https://doi.org/10.1300/J104v36n03_09">https://doi.org/10.1300/J104v36n03_09</a></p>
+
+<a name="refU"></a>
+
+<p>Urban, Richard J. 2014. &ldquo;The 1:1 Principle in the Age of Linked Data&rdquo;. In <i>International Conference on Dublin Core and Metadata Applications DC-2014</i>, Austin, Texas. <a class="menu" href="https://dcpapers.dublincore.org/pubs/article/view/3707/0">https://dcpapers.dublincore.org/pubs/article/view/3707/0</a></p>
+
+<a name="refV"></a>
+
+<p>Van de Sompel, Herbert, Michael L. Nelson, Carl Lagoze, and Simeon Warner. 2004. &ldquo;Resource Harvesting Within the OAI-PMH Framework&rdquo;. <i>D-Lib Magazine</i> 10, no. 12). <a class="menu" href="https://doi.org/10.1045/december2004-vandesompel">https://doi.org/10.1045/december2004-vandesompel</a></p>
+
+<p>Vertesi, Janet, Jofish Kaye, Samantha N. Jarosewski, Vera D. Khovanskaya, and Jenna Song. 2016. &ldquo;Data Narratives: Uncovering Tensions in Personal Data Management&rdquo;. In <i>CSCW '16: Proceedings of the 19th ACM Conference on Computer-Supported Cooperative Work and Social Computing</i>. New York: ACM Press, 478-490. <a class="menu" href="http://doi.org/10.1145/2818048.2820017">http://doi.org/10.1145/2818048.2820017</a></p>
+
+<a name="refW"></a>
+
+<p>Weibel, Stuart. 1995. &ldquo;Metadata: The Foundations of Resource Description&rdquo;. <i>D-Lib Magazine</i> 1, no. 1. <a class="menu" href="http://www.dlib.org/dlib/July95/07weibel.html">http://www.dlib.org/dlib/July95/07weibel.html</a></p>
+
+<p>Weihs, Jean. (Ed.). 1998. <i>The Principles and Future of AACR: Proceedings of the International Conference on the Principles and Future Development of AACR</i>. Chicago, IL: American Library Association.</p>
+
+<p>White, Hollie C. 2010. &ldquo;Considering Personal Organization: Metadata Practices of Scientists&rdquo;. <i>Journal of Library Metadata</i> 10, no. 2: 156-172. <a class="menu" href="https://doi.org/10.1080/19386389.2010.506396">https://doi.org/10.1080/19386389.2010.506396</a></p>
+
+<p>Wickett, Karen M. 2015. &ldquo;Accounting for Context in Markup: Which Situation, Whose Semantics?&rdquo; In <i>Proceedings of Balisage: The Markup Conference 2015</i>. Balisage Series on Markup Technologies, vol. 15. <a class="menu" href="https://doi.org/10.4242/BalisageVol15.Wickett01">https://doi.org/10.4242/BalisageVol15.Wickett01</a></p>
+
+<p>Wickett, Karen. 2018. &ldquo;A Logic-Based Framework for Collection/Item Metadata Relationships&rdquo;. <i>Journal of Documentation</i> 74, no. 6: 1175-1189. <a class="menu" href="https://doi.org/10.1108/JD-01-2018-0017">https://doi.org/10.1108/JD-01-2018-0017</a></p>
+
+<p>Woolgar, Steve. 1981. &ldquo;Critique and Criticism: Two Readings of Ethnomethodology&rdquo;. <i>Social Studies of Science</i> 11, no. 4: 504-514. <a class="menu" href="https://doi.org/10.1177/030631278101100406">https://doi.org/10.1177/030631278101100406</a></p>
+
+<a name="refX"></a>
+<a name="refY"></a>
+<a name="refZ"></a>
+
+<p>Zeng, Marcia Lei. 2019. &ldquo;Interoperability&rdquo;. <i>Knowledge Organization</i> 46, no. 2: 122-146. Also available in Hj&oslash;rland, Birger and Gnoli, Claudio eds. <i>ISKO Encyclopedia of Knowledge Organization</i>, <a class="menu" href="interoperability">https://www.isko.org/cyclo/interoperability</a></p>
+
+<p>Zeng, Marcia Lei and Jian Qin. 2016. <i>Metadata, 2</i>nd Edition. Chicago: Neal-Schuman.</p>
+
+<a name="col"></a>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<p>&nbsp;</p>
+
+<p>Visited <a href="https://www.digits.net" target="_blank"><img src="https://counter.digits.net/?counter={a0758d08-d8f9-f8a4-49c3-0bbc3cc2d430}&template=simple" alt="Hit Counter by Digits" border="0"  /></a> times.</p>
+
+<hr>
+<p>Version 1.0, published 2020-03-16, last edited 2020-12-23 <!-- version 1.0 published 2020--, this version 2020--, last edited 2020-- --><br>
+Article category: <code><a href="index#KS">Standards and formats for representing data</a></code></p>
+
+<p>This article (version 1.0) is also published in <i>Knowledge Organization</i>. How to cite it:
+<br>Mayernik, Matthew S. 2020. &ldquo;Metadata&rdquo;. <i>Knowledge Organization</i> 47, no. 8: 696-713. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli, https://www.isko.org/cyclo/metadata </p>
+
+<p>A Spanish traslation by Silvia Saor&iacute;n Miralles and Tom&aacute;s Saor&iacute;n P&eacute;rez of version 1.0 is published as: "Metadatos", <i>Anales de documentaci&oacute;n</i> 26 (2023), <A CLASS="menu" HREF="https://revistas.um.es/analesdoc/article/view/556681">https://revistas.um.es/analesdoc/article/view/556681</A>.</p>
+
+<p>&copy;2020 ISKO. All rights reserved.</p>
+
+</td>
+</tr>
+
+<tr>
+<td id="logo">
+</td>
+</tr>
+
+</table>
+</body>
+</html>

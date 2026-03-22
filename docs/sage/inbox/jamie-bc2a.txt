@@ -1,0 +1,19 @@
+n 1996 at RAF Molesworth, I worked on the BC2A (Bosnian Command and Control Augmentation) effort, which was stood up to address a fundamental problem: there was little to no reliable communications infrastructure in theater following the Bosnian War.
+
+BC2A was essentially a rapidly deployed communications augmentation layer, designed to bootstrap command-and-control capabilities for coalition operations. This meant deploying VSAT-based SATCOM systems and building a functional network from the ground up. That “functional network” wasn’t just basic connectivity—it incorporated some of the first operational uses of ATM (Asynchronous Transfer Mode) networking in this kind of environment, specifically chosen for its quality of service (QoS) characteristics.
+
+ATM allowed us to define traffic classes such as CBR (Constant Bit Rate), which was critical for handling real-time data like video. In an era where IP networks couldn’t reliably support low-jitter, low-latency streams, ATM provided deterministic delivery, making it possible to move time-sensitive ISR data and live video with a level of stability that was otherwise unattainable.
+
+Within that architecture, I worked on Sun Solaris-based systems responsible for ingesting and disseminating intelligence products, particularly NITF-formatted imagery. These systems transformed raw incoming data from the SATCOM links into structured, distributable intelligence for analysts and operators.
+
+One of the most compelling capabilities enabled by this architecture was live video integration. ISR feeds from the emerging RQ-1 Predator program could be transmitted over Ku-band SATCOM, ingested into the ground network, and then distributed across the ATM backbone. Using hardware-assisted video codecs such as H.261 and early implementations of H.263, those video streams were packetized into ATM cells and delivered with consistent performance.
+
+This made it possible to embed live ISR video directly into video teleconferences, allowing geographically dispersed teams to watch real-time sensor feeds while simultaneously discussing and coordinating operations. For the mid-1990s, this was a striking capability—true distributed collaboration built on a foundation of SATCOM, deterministic networking, and structured intelligence dissemination.
+
+The program itself retained a strong experimental and advanced-technology character, with involvement from organizations like DARPA and contributors from Charles Stark Draper Laboratory. It was a small, highly collaborative environment, and I had the opportunity to work alongside and learn from experienced engineers and researchers whose mentorship left a lasting impression.
+
+⸻
+
+In essence:
+BC2A established a SATCOM-enabled, ATM-based (QoS/CBR) communications backbone in a communications-denied environment. That foundation enabled early BLOS ISR, including live Predator video dissemination and real-time collaborative planning—well ahead of what conventional IP networks could support at the time.
+

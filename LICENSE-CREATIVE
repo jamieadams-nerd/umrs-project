@@ -1,0 +1,60 @@
+Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International
+
+The following files in this repository are licensed under the Creative Commons
+Attribution-NonCommercial-NoDerivatives 4.0 International License (CC BY-NC-ND 4.0),
+and are NOT covered by the MIT License that governs the software in this repository:
+
+  docs/modules/ai-transparency/pages/final-cast-and-crew.adoc
+  docs/modules/ai-transparency/images/sage.png
+  docs/modules/ai-transparency/images/rusty.png
+  docs/modules/ai-transparency/images/herb-auditor.png
+  docs/modules/ai-transparency/images/hamlet.png
+  docs/modules/ai-transparency/images/simone.png
+  docs/modules/ai-transparency/images/elena.png
+  docs/modules/ai-transparency/images/lucia.png
+  docs/modules/ai-transparency/images/librarian.png
+  docs/modules/ai-transparency/images/interns.png
+  docs/modules/ai-transparency/images/thehand.png
+  docs/modules/ai-transparency/images/jamie.png
+
+Copyright (c) 2025-2026 Jamie Adams. All rights reserved.
+
+These works -- including the character names, personalities, backstories,
+relationships, narrative text, and associated portrait images -- are original
+creative works authored by Jamie Adams. They are provided for reading and
+non-commercial sharing under the terms below, but may not be reproduced in
+modified form, used in commercial products or productions, or adapted for any
+other purpose without explicit written permission from the copyright holder.
+
+LICENSE SUMMARY
+
+  You may read and share these works with proper attribution to Jamie Adams.
+  You may not use them for commercial purposes.
+  You may not distribute modified versions or derivative works.
+
+ATTRIBUTION REQUIREMENT
+
+  If you share these works, you must credit "Jamie Adams, UMRS Project"
+  and include a link to https://creativecommons.org/licenses/by-nc-nd/4.0/
+
+FULL LICENSE TEXT
+
+  https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode
+
+HUMAN-READABLE SUMMARY
+
+  https://creativecommons.org/licenses/by-nc-nd/4.0/
+
+PERMISSIONS BEYOND THIS LICENSE
+
+  For permissions beyond the scope of this license -- including commercial use,
+  adaptation, or derivative works -- contact the copyright holder through the
+  UMRS project repository.
+
+NOTE ON DUAL LICENSING
+
+  The UMRS software (Rust source code, build scripts, configuration, and
+  tooling) remains MIT-licensed. See the LICENSE file at the repository root.
+  Only the creative works listed above carry this CC BY-NC-ND 4.0 license.
+  When in doubt about which license applies to a specific file, the MIT License
+  governs all files not explicitly listed here.

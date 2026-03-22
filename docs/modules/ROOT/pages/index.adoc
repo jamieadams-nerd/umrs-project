@@ -1,32 +1,43 @@
 = UMRS Documentation
 
-The Unclassified MLS Reference System (UMRS) is a free, MIT-licensed project started and currently
-maintained by one person to explore primarily high-assurance: in both operations and development.
+The Unclassified MLS Reference System (UMRS) is a free, MIT-licensed project — one person
+exploring high-assurance Linux engineering in depth, on real systems, with real security
+controls. UMRS covers both the operational side (deploying CUI labeling, running enriched
+security tools) and the development side (writing high-assurance Rust, applying provenance
+and TOCTOU-safe patterns). If you work in a CUI or MLS environment, or you want to
+understand what it actually takes to build trustworthy software on SELinux, this is a
+reference system built for you.
 
-The Unclassified MLS Reference System (UMRS) is an ongoing high assurance engineering project.
-The system is fully STIG-locked, configured for SELinux MLS with a complete unclassified label hierarchy, and structured to demonstrate—not merely describe—how a real organization can tailor, customize, and extend a commercial Linux distribution to satisfy its own security requirements.
+== Current Focus — Cantrip Release
 
-[INFO]
-====
-The first phase of the CUI labeling is focused on RHEL 10 SELinux capabilties in targetd policy
-mode with basic type enforcment. Subsequent release will include a tighter, more locked down version
-in MLS POlicy. 
+The first release, codenamed **Cantrip**, targets RHEL 10 with SELinux in targeted policy
+mode. It delivers CUI labeling using the MCS (Multi-Category Security) mechanism, plus two
+initial security tools: `umrs-ls` (security-enriched directory listing) and `umrs-state`
+(system security posture introspection).
 
-Also, support for Ubuntu and AppArmor will be included -- not for labeling of course  but for the
-variaety of tools and software stack being written.
-====
+NOTE: Targeted policy mode gives you real MCS labeling and access enforcement now. A future
+release will tighten to MLS policy mode for stronger mandatory separation. CUI labeling
+on targeted policy is a supported, meaningful step — not a placeholder.
 
+Ubuntu and AppArmor support is planned for the tools and software stack. CUI labeling
+remains a RHEL and SELinux capability.
 
-The UMRS Project is a reference system to explore and learn:
+This project uses AI agents throughout — for research, code review, documentation, and
+security analysis. The xref:ai-transparency:index.adoc[AI Transparency] section explains
+how agents are structured, what each one does, and how their work traces back to
+authoritative sources.
 
-* Using SELinux MCS labeling mechanism
-* Operations to Enhance High-Assurance
-* High-assurance software development
-* Use of AI to improve quality of tooling
+== What UMRS Covers
 
-The UMRS Project is several interrelated disciplines. One or all you may find useful. You're free to
-adopt one or all, but remember, this is not a production system. It is a reference system intended
-to educate, encourage exploration, and be a place to collaborate.
+UMRS is four interrelated things you can explore independently or together:
+
+* **Libraries** — reusable Rust crates for SELinux modeling, platform detection, and MLS math
+* **Patterns** — high-assurance Rust patterns (TPI, TOCTOU safety, provenance verification) with real codebase examples
+* **Tools** — CLI and TUI tools that give security operators typed, evidence-backed answers about what a system is running and whether it meets policy
+* **Assessment** — auditor-ready evidence with compliance control mappings (NIST SP 800-53, CMMC, NSA RTB)
+
+This is a reference system — its purpose is to educate, demonstrate, and invite collaboration.
+It is not a production hardening tool or a scanner. Pick up what is useful.
 
 |===
 | Documentation Set | Topics

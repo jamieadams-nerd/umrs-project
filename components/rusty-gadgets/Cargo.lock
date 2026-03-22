@@ -2294,6 +2294,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "umrs-stat"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "crossterm 0.28.1",
+ "log",
+ "ratatui 0.30.0",
+ "rustix 1.1.4",
+ "systemd-journal-logger",
+ "tree_magic_mini",
+ "umrs-core",
+ "umrs-platform",
+ "umrs-selinux",
+ "umrs-ui",
+]
+
+[[package]]
 name = "umrs-state"
 version = "0.1.0"
 dependencies = [
@@ -2307,7 +2324,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "umrs-tui"
+name = "umrs-ui"
 version = "0.1.0"
 dependencies = [
  "clap",
@@ -2317,10 +2334,22 @@ dependencies = [
  "ratatui-garnish",
  "rustix 1.1.4",
  "systemd-journal-logger",
- "tree_magic_mini",
  "umrs-core",
  "umrs-platform",
  "umrs-selinux",
+]
+
+[[package]]
+name = "umrs-uname"
+version = "0.1.0"
+dependencies = [
+ "crossterm 0.28.1",
+ "log",
+ "ratatui 0.30.0",
+ "systemd-journal-logger",
+ "umrs-core",
+ "umrs-platform",
+ "umrs-ui",
 ]
 
 [[package]]

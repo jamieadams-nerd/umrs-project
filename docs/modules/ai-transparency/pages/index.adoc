@@ -135,6 +135,19 @@ adds the launch entry — so the log reflects both that an agent started and tha
 A log with a start entry and no completion entry is the signal to investigate.
 ====
 
+== Licensing Note
+
+[NOTE]
+====
+The xref:final-cast-and-crew.adoc[Cast & Crew] document and the associated portrait
+images are original creative works authored by Jamie Adams.
+They are licensed under
+https://creativecommons.org/licenses/by-nc-nd/4.0/[CC BY-NC-ND 4.0]
+(attribution required, non-commercial use only, no derivative works).
+This license is separate from the MIT License that governs the UMRS software.
+See `LICENSE-CREATIVE` at the repository root for full terms.
+====
+
 == See Also
 
 * xref:ROOT:introduction.adoc[Introduction to UMRS] — project context

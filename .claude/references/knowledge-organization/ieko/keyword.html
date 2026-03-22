@@ -1,0 +1,1436 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head profile="http://dublincore.org/documents/2007/11/05/dc-html/">
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>Keyword (IEKO)</title>
+<link rel="stylesheet" type="text/css" href="../isko.css" />
+<link rel="schema.DCTERMS" href="http://purl.org/dc/terms/" />
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:url" content="https://www.isko.org/cyclo/" />
+<meta name="twitter:title" content="Keyword (ISKO Encyclopedia of KO)" />
+<meta property="og:image" content="https://www.isko.org/cyclo/keyword4.jpg" />
+<meta name="twitter:description" content="This article discusses the different meanings of keyword and related terms such as key phrase, descriptor, index term, subject heading, tag and n-gram and suggests definitions of each of these terms. It further illustrates a classification of keywords, based on how they are produced or who is the actor generating them and present comparison between author-assigned keywords, indexer-assigned keywords and reader-assigned keywords as well as the automatic generation of keywords. The article also considers the functions of keywords including the use of keywords for generating bibliographic indexes. The theoretical view informing the article is that the assignment of a keyword to a text, picture or other document involves an interpretation of the document and an evaluation of the document's potentials for users. This perspective is important for both manually assigned keywords and for automated generation and is opposed to a strong tendency to consider a set of keywords as ideally presenting one best representation of a document for all requests." />
+
+<meta name="DCTERMS.title" content="Keyword" />
+<meta name="DCTERMS.creator" content="Marco Lardera" />
+<meta name="DCTERMS.creator" content="Birger Hjorland" />
+<meta name="DCTERMS.issued" content="2020" />
+<meta name="DCTERMS.relation.ispartof" content="ISKO Encyclopedia of Knowledge Organization" />
+<meta name="DCTERMS.ispartof" content="ISKO Encyclopedia of Knowledge Organization" />
+<meta name="DCTERMS:bibliographicCitation" content="ISKO Encyclopedia of Knowledge Organization, eds. Birger Hjorland and Claudio Gnoli" />
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="001.012">
+<meta name="DCTERMS.subject.classification" scheme="DDC" content="025.4">
+<meta name="DCTERMS.subject.keyword" content="key phrase">
+<meta name="DCTERMS.subject.keyword" content="descriptor">
+<meta name="DCTERMS.subject.keyword" content="subject heading">
+<meta name="DCTERMS.type" content="Text" />
+<meta name="DCTERMS.format" content="text/html" />
+<meta name="DCTERMS.identifier" content="https://www.isko.org/cyclo/keyword" />
+
+<style>
+a {text-decoration: none;}
+a:hover {text-decoration:underline;}
+table td, table th { padding: 5px; }
+</style>
+
+</head>
+<body>
+
+<a name="top"></a>
+
+<table>
+
+<tr>
+<td id="isko"><h1>I S K O</h1></td>
+<td id="banner"><h2><a href="index.html" style="text-decoration:none;">Encyclopedia of Knowledge Organization</h2></a></td>
+</tr>
+
+<tr>
+<td id="navigation">
+<a href="../index.php">home</a>
+<a href="../about.html">about ISKO</a>
+<a href="../join.html">join ISKO</a>
+<a href="../ko.html"><cite>Knowledge Organization</cite> journal</a>
+<a href="../events.html">ISKO events</a>
+<a href="../chapters.html">ISKO chapters</a>
+<a href="../people.html">ISKO people</a>
+<a href="../pubs.html">ISKO publications</a>
+<a href="index.html">Encyclopedia</a>
+<a href="../lit.html">KO literature</a>
+<a href="../inst.html">KO institutions</a>
+<a href="http://bartoc.org/" title="link to BARTOC">&#8663; KOS registry</a>
+<a href="https://www.isko-mms.net/" title="access-account required">&#128274; members</a>
+<a href="../contact.html">contact us</a>
+</td>
+<td id="content" rowspan="2">
+
+<a class="menu" href="authors#hj">edited by Birger Hj&oslash;rland</a> <a class="menu" href="authors#g">and Claudio Gnoli</a>
+
+<p>&nbsp;
+
+<div itemscope itemtype="http://schema.org/Article">
+
+<h2 itemprop="headline">Keyword</h2>
+
+<blockquote>
+by <a itemprop="author" href="authors#l" style="text-decoration:underline">Marco Lardera</a> and <a itemprop="author" href="authors#hj" style="text-decoration:underline">Birger Hj&oslash;rland</a>
+
+<p>Table of contents:
+
+<br><a href="#1">1. <i>Keyword</i> and related terms</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#1.1">1.1. Term, index term, free-text term and uniterm:</a> <a href="#1.1.1">1.1.1 Term;</a> <a href="#1.1.2">1.1.2 Index term;</a> <a href="#1.1.3">1.1.3 Free text term;</a> <a href="#1.1.4">1.1.4 Uniterm</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#1.2">1.2. Heading and subject heading:</a> <a href="#1.2.1">1.2.1 Heading;</a> <a href="#1.2.2">1.2.2 Subject heading</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#1.3">1.3. Descriptor</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#1.4">1.4. Concept symbol</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#1.5">1.5. Tag</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#1.6">1.6. Word, keyword, keyphrase and stopword:</a> <a href="#1.6.1">1.6.1 Word;</a> <a href="#1.6.2">1.6.2 Stopword;</a> <a href="#1.6.3">1.6.3 <i>N</i>-gram;</a> <a href="#1.6.4">1.6.4 Keyword and keyphrase</a>
+<br><a href="#2">2. Functions of keywords</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#2.1">2.1 Some indexes associated with the term <i>keyword</i></a>
+<br><a href="#3">3. Classification of keywords in library an information science (LIS)</a>
+<br><a href="#4">4. Automatic generation of keywords</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#4.1">4.1 Statistical approaches</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#4.2">4.2 Linguistic approaches</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#4.3">4.3 Machine learning approaches:</a>
+<a href="#4.3.1">4.3.1 Supervised learning-based approaches;</a> <a href="#4.3.2">4.3.2 Semi-supervised learning-based approaches;</a> <a href="#4.3.3">4.3.3 Unsupervised learning-based approaches</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#4.4">4.4 Domain specific approaches</a>
+
+<br><a href="#5">5. Keywords selected by different kinds of actors
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#5.1">5.1 Professional indexers</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#5.2">5.2 Domain experts / authors</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#5.3">5.3 Causal indexers (readers, users)</a>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#5.4">5.4 Machines</a>
+<br><a href="#6">6. Conclusion</a>
+<br><a href="#ack">Acknowledgments</a>
+<br><a href="#end">Endnotes</a>
+<br><a href="#ref">References</a>
+<br><a href="#col">Colophon</a>
+
+
+<p itemprop="abstract"><strong>Abstract</strong>:
+<br>This article discusses the different meanings of <i>keyword</i> and related terms such as <i>key phrase</i>, <i>descriptor</i>, <i>index term</i>, <i>subject heading</i>, <i>tag</i> and <i>n-gram</i> and suggests definitions of each of these terms. It further illustrates a classification of keywords, based on how they are produced or who is the actor generating them and present comparison between author-assigned keywords, indexer-assigned keywords and reader-assigned keywords as well as the automatic generation of keywords. The article also considers the functions of keywords including the use of keywords for generating bibliographic indexes. The theoretical view informing the article is that the assignment of a keyword to a text, picture or other document involves an interpretation of the document and an evaluation of the document’s potentials for users. This perspective is important for both manually assigned keywords and for automated generation and is opposed to a strong tendency to consider a set of keywords as ideally presenting one best representation of a document for all requests.</p>
+
+</blockquote>
+
+<!--
+
+<div align="center"><figure>
+<img src=".jpg" title="Fig. : Caption" width="40%">
+<figcaption>Figure : Caption</figcaption>
+</figure></div>
+
+<blockquote>
+<table border="1">
+<p><caption><i>Table 1: </i><br>&nbsp;</caption></p>
+<tr>
+<td></td>
+<td></td>
+</tr><tr>
+<td></td>
+<td></td>
+</tr>
+</table>
+</blockquote>
+
+-->
+
+<span itemprop="articleBody">
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="1"></a>
+<h3 itemprop="articleSection">1. Keyword and related terms</h3>
+
+<p>The term <i>keyword</i> is one among many related terms, that are sometimes considered synonyms. Soergel (<A HREF="#refS">1974</A>, 31-4), for example, considered <i>keyword</i> synonym with <i>descriptor</i>, <i>clueword</i>, <i>cueword</i>, <i>index term</i>, and partly also <i>s</i><i>ubject heading</i>. <i>Wikipedia</i> (<A HREF="#refW">2020</A>) considers <i>index term</i>, <i>subject term</i>, <i>subject heading</i> and <i>descriptor</i> as  keywords <A HREF="#e1">[1]</A>. Before we directly address the meaning of <i>keyword</i> in <A HREF="#1.6.4">Section 1.6.4</A>, we have therefore chosen to consider a range of related terms. We will argue that <i>keyword</i> is one of many kinds of terms used in information science for describing &rarr; <a href="document_theory">documents</a>, and that many of these terms have specific meanings, and thus should not be considered synonyms. The understanding of these different meanings assumes an understanding of various kinds of &rarr; <a href="indexing">indexing</a> and retrieval mechanisms. A summary of conclusions about the concepts presented is given in table 2 at the end of this Section 1.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="1.1"></a>
+<h4 itemprop="articleSection">1.1 Term, index term, free-text term and uniterm </h4>
+
+<a name="1.1.1"></a>
+<h5 itemprop="articleSection">1.1.1 Term</h5>
+
+<p>The <i>Oxford English Dictionary</i> (<A HREF="#refO">2020b</A>) has no entrance for the noun <i>term</i> but defines <i>terminology</i>: &ldquo;The system of terms belonging to any science or subject; technical terms collectively; nomenclature. Also: the scientific study of the proper use of terms&rdquo;. This is in agreement with how <i>term</i> is defined by <i>Wiktionary</i> (<A HREF="#refW">2020</A>, sense 5): &ldquo;word or phrase, especially one from a specialised area of knowledge&rdquo;. </p>
+
+<p>Jacquemin and Bourigault (<A HREF="#refJ">2003</A>, 600-1) characterized &ldquo;the classical view&rdquo; of terms as the &ldquo;dominant approach to termhood [which] stems from the General Theory of Terminology which was elaborated by E. W&uuml;ster in the late 1930s, with the Vienna Circle&rdquo;. This positivist view
+
+<blockquote>assumes that experts in an area of knowledge have conceptual maps in their minds. This assumption is misleading and unproductive because experts cannot build a conceptual map from introspection. Terminologists constantly refer to textual data. [&hellip;] <BR>
+According to a definition that is better suited to corpus-based terminology, a term is the <i>output </i>of a procedure of terminological analysis. A single word, such as <i>cell</i>, or a multi-word unit, such as <i>blood cell</i>, are terms because they have been manually selected as such.</blockquote>
+
+<p>In information retrieval (IR), <i>term</i> has, however, a much broader meaning. In full-text indexing the term-document matrix is a table that describes the frequency of terms that occur in a collection of documents (<A HREF="#refB">Baeza-Yates and Ribeiro-Neto 2011</A>, 62-3). In this context <i>term</i> is every word in a document and in a collection of documents (excluding possible stopwords). This is an extremely important model, and thus &ldquo;term&rdquo; (and not, for example, &ldquo;keyword&rdquo; or &ldquo;index term&rdquo;) in this broad meaning is the dominating terminology in IR. </p>
+
+<blockquote>
+<table border="1">
+<p><caption><i>Table 1: A model of the term-document matrix <BR>
+used in information retrieval</i><br>&nbsp;</caption></p>
+<tr>
+<th>&nbsp;</th>
+<th>Document 1</th>
+<th>Document 2</th>
+<th>Document 3</th>
+<th>Document <i>N</i></th>
+</tr><tr>
+<th>Term 1</th>
+<td>0</td>
+<td>3</td>
+<td>3</td>
+<td>1</td>
+</tr><tr>
+<th>Term 2</th>
+<td>5</td>
+<td>4</td>
+<td>1</td>
+<td>0</td>
+</tr><tr>
+<th>Term 3</th>
+<td>3</td>
+<td>3</td>
+<td>2</td>
+<td>4</td>
+</tr><tr>
+<th>Term 4</th>
+<td>0</td>
+<td>4</td>
+<td>4</td>
+<td>1</td>
+</tr><tr>
+<th>Term 5</th>
+<td>1</td>
+<td>1</td>
+<td>2</td>
+<td>1</td>
+</tr><tr>
+<th>Term 6</th>
+<td>2</td>
+<td>1</td>
+<td>5</td>
+<td>4</td>
+</tr><tr>
+<th>.</th>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr><tr>
+<th>.</th>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr><tr>
+<th>Term <i>i</i></th>
+<td>0</td>
+<td>1</td>
+<td>2</td>
+<td>0</td>
+</tr>
+</table>
+</blockquote>
+
+<p>In the same context, Manning, Raghavan and Sch&uuml;tze (<A HREF="#refM">2008</A>, 21-2; italics in original) use the token/type distinction to define <i>term</i>:
+
+<blockquote>A <i>token </i>is an instance of a sequence of characters in some particular document that are grouped together as a useful semantic unit for processing. A <i>type </i>is the class of all tokens containing the same character sequence. A <i>term</i> is a (perhaps normalized) type that is included in the IR system's dictionary. The set of index terms could be entirely distinct from the tokens, for instance, they could be semantic identifiers in a taxonomy, but in practice in modern IR systems they are strongly related to the tokens in the document. However, rather than being exactly the tokens that appear in the document, they are usually derived from them by various normalization processes.</blockquote></p>
+
+<p>Anderson and P&eacute;rez-Carballo (<A HREF="#refA">2005</A>, 1.58, 18-19) emphasized that a term may consist of more than one word:
+
+<blockquote>A term is a word or a phrase representing a single concept or multiple concepts that are tightly bound together in the context of a particular IR database [&hellip;]. Some concepts need more than one word to express them, for example, information science or venetian blind. Some terms could be divided into two separate terms, but they are used so commonly together in a consistent order that they are considered a single bound term or compound term.</blockquote></p>
+
+<p>Because of the issue pointed out by Anderson and P&eacute;rez-Carballo, traditional, &ldquo;classical databases&rdquo; distinguish between &ldquo;word indexing&rdquo;, &ldquo;phrase indexing&rdquo; and combined word and phrase indexing (whether &ldquo;information science&rdquo; should be found under <code>information</code> and <code>science</code> as separate words, or only under <code>information science</code> as a phrase or under both the words and the phrase). <A HREF="#e2">[2]</A></p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="1.1.2"></a>
+<h5 itemprop="articleSection">1.1.2 Index term</h5>
+
+<p>Baeza-Yates and Ribeiro-Neto (<A HREF="#refB">2011</A>, 61-2; italics in original) wrote that <i>index term</i> has different meanings in search engine designing versus in library and information science:
+
+<blockquote><i>An</i> index term <i>is a word or group of consecutive words in a document. In its most general form, an index term is any word in the collection. This is the approach taken by search engine designers. In a more restricted interpretation, an index terms</i> [sic!] <i>is a preselected group of words that represents a key concept or topic in a document. This is the approach taken by librarians and information scientists</i>.</blockquote></p>
+
+<p>However, as we saw in <A HREF="#1.1.1">Section 1.1.1</A> in full-text IR (including search engine designing) it is &ldquo;term&rdquo; rather than &ldquo;index term&rdquo;, that is the common expression. We therefore suggest that <i>index term</i> is limited to the meaning, which Baeza-Yates and Ribeiro-Neto defined for library and information science: a preselected word or group of words that represents a key concept or topic in a document (synonym to <i>keyword</i>, as presented below). <i>Index term</i> is a hypernym for <i>subject heading</i>, <i>descriptor</i>, <i>derived index term</i>, <i>uniterm</i>, <i>keyword</i> and <i>tag</i>.  </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="1.1.3"></a>
+<h5 itemprop="articleSection">1.1.3 Free text term</h5>
+
+<p>Anderson and P&eacute;rez-Carballo (<A HREF="#refA">2005</A>, 1.61, 19) give this definition of <i>free-text term</i>:
+
+<blockquote>Often shortened to free text, free-text term usually refers to the use of uncontrolled words or terms from natural language text for indexing or searching. When one searches the actual text of a document, one is searching the free-text terms that are found in the document. The difference between free-text terms and just terms is that sometimes terms may be standardized, at least a little, with respect to format, and they may also have links with the most common synonyms or equivalent terms, even if they are not controlled to the extent of descriptors.</blockquote></p>
+
+<p>Free-text terms are thus opposed to controlled terms (either lightly normalized or derived from a controlled vocabulary (CV), such as a &rarr; <a href="thesaurus">thesaurus</a>). See also Bondi and Scott (<A HREF="#refB">2010</A>).</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="1.1.4"></a>
+<h5 itemprop="articleSection">1.1.4 Uniterm</h5>
+
+<p><i>Unit term</i> was coined by Taube, Gull and Wachtel (<A HREF="#refT">1952</A>) for use in post-coordinate indexing and has often since been called <i>uniterm</i>. It was a kind of minimal processing of natural-language terms, in which, for example, <i>s</i> for the plural form of nouns was removed. It represented a low-level form of indexing, like modern keywords <A HREF="#e3">[3]</A>. It was studied by the Cranfield Experiments (<A HREF="#refC">Cleverdon 1962</A>), in which the authors compared the Uniterm system to the classic library classification schemes (UDC, faceted classifications, and an alphabetical system). The results, although controversial, showed that a uniterm based search strategy scores better than classic systems in both precision (fraction of the retrieved items that are relevant) and recall (percentage of the relevant items retrieved), which came as something like a shock for the documentation profession at the time. The term <i>uniterm</i> has not, however, reached a clear definition. Costello (<A HREF="#refC">1961</A>, 20) wrote: &ldquo;An intensive study of the literature on Uniterm indexing has revealed that since Dr. Mortimer Taube originally published details of his system there have developed nearly as many different definitions and interpretations of uniterms and uniterm indexing as there are uniterm systems and documentalists responsible for their operation and maintenance&rdquo;.</p>
+
+<p>It seems that <i>uniterm</i> may today be considered a synonym for <i>keyword</i>. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="1.2"></a>
+<h4 itemprop="articleSection">1.2 Heading and subject heading</h4>
+
+<a name="1.2.1"></a>
+<h5 itemprop="articleSection"><br>1.2.1 Heading</h5>
+
+<p><i>Heading</i> is the general term for information used in printed catalogs and bibliographies as an access point, which includes <i>subject heading</i> as a narrower term. Anderson and P&eacute;rez-Carballo (<A HREF="#refA">2005</A>, 20, &sect;1.62):
+
+<blockquote>In displayed indexes (indexes that are designed for visual inspection by humans as opposed to non-displayed indexes that are searched by computer algorithm), index terms are combined into headings consisting of multiple terms. It is possible to have index headings with only single terms, but headings of two or more terms are more meaningful, because the lead term is modified or amplified or described by the subsequent term or terms. The subsequent term or terms create a context for the first, or lead, term.</blockquote></p>
+
+<p>Reitz (<A HREF="#refR">2004</A>): 
+
+<blockquote>Heading: <BR>
+The name of a person, corporate body, or geographic location; the title proper of a work; or an authorized content descriptor (subject heading), placed at the head of a catalog entry or listed in an index, to provide an access point. In library cataloging, genre/form terms are also used. In AACR2, form of entry is subject to authority control. See also: main heading and subheading. In Dewey Decimal Classification (DDC), a word or phrase used as a description of a class, given in the schedules in conjunction with the class number, for example, "Library and information sciences" for which the class notation is 020.</blockquote></p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="1.2.2"></a>
+<h5 itemprop="articleSection">1.2.2 Subject heading</h5>
+
+<p><i>Subject heading</i> is a subcategory of heading used about information provided as a subject access point (SAP) <A HREF="#e4">[4]</A>. The term is associated with subject heading systems such as Library of Congress Subject Headings (LCSH), &rarr; <a href="physh">Physics Subject Headings (PhySH)</a> (<A HREF="#refS">Smith 2020</A>), and many more.</p>
+
+<p>Reitz (<A HREF="#refR">2004</A>): 
+
+<blockquote>Subject heading: <BR>
+The most specific word or phrase that describes the subject, or one of the subjects, of a work, selected from a list of preferred terms (controlled vocabulary) and assigned as an added entry in the bibliographic record to serve as an access point in the library catalog. A subject heading may be subdivided by the addition of subheadings (example: Libraries--History--20th century) or include a parenthetical qualifier for semantic clarification, as in Mice (Computers). The use of cross-references to indicate semantic relations between subject headings is called syndetic structure. The process of examining the content of new publications and assigning appropriate subject headings is called subject analysis. In the United States, most libraries use Library of Congress subject headings (LCSH), but small libraries may use Sears subject headings. Compare with descriptor. See also: aboutness and summarization.</blockquote></p>
+
+<p><i>Headings</i> and <i>subject headings</i> are also used in the electronic environment although the concept originated in the print environment (and the idea of selecting or repeating some information at a specific place in a record is obsolete in the electronic world). However, subject heading systems such as LCSH are also used in electronic databases (e.g., in &rarr; <a href="opac">online public access catalogues - OPACs</a>). A study by Larson (<A HREF="#refL">1991</A>) indicated, however, that these subject headings may be harmful rather that fruitful, and that experienced users may learn to avoid them, a view that has been challenged <A HREF="#e5">[5]</A>. The difference between subject headings and descriptors is, that the former is developed for pre-coordinate indexing, the later for post-coordinate indexing. Soergel (<A HREF="#refS">1974</A>, 31-4) wrote, however, that although this usage corresponds to the original definition of <i>descriptor</i> it has not gained currency in the profession <A HREF="#e6">[6]</A>. ISO 5127:2017 fails to distinguish between descriptor <A HREF="#e7">[7]</A> and subject heading <A HREF="#e8">[8]</A>. </p>
+
+<p>It is here recommended to use the original meaning, where precoordinated vs post-coordinate indexing is the defining difference between <i>subject heading</i> and <i>descriptor</i>. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="1.3"></a>
+<h4 itemprop="articleSection">1.3 Descriptor</h4>
+
+<p>Another concept strongly related with <i>keyword</i> is <i>descriptor</i>. The first publication using this word is traced to Calvin Mooers (<A HREF="#refM">1950</A>) <A HREF="#e9">[9]</A>, who used it to define a new method for specifying the subject of a document. According to Mooers, the descriptor technique is based on principles that makes it different from traditional subject indexing: taking into consideration the specificity of the users population who interact with a given set of documents, focusing on the retrieval capabilities rather than describing the content of the document and using an idea-related vocabulary unlinked from the literal words contained in the text.</p>
+
+<p>Mooers found that a good descriptor set contains about 200-400 terms only: adding more of them may decrease the retrieval effectiveness. Thus, it can be created and maintained rather quickly by a subject-matter expert (which is not, however, in accordance with most modern tesauri) <A HREF="#e10">[10]</A>. Mooers (<A HREF="#refM">1972; 2003</A>) further found that the most critical aspect of using descriptors is the necessity of a knowledgeable librarian able to understand the concept of &ldquo;idea-words&rdquo; separated from the actual words contained in the document. Mooers emphasizes that most of the people that tried to work with descriptors were unable to do that, consequently causing the failure of the method in the librarian community, even though users reported to appreciate the information retrieval capabilities of descriptors. He concluded (<A HREF="#refM">2003</A>, 821):
+
+<blockquote>In epilogue, the descriptor method is largely a failure because it proved to be beyond the capabilities of the persons who chose to enter the service profession of librarianship in which descriptors were to be used.</blockquote></p>
+
+<p>In the recent literature the word <i>descriptor</i> has been used in a more general sense, indicating a term in a CV used to describe a concept that is linked to all the other related terms <A HREF="#e11">[11]</A>. Anderson and P&eacute;rez-Carballo (<A HREF="#refA">2005</A>, 1.60, 19) explain this meaning as following:
+
+<blockquote>The term descriptor is usually reserved for a term that is part of a controlled indexing language. Such indexing languages are often listed in a thesaurus. For each concept included in the indexing language, one descriptor will be chosen to represent the concept, and all other terms that can be used for the same concept are linked to the descriptor by means of cross references. Thus, if a thesaurus uses the descriptor lawyer, then it might not use the terms attorney, barrister, solicitor, or counselor-at-law. Each of these alternative terms would be linked to the preferred descriptor lawyer and would be given the status of un-used synonymous or equivalent terms.</blockquote></p>
+
+<p>However, as described in <A HREF="#1.2.2">1.2.2</A>, the main difference between subject headings and subject heading systems on the one hand and descriptors and thesauri on the other is, that the first are designed for pre-coordinate indexing techniques (in typed or printed catalogs or indexes), while the last are based on post-coordinative indexing (which are often dominating in electronic databases) <A HREF="#e12">[12]</A>.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+
+<a name="1.4"></a>
+<h4 itemprop="articleSection">1.4 Concept symbol</h4>
+
+<p>Citation techniques introduces the possibility for a new kind of highly valuable &ldquo;keywords&rdquo;, the meaning of which can be found in the citation context of citing papers. This idea was introduced by bibliometrician Henry G. Small (<A HREF="#refS">1978</A>), who described citations as "concept symbols" and as researchers&rdquo; "tools-of-the-trade" and emphasized that they are interpretations of works.  Citations may thus influence how other researchers view the importance of a given document, which may be different from how the author of the document saw its importance and expressed this for example, in the title of the document (see &rarr; <a href="subject#2.6">the example</a> about an article by Ronald Fisher in Hj&oslash;rland (<A HREF="#refH">2017</A>, 60)).  Small also emphaticized that when a document is cited by a large group of researchers, its meaning can be standardized by the citations it receives. These citations may form a consensus, which in the research community becomes a symbol of the meaning and importance for the document.</p>
+
+<p>Example: The reference &ldquo;Hulme (<A HREF="#refH">1911</A>)&rdquo; will, by many researchers in the field of knowledge organization, stand as the concept symbol for the article, which introduced the principle of &rarr; <a href="literary_warrant">literary warrant</a> even if this term was not used by that article.</p>
+
+<p>This bibliometric thinking has provided a fundamentally new way of looking at keywords and the subject of documents.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="1.5"></a>
+<h4 itemprop="articleSection">1.5 Tag</h4>
+
+<p>Furner (<A HREF="#refF">2010</A>, 1858-9) established that a &rarr; <a href="tagging">tag</a> is to be considered a kind of an index term:
+
+<blockquote>Tagging is the activity of assigning descriptive labels to useful (or potentially useful) resources. In effect, the labels that are assigned by agents to resources are the names selected by those agents for the categories, classes, or concepts into which the resources are deemed by the agents to fall. The tagger who assigns the tag &ldquo;cat&rdquo; to a digital photograph of a cat is simply specifying that the photograph is one of the resources that the tagger wishes to place in a category or class named &ldquo;cat&rdquo;.<BR>
+In the parlance of mid- to late-twentieth-century information science, &ldquo;cat&rdquo; is an <i>index term</i>, and the activity of assigning index terms (words, phrases, codes, etc.) to resources (books, journal articles, Web pages, blog entries, digital photos, video clips, museum objects, etc.) has long been known as <i>indexing</i>, whether undertaken by people or machines.</blockquote>
+
+<p>Tags, in the most common meaning, are user-generated keywords, implemented by many online platforms (including the majority of the social media such as &rarr; <a href="flickr">Flickr</a> and Twitter), that let users describe the resources using their own personal vocabulary, sometimes with the help of a recommendation system able to suggest potentially relevant keywords to the tagger (<A HREF="#refJ">Jaschke 2008</A>). </p>
+
+<p>Many studies have discussed the benefits of this bottom-up approach, including the capability of the crowd to enrich existing classifications with more up-to-date terms but at the same time folksonomies risk to increase the noise level, tagging the same concept with  different terms, therefore reducing the search and retrieval possibilities (<A HREF="#refA">Adler 2009</A>).</p>
+
+<p>Holstrom (<A HREF="#refH">2019</A>) underlines that the peculiar nature of tags lies in the fact that casual indexers tagging a document are performing <i>subject analysis</i> but not <i>subject representation</i>, since they don't map their natural language tags to a controlled language with clear and explicit semantic relationships.</p>
+
+<p>Nevertheless, social tagging has been proposed as a valid replacement for organizing both web contents and library catalogs. Comparisons between tags and CVs has been made with mixed results, suggesting that the two approaches need to be considered as complementary and not mutually exclusive (<A HREF="#refS">Syn 2009</A>). </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="1.6"></a>
+<h4 itemprop="articleSection">1.6 Word, stopword, <i>n</i>-gram, keyword and keyphrase</h4>
+
+<a name="1.6.1"></a>
+<h5 itemprop="articleSection">1.6.1 Word</h5>
+
+<p>A word is a linguistic unit, that is difficult to define. Uhlenbeck (<A HREF="#refU">2003</A>, 377) wrote:
+
+<blockquote>Words: Linguistic units, probably because of their pragmatic and functional character, are notoriously difficult to define. For the sentence as well as for the word, many definitions have been proposed; but so far none has gained general acceptance (for surveys of word definitions, see <A HREF="#refT">Togeby 1949</A>, <A HREF="#refK">Kr&aacute;msk&yacute; 1969</A>, and <A HREF="#refJ">Juilland and Roceric 1972</A>). This lack of consensus among linguists stands in sharp contrast to the general agreement of native speakers everywhere, who seem convinced that they have words at their disposal for daily use in actual speech.</blockquote></p>
+
+<p>In natural language processing stemming techniques and lemmatization are used to identify words derived from a common root and appearing in a variety of forms or determining the lemma for each word form that occurs in text. The lemma of a word encompasses its base form plus inflected forms that share the same part of speech.</p>
+
+<p>In information retrieval a sequence of characters surrounded by blanks or punctuation are normally regarded as a word (but see also <A HREF="#1.6.3">Section 1.6.3</A> <i>N</i>-gram). In bibliographical records a given field may be &ldquo;word indexed&rdquo; or &ldquo;phrase indexed&rdquo; (or both) <A HREF="#e13">[13]</A>. The descriptor <code>child custody</code> is indexed by words with the expressions &ldquo;child&rdquo; and &ldquo;custody&rdquo; as index terms. It may be phrase indexed as &ldquo;child custody&rdquo; as an index term. In the last case are the blanks ignored when the expression is represented in the inverted file of the database. Often &ldquo;word&rdquo; does not include &rarr; <a href="notation">notations</a> such as classification codes but only considers sequences of characters that form parts of natural language. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="1.6.2"></a>
+<h5 itemprop="articleSection">1.6.2 Stopword</h5>
+
+<p><i>Stopword</i> is a term that has been put in a stopword list because it is common and has been considered non-relevant for describing the subject of the documents in a given collection. That said, just as there is subjectivity in the choice of any kind of index terms and keywords, different stop word lists may be optimal in a given context. Dolamic and Savoy (<A HREF="#refD">2010</A>) reported experiments with various stopword lists in different languages and demonstrated that even the inclusion or exclusion of the English definite article <i>the</i> in stopword lists may influence search results. A stopword can be considered the opposite of keyword, as keywords are selected because of their importance in describing the subject of a given document (as presented in <A HREF="#1.6.4">Section 1.6.4</A>). </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="1.6.3"></a>
+<h5 itemprop="articleSection">1.6.3 <i>N</i>-gram</h5>
+
+<p>An <i>n-gram</i> is a contiguous sequence of <i>n</i> items from a given sample of text or speech. The items can be phonemes, syllables, characters, words or base pairs according to the application. In the present context it can be said that instead of words as units, any sequence of characters (be they letters, numbers, punctuations, or spaces) may be used. <i>N</i> can be any whole number (<i>n</i>=1 is a unigram; <i>n</i>=2 is a bigram; <i>n</i>=3 is a trigram; <i>n</i>=4 a &ldquo;four-gram&rdquo; etc.) In this way the somewhat arbitrary splitting of a text in words, can be replaced by a splitting of any sequence of characters of any length (or combining multiple lengths of <i>n</i>-grams). This is a technology increasingly used in computational linguistics, information retrieval and other fields (see, e.g., <A HREF="#refC">Cohen 1995</A>).  </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="1.6.4"></a>
+<h5 itemprop="articleSection">1.6.4 Keyword and keyphrase</h5>
+
+<p><i>Keyword</i> is a term with many different meanings, being used in various fields such as linguistics, computer science, information retrieval, library science and &rarr; <a href="knowledge_organization">knowledge organization</a>. Sometimes &ldquo;keywords&rdquo; are used for words that are central in a culture (or the analysis of that culture), see, for example, Williams (<A HREF="#refW">2015</A>). The <i>Oxford English Dictionary</i> (<A HREF="#refO">2020a</A>) provides the following definitions:
+
+<ol>
+<li>A word or concept of great significance.</li>
+<li>A word used in an information retrieval system to indicate the content of a document.</li>
+<li>A significant word mentioned in an index.</li>
+</ol>
+
+<p>In &rarr; <a href="lis">library and information science (LIS)</a> keywords are subject access points (SAP) and &rarr; <a href="metadata">metadata</a>. Their roles are determined in relation to different theories of indexing and information retrieval. Some sources define keywords as limited to free text terms, for example, the ISO 5127:2017 standard consider only the title and text of a document as a keywords source:
+
+<blockquote><i>Significant word (1) <orthographic word> (3.1.5.18) taken from the title (3.7.4.01) or the text (3.2.1.05) of a document (3.1.1.38) to represent all or part of the content. </i></blockquote></p>
+
+<p>The same understanding is reflected in Anderson and P&eacute;rez-Carballo (<A HREF="#refA">2005</A>, 1.61, 19) <A HREF="#e14">[14]</A> and in Wellisch (<A HREF="#refW">1995</A>) <A HREF="#e15">[15]</A>. However, Feather and Sturges (<A HREF="#refF">1996</A>, 341) did not demand that a keyword is taken from document, but provided the following definition: &ldquo;A word that succinctly and accurately describes the subject, or an aspect of the subject, discussed in a document&rdquo; <A HREF="#e16">[16]</A>. East Carolina University Libraries <A HREF="#e17">[17]</A> defined keywords as natural language terms in opposition to terms from controlled vocabularies.  However, the term &ldquo;keyword&rdquo; can be a source of confusion, as explained by Gross and Taylor (<A HREF="#refG">2005</A>, 213): &ldquo;In 2005, most online catalogs can search every field in a record, although moving from catalog to catalog can be quite confusing, with the definition of &ldquo;keyword search&rdquo; being quite different as to which fields are included in that search&rdquo;. Larson (<A HREF="#refL">1991</A>, 199) provides the following explanation for the confusion:
+
+<blockquote>The MELVYL system provides access to the database through both keyword and &ldquo;exact&rdquo; indexes and provides integrated authority control for personal and corporate name searches. Keyword indexes permit searching on any word from particular field or set of fields in the MARC record. The &ldquo;exact&rdquo; indexes provide searches with left-to-right matching of specific fields in the MARC record with optional right truncation. Both keyword and exact indexes ignore case, punctuation, and a small set of stopwords in matching, and indexes may be combined in command mode searches using Boolean operators.</blockquote></p>
+
+<p>In this article, &ldquo;keyword&rdquo; can be understood as including a single word from a CV (which is made searchable as such in a database). This correspond to a mention by Anderson and P&eacute;rez-Carballo (<A HREF="#refA">2005</A>, 222 &sect;12.75):
+
+<blockquote>[K]eyword searches using Library of Congress subject headings: A third way to searching is the 'keyword' approach. It should be invoked by the intelligent OPAC in several instances. In this first example, a searcher has used the 'exact' approach to 'jazz music' but wants more options. The next step would be to apply the 'keyword-in-main-heading approach' (retrieving all subject headings which include 'jazz').</blockquote></p>
+
+<p>As argued by Larson (<A HREF="#refL">1991</A>, 199) a keyword can be considered different from the 'exact' indexes which provide searchers with left-to-right matching of specific fields in databases. Larson mentioned MARC record, but this can of course be generalized to any type of bibliographical databases. &ldquo;Keyword&rdquo; is by some researchers meant to include phrases. Hartley and Kostoff (<A HREF="#refH">2003</A>, 433), for example, wrote: &ldquo;While 'key words' is common usage, these descriptors should strictly speaking be called 'key words and phrases', since multiword phrases can be used as descriptors in most publications&rdquo;. Sometimes &ldquo;multiword keywords&rdquo; are suggested (e.g., <A HREF="#refT">Thomaidou and Vazirgiannis 2011</A>), but here the term <i>keyphrase</i> is suggested as a better alternative, as suggested by Siddiqi and Sharan (<A HREF="#refS">2015</A>, 18): &rdquo;Both single words (keywords) and phrases (key phrases) may be referred to as 'key terms'&rdquo; and
+
+<blockquote>A keyphrase connotes a multi-word lexeme (e.g. computer science engineering, hard disk), whereas a keyword is a single word term (e.g. computer, disk). Using single words, as index terms, can sometimes lead to misunderstanding. For example, in phrases like 'hot dog', the constituent single words does [sic!] not have their regular meanings and are thus quite misleading if used as individual indexing terms. Also they may be too general, e.g. words 'junior' and 'college' are not specific enough to distinguish 'junior college' from 'college junior'. Also, when selected from a controlled vocabulary, keyphrases reduce the problems associated with synonymy and polysemy in natural language.</blockquote></p>
+
+<p>It follows that a keyword can be both:
+
+<ul>
+<li>A kind of index term: as such it can be a word from a controlled term made searchable as a separate word, or it can be free terms assigned by indexers (including authors and taggers as indexers, or keywords obtained by citation links as in Keyword Plus as described below).</li>
+<li>A free-text term used for searching, that can come from either document titles, abstracts, full-text, or any other element in a document made available in a search system. </li>
+</ul>
+
+<p>In the information retrieval field, a keyword (or a keyphrase) is a word (or a phrase) representing the topic or the content of a document, used for retrieving it from a source of information, such as a database. Although some authors also use the word <i>keyword</i> in a broader meaning, considering as a keyword every word in a document by which you can perform a full-text search, Firoozeh et al. (<A HREF="#refF">2020</A>) speak of &ldquo;keyness properties&rdquo; of words and phrases and distinguish three main types of keyness properties: informational, linguistic, and domain-based. </p>
+
+<ul>
+<li>Informational properties of keyness include principles of exhaustivity and specificity, and further minimality, impartiality, and representativity. </li>
+<li>Linguistic properties of keyness include well-formedness and citationess.</li>
+<li>Domain-based properties of keyness include conformity, homogeneity and univocity</li>
+</ul>
+
+<p>Regarding the &ldquo;keyness&rdquo; property of keywords in linguistics, Stubbs (in <A HREF="#refB">Bondi and Scott 2010</A>) also argues that &ldquo;keywords are words which are significantly more frequent in a sample of text than would be expected, given their frequency in a large general reference corpus&rdquo;.</p>
+
+<p>According to Hj&oslash;rland and Kyllesbech Nielsen (<A HREF="#refH">2001</A>), keywords can be considered a type of SAP, searchable entities used to retrieve documents starting from the topic of a document, extending more traditional entry points such as title or abstract.</p>
+
+<p>As already described in <A HREF="#1.1.4">Section 1.1.4</A> an early example of keyword-based information retrieval evaluation was represented by the Cranfield Experiments (<A HREF="#refC">Cleverdon 1962</A>). The authors of those experiments compared the Uniterm system, a low-level form of indexing, similar to modern keywords, to the classic &rarr; <a href="library_classification">library classification</a> schemes (UDC, faceted classifications, etc.). The results, although controversial, showed that a keyword-based search strategy scores better than classic systems in both precision (fraction of the retrieved items that are relevant) and recall (percentage of the relevant item retrieved).</p>
+
+<p>Similar experiments are performed each year, since 1992, in the TREC (Text Retrieval Conference) tests, where multiple research teams compete in retrieving documents from large databases in the most efficient way (<A HREF="#refS">Sanderson and Croft 2012</A>).</p>
+
+<p>A different and more specific meaning for the word <i>keyword</i> is present in the field of search engine optimization (SEO), where a keyword is a term contained in the HTML code of a page with the purpose of improving the page rank in the search engine result pages. Even different is the concept of keyword in linguistics: words that allow to discriminate between two or more corpora of documents, identifying the unique elements of each one (<A HREF="#refB">Bekhuis 2015</A>).</p>
+
+<p>Finally, in the indexing and knowledge organization fields the most reasonable way to address the issue of defining what is a keyword is to consider both CVs, terms and free-text terms as potential keywords. Under this comprehensive definition, for instance, we can conceive as keywords the terms contained in a thesaurus, if used for indexing, as well as the keywords provided by authors when submitting a manuscript to a journal. Free-text terms, however, should be considered in this regard only when significant. Since all the words in a document are, according to the definition discussed in this section, free-text terms (including the meaningless ones), we may recognize as keywords only the ones that bring with them a strong semantic value and are useful for expressing the ?subject of the document.</p>
+
+<p>There is a certain degree of subjectivity in this definition of keyword because the assessment of what is "significant" is, within certain limits, a matter of personal judgement or theoretical view. A keyword can be understood as a word highlighted (or assigned) by somebody in a text. It seems obvious that different words or phrases may be highlighted according to the purpose or interest of the person doing the highlighting. Keywords are thus subjective, but the most fruitful understanding of this subjectivity is to relate it to common perspectives and interests because this is the best way (or the only way) of making general principles for selecting keywords. In other words: A keyword should not be considered as something, which a given word either is or is not. A keyword should be considered a word that from some perspective provides a useful description of a document <A HREF="#e18">[18]</A>. </p>
+
+<blockquote>
+<table border="1">
+<p><caption><i>Table 2: Summary of conclusions about the concepts presented</i><br>&nbsp;</caption></p>
+<tr>
+<td><i>Term</i></td>
+<td>Broad meaning (IR): Any word in a document which is candidate for indexing, including algorithmic full-text retrieval.<BR>
+Narrow meaning: Word or phrase from the terminology of a given field. (E.g., in the field of knowledge organization <code>classification</code> and <code>controlled vocabulary</code> are terms.)</td>
+</tr><tr>
+<td><i>Index term</i></td>
+<td>Broad meaning: Synonym for <i>term</i> (any word in a document used for or potential useful for indexing). <BR>
+Narrow meaning: A word or phrase used for indexing; a single word index term corresponds in searching to a keyword. In the narrow meaning <i>index term</i> is hypernym for <i>subject heading</i>, <i>descriptor</i>, <i>derived index term</i>,  <i>uniterm</i>, <i>keyword</i> and <i>tag</i>.</td>
+</tr><tr>
+<td><i>Free-text term</i></td>
+<td>Term as it appears in the documents to be indexed, as opposed to terms from controlled vocabularies.</td>
+</tr><tr>
+<td><i>Uniterm</i></td>
+<td>Free-text terms with a low-level degree of normalization (e.g., <code>color</code> is a uniterm for each of the words &ldquo;color&rdquo;, &ldquo;colors&rdquo;, &ldquo;colour&rdquo;, &ldquo;colours&rdquo;).</td>
+</tr><tr>
+<td><i>Heading</i></td>
+<td>The general term for information used in printed catalogs, bibliographies and browsable lists as an access point. Also used in the term <i>HTML heading</i> and in OPACs (here probably caused by their use of subject heading systems developed in the time of printed indexes). A heading may be single terms or a string of terms.</td>
+</tr><tr>
+<td><i>Subject heading</i></td>
+<td>Subcategory of heading used as a subject access point (SAP). Normally from a controlled vocabulary (a subject heading system) with pre-coordinated terms (as opposed to descriptors).</td>
+</tr><tr>
+<td><i>Descriptor</i></td>
+<td>A keyword from a controlled vocabulary designed for post-coordinative indexing (as opposed to subject heading).</td>
+</tr><tr>
+<td><i>Concept symbol</i></td>
+<td>A symbol associated with a given meaning by a community of users. Specifically: The meaning associated with a given bibliographical reference by a set of citing papers. (E.g., &ldquo;Hulme (<A HREF="#refH">1911</A>)&rdquo; as symbol for the text that introduced the concept 'literary warrant'.)</td>
+</tr><tr>
+<td><i>Tag</i></td>
+<td>User-generated keyword, implemented by many online platforms, that let users describe the resources using their own personal vocabulary, sometimes with the help of a recommendation system able to suggest potentially relevant keywords.</td>
+</tr><tr>
+<td><i>Word</i></td>
+<td>In information science: A sequence of characters surrounded by blanks or punctuation. More than one consecutive word can be treated as a unit (a phrase) in phrase indexing. (E.g., the term <code>information retrieval</code> consists of two consecutive words, which can be 'phrase indexed' to function as one expression.</td>
+</tr><tr>
+<td><i>Stopword</i></td>
+<td>A common word considered non-relevant for describing the contents of a document and included in a stopword list.</td>
+</tr><tr>
+<td><i>N-gram</i></td>
+<td>In general:  A contiguous sequence of <i>n</i> items from a given sample of text or speech. The items can be phonemes, syllables, characters, words, or base pairs according to the application.  <BR>
+In the present context: Any sequence of characters of a given length.</td>
+</tr><tr>
+<td><i>Keyword</i><BR>
+and<BR>
+<i>keyphrase</i></td>
+<td>A word, selected for its significance for describing the content of a document, whether or not the selection is done by man or machine, whether it is a controlled or uncontrolled term, or whether it is derived from or assigned to a document. A keyword may be derived from a subject heading, but <i>subject heading</i> and <i>descriptor</i> are terms related to specific kinds of indexing languages. <BR>
+A keyword is different from a full multiterm subject heading or index term, which is called a <i>key phrase</i>. Both keywords and keyphrases are sometimes included in the term <i>key terms</i> .</td>
+</tr>
+</table>
+</blockquote>
+
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2"></a>
+<h3 itemprop="articleSection">2. Functions of keywords</h3>
+
+<p>It follows from the above given definition of <i>keyword</i> that the function primarily is to characterize documents to improve the findability of the documents described (or to find pages or passages within documents).  As such, keywords represent one among many kinds of indexing languages. </p>
+
+<p>In printed books, the indexes may improve the findability of the pages in which a particular subject or concept is discussed, but not where every word appear (which is more the task of concordances) <A HREF="#ref19">[19]</A>.  The difference between &ldquo;word indexing&rdquo;, &ldquo;concept indexing&rdquo; and &ldquo;subject indexing&rdquo; is important, as first pointed out by Bernier (<A HREF="#refB">1980</A>) and developed by Hj&oslash;rland (<A HREF="#refH">2018</A>, &sect;3.6). In printed books keywords may also (in combination with tables of contents, section headings and internal references) support browsing, for example, by using keywords as margin notes, or by different kinds of typographical highlighting. </p>
+
+<p>In printed journal indexes, pre-coordinated keywords (subject headings) were mostly used and, as argued by Milstead (<A HREF="#refM">1984</A>, 187), pre-coordination is the only appropriate method in the print environment. Computers compare lists of document numbers posted to keywords to locate a combination of concepts, but this is not practical for human beings to do. (But sometimes printed indexes are made from post-coordinate indexes because the producers do not want to produce two different indexes.) </p>
+
+<p>In the electronic bibliographic databases post-coordinate indexing were introduced, allowing flexible combination of keywords (&ldquo;descriptors&rdquo;), but also introducing the problem known as &ldquo;false drops&rdquo; <A HREF="#e20">[20]</A>.  These databases typically provide many kinds of SAP (e.g., descriptors from controlled vocabularies, free text terms in titles and abstracts and author supplied keywords). Much research has been done studying the relative contributions of such different kinds of subject access points (cf., <A HREF="#refH">Hj&oslash;rland and Kyllesbech Nielsen 2001</A>; <A HREF="#refM">McJunkin 1994</A>). </p>
+
+<p>In picture indexing, two approaches have been introduced (cf., <A HREF="#refC">Chu 2001</A>): (1) "content based indexing" (the techniques of indexing and retrieving images based on, among other features, color, shape, and texture) (2) "description based indexing" (techniques based on manually assigned captions, keywords, and other descriptions). In both cases keywords may be used, but in order to connect a keyword to a picture, the word cannot be derived as in texts, but must somehow be assigned on different levels of abstracting in analyzing the picture (from color and shape in the lowest level to artist style, such as impressionism, at the highest level of abstraction).</p>
+
+<p>Besides these functions keywords and keyphrases have become important concepts in information technology, where they are used for text summarization, abstracting, ontology construction, recommender systems, text analyses, browsing <A HREF="#e21">[21]</A>, subtitling (e.g., of videos) and more.  This is a highly active field of research in the second decade of the 21st Century. </p>
+
+<p>The authors of the present article write based on the understanding that in all contexts and for all purposes it is important to consider that keywords should not just be understood in a document-centered way as &ldquo;semantic condensation&rdquo; of the content of a document but should be understood in a request-oriented or policy-oriented way as an indication of the subject of a document (cf., <A HREF="#refH">Hj&oslash;rland 2017</A>, &sect;2.4): A document does not have a subject, but is assigned one or more subjects depending on the purpose of the indexing. There can always be different perspectives on given text, and the assignment of keywords cannot avoid this subjectivity (more about this in <A HREF="#5">Section 5</A>). Therefore, keywords should not be considered more or less wrong or correct in relation to a given document but should be considered more or less functional to facilitate given interests. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2.1"></a>
+<h4 itemprop="articleSection">2.1 Some indexes associated with the term <i>keyword</i></h4>
+
+<p>Some kinds of indexes contain the word &ldquo;keyword&rdquo; in their name. A well-known example is the KWIC (KeyWord In Context) index, normally attributed to Hans Peter Luhn who demonstrated his system at IBM in 1958 and published an article about it in 1960 <A HREF="#e22">[22]</A>.  KWIC is described by Manning and Sch&uuml;tze (1999, 31) as a &ldquo;concordancing program&rdquo;, a program that can produce a concordance (cf. <A HREF="#e19">endnote 19</A>). The KWIC index is one of the many kinds of &ldquo;title derivative indexing techniques&rdquo; (cf. <A HREF="#refF">Feinberg 1973</A>) although also, for example, used for full-text documents and for indexes in thesauri. KWIC indexes is probably the oldest kind of &rarr; <a href="automatic">automatic indexing</a> systems. The steps in creating a KWIC index are:
+
+<ul>
+<li>Keywords contained in the title are identified using a list of stop words <A HREF="#e23">[23]</A> to exclude irrelevant words.</li>
+<li>All the possible rotations or cyclings <A HREF="#e24">[24]</A> are generated around a central keyword (which is often emphasized, e.g., as in Figure 1 by using bold characters);</li>
+<li>The generated entries are then sorted in alphabetical order.</li>
+</ul>
+
+<div align="left"><figure>
+<!-- img src="keyword1.jpg" title="Fig. 1: A typical KWIC index for the title History of Naval Warfare in the Atlantic" width="40%" -->
+
+<blockquote><pre>
+Naval Warfare in the <b>Atlantic</b>, History of
+Naval Warfare, 	     <b>History</b> of in the Atlantic
+History of           <b>Naval</b> Warfare in the Atlantic
+History of Naval     <b>Warfare</b> in the Atlantic
+</pre></blockquote></p>
+
+<figcaption>Figure 1: A typical KWIC index for the title <i>History of Naval Warfare in the Atlantic </i>(remark the unconventional presentation format with the lead term displayed in the middle of the column rather as at the left)</figcaption>
+</figure></div>
+
+<p>To deal with complaints raised against this format two other formats (KWOC and KWAC) were developed (<A HREF="#refV">Van der Veer Martens 2023</A>). In the KWOC index (Key Word Out of Context) the keywords are displayed outside the title, usually at the beginning of the line:
+
+<div align="left"><figure>
+<!-- img src="keyword2.jpg" title="Fig. 2: A typical KWIC index for the title History of Naval Warfare in the Atlantic" width="40%" -->
+
+<blockquote><pre>
+<b>Atlantic</b>, History of Naval Warfare in the Atlantic
+<b>History</b>,  History of Naval Warfare in the Atlantic
+<b>Naval</b>,    History of Naval Warfare in the Atlantic
+<b>Warfare</b>,  History of Naval Warfare in the Atlantic
+</pre></blockquote></p>
+
+<figcaption>Figure 2: A KWOC index demonstrating the same title</figcaption>
+</figure></div>
+
+
+<p>Finally, a KWAC index (&ldquo;Key Word Alongside Context&rdquo;, also known as &ldquo;Keyword and Context&rdquo; and &ldquo;Key Word Augmented-in-Context&rdquo;), as described by Anderson and P&eacute;rez-Carballo (<A HREF="#refA">2005</A>, 261), preserves word pairs and phrases, but words preceding the keyword are no longer contiguous <A HREF="#e25">[25]</A>.</p>
+
+<div align="left"><figure>
+<!-- img src="keyword3.jpg" title="Fig. 3: " width="40%" -->
+
+<blockquote><pre>
+<b>Atlantic</b>,  History of Naval Warfare in the
+<b>History</b>,   of Naval Warfare in the Atlantic
+<b>Naval</b>      Warfare in the Atlantic, history of
+<b>Warfare</b>    in the Atlantic, History of Naval
+</pre></blockquote></p>
+
+<figcaption>Figure 3: A KWAC index demonstrating the same title</figcaption>
+</figure></div>
+
+
+<p>Another kind of keyword index is the Keywords Plus used by the Web of Science database. It takes keywords from the references in a given article. The Clarivate Analytics homepage <A HREF="#e26">[26]</A> writes:
+
+<blockquote>The data in KeyWords Plus are words or phrases that frequently appear in the titles of an article's references, but do not appear in the title of the article itself. Based upon a special algorithm that is unique to Clarivate Analytics databases, KeyWords Plus enhances the power of cited-reference searching by searching across disciplines for all the articles that have cited references in common.</blockquote></p>
+
+<p>The system is described in the literature by Garfield (<A HREF="#refG">1990a; 1990b</A>), Garfield and Sher (<A HREF="#refG">1993</A>) and Zhang et al. (<A HREF="#refZ">2016</A>). The last paper found (967): &ldquo;Keywords Plus terms were more broadly descriptive [compared to author-assigned keywords]. Keywords Plus is as effective as Author Keywords in terms of bibliometric analysis investigating the knowledge structure of scientific fields, but it is less comprehensive in representing an article's content.&rdquo; Further (971): &ldquo;Keywords Plus terms emphasized research methods and techniques, whereas Author Keywords tended to hone in on specific diseases and conditions&rdquo;, or generalized: Author keywords may be best at identifying documents about given topics and Keywords Plus best at identifying papers about specific research methods.</p>
+
+<p>Such keyword-based indexes had the advantage of being very fast and inexpensive to be generated using computers. The capabilities of full-text search engines have made such indexes less necessary and they have been in decline. However, the automatic generation of keywords and keyphrases from full text is, as shown later, a highly active research field today. Also, some attempts have been made in order to revitalize the KWIC technique as an instrument to enhance filtering of results in web search engine, displaying the most frequent context of the search query and letting the user select one of them (<A HREF="#refK">K&auml;ki 2006</A>). </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3"></a>
+<h3 itemprop="articleSection">3. Classification of keywords in library and information science (LIS)</h3>
+
+<p>Hj&oslash;rland (<A HREF="#refH">2011</A>) made a distinction between four kinds of indexing based on the dichotomies of human versus computer-based indexing and derived versus assigned indexing (or extractive versus abstractive methods). These four kinds may also be used to classify kinds of keywords:
+
+<ul>
+<li><i>Human-based derived keywords</i>: Keywords extracted by a human from parts of the document (text, abstract, title or others) on the bases of the indexer understanding about which words may be relevant in the given context.</li>
+<li><i>Computer derived keywords</i>: Keywords extracted from the document by a computer program (for more details see the paragraph &ldquo;Automatic generation of keywords&rdquo;).</li>
+<li><i>Human-based assigned keywords</i>: Keywords assigned by a human for describing a document, either:
+<ul>
+<li>terms from a controlled vocabulary (or rather, according to <A HREF="#1.6.4">Section 1.6.4</A>: words from CVs made searchable as keywords) <A HREF="#e27">[27]</A>.</li>
+<li>free terms conceptualized by the indexer.</li>
+</ul></li>
+<li><i>Computer assigned keywords</i>: Keywords assigned by a computer using various algorithms. Similarly, to the category above, the keywords can be either:
+<ul>
+<li>Keywords derived from a CV</li>
+<li>free terms assigned by an algorithm.</li>
+</ul></li>
+</ul>
+
+<p>This classification, therefore, takes into consideration two dimensions: the origin of the keyword (derived or assigned) and the typology of the agent (a human being or a machine).</p>
+
+<div align="center"><figure>
+<img src="keyword4.jpg" title="Fig. 4: Classification of keywords" width="70%">
+<figcaption>Figure 4: Classification of keywords</figcaption>
+</figure></div>
+
+<p>For both the assigned and the derived approaches the task is to find the best possible word(s)xxviii to represent the contents of a document (from a certain perspective and for a certain purpose). The derived approaches are more restricted in that only terms appearing in the documents can be used. Assigned indexing using a CV are correspondingly restricted by the terms in the CV. This distinction is less important compared to the deep problem: To express the content of a document in a way that increases the findability of the document for those users that might benefit from using it. </p>
+
+<p>Human-based keywords, regardless of being assigned or derived, can also be classified according to the identity of the actor (subject) that associate them to a document:
+
+<ul>
+<li>Author keywords</li>
+<li>Indexer keywords</li>
+<li>Reader/third-part keywords</li>
+</ul>
+
+<p>Holstrom (<A HREF="#refH">2019</A>) further differentiated professional indexers, domain experts and casual indexers and expressed the view that each of these categories of indexers have different strengths and weaknesses (see further the discussion in <A HREF="#5">Section 5</A>). </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4"></a>
+<h3 itemprop="articleSection">4. Automatic generation of keywords</h3>
+
+<p>There is a huge literature on automatic keyword extraction, which will here only be presented very selectively and briefly (some such as KWIC indexing were already presented in <A HREF="#2.1">Section 2.1</A>). In the literature, the main <A HREF="#e29">[29]</A> approaches suggested (e.g., <A HREF="#refS">Siddiqi and Sharan 2015</A>; <A HREF="#refB">Bharti et al. 2017</A>) may be classified as (1) statistical approaches (2) linguistic approaches (3) machine learning approaches (4) domain specific approaches <A HREF="#e30">[30]</A>. (In addition, there are hybrid approaches, and there is often strong overlap among the methods used in specific applications.)</p>
+
+<p>Automatic generation of keywords does not necessarily mean that keywords are automatically assigned to documents. In many cases, the generated keywords are only used as a suggestion for the user, that can use his human intellect to decide what keywords to accept and what others to discard (so-called &ldquo;tag-recommendation&rdquo;). See, for example, Subramaniyaswamy and Chenthur Pandian (<A HREF="#refS">2012</A>). </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.1"></a>
+<h4 itemprop="articleSection">Statistical approaches</h4>
+
+<p>Among the earliest work in this set of approaches was Luhn (<A HREF="#refL">1957</A>) who suggested that terms found repeatedly in a document was appropriate as index term for that document. Luhn thus based automatic indexing on scores of in-document counts. A next step was taken by Edmundson and Wyllys (<A HREF="#refE">1961</A>), who developed a &ldquo;term significance formula&rdquo; which, in addition to considering word frequency within a given document, also used a &ldquo;reference&rdquo; frequency, which measured words' relative frequency within a document collection. Sp&auml;rck Jones (<A HREF="#refS">1972; 1973</A>) developed the term frequency–inverse document frequency (TF-IDF) score to calculate the importance of indexing terms. It is based on the idea that terms with a high frequency in a document, but which are rare in other documents have the highest value as indexing terms. The application of TF-IDF was further developed by Salton and Yang (<A HREF="#refS">1973</A>) and Salton et al. (<A HREF="#refS">1975</A>). </p>
+
+<p>Whereas most approaches have been based on the &ldquo;bag of word&rdquo; <A HREF="#e31">[31]</A> principle (disregarding word order and grammar), some approaches have utilized information of word placement in documents. The use of word co-occurrences for selection keywords or keyphrases takes one step in thus direction. See, for example, <A HREF="#refB">Bullinaria and Levy 2007</A>; <A HREF="#refG">Garg and Kumar 2018</A> and <A HREF="#refL">Lancia 2008</A>.</p>
+
+<p>There are, however, more direct applications of document structures that have been applied for keyword extraction. Siddiqi and Sharan (<A HREF="#refS">2015</A>) presented seven approaches <A HREF="#e32">[32]</A> but unfortunately without references to further information. It seems obvious for future research to combine the field of genre studies (or composition studies) with empirical research on keyword selection. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.2"></a>
+<h4 itemprop="articleSection">4.2 Linguistic approaches</h4>
+
+<p>This set of approaches use various linguistic analyses and tools for keyword detection and extraction, such as lexical analysis, syntactic analysis, and discourse analysis.  Different types of words and word sequences do not have the same value as keywords. For instance, nouns and adjectives are more likely to appear in keywords than other kinds of words such as adverbs and determiners, as they tend to provide more information about a given text. Therefore, extraction tools may exploit morphological and syntactical features of textual units.  Firoozeh et al. (<A HREF="#refF">2020</A>, 272):
+
+<blockquote>Extraction methods rely not only on plain words (tokens) but also on their lemmatized forms, their parts of speech (POS tag), and some of their morphological features, such as gender or number (singular, plural). [&hellip;] When the extracted keywords are to be presented to human users, they are mainly retrained without any inflection so as to satisfy the citationess property.</blockquote></p>
+
+<p>See further about linguistic approaches in Jacquemin and Bourigault (<A HREF="#refJ">2003</A>). </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.3"></a>
+<h4 itemprop="articleSection">4.3 Machine learning approaches</h4>
+
+<p>Machine learning is a kind of artificial intelligence. Often three forms of machine learning are distinguished: Supervised learning, semi-supervised learning, and unsupervised learning. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.3.1"></a>
+<h5 itemprop="articleSection">4.3.1 Supervised learning-based approaches</h5>
+
+<p>Supervised learning methods acquire knowledge from data that a human expert has explicitly annotated with category labels or structural information. Supervised learning requires a large amount of expensive training data. Witten et al. (<A HREF="#refW">1999</A>) developed the algorithm <i>KEA</i> (keyphrase extraction algorithm) based on author-assigned keywords, which the algorithm learned from and had to demonstrate both on the same documents and on new documents which had not been assigned any keyphrases by their authors. What the algorithm learned was to extract phrases based on their features. Two features were calculated for each candidate phrase: (1) TF/IDF (the frequency of a phrase's use in a particular document compared with the frequency of that phrase in the corpus) (2) first occurrence (the number of words that precede the phrase's first appearance, divided by the number of words in the document.  Based on these &mdash; and many more technical choices &mdash; the authors found that KEA on the average can match between one and two of the five keyphrases chosen by the authors in the collection. This was considered a good performance because KEA must choose from thousands of candidates and because it is highly unlikely that even another human would select the same set of phrases as the original author. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.3.2"></a>
+<h5 itemprop="articleSection">4.3.2 Semi-supervised learning-based approaches</h5>
+
+<p>These are approaches that mediate between supervised and unsupervised learning. Li et al. (<A HREF="#refL">2010</A>), for example, proposed a semi-supervised key phrase extraction approach, which explored title phrases as the source of knowledge, because phrases in the titles of documents are often appropriate to be key phrases. The position of a term has been a quite effective feature as a phrase extraction method (<A HREF="#refW">Witten et al. 1999</A>). Therefore, terms located in the title are ranked higher. Li et al. used <i>Wikipedia</i> to compute the semantic relatedness between terms and thereby suggest key phrases related to title terms. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.3.3"></a>
+<h5 itemprop="articleSection">4.3.3 Unsupervised learning-based approaches</h5>
+
+<p>These are approaches that do not require expert human annotation of examples: rather, an algorithm identifies its own keywords by clustering unlabeled examples into coherent groups. Many different unsupervised approaches have been applied for key-phrase extraction. Among them are graph-based approaches. An overview of these are given in Beliga et al. (<A HREF="#refB">2015</A>). On p. 3 they explain:
+
+<blockquote>A graph is a mathematical model, which enables the exploration of the relationships and structural information very effectively. [&hellip;]. For now, in short, document is modelled as graph where terms (words) are represented by vertices (nodes) and their relations are represented by edges (links) [&hellip;]. The edge relation between words can be established on many principles exploiting different scopes of the text or relations among words for the graph’s construction. </blockquote></p>
+
+<p>Among the relations mentioned are co-occurrence relations, syntax relations and semantic relations. The authors conclude:
+
+<blockquote>Graph-based methods for keyword extraction are simple and robust in many ways: (1) they do not require advanced linguistic knowledge or processing, (2) they are domain independent and (3) they are language independent. Such graph-based KE techniques are certainly applicable for various tasks: text classification, summarization, search, etc. Due to the aforementioned benefits it is reasonable to expect that graph-based extraction will attract the attention of the research community in the future. It can be expected that many text and document analyses will incorporate graph-based keyword extraction.</blockquote></p>
+
+<p>Some approaches use natural language processing technologies to derive keywords, for example, syntactic analyses of text.  Kathait et al. (<A HREF="#refK">2017</A>) selected nouns and adjectives and combined them with statistical methodologies. Witten et al. (<A HREF="#refW">1999</A>) describe an algorithm, KEA, that identifies candidate keyphrases using lexical methods, calculates feature values for each candidate, and uses a machine-learning algorithm to predict which candidates are good keyphrases. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4.4"></a>
+<h4 itemprop="articleSection">4.4 Domain specific approaches</h4>
+
+<p><A HREF="#3.3.1">Section 3.3.1</A> mentioned that supervised machine learning mostly requires domain knowledge in an initial state. A separate set of approaches was mentioned by Siddiqi and Sharan (<A HREF="#refS">2015</A>, 19):
+
+<blockquote>Domain specific approaches: Various approaches can be applied to a specific domain corpus, which exploit the backend knowledge related to the domain (such as ontology) and inherent structure of that particular corpus to identify and extract keywords.</blockquote></p>
+
+<p>Frank et al. (<A HREF="#refF">1999</A>) used a machine learning approach to extract key phrases from sets of documents. They found that different key phrases are used in different subject areas and that the exploitation of this domain-specific information significantly improves the quality of the extracted keyphrases. Gazendam et al. (<A HREF="#refG">2010</A>) and Medelyan and Witten (<A HREF="#refM">2006</A>) used domain-specific thesauri to improve the quality of automatic keyword extraction. </p>
+
+<p>The literature on domain specific approaches is meager (and from this perspective it is somewhat surprising that Siddiqi and Sharan (<A HREF="#refS">2015</A>), included it in their survey). From the perspective of the present authors, it seems rather obvious that keyword selection must be related to different &ldquo;paradigms&rdquo; or metatheoretical perspectives in fields of knowledge. It is common knowledge, at the least in the humanities, that histories of a given domain cannot be neutral, but are always made from a perspective (whether or not the author acknowledges it or is aware of it). The ways different histories of music, for example, select terms used for periodization, vary. Such knowledge must &mdash; to the degree that it can be formalized &mdash; be usable, also in relation to the automatic generation of keywords. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5"></a>
+<h3 itemprop="articleSection">5. Keywords selected by different kinds of actors</h3>
+
+<p>Keywords may be, for example, author-generated, indexer-generated, editor generated, reader-generated, generated by algorithms (or be absent). Holstrom (<A HREF="#refH">2019</A>) called the focus on  who (subject or person)  performed the key-word attribution for &ldquo;an Actor-Based Model for Subject Indexing&rdquo; and wrote:
+
+<blockquote>Four primary types of actor perform subject indexing work: 1) professional indexers, 2) domain experts [authors in the listing above], 3) casual indexers [readers in the listing above], and 4) machines [i.e., the programmers]. These subject indexing actors all have agency and all act on information objects.</blockquote></p>
+
+<p>Holstrom also discusses how these kinds of actors may be combined. In special libraries (e.g., the National Library of Medicine) the professional indexers often have an advanced degree in a special domain in addition to their training as information specialists or indexers. Other kinds of actors might be added, for example, fandoms, which are often extremely knowledgeable about the documents being indexed (e.g., in certain genres of fiction and computer games). </p>
+
+<p>An example of an empirical investigation of the different actors' indexing is Lee et al. (<A HREF="#refL">2015</A>), which is a study of full-text documents on Alzheimer's disease together with their indexing with MeSH terms in PubMed (MEDLINE) and citation patterns. This article found that different actors in this domain represented different views: MEDLINE indexers emphasize amyloid-related entities, including methodological terms, while authors focus on specific biomedical terms, including clinical syndromes. The complex networks of citing relationships to a certain extent reflected the impact of basic science discoveries in research on Alzheimer's disease. </p>
+
+<p>A debate in library and information science is thus about the effectiveness of keywords assigned by different actors such as authors, indexers, taggers or cited papers (see <A HREF="#2.1">Section 2.1</A> about Keywords Plus).  </p>
+
+<p>The following kinds of actors are discussed in this section: <A HREF="#5.1">5.1 Professional indexers</A>; <A HREF="#5.2">5.2 Domain experts/authors</A>; <A HREF="#5.3">5.3 Causal indexers (readers, users)</A>; <A HREF="#5.4">5.4 Machines</A>.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5.1"></a>
+<h4 itemprop="articleSection">5.1 Professional indexers</h4>
+
+<p>Professional indexers are persons who are employed for the task of indexing documents as one of their main tasks. They may primarily be trained in information science and knowledge organization or they may be subject specialists with training in indexing (such a training may be a general indexing training from a LIS department or it may be inhouse training focusing on the specific system, e.g., as in the MEDLINE database <A HREF="#e33">[33]</A>). (Indexing by subject specialists without employment or training in indexing is discussed in <A HREF="#5.2">Section 5.2</A>.) Professional indexers mostly make use of a large, controlled vocabulary for assigning keywords to documents. It is extremely difficult to identify studies about the quality of indexing made by professional indexers, as Lancaster (<A HREF="#refL">2003</A>, 88) wrote:
+
+<blockquote>Regrettably, not much research has been performed on the factors that are most likely to affect the quality of indexing. An attempt has been made to identify such factors in Figure 35 but this is based more on common sense or intuition than on hard evidence.</blockquote></p>
+
+<p>Lancaster's Figure 35 (89) classified factors affecting indexing quality in five groups:
+
+<ul>
+<li>Indexer factors (e.g., subject knowledge and experience)</li>
+<li>Vocabulary factors (e.g., specificity/syntax and ambiguity or impression) </li>
+<li>Document factors (e.g., subject matter, complexity, and summarization)</li>
+<li>&ldquo;Process factors&rdquo; (e.g., type of indexing, rules and instructions)</li>
+<li>Environmental factors (e.g., heating/cooling, lighting, and noise)</li>
+</ul>
+
+<p>Here we are discussing the professional indexer. One of the things we know for sure is that inter-indexer consistency is low, i.e., indexers perform rather differently (see, e.g., <A HREF="#refL">Lancaster 2003</A>, chapter 5: &ldquo;Consistency of Indexing&rdquo;). It is remarkable that under &ldquo;indexer factors&rdquo; Lancaster did not mention anything about the indexers' theories. It seems important, for example, whether indexers have a  document-oriented view or a  request-oriented view on indexing (see 
+<A HREF="#refH">Hj&oslash;rland 2018</A>, 612-3, &rarr; <a href="indexing#3.1">&sect;3.1</a> and 619, <a href="indexing#3.8.2">&sect;3.8.2</a>). From the domain-analytic perspective, the most important determinant of people's behavior is the theories, that govern them (&ldquo;theory&rdquo; to be understood in the perspective of the so-called &ldquo;theory theory&rdquo; <A HREF="#e34">[34]</A>). </p>
+
+<p>Therefore, instead of supposing that &ldquo;professional indexers&rdquo; perform in one specific way, it is more fruitful to suggest that they perform differently based on, among other issues, how they have been trained and their specific theories and views on both indexing and the domain they are indexing, that have influenced them. Although Lancaster (<A HREF="#refL">2003</A>) and others found that theories do not exist in indexing, this is, as discussed by Hj&oslash;rland (<A HREF="#refH">2018</A>), not true (and the relative absence of theory discussions in KO may cause lack of progress in this field).  </p>
+
+<p>It has often been assumed that human indexing in general, and professional indexing in particular, is the &ldquo;gold standard&rdquo; against which computer-based indexing should be measured. According to what has already been written, this is a problematic assumption because indexers perform very differently. Another issue is that it is complicated to determine which set of index terms is the best for a given purpose: This is not something that human indexers just know, but is, as emphasized by Swanson (<A HREF="#refS">1986</A>) <A HREF="#e35">[35]</A>, a scientific hypothesis in need for examination. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5.2"></a>
+<h4 itemprop="articleSection">5.2 Domain experts / authors</h4>
+
+<p>Authors of scientific/scholarly papers sometimes assign keywords to their own articles. In this case, we have highly competent domain experts, which are not professional indexers. Author keywords are, like the title and the abstract, a part of the &rarr; <a href="paratext">paratext</a> (<A HREF="#refS">Skare 2020</A>), more precisely the peritext  of journal articles. Author assigned keywords have, according to Hartley and Kostoff (<A HREF="#refH">2003</A>, 434), been employed by many journals since at least 1975, in order to improve their indexing  and to increase the probability of the article being retrieved and potentially cited. This employment seems to be increasing at the least in the biomedical domain (cf., <A HREF="#refN">N&eacute;v&eacute;ol, Dogan and Lu 2010</A>). There is, however, a great variation over journals in the use of such keywords. Some journals do not apply author keywords (but may instead provide keywords by editors or no keyword), some journals demand that such &ldquo;keywords&rdquo; should consist of index terms from a controlled vocabulary (<i>Journal of the Association for Information Science and Technology</i>, for example, requires authors to apply terms from the <i>ASIS&amp;T Thesaurus of Information Science, Technology, and Librarianship</i> (<A HREF="#refR">Redmond-Neal and Hlava 2005</A>). See further Hartley and Kostoff (<A HREF="#refH">2003</A>) about different uses of author keywords among journals.</p>
+
+<p>The number of terms that may be applied also varies much. Today, many scientific journals ask authors to provide a certain number of keywords when submitting their articles. Databases such as <i>Web of Science </i>and <i>Scopus</i> have a specific field for author keywords allowing studies of these <A HREF="#e36">[36]</A>. Uddin and Khan (<A HREF="#refU">2016</A>) used Scopus to investigate author keywords in the field of obesity and found that  in this domain there was a significant relation between the number of author keywords assigned and the citation counts that the article obtained.  The analysis of  databases has shown that author keywords may take up different functions by describing different aspects of the document, such as &ldquo;research topic&rdquo;, &ldquo;research method&rdquo;, &ldquo;research area&rdquo;, &ldquo;data&rdquo; or other (see e.g., <A HREF="#refL">Lu et al. 2019</A>), with the indication of research topic as the most common function.  </p>
+
+<p>Caragea et al. (<A HREF="#refC">2014</A>, 1443) wrote:
+
+<blockquote>Hence, while we believe that authors are the best keyphrase annotators for their own work, there are cases when important keyphrases are overlooked or expressed in different ways, possibly due to the human subjective nature in choosing important keyphrases that describe a document.</blockquote></p>
+
+<p>Such subjectivity is, however, unavoidable, and it should be a trivial conclusion about all kinds of keyword annotations, whether they are done by human beings or by computers (programmed by human beings) that they represent different kinds of subjectivity. What seems to be important is to be able to characterize different kinds of subjectivity and utilize such knowledge for optimizing keyword assignment.</p>
+
+<p>N&eacute;v&eacute;ol, Dogan and Lu (<A HREF="#refD">2010</A>) is an important study of author-keywords in biomedical journal articles.  It did not (as it is often done) consider MEDLINE indexing as a gold standard that author keywords are compared to. In contrast, their aim was to access whether topics covered by author keywords are also covered by MeSH indexing terms. In their sample of 14,398 articles, which included both author keywords and MEDLINE indexing terms, authors  provided on average 5.3 (&plusmn; 1.9) keywords while indexers assigned on average 13.0 (&plusmn; 11.9) indexing terms. The article used Surgenor, Corwin and Clerico (<A HREF="#refS">2001</A> <A HREF="#e37">[37]</A>) as a running example in their article (see Table 3).</p>
+
+<blockquote>
+<table border="1">
+<p><caption><i>Table 3: MeSH terms and author keywords assigned to Surgenor, Corwin and Clerico (<A HREF="#refS">2001</A>)</i><br>&nbsp;</caption></p>
+<tr>
+<th>MEDLINE assigned terms (20 terms)</th>
+<th>Author assigned keywords (4 terms)</th>
+</tr><tr>
+<td><code>Adult</code></td>
+<td></td>
+</tr><tr>
+<td><code>Aged</code></td>
+<td></td>
+</tr><tr>
+<td><code>Cohort Studies</code></td>
+<td></td>
+</tr><tr>
+<td><code>Decision Making</code></td>
+<td><code>decision-making</code><br>
+(semantic distance to MeSH measured to 0)</td>
+</tr><tr>
+<td><code>Diagnosis-Related Groups</code></td>
+<td></td>
+</tr><tr>
+<td><code>Female</code></td>
+<td></td>
+</tr><tr>
+<td><code>Health Services Accessibility</code></td>
+<td></td>
+</tr><tr>
+<td><code>Hospital Mortality</code></td>
+<td></td>
+</tr><tr>
+<td><code>Hospitals, Community / organization &amp; administration*</code></td>
+<td></td>
+</tr><tr>
+<td><code>Hospitals, Rural / organization &amp; administration*</code></td>
+<td><code>rural health services</code><BR>
+(semantic distance to MeSH measured to 0.254)</td>
+</tr><tr>
+<td><code>Humans</code></td>
+<td></td>
+</tr><tr>
+<td><code>Intensive Care Units / statistics &amp; numerical data*</code></td>
+<td></td>
+</tr><tr>
+<td><code>Length of Stay</code></td>
+<td></td>
+</tr><tr>
+<td><code>Male</code></td>
+<td></td>
+</tr><tr>
+<td><code>Middle Aged</code></td>
+<td></td>
+</tr><tr>
+<td><code>New Hampshire / epidemiology</code></td>
+<td></td>
+</tr><tr>
+<td><code>Outcome Assessment, Health Care</code></td>
+<td></td>
+</tr><tr>
+<td><code>Patient Transfer / statistics &amp; numerical data*</code></td>
+<td><code>interhospital transport</code><BR>
+(semantic distance to MeSH measured to 0.361)</td>
+</tr><tr>
+<td><code>Prospective Studies</code></td>
+<td></td>
+</tr><tr>
+<td><code>Survival Analysis*</code></td>
+<td><code>survival analysis</code><BR>
+(semantic distance to MeSH = exact match)</td>
+</tr>
+</table>
+</blockquote>
+
+
+<p><br>N&eacute;v&eacute;ol, Dogan and Lu (<A HREF="#refD">2010</A>) found that in a sample of 300 pairs of author keywords and indexing terms
+
+<ul>
+<li>36% of the author keywords were covered by MeSH but not selected by the MEDLINE indexers</li>
+<li>16% were covered by MeSH but not yet linked</li>
+<li>15% were covered by multiple MeSH headings</li>
+<li>33% were not covered by MeSH</li>
+</ul>
+
+<p>The authors wrote that from the MEDLINE indexing perspective, their results show that the majority (62%) of the author keywords are already covered by an exact or closely related MeSH indexing term in MEDLINE indexing. They also pointed out that because 49% of the author keywords are either not covered in MeSH (33%) or not linked to their equivalent in MeSH (16%), this suggests that author keywords may be helpful for MeSH terminology development.</p>
+
+<p>The question is, of course, whether keywords suggested by authors, but missing in MeSH, or available in MeSH  but not used in the indexing of the documents in the sample, are fruitful keywords, that should be included in MeSH and should have been used by MEDLINE indexers.</p>
+
+<p>N&eacute;v&eacute;ol, Dogan and Lu (<A HREF="#refN">2010</A>, 537) wrote:
+
+<blockquote>Although the assignment of keywords to an article by the author and the assignment of MeSH indexing terms by the indexer may seem like two very similar activities, there are significant differences in terms of form and perspective. Typically, authors are asked to choose a small number of keywords, without reference to a controlled vocabulary; whereas indexers are trained to select indexing terms from MeSH according to a specific protocol. Moreover, in addition to the subjectivity inherent in an indexing task [references omitted], authors are focused on selecting keywords representing what they consider as important to describe the content of their own article. In contrast, indexers consider the article in the larger scope of the collection.</blockquote>
+
+<p>But is this a true dilemma? Is the description of the content on an article in contrast to considering the article in the larger scope of the whole of the medical literature? We should have the working hypothesis that indexing is an activity governed by knowledge and that the nature and content of this knowledge is subject to research in information science and knowledge organization. The article can be read as if the authors find that  author keywords often indicate failures in either MeSH or  the indexing. But how do we find out when this is the case? We need to know about the indexing training and instructions of MEDLINE indexers. Unfortunately, their indexing manual is not available for the research community (&ldquo;NLM Staff access only&rdquo;) <A HREF="#e38">[38]</A>. Looking at Surgenor, Corwin and Clerico (<A HREF="#refS">2001</A>) and Table 3 above might perhaps indicate that MEDLINE indexing is too mechanical and very week in the conceptualization of the article <A HREF="#e39">[39]</A>.</p>
+
+<p>There have also been critique of author keywords. Hahn et al. (<A HREF="#refH">2007</A>) proposed the use of automatic procedures in order to avoid kinds of subjectivity in author-assigned keywords. Among their arguments was that &ldquo;human indexers, even professional ones, are liable to error as well as to the possibility of intrinsic subjective bias [&hellip;] This is not to say that authors of a structured abstract would consciously cheat, but rather there is a grey area of overstatement and overestimation of one's own results in a highly competitive scientific environment&rdquo;. Yes, indeed, but the authors did not consider the problems inherent in the automatic procedures and their conclusion was based on a priori thinking rather than on empirical studies. Lok (<A HREF="#refL">2010</A>, 418) also addresses the issue of author's role in providing more machine-readable information about their articles.  They reported an experiment that they found was not encouraging. Authors used simple vocabulary that the curators of a protein database didn't accept and claimed: &ldquo;Authors are not the right people to validate their own claims. The community &mdash; referees, editors, curators, readers at large &mdash; is still needed&rdquo;.</p>
+
+<p>It is also relevant to notice that Peset (<A HREF="#refP">2020</A>) found that most new keywords introduced by authors in research papers are never used a second time and only 11% of them &ldquo;survive&rdquo; more than 3 years after their first appearance.</p>
+
+<p>Some further studies of author keywords are reported in an endnote <A HREF="#e40">[40]</A>.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5.3"></a>
+<h4 itemprop="articleSection">5.3 Causal indexers (readers, users)</h4>
+
+<p>Reader-assigned keywords are provided by the readers of documents, who can have  various ages and backgrounds. Some have more general knowledge about the domain of the studied document, whereas others may not be very familiar with the domain. As stated in <A HREF="#5">Section 5.0</A> are fandoms often extremely knowledgeable about the documents being indexed, but such  indexing is mostly limited to popular genres of, for example, fiction and computer games.</p>
+
+<p>Readers are often given some guidelines for annotating documents, but the reader-assigned keywords may nevertheless express a special kind of subjectivity, e.g., make comments of a private character of little usefulness for other readers. </p>
+
+<p>The field of social tagging and folksonomies is about these kinds of agents and is presented in more depth in a specific article in IEKO (<A HREF="#refR">Rafferty 2018</A>).</p> 
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5.4"></a>
+<h4 itemprop="articleSection">5.4 Machines</h4>
+
+<p>We have already presented kinds of automatically produced indexes (<A HREF="#2.1">Section 2.1</A>) and automatic generation of keywords (<A HREF="#4">Section 4</A>). The general view among computer scientists is &mdash; implicitly as well as explicitly &mdash; that computer approaches are both more efficient and more effective than human indexing/keyword assignment. Gerard Salton, for example, wrote (<A HREF="#refS">1996</A>, 333):
+
+<blockquote>forgetting all the accumulated evidence and test data, and acting as if we were stuck in the nineteenth century with controlled vocabularies, thesaurus control, and all the attendant miseries, will surely not contribute to a proper understanding and appreciation of the modern information science field.</blockquote></p>
+
+<p>Robertson (<A HREF="#refR">2008</A>) said: &ldquo;statistical approaches won, simply. They were overwhelmingly more successful [compared to other approaches such as thesauri]&rdquo;.</p>
+
+<p>There are voices in library and information science claiming superiority of human indexers (e.g., <A HREF="#refD">Day 2014</A> <A HREF="#e51">[51]</A> and <A HREF="#refW">Warner 2019</A>). Their arguments are not convincing, however, because they just consider humans in position of a fundamental ability to index documents without considering the nature of knowledge about both indexing and the domain of the documents being indexed. </p>
+
+<p>Hj&oslash;rland (<A HREF="#refH">2011</A>) criticized the dichotomy between human-based indexing versus computer-based indexing because both sides of the dichotomy may be governed by different &ldquo;theories&rdquo; of indexing. Humans may, for example, perform very computer-like if they follow a strict set of learned indexing rules or mechanically highlight terms in a text). What seems important is therefore to examine the theoretical foundations on which humans as well as computers work (e.g., if they are governed by document-oriented or policy-oriented indexing, cf. <A HREF="#refH">Hj&oslash;rland 2017</A>, &sect;2.4). Another issue is that computers often depend on input, which is made by humans. In bibliometric techniques, algorithms work on &rarr; <a href="citation">citation</a> patterns, but such patterns consist of human decisions on which papers to cite. This also indicates that a strict distinction between human-based approaches and computer-based approaches is too simplified. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="6"></a>
+<h3 itemprop="articleSection">6. Conclusion</h3>
+
+<p>Two main theories on keywords and keyphrases are:
+
+<ol>
+<li>Keywords are meant to extract &ldquo;the essence&rdquo; of the documents they characterize (see, e.g., <A HREF="#refC">Caragea et al. 2014</A>, 1435). This can be called <i>the essentialist theory</i>.</li>
+
+<li>Keywords are assigned to or derived from documents to facilitate the findability of certain information according to the purpose of the indexing institution. This can be called <i>the policy-based theory</i>. This theory implies that things and documents have no &ldquo;essence&rdquo;, and by implication there is not one correct way in which a set of keywords can characterize a document. </li>
+</ol>
+
+<p>(Other theories exist, for example, &rarr; <a href="user_based">user-oriented theories</a>, but these theories are considered relatively unimportant and are ignored here.)</p>
+
+<p>The choice between the essentialist theory and the policy-based theory is seldom openly presented or discussed. Nonetheless, such theories have great importance for both manual and automated indexing as well as for the evaluating of indexing. From the viewpoint of essentialist indexing (extracting keyphrases), Caragea et al. (<A HREF="#refC">2014</A>, 1435) wrote:
+
+<blockquote>The reason for not considering the entire text of a paper is that scientific papers contain details, e.g., discussion of results, experimental design, notation, that do not provide additional benefits for extracting keyphrases. Hence, [&hellip;] we did not use the entire text of a paper. However, extracting keyphrases from sections such as &ldquo;introduction&rdquo; or &ldquo;conclusion&rdquo; needs further attention.</blockquote></p>
+
+<p>This quote can be interpreted as indicating that the essence of a document is best expressed in the introduction and conclusion. Against this view it can be said that from, for example, the perspective of so-called &ldquo;evidence-based practice&rdquo;, exactly the methodology section in documents is of utmost importance.  We saw, for example, in Table 3 (<A HREF="#5.2">Section 5.2</A>) how MEDLINE indexing made high priority to methodological issues in indexing. </p>
+
+<p>Closely related to the issue of content-oriented versus policy-based indexing is the issue of what kind of information should be considered in the derivation or assignment of keywords to documents. The ISO 5963:1985 standard <A HREF="#e52">[52]</A> is typically document oriented as it only includes examining title, table of contents, introduction and so on &mdash; and even fails to mention the list of references. It is also implicitly assumed by this standard that the same set of indexing terms are optimal for all kinds or queries. </p>
+
+<p>Conflicting with the view that a document itself is all that needs to be considered is, for example, the view represented in the information retrieval tradition, where terms in a document are  related to all terms in a collection. This is, however, only a first step. A second step is taken by Morris (<A HREF="#refM">2010</A>, 148), who suggested:
+
+<blockquote>The fact that between approximately 30%–40% of the interpretation of lexical cohesion in the texts were individually different provides compelling evidence in support of returning to a computational view of text meaning that includes text, reader, and writer.</blockquote></p>
+
+<p>We saw another example in <A HREF="#5.2">Section 5.2</A> where Lok (<A HREF="#refL">2010</A>, 418) suggested: &ldquo;Authors are not the right people to validate their own claims. The community &mdash; referees, editors, curators, readers at large &mdash; is still needed&rdquo;.  This quote also indicates the need for a broader interpretation of documents. </p>
+
+<p>A third step can be illuminated by the philosophy of Hegel (here quoted from <A HREF="#refM">M&aacute;cha 2015</A>, 19):
+
+<blockquote>Hegel was indeed an adherent of the doctrine of internal relations. He writes in his Logic: 'Everything that exists stands in correlation, and this correlation is the veritable nature of every existence' [<A HREF="#refH">Hegel 1968</A>, 235]. To <i>adequately</i> understand the veritable nature (i.e., the essence) of every single thing, one has to understand its relations to every other thing and, in the end, to the whole, to the Absolute. To put the doctrine in negative terms: we cannot isolate or abstract one single thing out of the whole and understand it <i>adequately </i>in isolation [cf. <A HREF="#refK">Kain 2005</A>, 4–6].</blockquote></p>
+
+<p>Translated to keyword assignment this means that keywords cannot be assigned by considering a document in isolation. It must be assigned by considering the tradition or paradigm in which the document is written &mdash; as well as the interests that the indexing is meant to fulfill. </p>
+
+</span><!-- articleBody ends -->
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="ack"></a>
+<h3>Acknowledgments</h3>
+
+<p>The authors thanks two referees for their valuable feedback to a former version of this article and <a href="authors#g">Claudio Gnoli</a>, who served as editor as Birger Hj&oslash;rland was included as a co-author, for a great work improving the manuscript.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="end"></a>
+<h3>Endnotes</h3>
+
+<a name="e1"></a>
+<p><strong>1</strong>. <i>Wikipedia</i> (<A HREF="#refW">2020</A>) wrote: &rdquo;An index term, subject term, subject heading, or descriptor, in information retrieval, is a term that captures the essence of the topic of a document. Index terms make up a controlled vocabulary for use in bibliographic records. They are an integral part of bibliographic control, which is the function by which libraries collect, organize and disseminate documents. They are used as keywords to retrieve documents in an information system, for instance, a catalog or a search engine. A popular form of keywords on the web are tags which are directly visible and can be assigned by non-experts. Index terms can consist of a word, phrase, or alphanumerical term. They are created by analyzing the document either manually with subject indexing or automatically with automatic indexing or more sophisticated methods of keyword extraction. Index terms can either come from a controlled vocabulary or be freely assigned&rdquo;.
+
+<a name="e2"></a>
+<p><strong>2</strong>. In the former DIALOG system, for example, the names of journals were phrase indexed, and could not be searched by single words in the name, but titles of articles were both 'word indexed' and 'phrase indexed'.
+
+<a name="e3"></a>
+<p><strong>3</strong>. Mooers and Mooers (<A HREF="#refM">1993</A>) claimed that 'key words' are the direct descendants of Mortimer Taube's Uniterms, but according to the <i>Oxford English Dictionary</i> (<A HREF="#refO">2020a</A>) it goes back to 1827. However, Mooers and Mooers may have had a more specific use in mind.</p> 
+
+<a name="e4"></a>
+<p><strong>4</strong>. Concerning the concept &ldquo;subject access point&rdquo; see Hj&oslash;rland and Kyllesbech Nielsen (<A HREF="#refH">2001</A>).</p>
+
+<a name="e5"></a>
+<p><strong>5</strong>. Larson (<A HREF="#refL">1991</A>, 211): &ldquo;Experience in catalog use may not necessarily imply that users have been &ldquo;conditioned&rdquo; to avoid subject searches [searches using Library of Congress Subject Headings, not searches using title keywords], though such conditioning appears to be a likely result of gaining experience in catalog use, whether card or online catalog. We would suggest, as a hypothesis for further study, that individual users' experiences of subject search failure and information overload lead them to reduce their use of the subject index and to increase their use of alternate means of subject access, such as title keyword searching and shelf browsing following a known item search&rdquo;. See Gross and Taylor (<A HREF="#refG">2005</A>) for a response to Larson (<A HREF="#refL">1991</A>) defending subject headings : &ldquo;It was found that more than one-third of records retrieved by successful keyword searches would be lost if subject headings were not present, and many individual cases exist in which 80, 90, and even 100 percent of the retrieved records would not be retrieved in the absence of subject headings&rdquo;.</p>
+
+<a name="e6"></a>
+<p><strong>6</strong>. Alternatively Soergel (<A HREF="#refS">1974</A>, 31) defined:  &ldquo;A 'subject heading' is a specific type of descriptor, namely, a descriptor used in an alphabetical subject catalog or printed index&rdquo;. Soergel (<A HREF="#refS">1974</A>, 126): In subject headings, &ldquo;[t]he main headings and the subheadings are independent elements designed by terms and arranged alphabetically (with minor deviations in some catalogs). Many subject headings are created by combining a main heading with a subheading, and for those headings the place in the arrangement is determined by its components. The citation order is fixed: Main heading-subheading. A closer look reveals a more complex situation&rdquo;.</p>
+
+<a name="e7"></a>
+<p><strong>7</strong>. ISO 5127:2017: &ldquo;Preferred term, descriptor. <i>Term</i> (3.1.5.25) used to represent a <i>concept</i> (3.1.1.02) when<i> indexing</i> (3.8.2.01)&rdquo;.</p> 
+
+<a name="e8"></a>
+<p><strong>8</strong>. ISO 5127:2017: &ldquo;3.7.3.04 subject heading: heading (2) <i>access point</i>&rdquo; (3.7.3.01) expressing an aspect of the contents of all or part of a <i>document</i> (3.1.1.38) and also used to collocate <i>entries</i> (3.2.1.32) for documents having the same or similar content. Note: See also <i>keyword</i> (3.8.1.07); <i>content descriptor</i> (3.8.3.19)&rdquo;.</p>
+
+<a name="e9"></a>
+<p><strong>9</strong>. The date 1950 is debatable. Lancaster (<A HREF="#refL">1968</A>) said that in 1947 Calvin Mooers began using the term <i>descriptor</i> on a system called Zato 1 for documents subject classification as of words extracted from their own texts. Roberts (<A HREF="#refR">1984</A>) also suggests that the term descriptor was coined in 1947 and explains the difficulties in confirming this information.</p>
+
+<a name="e10"></a>
+<p><strong>10</strong>. Modern thesauri tend to include many more descriptors. The Thesaurus of Psychological Index Terms, for example, contains about 8,000 terms, including preferred and entry terms. Source: <A CLASS="menu" HREF="https://www.apa.org/pubs/databases/training/thesaurus">https://www.apa.org/pubs/databases/training/thesaurus</A>.</p>
+
+<a name="e11"></a>
+<p><strong>11</strong>. The PsycINFO database, for example, wrote: &ldquo;What Are Index Terms? Index terms are controlled vocabulary terms used in database records to make searching easier and more successful. By standardizing the words or phrases used to represent concepts, you don't need to try and figure out all the ways different authors could refer to the same concept. Each record in APA's databases contains controlled vocabulary terms from the Thesaurus of Psychological Index Terms&rdquo; (<A CLASS="menu" HREF="https://www.apa.org/pubs/databases/training/thesaurus">https://www.apa.org/pubs/databases/training/thesaurus</A>).</p>
+
+<a name="e12"></a>
+<p><strong>12</strong>. Soergel (<A HREF="#refS">1974</A>, 31-4) defined descriptors differently: &ldquo;A 'subject heading' is a specific type of descriptor, namely, a descriptor used in an alphabetical subject catalog or printed index. Some people use 'descriptor' only in connection with ISAR [information storage and retrieval] systems using combinational indexing (usually implemented through edge-notched cards, peek-a-boo cards or computerized methods). Descriptors in this usage represent predominantly elemental concepts, whereas subject headings represent predominantly compound concepts. While this usage corresponds to the original definition of 'descriptor' it has not gained currency in the profession. A 'class number' is another specific type of descriptor, namely the notation from a classification system such as the Dewey Decimal Classification or the Library of Congress Classification&rdquo;.</p>
+
+<a name="e13"></a>
+<p><strong>13</strong>. A phrase is sometimes called &ldquo;a multiword&rdquo;, &ldquo;a syntagmatic term&rdquo; or &ldquo;a complex term&rdquo; (<A HREF="#refL">Lauriston 1994</A>, 149).</p>
+
+<a name="e14"></a>
+<p><strong>14</strong>. Anderson and P&eacute;rez-Carballo (<A HREF="#refA">2005</A>, 1.61, 19) wrote: &ldquo;'Keyword' is often used to indicate the more important free-text terms&rdquo;. However, on p. 222 (&sect;12.75) another meaning is  suggested, &ldquo;keyword searches using <i>Library of Congress subject headings</i>: A third way to searching is the 'keyword' approach. It should be invoked by the intelligent OPAC in several instances. In this first example, a searcher has used the 'exact' approach to 'jazz music' but wants more options. The next step would be to apply the 'keyword-in-main-heading approach'&rdquo; (retrieving all subject headings which include 'jazz'. The authors add: &ldquo;in this case, 'music' and 'jazz' are treated as independent keywords&rdquo;.</p>
+
+<a name="e15"></a>
+<p><strong>15</strong>. Wellisch (<A HREF="#refW">1995</A>, 248) distinguishes two senses of &rdquo;keyword&rdquo;: (1) the first word of a heading, often called 'lead term'; (2) &ldquo;a significant term word taken from the title or the text of a document and used in a heading (but not necessarily the first word in it)&rdquo;. He writes (2501)  that in the KWOC (Key Word Out of Context) index, the two senses of <i>keyword</i> were here conflated so that a keyword serving as an index term was at the same time also used as a lead term. On p. 252-3 Wellisch introduces a third meaning: Author assigned keywords.  Wellisch claims that the KWIC was not first proposed by Hans Peter Luhn, but by Andrea Crestadoro in 1858. However, Wellisch have no reference to Crestadoro in the bibliography, and he probably meant Crestadoro 1856 (as cited by <A HREF="#refO">Olson and Boll 2001</A>, 112). But Olson and Boll wrote the opposite of Wellisch: &ldquo;Andrea Crestadoro invented the basic concept that topics should be described by a standardized vocabulary&rdquo;. Therefore, these two sources are in conflict. It will not be examined here which is right.</p>  
+
+<a name="e16"></a>
+<p><strong>16</strong>. Broughton (<A HREF="#refB">2011</A>, 262) did not define <i>keyword</i>, but implicitly understood it in the same broad sense by defining &ldquo;keyword list: a list of words, or descriptors, to be used for indexing documents. The keyword list is usually characterized by a lack of structure in its composition, and does not have cross-references between terms. It may be no more than an alphabetical list of terms taken from documents or previously used in indexing&rdquo;.</p>  
+
+<a name="e17"></a>
+<p><strong>17</strong>. East Carolina University Libraries. <i>Search Basics for the Health Sciences: Keywords vs. Subject Headings</i>. Retrieved from <A CLASS="menu" HREF=" https://web.archive.org/web/20201020200459/https://libguides.ecu.edu/c.php?g=89808&p=579367"> https://web.archive.org/web/20201020200459/ https://libguides.ecu.edu/c.php?g=89808&p=579367</A>:<br> 
+&ldquo;Keywords are:
+<ul>
+<li>natural language terms that describe your topic</li>
+<li>able to be combined in any number of ways</li>
+<li>lacking consistency in usage, definition, and sometimes spelling (e.g. GERD vs. GORD[U.K.])</li>
+<li>either single words or phrases</li>
+<li>used to search for matching words or phrases anywhere in the records the database contains (such as title, abstract, journal title)</li>
+<li>used when no appropriate subject heading exists as an equivalent
+sometimes either too broad or too narrow, resulting in either too many or too few results</li>
+<li>reflective of recent phenomena in advance of when the subject headings are added.</li>
+</ul>
+Subject Headings are:
+<ul>
+<li>&ldquo;controlled&rdquo; vocabulary used by an organization (e.g. the National Library of Medicine) to describe the concepts in the literature collected by that organization or database (such as MEDLINE or CINAHL).</li>
+<li>Consistent in their definition across the records in the database.</li>
+<li>Less flexible and must be chosen from the thesaurus used by the database; if the incorrect subject heading is selected, none of the results will be relevant.</li>
+<li>Only searched for in the subject heading field of the record.
+Helpful for retrieving a set of articles with fewer irrelevant results</li>
+<li>Slow to change--this means that the most recent changes in knowledge--on diseases, drugs, devices, procedures, concepts--may not be reflected in the controlled vocabulary&rdquo;.</li>
+</ul></p>
+
+<a name="e18"></a>
+<p><strong>18</strong>. Our understanding of keyword is thus different from the traditional approach, which considers a keyword an (intended) objective description of a document, cf., the definition by Feather and Sturges (<A HREF="#refF">1996</A>, 341) quoted above.
+Also, when Firoozeh et al. (<A HREF="#refF">2020</A>) claim: &ldquo;The terms 'keyword' and 'keyphrase' do not refer to any theory&rdquo;, we are here arguing that two opposing theories are in play: (1) the traditional view of one correct set of keywords for a given document (2) the alternative theory that different perspectives and interests requires different sets of keywords.</p> 
+
+<a name="e19"></a>
+<p><strong>19</strong>. A concordance consists of a list of the words in the text with a short section of the context that precedes and follows each word. Although a concordance  is often defined as &ldquo;an alphabetical list of the principal words used in a book or body of work, listing every instance of each word with its immediate context&rdquo;, where &ldquo;principal words&rdquo; could be understood as synonym for keywords, in reality a concordance includes many more words than key-word indexes (usually all words except words from a stop list).  See however <A HREF="#e23">endnote 23</A> about KWIC and related indexes.</p>
+
+<a name="e20"></a>
+<p><strong>20</strong>. Library of Congress (<A HREF="#refL">2006</A>, 14) wrote: &ldquo;With post-coordinate indexing, subject concepts are entered as single terms so that users are required to coordinate them. Boolean searching and other advanced techniques are required in order to locate resources on the compound and/or complex subjects in which the searchers are interested. False associations may easily occur because relationships among terms can be unclear&rdquo;. Slide 13 presented the following examples of pre-coordination: <code>Gold mining—United States—History—19th century</code>, <code>Diamond mining-South Africa-History-20th century</code>. &ldquo;In pre-coordinated indexing, appropriate terms are chosen and coordinated into subject-subdivision
+combinations at the time of indexing or cataloging. On the screen you'll see a couple of examples of precoordinated strings.
+You'll see Gold mining—United States—History—19th century. What we have here is a topical subject heading followed by a geographic subdivision, a topical subdivision (History), and a chronological period (19th century).
+In the second, it is the same structure, but with different components in that particular heading string. In
+each of these cases, what you get from the pre-coordinated string is a certain amount of context&rdquo;. Slide 14 presented the following examples of post-coordination in indexing: <code>Gold mining</code>, <code>Diamond mining</code>, <code>United States</code>, <code>South Africa</code>, <code>History</code>, <code>19th century</code>, <code>20th century</code>&rdquo;. P. 14: &ldquo;With post-coordinate indexing, subject concepts are entered as single terms so that users are required to coordinate them. Boolean searching and other advanced techniques are required in order to locate resources on the compound and/or complex subjects in which the searchers are interested. False associations may easily occur because relationships among terms can be unclear. If you look at the slide, you can see an example of what happens when terms are post-coordinated instead of being used in pre-coordinated strings. In contrast to the previous slide, in which it was clear that the resource was about gold mining in the United States in the 19th century, in this example it is unclear whether it's about gold mining in the United States in the 19th century, or about diamond mining in South Africa in the 19th century, or diamond mining in the United States. And what century is it? This is how false drops happen. A post-coordinated system often causes a  significant number of false drops, because the context is missing. One might never know exactly what that work is about, without the
+strings&rdquo;.
+<br>Another example is that a search after &ldquo;alcoholism in women&rdquo;, using <code>alcoholism</code> and <code>women</code> as keywords, may retrieve &ldquo;false drops&rdquo; such as &ldquo;<u>alcoholism</u> in men and its implications for their relations to <u>women</u>&rdquo;.</p>
+
+<a name="e21"></a>
+<p><strong>21</strong>. For example, Lok (<A HREF="#refL">2010</A>, 416-7) reported about Elsevier's system <i>Reflect</i>, which automatically recognizes and highlights the names of genes, proteins and small molecules in articles in the journal <i>Cell</i>.</p> 
+
+<a name="e22"></a>
+<p><strong>22</strong>. Luhn is normally given the honor for the idea of the KWIC index although indexes based on the a related idea have occurred earlier.</p> 
+
+<a name="e23"></a>
+<p><strong>23</strong>. According to the discussion in <A HREF="#1">Section 1</A> and the note on concordances in <A HREF="#2">Section 2</A>, we have now the paradox, that the &ldquo;keywords&rdquo; in, among other, KWIC-indexes are not really keywords because they are not selected (but contain all terms in the title/document except those deselected by the list of stop words). &ldquo;KWIC index&rdquo; should therefore, strictly speaking, be termed &ldquo;term index in context&rdquo;.</p>  
+
+<a name="e24"></a>
+<p><strong>24</strong>. Lancaster (<A HREF="#refL">2003</A>, 52-3; italics in original) explains the terms <i>cycling</i> and <i>rotation</i> and wrote: &ldquo;<i>Rotation</i> is essentially the same as cycling except that the entry term is highlighted in some way (e.g., italicized or underlined) rather than being moved to the leftmost position [examples follows]&rdquo;. The term <i>Permuterm index</i> was used (and trademarked) for a kind of index used in the <i>Science Citation Index </i>and its family of related products, cf. Garfield (<A HREF="#refG">1976</A>), who argued that permutations are different from cyclings and wrote about the drawbacks of KWIC indexes.</p>
+
+<a name="e25"></a>
+<p><strong>25</strong>. Some sources claim that KWAC index &ldquo;provides for the enrichment of the keywords of the title with additional significant words taken either from the abstract [o]f the document or its contents.&rdquo; See, for example, <A CLASS="menu" HREF="https://www.librarianshipstudies.com/2017/02/keyword-augmented-in-context-kwac.html">https://www.librarianshipstudies.com/2017/02/keyword-augmented-in-context-kwac.html</A> and <A CLASS="menu" HREF="http://inmyownterms.com/kwic-kwac-kwoc-not-knock-knock-joke/">http://inmyownterms.com/kwic-kwac-kwoc-not-knock-knock-joke/</A>.</p>
+
+<a name="e26"></a>
+<p><strong>26</strong>. KeyWords Plus on Clarivate Analytics' home page: <A CLASS="menu" HREF="https://support.clarivate.com/ScientificandAcademicResearch/s/article/KeyWords-Plus-generation-creation-and-changes?language=en_US">https://support.clarivate.com/ScientificandAcademicResearch/s/article/ KeyWords-Plus-generation-creation-and-changes?language=en_US</A>.</p>
+
+<a name="e27"></a>
+<p><strong>27</strong>. In the literature it is often assumed that assigned indexing (whether human or algorithmic) is always based on a controlled vocabulary (see e.g., <A HREF="#refB">Beliga et al. 2015</A>, 2), but this is not the case. Humans may, for example, assign words from their own associations, and machines may, for example, chose words from the bibliographic network of the document, a la &ldquo;concept symbols&rdquo; of Small (<A HREF="#refS">1978</A>). (Somewhat related to Keywordplus&reg;, cf. <A HREF="#refG">Garfield and Sher 1993</A>, although this particular method is derived from words in the references of the document and thus formally not a form of assigned indexing.)</p>
+
+<a name="e28"></a>
+<p><strong>28</strong>. Strictly speaking not just words can be used to represent the contents of documents, but also, for example, classification codes and pictures (<A HREF="#refJ">Jacob and Shaw 1996</A>).</p> 
+
+<a name="e29"></a>
+<p><strong>29</strong>. The following classification is not exhaustive. In addition to the main approaches, other approaches exist and new ones may be invented.</p> 
+
+<a name="e30"></a>
+<p><strong>30</strong>. Beliga (<A HREF="#refB">2015</A>, 2) suggested a somewhat different classification in which statistical, linguistic and other approaches were considered subcategories of unsupervised machine learning. This seems to explain that many of, for example, the statistical techniques are often used in papers about unsupervised learning.</p>
+
+<a name="e31"></a>
+<p><strong>31</strong>. The term &ldquo;bag of words&rdquo; was used by Harris (<A HREF="#refH">1954</A>), who wrote &ldquo;language is not merely a bag of words&rdquo;.</p>
+
+<a name="e32"></a>
+<p><strong>32</strong>. Siddiqi and Sharan (<A HREF="#refS">2015</A>, 22; dotted listing added) presented the following approaches to keyword selection based on location in the document: 
+<ul>
+<li>&ldquo;First N terms: Only the first N terms from the document are selected. The logic is that the important keyphrases are found in the beginning of the document as generally important information is put at the beginning.</li>
+<li>Last N terms: Only the last N terms of the document are selected. The logic is that the most important keyphrases are found in the last part of the document since important keyphrases are found in their concluding parts of the document</li>
+<li>At the beginning of a paragraph: It weights terms according to their relative position in a paragraph. The logic is that the important keyphrases are likely to be found near to the beginning of paragraphs.</li>
+<li>At the end of its paragraph: Weights a term according to its relative position in its paragraph. The logic is that the important keyphrases are likely to be found near to the end of paragraphs.
+Resemblance to title: Rates a term according to the similarity of its sentence with the title of the article. Phrases similar to the title will have a higher score.</li>
+<li>Maximal section headline importance: Rates a term according to its most important presence in a section or headline of the article. It is known that some parts of papers are more important from the aspect of presence of keyphrases such as abstract, introduction and conclusions.</li>
+<li>Accumulative section headline importance: It is very similar to the previous one but it weights a term according to all its presences in important sections or headlines of the article.&rdquo;</li>
+</ul></p>
+
+<a name="e33"></a>
+<p><strong>33</strong>. National Library of Medicine (<A HREF="#refN">2018</A>): &ldquo;Most MEDLINE indexers are either Federal employees or employees of firms that have contracts with NLM for biomedical indexing. A prospective indexer must have no less than a bachelor's degree in a biomedical science. A reading knowledge of certain modern foreign languages is typically sought. An increasing number of recent recruits hold advanced degrees in biomedical sciences. Federal employees must be United States citizens, but citizenship is not mandatory for contractors.<br>
+Indexers are trained in principles of MEDLINE indexing, using the Medical Subject Headings (MeSH) controlled vocabulary as part of individualized training. The initial part of the training is based on an online training module (partially available to the public at <A CLASS="menu" HREF="http://www.nlm.nih.gov/bsd/indexing/index.html">http://www.nlm.nih.gov/bsd/indexing/index.html</A>), followed by a period of practice indexing. NLM does not accept other indexing training programs as a substitute.<br>
+About 1% of MEDLINE indexing is performed by indexers at the International MEDLARS Centers in Sweden and Brazil&rdquo; (accessed October 9, 2020).</p>
+
+<a name="e34"></a>
+<p><strong>34</strong>. Concerning the concept &ldquo;theory&rdquo; see Hj&oslash;rland (<A HREF="#refH">2015</A>), who suggested the following definition (116-7):  &ldquo;A theory is an explicit or implicit statement or conception that might be questioned (and thus met with an alternative theory), which is more or less substantiated and dependent on other theories (including background assumptions). We use the term theory about a statement or conception when we want to emphasize that it might be wrong, biased, bad or insufficient for its intended use and therefore should be considered and perhaps replaced by another theory.&rdquo;</p>
+
+<a name="e35"></a>
+<p><strong>35</strong>. Swanson wrote about searching, but his argument is equally relevant for indexing. He wrote that if people working on a task  search the literature, some relevant documents may not be retrieved because any search strategy is a theory that may be refused but can never be finally proved. A search strategy is refused if it is possible to discover just one relevant document which has been missed by that strategy. Swanson concluded (<A HREF="#refS">1986</A>, 114): &ldquo;Any search function is necessarily no more than a conjecture and must remain so forever&rdquo;.</p>
+
+<a name="e36"></a>
+<p><strong>36</strong>. However, terms indexed as author-keywords seem to be confused with editor-assigned keywords and terms from CVs. A search for &ldquo;information&rdquo; as author-keyword in WoS provided a list of journals. Some of these journals do use author-assigned keywords, on the other hand <i>Journal of the Association for Information Science and Technology</i> demands that authors must select terms from ASIS&T Thesaurus of Information Science, Technology, and Librarianship (author-selected, but not free terms).  Finally, the journal <i>Knowledge Organization</i> uses editor-selected keywords (cf. <A HREF="#refS">Smiraglia 2013</A>), which the systems apparently cannot distinguish from author-assigned keywords.</p> 
+
+<a name="e37"></a>
+<p><strong>37</strong>. N&eacute;v&eacute;ol, Dogan and Lu (<A HREF="#refN">2010</A>) wrote &ldquo;Surgenor et al. 2009&rdquo;, but the correct printing year for this reference is 2001.</p>
+
+<a name="e38"></a>
+<p><strong>38</strong>. <A CLASS="menu" HREF="https://web.archive.org/web/20201022102233/https://www.nlm.nih.gov/bsd/indexing/training/INT_030.html">https://web.archive.org/web/20201022102233/https://www.nlm.nih.gov/bsd/indexing/training/INT_030.html</A> (accessed October 22, 2020): 
+&ldquo;Indexing Manual (NLM Staff access only)<br>
+The Indexing Manual provides discussion on all aspects of indexing at NLM. The Indexing Manual is provided to all new indexers and is available online to NLM staff. The online version contains a search feature.<br>
+Technical Memoranda&nbsp;(<i>NLM Staff access only</i>)<br>
+Technical Memoranda are updates to the Indexing Manual that provide further clarification of a specific issue or address an immediate need. Technical Memoranda are distributed online and on paper to NLM staff.&rdquo;</p>
+
+<a name="e39"></a>
+<p><strong>39</strong>. A main use of  Surgenor, Corwin and Clerico (<A HREF="#refS">2001</A>) is for decision making in hospital planning, more precisely regionalization of hospital services. This is far better expressed by the author keywords, although a term such as <code>regionalization of hospital services</code> (or just <code>regionalization</code>) is missed. The MEDLINE indexing is extremely individual oriented and seems to fail to connect the document with purpose for which is was written (decision making concerning regionalization of hospital services).</p>
+
+<a name="e40"></a>
+<p><strong>40</strong>. A study by Strader (<A HREF="#refS">2009</A>) compared the usage of author-supplied keywords to the Library of Congress Subject Headings (LCSH), using a sample of electronic theses and dissertations from the Ohio State University, each of them having both authors keywords and LCSH headings. The results show that a large part of authors assigned keywords don't match with LCSH headings, suggesting that keywords are useful as an additional source of information, even though part of them overlap with the content of the abstract. The author suggests that such a big lack of matching between keywords and LCSH can be explained by the fact that a controlled vocabulary cannot be always updated with the popular terms in current research. Therefore, it seems that authors keywords and controlled vocabularies are complementary, and both should be adopted, as a valuable point of access for users and cataloguers.
+<br>Similar results have been found in a study by Schwing, McCutcheon and Maurer (<A HREF="#refS">2012</A>), that replicated the analysis of Strader, on a different sample of electronic theses and dissertations. A partial matching between authors keywords and LCSH emerged, suggesting a complementarity of them, as well as an overlapping of author supplied keywords, title and abstract. Such overlapping may reduce the usefulness of them as original and unique access points.
+<br>Complementarity between subject headings and keywords has also been reported by Gross and Taylor (<A HREF="#refG">2005</A>), McCutcheon (<A HREF="#refM">2009</A>) and Gil-Leiva and Alonso Arroyo (<A HREF="#refG">2007</A>).
+<br>Smiraglia (<A HREF="#refS">2013</A>, 158) criticized using an author keywords list to improve retrieval. He initially suggested (p. 155) that every word in an article is a keyword but realized that for some persons they mean &ldquo;a list of author-contrived 'keywords' underneath the abstract&rdquo; as common in many journals. He wrote: 
+&ldquo;I do not think lists of author-contrived keywords are useful.&rdquo; His editorial concluded (158): &ldquo;The potential use of keywords for retrieval and indexing seems clear. That is, the presence of keywords, whether in a separate list or in their usual place in the text, has the potential to influence the formal indexing of research, and also to influence resource location or selection by researchers&rdquo;. And &ldquo;What is less clear is how those keywords should be generated. Empirical extraction of the terms is most accurate and therefore most reliable for indexing, retrieval or just for text analysis. Should editorial policy change to incorporate the use of formal keywords in <i>Knowledge Organization</i> it would make the best sense to generate the terms empirically, using text analysis tools designed for statistical term extraction&rdquo;. 
+It can be added that from the next volume (41, 2014) <i>Knowledge Organization</i> assigns keywords to all articles (but not by the author but by the editor), whereas other journals use free author-assigned keywords and <i>Journal of the Association for Information Science and Technology</i> uses author-assigned descriptors from the  ASIS&T Thesaurus of Information Science, Technology, and Librarianship (see above; <A HREF="#refR">Redmond-Neal and Hlava 2005</A>). Smiraglia points out that keywords are a core tool in information retrieval, but we should extract them from the actual text (including title or abstract) instead of providing a separate list. He also expresses concerns about the danger of keyword lists influencing the decision-making process of the indexers: 
+&ldquo;The potential use of keywords for retrieval and indexing seems clear. That is, the presence of keywords, whether in a separate list or in their usual place in the text, has the potential to influence the formal indexing of research, and also to influence resource location or selection by researchers. What is less clear is how those keywords should be generated. Empirical extraction of the terms is most accurate and therefore most reliable for indexing, retrieval or just for text analysis. Should editorial policy change to incorporate the use of formal keywords in <i>Knowledge Organization</i> it would make the best sense to generate the terms empirically, using text analysis tools designed for statistical term extraction&rdquo;.</p>
+
+<a name="e41"></a>
+<p><strong>41</strong>. Day (<A HREF="#refD">2014</A>, 7):&rdquo;Human indexes are what machine algorithms strive towards by the use of various syntactical and semantic techniques and technologies&rdquo;. Day's book has itself an index, but the present author has found it necessary to use Google to find content in this book that could not be found via the index.</p>
+
+<a name="e42"></a>
+<p><strong>42</strong>. <A CLASS="menu" HREF="https://www.iso.org/standard/12158.html">https://www.iso.org/standard/12158.html</A>  wrote on October 25, 2020: &rdquo;THIS STANDARD WAS LAST REVIEWED AND CONFIRMED IN 2020. THEREFORE THIS VERSION REMAINS CURRENT&rdquo;.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="ref"></a>
+<h3>References</h3>
+
+<span itemprop="citation">
+
+<a name="refA"></a>
+
+<p>Adler, Melissa. 2009. &ldquo;Transcending Library Catalogs: A Comparative Study of Controlled Terms in Library of Congress Subject Headings and User-generated Tags in LibraryThing for Transgender Books.&rdquo; <i>Journal of Web Librarianship</i>, 3 no. 4: 309-31.</p>
+
+<p>Anderson, James D. and Jos&eacute; P&eacute;rez-Carballo. 2005.&nbsp;<i>Information Retrieval Design: Principles and Options for Information Description, Organization, Display and Access in Information Retrieval Databases, Digital Libraries, Catalogs, and Indexes</i>. St. Petersburg, Fl: Ometeca Institute.</p>
+
+<p>Baeza-Yates, Ricardo and Berthier Ribeiro-Neto. 2011. <i>Modern Information Retrieval. The Concepts and Technology Behind Search</i>, 2nd ed. New York: Addison Wesley.</p>
+
+<a name="refB"></a>
+
+<p>Bekhuis, Tanja. 2015. "Keywords, Discoverability, and Impact". <i>Journal of the Medical Library Association</i> (JMLA) 103, no.3: 119-20.&nbsp; doi: <A CLASS="menu" HREF="http://dx.doi.org/10.3163/1536-5050.103.3.002">http://dx.doi.org/10.3163/1536-5050.103.3.002</A>.</p>
+
+<p>Beliga, Slobodan, Ana Me&scaron;trovic and Sanda Martincic-Ip&scaron;ic. 2015. &ldquo;An Overview of Graph-Based Keyword Extraction Methods and Approaches&rdquo;. <i>Journal of Information and Organizational Science</i> 39, no. 1: 1-20. <A CLASS="menu" HREF="https://jios.foi.hr/index.php/jios/article/view/938">https://jios.foi.hr/index.php/jios/article/view/938</A>.</p>
+
+<p>Bernier, Charles L. 1980. "Subject Indexes". In: <i>Encyclopedia of Library and Information Science</i>: Volume 29, eds. Allen Kent, Harold Lancour and Jay E. Daily, Jay E. New York, NY: Marcel Dekker, Inc.: 191-205.</p>
+
+<p>Bharti, Santosh Kumar, Korra Sathya Babu and Sanjay Kumar Jena. 2017. &ldquo;Automatic Keyword Extraction for Text Summarization: A Survey&rdquo;. <A CLASS="menu" HREF="https://arxiv.org/ftp/arxiv/papers/1704/1704.03242.pdf">https://arxiv.org/ftp/arxiv/papers/1704/1704.03242.pdf</A>.</p>
+
+<p>Bondi, Marina and Mike Scott (eds.). 2010. <i>Keyness in Texts</i>. Amsterdam: John Benjamins. DOI: <A CLASS="menu" HREF="https://doi.org/10.1075/scl.41">https://doi.org/10.1075/scl.41</A>.
+
+<p>Broughton, Vanda. 2011. <i>Essential Library of Congress Subject Headings</i>. London: Facet Publishing. doi:10.29085/9781783300365.</p>
+
+<p>Bullinaria, John A. and Joseph P. Levy. 2007. &ldquo;Extracting Semantic Representations from Word Co-Occurrence Statistics: A Computational Study&rdquo;. <i>Behavior Research Methods</i> 39, no. 3: 510-26. <A CLASS="menu" HREF="https://link-springer-com.ep.fjernadgang.kb.dk/content/pdf/10.3758%2FBF03193020.pdf">https://link-springer-com.ep.fjernadgang.kb.dk/content/pdf/10.3758%2FBF03193020.pdf</A>.</p>
+
+<a name="refC"></a>
+
+<p>Caragea, Cornelia, Florin Bulgarov, Andreea Godea and Sujatha Das Gollapalli. 2014. &ldquo;Citation-Enhanced Keyphrase Extraction from Research Papers: A Supervised Approach&rdquo;. <i>Proceedings of the 2014 Conference on Empirical Methods in Natural Language Processing</i> (EMNLP), October 25-29, 2014, Doha, Qatar. Eds. Alessandro Moschitti, Bo Pang and Walter Daelemans. Stroudsburg, PA: Association for Computational Linguistics, 1435–46. DOI: 10.3115/v1/D14-1150.</p>
+
+<p>Chu, Heting. 2001. &ldquo;Research in Image Indexing and Retrieval as Reflected in the Literature&rdquo;. <i>Journal of the American Society for Information Science and Technology</i> 52, no. 12: 1011-18. <A CLASS="menu" HREF="https://doi.org/10.1002/asi.1153">https://doi.org/10.1002/asi.1153</A>.</p>
+
+<p>Cleverdon Cyril W.  1962.  <i>Report on the Testing and Analysis of an Investigation into the Comparative Efficiency of Indexing Systems</i>. Aslib-Cranfield Research Project. Cranfield, UK.: College of Aeronautics. </p>
+
+<p>Cohen, Jonathan D. 1995. &ldquo;Highlights: Language- and Domain-Independent Automatic Indexing Terms for Abstracting&rdquo;. <i>Journal of the American Society for Information Science</i> 46, no. 3: 162-74. </p>
+
+<p>Costello, John C.  1961. &ldquo;Uniterm Indexing Principles, Problems and Solutions&rdquo;. <i>American Documentation</i> 12, no. 1: 20-6. </p>
+
+<p>Crestadoro, Andrea. 1856. <i>The Art of Making Catalogues</i> of Libraries.  London: The Literary, Scientific and Artistic Reference Office. </p>
+
+<a name="refD"></a>
+
+<p>Day, Ronald E. 2014. <i>Indexing It All: The Subject in the Age of Documentation, Information, and Data</i>. Cambridge, MA: The MIT Press. </p>
+
+<p>Dolamic, Ljiljana and Jacques Savoy. 2010. &ldquo;When Stopword Lists Make the Difference&rdquo;. Journal of the <i>American Society for Information Science and Technology</i> 61, no. 1: 200-3. </p>
+
+<a name="refE"></a>
+
+<p>Edmundson, Harold P. and Ronald E. Wyllys. 1961. &rdquo;Automatic Abstracting and Indexing-Survey and Recommendations&rdquo;. <i>Communications of the ACM</i> 4, no. 5: 226-34. <A CLASS="menu" HREF="https://doi.org/10.1145/366532.366545">https://doi.org/10.1145/366532.366545</A>.</p>
+
+<a name="refF"></a>
+<p>Feather, John and Paul Sturges (eds.). 1996. <i>International Encyclopedia of Information and Library Science</i>. London: Routledge. </p>
+
+<p>Feinberg, Hilda. 1973. <i>Title Derivative Indexing Techniques: A Comparative Study</i>. Metuchen, NJ: Scarecrow Press.</p>
+
+<p>Firoozeh, Nazanin, Adeline Nazarenko, Fabrice Alizon and B&eacute;atrice Daille. 2020. &ldquo;Keyword Extraction: Issues and Methods&rdquo;. <i>Natural Language Engineering</i> 26, no. 3: 259–91. doi:10.1017/S1351324919000457.</p>
+
+<p>Frank, Elbe, Gordon W. Paynter, Ian H. Witten, Carl Gutwin and Craig G. Nevill-Manning. 1999. &ldquo;Domain-Specific Keyphrase Extraction&rdquo;. <i>Proceedings of the Sixteenth International Joint Conference on Artificial Intelligence</i> (IJCAI-99), Stockholm, Sweden, July 31-August 6, 1999.  San Francisco, CA: Morgan Kaufmann, Vol. 1: 668-73.</p>
+
+<p>Furner, Jonathan. 2010. &ldquo;Folksonomies&rdquo;. <i>Encyclopedia of Library and Information Sciences</i>, Third<BR>
+Edition, edited by Marcia J. Bates and Mary Niles Maack. Boca Raton, FL: CRC Press, vol. III: 1858—66. doi: 10.1081/E-ELIS3-120043238.</p>
+
+<a name="refG"></a>
+
+<p>Garfield, Eugene. 1976. &ldquo;Permuterm Subject Index: Autobiographical Review&rdquo;. <i>Journal of the American Society for Information Science</i> 27, no. 5-6: 288-91. Also available at: <A CLASS="menu" HREF="http://www.garfield.library.upenn.edu/essays/v3p070y1977-78.pdf">http://www.garfield.library.upenn.edu/essays/v3p070y1977-78.pdf</A>.</p>
+
+<p>Garfield, Eugene 1990a. &ldquo;Keywords Plus&reg;: ISI's Breakthrough Retrieval Method. Part 1. Expanding your Searching Power on Current Contents on Diskette&rdquo;. <i>Current Contents</i>&reg; 1, no. 32: 5–9. <A CLASS="menu" HREF="http://www.garfield.library.upenn.edu/essays/v13p295y1990.pdf">http://www.garfield.library.upenn.edu/essays/v13p295y1990.pdf</A>.</p>
+
+<p>Garfield, Eugene. 1990b. &ldquo;Keywords PlusTM Takes You Beyond Title Words. Part 2. Expanded Journal Coverage for Current Contents on Diskette@, Includes Social and Behavioral Sciences&rdquo;. <i>Current Contents</i> 1, no. 33: 5-9. <A CLASS="menu" HREF="http://www.garfield.library.upenn.edu/essays/v13p300y1990.pdf">http://www.garfield.library.upenn.edu/essays/v13p300y1990.pdf</A>.</p>
+
+<p>Garfield, Eugene and Irving H. Sher. 1993. &ldquo;KeyWords PlusTM - Algorithmic Derivative Indexing&rdquo;. <i>Journal of the American Society for Information Science</i> 44, no. 5: 298-99. <A CLASS="menu" HREF="http://www.garfield.library.upenn.edu/papers/jasis44(5)p298y1993.html">http://www.garfield.library.upenn.edu/papers/jasis44(5)p298y1993.html</A>.</p>
+
+<p>Garg, Muskan and Mukesh Kumar. 2018. &ldquo;Identifying Influential Segments from Word Co-Occurrence Networks using AHP [Analytic Hierarchy Process]&rdquo;. <i>Cognitive Systems Research</i> 47: 28-41.</p>
+
+<p>Gazendam, Luit, Christian Wartena and Rogier Brussee. 2010. &ldquo;Thesaurus Based Term Ranking for Keyword Extraction&rdquo;. <i>Workshops on Database and Expert Systems Applications</i>, Bilbao, 2010, 49-53. doi: 10.1109/DEXA.2010.31.</p>
+
+<p>Gil-Leiva, Isidoro and Adolfo Alonso-Arroyo. 2007. "Keywords Given by Authors of Scientific Articles in Database Descriptors." <i>Journal of the American Society for Information Science and Technology</i> 58, no. 8: 1175-87.</p>
+
+<p>Gross, Tina and Arlene G. Taylor. 2005. &ldquo;What Have We Got to Lose? The Effect of Controlled Vocabulary on Keyword Searching Results&rdquo;. <i>College &amp; Research Libraries</i> 66, no. 3: 212-30. </p>
+
+<a name="refH"></a>
+
+<p>Hahn, Udo, Joachim Wermter, Rainer Blasczyk and Peter A. Horn. 2007. &ldquo;Text Mining: Powering the Database Revolution&rdquo;. <i>Nature </i>448, no. 7150: 130.</p>
+
+<p>Harris, Zellig. 1954. "Distributional Structure". <i>Word</i> 10, no. 2/3: 146–62. doi:10.1080/00437956.1954.11659520.</p>
+
+<p>Hartley, James and Ronald N. Kostoff. 2003. "How Useful are 'Key Words' in Scientific Journals?" <i>Journal of Information Science</i> 29, no. 5: 433-8.</p>
+
+<p>Hegel, Georg Wilhelm Friedrich. 1968. <i>The Logic of Hegel</i>. Trans. William Wallace. Oxford: Oxford University Press. </p>
+
+<p>Hj&oslash;rland, Birger. 2011. "The Importance of Theories of Knowledge: Indexing and Information Retrieval as an Example". <i>Journal of the American Society for Information Science and Technology</i> 62, no. 1: 72-7.</p>
+
+<p>Hj&oslash;rland, Birger. 2015. &ldquo;Theories are Knowledge Organizing Systems (KOS)&rdquo;. <i>Knowledge Organization</i> 42, no. 2: 113-28. </p>
+
+<p>Hj&oslash;rland, Birger. 2017. &ldquo;Subject (of Documents)&rdquo;. <i>Knowledge Organization</i> 44, no. 1: 55-64. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli, <A CLASS="menu" HREF="https://www.isko.org/cyclo/subject">https://www.isko.org/cyclo/subject</A>.</p>
+
+<p>Hj&oslash;rland, Birger. 2018. &ldquo;Indexing: Concepts and Theory&rdquo;. <i>Knowledge Organization</i> 45, no. 7: 609-39. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli, <A CLASS="menu" HREF="https://www.isko.org/cyclo/indexing">https://www.isko.org/cyclo/indexing</A>.</p>
+
+<p>Hj&oslash;rland, Birger and Lykke Kyllesbech Nielsen. 2001. &ldquo;Subject Access Points in Electronic Retrieval&rdquo;. <i>Annual Review of Information Science and Technology</i> 35, 249-98.</p>
+
+<p>Holstrom, Chris. 2019. &ldquo;Moving Towards an Actor-Based Model for Subject Indexing.&rdquo; <i>NASKO: North American Symposium on Knowledge Organization</i> 7, no. 1, 120-28. Doi: <A CLASS="menu" HREF="http://dx.doi.org/10.7152/nasko.v7i1.15631">http://dx.doi.org/10.7152/nasko.v7i1.15631</A>.</p>
+
+<p>Hulme, E. Wyndham. 1911. "Principles of Book Classification".&nbsp;<i>Library Association Record</i>, 13:354-358, Oct. 1911; 389-394, Nov. 1911 &amp; 444-449, Dec. 1911.</p>
+
+<a name="refI"></a>
+
+<p>ISO 5127:2017. <i>Information and Documentation: Foundation and Vocabulary</i>. 2nd. ed. Geneva, Switzerland: The International Organization for Standardization. </p>
+
+<p>ISO 5963:1985. Documentation &ndash; Methods for Examining Documents, Determining their Subjects, and Selecting Indexing Terms. Geneva: International Organization for Standardization.</p>
+
+<a name="refJ"></a>
+
+<p>Jacob, Elin K. and Debora Shaw. 1996. &ldquo;Is a Picture Worth a Thousand Words?&rdquo;. <i>Advances in Knowledge Organization</i> 5, 174-81.</p>
+
+<p>Jacquemin, Christian and Didier Bourigault. 2003. &ldquo;Term Extraction and Automatic Indexing&rdquo;. In <i>The Oxford Handbook of Computational Linguistics</i>, ed. Ruslan Mitkov. Oxford, UK: Oxford University Press, pp. 599–615. DOI: 10.1093/oxfordhb/9780199276349.013.0033.</p>
+
+<p>J&auml;schke, Robert, Leandro Marinho, Andreas Hotho, Lars Schmidt-Thieme and Gerd Stumme. 2008. "Tag Recommendations in Social Bookmarking Systems". <i>Ai Communications</i> 21 no. 4: 231-47.</p>
+
+<p>Juilland, Alphonse and Alexandra Roceric. 1972. <i>The Linguistic Concept of Word: Analytic Bibliography</i>. <i>Janua linguarum</i>, Series minor, 130. The Hague: Mouton.</p>
+
+<a name="refK"></a>
+
+<p>Kain, Philip J. 2005. <i>Hegel and the Other: A Study of the Phenomenology of Spirit</i>. Albany: State University of New York Press.</p>
+
+<p>K&auml;ki, Mika. 2006. "fKWIC: Frequency-Based Keyword-In-Context Index for Filtering Web Search Results". Journal of the American Society for Information Science and Technology 57, no. 12: 1606-15. </p>
+
+<p>Kathait, Shailendra Singh, Shubhrita Tiwari, Anubha Varshney and Ajit Sharma. 2017. &ldquo;Unsupervised Key-phrase Extraction using Noun Phrases&rdquo;. <i>International Journal of Computer Applications</i> 162, no. 1: 1-5.  doi: 10.5120/ijca2017913171.</p>
+
+<p>Kr&aacute;msk&yacute;, Ji&#345;&iacute;. 1969. <i>The Word as a Linguistic Unit</i>. Janua linguarum, Series minor, 75. The Hague: Mouton.</p>
+
+<a name="refL"></a>
+
+<p>Lancaster, Frederick W. 1968. <i>Information Retrieval Systems: Characteristics, Testing and Evaluation</i>. New York: Wiley.</p>
+
+<p>Lancaster, Frederick W. 2003. <i>Indexing and Abstracting in Theory and Practice</i>. 3rd. ed. London: Facet Publishing. </p>
+
+<p>Lancia, Franco. 2008 &ldquo;Word Co-Occurrence and Similarity in Meaning: Some Methodological Issues&rdquo;. In <i>Mind as Infinite Dimensionality</i>, ed.  Sergio Salvatore and Jaan Valsiner. Roma, Italy: Carlo Amore, 1–39. <A HREF="#refh">https://mytlab.com/wcsmeaning.pdf</A>.</p>
+
+<p>Larson, Ray R. 1991. &ldquo;The Decline of Subject Searching: Long-Term Trends and Patterns of Index Use in an Online Catalog&rdquo;. <i>Journal of the American Society for Information Science</i> 42, no. 3: 197-215.</p>
+
+<p>Lauriston, Andy. 1994. &ldquo;Automatic Recognition of Complex Terms: Problems and the TERMINO Solution&rdquo;. <i>Terminology</i> 1, no. 1: 149-70.</p>
+
+<p>Lee, Durin, Won Chul Kim, Andreas Charidimou and Min Song. 2015. &ldquo;A Bird's-Eye View of Alzheimer's Disease Research: Reflecting Different Perspectives of Indexers, Authors, or Citers in Mapping the Field&rdquo;. <i>Journal of Alzheimer's Disease</i> 45, no. 4: 1207-22. doi: 10.3233/JAD-142688.</p>
+
+<p>Li, Decong, Sujian Li, Wenjie Li, Wei Wang and Weiguang Qu. 2010. "A Semi-Supervised Key Phrase Extraction Approach: Learning from Title Phrases through a Document Semantic Network". Proceedings of the ACL 2010 Conference Short Papers, Uppsala, Sweden, 11-16 July 2010.  Uppsala, Sweden: Association for Computational Linguistics, 296–300. <A CLASS="menu" HREF="https://www.aclweb.org/anthology/P10-2055.pdf">https://www.aclweb.org/anthology/P10-2055.pdf</A>.</p>
+
+<p>Library of Congress, Policy and Standards Division. 2006. <i>Library of Congress Subject Headings. Module 1.2: Why Do We Use Controlled Vocabulary? </i>PowerPoint Presentation. Retrieved from <A CLASS="menu" HREF="https://www.loc.gov/catworkshop/lcsh/PDF%20scripts/1-2-WhyCV.pdf">https://www.loc.gov/catworkshop/lcsh/PDF%20scripts/1-2-WhyCV.pdf</A>.</p>
+
+<p>Lok, Corie. 2010. &ldquo;Speed Reading&rdquo;. <i>Nature</i> 463, no. 7280: 416-8. </p>
+
+<p>Lu, Wei, Xin Li, Zhifeng Liu and Qikai Cheng. 2019. "How do Author-Selected Keywords Function Semantically in Scientific Manuscripts?" <i>Knowledge Organization</i> 46 no. 6: 403-418. <A CLASS="menu" HREF="https://doi.org/10.5771/0943-7444-2019-6-403">https://doi.org/10.5771/0943-7444-2019-6-403</A>.</p>
+
+<p>Luhn, Hans Peter. 1957. &ldquo;A Statistical Approach to the Mechanized Encoding and Searching of Literary Information&rdquo;. <i>IBM Journal of Research and Development</i> I, no. 4: 309-17.</p>
+
+<p>Luhn, Hans Peter. 1960. &ldquo;Keyword-In-Context Index for Technical Literature&rdquo;. <i>American Documentation</i> 11, no. 4: 288–95. </p>
+
+<a name="refM"></a>
+
+<p>M&aacute;cha, Jakub. 2015. <i>Wittgenstein on Internal and External Relations: Tracing All the Connections</i>. London: Bloomsbury Academic. </p>
+
+<p>McCutcheon, Sevim. 2009. "Keyword vs Controlled Vocabulary Searching: The One with the Most Tools Wins". <i>The Indexer: The International Journal of Indexing</i> 27, no. 2: 62-65.</p>
+
+<p>McJunkin, Monica Cahill. 1994. <i>Precision and Recall in Title Keyword Searches</i>. Master's Research Paper. Kent, OH: Kent State University. <A CLASS="menu" HREF="https://pdfs.semanticscholar.org/14eb/fdef43d49942c71e01a637a8b730ed1068be.pdf?_ga=2.217421270.1972569115.1590375949-1712967020.1514566464">https://pdfs.semanticscholar.org/14eb/fdef43d49942c71e01a637a8b730ed1068be .pdf?_ga=2.217421270.1972569115.1590375949-1712967020.1514566464</A>.</p>
+
+<p>Manning, Christopher D. and Hinrich Sch&uuml;tze. 1999. Foundations of Statistical Natural Language Processing. Cambridge, MA: The MIT Press. </p>
+
+<p>Manning, Christopher D., Prabhakar Raghavan and Hinrich Sch&uuml;tze. 2008. <i>Introduction to Information Retrieval</i>. Cambridge: Cambridge University Press.</p>
+
+<p>Medelyan. Olena and Ian H. Witten. 2006. &ldquo;Thesaurus Based Automatic Keyphrase Indexing&rdquo;. <i>Proceedings of the 6th ACM/IEEE-CS joint conference on Digital libraries</i>, Chapel Hill NC USA June, 2006. New York, NY: Association for Computing Machinery, 296-7. </p>
+
+<p>Milstead, Jessica L. 1984. <i>Subject Access Systems: Alternatives in Design</i>. Orlando, FL: Academic Press. </p>
+
+<p>Mooers, Calvin N. 1950. &ldquo;Zatocoding for Punched Cards.&rdquo; <i>Zator Technical Bulletin</i> 30. Boston, MA: Zator Co. </p>
+
+<p>Mooers, Calvin N. 1972. &rdquo;Descriptors&rdquo;. In: <i>Encyclopedia of Library and Information Science</i>,  Ed. Allen Kent and Harold Lancour. Vol. 7. New York: Marcel Dekker, 31-45. (Reprinted in <A HREF="#refM">Mooers 2003</A>.)</p>
+
+<p>Mooers, Calvin N. 2003. &ldquo;Descriptors&rdquo;. In <i>Encyclopedia of Library and Information Science</i> 2nd. ed., ed. Miriam A. Drake.  New York: Marcel Dekker, vol. 2: 813-21. doi: 10.1081/E-ELIS 120008981 (Reprint of Mooers 1972). </p>
+
+<p>Mooers, Calvin N. and Charlotte D. Mooers. 1993. "Oral History Interview with Calvin N. Mooers and Charlotte D. Mooers". Interviewed by Kevin D. Corbitt. Minneapolis, MN: Charles Babbage Institute, 7-11. <A HREF="#refh">https://conservancy.umn.edu/handle/11299/107510</A>.</p>
+
+<p>Morris, Jane. 2010. &ldquo;Individual Differences in the Interpretation of Text: Implications for Information Science&rdquo;. <i>Journal of the American Society for Information Science and Technology</i> 61, no. 1: 141-9. <A HREF="#refh">https://doi.org/10.1002/asi.21222</A>.</p>
+
+<a name="refN"></a>
+
+<p>National Library of Medicine. 2018. &ldquo;Frequently Asked Questions About Indexing for MEDLINE: Who are the Indexers, and What are Their Qualifications?&rdquo; <A HREF="#refh">https://www.nlm.nih.gov/bsd/indexfaq.html#qualifications</A>.</p>
+
+<p>N&eacute;v&eacute;ol, Aur&eacute;lie, Rezarta Islamaj Dogan and Zhiyong Lu. 2010. &ldquo;Author Keywords in Biomedical Journal Articles&rdquo;.  537-41. <i>AMIA [American Medical Informatics Association] Annual Symposium proceedings</i>. AMIA Symposium vol. 2010 537-41. </p>
+
+<a name="refO"></a>
+
+<p>Olson, Hope A. and John J. Boll. 2001. <i>Subject Analysis in Online Catalogs</i>. Englewood, CO: Libraries Unlimited. </p>
+
+<p>Oxford English Dictionary. 2020a. &ldquo;Keyword&rdquo;. Retrieved 2020-06-19 from: <A HREF="#refh">https://www.oed.com/</A> (toll access). </p>
+
+<p>Oxford English Dictionary. 2020b. &ldquo;Terminology&rdquo;. Retrieved 2020-06-19 from: <A HREF="#refh">https://www.oed.com/</A> (toll access).</p>
+
+<a name="refP"></a>
+
+<p>Peset, Fernanda, Fernanda Garzon-Farinos, L.M. Gonzalez, X. Garcia-Masso, Antonia Ferrer-Sapena, J. L. Toca-Herrera and E. A. Sanchez-Perez. 2020. &ldquo;Survival Analysis of Author Keywords: An Application to the Library and Information Sciences Area&rdquo;. <i>Journal of the Association for Information Science and Technology</i> 71, no. 4: 462-73. DOI: 10.1002/asi.24248</p>
+
+<a name="refQ"></a>
+<a name="refR"></a>
+
+<p>Rafferty, Pauline. 2018. &ldquo;Tagging&rdquo;. <i>Knowledge Organization</i> 45, no. 6: 500-516. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli. <A CLASS="menu" HREF="tagging">https://www.isko.org/cyclo/tagging</A></p>
+
+<p>Redmond-Neal, Alice and Marjorie M. K. Hlava, eds. 2005. <i>ASIS&amp;T Thesaurus of Information Science, Technology, and Librarianship</i> 3rd. ed. Medford, NJ: Information Today. Read more: <A CLASS="menu" HREF="http://books.infotoday.com/asist/TheInfoSciLib3.shtml#ixzz6Q5qYq5Bc">http://books.infotoday.com/asist/TheInfoSciLib3.shtml#ixzz6Q5qYq5Bc</A>.</p>
+
+<p>Reitz, Joan M. 2004. <i>Online Dictionary for Library and Information Science</i> (ODLIS). Santa Barbara, CA: ABC-CLIO. <A CLASS="menu" HREF="https://products.abc-clio.com/ODLIS/odlis_p.aspx">https://products.abc-clio.com/ODLIS/odlis_p.aspx</A>.</p>
+
+<p>Roberts, Norman. 1984. "The Pre-History of the Information Retrieval Thesaurus". <i>Journal of Documentation</i> 40, no. 4: 271-85. </p>
+
+<p>Robertson, Stephen. 2008. &ldquo;The State of Information Retrieval: A Researcher’s View.&rdquo; ISKO-UK. Presentation and audio recording freely available at: <A CLASS="menu" HREF="http://event-archive.iskouk.org/content/state-information-retrieval-researchers-view">http://event-archive.iskouk.org/content/state-information-retrieval-researchers-view</A>.</p>
+
+<a name="refS"></a>
+
+<p>Salton, Gerard and Chung-Shu Yang. I 973. "On the Specification of Term Values in Automatic Indexing". <i>Journal of Documentation</i> 29, no. 4: 351-72. <A CLASS="menu" HREF="https://doi.org/10.1108/eb026562">https://doi.org/10.1108/eb026562</A>.</p>
+
+<p>Salton, Gerard, Chung-Shu Yang and C. T. Yu. 1975. &ldquo;A Theory of Term Importance in Automatic Text Analysis&rdquo;. <i>Journal of the American Society for Information Science 26</i>, no. 1: 33-44. <A CLASS="menu" HREF="https://doi.org/10.1002/asi.4630260106">https://doi.org/10.1002/asi.4630260106</A>.</p>
+
+<p>Sanderson, Mark and W. Bruce Croft. 2012. "The History of Information Retrieval Research". <i>Proceedings of the IEEE</i> 100 (Special Centennial Issue): 1444-51. doi: 10.1109/JPROC.2012.2189916.</p>
+
+<p>Schwing, Theda, Sevim McCutcheon, and Margaret Beecher Maurer. 2012. "Uniqueness Matters: Author-Supplied Keywords and LCSH in the Library Catalog". <i>Cataloging &amp; Classification Quarterly</i> 50, no. 8: 903-28.</p>
+
+<p>Siddiqi, Sifatullah and Aditi Sharan. 2015. "Keyword and Keyphrase Extraction Techniques: A Literature Review". <i>International Journal of Computer Applications</i> 109, no. 2: 18-23. </p>
+
+<p>Skare, Roswitha. 2020. &ldquo;Paratext&rdquo;. <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli, <A CLASS="menu" HREF="paratext">https://www.isko.org/cyclo/paratext</A>.</p>
+
+<p>Small, Henry G. 1978. &ldquo;Cited Documents as Concept Symbols.&rdquo; <i>Social Studies of Science</i> 8, no. 3: 327-40.</p>
+
+<p>Smiraglia, Richard P. 2013. "Keywords, Indexing, Text Analysis: An Editorial". <i>Knowledge Organization</i> 40, no. 3: 155-9.</p>
+
+<p>Smith, Arthur. 2020. &ldquo;Physics Subject Headings (PhySH)&rdquo;. <i>Knowledge Organization</i> 47, no. 3: 257-66. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli, <A CLASS="menu" HREF="physh">https://www.isko.org/cyclo/physh</A>.</p>
+
+<p>Soergel, Dagobert. 1974. <i>Indexing Languages and Thesauri: Construction and Maintenance</i>. Los Angeles, CA: Melville. </p>
+
+<p>Sp&auml;rck Jones, Karen. 1972. &ldquo;A Statistical Interpretation of Term Specificity and Its Application in Retrieval&rdquo;. <i>Journal of Documentation</i> 28, no. 1: 11-21. <A CLASS="menu" HREF="https://doi.org/10.1108/eb026526">https://doi.org/10.1108/eb026526</A>.</p>
+
+<p>Sp&auml;rck Jones, Karen. 1973. &ldquo;Index Term Weighting&rdquo;. <i>Information Storage and Retrieval</i> 9, no. 11: 619-33. <A CLASS="menu" HREF="https://doi.org/10.1016/0020-0271(73)90043-0">https://doi.org/10.1016/0020-0271(73)90043-0</A>.</p>
+
+<p>Strader, C Rockelle. 2009. "Author-assigned keywords versus Library of Congress subject headings". <i>Library resources &amp; technical services</i> 53, no. 4: 243-250.</p>
+
+<p>Subramaniyaswamy, V. and S. Chenthur Pandian. 2012. &ldquo;Effective Tag Recommendation System Based on Topic Ontology Using Wikipedia and WordNet&rdquo;. <i>International Journal of Intelligent Systems</i> 27, no. 12: 1034-48.</p>
+
+<p>Surgenor, Stephen D., Howard L. Corwin and Terri Clerico. 2001. &ldquo;Survival of Patients Transferred to Tertiary Intensive Care from Rural Community Hospitals&rdquo;. <i>Critical Care</i> 5, no. 2: 100-4. doi: 10.1186/cc993. </p>
+
+<p>Swanson, Don R. 1986. &ldquo;Undiscovered Public Knowledge&rdquo;. <i>The Library Quarterly</i> 56, no. 2: 103-18.</p>
+
+<p>Syn, Sue Yeon and Michael B. Spring. 2009. "Tags as Keywords–comparison of the Relative Quality of Tags and Keywords". <i>Proceedings of the American Society for Information Science and Technology</i> 46 no. 1: 1-19. doi: 10.1002/meet.2009.1450460247</p>
+
+<a name="refT"></a>
+
+<p>Taube, Mortimer, C. D. Gull and Irma S. Wachtel 1952. "Unit Terms in Coordinate Indexing". <i>American Documentation </i>3, no. 4: 213-8. </p>
+
+<p>Thomaidou, Stamatina and Michalis Vazirgiannis. 2011. &ldquo;Multiword Keyword Recommendation System for Online Advertising&rdquo;.  In <i>Proceedings of the 2011 International Conference on Advances in Social Networks Analysis and Mining</i>, Kaohsiung, Taiwan, July 25-27, 2011. Los Alamitos, CA: IEEE Computer Society, 423-7. DOI: 10.1109/ASONAM.2011.70. </p>
+
+<p>Togeby, Knud. 1949. &ldquo;Qu'est-ce qu'un mot?&rdquo;. <i>Travaux du Cercle Linguistique de Copenhague</i> (TCLC) 5: 97-111.</p>
+
+<a name="refU"></a>
+
+<p>Uddin, Shahadat and Arif Khan. 2016. &ldquo;The Impact of Author-Selected Keywords on Citation Counts&rdquo;. <i>Journal of Informetrics</i> 10, no. 4: 1166-77. https://doi.org/10.1016/j.joi.2016.10.004</p>
+
+<p>Uhlenbeck, Eugenius Marius. 2003. &ldquo;Words&rdquo;. In <i>International encyclopedia of linguistics</i>. 2nd. Ed. Edited by William J. Frawley. Oxford, UK: Oxford University Press, vol. 4: 377-8.</p>
+
+<a name="refV"></a>
+
+<p>Van der Veer Martens, Betsy. 2023. <i>Keywords In and Out of Context</i>. Cham: Springer. (Synthesis Lectures on Information Concepts, Retrieval, and Services). DOI: <A CLASS="menu" HREF="https://doi.org/10.1007/978-3-031-32530-4">https://doi.org/10.1007/978-3-031-32530-4</A>.</p>
+
+<a name="refW"></a>
+
+<p>Warner, Julian. 2019. &rdquo; When Might Human Indexing Be Strongly Justified&rdquo;. <i>Proceedings from the Document Academy</i> 5, no. 1: Article 5. DOI: <A CLASS="menu" HREF="https://doi.org/10.35492/docam/6/1/5">https://doi.org/10.35492/docam/6/1/5</A>. </p>
+
+<p>Wellisch, Hans H. 1995. &ldquo;Keyword&rdquo;. In <i>Indexing from A to Z</i>. 2nd. ed.  By Hans H. Wellisch. New York: H.W. Wilson, 248-53.</p>
+
+<p><i>Wikipedia, the Free Encyclopedia</i>. 2020. &ldquo;Index term&rdquo; [redirected from &ldquo;keyword&rdquo;]. Retrieved 2020-06-19 from: <A CLASS="menu" HREF="https://en.wikipedia.org/wiki/Index_term">https://en.wikipedia.org/wiki/Index_term</A>.</p>
+
+<p><i>Wiktionary, the Free Dictionary</i>. 2020. &ldquo;Term&rdquo;. Retrieved 2020-06-19 from: <A CLASS="menu" HREF="https://en.wiktionary.org/wiki/term#English">https://en.wiktionary.org/wiki/term#English</A>.</p>
+
+<p>Williams, Raymond. 2015. <i>Keywords: A Vocabulary of Culture and Society</i>. New Edition. New York: Oxford University Press. </p>
+
+<p>Witten, Ian H., Gordon W. Paynter, Eibe Frank, Carl Gutwin and C. Craig G. Nevill-Manning. 1999. &ldquo;Kea: Practical Automatic Key-Phrase Extraction,&rdquo; In: <i>Proceedings of the fourth ACM conference on Digital libraries</i>, Berkeley, CA: ACM, 254-2. <A CLASS="menu" HREF="https://arxiv.org/abs/cs/9902007">https://arxiv.org/abs/cs/9902007</A>.</p>
+
+<a name="refX"></a>
+<a name="refY"></a>
+<a name="refZ"></a>
+
+<p>Zhang, Juan, Qi Yu, Fashan Zheng, Chao Long, Zuxun Lu and Zhiguang Duan. 2016. &ldquo;Comparing Keywords Plus of WOS and Author Keywords: A Case Study of Patient Adherence Research&rdquo;. <i>Journal of the Association for Information Science and Technology</i> 67, no. 4: 967-72. <A CLASS="menu" HREF="https://doi.org/10.1002/asi.23437">https://doi.org/10.1002/asi.23437</A>.</p>
+
+</span><!-- citation ends -->
+
+
+<a name="col"></a>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<p>&nbsp;</p>
+
+<p>Visited <a href="https://www.digits.net" target="_blank"><img src="https://counter.digits.net/?counter={5d9ba505-8e23-b644-ed2d-2722d2dc43b7}&template=simple" alt="Hit Counter by Digits" border="0"  /></a> times.</p>
+
+<hr>
+<p itemprop="dateCreated">Version 1.0 published 2020-11-17
+<br>Version 1.1 published 2023-08-09: references to Bondi and Scotti 2010 and Van der Veer Martens 2023 added,  last edited 2023-08-10
+
+<p>Article category: <code><a itemprop="about" href="index#KD">KOS Kinds</a></code></p>
+
+<p>This article (version 1.0) is also published in <i>Knowledge Organization</i>. How to cite it:
+<br>Lardera, Marco and Birger Hj&oslash;rland. 2021. "Keyword". <i>Knowledge Organization</i> 48(6): 430-456. DOI:10.5771/0943-7444-2021-6-430; also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli. https://www.isko.org/cyclo/keyword.
+
+<p>&copy;2020 <span itemprop="publisher">ISKO</span>. All rights reserved.</p>
+
+</div><!-- Article ends -->
+
+</td>
+</tr>
+
+<tr>
+<td id="logo">
+</td>
+</tr>
+
+</table>
+</body>
+</html>

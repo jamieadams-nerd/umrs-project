@@ -3,26 +3,24 @@
 :toc: left
 :toclevels: 2
 
-// NIST 800-53 AC-4, SI-7 — information flow enforcement and integrity are the
+// NIST SP 800-53 AC-4, SI-7 — information flow enforcement and integrity are the
 // primary governing controls for this system's existence.
-// NIST 800-53 SA-3 — System development lifecycle
-// NIST 800-171 — CUI handling requirements (EO 13556)
+// NIST SP 800-53 SA-3 — System development lifecycle
+// NIST SP 800-171 — CUI handling requirements (EO 13556)
 
-The genesis of the project was to incorporate NARA-registered controlled unclassified (CUI) labeling
-to an SELinux system using the multi-category system (MCS). The first phase was to simply apply the
-labeling and ensure awareness within the boundaries of the system and resources labeled. How they
-should be treated and handled. The second phase will broaden to include enforcement policies.
+UMRS began as an investigation into NARA-registered Controlled Unclassified Information (CUI)
+labeling on an SELinux system using the Multi-Category Security (MCS) mechanism. The first
+phase applies labeling and makes CUI handling requirements visible to operators. The second
+phase broadens to include policy-enforced access boundaries at the kernel level.
 
-However, during this process several other areas of high-availability turned out to be very
-interesting and worth exploring. Given the person’s background in the classified world and
-strict, isolated systems, this seemed a worthy challenge.
+During that work, several adjacent areas of high-assurance engineering proved equally worth
+exploring — particularly given the project author’s background on classified MLS systems.
+UMRS grew into a reference system covering four interrelated areas:
 
-The UMRS Project is a reference system to explore and learn: 
-
-* Using SELinux MCS labeling mechanism 
-* Operations to Enhance High-Assurance 
-* High-assurance software development 
-* Use of AI to improve quality of tooling
+* CUI labeling using the SELinux MCS mechanism
+* Operations that enhance high-assurance posture
+* High-assurance software development in Rust
+* Responsible use of AI to improve tooling quality
 
 
 == What UMRS Demonstrates
@@ -66,7 +64,7 @@ patterns — Two-Path Independence parsing, TOCTOU-safe I/O, fail-closed
 error handling, provenance verification of kernel attributes — that
 make the enforcement logic auditable and resistant to common
 implementation-level attacks. These patterns derive from NSA RTB
-requirements, NIST 800-218 SSDF, and operational experience in
+requirements, NIST SP 800-218 SSDF, and operational experience in
 high-assurance environments.
 
 == The Platform
@@ -83,8 +81,8 @@ high-assurance environments.
   codebase. All cryptographic operations use FIPS-validated primitives.
 
 | Access control
-| SELinux MLS policy (mandatory, non-bypassable). Every process and file has
-  a security context. The kernel mediates all access decisions.
+| SELinux targeted policy (current deployment); MLS policy planned. Every process
+  and file has a security context. The kernel mediates all access decisions.
 
 | Baseline hardening
 | STIG-aligned configuration. (e.g., OpenSCAP SSG)
@@ -92,8 +90,6 @@ high-assurance environments.
 
 Ubuntu is a secondary deployment target.
 See xref:deployment:ubuntu/ubuntu.adoc[Ubuntu deployment notes].
-
-
 
 == CUI Handling
 
@@ -160,7 +156,7 @@ This documentation is written for three audiences, who will use it differently.
 developer guides that explain both the what and the why — including why
 high-assurance patterns exist and what threat they defeat.
 
-*Security auditors* will find precise control citations (NIST 800-53, CMMC,
+*Security auditors* will find precise control citations (NIST SP 800-53, CMMC,
 NSA RTB), auditable design rationale, and compliance framework documentation
 that traces enforcement decisions to their governing standards.
 

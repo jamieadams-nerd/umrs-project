@@ -107,6 +107,24 @@ pub struct IndicatorDescriptor {
     /// indicator to its authoritative SCAP content identifier for use in
     /// automated compliance reporting and STIG gap analysis.
     pub cce: Option<&'static str>,
+    /// Multi-sentence description explaining what this indicator controls and
+    /// what the security impact is if it is not hardened.
+    ///
+    /// Intended for operator-facing display in TUI, CLI, and assessment reports.
+    /// Empty string for indicators that do not yet have display-layer coverage
+    /// (e.g., CPU mitigation sub-indicators pending Phase 2b TUI integration).
+    ///
+    /// NIST SP 800-53 SA-5: system documentation — inline descriptions reduce
+    /// operator reliance on external reference guides.
+    pub description: &'static str,
+    /// Operator-facing remediation guidance shown when the indicator does not
+    /// meet the desired baseline. `None` when no single remediation action is
+    /// defined (e.g., indicators with site-policy-dependent desired values, or
+    /// CPU mitigation sub-indicators whose remediation is context-dependent).
+    ///
+    /// NIST SP 800-53 CM-6: configuration settings — remediation guidance
+    /// accompanies each failing configuration finding.
+    pub recommended: Option<&'static str>,
 }
 
 // ===========================================================================
@@ -135,6 +153,10 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         nist_controls: "NIST 800-53 CM-6(a), SC-30, SC-30(2), SC-30(5); \
                         NSA RTB: minimized information disclosure",
         cce: Some("CCE-88686-1"),
+        description: "Hides kernel pointer addresses from /proc and logs. Knowing \
+                      where kernel code lives in memory is the first step in most \
+                      kernel exploits.",
+        recommended: Some("2 (hidden from all users)"),
     },
     IndicatorDescriptor {
         id: IndicatorId::RandomizeVaSpace,
@@ -149,6 +171,10 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         nist_controls: "NIST 800-53 CM-6(a), SC-30, SC-30(2); \
                         NSA RTB: exploit mitigation",
         cce: Some("CCE-87876-9"),
+        description: "ASLR randomizes stack, heap, and library addresses on every \
+                      process start. Without it, memory-corruption exploits can jump \
+                      to known addresses reliably.",
+        recommended: Some("2 (full ASLR)"),
     },
     IndicatorDescriptor {
         id: IndicatorId::UnprivBpfDisabled,
@@ -162,6 +188,10 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
                     kernel exploits; restricting to CAP_BPF/CAP_SYS_ADMIN reduces attack surface.",
         nist_controls: "NIST 800-53 AC-6, SC-7(10); NSA RTB: attack surface reduction",
         cce: Some("CCE-89405-5"),
+        description: "Prevents unprivileged users from loading BPF programs. The BPF \
+                      JIT and verifier are complex attack surfaces responsible for many \
+                      kernel privilege escalation CVEs.",
+        recommended: Some("1 (restricted to CAP_BPF)"),
     },
     IndicatorDescriptor {
         id: IndicatorId::PerfEventParanoid,
@@ -175,6 +205,10 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
                     blocking side-channel attacks and profiling-based ASLR leaks.",
         nist_controls: "NIST 800-53 AC-6; NSA RTB: information disclosure prevention",
         cce: Some("CCE-90142-1"),
+        description: "Limits access to CPU performance counters. Performance counters \
+                      can be used as side-channels to leak information across processes \
+                      or bypass ASLR by inferring memory layout.",
+        recommended: Some("2 (restricted)"),
     },
     IndicatorDescriptor {
         id: IndicatorId::YamaPtraceScope,
@@ -188,6 +222,10 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
                     preventing credential extraction from sibling processes.",
         nist_controls: "NIST 800-53 SC-7(10), AC-6; NSA RTB: process isolation",
         cce: Some("CCE-88785-1"),
+        description: "Controls which processes can attach to another via ptrace. \
+                      Without restriction, a compromised process can extract passwords \
+                      and private keys from every sibling process.",
+        recommended: Some("1 (children only)"),
     },
     IndicatorDescriptor {
         id: IndicatorId::DmesgRestrict,
@@ -202,6 +240,10 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         nist_controls: "NIST 800-53 SI-11(a), SI-11(b); \
                         NSA RTB: information disclosure prevention",
         cce: Some("CCE-89000-4"),
+        description: "Prevents unprivileged users from reading the kernel message \
+                      buffer. dmesg often contains hardware addresses and capability \
+                      messages useful for kernel exploit development.",
+        recommended: Some("1 (restricted to CAP_SYSLOG)"),
     },
     IndicatorDescriptor {
         id: IndicatorId::KexecLoadDisabled,
@@ -215,6 +257,10 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
                     by root, preserving boot-time integrity guarantees (Secure Boot, IMA).",
         nist_controls: "NIST 800-53 CM-6, SI-7; NSA RTB: boot integrity",
         cce: Some("CCE-89232-3"),
+        description: "Prevents loading a new kernel image at runtime. Without this, \
+                      an attacker with root can replace the running kernel without a \
+                      reboot, bypassing Secure Boot.",
+        recommended: None,
     },
     IndicatorDescriptor {
         id: IndicatorId::Sysrq,
@@ -232,6 +278,10 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
                     fully disabling (0) is safest on production servers.",
         nist_controls: "NIST 800-53 AC-3, CM-7; NSA RTB: attack surface reduction",
         cce: None,
+        description: "Controls which Magic SysRq key combinations are active. On a \
+                      system with console access, SysRq can kill security processes or \
+                      force a reboot without authentication.",
+        recommended: Some("0 (fully disabled)"),
     },
     // ── Kernel Integrity ─────────────────────────────────────────────────
     IndicatorDescriptor {
@@ -246,6 +296,10 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
                     loaded, locking the kernel attack surface for the lifetime of the boot.",
         nist_controls: "NIST 800-53 CM-7, SI-7; NSA RTB: minimised attack surface",
         cce: None,
+        description: "One-way latch: once set, no new kernel modules can be loaded. \
+                      Prevents rootkits and SELinux bypass by freezing the kernel \
+                      attack surface after boot.",
+        recommended: Some("1 (loading locked)"),
     },
     // ── Process Isolation ────────────────────────────────────────────────
     IndicatorDescriptor {
@@ -260,6 +314,10 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
                     vector; blocking them (0) reduces the attack surface significantly.",
         nist_controls: "NIST 800-53 SC-39, CM-7; NSA RTB: process isolation",
         cce: None,
+        description: "Prevents unprivileged users from creating user namespaces. \
+                      Unprivileged user namespaces are one of the most commonly \
+                      exploited kernel features for container escapes.",
+        recommended: Some("0 (restricted to root)"),
     },
     // ── Filesystem Safety ────────────────────────────────────────────────
     IndicatorDescriptor {
@@ -274,6 +332,10 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
                     directories (e.g., /tmp); following symlinks owned by others is blocked.",
         nist_controls: "NIST 800-53 AC-6(1), CM-6(a); NSA RTB: filesystem hardening",
         cce: Some("CCE-88796-8"),
+        description: "Prevents following symlinks in world-writable directories when \
+                      owned by someone other than the caller. Blocks classic TOCTOU \
+                      attacks using /tmp symlinks.",
+        recommended: Some("1 (protected)"),
     },
     IndicatorDescriptor {
         id: IndicatorId::ProtectedHardlinks,
@@ -287,6 +349,10 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
                     own, blocking privilege escalation via SUID binaries.",
         nist_controls: "NIST 800-53 AC-6(1), CM-6(a); NSA RTB: filesystem hardening",
         cce: Some("CCE-86689-7"),
+        description: "Prevents creating hard links to files the caller does not own. \
+                      Without this, an attacker can hardlink a SUID binary into a \
+                      directory they control.",
+        recommended: Some("1 (protected)"),
     },
     IndicatorDescriptor {
         id: IndicatorId::ProtectedFifos,
@@ -300,6 +366,10 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
                     in world-writable sticky directories that they do not own.",
         nist_controls: "NIST 800-53 SI-10, CM-7; NSA RTB: filesystem hardening",
         cce: None,
+        description: "Prevents privileged processes from writing to FIFOs they do not \
+                      own in sticky directories. Blocks data interception via \
+                      predictable pipe names in /tmp.",
+        recommended: Some("2 (fully protected)"),
     },
     IndicatorDescriptor {
         id: IndicatorId::ProtectedRegular,
@@ -313,6 +383,10 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
                     files in world-writable sticky directories that they do not own.",
         nist_controls: "NIST 800-53 SI-10, CM-7; NSA RTB: filesystem hardening",
         cce: None,
+        description: "Prevents privileged processes from writing to regular files they \
+                      do not own in sticky directories. Blocks replacement of trusted \
+                      files via predictable paths in /tmp.",
+        recommended: Some("2 (fully protected)"),
     },
     IndicatorDescriptor {
         id: IndicatorId::SuidDumpable,
@@ -331,6 +405,10 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         //   CCE-88732-3 (coredump_disable_storage, systemd layer)
         // UMRS checks the kernel sysctl directly.
         cce: None,
+        description: "Controls whether SUID and privileged processes produce core dumps. \
+                      Core dumps can contain encryption keys, passwords, and session \
+                      tokens from process memory.",
+        recommended: Some("0 (no core dumps)"),
     },
     // ── Boot-time / kernel cmdline ───────────────────────────────────────
     IndicatorDescriptor {
@@ -349,6 +427,10 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
                     modification by root, preserving Secure Boot guarantees.",
         nist_controls: "NIST 800-53 CM-7, SI-7; NSA RTB: boot integrity",
         cce: None,
+        description: "Kernel lockdown LSM restricts operations that let root modify the \
+                      running kernel. Without it, boot-time integrity checks can be \
+                      bypassed after the system is up.",
+        recommended: Some("integrity or confidentiality (lockdown active)"),
     },
     IndicatorDescriptor {
         id: IndicatorId::ModuleSigEnforce,
@@ -365,6 +447,10 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         // UMRS proactive check exceeds STIG baseline (STIG audits reactively via
         // audit rules CCE-89982-3, CCE-88638-2, CCE-90172-8 instead).
         cce: None,
+        description: "Requires all kernel modules to be cryptographically signed. \
+                      Without this, any code can be loaded as a kernel module, \
+                      defeating lockdown and enabling rootkits.",
+        recommended: Some("module.sig_enforce=1 in cmdline"),
     },
     IndicatorDescriptor {
         id: IndicatorId::Mitigations,
@@ -379,6 +465,10 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
                     must not be disabled; `mitigations=off` is a critical weakening flag.",
         nist_controls: "NIST 800-53 SI-16, SC-39; NSA RTB: CPU vulnerability mitigations",
         cce: None,
+        description: "Umbrella switch: when mitigations=off is present, ALL CPU \
+                      vulnerability mitigations (Spectre, Meltdown, MDS) are disabled \
+                      at once. Should never be present in production.",
+        recommended: Some("remove mitigations=off from cmdline"),
     },
     IndicatorDescriptor {
         id: IndicatorId::Pti,
@@ -393,6 +483,10 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
                     explicitly disabled; `pti=off` removes kernel address space protection.",
         nist_controls: "NIST 800-53 SI-16; NSA RTB: CPU vulnerability mitigations",
         cce: Some("CCE-88971-7"),
+        description: "Page Table Isolation mitigates Meltdown (CVE-2017-5754). When \
+                      pti=off is present, any process can read arbitrary kernel memory \
+                      on affected CPUs.",
+        recommended: Some("remove pti=off from cmdline"),
     },
     IndicatorDescriptor {
         id: IndicatorId::RandomTrustCpu,
@@ -410,6 +504,10 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
                     RHEL 10 defaults to not trusting it.",
         nist_controls: "NIST 800-53 SC-12; NIST SP 800-90B entropy requirements",
         cce: None,
+        description: "Controls whether the kernel unconditionally trusts the CPU RNG \
+                      (RDRAND). Trusting it exclusively risks weak key generation if \
+                      the CPU RNG is compromised or backdoored.",
+        recommended: Some("remove random.trust_cpu=on from cmdline"),
     },
     IndicatorDescriptor {
         id: IndicatorId::RandomTrustBootloader,
@@ -423,6 +521,10 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
                     boot chain; absent Secure Boot attestation, the seed is untrusted.",
         nist_controls: "NIST 800-53 SC-12, SI-7; NIST SP 800-90B entropy requirements",
         cce: None,
+        description: "Controls whether the kernel trusts entropy from the bootloader. \
+                      Without a verified boot chain, a predictable seed can weaken all \
+                      cryptographic key generation during that boot.",
+        recommended: Some("remove random.trust_bootloader=on from cmdline"),
     },
     // ── Special ──────────────────────────────────────────────────────────
     IndicatorDescriptor {
@@ -440,6 +542,10 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         // the kernel enforcement state directly — nearest STIG anchor, not exact equivalent.
         // CCE-89085-5 (RHEL 10 STIG, scap-security-guide 2026-03-17)
         cce: Some("CCE-89085-5"),
+        description: "FIPS 140-2/3 mode restricts the system to NIST-validated \
+                      cryptographic algorithms. Required for DoD and federal deployments \
+                      processing CUI.",
+        recommended: Some("1 (FIPS mode active)"),
     },
     // ── modprobe.d (Phase 2a) ─────────────────────────────────────────────
     IndicatorDescriptor {
@@ -454,6 +560,10 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
                     byte/packet counters used by audit and firewall logging tools.",
         nist_controls: "NIST 800-53 AU-12, CM-6; NSA RTB: audit trail completeness",
         cce: None,
+        description: "Enables per-connection byte and packet counters in netfilter. \
+                      Without it, network audit logs lack the traffic volume data \
+                      needed for anomaly detection and forensic reconstruction.",
+        recommended: Some("1 (accounting enabled)"),
     },
     IndicatorDescriptor {
         id: IndicatorId::BluetoothBlacklisted,
@@ -468,6 +578,10 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         nist_controls: "NIST 800-53 AC-18(3), AC-18(a), CM-6(a), CM-7(a), CM-7(b), MP-7; \
                         NSA RTB: attack surface reduction; CMMC CM.L2-3.4.6",
         cce: Some("CCE-87455-2"),
+        description: "Bluetooth stack is blacklisted and cannot load. The Bluetooth \
+                      protocol stack is large, historically vulnerability-prone, and \
+                      serves no purpose on server infrastructure.",
+        recommended: Some("blacklist bluetooth in modprobe.d"),
     },
     IndicatorDescriptor {
         id: IndicatorId::UsbStorageBlacklisted,
@@ -483,6 +597,10 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         nist_controls: "NIST 800-53 CM-6(a), CM-7(a), CM-7(b), MP-7; \
                         NSA RTB: media protection; CMMC MP.L2-3.8.7",
         cce: Some("CCE-89301-6"),
+        description: "USB mass storage module is blacklisted. USB storage is a primary \
+                      data exfiltration vector — blacklisting prevents copying data \
+                      even if someone physically connects a drive.",
+        recommended: Some("blacklist usb_storage in modprobe.d"),
     },
     IndicatorDescriptor {
         id: IndicatorId::FirewireCoreBlacklisted,
@@ -498,6 +616,10 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         nist_controls: "NIST 800-53 SI-7, CM-7; NSA RTB: physical attack surface \
                         reduction",
         cce: None,
+        description: "FireWire module is blacklisted. FireWire uses DMA with direct \
+                      access to system RAM, allowing an attacker with physical access \
+                      to read and write arbitrary memory.",
+        recommended: Some("blacklist firewire_core in modprobe.d"),
     },
     IndicatorDescriptor {
         id: IndicatorId::ThunderboltBlacklisted,
@@ -512,6 +634,10 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         nist_controls: "NIST 800-53 SI-7, CM-7; NSA RTB: physical attack surface \
                         reduction; CMMC CM.L2-3.4.6",
         cce: None,
+        description: "Thunderbolt module is blacklisted. Like FireWire, Thunderbolt \
+                      uses DMA that can bypass IOMMU protections and expose system \
+                      memory to physical-access attackers.",
+        recommended: Some("blacklist thunderbolt in modprobe.d"),
     },
     // ── CPU mitigation sub-indicators (Phase 2b) ─────────────────────────
     // These complement the umbrella `Mitigations` indicator (which checks for
@@ -532,6 +658,8 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
                     branch-predictor injection attacks between processes and the kernel.",
         nist_controls: "NIST 800-53 SI-16, SC-39; NSA RTB: CPU vulnerability mitigations",
         cce: None,
+        description: "",
+        recommended: None,
     },
     IndicatorDescriptor {
         id: IndicatorId::SpectreV2UserOff,
@@ -546,6 +674,8 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
                     cross-process speculation exposure.",
         nist_controls: "NIST 800-53 SI-16, SC-39; NSA RTB: CPU vulnerability mitigations",
         cce: None,
+        description: "",
+        recommended: None,
     },
     IndicatorDescriptor {
         id: IndicatorId::MdsOff,
@@ -560,6 +690,8 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
                     hypervisor memory across fill-buffer boundaries.",
         nist_controls: "NIST 800-53 SI-16, SC-39; NSA RTB: CPU vulnerability mitigations",
         cce: None,
+        description: "",
+        recommended: None,
     },
     IndicatorDescriptor {
         id: IndicatorId::TsxAsyncAbortOff,
@@ -573,6 +705,8 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
                     CVE-2019-11135, which leaks data via asynchronous TSX aborts.",
         nist_controls: "NIST 800-53 SI-16, SC-39; NSA RTB: CPU vulnerability mitigations",
         cce: None,
+        description: "",
+        recommended: None,
     },
     IndicatorDescriptor {
         id: IndicatorId::L1tfOff,
@@ -587,6 +721,8 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
                     VM and process boundaries.",
         nist_controls: "NIST 800-53 SI-16, SC-39; NSA RTB: CPU vulnerability mitigations",
         cce: None,
+        description: "",
+        recommended: None,
     },
     IndicatorDescriptor {
         id: IndicatorId::RetbleedOff,
@@ -601,6 +737,8 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
                     that bypass retpoline on affected CPUs.",
         nist_controls: "NIST 800-53 SI-16, SC-39; NSA RTB: CPU vulnerability mitigations",
         cce: None,
+        description: "",
+        recommended: None,
     },
     IndicatorDescriptor {
         id: IndicatorId::SrbdsOff,
@@ -615,6 +753,8 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
                     via sampling attacks.",
         nist_controls: "NIST 800-53 SI-16, SC-39; NSA RTB: CPU vulnerability mitigations",
         cce: None,
+        description: "",
+        recommended: None,
     },
     IndicatorDescriptor {
         id: IndicatorId::NoSmtOff,
@@ -629,6 +769,8 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
                     depend on SMT being disabled.",
         nist_controls: "NIST 800-53 SI-16, SC-39; NSA RTB: CPU vulnerability mitigations",
         cce: None,
+        description: "",
+        recommended: None,
     },
     // ── Kernel core dump (Phase 2b) ──────────────────────────────────────
     IndicatorDescriptor {
@@ -650,5 +792,31 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         nist_controls: "NIST 800-53 SC-7(10), SC-28, CM-6, AU-9; NSA RTB: information \
                         disclosure prevention; CMMC SC.L2-3.13.10",
         cce: Some("CCE-86714-3"),
+        description: "",
+        recommended: None,
     },
 ];
+
+// ===========================================================================
+// Catalog lookup
+// ===========================================================================
+
+/// Look up an indicator descriptor by its typed identifier.
+///
+/// Searches the static `INDICATORS` array for the entry whose `id` matches
+/// the supplied `IndicatorId`. Returns `None` only if the id is not present
+/// in the catalog — which would indicate a programming error, since the
+/// catalog is intended to cover every `IndicatorId` variant.
+///
+/// Callers that need both the description and recommendation for display
+/// purposes should call `lookup()` once and access both fields from the
+/// returned descriptor, rather than calling separate helper functions.
+///
+/// NIST SP 800-53 SA-5: system documentation — centralised lookup ensures
+/// all display consumers access the same authoritative descriptor text.
+/// NIST SP 800-53 CM-6: configuration settings — remediation guidance is
+/// accessible to any reporting consumer via this function.
+#[must_use = "catalog lookup result should be used for display or assessment"]
+pub fn lookup(id: IndicatorId) -> Option<&'static IndicatorDescriptor> {
+    INDICATORS.iter().find(|d| d.id == id)
+}

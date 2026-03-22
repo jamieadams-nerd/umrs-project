@@ -13,21 +13,18 @@ Resolved entries are periodically archived to `notes-archive-*.md`.
 ### 2026-03-20 — doc-sync: umrs-tui — Kernel tab Phases 1-4 complete
 
 **To:** tech-writer (Von Neumann)
-**Status:** open
+**Status:** partial — crate rename addressed; ops/tool docs pending
 
-Rusty completed kernel tab enhancement Phases 1-4 in `umrs-tui/src/main.rs`.
+Rusty completed kernel tab enhancement Phases 1-4. Note: `umrs-tui` has been renamed to
+`umrs-ui` (library) and `umrs-uname` (binary). Doc sync pass (2026-03-22) updated all
+`umrs-tui` references in docs.
 
-Changes affecting documentation:
-- Value translations: integer indicators now show parenthetical meanings (e.g., `2 (full ASLR)`)
-- Group descriptions: each of the 6 indicator groups shows a 1-2 sentence explanation below its title
-- Trust / Evidence tab: "No downgrade — full trust retained" replaces bare "none"; contradictions get an explanation row
-- New key bindings: `?` and `F1` open a contextual help overlay for the current tab
-
-Operations reference guide (docs/modules/operations/ or docs/modules/umrs-tools/) needs updating:
+Still needed — operations/tool reference docs:
 - Key bindings table: add `?` / `F1` → ShowHelp
 - Trust Evidence tab section: update downgrade reasons description to reflect positive framing
 - Kernel Security tab section: note integer values now include plain-language annotations
 - Source of truth for all indicator descriptions: `.claude/agent-memory/security-auditor/indicator-definitions-plain-language.md`
+- Target file: `docs/modules/umrs-tools/pages/umrs-state.adoc` (or a new umrs-uname page — senior-tech-writer created `umrs-uname.adoc` on 2026-03-22)
 
 ---
 

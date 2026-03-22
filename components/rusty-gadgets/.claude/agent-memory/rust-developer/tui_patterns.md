@@ -1,10 +1,10 @@
 ---
-name: umrs-tui architecture and patterns
-description: Architecture decisions, trait patterns, and coding conventions for the umrs-tui crate
+name: umrs-ui architecture and patterns
+description: Architecture decisions, trait patterns, and coding conventions for the umrs-ui crate (renamed from umrs-tui 2026-03-22)
 type: project
 ---
 
-# umrs-tui Patterns
+# umrs-ui Patterns (renamed from umrs-tui 2026-03-22)
 
 ## Trait Design
 
@@ -13,8 +13,8 @@ mutable counterpart owned by the calling binary. This separation means `render_a
 takes `&dyn AuditCardApp` (object-safe) and `&AuditCardState`.
 
 New methods on `AuditCardApp` MUST have defaults — the trait has two consumers
-(`main.rs` OS detect binary, `bin/file_stat.rs`) and potentially external crates.
-Breaking changes to the trait require updating both consumers.
+(`umrs-ui/src/main.rs` = `umrs-uname`, `umrs-stat/src/main.rs` = `umrs-stat`) and
+potentially external crates. Breaking changes to the trait require updating both consumers.
 
 ## ColumnLayout Pattern
 

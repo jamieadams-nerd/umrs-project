@@ -13,16 +13,16 @@ bash -c 'curl -L -s --max-time 60 -A "Mozilla/5.0" "<pdf-url>" > <dest.pdf>'
 Rules: MUST use `>` inside bash -c string. `curl -o <path>` as separate arg is blocked by sandbox.
 Verify PDF: `head -c 4 <file>` must show `%PDF`.
 
-## Source Availability (updated 2026-03-16)
+## Source Availability (updated 2026-03-22)
 
-- developers.google.com: WebFetch blocked; **curl WORKS** (use User-Agent)
-- nist.gov: WebFetch blocked; **curl WORKS** (use User-Agent)
-- plainlanguage.gov PDF (FederalPLGuidelines.pdf): **DEAD URL** — 301 to digital.gov; PDF gone
-- plainlanguage.gov / digital.gov web pages: JavaScript SPAs — curl returns empty shells
-- Use GSA GitHub raw: `raw.githubusercontent.com/GSA/plainlanguage.gov/main/_pages/guidelines/`
-- everyspec.com: **curl WORKS** — Jamie-approved for unclassified DoD specs (2026-03-16)
-- docs.redhat.com PDFs: **curl WORKS** — URL pattern: `/en/documentation/red_hat_enterprise_linux/<ver>/pdf/<guide-name>/<title>-en-US.pdf`
-  e.g. `Red_Hat_Enterprise_Linux-10-Security_hardening-en-US.pdf` (title uses underscores, spaces become underscores)
+- hci.stanford.edu: **BLOCKED by RHEL10 FIPS** — TLS `ems not enabled`; WebFetch HTML only; Stanford CS147 = manual download
+- worrydream.com, isko.org, ocw.mit.edu, inlibra.com, bazerman.education.ucsb.edu: **curl WORKS**
+- ocw.mit.edu: hash-prefixed PDFs — scrape `/resources/<name>/` page to get hash, then fetch `/<hash>_<filename>.pdf`
+- niso.org: Z39.19 at `http://groups.niso.org/higherlogic/ws/public/download/12591/z39-19-2005r2010.pdf`
+- developers.google.com, nist.gov: WebFetch blocked; curl WORKS
+- plainlanguage.gov PDF: DEAD; use GSA GitHub raw instead
+- everyspec.com: curl WORKS — Jamie-approved for unclassified DoD specs
+- docs.redhat.com PDFs: curl WORKS — pattern `/en/documentation/red_hat_enterprise_linux/<ver>/pdf/<guide-name>/<Title-en-US.pdf>`
 
 ## Reference Library
 
@@ -60,6 +60,14 @@ Collections and status as of 2026-03-15:
 | tech-writer-corpus | MS Style Guide, Google Style Guide, MIL-STD-38784B, Plain Language, NIST Author Instructions, CC Parts 1+2, RHEL 10 security guides (4 PDFs) | Ingested (2026-03-17) | 2017 |
 | scap-security-guide | RHEL 10 STIG playbook preprocessed indexes (451 signals, CCE→NIST table) | Ingested (2026-03-17) | 7 |
 | info-theory-foundations | 12 research summaries: Shannon/MacKay/Rissanen/Kolmogorov/Dijkstra/A*/Avis-Fukuda/Edmonds/HNSW/ANN-survey/spectral/AC + synthesis | Written 2026-03-20 — awaiting ingestion | 0 |
+| knowledge-organization/ieko | 119 IEKO HTML articles (isko.org/cyclo) | Downloaded 2026-03-22 — awaiting ingestion | 0 |
+| knowledge-organization/texts | Svenonius Ch.5 + Hjørland KO theories | Downloaded 2026-03-22 — awaiting ingestion | 0 |
+| hci-courses/mit-6831 | 25 MIT OCW 6.831 lecture PDFs (CC BY-NC-SA) | Downloaded 2026-03-22 — awaiting ingestion | 0 |
+| hci-courses/stanford-cs147 | Stanford CS147 AU2023 lectures | REQUIRES MANUAL DOWNLOAD — FIPS TLS block | 0 |
+| hci-courses/theory-papers | Blackwell/Green Cognitive Dimensions + Vannevar Bush 1945 | Downloaded 2026-03-22 — awaiting ingestion | 0 |
+| technical-communication/theory | Miller "Genre as Social Action" + Bazerman genre chapter | Downloaded 2026-03-22 — awaiting ingestion | 0 |
+| information-architecture/theory | Pirolli ch.1 + Precision Content IA white paper | Downloaded 2026-03-22 — awaiting ingestion | 0 |
+| information-architecture/standards | NISO Z39.19-2005 (R2010) controlled vocabularies standard | Downloaded 2026-03-22 — awaiting ingestion | 0 |
 
 Full source URL list for update checks: see `rag-collections.md` in this directory.
 PQC status tracker (team-readable): see `pqc-tracker.md` in this directory.
@@ -122,6 +130,9 @@ Existing reports:
 - `refs/reports/nara-cui-registry-crossref.md` (2026-03-21)
   Topics: NARA canonical CUI vs cui-labels.json audit; 6 standalone-vs-group errors (CTI/NNPI/OPSEC/PROT/PSEC/RAIL);
   18 OURS_ONLY entries: 7 fabricated (CHEM,PCI,RECS,LEGL,AVIATION,MARITIME,PIPELINE), 7 wrong abbreviations,
+- `refs/reports/agent-knowledge-acquisition-plan.md` (2026-03-21)
+  Topics: HCI/IA/KO/TechComm open-access source inventory; 12 Tier-1 zero-cost resources; canonical reading
+  lists per domain; YouTube transcript pipeline logistics; ISKO IEKO, Stanford CS147/CS347, MIT 6.831 coverage
   FEDCON misclassified as category (it is a dissemination control), TRANSPORT/GOVT are invented groups
 
 ## Retrieval Patterns (learned 2026-03-11)
@@ -152,33 +163,16 @@ Existing reports:
 
 ## Retrieval Notes (learned 2026-03-12)
 
-- OASIS DITA 1.3 Part 2 PDF (dita-v1.3-part2-tech-content.pdf) is a valid PDF but ingest.py PDF
-  reader fails to open it — falls back to HTML version. HTML version ingested successfully (100 chunks).
-  Relevant for future: if a PDF is valid but ingest fails, try HTML equivalent from same source.
-- DoD 5200.01 volumes are accessible at esd.whs.mil (official DoD Issuances portal):
-  Vol1: https://www.esd.whs.mil/Portals/54/Documents/DD/issuances/dodm/520001m_vol1.pdf
-  Vol2: https://www.esd.whs.mil/portals/54/Documents/DD/issuances/dodm/520001m_vol2.pdf
-  Vol3: https://www.esd.whs.mil/Portals/54/Documents/DD/issuances/dodm/520001_p.PDF
-  esd.whs.mil is official .mil DoD Issuances site. Confirm approval before adding to library —
-  not on the current approved source list in role instructions, but is a legitimate .mil domain.
-
-## Retrieval Notes for JS-Rendered Pages
-
-Some pages return only CSS/JS framework code via WebFetch (no article body):
-- Sectigo blog (Nuxt.js): use search index snippets + write a stub noting the issue
-- Terra Quantum (React/Gatsby): same approach
-- Pattern: fetch the page, note it is JS-rendered, search for indexed snippet via WebSearch,
-  write stub with `## Note on Retrieval` header explaining the limitation
+- If a PDF fails ingest.py, try the HTML equivalent from the same source (e.g. OASIS DITA)
+- DoD 5200.01: esd.whs.mil/Portals/54/Documents/DD/issuances/dodm/520001m_vol{1,2}.pdf
+- JS-rendered pages (Nuxt/React/Gatsby): curl gets empty shell; use WebSearch snippets + write stub with `## Note on Retrieval`
 
 ## scap-security-guide Collection Notes (2026-03-17)
 
-- 451 STIG signals for RHEL 10; `stig-signal-index.md` and `cce-nist-crossref.md` in `.claude/references/scap-security-guide/`
-- **Chunking limitation:** both index files are single-heading flat markdown tables → each stored as one 20k+ token chunk
-  - RAG semantic search always returns same two chunks — not discriminating
-  - Workaround: read files directly with Read tool for CCE/signal lookups
-  - Fix: re-generate with alphabetical section headings (`## Signals: A-C`, etc.), then `--force` re-ingest
-- Plan: `.claude/plans/scap-stig-corpus-plan.md` — Phases 2-3 (agent familiarization + code integration) pending
-- Key UMRS-relevant signals: sysctl kernel hardening (~35), SELinux state/policytype, audit kmod rules, FIPS crypto policy
+- 451 STIG signals for RHEL 10; index files in `.claude/references/scap-security-guide/`
+- Chunking limitation: flat tables → one chunk per file; use Read tool directly for CCE/signal lookups
+- Fix pending: add alphabetical section headings then `--force` re-ingest
+- Key signals: sysctl kernel hardening (~35), SELinux state/policytype, audit kmod rules, FIPS crypto policy
 
 ## Standing Refresh Tasks
 
@@ -189,22 +183,10 @@ On "refresh library" or "check for updates":
 4. Post cross-team note summarizing changes; create tasks for tech-writer if docs are affected
 
 ## Pending Items
-- DISA RHEL 9 STIG v2r5: URL confirmed; needs write permission to `refs/dod/stig/`
-- CIS RHEL 9 Benchmark: free registration required at cisecurity.org; manual download
-- DISA RHEL 10 STIG: NOT YET PUBLISHED as of 2026-03-17; monitor public.cyber.mil
-- NSA RTB VNSSA and RAIN: referenced in CLAUDE.md; may be distribution-restricted
-- Classic papers (Clark-Wilson, Graham-Denning, HRU): require manual IEEE/ACM download
-- Version check due 2026-04-12
-- accreditation-artifacts, tui-cli, info-theory-foundations: READY FOR RAG INGESTION
-- tech-writer-corpus: Phase 4+ (Apple, DigitalOcean, Mailchimp, NASA) not yet acquired
+- Stanford CS147: MANUAL DOWNLOAD — 20 PDFs; see `.claude/references/hci-courses/stanford-cs147/SOURCE.md`
+- RAG ingestion pending: accreditation-artifacts, tui-cli, info-theory-foundations, all 2026-03-22 Tier 1 collections
 - OSCAL v1.1.2 schemas: not yet in refs/ — HIGH PRIORITY (assessment engine dep)
-- Five Eyes classification docs: needs source approval for 4 gov sites (see research-priorities.md)
-- 32 CFR Part 2002, EO 13556: needs source approval (federalregister.gov)
-- NIST SP 800-172, 800-161r1, 800-60v1r1: ready to download (nvlpubs.nist.gov)
-
-Full research roadmap: see `research-priorities.md` in this directory.
-- `ratatui.rs` and `docs.rs`: NOT in WebFetch allowlist; add to settings.json if verbatim fetch needed
-
-## CPU Security Corpus
-See `cpu-corpus-state.md` for phase completion, key findings, and new signal proposals.
-Phases 1A + 1B complete. 1C/1D/1E research done, files not yet written. 1F-1K not started.
+- DISA RHEL 10 STIG: NOT YET PUBLISHED as of 2026-03-17; monitor public.cyber.mil
+- Version check due 2026-04-12
+- Full pending list: see `research-priorities.md` in this directory
+- CPU corpus: see `cpu-corpus-state.md` for phase state

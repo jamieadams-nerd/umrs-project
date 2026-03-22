@@ -36027,5 +36027,866 @@
     "chunks_stored": 8,
     "collection": "sage-outreach-corpus",
     "ingested_date": "2026-03-20T12:46:59.372946+00:00"
+  },
+  "knowledge-organization/ieko/3ks.html": {
+    "hash": "cb2a8de14e01507c",
+    "converted_to": "converted/knowledge-organization/ieko/3ks.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:01:50.747765+00:00"
+  },
+  "knowledge-organization/ieko/SOURCE.md": {
+    "hash": "60501e93d4bf3e7c",
+    "converted_to": "converted/knowledge-organization/ieko/SOURCE.md",
+    "chunks_stored": 2,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:01:51.155119+00:00"
+  },
+  "knowledge-organization/ieko/alphabetization.html": {
+    "hash": "d255f1f926f75365",
+    "converted_to": "converted/knowledge-organization/ieko/alphabetization.md",
+    "chunks_stored": 27,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:01:53.551511+00:00"
+  },
+  "knowledge-organization/ieko/anzsrc.html": {
+    "hash": "f9337848c4c45977",
+    "converted_to": "converted/knowledge-organization/ieko/anzsrc.md",
+    "chunks_stored": 19,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:01:55.480411+00:00"
+  },
+  "knowledge-organization/ieko/archaeology.html": {
+    "hash": "81fd094c3bbf11b4",
+    "converted_to": "converted/knowledge-organization/ieko/archaeology.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:01:59.123137+00:00"
+  },
+  "knowledge-organization/ieko/art.html": {
+    "hash": "6bff2e9c0fdc88d5",
+    "converted_to": "converted/knowledge-organization/ieko/art.md",
+    "chunks_stored": 45,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:02:02.315101+00:00"
+  },
+  "knowledge-organization/ieko/automatic.html": {
+    "hash": "996b05314723b206",
+    "converted_to": "converted/knowledge-organization/ieko/automatic.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:02:09.324002+00:00"
+  },
+  "knowledge-organization/ieko/bc2.html": {
+    "hash": "b1b2b40eb73ec8b4",
+    "converted_to": "converted/knowledge-organization/ieko/bc2.md",
+    "chunks_stored": 113,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:02:16.239938+00:00"
+  },
+  "knowledge-organization/ieko/bcc.html": {
+    "hash": "f27f61df73bf374e",
+    "converted_to": "converted/knowledge-organization/ieko/bcc.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:02:22.396924+00:00"
+  },
+  "knowledge-organization/ieko/bibliography.html": {
+    "hash": "6f71dd2fc8c495c3",
+    "converted_to": "converted/knowledge-organization/ieko/bibliography.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:02:29.064189+00:00"
+  },
+  "knowledge-organization/ieko/bisac.html": {
+    "hash": "5736bff56932d727",
+    "converted_to": "converted/knowledge-organization/ieko/bisac.md",
+    "chunks_stored": 19,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:02:32.137172+00:00"
+  },
+  "knowledge-organization/ieko/bliss.html": {
+    "hash": "12f20a8df49da1b2",
+    "converted_to": "converted/knowledge-organization/ieko/bliss.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:03:02.494943+00:00"
+  },
+  "knowledge-organization/ieko/boolean.html": {
+    "hash": "9dc5897c9a5f5d6b",
+    "converted_to": "converted/knowledge-organization/ieko/boolean.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:03:11.865282+00:00"
+  },
+  "knowledge-organization/ieko/brown.html": {
+    "hash": "b158b5816e5238af",
+    "converted_to": "converted/knowledge-organization/ieko/brown.md",
+    "chunks_stored": 21,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:03:16.518615+00:00"
+  },
+  "knowledge-organization/ieko/cataloging.html": {
+    "hash": "5f3832faa811bff6",
+    "converted_to": "converted/knowledge-organization/ieko/cataloging.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:03:30.650432+00:00"
+  },
+  "knowledge-organization/ieko/citation.html": {
+    "hash": "20536ba2f585373a",
+    "converted_to": "converted/knowledge-organization/ieko/citation.md",
+    "chunks_stored": 54,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:03:37.662193+00:00"
+  },
+  "knowledge-organization/ieko/citation_analysis.html": {
+    "hash": "7087b2222f3dba0f",
+    "converted_to": "converted/knowledge-organization/ieko/citation_analysis.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:03:44.019402+00:00"
+  },
+  "knowledge-organization/ieko/classification.html": {
+    "hash": "629e5695d1bc91b6",
+    "converted_to": "converted/knowledge-organization/ieko/classification.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:03:58.670346+00:00"
+  },
+  "knowledge-organization/ieko/colon_classification.html": {
+    "hash": "933f16419c6a4907",
+    "converted_to": "converted/knowledge-organization/ieko/colon_classification.md",
+    "chunks_stored": 54,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:04:01.651143+00:00"
+  },
+  "knowledge-organization/ieko/colour.html": {
+    "hash": "c7e54b3e6cd03f09",
+    "converted_to": "converted/knowledge-organization/ieko/colour.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:04:10.747665+00:00"
+  },
+  "knowledge-organization/ieko/content_analysis.html": {
+    "hash": "0ae322e0d9c45c87",
+    "converted_to": "converted/knowledge-organization/ieko/content_analysis.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:04:13.065289+00:00"
+  },
+  "knowledge-organization/ieko/control.html": {
+    "hash": "8c52a3e9c1ec2da0",
+    "converted_to": "converted/knowledge-organization/ieko/control.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:04:16.368923+00:00"
+  },
+  "knowledge-organization/ieko/crdc.html": {
+    "hash": "3165e97da3975965",
+    "converted_to": "converted/knowledge-organization/ieko/crdc.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:04:26.828443+00:00"
+  },
+  "knowledge-organization/ieko/crg.html": {
+    "hash": "3c6d79ed7757c8d2",
+    "converted_to": "converted/knowledge-organization/ieko/crg.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:04:29.318123+00:00"
+  },
+  "knowledge-organization/ieko/dahlberg.html": {
+    "hash": "10c869649880488f",
+    "converted_to": "converted/knowledge-organization/ieko/dahlberg.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:04:38.562114+00:00"
+  },
+  "knowledge-organization/ieko/data.html": {
+    "hash": "dd497b069ba5ff03",
+    "converted_to": "converted/knowledge-organization/ieko/data.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:04:51.013809+00:00"
+  },
+  "knowledge-organization/ieko/data_documents.html": {
+    "hash": "391c6e177157ddd1",
+    "converted_to": "converted/knowledge-organization/ieko/data_documents.md",
+    "chunks_stored": 52,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:04:53.775283+00:00"
+  },
+  "knowledge-organization/ieko/ddc.html": {
+    "hash": "d5a50b6b6a238b9c",
+    "converted_to": "converted/knowledge-organization/ieko/ddc.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:05:05.820577+00:00"
+  },
+  "knowledge-organization/ieko/description.html": {
+    "hash": "f428fbad8146b03b",
+    "converted_to": "converted/knowledge-organization/ieko/description.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:05:10.621780+00:00"
+  },
+  "knowledge-organization/ieko/dikw.html": {
+    "hash": "daf87510505d5c89",
+    "converted_to": "converted/knowledge-organization/ieko/dikw.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:05:20.608704+00:00"
+  },
+  "knowledge-organization/ieko/discipline.html": {
+    "hash": "9bcfe424d5547ca3",
+    "converted_to": "converted/knowledge-organization/ieko/discipline.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:05:25.332486+00:00"
+  },
+  "knowledge-organization/ieko/document.html": {
+    "hash": "cc65ccd18a6813b0",
+    "converted_to": "converted/knowledge-organization/ieko/document.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:05:31.172232+00:00"
+  },
+  "knowledge-organization/ieko/document_retrieval.html": {
+    "hash": "8517a5c2005548b7",
+    "converted_to": "converted/knowledge-organization/ieko/document_retrieval.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:05:37.949982+00:00"
+  },
+  "knowledge-organization/ieko/domain_analysis.html": {
+    "hash": "284885a9c16390ef",
+    "converted_to": "converted/knowledge-organization/ieko/domain_analysis.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:05:51.068947+00:00"
+  },
+  "knowledge-organization/ieko/dsm.html": {
+    "hash": "c925c27533a2519d",
+    "converted_to": "converted/knowledge-organization/ieko/dsm.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:05:54.189333+00:00"
+  },
+  "knowledge-organization/ieko/education.html": {
+    "hash": "7cdbea336d42eae9",
+    "converted_to": "converted/knowledge-organization/ieko/education.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:06:04.400341+00:00"
+  },
+  "knowledge-organization/ieko/facet.html": {
+    "hash": "d6604be994bf8d73",
+    "converted_to": "converted/knowledge-organization/ieko/facet.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:06:09.350247+00:00"
+  },
+  "knowledge-organization/ieko/facet_analysis.html": {
+    "hash": "5e05a08d42b35e0a",
+    "converted_to": "converted/knowledge-organization/ieko/facet_analysis.md",
+    "chunks_stored": 20,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:06:11.867921+00:00"
+  },
+  "knowledge-organization/ieko/fictional.html": {
+    "hash": "3a42f7017cfd87e9",
+    "converted_to": "converted/knowledge-organization/ieko/fictional.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:06:15.063556+00:00"
+  },
+  "knowledge-organization/ieko/flickr.html": {
+    "hash": "607cec3c40ecb476",
+    "converted_to": "converted/knowledge-organization/ieko/flickr.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:06:18.626592+00:00"
+  },
+  "knowledge-organization/ieko/folk.html": {
+    "hash": "a875b094778c12b9",
+    "converted_to": "converted/knowledge-organization/ieko/folk.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:06:23.896280+00:00"
+  },
+  "knowledge-organization/ieko/foskett.html": {
+    "hash": "cfb998961723ac91",
+    "converted_to": "converted/knowledge-organization/ieko/foskett.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:06:25.209708+00:00"
+  },
+  "knowledge-organization/ieko/genealogical.html": {
+    "hash": "6989cad977fbe22c",
+    "converted_to": "converted/knowledge-organization/ieko/genealogical.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:06:28.151535+00:00"
+  },
+  "knowledge-organization/ieko/genre.html": {
+    "hash": "040aea4162a215de",
+    "converted_to": "converted/knowledge-organization/ieko/genre.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:06:33.865345+00:00"
+  },
+  "knowledge-organization/ieko/greco-roman.html": {
+    "hash": "a5d6af09f075c95a",
+    "converted_to": "converted/knowledge-organization/ieko/greco-roman.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:06:50.855729+00:00"
+  },
+  "knowledge-organization/ieko/grolier.html": {
+    "hash": "2ba18aa04d46285f",
+    "converted_to": "converted/knowledge-organization/ieko/grolier.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:06:55.098091+00:00"
+  },
+  "knowledge-organization/ieko/hierarchy.html": {
+    "hash": "7248c6bbbc04462d",
+    "converted_to": "converted/knowledge-organization/ieko/hierarchy.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:07:01.668300+00:00"
+  },
+  "knowledge-organization/ieko/hornbostel.html": {
+    "hash": "d728b6e440f3d5be",
+    "converted_to": "converted/knowledge-organization/ieko/hornbostel.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:07:07.440437+00:00"
+  },
+  "knowledge-organization/ieko/hypertext.html": {
+    "hash": "c7add873bafed12f",
+    "converted_to": "converted/knowledge-organization/ieko/hypertext.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:07:20.540667+00:00"
+  },
+  "knowledge-organization/ieko/icd.html": {
+    "hash": "100df85a7a6afad2",
+    "converted_to": "converted/knowledge-organization/ieko/icd.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:07:34.183636+00:00"
+  },
+  "knowledge-organization/ieko/ideal_language.html": {
+    "hash": "cadde92bed72cb2c",
+    "converted_to": "converted/knowledge-organization/ieko/ideal_language.md",
+    "chunks_stored": 61,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:07:39.169843+00:00"
+  },
+  "knowledge-organization/ieko/ilc.html": {
+    "hash": "5202b070126c6a19",
+    "converted_to": "converted/knowledge-organization/ieko/ilc.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:07:41.848338+00:00"
+  },
+  "knowledge-organization/ieko/indexing.html": {
+    "hash": "39f705812b3544d7",
+    "converted_to": "converted/knowledge-organization/ieko/indexing.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:07:55.141985+00:00"
+  },
+  "knowledge-organization/ieko/information.html": {
+    "hash": "8e8fa3311d834db0",
+    "converted_to": "converted/knowledge-organization/ieko/information.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:08:05.427625+00:00"
+  },
+  "knowledge-organization/ieko/integrative_levels.html": {
+    "hash": "339a2e5184c611cb",
+    "converted_to": "converted/knowledge-organization/ieko/integrative_levels.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:08:28.354018+00:00"
+  },
+  "knowledge-organization/ieko/interoperability.html": {
+    "hash": "3e2e2061f6d4bb87",
+    "converted_to": "converted/knowledge-organization/ieko/interoperability.md",
+    "chunks_stored": 66,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:08:33.129401+00:00"
+  },
+  "knowledge-organization/ieko/ir.html": {
+    "hash": "e64c85ddd1bccd66",
+    "converted_to": "converted/knowledge-organization/ieko/ir.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:08:42.265907+00:00"
+  },
+  "knowledge-organization/ieko/islamic.html": {
+    "hash": "fed1a4c0c2a3f6f8",
+    "converted_to": "converted/knowledge-organization/ieko/islamic.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:09:01.768631+00:00"
+  },
+  "knowledge-organization/ieko/jel.html": {
+    "hash": "d7d5644cc29c1fd4",
+    "converted_to": "converted/knowledge-organization/ieko/jel.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:09:07.278506+00:00"
+  },
+  "knowledge-organization/ieko/kdc.html": {
+    "hash": "77886438fe5820ca",
+    "converted_to": "converted/knowledge-organization/ieko/kdc.md",
+    "chunks_stored": 28,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:09:10.278067+00:00"
+  },
+  "knowledge-organization/ieko/keyword.html": {
+    "hash": "cb8bcb914f4d788d",
+    "converted_to": "converted/knowledge-organization/ieko/keyword.md",
+    "chunks_stored": 82,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:09:14.037951+00:00"
+  },
+  "knowledge-organization/ieko/kis.html": {
+    "hash": "50bbe2826e447dd8",
+    "converted_to": "converted/knowledge-organization/ieko/kis.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:09:17.139007+00:00"
+  },
+  "knowledge-organization/ieko/knowledge_organization.html": {
+    "hash": "5ecbe8db59641453",
+    "converted_to": "converted/knowledge-organization/ieko/knowledge_organization.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:09:20.399578+00:00"
+  },
+  "knowledge-organization/ieko/kos.html": {
+    "hash": "1a8d55ab6e7cede8",
+    "converted_to": "converted/knowledge-organization/ieko/kos.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:09:26.313045+00:00"
+  },
+  "knowledge-organization/ieko/lam.html": {
+    "hash": "c6fae6960cd10a3e",
+    "converted_to": "converted/knowledge-organization/ieko/lam.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:09:45.654185+00:00"
+  },
+  "knowledge-organization/ieko/lbc.html": {
+    "hash": "f4f749d1371bc66c",
+    "converted_to": "converted/knowledge-organization/ieko/lbc.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:09:51.643990+00:00"
+  },
+  "knowledge-organization/ieko/lcsh.html": {
+    "hash": "8e9dd9a4505a4ab6",
+    "converted_to": "converted/knowledge-organization/ieko/lcsh.md",
+    "chunks_stored": 17,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:09:53.161530+00:00"
+  },
+  "knowledge-organization/ieko/literary_warrant.html": {
+    "hash": "5d803fb8885da5eb",
+    "converted_to": "converted/knowledge-organization/ieko/literary_warrant.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:09:59.938465+00:00"
+  },
+  "knowledge-organization/ieko/logical_division.html": {
+    "hash": "fe2fa05702b8fc5c",
+    "converted_to": "converted/knowledge-organization/ieko/logical_division.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:10:04.718662+00:00"
+  },
+  "knowledge-organization/ieko/lrm.html": {
+    "hash": "30d87ecb0b2a0e4b",
+    "converted_to": "converted/knowledge-organization/ieko/lrm.md",
+    "chunks_stored": 10,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:10:06.151944+00:00"
+  },
+  "knowledge-organization/ieko/maniez.html": {
+    "hash": "31c9c459041b4f2f",
+    "converted_to": "converted/knowledge-organization/ieko/maniez.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:10:11.248429+00:00"
+  },
+  "knowledge-organization/ieko/mathematical_theory_of_classification.html": {
+    "hash": "764ebba04c688e0f",
+    "converted_to": "converted/knowledge-organization/ieko/mathematical_theory_of_classification.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:10:21.195437+00:00"
+  },
+  "knowledge-organization/ieko/mathematics.html": {
+    "hash": "09287860a3bb67cd",
+    "converted_to": "converted/knowledge-organization/ieko/mathematics.md",
+    "chunks_stored": 32,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:10:25.030924+00:00"
+  },
+  "knowledge-organization/ieko/metadata.html": {
+    "hash": "08b8aedb1a2a9938",
+    "converted_to": "converted/knowledge-organization/ieko/metadata.md",
+    "chunks_stored": 68,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:10:31.645170+00:00"
+  },
+  "knowledge-organization/ieko/ndc.html": {
+    "hash": "c9e8c91ce4620223",
+    "converted_to": "converted/knowledge-organization/ieko/ndc.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:10:34.973387+00:00"
+  },
+  "knowledge-organization/ieko/nomenclature.html": {
+    "hash": "3a9ed689f1f16e8b",
+    "converted_to": "converted/knowledge-organization/ieko/nomenclature.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:10:42.656581+00:00"
+  },
+  "knowledge-organization/ieko/notation.html": {
+    "hash": "fcf7a08cc5fd1723",
+    "converted_to": "converted/knowledge-organization/ieko/notation.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:10:49.039765+00:00"
+  },
+  "knowledge-organization/ieko/ontologies.html": {
+    "hash": "7149578bdb1e1b9d",
+    "converted_to": "converted/knowledge-organization/ieko/ontologies.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:10:56.418698+00:00"
+  },
+  "knowledge-organization/ieko/opac.html": {
+    "hash": "d92420b6f7383236",
+    "converted_to": "converted/knowledge-organization/ieko/opac.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:11:10.310278+00:00"
+  },
+  "knowledge-organization/ieko/paratext.html": {
+    "hash": "25d3269bbe5101f9",
+    "converted_to": "converted/knowledge-organization/ieko/paratext.md",
+    "chunks_stored": 33,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:11:12.668835+00:00"
+  },
+  "knowledge-organization/ieko/peirce.html": {
+    "hash": "850609cb98ec445f",
+    "converted_to": "converted/knowledge-organization/ieko/peirce.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:11:22.618553+00:00"
+  },
+  "knowledge-organization/ieko/periodization.html": {
+    "hash": "6a29d3b3c9d9629e",
+    "converted_to": "converted/knowledge-organization/ieko/periodization.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:11:25.286228+00:00"
+  },
+  "knowledge-organization/ieko/phenomenon.html": {
+    "hash": "33b6077dcf37576d",
+    "converted_to": "converted/knowledge-organization/ieko/phenomenon.md",
+    "chunks_stored": 26,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:11:32.032761+00:00"
+  },
+  "knowledge-organization/ieko/physh.html": {
+    "hash": "c24eca468aa58a42",
+    "converted_to": "converted/knowledge-organization/ieko/physh.md",
+    "chunks_stored": 22,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:11:34.593622+00:00"
+  },
+  "knowledge-organization/ieko/political.html": {
+    "hash": "eca0dd0dfbfe445a",
+    "converted_to": "converted/knowledge-organization/ieko/political.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:11:51.981999+00:00"
+  },
+  "knowledge-organization/ieko/precis.html": {
+    "hash": "9f83de007dcb91ed",
+    "converted_to": "converted/knowledge-organization/ieko/precis.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:12:19.511265+00:00"
+  },
+  "knowledge-organization/ieko/primitives.html": {
+    "hash": "c5cf98761b554c98",
+    "converted_to": "converted/knowledge-organization/ieko/primitives.md",
+    "chunks_stored": 77,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:12:25.273528+00:00"
+  },
+  "knowledge-organization/ieko/provenance.html": {
+    "hash": "0fcb91bdc8a741c9",
+    "converted_to": "converted/knowledge-organization/ieko/provenance.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:12:26.738866+00:00"
+  },
+  "knowledge-organization/ieko/psychology.html": {
+    "hash": "3754d7f50fdcdb0e",
+    "converted_to": "converted/knowledge-organization/ieko/psychology.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:12:38.201242+00:00"
+  },
+  "knowledge-organization/ieko/purposefulness.html": {
+    "hash": "efce744ee4b543cb",
+    "converted_to": "converted/knowledge-organization/ieko/purposefulness.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:12:43.257550+00:00"
+  },
+  "knowledge-organization/ieko/ranganathan.html": {
+    "hash": "700ab88b0070616a",
+    "converted_to": "converted/knowledge-organization/ieko/ranganathan.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:13:14.342269+00:00"
+  },
+  "knowledge-organization/ieko/research.html": {
+    "hash": "2239862682066142",
+    "converted_to": "converted/knowledge-organization/ieko/research.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:13:16.888381+00:00"
+  },
+  "knowledge-organization/ieko/review.html": {
+    "hash": "71cc63a61ddfa055",
+    "converted_to": "converted/knowledge-organization/ieko/review.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:13:22.695305+00:00"
+  },
+  "knowledge-organization/ieko/ric.html": {
+    "hash": "817d4c30094314cd",
+    "converted_to": "converted/knowledge-organization/ieko/ric.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:13:26.843076+00:00"
+  },
+  "knowledge-organization/ieko/rilm.html": {
+    "hash": "4ce04a5acb051229",
+    "converted_to": "converted/knowledge-organization/ieko/rilm.md",
+    "chunks_stored": 45,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:13:31.209342+00:00"
+  },
+  "knowledge-organization/ieko/sap.html": {
+    "hash": "be7ca9d54f4e6f68",
+    "converted_to": "converted/knowledge-organization/ieko/sap.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:13:43.981982+00:00"
+  },
+  "knowledge-organization/ieko/science.html": {
+    "hash": "f5111aa3042594b2",
+    "converted_to": "converted/knowledge-organization/ieko/science.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:14:04.565030+00:00"
+  },
+  "knowledge-organization/ieko/science_mapping.html": {
+    "hash": "ec13ac2cb67a52fc",
+    "converted_to": "converted/knowledge-organization/ieko/science_mapping.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:14:19.236919+00:00"
+  },
+  "knowledge-organization/ieko/se.html": {
+    "hash": "5deb23107acb6da6",
+    "converted_to": "converted/knowledge-organization/ieko/se.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:14:23.204060+00:00"
+  },
+  "knowledge-organization/ieko/skos.html": {
+    "hash": "55193b1f9e5dba83",
+    "converted_to": "converted/knowledge-organization/ieko/skos.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:14:27.033326+00:00"
+  },
+  "knowledge-organization/ieko/social.html": {
+    "hash": "d0e93f6762e573bc",
+    "converted_to": "converted/knowledge-organization/ieko/social.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:14:29.153047+00:00"
+  },
+  "knowledge-organization/ieko/social_sciences.html": {
+    "hash": "7ff87601d6ece10d",
+    "converted_to": "converted/knowledge-organization/ieko/social_sciences.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:14:33.048260+00:00"
+  },
+  "knowledge-organization/ieko/soil.html": {
+    "hash": "9690abefaaade31f",
+    "converted_to": "converted/knowledge-organization/ieko/soil.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:14:42.203721+00:00"
+  },
+  "knowledge-organization/ieko/species.html": {
+    "hash": "6a5424358cebd8f7",
+    "converted_to": "converted/knowledge-organization/ieko/species.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:14:55.002765+00:00"
+  },
+  "knowledge-organization/ieko/statistical.html": {
+    "hash": "44663d65c8b43107",
+    "converted_to": "converted/knowledge-organization/ieko/statistical.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:14:56.117365+00:00"
+  },
+  "knowledge-organization/ieko/stw.html": {
+    "hash": "42a6aec3c6756c64",
+    "converted_to": "converted/knowledge-organization/ieko/stw.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:14:57.477518+00:00"
+  },
+  "knowledge-organization/ieko/subject.html": {
+    "hash": "1d6a2544d1effc4c",
+    "converted_to": "converted/knowledge-organization/ieko/subject.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:15:02.467768+00:00"
+  },
+  "knowledge-organization/ieko/subject_analysis.html": {
+    "hash": "8a860f4911abcefb",
+    "converted_to": "converted/knowledge-organization/ieko/subject_analysis.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:15:04.846352+00:00"
+  },
+  "knowledge-organization/ieko/systems.html": {
+    "hash": "d1e0eb4c153f6d18",
+    "converted_to": "converted/knowledge-organization/ieko/systems.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:15:10.698836+00:00"
+  },
+  "knowledge-organization/ieko/tagging.html": {
+    "hash": "b98ab664907d92ac",
+    "converted_to": "converted/knowledge-organization/ieko/tagging.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:15:14.933048+00:00"
+  },
+  "knowledge-organization/ieko/terminology.html": {
+    "hash": "4a6d8b44af5d598f",
+    "converted_to": "converted/knowledge-organization/ieko/terminology.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:15:22.130947+00:00"
+  },
+  "knowledge-organization/ieko/theory.html": {
+    "hash": "61eebced5f04e834",
+    "converted_to": "converted/knowledge-organization/ieko/theory.md",
+    "chunks_stored": 32,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:15:25.152541+00:00"
+  },
+  "knowledge-organization/ieko/thesaurus.html": {
+    "hash": "524db7636d3a48e9",
+    "converted_to": "converted/knowledge-organization/ieko/thesaurus.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:15:30.035692+00:00"
+  },
+  "knowledge-organization/ieko/toc.html": {
+    "hash": "ec6947d522e6c653",
+    "converted_to": "converted/knowledge-organization/ieko/toc.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:15:37.563140+00:00"
+  },
+  "knowledge-organization/ieko/user_based.html": {
+    "hash": "44c7c55a8a6bd908",
+    "converted_to": "converted/knowledge-organization/ieko/user_based.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:15:43.802260+00:00"
+  },
+  "knowledge-organization/ieko/vickery.html": {
+    "hash": "d443d1d53dd64802",
+    "converted_to": "converted/knowledge-organization/ieko/vickery.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:15:56.859285+00:00"
+  },
+  "knowledge-organization/ieko/viniti.html": {
+    "hash": "d71572fd8e576bf6",
+    "converted_to": "converted/knowledge-organization/ieko/viniti.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:16:00.859270+00:00"
+  },
+  "knowledge-organization/ieko/web_archive.html": {
+    "hash": "c55b7496a13ceaf9",
+    "converted_to": "converted/knowledge-organization/ieko/web_archive.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:16:09.644164+00:00"
+  },
+  "knowledge-organization/ieko/wilson.html": {
+    "hash": "7758d5ed9b994dfc",
+    "converted_to": "converted/knowledge-organization/ieko/wilson.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:16:15.483954+00:00"
+  },
+  "knowledge-organization/ieko/work.html": {
+    "hash": "470d3f9037e22307",
+    "converted_to": "converted/knowledge-organization/ieko/work.md",
+    "chunks_stored": 1,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:16:18.886749+00:00"
+  },
+  "knowledge-organization/texts/SOURCE.md": {
+    "hash": "6a5d8dc59680bc5b",
+    "converted_to": "converted/knowledge-organization/texts/SOURCE.md",
+    "chunks_stored": 2,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:16:19.333362+00:00"
+  },
+  "knowledge-organization/texts/hjorland-theories-of-ko.pdf": {
+    "hash": "193b67867d672a8d",
+    "converted_to": "converted/knowledge-organization/texts/hjorland-theories-of-ko.md",
+    "chunks_stored": 24,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:16:21.053120+00:00"
+  },
+  "knowledge-organization/texts/svenonius-intellectual-foundation-ch5.pdf": {
+    "hash": "533a8a19ab20653c",
+    "converted_to": "converted/knowledge-organization/texts/svenonius-intellectual-foundation-ch5.md",
+    "chunks_stored": 18,
+    "collection": "knowledge-organization",
+    "ingested_date": "2026-03-22T17:16:22.240610+00:00"
   }
 }

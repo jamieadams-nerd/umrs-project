@@ -1,0 +1,1085 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>Data, big data and database semantics (IEKO)</title>
+<link rel="stylesheet" type="text/css" href="../isko.css" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:url" content="https://www.isko.org/cyclo/" />
+<meta name="twitter:title" content="Data, big data and database semantics (ISKO Encyclopedia of KO)" />
+<meta property="og:image" content="https://www.isko.org/cyclo/dikw1.jpg" />
+<meta name="twitter:description" content="It is argued that data should be defined as information on properties of units of analysis. Epistemologically it is important to establish that what is considered data by somebody need not be data for somebody else. This article considers the nature of data and &ldquo;big data&rdquo; and the relation between data, information, knowledge and documents. It is common for all these concepts that they are about phenomena produced in specific contexts for specific purposes and may be represented in documents, including as representations in databases. In that process, they are taken out of their original contexts and put into new ones and thereby data loses some or all their meaning due to the principle of semantic holism. Some of this lost meaning should be reestablished in the databases and the representations of data/documents cannot be understood as a neutral activity, but as an activity supporting the overall goal implicit in establishing the database. Utilizing (big) data (as it is the case with utilizing information, knowledge and documents) demands first of all the identification of the potentials of these data for relevant purposes. The most fruitful theoretical frame for knowledge organization and data science is the social epistemology suggested by Shera (1951). One important aspect about big data is that they are often unintentional traces we leave during all kinds of activities. Their potential to inform somebody about something is therefore less direct as compared to data that have been produced intentionally as, for example, scientific databases." />
+</head>
+<body>
+
+<a name="top"></a>
+
+<table>
+
+<tr>
+<td id="isko"><h1>I S K O</h1></td>
+<td id="banner"><h2><a href="index.html" style="text-decoration:none;">Encyclopedia of Knowledge Organization</h2></a></td>
+</tr>
+
+<tr>
+<td id="navigation">
+<a href="../index.php">home</a>
+<a href="../about.html">about ISKO</a>
+<a href="../join.html">join ISKO</a>
+<a href="../ko.html"><cite>Knowledge Organization</cite> journal</a>
+<a href="../events.html">ISKO events</a>
+<a href="../chapters.html">ISKO chapters</a>
+<a href="../people.html">ISKO people</a>
+<a href="../pubs.html">ISKO publications</a>
+<a href="index.html">Encyclopedia</a>
+<a href="../lit.html">KO literature</a>
+<a href="../inst.html">KO institutions</a>
+<a href="http://bartoc.org/" title="link to BARTOC">&#8663; KOS registry</a>
+<a href="http://www.isko-mms.net/home/" title="access-account required">&#128274; members</a>
+<a href="../contact.html">contact us</a>
+</td>
+<td id="content" rowspan="2">
+
+<p>&nbsp;
+
+<h2>Data
+<br><small><small>With big data and database semantics</small></small></h2>
+
+<blockquote>
+by <a href="authors#h">Birger Hj&oslash;rland</a></p>
+
+<p>Table of contents:
+
+<br><a style="text-decoration:none;" href="#1">1. Introduction</a>
+<br><a style="text-decoration:none;" href="#2">2. Defining data:</a> 
+<a style="text-decoration:none;" href="#2.1">2.1 Epistemological issues;</a> 
+<a style="text-decoration:none;" href="#2.2">2.2 Data, facts, information and documents;</a> 
+<a style="text-decoration:none;" href="#2.3">2.3 Data and documents confused;</a>  
+<a style="text-decoration:none;" href="#2.4">2.4 Recorded data;</a> 
+<a style="text-decoration:none;" href="#2.5">2.5 Further definitions and conclusion</a>
+<br><a style="text-decoration:none;" href="#3">3. Big data:</a> 
+<a style="text-decoration:none;" href="#3.1">3.1 Etymology;</a> 
+<a style="text-decoration:none;" href="#3.2">3.2 Defining big data;</a> 
+<a style="text-decoration:none;" href="#3.3">3.3 Big data in different contexts</a>
+<br><a style="text-decoration:none;" href="#4">4. Big data and undiscovered public knowledge</a>
+<br><a style="text-decoration:none;" href="#5">5. Towards a social epistemological understanding of data:</a>
+<a style="text-decoration:none;" href="#5.1">5.1 The myth of empiricism;</a> 
+<a style="text-decoration:none;" href="#5.2">5.2 Standards;</a> 
+<a style="text-decoration:none;" href="#5.3">5.3 Database semantics</a>
+<br><a style="text-decoration:none;" href="#6">6. Conclusion
+<br><a style="text-decoration:none;" href="#ack">Acknowledgments</a>
+<br><a style="text-decoration:none;" href="#end">Endnotes</a>
+<br><a style="text-decoration:none;" href="#ref">References</a>
+<br><a style="text-decoration:none;" href="#col">Colophon</a>
+
+<p><strong>Abstract</strong>:
+<br>It is argued that data should be defined as information on properties of units of analysis. Epistemologically it is important to establish that what is considered data by somebody need not be data for somebody else. This article considers the nature of data and &ldquo;big data&rdquo; and the relation between data, information, knowledge and documents. It is common for all these concepts that they are about phenomena produced in specific contexts for specific purposes and may be represented in documents, including as representations in databases. In that process, they are taken out of their original contexts and put into new ones and thereby data loses some of or all their meaning due to the principle of semantic holism. Some of this lost meaning should be reestablished in the databases and the representations of data/documents cannot be understood as a neutral activity, but as an activity supporting the overall goal implicit in establishing the database. Utilizing (big) data (as it is the case with utilizing information, knowledge and documents) demands first of all the identification of the potentials of these data for relevant purposes. The most fruitful theoretical frame for knowledge organization and data science is the social epistemology suggested by Shera (<a href="#refS">1951</a>). One important aspect about big data is that they are often unintentional traces we leave during all kinds of activities. Their potential to inform somebody about something is therefore less direct as compared to data that have been produced intentionally as, for example, scientific databases.</p>
+
+</blockquote>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="1"></a>
+<h3>1. Introduction</h3>
+
+<p>This paper seeks to define data and to relate this concept to other core concepts in &rarr; <a href="lis">library and information science (LIS)</a>, including facts, information and documents.  It also seeks to uncover the most important theoretical principles for dealing with this phenomenon. It is a basic assumption throughout the article that these problems are of an epistemological nature and that a problematic empiricism has dominated so far, and that a proper (social) epistemological understanding is of immense importance to get established. Social epistemology and its connection to related views are briefly introduced in <a href="#5">Section 5</a> but has also been influencing the way data is understood throughout the article.</p>
+
+<p><i>Data</i> is a much-used concept in many fields, including LIS, in particular in composite terms such as <i>database</i>, <i>data archive</i>, <i>data mining</i>, <i>descriptive data</i>, <i>metadata</i>, <i>linked data</i> and now <i>big data</i>. These terms are common terms of the field and need proper theoretical and terminological attention. The word <i>data</i> is used as either a mass noun or plural. We will here use <i>datum</i> about the singular term and <i>data</i>  about the plural. As shown in endnote 1 the term <i>data</i> is, however, also often used in the singular <a href="e1">[1]</a>.</p>
+
+<p>Today, <i>data</i> has become a much more used concept than ever before in the history of library and information science. Formerly, concepts such as books, (graphic) records <a href="#e2">[2]</a>, &rarr; <a href="document">documents</a>, and information were the terms used about the core object of the field. In 1955, when the term <i>information science</i> was introduced, there were much talk about the information explosion <a href="#e3">[3]</a> and how to deal with it (it seems almost a main reason for establishing information science as a field). Today, there is much talk about the data deluge, and the necessity to deal with it in various fields including computer science and information science <a href="#e4">[4]</a>, just as there are tendencies to establish a new field, <i>data science</i> <a href="#e5">[5]</a>. The choice of concepts considered the basis for the field is in itself an important issue and should be driven by theoretical arguments rather than by importing hype words. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2"></a>
+<h3>2. Defining data</h3>
+
+<a name="2.1"></a>
+<br><h4>2.1 Epistemological issues</h4>
+
+<p>Epistemological issues involve, first of all, the question about objectivity and subjectivity of data. The term <i>data</i> is used today in ways that are heavily loaded with epistemological problems. Rowley (<a href="#refR">2007</a>, 107-1) <a href="#e6">[6]</a>, for example, provides examples of the view, that data are discrete, objective facts or observations; however, in this article an opposite view will be put forward. </p>
+
+<p>Jensen (<a href="#refJ">1950</a>, ix) wrote:
+
+<blockquote>
+It is an unfortunate accident of history that the term <i>datum</i> (Latin, past participle of <i>dare</i>, &lsquo;to give&rsquo;) rather than <i>captum</i> (Latin, past participle of <i>capere</i>, &lsquo;to take&rsquo;) should have come to symbolize the unit-phenomenon in science. For science deals, not with &lsquo;that which has been given&rsquo; by nature to the scientist, but with &lsquo;that which has been taken&rsquo; or selected from nature by the scientist in accordance with his purpose, arid to a degree even constructed out of nature by the scientist's preliminary assumptions as to which of &lsquo;the things which have been given&rsquo; are also to be &lsquo;taken&rsquo; or observed. <a href="#e7">[7]</a></blockquote>
+
+<p>Drucker (<a href="#refD">2011</a>) also found that &ldquo;the concept of data as a given has to be rethought through a humanistic lens and characterized as <i>capta</i>, taken and constructed&rdquo;, and she thereby introduces an epistemological understanding related to the one mentioned by Jensen and further developed in the present article. In addition to the importance of understanding data as capta, it should be considered that Jensen understood data as being related to unit-phenomena. We shall return to this in the end of this <a href="#2">Section 2</a> in the suggested definition of data.</p>
+
+<p>In line with the understanding of data, not as &ldquo;given&rdquo; but as &ldquo;taken&rdquo; or constructed, Fritz Machlup (<a href="#refM">1984</a>, 646-7) provided an important analysis: </p>
+
+<blockquote>
+The use and misuse of the term data is due, in part, to linguistic ignorance. Many users do not know that this is a Latin word: dare means "to give"; datum, "the given" (singular); and data, "the givens" (plural). Data are the things given to the analyst, investigator, or problem-solver; they may be numbers, words, sentences, records, assumptions; just anything given, no matter in what form and of what origin. This used to be well known to scholars in most fields: Some wanted the word data to refer to facts, especially to instrument-readings; others to assumptions. Scholars with a hypothetico-deductive bent wanted data to mean the given set of assumptions; those with an empirical bent wanted data to mean the records, or protocol statements, representing the findings of observation, qualitative or quantitative [&hellip;]<br>
+One can probably find quotations supporting all possible combinations of the three terms [<i>data</i>, <i>information</i>, <i>knowledge</i>] or of the concepts they are supposed to denote. Each is said to be a specific type of each of the others, or an input for producing each of the others, or an output of processing each of the others. <br>
+Now, data from the point of view of the programmers, operators, and users of the computer, need not be data in any other sense.</blockquote>
+
+<p>Machlup thus point out that data are relative to different perspectives and domains (e.g., computer programmers versus computer users) and related to different epistemological perspectives (e.g. empiricism: instrument readings or protocol statements; rationalism: assumptions). This relativity was also emphasized by Borgman (<a href="#refB">2010</a>, 3): &ldquo;The notion of &ldquo;data&rdquo; can vary considerably among collaborators [&hellip;], and even more so between disciplines&rdquo;. The view that data differs among epistemological positions is here of special importance <a href="#e8">[8]</a>. Rafael Capurro further stresses the philosophical perspective: </p>
+
+<blockquote>
+Data are (or datum is) an abstraction. I mean, the concept of 'data' or 'datum' suggests that there is something there that is purely given and that can be known as such. The last one hundred years of (late) philosophic discussion and, of course, many hundred years before, have shown that there is nothing like 'the given' or 'naked facts' but that every (human) experience/knowledge is biased. This is the 'theory-laden' theorem that is shared today by such different philosophic schools as Popper's critical rationalism (and his followers and critics such as Kuhn or Feyerabend), analytic philosophy (Quine, for instance), hermeneutics (Gadamer), etc. Modern philosophy (Kant) is very acquainted with this question: experience ("Erfahrung") is a product of 'sensory data' within the framework of perception ("Anschauung") and the categories of reason ("Verstand") ("perception without concepts is blind, concepts without perception are void"). Pure sensory data are as unknowable as "things in themselves". (Capurro in <a href="#refZ">Zins 2007</a>, 481).</blockquote>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2.2"></a>
+<h4>2.2 Data, facts, information and documents</h4>
+
+<p><i>WordNet</i> 3.1 defines <i>data</i> and <i>datum</i>:
+
+<ul>
+<li>data, information (a collection of facts from which conclusions may be drawn): "statistical data"</li>
+<li>datum, data point (an item of factual information derived from measurement or research)</li>
+</ul>
+
+<p>We see that WordNet considers <i>data</i> to be synonym with both <i>information</i> and <i>facts</i>, a widely held view, which, however, will be further criticized below. Before we proceed to consider definitions in the scholarly literature, an example will be given demonstrating the present author&rsquo;s understanding of the relations between data, facts, documents and information. </p>
+
+<p>Consider genealogists, who are constructing family trees by putting up family relations between individuals. Important data are here, for example, date of birth of a given person (<i>X</i>), sex of <i>X</i>, father of <i>X</i> and mother of <i>X</i>. First drafts of such a tree may be based on interviews and recollections from close relatives. Because such information is often unreliable, improved documentation, such as birth certificates are looked for. A birth certificate is a <b>document</b> that contains <b>data</b> about name, birth dates and parents of an individual. Normally, such a documentation is considered as proof of a <b>fact</b>, e.g. that <i>X</i> is child of <i>Y</i>. A birth certificate provides <b>information</b> <a href="#e9">[9]</a> about family relations, i.e. it answers real or hypothetical questions, about, among other things, family relations. Birth certificates are made reliable by the institutions and procedures that have the responsibility to issue the certificates, and these institutions and procedures are established by the authorities based on a perceived balance between expenditure, needed security and conservatism of administrative institutions (depending on the jurisdiction, a record of birth might or might not, for example, contain verification of the event by a midwife or doctor). Today genealogists have got a new kind of document: reports from DNA analysis. They are highly reliable, for example, one report said &ldquo;The probability of Mr. Jim Doe being the biological father of John Test is &gt; 99.9999%&rdquo; <a href="#e10">[10]</a>. However, nothing can be considered as facts in an absolute sense (due to the view of fallibilism, further described below). Birth certificates and DNA reports are documents reporting data about relationships between individuals, but as they are sometimes conflicting neither of them can be understood as reporting pure facts. They may, however, be understood as claims that are normally accepted as facts by a given community. Here, as in science, great efforts may be made to secure the truth of the claims, but established procedures and findings are normally not questioned until there seem good reasons for doing so, or if very much is at stake. In other words, documented data are considered as being facts for the tasks they are produced to serve, they represent <b>sufficient facts</b> in a given social context. If they were not, it would be impossible to act on the basis of data; for example, it would be impossible to construct family trees, and there would be no reason to issue such documents (e.g., birth certificates). To summarize: The datum &ldquo;<i>X</i> is child of <i>Y</i>&rdquo; may, for example, be obtained from tree kinds of documents:
+<ol>
+<li>an interview with <i>Y</i>;</li>
+<li>the birth certificate of <i>X</i>;</li>
+<li>and DNA analysis based on DNA from <i>X</i> and <i>Y</i>.</li>
+</ol>
+Normally all tree documents will be considered to be reporting this datum as a fact. The DNA report is the most reliable source today, but all three contain the datum.</p>
+
+<p>We have now presented an example in which data, facts, documents and information are clearly distinguished as different concepts and will from this basis continue considering conceptual discussions in the scholarly literature.</p>
+
+<p>In information science, Henning Spang-Hanssen (<a href="#refS">2001</a>) related the data concept to the issue of fact retrieval versus document retrieval: </p>
+
+<blockquote>
+Information about some physical property of a material is actually incomplete without information about the precision of the data and about the conditions under which these data were obtained. Moreover, various investigations of a property have often led to different results that cannot be compared and evaluated apart from information about their background. An empirical fact has always a history and a perhaps not too certain future. This history and future can be known only through information from particular documents, i.e. by document retrieval. The so-called fact retrieval centers seem to be just information centers that keep their information sources &ndash; i.e. their documents &ndash; exclusively to themselves.
+</blockquote>
+
+<p>Spang-Hanssen here provided an argument against a view that has been strongly represented in information science: that what should be retrieved or found is not documents, but &ldquo;information&rdquo;, a view implicit in the term <i>information retrieval</i> (as opposed to <i>document retrieval</i>) <a href="#e11">[11]</a>. In connection to the understanding of the concept "data", Spang-Hanssen addressed its fallible nature and the necessity to consider information about how data has been obtained as well as about their contexts in general. The quote by Spang-Hanssen provides therefore a strong argument for preferring the term <i>document retrieval</i> and to consider documents, rather than information as the core object of the field. In the context of the present article the primary function of the quote is, however, to introduce fallibilism in relation to data. <i>Fallibilism</i> is a term coined by the founder of pragmatic philosophy, Charles Sanders Peirce (<a href="#refP">Peirce 1955</a>, 59), for the view that &ldquo;people cannot attain absolute certainty concerning questions of fact&rdquo;. From the viewpoint of hermeneutics, Caputo (<a href="#refC">2018</a>, 4) reached the same conclusion: </p>
+
+<blockquote>
+In hermeneutics, we defend the idea that there are no pure facts. Behind every interpretation lies another interpretation. We never reach an understanding of anything that is not an interpretation. We can never peel away the layers to get to some pure, uninterpreted, naked fact of the matter. No matter how loudly you proclaim you are just sticking to the facts, you are only raising the volume of your own interpretation. In hermeneutics, I like to say, interpretation goes all the way down.</blockquote>
+
+<p>Data has often been considered the bottom or basis of the so-called &rarr; <a href="dikw">Data-Information-Knowledge-Wisdom hierarchy (DIKW)</a>, where information is understood as processed or interpreted data, knowledge as processed or interpreted information and wisdom as interpreted knowledge. This model has been discussed and criticized by, among others, Frick&eacute; (<a href="#refF">2018</a>), who found that this model is based on the problematic epistemology of inductivism. The main problem in the DIKW model is that data cannot be seen as the given objective facts, on which interpretation is made to produce the higher levels. Data themselves are also based on interpretations as it was argued in the quotes above. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2.3"></a>
+<h4>2.3 Data and documents confused</h4>
+
+<p>Borgman (<a href="#refB">2007</a>, 41-2 and 119-21 and <a href="#refB">2015</a>, 17-29) presents and discusses definitions of data and refers in this regard to Meadows (<a href="#refM">2001</a>) <a href="#e12">[12]</a>, Hey and Trefethen (<a href="#refH">2003</a>), Consultative Committee for Space Data Systems (<a href="#refC">2002</a>, Section 1:9), National Research Council (<a href="#refN">1999</a>) <a href="#e13">[13]</a>, Hodge and Frangakis (<a href="#refH">2004</a>) and National Science Board (<a href="#refN">2005</a>). The definitions from some of these sources and Borgman&rsquo;s conclusions will be discussed below. </p>
+
+<p>One of the definitions of data is from Consultative Committee for Space Data Systems (<a href="#refC">2002</a>, Section 1:9):</p>
+
+<blockquote>
+Data: A reinterpretable representation of information in a formalized manner suitable for communication, interpretation, or processing. Examples of data include a sequence of bits, a table of numbers, the characters on a page, the recording of sounds made by a person speaking, or a moon rock specimen. <a href="#e14">[14]</a>
+</blockquote>
+
+<p>Borgman (<a href="#refB">2007</a>, 119) wrote that this definition of data is widely accepted in this context.  Concerning the distinction between data and documents, she wrote (<a href="#refB">Borgman 2007</a>, 41-2):
+
+<blockquote>
+Discussions of digital scholarship tend to distinguish (implicitly or explicitly) between data and documents. Some view data and documents as a continuum rather than as a dichotomy (<a href="#refH">Hey and Trefethen 2003</a>). In this sense, data such as numbers, images, and observations are the initial products of research, and publications are the final products that set research findings in context.</blockquote></p>
+
+<p>Besides considering data and documents as being related to different stages of the research process, the two quotes do not provide criteria to distinguish the two concepts. Borgman does not consider why the definitions of <i>data</i> given above do not <i>also</i> qualify as definitions of documents. (As we shall see below she also considers the situation about defining data unsatisfactory.) In particular, many of the specific examples of data provided (e.g., recording of sounds or a moon rock specimen) are explicitly considered documents in the literature. Suzanne Briet (<a href="#refB">1951</a>, 7; <a href="#refB">2006</a>, 9-10) defined: &ldquo;A document is evidence in support of a fact and could be any physical or symbolic sign, preserved or recorded, intended to represent, to reconstruct, or to demonstrate a physical or conceptual phenomenon&rdquo; (see also <a href="#refB">Buckland 2018</a>, &rarr; <a href="document#3">section 3</a>).</p>
+
+<p>The same confusion is repeated by Bugaje and Chowdhury (<a href="#refB">2018</a>, 253), who wrote (quoting <a href="#refB">Borgman 2015</a>): &ldquo;Among the more comprehensive definitions of research data is that they are &ldquo;entities used as evidence of phenomena for the purposes of research or scholarship&rdquo;, which may range in form from digital records (e.g. text, audio, video, spreadsheets, etc.) to physical objects (e.g. laboratory specimens, historical artefacts, soil samples, etc.)&rdquo;. This definition of data matches the definition of document as entities used for documenting something and it therefore also fails to distinguish data from documents.  The distinction between data and documents was also illustrated in the example about genealogy above and will be made clearer below when a suggested definition by Kaase is considered.   </p>
+
+<p>The confusion of distinguishing the two concepts increases when Borgman (<a href="#refB">2007</a>, 120; italics in original) with reference to Hodge and Frangakis (<a href="#refH">2005</a>) and National Science Board (<a href="#refN">2005</a>) writes: &ldquo;<i>Records</i> of government, business, and public and private life also yield useful data for scientific, social scientific, and humanistic research&rdquo;. Of course, they <i>yield</i> data, but that does not <i>make</i> them data, but rather kinds of documents. Borgman herself called for more a precise definition of data (<a href="#refB">2010</a>, 2-3):
+
+<blockquote
+all too rarely do those promoting the sharing and curation of data define &lsquo;data&rsquo; explicitly or acknowledge the diversity of forms that data may take. the definition established in a <i>National Research Council</i> report suggests the complexity of the concept: &ldquo;Data are facts, numbers, letters, and symbols that describe an object, idea, condition, situation, or other factors&rdquo; [<a href="#refS">Serafin et al. 1999</a>, 15]. The notion of &ldquo;data&rdquo; can vary considerably among collaborators [<a href="#refW">Wallis et al. 2008</a>], and even more so between disciplines.
+</blockquote></p>
+
+<p>This is, however, just a list of examples of what falls under the concept &ldquo;data&rdquo; and not a proper definition. Therefore, Borgman (<a href="#refB">2007; 2010</a>) and Bugaje and Chowdhury (<a href="#refB">2018</a>) have not clearly analyzed if &ldquo;data&rdquo; and &ldquo;document&rdquo; should be considered as synonymous concepts &mdash; and if they should not, then identified what distinguishes them.  Leonelli (<a href="#refL">2016</a>), which includes a deep discussion of data from the perspective of the philosophy of science, also seems to blur documents and data <a href="#e15">[15]</a>. Borgman (<a href="#refB">2015</a>, 28-9) acknowledges that the situation is not satisfactory:
+
+<blockquote>
+Lists of entities that could be considered data are unsatisfactory as definitions, yet such &ldquo;definitions&rdquo; abound in the scholarly literature and in policy documents. The inability to anchor the concept in ways that clarify what are and are not data in a given situation contributes mightily to the confusion about matters such as data management plans, open data policies, and data curation. Concrete, bounded definitions are most often found in operational contexts.
+</blockquote></p>
+
+<p>Borgman then concludes with the former quoted definition from Bugaje and Chowdhury (<a href="#refB">2018</a>, 253), which &mdash; as it has been shown &mdash; confuses data and documents: &ldquo;entities used as evidence of phenomena for the purposes of research or scholarship&rdquo; <a href="#e16">[16]</a>.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2.4"></a>
+<h4>2.4 Recorded data</h4>
+
+<p>It seems important to point out that data can only be managed if they are somehow recorded, that is appear in documents. The recent interest in data in information science and in data science cannot be understood as establishing a new category besides documents, only as a growing interest in new kinds of documents (cf. <a href="#refF">Furner 2016</a>, 297). In the abstract, Furner clearly expressed this relation:
+
+<blockquote>
+it is not in fact the case that documents are made up of data, nor that the document is a species of dataset: rather it is the other way round, in both respects. A dataset is made up of documents; and the dataset is a species of document.
+</blockquote></p>
+
+<p>In the past years, the movement of data sharing has been enjoying great popularity within LIS. In this context, Thomson Reuters (now Clarivate Analytics) launched at the end of 2012 the <i>Data Citation Index</i> as a new product in the <i>Web of Knowledge</i> family. This index covers alternative document types as compared to the traditional <i>Web of Science</i> documents: data repositories, data studies and data sets. These are all explicitly referred to as document types (cf., <a href="#refN">Nielsen and Hj&oslash;rland 2014</a>, 230; see also <a href="#refC">Clarivate Analytics 2018</a>). Compared to textual documents, however, such data documents are different and require new kinds of search systems, cf. Bugaje and Chowdhury (<a href="#refB">2018</a>).  This points to the question on how data are communicated and published. The original UNISIST model had a special communication channel for data including data centers but it seems to be an open issue whether this is actually the case (cf. <a href="#refF">Fjordback S&oslash;ndergaard, Andersen and Hj&oslash;rland 2003</a>); and the more theoretical study of data publishing and its metaphors (<a href="#refP">Parsons and Fox 2013</a>). There exist specific document types for data, for example data journals <a href="#e17">[17]</a> and data handbooks <a href="#e18">[18]</a>, but datasets are probably more often published on the WWW or in data repositories <a href="#e19">[19]</a> in connection with articles in scientific journals (see <a href="#refN">Nielsen and Hj&oslash;rland 2014</a>). It is also an issue to what degree specific data documents are being cited <a href="#e20">[20]</a>. In this way data can be researched and understood in relation to classifications of kinds of documents and communication units in scholarly communication <a href="#e21">[21]</a>.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="2.5"></a>
+<h4>2.5 Further definitions and conclusion</h4>
+
+<p>How then, should we define data? It was demonstrated above that the concept is relative, e.g. in the Borgman (<a href="#refB">2010</a>, 3) quote: &ldquo;The notion of &ldquo;data&rdquo; can vary considerably among collaborators [&hellip;], and even more so between disciplines&rdquo;. Does this mean that no general definition can be interdisciplinarily valid? <a href="#e22">[22]</a></p>
+
+<p>Suggestions for a general definition of data from five more researchers shall briefly be considered. Floridi (<a href="#refF">2008</a>) identifies four analyses of the concept of data <a href="#e23">[23]</a>:
+
+<ol>
+<li>The epistemic interpretation (data = facts),</li>
+<li>The informational interpretation (data are information or bits of information),</li>
+<li>The computational interpretation (data are collections of binary elements), and</li>
+<li>The diaphoric interpretation (Floridi&rsquo;s own preferred interpretation) which says that a datum is a lack of uniformity in some domain. Or, formally, a &ldquo;datum = x being distinct from y, where x and y are two uninterpreted variables and the domain is left open to further interpretation&rdquo; (<a href="#refF">Floridi 2008</a>, 235). This interpretation was criticized by Lyon (<a href="#refL">2016</a>, 743; italics in original): &ldquo;the diaphoric interpretation of data lets too many things count as data. Indeed, <i>any thing</i> x that is distinct from some other thing y will count as a datum&rdquo;.</li>
+</ol></p>
+
+<p>Based on Floridi&rsquo;s criticism of interpretations 1-3 and on Lyon&rsquo;s criticism on Floridi&rsquo;s preferred definition another definition of data clearly seems to be needed.</p>
+
+<p>Furner (<a href="#refF">2017</a>, 66; italics in original) suggested the following definition: &ldquo;data are <i>concrete instantiations of symbolic representations of descriptive propositions, informed by empirical observation, about the quantitative and qualitative properties of real-world phenomena</i>&rdquo;. Undoubtedly, this definition covers most of what should be termed &lsquo;data&rsquo;. But need data to be observational? Could they not be mathematical or theoretical?  And need they be about real-world phenomena? For example, does the expression &pi; = 3.1415926535 not contain a datum which is not observational?  Or could a book about fictional figures not containing data, although they are not real-world phenomena? Again, based on such considerations, another definition seems to be needed. </p>
+
+<p>Redman, Fox and Levitin (<a href="#refR">2017</a>, 1173) (based on <a href="#refF">Fox, Levitin and Redman 1994</A>) presented "the ordered triple view of data":
+
+<blockquote>
+Within this framework, we define a datum or data item, as a triple &lt;e, a, v&gt;, where e is
+an entity in a conceptual model, a is an attribute of entity e, and v is a value from the
+domain of attribute a. A datum asserts that entity e has value v for attribute a. Data
+are the members of any collection of data items.
+</blockquote>
+
+<p>The authors also wrote (1172-3) &ldquo;Many definitions of data have been suggested in the literature;
+the one that best meets the criteria discussed in the previous section is based on the classic
+definition of the term accepted in the database community&rdquo;.
+
+<p><i>Wikipedia</i> has for a long time used the following definition: &ldquo;Data is a set of values of qualitative or quantitative variables&rdquo; <a href="#e23a">[23a]</A>. This definition seems to be rather widely cited (e.g., by <A HREF="#refR">Roy and Zeng 2015</A>, p. 19) but without indication of authorship and without arguments or comparison with other definitions. (An alternative formulation using data as a plural seems also to be widely used: &ldquo;Data are values of qualitative or quantitative variables, belonging to a set of items&rdquo;). Referring to our former genealogical example where a datum could be &ldquo;date of birth of a given person (<i>X</i>)&rdquo;, is found here to be better termed &ldquo;a unit of analysis&rdquo; rather than a variable, but we cannot here open an analysis of the concept &ldquo;variable&rdquo; (and this should be done by those suggesting the definition, which they have not).</p>
+
+<p>Kaase (<a href="#refK">2001</a>, 3251) provided the following definition: &lsquo;Data is [are] information on properties of units of analysis&rsquo;. Example: a datum about a book could be that it contains 225 pages. The unit of analysis is here &lsquo;page&rsquo; and 225 is a datum that informs on the property of pages in the book that is their number (not about other properties of pages, for example, their size) <a href="#e24">[24]</a>. Other units could have been chosen, and different ways of what to include in counting pages can be chosen. (Whether or not a given metadata standard choses to include number of pages, and the way they are counted are, of course, &lsquo;social constructs&rsquo; or &lsquo;capta&rdquo;, but still a real phenomenon.)</p>
+
+<p>The strength of Kaase&rsquo;s definition is that:
+<ul>
+<li>It is clear and specific and does not confuse data and documents; </li>
+<li>It refers to unit-phenomena, which is a general characteristic for all kinds of data (cf. Jensen above in <a href="#2">Section 2</a>) <a href="#e25">[25]</a>. (A unit can be defined as a single thing or phenomenon.) </li>
+<li>It seems to be able to avoid the view that data are facts or that &ldquo;data speaks for themselves&rdquo;.</li>
+</ul></p>
+
+<p>It is possible to avoid the view that &ldquo;data speaks for themselves&rdquo; because Kaase&rsquo;s definition allows different interpretations about both (a) &ldquo;units of analysis&rdquo; and (b) the information about these units. There is no contradiction between claiming that the abstract concept &ldquo;data&rdquo; is precisely defined by Kaase but that different units of analysis will be chosen, understood and described differently in different contexts. Considering our former genealogy example, parent-child relationship (e.g. <i>X</i> is a child of <i>Y</i>) is a unit of analysis in genealogy, on which birth certificates, DNA analysis reports, data from family interviews and recollections, among many other documents may provide information. Any document reporting such a child-parent relationship contains this datum, whether it is true or not. The word &ldquo;information&rdquo; in Kaase&rsquo;s definition is, as formerly explained, always relative to a question. For example, a birth certificate informs somebody about the parents of an individual. But birth certificates contain many other kinds of information. For example, somebody may ask how such certificates have developed historically or compare certificates from different jurisdictions. For the expert interested in printing and paper technology, a certificate may answer different questions. But of course, the intended purpose of birth certificates normally is their main informational function, and thus they primarily inform about birth date and place, name and parents of individuals. </p>
+
+<p>Different societies, cultures, communities and sectors (state and municipalities, banks, churches, hospitals, sciences etc.) establish institutions, rules and processes to produce data and documentation that serve, as formerly explained, as sufficient facts for their main activities. In science and scholarship observational data from measurements and experiments including computational data are good examples. In the humanities they may be data about documents (bibliographical data), about works by artists, about individuals, about dates, events and historical periods.   </p>
+
+<p>If we consider medicine as an example, researchers do investigations to determine, for example, the effects and side effects of different kinds of treatments. Within this domain, evidence-based medicine (EBM) has become important, with an attempt to base decision on the best available evidence. Data are here evaluated in relation to their perceived value as evidence (with data from randomized controlled trials normally given the highest status, while the opinions of patients have the lowest status). Such norms, although they are strongly influential, are debatable (cf. <a href="#refH">Hj&oslash;rland 2011</a>). This example shows, that data are not &ldquo;raw&rdquo;, but they are carefully evaluated and selected in relation to how they have been obtained. With the words of Geoffrey Bowker (<a href="#refB">2005</a>, 184): &ldquo;Raw data is both an oxymoron <a href="#e26">[26]</a> and a bad idea; to the contrary, data should be cooked with care&rdquo;. The literature about EBM shows that the norms associated with using and evaluating data are basically rooted in different epistemological positions (see, e.g., <a href="#refC">Cohen, Starvi and Hersh 2004</a>). </p>
+
+<p>Data have been difficult to define in the humanities.  Keralis (<a href="#refK">2012</a>) said:
+
+<blockquote>
+What counts as humanities data? The term data is unsettling for many scholars in part because it connotes something definitive and unproblematic. Where humanities scholarship often thrives on complication and constructivism, data seeks repeatability and finality. Datasets are construed as a kind of incontestable bedrock which, to some, make them not only a little boring, but dangerously and deceptively boring. Is there a way for humanities researchers to have our constructivist cake and eat it, too? Can we, in other words, productively question the constructedness of datasets even as we assemble them? And can we expand the kinds of information that constitute data?
+</blockquote></p>
+
+<p>However, if we use Kaase&rsquo;s definition there seems to be no problem at all. Humanists are recording information about units of analysis, for example, about works of art, artists, historical events, theoretical positions and archaeological finds <a href="#e27">[27]</a>. Therefore, our conclusion of this Section is that Kaase&rsquo;s (<a href="#refK">2001</a>, 3251) definition seems the most fruitful one suggested thus far:
+
+<blockquote>Data are information on properties of units of analysis.</blockquote>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3"></a>
+<h3>3. Big data</h3>
+
+<a name="3.1"></a>
+<br><h4>3.1 Etymology</h4>
+
+<p>The term <i>big data</i> has been traced back to the 1990s: </p>
+
+<blockquote>The statistician Francis Diebold is generally credited with coining the term &ldquo;big data&rdquo; in a paper that he presented in 2000 entitled &ldquo;Big Data Dynamic. Factor Models for Macroeconomic Measurement and Forecasting&rdquo;. Diebold himself noted that the term was already used earlier in a non-academic context in advertisements run by Silicon Graphics International (SGI) between late 1990 and 1998. A slide deck prepared by the former Chief Scientist at SGI, John Mashey was entitled &ldquo;Big Data and the Next Wave of InfraStress&rdquo; <a href="#e28">[28]</a>. Another occurrence of the term was found in a 1998 computer science paper by Weiss and Indurkhya [<a href="#refW">1997</a>]. However, it was the data analyst Douglas Laney who in 2001 made a decisive contribution towards the current characterisation of the big data by coining the popular and catchy &ldquo;three V&rsquo;s&rdquo; of big data (volume, variety and velocity) in an unpublished 2001 research note at META Group <a href="#e29">[29]</a> (<a href="#refI">Ibekwe-SanJuan and Bowker 2017</a>, 192).
+</blockquote> </p>
+
+<p>Ekbia et al. (<a href="#refE">2015</a>, 1524) wrote &ldquo;In academia, the number of dedicated venues (journals, workshops, and conferences), initiatives, and publications on this topic reveal a continuous and consistent growing trend&rdquo;. They documented this with data about the occurrence of the term big data in five databases. Most occurrences appeared in ABI/Inform (Abstracted Business Information) database rapidly growing to more than 5.000 in 2013.  No doubt, this has become a hot term. But what does it mean, and what kind of research programs are involved in it? How does this term affect LIS and knowledge organization? What is its real importance, and what is just hype and vogue?</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.2"></a>
+<h4>3.2 Defining big data</h4>
+
+<p>Ekbia et al. (<a href="#refE">2015</a>, 1525) wrote &ldquo;A preliminary examination of the debates, discussions, and writings on Big Data demonstrates a pronounced lack of consensus about the definition, scope, and character of what falls within the purview of Big Data;&rdquo; and Floridi (<a href="#refF">2012</a>, 435) concluded that &ldquo;it is unclear what exactly the term &lsquo;Big Data&rsquo; means and hence refers to&rdquo;. Ward and Barker (<a href="#refW">2013</a>) is a short paper surveying big data definitions.</p>
+
+<p>Most discussions of the term conclude that big data is not just a certain quantity of data, for example, more than 1 terabyte <a href="#e30">[30]</a>. It is also just not regarded as big in relation to standard computers (e.g. amounts of data which need main-frame computers in order to be processed). A very common way to define big data is by referring to the 3 Vs: volume, velocity and variety (<a href="#refL">Laney 2001</a>; <a href="#refZ">Zikopoulos et al. 2012</a> <a href="#e31">[31]</a>), all of which should be fulfilled for a set of data to be considered big.  </p>
+
+<ul>
+<li>Volume: The quantity of generated and stored data.</li>
+<li>Velocity:  The speed at which the data is generated and processed, often real-time</li>
+<li>Variety: Different kinds of data, e.g. drawn from text, images and audio</li>
+</ul>
+
+<p>More characteristics have been introduced and discussed in the literature (cf. <a href="#e29">endnote 29</a>). Ibekwe-SanJuan and Bowker (<a href="#refI">2017</a>, 192) wrote: </p>
+
+<blockquote>
+Having retraced the origins of the term, the question about what it is remains open. There is a consensus, at least from a physical standpoint, that big data represents volumes of data such that traditional database algorithms are unable to cope with it and that it requires more robust and distributed computer infrastructures and algorithms such as hadoop clusters, grid infrastructure and cloud clusters.
+</blockquote></p>
+
+<p>However, it is not theoretically satisfactory to define big data relative to present-day information technology.  It is not &ldquo;a physical standpoint&rdquo; but a conceptual and theoretical standpoint that is important defining the term: a term should only be part of the terminology of knowledge organization, if it contributes developing the field.  </p>
+
+<p>In the USA, the National Science Foundation (<a href="#refN">2012</a>) have specified:
+
+<blockquote>
+The phrase &lsquo;big data&rsquo; in this solicitation refers to large, diverse, complex, longitudinal, and/or distributed data sets generated from instruments, sensors, Internet transactions, email, video, click streams, and/or all other digital sources available today and in the future.
+</blockquote>
+
+Which, however, in National Science Foundation (<a href="#refN">2014</a>) was changed to:
+
+<blockquote>The phrase &lsquo;big data&rsquo; refers to data that challenge existing methods due to size, complexity, or rate of availability&rdquo;.</blockquote>
+
+Remark that the last definition does not make the claim that all the characteristics should be fulfilled. In other words, there is a retreat from tree defining V&rsquo;s and thereby a specific definition of the term.</p>
+
+<p>Kitchin (<a href="#refK">2014</a>, 80-99) defines the term implicitly by arguing that the production of big data has been facilitated by the confluence of five technological innovations from the start of the 21th century onwards:
+
+<ul>
+<li>Growing computational power</li>
+<li>Dense internetworking</li>
+<li>Pervasive and ubiquitous computing</li>
+<li>Indexical and machine-readable identification</li>
+<li>Massive distributed storage</li>
+</ul>
+
+<p>In combination, Kitchin argues, these developments have led to a diverse set of social-technical systems that produce what is today considered big data.</p>
+
+<p>Boyd and Crawford (<a href="#refB">2012</a>, 663) suggested the following definition:</p>
+
+<blockquote>
+We define Big Data <a href="#e32">[32]</a> as a cultural, technological, and scholarly phenomenon that rests on the interplay of:<br>
+(1) Technology: maximizing computation power and algorithmic accuracy to gather, analyze, link, and compare large data sets.<br>
+(2) Analysis: drawing on large data sets to identify patterns in order to make economic, social, technical, and legal claims.<br>
+(3) Mythology: the widespread belief that large data sets offer a higher form of intelligence and knowledge that can generate insights that were previously impossible, with the aura of truth, objectivity, and accuracy.
+</blockquote></p>
+
+<p>These authors here suggest a new dimension: mythology, which is here understood as critique of many assumptions associated with the term. There is no doubt that there is much hype, buzz word and vogue associated with the term &ndash; and from a scholarly point of view it is important to try to identify what is sound and theoretically important and what is not <a href="#e33">[33]</a>.</p>
+
+<p>All these characteristics (3 or 5 Vs among others) seem differently represented in different kinds of big data and thus not necessary in order to define big data. On the other hand, large data sets are not always associated with the term. Bibliometrics is a field which has for a long term used large, well organized databases. Altmetrics is a newer field, an expansion of bibliometrics to cover measures of impact based on data from social media such as blogs, tweets, bookmarks, and downloads. It comes closer to the above understanding of big data because of the heterogeneity of the data (which poses greater challenges in interpreting altmetric studies, cf. <a href="#refH">Haustein 2016</a>). There seems, however, to be some arbitrariness whether or not something falls under the label &lsquo;big data&rsquo; and Golub and Hansson (<a href="#refG">2017</a>, 1098) stated: &ldquo;Data is nothing new to Library and Information Science (LIS) and Big Data presents a quantitative expansion of an already well-known object of study&rdquo;. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="3.3"></a>
+<h4>3.3 Big data in different contexts</h4>
+
+<p>Big data are produced in different domains. Physics and astronomy are the most data-intensive sciences. In CERN (Conseil Europ&eacute;en pour la Recherche Nucl&eacute;aire), for example, which is Europe's particle-physics laboratory near Geneva in Switzerland, the particle-collision events in the Large Hadron Collider generate around 15 petabytes of data annually &mdash; the equivalent of about 4 million high-definition feature-length films (<a href="#refM">Marx 2013</a>, 255). And the construction of the Large Synoptic Survey Telescope (LSST) in Chile is designed to produce about 15 terabytes of raw data per night and 30 petabytes over its 10-year survey life. These raw data are being refined, but even after processing, still 15 PB remains (<a href="#refM">Murray 2017</a>). Compared to such amounts of data, Marx (<a href="#refM">2013</a>, 257) found biology to have arrived later in the big science field, and having relatively smaller amounts of data and relatively more diverse data:</p>
+
+<blockquote>
+Biology data mining has challenges all of its own, says Birney. Biological data are much more heterogeneous than those in physics. They stem from a wide range of experiments that spit out many types of information, such as genetic sequences, interactions of proteins or findings in medical records. The complexity is daunting, says Lawrence Hunter, a computational biologist at the University of Colorado Denver. &ldquo;Getting the most from the data requires interpreting them in light of all the relevant prior knowledge&rdquo;, he says.
+</blockquote></p>
+
+<p>A third context represent the social media, like Facebook, Google <a href="#e34">[34]</a>, Twitter and YouTube collecting enormous amounts of information from us and about us, which may be used commercially, scholarly, and for other purposes. Here big data are often unintended traces that people leave during all kinds of activities. Such traces are often very vague indications and their informational value are therefore lesser compared to carefully constructed data. However, for many companies, such data have nonetheless turned out to be highly valuable because they large quantity may draw a rather detailed picture of our habits and preferences.</p>
+
+<p>A basic assumption in the present article is that variety (= diversity, heterogeneity, messiness or semantic ambiguity) in both production and use of data is the main theoretical issue. </p>
+
+<ol>
+<li>If the purposes for which the data are going to be used are ill-defined, then it is difficult to optimize the system providing the data. For example, because &rarr; <a href="web_archive">web archives</a> are always flawed (see <a href="#refF">Finnemann 2019</a>, &rarr; <a href="web_archive#5">section 5</a>) and even if they were not, their metadata and search facilities could not satisfy all needs. Social, pragmatic and critical epistemology acknowledge that a given knowledge organization system cannot be neutral, but always tends to make some perspectives more visible at the cost of other perspectives. It follows that well-defined needs can be better served than ill-defined needs.</li>
+
+<li>If the data themselves represent an ill-defined set, their merging implies that it is difficult to distinguish the relevant data from the non-relevant, and to identify how the dataset is related to different ideological positions (more about this follows in <a href="#5.3">Section 5.3</a> on database semantics).</li>
+</ol>
+
+<p>By implication we find that the term <i>big data</i> should include large data sets whether or not they are fulfilling the other criteria mentioned above. Big data should not be considered a (new) theoretical term, but just a synonym for large data sets, which may reflect greater or smaller semantic ambiguity, which is the issue of greatest theoretical importance for knowledge organization <a href="#e35">[35]</a>.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="4"></a>
+<h3>4. Big data and undiscovered public knowledge</h3>
+
+<p><i>Undiscovered public knowledge</i> is an important idea in LIS and for LIS. It is mostly associated with the pioneering research done by Swanson&rsquo;s (<a href="#refS">1986a; 1986b</a>) work. His idea was that there is important knowledge in libraries and the literature, that is published and thereby public, yet &ldquo;undiscovered&rdquo; in the sense that new scientific knowledge can be generated from it, but nobody is aware of the relevance of the published work in this connection. Exemplifying with fish oil and Raynaud&rsquo;s syndrome, Swanson (<a href="#refS">1986a</a>, 7-8) wrote:</p>
+
+<blockquote>
+Dietary fish oil has been shown in many experiments, human and animal, to lead to reductions in blood lipids, platelet aggregability, blood viscosity, and vascular reactivity&mdash;changes that are likely to improve blood circulation. Raynaud's syndrome is a peripheral circulatory disorder associated with and exacerbated by high platelet aggregability, high blood viscosity, and vasoconstriction. These two ideas&mdash;the fish oil/blood connection and the Raynaud/blood connection&mdash;are each supported by a substantial body of scientific evidence and literature; each idea separately represents knowledge that is publicly available. What is notable about the two ideas is that, apparently, they have not heretofore been brought together in print. Together they obviously suggest the hypothesis that dietary fish oil might ameliorate or prevent Raynaud's syndrome. So far as I have been able to determine, that hypothesis also has never appeared in print. In some sense it has existed implicitly for years simply because the above two premises that lead to it have existed in published form for years. We can presume that the hypothesis has remained hidden because the separate literatures on fish oil and on Raynaud's syndrome have never been brought together in a way that would reveal their logical connection and so reveal the hypothesis.
+</blockquote></p>
+
+<p>Based on the study of the medical literature alone, Swanson was able to suggest a new, important medical treatment and thereby to make undiscovered public knowledge to discovered public knowledge. This idea seems even more relevant in relation to big data and is probably one of the main inspirations behind many people&rsquo;s engagement with data curation as well as with open data. This is caused by the idea that lots of data are relatively underutilized.  About biology, for example, Marx (<a href="#refM">2013</a>, 260) reported: </p>
+
+<blockquote>
+A number of McClure's graduate students are microbial ecologists, and she teaches them how to rethink their findings in the face of so many new data. &ldquo;Before taking my class, none of these students would have imagined that they could produce new, meaningful knowledge, and new hypotheses, from existing data, not their own,&rdquo; she says. Big data in biology add to the possibilities for scientists, she says, because data sit [sic!] &lsquo;under-analysed in databases all over the world&rsquo;.
+</blockquote></p>
+
+<p>The idea should be considered one of pillars on which LIS and knowledge organization is based (although, as we shall see below, it may be associated with problematic epistemological assumptions) <a href="#e36">[36]</a>.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5"></a>
+<h3>5. Towards a social epistemological understanding of data</h3>
+
+<p>As a theoretical frame for understanding data this article argues that the social epistemology originally introduced by Jesse H. Shera (<a href="#refS">1951</a>) and since developed in the &rarr; <a href="domain_analysis">domain-analytic</a> approach is the most fruitful approach. The theory will hopefully later be presented in an independent article in this encyclopedia. Here we shall just say that a core assumption in this theory is that different kinds of knowledge representations (information or data representations) serve different interests, and that such interests are connected to different social groups. A given representation often (if not always) is relevant only from a point-of-view but may falsely be understood as the only viable solution from all points of view, i.e., it represents an ideological position. This social epistemological view belongs to a family of philosophies (including, for example, pragmatism, critical theory and hermeneutics, cf. <a href="#e8">endnote 8</a>) but it conflicts with other philosophical families (including empiricism). We shall consider empiricism in the next subsection, but it should be said that already the way the concept &lsquo;data&rsquo; was defined above and discussed in relation to the &rarr; <a href="dikw">DIKW hierarchy</a> was informed in opposition to an empiricist understanding. Furthermore, social epistemology has specific implications for standards and database semantics as demonstrated in subsections below. These subsections provide information that are intended as indication of the implications of a social epistemological understanding of data for the field of knowledge organization, although each topic is here introduced very briefly.    </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5.1"></a>
+<h4>5.1 The myth of empiricism</h4>
+
+<p>It is not a coincidence that big data is often associated with empiricism. Empiricism is the claim that all knowledge is based on our experiences, the physical signals that hit our senses, disregarding the theory-laden nature of observations. To get knowledge or to be informed is understood as collecting data, the more data, the better knowledge. Much hype about big data seems therefore to be just an ideology based on a na&iuml;ve trust in empiricism and inductivism. Empiricism is a point of view which may be contrasted with rationalism, historicism and pragmatism (see, e.g., <a href="#refH">Hj&oslash;rland 2017</a>, &rarr; <a href="classification#4.2c">section 4.2c</a>). </p>
+
+<p>Philosopher Finn Collin (<a href="#refC">2014</a>, 1221) addressed the relation between the new data science, empiricism and Thomas Kuhn's philosophy:
+
+<blockquote>
+Moreover, yet another even more radical revolution may be just around the corner,
+namely Big Data Science. This may, surprisingly, hand the positivist theory of science a
+posthumous victory after its well-publicised death at the hands of Kuhn and others: Big
+Data Science is data collection in conformity with the positivist formula; it is Carnap and
+Hempel's recipe for science, with unlimited computer power added. Famously, Carnap
+defined the task of philosophy as that of devising formal languages for use in articulating
+scientific theories (<a href="#refC">Carnap 1937</a>). Advanced computer languages for handling large sets of
+data combined with sophisticated pattern-finding algorithms (the latter-day counterparts of
+Carnap's inductive logic) is precisely the realization of that programme, and Carnap would
+have relished it.<br>
+The Kuhnian reaction to this phenomenon would probably be that, as long as the data
+are couched in languages the mutual relationship of which is left opaque &mdash; i.e., they are
+incommensurable &mdash; nothing of theoretical interest is likely to result from this kind of
+science. Here is an important issue for the next generation of philosophers and sociologists
+of science to grapple with, especially those who take their bearings from Kuhn. The
+emergence of Big Data is a quite recent phenomenon, and one can hardly blame the
+contributors to this volume for not engaging with it. Still, if Kuhnian scholarship is to
+remain relevant for current developments within science, and is not the degenerate into a
+"repository for anecdote and chronology" &mdash; terms picked from the famous opening line of
+SSR—this is a topic that must be addressed.
+</blockquote></p>
+
+<p>Kitchin (<a href="#refK">2014</a>, 133-6) describe four fallacies of empiricism in the context of big data. They are:
+
+<ol>
+<li>big data can capture a whole of a domain and provide full resolution;</li>
+<li>there is no need for a priori theory, models or hypotheses;</li>
+<li>data can speak for themselves free of human bias or framing;</li>
+<li>meaning transcends context or do main-specific knowledge.</li>
+</ol>
+
+<p>Frick&eacute; (<a href="#refF">2019</a>, &rarr; <a href="dikw#5.2">Section 5.2</a>) also considered such fallacies and wrote (referring to himself): </p>
+
+<blockquote>
+Frick&eacute; (<a href="#refF">2009</a>) argues that the DIKW theory seems to encourage uninspired methodology. The DIKW view is that data, existing data that has been collected, is promoted to information and that information answers questions. This encourages the mindless and meaningless collection of data in the hope that one day it will ascend to information &mdash; i.e. pre-emptive acquisition. It also leads to the desire for &ldquo;data warehouses&rdquo;, with contents that are to be analyzed by &ldquo;data mining&rdquo;. Collecting data also is very much in harmony with the modern &ldquo;big data&rdquo; approach to solving problems. Big data, and data mining are somewhat controversial (<a href="#refA">Austin and Goldwasser 2008</a>; <a href="#refA">Austin et al. 2006</a>; <a href="#refD">Dye 2007</a>; <a href="#refF">Frick&eacute; 2015</a>).  The worry is that collecting data blind is suspect methodologically.
+</blockquote></p>
+
+<p>An alternative is the hermeneutical and pragmatic view of social epistemology that data are never &ldquo;raw&rdquo; (<a href="#refG">Gitelman 2013</a>), that they must be carefully collected and processed and that it is important to understand the interests that have guided their capture, selection and processing, in particular when they are used in new contexts. Much hype connected with big data is based on a problematic empiricism, but that does not mean that big data becomes irrelevant if empiricism is criticized. It just means that the issues must be explored from other background assumptions. </p>
+
+<p>Empiricism also lies behind some ideas connected with <i>e-science</i> or <i>cyberinfrastructure</i>, two terms for the increasingly digitalization of all scientific processes and resources. While there is no doubt digitalization and new digital infrastructures in society is changing the way science, social science and the humanities are carried out, it is outside the focus of this article to discuss e-science except for the idea of a new data-driven science in which theory is obsolete, sometimes named &ldquo;the fourth paradigm&rdquo; (<a href="#refG">Gray 2009</a>).  Leonelli (<a href="#refL">2012</a>) and Frick&eacute; (<a href="#refF">2015</a>) argued that this idea should not be blindly accepted <a href="#e37">[37]</a>. As Frick&eacute; (<a href="#refF">2015</a>, 660) concludes:
+
+<blockquote>
+The ability to cheaply and easily gather large amounts of data does have advantages: Sample sizes can be larger, testing of theories can be better, there can be continuous assessment, and so on. But data-driven science, the &ldquo;fourth paradigm,&rdquo; is a chimera. Science needs problems, thoughts, theories, and designed experiments. If anything, science needs more theories and less data.
+</blockquote></p>
+
+<p>This idea of a new scientific paradigm caused by some specific ways of handling data, seems clearly to represent a problematic empiricism. Gray&rsquo;s paper can be read as a fairly accurate, although superficial description of the consequences of digitalization for scientific communication. Its description of developments of scientific paradigms, is, however, problematic. Although scientific paradigms have a lot to do with empirical data and their interpretation, it is not just the technology for providing massive data sets that in itself causes shifts in scientific paradigms, and it is directly wrong when it is claimed that empiricism is a paradigm that was abandoned hundreds of years ago (<a href="#refG">Gray 2009</a>, Figure 1, xviii). Paradoxically Gray&rsquo;s paper represents itself the empiricist standpoint: that data and data processing are sufficient for science, that theories and hypothesis are no longer needed. This way of thinking causes a block for better understanding theoretical problems related to data and knowledge organization. Therefore, although big data is the background for e-science, e-science does not define big data and cannot do without theory. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5.2"></a>
+<h4>5.2 Standards</h4>
+
+<p>To manage big data, they must be classified, indexed or assigned metadata. Such classifications can be local or general, where local can mean both domain specific and geographical local as in the example about ecological research below. The more general a classification is, the better are the possibilities for sharing data and equipment, for achieving &rarr; <a href="interoperability">interoperability</a> among systems and processes (see <a href="#refZ">Zeng 2019</a>). Standards are often conceived as technical solutions being developed to ensure optimal interconnection, reuse and cooperation between people and systems. They are not usually considered political. It may be the case that some standards, such as standards for paper sizes are relatively neutral, but in the case of &rarr; <a href="kos">knowledge organization systems</a> (see <a href="#refM">Mazzocchi 2018</a>), standards cannot be neutral, but always tends to support certain goals at the cost of other goals <a href="#e38">[38]</a>, corresponding to the view of social epistemology expressed above. A fine case-study is provided by Millerand and Bowker (<a href="#refM">2009</a>): the U.S. network for long-term ecological research (LTER). It was presented on p. 152-3:</p>
+
+<blockquote>
+The LTER program constitutes a distributed, heterogeneous network of more than 1200 research scientists and students. Formed in 1980, the network currently consists of 26 sites or research stations (ironically, some &lsquo;long term&rsquo; sites have already closed; and more have been added). Each is arranged around a particular biome &ndash; for example a hot desert region, a coastal estuary, a temperate pine forest or an Arctic tundra &ndash; in the continental United States and Antarctica. A 27th site is charged with the administration and coordination of the group. The program&rsquo;s mission is to further understanding of environmental change through interdisciplinary collaboration and long term research projects.<br>
+One of the chief challenges of LTER is to move beyond the &lsquo;plot&rsquo; of traditional ecoscience to analyze change at the scale of a continent and beyond the 5-year funding cycle or 30 year career cycle of the scientist to create baselines of data spanning multiple decades. While the preservation of data over time, and their storing in conditions appropriate to their present and future use, has always been a priority within the different sites of the LTER network, there has been a new urgency with the development of a cyberinfrastructure project aiming to encourage data sharing across the community.
+</blockquote></p>
+
+<p>We shall not here consider the more technological challenges described by Millerand and Bowker but focus on the perspective of relevance to social epistemology. Although standards are technical and practical devices, they are still also theoretically influenced (in a broader understanding of &ldquo;theory&rdquo;, see <a href="#refH">Hj&oslash;rland 2015</a>) and should be theoretically analyzed. Technical solutions are developed on the basis of theoretical assumptions and their implications. The case-study in Millerand and Bowker describes LTER as a research field consisting of many different sites, each using its own standards and metadata. The overall network had a clear, recognized interest in being able to combine data from many different sites to make new kinds of analyses, which are long-term, geographical broad and involving different kinds of observations. Two major objectives were generally agreed: (a) the promotion of interdisciplinary collaboration through data sharing and (b) the improvement of long-term data preservation. To provide a standard for metadata allowing such combinations of data is, as already said, often conceived as being a simple technical solution (<a href="#refM">Millerand and Bowker 2009</a>, 150; 153): &ldquo;In an ideal world, the metadata contain all the details necessary for all possible secondary users of a dataset&rdquo;.</p>
+
+<p>The Ecological Metadata Language (EML) is a standardized metadata description language for the generation of metadata in the domain of environmental sciences and was the standard which the LTER research community decided to adopt when it engaged in the process of standardizing its scientific data management practices. Millerand and Bowker described two narratives on how the implementation of the standard was received (or perceived): </p>
+
+<blockquote>
+Narrative 1: &ldquo;EML is a success: the entire LTER community has adopted it&rdquo; and <br>
+Narrative 2: &ldquo;EML is not (yet) a success: it needs to be redeveloped before it can be used&rdquo;.</blockquote></p>
+
+<p>However, everybody seems enthusiastic about its implementation. Millerand and Bowker (<a href="#refM">2009</a>, 157):</p>
+
+<blockquote>
+It is striking the degree to which all of the actors involved in the standardization process (EML developers, LTER network coordinators, information managers, domain researchers, and so on) have supported &ndash; and continue to support &ndash; the EML project. [&hellip;] they all believe in the idea of a metadata standard permitting the exchange and sharing of data throughout the LTER network and beyond. In this sense, it&rsquo;s not the case of the imposition of a standard by one group of actors (developers and coordinators) on a hostile, resistant group (information managers). The latter have always been highly supportive of the project.
+</blockquote></p>
+
+<p>The quote continues: &ldquo;It is at the moment of the actual implementation of the standard at a given site when critical problems emerge, and discordant voices can be heard&rdquo;. So, on one level everybody was enthusiastic because they could see great possibilities for new kinds of research questions and answers. But when it came to the implementation at their own site, they discovered losses if their own local standards had to be changed to the new standard.</p>
+
+<p>The conclusion that Millerand and Bowker draws from their case study is that the standard had to be redefined and be the object of multiple versions over the course of its development. The implementation of EML is not simply a case of upgrading an existing system. It consists above all in redefining the sociotechnical infrastructure which supports this articulation of technical, social and scientific practices and (165):
+
+<blockquote>
+Both standards and ontologies (the one apparently technical and the realm of machines, the other apparently philosophical and the realm of ideas) need to be socially, organizationally bundled &mdash; not as a perpetual afterthought but as an integral necessity.
+</blockquote></p>
+
+<p>A simpler conclusion can be made: metadata organized for one purpose may not be optimal for other purposes. Any use of data should ideally have metadata (and other procedures and tools) optimized for the specific purpose. When new standards serving other and broader goals are implemented, discordant voices arise when locally developed metadata have to fit local goals less in order to serve other interests.  A core sentence in the article (<a href="#refM">Millerand and Bowker 2009</a>, 153) is this: </p>
+
+<blockquote>
+In an ideal world, the metadata contain all the details necessary for all possible secondary users of a dataset. <a href="#e39">[39]</a>
+</blockquote></p>
+
+<p>From a philosophical perspective, the dream the perfect standard thus seems to be related to the rationalist dream of a &rarr; <a href="ideal_language">perfect language</a> (cf. <a href="#refL">Laporte 2018</a>). However, from the point of view of social epistemology, this will forever remain just a dream. What is possible, is to construe standards which are carefully developed to support specific goals &ndash; or compromises based on careful negotiations between different goals, which have first to be identified. This imply a movement of focus from a narrow perspective to a broader social and philosophical perspective. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="5.3"></a>
+<h4>5.3 Database semantics</h4>
+
+<p>Database semantics is about the meaning of data in databases. The field of data semantics seems to be well established in computer science. In 2012 the <i>Journal of Data Semantics</i> was established, and in its first editorial Stuckenschmidt (<a href="#refS">2012</a>, 1) wrote: </p>
+
+<blockquote>Data Semantics [<a href="#refS">Sheth 1997</a>] is a topic that has been investigated in computer science for more than 30 years. It is typically associated with a formal definition of the intended interpretation of the data often in terms of logic or algebraic formalisms [<a href="#refV">Veltman 1984</a>]. Over the time [sic!], the goals of defining data semantics as well as the ideal of having a clear formal representation of semantics has not change [sic!], what has changed and is constantly changing, however, are ways of capturing and using the semantic of data as well as the formalisms used to represent it.
+</blockquote></p>
+
+<p>What is important, however (cf. <a href="#3.3">Section 3.3</a>), is the semantic ambiguity (related to variety, diversity, heterogeneity and messiness) in both the production, merging and use of data. Stuckenschmidt (<a href="#refS">2012</a>, 3) wrote about this that in closed systems the meaning of data is defined by its intended use determined by the systems&rsquo; developers and users and often reflected in the specific schema or the data structures used for representing it.  To illustrate if you have &ldquo;1984&rdquo; in a bibliographic database, this can mean different things such as printing year or the title of a book (by George Orwell). In standard databases this is solved by having titles and printing in separate fields, to which searches can be specified. If all such data were merged with specified fields, users could not use &ldquo;1984&rdquo; to search for the book, because the overwhelming part of the retrieved references would be to documents having 1984 as the printing year. This is a simple case of semantic holism, the principle that the meaning of a word or sign depends on the context in which it is located. In Kuhn&rsquo;s (<a href="#refK">1962</a>) theory semantic holism is related to scientific theories: words and signs gets their meaning from the theories or <i>paradigms</i> of which they form part, and when <i>paradigm shifts</i> occur terms get new meanings. Example:
+
+<ul>
+<li>Paradigm one: Ptolemaic astronomers might learn the concepts "star" and "planet" by having the Sun, the Moon, and Mars pointed out as instances of the concept "planet" and some fixed stars as instances of the concept "star". </li>
+<li>Paradigm two: Copernicans might learn the words <i>star</i>, <i>planet</i>, and <i>satellites</i> by having Mars and Jupiter pointed out as instances of the concept "planet", the Moon as an instance of the concept "satellite", and the Sun and some fixed stars as instances of the concept "star". Thus, the terms <i>star</i>, <i>planet</i>, and <i>satellite</i> got a new meaning and astronomy got a new classification of celestial bodies.</li>
+</ul>
+
+<p>This means that if different paradigms are represented in the same database, that database may use the same terms in different ways. Another example in knowledge organization literature is provided by Gnoli&rsquo;s (<a href="#refG">2014</a>, 130) analysis of Marc Bloch&rsquo;s methodology of historical knowledge, where the French historian observes that the meaning of such terms as <i>bourgeoisie</i> or <i>feud</i> is dependent on their specific chronological context and cannot be applied to different contexts unproblematically.</p>
+
+<p>Of course, as Stuckenschmidt wrote (<a href="#refS">2012</a>, 3), the systems designer in closed systems may standardize the meanings (by using controlled vocabularies, CV), which however, introduces a new layer of interpretation that users have to relate to. This is an issue that has been neglected in much literature on CV. We shall here limit this discussion by referring Maniez (<a href="#refM">1997</a>), who pointed out that paradoxically the information languages increase the difficulties of cooperation between the different information databases, confirming what Lancaster (<a href="#refL">1986b</a>, 181) observed earlier: &ldquo;Perhaps somewhat surprisingly, vocabularies tend to promote internal consistency within information systems but reduce intersystem compatibility&rdquo; (see also <a href="#refZ">Zeng 2019</a>). In order to understand database semantics, we need therefore to consider how the meanings of terms are applied in the primary literature and from there consider how these meanings are represented in the secondary literature (such as bibliographical databases). The Web is probably a much better approximation to how meanings are developed in different kinds of discourses. </p>
+
+<p>How can we work with database semantics in open systems, such as the WWW?  Stuckenschmidt presents three approaches providing data semantics:
+
+<ol>
+<li>Semantics from models<br>
+This is about the use of standards such as RDF and OWL, which Stuckenschmidt (3) quotes as being &ldquo;a cornerstone of data semantics on the web&rdquo;, but (3) &ldquo;publishing the ontology along with a data set does not really solve the problem as long as every data set comes with its own ontology. In this case the problem of possible misinterpretations is just lifted from the data to the conceptual level&rdquo;. Stuckenschmidt mentions the use of a jointly shared ontology, a top-level ontology or the use of semantic mappings <a href="#e40">[40]</a>.</li>
+<li>Semantics from data<br>
+This is, for example, about the use of statistical approaches, linguistic approaches and learning approaches to extract semantic information from data sets.</li>
+<li>Semantics from users<br>
+This is described by Stuckenschmidt (4) as a new trend in data semantics. He further describes this approach: &ldquo;In contrast to classical knowledge acquisition scenarios, it is not assumed that the users are experts in the particular domain. The idea is more that asking many users the same question will ultimately generate the right result because a majority of users will give the correct interpretation of the piece of data. The most prominent approach of this type is tagging, where users attach simple descriptions (tags) to information objects&rdquo;</li>
+</ol></p>
+
+<p>These approaches outlined by Stuckenschmidt (<a href="#refS">2012</a>) seem to be based on the rationalist idea of one neutral and best interpretation of concepts: a view from nowhere rather than a view from a particular perspective. There seem to be a lack of understanding that semantic relations are not neutral but related to specific goals, interests, and paradigms etc. That means, that there is a danger that using a given approach &mdash; e.g. user &rarr; <a href="tagging">tagging</a> (see <a href="#refR">Rafferty 2018</a>, <a href="tagging#4">Section 4</a>) &mdash; may just represent a major ideology, not the interest of the specific purpose for which a system should be designed. </p>
+
+<p>From the point of view of social epistemology, the core issue with databases is that data are taken out of some contexts and put into other contexts, where the different contexts may represent implicit knowledge or conflicting perspectives, paradigms, interests and goals; as put by Leonelli (<a href="#refL">2016</a>): data make journeys, they travel. Such journals have to be considered from the perspective of semantic holism.</p>
+
+<p>The implication of this view is that an important issue in data semantics <i>is to uncover the main different meaning structures</i> (paradigms, perspectives or voices) in databases, on the web and in different fields of knowledge. One should not start by studying the data isolated but start by studying their overall contexts in a top-down fashion (or interactively top-down and bottom-up). Hj&oslash;rland (<a href="#refH">1998</a>, 27) provided an example searching for &lsquo;the effects of lead on behavior&rsquo; in the psychological database <i>PsycInfo</i>; here there is no need to indicate that you are searching for lead&rsquo;s effects on behaviour because it is implicit in <i>PsycInfo</i> that all records are on animal or human psychology/behaviour. However, if the records in <i>PsycInfo</i> are merged with the records in <i>Chemical Abstracts</i>, you will have to change your search strategy and specify that you are searching studies on how lead influences behaviour and performance. This new strategy would probably be less than optimal regarding the part of the records originally indexed in <i>PsycInfo</i> (because implicit information is lost by the merging). At another level <i>PsycInfo</i> can be seen as a merging of records which were once presented in individual journals, some of which may be American, some European, some behaviouristic, other psychoanalytic, etc. Originally, to the readers of those journals their selection policy and their way of writing titles and composing articles reflected some implicit meanings in those journals. By making a controlled vocabulary, a classification scheme, a certain structure in the records and so on the people behind <i>PsycInfo</i> made certain decisions which were coloured by their view of knowledge.</p>
+
+<p>In other words, a given set of texts represents different <i>paradigms</i> <a href="#e41">[41]</a> (or <i>voices</i> as understood by <a href="#refB">Bakhtin 1981; 1986</a> <a href="#e42">[42]</a>), which should be identified and thereby knowledge organization and information retrieval should provide choices for users to consciously select given voices based on informed choices. In a way this corresponds to the former mentioned terms <i>variety</i>, <i>diversity</i>, <i>heterogeneity</i> and <i>messiness</i>, but from the perspective that this diversity contains different values and may have their own conceptual structures, which should be identified and made visible. The more heterogenous the big data sets are, the more implicit knowledge is lost, and the more important the reconceptualization becomes. </p>
+
+<p>Leonelli (<a href="#refL">2014</a>) is a paper from the philosophy of biology which is based on an idea related to the idea of merging and re-identify conceptual structures.  It describes three stages of data travel: (1) De-contextualization (2) Re-contextualization and (3) Re-use:
+
+<ol>
+<li>Data de-contextualization involves according to Leonelli (<a href="#refL">2014</a>, 4) the assignment of metadata &ldquo;to decontextualize the data that are included in their resources, so that they can travel outside of their original production context and become available for integration with other datasets (thus forming a Big Data collection). The process of de-contextualisation involves making sure that data are formatted in ways that make them compatible with datasets coming from other sources, so that they are easy to analyse by researchers who see them for the first time&rdquo;.</li>
+<li>Data re-contextualization involves according to Leonelli (<a href="#refL">2014</a>, 4) use of data in new context: &ldquo;Within biology, re-contextualisation can only happen if database users have access not only to the data themselves but also to the information about their provenance &mdash; typically including the specific strain of organisms on which they were collected, the instruments and procedures used for data collection, and the composition of the research team who originated them in the first place. This sort of information, typically referred to as <i>metadata</i> (<a href="#refE">Edwards et al. 2011</a>; <a href="#refL">Leonelli 2010</a>), is indispensable to researchers wishing to evaluate the reliability and quality of data. Even more importantly, it makes the interpretation of the scientific significance of the data possible, thus enabling researchers to extract meaning from their scrutiny of databases&rdquo;.</li>
+<li>Data re-use. Leonelli (<a href="#refL">2014</a>, 5-6): &ldquo;One of the central themes in Big Data research is the opportunity to re-use the same datasets to uncover a large number of different correlations. After having been de-contextualised and recontextualised, data are therefore supposed to fulfil their epistemic role by leading to a variety of new discoveries. From my observations above, it will already be clear that very few of the data produced within experimental biology make it to this stage of their journeys, due to the lack of standardisation in their format and production techniques, as well as the absence of stable reference materials to which data can be meaningfully associated for re-contextualisation&rdquo; [&hellip;] <br>
+Whenever data and metadata are added to a database, curators need to tag them with keywords that will make them retrievable to biologists interested in related phenomena. This is an extremely hard task, given that curators want to leave the interpretation of the potential evidential value of data as open as possible to database users. Ideally, curators should label data according to the interests and terminology used by their prospective users, so that a biologist is able to search for any data connected to her phenomenon of interest (e.g. &lsquo;metabolism&rsquo;) and find what the evidence that she is looking for is. What makes such a labelling process into a complex and contentious endeavour is the recognition that this classification partly determines the ways in which data may be used in the future &ndash; which, paradoxically, is exactly what databases are not supposed to do&rdquo;.</li>
+</ol>
+
+<p>The important conclusions are of this section are:
+
+<ol>
+<li>Databases are supposed to answer a broad range of different needs, but nonetheless, the way metadata are assigned (or not assigned), and data thereby classified, determines partly the ways the database can fruitfully be used.</li>
+<li>Data are always produced for some purposes and perspectives. Before data &ldquo;travel&rdquo; and are merged in databases, relevant distinctions may be implicitly present, and this implicit knowledge may be lost.</li>
+<li>To make database effective data must be classified and coded. But this classification cannot be neutral in relation to the purposes for which the database is going to be used. The data/information scientist involved must understand that she is a part of a theoretical struggle in the domain. His/her main task is to study, identify and understand the mostly implicit theoretical positions in this struggle and make decisions based on informed arguments. This means that the coding of data reestablishes some of the implicit knowledge lost during the merging.</li>
+</ol></p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="6"></a>
+<h3>6. Conclusion</h3>
+
+<p>The examination of the issues related to data and big data confirms the need to look at different domains. Rather than having many kinds of generalists such as information scientists and data scientists there is a need for specialists in, for example, biological information/data scientists or specialists in digital humanities. The relevance of epistemological perspectives exists at two levels:</p>
+
+<blockquote>
+<p>(a) Data are always produced from certain perspectives, which contain their own criteria of relevance. The information scientist (data scientist, knowledge organizer) thus faces a merging of different views, often implicit, competing for influence, and this calls for &ldquo;data criticism&rdquo; (<a href="#refB">Beaton 2016</a>);</p>
+
+<p>(b) Information science (data science, knowledge organization) is dependent on tools, approaches, theories etc. which also are based on epistemological assumptions, often implicit assumptions.
+</p>
+</blockquote>
+
+<p>We find that the best theoretical frame to study big data is an approach which recognizes the importance of epistemology, which is a much-neglected perspective today. &ldquo;Social epistemology&rdquo; originally founded by Shera (<a href="#refS">1951</a>) but recently made more concrete and forceful in knowledge organization is here considered the most fruitful philosophy. We should always consider how we in LIS conceptualize the phenomena, we study, including data and big data (cf. <a href="#refJ">Johansson 2012</a>, 28ff). This is an argument for more conceptual, theoretical and philosophical studies (cf. <a href="#refF">Furner 2017</a>). </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="ack"></a>
+<h3>Acknowledgements</h3>
+
+<p>The drive to write this paper came from an invitation to give a keynote speech at the 10th International Meeting on Information, Knowledge and Action, June 22, 2018 in Unesp Mar&iacute;lia in Brazil on the theme <i>Big Data: Continuity or Revolution?</i> Thanks to <a href="authors#m">Daniel Mart&iacute;nez &Aacute;vila</a> for serving as the editor of this article as well as to three anonymous peer-reviewers, who contributed substantially to its improvement. Thanks also to Lars Konzack, Volkmar Engerer and <a href="authors#f">Niels Ole Finnemann</a> from the Knowledge Organization Research Group at the Department of Information Studies for a valuable discussion of a late version of the manuscript. </p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="end"></a>
+<h3>Endnotes</h3>
+
+<a name="e1"></a>
+<p><strong>1</strong>. Lindberg (<a href="#refL">2012</a>, 199; emphasis in original): &ldquo;In Latin, <i>data</i> is the plural of <i>datum</i> and, historically and in specialized scientific fields, it is also treated as a plural in English, taking a plural verb, as in <i>the data were collected and classified</i>. In modern non-scientific use, however, it is generally not treated as a plural. Instead, it is treated as a mass noun, similar to a word like <i>information</i>, which takes a singular verb. Sentences such as <i>data was collected over a number of years</i> are now widely accepted in standard English&rdquo;.<br>
+The IEEE Computer Society allows usage of <i>data</i> as either a mass noun or plural based on author preference. Other professional organizations and style guides require that authors treat <i>data</i> as a plural noun. For example, the Air Force Flight Test Center specifically states that the word <i>data</i> is always plural, never singular.<br>
+Furner (<a href="#refF">2016</a>, 300, note 25) wrote: &lsquo;The first [<i>document</i>] is a count noun; the second [<i>information</i>] is a mass noun; and the third [<i>data</i>] is sometimes used as a count noun, sometimes as a mass noun. It makes sense to talk of &ldquo;ten documents,&rdquo; just as it does to talk of &ldquo;ten dollars&rdquo;; but we would not usually choose to talk of &ldquo;ten informations,&rdquo; just as we would not normally say &ldquo;ten monies&rdquo;. &ldquo;Data,&rdquo; of course, is an odd case: its origin in Latin as a plural form leads many writers to insist on its taking a plural verb (e.g., &ldquo;The data are &hellip;&rdquo;), but presumably even those scholars would balk at using formulations like &ldquo;ten data&rdquo;.&rsquo; <br>
+<i>Wikipedia</i> writes: &ldquo;Data is most often used as a singular mass noun in educated everyday usage. Some major newspapers such as <i>the New York Times</i> use it either in the singular or plural. In <i>the New York Times</i> the phrases "the survey data are still being analyzed" and "the first year for which data is available" have appeared within one day. In scientific writing data is often treated as a plural, as in <i>These data do not support the conclusions, but it is also used as a singular mass entity like information</i>. British usage now widely accepts treating data as singular in standard English, including everyday newspaper usage at least in non-scientific use. UK scientific publishing still prefers treating it as a plural. Some UK university style guides recommend using data for both singular and plural use and some recommend treating it only as a singular in connection with computers".</p>
+
+<a name="e2"></a>
+<p><strong>2</strong>. <i>Graphic record</i> was, for example, used by Shera (<a href="#refS">1951</a>, 80) and elsewhere.</p>
+
+<a name="e3"></a>
+<p><strong>3</strong>. &ldquo;Information explosion&rdquo; is, according to the <i>Oxford English Dictionary</i> a term first used in 1941.<br>
+Rider (<a href="#refR">1944</a>) estimated that American university libraries were doubling in size every sixteen years. Given this growth rate, Rider speculates that the Yale Library in 2040 will have &ldquo;approximately 200,000,000 volumes, which will occupy over 6,000 miles of shelves [&hellip; requiring] a cataloging staff of over six thousand persons&rdquo;. <br>
+Saracevic (<a href="#refS">1999</a>, 1052) wrote: &ldquo;Information science is a field that emerged in the aftermath of the Second World War, along with a number of new fields, with computer science being but one example. The rapid pace of scientific and technical advances that were accumulating since the start of the 20th century, produced by midcentury a scientific and technical revolution. A most visible manifestation of this revolution was the phenomenon of "information explosion", referring to the exponential and unabated growth of scientific and technical publications and information records of all kinds ("literature")&rdquo;.</p>
+
+<a name="e4"></a>
+<p><strong>4</strong>. Ekstr&oslash;m and Wildgaard planned a book about data science librarianship: <i>Theories and Methods in Data Science Librarianship</i>, Facet Publishing; however its publication, planned in 2019, was cancelled.</p>
+
+<a name="e5"></a>
+<p><strong>5</strong>. The term <i>data science</i> sounds, from a Danish ear in particular, somewhat strange, because computer science in Danish is <i>datalogi</i> (meaning the study of data). It was named so by computer scientist Peter Naur (<a href="#refN">Naur</a> 1966); see also <i>Wikipedia</i>, 2018-05-07: <a href="https://en.wikipedia.org/wiki/Peter_Naur">https://en.wikipedia.org/wiki/Peter_Naur</a>. </p>
+
+<a name="e6"></a>
+<p><strong>6</strong>. Rowley (<a href="#refR">2007</a>, 170-1, references omitted) wrote: &ldquo;<i>5.2. Defining data</i><br>
+Where definitions of data are offered these are typically clearly and succinctly stated, sometimes with examples. In summary the definitions variously suggest that:<br>
+Data has no meaning or value because it is without context and interpretation [27, 40&ndash;42].<br>
+Data are discrete, objective facts or observations, which are unorganized and unprocessed, and do not convey any specific meaning [20; 37; 38; 41].<br>
+Data items are an elementary and recorded description of things, events, activities and transactions [43&ndash;45].<br>
+Choo [25] suggests that data are often elements of larger physical systems (such as books, or instrument panels) which give clues about what data to notice and how they should be read. Jashapara [39] and Choo [25] also introduce the concept of signals. Jashapara [39] suggests that we acquire data from the external world through our senses and try to make sense of these signals through our experience. Choo [25] develops this further and specifically identifies signals as the origin of data, and proposes the processes of sensing and selecting, together described as physical structuring, as transforming signals into data.<br>
+Interestingly, these definitions are largely in terms of what data lacks; data lacks meaning or value, is unorganized and unprocessed. They lay the foundations for defining information in terms of data&rdquo;.</p>
+
+<a name="e7"></a>
+<p><strong>7</strong>. Kitchin (<a href="#refK">2014</a>, 2; italics in original) citing Jensen&rsquo;s quote commented: &ldquo;Strictly speaking, then, this book should be entitled <i>The Capta Revolution</i> [rather than The Data Revolution]&rdquo;.</p>
+
+<a name="e8"></a>
+<p><strong>8</strong>. See, for example, Hj&oslash;rland (<a href="#refH">2005</a>) and Hj&oslash;rland (<a href="#refH">2017</a>, <a href="classification#4.2c">section 4.2c</a>) for a brief presentation of empiricism, rationalism, historicism and pragmatism.</p>
+
+<a name="e9"></a>
+<p><strong>9</strong>. Concerning the development of the distinction between data and information Gray (<a href="#refG">2003</a>) is relevant although that article only covers findings from the information systems literature.</p>
+
+<a name="e10"></a>
+<p><strong>10</strong>. The reliability of DNA test depends on different issues, including how the test was done and how closely related the persons are. The quote about Mr. Jim Doe being the biological father of John Test is from this report: <a href="https://cdnmedia.eurofins.com/vaterschaftsanalyse/media/105508/positive-dna-report-eurofins-forensics.pdf">https://cdnmedia.eurofins.com/vaterschaftsanalyse/media/105508/positive-dna-report-eurofins-forensics.pdf</a>, saved in <i>WebCite</i>: <a href="http://www.webcitation.org/72wPWlP8K">http://www.webcitation.org/72wPWlP8K</a>.</p>
+
+<a name="e11"></a>
+<p><strong>11</strong>. Karen Sp&auml;rck Jones (<a href="#refS">1987</a>, 9), for example, wrote &ldquo;we are concerned with access and, more materially, indirect access to the information user wants: he wants the information in the documents, but the system only gives him the documents&rdquo;. Again, this is a view connected with an empiricist/positivist philosophy, which, as Capurro wrote in the quote above has been proven wrong. As van Rijsbergen and Lalmas (<a href="#refR">1996</a>, 386) wrote: &rdquo; In the early days of Information Retrieval (van <a href="#refR">Rijsbergen 1979</a>), people used to qualify their statements about information retrieval (IR) by saying that really they were working on document retrieval. It was denied strenuously that information was being retrieved. As Lancaster (<a href="#refL">1968a</a>) wrote, &ldquo;An information retrieval system does not inform (i.e., change the knowledge of) the user on the subject of his inquiry. It merely informs on the existence (or non-existence) and whereabouts of documents relating to his request&rdquo;.<br>
+The situation has changed. We believe that the purpose of an information retrieval system is to provide information about a request and that a request is a representation of an information need that an IR system attempts to satisfy. Hence, a fundamental problem is how to compute the information contained in one object (e.g., a document) about another (e.g., a query). Thus, if a user states a query then it behooves the IR system to find the objects that contain information about that query&rdquo;.<br>
+Rijsbergen and Lalmas (<a href="#refR">1996</a>) seems to be the only serious argument that <i>information retrieval</i> can be justified as a correct term, and it seems itself related to the empiricist and positivist philosophy which was rejected by Capurro (in <a href="#refZ">Zins 2007</a>, 481) and by many others.  </p>
+
+<a name="e12"></a>
+<p><strong>12</strong>. Borgman (<a href="#refB">2007</a>, 41) wrote: &ldquo;Meadows&rsquo;s (<a href="#refM">2001</a>) treatise on information examines related concepts such as data, classification, storage, retrieval, communication, knowledge, intelligence, and wisdom. He distinguishes between data, facts (&lsquo;inferences from data&rsquo; [8]), and information, and yet does not offer firm definitions of any of them. Rather, he acknowledges the &lsquo;hazy border&rsquo; (14) between data and information. What are raw and unprocessed data to one person may be meaningful information to another. Similarly, data that are background context to one researcher, such as micrometeorological measurements, may be the focus of research to another&rdquo;.</p>
+
+<a name="e13"></a>
+<p><strong>13</strong>. &ldquo;National Research Council (<a href="#refN">1999</a>, 15; italics in original): &ldquo;<i>Data</i> are facts, numbers, letters, and symbols that describe an object, idea, condition, situation, or other factors. A data element is the smallest unit of information to which reference is made. [&hellip;] For purposes of this report the terms <i>data</i> and <i>facts</i> are treated interchangeably, as is the case in legal contexts.<br>
+Data in a database may be characterized as predominantly <i>word oriented</i> (e.g., as in a text, bibliography, directory, dictionary), <i>numeric</i> (e.g., properties, statistics, experimental values), <i>image</i> (e.g., fixed or moving video, such as a film of microbes under magnification or time-lapse photography of a flower opening), or <i>sound</i> (e.g., a sound recording of a tornado or a fire). Word oriented, numeric, image, and sound databases are processed by different types of software (text or word processing, data processing, image processing, and sound processing).<br>
+Data can also be referred to as <i>raw</i>, <i>processed</i>, or <i>verified</i>. Raw data consist of original observations, such as those collected by satellite and beamed back to Earth, or initial experimental results, such as laboratory test data. After they are collected, raw data can be processed or refined in many different ways. Processing usually makes data more usable, ordered, or simplified, thus increasing their intelligibility. Verified data are data whose quality and accuracy have been assured. For experimental results, verification signifies that the data have been shown to be reproducible in a test or experiment that repeats the original. For observational data, verification means that the data have been compared with other data whose quality is known or that the instrument with which they were obtained has been properly calibrated and tested. &ldquo;</p>
+
+<a name="e14"></a>
+<p><strong>14</strong>. This definition was adapted by some ISO standards. 5127:2017 defined: &ldquo;3.1.1.15 Data, pl.: reinterpretable representation of <i>information</i> (3.1.1.16) in a formalized manner suitable for <i>communication</i> (3.1.8.04), interpretation, or processing (Source: ISO/IEC 2382:2015 (en), 2121272)&rdquo;. Note 1 to entry: &ldquo;<i>Data</i> are often understood as taking the form of a set (3.1.1.09) of values or qualitative or quantitative variables&rdquo;. </p>
+
+<a name="e15"></a>
+<p><strong>15</strong>. Leonelli (<a href="#refL">2016</a>, 77; italics in original): &ldquo;I propose to define data as any product of research activities, ranging from artifacts such as photographs to symbols such as letters or numbers, that is collected, stored, and disseminated <i>in order to be used as evidence for knowledge claims</i>&rdquo;.<br>
+Rapley and Rees (<a href="#refR">2018</a>) call their paper &ldquo;Collecting Documents as Data&rdquo;, but is rather about documents as sources of data.</p>
+
+<a name="e16"></a>
+<p><strong>16</strong>. Borgman (<a href="#refB">2015</a>, 29; italics in original): &ldquo;However, use of the term data varies by context and by user, often in subtle and significant ways. Particularly in the case studies, usage follows the conventions of the field being discussed. Unless used as a concept or when conventions are noted, <i>data refers to entities used as evidence of phenomena for the purposes of research or scholarship</i>&rdquo;.</p>
+
+<a name="e17"></a>
+<p><strong>17</strong>. UlrichsWeb does not list data journal among its serial types, but see Candela et al. (<a href="#refC">2015</a>) for a survey of data journals.</p>
+
+<a name="e18"></a>
+<p><strong>18</strong>. The literature about data handbooks is very small, almost non-existing. One of the best known examples of data handbooks is <i>CRC Handbook of Chemistry and Physics: A Ready-reference Book of Chemical and Physical Data</i> (<a href="#ref">Haynes, Lide and Bruno 2017</a>, known as <i>the Rubber Bible</i>). Among the papers about data-handbooks is Gurr (<a href="#refG">1974</a>), which is a review of some data-handbooks in political science. </p>
+
+<a name="e19"></a>
+<p><strong>19</strong>. Kaden and Kleineberg (<a href="#refK">2018</a>, 3): &bdquo;The publication of your research data increases the transparency and reproducibility of your research results, makes hidden scientific work visible and opens up possibilities for reuse. Your research data will be given a citable persistent identifier (e.g., DOI - Digital Object Identifier) and can be considered as genuine scientific publications.&ldquo;</p>
+
+<a name="e20"></a>
+<p><strong>20</strong>. Among the published studies on data citation are, for example, Zhao, Erjia and Li (<a href="#refZ">2018</a>). </p>
+
+<a name="e21"></a>
+<p><strong>21</strong>. Voss (<a href="#refV">2013</a>) considered data as signs with departure in the understanding of the concept &lsquo;document&rsquo; in LIS.</p>
+
+<a name="e22"></a>
+<p><strong>22</strong>. In a discussion on 2018-09-25 professor Niels Ole Finnemann argued that the concept of data must be relative to medium, that the concept from the print media cannot be used in today&rsquo;s complex computer processes. However, there seems not to be any reason the Kaase&rsquo;s definition cannot be used also in the context suggested by Finnemann: different researchers may define units of analyses and criteria of measuring them that are relevant for their research. </p>
+
+<a name="e23"></a>
+<p><strong>23</strong>. Compare Leonelli (<a href="#refL">2016</a>, 71-6): &ldquo;3.1 Data in the philosophy of science&rdquo;, who distinguished two main views: (1) &ldquo;the representational view of data&rdquo; (2) &ldquo;the practice turn&rdquo;.</p>
+
+<a name="e23a"></a>
+<p><strong>23a</strong>. Richard Wilkin on the "Talk page" in <i>Wikipedia</i> on 12 August 2015
+(<A HREF="https://en.wikipedia.org/wiki/Talk:Data#Data_Definition_vs_Information">https://en.wikipedia.org/wiki/Talk:Data#Data_Definition_vs_Information</A>): &ldquo;proposed the following definition: &ldquo;Data is any set of quantitative and/or qualitative values. An information system either captures data by measuring the attributes of a phenomenon, or it is provided from another information system – be it mechanical (e.g. a computer), or biological (e.g. a human).&rdquo;&rdquo;. However, very similar definitions were formerly used in <i>Wikipedia</i>.</p>
+
+<a name="e24"></a>
+<p><strong>24</strong>. Perhaps, in most cases the definition could be simplified: &ldquo;Data are information on units of analysis". For example, the sentence <i>my mother has 39&deg; in fever</i> is a datum informing about the unit of analysis, which is temperature measured in Celsius degrees. <i>X is the child of Y</i> is a statement informing about the datum &ldquo;parent child relation&rdquo; between two persons <i>X</i> and <i>Y</i>.</p>
+
+<a name="e25"></a>
+<p><strong>25</strong>. Jensen (<a href="#refJ">1950</a>, ix) only considered the unit-phenomena in science, but the data concept is also used outside science, and also here are data about units of various kinds. Units need not be about measurements. Male/female and colors, for example, can be data and assigned without measurement and birth certificates reports sex of a child as a datum. </p>
+
+<a name="e26"></a>
+<p><strong>26</strong>. About the understanding of &ldquo;raw data&rdquo; as an oxymoron see also Gitelman (<a href="#refG">2013</a>). </p>
+
+<a name="e27"></a>
+<p><strong>27</strong>. Kaase&rsquo;s definition of data thus also covers humanities although qualitative researchers may find with Markham (<a href="#refM">2018</a>, 521) &ldquo;that putting data at the forefront of qualitative inquiry is the worst sort of trap because it deludes us into thinking we have already collected the knowledge when, in actuality, what qualitative inquiry produces is a bricolage of multiple voices, actors, and perspectives filtered through our own unique gaze and interpretive lenses&rdquo;. <br>
+But we may ask if, for example, such multiple perspectives be considered &ldquo;data&rdquo; in the kind of research suggested by Markham?<br>
+Owens (<a href="#refO">2011</a>) also discusses the data concept in the humanities.</p>
+
+<a name="e28"></a>
+<p><strong>28</strong>. &ldquo;[note 6 in <a href="#refI">Ibekwe-SanJuan and Bowker 2017</a>] The company&rsquo;s overview affirms its chief scientist&rsquo;s claim to paternity of the term &ldquo;In the late 90s, SGI&rsquo;s Chief Scientist at the time, John R. Mashey coined the term &lsquo;Big Data.&rsquo;&rdquo; <a href="https://www.sgi.com/company_info/overview.html">https://www.sgi.com/company_info/overview.html</a> (<a href="#refI">Ibekwe-SanJuan and Bowker 2017</a>, 196).</p>
+
+<a name="e29"></a>
+<p><strong>29</strong>. The quote continues: &ldquo;[note 7]. Laney&rsquo;s 3 Vs later expanded into 4 Vs (3 Vs + Validity) and now has a fifth V as well (4 Vs + Veracity)&rdquo;. Note 7 (196): &ldquo;According to Diebold (2012), &ldquo;META is now part of Gartner&rdquo;.&rdquo;.</p>
+
+<a name="e30"></a>
+<p><strong>30</strong>. 
+A bit is an abbreviation for &lsquo;binary digit&rsquo;; the unit in the binary code (0 or 1) used to store and process data. There are different ways to express larger quantities of data as indicated in the quote below, the traditional one being:
+<ul>
+<li>A byte is 8 bits,
+<li>A kilobyte (KB) is 2<sup>10</sup> bytes or 1,024 bytes;</li>
+<li>A megabyte (MB) is 2<sup>20</sup> bytes or 1,024 kilobytes;</li>
+<li>A gigabyte (GB) is 3<sup>30</sup> bytes or 1,024 megabytes;</li>
+<li>A terabyte (TB) is 2<sup>40</sup> bytes or 1,024 gigabytes;</li>
+<li>A petabyte (PB) is 2<sup>50</sup> bytes or 1,024 terabytes;</li>
+<li>An exabyte (EB) is 2<sup>60</sup> bytes or 1,024 petabytes;</li>
+<li>A zettabyte (ZB) is 2<sup>70</sup> bytes or 1,024 exabytes;</li>
+<li>A yottabyte (YB) is 2<sup>80</sup> bytes or 1,024 zettabytes.</li>
+</ul>
+However, to avoid confusing the terminology of the International System of Units (SI), where one kilo
+means 1,000 (and not 1,024) other prefixes have been suggested: &ldquo;These SI prefixes refer strictly to powers of 10. They should not be used to indicate powers of 2 (for example, one kilobit represents 1000 bits and not 1024 bits). The IEC [International Electrotechnical Commission] has adopted prefixes for binary powers
+in the international standard IEC 60027-2: 2005, third edition, Letter symbols to be used in electrical
+technology – Part 2: Telecommunications and electronics. The names and symbols for the prefixes
+corresponding to 2<sup>10</sup>, 2<sup>20</sup>, 2<sup>30</sup>, 2<sup>40</sup>, 2<sup>50</sup>, and 2<sup>60</sup> are, respectively: kibi, Ki; mebi, Mi; gibi, Gi; tebi, Ti; pebi, Pi; and exbi, Ei. Thus, for example, one kibibyte would be written: 1 KiB = 2<sup>10</sup> B = 1024 B, where B denotes a byte. Although these prefixes are not part of the SI, they should be used in the field of information technology to avoid the incorrect usage of the SI prefixes&rdquo; (<a href="#refB">Bureau International des Poids et Mesures 2006</a>, 121).</p>
+
+<a name="e31"></a>
+<p><strong>31</strong>. Zikopoulos et al. (<a href="#refZ">2012</a>, xxvi): &ldquo;Chapter 1 talks about the three defining characteristics of Big Data: volume (the growth and run rates of data), variety (the kinds of data such as sensor logs, microblogs&mdash;think Twitter and Facebook&mdash;and more), and velocity (the source speed of data flowing into your enterprise)&rdquo;.</p>
+
+<a name="e32"></a>
+<p><strong>32</strong>. &ldquo;We have chosen to capitalize the term &lsquo;Big Data&rsquo; throughout this article to make it clear that it is the phenomenon we are discussing&rdquo; (<a href="#refB">Boyd and Crawford 2015</a>, 663). </p>
+
+<a name="e33"></a>
+<p><strong>33</strong>. It is not healthy for scholarly fields to develop terminology, that is not well motivated, but just reflects fashion or &ldquo;hot&rdquo; terms and attempts to look smart. A serious field works on construing a set of necessary and sufficient terms that are associated with its basic theories. Social pressure to deal with hot terms rather than with well-constructed terms and theories may indeed be a barrier for scientific progress.  </p>
+
+<a name="e34"></a>
+<p><strong>34</strong>. One of Google&rsquo;s many projects is <i>Google Books</i> with its <i>n</i>-gram viewer. Pechenick, Danforth and Dodds (<a href="#refP">2015</a>) and Zhang (<a href="#refZ">2015</a>) demonstrate how the interpretation of big data often errors because of missing knowledge about the composition of the data sets. Zhang, for example, describes an erroneous interpretation that there in English books was a drop of the use of the term &ldquo;fuck&rdquo; in the period 1810-1960. This is due to problems with OCR-recognition: The lowercase long <i>s</i> in certain old books looks a lot like a <i>f</i>.  Pechenick, Danforth and Dodds (<a href="#refP">2015</a>) demonstrates how important it is to know, for example to which degree <i>Google Books</i> cover fiction, nonfiction and scientific literature from different periods. This example demonstrates one of the core assumptions of the present article, that data need interpretation on the basis of knowledge in specific domains.  </p>
+
+<a name="e35"></a>
+<p><strong>35</strong>. The reason <i>big data</i> has become a common term is that other characteristics than size are very important for managing data from an IT point of view, but that does not indicate they are important for a theory of data from the point of view of LIS and knowledge organization. However, the task here is to evaluate the term in the theoretical context of knowledge organization. Whether or not it is useful in other contexts is not a relevant discussion here. </p>
+
+<a name="e36"></a>
+<p><strong>36</strong>. Ibekwe-SanJuan and Bowker (<a href="#refI">2017</a>, 188) wrote: &ldquo;We hope that this discussion will help bridge the current gap between two research communities (and their literatures) which have existed separately until now: the KO community on the one hand, and the data analysis and machine learning community on the other&rdquo;. This can also be understood as a claim that undiscovered public knowledge exists in the two communities. As such, this example points to an issue, that was relatively neglected by Swanson: That discovering of relevant knowledge is closely related to issues of scientific paradigms. (Whether Ibekwe-SanJuan and Bowker&rsquo;s claim is true or false is irrelevant for the point here made.) </p>
+
+<a name="e37"></a>
+<p><strong>37</strong>. Hine (<a href="#refH">2006</a>, 292) wrote: &ldquo;Consequently, while practices and outcomes of knowledge production may change with increasing use of information and communication technologies, such changes do not do away with existing frameworks or necessarily produce new epistemic cultures&rdquo;.</p>
+
+<a name="e38"></a>
+<p><strong>38</strong>. An anonymous reviewer asked me to back-up the claim that standards supports certain interests at the cost of other interest with references to the literature. The best source is Lampland and Star (<a href="#refL">2009</a>) (including the chapter by Millerand and Bowker discussed in this <a href="#5.2">Section 5.2</a>). Most literature on this topic addresses specific domains, such as the ideology of language standardization (<a href="#refM">Milroy 2001</a>) or standardization of accounting rules (<a href="#refR">Ramanna 2015</a>) etc. etc. The general claim is supported by the growing literature about the impossibility of neutral knowledge organization systems (e.g., <a href="#refM">Mai 2011</a> and <a href="#refG">Guimar&atilde;es 2017</a>). The most important arguments come from voices in epistemology and the philosophy of science.</p>
+
+<a name="e39"></a>
+<p><strong>39</strong>. The quote continues: &ldquo;(an ideal solution that evokes Baruch Spinoza's problem &mdash; to know a single fact about the world, we need to know every fact about the world)&rdquo;.</p>
+
+<a name="e40"></a>
+<p><strong>40</strong>. Finnemann (<a href="#refF">in press</a>, <a href="#web_archive#6">Section 6</a>): &ldquo;A related project is the semantic Web, initiated by Tim Berners Lee, the creator of the Web protocols, aiming to &lsquo;bring structure to the meaningful content of Web pages, creating an environment where software agents roaming from page to page can readily carry out sophisticated tasks for users&rsquo; (<a href="#refB">Berners-Lee, Hendler and Lassila 2001</a>, 3; <a href="#refB">Berners-Lee, Shadbolt and Hall 2006</a>). The project is built on the claim that it is possible to automatize semantic analyses of materials to create coherent semantic metadata, which can be used by the machine either by help of an AI inference system or as automatic creation of linked data. Whether this is possible beyond controlled vocabularies within in a formalized semantic universe remains to be seen. In a linguistic perspective it is difficult to perceive such systems remain stable in a long-term perspective&rdquo;.</p>
+
+<a name="e41"></a>
+<p><strong>41</strong>. The concept &ldquo;paradigm&rdquo; became influential after Kuhn (<a href="#refK">1962</a>), but not in the sense indicated in that book. Whereas Kuhn only saw one paradigm at a given time, today the idea of multiple, competing paradigms is the norm. Kuhn did not recognize different schools in the social sciences as paradigms, but this is nonetheless the way paradigms is mostly understood today. </p>
+
+<a name="e42"></a>
+<p><strong>42</strong>. Bakhtin (<a href="#refB">1981; 1986</a>) introduced the concept of "voice" according to which an utterance is always produced by a certain voice, a speaking personality with a specific viewpoint. Specific voices, being invoked and informed as responses in the conversational and collaborative situation at hand, are also informed by a broader socio-cultural context with a particular history. Such social languages correspond to what Bakhtin called speech genres. These refer to types of utterances produced by types of voices. Speech genres can be recognized by typical situations of speech communication, by typical themes and meanings of words that are addressed. Advancing a certain theoretical viewpoint involves talking in terms of that theory, although it simultaneously depends on how the specific person understands that theory, what he or she places within that category. <br>
+Multivoicedness does not, however, just mean the juxtaposition of voices; not just that persons said what they meant. New meaning, new insight and understanding is, according to Bakhtin, dependent on the tension between different voices, viewpoints and perspectives. <br>
+Any sign has an orientation toward plurivocality, polylogism, and multivoicedness, and therefore an ability to adapt to new and different situational contexts.</p>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<a name="ref"></a>
+<h3>References</h3>
+
+<a name="refA"></a>
+
+<p>Austin, Peter C., and Meredith A. Goldwasser. 2008. "Pisces did not have Increased Heart Failure: Data-driven Comparisons of Binary Proportions between Levels of a Categorical Variable can Result in Incorrect Statistical Significance Levels". <i>Journal of Clinical Epidemiology</i> 61, no. 3: 295-300.</p>
+
+<p>Austin, Peter C., Muhammad M. Mamdani, David N. Juurlink, and Janet E. Hux. 2006. "Testing Multiple Statistical Hypotheses Resulted in Spurious Associations: a Study of Astrological Signs and Health". <i>Journal of Clinical Epidemiology</i> 59, no. 9: 871-2.</p>
+
+<a name="refB"></a>
+
+<p>Bakhtin, Mikhail Mikhailovich. 1981. <i>The Dialogic Imagination: Four Essays</i>, edited and translated by Michael Holquist and Caryl Emerson. Austin: University of Texas Press. </p>
+
+<p>Bakhtin, Mikhail Mikhailovich. 1986. <i>Speech Genres and Other Late Essays</i>, edited by Caryl Emerson and Michael Holquist; translated by Vern W. McGee. Austin: University of Texas Press. </p>
+
+<p>Beaton, Brian. 2016. &ldquo;How to Respond to Data Science: Early Data Criticism by Lionel Trilling&rdquo;. <i>Information & Culture</i> 51, no. 3: 352-72. </p>
+
+<p>Berners-Lee, Tim, James Hendler and Ora Lassila. 2001. &ldquo;The Semantic Web; A new form of Web content that is meaningful to computers will unleash a revolution of new possibilities&rdquo;. <i>Scientific American</i> 284, no. 5: 34-43. <a href="http://www.jstor.org/stable/26059207?seq=1&cid=pdf-reference#references_tab_contents">http://www.jstor.org/stable/26059207?seq=1&cid=pdf-reference#references_tab_contents</a> </p>
+
+<p>Berners-Lee, Tim, Nigel Shadbolt and Wendy Hall. 2006. &ldquo;The Semantic Web revisited&rdquo;. <i>IEEE intelligent systems</i>, published by the IEEE Computer Society, 1541-1672/06 2006. <a href="https://eprints.soton.ac.uk/262614/2/OLD_Semantic_Web_Revisted.pdf">https://eprints.soton.ac.uk/262614/2/OLD_Semantic_Web_Revisted.pdf</a>.</p>
+
+<p>Borgman, Christine L. 2007. <i>Scholarship in the Digital Age: Information, Infrastructure, and the Internet</i>. Cambridge, MA: The MIT Press. </p>
+
+<p>Borgman, Christine L. 2010. &ldquo;Research Data: Who Will Share What, With Whom, When, and Why?&rdquo; Unpublished paper, China-North America Library Conference, Beijing (2010). Retrieved from: <a href="https://works.bepress.com/borgman/238/">https://works.bepress.com/borgman/238/</a>; WebCite archived version: <a href="http://www.webcitation.org/6z8dxwj8Y">http://www.webcitation.org/6z8dxwj8Y</a>.</p>
+
+<p>Borgman, Christine L.  2015. <i>Big Data, Little Data, No Data: Scholarship in the Networked World</i>. Cambridge, MA: The MIT Press. </p>
+
+<p>Bowker, Geoffrey C. 2005. <i>Memory Practices in the Sciences</i>. Cambridge, MA: MIT Press. </p>
+
+<p>Boyd, Danah and Kate Crawford. 2012. &ldquo;Critical Questions for Big Data: Provocations for a Cultural, Technological, and Scholarly Phenomenon&rdquo;. In: <i>Information, Communication & Society</i> 15, no. 5: 662&ndash;79.</p>
+
+<p>Briet, Suzanne. 1951. <i>Qu&rsquo;est-ce que la Documentation?</i> Paris&nbsp;: EDIT.</p>
+
+<p>Briet, Suzanne. 2006. <i>What is Documentation?</i> English translation of the classic French text. Lanham, MD: Scarecrow Press. Also <a href="http://info.slis.indiana.edu/~roday/what%20is%20documentation.pdf">http://info.slis.indiana.edu/~roday/what%20is%20documentation.pdf</a>.</p>
+
+<p>Buckland, Michael. 2018. &ldquo;Document Theory&rdquo;. <i>Knowledge Organization</i> 45, no. 5: 425-436. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, ed. Birger Hj&oslash;rland, coed. Claudio Gnoli, <a href="document">https://www.isko.org/cyclo/document</a>.</p>
+
+<p>Bugaje, Maryam and Gobinda Chowdhury. 2018. &ldquo;Data Retrieval = Text Retrieval?&rdquo; In <i>Transforming Digital Worlds: iConference 2018</i>, edited by Gobinda Chowdhury, Julie McLeod, Val Gillet and Peter Willett. Lecture Notes in Computer Science, vol. 10766. Cham: Springer, 253-62. </p>
+
+<p>Bureau International des Poids et Mesures (BIPM). 2006. <i>The International System of Units (SI)</i>. 8th edition. Organisation Intergouvernementale de la Convention du M&egrave;tre. Paris:  STEDI Media.  <a href="https://www.bipm.org/utils/common/pdf/si_brochure_8.pdf">https://www.bipm.org/utils/common/pdf/si_brochure_8.pdf</a>.</p>
+
+<a name="refC"></a>
+
+<p>Candela, Leonardo, Donatella Castelli, Paolo Manghi and Alice Tani. 2015. &ldquo;Data Journals: A Survey&rdquo;. <i>Journal of the Association for Information Science and Technology</i> 66, no. 3: 1747-62. DOI: 10.1002/asi.23358</p>
+
+<p>Caputo, John D. 2018. <i>Hermeneutics: Fact and Interpretation in the Age of Information</i>. London: Penguin. </p>
+
+<p>Carnap, Rudolf. 1937. <i>Logical syntax of language</i>. London: Routledge & Kegan Paul.</p>
+
+<p>Clarivate Analytics. 2018. <i>The Repository Selection Process: Repository Evaluation, Selection, and Coverage Policies for the Data Citation Index within Clarivate Analytics Web of Science</i>. Retrieved 2018-05-12 from: <a href="https://clarivate.com/products/web-of-science/repository-selection-process/">https://clarivate.com/products/web-of-science/repository-selection-process/</a>, saved in WebCite at <a href="http://www.webcitation.org/6zMaP1URR">http://www.webcitation.org/6zMaP1URR</a> (see in the bottom). </p>
+
+<p>Cohen, Aaron, Michael, P. Zo&euml; Starvi and William R. Hersh. 2004. &ldquo;A Categorization and Analysis of the Criticisms of Evidence-Based Medicine&rdquo;. <i>International Journal of Medical Informatics</i> 73, no. 1: 35&ndash;43.</p>
+
+<p>Collin, Finn. 2014. Book review of Kuhn's <i>The Structure of Scientific Revolutions Revisited</i>, edited by Vasso Kindi and Theodore Arabatzis. New York: Routledge, 2012. <i>Science & Education</i> 23, no. 5: 1217–22. DOI 10.1007/s11191-014-9686-x</p>
+
+<p>Consultative Committee for Space Data Systems. 2002.  <i>Reference Model for an Open Archival Information System (OAIS)</i>. [Superseded. Replaced by <i>Reference Model for an Open Archival Information System (OAIS): Recommended Practice</i>, Issue 2. 2012, <a href="https://public.ccsds.org/pubs/650x0m2.pdf">https://public.ccsds.org/pubs/650x0m2.pdf</a>]. Washington, DC: CCSDS. 2002 Version: <a href="https://siarchives.si.edu/sites/default/files/pdfs/650x0b1.PDF">https://siarchives.si.edu/sites/default/files/pdfs/650x0b1.PDF</a>.</p>
+
+<a name="refD"></a>
+
+<p>Diebold, Francis. 2012. &ldquo;A Personal Perspective on the Origin(s) and Development of &lsquo;Big Data&rsquo;: The Phenomenon, the Term, and the Discipline&rdquo;. In <i>PIER Working Paper</i>, n&deg; 13-003, University of Pennsylvania Department of Economics; National Bureau of Economic Research (NBER), November 2012. <a href="http://ssrn.com/abstract=2202843">http://ssrn.com/abstract=2202843</a>.</p>
+
+<p>Drucker, Johanna. 2011. &ldquo;Humanities approaches to graphical display&rdquo;. <i>Digital Humanities Quarterly</i> 5, no. 1: (electronic source, no pages; 52 sections). <br>
+<a href="http://www.digitalhumanities.org/dhq/vol/5/1/000091/000091.html">http://www.digitalhumanities.org/dhq/vol/5/1/000091/000091.html</a>.</p>
+
+<p>Dye, Lee. 2007. "Do Libras Live Longer?", accessed March 20 2008. <a href="http://abcnews.go.com/Technology/Story?id=2890150&page=1">http://abcnews.go.com/Technology/Story?id=2890150&page=1</a>.</p>
+
+<a name="refE"></a>
+
+<p>Edwards, Paul N., Matthew S. Mayernik and Archer L. Batcheller, Geoffrey C. Bowker  and Christine L. Borgman. 2011. &ldquo;Science Friction: Data, Metadata, and Collaboration&rdquo;. <i>Social Studies of Science</i> 41, no. 5: 667&ndash;90.</p>
+
+<p>Ekbia, Hamid, Michael Mattioli, Inna Kouper, G. Arave, All Ghazinejad, Timothy Bowman, 
+Venkata Ratandeep Suri, Andrew Tsou, Scott Weingart and Cassidy R. Sugimoto. 2015. &ldquo;Big Data, Bigger Dilemmas: A Critical Review&rdquo;. <i>Journal of the Association for Information Science and Technology</i> 66, no. 8: 1523-45.</p>
+
+<a name="refF"></a>
+
+<p>Finnemann, Niels Ole. 2019. &ldquo;Web Archive&rdquo;. <i>Knowledge Organization</i> 49, no. 1: 47-70. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, ed. Birger Hj&oslash;rland, coed. Claudio Gnoli. <a href="web_archive">https://www.isko.org/cyclo/web_archive</a>.</p>
+
+<p>Fjordback S&oslash;ndergaard, Trine, Jack Andersen and Birger Hj&oslash;rland. 2003. &rdquo;Documents and the Communication of Scientific and Scholarly Information: Revising and Updating the UNISIST Model&rdquo;. <i>Journal of Documentation</i> 59, no. 3: 278-320.</p>
+
+<p>Floridi, Luciano. 2008. &ldquo;Data&rdquo;. In <i>International Encyclopedia of the Social Sciences</i>, edited by William A. Darity.  New York: Macmillan Reference 234&ndash;7.</p>
+
+<p>Floridi, Luciano. 2012. &ldquo;Big Data and Their Epistemological Challenge&rdquo;. <i>Philosophy and Technology</i> 25, no. 4:  435&ndash;7.</p>
+
+<p>Fox, Christopher, Anany V. Levitin and Thomas C Redman. 1994. &ldquo;The Notion of Data and Its
+Quality Dimensions&rdquo;. <i>Information Processing &amp; Management</i> 30, no. 1: 9–19.</p>
+
+<p>Frick&eacute;, Martin. 2009. "The Knowledge Pyramid: a Critique of the DIKW Hierarchy". <i>Journal of Information Science</i> 35, no. 2: 131-42. doi: 10.1177/0165551508094050.</p>
+
+<p>Frick&eacute;, Martin. 2015. &ldquo;Big Data and Its Epistemology&rdquo;. <i>Journal of the Association for Information Science and Technology</i> 66, no. 4: 651-61. </p>
+
+<p>Frick&eacute;, Martin. 2019. &ldquo;The Knowledge Pyramid: the DIKW Hierarchy&rdquo;. <i>Knowledge Organization</i> 49, no. 1: 33-46. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, ed. Birger Hj&oslash;rland, coed. Claudio Gnoli. <a href="dikw">https://www.isko.org/cyclo/dikw</a>.</p>
+
+<p>Furner, Jonathan. 2016. &ldquo;&lsquo;Data&rsquo;: The Data&rdquo;. In <i>Information Cultures In The Digital Age: A Festschrift in Honor of Raphael Capurro</i>, edited by Matthew Kelly and Jared Bielby. Wiesbaden: Springer, 287-306. <a href="http://www.jonathanfurner.info/wp-content/uploads/2016/12/Furner-Final-Proof-18.4.16.pdf">http://www.jonathanfurner.info/wp-content/uploads/2016/12/Furner-Final-Proof-18.4.16.pdf</a>.</p>
+
+<p>Furner, Jonathan. 2017. &ldquo;Philosophy of data: Why?&rdquo; <i>Education for Information</i> 33, no. 1:  55-70. DOI: 10.3233/EFI-170986</p>
+
+<a name="refG"></a>
+
+<p>Gitelman, Lisa (ed.). 2013. <i>Raw Data&rsquo; is an Oxymoron</i>. Cambridge, MA: MIT Press.</p>
+
+<p>Gnoli, Claudio. 2014. &ldquo;Boundaries and Overlaps of Disciplines in Bloch&#39;s Methodology of Historical
+Knowledge&rdquo;. <i>Advances in Knowledge Organization</i> 14: 129-35.</p>
+
+<p>Golub, Koraljka and Joacim Hansson. 2017. &ldquo;(Big) Data in Library and Information Science: A Brief Overview of Some Important Problem Areas&rdquo;. <i>Journal of Universal Computer Science</i> 23 (Online), no. 11: 1098-108. <a href="http://lnu.diva-portal.org/smash/get/diva2:1194296/FULLTEXT01.pdf">http://lnu.diva-portal.org/smash/get/diva2:1194296/FULLTEXT01.pdf</a>.</p>
+
+<p>Gray, Jim. 2009. &ldquo;eScience: A Transformed Scientific Method&rdquo;. In <i>The Fourth Paradigm, Data-intensive Scientific Discovery</i>, ed. Tony Hey, Stewart Tansley and Kristin Tolle. Redmond, Wash.: Microsoft Research, 19-33. (Second printing, version 1.1 available at: <a href="http://itre.cis.upenn.edu/myl/JimGrayOnE-Science.pdf">http://itre.cis.upenn.edu/myl/JimGrayOnE-Science.pdf</a>).</p>
+
+<p>Gray, Robert L. 2003. &ldquo;Brief Historical Review of the Development of the Distinction Between Data and Information in the Information Systems Literature&rdquo;. In: <i>9th Americas Conference on Information Systems</i>, hg von. J. Ross und D. Galletta. Tampa: Association for Information Systems, 2843&ndash;9.</p>
+
+<p>Guimar&atilde;es, Jos&eacute; Augusto Chaves. 2017. &ldquo;Slanted Knowledge Organization as a New Ethical Perspective&ldquo;. In <i>The Organization of Knowledge: Caught Between Global Structures and Local Meaning</i>, edited by Jack Andersen, and Laura Skouvig. (Studies in Information) Bingley, UK. Emerald Publishing Limited.  doi:10.1108/S2055-537720170000011012</p>
+
+<p>Gurr, Ted Robert. 1974. &ldquo;The Neo-Alexandrians: A Review Essay on Data Handbooks in Political Science&rdquo;. <i>The American Political Science Review</i>   68, no. 1: 243-52. </p>
+
+<a name="refH"></a>
+
+<p>Haustein, Stefanie. 2016. &ldquo;Grand Challenges in Altmetrics: Heterogeneity, Data Quality and Dependencies&rdquo;. <i>Scientometrics</i> 108, no. 1: 413&ndash;23.  doi: 10.1007/s11192-016-1910-9. <a href="https://arxiv.org/ftp/arxiv/papers/1603/1603.04939.pdf">https://arxiv.org/ftp/arxiv/papers/1603/1603.04939.pdf</a>.</p>
+
+<p>Haynes, W. M., David R. Lide and Thomas J. Bruno (Eds.). 2017. <i>CRC Handbook of Chemistry and Physics: A Ready-reference Book of Chemical and Physical Data</i>. Ninety-seven edition. Boca Raton, Florida: CRC Press. </p>
+
+<p>Hey, Tony and Anne Trefethen. 2003. &ldquo;The Data Deluge: An E-Science Perspective&rdquo; In <i>Grid Computing: Making the Global Infrastructure a Reality</i>, edited by Fran Berman, Geoffrey Fox and Tony Hey. New York: Wiley, 809-24. Version available at: <a href="https://eprints.soton.ac.uk/257648/1/The_Data_Deluge.pdf">https://eprints.soton.ac.uk/257648/1/The_Data_Deluge.pdf</a>.</p>
+
+<p>Hine, Christine. 2006. &ldquo;Databases as Scientific Instruments and Their Role in the Ordering of Scientific Work&rdquo;. <i>Social Studies of Science</i> 36, no. 2: 269&ndash;98.</p>
+
+<p>Hj&oslash;rland, Birger. 1998. &ldquo;Information Retrieval, Text Composition, and Semantics&rdquo;.<i> Knowledge Organization</i> 25, nos. 1-2: 16-31.</p>
+
+<p>Hj&oslash;rland, Birger. 2005. "Empiricism, Rationalism and Positivism in Library and Information Science". <i>Journal of Documentation</i> 61, no. 1: 130-55. http://dx.doi.org/10.1108/00220410510578050</p>
+
+<p>Hj&oslash;rland, Birger. 2011. &ldquo;Evidence Based Practice; An Analysis Based on the Philosophy of Science&rdquo;. <i>Journal of the American Society for Information Science and Technology</i> 62, no. 7: 1301-10.</p>
+
+<p>Hj&oslash;rland, Birger. 2015. &ldquo;Theories are Knowledge Organizing Systems (KOS)&rdquo;. <i>Knowledge Organization</i> 42, no. 2: 113-28.</p>
+
+<p>Hj&oslash;rland, Birger. 2017. &ldquo;Classification&rdquo;. <i>Knowledge Organization</i> 44, no. 2: 97-128. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, ed. Birger Hj&oslash;rland, coed. Claudio Gnoli. <a href="classification">https://www.isko.org/cyclo/classification</a>.</p>
+
+<p>Hodge, Gail and Evelyn Frangakis. 2004. <i>Digital Preservation and Permanent Access to Scientific Information: The State of the Practice</i>. A Report Sponsored by The International Council for Scientific and Technical Information (ICSTI) and CENDI US Federal Information Managers Group. <a href="https://cendi.gov/publications/04-3dig_preserv.pdf">https://cendi.gov/publications/04-3dig_preserv.pdf</a>.</p>
+
+<a name="refI"></a>
+
+<p>Ibekwe-SanJuan, Fidelia and Geoffrey C. Bowker. 2017. &ldquo;Implications of Big Data for Knowledge Organization&rdquo;. <i>Knowledge Organization</i> 44, no 3: 187-98.</p>
+
+<p>ISO 5127:2017. <i>Information and documentation: Foundation and Vocabulary</i>. Edition 2, 2017-05. Geneva: International Standards Organization. </p>
+
+<a name="refJ"></a>
+
+<p>Jensen, Howard E. 1950 &lsquo;Editorial note&rsquo;, in <i>Through Values to Social Interpretation: Essays on Social Contexts, Actions, Types, and Prospects</i> by Howard Paul Becker. Durham, NC: Duke University Press, vii&ndash;xi.</p>
+
+<p>Johansson, Veronica. 2012. <i>A Time and Place for Everything? Social Visualization Tools and Critical Literacies</i>. Bor&aring;s: Valfrid. (PhD-dissertation). <a href="https://www.diva-portal.org/smash/get/diva2:877028/FULLTEXT01.pdf">https://www.diva-portal.org/smash/get/diva2:877028/FULLTEXT01.pdf</a>.</p>
+
+<a name="refK"></a>
+
+<p>Kaase, Max. 2001. &rdquo;Databases, Core: Political Science and Political Behavior&rdquo;. In <i>International Encyclopedia of the Social and Behavioral Sciences</i>, edited by Neil J. Smelser and Paul B. Baltes. Amsterdam: Elsevier, Vol. 5, 3251&ndash;5. </p>
+
+<p>Kaden, Ben and Michael Kleineberg. 2018. <i>Guidelines for Publishing Dissertation-related Research Data</i>. Version 1.0. Berlin: Humboldt-Universit&auml;t zu Berlin. DOI: 10.18452/19301.</p>
+
+<p>Keralis, Spencer D. C. 2012. CFP for Roundtable on Data Management for Humanities Research at MLA 2013. Blog post retrieved from: 
+<a href="http://ach.org/conferences/mla-pages/digital-humanities-sessions/guide-digital-humanities-talks-2013-mla-convention/#session586">http://ach.org/conferences/mla-pages/digital-humanities-sessions/guide-digital-humanities-talks-2013-mla-convention/#session586</a>.</p>
+
+<p>Kitchin, Rob. 2014. <i>The Data Revolution: Big Data, Open Data, Data Infrastructures & Their Consequences</i>. London: SAGE.  </p>
+
+<p>Kuhn, Thomas S. 1962. <i>The Structure of Scientific Revolutions</i>. Chicago, IL: University of Chicago Press.</p>
+
+<a name="refL"></a>
+
+<p>Lampland, Martha and Susan Leigh Star (Eds.). 2009.  <i>Standards and Their Stories: How Quantifying, Classifying, and Formalizing Practices Shape Everyday Life</i>. Ithaca, NY: Cornell University Press. </p>
+
+<p>Lancaster, Frederick Wilfrid.  1968a. <i>Information Retrieval Systems: Characteristics, Testing and Evolution</i>. New York: Wiley. </p>
+
+<p>Lancaster, Frederick Wilfrid. 1986b. <i>Vocabulary Control for Information Retrieval</i>. 2nd. Ed. Arlington, Va.: Information Resources Press.</p>
+
+<p>Laney, Douglas. 2001. &rdquo;3-D Data Management: Controlling Data Volume, Velocity and Variety". META Group Research Note, February 6. <a href="https://blogs.gartner.com/doug-laney/deja-vvvue-others-claiming-gartners-volume-velocity-variety-construct-for-big-data/">https://blogs.gartner.com/doug-laney/deja-vvvue-others-claiming-gartners-volume-velocity-variety-construct-for-big-data/</a>.</p>
+
+<p>Laporte, Steven. In press. &rdquo;Ideal Language&rdquo;. <i>Knowledge Organization</i>. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, ed. Birger Hj&oslash;rland, coed. Claudio Gnoli. <a href="ideal_language">https://www.isko.org/cyclo/ideal_language</a>.</p>
+
+<p>Leonelli, Sabina. 2010. &rdquo;Packaging Small Facts for Re-Use: Databases in Model Organism Biology&rdquo;. In: <i>How Well Do Facts Travel? The Dissemination of Reliable Knowledge</i>, edited by Mary S. Morgan and Peter Howlett. Cambridge, UK: Cambridge University Press, 325&ndash;48.</p>
+
+<p>Leonelli, Sabina. 2012. &ldquo;Classificatory Theory in Data-intensive Science: The Case of Open Biomedical Ontologies&rdquo;. <i>International Studies in the Philosophy of Science</i> 26, no. 1: 47&ndash;65.</p>
+
+<p>Leonelli, Sabina. 2014. &ldquo;What Difference does Quantity Make? On the Epistemology of Big Data in Biology&rdquo;. <i>Big Data & Society</i> 1, no. 1: 1&ndash;11. DOI: 10.1177/2053951714534395.</p>
+
+<p>Leonelli, Sabina. 2016. <i>Data-Centric Biology: A Philosophical Study</i>. Chicago, IL: University of Chicago Press.</p>
+
+<p>Lindberg, Christina A. (comp.). 2012. <i>Oxford American Writer's Thesaurus</i>. Third edition. New York: Oxford University Press. </p>
+
+<p>Lyon, Aidan. 2016. &ldquo;Data&rdquo;. In <i>The Oxford Handbook of Philosophy of Science</i>, edited by Paul Humphreys. Oxford, UK: Oxford University Press, 738-58.</p>
+
+<a name="refM"></a>
+
+<p>Machlup, Fritz. 1984. &rdquo;Semantic Quirks in Studies of Information&rdquo;. In: <i>The Study of Information: Interdisciplinary Messages</i>, edited by Fritz Machlup and Una Mansfield. New York: Wiley, 641&ndash;71. </p>
+
+<p>Mai, Jens-Erik. 2011. &ldquo;The Modernity of Classification&rdquo;. <i>Journal of Documentation</i> 67, no.4: 710-30. </p>
+
+<p>Maniez, Jacques. 1997. &ldquo;Database Merging and the Compatibility of Indexing Languages&rdquo;. <i>Knowledge Organization</i> 24, no. 4: 213-24.</p>
+
+<p>Markham, Annette N. 2018. &rdquo;Troubling the Concept of Data in Qualitative Digital Research&rdquo;. In <i>The SAGE Handbook of Qualitative Data Collection</i>, edited by Uwe Flick. London: SAGE Publications, 511&ndash;23. </p>
+
+<p>Marx, Vivien. 2013. &ldquo;Biology: The Big Challenges of Big Data&rdquo;. Nature 498: 255&ndash;60. Retrieved from: <a href="http://www.nature.com/articles/498255a.pdf">http://www.nature.com/articles/498255a.pdf</a>.</p>
+
+<p>Mazzocchi, Fulvio. 2018. &ldquo;Knowledge Organization System (KOS): An Introductory Critical Account&rdquo;. <i>Knowledge Organization</i> 45, no. 1: 54-78. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, eds. Birger Hj&oslash;rland and Claudio Gnoli. <a href="kos">https://www.isko.org/cyclo/kos</a>.</p>
+
+<p>Meadows, Arthur Jack. 2001. <i>Understanding Information</i>. Munich: K. G. Saur. </p>
+
+<p>Millerand, Florence and Geoffrey C. Bowker. 2009. "Metadata Standards: Trajectories and Enactment in the Life of an Ontology". In <i>Standards and Their Stories: How Quantifying, Classifying, and Formalizing Practices Shape Everyday Life</i>, edited by Martha Lampland and Susan Leigh Star. Ithaca, NY: Cornell University Press, 149&ndash;165.</p>
+
+<p>Milroy, James. 2001. &ldquo;Language Ideologies and the Consequence of Standardization&rdquo;. <i>Journal of Sociolinguistics</i> 5, no. 4: 530-55.</p>
+
+<p>Murray, Steve. 2017. &rdquo;The LSST and Big Data Science: A New Kind of Telescope Will Need a New Kind of Astronomer&rdquo;. <i>Astronomy</i> [Magazine], December 15, 2017.  Retrieved 2018-06-08 from: <a href="http://www.astronomy.com/news/2017/12/the-lsst-and-big-data-science">http://www.astronomy.com/news/2017/12/the-lsst-and-big-data-science</a>.</p>
+
+<a name="refN"></a>
+
+<p>National Research Council. 1999. Committee for a Study on Promoting Access to Scientific and Technical Data for the Public Interest, National Research Council. <i>A Question of Balance: Private Rights and the Public Interest in Scientific and Technical Databases</i>.  Washington, D.C: National Academy Press. Available at: <a href="https://www.nap.edu/read/9692/">https://www.nap.edu/read/9692/</a>.</p>
+
+<p>National Science Board. 2005. <i>Long-Lived Digital Data Collections: Enabling Research and Education in the 21st Century</i>. Alexandria, VA: National Science Foundation.  <a href="https://www.nsf.gov/pubs/2005/nsb0540/nsb0540.pdf">https://www.nsf.gov/pubs/2005/nsb0540/nsb0540.pdf</a>.</p>
+
+<p>National Science Foundation. 2012.  <i>Core Techniques and Technologies for Advancing Big Data Science & Engineering (BIGDATA)</i>. Arlington, VA: National Science Foundation (NSF-12-499). [This document is replaced by NSF-14-543] <a href="https://www.nsf.gov/pubs/2012/nsf12499/nsf12499.pdf">https://www.nsf.gov/pubs/2012/nsf12499/nsf12499.pdf</a>.</p>
+
+<p>National Science Foundation. 2014. <i>Critical Techniques and Technologies for Advancing Big 
+Data Science & Engineering (BIGDATA)</i>. Arlington, VA: National Science Foundation (NSF-14-543).  [This document replaces NSF-12-499]. <a href="https://www.nsf.gov/pubs/2014/nsf14543/nsf14543.pdf">https://www.nsf.gov/pubs/2014/nsf14543/nsf14543.pdf</a>.</p>
+
+<p>Naur, Peter. 1966. &ldquo;The Science of Datalogy&rdquo;. <i>Communications of the ACM</i> 9, no. 7: 485.</p>
+
+<p>Nielsen, Hans J&oslash;rn and Birger Hj&oslash;rland. 2014. &rdquo;Curating Research Data: The Potential Roles of Libraries and Information Professionals&rdquo;. <i>Journal of Documentation</i> 70, no. 2: 221-40.</p>
+
+<a name="refO"></a>
+
+<p>Owens, Trevor. 2011. &ldquo;Defining Data for Humanists: Text, Artifact, Information or Evidence?&rdquo;. <i>Journal of Digital Humanities</i> 1, no.1: 6-8. <A HREF="http://journalofdigitalhumanities.org/1-1/defining-data-for-humanists-by-trevor-owens/">http://journalofdigitalhumanities.org/1-1/defining-data-for-humanists-by-trevor-owens/</A>.</p>
+
+<a name="refP"></a>
+
+<p>Parsons, M. A. and P. A. Fox. 2013. &ldquo;Is Data Publication the Right Metaphor?&rdquo; <i>Data Science Journal</i> 12: WDS32-WDS46. DOI: http://doi.org/10.2481/dsj.WDS-042  </p>
+
+<p>Pechenick, Eitan Adam, Christopher M. Danforth and Peter Sheridan Dodds. 2015. &ldquo;Characterizing the Google Books Corpus: Strong Limits to Inferences of Socio-Cultural and Linguistic Evolution&rdquo;. <i>PLoS ONE</i> 10, no. 10: e0137041, 1-24. doi:10.1371/journal.pone.0137041 . <a href="http://journals.plos.org/plosone/article/file?id=10.1371/journal.pone.0137041&type=printable">http://journals.plos.org/plosone/article/file?id=10.1371/journal.pone.0137041&type=printable</a>.</p>
+
+<p>Peirce, Charles Sanders. 1955. "The Scientific Attitude and Fallibilism". In <i>Philosophical Writings of Peirce</i>, edited by Justus Buchler. New York: Dover. </p>
+
+<a name="refQ"></a>
+<a name="refR"></a>
+
+<p>Rafferty, Pauline M. 2018. &ldquo;Tagging&rdquo;. <i>Knowledge Organization</i> 	45, no. 6: 500-516. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, ed. Birger Hj&oslash;rland, coed. Claudio Gnoli. <a href="https://www.isko.org/cyclo/tagging">https://www.isko.org/cyclo/tagging</a>.</p>
+
+<p>Ramanna, Karthik. 2015. <i>Political Standards: Corporate Interest, Ideology, and Leadership in the Shaping of Accounting Rules for the Market Economy</i>. Chicago: University of Chicago Press.</p>
+
+<p>Rapley, Tim and Gethin Rees. 2018. &ldquo;Collecting Documents as Data&rdquo;. <i>The SAGE Handbook of Qualitative Data Collection</i>, edited by Uwe Flick. London: SAGE Publications, 378-91.</p>
+
+<p>Redman, Thomas C., Christopher Fox and Anany V. Levitin. 2017. &ldquo;Data and Data Quality&rdquo;.
+<i>Encyclopedia of Library and Information Sciences</i>, Fourth Edition. Edited by John D. McDonald and
+Michael Levine-Clark. Boca Raton, FL: CRC Press, 1171-82.</p>
+
+<p>Rider, Fremont. 1944. <i>The Scholar and the Future of the Research Library: A Problem and Its Solution</i>. New York: Hadham Press. </p>
+
+<p>Rijsbergen, Cornelis Joost van. 1979. <i>Information Retrieval</i>. Second edition. London: Butterworths.</p>
+
+<p>Rijsbergen, Cornelis Joost van and Mounia Lalmas. 1996. &ldquo;Information Calculus for Information Retrieval&rdquo;. <i>Journal of the American Society for Information Science</i> 47, no. 5: 385-98. </p>
+
+<p>Rowley, Jennifer E. 2007. "The Wisdom Hierarchy: Representations of the DIKW hierarchy". <i>Journal of Information Science</i> 33, no. 2: 163-80.</p>
+
+<p>Roy, Suman Deb and Wenjun Zeng. 2015. <i>Social Multimedia Signals: A Signal Processing Approach to Social Network Phenomena</i>. Cham, Switzerland: Springer.</p>
+
+<a name="refS"></a>
+
+<p>Saracevic, Tefko. 1999. &ldquo;Information Science&rdquo;. <i>Journal of the American Society for Information Science</i> 50, no. 12:1051-63. </p>
+
+<p>Serafin, Robert J. et al. 1999. <i>A Question of Balance: Private Rights and the Public Interest in Scientific and Technical Databases</i>. Washington, DC: National Academy Press. Retrieved from <a href="https://www.nap.edu/read/9692/chapter/1">https://www.nap.edu/read/9692/chapter/1</a> on 3 May 2018. </p>
+
+<p>Shera, Jesse H. 1951. &ldquo;Classification as the basis of bibliographic organization&rdquo;. In <i>Bibliographic Organization: Papers presented before the Fifteenth Annual Conference of the Graduate Library School July 24-29, 1950</i>, edited by Jesse H. Shera and Margaret E. Egan. Chicago: University of Chicago Press, 72-93.</p>
+
+<p>Sheth, Amit. 1997. &ldquo;Data Semantics: What, Where and How? In: <i>Database Applications Semantics, Proceedings of the Sixth IFIP TC-2 Working Conference on Data Semantics (DS-6) Stone Mountain, Atlanta, Georgia U.S.A., May 30&ndash;June 2, 1995</i>, edited by Robert Meersman and Leo Mark. Cham: Springer. DOI: 10.1007/978-0-387-34913-8</p>
+
+<p>Spang-Hanssen, Henning. 2001. &ldquo;How to teach about information as related to documentation&rdquo;. <i>Human IT</i>. (1), 125-143. <a href="http://www.hb.se/bhs/ith/1-01/hsh.htm">http://www.hb.se/bhs/ith/1-01/hsh.htm</a>.</p>
+
+<p>Sp&auml;rck Jones, Karen. 1987. &ldquo;Architecture Problems in the Construction of Expert Systems for Document Retrieval&rdquo;. In <i>Knowledge Engineering: Expert Systems and Information Retrieval</i>. Edited by Irene Wormell. London: Taylor Graham, 7&ndash;33.</p>
+
+<p>Stuckenschmidt, Heiner. 2012. &ldquo;Data Semantics on the Web&rdquo;. <i>Journal of Data Semantics</i> 1, no. 1: 1&ndash;9. DOI 10.1007/s13740-012-0003-z</p>
+
+<p>Swanson, Don R. 1986a. &ldquo;Fish Oil, Raynauds Syndrome, and Undiscovered Public Knowledge&rdquo;. <i>Perspectives in Biology and Medicine</i> 30, no. 1: 7-18.</p>
+
+<p>Swanson, Don R. 1986b. &ldquo;Undiscovered Public Knowledge&rdquo;. <i>The Library Quarterly</i> 56, no. 2: 103-18.</p>
+
+<a name="refT"></a>
+<a name="refU"></a>
+<a name="refV"></a>
+
+<p>Veltman, Frank. 1984. &ldquo;Data Semantics&rdquo;. In: <i>Truth, interpretation, and information: selected papers from the third Amsterdam colloquium</i>, edited Jeroen Groenendijk, Theo M. V. Janssen and Martin Stokhof. Berlin: Walter de Gruyter, 43&ndash;65.</p>
+
+<p>Voss, Jakob. 2013. <i>Describing Data Patterns: A General Deconstruction of Metadata Standards</i>. (Dissertation). Berlin: Humboldt University. <a href="http://edoc.hu-berlin.de/dissertationen/voss-jakob-2013-05-31/PDF/voss.pdf">http://edoc.hu-berlin.de/dissertationen/voss-jakob-2013-05-31/PDF/voss.pdf</a>.</p>
+
+<a name="refW"></a>
+
+<p>Wallis, Jullian C, Christine L. Borgman, Matthew S. Mayernik and Alberto Pepe. 2008. &ldquo;Moving Archival Practices Upstream: An Exploration of the Life Cycle of Ecological Sensing Data in Collaborative Field Research&rdquo;. <i>International Journal of Digital Curation</i> 3, no. 1. Retrieved from <a href="http://www.ijdc.net/article/view/67">http://www.ijdc.net/article/view/67</a>  on June 14, 2018.</p>
+
+<p>Ward, Jonathan Stuart and Adam Barker. 2013. &ldquo;Undefined by Data: A Survey of Big Data Definitions&rdquo;. <i>ArXiv</i> e-print, <a href="http://arxiv.org/abs/1309.5821">http://arxiv.org/abs/1309.5821</a>.</p>
+
+<p>Weiss, Sholom and Nitin Indurkhya. 1997. <i>Predictive Data Mining: A Practical Guide</i>. San Francisco, CA: Morgan Kaufmann Publishers. </p>
+
+<p><i>Wikipedia, the free encyclopedia</i>. &ldquo;Data&rdquo;. Retrieved 2006-09-09 from <a href="http://en.wikipedia.org/wiki/Data">http://en.wikipedia.org/wiki/Data</a> </p>
+
+<p>WordNet 3.1 (2012). Retrieved 2006-09-09 from <a href="http://wordnetweb.princeton.edu/perl/webwn?s=data&sub=">http://wordnetweb.princeton.edu/perl/webwn?s=data&sub=</a>.</p>
+
+<a name="refX"></a>
+<a name="refY"></a>
+<a name="refZ"></a>
+
+<p>Zeng, Marcia Lei. 2019. &ldquo;Interoperability&rdquo; <i>Knowledge Organization</i> 46, no. 2: 122-146. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, ed. Birger Hj&oslash;rland, coed. Claudiuo Gnoli. <a href="interoperability">https://www.isko.org/cyclo/interoperability</a>.</p>
+
+<p>Zhang, Sarah. 2015. <i>The Pitfalls of Using Google Ngram to Study Language</i>. Wired, <a href="https://www.wired.com/2015/10/pitfalls-of-studying-language-with-google-ngram">https://www.wired.com/2015/10/pitfalls-of-studying-language-with-google-ngram</a>.</p>
+
+<p>Zhao, Mengnan, Erjia Yan and Kai Li. 2018. &ldquo;Data Set Mentions and Citations: A Content Analysis of Full-text Publications&rdquo;. <i>Journal of the Association for Information Science and Technology</i> 69, no. 1: 32-46.</p>
+
+<p>Zikopoulos, Paul, Chris Eaton, Dirk deRoss, Tom Deutsch and George Lapis. 2012. <i>Understanding Big Data: Analytics for Enterprise Class Hadoop and Streaming Data</i>. New York: McGraw Hill. <a href="https://www.immagic.com/eLibrary/ARCHIVES/EBOOKS/I111025E.pdf">https://www.immagic.com/eLibrary/ARCHIVES/EBOOKS/I111025E.pdf</a>.</p>
+
+<p>Zins, Chaim. 2007. &ldquo;Conceptual Approaches for Defining Data, Information, and Knowledge&rdquo;. <i>Journal of the American Society for Information Science and Technology</i> 58, no. 4: 479-93.</p>
+
+
+<a name="col"></a>
+
+<p align="right">[<a href="#top">top of entry</a>]</p>
+
+<p>&nbsp;</p>
+
+<p>Visited <a href="https://www.digits.net" target="_blank">
+    <img src="https://counter.digits.net/?counter={1da10c3e-ecf2-6974-456f-635720d2ad3e}&template=simple" 
+     alt="Hit Counter by Digits" border="0"  /></a> times since 2018-10-11.</p>
+
+<hr>
+<p>Version 1.4 (= 1.0 plus quote of Collin 2014, references to Fox et al. 1994, Owens 2011, Redman et al. 2017, Roy et al. 2015, Ward and Barker 2013; corrected ones to Finnemann 2019, Frick&eacute; 2019, Mazzocchi 2018 and Zeng 2019; <i>Wikipedia</i> in 2.5; endnotes 4 and 23a); version 1.0 published 2018-10-11, this version 2020-01-08, last edited 2020-01-08<br>
+Article category: <code><a href="index#CC">Core concepts in KO</a></code></p>
+
+<p>This article (version 1) is published in <i>Knowledge Organization</i>, vol. 45 (2018), Issue 8, pp. 685-708.<br>
+How to cite it (version 1): Hj&oslash;rland, Birger. 2018. &ldquo;Data (with big data and database semantics)&rdquo;. <i>Knowledge Organization</i> 45, no. 8: 685-708. Also available in <i>ISKO Encyclopedia of Knowledge Organization</i>, ed. Birger Hj&oslash;rland, coed. Claudio Gnoli, https://www.isko.org/cyclo/data.</p>
+
+<p>&copy;2018 ISKO. All rights reserved.</p>
+
+</td>
+</tr>
+
+<tr>
+<td id="logo">
+</td>
+</tr>
+
+</table>
+</body>
+</html>

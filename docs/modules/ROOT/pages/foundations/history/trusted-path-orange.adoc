@@ -1,78 +1,135 @@
-= Orange Book's Trusted Path
+= The Orange Book and Trusted Path
 Jamie L. Adams
+:description: Orange Book evaluation classes, the Trusted Computing Base, and the trusted path concept — and why they remain relevant to CUI systems.
+:toc: left
+:toclevels: 2
 
-The Orange Book — formally the Trusted Computer System Evaluation Criteria (TCSEC), published by the U.S. Department of Defense in 1983 — defined the evaluation classes that governed secure system certification for over two decades.
-Its most important contribution to MLS practice was the concept of the _Trusted Computing Base_ (TCB): the set of hardware, firmware, and software components that must be trusted for the system's security policy to be enforced correctly.
+The Orange Book — formally the Trusted Computer System Evaluation Criteria (TCSEC), published
+by the U.S. Department of Defense in 1983 — defined the evaluation classes that governed secure
+system certification for over two decades. Its most important contribution to MLS practice was
+the concept of the _Trusted Computing Base_ (TCB): the set of hardware, firmware, and software
+components that must be trusted for the system's security policy to be enforced correctly.
 
-This page covers the Orange Book evaluation classes, what they required of MLS systems, and the concept of trusted path — a design requirement introduced at the B2 level that remains relevant to any system handling sensitive information.
+This page covers the Orange Book evaluation classes, what they required of MLS systems, and
+the concept of trusted path — a design requirement introduced at the B2 level that remains
+relevant to any system handling sensitive information.
 
+== Orange Book Evaluation Classes
 
-== Orange Book Classes (Why B1/B2 Matyter)
+The Orange Book divided systems into four broad categories, each with sub-levels.
 
-The Orange Book divided systems into broad categories:
+=== D — Minimal Protection
 
-D – Minimal protection (mostly historical interest)
+The D class is primarily of historical interest. Systems evaluated at D provide no meaningful
+security guarantees.
 
-C – Discretionary protection
-• C1: Basic DAC, identification, minimal auditing
-• C2: Controlled access protection
-– Stronger DAC
-– Object reuse protection
-– Auditing
-– Individual accountability
+=== C — Discretionary Protection
 
-Most commercial UNIX systems historically reached C2 at best.
+The C class covers discretionary access control. Most commercial UNIX systems historically
+reached C2 at best.
 
-B – Mandatory protection (MLS begins here)
-• B1: Labeled Security Protection
-– Security labels on subjects and objects
-– Mandatory access control
-– Basic MLS enforcement
-• B2: Structured Protection
-– Stronger isolation
-– Trusted path
-– More rigorous design and testing
-• B3: Security Domains
-– Highly robust reference monitor
-– Strong process isolation
-– Extensive assurance evidence
+[cols="1,3"]
+|===
+| Level | Requirements
 
-A – Verified Protection
-• A1: Formally verified design and implementation
-– Extremely rare
-– Extremely expensive
+| C1
+| Basic discretionary access control (DAC), identification and authentication, minimal auditing.
 
-When people refer to “B1” or “B2” systems, they are explicitly referring to MLS-capable systems with mandatory policy enforcement.
+| C2
+| Stronger DAC, object reuse protection, auditing, individual accountability.
+|===
 
+C2 added object reuse protection — a critical requirement ensuring that memory and storage
+released by one user cannot expose residual data to another. Even so, C2 does not require
+mandatory access control, MLS labeling, or trusted path.
 
-== TRUSTED PATH: A CRITICAL MLS CONCEPT
+=== B — Mandatory Protection
 
-Trusted Path is a cornerstone concept in MLS systems.
+The B class is where MLS begins. These levels require mandatory access control, security labels,
+and formal design evidence.
 
-The _Trusted Computing Base_ (TCB) is the complete set of protection mechanisms within a system — hardware, firmware, and software — whose correct operation is necessary to enforce the security policy.
-A _trusted path_ is a guaranteed communication channel between the user and the TCB, ensuring that sensitive operations cannot be intercepted or spoofed.
+[cols="1,3"]
+|===
+| Level | Requirements
 
-This requirement is formalized in TCSEC at the B2 level and corresponds to NIST 800-53 SC-11 (Trusted Path) in modern control catalogs.
+| B1
+| Security labels on subjects and objects; mandatory access control; basic MLS enforcement.
 
-Why trusted path exists:
-MLS systems assume:
-• Applications may be compromised
-• User interfaces may be spoofed
-• Users may be tricked into entering sensitive data
+| B2
+| Stronger isolation; *trusted path* (required at this level); more rigorous design and testing.
 
-Trusted path ensures that:
-• When a user authenticates
-• When a user changes security attributes
-• When a user confirms sensitive actions
+| B3
+| Highly robust reference monitor; strong process isolation; extensive assurance evidence.
+|===
 
-…the communication is directly with the TCB, not with an untrusted process.
+When practitioners refer to "B1" or "B2" systems, they mean systems with mandatory policy
+enforcement and label-based access control.
 
-Classic examples:
-• Secure attention keys (e.g., Ctrl-Alt-Del)
-• Trusted login paths
-• Trusted labeling interfaces
+=== A — Verified Protection
 
-Trusted path becomes mandatory at B2 and above.
+The A class requires formally verified design and implementation. A1 evaluations were extremely
+rare and extremely expensive. They required mathematical proofs that the implementation matched
+the formal security model.
 
-Without trusted path, MLS enforcement can be bypassed through deception rather than technical exploitation.
+== Trusted Path
 
+Trusted path is a cornerstone concept in MLS systems, first required at the B2 level.
+
+The _Trusted Computing Base_ (TCB) is the complete set of protection mechanisms — hardware,
+firmware, and software — whose correct operation is necessary to enforce the security policy.
+A _trusted path_ is a guaranteed communication channel between the user and the TCB, ensuring
+that sensitive operations cannot be intercepted or spoofed.
+
+This requirement corresponds to NIST SP 800-53 SC-11 (Trusted Path) in modern control catalogs.
+
+=== Why Trusted Path Exists
+
+MLS systems operate under a threat model in which applications may be compromised, user
+interfaces may be spoofed, and users may be tricked into entering sensitive data into untrusted
+processes. Without a trusted path, an attacker who controls a windowing system or login
+application can capture credentials and security attribute changes.
+
+Trusted path ensures that when a user authenticates, changes security attributes, or confirms
+sensitive actions, the communication goes directly to the TCB — not to an untrusted process
+that happens to be presenting itself as the login screen.
+
+Classic examples of trusted path mechanisms include:
+
+* Secure attention keys (Ctrl-Alt-Del on Windows NT; similar on some UNIX systems)
+* Trusted login paths that cannot be replicated by user-space processes
+* Trusted labeling interfaces for changing security contexts
+
+Without trusted path, MLS enforcement can be bypassed through deception rather than technical
+exploitation. Trusted path becomes mandatory at B2 and above because at that assurance level,
+the threat model explicitly includes adversarial user interfaces.
+
+== Object Reuse
+
+Object reuse protection is required at C2 and all higher levels. It ensures that when a system
+reassigns a resource (memory, disk blocks, buffers) from one user or process to another, no
+residual data from the previous user is exposed.
+
+Early systems frequently failed this requirement. A user who deleted a file could have their data
+recovered by another user who later allocated the same disk blocks. Memory pages were handed to
+new processes without zeroing. The leak happened below the permission system — correct access
+control was irrelevant if the kernel was handing out dirty memory.
+
+MLS designers considered this failure mode unacceptable. Every storage resource — memory pages,
+swap, IPC buffers, disk blocks, temporary files — must be sanitized before reuse. This
+requirement drives the kernel-level memory zeroing and secure deletion practices that appear in
+modern high-assurance system design.
+
+== The Orange Book's Legacy
+
+The TCSEC was superseded by the Common Criteria (ISO/IEC 15408) in the late 1990s, which took
+a more flexible, profile-based approach to evaluation. However, the Orange Book's conceptual
+contributions endure.
+
+The TCB concept — a minimal, auditable trusted core — remains the foundation of SELinux's
+reference monitor design. The trusted path requirement survives in modern form as secure
+attention mechanisms and kernel-enforced security boundaries. Object reuse protection is now
+built into every serious operating system kernel.
+
+For UMRS, the Orange Book lineage is visible in the emphasis on a minimal TCB (SELinux kernel
+policy), non-bypassable enforcement, and the requirement that security-critical operations go
+through kernel-mediated paths rather than user-space application logic.

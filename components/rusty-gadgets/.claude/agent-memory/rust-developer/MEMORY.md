@@ -4,14 +4,15 @@
 
 ## Key Memory Files
 
-- [tui_patterns.md](tui_patterns.md) — umrs-tui architecture, trait patterns, clippy rules
+- [tui_patterns.md](tui_patterns.md) — umrs-ui architecture, trait patterns, clippy rules
 
 ## Workspace Quick Reference
 
 - Workspace root: `components/rusty-gadgets/`
 - Run all checks from that directory: `cargo xtask clippy && cargo xtask test`
 - Format: `cargo xtask fmt`
-- Primary crate under active development: `umrs-tui`
+- UI library crate: `umrs-ui` (renamed from `umrs-tui` 2026-03-22; pure lib — no binary targets)
+- `umrs-uname` is a standalone binary crate depending on `umrs-ui` (extracted 2026-03-22)
 
 ## Critical Rules (from CLAUDE.md)
 
@@ -22,16 +23,16 @@
 - Clippy must be clean with zero warnings — fix findings, no `#[allow]` without Jamie approval
 - 100-char max line width, 4-space indent, Unix newlines
 
-## umrs-tui Architecture
+## umrs-ui Architecture (renamed from umrs-tui 2026-03-22)
 
 ### Key source files
-- `src/app.rs` — `AuditCardApp` trait, `AuditCardState`, `DataRow`, `ColumnLayout`, all enums
-- `src/data_panel.rs` — `render_data_panel()`, `render_scrollable_pane()`, row expansion
-- `src/layout.rs` — master `render_audit_card()` entry point
-- `src/main.rs` — `OsDetectApp` implementation (OS detection TUI)
-- `src/bin/file_stat.rs` — `FileStat` implementation (file security TUI)
-- `tests/data_types_tests.rs` — DataRow, TabDef, StatusMessage tests
-- `tests/column_layout_tests.rs` — ColumnLayout, two-column trait method tests
+- `umrs-ui/src/app.rs` — `AuditCardApp` trait, `AuditCardState`, `DataRow`, `ColumnLayout`, all enums
+- `umrs-ui/src/data_panel.rs` — `render_data_panel()`, `render_scrollable_pane()`, row expansion
+- `umrs-ui/src/layout.rs` — master `render_audit_card()` entry point
+- `umrs-uname/src/main.rs` — `OsDetectApp` implementation, binary = `umrs-uname` (own crate, extracted 2026-03-22)
+- `umrs-stat/src/main.rs` — `FileStatApp` implementation, binary = `umrs-stat` (own crate)
+- `umrs-ui/tests/data_types_tests.rs` — DataRow, TabDef, StatusMessage tests
+- `umrs-ui/tests/column_layout_tests.rs` — ColumnLayout, two-column trait method tests
 
 ### Tab conventions
 - Trust/Evidence is always the rightmost (last) tab — UMRS convention

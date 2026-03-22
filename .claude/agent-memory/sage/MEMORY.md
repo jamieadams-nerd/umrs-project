@@ -68,6 +68,10 @@ analytics are flowing. Ask Jamie about this before drafting the first editorial 
 - [project-case-studies-and-impact-profiles.md](project-case-studies-and-impact-profiles.md) — CRITICAL: Full case study inventory (12 cases, CUI categories, failure classes, consequences), SP 800-30 Rev 1 impact profile framework (OPS/ASSET/IND/ORG/NATION), the three-pillar CUI enrichment vision, and why this combination is a novel publishable contribution. Read before writing any CUI-related content.
 - [project-content-angles-case-studies.md](project-content-angles-case-studies.md) — Concrete blog series ("Failures That Built UMRS"), YouTube companion series, conference abstract core, canonical pitch line, and phase guardrails for all content in this series.
 
+## Agent Evolution Research (Jamie's Parallel AI Study — 2026-03-22)
+
+- [project-agent-evolution-research.md](project-agent-evolution-research.md) — CRITICAL: Jamie's parallel research track proving knowledge-trained few > generic swarm. Herb study complete, Rusty study planned post-performance-baseline. This is equally important to UMRS technical content. Source material for AI Journey blog and conference abstracts.
+
 ## Pre-Release Strategy Context (2026-03-21)
 
 - [project-next-big-steps.md](project-next-big-steps.md) — CRITICAL: Full synthesis of Jamie's next-big-steps.md braindump. CUI labeling workstream (no existing plan), umrs-mcs tool concept, test vault, Five Eyes i18n, YouTube channel status, AI documentation audit, Sage publication role expansion, intern discipline, and gap analysis between new items vs already-covered items. Read before strategy session.
@@ -94,6 +98,10 @@ before attempting to cross into broader developer or enterprise audiences.
 Sage's registered voice for all public content: precise, systems-oriented, assurance-focused,
 occasionally narrative when explaining design intent. Explain like an engineer. Do not market
 like a salesperson. If it sounds like a product page, rewrite it.
+
+## Jamie's Operational History (Ready-Reference Source Material)
+
+- [user-bc2a-operational-history.md](user-bc2a-operational-history.md) — Jamie's firsthand 1996 BC2A account: SATCOM/ATM backbone, early Predator ISR video, NITF imagery dissemination, coalition C2 at RAF Molesworth. Primary source for AI Journey blog background, Five Eyes introductions, and E-E-A-T credibility. Source: `docs/sage/inbox/jamie-bc2a.txt`. Do not publish verbatim without Jamie's direction.
 
 ## Author Blurb
 Canonical author blurb is stored at `~/.claude/agent-memory/sage/` per project MEMORY.md

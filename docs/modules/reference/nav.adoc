@@ -30,6 +30,4 @@
 ** xref:kernel-probe-indicators.adoc[Kernel probe indicators]
 
 * Language & Style Guides
-** xref:rust-style-guide.adoc[Rust style guide]
-** xref:secure-bash.adoc[Secure Bash guide]
 ** xref:secure-python.adoc[Secure Python guide]

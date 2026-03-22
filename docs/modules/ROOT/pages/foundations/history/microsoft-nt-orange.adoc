@@ -1,355 +1,102 @@
-= Microsoft NT TSEC Evaluation
+= Microsoft NT and the Orange Book
+:description: Windows NT's C2 evaluation under TCSEC — what the claim meant, what it did not mean, and what the episode taught the security community.
+:toc: left
+:toclevels: 2
 
+In the mid-1990s, Microsoft pursued a C2-level evaluation for Windows NT under the Trusted
+Computer System Evaluation Criteria (TCSEC). The claim became one of the more instructive
+episodes in security evaluation history — and a recurring example of the gap between evaluation
+scope and operational reality.
 
-Yes, early Windows NT did receive TCSEC (Orange Book) evaluations, but only under very constrained configurations, and network connectivity either had to be absent or severely restricted.
+== What Microsoft Actually Claimed
 
-So the joke:
-
-“Windows NT was C2… as long as it wasn’t connected to a network”
-
-…is rooted in reality.
-
-⸻
-
-WHAT MICROSOFT ACTUALLY CLAIMED
-
-In the mid-1990s, Microsoft pursued C2-level evaluation for Windows NT.
-
-Key facts:
-
-• Windows NT 3.5 and later NT 4.0 were evaluated
-• The target was C2 (Controlled Access Protection)
-• Evaluations were done under TCSEC, not Common Criteria
-• The evaluated configuration was very specific
-
-Microsoft never claimed B1/B2 MLS.
-They aimed squarely at C2.
-
-⸻
-
-WHAT C2 ACTUALLY MEANS (IMPORTANT CONTEXT)
+Windows NT 3.5 and later NT 4.0 received TCSEC evaluations targeting the C2 level (Controlled
+Access Protection). Microsoft never claimed B1 or B2 MLS certification. The goal was C2 —
+the highest discretionary protection level.
 
 C2 requires:
 
-• Discretionary Access Control (DAC)
-• Individual user identification & authentication
-• Auditing of security-relevant events
-• Object reuse protection (no data leakage from reused memory/disk)
+* Discretionary Access Control (DAC)
+* Individual user identification and authentication
+* Auditing of security-relevant events
+* Object reuse protection
 
-C2 does not require:
+C2 does not require mandatory access control, MLS labeling, trusted path, or protection
+against malicious code. A system that achieves C2 is not high assurance and is not MLS-capable.
 
-• Mandatory access control
-• MLS labeling
-• Trusted path
-• Protection against malicious code
+== The Evaluated Configuration Problem
 
-So even a perfect C2 system is not MLS and not “high assurance.”
+TCSEC evaluations apply to a specific configuration, not to the product in general. For
+Windows NT, that configuration typically involved:
 
-⸻
+* A standalone system or tightly controlled environment
+* NTFS as the filesystem (FAT excluded the evaluation scope)
+* Specific account policies and auditing settings
+* No untrusted services
+* Limited or no network services
 
-THE CATCH: “EVALUATED CONFIGURATION”
+This is where the well-known observation about NT arose. Network services were either disabled,
+heavily constrained, or excluded from the evaluated configuration. As a standalone, carefully
+locked-down system, NT could satisfy C2 requirements. As a networked enterprise system — which
+is how nearly every NT deployment worked in practice — the evaluated configuration bore little
+resemblance to reality.
 
-Here’s where the joke comes from.
+The quip that "NT was C2 as long as it wasn't connected to a network" captures this gap,
+though it is not entirely fair. The more precise statement is that networking was not included
+in the evaluated configuration, and enabling it substantially changed the security properties
+of the system.
 
-TCSEC evaluations are always for a specific configuration, not “the product in general.”
+== Why Networking Complicated the Evaluation
 
-For Windows NT, that configuration typically involved:
+Under the TCSEC, networking massively expands the Trusted Computing Base. Every network service
+becomes part of the attack surface. Auditing, identification, and access control become harder
+to reason about. The Orange Book predated modern network threat models, and many systems —
+not just NT — achieved their evaluation with networking disabled or severely restricted.
 
-• Standalone system or tightly controlled environment
-• Specific filesystem (NTFS only)
-• Specific account policies
-• Auditing enabled
-• No untrusted services
-• Limited or no network services
+Windows NT became the most prominent example of this pattern because Microsoft marketed the C2
+achievement aggressively while the gap between the evaluated configuration and real-world
+deployments was unusually wide.
 
-In practice:
+== Object Reuse and NT
 
-• Network services were either disabled
-• Or heavily constrained
-• Or excluded from the evaluated configuration
+One reason NT's C2 evaluation was configuration-specific is that object reuse guarantees
+depended on NTFS. On FAT volumes, the guarantees did not hold. Paging behavior also affected
+compliance. Certain subsystems had to be disabled or constrained to maintain the evaluated
+posture.
 
-So while NT as an OS could support networking, the evaluated system often did not include it in any meaningful way.
+Networking increased the number of objects and buffers dramatically, making object reuse
+guarantees harder to reason about formally — which is part of why networking was excluded
+from the evaluation scope.
 
-Hence the joke.
+== What the NT Evaluation Taught the Security Community
 
-⸻
+The NT episode reinforced lessons that MLS designers already understood:
 
-WHY NETWORKING WAS SUCH A PROBLEM
+* Evaluation scope is not the same as real-world security posture.
+* Configuration matters more than marketing.
+* Networked systems require a fundamentally different threat model.
+* Paper compliance without operational enforcement is fragile.
 
-Under TCSEC:
+These lessons contributed to:
 
-• Networking massively expands the Trusted Computing Base (TCB)
-• Every network service becomes part of the attack surface
-• Auditing, identification, and access control become harder
-• The Orange Book predates modern network threat models
+* Later distrust of TCSEC for networked environments.
+* The shift to Common Criteria, which uses Protection Profiles to define the intended
+  operational environment explicitly.
+* Greater emphasis on mandatory enforcement mechanisms such as SELinux.
+* Increased scrutiny of "checkbox security" claims.
 
-Many systems — not just NT — struggled with this.
+NT was not unique. Many vendors achieved C2 in lab conditions with locked-down systems that
+looked nothing like production deployments. NT became the punchline because the contrast between
+the evaluation claim and actual deployment practice was especially visible.
 
-Even UNIX systems that achieved C2 often did so:
+== Relevance to UMRS
 
-• With networking disabled
-• Or with extremely limited network stacks
-• Or by excluding networking from the evaluation scope
+UMRS takes the opposite stance. Every capability is evaluated against the operational
+environment it will actually be used in — networked, administered by humans, subject to
+misconfiguration. The emphasis is on kernel-enforced boundaries that hold regardless of
+application correctness, not evaluation configurations that hold only in a lab.
 
-Windows NT just became the punchline because Microsoft marketed the achievement aggressively.
-
-⸻
-
-THE “C1 OR C2” CONFUSION
-
-You may hear variations of the joke saying:
-
-• “C1 if networked”
-• “C2 only standalone”
-• “C2 on paper”
-
-That’s because:
-
-• Some NT configurations only met C1 requirements
-• Others met C2, but only with stricter controls
-• Marketing often blurred those distinctions
-
-The joke simplified it to:
-
-“C2 — unless you actually use it”
-
-Which, while unfair, captured the spirit.
-
-⸻
-
-WAS THIS UNIQUE TO MICROSOFT?
-
-No.
-
-This was common across the industry.
-
-Many vendors achieved:
-
-• C2 in lab conditions
-• With carefully locked-down systems
-• That looked nothing like real enterprise deployments
-
-What made NT different was:
-
-• The contrast between the evaluation claim
-• And how NT was actually deployed in the real world
-
-⸻
-
-WHY THIS STORY MATTERS (AND WHY YOU REMEMBER IT)
-
-This episode reinforced several hard lessons that MLS designers already knew:
-
-• Evaluation ≠ real-world security
-• Configuration matters more than marketing
-• Networked systems change the threat model entirely
-• Paper compliance without enforcement is fragile
-
-These lessons directly influenced:
-
-• Later distrust of TCSEC for networked systems
-• The shift to Common Criteria
-• The emphasis on mandatory enforcement (e.g., SELinux)
-• Skepticism of “checkbox security”
-
-⸻
-
-WHY THIS CONNECTS CLEANLY TO UMRS
-
-UMRS implicitly takes the opposite stance:
-
-• Enforcement over claims
-• Real configurations over lab artifacts
-• System-enforced boundaries over documentation
-• Auditability over marketing language
-
-The NT C2 joke is funny because it exposes what happens when:
-
-Security is treated as a certification goal rather than an operational reality.
-
-MLS history — and UMRS — come from the opposite mindset.
-
-⸻
-
-CLOSING LINE (OPTIONAL, BUT YOU’LL LIKE IT)
-
-Windows NT wasn’t “lying.”
-
-It was technically correct — the most dangerous kind of correct.
-
-⸻
-
-If you want, I can:
-• Cite the specific NT evaluation documents
-• Contrast TCSEC vs Common Criteria failures
-• Tie this anecdote into your MLS/CUI narrative as a sidebar
-• Help you write a short “security folklore” section for UMRS
-
-Just say the word.
-
-Good question — this is one of those Orange Book terms that sounds abstract until you see why it mattered.
-
-I’ll explain it plainly, then tie it back to why it showed up in C2 and why it’s still relevant.
-
-⸻
-
-DEFINITION (IN PLAIN ENGLISH)
-
-Object reuse means:
-
-When a system reassigns a resource (like memory, disk blocks, or buffers) from one user or process to another, no residual data from the previous user is exposed.
-
-In short:
-
-No leftovers.
-
-⸻
-
-WHAT COUNTS AS AN “OBJECT”
-
-In TCSEC terms, an “object” is any system resource that can contain data, such as:
-
-• Memory pages
-• Disk blocks
-• Temporary files
-• Swap space
-• IPC buffers
-• File system inodes or metadata
-• Device buffers
-
-If that object was previously used by one subject, and is later reused by another, the system must ensure it is “clean.”
-
-⸻
-
-THE CLASSIC FAILURE SCENARIO
-
-Imagine this early-system behavior:
-	1.	User A creates a file or uses memory
-	2.	User A deletes the file or exits
-	3.	The system marks the space as “free”
-	4.	User B allocates new space
-	5.	User B sees fragments of User A’s data
-
-That was not hypothetical. It happened routinely on early systems.
-
-⸻
-
-WHY THIS WAS A BIG DEAL
-
-Without object reuse protection, a system could leak sensitive data even if:
-
-• File permissions were correct
-• Access control checks passed
-• Users followed the rules
-
-Because the leak happens below the permission system.
-
-This meant:
-
-Security could fail even when policy was “correct.”
-
-That was unacceptable for controlled-access systems.
-
-⸻
-
-WHAT C2 REQUIRED
-
-At C2 (Controlled Access Protection), the Orange Book required:
-
-• Memory to be cleared before reuse
-• Disk blocks to be wiped or zeroed before reassignment
-• Temporary storage to be sanitized
-• No residual data to be accessible across users
-
-This applied even in unclassified systems, because C2 assumed:
-
-• Multiple users
-• Different trust levels
-• Shared hardware
-
-⸻
-
-CONCRETE EXAMPLES
-
-Memory:
-If a process exits, its memory pages must be cleared before another process gets them.
-
-Disk:
-If a file is deleted, the disk blocks must not be readable by another user who later allocates space.
-
-Swap:
-Swapped-out memory must not leak between users.
-
-IPC:
-Shared buffers must be sanitized before reuse.
-
-⸻
-
-WHY THIS WAS HARD IN PRACTICE
-
-Object reuse protection:
-
-• Has performance costs
-• Requires kernel-level discipline
-• Requires careful filesystem design
-• Is easy to get wrong
-
-Many early systems simply did not do this consistently.
-
-That is one reason achieving C2 was non-trivial.
-
-⸻
-
-WHY THE WINDOWS NT STORY CONNECTS HERE
-
-One reason Windows NT’s C2 evaluation was configuration-specific is that:
-
-• Object reuse guarantees depended on NTFS
-• Paging behavior mattered
-• Certain subsystems had to be disabled or constrained
-
-Networking increased the number of objects and buffers dramatically, making reuse guarantees harder to reason about.
-
-⸻
-
-WHY THIS STILL MATTERS TODAY
-
-Even now, object reuse is relevant:
-
-• Container isolation
-• VM memory reuse
-• Cloud multi-tenancy
-• Temporary file handling
-• Crash dumps and core files
-
-Modern systems usually handle this correctly, but only because these lessons were learned the hard way.
-
-⸻
-
-ONE-SENTENCE SUMMARY
-
-Object reuse protection ensures that when a system reuses memory or storage, it never leaks data left behind by someone else.
-
-⸻
-
-WHY MLS PEOPLE CARED SO MUCH
-
-MLS designers assumed:
-
-• You cannot trust applications
-• You cannot trust users
-• You must trust the kernel
-
-Object reuse is one of the places where that philosophy is most visible.
-
-Even perfect access control is meaningless if yesterday’s data leaks into today’s allocation.
-
-⸻
-
-If you want, next we can:
-• Contrast object reuse with modern secure deletion myths
-• Show how Linux implements object reuse protections
-• Tie object reuse directly into SELinux and auditing
-• Add this as a short glossary entry for UMRS docs
-
-Just tell me how you want to use it.
+The NT evaluation story is a useful reminder of why enforcement matters more than
+certification. A system can be technically compliant with an evaluation standard while
+providing no meaningful protection in the environment where it is actually deployed.
+That is the failure mode UMRS is designed to avoid.
