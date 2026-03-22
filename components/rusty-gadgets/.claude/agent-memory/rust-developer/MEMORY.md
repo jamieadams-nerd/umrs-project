@@ -78,3 +78,30 @@
 Clippy fires `vec_init_then_push` when the first pushes after `Vec::new()` are unconditional.
 Fix: use `vec![item1, item2, ...]` for the initial unconditional items, then use `push()`
 for conditional items. See `build_os_info_right()` in `main.rs` for the canonical example.
+
+## DialogState Scrolling (added 2026-03-22)
+
+`umrs-ui/src/dialog.rs` now supports scrollable help text:
+- Fields: `scroll_offset: u16`, `total_lines: u16`, `visible_height: u16` (all public)
+- Methods: `scroll_up()` and `scroll_down()` (both `const fn`)
+- `render_dialog()` takes `Option<&mut DialogState>` (changed from `Option<&DialogState>`)
+  and writes `total_lines` + `visible_height` back each frame
+- Scroll indicators (`▲ more above` / `▼ more below`) rendered in the spacer line
+- `u16::min()` is not const-stable — use explicit `if next <= max { next } else { max }`
+
+## umrs-uname help text conventions (2026-03-22)
+
+- All help text uses `r"..."` raw strings (no `r#"..."#` unless `"` needed inside)
+- Direct Unicode chars in raw strings: `◼`, `◻`, `⚠`, `✓`, `✗`, `▲`, `▼`
+- Section headers in ALL CAPS with leading space: ` SECTION NAME:`
+- `◼` for categories, `◻` for sub-items
+- Every tab's help text ends with a NAVIGATION section listing all keys
+- `help_text_for_tab()` has `#[allow(clippy::too_many_lines)]` — lookup table pattern
+
+## handle_key_action() extraction pattern
+
+When `main()` exceeds the 100-line clippy limit due to a match arm expansion,
+extract the match into a helper `fn handle_key_action(...) -> bool` that returns
+`should_quit`. The event loop becomes: `if let Some(action) = keymap.lookup(&key)
+&& handle_key_action(action, ...) { break; }`. This also lets clippy's
+`collapsible_if` lint guide the merge into a `let ... && ...` guard.

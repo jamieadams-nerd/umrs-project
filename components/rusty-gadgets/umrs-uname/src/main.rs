@@ -1475,94 +1475,280 @@ fn build_status(result: &DetectionResult) -> StatusMessage {
 ///
 /// NIST SP 800-53 SA-5 — inline system documentation reduces operator
 /// reliance on external reference guides during assessment.
+#[allow(clippy::too_many_lines)] // lookup table — splitting reduces readability
 const fn help_text_for_tab(tab_index: usize) -> &'static str {
     match tab_index {
         0 => {
-            "OS Information\n\
-             Shows identity fields from /etc/os-release, platform identity,\n\
-             and boot ID. These fields identify the system under assessment.\n\
-             \n\
-             Navigation: Tab / Shift-Tab = switch tabs  j/k = scroll\n\
-             \n\
-             Press Enter, Esc, or q to close this help."
+            r" OS INFORMATION Tab
+   ◼ Identity fields extracted from the running system.
+   ◼ These values identify the platform under assessment.
+
+ WHAT IS SHOWN:
+   ◼ OS NAME / VERSION
+         From /etc/os-release. The distro name, version ID,
+         and pretty name. Used to verify the platform is the expected
+         OS and version for this deployment.
+
+   ◼ PLATFORM IDENTITY
+         Kernel release string (from uname) and architecture.
+         Cross-checked against /proc/sys/kernel/osrelease for
+         corroboration — two independent sources must agree.
+         If they disagree, the Trust / Evidence tab shows the
+         contradiction and its source.
+
+   ◼ BOOT ID
+         A unique identifier assigned by the kernel at each boot.
+         Changes every reboot. Useful for correlating system
+         log entries (journald) to a specific boot session.
+
+ NAVIGATION:
+   Tab / Shift-Tab     switch between tabs
+   j / k  or  ↑ / ↓   scroll this help
+   PgDn / PgUp         scroll faster
+   Enter, Esc, or q    close this help"
         }
         1 => {
-            "Kernel Security\n\
-             Shows live kernel security posture from /proc and /sys.\n\
-             \n\
-             Symbols: \u{2713} = hardened  \u{2717} = not hardened  ? = unavailable\n\
-             Colors:  green   = hardened  red  = not hardened  dim = unavailable\n\
-             \n\
-             Groups:\n\
-             BOOT INTEGRITY      — lockdown, kexec, module sig, modules_disabled\n\
-             CRYPTOGRAPHIC POSTURE — FIPS mode and entropy sources\n\
-             KERNEL SELF-PROTECTION — ASLR, kptr, BPF, ptrace, perf\n\
-             PROCESS ISOLATION   — user namespaces, sysrq, suid dumps\n\
-             FILESYSTEM HARDENING — symlink and hardlink protections\n\
-             MODULE RESTRICTIONS — blacklisted kernel modules\n\
-             NETWORK AUDITING    — nf_conntrack accounting\n\
-             \n\
-             Red rows do not meet the hardened baseline — review each\n\
-             indicator's description for risk context and remediation\n\
-             priority before CUI processing.\n\
-             \n\
-             Contradictions (running kernel vs persisted config disagree):\n\
-             \u{26a0} DRIFT         — config says hardened but kernel is not;\n\
-                                  intended hardening is not active\n\
-             \u{26a0} NOT PERSISTED — kernel is hardened now but config will not\n\
-                                  keep it after reboot\n\
-             \u{26a0} UNVERIFIABLE  — config exists but kernel value could not\n\
-                                  be read to confirm\n\
-             \n\
-             Press Enter, Esc, or q to close this help."
+            r" KERNEL SECURITY Tab
+   ◼ Shows the settings in the currently running kernel.
+   ◼ These are extracted from /proc and /sys.
+
+ SUMMARY:
+   ◼ The running kernel version.
+   ◼ Baseline compares the running kernel to what this tool
+     was tested against. If the kernel is a major version
+     newer, some indicators may not map correctly. Treat
+     results as advisory and verify critical findings
+     manually. Check for an updated version of this tool.
+   ◼ The number of indicators checked and high-level counts.
+   ◼ Contradictions identifies disagreements between what is
+     in the kernel and what was configured. This tool reports
+     the disagreement but cannot determine the cause. Each
+     type below has a different appropriate response.
+
+     ◻ None
+           Running kernel is consistent with configuration.
+
+     ⚠ DRIFT
+           The hardened setting is in the config file but
+           the running kernel does not reflect it. The
+           intended hardening is not active. Check
+           appropriate system logs to identify the cause.
+
+     ⚠ NOT PERSISTED
+           The running kernel is hardened now but no config
+           file reflects this. The setting will be lost on
+           next reboot. Persist per your site configuration
+           procedures.
+
+     ⚠ UNVERIFIABLE
+           A configuration value exists but the kernel node
+           could not be read to confirm whether it is active.
+           This may be normal for this kernel version or may
+           indicate a permission issue. Verify manually.
+
+ EVIDENCE CHAIN:
+   Indicator       ✓ = Hardened (green)
+                   ✗ = Not hardened (red)
+                   ? = Unavailable (kernel node unreadable)
+
+   Grouped by:
+
+   ◼ BOOT INTEGRITY
+         lockdown, kexec, module sig, modules_disabled
+
+   ◼ CRYPTOGRAPHIC POSTURE
+         FIPS mode and entropy sources
+
+   ◼ KERNEL SELF-PROTECTION
+         ASLR, kptr, BPF, ptrace, perf
+
+   ◼ PROCESS ISOLATION
+         user namespaces, sysrq, suid dumps
+
+   ◼ FILESYSTEM HARDENING
+         symlink and hardlink protections
+
+   ◼ MODULE RESTRICTIONS
+         blacklisted kernel modules
+
+   ◼ NETWORK AUDITING
+         nf_conntrack accounting
+
+ NOTE: Red rows do not meet the expected hardened value.
+       Each red row shows a description and recommended
+       value directly below the indicator name. Scroll
+       down within the tab to see all indicators.
+
+ NAVIGATION:
+   Tab / Shift-Tab     switch between tabs
+   j / k  or  ↑ / ↓   scroll this help
+   PgDn / PgUp         scroll faster
+   Enter, Esc, or q    close this help"
         }
         2 => {
-            "Trust / Evidence\n\
-             \n\
-             TOP (Summary — always visible):\n\
-             Trust tier, downgrade reasons, and contradictions.\n\
-             'No downgrade' means all trust checks passed.\n\
-             Any contradiction requires manual review — it may indicate\n\
-             tampering or a misconfigured system.\n\
-             Contradictions here are OS detection contradictions: two\n\
-             independent sources (e.g., /etc/os-release vs package DB)\n\
-             reported conflicting values for the same fact. This is\n\
-             distinct from kernel/config contradictions on the Kernel\n\
-             Security tab.\n\
-             \n\
-             Trust tiers: T0=Untrusted  T1=Kernel Anchored  T2=Env Anchored\n\
-             T3=Platform Verified  T4=Integrity Anchored\n\
-             \n\
-             BOTTOM (Evidence Chain — scrollable):\n\
-             Actual files and kernel nodes read during detection.\n\
-             Check mark = parsed successfully.\n\
-             \n\
-             Evidence types:\n\
-               Kernel runtime (/proc)    — from /proc (procfs)\n\
-               Kernel attributes (/sys)  — from /sys (sysfs)\n\
-               Configuration file        — from /etc or filesystem\n\
-               Package database          — from RPM/dpkg package DB\n\
-               Symlink target            — symlink destination\n\
-               Filesystem identity       — from statfs() syscall\n\
-             \n\
-             Verification codes:\n\
-               fd          — file opened by file descriptor (safer than path)\n\
-               PROC_MAGIC  — procfs verified via fstatfs() filesystem magic\n\
-               SYS_MAGIC   — sysfs verified via fstatfs() filesystem magic\n\
-               statfs      — filesystem identity confirmed via statfs()\n\
-             These confirm the source is the real kernel filesystem,\n\
-             not a crafted file at the same path.\n\
-             \n\
-             Press Enter, Esc, or q to close this help."
+            r" TRUST / EVIDENCE Tab
+
+ TOP — SUMMARY (always visible):
+   ◼ Trust tier, downgrade reasons, and contradictions.
+   ◼ 'No downgrade' means all trust checks passed.
+   ◼ Any contradiction requires manual review. A contradiction
+     means two independent sources reported different values
+     for the same fact. Common causes include partial updates
+     or a package database out of sync. In the worst case it
+     may indicate tampering with OS identity files.
+   ◼ If you cannot explain the contradiction, follow your
+     site's incident response procedures before continuing
+     assessment work on this system.
+   ◼ These are OS detection contradictions (identity sources
+     disagreeing). They are separate from kernel/config
+     contradictions shown on the Kernel Security tab.
+
+ TRUST TIERS:
+   Each tier includes all guarantees of the tiers below it.
+
+   T0  Untrusted          No reliable sources found.
+                          Do not rely on any value shown.
+
+   T1  Kernel Anchored    At least one kernel source confirmed.
+                          Basic identity only — treat with caution.
+
+   T2  Env Anchored       Environment sources corroborate kernel.
+                          Consistent across /proc, /sys, and /etc.
+                          Acceptable for routine operations.
+
+   T3  Platform Verified  All expected sources agree.
+                          Normal operating posture.
+
+   T4  Integrity Anchored All sources agree + kernel filesystem
+                          identity verified. Highest confidence.
+
+ BOTTOM — EVIDENCE CHAIN (scrollable):
+   ◼ Actual files and kernel nodes read during detection.
+   ◼ ✓ = parsed successfully   ✗ = read or parse failed
+
+ EVIDENCE TYPES:
+   Kernel runtime (/proc)    from /proc (procfs)
+   Kernel attributes (/sys)  from /sys (sysfs)
+   Configuration file        from /etc or filesystem
+   Package database          from RPM/dpkg package DB
+   Symlink target            symlink destination resolved
+   Filesystem identity       from statfs() — kernel mount type check
+
+ VERIFICATION CODES:
+   These codes appear on evidence lines that passed an extra
+   check against path spoofing. They confirm the tool read
+   the real kernel object, not a substitute at the same path.
+   Lines without a code were read by path only — this is
+   normal for configuration files and package databases.
+
+   fd          Verified using a secure file descriptor (FD),
+               confirming the kernel object directly rather
+               than relying on the file path. Prevents
+               symlink, bind-mount, and TOCTOU substitution.
+
+   PROC_MAGIC  The kernel verified this mount is the real
+               /proc filesystem by checking its built-in
+               type identifier ('magic number'). Confirms
+               the mount has not been spoofed or substituted.
+
+   SYS_MAGIC   Same kernel 'magic number' check applied to
+               /sys (sysfs). Ensures we are reading real
+               kernel attributes, not a crafted overlay.
+
+   statfs      Filesystem identity confirmed via statfs() —
+               the kernel verified the mount type matches
+               expectations at the time of the read.
+
+ NAVIGATION:
+   Tab / Shift-Tab     switch between tabs
+   j / k  or  ↑ / ↓   scroll this help
+   PgDn / PgUp         scroll faster
+   Enter, Esc, or q    close this help"
         }
         _ => {
-            "Press Tab / Shift-Tab to switch tabs.\n\
-             Press j/k or Up/Down to scroll.\n\
-             Press q or Esc to quit.\n\
-             \n\
-             Press Enter, Esc, or q to close this help."
+            r" NAVIGATION:
+   Tab / Shift-Tab     switch between tabs
+   j / k  or  ↑ / ↓   scroll this help
+   PgDn / PgUp         scroll faster
+   Enter, Esc, or q    close this help"
         }
     }
+}
+
+// ---------------------------------------------------------------------------
+// Entry point helpers
+// ---------------------------------------------------------------------------
+
+/// Handle a single key action in the event loop.
+///
+/// Mutates `help_dialog` and `card_state` based on the action and the current
+/// dialog visibility. Returns `true` when the event loop should exit.
+///
+/// Separating this from `main()` keeps `main()` within the line-count limit
+/// and makes the dispatch logic independently readable.
+///
+/// NIST SP 800-53 AC-2 — dialog lifecycle is explicitly controlled here;
+/// no implicit state changes occur outside this function.
+fn handle_key_action(
+    action: Action,
+    help_dialog: &mut Option<DialogState>,
+    card_state: &mut AuditCardState,
+) -> bool {
+    match action {
+        // Dialog-dismissal actions clear an open help dialog.
+        // Quit (Esc / q) dismisses the dialog when one is open rather than
+        // quitting — the operator is clearly interacting with the dialog.
+        Action::DialogConfirm | Action::DialogCancel | Action::Quit
+            if help_dialog.is_some() =>
+        {
+            *help_dialog = None;
+        }
+        // ShowHelp opens the contextual help overlay for the current tab.
+        // If a dialog is already open, toggle it closed instead.
+        Action::ShowHelp => {
+            if help_dialog.is_some() {
+                *help_dialog = None;
+            } else {
+                let text = help_text_for_tab(card_state.active_tab);
+                *help_dialog = Some(DialogState::info(text));
+            }
+        }
+        // Scroll actions drive the help dialog when one is open.
+        // PageUp/PageDown advance by 5 lines for faster navigation through
+        // long help text.
+        Action::ScrollUp if help_dialog.is_some() => {
+            if let Some(d) = help_dialog.as_mut() {
+                d.scroll_up();
+            }
+        }
+        Action::ScrollDown if help_dialog.is_some() => {
+            if let Some(d) = help_dialog.as_mut() {
+                d.scroll_down();
+            }
+        }
+        Action::PageUp if help_dialog.is_some() => {
+            if let Some(d) = help_dialog.as_mut() {
+                for _ in 0..5 {
+                    d.scroll_up();
+                }
+            }
+        }
+        Action::PageDown if help_dialog.is_some() => {
+            if let Some(d) = help_dialog.as_mut() {
+                for _ in 0..5 {
+                    d.scroll_down();
+                }
+            }
+        }
+        // All other actions are suppressed when the help dialog is open —
+        // the operator must dismiss it before resuming navigation.
+        _ if help_dialog.is_some() => {}
+        // Normal card navigation when no dialog is visible.
+        _ => {
+            card_state.handle_action(&action);
+        }
+    }
+    card_state.should_quit
 }
 
 // ---------------------------------------------------------------------------
@@ -1646,7 +1832,7 @@ fn main() {
     loop {
         if let Err(e) = terminal.draw(|f| {
             render_audit_card(f, f.area(), &app, &state, &ctx, &theme);
-            render_dialog(f, f.area(), help_dialog.as_ref(), &theme);
+            render_dialog(f, f.area(), help_dialog.as_mut(), &theme);
         }) {
             log::error!("terminal draw error: {e}");
             break;
@@ -1655,38 +1841,14 @@ fn main() {
         match event::poll(Duration::from_millis(250)) {
             Ok(true) => match event::read() {
                 Ok(Event::Key(key)) => {
-                    if let Some(action) = keymap.lookup(&key) {
-                        match action {
-                            // Dialog-dismissal actions clear an open help dialog.
-                            // Quit (Esc / q) also dismisses the dialog when one
-                            // is open rather than quitting — the operator is
-                            // clearly interacting with the dialog, not exiting.
-                            Action::DialogConfirm
-                            | Action::DialogCancel
-                            | Action::Quit
-                                if help_dialog.is_some() =>
-                            {
-                                help_dialog = None;
-                            }
-                            // ShowHelp opens the contextual help overlay for the
-                            // current tab. If a dialog is already open, dismiss it.
-                            Action::ShowHelp => {
-                                if help_dialog.is_some() {
-                                    help_dialog = None;
-                                } else {
-                                    let text =
-                                        help_text_for_tab(state.active_tab);
-                                    help_dialog = Some(DialogState::info(text));
-                                }
-                            }
-                            // When a dialog is open, suppress all navigation
-                            // actions — the operator must dismiss the dialog first.
-                            _ if help_dialog.is_some() => {}
-                            // Normal navigation.
-                            _ => {
-                                state.handle_action(&action);
-                            }
-                        }
+                    if let Some(action) = keymap.lookup(&key)
+                        && handle_key_action(
+                            action,
+                            &mut help_dialog,
+                            &mut state,
+                        )
+                    {
+                        break;
                     }
                 }
                 Ok(_) => {}

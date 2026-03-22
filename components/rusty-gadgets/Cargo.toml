@@ -1,10 +1,9 @@
 [workspace]
 resolver = "2"
 members = [
-    "umrs-apparmor",
-    "umrs-core", "umrs-crypto", "umrs-hw",
-    "umrs-logspace", "umrs-ls", "umrs-platform", "umrs-selinux",
-    "umrs-stat", "umrs-state", "umrs-ui", "umrs-uname",
+    "umrs-core", "umrs-hw",
+    "umrs-ls", "umrs-platform", "umrs-selinux",
+    "umrs-stat", "umrs-ui", "umrs-uname",
     "xtask",
 ]
 

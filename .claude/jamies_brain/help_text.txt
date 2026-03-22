@@ -1,0 +1,88 @@
+Magic
+
+You want something that is both technically correct and immediately intuitive to a non-kernel person. Here are a few tight options you can drop into documentation, depending on tone:
+
+Concise / plain-language
+
+Each filesystem in Linux has a unique “magic number” — a built-in identifier the kernel uses to recognize its type. By checking this value on a mount point, we can confirm that /proc is actually the proc filesystem and not something else pretending to be it.
+
+Slightly more technical
+
+Linux assigns a fixed “magic number” to every filesystem type (e.g., procfs, sysfs, ext4). When we validate /proc, we read this identifier from the kernel and verify it matches the expected procfs value, ensuring the mount point is genuine and not substituted or tampered with.
+
+Security-focused (fits UMRS tone well)
+
+Filesystems expose a kernel-defined “magic number” that uniquely identifies their type. Verifying this value for /proc ensures we are interacting with the authentic procfs instance, not a spoofed or incorrectly mounted filesystem — establishing a trusted footing for further inspection.
+
+Ultra-compact (inline hint)
+
+“Magic number” = kernel-level filesystem ID used to verify the mount is the expected type (e.g., procfs).
+
+If you want, I can align this with your trust ladder terminology (T0–T4) and phrase it as a specific validation step with provenance classification.
+
+Got it — you want operator-facing, zero-friction clarity. Short, decisive, no jargon drift.
+
+Here are strong candidates tuned for a tooltip:
+
+Option 1 (recommended — clean + precise)
+
+The kernel verified this mount is the real /proc filesystem by checking its built-in type identifier (“magic number”).
+
+Option 2 (slightly more explanatory)
+
+The kernel confirms this mount is genuine procfs by matching its unique filesystem identifier (“magic number”).
+
+Option 3 (more assurance tone)
+
+Verified by the kernel: this mount matches the expected procfs type using its unique identifier (“magic number”), indicating it has not been substituted.
+
+Option 4 (ultra-compact)
+
+Kernel-verified procfs mount via filesystem “magic number” check.
+
+If you want to align tightly with your evidence chain / trust language, this variant fits very cleanly:
+
+Option 5 (UMRS-aligned)
+
+Kernel evidence: mount type confirmed as procfs using its unique “magic number” identifier.
+
+If you want, next step I can standardize a whole set of these for sysfs, tmpfs, devpts, etc., so your UI has consistent semantics across all filesystem checks.
+
+Ah, you’re referring to validating via the file descriptor (FD) rather than trusting the path — i.e., “we opened the object securely and verified it by its actual kernel identity, not by name.” That’s a great high-assurance signal.
+
+Here are clean, drop-in options for both layers:
+
+⸻
+
+Operator Tooltip (short, UI-friendly)
+
+Option 1 (recommended)
+
+Verified using a secure file descriptor (FD), confirming the kernel object directly rather than relying on the file path.
+
+Option 2 (more assurance tone)
+
+Kernel-verified via file descriptor (FD), ensuring this is the actual object, not just a matching path.
+
+Option 3 (ultra-compact)
+
+Verified by FD: checked the real object, not the pathname.
+
+⸻
+
+Documentation (slightly expanded)
+
+Option 1 (recommended)
+
+Validation performed using a file descriptor (FD), meaning the object was opened securely and verified by the kernel directly. This avoids relying on pathnames, which can be spoofed via symlinks, bind mounts, or race conditions.
+
+Option 2 (more technical)
+
+The system validates this resource via a file descriptor (FD), obtained through a secure open. All checks are performed against the kernel-resolved object (inode/device), not the user-visible path, preventing substitution or TOCTOU-style attacks.
+
+Option 3 (UMRS / assurance framing)
+
+Evidence is derived from a kernel-backed file descriptor (FD), establishing identity at the object level (inode/device) rather than the pathname. This ensures the validated resource cannot be spoofed through path manipulation.
+'
+'
+

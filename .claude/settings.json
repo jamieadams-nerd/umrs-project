@@ -210,7 +210,23 @@
       "Bash(tee cui-video-info.txt)",
       "Bash(yt-dlp --write-auto-subs --write-subs --sub-langs \"en*\" --skip-download -o \"cui-banner-markings\" \"https://youtu.be/UxpF21AsxZE\")",
       "Bash(/usr/local/bin/yt-dlp --print title --print description \"https://youtu.be/UxpF21AsxZE\" 2>&1)",
-      "Bash(/usr/local/bin/yt-dlp --write-auto-subs --write-subs --sub-langs \"en*\" --skip-download -o \"cui-banner-markings\" \"https://youtu.be/UxpF21AsxZE\")"
+      "Bash(/usr/local/bin/yt-dlp --write-auto-subs --write-subs --sub-langs \"en*\" --skip-download -o \"cui-banner-markings\" \"https://youtu.be/UxpF21AsxZE\")",
+      "Bash(rm:*)",
+      "Bash(python3 -c \":*)",
+      "Bash(printf '[2026-03-22 10:15] sage  Write public-facing release-notes.adoc from skeleton  Read,Write,Bash\\(cargo-metadata,find\\)  success  Pre-existing errors only \\(timeline-high-assurance, ubuntu.adoc\\); 3 sections: current state, Cantrip, known limitations; accurate crate counts verified via cargo metadata and find\\\\n')",
+      "WebFetch(domain:ocw.mit.edu)",
+      "WebFetch(domain:crates.io)",
+      "WebFetch(domain:spec.c2pa.org)",
+      "WebFetch(domain:www.semanticscholar.org)",
+      "Bash(wget -v --no-check-certificate -O /tmp/test-cs147.pdf \"https://hci.stanford.edu/courses/cs147/2023/au/lectures/01-introduction.pdf\")",
+      "WebFetch(domain:archive.org)",
+      "WebFetch(domain:shop.elsevier.com)",
+      "WebFetch(domain:jarango.com)",
+      "WebFetch(domain:rosenfeldmedia.com)",
+      "Bash(do)",
+      "Bash(sed -i 's/umrs_tui/umrs_ui/g' \"$f\")",
+      "WebFetch(domain:www.ebooks.com)",
+      "Bash(do OPENSSL_CONF=/dev/null curl -sL -o \"$pdf\" \"https://hci.stanford.edu/courses/cs147/2023/au/lectures/$pdf\")"
     ]
   },
   "enabledPlugins": {

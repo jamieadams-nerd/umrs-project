@@ -143,3 +143,10 @@ Zeroize and Constant-Time: not yet implemented. SEC: implemented.
 
 `patterns/pages/pattern-os-detection.adoc` + `devel/pages/os-detection-deep-dive.adoc`.
 FIPS gate: sha2 not validated; ceiling T3.
+
+## HCI/IA/KO Corpus
+
+All 12 Tier 1 resources downloaded, NONE yet ingested into RAG.
+Priority: IEKO → Blackwell/Green → Stanford CS147 → Miller/Bazerman → NISO Z39.19.
+Missing: Rosenfeld/Morville/Arango IA book (purchase needed).
+Full status: [hci-ia-ko-corpus-status.md](hci-ia-ko-corpus-status.md)

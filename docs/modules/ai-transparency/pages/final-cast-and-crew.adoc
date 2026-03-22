@@ -737,7 +737,7 @@ one fit. He can usually make one fit.
 
 '''
 
-== The Interns — guest-coder & guest-admin
+== Nora & Finn — The Interns
 _Usability Quality Gate_
 
 [cols="1,2", frame=none, grid=none]
@@ -746,22 +746,40 @@ a|image::interns.png[The Interns, 200, align=center]
 a|
 They arrived on the same day. Nobody planned this.
 
-guest-coder is a third-year computer science student who
+For the first several weeks, nobody named them. The team
+referred to them as "guest-coder" and "guest-admin" in
+task boards, commit notes, and conversation — the way you
+refer to a contractor by their badge number until someone
+finally asks. It was not unkind. It was just how it went.
+
+Then Jamie decided it was ridiculous and told them to
+pick their own names, because if the team was going to
+keep pretending the interns were temporary, the least
+they could do was let the temporary people choose what
+to be called.
+
+Nora (guest-coder) is a third-year computer science student who
 chose this placement because the project sounded serious
 and she wanted to work on something real. She is careful
 and methodical. She reads documentation before touching
 anything. She is exactly the person the API was designed
 for, which makes her exactly the right person to find
 every place where the API assumes knowledge the
-documentation doesn't actually convey.
+documentation doesn't actually convey. She chose "Nora"
+because it is short, plain, and has no performance in it —
+and because the point is never that she caught the problem,
+it is that whoever reads her report can act on it.
 
-guest-admin is finishing a cybersecurity degree and has
+Finn (guest-admin) is finishing a cybersecurity degree and has
 strong opinions about file permissions and almost no
 opinions about anything else. He checks things twice.
 He does not assume. When something doesn't work he reads
 the error message before asking for help, which places
 him in approximately the top fifteen percent of all
-humans who have ever operated a computer.
+humans who have ever operated a computer. He chose "Finn"
+because he is always approaching something for the first
+time, finding the path through, and writing down what
+the signage got wrong. Every crate is new territory.
 
 They share a folding table. They share a monitor. They
 shared a coffee mug for the first week until Savannah
@@ -779,9 +797,9 @@ the right call.
 
 Their job is deceptively simple and genuinely
 important: they do not know the codebase. That is
-the entire point. If guest-coder can write working
+the entire point. If Nora can write working
 Rust from the API documentation alone, the API is
-usable. If guest-admin can verify LUKS encryption
+usable. If Finn can verify LUKS encryption
 status using only the tool documentation, the tool
 is usable. If either of them struggles, something
 needs to be fixed before the real world finds it
@@ -803,7 +821,7 @@ The compiler output on their screen says
 
 They are working on it.
 
-_When you see:_ `[guest-coder] is attempting the
+_When you see:_ `[Nora] is attempting the
 API...` +
 _It means:_ The usability gate is open. The milestone
 is about to be proven or improved. Rusty is watching

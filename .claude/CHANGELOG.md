@@ -1,5 +1,49 @@
 # Changelog
 
+## 2026-03-22
+
+### Infrastructure & Governance
+- Added instruction vocabulary system (AXIOM, CONSTRAINT, RULE, ASSUMPTION, PATTERN, ANTI-PATTERN) with priority ordering in `.claude/rules/instruction-vocabulary.md`; wired into CLAUDE.md as mandatory first read
+- Added persona identity guardrails to CLAUDE.md with per-agent rules (Jamie authored)
+- Converted secure-bash.adoc into `.claude/rules/secure_bash_rules.md` using instruction vocabulary prefixes; deleted from docs
+- Absorbed rust-style-guide.adoc into Rusty agent memory; removed from docs
+- Added ANSSI Secure Rust Guidelines reference to developer guide language rationale page
+
+### CUI Labeling
+- Knox extracted CUI banner marking rules from ISOO YouTube transcript into `refs/cui-banner-marking-rules.md`
+- Identified SP- prefix validation gap — Specified categories require SP- prefix per ISOO; LEI/INV entries need registry lookup
+- Confirmed double-slash/single-slash syntax (`CUI//LEI/INV`) is correct per ISOO
+
+### Team Identity & Cast & Crew
+- Knox renamed from The Architect to The Lorekeeper (changelog-updater agent)
+- Hamlet confirmed as changelog-updater agent
+- Guest-coder = Summer Intern 1; guest-admin = Summer Intern 2
+- Updated agent-roles.adoc and final-cast-and-crew.adoc with new names and roles
+
+### Documentation — Public Publishing Polish
+- Rewrote ROOT/index.adoc with clean intro, Cantrip release focus, four-pillar coverage
+- Wrote release-notes.adoc from scratch — current state v0.1.0, Cantrip plan, known limitations (verified against cargo metadata)
+- Elena editorial pass on ROOT module — fixed 8 pages including 3 full rewrites of AI-transcript-sourced pages (microsoft-nt-orange, trusted-path-orange, ibm-zos-os390); normalized citations and terminology
+- Created umrs-uname.adoc and umrs-stat.adoc tool reference pages in umrs-tools module
+- Cross-module references woven into operations, devel, and security-concepts
+- Lucia doc sync: Signal→Indicator rename in update-checklists.adoc, release notes updated with new crate names, all navs verified clean
+- Reference nav cleaned — removed deleted rust-style-guide and secure-bash entries
+
+### Code Changes
+- Split umrs-uname from umrs-ui binary target into standalone crate; umrs-ui is now a pure library
+- Platform API enrichment session 2 (parallel work): Signal→Indicator rename, catalog enriched with descriptions/labels/rationale
+
+### Knowledge Acquisition Pipeline
+- Tier 1 resources: 12/12 downloaded (ISKO IEKO 119 articles, MIT 6.831 25 lectures, Stanford CS147 22 lectures, 7 theory papers and standards)
+- RAG collections ingested: hci-courses (1228 chunks), knowledge-organization (309), information-architecture (241), technical-communication (17)
+- O'Reilly alternatives researched; recommendation: buy individual books, skip subscription
+- Sage filed Jamie BC2A operational history as source material
+
+### HCI Training & Pre-Training Baseline
+- Captured baseline reviews before HCI corpus familiarization: Elena (29 findings) and Sage (29 findings) independently reviewed umrs-uname TUI
+- Key findings: silent refresh key (CRITICAL), CamelCase labels in operator display, contradictions terminology overloaded, NO_COLOR gaps, no scroll indicator
+- Post-training review planned after Rusty fixes findings and agents familiarize on HCI corpus
+
 ## 2026-03-21
 
 ### TUI Lightning Round — 10 Fixes + 4 Team Reviews

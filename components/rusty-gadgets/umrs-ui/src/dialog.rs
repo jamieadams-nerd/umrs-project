@@ -11,7 +11,7 @@
 //! ## Visibility Model
 //!
 //! The dialog is visible when the caller holds a `Some(DialogState)`.
-//! The caller passes `Option<&DialogState>` to [`render_dialog`]; when
+//! The caller passes `Option<&mut DialogState>` to [`render_dialog`]; when
 //! `None`, the function is a no-op and nothing is rendered. There is no
 //! separate `visible` flag — presence in the `Option` is the authoritative
 //! visibility signal. The type system enforces this contract.
@@ -23,12 +23,23 @@
 //! let mut dialog: Option<DialogState> = Some(DialogState::security_warning("..."));
 //!
 //! // In the render closure:
-//! render_dialog(frame, frame.area(), dialog.as_ref(), &theme);
+//! render_dialog(frame, frame.area(), dialog.as_mut(), &theme);
 //!
 //! // After user acts (dialog.as_ref().unwrap().response is Some(...)):
 //! // Log the interaction to journald, then clear:
 //! dialog = None;
 //! ```
+//!
+//! ## Scrollable Help Text
+//!
+//! Informational dialogs (help overlays) may contain content taller than the
+//! dialog's maximum height (80% of terminal). When content overflows,
+//! [`render_dialog`] shows `▲ more above` / `▼ more below` scroll hints in
+//! the spacer line. The caller drives scrolling by calling
+//! [`DialogState::scroll_up`] and [`DialogState::scroll_down`] in the event
+//! loop when `Action::ScrollUp` / `Action::ScrollDown` arrive while the
+//! dialog is open. No geometry parameters are needed — [`render_dialog`]
+//! writes `total_lines` and `visible_height` back into the state each frame.
 //!
 //! ## Audit Obligation
 //!
@@ -169,9 +180,9 @@ impl DialogFocus {
 /// by the caller after reading `response`. The library has zero authority
 /// over dialog lifetime — there is no implicit global modal state.
 ///
-/// Pass `Some(&state)` to [`render_dialog`] to render the dialog. Pass
+/// Pass `Some(&mut state)` to [`render_dialog`] to render the dialog. Pass
 /// `None` to suppress it. The `Option` wrapper is the authoritative
-/// visibility signal; there is no separate `visible` field.
+/// visibility signal; there is no separate `visible` flag.
 ///
 /// ## Response lifecycle
 ///
@@ -182,6 +193,19 @@ impl DialogFocus {
 /// The calling binary sets `response` in its event loop when `DialogConfirm`
 /// or `DialogCancel` actions are received from the keymap. The library does
 /// not mutate `response` — only the render path reads it.
+///
+/// ## Scrolling
+///
+/// Long help messages may exceed the visible dialog height (capped at 80% of
+/// the terminal). When that happens the dialog shows scroll indicators in the
+/// spacer line (`▲ more above` / `▼ more below`). The caller advances the
+/// scroll position by calling [`DialogState::scroll_up`] or
+/// [`DialogState::scroll_down`] in its event loop when
+/// `Action::ScrollUp` / `Action::ScrollDown` arrive while the dialog is open.
+///
+/// [`render_dialog`] writes back `total_lines` and `visible_height` each
+/// frame so the scroll methods have correct bounds without requiring the
+/// caller to track terminal geometry.
 ///
 /// ## Audit obligation (SecurityWarning and Confirm modes)
 ///
@@ -224,6 +248,30 @@ pub struct DialogState {
     /// button always has implicit focus. For two-button modes, the caller
     /// toggles this field in response to `DialogToggleFocus` actions.
     pub focused: DialogFocus,
+
+    /// Current vertical scroll offset (lines scrolled past the top).
+    ///
+    /// Advance via [`DialogState::scroll_up`] and [`DialogState::scroll_down`].
+    /// Read by [`render_dialog`] to apply `.scroll()` on the message paragraph.
+    /// Reset to 0 whenever a new dialog is constructed.
+    pub scroll_offset: u16,
+
+    /// Total rendered lines in the message content.
+    ///
+    /// Written by [`render_dialog`] each frame from `count_dialog_lines`.
+    /// Used by [`DialogState::scroll_down`] to clamp the offset at the last
+    /// line of content. Do not set this field manually — it is owned by
+    /// [`render_dialog`] and overwritten on every frame.
+    pub total_lines: u16,
+
+    /// Visible height of the message area in the last rendered frame (lines).
+    ///
+    /// Written by [`render_dialog`] each frame. Used by
+    /// [`DialogState::scroll_down`] to compute the maximum scroll offset
+    /// without requiring the caller to pass terminal geometry. Do not set
+    /// this field manually — it is owned by [`render_dialog`] and
+    /// overwritten on every frame.
+    pub visible_height: u16,
 }
 
 impl DialogState {
@@ -242,6 +290,9 @@ impl DialogState {
             message: message.into(),
             mode: DialogMode::Info,
             focused: DialogFocus::Primary,
+            scroll_offset: 0,
+            total_lines: 0,
+            visible_height: 0,
         }
     }
 
@@ -260,6 +311,9 @@ impl DialogState {
             message: message.into(),
             mode: DialogMode::Error,
             focused: DialogFocus::Primary,
+            scroll_offset: 0,
+            total_lines: 0,
+            visible_height: 0,
         }
     }
 
@@ -284,6 +338,9 @@ impl DialogState {
             message: message.into(),
             mode: DialogMode::SecurityWarning,
             focused: DialogFocus::Secondary, // Cancel is the safe default
+            scroll_offset: 0,
+            total_lines: 0,
+            visible_height: 0,
         }
     }
 
@@ -308,7 +365,37 @@ impl DialogState {
             message: message.into(),
             mode: DialogMode::Confirm,
             focused: DialogFocus::Secondary, // No is the safe default
+            scroll_offset: 0,
+            total_lines: 0,
+            visible_height: 0,
         }
+    }
+
+    /// Scroll the dialog message up by one line.
+    ///
+    /// Clamps at zero — scrolling up past the top is a no-op.
+    pub const fn scroll_up(&mut self) {
+        self.scroll_offset = self.scroll_offset.saturating_sub(1);
+    }
+
+    /// Scroll the dialog message down by one line.
+    ///
+    /// Clamps at the last line of content so the final content line remains
+    /// visible. Uses `total_lines` and `visible_height` written by the most
+    /// recent [`render_dialog`] call. Before the first [`render_dialog`] call,
+    /// `total_lines` and `visible_height` are zero, making this a safe no-op.
+    pub const fn scroll_down(&mut self) {
+        // Maximum offset: last line of content is still visible at the bottom
+        // of the message area. If total_lines <= visible_height the content
+        // fits without scrolling and the max offset is zero.
+        let max_offset = self.total_lines.saturating_sub(self.visible_height);
+        let next = self.scroll_offset.saturating_add(1);
+        // `u16::min` is not const-stable; use an explicit branch instead.
+        self.scroll_offset = if next <= max_offset {
+            next
+        } else {
+            max_offset
+        };
     }
 }
 
@@ -319,13 +406,27 @@ impl DialogState {
 /// Render a modal dialog box centered in `area`.
 ///
 /// When `state` is `None`, this function is a no-op — nothing is rendered.
-/// Presence of `Some(&state)` is the sole visibility signal; there is no
+/// Presence of `Some(&mut state)` is the sole visibility signal; there is no
 /// separate `visible` field on [`DialogState`].
 ///
 /// The dialog is rendered on top of existing content. Call this **after**
 /// `render_audit_card()` so it overlays the card. Uses ratatui [`Clear`]
 /// to blank the region before drawing — content behind the dialog is not
 /// visible through the border.
+///
+/// ## Scroll state writeback
+///
+/// This function writes `total_lines` and `visible_height` into `state` each
+/// frame. These values allow [`DialogState::scroll_down`] to clamp the scroll
+/// offset correctly without the caller tracking terminal geometry.
+///
+/// ## Scroll indicators
+///
+/// When the message content exceeds the visible message area height, a scroll
+/// hint is displayed in the spacer line between the message and the buttons:
+/// - `▲ more above` — when the operator has scrolled down past the top.
+/// - `▼ more below` — when there is content below the visible window.
+/// - Both indicators may appear simultaneously (content above and below).
 ///
 /// ## Width and height calculation
 ///
@@ -379,7 +480,7 @@ impl DialogState {
 pub fn render_dialog(
     frame: &mut Frame,
     area: Rect,
-    state: Option<&DialogState>,
+    state: Option<&mut DialogState>,
     theme: &Theme,
 ) {
     let Some(state) = state else {
@@ -414,6 +515,12 @@ pub fn render_dialog(
     // Content width = dialog_width - 2 (left/right borders), minimum 1.
     let content_width = dialog_width_usize.saturating_sub(2).max(1);
     let message_lines = count_dialog_lines(&state.message, content_width);
+    // Write total_lines back so scroll_down() can clamp without geometry params.
+    // Cast is safe: message_lines is bounded by dialog_height which fits u16.
+    #[allow(clippy::cast_possible_truncation)] // bounded by dialog_height (u16)
+    let total_lines_u16 = message_lines as u16;
+    state.total_lines = total_lines_u16;
+
     // Cap at 80 % of terminal height so the dialog never fills the screen.
     // `area.height` is `u16`; the mul/div are on `u16` values with no overflow
     // risk because both operands are at most u16::MAX.
@@ -424,6 +531,12 @@ pub fn render_dialog(
     .unwrap_or(u16::MAX);
     // Minimum 6 lines so single-line messages always look reasonable.
     let dialog_height = uncapped_height.min(max_height).max(6);
+
+    // Visible message area height = dialog inner height minus spacer and buttons.
+    // dialog_height includes 2 border lines, so inner height = dialog_height - 2.
+    // Of that inner height: spacer (1) + button row (1) = 2 lines reserved.
+    let visible_msg_height = dialog_height.saturating_sub(4); // 2 borders + spacer + buttons
+    state.visible_height = visible_msg_height;
 
     // --- Center the dialog in `area` ---
     let dialog_rect = centered_rect(dialog_width, dialog_height, area);
@@ -457,28 +570,40 @@ pub fn render_dialog(
     frame.render_widget(block, dialog_rect);
 
     // --- Split inner area: message block + spacer + button row ---
-    // `message_lines` was computed from count_dialog_lines above; safe cast
-    // because it is bounded by `dialog_height` which is already a `u16`.
-    #[allow(clippy::cast_possible_truncation)] // bounded by dialog_height (u16)
-    let msg_height = message_lines as u16;
+    // `visible_msg_height` is the rendered message area height. `Paragraph`
+    // will scroll within it using `scroll_offset`.
     let chunks = Layout::default()
         .direction(Direction::Vertical)
         .constraints([
-            Constraint::Length(msg_height), // message (dynamic)
-            Constraint::Length(1),          // spacer
-            Constraint::Length(1),          // buttons
+            Constraint::Length(visible_msg_height), // message (scrollable)
+            Constraint::Length(1),                  // spacer / scroll hint
+            Constraint::Length(1),                  // buttons
         ])
         .split(inner);
 
-    // --- Message block — rendered as a `Paragraph` that may span multiple lines ---
-    // The message is stored with '\n' as the line separator (as used by
-    // `help_text_for_tab`). `Paragraph` renders each `\n` as a new line when
-    // the text is passed as a `String`; ratatui does not word-wrap by default,
-    // so lines must be pre-wrapped at the source (see `count_dialog_lines`).
+    // --- Message paragraph with scroll offset applied ---
     let msg_para = Paragraph::new(state.message.as_str())
         .style(theme.dialog_message)
-        .alignment(Alignment::Left);
+        .alignment(Alignment::Left)
+        .scroll((state.scroll_offset, 0));
     frame.render_widget(msg_para, chunks[0]);
+
+    // --- Spacer / scroll indicator line ---
+    let has_above = state.scroll_offset > 0;
+    let has_below = state.scroll_offset
+        < total_lines_u16.saturating_sub(visible_msg_height);
+    let hint = match (has_above, has_below) {
+        (true, true) => "▲ more above   ▼ more below",
+        (true, false) => "▲ more above",
+        (false, true) => "▼ more below",
+        (false, false) => "",
+    };
+    if !hint.is_empty() {
+        let hint_para = Paragraph::new(hint)
+            .style(theme.dialog_message)
+            .alignment(Alignment::Center);
+        frame.render_widget(hint_para, chunks[1]);
+    }
 
     // --- Button row ---
     render_buttons(frame, chunks[2], state, theme);

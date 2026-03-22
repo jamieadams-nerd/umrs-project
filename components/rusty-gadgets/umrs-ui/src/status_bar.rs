@@ -36,7 +36,7 @@ use crate::theme::{Theme, status_bg_color};
 ///
 /// Must be short enough to coexist with a typical status message on an
 /// 80-column terminal (<=40 characters including leading separator).
-const KEY_LEGEND: &str = "  Tab: tabs | ↑↓/jk: scroll | ?: help | q: quit";
+const KEY_LEGEND: &str = "  Tab: tabs | ↑↓/jk/PgDn: scroll | ?: help | q: quit";
 
 /// Render the status bar from the app's current [`StatusMessage`].
 ///
