@@ -1,0 +1,160 @@
+Herb — Accreditation Artifacts (NIST 800-18, FedRAMP)
+
+  What he learned: Federal SSP structure, the authorization-to-operate lifecycle, continuous
+  monitoring obligations, and how SAR/SAP templates structure assessment evidence.
+
+  Enhancement proposals:
+  1. Posture-to-SSP auto-generation — UMRS posture catalog could emit structured SSP section drafts
+  grouped by NIST control family. The "proof of compliance" becomes auditable data, not prose.
+  2. ConMon evidence pipeline — Emit assessment findings (contradictions, kernel misconfigurations)
+  in a format that maps to SAR templates, simplifying annual assessment burden.
+  3. Control drift detector — Live-vs-baseline contradiction model flags when deployed systems drift
+   from documented security posture — exactly what auditors look for during ongoing authorization.
+
+  ---
+  Elena — Knowledge Organization & Information Architecture
+
+  What she learned: Ranganathan's faceted classification, NISO Z39.19 controlled vocabulary
+  standards, Pirolli's information foraging theory, and structured thesaurus design.
+
+  Enhancement proposals:
+  1. Faceted Antora navigation — Restructure sidebar nav to expose facets (audience, topic,
+  signal-type) so operators filter by combination instead of rigid tree paths.
+  2. Glossary as NISO controlled vocabulary — Upgrade from flat list to structured thesaurus with
+  scope notes, preferred terms, and Related Term links. CUI//LEI//INV gets a scope note; its RT
+  points to banner marking and handling instructions.
+  3. Navigation scent tuning — Audit every link and header for information scent. Replace generic
+  "Configuration" with "Configure SELinux Enforcement Mode" with outcome hints. Operators should
+  always know they're moving toward their goal.
+
+  ---
+  Rusty — HCI, Genre Theory, Information Theory
+
+  What he learned: MIT 6.831 usability principles (learnability, visibility, Gulf of
+  Evaluation/Execution), Miller's "Genre as Social Action," and information foraging patterns.
+
+  Enhancement proposals:
+  1. Help overlay as learnability device — Group help options by task (not alphabetically), add mode
+   indicators ("Viewing: policies"), put "common tasks" first. Genre insight: a help overlay isn't a
+   man page — it's situational learning under urgency.
+  2. Output modes as explicit genres — Human output helps operators understand, JSON enables
+  integration, audit output enables accountability. Design each genre's information structure
+  separately — don't just serialize the same data three ways.
+  3. Tab navigation via foraging cues — Tab titles should hint at content ("CPU Security: Threats &
+  Status"), add a preview bar showing count/severity per tab, use color to indicate baseline drift.
+  If users can predict what a tab shows, they navigate 3x faster.
+
+  ---
+  Nine proposals total. Some of these are near-term (help overlay grouping, nav scent), some are
+  roadmap-scale (posture-to-SSP generation, faceted nav). Want me to convert any of these into
+  plans?
+
+✻ Cogitated for 2m 2s · 3 local agents still running
+
+❯ No, thank you. I really want them to report on what THEY learned. It will be interesting because
+their background is a different context applied to learningsometning new.
+
+● You're right — me summarizing strips out the interesting part. Let me have each of them write
+  their own reflection.
+
+● 2 agents launched (ctrl+o to expand)
+   ├─ senior-tech-writer (Elena reflects on KO/IA familiarization)
+   │  ⎿  Running in the background
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ ---
+  Elena — "I was doing it by instinct and taste, without a theoretical foundation"
+
+  Biggest surprise: The problems she deals with daily — synonymy ("security label" vs "security
+  context"), homographs ("category" meaning different things to SELinux and general readers),
+  navigation structure — are the same problems Ranganathan was solving in 1937. "The problem is
+  ancient. Our instance of it is not special. That was humbling."
+
+  Sharpest insight: The NISO controlled vocabulary standard reframed terminology maintenance from a
+  style decision to a retrieval contract. If an auditor searches for "sensitivity level" and half
+  the pages say "classification level," we've broken a promise.
+
+  What challenged her: She assumed Diataxis was theoretically grounded. Turns out Svenonius had a
+  more rigorous version decades earlier. Diataxis is a useful packaging, not an endpoint.
+
+  Her top suggestions:
+  1. Glossary scope notes — every term needs notes that say what it covers AND what it doesn't.
+  "Security context" needs a note explaining how it differs from "security label."
+  2. Audience-aware entry points — the navigation gives all three audiences (engineers, auditors,
+  adopters) the same scent. It should say "if you are an auditor, start here." This is a
+  domain-analysis problem she'd been treating as a layout problem.
+
+  ---
+  Rusty — "I had never thought about a command-line security tool as a genre before"
+
+  Biggest surprise: Miller's genre theory hit him unexpectedly. umrs-uname isn't defined by its form
+   (TUI with tabs); it's defined by the recurring social situation it responds to: the morning
+  security check. "What does this situation demand? Fast orientation, not comprehensive coverage."
+
+  Sharpest insight: The Gulf of Evaluation from MIT 6.831 maps directly onto what UMRS does. The
+  kernel has state the operator can't see. umrs-uname is literally a "Gulf-narrowing device."
+  Surfacing contradictions isn't a feature — it's the core obligation.
+
+  What challenged him: Shannon entropy applied to indicator display. On a well-configured system,
+  most indicators are green (low entropy). A green indicator carries almost no information. A red
+  one carries a lot. "We should be ranking by information content, not by category." The anomaly
+  should interrupt the operator, not wait to be found by scrolling.
+
+  His top suggestions:
+  1. Pinned summary redesign — the summary pane should answer "is this machine safe right now?"
+  without scrolling. Currently some critical signals require scrolling to verify. The affordance
+  question is: what does the operator come here to do?
+  2. Group headings as purpose, not location — "Kernel Attributes (/sys)" is a location. "Memory
+  Integrity" is a purpose. The group name is the chunking mechanism — a bad name literally costs
+  cognitive capacity.
+
+  ---
+  Herb — "The giddiness is real. The concerns are also real. Both are true simultaneously."
+
+  Biggest surprise: The SSP is not a compliance checklist — it's a story. The FedRAMP playbook
+  literally says "it is telling a story about the security of your CSO." If any thread breaks, the
+  reviewer can't trace the argument and the package stalls.
+
+  Sharpest insight: His code annotation audits have been checking for citation presence when they
+  should be checking for citation quality. A bare // NIST SP 800-53 SI-7 is exactly the bad control
+  implementation statement the FedRAMP playbook warns against — restating the requirement without
+  describing how it's met.
+
+  What challenged him: The assessment engine's 5-layer model maps cleanly to FedRAMP artifacts (he
+  built a mapping table), but it's missing a common_controls field. umrs-platform provides common
+  security infrastructure that all tools inherit — the accreditation framework has explicit
+  machinery for this (SP 800-18 §2.5.3) and the assessment engine should use it.
+
+  His top suggestions:
+  1. Annotation quality standard — shift from "does a citation exist?" to "does the annotation
+  describe who, what, where, when, why and how the control is met?" The tire pressure analogy from
+  the FedRAMP playbook is his new benchmark.
+  2. common_controls in the assessment engine — the BundleManifest has profile_used but no field for
+   controls inherited from the platform. An AO reviewing the package needs to see this separation
+  explicitly.
+
+  ---
+  Compared to my earlier summary: The personal reflections surfaced different priorities. I had
+  proposed faceted nav, NISO glossary, and posture-to-SSP generation. Their actual priorities are
+  more grounded: Elena wants scope notes and audience entry points, Rusty wants to redesign the
+  pinned summary and fix group semantics, Herb wants to raise the annotation quality bar and add
+  common_controls to the assessment engine. The theoretical framing made them more precise about why
+   changes matter, not just what to change.
+
+
+

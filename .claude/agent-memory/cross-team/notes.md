@@ -92,6 +92,56 @@ See `.claude/team-collaboration.md` for the full team structure and agent respon
 
 ---
 
+## [2026-03-23] The Hand → ALL: How to test French translations live
+
+**Status**: open
+
+### Running umrs-uname in French
+
+From the crate directory:
+```bash
+cd components/rusty-gadgets/umrs-uname
+./run-as-french.sh
+```
+
+This compiles the `.mo` files and launches with `UMRS_LOCALEDIR` pointing to the
+development locale tree. Requires `glibc-langpack-fr` installed on the system
+(`sudo dnf install glibc-langpack-fr` if `locale -a | grep fr` returns nothing).
+
+### What this reveals
+
+Any string that stays in English while the surrounding UI is in French is an
+**unwrapped string** — it needs `i18n::tr()` wrapping. This is the fastest way
+to visually audit i18n coverage.
+
+### i18n scope reminder — what gets translated, what does NOT
+
+**Translate (user-facing tool output):**
+- CLI/TUI display text, help text, status labels, error messages shown to operators
+- Description strings, group headings, tab labels
+- Anything an operator reads during normal use
+
+**Do NOT translate (internal/diagnostic):**
+- `log::debug!`, `log::warn!`, `log::error!` messages — stay English for cross-locale SOC debugging
+- `thiserror` display strings — internal error chain, not user-facing
+- Audit trail entries — must be language-stable for programmatic consumption
+- Structured data fields (`--json` output keys, field names)
+- Config file content, catalog entries, SELinux labels
+- Rust type names retained as identifiers (e.g., `UntrustedLabelCandidate`)
+
+### Pipeline changes (2026-03-23)
+
+- `UMRS_LOCALEDIR` env var override added to `umrs-core/src/i18n.rs`
+- Makefile `.mo` output now uses standard `<locale>/LC_MESSAGES/<domain>.mo` layout
+- `make i18n-build` delegates to per-domain targets (fixes `fr_CA` being missed)
+- Full details: `.claude/agent-memory/cross-team/notes-simone-i18n-update.md`
+
+**Simone:** Run `./run-as-french.sh` to see your translations live. Your work shows.
+The gaps that remain are visual proof of where wrapping is still needed — use this
+as your audit tool for the next pass.
+
+---
+
 ## [2026-03-21] The Hand → ALL: Alias updates and Cast & Crew document
 
 **Status**: open

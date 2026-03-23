@@ -1,0 +1,44 @@
+Agent 1: Media/Format Specialist
+This is a genuinely specialized domain that Rusty shouldn't be stretched to cover. The overlap with Rusty is Rust — the divergence is everything else. This agent needs:
+C2PA (Coalition for Content Provenance and Authenticity)
+The standard for cryptographically binding provenance metadata to media files. Already implemented in tools like Adobe's Content Credentials. For your dropbox/vault concept this is exactly right — you can inspect whether an asset already carries a C2PA manifest before deciding how to label it. The manifest may already assert origin, chain of custody, and modification history. That's evidence chain material Herb would love.
+Format scanning stack:
+
+Images: EXIF, XMP, IPTC metadata inspection
+Video: container inspection (MP4/MOV atoms, MKV tags), FFmpeg for watermarking
+Documents: PDF metadata, embedded XMP, existing classification markings
+Office formats: OOXML properties, embedded metadata
+
+The watermarking angle:
+FFmpeg-based visible or invisible watermarking for video is straightforward. The interesting security question is whether the watermark itself becomes part of the provenance chain. If you watermark a video and then C2PA-sign it, the watermark is now attested. That's a strong chain.
+The auto-labeling concept:
+Scan incoming asset, check for existing C2PA manifest, check for embedded classification markings, check format metadata, then apply MLS label based on what you find. This is a trust pipeline in miniature — exactly the UMRS philosophy applied to media.
+For his persona:
+I'm imagining someone who came up through digital forensics or broadcast engineering. Knows FFmpeg the way Rusty knows the borrow checker — not as a tool but as a language. Has strong opinions about container formats. Probably has a story about a time a codec decision caused a security problem nobody anticipated.
+What's his name? And do you see him as younger like Rusty or more seasoned?
+
+Agent 2: Canadian Government Specialist
+This is smart for multiple reasons and more nuanced than it might appear.
+Canada's equivalent of CUI is Protected A/B/C for sensitive government information and Classified for national security information. But the interesting layer for your use case is the unclassified but sensitive tier — which Canada handles through Treasury Board Secretariat policy rather than a NARA-style registry.
+What this agent needs:
+
+Treasury Board of Canada Secretariat (TBS) information classification policy
+ITSP.10.222 and related CCCS (Canadian Centre for Cyber Security) guidance
+PBMM (Protected B, Medium Integrity, Medium Availability) — the Canadian government cloud security baseline, roughly analogous to FedRAMP Moderate
+ATIP (Access to Information and Privacy) — Canada's FOIA equivalent, affects what can be released and how
+Government of Canada writing guides (which you have)
+Sensitivity designations that don't map cleanly to CUI — Canada has categories like "Personal Information" under PIPEDA/Privacy Act that require specific handling
+
+The Simone interaction is the key value:
+Simone handles French translation accuracy. This agent handles whether the substance of what was translated is correctly interpreted in the Canadian government context. A term that means one thing in US CUI marking may have a different legal weight in Canadian Protected B context. The agent catches that divergence before it becomes a compliance problem.
+The Five Eyes angle:
+Canada is a Five Eyes partner so there's significant overlap with US CUI handling for shared intelligence and defense material. But the divergence in unclassified sensitive handling is exactly where errors happen. This agent knows where the seams are.
+For his/her persona:
+A Canadian government employee — possibly a retired ATIP coordinator or information management specialist from a federal department. Someone who has spent years explaining to American counterparts why "it's basically the same as CUI" is not quite right and here is precisely why.
+Male or female? And which department do you imagine them coming from — Treasury Board, CCCS, DND (Defence), or somewhere else? Each has a different flavor.
+
+The interaction pattern between the two new agents and the existing team:
+Media specialist feeds the dropbox/vault pipeline. Labeled assets flow into the system with provenance already established. Herb reviews the labeling decisions. Knox validates the trust chain from ingest to label assignment.
+Canadian specialist works alongside Simone on any Five Eyes adjacent content. Simone handles linguistic accuracy. Canadian specialist handles regulatory accuracy. Elena reviews the final documentation. Nothing leaves without both having signed off.
+That's a coherent expansion. Not scope creep — targeted capability addition.
+What are their names? 🦀 Sonnet 4.6

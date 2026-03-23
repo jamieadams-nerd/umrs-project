@@ -76,8 +76,8 @@ clean: docs-clean
 # ------------------------------------------------------------
 
 I18N_BASE_DIR       := resources/i18n
-I18N_TEXT_DOMAINS   := umrs-logspace umrs-ps umrs-df umrs-ls umrs-state
-I18N_ACTIVE_DOMAINS := umrs-ls umrs-state umrs-logspace
+I18N_TEXT_DOMAINS   := umrs-logspace umrs-ps umrs-df umrs-ls umrs-state umrs-uname umrs-platform
+I18N_ACTIVE_DOMAINS := umrs-ls umrs-state umrs-logspace umrs-uname umrs-platform
 I18N_LOCALES        := en_US fr_FR en_GB en_AU en_NZ
 
 # Internal helper: hyphen-to-underscore for variable name lookup.
@@ -91,6 +91,8 @@ i18n_var = $(subst -,_,$(1))
 I18N_SRC_DIR_umrs_ls       := components/rusty-gadgets/umrs-ls/src
 I18N_SRC_DIR_umrs_state    := components/rusty-gadgets/umrs-state/src
 I18N_SRC_DIR_umrs_logspace := components/rusty-gadgets/umrs-logspace/src
+I18N_SRC_DIR_umrs_uname    := components/rusty-gadgets/umrs-uname/src
+I18N_SRC_DIR_umrs_platform := components/rusty-gadgets/umrs-platform/src
 
 # Active locales per domain (locales with committed .po files ready for compilation).
 # The generic I18N_LOCALES list above is for i18n-setup scaffolding only.
@@ -98,6 +100,8 @@ I18N_SRC_DIR_umrs_logspace := components/rusty-gadgets/umrs-logspace/src
 I18N_ACTIVE_LOCALES_umrs_ls       := fr_CA fr_FR en_GB en_AU en_NZ
 I18N_ACTIVE_LOCALES_umrs_state    := fr_CA
 I18N_ACTIVE_LOCALES_umrs_logspace := fr_CA
+I18N_ACTIVE_LOCALES_umrs_uname    := fr_CA
+I18N_ACTIVE_LOCALES_umrs_platform := fr_CA
 
 I18N_POT_EXT := .pot
 I18N_PO_EXT  := .po
@@ -132,22 +136,7 @@ i18n-setup:
 # i18n build (.po -> .mo)
 # ------------------------------------------------------------
 
-i18n-build:
-	@echo "==> Building i18n .mo files"
-	@set -e; \
-	for domain in $(I18N_TEXT_DOMAINS); do \
-		domain_dir="$(I18N_BASE_DIR)/$$domain"; \
-		for locale in $(I18N_LOCALES); do \
-			po_file="$$domain_dir/$$locale$(I18N_PO_EXT)"; \
-			mo_file="$$domain_dir/$$locale$(I18N_MO_EXT)"; \
-			if [ -f "$$po_file" ]; then \
-				echo "  - Compiling $$po_file -> $$mo_file"; \
-				msgfmt -o "$$mo_file" "$$po_file"; \
-			else \
-				echo "  ! Missing $$po_file (skipping)"; \
-			fi; \
-		done; \
-	done
+i18n-build: $(foreach _d,$(I18N_ACTIVE_DOMAINS),i18n-compile-$(_d))
 	@echo "==> i18n build complete"
 
 # ------------------------------------------------------------
@@ -199,8 +188,10 @@ i18n-compile-$(1):
 	@set -e; \
 	for locale in $(I18N_ACTIVE_LOCALES_$(call i18n_var,$(1))); do \
 		po_file="$(I18N_BASE_DIR)/$(1)/$$$$locale$(I18N_PO_EXT)"; \
-		mo_file="$(I18N_BASE_DIR)/$(1)/$$$$locale$(I18N_MO_EXT)"; \
+		mo_dir="$(I18N_BASE_DIR)/$(1)/$$$$locale/LC_MESSAGES"; \
+		mo_file="$$$$mo_dir/$(1)$(I18N_MO_EXT)"; \
 		if [ -f "$$$$po_file" ]; then \
+			mkdir -p "$$$$mo_dir"; \
 			echo "  - Compiling $$$$po_file -> $$$$mo_file"; \
 			msgfmt -o "$$$$mo_file" "$$$$po_file"; \
 		else \

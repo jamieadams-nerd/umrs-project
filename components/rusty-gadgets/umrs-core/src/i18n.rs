@@ -10,8 +10,22 @@
 //! - No side effects beyond returning formatted message text
 //! - Stable API surface for CLI and console integration
 //!
-//! Non-goals:
-//! - Dynamic locale discovery or environment probing
+//! ## Locale directory resolution
+//!
+//! The catalog directory defaults to `/usr/share/locale` (the system standard).
+//! For development and testing, set `UMRS_LOCALEDIR` to override:
+//!
+//! ```bash
+//! UMRS_LOCALEDIR=resources/i18n/umrs-uname LANG=fr_CA.UTF-8 cargo run -p umrs-uname
+//! ```
+//!
+//! `UMRS_LOCALEDIR` is on the environment scrub allowlist defined in the
+//! `umrs-core::init` tool initialization plan (sub-phase 1e). When the
+//! `SanitizedEnv` pipeline is implemented, this variable will be read from
+//! the validated environment snapshot rather than raw `std::env`.
+//!
+//! ## Non-goals
+//!
 //! - Full gettext or ICU-style localization frameworks
 //! - Runtime translation loading from external sources
 //
@@ -23,6 +37,7 @@ static INIT_LOCALE: OnceLock<()> = OnceLock::new();
 static DOMAIN: OnceLock<&'static str> = OnceLock::new();
 
 const DEFAULT_LOCALEDIR: &str = "/usr/share/locale";
+const LOCALEDIR_ENV: &str = "UMRS_LOCALEDIR";
 const FALLBACK_DOMAIN: &str = "umrs";
 
 /// Ensure locale subsystem is initialized.
@@ -63,9 +78,18 @@ fn ensure_locale() {
 /// - Modifies global translation state.
 /// - Affects all subsequent internationalized output.
 ///
+/// # Locale directory
+///
+/// If `UMRS_LOCALEDIR` is set, its value is used as the catalog search
+/// path instead of the compiled-in default (`/usr/share/locale`). This
+/// allows development-time testing without installing `.mo` files
+/// system-wide. When the `SanitizedEnv` pipeline (umrs-tool-init plan,
+/// sub-phase 1e) is implemented, this read will be replaced by a
+/// validated accessor.
+///
 /// # Panics
 ///
-/// This function does not intentionally panic.  
+/// This function does not intentionally panic.
 /// Failures to locate or load locale data are handled internally and result
 /// in fallback behavior rather than process termination.
 pub fn init(domain: &'static str) {
@@ -75,7 +99,9 @@ pub fn init(domain: &'static str) {
         let _ = setlocale(LocaleCategory::LcAll, "");
 
         let dom = *DOMAIN.get().unwrap_or(&FALLBACK_DOMAIN);
-        let _ = bindtextdomain(dom, DEFAULT_LOCALEDIR);
+        let locale_dir = std::env::var(LOCALEDIR_ENV)
+            .unwrap_or_else(|_| DEFAULT_LOCALEDIR.to_string());
+        let _ = bindtextdomain(dom, &locale_dir);
     });
 }
 

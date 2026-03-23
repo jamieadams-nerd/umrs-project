@@ -16,6 +16,21 @@ rpm-db = ["dep:rusqlite"]
 rpm-db-bundled = ["rpm-db", "rusqlite/bundled"]
 
 [dependencies]
+# umrs-core — workspace i18n utilities, provides i18n::tr() for operator-facing
+# display strings. Adding this dependency brings in gettext-rs (C FFI via libintl),
+# colored, serde, serde_json, regex, textwrap, and humansize. This is a deliberate
+# architectural trade-off: display.rs is the canonical source of operator-visible
+# annotation strings and must translate them at their origin so every consumer
+# (TUI, CLI, JSON, assessment reports) receives localized output without each
+# implementing its own i18n wrapping.
+#
+# FFI NOTE: gettext-rs links against the system libintl (or a bundled gettext).
+# This is a display-layer dependency, not a security-critical code path. The
+# translation lookup is pure I/O — no security decisions depend on its output.
+# Reviewed and accepted per task: i18n wrap of display.rs annotation strings.
+# NIST SP 800-53 SA-5: centralised, localizable operator-facing output.
+umrs-core = { path = "../umrs-core" }
+
 # umrs-hw — hardware timestamp isolation crate (the workspace's unsafe boundary).
 # Provides safe read_hw_timestamp() backed by RDTSCP on x86_64 or
 # CLOCK_MONOTONIC_RAW on aarch64. The only workspace crate permitted to contain

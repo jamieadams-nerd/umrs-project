@@ -36888,5 +36888,257 @@
     "chunks_stored": 18,
     "collection": "knowledge-organization",
     "ingested_date": "2026-03-22T17:16:22.240610+00:00"
+  },
+  "hci-courses/mit-6831/MIT6_831S11_lec01.pdf": {
+    "hash": "e528d4d3ca78663f",
+    "converted_to": "converted/hci-courses/mit-6831/MIT6_831S11_lec01.md",
+    "chunks_stored": 20,
+    "collection": "hci-courses/mit-6831",
+    "ingested_date": "2026-03-23T08:40:24.745120+00:00"
+  },
+  "hci-courses/mit-6831/MIT6_831S11_lec02.pdf": {
+    "hash": "935fd021127920eb",
+    "converted_to": "converted/hci-courses/mit-6831/MIT6_831S11_lec02.md",
+    "chunks_stored": 34,
+    "collection": "hci-courses/mit-6831",
+    "ingested_date": "2026-03-23T08:40:31.479498+00:00"
+  },
+  "hci-courses/mit-6831/MIT6_831S11_lec03.pdf": {
+    "hash": "83b3ad2e96c87ebd",
+    "converted_to": "converted/hci-courses/mit-6831/MIT6_831S11_lec03.md",
+    "chunks_stored": 25,
+    "collection": "hci-courses/mit-6831",
+    "ingested_date": "2026-03-23T08:40:32.745907+00:00"
+  },
+  "hci-courses/mit-6831/MIT6_831S11_lec04.pdf": {
+    "hash": "557f2f8fe7aad692",
+    "converted_to": "converted/hci-courses/mit-6831/MIT6_831S11_lec04.md",
+    "chunks_stored": 40,
+    "collection": "hci-courses/mit-6831",
+    "ingested_date": "2026-03-23T08:40:34.421779+00:00"
+  },
+  "hci-courses/mit-6831/MIT6_831S11_lec05.pdf": {
+    "hash": "a376c37025a3a429",
+    "converted_to": "converted/hci-courses/mit-6831/MIT6_831S11_lec05.md",
+    "chunks_stored": 35,
+    "collection": "hci-courses/mit-6831",
+    "ingested_date": "2026-03-23T08:40:35.728750+00:00"
+  },
+  "hci-courses/mit-6831/MIT6_831S11_lec06.pdf": {
+    "hash": "b696ab26c102ea9c",
+    "converted_to": "converted/hci-courses/mit-6831/MIT6_831S11_lec06.md",
+    "chunks_stored": 22,
+    "collection": "hci-courses/mit-6831",
+    "ingested_date": "2026-03-23T08:40:36.748150+00:00"
+  },
+  "hci-courses/mit-6831/MIT6_831S11_lec07.pdf": {
+    "hash": "251b735848521472",
+    "converted_to": "converted/hci-courses/mit-6831/MIT6_831S11_lec07.md",
+    "chunks_stored": 23,
+    "collection": "hci-courses/mit-6831",
+    "ingested_date": "2026-03-23T08:40:37.627780+00:00"
+  },
+  "hci-courses/mit-6831/MIT6_831S11_lec08.pdf": {
+    "hash": "ebcbfc39d8e42531",
+    "converted_to": "converted/hci-courses/mit-6831/MIT6_831S11_lec08.md",
+    "chunks_stored": 27,
+    "collection": "hci-courses/mit-6831",
+    "ingested_date": "2026-03-23T08:40:38.573222+00:00"
+  },
+  "hci-courses/mit-6831/MIT6_831S11_lec09.pdf": {
+    "hash": "46a5912d4eafdab7",
+    "converted_to": "converted/hci-courses/mit-6831/MIT6_831S11_lec09.md",
+    "chunks_stored": 26,
+    "collection": "hci-courses/mit-6831",
+    "ingested_date": "2026-03-23T08:40:39.576841+00:00"
+  },
+  "hci-courses/mit-6831/MIT6_831S11_lec10.pdf": {
+    "hash": "181360a42f9a4322",
+    "converted_to": "converted/hci-courses/mit-6831/MIT6_831S11_lec10.md",
+    "chunks_stored": 14,
+    "collection": "hci-courses/mit-6831",
+    "ingested_date": "2026-03-23T08:40:40.062084+00:00"
+  },
+  "hci-courses/mit-6831/MIT6_831S11_lec11.pdf": {
+    "hash": "e83662f5c6064b2f",
+    "converted_to": "converted/hci-courses/mit-6831/MIT6_831S11_lec11.md",
+    "chunks_stored": 22,
+    "collection": "hci-courses/mit-6831",
+    "ingested_date": "2026-03-23T08:40:40.773543+00:00"
+  },
+  "hci-courses/mit-6831/MIT6_831S11_lec12.pdf": {
+    "hash": "f334b46de6f82737",
+    "converted_to": "converted/hci-courses/mit-6831/MIT6_831S11_lec12.md",
+    "chunks_stored": 19,
+    "collection": "hci-courses/mit-6831",
+    "ingested_date": "2026-03-23T08:40:41.398895+00:00"
+  },
+  "hci-courses/mit-6831/MIT6_831S11_lec13.pdf": {
+    "hash": "fcad37c7571316ee",
+    "converted_to": "converted/hci-courses/mit-6831/MIT6_831S11_lec13.md",
+    "chunks_stored": 19,
+    "collection": "hci-courses/mit-6831",
+    "ingested_date": "2026-03-23T08:40:42.040638+00:00"
+  },
+  "hci-courses/mit-6831/MIT6_831S11_lec14.pdf": {
+    "hash": "0b9f77f8b576b3e1",
+    "converted_to": "converted/hci-courses/mit-6831/MIT6_831S11_lec14.md",
+    "chunks_stored": 22,
+    "collection": "hci-courses/mit-6831",
+    "ingested_date": "2026-03-23T08:40:42.821497+00:00"
+  },
+  "hci-courses/mit-6831/MIT6_831S11_lec15.pdf": {
+    "hash": "b88d56fe392fe9e1",
+    "converted_to": "converted/hci-courses/mit-6831/MIT6_831S11_lec15.md",
+    "chunks_stored": 26,
+    "collection": "hci-courses/mit-6831",
+    "ingested_date": "2026-03-23T08:40:43.687110+00:00"
+  },
+  "hci-courses/mit-6831/MIT6_831S11_lec16.pdf": {
+    "hash": "099fb7c9c8944338",
+    "converted_to": "converted/hci-courses/mit-6831/MIT6_831S11_lec16.md",
+    "chunks_stored": 9,
+    "collection": "hci-courses/mit-6831",
+    "ingested_date": "2026-03-23T08:40:44.013142+00:00"
+  },
+  "hci-courses/mit-6831/MIT6_831S11_lec17.pdf": {
+    "hash": "03ee90092fb2a569",
+    "converted_to": "converted/hci-courses/mit-6831/MIT6_831S11_lec17.md",
+    "chunks_stored": 29,
+    "collection": "hci-courses/mit-6831",
+    "ingested_date": "2026-03-23T08:40:45.275782+00:00"
+  },
+  "hci-courses/mit-6831/MIT6_831S11_lec18.pdf": {
+    "hash": "5b524288e877b6b8",
+    "converted_to": "converted/hci-courses/mit-6831/MIT6_831S11_lec18.md",
+    "chunks_stored": 29,
+    "collection": "hci-courses/mit-6831",
+    "ingested_date": "2026-03-23T08:40:46.302695+00:00"
+  },
+  "hci-courses/mit-6831/MIT6_831S11_lec19.pdf": {
+    "hash": "1b048f77bddcb1b4",
+    "converted_to": "converted/hci-courses/mit-6831/MIT6_831S11_lec19.md",
+    "chunks_stored": 20,
+    "collection": "hci-courses/mit-6831",
+    "ingested_date": "2026-03-23T08:40:46.959824+00:00"
+  },
+  "hci-courses/mit-6831/MIT6_831S11_lec20.pdf": {
+    "hash": "15cede17740db178",
+    "converted_to": "converted/hci-courses/mit-6831/MIT6_831S11_lec20.md",
+    "chunks_stored": 26,
+    "collection": "hci-courses/mit-6831",
+    "ingested_date": "2026-03-23T08:40:47.777361+00:00"
+  },
+  "hci-courses/mit-6831/MIT6_831S11_lec21.pdf": {
+    "hash": "d209c03119ae52fe",
+    "converted_to": "converted/hci-courses/mit-6831/MIT6_831S11_lec21.md",
+    "chunks_stored": 14,
+    "collection": "hci-courses/mit-6831",
+    "ingested_date": "2026-03-23T08:40:48.237596+00:00"
+  },
+  "hci-courses/mit-6831/MIT6_831S11_lec22.pdf": {
+    "hash": "43d78294b0095ec0",
+    "converted_to": "converted/hci-courses/mit-6831/MIT6_831S11_lec22.md",
+    "chunks_stored": 17,
+    "collection": "hci-courses/mit-6831",
+    "ingested_date": "2026-03-23T08:40:48.795010+00:00"
+  },
+  "hci-courses/mit-6831/MIT6_831S11_lec23.pdf": {
+    "hash": "27b8e54ae3180562",
+    "converted_to": "converted/hci-courses/mit-6831/MIT6_831S11_lec23.md",
+    "chunks_stored": 17,
+    "collection": "hci-courses/mit-6831",
+    "ingested_date": "2026-03-23T08:40:49.362685+00:00"
+  },
+  "hci-courses/mit-6831/MIT6_831S11_lec24.pdf": {
+    "hash": "fc819656fe779be4",
+    "converted_to": "converted/hci-courses/mit-6831/MIT6_831S11_lec24.md",
+    "chunks_stored": 20,
+    "collection": "hci-courses/mit-6831",
+    "ingested_date": "2026-03-23T08:40:50.051208+00:00"
+  },
+  "hci-courses/mit-6831/MIT6_831S11_lec25.pdf": {
+    "hash": "9b1023c7564bca70",
+    "converted_to": "converted/hci-courses/mit-6831/MIT6_831S11_lec25.md",
+    "chunks_stored": 13,
+    "collection": "hci-courses/mit-6831",
+    "ingested_date": "2026-03-23T08:40:50.577180+00:00"
+  },
+  "hci-courses/mit-6831/SOURCE.md": {
+    "hash": "1685de184be4af1d",
+    "converted_to": "converted/hci-courses/mit-6831/SOURCE.md",
+    "chunks_stored": 4,
+    "collection": "hci-courses/mit-6831",
+    "ingested_date": "2026-03-23T08:40:50.765522+00:00"
+  },
+  "hci-courses/theory-papers/SOURCE.md": {
+    "hash": "e7cc31992cfe7c6f",
+    "converted_to": "converted/hci-courses/theory-papers/SOURCE.md",
+    "chunks_stored": 2,
+    "collection": "hci-courses/theory-papers",
+    "ingested_date": "2026-03-23T08:41:12.760395+00:00"
+  },
+  "hci-courses/theory-papers/blackwell-green-cognitive-dimensions.pdf": {
+    "hash": "b69a251d1aae306a",
+    "converted_to": "converted/hci-courses/theory-papers/blackwell-green-cognitive-dimensions.md",
+    "chunks_stored": 22,
+    "collection": "hci-courses/theory-papers",
+    "ingested_date": "2026-03-23T08:41:13.570017+00:00"
+  },
+  "hci-courses/theory-papers/vannevar-bush-as-we-may-think-1945.pdf": {
+    "hash": "a766eb1d16b0d199",
+    "converted_to": "converted/hci-courses/theory-papers/vannevar-bush-as-we-may-think-1945.md",
+    "chunks_stored": 19,
+    "collection": "hci-courses/theory-papers",
+    "ingested_date": "2026-03-23T08:41:14.277120+00:00"
+  },
+  "technical-communication/theory/SOURCE.md": {
+    "hash": "3ecac425dcb373c1",
+    "converted_to": "converted/technical-communication/theory/SOURCE.md",
+    "chunks_stored": 2,
+    "collection": "technical-communication/theory",
+    "ingested_date": "2026-03-23T08:41:33.369250+00:00"
+  },
+  "technical-communication/theory/bazerman-genre-as-social-action.pdf": {
+    "hash": "517c0ba46ce1eeb4",
+    "converted_to": "converted/technical-communication/theory/bazerman-genre-as-social-action.md",
+    "chunks_stored": 15,
+    "collection": "technical-communication/theory",
+    "ingested_date": "2026-03-23T08:41:36.797669+00:00"
+  },
+  "information-architecture/theory/SOURCE.md": {
+    "hash": "e63d3d902ae63f31",
+    "converted_to": "converted/information-architecture/theory/SOURCE.md",
+    "chunks_stored": 2,
+    "collection": "information-architecture/theory",
+    "ingested_date": "2026-03-23T08:41:54.914566+00:00"
+  },
+  "information-architecture/theory/pirolli-information-foraging-ch1.pdf": {
+    "hash": "ef281f9d724d001e",
+    "converted_to": "converted/information-architecture/theory/pirolli-information-foraging-ch1.md",
+    "chunks_stored": 44,
+    "collection": "information-architecture/theory",
+    "ingested_date": "2026-03-23T08:41:56.790988+00:00"
+  },
+  "information-architecture/theory/precision-content-understanding-ia.pdf": {
+    "hash": "5a5df77a9cc074da",
+    "converted_to": "converted/information-architecture/theory/precision-content-understanding-ia.md",
+    "chunks_stored": 9,
+    "collection": "information-architecture/theory",
+    "ingested_date": "2026-03-23T08:41:57.138314+00:00"
+  },
+  "information-architecture/standards/SOURCE.md": {
+    "hash": "90a187ac1a543456",
+    "converted_to": "converted/information-architecture/standards/SOURCE.md",
+    "chunks_stored": 1,
+    "collection": "information-architecture/standards",
+    "ingested_date": "2026-03-23T08:42:19.029702+00:00"
+  },
+  "information-architecture/standards/niso-z39-19-2005r2010.pdf": {
+    "hash": "703f1df79771720b",
+    "converted_to": "converted/information-architecture/standards/niso-z39-19-2005r2010.md",
+    "chunks_stored": 185,
+    "collection": "information-architecture/standards",
+    "ingested_date": "2026-03-23T08:42:25.910335+00:00"
   }
 }

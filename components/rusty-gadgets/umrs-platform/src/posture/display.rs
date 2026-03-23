@@ -8,6 +8,11 @@
 //! assessment reports) that needs human-readable indicator values must
 //! call these functions rather than duplicating the annotation tables.
 //!
+//! All operator-facing strings are passed through `i18n::tr()` so that
+//! translation catalogs can provide localized annotations. When no
+//! translation catalog is active the original English string is returned
+//! unchanged, making the function safe to call without prior `i18n::init`.
+//!
 //! ## Key Exported Functions
 //!
 //! - [`annotate_live_value`] — main entry point; routes any `LiveValue` to
@@ -34,6 +39,7 @@
 //!   the security-meaning context required for useful audit records.
 
 use super::indicator::{IndicatorId, LiveValue};
+use umrs_core::i18n;
 
 // ---------------------------------------------------------------------------
 // Primary entry point
@@ -42,9 +48,9 @@ use super::indicator::{IndicatorId, LiveValue};
 /// Translate a `LiveValue` into an operator-readable display string.
 ///
 /// Routes to `annotate_integer` or `annotate_signed_integer` for numeric
-/// variants. Booleans are rendered as `"enabled"` / `"disabled"`. Text
-/// values are passed through, except the internal sentinel `"absent"` which
-/// is mapped to `"Not Present"`.
+/// variants. Booleans are rendered as `"Enabled"` / `"Disabled"`. Text
+/// values are passed through `i18n::tr()`, except the internal sentinel
+/// `"absent"` which is mapped to `"Not Present"`.
 ///
 /// NIST SP 800-53 SA-5: operator-facing strings are defined in one place and
 /// consumed by all display layers.
@@ -53,8 +59,8 @@ use super::indicator::{IndicatorId, LiveValue};
 #[must_use = "annotated display string should be rendered to the operator"]
 pub fn annotate_live_value(id: IndicatorId, live: &LiveValue) -> String {
     match live {
-        LiveValue::Bool(true) => "enabled".to_owned(),
-        LiveValue::Bool(false) => "disabled".to_owned(),
+        LiveValue::Bool(true) => i18n::tr("Enabled"),
+        LiveValue::Bool(false) => i18n::tr("Disabled"),
         LiveValue::Text(s) => {
             // "absent" is the internal sentinel used by the posture snapshot
             // when a cmdline token is not present in /proc/cmdline, and by
@@ -62,9 +68,9 @@ pub fn annotate_live_value(id: IndicatorId, live: &LiveValue) -> String {
             // as "Not Present" so operators know this is an expected absence,
             // not a probe failure or I/O error.
             if s == "absent" {
-                "Not Present".to_owned()
+                i18n::tr("Not Present")
             } else {
-                s.clone()
+                i18n::tr(s)
             }
         }
         LiveValue::Integer(v) => annotate_integer(id, u64::from(*v)),
@@ -83,7 +89,7 @@ pub fn annotate_live_value(id: IndicatorId, live: &LiveValue) -> String {
 /// Returns `"<n> (<description>)"` for known indicator/value pairs, or
 /// `"<n>"` when no annotation is defined for that combination. The annotation
 /// table covers all sysctl-based indicators that have semantically meaningful
-/// integer levels.
+/// integer levels. All description strings are passed through `i18n::tr()`.
 ///
 /// NIST SP 800-53 AU-3: annotated values provide the security-meaning context
 /// required for operators to act on audit findings without a reference guide.
@@ -91,67 +97,67 @@ pub fn annotate_live_value(id: IndicatorId, live: &LiveValue) -> String {
 pub fn annotate_integer(id: IndicatorId, v: u64) -> String {
     let annotation: Option<&'static str> = match id {
         IndicatorId::RandomizeVaSpace => match v {
-            0 => Some("ASLR disabled"),
-            1 => Some("partial randomization"),
-            2 => Some("full ASLR"),
+            0 => Some("ASLR Disabled"),
+            1 => Some("Partial Randomization"),
+            2 => Some("Full ASLR"),
             _ => None,
         },
         IndicatorId::KptrRestrict => match v {
-            0 => Some("pointers visible"),
-            1 => Some("hidden from unprivileged"),
-            2 => Some("hidden from all users"),
+            0 => Some("Pointers Visible"),
+            1 => Some("Hidden from Unprivileged"),
+            2 => Some("Hidden from All Users"),
             _ => None,
         },
         IndicatorId::UnprivBpfDisabled => match v {
-            0 => Some("unprivileged BPF allowed"),
-            1 => Some("restricted to CAP_BPF"),
+            0 => Some("Unprivileged BPF Allowed"),
+            1 => Some("Restricted to CAP_BPF"),
             _ => None,
         },
         IndicatorId::YamaPtraceScope => match v {
-            0 => Some("unrestricted"),
-            1 => Some("children only"),
-            2 => Some("admin only"),
-            3 => Some("no attach"),
+            0 => Some("Unrestricted"),
+            1 => Some("Children Only"),
+            2 => Some("Admin Only"),
+            3 => Some("No Attach"),
             _ => None,
         },
         IndicatorId::DmesgRestrict => match v {
-            0 => Some("world-readable"),
-            1 => Some("restricted"),
+            0 => Some("World-Readable"),
+            1 => Some("Restricted"),
             _ => None,
         },
         IndicatorId::ModulesDisabled => match v {
-            0 => Some("loading allowed"),
-            1 => Some("loading locked"),
+            0 => Some("Loading Allowed"),
+            1 => Some("Loading Locked"),
             _ => None,
         },
         IndicatorId::UnprivUsernsClone => match v {
-            0 => Some("restricted"),
-            1 => Some("allowed"),
+            0 => Some("Restricted"),
+            1 => Some("Allowed"),
             _ => None,
         },
         IndicatorId::Sysrq => match v {
-            0 => Some("fully disabled"),
-            1 => Some("all functions enabled"),
+            0 => Some("Fully Disabled"),
+            1 => Some("All Functions Enabled"),
             _ => None,
         },
         IndicatorId::SuidDumpable => match v {
-            0 => Some("no core dumps"),
-            1 => Some("core dumps enabled"),
-            2 => Some("readable by root only"),
+            0 => Some("No Core Dumps"),
+            1 => Some("Core Dumps Enabled"),
+            2 => Some("Readable by Root Only"),
             _ => None,
         },
         IndicatorId::ProtectedSymlinks | IndicatorId::ProtectedHardlinks => {
             match v {
-                0 => Some("not protected"),
-                1 => Some("protected"),
+                0 => Some("Not Protected"),
+                1 => Some("Protected"),
                 _ => None,
             }
         }
         IndicatorId::ProtectedFifos | IndicatorId::ProtectedRegular => {
             match v {
-                0 => Some("not protected"),
-                1 => Some("partial protection"),
-                2 => Some("fully protected"),
+                0 => Some("Not Protected"),
+                1 => Some("Partial Protection"),
+                2 => Some("Fully Protected"),
                 _ => None,
             }
         }
@@ -161,8 +167,8 @@ pub fn annotate_integer(id: IndicatorId, v: u64) -> String {
             _ => None,
         },
         IndicatorId::NfConntrackAcct => match v {
-            0 => Some("accounting off"),
-            1 => Some("accounting on"),
+            0 => Some("Accounting Off"),
+            1 => Some("Accounting On"),
             _ => None,
         },
         // Boolean-style indicators are handled via LiveValue::Bool.
@@ -171,7 +177,7 @@ pub fn annotate_integer(id: IndicatorId, v: u64) -> String {
     };
 
     if let Some(note) = annotation {
-        format!("{v} ({note})")
+        format!("{v} ({})", i18n::tr(note))
     } else {
         v.to_string()
     }
@@ -185,7 +191,8 @@ pub fn annotate_integer(id: IndicatorId, v: u64) -> String {
 ///
 /// `perf_event_paranoid` is the primary signed indicator; negative values
 /// grant broader access than zero. Returns `"<n> (<description>)"` for
-/// known pairs, or `"<n>"` when no annotation is defined.
+/// known pairs, or `"<n>"` when no annotation is defined. All description
+/// strings are passed through `i18n::tr()`.
 ///
 /// NIST SP 800-53 AU-3: negative kernel values (e.g., `-1` for `perf_event_paranoid`)
 /// must be labelled clearly so operators understand the security implication
@@ -194,16 +201,16 @@ pub fn annotate_integer(id: IndicatorId, v: u64) -> String {
 pub fn annotate_signed_integer(id: IndicatorId, v: i64) -> String {
     let annotation: Option<&'static str> = match id {
         IndicatorId::PerfEventParanoid => match v {
-            i64::MIN..=-1 => Some("fully open"),
-            0 => Some("kernel profiling allowed"),
-            1 => Some("user profiling allowed"),
-            2.. => Some("restricted"),
+            i64::MIN..=-1 => Some("Fully Open"),
+            0 => Some("Kernel Profiling Allowed"),
+            1 => Some("User Profiling Allowed"),
+            2.. => Some("Restricted"),
         },
         _ => None,
     };
 
     if let Some(note) = annotation {
-        format!("{v} ({note})")
+        format!("{v} ({})", i18n::tr(note))
     } else {
         v.to_string()
     }

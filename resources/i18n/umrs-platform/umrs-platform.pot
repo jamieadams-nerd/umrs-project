@@ -1,0 +1,311 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Jamie Adams (a.k.a. Imodium Operator)
+# This file is distributed under the same license as the UMRS Project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: umrs-platform\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-23 00:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+# NOTE: Hand-crafted on 2026-03-23 (display.rs scope only).
+# Prior wrapping-report strings (log::warn!/error!, thiserror) are catalogued
+# in 2026-03-11-umrs-platform-unwrapped.md — pending scope decision from
+# architect. Once decided and wrapped, re-run xtr to consolidate.
+#
+# xtr invocation (when available):
+#   xtr --package-name umrs-platform \
+#       --output resources/i18n/umrs-platform/umrs-platform.pot \
+#       components/rusty-gadgets/umrs-platform/src/**/*.rs
+
+# ---------------------------------------------------------------------------
+# annotate_live_value — LiveValue::Bool and sentinel
+# ---------------------------------------------------------------------------
+
+#. TRANSLATOR: Display string for a boolean indicator that is active/on.
+#. Lowercase. Appears inline as the value column of an indicator row,
+#. e.g. "lockdown: enabled". Corpus: coreutils/SELinux context → "activé".
+#: components/rusty-gadgets/umrs-platform/src/posture/display.rs:56
+msgid "enabled"
+msgstr ""
+
+#. TRANSLATOR: Display string for a boolean indicator that is inactive/off.
+#. Lowercase. Corpus: coreutils → "désactivé".
+#: components/rusty-gadgets/umrs-platform/src/posture/display.rs:57
+msgid "disabled"
+msgstr ""
+
+#. TRANSLATOR: Shown when a cmdline token or modprobe blacklist entry is
+#. absent — an expected absence (the configuration has not been applied or
+#. is not needed). "Not Present" signals a known-absent state, not a read
+#. error. No corpus match; UMRS decision.
+#: components/rusty-gadgets/umrs-platform/src/posture/display.rs:65
+msgid "Not Present"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# annotate_integer — IndicatorId::RandomizeVaSpace
+# ---------------------------------------------------------------------------
+
+#. TRANSLATOR: ASLR = Address Space Layout Randomization. Retained as
+#. acronym in all Five Eyes francophone contexts (NATO/OTAN technical docs).
+#. "disabled" = désactivé (corpus:coreutils).
+#: components/rusty-gadgets/umrs-platform/src/posture/display.rs:94
+msgid "ASLR disabled"
+msgstr ""
+
+#. TRANSLATOR: "partial randomization" — only the stack and mmap base are
+#. randomized; the heap and other regions are not. No corpus match; UMRS
+#. decision.
+#: components/rusty-gadgets/umrs-platform/src/posture/display.rs:95
+msgid "partial randomization"
+msgstr ""
+
+#. TRANSLATOR: "full ASLR" — all memory regions randomized. ASLR retained
+#. as acronym.
+#: components/rusty-gadgets/umrs-platform/src/posture/display.rs:96
+msgid "full ASLR"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# annotate_integer — IndicatorId::KptrRestrict
+# ---------------------------------------------------------------------------
+
+#. TRANSLATOR: kernel pointer values are visible to unprivileged users
+#. via /proc. Security risk — attackers can use visible pointers to
+#. locate kernel code for exploits.
+#: components/rusty-gadgets/umrs-platform/src/posture/display.rs:101
+msgid "pointers visible"
+msgstr ""
+
+#. TRANSLATOR: kernel pointers are hidden from users without CAP_SYSLOG.
+#. "unprivileged" = sans privilèges. No corpus match; UMRS decision.
+#: components/rusty-gadgets/umrs-platform/src/posture/display.rs:102
+msgid "hidden from unprivileged"
+msgstr ""
+
+#. TRANSLATOR: kernel pointers are hidden from everyone, including root,
+#. except in specific kernel debugging contexts.
+#: components/rusty-gadgets/umrs-platform/src/posture/display.rs:103
+msgid "hidden from all users"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# annotate_integer — IndicatorId::UnprivBpfDisabled
+# ---------------------------------------------------------------------------
+
+#. TRANSLATOR: BPF = Berkeley Packet Filter. Retained as acronym.
+#. Unprivileged users can load BPF programs — a security risk.
+#: components/rusty-gadgets/umrs-platform/src/posture/display.rs:107
+msgid "unprivileged BPF allowed"
+msgstr ""
+
+#. TRANSLATOR: BPF loading restricted to processes with the CAP_BPF
+#. capability. CAP_BPF is a Linux capability name — do not translate it.
+#: components/rusty-gadgets/umrs-platform/src/posture/display.rs:108
+msgid "restricted to CAP_BPF"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# annotate_integer — IndicatorId::YamaPtraceScope
+# ---------------------------------------------------------------------------
+
+#. TRANSLATOR: ptrace = process trace — a Linux system call. Any process
+#. can trace any other process. Highest attack surface. Corpus:bash →
+#. "restreint" for "restricted"; this value is the opposite.
+#: components/rusty-gadgets/umrs-platform/src/posture/display.rs:112
+msgid "unrestricted"
+msgstr ""
+
+#. TRANSLATOR: A process may only ptrace its own children. No corpus match.
+#: components/rusty-gadgets/umrs-platform/src/posture/display.rs:113
+msgid "children only"
+msgstr ""
+
+#. TRANSLATOR: Only processes with CAP_SYS_PTRACE (administrator) may use
+#. ptrace. "admin only" = réservé aux administrateurs.
+#: components/rusty-gadgets/umrs-platform/src/posture/display.rs:114
+msgid "admin only"
+msgstr ""
+
+#. TRANSLATOR: ptrace is completely disabled — no process may trace another.
+#. "no attach" = interdiction d'attachement. No corpus match; UMRS decision.
+#: components/rusty-gadgets/umrs-platform/src/posture/display.rs:115
+msgid "no attach"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# annotate_integer — IndicatorId::DmesgRestrict
+# ---------------------------------------------------------------------------
+
+#. TRANSLATOR: The kernel ring buffer (dmesg) is readable by all users.
+#. "world-readable" is a Unix permission idiom — "accessible à tous".
+#: components/rusty-gadgets/umrs-platform/src/posture/display.rs:119
+msgid "world-readable"
+msgstr ""
+
+#. TRANSLATOR: dmesg is restricted to privileged users.
+#. Corpus:bash → "restreint" for "restricted".
+#: components/rusty-gadgets/umrs-platform/src/posture/display.rs:120
+#: components/rusty-gadgets/umrs-platform/src/posture/display.rs:129
+#: components/rusty-gadgets/umrs-platform/src/posture/display.rs:200
+msgid "restricted"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# annotate_integer — IndicatorId::ModulesDisabled
+# ---------------------------------------------------------------------------
+
+#. TRANSLATOR: Kernel module loading is permitted.
+#. Corpus:bash → "chargement" for "loading".
+#: components/rusty-gadgets/umrs-platform/src/posture/display.rs:124
+msgid "loading allowed"
+msgstr ""
+
+#. TRANSLATOR: Kernel module loading is permanently disabled for this boot.
+#. This is a one-way door — once set, modules cannot be loaded until reboot.
+#: components/rusty-gadgets/umrs-platform/src/posture/display.rs:125
+msgid "loading locked"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# annotate_integer — IndicatorId::UnprivUsernsClone
+# ---------------------------------------------------------------------------
+
+#. TRANSLATOR: Unprivileged user namespace creation is permitted.
+#. No corpus match; UMRS decision.
+#: components/rusty-gadgets/umrs-platform/src/posture/display.rs:130
+msgid "allowed"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# annotate_integer — IndicatorId::Sysrq
+# ---------------------------------------------------------------------------
+
+#. TRANSLATOR: The SysRq key is completely disabled. All SysRq functions
+#. are unavailable. "fully disabled" = entièrement désactivé.
+#: components/rusty-gadgets/umrs-platform/src/posture/display.rs:134
+msgid "fully disabled"
+msgstr ""
+
+#. TRANSLATOR: All SysRq key functions are available — highest attack
+#. surface. "all functions enabled" = toutes les fonctions activées.
+#: components/rusty-gadgets/umrs-platform/src/posture/display.rs:135
+msgid "all functions enabled"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# annotate_integer — IndicatorId::SuidDumpable
+# ---------------------------------------------------------------------------
+
+#. TRANSLATOR: SUID/SGID processes do not produce core dump files.
+#. "core dumps" = vidages mémoire (POSIX/Linux francophone standard term).
+#: components/rusty-gadgets/umrs-platform/src/posture/display.rs:139
+msgid "no core dumps"
+msgstr ""
+
+#. TRANSLATOR: Core dump files are produced for SUID/SGID processes.
+#: components/rusty-gadgets/umrs-platform/src/posture/display.rs:140
+msgid "core dumps enabled"
+msgstr ""
+
+#. TRANSLATOR: Core dump files are readable by root only.
+#: components/rusty-gadgets/umrs-platform/src/posture/display.rs:141
+msgid "readable by root only"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# annotate_integer — IndicatorId::ProtectedSymlinks / ProtectedHardlinks
+# ---------------------------------------------------------------------------
+
+#. TRANSLATOR: Symlink/hardlink following restriction is not applied.
+#: components/rusty-gadgets/umrs-platform/src/posture/display.rs:145
+#: components/rusty-gadgets/umrs-platform/src/posture/display.rs:152
+msgid "not protected"
+msgstr ""
+
+#. TRANSLATOR: Symlink/hardlink restriction is enforced.
+#: components/rusty-gadgets/umrs-platform/src/posture/display.rs:146
+msgid "protected"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# annotate_integer — IndicatorId::ProtectedFifos / ProtectedRegular
+# ---------------------------------------------------------------------------
+
+#. TRANSLATOR: Partial FIFO/regular-file following restriction — applied
+#. only in restricted conditions.
+#: components/rusty-gadgets/umrs-platform/src/posture/display.rs:153
+msgid "partial protection"
+msgstr ""
+
+#. TRANSLATOR: Full FIFO/regular-file following restriction enforced in
+#. world-writable sticky directories.
+#: components/rusty-gadgets/umrs-platform/src/posture/display.rs:154
+msgid "fully protected"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# annotate_integer — IndicatorId::FipsEnabled
+# ---------------------------------------------------------------------------
+
+#. TRANSLATOR: FIPS 140-2/3 mode is not active. Capitalised ("Disabled")
+#. as a state label, distinct from lowercase "disabled" used for boolean
+#. indicators. FIPS is retained as acronym.
+#: components/rusty-gadgets/umrs-platform/src/posture/display.rs:160
+msgid "Disabled"
+msgstr ""
+
+#. TRANSLATOR: FIPS 140-2/3 mode is active. Capitalised state label.
+#: components/rusty-gadgets/umrs-platform/src/posture/display.rs:161
+msgid "Enabled"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# annotate_integer — IndicatorId::NfConntrackAcct
+# ---------------------------------------------------------------------------
+
+#. TRANSLATOR: netfilter connection tracking accounting (per-connection
+#. byte/packet counters) is disabled. "accounting" in the netfilter sense =
+#. comptabilisation. No direct corpus match; UMRS decision.
+#: components/rusty-gadgets/umrs-platform/src/posture/display.rs:165
+msgid "accounting off"
+msgstr ""
+
+#. TRANSLATOR: netfilter connection tracking accounting is enabled.
+#: components/rusty-gadgets/umrs-platform/src/posture/display.rs:166
+msgid "accounting on"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# annotate_signed_integer — IndicatorId::PerfEventParanoid
+# ---------------------------------------------------------------------------
+
+#. TRANSLATOR: perf_event_paranoid = -1 or lower. All perf events are
+#. accessible to all users — no restrictions. "fully open" = entièrement
+#. ouvert. No corpus match; UMRS decision.
+#: components/rusty-gadgets/umrs-platform/src/posture/display.rs:197
+msgid "fully open"
+msgstr ""
+
+#. TRANSLATOR: perf_event_paranoid = 0. Kernel performance profiling events
+#. are accessible to users with CAP_PERFMON. "profiling" = profilage.
+#. No corpus match; UMRS decision.
+#: components/rusty-gadgets/umrs-platform/src/posture/display.rs:198
+msgid "kernel profiling allowed"
+msgstr ""
+
+#. TRANSLATOR: perf_event_paranoid = 1. Only user-space performance
+#. profiling events are accessible to unprivileged users.
+#: components/rusty-gadgets/umrs-platform/src/posture/display.rs:199
+msgid "user profiling allowed"
+msgstr ""

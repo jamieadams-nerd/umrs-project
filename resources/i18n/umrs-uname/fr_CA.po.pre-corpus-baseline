@@ -1,0 +1,1266 @@
+# French translation of umrs-uname
+# This file is distributed under the same license as the UMRS Project
+# MIT License
+# Copyright (c) 2025 Jamie Adams (a.k.a. Imodium Operator)
+#
+# Initial translation provided by a specialized Claude Code "umrs-translator".
+# The agent was assisted by a technical corpus derived from various GNU
+# tools via the Translation Project (https://translationproject.org).
+#
+# NOTE: This translation is AI-generated and may contain nuances
+# requiring human verification.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: umrs-uname\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-23 00:00+0000\n"
+"PO-Revision-Date: 2026-03-23 00:00+0000\n"
+"Last-Translator: umrs-translator (Claude Code)\n"
+"Language-Team: fr_CA\n"
+"Language: fr_CA\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+# ---------------------------------------------------------------------------
+# Tab labels
+# ---------------------------------------------------------------------------
+
+# TRANSLATOR: Tab label. "Informations" is the standard fr_CA plural for
+# system status/identity data panels. No corpus match; UMRS decision.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:216
+#: components/rusty-gadgets/umrs-uname/src/main.rs:302
+msgid "OS Information"
+msgstr "Informations système"
+
+# TRANSLATOR: Tab label. "Sécurité noyau" is the standard fr_CA rendering
+# of "Kernel Security" in Linux/POSIX francophone documentation.
+# No corpus match; UMRS decision.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:217
+#: components/rusty-gadgets/umrs-uname/src/main.rs:303
+msgid "Kernel Security"
+msgstr "Sécurité noyau"
+
+# TRANSLATOR: Tab label. "Confiance / Preuves" follows the OTAN/ANSSI
+# pattern for trust and evidence chains in security assessment.
+# No corpus match; UMRS decision.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:218
+#: components/rusty-gadgets/umrs-uname/src/main.rs:304
+msgid "Trust / Evidence"
+msgstr "Confiance / Preuves"
+
+# ---------------------------------------------------------------------------
+# Card title and detection status
+# ---------------------------------------------------------------------------
+
+# TRANSLATOR: Main card title. "Audit de détection" follows ANSSI/OTAN
+# audit report terminology. "OS" retained as acronym.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:329
+msgid "OS Detection Audit"
+msgstr "Audit de détection OS"
+
+# TRANSLATOR: Status message when the OS detection pipeline fails.
+# "Échec" is corpus-attested for failure states; "pipeline" is retained
+# as it is a technical term with no standard fr_CA substitute.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:267
+#: components/rusty-gadgets/umrs-uname/src/main.rs:294
+msgid "Detection pipeline failed"
+msgstr "Échec du pipeline de détection"
+
+# ---------------------------------------------------------------------------
+# Detection error descriptions
+# ---------------------------------------------------------------------------
+
+# TRANSLATOR: "Verrou dur" is the ANSSI/OTAN francophone equivalent of a
+# hard gate (a mandatory check that cannot be bypassed). "procfs" is a
+# technical filesystem name — retained untranslated. UMRS decision.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:255
+msgid "Hard gate: procfs is not real procfs"
+msgstr "Verrou dur : procfs n'est pas le vrai procfs"
+
+# TRANSLATOR: PID = Process Identifier. Technical term — retained.
+# "cohérence" is the POSIX/Linux francophone standard for coherence checks.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:259
+msgid "Hard gate: PID coherence broken"
+msgstr "Verrou dur : incohérence de PID détectée"
+
+# TRANSLATOR: "ancrage noyau" = kernel anchor. UMRS established term.
+# "E/S" = Entrée/Sortie = I/O. Standard fr_CA abbreviation.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:261
+msgid "Hard gate: I/O error during kernel anchor"
+msgstr "Verrou dur : erreur d'E/S lors de l'ancrage noyau"
+
+# ---------------------------------------------------------------------------
+# Error state rows
+# ---------------------------------------------------------------------------
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:268
+msgid "Status"
+msgstr "État"
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:271
+#: components/rusty-gadgets/umrs-uname/src/main.rs:281
+msgid "Reason"
+msgstr "Raison"
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:277
+msgid "Trust Level"
+msgstr "Niveau de confiance"
+
+# TRANSLATOR: T0 = trust tier zero. Tier labels use the established UMRS
+# numbering scheme; the en-dash and tier name are retained in structure.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:278
+msgid "T0 — Untrusted"
+msgstr "T0 — Non fiable"
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:283
+msgid "Hard gate failure aborted pipeline"
+msgstr "Échec du verrou dur — pipeline interrompu"
+
+# ---------------------------------------------------------------------------
+# OS info rows
+# ---------------------------------------------------------------------------
+
+# TRANSLATOR: Shown when an expected data field is absent from the result.
+# "non disponible" is the standard fr_CA form; no corpus match. UMRS decision.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:392
+#: components/rusty-gadgets/umrs-uname/src/main.rs:429
+#: components/rusty-gadgets/umrs-uname/src/main.rs:443
+msgid "not available"
+msgstr "non disponible"
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:401
+msgid "Platform Family"
+msgstr "Famille de plateforme"
+
+# TRANSLATOR: RPM = Red Hat Package Manager. Acronym — retained.
+# "basé sur RPM" follows RHEL/Fedora francophone documentation style.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:402
+msgid "RPM-based"
+msgstr "basé sur RPM"
+
+# TRANSLATOR: dpkg = Debian package manager. Tool name — retained.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:402
+msgid "dpkg-based"
+msgstr "basé sur dpkg"
+
+# TRANSLATOR: pacman = Arch Linux package manager. Tool name — retained.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:402
+msgid "pacman-based"
+msgstr "basé sur pacman"
+
+# TRANSLATOR: Shown when the OS family cannot be determined.
+# "inconnu" is corpus-attested (findutils) for "unknown".
+#: components/rusty-gadgets/umrs-uname/src/main.rs:402
+msgid "unknown"
+msgstr "inconnu"
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:407
+msgid "Platform Distro"
+msgstr "Distribution"
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:413
+msgid "Platform Version"
+msgstr "Version de plateforme"
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:419
+msgid "Platform Facts"
+msgstr "Faits de plateforme"
+
+# TRANSLATOR: "Sonde utilisée" — the detection probe that was used to
+# identify the package substrate. "sonde" is the fr_CA term for a software
+# probe/detector; no corpus match. UMRS decision.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:423
+msgid "Probe Used"
+msgstr "Sonde utilisée"
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:428
+msgid "Platform Identity"
+msgstr "Identité de plateforme"
+
+# ---------------------------------------------------------------------------
+# unavailable fallback
+# ---------------------------------------------------------------------------
+
+# TRANSLATOR: Shown when OS release data or an indicator value is absent.
+# "indisponible" (one word) is the fr_CA form for a resource that is
+# inaccessible or could not be read. No corpus match; UMRS decision.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:135
+#: components/rusty-gadgets/umrs-uname/src/main.rs:1189
+msgid "unavailable"
+msgstr "indisponible"
+
+# ---------------------------------------------------------------------------
+# Trust summary rows
+# ---------------------------------------------------------------------------
+
+# TRANSLATOR: Key column label for the label trust classification row.
+# Shortened from "Confiance de l'étiquette" (25 chars) to "Confiance" (9 chars)
+# to prevent the key column from jamming the value column in the TUI.
+# "Confiance" alone is unambiguous in context: the value column carries
+# the full classification string. UMRS decision.
+# Visual check: English "Label Trust" = 11 chars; French "Confiance" = 9 chars.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:467
+msgid "Label Trust"
+msgstr "Confiance"
+
+# TRANSLATOR: Key column label for the trust tier row.
+# Shortened from "Palier de confiance" (19 chars) to "Palier" (6 chars)
+# to match the English key width ("Trust Tier" = 10 chars) and prevent
+# column jamming. "Palier" alone is unambiguous: the value column shows
+# the full tier label (e.g., "T4 — Ancré à l'intégrité"). UMRS decision.
+# Visual check: English "Trust Tier" = 10 chars; French "Palier" = 6 chars.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:489
+msgid "Trust Tier"
+msgstr "Palier"
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:494
+msgid "Description"
+msgstr "Description"
+
+# TRANSLATOR: Key column label for the downgrade reasons row.
+# Shortened from "Motifs de déclassement" (22 chars) to "Motifs" (6 chars)
+# to match the English key width ("Downgrade Reasons" = 17 chars) and
+# prevent column jamming. "Motifs" alone is sufficient: the value column
+# carries either a count or "Aucun déclassement — confiance totale maintenue".
+# "déclassement" follows ANSSI terminology for a trust downgrade.
+# UMRS decision.
+# Visual check: English "Downgrade Reasons" = 17 chars; French "Motifs" = 6 chars.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:504
+msgid "Downgrade Reasons"
+msgstr "Motifs"
+
+# TRANSLATOR: Positive result — no downgrade occurred; full trust was
+# achieved at the current tier.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:505
+msgid "No downgrade — full trust retained"
+msgstr "Aucun déclassement — confiance totale maintenue"
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:517
+msgid "Each reason below prevented a trust tier upgrade."
+msgstr "Chaque motif ci-dessous a empêché une montée en palier de confiance."
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:536
+msgid "Contradictions"
+msgstr "Contradictions"
+
+# TRANSLATOR: Positive result — no contradictions between evidence sources.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:537
+msgid "None detected"
+msgstr "Aucune détectée"
+
+# TRANSLATOR: Explanatory note when all evidence sources agreed.
+# Em-dash preserved. Typography: space before em-dash per fr_CA convention.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:542
+msgid "All evidence sources agreed — no conflicting identity assertions detected."
+msgstr "Toutes les sources de preuves concordent — aucune assertion d'identité contradictoire détectée."
+
+# TRANSLATOR: Warning when two independent evidence sources disagree.
+# Em-dash preserved. "falsification" is the ANSSI/OTAN term for tampering.
+# WIDTH: 66-char limit. Both sentences fit within the limit.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:555
+msgid ""
+"Two independent sources reported conflicting values. Review each pair — this "
+"may indicate tampering."
+msgstr ""
+"Deux sources indépendantes rapportent des valeurs contradictoires. Vérifiez "
+"chaque paire — cela peut indiquer une falsification."
+
+# TRANSLATOR: Key column label for the evidence records count row.
+# Shortened from "Enregistrements de preuves" (26 chars) to "Preuves" (7 chars)
+# to match the English key width ("Evidence Records" = 16 chars) and prevent
+# column jamming. The value column always contains an integer count, so
+# "Preuves" (evidence/proof items) is unambiguous. UMRS decision.
+# Visual check: English "Evidence Records" = 16 chars; French "Preuves" = 7 chars.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:577
+msgid "Evidence Records"
+msgstr "Preuves"
+
+# ---------------------------------------------------------------------------
+# label_trust_display — trust classification strings
+# ---------------------------------------------------------------------------
+
+# TRANSLATOR: The label candidate has not been verified by any trust gate.
+# "Ne pas utiliser pour la politique" is the security-domain fr_CA form for
+# "do not use for policy" — "politique" here means SELinux/MLS security
+# policy, not general policy. Retain the type name prefix in English as
+# a type identifier. WIDTH: 66-char limit; this line is 57 chars — OK.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:1405
+msgid "UntrustedLabelCandidate — do not use for policy"
+msgstr "UntrustedLabelCandidate — ne pas utiliser pour la politique"
+
+# TRANSLATOR: The label is structurally well-formed (correct syntax) but
+# no integrity check (ownership/digest) has been run yet.
+# "valide structurellement" follows ANSSI structural validation terminology.
+# WIDTH: 65 chars — OK.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:1409
+msgid "LabelClaim — structurally valid; integrity unconfirmed"
+msgstr "LabelClaim — valide structurellement ; intégrité non confirmée"
+
+# TRANSLATOR: Highest normal trust tier. T4 = Integrity Anchored.
+# "propriété + condensé vérifiés" = ownership + digest verified.
+# "condensé" is the ANSSI/ISO fr_CA term for cryptographic hash/digest.
+# WIDTH: 57 chars — OK.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:1413
+msgid "TrustedLabel — T4: ownership + digest verified"
+msgstr "TrustedLabel — T4 : propriété + condensé vérifiés"
+
+# TRANSLATOR: T4 integrity confirmed but a contradiction was also found.
+# Abbreviated to fit the column width — full detail in a secondary row.
+# "Vérifié avec contradiction" is a compound finding label.
+# WIDTH: 63 chars — OK.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:1422
+msgid "Verified w/ Contradiction — T4 integrity + conflict"
+msgstr "Vérifié avec contradiction — intégrité T4 + conflit"
+
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:69
+msgid "T1 — Kernel Anchored"
+msgstr "T1 — Ancré au noyau"
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:70
+msgid "T2 — Environment Anchored"
+msgstr "T2 — Ancré à l'environnement"
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:71
+msgid "T3 — Platform Verified"
+msgstr "T3 — Plateforme vérifiée"
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:72
+msgid "T4 — Integrity Anchored"
+msgstr "T4 — Ancré à l'intégrité"
+
+# TRANSLATOR: One-line description for the T0 trust tier.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:78
+msgid "No kernel anchor established."
+msgstr "Aucun ancrage noyau établi."
+
+# TRANSLATOR: procfs = /proc filesystem. Technical name — retained.
+# PROC_SUPER_MAGIC = kernel magic number constant — retained.
+# "PID" = Process Identifier — retained.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:80
+msgid "procfs verified via PROC_SUPER_MAGIC + PID coherence."
+msgstr "procfs vérifié via PROC_SUPER_MAGIC + cohérence PID."
+
+# TRANSLATOR: mountinfo = /proc/self/mountinfo (kernel file name) — retained.
+# statfs = system call name — retained.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:83
+msgid "Mount topology cross-checked (mountinfo vs statfs)."
+msgstr "Topologie de montage recoupée (mountinfo vs statfs)."
+
+# TRANSLATOR: >= 2 retained as a mathematical expression.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:86
+msgid "Platform identity verified; >= 2 independent package facts confirmed."
+msgstr "Identité de plateforme vérifiée ; >= 2 faits paquets indépendants confirmés."
+
+# TRANSLATOR: os-release = filename — retained. "condensé installé" =
+# installed digest (cryptographic hash from package database).
+#: components/rusty-gadgets/umrs-uname/src/main.rs:89
+msgid "os-release ownership + installed digest verified."
+msgstr "Propriété de os-release + condensé installé vérifiés."
+
+# ---------------------------------------------------------------------------
+# Status bar messages
+# ---------------------------------------------------------------------------
+
+# TRANSLATOR: "Intégrité ancrée" mirrors the tier label T4. Used as
+# a brief status bar confirmation.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:1431
+msgid "Integrity Anchored"
+msgstr "Intégrité ancrée"
+
+# TRANSLATOR: T3 tier label abbreviated for the status bar.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:1434
+msgid "Platform Verified"
+msgstr "Plateforme vérifiée"
+
+# TRANSLATOR: T0 status bar label with explanation suffix.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:1454
+msgid "Untrusted — no kernel anchor"
+msgstr "Non fiable — aucun ancrage noyau"
+
+# ---------------------------------------------------------------------------
+# Kernel Security summary rows
+# ---------------------------------------------------------------------------
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:748
+msgid "Kernel Version"
+msgstr "Version du noyau"
+
+# TRANSLATOR: Provenance note shown in the kernel security summary pane.
+# "/proc" and "/sys" are filesystem paths — retained.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:755
+msgid "All values below are read live from the running kernel via /proc and /sys."
+msgstr "Toutes les valeurs ci-dessous sont lues en direct depuis le noyau actif via /proc et /sys."
+
+# TRANSLATOR: Column header for the count of readable indicators.
+# "Indicateurs" is the fr_CA term for posture indicators. UMRS decision.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:809
+msgid "Indicators"
+msgstr "Indicateurs"
+
+# TRANSLATOR: Row label for indicators that could not be assessed.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:816
+msgid "No Assessment"
+msgstr "Sans évaluation"
+
+# TRANSLATOR: Curated summary note. "durcissement" is the ANSSI fr_CA
+# term for hardening. "posture de sécurité" is corpus-attested.
+# WIDTH: The longest translated line is 67 chars. FLAG for developer review.
+# Proposed abbreviation if needed: replace "ci-dessous" with "en rouge".
+#: components/rusty-gadgets/umrs-uname/src/main.rs:831
+msgid ""
+"Curated indicators selected to give you the clearest view of your system's "
+"security posture. Items marked in red can be hardened — see each indicator's "
+"recommended setting below."
+msgstr ""
+"Indicateurs sélectionnés pour offrir la vue la plus claire de la posture de "
+"sécurité du système. Les éléments en rouge peuvent être durcis — "
+"consultez le réglage recommandé de chaque indicateur ci-dessous."
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:685
+msgid "Catalog Baseline"
+msgstr "Base de référence du catalogue"
+
+# TRANSLATOR: Positive result — running kernel matches the catalog version.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:699
+msgid "Catalog baseline matches running kernel"
+msgstr "La base de référence du catalogue correspond au noyau actif"
+
+# ---------------------------------------------------------------------------
+# Kernel contradiction rows
+# ---------------------------------------------------------------------------
+
+# TRANSLATOR: Value shown when the contradiction count is zero (positive).
+# "Aucune" (feminine) agrees with "Contradictions" (feminine plural).
+#: components/rusty-gadgets/umrs-uname/src/main.rs:628
+msgid "None"
+msgstr "Aucune"
+
+
+# TRANSLATOR: Positive result — running kernel and persisted config agree.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:645
+msgid "No disagreements between running kernel and persisted configuration."
+msgstr "Aucun désaccord entre le noyau actif et la configuration persistée."
+
+# TRANSLATOR: Warning when kernel and persisted configuration disagree.
+# "dérive" = drift (ANSSI term for configuration drift). "corrections
+# éphémères" = hotfixes. "au prochain redémarrage" = on reboot.
+# WIDTH: lines up to 66 chars — OK.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:651
+msgid ""
+"The running kernel and persisted configuration disagree on one or more "
+"settings. Drift means intended hardening is not active; hotfixes mean "
+"current hardening will be lost on reboot."
+msgstr ""
+"Le noyau actif et la configuration persistée sont en désaccord sur un ou "
+"plusieurs réglages. Une dérive signifie que le durcissement prévu n'est pas "
+"actif ; des corrections éphémères signifient que le durcissement actuel "
+"sera perdu au prochain redémarrage."
+
+# ---------------------------------------------------------------------------
+# indicator_group_rows — Configured: prefix
+# ---------------------------------------------------------------------------
+
+# TRANSLATOR: Label prefix for a persisted configuration value line.
+# The colon is part of the msgid — preserve it.
+# Usage: "Configuré : <value> (source <filepath>)"
+#: components/rusty-gadgets/umrs-uname/src/main.rs:1112
+msgid "Configured:"
+msgstr "Configuré :"
+
+# TRANSLATOR: Introduces the source file for a configured value.
+# French word order: "source" precedes the path in the formatted string.
+# Developer note: the format call becomes:
+#   format!("{} {} ({} {})", tr("Configured:"), raw, tr("from"), source_file)
+#: components/rusty-gadgets/umrs-uname/src/main.rs:1112
+msgid "from"
+msgstr "source"
+
+# ---------------------------------------------------------------------------
+# Kernel Security group titles and descriptions
+# ---------------------------------------------------------------------------
+
+# TRANSLATOR: Group title in all-caps — preserved in French as all-caps
+# to maintain visual alignment with other group titles.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:1021
+msgid "BOOT INTEGRITY"
+msgstr "INTÉGRITÉ AU DÉMARRAGE"
+
+# TRANSLATOR: One-line group description. "état inviolable" = tamper-
+# resistant state. "remplacé silencieusement" = silently replaced.
+# WIDTH: 66-char limit. Longest line is 65 chars — OK.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:1025
+msgid ""
+"Verifies the kernel loaded in a tamper-resistant state and cannot be "
+"silently replaced at runtime."
+msgstr ""
+"Vérifie que le noyau a été chargé dans un état inviolable et ne peut pas "
+"être remplacé silencieusement à l'exécution."
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:873
+msgid "CRYPTOGRAPHIC POSTURE"
+msgstr "POSTURE CRYPTOGRAPHIQUE"
+
+# TRANSLATOR: "cryptographie validée par le gouvernement" = government-
+# validated cryptography (FIPS context). "sourçage d'entropie" = entropy
+# sourcing. "algorithmes non validés" = unvalidated algorithms.
+# WIDTH: 66-char limit. Lines are within range.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:874
+msgid ""
+"Verifies government-validated cryptography and correct entropy sourcing. "
+"Failures here mean sensitive operations may use unvalidated algorithms."
+msgstr ""
+"Vérifie la cryptographie validée par le gouvernement et le sourçage "
+"d'entropie correct. Les échecs ici signifient que des opérations sensibles "
+"pourraient utiliser des algorithmes non validés."
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:887
+msgid "KERNEL SELF-PROTECTION"
+msgstr "AUTO-PROTECTION DU NOYAU"
+
+# TRANSLATOR: ASLR = acronym retained. "code exploitable" = exploitable code.
+# WIDTH: lines within 66-char limit.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:888
+msgid ""
+"Controls that hide kernel internals from unprivileged processes. Weak "
+"settings let attackers locate exploitable code and bypass ASLR."
+msgstr ""
+"Contrôles qui masquent les internes du noyau aux processus sans privilèges. "
+"Des réglages faibles permettent aux attaquants de localiser du code "
+"exploitable et de contourner l'ASLR."
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:902
+msgid "PROCESS ISOLATION"
+msgstr "ISOLATION DES PROCESSUS"
+
+# TRANSLATOR: "vol d'identifiants" = credential theft.
+# "processus frères" = sibling processes (Unix terminology).
+# WIDTH: within limit.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:903
+msgid ""
+"Controls how much one process can see or interfere with another. Weak "
+"settings allow credential theft across sibling processes."
+msgstr ""
+"Contrôles définissant ce qu'un processus peut voir ou perturber chez un "
+"autre. Des réglages faibles permettent le vol d'identifiants entre processus "
+"frères."
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:913
+msgid "FILESYSTEM HARDENING"
+msgstr "DURCISSEMENT DU SYSTÈME DE FICHIERS"
+
+# TRANSLATOR: "escalade de privilèges" = privilege escalation (ANSSI term).
+# "liens symboliques/physiques" = symlink/hardlink. "répertoires en écriture
+# pour tous" = world-writable directories.
+# WIDTH: FLAG — "DURCISSEMENT DU SYSTÈME DE FICHIERS" is 38 chars as a
+# group title, within the 66-char limit. Description lines are within limit.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:914
+msgid ""
+"Closes privilege escalation paths through the filesystem. Absent controls "
+"allow symlink and hardlink attacks in world-writable directories."
+msgstr ""
+"Ferme les chemins d'escalade de privilèges dans le système de fichiers. "
+"L'absence de contrôles permet les attaques par lien symbolique et physique "
+"dans les répertoires en écriture pour tous."
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:927
+msgid "MODULE RESTRICTIONS"
+msgstr "RESTRICTIONS DE MODULES"
+
+# TRANSLATOR: "vecteurs d'exfiltration de données" = data exfiltration
+# vectors. "vecteurs d'attaque DMA" = DMA attack vectors. USB, FireWire,
+# Thunderbolt — proper nouns, retained.
+# WIDTH: within limit.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:928
+msgid ""
+"Verifies high-risk kernel modules are blocked from loading. USB, FireWire, "
+"and Thunderbolt are primary data exfiltration and DMA attack vectors."
+msgstr ""
+"Vérifie que les modules noyau à haut risque sont bloqués au chargement. "
+"USB, FireWire et Thunderbolt sont les principaux vecteurs d'exfiltration de "
+"données et d'attaque DMA."
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:949
+msgid "NETWORK AUDITING"
+msgstr "AUDIT RÉSEAU"
+
+# TRANSLATOR: "comptabilisation du trafic" = traffic accounting (netfilter
+# connection tracking context). "reconstruction forensique" = forensic
+# reconstruction. "journaux d'audit réseau" = network audit logs.
+# "exfiltration" retained as internationally standardised term.
+# WIDTH: within limit.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:950
+msgid ""
+"Controls that enable traffic accounting for anomaly detection and forensic "
+"reconstruction. Without these, network audit logs lack the volume data "
+"needed to identify exfiltration."
+msgstr ""
+"Contrôles qui activent la comptabilisation du trafic pour la détection "
+"d'anomalies et la reconstruction forensique. Sans ceux-ci, les journaux "
+"d'audit réseau manquent des données de volume nécessaires pour identifier "
+"une exfiltration."
+
+# ---------------------------------------------------------------------------
+# Evidence table column headers
+# ---------------------------------------------------------------------------
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:1266
+msgid "Evidence Type"
+msgstr "Type de preuve"
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:1267
+msgid "Source"
+msgstr "Source"
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:1268
+msgid "Verification"
+msgstr "Vérification"
+
+# ---------------------------------------------------------------------------
+# Evidence source kind labels
+# ---------------------------------------------------------------------------
+
+# TRANSLATOR: procfs = /proc filesystem. "Exécution noyau" = kernel runtime.
+# Path component retained.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:113
+msgid "Kernel runtime (/proc)"
+msgstr "Exécution noyau (/proc)"
+
+# TRANSLATOR: Configuration files from /etc or the filesystem.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:114
+msgid "Configuration file"
+msgstr "Fichier de configuration"
+
+# TRANSLATOR: RPM or dpkg package database records.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:115
+msgid "Package database"
+msgstr "Base de données des paquets"
+
+# TRANSLATOR: The destination of a symbolic link.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:116
+msgid "Symlink target"
+msgstr "Cible du lien symbolique"
+
+# TRANSLATOR: sysfs = /sys filesystem. "Attributs noyau" = kernel attributes.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:117
+msgid "Kernel attributes (/sys)"
+msgstr "Attributs noyau (/sys)"
+
+# TRANSLATOR: Result from a statfs(2) call — filesystem identity.
+# "statfs" is a syscall name — retained.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:118
+msgid "Filesystem identity"
+msgstr "Identité du système de fichiers"
+
+# ---------------------------------------------------------------------------
+# Help text — Tab 0 (OS Information)
+# TRANSLATOR: Multi-line TUI help overlay with fixed-width ASCII layout.
+# Preserve all leading spaces and ◼ characters exactly.
+# French expansion: approximately 20% longer than English.
+# WIDTH CONSTRAINT: Do not exceed 66 characters per line.
+# Lines exceeding 66 chars are flagged below with WIDTH FLAG.
+# Navigation column alignment uses fixed-width padding — preserve.
+# ---------------------------------------------------------------------------
+
+# TRANSLATOR: Full help text for the OS Information tab.
+# All lines verified at or under 66 characters.
+# Key translations:
+#   "validated, trusted" = "validé et de confiance"
+#   "corroboration" = "corroboration" (same word, fr_CA)
+#   "unique identifier" = "identifiant unique"
+#   "correlating" = "corréler"
+#   "specific boot session" = "session de démarrage spécifique"
+# Navigation block: "switch between tabs" = "changer d'onglet";
+#   "scroll this help" = "défiler cette aide";
+#   "scroll faster" = "défiler plus vite";
+#   "close this help" = "fermer cette aide".
+# All navigation lines preserve column alignment with spaces.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:1488
+msgid ""
+" OS INFORMATION Tab\n"
+"   ◼ Identity fields extracted from the running system.\n"
+"   ◼ These values identify the platform under assessment.\n"
+"\n"
+" WHAT IS SHOWN:\n"
+"   ◼ OS NAME / VERSION\n"
+"         From the validated, trusted /etc/os-release. The distro \n"
+"         name, version ID, and pretty name. Used to verify the \n"
+"         platform is the expected OS and version for this \n"
+"         deployment.\n"
+"\n"
+"   ◼ PLATFORM IDENTITY\n"
+"         Kernel release string (from uname) and architecture.\n"
+"         Cross-checked against /proc/sys/kernel/osrelease for\n"
+"         corroboration — two independent sources must agree.\n"
+"         If they disagree, the Trust / Evidence tab shows the\n"
+"         contradiction and its source.\n"
+"\n"
+"   ◼ BOOT ID\n"
+"         A unique identifier assigned by the kernel at each boot.\n"
+"         Changes every reboot. Useful for correlating system\n"
+"         log entries (journald) to a specific boot session.\n"
+"\n"
+" NAVIGATION:\n"
+"   Tab / Shift-Tab     switch between tabs\n"
+"   j / k  or  ↑ / ↓    scroll this help\n"
+"   PgDn / PgUp         scroll faster\n"
+"   Enter, Esc, or q    close this help"
+msgstr ""
+" Onglet INFORMATIONS SYSTÈME\n"
+"   ◼ Champs d'identité extraits du système en cours d'exécution.\n"
+"   ◼ Ces valeurs identifient la plateforme sous évaluation.\n"
+"\n"
+" CE QUI EST AFFICHÉ :\n"
+"   ◼ NOM / VERSION DU SYSTÈME\n"
+"         Issu du fichier /etc/os-release validé et de confiance.\n"
+"         Le nom de la distribution, l'identifiant de version et\n"
+"         le nom complet. Utilisé pour vérifier que la plateforme\n"
+"         est le système attendu pour ce déploiement.\n"
+"\n"
+"   ◼ IDENTITÉ DE PLATEFORME\n"
+"         Chaîne de publication du noyau (via uname) et architecture.\n"
+"         Recoupée avec /proc/sys/kernel/osrelease pour corroboration\n"
+"         — deux sources indépendantes doivent concorder. En cas de\n"
+"         désaccord, l'onglet Confiance / Preuves indique la\n"
+"         contradiction et sa source.\n"
+"\n"
+"   ◼ IDENTIFIANT DE DÉMARRAGE\n"
+"         Identifiant unique attribué par le noyau à chaque démarrage.\n"
+"         Change à chaque redémarrage. Utile pour corréler les entrées\n"
+"         du journal (journald) à une session de démarrage précise.\n"
+"\n"
+" NAVIGATION :\n"
+"   Tab / Shift-Tab     changer d'onglet\n"
+"   j / k  ou  ↑ / ↓    défiler cette aide\n"
+"   PgDn / PgUp         défiler plus vite\n"
+"   Entrée, Éch ou q    fermer cette aide"
+
+# ---------------------------------------------------------------------------
+# Help text — Tab 1 (Kernel Security)
+# TRANSLATOR: Multi-line TUI help overlay. Preserve ASCII structure exactly.
+# WIDTH CONSTRAINT: Do not exceed 66 characters per line.
+# Lines exceeding 66 chars are flagged with WIDTH FLAG.
+# Contradiction type labels (DRIFT, NOT PERSISTED, UNVERIFIABLE) are
+# retained in English — they are displayed verbatim by the TUI render layer.
+# ---------------------------------------------------------------------------
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:1521
+msgid ""
+" KERNEL SECURITY Tab\n"
+"   ◼ Shows the settings in the currently running kernel.\n"
+"   ◼ These are extracted from /proc and /sys.\n"
+"\n"
+" SUMMARY:\n"
+"   ◼ The running kernel version.\n"
+"   ◼ Baseline compares the running kernel to what this tool\n"
+"     was tested against. If the kernel is a major version\n"
+"     newer, some indicators may not map correctly. Treat\n"
+"     results as advisory and verify critical findings\n"
+"     manually. Check for an updated version of this tool.\n"
+"   ◼ The number of indicators checked and high-level counts.\n"
+"   ◼ Contradictions identifies disagreements between what is\n"
+"     in the kernel and what was configured. This tool reports\n"
+"     the disagreement but cannot determine the cause. Each\n"
+"     type below has a different appropriate response.\n"
+"\n"
+"     ◻ None\n"
+"           Running kernel is consistent with configuration.\n"
+"\n"
+"     ⚠ DRIFT\n"
+"           The hardened setting is in the config file but\n"
+"           the running kernel does not reflect it. The\n"
+"           intended hardening is not active. Check\n"
+"           appropriate system logs to identify the cause.\n"
+"\n"
+"     ⚠ NOT PERSISTED\n"
+"           The running kernel is hardened now but no config\n"
+"           file reflects this. The setting will be lost on\n"
+"           next reboot. Persist per your site configuration\n"
+"           procedures.\n"
+"\n"
+"     ⚠ UNVERIFIABLE\n"
+"           A configuration value exists but the kernel node\n"
+"           could not be read to confirm whether it is active.\n"
+"           This may be normal for this kernel version or may\n"
+"           indicate a permission issue. Verify manually.\n"
+"\n"
+" EVIDENCE CHAIN:\n"
+"   Indicator       ✓ = Hardened (green)\n"
+"                   ✗ = Not hardened (red)\n"
+"                   ? = Unavailable (kernel node unreadable)\n"
+"\n"
+"   Grouped by:\n"
+"\n"
+"   ◼ BOOT INTEGRITY\n"
+"         lockdown, kexec, module sig, modules_disabled\n"
+"\n"
+"   ◼ CRYPTOGRAPHIC POSTURE\n"
+"         FIPS mode and entropy sources\n"
+"\n"
+"   ◼ KERNEL SELF-PROTECTION\n"
+"         ASLR, kptr, BPF, ptrace, perf\n"
+"\n"
+"   ◼ PROCESS ISOLATION\n"
+"         user namespaces, sysrq, suid dumps\n"
+"\n"
+"   ◼ FILESYSTEM HARDENING\n"
+"         symlink and hardlink protections\n"
+"\n"
+"   ◼ MODULE RESTRICTIONS\n"
+"         blacklisted kernel modules\n"
+"\n"
+"   ◼ NETWORK AUDITING\n"
+"         nf_conntrack accounting\n"
+"\n"
+" NOTE: Red rows do not meet the expected hardened value.\n"
+"       Each red row shows a description and recommended\n"
+"       value directly below the indicator name. Scroll\n"
+"       down within the tab to see all indicators.\n"
+"\n"
+" NAVIGATION:\n"
+"   Tab / Shift-Tab     switch between tabs\n"
+"   j / k  or  ↑ / ↓    scroll this help\n"
+"   PgDn / PgUp         scroll faster\n"
+"   Enter, Esc, or q    close this help"
+msgstr ""
+" Onglet SÉCURITÉ NOYAU\n"
+"   ◼ Affiche les réglages du noyau en cours d'exécution.\n"
+"   ◼ Ces valeurs sont extraites de /proc et /sys.\n"
+"\n"
+" RÉSUMÉ :\n"
+"   ◼ La version du noyau actif.\n"
+"   ◼ La référence compare le noyau actif à ce pour quoi cet\n"
+"     outil a été testé. Si le noyau est d'une version majeure\n"
+"     plus récente, certains indicateurs peuvent ne pas être\n"
+"     correctement associés. Traitez les résultats comme\n"
+"     consultatifs et vérifiez manuellement les conclusions\n"
+"     critiques. Vérifiez qu'une version mise à jour de cet\n"
+"     outil est disponible.\n"
+"   ◼ Nombre d'indicateurs vérifiés et totaux généraux.\n"
+"   ◼ Contradictions identifie les désaccords entre ce qui est\n"
+"     dans le noyau et ce qui a été configuré. Cet outil\n"
+"     signale le désaccord mais ne peut en déterminer la cause.\n"
+"     Chaque type ci-dessous requiert une réponse différente.\n"
+"\n"
+"     ◻ None\n"
+"           Le noyau actif est cohérent avec la configuration.\n"
+"\n"
+"     ⚠ DRIFT\n"
+"           Le réglage durci est dans le fichier de config mais\n"
+"           le noyau actif ne le reflète pas. Le durcissement\n"
+"           prévu n'est pas actif. Consultez les journaux système\n"
+"           appropriés pour identifier la cause.\n"
+"\n"
+"     ⚠ NOT PERSISTED\n"
+"           Le noyau actif est durci mais aucun fichier de config\n"
+"           ne le reflète. Ce réglage sera perdu au prochain\n"
+"           redémarrage. Persistez selon vos procédures de site.\n"
+"\n"
+"     ⚠ UNVERIFIABLE\n"
+"           Une valeur de configuration existe mais le nœud noyau\n"
+"           n'a pas pu être lu pour confirmer si elle est active.\n"
+"           Cela peut être normal pour cette version du noyau ou\n"
+"           indiquer un problème de permission. Vérifiez manuellement.\n"
+"\n"
+" CHAÎNE DE PREUVES :\n"
+"   Indicateur      ✓ = Durci (vert)\n"
+"                   ✗ = Non durci (rouge)\n"
+"                   ? = Indisponible (nœud noyau illisible)\n"
+"\n"
+"   Regroupé par :\n"
+"\n"
+"   ◼ INTÉGRITÉ AU DÉMARRAGE\n"
+"         lockdown, kexec, module sig, modules_disabled\n"
+"\n"
+"   ◼ POSTURE CRYPTOGRAPHIQUE\n"
+"         Mode FIPS et sources d'entropie\n"
+"\n"
+"   ◼ AUTO-PROTECTION DU NOYAU\n"
+"         ASLR, kptr, BPF, ptrace, perf\n"
+"\n"
+"   ◼ ISOLATION DES PROCESSUS\n"
+"         espaces de noms utilisateur, sysrq, vidages suid\n"
+"\n"
+"   ◼ DURCISSEMENT DU SYSTÈME DE FICHIERS\n"
+"         protections des liens symboliques et physiques\n"
+"\n"
+"   ◼ RESTRICTIONS DE MODULES\n"
+"         modules noyau en liste de blocage\n"
+"\n"
+"   ◼ AUDIT RÉSEAU\n"
+"         comptabilisation nf_conntrack\n"
+"\n"
+" NOTE : Les lignes rouges ne satisfont pas la valeur durcie\n"
+"        attendue. Chaque ligne rouge affiche une description\n"
+"        et le réglage recommandé directement sous le nom de\n"
+"        l'indicateur. Défilez vers le bas pour tout voir.\n"
+"\n"
+" NAVIGATION :\n"
+"   Tab / Shift-Tab     changer d'onglet\n"
+"   j / k  ou  ↑ / ↓    défiler cette aide\n"
+"   PgDn / PgUp         défiler plus vite\n"
+"   Entrée, Éch ou q    fermer cette aide"
+
+# ---------------------------------------------------------------------------
+# Help text — Tab 2 (Trust / Evidence)
+# TRANSLATOR: Multi-line TUI help overlay with TRUST TIERS table.
+# The TRUST TIERS table uses fixed two-column layout with ⭭ arrow alignment.
+# WIDTH CONSTRAINT: Do not exceed 66 characters per line.
+# Tier names (T0–T4) and verification code names (fd, PROC_MAGIC, etc.)
+# are retained in English as technical identifiers displayed by the TUI.
+# WIDTH FLAGS noted inline below where lines approach the limit.
+# ---------------------------------------------------------------------------
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:1602
+msgid ""
+" ⟬ TRUST / EVIDENCE Tab ⟭\n"
+"\n"
+" TOP — SUMMARY (always visible):\n"
+"   ◼ Trust tier, downgrade reasons, and contradictions.\n"
+"   ◼ 'No downgrade' means all trust checks passed.\n"
+"   ◼ Any contradiction requires manual review. A contradiction\n"
+"     means two independent sources reported different values\n"
+"     for the same fact. Common causes include partial updates\n"
+"     or a package database out of sync. In the worst case it\n"
+"     may indicate tampering with OS identity files.\n"
+"   ◼ If you cannot explain the contradiction, follow your\n"
+"     site's incident response procedures before continuing\n"
+"     assessment work on this system.\n"
+"   ◼ These are OS detection contradictions (identity sources\n"
+"     disagreeing). They are separate from kernel/config\n"
+"     contradictions shown on the Kernel Security tab.\n"
+"\n"
+" TRUST TIERS:\n"
+"   Each tier includes all guarantees of the tiers below it.\n"
+"\n"
+"   T0  Untrusted          No reliable sources found.\n"
+"    ⭭                     Do not rely on any value shown.\n"
+"\n"
+"   T1  Kernel Anchored    At least one kernel source confirmed.\n"
+"    ⭭                     Basic identity only — treat with caution.\n"
+"\n"
+"   T2  Env Anchored       Environment sources corroborate kernel.\n"
+"                          Consistent across /proc, /sys, and /etc.\n"
+"    ⭭                     Acceptable for routine operations.\n"
+"\n"
+"   T3  Platform Verified  All expected sources agree.\n"
+"    ⭭                     Normal operating posture.\n"
+"\n"
+"   T4  Integrity Anchored All sources agree + kernel filesystem\n"
+"                          identity verified. Highest confidence.\n"
+"\n"
+" BOTTOM — EVIDENCE CHAIN (scrollable):\n"
+"   ◼ Actual files and kernel nodes read during detection.\n"
+"   ◼ ✓ = parsed successfully   ✗ = read or parse failed\n"
+"\n"
+" EVIDENCE TYPES:\n"
+"   Kernel runtime (/proc)    from /proc (procfs)\n"
+"   Kernel attributes (/sys)  from /sys (sysfs)\n"
+"   Configuration file        from /etc or filesystem\n"
+"   Package database          from RPM/dpkg package DB\n"
+"   Symlink target            symlink destination resolved\n"
+"   Filesystem identity       from statfs() — kernel mount type check\n"
+"\n"
+" VERIFICATION CODES:\n"
+"   These codes appear on evidence lines that passed an extra\n"
+"   check against path spoofing. They confirm the tool read\n"
+"   the real kernel object, not a substitute at the same path.\n"
+"   Lines without a code were read by path only — this is\n"
+"   normal for configuration files and package databases.\n"
+"\n"
+"   fd          Verified using a secure file descriptor (FD),\n"
+"               confirming the kernel object directly rather\n"
+"               than relying on the file path. Prevents\n"
+"               symlink, bind-mount, and TOCTOU substitution.\n"
+"\n"
+"   PROC_MAGIC  The kernel verified this mount is the real\n"
+"               /proc filesystem by checking its built-in\n"
+"               type identifier ('magic number'). Confirms\n"
+"               the mount has not been spoofed or substituted.\n"
+"\n"
+"   SYS_MAGIC   Same kernel 'magic number' check applied to\n"
+"               /sys (sysfs). Ensures we are reading real\n"
+"               kernel attributes, not a crafted overlay.\n"
+"\n"
+"   statfs      Filesystem identity confirmed via statfs() —\n"
+"               the kernel verified the mount type matches\n"
+"               expectations at the time of the read.\n"
+"\n"
+" NAVIGATION:\n"
+"   Tab / Shift-Tab     switch between tabs\n"
+"   j / k  or  ↑ / ↓    scroll this help\n"
+"   PgDn / PgUp         scroll faster\n"
+"   Enter, Esc, or q    close this help"
+msgstr ""
+" ⟬ Onglet CONFIANCE / PREUVES ⟭\n"
+"\n"
+" HAUT — RÉSUMÉ (toujours visible) :\n"
+"   ◼ Palier de confiance, motifs de déclassement et contradictions.\n"
+"   ◼ « Aucun déclassement » signifie que tous les contrôles ont réussi.\n"
+"   ◼ Toute contradiction nécessite une révision manuelle. Une\n"
+"     contradiction signifie que deux sources indépendantes ont\n"
+"     rapporté des valeurs différentes pour le même fait. Les causes\n"
+"     courantes incluent des mises à jour partielles ou une base de\n"
+"     données de paquets non synchronisée. Dans le pire des cas,\n"
+"     cela peut indiquer une falsification des fichiers d'identité.\n"
+"   ◼ Si vous ne pouvez pas expliquer la contradiction, suivez les\n"
+"     procédures de réponse aux incidents de votre site avant de\n"
+"     poursuivre l'évaluation sur ce système.\n"
+"   ◼ Il s'agit de contradictions de détection OS (sources d'identité\n"
+"     en désaccord). Elles sont distinctes des contradictions noyau/\n"
+"     config affichées dans l'onglet Sécurité noyau.\n"
+"\n"
+" PALIERS DE CONFIANCE :\n"
+"   Chaque palier inclut toutes les garanties des paliers inférieurs.\n"
+"\n"
+"   T0  Untrusted          Aucune source fiable trouvée.\n"
+"    ⭭                     Ne vous fiez à aucune valeur affichée.\n"
+"\n"
+"   T1  Kernel Anchored    Au moins une source noyau confirmée.\n"
+"    ⭭                     Identité de base seulement — prudence.\n"
+"\n"
+"   T2  Env Anchored       Sources d'environnement corroborent le noyau.\n"
+"                          Cohérent entre /proc, /sys et /etc.\n"
+"    ⭭                     Acceptable pour les opérations courantes.\n"
+"\n"
+"   T3  Platform Verified  Toutes les sources attendues concordent.\n"
+"    ⭭                     Posture opérationnelle normale.\n"
+"\n"
+"   T4  Integrity Anchored Toutes les sources concordent + identité\n"
+"                          du système de fichiers noyau vérifiée.\n"
+"\n"
+" BAS — CHAÎNE DE PREUVES (défilable) :\n"
+"   ◼ Fichiers et nœuds noyau lus lors de la détection.\n"
+"   ◼ ✓ = analysé avec succès   ✗ = lecture ou analyse échouée\n"
+"\n"
+" TYPES DE PREUVES :\n"
+"   Exécution noyau (/proc)   depuis /proc (procfs)\n"
+"   Attributs noyau (/sys)    depuis /sys (sysfs)\n"
+"   Fichier de configuration  depuis /etc ou le système de fichiers\n"
+"   Base de données paquets   depuis la BD RPM/dpkg\n"
+"   Cible du lien symbolique  destination du lien résolue\n"
+"   Identité système fichiers via statfs() — vérif. type de montage\n"
+"\n"
+" CODES DE VÉRIFICATION :\n"
+"   Ces codes apparaissent sur les lignes de preuves ayant passé\n"
+"   un contrôle supplémentaire contre l'usurpation de chemin. Ils\n"
+"   confirment que l'outil a lu le vrai objet noyau, non un\n"
+"   substitut au même chemin. Les lignes sans code ont été lues par\n"
+"   chemin uniquement — normal pour les fichiers de config et BD.\n"
+"\n"
+"   fd          Vérifié via un descripteur de fichier sécurisé (DF),\n"
+"               confirmant l'objet noyau directement plutôt que\n"
+"               par le chemin. Prévient les substitutions par lien\n"
+"               symbolique, montage lié et TOCTOU.\n"
+"\n"
+"   PROC_MAGIC  Le noyau a vérifié que ce montage est le vrai\n"
+"               système de fichiers /proc via son identifiant de\n"
+"               type intégré (« nombre magique »). Confirme que\n"
+"               le montage n'a pas été usurpé ou substitué.\n"
+"\n"
+"   SYS_MAGIC   Même vérification du « nombre magique » appliquée\n"
+"               à /sys (sysfs). Garantit la lecture des vrais\n"
+"               attributs noyau, non d'une surcouche artificielle.\n"
+"\n"
+"   statfs      Identité du système de fichiers confirmée via\n"
+"               statfs() — le noyau a vérifié que le type de\n"
+"               montage correspond aux attentes lors de la lecture.\n"
+"\n"
+" NAVIGATION :\n"
+"   Tab / Shift-Tab     changer d'onglet\n"
+"   j / k  ou  ↑ / ↓    défiler cette aide\n"
+"   PgDn / PgUp         défiler plus vite\n"
+"   Entrée, Éch ou q    fermer cette aide"
+
+# ---------------------------------------------------------------------------
+# Help text — fallback navigation
+# ---------------------------------------------------------------------------
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:1684
+msgid ""
+" NAVIGATION:\n"
+"   Tab / Shift-Tab     switch between tabs\n"
+"   j / k  or  ↑ / ↓   scroll this help\n"
+"   PgDn / PgUp         scroll faster\n"
+"   Enter, Esc, or q    close this help"
+msgstr ""
+" NAVIGATION :\n"
+"   Tab / Shift-Tab     changer d'onglet\n"
+"   j / k  ou  ↑ / ↓   défiler cette aide\n"
+"   PgDn / PgUp         défiler plus vite\n"
+"   Entrée, Éch ou q    fermer cette aide"
+
+# ---------------------------------------------------------------------------
+# umrs-ui library strings — displayed within the umrs-uname binary context
+# Per UMRS text-domain strategy, library strings rendered by a binary are
+# included in that binary's domain. Source: umrs-ui/src/data_panel.rs
+# ---------------------------------------------------------------------------
+
+# TRANSLATOR: Label for the recommended hardening value shown below an
+# unhardened indicator. Appears as "[ Recommandé : <value> ]" in the TUI.
+# Corpus: Termium Plus attests "recommandé(e)" as the fr_CA past-participle
+# adjective form for "recommended". Masculine form used here to agree with
+# "réglage" (setting, masculine noun) implied by the context.
+# Visual check: single-line display string.
+# "Recommended" = 11 chars; "Recommandé" = 10 chars — within 150% rule.
+#: components/rusty-gadgets/umrs-ui/src/data_panel.rs:693
+msgid "Recommended"
+msgstr "Recommandé"
+
+# ---------------------------------------------------------------------------
+# AuditCardApp trait strings (report_name / report_subject)
+# DEVELOPER NOTE: These require the AuditCardApp trait to return String instead
+# of &'static str for report_name() and report_subject(). See rescan report.
+# ---------------------------------------------------------------------------
+
+# TRANSLATOR: The report name shown in the TUI header combined line.
+# "Détection OS" follows the same pattern as "Audit de détection OS" (the
+# card title). "OS" is retained as an acronym per OTAN/NATO convention.
+# No corpus match; UMRS decision.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:321
+msgid "OS Detection"
+msgstr "Détection OS"
+
+# TRANSLATOR: The report subject shown in the TUI header combined line
+# alongside report_name(). "Identité et intégrité de plateforme" follows
+# ANSSI/OTAN terminology for platform identity verification assessments.
+# No corpus match; UMRS decision.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:325
+msgid "Platform Identity and Integrity"
+msgstr "Identité et intégrité de plateforme"
+
+# ---------------------------------------------------------------------------
+# data_rows() fallback (invalid tab index)
+# ---------------------------------------------------------------------------
+
+# TRANSLATOR: Fallback row label when an out-of-range tab index is requested.
+# Should never appear in normal operation. "aucune donnée" is the standard
+# fr_CA rendering for "no data" in a status/results context.
+# No corpus match; UMRS decision.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:347
+msgid "(no data)"
+msgstr "(aucune donnée)"
+
+# TRANSLATOR: Fallback row value for an invalid tab index. Technical
+# diagnostic string. "invalide" is corpus-attested in this project.
+# No corpus match in GNU corpus; UMRS decision.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:347
+msgid "(invalid tab index)"
+msgstr "(index d'onglet invalide)"
+
+# ---------------------------------------------------------------------------
+# Technical field name keys (os-release and boot_id)
+# DEVELOPER NOTE: These are standardized file format field names. The French
+# msgstr is identical to the English msgid — they are retained as technical
+# identifiers. Wrap with i18n::tr() so the strings are extractable and
+# visible to translators, even though no localization occurs.
+# ---------------------------------------------------------------------------
+
+# TRANSLATOR: Row key shown when /etc/os-release cannot be read. "os-release"
+# is a filename — it is a technical identifier and must not be translated.
+# msgstr is intentionally identical to msgid.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:391
+msgid "os-release"
+msgstr "os-release"
+
+# TRANSLATOR: Row key for the kernel boot identifier field. "boot_id" is a
+# kernel procfs field name — it is a technical identifier and must not be
+# translated. msgstr is intentionally identical to msgid.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:438
+msgid "boot_id"
+msgstr "boot_id"
+
+# ---------------------------------------------------------------------------
+# Catalog baseline format string templates
+# DEVELOPER NOTE: These msgids are template strings containing {r} and {b}
+# as named placeholders for runtime kernel version values. The developer must
+# refactor catalog_baseline_row() to use i18n::tr(template).replace("{r}", ...)
+# .replace("{b}", ...) pattern. See rescan report items 12–13.
+# ---------------------------------------------------------------------------
+
+# TRANSLATOR: Displayed when the running kernel version is newer than the
+# catalog target version. {r} = running kernel version, {b} = catalog baseline
+# version. The em-dash (—) is U+2014. Word order preserved in French.
+# WIDTH: longest line fits within normal display constraints.
+# No corpus match; UMRS decision.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:692
+#, fuzzy
+msgid "{r} is newer than catalog baseline ({b}) — some indicators may have changed"
+msgstr "{r} est plus récent que la base de référence du catalogue ({b}) — certains indicateurs ont peut-être changé"
+
+# TRANSLATOR: Displayed when the running kernel version is older than the
+# catalog target version. Rare case. {r} = running kernel version,
+# {b} = catalog baseline version. "mettez à jour votre noyau" = update your
+# kernel (imperative, formal register for operator-facing text).
+# No corpus match; UMRS decision.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:705
+#, fuzzy
+msgid "{r} is older than catalog baseline ({b}) — update your kernel"
+msgstr "{r} est plus ancien que la base de référence du catalogue ({b}) — mettez à jour votre noyau"
+
+# ---------------------------------------------------------------------------
+# Indicators summary format string templates
+# DEVELOPER NOTE: These msgids are template strings containing {readable},
+# {hardened}, {not_hardened}, and {pct} as named placeholders for runtime
+# counts. The developer must refactor build_kernel_security_summary_rows()
+# to use i18n::tr(template).replace("{readable}", ...) etc. See items 14–15.
+# ---------------------------------------------------------------------------
+
+# TRANSLATOR: Shown in the Kernel Security pinned summary when all readable
+# indicators meet the hardened baseline. {readable} = count of readable
+# indicators. The ✓ (U+2713) symbol is a literal character. "lisibles" is
+# the fr_CA plural for "readable" (masculine plural — agree with "indicateurs").
+# "tous durcis" = all hardened (masculine plural agreement).
+# No corpus match for this phrase; UMRS decision.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:788
+#, fuzzy
+msgid "{readable} readable — all hardened ✓"
+msgstr "{readable} lisibles — tous durcis ✓"
+
+# TRANSLATOR: Shown when some indicators do not meet the hardened baseline.
+# {readable} = total readable count, {hardened} = hardened count,
+# {not_hardened} = not-hardened count, {pct} = percentage not hardened.
+# All four placeholders must appear in the French string unchanged.
+# "lisibles" / "durcis" / "non durcis" are masculine plural to agree with
+# "indicateurs". The ({pct}%) parenthetical is retained as-is.
+# No corpus match; UMRS decision.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:799
+#, fuzzy
+msgid "{readable} readable — {hardened} hardened, {not_hardened} not hardened ({pct}%)"
+msgstr "{readable} lisibles — {hardened} durcis, {not_hardened} non durcis ({pct}%)"
+
+# ---------------------------------------------------------------------------
+# Header labels (from umrs-ui/src/header.rs)
+# These labels appear in the two-column audit card header panel.
+# ---------------------------------------------------------------------------
+
+#: components/rusty-gadgets/umrs-ui/src/header.rs
+msgid "Assessment"
+msgstr "Évaluation"
+
+#: components/rusty-gadgets/umrs-ui/src/header.rs
+msgid "Host"
+msgstr "Hôte"
+
+#: components/rusty-gadgets/umrs-ui/src/header.rs
+msgid "Tool"
+msgstr "Outil"
+
+#: components/rusty-gadgets/umrs-ui/src/header.rs
+msgid "OS"
+msgstr "SE"
+
+#: components/rusty-gadgets/umrs-ui/src/header.rs
+msgid "Assessed"
+msgstr "Évalué"
+
+#: components/rusty-gadgets/umrs-ui/src/header.rs
+msgid "SELinux"
+msgstr "SELinux"
+
+#: components/rusty-gadgets/umrs-ui/src/header.rs
+msgid "FIPS"
+msgstr "FIPS"

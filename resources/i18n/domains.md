@@ -12,6 +12,7 @@ is onboarded to the i18n pipeline.
 | `umrs-ls` | binary | `umrs-ls` | `resources/i18n/umrs-ls/` | First binary crate in pipeline; uses `gettextrs` |
 | `umrs-core` | library | `umrs-core` | `resources/i18n/umrs-core/` | Shared formatting, i18n, timing utilities; uses `gettextrs` |
 | `umrs-platform` | library | `umrs-platform` | `resources/i18n/umrs-platform/` | Kernel attribute access and OS detection pipeline; uses `gettextrs` |
+| `umrs-uname` | binary | `umrs-uname` | `resources/i18n/umrs-uname/` | OS detection audit card TUI; binds `umrs-uname` domain at runtime |
 
 ---
 

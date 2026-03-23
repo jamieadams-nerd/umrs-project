@@ -5,6 +5,10 @@
 //! Verifies that `annotate_live_value`, `annotate_integer`, and
 //! `annotate_signed_integer` produce the expected operator-facing strings for
 //! known indicator/value combinations.
+//!
+//! In the test environment no gettext catalog is initialized, so `i18n::tr()`
+//! falls back to returning the original msgid unchanged. The expected strings
+//! in these tests therefore match the English msgid literals in display.rs.
 
 use umrs_platform::posture::{
     annotate_integer, annotate_live_value, annotate_signed_integer,
@@ -19,15 +23,15 @@ use umrs_platform::posture::{
 fn annotate_integer_kptr_restrict_levels() {
     assert_eq!(
         annotate_integer(IndicatorId::KptrRestrict, 0),
-        "0 (pointers visible)"
+        "0 (Pointers Visible)"
     );
     assert_eq!(
         annotate_integer(IndicatorId::KptrRestrict, 1),
-        "1 (hidden from unprivileged)"
+        "1 (Hidden from Unprivileged)"
     );
     assert_eq!(
         annotate_integer(IndicatorId::KptrRestrict, 2),
-        "2 (hidden from all users)"
+        "2 (Hidden from All Users)"
     );
 }
 
@@ -41,15 +45,15 @@ fn annotate_integer_kptr_restrict_unknown_value() {
 fn annotate_integer_randomize_va_space_levels() {
     assert_eq!(
         annotate_integer(IndicatorId::RandomizeVaSpace, 0),
-        "0 (ASLR disabled)"
+        "0 (ASLR Disabled)"
     );
     assert_eq!(
         annotate_integer(IndicatorId::RandomizeVaSpace, 1),
-        "1 (partial randomization)"
+        "1 (Partial Randomization)"
     );
     assert_eq!(
         annotate_integer(IndicatorId::RandomizeVaSpace, 2),
-        "2 (full ASLR)"
+        "2 (Full ASLR)"
     );
 }
 
@@ -57,11 +61,11 @@ fn annotate_integer_randomize_va_space_levels() {
 fn annotate_integer_unprivileged_bpf() {
     assert_eq!(
         annotate_integer(IndicatorId::UnprivBpfDisabled, 0),
-        "0 (unprivileged BPF allowed)"
+        "0 (Unprivileged BPF Allowed)"
     );
     assert_eq!(
         annotate_integer(IndicatorId::UnprivBpfDisabled, 1),
-        "1 (restricted to CAP_BPF)"
+        "1 (Restricted to CAP_BPF)"
     );
 }
 
@@ -69,19 +73,19 @@ fn annotate_integer_unprivileged_bpf() {
 fn annotate_integer_yama_ptrace_scope_all_levels() {
     assert_eq!(
         annotate_integer(IndicatorId::YamaPtraceScope, 0),
-        "0 (unrestricted)"
+        "0 (Unrestricted)"
     );
     assert_eq!(
         annotate_integer(IndicatorId::YamaPtraceScope, 1),
-        "1 (children only)"
+        "1 (Children Only)"
     );
     assert_eq!(
         annotate_integer(IndicatorId::YamaPtraceScope, 2),
-        "2 (admin only)"
+        "2 (Admin Only)"
     );
     assert_eq!(
         annotate_integer(IndicatorId::YamaPtraceScope, 3),
-        "3 (no attach)"
+        "3 (No Attach)"
     );
 }
 
@@ -89,11 +93,11 @@ fn annotate_integer_yama_ptrace_scope_all_levels() {
 fn annotate_integer_dmesg_restrict() {
     assert_eq!(
         annotate_integer(IndicatorId::DmesgRestrict, 0),
-        "0 (world-readable)"
+        "0 (World-Readable)"
     );
     assert_eq!(
         annotate_integer(IndicatorId::DmesgRestrict, 1),
-        "1 (restricted)"
+        "1 (Restricted)"
     );
 }
 
@@ -101,11 +105,11 @@ fn annotate_integer_dmesg_restrict() {
 fn annotate_integer_modules_disabled() {
     assert_eq!(
         annotate_integer(IndicatorId::ModulesDisabled, 0),
-        "0 (loading allowed)"
+        "0 (Loading Allowed)"
     );
     assert_eq!(
         annotate_integer(IndicatorId::ModulesDisabled, 1),
-        "1 (loading locked)"
+        "1 (Loading Locked)"
     );
 }
 
@@ -113,11 +117,11 @@ fn annotate_integer_modules_disabled() {
 fn annotate_integer_unpriv_userns_clone() {
     assert_eq!(
         annotate_integer(IndicatorId::UnprivUsernsClone, 0),
-        "0 (restricted)"
+        "0 (Restricted)"
     );
     assert_eq!(
         annotate_integer(IndicatorId::UnprivUsernsClone, 1),
-        "1 (allowed)"
+        "1 (Allowed)"
     );
 }
 
@@ -125,11 +129,11 @@ fn annotate_integer_unpriv_userns_clone() {
 fn annotate_integer_sysrq() {
     assert_eq!(
         annotate_integer(IndicatorId::Sysrq, 0),
-        "0 (fully disabled)"
+        "0 (Fully Disabled)"
     );
     assert_eq!(
         annotate_integer(IndicatorId::Sysrq, 1),
-        "1 (all functions enabled)"
+        "1 (All Functions Enabled)"
     );
     // Bitmask values not in the table return bare decimal.
     assert_eq!(annotate_integer(IndicatorId::Sysrq, 176), "176");
@@ -139,15 +143,15 @@ fn annotate_integer_sysrq() {
 fn annotate_integer_suid_dumpable() {
     assert_eq!(
         annotate_integer(IndicatorId::SuidDumpable, 0),
-        "0 (no core dumps)"
+        "0 (No Core Dumps)"
     );
     assert_eq!(
         annotate_integer(IndicatorId::SuidDumpable, 1),
-        "1 (core dumps enabled)"
+        "1 (Core Dumps Enabled)"
     );
     assert_eq!(
         annotate_integer(IndicatorId::SuidDumpable, 2),
-        "2 (readable by root only)"
+        "2 (Readable by Root Only)"
     );
 }
 
@@ -155,19 +159,19 @@ fn annotate_integer_suid_dumpable() {
 fn annotate_integer_protected_symlinks_and_hardlinks() {
     assert_eq!(
         annotate_integer(IndicatorId::ProtectedSymlinks, 0),
-        "0 (not protected)"
+        "0 (Not Protected)"
     );
     assert_eq!(
         annotate_integer(IndicatorId::ProtectedSymlinks, 1),
-        "1 (protected)"
+        "1 (Protected)"
     );
     assert_eq!(
         annotate_integer(IndicatorId::ProtectedHardlinks, 0),
-        "0 (not protected)"
+        "0 (Not Protected)"
     );
     assert_eq!(
         annotate_integer(IndicatorId::ProtectedHardlinks, 1),
-        "1 (protected)"
+        "1 (Protected)"
     );
 }
 
@@ -175,19 +179,19 @@ fn annotate_integer_protected_symlinks_and_hardlinks() {
 fn annotate_integer_protected_fifos_and_regular() {
     assert_eq!(
         annotate_integer(IndicatorId::ProtectedFifos, 0),
-        "0 (not protected)"
+        "0 (Not Protected)"
     );
     assert_eq!(
         annotate_integer(IndicatorId::ProtectedFifos, 1),
-        "1 (partial protection)"
+        "1 (Partial Protection)"
     );
     assert_eq!(
         annotate_integer(IndicatorId::ProtectedFifos, 2),
-        "2 (fully protected)"
+        "2 (Fully Protected)"
     );
     assert_eq!(
         annotate_integer(IndicatorId::ProtectedRegular, 2),
-        "2 (fully protected)"
+        "2 (Fully Protected)"
     );
 }
 
@@ -204,11 +208,11 @@ fn annotate_integer_fips_enabled() {
 fn annotate_integer_nf_conntrack_acct() {
     assert_eq!(
         annotate_integer(IndicatorId::NfConntrackAcct, 0),
-        "0 (accounting off)"
+        "0 (Accounting Off)"
     );
     assert_eq!(
         annotate_integer(IndicatorId::NfConntrackAcct, 1),
-        "1 (accounting on)"
+        "1 (Accounting On)"
     );
 }
 
@@ -228,30 +232,30 @@ fn annotate_signed_integer_perf_event_paranoid_all_ranges() {
     // Negative values — fully open
     assert_eq!(
         annotate_signed_integer(IndicatorId::PerfEventParanoid, -1),
-        "-1 (fully open)"
+        "-1 (Fully Open)"
     );
     assert_eq!(
         annotate_signed_integer(IndicatorId::PerfEventParanoid, i64::MIN),
-        format!("{} (fully open)", i64::MIN)
+        format!("{} (Fully Open)", i64::MIN)
     );
     // Zero — kernel profiling allowed
     assert_eq!(
         annotate_signed_integer(IndicatorId::PerfEventParanoid, 0),
-        "0 (kernel profiling allowed)"
+        "0 (Kernel Profiling Allowed)"
     );
     // One — user profiling allowed
     assert_eq!(
         annotate_signed_integer(IndicatorId::PerfEventParanoid, 1),
-        "1 (user profiling allowed)"
+        "1 (User Profiling Allowed)"
     );
     // Two and above — restricted
     assert_eq!(
         annotate_signed_integer(IndicatorId::PerfEventParanoid, 2),
-        "2 (restricted)"
+        "2 (Restricted)"
     );
     assert_eq!(
         annotate_signed_integer(IndicatorId::PerfEventParanoid, 99),
-        "99 (restricted)"
+        "99 (Restricted)"
     );
 }
 
@@ -269,7 +273,7 @@ fn annotate_signed_integer_unknown_indicator_passes_through() {
 fn annotate_live_value_bool_true_is_enabled() {
     assert_eq!(
         annotate_live_value(IndicatorId::FipsEnabled, &LiveValue::Bool(true)),
-        "enabled"
+        "Enabled"
     );
 }
 
@@ -277,7 +281,7 @@ fn annotate_live_value_bool_true_is_enabled() {
 fn annotate_live_value_bool_false_is_disabled() {
     assert_eq!(
         annotate_live_value(IndicatorId::FipsEnabled, &LiveValue::Bool(false)),
-        "disabled"
+        "Disabled"
     );
 }
 
@@ -304,7 +308,7 @@ fn annotate_live_value_integer_routes_to_annotate_integer() {
     let lv = LiveValue::Integer(2);
     assert_eq!(
         annotate_live_value(IndicatorId::KptrRestrict, &lv),
-        "2 (hidden from all users)"
+        "2 (Hidden from All Users)"
     );
 }
 
@@ -313,6 +317,6 @@ fn annotate_live_value_signed_integer_routes_to_annotate_signed_integer() {
     let lv = LiveValue::SignedInteger(-1);
     assert_eq!(
         annotate_live_value(IndicatorId::PerfEventParanoid, &lv),
-        "-1 (fully open)"
+        "-1 (Fully Open)"
     );
 }

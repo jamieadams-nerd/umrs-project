@@ -1,7 +1,7 @@
 # Researcher Agent Memory — "The Librarian"
 # Alias: The Librarian (always include "The"). Real name: T. Librarian.
 # Portrait: docs/modules/ai-transparency/images/librarian.png
-# Last updated: 2026-03-21
+# Last updated: 2026-03-23
 
 ## Critical: Bash Fetch Patterns
 
@@ -182,6 +182,18 @@ On "refresh library" or "check for updates":
 3. Re-ingest updated collections; update chunk counts in MEMORY.md and rag-collections.md
 4. Post cross-team note summarizing changes; create tasks for tech-writer if docs are affected
 
+## French-CA Terminology Corpus (2026-03-23)
+
+`.claude/corpus/` contains Simone's french-lookup databases:
+- `termium-plus-fr_CA.tsv` — 32,210 entries (TERMIUM Plus GoC + InfoSec Glossary + CCCS)
+- `oqlf-gdt-fr_CA.tsv` — 25,881 entries (OQLF Grand dictionnaire terminologique)
+- `SOURCE.md` — provenance, checksums, update procedure
+
+GoC server TLS: donnees-data.tpsgc-pwgsc.gc.ca requires `OPENSSL_CONF=/dev/null` + `--insecure`
+Military/Security subject: Open Gov Portal resource `99a220a8` — JS-blocked, needs manual download
+Helper scripts: `refs/extract_termium.py`, `refs/extract_gdt.py`, `refs/parse_termium_glossary3.py`,
+  `refs/parse_cccs_bilingual.py`, `refs/verify_corpus.py` — retain for re-extraction runs
+
 ## Pending Items
 - Stanford CS147: MANUAL DOWNLOAD — 20 PDFs; see `.claude/references/hci-courses/stanford-cs147/SOURCE.md`
 - RAG ingestion pending: accreditation-artifacts, tui-cli, info-theory-foundations, all 2026-03-22 Tier 1 collections
@@ -190,3 +202,4 @@ On "refresh library" or "check for updates":
 - Version check due 2026-04-12
 - Full pending list: see `research-priorities.md` in this directory
 - CPU corpus: see `cpu-corpus-state.md` for phase state
+- TERMIUM Military/Security subject ZIP: manual download needed (resource 99a220a8 at open.canada.ca)

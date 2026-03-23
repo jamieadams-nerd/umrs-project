@@ -68,3 +68,103 @@ When a term has no established francophone equivalent, retain the English term a
 | security marking (column header) | MARQUAGE | UMRS decision | OTAN/NATO and ANSSI francophone term for classification marking; preferred over "étiquette" for the human-readable marking string column; no corpus match |
 | sensitivity label | étiquette de sensibilité | UMRS decision | |
 | restricted (placeholder) | restreint | corpus:bash | bash corpus: msgid "restricted" → msgstr "restreint"; applied in angle-bracket placeholder format as <restreint> |
+| hard gate (trust pipeline) | verrou dur | UMRS decision | No corpus match; a mandatory, non-bypassable check in the trust pipeline; "verrou" (lock/gate) is the ANSSI/OTAN term for a security barrier |
+| tampering | falsification | UMRS decision | No corpus match; "falsification" is the ANSSI/OTAN fr_CA term for tampering with security-relevant data |
+| trust tier | palier de confiance | UMRS decision | No corpus match; "palier" = a defined level in a graded scale; standard ANSSI/OTAN security assessment vocabulary |
+| downgrade (trust) | déclassement | UMRS decision | No corpus match; ANSSI fr_CA term for a trust level reduction; distinct from "déclassification" (classification downgrade) |
+| contradiction (evidence) | contradiction | UMRS decision | Direct cognate; used when two independent evidence sources disagree on a fact |
+| hardening / to harden | durcissement / durcir | UMRS decision | No corpus match; ANSSI/OTAN fr_CA standard term for security hardening of system settings |
+| kernel anchor | ancrage noyau | UMRS decision | UMRS-specific term; "ancrage" = anchoring/grounding to a known-good reference point |
+| indicator (posture) | indicateur | UMRS decision | No corpus match; "indicateur" is the fr_CA standard for a measured posture signal |
+| posture | posture | UMRS decision | Direct cognate; retained as technical term in ANSSI/OTAN security assessment contexts |
+| drift (configuration) | dérive | UMRS decision | No corpus match; ANSSI fr_CA term for configuration drift (live state diverging from persisted config) |
+| core dump | vidage mémoire | UMRS decision | No corpus match; standard POSIX/Linux fr_CA term for a process memory dump file |
+| world-readable | accessible à tous | UMRS decision | No corpus match; fr_CA rendering of the Unix "world-readable" permission idiom |
+| accounting (netfilter) | comptabilisation | UMRS decision | No corpus match; per-connection byte/packet counter feature in netfilter; "comptabilisation" is the standard fr_CA infrastructure term |
+| profiling (perf) | profilage | UMRS decision | No corpus match; "profilage" is the standard fr_CA computing term for performance profiling |
+| digest (cryptographic) | condensé | UMRS decision | No corpus match; ANSSI/ISO fr_CA term for a cryptographic hash/digest value |
+| Not Present (absent sentinel) | Non présent | UMRS decision | Used when a cmdline token or blacklist entry is intentionally absent; distinct from "unavailable" (read failure) |
+| unavailable (read failure) | indisponible | UMRS decision | Used when a data field could not be read or is absent from the detection result |
+| not available (absent field) | non disponible | UMRS decision | Used as a row value when an optional field (e.g., VERSION_ID) is absent from os-release |
+
+---
+
+## OS Detection and Trust Terms (umrs-uname)
+
+| English | French (fr_CA) | Source | Notes |
+|---|---|---|---|
+| OS Information (tab) | Informations système | UMRS decision | No corpus match; standard fr_CA for a system identity/status data panel |
+| Kernel Security (tab) | Sécurité noyau | UMRS decision | No corpus match; ANSSI/OTAN fr_CA rendering of "kernel security" |
+| Trust / Evidence (tab) | Confiance / Preuves | UMRS decision | No corpus match; ANSSI fr_CA for the trust classification and evidence chain tab |
+| OS Detection Audit | Audit de détection OS | UMRS decision | "Audit de détection" follows ANSSI/OTAN audit report title conventions |
+| Label Trust | Confiance | UMRS decision | Shortened 2026-03-23 from "Confiance de l'étiquette" (25 chars) after live TUI testing showed column jamming. "Confiance" (9 chars) is unambiguous: value column carries full classification. |
+| Trust Tier | Palier | UMRS decision | Shortened 2026-03-23 from "Palier de confiance" (19 chars). "Palier" alone is unambiguous: value column carries the full tier label (e.g., T4 — Ancré à l'intégrité). |
+| Downgrade Reasons | Motifs | UMRS decision | Shortened 2026-03-23 from "Motifs de déclassement" (22 chars). "Motifs" (6 chars) is unambiguous: value is either a count or the "no downgrade" positive message. |
+| Evidence Records | Preuves | UMRS decision | Shortened 2026-03-23 from "Enregistrements de preuves" (26 chars). "Preuves" (7 chars) is unambiguous: value is always an integer count. |
+| Catalog Baseline | Base de référence du catalogue | UMRS decision | No corpus match; "base de référence" is the ANSSI/OTAN fr_CA for a security baseline |
+| Probe Used | Sonde utilisée | UMRS decision | No corpus match; "sonde" = software detection probe |
+| Platform Facts | Faits de plateforme | UMRS decision | No corpus match; the count of independent package substrate facts confirmed |
+| No Assessment | Sans évaluation | UMRS decision | No corpus match; indicators that could not be assessed because the kernel node was unreadable |
+| BOOT INTEGRITY (group) | INTÉGRITÉ AU DÉMARRAGE | UMRS decision | No corpus match; ANSSI fr_CA standard for boot-time integrity controls |
+| CRYPTOGRAPHIC POSTURE (group) | POSTURE CRYPTOGRAPHIQUE | UMRS decision | Direct compound; "posture cryptographique" used in ANSSI/OTAN assessment contexts |
+| KERNEL SELF-PROTECTION (group) | AUTO-PROTECTION DU NOYAU | UMRS decision | No corpus match; "auto-protection" is the ANSSI fr_CA rendering of self-protection mechanisms |
+| PROCESS ISOLATION (group) | ISOLATION DES PROCESSUS | UMRS decision | No corpus match; standard fr_CA for OS process isolation controls |
+| FILESYSTEM HARDENING (group) | DURCISSEMENT DU SYSTÈME DE FICHIERS | UMRS decision | See "hardening" entry; longer than English — FLAG for developer width review |
+| MODULE RESTRICTIONS (group) | RESTRICTIONS DE MODULES | UMRS decision | No corpus match; standard fr_CA for kernel module loading restrictions |
+| NETWORK AUDITING (group) | AUDIT RÉSEAU | UMRS decision | No corpus match; ANSSI fr_CA for network traffic auditing controls |
+| Configured: (prefix) | Configuré : | UMRS decision | fr_CA typography: non-breaking space before colon (U+00A0) required |
+| from (source file prefix) | source | UMRS decision | In context: "Configuré : <value> (source <file>)"; "source" is clearer than "depuis" for a file attribution |
+| OS Detection (report name) | Détection OS | UMRS decision | No corpus match; TUI header report name; "OS" retained as OTAN/NATO acronym |
+| Platform Identity and Integrity | Identité et intégrité de plateforme | UMRS decision | No corpus match; TUI header report subject; ANSSI/OTAN phrasing for platform identity assessment |
+| (no data) | (aucune donnée) | UMRS decision | Fallback row label for an invalid tab index condition |
+| (invalid tab index) | (index d'onglet invalide) | UMRS decision | Fallback row value for an invalid tab index condition |
+| X readable — all hardened | X lisibles — tous durcis | UMRS decision | Kernel Security summary: all-hardened case; "lisibles/durcis" masculine plural agree with "indicateurs" |
+| X readable — Y hardened, Z not hardened | X lisibles — Y durcis, Z non durcis | UMRS decision | Kernel Security summary: mixed-result case; same gender agreement |
+| newer than catalog baseline | est plus récent que la base de référence du catalogue | UMRS decision | Version comparison message for catalog_baseline_row(); corpus:tar confirmed "plus récent" pattern |
+| older than catalog baseline | est plus ancien que la base de référence du catalogue | UMRS decision | Version comparison message for catalog_baseline_row(); "ancien" opposite of "récent" |
+| update your kernel | mettez à jour votre noyau | UMRS decision | Remediation instruction; imperative formal register; "votre" = formal second person for operators |
+
+| Recommended (indicator label) | Recommandé | corpus:Termium Plus | Appears as "[ Recommandé : <value> ]" in data_panel.rs for unhardened indicators. Termium Plus attests "recommandé(e)" as fr_CA past-participle adjective. Masculine form used to agree with "réglage" (setting) implied by context. Lives in umrs-uname domain (library string rendered by binary). |
+
+---
+
+## Kernel Posture Annotation Terms (umrs-platform display.rs)
+
+| English | French (fr_CA) | Source | Notes |
+|---|---|---|---|
+| enabled (boolean indicator) | activé | corpus:coreutils | SELinux context: "activé" well attested; lowercase form for inline use |
+| disabled (boolean indicator) | désactivé | corpus:coreutils | From "(désactivé par...)" in coreutils; lowercase form for inline use |
+| Enabled (FIPS state label) | Activé | corpus:coreutils | Capitalised state-label form; distinct msgid from lowercase "enabled" |
+| Disabled (FIPS state label) | Désactivé | corpus:coreutils | Capitalised state-label form; distinct msgid from lowercase "disabled" |
+| Not Present (absent sentinel) | Non présent | UMRS decision | See Security and Access Control section |
+| ASLR disabled | ASLR désactivé | corpus:coreutils + UMRS | ASLR acronym retained; "désactivé" corpus-confirmed |
+| partial randomization | randomisation partielle | UMRS decision | ANSSI fr_CA technical term for partial ASLR |
+| full ASLR | ASLR complet | UMRS decision | ASLR acronym retained |
+| pointers visible | pointeurs visibles | UMRS decision | kptr_restrict = 0; kernel pointers readable by all |
+| hidden from unprivileged | masqués aux non privilégiés | UMRS decision | kptr_restrict = 1 |
+| hidden from all users | masqués à tous les utilisateurs | UMRS decision | kptr_restrict = 2 |
+| unprivileged BPF allowed | BPF non privilégié autorisé | UMRS decision | BPF acronym retained |
+| restricted to CAP_BPF | restreint à CAP_BPF | corpus:bash + UMRS | "restreint" corpus:bash confirmed; CAP_BPF is a Linux capability — retained |
+| unrestricted | sans restriction | UMRS decision | Opposite of "restreint"; ptrace scope = 0 |
+| children only | enfants uniquement | UMRS decision | ptrace scope = 1 |
+| admin only | administrateurs uniquement | UMRS decision | ptrace scope = 2; CAP_SYS_PTRACE required |
+| no attach | attachement interdit | UMRS decision | ptrace scope = 3; complete prohibition |
+| world-readable | accessible à tous | UMRS decision | Unix permission idiom; dmesg_restrict = 0 |
+| restricted | restreint | corpus:bash | msgid "restricted" → msgstr "restreint"; bash builtins/common.c confirmed |
+| loading allowed | chargement autorisé | corpus:bash + UMRS | "chargement" corpus:bash confirmed; "autorisé" UMRS decision |
+| loading locked | chargement verrouillé | corpus:bash + UMRS | "chargement" corpus:bash; "verrouillé" for the one-way locked state |
+| allowed | autorisé | UMRS decision | No corpus exact match for bare "allowed"; UMRS decision |
+| fully disabled | entièrement désactivé | corpus:coreutils + UMRS | "désactivé" corpus-confirmed; sysrq = 0 |
+| all functions enabled | toutes les fonctions activées | corpus:coreutils + UMRS | "activées" corpus-confirmed; sysrq = 1 |
+| no core dumps | aucun vidage mémoire | UMRS decision | suid_dumpable = 0 |
+| core dumps enabled | vidages mémoire activés | corpus:coreutils + UMRS | "activés" corpus-confirmed |
+| readable by root only | lisibles par root uniquement | UMRS decision | suid_dumpable = 2; "root" retained as technical username |
+| not protected | non protégé | UMRS decision | protected_symlinks/hardlinks = 0 |
+| protected | protégé | UMRS decision | protected_symlinks/hardlinks = 1 |
+| partial protection | protection partielle | UMRS decision | protected_fifos/regular = 1 |
+| fully protected | entièrement protégé | UMRS decision | protected_fifos/regular = 2 |
+| accounting off | comptabilisation désactivée | UMRS decision | nf_conntrack acct = 0; feminine agreement with "comptabilisation" |
+| accounting on | comptabilisation activée | corpus:coreutils + UMRS | "activée" corpus-confirmed; feminine form |
+| fully open | entièrement ouvert | UMRS decision | perf_event_paranoid <= -1; no restrictions |
+| kernel profiling allowed | profilage noyau autorisé | UMRS decision | perf_event_paranoid = 0 |
+| user profiling allowed | profilage espace utilisateur autorisé | UMRS decision | perf_event_paranoid = 1 |

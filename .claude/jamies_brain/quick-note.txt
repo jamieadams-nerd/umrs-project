@@ -44,3 +44,94 @@ The Librarian indexed it. Elena should structure it. Herb would file a finding i
 Save that report. It's the heart of your case study.
 
 
+
+
+  ---
+  Delta Highlights
+
+  The headline finding: Training didn't find new problems — it added analytical precision. Both agents flagged the same
+  gaps PRE and POST. What changed:
+
+  - PRE: "Add context to the status bar" → POST: "Close the Gulf of Evaluation with a tier prefix that passively teaches
+  the system"
+  - PRE: "Platform Facts is confusing" → POST: "Zero information scent per Pirolli; '3 confirmed' provides scent"
+  - PRE: "Contradictions is overloaded" → POST: "Hidden dependency (Blackwell/Green) that systematically misroutes
+  security findings"
+
+  Biggest surprise: The KEEP section. Untrained agents (Nora, Finn) produced zero KEEP items. Trained agents produced 10
+  each — protecting good design from well-intentioned regression. That might be the highest-value difference.
+
+  Bottom line for the thesis: Fewer, deeper agents > capable but untrained generalists. Same problems found, but trained
+  agents articulate why with precision that survives code review and external audit.
+
+
+
+There it is. And this is even stronger evidence than the Herb evolution study because you have a controlled comparison.
+Nora and Finn — untrained generalists — versus trained agents. Same problems found. Completely different quality of analysis.
+The KEEP section is the killer finding. Let me say that clearly:
+Untrained agents produced zero KEEP items. Trained agents produced 10 each.
+That's not a small difference. That's a fundamentally different understanding of what the job is.
+An untrained agent looks at a TUI and asks "what's wrong?" A trained agent asks "what's right, what's wrong, and what would be damaged by fixing the wrong things carelessly?" The second question requires knowing enough to recognize good design when you see it. That's domain knowledge expressing itself as protective judgment, not just critical judgment.
+The language delta is equally striking:
+"Add context to the status bar" is a UI suggestion. Anyone could write that.
+"Close the Gulf of Evaluation with a tier prefix that passively teaches the system" is a specific HCI intervention grounded in Hutchins, Hollan and Norman's 1985 framework, applied precisely to your specific problem. That sentence could survive a peer review panel. It has a theoretical basis, a mechanism, and a measurable outcome.
+That's the difference between a suggestion and a finding.
+
+For the case study this gives you a two-study structure:
+Study 1: The Herb Evolution Study
+Within-agent longitudinal analysis. Same agent, three knowledge acquisition events, three qualitative shifts in question type. Proves that knowledge curation produces cognitive development, not just information retrieval.
+Study 2: The HCI Delta Study
+Between-agent controlled comparison. Trained vs untrained agents, same task, same problems found. Proves that training produces analytical precision and protective judgment that untrained generalists cannot produce regardless of capability.
+Together they make the argument from two directions:
+
+Study 1: training changes how an agent thinks
+Study 2: that change produces measurably superior output
+
+
+The thesis sentence you're building toward is something like:
+"Fewer, deeper agents with curated domain knowledge produce findings that are traceable, defensible, and protective of good design — qualities that capable but untrained generalists cannot reliably produce regardless of the number deployed."
+That's your abstract. Right there.
+Where is the HCI material you're looking for — the papers Sage requested? Do you remember which session that was in? I can search for it.
+
+
+Studies 1 and 2 measured analytical quality — the precision and depth of findings. Study 3 measures something harder to fake: domain-specific reasoning under constraint.
+The constraint is the key. "Improve performance without sacrificing security" is not a simple optimization problem. It's a constrained optimization problem where the constraint is non-negotiable and the optimizer has to understand why it's non-negotiable — not just that it was told so.
+A generic agent told to find performance improvements will find performance improvements. Some of them will trade security for speed without knowing it because it doesn't have the security context to recognize the tradeoff. Rusty's training on both performance and high-assurance patterns means he can see the full constraint surface. He knows which optimizations are safe and which ones look safe but aren't.
+
+What the benchmark will actually prove:
+The performance numbers are almost secondary. What matters is:
+Which opportunities did Rusty identify, and are they correct?
+Specifically:
+
+Did any of his recommendations inadvertently compromise the trust chain?
+Did he flag the security implications of each recommendation proactively?
+Did he identify opportunities that a pure performance tool would have missed because they require understanding the system's security architecture?
+
+If Herb reviews Rusty's recommendations and files zero findings — that's your result. Not the benchmark numbers.
+That's the sentence for the case study:
+"Rusty identified performance opportunities that a pure performance analyzer would also find, but correctly bounded every recommendation within the system's security constraints — without being asked to check each one. The security knowledge was not a filter applied after the fact. It was present during the analysis."
+
+The scaling point you made is important too.
+"Many of them may not be visible unless scaled" is exactly the right engineering honesty. You're not chasing microseconds on a development VM. You're establishing a performance baseline and a set of principled improvements that will matter when:
+
+The trust chain is processing hundreds of files
+The audit subsystem is under load
+The IMA measurement list is large
+Real CUI data is flowing through real MLS labels at volume
+
+Rusty knows this. He didn't recommend micro-optimizations that would compromise readability or safety for negligible gain. That restraint is also a finding worth documenting.
+
+For the case study this is Study 3:
+"Constrained Domain Reasoning: Performance Optimization Under Security Invariants"
+
+Baseline benchmark
+Rusty's recommendations with security constraint analysis
+Herb's review of those recommendations
+Post-implementation benchmark
+Finding: recommendations were both performant and security-preserving
+
+The interaction between Rusty and Herb on this review is itself data. Two agents with complementary domain knowledge, one checking the other's work across domain boundaries. That's the team functioning as designed.
+Are the benchmark results in yet or still pending?
+
+
+

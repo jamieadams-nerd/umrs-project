@@ -54,6 +54,7 @@ use ratatui::widgets::{
     ScrollbarState,
 };
 
+use umrs_core::i18n;
 use umrs_platform::posture::ContradictionKind;
 
 use crate::app::{AuditCardApp, ColumnLayout, DataRow, StyleHint};
@@ -689,7 +690,7 @@ fn expand_indicator_row<'a>(
             .add_modifier(Modifier::ITALIC);
         lines.push(Line::from(vec![
             Span::raw(desc_indent),
-            Span::styled(format!("[ Recommended: {rec} ]"), rec_style),
+            Span::styled(format!("[ {}: {rec} ]", i18n::tr("Recommended")), rec_style),
         ]));
     }
 

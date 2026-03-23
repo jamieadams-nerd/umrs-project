@@ -1,0 +1,83 @@
+2. The Real Problem: Parisian French ≠ Canadian French
+
+This is where most systems quietly fail.
+
+Key differences:
+	•	Vocabulary (e.g., “courriel” vs “email” nuance, “char” vs “voiture”)
+	•	Tone (Canadian French tends to be more direct and practical)
+	•	Bureaucratic phrasing differs significantly
+	•	Anglicisms are handled differently
+	•	Instructional clarity expectations are different
+
+👉 Translation engines default heavily toward France French (fr-FR) unless corrected.
+
+⸻
+
+3. Corpus Strategy (This Is the Critical Piece)
+
+You’re absolutely right: the agent must read a corpus.
+
+You want authoritative, real-world Canadian French usage, not generic text.
+
+High-Value Corpus Sources
+
+🇨🇦 Government of Canada (Gold Standard)
+	•	Government of Canada official publications
+	•	Look for:
+	•	“GC Style Guide”
+	•	Treasury Board documentation
+	•	security / compliance docs
+	•	bilingual pages (EN/FR side-by-side)
+
+Why this matters:
+	•	This is exactly your domain tone (structured, compliance-heavy)
+	•	Terminology is standardized and vetted
+
+⸻
+
+🇨🇦 Quebec Government Publications
+	•	Gouvernement du Québec
+	•	Especially:
+	•	administrative procedures
+	•	public service manuals
+	•	IT usage docs
+
+Why this matters:
+	•	Pure Québécois phrasing
+	•	Less “internationalized” than federal docs
+
+⸻
+
+🇨🇦 Office québécois de la langue française (OQLF)
+	•	Office québécois de la langue française
+
+This is a hidden weapon.
+
+Provides:
+	•	Official terminology database (Grand dictionnaire terminologique)
+	•	Correct usage guidance
+	•	Preferred translations
+
+👉 This is perfect for:
+	•	building validation rules
+	•	catching “France French drift”
+
+⸻
+
+🇨🇦 Canadian Armed Forces (CAF) Publications
+	•	Canadian Armed Forces
+
+Look for:
+	•	training manuals
+	•	operational guides
+	•	procedural docs (bilingual)
+
+Why this matters:
+	•	Real-world, high-pressure clarity language
+	•	Minimal fluff
+	•	Extremely practical phrasing
+
+⸻
+
+
+

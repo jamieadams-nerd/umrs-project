@@ -1,0 +1,738 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Jamie Adams (a.k.a. Imodium Operator)
+# This file is distributed under the same license as the UMRS Project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: umrs-uname\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-23 00:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+# NOTE: Hand-crafted on 2026-03-23. Re-run xtr once available.
+# xtr invocation:
+#   xtr --package-name umrs-uname \
+#       --output resources/i18n/umrs-uname/umrs-uname.pot \
+#       components/rusty-gadgets/umrs-uname/src/main.rs
+
+# ---------------------------------------------------------------------------
+# Tab labels
+# ---------------------------------------------------------------------------
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:216
+#: components/rusty-gadgets/umrs-uname/src/main.rs:302
+msgid "OS Information"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:217
+#: components/rusty-gadgets/umrs-uname/src/main.rs:303
+msgid "Kernel Security"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:218
+#: components/rusty-gadgets/umrs-uname/src/main.rs:304
+msgid "Trust / Evidence"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# Card title and detection status
+# ---------------------------------------------------------------------------
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:329
+msgid "OS Detection Audit"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:267
+#: components/rusty-gadgets/umrs-uname/src/main.rs:294
+msgid "Detection pipeline failed"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# Detection error descriptions
+# ---------------------------------------------------------------------------
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:255
+msgid "Hard gate: procfs is not real procfs"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:259
+msgid "Hard gate: PID coherence broken"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:261
+msgid "Hard gate: I/O error during kernel anchor"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# Error state rows
+# ---------------------------------------------------------------------------
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:268
+msgid "Status"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:271
+#: components/rusty-gadgets/umrs-uname/src/main.rs:281
+msgid "Reason"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:277
+msgid "Trust Level"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:278
+msgid "T0 — Untrusted"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:283
+msgid "Hard gate failure aborted pipeline"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# OS info rows
+# ---------------------------------------------------------------------------
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:392
+#: components/rusty-gadgets/umrs-uname/src/main.rs:429
+#: components/rusty-gadgets/umrs-uname/src/main.rs:443
+msgid "not available"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:401
+msgid "Platform Family"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:402
+msgid "RPM-based"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:402
+msgid "dpkg-based"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:402
+msgid "pacman-based"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:402
+msgid "unknown"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:407
+msgid "Platform Distro"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:413
+msgid "Platform Version"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:419
+msgid "Platform Facts"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:423
+msgid "Probe Used"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:428
+msgid "Platform Identity"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# unavailable fallback (os_name_from_release, indicator_to_display)
+# ---------------------------------------------------------------------------
+
+#. TRANSLATOR: shown when os-release is absent or an indicator value is
+#. unavailable. Same msgid covers both call sites.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:135
+#: components/rusty-gadgets/umrs-uname/src/main.rs:1189
+msgid "unavailable"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# Trust summary rows
+# ---------------------------------------------------------------------------
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:467
+msgid "Label Trust"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:489
+msgid "Trust Tier"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:494
+msgid "Description"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:504
+msgid "Downgrade Reasons"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:505
+msgid "No downgrade — full trust retained"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:517
+msgid "Each reason below prevented a trust tier upgrade."
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:536
+msgid "Contradictions"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:537
+msgid "None detected"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:542
+msgid "All evidence sources agreed \u2014 no conflicting identity assertions detected."
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:555
+msgid ""
+"Two independent sources reported conflicting values. Review each pair — this "
+"may indicate tampering."
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:577
+msgid "Evidence Records"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# label_trust_display — trust classification strings
+# TRANSLATOR: These strings appear in the pinned Trust / Evidence summary pane.
+# ---------------------------------------------------------------------------
+
+#. TRANSLATOR: Label Trust classification for a candidate that cannot be
+#. verified. "policy" here refers to SELinux/MLS security policy — do not
+#. generalise to "politique" without the security context. Retain the
+#. variant name prefix in English as it is a type identifier, not prose.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:1405
+msgid "UntrustedLabelCandidate — do not use for policy"
+msgstr ""
+
+#. TRANSLATOR: A label whose structure is valid but whose integrity has not
+#. been confirmed by independent evidence. "structurally valid" = well-formed;
+#. "integrity unconfirmed" = no digest or ownership check passed yet.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:1409
+msgid "LabelClaim — structurally valid; integrity unconfirmed"
+msgstr ""
+
+#. TRANSLATOR: Highest trust level. T4 = integrity anchored tier. "ownership"
+#. = file ownership in the package database; "digest" = cryptographic hash.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:1413
+msgid "TrustedLabel — T4: ownership + digest verified"
+msgstr ""
+
+#. TRANSLATOR: T4 integrity was verified BUT a contradiction was also found
+#. between independent evidence sources. The label passed the crypto check
+#. but the system state is internally inconsistent. Abbreviated to fit the
+#. fixed column width — full detail is in the secondary row below.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:1422
+msgid "Verified w/ Contradiction — T4 integrity + conflict"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# Trust tier labels and descriptions (const fn helpers — wrapped at call site)
+# ---------------------------------------------------------------------------
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:68
+msgid "T0 — Untrusted"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:69
+msgid "T1 — Kernel Anchored"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:70
+msgid "T2 — Environment Anchored"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:71
+msgid "T3 — Platform Verified"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:72
+msgid "T4 — Integrity Anchored"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:78
+msgid "No kernel anchor established."
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:80
+msgid "procfs verified via PROC_SUPER_MAGIC + PID coherence."
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:83
+msgid "Mount topology cross-checked (mountinfo vs statfs)."
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:86
+msgid "Platform identity verified; >= 2 independent package facts confirmed."
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:89
+msgid "os-release ownership + installed digest verified."
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# Status bar messages
+# ---------------------------------------------------------------------------
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:1431
+msgid "Integrity Anchored"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:1434
+msgid "Platform Verified"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:1454
+msgid "Untrusted — no kernel anchor"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# Kernel Security summary rows
+# ---------------------------------------------------------------------------
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:748
+msgid "Kernel Version"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:755
+msgid "All values below are read live from the running kernel via /proc and /sys."
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:809
+msgid "Indicators"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:816
+msgid "No Assessment"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:831
+msgid ""
+"Curated indicators selected to give you the clearest view of your system's "
+"security posture. Items marked in red can be hardened — see each indicator's "
+"recommended setting below."
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:685
+msgid "Catalog Baseline"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:699
+msgid "Catalog baseline matches running kernel"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# Kernel contradiction rows
+# ---------------------------------------------------------------------------
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:628
+msgid "None"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:638
+msgid "Contradictions"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:645
+msgid "No disagreements between running kernel and persisted configuration."
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:651
+msgid ""
+"The running kernel and persisted configuration disagree on one or more "
+"settings. Drift means intended hardening is not active; hotfixes mean "
+"current hardening will be lost on reboot."
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# indicator_group_rows — Configured: prefix
+# TRANSLATOR: "Configured:" labels the persisted configuration value for a
+# kernel indicator. "from" introduces the source file path. Both are static
+# fragments; the values {raw} and {source_file} are runtime data inserted
+# by format!() and must not be translated.
+# ---------------------------------------------------------------------------
+
+#. TRANSLATOR: Prefix label for a persisted configuration value.
+#. Usage in display: "Configured: <value> (from <filepath>)"
+#: components/rusty-gadgets/umrs-uname/src/main.rs:1112
+msgid "Configured:"
+msgstr ""
+
+#. TRANSLATOR: Introduces the source file in a configured-value line.
+#. Used in: "Configured: <value> (from <filepath>)"
+#: components/rusty-gadgets/umrs-uname/src/main.rs:1112
+msgid "from"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# Kernel Security group titles and descriptions
+# ---------------------------------------------------------------------------
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:1021
+msgid "BOOT INTEGRITY"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:1025
+msgid ""
+"Verifies the kernel loaded in a tamper-resistant state and cannot be "
+"silently replaced at runtime."
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:873
+msgid "CRYPTOGRAPHIC POSTURE"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:874
+msgid ""
+"Verifies government-validated cryptography and correct entropy sourcing. "
+"Failures here mean sensitive operations may use unvalidated algorithms."
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:887
+msgid "KERNEL SELF-PROTECTION"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:888
+msgid ""
+"Controls that hide kernel internals from unprivileged processes. Weak "
+"settings let attackers locate exploitable code and bypass ASLR."
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:902
+msgid "PROCESS ISOLATION"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:903
+msgid ""
+"Controls how much one process can see or interfere with another. Weak "
+"settings allow credential theft across sibling processes."
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:913
+msgid "FILESYSTEM HARDENING"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:914
+msgid ""
+"Closes privilege escalation paths through the filesystem. Absent controls "
+"allow symlink and hardlink attacks in world-writable directories."
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:927
+msgid "MODULE RESTRICTIONS"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:928
+msgid ""
+"Verifies high-risk kernel modules are blocked from loading. USB, FireWire, "
+"and Thunderbolt are primary data exfiltration and DMA attack vectors."
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:949
+msgid "NETWORK AUDITING"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:950
+msgid ""
+"Controls that enable traffic accounting for anomaly detection and forensic "
+"reconstruction. Without these, network audit logs lack the volume data "
+"needed to identify exfiltration."
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# Evidence table column headers
+# ---------------------------------------------------------------------------
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:1266
+msgid "Evidence Type"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:1267
+msgid "Source"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:1268
+msgid "Verification"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# Evidence source kind labels (wrapped at call site via source_kind_label)
+# ---------------------------------------------------------------------------
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:113
+msgid "Kernel runtime (/proc)"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:114
+msgid "Configuration file"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:115
+msgid "Package database"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:116
+msgid "Symlink target"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:117
+msgid "Kernel attributes (/sys)"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:118
+msgid "Filesystem identity"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# Help text — Tab 0 (OS Information)
+# TRANSLATOR: Multi-line TUI help overlay. Preserve all leading spaces and
+# ASCII box-drawing characters exactly. Column alignment uses fixed-width
+# ASCII spacing — do NOT reflow lines. See width constraint notes in the
+# wrapping report.
+# ---------------------------------------------------------------------------
+
+#. TRANSLATOR: Full help text for the OS Information tab. Raw string with
+#. fixed-width ASCII layout. French must preserve the navigation column
+#. alignment. Flag any line exceeding 66 characters for developer review.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:1488
+msgid ""
+" OS INFORMATION Tab\n"
+"   ◼ Identity fields extracted from the running system.\n"
+"   ◼ These values identify the platform under assessment.\n"
+"\n"
+" WHAT IS SHOWN:\n"
+"   ◼ OS NAME / VERSION\n"
+"         From the validated, trusted /etc/os-release. The distro \n"
+"         name, version ID, and pretty name. Used to verify the \n"
+"         platform is the expected OS and version for this \n"
+"         deployment.\n"
+"\n"
+"   ◼ PLATFORM IDENTITY\n"
+"         Kernel release string (from uname) and architecture.\n"
+"         Cross-checked against /proc/sys/kernel/osrelease for\n"
+"         corroboration — two independent sources must agree.\n"
+"         If they disagree, the Trust / Evidence tab shows the\n"
+"         contradiction and its source.\n"
+"\n"
+"   ◼ BOOT ID\n"
+"         A unique identifier assigned by the kernel at each boot.\n"
+"         Changes every reboot. Useful for correlating system\n"
+"         log entries (journald) to a specific boot session.\n"
+"\n"
+" NAVIGATION:\n"
+"   Tab / Shift-Tab     switch between tabs\n"
+"   j / k  or  ↑ / ↓    scroll this help\n"
+"   PgDn / PgUp         scroll faster\n"
+"   Enter, Esc, or q    close this help"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# Help text — Tab 1 (Kernel Security)
+# TRANSLATOR: Multi-line TUI help overlay. Preserve all leading spaces and
+# ASCII box-drawing characters exactly. Column alignment uses fixed-width
+# ASCII spacing — do NOT reflow lines. See width constraint notes in the
+# wrapping report.
+# ---------------------------------------------------------------------------
+
+#. TRANSLATOR: Full help text for the Kernel Security tab. Raw string.
+#. Flag any translated line exceeding 66 characters for developer review.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:1521
+msgid ""
+" KERNEL SECURITY Tab\n"
+"   ◼ Shows the settings in the currently running kernel.\n"
+"   ◼ These are extracted from /proc and /sys.\n"
+"\n"
+" SUMMARY:\n"
+"   ◼ The running kernel version.\n"
+"   ◼ Baseline compares the running kernel to what this tool\n"
+"     was tested against. If the kernel is a major version\n"
+"     newer, some indicators may not map correctly. Treat\n"
+"     results as advisory and verify critical findings\n"
+"     manually. Check for an updated version of this tool.\n"
+"   ◼ The number of indicators checked and high-level counts.\n"
+"   ◼ Contradictions identifies disagreements between what is\n"
+"     in the kernel and what was configured. This tool reports\n"
+"     the disagreement but cannot determine the cause. Each\n"
+"     type below has a different appropriate response.\n"
+"\n"
+"     ◻ None\n"
+"           Running kernel is consistent with configuration.\n"
+"\n"
+"     ⚠ DRIFT\n"
+"           The hardened setting is in the config file but\n"
+"           the running kernel does not reflect it. The\n"
+"           intended hardening is not active. Check\n"
+"           appropriate system logs to identify the cause.\n"
+"\n"
+"     ⚠ NOT PERSISTED\n"
+"           The running kernel is hardened now but no config\n"
+"           file reflects this. The setting will be lost on\n"
+"           next reboot. Persist per your site configuration\n"
+"           procedures.\n"
+"\n"
+"     ⚠ UNVERIFIABLE\n"
+"           A configuration value exists but the kernel node\n"
+"           could not be read to confirm whether it is active.\n"
+"           This may be normal for this kernel version or may\n"
+"           indicate a permission issue. Verify manually.\n"
+"\n"
+" EVIDENCE CHAIN:\n"
+"   Indicator       ✓ = Hardened (green)\n"
+"                   ✗ = Not hardened (red)\n"
+"                   ? = Unavailable (kernel node unreadable)\n"
+"\n"
+"   Grouped by:\n"
+"\n"
+"   ◼ BOOT INTEGRITY\n"
+"         lockdown, kexec, module sig, modules_disabled\n"
+"\n"
+"   ◼ CRYPTOGRAPHIC POSTURE\n"
+"         FIPS mode and entropy sources\n"
+"\n"
+"   ◼ KERNEL SELF-PROTECTION\n"
+"         ASLR, kptr, BPF, ptrace, perf\n"
+"\n"
+"   ◼ PROCESS ISOLATION\n"
+"         user namespaces, sysrq, suid dumps\n"
+"\n"
+"   ◼ FILESYSTEM HARDENING\n"
+"         symlink and hardlink protections\n"
+"\n"
+"   ◼ MODULE RESTRICTIONS\n"
+"         blacklisted kernel modules\n"
+"\n"
+"   ◼ NETWORK AUDITING\n"
+"         nf_conntrack accounting\n"
+"\n"
+" NOTE: Red rows do not meet the expected hardened value.\n"
+"       Each red row shows a description and recommended\n"
+"       value directly below the indicator name. Scroll\n"
+"       down within the tab to see all indicators.\n"
+"\n"
+" NAVIGATION:\n"
+"   Tab / Shift-Tab     switch between tabs\n"
+"   j / k  or  ↑ / ↓    scroll this help\n"
+"   PgDn / PgUp         scroll faster\n"
+"   Enter, Esc, or q    close this help"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# Help text — Tab 2 (Trust / Evidence)
+# TRANSLATOR: Multi-line TUI help overlay. The TRUST TIERS table uses a
+# fixed two-column layout with arrow alignment (⭭). French tier names and
+# descriptions must fit within the original column widths. Flag any line
+# exceeding 66 characters for developer review.
+# ---------------------------------------------------------------------------
+
+#. TRANSLATOR: Full help text for the Trust / Evidence tab. Raw string.
+#. The TRUST TIERS table has fixed column alignment using spaces — preserve
+#. structure. Flag any translated line exceeding 66 characters.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:1602
+msgid ""
+" ⟬ TRUST / EVIDENCE Tab ⟭\n"
+"\n"
+" TOP — SUMMARY (always visible):\n"
+"   ◼ Trust tier, downgrade reasons, and contradictions.\n"
+"   ◼ 'No downgrade' means all trust checks passed.\n"
+"   ◼ Any contradiction requires manual review. A contradiction\n"
+"     means two independent sources reported different values\n"
+"     for the same fact. Common causes include partial updates\n"
+"     or a package database out of sync. In the worst case it\n"
+"     may indicate tampering with OS identity files.\n"
+"   ◼ If you cannot explain the contradiction, follow your\n"
+"     site's incident response procedures before continuing\n"
+"     assessment work on this system.\n"
+"   ◼ These are OS detection contradictions (identity sources\n"
+"     disagreeing). They are separate from kernel/config\n"
+"     contradictions shown on the Kernel Security tab.\n"
+"\n"
+" TRUST TIERS:\n"
+"   Each tier includes all guarantees of the tiers below it.\n"
+"\n"
+"   T0  Untrusted          No reliable sources found.\n"
+"    ⭭                     Do not rely on any value shown.\n"
+"\n"
+"   T1  Kernel Anchored    At least one kernel source confirmed.\n"
+"    ⭭                     Basic identity only — treat with caution.\n"
+"\n"
+"   T2  Env Anchored       Environment sources corroborate kernel.\n"
+"                          Consistent across /proc, /sys, and /etc.\n"
+"    ⭭                     Acceptable for routine operations.\n"
+"\n"
+"   T3  Platform Verified  All expected sources agree.\n"
+"    ⭭                     Normal operating posture.\n"
+"\n"
+"   T4  Integrity Anchored All sources agree + kernel filesystem\n"
+"                          identity verified. Highest confidence.\n"
+"\n"
+" BOTTOM — EVIDENCE CHAIN (scrollable):\n"
+"   ◼ Actual files and kernel nodes read during detection.\n"
+"   ◼ ✓ = parsed successfully   ✗ = read or parse failed\n"
+"\n"
+" EVIDENCE TYPES:\n"
+"   Kernel runtime (/proc)    from /proc (procfs)\n"
+"   Kernel attributes (/sys)  from /sys (sysfs)\n"
+"   Configuration file        from /etc or filesystem\n"
+"   Package database          from RPM/dpkg package DB\n"
+"   Symlink target            symlink destination resolved\n"
+"   Filesystem identity       from statfs() — kernel mount type check\n"
+"\n"
+" VERIFICATION CODES:\n"
+"   These codes appear on evidence lines that passed an extra\n"
+"   check against path spoofing. They confirm the tool read\n"
+"   the real kernel object, not a substitute at the same path.\n"
+"   Lines without a code were read by path only — this is\n"
+"   normal for configuration files and package databases.\n"
+"\n"
+"   fd          Verified using a secure file descriptor (FD),\n"
+"               confirming the kernel object directly rather\n"
+"               than relying on the file path. Prevents\n"
+"               symlink, bind-mount, and TOCTOU substitution.\n"
+"\n"
+"   PROC_MAGIC  The kernel verified this mount is the real\n"
+"               /proc filesystem by checking its built-in\n"
+"               type identifier ('magic number'). Confirms\n"
+"               the mount has not been spoofed or substituted.\n"
+"\n"
+"   SYS_MAGIC   Same kernel 'magic number' check applied to\n"
+"               /sys (sysfs). Ensures we are reading real\n"
+"               kernel attributes, not a crafted overlay.\n"
+"\n"
+"   statfs      Filesystem identity confirmed via statfs() —\n"
+"               the kernel verified the mount type matches\n"
+"               expectations at the time of the read.\n"
+"\n"
+" NAVIGATION:\n"
+"   Tab / Shift-Tab     switch between tabs\n"
+"   j / k  or  ↑ / ↓    scroll this help\n"
+"   PgDn / PgUp         scroll faster\n"
+"   Enter, Esc, or q    close this help"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# Help text — fallback navigation
+# ---------------------------------------------------------------------------
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:1684
+msgid ""
+" NAVIGATION:\n"
+"   Tab / Shift-Tab     switch between tabs\n"
+"   j / k  or  ↑ / ↓   scroll this help\n"
+"   PgDn / PgUp         scroll faster\n"
+"   Enter, Esc, or q    close this help"
+msgstr ""

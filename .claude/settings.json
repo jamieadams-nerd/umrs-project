@@ -226,7 +226,23 @@
       "Bash(do)",
       "Bash(sed -i 's/umrs_tui/umrs_ui/g' \"$f\")",
       "WebFetch(domain:www.ebooks.com)",
-      "Bash(do OPENSSL_CONF=/dev/null curl -sL -o \"$pdf\" \"https://hci.stanford.edu/courses/cs147/2023/au/lectures/$pdf\")"
+      "Bash(do OPENSSL_CONF=/dev/null curl -sL -o \"$pdf\" \"https://hci.stanford.edu/courses/cs147/2023/au/lectures/$pdf\")",
+      "Bash(printf '[2026-03-22 --:--] rust-developer  apply 18 intern-reviewed help text changes to umrs-uname/main.rs, umrs-ui/status_bar.rs, umrs-ui/dialog.rs  Read,Edit,Bash  success  all 18 changes applied; fmt/clippy/test all clean\\\\n')",
+      "Write(resources/**)",
+      "Edit(resources/**)",
+      "Write(/media/psf/repos/umrs-project/resources/**)",
+      "Edit(/media/psf/repos/umrs-project/resources/**)",
+      "Bash(RAG_CHROMA_PATH=/media/psf/repos/ai-rag-vdb/chroma python ingest.py --collection accreditation-artifacts)",
+      "Bash(RAG_CHROMA_PATH=/media/psf/repos/ai-rag-vdb/chroma python ingest.py --collection hci-courses/mit-6831 2>&1)",
+      "Bash(RAG_CHROMA_PATH=/media/psf/repos/ai-rag-vdb/chroma python ingest.py --collection hci-courses/theory-papers 2>&1)",
+      "Bash(RAG_CHROMA_PATH=/media/psf/repos/ai-rag-vdb/chroma python ingest.py --collection technical-communication/theory 2>&1)",
+      "Bash(RAG_CHROMA_PATH=/media/psf/repos/ai-rag-vdb/chroma python ingest.py --collection information-architecture/theory 2>&1)",
+      "Bash(RAG_CHROMA_PATH=/media/psf/repos/ai-rag-vdb/chroma python ingest.py --collection information-architecture/standards 2>&1)",
+      "Bash(RAG_CHROMA_PATH=/media/psf/repos/ai-rag-vdb/chroma python query.py \"SSP system security plan structure sections required\" --collection accreditation-artifacts --top-k 5)",
+      "Bash(RAG_CHROMA_PATH=/media/psf/repos/ai-rag-vdb/chroma python query.py \"learnability visibility error prevention user interface design\" --collection hci-courses-mit-6831 --top-k 5)",
+      "Bash(RAG_CHROMA_PATH=/media/psf/repos/ai-rag-vdb/chroma python query.py \"continuous monitoring assessment methodology authorization\" --collection accreditation-artifacts --top-k 5)",
+      "Bash(RAG_CHROMA_PATH=/media/psf/repos/ai-rag-vdb/chroma python query.py \"genre theory social action rhetorical situation\" --collection technical-communication-theory --top-k 3)",
+      "Bash(tee /media/psf/repos/umrs-project/.claude/reports/elena-familiarization-reflection-2026-03-23.md)"
     ]
   },
   "enabledPlugins": {

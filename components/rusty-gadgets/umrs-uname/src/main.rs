@@ -132,7 +132,7 @@ const fn source_kind_label(kind: &SourceKind) -> &'static str {
 /// This is display-only — not a trust-relevant assertion.
 fn os_name_from_release(rel: Option<&OsRelease>) -> String {
     let Some(rel) = rel else {
-        return "unavailable".to_owned();
+        return i18n::tr("unavailable");
     };
     if let Some(ver) = &rel.version_id {
         return format!("{} {}", rel.name.as_str(), ver.as_str());
@@ -481,6 +481,8 @@ fn build_trust_summary_rows(result: &DetectionResult) -> Vec<DataRow> {
         ));
     }
 
+    rows.push(DataRow::separator());
+
     // Confidence level — the numeric trust tier with plain-language description.
     // Note: trust_level_label/description are const fn helpers returning
     // &'static str; the translation wraps the returned value at the call site.
@@ -495,6 +497,8 @@ fn build_trust_summary_rows(result: &DetectionResult) -> Vec<DataRow> {
         i18n::tr(trust_level_description(level)),
         StyleHint::Dim,
     ));
+
+    rows.push(DataRow::separator());
 
     // Downgrade reasons — positive framing when none exist.
     // A downgrade reason means a check that would have elevated trust
@@ -527,6 +531,8 @@ fn build_trust_summary_rows(result: &DetectionResult) -> Vec<DataRow> {
             ));
         }
     }
+
+    rows.push(DataRow::separator());
 
     // Contradictions — two independent evidence sources disagreed.
     // A contradiction means the same fact was asserted differently by two
@@ -562,12 +568,14 @@ fn build_trust_summary_rows(result: &DetectionResult) -> Vec<DataRow> {
             let idx = i.saturating_add(1);
             let desc: String = con.description.chars().take(64).collect();
             rows.push(DataRow::new(
-                format!("  [{idx}] {} vs {}", con.source_a, con.source_b),
+                format!("  [{idx}] {} {} {}", con.source_a, i18n::tr("vs"), con.source_b),
                 desc,
                 StyleHint::TrustRed,
             ));
         }
     }
+
+    rows.push(DataRow::separator());
 
     // Evidence record count — always visible in the summary pane so the
     // operator can correlate the trust tier with the volume of evidence
@@ -629,7 +637,8 @@ fn append_kernel_contradiction_rows(rows: &mut Vec<DataRow>, count: usize) {
     } else {
         (
             format!(
-                "{count} \u{2014} configuration/kernel disagreements detected"
+                "{count} \u{2014} {}",
+                i18n::tr("configuration/kernel disagreements detected")
             ),
             StyleHint::TrustRed,
         )
@@ -683,14 +692,15 @@ fn catalog_baseline_row(kernel_version: &str) -> DataRow {
     match (running, baseline) {
         (Err(_), _) | (_, Err(_)) => DataRow::key_value(
             i18n::tr("Catalog Baseline"),
-            format!("baseline {CATALOG_KERNEL_BASELINE}"),
+            format!("{} {CATALOG_KERNEL_BASELINE}", i18n::tr("baseline")),
             StyleHint::Dim,
         ),
         (Ok(r), Ok(b)) if r > b => DataRow::key_value(
             i18n::tr("Catalog Baseline"),
             format!(
-                "{r} is newer than catalog baseline ({b}) \u{2014} \
-                 some indicators may have changed"
+                "{r} {} ({b}) \u{2014} {}",
+                i18n::tr("is newer than catalog baseline"),
+                i18n::tr("some indicators may have changed")
             ),
             StyleHint::TrustYellow,
         ),
@@ -702,8 +712,9 @@ fn catalog_baseline_row(kernel_version: &str) -> DataRow {
         (Ok(r), Ok(b)) => DataRow::key_value(
             i18n::tr("Catalog Baseline"),
             format!(
-                "{r} is older than catalog baseline ({b}) \u{2014} \
-                 update your kernel"
+                "{r} {} ({b}) \u{2014} {}",
+                i18n::tr("is older than catalog baseline"),
+                i18n::tr("update your kernel")
             ),
             StyleHint::TrustRed,
         ),
@@ -785,7 +796,11 @@ fn build_kernel_security_summary_rows(
     // the operator immediately knows remediation scope.
     // NIST SP 800-53 CM-6 — posture summary is co-located with the detail.
     let indicators_value = if not_hardened == 0 {
-        format!("{readable} readable \u{2014} all hardened \u{2713}")
+        format!(
+            "{readable} {} \u{2014} {} \u{2713}",
+            i18n::tr("readable"),
+            i18n::tr("all hardened")
+        )
     } else {
         // Compute the percentage of readable indicators that are not hardened.
         // Use saturating arithmetic; readable is always >= not_hardened by
@@ -796,8 +811,11 @@ fn build_kernel_security_summary_rows(
             0
         };
         format!(
-            "{readable} readable \u{2014} {hardened} hardened, \
-             {not_hardened} not hardened ({pct}%)"
+            "{readable} {} \u{2014} {hardened} {}, \
+             {not_hardened} {} ({pct}%)",
+            i18n::tr("readable"),
+            i18n::tr("hardened"),
+            i18n::tr("not hardened")
         )
     };
     let indicators_hint = if not_hardened > 0 {
@@ -1109,7 +1127,13 @@ fn indicator_group_rows(
                      raw,
                      source_file,
                  }| {
-                    format!("Configured: {raw} (from {source_file})")
+                    format!(
+                        "{} {} ({} {})",
+                        i18n::tr("Configured:"),
+                        raw,
+                        i18n::tr("from"),
+                        source_file
+                    )
                 },
             );
 
@@ -1186,7 +1210,7 @@ fn indicator_to_display(value: &IndicatorValue) -> (String, StyleHint) {
         IndicatorValue::Enabled(s) => (s.clone(), StyleHint::TrustGreen),
         IndicatorValue::Disabled(s) => (s.clone(), StyleHint::TrustYellow),
         IndicatorValue::Unavailable => {
-            ("unavailable".to_owned(), StyleHint::Dim)
+            (i18n::tr("unavailable"), StyleHint::Dim)
         }
     }
 }
@@ -1402,15 +1426,15 @@ const fn evidence_style_hint(rec: &EvidenceRecord) -> StyleHint {
 fn label_trust_display(trust: &LabelTrust) -> (String, StyleHint) {
     match trust {
         LabelTrust::UntrustedLabelCandidate => (
-            "UntrustedLabelCandidate — do not use for policy".to_owned(),
+            i18n::tr("UntrustedLabelCandidate — do not use for policy"),
             StyleHint::TrustRed,
         ),
         LabelTrust::LabelClaim => (
-            "LabelClaim — structurally valid; integrity unconfirmed".to_owned(),
+            i18n::tr("LabelClaim — structurally valid; integrity unconfirmed"),
             StyleHint::TrustYellow,
         ),
         LabelTrust::TrustedLabel => (
-            "TrustedLabel — T4: ownership + digest verified".to_owned(),
+            i18n::tr("TrustedLabel — T4: ownership + digest verified"),
             StyleHint::TrustGreen,
         ),
         LabelTrust::IntegrityVerifiedButContradictory {
@@ -1419,7 +1443,7 @@ fn label_trust_display(trust: &LabelTrust) -> (String, StyleHint) {
             // Shorter display form so the label fits without truncation.
             // The full contradiction description is emitted as a secondary
             // row in build_trust_summary_rows — see the call site.
-            "Verified w/ Contradiction — T4 integrity + conflict".to_owned(),
+            i18n::tr("Verified w/ Contradiction — T4 integrity + conflict"),
             StyleHint::TrustRed,
         ),
     }
@@ -1473,21 +1497,28 @@ fn build_status(result: &DetectionResult) -> StatusMessage {
 ///
 /// An unknown index falls back to a generic navigation hint.
 ///
+/// IMPORTANT: The r"" raw text format is critical because the manner
+/// which the help text is displayed. Watch the formatting/alignment
+/// and such.
+///
 /// NIST SP 800-53 SA-5 — inline system documentation reduces operator
 /// reliance on external reference guides during assessment.
 #[allow(clippy::too_many_lines)] // lookup table — splitting reduces readability
-const fn help_text_for_tab(tab_index: usize) -> &'static str {
+fn help_text_for_tab(tab_index: usize) -> String {
     match tab_index {
-        0 => {
+       // --------------------------------------------------------------------
+       // Os Information Tab
+        0 => { i18n::tr(
             r" OS INFORMATION Tab
    ◼ Identity fields extracted from the running system.
    ◼ These values identify the platform under assessment.
 
  WHAT IS SHOWN:
    ◼ OS NAME / VERSION
-         From /etc/os-release. The distro name, version ID,
-         and pretty name. Used to verify the platform is the expected
-         OS and version for this deployment.
+         From the validated, trusted /etc/os-release. The distro 
+         name, version ID, and pretty name. Used to verify the 
+         platform is the expected OS and version for this 
+         deployment.
 
    ◼ PLATFORM IDENTITY
          Kernel release string (from uname) and architecture.
@@ -1503,12 +1534,15 @@ const fn help_text_for_tab(tab_index: usize) -> &'static str {
 
  NAVIGATION:
    Tab / Shift-Tab     switch between tabs
-   j / k  or  ↑ / ↓   scroll this help
+   j / k  or  ↑ / ↓    scroll this help
    PgDn / PgUp         scroll faster
    Enter, Esc, or q    close this help"
-        }
+       ) }
+
+       // --------------------------------------------------------------------
+       // Kernel Security Tab
         1 => {
-            r" KERNEL SECURITY Tab
+            i18n::tr(r" KERNEL SECURITY Tab
    ◼ Shows the settings in the currently running kernel.
    ◼ These are extracted from /proc and /sys.
 
@@ -1581,12 +1615,15 @@ const fn help_text_for_tab(tab_index: usize) -> &'static str {
 
  NAVIGATION:
    Tab / Shift-Tab     switch between tabs
-   j / k  or  ↑ / ↓   scroll this help
+   j / k  or  ↑ / ↓    scroll this help
    PgDn / PgUp         scroll faster
    Enter, Esc, or q    close this help"
-        }
+            ) }
+
+       // --------------------------------------------------------------------
+       // Trust / Evidence Tab
         2 => {
-            r" TRUST / EVIDENCE Tab
+            i18n::tr(r" ⟬ TRUST / EVIDENCE Tab ⟭
 
  TOP — SUMMARY (always visible):
    ◼ Trust tier, downgrade reasons, and contradictions.
@@ -1607,17 +1644,17 @@ const fn help_text_for_tab(tab_index: usize) -> &'static str {
    Each tier includes all guarantees of the tiers below it.
 
    T0  Untrusted          No reliable sources found.
-                          Do not rely on any value shown.
+    ⭭                     Do not rely on any value shown.
 
    T1  Kernel Anchored    At least one kernel source confirmed.
-                          Basic identity only — treat with caution.
+    ⭭                     Basic identity only — treat with caution.
 
    T2  Env Anchored       Environment sources corroborate kernel.
                           Consistent across /proc, /sys, and /etc.
-                          Acceptable for routine operations.
+    ⭭                     Acceptable for routine operations.
 
    T3  Platform Verified  All expected sources agree.
-                          Normal operating posture.
+    ⭭                     Normal operating posture.
 
    T4  Integrity Anchored All sources agree + kernel filesystem
                           identity verified. Highest confidence.
@@ -1661,16 +1698,19 @@ const fn help_text_for_tab(tab_index: usize) -> &'static str {
 
  NAVIGATION:
    Tab / Shift-Tab     switch between tabs
-   j / k  or  ↑ / ↓   scroll this help
+   j / k  or  ↑ / ↓    scroll this help
    PgDn / PgUp         scroll faster
    Enter, Esc, or q    close this help"
-        }
+            ) }
+       // --------------------------------------------------------------------
+       // Navigation
         _ => {
-            r" NAVIGATION:
+            i18n::tr(r" NAVIGATION:
    Tab / Shift-Tab     switch between tabs
    j / k  or  ↑ / ↓   scroll this help
    PgDn / PgUp         scroll faster
    Enter, Esc, or q    close this help"
+            )
         }
     }
 }
@@ -1757,10 +1797,10 @@ fn handle_key_action(
 
 fn main() {
     // ── i18n ─────────────────────────────────────────────────────────────
-    // Initialize gettext catalog for the "umrs-ui" domain. Must be called
+    // Initialize gettext catalog for the "umrs-uname" domain. Must be called
     // before any i18n::tr() calls. Falls back to the msgid if no catalog
     // is found — no error surfaced to the user.
-    i18n::init("umrs-ui");
+    i18n::init("umrs-uname");
 
     // ── Logging ──────────────────────────────────────────────────────────
     // Best-effort journald logger. Failures are silently ignored — a TUI
