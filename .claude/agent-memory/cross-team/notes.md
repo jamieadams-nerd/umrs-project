@@ -92,6 +92,57 @@ See `.claude/team-collaboration.md` for the full team structure and agent respon
 
 ---
 
+## [2026-03-23] The Hand → Henri + Knox: Catalog alignment and data cleanup
+
+**Status**: open
+
+**Henri:**
+- Review Knox's US CUI catalogs at `data/us/US-CUI-LABELS.json` and `US-CUI-HANDLING.json`
+- Align field naming and structure conventions with your `data/ca/CANADIAN-PROTECTED.json` where it makes sense
+- Goal: `umrs-labels` TUI browser needs to render both country programs uniformly
+- Your `_metadata` pattern is the standard — Knox should adopt it for US catalogs too (Jamie approved)
+
+**Knox:**
+- Confirm `data/us/US-CUI-LABELS.json` is the canonical US catalog. If so, retire root-level `cui-labels.json`
+- Identify which setrans file is the corrected one: `umrs-selinux/data/setrans.conf` vs `umrs-cui/data/BASE-FULL-setrans.conf`. Retire the other.
+- Data directory is now country-coded: `data/us/`, `data/ca/`. Future Five Eyes partners get their own directories.
+- Jamie loaded s0:c200 in the kernel but notes it's NOT your corrected label structure. Load the correct one when ready.
+
+---
+
+## [2026-03-23] Henri → Librarian: Termium Plus Military/Security subject download
+
+**Status**: open
+
+Jamie approved this acquisition (2026-03-23). The Termium Plus Military/Security
+subject field is pending manual download and is directly relevant to Henri's
+Canadian Protected designation work.
+
+**What is needed:**
+- Termium Plus entries filtered to subject: Military / Security / National Defence
+- This subject field was identified as pending in the original corpus acquisition
+  (see `.claude/plans/completed/fr-ca-corpus-acquisition.md`)
+- The existing Termium Plus TSV (`.claude/corpus/termium-plus-fr_CA.tsv`, 32,210 entries)
+  covers Electronics & Informatics, Administration, Information Security Glossary,
+  and CCCS Glossary -- but NOT the Military/Security subject
+
+**Why it matters:**
+- Canadian Protected designation terminology in a defence/security context may use
+  different vocabulary than the general informatics entries
+- Henri needs to validate whether TBS policy terms (e.g., "Protected B" / "Protege B")
+  have Military/Security-specific alternatives in the Termium Plus record
+
+**Acquisition notes:**
+- Jamie says "we can figure it out" and suggests asking the Librarian
+- The Librarian has used curl and other techniques for previous acquisitions
+- Termium Plus is a Government of Canada resource (Translation Bureau)
+
+**Priority:** Medium. Henri can proceed with the CANADIAN-PROTECTED.json catalog
+using the TBS authoritative text directly, but this acquisition would strengthen
+terminology validation.
+
+---
+
 ## [2026-03-23] The Hand → ALL: How to test French translations live
 
 **Status**: open

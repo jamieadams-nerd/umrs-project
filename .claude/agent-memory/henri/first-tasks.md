@@ -28,9 +28,9 @@ Work with Herb (security-auditor) and Jamie to map out the Canadian Protected de
 **MCS Architecture (confirmed by Jamie):**
 - s0 = OS baseline
 - s1:c0–c199 = US CUI categories
-- s1:c200+ = Canadian Protected A
-- s2:c200+ = Canadian Protected B
-- s3:c200+ = Canadian Protected C
+- s1:c200-c299 = Canadian Protected A (c200 = tier marker, c201-c299 reserved)
+- s2:c200-c299 = Canadian Protected B (c200 = tier marker, c201-c299 reserved)
+- s3:c200-c299 = Canadian Protected C (c200 = tier marker, c201-c299 reserved; include in Phase 1 with caveat)
 
 **Collaborators:** Henri (regulatory accuracy) + Herb (security controls) + Jamie (decisions)
 
