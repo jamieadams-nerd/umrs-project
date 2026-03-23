@@ -53,8 +53,9 @@ the right place to start.
 | xref:auditor-guide.adoc[Auditor's Guide]
 | Security auditors
 
-| *Case Study*
-| xref:case-study-rmf-corpus.adoc[Case Study: RMF Methodology Corpus]
+| *Case Studies*
+| xref:case-study-rmf-corpus.adoc[Case Study: RMF Methodology Corpus],
+  xref:case-study-henris-first-day.adoc[Case Study: Henri's First Day]
 | Adopters, contributors
 |===
 

@@ -13,8 +13,11 @@ bash -c 'curl -L -s --max-time 60 -A "Mozilla/5.0" "<pdf-url>" > <dest.pdf>'
 Rules: MUST use `>` inside bash -c string. `curl -o <path>` as separate arg is blocked by sandbox.
 Verify PDF: `head -c 4 <file>` must show `%PDF`.
 
-## Source Availability (updated 2026-03-22)
+## Source Availability (updated 2026-03-23)
 
+- cyber.gc.ca: **BLOCKED by RHEL10 FIPS** — TLS `ems not enabled`; all CCCS documents (ITSG-33, ITSP.*) require manual download
+- tbs-sct.canada.ca: curl WORKS with Firefox UA; some IDs need `Accept-Language: fr-CA,fr;q=0.9` for FR pages; use `&section=html` for cleaner extraction; Python extractor at `.claude/agent-memory/henri/extract_pol.py`
+- laws-lois.justice.gc.ca: curl WORKS without special headers; use `FullText.html` (EN) / `TexteComplet.html` (FR) for complete acts
 - hci.stanford.edu: **BLOCKED by RHEL10 FIPS** — TLS `ems not enabled`; WebFetch HTML only; Stanford CS147 = manual download
 - worrydream.com, isko.org, ocw.mit.edu, inlibra.com, bazerman.education.ucsb.edu: **curl WORKS**
 - ocw.mit.edu: hash-prefixed PDFs — scrape `/resources/<name>/` page to get hash, then fetch `/<hash>_<filename>.pdf`
@@ -203,3 +206,4 @@ Helper scripts: `refs/extract_termium.py`, `refs/extract_gdt.py`, `refs/parse_te
 - Full pending list: see `research-priorities.md` in this directory
 - CPU corpus: see `cpu-corpus-state.md` for phase state
 - TERMIUM Military/Security subject ZIP: manual download needed (resource 99a220a8 at open.canada.ca)
+- Henri regulatory corpus: 14 files (8 docs EN+FR) acquired 2026-03-23 at `.claude/agent-memory/henri/corpus/`; CCCS docs blocked — see corpus-index.md; ITSP.10.222 does not exist (correct: ITSG-33 Annex 4A)

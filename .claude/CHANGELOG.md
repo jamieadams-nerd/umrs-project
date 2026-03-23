@@ -1,5 +1,64 @@
 # Changelog
 
+## 2026-03-23
+
+### i18n / French Localization — Milestone Achieved
+- Fixed domain name mismatch in umrs-uname: "umrs-ui" → "umrs-uname" in i18n::init() call
+- Fixed const fn help_text_for_tab() to fn — required for i18n::tr() invocations in non-const context
+- Wrapped 18+ user-facing string sites across umrs-uname with i18n::tr() locale lookups
+- Wrapped all display.rs annotation strings (umrs-platform) with i18n::tr() and applied title-casing to all status values (Disabled, Enabled, Not Present, etc.)
+- Wrapped "Recommended" label in umrs-ui data_panel.rs with i18n::tr()
+- Added header label translations (Assessment, Host, Tool, OS, Assessed, SELinux, FIPS) to localization domain
+- Added UMRS_LOCALEDIR environment variable override to umrs-core/src/i18n.rs for development testing and corpus validation
+- Shortened Evidence tab key translations for column alignment (Confiance, Palier, Motifs, Preuves)
+- Improved Evidence tab layout with group separators matching kernel tab visual structure
+- **First successful French Canadian (fr_CA) TUI rendering** — umrs-uname fully localized and verified with visual checklist
+
+### Localization Build Pipeline & Data Files
+- Fixed Makefile i18n-build targets: corrected locale list delegation to per-domain compile rules
+- Fixed .mo output paths to gettext standard layout (`<locale>/LC_MESSAGES/<domain>.mo`)
+- Corrected .po file: replaced Unicode escapes with literal UTF-8 and removed duplicate msgids
+- Updated run-as-french.sh test harness to use UMRS_LOCALEDIR for offline corpus testing
+- Added umrs-uname and umrs-platform to Makefile I18N_TEXT_DOMAINS and I18N_ACTIVE_DOMAINS
+- Simone delivered complete .pot (template) and .po (French Canadian) translation files for both domains
+- Corpus delta report validated: pre-corpus translation accuracy was high; post-corpus terminology (e.g., "posture de sécurité") confirmed by Termium Plus
+
+### French Canadian Corpus Acquisition — Government Standards
+- Librarian acquired Termium Plus: 32,210 authoritative federal terminology entries from Government of Canada
+- Librarian acquired OQLF GDT: 25,881 Quebec official terminology entries
+- Updated french-lookup skill with .tsv priority chain (Termium → GDT → GNU fallback)
+- Updated french_lookup.sh script to parse .tsv corpus files with formatted output
+- Created fr-ca-corpus-acquisition.md plan documenting acquisition, reconciliation, and ongoing maintenance strategy
+- Helper extraction scripts retained in refs/ (Termium and OQLF GDT parsers)
+
+### RAG & Knowledge Management Expansion
+- Ingested 10 RAG collections: MIT 6.831 (572 chunks), NISO Z39.19 (186), information architecture theory (55), HCI theory papers (43), technical communication (17)
+- Created rag-inventory skill at `.claude/skills/rag-inventory/` for displaying complete RAG database state
+- Post-ingestion familiarization reflections written: Elena (15K words on knowledge organization/IA), Rusty (21K on HCI theory/accessibility), Herb (37K on accreditation frameworks)
+- Familiarization process surfaced 9 enhancement proposals across Elena/Rusty/Herb reflections
+
+### Performance Rescan — Full Coverage
+- Rusty completed full crate performance rescan: 16 findings identified across all crates with explicit security impact statements
+- P-01 (render loop memory allocation) flagged as highest-value optimization opportunity (rendering subsystem)
+- All findings include justification noting: no findings affect security posture
+
+### Agent Memory & Infrastructure Consolidation
+- Consolidated agent-memory from `components/rusty-gadgets/.claude/agent-memory/` → project root `.claude/agent-memory/`
+- Deleted guest-admin and three specialist (rust-developer, sage, security-auditor) memory directories from nested location
+- Updated umrs-translator, researcher, and cross-team memory in root location with today's session context
+
+### Dependencies & Code Changes
+- Added umrs-core dependency to umrs-platform Cargo.toml (required for i18n::tr() in display.rs)
+- Updated umrs-core/src/i18n.rs with UMRS_LOCALEDIR override logic for development testing
+- Updated resources/i18n domains.md and vocabulary-fr_CA.md with new domain inventory and translation context
+
+### Documentation & Reports
+- Created visual verification checklist for translation quality assurance
+- Created corpus delta report comparing pre/post-corpus French Canadian translation accuracy
+- Generated umrs-platform display supplement report documenting all wrapped annotation strings
+- Generated umrs-uname unwrapped strings report and rescan analysis
+- Added i18n report directory: resources/i18n/reports/
+
 ## 2026-03-22
 
 ### Infrastructure & Governance

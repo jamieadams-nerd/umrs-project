@@ -242,7 +242,14 @@
       "Bash(RAG_CHROMA_PATH=/media/psf/repos/ai-rag-vdb/chroma python query.py \"learnability visibility error prevention user interface design\" --collection hci-courses-mit-6831 --top-k 5)",
       "Bash(RAG_CHROMA_PATH=/media/psf/repos/ai-rag-vdb/chroma python query.py \"continuous monitoring assessment methodology authorization\" --collection accreditation-artifacts --top-k 5)",
       "Bash(RAG_CHROMA_PATH=/media/psf/repos/ai-rag-vdb/chroma python query.py \"genre theory social action rhetorical situation\" --collection technical-communication-theory --top-k 3)",
-      "Bash(tee /media/psf/repos/umrs-project/.claude/reports/elena-familiarization-reflection-2026-03-23.md)"
+      "Bash(tee /media/psf/repos/umrs-project/.claude/reports/elena-familiarization-reflection-2026-03-23.md)",
+      "Bash(tee /media/psf/repos/umrs-project/.claude/reports/rusty-familiarization-reflection-2026-03-23.md)",
+      "Bash(tee /media/psf/repos/umrs-project/.claude/reports/herb-familiarization-reflection-2026-03-23.md)",
+      "Bash(tee /media/psf/repos/umrs-project/.claude/reports/performance-rescan-2026-03-23.md)",
+      "Bash(/media/psf/repos/umrs-project/resources/i18n/umrs-uname/fr_CA.po:*)",
+      "Bash(mkdir -p .claude/plans/completed)",
+      "Bash(mv .claude/plans/tui-contradiction-display.md .claude/plans/completed/)",
+      "Bash(sudo -u umrs-agent -i bash -c 'id')"
     ]
   },
   "enabledPlugins": {

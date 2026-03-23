@@ -1,0 +1,77 @@
+english	french	source	domain	notes
+Access to Information Act	Loi sur l'accès à l'information	ATIA (R.S.C. 1985 c. A-1)	legislation	Fundamental access rights legislation
+Privacy Act	Loi sur la protection des renseignements personnels	Privacy Act (R.S.C. 1985 c. P-21)	legislation	Personal information protection
+Official Languages Act	Loi sur les langues officielles	OLA (R.S.C. 1985 c. 31 4th Supp.)	legislation	Bilingual obligations
+Policy on Government Security	Politique sur la sécurité du gouvernement	TBS id=16578	security policy	Effective 2019-07-01; amended 2025-01-06
+Directive on Security Management	Directive sur la gestion de la sécurité	TBS id=32611	security policy	Effective 2019-07-01
+Standard on Security Categorization	Norme sur la catégorisation de sécurité	TBS id=32614	security standard	Appendix J of Directive on Security Management
+Directive on Privacy Practices	Directive sur les pratiques relatives à la protection de la vie privée	TBS id=18309	privacy policy	Effective 2024-10-09; replaces 2022 version
+deputy head	administrateur général	TBS Directive on Security Management	governance	Head of a government institution
+chief security officer	agent de sécurité du ministère	TBS Directive on Security Management	security governance	CSO — designated by deputy head
+security plan	plan de sécurité ministériel	TBS Directive on Security Management	security governance	Departmental security plan
+security category	catégorie de sécurité	TBS Standard on Security Categorization	classification	Very high / high / medium / low
+confidentiality	confidentialité	TBS Standard on Security Categorization	security property	One of three security properties (CIA)
+integrity	intégrité	TBS Standard on Security Categorization	security property	One of three security properties (CIA)
+availability	disponibilité	TBS Standard on Security Categorization	security property	One of three security properties (CIA)
+injury	préjudice	TBS Standard on Security Categorization	impact assessment	Used for all impact levels
+Top Secret	Très secret	TBS Standard on Security Categorization	classification level	National interest — exceptionally grave injury
+Secret	Secret	TBS Standard on Security Categorization	classification level	National interest — serious injury
+Confidential	Confidentiel	TBS Standard on Security Categorization	classification level	National interest — limited or moderate injury
+Protected C	Protégé C	TBS Standard on Security Categorization	classification level	Outside national interest — extremely grave injury (e.g. loss of life)
+Protected B	Protégé B	TBS Standard on Security Categorization	classification level	Outside national interest — serious injury (e.g. loss of reputation)
+Protected A	Protégé A	TBS Standard on Security Categorization	classification level	Outside national interest — limited or moderate injury (e.g. exact salary)
+classified	classifié	TBS Standard on Security Categorization	classification term	Top Secret / Secret / Confidential — national interest
+protected	protégé	TBS Standard on Security Categorization	classification term	Protected A/B/C — non-national interest
+unclassified	non classifié	TBS Standard on Security Categorization	classification term	No injury expected from compromise
+non-sensitive	non délicate	TBS Standard on Security Categorization	classification term	No injury; treated as low impact
+security incident	incident de sécurité	TBS Directive on Security Management	security operations	Event requiring response/reporting
+security risk	risque de sécurité	TBS Policy on Government Security	risk management	To be assessed and documented
+residual security risk	risque de sécurité résiduel	TBS Directive on Security Management	risk management	Actions must be documented
+security control	contrôle de sécurité	TBS Directive on Security Management	security management	Practices implemented to meet requirements
+security governance	gouvernance de la sécurité	TBS Directive on Security Management	governance	Senior officials with security responsibilities
+senior official	cadre supérieur	TBS Directive on Security Management	governance	Designated with security responsibilities
+personal information	renseignements personnels	Privacy Act; TBS Directive on Privacy	privacy	Information about an identifiable individual
+personal information bank	fichier de renseignements personnels	Privacy Act s.10; TBS Directive on Privacy	privacy	PIB — FRP in French; registered collection of PI
+privacy impact assessment	évaluation des facteurs relatifs à la vie privée	TBS Directive on Privacy	privacy	PIA — EFVP in French
+government institution	institution fédérale	ATIA s.3; Privacy Act s.3; OLA s.3	legislation	Any department or body listed in Schedule I
+information commissioner	commissaire à l'information	ATIA s.54	access rights	Officer of Parliament; access to information oversight
+privacy commissioner	commissaire à la protection de la vie privée	Privacy Act s.53	privacy rights	Officer of Parliament; privacy oversight
+commissioner of official languages	commissaire aux langues officielles	OLA s.49	official languages	Officer of Parliament; OLA oversight
+right of access	droit d'accès	ATIA s.4; Privacy Act s.12	access rights	Canadian citizens and permanent residents
+request for access	demande de communication	ATIA s.6; Privacy Act s.13	access rights	Formal request mechanism
+exemption	exception	ATIA Part I Division 2; Privacy Act s.18-28	access rights	Categories where access may be refused
+exclusion	exclusion	ATIA s.68-69; Privacy Act s.69	access rights	Information outside the Acts entirely
+proactive publication	publication proactive	ATIA Part 2 (ss.71.01+)	transparency	Mandatory proactive disclosure
+language of work	langue de travail	OLA Part V (s.33.1+)	official languages	Right to work in either official language
+communications and services	communications et services	OLA Part IV (s.21+)	official languages	Service delivery in official languages
+significant official language minority	minorité de langue officielle importante	OLA Part IV	official languages	Triggers bilingual service obligations
+Treasury Board	Conseil du Trésor	TBS policies generally	governance	Employer; policy-setting authority
+Treasury Board Secretariat	Secrétariat du Conseil du Trésor	TBS policies generally	governance	TBS — administrative arm of Treasury Board
+information technology security	sécurité des technologies de l'information	TBS Directive on Security Management Appendix B	IT security	IT security controls (Appendix B)
+physical security	sécurité physique	TBS Directive on Security Management Appendix C	physical security	Physical security controls (Appendix C)
+business continuity management	gestion de la continuité des activités	TBS Directive on Security Management Appendix D	continuity	BCM controls (Appendix D)
+information management security	sécurité de la gestion de l'information	TBS Directive on Security Management Appendix E	IM security	IM security controls (Appendix E)
+security screening	filtrage de sécurité	TBS Policy on Government Security Annex A.1	personnel security	Full lifecycle screening; Directive on Security Screening (2025-01-06)
+security clearance	habilitation de sécurité	TBS Policy on Government Security	personnel security	Can be refused revoked or suspended by deputy head
+Protected B Medium Medium	Protégé B Intégrité moyenne Disponibilité moyenne	CCCS ITSG-33 Annex 4A	PBMM	PBMM profile — basis for GC cloud security assessment
+security categorization process	processus de catégorisation de la sécurité	TBS Standard on Security Categorization J.2.2	classification	Examine CIA separately; assign impact levels
+aggregation	regroupement	TBS Standard on Security Categorization J.2.2.4	classification	Group of assets may have higher category than individual items
+safeguard	mesure de protection	TBS Standard on Security Categorization J.2.2.5	risk management	Cost-benefit consideration in categorization
+data residency	résidence des données	GC Cloud Security (implicit)	cloud security	Where data is physically stored
+Government of Canada	Gouvernement du Canada	All sources	general	GC — Gouvernement du Canada (GdC)
+Crown corporation	société d'État	ATIA Schedule I	governance	Included in access to information regime
+department	ministère	ATIA; Privacy Act; OLA	governance	Core federal institution
+agency	organisme	ATIA; Privacy Act	governance	Non-departmental federal body
+proactive disclosure	divulgation proactive	ATIA Part 2	transparency	Mandatory publication without request
+access request	demande d'accès	ATIA s.6	access rights	Written request to institution head
+30-day response period	délai de réponse de 30 jours	ATIA s.7	access rights	Standard response timeline
+complaint	plainte	ATIA s.30; Privacy Act s.29	oversight	Filed with Commissioner
+investigation	enquête	ATIA s.32; Privacy Act s.31	oversight	Commissioner-led investigation
+order	ordonnance	ATIA s.36.1	enforcement	Commissioner order — binding
+Federal Court	Cour fédérale	ATIA s.41; Privacy Act s.41	judicial review	Review of access/privacy decisions
+official language minority community	communauté de langue officielle en situation minoritaire	OLA Part VII	official languages	Advancement obligations
+positive measures	mesures positives	OLA Part VII (s.41+)	official languages	Concrete steps to advance OLA Part VII
+French-speaking Canadians	Canadiens d'expression française	OLA s.39+	official languages	Participation in federal institutions
+English-speaking Canadians	Canadiens d'expression anglaise	OLA s.39+	official languages	Participation in federal institutions
+bilingual district	district bilingue	OLA Part IV	official languages	Geographic trigger for bilingual services
+significant demand	demande importante	OLA Part IV	official languages	Trigger for bilingual service delivery

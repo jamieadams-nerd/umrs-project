@@ -1,0 +1,388 @@
+= Case Study: Henri's First Day at the Office
+:description: How a new specialized AI agent — Canadian government regulatory specialist — was onboarded to a mature project team and delivered eight specific findings, three formal filings, and a correction of the team's own terminology within hours of arrival.
+:toc: left
+:toclevels: 2
+
+[id="case-study-henris-first-day"]
+
+There is a management question that haunts every complex project:
+how long does it take before a new team member is actually useful?
+
+For a human consultant joining a security engineering project,
+a realistic answer is weeks.
+You have to read the codebase, learn the conventions, understand the history,
+figure out where your lane ends and someone else's begins.
+You get up to speed slowly, with lots of hand-holding.
+That is not a criticism — it is just how complex systems work.
+
+Henri was productive in hours.
+
+This case study documents what happened, why it happened, and what it means for how the
+UMRS team thinks about building AI capacity.
+
+== Who Henri Is
+
+Henri is a Canadian government information management and bilingual policy specialist.
+His job is regulatory accuracy.
+
+That distinction — regulatory accuracy, not linguistic accuracy — matters enormously.
+Simone, the team's French Canadian translator, owns linguistic correctness.
+She validates that translated security terms are proper Canadian federal French,
+grounded in Termium Plus and the OQLF Grand dictionnaire terminologique.
+
+Henri owns a different question: do those terms carry the correct legal and policy weight
+in a Canadian federal context?
+
+A term can be linguistically correct and policy-wrong simultaneously.
+Termium Plus may confirm that "étiquette de sécurité" is the proper French for
+"security label."
+The TBS Directive on Security Management may use different vocabulary in its formal policy
+text.
+In a security assessment, the policy vocabulary governs.
+That is Henri's lane.
+
+His domain spans:
+
+* Mapping UMRS MLS labels to Canadian Protected A/B/C designations
+* Resolving Termium Plus vs OQLF GDT terminology divergences on policy questions
+* Validating Five Eyes interoperability claims from the Canadian side
+* Flagging ATIP (Access to Information and Privacy) implications
+* Verifying Official Languages Act compliance for bilingual material
+* Cross-referencing Simone's translations against TBS policy instruments
+
+The reason Henri exists is that UMRS is heading toward Five Eyes interoperability.
+Canadian Protected A/B/C designations need to coexist with US CUI categories in the same
+MCS configuration.
+The kernel does not care about nationality — categories are categories and it enforces set
+membership regardless of which country defined the policy.
+But someone has to validate that the Canadian side of that mapping is correct.
+That is not Simone's job.
+It is not Herb's job (he owns US security controls).
+It is a new specialized function that the team did not have.
+
+== What Was Ready Before Henri Arrived
+
+The onboarding process for Henri was the same process you would run for a human specialist
+joining a complex project: set up his desk, put the relevant materials in front of him,
+and ask him to read everything and write down what he found.
+
+What made that possible was what was already built.
+
+=== The Terminology Infrastructure
+
+Before Henri's first session, the Librarian had assembled 58,091 terminology corpus entries:
+
+* *Termium Plus* (`.claude/corpus/termium-plus-fr_CA.tsv`): 32,210 entries from the
+  Government of Canada Translation Bureau, covering Electronics and Informatics,
+  Administration, the Information Security Glossary, and the CCCS Glossary.
+  Coverage analysis showed 100% of 41 sampled UMRS key terms were present.
+* *OQLF GDT* (`.claude/corpus/oqlf-gdt-fr_CA.tsv`): 25,881 entries from the Grand
+  dictionnaire terminologique, covering IT, security, public administration, and
+  national defence.
+  Coverage was 82% of the sampled terms, with "mandatory access control" and
+  "security label" among the gaps — both of which Termium Plus covers.
+* Production GNU `.po` files for coreutils, bash, findutils, grep, sed, tar, and
+  cryptsetup — proven Canadian French vocabulary for CLI terms.
+
+This is not background reference material.
+It is infrastructure Henri uses immediately to validate every terminology decision.
+On day one, he could already tell whether a Simone translation matched federal authority,
+whether Termium Plus and OQLF diverged on a given term, and which source governs in
+which context.
+
+=== The Policy Corpus
+
+Jamie prepared a detailed five-priority-tier acquisition brief for the Librarian before
+Henri arrived (`.claude/jamies_brain/librarian-henri-needs.md`).
+
+The brief specified:
+
+* *Priority 1*: TBS Directive on Security Management, Standard on Security Categorization,
+  Policy on Government Security, Directive on Privacy Practices — both languages for each
+* *Priority 2*: CCCS guidance (ITSP.10.222, PBMM profile, CSE practitioner tools)
+* *Priority 3*: Legislation — Access to Information Act, Privacy Act, Official Languages Act,
+  Charte de la langue française (Loi 101)
+* *Priority 4*: Five Eyes and NATO interoperability context
+* *Priority 5*: Canadian Cybersecurity Strategy, CSE public guidance
+
+The brief included a critical design decision: acquire every TBS policy document in both
+official languages, with the bilingual pairing treated as training material.
+The TBS's own French renderings of its policy terms are the authoritative source for
+regulatory term mapping — more authoritative than any terminology database entry.
+
+At Henri's arrival, the TBS Directive on Security Management in English had been acquired.
+The rest was in queue.
+This partial corpus was enough for a productive first day, while also producing a clear
+finding about what remained missing.
+
+=== The Project Architecture
+
+Henri had access to the same infrastructure every team member reads at session start:
+
+* ROADMAP with goals G1–G10 and milestones M1–M5
+* Team collaboration rules including role boundaries and the review pipeline
+* Architecture documentation
+* Existing CUI labeling work and Five Eyes research
+* The Phase 1 / Phase 2 language directive (the approved constraint that requires
+  "awareness and custody" language for Phase 1, enforcement language only for Phase 2)
+* Simone's translation pipeline documentation and the `.po` files for `umrs-uname`
+
+None of this required hand-holding.
+Henri read it, formed a picture of the project, and went to work.
+
+== What Henri Produced
+
+Henri was asked to do exactly what you would ask a new human consultant to do: read
+everything relevant, write orientation notes, identify gaps, ask questions.
+
+The orientation notes (`.claude/agent-memory/henri/orientation-notes.md`) are 1,800 words.
+They document what the project is, where Henri fits in the team structure, what work already
+exists that touches his domain, and then — the payoff — eight specific gaps, six questions
+for Jamie, and his own initial observations.
+
+=== The Eight Gaps
+
+Henri produced eight specific, actionable findings in a single orientation pass:
+
+*Gap 1 — No Canadian Protected A/B/C mapping exists.*
+The CUI labeling work is entirely US-focused.
+ROADMAP milestone M3 explicitly calls for "Canadian CUI equivalent labels"
+but no structured mapping has been produced.
+This is the most critical gap for Five Eyes interoperability.
+
+*Gap 2 — The CUI-to-Protected mapping will break down.*
+US CUI is a category-based taxonomy.
+Canadian Protected A/B/C is impact-based tiering.
+These are structurally different systems and a simple equivalency table will be inaccurate:
+
+* Protected A (low injury) maps to specific CUI categories like PII, not to CUI Basic as a whole
+* Protected B (serious injury) maps to CUI Specified categories with enhanced handling requirements
+* Protected C (extremely grave injury) has no direct CUI equivalent — CUI tops out below classified;
+  Protected C sits at the classified boundary
+
+A formal mapping with explicit caveats is required, not a simple table.
+
+*Gap 3 — No Canadian policy validation of labels or tool output.*
+No one had reviewed what a Canadian operator sees when UMRS displays CUI markings,
+whether dual-marking (CUI alongside PROTEGE B) is required on Canadian government systems,
+or what the Official Languages Act obligations are for tool output in bilingual deployments.
+
+*Gap 4 — The terminology corpus is not policy-validated.*
+Termium Plus confirms correct federal French.
+It does not confirm correct regulatory weight in a security context.
+The TBS Directive's own terminology governs in a security assessment.
+A term being in Termium Plus is necessary, not sufficient.
+
+*Gap 5 — The corpus is incomplete.*
+Only the TBS Directive on Security Management in English had been acquired.
+Missing: the French version, the Standard on Security Categorization, the Policy on
+Government Security, the Access to Information Act, the Privacy Act, the Official Languages Act,
+and all CCCS guidance.
+The Standard on Security Categorization is the most urgent gap — it is the Canadian equivalent
+of the CUI categorization process.
+
+*Gap 6 — No ATIP review has been done.*
+If UMRS deploys on Canadian government systems, ATIP obligations will apply to system security
+posture reports, CUI label definitions and mappings, and assessment engine findings.
+Not urgent for Phase 1, but critical before any Canadian government deployment.
+
+*Gap 7 — French translations are linguistically correct but policy-unvalidated.*
+Simone's coinages — "verrou dur" for hard gate, "palier de confiance" for trust tier —
+may be linguistically sound and corpus-backed, but have not been cross-referenced against
+TBS policy vocabulary.
+Until that review is done, they are linguistically correct and policy-status-unknown.
+
+*Gap 8 — The Phase 1 Language Directive needs a Canadian equivalent.*
+The existing directive constrains enforcement language for the US context.
+A Canadian equivalent is needed, using TBS vocabulary: "Les fichiers sont étiquetés
+et visibles" (files are labeled and visible) rather than "L'accès est contrôlé"
+(access is controlled) for Phase 1.
+
+=== The Terminology Correction
+
+Henri's most immediately visible contribution was a correction of the team's own language.
+
+The ROADMAP phrasing — "Canadian CUI equivalent labels (3 basic labels — Five Eyes interop)"
+— had been accepted shorthand.
+Henri identified it as misleading:
+
+[quote, Henri — orientation notes]
+____
+The phrasing "Canadian CUI equivalent labels" in the ROADMAP is misleading.
+Canada does not have CUI equivalents.
+Canada has Protected A/B/C, which is a different system with a different structure.
+What I will produce are Canadian Protected designations with documented approximate
+correspondence to US CUI — with caveats at every level where the mapping breaks down.
+____
+
+This is not a pedantic correction.
+It is a finding with engineering consequences.
+If the team treats the mapping as a simple equivalency, the resulting MCS label architecture
+will assert accuracy it does not have.
+An engineer implementing the Five Eyes interoperability feature, or a Canadian government
+auditor reviewing the deployment, will identify the discrepancy.
+
+Getting the terminology right before implementation begins is exactly what a specialist is for.
+
+=== The Naming Analysis
+
+Henri was also asked to find the canonical short name for the Canadian program — the equivalent
+of "CUI" as a compact identifier.
+
+His answer was precise: there is no such abbreviation, and the absence is structural.
+
+The US CUI program is a branded policy program with a formal name, an administering agency
+(NARA), and a federal regulation (32 CFR Part 2002).
+The abbreviation CUI is the program name made compact.
+
+Canada has a classification framework, not a branded program.
+"Protected" and "Protégé" are the actual policy terms — the designation words themselves,
+not abbreviations.
+They appear in the TBS Directive on Security Management as written, in both official languages.
+
+For compact reference contexts, PA/PB/PC work — and they are bilingual by nature, since
+the French designation words (Protégé A, Protégé B, Protégé C) carry the same abbreviation.
+
+Henri filed three formal findings from this analysis:
+
+[cols="1,1,3", options="header"]
+|===
+| Finding | Severity | Summary
+
+| No official CUI-equivalent abbreviation
+| Informational
+| Canada has no program name equivalent to "CUI." "Protected" and "Protégé" are the
+  designation words, not abbreviations.
+
+| Structural difference between CUI and Protected
+| High
+| CUI is a category-based taxonomy. Protected A/B/C is impact-based tiering.
+  The mapping requires explicit caveats. Treating them as equivalent will produce
+  incorrect claims.
+
+| Bilingual marking display question
+| Medium
+| When UMRS displays information on a Canadian government system, does it display
+  the English designation, the French designation, or both?
+  The Official Languages Act may require both in certain deployment contexts.
+  This is unresolved.
+|===
+
+=== The Six Questions for Jamie
+
+Henri's six questions are worth reading in full because of what they reveal about his
+understanding of the project:
+
+. Is UMRS expected to be deployed on Canadian government systems? (This determines whether
+  his work is advisory — informing Five Eyes interoperability documentation — or prescriptive —
+  producing deployment-ready Canadian configurations.)
+. What is the relationship between UMRS and the Canadian government procurement process?
+  (If UMRS needs to pass a Canadian government security assessment, the TBS Standard on
+  Security Categorization becomes a hard requirement, not a reference.)
+. Should the Librarian prioritize the Standard on Security Categorization over other Priority 1
+  documents?
+. Has Jamie discussed UMRS with any Canadian government contacts?
+. Which CUI categories will have French labels in the Canadian program?
+. The Termium Plus Military/Security subject download is pending manual action —
+  can Jamie prioritize this?
+
+These are not orientation questions.
+These are requirements scoping questions.
+Question 1 is the difference between two fundamentally different work programs.
+Question 2 is the difference between a reference document and a compliance gate.
+A consultant who generates questions at this level on day one is already doing useful work.
+
+== What Made This Possible
+
+Henri's day-one quality was not accidental.
+It was the direct result of what was available for him to read.
+
+The UMRS project has been building documentation and infrastructure for months.
+Every piece of that investment paid a return on the day Henri arrived.
+
+*The terminology corpus.* 58,091 entries in hand before Henri's first session meant he
+could validate coverage immediately.
+He could note that Termium Plus covered 100% of sampled UMRS terms and that the OQLF GDT
+missed "mandatory access control" — a specific, citable finding on his own corpus status.
+Without that infrastructure, he would have had to build it from scratch before doing any
+policy work.
+
+*The architecture documentation.* Because the project had clear documentation of what UMRS
+is (a two-phase system with targeted policy now and MLS enforcement later), Henri could
+correctly characterize Phase 1 capabilities and identify where enforcement language is
+premature.
+He did not need to ask "what does this thing actually do?" — he could read it.
+
+*The team-collaboration rules.* Henri read the team structure, role boundaries, and review
+pipeline before writing a word of orientation notes.
+That is why his role analysis was precise: he knew exactly where Simone's lane ended and
+his began, and why that boundary exists.
+He did not invent the boundary — he read it, validated it, and accepted it.
+
+*The Phase 1 / Phase 2 language directive.* This approved constraint — written weeks before
+Henri arrived — meant he could assess the regulatory credibility of UMRS's own Phase 1 claims.
+He explicitly cited it as "exactly right for regulatory credibility."
+It also told him where Gap 8 was: a Canadian equivalent of this directive was needed, and
+no one had written it yet.
+
+*The CUI labeling research.* Because the project had an existing US-focused CUI labeling
+workstream, Henri could identify exactly what was missing on the Canadian side.
+His Gap 1 finding — no Canadian Protected A/B/C mapping exists — is only meaningful because
+he could see that a US mapping did exist.
+You cannot identify a gap unless you can see the boundary.
+
+*The Five Eyes research.* The existing Five Eyes documentation gave Henri the conceptual
+context for the US/Canada mapping challenge.
+He arrived knowing the structural difference between the two systems had already been noted
+in the research notes.
+His contribution was to escalate that observation from a note to a formal finding with
+engineering consequences.
+
+Put these pieces together and the pattern is clear:
+
+[NOTE]
+====
+Documentation investment compounds.
+Every architecture doc, every role boundary definition, every research artifact,
+every terminology decision that was written down rather than held in someone's head —
+all of it became available to Henri the moment he arrived.
+The onboarding time was short because the reading material was rich.
+====
+
+== The Replicable Pattern
+
+The onboarding process that produced these results was not custom-designed for Henri.
+It was the same process every agent on this team uses:
+
+. *Set up the desk.* Create the memory directory, initialize `MEMORY.md`, establish the
+  agent definition with role boundaries and finding format.
+. *Commission the corpus.* The Librarian acquires domain-specific reference material using
+  a structured acquisition brief.
+  Bilingual pairing is specified where the domain requires it.
+  Priority tiers ensure the most important documents arrive first.
+. *Self-directed orientation.* The agent reads everything relevant: architecture docs,
+  ROADMAP, team collaboration rules, existing domain work, active plans.
+  No hand-holding.
+  The output is a written deliverable: orientation notes with gaps, questions, and findings.
+. *Review and assignment.* Jamie reviews the orientation output, answers the questions,
+  and assigns first tasks.
+
+This is exactly what you would do for a human specialist.
+Set up their desk.
+Get them the relevant documents.
+Ask them to read and write down what they found.
+Review it together.
+Give them their first assignment.
+
+The difference is that Henri read and synthesized a substantial domain corpus in a fraction
+of the time a human specialist would require.
+And he could not cut corners on reading the architecture docs or the team collaboration rules
+— those were load-bearing for the quality of his orientation notes.
+
+== See Also
+
+* xref:agent-roles.adoc[Agent Roles and Responsibilities]
+* xref:case-study-rmf-corpus.adoc[Case Study: RMF Methodology Corpus]
+* xref:knowledge-pipeline.adoc[How Knowledge Enters the System]
+* xref:corpus-familiarization.adoc[Corpus Familiarization]
+* xref:final-cast-and-crew.adoc[The Team: Cast and Crew]

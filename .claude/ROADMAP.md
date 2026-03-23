@@ -1,6 +1,6 @@
 # UMRS ROADMAP
 
-**Updated:** 2026-03-16
+**Updated:** 2026-03-23
 
 High-assurance Rust platform for system security on Linux.
 Typed, provenance-verified answers about what a system is, what it runs, and whether it meets policy.
@@ -136,15 +136,15 @@ applies consistently across all sites.
 
 ## Milestones
 
-### M1 — Solid Foundation (current) (G1, G2, G8)
+### M1 — Solid Foundation — COMPLETE (2026-03-23) (G1, G2, G8)
 - [x] OS detection with trust tiers
 - [x] SELinux modeling (SecurityContext, MLS, CategorySet, SecureDirent)
-- [ ] Kernel posture probe complete (through Phase 2b)
-- [ ] CPU corpus research complete
-- [ ] Security-auditor methodology corpus ingested
+- [x] Kernel posture probe complete (Phase 2c — 2026-03-17)
+- [x] CPU corpus research complete (60 files, 645 RAG chunks — 2026-03-18)
+- [x] Security-auditor methodology corpus ingested (Phase 3 — 2026-03-17)
 - [x] Documentation restructure complete (2026-03-12)
 
-### M2 — Assessment Capable (G1, G4, G6)
+### M2 — Assessment Capable (current) (G1, G4, G6)
 - [ ] Assessment engine v1 (evidence/assertion/finding pipeline)
 - [ ] OSCAL export working
 - [ ] CPU extension detection (three-layer model)
@@ -152,10 +152,13 @@ applies consistently across all sites.
 
 ### M3 — CUI Ready (G3)
 - [ ] CUI label definitions
+- [ ] Canadian CUI equivalent labels (3 basic labels — Five Eyes interop)
 - [ ] MCS translation
       - Install utility to choose CUI categories and optional Five Eyes
 - [ ] Five Eyes interop mapping
-- [ ] French translations for all tool domains (Five Eyes demonstration)
+- [x] French translation pipeline operational (Termium Plus + OQLF GDT corpus, 58K entries — 2026-03-23)
+- [x] First tool domain translated: umrs-uname fr_CA (Canadian federal security French — 2026-03-23)
+- [ ] French translations for remaining tool domains (umrs-ls, umrs-stat, umrs-platform)
 - [ ] Extending label information to external systems:
       - Apache module which can read the SELinux label adn then add an http header to indicate
         the file being servied is CUI and deserves awareness.
@@ -195,10 +198,12 @@ in this milestone when the project moves from user-local to system-installed.
 ### M5 — AI Transparency (G10)
 - [x] Antora module: `ai-transparency` (2026-03-15)
 - [x] Agents and their roles (2026-03-15 — agent-roles.adoc with aliases)
-- [ ] Corpus/RAG setup — how we improved agents with authoritative knowledge
+- [x] Corpus/RAG pipeline operational — 33 collections, 36,898 chunks, rag-inventory skill (2026-03-23)
       - Document every collection, its sources, and why it exists
       - The pipeline: Jamie identifies knowledge gap → researcher acquires → corpus built →
         familiarization skill has target agent read it → agent produces grounded work
+- [x] Agent familiarization process demonstrated — Elena/Rusty/Herb reflections (73K words, 2026-03-23)
+- [x] Simone corpus case study — agent identifies own quality gap, directs infrastructure (2026-03-23)
 - [ ] Knowledge provenance: how security claims trace back to authoritative sources
 - [ ] Roadmap, plans, tasks, and the jamies_brain/new-stuff intake concept
 - [ ] Workflow and feedback — how we ensure agents get what they need

@@ -18,4 +18,6 @@
 ** xref:knowledge-provenance.adoc[Knowledge Provenance and Claim Traceability]
 * xref:skills-catalog.adoc[Skills Catalog]
 * xref:auditor-guide.adoc[Auditor's Guide]
-* xref:case-study-rmf-corpus.adoc[Case Study: RMF Methodology Corpus]
+* Case Studies
+** xref:case-study-rmf-corpus.adoc[Case Study: RMF Methodology Corpus]
+** xref:case-study-henris-first-day.adoc[Case Study: Henri's First Day]
