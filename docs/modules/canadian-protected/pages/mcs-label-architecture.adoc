@@ -1,0 +1,185 @@
+= MCS Label Architecture
+:description: How UMRS maps Canadian Protected A/B/C designations to SELinux MCS sensitivity levels and categories.
+
+This page describes how UMRS maps the three Canadian Protected tiers to SELinux Multi-Category Security (MCS) labels.
+The mapping uses MCS sensitivity levels to represent the injury tier and MCS categories within the `c200-c299` range for compartmentalization.
+
+== Design Principles
+
+The Canadian Protected label architecture follows the same principles as the xref:cui-labeling:mcs-label-architecture.adoc[CUI MCS label architecture]:
+
+* *Content-agnostic mechanism.* The SELinux MCS subsystem does not know what "Protected B" means. It enforces sensitivity level dominance and category set inclusion. The meaning comes from the label assignment, not the mechanism.
+
+* *Namespace separation.* US CUI categories occupy `c0-c199`. Canadian Protected categories occupy `c200-c299`. The two namespaces do not overlap. This is a deliberate design decision that enables co-existence on the same system.
+
+* *Phase 1 reads, Phase 2 enforces.* Under SELinux targeted policy (Phase 1), labels are visible and auditable but not enforced by MAC. Under MLS policy (Phase 2), Bell-LaPadula dominance checking enforces mandatory separation between sensitivity levels.
+
+== Sensitivity Level Allocation
+
+Canadian Protected tiers map to MCS sensitivity levels:
+
+[cols="1,2,3,3", options="header"]
+|===
+| MCS Level | Protected Tier | Designation (EN) | Designation (FR)
+
+| `s1`
+| Protected A
+| PROTECTED A
+| PROTÉGÉ A
+
+| `s2`
+| Protected B
+| PROTECTED B
+| PROTÉGÉ B
+
+| `s3`
+| Protected C
+| PROTECTED C
+| PROTÉGÉ C
+|===
+
+The sensitivity level is the primary enforcement axis.
+In Phase 2 (MLS policy), a process at sensitivity level `s1` cannot read a file at `s2` or `s3`.
+A process at `s2` can read files at `s1` and `s2` but not `s3`.
+This is standard BLP "no read up" enforcement.
+
+NOTE: `s0` is reserved for unlabeled or non-sensitive content. The Canadian Protected tiers begin at `s1`.
+
+== Category Allocation: c200-c299
+
+Each Protected tier uses the same category range: `c200` through `c299`.
+The sensitivity level distinguishes the tier; the category provides compartmentalization within that tier.
+
+[cols="2,3,2", options="header"]
+|===
+| MCS Label | Meaning | Status
+
+| `s1:c200`
+| Protected A (tier marker)
+| Active -- primary PA designation
+
+| `s2:c200`
+| Protected B (tier marker)
+| Active -- primary PB designation
+
+| `s3:c200`
+| Protected C (tier marker)
+| Active -- primary PC designation
+
+| `s1:c201-c299`
+| Reserved: PA subcategories
+| Extension point -- not populated
+
+| `s2:c201-c299`
+| Reserved: PB subcategories
+| Extension point -- not populated
+
+| `s3:c201-c299`
+| Reserved: PC subcategories
+| Extension point -- not populated
+|===
+
+Category `c200` is the tier marker for all three levels.
+A file labeled `s2:c200` is Protected B.
+A user must have `s2:c200` (or higher sensitivity with `c200`) in their security context to access it.
+
+=== Why c200-c299?
+
+The `c200-c299` range gives each tier 100 category slots.
+This is generous for a system that currently defines zero subcategories, but it provides room for future departmental subcategorization without encroaching on the US CUI namespace (`c0-c199`) or the upper MCS range (`c300-c1023`).
+
+The category range allocation:
+
+[cols="1,3", options="header"]
+|===
+| Range | Assignment
+
+| `c0-c199`
+| US CUI categories (see xref:cui-labeling:mcs-label-architecture.adoc[CUI MCS Architecture])
+
+| `c200-c299`
+| Canadian Protected categories
+
+| `c300-c1023`
+| Unallocated -- available for future national programs or organizational use
+|===
+
+This allocation is an UMRS convention, not a standard imposed by SELinux or any policy authority.
+It reflects the design goal that multiple national programs can co-exist on the same system with non-overlapping label namespaces.
+
+== Co-existence with US CUI
+
+The MCS architecture was designed so that Canadian Protected and US CUI labels can co-exist on the same system.
+A file can carry both CUI category labels and a Canadian Protected sensitivity level, because the two occupy different parts of the MCS label space.
+
+For example, a system processing both US and Canadian information might have:
+
+----
+-rw-r-----. user staff s0:c100      file_us_lei.pdf       (CUI//LEI)
+-rw-r-----. user staff s2:c200      file_ca_pb.pdf        (Protected B)
+-rw-r-----. user staff s0:c100,c200 file_bilateral.pdf    (CUI//LEI + PA compartment)
+----
+
+IMPORTANT: Co-existence of US CUI and Canadian Protected labels on a single system requires bilateral agreement, joint risk assessment, and approval from both the US and Canadian authorizing officials.
+UMRS demonstrates that the mechanism supports this configuration.
+The policy decision to deploy it is outside the scope of a reference system.
+
+== setrans.conf Integration
+
+The `mcstransd` daemon translates between human-readable names and numeric MCS labels.
+Canadian Protected translations are configured through files in `/etc/selinux/targeted/setrans.d/`.
+
+Example configuration entries:
+
+----
+s1:c200=PROTECTED A
+s2:c200=PROTECTED B
+s3:c200=PROTECTED C
+----
+
+When the system locale is `fr_CA`, the translations display the French designations:
+
+----
+s1:c200=PROTÉGÉ A
+s2:c200=PROTÉGÉ B
+s3:c200=PROTÉGÉ C
+----
+
+NOTE: Locale-aware translation display is a Phase 1 feature delivered through the existing UMRS i18n pipeline.
+The `umrs-ls` tool respects the `LANG` environment variable when displaying translated labels.
+
+== Extension Points
+
+The Canadian Protected label architecture is intentionally minimal for the initial release.
+The following extension points are documented for future use:
+
+=== Departmental Subcategories
+
+Categories `c201` through `c299` within each sensitivity level are reserved for departmental subcategorization.
+For example, a future Canadian department might define:
+
+* `c201` = Personnel records
+* `c202` = Financial records
+* `c203` = Medical records
+
+These subcategories do not exist in the current TBS framework.
+They would require departmental input and policy authority.
+The MCS architecture accommodates them without modification -- the category slots are available and the enforcement mechanism is the same.
+
+=== Additional National Programs
+
+The `c300-c1023` range is unallocated.
+If other Five Eyes partners or allied nations require MCS label namespaces, the same allocation pattern applies: assign a non-overlapping category range, define sensitivity level mappings, and configure `setrans.d` translations.
+
+== Phase 2: MLS Enforcement
+
+In Phase 2, UMRS operates under MLS policy.
+The following changes apply to Canadian Protected labels:
+
+* *Sensitivity level enforcement becomes mandatory.* A process at `s1` cannot read a file at `s2`. The kernel enforces this on every system call.
+* *`unconfined_t` does not exist.* Every process runs in a confined domain with an explicit clearance range.
+* *Reclassification requires privilege.* Changing a file from `s1:c200` (PA) to `s2:c200` (PB) requires a process with the appropriate MAC privilege. This is a controlled operation, not a routine file edit.
+* *Audit events are generated.* Every access decision -- granted or denied -- produces an audit record traceable to the requesting process and the target file's label.
+
+Phase 2 is a different deployment posture with different operational requirements.
+The label architecture defined here carries forward unchanged -- only the enforcement strictness changes.

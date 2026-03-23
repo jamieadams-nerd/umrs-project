@@ -1,0 +1,200 @@
+= Protected A / B / C Tiers
+:description: The three Canadian Protected information tiers, their injury thresholds, mutual exclusivity, and how they differ from US CUI designations.
+
+The Canadian government classifies protected information into three tiers based on the severity of injury that unauthorized disclosure would cause.
+The tiers are defined in the TBS _Standard on Security Categorization_ (Appendix J, sections J.2.4.2.1 through J.2.4.2.3), effective 2019-07-01.
+
+The organizing principle is simple: how bad is it if this information gets out?
+
+== The Three Tiers
+
+[cols="1,2,2,3", options="header"]
+|===
+| Tier | English Designation | French Designation | Injury Threshold
+
+| PA
+| Protected A
+| Protégé A
+| Limited or moderate injury to interests outside the national interest
+
+| PB
+| Protected B
+| Protégé B
+| Serious injury to interests outside the national interest
+
+| PC
+| Protected C
+| Protégé C
+| Extremely grave injury to interests outside the national interest
+|===
+
+NOTE: PA, PB, and PC are bilingual shorthand -- the same letters represent the same tiers in both English and French.
+
+== Injury Thresholds in Detail
+
+=== Protected A -- Limited or Moderate Injury
+
+Protected A covers information whose disclosure could cause limited or moderate harm to individuals or non-national interests.
+Typical examples include:
+
+* Personnel records with routine personal information
+* Internal administrative records
+* Draft policy documents not yet approved for release
+
+Protected A carries the lightest handling requirements of the three tiers.
+It requires a reliability status screening for personnel and basic access controls for storage.
+
+=== Protected B -- Serious Injury
+
+Protected B is the most commonly encountered tier in Canadian federal departments.
+Disclosure could cause serious harm, including:
+
+* Loss of reputation or competitive advantage
+* Financial loss to an individual or organization
+* Compromise of an investigation or legal proceeding
+* Serious harm to an individual's physical safety
+
+Protected B requires enhanced reliability screening, encrypted storage and transmission, and locked storage in alarm-monitored areas.
+
+=== Protected C -- Extremely Grave Injury
+
+Protected C covers information whose disclosure could cause extremely grave harm, up to and including loss of life.
+Examples include:
+
+* Witness protection information
+* Information whose disclosure could directly endanger an individual's life
+* Critical infrastructure vulnerability details that could enable physical harm
+
+Protected C handling requirements approach those of Classified information.
+It requires enhanced personnel screening, approved security containers, access logging, and CSE-approved cryptographic protection.
+
+== The "Outside the National Interest" Boundary
+
+The TBS Standard draws a hard line between two tracks of information sensitivity:
+
+* *Classified* (Confidential / Secret / Top Secret): injury to *the national interest*
+* *Protected* (A / B / C): injury to interests *outside the national interest*
+
+This is not a difference in degree.
+It is a difference in kind.
+The boundary is the _domain_ of injury, not the _severity_ of injury.
+
+Protected C, despite describing "extremely grave injury," is NOT equivalent to Confidential.
+Protected C covers loss of life to _individuals_.
+Confidential covers injury to the _state's national interest_.
+These are fundamentally different injury domains, even when the severity sounds comparable.
+
+CAUTION: Any documentation or tool output that implies Protected C is equivalent to Confidential is factually incorrect and could mislead operators handling sensitive material.
+UMRS must never conflate the Protected and Classified tracks.
+
+== Mutual Exclusivity
+
+=== Tier Exclusivity
+
+Protected A, Protected B, and Protected C are mutually exclusive on the same information asset.
+A document is categorized at exactly one Protected tier based on the injury assessment.
+It cannot be simultaneously Protected A and Protected B.
+
+This is inherent in the injury-threshold model.
+If the injury from disclosure would be "serious" (Protected B), it is by definition not "limited or moderate" (Protected A).
+The categorization process in TBS Standard J.2.2 requires a single determination.
+
+In MCS terms, a file at sensitivity level `s1` (Protected A) cannot simultaneously be at `s2` (Protected B) or `s3` (Protected C).
+The sensitivity level enforces what the policy requires.
+
+=== Protected vs Classified Exclusivity
+
+Protected and Classified are mutually exclusive tracks.
+A single information asset falls into one track or the other based on the injury domain.
+
+However, a single _system_ may contain both Classified and Protected information under appropriate controls.
+In that case, the Classified designation governs the system handling baseline.
+UMRS does not model Classified information -- that requires a separate policy framework outside the scope of this project.
+
+=== Reclassification
+
+Upgrading from Protected A to Protected B means changing the sensitivity level from `s1` to `s2`.
+This is a reclassification event, not a dual designation.
+In Phase 2 (MLS enforcement), reclassification requires specific privileges and generates an audit event.
+
+== Comparison with US CUI Tiers
+
+US CUI uses two handling tiers: CUI Basic and CUI Specified.
+The Canadian system uses three injury tiers.
+While it is tempting to draw correspondences, direct mapping fails in important ways.
+
+[cols="1,2,3", options="header"]
+|===
+| Canadian Tier | Approximate US Correspondence | Why the Mapping Breaks
+
+| Protected A
+| CUI Basic (some categories)
+| PA covers "limited or moderate injury" which overlaps with some CUI Basic categories, but many CUI Basic categories have no injury-to-individuals dimension at all.
+
+| Protected B
+| CUI Specified (some categories)
+| PB covers "serious injury" which roughly matches the enhanced handling of some CUI Specified categories. However, CUI Specified is category-specific (each has its own authorizing law), while PB is a uniform tier applied to all information at that injury level.
+
+| Protected C
+| No direct CUI equivalent
+| PC covers "extremely grave injury outside the national interest." US CUI does not have a tier at this severity within unclassified. PC sits at the boundary between unclassified and classified handling. The closest US analog would be information just below the Confidential threshold, but that is not a CUI designation.
+|===
+
+IMPORTANT: These correspondences are approximate and advisory.
+They exist to help operators familiar with one system understand the other.
+They are not equivalence statements and must not be used as the basis for cross-border handling decisions without bilateral agreement.
+
+== What Canada Does Not Have
+
+Understanding what the Canadian system _does not include_ is as important as understanding what it does:
+
+. *No subcategories.* CUI has 125+ named categories organized under parent groups (e.g., PRIVACY/HEALTH, LEI/INV). Canada has three tiers. Period. There is no Canadian equivalent of the NARA CUI Registry category taxonomy.
+
+. *No dissemination control suffixes.* CUI supports markings like NOFORN, FEDONLY, and REL TO that encode distribution restrictions in the label itself. Canada has no standardized equivalents. Canadian handling operates on two axes: injury tier plus need-to-know. The US operates on three axes: designation plus category plus dissemination control.
+
+. *No information-type taxonomy.* CUI categorizes by _what type_ of information it is. Canada categorizes by _how bad it is_ if the information is disclosed. These are orthogonal organizing principles.
+
+. *No department-specific tiers.* The three tiers are government-wide, defined by TBS. Individual departments (DND, RCMP, CSIS) may have internal handling procedures, but the designation ladder itself is standardized.
+
+== Handling Requirements Summary
+
+[cols="1,2,2,2,2", options="header"]
+|===
+| Tier | Personnel Screening | Storage | Transmission | Destruction
+
+| PA
+| Reliability Status
+| Locked container or access-controlled area
+| Encrypted or approved courier
+| Shred or approved destruction
+
+| PB
+| Reliability Status (Enhanced)
+| Locked container, alarm-monitored area
+| Encrypted, double envelope for physical
+| Cross-cut shred, approved electronic media destruction
+
+| PC
+| Enhanced screening (approaches Secret-level)
+| Approved security container, alarm-monitored, access logging
+| Encrypted with approved cryptography, approved courier with chain of custody
+| NSA/CSE-approved destruction methods
+|===
+
+NOTE: These handling requirements come from TBS guidance and CCCS publications (ITSP.10.222, ITSG-33 PBMM profile).
+The exact safeguard requirements are departmental decisions within the TBS framework.
+This table represents general practice, not a prescriptive standard for UMRS to enforce.
+
+== Need-to-Know
+
+In the Canadian system, access control beyond the tier level is governed by need-to-know.
+Need-to-know is procedural: individuals must demonstrate that their duties require access to the specific information.
+
+In MCS terms, need-to-know maps naturally to category membership:
+
+* A user with category `c200` in their clearance range can access files tagged `c200`.
+* A user without `c200` cannot, regardless of their sensitivity level.
+* This is the MCS two-factor model: sensitivity level (which tier) multiplied by category (which compartment).
+
+For the initial Canadian Protected implementation, the sensitivity level does the heavy lifting.
+Categories within the `c200-c299` range are reserved for future departmental subcategorization that does not yet exist in the TBS framework.

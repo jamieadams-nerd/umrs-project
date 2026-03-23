@@ -13,6 +13,10 @@ being consolidated from the architecture module. Content will be added in
 a future milestone.
 ====
 
+Before reading this page, see
+xref:label-mechanism.adoc[Understanding the label mechanism] for a plain-language
+introduction to how sensitivity levels and category sets work.
+
 == Summary
 
 UMRS implements mandatory access control (MAC) enforcement for

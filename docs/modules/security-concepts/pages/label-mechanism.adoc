@@ -1,0 +1,243 @@
+= Understanding the Label Mechanism
+:description: How sensitivity levels and category sets combine to control access — the core mechanism behind mandatory access control.
+:toc: left
+
+// Compliance: NIST SP 800-53 AC-3, AC-4, AC-16
+
+Many years ago, people realized something important about computer systems: security
+couldn't rely entirely on humans making the right decisions.
+System owners could define rules about who should be allowed to see certain data, but
+if enforcement was left up to users, mistakes were inevitable.
+Files would be shared incorrectly, access would be granted too broadly, and sensitive
+information could be exposed — either unintentionally through errors and oversight, or
+intentionally through misuse or malicious activity.
+
+So the idea emerged that instead of trusting people to enforce the rules, the system
+itself should enforce the policy defined by its owners.
+The operating system — specifically the kernel, the core component that controls
+everything — would take responsibility for making sure those rules were followed every
+single time, without exception.
+
+They didn't replace existing systems to do this.
+Instead, they added a security subsystem that could be enabled to strengthen
+enforcement.
+That's where the name comes from: Security-Enhanced Linux.
+It's not a separate operating system — it's an enhancement that allows the system to
+enforce security policy in a consistent, non-bypassable way.
+Not every system adopted it, but where it is used, it provides a much stronger model
+of control.
+
+
+== Labels and Clearances
+
+To understand how this works, you have to think about how both data and users are
+described inside the system.
+Every piece of data — like a file — has a security label.
+Every user has a clearance, and processes — like a web server or application — also
+run with a clearance because they act on behalf of users.
+The system compares these to decide what is allowed.
+
+
+== The Refrigerator Model
+
+A good way to picture this is a family and a refrigerator.
+
+Imagine a mom, a dad, and a couple of kids.
+Inside the refrigerator are several shelves.
+Each shelf represents a different sensitivity level.
+The bottom shelf is level zero (s0), the next one up is level one (s1), and the top
+shelf is level two (s2).
+
+On each shelf are storage containers.
+Each container has a label on it — just like a filename — and you can see that label
+from the outside.
+You don't know what's inside unless you're allowed to open it, but the label itself is
+visible.
+In a real system, it's the same way: when you list files in a directory, you can
+actually see the security label attached to each file right alongside its name.
+
+Each person in the family has a clearance that defines the shelves they are allowed to
+access:
+
+* The kids can only access the bottom shelf (s0). They cannot see anything above it.
+* Dad can access the middle shelf (s1), and because he is higher, he can also see down
+  to the kids' shelf (s0) — but he cannot see up to mom's shelf (s2).
+* Mom, at the top level (s2), can access her shelf and see everything below it — both
+  dad's (s1) and the kids' shelves (s0).
+
+Access flows downward, not upward.
+You can always see down, but you cannot see up.
+That is the sensitivity level dimension.
+
+
+== Adding Categories
+
+But there is a second dimension.
+
+Each person is also assigned certain categories.
+This collection of assigned categories is their category set, which is part of their
+clearance.
+
+In the refrigerator, the containers are color-coded:
+
+* Red lids mean chicken (c0).
+* Blue lids mean vegan (c1).
+* Green lids mean vegetarian (c2).
+
+These colors represent categories.
+In the system they are stored as simple identifiers like c0, c1, c2 — internally
+represented as compact bitmaps so that many categories can be tracked efficiently.
+
+Now instead of thinking about food preferences, think of it this way: each child is
+assigned to specific categories they are allowed to access.
+
+The first child can eat most things, but is not allowed to eat his brother's vegan
+food.
+So he is assigned the chicken (c0) and veggie (c2) categories.
+
+The second child is assigned to the vegan (c1) and veggie (c2) categories because he
+does not eat meat.
+
+Those category memberships define what they are allowed to access.
+That is their category set, and it is part of their overall clearance.
+
+So even though both kids are at the same sensitivity level — both can access the
+bottom shelf (s0) — they don't have access to the same containers:
+
+* The first child can open red (c0) and green (c2) containers, but not blue (c1).
+* The second child can open blue (c1) and green (c2) containers, but not red (c0).
+* Both can access the green containers (c2) because they both belong to the veggie
+  category (c2).
+
+Now every container has a security label.
+That label includes its sensitivity level (which shelf it is on, like s0, s1, s2) and
+its category set (its color combination, like c0, c1, c2).
+And just like in a real system, that label is visible — you can see it, but you still
+need the right clearance to access what is inside.
+
+
+== How the System Decides
+
+When someone tries to open a container, the system does two checks.
+
+First, it checks the sensitivity level: is the shelf's level at or below the person's
+clearance level?
+
+____
+Dad wants to reach down to the kids' shelf: is s0 &#x2264; s1? Yes.
+____
+
+Second, it checks the category set: does the person's category set include every
+category on the container's label?
+If the container requires c0 and c1, the person must have both c0 and c1 in their
+clearance.
+
+Both checks must pass.
+Sensitivity level alone is not enough.
+Category membership alone is not enough.
+The clearance must satisfy both dimensions.
+
+That is the key idea:
+
+____
+Clearance (on the person or process) is compared to the security label (on the data).
+____
+
+
+== The Scale
+
+This model is completely flexible.
+
+The system supports up to sixteen sensitivity levels (s0 through s15).
+Individual categories run from c0 through c1023 — 1,024 in total.
+You can assign users however you want.
+
+The system doesn't care what textual names were assigned to the categories or
+sensitivity levels — it just enforces the rules based on the s-number and the
+combination of c-numbers.
+
+Careful planning is essential.
+Site security policy, personnel clearances, and handling procedures must all be
+accounted for before assigning people access to the system.
+
+
+== From the Refrigerator to Real Information Domains
+
+When you bring this into the real world, those shelves and colors become real
+information domains.
+
+Instead of food, you are dealing with things like law enforcement data, agriculture
+data, investigative records, or other controlled information.
+A file is assigned a security label.
+A user — or a process acting on behalf of that user — is given a clearance.
+
+In many unclassified environments, you might effectively operate at a single
+sensitivity level — one shelf — but you still use categories to separate different
+kinds of information with different handling requirements.
+
+For example, a police officer might be able to access general department data, but not
+investigative files.
+Those investigative files are simply a different category for which the officer is not
+a member.
+Unless the officer's clearance includes that category, they can see the label, but they
+cannot access the contents.
+
+The system enforces this consistently and automatically:
+
+A file is labeled. +
+A user attempts access. +
+The system compares clearance to label.
+
+If they match the rules, access is allowed.
+If they don't, it is denied.
+
+No guessing.
+No exceptions.
+No relying on someone to do the right thing.
+
+
+== Labels as Handling Guidance
+
+Enforcement aside, just knowing what is in the containers by the label is helpful
+enough.
+
+You now know how those containers should be handled.
+In the real world, some governing organizations require that a file always reside on
+encrypted storage.
+Knowing the label, you can check whether the file is sitting on an encrypted
+filesystem — confirming it is in fact handled correctly.
+
+That is the whole idea behind label awareness before enforcement is even turned on.
+
+
+== Policy and Permanence
+
+Imagine you place a container with a red lid on the bottom shelf of that refrigerator.
+The system automatically assigns it s0:c0.
+That is what a file context rule does in system policy: it binds a location to a
+label automatically, so the label is applied consistently regardless of who creates
+the file.
+
+Unlike discretionary access controls, users cannot change the label that has been
+assigned.
+
+Writing such a rule isn't that hard, but it requires proper planning because of its
+expected permanence.
+Tinkering with policies is not something you do routinely.
+Once a policy has been thoroughly tested, approved, and the environment has been
+accredited, you don't change it until a proper reassessment and scrutiny process has
+been completed.
+
+
+== Summary
+
+Give users a clearance. +
+Give data a label. +
+Let the system enforce the rules.
+
+That is the core of mandatory access control.
+Everything else — the SELinux tooling, the policy language, the UMRS validation
+layer — is built on this foundation.
+
+For how these concepts map to specific information domains in this project, see
+xref:architecture:mls-label-model.adoc[MLS label model and CUI mapping].

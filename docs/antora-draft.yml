@@ -5,6 +5,8 @@ nav:
   - modules/ROOT/nav.adoc
   - modules/architecture/nav.adoc
   - modules/security-concepts/nav.adoc
+  - modules/cui-labeling/nav.adoc
+  - modules/canadian-protected/nav.adoc
   - modules/deployment/nav.adoc
   - modules/devel/nav.adoc
   - modules/patterns/nav.adoc

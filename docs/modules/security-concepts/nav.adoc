@@ -1,9 +1,11 @@
 .xref:index.adoc[Security Concepts]
-[collapsible]
-* Foundations
-** xref:reference-monitor.adoc[Reference monitor design]
-** xref:rtb-vnssa.adoc[NSA RTB and RAIN]
 
-* Integrity and Trust
+* Foundations
+** xref:label-mechanism.adoc[Understanding the label mechanism]
+** xref:security-model.adoc[Security model overview]
 ** xref:integrity-and-provenance.adoc[Integrity and provenance]
 ** xref:truth-concepts.adoc[Truth and trust concepts]
+
+* Technical Foundations
+** xref:reference-monitor.adoc[Reference monitor design]
+** xref:rtb-vnssa.adoc[NSA RTB and RAIN]

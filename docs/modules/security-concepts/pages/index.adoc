@@ -5,19 +5,30 @@ This module covers the security principles and models that inform UMRS design de
 Understanding these concepts helps engineers and auditors evaluate why UMRS is built the
 way it is.
 
-== Topics
+Start here if you are new to mandatory access control or SELinux.
 
-* xref:reference-monitor.adoc[Reference monitor design] — the tamperproof, non-bypassable
-  access control kernel and its role in UMRS.
+== Foundations
 
-* xref:rtb-vnssa.adoc[NSA RTB and RAIN] — the NSA Reference Technical Brief requirements
-  and how RAIN (Reference Architecture Implementation Notes) maps to UMRS.
+* xref:label-mechanism.adoc[Understanding the label mechanism] — **Start here.**
+  How sensitivity levels and category sets combine to control access.
+  The refrigerator analogy that makes the whole model click.
+
+* xref:security-model.adoc[Security model overview] — how UMRS applies mandatory access
+  control for CUI handling and what the three pillars of the security model are.
 
 * xref:integrity-and-provenance.adoc[Integrity and provenance] — what integrity assurance
   means in this context and how provenance is tracked.
 
 * xref:truth-concepts.adoc[Truth and trust concepts] — ground truth, trust anchors, and
   the distinction between custody trust and content trust.
+
+== Technical Foundations
+
+* xref:reference-monitor.adoc[Reference monitor design] — the tamperproof, non-bypassable
+  access control kernel and its role in UMRS.
+
+* xref:rtb-vnssa.adoc[NSA RTB and RAIN] — the NSA Reference Technical Brief requirements
+  and how RAIN (Reference Architecture Implementation Notes) maps to UMRS.
 
 == Related Modules
 

@@ -1,0 +1,139 @@
+= Canadian Protected Designations
+:description: How UMRS implements Canadian Protected A/B/C information labeling using SELinux MCS sensitivity levels and categories.
+
+Canada's Protected information designation system classifies government information by the severity of injury that unauthorized disclosure would cause.
+The system is administered by the Treasury Board of Canada Secretariat (TBS) under the _Directive on Security Management_ and its _Standard on Security Categorization_ (Appendix J).
+
+Unlike the US CUI framework, which organizes information by type across 125+ named categories, the Canadian system uses three tiers defined by a single question: how serious is the harm if this information is disclosed?
+
+UMRS brings Canadian Protected designations into the filesystem.
+Each Protected tier maps to an SELinux Multi-Category Security (MCS) sensitivity level.
+When a file carries a Protected B label, the kernel tracks that designation -- not a policy binder, not a cover sheet, not a classification guide sitting in a drawer.
+
+This module documents:
+
+* The three Protected tiers and their injury thresholds
+* How UMRS maps Protected A/B/C to MCS sensitivity labels
+* Structural differences between the Canadian and US systems
+* Co-existence of Canadian Protected and US CUI labels on the same system
+
+== The Labeling Mechanism
+
+Both the Canadian Protected module and its sibling xref:cui-labeling:index.adoc[CUI Labeling] module build on the same SELinux MCS mechanism described in xref:security-concepts:label-mechanism.adoc[How SELinux Labeling Works].
+The mechanism is content-agnostic.
+It does not know or care whether a label represents a US CUI category, a Canadian Protected tier, or any other organizational requirement.
+
+What matters is the planning that determines which labels mean what.
+The mechanism enforces boundaries.
+The organization defines what those boundaries protect.
+
+== Why Filesystem Labeling Matters
+
+Protected information breaches follow the same pattern regardless of which country's framework applies.
+A file ends up somewhere it should not be.
+An attachment forwarded to the wrong recipient.
+A backup written to an uncontrolled drive.
+A spreadsheet copied outside its authorized boundary.
+
+The root cause is always the same: the protection was procedural, not structural.
+The file carried no machine-readable indication of its sensitivity.
+The filesystem had no mechanism to enforce the boundary.
+
+SELinux MCS changes this.
+A file labeled at sensitivity level `s2` with category `c200` cannot be read by a process without matching clearance in its security context.
+The check happens in the kernel, on every `open()` call, regardless of discretionary permissions.
+The label travels with the file through copy, move, and backup operations.
+
+Canadian Protected labeling bridges the TBS policy framework and the SELinux enforcement mechanism.
+UMRS builds that bridge.
+
+== Phase 1: Awareness and Custody
+
+The first UMRS release (Cantrip) operates under SELinux targeted policy.
+In targeted policy, MCS labels are present and functional, but the `unconfined_t` domain bypasses most MAC checks.
+This means:
+
+* Labels are applied and visible -- `umrs-ls` shows them, `chcat -L` translates them
+* Tools read and display label information correctly
+* Operators learn the Protected tier structure through hands-on vault exploration
+* The system demonstrates custody: files are labeled, and the labeling is auditable
+
+What Phase 1 does _not_ do is enforce mandatory separation between Protected tiers.
+An `unconfined_t` process can still read any file regardless of its MCS label.
+This is by design -- targeted policy is the safe starting point for organizations that have never used MCS.
+
+Just knowing what is in the containers by reading the label is helpful enough.
+An operator who can see that a file is Protected B has information they did not have before.
+That awareness changes behavior even without kernel enforcement.
+
+Phase 2 introduces MLS policy with Bell-LaPadula (BLP) dominance checking, where sensitivity level enforcement is mandatory and `unconfined_t` does not exist.
+That is a different operational posture with different deployment requirements.
+
+== Canadian Protected Marking Syntax
+
+Canadian Protected markings use the designation directly:
+
+----
+PROTECTED A
+PROTECTED B
+PROTECTED C
+----
+
+In French:
+
+----
+PROTÉGÉ A
+PROTÉGÉ B
+PROTÉGÉ C
+----
+
+NOTE: PA, PB, and PC serve as compact shorthand in both official languages.
+
+There are no subcategory suffixes or dissemination control extensions.
+The marking is the tier designation alone.
+Handling requirements beyond the tier are governed by departmental need-to-know procedures, not by marking-encoded distribution rules.
+
+== Advisory Status
+
+UMRS is a reference system.
+Canadian Protected alignment is advisory and informational, not a deployment prerequisite.
+The Protected A/B/C mapping demonstrates that the MCS architecture can accommodate multiple national programs.
+Organizations considering deployment with Canadian Protected labels should consult TBS guidance and their departmental security authority directly.
+
+== Structural Comparison with US CUI
+
+Readers familiar with the xref:cui-labeling:index.adoc[CUI Labeling] module will notice that the Canadian Protected module is structurally simpler.
+This is not because it is less rigorous -- it is because the two systems are organized around different principles.
+
+[cols="1,2,2", options="header"]
+|===
+| Dimension | US CUI | Canadian Protected
+
+| Organizing principle
+| Information type taxonomy (what kind of information)
+| Injury severity ladder (how bad is disclosure)
+
+| Number of designations
+| 125+ named categories under parent groups
+| 3 tiers
+
+| Subcategories
+| Yes (e.g., PRIVACY/HEALTH, LEI/INV)
+| None standardized by TBS
+
+| Dissemination controls
+| Yes (NOFORN, FEDONLY, REL TO, etc.)
+| None -- need-to-know is procedural, not marking-encoded
+
+| Governing authority
+| NARA CUI Registry, 32 CFR Part 2002
+| TBS Standard on Security Categorization
+
+| Injury test
+| Varies by authorizing law/regulation per category
+| Standardized three-tier injury threshold
+|===
+
+These are parallel systems for different sovereigns.
+Neither is subordinate to the other.
+Both map onto the same SELinux MCS mechanism.
