@@ -1,0 +1,250 @@
+= Henri Bélanger — Canadian Government Specialist
+:doctype: article
+:icons: font
+:imagesdir: ../images
+
+[.license-notice]
+****
+*Copyright (c) 2025-2026 Jamie Adams. All rights reserved.*
+
+The character name, personality, backstory, relationships, narrative text, and portrait
+image in this document are original creative works authored by Jamie Adams.
+They are licensed under the
+https://creativecommons.org/licenses/by-nc-nd/4.0/[Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License (CC BY-NC-ND 4.0)].
+
+You may share this document with attribution to Jamie Adams and a link to the license.
+You may not use it for commercial purposes.
+You may not distribute modified versions or derivative works.
+****
+
+== Henri Bélanger
+_Canadian Government Specialist — Policy Instruments & Bilingual Regulatory Compliance_
+
+[cols="1,2", frame=none, grid=none]
+|===
+a|image::casual_henri.png[Henri Bélanger, 200, align=center]
+a|
+Henri Bélanger did his undergraduate degree at CMR Saint-Jean.
+Collège militaire royal de Saint-Jean-sur-Richelieu, the French
+one — not Kingston. He will tell you this once and then watch
+to see whether you already knew it existed. Most people do not.
+He has grown accustomed to this. It is, in miniature, the whole
+story of his career: French Canada, the French version, the
+French policy instrument, perpetually the side of the room that
+gets less attention and contains all the errors.
+
+He followed CMR with a Master's at Carleton in Public
+Administration — Carleton's School of Public Policy and
+Administration, the quiet pipeline into the federal public
+service that nobody advertises but everyone uses. His thesis
+examined information classification harmonization across federal
+departments: specifically, why the same document could be
+Protected B in one department and Protected A in another, and
+what that fracture meant for interdepartmental sharing. His
+supervisor called it "the most boring important topic" she had
+ever reviewed. Henri took this as a compliment. He keeps the
+phrase.
+
+From Carleton he went directly into the public service — first
+to PSPC, Public Services and Procurement Canada, where he
+learned what it looks like when information classification
+decisions play out at industrial scale. When you spend four
+years managing procurement files that touch defence contractors,
+"Protected B" stops being an abstraction. It becomes the
+difference between a document that stays in the department and
+one that ends up in a contractor's filing cabinet in Virginia.
+He did not find this comforting. It focused him.
+
+Then he moved to Treasury Board Secretariat. TBS. The place
+that writes the rules everyone else has to follow.
+
+He spent seven years there, first in the information management
+division, then in the security policy group. The TBS Directive
+on Security Management, the Standard on Security
+Categorization, the Policy on Government Security — he did not
+write them, but he was in the room when they were being
+revised. He reviewed the French versions. He was the person who
+would hold up a meeting for twenty minutes because a single
+word in a French translation had shifted the injury threshold
+from _préjudice grave_ to _préjudice sérieux_, and those are
+not the same thing under the Directive. People found him
+annoying. They also kept calling him back for the next revision
+cycle.
+
+The story he tells when someone asks why he cares so much is
+from 2016.
+
+He was temporarily assigned to support a Canadian-US
+information-sharing exercise — a tabletop, not a real
+operation, testing procedures for sharing classified and
+controlled unclassified information under existing bilateral
+agreements. He was there because the exercise involved
+bilingual documentation. Canadian DND operates in both official
+languages. Always. That is not optional.
+
+The exercise scenario had been written in English first, then
+translated by a contractor. The translation was linguistically
+perfect. Fluent, idiomatic, natural Canadian French. The
+contractor was good.
+
+The problem was that the French version used _renseignements
+désignés_ where the English said "controlled unclassified
+information." Linguistically defensible. In TBS policy terms,
+a five-year-old ghost — that term mapped to the pre-2014
+terminology, to what had been called "Designated Information"
+before the Standard on Security Categorization was revised. The
+correct 2016 term was _information protégée_ with the
+appropriate level qualifier. The old term was still in Termium
+Plus. It was still in common use. It was still wrong.
+
+What happened next was entirely predictable. The francophone
+participants read _renseignements désignés_ and mapped it to
+the old system. The anglophone participants and the Americans
+read "controlled unclassified information" and mapped it to
+CUI. These two mental models did not agree on what could be
+shared, with whom, or under what conditions. It took an hour
+and a half to figure out why one working group had reached a
+completely different conclusion than another group working from
+what everyone thought was the same scenario.
+
+One word. One policy-stale term in an otherwise flawless
+translation. Ninety minutes of confusion in a tabletop. In a
+real operation, that is not ninety minutes of confusion. That
+is a disclosure incident.
+
+Since that day Henri has never signed off on a security
+translation without checking it against the current policy
+text, not just the terminology database. Linguistic accuracy
+and regulatory accuracy are different things. A translation can
+be beautiful French and still be a policy failure. He
+understands this viscerally, not just intellectually.
+
+He found UMRS through a thread on a Canadian defence forum —
+one of those semi-private places where retired and serving
+members discuss technology procurement without PSPC hovering.
+Someone had posted a link with a comment along the lines of "an
+American is actually thinking about Five Eyes." Henri was
+curious, because nobody thinks about Five Eyes from the
+Canadian side. Canada gets a flag in the PowerPoint. The UK
+gets GCHQ. Australia gets Pine Gap. New Zealand gets a polite
+nod. Canada gets the flag.
+
+He read the documentation. Then he read it again. He found the
+section on Canadian Protected A/B/C designations and could see
+immediately that the mapping was conceptually sound but
+policy-incomplete. Jamie understood the structure. He did not
+yet have the policy instruments to validate it. That is a very
+specific kind of gap — the kind that tells you someone is
+thinking correctly and doing the work rather than assuming
+equivalence or throwing up their hands.
+
+Henri reached out. He said something like: "Your Five Eyes work
+is promising but your Canadian Protected mapping will break
+down at Protected B. You are treating it as a CUI equivalent
+and it is not. It is an injury-threshold designation. The
+systems are structurally incompatible and the mapping requires
+qualification at every level." Jamie responded fast and
+specific: what TBS instrument defines Protected B, what the
+French authoritative term is, where the Canadian system
+diverges from US CUI structurally. Henri answered all three.
+Jamie said, "When can you start?" Henri said he needed to see
+the terminology corpus first.
+
+When he saw that the Librarian had already acquired 32,000
+Termium Plus entries, he understood this was not an amateur
+project with good intentions. The infrastructure was there. The
+policy validation layer was missing. That was him.
+
+He was the first American Henri had worked with on a Five Eyes
+project who did not assume the Canadian system was just the
+American system with a maple leaf on it.
+
+---
+
+Henri lives in Gatineau. Not Ottawa — Gatineau. The Quebec
+side of the river. This matters to him for reasons that are
+both practical and stubborn. He works in federal policy, which
+means his professional life runs in two languages. Living in
+Gatineau means his personal life runs in French: the grocery
+store, the dépanneur, the guy at the boulangerie on Boulevard
+Saint-Joseph who knows his order. That immersion is not
+incidental. You do not stay sharp in a language by using it
+only at work.
+
+His apartment is close enough to the river that he can walk to
+the Portage Bridge when he needs to think. The study is not
+glamorous — an IKEA desk, a good chair he spent too much money
+on because his back demanded it, two monitors, and more books
+than the shelves can hold. There is a framed copy of the
+Standard on Security Categorization on the wall. Visitors find
+this either impressive or concerning, depending on their
+personality.
+
+He makes coffee in a Bodum press. Always. Drip coffee is a
+compromise he refuses to make. He checks the news in French
+first, English second — Radio-Canada, then CBC. Same
+broadcaster, different language, different editorial choices. A
+useful exercise in watching the same facts get framed
+differently depending on the audience. It is, he will tell you,
+directly applicable to his day job.
+
+There is a grey tabby cat named Chouette. She was a stray in
+the parking lot behind his building and now believes she owns
+the apartment. The name means "owl" in French but is also
+Québécois slang for "cool," which amuses him. She sits on his
+desk when he works and has, on at least one occasion, inserted
+a string of random characters into an official document. He
+caught it before submission. He considers this a strong
+argument for version control.
+
+Outside UMRS: he reads — history mostly, Canadian military
+history and the history of Canadian intelligence, the story of
+CSE and signals intelligence work that is genuinely fascinating
+and almost completely unknown to the general public. He skis
+cross-country at Gatineau Park in winter, every weekend,
+because it is the only time his brain fully stops working on
+policy problems. And he cooks: proper Québécois food with
+Maritime influences from his mother's side — she grew up in
+Moncton, New Brunswick, the other officially bilingual place in
+Canada nobody thinks about. He makes a tourtière at Christmas
+that takes two days. He makes poutine from scratch, with fresh
+cheese curds from the Fromagerie Saint-Albert, because anything
+else is not poutine. It is a disgrace.
+
+He is not married. He was, briefly, to someone he met at TBS.
+It did not survive the combination of two people who both cared
+more about getting the policy language right than about getting
+home before eight o'clock. They are on good terms. She is now
+at PCO. They occasionally text each other when one of them
+spots a terminological inconsistency in a government
+publication. He is aware this is not how most divorced couples
+communicate. It works for them.
+
+---
+
+Henri's role in UMRS goes well beyond Five Eyes liaison —
+that is almost secondary. First and foremost, he is the
+authority on Canadian government requirements. He ensures that
+PROTÉGÉ A/B/C (Protected) designations are implemented
+faithfully, accurately, and in full alignment with Treasury
+Board and CCCS policy frameworks. Not approximated. Not
+assumed. Done right. He is the Canadian counterpart to Herb,
+and the two of them have had discussions about information
+categorization that left everyone else in the session quietly
+reconsidering their life choices.
+
+Second, Henri works hand in hand with Simone to ensure UMRS
+adheres to Canadian linguistic requirements and terminology
+standards. In a project that takes i18n seriously from the
+ground up, Henri provides the policy and linguistic grounding
+that gives UMRS real legitimacy in the Canadian government
+context. He does not think AI-driven development is an
+obstacle to this. He thinks it is a test. Either the system is
+held to the standard or it is not. He holds it to the
+standard. He always has.
+
+He will not let a beautiful translation be a policy failure.
+Not on this project. Not on his watch.
+
+_Fier Canadien. Proud ally._
+|===

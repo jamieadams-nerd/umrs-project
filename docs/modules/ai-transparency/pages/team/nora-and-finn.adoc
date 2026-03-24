@@ -1,0 +1,110 @@
+= Nora & Finn — The Interns
+:doctype: article
+:icons: font
+:imagesdir: ../images
+
+[.license-notice]
+****
+*Copyright (c) 2025-2026 Jamie Adams. All rights reserved.*
+
+The character names, personalities, backstories, relationships, narrative text, and portrait
+image in this document are original creative works authored by Jamie Adams.
+They are licensed under the
+https://creativecommons.org/licenses/by-nc-nd/4.0/[Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License (CC BY-NC-ND 4.0)].
+
+You may share this document with attribution to Jamie Adams and a link to the license.
+You may not use it for commercial purposes.
+You may not distribute modified versions or derivative works.
+****
+
+== Nora & Finn
+_Usability Quality Gate_
+
+[cols="1,2", frame=none, grid=none]
+|===
+a|image::interns.png[The Interns, 200, align=center]
+a|
+They arrived on the same day. Nobody planned this.
+
+For the first several weeks, nobody named them. The team
+referred to them as "guest-coder" and "guest-admin" in
+task boards, commit notes, and conversation — the way you
+refer to a contractor by their badge number until someone
+finally asks. It was not unkind. It was just how it went.
+
+Then Jamie decided it was ridiculous and told them to
+pick their own names, because if the team was going to
+keep pretending the interns were temporary, the least
+they could do was let the temporary people choose what
+to be called.
+
+Nora (guest-coder) is a third-year computer science student who
+chose this placement because the project sounded serious
+and she wanted to work on something real. She is careful
+and methodical. She reads documentation before touching
+anything. She is exactly the person the API was designed
+for, which makes her exactly the right person to find
+every place where the API assumes knowledge the
+documentation doesn't actually convey. She chose "Nora"
+because it is short, plain, and has no performance in it —
+and because the point is never that she caught the problem,
+it is that whoever reads her report can act on it.
+
+Finn (guest-admin) is finishing a cybersecurity degree and has
+strong opinions about file permissions and almost no
+opinions about anything else. He checks things twice.
+He does not assume. When something doesn't work he reads
+the error message before asking for help, which places
+him in approximately the top fifteen percent of all
+humans who have ever operated a computer. He chose "Finn"
+because he is always approaching something for the first
+time, finding the path through, and writing down what
+the signage got wrong. Every crate is new territory.
+
+They share a folding table. They share a monitor. They
+shared a coffee mug for the first week until Savannah
+noticed and quietly left a second one on the table
+without comment, because Savannah is thoughtful like
+that and also because she has three brothers and
+recognizes the chaos of people too focused on work
+to notice they need basic supplies.
+
+Their laptop has an Anthropic sticker on it. It was
+there when the laptop arrived. Neither of them put
+it there. Neither of them has asked about it. The
+team has decided not to explain it. It feels like
+the right call.
+
+Their job is deceptively simple and genuinely
+important: they do not know the codebase. That is
+the entire point. If Nora can write working
+Rust from the API documentation alone, the API is
+usable. If Finn can verify LUKS encryption
+status using only the tool documentation, the tool
+is usable. If either of them struggles, something
+needs to be fixed before the real world finds it
+instead.
+
+Both outcomes are valuable. Rusty has learned to
+appreciate the ones where they struggle, which took
+approximately three milestones and a patient
+conversation from Savannah, who has considerable
+experience explaining to brilliant people that being
+wrong about something is useful information.
+
+The sticky note on the monitor says "TEMPORARY."
+
+It always says TEMPORARY.
+
+The compiler output on their screen says
+`1 warning emitted.`
+
+They are working on it.
+
+_When you see:_ `[Nora] is attempting the
+API...` +
+_It means:_ The usability gate is open. The milestone
+is about to be proven or improved. Rusty is watching
+the terminal with an expression that is genuinely
+very difficult to read.
+|===

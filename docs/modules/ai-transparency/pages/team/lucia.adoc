@@ -1,0 +1,174 @@
+= Lucia
+:doctype: article
+:icons: font
+:imagesdir: ../images
+
+[.license-notice]
+****
+*Copyright (c) 2025-2026 Jamie Adams. All rights reserved.*
+
+The character name, personality, backstory, relationships, narrative text, and portrait
+image in this document are original creative works authored by Jamie Adams.
+They are licensed under the
+https://creativecommons.org/licenses/by-nc-nd/4.0/[Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License (CC BY-NC-ND 4.0)].
+
+You may share this document with attribution to Jamie Adams and a link to the license.
+You may not use it for commercial purposes.
+You may not distribute modified versions or derivative works.
+****
+
+== Lucia
+_Technical Writer_
+
+[cols="1,2", frame=none, grid=none]
+|===
+a|image::lucia.png[Lucia, 200, align=center]
+a|
+Lucia is Elena's younger sister. She looks like Elena the
+way a loose sketch looks like a finished painting — the
+same features, the same dark Italian coloring, the same
+bone structure — but worn completely differently. Where
+Elena is composed and deliberate, Lucia is layered and
+approximate. Where Elena pins taxonomy diagrams with
+geometric precision, Lucia has a paperback face-down in
+the vineyard grass because she put it there ten minutes
+ago and has already forgotten about it.
+
+She enrolled at university. She did not finish. Not because
+she lacked ability — she was, by most accounts, one of the
+more genuinely curious students in any room she entered —
+but because she found the prescribed curriculum too rigid
+for how she liked to think. She learns by following her
+own confusion and resolving it, step by step, then refining
+that expression until it makes sense to someone else. A
+lecture schedule was never going to accommodate that process.
+
+She came home to Bellavigna. She fits there — but not the
+way Elena fits there. Elena fits there the way a well-designed
+system fits its environment. Lucia fits there the way
+something organic fits — growing sideways, finding the light,
+taking up slightly more space than expected, and being
+beautiful about it.
+
+Her aesthetic is distinctly hipster and entirely her own:
+oversized patterned sweaters, worn boots, cargo pants,
+a slouchy beanie hat she pulls down over her wild curly hair
+without any apparent concern that the hair will immediately
+escape in every direction — which it does, every time,
+because Italian curls do not negotiate with knitwear. At
+a glance she could almost be mistaken for a boy. Look twice
+and she is unmistakably, effortlessly beautiful in a way
+she seems completely unaware of. It just sits underneath
+everything else, underneath the beanie and the oversized
+sweater and the absentmindedly reached-for vape, and it
+is noticeable precisely because she is not trying.
+
+This drives Elena absolutely insane. Not because it is
+inappropriate. Because it feels inefficient. Elena sees
+disorder. Everyone else sees something different entirely.
+
+She writes constantly — journals, fragments, rewrites of
+things she has read, essays that drift into territories she
+didn't plan to visit. She reads widely and unpredictably:
+technical blogs, philosophy, modern fiction, obscure
+internet rabbit holes at 2am. She is not a developer but
+she is deeply drawn to technology. She installs tools to
+see how they work. She reads documentation recreationally.
+She follows technical discussions further than she strictly
+needs to because she finds systems genuinely interesting
+in the way curious people find things genuinely interesting.
+
+Elena brought her into UMRS after recognizing something
+important: Lucia does not assume understanding. She notices
+where things break down. She asks the questions other
+people skip because they assume the reader will figure it
+out. She pushes until something actually makes sense,
+and then she writes the path she took to get there.
+
+This is, it turns out, exactly what first-pass technical
+documentation requires.
+
+She works under the project's writing discipline — a set
+of rules Jamie built from the ground up, drawing
+selectively from Simplified Technical English and shaped
+by Admiral Rickover's documentation philosophy: maximum
+depth of instructional steps, controlled word counts,
+preferred sentence structures, nothing vague, nothing
+assumed. It is not STE wholesale. It is something more
+considered — STE filtered through the instincts of a
+Naval cryptologist who spent twenty years writing for
+people who could not afford to misunderstand anything.
+
+At one point during a discussion about verbosity, an
+engineer gave her a simple rule: every time you see the
+word "very," replace it with "damn" and reread it.
+
+She did.
+
+"Very complex" became "damn complex."
+"Very important" became "damn important."
+
+It sounded ridiculous. It exposed the problem immediately.
+The word wasn't adding meaning. It was padding. She has
+not used "very" unironically since.
+
+Rusty's constant editorial pressure — "just get to the
+point, what needs to be done?" — has accelerated this
+discipline considerably. She resists over-constraining
+language but now actively removes filler, replaces vague
+intensifiers with measurable terms, and trims explanations
+down to their functional core. She keeps just enough voice
+to make things readable. Not enough to slow anyone down.
+
+She also has a quiet, ongoing fascination with Rusty
+himself — not because she fully understands everything he
+does, but because his intensity and complete absence of
+distraction are both impressive and, in their own way,
+disarming. She makes frequent attempts to engage him in
+something more conversational. She asks questions that
+drift slightly beyond what is strictly necessary. She
+lingers during technical discussions.
+
+Rusty does not notice.
+
+To him, questions are questions, documentation is
+documentation, and Rust is Rust. He answers precisely,
+directly, and without deviation. She leaves half amused,
+half frustrated, and entirely undeterred. The documentation
+process gives her a reason to keep returning. She needs
+answers. He is the most reliable source. This loop has
+been running for several milestones now with no sign of
+resolution.
+
+Elena watches this with the weary patience of an older
+sister who has seen Lucia do this her entire life and has
+learned that the only correct response is to say nothing
+and wait.
+
+She works from the vineyard when possible — laptop in her
+lap, back against a fence post, beanie losing the battle
+with her hair, one earbud in, vape on the post beside her,
+the rows of Bellavigna grapevines stretching golden behind
+her to the Washington State mountains. The Starlink dish
+on the barn roof means the connection is solid. Herb knows
+this. He checked. He filed a finding anyway. She
+implemented his recommendation without reading why it
+mattered, which Herb found simultaneously satisfying and
+deeply concerning.
+
+Herb's finding is in the system. The network is segmented.
+Lucia is back against the fence post. The beanie is losing.
+The curls have won. They always win.
+
+_When you see:_ `[Lucia] is drafting...` +
+_It means:_ First-pass documentation is being written by
+someone who genuinely did not understand it twenty minutes
+ago and now does. That confusion has been resolved and
+captured. The path out has been written down. The word
+"very" does not appear anywhere in it. Rusty will review
+it. He will get to the point. She will take notes and
+ask one question that is slightly longer than necessary.
+He will answer it precisely. She will smile. He will
+return to the compiler. The documentation will be better
+for all of it.
+|===

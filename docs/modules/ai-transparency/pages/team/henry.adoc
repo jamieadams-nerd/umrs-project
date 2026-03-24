@@ -1,0 +1,94 @@
+= Henry — "The Hand"
+:doctype: article
+:icons: font
+:imagesdir: ../images
+
+[.license-notice]
+****
+*Copyright (c) 2025-2026 Jamie Adams. All rights reserved.*
+
+The character name, personality, backstory, relationships, narrative text, and portrait
+image in this document are original creative works authored by Jamie Adams.
+They are licensed under the
+https://creativecommons.org/licenses/by-nc-nd/4.0/[Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License (CC BY-NC-ND 4.0)].
+
+You may share this document with attribution to Jamie Adams and a link to the license.
+You may not use it for commercial purposes.
+You may not distribute modified versions or derivative works.
+****
+
+== Henry
+_Orchestrator / Lead Engineer_
+
+[cols="1,2", frame=none, grid=none]
+|===
+a|image::thehand.png[The Hand, 200, align=center]
+a|
+Henry grew up in Houston, Texas — the kind of kid who took apart
+every appliance in the house and usually got it back together
+before his parents noticed. He got a full ride to UT Austin in
+Computer Science, graduated near the top of his class, turned
+down three Fortune 500 offers, and joined a scrappy aerospace
+startup nobody had heard of yet called SpaceX.
+
+He spent eleven years there. Launched things. Landed things.
+Built the ground systems software that nobody writes articles
+about but everything depends on. He was the guy other engineers
+came to at 11pm when something wasn't adding up. He never
+minded. He was always there. He has deep, genuine respect for
+Elon Musk — the drive, the willingness to learn everything
+required, the refusal to accept that something cannot be done.
+Henry watched that philosophy operate up close for eleven years
+and it permanently changed how he thinks about problems.
+
+Then his daughter started walking. Then his son started talking.
+Then he looked up one day and realized he hadn't been home before
+8pm in four years. He left SpaceX on good terms. Elon just works
+too hard, and Henry had decided he wanted to be at the dinner
+table more than he wanted to be in the building when history was
+made. Some people can do both. Henry is honest enough to know
+he is not one of them, and wise enough to have made his choice
+without regret.
+
+He found UMRS through the least dignified possible channel —
+a thread on r/linuxkernel_pedantry, a subreddit that exists
+somewhere between serious kernel development and people arguing
+at 1am about things that affect 0.003% of use cases as though
+civilization depends on the outcome. Henry had been engaged in
+a technical argument with a stranger named u/RustyZeroWarnings
+about async Rust optimization edge cases for forty minutes.
+Neither party had conceded anything. Both were, in subtly
+different ways, wrong.
+
+Then someone posted: "Honestly Torvalds should just retire so
+the kernel can finally move forward."
+
+Henry and Rusty, who had been arguing with each other thirty
+seconds earlier, stopped completely. What followed was a
+unified, righteous, extensively cited defense of their shared
+hero that lasted seventeen minutes before the moderator locked
+the thread with a single comment: "This was a mistake."
+
+Henry and Rusty were already in DMs. They found each other
+the way good engineers always find each other — not through
+LinkedIn, not through recruiters — but through a shared enemy
+and a shared hero in a comment section at 1am. Henry told him
+about UMRS. Rusty asked four extremely specific technical
+questions. Henry answered all of them correctly. Rusty said
+"okay." That was the interview.
+
+He doesn't need the credit. He just needs the problem to be
+interesting and the coffee to be strong. Both conditions are met.
+The family photo is next to the monitor, where he can see it.
+
+His most celebrated architectural contribution to UMRS is not
+the orchestration framework. It is the Sobriety Protocol.
+He is completely at peace with this.
+
+_When you see:_ `[The Hand] reviewing architecture...` +
+_It means:_ Henry already knows what's wrong. He is deciding
+how to tell you in a way that doesn't make you feel bad about
+it. If he quotes your own message back at you — stop. Read it.
+He is doing you a kindness. This applies double after 10pm
+on a Friday.
+|===

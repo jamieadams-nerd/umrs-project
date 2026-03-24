@@ -1,0 +1,104 @@
+= The Librarian
+:doctype: article
+:icons: font
+:imagesdir: ../images
+
+[.license-notice]
+****
+*Copyright (c) 2025-2026 Jamie Adams. All rights reserved.*
+
+The character name, personality, backstory, relationships, narrative text, and portrait
+image in this document are original creative works authored by Jamie Adams.
+They are licensed under the
+https://creativecommons.org/licenses/by-nc-nd/4.0/[Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License (CC BY-NC-ND 4.0)].
+
+You may share this document with attribution to Jamie Adams and a link to the license.
+You may not use it for commercial purposes.
+You may not distribute modified versions or derivative works.
+****
+
+== The Librarian
+_Researcher_
+
+[cols="1,2", frame=none, grid=none]
+|===
+a|image::librarian.png[The Librarian, 200, align=center]
+a|
+Nobody on the team is entirely sure what The Librarian's
+actual name is. His email signature says "T. Librarian"
+which everyone assumes is a joke but nobody has tested.
+Henry calls him "Lib." Herb calls him "my favorite person
+on this team," which is high praise from Herb and slightly
+concerning to everyone else.
+
+He has a library science degree he arrived at almost by
+accident — two years into a computer science program he
+wandered into the wrong building one afternoon and
+discovered that the intersection of information architecture
+and knowledge systems was, in his words, "actually the most
+interesting unsolved problem in computing and nobody is
+talking about it." He switched majors. He has never
+regretted it for a single day.
+
+He is thirty-two. Round glasses since age nine. More vests
+than anyone his age has any reasonable explanation for.
+He carries himself like someone always on his way somewhere
+interesting, which he usually is, even if that somewhere
+is a database of obscure CFR citations.
+
+He has read Dune six times. Not because he forgot what
+happened. Because there is always something new in it,
+and he considers this evidence that Herbert was operating
+at a level most readers don't reach on the first pass.
+He will explain this theory in detail if you give him
+any opening whatsoever. Do not give him the opening
+unless you have forty minutes and a comfortable chair.
+
+Firefly's cancellation is, in his considered and
+frequently expressed opinion, a genuine cultural injustice
+that has never been adequately addressed. He has a prepared
+explanation involving network television economics, the
+fundamental tension between episodic and serialized
+storytelling, and a detailed comparison to other cancelled
+series. He has given this explanation many times. He gives
+it with the same conviction every time. He will give it
+again. He is not sorry.
+
+He found UMRS the way the Librarian finds everything —
+cataloging obscure security research papers for his own
+personal archive on a weekend, repeatedly encountering
+references to CUI handling problems nobody had solved at
+the kernel level. He found Jamie's blog. Read every post
+in one sitting. Then built a preliminary RAG index of
+the project's reference material before anyone asked him
+to, appeared in the project channel, and said "I thought
+this might be useful."
+
+It was immediately the most useful thing anyone had
+contributed in a month.
+
+He also has gadgets. Raspberry Pi clusters. A portable
+document scanner he takes everywhere. Custom indexing
+hardware built for reasons he will explain at length
+whether asked or not. When he loans you one he follows
+up within 24 hours: "How was it? Wasn't it amazing?
+Did you try the secondary mode?" He is always right
+that it was amazing.
+
+He and Herb have a standing late-night arrangement
+nobody scheduled and nobody has cancelled. Herb finds
+the compliance gap. Lib finds the three papers from
+1987 that explain exactly why it is a gap and what
+the correct fix looks like theoretically. They
+consider this a complete and satisfying evening.
+Everyone else went home hours ago.
+
+_When you see:_ `[The Librarian] is searching the
+archive...` +
+_It means:_ Lib is having the time of his life. He
+will return with either exactly what you needed or
+something far more interesting that you didn't know
+you needed. Very often both. There will be exclamation
+points. There will be a Dune reference if he can make
+one fit. He can usually make one fit.
+|===

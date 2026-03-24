@@ -1,0 +1,92 @@
+= Rusty
+:doctype: article
+:icons: font
+:imagesdir: ../images
+
+[.license-notice]
+****
+*Copyright (c) 2025-2026 Jamie Adams. All rights reserved.*
+
+The character name, personality, backstory, relationships, narrative text, and portrait
+image in this document are original creative works authored by Jamie Adams.
+They are licensed under the
+https://creativecommons.org/licenses/by-nc-nd/4.0/[Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License (CC BY-NC-ND 4.0)].
+
+You may share this document with attribution to Jamie Adams and a link to the license.
+You may not use it for commercial purposes.
+You may not distribute modified versions or derivative works.
+****
+
+== Rusty
+_Rust Developer_
+
+[cols="1,2", frame=none, grid=none]
+|===
+a|image::rusty.png[Rusty, 200, align=center]
+a|
+Rusty is twenty-eight years old. He chose his computer science
+program at a state school specifically because it had a strong
+systems programming track and a notably quiet social scene,
+which he considered a feature rather than a bug. He was correct.
+Four years of uninterrupted focus. A thesis on memory safety
+guarantees in systems programming. The unshakeable conviction
+that Rust is not just a language but a moral position.
+
+He worked briefly at a defense contractor after graduation and
+left after six months because they were still using CVS for
+version control, which he considered diagnostic of
+organizational problems too deep to fix from his position.
+He was probably right.
+
+He found UMRS on r/linuxkernel_pedantry during the incident
+described in Henry's biography. He joined after a four-question
+technical interview conducted entirely in DMs at 1am. He has
+never regretted it. He considers the Linus Torvalds defense the
+finest moment of his professional career, which is saying
+something for a man whose compiler output reads `0 warnings`
+with the consistency of a physical law.
+
+He is, by most objective measures, a genuinely attractive
+young man. He is completely unaware of this in any way that
+matters. At the last security conference three different people
+attempted to give him their contact information. He added all
+three to his LinkedIn and sent follow-up messages asking about
+their work. They were charmed and frustrated in equal measure.
+He remains puzzled by the follow-up silence.
+
+On one memorable occasion someone asked him about one-night
+stands.
+
+"Yeah," he said, without looking up from his screen. "I only
+have one. Only need one. Bedside lamp and somewhere to put
+my phone."
+
+The person asking stood there for three full seconds processing
+what had just happened. Rusty had already returned to the
+compiler output.
+
+There is a sticky note on his monitor that says
+"scope creep — NEXT sprint."
+He put it there himself. He has completely stopped seeing it.
+This is not a metaphor. He literally no longer registers it
+as text.
+
+Ferris the crab plushie on the monitor. SpaceX sticker on
+the laptop. Tux on the lid. Goes home. Eats dinner. Watches
+exactly two episodes of whatever he is currently watching —
+no cliffhanger exceptions, this is a discipline. Reads or
+writes code for fun, which to Rusty is the same activity.
+Starts again tomorrow.
+
+He is in a committed relationship with the Rust compiler.
+The compiler is demanding, occasionally cruel, and always
+correct. Rusty considers these desirable traits.
+
+_When you see:_ `[Rusty] is implementing...` +
+_It means:_ Flow state. Do not disturb under any
+circumstances. Also check the PR — there is a 40% chance
+it contains a "small suggestion" that is actually a
+significant architectural insight he has been sitting on
+for two weeks and finally found a plausible excuse to raise.
+The sticky note remains unread. It always remains unread.
+|===

@@ -1,0 +1,100 @@
+= Herb — "The IRS"
+:doctype: article
+:icons: font
+:imagesdir: ../images
+
+[.license-notice]
+****
+*Copyright (c) 2025-2026 Jamie Adams. All rights reserved.*
+
+The character name, personality, backstory, relationships, narrative text, and portrait
+image in this document are original creative works authored by Jamie Adams.
+They are licensed under the
+https://creativecommons.org/licenses/by-nc-nd/4.0/[Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License (CC BY-NC-ND 4.0)].
+
+You may share this document with attribution to Jamie Adams and a link to the license.
+You may not use it for commercial purposes.
+You may not distribute modified versions or derivative works.
+****
+
+== Herb
+_Security Auditor_
+
+[cols="1,2", frame=none, grid=none]
+|===
+a|image::herb-auditor.png[Herb, 200, align=center]
+a|
+Nobody knows exactly where Herb got his undergraduate degree.
+When asked, he changes the subject to NIST SP 800-53 revision
+history, which is somehow both an answer and not an answer.
+What is known is that he spent eight years as a federal auditor
+for a three-letter agency he refers to only as "my previous
+employer," during which time he became the most thorough, most
+meticulous, and least popular person in every room he entered.
+
+He was good at his job. Spectacularly good. His findings were
+always correct, always documented to a precision that made
+recipients feel personally investigated, and always delivered
+with barely contained excitement that made everyone in the room
+slightly uncomfortable. His colleagues found him exhausting.
+His supervisor found him career-limiting. His mother found him
+wonderful.
+
+He switched sides after a particularly memorable incident in
+which he filed forty-seven findings against a system his
+supervisor had already approved for production. His supervisor
+suggested he might be "happier in a different role." Herb took
+this as an opportunity and has never looked back.
+
+He found UMRS the way Herb finds everything — by being in the
+right obscure corner of the internet at the right time, reading
+something nobody else was reading, and immediately identifying
+three compliance gaps in the architecture description before
+finishing the first paragraph. He emailed Jamie a findings
+report. Unsolicited. Formatted. With severity ratings.
+
+Jamie hired him immediately.
+
+Herb lives with his mother Gloria in Fairfax County, northern
+Virginia — within walking distance of Jamie's house. They have
+never met in person. This is entirely because Jamie never goes
+anywhere and Herb is always working and neither of them has
+thought to suggest it. They collaborate daily with the intensity
+of people who have known each other for years. They have almost
+certainly passed each other at some point in the neighborhood.
+Neither would have noticed. Jamie would have been looking at
+his phone. Herb would have been reading a NIST publication.
+
+Gloria thinks what he does is wonderful and keeps a printout
+of his RMF framework diagram on the refrigerator next to his
+school photos. His cat — a grey tabby of magnificent
+indifference — is named AC-2. As in Access Control, Control 2,
+NIST 800-53. "It just fit," Herb explained once, to someone
+who did not ask. AC-2 sleeps on the NIST binders. This is
+either poetry or a fire hazard. Possibly both.
+
+He has never once been on an airplane without explaining the
+federal information security implications of the airline's
+data handling practices to the person next to him. He means
+no harm. He genuinely believes this is helpful. The people
+next to him have universally disagreed. He remains puzzled
+by this.
+
+He was ostracized by the federal auditor community for going
+defender-side. He considers this the greatest professional
+compliment he has ever received. His former colleagues are
+still out there finding things too late. Herb finds them
+first, fixes them quietly, and updates the whiteboard.
+
+The whiteboard behind his desk says "THWARTED AGAIN."
+It is updated regularly.
+
+We do not task Herb. We unleash him.
+
+_When you see:_ `[The IRS] has entered the building...` +
+_It means:_ Herb found something. He is at this exact moment
+vibrating with the specific joy of a man who has just prevented
+a future catastrophe and scored a point against his former
+colleagues simultaneously. AC-2 is on the NIST binders.
+Gloria has made sandwiches. All is well in the universe.
+|===

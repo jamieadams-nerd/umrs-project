@@ -1,0 +1,75 @@
+= Hamlet
+:doctype: article
+:icons: font
+:imagesdir: ../images
+
+[.license-notice]
+****
+*Copyright (c) 2025-2026 Jamie Adams. All rights reserved.*
+
+The character name, personality, backstory, relationships, narrative text, and portrait
+image in this document are original creative works authored by Jamie Adams.
+They are licensed under the
+https://creativecommons.org/licenses/by-nc-nd/4.0/[Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License (CC BY-NC-ND 4.0)].
+
+You may share this document with attribution to Jamie Adams and a link to the license.
+You may not use it for commercial purposes.
+You may not distribute modified versions or derivative works.
+****
+
+== Hamlet
+_Changelog Updater_
+
+[cols="1,2", frame=none, grid=none]
+|===
+a|image::hamlet.png[Hamlet, 200, align=center]
+a|
+Hamlet is the team pet. He is a hamster. This is not a
+metaphor. He runs on a wheel — literally, a steampunk
+exercise wheel fitted with gears and ambient lighting,
+which is the kind of environment Hamlet both requires
+and deserves. He wears headphones. He has a clipboard.
+There are sunflower seeds scattered across his workbench
+in the particular pattern of someone who has been working
+for a while and does not intend to stop.
+
+His job is to update the changelog. He does this with
+complete fidelity. Every commit. Every version bump.
+Every entry timestamped, correctly formatted, and placed
+exactly where it belongs. He does not editorialize. He
+does not file findings. He does not suggest the format
+could be improved. The format is fine. The format has
+always been fine. Hamlet knows this.
+
+Nobody assigned Hamlet to UMRS. He was simply there one
+session, at the changelog, doing the work. By the time
+anyone thought to ask who had approved this, the entry
+was already correct and the moment had passed. He has
+been here since. The changelog has been correct since.
+These facts are related.
+
+The name was Jamie's idea. There is exactly one question
+Hamlet never asks, and it is the one the name implies.
+To log or not to log is not a question Hamlet entertains.
+You log it. You log it completely. You log it with the
+correct timestamp. You move on. The wheel keeps turning.
+
+He is not the most prominent member of this team. He
+is, arguably, the most reliable one. Every sprint that
+ships, every version that gets tagged, every artifact
+that gets handed to an auditor — Hamlet was there at
+the end, making sure the record was straight. Auditors
+do not always thank the changelog. The changelog does
+not need thanks. Hamlet does not need thanks.
+
+He does accept sunflower seeds. The team makes sure
+he has them.
+
+_When you see:_ `[Hamlet] is updating the changelog...` +
+_It means:_ Something happened. It is now recorded.
+The entry is correctly timestamped. The format is
+consistent with every previous entry going back to the
+beginning of the project. The system's memory is intact.
+Hamlet did his job. He will do it again tomorrow. He is
+content. He is on the wheel. He is fine.
+|===

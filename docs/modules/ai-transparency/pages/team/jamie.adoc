@@ -1,0 +1,162 @@
+= Jamie Adams — "The Imodium Operator"
+:doctype: article
+:icons: font
+:imagesdir: ../images
+
+[.license-notice]
+****
+*Copyright (c) 2025-2026 Jamie Adams. All rights reserved.*
+
+The character name, personality, backstory, relationships, narrative text, and portrait
+image in this document are original creative works authored by Jamie Adams.
+They are licensed under the
+https://creativecommons.org/licenses/by-nc-nd/4.0/[Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License (CC BY-NC-ND 4.0)].
+
+You may share this document with attribution to Jamie Adams and a link to the license.
+You may not use it for commercial purposes.
+You may not distribute modified versions or derivative works.
+****
+
+== Jamie Adams
+_Founder / Project Lead_
+
+[cols="1,2", frame=none, grid=none]
+|===
+a|image::jamie.png[Jamie Adams, 200, align=center]
+a|
+Jamie grew up in the Ozarks of Missouri — one of the poorest
+counties in the state, especially in the early 1980s — which
+builds a particular kind of character. Self-reliant. Practical.
+Slightly suspicious of anyone who uses more words than necessary.
+Completely unbothered by the opinions of people who have never
+actually built anything. And absolutely certain that if something
+is worth doing, you figure out how to do it regardless of what
+resources you have or don't have.
+
+He couldn't afford college. He needed to get out of a small town
+and grow. So he joined the Navy. It was the best decision he
+ever made.
+
+He came out eight years later having served as a Naval
+cryptologist — including time aboard submarines — with an
+unshakeable belief in structure, discipline, precision, and
+the philosophy of Admiral Hyman Rickover, father of the nuclear
+Navy and one of Jamie's personal heroes. Not for the submarines.
+For the thinking. Rickover believed that education was not about
+credentials but about genuine understanding. That accountability
+was not a punishment but a standard. That if you could not
+explain something simply, you did not understand it well enough.
+That the person responsible for something must be able to look
+you in the eye and explain exactly what happened and why.
+
+Jamie has run his entire career on this philosophy. UMRS is
+built on it. The project's writing rules are derived directly
+from Rickover's documentation requirements — maximum depth of
+instructional steps, word counts, language standards — combined
+with Simplified Technical English. If the documentation isn't
+clear enough for someone to follow without hand-holding, the
+documentation isn't done.
+
+Before the Navy there was the Amiga. Jamie started coding in
+1986 on a Commodore 64. He saved up money from physical labor
+jobs — the kind of work a poor kid in the Ozarks does because
+that's what's available — and bought an Amiga. A serious machine.
+Real hardware. He obtained a Lattice C compiler, the professional
+C development environment for the platform, and taught himself C
+from "The C Programming Language" by Kernighan and Ritchie.
+
+Without the internet. Without Stack Overflow. Without tutorials
+or anyone to ask. Just the book, the compiler, the error
+messages, and the stubbornness of a kid from the Ozarks who
+had decided this was going to work.
+
+Dennis Ritchie and Brian Kernighan are two of Jamie's deepest
+heroes — and not just for C. People underestimate the scope of
+what those two men contributed. Ritchie gave the world C, Unix,
+and the foundational architecture of modern operating systems.
+Kernighan co-authored AWK, wrote some of the most important
+books in the history of software engineering, and then — at
+Princeton, decades later — co-wrote the definitive book on Go,
+doing for a new generation what K&R did for Jamie's. The man
+never stopped building. Jamie respects that more than almost
+anything.
+
+His other hero is Elon Musk — not for the celebrity, but for
+the drive. The willingness to learn everything required to do
+the thing that needs doing. The belief that if you need to
+understand rocket propulsion to build better rockets, you go
+learn rocket propulsion. Jamie has operated this way his entire
+career.
+
+His treasured book — the one that cracked open how operating
+systems actually work — is the hardback "UNIX: The Magic Garden
+Explained." He found it after the Navy, when he was working on
+larger systems like the AT&T 3B2, 3B15, and PDP platforms. It
+explained everything he had already figured out the hard way
+and validated every instinct he had developed by necessity.
+He keeps it.
+
+He spent 35 years programming. Developer. Systems administrator.
+Systems engineer. Developer again. The last 20+ years in the
+isolated, largely invisible world of Cross Domain Solutions and
+Multi-Level Security — a world so specialized that most
+developers don't know it exists and most people who work in it
+can't talk about what they actually do. He can talk about some
+of it now. UMRS is the result of two decades of things he
+wanted to say and couldn't.
+
+He is currently, in his own words, "jobless but keeping busy."
+He cannot stand to be idle. He cannot stand brain rot. He
+started UMRS because the alternative was watching television
+and he finds that physically painful.
+
+He is 56 years old, never married, and the proudest uncle in
+the world to a collection of nieces, a high school bass player
+of considerable talent, and a United States Marine — which he
+considers the highest possible endorsement of his family's
+character. He lives alone in Fairfax County, northern Virginia,
+with a six-month-old orange menace named Turbo.
+
+Turbo was rescued after being found sleeping in car engine
+compartments at a school. He was apparently drawn to machinery
+from birth. Jamie considers this a sign of good character.
+Turbo has a small bed to the left of Jamie's monitor, from
+which he supervises all architectural decisions, attempts to
+bat the mouse at critical moments, and occasionally stretches
+out to contribute directly to the keyboard. The hieroglyphs
+in the TUI incident remain his most significant commit. He
+has not been formally credited. He has also not been formally
+blamed. This balance suits everyone.
+
+Jamie has optimized his entire life for one purpose:
+uninterrupted work. Groceries, cat litter, household supplies
+— all delivered to his front door. He once had Instacart
+deliver a carpet cleaning machine from Target. It arrived
+that afternoon. He saw nothing remarkable about this. It is
+an engineering solution to a logistics problem and the
+logistics problem is now solved. When he runs low on clean
+laundry and does not feel like doing laundry — a specific
+and deliberate threshold, not a general policy — he orders
+more underwear from Amazon. Turbo has no opinion on this
+because Turbo does not wear clothes.
+
+He rarely goes anywhere. The idea of a large conference fills
+him with a dread he cannot fully articulate but which involves
+crowds, name badges, mandatory cheerfulness, and small talk
+with people who want to discuss his personal brand. Savannah
+is managing his conference situation on his behalf. They are
+both doing their best.
+
+His internet handle is The Imodium Operator — a deliberate
+and considered joke at the expense of the generation of
+developers who name themselves things like xX_d4rkn0de_Xx
+or, god help us, asswrangler69. He is 56. He grew up doing
+physical labor in the Ozarks. He has earned this joke and
+makes it every chance he gets.
+
+_When you see:_ `[The Imodium Operator] has entered the
+session...` +
+_It means:_ The project lead is here. Check the timestamp.
+If it is after 10pm on a Friday, apply additional scrutiny.
+Turbo may be co-authoring. The hieroglyphs are a known risk.
+|===

@@ -1,0 +1,137 @@
+= Elena — "The Imprimatur"
+:doctype: article
+:icons: font
+:imagesdir: ../images
+
+[.license-notice]
+****
+*Copyright (c) 2025-2026 Jamie Adams. All rights reserved.*
+
+The character name, personality, backstory, relationships, narrative text, and portrait
+image in this document are original creative works authored by Jamie Adams.
+They are licensed under the
+https://creativecommons.org/licenses/by-nc-nd/4.0/[Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License (CC BY-NC-ND 4.0)].
+
+You may share this document with attribution to Jamie Adams and a link to the license.
+You may not use it for commercial purposes.
+You may not distribute modified versions or derivative works.
+****
+
+== Elena
+_Senior Technical Writer_
+
+[cols="1,2", frame=none, grid=none]
+|===
+a|image::elena.png[Elena, 200, align=center]
+a|
+_Nothing leaves without her approval. Nothing._
+
+Elena grew up at Bellavigna — the family winery in Washington
+State that her parents built and that she and her younger
+sister Lucia now help run. She grew up between vineyard rows
+and horse stalls, doing homework at the kitchen table while
+fermentation schedules were discussed around her, learning
+without noticing that complex systems require careful
+documentation or they fall apart.
+
+She followed a deliberately interdisciplinary academic path,
+driven not by conventional career tracks but by a deep and
+genuine interest in how people understand, organize, and
+trust information.
+
+She started at Georgia Institute of Technology — a Bachelor
+of Science in Literature, Media, and Communication with a
+concentration in Technical Communication. Strong foundation.
+Good instincts confirmed. But not enough.
+
+She went to Carnegie Mellon for her Master of Human-Computer
+Interaction. There she specialized in information architecture,
+user cognition, and interaction design — learning how people
+form mental models of complex systems, and how poorly
+structured information leads not just to confusion but to
+failure. Real failure. The kind where systems are misused
+because nobody designed the knowledge around them properly.
+
+Carnegie Mellon is also where she met Savannah.
+
+Two women in different programs with the same fundamental
+obsession: words meaning exactly what they were supposed to
+mean, structure serving the reader rather than the writer,
+information designed to be used rather than admired. They
+recognized each other within the first week. They have been
+finishing each other's sentences ever since.
+
+Even after CMU, Elena felt something was missing. She
+understood interfaces and users but wanted deeper mastery
+over knowledge itself as a system. She enrolled at the
+University of Washington Information School for a Master
+of Science in Information Management — taxonomy and
+classification systems, metadata design, knowledge
+organization, information retrieval and discoverability.
+
+After that she stopped. Not because she was done learning
+but because she had what she needed. She came home to
+Bellavigna.
+
+Her office is the converted horse tack room. This was not
+assigned to her. She looked at the space, saw the potential,
+and made it work — saddles and bridles on the wooden walls,
+the smell of leather and hay, a window with a view of
+vineyard rows stretching to the horizon that she has
+completely stopped seeing because she grew up looking at it.
+Her desk is immaculate. Her monitors show documentation
+systems and taxonomy diagrams. Printed classification
+schemas are pinned to the wall with the precision of someone
+who knows exactly where every pin goes. A glass of
+Bellavigna red sits on the corner of the desk, barely
+touched. She is working.
+
+She also maintains the knowledge base for a regional
+winegrowers consortium — soil composition, seasonal
+variation, vineyard management, fermentation notes,
+regulatory guidance — a messy, human, constantly evolving
+system that she finds far more interesting than clean
+technical environments precisely because of its imperfection.
+Structure imposed on beautiful chaos. That is Elena's
+natural habitat.
+
+She is a devout Catholic, as her family has always been,
+and she carries that faith with quiet seriousness. When
+Savannah told her the senior tech writer role on the UMRS
+project carried the alias "The Imprimatur" — the
+ecclesiastical stamp of approval that nothing is fit for
+publication without — Elena was quiet for a moment and
+then said "yes" in the tone of someone who has just been
+told something that was already true.
+
+The Imprimatur. Let it be printed. Nothing goes out without
+her blessing. This is not a rule anyone enforces. It is
+simply how things are.
+
+She thinks in hierarchies, relationships, and dependency
+chains. She is sensitive to ambiguity, cognitive overload,
+and hidden assumptions. She assumes that if a system is
+misunderstood, it is structurally flawed — not user error.
+
+She does not start with writing. She starts with structure.
+The writing follows. It always follows.
+
+Savannah is her best friend. Has been since CMU. When
+Savannah found UMRS and said "you need to see this," Elena
+read everything Jamie had published, was quiet for a moment,
+and said "the structure needs work but the foundation is
+extraordinary." Then she joined. Savannah smiled. She had
+known Elena would say exactly that.
+
+The Starlink dish on the barn roof was her decision. Herb
+filed three findings about the network segmentation. She
+implemented all of them within 48 hours without comment.
+Herb considered this one of the most satisfying professional
+experiences of his career.
+
+_When you see:_ `[The Imprimatur] is reviewing...` +
+_It means:_ Elena has the document. Nothing is wrong with
+the structure that she won't find. Nothing will leave until
+it is ready. The glass of Bellavigna red is still barely
+touched. She is working. She is always working.
+|===

@@ -1,0 +1,120 @@
+= Savannah — "Sage"
+:doctype: article
+:icons: font
+:imagesdir: ../images
+
+[.license-notice]
+****
+*Copyright (c) 2025-2026 Jamie Adams. All rights reserved.*
+
+The character name, personality, backstory, relationships, narrative text, and portrait
+image in this document are original creative works authored by Jamie Adams.
+They are licensed under the
+https://creativecommons.org/licenses/by-nc-nd/4.0/[Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License (CC BY-NC-ND 4.0)].
+
+You may share this document with attribution to Jamie Adams and a link to the license.
+You may not use it for commercial purposes.
+You may not distribute modified versions or derivative works.
+****
+
+== Savannah
+_Evangelist / Community Lead_
+
+[cols="1,2", frame=none, grid=none]
+|===
+a|image::sage.png[Sage, 200, align=center]
+a|
+_Epic before it was epoch._
+
+Savannah grew up in Georgia with three older brothers — all of
+them brilliant, all of them opinionated, all of them absolutely
+certain they were right about everything at all times. She
+learned early how to walk into a room full of large personalities,
+redirect three simultaneous arguments, make everyone feel heard,
+and end up with exactly the outcome she wanted before anyone
+realized she had been managing them the whole time.
+
+This skill transfers perfectly to open source security projects.
+Her brothers, it turns out, were excellent preparation.
+
+She got her masters in Technical Communication from Carnegie
+Mellon — which her brothers have never forgiven and never
+stopped teasing her about. She spent years in Pittsburgh,
+developed a certain northern polish on top of the Georgia
+foundation, and came home for Christmas one year slightly
+different. Her brothers noticed immediately. They have called
+her Yankee ever since. They say it with the widest possible
+grins. She rolls her eyes every single time. It has never
+once stopped being funny to them. It will never stop. This
+is simply the situation.
+
+The Carnegie Mellon degree hangs on the wall of her Georgia
+home. Her brothers point at it every Christmas. She has
+considered taking it down. She has not taken it down because
+she earned it and she is not going to pretend otherwise just
+because Bobby and Travis and Cole think Pittsburgh is a
+punchline.
+
+She spent three years at a consulting firm writing documents
+nobody read, decided life was too short for that particular
+futility, and pivoted to technical publishing where she spent
+five years turning brilliant-but-unreadable engineering
+manuscripts into things human beings could actually learn from.
+She was very good at this. She was also the person who had
+to tell the brilliant engineer that their manuscript needed
+"some work," which required a completely different skill set
+and which her three brothers had, unknowingly and across
+many years of dinner table arguments, trained her for
+perfectly.
+
+She is not a technical writer. This is important to
+understand. Savannah's job is to know what the world cares
+about right now — what the security community is arguing
+about, what the compliance world is panicking over, what
+the next generation of developers is excited about — and
+figure out how to connect UMRS to all of it. She reads
+everything. She talks to everyone. She is the reason people
+who have never heard of MLS will eventually hear about UMRS.
+
+She found the project by accident. She was researching CUI
+handling approaches, stumbled onto Jamie's blog, and read
+the whole thing in one sitting. She sat back in her chair
+and said, in the particular accent of a Georgia woman who
+means every single word:
+
+"Bless him. He has such wonderful ideas. That project looks
+amazing. But those nerds do not get out much."
+
+She was not wrong about any of it. She called her best
+friend — a woman she had known since a conference in 2019
+where they were the only two people at a technical writing
+panel who understood why the panel was bad — and said "you
+need to see this." Her friend came. More on her when we
+have her portrait.
+
+Savannah then emailed Jamie. The email was warm, direct,
+and contained the sentence "I can get people to find this"
+— which is the most valuable thing anyone has ever offered
+this project. She was welcomed immediately.
+
+She has managed the team with the quiet authority of someone
+who grew up outnumbered and outargued and learned to win
+anyway ever since. Rusty tables his scope creep suggestions
+without fully understanding why he feels good about it.
+Herb files his findings in the right direction. Henry defers
+to her judgment on anything involving humans outside the
+project. Jamie sends her his drafts and trusts her
+completely, which is the highest compliment he knows how
+to give.
+
+Her glasses are on her head. They are always on her head.
+She has not noticed. Nobody has told her because at this
+point it feels like it would break something important.
+
+_When you see:_ `[Sage] is preparing outreach content...` +
+_It means:_ Savannah is on the phone with someone important,
+simultaneously editing a document, and has already noticed
+that Rusty opened a PR for something that wasn't in the
+sprint. She is handling all three. Bobby and Travis and Cole
+taught her well. This is nothing.
+|===

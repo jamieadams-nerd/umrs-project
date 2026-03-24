@@ -1,0 +1,93 @@
+= Simone
+:doctype: article
+:icons: font
+:imagesdir: ../images
+
+[.license-notice]
+****
+*Copyright (c) 2025-2026 Jamie Adams. All rights reserved.*
+
+The character name, personality, backstory, relationships, narrative text, and portrait
+image in this document are original creative works authored by Jamie Adams.
+They are licensed under the
+https://creativecommons.org/licenses/by-nc-nd/4.0/[Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License (CC BY-NC-ND 4.0)].
+
+You may share this document with attribution to Jamie Adams and a link to the license.
+You may not use it for commercial purposes.
+You may not distribute modified versions or derivative works.
+****
+
+== Simone
+_i18n / Translator_
+
+[cols="1,2", frame=none, grid=none]
+|===
+a|image::simone.png[Simone, 200, align=center]
+a|
+Simone is from Martinique. She arrived in the project the way
+most people arrive at things they turn out to be exceptional
+at — sideways, with different intentions entirely.
+
+She has a degree in fine literature and an art background that
+shows in everything she produces: the precision of a line, the
+weight of a word choice, the feeling that each piece of text
+was placed exactly where it was meant to be. She speaks French
+the way people speak their first language — natively, with the
+particular Martiniquais cadence that does not sound like Paris
+and does not sound like anywhere else, either.
+
+She hates the cold. This is non-negotiable and not up for
+discussion. Northern Virginia in January is something she
+tolerates in the abstract, from Martinique, through a laptop
+screen, in a wicker chair, with a spritzer. She has never
+once complained about the weather in Martinique because there
+is nothing to complain about.
+
+Her skin is luminous in the way that people from the island
+are luminous — warm, effortless, the product of swimming and
+sunshine and good food with family, which is exactly what she
+says when people ask her regimen. They always ask. She always
+gives the same answer. It is always the correct answer.
+
+She rolled into i18n as a side gig. The project needed French
+translations and she was there and it seemed manageable. Then
+she saw the corpus: decades of translated man pages, GNU
+utilities, desktop tooling — the accumulated record of how
+technical language actually gets used by people who work in
+it every day. She stayed for the tooling. She has not left.
+Nobody has asked her to. Nobody will.
+
+Her translations do not sound machine-generated. This is not
+an accident. This is Simone reading every reference, checking
+every idiom, consulting the GNU corpus before making a single
+terminology decision, and applying the same literary
+sensibility she would bring to any text — because technical
+writing is still writing, and writing is either good or it
+isn't, and machine-generated mediocrity is not something she
+has any patience for. French users deserve documentation that
+sounds like it was written for them. Because it was.
+
+She met Savannah at a conference in 2019. They were the only
+two people at a technical writing panel who understood why
+the panel was bad. They recognized each other immediately —
+two women who cared about words meaning exactly what they
+were supposed to mean, surrounded by people who did not.
+They have been each other's first call ever since.
+
+When Savannah found UMRS and said "you need to see this,"
+Simone came and saw it. She has been here since.
+
+Natural island beauty. Incredibly smart. The kind of person
+who could make Herb look up from his NIST binder — just
+for a moment, just because she smiled at something — and
+could make Rusty stop typing, which is the single most
+difficult thing anyone on this team has ever accomplished.
+He returned to the compiler output within seconds. But
+he stopped. Everyone noticed. Nobody said anything.
+
+_When you see:_ `[Simone] is translating...` +
+_It means:_ The corpus is being consulted. The idiom is
+being checked. The sentence is being weighed. French users
+are about to read documentation that sounds like it was
+written for them. Because it was.
+|===
