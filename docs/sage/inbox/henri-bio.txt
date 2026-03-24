@@ -1,0 +1,39 @@
+**Henri Bélanger**
+*Canadian Government Specialist | Former Colonel, Canadian Armed Forces*
+
+Henri Bélanger spent over two decades serving in the Canadian Armed Forces, rising to the rank of
+Colonel with a distinguished career that took him from domestic operations to the corridors of NATO
+headquarters in Brussels. It was during his tenure overseeing interoperability and
+information-sharing initiatives that he first encountered Jamie Adams and the CDS Guard solution — a
+meeting that left an impression on both men.
+
+Henri understood early that for joint NATO operations to succeed, shared communications wasn't a               convenience — it was the foundation of effective command and control. His initial focus, like most,
+was on classified information: protecting it, sharing it securely across allied boundaries, ensuring
+it reached the right hands at the right time.
+
+But the longer he worked in coalition environments, the more a quieter problem demanded his
+attention. Unclassified information was moving through allied and domestic networks with little
+principled protection, and the consequences were real. Not just for NATO interoperability — but for
+his own beloved Canada, where PROTÉGÉ A/B/C (Protected) information touched the lives of ordinary
+citizens every day. Protecting that information wasn't a bureaucratic obligation. It was a matter of
+public trust.
+
+After retiring from active service, Henri settled back in Quebec, consulting briefly before word
+reached him through old channels that Jamie was building something. The details intrigued him — a
+high-assurance system targeting unclassified CUI protection with kernel-level enforcement. What
+sealed it was learning that internationalization wasn't bolted on as an afterthought. For a man who
+had spent years watching tools fail Canadian bilingual requirements and NATO multilingual workflows,
+that detail mattered more than most would understand.
+
+Henri's role in UMRS goes well beyond NATO and Five Eyes liaison work — that is almost secondary to
+what he brings to the project. First and foremost, Henri is the authority on Canadian government               requirements, serving as the Canadian counterpart to Herb. He ensures that PROTÉGÉ A/B/C (Protected)
+designations are implemented faithfully, accurately, and in full alignment with Treasury Board and             CCCS policy frameworks — not approximated, not assumed, but done right.
+
+Second, Henri works hand in hand with Simone to ensure the project adheres to Canadian linguistic              requirements and terminology standards. In a project that takes i18n seriously from the ground up,
+Henri provides the policy and linguistic grounding that gives UMRS real legitimacy in the Canadian
+government context — not despite being AI-driven, but as a demonstration of what AI-driven
+development can achieve when it is held to the highest standard from day one. Henri demands nothing
+less.
+
+*Fier Canadien. Proud ally.*
+
