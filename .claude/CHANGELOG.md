@@ -59,6 +59,19 @@
 - Generated umrs-uname unwrapped strings report and rescan analysis
 - Added i18n report directory: resources/i18n/reports/
 
+### Documentation — Labeling Foundation & Canadian Protected Module
+- **Label Mechanism page** (Jamie + Elena): Written explanation of SELinux labeling using refrigerator analogy (no jargon, mental model building). Editorial corrections: AVC factual fix, category range (c0-c1023), trademark replacement (Tupperware → storage containers), typos, tightened digression. Jamie's voice preserved throughout.
+- **Canadian Protected module** (new): Sibling to cui-labeling/, created under docs/modules/canadian-protected/. Five pages: index (TBS authority, three-tier injury model, phase 1 awareness, marking syntax EN/FR), protected-abc-tiers (thresholds, mutual exclusivity, handling requirements, US CUI correspondence with caveats), mcs-label-architecture (s1-s3:c200-c299 mapping, namespace separation from US CUI, co-existence, setrans.conf integration, extension points). All PROTÉGÉ markings use proper UTF-8 accents. setrans.conf entries corrected to uppercase per banner marking standard.
+- **Security-Concepts restructure**: Nav reorganized into Foundations (label-mechanism first, security-model, integrity, truth) and Technical Foundations (reference-monitor, rtb-vnssa pending move to devel/). Index updated with label-mechanism as "Start here" entry. security-model.adoc forward-references label-mechanism. Removed hidden nav attribute that was blocking newcomer discovery.
+- **Elena knowledge-organization reflection**: Deep familiarization over KO/IA literature (IEKO, Svenonius, Hjørland, Pirolli, NISO Z39.19, Precision Content). Proposed enhancements: glossary scope notes, three audience entry points (developer, auditor, evaluator).
+
+### Infrastructure — Canadian Protected Module Registration
+- Registered canadian-protected module in antora.yml and antora-draft.yml; build passes clean with no new warnings.
+
+### Decisions Deferred to Future Sessions
+- reference-monitor and rtb-vnssa pages to move to devel/ module (Jamie decision, pending).
+- YouTube Phase 2 MLS enforcement demo: Jamie records, Henri translates to fr_CA (French dub or subtitles, TBD). TTS platform options documented (ElevenLabs, Google Cloud TTS fr-CA, Azure Cognitive Services fr-CA). Script not yet written.
+
 ## 2026-03-22
 
 ### Infrastructure & Governance

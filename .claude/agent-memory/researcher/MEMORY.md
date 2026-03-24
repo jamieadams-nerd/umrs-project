@@ -31,7 +31,7 @@ Verify PDF: `head -c 4 <file>` must show `%PDF`.
 
 ### refs/ manifest (official security docs)
 - `refs/manifest.md` is the canonical manifest — always read before retrieval tasks
-- `refs/nist/` — NIST SPs (800-218, 800-171r2, 800-171r3, 800-53r5, 800-37r2, 800-53Ar5, 800-30r1, 800-39, 800-90B) + FIPS (140-2, 140-3)
+- `refs/nist/` — NIST SPs (800-218, 800-171r2, 800-171r3, 800-53r5, 800-37r2, 800-53Ar5, 800-30r1, 800-39, 800-90B, 800-172, 800-161r1, 800-60v1r1) + FIPS (140-2, 140-3)
 - `refs/nist/fips/` — FIPS 203, 204, 205 (PQC standards, downloaded 2026-03-13)
 - `refs/dod/` — DoD CMMC docs (Final Rule + Assessment Guide L2, both downloaded 2026-03-12)
 - `refs/fedramp/` — FedRAMP accreditation docs (downloaded 2026-03-15: CSP playbook, Agency playbook, SSP/SAP/SAR templates)
@@ -71,6 +71,7 @@ Collections and status as of 2026-03-15:
 | technical-communication/theory | Miller "Genre as Social Action" + Bazerman genre chapter | Downloaded 2026-03-22 — awaiting ingestion | 0 |
 | information-architecture/theory | Pirolli ch.1 + Precision Content IA white paper | Downloaded 2026-03-22 — awaiting ingestion | 0 |
 | information-architecture/standards | NISO Z39.19-2005 (R2010) controlled vocabularies standard | Downloaded 2026-03-22 — awaiting ingestion | 0 |
+| oscal-schemas | OSCAL v1.1.2 JSON schemas (8) + FedRAMP Rev5 LOW/MOD/HIGH profiles (6) | Downloaded 2026-03-23 — NEEDS settings.json permission to ingest | 0 |
 
 Full source URL list for update checks: see `rag-collections.md` in this directory.
 PQC status tracker (team-readable): see `pqc-tracker.md` in this directory.
@@ -200,7 +201,7 @@ Helper scripts: `refs/extract_termium.py`, `refs/extract_gdt.py`, `refs/parse_te
 ## Pending Items
 - Stanford CS147: MANUAL DOWNLOAD — 20 PDFs; see `.claude/references/hci-courses/stanford-cs147/SOURCE.md`
 - RAG ingestion pending: accreditation-artifacts, tui-cli, info-theory-foundations, all 2026-03-22 Tier 1 collections
-- OSCAL v1.1.2 schemas: not yet in refs/ — HIGH PRIORITY (assessment engine dep)
+- OSCAL v1.1.2 schemas: DOWNLOADED (2026-03-23) — 8 JSON schemas + 6 FedRAMP Rev5 profiles in `.claude/references/oscal-schemas/`; manifest updated; RAG ingestion BLOCKED — needs `Bash(RAG_CHROMA_PATH=... python ingest.py --collection oscal-schemas 2>&1)` added to settings.json allowlist
 - DISA RHEL 10 STIG: NOT YET PUBLISHED as of 2026-03-17; monitor public.cyber.mil
 - Version check due 2026-04-12
 - Full pending list: see `research-priorities.md` in this directory

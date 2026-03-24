@@ -1,0 +1,61 @@
+# Sage Interviews Jamie — Batch 1
+
+**Date:** 2026-03-23
+**Purpose:** Building Jamie's public profile for website About page, YouTube channel, and first video intro
+**Publishing intent:** This Q&A will be published as a blog post demonstrating real AI-human collaboration
+
+---
+
+## Question 1
+
+The Ozarks to the Navy to submarines to Fairfax County with an orange menace named Turbo. That's a long thread. What does the 56-year-old version of you understand about security that the kid with the Amiga and the K&R book couldn't have?
+
+I'm not asking for a resume walkthrough. I'm asking what the decades actually taught you — what changed in how you think, not just what you learned.
+
+**Jamie's answer:**
+
+*(pending)*
+
+---
+
+## Question 2
+
+You've described yourself as "jobless but keeping busy." That's doing a lot of work in six words. What does UMRS actually mean to you at this point in your life — not what it is technically, but why you're spending your days on it instead of anything else?
+
+**Jamie's answer:**
+
+*(pending)*
+
+---
+
+## Question 3
+
+Agoraphobia is real and you're building a public project. I want to talk about that honestly. Not in a way that makes you a poster for something, but because it's actually relevant to why UMRS exists in the form it does — a man who can't stand large conferences building tools for a world that runs on large conferences and compliance theater. How do you think about the tension between wanting this work to reach people and not wanting to be the one who carries it into rooms?
+
+Take that wherever it needs to go.
+
+**Jamie's answer:**
+
+*(pending)*
+
+---
+
+## Question 4
+
+You mapped Foucault onto Knox, Rumi onto zero trust, Epictetus onto discipline. Most engineers don't do that. Where did the philosophical instinct come from, and does it actually change how you build things — or is it more like how you explain things after the fact?
+
+I'm genuinely curious whether the philosophy precedes the engineering or follows it.
+
+**Jamie's answer:**
+
+*(pending)*
+
+---
+
+## Question 5
+
+You wrote that the AI team makes the work feel like a team instead of "a man alone in a room talking to a computer." Is that a good thing? I'm asking because there's a version of that statement that's kind of sad, and a version that's genuinely exciting, and I think both might be true at the same time. Which one are you living in right now?
+
+**Jamie's answer:**
+
+*(pending)*

@@ -1,5 +1,7 @@
 # Plan: Researcher Enhancement — Knowledge Service, Gap Protocol, and AI Provenance
 
+**Status:** on-hold — Jamie deferred 2026-03-23; revisit post-M3 when acquisition backlog clears
+
 ## Purpose
 
 The researcher is an excellent acquisition agent. This plan evolves it into the team's

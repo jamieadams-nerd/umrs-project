@@ -1,7 +1,7 @@
 # Research Pipeline Priorities
 
 **Date:** 2026-03-21
-**Status:** draft — awaiting Jamie approval of source sites
+**Status:** approved — Jamie approved all source sites 2026-03-23; execution in progress
 **Author:** The Librarian (researcher)
 **ROADMAP Goals:** G3 (CUI & Five Eyes), G4 (Assessment Engine), G7 (Public Project)
 **Milestones:** M2 (OSCAL), M3 (CUI/Five Eyes)

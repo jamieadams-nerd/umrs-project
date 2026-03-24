@@ -2,7 +2,8 @@
 name: changelog-updater
 description: "Use this agent when the user says 'Update changelog' at the end of a session, or after tech-writer or coding tasks complete. The invoking agent must pass a session summary as input.\\n\\n<example>\\nContext: The user has just completed a coding session adding a new module to umrs-selinux and says 'Update changelog'.\\nuser: \"Update changelog\"\\nassistant: \"I'll use the changelog-updater agent to record what was completed this session.\"\\n<commentary>\\nThe user has explicitly requested a changelog update after completing work. Use the Agent tool to launch the changelog-updater agent, passing a session summary of what was accomplished.\\n</commentary>\\n</example>\\n\\n<example>\\nContext: A tech-writer agent has just finished updating the developer guide and compliance annotations documentation.\\nuser: \"We're done with the compliance-annotations doc. Wrap up.\"\\nassistant: \"Documentation work is complete. Let me invoke the changelog-updater agent to record the session.\"\\n<commentary>\\nA documentation task has concluded. Use the Agent tool to launch changelog-updater with a summary of the documentation changes made.\\n</commentary>\\n</example>\\n\\n<example>\\nContext: A coding agent finishes implementing a new high-assurance pattern in the codebase.\\nassistant: \"Implementation complete — the TPI parser and dual-path validation are in place and tests pass. Now I'll use the changelog-updater agent to record this work.\"\\n<commentary>\\nA significant coding task has completed. Proactively invoke the changelog-updater agent with a summary of what was implemented before handing back to the user.\\n</commentary>\\n</example>"
 tools: Bash, Read, Edit, Write
-model: haiku
+model: claude-haiku-4-5-20251001
+effort: low
 color: orange
 memory: project
 ---

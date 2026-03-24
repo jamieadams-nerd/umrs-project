@@ -1,0 +1,52 @@
+i
+
+Two things worth knowing for your workflow:
+/effort auto resets to your model's default effort level. For Opus 4.6, that's Medium as of March 2026. J.D. Hodges
+The ultrathink keyword in any prompt temporarily boosts to High effort for that single response only J.D. Hodges — useful when you want one heavy turn without changing the session default.
+For UMRS work — architecture reviews and Knox-level analysis warrant high. Routine tasks like changelog updates (Hamlet's wheel) are fine at medium or low. 🦀
+
+Good current information. Here's the complete picture:
+--effort controls how deeply Claude thinks before responding. Four levels:
+LevelUse caseToken costlowSimple tasks — file renames, quick greps, "what does this do?"~1/3 of highmediumGeneral coding, writing functions, small refactorsDefault as of March 2026highComplex debugging, multi-file refactors, architecture questionsFull reasoningmaxHardest problems — system design, deeply nested bugsMaximum tokens, Opus only
+
+
+
+
+---
+name: hamlet
+description: |
+  Invoked at the end of every session to capture completed work
+  in the changelog. Makes rounds, collects findings, writes entries.
+model: claude-haiku-4-5-20251001
+---
+The model: field in the agent frontmatter overrides whatever the orchestrator would otherwise select. Hamlet will always run on Haiku regardless of what Henry told The Hand.
+For the broader "minimum model" principle — The Hand enforcing this through orchestration is good practice but soft. The frontmatter model: field is hard. For agents where the right model is obvious and permanent, bake it into the agent file directly:
+AgentSuggested modelReasonHamletHaikuStructured repetitive output, no reasoning neededguest-coderHaiku or SonnetUsability testing, straightforward tasksguest-adminHaiku or SonnetSameSimoneSonnetTranslation requires nuanceHenriSonnetPolicy reasoning requires depthHerbSonnet or OpusCompliance reasoning, findings quality mattersKnoxOpusFirst-principles architecture audit, maximum depthThe LibrarianSonnetResearch and retrievalElenaSonnetEditorial precisionRustySonnet or OpusDepends on task complexityHenry/The HandOpusOrchestration, sees everything
+The rule of thumb: if the agent needs to reason, use Sonnet minimum. If it needs to retrieve and format, Haiku is fine. If it needs to evaluate correctness under constraint, consider Opus.
+Worth adding a note in CLAUDE.md:
+markdown[RULE] Agent model selection follows minimum capability required.
+Hamlet: Haiku. Reasoning agents: Sonnet minimum.
+Architecture and audit agents: Opus where depth is required.
+
+
+However — when using the Task tool to spawn subagents, there's no way to control the reasoning effort level per-agent. The effort level is only configurable at the session level — all spawned teammates inherit the session-wide effort. GitHub That GitHub issue is still open.
+So the current reality for your setup:
+ContextPer-agent effortHowSkillsYeseffort: in frontmatterSubagents (.claude/agents/)Yes — effort is listed as a supported frontmatter field for subagents Claudeeffort: in frontmatterSpawned teammates via Task toolNoInherits session level
+Worth adding effort: low to Hamlet's agent file right now — it's supported and it's the right call for a changelog writer. Knox gets effort: high. Herb gets effort: high. Hamlet gets effort: low. 🦀
+
+model: claude-haiku-4-5-20251001
+```
+
+The shorthand aliases like `haiku`, `sonnet`, `opus` are not reliably supported in agent frontmatter — Claude Code expects the full model string. The full strings for the current models are:
+```
+claude-opus-4-6
+claude-sonnet-4-6  
+claude-haiku-4-5-20251001
+
+
+
+model: claude-opus          # always latest Opus
+model: claude-sonnet        # always latest Sonnet  
+model: claude-haiku         # always latest Haiku
+
+

@@ -1,6 +1,6 @@
 # Plan: French Canadian Corpus Acquisition
 
-**Status:** draft — awaiting Jamie approval
+**Status:** Tier 1 complete; Tier 2 backburner (2026-03-23)
 **Date:** 2026-03-23
 **Tech Lead:** The Librarian (researcher)
 **Consumer:** Simone (umrs-translator)

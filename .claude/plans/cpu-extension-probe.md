@@ -2,7 +2,7 @@
 name: CPU Extension Probe
 path: components/rusty-gadgets/umrs-platform
 agent: rust-developer
-status: future — blocked on kernel posture probe completion (CPU corpus COMPLETE 2026-03-18)
+status: backburner — next release, not Cantrip (2026-03-23). CPU corpus complete 2026-03-18.
 split-from: umrs-platform-posture-and-cross-platform.md (2026-03-18)
 ---
 

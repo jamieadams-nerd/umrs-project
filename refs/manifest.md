@@ -248,6 +248,75 @@ Directly informs what UMRS components must demonstrate and log to satisfy each r
 
 ---
 
+### NIST SP 800-172 — Enhanced Security Requirements for Protecting CUI
+
+| Field | Value |
+|---|---|
+| Full title | Enhanced Security Requirements for Protecting Controlled Unclassified Information: A Supplement to NIST Special Publication 800-171 |
+| Issuing authority | NIST |
+| Version | Feb 2021 (Final) |
+| Published | February 2021 |
+| Downloaded | 2026-03-23 |
+| Local path | `nist/sp800-172.pdf` |
+| Source URL | https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-172.pdf |
+| SHA-256 | `5d8a04c46d6972505ddd52da6e84725161358fb334751e9a12d94fe0b64c8302` |
+| Status | ✓ Downloaded |
+| Relevance | umrs-selinux, CMMC Level 3, AC-4, SC-3, SC-7, SI-3; enhanced CUI requirements for APT threat context |
+
+**Key relevance**: Supplement to SP 800-171. Addresses protection of CUI from Advanced Persistent
+Threats (APTs). Defines 35 enhanced requirements across 14 families beyond the 110 in 800-171.
+Critical reference for CMMC Level 3 (formerly Level 4/5). Relevant to UMRS's MLS/MCS labeling
+framework when operating at high-assurance protection levels against sophisticated adversaries.
+
+---
+
+### NIST SP 800-161 Rev 1 — Cybersecurity Supply Chain Risk Management
+
+| Field | Value |
+|---|---|
+| Full title | Cybersecurity Supply Chain Risk Management Practices for Systems and Organizations |
+| Issuing authority | NIST |
+| Version | Rev 1 |
+| Published | May 2022 |
+| Downloaded | 2026-03-23 |
+| Local path | `nist/sp800-161r1.pdf` |
+| Source URL | https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-161r1.pdf |
+| SHA-256 | `c8250b1ea542640a7cffc145be08c6b17ff76bd695f8c0ac1b40c49d45355d89` |
+| Status | ✓ Downloaded |
+| Relevance | umrs-selinux, SA-12, SR family, CMMC SR.L2; supply chain risk management for Rust crates and OS packages |
+
+**Key relevance**: Comprehensive C-SCRM guidance aligned to NIST SP 800-53 Rev 5 SR (Supply Chain
+Risk Management) family. Directly applicable to UMRS's scrutiny of Rust crate dependencies and
+RHEL package provenance. Informs the crate vetting checklist and component integrity verification
+requirements. CMMC Level 2 includes SR.L2 requirements that reference this publication.
+
+---
+
+### NIST SP 800-60 Vol 1 Rev 1 — Guide for Mapping Information Types to Security Categories
+
+| Field | Value |
+|---|---|
+| Full title | Guide for Mapping Types of Information and Information Systems to Security Categories |
+| Issuing authority | NIST |
+| Version | Volume 1, Rev 1 |
+| Published | August 2008 |
+| Downloaded | 2026-03-23 |
+| Local path | `nist/sp800-60v1r1.pdf` |
+| Source URL | https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-60v1r1.pdf |
+| SHA-256 | `6f13f57f11697efcba694d0c9935c99168512f737cc76f2c432f248550128460` |
+| Status | ✓ Downloaded |
+| Relevance | umrs-selinux MLS/MCS, RA-2, FIPS 199, information categorization, CUI classification mapping |
+
+**Key relevance**: Establishes the FIPS 199 information categorization methodology. Defines how
+information types map to LOW/MODERATE/HIGH security categories (confidentiality, integrity,
+availability). Foundational for MLS/MCS label design — UMRS's Protected A/B/C mapping and CUI
+categorization align to the categorization framework defined here. Companion Volume 2 defines
+specific government information type mappings.
+
+---
+
+---
+
 ## Research Reports
 
 Researcher-authored synthesis reports live at `refs/reports/`. Each report
@@ -1111,6 +1180,59 @@ as it is not an approved source. Manual steps:
 Level 1/2 content in machine-readable form (`rhel10-playbook-cis.yml`). The PDF
 benchmark adds rationale text and Level 1 / Level 2 profile distinctions that
 improve the security-auditor's reasoning depth.
+
+---
+
+### OSCAL v1.1.2 JSON Schemas (RAG Collection)
+
+**Collection path:** `.claude/references/oscal-schemas/`
+**Source:** NIST usnistgov/OSCAL GitHub release v1.1.2
+**Date retrieved:** 2026-03-23
+
+These are the official OSCAL JSON Schema files from NIST's OSCAL v1.1.2 release.
+They define the machine-readable structure for OSCAL documents used in FedRAMP Rev5
+automation and CMMC assessment tooling.
+
+| File | SHA-256 |
+|---|---|
+| `oscal_assessment-plan_schema.json` | `43464ad048b711c735934b66015bcf8239782c6263d377a742c6b205ea796ecb` |
+| `oscal_assessment-results_schema.json` | `d033da70154cf6625ae46a746199e88e58f2928b1387dfac051d381b92f41b0d` |
+| `oscal_catalog_schema.json` | `5b069afa4f4ecc38d59914dab56098566d4247d3578a2123c030c80d36fc5104` |
+| `oscal_complete_schema.json` | `f0b24aef59190cb2649b404976f1677b546e6bb1982597d8bccb9e6b1244e18c` |
+| `oscal_component_schema.json` | `7b74710940ad39b6b63d4ddccbadf2c7d2e9bf11b07808d41d2aa27a4616e5ce` |
+| `oscal_poam_schema.json` | `906725163d767036c6189aec51252109b203214e121fc1acaff494b4d2dfbc04` |
+| `oscal_profile_schema.json` | `c910ea1a852e9d4ccfb7f6a8d0898b0cd4f137e48f88886412a083c8d87d540a` |
+| `oscal_ssp_schema.json` | `08d3faeb12f0fab7705dec15fb648c72400c7ab6ac0056222d49d21507e02a69` |
+
+**Relevance:** assessment-engine, CMMC CA-7, NIST RMF artifacts, FedRAMP SSP/SAP/SAR/POA&M structure
+
+---
+
+### FedRAMP OSCAL Rev5 Baseline Profiles (RAG Collection)
+
+**Collection path:** `.claude/references/oscal-schemas/` (flat, alongside OSCAL schemas)
+**Source:** GSA/fedramp-automation GitHub `master` branch — `dist/content/rev5/baselines/json/`
+**Date retrieved:** 2026-03-23
+
+These are the official FedRAMP Rev5 OSCAL baseline profiles, representing LOW, MODERATE, and
+HIGH impact levels. The resolved-profile catalogs embed all 800-53 Rev5 control text.
+
+| File | Size | SHA-256 |
+|---|---|---|
+| `fedramp_rev5_LOW-baseline_profile.json` | 795 KB | `b13459be3665380b559f10c500310668ce12c2ef71b3c8be997509659988265e` |
+| `fedramp_rev5_LOW-baseline-resolved-profile_catalog.json` | 3.3 MB | `54517b456a19c937b4f8cecb58674de917c02af7deaf6be368cf8bbae3771071` |
+| `fedramp_rev5_MODERATE-baseline_profile.json` | 1.2 MB | `5db32cd3c31c3450c03168edd3db26641324c15971edf52163d2310ccdaa925f` |
+| `fedramp_rev5_MODERATE-baseline-resolved-profile_catalog.json` | 5.0 MB | `072d831452744341de1de1201e9494b0ed84e9f62b54b52ec8017369df4be780` |
+| `fedramp_rev5_HIGH-baseline_profile.json` | 1.4 MB | `cce692728b57fae69b25860aba7116426a3637d5b01eb02cd23b13c4eff868f4` |
+| `fedramp_rev5_HIGH-baseline-resolved-profile_catalog.json` | 5.9 MB | `0bc97487599ceeffe1adad218570b948157aa96987ff7308759caf8fc84236fb` |
+
+**Note:** The resolved-profile catalogs are large JSON files (~3–6 MB each). They contain full
+800-53 Rev5 control text with FedRAMP-specific parameters. RAG ingestion chunks these by
+top-level control objects. The profile files contain only control selections and parameter
+overrides, which are smaller and more targeted for automation use.
+
+**Relevance:** FedRAMP authorization, CMMC alignment, assessment-engine, AC-2, AC-4, CA-7,
+RA-2, SI-12; informs which controls are selected at each impact level
 
 ---
 

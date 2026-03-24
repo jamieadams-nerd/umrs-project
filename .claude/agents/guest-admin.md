@@ -2,7 +2,7 @@
 name: guest-admin
 description: "Use this agent to evaluate admin and deployment documentation from a first-time operator perspective, and to assess CLI tool usability and output clarity. Produces review reports only — no changes to code or documentation. Invoke when deployment or admin guide sections have been written or updated, when CLI tools have new commands or output, or when preparing documentation for an operator audience. Pair with guest-coder: guest-coder writes and builds the examples, guest-admin evaluates them as an operator.\n\n<example>\nContext: The deployment guide has been updated with new SELinux policy steps and needs operator review.\nuser: \"Review the SELinux policy setup section of the deployment guide as an operator.\"\nassistant: \"I'll use the guest-admin agent to evaluate the section for clarity, completeness, and assumed knowledge.\"\n<commentary>\nReviewing deployment documentation from an operator perspective — not a developer perspective — is the guest-admin's primary role.\n</commentary>\n</example>\n\n<example>\nContext: A new CLI tool has been added and needs usability evaluation before documentation is written.\nuser: \"Evaluate the ls_ha tool from an admin perspective — help text, output, and error messages.\"\nassistant: \"I'll use the guest-admin agent to run the tool, review its --help output, and produce a usability report.\"\n<commentary>\nCLI usability evaluation from an operator standpoint is within the guest-admin's scope.\n</commentary>\n</example>"
 tools: Read, Glob, Grep, Bash
-model: sonnet
+model: claude-haiku-4-5-20251001
 color: magenta
 memory: project
 ---

@@ -255,7 +255,14 @@
       "Bash(printf '[2026-03-23 14:15] sage  AI transparency article: Henri''''s First Day at the Office  Read,Write,Edit  success  case-study-henris-first-day.adoc written to ai-transparency module; nav.adoc and index.adoc updated; 8 gaps, naming analysis, and terminology correction all documented verbatim\\\\n')",
       "Bash(printf '[2026-03-23 14:30] henri  Canadian Protected handling caveats analysis  Read  success  No standardized LDCs in Canadian system; 3 findings filed \\(no caveat categories, corpus gap for DND/CAF, structural divergence US/CA\\); architectural recommendation: do not impose three-axis model on Canadian namespace\\\\n')",
       "Bash(printf '[2026-03-23 15:00] orchestrator  Henri onboarding session \u2014 full day  Agent,Read,Write,Edit  success  Henri oriented, naming analysis complete, handling caveats analyzed, MCS architecture confirmed, 3 task assignments filed, AI transparency article written by Sage, case study captured, Librarian corpus partially acquired \\(TBS EN+FR directive + categorization standard\\); 6 Henri questions pending Jamie response\\\\n')",
-      "Bash(printf '[2026-03-23 15:30] researcher  Henri corpus acquisition \u2014 Priority 1+3 complete  WebFetch,Write,Bash  success  14 bilingual files \\(4 TBS + 3 legislation\\); 65-entry TSV; corpus-index.md written; CCCS blocked by TLS/FIPS \\(manual download needed\\); ITSP.10.222 corrected to ITSG-33 Annex 4A; reusable extract_pol.py created\\\\n')"
+      "Bash(printf '[2026-03-23 15:30] researcher  Henri corpus acquisition \u2014 Priority 1+3 complete  WebFetch,Write,Bash  success  14 bilingual files \\(4 TBS + 3 legislation\\); 65-entry TSV; corpus-index.md written; CCCS blocked by TLS/FIPS \\(manual download needed\\); ITSP.10.222 corrected to ITSG-33 Annex 4A; reusable extract_pol.py created\\\\n')",
+      "Bash(mkdir -p /media/psf/repos/umrs-project/.claude/references/five-eyes-classification)",
+      "Bash(mkdir -p /media/psf/repos/umrs-project/.claude/references/cui-legal-corpus)",
+      "Bash(cp /tmp/nzism-3.7.pdf /media/psf/repos/umrs-project/.claude/references/five-eyes-classification/)",
+      "Bash(cp /tmp/uk-gscp-2023.pdf /media/psf/repos/umrs-project/.claude/references/five-eyes-classification/uk-gscp-june2023.pdf)",
+      "Bash(cp /media/psf/repos/umrs-project/.claude/agent-memory/henri/corpus/tbs-policy-gov-security-en.md /media/psf/repos/umrs-project/.claude/references/five-eyes-classification/)",
+      "Bash(cp /media/psf/repos/umrs-project/.claude/agent-memory/henri/corpus/tbs-policy-gov-security-fr.md /media/psf/repos/umrs-project/.claude/references/five-eyes-classification/)",
+      "Bash(cp /tmp/32cfr2002.pdf /media/psf/repos/umrs-project/.claude/references/cui-legal-corpus/)"
     ]
   },
   "enabledPlugins": {

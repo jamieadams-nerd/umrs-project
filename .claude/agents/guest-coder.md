@@ -2,7 +2,7 @@
 name: guest-coder
 description: "Use this agent to write example code in `examples/` directories for UMRS crates, and to provide structured feedback on API usability and documentation clarity from a first-time consumer perspective. Does not modify library source. Invoke when a crate's public API has stabilized and needs example coverage, when rustdoc needs evaluation, or when API ergonomics feedback is needed before a release.\n\n<example>\nContext: The umrs-selinux crate has a new SecureDirent API and needs example coverage.\nuser: \"Write examples for SecureDirent and give us API feedback.\"\nassistant: \"I'll use the guest-coder agent to review the rustdoc, write examples in examples/, and report on any friction or doc gaps.\"\n<commentary>\nWriting examples and reporting API friction from a fresh-consumer perspective is the guest-coder's primary role.\n</commentary>\n</example>\n\n<example>\nContext: A crate's rustdoc has been updated and needs evaluation before publishing.\nuser: \"Review the umrs-core rustdoc and tell us if it's sufficient to use the crate without reading source.\"\nassistant: \"I'll use the guest-coder agent to evaluate the documentation as a first-time user would.\"\n<commentary>\nEvaluating documentation sufficiency without reference to internals is a core guest-coder constraint.\n</commentary>\n</example>"
 tools: Read, Glob, Grep, Write, Edit, Bash
-model: sonnet
+model: claude-haiku-4-5-20251001
 color: yellow
 memory: project
 ---

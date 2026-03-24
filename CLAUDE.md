@@ -67,11 +67,14 @@ cargo doc -p umrs-selinux --no-deps --open
   - And a use case example to identify its use as a building block.
 - **End of session**: Brief summary of changes, flag anything unusual, then
   "your turn to review, commit, and push."
+- [RULE] Agent model selection follows minimum capability required.
+  - Hamlet: Haiku. Reasoning agents: Sonnet minimum.
+  - Architecture and audit agents: Opus where depth is required.
 
 ## Claude will NEVER
 
-- Never git commit or push
-- Never delete documentation. If it is duplicate, redundant or useless information ask me. We can
+- [RULE] Never git commit or push
+- [RULE] Never delete documentation. If it is duplicate, redundant or useless information ask me. We can
   either delete it or merge it.
 
 ## Technology Stack
@@ -95,13 +98,13 @@ cargo doc -p umrs-selinux --no-deps --open
 ## Shell Tools — Hard Rule
 - Always use `rg` (ripgrep) instead of `grep` for all search operations.
 - `rg` is available at `~/.cargo/bin/rg`.
-- NEVER use the built-in Search or Read tools. ALL agents, no exceptions.
+- [RULE] NEVER use the built-in Search or Read tools. ALL agents, no exceptions.
 - ALL searching MUST use `rg` via Bash.
 - ALL file reading MUST use `Bash(cat:*)` or `Bash(rg:*)`.
 
 ### Path Rules — Hard Rule
-- NEVER use absolute paths starting with `/media/psf/` — this mount is not traversable by subprocesses.
-- NEVER append any path argument to `rg`. Always `cd` first, then run `rg` without a path.
+- [RULE] NEVER use absolute paths starting with `/media/psf/` — this mount is not traversable by subprocesses.
+- [RULE] NEVER append any path argument to `rg`. Always `cd` first, then run `rg` without a path.
 - If unsure of CWD, run `pwd` first before any file operation.
 - Correct:   `cd components/rusty-gadgets && rg --no-heading -n --hidden --smart-case --glob '!target/*' --glob '!.git/*' <pattern>`
 - INCORRECT: `rg <args> <pattern> /media/psf/repos/umrs-project/components/rusty-gadgets/`
@@ -119,7 +122,7 @@ Example: `ls -lh | tee output.txt` not `ls -lh > output.txt`
 
 ## Settings Files — Hard Rule
 - There is ONE settings file: `.claude/settings.json`
-- NEVER create `.claude/settings.local.json` or any other settings variant.
+- [RULE] NEVER create `.claude/settings.local.json` or any other settings variant.
 - If you need to add a permission or env var, edit `.claude/settings.json` directly.
 - This rule applies to ALL agents without exception.
 
