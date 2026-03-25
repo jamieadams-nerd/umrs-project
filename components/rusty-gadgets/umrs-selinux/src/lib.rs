@@ -37,6 +37,7 @@
 //! | `posix` | `Uid`, `Gid`, `Inode`, `FileMode`, `LinuxUser`, `LinuxGroup` |
 //! | `observations` | `SecurityObservation`, `ObservationKind` — typed security findings |
 //! | `utils` | Directory listing helpers and file context accessors |
+//! | `validate` | `SelinuxPattern`, `is_valid` — regex-cached syntax validation for SELinux contexts and MLS ranges |
 //!
 //! ## Compliance
 //!
@@ -89,6 +90,7 @@
 pub mod category;
 pub mod sensitivity;
 pub mod status;
+pub mod validate;
 
 pub mod mcs;
 pub mod mls;

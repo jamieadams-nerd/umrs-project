@@ -1,0 +1,62 @@
+
+## Merge our JSON Catalogs.
+- These are fantastic and will server the system well.
+- WE meed to merge the schema
+- Both the U.S. and Candaian versions are great but we need a common schema so we can query easily.
+  - Replicate the Canadian "_metadata" seciotn!!!
+  - We keep the two separte json files. 
+  - Perhpas, we extract the level definitions (s0 - s3) into it's own JSON? it woudl prevent
+    duplciation.
+  - The Canadian has "level" which maps it to s1 or whatever. U.s. 
+    - U.S. needs the same thing. 
+    - however, U.S. will always be s0 in targeted, and s1 in MLS. 
+    - In targeted, we only get s0 - That's an easy thing to address in setrans.conf
+      - I now h ave two: setrans.conf one for earch policy
+      - Knox - Using your fixed json informatoin ou know what category/subcategory pairings
+        must exist.
+        - Fix the setrans.conf files. Allocote blocks of Cx numbers and leave breating room betwen
+          each each. then Canada starts at c200 extends to c299.
+        - Be sure to leave those comments to the right of a definition, the are used by our MCS
+          parser.
+        - Correct, or update the text at the top of the configruatin file. 
+        - Note that Canada gets PA s1:c200, PB s2:201, and s3:203 they must have three different
+          categories to respect the senstivity level.
+- as for these files:
+  - US-CUI-HANDLING.json - Canada rolled theirs up into the same file, what can we do here. Did I
+    overcomplicate it earlier?
+  - US-CUI-PALETTE.json - This can be shared. This is important because the secolor.conf sucks. We
+    will use this. Change it as you see fit. From what I've read:
+    - CUI has not designated any specific color requiremnts
+    - Many people ahve using "purple" but I think I would want to give the options to distinigish
+      more. Hence things like police is blue/white. I woudl just stay away from gree, red, and
+      orange. -- I believe those were traditionally CLASSIFED colors.
+    - Have @sage and @Elena review the colors. Although the intention is to make the files distinct
+      by the color. Colors have a strange human impact. Certain colors are more intense and "feel"
+      more important than others. Including bold, reverse, etc.
+    - Henri -- I believe you would agree that PA, PB, and PC should get very distinct colors. These
+      need to be visibile in our directory listings and our TUI tool. Must survive 
+      dark/light themese.
+  - US-CUI-RISK-DOMAINS.json - we talked abuot this before. It is low priiority but henri take a
+    look and talk to The Hand as he and I have talked about the usefullness.
+- Envsion it like this:
+  - MCS translation just let's the operator know what the file is tagged.
+  - Our JSON catalog can be used with our umrs-stat/umrs-ls to undedrstand, in detail how to'
+    treat this file. 
+  - Also, the umrs-labels tool can be used to browse these ALL jason together in a hierirarchial
+    view for research. Or even find an appropriate label they need to start using.
+  - Latly, our tools taht audit filesystems where such files reside, we can use the json to ensure
+    we are handling the files correct. (e.g., data at rest is encrypted?)
+
+## After the catalog work
+- We will start on the umrs-labels tool. 
+  - It will ahve a library where other tools can query by labels and get specific information. 
+  - It will ahve a umrs-labels binaru both CLI output (text or json) and a TUI interface.
+- Once this is done, we should be about ready to build our umrs-ls TUI
+- These are the foundations for demonstrating our Vault concept to prove marking
+- If all this goes, smoothly, I will load the team up on a development system running
+  the MLS policy. I've done it, and it looks sexy. @henri "UMRS est élégant."
+
+
+  =
+
+

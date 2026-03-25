@@ -58,23 +58,23 @@ The sensitivity level distinguishes the tier; the category provides compartmenta
 | Protected A (tier marker)
 | Active -- primary PA designation
 
-| `s2:c200`
+| `s2:c201`
 | Protected B (tier marker)
 | Active -- primary PB designation
 
-| `s3:c200`
+| `s3:c202`
 | Protected C (tier marker)
 | Active -- primary PC designation
 
-| `s1:c201-c299`
+| `s1:c203-c299`
 | Reserved: PA subcategories
 | Extension point -- not populated
 
-| `s2:c201-c299`
+| `s2:c203-c299`
 | Reserved: PB subcategories
 | Extension point -- not populated
 
-| `s3:c201-c299`
+| `s3:c203-c299`
 | Reserved: PC subcategories
 | Extension point -- not populated
 |===

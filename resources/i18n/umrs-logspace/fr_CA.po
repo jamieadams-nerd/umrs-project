@@ -24,35 +24,35 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: components/rusty-gadgets/umrs-logspace/src/output.rs:9
 # TRANSLATOR: "Resource Pool" refers to a storage resource group (disk/partition pool).
 # No GNU corpus match; UMRS decision. Colon is in the format string, not here.
+#: components/rusty-gadgets/umrs-logspace/src/output.rs:9
 msgid "Resource Pool"
 msgstr "Groupe de ressources"
 
-#: components/rusty-gadgets/umrs-logspace/src/output.rs:10
 # TRANSLATOR: corpus:coreutils confirms "Point de montage" for "mount point".
 # Colon is in the format string, not here.
+#: components/rusty-gadgets/umrs-logspace/src/output.rs:10
 msgid "Mount point"
 msgstr "Point de montage"
 
-#: components/rusty-gadgets/umrs-logspace/src/output.rs:11
 # TRANSLATOR: No GNU corpus match for "Total space"; UMRS decision.
 # "Espace total" is standard francophone POSIX/Linux usage.
 # Colon is in the format string, not here.
+#: components/rusty-gadgets/umrs-logspace/src/output.rs:11
 msgid "Total space"
 msgstr "Espace total"
 
-#: components/rusty-gadgets/umrs-logspace/src/output.rs:12
 # TRANSLATOR: No GNU corpus match for "Free space"; UMRS decision.
 # "Espace libre" is standard francophone POSIX/Linux usage.
 # Colon is in the format string, not here.
+#: components/rusty-gadgets/umrs-logspace/src/output.rs:12
 msgid "Free space"
 msgstr "Espace libre"
 
-#: components/rusty-gadgets/umrs-logspace/src/output.rs:15
 # TRANSLATOR: "Lifecycle" refers to a log/audit retention lifecycle.
 # No GNU corpus match; UMRS decision. "Cycle de vie" is standard ANSSI/OTAN terminology.
 # Colon is in the format string, not here.
+#: components/rusty-gadgets/umrs-logspace/src/output.rs:15
 msgid "Lifecycle"
 msgstr "Cycle de vie"

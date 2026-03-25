@@ -1,7 +1,7 @@
 # French translation of umrs-ls
 # This file is distributed under the same license as the UMRS Project
 # MIT License
-# Copyright (c) 2025 Jamie Adams (a.k.a, Imodium Operator)
+# Copyright (c) 2025 Jamie Adams (a.k.a. Imodium Operator)
 #
 # Initial translation provided by a specialized Claude Code "umrs-translator".
 # The agent was assisted by a technical corpus derived from various GNU

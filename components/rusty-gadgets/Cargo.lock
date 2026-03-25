@@ -2045,6 +2045,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "umrs-labels"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "clap",
+ "log",
+ "regex",
+ "serde",
+ "serde_json",
+ "umrs-core",
+]
+
+[[package]]
 name = "umrs-ls"
 version = "0.1.0"
 dependencies = [
@@ -2086,6 +2099,7 @@ dependencies = [
  "log",
  "nix 0.27.1",
  "nom 7.1.3",
+ "regex",
  "rustix 0.38.44",
  "systemd-journal-logger",
  "umrs-platform",

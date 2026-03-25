@@ -1092,7 +1092,19 @@ impl AuditCardState {
             | Action::DialogConfirm
             | Action::DialogCancel
             | Action::DialogToggleFocus
-            | Action::ShowHelp => {
+            | Action::ShowHelp
+            // ViewerApp and ConfigApp actions — not relevant to AuditCardState.
+            // ViewerApp: Expand, Collapse, Search, Back.
+            // ConfigApp: Save, Discard, ToggleEdit.
+            // These variants exist in Action for the shared keymap; AuditCardState
+            // ignores them rather than forwarding to unused code paths.
+            | Action::Expand
+            | Action::Collapse
+            | Action::Search
+            | Action::Back
+            | Action::Save
+            | Action::Discard
+            | Action::ToggleEdit => {
                 // These actions have no effect on AuditCardState itself.
                 //
                 // Refresh is application-defined — callers use this signal to

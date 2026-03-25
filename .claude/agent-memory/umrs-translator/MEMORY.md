@@ -82,6 +82,21 @@ File: `components/rusty-gadgets/umrs-core/src/i18n.rs`
 `#[error("...")]` strings: wrap at binary display boundary, not at annotation site.
 These are recorded in .pot for inventory; developer acts at the display call site.
 
+## umrs-stat: MISSING DOMAIN (blocking gap — 2026-03-25)
+- `umrs-stat/src/main.rs:748` calls `i18n::init("umrs-stat")` — NO domain directory exists
+- No .pot, no .po, no .mo. Operators on fr_CA systems get raw English msgids.
+- Not in Makefile I18N_TEXT_DOMAINS or I18N_ACTIVE_DOMAINS
+- Action: wrapping scan → wrapping report → onboard to pipeline
+- Full gap documentation: `.claude/reports/i18n-l10n-architecture.md` §Gap 1 and §Gap 3
+
+## umrs-ui: No Own Domain (architecture decision pending — 2026-03-25)
+- `umrs-ui/src/data_panel.rs` and `umrs-ui/src/header.rs` call `i18n::tr()` directly
+- No domain registered in domains.md for umrs-ui
+- Current implicit behavior (Option A): library strings resolved in calling binary's domain
+- Option B: give umrs-ui its own domain with `tr_ui()` wrapper
+- Precedent: "Recommended" (data_panel.rs:694) lives in umrs-uname fr_CA.po under Option A
+- Jamie must decide. Do not onboard umrs-ui until decision is made.
+
 ## umrs-platform Scope Decision Pending
 Should `warn!`/`error!` log strings in library crates be wrapped at runtime?
 See `resources/i18n/reports/2026-03-11-umrs-platform-unwrapped.md`.

@@ -1,5 +1,37 @@
 # Changelog
 
+## 2026-03-25
+
+### Architecture Refactoring — CUI → Labels + Validation Split
+- Created umrs-labels crate (lib + bin): refactored umrs-cui with CUI catalog, palette, and marking validation moved from umrs-core::cui module. Edition 2024, `#![forbid(unsafe_code)]` enabled. Removed unsafe `umask()` call from main.rs.
+- Removed umrs-core::selinux module — fully superseded by umrs-selinux::mcs::translator with zero remaining consumers.
+- Split umrs-core::validate into three destinations: CuiMarking pattern → umrs-labels/src/validate.rs; SelinuxContext + MlsRange patterns → umrs-selinux/src/validate.rs; generic patterns (Email, RgbHex, SafeString) remain in umrs-core. Each destination maintains its own regex cache.
+- Fixed SelinuxContext validation regex to accept real MLS contexts with colons in level field (e.g., `s0:c0,c5`).
+
+### TUI Enhancement — Reusable Application Patterns
+- Added ViewerApp trait to umrs-ui: tree model with expand/collapse, search/filter, breadcrumb navigation, and detail panel — used for catalog browsing and system state inspection.
+- Added ConfigApp trait to umrs-ui: editable fields with validators, dirty tracking, diff view, save/discard workflow — foundation for configuration editors.
+- Expanded keymap with 7 new Action variants supporting viewer and config operations.
+- Added 95 new tests for ViewerApp and ConfigApp patterns across config_tests.rs and viewer_tests.rs.
+- Created two example applications: viewer_catalog.rs (catalog tree viewer) and config_selinux.rs (SELinux config editor).
+
+### Code Quality
+- Resolved pre-existing umrs-uname clippy `too_many_lines` violation by extracting helper functions.
+
+### Documentation & Research
+- Rewrote ROOT landing page opening paragraph to be inclusive of Canadian Protected A/B/C, CMMC, and CUI — removed jargon gate for international audience.
+- Completed comprehensive Five Eyes marking programs research (UK OFFICIAL/OFFICIAL-SENSITIVE, Australia PROTECTED under PSPF, New Zealand IN-CONFIDENCE/SENSITIVE/RESTRICTED) with 6 findings and decisions.
+- Produced i18n/l10n architecture audit: identified gaps (umrs-stat zero translations, tr_ctx function blocker for gettext context) and pipeline recommendations.
+- Completed Henri l10n review (18 findings on guidance docs, MARQUAGE vs COTE terminology divergence, zero Canadian policy refs).
+- Completed Simone l10n review: technical pipeline audit, string wrapping analysis, domains.md expanded from 4→15 rows, .po comment ordering and header fixes.
+
+### Planning & Governance
+- Created catalog-schema-merge plan (6 phases): JSON schema harmonization, setrans.conf category allocation, palette review.
+- Created tui-header-identity plan: username in all TUI headers (blocking), virtualization detection (next release), log viewer TUI (future).
+- Created five-eyes-decisions plan documenting Jamie's D1-D4 approvals (Australian PROTECTED included, sX levels + category flags, harmonized caveat offsets, nullable caveats array, bilingual en+fr for all five catalogs, country-specific English variants).
+- Completed mellow-booping-forest plan (umrs-labels refactoring).
+- Archived jamies_brain/notes.txt → archive/notes-catalog-schema-2026-03-25.txt.
+
 ## 2026-03-23
 
 ### i18n / French Localization — Milestone Achieved

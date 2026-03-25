@@ -11,10 +11,17 @@
 //! Call `keymap.bind(key_event, action)` to add or override a mapping.
 //! The defaults cover quit, tab navigation, and vertical scrolling.
 //!
+//! Extended actions for [`crate::viewer::ViewerApp`] (`Expand`, `Collapse`,
+//! `Search`, `Back`) and [`crate::config::ConfigApp`] (`Save`, `Discard`,
+//! `ToggleEdit`) are defined as variants in [`Action`] but are not bound
+//! in the default keymap — callers add bindings with `KeyMap::bind()`.
+//!
 //! ## Compliance
 //!
 //! - **NIST SP 800-53 AC-12**: The quit action terminates the session cleanly —
 //!   no half-written state is left behind.
+//! - **NIST SP 800-53 SI-10**: Explicit operator input (`Save`, `Discard`,
+//!   `ToggleEdit`) ensures configuration mutations are intentional and logged.
 
 use std::collections::HashMap;
 
@@ -94,6 +101,95 @@ pub enum Action {
     /// NIST SP 800-53 SA-5 — system documentation is accessible from within
     /// the tool; operators do not need an external reference guide.
     ShowHelp,
+
+    // -----------------------------------------------------------------------
+    // ViewerApp actions
+    // -----------------------------------------------------------------------
+
+    /// Expand the currently selected tree node (Enter or Space in viewer mode).
+    ///
+    /// When a collapsed node is selected, `Expand` opens it to reveal its
+    /// children. When an already-expanded node is selected, this action is
+    /// a no-op. Leaf nodes ignore `Expand`.
+    ///
+    /// Not bound in the default keymap — callers add bindings via `KeyMap::bind()`.
+    ///
+    /// NIST SP 800-53 AC-3 — navigation is gated on node type; leaf nodes do
+    /// not expose a false "expand" affordance that might mislead operators.
+    Expand,
+
+    /// Collapse the currently selected tree node.
+    ///
+    /// Hides all descendants of the selected node. When the node is already
+    /// collapsed or is a leaf, this action is a no-op.
+    ///
+    /// Not bound in the default keymap.
+    Collapse,
+
+    /// Activate the search/filter input bar in a viewer.
+    ///
+    /// Bound to `/` by convention (vim-style search activation). The viewer
+    /// state transitions to search mode; subsequent character input populates
+    /// the filter query.
+    ///
+    /// Not bound in the default keymap.
+    ///
+    /// NIST SP 800-53 AU-3 — search operates over visible data only; filtered
+    /// results remain scoped to what is already permitted for display.
+    Search,
+
+    /// Navigate up one level in the tree hierarchy (Backspace).
+    ///
+    /// Moves selection to the parent of the currently selected node. At the
+    /// root, this action is a no-op.
+    ///
+    /// Not bound in the default keymap.
+    Back,
+
+    // -----------------------------------------------------------------------
+    // ConfigApp actions
+    // -----------------------------------------------------------------------
+
+    /// Persist all in-progress edits to their backing store (Ctrl+S).
+    ///
+    /// The calling binary is responsible for emitting a structured journald
+    /// record identifying the changed fields, the operator identity, and the
+    /// timestamp. `Save` must only commit validated fields — the caller must
+    /// verify all validation results are clean before acting on this action.
+    ///
+    /// Not bound in the default keymap — callers add bindings via `KeyMap::bind()`.
+    ///
+    /// NIST SP 800-53 CM-3 — configuration changes require explicit operator
+    /// action and must be logged with before/after values.
+    /// NIST SP 800-53 AU-2 — the save event is an auditable operation.
+    /// NIST SP 800-53 SI-10 — only validated input may be committed.
+    Save,
+
+    /// Discard all in-progress edits and restore the last committed state (Ctrl+Z or Esc).
+    ///
+    /// The calling binary should present a `DialogState::confirm(...)` when
+    /// dirty fields exist, so the operator must explicitly confirm discard.
+    /// An operator who accidentally hits Discard on a clean form should see
+    /// no confirmation — the form is already at the committed state.
+    ///
+    /// Not bound in the default keymap.
+    ///
+    /// NIST SP 800-53 CM-3 — discard must be an explicit, confirmed action
+    /// when unsaved edits are present.
+    Discard,
+
+    /// Enter or exit edit mode for the focused field (Enter on a field).
+    ///
+    /// When a field is focused but not in edit mode, `ToggleEdit` activates
+    /// the in-place editor. When the field is already being edited,
+    /// `ToggleEdit` commits the current buffer (equivalent to pressing Enter
+    /// to accept the edited value).
+    ///
+    /// Not bound in the default keymap.
+    ///
+    /// NIST SP 800-53 SI-10 — field-level edit mode ensures input validation
+    /// is applied at the moment the operator commits each field value.
+    ToggleEdit,
 }
 
 // ---------------------------------------------------------------------------
@@ -178,6 +274,30 @@ impl KeyMap {
             Action::ShowHelp,
         );
         map.insert(key(KeyCode::F(1), KeyModifiers::NONE), Action::ShowHelp);
+
+        // ViewerApp — search activation (vim-style /)
+        // Not bound by default in the AuditCardApp context but present in the
+        // default map so callers do not need to re-bind it when constructing
+        // a viewer.
+        map.insert(
+            key(KeyCode::Char('/'), KeyModifiers::NONE),
+            Action::Search,
+        );
+
+        // ViewerApp — navigate up in hierarchy (Backspace)
+        map.insert(
+            key(KeyCode::Backspace, KeyModifiers::NONE),
+            Action::Back,
+        );
+
+        // ViewerApp — expand / collapse (Enter = Expand, Ctrl+Space = Collapse)
+        // Enter is already bound to DialogConfirm; viewer event loops must
+        // disambiguate based on dialog state. Collapse is available for callers
+        // to bind to a key of their choice.
+        map.insert(
+            key(KeyCode::Char(' '), KeyModifiers::NONE),
+            Action::Expand,
+        );
 
         Self {
             map,

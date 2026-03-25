@@ -499,10 +499,30 @@ fn build_trust_summary_rows(result: &DetectionResult) -> Vec<DataRow> {
     ));
 
     rows.push(DataRow::separator());
+    append_downgrade_rows(&mut rows, result);
 
-    // Downgrade reasons — positive framing when none exist.
-    // A downgrade reason means a check that would have elevated trust
-    // could not be confirmed. "None" means full trust was retained.
+    rows.push(DataRow::separator());
+    append_contradiction_rows(&mut rows, result);
+
+    rows.push(DataRow::separator());
+
+    // Evidence record count — always visible in the summary pane so the
+    // operator can correlate the trust tier with the volume of evidence
+    // reviewed, without needing to scroll to the bottom of the evidence chain.
+    rows.push(DataRow::new(
+        i18n::tr("Evidence Records"),
+        result.evidence.records().len().to_string(),
+        StyleHint::Normal,
+    ));
+
+    rows
+}
+
+/// Append downgrade reason rows to `rows`.
+///
+/// Positive framing when none exist: "No downgrade — full trust retained."
+/// When reasons are present, each is listed with an index prefix.
+fn append_downgrade_rows(rows: &mut Vec<DataRow>, result: &DetectionResult) {
     if result.confidence.downgrade_reasons.is_empty() {
         rows.push(DataRow::new(
             i18n::tr("Downgrade Reasons"),
@@ -531,12 +551,18 @@ fn build_trust_summary_rows(result: &DetectionResult) -> Vec<DataRow> {
             ));
         }
     }
+}
 
-    rows.push(DataRow::separator());
-
-    // Contradictions — two independent evidence sources disagreed.
-    // A contradiction means the same fact was asserted differently by two
-    // separate checks. This may indicate tampering or a misconfigured system.
+/// Append contradiction rows to `rows`.
+///
+/// A contradiction means two independent evidence sources asserted the same
+/// fact differently. This may indicate tampering or a misconfigured system.
+/// NIST SP 800-53 AU-3 / SI-7 — contradictions are integrity findings and
+/// must be fully represented in the audit-visible summary.
+fn append_contradiction_rows(
+    rows: &mut Vec<DataRow>,
+    result: &DetectionResult,
+) {
     if result.confidence.contradictions.is_empty() {
         rows.push(DataRow::new(
             i18n::tr("Contradictions"),
@@ -568,26 +594,17 @@ fn build_trust_summary_rows(result: &DetectionResult) -> Vec<DataRow> {
             let idx = i.saturating_add(1);
             let desc: String = con.description.chars().take(64).collect();
             rows.push(DataRow::new(
-                format!("  [{idx}] {} {} {}", con.source_a, i18n::tr("vs"), con.source_b),
+                format!(
+                    "  [{idx}] {} {} {}",
+                    con.source_a,
+                    i18n::tr("vs"),
+                    con.source_b
+                ),
                 desc,
                 StyleHint::TrustRed,
             ));
         }
     }
-
-    rows.push(DataRow::separator());
-
-    // Evidence record count — always visible in the summary pane so the
-    // operator can correlate the trust tier with the volume of evidence
-    // reviewed, without needing to scroll to the bottom of the evidence chain.
-    let evidence_count = result.evidence.records().len();
-    rows.push(DataRow::new(
-        i18n::tr("Evidence Records"),
-        evidence_count.to_string(),
-        StyleHint::Normal,
-    ));
-
-    rows
 }
 
 /// Build the scrollable evidence chain rows for the Trust / Evidence tab.
@@ -1506,9 +1523,9 @@ fn build_status(result: &DetectionResult) -> StatusMessage {
 #[allow(clippy::too_many_lines)] // lookup table — splitting reduces readability
 fn help_text_for_tab(tab_index: usize) -> String {
     match tab_index {
-       // --------------------------------------------------------------------
-       // Os Information Tab
-        0 => { i18n::tr(
+        // --------------------------------------------------------------------
+        // Os Information Tab
+        0 => i18n::tr(
             r" OS INFORMATION Tab
    ◼ Identity fields extracted from the running system.
    ◼ These values identify the platform under assessment.
@@ -1536,13 +1553,13 @@ fn help_text_for_tab(tab_index: usize) -> String {
    Tab / Shift-Tab     switch between tabs
    j / k  or  ↑ / ↓    scroll this help
    PgDn / PgUp         scroll faster
-   Enter, Esc, or q    close this help"
-       ) }
+   Enter, Esc, or q    close this help",
+        ),
 
-       // --------------------------------------------------------------------
-       // Kernel Security Tab
-        1 => {
-            i18n::tr(r" KERNEL SECURITY Tab
+        // --------------------------------------------------------------------
+        // Kernel Security Tab
+        1 => i18n::tr(
+            r" KERNEL SECURITY Tab
    ◼ Shows the settings in the currently running kernel.
    ◼ These are extracted from /proc and /sys.
 
@@ -1617,13 +1634,13 @@ fn help_text_for_tab(tab_index: usize) -> String {
    Tab / Shift-Tab     switch between tabs
    j / k  or  ↑ / ↓    scroll this help
    PgDn / PgUp         scroll faster
-   Enter, Esc, or q    close this help"
-            ) }
+   Enter, Esc, or q    close this help",
+        ),
 
-       // --------------------------------------------------------------------
-       // Trust / Evidence Tab
-        2 => {
-            i18n::tr(r" ⟬ TRUST / EVIDENCE Tab ⟭
+        // --------------------------------------------------------------------
+        // Trust / Evidence Tab
+        2 => i18n::tr(
+            r" ⟬ TRUST / EVIDENCE Tab ⟭
 
  TOP — SUMMARY (always visible):
    ◼ Trust tier, downgrade reasons, and contradictions.
@@ -1700,18 +1717,17 @@ fn help_text_for_tab(tab_index: usize) -> String {
    Tab / Shift-Tab     switch between tabs
    j / k  or  ↑ / ↓    scroll this help
    PgDn / PgUp         scroll faster
-   Enter, Esc, or q    close this help"
-            ) }
-       // --------------------------------------------------------------------
-       // Navigation
-        _ => {
-            i18n::tr(r" NAVIGATION:
+   Enter, Esc, or q    close this help",
+        ),
+        // --------------------------------------------------------------------
+        // Navigation
+        _ => i18n::tr(
+            r" NAVIGATION:
    Tab / Shift-Tab     switch between tabs
    j / k  or  ↑ / ↓   scroll this help
    PgDn / PgUp         scroll faster
-   Enter, Esc, or q    close this help"
-            )
-        }
+   Enter, Esc, or q    close this help",
+        ),
     }
 }
 

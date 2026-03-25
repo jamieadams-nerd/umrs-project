@@ -690,7 +690,10 @@ fn expand_indicator_row<'a>(
             .add_modifier(Modifier::ITALIC);
         lines.push(Line::from(vec![
             Span::raw(desc_indent),
-            Span::styled(format!("[ {}: {rec} ]", i18n::tr("Recommended")), rec_style),
+            Span::styled(
+                format!("[ {}: {rec} ]", i18n::tr("Recommended")),
+                rec_style,
+            ),
         ]));
     }
 

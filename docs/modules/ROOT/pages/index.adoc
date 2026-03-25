@@ -1,12 +1,12 @@
 = UMRS Documentation
 
-The Unclassified MLS Reference System (UMRS) is a free, MIT-licensed project — one person
-exploring high-assurance Linux engineering in depth, on real systems, with real security
-controls. UMRS covers both the operational side (deploying CUI labeling, running enriched
-security tools) and the development side (writing high-assurance Rust, applying provenance
-and TOCTOU-safe patterns). If you work in a CUI or MLS environment, or you want to
-understand what it actually takes to build trustworthy software on SELinux, this is a
-reference system built for you.
+The Unclassified MLS Reference System (UMRS) is a free, MIT-licensed reference system for
+anyone who needs to protect sensitive unclassified information — whether that means following
+CMMC, handling U.S. CUI designations, working under Canadian Protected A/B/C requirements,
+or simply building software that a security auditor can actually verify. UMRS covers the full
+stack: deploying kernel-enforced information labels, running security tools that give operators
+evidence-backed answers, and writing high-assurance Rust with patterns that hold up under
+scrutiny. The engineering is real. The controls are mapped. The source is open.
 
 == Current Focus — Cantrip Release
 

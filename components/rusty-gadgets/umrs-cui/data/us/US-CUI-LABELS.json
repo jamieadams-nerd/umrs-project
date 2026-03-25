@@ -1,34 +1,36 @@
 {
-  "labels": {
-    "GENERAL": {
-      "name": "General",
+  "senstivity": {
+    "SystemLow": {
+      "name": "SystemLow",
       "level": "s0",
-      "description": "The broad general unclassified level suitable for anything openly unclassified, routine, not requiring special controls.",
+      "description": "Base operating system in MLS policy. In targeted policy, this serves double duty as unclassified since there is a single sensitivity in this policy.",
       "handling": "No special handling requirements. Standard system access controls apply."
     },
-    "U-PUBLIC": {
-      "name": "Unclassified Public",
+    "Unclassified1": {
+      "name": "Unclassified",
       "level": "s1",
-      "description": "Intended for material that is still unclassified but suitable for public dissemination, documentation, public website assets, etc."
+      "description": ""
     },
-    "U-INTERNAL": {
-      "name": "Unclassified Internal",
+    "Unclassified2": {
+      "name": "Unclass L2",
       "level": "s2",
-      "description": "Organizational level unclassified information. Internal-use unclassified information that is still above the purely  sensitive level. This covers items where integrity matters more strongly (engineering docs, config examples, internal processes)."
+      "description": ""
     },
-    "CUI": {
-      "name": "Controlled Unclassified Information",
+
+    "Unclassied3": {
+      "name": "Unclass L3",
       "level": "s3",
-      "description": "Information requiring safeguarding or dissemination controls under U.S. law, regulation, or government policy. This is the base CUI level to which specific categories may be attached.",
-      "handling": "Mark clearly as CUI. Enforce access restrictions. Use approved storage, transport, and encryption. Ensure auditing and accountability."
+      "description": ""
     }
   },
+
   "markings": {
     "CUI": {
       "name": "Controlled Unclassified Information",
       "abbrv_name": "CUI",
       "description": "Baseline Controlled Unclassified Information. Represents information subject to safeguarding or dissemination controls per law, regulation, or policy.",
       "parent_group": "",
+      "assigned_level": "s1", 
       "handling": "Must be stored, transmitted, and shared only with authorized users. Must be encrypted when leaving controlled environments. Apply CUI markings.",
       "handling_restrictions": "Must be safeguarded from unauthorized access and shared only with authorized personnel who have a lawful government purpose. Requires access control and proper dissemination markings. Must not be posted publicly. No encryption requirement beyond standard organizational policy.",
       "handling_group_id": "CUI-BASE",
