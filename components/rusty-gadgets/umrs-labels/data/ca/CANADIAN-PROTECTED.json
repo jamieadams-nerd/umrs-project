@@ -13,23 +13,44 @@
       "There are no standardized subcategories or dissemination controls in the Canadian system.",
       "Injury thresholds are quoted verbatim from TBS Standard on Security Categorization.",
       "French designations are from the authoritative TBS French text, not Termium Plus.",
-      "This catalog uses UTF-8 encoding for accented characters."
+      "This catalog uses UTF-8 encoding for accented characters.",
+      "TBS Appendix J lists tiers in descending severity order: J.2.4.2.1 (PC/highest), J.2.4.2.2 (PB), J.2.4.2.3 (PA/lowest)."
     ],
     "structural_differences_from_us_cui": {
       "organizing_principle": "Injury severity ladder (3 tiers) vs category taxonomy (125+ named categories)",
-      "subcategories": "None standardized. Categories c201-c299 reserved per tier for future departmental use.",
+      "subcategories": "None standardized. Categories c203-c299 reserved for future departmental use.",
       "dissemination_controls": "None standardized. Canadian handling = injury tier + need-to-know.",
       "governing_framework": "TBS (Treasury Board of Canada Secretariat) vs NARA CUI Registry / 32 CFR Part 2002"
+    },
+    "country_code": "CA",
+    "mcs_category_range": "c200-c299"
+  },
+  "mutual_exclusivity": {
+    "rule": "Protected A, Protected B, and Protected C are mutually exclusive on the same information asset. A document is categorized at exactly one tier based on injury assessment.",
+    "rule_fr": "Protégé A, Protégé B et Protégé C sont mutuellement exclusifs pour un même bien informationnel. Un document est catégorisé à un seul palier selon l'évaluation du préjudice.",
+    "enforcement": "MCS sensitivity levels naturally enforce exclusivity — a file exists at exactly one sensitivity level.",
+    "reclassification": "Moving information between tiers (e.g., PA to PB) is a reclassification event requiring a new injury assessment.",
+    "atip_note": "ATIP (Access to Information and Privacy Act) release is a distinct process from tier reclassification. ATIP can result in complete removal of the Protected designation, not just movement between tiers."
+  },
+  "extension_points": {
+    "departmental_subcategories": {
+      "description": "Categories c203-c299 within each sensitivity level are reserved for future departmental information-type subcategories. Categories c200-c202 are consumed by the three base tiers (PA/PB/PC).",
+      "description_fr": "Les catégories c203 à c299 à chaque niveau de sensibilité sont réservées pour les futures sous-catégories ministérielles par type d'information. Les catégories c200 à c202 sont utilisées par les trois paliers de base (PA/PB/PC).",
+      "status": "Not populated. Requires departmental input that UMRS does not currently have.",
+      "example": "A department could define c203=Personnel, c204=Financial, c205=Medical within the PB tier (s2:c200,c203, s2:c200,c204, s2:c200,c205)."
+    },
+    "military_caveats": {
+      "description": "DND/CAF may have military-specific handling caveats not reflected in the civilian TBS framework. This is a known corpus gap.",
+      "status": "Pending Termium Plus Military/Security subject acquisition."
     }
   },
   "labels": {
     "PROTECTED-A": {
       "name": "Protected A",
       "name_fr": "Protégé A",
-      "abbreviation": "PA",
       "level": "s1",
       "category_base": "c200",
-      "category_range_reserved": "c201-c299",
+      "category_range_reserved": "c203-c299",
       "description": "Information whose unauthorized disclosure could reasonably be expected to cause limited or moderate injury outside the national interest.",
       "description_fr": "Renseignements dont on pourrait vraisemblablement s'attendre à ce que la divulgation non autorisée cause un préjudice limité ou modéré à des intérêts autres que l'intérêt national.",
       "injury_examples": "Disclosure of an exact salary figure.",
@@ -49,15 +70,19 @@
       "dissemination_controls": null,
       "us_cui_approximate_correspondence": "Some CUI Basic categories address similar injury levels, but the systems are structurally different. Not a direct mapping.",
       "marking_banner_en": "PROTECTED A",
-      "marking_banner_fr": "PROTÉGÉ A"
+      "marking_banner_fr": "PROTÉGÉ A",
+      "abbrv_name": "PA",
+      "parent_group": "",
+      "designation": null,
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
     "PROTECTED-B": {
       "name": "Protected B",
       "name_fr": "Protégé B",
-      "abbreviation": "PB",
       "level": "s2",
-      "category_base": "c200",
-      "category_range_reserved": "c201-c299",
+      "category_base": "c201",
+      "category_range_reserved": "c203-c299",
       "description": "Information whose unauthorized disclosure could reasonably be expected to cause serious injury outside the national interest.",
       "description_fr": "Renseignements dont on pourrait vraisemblablement s'attendre à ce que la divulgation non autorisée cause un préjudice sérieux à des intérêts autres que l'intérêt national.",
       "injury_examples": "Loss of reputation or competitive advantage.",
@@ -77,15 +102,19 @@
       "dissemination_controls": null,
       "us_cui_approximate_correspondence": "Roughly corresponds to CUI Specified categories requiring enhanced handling. The correspondence is approximate — CUI Specified is category-specific while PB is a uniform tier.",
       "marking_banner_en": "PROTECTED B",
-      "marking_banner_fr": "PROTÉGÉ B"
+      "marking_banner_fr": "PROTÉGÉ B",
+      "abbrv_name": "PB",
+      "parent_group": "",
+      "designation": null,
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
     "PROTECTED-C": {
       "name": "Protected C",
       "name_fr": "Protégé C",
-      "abbreviation": "PC",
       "level": "s3",
-      "category_base": "c200",
-      "category_range_reserved": "c201-c299",
+      "category_base": "c202",
+      "category_range_reserved": "c203-c299",
       "description": "Information whose unauthorized disclosure could reasonably be expected to cause extremely grave injury outside the national interest, for example, loss of life.",
       "description_fr": "Renseignements dont on pourrait raisonnablement s'attendre à ce que la divulgation non autorisée cause un préjudice extrêmement grave à des intérêts autres que l'intérêt national, par exemple, la perte de vie.",
       "injury_examples": "Loss of life.",
@@ -106,25 +135,12 @@
       "us_cui_approximate_correspondence": "No direct US CUI equivalent. Protected C sits at the boundary between unclassified and classified. US CUI does not include a tier of this severity.",
       "marking_banner_en": "PROTECTED C",
       "marking_banner_fr": "PROTÉGÉ C",
-      "phase_note": "Protected C requires Phase 2 MLS enforcement to carry meaningful security value. In Phase 1, the label is applied and visible but not kernel-enforced."
-    }
-  },
-  "mutual_exclusivity": {
-    "rule": "Protected A, Protected B, and Protected C are mutually exclusive on the same information asset. A document is categorized at exactly one tier based on injury assessment.",
-    "rule_fr": "Protégé A, Protégé B et Protégé C sont mutuellement exclusifs pour un même bien informationnel. Un document est catégorisé à un seul palier selon l'évaluation du préjudice.",
-    "enforcement": "MCS sensitivity levels naturally enforce exclusivity — a file exists at exactly one sensitivity level.",
-    "reclassification": "Moving information between tiers (e.g., PA to PB) is a reclassification event requiring a new injury assessment."
-  },
-  "extension_points": {
-    "departmental_subcategories": {
-      "description": "Categories c201-c299 within each sensitivity level are reserved for future departmental information-type subcategories.",
-      "description_fr": "Les catégories c201 à c299 à chaque niveau de sensibilité sont réservées pour les futures sous-catégories ministérielles par type d'information.",
-      "status": "Not populated. Requires departmental input that UMRS does not currently have.",
-      "example": "A department could define c201=Personnel, c202=Financial, c203=Medical within the PB tier (s2:c201, s2:c202, s2:c203)."
-    },
-    "military_caveats": {
-      "description": "DND/CAF may have military-specific handling caveats not reflected in the civilian TBS framework. This is a known corpus gap.",
-      "status": "Pending Termium Plus Military/Security subject acquisition."
+      "phase_note": "Protected C requires Phase 2 MLS enforcement to carry meaningful security value. In Phase 1, the label is applied and visible but not kernel-enforced.",
+      "abbrv_name": "PC",
+      "parent_group": "",
+      "designation": null,
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     }
   }
 }

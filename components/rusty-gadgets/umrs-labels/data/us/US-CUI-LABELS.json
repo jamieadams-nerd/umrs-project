@@ -1,27 +1,22 @@
 {
-  "labels": {
-    "GENERAL": {
-      "name": "General",
-      "level": "s0",
-      "description": "The broad general unclassified level suitable for anything openly unclassified, routine, not requiring special controls.",
-      "handling": "No special handling requirements. Standard system access controls apply."
-    },
-    "U-PUBLIC": {
-      "name": "Unclassified Public",
-      "level": "s1",
-      "description": "Intended for material that is still unclassified but suitable for public dissemination, documentation, public website assets, etc."
-    },
-    "U-INTERNAL": {
-      "name": "Unclassified Internal",
-      "level": "s2",
-      "description": "Organizational level unclassified information. Internal-use unclassified information that is still above the purely  sensitive level. This covers items where integrity matters more strongly (engineering docs, config examples, internal processes)."
-    },
-    "CUI": {
-      "name": "Controlled Unclassified Information",
-      "level": "s3",
-      "description": "Information requiring safeguarding or dissemination controls under U.S. law, regulation, or government policy. This is the base CUI level to which specific categories may be attached.",
-      "handling": "Mark clearly as CUI. Enforce access restrictions. Use approved storage, transport, and encryption. Ensure auditing and accountability."
-    }
+  "_metadata": {
+    "catalog_name": "United States Controlled Unclassified Information (CUI)",
+    "version": "0.2.0",
+    "authority": "NARA CUI Registry / 32 CFR Part 2002",
+    "authority_date": "2024-01-01",
+    "country_code": "US",
+    "mcs_category_range": "c0-c199",
+    "author": "UMRS Project",
+    "created": "2026-03-21",
+    "updated": "2026-03-27",
+    "scope": "Advisory reference — UMRS is a reference system, not a production deployment",
+    "notes": [
+      "US CUI is organized as a category taxonomy with 72+ named markings under a single sensitivity level (s1 in MLS, s0 in targeted).",
+      "All CUI markings share sensitivity level s1 — differentiation is by MCS category, not sensitivity.",
+      "Handling requirements are defined in the companion file US-CUI-HANDLING.json, linked via handling_group_id.",
+      "Category numbers c0-c149 are allocated; c150-c199 reserved for US growth.",
+      "Palette colors are defined in the shared UMRS-PALETTE.json file, linked via palette_ref."
+    ]
   },
   "markings": {
     "CUI": {
@@ -32,56 +27,11 @@
       "handling": "Must be stored, transmitted, and shared only with authorized users. Must be encrypted when leaving controlled environments. Apply CUI markings.",
       "handling_restrictions": "Must be safeguarded from unauthorized access and shared only with authorized personnel who have a lawful government purpose. Requires access control and proper dissemination markings. Must not be posted publicly. No encryption requirement beyond standard organizational policy.",
       "handling_group_id": "CUI-BASE",
-      "other": {}
-    },
-    "CUI//AGR": {
-      "name": "Agriculture",
-      "abbrv_name": "AGR",
-      "description": "Information related to agriculture, farming, livestock, food production, and agricultural chemicals requiring controlled handling.",
-      "parent_group": "CUI",
-      "palette_ref": "agriculture_green",
-      "handling_group_id": "AGR-GROUP",
-      "risk_domains": [
-        "AGRO-INFRA",
-        "FOOD-SUPPLY",
-        "AGRO-BIOSEC"
-      ],
-      "other": {}
-    },
-    "CUI//AGR/AMNT": {
-      "name": "Ammonium Nitrate",
-      "abbrv_name": "AMNT",
-      "description": "Information related to the manufacture, storage, distribution, or use of ammonium nitrate, including safety and regulatory data.",
-      "parent_group": "AGR",
-      "handling_group_id": "AGR-AMNT-GROUP",
-      "other": {}
-    },
-    "CUI//AGR/CHEM": {
-      "name": "Agricultural Chemicals",
-      "abbrv_name": "CHEM",
-      "description": "Information related to agricultural chemicals such as pesticides, herbicides, fertilizers, and their regulated use.",
-      "parent_group": "AGR",
-      "handling_group_id": "AGR-CHEM-GROUP",
-      "risk_domains": [
-        "AG-CHEM-SENS",
-        "ENV-CONTAIN",
-        "SUPPLY-CHAIN"
-      ],
-      "other": {}
-    },
-    "CUI//AGR/PCI": {
-      "name": "Pesticide Control Information",
-      "abbrv_name": "PCI",
-      "description": "Information concerning pesticide regulation, application controls, environmental impact data, and restricted chemical handling guidance.",
-      "parent_group": "AGR",
-      "palette_ref": "",
-      "handling_group_id": "AGR-PCI-GROUP",
-      "risk_domains": [
-        "TOXIC-USE",
-        "FOOD-CONTAM",
-        "REG-ENF"
-      ],
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
     "CUI//CRIT": {
       "name": "Critical Infrastructure",
@@ -89,7 +39,11 @@
       "description": "Information related to the protection, operation, or vulnerability of critical infrastructure systems and assets.",
       "parent_group": "CUI",
       "handling_group_id": "CUI-BASE",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
     "CUI//CRIT/CEII": {
       "name": "Critical Energy Infrastructure Information",
@@ -97,15 +51,39 @@
       "description": "Information about energy sector infrastructure (generation, transmission, pipelines, etc.) that could be misused to disrupt services or compromise safety.",
       "parent_group": "CRIT",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
-    "CUI//CRIT/DCRIT": {
-      "name": "DoD Critical",
-      "abbrv_name": "DCRIT",
-      "description": "Information concerning Department of Defense critical infrastructure, including facilities, systems, and supporting assets.",
+    "CUI//CRIT/CRITAN": {
+      "name": "Ammonium Nitrate",
+      "abbrv_name": "CRITAN",
+      "description": "",
       "parent_group": "CRIT",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//CRIT/CVI": {
+      "name": "Chemical-Terrorism Vulnerability Information",
+      "abbrv_name": "CVI",
+      "parent_group": "CRIT",
+      "description": "",
+      "level": "s1",
+      "designation": "specified",
+      "required_warning_statement": "WARNING: This record contains Chemical-Terrorism Vulnerability Information controlled by 6 CFR 27.400. Do not disclose to persons without a “need to know” in accordance with 6 CFR 27.400(e). Unauthorized release may result in civil penalties or other action. In any administrative or judicial proceeding, this information shall be treated as classified information in accordance with 6 CFR 27.400(h) and (i).",
+      "required_dissemination_control": null,
+      "handling": "",
+      "handling_group_id": "",
+      "other": {},
+      "palette_ref": null,
+      "risk_domains": null,
+      "handling_restrictions": null
     },
     "CUI//CRIT/EMGT": {
       "name": "Emergency Management",
@@ -113,7 +91,11 @@
       "description": "Information related to emergency management planning, response, recovery, and coordination activities.",
       "parent_group": "CRIT",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
     "CUI//CRIT/ISVI": {
       "name": "Information Systems Vulnerability Information",
@@ -121,7 +103,23 @@
       "description": "Details about weaknesses, vulnerabilities, or exploitation paths in information systems or networks (e.g., vulnerability reports, scans) that require protection to avoid aiding adversaries.",
       "parent_group": "CRIT",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//CRIT/PCII": {
+      "name": "Protected Critical Infrastructure Information",
+      "abbrv_name": "PCII",
+      "description": "",
+      "parent_group": "CRIT",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
     "CUI//CRIT/PHYS": {
       "name": "Physical Security",
@@ -129,7 +127,35 @@
       "description": "Information related to physical security measures, vulnerabilities, or protection of facilities and assets.",
       "parent_group": "CRIT",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//CRIT/SAFE": {
+      "name": "SAFETY Act Information",
+      "abbrv_name": "SAFE",
+      "description": "",
+      "parent_group": "CRIT",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//CRIT/TSCA": {
+      "name": "Toxic Substances",
+      "abbrv_name": "TSCA",
+      "description": "",
+      "parent_group": "CRIT",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
     "CUI//CRIT/WATER": {
       "name": "Water Assessments",
@@ -137,32 +163,113 @@
       "description": "Information related to assessments of drinking water systems and water infrastructure, including treatment, distribution, and vulnerability data.",
       "parent_group": "CRIT",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
-    "CUI//CTI": {
+    "CUI//DEF": {
+      "name": "Defense",
+      "abbrv_name": "DEF",
+      "description": "Information related to Department of Defense operations, systems, and programs requiring controlled handling.",
+      "parent_group": "CUI",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//DEF/CTI": {
       "name": "Controlled Technical Information (Defense)",
       "abbrv_name": "CTI",
       "description": "Technical information (e.g., engineering, technical data, software) with military or space application that requires protection under specific defense-related regulations or contracts.",
-      "parent_group": "CUI",
+      "parent_group": "DEF",
       "handling_group_id": "CTI-GROUP",
       "palette_ref": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "specified",
+      "required_warning_statement": "Required Dissemination Control:  Distribution Statement B thru F",
+      "required_dissemination_control": null
     },
-    "CUI//CTI/EXPT": {
+    "CUI//DEF/DCNI": {
+      "name": "Unclassified Controlled Nuclear Information - Defense",
+      "abbrv_name": "DCNI",
+      "parent_group": "DEF",
+      "description": "",
+      "level": "s1",
+      "designation": "specified",
+      "required_warning_statement": "Department of Defense Unclassified Controlled Nuclear Information Exempt from mandatory disclosure pursuant to 5 U.S.C. 552(b)(3), as authorized by 10 U.S.C. 128",
+      "required_dissemination_control": null,
+      "handling": "",
+      "handling_group_id": "",
+      "other": {},
+      "palette_ref": null,
+      "risk_domains": null,
+      "handling_restrictions": null
+    },
+    "CUI//DEF/DCRIT": {
+      "name": "DoD Critical",
+      "abbrv_name": "DCRIT",
+      "description": "Information concerning Department of Defense critical infrastructure, including facilities, systems, and supporting assets.",
+      "parent_group": "DEF",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//DEF/NNPI": {
+      "name": "Naval Nuclear Propulsion Information (Defense)",
+      "abbrv_name": "NNPI",
+      "description": "Information concerning naval nuclear propulsion systems and technology protected by statute.",
+      "parent_group": "DEF",
+      "handling_group_id": "NNPI-GROUP",
+      "palette_ref": "default",
+      "other": {},
+      "level": "s1",
+      "designation": "specified",
+      "required_warning_statement": "Required Dissemination Control:  NOFORN",
+      "required_dissemination_control": null
+    },
+    "CUI//DEF/PSI": {
+      "name": "Privileged Safety Information",
+      "abbrv_name": "PSI",
+      "description": "",
+      "parent_group": "DEF",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//EXPT": {
       "name": "Export Controlled",
       "abbrv_name": "EXPT",
       "description": "Information subject to U.S. export control laws such as ITAR or EAR. This includes technical data, software, or other information whose transfer to foreign persons or countries is restricted.",
-      "parent_group": "CTI",
+      "parent_group": "EXPT",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "specified",
+      "required_warning_statement": "WARNING - This document contains technical data whose export is restricted by the Arms Export Control Act (Title 22, U.S.C., Sec 2751, et seq.) or the Export Control Reform Act of 2018 (Title 50, U.S.C., Chapter 58, Sec. 4801-4852). Violations of these export laws are subject to severe criminal penalties. Disseminate in accordance with provisions of DoD Directive 5230.25. Required Dissemination Control:  Distribution Statement B through F",
+      "required_dissemination_control": null
     },
-    "CUI//CTI/EXPTR": {
+    "CUI//EXPT/EXPTR": {
       "name": "Export Controlled Research",
       "abbrv_name": "EXPTR",
       "description": "Research data that falls under export control, often arising in academic or R&D contexts where results could be export-controlled.",
-      "parent_group": "CTI",
+      "parent_group": "EXPT",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
     "CUI//FNC": {
       "name": "General Financial Information",
@@ -172,64 +279,323 @@
       "palette_ref": "",
       "handling_restrictions": "Requires restricted access, protection from tampering, and integrity-preserving storage. Often requires audit logging and controlled dissemination",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
-    "CUI//FNC/BSA": {
-      "name": "Bank Secrecy Act Information",
-      "abbrv_name": "BSA",
-      "description": "Financial records and reporting governed by the Bank Secrecy Act, including anti-money-laundering filings, suspicious activity reports, and regulatory disclosures.",
-      "parent_group": "FNC",
-      "palette_ref": "",
-      "handling_group_id": "",
-      "other": {}
-    },
-    "CUI//GOVT": {
-      "name": "Government",
-      "abbrv_name": "GOVT",
-      "description": "Information related to government operations, processes, and official activities requiring controlled handling.",
-      "parent_group": "CUI",
-      "handling_group_id": "",
-      "other": {}
-    },
-    "CUI//GOVT/BUDG": {
+    "CUI//FNC/BUDG": {
       "name": "Budget Information",
       "abbrv_name": "BUDG",
       "description": "Non-public budget planning, allocation, and fiscal strategy information related to government funding and appropriations.",
-      "parent_group": "GOVT",
+      "parent_group": "FNC",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
-    "CUI//GOVT/PROC": {
-      "name": "Government Procurement",
-      "abbrv_name": "PROC",
-      "description": "nternal procurement planning, acquisition strategy, and pre-award sourcing information requiring controlled dissemination.",
-      "parent_group": "GOVT",
+    "CUI//FNC/COMPT": {
+      "name": "Comptroller General",
+      "abbrv_name": "COMPT",
+      "description": "",
+      "parent_group": "FNC",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
-    "CUI//GOVT/RECS": {
-      "name": "Federal Records Information",
-      "abbrv_name": "RECS",
-      "description": "Federal records subject to records management controls, retention schedules, and restricted archival handling.",
-      "parent_group": "GOVT",
+    "CUI//FNC/FINT": {
+      "name": "International Financial Institutions",
+      "abbrv_name": "FINT",
+      "description": "",
+      "parent_group": "FNC",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
-    "CUI//GOVT/LEGL": {
-      "name": "Legal",
-      "abbrv_name": "LEGL",
-      "description": "Attorney-client privileged information, legal analyses, litigation strategy, or regulatory investigation details requiring controlled distribution.",
-      "parent_group": "GOVT",
+    "CUI//FNC/FSEC": {
+      "name": "Bank Secrecy",
+      "abbrv_name": "FSEC",
+      "description": "",
+      "parent_group": "FNC",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
-    "CUI//GOVT/LMI": {
-      "name": "Legislative Materials",
-      "abbrv_name": "LMI",
-      "description": "Information related to legislative materials, including non-public legislative records and supporting documents.",
-      "parent_group": "GOVT",
+    "CUI//FNC/FSI": {
+      "name": "Financial Supervision Information",
+      "abbrv_name": "FSI",
+      "description": "",
+      "parent_group": "FNC",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//FNC/MERG": {
+      "name": "Mergers",
+      "abbrv_name": "MERG",
+      "description": "",
+      "parent_group": "FNC",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//FNC/NETW": {
+      "name": "Net Worth",
+      "abbrv_name": "NETW",
+      "description": "",
+      "parent_group": "FNC",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//FNC/RTR": {
+      "name": "Retirement",
+      "abbrv_name": "RTR",
+      "description": "",
+      "parent_group": "FNC",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//FNC/XFER": {
+      "name": "Electronic Funds Transfer",
+      "abbrv_name": "XFER",
+      "description": "",
+      "parent_group": "FNC",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//IMMG": {
+      "name": "Immigration",
+      "abbrv_name": "IMMG",
+      "description": "Information related to immigration status, proceedings, and benefits requiring controlled handling.",
+      "parent_group": "CUI",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//IMMG/ADJ": {
+      "name": "Status Adjustment",
+      "abbrv_name": "ADJ",
+      "description": "",
+      "parent_group": "IMMG",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//IMMG/ASYL": {
+      "name": "Asylee",
+      "abbrv_name": "ASYL",
+      "description": "",
+      "parent_group": "IMMG",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//IMMG/BATT": {
+      "name": "Battered Spouse or Child",
+      "abbrv_name": "BATT",
+      "description": "",
+      "parent_group": "IMMG",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//IMMG/IVIC": {
+      "name": "Victims of Human Trafficking",
+      "abbrv_name": "IVIC",
+      "description": "",
+      "parent_group": "IMMG",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//IMMG/PROT": {
+      "name": "Temporary Protected Status (Immigration)",
+      "abbrv_name": "PROT",
+      "description": "Information related to individuals granted Temporary Protected Status under immigration law.",
+      "parent_group": "IMMG",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//IMMG/RESD": {
+      "name": "Permanent Resident Status",
+      "abbrv_name": "RESD",
+      "description": "",
+      "parent_group": "IMMG",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//IMMG/VISA": {
+      "name": "Visas",
+      "abbrv_name": "VISA",
+      "description": "",
+      "parent_group": "IMMG",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//INTEL": {
+      "name": "Intelligence",
+      "abbrv_name": "INTEL",
+      "description": "Sensitive intelligence support data not formally classified but requiring controlled dissemination.",
+      "parent_group": "CUI",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//INTEL/AG": {
+      "name": "Agriculture",
+      "abbrv_name": "AG",
+      "description": "",
+      "parent_group": "INTEL",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//INTEL/FISA": {
+      "name": "Foreign Intelligence Surveillance Act",
+      "abbrv_name": "FISA",
+      "description": "",
+      "parent_group": "INTEL",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//INTEL/FISAB": {
+      "name": "FISA Business Records",
+      "abbrv_name": "FISAB",
+      "description": "",
+      "parent_group": "INTEL",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//INTEL/GEO": {
+      "name": "Geodetic Product Information",
+      "abbrv_name": "GEO",
+      "description": "",
+      "parent_group": "INTEL",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//INTEL/ID": {
+      "name": "Internal Data",
+      "abbrv_name": "ID",
+      "description": "",
+      "parent_group": "INTEL",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//INTEL/IFNC": {
+      "name": "Intelligence Financial Records",
+      "abbrv_name": "IFNC",
+      "description": "",
+      "parent_group": "INTEL",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//INTEL/OPSEC": {
+      "name": "Operations Security (Intelligence)",
+      "abbrv_name": "OPSEC",
+      "description": "Information whose uncontrolled exposure would undermine operational security (e.g., patterns revealing how an organization operates, schedules, specific capabilities).",
+      "parent_group": "INTEL",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//INTL": {
+      "name": "International Agreement Information",
+      "abbrv_name": "INTL",
+      "description": "",
+      "parent_group": "CUI",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
     "CUI//LEI": {
       "name": "Law Enforcement Information",
@@ -238,7 +604,11 @@
       "parent_group": "CUI",
       "palette_ref": "police_blue",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
     "CUI//LEI/AIV": {
       "name": "Accident Investigation",
@@ -246,7 +616,11 @@
       "description": "Investigative records, forensic analyses, and official findings related to accident investigations conducted by law enforcement authorities.",
       "parent_group": "LEI",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
     "CUI//LEI/CHRI": {
       "name": "Criminal History Records Information",
@@ -254,7 +628,11 @@
       "description": "Criminal history record information including arrest records, charges, dispositions, and law enforcement identification data.",
       "parent_group": "LEI",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
     "CUI//LEI/CMPRS": {
       "name": "Committed Person",
@@ -262,7 +640,11 @@
       "description": "ecords pertaining to individuals legally committed through judicial or law enforcement processes, including custody and case documentation.",
       "parent_group": "LEI",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
     "CUI//LEI/FUND": {
       "name": "Campaign Funds",
@@ -270,7 +652,11 @@
       "description": "Financial tracking, seizure, forfeiture, or investigative accounting records associated with law enforcement operations.",
       "parent_group": "LEI",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
     "CUI//LEI/INF": {
       "name": "Informant",
@@ -278,7 +664,11 @@
       "description": "Sensitive information identifying or provided by confidential informants supporting investigative or intelligence activities.",
       "parent_group": "LEI",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
     "CUI//LEI/INV": {
       "name": "Investigation",
@@ -286,7 +676,11 @@
       "description": "Active or closed investigative case records, evidence documentation, and operational law enforcement reporting.",
       "parent_group": "LEI",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
     "CUI//LEI/JUV": {
       "name": "Juvenile",
@@ -294,7 +688,11 @@
       "description": "Law enforcement records involving juveniles, protected under statutory confidentiality and restricted dissemination requirements.",
       "parent_group": "LEI",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
     "CUI//LEI/LCOMM": {
       "name": "Communications",
@@ -302,7 +700,11 @@
       "description": "Intercepted, monitored, or retained law enforcement communications including authorized surveillance or operational exchanges.",
       "parent_group": "LEI",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
     "CUI//LEI/LDNA": {
       "name": "DNA",
@@ -310,7 +712,11 @@
       "description": "Forensic DNA profiles, laboratory analyses, and genetic identification records maintained for investigative purposes.",
       "parent_group": "LEI",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
     "CUI//LEI/LFNC": {
       "name": "Law Enforcement Financial Records",
@@ -318,7 +724,11 @@
       "description": "Financial documentation tied to criminal investigations including fraud, laundering, or asset tracing activities.",
       "parent_group": "LEI",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
     "CUI//LEI/LNSL": {
       "name": "National Security Letter",
@@ -326,7 +736,11 @@
       "description": "Records and supporting documentation associated with National Security Letters issued under authorized investigative authority.",
       "parent_group": "LEI",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
     "CUI//LEI/LSCRN": {
       "name": "Terrorist Screening",
@@ -334,7 +748,11 @@
       "description": "Terrorist screening datasets, watchlist correlations, and identity vetting records maintained by law enforcement.",
       "parent_group": "LEI",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
     "CUI//LEI/RWRD": {
       "name": "Reward",
@@ -342,7 +760,11 @@
       "description": "Documentation related to reward programs, informant compensation, or public incentive investigative initiatives.",
       "parent_group": "LEI",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
     "CUI//LEI/SCV": {
       "name": "Sex Crime Victim",
@@ -350,7 +772,11 @@
       "description": "Protected victim information related to sexual crimes, safeguarded to preserve privacy and investigative integrity.",
       "parent_group": "LEI",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
     "CUI//LEI/SUB": {
       "name": "Controlled Substances",
@@ -358,7 +784,11 @@
       "description": "Records concerning controlled substances including enforcement actions, seizure logs, and regulatory violations.",
       "parent_group": "LEI",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
     "CUI//LEI/TRACE": {
       "name": "Pen Register/Trap & Trace",
@@ -366,7 +796,11 @@
       "description": "Pen register and trap-and-trace surveillance data collected under authorized legal monitoring operations.",
       "parent_group": "LEI",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
     "CUI//LEI/WHISTL": {
       "name": "Whistleblower Identity",
@@ -374,97 +808,451 @@
       "description": "Protected identity and disclosure records of whistleblowers supporting investigative or oversight activities.",
       "parent_group": "LEI",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
-    "CUI//NNPI": {
-      "name": "Naval Nuclear Propulsion Information (Defense)",
-      "abbrv_name": "NNPI",
-      "description": "Information concerning naval nuclear propulsion systems and technology protected by statute.",
-      "parent_group": "CUI",
-      "handling_group_id": "NNPI-GROUP",
-      "palette_ref": "default",
-      "other": {}
-    },
-    "CUI//OPSEC": {
-      "name": "Operations Security (Intelligence)",
-      "abbrv_name": "OPSEC",
-      "description": "Information whose uncontrolled exposure would undermine operational security (e.g., patterns revealing how an organization operates, schedules, specific capabilities).",
+    "CUI//LGL": {
+      "name": "Legal",
+      "abbrv_name": "LGL",
+      "description": "Information related to legal proceedings, judicial records, and privileged legal materials requiring controlled handling.",
       "parent_group": "CUI",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
-    "CUI//PRIVACY": {
-      "name": "General Privacy",
-      "abbrv_name": "PRIVACY",
-      "description": "Personally identifiable information (PII) requiring protection from unauthorized disclosure under privacy laws and policy.",
-      "handling": "Encrypt in transit and at rest. Prevent unnecessary distribution. Apply Privacy Act or SORN constraints if applicable.",
+    "CUI//LGL/ADPO": {
+      "name": "Administrative Proceedings",
+      "abbrv_name": "ADPO",
+      "description": "",
+      "parent_group": "LGL",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//LGL/BARG": {
+      "name": "Collective Bargaining",
+      "abbrv_name": "BARG",
+      "description": "",
+      "parent_group": "LGL",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//LGL/CHLD": {
+      "name": "Child Pornography",
+      "abbrv_name": "CHLD",
+      "description": "",
+      "parent_group": "LGL",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//LGL/CVIC": {
+      "name": "Child Victim/Witness",
+      "abbrv_name": "CVIC",
+      "description": "",
+      "parent_group": "LGL",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//LGL/JURY": {
+      "name": "Federal Grand Jury",
+      "abbrv_name": "JURY",
+      "description": "",
+      "parent_group": "LGL",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//LGL/LMI": {
+      "name": "Legislative Materials",
+      "abbrv_name": "LMI",
+      "description": "Information related to legislative materials, including non-public legislative records and supporting documents.",
+      "parent_group": "LGL",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//LGL/LPROT": {
+      "name": "Protective Order",
+      "abbrv_name": "LPROT",
+      "description": "",
+      "parent_group": "LGL",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//LGL/LVIC": {
+      "name": "Victim",
+      "abbrv_name": "LVIC",
+      "description": "",
+      "parent_group": "LGL",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//LGL/PRE": {
+      "name": "Presentence Report",
+      "abbrv_name": "PRE",
+      "description": "",
+      "parent_group": "LGL",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//LGL/PRIOR": {
+      "name": "Prior Arrest",
+      "abbrv_name": "PRIOR",
+      "description": "",
+      "parent_group": "LGL",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//LGL/PRIVILEGE": {
+      "name": "Legal Privilege",
+      "abbrv_name": "PRIVILEGE",
+      "parent_group": "LGL",
+      "description": "",
+      "level": "s1",
+      "designation": "specified",
+      "required_warning_statement": "Required Dissemination Control:  ATTORNEY-CLIENT or ATTORNEY-WP",
+      "required_dissemination_control": null,
+      "handling": "",
+      "handling_group_id": "",
+      "other": {},
+      "palette_ref": null,
+      "risk_domains": null,
+      "handling_restrictions": null
+    },
+    "CUI//LGL/WIT": {
+      "name": "Witness Protection",
+      "abbrv_name": "WIT",
+      "description": "",
+      "parent_group": "LGL",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//NCR": {
+      "name": "Natural and Cultural Resources",
+      "abbrv_name": "NCR",
+      "description": "Information related to the protection of archaeological, historical, and natural park system resources.",
       "parent_group": "CUI",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
-    "CUI//PRIVACY/CONTRACT": {
+    "CUI//NCR/ARCHR": {
+      "name": "Archaeological Resources",
+      "abbrv_name": "ARCHR",
+      "description": "",
+      "parent_group": "NCR",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//NCR/HISTP": {
+      "name": "Historic Properties",
+      "abbrv_name": "HISTP",
+      "description": "",
+      "parent_group": "NCR",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//NCR/NPSR": {
+      "name": "National Park System Resources",
+      "abbrv_name": "NPSR",
+      "description": "",
+      "parent_group": "NCR",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//NUC": {
+      "name": "General Nuclear",
+      "abbrv_name": "NUC",
+      "description": "",
+      "parent_group": "CUI",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//NUC/RECOMM": {
+      "name": "Nuclear Recommendation Material",
+      "abbrv_name": "RECOMM",
+      "description": "",
+      "parent_group": "NUC",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//NUC/SGI": {
+      "name": "Safeguards Information",
+      "abbrv_name": "SGI",
+      "description": "",
+      "parent_group": "NUC",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//NUC/SRI": {
+      "name": "Nuclear Security-Related Information",
+      "abbrv_name": "SRI",
+      "description": "",
+      "parent_group": "NUC",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//NUC/UCNI": {
+      "name": "Unclassified Controlled Nuclear Information - Energy",
+      "abbrv_name": "UCNI",
+      "parent_group": "NUC",
+      "description": "",
+      "level": "s1",
+      "designation": "specified",
+      "required_warning_statement": "Unclassified Controlled Nuclear Information Not for Public Dissemination Unauthorized dissemination subject to civil and criminal sanctions under section 148 of the Atomic Energy Act of 1954, as amended (42 U.S.C. 2168). Additional Marking Requirement:  Unclassified Controlled Nuclear Information will be placed at the bottom of all pages",
+      "required_dissemination_control": null,
+      "handling": "",
+      "handling_group_id": "",
+      "other": {},
+      "palette_ref": null,
+      "risk_domains": null,
+      "handling_restrictions": null
+    },
+    "CUI//PAT": {
+      "name": "Patent",
+      "abbrv_name": "PAT",
+      "description": "Information related to patent applications, inventions, and secrecy orders requiring controlled handling.",
+      "parent_group": "CUI",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//PAT/APP": {
+      "name": "Patent Applications",
+      "abbrv_name": "APP",
+      "description": "",
+      "parent_group": "PAT",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//PAT/INVENT": {
+      "name": "Inventions",
+      "abbrv_name": "INVENT",
+      "description": "",
+      "parent_group": "PAT",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//PAT/PSEC": {
+      "name": "Secrecy Orders (Patent)",
+      "abbrv_name": "PSEC",
+      "description": "Information subject to patent secrecy orders restricting disclosure of certain inventions.",
+      "parent_group": "PAT",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//PRIV": {
+      "name": "Privacy",
+      "abbrv_name": "PRIV",
+      "description": "Personally identifiable information and privacy-protected records requiring controlled handling under federal privacy law.",
+      "parent_group": "CUI",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//PRIV/CONTRACT": {
       "name": "Contract Use",
       "abbrv_name": "CONTRACT",
       "description": "Personally identifiable information collected or used in the context of contractual relationships.",
-      "parent_group": "PRIVACY",
+      "parent_group": "PRIV",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
-    "CUI//PRIVACY/DREC": {
+    "CUI//PRIV/DREC": {
       "name": "Death Records",
       "abbrv_name": "DREC",
       "description": "Information contained in death records that is protected from public disclosure.",
-      "parent_group": "PRIVACY",
+      "parent_group": "PRIV",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
-    "CUI//PRIVACY/GENETIC": {
+    "CUI//PRIV/GENETIC": {
       "name": "Genetic Information",
       "abbrv_name": "GENETIC",
       "description": "Information about genetic tests or characteristics (DNA, inherited traits) that are individually identifiable and protected.",
-      "parent_group": "PRIVACY",
+      "parent_group": "PRIV",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
-    "CUI//PRIVACY/HEALTH": {
-      "name": "Health",
-      "abbrv_name": "HEALTH",
-      "description": "Health-related information associated with identifiable individuals that requires privacy protection.",
-      "parent_group": "PRIVACY",
+    "CUI//PRIV/HLTH": {
+      "name": "Health Information",
+      "abbrv_name": "HLTH",
+      "description": "",
+      "parent_group": "PRIV",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
-    "CUI//PRIVACY/MIL": {
+    "CUI//PRIV/MIL": {
       "name": "Military Personnel Records",
       "abbrv_name": "MIL",
       "description": "Personnel data for military members that requires safeguarding (assignments, performance, non-public details, etc.).",
-      "parent_group": "PRIVACY",
+      "parent_group": "PRIV",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
-    "CUI//PRIVACY/PERS": {
+    "CUI//PRIV/PERS": {
       "name": "Personnel Records",
       "abbrv_name": "PERS",
       "description": "Similar to MIL but broader: personnel records for non-military staff or employees.",
-      "parent_group": "PRIVACY",
+      "parent_group": "PRIV",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
-    "CUI//PRIVACY/PRIIG": {
+    "CUI//PRIV/PRIIG": {
       "name": "Inspector General Protected",
       "abbrv_name": "PRIIG",
       "description": "Personally identifiable information protected in the context of Inspector General activities.",
-      "parent_group": "PRIVACY",
+      "parent_group": "PRIV",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
-    "CUI//PRIVACY/STUD": {
+    "CUI//PRIV/PRVCY": {
+      "name": "General Privacy",
+      "abbrv_name": "PRVCY",
+      "description": "",
+      "parent_group": "PRIV",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//PRIV/STUD": {
       "name": "Student Records",
       "abbrv_name": "STUD",
       "description": "Education records related to identifiable students that are protected by privacy requirements.",
-      "parent_group": "PRIVACY",
+      "parent_group": "PRIV",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
     "CUI//PROCURE": {
       "name": "Procurement and Acquisition",
@@ -473,7 +1261,11 @@
       "parent_group": "CUI",
       "palette_ref": "",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
     "CUI//PROCURE/SBIZ": {
       "name": "Small Business Research and Technology",
@@ -481,7 +1273,11 @@
       "description": "Acquisition data related to small business research, innovation grants, and technology development programs.",
       "parent_group": "PROCURE",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
     "CUI//PROCURE/SSEL": {
       "name": "Source Selection",
@@ -489,7 +1285,11 @@
       "description": "ource selection materials including evaluation criteria, scoring records, and award decision documentation.",
       "parent_group": "PROCURE",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
     "CUI//PROPIN": {
       "name": "General Proprietary Business Information",
@@ -497,7 +1297,23 @@
       "description": "Proprietary business information provided to the government that is protected from unauthorized disclosure.",
       "parent_group": "CUI",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "specified",
+      "required_warning_statement": null,
+      "required_dissemination_control": "Additional Note: Pursuant to 10 CFR 600.15, an application or other document, including any unsolicited information, may include technical data and other data, including trade secrets and commercial or financial information that is privileged or confidential, which the applicant does not want disclosed to the public or used by the Government for any purpose other than application evaluation.  To protect such data, the submitter must mark the cover sheet of the application or other document with the following Notice: NOTICE OF RESTRICTION ON DISCLOSURE AND USE OF DATA Pages [____] of this document may contain trade secrets or commercial or financial information that is privileged or confidential and is exempt from public disclosure. Such information shall be used or disclosed only for evaluation purposes or in accordance with a financial assistance or loan agreement between the submitter and the Government. The Government may use or disclose any information that is not appropriately marked or otherwise restricted, regardless of source."
+    },
+    "CUI//PROPIN/CONREG": {
+      "name": "Entity Registration Information",
+      "abbrv_name": "CONREG",
+      "description": "",
+      "parent_group": "PROPIN",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
     "CUI//PROPIN/MFC": {
       "name": "Proprietary Manufacturer",
@@ -505,31 +1321,95 @@
       "description": "Proprietary manufacturing processes, designs, or production data submitted under protected disclosure.",
       "parent_group": "PROPIN",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
-    "CUI//PROT": {
-      "name": "Temporary Protected Status (Immigration)",
-      "abbrv_name": "PROT",
-      "description": "Information related to individuals granted Temporary Protected Status under immigration law.",
+    "CUI//PROPIN/OCCMTO": {
+      "name": "Ocean Common Carrier and Marine Terminal Operator Agreements",
+      "abbrv_name": "OCCMTO",
+      "description": "",
+      "parent_group": "PROPIN",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//PROPIN/POST": {
+      "name": "Proprietary Postal",
+      "abbrv_name": "POST",
+      "description": "",
+      "parent_group": "PROPIN",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//PROPIN/SERV": {
+      "name": "Ocean Common Carrier Service Contracts",
+      "abbrv_name": "SERV",
+      "description": "",
+      "parent_group": "PROPIN",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//STAT": {
+      "name": "Statistical Information",
+      "abbrv_name": "STAT",
+      "description": "",
       "parent_group": "CUI",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
-    "CUI//PSEC": {
-      "name": "Secrecy Orders (Patent)",
-      "abbrv_name": "PSEC",
-      "description": "Information subject to patent secrecy orders restricting disclosure of certain inventions.",
-      "parent_group": "CUI",
+    "CUI//STAT/CENS": {
+      "name": "U.S. Census",
+      "abbrv_name": "CENS",
+      "description": "",
+      "parent_group": "STAT",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
-    "CUI//RAIL": {
-      "name": "Railroad Safety Analysis Records",
-      "abbrv_name": "RAIL",
-      "description": "Information related to railroad safety analysis, inspections, or incident assessments.",
-      "parent_group": "CUI",
+    "CUI//STAT/PEST": {
+      "name": "Pesticide Producer Survey",
+      "abbrv_name": "PEST",
+      "description": "",
+      "parent_group": "STAT",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
+    },
+    "CUI//STAT/SURV": {
+      "name": "Investment Survey",
+      "abbrv_name": "SURV",
+      "description": "",
+      "parent_group": "STAT",
+      "handling_group_id": "",
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
     "CUI//TAX": {
       "name": "Federal Taxpayer Information",
@@ -537,7 +1417,11 @@
       "description": "Federal taxpayer information protected from unauthorized disclosure under tax law.",
       "parent_group": "CUI",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
     "CUI//TAX/CONV": {
       "name": "Tax Convention",
@@ -545,7 +1429,11 @@
       "description": "Information exchanged under international tax conventions, treaties, and bilateral fiscal agreements.",
       "parent_group": "TAX",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
     "CUI//TAX/TAI": {
       "name": "Taxpayer Advocate Information",
@@ -553,7 +1441,11 @@
       "description": "Taxpayer Advocate Service case records and protected taxpayer assistance documentation.",
       "parent_group": "TAX",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
     "CUI//TAX/WDT": {
       "name": "Written Determinations",
@@ -561,71 +1453,51 @@
       "description": "IRS written determinations including rulings, determinations, and interpretive tax guidance.",
       "parent_group": "TAX",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
-    "CUI//TRANSPORT": {
+    "CUI//TRANS": {
       "name": "Transportation",
-      "abbrv_name": "TRANSPORT",
-      "description": "Sensitive transportation infrastructure data including routing systems, safety controls, and operational vulnerabilities.",
+      "abbrv_name": "TRANS",
+      "description": "Information related to transportation safety, security, and regulatory records requiring controlled handling.",
       "parent_group": "CUI",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
-    "CUI//AVIATION": {
-      "name": "Aviation Safety",
-      "abbrv_name": "AVIATION",
-      "description": "Aviation safety, security assessments, and regulatory compliance information requiring controlled handling.",
-      "parent_group": "CUI",
+    "CUI//TRANS/RAIL": {
+      "name": "Railroad Safety Analysis Records",
+      "abbrv_name": "RAIL",
+      "description": "Information related to railroad safety analysis, inspections, or incident assessments.",
+      "parent_group": "TRANS",
       "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "level": "s1",
+      "designation": "basic",
+      "required_warning_statement": null,
+      "required_dissemination_control": null
     },
-    "CUI//MARITIME": {
-      "name": "Maritime Security",
-      "abbrv_name": "MARITIME",
-      "description": "Maritime security operations, port vulnerability assessments, and vessel tracking intelligence.",
-      "parent_group": "CUI",
+    "CUI//TRANS/SSI": {
+      "name": "Sensitive Security Information",
+      "abbrv_name": "SSI",
+      "parent_group": "TRANS",
+      "description": "",
+      "level": "s1",
+      "designation": "specified",
+      "required_warning_statement": "WARNING: This record contains Sensitive Security Information that is controlled under 49 CFR parts 15 and 1520. No part of this record may be disclosed to persons without a “need to know”, as defined in 49 CFR parts 15 and 1520, except with the written permission of the Administrator of the Transportation Security Administration or the Secretary of Transportation. Unauthorized release may result in civil penalty or other action. For U.S. government agencies, public disclosure is governed by 5 U.S.C. 552 and 49 CFR parts 15 and 1520.",
+      "required_dissemination_control": null,
+      "handling": "",
       "handling_group_id": "",
-      "other": {}
-    },
-    "CUI//PIPELINE": {
-      "name": "Pipeline Security",
-      "abbrv_name": "PIPELINE",
-      "description": "Pipeline infrastructure schematics, monitoring systems, and energy transport security data.",
-      "parent_group": "CUI",
-      "handling_group_id": "",
-      "other": {}
-    },
-    "CUI//EMERGENCY": {
-      "name": "Emergency Services",
-      "abbrv_name": "EMERGENCY",
-      "description": "Emergency services operational plans, response coordination data, and crisis management infrastructure.",
-      "parent_group": "CUI",
-      "handling_group_id": "",
-      "other": {}
-    },
-    "CUI//INTEL": {
-      "name": "Intelligence",
-      "abbrv_name": "INTEL",
-      "description": "Sensitive intelligence support data not formally classified but requiring controlled dissemination.",
-      "parent_group": "CUI",
-      "handling_group_id": "",
-      "other": {}
-    },
-    "CUI//EXPORT": {
-      "name": "Export Control",
-      "abbrv_name": "EXPORT",
-      "description": "Information limited by export control laws such as ITAR and EAR, including technical data, defense articles, or dual-use technologies.",
-      "parent_group": "CUI",
-      "handling_group_id": "",
-      "other": {}
-    },
-    "CUI//FEDCON": {
-      "name": "Federal Contract Information",
-      "abbrv_name": "FEDCON",
-      "description": "Federal contract performance, deliverables, and controlled technical deliverable information.",
-      "parent_group": "CUI",
-      "handling_group_id": "",
-      "other": {}
+      "other": {},
+      "palette_ref": null,
+      "risk_domains": null,
+      "handling_restrictions": null
     }
   }
 }

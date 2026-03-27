@@ -186,3 +186,7 @@ Changes in `umrs-tui/src/`:
 - `main.rs`: OS tab platform labels: "Platform Family/Distro/Version/Facts/Identity"
 - `status_bar.rs`: KEY_LEGEND const + right-aligned key legend; elided on narrow terminals
 - Internal Rust types (`SubstrateAnchored` enum variant etc.) NOT renamed — display layer only
+
+## umrs-labels Catalog (2026-03-27)
+
+`src/cui/catalog.rs`: `CatalogMetadata` (flatten for nation-specific fields; `catalog_name`/`authority` `#[serde(default)]` for LEVELS.json compat), `Catalog` (both `labels` and `markings` `#[serde(default)]`), `Marking`/`Label` (`handling: serde_json::Value` — US=string, CA=object), `LevelRegistry`/`LevelDefinition` + `load_levels()`. `country_code()` helper on `Catalog`. Tests: `catalog_tests.rs` (47 tests covering fixture, US, CA, LEVELS.json).

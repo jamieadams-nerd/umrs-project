@@ -137,6 +137,7 @@
           "facial_image_control": true,
           "location_suppression": true
         }
+      }
     },
     "CRIT": {}
   }
