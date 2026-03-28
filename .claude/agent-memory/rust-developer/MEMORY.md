@@ -83,18 +83,6 @@ RPM DB has absolute path. Fix: `find_resolved_path` → canonicalize → use for
 - `FileSize` is `Copy` — pass by value. Has `.as_u64()`.
 - `SecureDirent::access_denied` is a `pub bool` field
 
-## Clippy Style Preferences
-
-- Explicit `match` over `.map().unwrap_or_else()`
-- `let x && let y` chains for if-let guards
-- `is_multiple_of(2)` over `% 2 == 0`
-- `let-else` for early-return: `let Some(x) = expr else { return None; };`
-- `missing_const_for_fn`: make helpers const, never suppress
-- `unnecessary_literal_bound`: use `&'static str` for literal returns
-- `cast_possible_truncation`: `#[allow]` with range-safety comment
-- `bool_to_int_with_if`: use `usize::from(x.is_some())` not `if x { 1 } else { 0 }`
-- `elidable_lifetime_names`: elide lifetimes when clippy suggests it
-
 ## Outstanding Audit Findings
 
 Reports in `.claude/reports/` with coder-assigned items:

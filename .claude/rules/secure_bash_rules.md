@@ -1,3 +1,9 @@
+## Scope
+
+These rules apply when **writing bash script files** (`.sh` files with a shebang,
+or scripts intended to be saved and executed). They do not apply to one-liner
+commands agents run interactively via the Bash tool during development.
+
 ## Interpreter Directive Rule
 
 [RULE]

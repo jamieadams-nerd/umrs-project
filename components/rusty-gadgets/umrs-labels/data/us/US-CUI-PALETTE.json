@@ -3,168 +3,139 @@
 
     "default": {
       "display_name": "Default Neutral",
+      "truecolor": { "fg": "#FFFFFF", "bg": "#404040" },
+      "ansi16": { "fg": "bright_white", "bg": "black" },
+      "ansi256": { "fg": 231, "bg": 238 },
+      "style": { "bold": false }
+    },
 
-      "truecolor": {
-        "fg": "#FFFFFF",
-        "bg": "#404040"
-      },
-
-      "ansi16": {
-        "fg": "bright_white",
-        "bg": "black"
-      },
-
-      "ansi256": {
-        "fg": 231,
-        "bg": 238
-      },
-
-      "style": {
-        "bold": false
-      }
+    "cui_purple": {
+      "display_name": "CUI Purple",
+      "truecolor": { "fg": "#FFFFFF", "bg": "#6A3D9A" },
+      "ansi16": { "fg": "bright_white", "bg": "magenta" },
+      "ansi256": { "fg": 231, "bg": 97 },
+      "style": { "bold": true }
     },
 
     "police_blue": {
       "display_name": "Police Blue",
+      "truecolor": { "fg": "#FFFFFF", "bg": "#1F4E79" },
+      "ansi16": { "fg": "bright_white", "bg": "blue" },
+      "ansi256": { "fg": 231, "bg": 24 },
+      "style": { "bold": true }
+    },
 
-      "truecolor": {
-        "fg": "#FFFFFF",
-        "bg": "#1F4E79"
-      },
+    "privacy_rose": {
+      "display_name": "Privacy Rose",
+      "truecolor": { "fg": "#FFFFFF", "bg": "#8B3A62" },
+      "ansi16": { "fg": "bright_white", "bg": "magenta" },
+      "ansi256": { "fg": 231, "bg": 89 },
+      "style": { "bold": false }
+    },
 
-      "ansi16": {
-        "fg": "bright_white",
-        "bg": "blue"
-      },
+    "procure_slate": {
+      "display_name": "Procurement Slate",
+      "truecolor": { "fg": "#FFFFFF", "bg": "#4A5568" },
+      "ansi16": { "fg": "bright_white", "bg": "bright_black" },
+      "ansi256": { "fg": 231, "bg": 240 },
+      "style": { "bold": false }
+    },
 
-      "ansi256": {
-        "fg": 231,
-        "bg": 24
-      },
+    "propin_bronze": {
+      "display_name": "Proprietary Bronze",
+      "truecolor": { "fg": "#000000", "bg": "#CD8032" },
+      "ansi16": { "fg": "black", "bg": "yellow" },
+      "ansi256": { "fg": 16, "bg": 172 },
+      "style": { "bold": false }
+    },
 
-      "style": {
-        "bold": true
-      }
+    "cti_steel": {
+      "display_name": "CTI Steel Blue",
+      "truecolor": { "fg": "#FFFFFF", "bg": "#4682B4" },
+      "ansi16": { "fg": "bright_white", "bg": "cyan" },
+      "ansi256": { "fg": 231, "bg": 67 },
+      "style": { "bold": false }
+    },
+
+    "crit_brass": {
+      "display_name": "Infrastructure Brass",
+      "truecolor": { "fg": "#FFFFFF", "bg": "#7A6008" },
+      "ansi16": { "fg": "bright_white", "bg": "bright_yellow" },
+      "ansi256": { "fg": 231, "bg": 136 },
+      "style": { "bold": true }
+    },
+
+    "opsec_charcoal": {
+      "display_name": "OPSEC Charcoal",
+      "truecolor": { "fg": "#E0E0E0", "bg": "#2D2D2D" },
+      "ansi16": { "fg": "white", "bg": "black" },
+      "ansi256": { "fg": 253, "bg": 235 },
+      "style": { "bold": false }
+    },
+
+    "nnpi_navy": {
+      "display_name": "NNPI Navy",
+      "truecolor": { "fg": "#FFFFFF", "bg": "#1B3A5C" },
+      "ansi16": { "fg": "bright_white", "bg": "blue" },
+      "ansi256": { "fg": 231, "bg": 23 },
+      "style": { "bold": true }
+    },
+
+    "tax_olive": {
+      "display_name": "Tax Olive",
+      "truecolor": { "fg": "#FFFFFF", "bg": "#556B2F" },
+      "ansi16": { "fg": "bright_white", "bg": "green" },
+      "ansi256": { "fg": 231, "bg": 58 },
+      "style": { "bold": false }
     },
 
     "agriculture_green": {
       "display_name": "Agriculture Green",
+      "truecolor": { "fg": "#000000", "bg": "#70AD47" },
+      "ansi16": { "fg": "black", "bg": "green" },
+      "ansi256": { "fg": 16, "bg": 71 },
+      "style": { "bold": false }
+    },
 
-      "truecolor": {
-        "fg": "#000000",
-        "bg": "#70AD47"
-      },
-
-      "ansi16": {
-        "fg": "black",
-        "bg": "green"
-      },
-
-      "ansi256": {
-        "fg": 16,
-        "bg": 71
-      }
+    "govt_blue_gray": {
+      "display_name": "Government Blue-Gray",
+      "truecolor": { "fg": "#FFFFFF", "bg": "#5B7C99" },
+      "ansi16": { "fg": "bright_white", "bg": "bright_black" },
+      "ansi256": { "fg": 231, "bg": 67 },
+      "style": { "bold": true }
     },
 
     "finance_gold": {
       "display_name": "Financial Gold",
-
-      "truecolor": {
-        "fg": "#000000",
-        "bg": "#D6A300"
-      },
-
-      "ansi16": {
-        "fg": "black",
-        "bg": "yellow"
-      },
-
-      "ansi256": {
-        "fg": 16,
-        "bg": 178
-      }
+      "truecolor": { "fg": "#000000", "bg": "#D6A300" },
+      "ansi16": { "fg": "black", "bg": "yellow" },
+      "ansi256": { "fg": 16, "bg": 178 },
+      "style": { "bold": false }
     },
 
     "intel_purple": {
       "display_name": "Intelligence Purple",
-
-      "truecolor": {
-        "fg": "#FFFFFF",
-        "bg": "#4B2E83"
-      },
-
-      "ansi16": {
-        "fg": "bright_white",
-        "bg": "magenta"
-      },
-
-      "ansi256": {
-        "fg": 231,
-        "bg": 54
-      }
-    },
-
-    "critical_red": {
-      "display_name": "Critical Red",
-
-      "truecolor": {
-        "fg": "#FFFFFF",
-        "bg": "#A61C1C"
-      },
-
-      "ansi16": {
-        "fg": "bright_white",
-        "bg": "red"
-      },
-
-      "ansi256": {
-        "fg": 231,
-        "bg": 124
-      },
-
-      "style": {
-        "bold": true
-      }
+      "truecolor": { "fg": "#FFFFFF", "bg": "#4B2E83" },
+      "ansi16": { "fg": "bright_white", "bg": "magenta" },
+      "ansi256": { "fg": 231, "bg": 54 },
+      "style": { "bold": false }
     },
 
     "cyber_teal": {
       "display_name": "Cyber Teal",
-
-      "truecolor": {
-        "fg": "#000000",
-        "bg": "#00A8A8"
-      },
-
-      "ansi16": {
-        "fg": "black",
-        "bg": "cyan"
-      },
-
-      "ansi256": {
-        "fg": 16,
-        "bg": 37
-      }
+      "truecolor": { "fg": "#000000", "bg": "#00A8A8" },
+      "ansi16": { "fg": "black", "bg": "cyan" },
+      "ansi256": { "fg": 16, "bg": 37 },
+      "style": { "bold": false }
     },
 
     "research_gray": {
       "display_name": "Research Gray",
-
-      "truecolor": {
-        "fg": "#FFFFFF",
-        "bg": "#6E6E6E"
-      },
-
-      "ansi16": {
-        "fg": "white",
-        "bg": "bright_black"
-      },
-
-      "ansi256": {
-        "fg": 231,
-        "bg": 242
-      }
+      "truecolor": { "fg": "#FFFFFF", "bg": "#6E6E6E" },
+      "ansi16": { "fg": "white", "bg": "bright_black" },
+      "ansi256": { "fg": 231, "bg": 242 },
+      "style": { "bold": false }
     }
 
   }
 }
-

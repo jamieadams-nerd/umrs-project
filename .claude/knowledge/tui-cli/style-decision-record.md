@@ -1,6 +1,7 @@
 # tui-cli Collection — Style Decision Record
 
 Generated: 2026-03-15
+Refreshed: 2026-03-28 (all existing decisions verified; one new placeholder added)
 Ratatui version covered: v0.30.0
 
 This file records project-specific resolutions to cross-reference tensions identified in
@@ -215,3 +216,19 @@ and compatibility with remote sessions. Mouse support may be revisited for speci
 **Decision:** Yes — ship shell completions via `clap_complete`.
 **Rationale:** Low effort with clap, high ergonomic value for operators. Generate for bash, zsh,
 and fish.
+
+---
+
+### PH-4: `#[expect]` attribute for lint suppression — OPEN (2026-03-28)
+**Context:** The ratatui example code (`table.rs`, `flex_layouts.rs`) uses `#[expect(clippy::...)]`
+rather than `#[allow(clippy::...)]`. `#[expect]` (stabilized Rust 1.81+) causes a compiler error
+if the named lint no longer fires, making suppressions self-auditing and safer than `#[allow]`.
+CLAUDE.md requires Jamie's approval before adding any `#[allow]` attribute. It is not clear whether
+the same approval requirement applies to `#[expect]`.
+
+**Question for Jamie:** Is `#[expect(clippy::cast_possible_truncation)]` pre-approved for
+known-bounded `usize`→`u16` casts (e.g., terminal width values), or does it require the same
+review process as `#[allow]`?
+
+**Interim ruling:** Treat `#[expect]` as requiring the same approval process as `#[allow]` until
+Jamie decides. Do not add either unilaterally.

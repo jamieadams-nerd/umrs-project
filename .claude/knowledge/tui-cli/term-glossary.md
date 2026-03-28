@@ -1,6 +1,7 @@
 # tui-cli Collection — Term Glossary
 
 Generated: 2026-03-15
+Refreshed: 2026-03-28 (corpus unchanged; entries verified; two new terms added)
 Ratatui version covered: v0.30.0
 
 Priority: ratatui docs → crossterm docs → CLIG → style guides.
@@ -490,6 +491,35 @@ for `event::poll()`.
 **Source:** ratatui-website/concepts-application-architecture.md; ratatui-examples/scrollbar.rs
 
 **Canonical spelling:** tick rate (two words, lowercase)
+
+---
+
+## Masked
+
+**Definition:** A ratatui widget that renders a string with each character replaced by a mask
+character (default `*`). Used for displaying sensitive data (passwords, tokens) in a TUI without
+exposing the actual content on screen.
+
+**Source:** ratatui-examples/scrollbar.rs
+
+**Canonical spelling:** `Masked`
+
+**Usage:** `Masked::new("my-password", '*')` — returns a displayable value accepted by `Span::styled`.
+
+---
+
+## ratatui::run()
+
+**Definition:** A convenience function introduced in ratatui v0.30.0 that combines
+`ratatui::init()`, the draw loop, and `ratatui::restore()` into a single closure-based call.
+Takes a closure `FnOnce(&mut DefaultTerminal) -> Result<()>`.
+
+**Source:** ratatui-examples/popup.rs; ratatui-examples/scrollbar.rs; ratatui-examples/flex_layouts.rs
+
+**Canonical spelling:** `ratatui::run()` (full path preferred in documentation to avoid ambiguity)
+
+**When to use:** Acceptable for examples and simple demos. For UMRS production binaries, use the
+explicit `init()` / `App::run()` / `restore()` pattern (SDR-1).
 
 ---
 

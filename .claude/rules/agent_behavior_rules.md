@@ -41,12 +41,11 @@
 
 ## Repository Interaction Rule
 
-- Never execute git commit.
-- Never execute git push.
-- Never create or modify branches.
+- [RULE] Never execute `git commit`, `git push`, or branch operations.
 - The agent may modify working files only.
 - The agent must not alter repository history.
 - Never modify production configuration unless explicitly instructed.
+- Scripts written for operators may include git commands — the prohibition is on agent execution, not authored content.
 
 ## Agent Permissions Pre-Grant Rule
 
@@ -64,6 +63,17 @@
 
 - After RAG ingestion of a new collection, the target agent MUST run the `corpus-familiarization` skill before using the material.
 - Do not skip this step — without familiarization, the agent has passive retrieval but no active knowledge of what the collection contains.
+
+## RAG vs Familiarization Decision Rule
+
+Not every reference needs RAG ingestion. Choose based on the material:
+
+- **Large corpus, many agents need it** → ingest into RAG, then familiarize the primary agent.
+- **Small/medium doc, one agent owns it** → familiarize only. The agent reads and distills; others can read the source file or ask that agent.
+- **Reference you search for specific passages** → ingest (RAG excels at retrieval).
+- **Reference you apply as principles** → familiarize only (active knowledge, not retrieval).
+
+Familiarization produces structured artifacts (concept index, cross-reference map, style decisions) that are cheaper to query than RAG and carry forward in context. Do not default to ingesting everything — each collection adds storage cost and query noise.
 
 ## Plan Status Header Rule
 
@@ -91,6 +101,43 @@ The following file patterns must never be edited unless the user explicitly inst
 - `**/setrans.conf` — SELinux MCS translation configuration
 - `**/.gitignore` — repository ignore rules
 
+**Exception:** `.claude/settings.json` may be edited per the Settings and Data Location Rule
+without additional user confirmation. That rule takes precedence for that specific file.
+
 These files affect deployed system behavior or repository integrity.
 Changes must be intentional and user-directed.
+
+## Task Log Rule
+
+- [RULE] Every agent MUST append a one-line entry to `.claude/logs/task-log.md` upon task completion.
+- Create the file and directory if it does not exist.
+- Format: `[YYYY-MM-DD HH:MM] [agent-name] [brief task description] [tools used] [outcome: success/partial/failed] [notes]`
+- Record dead ends, tool failures, Jamie interventions, and unexpected findings in notes.
+
+## End of Session Report Rule
+
+- When the team goes idle, report a summary of `.claude/logs/task-log.md` entries from the current session before signing off.
+
+## Shell Convention Rule
+
+- Prefer `tee` over `>` for output redirection to avoid approval prompts.
+
+## Review Format Rule
+
+All reviews (code, documentation, blog, outreach) use the tiered ACCURATE/CONCERN/ERROR format:
+
+- Summary table with category counts (ACCURATE / CONCERN / ERROR)
+- Each finding: ID (A-1, C-1, E-1), descriptive title, explanation
+- CONCERN items: include a **Recommendation** line
+- ERROR items: include **Severity** and **Recommended replacement** text
+- Remediation Owner Summary table with priority ranking
+- **Strengths Worth Preserving** section
+
+## Review Routing Rule
+
+| Review type | Location |
+|---|---|
+| Blog / whitepaper / outreach | `docs/sage/reviews/YYYY-MM-DD-<type>-<slug>.md` |
+| Documentation | `docs/imprimatur/reviews/YYYY-MM-DD-<module>-<slug>.md` |
+| Code / security audits | `.claude/reports/code/YYYY-MM-DD-<crate>-<description>.md` |
 

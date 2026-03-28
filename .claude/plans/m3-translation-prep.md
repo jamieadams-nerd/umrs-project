@@ -85,8 +85,30 @@ government spelling conventions.
 
 ---
 
+## Canadian VM Acceptance Testing
+
+Jamie will provision two RHEL 10 virtual machines with Canadian locale selections
+during OS installation:
+
+- **VM 1:** English (Canada) → `en_CA.UTF-8`
+- **VM 2:** Français (Canada) → `fr_CA.UTF-8`
+
+These are the acceptance gate for l10n — proving UMRS works as a real Canadian
+system, not just an American system with `LANG` overridden.
+
+| Team member | Verification scope |
+|---|---|
+| Rusty | Tools build, run, produce correct output on both VMs |
+| Henri | Security labels, TB terminology, policy-critical strings on `fr_CA` VM |
+| Simone | Typography, plural forms, string expansion on `fr_CA` VM |
+| Knox | Locale switching does not degrade security posture (no silent fallback) |
+
+This testing phase follows the M3 translation sprint. No release with French
+localization ships without passing both VMs.
+
 ## Dependencies
 
 - Librarian's research-pipeline-priorities.md Priority 2 (Five Eyes sources)
 - Platform API enrichment (consolidates translatable strings into fewer locations)
 - umrs-ui library extraction (single translation domain for shared UI strings)
+- Two RHEL 10 VMs provisioned by Jamie (English Canada + French Canada)

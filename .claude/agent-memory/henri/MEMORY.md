@@ -35,6 +35,15 @@
 - Canadian category requirements report: `.claude/reports/2026-03-23-canadian-protected-category-requirements.md` (updated with Jamie's decisions)
 - CANADIAN-PROTECTED.json catalog: `components/rusty-gadgets/umrs-cui/data/ca/CANADIAN-PROTECTED.json`
 
+## TBS Style Guide Analysis (2026-03-28)
+- [Full analysis](tbs-style-guide-analysis.md) -- Canada.ca Content Style Guide EN + FR
+- Key finding: French headings must use infinitive mood per TBS s5.1.1 (not imperative)
+- Key finding: Federal French uses "redaction epicene" (Termium/BdT), not OQLF "ecriture inclusive"
+- EN must/need-to distinction collapses to "devez" in FR -- flag if distinction needed
+- Plain language rules compatible with STE mode (20 words max, active voice, one idea per sentence)
+- Number formatting differences documented (100 $ vs $100, 20 % vs 20%, 16 h 30 vs 4:30 pm)
+- Guide is advisory for UMRS (reference system), but positions FR content for federal deployment
+
 ## Key Policy References
 - TBS Standard on Security Categorization, Appendix J, section J.2.4.2 -- defines Protected A/B/C
 - EN: "Protected A" / "Protected B" / "Protected C"

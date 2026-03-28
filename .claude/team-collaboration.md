@@ -184,7 +184,7 @@ Reviews are stored separately by category so they can be analyzed for quality tr
 - `docs/imprimatur/` — owned by `senior-tech-writer`. Documentation lifecycle, reviews of doc quality.
 - `.claude/reports/code/` — owned by `security-auditor` and `security-engineer`. Code quality and compliance audits.
 
-> **Note:** `docs/new_stuff/` is retired. Use `docs/imprimatur/inbox/` instead.
+> **Note:** `docs/new-stuff/` is retired. Jamie delivers material to agent inboxes at `.claude/agent-memory/<agent>/`. See `doc_workflow_rules.md` for archive routing.
 
 ---
 

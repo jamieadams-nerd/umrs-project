@@ -11,18 +11,6 @@
 - [Indicator definitions](indicator-definitions-plain-language.md) — 37 indicators, plain English
 - [TUI/CLI corpus](tui-cli-corpus.md) — ratatui, crossterm, clap audit checkpoints
 
-## Control Mapping Conventions
-
-- TPI claims → cite NIST SP 800-53 SI-7 + NSA RTB
-- Fail-closed → cite SI-10 + NSA RTB
-- Bounded reads / checked arithmetic → cite NIST SP 800-218 SSDF PW.4.1
-- Error information discipline → cite SI-12
-- Audit record integrity / append-only → cite AU-10
-- Non-bypassable security checks → cite NSA RTB RAIN
-- TOCTOU fd-anchored I/O → cite NSA RTB TOCTOU + SI-7
-- Component inventory (RPM/dpkg) → cite CM-8 + SA-12
-- FIPS mode gating → cite SC-13 + CMMC L2 SC.3.177
-
 ## Recurring Gap Patterns
 
 ### pub field defeats immutability claim
@@ -67,30 +55,6 @@ Wrap and emit only category + error code. Never forward Display verbatim.
 
 ### Portfolio-Wide Gap
 All plans: strong Implement, weak Assess/Monitor artifact production. Runtime outputs not connected to SAR-consumable Examine objects. **Check every new plan for output artifact format.**
-
-## Review Format — Jamie-Approved (2026-03-19)
-
-The ACCURATE/CONCERN/ERROR tiered format from the blog-cui-sign-lock audit is the **preferred format for all reviews**. Jamie specifically praised it for enabling prioritization.
-
-**Required elements:**
-- Summary table with category counts (ACCURATE / CONCERN / ERROR)
-- Each finding: ID (A-1, C-1, E-1), descriptive title, explanation
-- CONCERN items: include a **Recommendation** line
-- ERROR items: include **Severity** and **Recommended replacement** text
-- Remediation Owner Summary table with priority ranking at the end
-- **Strengths Worth Preserving** section (positive reinforcement matters)
-
-Use this format for blog reviews, doc reviews, AND code reviews.
-
-## Review Routing (2026-03-19)
-
-Reviews are now stored by category, not in a flat pile:
-
-| Review type | Location |
-|---|---|
-| Blog / whitepaper / outreach | `docs/sage/reviews/YYYY-MM-DD-<type>-<slug>.md` |
-| Documentation | `docs/imprimatur/reviews/YYYY-MM-DD-<module>-<slug>.md` |
-| Code / security audits | `.claude/reports/code/YYYY-MM-DD-<crate>-<description>.md` |
 
 ## Reports Index
 - `2026-03-11-rpm-db-security-audit.md` — RPM findings

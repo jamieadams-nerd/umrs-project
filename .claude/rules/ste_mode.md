@@ -204,9 +204,63 @@ admonitions adjacent to the step or paragraph they apply to, not at the end of a
 Do not use informal labels such as `Note:`, `Warning:`, or `IMPORTANT —` in plain Markdown
 style. This project uses Antora. Use the block admonition form.
 
+## Canadian French Procedural Rules
+
+The structural rules above (sentence length, one action per step, active voice, consistent
+terminology, admonition hierarchy) apply equally to French procedural content. The following
+French-specific conventions supplement them.
+
+**Authority:** TBS Canada.ca Content Style Guide (Guide de rédaction du contenu du site
+Canada.ca) + Bureau de la traduction conventions. Vocabulary: TERMIUM Plus (primary),
+OQLF GDT (fallback).
+
+### Mood conventions
+
+- **Headings and subheadings:** use infinitive mood ("Configurer SELinux", not "Configurez SELinux").
+  This is TBS policy (section 5.1.1 of the French guide), not a preference.
+- **Numbered procedure steps within lists:** use imperative mood consistently
+  ("Ouvrez le fichier", "Exécutez la commande").
+
+### Address and register
+
+- Address users with "vous" (formal), never "tu".
+- Follow epicene writing conventions per Bureau de la traduction ("rédaction épicène"),
+  not OQLF's "écriture inclusive."
+
+### Number and date formatting
+
+- Currency: `100 $` (space before symbol, symbol after number)
+- Percentage: `20 %` (space before percent sign)
+- Time: `16 h 30` (spaces around `h`)
+- Dates: `31 juillet 2016` (day month year, month lowercase)
+
+### Approved French verb list
+
+A French approved verb list parallel to the English list must be sourced from TERMIUM Plus
+translations. Until the full list is compiled (Simone builds, Henri validates), use the
+TERMIUM Plus translation of each English approved verb. When TERMIUM offers multiple
+translations, prefer the shortest and most direct form.
+
+### Ambiguous words to avoid (French)
+
+Apply the same principle as the English list — avoid hedging and vague terms:
+
+```
+plusieurs (use a specific number)
+pourrait / devrait (use "doit" for mandatory, state the condition for optional)
+approprié / adéquat (state the specific requirement)
+éventuellement (ambiguous in fr_CA — means "possibly", not "eventually")
+```
+
+## Activation
+
+STE mode is always active when writing or editing numbered procedure steps in any `.adoc`
+file. There is no explicit on/off switch. If the content is a numbered procedure, these
+rules apply. If it is conceptual or explanatory text, they do not.
+
 ## Agent Behavior
 
-When STE mode is active:
+When writing or editing numbered procedure steps:
 
 1. Apply STE rules to numbered procedure steps only. Explanatory and conceptual text in the
    same document is not affected.

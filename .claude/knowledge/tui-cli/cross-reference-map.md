@@ -1,6 +1,7 @@
 # tui-cli Collection — Cross-Reference Map
 
 Generated: 2026-03-15
+Refreshed: 2026-03-28 (verified; one new tension identified — see below)
 Ratatui version covered: v0.30.0
 
 ---
@@ -120,6 +121,17 @@ Where one document defers to another:
 - **WEB-APP** defers terminal setup to **WEB-BACK** and **CT-3**
 - **CLIG-1** is the authoritative UX guide; **CL-1** (clap) is its implementation vehicle
 - **NC-1** is the authoritative NO_COLOR standard; **CT-4** and **CLIG-1** reference it
+
+### `#[expect]` vs. `#[allow]` for lint suppression
+**Sources:** EX-TABLE, EX-FLEX (use `#[expect(...)]`); project CLAUDE.md (avoid `#[allow]` without Jamie approval)
+
+The example code uses `#[expect(clippy::cast_possible_truncation)]` — a Rust 1.81+ feature that
+causes a compiler error if the attributed lint no longer fires (making suppressions self-auditing).
+The project CLAUDE.md says "ask Jamie before adding any allow attribute." It is unclear whether
+`#[expect]` falls under the same policy or is treated as strictly safer.
+**Judgment needed:** Ask Jamie whether `#[expect]` is pre-approved for known-bounded casts or
+requires the same review process as `#[allow]`. Until clarified, treat `#[expect]` as requiring
+the same approval (err on the side of caution).
 
 ---
 

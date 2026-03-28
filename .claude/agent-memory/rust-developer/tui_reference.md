@@ -3,6 +3,28 @@
 Moved from MEMORY.md 2026-03-18. Detailed TUI implementation notes.
 See also: tui_phase1.md through tui_phase45.md for phase-specific context.
 
+## tui-cli RAG Collection (familiarized 2026-03-28)
+
+Knowledge artifacts at `.claude/knowledge/tui-cli/`. Full re-read confirmed unchanged from
+2026-03-15 ingestion. Covers:
+- ratatui v0.30.0 API: workspace structure, Widget/StatefulWidget, Layout/Constraint/Flex,
+  Frame::area(), DefaultTerminal, init()/restore(), breaking changes v0.20–v0.31
+- crossterm: event poll/read pattern, KeyCode, KeyModifiers, NO_COLOR (built-in suppression)
+- clap v4 derive API: Parser/Subcommand/Args/ValueEnum, --json pattern (UMRS convention)
+- color-eyre: install() first in main(), WrapErr, Section helpers
+- CLIG guidelines: stdout/stderr discipline, --json, error message format, NO_COLOR
+- 5 example Rust programs: demo2 (multi-tab), popup, table, scrollbar, flex_layouts
+
+Key rulings (see style-decision-record.md):
+- SDR-1: manual init()/restore() for production binaries; ratatui::run() for examples only
+- SDR-2: impl Widget for &App (not WidgetRef)
+- SDR-3: crossterm handles NO_COLOR for TUI paths; manual check for direct println! paths
+- SDR-4: always poll(timeout) — UMRS tools need periodic refresh for live status
+- SDR-8: always use array destructuring let [header, body, footer] = area.layout(&layout)
+- SDR-9: use Line::from("...") for block titles (block::Title removed in v0.30.0)
+
+Open: PH-4 — whether #[expect(clippy::...)] requires same Jamie approval as #[allow].
+
 ## umrs-tui Architecture (2026-03-12)
 
 - Library crate `umrs_tui` (lib.rs) + binary `umrs-tui` (main.rs)

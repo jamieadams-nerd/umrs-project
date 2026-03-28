@@ -2,8 +2,9 @@
 
 Collection: `tui-cli`
 Familiarization pass: 2026-03-15
+Refreshed: 2026-03-28 (full re-read, no corpus changes detected)
 Ratatui version: v0.30.0
-Document count: 26 files across 6 subdirectories
+Document count: 27 files across 6 subdirectories (SOURCE.md counted separately)
 
 ---
 
@@ -74,8 +75,23 @@ approval, Jamie notification. These are not pre-approved.
 
 ## Open Questions for Jamie
 
-Three style decisions require project owner input — see `style-decision-record.md`:
+All three original placeholders were resolved on 2026-03-15 — see `style-decision-record.md`:
 
-- **PH-1:** Should UMRS tools adopt async tokio event handling?
-- **PH-2:** Should any UMRS TUI enable mouse capture (`EnableMouseCapture`)?
-- **PH-3:** Should UMRS ship shell completion scripts via `clap_complete`?
+- **PH-1:** Async tokio adopted — DECIDED
+- **PH-2:** Keyboard-only for now — DECIDED
+- **PH-3:** Shell completions via `clap_complete` — DECIDED
+
+No new open questions identified in the 2026-03-28 refresh pass.
+
+## Additional Notes (2026-03-28 Refresh)
+
+The `ratatui::run()` convenience function (introduced in v0.30.0) appears in three examples
+(`popup.rs`, `scrollbar.rs`, `flex_layouts.rs`) as well as the table example's entry point.
+SDR-1 governs: use the manual `init()`/`restore()` pattern for production UMRS binaries;
+`ratatui::run()` is acceptable only in `examples/`.
+
+The `#[expect(clippy::cast_possible_truncation)]` pattern appears twice in the examples
+(`table.rs`, `flex_layouts.rs`) for `usize`-to-`u16` casts from `unicode_width`. This is the
+approved form when a truncation is intentional and bounded. Note: `#[expect]` (not `#[allow]`)
+causes a compiler warning if the lint no longer fires — safer than `#[allow]`. Check whether
+the project's clippy policy has a ruling on `#[expect]` vs. `#[allow]`; if not, raise with Jamie.

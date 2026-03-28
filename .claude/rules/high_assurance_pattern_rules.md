@@ -1,18 +1,29 @@
+## Security-Relevant Type Definition
+
+A type is **security-relevant** if it represents any of:
+
+- An access control decision or security label (e.g., `SecurityContext`, `MlsLevel`, `CategorySet`)
+- Cryptographic material or a FIPS mode gate
+- An audit event or evidence record
+- A trust boundary crossing or trust level assertion
+- A pending operation whose result affects system security posture
+
+When a rule in this file says "security-relevant type," apply this definition.
+
 ## High Assurance Pattern Adoption Rule
 
 - Maintain a documented list of high assurance patterns.
 - Review the list when designing new features.
 - Identify opportunities to apply documented patterns.
-- Notify when a high assurance pattern may be applicable.
-- Do not apply patterns automatically.
-- Apply patterns when approved.
+- Proactively identify and notify when a high assurance pattern may be applicable.
+- Do not refactor existing code to add a pattern without approval.
+- Applying a pattern to new code being written (e.g., `#[must_use]` on a new type) is expected, not optional — that is following the rules, not "automatically applying a pattern."
 - Example: Consider memory zeroization when handling secrets.
 
 ## Pattern Execution Measurement Rule
 
 - When a high assurance pattern is implemented, record execution time in debug mode (`#[cfg(debug_assertions)]` in Rust).
-- Use a standardized timing mechanism.
-- Use std::time::Instant and .elapsed() for duration measurement.
+- Use `std::time::Instant` and `.elapsed()` for duration measurement.
 - Log timing at pattern completion.
 - Include the pattern name in the log entry.
 - Include a clear completion message.

@@ -20,12 +20,10 @@ Read at session start for entries addressed to senior-tech-writer.
 
 ## Key Structural Facts
 
-- `.md`/`.txt` files in `pages/` do NOT render in Antora — convert to `.adoc`
 - `security/` and `historical/` modules retired (2026-03-11) — content in architecture/ and devel/
 - `admin/` merged into `operations/` — originals still present pending Jamie cleanup
 - Operations module has NO Logging section — all logging in deployment/ (setup) or logging-audit/ (ops)
 - `architecture:rationale.adoc` does NOT exist — correct filename is `architecture:rationale-strongly-typed.adoc`
-- **Antora `examples/` constraint**: Files in `examples/` cannot be navigable pages or xref targets. They are includable fragments only.
 
 ---
 
@@ -45,12 +43,6 @@ Key: `security context` (not label), `sensitivity level` (not label), never abbr
 
 ---
 
-## Build Verification
-`make docs` must pass cleanly before any docs/ work is done. No exceptions.
-When moving pages, update ALL xrefs across ALL modules.
-
----
-
 ## Multi-Component Split Plan (pending Jamie approval)
 
 Plan: `.claude/plans/antora-multi-component-split.md`
@@ -63,7 +55,6 @@ Key: 272 xrefs across 72 files — scripted substitution mandatory. Nav drafts r
 ## Writing Modes
 - Architecture Mode for explanatory content
 - STE Mode for procedures
-- Load rules file before writing
 
 ---
 

@@ -1,6 +1,7 @@
 # tui-cli Collection — Concept Index
 
 Generated: 2026-03-15
+Refreshed: 2026-03-28 (corpus unchanged; index verified against full re-read)
 Ratatui version covered: v0.30.0
 
 ---
