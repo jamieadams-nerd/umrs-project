@@ -76,6 +76,8 @@ const GREEN: &str = "\x1b[32m";
 const RED: &str = "\x1b[31m";
 const RESET: &str = "\x1b[0m";
 const UNDERLINE: &str = "\x1b[4m";
+const REVERSE: &str = "\x1b[7m";
+const BLACK_ON_CYAN: &str = "\x1b[30;46m";
 
 // Runtime display configuration — colour switch, mount symbols, and loaded
 // secolor config.
@@ -451,7 +453,7 @@ fn cell_iov(entry: &ListEntry, cfg: &DisplayConfig) -> String {
 // reach [`TERM_WIDTH`].  When `cfg.use_color` is `true` and secolor.conf
 // is available, the type and marking are wrapped in ANSI 24-bit true-color.
 fn group_separator(key: &GroupKey, cfg: &DisplayConfig) -> String {
-    let plain = format!("{} :: {} ", key.selinux_type, key.marking);
+    let plain = format!("{0:20} \u{1FB6C}{1:20}\u{1FB6C} ", key.selinux_type, key.marking);
     let fill = " ".repeat(TERM_WIDTH.saturating_sub(plain.len()));
 
     if cfg.use_color
@@ -476,8 +478,9 @@ fn group_separator(key: &GroupKey, cfg: &DisplayConfig) -> String {
             selinux_type, key.marking
         )
     } else {
+        // BE CAREFUL HERE! This combination of reverrse, colors, and unicode was challenging!
         format!(
-            "{BOLD_UNDER}{0} :: {1} {fill}{RESET}",
+            "{BLACK_ON_CYAN} {0:20} {REVERSE}\x1b[36;30m\u{1FB6C}{RESET}{REVERSE}\u{1FB6C}{1:^20} {RESET}{UNDERLINE}\u{1FB6C}{fill}{RESET}",
             key.selinux_type, key.marking
         )
     }

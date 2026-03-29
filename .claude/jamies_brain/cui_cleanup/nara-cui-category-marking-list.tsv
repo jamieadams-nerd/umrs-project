@@ -1,0 +1,127 @@
+CUI Category	Banner Marking: Specified Authorities	Banner Marking: Basic Authorities	Category Marking	Organizational Index Grouping
+Accident Investigation	CUI//SP-AIV		AIV	Law Enforcement
+Administrative Proceedings	CUI//SP-ADPO	CUI	ADPO	Legal
+Agriculture		CUI	AG	Intelligence
+Ammonium Nitrate	CUI//SP-CRITAN		CRITAN	Critical Infrastructure
+Archaeological Resources		CUI	ARCHR	Natural and Cultural Resources
+Asylee		CUI	ASYL	Immigration
+Bank Secrecy	CUI//SP-FSEC	CUI	FSEC	Financial
+Battered Spouse or Child		CUI	BATT	Immigration
+Budget	CUI//SP-BUDG		BUDG	Financial
+Campaign Funds	CUI//SP-FUND		FUND	Law Enforcement
+Chemical-terrorism Vulnerability Information	CUI//SP-CVI	CUI	CVI	Critical Infrastructure
+Child Pornography	CUI//SP-CHLD		CHLD	Legal
+Child Victim/Witness		CUI	CVIC	Legal
+Collective Bargaining		CUI	BARG	Legal
+Committed Person		CUI	CMPRS	Law Enforcement
+Communications		CUI	LCOMM	Law Enforcement
+Comptroller General		CUI	COMPT	Financial
+Consumer Complaint Information	CUI//SP-CCI		CCI	Financial
+Contract Use	CUI//SP-CONTRACT		CONTRACT	Privacy
+Controlled Substances	CUI//SP-SUB		SUB	Law Enforcement
+Controlled Technical Information	CUI//SP-CTI		CTI	Defense
+Criminal History Records Information	CUI//SP-CHRI		CHRI	Law Enforcement
+Critical Energy Infrastructure Information	CUI//SP-CEII		CEII	Critical Infrastructure
+Death Records		CUI	DREC	Privacy
+DNA	CUI//SP-LDNA		LDNA	Law Enforcement
+DoD Critical Infrastructure Security Information		CUI	DCRIT	Defense
+Electronic Funds Transfer		CUI	XFER	Financial
+Emergency Management		CUI	EMGT	Critical Infrastructure
+Entity Registration Information		CUI	CONREG	Proprietary Business Information
+Export Controlled	CUI//SP-EXPT	CUI	EXPT	Export Control
+Export Controlled Research		CUI	EXPTR	Export Control
+Federal Grand Jury	CUI//SP-JURY	CUI	JURY	Legal
+Federal Housing Finance Non-Public Information		CUI	FHFANPI	Financial
+Federal Taxpayer Information	CUI//SP-TAX		TAX	Tax
+Financial Supervision Information		CUI	FSI	Financial
+Foreign Intelligence Surveillance Act	CUI//SP-FISA		FISA	Intelligence
+Foreign Intelligence Surveillance Act Business Records	CUI//SP-FISAB		FISAB	Intelligence
+General Critical Infrastructure Information		CUI	CRIT	Critical Infrastructure
+General Financial Information	CUI//SP-FNC	CUI	FNC	Financial
+General Intelligence	CUI//SP-INTEL	CUI	INTEL	Intelligence
+General Law Enforcement		CUI	LEI	Law Enforcement
+General Nuclear	CUI//SP-NUC	CUI	NUC	Nuclear
+General Privacy	CUI//SP-PRVCY	CUI	PRVCY	Privacy
+General Procurement and Acquisition	CUI//SP-PROCURE		PROCURE	Procurement and Acquisition
+General Proprietary Business Information	CUI//SP-PROPIN	CUI	PROPIN	Proprietary Business Information
+Genetic Information	CUI//SP-GENETIC	CUI	GENETIC	Privacy
+Geodetic Product Information	CUI//SP-GEO		GEO	Intelligence
+Health Information	CUI//SP-HLTH	CUI	HLTH	Privacy
+Historic Properties	CUI//SP-HISTP		HISTP	Natural and Cultural Resources
+Homeland Security Agreement Information		CUI		Provisional
+Homeland Security Enforcement Information		CUI		Provisional
+Informant	CUI//SP-INF	CUI	INF	Law Enforcement
+Information Systems Vulnerability Information		CUI	ISVI	Critical Infrastructure
+Information Systems Vulnerability Information - Homeland		CUI		Provisional
+Inspector General Protected	CUI//SP-PRIIG	CUI	PRIIG	Privacy
+Intelligence Financial Records	CUI//SP-IFNC		IFNC	Intelligence
+Internal Data	CUI//SP-ID	CUI	ID	Intelligence
+International Agreement Information	CUI//SP-INTL		INTL	International Agreements
+International Agreement Information - Homeland		CUI		Provisional
+International Financial Institutions		CUI	FINT	Financial
+Inventions		CUI	INVENT	Patent
+Investigation	CUI//SP-INV	CUI	INV	Law Enforcement
+Investment Survey		CUI	SURV	Statistical
+Juvenile		CUI	JUV	Law Enforcement
+Law Enforcement Financial Records	CUI//SP-LFNC		LFNC	Law Enforcement
+Legal Privilege		CUI	PRIVILEGE	Legal
+Legislative Materials		CUI	LMI	Legal
+Mergers		CUI	MERG	Financial
+Military Personnel Records		CUI	MIL	Privacy
+National Park System Resources	CUI//SP-NPSR		NPSR	Natural and Cultural Resources
+National Security Letter		CUI	LNSL	Law Enforcement
+NATO Restricted				North Atlantic Treaty Organization (NATO)
+NATO Unclassified				North Atlantic Treaty Organization (NATO)
+Naval Nuclear Propulsion Information	CUI//SP-NNPI	CUI	NNPI	Defense
+Net Worth		CUI//NETW	NETW	Financial
+Nuclear Recommendation Material		CUI	RECCOM	Nuclear
+Nuclear Security-Related Information	CUI//SP-SRI	CUI	SRI	Nuclear
+Ocean Common Carrier and Marine Terminal Operator Agreements		CUI	OCCMTO	Proprietary Business Information
+Ocean Common Carrier Service Contracts		CUI	SERV	Proprietary Business Information
+Operations Security		CUI	OPSEC	Intelligence
+Operations Security Information		CUI		Provisional
+Patent Applications		CUI	APP	Patent
+Pen Register/Trap & Trace		CUI	TRACE	Law Enforcement
+Permanent Resident Status		CUI	RESD	Immigration
+Personnel Records	CUI//SP-PERS	CUI	PERS	Privacy
+Personnel Security Information		CUI		Provisional
+Pesticide Producer Survey		CUI	PEST	Statistical
+Physical Security		CUI	PHYS	Critical Infrastructure
+Physical Security - Homeland		CUI		Provisional
+Presentence Report		CUI	PRE	Legal
+Prior Arrest		CUI	PRIOR	Legal
+Privacy Information		CUI		Provisional
+Privileged Safety Information		CUI	PSI	Defense
+Proprietary Manufacturer	CUI//SP-MFC		MFC	Proprietary Business Information
+Proprietary Postal		CUI	POST	Proprietary Business Information
+Protected Critical Infrastructure Information	CUI//SP-PCII		PCII	Critical Infrastructure
+Protective Order	CUI//SP-LPROT	CUI	LPROT	Legal
+Railroad Safety Analysis Records		CUI	RAIL	Transportation
+Retirement		CUI	RTR	Financial
+Reward		CUI	RWRD	Law Enforcement
+Safeguards Information	CUI//SP-SGI		SGI	Nuclear
+SAFETY Act Information		CUI	SAFE	Critical Infrastructure
+Secrecy Orders		CUI	PSEC	Patent
+Sensitive Personally Identifiable Information		CUI		Provisional
+Sensitive Security Information	CUI//SP-SSI		SSI	Transportation
+Sex Crime Victim		CUI	SCV	Law Enforcement
+Small Business Research and Technology		CUI	SBIZ	Procurement and Acquisition
+Source Selection	CUI//SP-SSEL	CUI	SSEL	Procurement and Acquisition
+Statistical Information	CUI//SP-STAT	CUI	STAT	Statistical
+Status Adjustment		CUI	ADJ	Immigration
+Student Records	CUI//SP-STUD	CUI	STUD	Privacy
+Tax Convention		CUI	CONV	Tax
+Taxpayer Advocate Information		CUI	TAI	Tax
+Temporary Protected Status		CUI	PROT	Immigration
+Terrorist Screening		CUI	LSCRN	Law Enforcement
+Toxic Substances	CUI//SP-TSCA		TSCA	Critical Infrastructure
+Unclassified Controlled Nuclear Information - Defense	CUI//SP-DCNI	CUI	DCNI	Defense
+Unclassified Controlled Nuclear Information - Energy	CUI//SP-UCNI	CUI	UCNI	Nuclear
+US Census	CUI//SP-CENS		CENS	Statistical
+Victim		CUI	LVIC	Legal
+Victims of Human Trafficking		CUI	IVIC	Immigration
+Visas		CUI	VISA	Immigration
+Water Assessments		CUI	WATER	Critical Infrastructure
+Whistleblower Identity	CUI//SP-WHSTL	CUI	WHSTL	Law Enforcement
+Witness Protection	CUI//SP-WIT	CUI	WIT	Legal
+Written Determinations	CUI//SP-WDT		WDT	Tax

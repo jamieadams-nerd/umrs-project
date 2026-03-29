@@ -264,7 +264,11 @@
       "Bash(cp /media/psf/repos/umrs-project/.claude/agent-memory/henri/corpus/tbs-policy-gov-security-fr.md /media/psf/repos/umrs-project/.claude/references/five-eyes-classification/)",
       "Bash(cp /tmp/32cfr2002.pdf /media/psf/repos/umrs-project/.claude/references/cui-legal-corpus/)",
       "Bash(mkdir -p /DEVELOPMENT/umrs-project/.claude/logs)",
-      "Bash(printf '[2026-03-27 --:--] rust-developer  umrs-labels Five Eyes Rust types  Bash,Read,Write,Edit,TaskUpdate  success  47 catalog tests pass; clippy clean; CatalogMetadata/Marking/Label updated; LevelRegistry added; cui-labels.json fixture replaced\\\\n')"
+      "Bash(printf '[2026-03-27 --:--] rust-developer  umrs-labels Five Eyes Rust types  Bash,Read,Write,Edit,TaskUpdate  success  47 catalog tests pass; clippy clean; CatalogMetadata/Marking/Label updated; LevelRegistry added; cui-labels.json fixture replaced\\\\n')",
+      "Bash(RAG_CHROMA_PATH=/media/psf/repos/ai-rag-vdb/chroma python ingest.py --collection tui-cli --summary)",
+      "Bash(RAG_CHROMA_PATH=/media/psf/repos/ai-rag-vdb/chroma python ingest.py --collection technical-communication-theory --summary)",
+      "Bash(tee /DEVELOPMENT/umrs-project/.claude/references/tbs-canada-style/canada-content-style-guide-en.md)",
+      "Bash(tee /DEVELOPMENT/umrs-project/.claude/references/tbs-canada-style/canada-content-style-guide-fr.md)"
     ]
   },
   "enabledPlugins": {
