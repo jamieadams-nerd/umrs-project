@@ -17,7 +17,7 @@ concerns serving four audiences:
 | Libraries | Rust developers | `components/rusty-gadgets/` (single workspace) |
 | Patterns & Education | Developers learning HA | `docs/modules/patterns/` + inline in crate code |
 | Tools | Security operators | `components/rusty-gadgets/` (mixed with libs) |
-| Compliance & Assessment | Auditors | planned (`umrs-assess`), `refs/`, `.claude/` |
+| Compliance & Assessment | Auditors | planned (`umrs-assess`), `.claude/references/`, `.claude/` |
 
 Everything lives in one monorepo. That worked early on but creates friction for:
 - crates.io publishing (versioning, independent releases)
@@ -47,7 +47,7 @@ umrs-project/
   tools/              ← CLI binaries
   docs/               ← Antora
   patterns/           ← HA pattern library
-  refs/               ← standards
+  .claude/references/               ← standards
 ```
 
 ### Option C — Hybrid (2-3 repos)
@@ -68,7 +68,7 @@ Jamie may have a different structure in mind.
 - [ ] CLAUDE.md and agent configuration — currently assumes single repo root
 - [ ] Skills and hooks — currently assume monorepo paths
 - [ ] Cross-crate development workflow — how do devs work across crates during development?
-- [ ] `refs/` and `.claude/references/` — where do compliance materials live?
+- [ ] `.claude/references/` and `.claude/references/` — where do compliance materials live?
 - [ ] git history — how to preserve history if splitting repos?
 - [ ] Dependency management — workspace deps become crates.io deps in multi-repo
 

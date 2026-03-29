@@ -187,7 +187,7 @@ Use the existing RAG infrastructure (`rag-ingest` skill). Recommended collection
 ### Manual Download Items
 
 DISA STIGs may require manual browser download from public.cyber.mil (similar to
-existing items in `refs/manifest.md`). Note these in `refs/manifest.md` when acquired.
+existing items in `.claude/references/refs-manifest.md`). Note these in `.claude/references/refs-manifest.md` when acquired.
 
 ---
 
@@ -215,8 +215,8 @@ directly improve feedback on other active plans:
   - [x] RAG ingestion run after downloads complete (2026-03-15, 405 chunks)
   - [x] Corpus familiarization completed (2026-03-15) — 5 knowledge artifacts
 - [x] Phase 3: RHEL 10 STIG (SSG playbook, 451 rules) confirmed already in collection — not duplicated
-- [x] Phase 3: CMMC Assessment Guide L2 v2.13 confirmed already in manifest (`refs/dod/cmmc-assessment-guide-l2.pdf`)
-- [x] Phase 3: Signal-to-STIG cross-reference mapping complete — `refs/reports/stig-signal-coverage.md`
+- [x] Phase 3: CMMC Assessment Guide L2 v2.13 confirmed already in manifest (`.claude/references/dod-5200/cmmc-assessment-guide-l2.pdf`)
+- [x] Phase 3: Signal-to-STIG cross-reference mapping complete — `.claude/references/reports/stig-signal-coverage.md`
   - 36 indicators analyzed; 20 direct STIG matches; 10 CPU mitigation indicators exceed STIG baseline
   - Audit gap (51 rules, zero UMRS coverage) and network hardening gap (19 rules) identified
   - 7 Tier 1 candidate new indicators identified with CCEs and NIST controls
@@ -224,7 +224,7 @@ directly improve feedback on other active plans:
 - [ ] Phase 3 (optional): CIS RHEL 9 Benchmark — supplementary; requires manual download
 - [ ] Phase 4: NIST SP 800-160 acquired and ingested
 - [ ] Phase 5: Lower-priority resources acquired as time permits
-- [ ] All acquired documents tracked in `refs/manifest.md` with version, date, URL, SHA-256
+- [ ] All acquired documents tracked in `.claude/references/refs-manifest.md` with version, date, URL, SHA-256
 - [ ] `corpus-familiarization` skill run after each phase to build active knowledge
 
 ---

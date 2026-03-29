@@ -1,0 +1,39 @@
+{
+  "abbreviation": "EMGT",
+  "category": "Emergency Management",
+  "index_group": "Critical Infrastructure",
+  "index_group_abbreviation": "CRIT",
+  "cui_marking": "CUI//CRIT/EMGT",
+  "dod_detail_url": "https://www.dodcui.mil/Critical-Infrastructure/Emergency-Management/",
+  "category_description": null,
+  "required_warning_statement": null,
+  "required_dissemination_control": null,
+  "authorities": [],
+  "applicable_dod_policies": [
+    "DoDD 3020.26",
+    "DoDD 3020.40",
+    "DoDI 6055.17"
+  ],
+  "examples": [
+    "Continuity of Operations",
+    "Emergency evacuation plans",
+    "COOP briefings (specific)",
+    "EOC staffing",
+    "EOC location/alternate",
+    "EOP operating procedures",
+    "Alert notification plans",
+    "Security vulnerabilities",
+    "Alert notification rosters",
+    "Security practices",
+    "Inspection findings",
+    "Link Disclaimer\tDoD Careers",
+    "FOIA\tUSA Jobs",
+    "USA.gov\tPrivacy & Security",
+    "No FEAR Act\tWeb Policy",
+    "DoD Inspector General\tAccessibility/Section 508",
+    "STAY CONNECTED",
+    "Hosted by Department of War Information Activity - WEB.mil"
+  ],
+  "source": "dodcui.mil",
+  "retrieved_date": "2026-03-21"
+}

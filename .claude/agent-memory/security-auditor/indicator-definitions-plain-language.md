@@ -9,9 +9,9 @@ type: reference
 **Produced by:** The IRS (security-auditor)
 **Date:** 2026-03-17
 **Source files read:**
-- `components/rusty-gadgets/umrs-platform/src/posture/catalog.rs`
-- `components/rusty-gadgets/umrs-platform/src/posture/indicator.rs`
-- `components/rusty-gadgets/umrs-platform/src/confidence.rs`
+- `components/rusty-gadgets/libs/umrs-platform/src/posture/catalog.rs`
+- `components/rusty-gadgets/libs/umrs-platform/src/posture/indicator.rs`
+- `components/rusty-gadgets/libs/umrs-platform/src/confidence.rs`
 - `components/rusty-gadgets/umrs-tui/src/main.rs`
 - `components/rusty-gadgets/umrs-tui/src/indicators.rs`
 - `components/rusty-gadgets/umrs-tui/src/tabs.rs`

@@ -1,0 +1,143 @@
+{
+  "risk_domains": {
+    "global": {},
+    "AGR": {
+      "EXP-PRECURSOR": {
+        "display": "Explosive Precursor Sensitive",
+        "description": "Information involving materials that may be used to manufacture explosives.",
+        "enforcement": {
+          "distribution_restriction": "licensed_personnel_only",
+          "facility_disclosure_limit": true,
+          "aggregation_risk": true
+        }
+      },
+      "TOXIC-USE": {
+        "display": "Toxic Application Sensitive",
+        "description": "Information on pesticide toxicity, concentration, or lethality thresholds.",
+        "enforcement": {
+          "misuse_risk": true,
+          "public_health_sensitive": true,
+          "distribution_restriction": "certified_applicators"
+        }
+      },
+      "FOOD-CONTAM": {
+        "display": "Food Contamination Risk",
+        "description": "Information that could enable intentional contamination of food sources.",
+        "enforcement": {
+          "supply_chain_protection": true,
+          "facility_identity_limit": true,
+          "recall_coordination_required": true
+        }
+      },
+      "REG-ENF": {
+        "display": "Regulatory Enforcement Sensitive",
+        "description": "Inspection findings, violations, or enforcement targeting data.",
+        "enforcement": {
+          "premature_disclosure_prohibited": true,
+          "investigative_hold": true
+        }
+      },
+      "STORAGE-SEC": {
+        "display": "Hazardous Storage Security",
+        "description": "Details regarding storage quantities, configurations, or vulnerabilities.",
+        "enforcement": {
+          "site_specific_redaction": true,
+          "physical_security_sensitive": true,
+          "public_release": false
+        }
+      },
+      "DIVERSION-RISK": {
+        "display": "Material Diversion Risk",
+        "description": "Supply chain or transport information that could enable theft or diversion.",
+        "enforcement": {
+          "transport_route_protection": true,
+          "vendor_identity_limit": true,
+          "law_enforcement_coordination": true
+        }
+      },
+      "AGRO-INFRA": {
+        "display": "Agricultural Infrastructure Sensitive",
+        "description": "Information revealing vulnerabilities in agricultural production, storage, or distribution systems.",
+        "enforcement": {
+          "dissemination_limit": "authorized_agriculture_personnel",
+          "public_release": false,
+          "critical_infrastructure": true
+        }
+      },
+      "FOOD-SUPPLY": {
+        "display": "Food Supply Sensitive",
+        "description": "Information impacting food supply safety, contamination response, or continuity planning.",
+        "enforcement": {
+          "public_health_coordination_required": true,
+          "distribution_restriction": "need_to_know",
+          "export_control_review": true
+        }
+      },
+      "AGRO-BIOSEC": {
+        "display": "Agro Biosecurity",
+        "description": "Information that could enable intentional harm to crops, livestock, or food systems.",
+        "enforcement": {
+          "misuse_risk": true,
+          "foreign_dissemination_review": true,
+          "research_release_review": true
+        }
+      },
+      "AG-CHEM-SENS": {
+        "display": "Agricultural Chemical Sensitive",
+        "description": "Technical or operational details regarding agricultural chemical composition or use.",
+        "enforcement": {
+          "formula_protection": true,
+          "bulk_handling_restriction": true,
+          "industrial_use_only": true
+        }
+      },
+      "ENV-CONTAM": {
+        "display": "Environmental Contamination Risk",
+        "description": "Information that could enable large-scale environmental or crop contamination.",
+        "enforcement": {
+          "misuse_risk": true,
+          "application_method_limit": true,
+          "public_release": false
+        }
+      },
+      "SUPPLY-CHAIN": {
+        "display": "Chemical Supply Chain Sensitive",
+        "description": "Vendor, transport, or storage ecosystem details.",
+        "enforcement": {
+          "vendor_redaction": true,
+          "logistics_obfuscation": true
+        }
+      }
+    },
+    "LEI": {
+      "INFORMANT-EXPOSURE": {
+        "display": "Confidential Informant Exposure",
+        "description": "Risk of identifying or compromising confidential sources.",
+        "enforcement": {
+          "identity_redaction_required": true,
+          "access_restriction": "case_assigned_personnel",
+          "dissemination_prohibited": true
+        }
+      },
+
+      "CASE-COMPROMISE": {
+        "display": "Active Case Compromise",
+        "description": "Information that could jeopardize ongoing investigations.",
+        "enforcement": {
+          "investigative_hold": true,
+          "premature_disclosure_prohibited": true
+        }
+      },
+
+      "UNDERCOVER-RISK": {
+        "display": "Undercover Officer Exposure",
+        "description": "Information revealing undercover identities or operations.",
+        "enforcement": {
+          "identity_protection": true,
+          "facial_image_control": true,
+          "location_suppression": true
+        }
+    },
+    "CRIT": {}
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "abbreviation": "HISTP",
+  "category": "Historic Properties",
+  "index_group": "Natural and Cultural Resources",
+  "index_group_abbreviation": "NCR",
+  "cui_marking": "CUI//NCR/HISTP",
+  "dod_detail_url": "https://www.dodcui.mil/Natural-and-Cultural-Resources/Historic-Properties/",
+  "category_description": null,
+  "required_warning_statement": null,
+  "required_dissemination_control": null,
+  "authorities": [],
+  "applicable_dod_policies": [],
+  "examples": [
+    "The head of a Federal agency or other public official receiving grant assistance pursuant to the act, after consultation with the Secretary, shall withhold from public disclosure information about the location, character, or ownership of a historic property when disclosure may cause a significant invasion of privacy; risk harm to the historic property; or impede the use of a traditional religious site by practitioners.",
+    "Link Disclaimer\tDoD Careers",
+    "FOIA\tUSA Jobs",
+    "USA.gov\tPrivacy & Security",
+    "No FEAR Act\tWeb Policy",
+    "DoD Inspector General\tAccessibility/Section 508",
+    "STAY CONNECTED",
+    "Hosted by Department of War Information Activity - WEB.mil"
+  ],
+  "source": "dodcui.mil",
+  "retrieved_date": "2026-03-21"
+}

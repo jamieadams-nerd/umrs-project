@@ -1,0 +1,31 @@
+[
+  {
+    "abbreviation": "PROPIN",
+    "category": "General Proprietary Business Information",
+    "index_group": "Proprietary Business Information",
+    "index_group_abbreviation": "PROPIN",
+    "cui_marking": "CUI//PROPIN",
+    "dod_detail_url": "https://www.dodcui.mil/Proprietary-Business-Information/General-Proprietary-Business-Information/",
+    "category_description": null,
+    "required_warning_statement": null,
+    "required_dissemination_control": "Additional Note: Pursuant to 10 CFR 600.15, an application or other document, including any unsolicited information, may include technical data and other data, including trade secrets and commercial or financial information that is privileged or confidential, which the applicant does not want disclosed to the public or used by the Government for any purpose other than application evaluation.\u00a0\u00a0To protect such data, the submitter must mark the cover sheet of the application or other document with the following Notice: NOTICE OF RESTRICTION ON DISCLOSURE AND USE OF DATA Pages [____] of this document may contain trade secrets or commercial or financial information that is privileged or confidential and is exempt from public disclosure. Such information shall be used or disclosed only for evaluation purposes or in accordance with a financial assistance or loan agreement between the submitter and the Government. The Government may use or disclose any information that is not appropriately marked or otherwise restricted, regardless of source.",
+    "authorities": [],
+    "applicable_dod_policies": [],
+    "examples": [
+      "Information concerning or relating to\u00a0trade secrets, processes, operations, style of work, or apparatus, or to the identity, confidential statistical data, amount or source of any income profits, losses, or expenditures of any person, firm, partnership, corporation, or association",
+      "Customer names submitted in an investigation",
+      "Intellectual property",
+      "Limited rights data means data (other than computer software) developed at private expense that embody trade secrets or are commercial or financial and confidential or privileged",
+      "Confidential business information",
+      "Link Disclaimer\tDoD Careers",
+      "FOIA\tUSA Jobs",
+      "USA.gov\tPrivacy & Security",
+      "No FEAR Act\tWeb Policy",
+      "DoD Inspector General\tAccessibility/Section 508",
+      "STAY CONNECTED",
+      "Hosted by Department of War Information Activity - WEB.mil"
+    ],
+    "source": "dodcui.mil",
+    "retrieved_date": "2026-03-21"
+  }
+]

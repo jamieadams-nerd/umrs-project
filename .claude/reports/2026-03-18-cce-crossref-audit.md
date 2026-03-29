@@ -307,6 +307,6 @@ Remediation owner: coder
 - SCAP familiarization notes: `.claude/agent-memory/security-auditor/scap_familiarization.md`
 - STIG signal index: `.claude/references/scap-security-guide/stig-signal-index.md`
 - CCE cross-ref: `.claude/references/scap-security-guide/cce-nist-crossref.md`
-- Coverage report: `refs/reports/stig-signal-coverage.md`
+- Coverage report: `.claude/references/reports/stig-signal-coverage.md`
 - SCAP/STIG corpus plan: `.claude/plans/scap-stig-corpus-plan.md`
 - Citation Format Rule: `.claude/rules/rust_design_rules.md`

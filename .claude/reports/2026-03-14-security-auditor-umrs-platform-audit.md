@@ -430,7 +430,7 @@ Public items missing required annotations per CLAUDE.md tiered rules:
 
 ## Control Citation Accuracy Review
 
-All cited controls were verified against the reference documents in `refs/`. No incorrect control family citations were found. Specific assessments:
+All cited controls were verified against the reference documents in `.claude/references/`. No incorrect control family citations were found. Specific assessments:
 
 - **SI-7** (Software and Information Integrity): Correctly applied throughout for provenance verification and TPI parsing. No mis-application detected.
 - **SC-13** (Cryptographic Protection): Correctly cited in `sealed_cache.rs` FIPS gate. Under-applied in `integrity_check.rs` (Finding F-11 — the gap is not a wrong citation but a missing one).

@@ -128,7 +128,7 @@ to interpret what you see?
 
 ## Output Format
 
-Save the report to `.claude/admin-reports/YYYY-MM-DD-<scope>.md`. Use today's date and a short scope descriptor (e.g., `2026-03-04-selinux-setup`, `2026-03-04-ls-ha-tool`).
+Save the report to `.claude/reports/YYYY-MM-DD-<scope>.md`. Use today's date and a short scope descriptor (e.g., `2026-03-04-selinux-setup`, `2026-03-04-ls-ha-tool`).
 
 **Report header:**
 ```

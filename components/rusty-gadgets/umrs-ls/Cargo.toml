@@ -8,21 +8,28 @@ name = "umrs-ls"
 path = "src/main.rs"
 
 [dependencies]
-umrs-selinux = { path = "../umrs-selinux" }
-umrs-core    = { path = "../umrs-core" }
-chrono     = "0.4"
-nix        = { version = "0.27", features = ["user", "fs"] }
-log        = { version = "0.4", features = ["release_max_level_info"] }
-env_logger = "0.11"
-gettext-rs = { version = "0.7", features = ["gettext-system"] }
+umrs-selinux = { path = "../libs/umrs-selinux" }
+umrs-core    = { path = "../libs/umrs-core" }
+
+chrono       = "0.4"
+nix          = { version = "0.27", features = ["user", "fs"] }
+log          = { version = "0.4", features = ["release_max_level_info"] }
+env_logger   = "0.11"
+gettext-rs   = { version = "0.7", features = ["gettext-system"] }
 
 [lints.clippy]
 missing_errors_doc    = { level = "allow", priority = 1 }
 missing_panics_doc    = { level = "allow", priority = 1 }
-# doc_markdown: backtick-wrapping every field name in prose is disruptive (matches umrs-selinux policy)
+
+# doc_markdown: backtick-wrapping every field name in 
+# prose is disruptive (matches umrs-selinux policy)
 doc_markdown          = { level = "allow", priority = 1 }
-# map_unwrap_or / option_if_let_else: explicit chains and if/else preferred for readability
+
+# map_unwrap_or / option_if_let_else: explicit chains 
+# and if/else preferred for readability
 map_unwrap_or         = { level = "allow", priority = 1 }
 option_if_let_else    = { level = "allow", priority = 1 }
-# format_push_string: write! over push_str(&format!()) is a micro-optimisation; readability wins
+
+# format_push_string: write! over push_str(&format!()) 
+# is a micro-optimisation; readability wins
 format_push_string    = { level = "allow", priority = 1 }

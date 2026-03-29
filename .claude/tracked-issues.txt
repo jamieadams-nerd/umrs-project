@@ -1,5 +1,0 @@
-# Tracked upstream issues — checked at session start
-# Format: repo|number|brief description
-# Lines starting with # are ignored
-anthropics/claude-code|34472|settings.local.json created despite project rules
-anthropics/claude-code|34473|Nested .claude/ created when agent CWD inside .claude/

@@ -98,7 +98,7 @@ Detailed rules are externalized. Do not duplicate rule content in this file.
 
 ## Architecture & Patterns
 
-- Workspace layout, crate dependencies, module map, architectural review triggers: `.claude/ARCHITECTURE.md`
+- Workspace layout, crate dependencies, module map, architectural review triggers: `.claude/plans/ARCHITECTURE.md`
 - Pattern library: `docs/modules/patterns/pages/`
 - Developer guide: `docs/modules/devel/pages/high-assurance-patterns.adoc`
 
@@ -106,13 +106,13 @@ Detailed rules are externalized. Do not duplicate rule content in this file.
 
 ## Team Collaboration
 
-All agents read `.claude/team-collaboration.md` at session start.
+All agents read `.claude/agents/team-collaboration.md` at session start.
 
 ---
 
 ## Reference Documents
 
-Third-party standards in `refs/`. Manifest at `refs/manifest.md` tracks versions, sources, and checksums.
+Third-party standards in `.claude/references/`. Manifest at `.claude/references/refs-manifest.md` tracks versions, sources, and checksums.
 
 ---
 

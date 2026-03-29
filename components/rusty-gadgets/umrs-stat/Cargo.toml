@@ -1,25 +1,46 @@
 [package]
 name = "umrs-stat"
+license = "MIT"
 version = "0.1.0"
 edition = "2024"
-description = "UMRS file security audit card — interactive stat-style display of SELinux labels and inode security flags"
+description = """
+UMRS file security audit card — interactive stat-style display of 
+SELinux labels and inode security flags
+"""
+# Note: crates.io has a maximum of 5 categories. 
+# Each category should match one of the strings 
+# available at https://crates.io/category_slugs, and must match exactly.
+
+# https://doc.rust-lang.org/cargo/reference/manifest.html
+# include/exclude
+# documentation = "https:// " when we finish
+# include = ["/src", "/examples"]
+# keywords
+
 
 [[bin]]
 name = "umrs-stat"
 path = "src/main.rs"
 
+
 [dependencies]
+umrs-core = { path = "../libs/umrs-core" }
+umrs-selinux = { path = "../libs/umrs-selinux" }
+umrs-platform = { path = "../libs/umrs-platform" }
+umrs-ui = { path = "../libs/umrs-ui" }
+
 clap = { version = "4.5", features = ["derive"] }
 ratatui = "0.30.0"
 crossterm = "0.28"
 rustix = { version = "1", features = ["system"] }
-umrs-core = { path = "../umrs-core" }
-umrs-selinux = { path = "../umrs-selinux" }
-umrs-platform = { path = "../umrs-platform" }
-umrs-ui = { path = "../umrs-ui" }
 tree_magic_mini = "3"
 log = "0.4"
 systemd-journal-logger = "2"
+
+
+[lints.rust]
+unsafe_code = "forbid"
+
 
 [lints.clippy]
 pedantic = { level = "warn", priority = -1 }

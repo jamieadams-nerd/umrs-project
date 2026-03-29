@@ -75,11 +75,11 @@ or resolve Canadian/US policy divergences unilaterally (route to Jamie).
 
 The Librarian has built a substantial terminology corpus:
 
-- **Termium Plus TSV** (`.claude/corpus/termium-plus-fr_CA.tsv`): 32,210 entries
+- **Termium Plus TSV** (`.claude/references/corpus/termium-plus-fr_CA.tsv`): 32,210 entries
   from Government of Canada Translation Bureau. Covers Electronics & Informatics,
   Administration, Information Security Glossary, and CCCS Glossary. The Military/Security
   subject remains pending manual download.
-- **OQLF GDT TSV** (`.claude/corpus/oqlf-gdt-fr_CA.tsv`): 25,881 entries from the
+- **OQLF GDT TSV** (`.claude/references/corpus/oqlf-gdt-fr_CA.tsv`): 25,881 entries from the
   Grand dictionnaire terminologique. Covers IT, security, public administration,
   national defence.
 - **GNU .po files** for coreutils, bash, findutils, grep, sed, tar, cryptsetup --

@@ -47,7 +47,7 @@ Report: `resources/i18n/reports/2026-03-23-umrs-uname-rescan.md`
 - Domain registry: `resources/i18n/domains.md`
 - Makefile: `/media/psf/repos/umrs-project/Makefile`
 - Corpus skill: invoke `french-lookup` Skill tool — do NOT grep corpus files directly
-- Corpus files: `.claude/corpus/*.po` (coreutils, grep, sed, tar, findutils, bash, cryptsetup)
+- Corpus files: `.claude/references/corpus/*.po` (coreutils, grep, sed, tar, findutils, bash, cryptsetup)
 
 ## Cargo.toml Entry (confirmed)
 - `gettext-rs = { version = "0.7", features = ["gettext-system"] }`
@@ -73,7 +73,7 @@ See detailed steps in [workflow.md](workflow.md). Summary:
 9. Update Makefile (I18N_TEXT_DOMAINS, I18N_SRC_DIR_, I18N_ACTIVE_LOCALES_)
 
 ## umrs-core i18n Pattern (canonical reference)
-File: `components/rusty-gadgets/umrs-core/src/i18n.rs`
+File: `components/rusty-gadgets/libs/umrs-core/src/i18n.rs`
 - `init(domain)`, `tr(msgid)`, `tr_core(msgid)` via `dgettext("umrs-core", msgid)`
 - `OnceLock` for locale init; `DEFAULT_LOCALEDIR = "/usr/share/locale"`
 - For umrs-platform: `tr_platform()` with `dgettext("umrs-platform", msgid)`

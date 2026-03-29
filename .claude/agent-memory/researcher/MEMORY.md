@@ -29,14 +29,14 @@ Verify PDF: `head -c 4 <file>` must show `%PDF`.
 
 ## Reference Library
 
-### refs/ manifest (official security docs)
-- `refs/manifest.md` is the canonical manifest — always read before retrieval tasks
-- `refs/nist/` — NIST SPs (800-218, 800-171r2, 800-171r3, 800-53r5, 800-37r2, 800-53Ar5, 800-30r1, 800-39, 800-90B, 800-172, 800-161r1, 800-60v1r1) + FIPS (140-2, 140-3)
-- `refs/nist/fips/` — FIPS 203, 204, 205 (PQC standards, downloaded 2026-03-13)
-- `refs/dod/` — DoD CMMC docs (Final Rule + Assessment Guide L2, both downloaded 2026-03-12)
-- `refs/fedramp/` — FedRAMP accreditation docs (downloaded 2026-03-15: CSP playbook, Agency playbook, SSP/SAP/SAR templates)
-- `refs/nist/sp800-18r1.pdf` — NIST SP 800-18 Rev 1 (downloaded 2026-03-15)
-- `refs/nist/sp800-90B.pdf` — NIST SP 800-90B (downloaded 2026-03-18; SHA-256: 9b0dd77131ade3617a91cd8457fa09e0dc354c273bb2220a6afeaca16e5defe7)
+### .claude/references/ manifest (official security docs)
+- `.claude/references/refs-manifest.md` is the canonical manifest — always read before retrieval tasks
+- `.claude/references/nist/` — NIST SPs (800-218, 800-171r2, 800-171r3, 800-53r5, 800-37r2, 800-53Ar5, 800-30r1, 800-39, 800-90B, 800-172, 800-161r1, 800-60v1r1) + FIPS (140-2, 140-3)
+- `.claude/references/nist/fips/` — FIPS 203, 204, 205 (PQC standards, downloaded 2026-03-13)
+- `.claude/references/dod-5200/` — DoD CMMC docs (Final Rule + Assessment Guide L2, both downloaded 2026-03-12)
+- `.claude/references/fedramp/` — FedRAMP accreditation docs (downloaded 2026-03-15: CSP playbook, Agency playbook, SSP/SAP/SAR templates)
+- `.claude/references/nist/sp800-18r1.pdf` — NIST SP 800-18 Rev 1 (downloaded 2026-03-15)
+- `.claude/references/nist/sp800-90B.pdf` — NIST SP 800-90B (downloaded 2026-03-18; SHA-256: 9b0dd77131ade3617a91cd8457fa09e0dc354c273bb2220a6afeaca16e5defe7)
 - Last version check: 2026-03-12 (next due 2026-04-12)
 
 ### .claude/references/ (technical reference collections for RAG)
@@ -106,35 +106,35 @@ RAG_CHROMA_PATH=/media/psf/repos/ai-rag-vdb/chroma python ingest.py --collection
 - CMMC: dodcio.defense.gov, acq.osd.mil
 - DoD Issuances: esd.whs.mil (approved 2026-03-12)
 - FedRAMP: fedramp.gov (approved 2026-03-15 — accreditation process artifacts)
-- Common Criteria: commoncriteriaportal.org (approved per tech-writer-corpus-plan.md Phase 3.6 — RAG only, not refs/)
+- Common Criteria: commoncriteriaportal.org (approved per tech-writer-corpus-plan.md Phase 3.6 — RAG only, not .claude/references/)
 
 ## Research Reports — MANDATORY RULE
 
-**ALL researcher reports MUST be saved to `refs/reports/`.**
+**ALL researcher reports MUST be saved to `.claude/references/reports/`.**
 This is the permanent, stable, user-facing location. Never use any other path.
 Always do this even if not explicitly asked — if a research answer is substantial
-enough to write up, it goes in `refs/reports/`.
+enough to write up, it goes in `.claude/references/reports/`.
 
 Checklist for every new report:
-1. Write file to `refs/reports/<kebab-case-name>.md` (date inside file, not in filename)
+1. Write file to `.claude/references/reports/<kebab-case-name>.md` (date inside file, not in filename)
 2. Compute SHA-256 with `sha256sum` and record it
-3. Add a manifest entry under "Research Reports" in `refs/manifest.md`
+3. Add a manifest entry under "Research Reports" in `.claude/references/refs-manifest.md`
 4. Add a one-line entry to the "Existing reports" list below
 
 Existing reports:
-- `refs/reports/kernel-selinux-module-context-security.md` (2026-03-10)
+- `.claude/references/reports/kernel-selinux-module-context-security.md` (2026-03-10)
   Topics: modules_disabled, MODULE_SIG_FORCE, Lockdown/LoadPin/IPE LSMs,
   SELinux system:module_request, MLS mlsvalidatetrans, Bell-LaPadula tranquility
-- `refs/reports/stig-signal-coverage.md` (2026-03-17)
+- `.claude/references/reports/stig-signal-coverage.md` (2026-03-17)
   Topics: 36 posture indicators vs 451 STIG rules; 20 direct matches; audit gap (51 rules);
   network gap (19 rules); 7 Tier-1 candidate indicators; CMMC alignment; severity cross-reference
-- `refs/reports/umrs-capabilities-800-171r3-mapping.md` (2026-03-19)
+- `.claude/references/reports/umrs-capabilities-800-171r3-mapping.md` (2026-03-19)
   Topics: 7 UMRS blog capabilities mapped to 800-171r3 mandatory requirements; all 7 are mandated;
   3 have above-and-beyond implementation dimensions; MP-03, PL-04, CM-06, CA-07, AU-03, SA-08, AC-03/04
-- `refs/reports/nara-cui-registry-crossref.md` (2026-03-21)
+- `.claude/references/reports/nara-cui-registry-crossref.md` (2026-03-21)
   Topics: NARA canonical CUI vs cui-labels.json audit; 6 standalone-vs-group errors (CTI/NNPI/OPSEC/PROT/PSEC/RAIL);
   18 OURS_ONLY entries: 7 fabricated (CHEM,PCI,RECS,LEGL,AVIATION,MARITIME,PIPELINE), 7 wrong abbreviations,
-- `refs/reports/agent-knowledge-acquisition-plan.md` (2026-03-21)
+- `.claude/references/reports/agent-knowledge-acquisition-plan.md` (2026-03-21)
   Topics: HCI/IA/KO/TechComm open-access source inventory; 12 Tier-1 zero-cost resources; canonical reading
   lists per domain; YouTube transcript pipeline logistics; ISKO IEKO, Stanford CS147/CS347, MIT 6.831 coverage
   FEDCON misclassified as category (it is a dissemination control), TRANSPORT/GOVT are invented groups
@@ -182,21 +182,22 @@ Existing reports:
 
 On "refresh library" or "check for updates":
 1. Read `pqc-tracker.md` for PQC monitoring URLs; check for new FIPS/RHEL updates
-2. Check `rag-collections.md` source URLs for newer versions; check `refs/manifest.md`
+2. Check `rag-collections.md` source URLs for newer versions; check `.claude/references/refs-manifest.md`
 3. Re-ingest updated collections; update chunk counts in MEMORY.md and rag-collections.md
 4. Post cross-team note summarizing changes; create tasks for tech-writer if docs are affected
 
 ## French-CA Terminology Corpus (2026-03-23)
 
-`.claude/corpus/` contains Simone's french-lookup databases:
+`.claude/references/corpus/` contains Simone's french-lookup databases:
 - `termium-plus-fr_CA.tsv` — 32,210 entries (TERMIUM Plus GoC + InfoSec Glossary + CCCS)
 - `oqlf-gdt-fr_CA.tsv` — 25,881 entries (OQLF Grand dictionnaire terminologique)
 - `SOURCE.md` — provenance, checksums, update procedure
 
 GoC server TLS: donnees-data.tpsgc-pwgsc.gc.ca requires `OPENSSL_CONF=/dev/null` + `--insecure`
 Military/Security subject: Open Gov Portal resource `99a220a8` — JS-blocked, needs manual download
-Helper scripts: `refs/extract_termium.py`, `refs/extract_gdt.py`, `refs/parse_termium_glossary3.py`,
-  `refs/parse_cccs_bilingual.py`, `refs/verify_corpus.py` — retain for re-extraction runs
+Helper scripts: `.claude/references/scripts/extract_termium.py`, `.claude/references/scripts/extract_gdt.py`,
+  `.claude/references/scripts/parse_termium_glossary3.py`, `.claude/references/scripts/parse_cccs_bilingual.py`,
+  `.claude/references/scripts/verify_corpus.py` — retain for re-extraction runs
 
 ## Pending Items
 - Stanford CS147: MANUAL DOWNLOAD — 20 PDFs; see `.claude/references/hci-courses/stanford-cs147/SOURCE.md`

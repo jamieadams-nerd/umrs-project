@@ -17,7 +17,7 @@ help text only, with no HCI training. Their reviews are at `nora-help-text-revie
 and `finn-help-text-review-2026-03-22.md`.
 
 **Training material:** 12 Tier 1 zero-cost HCI/IA/KO resources identified in the knowledge
-acquisition plan (`refs/reports/agent-knowledge-acquisition-plan.md`). Material is on disk
+acquisition plan (`.claude/references/reports/agent-knowledge-acquisition-plan.md`). Material is on disk
 in `.claude/references/` but not yet ingested into RAG. Agents familiarized with the plan
 and available material descriptions.
 
@@ -164,4 +164,4 @@ correction applied and internalized it.
 | `sage-umrs-uname-full-review-2026-03-22.md` | Sage POST review |
 | `nora-help-text-review-2026-03-22.md` | Untrained control (Nora) |
 | `finn-help-text-review-2026-03-22.md` | Untrained control (Finn) |
-| `refs/reports/agent-knowledge-acquisition-plan.md` | Training material plan |
+| `.claude/references/reports/agent-knowledge-acquisition-plan.md` | Training material plan |

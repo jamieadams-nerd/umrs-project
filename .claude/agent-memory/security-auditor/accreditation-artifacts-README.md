@@ -29,6 +29,6 @@ type: reference
 at end of FY27. These documents cover the current Rev5 agency authorization path.
 
 ## Source file locations
-- PDFs: `.claude/references/accreditation-artifacts/` and `refs/fedramp/`
+- PDFs: `.claude/references/accreditation-artifacts/` and `.claude/references/fedramp/`
 - Templates (converted to text): `.claude/references/accreditation-artifacts/*.txt`
 - Provenance: `SOURCE.md` in the collection directory with SHA-256 checksums

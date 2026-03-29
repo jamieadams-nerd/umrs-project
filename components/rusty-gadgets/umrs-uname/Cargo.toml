@@ -2,7 +2,10 @@
 name = "umrs-uname"
 version = "0.1.0"
 edition = "2024"
-description = "UMRS OS detection audit card — interactive display of platform identity, kernel security posture, and label trust"
+description = """
+UMRS OS detection audit card — interactive display of platform 
+identity, kernel security posture, and label trust.
+"""
 
 [[bin]]
 name = "umrs-uname"
@@ -11,11 +14,12 @@ path = "src/main.rs"
 [dependencies]
 crossterm = "0.28"
 ratatui = "0.30.0"
-umrs-core = { path = "../umrs-core" }
-umrs-platform = { path = "../umrs-platform" }
-umrs-ui = { path = "../umrs-ui" }
+umrs-core = { path = "../libs/umrs-core" }
+umrs-platform = { path = "../libs/umrs-platform" }
+umrs-ui = { path = "../libs/umrs-ui" }
 log = "0.4"
 systemd-journal-logger = "2"
+
 
 [lints.clippy]
 pedantic = { level = "warn", priority = -1 }

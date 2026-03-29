@@ -16,7 +16,7 @@ Last updated: 2026-03-13
 
 ## access-control (not yet ingested — awaiting user review)
 
-See refs/manifest.md "Access Control Reference Collection" section for all source URLs.
+See .claude/references/refs-manifest.md "Access Control Reference Collection" section for all source URLs.
 
 ## selinux-notebook
 

@@ -1,0 +1,27 @@
+{
+  "abbreviation": "UCNI",
+  "category": "Unclassified Controlled Nuclear Information - Energy",
+  "index_group": "Nuclear",
+  "index_group_abbreviation": "NUC",
+  "cui_marking": "CUI//NUC/UCNI",
+  "dod_detail_url": "https://www.dodcui.mil/Nuclear/Unclassified-Controlled-Nuclear-Information-Energy/",
+  "category_description": null,
+  "required_warning_statement": "Unclassified Controlled Nuclear Information Not for Public Dissemination Unauthorized dissemination subject to civil and criminal sanctions under section 148 of the Atomic Energy Act of 1954, as amended (42 U.S.C. 2168). Additional Marking Requirement:\u00a0\u00a0Unclassified Controlled Nuclear Information will be placed at the bottom of all pages",
+  "required_dissemination_control": null,
+  "authorities": [],
+  "applicable_dod_policies": [],
+  "examples": [
+    "Design of production facilities or utilization facilities",
+    "Security measures (plans, procedures, equipment) for the physical protection of production or utilization facilities, nuclear material contained in such facilities, or nuclear material in transit",
+    "Design, manufacture, or utilization of any atomic weapon or component if the design, manufacture, or utilization of such weapon or component was contained in any information declassified or removed from the Restricted Data category by the Secretary of Energy",
+    "Link Disclaimer\tDoD Careers",
+    "FOIA\tUSA Jobs",
+    "USA.gov\tPrivacy & Security",
+    "No FEAR Act\tWeb Policy",
+    "DoD Inspector General\tAccessibility/Section 508",
+    "STAY CONNECTED",
+    "Hosted by Department of War Information Activity - WEB.mil"
+  ],
+  "source": "dodcui.mil",
+  "retrieved_date": "2026-03-21"
+}

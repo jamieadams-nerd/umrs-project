@@ -1,0 +1,33 @@
+[package]
+name = "umrs-ui"
+version = "0.1.0"
+edition = "2021"
+description = "UMRS terminal UI — shared audit card template library for UMRS tool binaries"
+
+[lib]
+name = "umrs_ui"
+path = "src/lib.rs"
+
+[dependencies]
+clap = { version = "4.5", features = ["derive"] }
+ratatui = "0.30.0"
+ratatui-garnish = "0.1.0"
+crossterm = "0.28"
+rustix = { version = "1", features = ["system"] }
+umrs-core = { path = "../umrs-core" }
+umrs-platform = { path = "../umrs-platform" }
+umrs-selinux = { path = "../umrs-selinux" }
+log = "0.4"
+systemd-journal-logger = "2"
+
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+nursery = { level = "warn", priority = -1 }
+unwrap_used = "deny"
+doc_markdown = "allow"
+missing_errors_doc = "allow"
+missing_panics_doc = "allow"
+module_name_repetitions = "allow"
+option_if_let_else = "allow"
+redundant_closure = "allow"
+unreadable_literal = "allow"

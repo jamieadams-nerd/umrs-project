@@ -3,7 +3,7 @@
 **Session:** 2026-03-22
 **Agent:** The Librarian (researcher)
 **Authorization:** Jamie Adams — green light given for Tier 1 downloads
-**Plan source:** `refs/reports/agent-knowledge-acquisition-plan.md`
+**Plan source:** `.claude/references/reports/agent-knowledge-acquisition-plan.md`
 
 ---
 

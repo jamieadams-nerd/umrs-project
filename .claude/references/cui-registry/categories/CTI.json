@@ -1,0 +1,43 @@
+{
+  "abbreviation": "CTI",
+  "category": "Controlled Technical Information",
+  "index_group": "Defense",
+  "index_group_abbreviation": "DEF",
+  "cui_marking": "CUI//DEF/CTI",
+  "dod_detail_url": "https://www.dodcui.mil/Defense/Controlled-Technical-Information/",
+  "category_description": null,
+  "required_warning_statement": "Required Dissemination Control:\u00a0 Distribution Statement B thru F",
+  "required_dissemination_control": null,
+  "authorities": [],
+  "applicable_dod_policies": [
+    "DFARS 204.73",
+    "DoDD 5000.01",
+    "DoDD 5230.25",
+    "DoDI 2030.08",
+    "DoDI 2040.02",
+    "DoDI 3200.12",
+    "DoDI 5000.02",
+    "DoDI 5200.39"
+  ],
+  "examples": [
+    "Research and engineering data",
+    "Engineering drawings",
+    "Technical reports",
+    "Technical data packages",
+    "Design analysis",
+    "Specifications",
+    "Test reports",
+    "Technical orders",
+    "Cybersecurity plan",
+    "IP addresses, nodes, links",
+    "Link Disclaimer\tDoD Careers",
+    "FOIA\tUSA Jobs",
+    "USA.gov\tPrivacy & Security",
+    "No FEAR Act\tWeb Policy",
+    "DoD Inspector General\tAccessibility/Section 508",
+    "STAY CONNECTED",
+    "Hosted by Department of War Information Activity - WEB.mil"
+  ],
+  "source": "dodcui.mil",
+  "retrieved_date": "2026-03-21"
+}

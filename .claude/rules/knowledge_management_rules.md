@@ -14,8 +14,8 @@ and content description.
 - HTML-to-markdown conversions: spot-check for empty or stub content
 - Check `content-length` and `content-type` headers — reject redirect stubs
 
-[RULE] All substantial research reports go to `refs/reports/` with a
-`refs/manifest.md` entry and SHA-256 checksum.
+[RULE] All substantial research reports go to `.claude/references/reports/` with a
+`.claude/references/refs-manifest.md` entry and SHA-256 checksum.
 
 [CONSTRAINT] Only fetch from approved sources (listed in Librarian's memory).
 New sources require Jamie's approval before first use.
@@ -53,15 +53,18 @@ name flattens these: `hci-courses-mit-6831`.
 - `.claude/rag/manifest.json` — per-file tracking (hash, chunks, date)
 - `.claude/rag/chroma/` — local ChromaDB (development)
 - `RAG_CHROMA_PATH` env var — production ChromaDB location
-- `refs/` — official third-party standards (NIST, DoD, CMMC)
-- `refs/reports/` — Librarian's research reports
+- `.claude/references/nist/` — NIST standards (SPs, FIPS)
+- `.claude/references/dod-5200/` — DoD standards and CMMC
+- `.claude/references/fedramp/` — FedRAMP templates
+- `.claude/references/reports/` — Librarian's research reports
+- `.claude/references/refs-manifest.md` — provenance manifest for third-party standards
 
 [CONSTRAINT] Never modify files in `.claude/references/` after acquisition.
 They are the source of truth for re-ingestion.
 
 ### Refresh and Version Tracking
 
-[RULE] Check `refs/manifest.md` source URLs for newer versions monthly
+[RULE] Check `.claude/references/refs-manifest.md` source URLs for newer versions monthly
 (or when Jamie requests a refresh).
 
 [PATTERN] When a document is updated upstream:

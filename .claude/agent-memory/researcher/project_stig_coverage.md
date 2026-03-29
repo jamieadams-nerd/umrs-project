@@ -4,7 +4,7 @@ description: Results of signal-to-STIG cross-reference for umrs-platform posture
 type: project
 ---
 
-Signal coverage mapping completed 2026-03-17. Report at `refs/reports/stig-signal-coverage.md`.
+Signal coverage mapping completed 2026-03-17. Report at `.claude/references/reports/stig-signal-coverage.md`.
 
 **Key findings:**
 - 36 indicators in catalog; 20 direct STIG matches; 10 CPU mitigation indicators exceed the STIG baseline (UMRS-only value-add)

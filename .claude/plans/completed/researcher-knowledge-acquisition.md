@@ -184,7 +184,7 @@ The theme: **maintain the corpus, not just build it.**
 
 | Skill | Purpose |
 |---|---|
-| **Version checker** | Given `refs/manifest.md`, hit source URLs and report which tracked documents have newer versions (NIST revisions, STIG updates, kernel doc changes) |
+| **Version checker** | Given `.claude/references/refs-manifest.md`, hit source URLs and report which tracked documents have newer versions (NIST revisions, STIG updates, kernel doc changes) |
 | **Structured extraction** | Take a raw PDF/HTML source and produce a standardized matrix entry following the current schema, so every corpus addition has consistent format |
 
 ### Phase 3B — Cross-reference building skills

@@ -173,6 +173,6 @@ Phase 1B big integer features (ADX, BMI1, BMI2) are **Informational** because th
 - `rdseed.md` — RDSEED 800-90B analysis, AMD-SB-7055 Zen 5 bug detail
 - `arm-rng.md` — RNDR/RNDRRS semantics, HWCAP2_RNG detection, RDRAND/RDSEED comparison table
 - `adx-bmi.md` — ADX parallel multiplication pattern, PEXT/PDEP timing caveat
-- `refs/nist/sp800-90B.pdf` — NIST SP 800-90B (January 2018), full text
+- `.claude/references/nist/sp800-90B.pdf` — NIST SP 800-90B (January 2018), full text
 - `umrs-platform/src/posture/catalog.rs` — `IndicatorId::RandomTrustCpu` implementation
 - Phase 1A summary: `.claude/references/cpu-extensions/crypto-accel/phase-1a-summary.md`

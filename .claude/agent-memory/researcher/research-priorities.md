@@ -11,7 +11,7 @@ Derived from reading ROADMAP.md, sage-outreach-and-release-strategy.md, and umrs
 ## Immediate (no approval needed)
 
 - **OSCAL v1.1.2 schemas** — Download from github.com/usnistgov/OSCAL (approved source).
-  Target `refs/nist/oscal/`. Build `oscal-schemas` RAG collection including OSCAL Reference docs
+  Target `.claude/references/nist/oscal/`. Build `oscal-schemas` RAG collection including OSCAL Reference docs
   from pages.nist.gov/OSCAL-Reference/ and FedRAMP OSCAL profile from github.com/GSA/fedramp-automation.
   **Why:** Assessment engine plan has explicit open question directed at researcher to confirm
   OSCAL version. Answer: target v1.1.2. FedRAMP RFC-0024 mandates OSCAL packages by Sept 2026.
@@ -41,7 +41,7 @@ Derived from reading ROADMAP.md, sage-outreach-and-release-strategy.md, and umrs
 
 ## Research Without Downloads (can do now)
 
-- **Five Eyes equivalency table** — Produce preliminary research report to `refs/reports/`
+- **Five Eyes equivalency table** — Produce preliminary research report to `.claude/references/reports/`
   from domain knowledge + search. Lock citations once source approval granted.
 
 - **Jamie's pre-Claude CUI legal research** — Needs to be located. Ask Jamie to check local

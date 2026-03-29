@@ -155,7 +155,7 @@ Or keep a single "security_label" context but document the taxonomy.
 
 ### 2.1 Termium Plus Corpus -- AVAILABLE, PARTIAL
 
-The corpus at `.claude/corpus/termium-plus-fr_CA.tsv` contains 32,210 entries from:
+The corpus at `.claude/references/corpus/termium-plus-fr_CA.tsv` contains 32,210 entries from:
 - Electronics & Informatics subject (~12,911 entries)
 - Administration subject (~18,472 entries)
 - Information Security Glossary (287 entries)
@@ -186,7 +186,7 @@ FINDING: TBS Directive on Security Management not in reference corpus
 SEVERITY: High
 DOMAIN: Canadian Policy
 SOURCE: Treasury Board of Canada Secretariat
-DETAIL: The `refs/` directory contains extensive NIST, DoD, and CMMC references but
+DETAIL: The `.claude/references/` directory contains extensive NIST, DoD, and CMMC references but
 NO Canadian government policy instruments. The TBS Directive on Security Management
 (https://www.tbs-sct.canada.ca/pol/doc-eng.aspx?id=16578) is the authoritative source for:
 - Security marking requirements
@@ -198,7 +198,7 @@ Without this document in the reference corpus, policy validation relies on my kn
 and the Termium Plus glossary entries, which are derivatives of the policy, not the
 policy itself.
 
-REMEDIATION: Download the following TBS policy instruments and add to `refs/`:
+REMEDIATION: Download the following TBS policy instruments and add to `.claude/references/`:
 1. Directive on Security Management (https://www.tbs-sct.canada.ca/pol/doc-eng.aspx?id=16578)
 2. Policy on Government Security (https://www.tbs-sct.canada.ca/pol/doc-eng.aspx?id=16578)
 3. Standard on Security Categorization (if published -- was under development)
@@ -209,7 +209,7 @@ authoritative source for Canadian French security terminology in policy context.
 
 ### 2.3 OQLF Grand dictionnaire terminologique -- AVAILABLE
 
-The corpus at `.claude/corpus/oqlf-gdt-fr_CA.tsv` contains 25,881 entries. Coverage
+The corpus at `.claude/references/corpus/oqlf-gdt-fr_CA.tsv` contains 25,881 entries. Coverage
 assessment from SOURCE.md: 82% of sampled UMRS key terms are covered. Gaps include
 mandatory access control, security label, and several other security-specific terms
 that are better covered in Termium Plus.
@@ -222,7 +222,7 @@ The OQLF GDT is Level 3 in the terminology hierarchy. It is correctly positioned
 
 ### 2.4 GNU Translation Memory -- AVAILABLE
 
-Seven GNU .po files are available in `.claude/corpus/`:
+Seven GNU .po files are available in `.claude/references/corpus/`:
 - bash-5.3-rc2.fr.po
 - coreutils-9.9.280.fr.po
 - cryptsetup-2.8.2-rc0.fr.po
@@ -600,7 +600,7 @@ This section matters. The team should know what is working.
 
 ## 7. Recommended Next Steps (Priority Order)
 
-1. **Download TBS Directive on Security Management** (English + French) into `refs/`.
+1. **Download TBS Directive on Security Management** (English + French) into `.claude/references/`.
 2. **Download Termium Plus Military/Security subject** (requires browser -- see SOURCE.md).
 3. **Resolve the MARQUAGE vs COTE divergence** -- Jamie's decision required.
 4. **Add Canadian Security Taxonomy section to vocabulary-fr_CA.md** -- I will draft this.

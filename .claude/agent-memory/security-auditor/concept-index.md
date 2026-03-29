@@ -6,7 +6,7 @@ Generated: 2026-03-15
 ## SP800-37r2
 
 **Full title:** Risk Management Framework for Information Systems and Organizations: A System Life Cycle Approach for Security and Privacy (NIST SP 800-37 Rev. 2)
-**Source:** refs/nist/sp800-37r2.pdf
+**Source:** .claude/references/nist/sp800-37r2.pdf
 **Type:** regulatory standard
 **Normative weight:** normative
 
@@ -48,7 +48,7 @@ Defines the full seven-step Risk Management Framework lifecycle that federal age
 ## SP800-53Ar5
 
 **Full title:** Assessing Security and Privacy Controls in Information Systems and Organizations (NIST SP 800-53A Rev. 5)
-**Source:** refs/nist/sp800-53Ar5.pdf
+**Source:** .claude/references/nist/sp800-53Ar5.pdf
 **Type:** regulatory standard
 **Normative weight:** normative
 
@@ -88,7 +88,7 @@ Provides the authoritative catalog of assessment procedures for every security a
 ## SP800-30r1
 
 **Full title:** Guide for Conducting Risk Assessments (NIST SP 800-30 Rev. 1)
-**Source:** refs/nist/sp800-30r1.pdf
+**Source:** .claude/references/nist/sp800-30r1.pdf
 **Type:** regulatory standard
 **Normative weight:** normative
 
@@ -124,7 +124,7 @@ Defines the methodology for conducting information security risk assessments at 
 ## SP800-39
 
 **Full title:** Managing Information Security Risk: Organization, Mission, and Information System View (NIST SP 800-39)
-**Source:** refs/nist/sp800-39.pdf
+**Source:** .claude/references/nist/sp800-39.pdf
 **Type:** regulatory standard
 **Normative weight:** normative
 

@@ -52,16 +52,16 @@ These ensure correct terminology when writing about the security domain.
 
 | # | Source | Format | Priority | Notes |
 |---|--------|--------|----------|-------|
-| 3.1 | NIST SP 800-53 Rev 5 | PDF | Critical | **CHECK:** may already exist at `refs/nist/sp800-53r5.pdf` — do NOT re-acquire if present |
-| 3.2 | NIST SP 800-171 Rev 3 | PDF | High | **CHECK:** may already exist at `refs/nist/` |
-| 3.3 | CMMC Level 2 Assessment Guide | PDF from `dodcio.defense.gov/CMMC/` | High | **CHECK:** may already exist at `refs/dod/` — may need manual browser download |
+| 3.1 | NIST SP 800-53 Rev 5 | PDF | Critical | **CHECK:** may already exist at `.claude/references/nist/sp800-53r5.pdf` — do NOT re-acquire if present |
+| 3.2 | NIST SP 800-171 Rev 3 | PDF | High | **CHECK:** may already exist at `.claude/references/nist/` |
+| 3.3 | CMMC Level 2 Assessment Guide | PDF from `dodcio.defense.gov/CMMC/` | High | **CHECK:** may already exist at `.claude/references/dod-5200/` — may need manual browser download |
 | 3.4 | RHEL 10 Security Guide | Web/PDF from Red Hat docs | High | SELinux, MLS, IMA, LUKS, audit chapters |
 | 3.5 | SELinux Project Notebook | Web crawl (`selinuxproject.org`) | Medium | **CHECK:** already at `.claude/references/selinux-notebook/` — only ingest into tech-writer collection if not already there |
 | 3.6 | Common Criteria Parts 1 & 2 | PDF from `commoncriteriaportal.org` | Medium | SFR naming conventions and formal register |
 
 **Save to:** `.claude/references/tech-writer-corpus/domain-refs/`
 
-**IMPORTANT:** Phase 3 items overlap with existing `refs/` and `.claude/references/` collections.
+**IMPORTANT:** Phase 3 items overlap with existing `.claude/references/` and `.claude/references/` collections.
 The researcher must CHECK existing material first and only acquire what's missing. For items
 that already exist, create symlinks or reference pointers rather than duplicating files.
 

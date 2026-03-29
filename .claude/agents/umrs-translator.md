@@ -99,7 +99,7 @@ Before proposing any French translation for a technical term:
 1. **Invoke the skill**: Call the `french-lookup` skill via the `Skill` tool for each primary technical term.
 2. **Priority is enforced by the skill**: The skill searches the GNU corpus in the correct priority order (coreutils → util-linux → grep → sed → tar → findutils → bash → other). Use the `msgstr` value it returns.
 3. **Corpus result is final**: If the corpus provides a translation, use it — do not substitute from memory, the vocabulary file, or other sources.
-4. **No direct corpus reads**: Do not `cat`, `read`, or `grep` the `.po` files in `.claude/corpus/gnu-fr/` directly. The skill handles this efficiently to keep the context window clean.
+4. **No direct corpus reads**: Do not `cat`, `read`, or `grep` the `.po` files in `.claude/references/corpus/gnu-fr/` directly. The skill handles this efficiently to keep the context window clean.
 5. **No match found**: If the skill returns no match, consult `resources/i18n/vocabulary-fr_CA.md`. If neither source covers the term, retain the English term and add a `# TRANSLATOR:` comment explaining why, then add the decision to the vocabulary file.
 
 ---

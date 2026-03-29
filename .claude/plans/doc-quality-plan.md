@@ -132,7 +132,7 @@ This plan operationalizes those foundations into an automated quality pipeline.
 
 - Source code comments (separate concern, governed by `rules/assurance_rules.md`; see Future Expansion in Vale assessment)
 - `docs/sage/inbox/` and `docs/imprimatur/inbox/` scratch content (not yet promoted)
-- `refs/` documents (third-party, not authored by UMRS)
+- `.claude/references/` documents (third-party, not authored by UMRS)
 - French translations (umrs-translator scope; separate quality pass if desired later)
 
 ---
@@ -703,7 +703,7 @@ Quality scan triggers:
 - Baseline run must complete before any fixes are applied — the baseline is the anchor
 - Fix tasks created during review must be tracked in the review document until resolved
 - `history.json` is append-only — never modify past entries
-- Never touch `refs/`, `knowledge/`, or source code under `components/`
+- Never touch `.claude/references/`, `knowledge/`, or source code under `components/`
 - Never git commit or push
 
 ---

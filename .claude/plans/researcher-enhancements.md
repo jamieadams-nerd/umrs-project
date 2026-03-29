@@ -51,7 +51,7 @@ it demonstrates that:
 - The knowledge base was built from authoritative, integrity-verified sources
 - Human review (Jamie) was the approval gate at every acquisition step
 
-The researcher's existing `refs/manifest.md` and `refs/reports/` already form the
+The researcher's existing `.claude/references/refs-manifest.md` and `.claude/references/reports/` already form the
 foundation of this chain. This plan formalizes it into a first-class documentation module.
 
 ---
@@ -162,7 +162,7 @@ The researcher produces a digest when:
 2. Jamie reviews and responds with approval (can be "approve all", "approve #1 #3", or line-item)
 3. Researcher updates status to `approved` for approved items
 4. Researcher executes approved acquisitions in priority order
-5. After each acquisition: updates `knowledge-gaps.md` status, updates `refs/manifest.md`,
+5. After each acquisition: updates `knowledge-gaps.md` status, updates `.claude/references/refs-manifest.md`,
    posts cross-team note, invokes changelog-updater
 6. Researcher reports completion with chunk counts and any items that required manual action
 
@@ -256,7 +256,7 @@ to log it separately.
 ### What
 
 Automates the researcher's existing 30-day version check against `rag-collections.md`
-source URLs and `refs/manifest.md`. Produces a structured staleness report.
+source URLs and `.claude/references/refs-manifest.md`. Produces a structured staleness report.
 
 ### File
 
@@ -373,7 +373,7 @@ ai-provenance/
     index.adoc              ← Overview: what AI was used, what role it played
     knowledge-base.adoc     ← What's in the knowledge base and why
     decision-trail.adoc     ← How to trace a decision back to its source
-    acquisition-log.adoc    ← Pointer to refs/manifest.md as the authoritative record
+    acquisition-log.adoc    ← Pointer to .claude/references/refs-manifest.md as the authoritative record
     agent-roles.adoc        ← What each Claude Code agent does and does not do
     human-oversight.adoc    ← Jamie's role as approval gate; what required human decision
 ```
@@ -396,7 +396,7 @@ For each RAG collection, documents:
 - SHA-256 checksums and manifest reference for integrity verification
 - What decisions or documentation it has influenced
 
-This page is **generated from `refs/manifest.md` and `knowledge-gaps.md`** — the researcher
+This page is **generated from `.claude/references/refs-manifest.md` and `knowledge-gaps.md`** — the researcher
 maintains those files; the tech-writer syncs this page periodically.
 
 ### `decision-trail.adoc` — Tracing a decision
@@ -424,7 +424,7 @@ Explicit documentation of every category of decision that required Jamie's appro
 - Security pattern adoptions
 - Dependency additions
 
-Cross-references `refs/manifest.md` (acquisition approvals) and `.claude/logs/task-log.md`
+Cross-references `.claude/references/refs-manifest.md` (acquisition approvals) and `.claude/logs/task-log.md`
 (execution record).
 
 ### Reminder Note — AI Provenance in Daily Work
@@ -432,9 +432,9 @@ Cross-references `refs/manifest.md` (acquisition approvals) and `.claude/logs/ta
 **Add to `CLAUDE.md` (Critical Coding Rules section):**
 
 > **AI Provenance** — When an architectural or security decision is informed by corpus
-> research, the relevant `refs/reports/` report or RAG collection MUST be cited in
+> research, the relevant `.claude/references/reports/` report or RAG collection MUST be cited in
 > the doc comment or design note. This is an accreditation requirement, not optional.
-> Format: `// Source: refs/reports/<report>.md` or `// RAG: <collection> — <topic>`
+> Format: `// Source: .claude/references/reports/<report>.md` or `// RAG: <collection> — <topic>`
 
 ---
 

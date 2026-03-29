@@ -4,7 +4,7 @@ description: Tier 1 zero-cost HCI/IA/KO resources identified for agent enrichmen
 type: project
 ---
 
-Full report at `refs/reports/agent-knowledge-acquisition-plan.md` (2026-03-21).
+Full report at `.claude/references/reports/agent-knowledge-acquisition-plan.md` (2026-03-21).
 
 Librarian identified 12 Tier 1 zero-cost resources ready for immediate acquisition:
 1. ISKO IEKO encyclopedia (~100 articles) — Elena KO

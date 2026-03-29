@@ -23,7 +23,7 @@ remains the final authority.
 **Auditor value**: An auditor seeing a NIST control citation in UMRS documentation can follow
 the chain: the citation exists because a security-auditor agent found it; that agent's
 knowledge came from a RAG corpus built from a specific NIST SP PDF; that PDF is checksummed
-in `refs/manifest.md`. The chain is complete and reproducible.
+in `.claude/references/refs-manifest.md`. The chain is complete and reproducible.
 
 **Adopter value**: Organizations considering a similar AI-assisted workflow can use this module
 as a concrete reference. UMRS documents the full pipeline — not just "we used AI" but how the
@@ -327,7 +327,7 @@ Content structure:
   current RMF assessment methodology deeply enough")
 - Researcher agent acquires authoritative source documents (NIST SPs, FIPS standards,
   DISA STIGs, CMMC guides) from approved sources
-- Sources are checksummed and recorded in `refs/manifest.md`
+- Sources are checksummed and recorded in `.claude/references/refs-manifest.md`
 - Ingestion: `ingest.py` chunks documents and stores them in ChromaDB
 - At query time, `query.py` performs semantic search and returns relevant chunks with
   source attribution
@@ -340,7 +340,7 @@ Content structure:
 
 **The result**:
 - When an agent produces a NIST citation, it traces to a specific chunk in a specific
-  document that is itself checksummed in `refs/manifest.md`
+  document that is itself checksummed in `.claude/references/refs-manifest.md`
 - The chain: agent output → RAG chunk → source document → manifest entry → SHA-256
 
 Include a Mermaid flowchart of the full pipeline (gap → research → ingest → familiarize
@@ -380,7 +380,7 @@ Collections to document (from current cross-team notes):
 Add a note on the three-layer reference architecture:
 - RAG database: searchable, semantic
 - Source documents (`.claude/references/<collection>/`): original files, readable
-- Official refs (`refs/`): checksummed, manifested, authoritative archive
+- Official refs (`.claude/references/`): checksummed, manifested, authoritative archive
 
 ---
 
@@ -416,16 +416,16 @@ Content:
   1. A doc page contains a NIST control citation (e.g., `NIST SP 800-53 AC-4`)
   2. That citation was proposed by an agent during documentation work
   3. The agent queried the `nist` RAG collection and retrieved a matching chunk
-  4. That chunk came from `refs/nist/sp800-53r5.pdf`
-  5. That PDF has a SHA-256 checksum in `refs/manifest.md`
+  4. That chunk came from `.claude/references/nist/sp800-53r5.pdf`
+  5. That PDF has a SHA-256 checksum in `.claude/references/refs-manifest.md`
   6. The engineer reviewed the citation before accepting it in a git commit
 
-- The manifest as an audit artifact: `refs/manifest.md` records every reference
+- The manifest as an audit artifact: `.claude/references/refs-manifest.md` records every reference
   document — title, version, download date, source URL, SHA-256. This makes the
   knowledge base inspectable and verifiable.
 
 - Where the chain can be inspected:
-  - `refs/manifest.md` — document inventory
+  - `.claude/references/refs-manifest.md` — document inventory
   - `.claude/references/<collection>/` — source documents used for ingestion
   - Git history — engineer acceptance of specific content
 
@@ -500,7 +500,7 @@ Content:
 - How to query the RAG for source verification:
   - Brief instruction: RAG is not externally accessible; auditors can request that
     specific claims be traced to their source document and section on request
-- The `refs/manifest.md` as a reference inventory: all source documents are recorded
+- The `.claude/references/refs-manifest.md` as a reference inventory: all source documents are recorded
   with SHA-256 checksums; auditors can verify document integrity
 
 Control citations for this page:
@@ -631,13 +631,13 @@ When the freeze lifts:
 7. Write Phase 2 pages
 
 **Source material for writing**:
-- `.claude/team-collaboration.md` — authoritative on workflow, roles, Jamie's working style
-- `.claude/ROADMAP.md` — G10/M5 goals
+- `.claude/agents/team-collaboration.md` — authoritative on workflow, roles, Jamie's working style
+- `.claude/plans/ROADMAP.md` — G10/M5 goals
 - `docs/modules/ROOT/pages/ai-transparency.adoc` — existing Phase 3 page (expand, do not duplicate)
 - Cross-team notes entries from 2026-03-12 and 2026-03-15 — RAG collections and workflow details
 - Skill SKILL.md files in `.claude/skills/` — authoritative on what each skill does
 - Agent `.md` files in `.claude/agents/` — authoritative on agent roles
-- `refs/manifest.md` — source for the RAG collections reference table
+- `.claude/references/refs-manifest.md` — source for the RAG collections reference table
 
 **MEMORY.md update needed**: After execution, add `ai-transparency` module to the module
 list in MEMORY.md and note the ROOT page disposition decision.

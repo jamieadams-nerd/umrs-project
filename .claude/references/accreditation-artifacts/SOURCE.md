@@ -8,7 +8,7 @@ Downloaded: 2026-03-15
 
 ## Documents in this collection
 
-All documents downloaded 2026-03-15 via curl. See `refs/manifest.md` for full manifest entries
+All documents downloaded 2026-03-15 via curl. See `.claude/references/refs-manifest.md` for full manifest entries
 with SHA-256 checksums and provenance details.
 
 **URL corrections applied during download**: Several original URLs contained S3 website
@@ -36,7 +36,7 @@ structural ground.
 | Size | 367K |
 | Status | Downloaded 2026-03-15 |
 
-Also copied to: `refs/nist/sp800-18r1.pdf`
+Also copied to: `.claude/references/nist/sp800-18r1.pdf`
 
 ### FedRAMP CSP Authorization Playbook v4.2
 
@@ -51,7 +51,7 @@ Also copied to: `refs/nist/sp800-18r1.pdf`
 | Size | 1.5M |
 | Status | Downloaded 2026-03-15 |
 
-Also copied to: `refs/fedramp/fedramp-csp-authorization-playbook.pdf`
+Also copied to: `.claude/references/fedramp/fedramp-csp-authorization-playbook.pdf`
 
 ### FedRAMP Agency Authorization Playbook v4.1
 
@@ -66,7 +66,7 @@ Also copied to: `refs/fedramp/fedramp-csp-authorization-playbook.pdf`
 | Size | 928K |
 | Status | Downloaded 2026-03-15 |
 
-Also copied to: `refs/fedramp/fedramp-agency-authorization-playbook.pdf`
+Also copied to: `.claude/references/fedramp/fedramp-agency-authorization-playbook.pdf`
 
 ### FedRAMP SAP Training (PDF)
 
@@ -104,7 +104,7 @@ Also copied to: `refs/fedramp/fedramp-agency-authorization-playbook.pdf`
 Converted to plain text for RAG ingestion:
 - `fedramp-ssp-template.txt` — SHA-256: `e631914c8afbfad5603220c42ae13038c3b7e42ff9a542e1f7a2cdbb9e02166e` (151K)
 
-Also copied to: `refs/fedramp/fedramp-ssp-template.docx`
+Also copied to: `.claude/references/fedramp/fedramp-ssp-template.docx`
 
 ### FedRAMP SAP Template (DOCX)
 
@@ -122,7 +122,7 @@ Also copied to: `refs/fedramp/fedramp-ssp-template.docx`
 Converted to plain text for RAG ingestion:
 - `fedramp-sap-template.txt` — SHA-256: `004cbf245201cf229e236090716e5761969f77c43f3a964e663be6ff4f326fa4` (91K)
 
-Also copied to: `refs/fedramp/fedramp-sap-template.docx`
+Also copied to: `.claude/references/fedramp/fedramp-sap-template.docx`
 
 ### FedRAMP SAR Template (DOCX)
 
@@ -140,7 +140,7 @@ Also copied to: `refs/fedramp/fedramp-sap-template.docx`
 Converted to plain text for RAG ingestion:
 - `fedramp-sar-template.txt` — SHA-256: `77f745835de5b2160bed708166d54d7da318794f6a46612dd60db1d3a80b1372` (93K)
 
-Also copied to: `refs/fedramp/fedramp-sar-template.docx`
+Also copied to: `.claude/references/fedramp/fedramp-sar-template.docx`
 
 **URL correction**: Original SOURCE.md had `/assets/resources/templates/...` which is an S3
 redirect stub. Correct URL is `/resources/templates/FedRAMP-Security-Assessment-Report-(SAR)-Template.docx`.

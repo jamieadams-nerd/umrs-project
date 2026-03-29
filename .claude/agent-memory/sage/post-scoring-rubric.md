@@ -70,7 +70,7 @@ These failures invalidate the post regardless of other scores.
 | 5.2 | **Code examples verified** — any command, code snippet, or config shown has been tested or is clearly labeled as illustrative | |
 | 5.3 | **No implementation details that aid adversaries** — reviewed for sensitive details about undeployed security mechanisms | |
 | 5.4 | **No false government endorsement implied** — post does not imply NSA, NIST, or any agency endorses UMRS | |
-| 5.5 | **Citations checked against refs/manifest.md** — any cited standard is in the manifest and the version cited is the version we reference | |
+| 5.5 | **Citations checked against .claude/references/refs-manifest.md** — any cited standard is in the manifest and the version cited is the version we reference | |
 
 ---
 

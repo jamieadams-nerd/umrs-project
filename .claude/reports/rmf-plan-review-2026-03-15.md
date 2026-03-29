@@ -156,7 +156,7 @@ Phase 1F (CET binary verification) maps to SI-7. SP 800-53A SI-7 Examine objects
 
 The corpus plan itself is an SA-15 artifact: it documents the research process for acquiring knowledge about CPU security features before implementing detection. Requiring Phase 0 reviews before implementation, and gating Phase 1B on SP 800-90B acquisition, demonstrates supply chain hygiene for the knowledge base.
 
-**Gap**: The plan requires NIST SP 800-90B, Intel SDM, AMD APM, and NSA RHEL hardening guidance. Acquiring these via curl to `refs/` is documented in the plan, but the plan does not specify verification of document integrity (hash checks) for newly acquired documents. The `refs/manifest.md` tracks SHA-256 checksums — the plan should explicitly require updating `refs/manifest.md` with hashes for each new document acquired.
+**Gap**: The plan requires NIST SP 800-90B, Intel SDM, AMD APM, and NSA RHEL hardening guidance. Acquiring these via curl to `.claude/references/` is documented in the plan, but the plan does not specify verification of document integrity (hash checks) for newly acquired documents. The `.claude/references/refs-manifest.md` tracks SHA-256 checksums — the plan should explicitly require updating `.claude/references/refs-manifest.md` with hashes for each new document acquired.
 
 **SP 800-53A SA-12 Examine object**: supply chain risk assessment; procurement policies. The plan's source acquisition table constitutes a procurement-equivalent process; checksum verification is the integrity control on that process.
 
@@ -213,7 +213,7 @@ The corpus plan currently ends at Implement step preparation. It does not yet re
 ### 2.6 "Other Than Satisfied" Flags Under Current Plan
 
 1. **SC-13**: "other than satisfied" for software utilization claim — Layer 1 (hardware) can be verified from corpus; Layer 2/3 (kernel driver and library utilization) assessment procedure is not a named deliverable from any phase. An assessor cannot determine that hardware acceleration is in use without a Test procedure against `/proc/crypto`.
-2. **SA-12**: "other than satisfied" for document integrity — acquired reference documents are not required to be checksum-verified against `refs/manifest.md` entries.
+2. **SA-12**: "other than satisfied" for document integrity — acquired reference documents are not required to be checksum-verified against `.claude/references/refs-manifest.md` entries.
 
 ---
 
@@ -357,7 +357,7 @@ I can now map UMRS artifacts to RMF authorization package components:
 
 **R-3: Resolve SP 800-90B blocking dependency for RDRAND/RDSEED (CPU corpus plan)**
 - Owner: researcher (Phase 1B pre-requisite)
-- Action: Acquire NIST SP 800-90B from `https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-90B.pdf`; add to `refs/manifest.md` with SHA-256 checksum; unblock Phase 1B
+- Action: Acquire NIST SP 800-90B from `https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-90B.pdf`; add to `.claude/references/refs-manifest.md` with SHA-256 checksum; unblock Phase 1B
 - RMF anchor: SP 800-37 Select S-2; SC-13 ODP for FIPS entropy source requirements
 - SP 800-30 risk: High (entropy quality unverifiable on FIPS systems without 800-90B)
 
@@ -374,9 +374,9 @@ I can now map UMRS artifacts to RMF authorization package components:
 - Action: Define a structured output format (machine-readable, e.g., JSON or CBOR) for `PostureSnapshot::findings()` that can be written to disk and consumed as the CM-6 "documented deviations" Examine artifact
 - RMF anchor: SP 800-53A CM-6 Examine object: documented deviations from configuration settings
 
-**R-6: Require SHA-256 checksum updates in `refs/manifest.md` for all newly acquired CPU corpus documents**
+**R-6: Require SHA-256 checksum updates in `.claude/references/refs-manifest.md` for all newly acquired CPU corpus documents**
 - Owner: researcher (policy addition to cpu-security-corpus-plan.md)
-- Action: Add to each Phase 1x "Post-phase Hygiene" section: "Update `refs/manifest.md` with SHA-256 hash for each newly acquired document"
+- Action: Add to each Phase 1x "Post-phase Hygiene" section: "Update `.claude/references/refs-manifest.md` with SHA-256 hash for each newly acquired document"
 - RMF anchor: SP 800-53A SA-12 Examine object: supply chain risk assessment
 
 **R-7: Document interim SC-28 control for DetectionResult cache while serialization is deferred**

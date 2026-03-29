@@ -67,7 +67,7 @@ to unblock downstream work across the team.
 - NIST SP 800-172: Enhanced Security for CUI (advanced controls)
 - NIST SP 800-161r1: Supply Chain Risk Management
 - NIST SP 800-60v1r1: Information Type to Security Category Mapping
-- Add to `refs/manifest.md` with version, date, SHA-256
+- Add to `.claude/references/refs-manifest.md` with version, date, SHA-256
 
 ---
 

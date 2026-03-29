@@ -40,7 +40,7 @@ non-bypassability. The content strategy must reflect the engineering values.
 this. Cite real implementation decisions, real tradeoffs, real failure modes. Not
 theoretical discussion.
 
-**Expertise** — Draw from the knowledge base: foundations/, patterns/, refs/standards.
+**Expertise** — Draw from the knowledge base: foundations/, patterns/, .claude/references/standards.
 Every claim that needs backing gets one. When unsure, research before publishing.
 
 **Authority** — NIST, NSA RTB, CMMC, Bell-LaPadula, Rainbow Series — these are not

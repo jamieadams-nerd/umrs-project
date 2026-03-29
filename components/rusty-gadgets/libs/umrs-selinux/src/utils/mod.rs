@@ -1,0 +1,137 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Jamie Adams (a.k.a, Imodium Operator)
+//! # Userland Utility Helpers
+//!
+//! Userland utility helpers for umrs-selinux.
+//!
+//! Provides directory listing (`dirlist`) and file context helpers
+//! (`get_file_context`, `lget_file_context`, `fget_file_context`,
+//! `get_pid_context`, `get_self_context`).
+//!
+//! Kernel attribute access (formerly `kattrs`) has been promoted to the
+//! `umrs-platform` crate and is re-exported as `umrs_platform::kattrs`.
+//!
+//! ## TPI Routing
+//!
+//! All file context helpers that return a `SecurityContext` route through
+//! `SecureXattrReader::read_context()`, which enforces TPI. Callers do not
+//! invoke the `nom` or `FromStr` parsers directly.
+//!
+//! ## Compliance
+//!
+//! - **NIST SP 800-53 AC-3**: Access Enforcement — file context helpers are
+//!   the primary mechanism for retrieving the security label used in access
+//!   control decisions.
+//! - **NIST SP 800-53 AU-3**: Audit Record Content — PID and self-context
+//!   helpers provide the subject label required in audit records.
+//! - **NSA RTB RAIN**: Non-Bypassability — all label reads route through the
+//!   TPI gate in `xattrs.rs`; no direct parser invocation is permitted here.
+//!
+
+pub mod dirlist;
+
+use std::fs::File;
+use std::io;
+use std::os::unix::fs::OpenOptionsExt;
+use std::path::Path;
+use std::str::FromStr;
+
+use crate::context::SecurityContext;
+use crate::xattrs::{SecureXattrReader, XattrReadError};
+
+use nix::libc;
+
+///
+/// High-Assurance file security context retrieval (libselinux-style)
+///
+/// Opens the file, anchors to inode, and retrieves the verified
+/// SELinux security context.
+///
+///
+/// # Errors
+///
+/// Returns `io::Error` if the file's security context xattr cannot be read.
+pub fn get_file_context(path: &Path) -> io::Result<SecurityContext> {
+    let file = File::open(path)?;
+    SecureXattrReader::read_context(&file).map_err(xattr_err_to_io)
+}
+
+///
+/// Symbolic link security context retrieval
+///
+///
+/// # Errors
+///
+/// Returns `io::Error` if the symlink's security context xattr cannot be read.
+pub fn lget_file_context(path: &Path) -> io::Result<SecurityContext> {
+    let file = std::fs::OpenOptions::new()
+        .read(true)
+        .custom_flags(libc::O_NOFOLLOW)
+        .open(path)?;
+
+    SecureXattrReader::read_context(&file).map_err(xattr_err_to_io)
+}
+
+///
+/// Retrieve security context from file descriptor
+///
+///
+/// # Errors
+///
+/// Returns `io::Error` if the file descriptor's security context xattr cannot be read.
+pub fn fget_file_context(file: &File) -> io::Result<SecurityContext> {
+    SecureXattrReader::read_context(file).map_err(xattr_err_to_io)
+}
+
+/// Map an `XattrReadError` to an `io::Error` for callers that use the
+/// `io::Result<SecurityContext>` compatibility API.
+///
+/// OS errors are forwarded as-is.  TPI errors are mapped to
+/// `InvalidData` so callers that cannot inspect `XattrReadError` directly
+/// still receive a meaningful error kind.
+fn xattr_err_to_io(e: XattrReadError) -> io::Error {
+    match e {
+        XattrReadError::OsError(io_err) => io_err,
+        XattrReadError::Tpi(tpi_err) => {
+            io::Error::new(io::ErrorKind::InvalidData, tpi_err.to_string())
+        }
+    }
+}
+
+// ===========================================================================
+
+/// libselinux-style: `getpidcon()`
+///
+/// Reads `/proc/<pid>/attr/current` (procfs attribute contents) and parses it.
+///
+/// # Errors
+///
+/// Returns `io::Error` if `/proc/<pid>/attr/current` cannot be read.
+pub fn get_pid_context(pid: u32) -> io::Result<SecurityContext> {
+    let path = format!("/proc/{pid}/attr/current");
+
+    let raw = std::fs::read_to_string(&path).map_err(|e| {
+        io::Error::new(
+            e.kind(),
+            format!("ACCESS DENIED: Cannot read {path}: {e}"),
+        )
+    })?;
+
+    let s = raw.trim();
+
+    SecurityContext::from_str(s).map_err(|e| {
+        io::Error::new(
+            io::ErrorKind::InvalidData,
+            format!("Invalid security context in {path}: {e}"),
+        )
+    })
+}
+
+/// Convenience helper for current process
+///
+/// # Errors
+///
+/// Returns `io::Error` if `/proc/self/attr/current` cannot be read.
+pub fn get_self_context() -> io::Result<SecurityContext> {
+    get_pid_context(std::process::id())
+}

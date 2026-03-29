@@ -82,7 +82,7 @@ Sources: docs.redhat.com (approved source)
    Try direct WebFetch in a future session, or use `curl` if Bash permissions are restored.
 
 3. **Phase 3 check:** Before acquiring Phase 3 items, verify which already exist in
-   `.claude/references/nist/`, `.claude/references/selinux-notebook/`, and `refs/`.
+   `.claude/references/nist/`, `.claude/references/selinux-notebook/`, and `.claude/references/`.
 
 4. **RAG ingestion (Phase 6):** When sufficient material is collected, run:
    ```bash

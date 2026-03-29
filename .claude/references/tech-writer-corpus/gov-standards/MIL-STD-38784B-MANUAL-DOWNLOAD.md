@@ -20,7 +20,7 @@ unapproved sources.
 1. Go to https://quicksearch.dla.mil
 2. Search for "MIL-STD-38784B"
 3. Download the PDF
-4. Save to `refs/gov-standards/mil-std-38784b.pdf` (or this collection)
+4. Save to `.claude/references/tech-writer-corpus/gov-standards/mil-std-38784b.pdf`
 5. Compute SHA-256 and record in manifest
 
 **Option 2 — via AF eTIMS (requires .mil email):**

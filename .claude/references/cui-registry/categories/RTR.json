@@ -1,0 +1,31 @@
+{
+  "abbreviation": "RTR",
+  "category": "Retirement",
+  "index_group": "Financial",
+  "index_group_abbreviation": "FNC",
+  "cui_marking": "CUI//FNC/RTR",
+  "dod_detail_url": "https://www.dodcui.mil/Financial/Retirement/",
+  "category_description": null,
+  "required_warning_statement": null,
+  "required_dissemination_control": null,
+  "authorities": [],
+  "applicable_dod_policies": [
+    "DoDI 1000.28",
+    "DoDI 1215.06",
+    "DoDI 1400.25 (note: need specific sections)"
+  ],
+  "examples": [
+    "Monetary information revealing identity of an individual",
+    "Financial institution information (name, account number, etc.)",
+    "Monetary information revealing type of retirement",
+    "Link Disclaimer\tDoD Careers",
+    "FOIA\tUSA Jobs",
+    "USA.gov\tPrivacy & Security",
+    "No FEAR Act\tWeb Policy",
+    "DoD Inspector General\tAccessibility/Section 508",
+    "STAY CONNECTED",
+    "Hosted by Department of War Information Activity - WEB.mil"
+  ],
+  "source": "dodcui.mil",
+  "retrieved_date": "2026-03-21"
+}

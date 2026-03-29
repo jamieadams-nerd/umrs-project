@@ -1,0 +1,30 @@
+{
+  "abbreviation": "FISA",
+  "category": "Foreign Intelligence Surveillance Act",
+  "index_group": "Intelligence",
+  "index_group_abbreviation": "INTEL",
+  "cui_marking": "CUI//INTEL/FISA",
+  "dod_detail_url": "https://www.dodcui.mil/Intelligence/Foreign-Intelligence-Surveillance-Act/",
+  "category_description": null,
+  "required_warning_statement": null,
+  "required_dissemination_control": null,
+  "authorities": [],
+  "applicable_dod_policies": [],
+  "examples": [
+    "Pre-decisional policy information",
+    "\u200bExecutives' future calendars",
+    "Executive-level meeting minutes",
+    "Critical Information and Indicators (CII) resulting from OPSEC process",
+    "Intelligence reports containing information collected from non-consenting individuals",
+    "\u200bFISA information related to business operations",
+    "Link Disclaimer\tDoD Careers",
+    "FOIA\tUSA Jobs",
+    "USA.gov\tPrivacy & Security",
+    "No FEAR Act\tWeb Policy",
+    "DoD Inspector General\tAccessibility/Section 508",
+    "STAY CONNECTED",
+    "Hosted by Department of War Information Activity - WEB.mil"
+  ],
+  "source": "dodcui.mil",
+  "retrieved_date": "2026-03-21"
+}

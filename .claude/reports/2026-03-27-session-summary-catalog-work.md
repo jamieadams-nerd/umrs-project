@@ -38,7 +38,7 @@
 - **All 91 tests pass** (47 catalog_tests + 44 setrans_tests)
 
 ### DoD Registry Reconciliation
-- DoD scrape at `references/cui-registry/categories/` has 113 entries
+- DoD scrape at `.claude/references/cui-registry/categories/` has 113 entries
 - Scrape quality: index table (abbreviation + group) is reliable; detail pages are garbage
   (null descriptions, website footer parsed as content)
 - All 113 DoD entries now represented in our catalog (113 + CUI base = 114, + 7 group headers = 121)

@@ -13,10 +13,10 @@ Four NIST documents covering the full Risk Management Framework (RMF) and its su
 
 | Document | Source | Pages |
 |---|---|---|
-| NIST SP 800-37 Rev. 2 | refs/nist/sp800-37r2.pdf | ~96 |
-| NIST SP 800-53A Rev. 5 | refs/nist/sp800-53Ar5.pdf | ~49 (methodology + AC family; catalog is ~450 pages total) |
-| NIST SP 800-30 Rev. 1 | refs/nist/sp800-30r1.pdf | ~40 |
-| NIST SP 800-39 | refs/nist/sp800-39.pdf | ~88 |
+| NIST SP 800-37 Rev. 2 | .claude/references/nist/sp800-37r2.pdf | ~96 |
+| NIST SP 800-53A Rev. 5 | .claude/references/nist/sp800-53Ar5.pdf | ~49 (methodology + AC family; catalog is ~450 pages total) |
+| NIST SP 800-30 Rev. 1 | .claude/references/nist/sp800-30r1.pdf | ~40 |
+| NIST SP 800-39 | .claude/references/nist/sp800-39.pdf | ~88 |
 
 ---
 

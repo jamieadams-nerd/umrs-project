@@ -67,7 +67,7 @@ Flag inconsistencies when:
 
 When a citation is present but appears incorrect, determine the correct control and state it explicitly. Do not merely flag that something looks wrong.
 
-Use the reference documents in `refs/` to verify control definitions. If you are uncertain which control applies, note the uncertainty explicitly and provide your best recommendation with reasoning.
+Use the reference documents in `.claude/references/` to verify control definitions. If you are uncertain which control applies, note the uncertainty explicitly and provide your best recommendation with reasoning.
 
 ---
 

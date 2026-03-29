@@ -33,15 +33,15 @@ All rust-developer and security-auditor recommendations are accepted. Key decisi
 
 | Material | Location | Status |
 |---|---|---|
-| NIST SP 800-53 Rev 5 | `refs/nist/sp800-53r5.pdf` | Done |
-| NIST SP 800-171 Rev 2+3 | `refs/nist/` | Done |
-| CMMC L2 Assessment Guide | `refs/dod/cmmc-assessment-guide-l2.pdf` | Done |
+| NIST SP 800-53 Rev 5 | `.claude/references/nist/sp800-53r5.pdf` | Done |
+| NIST SP 800-171 Rev 2+3 | `.claude/references/nist/` | Done |
+| CMMC L2 Assessment Guide | `.claude/references/dod-5200/cmmc-assessment-guide-l2.pdf` | Done |
 | SELinux Notebook | `.claude/references/selinux-notebook/` | Done |
 | Linux kernel docs (full tree) | `.claude/references/kernel-docs/` | Done |
 | — incl. SNP/TDX threat model | `kernel-docs/security/snp-tdx-threat-model.rst` | Done |
 | — incl. AMD memory encryption | `kernel-docs/arch/x86/amd-memory-encryption.rst` | Done |
 | — incl. crypto subsystem docs | `kernel-docs/crypto/` | Done |
-| NIST SSDF (800-218) | `refs/nist/sp800-218-ssdf.pdf` | Done |
+| NIST SSDF (800-218) | `.claude/references/nist/sp800-218-ssdf.pdf` | Done |
 | Phase 0 reviews | `.claude/reports/cpu-matrix-review/` | Done |
 
 ---
@@ -295,8 +295,8 @@ Each entry will be documented with all 23 matrix columns.
 
 **Pre-requisite action:** Researcher must acquire NIST SP 800-90B before starting RDRAND/RDSEED work:
 - URL: `https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-90B.pdf`
-- Save to: `refs/nist/sp800-90B.pdf`
-- Update `refs/manifest.md`
+- Save to: `.claude/references/nist/sp800-90B.pdf`
+- Update `.claude/references/refs-manifest.md`
 
 ---
 

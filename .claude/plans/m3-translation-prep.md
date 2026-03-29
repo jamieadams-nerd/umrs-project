@@ -30,7 +30,7 @@
 - 3 active domains: `umrs-ls`, `umrs-state`, `umrs-logspace` (~25-30 msgids total)
 - `domains.md` registry is incomplete (missing umrs-state and umrs-logspace entries)
 - Pipeline proven: xtr → msginit → translate → msgfmt
-- french-lookup corpus at `.claude/corpus/*.po`
+- french-lookup corpus at `.claude/references/corpus/*.po`
 
 ## Incoming Domains
 

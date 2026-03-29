@@ -116,7 +116,7 @@ Execute approved changes in this order to minimize broken references:
    - Crate dependency rules table
    - `umrs-selinux` module map
    - Architectural review triggers table
-   - Add pointer in `CLAUDE.md`: `See .claude/ARCHITECTURE.md for workspace layout and architectural constraints.`
+   - Add pointer in `CLAUDE.md`: `See .claude/plans/ARCHITECTURE.md for workspace layout and architectural constraints.`
 
 2. **Refactor `CLAUDE.md`** to slim, pointer-based format:
    - Identity, environment context, and hard rules stay

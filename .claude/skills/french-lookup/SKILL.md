@@ -10,7 +10,7 @@ description: >
 
 # French Lookup Skill
 
-Queries `.claude/corpus/` for authoritative Canadian French technical terminology.
+Queries `.claude/references/corpus/` for authoritative Canadian French technical terminology.
 
 ## Search Priority
 

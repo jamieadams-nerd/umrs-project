@@ -85,7 +85,7 @@ Familiarization produces structured artifacts (concept index, cross-reference ma
 
 - Every new plan MUST reference which ROADMAP goals (G1–G10) and milestones (M1–M5) it serves.
 - Plans without ROADMAP alignment require explicit justification.
-- See `.claude/ROADMAP.md` for the current goal and milestone definitions.
+- See `.claude/plans/ROADMAP.md` for the current goal and milestone definitions.
 
 ## Tool Usage Verification Rule
 

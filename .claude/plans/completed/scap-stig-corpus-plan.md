@@ -235,7 +235,7 @@ standard SCAP scans miss.
 - [x] Phase 2 (senior-tech-writer): CCE table → reference/; inline in kernel-probe-signals.adoc; out of operator content (2026-03-17)
 - [x] Phase 3a: `cce` field added to `IndicatorDescriptor`; 13 indicators annotated; 4 NIST citations updated (2026-03-17)
 - [x] Phase 3b: CCE citation format established in `compliance-annotations.adoc`; 5 terms in glossary (2026-03-17)
-- [x] Phase 3c: Coverage gap report at `refs/reports/stig-signal-coverage.md` (2026-03-17)
+- [x] Phase 3c: Coverage gap report at `.claude/references/reports/stig-signal-coverage.md` (2026-03-17)
 - [x] Phase 3d: Methodology comparison at `docs/modules/architecture/pages/stig-methodology-comparison.adoc` (2026-03-17)
 - [ ] All agents using CCE citations in new work where applicable — ONGOING (rule added to Citation Format Rule)
 - [ ] RAG chunking fix: re-generate index files with section headings; re-ingest with `--force` — DEFERRED (workaround: direct file reads)

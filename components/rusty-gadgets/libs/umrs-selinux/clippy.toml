@@ -1,0 +1,23 @@
+# 
+doc-valid-idents= [
+"AbsolutePath",
+"ATTRIBUTE_NAME",
+"CategorySet", 
+"d_type",
+"FromStr",
+"FsMagic",
+"GLOBAL_TRANSLATOR",
+"GroupKey",
+"parse()",
+"PhantomData",
+"NAME_MAX",
+"NAME_MAX_PATH",
+"OsStr",
+"ProcFS", 
+"RwLock",
+"SecureReader",
+"SELinux", 
+"SELINUX_MAGIC", 
+"StaticSource", 
+"st_mode",
+"SystemLow" ]

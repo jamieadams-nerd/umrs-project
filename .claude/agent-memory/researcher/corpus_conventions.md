@@ -16,16 +16,16 @@ Some references are single files placed directly under .claude/references/:
   .claude/references/xdg-basedir-spec.md   — XDG Base Directory Spec (from training knowledge)
   .claude/references/capability-matrix-domains.md
 
-## Provenance Requirements (lighter than refs/)
+## Provenance Requirements (lighter than .claude/references/)
 
-- No SHA-256 required (unlike refs/ which requires checksums)
+- No SHA-256 required (unlike .claude/references/ which requires checksums)
 - SOURCE.md or header block with source URL and retrieval date is sufficient
 - Mark training-knowledge documents with "Status: requires_verification_download"
   and include the source URL for Jamie to verify manually
 
-## refs/ vs .claude/references/
+## .claude/references/ vs .claude/references/
 
-- refs/          — official security standards; strict provenance; SHA-256 required; manifest tracked
+- .claude/references/          — official security standards; strict provenance; SHA-256 required; manifest tracked
 - .claude/references/ — RAG augmentation; lighter process; broader technical content
 
 ## RAG Collections Tracking

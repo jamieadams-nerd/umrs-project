@@ -15,15 +15,15 @@ type: reference
 ### DoD / public.cyber.mil
 - Some STIG/SCAP documents require browser login on the DoD Cyber Exchange portal
 - Workaround: Record manifest entry with Status: requires_manual_download; provide URL and instructions
-- See refs/manifest.md for current manual-download entries
+- See .claude/references/refs-manifest.md for current manual-download entries
 
 ## Curl Patterns
 
 Standard PDF download:
-  curl -L -o refs/<category>/<filename>.pdf <url>
+  curl -L -o .claude/references/<category>/<filename>.pdf <url>
 
 Verify checksum after download:
-  sha256sum refs/<category>/<filename>.pdf
+  sha256sum .claude/references/<category>/<filename>.pdf
 
 HTML spec (if curl is not blocked):
   curl -L -o /tmp/<name>.html <url>

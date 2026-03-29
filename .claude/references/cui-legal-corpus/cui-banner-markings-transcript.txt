@@ -1,0 +1,218 @@
+# Controlled Unclassified Information - Introduction to Marking
+# Source: ISOO (Information Security Oversight Office)
+# URL: https://youtu.be/UxpF21AsxZE
+# Retrieved: 2026-03-21
+# Additional info: https://isoo.blogs.archives.gov/
+#
+# This video provides an introduction on how to mark controlled
+# unclassified information in documents.
+# ---
+
+Hello, I’m glad you dropped by. I just read your email and saw that you had
+some questions about how to mark CUI. Since you’re here, I’m happy to run
+through some slides I made that’ll teach you all about how to mark CUI. Before
+we start talking about all of that, the first thing to know is why it is
+important to mark CUI or sensitive information in a standardized way. The
+answer is that while agencies in the government have been marking sensitive
+information for decades, every agency had its own methods, acronyms, and
+labels. This hindered sharing information and created inconsistency in the
+handling and safeguarding of that information. What standardized CUI markings
+try to accomplish is to make sure CUI is adequately protected by all agencies
+and to facilitate timely information sharing to authorized recipients. SLIDE 1
+This presentation is going to address all of the marking requirements for CUI
+including: the application of a designation indicator and the banner marking
+and what elements must or can be included in the banner. I’m also going to
+address marking multi-page documents, emails, and presentations, using limited
+dissemination control markings, using approved CUI Coversheets, and marking
+photographs or video files and what to do when mailing CUI. Lastly we will
+discuss how to identify when CUI has been decontrolled. First, I’m going to
+talk about the two kinds of CUI, CUI Basic and CUI Specified. CUI Basic is any
+category of CUI which a law, regulation, or Government wide policy says must be
+protected, but doesn’t provide any further information about how to protect it.
+CUI Specified, on the other hand, refers to any category of CUI which a law,
+regulation, or government wide policy says must be protected and indicates
+specific handling, marking or sharing requirements to ensure adequate
+protection. To find out which CUI is CUI Basic and which is CUI Specified, you
+can go to the CUI Registry. In most respects, CUI Specified and CUI Basic are
+marked in the same way, however there are several differences, which I’ll
+identify. Now I’m going to turn to the specifics of how to mark CUI. Knowing
+how to mark CUI is important because marking alerts holders that the
+information must be protected. In the CUI program, there is a standard way to
+apply markings but also alternative methods to satisfy marking or
+identification requirements. First, I’m going to talk about the designation
+indicator, which is a mandatory component for all CUI markings. The designation
+indicator must identify who originated the CUI and can take various forms
+including a letterhead like the example on the left, a signature block, or a
+“controlled by” line like the example on the right. It is a best practice to
+include the name and contact information for the specific Point of Contact from
+which the document originated. This will allow the receiving agency or
+individual to easily know who to contact with any questions regarding security
+and proper handling of the CUI. SLIDE 4 Now I’m going to discuss CUI banner
+marking, another mandatory component of marking CUI. Banners appear at the top
+of the document, alerting the recipient that the document contains CUI,
+indicating that the document must be protected. Banners must appear in BOLD
+Capitalized text and centered when feasible. The three components of a Banner
+Marking are the CUI Control Marking; the Category Marking; and the Limited
+Dissemination Control Marking, which are all separated by two forward slashes.
+You can see here an example of how these markings would be placed on a
+document. The simplest form that a banner marking can take is either the word
+CONTROLLED or CUI appearing in the top portion of a document, which is
+sufficient if the document only contains CUI Basic. An identical footer marking
+is optional but, if used, must be identical to the banner marking. Another
+aspect of banner markings are category markings. As I mentioned earlier, there
+are two kinds of CUI. For CUI Basic, category markings are not mandatory, but
+they are recommended because they clarify what kind of CUI Basic is in a
+document. To include the category in the banner marking, place two forward
+slashes after the control marking (CONTROLLED or CUI). If you wish to indicate
+that there are multiple categories of CUI in the document, list them in
+alphabetical order and separate each of them by one forward slash. You can find
+all of the markings for categories of CUI on the CUI Registry. In the example
+on the slide, there are two categories of CUI Basic indicated by the markings
+EMGT and WATER, which indicate that in this document, there is Emergency
+Management and Water Assessments CUI. While it is only mandatory to include the
+CUI Control marking (CUI or CONTROLLED) for CUI Basic, for CUI Specified, the
+category marking MUST appear in the banner and must be preceded by “SP-“. “SP”
+before the category marking distinguishes it from basic categories. This is
+because CUI Specified may have different controls than CUI Basic, which the
+recipient must be aware of in order to properly protect it. If there are
+multiple categories of CUI Specified, alphabetize them and separate them with
+one forward slash Here you can see an example of a document marked as
+containing General Privacy Information, which is a category of CUI Specified.
+In some cases you may have a document that has multiple categories of CUI Basic
+and Specified and you may wish to include all of the category markings. In this
+case, all CUI Specified category markings must precede all CUI Basic Markings.
+That means that you alphabetize the CUI Specified markings and place them
+before the alphabetized CUI Basic markings, all of which are separated by a
+forward slash. In the example on the screen, the document contains two
+categories of CUI Specified, Health Information and General Privacy, which have
+been alphabetized and placed after the control marking. The document also has
+two Categories of CUI Basic, Death Records information and Student Records
+Information, which were alphabetized among themselves and placed after the CUI
+Specified markings. Now I’m going to talk about how to include limited
+dissemination controls in the CUI banner marking. Limited dissemination control
+markings can be applied by agencies to place additional limits on sharing CUI.
+You can find the approved list of limited dissemination controls for CUI on the
+CUI Registry. If you include a limited dissemination control in the banner, it
+must appear as the last element and be separated from the other components by
+two forward slashes. If there are multiple limited dissemination control
+markings for one document, they must be alphabetized and separated from each
+other by a single forward slash. This slide shows two examples of CUI with
+Limited Dissemination Control Markings. The first is marked with NOFORN, which
+means that it can only be disseminated to US citizens. The second is marked
+with DL ONLY, which means that the information can only be disseminated to
+those on the accompanying dissemination list. Please note that when this
+control is used you must include on a separate sheet or somewhere apparent on
+the document a list of individuals, organizations, or entities that can have
+access to the information. In the example on the screen, there is a separate
+page that specifies that only those in DHS’s Office of Intelligence and
+Analysis and the FBI’s Counterterrorism Division can access this document.
+Another recommended, though not mandatory practice for marking CUI is portion
+marking. Portion marking is helpful because it indicates which parts of a
+document are CUI. To do this, portion markings are inserted in parentheses
+before each paragraph of the document. If you choose to use portion markings,
+however, they must be used throughout the document. To indicate that a
+paragraph only contains Uncontrolled Unclassified Information using portion
+markings, place a U in parentheses. To indicate that a paragraph contains CUI,
+place CUI in parentheses. You can also indicate not only that a paragraph
+contains CUI but the category of CUI in the paragraph and any limited
+dissemination controls that apply. If you include these markings, separate them
+as you would in the banner. You can find a list of markings for all of the
+categories and limited dissemination controls for CUI on the CUI Registry. The
+example here shows a document that contains Export Controlled Information with
+a no foreign dissemination Limited Dissemination Control, which appears in the
+portion markings as of NF. You can see also that some paragraphs are only
+indicated to contain CUI, which means that they contain CUI Basic. When marking
+a document with multiple pages that contain CUI, the banner marking will be the
+same for the entire document. This means that if you choose to indicate the
+categories of CUI Basic or if there is CUI Specified anywhere in the document,
+it must be included in the banner marking for the entire document, even if that
+category of CUI is not on every page. Another aspect that you should keep in
+mind while handling CUI is that the CUI banner marking must be kept separate
+from any administrative markings. Frequently, agencies collaborate on documents
+or share drafts. If these documents, even in their unfinished state have CUI,
+this must be marked so that the CUI is protected, which means that you must
+include CUI banner markings. If you wish to indicate that the document is a
+draft, you may do so with administrative markings, however this marking cannot
+be incorporated into the banner marking. If you look at the examples on the
+screen, the two to the right are acceptable because the administrative markings
+of draft and provisional are clearly separate from the CUI marking. However,
+the one on the left is not acceptable because the administrative marking has
+been incorporated into the banner marking. [WATER] Now I know that this has
+been a lot of information. If you have any questions about what I’ve just
+talked about, you should talk to your agency’s CUI Program office or refer to
+the CUI Marking Handbook on the CUI Registry. I’m now going to switch to
+talking about more non-traditional ways of marking CUI. In some instances, when
+you are marking a document it is more convenient to use a coversheet, which can
+replace CUI banner headings, to indicate that a document contains CUI, such as
+when there is limited space at the top of a document or form. If you wish to
+use a coversheet, there are three available from the CUI Registry. If your
+document only contains CUI Basic you can use Optional form 901. If you wish to
+convey the categories of CUI in the document, you can use Optional Form 902 and
+if you wish to detail special handling requirements or other information, you
+can use Optional Form 903. Now I’m going to talk about when you might have to
+mark that forms contain CUI. If a form will be filled in with information that
+qualifies as CUI, it must be marked to reflect this through a CUI Banner
+marking. If there is not sufficient room on the document for the CUI Banner
+Marking, you may use a coversheet instead. You can see up on the left a
+performance appraisal form. When this form is filled out it contains CUI,
+therefore it must have a banner marking to indicate that. On the right, you can
+see an application for federal employment, which also contains CUI when filled
+out. However, there is not very much room at the top of the form, so instead
+you can use a coversheet, as on the slide, to indicate the presence of CUI.
+When you send an email containing CUI, you must be careful to include markings
+to let the recipient know that the information in the email must be protected.
+To do this, you must apply a banner marking at the top of the email.
+Furthermore, you can include an indicator in the subject line to inform the
+recipient that the email contains CUI. This can be accomplished by placing
+“Contains CUI” in brackets at the end of the subject line. One other important
+thing to note is that when forwarding an email that contains CUI, carry forward
+all previous markings, such as by moving the banner marking back to the top of
+the email, which is shown in the example on the screen. If you are emailing an
+attachment that contains CUI, it is best practice to indicate that in the name
+of the file, such as by including Contains CUI in brackets in the file name.
+Additionally, though it is not mandatory, you can also portion mark emails,
+which is done in the same manner as with a document. You must also mark
+PowerPoint presentations if the slides contain CUI. When marking slides, the
+thing to remember is that the basic rules of marking CUI apply. The two
+mandatory components that you must include are the Designation Indicator and
+Banner Marking. In the example on the slide, the slides only contain CUI Basic,
+so only the CUI Control Marking is mandatory, but if the slides contained CUI
+Specified, Category Marking would also be mandatory, as with a document
+containing CUI. Another instance in which you may have to mark information as
+CUI is when you send transmittal documents, such as faxes, that contain CUI. To
+indicate the presence of CUI, the document can contain a message that CUI is
+enclosed or attached. Furthermore, the document must have a clear and
+conspicuous message of either “When enclosure is removed, this document becomes
+Uncontrolled Unclassified Information.” You can see from this example that the
+document enclosed is CUI Specified, which the transmittal message indicates.
+When storing CUI electronically, such as on hard drives, USB drives, or CDs,
+there must be a physical marking to indicate that the information on the
+storage device is CUI. While it may not be practical to include the full
+designation of the category of the CUI, when feasible there must be a clear
+label of “Controlled” or “CUI” and the designating agency on the outside of
+these storage devices, such as in the examples on this slide. While there are
+various ways that CUI contained in audio or video files or in photographs may
+be marked, for all of these forms, it must be clear that CUI is present. For
+digital photographs, you could insert a watermark. If the photograph is in
+physical form, you could label the back or use a frame. For audio and video
+files, you can insert disclaimers at the beginning that alert users to the
+presence of CUI and any relevant categories or limited dissemination controls.
+If you want to learn more about how to mark CUI in these forms, you can refer
+to our CUI Audio, Photography, and Video Marking Brochure on the CUI Registry.
+Now I’m going to talk about mailing CUI. CUI can be shipped through interagency
+mail systems, USPS, or other commercial delivery services. While not mandatory,
+it is a best practice to use tracking to record the location of the CUI.
+Furthermore, although the document being mailed itself must be properly
+labeled, the envelope must not indicate the presence of CUI. In some cases you
+may come across CUI that has been decontrolled or have to decontrol CUI
+yourself, which occurs when the CUI no longer requires protection under a law,
+regulation, or government wide policy. Decontrolled CUI must have a marker or
+indicator on the first page to indicate that the information is no longer CUI.
+It is important to properly mark CUI that has been decontrolled because it
+ensures that we don’t use resources to protect document that no longer need to
+be protected. You must follow agency policy regarding marking decontrolled CUI,
+which may involve striking through or removing old CUI markings either on the
+first page, cover page, or first page of any attachment. Thanks for stopping
+by. If you have further questions or concerns, please contact your agency’s CUI
+Program office, download the CUI Marking Handbook, or visit the CUI Registry
+website.

@@ -84,7 +84,7 @@ Key directives from Jamie:
 [Content — one concern per entry. Be specific: file paths, pattern names, crate names.]
 ```
 
-See `.claude/team-collaboration.md` for the full team structure and agent responsibilities.
+See `.claude/agents/team-collaboration.md` for the full team structure and agent responsibilities.
 
 ---
 
@@ -122,7 +122,7 @@ Canadian Protected designation work.
 - Termium Plus entries filtered to subject: Military / Security / National Defence
 - This subject field was identified as pending in the original corpus acquisition
   (see `.claude/plans/completed/fr-ca-corpus-acquisition.md`)
-- The existing Termium Plus TSV (`.claude/corpus/termium-plus-fr_CA.tsv`, 32,210 entries)
+- The existing Termium Plus TSV (`.claude/references/corpus/termium-plus-fr_CA.tsv`, 32,210 entries)
   covers Electronics & Informatics, Administration, Information Security Glossary,
   and CCCS Glossary -- but NOT the Military/Security subject
 
@@ -253,7 +253,7 @@ New architecture page written:
 
 Added to `docs/modules/architecture/nav.adoc` under the Security Model section.
 
-Please log in `.claude/CHANGELOG.md` under docs / architecture module.
+Please log in `.claude/logs/CHANGELOG.md` under docs / architecture module.
 
 ---
 

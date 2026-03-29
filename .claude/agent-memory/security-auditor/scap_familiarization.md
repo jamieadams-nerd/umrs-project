@@ -10,8 +10,8 @@ type: reference
 **Source documents:**
 - `.claude/references/scap-security-guide/stig-signal-index.md` (451 STIG rules)
 - `.claude/references/scap-security-guide/cce-nist-crossref.md` (451 CCE entries)
-- `refs/reports/stig-signal-coverage.md` (researcher coverage report)
-- `components/rusty-gadgets/umrs-platform/src/posture/catalog.rs` (36 indicators)
+- `.claude/references/reports/stig-signal-coverage.md` (researcher coverage report)
+- `components/rusty-gadgets/libs/umrs-platform/src/posture/catalog.rs` (36 indicators)
 
 ---
 
@@ -243,8 +243,8 @@ runtime output strings. No action required on citation format in catalog.rs `nis
 
 ## 6. Key Cross-References
 
-- Coverage report: `refs/reports/stig-signal-coverage.md`
+- Coverage report: `.claude/references/reports/stig-signal-coverage.md`
 - STIG signal index: `.claude/references/scap-security-guide/stig-signal-index.md`
 - CCE cross-ref: `.claude/references/scap-security-guide/cce-nist-crossref.md`
-- Source catalog: `components/rusty-gadgets/umrs-platform/src/posture/catalog.rs`
+- Source catalog: `components/rusty-gadgets/libs/umrs-platform/src/posture/catalog.rs`
 - SCAP/STIG corpus plan: `.claude/plans/scap-stig-corpus-plan.md`

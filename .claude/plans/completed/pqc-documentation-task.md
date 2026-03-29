@@ -13,9 +13,9 @@
 Three NIST post-quantum cryptography FIPS standards were downloaded and ingested into the
 RAG on 2026-03-13:
 
-- FIPS 203 (ML-KEM / CRYSTALS-Kyber) — `refs/nist/fips/fips203.pdf`
-- FIPS 204 (ML-DSA / CRYSTALS-Dilithium) — `refs/nist/fips/fips204.pdf`
-- FIPS 205 (SLH-DSA / SPHINCS+) — `refs/nist/fips/fips205.pdf`
+- FIPS 203 (ML-KEM / CRYSTALS-Kyber) — `.claude/references/nist/fips/fips203.pdf`
+- FIPS 204 (ML-DSA / CRYSTALS-Dilithium) — `.claude/references/nist/fips/fips204.pdf`
+- FIPS 205 (SLH-DSA / SPHINCS+) — `.claude/references/nist/fips/fips205.pdf`
 
 Additionally, 10 supplementary web articles were ingested into the `nist-pqc` RAG collection
 (`.claude/references/nist-pqc/web/`). The collection now has 264 chunks.

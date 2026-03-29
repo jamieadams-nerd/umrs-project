@@ -1,0 +1,32 @@
+{
+  "abbreviation": "PCII",
+  "category": "Protected Critical Infrastructure Information",
+  "index_group": "Critical Infrastructure",
+  "index_group_abbreviation": "CRIT",
+  "cui_marking": "CUI//CRIT/PCII",
+  "dod_detail_url": "https://www.dodcui.mil/Critical-Infrastructure/Protected-Critical-Infrastructure-Information/",
+  "category_description": null,
+  "required_warning_statement": null,
+  "required_dissemination_control": null,
+  "authorities": [],
+  "applicable_dod_policies": [
+    "DoDD 3020.40",
+    "DoDI 3020.45"
+  ],
+  "examples": [
+    "Asset location",
+    "Asset listing",
+    "Mission assurance assessment reports",
+    "Commercial organizations",
+    "Building blueprints",
+    "Link Disclaimer\tDoD Careers",
+    "FOIA\tUSA Jobs",
+    "USA.gov\tPrivacy & Security",
+    "No FEAR Act\tWeb Policy",
+    "DoD Inspector General\tAccessibility/Section 508",
+    "STAY CONNECTED",
+    "Hosted by Department of War Information Activity - WEB.mil"
+  ],
+  "source": "dodcui.mil",
+  "retrieved_date": "2026-03-21"
+}
