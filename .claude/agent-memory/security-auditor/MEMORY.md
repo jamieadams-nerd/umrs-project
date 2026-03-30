@@ -56,6 +56,26 @@ Wrap and emit only category + error code. Never forward Display verbatim.
 ### Portfolio-Wide Gap
 All plans: strong Implement, weak Assess/Monitor artifact production. Runtime outputs not connected to SAR-consumable Examine objects. **Check every new plan for output artifact format.**
 
+## CUI Rules File Patterns (2026-03-30)
+
+- LEI is a valid category abbreviation (General Law Enforcement), not an index group. Index group = "Law Enforcement". Never conflate them. The anti-pattern example in the old rules version was wrong.
+- DL ONLY official NARA name is "Dissemination list controlled" — not "Distribution list controlled."
+- RELIDO official authority acronym is SFDRA (Senior Foreign Disclosure **and Release** Authority). Check for dropped "and Release."
+- ITAR vs EAR does not determine Basic vs Specified for EXPT — both regimes can produce either designation.
+- Rules file JSON field table was incomplete: missing `handling_group_id`, `required_warning_statement`, `required_dissemination_control`.
+
+## CUI Catalog Audit Patterns (2026-03-30)
+
+Recurring gaps found in `US-CUI-LABELS.json` v0.3.0 audit:
+
+- `mcs_ranges` metadata must match `labeling_mcs.md` constraint (`c0-c199` for US CUI, not c0-c249)
+- `handling_group_id: ""` should be `null` — standardize with other optional fields
+- Distribution Statements B–F belong ONLY to CTI (SP-CTI), not to EXPT or any other category
+- Basic-tier entries use `CUI//ABBREV` key format (UMRS convention) vs. NARA's bare `CUI` for basic — must be documented in `_metadata.notes` to prevent operator misinterpretation
+- Known mandatory warning statements: CVI (6 CFR 27.400), DCNI (10 U.S.C. 128), SSI (49 CFR 15/1520), UCNI (42 U.S.C. 2168), TAX (26 U.S.C. §§ 6103/7213), PCII (6 CFR 29.8), SGI (10 CFR 73.21)
+- EXPT warning conflates ITAR (22 CFR 120-130) and EAR (15 CFR 730-774) — these require separate treatments
+- RELIDO is a permissive foreign disclosure marking — logically mutually exclusive with NOFORN; add to `mutually_exclusive_with`
+
 ## Reports Index
 - `2026-03-11-rpm-db-security-audit.md` — RPM findings
 - `2026-03-11-os-detection-umrs-platform-surface-audit.md` — detect pipeline
@@ -67,6 +87,7 @@ All plans: strong Implement, weak Assess/Monitor artifact production. Runtime ou
 - `docs/sage/reviews/2026-03-19-blog-cui-sign-lock.md` — blog accuracy audit
 - `security-auditor-tui-review-2026-03-20.md` — TUI v1: 14A/17C/3E
 - `security-auditor-tui-review-2026-03-20-v2.md` — TUI v2: 26A/3C/0E; 3 open (C-15v2 MEDIUM, C-T3-STATUS LOW, C-7v2 LOW)
+- `code/2026-03-30-us-cui-labels-audit.md` — US-CUI-LABELS.json v0.3.0: 4E/9C; MCS range conflict, EXPT distribution stmt error, 5 missing warning stmts, RELIDO mutex gap; plus rules-file review: 1E/5C (LEI anti-pattern error, DL ONLY name, RELIDO title, JSON fields incomplete)
 
 ## TUI Audit Card Patterns
 - IndicatorValue for kernel flags → cite SI-7 + CM-6 (NOT SI-3)

@@ -38,8 +38,10 @@ files. Do not modify without explicit user instruction.
 user instruction.
 
 [CONSTRAINT] Nation-specific MCS category ranges must not overlap:
-- US CUI: `c0`–`c199`
-- Canadian Protected: `c200`–`c299`
+- US CUI categories: `c0`–`c249`
+- US LDCs and Distribution Statements: `c250`–`c279`
+- US reserved (NATO, Provisional, growth): `c280`–`c299`
+- Canadian Protected: `c300`–`c399`
 - UK/AU/NZ: ranges TBD (not yet assigned)
 
 [CONSTRAINT] CUI palette colors must not use red or orange. In Five Eyes

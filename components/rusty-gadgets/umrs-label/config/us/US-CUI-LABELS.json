@@ -20,6 +20,7 @@
       "Palette colors are defined in the shared UMRS-PALETTE.json file.",
       "Dual-status categories (those that can be Basic or Specified depending on governing authority) have two entries: CUI//ABBREV (basic) and CUI//SP-ABBREV (specified).",
       "Index groups are NARA organizational groupings for display only — they never appear in banner markings.",
+      "UMRS convention: all markings use CUI//ABBREVIATION format, never bare CUI. NARA permits bare CUI for Basic categories, but UMRS requires specific category markings for granular MCS enforcement and auditability. A file marked just CUI would be invisible to category-based access control.",
       "Keys are the complete banner marking string in alphabetical order.",
       "NATO and Provisional categories are excluded — they lack finalized abbreviations in the NARA registry as of 2026-03.",
       "LDCs and Distribution Statements are tracked separately with their own MCS category numbers in the c250-c279 range."
@@ -992,7 +993,7 @@
       "level": "s1",
       "handling_group_id": "",
       "required_warning_statement": "WARNING: This document contains technical data whose export is restricted by the Arms Export Control Act (Title 22, U.S.C., Sec 2751, et seq.) or the Export Control Reform Act of 2018. Violations of these export laws are subject to severe criminal penalties.",
-      "required_dissemination_control": "Distribution Statements B through F"
+      "required_dissemination_control": null
     },
     "CUI//SP-FISA": {
       "name": "Foreign Intelligence Surveillance Act (Specified)",

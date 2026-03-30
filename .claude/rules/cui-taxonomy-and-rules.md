@@ -88,7 +88,7 @@ Common dual-status categories:
 
 | Category | Basic marking | Specified marking | Why it varies |
 |---|---|---|---|
-| Export Control | `CUI//EXPT` | `CUI//SP-EXPT` | ITAR vs EAR |
+| Export Control | `CUI//EXPT` | `CUI//SP-EXPT` | Depends on whether the specific authority mandates controls beyond the NARA baseline |
 | Nuclear | `CUI//NUC` | `CUI//SP-NUC` | Statute-dependent |
 | Privacy | `CUI//PRVCY` | `CUI//SP-PRVCY` | Health/student record laws |
 | Financial | `CUI//FNC` | `CUI//SP-FNC` | Banking/tax law specifics |
@@ -172,8 +172,11 @@ overlap heavily:
 
 #### Common Mistakes
 
-[ANTI-PATTERN] `CUI//LEI/INV` — LEI (Law Enforcement) is an index group, not a category.
-If the data is about an investigation, the marking is `CUI//INV`.
+[ANTI-PATTERN] `CUI//LEI/INV` — this incorrectly implies INV is a subcategory of LEI.
+LEI (General Law Enforcement) and INV (Investigation) are both independent categories
+under the "Law Enforcement" index group. If a document contains only investigation
+data, the marking is `CUI//INV`. If it contains both general law enforcement and
+investigation data, list both: `CUI//INV/LEI` (alphabetized).
 
 [ANTI-PATTERN] `CUI//SP-CTI//SP-EXPT` — double slash between categories. Use single
 slash: `CUI//SP-CTI/EXPT`.
@@ -195,7 +198,7 @@ double slash.
 | NOFORN | No foreign dissemination |
 | FED ONLY | Federal employees only |
 | FEDCON | Federal employees and contractors only |
-| DL ONLY | Distribution list only |
+| DL ONLY | Dissemination list controlled |
 | REL TO | Authorized for release to specific country/group |
 | DISPLAY ONLY | For viewing only, no copying or distribution |
 
@@ -221,7 +224,7 @@ block these combinations:
 | LDC | Banner Marking | Description |
 |---|---|---|
 | No contractors | NOCON | No dissemination to contractors; permits dissemination to state/local/tribal employees |
-| Releasable by disclosure official | RELIDO | Originator has authorized a Senior Foreign Disclosure Authority to make further sharing decisions |
+| Releasable by disclosure official | RELIDO | Originator has authorized a Senior Foreign Disclosure and Release Authority (SFDRA) to make further sharing decisions |
 | Attorney-Client | Attorney-Client | Attorney-client privilege; may only be used with the PRIVILEGE category |
 | Attorney Work Product | Attorney-WP | Attorney work product privilege; may only be used with the PRIVILEGE category |
 
@@ -301,6 +304,8 @@ catalog JSON files (e.g., `US-CUI-LABELS.json`).
 | `index_group` | NARA organizational group (display only) | `"Critical Infrastructure"` |
 | `designation` | Basic or Specified | `"basic"`, `"specified"`, or `null` |
 | `level` | MLS sensitivity level | `"s1"` |
+| `required_warning_statement` | Mandatory statutory warning text, or null | `"WARNING: This record contains..."` |
+| `required_dissemination_control` | Required LDC or Distribution Statement, or null | `"Distribution Statements B through F..."` |
 
 [RULE] The JSON object key is the complete banner marking string. It encodes the
 marking relationship directly — no separate parent field is needed.
