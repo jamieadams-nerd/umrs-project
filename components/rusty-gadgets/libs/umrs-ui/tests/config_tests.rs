@@ -7,9 +7,9 @@
 //! ValidationResult blocking, ConfigState action handling, dirty tracking,
 //! save gating, and discard behavior.
 
+use umrs_ui::Action;
 use umrs_ui::config::fields::{FieldDef, FieldValue, ValidationResult};
 use umrs_ui::config::{ConfigState, ConfigStateEvent};
-use umrs_ui::Action;
 
 // ---------------------------------------------------------------------------
 // FieldValue
@@ -380,7 +380,10 @@ fn prev_tab_action_wraps() {
     let mut state = ConfigState::new(2);
     let event = state.handle_action(Action::PrevTab);
     assert_eq!(event, ConfigStateEvent::Redraw);
-    assert_eq!(state.active_tab, 1, "PrevTab at 0 must wrap to tab_count - 1");
+    assert_eq!(
+        state.active_tab, 1,
+        "PrevTab at 0 must wrap to tab_count - 1"
+    );
 }
 
 #[test]
@@ -489,10 +492,7 @@ fn dialog_cancel_exits_edit_mode_without_commit() {
     assert_eq!(event, ConfigStateEvent::Redraw);
     assert!(!state.fields[0].editing);
     // Value unchanged (discard_edit restores to original buffer).
-    assert_eq!(
-        state.fields[0].value,
-        FieldValue::Text("v1".to_owned())
-    );
+    assert_eq!(state.fields[0].value, FieldValue::Text("v1".to_owned()));
 }
 
 // ---------------------------------------------------------------------------
@@ -512,7 +512,10 @@ fn validation_summary_counts_errors() {
     state.fields.push(FieldDef::text("F", "", require_non_empty));
     let _ = state.validate_all();
     let summary = state.validation_summary();
-    assert!(summary.contains('1'), "expected '1' in summary, got: {summary}");
+    assert!(
+        summary.contains('1'),
+        "expected '1' in summary, got: {summary}"
+    );
     assert!(
         summary.contains("error"),
         "expected 'error' in summary, got: {summary}"

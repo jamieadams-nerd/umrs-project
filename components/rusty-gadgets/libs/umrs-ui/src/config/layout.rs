@@ -43,13 +43,15 @@ use ratatui::Frame;
 use ratatui::layout::{Constraint, Direction, Layout, Rect};
 use ratatui::style::Style;
 use ratatui::text::{Line, Span};
-use ratatui::widgets::{Block, BorderType, Borders, List, ListItem, ListState, Paragraph};
+use ratatui::widgets::{
+    Block, BorderType, Borders, List, ListItem, ListState, Paragraph,
+};
 
 use crate::theme::Theme;
 
-use super::{ConfigApp, ConfigState};
 use super::diff::{DiffEntry, render_diff};
 use super::fields::{FieldDef, ValidationResult};
+use super::{ConfigApp, ConfigState};
 
 // ---------------------------------------------------------------------------
 // Layout constants
@@ -153,9 +155,16 @@ fn render_config_header(
 ) {
     let ctx = app.config_header();
 
-    let dirty_indicator = if state.is_dirty() { " [modified]" } else { "" };
+    let dirty_indicator = if state.is_dirty() {
+        " [modified]"
+    } else {
+        ""
+    };
     let target_line = format!("  {:<12} : {}", "Target", ctx.config_target);
-    let modified_line = format!("  {:<12} : {}{dirty_indicator}", "Status", ctx.validation_summary);
+    let modified_line = format!(
+        "  {:<12} : {}{dirty_indicator}",
+        "Status", ctx.validation_summary
+    );
 
     let lines = vec![
         Line::from(""),
@@ -164,11 +173,14 @@ fn render_config_header(
             theme.header_name,
         )),
         Line::from(Span::styled(target_line, theme.header_field)),
-        Line::from(Span::styled(modified_line, if state.is_dirty() {
-            theme.indicator_unavailable
-        } else {
-            theme.header_field
-        })),
+        Line::from(Span::styled(
+            modified_line,
+            if state.is_dirty() {
+                theme.indicator_unavailable
+            } else {
+                theme.header_field
+            },
+        )),
     ];
 
     let block = Block::default()
@@ -261,8 +273,13 @@ fn render_field_list(
 /// Layout: `{label:<FIELD_LABEL_WIDTH$} : {value_or_buffer}{edit_cursor?}`
 /// Followed by a validation message line if the field has an error or warning.
 fn build_field_item<'a>(field: &FieldDef, theme: &'a Theme) -> ListItem<'a> {
-    let dirty_marker = if field.dirty { "*" } else { " " };
-    let label_str = format!(" {dirty_marker}{:<FIELD_LABEL_WIDTH$} : ", field.label);
+    let dirty_marker = if field.dirty {
+        "*"
+    } else {
+        " "
+    };
+    let label_str =
+        format!(" {dirty_marker}{:<FIELD_LABEL_WIDTH$} : ", field.label);
 
     let (value_text, value_style) = if field.editing {
         (
@@ -274,7 +291,9 @@ fn build_field_item<'a>(field: &FieldDef, theme: &'a Theme) -> ListItem<'a> {
         let style = match &field.validation {
             ValidationResult::Error(_) => theme.dialog_error_border,
             ValidationResult::Warning(_) => theme.indicator_unavailable,
-            ValidationResult::Ok | ValidationResult::Pending => theme.data_value,
+            ValidationResult::Ok | ValidationResult::Pending => {
+                theme.data_value
+            }
         };
         (val, style)
     };
@@ -317,10 +336,11 @@ fn render_validation_panel(
     state: &ConfigState,
     theme: &Theme,
 ) {
-    let mut lines = vec![Line::from(""), Line::from(Span::styled(
-        "  Validation",
-        theme.group_title,
-    )), Line::from("")];
+    let mut lines = vec![
+        Line::from(""),
+        Line::from(Span::styled("  Validation", theme.group_title)),
+        Line::from(""),
+    ];
 
     for field in &state.fields {
         let result_str = match &field.validation {
@@ -425,16 +445,17 @@ fn render_config_status(
 ///
 /// The "before" value for each field is retrieved from `app.committed_values()`.
 /// Fields not present in the committed values map are treated as new (before = "").
-fn build_diff_entries(app: &dyn ConfigApp, state: &ConfigState) -> Vec<DiffEntry> {
+fn build_diff_entries(
+    app: &dyn ConfigApp,
+    state: &ConfigState,
+) -> Vec<DiffEntry> {
     let committed = app.committed_values();
     state
         .fields
         .iter()
         .map(|field| {
-            let before = committed
-                .get(&field.label)
-                .cloned()
-                .unwrap_or_default();
+            let before =
+                committed.get(&field.label).cloned().unwrap_or_default();
             let after = field.value.display();
             DiffEntry::new(field.label.clone(), before, after)
         })

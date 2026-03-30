@@ -38,7 +38,9 @@ use ratatui::Frame;
 use ratatui::layout::{Constraint, Direction, Layout, Rect};
 use ratatui::style::Style;
 use ratatui::text::{Line, Span};
-use ratatui::widgets::{Block, BorderType, Borders, List, ListItem, ListState, Paragraph};
+use ratatui::widgets::{
+    Block, BorderType, Borders, List, ListItem, ListState, Paragraph,
+};
 
 use crate::theme::Theme;
 
@@ -109,7 +111,8 @@ pub fn render_viewer(
         ])
         .split(area);
 
-    let [header_area, tab_area, body_area, search_area, status_area] = *outer else {
+    let [header_area, tab_area, body_area, search_area, status_area] = *outer
+    else {
         return;
     };
 
@@ -171,10 +174,7 @@ fn render_viewer_header(
     let ctx = app.viewer_header();
     let breadcrumb = state.breadcrumb_display();
 
-    let source_line = format!(
-        "  {:<10} : {}",
-        "Source", ctx.data_source
-    );
+    let source_line = format!("  {:<10} : {}", "Source", ctx.data_source);
     let count_line = if let Some(desc) = &ctx.summary_description {
         format!("  {:<10} : {}    {}", "Records", ctx.record_count, desc)
     } else {
@@ -254,10 +254,8 @@ fn render_tree_panel(
 ) {
     let display = &state.tree.display_list;
 
-    let items: Vec<ListItem<'_>> = display
-        .iter()
-        .map(|entry| build_tree_item(entry, theme))
-        .collect();
+    let items: Vec<ListItem<'_>> =
+        display.iter().map(|entry| build_tree_item(entry, theme)).collect();
 
     let block = Block::default()
         .title(" Tree ")
@@ -328,8 +326,7 @@ fn render_search_bar(
 // ---------------------------------------------------------------------------
 
 /// Key legend for the viewer status bar.
-const VIEWER_KEY_LEGEND: &str =
-    "  Tab: tabs | ↑↓: select | Enter/Space: expand | Backspace: up | /: search | q: quit";
+const VIEWER_KEY_LEGEND: &str = "  Tab: tabs | ↑↓: select | Enter/Space: expand | Backspace: up | /: search | q: quit";
 
 /// Render the viewer status bar.
 ///

@@ -23,10 +23,10 @@
 
 use std::collections::HashMap;
 
+use umrs_ui::Action;
 use umrs_ui::app::{StatusLevel, StatusMessage, TabDef};
 use umrs_ui::viewer::tree::{TreeModel, TreeNode};
 use umrs_ui::viewer::{ViewerApp, ViewerHeaderContext, ViewerState};
-use umrs_ui::Action;
 
 // ---------------------------------------------------------------------------
 // Data struct
@@ -51,20 +51,19 @@ impl CatalogApp {
         let mut model = TreeModel::new();
 
         // Category: Controlled Technical Information
-        let mut cti = TreeNode::branch(
-            "Controlled Technical Information",
-            "CTI",
-        );
-        cti.metadata
-            .insert("Code".to_owned(), "CTI".to_owned());
+        let mut cti =
+            TreeNode::branch("Controlled Technical Information", "CTI");
+        cti.metadata.insert("Code".to_owned(), "CTI".to_owned());
         cti.metadata
             .insert("Authority".to_owned(), "DFARS 252.204-7012".to_owned());
 
         let mut naval = TreeNode::branch("Naval Systems", "CTI-NS");
         naval.children.push({
             let mut n = TreeNode::leaf("Propulsion", "CTI-NS-P");
-            n.metadata
-                .insert("Description".to_owned(), "Naval propulsion data".to_owned());
+            n.metadata.insert(
+                "Description".to_owned(),
+                "Naval propulsion data".to_owned(),
+            );
             n
         });
         naval.children.push(TreeNode::leaf("Navigation", "CTI-NS-N"));
@@ -73,14 +72,10 @@ impl CatalogApp {
 
         // Category: Export Controlled
         let mut ec = TreeNode::branch("Export Controlled", "EC");
-        ec.metadata
-            .insert("Code".to_owned(), "EC".to_owned());
-        ec.metadata
-            .insert("Authority".to_owned(), "EAR / ITAR".to_owned());
-        ec.children
-            .push(TreeNode::leaf("EAR99 Technology", "EC-EAR"));
-        ec.children
-            .push(TreeNode::leaf("ITAR Defense Articles", "EC-ITAR"));
+        ec.metadata.insert("Code".to_owned(), "EC".to_owned());
+        ec.metadata.insert("Authority".to_owned(), "EAR / ITAR".to_owned());
+        ec.children.push(TreeNode::leaf("EAR99 Technology", "EC-EAR"));
+        ec.children.push(TreeNode::leaf("ITAR Defense Articles", "EC-ITAR"));
 
         model.roots.push(cti);
         model.roots.push(ec);
@@ -105,12 +100,8 @@ impl ViewerApp for CatalogApp {
     }
 
     fn viewer_header(&self) -> ViewerHeaderContext {
-        ViewerHeaderContext::new(
-            "umrs-labels",
-            "US CUI Catalog v0.1.0",
-            2,
-        )
-        .with_summary("2 top-level categories, 5 subcategories")
+        ViewerHeaderContext::new("umrs-labels", "US CUI Catalog v0.1.0", 2)
+            .with_summary("2 top-level categories, 5 subcategories")
     }
 
     fn initial_tree(&self) -> Option<TreeModel> {
@@ -134,7 +125,10 @@ fn main() {
     println!("=== UMRS Label Catalog Viewer — ViewerApp Example ===\n");
 
     // Initial state: both root nodes are collapsed.
-    println!("Initial display list ({} entries):", state.tree.display_count());
+    println!(
+        "Initial display list ({} entries):",
+        state.tree.display_count()
+    );
     for entry in &state.tree.display_list {
         println!("  [depth {}] {} {}", entry.depth, entry.prefix, entry.label);
     }
@@ -170,10 +164,7 @@ fn main() {
     let _ = state.handle_action(Action::Expand);
     println!("Display list ({} entries):", state.tree.display_count());
     for entry in &state.tree.display_list {
-        println!(
-            "  [depth {}] {}{}",
-            entry.depth, entry.prefix, entry.label
-        );
+        println!("  [depth {}] {}{}", entry.depth, entry.prefix, entry.label);
     }
     println!();
 

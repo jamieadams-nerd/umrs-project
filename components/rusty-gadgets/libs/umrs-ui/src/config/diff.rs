@@ -125,7 +125,10 @@ pub fn render_diff(
 ///
 /// Renders the column header, then unchanged entries (dimmed), then changed
 /// entries (highlighted).
-fn build_diff_lines<'a>(entries: &[DiffEntry], theme: &'a Theme) -> Vec<Line<'a>> {
+fn build_diff_lines<'a>(
+    entries: &[DiffEntry],
+    theme: &'a Theme,
+) -> Vec<Line<'a>> {
     let mut lines: Vec<Line<'a>> = Vec::new();
 
     // Column header.
@@ -134,7 +137,8 @@ fn build_diff_lines<'a>(entries: &[DiffEntry], theme: &'a Theme) -> Vec<Line<'a>
     lines.push(Line::from(""));
 
     // Unchanged entries (context, dimmed).
-    let unchanged: Vec<&DiffEntry> = entries.iter().filter(|e| !e.is_changed()).collect();
+    let unchanged: Vec<&DiffEntry> =
+        entries.iter().filter(|e| !e.is_changed()).collect();
     if !unchanged.is_empty() {
         for entry in &unchanged {
             lines.push(diff_row_line(entry, false, theme));
@@ -143,12 +147,10 @@ fn build_diff_lines<'a>(entries: &[DiffEntry], theme: &'a Theme) -> Vec<Line<'a>
     }
 
     // Changed entries (highlighted).
-    let changed: Vec<&DiffEntry> = entries.iter().filter(|e| e.is_changed()).collect();
+    let changed: Vec<&DiffEntry> =
+        entries.iter().filter(|e| e.is_changed()).collect();
     if !changed.is_empty() {
-        lines.push(Line::from(Span::styled(
-            "  Changed",
-            theme.group_title,
-        )));
+        lines.push(Line::from(Span::styled("  Changed", theme.group_title)));
         lines.push(Line::from(""));
         for entry in &changed {
             lines.push(diff_row_line(entry, true, theme));
@@ -174,7 +176,11 @@ fn header_line(theme: &Theme) -> Line<'_> {
 ///
 /// `highlighted` = `true` for changed entries (uses `indicator_active` /
 /// yellow), `false` for unchanged context (uses `tab_inactive` dim style).
-fn diff_row_line<'a>(entry: &DiffEntry, highlighted: bool, theme: &'a Theme) -> Line<'a> {
+fn diff_row_line<'a>(
+    entry: &DiffEntry,
+    highlighted: bool,
+    theme: &'a Theme,
+) -> Line<'a> {
     let label_str = format!("  {:<DIFF_LABEL_WIDTH$}", entry.label);
     let before_str = format!("  {:<DIFF_VALUE_WIDTH$}", entry.before);
     let after_str = format!("  {}", entry.after);

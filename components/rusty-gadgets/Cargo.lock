@@ -2045,7 +2045,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "umrs-labels"
+name = "umrs-label"
 version = "0.1.0"
 dependencies = [
  "anyhow",

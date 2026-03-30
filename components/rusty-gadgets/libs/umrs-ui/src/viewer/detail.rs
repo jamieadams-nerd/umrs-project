@@ -66,10 +66,7 @@ pub fn render_detail(
     let lines = match selected_node {
         None => vec![
             Line::from(""),
-            Line::from(Span::styled(
-                "  No item selected.",
-                theme.data_value,
-            )),
+            Line::from(Span::styled("  No item selected.", theme.data_value)),
         ],
         Some(node) => build_detail_lines(node, theme),
     };
@@ -80,9 +77,9 @@ pub fn render_detail(
         .border_type(BorderType::Rounded)
         .border_style(theme.border);
 
-    let paragraph = Paragraph::new(lines)
-        .block(block)
-        .wrap(Wrap { trim: false });
+    let paragraph = Paragraph::new(lines).block(block).wrap(Wrap {
+        trim: false,
+    });
 
     frame.render_widget(paragraph, area);
 }
@@ -113,10 +110,7 @@ fn build_detail_lines<'a>(node: &TreeNode, theme: &'a Theme) -> Vec<Line<'a>> {
     // Blank separator before metadata section.
     if !node.metadata.is_empty() {
         lines.push(Line::from(""));
-        lines.push(Line::from(Span::styled(
-            "  Metadata",
-            theme.group_title,
-        )));
+        lines.push(Line::from(Span::styled("  Metadata", theme.group_title)));
         lines.push(Line::from(""));
 
         for (key, value) in &node.metadata {

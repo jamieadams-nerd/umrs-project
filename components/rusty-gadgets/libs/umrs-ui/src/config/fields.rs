@@ -63,7 +63,13 @@ impl FieldValue {
     pub fn display(&self) -> String {
         match self {
             Self::Text(s) | Self::Selection(s) => s.clone(),
-            Self::Toggle(b) => if *b { "enabled".to_owned() } else { "disabled".to_owned() },
+            Self::Toggle(b) => {
+                if *b {
+                    "enabled".to_owned()
+                } else {
+                    "disabled".to_owned()
+                }
+            }
         }
     }
 }
@@ -342,11 +348,8 @@ impl FieldDef {
             if self.options.is_empty() {
                 return;
             }
-            let idx = self
-                .options
-                .iter()
-                .position(|o| o == current)
-                .unwrap_or(0);
+            let idx =
+                self.options.iter().position(|o| o == current).unwrap_or(0);
             let next_idx = (idx + 1) % self.options.len();
             if let Some(next) = self.options.get(next_idx) {
                 let new_val = FieldValue::Selection(next.clone());

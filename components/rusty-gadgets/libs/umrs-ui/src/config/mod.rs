@@ -299,7 +299,9 @@ impl ConfigState {
             let _ = field.validate_buffer();
             match &field.validation {
                 ValidationResult::Error(_) => errors = errors.saturating_add(1),
-                ValidationResult::Warning(_) => warnings = warnings.saturating_add(1),
+                ValidationResult::Warning(_) => {
+                    warnings = warnings.saturating_add(1);
+                }
                 _ => {}
             }
         }

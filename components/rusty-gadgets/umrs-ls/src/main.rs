@@ -69,7 +69,6 @@ const ROW_INDENT: &str = "  "; // 2-space left indent on every row
 const NAME_PREFIX: &str = "   "; // 3-char icon zone before filename
 
 const BOLD_RED: &str = "\x1b[1;31m";
-const BOLD_UNDER: &str = "\x1b[1;4m";
 const DIM_ITALIC: &str = "\x1b[2;3m";
 const DIM: &str = "\x1b[2m";
 const GREEN: &str = "\x1b[32m";
@@ -453,7 +452,10 @@ fn cell_iov(entry: &ListEntry, cfg: &DisplayConfig) -> String {
 // reach [`TERM_WIDTH`].  When `cfg.use_color` is `true` and secolor.conf
 // is available, the type and marking are wrapped in ANSI 24-bit true-color.
 fn group_separator(key: &GroupKey, cfg: &DisplayConfig) -> String {
-    let plain = format!("{0:20} \u{1FB6C}{1:20}\u{1FB6C} ", key.selinux_type, key.marking);
+    let plain = format!(
+        "{0:20} \u{1FB6C}{1:20}\u{1FB6C} ",
+        key.selinux_type, key.marking
+    );
     let fill = " ".repeat(TERM_WIDTH.saturating_sub(plain.len()));
 
     if cfg.use_color

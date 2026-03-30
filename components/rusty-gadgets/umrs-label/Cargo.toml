@@ -1,10 +1,10 @@
 [package]
-name = "umrs-labels"
+name = "umrs-label"
 version = "0.1.0"
 edition = "2024"
 
 [[bin]]
-name = "umrs-labels"
+name = "umrs-label"
 path = "src/main.rs"
 
 [dependencies]

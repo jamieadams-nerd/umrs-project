@@ -5,8 +5,8 @@
 //
 // Usage:
 //   cargo run -p umrs-labels --example labels -- <catalog.json>
-//   cargo run -p umrs-labels --example labels -- data/us/US-CUI-LABELS.json
-//   cargo run -p umrs-labels --example labels -- data/ca/CANADIAN-PROTECTED.json
+//   cargo run -p umrs-labels --example labels -- config/us/US-CUI-LABELS.json
+//   cargo run -p umrs-labels --example labels -- config/ca/CANADIAN-PROTECTED.json
 
 use umrs_labels::cui::catalog;
 
@@ -44,28 +44,6 @@ fn main() {
     }
 
     // ---------------------------------------------------------------------------
-    // Labels
-    // ---------------------------------------------------------------------------
-    println!("\n=========== Labels ===================");
-    let label_count = cat.iter_labels().count();
-    println!("Label count: {label_count}");
-    for (key, label) in cat.iter_labels() {
-        let level = label.level.as_deref().unwrap_or("(none)");
-        let fr = label.name_fr.as_deref().unwrap_or("");
-        if fr.is_empty() {
-            println!("  {key} — {} [level={}]", label.name, level);
-        } else {
-            println!("  {key} — {} / {fr} [level={}]", label.name, level);
-        }
-        // Show handling type for this label.
-        if label.handling_as_str().is_some() {
-            println!("    handling: string");
-        } else if label.handling_as_object().is_some() {
-            println!("    handling: structured object");
-        }
-    }
-
-    // ---------------------------------------------------------------------------
     // Markings
     // ---------------------------------------------------------------------------
     println!("\n=========== Markings (first 5) ===================");
@@ -92,16 +70,19 @@ fn main() {
     }
 
     // ---------------------------------------------------------------------------
-    // Children of CUI//LEI (US catalogs)
+    // Index group summary (groups by display grouping hint)
     // ---------------------------------------------------------------------------
-    if cat.marking("CUI//LEI").is_some() {
-        println!("\n=========== Children of CUI//LEI ===================");
-        for (key, child) in cat.marking_children("CUI//LEI") {
-            println!("{} -> {}", key, child.name);
-            if child.has_description() {
-                println!("  description: {}", child.description);
-            }
-        }
+    println!("\n=========== Index groups ===================");
+    let mut groups: std::collections::HashMap<String, usize> =
+        std::collections::HashMap::new();
+    for (_, m) in cat.iter_markings() {
+        let group = m.index_group.as_deref().unwrap_or("(ungrouped)");
+        *groups.entry(group.to_string()).or_insert(0) += 1;
+    }
+    let mut sorted: Vec<_> = groups.iter().collect();
+    sorted.sort_by_key(|(k, _)| k.as_str());
+    for (group, count) in sorted {
+        println!("  {group}: {count}");
     }
 
     // ---------------------------------------------------------------------------
@@ -109,9 +90,12 @@ fn main() {
     // ---------------------------------------------------------------------------
     println!("\n=========== Field presence audit ===================");
     let total = cat.iter_markings().count();
-    let with_description = cat.iter_markings().filter(|(_, m)| m.has_description()).count();
-    let with_handling = cat.iter_markings().filter(|(_, m)| m.has_handling()).count();
-    let with_level = cat.iter_markings().filter(|(_, m)| m.level.is_some()).count();
+    let with_description =
+        cat.iter_markings().filter(|(_, m)| m.has_description()).count();
+    let with_handling =
+        cat.iter_markings().filter(|(_, m)| m.has_handling()).count();
+    let with_level =
+        cat.iter_markings().filter(|(_, m)| m.level.is_some()).count();
     println!("Markings total:         {total}");
     println!("  with description:     {with_description}");
     println!("  with handling:        {with_handling}");

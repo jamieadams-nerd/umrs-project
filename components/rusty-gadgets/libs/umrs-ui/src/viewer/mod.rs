@@ -280,8 +280,10 @@ impl ViewerState {
                 true
             }
             Action::PrevTab => {
-                self.active_tab =
-                    self.active_tab.checked_sub(1).unwrap_or(self.tab_count - 1);
+                self.active_tab = self
+                    .active_tab
+                    .checked_sub(1)
+                    .unwrap_or(self.tab_count - 1);
                 true
             }
             Action::ScrollUp => {

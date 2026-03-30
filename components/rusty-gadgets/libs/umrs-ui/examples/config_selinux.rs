@@ -23,11 +23,13 @@
 
 use std::collections::HashMap;
 
+use umrs_ui::Action;
 use umrs_ui::app::{StatusLevel, StatusMessage, TabDef};
 use umrs_ui::config::diff::DiffEntry;
 use umrs_ui::config::fields::{FieldDef, FieldValue, ValidationResult};
-use umrs_ui::config::{ConfigApp, ConfigHeaderContext, ConfigState, ConfigStateEvent};
-use umrs_ui::Action;
+use umrs_ui::config::{
+    ConfigApp, ConfigHeaderContext, ConfigState, ConfigStateEvent,
+};
 
 // ---------------------------------------------------------------------------
 // Data struct
@@ -110,7 +112,9 @@ fn validate_selinux_mode(v: &FieldValue) -> ValidationResult {
 fn validate_selinux_type(v: &FieldValue) -> ValidationResult {
     let valid = ["targeted", "mls", "minimum"];
     match v {
-        FieldValue::Selection(s) if valid.contains(&s.as_str()) => ValidationResult::Ok,
+        FieldValue::Selection(s) if valid.contains(&s.as_str()) => {
+            ValidationResult::Ok
+        }
         _ => ValidationResult::Error(
             "Must be 'targeted', 'mls', or 'minimum'".to_owned(),
         ),
@@ -139,21 +143,15 @@ fn populate_fields(state: &mut ConfigState) {
     state.fields.push(
         FieldDef::selection(
             "SELINUXTYPE",
-            vec![
-                "targeted".to_owned(),
-                "mls".to_owned(),
-                "minimum".to_owned(),
-            ],
+            vec!["targeted".to_owned(), "mls".to_owned(), "minimum".to_owned()],
             "targeted",
             validate_selinux_type,
         )
         .required(),
     );
-    state.fields.push(FieldDef::toggle(
-        "AUDIT_ENABLED",
-        true,
-        |_| ValidationResult::Ok,
-    ));
+    state.fields.push(FieldDef::toggle("AUDIT_ENABLED", true, |_| {
+        ValidationResult::Ok
+    }));
 }
 
 /// Demonstrate entering edit mode, cycling a selection, and committing.
@@ -190,7 +188,11 @@ fn demo_diff(app: &SelinuxConfigApp, state: &ConfigState) {
         .collect();
     println!("  {:<20}  {:<20}  After", "Field", "Before");
     for entry in &diff_entries {
-        let changed_marker = if entry.is_changed() { " *" } else { "" };
+        let changed_marker = if entry.is_changed() {
+            " *"
+        } else {
+            ""
+        };
         println!(
             "  {:<20}  {:<20}  {}{}",
             entry.label, entry.before, entry.after, changed_marker

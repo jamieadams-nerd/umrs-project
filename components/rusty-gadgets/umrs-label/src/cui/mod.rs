@@ -7,7 +7,7 @@
 //!
 //! ## Sub-modules
 //!
-//! - `catalog` — `Catalog`, `Label`, `Marking`: deserializes the CUI label
+//! - `catalog` — `Catalog`, `Marking`: deserializes the CUI label
 //!   catalog from a JSON file; maps MCS security ranges to regulatory markings.
 //! - `palette` — color palette definitions for CUI marking display.
 //!

@@ -6,9 +6,9 @@
 //! Covers: tree model construction, expand/collapse, filter/search,
 //! ViewerState action handling, and breadcrumb display.
 
-use umrs_ui::viewer::tree::{TreeModel, TreeNode};
-use umrs_ui::viewer::ViewerState;
 use umrs_ui::Action;
+use umrs_ui::viewer::ViewerState;
+use umrs_ui::viewer::tree::{TreeModel, TreeNode};
 
 // ---------------------------------------------------------------------------
 // Tree construction helpers
@@ -234,15 +234,17 @@ fn node_ref_valid_path_returns_node() {
 fn node_ref_invalid_path_returns_none() {
     let model = build_test_tree();
     let node = model.node_ref(&[99]);
-    assert!(node.is_none(), "out-of-bounds path must return None (fail-closed)");
+    assert!(
+        node.is_none(),
+        "out-of-bounds path must return None (fail-closed)"
+    );
 }
 
 #[test]
 fn node_ref_nested_path() {
     let model = build_test_tree();
-    let node = model
-        .node_ref(&[0, 1, 0])
-        .expect("node at path [0,1,0] must exist");
+    let node =
+        model.node_ref(&[0, 1, 0]).expect("node at path [0,1,0] must exist");
     assert_eq!(node.label, "Grandchild A2a");
 }
 
@@ -256,11 +258,8 @@ fn apply_filter_hides_non_matching_nodes() {
     model.apply_filter("grandchild");
     model.rebuild_display();
 
-    let visible: Vec<&str> = model
-        .display_list
-        .iter()
-        .map(|e| e.label.as_str())
-        .collect();
+    let visible: Vec<&str> =
+        model.display_list.iter().map(|e| e.label.as_str()).collect();
     assert!(
         visible.contains(&"Root A"),
         "Root A must be visible as ancestor of match"
@@ -311,8 +310,14 @@ fn node_metadata_is_stored_and_retrievable() {
     model.rebuild_display();
 
     let node = model.node_ref(&[0]).expect("leaf node at path [0] must exist");
-    assert_eq!(node.metadata.get("key1").map(String::as_str), Some("value1"));
-    assert_eq!(node.metadata.get("key2").map(String::as_str), Some("value2"));
+    assert_eq!(
+        node.metadata.get("key1").map(String::as_str),
+        Some("value1")
+    );
+    assert_eq!(
+        node.metadata.get("key2").map(String::as_str),
+        Some("value2")
+    );
 }
 
 // ---------------------------------------------------------------------------
@@ -411,7 +416,10 @@ fn next_tab_wraps() {
 fn prev_tab_wraps() {
     let mut state = ViewerState::new(3);
     let _ = state.handle_action(Action::PrevTab);
-    assert_eq!(state.active_tab, 2, "PrevTab at 0 must wrap to tab_count - 1");
+    assert_eq!(
+        state.active_tab, 2,
+        "PrevTab at 0 must wrap to tab_count - 1"
+    );
 }
 
 // ---------------------------------------------------------------------------
@@ -562,12 +570,9 @@ fn viewer_header_context_summary_none_by_default() {
 #[test]
 fn viewer_header_context_with_summary() {
     use umrs_ui::ViewerHeaderContext;
-    let ctx =
-        ViewerHeaderContext::new("tool", "source", 42).with_summary("15 categories");
-    assert_eq!(
-        ctx.summary_description.as_deref(),
-        Some("15 categories")
-    );
+    let ctx = ViewerHeaderContext::new("tool", "source", 42)
+        .with_summary("15 categories");
+    assert_eq!(ctx.summary_description.as_deref(), Some("15 categories"));
 }
 
 // ---------------------------------------------------------------------------

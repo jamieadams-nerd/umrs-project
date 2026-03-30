@@ -1,12 +1,13 @@
 ## CUI Basic
-Definition: Information for which no specific law or regulation dictates unique handling controls.
+
+- Definition: Information for which no specific law or regulation dictates unique handling controls.
 Controls: Follows the baseline uniform set of safeguards defined by the National Archives (NARA) in 32 CFR Part 2002 and NIST SP 800-171 for non-federal systems.
 Marking: Mandatory to use "CUI" or "CONTROLLED" in the banner; category markings (e.g., //PRVCY) are optional unless required by agency policy. 
 
 ## CUI Specified
-Definition: Information where the underlying authority (law or regulation) mandates specific controls that differ from or exceed the Basic baseline.
-Controls: The authority dictates unique requirements, such as enhanced physical security, specific encryption, or restricted dissemination.
-Marking: Mandatory to include the category in the banner, and it must be preceded by the SP- prefix (e.g., CUI//SP-CTI). 
+- Definition: Information where the underlying authority (law or regulation) mandates specific controls that differ from or exceed the Basic baseline.
+- Controls: The authority dictates unique requirements, such as enhanced physical security, specific encryption, or restricted dissemination.
+- Marking: Mandatory to include the category in the banner, and it must be preceded by the SP- prefix (e.g., CUI//SP-CTI). 
 
 
 ## Key Comparison
@@ -19,77 +20,62 @@ Hierarchy       | Standard "vanilla" CUI       | Not a higher level, just differ
 
 
 
-You are absolutely right to be frustrated. The Index Groups (like "Law Enforcement" or "Defense") are purely for organization on the website and never appear in a banner. 
-National Archives (.gov)
-National Archives (.gov)
+
 When a document contains information from two or more categories, you must include both in the banner if they are "Specified" categories (those starting with SP-). 
-DCSA (.mil)
-DCSA (.mil)
- +1
-When to Include Multiple Categories
+
+
 You include multiple categories in the banner when a single document contains information that falls under more than one specific CUI Category. 
-National Archives (.gov)
-National Archives (.gov)
- +1
-Rule 1: Use a single slash (/) to separate the categories themselves.
-Rule 2: Alphabetize the categories within their type.
-Rule 3: Specified before Basic. All "Specified" categories (starting with SP-) must come before any "Basic" categories. 
-DCSA (.mil)
-DCSA (.mil)
- +4
-Correct Banner Example
+[RULE] Use a single slash (/) to separate the categories themselves.
+[RULE] Alphabetize the categories within their type.
+[RULE] Specified before Basic. All "Specified" categories (starting with SP-) must come before any "Basic" categories. 
+
 If you have a document with Controlled Technical Information (CTI) and Export Controlled (EXPT) data, the banner is:
-CUI//SP-CTI/EXPT
-CUI (Mandatory Control Marking)
-// (Separator for categories)
-SP-CTI (First category, alphabetized)
-/ (Separator between categories)
-EXPT (Second category, alphabetized) 
-DCSA (.mil)
-DCSA (.mil)
- +3
+- CUI//SP-CTI/EXPT
+- CUI (Mandatory Control Marking)
+- // (Separator for categories)
+- SP-CTI (First category, alphabetized)
+- / (Separator between categories)
+- EXPT (Second category, alphabetized) 
+
+
 Common "Combo" Mistakes
 Incorrect: CUI//LEI/INV — You would not use LEI as a "prefix" for INV. If the data is specifically about an investigation, you just use CUI//INV.
 Incorrect: CUI//SP-CTI//SP-EXPT — Use a single slash between categories. The double slash // is strictly for separating the main "CUI" prefix from categories, or categories from dissemination controls (like //NOFORN). 
-National Archives (.gov)
-National Archives (.gov)
- +3
+
+
 Summary of Hierarchies
 Index Group: (e.g., Law Enforcement) — Internal filing only; ignore for markings.
 Category: (e.g., INV or CTI) — The actual marking you use.
 LDC Suffix: (e.g., NOFORN) — Handling instructions that go at the very end. 
-National Archives (.gov)
-National Archives (.gov)
- +4
 For the most accurate list of markings that actually go into a banner, use the NARA CUI Marking List, which explicitly shows the "Banner Marking" for every category. 
-National Archives (.gov)
-National Archives (.gov)
+
 
 
 
 In the CUI program, there are no groups or categories that are strictly "mutually exclusive" by rule. If a single document contains information that falls under two different categories, you are required to list both in the banner. 
-National Archives (.gov)
-National Archives (.gov)
- +2
+
 However, certain combinations are rare because they overlap so heavily that one usually "swallows" the other for marking purposes.
 Rare or "Overlapping" Combinations
+
 While not forbidden, you will rarely see these together because they are often redundant:
+
 SP-CTI and EXPT: These are frequently found together in the same document because most Controlled Technical Information (CTI) is also Export Controlled (EXPT). In this case, you must list both: CUI//SP-CTI/EXPT.
+
 PRVCY and HLTH: Since health information is a specific type of privacy data, you typically mark the document with the most specific category applicable (e.g., CUI//HLTH) rather than listing both.
+
 Basic vs. Specified: If you have a document with "Basic" privacy info and "Specified" technical info, the Specified marking always takes precedence in the order of the banner. 
-National Archives (.gov)
-National Archives (.gov)
- +5
+
+
 The "Sum of Parts" Rule
 The CUI banner is a cumulative reflection of every CUI portion in the document. 
-National Archives (.gov)
-National Archives (.gov)
- +1
+
+
 If Page 1 has Law Enforcement (INV) data and Page 2 has Nuclear (NUC) data, the banner on every page must include both.
 The only thing that changes is the alphabetical order: CUI//INV/NUC. 
 National Archives (.gov)
 National Archives (.gov)
  +1
+
 Combinations that Look Exclusive (LDCs)
 While categories aren't exclusive, the Limited Dissemination Controls (LDCs) at the end of the banner often act that way. You would never see these together because they contradict each other: 
 NOFORN (No foreign dissemination) and REL TO (Authorized for release to specific countries).
@@ -97,10 +83,6 @@ FED ONLY (Federal employees only) and FEDCON (Federal employees and contractors)
 Totem Technologies
 Totem Technologies
 Summary: You can combine any categories as long as the information is actually present. Just remember: Specified (SP-) comes first, everything is alphabetized, and you use a single slash (/) between them. 
-National Archives (.gov)
-National Archives (.gov)
- +1
-Are you trying to resolve a conflict where two different sets of handling instructions (like different shredding or storage rules) seem to apply to the same document?
 
 
 

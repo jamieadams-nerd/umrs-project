@@ -105,7 +105,6 @@ pub enum Action {
     // -----------------------------------------------------------------------
     // ViewerApp actions
     // -----------------------------------------------------------------------
-
     /// Expand the currently selected tree node (Enter or Space in viewer mode).
     ///
     /// When a collapsed node is selected, `Expand` opens it to reveal its
@@ -149,7 +148,6 @@ pub enum Action {
     // -----------------------------------------------------------------------
     // ConfigApp actions
     // -----------------------------------------------------------------------
-
     /// Persist all in-progress edits to their backing store (Ctrl+S).
     ///
     /// The calling binary is responsible for emitting a structured journald
@@ -279,25 +277,16 @@ impl KeyMap {
         // Not bound by default in the AuditCardApp context but present in the
         // default map so callers do not need to re-bind it when constructing
         // a viewer.
-        map.insert(
-            key(KeyCode::Char('/'), KeyModifiers::NONE),
-            Action::Search,
-        );
+        map.insert(key(KeyCode::Char('/'), KeyModifiers::NONE), Action::Search);
 
         // ViewerApp — navigate up in hierarchy (Backspace)
-        map.insert(
-            key(KeyCode::Backspace, KeyModifiers::NONE),
-            Action::Back,
-        );
+        map.insert(key(KeyCode::Backspace, KeyModifiers::NONE), Action::Back);
 
         // ViewerApp — expand / collapse (Enter = Expand, Ctrl+Space = Collapse)
         // Enter is already bound to DialogConfirm; viewer event loops must
         // disambiguate based on dialog state. Collapse is available for callers
         // to bind to a key of their choice.
-        map.insert(
-            key(KeyCode::Char(' '), KeyModifiers::NONE),
-            Action::Expand,
-        );
+        map.insert(key(KeyCode::Char(' '), KeyModifiers::NONE), Action::Expand);
 
         Self {
             map,

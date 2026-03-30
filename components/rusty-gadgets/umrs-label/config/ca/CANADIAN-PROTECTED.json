@@ -2,11 +2,14 @@
   "_metadata": {
     "catalog_name": "Canadian Protected Information Designations",
     "catalog_name_fr": "Désignations de l'information protégée du Canada",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "authority": "TBS Directive on Security Management, Appendix J: Standard on Security Categorization",
     "authority_date": "2019-07-01",
     "author": "Henri (UMRS Canadian Policy Specialist)",
+    "country_code": "CA",
+    "mcs_category_range": "c300-c399",
     "created": "2026-03-23",
+    "updated": "2026-03-30",
     "scope": "Advisory reference — UMRS is a reference system, not a production deployment",
     "notes": [
       "Canada's Protected designation is an impact-based severity ladder, not a category taxonomy.",
@@ -14,16 +17,15 @@
       "Injury thresholds are quoted verbatim from TBS Standard on Security Categorization.",
       "French designations are from the authoritative TBS French text, not Termium Plus.",
       "This catalog uses UTF-8 encoding for accented characters.",
-      "TBS Appendix J lists tiers in descending severity order: J.2.4.2.1 (PC/highest), J.2.4.2.2 (PB), J.2.4.2.3 (PA/lowest)."
+      "TBS Appendix J lists tiers in descending severity order: J.2.4.2.1 (PC/highest), J.2.4.2.2 (PB), J.2.4.2.3 (PA/lowest).",
+      "Structure aligned with US CUI catalog: top-level key is 'markings', grouping field is 'index_group'."
     ],
     "structural_differences_from_us_cui": {
       "organizing_principle": "Injury severity ladder (3 tiers) vs category taxonomy (125+ named categories)",
-      "subcategories": "None standardized. Categories c203-c299 reserved for future departmental use.",
+      "subcategories": "None standardized. Categories c303-c399 reserved for future departmental use.",
       "dissemination_controls": "None standardized. Canadian handling = injury tier + need-to-know.",
       "governing_framework": "TBS (Treasury Board of Canada Secretariat) vs NARA CUI Registry / 32 CFR Part 2002"
-    },
-    "country_code": "CA",
-    "mcs_category_range": "c200-c299"
+    }
   },
   "mutual_exclusivity": {
     "rule": "Protected A, Protected B, and Protected C are mutually exclusive on the same information asset. A document is categorized at exactly one tier based on injury assessment.",
@@ -34,28 +36,29 @@
   },
   "extension_points": {
     "departmental_subcategories": {
-      "description": "Categories c203-c299 within each sensitivity level are reserved for future departmental information-type subcategories. Categories c200-c202 are consumed by the three base tiers (PA/PB/PC).",
-      "description_fr": "Les catégories c203 à c299 à chaque niveau de sensibilité sont réservées pour les futures sous-catégories ministérielles par type d'information. Les catégories c200 à c202 sont utilisées par les trois paliers de base (PA/PB/PC).",
+      "description": "Categories c303-c399 within each sensitivity level are reserved for future departmental information-type subcategories. Categories c300-c302 are consumed by the three base tiers (PA/PB/PC).",
+      "description_fr": "Les catégories c303 à c399 à chaque niveau de sensibilité sont réservées pour les futures sous-catégories ministérielles par type d'information. Les catégories c300 à c302 sont utilisées par les trois paliers de base (PA/PB/PC).",
       "status": "Not populated. Requires departmental input that UMRS does not currently have.",
-      "example": "A department could define c203=Personnel, c204=Financial, c205=Medical within the PB tier (s2:c200,c203, s2:c200,c204, s2:c200,c205)."
+      "example": "A department could define c303=Personnel, c304=Financial, c305=Medical within the PB tier (s2:c300,c303, s2:c300,c304, s2:c300,c305)."
     },
     "military_caveats": {
       "description": "DND/CAF may have military-specific handling caveats not reflected in the civilian TBS framework. This is a known corpus gap.",
       "status": "Pending Termium Plus Military/Security subject acquisition."
     }
   },
-  "labels": {
+  "markings": {
     "PROTECTED-A": {
       "name": "Protected A",
       "name_fr": "Protégé A",
-      "level": "s1",
-      "category_base": "c200",
-      "category_range_reserved": "c203-c299",
+      "abbrv_name": "PA",
       "description": "Information whose unauthorized disclosure could reasonably be expected to cause limited or moderate injury outside the national interest.",
       "description_fr": "Renseignements dont on pourrait vraisemblablement s'attendre à ce que la divulgation non autorisée cause un préjudice limité ou modéré à des intérêts autres que l'intérêt national.",
-      "injury_examples": "Disclosure of an exact salary figure.",
-      "injury_examples_fr": "La divulgation d'un salaire exact.",
-      "authority_section": "J.2.4.2.3",
+      "index_group": null,
+      "designation": null,
+      "level": "s1",
+      "category_base": "c300",
+      "category_range_reserved": "c303-c399",
+      "handling_group_id": null,
       "handling": {
         "personnel_screening": "Reliability Status",
         "personnel_screening_fr": "Cote de fiabilité",
@@ -67,27 +70,29 @@
         "destruction_fr": "Déchiquetage ou méthode de destruction approuvée",
         "need_to_know": true
       },
-      "dissemination_controls": null,
-      "us_cui_approximate_correspondence": "Some CUI Basic categories address similar injury levels, but the systems are structurally different. Not a direct mapping.",
+      "injury_examples": "Disclosure of an exact salary figure.",
+      "injury_examples_fr": "La divulgation d'un salaire exact.",
+      "authority_section": "J.2.4.2.3",
       "marking_banner_en": "PROTECTED A",
       "marking_banner_fr": "PROTÉGÉ A",
-      "abbrv_name": "PA",
-      "parent_group": "",
-      "designation": null,
+      "us_cui_approximate_correspondence": "Some CUI Basic categories address similar injury levels, but the systems are structurally different. Not a direct mapping.",
+      "dissemination_controls": null,
       "required_warning_statement": null,
-      "required_dissemination_control": null
+      "required_dissemination_control": null,
+      "phase_note": null
     },
     "PROTECTED-B": {
       "name": "Protected B",
       "name_fr": "Protégé B",
-      "level": "s2",
-      "category_base": "c201",
-      "category_range_reserved": "c203-c299",
+      "abbrv_name": "PB",
       "description": "Information whose unauthorized disclosure could reasonably be expected to cause serious injury outside the national interest.",
       "description_fr": "Renseignements dont on pourrait vraisemblablement s'attendre à ce que la divulgation non autorisée cause un préjudice sérieux à des intérêts autres que l'intérêt national.",
-      "injury_examples": "Loss of reputation or competitive advantage.",
-      "injury_examples_fr": "Perte de réputation ou d'avantage concurrentiel.",
-      "authority_section": "J.2.4.2.2",
+      "index_group": null,
+      "designation": null,
+      "level": "s2",
+      "category_base": "c301",
+      "category_range_reserved": "c303-c399",
+      "handling_group_id": null,
       "handling": {
         "personnel_screening": "Reliability Status (Enhanced)",
         "personnel_screening_fr": "Cote de fiabilité (approfondie)",
@@ -99,27 +104,29 @@
         "destruction_fr": "Déchiquetage à coupe croisée; destruction approuvée des supports électroniques",
         "need_to_know": true
       },
-      "dissemination_controls": null,
-      "us_cui_approximate_correspondence": "Roughly corresponds to CUI Specified categories requiring enhanced handling. The correspondence is approximate — CUI Specified is category-specific while PB is a uniform tier.",
+      "injury_examples": "Loss of reputation or competitive advantage.",
+      "injury_examples_fr": "Perte de réputation ou d'avantage concurrentiel.",
+      "authority_section": "J.2.4.2.2",
       "marking_banner_en": "PROTECTED B",
       "marking_banner_fr": "PROTÉGÉ B",
-      "abbrv_name": "PB",
-      "parent_group": "",
-      "designation": null,
+      "us_cui_approximate_correspondence": "Roughly corresponds to CUI Specified categories requiring enhanced handling. The correspondence is approximate — CUI Specified is category-specific while PB is a uniform tier.",
+      "dissemination_controls": null,
       "required_warning_statement": null,
-      "required_dissemination_control": null
+      "required_dissemination_control": null,
+      "phase_note": null
     },
     "PROTECTED-C": {
       "name": "Protected C",
       "name_fr": "Protégé C",
-      "level": "s3",
-      "category_base": "c202",
-      "category_range_reserved": "c203-c299",
+      "abbrv_name": "PC",
       "description": "Information whose unauthorized disclosure could reasonably be expected to cause extremely grave injury outside the national interest, for example, loss of life.",
       "description_fr": "Renseignements dont on pourrait raisonnablement s'attendre à ce que la divulgation non autorisée cause un préjudice extrêmement grave à des intérêts autres que l'intérêt national, par exemple, la perte de vie.",
-      "injury_examples": "Loss of life.",
-      "injury_examples_fr": "La perte de vie.",
-      "authority_section": "J.2.4.2.1",
+      "index_group": null,
+      "designation": null,
+      "level": "s3",
+      "category_base": "c302",
+      "category_range_reserved": "c303-c399",
+      "handling_group_id": null,
       "handling": {
         "personnel_screening": "Enhanced screening (approaches Secret-level requirements)",
         "personnel_screening_fr": "Vérification approfondie (s'approche des exigences du niveau Secret)",
@@ -131,16 +138,16 @@
         "destruction_fr": "Méthodes de destruction approuvées par la NSA/le CST",
         "need_to_know": true
       },
-      "dissemination_controls": null,
-      "us_cui_approximate_correspondence": "No direct US CUI equivalent. Protected C sits at the boundary between unclassified and classified. US CUI does not include a tier of this severity.",
+      "injury_examples": "Loss of life.",
+      "injury_examples_fr": "La perte de vie.",
+      "authority_section": "J.2.4.2.1",
       "marking_banner_en": "PROTECTED C",
       "marking_banner_fr": "PROTÉGÉ C",
-      "phase_note": "Protected C requires Phase 2 MLS enforcement to carry meaningful security value. In Phase 1, the label is applied and visible but not kernel-enforced.",
-      "abbrv_name": "PC",
-      "parent_group": "",
-      "designation": null,
+      "us_cui_approximate_correspondence": "No direct US CUI equivalent. Protected C sits at the boundary between unclassified and classified. US CUI does not include a tier of this severity.",
+      "dissemination_controls": null,
       "required_warning_statement": null,
-      "required_dissemination_control": null
+      "required_dissemination_control": null,
+      "phase_note": "Protected C requires Phase 2 MLS enforcement to carry meaningful security value. In Phase 1, the label is applied and visible but not kernel-enforced."
     }
   }
 }
