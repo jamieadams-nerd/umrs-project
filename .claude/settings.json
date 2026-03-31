@@ -269,7 +269,8 @@
       "Bash(RAG_CHROMA_PATH=/media/psf/repos/ai-rag-vdb/chroma python ingest.py --collection technical-communication-theory --summary)",
       "Bash(tee /DEVELOPMENT/umrs-project/.claude/references/tbs-canada-style/canada-content-style-guide-en.md)",
       "Bash(tee /DEVELOPMENT/umrs-project/.claude/references/tbs-canada-style/canada-content-style-guide-fr.md)",
-      "WebFetch(domain:www.archives.gov)"
+      "WebFetch(domain:www.archives.gov)",
+      "Bash(xargs -I{} grep -l coder {})"
     ]
   },
   "enabledPlugins": {
