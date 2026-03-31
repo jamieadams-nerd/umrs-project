@@ -1,7 +1,7 @@
 # Research Pipeline Priorities
 
 **Date:** 2026-03-21
-**Status:** approved — Jamie approved all source sites 2026-03-23; execution in progress
+**Status:** in-progress — Priority 1 complete; Priority 2 Canada complete (Appendix J EN/FR downloaded 2026-03-31, AU/UK/NZ backburner); Priority 3 backburner; Priority 4 complete (all 3 docs downloaded + familiarized 2026-03-31, no RAG needed)
 **Author:** The Librarian (researcher)
 **ROADMAP Goals:** G3 (CUI & Five Eyes), G4 (Assessment Engine), G7 (Public Project)
 **Milestones:** M2 (OSCAL), M3 (CUI/Five Eyes)

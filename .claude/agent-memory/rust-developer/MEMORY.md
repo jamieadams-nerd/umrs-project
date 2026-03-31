@@ -37,6 +37,8 @@ OpenSSL is a system-wide trust anchor — binary analysis must trace linkage to 
 - HW crate: `umrs-hw` — ONLY crate WITHOUT `#![forbid(unsafe_code)]`
 - All tests in `tests/`, never inline
 - Run via `cargo xtask {fmt,clippy,test}` from `components/rusty-gadgets/`
+- Binary crates that need testable modules: add `[lib]` + `src/lib.rs` to expose modules for `tests/`
+- `umrs-ls` now has `[lib]` (lib.rs) exposing `pub mod grouping`; binary in main.rs imports via `umrs_ls::grouping::`
 
 ## posture Catalog — Display Fields (added 2026-03-22 Session 2)
 

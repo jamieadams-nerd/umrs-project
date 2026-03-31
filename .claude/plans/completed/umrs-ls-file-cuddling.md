@@ -1,6 +1,6 @@
 # Plan: umrs-ls File Cuddling (Compact View)
 
-**Status:** Approved — implement before TUI conversion.
+**Status:** Completed — all 3 phases implemented 2026-03-31. 30 tests, clippy clean.
 
 **ROADMAP alignment:** G4 (Tool Ecosystem), G8 (Human-Centered Design)
 

@@ -270,7 +270,25 @@
       "Bash(tee /DEVELOPMENT/umrs-project/.claude/references/tbs-canada-style/canada-content-style-guide-en.md)",
       "Bash(tee /DEVELOPMENT/umrs-project/.claude/references/tbs-canada-style/canada-content-style-guide-fr.md)",
       "WebFetch(domain:www.archives.gov)",
-      "Bash(xargs -I{} grep -l coder {})"
+      "Bash(xargs -I{} grep -l coder {})",
+      "Bash(sudo tee:*)",
+      "Bash(sudo systemctl:*)",
+      "Bash(systemctl is-active:*)",
+      "Bash(mkdir -p /MLS_TEST_DIRS/cui_test)",
+      "Bash(touch /MLS_TEST_DIRS/cui_test/export_controlled.txt /MLS_TEST_DIRS/cui_test/investigation.txt /MLS_TEST_DIRS/cui_test/protected_b.txt /MLS_TEST_DIRS/cui_test/uncontrolled.txt)",
+      "Bash(chcon -l s0:c0 /MLS_TEST_DIRS/cui_test/uncontrolled.txt)",
+      "Bash(chcon -l s0:c25 /MLS_TEST_DIRS/cui_test/export_controlled.txt)",
+      "Bash(chcon -l s0:c76 /MLS_TEST_DIRS/cui_test/investigation.txt)",
+      "Bash(chcon -l s0:c301 /MLS_TEST_DIRS/cui_test/protected_b.txt)",
+      "Bash(touch /tmp/ldc_test.txt)",
+      "Bash(chcon -l s0:c254 /tmp/ldc_test.txt)",
+      "Bash(touch /tmp/dq_test.txt)",
+      "Bash(chcon -l \"DISPLAY ONLY\" /tmp/dq_test.txt)",
+      "Bash(/DEVELOPMENT/umrs-project/components/rusty-gadgets/target/debug/umrs-ls /MLS_TEST_DIRS/basic_tests/vault_sim --color)",
+      "Bash(/DEVELOPMENT/umrs-project/components/rusty-gadgets/target/debug/umrs-ls /MLS_TEST_DIRS/basic_tests/vault_sim/inbox --color)",
+      "Bash(/DEVELOPMENT/umrs-project/components/rusty-gadgets/target/debug/umrs-ls /MLS_TEST_DIRS/basic_tests/vault_sim/reviewed --color)",
+      "Bash(/DEVELOPMENT/umrs-project/components/rusty-gadgets/target/debug/umrs-ls /MLS_TEST_DIRS/basic_tests/vault_sim/exported --color)",
+      "WebFetch(domain:www.tbs-sct.canada.ca)"
     ]
   },
   "enabledPlugins": {

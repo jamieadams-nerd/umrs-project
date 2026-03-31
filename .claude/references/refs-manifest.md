@@ -282,13 +282,42 @@ framework when operating at high-assurance protection levels against sophisticat
 | Local path | `nist/sp800-161r1.pdf` |
 | Source URL | https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-161r1.pdf |
 | SHA-256 | `c8250b1ea542640a7cffc145be08c6b17ff76bd695f8c0ac1b40c49d45355d89` |
-| Status | ✓ Downloaded |
+| Status | ⚠ Withdrawn — superseded by SP 800-161r1-upd1 (November 1, 2024). Do not cite for compliance. Acquire upd1. |
 | Relevance | umrs-selinux, SA-12, SR family, CMMC SR.L2; supply chain risk management for Rust crates and OS packages |
 
 **Key relevance**: Comprehensive C-SCRM guidance aligned to NIST SP 800-53 Rev 5 SR (Supply Chain
 Risk Management) family. Directly applicable to UMRS's scrutiny of Rust crate dependencies and
 RHEL package provenance. Informs the crate vetting checklist and component integrity verification
 requirements. CMMC Level 2 includes SR.L2 requirements that reference this publication.
+
+**WARNING**: This document was formally withdrawn by NIST on November 1, 2024 and replaced by
+SP 800-161r1-upd1. The local copy is retained for reference only. Do not cite this version in
+compliance documentation, control mappings, or design rationale. See the entry below for the
+current version: SP 800-161r1-upd1.
+
+---
+
+### NIST SP 800-161 Rev 1 Upd 1 — Cybersecurity Supply Chain Risk Management (Current)
+
+| Field | Value |
+|---|---|
+| Full title | Cybersecurity Supply Chain Risk Management Practices for Systems and Organizations |
+| Issuing authority | NIST |
+| Version | Rev 1, Update 1 |
+| Published | November 1, 2024 |
+| Downloaded | 2026-03-31 |
+| Local path | `nist/sp800-161r1-upd1.pdf` |
+| Source URL | https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-161r1-upd1.pdf |
+| SHA-256 | `d2bacbf4053adbbe11628f74f071077d8fd59ba99754a3aab34d7813c1cb3d40` |
+| Status | ✓ Downloaded |
+| Relevance | umrs-selinux, SA-12, SR family, CMMC SR.L2; supply chain risk management for Rust crates and OS packages |
+
+**Key relevance**: Current (Update 1) version of the C-SCRM guidance, superseding the withdrawn
+Rev 1 (May 2022). Fully aligned to NIST SP 800-53 Rev 5 SR (Supply Chain Risk Management) family.
+Directly applicable to UMRS scrutiny of Rust crate dependencies and RHEL package provenance.
+Informs the crate vetting checklist and component integrity verification requirements. CMMC Level 2
+SR.L2 requirements reference this publication. Cite this version — not `sp800-161r1.pdf` — in all
+compliance documentation, control mappings, and design rationale.
 
 ---
 
@@ -312,6 +341,31 @@ information types map to LOW/MODERATE/HIGH security categories (confidentiality,
 availability). Foundational for MLS/MCS label design — UMRS's Protected A/B/C mapping and CUI
 categorization align to the categorization framework defined here. Companion Volume 2 defines
 specific government information type mappings.
+
+---
+
+### NIST SP 800-60 Vol 2 Rev 1 — Appendices to Guide for Mapping Information Types to Security Categories
+
+| Field | Value |
+|---|---|
+| Full title | Guide for Mapping Types of Information and Information Systems to Security Categories: Appendices |
+| Issuing authority | NIST |
+| Version | Volume 2, Rev 1 |
+| Published | August 2008 |
+| Downloaded | 2026-03-31 |
+| Local path | `nist/sp800-60v2r1.pdf` |
+| Source URL | https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-60v2r1.pdf |
+| SHA-256 | `0b4c5128b39a90f1bb1c1004f22bfe1fa34110222da740011f86c050983dc8de` |
+| Status | ✓ Downloaded |
+| Relevance | umrs-selinux MLS/MCS, RA-2, FIPS 199, information categorization, CUI classification mapping, government information types |
+
+**Key relevance**: The concrete mapping companion to Volume 1. Contains the authoritative
+LOW/MODERATE/HIGH security category assignments for specific government information types
+across all federal mission areas (e.g., Law Enforcement, Intelligence, Financial Management).
+Directly informs UMRS MCS category range design: the US CUI category numbers assigned to
+categories like Law Enforcement (LEI, INV) and Privacy (PRVCY) should be cross-checked against
+the CIA-impact baselines defined here. Essential reference when validating that UMRS label
+assignments reflect the federal information type hierarchy.
 
 ---
 
@@ -380,6 +434,18 @@ permanent, stable location — always look here first.
 | SHA-256 | `0ac16788b256f4c26dac13fb254741065387a275a8e527d1f4806b5a690dd09b` |
 | Topics | HCI foundational texts, information architecture discipline, knowledge organization theory, technical communication academic theory, YouTube transcript RAG pipeline logistics, open-access source inventory, prioritized acquisition plan with Tier 1/2/3/4 sequencing |
 | Relevance | Elena (senior-tech-writer), Sage, Simone educational background materialization; `.claude/references/` RAG collection design; UMRS documentation quality improvement; CUI taxonomy design; posture catalog classification design |
+
+---
+
+### Priority 4 NIST Familiarization — SP 800-172, SP 800-161r1, SP 800-60 Vol 1
+
+| Field | Value |
+|---|---|
+| File | `.claude/references/reports/2026-03-31-priority4-nist-familiarization.md` |
+| Date | 2026-03-31 |
+| SHA-256 | `70bd815797b414b55289a8a61c2d954e0ed12688be06f43fd5e70703d845b49e` |
+| Topics | SP 800-172 enhanced CUI requirements, CMMC Level 3 delta from Level 2, APT threat framing, C-SCRM framework (SP 800-161r1 — withdrawn), FIPS 199 information categorization methodology (SP 800-60), RAG ingestion decisions, pending acquisitions (SP 800-161r1-upd1 and SP 800-60 Vol 2) |
+| Relevance | `umrs-selinux`, `umrs-labels`, `umrs-hw`, Knox (dependency scrutiny), future assessment engine (G4); SC.3.177, SR family, AC-4, RA-2, FIPS 199 |
 
 ---
 
@@ -1233,6 +1299,217 @@ overrides, which are smaller and more targeted for automation use.
 
 **Relevance:** FedRAMP authorization, CMMC alignment, assessment-engine, AC-2, AC-4, CA-7,
 RA-2, SI-12; informs which controls are selected at each impact level
+
+---
+
+## Five Eyes Classification Policies
+
+Acquired per `.claude/plans/research-pipeline-priorities.md` Priority 2 (Canada portion).
+Collection path: `.claude/references/five-eyes-classification/`
+Source record: `.claude/references/five-eyes-classification/SOURCE.md`
+Familiarization-only — no RAG ingestion required (Henri and Simone use directly).
+Initial download: 2026-03-24. SOURCE.md and manifest entries added: 2026-03-31.
+
+---
+
+### TBS Policy on Government Security (PGS) — English
+
+```
+name: TBS Policy on Government Security — English
+path: .claude/references/five-eyes-classification/tbs-policy-gov-security-en.md
+version: July 1, 2019 (last amended January 6, 2025)
+source_url: https://www.tbs-sct.canada.ca/pol/doc-eng.aspx?id=16578
+date_retrieved: 2026-03-24
+sha256: ⚠ pending — run sha256sum on file and record here
+relevance: umrs-labels, CANADIAN-PROTECTED.json, Henri, Simone, Five Eyes mapping, AC-16
+status: downloaded
+```
+
+High-level governance policy. Defines security management obligations for GoC departments.
+Covers: security screening (A.1), IT security (A.2), physical security (A.3), BCM (A.4),
+information management security (A.5), contract security (A.6), security event management (A.7),
+security awareness (A.8). Full definitions glossary in Appendix B.
+
+**Note:** The PGS does NOT define Protected A/B/C tiers. Those are in Appendix J of the DOSM
+(id=32614). The PGS is the enabling governance instrument; Appendix J is the classification standard.
+
+---
+
+### TBS Policy on Government Security (PGS) — French
+
+```
+name: TBS Politique sur la sécurité du gouvernement — French (fr-CA)
+path: .claude/references/five-eyes-classification/tbs-policy-gov-security-fr.md
+version: 1er juillet 2019 (modifiée le 6 janvier 2025)
+source_url: https://www.tbs-sct.canada.ca/pol/doc-fra.aspx?id=16578
+date_retrieved: 2026-03-24
+sha256: ⚠ pending — run sha256sum on file and record here
+relevance: umrs-labels, CANADIAN-PROTECTED.json, Simone (French terminology), Five Eyes mapping
+status: downloaded
+```
+
+French (fr-CA) version of the PGS. Primary use: Simone's bilingual terminology reference for
+GoC security management vocabulary. Covers identical content to the English version.
+Canonical French title: "Politique sur la sécurité du gouvernement".
+
+---
+
+### TBS Directive on Security Management (DOSM) — English
+
+```
+name: TBS Directive on Security Management — English
+path: .claude/references/five-eyes-classification/tbs-dosm-en.md
+version: July 1, 2019
+source_url: https://www.tbs-sct.canada.ca/pol/doc-eng.aspx?id=32611
+date_retrieved: —
+sha256: —
+relevance: umrs-labels, CANADIAN-PROTECTED.json, Henri, Simone, AC-16
+status: requires_download
+```
+
+**Status: Not yet downloaded.** The DOSM is the mandatory directive implementing the PGS.
+It defines mandatory procedures for all security management domains. Parent document for
+Appendix J (the classification standard). Fetch with:
+
+```bash
+bash -c 'curl -L -s --max-time 60 \
+  -A "Mozilla/5.0 (X11; Linux x86_64; rv:120.0) Gecko/20100101 Firefox/120.0" \
+  "https://www.tbs-sct.canada.ca/pol/doc-eng.aspx?id=32611&section=html" \
+  | pandoc -f html -t markdown --wrap=none \
+  > /DEVELOPMENT/umrs-project/.claude/references/five-eyes-classification/tbs-dosm-en.md'
+```
+
+---
+
+### TBS Directive on Security Management (DOSM) — French
+
+```
+name: TBS Directive sur la gestion de la sécurité — French (fr-CA)
+path: .claude/references/five-eyes-classification/tbs-dosm-fr.md
+version: 1er juillet 2019
+source_url: https://www.tbs-sct.canada.ca/pol/doc-fra.aspx?id=32611
+date_retrieved: —
+sha256: —
+relevance: umrs-labels, CANADIAN-PROTECTED.json, Simone (French terminology)
+status: requires_download
+```
+
+**Status: Not yet downloaded.** French (fr-CA) version of the DOSM.
+Canonical French title: "Directive sur la gestion de la sécurité". Fetch with:
+
+```bash
+bash -c 'curl -L -s --max-time 60 \
+  -A "Mozilla/5.0 (X11; Linux x86_64; rv:120.0) Gecko/20100101 Firefox/120.0" \
+  -H "Accept-Language: fr-CA,fr;q=0.9" \
+  "https://www.tbs-sct.canada.ca/pol/doc-fra.aspx?id=32611&section=html" \
+  | pandoc -f html -t markdown --wrap=none \
+  > /DEVELOPMENT/umrs-project/.claude/references/five-eyes-classification/tbs-dosm-fr.md'
+```
+
+---
+
+### TBS DOSM Appendix J — Standard on Security Categorization — English
+
+```
+name: TBS DOSM Appendix J: Standard on Security Categorization — English
+path: .claude/references/five-eyes-classification/tbs-dosm-appendix-j-security-categorization-en.md
+version: July 1, 2019
+source_url: https://www.tbs-sct.canada.ca/pol/doc-eng.aspx?id=32614
+date_retrieved: —
+sha256: —
+relevance: umrs-labels, CANADIAN-PROTECTED.json, setrans.conf, Henri, Simone, AC-16, MP-3
+status: requires_download — HIGHEST PRIORITY in this collection
+```
+
+**Status: Not yet downloaded. HIGHEST PRIORITY.** This is the document that defines
+Protected A, Protected B, Protected C, and Classified (Confidential/Secret/Top Secret) tiers
+by injury type. This is the authoritative source for `CANADIAN-PROTECTED.json` label design
+and `setrans.conf` Canadian entries.
+
+Key content (confirmed via search):
+- Protected = injury outside the national interest (to individuals or organizations)
+- Classified = injury to the national interest
+- Protected A: limited injury to an individual or organization
+- Protected B: serious injury to an individual or organization
+- Protected C: extremely grave injury (comparable to Classified; rarely used)
+
+Fetch with:
+```bash
+bash -c 'curl -L -s --max-time 60 \
+  -A "Mozilla/5.0 (X11; Linux x86_64; rv:120.0) Gecko/20100101 Firefox/120.0" \
+  "https://www.tbs-sct.canada.ca/pol/doc-eng.aspx?id=32614&section=html" \
+  | pandoc -f html -t markdown --wrap=none \
+  > /DEVELOPMENT/umrs-project/.claude/references/five-eyes-classification/tbs-dosm-appendix-j-security-categorization-en.md'
+```
+
+---
+
+### TBS DOSM Appendix J — Norme sur la catégorisation de la sécurité — French
+
+```
+name: TBS DOSM Annexe J : Norme sur la catégorisation de la sécurité — French (fr-CA)
+path: .claude/references/five-eyes-classification/tbs-dosm-appendix-j-security-categorization-fr.md
+version: 1er juillet 2019
+source_url: https://www.tbs-sct.canada.ca/pol/doc-fra.aspx?id=32614
+date_retrieved: —
+sha256: —
+relevance: umrs-labels, CANADIAN-PROTECTED.json, setrans.conf, Simone (canonical French terms)
+status: requires_download — HIGHEST PRIORITY in this collection
+```
+
+**Status: Not yet downloaded. HIGHEST PRIORITY.** French (fr-CA) version of Appendix J.
+Canonical French title: "Norme sur la catégorisation de la sécurité".
+Primary use: Simone's canonical source for "Protégé A", "Protégé B", "Protégé C" — the
+Treasury Board-authorized French-language designations for GoC classification tiers.
+These terms must appear in any fr-CA localized security label output from UMRS.
+
+Fetch with:
+```bash
+bash -c 'curl -L -s --max-time 60 \
+  -A "Mozilla/5.0 (X11; Linux x86_64; rv:120.0) Gecko/20100101 Firefox/120.0" \
+  -H "Accept-Language: fr-CA,fr;q=0.9" \
+  "https://www.tbs-sct.canada.ca/pol/doc-fra.aspx?id=32614&section=html" \
+  | pandoc -f html -t markdown --wrap=none \
+  > /DEVELOPMENT/umrs-project/.claude/references/five-eyes-classification/tbs-dosm-appendix-j-security-categorization-fr.md'
+```
+
+---
+
+### UK Government Security Classification Policy (GSCP)
+
+```
+name: UK Government Security Classification Policy (GSCP)
+path: .claude/references/five-eyes-classification/uk-gscp-june2023.pdf
+version: June 2023
+source_url: https://www.gov.uk/government/publications/government-security-classifications
+date_retrieved: 2026-03-24
+sha256: ⚠ pending — run sha256sum on file and record here
+relevance: umrs-labels, Five Eyes mapping, AC-16
+status: downloaded
+```
+
+Cabinet Office policy defining the UK classification scheme: OFFICIAL, SECRET, TOP SECRET.
+Includes guidance on handling, markings, and system requirements. The OFFICIAL tier (with
+SENSITIVE subset) maps roughly to US CUI / Canadian Protected B.
+
+---
+
+### New Zealand Information Security Manual (NZISM) v3.7
+
+```
+name: New Zealand Information Security Manual (NZISM)
+path: .claude/references/five-eyes-classification/nzism-3.7.pdf
+version: 3.7
+source_url: https://www.nzism.gcsb.govt.nz/
+date_retrieved: 2026-03-24
+sha256: ⚠ pending — run sha256sum on file and record here
+relevance: umrs-labels, Five Eyes mapping, AC-16
+status: downloaded
+```
+
+GCSB (Government Communications Security Bureau) security manual. Covers NZ classification
+scheme: UNCLASSIFIED, IN-CONFIDENCE, SENSITIVE, RESTRICTED, CONFIDENTIAL, SECRET, TOP SECRET.
+Relevant for Five Eyes label equivalency mapping.
 
 ---
 

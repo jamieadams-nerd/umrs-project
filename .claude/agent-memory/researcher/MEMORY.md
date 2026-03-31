@@ -1,7 +1,7 @@
 # Researcher Agent Memory — "The Librarian"
 # Alias: The Librarian (always include "The"). Real name: T. Librarian.
 # Portrait: docs/modules/ai-transparency/images/librarian.png
-# Last updated: 2026-03-23
+# Last updated: 2026-03-31 (sp800-161r1-upd1 familiarization complete)
 
 ## Critical: Bash Fetch Patterns
 
@@ -31,7 +31,7 @@ Verify PDF: `head -c 4 <file>` must show `%PDF`.
 
 ### .claude/references/ manifest (official security docs)
 - `.claude/references/refs-manifest.md` is the canonical manifest — always read before retrieval tasks
-- `.claude/references/nist/` — NIST SPs (800-218, 800-171r2, 800-171r3, 800-53r5, 800-37r2, 800-53Ar5, 800-30r1, 800-39, 800-90B, 800-172, 800-161r1, 800-60v1r1) + FIPS (140-2, 140-3)
+- `.claude/references/nist/` — NIST SPs (800-218, 800-171r2, 800-171r3, 800-53r5, 800-37r2, 800-53Ar5, 800-30r1, 800-39, 800-90B, 800-172, 800-161r1 [WITHDRAWN], 800-161r1-upd1 [CURRENT, downloaded 2026-03-31, **familiarized 2026-03-31** → see `sp800-161r1-upd1-familiarization.md`], 800-60v1r1 [Vol 1], 800-60v2r1 [Vol 2, **familiarized 2026-03-31** → see `sp800-60-familiarization.md`]) + FIPS (140-2, 140-3)
 - `.claude/references/nist/fips/` — FIPS 203, 204, 205 (PQC standards, downloaded 2026-03-13)
 - `.claude/references/dod-5200/` — DoD CMMC docs (Final Rule + Assessment Guide L2, both downloaded 2026-03-12)
 - `.claude/references/fedramp/` — FedRAMP accreditation docs (downloaded 2026-03-15: CSP playbook, Agency playbook, SSP/SAP/SAR templates)
@@ -72,6 +72,7 @@ Collections and status as of 2026-03-15:
 | information-architecture/theory | Pirolli ch.1 + Precision Content IA white paper | Downloaded 2026-03-22 — awaiting ingestion | 0 |
 | information-architecture/standards | NISO Z39.19-2005 (R2010) controlled vocabularies standard | Downloaded 2026-03-22 — awaiting ingestion | 0 |
 | oscal-schemas | OSCAL v1.1.2 JSON schemas (8) + FedRAMP Rev5 LOW/MOD/HIGH profiles (6) | Downloaded 2026-03-23 — NEEDS settings.json permission to ingest | 0 |
+| five-eyes-classification | TBS PGS EN/FR, UK GSCP, NZISM 3.7 (downloaded 2026-03-24); DOSM+Appendix J NOT YET downloaded | Familiarization-only (no RAG) — SOURCE.md + manifest added 2026-03-31 | n/a |
 
 Full source URL list for update checks: see `rag-collections.md` in this directory.
 PQC status tracker (team-readable): see `pqc-tracker.md` in this directory.
@@ -93,8 +94,7 @@ RAG_CHROMA_PATH=/media/psf/repos/ai-rag-vdb/chroma python ingest.py --collection
 # No --source flag; auto-discovers via rglob; --force to reprocess; --summary for counts
 ```
 
-### ingest.py known fixes (2026-03-10): `.txt`→PASSTHROUGH; SKIP_EXTENSIONS for binaries; save_manifest() per-file.
-### Collection naming: ChromaDB sanitizes `/` → `-`, so `linux-fhs-2.3` becomes `linux-fhs-2-3`
+### ingest.py known fixes (2026-03-10): `.txt`→PASSTHROUGH; SKIP_EXTENSIONS for binaries; save_manifest() per-file. Collection naming: `/` → `-` (e.g. `linux-fhs-2.3` → `linux-fhs-2-3`).
 
 ## Approved Sources (from role instructions)
 - NIST: csrc.nist.gov, nvlpubs.nist.gov
@@ -123,21 +123,17 @@ Checklist for every new report:
 
 Existing reports:
 - `.claude/references/reports/kernel-selinux-module-context-security.md` (2026-03-10)
-  Topics: modules_disabled, MODULE_SIG_FORCE, Lockdown/LoadPin/IPE LSMs,
-  SELinux system:module_request, MLS mlsvalidatetrans, Bell-LaPadula tranquility
+  Topics: modules_disabled, MODULE_SIG_FORCE, Lockdown/LoadPin/IPE LSMs, SELinux module_request, MLS tranquility
 - `.claude/references/reports/stig-signal-coverage.md` (2026-03-17)
-  Topics: 36 posture indicators vs 451 STIG rules; 20 direct matches; audit gap (51 rules);
-  network gap (19 rules); 7 Tier-1 candidate indicators; CMMC alignment; severity cross-reference
+  Topics: 36 posture indicators vs 451 STIG rules; 20 direct matches; audit/network gaps; 7 Tier-1 candidates
 - `.claude/references/reports/umrs-capabilities-800-171r3-mapping.md` (2026-03-19)
-  Topics: 7 UMRS blog capabilities mapped to 800-171r3 mandatory requirements; all 7 are mandated;
-  3 have above-and-beyond implementation dimensions; MP-03, PL-04, CM-06, CA-07, AU-03, SA-08, AC-03/04
+  Topics: 7 UMRS blog capabilities → 800-171r3 mandatory reqs; MP-03/PL-04/CM-06/CA-07/AU-03/SA-08/AC-03/04
 - `.claude/references/reports/nara-cui-registry-crossref.md` (2026-03-21)
-  Topics: NARA canonical CUI vs cui-labels.json audit; 6 standalone-vs-group errors (CTI/NNPI/OPSEC/PROT/PSEC/RAIL);
-  18 OURS_ONLY entries: 7 fabricated (CHEM,PCI,RECS,LEGL,AVIATION,MARITIME,PIPELINE), 7 wrong abbreviations,
+  Topics: NARA CUI vs cui-labels.json audit; 6 standalone-vs-group errors; 7 fabricated categories
 - `.claude/references/reports/agent-knowledge-acquisition-plan.md` (2026-03-21)
-  Topics: HCI/IA/KO/TechComm open-access source inventory; 12 Tier-1 zero-cost resources; canonical reading
-  lists per domain; YouTube transcript pipeline logistics; ISKO IEKO, Stanford CS147/CS347, MIT 6.831 coverage
-  FEDCON misclassified as category (it is a dissemination control), TRANSPORT/GOVT are invented groups
+  Topics: HCI/IA/KO/TechComm open-access sources; 12 Tier-1 resources; ISKO IEKO, Stanford CS147, MIT 6.831
+- `.claude/references/reports/2026-03-31-priority4-nist-familiarization.md` (2026-03-31)
+  Topics: SP 800-172 (APT/CMMC L3); SP 800-161r1 WITHDRAWN (superseded by upd1); SP 800-60 Vol 1 INCOMPLETE
 
 ## Retrieval Patterns (learned 2026-03-11)
 
@@ -153,17 +149,10 @@ Existing reports:
   passes Cloudflare challenge, then JS `fetch()` from same origin works for PDF downloads
 - dodcio.defense.gov now redirects to `dowcio.war.gov`; must navigate to war.gov first, then
   fetch from war.gov domain context (cross-origin fetch from defense.gov context fails)
-- govinfo.gov PDF URL pattern: `/content/pkg/FR-YYYY-MM-DD/pdf/<doc-number>.pdf` — search
-  govinfo to confirm correct date and document number before downloading
-- CMMC manifest correction: document 2023-27756 was an OMB submission, NOT the CMMC rule;
-  the actual Final Rule is document 2024-22905 (89 FR 83092, Oct 2024)
-- CMMC Assessment Guide L2 filename changed from `AssessmentGuide_L2.pdf` to `AssessmentGuideL2v2.pdf`
-- fedramp.gov S3 redirect stubs: URLs at `/assets/resources/documents/` and `/assets/resources/templates/`
-  return 59–83 byte `binary/octet-stream` objects with `x-amz-website-redirect-location` headers
-  (trailing slash redirect). Actual files are at `/resources/documents/` and `/resources/templates/`.
-  Always check `content-length` and `content-type` — a valid PDF is `application/pdf`, not `binary/octet-stream`.
-- fedramp.gov Rev4 training PDFs (200-B SAP, 200-C SAR) were removed in the Rev5 reorganization.
-  As of 2026-03-15 these URLs return S3 redirect stubs. Do not attempt to download them.
+- govinfo.gov PDF URL pattern: `/content/pkg/FR-YYYY-MM-DD/pdf/<doc-number>.pdf` — confirm date/number before downloading
+- CMMC manifest correction: 2023-27756 = OMB submission (wrong); actual Final Rule = 2024-22905 (89 FR 83092, Oct 2024)
+- CMMC Assessment Guide L2: filename is `AssessmentGuideL2v2.pdf` (not `AssessmentGuide_L2.pdf`)
+- fedramp.gov: `/assets/resources/` URLs return S3 redirect stubs (59–83 byte `binary/octet-stream`); real files at `/resources/`. Check content-type: valid PDF = `application/pdf`. Rev4 training PDFs (200-B/200-C) removed in Rev5 reorg.
 
 ## Retrieval Notes (learned 2026-03-12)
 

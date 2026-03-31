@@ -1,0 +1,158 @@
+﻿/* Canada.ca - Policy Instrument */
+div.pol-cha, div.pol-app { padding-left: 0; padding-right: 0; }
+ul, ol { padding-left: 3em; }
+/* 3rd-level ul/ol */
+section.pol-sub ul, section.pol-sub ol, li ul, li ol { padding-left: 4em; }
+/* 4th-level ul/ol */
+section.pol-sub section.pol-sub ul, 
+section.pol-sub section.pol-sub ol, 
+section.pol-sub li ul, 
+section.pol-sub li ol, 
+li li ul, 
+li li ol { padding-left: 5em; } 
+/* 5th-level ul/ol */
+section.pol-sub section.pol-sub ul,
+section.pol-sub section.pol-sub ol, 
+section.pol-sub li ul, 
+section.pol-sub li ol, 
+li li ul, 
+li li ol { padding-left: 6em; }
+ul.pol-cla, ol.pol-cla { padding-left: 0 !important; }
+li.pol-cla { display: block; list-style: none; margin: 1em 0 1em 3em; position: relative; }
+li.pol-cla > span.pol-cla-id { display: block; left: -3em; position: absolute; width: 2.5em; }
+/* 3rd-level clause */
+section.pol-sub li.pol-cla, 
+li.pol-cla li.pol-cla { margin-left: 4em; }
+/* 3rd-level clause-Id */
+section.pol-sub li.pol-cla > span.pol-cla-id, 
+li.pol-cla li.pol-cla > span.pol-cla-id { left: -4em; width: 3.5em; }
+/* 4th-level clause */
+section.pol-sub section.pol-sub li.pol-cla, 
+section.pol-sub li.pol-cla li.pol-cla, 
+li.pol-cla li.pol-cla li.pol-cla { margin-left: 5em; } 
+/* 4th-level clause-Id */
+section.pol-sub section.pol-sub li.pol-cla > span.pol-cla-id, 
+section.pol-sub li.pol-cla li.pol-cla > span.pol-cla-id, 
+li.pol-cla li.pol-cla li.pol-cla > span.pol-cla-id { left: -5em; width: 4.5em; }
+/* 5th-level clause */
+section.pol-sub section.pol-sub li.pol-cla li.pol-cla, 
+section.pol-sub li.pol-cla li.pol-cla li.pol-cla, 
+li.pol-cla li.pol-cla li.pol-cla li.pol-cla { margin-left: 5em; } 
+/* 5th-level clause-Id */
+section.pol-sub section.pol-sub li.pol-cla li.pol-cla > span.pol-cla-id, 
+section.pol-sub li.pol-cla li.pol-cla li.pol-cla > span.pol-cla-id, 
+li.pol-cla li.pol-cla li.pol-cla li.pol-cla > span.pol-cla-id { left: -5em; width: 5em; }
+/* 6th-level clause */
+section.pol-sub section.pol-sub li.pol-cla li.pol-cla li.pol-cla, 
+section.pol-sub li.pol-cla li.pol-cla li.pol-cla li.pol-cla, 
+li.pol-cla li.pol-cla li.pol-cla li.pol-cla li.pol-cla { margin-left: 5em; padding-left: 1em; } 
+/* 6th-level clause-Id */
+section.pol-sub section.pol-sub li.pol-cla li.pol-cla li.pol-cla > span.pol-cla-id, 
+section.pol-sub li.pol-cla li.pol-cla li.pol-cla li.pol-cla > span.pol-cla-id, 
+li.pol-cla li.pol-cla li.pol-cla li.pol-cla li.pol-cla > span.pol-cla-id { left: -5em; width: 6em; }
+/* 7th-level clause */
+section.pol-sub section.pol-sub li.pol-cla li.pol-cla li.pol-cla li.pol-cla, 
+section.pol-sub li.pol-cla li.pol-cla li.pol-cla li.pol-cla li.pol-cla, 
+li.pol-cla li.pol-cla li.pol-cla li.pol-cla li.pol-cla li.pol-cla { margin-left: 6em; padding-left: .5em; } 
+/* 7th-level clause-Id */
+section.pol-sub section.pol-sub li.pol-cla li.pol-cla li.pol-cla li.pol-cla > span.pol-cla-id, 
+section.pol-sub li.pol-cla li.pol-cla li.pol-cla li.pol-cla li.pol-cla > span.pol-cla-id, 
+li.pol-cla li.pol-cla li.pol-cla li.pol-cla li.pol-cla li.pol-cla > span.pol-cla-id { left: -5em; width: 6em; }
+
+section.pol-sub > div.pol-content { padding-left: 3em; }
+details.pol-sec > summary:active, 
+details.pol-sec > summary:focus, 
+details.pol-sec > summary:hover, 
+details.pol-sec[open] > summary { background: #eee; text-decoration: none; }
+details.pol-sec[open] { padding-bottom: 1em; padding-left: 0; padding-right: 0; }
+details.pol-sec[open] > div.pol-content { margin-left: 1.3em; margin-right: 1em; }
+details.pol-sec[open] > summary { border-bottom: 1px solid #ddd; margin-left: auto; margin-right: auto; margin-bottom: 1em; }
+[dir=rtl] details.pol-sec[open] > div.pol-content { margin-left: 1em; margin-right: 1.3em; }
+#wb-bc li { overflow: visible; }
+
+/* Glossary */
+.popover { max-width: 500px; }
+.popover button.close { margin-right: -9px; margin-top: -3px; }
+.popover .popover-content { max-height: 300px; overflow-y: auto; }
+.ps-gls { border-bottom: 1px dashed #999; cursor: help; }
+.ps-gls:active, .ps-gls:focus, .ps-gls:hover { border-bottom: 1px dashed #666; color: #000; }
+
+/* Policy sidebar */
+details.pol-sb > summary:active, details.pol-sb > summary:focus, details.pol-sb > summary:hover, details.pol-sb[open] > summary { background: #eee; text-decoration: none; }
+details.pol-sb[open] { background: #fff; padding: 0; }
+details.pol-sb[open] > * { margin: 1em; }
+details.pol-sb[open] > summary { border-bottom: 1px solid #ddd; margin: 0 0 1em 0 !important;  }
+/*[dir=rtl] details.pol-sb[open] > div.pol-content { margin-left: 1em; margin-right: 1.3em; }*/
+
+/* Search */
+.dataTables_wrapper table > thead > tr { display: none; }
+.dataTables_wrapper table { border-top: 1px solid #111; }
+
+/* Topic page */
+section.sub-topics > details { background: #fff; padding: 0; }
+section.sub-topics > details > summary { background: #f5f5f5; padding: 1em; margin: 0; }
+section.sub-topics > details > section { border-bottom: 1px solid #ddd; margin: 0; padding: 0; }
+section.sub-topics > details > section:last-child  { border-bottom: 0px; }
+section.sub-topics > details > section > header > a { display: block; margin: 0; padding: 1em; }
+section.sub-topics > details > section > div { background: #FFF; padding: 0 1em; }
+
+/* Topics tooltips */
+.h5 { line-height: inherit }
+label > *[title] { border-bottom:1px dotted #ccc; cursor:help; padding-bottom:1px }
+label > *[title]:hover, label > *[title]:focus { background:#eef; border-bottom:1px dotted blue }
+
+/* TreeView */
+.tv { /*font-size: 12px; line-height: 16px;*/ zoom: 1; }
+.tv .tv-ul { list-style-image: none !important; list-style-position: outside !important; list-style-type: none !important; margin: 0px !important; padding: 0px !important; }
+.tv .tv-ul > .tv-li { background-image: url("../img/tv/tvNodeSpan.png"); background-position: 0px 0px; background-repeat: repeat-y; color: #333; }
+.tv .tv-ul > .tv-li.tv-first { background-image: url("../img/tv/tvFirstNodeSpan.png"); background-position: 0px 9px; background-repeat: no-repeat; }
+.tv .tv-ul > .tv-li.tv-last {
+    background-attachment: scroll;
+    background-clip: border-box;
+    background-color: transparent;
+    background-image: none;
+    background-origin: padding-box;
+    background-position: 0px center;
+    background-repeat: repeat;
+    background-size: auto;
+}
+.tv .tv-ul .tv-ul { padding-left: 20px !important; }
+.tv .tv-ul > .tv-li > div { background-repeat: no-repeat; padding: 1px 0px 1px 20px !important; }
+.tv .tv-ul > .tv-li > .tv-top { background-position: 0px 8px; background-image: url("../img/tv/tvTopLine.png"); }
+.tv .tv-ul > .tv-li > .tv-mid { background-position: 0px 8px; background-image: url("../img/tv/tvMiddleLine.png"); }
+.tv .tv-ul > .tv-li > .tv-bot { background-position: 0px 0px; background-image: url("../img/tv/tvBottomLine.png"); }
+.tv .tv-ul > .tv-li.tv-first.tv-last > .tv-top { background-position: 0px 9px; background-image: url("../img/tv/tvSingleLine.png"); }
+.tv .tv-ul > .tv-li.tv-last > .tv-top { background-position: 0px 0px; background-image: url("../img/tv/tvBottomLine.png"); }
+/* Custom TreeView :: Styles for the spacer, plus/minus signs (+hover), text nodes */
+.tv .tv-ul > .tv-li > div > .tv-sp { display: inline-block; height: 1em; margin-left: -1px; vertical-align: middle; width: 1px; }
+.tv .tv-ul > .tv-li > div > .tv-minus,
+.tv .tv-ul > .tv-li > div > .tv-plus {
+    background-position: 0px 0px;
+    background-repeat: no-repeat;
+    display: inline-block;
+    font-size: 0px;
+    height: 11px;
+    margin: 3px 6px 0px -17px !important;
+    padding: 0px !important;
+    vertical-align: top;
+    width: 11px;
+}
+.tv .tv-ul > .tv-li > div > .tv-in { margin-left: -3px; padding: 2px 0px 2px 0px; text-decoration: none; vertical-align: middle; }
+.tv .tv-ul > .tv-li > div > .tv-minus:active,
+.tv .tv-ul > .tv-li > div > .tv-minus:focus,
+.tv .tv-ul > .tv-li > div > .tv-minus:hover,
+.tv .tv-ul > .tv-li > div > .tv-plus:active,
+.tv .tv-ul > .tv-li > div > .tv-plus:focus,
+.tv .tv-ul > .tv-li > div > .tv-plus:hover { cursor: pointer !important; }
+.tv .tv-ul > .tv-li > div > .tv-in { display: inline-block; width: 98%; }
+
+/* WET Tweaks + Legacy CSS classes */
+.lower-alpha { list-style-type: lower-alpha; }
+.lower-roman { list-style-type: lower-roman; }
+.upper-alpha { list-style-type: upper-alpha; }
+.upper-roman { list-style-type: upper-roman; }
+mark.ps-hl { background-color: #ffc; animation: fadehilite ease 5s; }
+@keyframes fadehilite {
+    from    { background-color: #ff0; }
+    to      { background-color: #ffc; }
+}

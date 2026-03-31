@@ -7,11 +7,16 @@
 //! `(SELinux type, security marking)` — the type and marking appear in group
 //! headers only and are not repeated for every row.
 //!
+//! By default, related files (rotations, signatures, checksums, backups) are
+//! *cuddled* under their base file — one summary line replaces the individual
+//! sibling rows. Pass `--flat` to disable cuddling and show every entry on
+//! its own row.
+//!
 //! ## Usage
 //!
 //! ```text
 //! umrs-ls [PATH] [--color] [--no-iov] [--no-mtime]
-//!         [--with-size] [--with-inode]
+//!         [--with-size] [--with-inode] [--flat] [--json]
 //! ```
 //!
 //! Default path is the current directory. Color output is off by default.
@@ -51,10 +56,14 @@ use std::io;
 use std::path::Path;
 use std::time::SystemTime;
 
+use serde::Serialize;
+
 use chrono::{DateTime, Local};
 use umrs_core::i18n;
-
 use umrs_core::human::sizefmt::{SizeBase, auto_format as fmt_size};
+use umrs_ls::grouping::{
+    FileGroup, SiblingKind, aggregate_size, group_entries, sibling_summary,
+};
 use umrs_selinux::ObservationKind;
 use umrs_selinux::mcs::colors::{
     ContextComponents, Rgb, SeColorConfig, load_secolors_cached, resolve_colors,
@@ -63,6 +72,48 @@ use umrs_selinux::secure_dirent::{FileType, InodeSecurityFlags};
 use umrs_selinux::utils::dirlist::{
     Column, ColumnSet, DirGroup, GroupKey, ListEntry, list_directory,
 };
+
+// ============================================================================
+// JSON output types
+//
+// Lightweight, serialisable mirror of the grouped structure.  Only the fields
+// that are meaningful in a machine-readable context are included — full
+// SecureDirent is not serialised (it contains OS-level primitives that would
+// need custom implementations).
+// ============================================================================
+
+/// A sibling entry in JSON output.
+#[derive(Serialize)]
+struct JsonSibling {
+    name: String,
+    kind: &'static str,
+    size: u64,
+}
+
+/// A file group in JSON output: base entry plus its siblings.
+#[derive(Serialize)]
+struct JsonFileGroup {
+    base_name: String,
+    base_size: u64,
+    siblings: Vec<JsonSibling>,
+    aggregate_size: u64,
+}
+
+/// One SELinux-type+marking group in JSON output.
+#[derive(Serialize)]
+struct JsonDirGroup {
+    selinux_type: String,
+    marking: String,
+    file_groups: Vec<JsonFileGroup>,
+}
+
+/// Root JSON document produced by `--json`.
+#[derive(Serialize)]
+struct JsonListing {
+    path: String,
+    groups: Vec<JsonDirGroup>,
+    elapsed_us: u64,
+}
 
 const TERM_WIDTH: usize = 100;
 const ROW_INDENT: &str = "  "; // 2-space left indent on every row
@@ -156,9 +207,16 @@ fn main() -> io::Result<()> {
     }
 
     let use_color = args.contains(&"--color".to_owned());
+    let flat_mode = args.contains(&"--flat".to_owned());
+    let json_mode = args.contains(&"--json".to_owned());
     let cfg = DisplayConfig::build(use_color);
 
     let listing = list_directory(Path::new(target))?;
+
+    // --json: emit machine-readable grouped output and exit.
+    if json_mode {
+        return emit_json(&listing.groups, &listing.path.display().to_string(), listing.elapsed_us);
+    }
 
     // Pre-scan column widths across all groups and entries.
     let widths = compute_widths(&listing.groups, &cols, &cfg);
@@ -169,12 +227,31 @@ fn main() -> io::Result<()> {
 
     // Groups.
     let mut total_entries = 0usize;
+    let mut total_file_groups = 0usize;
+
     for group in &listing.groups {
-        println!(); // Seperate every group
+        println!(); // Separate every group
         println!("{}", group_separator(&group.key, &cfg));
-        for entry in &group.entries {
-            print_row(entry, &group.key, &cols, &widths, &cfg);
-            total_entries += 1;
+
+        if flat_mode {
+            // Traditional flat listing — one row per entry.
+            for entry in &group.entries {
+                print_row(entry, &group.key, &cols, &widths, &cfg);
+                total_entries += 1;
+                total_file_groups += 1;
+            }
+        } else {
+            // Cuddled view — group related files under their base.
+            let file_groups = group_entries(&group.entries);
+            total_file_groups += file_groups.len();
+            for fg in &file_groups {
+                print_row(&fg.base, &group.key, &cols, &widths, &cfg);
+                total_entries += 1;
+                if !fg.siblings.is_empty() {
+                    total_entries += fg.siblings.len();
+                    print_cuddle_line(fg, &cfg);
+                }
+            }
         }
     }
 
@@ -193,14 +270,114 @@ fn main() -> io::Result<()> {
 
     // Timing footer.
     println!();
-    println!(
-        "{total_entries} entries  {}  {} groups  {} µs",
-        listing.path.display(),
-        listing.groups.len(),
-        listing.elapsed_us,
-    );
+    if flat_mode {
+        println!(
+            "{total_entries} entries  {}  {} groups  {} µs",
+            listing.path.display(),
+            listing.groups.len(),
+            listing.elapsed_us,
+        );
+    } else {
+        println!(
+            "{total_entries} entries  {}  {} file groups  {} SELinux groups  {} µs",
+            listing.path.display(),
+            total_file_groups,
+            listing.groups.len(),
+            listing.elapsed_us,
+        );
+    }
 
     Ok(())
+}
+
+// ============================================================================
+// Cuddle line
+// ============================================================================
+
+/// Print a dim summary line for a `FileGroup` that has siblings.
+///
+/// Format: `  └ <summary>  <aggregate_size> total`
+///
+/// The line is rendered dim (ANSI 2) when color is enabled so it
+/// recedes behind the base file row visually.
+fn print_cuddle_line(fg: &FileGroup, cfg: &DisplayConfig) {
+    let summary = sibling_summary(fg);
+    let agg = aggregate_size(fg);
+    let size_str = fmt_size(u128::from(agg), SizeBase::Binary);
+    let line = format!("{ROW_INDENT}\u{2514} {summary}  {size_str} total");
+    if cfg.use_color {
+        println!("{DIM}{line}{RESET}");
+    } else {
+        println!("{line}");
+    }
+}
+
+// ============================================================================
+// JSON output
+// ============================================================================
+
+/// Emit a JSON listing to stdout and return.
+///
+/// Serialises the fully grouped structure.  All display-layer formatting
+/// (ANSI codes, column alignment) is bypassed.
+fn emit_json(
+    groups: &[DirGroup],
+    path: &str,
+    elapsed_us: u64,
+) -> io::Result<()> {
+    let json_groups: Vec<JsonDirGroup> = groups
+        .iter()
+        .map(|g| {
+            let file_groups = group_entries(&g.entries);
+            let json_file_groups = file_groups
+                .iter()
+                .map(|fg| {
+                    let siblings = fg
+                        .siblings
+                        .iter()
+                        .map(|s| JsonSibling {
+                            name: s.entry.dirent.name.as_str().to_owned(),
+                            kind: sibling_kind_str(&s.kind),
+                            size: s.entry.dirent.size.as_u64(),
+                        })
+                        .collect();
+                    JsonFileGroup {
+                        base_name: fg.base.dirent.name.as_str().to_owned(),
+                        base_size: fg.base.dirent.size.as_u64(),
+                        siblings,
+                        aggregate_size: aggregate_size(fg),
+                    }
+                })
+                .collect();
+            JsonDirGroup {
+                selinux_type: g.key.selinux_type.clone(),
+                marking: g.key.marking.clone(),
+                file_groups: json_file_groups,
+            }
+        })
+        .collect();
+
+    let doc = JsonListing {
+        path: path.to_owned(),
+        groups: json_groups,
+        elapsed_us,
+    };
+
+    let json = serde_json::to_string_pretty(&doc)
+        .map_err(io::Error::other)?;
+    println!("{json}");
+    Ok(())
+}
+
+const fn sibling_kind_str(kind: &SiblingKind) -> &'static str {
+    match kind {
+        SiblingKind::Rotation => "rotation",
+        SiblingKind::CompressedRotation => "compressed_rotation",
+        SiblingKind::Signature => "signature",
+        SiblingKind::Checksum => "checksum",
+        SiblingKind::Backup => "backup",
+        SiblingKind::Related => "related",
+    }
 }
 
 // Column width pre-scan

@@ -2066,6 +2066,8 @@ dependencies = [
  "gettext-rs",
  "log",
  "nix 0.27.1",
+ "serde",
+ "serde_json",
  "umrs-core",
  "umrs-selinux",
 ]
