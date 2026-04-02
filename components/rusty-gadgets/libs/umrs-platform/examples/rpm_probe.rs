@@ -26,10 +26,7 @@ use umrs_platform::evidence::EvidenceBundle;
 
 fn main() {
     // Initialise a simple stderr logger so debug messages are visible.
-    env_logger::Builder::from_env(
-        env_logger::Env::default().default_filter_or("info"),
-    )
-    .init();
+    env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("info")).init();
 
     println!("=== UMRS Platform — RPM Probe Example ===\n");
 
@@ -89,10 +86,7 @@ fn main() {
                     }
                 }
                 None => {
-                    println!(
-                        "Ownership of {}: not found in RPM DB",
-                        target.display()
-                    );
+                    println!("Ownership of {}: not found in RPM DB", target.display());
                 }
             }
         }

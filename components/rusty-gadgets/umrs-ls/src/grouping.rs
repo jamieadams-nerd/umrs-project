@@ -107,8 +107,7 @@ pub fn classify_suffix(suffix: &str) -> SiblingKind {
     // Use Path::extension() for extension-based matching to satisfy the
     // case_sensitive_file_extension_comparisons lint and get correct semantics
     // for dotted suffixes (e.g., "1.gz" → extension "gz").
-    let ext =
-        Path::new(rest).extension().and_then(|e| e.to_str()).unwrap_or("");
+    let ext = Path::new(rest).extension().and_then(|e| e.to_str()).unwrap_or("");
 
     // Compressed rotation: the final extension is a known compression format.
     // Also handle the bare-extension case (rest == "gz" etc.) where there is
@@ -168,9 +167,7 @@ pub fn classify_suffix(suffix: &str) -> SiblingKind {
     // extension is purely numeric (e.g., "1" in "1.old" is already Backup
     // above; "1" in "1" alone is Rotation; "20260301" is Rotation).
     let numeric_part = rest.split('.').next().unwrap_or("");
-    if !numeric_part.is_empty()
-        && numeric_part.chars().all(|c| c.is_ascii_digit())
-    {
+    if !numeric_part.is_empty() && numeric_part.chars().all(|c| c.is_ascii_digit()) {
         return SiblingKind::Rotation;
     }
 
@@ -276,7 +273,7 @@ pub fn sibling_summary(group: &FileGroup) -> String {
         match sib.kind {
             SiblingKind::Rotation => rotations = rotations.saturating_add(1),
             SiblingKind::CompressedRotation => {
-                compressed = compressed.saturating_add(1)
+                compressed = compressed.saturating_add(1);
             }
             SiblingKind::Signature => signatures = signatures.saturating_add(1),
             SiblingKind::Checksum => checksums = checksums.saturating_add(1),
@@ -320,11 +317,7 @@ pub fn sibling_summary(group: &FileGroup) -> String {
     parts.join(", ")
 }
 
-const fn plural(
-    n: u32,
-    singular: &'static str,
-    plural_form: &'static str,
-) -> &'static str {
+const fn plural(n: u32, singular: &'static str, plural_form: &'static str) -> &'static str {
     if n == 1 {
         singular
     } else {

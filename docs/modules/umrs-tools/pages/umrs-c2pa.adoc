@@ -163,22 +163,23 @@ that touched the file and added a manifest.
 [source]
 ----
 Chain of Custody — photo.jpg
-SHA-256: a3f1b2c4d5e6...
+SHA-256 : a3f1b2c4d5e6...
+SHA-384 : 9c2e4a7f1b8d...
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   1   [TRUSTED]     Sony Corporation
                      Signed at : 2025-09-14T08:12:33Z UTC
-                     Alg       : Es256
+                     Algorithm : ES256  ECDSA / P-256 (prime256v1) / SHA-256 / 256-bit / FIPS-safe
                      Generator : Sony Camera Firmware 1.0
 
   2   [TRUSTED]     Adobe Inc. / Adobe Lightroom
                      Signed at : 2025-10-02T14:45:01Z UTC
                      Issuer    : Adobe Content Credentials CA
-                     Alg       : Es256
+                     Algorithm : ES256  ECDSA / P-256 (prime256v1) / SHA-256 / 256-bit / FIPS-safe
                      Generator : Adobe Lightroom 13.0
 
   3   *[NO TRUST LIST]  My Organization (ephemeral — self-signed)
                      Signed at : 2026-03-26T11:00:00Z UTC
-                     Alg       : Es256
+                     Algorithm : ES256  ECDSA / P-256 (prime256v1) / SHA-256 / 256-bit / FIPS-safe
                      Generator : UMRS Reference System 0.1.0
                      Marking   : CUI//SP-CTI//NOFORN
 
@@ -216,8 +217,10 @@ UMRS identity    : ephemeral self-signed cert (test mode — UNTRUSTED)
   Only shown when different from the Signer name.
   Suppressed when signer and issuer are the same entity (self-signed certs).
 
-| **Alg**
-| Signing algorithm.
+| **Algorithm**
+| Signing algorithm, shown with the full descriptor string.
+  Format: `<C2PA-id>  <type> / <curve> / <hash> / <key-size> / <FIPS-status>`.
+  Example: `ES256  ECDSA / P-256 (prime256v1) / SHA-256 / 256-bit / FIPS-safe`.
   UMRS-signed entries always use a FIPS-safe algorithm from the allowed set.
 
 | **Generator**
@@ -232,7 +235,16 @@ UMRS identity    : ephemeral self-signed cert (test mode — UNTRUSTED)
   classification markings.
 
 | **SHA-256**
-| SHA-256 of the file as it exists on disk at inspection time.
+| SHA-256 digest of the file as it exists on disk at inspection time.
+  Current FIPS 140-2/140-3 compliance and required by the C2PA specification.
+
+| **SHA-384**
+| SHA-384 digest of the file as it exists on disk at inspection time.
+  Computed alongside SHA-256 for CNSA 2.0 (NSA Commercial National Security
+  Algorithm Suite 2.0) readiness.
+  CNSA 2.0 requires SHA-384 as the minimum hash strength for national security
+  systems.
+  Both digests use system OpenSSL on FIPS-enabled deployments.
 
 | **Hash consistency**
 | `PASS` — the c2pa SDK verified all ingredient hashes when building the chain.
@@ -243,6 +255,54 @@ UMRS identity    : ephemeral self-signed cert (test mode — UNTRUSTED)
 | `c2pa.acquired` for files that had no prior manifest.
   `c2pa.published` for files with an existing manifest chain.
 |===
+
+=== Digest Verification
+
+`umrs-c2pa` computes both SHA-256 and SHA-384 for every inspected or signed
+file.
+
+**SHA-256** satisfies current FIPS 140-2/140-3 requirements and is required by
+the C2PA specification.
+
+**SHA-384** provides forward compatibility with CNSA 2.0 (NSA Commercial
+National Security Algorithm Suite 2.0), which requires SHA-384 as the minimum
+hash strength for national security systems.
+
+Both digests are computed using system OpenSSL on FIPS-enabled deployments
+(the `system-openssl` feature).
+
+NOTE: CNSA 2.0 readiness is structural — both digests are always computed and
+displayed.
+No configuration change is required to see the SHA-384 value.
+
+==== Procedure: Independently Verify File Digests
+
+Use this procedure to confirm that a file has not changed since `umrs-c2pa`
+last inspected it.
+
+. Verify the SHA-256 digest.
++
+[source,shell]
+----
+openssl dgst -sha256 file.jpg
+----
++
+The output shows `SHA2-256(file.jpg)= <hex-digest>`.
+The value must match the `SHA-256` line in the chain-of-custody report.
+
+. Verify the SHA-384 digest.
++
+[source,shell]
+----
+openssl dgst -sha384 file.jpg
+----
++
+The output shows `SHA2-384(file.jpg)= <hex-digest>`.
+The value must match the `SHA-384` line in the chain-of-custody report.
+
+WARNING: A mismatch on either digest means the file has been modified since
+the chain-of-custody report was generated.
+Treat the file as untrusted and do not ingest it.
 
 === Trust Status Values
 
@@ -348,11 +408,6 @@ These flags apply when inspecting or signing a file.
   Useful for debugging and for piping to `jq`.
   Includes all assertions, ingredients, and validation status codes.
 
-| `--detailed-json`
-| Emit the detailed manifest store as JSON.
-  Includes certificate chains and full validation data.
-  Use this to extract signer certificates from a manifest.
-
 | `--chain-json`
 | Emit the UMRS-parsed evidence chain as JSON.
   Returns normalized, structured data with trust status, signer, algorithm,
@@ -369,10 +424,6 @@ These flags apply when inspecting or signing a file.
 | `--json`
 | Raw c2pa SDK manifest store
 | Debugging, full assertion inspection, piping to `jq`
-
-| `--detailed-json`
-| Raw c2pa SDK manifest store with certificate chains
-| Extracting signer certificates, full validation analysis
 
 | `--chain-json`
 | UMRS-parsed evidence chain
@@ -945,11 +996,6 @@ Includes all assertions, ingredients, validation status codes, and claim
 generator info.
 Use for debugging or for piping to `jq`.
 
-=== `--detailed-json` — Extended Manifest Store
-
-Raw JSON with certificate chains and full validation data included.
-Use this format to extract signer certificates from a manifest.
-
 === `--chain-json` — UMRS Evidence Chain
 
 Normalized JSON array of chain entries, one object per signing event.
@@ -963,7 +1009,7 @@ Fields are consistent across all signers and versions.
     "issuer": "OpenAI",
     "signed_at": null,
     "trust_status": "NO_TRUST_LIST",
-    "algorithm": "Es256",
+    "algorithm": "ES256  ECDSA / P-256 (prime256v1) / SHA-256 / 256-bit / FIPS-safe",
     "generator": "ChatGPT",
     "generator_version": null,
     "security_label": null
@@ -973,7 +1019,7 @@ Fields are consistent across all signers and versions.
     "issuer": "My Organization (ephemeral — self-signed)",
     "signed_at": "2026-03-26T14:44:14Z",
     "trust_status": "NO_TRUST_LIST",
-    "algorithm": "Es256",
+    "algorithm": "ES256  ECDSA / P-256 (prime256v1) / SHA-256 / 256-bit / FIPS-safe",
     "generator": "UMRS Reference System",
     "generator_version": "0.1.0",
     "security_label": "CUI//SP-CTI//NOFORN"
@@ -1069,13 +1115,13 @@ All security-relevant events are logged to journald under tag `umrs`.
 .Ingest — file with no prior manifest
 [source]
 ----
-umrs [INFO] ingest file="photo.jpg" sha256="a3f1b2..." manifest=none action=c2pa.acquired
+umrs [INFO] ingest file="photo.jpg" sha256="a3f1b2..." sha384="9c2e4a..." manifest=none action=c2pa.acquired
 ----
 
 .Ingest — file with existing manifest
 [source]
 ----
-umrs [INFO] ingest file="photo.jpg" sha256="a3f1b2..." previous_signer="Sony Corporation" signed_at="2025-09-14T08:12:33Z" action=c2pa.published
+umrs [INFO] ingest file="photo.jpg" sha256="a3f1b2..." sha384="9c2e4a..." previous_signer="Sony Corporation" signed_at="2025-09-14T08:12:33Z" action=c2pa.published
 ----
 
 .Config validation
@@ -1208,6 +1254,9 @@ This tool contributes to the following control families:
 | All signing operations are gated through the FIPS-safe algorithm set.
   Ed25519 is excluded by policy.
   The algorithm is validated before any signing occurs.
+  Both SHA-256 and SHA-384 digests are computed for every file to satisfy
+  current FIPS requirements and CNSA 2.0 (NSA Commercial National Security
+  Algorithm Suite 2.0) forward-compatibility requirements.
 
 | NIST SP 800-53 SI-7
 | The `c2pa.hash.data` assertion cryptographically binds the manifest to the
@@ -1224,6 +1273,7 @@ This tool contributes to the following control families:
 * **FIPS 186-5** — Digital Signature Standard (ECDSA, RSA-PSS, EdDSA)
 * **NIST SP 800-53r5** — Security and Privacy Controls for Information Systems
 * **NARA 32 CFR Part 2002** — Controlled Unclassified Information (CUI) marking rules
+* **NSA CNSA 2.0** — Commercial National Security Algorithm Suite 2.0 (SHA-384 minimum hash requirement)
 
 == See Also
 

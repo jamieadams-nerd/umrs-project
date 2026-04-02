@@ -64,10 +64,9 @@ pub fn render_detail(
     theme: &Theme,
 ) {
     let lines = match selected_node {
-        None => vec![
-            Line::from(""),
-            Line::from(Span::styled("  No item selected.", theme.data_value)),
-        ],
+        None => {
+            vec![Line::from(""), Line::from(Span::styled("  No item selected.", theme.data_value))]
+        }
         Some(node) => build_detail_lines(node, theme),
     };
 

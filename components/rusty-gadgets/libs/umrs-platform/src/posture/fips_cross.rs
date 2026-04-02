@@ -116,10 +116,7 @@ impl FipsCrossCheck {
     /// NIST SP 800-53 CM-6: Trust Gate and configured-value resolution.
     /// NIST SP 800-53 SI-11: no crypto-policy content in error paths.
     #[must_use = "FIPS cross-check evaluation result must be examined for compliance findings"]
-    pub fn evaluate(
-        live_fips_readable: bool,
-        cmdline_has_fips1: Option<bool>,
-    ) -> Self {
+    pub fn evaluate(live_fips_readable: bool, cmdline_has_fips1: Option<bool>) -> Self {
         #[cfg(debug_assertions)]
         let start = std::time::Instant::now();
 
@@ -157,11 +154,8 @@ impl FipsCrossCheck {
         //
         // Any single indicator is sufficient to assert configured=FIPS.
         // If ALL indicators are None, the assessment is None (insufficient data).
-        let configured_meets_desired = assess_configured_fips(
-            marker_present,
-            cmdline_has_fips1,
-            crypto_policy.as_deref(),
-        );
+        let configured_meets_desired =
+            assess_configured_fips(marker_present, cmdline_has_fips1, crypto_policy.as_deref());
 
         #[cfg(debug_assertions)]
         log::debug!(
@@ -267,9 +261,7 @@ impl FipsCrossCheck {
 /// (`true`/`false`), but the race window is removed. NIST SP 800-53 SI-10.
 fn check_system_fips_marker() -> bool {
     let exists = std::fs::metadata(SYSTEM_FIPS_MARKER).is_ok();
-    log::debug!(
-        "posture: FIPS cross-check: {SYSTEM_FIPS_MARKER} exists={exists}"
-    );
+    log::debug!("posture: FIPS cross-check: {SYSTEM_FIPS_MARKER} exists={exists}");
     exists
 }
 
@@ -284,13 +276,9 @@ fn read_crypto_policy_state() -> Option<String> {
     match std::fs::read_to_string(CRYPTO_POLICY_STATE) {
         Ok(content) => {
             let trimmed = content.trim().to_owned();
-            log::debug!(
-                "posture: FIPS cross-check: {CRYPTO_POLICY_STATE} = \"{trimmed}\""
-            );
+            log::debug!("posture: FIPS cross-check: {CRYPTO_POLICY_STATE} = \"{trimmed}\"");
             if trimmed.is_empty() {
-                log::debug!(
-                    "posture: FIPS cross-check: crypto-policy state is empty"
-                );
+                log::debug!("posture: FIPS cross-check: crypto-policy state is empty");
                 None
             } else {
                 Some(trimmed)
@@ -333,17 +321,15 @@ fn assess_configured_fips(
 ) -> Option<bool> {
     let marker_says_fips = marker_present == Some(true);
     let cmdline_says_fips = cmdline_fips == Some(true);
-    let policy_says_fips =
-        crypto_policy.is_some_and(|p| p == "FIPS" || p.starts_with("FIPS:"));
+    let policy_says_fips = crypto_policy.is_some_and(|p| p == "FIPS" || p.starts_with("FIPS:"));
 
     if marker_says_fips || cmdline_says_fips || policy_says_fips {
         return Some(true);
     }
 
     // No positive indicator — determine if we have any evidence at all.
-    let any_indicator = marker_present.is_some()
-        || cmdline_fips.is_some()
-        || crypto_policy.is_some();
+    let any_indicator =
+        marker_present.is_some() || cmdline_fips.is_some() || crypto_policy.is_some();
 
     if any_indicator {
         Some(false)

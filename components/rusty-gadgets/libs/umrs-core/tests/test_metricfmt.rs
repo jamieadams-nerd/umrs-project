@@ -12,14 +12,12 @@ use std::process::ExitCode;
 
 // 3) local crates (my workspace)
 use umrs_core::human::metricfmt::{
-    FormatOptions, FormatWarning, PrefixStyle, SIPrefix, auto_format,
-    auto_format_with_options, format_in_prefix,
+    FormatOptions, FormatWarning, PrefixStyle, SIPrefix, auto_format, auto_format_with_options,
+    format_in_prefix,
 };
 
 fn main() -> ExitCode {
-    println!(
-        "\nExample 1 — Auto-scaling for time (seconds → ms / µs / ns / etc.)"
-    );
+    println!("\nExample 1 — Auto-scaling for time (seconds → ms / µs / ns / etc.)");
     let t1 = 0.000001234_f64; // 1.234 microseconds
     let t2 = 12.345678_f64; // ~12 seconds
     let t3 = 0.000000000045; // 45 picoseconds
@@ -48,10 +46,8 @@ fn main() -> ExitCode {
     println!("\nExample 3 — Forced prefix (and detecting precision loss)");
     let t = 0.000000000001234_f64; // 1.234 picoseconds
 
-    let (s1, w1) =
-        format_in_prefix(t, SIPrefix::Pico, PrefixStyle::AbbrevAscii);
-    let (s2, w2) =
-        format_in_prefix(t, SIPrefix::Milli, PrefixStyle::AbbrevAscii);
+    let (s1, w1) = format_in_prefix(t, SIPrefix::Pico, PrefixStyle::AbbrevAscii);
+    let (s2, w2) = format_in_prefix(t, SIPrefix::Milli, PrefixStyle::AbbrevAscii);
 
     let _msg = format!("Forced pico: {}s  {:?}", s1.replace(" ", ""), w1);
     let _msg = format!("Forced milli: {}s {:?}", s2.replace(" ", ""), w2);
@@ -69,13 +65,10 @@ fn main() -> ExitCode {
         auto_target_max: 500.0,
     };
 
-    let (s, _, _) =
-        auto_format_with_options(v, PrefixStyle::AbbrevAscii, &opts);
+    let (s, _, _) = auto_format_with_options(v, PrefixStyle::AbbrevAscii, &opts);
     let _final_str = format!("{}Hz", s.replace(" ", ""));
 
-    println!(
-        "\nExample 5 — Voltage, frequency, and arbitrary domains (unit-agnostic)"
-    );
+    println!("\nExample 5 — Voltage, frequency, and arbitrary domains (unit-agnostic)");
     let freq = 0.000045_f64; // Hz
     let volt = 12_300_000.0; // V
     let dist = 0.00000032; // meters

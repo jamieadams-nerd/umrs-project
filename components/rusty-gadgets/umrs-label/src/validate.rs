@@ -60,14 +60,12 @@ impl CuiPattern {
 // Regex cache
 // ---------------------------------------------------------------------------
 
-static REGEX_CACHE: OnceLock<Mutex<HashMap<CuiPattern, Regex>>> =
-    OnceLock::new();
+static REGEX_CACHE: OnceLock<Mutex<HashMap<CuiPattern, Regex>>> = OnceLock::new();
 
 fn get_regex(kind: CuiPattern) -> Regex {
     let cache = REGEX_CACHE.get_or_init(|| Mutex::new(HashMap::new()));
 
-    let mut map =
-        cache.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+    let mut map = cache.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
 
     if let Some(re) = map.get(&kind) {
         return re.clone();
@@ -76,8 +74,7 @@ fn get_regex(kind: CuiPattern) -> Regex {
     // SAFETY of expect: the pattern literals are authored at compile time and
     // are known-valid. A panic here indicates a programmer error, not a
     // runtime condition.
-    let compiled =
-        Regex::new(kind.regex()).expect("CuiPattern regex failed to compile");
+    let compiled = Regex::new(kind.regex()).expect("CuiPattern regex failed to compile");
 
     map.insert(kind, compiled.clone());
     compiled

@@ -60,9 +60,7 @@ use std::path::{Path, PathBuf};
 use sha2::{Digest, Sha256};
 
 use crate::confidence::{ConfidenceModel, TrustLevel};
-use crate::evidence::{
-    DigestAlgorithm, EvidenceBundle, EvidenceRecord, PkgDigest, SourceKind,
-};
+use crate::evidence::{DigestAlgorithm, EvidenceBundle, EvidenceRecord, PkgDigest, SourceKind};
 use crate::kattrs::{ProcfsText, SecureReader};
 
 use super::file_ownership::{find_resolved_path, find_stat_for_path};
@@ -128,9 +126,7 @@ fn run_inner(
     };
 
     if ownership.is_none() {
-        log::debug!(
-            "integrity_check: file is unowned — T4 cannot be reached for {candidate_str}"
-        );
+        log::debug!("integrity_check: file is unowned — T4 cannot be reached for {candidate_str}");
         return false;
     }
 
@@ -143,17 +139,14 @@ fn run_inner(
     //
     // `readlinkat` may return a relative symlink target (e.g., `../usr/lib/os-release`).
     // Resolve against the candidate's parent directory and canonicalize to an absolute path.
-    let query_path: PathBuf = match find_resolved_path(evidence, &candidate_str)
-    {
+    let query_path: PathBuf = match find_resolved_path(evidence, &candidate_str) {
         Some(resolved) => {
             let p = PathBuf::from(&resolved);
             if p.is_absolute() {
                 p
             } else {
-                let parent =
-                    candidate.parent().unwrap_or_else(|| Path::new("/"));
-                std::fs::canonicalize(parent.join(&p))
-                    .unwrap_or_else(|_| parent.join(p))
+                let parent = candidate.parent().unwrap_or_else(|| Path::new("/"));
+                std::fs::canonicalize(parent.join(&p)).unwrap_or_else(|_| parent.join(p))
             }
         }
         None => candidate.to_path_buf(),
@@ -231,9 +224,7 @@ fn run_inner(
             Some(((maj << 32) | min, st.st_ino))
         }
         Err(e) => {
-            log::warn!(
-                "integrity_check: fstat failed for open fd on {candidate_str}: {e}"
-            );
+            log::warn!("integrity_check: fstat failed for open fd on {candidate_str}: {e}");
             None
         }
     };
@@ -432,9 +423,7 @@ fn compare_and_record(
     };
 
     if digest_matches {
-        log::debug!(
-            "integrity_check: SHA-256 digest verified for {candidate_str}"
-        );
+        log::debug!("integrity_check: SHA-256 digest verified for {candidate_str}");
         confidence.upgrade(TrustLevel::IntegrityAnchored);
         evidence.push(EvidenceRecord {
             source_kind: SourceKind::RegularFile,
@@ -453,10 +442,7 @@ fn compare_and_record(
                 value: installed.value,
             }),
             parse_ok: true,
-            notes: vec![
-                open_note,
-                "SHA-256 digest verified (T4 earned)".to_owned(),
-            ],
+            notes: vec![open_note, "SHA-256 digest verified (T4 earned)".to_owned()],
             duration_ns: None,
         });
         true
@@ -484,8 +470,7 @@ fn compare_and_record(
             parse_ok: false,
             notes: vec![
                 open_note,
-                "SHA-256 digest mismatch — integrity deviation recorded"
-                    .to_owned(),
+                "SHA-256 digest mismatch — integrity deviation recorded".to_owned(),
             ],
             duration_ns: None,
         });
@@ -526,25 +511,18 @@ fn no_digest_record(candidate_str: &str) -> EvidenceRecord {
 ///
 /// NIST SP 800-53 SC-13, CMMC L2 SC.3.177 — gate T4 on FIPS;
 /// sha2 crate is not FIPS 140-3 validated.
-fn fips_mode_active(
-    evidence: &mut EvidenceBundle,
-    confidence: &mut ConfidenceModel,
-) -> bool {
+fn fips_mode_active(evidence: &mut EvidenceBundle, confidence: &mut ConfidenceModel) -> bool {
     const FIPS_PATH: &str = "/proc/sys/crypto/fips_enabled";
 
     let node = match ProcfsText::new(PathBuf::from(FIPS_PATH)) {
         Ok(n) => n,
         Err(e) => {
-            log::debug!(
-                "integrity_check: could not construct ProcfsText for fips_enabled: {e}"
-            );
+            log::debug!("integrity_check: could not construct ProcfsText for fips_enabled: {e}");
             return false;
         }
     };
 
-    let content = match SecureReader::<ProcfsText>::new()
-        .read_generic_text(&node)
-    {
+    let content = match SecureReader::<ProcfsText>::new().read_generic_text(&node) {
         Ok(s) => s,
         Err(e) => {
             log::debug!("integrity_check: could not read fips_enabled: {e}");
@@ -595,9 +573,7 @@ fn fips_mode_active(
 /// NSA RTB: bounded reads prevent unbounded allocation on malformed inputs.
 fn read_bounded(file: &mut File, max_bytes: usize) -> io::Result<Vec<u8>> {
     let mut buf = Vec::new();
-    let bytes_read = file
-        .take((max_bytes as u64).saturating_add(1))
-        .read_to_end(&mut buf)?;
+    let bytes_read = file.take((max_bytes as u64).saturating_add(1)).read_to_end(&mut buf)?;
 
     if bytes_read > max_bytes {
         return Err(io::Error::new(

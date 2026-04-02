@@ -550,17 +550,14 @@ fn snapshot_perf_event_paranoid_has_live_value_or_node_absent() {
             match live {
                 LiveValue::SignedInteger(v) => {
                     // meets_desired must match what AtLeast(2) says for this value.
-                    let expected =
-                        DesiredValue::AtLeast(2).meets_signed_integer(*v);
+                    let expected = DesiredValue::AtLeast(2).meets_signed_integer(*v);
                     assert_eq!(
                         report.meets_desired, expected,
                         "PerfEventParanoid meets_desired must agree with signed comparison"
                     );
                 }
                 other => {
-                    panic!(
-                        "PerfEventParanoid live_value must be SignedInteger, got {other:?}"
-                    );
+                    panic!("PerfEventParanoid live_value must be SignedInteger, got {other:?}");
                 }
             }
         }
@@ -646,10 +643,8 @@ fn sysctl_config_slash_key_normalized_to_dot() {
     use std::io::Write;
 
     // Write a temp sysctl.d conf file with a slash-style key.
-    let tmp =
-        tempfile::NamedTempFile::new().expect("tempfile creation must succeed");
-    writeln!(tmp.as_file(), "kernel/kptr_restrict = 2")
-        .expect("write to tempfile must succeed");
+    let tmp = tempfile::NamedTempFile::new().expect("tempfile creation must succeed");
+    writeln!(tmp.as_file(), "kernel/kptr_restrict = 2").expect("write to tempfile must succeed");
     let tmp_path = tmp.path().to_path_buf();
 
     // Verify that parse_sysctl_line returns the raw slash key (normalisation
@@ -696,10 +691,7 @@ fn eval_configured_u32_max_at_most_zero() {
 #[test]
 fn eval_configured_u32_max_exact() {
     assert_eq!(
-        evaluate_configured_meets(
-            "4294967295",
-            &DesiredValue::Exact(4294967295)
-        ),
+        evaluate_configured_meets("4294967295", &DesiredValue::Exact(4294967295)),
         Some(true),
         "u32::MAX must match Exact(u32::MAX)"
     );
@@ -744,8 +736,7 @@ fn eval_configured_negative_ephemeral_hotfix_path() {
     // live_meets = Some(true): live value is 2, AtLeast(2) passes.
     let live_meets = Some(true);
     // configured_meets = Some(false): configured is -1, AtLeast(2) fails.
-    let configured_meets =
-        evaluate_configured_meets("-1", &DesiredValue::AtLeast(2));
+    let configured_meets = evaluate_configured_meets("-1", &DesiredValue::AtLeast(2));
     assert_eq!(
         configured_meets,
         Some(false),
@@ -767,8 +758,7 @@ fn eval_configured_negative_both_unhardened_no_contradiction() {
     // live_meets = Some(false): live value is -1 (signed), AtLeast(2) fails.
     let live_meets = Some(false);
     // configured_meets = Some(false): configured is also -1.
-    let configured_meets =
-        evaluate_configured_meets("-1", &DesiredValue::AtLeast(2));
+    let configured_meets = evaluate_configured_meets("-1", &DesiredValue::AtLeast(2));
     assert_eq!(
         configured_meets,
         Some(false),
@@ -818,10 +808,10 @@ fn cpu_mitigation_sub_indicators_are_cmdline_class() {
         IndicatorId::NoSmtOff,
     ];
     for id in cpu_ids {
-        let desc =
-            INDICATORS.iter().find(|d| d.id == id).unwrap_or_else(|| {
-                panic!("CPU sub-indicator {id:?} missing from catalog")
-            });
+        let desc = INDICATORS
+            .iter()
+            .find(|d| d.id == id)
+            .unwrap_or_else(|| panic!("CPU sub-indicator {id:?} missing from catalog"));
         assert_eq!(
             desc.class,
             IndicatorClass::KernelCmdline,
@@ -844,10 +834,10 @@ fn cpu_mitigation_sub_indicators_use_cmdline_absent() {
         IndicatorId::NoSmtOff,
     ];
     for id in cpu_ids {
-        let desc =
-            INDICATORS.iter().find(|d| d.id == id).unwrap_or_else(|| {
-                panic!("CPU sub-indicator {id:?} missing from catalog")
-            });
+        let desc = INDICATORS
+            .iter()
+            .find(|d| d.id == id)
+            .unwrap_or_else(|| panic!("CPU sub-indicator {id:?} missing from catalog"));
         assert!(
             matches!(desc.desired, DesiredValue::CmdlineAbsent(_)),
             "CPU sub-indicator {id:?} must use DesiredValue::CmdlineAbsent, \
@@ -1094,10 +1084,8 @@ fn catalog_security_fs_indicators_have_no_sysctl_key() {
 /// `Sysrq` must use `DesiredValue::Custom` in the catalog.
 #[test]
 fn catalog_sysrq_uses_custom_desired() {
-    let desc = INDICATORS
-        .iter()
-        .find(|d| d.id == IndicatorId::Sysrq)
-        .expect("Sysrq must be in catalog");
+    let desc =
+        INDICATORS.iter().find(|d| d.id == IndicatorId::Sysrq).expect("Sysrq must be in catalog");
     assert_eq!(
         desc.desired,
         DesiredValue::Custom,
@@ -1343,8 +1331,7 @@ fn cmdline_boot_drift_mitigations_off_live_not_configured() {
     let desired = DesiredValue::CmdlineAbsent("mitigations=off");
 
     // Live NOT hardened: /proc/cmdline has mitigations=off.
-    let live_meets =
-        desired.meets_cmdline("root=UUID=abc mitigations=off quiet");
+    let live_meets = desired.meets_cmdline("root=UUID=abc mitigations=off quiet");
     assert_eq!(live_meets, Some(false));
 
     // Configured hardened: BLS options do not have mitigations=off.
@@ -1503,9 +1490,8 @@ fn kernel_version_parses_plain_triple() {
 /// and returns only the version triple.
 #[test]
 fn kernel_version_parses_rhel_release_string() {
-    let v: KernelVersion = "6.12.0-211.el10.aarch64"
-        .parse()
-        .expect("RHEL release string must parse");
+    let v: KernelVersion =
+        "6.12.0-211.el10.aarch64".parse().expect("RHEL release string must parse");
     assert_eq!(v.major, 6);
     assert_eq!(v.minor, 12);
     assert_eq!(v.patch, 0);
@@ -1514,9 +1500,8 @@ fn kernel_version_parses_rhel_release_string() {
 /// KV-03: older RHEL 9 release string with underscore in suffix.
 #[test]
 fn kernel_version_parses_rhel9_release_string() {
-    let v: KernelVersion = "5.14.0-503.23.1.el9_5.x86_64"
-        .parse()
-        .expect("RHEL 9 release string must parse");
+    let v: KernelVersion =
+        "5.14.0-503.23.1.el9_5.x86_64".parse().expect("RHEL 9 release string must parse");
     assert_eq!(v.major, 5);
     assert_eq!(v.minor, 14);
     assert_eq!(v.patch, 0);
@@ -1586,9 +1571,9 @@ fn kernel_version_rejects_empty_string() {
 /// MAJOR.MINOR.PATCH string. If this test fails, the constant must be updated.
 #[test]
 fn catalog_baseline_constant_is_valid_kernel_version() {
-    let v = CATALOG_KERNEL_BASELINE.parse::<KernelVersion>().expect(
-        "CATALOG_KERNEL_BASELINE must be a valid MAJOR.MINOR.PATCH string",
-    );
+    let v = CATALOG_KERNEL_BASELINE
+        .parse::<KernelVersion>()
+        .expect("CATALOG_KERNEL_BASELINE must be a valid MAJOR.MINOR.PATCH string");
     // Must have a non-zero major — no kernel has ever shipped as 0.x.y.
     assert!(v.major > 0, "catalog baseline major version must be > 0");
 }

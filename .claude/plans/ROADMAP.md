@@ -1,6 +1,6 @@
 # UMRS ROADMAP
 
-**Updated:** 2026-03-23
+**Updated:** 2026-04-02
 
 High-assurance Rust platform for system security on Linux.
 Typed, provenance-verified answers about what a system is, what it runs, and whether it meets policy.
@@ -158,6 +158,11 @@ applies consistently across all sites.
 - [ ] Five Eyes interop mapping
 - [x] French translation pipeline operational (Termium Plus + OQLF GDT corpus, 58K entries — 2026-03-23)
 - [x] First tool domain translated: umrs-uname fr_CA (Canadian federal security French — 2026-03-23)
+- [x] umrs-c2pa fr_CA man page translated, Henri policy-reviewed, findings fixed (2026-04-01)
+- [x] umrs-c2pa string inventory complete (105 strings, 5 design decisions — all 5 resolved by Jamie)
+- [x] umrs-c2pa gettext wrapping in progress (2026-04-02) — all design blockers cleared
+- [x] FIPS 180-4 and FIPS 186-5 downloaded to reference library (2026-04-02)
+- [x] Audit/logging research corpus acquisition started (CC Part 2, IDMEF, CEF, DFXML, CASE, ITU X.721)
 - [ ] French translations for remaining tool domains (umrs-ls, umrs-stat, umrs-platform)
 - [ ] Extending label information to external systems:
       - Apache module which can read the SELinux label adn then add an http header to indicate
@@ -226,6 +231,7 @@ are escalated.
 | `umrs-ls` | `umrs-ls` | Security-enriched directory listing — SELinux labels, xattrs, security observations | Functional | Files, directories |
 | `umrs-state` | `umrs-state` | System state introspection — kernel posture, platform detection, security signals | Prototype | Host system |
 | `umrs-logspace` | `umrs-logspace` | Audit trail and logging — structured security event capture | Prototype | Audit events |
+| `umrs-c2pa` | `umrs-c2pa` | C2PA media provenance — chain-of-custody, trust list validation, CUI marking, SHA-256+SHA-384 dual digest (CNSA 2.0 ready) | Functional (43 tests, security-reviewed, EN+FR docs, i18n in progress) | Media files (JPEG, PNG, MP4, PDF) |
 
 ### Suggested Tool Enhancements
 

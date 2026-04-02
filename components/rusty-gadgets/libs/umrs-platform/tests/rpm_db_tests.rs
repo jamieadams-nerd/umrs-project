@@ -74,8 +74,7 @@ mod rpm_db_tests {
         let mut bundle = EvidenceBundle::new();
         let db = RpmDb::open(&mut bundle).expect("db should open");
         let path = Path::new("/usr/lib/os-release");
-        let result =
-            db.query_file_digest(path).expect("digest query should not error");
+        let result = db.query_file_digest(path).expect("digest query should not error");
         match result {
             Some((algo, bytes)) => {
                 assert!(!bytes.is_empty(), "digest bytes must not be empty");
@@ -84,9 +83,7 @@ mod rpm_db_tests {
                     DigestAlgorithm::Sha256 | DigestAlgorithm::Sha512 => {}
                     DigestAlgorithm::Md5 => {
                         // MD5 is allowed on older DBs — just log.
-                        eprintln!(
-                            "INFO: os-release digest uses MD5 (legacy DB)"
-                        );
+                        eprintln!("INFO: os-release digest uses MD5 (legacy DB)");
                     }
                     DigestAlgorithm::Unknown(ref s) => {
                         panic!("unexpected digest algorithm: {s}");
@@ -133,10 +130,8 @@ mod rpm_db_tests {
             eprintln!("SKIP: {RPM_DB_PATH} not present");
             return;
         }
-        let result = umrs_platform::detect::is_installed(
-            "nonexistent-pkg-xyz-umrs-test",
-        )
-        .expect("RPM DB must be queryable on an RHEL system");
+        let result = umrs_platform::detect::is_installed("nonexistent-pkg-xyz-umrs-test")
+            .expect("RPM DB must be queryable on an RHEL system");
         assert!(!result, "nonexistent package must return false");
     }
 
@@ -150,8 +145,7 @@ mod rpm_db_tests {
         let mut bundle = EvidenceBundle::new();
         let db = RpmDb::open(&mut bundle).expect("db should open");
         let path = Path::new("/nonexistent/path/xyzzy-not-a-real-file");
-        let result =
-            db.query_file_digest(path).expect("digest query should not error");
+        let result = db.query_file_digest(path).expect("digest query should not error");
         assert!(result.is_none(), "nonexistent path must return None");
     }
 }

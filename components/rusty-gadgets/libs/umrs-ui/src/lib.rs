@@ -91,19 +91,13 @@ pub mod viewer;
 
 // Convenience re-exports for callers
 pub use app::{
-    AuditCardApp, AuditCardState, ColumnLayout, DataRow, HeaderContext,
-    HeaderField, IndicatorValue, SecurityIndicators, StatusLevel,
-    StatusMessage, StyleHint, TabDef,
+    AuditCardApp, AuditCardState, ColumnLayout, DataRow, HeaderContext, HeaderField,
+    IndicatorValue, SecurityIndicators, StatusLevel, StatusMessage, StyleHint, TabDef,
 };
 pub use config::fields::{FieldDef, FieldValue, ValidationResult};
-pub use config::{
-    ConfigApp, ConfigHeaderContext, ConfigState, ConfigStateEvent,
-    render_config,
-};
+pub use config::{ConfigApp, ConfigHeaderContext, ConfigState, ConfigStateEvent, render_config};
 pub use dialog::{DialogFocus, DialogMode, DialogState, render_dialog};
-pub use indicators::{
-    build_header_context, read_security_indicators, read_system_uuid,
-};
+pub use indicators::{build_header_context, read_security_indicators, read_system_uuid};
 pub use keymap::{Action, KeyMap};
 pub use layout::render_audit_card;
 pub use theme::Theme;

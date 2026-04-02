@@ -294,7 +294,8 @@
       "Bash(tee -a /DEVELOPMENT/umrs-project/.claude/logs/task-log.md)",
       "Bash(./target/debug/umrs-c2pa:*)",
       "Bash(/DEVELOPMENT/umrs-project/components/rusty-gadgets/target/debug/umrs-c2pa:*)",
-      "Bash(cd:*)"
+      "Bash(cd:*)",
+      "Bash(openssl list:*)"
     ]
   },
   "enabledPlugins": {

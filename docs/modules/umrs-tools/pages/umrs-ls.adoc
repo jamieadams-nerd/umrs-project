@@ -110,7 +110,7 @@ They are not repeated on every row.
 | Group header only
 | The setrans-translated sensitivity/category string when `mcstransd` is
   running, or the raw level string otherwise.
-  E.g., `CUI//LEI/INV`, `s0`, `<no-level>`, `<restricted>`.
+  E.g., `CUI//INV`, `CUI//SP-CTI`, `s0`, `<no-level>`, `<restricted>`.
 
 | `OWNER:GROUP`
 | On

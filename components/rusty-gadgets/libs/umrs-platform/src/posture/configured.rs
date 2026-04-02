@@ -166,8 +166,7 @@ impl SysctlConfig {
 /// This matches the order specified in `sysctl(8)` and `sysctl.d(5)`.
 /// Phase 1 intentionally omits `/lib/sysctl.d/` (deprecated path alias for
 /// `/usr/lib/sysctl.d/` on modern RHEL) to avoid double-counting.
-const SYSCTL_SEARCH_DIRS: &[&str] =
-    &["/usr/lib/sysctl.d", "/run/sysctl.d", "/etc/sysctl.d"];
+const SYSCTL_SEARCH_DIRS: &[&str] = &["/usr/lib/sysctl.d", "/run/sysctl.d", "/etc/sysctl.d"];
 
 // ===========================================================================
 // File loading helpers
@@ -178,23 +177,14 @@ const SYSCTL_SEARCH_DIRS: &[&str] =
 /// Returns the number of successfully parsed lines contributed across
 /// all files. Unreadable files and lines that fail to parse are skipped
 /// and logged at `debug`.
-fn load_conf_dir(
-    dir: &Path,
-    map: &mut HashMap<String, (String, String)>,
-) -> usize {
+fn load_conf_dir(dir: &Path, map: &mut HashMap<String, (String, String)>) -> usize {
     let mut files: Vec<PathBuf> = match std::fs::read_dir(dir) {
         Ok(entries) => entries
             .filter_map(|e| e.ok().map(|e| e.path()))
-            .filter(|p| {
-                p.extension().and_then(|e| e.to_str()) == Some("conf")
-                    && p.is_file()
-            })
+            .filter(|p| p.extension().and_then(|e| e.to_str()) == Some("conf") && p.is_file())
             .collect(),
         Err(e) => {
-            log::debug!(
-                "posture: cannot read sysctl.d dir {}: {e}",
-                dir.display()
-            );
+            log::debug!("posture: cannot read sysctl.d dir {}: {e}", dir.display());
             return 0;
         }
     };
@@ -225,10 +215,7 @@ fn load_conf_dir(
 ///
 /// NIST SP 800-53 SI-10: Input Validation — malformed lines are rejected and
 /// logged rather than silently ignored or causing a parse error.
-fn load_conf_file(
-    path: &Path,
-    map: &mut HashMap<String, (String, String)>,
-) -> io::Result<usize> {
+fn load_conf_file(path: &Path, map: &mut HashMap<String, (String, String)>) -> io::Result<usize> {
     let content = std::fs::read_to_string(path)?;
     let source = path.to_string_lossy().into_owned();
     let mut count = 0usize;
@@ -237,10 +224,7 @@ fn load_conf_file(
         let trimmed = line.trim();
 
         // Skip comments and blank lines.
-        if trimmed.is_empty()
-            || trimmed.starts_with('#')
-            || trimmed.starts_with(';')
-        {
+        if trimmed.is_empty() || trimmed.starts_with('#') || trimmed.starts_with(';') {
             continue;
         }
 

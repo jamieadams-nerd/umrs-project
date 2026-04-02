@@ -285,9 +285,7 @@ impl FieldDef {
     pub fn validate_buffer(&mut self) -> &ValidationResult {
         let proposed = match &self.value {
             FieldValue::Text(_) => FieldValue::Text(self.edit_buffer.clone()),
-            FieldValue::Selection(_) => {
-                FieldValue::Selection(self.edit_buffer.clone())
-            }
+            FieldValue::Selection(_) => FieldValue::Selection(self.edit_buffer.clone()),
             FieldValue::Toggle(b) => FieldValue::Toggle(*b),
         };
         self.validation = (self.validator)(&proposed);
@@ -313,9 +311,7 @@ impl FieldDef {
         }
         let new_value = match &self.value {
             FieldValue::Text(_) => FieldValue::Text(self.edit_buffer.clone()),
-            FieldValue::Selection(_) => {
-                FieldValue::Selection(self.edit_buffer.clone())
-            }
+            FieldValue::Selection(_) => FieldValue::Selection(self.edit_buffer.clone()),
             FieldValue::Toggle(b) => FieldValue::Toggle(*b),
         };
         self.dirty = new_value != self.value;
@@ -348,8 +344,7 @@ impl FieldDef {
             if self.options.is_empty() {
                 return;
             }
-            let idx =
-                self.options.iter().position(|o| o == current).unwrap_or(0);
+            let idx = self.options.iter().position(|o| o == current).unwrap_or(0);
             let next_idx = (idx + 1) % self.options.len();
             if let Some(next) = self.options.get(next_idx) {
                 let new_val = FieldValue::Selection(next.clone());

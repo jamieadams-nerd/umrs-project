@@ -4,8 +4,8 @@
 // Kept separate from source per project convention.
 
 use umrs_selinux::posix::{
-    Gid, LinuxGroup, LinuxGroupName, LinuxOwnership, LinuxUser, LinuxUsername,
-    PosixNameError, Uid, UserIdentity,
+    Gid, LinuxGroup, LinuxGroupName, LinuxOwnership, LinuxUser, LinuxUsername, PosixNameError, Uid,
+    UserIdentity,
 };
 
 // ── LinuxUsername: valid cases ────────────────────────────────────────────────
@@ -249,13 +249,7 @@ fn linux_group_gid_only() {
 
 #[test]
 fn linux_ownership_from_raw() {
-    let o = LinuxOwnership::from_raw(
-        Uid::new(1000),
-        "alice",
-        Gid::new(1000),
-        "staff",
-    )
-    .unwrap();
+    let o = LinuxOwnership::from_raw(Uid::new(1000), "alice", Gid::new(1000), "staff").unwrap();
     assert_eq!(o.to_string(), "alice(1000):staff(1000)");
     assert!(!o.has_unresolved());
 }
@@ -269,10 +263,7 @@ fn linux_ownership_from_ids() {
 
 #[test]
 fn linux_ownership_rejects_bad_group() {
-    assert!(
-        LinuxOwnership::from_raw(Uid::new(0), "root", Gid::new(0), "bad.group")
-            .is_err()
-    );
+    assert!(LinuxOwnership::from_raw(Uid::new(0), "root", Gid::new(0), "bad.group").is_err());
 }
 
 // ── UserIdentity ──────────────────────────────────────────────────────────────

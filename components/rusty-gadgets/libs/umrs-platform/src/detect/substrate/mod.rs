@@ -66,18 +66,14 @@ pub enum PackageQueryError {
     ///
     /// The RPM database file is absent, unreadable, or the `rpm-db` feature
     /// is not compiled in. The query could not be attempted.
-    #[error(
-        "RPM database unavailable — cannot query package installation status"
-    )]
+    #[error("RPM database unavailable — cannot query package installation status")]
     DatabaseUnavailable,
 
     /// The database opened successfully but the query itself failed.
     ///
     /// The database may be corrupt, locked, or the query encountered an
     /// unexpected schema. The result is indeterminate.
-    #[error(
-        "package installation query failed — database may be corrupt or locked"
-    )]
+    #[error("package installation query failed — database may be corrupt or locked")]
     QueryFailed,
 }
 
@@ -191,12 +187,7 @@ pub trait PackageProbe: Send + Sync {
     ///
     /// Returns `None` if the file is unowned, the probe lacks ownership
     /// query capability, or an error occurs — fail closed.
-    fn query_ownership(
-        &self,
-        dev: u64,
-        ino: u64,
-        path: &Path,
-    ) -> Option<FileOwnership>;
+    fn query_ownership(&self, dev: u64, ino: u64, path: &Path) -> Option<FileOwnership>;
 
     /// Fetch the expected installed digest for `path` from the package DB.
     ///

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 Jamie Adams
+#![forbid(unsafe_code)]
 
 //! # UMRS C2PA — Binary Entry Point
 //!
@@ -37,11 +38,13 @@ use std::path::PathBuf;
 
 use anyhow::{Context, Result};
 use clap::{Parser, Subcommand};
+use gettextrs::ngettext;
+use umrs_core::i18n;
 
 use c2pa::{
     UmrsConfig,
-    ingest::sha256_hex,
-    manifest::read_chain,
+    ingest::{sha256_hex, sha384_hex},
+    manifest::{chain_report_json, read_chain},
     manifest_json,
     report::{print_chain, print_chain_readonly, print_validation_report},
     validate::validate_config,
@@ -157,6 +160,11 @@ enum CredsAction {
 }
 
 fn main() -> Result<()> {
+    // Initialize the i18n subsystem before any user-facing output.
+    // This binds the "umrs-c2pa" gettext domain so that tr() calls resolve
+    // against the correct message catalog for the active system locale.
+    i18n::init("umrs-c2pa");
+
     let cli = Cli::parse();
 
     // Enable verbose console output if requested.
@@ -167,10 +175,19 @@ fn main() -> Result<()> {
     // Load config — fall back to defaults if the file doesn't exist.
     let config = if cli.config.exists() {
         verbose!("Loading config from {}", cli.config.display());
-        UmrsConfig::load(&cli.config)
-            .with_context(|| format!("Failed to load config: {}", cli.config.display()))?
+        UmrsConfig::load(&cli.config).with_context(|| {
+            format!(
+                "{} {}",
+                i18n::tr("Failed to load config:"),
+                cli.config.display()
+            )
+        })?
     } else {
-        verbose!("No config file at {} — using defaults", cli.config.display());
+        verbose!(
+            "{} {}",
+            i18n::tr("No config file at"),
+            format!("{} — {}", cli.config.display(), i18n::tr("using defaults"))
+        );
         UmrsConfig::default()
     };
 
@@ -264,69 +281,119 @@ fn cmd_c2pa(
     config: &UmrsConfig,
 ) -> Result<()> {
     if !file.exists() {
-        anyhow::bail!("File not found: {}", file.display());
+        anyhow::bail!("{} {}", i18n::tr("File not found:"), file.display());
     }
+
+    // Marking without signing is an error — markings are embedded during signing.
+    if marking.is_some() && !sign {
+        anyhow::bail!(
+            "--marking requires --sign. Markings are embedded during signing, not during inspection."
+        );
+    }
+
     verbose!("Found file: {}", file.display());
 
     // JSON mode — emit raw manifest store and exit.
     if json {
-        verbose!("Reading raw manifest store as JSON...");
+        verbose!("{}", i18n::tr("Reading raw manifest store as JSON..."));
         match manifest_json(file, config) {
             Ok(j) => println!("{j}"),
-            Err(e) => eprintln!("No manifest or read error: {e}"),
+            Err(e) => eprintln!("{} {e}", i18n::tr("No manifest or read error:")),
         }
         return Ok(());
     }
 
-    // Chain JSON mode — emit parsed evidence chain as JSON and exit.
+    // Chain JSON mode — emit parsed evidence chain with integrity hashes as JSON and exit.
     if chain_json {
-        verbose!("Reading chain of custody as JSON...");
-        match c2pa::chain_json(file, config) {
+        verbose!("{}", i18n::tr("Computing SHA-256 and SHA-384 digests..."));
+        let sha256 = sha256_hex(file)
+            .with_context(|| format!("{} {}", i18n::tr("Failed to hash file:"), file.display()))?;
+        let sha384 = sha384_hex(file)
+            .with_context(|| format!("{} {}", i18n::tr("Failed to hash file:"), file.display()))?;
+        verbose!("{}", i18n::tr("Reading chain of custody as JSON..."));
+        match chain_report_json(file, &sha256, &sha384, config) {
             Ok(j) => println!("{j}"),
-            Err(e) => eprintln!("No manifest or read error: {e}"),
+            Err(e) => eprintln!("{} {e}", i18n::tr("No manifest or read error:")),
         }
         return Ok(());
     }
 
-    verbose!("Computing SHA-256 digest...");
-    let sha256 =
-        sha256_hex(file).with_context(|| format!("Failed to hash file: {}", file.display()))?;
-    verbose!("SHA-256: {}", sha256);
-
-    // Marking without signing is a no-op — warn the operator.
-    if marking.is_some() && !sign {
-        eprintln!(
-            "Warning: --marking has no effect without --sign. \
-             Markings are embedded during signing, not during inspection."
-        );
-    }
+    verbose!("{}", i18n::tr("Computing SHA-256 and SHA-384 digests..."));
+    let sha256 = sha256_hex(file)
+        .with_context(|| format!("{} {}", i18n::tr("Failed to hash file:"), file.display()))?;
+    let sha384 = sha384_hex(file)
+        .with_context(|| format!("{} {}", i18n::tr("Failed to hash file:"), file.display()))?;
+    verbose!("{}: {}", i18n::tr("SHA-256"), sha256);
+    verbose!("{}: {}", i18n::tr("SHA-384"), sha384);
 
     if sign {
-        verbose!("Signing mode — ingesting file into UMRS chain of custody...");
+        verbose!(
+            "{}",
+            i18n::tr("Signing mode — ingesting file into UMRS chain of custody...")
+        );
         if let Some(m) = marking {
-            verbose!("Security marking: {}", m);
+            verbose!("{} {}", i18n::tr("Security marking:"), m);
         }
 
         // Ingest mode: sign the file, display the resulting chain.
         let result = c2pa::ingest_file(file, output, marking, config)
-            .with_context(|| format!("Ingest failed for: {}", file.display()))?;
-        verbose!("Signed output written to: {}", result.output_path.display());
+            .with_context(|| format!("{} {}", i18n::tr("Ingest failed for:"), file.display()))?;
+        verbose!(
+            "{} {}",
+            i18n::tr("Signed output written to:"),
+            result.output_path.display()
+        );
 
-        verbose!("Reading chain of custody from signed output...");
+        verbose!(
+            "{}",
+            i18n::tr("Reading chain of custody from signed output...")
+        );
         let chain = read_chain(&result.output_path, config)
-            .with_context(|| "Failed to read chain from signed output")?;
-        verbose!("Chain contains {} entries", chain.len());
+            .with_context(|| i18n::tr("Failed to read chain from signed output"))?;
+        let n = chain.len();
+        verbose!(
+            "{}",
+            ngettext(
+                "Chain contains {} entry",
+                "Chain contains {} entries",
+                u32::try_from(n).unwrap_or(u32::MAX)
+            )
+            .replace("{}", &n.to_string())
+        );
 
-        print_chain(&file.display().to_string(), &sha256, &chain, Some(&result));
+        print_chain(
+            &file.display().to_string(),
+            &sha256,
+            &sha384,
+            &chain,
+            Some(&result),
+        );
     } else {
-        verbose!("Read-only mode — inspecting existing chain of custody...");
+        verbose!(
+            "{}",
+            i18n::tr("Read-only mode — inspecting existing chain of custody...")
+        );
 
         // Read-only mode: display the chain as-is.
-        let chain = read_chain(file, config)
-            .with_context(|| format!("Failed to read chain from: {}", file.display()))?;
-        verbose!("Chain contains {} entries", chain.len());
+        let chain = read_chain(file, config).with_context(|| {
+            format!(
+                "{} {}",
+                i18n::tr("Failed to read chain from:"),
+                file.display()
+            )
+        })?;
+        let n = chain.len();
+        verbose!(
+            "{}",
+            ngettext(
+                "Chain contains {} entry",
+                "Chain contains {} entries",
+                u32::try_from(n).unwrap_or(u32::MAX)
+            )
+            .replace("{}", &n.to_string())
+        );
 
-        print_chain_readonly(&file.display().to_string(), &sha256, &chain);
+        print_chain_readonly(&file.display().to_string(), &sha256, &sha384, &chain);
     }
 
     Ok(())
@@ -335,9 +402,18 @@ fn cmd_c2pa(
 // ── config validate ──────────────────────────────────────────────────────────
 
 fn cmd_config_validate(config: &UmrsConfig) {
-    verbose!("Running configuration preflight checks...");
+    verbose!("{}", i18n::tr("Running configuration preflight checks..."));
     let results = validate_config(config);
-    verbose!("{} checks completed", results.len());
+    let n = results.len();
+    verbose!(
+        "{}",
+        ngettext(
+            "{} check completed",
+            "{} checks completed",
+            u32::try_from(n).unwrap_or(u32::MAX)
+        )
+        .replace("{}", &n.to_string())
+    );
     print_validation_report(&results);
 
     let failures = results.iter().filter(|r| r.status == c2pa::validate::CheckStatus::Fail).count();
@@ -353,9 +429,18 @@ fn cmd_config_generate(output: Option<&std::path::Path>) -> Result<()> {
     let template = config_template();
     match output {
         Some(path) => {
-            std::fs::write(path, template)
-                .with_context(|| format!("Failed to write config to: {}", path.display()))?;
-            println!("Config template written to: {}", path.display());
+            std::fs::write(path, template).with_context(|| {
+                format!(
+                    "{} {}",
+                    i18n::tr("Failed to write config to:"),
+                    path.display()
+                )
+            })?;
+            println!(
+                "{} {}",
+                i18n::tr("Config template written to:"),
+                path.display()
+            );
         }
         None => print!("{template}"),
     }
@@ -462,16 +547,25 @@ fn cmd_creds_generate(
     csr: bool,
     days: u32,
 ) -> Result<()> {
-    verbose!("Generating credentials in: {}", output_dir.display());
+    verbose!(
+        "{} {}",
+        i18n::tr("Generating credentials in:"),
+        output_dir.display()
+    );
 
     // Create output directory if it doesn't exist.
     if !output_dir.exists() {
-        std::fs::create_dir_all(output_dir)
-            .with_context(|| format!("Failed to create directory: {}", output_dir.display()))?;
+        std::fs::create_dir_all(output_dir).with_context(|| {
+            format!(
+                "{} {}",
+                i18n::tr("Failed to create directory:"),
+                output_dir.display()
+            )
+        })?;
     }
 
-    let result =
-        c2pa::creds::generate(config, csr, days).with_context(|| "Credential generation failed")?;
+    let result = c2pa::creds::generate(config, csr, days)
+        .with_context(|| i18n::tr("Credential generation failed"))?;
 
     let cert_name = if result.is_csr {
         "signing.csr"
@@ -484,20 +578,25 @@ fn cmd_creds_generate(
     // Safety: refuse to overwrite existing files.
     if cert_path.exists() {
         anyhow::bail!(
-            "{} already exists at {}. Remove it first or choose a different --output directory.",
+            "{} {} {}. {} {}",
             cert_name,
-            cert_path.display()
+            i18n::tr("already exists at"),
+            cert_path.display(),
+            i18n::tr("Remove it first or choose a different --output directory."),
+            ""
         );
     }
     if key_path.exists() {
         anyhow::bail!(
-            "signing.key already exists at {}. Remove it first or choose a different --output directory.",
-            key_path.display()
+            "signing.key {} {}. {}",
+            i18n::tr("already exists at"),
+            key_path.display(),
+            i18n::tr("Remove it first or choose a different --output directory."),
         );
     }
 
     std::fs::write(&cert_path, &result.cert_or_csr_pem)
-        .with_context(|| format!("Failed to write {}", cert_path.display()))?;
+        .with_context(|| format!("{} {}", i18n::tr("Failed to write"), cert_path.display()))?;
 
     // Write private key with mode 0600 from the start, not as a post-write
     // chmod. Using OpenOptions with .mode(0o600) on Unix creates the file with
@@ -515,69 +614,119 @@ fn cmd_creds_generate(
             .create_new(true)
             .mode(0o600)
             .open(&key_path)
-            .with_context(|| format!("Failed to create key file: {}", key_path.display()))?;
-        key_file
-            .write_all(&result.key_pem)
-            .with_context(|| format!("Failed to write key to: {}", key_path.display()))?;
+            .with_context(|| {
+                format!(
+                    "{} {}",
+                    i18n::tr("Failed to create key file:"),
+                    key_path.display()
+                )
+            })?;
+        key_file.write_all(&result.key_pem).with_context(|| {
+            format!(
+                "{} {}",
+                i18n::tr("Failed to write key to:"),
+                key_path.display()
+            )
+        })?;
     }
     #[cfg(not(unix))]
     {
         std::fs::write(&key_path, &result.key_pem)
-            .with_context(|| format!("Failed to write {}", key_path.display()))?;
+            .with_context(|| format!("{} {}", i18n::tr("Failed to write"), key_path.display()))?;
         eprintln!(
-            "Warning: key file permissions cannot be restricted on this platform. \
-             Manually restrict access to: {}",
+            "{} {}",
+            i18n::tr(
+                "Warning: key file permissions cannot be restricted on this platform. \
+                 Manually restrict access to:"
+            ),
             key_path.display()
         );
     }
 
-    // Render the generation summary from structured fields so each line is an
-    // independent string that can be wrapped with gettext() when i18n is wired in.
+    // Render the generation summary from structured fields — each line is
+    // an independent translated string.
     if result.is_csr {
-        println!("Generated CSR + private key");
-    } else {
-        println!("Generated self-signed certificate + private key");
-    }
-    println!(
-        "Algorithm : {} (ECDSA {}, {}-bit)",
-        result.algorithm, result.curve_name, result.key_bits
-    );
-    println!(
-        "Subject   : O={org}, CN={org} (UMRS C2PA Signing{suffix})",
-        org = result.organization,
-        suffix = if result.is_csr { "" } else { " \u{2014} self-signed" },
-    );
-    if let Some(days) = result.validity_days {
-        println!("Validity  : {days} days from now");
-    }
-    println!();
-    if result.is_csr {
-        println!("Submit the CSR to your Certificate Authority for signing.");
-        println!("Keep the private key safe \u{2014} it cannot be regenerated.");
+        println!("{}", i18n::tr("Generated CSR + private key"));
     } else {
         println!(
-            "Self-signed certificates will show as UNVERIFIED by external validators."
+            "{}",
+            i18n::tr("Generated self-signed certificate + private key")
         );
-        println!("For trusted status, submit a CSR to a recognized CA");
-        println!("or add your org's root to the trust anchors.");
+    }
+    println!(
+        "{}: {} (ECDSA {}, {}-bit)",
+        i18n::tr("Algorithm"),
+        result.algorithm,
+        result.curve_name,
+        result.key_bits
+    );
+    println!(
+        "{}: O={org}, CN={org} (UMRS C2PA Signing{suffix})",
+        i18n::tr("Subject"),
+        org = result.organization,
+        suffix = if result.is_csr {
+            ""
+        } else {
+            " \u{2014} self-signed"
+        },
+    );
+    if let Some(days) = result.validity_days {
+        println!(
+            "{}: {}",
+            i18n::tr("Validity"),
+            ngettext("{} day from now", "{} days from now", days).replace("{}", &days.to_string())
+        );
     }
     println!();
-    println!("Files written:");
+    if result.is_csr {
+        println!(
+            "{}",
+            i18n::tr("Submit the CSR to your Certificate Authority for signing.")
+        );
+        println!(
+            "{}",
+            i18n::tr("Keep the private key safe \u{2014} it cannot be regenerated.")
+        );
+    } else {
+        println!(
+            "{}",
+            i18n::tr("Self-signed certificates will show as UNVERIFIED by external validators.")
+        );
+        println!(
+            "{}",
+            i18n::tr("For trusted status, submit a CSR to a recognized CA")
+        );
+        println!(
+            "{}",
+            i18n::tr("or add your org's root to the trust anchors.")
+        );
+    }
+    println!();
+    println!("{}:", i18n::tr("Files written"));
     println!("  {} : {}", cert_name, cert_path.display());
     println!("  signing.key : {}", key_path.display());
     println!();
-    println!("Next step — add these to your umrs-c2pa.toml:");
+    println!(
+        "{} umrs-c2pa.toml:",
+        i18n::tr("Next step — add these to your")
+    );
     println!();
     println!("  [identity]");
     if result.is_csr {
-        println!("  # After your CA signs the CSR, replace signing.csr with the signed cert:");
-        println!("  cert_chain  = \"{}\"", output_dir.join("signing.pem").display());
+        println!(
+            "  # {}:",
+            i18n::tr("After your CA signs the CSR, replace signing.csr with the signed cert")
+        );
+        println!(
+            "  cert_chain  = \"{}\"",
+            output_dir.join("signing.pem").display()
+        );
     } else {
         println!("  cert_chain  = \"{}\"", cert_path.display());
     }
     println!("  private_key = \"{}\"", key_path.display());
     println!();
-    println!("Then run: umrs-c2pa creds validate");
+    println!("{} umrs-c2pa creds validate", i18n::tr("Then run:"));
 
     Ok(())
 }
@@ -585,14 +734,17 @@ fn cmd_creds_generate(
 // ── creds validate ───────────────────────────────────────────────────────────
 
 fn cmd_creds_validate(config: &UmrsConfig) {
-    verbose!("Validating configured signing credentials...");
+    verbose!(
+        "{}",
+        i18n::tr("Validating configured signing credentials...")
+    );
     let checks = c2pa::creds::validate(config);
 
     let pass_mark = "\u{2714}"; // checkmark
     let fail_mark = "\u{2718}"; // x-mark
 
     println!();
-    println!("Credential Validation");
+    println!("{}", i18n::tr("Credential Validation"));
     println!("{}", "\u{2501}".repeat(56));
 
     for check in &checks {
@@ -608,11 +760,22 @@ fn cmd_creds_validate(config: &UmrsConfig) {
 
     let failures = checks.iter().filter(|c| !c.ok).count();
     if failures > 0 {
-        println!("{failures} check(s) failed.");
+        println!(
+            "{}",
+            ngettext(
+                "{} check failed.",
+                "{} checks failed.",
+                u32::try_from(failures).unwrap_or(u32::MAX)
+            )
+            .replace("{}", &failures.to_string())
+        );
         println!();
-        println!("To generate new credentials: umrs-c2pa creds generate --output /path/to/certs/");
+        println!(
+            "{} umrs-c2pa creds generate --output /path/to/certs/",
+            i18n::tr("To generate new credentials:")
+        );
         std::process::exit(1);
     } else {
-        println!("All checks passed.");
+        println!("{}", i18n::tr("All checks passed."));
     }
 }

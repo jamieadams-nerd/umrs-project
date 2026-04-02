@@ -167,7 +167,7 @@ pub fn parse_secolor_file(path: &Path) -> io::Result<SeColorConfig> {
         }
 
         if let Err(e) = parse_line(line, &mut cfg) {
-            eprintln!("secolor.conf parse warning line {}: {}", line_no + 1, e);
+            log::warn!("secolor.conf parse warning line {}: {}", line_no + 1, e);
         }
     }
 
@@ -178,8 +178,6 @@ pub fn parse_secolor_file(path: &Path) -> io::Result<SeColorConfig> {
 
 fn parse_line(line: &str, cfg: &mut SeColorConfig) -> io::Result<()> {
     // color NAME = #RRGGBB
-    eprintln!("Examining: {line}");
-
     if line.starts_with("color ") {
         let parts: Vec<&str> = line.split_whitespace().collect();
         if parts.len() != 4 || parts[2] != "=" {
@@ -238,15 +236,11 @@ fn resolve_color(name: &str, cfg: &SeColorConfig) -> io::Result<Rgb> {
         return Ok(Rgb::from_hex(parse_hex(name)?));
     }
 
-    cfg.mnemonics
-        .get(name)
-        .copied()
-        .ok_or_else(|| io_err("unknown color mnemonic"))
+    cfg.mnemonics.get(name).copied().ok_or_else(|| io_err("unknown color mnemonic"))
 }
 
 fn parse_hex(s: &str) -> io::Result<u32> {
-    u32::from_str_radix(s.trim_start_matches('#'), 16)
-        .map_err(|_| io_err("invalid hex color"))
+    u32::from_str_radix(s.trim_start_matches('#'), 16).map_err(|_| io_err("invalid hex color"))
 }
 
 // ============================================================================
@@ -264,10 +258,7 @@ pub struct ContextComponents<'a> {
 // ----------------------------------------------------------------------------
 
 #[must_use]
-pub fn resolve_colors(
-    ctx: &ContextComponents,
-    cfg: &SeColorConfig,
-) -> [SeColor; 4] {
+pub fn resolve_colors(ctx: &ContextComponents, cfg: &SeColorConfig) -> [SeColor; 4] {
     let mut out: [Option<SeColor>; 4] = [None, None, None, None];
 
     out[0] = match_rule(&cfg.user, ctx.user);
@@ -298,8 +289,7 @@ fn match_rule(rules: &[Rule], value: &str) -> Option<SeColor> {
 // Precedence propagation (matches C logic)
 // ----------------------------------------------------------------------------
 
-const PRECEDENCE: [[usize; 3]; 4] =
-    [[1, 2, 3], [0, 2, 3], [0, 1, 3], [0, 1, 2]];
+const PRECEDENCE: [[usize; 3]; 4] = [[1, 2, 3], [0, 2, 3], [0, 1, 3], [0, 1, 2]];
 
 fn propagate_precedence(colors: &mut [Option<SeColor>; 4]) {
     for i in 0..4 {

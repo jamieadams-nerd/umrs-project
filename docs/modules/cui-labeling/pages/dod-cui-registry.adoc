@@ -43,8 +43,15 @@ DoD and NARA use different column names for the same hierarchy:
 | INV
 |===
 
-The marking format is identical regardless of terminology:
-`CUI//[Index Group Abbreviation]/[Category Abbreviation]`
+Per the NARA CUI standard, only category abbreviations appear in the banner marking.
+Index groups are organizational groupings used for registry navigation — they do not appear in markings.
+The correct format is `CUI//[Category Abbreviation]` (e.g., `CUI//INV` for Investigation).
+
+NOTE: The DoD registry documentation sometimes shows groupings such as `CUI//INTEL/OPSEC`.
+In these cases, `INTEL` reflects DoD's index group assignment, not a valid banner component.
+The authoritative banner marking is the category abbreviation alone (`CUI//OPSEC`).
+See the xref:reconciliation.adoc[Registry Reconciliation] page for a full list of cases where
+DoD and NARA groupings differ.
 
 == Registry Structure
 

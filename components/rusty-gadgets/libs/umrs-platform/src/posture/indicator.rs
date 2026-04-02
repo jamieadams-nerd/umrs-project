@@ -213,9 +213,7 @@ impl IndicatorId {
             Self::NfConntrackAcct => "modprobe:nf_conntrack/acct",
             Self::BluetoothBlacklisted => "modprobe:bluetooth/blacklisted",
             Self::UsbStorageBlacklisted => "modprobe:usb_storage/blacklisted",
-            Self::FirewireCoreBlacklisted => {
-                "modprobe:firewire_core/blacklisted"
-            }
+            Self::FirewireCoreBlacklisted => "modprobe:firewire_core/blacklisted",
             Self::ThunderboltBlacklisted => "modprobe:thunderbolt/blacklisted",
             Self::SpectreV2Off => "spectre_v2=off",
             Self::SpectreV2UserOff => "spectre_v2_user=off",
@@ -350,9 +348,7 @@ impl DesiredValue {
             Self::Exact(v) => Some(live == *v),
             Self::AtLeast(v) => Some(live >= *v),
             Self::AtMost(v) => Some(live <= *v),
-            Self::CmdlinePresent(_) | Self::CmdlineAbsent(_) | Self::Custom => {
-                None
-            }
+            Self::CmdlinePresent(_) | Self::CmdlineAbsent(_) | Self::Custom => None,
         }
     }
 
@@ -376,9 +372,7 @@ impl DesiredValue {
             Self::Exact(v) => Some(live64 == i64::from(*v)),
             Self::AtLeast(v) => Some(live64 >= i64::from(*v)),
             Self::AtMost(v) => Some(live64 <= i64::from(*v)),
-            Self::CmdlinePresent(_) | Self::CmdlineAbsent(_) | Self::Custom => {
-                None
-            }
+            Self::CmdlinePresent(_) | Self::CmdlineAbsent(_) | Self::Custom => None,
         }
     }
 
@@ -390,16 +384,9 @@ impl DesiredValue {
     #[must_use = "hardening check result must be examined"]
     pub fn meets_cmdline(&self, cmdline: &str) -> Option<bool> {
         match self {
-            Self::CmdlinePresent(token) => {
-                Some(cmdline_contains(cmdline, token))
-            }
-            Self::CmdlineAbsent(token) => {
-                Some(!cmdline_contains(cmdline, token))
-            }
-            Self::Exact(_)
-            | Self::AtLeast(_)
-            | Self::AtMost(_)
-            | Self::Custom => None,
+            Self::CmdlinePresent(token) => Some(cmdline_contains(cmdline, token)),
+            Self::CmdlineAbsent(token) => Some(!cmdline_contains(cmdline, token)),
+            Self::Exact(_) | Self::AtLeast(_) | Self::AtMost(_) | Self::Custom => None,
         }
     }
 }

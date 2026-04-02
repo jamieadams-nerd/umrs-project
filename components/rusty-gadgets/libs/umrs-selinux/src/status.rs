@@ -34,9 +34,7 @@
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
-use umrs_platform::kattrs::{
-    EnforceState, SelinuxEnforce, SelinuxMls, StaticSource,
-};
+use umrs_platform::kattrs::{EnforceState, SelinuxEnforce, SelinuxMls, StaticSource};
 
 const SELINUX_MAGIC: i64 = 0xf97c_ff8c;
 
@@ -121,9 +119,7 @@ impl SelinuxStatus {
 
         let enforcing = if enabled {
             // CALL ON THE STRUCT, NOT THE TRAIT
-            SelinuxEnforce::read()
-                .map(|state| state == EnforceState::Enforcing)
-                .unwrap_or(false)
+            SelinuxEnforce::read().map(|state| state == EnforceState::Enforcing).unwrap_or(false)
         } else {
             false
         };

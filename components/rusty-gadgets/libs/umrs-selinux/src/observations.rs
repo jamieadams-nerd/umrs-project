@@ -201,9 +201,7 @@ impl SecurityObservation {
             }
             | Self::AccessDenied
             | Self::SelinuxParseFailure => ObservationKind::Warning,
-            Self::ImaHashPresent | Self::ImmutableFlagSet => {
-                ObservationKind::Good
-            }
+            Self::ImaHashPresent | Self::ImmutableFlagSet => ObservationKind::Good,
         }
     }
 }
@@ -217,12 +215,8 @@ impl fmt::Display for SecurityObservation {
         };
         let msg = match self {
             Self::WorldWritable => "world-writable".to_owned(),
-            Self::NoSelinuxContext => {
-                "no SELinux context (unlabeled)".to_owned()
-            }
-            Self::SetuidWritable => {
-                "setuid with group/world write permissions".to_owned()
-            }
+            Self::NoSelinuxContext => "no SELinux context (unlabeled)".to_owned(),
+            Self::SetuidWritable => "setuid with group/world write permissions".to_owned(),
             Self::SetuidBitSet => "SETUID bit set".to_owned(),
             Self::SetgidBitSet => "SETGID bit set".to_owned(),
             Self::HardLinked {
@@ -235,16 +229,11 @@ impl fmt::Display for SecurityObservation {
             Self::UnresolvedGroup {
                 gid,
             } => format!("orphaned group (gid={gid})"),
-            Self::AccessDenied => {
-                "access denied during attribute read".to_owned()
-            }
+            Self::AccessDenied => "access denied during attribute read".to_owned(),
             Self::SelinuxParseFailure => {
-                "SELinux label present but unverifiable (parse failure)"
-                    .to_owned()
+                "SELinux label present but unverifiable (parse failure)".to_owned()
             }
-            Self::TpiDisagreement => {
-                "SELinux TPI integrity violation: parsers disagree".to_owned()
-            }
+            Self::TpiDisagreement => "SELinux TPI integrity violation: parsers disagree".to_owned(),
             Self::ImaHashPresent => "IMA integrity hash present".to_owned(),
             Self::ImmutableFlagSet => "immutable flag set".to_owned(),
         };

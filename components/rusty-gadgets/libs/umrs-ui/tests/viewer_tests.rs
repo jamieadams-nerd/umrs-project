@@ -243,8 +243,7 @@ fn node_ref_invalid_path_returns_none() {
 #[test]
 fn node_ref_nested_path() {
     let model = build_test_tree();
-    let node =
-        model.node_ref(&[0, 1, 0]).expect("node at path [0,1,0] must exist");
+    let node = model.node_ref(&[0, 1, 0]).expect("node at path [0,1,0] must exist");
     assert_eq!(node.label, "Grandchild A2a");
 }
 
@@ -258,8 +257,7 @@ fn apply_filter_hides_non_matching_nodes() {
     model.apply_filter("grandchild");
     model.rebuild_display();
 
-    let visible: Vec<&str> =
-        model.display_list.iter().map(|e| e.label.as_str()).collect();
+    let visible: Vec<&str> = model.display_list.iter().map(|e| e.label.as_str()).collect();
     assert!(
         visible.contains(&"Root A"),
         "Root A must be visible as ancestor of match"
@@ -570,8 +568,7 @@ fn viewer_header_context_summary_none_by_default() {
 #[test]
 fn viewer_header_context_with_summary() {
     use umrs_ui::ViewerHeaderContext;
-    let ctx = ViewerHeaderContext::new("tool", "source", 42)
-        .with_summary("15 categories");
+    let ctx = ViewerHeaderContext::new("tool", "source", 42).with_summary("15 categories");
     assert_eq!(ctx.summary_description.as_deref(), Some("15 categories"));
 }
 

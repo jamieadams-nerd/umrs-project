@@ -45,13 +45,13 @@ use umrs_platform::detect::label_trust::LabelTrust;
 use umrs_platform::detect::{DetectionError, DetectionResult, OsDetector};
 use umrs_platform::evidence::{EvidenceRecord, SourceKind};
 use umrs_platform::posture::{
-    CATALOG_KERNEL_BASELINE, ConfiguredValue, ContradictionKind, IndicatorId,
-    PostureSnapshot, annotate_live_value, lookup,
+    CATALOG_KERNEL_BASELINE, ConfiguredValue, ContradictionKind, IndicatorId, PostureSnapshot,
+    annotate_live_value, lookup,
 };
 use umrs_platform::{Distro, KernelVersion, OsFamily, OsRelease, TrustLevel};
 use umrs_ui::app::{
-    AuditCardApp, AuditCardState, DataRow, HeaderContext, IndicatorValue,
-    SecurityIndicators, StatusLevel, StatusMessage, StyleHint, TabDef,
+    AuditCardApp, AuditCardState, DataRow, HeaderContext, IndicatorValue, SecurityIndicators,
+    StatusLevel, StatusMessage, StyleHint, TabDef,
 };
 use umrs_ui::dialog::{DialogState, render_dialog};
 use umrs_ui::indicators::build_header_context;
@@ -76,30 +76,20 @@ const fn trust_level_label(level: TrustLevel) -> &'static str {
 const fn trust_level_description(level: TrustLevel) -> &'static str {
     match level {
         TrustLevel::Untrusted => "No kernel anchor established.",
-        TrustLevel::KernelAnchored => {
-            "procfs verified via PROC_SUPER_MAGIC + PID coherence."
-        }
-        TrustLevel::EnvAnchored => {
-            "Mount topology cross-checked (mountinfo vs statfs)."
-        }
+        TrustLevel::KernelAnchored => "procfs verified via PROC_SUPER_MAGIC + PID coherence.",
+        TrustLevel::EnvAnchored => "Mount topology cross-checked (mountinfo vs statfs).",
         TrustLevel::SubstrateAnchored => {
             "Platform identity verified; >= 2 independent package facts confirmed."
         }
-        TrustLevel::IntegrityAnchored => {
-            "os-release ownership + installed digest verified."
-        }
+        TrustLevel::IntegrityAnchored => "os-release ownership + installed digest verified.",
     }
 }
 
 const fn trust_level_hint(level: TrustLevel) -> StyleHint {
     match level {
         TrustLevel::Untrusted => StyleHint::TrustRed,
-        TrustLevel::KernelAnchored | TrustLevel::EnvAnchored => {
-            StyleHint::TrustYellow
-        }
-        TrustLevel::SubstrateAnchored | TrustLevel::IntegrityAnchored => {
-            StyleHint::TrustGreen
-        }
+        TrustLevel::KernelAnchored | TrustLevel::EnvAnchored => StyleHint::TrustYellow,
+        TrustLevel::SubstrateAnchored | TrustLevel::IntegrityAnchored => StyleHint::TrustGreen,
     }
 }
 
@@ -202,11 +192,7 @@ impl OsDetectApp {
     ///
     /// `ctx` is passed in for header indicators and kernel version string.
     /// `snap` provides the full `PostureSnapshot` for the Kernel Security tab.
-    fn from_result(
-        result: &DetectionResult,
-        ctx: &HeaderContext,
-        snap: &PostureSnapshot,
-    ) -> Self {
+    fn from_result(result: &DetectionResult, ctx: &HeaderContext, snap: &PostureSnapshot) -> Self {
         // Tab order: OS Information → Kernel Security → Trust / Evidence.
         // Trust/Evidence is intentionally last — it is the deepest-dive tab
         // (evidence chain) and operators typically start with OS identity and
@@ -223,8 +209,7 @@ impl OsDetectApp {
         let trust_evidence_rows = build_trust_evidence_rows(result);
         let kernel_security_summary_rows =
             build_kernel_security_summary_rows(snap, &ctx.kernel_version);
-        let kernel_security_rows =
-            build_kernel_security_rows(snap, &ctx.indicators);
+        let kernel_security_rows = build_kernel_security_rows(snap, &ctx.indicators);
         let status = build_status(result);
 
         Self {
@@ -243,17 +228,11 @@ impl OsDetectApp {
     /// `ctx` is passed in for header indicators and kernel version string.
     /// `snap` provides the full `PostureSnapshot` for the Kernel Security tab —
     /// kernel posture data is available independently of OS detection.
-    fn from_error(
-        err: &DetectionError,
-        ctx: &HeaderContext,
-        snap: &PostureSnapshot,
-    ) -> Self {
+    fn from_error(err: &DetectionError, ctx: &HeaderContext, snap: &PostureSnapshot) -> Self {
         // Error description — does not include variable kernel data
         // (NIST SP 800-53 SI-12 — no sensitive data in user-visible errors).
         let description = match err {
-            DetectionError::ProcfsNotReal => {
-                i18n::tr("Hard gate: procfs is not real procfs")
-            }
+            DetectionError::ProcfsNotReal => i18n::tr("Hard gate: procfs is not real procfs"),
             DetectionError::PidCoherenceFailed {
                 ..
             } => i18n::tr("Hard gate: PID coherence broken"),
@@ -288,12 +267,8 @@ impl OsDetectApp {
 
         let kernel_security_summary_rows =
             build_kernel_security_summary_rows(snap, &ctx.kernel_version);
-        let kernel_security_rows =
-            build_kernel_security_rows(snap, &ctx.indicators);
-        let status = StatusMessage::new(
-            StatusLevel::Error,
-            i18n::tr("Detection pipeline failed"),
-        );
+        let kernel_security_rows = build_kernel_security_rows(snap, &ctx.indicators);
+        let status = StatusMessage::new(StatusLevel::Error, i18n::tr("Detection pipeline failed"));
 
         // Tab order: OS Information → Kernel Security → Trust / Evidence.
         // Trust/Evidence is always the rightmost (last) tab — convention
@@ -410,10 +385,7 @@ fn build_os_info_rows(result: &DetectionResult) -> Vec<DataRow> {
             ));
         }
         if let Some(ver) = &sub.version_id {
-            rows.push(DataRow::normal(
-                i18n::tr("Platform Version"),
-                ver.clone(),
-            ));
+            rows.push(DataRow::normal(i18n::tr("Platform Version"), ver.clone()));
         }
         rows.push(DataRow::normal(
             i18n::tr("Platform Facts"),
@@ -540,9 +512,7 @@ fn append_downgrade_rows(rows: &mut Vec<DataRow>, result: &DetectionResult) {
             i18n::tr("Each reason below prevented a trust tier upgrade."),
             StyleHint::Dim,
         ));
-        for (i, reason) in
-            result.confidence.downgrade_reasons.iter().enumerate()
-        {
+        for (i, reason) in result.confidence.downgrade_reasons.iter().enumerate() {
             let idx = i.saturating_add(1);
             rows.push(DataRow::new(
                 format!("  [{idx}]"),
@@ -559,10 +529,7 @@ fn append_downgrade_rows(rows: &mut Vec<DataRow>, result: &DetectionResult) {
 /// fact differently. This may indicate tampering or a misconfigured system.
 /// NIST SP 800-53 AU-3 / SI-7 — contradictions are integrity findings and
 /// must be fully represented in the audit-visible summary.
-fn append_contradiction_rows(
-    rows: &mut Vec<DataRow>,
-    result: &DetectionResult,
-) {
+fn append_contradiction_rows(rows: &mut Vec<DataRow>, result: &DetectionResult) {
     if result.confidence.contradictions.is_empty() {
         rows.push(DataRow::new(
             i18n::tr("Contradictions"),
@@ -780,9 +747,7 @@ fn build_kernel_security_summary_rows(
         catalog_baseline_row(kernel_version),
         DataRow::key_value(
             "",
-            i18n::tr(
-                "All values below are read live from the running kernel via /proc and /sys.",
-            ),
+            i18n::tr("All values below are read live from the running kernel via /proc and /sys."),
             StyleHint::Dim,
         ),
         DataRow::separator(),
@@ -1030,8 +995,7 @@ fn append_boot_integrity_group(
     let group_rows = indicator_group_rows(snap, boot_indicators);
 
     // If lockdown was not in the snapshot, fall back to the header indicator.
-    let has_lockdown =
-        snap.get(IndicatorId::Lockdown).is_some_and(|r| r.live_value.is_some());
+    let has_lockdown = snap.get(IndicatorId::Lockdown).is_some_and(|r| r.live_value.is_some());
     let fallback: Option<DataRow> = if has_lockdown {
         None
     } else {
@@ -1093,10 +1057,7 @@ fn append_boot_integrity_group(
 /// NIST SP 800-53 SA-5: inline documentation reduces operator reliance on
 /// external reference guides.
 /// NIST SP 800-53 CM-6: remediation guidance accompanies each failing setting.
-fn indicator_group_rows(
-    snap: &PostureSnapshot,
-    signals: &[(IndicatorId, &str)],
-) -> Vec<DataRow> {
+fn indicator_group_rows(snap: &PostureSnapshot, signals: &[(IndicatorId, &str)]) -> Vec<DataRow> {
     let mut rows: Vec<DataRow> = Vec::new();
     for (id, label) in signals {
         let Some(report) = snap.get(*id) else {
@@ -1138,21 +1099,20 @@ fn indicator_group_rows(
         //
         // NIST SP 800-53 CM-6 — source attribution for the configured value
         // allows the operator to locate and correct the config file.
-        let configured_line: Option<String> =
-            report.configured_value.as_ref().map(
-                |ConfiguredValue {
-                     raw,
-                     source_file,
-                 }| {
-                    format!(
-                        "{} {} ({} {})",
-                        i18n::tr("Configured:"),
-                        raw,
-                        i18n::tr("from"),
-                        source_file
-                    )
-                },
-            );
+        let configured_line: Option<String> = report.configured_value.as_ref().map(
+            |ConfiguredValue {
+                 raw,
+                 source_file,
+             }| {
+                format!(
+                    "{} {} ({} {})",
+                    i18n::tr("Configured:"),
+                    raw,
+                    i18n::tr("from"),
+                    source_file
+                )
+            },
+        );
 
         rows.push(DataRow::indicator_row_full(
             format!("  {label}"),
@@ -1226,9 +1186,7 @@ fn indicator_to_display(value: &IndicatorValue) -> (String, StyleHint) {
     match value {
         IndicatorValue::Enabled(s) => (s.clone(), StyleHint::TrustGreen),
         IndicatorValue::Disabled(s) => (s.clone(), StyleHint::TrustYellow),
-        IndicatorValue::Unavailable => {
-            (i18n::tr("unavailable"), StyleHint::Dim)
-        }
+        IndicatorValue::Unavailable => (i18n::tr("unavailable"), StyleHint::Dim),
     }
 }
 
@@ -1286,19 +1244,14 @@ const PIPELINE_ORDER: &[SourceKind] = &[
 ///
 /// NIST SP 800-53 AU-3 — evidence rows are labelled and structured.
 /// NIST SP 800-53 SI-7 — SHA-256 and package digests support integrity verification.
-fn append_grouped_evidence(
-    rows: &mut Vec<DataRow>,
-    evidence: &[EvidenceRecord],
-) {
+fn append_grouped_evidence(rows: &mut Vec<DataRow>, evidence: &[EvidenceRecord]) {
     // Collect records into per-kind buckets. SourceKind does not implement Hash,
     // so we iterate PIPELINE_ORDER for collection — one O(n) pass per kind,
     // which is acceptable given the small number of kinds (6) and the typical
     // evidence bundle size (< 30 records).
     let kind_records: Vec<Vec<&EvidenceRecord>> = PIPELINE_ORDER
         .iter()
-        .map(|kind| {
-            evidence.iter().filter(|rec| &rec.source_kind == kind).collect()
-        })
+        .map(|kind| evidence.iter().filter(|rec| &rec.source_kind == kind).collect())
         .collect();
 
     // Single header row at the top of the entire evidence section.
@@ -1359,18 +1312,10 @@ fn append_grouped_evidence(
             // hex-encoded value stored in the RPM/dpkg database for this path.
             if let Some(pkg) = &rec.pkg_digest {
                 let alg_label = match &pkg.algorithm {
-                    umrs_platform::evidence::DigestAlgorithm::Sha256 => {
-                        "sha256"
-                    }
-                    umrs_platform::evidence::DigestAlgorithm::Sha512 => {
-                        "sha512"
-                    }
-                    umrs_platform::evidence::DigestAlgorithm::Md5 => {
-                        "md5 (weak)"
-                    }
-                    umrs_platform::evidence::DigestAlgorithm::Unknown(s) => {
-                        s.as_str()
-                    }
+                    umrs_platform::evidence::DigestAlgorithm::Sha256 => "sha256",
+                    umrs_platform::evidence::DigestAlgorithm::Sha512 => "sha512",
+                    umrs_platform::evidence::DigestAlgorithm::Md5 => "md5 (weak)",
+                    umrs_platform::evidence::DigestAlgorithm::Unknown(s) => s.as_str(),
                 };
                 let hex = bytes_to_hex(&pkg.value);
                 rows.push(DataRow::key_value(
@@ -1411,9 +1356,7 @@ fn evidence_verification_str(rec: &EvidenceRecord) -> String {
             SourceKind::Procfs => "fd, PROC_MAGIC",
             SourceKind::SysfsNode => "fd, SYS_MAGIC",
             SourceKind::StatfsResult => "fd, statfs",
-            SourceKind::RegularFile
-            | SourceKind::PackageDb
-            | SourceKind::SymlinkTarget => "fd",
+            SourceKind::RegularFile | SourceKind::PackageDb | SourceKind::SymlinkTarget => "fd",
         };
         if rec.parse_ok {
             format!("\u{2713} ok ({method_detail})")
@@ -1490,10 +1433,9 @@ fn build_status(result: &DetectionResult) -> StatusMessage {
                 i18n::tr(trust_level_description(TrustLevel::KernelAnchored))
             ),
         ),
-        TrustLevel::Untrusted => StatusMessage::new(
-            StatusLevel::Error,
-            i18n::tr("Untrusted — no kernel anchor"),
-        ),
+        TrustLevel::Untrusted => {
+            StatusMessage::new(StatusLevel::Error, i18n::tr("Untrusted — no kernel anchor"))
+        }
     }
 }
 
@@ -1754,9 +1696,7 @@ fn handle_key_action(
         // Dialog-dismissal actions clear an open help dialog.
         // Quit (Esc / q) dismisses the dialog when one is open rather than
         // quitting — the operator is clearly interacting with the dialog.
-        Action::DialogConfirm | Action::DialogCancel | Action::Quit
-            if help_dialog.is_some() =>
-        {
+        Action::DialogConfirm | Action::DialogCancel | Action::Quit if help_dialog.is_some() => {
             *help_dialog = None;
         }
         // ShowHelp opens the contextual help overlay for the current tab.
@@ -1855,10 +1795,7 @@ fn main() {
     // ── Detection ────────────────────────────────────────────────────────
     let app: OsDetectApp = match OsDetector::default().detect() {
         Ok(result) => {
-            log::info!(
-                "OS detection succeeded: {:?}",
-                result.confidence.level()
-            );
+            log::info!("OS detection succeeded: {:?}", result.confidence.level());
             // Populate os_name from the detection result now that it is available.
             ctx.os_name = os_name_from_release(result.os_release.as_ref());
             OsDetectApp::from_result(&result, &ctx, &snap)
@@ -1898,11 +1835,7 @@ fn main() {
             Ok(true) => match event::read() {
                 Ok(Event::Key(key)) => {
                     if let Some(action) = keymap.lookup(&key)
-                        && handle_key_action(
-                            action,
-                            &mut help_dialog,
-                            &mut state,
-                        )
+                        && handle_key_action(action, &mut help_dialog, &mut state)
                     {
                         break;
                     }

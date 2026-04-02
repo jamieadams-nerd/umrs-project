@@ -51,8 +51,7 @@ fn us_catalog_loads_without_error() {
 
 #[test]
 fn us_catalog_metadata_is_present() {
-    let cat =
-        catalog::load_catalog(us_catalog_path()).expect("US catalog load");
+    let cat = catalog::load_catalog(us_catalog_path()).expect("US catalog load");
     assert!(
         cat.metadata.is_some(),
         "US catalog should have _metadata block"
@@ -61,8 +60,7 @@ fn us_catalog_metadata_is_present() {
 
 #[test]
 fn us_catalog_metadata_country_code() {
-    let cat =
-        catalog::load_catalog(us_catalog_path()).expect("US catalog load");
+    let cat = catalog::load_catalog(us_catalog_path()).expect("US catalog load");
     assert_eq!(
         cat.country_code(),
         Some("US"),
@@ -72,8 +70,7 @@ fn us_catalog_metadata_country_code() {
 
 #[test]
 fn us_catalog_metadata_version_present() {
-    let cat =
-        catalog::load_catalog(us_catalog_path()).expect("US catalog load");
+    let cat = catalog::load_catalog(us_catalog_path()).expect("US catalog load");
     let meta = cat.metadata.as_ref().expect("metadata should be Some");
     assert!(
         !meta.version.is_empty(),
@@ -87,8 +84,7 @@ fn us_catalog_metadata_version_present() {
 
 #[test]
 fn us_catalog_has_72_or_more_markings() {
-    let cat =
-        catalog::load_catalog(us_catalog_path()).expect("US catalog load");
+    let cat = catalog::load_catalog(us_catalog_path()).expect("US catalog load");
     let count = cat.iter_markings().count();
     assert!(
         count >= 72,
@@ -98,23 +94,20 @@ fn us_catalog_has_72_or_more_markings() {
 
 #[test]
 fn us_catalog_marking_lookup_existing_key() {
-    let cat =
-        catalog::load_catalog(us_catalog_path()).expect("US catalog load");
+    let cat = catalog::load_catalog(us_catalog_path()).expect("US catalog load");
     let marking = cat.marking("CUI//LEI");
     assert!(marking.is_some(), "expected CUI//LEI to exist in catalog");
 }
 
 #[test]
 fn us_catalog_marking_lookup_missing_key_returns_none() {
-    let cat =
-        catalog::load_catalog(us_catalog_path()).expect("US catalog load");
+    let cat = catalog::load_catalog(us_catalog_path()).expect("US catalog load");
     assert!(cat.marking("CUI//DOESNOTEXIST").is_none());
 }
 
 #[test]
 fn us_catalog_marking_lookup_base_cui() {
-    let cat =
-        catalog::load_catalog(us_catalog_path()).expect("US catalog load");
+    let cat = catalog::load_catalog(us_catalog_path()).expect("US catalog load");
     let m = cat.marking("CUI").expect("CUI base marking should exist");
     assert_eq!(m.abbrv_name, "CUI");
 }
@@ -125,8 +118,7 @@ fn us_catalog_marking_lookup_base_cui() {
 
 #[test]
 fn us_catalog_all_markings_have_level_s1() {
-    let cat =
-        catalog::load_catalog(us_catalog_path()).expect("US catalog load");
+    let cat = catalog::load_catalog(us_catalog_path()).expect("US catalog load");
     for (key, m) in cat.iter_markings() {
         assert_eq!(
             m.level.as_deref(),
@@ -138,8 +130,7 @@ fn us_catalog_all_markings_have_level_s1() {
 
 #[test]
 fn us_catalog_markings_have_string_handling_or_none() {
-    let cat =
-        catalog::load_catalog(us_catalog_path()).expect("US catalog load");
+    let cat = catalog::load_catalog(us_catalog_path()).expect("US catalog load");
     for (key, m) in cat.iter_markings() {
         if m.has_handling() {
             assert!(
@@ -152,8 +143,7 @@ fn us_catalog_markings_have_string_handling_or_none() {
 
 #[test]
 fn us_catalog_designation_values_are_basic_or_specified() {
-    let cat =
-        catalog::load_catalog(us_catalog_path()).expect("US catalog load");
+    let cat = catalog::load_catalog(us_catalog_path()).expect("US catalog load");
     for (key, m) in cat.iter_markings() {
         if let Some(d) = &m.designation {
             assert!(
@@ -167,10 +157,8 @@ fn us_catalog_designation_values_are_basic_or_specified() {
 #[test]
 fn us_catalog_index_group_is_optional() {
     // At least one US marking has a null index_group; None is a valid value.
-    let cat =
-        catalog::load_catalog(us_catalog_path()).expect("US catalog load");
-    let null_count =
-        cat.iter_markings().filter(|(_, m)| m.index_group.is_none()).count();
+    let cat = catalog::load_catalog(us_catalog_path()).expect("US catalog load");
+    let null_count = cat.iter_markings().filter(|(_, m)| m.index_group.is_none()).count();
     assert!(
         null_count > 0,
         "expected at least one US marking with a null index_group"
@@ -180,11 +168,10 @@ fn us_catalog_index_group_is_optional() {
 #[test]
 fn us_catalog_handling_group_id_is_optional_string() {
     // US entries have a handling_group_id string; it should deserialize as Some.
-    let cat =
-        catalog::load_catalog(us_catalog_path()).expect("US catalog load");
-    let has_hgid = cat.iter_markings().any(|(_, m)| {
-        m.handling_group_id.as_deref().is_some_and(|s| !s.is_empty())
-    });
+    let cat = catalog::load_catalog(us_catalog_path()).expect("US catalog load");
+    let has_hgid = cat
+        .iter_markings()
+        .any(|(_, m)| m.handling_group_id.as_deref().is_some_and(|s| !s.is_empty()));
     assert!(
         has_hgid,
         "at least one US marking should have a non-empty handling_group_id"
@@ -197,8 +184,7 @@ fn us_catalog_handling_group_id_is_optional_string() {
 
 #[test]
 fn us_iter_markings_is_nonempty() {
-    let cat =
-        catalog::load_catalog(us_catalog_path()).expect("US catalog load");
+    let cat = catalog::load_catalog(us_catalog_path()).expect("US catalog load");
     assert!(
         cat.iter_markings().count() > 0,
         "expected at least one marking"
@@ -207,16 +193,14 @@ fn us_iter_markings_is_nonempty() {
 
 #[test]
 fn us_iter_markings_contains_lei() {
-    let cat =
-        catalog::load_catalog(us_catalog_path()).expect("US catalog load");
+    let cat = catalog::load_catalog(us_catalog_path()).expect("US catalog load");
     let found = cat.iter_markings().any(|(k, _)| k == "CUI//LEI");
     assert!(found, "expected CUI//LEI in iter_markings");
 }
 
 #[test]
 fn us_all_markings_returns_same_as_iter_markings() {
-    let cat =
-        catalog::load_catalog(us_catalog_path()).expect("US catalog load");
+    let cat = catalog::load_catalog(us_catalog_path()).expect("US catalog load");
     assert_eq!(
         cat.all_markings().count(),
         cat.iter_markings().count(),
@@ -230,8 +214,7 @@ fn us_all_markings_returns_same_as_iter_markings() {
 
 #[test]
 fn us_has_description_reflects_field_content() {
-    let cat =
-        catalog::load_catalog(us_catalog_path()).expect("US catalog load");
+    let cat = catalog::load_catalog(us_catalog_path()).expect("US catalog load");
     for (key, m) in cat.iter_markings() {
         let expected = !m.description.trim().is_empty();
         assert_eq!(
@@ -244,8 +227,7 @@ fn us_has_description_reflects_field_content() {
 
 #[test]
 fn us_has_handling_reflects_field_content() {
-    let cat =
-        catalog::load_catalog(us_catalog_path()).expect("US catalog load");
+    let cat = catalog::load_catalog(us_catalog_path()).expect("US catalog load");
     for (key, m) in cat.iter_markings() {
         let expected = match &m.handling {
             serde_json::Value::String(s) => !s.trim().is_empty(),
@@ -273,8 +255,7 @@ fn ca_catalog_loads_without_error() {
 
 #[test]
 fn ca_catalog_metadata_country_code() {
-    let cat =
-        catalog::load_catalog(ca_catalog_path()).expect("CA catalog load");
+    let cat = catalog::load_catalog(ca_catalog_path()).expect("CA catalog load");
     assert_eq!(
         cat.country_code(),
         Some("CA"),
@@ -288,8 +269,7 @@ fn ca_catalog_metadata_country_code() {
 
 #[test]
 fn ca_catalog_has_three_markings() {
-    let cat =
-        catalog::load_catalog(ca_catalog_path()).expect("CA catalog load");
+    let cat = catalog::load_catalog(ca_catalog_path()).expect("CA catalog load");
     let count = cat.iter_markings().count();
     assert_eq!(
         count, 3,
@@ -299,8 +279,7 @@ fn ca_catalog_has_three_markings() {
 
 #[test]
 fn ca_catalog_pa_pb_pc_present() {
-    let cat =
-        catalog::load_catalog(ca_catalog_path()).expect("CA catalog load");
+    let cat = catalog::load_catalog(ca_catalog_path()).expect("CA catalog load");
     assert!(
         cat.marking("PROTECTED-A").is_some(),
         "PROTECTED-A should exist"
@@ -321,32 +300,28 @@ fn ca_catalog_pa_pb_pc_present() {
 
 #[test]
 fn ca_catalog_pa_has_level_s1() {
-    let cat =
-        catalog::load_catalog(ca_catalog_path()).expect("CA catalog load");
+    let cat = catalog::load_catalog(ca_catalog_path()).expect("CA catalog load");
     let pa = cat.marking("PROTECTED-A").expect("PROTECTED-A should exist");
     assert_eq!(pa.level.as_deref(), Some("s1"), "Protected A should be s1");
 }
 
 #[test]
 fn ca_catalog_pb_has_level_s2() {
-    let cat =
-        catalog::load_catalog(ca_catalog_path()).expect("CA catalog load");
+    let cat = catalog::load_catalog(ca_catalog_path()).expect("CA catalog load");
     let pb = cat.marking("PROTECTED-B").expect("PROTECTED-B should exist");
     assert_eq!(pb.level.as_deref(), Some("s2"), "Protected B should be s2");
 }
 
 #[test]
 fn ca_catalog_pc_has_level_s3() {
-    let cat =
-        catalog::load_catalog(ca_catalog_path()).expect("CA catalog load");
+    let cat = catalog::load_catalog(ca_catalog_path()).expect("CA catalog load");
     let pc = cat.marking("PROTECTED-C").expect("PROTECTED-C should exist");
     assert_eq!(pc.level.as_deref(), Some("s3"), "Protected C should be s3");
 }
 
 #[test]
 fn ca_catalog_markings_have_bilingual_names() {
-    let cat =
-        catalog::load_catalog(ca_catalog_path()).expect("CA catalog load");
+    let cat = catalog::load_catalog(ca_catalog_path()).expect("CA catalog load");
     for (key, marking) in cat.iter_markings() {
         assert!(
             marking.name_fr.is_some(),
@@ -357,8 +332,7 @@ fn ca_catalog_markings_have_bilingual_names() {
 
 #[test]
 fn ca_catalog_pa_has_abbrv_name() {
-    let cat =
-        catalog::load_catalog(ca_catalog_path()).expect("CA catalog load");
+    let cat = catalog::load_catalog(ca_catalog_path()).expect("CA catalog load");
     let pa = cat.marking("PROTECTED-A").expect("PROTECTED-A should exist");
     assert_eq!(
         pa.abbrv_name.as_str(),
@@ -370,8 +344,7 @@ fn ca_catalog_pa_has_abbrv_name() {
 #[test]
 fn ca_catalog_handling_group_id_is_null() {
     // Canadian entries have null handling_group_id.
-    let cat =
-        catalog::load_catalog(ca_catalog_path()).expect("CA catalog load");
+    let cat = catalog::load_catalog(ca_catalog_path()).expect("CA catalog load");
     for (key, m) in cat.iter_markings() {
         assert!(
             m.handling_group_id.is_none(),
@@ -382,8 +355,7 @@ fn ca_catalog_handling_group_id_is_null() {
 
 #[test]
 fn ca_catalog_markings_handling_is_object() {
-    let cat =
-        catalog::load_catalog(ca_catalog_path()).expect("CA catalog load");
+    let cat = catalog::load_catalog(ca_catalog_path()).expect("CA catalog load");
     for (key, marking) in cat.iter_markings() {
         if marking.has_handling() {
             assert!(

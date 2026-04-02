@@ -1,11 +1,23 @@
 # C2PA Content Credentials — UMRS Vault Integration Prototype
 
-**Status:** draft
-**Type:** feasibility prototype (spike)
-**ROADMAP alignment:** G4 (CUI vault integrity), G6 (chain-of-custody), G10 (transparency)
-**Tech lead:** TBD — new Rust-capable agent or Rusty
-**LOE estimate:** Small (1-2 sessions for spike)
+**Status:** completed (spike → full tool delivery, 2026-04-02)
+**Type:** feasibility prototype → production tool
+**ROADMAP alignment:** G4 (CUI vault integrity), G5 (Security Tools), G3 (CUI & Five Eyes)
+**Tech lead:** Rusty (rust-developer)
+**Delivered:** 2026-04-01 through 2026-04-02
 **Source:** `.claude/jamies_brain/c2pa-in-vault-concept.txt`
+
+### Delivery Summary (2026-04-02)
+
+Full-team delivery: code, security review, compliance audit, EN+FR docs, i18n inventory, operator+developer evaluations.
+
+- **Code:** 43 tests, clippy clean, `#![forbid(unsafe_code)]`
+- **Security:** Knox (18 findings) + Herb (25 findings) — all addressed
+- **Crypto:** SHA-256 + SHA-384 dual digest via system OpenSSL (FIPS 180-4); ECDSA signing (FIPS 186-5); CNSA 2.0 ready
+- **HA patterns:** zeroize on all key material, O_NOFOLLOW, atomic 0600 key creation, single-read TOCTOU, journald with fallback
+- **Docs:** Antora page, EN man page, FR man page (Henri policy-reviewed), all synced post-security-fixes
+- **i18n:** 105-string inventory complete, all 5 design decisions resolved, gettext wrapping in progress
+- **Evaluations:** guest-coder (production-ready), guest-admin (9 findings, 1 HIGH addressed)
 
 ---
 

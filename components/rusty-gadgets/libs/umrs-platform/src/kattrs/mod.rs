@@ -88,8 +88,7 @@ pub use types::{DualBool, EnforceState};
 
 // selinuxfs attributes
 pub use selinux::{
-    GenericDualBool, GenericKernelBool, SelinuxEnforce, SelinuxMls,
-    SelinuxPolicyVers,
+    GenericDualBool, GenericKernelBool, SelinuxEnforce, SelinuxMls, SelinuxPolicyVers,
 };
 
 // procfs attributes

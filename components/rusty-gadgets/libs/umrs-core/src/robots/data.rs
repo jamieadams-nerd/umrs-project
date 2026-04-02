@@ -29,10 +29,7 @@ pub struct AsciiArtStatic {
 /// Build normalized ASCII art from raw input.
 ///
 /// This is intended to be called by the robot generator tool.
-pub fn build_robot_art(
-    name: &str,
-    input: &str,
-) -> Result<AsciiArt, Box<dyn Error>> {
+pub fn build_robot_art(name: &str, input: &str) -> Result<AsciiArt, Box<dyn Error>> {
     let raw_lines: Vec<&str> = input.lines().collect();
 
     // Trim empty top/bottom
@@ -46,8 +43,7 @@ pub fn build_robot_art(
         }
     };
 
-    let mut lines: Vec<String> =
-        raw_lines[first..=last].iter().map(|s| s.to_string()).collect();
+    let mut lines: Vec<String> = raw_lines[first..=last].iter().map(|s| s.to_string()).collect();
 
     // Determine left/right trim
     let left = lines

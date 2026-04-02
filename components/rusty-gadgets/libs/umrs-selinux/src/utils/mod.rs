@@ -64,10 +64,7 @@ pub fn get_file_context(path: &Path) -> io::Result<SecurityContext> {
 ///
 /// Returns `io::Error` if the symlink's security context xattr cannot be read.
 pub fn lget_file_context(path: &Path) -> io::Result<SecurityContext> {
-    let file = std::fs::OpenOptions::new()
-        .read(true)
-        .custom_flags(libc::O_NOFOLLOW)
-        .open(path)?;
+    let file = std::fs::OpenOptions::new().read(true).custom_flags(libc::O_NOFOLLOW).open(path)?;
 
     SecureXattrReader::read_context(&file).map_err(xattr_err_to_io)
 }
@@ -110,12 +107,8 @@ fn xattr_err_to_io(e: XattrReadError) -> io::Error {
 pub fn get_pid_context(pid: u32) -> io::Result<SecurityContext> {
     let path = format!("/proc/{pid}/attr/current");
 
-    let raw = std::fs::read_to_string(&path).map_err(|e| {
-        io::Error::new(
-            e.kind(),
-            format!("ACCESS DENIED: Cannot read {path}: {e}"),
-        )
-    })?;
+    let raw = std::fs::read_to_string(&path)
+        .map_err(|e| io::Error::new(e.kind(), format!("ACCESS DENIED: Cannot read {path}: {e}")))?;
 
     let s = raw.trim();
 

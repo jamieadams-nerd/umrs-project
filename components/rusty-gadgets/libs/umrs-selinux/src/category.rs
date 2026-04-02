@@ -166,9 +166,7 @@ impl FromStr for Category {
 
         let num_part = &s[1..];
 
-        let id: u16 = num_part
-            .parse()
-            .map_err(|_| CategoryError::InvalidFormat(s.into()))?;
+        let id: u16 = num_part.parse().map_err(|_| CategoryError::InvalidFormat(s.into()))?;
 
         Self::new(id)
     }

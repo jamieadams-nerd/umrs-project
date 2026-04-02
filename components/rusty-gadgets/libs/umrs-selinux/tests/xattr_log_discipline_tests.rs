@@ -31,10 +31,7 @@ const SENSITIVE_INPUTS: &[&str] = &[
 #[test]
 fn nom_error_kind_tag_excludes_input() {
     for input in SENSITIVE_INPUTS {
-        let nom_err = nom::Err::Failure(nom::error::Error::new(
-            *input,
-            nom::error::ErrorKind::Tag,
-        ));
+        let nom_err = nom::Err::Failure(nom::error::Error::new(*input, nom::error::ErrorKind::Tag));
         let kind_str = nom_error_kind(&nom_err);
         assert!(
             !kind_str.contains(*input),
@@ -75,8 +72,7 @@ fn nom_error_kind_take_until_excludes_input() {
 
 #[test]
 fn nom_error_kind_incomplete_is_safe() {
-    let nom_err: nom::Err<nom::error::Error<&str>> =
-        nom::Err::Incomplete(nom::Needed::Unknown);
+    let nom_err: nom::Err<nom::error::Error<&str>> = nom::Err::Incomplete(nom::Needed::Unknown);
     let kind_str = nom_error_kind(&nom_err);
     assert_eq!(kind_str, "Incomplete");
 }
@@ -91,10 +87,7 @@ fn nom_error_kind_incomplete_is_safe() {
 #[test]
 fn nom_error_kind_output_is_concise() {
     for input in SENSITIVE_INPUTS {
-        let nom_err = nom::Err::Failure(nom::error::Error::new(
-            *input,
-            nom::error::ErrorKind::Tag,
-        ));
+        let nom_err = nom::Err::Failure(nom::error::Error::new(*input, nom::error::ErrorKind::Tag));
         let kind_str = nom_error_kind(&nom_err);
         assert!(
             kind_str.len() <= 64,

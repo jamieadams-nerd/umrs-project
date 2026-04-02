@@ -13,8 +13,7 @@
 //! - NIST SP 800-53 CM-8 — file list reconstruction tests verify inventory accuracy.
 
 use umrs_platform::detect::substrate::rpm_header::{
-    MAX_BLOB_BYTES, MAX_INDEX_ENTRIES, RpmDigestAlgo, RpmHeaderError,
-    parse_rpm_header,
+    MAX_BLOB_BYTES, MAX_INDEX_ENTRIES, RpmDigestAlgo, RpmHeaderError, parse_rpm_header,
 };
 
 // ===========================================================================
@@ -116,8 +115,7 @@ fn build_blob(tags: &[TagData]) -> Vec<u8> {
 /// Parse a minimal blob with only NAME and VERSION tags.
 #[test]
 fn parse_minimal_header() {
-    let blob =
-        build_blob(&[TagData::Str(1000, "bash"), TagData::Str(1001, "5.2.21")]);
+    let blob = build_blob(&[TagData::Str(1000, "bash"), TagData::Str(1001, "5.2.21")]);
     let header = parse_rpm_header(&blob).expect("minimal header should parse");
     assert_eq!(header.name.as_deref(), Some("bash"));
     assert_eq!(header.version.as_deref(), Some("5.2.21"));
@@ -151,8 +149,7 @@ fn parse_file_list() {
 /// Parse a blob with SHA-256 digest algorithm tag.
 #[test]
 fn parse_file_digests_sha256() {
-    let sha256_hex =
-        "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+    let sha256_hex = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
     let blob = build_blob(&[
         TagData::Str(1000, "testpkg"),
         TagData::Str(1001, "1.0"),
@@ -162,8 +159,7 @@ fn parse_file_digests_sha256() {
         TagData::StrArray(1035, vec![sha256_hex]),
         TagData::Int32(5011, 8), // FILEDIGESTALGO = 8 (SHA256)
     ]);
-    let header =
-        parse_rpm_header(&blob).expect("sha256 digest blob should parse");
+    let header = parse_rpm_header(&blob).expect("sha256 digest blob should parse");
     assert_eq!(header.files.len(), 1);
     assert_eq!(header.files[0].digest_hex, sha256_hex);
     assert_eq!(header.files[0].digest_algo, RpmDigestAlgo::Sha256);
@@ -181,8 +177,7 @@ fn parse_file_digests_sha512() {
         TagData::StrArray(1035, vec!["aabbccdd"]),
         TagData::Int32(5011, 10), // FILEDIGESTALGO = 10 (SHA512)
     ]);
-    let header =
-        parse_rpm_header(&blob).expect("sha512 digest blob should parse");
+    let header = parse_rpm_header(&blob).expect("sha512 digest blob should parse");
     assert_eq!(header.files[0].digest_algo, RpmDigestAlgo::Sha512);
 }
 
@@ -198,8 +193,7 @@ fn parse_file_digests_md5_default() {
         TagData::StrArray(1035, vec!["deadbeef"]),
         // No FILEDIGESTALGO tag — should default to MD5
     ]);
-    let header =
-        parse_rpm_header(&blob).expect("md5 default blob should parse");
+    let header = parse_rpm_header(&blob).expect("md5 default blob should parse");
     assert_eq!(header.files[0].digest_algo, RpmDigestAlgo::Md5);
 }
 
@@ -260,10 +254,7 @@ fn parse_misaligned_offset() {
     // or OffsetOutOfBounds when string extraction runs.
     assert!(
         matches!(result, Err(RpmHeaderError::OffsetOutOfBounds { .. }))
-            || matches!(
-                result,
-                Err(RpmHeaderError::MissingNulTerminator { .. })
-            )
+            || matches!(result, Err(RpmHeaderError::MissingNulTerminator { .. }))
     );
 }
 
@@ -295,8 +286,7 @@ fn tpi_agreement() {
 /// → a parse error.
 #[test]
 fn tpi_corruption_causes_error() {
-    let blob =
-        build_blob(&[TagData::Str(1000, "pkg"), TagData::Str(1001, "1.0")]);
+    let blob = build_blob(&[TagData::Str(1000, "pkg"), TagData::Str(1001, "1.0")]);
     // Corrupt the offset field of the first index entry (bytes 16..20)
     // to a value that points past the end of the store.
     let hsize = u32::from_be_bytes(blob[4..8].try_into().unwrap());
@@ -323,8 +313,7 @@ fn digest_algo_mapping() {
 /// A meta-package blob with no file tags — must parse cleanly with empty files list.
 #[test]
 fn parse_meta_package_no_files() {
-    let blob =
-        build_blob(&[TagData::Str(1000, "meta"), TagData::Str(1001, "0.1")]);
+    let blob = build_blob(&[TagData::Str(1000, "meta"), TagData::Str(1001, "0.1")]);
     let header = parse_rpm_header(&blob).expect("meta-package should parse");
     assert_eq!(header.name.as_deref(), Some("meta"));
     assert!(header.files.is_empty());
@@ -338,8 +327,7 @@ fn parse_release_tag() {
         TagData::Str(1001, "2.38"),
         TagData::Str(1002, "35.el10"),
     ]);
-    let header =
-        parse_rpm_header(&blob).expect("release tag blob should parse");
+    let header = parse_rpm_header(&blob).expect("release tag blob should parse");
     assert_eq!(header.release.as_deref(), Some("35.el10"));
 }
 

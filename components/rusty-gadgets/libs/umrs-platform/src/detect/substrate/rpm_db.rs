@@ -60,9 +60,7 @@ use std::path::Path;
 
 use rusqlite::{Connection, OpenFlags};
 
-use crate::evidence::{
-    DigestAlgorithm, EvidenceBundle, EvidenceRecord, SourceKind,
-};
+use crate::evidence::{DigestAlgorithm, EvidenceBundle, EvidenceRecord, SourceKind};
 
 use super::rpm_header::{self, RpmDigestAlgo};
 
@@ -159,17 +157,12 @@ impl RpmDb {
     /// NIST SP 800-53 AU-3 — evidence pushed regardless of outcome.
     /// NIST SP 800-53 CM-8, SA-12.
     pub fn open(bundle: &mut EvidenceBundle) -> Result<Self, RpmDbError> {
-        let flags =
-            OpenFlags::SQLITE_OPEN_READ_ONLY | OpenFlags::SQLITE_OPEN_NO_MUTEX;
+        let flags = OpenFlags::SQLITE_OPEN_READ_ONLY | OpenFlags::SQLITE_OPEN_NO_MUTEX;
         let conn = match Connection::open_with_flags(RPM_DB_PATH, flags) {
             Ok(c) => c,
             Err(e) => {
                 log::warn!("rpm_db: failed to open {RPM_DB_PATH}: {e}");
-                let rec = evidence_record(
-                    RPM_DB_PATH,
-                    false,
-                    vec!["open failed".to_owned()],
-                );
+                let rec = evidence_record(RPM_DB_PATH, false, vec!["open failed".to_owned()]);
                 bundle.push(rec);
                 return Err(RpmDbError::Sqlite(e));
             }
@@ -193,9 +186,7 @@ impl RpmDb {
                 vec!["Packages table missing — not a valid RPM db".to_owned()],
             );
             bundle.push(rec);
-            return Err(RpmDbError::Sqlite(
-                rusqlite::Error::QueryReturnedNoRows,
-            ));
+            return Err(RpmDbError::Sqlite(rusqlite::Error::QueryReturnedNoRows));
         }
 
         log::debug!("rpm_db: opened {RPM_DB_PATH} read-only");
@@ -232,9 +223,7 @@ impl RpmDb {
     ) -> Result<Option<(String, String, Vec<String>)>, RpmDbError> {
         let (dirname, basename) = split_path(path);
 
-        let mut stmt = self
-            .conn
-            .prepare_cached("SELECT hnum FROM Basenames WHERE key = ?1")?;
+        let mut stmt = self.conn.prepare_cached("SELECT hnum FROM Basenames WHERE key = ?1")?;
         let hnums: Vec<i64> = stmt
             .query_map([&basename], |row| row.get::<_, i64>(0))?
             .filter_map(std::result::Result::ok)
@@ -252,9 +241,7 @@ impl RpmDb {
             ) {
                 Ok(b) => b,
                 Err(e) => {
-                    log::debug!(
-                        "rpm_db: blob fetch for hnum={hnum} failed: {e}"
-                    );
+                    log::debug!("rpm_db: blob fetch for hnum={hnum} failed: {e}");
                     continue;
                 }
             };
@@ -262,9 +249,7 @@ impl RpmDb {
             let header = match rpm_header::parse_rpm_header(&blob) {
                 Ok(h) => h,
                 Err(e) => {
-                    log::debug!(
-                        "rpm_db: header parse for hnum={hnum} failed: {e}"
-                    );
+                    log::debug!("rpm_db: header parse for hnum={hnum} failed: {e}");
                     continue;
                 }
             };
@@ -275,16 +260,14 @@ impl RpmDb {
                     .parent()
                     .and_then(|d| d.to_str())
                     .map_or_else(|| "/".to_owned(), ensure_trailing_slash);
-                let fbase =
-                    p.file_name().and_then(|n| n.to_str()).unwrap_or("");
+                let fbase = p.file_name().and_then(|n| n.to_str()).unwrap_or("");
                 fdir == dirname && fbase == basename
             });
 
             if owns {
                 let pkg_name = header.name.unwrap_or_default();
                 let pkg_ver = header.version.unwrap_or_default();
-                let trail =
-                    vec![format!("hnum={hnum}"), format!("pkg={pkg_name}")];
+                let trail = vec![format!("hnum={hnum}"), format!("pkg={pkg_name}")];
                 return Ok(Some((pkg_name, pkg_ver, trail)));
             }
         }
@@ -309,9 +292,7 @@ impl RpmDb {
     ) -> Result<Option<(DigestAlgorithm, Vec<u8>)>, RpmDbError> {
         let (dirname, basename) = split_path(path);
 
-        let mut stmt = self
-            .conn
-            .prepare_cached("SELECT hnum FROM Basenames WHERE key = ?1")?;
+        let mut stmt = self.conn.prepare_cached("SELECT hnum FROM Basenames WHERE key = ?1")?;
         let hnums: Vec<i64> = stmt
             .query_map([&basename], |row| row.get::<_, i64>(0))?
             .filter_map(std::result::Result::ok)
@@ -329,9 +310,7 @@ impl RpmDb {
             ) {
                 Ok(b) => b,
                 Err(e) => {
-                    log::debug!(
-                        "rpm_db: blob fetch for hnum={hnum} failed: {e}"
-                    );
+                    log::debug!("rpm_db: blob fetch for hnum={hnum} failed: {e}");
                     continue;
                 }
             };
@@ -339,9 +318,7 @@ impl RpmDb {
             let header = match rpm_header::parse_rpm_header(&blob) {
                 Ok(h) => h,
                 Err(e) => {
-                    log::debug!(
-                        "rpm_db: header parse for hnum={hnum} failed: {e}"
-                    );
+                    log::debug!("rpm_db: header parse for hnum={hnum} failed: {e}");
                     continue;
                 }
             };
@@ -352,8 +329,7 @@ impl RpmDb {
                     .parent()
                     .and_then(|d| d.to_str())
                     .map_or_else(|| "/".to_owned(), ensure_trailing_slash);
-                let fbase =
-                    p.file_name().and_then(|n| n.to_str()).unwrap_or("");
+                let fbase = p.file_name().and_then(|n| n.to_str()).unwrap_or("");
 
                 if fdir == dirname && fbase == basename {
                     if entry.digest_hex.is_empty() {
@@ -383,9 +359,7 @@ impl RpmDb {
     /// Returns `RpmDbError::Sqlite` if the `Name` table query fails.
     ///
     /// NIST SP 800-53 CM-8 — component inventory, evidence-based identity.
-    pub fn infer_distro(
-        &self,
-    ) -> Result<Option<(crate::os_identity::Distro, String)>, RpmDbError> {
+    pub fn infer_distro(&self) -> Result<Option<(crate::os_identity::Distro, String)>, RpmDbError> {
         use crate::os_identity::Distro;
 
         // Order: most specific first. Each entry: (package_name, Distro).
@@ -439,8 +413,7 @@ impl RpmDb {
 ///
 /// Operates entirely on the path components — no filesystem access.
 fn split_path(path: &Path) -> (String, String) {
-    let basename =
-        path.file_name().and_then(|n| n.to_str()).unwrap_or("").to_owned();
+    let basename = path.file_name().and_then(|n| n.to_str()).unwrap_or("").to_owned();
     let dirname = path
         .parent()
         .and_then(|d| d.to_str())
@@ -463,9 +436,7 @@ fn rpm_algo_to_digest_algo(algo: RpmDigestAlgo) -> DigestAlgorithm {
         RpmDigestAlgo::Sha256 => DigestAlgorithm::Sha256,
         RpmDigestAlgo::Sha512 => DigestAlgorithm::Sha512,
         RpmDigestAlgo::Md5 => DigestAlgorithm::Md5,
-        RpmDigestAlgo::Unknown(n) => {
-            DigestAlgorithm::Unknown(format!("rpm-algo-{n}"))
-        }
+        RpmDigestAlgo::Unknown(n) => DigestAlgorithm::Unknown(format!("rpm-algo-{n}")),
     }
 }
 

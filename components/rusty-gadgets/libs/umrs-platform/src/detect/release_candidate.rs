@@ -94,24 +94,17 @@ pub(super) fn run(
     result
 }
 
-fn run_inner(
-    evidence: &mut EvidenceBundle,
-    confidence: &mut ConfidenceModel,
-) -> Option<PathBuf> {
+fn run_inner(evidence: &mut EvidenceBundle, confidence: &mut ConfidenceModel) -> Option<PathBuf> {
     for &path_str in &OS_RELEASE_PATHS {
         let path = PathBuf::from(path_str);
 
-        if let Some(candidate) =
-            probe_candidate(path_str, &path, evidence, confidence)
-        {
+        if let Some(candidate) = probe_candidate(path_str, &path, evidence, confidence) {
             return Some(candidate);
         }
     }
 
     // Neither path was usable.
-    log::warn!(
-        "release_candidate: no usable os-release candidate found at any standard path"
-    );
+    log::warn!("release_candidate: no usable os-release candidate found at any standard path");
     confidence.downgrade(
         TrustLevel::EnvAnchored,
         "os-release not found at any standard path",
@@ -151,9 +144,7 @@ fn probe_candidate(
 
     // Step 2: Permissions sanity check — world-writable is an immediate reject.
     if mode & S_IWOTH != 0 {
-        log::warn!(
-            "release_candidate: {path_str} is world-writable — rejecting candidate"
-        );
+        log::warn!("release_candidate: {path_str} is world-writable — rejecting candidate");
         confidence.downgrade(
             TrustLevel::EnvAnchored,
             "os-release candidate is world-writable",
@@ -205,8 +196,7 @@ fn probe_candidate(
 
     // Combine major/minor into a single u64 device ID for storage.
     // The standard representation is (major << 32) | minor for unambiguous u64 storage.
-    let dev_combined: u64 =
-        (u64::from(sx.stx_dev_major) << 32) | u64::from(sx.stx_dev_minor);
+    let dev_combined: u64 = (u64::from(sx.stx_dev_major) << 32) | u64::from(sx.stx_dev_minor);
 
     evidence.push(EvidenceRecord {
         source_kind: SourceKind::RegularFile,
@@ -249,8 +239,7 @@ fn probe_candidate(
 /// Used when we have a valid statx result but are rejecting the candidate —
 /// we still want to record the full metadata for the audit trail.
 fn extract_file_stat(sx: &rustix::fs::Statx) -> FileStat {
-    let dev_combined: u64 =
-        (u64::from(sx.stx_dev_major) << 32) | u64::from(sx.stx_dev_minor);
+    let dev_combined: u64 = (u64::from(sx.stx_dev_major) << 32) | u64::from(sx.stx_dev_minor);
     FileStat {
         dev: Some(dev_combined),
         ino: Some(sx.stx_ino),
@@ -275,15 +264,10 @@ fn extract_file_stat(sx: &rustix::fs::Statx) -> FileStat {
 ///
 /// The resolved path is recorded in the evidence record's `path_resolved`
 /// field (NIST SP 800-53 AU-3 — audit records include resolved paths).
-fn resolve_symlink(
-    path_str: &str,
-    evidence: &mut EvidenceBundle,
-) -> Option<String> {
+fn resolve_symlink(path_str: &str, evidence: &mut EvidenceBundle) -> Option<String> {
     if let Ok(target) = readlinkat(CWD, path_str, Vec::new()) {
         let target_str = target.to_string_lossy().into_owned();
-        log::debug!(
-            "release_candidate: {path_str} is a symlink → {target_str}"
-        );
+        log::debug!("release_candidate: {path_str} is a symlink → {target_str}");
         evidence.push(EvidenceRecord {
             source_kind: SourceKind::SymlinkTarget,
             opened_by_fd: false,
@@ -300,9 +284,7 @@ fn resolve_symlink(
         Some(target_str)
     } else {
         // Not a symlink or path not accessible — not an error condition.
-        log::debug!(
-            "release_candidate: {path_str} is not a symlink (or readlinkat failed)"
-        );
+        log::debug!("release_candidate: {path_str} is not a symlink (or readlinkat failed)");
         None
     }
 }

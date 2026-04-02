@@ -86,9 +86,7 @@ fn run_inner(
 ) -> Option<FileOwnership> {
     // Step 1: Probe must be present (T3 was reached).
     let Some(probe) = probe else {
-        log::debug!(
-            "file_ownership: no probe available — skipping ownership query"
-        );
+        log::debug!("file_ownership: no probe available — skipping ownership query");
         return None;
     };
 
@@ -121,8 +119,7 @@ fn run_inner(
     // absolute path that matches what the RPM DB records.
     //
     // NIST SP 800-53 SI-7 — integrity verification must complete on the target platform.
-    let query_path: PathBuf = match find_resolved_path(evidence, &candidate_str)
-    {
+    let query_path: PathBuf = match find_resolved_path(evidence, &candidate_str) {
         Some(resolved) => {
             let p = PathBuf::from(&resolved);
             if p.is_absolute() {
@@ -130,10 +127,8 @@ fn run_inner(
             } else {
                 // Relative symlink: join with the candidate's parent directory, then
                 // canonicalize to an absolute path.
-                let parent =
-                    candidate.parent().unwrap_or_else(|| Path::new("/"));
-                std::fs::canonicalize(parent.join(&p))
-                    .unwrap_or_else(|_| parent.join(p))
+                let parent = candidate.parent().unwrap_or_else(|| Path::new("/"));
+                std::fs::canonicalize(parent.join(&p)).unwrap_or_else(|_| parent.join(p))
             }
         }
         None => candidate.to_path_buf(),
@@ -173,9 +168,7 @@ fn run_inner(
             duration_ns: None,
         });
     } else {
-        log::warn!(
-            "file_ownership: {candidate_str} has no package owner — T4 cannot be reached"
-        );
+        log::warn!("file_ownership: {candidate_str} has no package owner — T4 cannot be reached");
         evidence.push(EvidenceRecord {
             source_kind: SourceKind::PackageDb,
             opened_by_fd: false,
@@ -206,10 +199,7 @@ fn run_inner(
 /// `pub(super)` so that sibling phase modules (e.g., `integrity_check`,
 /// `release_parse`) can re-verify `(dev, ino)` without duplicating the
 /// search logic. NIST SP 800-53 SI-7 — TOCTOU re-verification.
-pub(super) fn find_stat_for_path(
-    evidence: &EvidenceBundle,
-    path_str: &str,
-) -> Option<(u64, u64)> {
+pub(super) fn find_stat_for_path(evidence: &EvidenceBundle, path_str: &str) -> Option<(u64, u64)> {
     for record in evidence.iter().rev() {
         if record.path_requested == path_str
             && let Some(ref stat) = record.stat
@@ -232,10 +222,7 @@ pub(super) fn find_stat_for_path(
 /// `pub(super)` so that `integrity_check` can perform the same redirection.
 /// NIST SP 800-53 SI-7 — integrity verification must use the path the package DB
 /// tracks, not the symlink.
-pub(super) fn find_resolved_path(
-    evidence: &EvidenceBundle,
-    candidate_str: &str,
-) -> Option<String> {
+pub(super) fn find_resolved_path(evidence: &EvidenceBundle, candidate_str: &str) -> Option<String> {
     for record in evidence.iter().rev() {
         if record.path_requested == candidate_str
             && let Some(ref resolved) = record.path_resolved

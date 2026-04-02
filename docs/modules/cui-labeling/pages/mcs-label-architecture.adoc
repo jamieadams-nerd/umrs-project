@@ -1,19 +1,19 @@
 = MCS Label Architecture
 :description: How UMRS maps CUI categories to SELinux Multi-Category Security labels.
 
-_This page is a placeholder for the MCS label architecture documentation. Content will be developed as the `umrs-mcs` tool is implemented._
+_This page is a placeholder for the MCS label architecture documentation. Content will be developed as the `umrs-label` tool is implemented._
 
 == Overview
 
 SELinux Multi-Category Security (MCS) provides the kernel mechanism for CUI labeling.
 Each CUI category maps to one or more MCS category numbers (c0 through c1023).
-The `mcstransd` daemon translates between human-readable category names and numeric labels using configuration files in `/etc/selinux/targeted/setrans.d/`.
+The `mcstransd` daemon translates between human-readable category names and numeric labels using the `/etc/selinux/targeted/setrans.conf` configuration file.
 
 == Topics to Document
 
 * MCS category number assignment scheme
-* setrans.d configuration file format
-* How `umrs-mcs` generates and manages translation files
-* Relationship between CUI-LABELS.json and setrans.conf
+* setrans.conf configuration file format
+* How `umrs-label` generates and manages translation entries
+* Relationship between `US-CUI-LABELS.json` and `setrans.conf`
 * Category number allocation strategy (avoiding collisions)
-* Per-country/program namespace conventions (`us-nara-lei.conf`, `us-nara-agr.conf`)
+* Per-country/program namespace conventions

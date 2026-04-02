@@ -1,11 +1,6 @@
 use ::textwrap::{Options, wrap};
 
-pub fn text_wrap(
-    input: &str,
-    width: usize,
-    left_pad: usize,
-    right_pad: usize,
-) -> String {
+pub fn text_wrap(input: &str, width: usize, left_pad: usize, right_pad: usize) -> String {
     let indent = " ".repeat(left_pad);
 
     let options = Options::new(width)

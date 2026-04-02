@@ -198,10 +198,7 @@ impl SecureXattrReader {
         )?;
 
         if size == 0 {
-            return Err(io::Error::new(
-                io::ErrorKind::InvalidData,
-                "Empty xattr",
-            ));
+            return Err(io::Error::new(io::ErrorKind::InvalidData, "Empty xattr"));
         }
 
         let mut buffer = vec![0u8; size];
@@ -250,9 +247,7 @@ impl SecureXattrReader {
     /// # Errors
     ///
     /// Returns `io::Error` if the extended attribute cannot be read, or an integrity error if TPI validation detects a mismatch.
-    pub fn read_context(
-        file: &File,
-    ) -> Result<SecurityContext, XattrReadError> {
+    pub fn read_context(file: &File) -> Result<SecurityContext, XattrReadError> {
         let start_time = Instant::now();
 
         let raw_bytes = Self::read_raw(file, XATTR_NAME_SELINUX)?;
@@ -270,8 +265,7 @@ impl SecureXattrReader {
         // --- PATH B: FromStr (Imperative) ---
         // Always attempted regardless of Path A outcome.  This is the core of
         // the TPI contract: both paths must always run so the gate fires.
-        let path_b_result: Result<SecurityContext, ContextParseError> =
-            context_str.parse();
+        let path_b_result: Result<SecurityContext, ContextParseError> = context_str.parse();
 
         // --- TPI GATE: always reached ---
         let result = match (path_a_result, path_b_result) {
@@ -292,11 +286,7 @@ impl SecureXattrReader {
                         context_a.security_type(),
                         context_b.security_type(),
                     );
-                    Err(TpiError::Disagreement(
-                        Box::new(context_a),
-                        Box::new(context_b),
-                    )
-                    .into())
+                    Err(TpiError::Disagreement(Box::new(context_a), Box::new(context_b)).into())
                 }
             }
 
@@ -439,30 +429,23 @@ fn parse_context_nom(input: &str) -> IResult<&str, SecurityContext> {
             Err(_) => ("", input),
         };
 
-    log::debug!(
-        "[PATH A] Raw Type: '{type_raw}', Level remainder: '{remaining_after_type}'"
-    );
+    log::debug!("[PATH A] Raw Type: '{type_raw}', Level remainder: '{remaining_after_type}'");
 
     // 3. Level Parsing (Sensitivity + Categories)
     let level = if remaining_after_type.is_empty() {
         None
     } else {
-        let (sens_raw, cats_str) = remaining_after_type
-            .split_once(':')
-            .unwrap_or((remaining_after_type, ""));
+        let (sens_raw, cats_str) =
+            remaining_after_type.split_once(':').unwrap_or((remaining_after_type, ""));
 
-        let sens = SensitivityLevel::from_str(sens_raw).unwrap_or_else(|_| {
-            SensitivityLevel::new(0).expect("TCB Invariant: s0 must be valid")
-        });
+        let sens = SensitivityLevel::from_str(sens_raw)
+            .unwrap_or_else(|_| SensitivityLevel::new(0).expect("TCB Invariant: s0 must be valid"));
 
         let cats = if cats_str.is_empty() {
             CategorySet::new()
         } else {
             parse_mcs_categories(cats_str).map_err(|_| {
-                nom::Err::Failure(nom::error::Error::new(
-                    cats_str,
-                    nom::error::ErrorKind::Tag,
-                ))
+                nom::Err::Failure(nom::error::Error::new(cats_str, nom::error::ErrorKind::Tag))
             })?
         };
 
@@ -475,24 +458,15 @@ fn parse_context_nom(input: &str) -> IResult<&str, SecurityContext> {
 
     // 4. Map to Strong Types
     let user = SelinuxUser::from_str(user_raw).map_err(|_| {
-        nom::Err::Failure(nom::error::Error::new(
-            user_raw,
-            nom::error::ErrorKind::Tag,
-        ))
+        nom::Err::Failure(nom::error::Error::new(user_raw, nom::error::ErrorKind::Tag))
     })?;
 
     let role = SelinuxRole::from_str(role_raw).map_err(|_| {
-        nom::Err::Failure(nom::error::Error::new(
-            role_raw,
-            nom::error::ErrorKind::Tag,
-        ))
+        nom::Err::Failure(nom::error::Error::new(role_raw, nom::error::ErrorKind::Tag))
     })?;
 
     let security_type = SelinuxType::from_str(type_raw).map_err(|_| {
-        nom::Err::Failure(nom::error::Error::new(
-            type_raw,
-            nom::error::ErrorKind::Tag,
-        ))
+        nom::Err::Failure(nom::error::Error::new(type_raw, nom::error::ErrorKind::Tag))
     })?;
 
     Ok(("", SecurityContext::new(user, role, security_type, level)))
@@ -508,9 +482,7 @@ fn parse_context_nom(input: &str) -> IResult<&str, SecurityContext> {
 ///
 /// Returns `ErrorKind` due to invalid data.
 ///
-pub fn parse_mcs_categories(
-    input: &str,
-) -> io::Result<crate::category::CategorySet> {
+pub fn parse_mcs_categories(input: &str) -> io::Result<crate::category::CategorySet> {
     let mut set = crate::category::CategorySet::new();
 
     if !input.contains('c') {
@@ -529,21 +501,15 @@ pub fn parse_mcs_categories(
                 let start = parse_cat_id(range[0])?;
                 let end = parse_cat_id(range[1])?;
                 for i in start..=end {
-                    let cat =
-                        crate::category::Category::new(i).map_err(|e| {
-                            io::Error::new(
-                                io::ErrorKind::InvalidData,
-                                e.to_string(),
-                            )
-                        })?;
+                    let cat = crate::category::Category::new(i)
+                        .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e.to_string()))?;
                     set.insert(cat);
                 }
             }
         } else {
             let id = parse_cat_id(part)?;
-            let cat = crate::category::Category::new(id).map_err(|e| {
-                io::Error::new(io::ErrorKind::InvalidData, e.to_string())
-            })?;
+            let cat = crate::category::Category::new(id)
+                .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e.to_string()))?;
             set.insert(cat);
         }
     }

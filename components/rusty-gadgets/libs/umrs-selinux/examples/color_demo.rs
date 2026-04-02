@@ -15,9 +15,7 @@ use std::path::Path;
 use std::str::FromStr;
 
 use umrs_selinux::context::SecurityContext;
-use umrs_selinux::mcs::colors::{
-    ContextComponents, load_default, resolve_colors,
-};
+use umrs_selinux::mcs::colors::{ContextComponents, load_default, resolve_colors};
 use umrs_selinux::mcs::translator::{self, GLOBAL_TRANSLATOR, SecurityRange};
 use umrs_selinux::utils::{get_file_context, get_pid_context};
 
@@ -41,8 +39,7 @@ fn show_colors_for_ctx(ctx: &SecurityContext) {
     };
 
     // Resolve colors
-    let colors =
-        resolve_colors(&comps, &load_default().expect("secolor load failed"));
+    let colors = resolve_colors(&comps, &load_default().expect("secolor load failed"));
 
     // ANSI helper
     fn ansi_rgb(fg: (u8, u8, u8), bg: (u8, u8, u8), text: &str) -> String {
@@ -117,11 +114,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let query = "s0:c90,c91";
     let range = SecurityRange::from_str(query)?;
 
-    let translator =
-        GLOBAL_TRANSLATOR.read().expect("Translator lock poisoned");
+    let translator = GLOBAL_TRANSLATOR.read().expect("Translator lock poisoned");
 
-    let _marking =
-        translator.lookup(&range).unwrap_or_else(|| "MISSING".to_string());
+    let _marking = translator.lookup(&range).unwrap_or_else(|| "MISSING".to_string());
 
     //println!("Range  : {query}");
     ////println!("Marking: {marking}");

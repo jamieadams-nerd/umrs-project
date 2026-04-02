@@ -81,8 +81,7 @@ pub use confidence::{ConfidenceModel, Contradiction, TrustLevel};
 
 // Evidence / provenance records
 pub use evidence::{
-    DigestAlgorithm, EvidenceBundle, EvidenceRecord, FileStat, PkgDigest,
-    SourceKind,
+    DigestAlgorithm, EvidenceBundle, EvidenceRecord, FileStat, PkgDigest, SourceKind,
 };
 
 // Detection phase timing
@@ -90,27 +89,21 @@ pub use detect::{DetectionPhase, PackageQueryError, PhaseDuration};
 
 // OS identity (substrate-derived)
 pub use os_identity::{
-    CpuArch, Distro, KernelRelease, KernelVersion, KernelVersionParseError,
-    OsFamily, SubstrateIdentity,
+    CpuArch, Distro, KernelRelease, KernelVersion, KernelVersionParseError, OsFamily,
+    SubstrateIdentity,
 };
 
 // OS release types (validated newtypes + error)
 pub use os_release::{
-    BuildId, Codename, CpeName, OsId, OsName, OsRelease, OsReleaseParseError,
-    OsVersion, ValidatedUrl, VariantId, VersionId,
+    BuildId, Codename, CpeName, OsId, OsName, OsRelease, OsReleaseParseError, OsVersion,
+    ValidatedUrl, VariantId, VersionId,
 };
 
 // Sealed evidence cache (SEC pattern)
-pub use sealed_cache::{
-    CacheStatus, DEFAULT_TTL_SECS, MAX_TTL_SECS, SealedCache,
-};
+pub use sealed_cache::{CacheStatus, DEFAULT_TTL_SECS, MAX_TTL_SECS, SealedCache};
 
 // Posture probe
-pub use posture::{
-    AssuranceImpact, IndicatorId, IndicatorReport, PostureSnapshot,
-};
+pub use posture::{AssuranceImpact, IndicatorId, IndicatorReport, PostureSnapshot};
 
 // Boot-session timestamps (nanosecond-precision monotonic ordering)
-pub use timestamp::{
-    BootSessionDuration, BootSessionTimestamp, TimestampError,
-};
+pub use timestamp::{BootSessionDuration, BootSessionTimestamp, TimestampError};

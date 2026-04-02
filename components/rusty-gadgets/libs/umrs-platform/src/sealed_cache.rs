@@ -225,10 +225,7 @@ fn build_payload(result: &DetectionResult) -> Vec<u8> {
 
     let boot_id_bytes = result.boot_id.as_deref().unwrap_or("").as_bytes();
 
-    let os_id_bytes = result
-        .os_release
-        .as_ref()
-        .map_or(b"" as &[u8], |r| r.id.as_str().as_bytes());
+    let os_id_bytes = result.os_release.as_ref().map_or(b"" as &[u8], |r| r.id.as_str().as_bytes());
 
     let version_id_bytes = result
         .os_release
@@ -239,10 +236,8 @@ fn build_payload(result: &DetectionResult) -> Vec<u8> {
     // Use probe_used (&'static str) as the substrate identity contribution.
     // This covers the substrate probe type (e.g., "rpm", "dpkg") in the seal
     // without requiring a Display impl on Distro.
-    let substrate_bytes = result
-        .substrate_identity
-        .as_ref()
-        .map_or(b"" as &[u8], |s| s.probe_used.as_bytes());
+    let substrate_bytes =
+        result.substrate_identity.as_ref().map_or(b"" as &[u8], |s| s.probe_used.as_bytes());
 
     let mut payload = Vec::with_capacity(
         1 + 32
@@ -311,12 +306,8 @@ fn digest_evidence(bundle: &EvidenceBundle) -> [u8; 32] {
 /// Returns the 32-byte tag. The `hmac` crate's `Mac::finalize_reset` API
 /// is used rather than a raw byte slice; this guards against misuse of the
 /// internal state.
-fn compute_tag(
-    key: &SealingKey,
-    payload: &[u8],
-) -> Result<[u8; 32], SealError> {
-    let mut mac = Hmac::<Sha256>::new_from_slice(&key.bytes)
-        .map_err(|_| SealError::HmacInit)?;
+fn compute_tag(key: &SealingKey, payload: &[u8]) -> Result<[u8; 32], SealError> {
+    let mut mac = Hmac::<Sha256>::new_from_slice(&key.bytes).map_err(|_| SealError::HmacInit)?;
     mac.update(payload);
     let result = mac.finalize().into_bytes();
     let mut tag = [0u8; 32];
@@ -331,16 +322,10 @@ fn compute_tag(
 /// timing-based tag oracle attacks.
 ///
 /// NIST SP 800-53 SI-7 — constant-time comparison prevents oracle attacks.
-fn verify_tag(
-    key: &SealingKey,
-    payload: &[u8],
-    expected_tag: &[u8; 32],
-) -> Result<(), SealError> {
-    let mut mac = Hmac::<Sha256>::new_from_slice(&key.bytes)
-        .map_err(|_| SealError::HmacInit)?;
+fn verify_tag(key: &SealingKey, payload: &[u8], expected_tag: &[u8; 32]) -> Result<(), SealError> {
+    let mut mac = Hmac::<Sha256>::new_from_slice(&key.bytes).map_err(|_| SealError::HmacInit)?;
     mac.update(payload);
-    mac.verify_slice(expected_tag.as_slice())
-        .map_err(|_| SealError::TagMismatch)
+    mac.verify_slice(expected_tag.as_slice()).map_err(|_| SealError::TagMismatch)
 }
 
 // ===========================================================================
@@ -576,21 +561,16 @@ impl SealedCache {
         let tag = match compute_tag(key, &payload) {
             Ok(t) => t,
             Err(e) => {
-                log::warn!(
-                    "SEC: could not compute HMAC tag ({e:?}); caching skipped"
-                );
+                log::warn!("SEC: could not compute HMAC tag ({e:?}); caching skipped");
                 return;
             }
         };
 
-        let expires_at =
-            Instant::now().checked_add(self.ttl).unwrap_or_else(|| {
-                // checked_add overflow: use a minimal TTL rather than panicking.
-                log::warn!(
-                    "SEC: TTL Instant::checked_add overflow; using 1-second TTL"
-                );
-                Instant::now() + Duration::from_secs(1)
-            });
+        let expires_at = Instant::now().checked_add(self.ttl).unwrap_or_else(|| {
+            // checked_add overflow: use a minimal TTL rather than panicking.
+            log::warn!("SEC: TTL Instant::checked_add overflow; using 1-second TTL");
+            Instant::now() + Duration::from_secs(1)
+        });
 
         self.entry = Some(SealedEntry {
             payload,
@@ -623,9 +603,7 @@ impl SealedCache {
     /// of pipeline re-runs. This deferred path must use a FIPS 140-3 validated
     /// serialization + integrity primitive before being enabled.
     /// NIST SP 800-218 SSDF PW.6.1: residual defect — deferred capability.
-    fn decode_cached_result(
-        &mut self,
-    ) -> Result<DetectionResult, DetectionError> {
+    fn decode_cached_result(&mut self) -> Result<DetectionResult, DetectionError> {
         // Verified cache hit — we know the stored bytes have not been tampered
         // with. Run the pipeline to produce a fresh, typed result.
         //
@@ -633,9 +611,7 @@ impl SealedCache {
         // benefit of a true cache hit for simplicity and correctness. The seal
         // still provides the key security property: any in-memory substitution
         // of the payload bytes will be detected on the next query.
-        log::debug!(
-            "SEC: seal verified; re-running pipeline for fresh typed result"
-        );
+        log::debug!("SEC: seal verified; re-running pipeline for fresh typed result");
         self.entry = None; // clear entry; pipeline will re-seal
         self.detector.detect()
     }
@@ -693,17 +669,16 @@ fn read_fips_at_init() -> bool {
         }
     };
 
-    let content =
-        match SecureReader::<ProcfsText>::new().read_generic_text(&node) {
-            Ok(s) => s,
-            Err(e) => {
-                log::warn!(
-                    "SEC: could not read fips_enabled ({e}); \
+    let content = match SecureReader::<ProcfsText>::new().read_generic_text(&node) {
+        Ok(s) => s,
+        Err(e) => {
+            log::warn!(
+                "SEC: could not read fips_enabled ({e}); \
                  assuming FIPS active — caching disabled (fail-closed)"
-                );
-                return true;
-            }
-        };
+            );
+            return true;
+        }
+    };
 
     if content.trim() == "1" {
         log::warn!(
@@ -750,21 +725,18 @@ fn read_proc_self_stat_starttime() -> Option<u64> {
     let node = match ProcfsText::new(PathBuf::from(STAT_PATH)) {
         Ok(n) => n,
         Err(e) => {
-            log::warn!(
-                "SEC: could not construct ProcfsText for /proc/self/stat: {e}"
-            );
+            log::warn!("SEC: could not construct ProcfsText for /proc/self/stat: {e}");
             return None;
         }
     };
 
-    let content =
-        match SecureReader::<ProcfsText>::new().read_generic_text(&node) {
-            Ok(s) => s,
-            Err(e) => {
-                log::warn!("SEC: could not read /proc/self/stat: {e}");
-                return None;
-            }
-        };
+    let content = match SecureReader::<ProcfsText>::new().read_generic_text(&node) {
+        Ok(s) => s,
+        Err(e) => {
+            log::warn!("SEC: could not read /proc/self/stat: {e}");
+            return None;
+        }
+    };
 
     // Find the last ')' to skip past the comm field, which may contain spaces.
     let Some(paren_pos) = content.rfind(')') else {
@@ -782,9 +754,7 @@ fn read_proc_self_stat_starttime() -> Option<u64> {
 
     starttime_str.parse::<u64>().map_or_else(
         |_| {
-            log::warn!(
-                "SEC: /proc/self/stat starttime field is not a valid u64"
-            );
+            log::warn!("SEC: /proc/self/stat starttime field is not a valid u64");
             None
         },
         Some,

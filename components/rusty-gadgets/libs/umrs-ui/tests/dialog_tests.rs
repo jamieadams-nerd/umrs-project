@@ -41,12 +41,8 @@ fn dialog_state_info_starts_pending() {
 /// button labels) will never conflate different dialog kinds.
 #[test]
 fn dialog_mode_variants_are_distinct() {
-    let modes = [
-        DialogMode::Info,
-        DialogMode::Error,
-        DialogMode::SecurityWarning,
-        DialogMode::Confirm,
-    ];
+    let modes =
+        [DialogMode::Info, DialogMode::Error, DialogMode::SecurityWarning, DialogMode::Confirm];
     for (i, a) in modes.iter().enumerate() {
         for (j, b) in modes.iter().enumerate() {
             if i == j {

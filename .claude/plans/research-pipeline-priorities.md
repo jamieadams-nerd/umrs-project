@@ -1,7 +1,7 @@
 # Research Pipeline Priorities
 
 **Date:** 2026-03-21
-**Status:** in-progress — Priority 1 complete; Priority 2 Canada complete (Appendix J EN/FR downloaded 2026-03-31, AU/UK/NZ backburner); Priority 3 backburner; Priority 4 complete (all 3 docs downloaded + familiarized 2026-03-31, no RAG needed)
+**Status:** in-progress — Priority 1 complete; Priority 2 Canada complete (Appendix J EN/FR downloaded 2026-03-31, AU/UK/NZ backburner); Priority 3 backburner; Priority 4 complete (all 3 docs downloaded + familiarized 2026-03-31, no RAG needed); FIPS 180-4 + 186-5 downloaded 2026-04-02; audit/logging research corpus (CC Part 2, IDMEF, CEF, DFXML, CASE, ITU X.721) acquisition started 2026-04-02
 **Author:** The Librarian (researcher)
 **ROADMAP Goals:** G3 (CUI & Five Eyes), G4 (Assessment Engine), G7 (Public Project)
 **Milestones:** M2 (OSCAL), M3 (CUI/Five Eyes)

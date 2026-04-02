@@ -95,7 +95,7 @@ SELINUX TYPE is the type component of the verified security context (e.g., `bin_
 `httpd_t`, `<unlabeled>`, `<restricted>`).
 
 MARKING is the setrans-translated sensitivity/category string when `mcstransd` is
-running, or the raw level string otherwise (e.g., `CUI//LEI/INV`, `s0`, `<no-level>`,
+running, or the raw level string otherwise (e.g., `CUI//INV`, `CUI//SP-CTI`, `s0`, `<no-level>`,
 `<restricted>`).
 
 === OWNER:GROUP

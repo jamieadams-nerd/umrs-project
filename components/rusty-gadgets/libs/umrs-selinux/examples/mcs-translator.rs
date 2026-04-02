@@ -38,8 +38,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // --- Forward lookup: kernel range -> marking --------------------------------
     println!("[TEST - Valid FORWARD Lookup");
     let query_range = SecurityRange::from_str("s0:c90,c91")?;
-    let marking =
-        guard.lookup(&query_range).unwrap_or_else(|| "MISSING".to_string());
+    let marking = guard.lookup(&query_range).unwrap_or_else(|| "MISSING".to_string());
     println!("FORWARD  s0:c90,c91 -> {marking}");
 
     //let marking = guard

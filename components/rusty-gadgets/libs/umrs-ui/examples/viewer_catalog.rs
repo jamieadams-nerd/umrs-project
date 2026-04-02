@@ -51,19 +51,14 @@ impl CatalogApp {
         let mut model = TreeModel::new();
 
         // Category: Controlled Technical Information
-        let mut cti =
-            TreeNode::branch("Controlled Technical Information", "CTI");
+        let mut cti = TreeNode::branch("Controlled Technical Information", "CTI");
         cti.metadata.insert("Code".to_owned(), "CTI".to_owned());
-        cti.metadata
-            .insert("Authority".to_owned(), "DFARS 252.204-7012".to_owned());
+        cti.metadata.insert("Authority".to_owned(), "DFARS 252.204-7012".to_owned());
 
         let mut naval = TreeNode::branch("Naval Systems", "CTI-NS");
         naval.children.push({
             let mut n = TreeNode::leaf("Propulsion", "CTI-NS-P");
-            n.metadata.insert(
-                "Description".to_owned(),
-                "Naval propulsion data".to_owned(),
-            );
+            n.metadata.insert("Description".to_owned(), "Naval propulsion data".to_owned());
             n
         });
         naval.children.push(TreeNode::leaf("Navigation", "CTI-NS-N"));
@@ -151,11 +146,7 @@ fn main() {
     let _ = state.handle_action(Action::ScrollDown);
     println!("Breadcrumb: {}", state.breadcrumb_display());
     println!("Selected: {}", {
-        state
-            .tree
-            .display_list
-            .get(state.selected_index)
-            .map_or("(none)", |e| e.label.as_str())
+        state.tree.display_list.get(state.selected_index).map_or("(none)", |e| e.label.as_str())
     });
     println!();
 

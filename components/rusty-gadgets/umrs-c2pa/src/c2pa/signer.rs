@@ -59,20 +59,39 @@ use openssl::x509::extension::{BasicConstraints, ExtendedKeyUsage, KeyUsage};
 use openssl::x509::{X509Builder, X509NameBuilder};
 use zeroize::Zeroizing;
 
+use umrs_core::i18n;
+
 use crate::c2pa::{config::IdentityConfig, error::InspectError};
 #[allow(unused_imports)]
 use crate::verbose;
 
 /// FIPS-safe algorithms supported by UMRS.
-/// ed25519 is intentionally excluded — unreliable on FIPS-enabled RHEL.
+///
+/// ed25519 is intentionally excluded — it is not reliably available on FIPS 140-2
+/// validated modules (only added in FIPS 186-5) and is optional in the C2PA spec.
+/// All permitted algorithms are ECDSA curves (ES256/384/512) or RSA-PSS
+/// (PS256/384/512); there are no plain RSA signing or decryption paths.
+///
+/// # Supply Chain Note
+///
+/// The `rsa` crate (transitive via `c2pa` SDK) carries RUSTSEC-2023-0071
+/// (Marvin Attack — timing side-channel in PKCS#1 v1.5 decryption). This
+/// gate ensures UMRS never exercises RSA signing paths. All permitted
+/// algorithms are ECDSA curves. The vulnerable RSA decryption code path
+/// is unreachable from UMRS signing operations.
 pub const ALLOWED_ALGORITHMS: &[&str] = &["es256", "es384", "es512", "ps256", "ps384", "ps512"];
 
 /// Human-readable description of a signing algorithm: family, curve/key type,
 /// digest, key size, and FIPS status.
+///
+/// Returns a localized string via the active gettext catalog. Algorithm
+/// identifiers (ES256, ECDSA, SHA-256, etc.) are international notation and
+/// are not translated — only the "FIPS-safe" suffix is a candidate for
+/// localization, pending Simone/Henri review.
 #[must_use = "Algorithm description is used in operator-facing validation output; \
               discarding it silently produces no report"]
-pub fn describe_algorithm(alg: &str) -> &'static str {
-    match alg {
+pub fn describe_algorithm(alg: &str) -> String {
+    let key = match alg {
         "es256" => "ES256  ECDSA / P-256 (prime256v1) / SHA-256 / 256-bit / FIPS-safe",
         "es384" => "ES384  ECDSA / P-384 (secp384r1) / SHA-384 / 384-bit / FIPS-safe",
         "es512" => "ES512  ECDSA / P-521 (secp521r1) / SHA-512 / 521-bit / FIPS-safe",
@@ -80,7 +99,8 @@ pub fn describe_algorithm(alg: &str) -> &'static str {
         "ps384" => "PS384  RSA-PSS / SHA-384 / 2048+ bit / FIPS-safe",
         "ps512" => "PS512  RSA-PSS / SHA-512 / 2048+ bit / FIPS-safe",
         _ => "(unknown algorithm)",
-    }
+    };
+    i18n::tr(key)
 }
 
 /// Parse an algorithm string into `c2pa::SigningAlg`.
@@ -244,7 +264,11 @@ fn generate_ephemeral_cert(
         SigningAlg::Es512 => (Nid::SECP521R1, MessageDigest::sha512(), "P-521 (secp521r1)"),
         // ES256 and RSA-PSS algorithms both use P-256 for ephemeral test certs.
         // Production RSA-PSS signing uses real certs, not this path.
-        _ => (Nid::X9_62_PRIME256V1, MessageDigest::sha256(), "P-256 (prime256v1)"),
+        _ => (
+            Nid::X9_62_PRIME256V1,
+            MessageDigest::sha256(),
+            "P-256 (prime256v1)",
+        ),
     };
 
     verbose!("Generating ephemeral ECDSA key on curve {}...", curve_name);

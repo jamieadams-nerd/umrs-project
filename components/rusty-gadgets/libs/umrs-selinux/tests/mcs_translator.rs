@@ -8,9 +8,7 @@
 use std::str::FromStr;
 use std::sync::OnceLock;
 
-use umrs_selinux::mcs::translator::{
-    GLOBAL_TRANSLATOR, SecurityRange, load_setrans_file,
-};
+use umrs_selinux::mcs::translator::{GLOBAL_TRANSLATOR, SecurityRange, load_setrans_file};
 
 /// Update this if you relocate the fixture.
 const SETRANS_PATH: &str = "data/setrans.conf";
@@ -20,8 +18,7 @@ static INIT: OnceLock<()> = OnceLock::new();
 
 fn ensure_loaded() {
     INIT.get_or_init(|| {
-        load_setrans_file(SETRANS_PATH)
-            .expect("Failed to load test setrans.conf");
+        load_setrans_file(SETRANS_PATH).expect("Failed to load test setrans.conf");
     });
 }
 
@@ -34,12 +31,10 @@ fn ensure_loaded() {
 fn forward_lookup_returns_non_missing() {
     ensure_loaded();
 
-    let guard =
-        GLOBAL_TRANSLATOR.read().expect("GLOBAL_TRANSLATOR lock poisoned");
+    let guard = GLOBAL_TRANSLATOR.read().expect("GLOBAL_TRANSLATOR lock poisoned");
 
     let raw = "s0:c90,c91"; // adjust if needed
-    let range =
-        SecurityRange::from_str(raw).expect("Failed to parse SecurityRange");
+    let range = SecurityRange::from_str(raw).expect("Failed to parse SecurityRange");
 
     let marking = guard.lookup(&range).unwrap_or_else(|| "MISSING".to_string());
 
@@ -54,12 +49,10 @@ fn forward_lookup_returns_non_missing() {
 fn forward_lookup_detail_accessible() {
     ensure_loaded();
 
-    let guard =
-        GLOBAL_TRANSLATOR.read().expect("GLOBAL_TRANSLATOR lock poisoned");
+    let guard = GLOBAL_TRANSLATOR.read().expect("GLOBAL_TRANSLATOR lock poisoned");
 
     let raw = "s0:c90,c91";
-    let range =
-        SecurityRange::from_str(raw).expect("Failed to parse SecurityRange");
+    let range = SecurityRange::from_str(raw).expect("Failed to parse SecurityRange");
 
     // Detail may legitimately be empty — we just verify API path works.
     let _detail = guard.get_detail(&range);
@@ -74,8 +67,7 @@ fn forward_lookup_detail_accessible() {
 fn reverse_lookup_known_marking_returns_ranges() {
     ensure_loaded();
 
-    let guard =
-        GLOBAL_TRANSLATOR.read().expect("GLOBAL_TRANSLATOR lock poisoned");
+    let guard = GLOBAL_TRANSLATOR.read().expect("GLOBAL_TRANSLATOR lock poisoned");
 
     let marking = "CUI//PRIVACY/CONTRACT"; // adjust if needed
 
@@ -102,8 +94,7 @@ fn reverse_lookup_known_marking_returns_ranges() {
 fn reverse_lookup_unknown_marking_returns_empty() {
     ensure_loaded();
 
-    let guard =
-        GLOBAL_TRANSLATOR.read().expect("GLOBAL_TRANSLATOR lock poisoned");
+    let guard = GLOBAL_TRANSLATOR.read().expect("GLOBAL_TRANSLATOR lock poisoned");
 
     let marking = "UMRS//THIS/SHOULD/NOT/EXIST";
 
@@ -126,8 +117,7 @@ fn reverse_lookup_unknown_marking_returns_empty() {
 fn category_order_normalization_should_not_change_lookup() {
     ensure_loaded();
 
-    let guard =
-        GLOBAL_TRANSLATOR.read().expect("GLOBAL_TRANSLATOR lock poisoned");
+    let guard = GLOBAL_TRANSLATOR.read().expect("GLOBAL_TRANSLATOR lock poisoned");
 
     let a = "s0:c90,c91";
     let b = "s0:c91,c90";

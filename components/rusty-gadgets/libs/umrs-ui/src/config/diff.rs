@@ -93,20 +93,9 @@ const DIFF_VALUE_WIDTH: usize = 24;
 /// operator review before the `Save` action is processed.
 /// NIST SP 800-53 AU-3 — before/after values are always paired; the operator
 /// cannot see an "after" without also seeing the "before".
-pub fn render_diff(
-    frame: &mut Frame,
-    area: Rect,
-    entries: &[DiffEntry],
-    theme: &Theme,
-) {
+pub fn render_diff(frame: &mut Frame, area: Rect, entries: &[DiffEntry], theme: &Theme) {
     let lines = if entries.is_empty() {
-        vec![
-            Line::from(""),
-            Line::from(Span::styled(
-                "  No changes to review.",
-                theme.data_value,
-            )),
-        ]
+        vec![Line::from(""), Line::from(Span::styled("  No changes to review.", theme.data_value))]
     } else {
         build_diff_lines(entries, theme)
     };
@@ -125,10 +114,7 @@ pub fn render_diff(
 ///
 /// Renders the column header, then unchanged entries (dimmed), then changed
 /// entries (highlighted).
-fn build_diff_lines<'a>(
-    entries: &[DiffEntry],
-    theme: &'a Theme,
-) -> Vec<Line<'a>> {
+fn build_diff_lines<'a>(entries: &[DiffEntry], theme: &'a Theme) -> Vec<Line<'a>> {
     let mut lines: Vec<Line<'a>> = Vec::new();
 
     // Column header.
@@ -137,8 +123,7 @@ fn build_diff_lines<'a>(
     lines.push(Line::from(""));
 
     // Unchanged entries (context, dimmed).
-    let unchanged: Vec<&DiffEntry> =
-        entries.iter().filter(|e| !e.is_changed()).collect();
+    let unchanged: Vec<&DiffEntry> = entries.iter().filter(|e| !e.is_changed()).collect();
     if !unchanged.is_empty() {
         for entry in &unchanged {
             lines.push(diff_row_line(entry, false, theme));
@@ -147,8 +132,7 @@ fn build_diff_lines<'a>(
     }
 
     // Changed entries (highlighted).
-    let changed: Vec<&DiffEntry> =
-        entries.iter().filter(|e| e.is_changed()).collect();
+    let changed: Vec<&DiffEntry> = entries.iter().filter(|e| e.is_changed()).collect();
     if !changed.is_empty() {
         lines.push(Line::from(Span::styled("  Changed", theme.group_title)));
         lines.push(Line::from(""));
@@ -176,11 +160,7 @@ fn header_line(theme: &Theme) -> Line<'_> {
 ///
 /// `highlighted` = `true` for changed entries (uses `indicator_active` /
 /// yellow), `false` for unchanged context (uses `tab_inactive` dim style).
-fn diff_row_line<'a>(
-    entry: &DiffEntry,
-    highlighted: bool,
-    theme: &'a Theme,
-) -> Line<'a> {
+fn diff_row_line<'a>(entry: &DiffEntry, highlighted: bool, theme: &'a Theme) -> Line<'a> {
     let label_str = format!("  {:<DIFF_LABEL_WIDTH$}", entry.label);
     let before_str = format!("  {:<DIFF_VALUE_WIDTH$}", entry.before);
     let after_str = format!("  {}", entry.after);

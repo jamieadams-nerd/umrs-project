@@ -8,8 +8,7 @@
 //! No terminal backend is required.
 
 use umrs_ui::app::{
-    AuditCardApp, DataRow, HeaderField, StatusLevel, StatusMessage, StyleHint,
-    TabDef,
+    AuditCardApp, DataRow, HeaderField, StatusLevel, StatusMessage, StyleHint, TabDef,
 };
 use umrs_ui::tabs::tabs_from_labels;
 
@@ -58,10 +57,7 @@ impl AuditCardApp for MockApp {
                 DataRow::separator(),
                 DataRow::new("SELinux", "Enforcing", StyleHint::TrustGreen),
             ],
-            1 => vec![
-                DataRow::normal("Arch", "aarch64"),
-                DataRow::normal("FIPS", "active"),
-            ],
+            1 => vec![DataRow::normal("Arch", "aarch64"), DataRow::normal("FIPS", "active")],
             // Fail-closed: unknown tab returns empty — no panic, no garbage data
             _ => vec![],
         }
@@ -359,11 +355,7 @@ struct MockAppThreeTabs {
 impl MockAppThreeTabs {
     fn new() -> Self {
         Self {
-            tabs: tabs_from_labels(&[
-                "OS Information",
-                "Trust / Evidence",
-                "Kernel Security",
-            ]),
+            tabs: tabs_from_labels(&["OS Information", "Trust / Evidence", "Kernel Security"]),
             status: StatusMessage::new(StatusLevel::Ok, "Ready"),
         }
     }
@@ -390,10 +382,9 @@ impl AuditCardApp for MockAppThreeTabs {
         match tab_index {
             0 => vec![DataRow::normal("ID", "rhel")],
             1 => vec![DataRow::normal("trust_level", "T3")],
-            2 => vec![
-                DataRow::group_title("FIPS STATE"),
-                DataRow::normal("fips_enabled", "active"),
-            ],
+            2 => {
+                vec![DataRow::group_title("FIPS STATE"), DataRow::normal("fips_enabled", "active")]
+            }
             _ => vec![],
         }
     }

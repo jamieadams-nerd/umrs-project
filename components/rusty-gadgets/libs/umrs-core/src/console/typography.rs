@@ -37,9 +37,7 @@ pub fn stylize(input: &str, style: TypographyStyle) -> String {
         .map(|c| {
             match style {
                 TypographyStyle::Bold => map_char(c, 0x1D400, 0x1D41A, 0x1D7CE),
-                TypographyStyle::DoubleStruck => {
-                    map_char(c, 0x1D538, 0x1D552, 0x1D7D8)
-                }
+                TypographyStyle::DoubleStruck => map_char(c, 0x1D538, 0x1D552, 0x1D7D8),
                 TypographyStyle::Circled => map_char_circled(c),
                 TypographyStyle::Gothic => map_char(c, 0x1D504, 0x1D51E, 0),
                 TypographyStyle::Script => map_char(c, 0x1D49C, 0x1D4B6, 0),
@@ -51,12 +49,7 @@ pub fn stylize(input: &str, style: TypographyStyle) -> String {
 }
 
 /// Internal helper for contiguous Unicode blocks
-fn map_char(
-    c: char,
-    upper_start: u32,
-    lower_start: u32,
-    digit_start: u32,
-) -> char {
+fn map_char(c: char, upper_start: u32, lower_start: u32, digit_start: u32) -> char {
     if c.is_ascii_uppercase() && upper_start != 0 {
         std::char::from_u32(upper_start + (c as u32 - 'A' as u32)).unwrap_or(c)
     } else if c.is_ascii_lowercase() && lower_start != 0 {

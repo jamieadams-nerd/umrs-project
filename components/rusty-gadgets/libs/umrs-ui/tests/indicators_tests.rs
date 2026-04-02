@@ -104,9 +104,7 @@ fn indicator_value_disabled_contains_string() {
 #[test]
 fn security_indicators_field_assignment() {
     let indicators = SecurityIndicators {
-        selinux_status: IndicatorValue::Enabled(
-            "Enforcing (Targeted)".to_owned(),
-        ),
+        selinux_status: IndicatorValue::Enabled("Enforcing (Targeted)".to_owned()),
         fips_mode: IndicatorValue::Enabled("Enabled".to_owned()),
         lockdown_mode: IndicatorValue::Disabled("none".to_owned()),
         ..SecurityIndicators::default()

@@ -50,8 +50,7 @@ use ratatui::layout::{Constraint, Direction, Layout, Rect};
 use ratatui::style::Modifier;
 use ratatui::text::{Line, Span};
 use ratatui::widgets::{
-    Block, BorderType, Borders, Paragraph, Scrollbar, ScrollbarOrientation,
-    ScrollbarState,
+    Block, BorderType, Borders, Paragraph, Scrollbar, ScrollbarOrientation, ScrollbarState,
 };
 
 use umrs_core::i18n;
@@ -126,14 +125,11 @@ pub fn render_data_panel(
     } else {
         // Compute pinned section height from content, then carve it off the top.
         let inner_width = (area.width as usize).saturating_sub(4);
-        let pinned_line_count: usize = pinned
-            .iter()
-            .map(|r| expanded_row_line_count(r, inner_width))
-            .sum();
+        let pinned_line_count: usize =
+            pinned.iter().map(|r| expanded_row_line_count(r, inner_width)).sum();
         let pinned_height_raw = pinned_line_count.saturating_add(2); // +2 borders
         // Clamp: never use more than 40% of area for pinned content.
-        let max_pinned =
-            (area.height as usize).saturating_mul(2).saturating_div(5);
+        let max_pinned = (area.height as usize).saturating_mul(2).saturating_div(5);
         let pinned_height = pinned_height_raw.min(max_pinned).max(4);
 
         #[allow(clippy::cast_possible_truncation)]
@@ -141,10 +137,7 @@ pub fn render_data_panel(
 
         let chunks = Layout::default()
             .direction(Direction::Vertical)
-            .constraints([
-                Constraint::Length(pinned_height_u16),
-                Constraint::Min(0),
-            ])
+            .constraints([Constraint::Length(pinned_height_u16), Constraint::Min(0)])
             .split(area);
 
         let [pinned_area, remaining] = *chunks else {
@@ -160,14 +153,7 @@ pub fn render_data_panel(
         ColumnLayout::Full => {
             let rows = app.data_rows(active_tab);
             let has_pinned = !pinned.is_empty();
-            render_scrollable_pane(
-                frame,
-                scroll_area,
-                &rows,
-                scroll_offset,
-                theme,
-                has_pinned,
-            );
+            render_scrollable_pane(frame, scroll_area, &rows, scroll_offset, theme, has_pinned);
         }
         ColumnLayout::TwoColumn => {
             let left_rows = app.data_rows_left(active_tab);
@@ -216,22 +202,8 @@ fn render_two_column_pane(
         return;
     };
 
-    render_scrollable_pane(
-        frame,
-        left_area,
-        left_rows,
-        scroll_offset,
-        theme,
-        false,
-    );
-    render_scrollable_pane(
-        frame,
-        right_area,
-        right_rows,
-        scroll_offset,
-        theme,
-        false,
-    );
+    render_scrollable_pane(frame, left_area, left_rows, scroll_offset, theme, false);
+    render_scrollable_pane(frame, right_area, right_rows, scroll_offset, theme, false);
 }
 
 /// Render a non-scrollable pinned summary pane.
@@ -339,12 +311,8 @@ fn render_scrollable_pane(
     let offset = scroll_offset.min(max_offset);
 
     // Flatten and take the visible window of scrollable content.
-    let scrollable_visible: Vec<Line<'_>> = expanded
-        .into_iter()
-        .flatten()
-        .skip(offset)
-        .take(inner_height)
-        .collect();
+    let scrollable_visible: Vec<Line<'_>> =
+        expanded.into_iter().flatten().skip(offset).take(inner_height).collect();
 
     // Build the full visible line list: sticky header (if any) + scrollable body.
     let mut visible: Vec<Line<'_>> = Vec::new();
@@ -352,10 +320,8 @@ fn render_scrollable_pane(
         // Render the header with bold + reverse video so it stands out as the
         // column label row. Uses header_field (bright cyan) rather than
         // data_key (dim cyan) so the reversed text is readable.
-        let header_style = theme
-            .header_field
-            .add_modifier(Modifier::BOLD)
-            .add_modifier(Modifier::REVERSED);
+        let header_style =
+            theme.header_field.add_modifier(Modifier::BOLD).add_modifier(Modifier::REVERSED);
         visible.push(build_table_header_line_styled(
             header_row,
             header_style,
@@ -389,14 +355,9 @@ fn render_scrollable_pane(
             .viewport_content_length(inner_height)
             .position(offset);
 
-        let scrollbar = Scrollbar::default()
-            .orientation(ScrollbarOrientation::VerticalRight);
+        let scrollbar = Scrollbar::default().orientation(ScrollbarOrientation::VerticalRight);
 
-        frame.render_stateful_widget(
-            scrollbar,
-            chunks[1],
-            &mut scrollbar_state,
-        );
+        frame.render_stateful_widget(scrollbar, chunks[1], &mut scrollbar_state);
     } else {
         frame.render_widget(paragraph, area);
     }
@@ -534,8 +495,7 @@ fn expand_row_lines<'a>(
             let wrap_width = wrap_width.max(20); // never wrap at < 20 chars
             let wrapped = word_wrap(value, wrap_width);
             let color = style_hint_color(*style_hint);
-            let style =
-                theme.data_value.fg(color).add_modifier(Modifier::ITALIC);
+            let style = theme.data_value.fg(color).add_modifier(Modifier::ITALIC);
             wrapped
                 .into_iter()
                 .map(|chunk| {
@@ -619,15 +579,11 @@ fn expand_indicator_row<'a>(
 
     // Description lines: dim italic, wrapped to available width.
     if !description.is_empty() {
-        let available = inner_width
-            .saturating_sub(indent_len)
-            .saturating_sub(WRAP_RIGHT_PADDING);
+        let available = inner_width.saturating_sub(indent_len).saturating_sub(WRAP_RIGHT_PADDING);
         let wrap_width = available.max(20);
         let wrapped = word_wrap(description, wrap_width);
-        let desc_style = theme
-            .data_value
-            .fg(style_hint_color(StyleHint::Dim))
-            .add_modifier(Modifier::ITALIC);
+        let desc_style =
+            theme.data_value.fg(style_hint_color(StyleHint::Dim)).add_modifier(Modifier::ITALIC);
         for chunk in wrapped {
             lines.push(Line::from(vec![
                 Span::raw(desc_indent.clone()),
@@ -658,10 +614,8 @@ fn expand_indicator_row<'a>(
                 StyleHint::Dim,
             ),
         };
-        let marker_style = theme
-            .data_value
-            .fg(style_hint_color(marker_hint))
-            .add_modifier(Modifier::ITALIC);
+        let marker_style =
+            theme.data_value.fg(style_hint_color(marker_hint)).add_modifier(Modifier::ITALIC);
         lines.push(Line::from(vec![
             Span::raw(desc_indent.clone()),
             Span::styled(marker_text, marker_style),
@@ -672,10 +626,8 @@ fn expand_indicator_row<'a>(
     // file it came from. Rendered dim so it is clearly subordinate to the
     // live value on line 1.
     if let Some(cfg_line) = configured_line {
-        let cfg_style = theme
-            .data_value
-            .fg(style_hint_color(StyleHint::Dim))
-            .add_modifier(Modifier::ITALIC);
+        let cfg_style =
+            theme.data_value.fg(style_hint_color(StyleHint::Dim)).add_modifier(Modifier::ITALIC);
         lines.push(Line::from(vec![
             Span::raw(desc_indent.clone()),
             Span::styled(cfg_line.clone(), cfg_style),
@@ -684,16 +636,11 @@ fn expand_indicator_row<'a>(
 
     // Recommendation line: "[ Recommended: <value> ]" for unhardened indicators.
     if let Some(rec) = recommendation {
-        let rec_style = theme
-            .data_value
-            .fg(style_hint_color(StyleHint::Dim))
-            .add_modifier(Modifier::ITALIC);
+        let rec_style =
+            theme.data_value.fg(style_hint_color(StyleHint::Dim)).add_modifier(Modifier::ITALIC);
         lines.push(Line::from(vec![
             Span::raw(desc_indent),
-            Span::styled(
-                format!("[ {}: {rec} ]", i18n::tr("Recommended")),
-                rec_style,
-            ),
+            Span::styled(format!("[ {}: {rec} ]", i18n::tr("Recommended")), rec_style),
         ]));
     }
 
@@ -907,20 +854,14 @@ fn build_key_value_line<'a>(
 /// Description rows (empty-key `KeyValue`) are handled separately by
 /// `expand_row_lines` which may return multiple wrapped lines. This function
 /// will receive them only when they have a non-empty key.
-fn build_row_line<'a>(
-    row: &'a DataRow,
-    theme: &'a Theme,
-    widths: TableWidths,
-) -> Line<'a> {
+fn build_row_line<'a>(row: &'a DataRow, theme: &'a Theme, widths: TableWidths) -> Line<'a> {
     match row {
         DataRow::KeyValue {
             key,
             value,
             style_hint,
             highlight_key,
-        } => {
-            build_key_value_line(key, value, *style_hint, *highlight_key, theme)
-        }
+        } => build_key_value_line(key, value, *style_hint, *highlight_key, theme),
 
         DataRow::TwoColumn {
             left_key,
@@ -949,15 +890,9 @@ fn build_row_line<'a>(
             Line::from(vec![
                 Span::raw(" "),
                 Span::styled(left_key_str, theme.data_key),
-                Span::styled(
-                    left_val_padded,
-                    theme.data_value.fg(left_val_color),
-                ),
+                Span::styled(left_val_padded, theme.data_value.fg(left_val_color)),
                 Span::styled(right_key_str, theme.data_key),
-                Span::styled(
-                    right_value.clone(),
-                    theme.data_value.fg(right_val_color),
-                ),
+                Span::styled(right_value.clone(), theme.data_value.fg(right_val_color)),
             ])
         }
 
@@ -1044,8 +979,7 @@ fn pad_key(key: &str, width: usize) -> String {
     let char_count = key.chars().count();
     if char_count >= width {
         // Truncate and add separator
-        let truncated: String =
-            key.chars().take(width.saturating_sub(2)).collect();
+        let truncated: String = key.chars().take(width.saturating_sub(2)).collect();
         format!("{truncated}: ")
     } else {
         let pad = width.saturating_sub(char_count).saturating_sub(2);

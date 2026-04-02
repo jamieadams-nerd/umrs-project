@@ -1,10 +1,15 @@
 = Canadian Protected Designations
 :description: How UMRS implements Canadian Protected A/B/C information labeling using SELinux MCS sensitivity levels and categories.
 
-Canada's Protected information designation system classifies government information by the severity of injury that unauthorized disclosure would cause.
-The system is administered by the Treasury Board of Canada Secretariat (TBS) under the _Directive on Security Management_ and its _Standard on Security Categorization_ (Appendix J).
+Canada's Protected information designation system classifies government information by the severity
+of injury that unauthorized disclosure would cause.
 
-Unlike the US CUI framework, which organizes information by type across 125+ named categories, the Canadian system uses three tiers defined by a single question: how serious is the harm if this information is disclosed?
+The system is administered by the Treasury Board of Canada Secretariat (TBS) under the _Directive on
+Security Management_ and its _Standard on Security Categorization_ (Appendix J).
+
+Unlike the US CUI framework, which organizes information by type across 125+ named categories, the
+Canadian system uses three tiers defined by a single question: how serious is the harm if this
+information is disclosed?
 
 UMRS brings Canadian Protected designations into the filesystem.
 Each Protected tier maps to an SELinux Multi-Category Security (MCS) sensitivity level.
@@ -19,9 +24,12 @@ This module documents:
 
 == The Labeling Mechanism
 
-Both the Canadian Protected module and its sibling xref:cui-labeling:index.adoc[CUI Labeling] module build on the same SELinux MCS mechanism described in xref:security-concepts:label-mechanism.adoc[How SELinux Labeling Works].
-The mechanism is content-agnostic.
-It does not know or care whether a label represents a US CUI category, a Canadian Protected tier, or any other organizational requirement.
+Both the Canadian Protected module and its sibling xref:cui-labeling:index.adoc[CUI Labeling] module
+build on the same SELinux MCS mechanism described in xref:security-concepts:label-mechanism.adoc[How
+SELinux Labeling Works]. The mechanism is content-agnostic.
+
+It does not know or care whether a label represents a US CUI category, a Canadian Protected tier, or
+any other organizational requirement.
 
 What matters is the planning that determines which labels mean what.
 The mechanism enforces boundaries.
@@ -118,7 +126,7 @@ This is not because it is less rigorous -- it is because the two systems are org
 | 3 tiers
 
 | Subcategories
-| Yes (e.g., PRIVACY/HEALTH, LEI/INV)
+| None. CUI uses independent named categories (e.g., `CUI//PRVCY`, `CUI//INV`, `CUI//LEI`) that combine additively in a banner when a document contains multiple category types.
 | None standardized by TBS
 
 | Dissemination controls

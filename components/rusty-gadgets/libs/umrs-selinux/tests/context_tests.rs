@@ -19,12 +19,7 @@ fn construct_security_context() {
     let role = SelinuxRole::from_str("system_r").unwrap();
     let security_type = SelinuxType::from_str("sshd_t").unwrap();
 
-    let ctx = SecurityContext::new(
-        user.clone(),
-        role.clone(),
-        security_type.clone(),
-        None,
-    );
+    let ctx = SecurityContext::new(user.clone(), role.clone(), security_type.clone(), None);
 
     assert_eq!(ctx.user(), &user);
     assert_eq!(ctx.role(), &role);
@@ -48,8 +43,7 @@ fn display_formats_canonical_context() {
 
 #[test]
 fn parse_valid_context() {
-    let ctx: SecurityContext =
-        "unconfined_u:unconfined_r:unconfined_t".parse().unwrap();
+    let ctx: SecurityContext = "unconfined_u:unconfined_r:unconfined_t".parse().unwrap();
 
     assert_eq!(ctx.user().to_string(), "unconfined_u");
     assert_eq!(ctx.role().to_string(), "unconfined_r");
@@ -104,8 +98,7 @@ fn parse_invalid_role() {
 
 #[test]
 fn parse_invalid_type() {
-    let result: Result<SecurityContext, _> =
-        "system_u:system_r:bad type".parse();
+    let result: Result<SecurityContext, _> = "system_u:system_r:bad type".parse();
 
     assert!(matches!(
         result,

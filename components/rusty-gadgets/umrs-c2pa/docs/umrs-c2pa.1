@@ -19,7 +19,7 @@ umrs-c2pa \- C2PA media inspection and signing tool
 .br
 .B umrs-c2pa
 .RI [ OPTIONS ]
-.RB [ \-\-json | \-\-detailed\-json | \-\-chain\-json ]
+.RB [ \-\-json | \-\-chain\-json ]
 .I FILE
 .br
 .B umrs-c2pa creds generate
@@ -64,11 +64,6 @@ Without this flag, the file is inspected read-only.
 .B \-\-json
 Emit the full manifest store as JSON instead of the formatted report.
 This is the raw output from the c2pa SDK.
-.TP
-.B \-\-detailed\-json
-Emit the detailed manifest store as JSON, including certificate chains
-and full validation data.
-Use this to extract signer certificates from a manifest.
 .TP
 .B \-\-chain\-json
 Emit the UMRS-parsed evidence chain as JSON.
@@ -303,6 +298,29 @@ and produce UNVERIFIED trust status.
 If journald is unavailable at startup, the tool falls back to stderr logging
 rather than aborting, ensuring audit output is never silently lost
 (NIST SP 800-53 AU-5).
+.SH DIGEST VERIFICATION
+Every file inspected or signed by
+.B umrs-c2pa
+produces two independent digests: SHA-256 for current FIPS 140-2/140-3 and
+C2PA compatibility, and SHA-384 for CNSA 2.0 (Commercial National Security
+Algorithm Suite 2.0) readiness.
+CNSA 2.0 requires SHA-384 as the minimum hash strength for classified
+national security systems.
+Both digests are computed using system OpenSSL for FIPS compliance.
+.PP
+To verify either digest independently:
+.PP
+.RS
+.nf
+openssl dgst \-sha256 file.jpg
+openssl dgst \-sha384 file.jpg
+.fi
+.RE
+.PP
+The values must match what
+.B umrs-c2pa
+reports.
+A mismatch indicates the file has been modified since inspection.
 .SH STANDARDS
 .TP
 .B C2PA
@@ -311,6 +329,9 @@ Coalition for Content Provenance and Authenticity Technical Specification
 .TP
 .B FIPS 186-5
 Digital Signature Standard (ECDSA, RSA-PSS)
+.TP
+.B CNSA 2.0
+NSA Commercial National Security Algorithm Suite 2.0
 .TP
 .B NIST SP 800-53 AU-3
 Audit Record Content

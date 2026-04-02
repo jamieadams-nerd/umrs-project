@@ -91,9 +91,7 @@ pub fn read_configured_cmdline() -> Option<String> {
 
     let entries = collect_bls_entries()?;
     if entries.is_empty() {
-        log::debug!(
-            "posture: bootcmdline: no BLS entries found in {BLS_ENTRIES_DIR}"
-        );
+        log::debug!("posture: bootcmdline: no BLS entries found in {BLS_ENTRIES_DIR}");
         return None;
     }
 
@@ -130,9 +128,7 @@ fn collect_bls_entries() -> Option<Vec<PathBuf>> {
             return None;
         }
         Err(e) => {
-            log::debug!(
-                "posture: bootcmdline: cannot read {BLS_ENTRIES_DIR}: {e}"
-            );
+            log::debug!("posture: bootcmdline: cannot read {BLS_ENTRIES_DIR}: {e}");
             return None;
         }
     };
@@ -221,9 +217,7 @@ fn read_kernel_osrelease() -> Option<String> {
     match std::fs::read_to_string(KERNEL_OSRELEASE) {
         Ok(s) => Some(s.trim().to_owned()),
         Err(e) => {
-            log::debug!(
-                "posture: bootcmdline: cannot read {KERNEL_OSRELEASE}: {e}"
-            );
+            log::debug!("posture: bootcmdline: cannot read {KERNEL_OSRELEASE}: {e}");
             None
         }
     }

@@ -49,8 +49,7 @@ impl Colours {
     fn new() -> Self {
         // Honour NO_COLOR and non-terminal output (NIST SP 800-53 SI-12 —
         // output must not embed terminal-specific sequences in structured contexts).
-        let use_color = std::env::var("NO_COLOR").is_err()
-            && std::io::stdout().is_terminal();
+        let use_color = std::env::var("NO_COLOR").is_err() && std::io::stdout().is_terminal();
         if use_color {
             Self {
                 reset: "\x1b[0m",
@@ -174,8 +173,7 @@ fn print_package_check(c: &Colours) {
     // NOTE: is_installed now returns Result<bool, PackageQueryError> so callers
     // can distinguish "package absent" from "database unreadable." The intern
     // reported this as a gap when is_installed returned a bare bool.
-    let packages =
-        &["openssl-libs", "audit", "policycoreutils", "selinux-policy"];
+    let packages = &["openssl-libs", "audit", "policycoreutils", "selinux-policy"];
 
     for pkg in packages {
         match is_installed(pkg) {
@@ -192,10 +190,7 @@ fn print_package_check(c: &Colours) {
                 );
             }
             Err(PackageQueryError::QueryFailed) => {
-                println!(
-                    "  {}[query-err]{} {pkg} — query failed",
-                    c.red, c.reset
-                );
+                println!("  {}[query-err]{} {pkg} — query failed", c.red, c.reset);
             }
         }
     }
@@ -227,9 +222,7 @@ fn print_selinux_context(c: &Colours) {
     println!(
         "  umrs-platform's module doc now includes a cross-crate pointer for discoverability."
     );
-    println!(
-        "  See: umrs_selinux::ls::SecureDirent for per-file context reading."
-    );
+    println!("  See: umrs_selinux::ls::SecureDirent for per-file context reading.");
 }
 
 // ---------------------------------------------------------------------------
@@ -312,12 +305,8 @@ fn main() {
         "{}{}umrs-platform system_summary — API Demonstration{}",
         c.bold, c.cyan, c.reset
     );
-    println!(
-        "Exercises: Display impls, KernelRelease accessor, Result-based is_installed,"
-    );
-    println!(
-        "           IndicatorDescriptor.label, cross-crate discovery pointer."
-    );
+    println!("Exercises: Display impls, KernelRelease accessor, Result-based is_installed,");
+    println!("           IndicatorDescriptor.label, cross-crate discovery pointer.");
 
     print_os_identity(&c);
     print_package_check(&c);

@@ -204,14 +204,12 @@ impl FromStr for SecurityContext {
             return Err(ContextParseError::InvalidFormat);
         }
 
-        let user = SelinuxUser::from_str(parts[0])
-            .map_err(|_| ContextParseError::InvalidUser)?;
+        let user = SelinuxUser::from_str(parts[0]).map_err(|_| ContextParseError::InvalidUser)?;
 
-        let role = SelinuxRole::from_str(parts[1])
-            .map_err(|_| ContextParseError::InvalidRole)?;
+        let role = SelinuxRole::from_str(parts[1]).map_err(|_| ContextParseError::InvalidRole)?;
 
-        let security_type = SelinuxType::from_str(parts[2])
-            .map_err(|_| ContextParseError::InvalidType)?;
+        let security_type =
+            SelinuxType::from_str(parts[2]).map_err(|_| ContextParseError::InvalidType)?;
 
         // Path B: Greedy Level Capture (NIST SP 800-53 SI-7)
         let level = if parts.len() >= 4 {
@@ -222,12 +220,10 @@ impl FromStr for SecurityContext {
             // 1. Sensitivity Logic: Parse the first part of the level string
             let sens_part = level_raw.split(':').next().unwrap_or(&level_raw);
 
-            let sens =
-                SensitivityLevel::from_str(sens_part).unwrap_or_else(|_| {
-                    SensitivityLevel::new(0).expect(
-                      "Invariant failure: SensitivityLevel::new(0) must succeed",
-                    )
-                });
+            let sens = SensitivityLevel::from_str(sens_part).unwrap_or_else(|_| {
+                SensitivityLevel::new(0)
+                    .expect("Invariant failure: SensitivityLevel::new(0) must succeed")
+            });
 
             // 2. Category Logic: Only pass the part after the first colon
             let cats_str = level_raw.split_once(':').map_or("", |(_, c)| c);

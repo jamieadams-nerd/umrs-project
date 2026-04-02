@@ -211,18 +211,14 @@ impl BootSessionTimestamp {
 
         // Fail-closed: reject negative values — they indicate a broken clock state.
         // NSA RTB Secure Arithmetic: checked_mul and checked_add prevent overflow.
-        let secs = u64::try_from(ts.tv_sec)
-            .map_err(|_| TimestampError::NegativeSecs(ts.tv_sec))?;
+        let secs = u64::try_from(ts.tv_sec).map_err(|_| TimestampError::NegativeSecs(ts.tv_sec))?;
 
-        let nsec = u64::try_from(ts.tv_nsec)
-            .map_err(|_| TimestampError::NegativeNsecs(ts.tv_nsec))?;
+        let nsec =
+            u64::try_from(ts.tv_nsec).map_err(|_| TimestampError::NegativeNsecs(ts.tv_nsec))?;
 
-        let secs_as_nanos = secs
-            .checked_mul(1_000_000_000u64)
-            .ok_or(TimestampError::Overflow)?;
+        let secs_as_nanos = secs.checked_mul(1_000_000_000u64).ok_or(TimestampError::Overflow)?;
 
-        let total =
-            secs_as_nanos.checked_add(nsec).ok_or(TimestampError::Overflow)?;
+        let total = secs_as_nanos.checked_add(nsec).ok_or(TimestampError::Overflow)?;
 
         #[cfg(debug_assertions)]
         {

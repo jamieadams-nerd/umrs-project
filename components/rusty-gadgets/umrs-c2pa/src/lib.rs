@@ -27,6 +27,22 @@
 //!   C2PA asset hashing and manifest signing detect tampering.
 //! - **CMMC SC.L2-3.13.10**: Employ FIPS-validated cryptography — algorithm
 //!   allow-list enforced at configuration parse and signer construction time.
+//!
+//! ## Supply Chain Advisories
+//!
+//! ### RUSTSEC-2023-0071 — RSA Marvin Attack (`rsa` 0.9.x)
+//!
+//! The `rsa` crate is a transitive dependency via the `c2pa` SDK. UMRS is **not
+//! affected**: all signing uses ECDSA (P-256/P-384) exclusively, enforced by
+//! `parse_algorithm()`. The Marvin Attack targets RSA PKCS#1 v1.5 *decryption*
+//! (private-key operation); UMRS only performs RSA signature *verification*
+//! (public-key operation) when reading third-party manifests. On FIPS-active
+//! systems, RSA operations route through system OpenSSL, not the pure-Rust crate.
+//! UMRS holds no RSA private keys.
+//!
+//! Assessed: 2026-04-02. Monitoring: track `c2pa` crate for `rsa` dependency removal.
+//!
+//! NIST SP 800-53 SC-13
 
 #![forbid(unsafe_code)]
 #![warn(clippy::pedantic)]

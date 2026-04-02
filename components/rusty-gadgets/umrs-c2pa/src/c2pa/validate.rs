@@ -28,6 +28,9 @@
 //!   causes the caller to exit non-zero, preventing operation with an invalid
 //!   configuration.
 
+use gettextrs::ngettext;
+use umrs_core::i18n;
+
 use crate::c2pa::{config::UmrsConfig, signer::ALLOWED_ALGORITHMS};
 #[allow(unused_imports)]
 use crate::verbose;
@@ -140,7 +143,7 @@ pub fn validate_config(config: &UmrsConfig) -> Vec<ValidationResult> {
     } else if config.identity.cert_chain.is_some() || config.identity.private_key.is_some() {
         results.push(ValidationResult::skip(
             "key_cert_match",
-            "Skipped — requires both cert and key files to be readable",
+            &i18n::tr("Skipped — requires both cert and key files to be readable"),
         ));
     }
 
@@ -160,8 +163,10 @@ pub fn validate_config(config: &UmrsConfig) -> Vec<ValidationResult> {
     if config.identity.cert_chain.is_none() && config.identity.private_key.is_none() {
         results.push(ValidationResult::info(
             "credential_mode",
-            "No certificate configured — ephemeral self-signed cert will be used (test mode). \
-             Manifests will be marked UNTRUSTED by external validators.",
+            &i18n::tr(
+                "No certificate configured — ephemeral self-signed cert will be used (test mode). \
+                 Manifests will be marked UNTRUSTED by external validators.",
+            ),
         ));
     }
 
@@ -170,7 +175,10 @@ pub fn validate_config(config: &UmrsConfig) -> Vec<ValidationResult> {
 
 fn check_required_fields(config: &UmrsConfig, out: &mut Vec<ValidationResult>) {
     if config.identity.claim_generator.is_empty() {
-        out.push(ValidationResult::fail("claim_generator", "Field is empty"));
+        out.push(ValidationResult::fail(
+            "claim_generator",
+            &i18n::tr("Field is empty"),
+        ));
     } else {
         out.push(ValidationResult::pass(
             "claim_generator",
@@ -183,29 +191,27 @@ fn check_cert_file(config: &UmrsConfig, out: &mut Vec<ValidationResult>) -> bool
     let Some(path) = &config.identity.cert_chain else {
         return false;
     };
-    if !path.exists() {
-        out.push(ValidationResult::fail(
-            "cert_chain",
-            &format!("File not found: {}", path.display()),
-        ));
-        return false;
-    }
     match std::fs::read(path) {
         Err(e) => {
-            out.push(ValidationResult::fail("cert_chain", &format!("Cannot read: {e}")));
+            let msg = if e.kind() == std::io::ErrorKind::NotFound {
+                format!("{} {}", i18n::tr("File not found:"), path.display())
+            } else {
+                format!("{} {e}", i18n::tr("Cannot read:"))
+            };
+            out.push(ValidationResult::fail("cert_chain", &msg));
             false
         }
         Ok(bytes) => {
             if is_valid_pem(&bytes) {
                 out.push(ValidationResult::pass(
                     "cert_chain",
-                    &format!("Valid PEM at {}", path.display()),
+                    &format!("{} {}", i18n::tr("Valid PEM at"), path.display()),
                 ));
                 true
             } else {
                 out.push(ValidationResult::fail(
                     "cert_chain",
-                    &format!("File is not valid PEM: {}", path.display()),
+                    &format!("{} {}", i18n::tr("File is not valid PEM:"), path.display()),
                 ));
                 false
             }
@@ -217,13 +223,6 @@ fn check_key_file(config: &UmrsConfig, out: &mut Vec<ValidationResult>) -> bool 
     let Some(path) = &config.identity.private_key else {
         return false;
     };
-    if !path.exists() {
-        out.push(ValidationResult::fail(
-            "private_key",
-            &format!("File not found: {}", path.display()),
-        ));
-        return false;
-    }
 
     // Unix permission check — private key must not be world-readable.
     #[cfg(unix)]
@@ -237,9 +236,10 @@ fn check_key_file(config: &UmrsConfig, out: &mut Vec<ValidationResult>) -> bool 
                     out.push(ValidationResult::fail(
                         "key_permissions",
                         &format!(
-                            "Private key has unsafe permissions {:04o} — expected 0600 or 0400. \
-                             Run: chmod 0600 {}",
+                            "{} {:04o} — {} {}",
+                            i18n::tr("Private key has unsafe permissions"),
                             mode,
+                            i18n::tr("expected 0600 or 0400. Run: chmod 0600"),
                             path.display()
                         ),
                     ));
@@ -252,7 +252,11 @@ fn check_key_file(config: &UmrsConfig, out: &mut Vec<ValidationResult>) -> bool 
                 } else {
                     out.push(ValidationResult::pass(
                         "key_permissions",
-                        &format!("Permissions {mode:04o} (secure)"),
+                        &format!(
+                            "{} {mode:04o} ({})",
+                            i18n::tr("Permissions"),
+                            i18n::tr("secure")
+                        ),
                     ));
                 }
                 // Check owner matches effective uid.
@@ -263,8 +267,10 @@ fn check_key_file(config: &UmrsConfig, out: &mut Vec<ValidationResult>) -> bool 
                     out.push(ValidationResult::warn(
                         "key_owner",
                         &format!(
-                            "Private key owner uid={} does not match process euid={}",
+                            "{} uid={} {} euid={}",
+                            i18n::tr("Private key owner"),
                             meta.uid(),
+                            i18n::tr("does not match process"),
                             euid
                         ),
                     ));
@@ -273,7 +279,7 @@ fn check_key_file(config: &UmrsConfig, out: &mut Vec<ValidationResult>) -> bool 
             Err(e) => {
                 out.push(ValidationResult::warn(
                     "key_permissions",
-                    &format!("Cannot stat key file: {e}"),
+                    &format!("{} {e}", i18n::tr("Cannot stat key file:")),
                 ));
             }
         }
@@ -281,20 +287,25 @@ fn check_key_file(config: &UmrsConfig, out: &mut Vec<ValidationResult>) -> bool 
 
     match std::fs::read(path) {
         Err(e) => {
-            out.push(ValidationResult::fail("private_key", &format!("Cannot read: {e}")));
+            let msg = if e.kind() == std::io::ErrorKind::NotFound {
+                format!("{} {}", i18n::tr("File not found:"), path.display())
+            } else {
+                format!("{} {e}", i18n::tr("Cannot read:"))
+            };
+            out.push(ValidationResult::fail("private_key", &msg));
             false
         }
         Ok(bytes) => {
             if is_valid_pem(&bytes) {
                 out.push(ValidationResult::pass(
                     "private_key",
-                    &format!("Valid PEM at {}", path.display()),
+                    &format!("{} {}", i18n::tr("Valid PEM at"), path.display()),
                 ));
                 true
             } else {
                 out.push(ValidationResult::fail(
                     "private_key",
-                    &format!("File is not valid PEM: {}", path.display()),
+                    &format!("{} {}", i18n::tr("File is not valid PEM:"), path.display()),
                 ));
                 false
             }
@@ -308,7 +319,10 @@ fn check_key_cert_match(config: &UmrsConfig, out: &mut Vec<ValidationResult>) {
         .and_then(|mode| crate::c2pa::signer::build_signer(&mode).map(|_| ()))
     {
         Ok(()) => {
-            out.push(ValidationResult::pass("key_cert_match", "Private key matches certificate"));
+            out.push(ValidationResult::pass(
+                "key_cert_match",
+                "Private key matches certificate",
+            ));
         }
         Err(e) => out.push(ValidationResult::fail("key_cert_match", &e.to_string())),
     }
@@ -319,16 +333,22 @@ fn check_algorithm(config: &UmrsConfig, out: &mut Vec<ValidationResult>) {
     if alg == "ed25519" {
         out.push(ValidationResult::warn(
             "algorithm",
-            "ed25519 is not reliably available on FIPS-enabled systems. \
-             Recommended: es256, es384, or es512.",
+            &i18n::tr(
+                "ed25519 is not reliably available on FIPS-enabled systems. \
+                 Recommended: es256, es384, or es512.",
+            ),
         ));
     } else if ALLOWED_ALGORITHMS.contains(&alg.as_str()) {
         let desc = crate::c2pa::signer::describe_algorithm(alg);
-        out.push(ValidationResult::pass("algorithm", desc));
+        out.push(ValidationResult::pass("algorithm", &desc));
     } else {
         out.push(ValidationResult::fail(
             "algorithm",
-            &format!("'{alg}' is not allowed. Use one of: {}", ALLOWED_ALGORITHMS.join(", ")),
+            &format!(
+                "'{alg}' {} {}",
+                i18n::tr("is not allowed. Use one of:"),
+                ALLOWED_ALGORITHMS.join(", ")
+            ),
         ));
     }
 }
@@ -342,11 +362,11 @@ fn check_tsa(config: &UmrsConfig, out: &mut Vec<ValidationResult>) {
     match ureq::head(url).call() {
         Ok(_) => out.push(ValidationResult::pass(
             "tsa_reachable",
-            &format!("TSA endpoint reachable: {url}"),
+            &format!("{} {url}", i18n::tr("TSA endpoint reachable:")),
         )),
         Err(e) => out.push(ValidationResult::warn(
             "tsa_reachable",
-            &format!("TSA endpoint did not respond: {url} ({e})"),
+            &format!("{} {url} ({e})", i18n::tr("TSA endpoint did not respond:")),
         )),
     }
 
@@ -354,7 +374,10 @@ fn check_tsa(config: &UmrsConfig, out: &mut Vec<ValidationResult>) {
     out.push(ValidationResult::warn(
         "tsa_reachable",
         &format!(
-            "TSA configured ({url}) but network feature is disabled — timestamps will be unsigned"
+            "TSA {} ({url}) {} — {}",
+            i18n::tr("configured"),
+            i18n::tr("but network feature is disabled"),
+            i18n::tr("timestamps will be unsigned")
         ),
     ));
 }
@@ -363,8 +386,10 @@ fn check_trust_config(config: &UmrsConfig, out: &mut Vec<ValidationResult>) {
     if !config.has_trust_config() {
         out.push(ValidationResult::info(
             "trust_config",
-            "No trust lists configured — all manifests will show NO TRUST LIST. \
-             See docs/trust-maintenance.md to set up trust anchors.",
+            &i18n::tr(
+                "No trust lists configured — all manifests will show NO TRUST LIST. \
+                 See docs/trust-maintenance.md to set up trust anchors.",
+            ),
         ));
         return;
     }
@@ -383,50 +408,73 @@ fn check_trust_config(config: &UmrsConfig, out: &mut Vec<ValidationResult>) {
         check_trust_file_permissions("user_anchors", path, out);
     }
     if let Some(path) = &config.trust.allowed_list {
-        if path.exists() {
-            out.push(ValidationResult::pass(
-                "allowed_list",
-                &format!("File exists: {}", path.display()),
-            ));
-        } else {
-            out.push(ValidationResult::fail(
-                "allowed_list",
-                &format!("File not found: {}", path.display()),
-            ));
+        match std::fs::metadata(path) {
+            Ok(_) => {
+                out.push(ValidationResult::pass(
+                    "allowed_list",
+                    &format!("{} {}", i18n::tr("File exists:"), path.display()),
+                ));
+            }
+            Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
+                out.push(ValidationResult::fail(
+                    "allowed_list",
+                    &format!("{} {}", i18n::tr("File not found:"), path.display()),
+                ));
+            }
+            Err(e) => {
+                out.push(ValidationResult::fail(
+                    "allowed_list",
+                    &format!("{} {e}", i18n::tr("Cannot stat:")),
+                ));
+            }
         }
         #[cfg(unix)]
         check_trust_file_permissions("allowed_list", path, out);
     }
     if let Some(path) = &config.trust.trust_config {
-        if path.exists() {
-            out.push(ValidationResult::pass(
-                "trust_eku_config",
-                &format!("EKU config found: {}", path.display()),
-            ));
-        } else {
-            out.push(ValidationResult::fail(
-                "trust_eku_config",
-                &format!("File not found: {}", path.display()),
-            ));
+        match std::fs::metadata(path) {
+            Ok(_) => {
+                out.push(ValidationResult::pass(
+                    "trust_eku_config",
+                    &format!("{} {}", i18n::tr("EKU config found:"), path.display()),
+                ));
+            }
+            Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
+                out.push(ValidationResult::fail(
+                    "trust_eku_config",
+                    &format!("{} {}", i18n::tr("File not found:"), path.display()),
+                ));
+            }
+            Err(e) => {
+                out.push(ValidationResult::fail(
+                    "trust_eku_config",
+                    &format!("{} {e}", i18n::tr("Cannot stat:")),
+                ));
+            }
         }
     }
 
     if let Some(url) = &config.trust.ocsp_responder {
         out.push(ValidationResult::info(
             "ocsp_responder",
-            &format!("OCSP responder configured: {url} (not yet implemented — skeleton only)"),
+            &format!(
+                "{} {url} ({})",
+                i18n::tr("OCSP responder configured:"),
+                i18n::tr("not yet implemented — skeleton only")
+            ),
         ));
     }
 }
 
 fn check_pem_file(name: &str, path: &std::path::Path, out: &mut Vec<ValidationResult>) {
-    if !path.exists() {
-        out.push(ValidationResult::fail(name, &format!("File not found: {}", path.display())));
-        return;
-    }
     match std::fs::read(path) {
         Err(e) => {
-            out.push(ValidationResult::fail(name, &format!("Cannot read: {e}")));
+            let msg = if e.kind() == std::io::ErrorKind::NotFound {
+                format!("{} {}", i18n::tr("File not found:"), path.display())
+            } else {
+                format!("{} {e}", i18n::tr("Cannot read:"))
+            };
+            out.push(ValidationResult::fail(name, &msg));
         }
         Ok(bytes) => {
             if is_valid_pem(&bytes) {
@@ -437,14 +485,18 @@ fn check_pem_file(name: &str, path: &std::path::Path, out: &mut Vec<ValidationRe
                             .matches("-----BEGIN CERTIFICATE-----")
                             .count(),
                     );
-                out.push(ValidationResult::pass(
-                    name,
-                    &format!("Valid PEM at {} ({} certificate(s))", path.display(), cert_count),
-                ));
+                let cert_str = ngettext(
+                    "Valid PEM at {} ({} certificate)",
+                    "Valid PEM at {} ({} certificates)",
+                    u32::try_from(cert_count).unwrap_or(u32::MAX),
+                )
+                .replacen("{}", &path.display().to_string(), 1)
+                .replacen("{}", &cert_count.to_string(), 1);
+                out.push(ValidationResult::pass(name, &cert_str));
             } else {
                 out.push(ValidationResult::fail(
                     name,
-                    &format!("File is not valid PEM: {}", path.display()),
+                    &format!("{} {}", i18n::tr("File is not valid PEM:"), path.display()),
                 ));
             }
         }
@@ -455,10 +507,9 @@ fn check_pem_file(name: &str, path: &std::path::Path, out: &mut Vec<ValidationRe
 ///
 /// Trust anchor files are the root of trust for all C2PA signature validation.
 /// A world-writable trust anchor file allows any local user to inject arbitrary
-/// CA certificates and bypass signature trust decisions.
-///
-/// This emits a `Warn` rather than a `Fail` because the file may still be
-/// functionally usable, but the operator must be informed.
+/// CA certificates and bypass signature trust decisions. This is a hard failure —
+/// operating with a world-writable trust anchor is not a degraded mode, it is a
+/// broken trust model.
 ///
 /// ## Compliance
 ///
@@ -478,18 +529,19 @@ fn check_trust_file_permissions(
         Ok(meta) => {
             let mode = meta.mode() & 0o777;
             if mode & 0o002 != 0 {
-                // World-writable — anyone can inject CA certificates.
-                out.push(ValidationResult::warn(
+                // World-writable — anyone can inject CA certificates. Hard failure.
+                out.push(ValidationResult::fail(
                     &format!("{name}_permissions"),
                     &format!(
-                        "Trust file is world-writable (mode {:04o}) — \
-                         any local user could inject CA certificates. \
-                         Run: chmod o-w {}",
+                        "{} ({:04o}) — {}. {} {}",
+                        i18n::tr("Trust file is world-writable (mode)"),
                         mode,
+                        i18n::tr("any local user could inject CA certificates"),
+                        i18n::tr("Run: chmod o-w"),
                         path.display()
                     ),
                 ));
-                log::warn!(
+                log::error!(
                     target: "umrs",
                     "trust file is world-writable mode={:04o} file={}",
                     mode,

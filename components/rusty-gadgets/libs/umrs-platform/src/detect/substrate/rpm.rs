@@ -44,10 +44,7 @@ use nix::sys::statfs::statfs;
 use crate::evidence::{EvidenceBundle, EvidenceRecord, SourceKind};
 use crate::os_identity::{Distro, OsFamily, SubstrateIdentity};
 
-use super::{
-    FileOwnership, InstalledDigest, PackageProbe, PackageQueryError,
-    ProbeResult,
-};
+use super::{FileOwnership, InstalledDigest, PackageProbe, PackageQueryError, ProbeResult};
 
 #[cfg(feature = "rpm-db")]
 use super::rpm_db::RpmDb;
@@ -109,12 +106,7 @@ impl PackageProbe for RpmProbe {
         probe_inner(self, bundle)
     }
 
-    fn query_ownership(
-        &self,
-        dev: u64,
-        ino: u64,
-        path: &Path,
-    ) -> Option<FileOwnership> {
+    fn query_ownership(&self, dev: u64, ino: u64, path: &Path) -> Option<FileOwnership> {
         query_ownership_inner(self, dev, ino, path)
     }
 
@@ -150,9 +142,7 @@ fn probe_inner(probe: &RpmProbe, bundle: &mut EvidenceBundle) -> ProbeResult {
         Ok(stat) => {
             let magic = stat.filesystem_type().0;
             if magic == TMPFS_MAGIC {
-                log::warn!(
-                    "rpm_probe: {RPM_DB_ROOT} is on tmpfs — may not be a real RPM database"
-                );
+                log::warn!("rpm_probe: {RPM_DB_ROOT} is on tmpfs — may not be a real RPM database");
             }
             Some(magic.cast_unsigned())
         }
@@ -261,16 +251,12 @@ fn try_open_db(
                     Ok(db) => {
                         // Refine distro from release package evidence.
                         if let Ok(Some((distro, pkg))) = db.infer_distro() {
-                            notes.push(format!(
-                                "distro refined: {distro:?} (from {pkg})"
-                            ));
+                            notes.push(format!("distro refined: {distro:?} (from {pkg})"));
                             identity.distro = Some(distro);
                         }
                         *guard = Some(db);
                         identity.add_fact();
-                        notes.push(
-                            "RPM SQLite DB opened and validated".to_owned(),
-                        );
+                        notes.push("RPM SQLite DB opened and validated".to_owned());
                         return (true, true);
                     }
                     Err(e) => {

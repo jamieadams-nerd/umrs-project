@@ -47,17 +47,17 @@ pub struct UmrsState {
 
 // Load state from a file. Returns default if file is missing.
 pub fn load_state(path: &Path) -> io::Result<UmrsState> {
-    if !path.exists() {
-        //let msg = format!("state file '{}' not found, using default state.", path.display());
-        //eprintln!("Warning: {}", msg);
-        return Ok(UmrsState::default());
-    }
-
-    let mut file = fs::File::open(path)?;
+    let mut file = match fs::File::open(path) {
+        Ok(f) => f,
+        Err(e) if e.kind() == io::ErrorKind::NotFound => {
+            return Ok(UmrsState::default());
+        }
+        Err(e) => return Err(e),
+    };
     let mut buf = String::new();
     file.read_to_string(&mut buf)?;
-    let state: UmrsState = serde_json::from_str(&buf)
-        .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;
+    let state: UmrsState =
+        serde_json::from_str(&buf).map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;
     Ok(state)
 }
 
@@ -66,8 +66,7 @@ pub fn save_state(path: &Path, state: &UmrsState) -> io::Result<()> {
     let tmp_path = path.with_extension("json.tmp");
     {
         let mut file = fs::File::create(&tmp_path)?;
-        let data =
-            serde_json::to_string_pretty(state).map_err(io::Error::other)?;
+        let data = serde_json::to_string_pretty(state).map_err(io::Error::other)?;
         file.write_all(data.as_bytes())?;
         file.sync_all()?;
     }

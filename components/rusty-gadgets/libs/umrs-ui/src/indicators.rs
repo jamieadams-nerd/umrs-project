@@ -47,8 +47,8 @@ use std::path::PathBuf;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use umrs_platform::kattrs::{
-    EnforceState, KernelLockdown, LockdownMode, ProcFips, ProcfsText,
-    SecureReader, SelinuxEnforce, StaticSource, SysfsText,
+    EnforceState, KernelLockdown, LockdownMode, ProcFips, ProcfsText, SecureReader, SelinuxEnforce,
+    StaticSource, SysfsText,
 };
 use umrs_selinux::status::selinux_policy;
 
@@ -336,9 +336,7 @@ fn read_uname_fields() -> (String, String, String) {
 /// NSA RTB RAIN — raw `File::open` on `/proc/` is prohibited; all reads
 /// route through `ProcfsText`.
 fn read_boot_id() -> String {
-    let Ok(node) =
-        ProcfsText::new(PathBuf::from("/proc/sys/kernel/random/boot_id"))
-    else {
+    let Ok(node) = ProcfsText::new(PathBuf::from("/proc/sys/kernel/random/boot_id")) else {
         log::warn!("indicators: boot_id path rejected by ProcfsText");
         return "unavailable".to_owned();
     };
@@ -367,9 +365,7 @@ fn read_boot_id() -> String {
 /// route through `SysfsText`.
 #[must_use = "system UUID string must be used; discarding it omits hardware identity from the display"]
 pub fn read_system_uuid() -> String {
-    let Ok(node) =
-        SysfsText::new(PathBuf::from("/sys/class/dmi/id/product_uuid"))
-    else {
+    let Ok(node) = SysfsText::new(PathBuf::from("/sys/class/dmi/id/product_uuid")) else {
         log::warn!("indicators: system_uuid path rejected by SysfsText");
         return "unavailable".to_owned();
     };
@@ -378,9 +374,7 @@ pub fn read_system_uuid() -> String {
         Ok(raw) => raw.trim().to_owned(),
         Err(e) => {
             // Permission denied is expected on non-root; debug level is appropriate.
-            log::debug!(
-                "indicators: system_uuid read failed (may require root): {e}"
-            );
+            log::debug!("indicators: system_uuid read failed (may require root): {e}");
             "unavailable".to_owned()
         }
     }

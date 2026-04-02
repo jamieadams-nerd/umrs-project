@@ -127,9 +127,8 @@ impl OsId {
         if s.is_empty() || s.len() > 64 {
             return Err(OsReleaseParseError::InvalidId(s.to_owned()));
         }
-        if !s.chars().all(|c| {
-            c.is_ascii_lowercase() || c.is_ascii_digit() || c == '-' || c == '_'
-        }) {
+        if !s.chars().all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '-' || c == '_')
+        {
             return Err(OsReleaseParseError::InvalidId(s.to_owned()));
         }
         Ok(Self(s.to_owned()))
@@ -206,10 +205,7 @@ impl VersionId {
         if s.is_empty() || s.len() > 32 {
             return Err(OsReleaseParseError::InvalidVersionId(s.to_owned()));
         }
-        if !s
-            .chars()
-            .all(|c| c.is_ascii_digit() || c == '.' || c == '~' || c == '-')
-        {
+        if !s.chars().all(|c| c.is_ascii_digit() || c == '.' || c == '~' || c == '-') {
             return Err(OsReleaseParseError::InvalidVersionId(s.to_owned()));
         }
         Ok(Self(s.to_owned()))
@@ -310,9 +306,7 @@ impl CpeName {
     /// Returns [`OsReleaseParseError`] if the value exceeds 256 bytes or does not start with a valid CPE prefix.
     pub fn parse(s: &str) -> Result<Self, OsReleaseParseError> {
         let s = s.trim().trim_matches('"');
-        if s.len() > 256
-            || (!s.starts_with("cpe:/") && !s.starts_with("cpe:2.3:"))
-        {
+        if s.len() > 256 || (!s.starts_with("cpe:/") && !s.starts_with("cpe:2.3:")) {
             return Err(OsReleaseParseError::InvalidCpe(s.to_owned()));
         }
         Ok(Self(s.to_owned()))
@@ -343,9 +337,7 @@ impl ValidatedUrl {
     /// Returns [`OsReleaseParseError`] if the value exceeds 512 bytes or does not use an HTTP(S) scheme.
     pub fn parse(s: &str) -> Result<Self, OsReleaseParseError> {
         let s = s.trim().trim_matches('"');
-        if s.len() > 512
-            || (!s.starts_with("https://") && !s.starts_with("http://"))
-        {
+        if s.len() > 512 || (!s.starts_with("https://") && !s.starts_with("http://")) {
             return Err(OsReleaseParseError::InvalidUrl(s.to_owned()));
         }
         Ok(Self(s.to_owned()))
@@ -406,10 +398,7 @@ impl BuildId {
     /// Returns [`OsReleaseParseError`] if the value is empty, exceeds 128 bytes, or contains non-printable characters.
     pub fn parse(s: &str) -> Result<Self, OsReleaseParseError> {
         let s = s.trim().trim_matches('"');
-        if s.is_empty()
-            || s.len() > 128
-            || !s.chars().all(|c| c.is_ascii_graphic() || c == ' ')
-        {
+        if s.is_empty() || s.len() > 128 || !s.chars().all(|c| c.is_ascii_graphic() || c == ' ') {
             return Err(OsReleaseParseError::InvalidBuildId(s.to_owned()));
         }
         Ok(Self(s.to_owned()))

@@ -189,40 +189,26 @@ impl Default for Theme {
                 .bg(Color::Cyan)
                 .add_modifier(Modifier::BOLD),
             tab_inactive: Style::default().fg(Color::DarkGray),
-            data_key: Style::default()
-                .fg(Color::Cyan)
-                .add_modifier(Modifier::DIM),
+            data_key: Style::default().fg(Color::Cyan).add_modifier(Modifier::DIM),
             data_value: Style::default().fg(Color::White),
-            header_name: Style::default()
-                .fg(Color::White)
-                .add_modifier(Modifier::BOLD),
+            header_name: Style::default().fg(Color::White).add_modifier(Modifier::BOLD),
             header_field: Style::default().fg(Color::Cyan),
             wizard: Style::default().fg(Color::Green),
-            status_text: Style::default()
-                .fg(Color::White)
-                .add_modifier(Modifier::BOLD),
-            indicator_active: Style::default()
-                .fg(Color::Green)
-                .add_modifier(Modifier::BOLD),
+            status_text: Style::default().fg(Color::White).add_modifier(Modifier::BOLD),
+            indicator_active: Style::default().fg(Color::Green).add_modifier(Modifier::BOLD),
             indicator_inactive: Style::default().fg(Color::DarkGray),
             indicator_unavailable: Style::default().fg(Color::Yellow),
-            group_title: Style::default()
-                .fg(Color::White)
-                .add_modifier(Modifier::BOLD),
+            group_title: Style::default().fg(Color::White).add_modifier(Modifier::BOLD),
             // Dialog styles
             dialog_info_border: Style::default().fg(Color::Cyan),
             dialog_error_border: Style::default().fg(Color::Red),
-            dialog_security_border: Style::default()
-                .fg(Color::Yellow)
-                .add_modifier(Modifier::BOLD),
+            dialog_security_border: Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD),
             dialog_button_focused: Style::default()
                 .fg(Color::Black)
                 .bg(Color::Cyan)
                 .add_modifier(Modifier::BOLD),
             dialog_button_unfocused: Style::default().fg(Color::DarkGray),
-            dialog_title: Style::default()
-                .fg(Color::White)
-                .add_modifier(Modifier::BOLD),
+            dialog_title: Style::default().fg(Color::White).add_modifier(Modifier::BOLD),
             dialog_message: Style::default().fg(Color::White),
         }
     }

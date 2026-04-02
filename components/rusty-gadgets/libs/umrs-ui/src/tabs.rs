@@ -38,11 +38,8 @@ pub fn render_tabs(
     active_tab: usize,
     theme: &Theme,
 ) {
-    let tab_titles: Vec<Line<'_>> = app
-        .tabs()
-        .iter()
-        .map(|t| Line::from(format!(" {} ", t.label)))
-        .collect();
+    let tab_titles: Vec<Line<'_>> =
+        app.tabs().iter().map(|t| Line::from(format!(" {} ", t.label))).collect();
 
     let tabs = Tabs::new(tab_titles)
         .select(active_tab)

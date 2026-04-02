@@ -59,13 +59,10 @@ use umrs_platform::kattrs::{ProcfsText, SecureReader};
 use umrs_selinux::fs_encrypt::EncryptionSource;
 use umrs_selinux::mcs::translator::{GLOBAL_TRANSLATOR, SecurityRange};
 use umrs_selinux::posix::primitives::FileSize;
-use umrs_selinux::secure_dirent::{
-    InodeSecurityFlags, SecDirError, SecureDirent,
-};
+use umrs_selinux::secure_dirent::{InodeSecurityFlags, SecDirError, SecureDirent};
 use umrs_selinux::{ObservationKind, SecurityObservation, SelinuxCtxState};
 use umrs_ui::app::{
-    AuditCardApp, AuditCardState, DataRow, StatusLevel, StatusMessage,
-    StyleHint, TabDef,
+    AuditCardApp, AuditCardState, DataRow, StatusLevel, StatusMessage, StyleHint, TabDef,
 };
 use umrs_ui::indicators::build_header_context;
 use umrs_ui::keymap::KeyMap;
@@ -150,8 +147,7 @@ struct FsInfo {
 /// prohibited by project policy.
 fn find_fs_info(path: &Path) -> Option<FsInfo> {
     let node = ProcfsText::new(PathBuf::from("/proc/mounts")).ok()?;
-    let contents =
-        SecureReader::<ProcfsText>::new().read_generic_text(&node).ok()?;
+    let contents = SecureReader::<ProcfsText>::new().read_generic_text(&node).ok()?;
 
     let path_str = path.to_str()?;
     let mut best: Option<FsInfo> = None;
@@ -253,11 +249,7 @@ fn read_elf_info(path: &Path) -> Option<ElfInfo> {
 /// 9. Separator
 /// 10. Mount point
 /// 11. Filesystem, Device node, Mounted on (if /proc/mounts readable)
-fn build_identity_rows(
-    dirent: &SecureDirent,
-    mime: &str,
-    path: &Path,
-) -> Vec<DataRow> {
+fn build_identity_rows(dirent: &SecureDirent, mime: &str, path: &Path) -> Vec<DataRow> {
     let mut rows = Vec::new();
 
     // ── Static identity fields ──────────────────────────────────────────
@@ -316,12 +308,11 @@ fn build_identity_rows(
 
     // ── Hard links — yellow when > 1 on a non-directory (security finding) ──
     let nlink_val: u32 = dirent.nlink.into();
-    let (nlink_str, nlink_hint) =
-        if nlink_val > 1 && !dirent.file_type.is_directory() {
-            (format!("{nlink_val} (hard-linked)"), StyleHint::TrustYellow)
-        } else {
-            (dirent.nlink.to_string(), StyleHint::Normal)
-        };
+    let (nlink_str, nlink_hint) = if nlink_val > 1 && !dirent.file_type.is_directory() {
+        (format!("{nlink_val} (hard-linked)"), StyleHint::TrustYellow)
+    } else {
+        (dirent.nlink.to_string(), StyleHint::Normal)
+    };
     rows.push(DataRow::new("Hard links", nlink_str, nlink_hint));
 
     rows.push(DataRow::separator());
@@ -382,39 +373,35 @@ fn build_inode_flag_rows(dirent: &SecureDirent) -> Vec<DataRow> {
     let mut rows = Vec::new();
 
     // Immutable — NIST SP 800-53 SI-7: Software and Information Integrity.
-    let (immut_str, immut_hint) =
-        if dirent.sec_flags.contains(InodeSecurityFlags::IMMUTABLE) {
-            ("Yes", StyleHint::TrustGreen)
-        } else {
-            ("No", StyleHint::Normal)
-        };
+    let (immut_str, immut_hint) = if dirent.sec_flags.contains(InodeSecurityFlags::IMMUTABLE) {
+        ("Yes", StyleHint::TrustGreen)
+    } else {
+        ("No", StyleHint::Normal)
+    };
     rows.push(DataRow::new(i18n::tr("Immutable"), immut_str, immut_hint));
 
     // IMA/EVM — NIST SP 800-53 SI-7: integrity measurement hash present.
-    let (ima_str, ima_hint) =
-        if dirent.sec_flags.contains(InodeSecurityFlags::IMA_PRESENT) {
-            ("Yes — integrity hash present", StyleHint::TrustGreen)
-        } else {
-            ("No", StyleHint::Normal)
-        };
+    let (ima_str, ima_hint) = if dirent.sec_flags.contains(InodeSecurityFlags::IMA_PRESENT) {
+        ("Yes — integrity hash present", StyleHint::TrustGreen)
+    } else {
+        ("No", StyleHint::Normal)
+    };
     rows.push(DataRow::new(i18n::tr("IMA/EVM"), ima_str, ima_hint));
 
     // Append-only — NIST SP 800-53 AU-9: Protection of Audit Information.
-    let (append_str, append_hint) =
-        if dirent.sec_flags.contains(InodeSecurityFlags::APPEND_ONLY) {
-            ("Yes", StyleHint::TrustGreen)
-        } else {
-            ("No", StyleHint::Normal)
-        };
+    let (append_str, append_hint) = if dirent.sec_flags.contains(InodeSecurityFlags::APPEND_ONLY) {
+        ("Yes", StyleHint::TrustGreen)
+    } else {
+        ("No", StyleHint::Normal)
+    };
     rows.push(DataRow::new("Append-only", append_str, append_hint));
 
     // POSIX ACL — NIST SP 800-53 AC-3: extended DAC in effect when present.
-    let (acl_str, acl_hint) =
-        if dirent.sec_flags.contains(InodeSecurityFlags::ACL_PRESENT) {
-            ("Yes — extended DAC in effect", StyleHint::TrustYellow)
-        } else {
-            ("No", StyleHint::Normal)
-        };
+    let (acl_str, acl_hint) = if dirent.sec_flags.contains(InodeSecurityFlags::ACL_PRESENT) {
+        ("Yes — extended DAC in effect", StyleHint::TrustYellow)
+    } else {
+        ("No", StyleHint::Normal)
+    };
     rows.push(DataRow::new("POSIX ACL", acl_str, acl_hint));
 
     let (access_str, access_hint) = if dirent.access_denied {
@@ -453,21 +440,15 @@ fn build_security_rows(dirent: &SecureDirent) -> Vec<DataRow> {
             "  SELinux type",
             ctx.security_type().to_string(),
         ));
-        let level_str = ctx
-            .level()
-            .map_or_else(|| "(none)".to_owned(), |l| l.raw().to_owned());
+        let level_str = ctx.level().map_or_else(|| "(none)".to_owned(), |l| l.raw().to_owned());
         rows.push(DataRow::normal("  Raw label", level_str));
 
         // Label state variant name
         let (state_str, state_hint) = match &dirent.selinux_label {
             SelinuxCtxState::Labeled(_) => ("Labeled", StyleHint::TrustGreen),
             SelinuxCtxState::Unlabeled => ("Unlabeled", StyleHint::TrustRed),
-            SelinuxCtxState::ParseFailure => {
-                ("ParseFailure", StyleHint::TrustRed)
-            }
-            SelinuxCtxState::TpiDisagreement => {
-                ("TpiDisagreement", StyleHint::TrustRed)
-            }
+            SelinuxCtxState::ParseFailure => ("ParseFailure", StyleHint::TrustRed),
+            SelinuxCtxState::TpiDisagreement => ("TpiDisagreement", StyleHint::TrustRed),
         };
         rows.push(DataRow::new(
             i18n::tr("  Label state"),
@@ -509,9 +490,7 @@ fn build_security_rows(dirent: &SecureDirent) -> Vec<DataRow> {
     // Encryption source
     let (enc_str, enc_hint) = match &dirent.encryption {
         EncryptionSource::None => ("None".to_owned(), StyleHint::Normal),
-        EncryptionSource::LuksDevice => {
-            ("LUKS (dm-crypt)".to_owned(), StyleHint::TrustGreen)
-        }
+        EncryptionSource::LuksDevice => ("LUKS (dm-crypt)".to_owned(), StyleHint::TrustGreen),
         EncryptionSource::EncryptedFilesystem(fs) => (
             format!("Encrypted filesystem ({fs})"),
             StyleHint::TrustGreen,
@@ -522,9 +501,7 @@ fn build_security_rows(dirent: &SecureDirent) -> Vec<DataRow> {
     rows
 }
 
-fn build_observation_rows(
-    observations: &[SecurityObservation],
-) -> Vec<DataRow> {
+fn build_observation_rows(observations: &[SecurityObservation]) -> Vec<DataRow> {
     let mut rows = Vec::new();
 
     rows.push(DataRow::normal(
@@ -568,11 +545,7 @@ fn build_identity_error_rows() -> Vec<DataRow> {
 
 fn build_security_error_rows(err: &SecDirError) -> Vec<DataRow> {
     vec![
-        DataRow::new(
-            "Status",
-            i18n::tr("No data available"),
-            StyleHint::TrustRed,
-        ),
+        DataRow::new("Status", i18n::tr("No data available"), StyleHint::TrustRed),
         DataRow::new("Error", err.to_string(), StyleHint::TrustRed),
     ]
 }
@@ -621,15 +594,13 @@ impl FileStatApp {
 
         // dirent.path is AbsolutePath which implements Deref<Target = str>,
         // so &*dirent.path gives &str and Path::new converts it to &Path.
-        let identity_rows =
-            build_identity_rows(dirent, mime, Path::new(&*dirent.path));
+        let identity_rows = build_identity_rows(dirent, mime, Path::new(&*dirent.path));
         let security_rows = build_security_rows(dirent);
         let observation_rows = build_observation_rows(&observations);
 
         // Leak the path string to satisfy &'static str in the trait.
         // This is a one-time allocation per binary run — acceptable cost.
-        let subject: &'static str =
-            Box::leak(dirent.path.to_string().into_boxed_str());
+        let subject: &'static str = Box::leak(dirent.path.to_string().into_boxed_str());
 
         Self {
             tabs,
@@ -649,8 +620,7 @@ impl FileStatApp {
             TabDef::new(i18n::tr("Observations")),
         ];
 
-        let subject: &'static str =
-            Box::leak(path_str.to_owned().into_boxed_str());
+        let subject: &'static str = Box::leak(path_str.to_owned().into_boxed_str());
 
         Self {
             tabs,
@@ -765,9 +735,7 @@ fn main() {
     let path_str = if let Some(s) = args.path.to_str() {
         s.to_owned()
     } else {
-        eprintln!(
-            "error: path contains non-UTF-8 characters and cannot be displayed"
-        );
+        eprintln!("error: path contains non-UTF-8 characters and cannot be displayed");
         std::process::exit(1);
     };
 
@@ -796,8 +764,7 @@ fn main() {
     // This is acceptable: MIME type is display-only, not a trust-relevant assertion
     // and not part of any policy decision.
     let mime: &str = match &dirent_result {
-        Ok(_) => tree_magic_mini::from_filepath(Path::new(&path_str))
-            .unwrap_or("unknown"),
+        Ok(_) => tree_magic_mini::from_filepath(Path::new(&path_str)).unwrap_or("unknown"),
         Err(_) => "unknown",
     };
 

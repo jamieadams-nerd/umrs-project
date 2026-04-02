@@ -169,7 +169,10 @@ pub fn build_c2pa_settings(config: &UmrsConfig) -> Result<Settings, InspectError
 
     if !anchor_bundle.is_empty() {
         let total_certs = count_pem_certs(&anchor_bundle);
-        verbose!("Trust validation enabled with {} total anchor certificate(s)", total_certs);
+        verbose!(
+            "Trust validation enabled with {} total anchor certificate(s)",
+            total_certs
+        );
         settings = settings
             .with_value("trust.trust_anchors", anchor_bundle)
             .map_err(|e| InspectError::Config(format!("c2pa trust_anchors settings error: {e}")))?;

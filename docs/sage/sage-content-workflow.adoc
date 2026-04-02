@@ -491,11 +491,23 @@ Blog posts and papers may include accompanying images or Mermaid diagrams.
 ----
 ```mermaid
 graph LR
-    A[CUI Category: LEI] --> B[Subcategory: INV]
-    A --> C[Subcategory: CHRI]
-    D[CUI Category: AGR] --> E[Subcategory: AMNT]
+    subgraph Law Enforcement index group
+        A[Category: INV]
+        B[Category: LEI]
+        C[Category: CHRI]
+    end
+    A -- additive --> D["Banner: CUI//INV/LEI"]
+    B -- additive --> D
+    E[Category: AMNT] --> F["Banner: CUI//AMNT"]
 ```
 ----
++
+NOTE: CUI categories are independent and additive. INV (Investigation), LEI (Law Enforcement
+General), and CHRI (Criminal History Records Information) are all peer categories that happen
+to share the Law Enforcement index group. The index group is a navigation aid only and never
+appears in a banner marking. A document containing both investigation and law enforcement data
+is marked `CUI//INV/LEI` (alphabetized). AMNT (Ammonium Nitrate Security) is the category
+abbreviation — AGR (Agriculture) is an index group name and does not appear in banners.
 +
 - Keep diagrams simple and operator-readable. They are teaching tools, not architecture docs.
 

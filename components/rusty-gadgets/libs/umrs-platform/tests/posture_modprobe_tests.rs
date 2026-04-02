@@ -23,9 +23,7 @@ use umrs_platform::posture::{
     catalog::INDICATORS,
     contradiction::{ContradictionKind, classify, evaluate_configured_meets},
     indicator::{AssuranceImpact, DesiredValue, IndicatorClass, IndicatorId},
-    modprobe::{
-        ModprobeConfig, ParsedDirective, is_module_loaded, parse_modprobe_line,
-    },
+    modprobe::{ModprobeConfig, ParsedDirective, is_module_loaded, parse_modprobe_line},
     snapshot::PostureSnapshot,
 };
 
@@ -164,9 +162,7 @@ fn parse_install_usr_bin_true_is_hard_blacklist() {
 #[test]
 fn parse_install_complex_command_is_not_hard_blacklist() {
     // A complex modprobe redirect is not a hard blacklist.
-    let result = parse_line(
-        "install pcspkr /sbin/modprobe --ignore-install pcspkr && /bin/true",
-    );
+    let result = parse_line("install pcspkr /sbin/modprobe --ignore-install pcspkr && /bin/true");
     assert_eq!(
         result,
         ParsedDirective::Install {
@@ -271,12 +267,9 @@ fn modprobe_config_query_get_option() {
     use std::io::Write;
 
     // Write a temp modprobe.d conf file with known options.
-    let tmp =
-        tempfile::NamedTempFile::new().expect("tempfile creation must succeed");
-    writeln!(tmp.as_file(), "options nf_conntrack acct=1")
-        .expect("write must succeed");
-    writeln!(tmp.as_file(), "options mymod foo=42 bar=0")
-        .expect("write must succeed");
+    let tmp = tempfile::NamedTempFile::new().expect("tempfile creation must succeed");
+    writeln!(tmp.as_file(), "options nf_conntrack acct=1").expect("write must succeed");
+    writeln!(tmp.as_file(), "options mymod foo=42 bar=0").expect("write must succeed");
 
     // Verify that parse_line extracts the correct params.
     let r = parse_line("options nf_conntrack acct=1");
@@ -571,9 +564,7 @@ fn snapshot_contains_phase_2a_modprobe_indicators() {
     ];
 
     for id in modprobe_ids {
-        let report = snap
-            .get(id)
-            .unwrap_or_else(|| panic!("{id:?} must appear in snapshot"));
+        let report = snap.get(id).unwrap_or_else(|| panic!("{id:?} must appear in snapshot"));
         assert_eq!(
             report.descriptor.id, id,
             "snapshot report ID mismatch for {id:?}"
@@ -604,9 +595,7 @@ fn snapshot_blacklist_signal_coherent_with_module_load_state() {
     ];
 
     for (id, module_name) in blacklist_ids {
-        let report = snap
-            .get(id)
-            .unwrap_or_else(|| panic!("{id:?} must appear in snapshot"));
+        let report = snap.get(id).unwrap_or_else(|| panic!("{id:?} must appear in snapshot"));
 
         let module_loaded = is_module_loaded(module_name);
 
@@ -725,8 +714,7 @@ fn blacklist_contradiction_absent_module_produces_no_contradiction() {
 /// Regression: configured="absent" (no modprobe.d entry) + module loaded
 /// → no contradiction. Absence of a blacklist entry is not a policy assertion.
 #[test]
-fn blacklist_contradiction_no_config_entry_module_loaded_produces_no_contradiction()
- {
+fn blacklist_contradiction_no_config_entry_module_loaded_produces_no_contradiction() {
     let desired = DesiredValue::Exact(1);
 
     // "absent" is not the "blacklisted" sentinel and not a u32 —

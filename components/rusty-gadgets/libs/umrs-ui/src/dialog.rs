@@ -498,8 +498,7 @@ pub fn render_dialog(
     let longest_line = state.message.lines().map(str::len).max().unwrap_or(0);
     let dialog_width_usize = longest_line.max(40).min(max_width.max(40));
     // The value is bounded by area.width (a u16), so the conversion is safe.
-    let dialog_width =
-        u16::try_from(dialog_width_usize).unwrap_or(max_width_u16);
+    let dialog_width = u16::try_from(dialog_width_usize).unwrap_or(max_width_u16);
 
     // Height: computed dynamically from the message line count so that
     // multi-line help text is not clipped. Layout:
@@ -590,8 +589,7 @@ pub fn render_dialog(
 
     // --- Spacer / scroll indicator line ---
     let has_above = state.scroll_offset > 0;
-    let has_below = state.scroll_offset
-        < total_lines_u16.saturating_sub(visible_msg_height);
+    let has_below = state.scroll_offset < total_lines_u16.saturating_sub(visible_msg_height);
     let hint = match (has_above, has_below) {
         (true, true) => "▲ more above   ▼ more below",
         (true, false) => "▲ more above",
@@ -599,9 +597,8 @@ pub fn render_dialog(
         (false, false) => "",
     };
     if !hint.is_empty() {
-        let hint_para = Paragraph::new(hint)
-            .style(theme.dialog_message)
-            .alignment(Alignment::Center);
+        let hint_para =
+            Paragraph::new(hint).style(theme.dialog_message).alignment(Alignment::Center);
         frame.render_widget(hint_para, chunks[1]);
     }
 
@@ -614,18 +611,12 @@ pub fn render_dialog(
 // ---------------------------------------------------------------------------
 
 /// Render the button row for the given dialog state.
-fn render_buttons(
-    frame: &mut Frame,
-    area: Rect,
-    state: &DialogState,
-    theme: &Theme,
-) {
+fn render_buttons(frame: &mut Frame, area: Rect, state: &DialogState, theme: &Theme) {
     match state.mode {
         DialogMode::Info | DialogMode::Error => {
             // Single [OK] button, centered.
             let btn = Span::styled(" [OK] ", theme.dialog_button_focused);
-            let para = Paragraph::new(Line::from(vec![btn]))
-                .alignment(Alignment::Center);
+            let para = Paragraph::new(Line::from(vec![btn])).alignment(Alignment::Center);
             frame.render_widget(para, area);
         }
         DialogMode::SecurityWarning => {
@@ -686,8 +677,7 @@ fn count_dialog_lines(message: &str, content_width: usize) -> usize {
                 1
             } else {
                 // ceiling division: (len + width - 1) / width
-                line.len().saturating_add(content_width).saturating_sub(1)
-                    / content_width
+                line.len().saturating_add(content_width).saturating_sub(1) / content_width
             }
         })
         .sum::<usize>()
@@ -703,8 +693,7 @@ fn centered_rect(width: u16, height: u16, area: Rect) -> Rect {
     let clamped_height = height.min(area.height);
 
     let x = area.x.saturating_add(area.width.saturating_sub(clamped_width) / 2);
-    let y =
-        area.y.saturating_add(area.height.saturating_sub(clamped_height) / 2);
+    let y = area.y.saturating_add(area.height.saturating_sub(clamped_height) / 2);
 
     Rect::new(x, y, clamped_width, clamped_height)
 }

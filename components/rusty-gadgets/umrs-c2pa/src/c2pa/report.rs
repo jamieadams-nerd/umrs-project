@@ -28,9 +28,13 @@
 //! - **NIST SP 800-53 SI-11**: Error Handling — the report layer does not emit
 //!   key material, credential paths, or classified data in any output field.
 
+use gettextrs::ngettext;
+use umrs_core::i18n;
+
 use crate::c2pa::{
     ingest::IngestResult,
     manifest::{ChainEntry, TrustStatus},
+    signer::describe_algorithm,
 };
 
 const SEPARATOR: &str = "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━";
@@ -39,14 +43,27 @@ const THIN_SEP: &str = "──────────────────�
 /// Print the full chain-of-custody report to stdout.
 ///
 /// Shows every entry in the chain with trust indicators, then a hash
-/// consistency summary based on the ingest result.
-pub fn print_chain(path: &str, sha256: &str, chain: &[ChainEntry], ingest: Option<&IngestResult>) {
-    println!("\nChain of Custody — {path}");
-    println!("SHA-256: {sha256}");
+/// consistency summary based on the ingest result. Both SHA-256 and SHA-384
+/// digests are displayed for CNSA 2.0 readiness.
+#[expect(
+    clippy::too_many_lines,
+    reason = "Sequential field-by-field report rendering with i18n wrapping; \
+              splitting would harm readability without improving correctness"
+)]
+pub fn print_chain(
+    path: &str,
+    sha256: &str,
+    sha384: &str,
+    chain: &[ChainEntry],
+    ingest: Option<&IngestResult>,
+) {
+    println!("\n{} — {path}", i18n::tr("Chain of Custody"));
+    println!("{}: {sha256}", i18n::tr("SHA-256"));
+    println!("{}: {sha384}", i18n::tr("SHA-384"));
     println!("{SEPARATOR}");
 
     if chain.is_empty() {
-        println!("  (no C2PA manifest found)");
+        println!("  {}", i18n::tr("(no C2PA manifest found)"));
     } else {
         // Calculate the maximum rendered width of all trust status tags in this
         // chain so column alignment adapts to the actual content. French
@@ -72,7 +89,7 @@ pub fn print_chain(path: &str, sha256: &str, chain: &[ChainEntry], ingest: Optio
 
         // Collect unique footnotes keyed by their display label so identical
         // statuses across entries produce a single footnote line.
-        let mut footnote_set: std::collections::BTreeMap<String, &str> =
+        let mut footnote_set: std::collections::BTreeMap<String, String> =
             std::collections::BTreeMap::new();
 
         for (i, entry) in chain.iter().enumerate() {
@@ -85,28 +102,28 @@ pub fn print_chain(path: &str, sha256: &str, chain: &[ChainEntry], ingest: Optio
             let trust_tag = match (&entry.trust_status, is_self_signed) {
                 (TrustStatus::Untrusted | TrustStatus::NoTrustList, true) => {
                     let label = format!("{}", entry.trust_status);
-                    footnote_set
-                        .entry(label)
-                        .or_insert("Self-signed certificate — not issued by a trusted CA");
+                    footnote_set.entry(label).or_insert_with(|| {
+                        i18n::tr("Self-signed certificate — not issued by a trusted CA")
+                    });
                     format!("*[{}]", entry.trust_status)
                 }
                 (TrustStatus::NoTrustList, false) => {
                     let label = format!("{}", entry.trust_status);
-                    footnote_set
-                        .entry(label)
-                        .or_insert("No trust list configured — trust could not be evaluated");
+                    footnote_set.entry(label).or_insert_with(|| {
+                        i18n::tr("No trust list configured — trust could not be evaluated")
+                    });
                     format!("*[{}]", entry.trust_status)
                 }
                 (TrustStatus::Untrusted, false) => {
                     let label = format!("{}", entry.trust_status);
-                    footnote_set
-                        .entry(label)
-                        .or_insert(
-                            "Signature is valid but the signer's CA is not in your trust list. \
-                             This does not mean the file is untrustworthy — the signer may use \
-                             a CA that is not yet in the C2PA official trust list (e.g., OpenAI). \
-                             To resolve, add the signer's root CA to trust_anchors or allowed_list.",
-                        );
+                    footnote_set.entry(label).or_insert_with(|| {
+                        i18n::tr(
+                            "Signature is valid but the signer's CA is not in your trust list. \n\
+                           \tThis does not mean the file is untrustworthy — the signer may use \n\
+                           \ta CA that is not yet in the C2PA official trust list (e.g., OpenAI). \n\
+                           \tTo resolve, add the signer's root CA to trust_anchors or allowed_list.",
+                        )
+                    });
                     format!("*[{}]", entry.trust_status)
                 }
                 _ => format!("[{}]", entry.trust_status),
@@ -115,27 +132,53 @@ pub fn print_chain(path: &str, sha256: &str, chain: &[ChainEntry], ingest: Optio
             println!("  {:<3} {:<pad$}  {}", idx, trust_tag, entry.signer_name);
 
             match &entry.signed_at {
-                Some(ts) => println!("       {:<pad$}  Signed at : {} UTC", "", ts),
-                None => println!("       {:<pad$}  Signed at : no timestamp provided", ""),
+                Some(ts) => println!(
+                    "       {:<pad$}  {} {} UTC",
+                    "",
+                    i18n::tr("Signed at :"),
+                    ts
+                ),
+                None => println!(
+                    "       {:<pad$}  {} {}",
+                    "",
+                    i18n::tr("Signed at :"),
+                    i18n::tr("no timestamp provided")
+                ),
             }
 
             // Only show Issuer if it differs from the top-level signer name.
             if entry.issuer != entry.signer_name {
-                println!("       {:<pad$}  Issuer    : {}", "", entry.issuer);
+                println!(
+                    "       {:<pad$}  {} {}",
+                    "",
+                    i18n::tr("Issuer    :"),
+                    entry.issuer
+                );
             }
 
-            println!("       {:<pad$}  Alg       : {}", "", entry.algorithm);
+            let alg_display = describe_algorithm(&entry.algorithm.to_lowercase());
+            println!(
+                "       {:<pad$}  {} {}",
+                "",
+                i18n::tr("Alg       :"),
+                alg_display
+            );
 
             // Generator + version (e.g. "ChatGPT 0.67.1")
             let gen_display = match &entry.generator_version {
                 Some(v) => format!("{} {v}", entry.generator),
                 None => entry.generator.clone(),
             };
-            println!("       {:<pad$}  Generator : {}", "", gen_display);
+            println!(
+                "       {:<pad$}  {} {}",
+                "",
+                i18n::tr("Generator :"),
+                gen_display
+            );
 
             // Security label / marking, if present.
             if let Some(label) = &entry.security_label {
-                println!("       {:<pad$}  Marking   : {}", "", label);
+                println!("       {:<pad$}  {} {}", "", i18n::tr("Marking   :"), label);
             }
             println!();
         }
@@ -155,14 +198,30 @@ pub fn print_chain(path: &str, sha256: &str, chain: &[ChainEntry], ingest: Optio
     if let Some(result) = ingest {
         if result.had_manifest {
             // We have a chain — all hashes should be consistent.
-            println!("Hash consistency : PASS — file unchanged across all signing events");
+            println!(
+                "{} PASS — {}",
+                i18n::tr("Hash consistency :"),
+                i18n::tr("file unchanged across all signing events")
+            );
         } else {
-            println!("Hash consistency : N/A  — no prior manifest (first signature)");
+            println!(
+                "{} N/A  — {}",
+                i18n::tr("Hash consistency :"),
+                i18n::tr("no prior manifest (first signature)")
+            );
         }
-        println!("UMRS action      : {}", result.action);
-        println!("UMRS output      : {}", result.output_path.display());
+        println!("{} {}", i18n::tr("UMRS action      :"), result.action);
+        println!(
+            "{} {}",
+            i18n::tr("UMRS output      :"),
+            result.output_path.display()
+        );
         if result.is_ephemeral {
-            println!("UMRS identity    : ephemeral self-signed cert (test mode — UNTRUSTED)");
+            println!(
+                "{} {}",
+                i18n::tr("UMRS identity    :"),
+                i18n::tr("ephemeral self-signed cert (test mode — UNTRUSTED)")
+            );
         }
     }
 
@@ -170,8 +229,8 @@ pub fn print_chain(path: &str, sha256: &str, chain: &[ChainEntry], ingest: Optio
 }
 
 /// Print the result of a read-only chain inspection (no ingest).
-pub fn print_chain_readonly(path: &str, sha256: &str, chain: &[ChainEntry]) {
-    print_chain(path, sha256, chain, None);
+pub fn print_chain_readonly(path: &str, sha256: &str, sha384: &str, chain: &[ChainEntry]) {
+    print_chain(path, sha256, sha384, chain, None);
 }
 
 /// Print the config validation report.
@@ -196,12 +255,27 @@ pub fn print_validation_report(results: &[crate::c2pa::validate::ValidationResul
 
     if failures == 0 {
         if warnings > 0 {
-            println!("  All checks passed ({warnings} warning(s)). Configuration is ready.");
+            let warn_str = ngettext(
+                "All checks passed ({} warning). Configuration is ready.",
+                "All checks passed ({} warnings). Configuration is ready.",
+                u32::try_from(warnings).unwrap_or(u32::MAX),
+            )
+            .replace("{}", &warnings.to_string());
+            println!("  {}", i18n::tr(&warn_str));
         } else {
-            println!("  All checks passed. Configuration is ready.");
+            println!(
+                "  {}",
+                i18n::tr("All checks passed. Configuration is ready.")
+            );
         }
     } else {
-        println!("  {failures} check(s) failed. Configuration is NOT ready.");
+        let fail_str = ngettext(
+            "{} check failed. Configuration is NOT ready.",
+            "{} checks failed. Configuration is NOT ready.",
+            u32::try_from(failures).unwrap_or(u32::MAX),
+        )
+        .replace("{}", &failures.to_string());
+        println!("  {}", i18n::tr(&fail_str));
     }
     println!();
 }

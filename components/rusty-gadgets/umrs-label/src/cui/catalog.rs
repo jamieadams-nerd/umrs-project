@@ -107,9 +107,8 @@ pub fn load_catalog<P: AsRef<Path>>(path: P) -> Result<Catalog, String> {
 
     let reader = BufReader::new(file);
 
-    serde_json::from_reader(reader).map_err(|e| {
-        format!("Failed to parse JSON {}: {}", path_ref.display(), e)
-    })
+    serde_json::from_reader(reader)
+        .map_err(|e| format!("Failed to parse JSON {}: {}", path_ref.display(), e))
 }
 
 impl Catalog {
@@ -241,9 +240,7 @@ impl Marking {
 
     /// Returns handling guidance as a JSON object, if it is one.
     #[must_use = "returns None if handling is absent or is not an object value"]
-    pub fn handling_as_object(
-        &self,
-    ) -> Option<&serde_json::Map<String, serde_json::Value>> {
+    pub fn handling_as_object(&self) -> Option<&serde_json::Map<String, serde_json::Value>> {
         self.handling.as_object()
     }
 
@@ -328,9 +325,8 @@ pub fn load_levels<P: AsRef<Path>>(path: P) -> Result<LevelRegistry, String> {
 
     let reader = BufReader::new(file);
 
-    serde_json::from_reader(reader).map_err(|e| {
-        format!("Failed to parse JSON {}: {}", path_ref.display(), e)
-    })
+    serde_json::from_reader(reader)
+        .map_err(|e| format!("Failed to parse JSON {}: {}", path_ref.display(), e))
 }
 
 impl LevelRegistry {
@@ -341,9 +337,7 @@ impl LevelRegistry {
     }
 
     /// Iterate all level definitions as `(key, definition)` pairs.
-    pub fn iter_levels(
-        &self,
-    ) -> impl Iterator<Item = (&String, &LevelDefinition)> {
+    pub fn iter_levels(&self) -> impl Iterator<Item = (&String, &LevelDefinition)> {
         self.levels.iter()
     }
 }

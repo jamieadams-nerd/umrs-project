@@ -1,8 +1,14 @@
 = Registry Reconciliation
-:description: Comparison between the UMRS MCS mapping and the authoritative DoD CUI Registry.
+:description: Comparison between the UMRS MCS mapping and the authoritative DoD CUI Registry and NARA canonical list.
 
 This page documents the reconciliation between our existing CUI-LABELS.json mapping and the DoD CUI Registry at `dodcui.mil`.
 The reconciliation was performed on 2026-03-21 by scraping all 113 DoD registry entries and comparing them against our 72-entry mapping.
+
+IMPORTANT: The NARA registry is the authoritative source for UMRS banner markings, not the DoD registry.
+Where DoD and NARA diverge, UMRS follows NARA.
+Index groups (Defense, Intelligence, Immigration, etc.) are organizational navigation aids in both registries.
+They never appear in banner markings.
+Only category abbreviations appear in banners.
 
 == Summary
 
@@ -29,117 +35,127 @@ The reconciliation was performed on 2026-03-21 by scraping all 113 DoD registry 
 
 == HIGH Priority Mismatches
 
-These entries exist in both registries but with different parent group assignments, which changes the CUI marking string.
-Each must be reviewed against the NARA canonical registry before our mapping is updated.
+These entries exist in both registries but with different notation.
+Each must be reviewed against the NARA canonical registry before the mapping is updated.
+
+The "UMRS Correct Marking" column reflects NARA standalone form — the form UMRS uses.
+The "DoD Registry Notation" column records what the DoD registry shows for reference.
+The two columns may legitimately differ: see the Analysis section.
 
 [cols="1,2,2,2", options="header"]
 |===
-| Abbrev | Our Marking | DoD Marking | Issue
+| Abbrev | UMRS Correct Marking | DoD Registry Notation | Issue
 
 | CONTRACT
-| `CUI//PRIVACY/CONTRACT`
+| `CUI//CONTRACT`
 | `CUI//PRIV/CONTRACT`
-| Group abbreviation differs: PRIVACY vs PRIV
+| DoD nests under PRIV (Privacy index group notation); NARA: standalone category. Verify against NARA.
 
 | CTI
 | `CUI//CTI`
 | `CUI//DEF/CTI`
-| We treat as standalone; DoD places under Defense
+| DoD nests under DEF (Defense index group notation); NARA: standalone category.
 
 | DCRIT
-| `CUI//CRIT/DCRIT`
+| `CUI//DCRIT`
 | `CUI//DEF/DCRIT`
-| We place under CRIT; DoD places under Defense
+| DoD nests under DEF (Defense index group notation); NARA: standalone category. Verify parent group assignment.
 
 | DREC
-| `CUI//PRIVACY/DREC`
+| `CUI//DREC`
 | `CUI//PRIV/DREC`
-| Group abbreviation differs: PRIVACY vs PRIV
+| DoD nests under PRIV (Privacy index group notation); NARA: standalone category. Verify against NARA.
 
 | EXPT
-| `CUI//CTI/EXPT`
 | `CUI//EXPT`
-| We placed under CTI; DoD treats as standalone Export Control group
+| `CUI//EXPT`
+| DoD agrees on standalone form. Previous UMRS mapping incorrectly placed EXPT under CTI — correct to `CUI//EXPT`.
 
 | EXPTR
-| `CUI//CTI/EXPTR`
+| `CUI//EXPTR`
 | `CUI//EXPT/EXPTR`
-| We placed under CTI; DoD places under Export Control
+| DoD nests under EXPT (Export Control index group notation); NARA: standalone category. Verify against NARA.
 
 | GENETIC
-| `CUI//PRIVACY/GENETIC`
+| `CUI//GENETIC`
 | `CUI//PRIV/GENETIC`
-| Group abbreviation differs: PRIVACY vs PRIV
+| DoD nests under PRIV (Privacy index group notation); NARA: standalone category. Verify against NARA.
 
 | LMI
-| `CUI//GOVT/LMI`
+| `CUI//LMI`
 | `CUI//LGL/LMI`
-| We placed under GOVT; DoD places under Legal
+| DoD nests under LGL (Legal index group notation); NARA: standalone category. Verify against NARA.
 
 | MIL
-| `CUI//PRIVACY/MIL`
+| `CUI//MIL`
 | `CUI//PRIV/MIL`
-| Group abbreviation differs: PRIVACY vs PRIV
+| DoD nests under PRIV (Privacy index group notation); NARA: standalone category. Verify against NARA.
 
 | NNPI
 | `CUI//NNPI`
 | `CUI//DEF/NNPI`
-| We treat as standalone; DoD places under Defense
+| DoD nests under DEF (Defense index group notation); NARA: standalone category.
 
 | OPSEC
 | `CUI//OPSEC`
 | `CUI//INTEL/OPSEC`
-| We treat as standalone; DoD places under Intelligence
+| DoD nests under INTEL (Intelligence index group notation); NARA: OPSEC is a standalone category with its own abbreviation.
 
 | PERS
-| `CUI//PRIVACY/PERS`
+| `CUI//PERS`
 | `CUI//PRIV/PERS`
-| Group abbreviation differs: PRIVACY vs PRIV
+| DoD nests under PRIV (Privacy index group notation); NARA: standalone category. Verify against NARA.
 
 | PRIIG
-| `CUI//PRIVACY/PRIIG`
+| `CUI//PRIIG`
 | `CUI//PRIV/PRIIG`
-| Group abbreviation differs: PRIVACY vs PRIV
+| DoD nests under PRIV (Privacy index group notation); NARA: standalone category. Verify against NARA.
 
 | PROT
 | `CUI//PROT`
 | `CUI//IMMG/PROT`
-| We treat as standalone; DoD places under Immigration
+| DoD nests under IMMG (Immigration index group notation); NARA: standalone category.
 
 | PSEC
 | `CUI//PSEC`
 | `CUI//PAT/PSEC`
-| We treat as standalone; DoD places under Patent
+| DoD nests under PAT (Patent index group notation); NARA: standalone category.
 
 | RAIL
 | `CUI//RAIL`
 | `CUI//TRANS/RAIL`
-| We treat as standalone; DoD places under Transportation
+| DoD nests under TRANS (Transportation index group notation); NARA: standalone category.
 
 | STUD
-| `CUI//PRIVACY/STUD`
+| `CUI//STUD`
 | `CUI//PRIV/STUD`
-| Group abbreviation differs: PRIVACY vs PRIV
+| DoD nests under PRIV (Privacy index group notation); NARA: standalone category. Verify against NARA.
 
 | BUDG
-| `CUI//GOVT/BUDG`
+| `CUI//BUDG`
 | `CUI//FNC/BUDG`
-| We placed under GOVT; DoD places under Financial
+| DoD nests under FNC (Financial index group notation); NARA: standalone category. Verify parent group assignment.
 |===
 
 === Analysis
 
 The mismatches fall into three categories:
 
-1. **Group abbreviation difference (7 entries)**: We used `PRIVACY` as the group abbreviation; DoD uses `PRIV`. This is a naming convention issue, not a structural disagreement. Resolution: adopt DoD's `PRIV` abbreviation.
+1. **Index group notation in DoD markings (most entries)**: The DoD registry uses index group abbreviations (PRIV, DEF, INTEL, IMMG, PAT, TRANS, FNC, LGL) as prefixes in its banner notation, producing strings like `CUI//INTEL/OPSEC`. This format is incompatible with NARA canonical markings and must not be adopted by UMRS.
++
+Per the NARA registry, index groups are organizational navigation aids only. They never appear in banner markings. UMRS uses the NARA standalone form: `CUI//OPSEC`, not `CUI//INTEL/OPSEC`. This divergence from DoD notation is intentional and correct.
 
-2. **Standalone vs grouped (7 entries)**: We treated certain categories as top-level; DoD nests them under parent groups (Defense, Intelligence, Immigration, Patent, Transportation). The DoD grouping is authoritative for DoD systems. Resolution: adopt DoD's parent group assignments.
+2. **Incorrect parent assignments in previous UMRS mapping (several entries)**: The previous UMRS mapping also used group-nested notation (`CUI//PRIVACY/CONTRACT`, `CUI//CTI/EXPT`, etc.). These were wrong for the same reason — index group names were embedded in markings. The UMRS Correct Marking column above corrects all of these to standalone form.
 
-3. **Different parent group (4 entries)**: CTI/EXPT under CTI vs Export Control; DCRIT under CRIT vs Defense; LMI under GOVT vs Legal; BUDG under GOVT vs Financial. These require NARA cross-reference before resolution.
+3. **Different index group assignment (4 entries requiring NARA verification)**: CTI, DCRIT, LMI, and BUDG have assignments that differ between the previous UMRS mapping and DoD. These require NARA cross-reference to confirm the standalone abbreviation is correct and no renaming has occurred.
 
 CAUTION: Do not update the MCS mapping unilaterally based on DoD alone.
 Cross-reference each HIGH priority mismatch against the NARA canonical registry at `https://www.archives.gov/cui/registry/category-list`.
-If DoD and NARA disagree, flag for Jamie to make the call.
+Where DoD and NARA disagree on anything beyond index group nesting, flag for Jamie to make the call.
+
+NOTE: The DoD registry's grouped notation (`CUI//INTEL/OPSEC`) is a DoD-internal convention for navigating their registry.
+It is not valid NARA banner syntax.
+UMRS systems that exchange data with DoD systems must use NARA standalone form in all banners and MCS labels.
 
 == Machine-Readable Data
 

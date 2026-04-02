@@ -90,7 +90,7 @@ SELINUX TYPE est la composante type du contexte de sécurité vérifié (p. ex.,
 `<unlabeled>`, `<restricted>`).
 
 MARKING est la chaîne de sensibilité/catégorie traduite par setrans lorsque `mcstransd` est actif,
-ou la chaîne de niveau brute sinon (p. ex., `CUI//LEI/INV`, `s0`, `<no-level>`, `<restricted>`).
+ou la chaîne de niveau brute sinon (p. ex., `CUI//INV`, `CUI//SP-CTI`, `s0`, `<no-level>`, `<restricted>`).
 
 === OWNER:GROUP
 

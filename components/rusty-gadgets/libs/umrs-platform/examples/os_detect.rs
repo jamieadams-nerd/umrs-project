@@ -25,9 +25,7 @@ use std::io::IsTerminal;
 use umrs_platform::detect::label_trust::LabelTrust;
 use umrs_platform::detect::{DetectionError, OsDetector, is_installed};
 use umrs_platform::evidence::{DigestAlgorithm, EvidenceRecord, SourceKind};
-use umrs_platform::{
-    ConfidenceModel, Distro, OsFamily, SubstrateIdentity, TrustLevel,
-};
+use umrs_platform::{ConfidenceModel, Distro, OsFamily, SubstrateIdentity, TrustLevel};
 
 // ---------------------------------------------------------------------------
 // ANSI colour helpers
@@ -105,9 +103,7 @@ fn trust_level_description(level: TrustLevel) -> &'static str {
         TrustLevel::Untrusted => {
             "No kernel anchor established. No claim can be made about the platform."
         }
-        TrustLevel::KernelAnchored => {
-            "procfs verified via PROC_SUPER_MAGIC + PID coherence gate."
-        }
+        TrustLevel::KernelAnchored => "procfs verified via PROC_SUPER_MAGIC + PID coherence gate.",
         TrustLevel::EnvAnchored => {
             "Mount topology cross-checked (mountinfo vs statfs). Execution environment known."
         }
@@ -170,10 +166,7 @@ fn print_header(c: &Colours) {
     );
 }
 
-fn print_os_identity(
-    result: &umrs_platform::detect::DetectionResult,
-    c: &Colours,
-) {
+fn print_os_identity(result: &umrs_platform::detect::DetectionResult, c: &Colours) {
     section("OS Identity", c);
 
     match &result.os_release {
@@ -181,12 +174,7 @@ fn print_os_identity(
             println!("  {}os-release: not available{}", c.yellow, c.reset);
         }
         Some(rel) => {
-            println!(
-                "  {}ID           :{} {}",
-                c.cyan,
-                c.reset,
-                rel.id.as_str()
-            );
+            println!("  {}ID           :{} {}", c.cyan, c.reset, rel.id.as_str());
             println!(
                 "  {}NAME         :{} {}",
                 c.cyan,
@@ -194,38 +182,20 @@ fn print_os_identity(
                 rel.name.as_str()
             );
             if let Some(ver) = &rel.version_id {
-                println!(
-                    "  {}VERSION_ID   :{} {}",
-                    c.cyan,
-                    c.reset,
-                    ver.as_str()
-                );
+                println!("  {}VERSION_ID   :{} {}", c.cyan, c.reset, ver.as_str());
             }
             if let Some(pn) = &rel.pretty_name {
-                println!(
-                    "  {}PRETTY_NAME  :{} {}",
-                    c.cyan,
-                    c.reset,
-                    pn.as_str()
-                );
+                println!("  {}PRETTY_NAME  :{} {}", c.cyan, c.reset, pn.as_str());
             }
             if let Some(cpe) = &rel.cpe_name {
-                println!(
-                    "  {}CPE_NAME     :{} {}",
-                    c.cyan,
-                    c.reset,
-                    cpe.as_str()
-                );
+                println!("  {}CPE_NAME     :{} {}", c.cyan, c.reset, cpe.as_str());
             }
         }
     }
 
     match &result.substrate_identity {
         None => {
-            println!(
-                "  {}substrate-identity: not available{}",
-                c.yellow, c.reset
-            );
+            println!("  {}substrate-identity: not available{}", c.yellow, c.reset);
         }
         Some(sub) => {
             println!();
@@ -281,24 +251,16 @@ fn print_trust_summary(label_trust: &LabelTrust, c: &Colours) {
                 "  {}LABEL CLAIM{}  — structurally valid; integrity unconfirmed.",
                 c.yellow, c.reset
             );
-            println!(
-                "  Package substrate was not probed (T3 not reached), or digest unavailable."
-            );
-            println!(
-                "  Usable for display only; do not rely on it for policy."
-            );
+            println!("  Package substrate was not probed (T3 not reached), or digest unavailable.");
+            println!("  Usable for display only; do not rely on it for policy.");
         }
         LabelTrust::TrustedLabel => {
             println!(
                 "  {}TRUSTED LABEL{}  — T4: ownership + digest verified against package DB.",
                 c.green, c.reset
             );
-            println!(
-                "  Label content corroborates substrate-derived identity."
-            );
-            println!(
-                "  Safe for policy decisions (NIST SP 800-53 SI-7, CMMC L2 SI.1.210)."
-            );
+            println!("  Label content corroborates substrate-derived identity.");
+            println!("  Safe for policy decisions (NIST SP 800-53 SI-7, CMMC L2 SI.1.210).");
         }
         LabelTrust::IntegrityVerifiedButContradictory {
             contradiction,
@@ -386,12 +348,9 @@ fn print_evidence_chain(records: &[EvidenceRecord], c: &Colours) {
         }
 
         if let Some(stat) = &rec.stat {
-            let ino =
-                stat.ino.map_or_else(|| "-".to_owned(), |v| v.to_string());
-            let size =
-                stat.size.map_or_else(|| "-".to_owned(), |v| v.to_string());
-            let uid =
-                stat.uid.map_or_else(|| "-".to_owned(), |v| v.to_string());
+            let ino = stat.ino.map_or_else(|| "-".to_owned(), |v| v.to_string());
+            let size = stat.size.map_or_else(|| "-".to_owned(), |v| v.to_string());
+            let uid = stat.uid.map_or_else(|| "-".to_owned(), |v| v.to_string());
             println!("        stat: ino={ino}  size={size}  uid={uid}");
         }
 
@@ -406,11 +365,7 @@ fn print_evidence_chain(records: &[EvidenceRecord], c: &Colours) {
                 DigestAlgorithm::Md5 => "md5 (WEAK)".to_owned(),
                 DigestAlgorithm::Unknown(s) => format!("unknown({})", s),
             };
-            println!(
-                "        pkg_digest: alg={}  value={}",
-                alg,
-                hex(&pkg.value)
-            );
+            println!("        pkg_digest: alg={}  value={}", alg, hex(&pkg.value));
         }
 
         for note in &rec.notes {
@@ -458,9 +413,7 @@ fn print_package_query_demo(c: &Colours) {
         "  {}Note:{} is_installed() returns Ok(true/false) when the DB is readable.",
         c.dim, c.reset
     );
-    println!(
-        "  It returns Err(DatabaseUnavailable) when the RPM DB cannot be opened."
-    );
+    println!("  It returns Err(DatabaseUnavailable) when the RPM DB cannot be opened.");
 }
 
 fn print_pkg_result(name: &str, c: &Colours) {

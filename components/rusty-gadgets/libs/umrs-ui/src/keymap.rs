@@ -246,17 +246,11 @@ impl KeyMap {
             Action::ScrollUp,
         );
         map.insert(key(KeyCode::Up, KeyModifiers::NONE), Action::ScrollUp);
-        map.insert(
-            key(KeyCode::PageDown, KeyModifiers::NONE),
-            Action::PageDown,
-        );
+        map.insert(key(KeyCode::PageDown, KeyModifiers::NONE), Action::PageDown);
         map.insert(key(KeyCode::PageUp, KeyModifiers::NONE), Action::PageUp);
 
         // Refresh
-        map.insert(
-            key(KeyCode::Char('r'), KeyModifiers::NONE),
-            Action::Refresh,
-        );
+        map.insert(key(KeyCode::Char('r'), KeyModifiers::NONE), Action::Refresh);
 
         // Dialog confirm — Enter dismisses an open dialog via the [OK] button.
         // The event loop maps DialogConfirm to dialog dismissal; when no dialog

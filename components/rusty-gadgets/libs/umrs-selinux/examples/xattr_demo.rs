@@ -26,9 +26,7 @@ fn main() -> io::Result<()> {
         }
         Err(e) => {
             eprintln!("  ERROR: Failed to read context: {}", e);
-            eprintln!(
-                "  NOTE: Ensure SELinux is enabled and the file has an xattr."
-            );
+            eprintln!("  NOTE: Ensure SELinux is enabled and the file has an xattr.");
         }
     }
 
@@ -44,9 +42,7 @@ fn main() -> io::Result<()> {
     // that if the bytes returned from the kernel don't match our
     // expected TPI format, the user gets a PermissionDenied error.
     println!("  INPUT: '{}'", malformed);
-    println!(
-        "  ACTION: SecureXattrReader::read_context would trigger mismatch."
-    );
+    println!("  ACTION: SecureXattrReader::read_context would trigger mismatch.");
     println!("  OUTCOME: io::ErrorKind::PermissionDenied (Parser Mismatch)");
 
     Ok(())

@@ -33,6 +33,8 @@
 
 use std::fmt;
 
+use umrs_core::i18n;
+
 /// All errors produced by the UMRS c2pa library.
 #[derive(Debug)]
 pub enum InspectError {
@@ -51,16 +53,24 @@ impl fmt::Display for InspectError {
         // later without any structural change. The dynamic values are formatted
         // with standard Rust interpolation after the translatable prefix.
         match self {
-            Self::Io(e) => write!(f, "IO error: {e}"),
-            Self::C2pa(e) => write!(f, "C2PA error: {e}"),
-            Self::Config(msg) => write!(f, "Config error: {msg}"),
-            Self::Signing(msg) => write!(f, "Signing error: {msg}"),
-            Self::Hash(msg) => write!(f, "Hash error: {msg}"),
+            Self::Io(e) => write!(f, "{} {e}", i18n::tr("IO error:")),
+            Self::C2pa(e) => write!(f, "{} {e}", i18n::tr("C2PA error:")),
+            Self::Config(msg) => write!(f, "{} {msg}", i18n::tr("Config error:")),
+            Self::Signing(msg) => write!(f, "{} {msg}", i18n::tr("Signing error:")),
+            Self::Hash(msg) => write!(f, "{} {msg}", i18n::tr("Hash error:")),
             Self::UnsafeAlgorithm(alg) => {
-                write!(f, "Algorithm '{alg}' is not in the FIPS-safe allowed set")
+                write!(
+                    f,
+                    "'{alg}' {}",
+                    i18n::tr("is not in the FIPS-safe allowed set")
+                )
             }
             Self::AlreadySigned(path) => {
-                write!(f, "Refusing to overwrite previously signed file: {path}")
+                write!(
+                    f,
+                    "{} {path}",
+                    i18n::tr("Refusing to overwrite previously signed file:")
+                )
             }
         }
     }

@@ -12,9 +12,7 @@
 //! 3. **Snapshot integration** — KernelCmdline indicators have `configured_value`
 //!    when BLS entries are present; gracefully return `None` when absent.
 
-use umrs_platform::posture::bootcmdline::{
-    parse_bls_content, read_configured_cmdline,
-};
+use umrs_platform::posture::bootcmdline::{parse_bls_content, read_configured_cmdline};
 use umrs_platform::posture::indicator::IndicatorId;
 use umrs_platform::posture::snapshot::PostureSnapshot;
 
@@ -231,9 +229,7 @@ fn snapshot_cmdline_indicators_have_correct_class() {
     ];
 
     for id in cmdline_ids {
-        let report = snap
-            .get(id)
-            .unwrap_or_else(|| panic!("{id:?} must appear in snapshot"));
+        let report = snap.get(id).unwrap_or_else(|| panic!("{id:?} must appear in snapshot"));
         assert_eq!(
             report.descriptor.class,
             IndicatorClass::KernelCmdline,
@@ -252,9 +248,7 @@ fn snapshot_cmdline_configured_value_does_not_panic() {
     let snap = PostureSnapshot::collect();
     let cmdline_ids = [IndicatorId::ModuleSigEnforce, IndicatorId::Mitigations];
     for id in cmdline_ids {
-        let report = snap
-            .get(id)
-            .unwrap_or_else(|| panic!("{id:?} must appear in snapshot"));
+        let report = snap.get(id).unwrap_or_else(|| panic!("{id:?} must appear in snapshot"));
         // configured_value is Some (BLS) or None (no BLS) — either is correct.
         // We just verify the field is accessible without panic.
         let _ = &report.configured_value;
@@ -278,8 +272,7 @@ fn snapshot_cmdline_configured_value_non_empty_when_bls_available() {
     let has_configured = snap
         .iter()
         .filter(|r| {
-            r.descriptor.class
-                == umrs_platform::posture::indicator::IndicatorClass::KernelCmdline
+            r.descriptor.class == umrs_platform::posture::indicator::IndicatorClass::KernelCmdline
         })
         .any(|r| r.configured_value.is_some());
 

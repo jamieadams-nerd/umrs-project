@@ -12,7 +12,7 @@
 .\"
 .\" NOTE: This translation is AI-generated and may contain nuances
 .\" requiring human verification.
-.TH UMRS-C2PA 1 "1er avril 2026" "umrs-c2pa 0.1.0" "Outils UMRS"
+.TH UMRS-C2PA 1 "2 avril 2026" "umrs-c2pa 0.1.0" "Outils UMRS"
 .SH NOM
 umrs-c2pa \- outil d'inspection et de signature C2PA pour fichiers multimédias
 .SH SYNOPSIS
@@ -23,6 +23,15 @@ umrs-c2pa \- outil d'inspection et de signature C2PA pour fichiers multimédias
 .B umrs-c2pa
 .RI [ OPTIONS ]
 .B \-\-sign
+.RI [ \-\-marking
+.IR CHAÎNE ]
+.RI [ \-\-output
+.IR CHEMIN ]
+.I FICHIER
+.br
+.B umrs-c2pa
+.RI [ OPTIONS ]
+.RB [ \-\-json | \-\-chain\-json ]
 .I FICHIER
 .br
 .B umrs-c2pa creds generate
@@ -42,6 +51,20 @@ possession pour le projet Unclassified MLS Reference System (UMRS).
 Lorsqu'un fichier est fourni sans sous-commande, l'outil lit le dépôt de manifestes
 C2PA et affiche la chaîne de possession \(em qui a signé le fichier, à quel moment,
 avec quel algorithme, et si la signature est de confiance.
+Le champ
+.B Algorithme
+du rapport de chaîne affiche désormais la description complète de l'algorithme.
+Par exemple\~:
+.PP
+.RS
+.nf
+Algorithme : ES256  ECDSA / P-256 (prime256v1) / SHA-256 / 256-bit / FIPS-safe
+.fi
+.RE
+.PP
+Pour chaque fichier inspecté, l'outil calcule et affiche deux condensés\~: SHA-256
+et SHA-384.
+SHA-384 est fourni pour préparer la conformité à la suite CNSA 2.0.
 .PP
 Avec
 .BR \-\-sign ,
@@ -157,6 +180,36 @@ ps512	RSA-PSS	SHA-512 / 2048+ bits
 .PP
 .B ed25519
 est intentionnellement exclu \(em peu fiable sur les systèmes RHEL avec FIPS activé.
+.SH VÉRIFICATION DES CONDENSÉS
+Pour chaque fichier inspecté,
+.B umrs-c2pa
+calcule et affiche deux condensés cryptographiques\~:
+.TP
+.B SHA-256
+Condensé standard de la chaîne de possession.
+.TP
+.B SHA-384
+Condensé supplémentaire pour la préparation à la conformité CNSA 2.0.
+.PP
+Pour vérifier un condensé SHA-256 indépendamment\~:
+.PP
+.RS
+.nf
+openssl dgst -sha256 FICHIER
+.fi
+.RE
+.PP
+Pour vérifier un condensé SHA-384 indépendamment\~:
+.PP
+.RS
+.nf
+openssl dgst -sha384 FICHIER
+.fi
+.RE
+.PP
+Comparer la valeur affichée par
+.B umrs-c2pa
+avec la sortie d'OpenSSL pour confirmer l'intégrité du fichier.
 .SH LISTES DE CONFIANCE
 La validation de confiance requiert des fichiers d'ancres de confiance au format PEM
 configurés dans
@@ -318,6 +371,10 @@ Spécification technique de la Coalition for Content Provenance and Authenticity
 .TP
 .B FIPS 186-5
 Norme de signature numérique (ECDSA, RSA-PSS)
+.TP
+.B CNSA 2.0
+Suite cryptographique commerciale nationale 2.0 (NSA).
+Justifie le double condensé SHA-256 / SHA-384.
 .TP
 .B NIST SP 800-53 AU-3
 Contenu des enregistrements d'audit

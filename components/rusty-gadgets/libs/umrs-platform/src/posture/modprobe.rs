@@ -194,8 +194,7 @@ impl ModprobeConfig {
         #[cfg(debug_assertions)]
         let start = std::time::Instant::now();
 
-        let mut options: HashMap<String, HashMap<String, (String, String)>> =
-            HashMap::new();
+        let mut options: HashMap<String, HashMap<String, (String, String)>> = HashMap::new();
         let mut blacklisted: HashMap<String, String> = HashMap::new();
         let mut hard_blacklisted: HashMap<String, String> = HashMap::new();
         let mut file_count: usize = 0;
@@ -249,16 +248,10 @@ impl ModprobeConfig {
     ///
     /// NIST SP 800-53 CM-6: returns the last-writer-wins effective configured value.
     #[must_use = "module parameter configured value result must be examined"]
-    pub fn get_option(
-        &self,
-        module: &str,
-        param: &str,
-    ) -> Option<ConfiguredValue> {
-        self.options.get(module)?.get(param).map(|(value, source)| {
-            ConfiguredValue {
-                raw: value.clone(),
-                source_file: source.clone(),
-            }
+    pub fn get_option(&self, module: &str, param: &str) -> Option<ConfiguredValue> {
+        self.options.get(module)?.get(param).map(|(value, source)| ConfiguredValue {
+            raw: value.clone(),
+            source_file: source.clone(),
         })
     }
 
@@ -278,9 +271,7 @@ impl ModprobeConfig {
     /// loading in the intended configuration; both are security-relevant findings.
     #[must_use = "blacklist check result must be examined — None means absent from config, not allowed"]
     pub fn is_blacklisted(&self, module: &str) -> Option<bool> {
-        if self.blacklisted.contains_key(module)
-            || self.hard_blacklisted.contains_key(module)
-        {
+        if self.blacklisted.contains_key(module) || self.hard_blacklisted.contains_key(module) {
             Some(true)
         } else {
             None
@@ -341,16 +332,10 @@ fn load_conf_dir(
     let mut files: Vec<PathBuf> = match std::fs::read_dir(dir) {
         Ok(entries) => entries
             .filter_map(|e| e.ok().map(|e| e.path()))
-            .filter(|p| {
-                p.extension().and_then(|e| e.to_str()) == Some("conf")
-                    && p.is_file()
-            })
+            .filter(|p| p.extension().and_then(|e| e.to_str()) == Some("conf") && p.is_file())
             .collect(),
         Err(e) => {
-            log::debug!(
-                "posture: cannot read modprobe.d dir {}: {e}",
-                dir.display()
-            );
+            log::debug!("posture: cannot read modprobe.d dir {}: {e}", dir.display());
             return 0;
         }
     };
@@ -363,10 +348,7 @@ fn load_conf_dir(
         match load_conf_file(path, options, blacklisted, hard_blacklisted) {
             Ok(()) => count = count.saturating_add(1),
             Err(e) => {
-                log::debug!(
-                    "posture: modprobe.d: skipping {}: {e}",
-                    path.display()
-                );
+                log::debug!("posture: modprobe.d: skipping {}: {e}", path.display());
             }
         }
     }
@@ -409,18 +391,16 @@ fn load_conf_file(
                         "posture: modprobe.d merge: {source}:{human_no} options \
                          {module} {param}=<value>"
                     );
-                    options.entry(module.to_owned()).or_default().insert(
-                        param.to_owned(),
-                        (value.to_owned(), source.clone()),
-                    );
+                    options
+                        .entry(module.to_owned())
+                        .or_default()
+                        .insert(param.to_owned(), (value.to_owned(), source.clone()));
                 }
             }
             ParsedDirective::Blacklist {
                 module,
             } => {
-                log::debug!(
-                    "posture: modprobe.d merge: {source}:{human_no} blacklist {module}"
-                );
+                log::debug!("posture: modprobe.d merge: {source}:{human_no} blacklist {module}");
                 blacklisted.insert(module.to_owned(), source.clone());
             }
             ParsedDirective::Install {
@@ -500,11 +480,9 @@ pub fn parse_modprobe_line(line: &str) -> ParsedDirective<'_> {
         "options" => parse_options_directive(rest),
         "blacklist" => parse_blacklist_directive(rest),
         "install" => parse_install_directive(rest),
-        "softdep" | "alias" | "override" | "remove" => {
-            ParsedDirective::Unrecognised {
-                keyword,
-            }
-        }
+        "softdep" | "alias" | "override" | "remove" => ParsedDirective::Unrecognised {
+            keyword,
+        },
         _ => ParsedDirective::Malformed,
     }
 }
@@ -621,10 +599,7 @@ fn parse_install_directive(rest: &str) -> ParsedDirective<'_> {
 ///
 /// NIST SP 800-53 SI-10: Input Validation.
 fn is_valid_module_name(name: &str) -> bool {
-    !name.is_empty()
-        && !name.contains('/')
-        && !name.contains('\0')
-        && name != ".."
+    !name.is_empty() && !name.contains('/') && !name.contains('\0') && name != ".."
 }
 
 /// Check whether a kernel module is currently loaded by testing for the
@@ -702,10 +677,7 @@ pub fn is_module_loaded(module_name: &str) -> bool {
 ///
 /// Returns `io::Error` if the modprobe configuration directory cannot be read.
 #[must_use = "sysfs parameter read result must be examined"]
-pub fn read_module_param(
-    module_name: &str,
-    param_name: &str,
-) -> io::Result<Option<String>> {
+pub fn read_module_param(module_name: &str, param_name: &str) -> io::Result<Option<String>> {
     use crate::kattrs::sysfs::SysfsText;
     use crate::kattrs::traits::SecureReader;
 
@@ -720,10 +692,8 @@ pub fn read_module_param(
     #[cfg(debug_assertions)]
     let start = std::time::Instant::now();
 
-    let param_path = PathBuf::from(SYS_MODULE_BASE)
-        .join(module_name)
-        .join("parameters")
-        .join(param_name);
+    let param_path =
+        PathBuf::from(SYS_MODULE_BASE).join(module_name).join("parameters").join(param_name);
 
     let node = match SysfsText::new(param_path) {
         Ok(n) => n,
@@ -736,8 +706,7 @@ pub fn read_module_param(
         }
     };
 
-    let result = match SecureReader::<SysfsText>::new().read_generic_text(&node)
-    {
+    let result = match SecureReader::<SysfsText>::new().read_generic_text(&node) {
         Ok(s) => Ok(Some(s.trim_end_matches('\n').to_owned())),
         Err(e) if e.kind() == io::ErrorKind::NotFound => Ok(None),
         Err(e) => Err(e),
@@ -774,10 +743,7 @@ pub fn blacklist_configured_value(
     config: &ModprobeConfig,
 ) -> Option<ConfiguredValue> {
     config.is_blacklisted(module_name).map(|_| {
-        let source = config
-            .blacklist_source(module_name)
-            .unwrap_or("<unknown>")
-            .to_owned();
+        let source = config.blacklist_source(module_name).unwrap_or("<unknown>").to_owned();
         ConfiguredValue {
             raw: "blacklisted".to_owned(),
             source_file: source,

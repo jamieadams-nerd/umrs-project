@@ -43,9 +43,7 @@ use ratatui::Frame;
 use ratatui::layout::{Constraint, Direction, Layout, Rect};
 use ratatui::style::Style;
 use ratatui::text::{Line, Span};
-use ratatui::widgets::{
-    Block, BorderType, Borders, List, ListItem, ListState, Paragraph,
-};
+use ratatui::widgets::{Block, BorderType, Borders, List, ListItem, ListState, Paragraph};
 
 use crate::theme::Theme;
 
@@ -209,11 +207,8 @@ fn render_config_tabs(
 ) {
     use ratatui::widgets::Tabs;
 
-    let tab_titles: Vec<Line<'_>> = app
-        .tabs()
-        .iter()
-        .map(|t| Line::from(format!(" {} ", t.label)))
-        .collect();
+    let tab_titles: Vec<Line<'_>> =
+        app.tabs().iter().map(|t| Line::from(format!(" {} ", t.label))).collect();
 
     let tabs = Tabs::new(tab_titles)
         .select(active_tab)
@@ -237,17 +232,9 @@ const FIELD_LABEL_WIDTH: usize = 20;
 /// `tab_active` highlight style. Fields in edit mode show the edit buffer
 /// value with a cursor indicator (`█`). Validation errors are shown as a
 /// dim annotation below the value.
-fn render_field_list(
-    frame: &mut Frame,
-    area: Rect,
-    state: &ConfigState,
-    theme: &Theme,
-) {
-    let items: Vec<ListItem<'_>> = state
-        .fields
-        .iter()
-        .map(|field| build_field_item(field, theme))
-        .collect();
+fn render_field_list(frame: &mut Frame, area: Rect, state: &ConfigState, theme: &Theme) {
+    let items: Vec<ListItem<'_>> =
+        state.fields.iter().map(|field| build_field_item(field, theme)).collect();
 
     let block = Block::default()
         .title(" Fields ")
@@ -260,10 +247,8 @@ fn render_field_list(
         list_state.select(Some(state.focused_field));
     }
 
-    let list = List::new(items)
-        .block(block)
-        .highlight_style(theme.tab_active)
-        .highlight_symbol("► ");
+    let list =
+        List::new(items).block(block).highlight_style(theme.tab_active).highlight_symbol("► ");
 
     frame.render_stateful_widget(list, area, &mut list_state);
 }
@@ -278,8 +263,7 @@ fn build_field_item<'a>(field: &FieldDef, theme: &'a Theme) -> ListItem<'a> {
     } else {
         " "
     };
-    let label_str =
-        format!(" {dirty_marker}{:<FIELD_LABEL_WIDTH$} : ", field.label);
+    let label_str = format!(" {dirty_marker}{:<FIELD_LABEL_WIDTH$} : ", field.label);
 
     let (value_text, value_style) = if field.editing {
         (
@@ -291,9 +275,7 @@ fn build_field_item<'a>(field: &FieldDef, theme: &'a Theme) -> ListItem<'a> {
         let style = match &field.validation {
             ValidationResult::Error(_) => theme.dialog_error_border,
             ValidationResult::Warning(_) => theme.indicator_unavailable,
-            ValidationResult::Ok | ValidationResult::Pending => {
-                theme.data_value
-            }
+            ValidationResult::Ok | ValidationResult::Pending => theme.data_value,
         };
         (val, style)
     };
@@ -330,12 +312,7 @@ fn build_field_item<'a>(field: &FieldDef, theme: &'a Theme) -> ListItem<'a> {
 /// Shows the field label, current edit buffer, and validation result
 /// for all fields — not just the one being edited — so the operator
 /// can see the full validation state before committing.
-fn render_validation_panel(
-    frame: &mut Frame,
-    area: Rect,
-    state: &ConfigState,
-    theme: &Theme,
-) {
+fn render_validation_panel(frame: &mut Frame, area: Rect, state: &ConfigState, theme: &Theme) {
     let mut lines = vec![
         Line::from(""),
         Line::from(Span::styled("  Validation", theme.group_title)),
@@ -377,8 +354,7 @@ fn render_validation_panel(
 // ---------------------------------------------------------------------------
 
 /// Key legend when the form is clean (no dirty fields).
-const CONFIG_KEY_LEGEND_CLEAN: &str =
-    "  Tab: tabs | ↑↓: select | Enter: edit | q: quit";
+const CONFIG_KEY_LEGEND_CLEAN: &str = "  Tab: tabs | ↑↓: select | Enter: edit | q: quit";
 
 /// Key legend when the form has dirty fields (show Save/Discard).
 const CONFIG_KEY_LEGEND_DIRTY: &str =
@@ -418,9 +394,7 @@ fn render_config_status(
     let combined = status_chars.saturating_add(legend_chars);
 
     let padded = if combined <= total_width {
-        let pad = total_width
-            .saturating_sub(status_chars)
-            .saturating_sub(legend_chars);
+        let pad = total_width.saturating_sub(status_chars).saturating_sub(legend_chars);
         format!("{status_text}{}{legend}", " ".repeat(pad))
     } else if status_chars < total_width {
         let pad = total_width.saturating_sub(status_chars);
@@ -445,17 +419,13 @@ fn render_config_status(
 ///
 /// The "before" value for each field is retrieved from `app.committed_values()`.
 /// Fields not present in the committed values map are treated as new (before = "").
-fn build_diff_entries(
-    app: &dyn ConfigApp,
-    state: &ConfigState,
-) -> Vec<DiffEntry> {
+fn build_diff_entries(app: &dyn ConfigApp, state: &ConfigState) -> Vec<DiffEntry> {
     let committed = app.committed_values();
     state
         .fields
         .iter()
         .map(|field| {
-            let before =
-                committed.get(&field.label).cloned().unwrap_or_default();
+            let before = committed.get(&field.label).cloned().unwrap_or_default();
             let after = field.value.display();
             DiffEntry::new(field.label.clone(), before, after)
         })

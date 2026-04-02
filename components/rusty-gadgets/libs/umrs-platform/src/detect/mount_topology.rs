@@ -71,8 +71,7 @@ fn run_inner(
     read_mnt_namespace(evidence);
 
     // Step 2: mountinfo
-    let mountinfo_ok =
-        read_mountinfo(evidence, confidence, max_mountinfo_bytes);
+    let mountinfo_ok = read_mountinfo(evidence, confidence, max_mountinfo_bytes);
 
     // Step 3: statfs on /etc
     let statfs_ok = read_etc_statfs(evidence);
@@ -82,9 +81,7 @@ fn run_inner(
         confidence.upgrade(TrustLevel::EnvAnchored);
         log::debug!("mount_topology: confidence upgraded to EnvAnchored");
     } else {
-        log::warn!(
-            "mount_topology: partial failure — confidence not upgraded to T2"
-        );
+        log::warn!("mount_topology: partial failure — confidence not upgraded to T2");
     }
 }
 
@@ -124,9 +121,7 @@ fn read_mnt_namespace(evidence: &mut EvidenceBundle) {
             });
         }
         Err(e) => {
-            log::warn!(
-                "mount_topology: could not read mnt namespace link: {e}"
-            );
+            log::warn!("mount_topology: could not read mnt namespace link: {e}");
             evidence.push(EvidenceRecord {
                 source_kind: SourceKind::Procfs,
                 opened_by_fd: false,
@@ -164,9 +159,7 @@ fn read_mountinfo(
     let node = match ProcfsText::new(path.clone()) {
         Ok(n) => n,
         Err(e) => {
-            log::warn!(
-                "mount_topology: ProcfsText rejected mountinfo path: {e}"
-            );
+            log::warn!("mount_topology: ProcfsText rejected mountinfo path: {e}");
             confidence.downgrade(
                 TrustLevel::KernelAnchored,
                 "mountinfo path construction failed",
@@ -175,14 +168,11 @@ fn read_mountinfo(
         }
     };
 
-    let content = match SecureReader::<ProcfsText>::new()
-        .read_generic_text(&node)
-    {
+    let content = match SecureReader::<ProcfsText>::new().read_generic_text(&node) {
         Ok(s) => s,
         Err(e) => {
             log::warn!("mount_topology: could not read mountinfo: {e}");
-            confidence
-                .downgrade(TrustLevel::KernelAnchored, "mountinfo read failed");
+            confidence.downgrade(TrustLevel::KernelAnchored, "mountinfo read failed");
             evidence.push(EvidenceRecord {
                 source_kind: SourceKind::Procfs,
                 opened_by_fd: true,
@@ -206,10 +196,7 @@ fn read_mountinfo(
             content.len(),
             max_mountinfo_bytes
         );
-        confidence.downgrade(
-            TrustLevel::KernelAnchored,
-            "mountinfo exceeded size cap",
-        );
+        confidence.downgrade(TrustLevel::KernelAnchored, "mountinfo exceeded size cap");
         evidence.push(EvidenceRecord {
             source_kind: SourceKind::Procfs,
             opened_by_fd: true,
@@ -264,9 +251,7 @@ fn read_etc_statfs(evidence: &mut EvidenceBundle) -> bool {
             // Cast i64 → u64 for storage; filesystem magic values are defined
             // as positive constants in linux/magic.h.
             let magic_u64 = magic.cast_unsigned();
-            log::debug!(
-                "mount_topology: /etc filesystem magic = {magic_u64:#x}"
-            );
+            log::debug!("mount_topology: /etc filesystem magic = {magic_u64:#x}");
             evidence.push(EvidenceRecord {
                 source_kind: SourceKind::StatfsResult,
                 opened_by_fd: false,

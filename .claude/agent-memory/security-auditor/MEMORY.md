@@ -11,6 +11,10 @@
 - [Indicator definitions](indicator-definitions-plain-language.md) — 37 indicators, plain English
 - [TUI/CLI corpus](tui-cli-corpus.md) — ratatui, crossterm, clap audit checkpoints
 
+## Reference Knowledge
+- [OSCAL integration](oscal-integration.md) — OSCAL schema structure, FedRAMP tier mappings, UMRS-to-OSCAL translation conventions
+- [Citation conventions](citation-conventions.md) — Canonical citation forms, common incorrect citations, tier-awareness rules
+
 ## Recurring Gap Patterns
 
 ### pub field defeats immutability claim
@@ -88,6 +92,36 @@ Recurring gaps found in `US-CUI-LABELS.json` v0.3.0 audit:
 - SignerMode determines FIPS mode choice → must be #[must_use] at type level
 - TrustStatus is a security-decision type → must be #[must_use] at type level
 
+## Workspace-Wide Annotation Patterns (2026-04-02)
+
+### nist_controls runtime strings in catalog.rs use `NIST 800-53` — should be `SP 800-53`
+The posture indicator catalog uses `NIST 800-53 CM-6` in all runtime strings. The
+citation rule allows dropping "NIST" for runtime output but NOT dropping "SP".
+The correct runtime abbreviation is `SP 800-53 CM-6`. Flag this in any crate that
+exposes operator-visible control citation strings.
+
+### NSA RTB runtime citations use prose descriptions, not named principles
+`NSA RTB: attack surface reduction` is not a named RTB principle. Runtime strings
+should use `RTB RAIN` or `RTB` for the named principle form. Prose descriptions
+after a colon are acceptable for human readability but must follow — not replace —
+the named principle token.
+
+### bare #[must_use] without messages is a workspace-wide pattern in umrs-selinux
+~40 accessor methods across `secure_dirent.rs`, `status.rs`, `xattrs.rs`,
+`dirlist.rs`, `user.rs`, `type_id.rs`, `sensitivity.rs` carry bare `#[must_use]`
+with no message. The Must-Use Contract Rule forbids bare annotations regardless of
+tier — even simple accessors need a message if they carry `#[must_use]` at all.
+This is an ongoing annotation debt pattern in umrs-selinux.
+
+### umrs-core `human/` and `robots/` subdirectories are missing //! blocks
+10 files in umrs-core have no `//!` module-level doc block at all. These are
+utility/support modules, not security-critical, but the Module Documentation
+Checklist Rule applies unconditionally. Flag this pattern in new crate reviews.
+
+### timestamp.rs "NSA RTB Secure Arithmetic" is not a named principle
+Checked arithmetic maps to NIST SP 800-53 SI-10 per the Control Mapping Conventions.
+`NSA RTB Secure Arithmetic` is an invented principle name, not an RTB identifier.
+
 ## Reports Index
 - `2026-03-11-rpm-db-security-audit.md` — RPM findings
 - `2026-03-11-os-detection-umrs-platform-surface-audit.md` — detect pipeline
@@ -101,6 +135,7 @@ Recurring gaps found in `US-CUI-LABELS.json` v0.3.0 audit:
 - `security-auditor-tui-review-2026-03-20-v2.md` — TUI v2: 26A/3C/0E; 3 open (C-15v2 MEDIUM, C-T3-STATUS LOW, C-7v2 LOW)
 - `code/2026-03-30-us-cui-labels-audit.md` — US-CUI-LABELS.json v0.3.0: 4E/9C; MCS range conflict, EXPT distribution stmt error, 5 missing warning stmts, RELIDO mutex gap; plus rules-file review: 1E/5C (LEI anti-pattern error, DL ONLY name, RELIDO title, JSON fields incomplete)
 - `code/2026-04-01-umrs-c2pa-security-audit-review.md` — in-depth; 13 files; 3E/9C/14A (4H/12M/9L); main gaps: validate.rs no //! block, creds.rs no Compliance section, 19 #[must_use] gaps (4 types, 7 Result fns, 8 bare annotations)
+- `code/2026-04-02-full-workspace-compliance-audit.md` — in-depth; 85 files; all 10 crates; 2H/11M/8L; main gaps: load_state/save_state missing #[must_use], is_selinux_enabled et al bare #[must_use], catalog.rs NIST 800-53 format error (20+ entries), ~40 bare #[must_use] in umrs-selinux, 10 umrs-core files missing //! blocks
 
 ## TUI Audit Card Patterns
 - IndicatorValue for kernel flags → cite SI-7 + CM-6 (NOT SI-3)

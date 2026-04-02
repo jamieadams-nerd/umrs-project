@@ -159,10 +159,7 @@ impl fmt::Display for RpmHeaderError {
                 )
             }
             Self::TpiDisagreement => {
-                write!(
-                    f,
-                    "rpm header TPI: nom and manual parse paths disagreed"
-                )
+                write!(f, "rpm header TPI: nom and manual parse paths disagreed")
             }
             Self::OffsetOutOfBounds {
                 tag,
@@ -175,10 +172,7 @@ impl fmt::Display for RpmHeaderError {
             Self::MissingNulTerminator {
                 tag,
             } => {
-                write!(
-                    f,
-                    "rpm header tag={tag}: missing nul terminator in store"
-                )
+                write!(f, "rpm header tag={tag}: missing nul terminator in store")
             }
             Self::Utf8Error {
                 tag,
@@ -305,10 +299,7 @@ fn parse_index_entry_nom(input: &[u8]) -> IResult<&[u8], IndexEntry> {
 }
 
 /// Parse all index entries using `nom`.
-fn parse_index_nom(
-    input: &[u8],
-    nindex: u32,
-) -> Result<Vec<IndexEntry>, RpmHeaderError> {
+fn parse_index_nom(input: &[u8], nindex: u32) -> Result<Vec<IndexEntry>, RpmHeaderError> {
     let n = nindex as usize;
     match count(parse_index_entry_nom, n)(input) {
         Ok((_, entries)) => Ok(entries),
@@ -321,53 +312,28 @@ fn parse_index_nom(
 // ===========================================================================
 
 /// Parse all index entries via manual `u32::from_be_bytes` extraction.
-fn parse_index_manual(
-    blob: &[u8],
-    nindex: u32,
-) -> Result<Vec<IndexEntry>, RpmHeaderError> {
+fn parse_index_manual(blob: &[u8], nindex: u32) -> Result<Vec<IndexEntry>, RpmHeaderError> {
     let n = nindex as usize;
     // Each entry is 16 bytes; entries start at byte 8 (after the 8-byte prefix).
-    let required =
-        n.checked_mul(16).ok_or(RpmHeaderError::InvalidIndexCount(nindex))?;
-    let index_region =
-        blob.get(8..8 + required).ok_or(RpmHeaderError::TooShort)?;
+    let required = n.checked_mul(16).ok_or(RpmHeaderError::InvalidIndexCount(nindex))?;
+    let index_region = blob.get(8..8 + required).ok_or(RpmHeaderError::TooShort)?;
 
     let mut entries = Vec::with_capacity(n);
     for i in 0..n {
-        let base = i
-            .checked_mul(16)
-            .ok_or(RpmHeaderError::InvalidIndexCount(nindex))?;
-        let slice = index_region
-            .get(base..base + 16)
-            .ok_or(RpmHeaderError::TooShort)?;
+        let base = i.checked_mul(16).ok_or(RpmHeaderError::InvalidIndexCount(nindex))?;
+        let slice = index_region.get(base..base + 16).ok_or(RpmHeaderError::TooShort)?;
 
         let tag = u32::from_be_bytes(
-            slice
-                .get(0..4)
-                .ok_or(RpmHeaderError::TooShort)?
-                .try_into()
-                .unwrap_or([0u8; 4]),
+            slice.get(0..4).ok_or(RpmHeaderError::TooShort)?.try_into().unwrap_or([0u8; 4]),
         );
         let data_type = u32::from_be_bytes(
-            slice
-                .get(4..8)
-                .ok_or(RpmHeaderError::TooShort)?
-                .try_into()
-                .unwrap_or([0u8; 4]),
+            slice.get(4..8).ok_or(RpmHeaderError::TooShort)?.try_into().unwrap_or([0u8; 4]),
         );
         let offset = u32::from_be_bytes(
-            slice
-                .get(8..12)
-                .ok_or(RpmHeaderError::TooShort)?
-                .try_into()
-                .unwrap_or([0u8; 4]),
+            slice.get(8..12).ok_or(RpmHeaderError::TooShort)?.try_into().unwrap_or([0u8; 4]),
         );
         let cnt = u32::from_be_bytes(
-            slice
-                .get(12..16)
-                .ok_or(RpmHeaderError::TooShort)?
-                .try_into()
-                .unwrap_or([0u8; 4]),
+            slice.get(12..16).ok_or(RpmHeaderError::TooShort)?.try_into().unwrap_or([0u8; 4]),
         );
         entries.push(IndexEntry {
             tag,
@@ -407,11 +373,7 @@ fn tpi_agree(a: &[IndexEntry], b: &[IndexEntry]) -> Result<(), RpmHeaderError> {
 ///
 /// Returns `Err` if `offset` is out of bounds or no nul terminator is found
 /// before the end of the store.
-fn read_string(
-    store: &[u8],
-    offset: u32,
-    tag: u32,
-) -> Result<String, RpmHeaderError> {
+fn read_string(store: &[u8], offset: u32, tag: u32) -> Result<String, RpmHeaderError> {
     let start = offset as usize;
     if start >= store.len() {
         return Err(RpmHeaderError::OffsetOutOfBounds {
@@ -420,26 +382,20 @@ fn read_string(
             store_len: store_len_u32(store),
         });
     }
-    let slice = store.get(start..).ok_or_else(|| {
-        RpmHeaderError::OffsetOutOfBounds {
-            tag,
-            offset,
-            store_len: store_len_u32(store),
-        }
+    let slice = store.get(start..).ok_or_else(|| RpmHeaderError::OffsetOutOfBounds {
+        tag,
+        offset,
+        store_len: store_len_u32(store),
     })?;
-    let nul_pos = slice.iter().position(|&b| b == 0).ok_or(
-        RpmHeaderError::MissingNulTerminator {
-            tag,
-        },
-    )?;
-    let bytes =
-        slice.get(..nul_pos).ok_or(RpmHeaderError::MissingNulTerminator {
+    let nul_pos =
+        slice.iter().position(|&b| b == 0).ok_or(RpmHeaderError::MissingNulTerminator {
             tag,
         })?;
-    std::str::from_utf8(bytes).map(str::to_owned).map_err(|_| {
-        RpmHeaderError::Utf8Error {
-            tag,
-        }
+    let bytes = slice.get(..nul_pos).ok_or(RpmHeaderError::MissingNulTerminator {
+        tag,
+    })?;
+    std::str::from_utf8(bytes).map(str::to_owned).map_err(|_| RpmHeaderError::Utf8Error {
+        tag,
     })
 }
 
@@ -465,38 +421,30 @@ fn read_string_array(
             });
         }
         let cursor_u32 = u32::try_from(cursor).unwrap_or(u32::MAX);
-        let slice = store.get(cursor..).ok_or_else(|| {
+        let slice = store.get(cursor..).ok_or_else(|| RpmHeaderError::OffsetOutOfBounds {
+            tag,
+            offset: cursor_u32,
+            store_len: store_len_u32(store),
+        })?;
+        let nul_pos =
+            slice.iter().position(|&b| b == 0).ok_or(RpmHeaderError::MissingNulTerminator {
+                tag,
+            })?;
+        let bytes = slice.get(..nul_pos).ok_or(RpmHeaderError::MissingNulTerminator {
+            tag,
+        })?;
+        let s = std::str::from_utf8(bytes).map_err(|_| RpmHeaderError::Utf8Error {
+            tag,
+        })?;
+        results.push(s.to_owned());
+        // Advance past the string and its nul terminator.
+        cursor = cursor.checked_add(nul_pos).and_then(|c| c.checked_add(1)).ok_or_else(|| {
             RpmHeaderError::OffsetOutOfBounds {
                 tag,
                 offset: cursor_u32,
                 store_len: store_len_u32(store),
             }
         })?;
-        let nul_pos = slice.iter().position(|&b| b == 0).ok_or(
-            RpmHeaderError::MissingNulTerminator {
-                tag,
-            },
-        )?;
-        let bytes = slice.get(..nul_pos).ok_or(
-            RpmHeaderError::MissingNulTerminator {
-                tag,
-            },
-        )?;
-        let s = std::str::from_utf8(bytes).map_err(|_| {
-            RpmHeaderError::Utf8Error {
-                tag,
-            }
-        })?;
-        results.push(s.to_owned());
-        // Advance past the string and its nul terminator.
-        cursor = cursor
-            .checked_add(nul_pos)
-            .and_then(|c| c.checked_add(1))
-            .ok_or_else(|| RpmHeaderError::OffsetOutOfBounds {
-                tag,
-                offset: cursor_u32,
-                store_len: store_len_u32(store),
-            })?;
     }
     Ok(results)
 }
@@ -512,26 +460,21 @@ fn read_int32_array(
 ) -> Result<Vec<u32>, RpmHeaderError> {
     let sl = store_len_u32(store);
     let start = offset as usize;
-    let byte_len = (count as usize).checked_mul(4).ok_or(
-        RpmHeaderError::OffsetOutOfBounds {
-            tag,
-            offset,
-            store_len: sl,
-        },
-    )?;
-    let end = start.checked_add(byte_len).ok_or(
-        RpmHeaderError::OffsetOutOfBounds {
-            tag,
-            offset,
-            store_len: sl,
-        },
-    )?;
-    let slice =
-        store.get(start..end).ok_or(RpmHeaderError::OffsetOutOfBounds {
-            tag,
-            offset,
-            store_len: sl,
-        })?;
+    let byte_len = (count as usize).checked_mul(4).ok_or(RpmHeaderError::OffsetOutOfBounds {
+        tag,
+        offset,
+        store_len: sl,
+    })?;
+    let end = start.checked_add(byte_len).ok_or(RpmHeaderError::OffsetOutOfBounds {
+        tag,
+        offset,
+        store_len: sl,
+    })?;
+    let slice = store.get(start..end).ok_or(RpmHeaderError::OffsetOutOfBounds {
+        tag,
+        offset,
+        store_len: sl,
+    })?;
 
     let mut results = Vec::with_capacity(count as usize);
     for i in 0..count as usize {
@@ -540,55 +483,45 @@ fn read_int32_array(
             offset,
             store_len: sl,
         })?;
-        let end_b =
-            b.checked_add(4).ok_or(RpmHeaderError::OffsetOutOfBounds {
-                tag,
-                offset,
-                store_len: sl,
-            })?;
-        let word =
-            slice.get(b..end_b).ok_or(RpmHeaderError::OffsetOutOfBounds {
-                tag,
-                offset,
-                store_len: sl,
-            })?;
-        let arr: [u8; 4] =
-            word.try_into().map_err(|_| RpmHeaderError::OffsetOutOfBounds {
-                tag,
-                offset,
-                store_len: sl,
-            })?;
+        let end_b = b.checked_add(4).ok_or(RpmHeaderError::OffsetOutOfBounds {
+            tag,
+            offset,
+            store_len: sl,
+        })?;
+        let word = slice.get(b..end_b).ok_or(RpmHeaderError::OffsetOutOfBounds {
+            tag,
+            offset,
+            store_len: sl,
+        })?;
+        let arr: [u8; 4] = word.try_into().map_err(|_| RpmHeaderError::OffsetOutOfBounds {
+            tag,
+            offset,
+            store_len: sl,
+        })?;
         results.push(u32::from_be_bytes(arr));
     }
     Ok(results)
 }
 
 /// Read a single u32 big-endian value from `store` at `offset`.
-fn read_int32(
-    store: &[u8],
-    offset: u32,
-    tag: u32,
-) -> Result<u32, RpmHeaderError> {
+fn read_int32(store: &[u8], offset: u32, tag: u32) -> Result<u32, RpmHeaderError> {
     let sl = store_len_u32(store);
     let start = offset as usize;
-    let end =
-        start.checked_add(4).ok_or(RpmHeaderError::OffsetOutOfBounds {
-            tag,
-            offset,
-            store_len: sl,
-        })?;
-    let slice =
-        store.get(start..end).ok_or(RpmHeaderError::OffsetOutOfBounds {
-            tag,
-            offset,
-            store_len: sl,
-        })?;
-    let arr: [u8; 4] =
-        slice.try_into().map_err(|_| RpmHeaderError::OffsetOutOfBounds {
-            tag,
-            offset,
-            store_len: sl,
-        })?;
+    let end = start.checked_add(4).ok_or(RpmHeaderError::OffsetOutOfBounds {
+        tag,
+        offset,
+        store_len: sl,
+    })?;
+    let slice = store.get(start..end).ok_or(RpmHeaderError::OffsetOutOfBounds {
+        tag,
+        offset,
+        store_len: sl,
+    })?;
+    let arr: [u8; 4] = slice.try_into().map_err(|_| RpmHeaderError::OffsetOutOfBounds {
+        tag,
+        offset,
+        store_len: sl,
+    })?;
     Ok(u32::from_be_bytes(arr))
 }
 
@@ -656,21 +589,16 @@ pub fn parse_rpm_header(blob: &[u8]) -> Result<RpmHeader, RpmHeaderError> {
     }
 
     // ── Validate total size ───────────────────────────────────────────────────
-    let index_bytes = (nindex as usize)
-        .checked_mul(16)
-        .ok_or(RpmHeaderError::InvalidIndexCount(nindex))?;
-    let header_end =
-        8usize.checked_add(index_bytes).ok_or(RpmHeaderError::TooShort)?;
-    let store_end = header_end
-        .checked_add(hsize as usize)
-        .ok_or(RpmHeaderError::TooShort)?;
+    let index_bytes =
+        (nindex as usize).checked_mul(16).ok_or(RpmHeaderError::InvalidIndexCount(nindex))?;
+    let header_end = 8usize.checked_add(index_bytes).ok_or(RpmHeaderError::TooShort)?;
+    let store_end = header_end.checked_add(hsize as usize).ok_or(RpmHeaderError::TooShort)?;
     if blob.len() < store_end {
         return Err(RpmHeaderError::TooShort);
     }
 
     // ── Path A: nom ───────────────────────────────────────────────────────────
-    let index_region =
-        blob.get(8..header_end).ok_or(RpmHeaderError::TooShort)?;
+    let index_region = blob.get(8..header_end).ok_or(RpmHeaderError::TooShort)?;
     let entries_a = parse_index_nom(index_region, nindex)?;
 
     // ── Path B: manual ────────────────────────────────────────────────────────
@@ -680,8 +608,7 @@ pub fn parse_rpm_header(blob: &[u8]) -> Result<RpmHeader, RpmHeaderError> {
     tpi_agree(&entries_a, &entries_b)?;
 
     // ── Store region ──────────────────────────────────────────────────────────
-    let store =
-        blob.get(header_end..store_end).ok_or(RpmHeaderError::TooShort)?;
+    let store = blob.get(header_end..store_end).ok_or(RpmHeaderError::TooShort)?;
 
     // ── Tag extraction ────────────────────────────────────────────────────────
     let result = extract_tags(&entries_a, store)?;
@@ -696,10 +623,7 @@ pub fn parse_rpm_header(blob: &[u8]) -> Result<RpmHeader, RpmHeaderError> {
 }
 
 /// Extract all known tags from the parsed index entries and store region.
-fn extract_tags(
-    entries: &[IndexEntry],
-    store: &[u8],
-) -> Result<RpmHeader, RpmHeaderError> {
+fn extract_tags(entries: &[IndexEntry], store: &[u8]) -> Result<RpmHeader, RpmHeaderError> {
     let find = |tag: u32| entries.iter().find(|e| e.tag == tag);
 
     // ── NAME ──────────────────────────────────────────────────────────────────
@@ -830,16 +754,13 @@ fn extract_file_list(
     for i in 0..file_count {
         let basename = basenames.get(i).ok_or(RpmHeaderError::TooShort)?;
         let dir_idx = *dirindexes.get(i).ok_or(RpmHeaderError::TooShort)?;
-        let digest_hex =
-            filedigests.get(i).ok_or(RpmHeaderError::TooShort)?.clone();
+        let digest_hex = filedigests.get(i).ok_or(RpmHeaderError::TooShort)?.clone();
 
-        let dirname = dirnames.get(dir_idx as usize).ok_or(
-            RpmHeaderError::InvalidDirindex {
-                file_idx: i,
-                dir_idx,
-                dir_count: dirnames.len(),
-            },
-        )?;
+        let dirname = dirnames.get(dir_idx as usize).ok_or(RpmHeaderError::InvalidDirindex {
+            file_idx: i,
+            dir_idx,
+            dir_count: dirnames.len(),
+        })?;
 
         // Reconstruct the full path. DIRNAMES entries already end with '/'.
         let full_path = format!("{dirname}{basename}");

@@ -1,7 +1,7 @@
 # M3 Translation Preparation
 
 **Date:** 2026-03-21
-**Status:** draft
+**Status:** in-progress — umrs-c2pa wrapping active (2026-04-02); D1-D5 all resolved; pipeline proven on umrs-uname
 **Author:** Simone (umrs-translator)
 **ROADMAP Goals:** G3 (CUI & Five Eyes)
 **Milestones:** M3 (CUI Ready)
@@ -36,6 +36,7 @@
 
 | Domain | Expected Volume | Terminology Complexity | Notes |
 |---|---|---|---|
+| `umrs-c2pa` | 105 entries (74 unique strings) | HIGH — C2PA spec terms, policy-critical labels | D1-D5 all resolved; wrapping in progress 2026-04-02 |
 | `umrs-mcs` | 40-60 msgids | HIGH — legal/compliance terms | CUI vocabulary needs authoritative French sources |
 | `umrs-stat` | 30-40 msgids | MEDIUM — security posture terms | Some overlap with umrs-state |
 | `umrs-uname` | 15-20 msgids | LOW — overlaps existing vocabulary | Lowest friction onboarding |

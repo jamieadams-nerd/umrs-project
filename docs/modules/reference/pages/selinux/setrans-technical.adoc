@@ -13,7 +13,7 @@ Module: `umrs_selinux::mcs::setrans`
 In SELinux, the ground truth stored on disk is often a raw bitmask (for example,
 `s0:c90,c99`). While mathematically sound for the kernel, this representation is
 illegible to human operators and auditors who require regulatory markings such as
-`CUI//LEI/INV`. Traditional systems rely on the `mcstransd` daemon, which introduces
+`CUI//INV`. Traditional systems rely on the `mcstransd` daemon, which introduces
 a non-anchored userspace dependency.
 
 == The UMRS Solution: TPI-Vetted Translation
@@ -80,7 +80,7 @@ facade, identifying exactly which bitmask triggered a vernacular match.
 == Future Trajectory
 
 The substrate is designed to bridge into the UMRS CUI Master Catalog. Future iterations
-will use the translated markings (for example, `CUI//AGR`) as a key to pull extended
+will use the translated markings (for example, `CUI//AMNT`) as a key to pull extended
 metadata from JSON registries, including:
 
 * *Visual fidelity* — dynamic color palettes for UI rendering

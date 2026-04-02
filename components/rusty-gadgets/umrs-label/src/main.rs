@@ -5,6 +5,7 @@
 // This binary does not set umask; deploy with an appropriate service unit
 // or shell profile that enforces umask 0o027 before launching.
 //
+#![forbid(unsafe_code)]
 use std::collections::BTreeMap;
 use umrs_labels::cui::catalog;
 
@@ -30,21 +31,16 @@ fn main() {
     println!();
 
     // Group markings by index_group, sorted. Ungrouped entries go under "(No Group)".
-    let mut groups: BTreeMap<String, Vec<(&String, &catalog::Marking)>> =
-        BTreeMap::new();
+    let mut groups: BTreeMap<String, Vec<(&String, &catalog::Marking)>> = BTreeMap::new();
     for (key, marking) in cat.iter_markings() {
-        let group_name = marking
-            .index_group
-            .clone()
-            .unwrap_or_else(|| "(No Group)".to_string());
+        let group_name = marking.index_group.clone().unwrap_or_else(|| "(No Group)".to_string());
         groups.entry(group_name).or_default().push((key, marking));
     }
 
     // Sort entries within each group alphabetically by key
     for entries in groups.values_mut() {
         entries.sort_by(
-            |a: &(&String, &catalog::Marking),
-             b: &(&String, &catalog::Marking)| { a.0.cmp(b.0) },
+            |a: &(&String, &catalog::Marking), b: &(&String, &catalog::Marking)| a.0.cmp(b.0),
         );
     }
 

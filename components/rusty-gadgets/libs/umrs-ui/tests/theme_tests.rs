@@ -47,8 +47,7 @@ fn theme_default_indicator_unavailable_is_yellow() {
 #[test]
 fn theme_default_indicator_disabled_and_unavailable_differ() {
     let theme = Theme::default();
-    let disabled =
-        theme.indicator_style(&IndicatorValue::Disabled("off".to_owned()));
+    let disabled = theme.indicator_style(&IndicatorValue::Disabled("off".to_owned()));
     let unavailable = theme.indicator_style(&IndicatorValue::Unavailable);
     assert_ne!(
         disabled, unavailable,
@@ -59,10 +58,8 @@ fn theme_default_indicator_disabled_and_unavailable_differ() {
 #[test]
 fn theme_default_all_indicator_styles_differ() {
     let theme = Theme::default();
-    let enabled =
-        theme.indicator_style(&IndicatorValue::Enabled("on".to_owned()));
-    let disabled =
-        theme.indicator_style(&IndicatorValue::Disabled("off".to_owned()));
+    let enabled = theme.indicator_style(&IndicatorValue::Enabled("on".to_owned()));
+    let disabled = theme.indicator_style(&IndicatorValue::Disabled("off".to_owned()));
     let unavailable = theme.indicator_style(&IndicatorValue::Unavailable);
     assert_ne!(
         enabled, disabled,

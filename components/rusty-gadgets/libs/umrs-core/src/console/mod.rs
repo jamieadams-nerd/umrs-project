@@ -19,6 +19,4 @@ pub use ansi::*;
 pub use macros::{VERBOSE, stderr_is_tty, stdout_is_tty};
 
 // Re-export console macros (DEFINED at crate root via #[macro_export])
-pub use crate::{
-    console_error, console_info, console_status, console_warn, verbose,
-};
+pub use crate::{console_error, console_info, console_status, console_warn, verbose};

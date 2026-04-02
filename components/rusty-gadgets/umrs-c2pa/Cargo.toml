@@ -47,8 +47,7 @@ serde_json = "1"
 # Logging facade — always present; backend is platform-gated below
 log = "0.4"
 
-# SHA-256 file hash at ingest
-sha2 = "0.10"
+# Hex encoding for digest output
 hex  = "0.4"
 
 # Timestamp parsing from manifests
@@ -73,3 +72,10 @@ zeroize = "1"
 # libc — needed for O_NOFOLLOW flag in Unix private key reads.
 # Widely used, well-audited system call binding.
 libc = "0.2"
+
+# Internationalization — gettext-based message translation.
+# gettext-rs wraps GNU gettext; gettext-system links the system libintl (present
+# on all RHEL/Fedora systems). umrs-core re-exports the tr() helper; we also
+# depend on gettext-rs directly for ngettext() plural forms.
+gettext-rs = { version = "0.7", features = ["gettext-system"] }
+umrs-core  = { path = "../libs/umrs-core" }

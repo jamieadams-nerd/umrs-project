@@ -54,9 +54,7 @@ enum DenialReason {
 // Helper: extract the CategorySet from a file's SELinux label state.
 // ---------------------------------------------------------------------------
 
-fn file_categories(
-    label: &SelinuxCtxState,
-) -> Result<CategorySet, DenialReason> {
+fn file_categories(label: &SelinuxCtxState) -> Result<CategorySet, DenialReason> {
     match label {
         SelinuxCtxState::Labeled(ctx) => {
             // context::MlsLevel has public field `categories`.
@@ -82,10 +80,7 @@ fn file_categories(
 //   i.e., the process holds ALL categories the file requires.
 // ---------------------------------------------------------------------------
 
-fn check_access(
-    process_clearance: &CategorySet,
-    label: &SelinuxCtxState,
-) -> AccessDecision {
+fn check_access(process_clearance: &CategorySet, label: &SelinuxCtxState) -> AccessDecision {
     match file_categories(label) {
         Ok(file_cats) => {
             if process_clearance.dominates(&file_cats) {
@@ -108,11 +103,7 @@ fn check_access(
 // Print helpers
 // ---------------------------------------------------------------------------
 
-fn print_decision(
-    filename: &str,
-    label: &SelinuxCtxState,
-    decision: &AccessDecision,
-) {
+fn print_decision(filename: &str, label: &SelinuxCtxState, decision: &AccessDecision) {
     let label_str = match label {
         SelinuxCtxState::Labeled(ctx) => ctx.to_string(),
         SelinuxCtxState::Unlabeled => "<unlabeled>".to_string(),
@@ -205,9 +196,7 @@ fn main() -> io::Result<()> {
         Ok(e) => e,
         Err(e) => {
             eprintln!("Cannot read directory '{}': {e}", scan_dir.display());
-            eprintln!(
-                "Tip: run the setup commands from the exercise to create ~/cui-lab/"
-            );
+            eprintln!("Tip: run the setup commands from the exercise to create ~/cui-lab/");
             return Err(e);
         }
     };
@@ -230,10 +219,7 @@ fn main() -> io::Result<()> {
         let dirent = match SecureDirent::from_path(&path) {
             Ok(d) => d,
             Err(SecDirError::InvalidPath(e)) => {
-                eprintln!(
-                    "  [ERROR] path validation for '{}': {e:?}",
-                    path.display()
-                );
+                eprintln!("  [ERROR] path validation for '{}': {e:?}", path.display());
                 continue;
             }
             Err(e) => {
@@ -283,84 +269,50 @@ fn main() -> io::Result<()> {
             match fs::File::open(path) {
                 Err(e) => {
                     println!("  open() failed: {e}");
-                    println!(
-                        "  SELinux enforcement blocked the read at the kernel level."
-                    );
+                    println!("  SELinux enforcement blocked the read at the kernel level.");
                 }
                 Ok(mut file) => {
                     let mut buf = String::new();
                     match file.read_to_string(&mut buf) {
                         Err(e) => {
                             println!("  read() failed: {e}");
-                            println!(
-                                "  SELinux enforcement blocked the read at the kernel level."
-                            );
+                            println!("  SELinux enforcement blocked the read at the kernel level.");
                         }
                         Ok(n) => {
                             println!("  Read {n} bytes successfully: {buf:?}");
                             println!();
                             println!("  WHY DID THIS SUCCEED AFTER DENIED?");
                             println!("  -----------------------------------");
-                            println!(
-                                "  Our software said DENIED, but the kernel said OK."
-                            );
+                            println!("  Our software said DENIED, but the kernel said OK.");
                             println!();
-                            println!(
-                                "  The umrs-selinux library models SELinux MCS mathematics"
-                            );
-                            println!(
-                                "  in pure Rust userland — it does NOT call into the kernel"
-                            );
+                            println!("  The umrs-selinux library models SELinux MCS mathematics");
+                            println!("  in pure Rust userland — it does NOT call into the kernel");
                             println!(
                                 "  or libselinux to enforce access.  CategorySet::dominates()"
                             );
-                            println!(
-                                "  is a *simulation* of the Bell-LaPadula lattice check,"
-                            );
+                            println!("  is a *simulation* of the Bell-LaPadula lattice check,");
                             println!("  not a kernel syscall.");
                             println!();
-                            println!(
-                                "  Kernel enforcement only triggers when the SELinux policy"
-                            );
-                            println!(
-                                "  says the PROCESS LABEL does not dominate the FILE LABEL."
-                            );
+                            println!("  Kernel enforcement only triggers when the SELinux policy");
+                            println!("  says the PROCESS LABEL does not dominate the FILE LABEL.");
                             println!(
                                 "  In targeted policy (the default on RHEL/Fedora), most user"
                             );
-                            println!(
-                                "  processes run as 'unconfined_t' or have type enforcement"
-                            );
-                            println!(
-                                "  rules that ALLOW cross-category reads regardless of MCS."
-                            );
+                            println!("  processes run as 'unconfined_t' or have type enforcement");
+                            println!("  rules that ALLOW cross-category reads regardless of MCS.");
                             println!();
-                            println!(
-                                "  MCS enforcement is strong in MLS policy.  In targeted"
-                            );
-                            println!(
-                                "  policy it is present but unconfined processes bypass it."
-                            );
-                            println!(
-                                "  The blog post on CUI sign-and-lock covers this in detail."
-                            );
+                            println!("  MCS enforcement is strong in MLS policy.  In targeted");
+                            println!("  policy it is present but unconfined processes bypass it.");
+                            println!("  The blog post on CUI sign-and-lock covers this in detail.");
                             println!();
                             println!("  In a real CUI enforcement deployment:");
-                            println!(
-                                "    1. The application runs as a confined SELinux type."
-                            );
+                            println!("    1. The application runs as a confined SELinux type.");
                             println!(
                                 "    2. The policy denies cross-category reads at the kernel."
                             );
-                            println!(
-                                "    3. Our DENIED decision and the kernel decision agree."
-                            );
-                            println!(
-                                "    4. The userland check is an additional audit layer, not"
-                            );
-                            println!(
-                                "       a substitute for kernel-level policy enforcement."
-                            );
+                            println!("    3. Our DENIED decision and the kernel decision agree.");
+                            println!("    4. The userland check is an additional audit layer, not");
+                            println!("       a substitute for kernel-level policy enforcement.");
                         }
                     }
                 }

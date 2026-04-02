@@ -87,15 +87,9 @@ pub enum ContradictionKind {
 impl std::fmt::Display for ContradictionKind {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Self::EphemeralHotfix => {
-                f.write_str("EphemeralHotfix (live hardened, config not)")
-            }
-            Self::BootDrift => {
-                f.write_str("BootDrift (config hardened, live not)")
-            }
-            Self::SourceUnavailable => {
-                f.write_str("SourceUnavailable (live unreadable)")
-            }
+            Self::EphemeralHotfix => f.write_str("EphemeralHotfix (live hardened, config not)"),
+            Self::BootDrift => f.write_str("BootDrift (config hardened, live not)"),
+            Self::SourceUnavailable => f.write_str("SourceUnavailable (live unreadable)"),
         }
     }
 }
@@ -125,9 +119,7 @@ pub const fn classify(
 ) -> Option<ContradictionKind> {
     match (live_meets, configured_meets) {
         // Both agree or no configured value — no contradiction.
-        (Some(true), Some(true)) | (Some(false), Some(false)) | (_, None) => {
-            None
-        }
+        (Some(true), Some(true)) | (Some(false), Some(false)) | (_, None) => None,
         // Configured exists but live is unreadable.
         (None, Some(_)) => Some(ContradictionKind::SourceUnavailable),
         // Live hardened, configured not → ephemeral hotfix.
@@ -212,10 +204,7 @@ pub fn evaluate_configured_meets(
             //
             // NIST SP 800-53 CA-7: must not silently suppress EphemeralHotfix
             // when the configured and live values legitimately disagree.
-            raw.trim()
-                .parse::<i32>()
-                .ok()
-                .and_then(|v| desired.meets_signed_integer(v))
+            raw.trim().parse::<i32>().ok().and_then(|v| desired.meets_signed_integer(v))
         }
     }
 }

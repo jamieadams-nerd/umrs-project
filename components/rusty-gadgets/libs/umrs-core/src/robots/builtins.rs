@@ -5,15 +5,8 @@ use super::AsciiArtStatic;
 //
 // Use for robot in umrs_core::robots::ALL_ROBOTS
 //
-pub static ALL_ROBOTS: &[&AsciiArtStatic] = &[
-    &MYROBOT,
-    &UMRS_ROMAN,
-    &ROBOT_BIG_WALK,
-    &TINY_ROBOT,
-    &ROBOT2,
-    &WIZARD_MEDIUM,
-    &WIZARD_SMALL,
-];
+pub static ALL_ROBOTS: &[&AsciiArtStatic] =
+    &[&MYROBOT, &UMRS_ROMAN, &ROBOT_BIG_WALK, &TINY_ROBOT, &ROBOT2, &WIZARD_MEDIUM, &WIZARD_SMALL];
 
 pub static UMRS_ROMAN: AsciiArtStatic = AsciiArtStatic {
     name: "umrs_roman",

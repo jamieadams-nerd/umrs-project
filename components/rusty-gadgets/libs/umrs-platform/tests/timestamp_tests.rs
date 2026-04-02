@@ -26,8 +26,7 @@ use umrs_platform::timestamp::{BootSessionDuration, BootSessionTimestamp};
 /// will produce a non-zero value.
 #[test]
 fn now_returns_nonzero() {
-    let ts = BootSessionTimestamp::now()
-        .expect("clock_gettime(CLOCK_MONOTONIC_RAW) failed");
+    let ts = BootSessionTimestamp::now().expect("clock_gettime(CLOCK_MONOTONIC_RAW) failed");
     assert!(
         ts.as_nanos() > 0,
         "expected non-zero nanoseconds from a running kernel"

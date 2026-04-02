@@ -174,9 +174,7 @@ impl FromStr for SensitivityLevel {
 
         let numeric = &s[1..];
 
-        let value: u16 = numeric
-            .parse()
-            .map_err(|_| SensitivityError::InvalidFormat(s.into()))?;
+        let value: u16 = numeric.parse().map_err(|_| SensitivityError::InvalidFormat(s.into()))?;
 
         Self::new(value)
     }

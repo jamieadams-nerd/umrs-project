@@ -125,9 +125,7 @@ where
     T::Output: fmt::Debug,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let read_at_secs = if let Ok(dur) =
-            self.read_at.duration_since(SystemTime::UNIX_EPOCH)
-        {
+        let read_at_secs = if let Ok(dur) = self.read_at.duration_since(SystemTime::UNIX_EPOCH) {
             dur.as_secs()
         } else {
             0u64
@@ -202,10 +200,7 @@ impl<T> SecureReader<T> {
     ///
     /// `pub(crate)` — all external callers route through `read_generic_text`
     /// on a typed wrapper (NIST SP 800-53 SI-7, NSA RTB RAIN).
-    pub(crate) fn execute_read_text(
-        path: &Path,
-        expected_magic: FsType,
-    ) -> io::Result<String> {
+    pub(crate) fn execute_read_text(path: &Path, expected_magic: FsType) -> io::Result<String> {
         // TOCTOU safety: open first to anchor the inode, then verify magic
         // on the open fd. Path is never re-resolved after open.
         let mut file = File::open(path)?;
@@ -290,10 +285,7 @@ impl<T: KernelFileSource> SecureReader<T> {
     ///
     /// `pub(crate)` so that sibling modules (e.g., `selinux`) can implement
     /// specialised `read_generic` wrappers for dynamic-path nodes.
-    pub(crate) fn execute_read(
-        path: &Path,
-        expected_magic: FsType,
-    ) -> io::Result<T::Output> {
+    pub(crate) fn execute_read(path: &Path, expected_magic: FsType) -> io::Result<T::Output> {
         // TOCTOU safety (NIST SP 800-53 SI-7): open the file FIRST to anchor to the
         // inode, then verify filesystem magic on the open fd via fstatfs. Using
         // fd-anchored fstatfs eliminates the race window between a path-based statfs

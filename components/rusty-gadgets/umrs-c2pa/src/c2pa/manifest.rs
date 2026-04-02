@@ -252,6 +252,55 @@ pub fn chain_json(path: &Path, config: &UmrsConfig) -> Result<String, InspectErr
         .map_err(|e| InspectError::Config(format!("JSON serialize: {e}")))
 }
 
+/// Returns the UMRS-parsed chain of custody as a JSON string, including
+/// SHA-256 and SHA-384 file integrity digests.
+///
+/// Produces a JSON object with `sha256`, `sha384`, and `chain` fields.
+/// The `chain` array contains the same entries as `chain_json()`, ordered
+/// oldest-first. Both hash digests must be pre-computed by the caller from
+/// the source file so that the hashes and the chain describe the same bytes.
+///
+/// ```json
+/// {
+///   "sha256": "abcdef...",
+///   "sha384": "123456...",
+///   "chain": [ ... ]
+/// }
+/// ```
+///
+/// Returns `chain: []` if the file has no C2PA manifest.
+///
+/// # Errors
+///
+/// Returns `InspectError::C2pa` if the manifest store cannot be read, or
+/// `InspectError::Config` if JSON serialization or trust settings assembly
+/// fails.  Returns `InspectError::Io` if any trust PEM file cannot be read.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-10**: Non-repudiation — the JSON output carries
+///   both integrity digests alongside the full custody chain for forensic use.
+/// - **NIST SP 800-53 SC-13**: SHA-256 and SHA-384 are computed via system
+///   OpenSSL (FIPS 140-2/3 validated module on RHEL 10).
+/// - **CNSA 2.0**: SHA-384 satisfies CNSA 2.0 hash algorithm requirements.
+#[must_use = "Chain report JSON carries integrity digests and the full custody record; \
+              discarding it silently loses the programmatic evidence output"]
+pub fn chain_report_json(
+    path: &Path,
+    sha256: &str,
+    sha384: &str,
+    config: &UmrsConfig,
+) -> Result<String, InspectError> {
+    let chain = read_chain(path, config)?;
+    let report = serde_json::json!({
+        "sha256": sha256,
+        "sha384": sha384,
+        "chain": chain,
+    });
+    serde_json::to_string_pretty(&report)
+        .map_err(|e| InspectError::Config(format!("JSON serialize: {e}")))
+}
+
 /// Returns the most recent signer name and timestamp from the active manifest.
 ///
 /// Used for the ingest log entry in the "has manifest" case.  Trust settings
@@ -283,7 +332,12 @@ fn collect_entries(store: &serde_json::Value, out: &mut Vec<ChainEntry>) {
     };
 
     // Walk the chain recursively: ingredients first, then the active manifest.
-    walk_manifest(active_id, manifests, out, &mut std::collections::HashSet::new());
+    walk_manifest(
+        active_id,
+        manifests,
+        out,
+        &mut std::collections::HashSet::new(),
+    );
 
     // The c2pa SDK places validation_status at the **store level**, not inside
     // individual manifests.  Per-manifest validation_status is absent for most

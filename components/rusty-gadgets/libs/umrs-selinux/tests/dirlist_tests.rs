@@ -132,10 +132,7 @@ fn column_set_with_is_idempotent() {
 /// Name is always the last column after builder operations.
 #[test]
 fn column_set_name_is_always_last() {
-    let cols = ColumnSet::default()
-        .without(Column::Iov)
-        .with(Column::Size)
-        .with(Column::Inode);
+    let cols = ColumnSet::default().without(Column::Iov).with(Column::Size).with(Column::Inode);
 
     let last = cols.columns().last().copied();
     assert_eq!(last, Some(Column::Name));

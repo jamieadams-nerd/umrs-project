@@ -14,6 +14,7 @@
 | `umrs-state` | binary | `umrs-state` | `resources/i18n/umrs-state/` |
 | `umrs-logspace` | binary | `umrs-logspace` | `resources/i18n/umrs-logspace/` |
 | `umrs-uname` | binary | `umrs-uname` | `resources/i18n/umrs-uname/` |
+| `umrs-c2pa` | binary | `umrs-c2pa` | `resources/i18n/umrs-c2pa/` |
 | `umrs-core` | library | `umrs-core` | `resources/i18n/umrs-core/` |
 | `umrs-platform` | library | `umrs-platform` | `resources/i18n/umrs-platform/` |
 
@@ -28,6 +29,7 @@ Full registry: `resources/i18n/domains.md`
 | umrs-logspace | xtr 2026-03-10 | translated 2026-03-10 | compiled | msgid colon moved to format string |
 | umrs-uname | hand-crafted 2026-03-23 | rescan 2026-03-23 | compiled clean | 16 new gaps found; 4 wrapped, 8 need dev refactor |
 | umrs-platform | hand-crafted 2026-03-23 | translated 2026-03-23 | NOT compiled | display.rs scope only |
+| umrs-c2pa | inventory 2026-04-01 | NOT STARTED | NOT compiled | 74 strings inventoried; 5 design decisions pending; fr man page written |
 
 ## umrs-uname BUG (open — developer action required)
 - `main.rs:1785` calls `i18n::init("umrs-uname")` — CONFIRMED FIXED in current source
@@ -48,6 +50,14 @@ Report: `resources/i18n/reports/2026-03-23-umrs-uname-rescan.md`
 - Makefile: `/media/psf/repos/umrs-project/Makefile`
 - Corpus skill: invoke `french-lookup` Skill tool — do NOT grep corpus files directly
 - Corpus files: `.claude/references/corpus/*.po` (coreutils, grep, sed, tar, findutils, bash, cryptsetup)
+
+## umrs-c2pa i18n Status (updated 2026-04-02)
+- String inventory: [umrs-c2pa-string-inventory.md](umrs-c2pa-string-inventory.md) — 74 strings, 105 entries total, 5 design decisions pending
+- French man page: [fr-man-page.md](fr-man-page.md) — written to docs/fr/umrs-c2pa.1; Henri D3/D4 decisions applied
+- Man page last synced: 2026-04-02 — SHA-384 dual digest + enriched Algorithm field added
+- Design decisions D1–D5 block wrapping work (thiserror, composite summary, status tags, TrustStatus labels, column layout)
+- Henri must review TrustStatus labels (TRUSTED, UNVERIFIED, INVALID, REVOKED, NO TRUST LIST) before translation
+- NOTE: English man page (umrs-c2pa.1) not yet updated by Lucia as of 2026-04-02; FR page synced from feature spec. Re-verify when EN page ships.
 
 ## Cargo.toml Entry (confirmed)
 - `gettext-rs = { version = "0.7", features = ["gettext-system"] }`

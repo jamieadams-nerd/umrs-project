@@ -1,6 +1,4 @@
-use umrs_core::human::sizefmt::{
-    SizeBase, SizeUnit, auto_format, format_in_unit,
-};
+use umrs_core::human::sizefmt::{SizeBase, SizeUnit, auto_format, format_in_unit};
 
 fn main() {
     let bytes = 1_500_000u128;

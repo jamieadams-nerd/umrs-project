@@ -34,10 +34,7 @@
 //!   cargo test -p umrs-platform --test sealed_cache_tests
 //! =============================================================================
 
-use umrs_platform::{
-    CacheStatus, DEFAULT_TTL_SECS, MAX_TTL_SECS, SealedCache,
-    detect::OsDetector,
-};
+use umrs_platform::{CacheStatus, DEFAULT_TTL_SECS, MAX_TTL_SECS, SealedCache, detect::OsDetector};
 
 // =============================================================================
 // Construction and basic accessors

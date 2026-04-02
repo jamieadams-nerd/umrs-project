@@ -203,12 +203,9 @@ impl FromStr for KernelVersion {
         let version_part = s.split('-').next().ok_or_else(err)?;
 
         let mut parts = version_part.splitn(4, '.');
-        let major =
-            parts.next().ok_or_else(err)?.parse::<u32>().map_err(|_| err())?;
-        let minor =
-            parts.next().ok_or_else(err)?.parse::<u32>().map_err(|_| err())?;
-        let patch =
-            parts.next().ok_or_else(err)?.parse::<u32>().map_err(|_| err())?;
+        let major = parts.next().ok_or_else(err)?.parse::<u32>().map_err(|_| err())?;
+        let minor = parts.next().ok_or_else(err)?.parse::<u32>().map_err(|_| err())?;
+        let patch = parts.next().ok_or_else(err)?.parse::<u32>().map_err(|_| err())?;
 
         Ok(Self {
             major,

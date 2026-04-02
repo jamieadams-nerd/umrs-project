@@ -34,8 +34,7 @@ impl KernelFileSource for SelinuxEnforce {
     const DESCRIPTION: &'static str = r"0 -- permissive
 1 -- enforcing
 Set the security-enforcing mode of SELinux.";
-    const KERNEL_NOTE: &'static str =
-        "Can be toggled at runtime via /sys/fs/selinux/enforce.";
+    const KERNEL_NOTE: &'static str = "Can be toggled at runtime via /sys/fs/selinux/enforce.";
 
     fn parse(data: &[u8]) -> io::Result<Self::Output> {
         use super::types::EnforceState;
@@ -96,9 +95,8 @@ impl KernelFileSource for SelinuxPolicyVers {
         "The version of the SELinux policy language supported by the kernel.";
 
     fn parse(data: &[u8]) -> io::Result<Self::Output> {
-        let s = std::str::from_utf8(data).map_err(|_| {
-            io::Error::new(io::ErrorKind::InvalidData, "Non-UTF8 data")
-        })?;
+        let s = std::str::from_utf8(data)
+            .map_err(|_| io::Error::new(io::ErrorKind::InvalidData, "Non-UTF8 data"))?;
         // SI-12: use a fixed error string — do not propagate ParseIntError detail to callers
         s.trim().parse::<u32>().map_err(|_| {
             io::Error::new(
@@ -221,17 +219,18 @@ impl KernelFileSource for GenericDualBool {
         "Dynamic selinuxfs dual-boolean attribute (current / pending)";
 
     fn parse(data: &[u8]) -> io::Result<Self::Output> {
-        let s = std::str::from_utf8(data).map_err(|_| {
-            io::Error::new(io::ErrorKind::InvalidData, "Non-UTF8")
-        })?;
+        let s = std::str::from_utf8(data)
+            .map_err(|_| io::Error::new(io::ErrorKind::InvalidData, "Non-UTF8"))?;
         // NIST SP 800-218 SSDF PW.4.1: bounds-safe access — use .get() rather than direct indexing
         let parts: Vec<&str> = s.split_whitespace().collect();
-        let current_str = parts.first().copied().ok_or_else(|| {
-            io::Error::new(io::ErrorKind::InvalidData, "Malformed dual bool")
-        })?;
-        let pending_str = parts.get(1).copied().ok_or_else(|| {
-            io::Error::new(io::ErrorKind::InvalidData, "Malformed dual bool")
-        })?;
+        let current_str = parts
+            .first()
+            .copied()
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidData, "Malformed dual bool"))?;
+        let pending_str = parts
+            .get(1)
+            .copied()
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidData, "Malformed dual bool"))?;
         Ok(DualBool {
             current: current_str == "1",
             pending: pending_str == "1",

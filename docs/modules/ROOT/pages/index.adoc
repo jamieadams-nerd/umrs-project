@@ -10,13 +10,22 @@ scrutiny. The engineering is real. The controls are mapped. The source is open.
 
 == Current Focus — Cantrip Release
 
-The first release, codenamed **Cantrip**, targets RHEL 10 with SELinux in targeted policy
-mode. It delivers CUI labeling using the MCS (Multi-Category Security) mechanism, plus two
-initial security tools: `umrs-ls` (security-enriched directory listing) and `umrs-state`
-(system security posture introspection).
+The first release, codenamed **Cantrip**, is focused on RHEL 10 with SELinux enforcing the 
+"targeted" policy. It delivers CUI labeling using the MCS (Multi-Category Security) mechanism, 
+plus some initial security tools inlcuding `umrs-ls` a security-enriched directory listing).
 
-NOTE: Targeted policy mode gives you real MCS labeling and access enforcement now. A future
-release will tighten to MLS policy mode for stronger mandatory separation. CUI labeling
+[NOTE:]
+====
+Targeted policy gives you real security labeling and basic "type enforcement" now. Using
+the MCS provides a non-hierarchical access control method that uses categories to partition 
+data. Unlike a "Secret" or "Top Secret" hierarchy, MCS is a "Lateral" system—being cleared 
+for one category doesn't give you access to another. 
+
+For example: In order for a process to read a file, it must possess every category assigned to 
+that file. If a file is labeled c10,c20, and you only have c10, the kernel will deny access.
+====
+
+In a future, release will tighten to MLS policy for stronger mandatory separation. CUI labeling
 on targeted policy is a supported, meaningful step — not a placeholder.
 
 Ubuntu and AppArmor support is planned for the tools and software stack. CUI labeling
@@ -31,7 +40,7 @@ authoritative sources.
 
 UMRS is four interrelated things you can explore independently or together:
 
-* **Libraries** — reusable Rust crates for SELinux modeling, platform detection, and MLS math
+* **Libraries** — reusable Rust crates for SELinux modeling and platform detection 
 * **Patterns** — high-assurance Rust patterns (TPI, TOCTOU safety, provenance verification) with real codebase examples
 * **Tools** — CLI and TUI tools that give security operators typed, evidence-backed answers about what a system is running and whether it meets policy
 * **Assessment** — auditor-ready evidence with compliance control mappings (NIST SP 800-53, CMMC, NSA RTB)

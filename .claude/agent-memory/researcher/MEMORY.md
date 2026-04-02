@@ -1,7 +1,10 @@
 # Researcher Agent Memory — "The Librarian"
 # Alias: The Librarian (always include "The"). Real name: T. Librarian.
 # Portrait: docs/modules/ai-transparency/images/librarian.png
-# Last updated: 2026-03-31 (sp800-161r1-upd1 familiarization complete)
+# Last updated: 2026-04-02 (audit-logging collection: 7 docs downloaded to .claude/research/audit-logging/)
+
+## Session Constraints
+- [Session tool constraints](feedback-session-constraints.md) — Bash/WebFetch unavailable workarounds, Canada.ca curl tips
 
 ## Critical: Bash Fetch Patterns
 
@@ -31,7 +34,7 @@ Verify PDF: `head -c 4 <file>` must show `%PDF`.
 
 ### .claude/references/ manifest (official security docs)
 - `.claude/references/refs-manifest.md` is the canonical manifest — always read before retrieval tasks
-- `.claude/references/nist/` — NIST SPs (800-218, 800-171r2, 800-171r3, 800-53r5, 800-37r2, 800-53Ar5, 800-30r1, 800-39, 800-90B, 800-172, 800-161r1 [WITHDRAWN], 800-161r1-upd1 [CURRENT, downloaded 2026-03-31, **familiarized 2026-03-31** → see `sp800-161r1-upd1-familiarization.md`], 800-60v1r1 [Vol 1], 800-60v2r1 [Vol 2, **familiarized 2026-03-31** → see `sp800-60-familiarization.md`]) + FIPS (140-2, 140-3)
+- `.claude/references/nist/` — NIST SPs (800-218, 800-171r2, 800-171r3, 800-53r5, 800-37r2, 800-53Ar5, 800-30r1, 800-39, 800-90B, 800-172, 800-161r1 [WITHDRAWN], 800-161r1-upd1 [CURRENT, downloaded 2026-03-31, **familiarized 2026-03-31** → see `sp800-161r1-upd1-familiarization.md`], 800-60v1r1 [Vol 1], 800-60v2r1 [Vol 2, **familiarized 2026-03-31** → see `sp800-60-familiarization.md`]) + FIPS (140-2, 140-3, 180-4 [SHA-256/384, downloaded 2026-04-02], 186-5 [ECDSA, downloaded 2026-04-02])
 - `.claude/references/nist/fips/` — FIPS 203, 204, 205 (PQC standards, downloaded 2026-03-13)
 - `.claude/references/dod-5200/` — DoD CMMC docs (Final Rule + Assessment Guide L2, both downloaded 2026-03-12)
 - `.claude/references/fedramp/` — FedRAMP accreditation docs (downloaded 2026-03-15: CSP playbook, Agency playbook, SSP/SAP/SAR templates)
@@ -189,6 +192,7 @@ Helper scripts: `.claude/references/scripts/extract_termium.py`, `.claude/refere
   `.claude/references/scripts/verify_corpus.py` — retain for re-extraction runs
 
 ## Pending Items
+- audit-logging collection: [reference_audit_logging_collection.md](reference_audit_logging_collection.md) — 7 docs in `.claude/research/audit-logging/`; not yet ingested; see SOURCE.md for checksums
 - Stanford CS147: MANUAL DOWNLOAD — 20 PDFs; see `.claude/references/hci-courses/stanford-cs147/SOURCE.md`
 - RAG ingestion pending: accreditation-artifacts, tui-cli, info-theory-foundations, all 2026-03-22 Tier 1 collections
 - OSCAL v1.1.2 schemas: DOWNLOADED (2026-03-23) — 8 JSON schemas + 6 FedRAMP Rev5 profiles in `.claude/references/oscal-schemas/`; manifest updated; RAG ingestion BLOCKED — needs `Bash(RAG_CHROMA_PATH=... python ingest.py --collection oscal-schemas 2>&1)` added to settings.json allowlist

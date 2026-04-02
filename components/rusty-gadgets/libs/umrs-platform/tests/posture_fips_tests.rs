@@ -135,9 +135,7 @@ fn as_configured_value_trust_gate_returns_none() {
 #[test]
 fn as_configured_value_cmdline_fips_present_in_raw() {
     let cc = FipsCrossCheck::evaluate(true, Some(true));
-    let cv = cc
-        .as_configured_value()
-        .expect("must return Some when cmdline indicator is present");
+    let cv = cc.as_configured_value().expect("must return Some when cmdline indicator is present");
     assert!(
         cv.raw.contains("cmdline=fips=1"),
         "raw summary must contain 'cmdline=fips=1' when cmdline_fips=Some(true): \
@@ -150,9 +148,7 @@ fn as_configured_value_cmdline_fips_present_in_raw() {
 #[test]
 fn as_configured_value_cmdline_no_fips_in_raw() {
     let cc = FipsCrossCheck::evaluate(true, Some(false));
-    let cv = cc
-        .as_configured_value()
-        .expect("must return Some when cmdline indicator is present");
+    let cv = cc.as_configured_value().expect("must return Some when cmdline indicator is present");
     // marker is also read on the live system so raw will contain marker info.
     // Check that the cmdline portion is present.
     assert!(
@@ -219,9 +215,7 @@ fn catalog_fips_enabled_desired_is_exact_1() {
 #[test]
 fn snapshot_fips_indicator_has_coherent_configured_value() {
     let snap = PostureSnapshot::collect();
-    let report = snap
-        .get(IndicatorId::FipsEnabled)
-        .expect("FipsEnabled must appear in snapshot");
+    let report = snap.get(IndicatorId::FipsEnabled).expect("FipsEnabled must appear in snapshot");
 
     // Coherence: if live is readable, configured must also be Some.
     if report.live_value.is_some() {
@@ -239,9 +233,7 @@ fn snapshot_fips_indicator_has_coherent_configured_value() {
 #[test]
 fn snapshot_fips_report_descriptor_id_correct() {
     let snap = PostureSnapshot::collect();
-    let report = snap
-        .get(IndicatorId::FipsEnabled)
-        .expect("FipsEnabled must appear in snapshot");
+    let report = snap.get(IndicatorId::FipsEnabled).expect("FipsEnabled must appear in snapshot");
     assert_eq!(
         report.descriptor.id,
         IndicatorId::FipsEnabled,
@@ -253,9 +245,7 @@ fn snapshot_fips_report_descriptor_id_correct() {
 #[test]
 fn snapshot_fips_configured_value_raw_not_empty() {
     let snap = PostureSnapshot::collect();
-    let report = snap
-        .get(IndicatorId::FipsEnabled)
-        .expect("FipsEnabled must appear in snapshot");
+    let report = snap.get(IndicatorId::FipsEnabled).expect("FipsEnabled must appear in snapshot");
     if let Some(ref cv) = report.configured_value {
         assert!(
             !cv.raw.is_empty(),

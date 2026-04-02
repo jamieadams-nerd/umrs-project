@@ -120,12 +120,11 @@ impl StaticSource for KptrRestrict {
 ///
 /// Returns `io::Error` if the byte content is not valid UTF-8 or does not contain a valid unsigned 32-bit integer.
 pub fn parse_sysctl_u32(data: &[u8]) -> io::Result<u32> {
-    let s = std::str::from_utf8(data).map_err(|_| {
-        io::Error::new(io::ErrorKind::InvalidData, "sysctl: non-UTF8 data")
-    })?;
-    s.trim().parse::<u32>().map_err(|_| {
-        io::Error::new(io::ErrorKind::InvalidData, "sysctl: non-integer value")
-    })
+    let s = std::str::from_utf8(data)
+        .map_err(|_| io::Error::new(io::ErrorKind::InvalidData, "sysctl: non-UTF8 data"))?;
+    s.trim()
+        .parse::<u32>()
+        .map_err(|_| io::Error::new(io::ErrorKind::InvalidData, "sysctl: non-integer value"))
 }
 
 /// Parse a signed sysctl integer value from kernel-format bytes (`"-1\n"` → `-1`).
@@ -144,12 +143,11 @@ pub fn parse_sysctl_u32(data: &[u8]) -> io::Result<u32> {
 ///
 /// Returns `io::Error` if the byte content is not valid UTF-8 or does not contain a valid signed 32-bit integer.
 pub fn parse_sysctl_i32(data: &[u8]) -> io::Result<i32> {
-    let s = std::str::from_utf8(data).map_err(|_| {
-        io::Error::new(io::ErrorKind::InvalidData, "sysctl: non-UTF8 data")
-    })?;
-    s.trim().parse::<i32>().map_err(|_| {
-        io::Error::new(io::ErrorKind::InvalidData, "sysctl: non-integer value")
-    })
+    let s = std::str::from_utf8(data)
+        .map_err(|_| io::Error::new(io::ErrorKind::InvalidData, "sysctl: non-UTF8 data"))?;
+    s.trim()
+        .parse::<i32>()
+        .map_err(|_| io::Error::new(io::ErrorKind::InvalidData, "sysctl: non-integer value"))
 }
 
 // ===========================================================================
@@ -217,8 +215,7 @@ macro_rules! define_sysctl_signal {
 
         impl $crate::kattrs::traits::StaticSource for $type_name {
             const PATH: &'static str = $path;
-            const EXPECTED_MAGIC: ::nix::sys::statfs::FsType =
-                ::nix::sys::statfs::PROC_SUPER_MAGIC;
+            const EXPECTED_MAGIC: ::nix::sys::statfs::FsType = ::nix::sys::statfs::PROC_SUPER_MAGIC;
         }
     };
 }
@@ -463,10 +460,7 @@ impl KernelFileSource for CorePatternReader {
         let start = std::time::Instant::now();
 
         let s = std::str::from_utf8(data).map_err(|_| {
-            io::Error::new(
-                io::ErrorKind::InvalidData,
-                "core_pattern: non-UTF8 data",
-            )
+            io::Error::new(io::ErrorKind::InvalidData, "core_pattern: non-UTF8 data")
         })?;
         let trimmed = s.trim_end();
 
@@ -618,8 +612,7 @@ impl CmdlineReader {
         let start = std::time::Instant::now();
 
         let node = ProcfsText::new(PathBuf::from("/proc/cmdline"))?;
-        let content =
-            SecureReader::<ProcfsText>::new().read_generic_text(&node)?;
+        let content = SecureReader::<ProcfsText>::new().read_generic_text(&node)?;
 
         #[cfg(debug_assertions)]
         log::debug!(
@@ -710,9 +703,7 @@ impl BootIdReader {
 ///
 /// Returns `io::Error` if the sysctl value cannot be read via the indicator's `SecureReader`.
 #[must_use = "live sysctl read result must be examined"]
-pub fn read_live_sysctl(
-    id: crate::posture::indicator::IndicatorId,
-) -> io::Result<Option<u32>> {
+pub fn read_live_sysctl(id: crate::posture::indicator::IndicatorId) -> io::Result<Option<u32>> {
     use crate::kattrs::traits::StaticSource;
     use crate::posture::indicator::IndicatorId;
 
@@ -784,8 +775,7 @@ pub fn read_live_sysctl(
 ///
 /// Returns `io::Error` if the sysctl value cannot be read or parsed as a signed integer.
 #[must_use = "core_pattern live read result drives hardening assessment — do not discard"]
-pub fn read_live_core_pattern() -> io::Result<Option<(CorePatternKind, String)>>
-{
+pub fn read_live_core_pattern() -> io::Result<Option<(CorePatternKind, String)>> {
     use crate::kattrs::traits::StaticSource;
 
     match CorePatternReader::read() {
@@ -839,8 +829,7 @@ pub fn read_live_sysctl_signed(
 /// # Errors
 ///
 /// Returns `io::Error` if the lockdown attribute cannot be read from the kernel security filesystem.
-pub fn read_lockdown_live()
--> io::Result<Option<crate::kattrs::security::LockdownMode>> {
+pub fn read_lockdown_live() -> io::Result<Option<crate::kattrs::security::LockdownMode>> {
     use crate::kattrs::security::KernelLockdown;
     use crate::kattrs::traits::StaticSource;
 

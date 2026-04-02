@@ -35,8 +35,8 @@
 
 use umrs_ui::Theme;
 use umrs_ui::app::{
-    AuditCardApp, AuditCardState, DataRow, HeaderContext, IndicatorValue,
-    SecurityIndicators, StatusLevel, StatusMessage, TabDef,
+    AuditCardApp, AuditCardState, DataRow, HeaderContext, IndicatorValue, SecurityIndicators,
+    StatusLevel, StatusMessage, TabDef,
 };
 use umrs_ui::header::{build_single_column_lines, build_two_column_lines};
 use umrs_ui::tabs::tabs_from_labels;
@@ -61,9 +61,7 @@ fn line_text(line: &ratatui::text::Line<'_>) -> String {
 fn test_header_context() -> HeaderContext {
     HeaderContext {
         indicators: SecurityIndicators {
-            selinux_status: IndicatorValue::Enabled(
-                "Enforcing (Targeted)".to_owned(),
-            ),
+            selinux_status: IndicatorValue::Enabled("Enforcing (Targeted)".to_owned()),
             fips_mode: IndicatorValue::Enabled("Enabled".to_owned()),
             active_lsm: IndicatorValue::Unavailable,
             lockdown_mode: IndicatorValue::Disabled("none".to_owned()),
@@ -708,10 +706,8 @@ fn two_col_label_separator_at_consistent_position_content_rows() {
 
     // Content rows 1, 3, 4, 5 all have a left-column label; the separator
     // position must be identical across all of them (determined by LABEL_WIDTH = 10).
-    let positions: Vec<(usize, Option<usize>)> = CONTENT_ROWS
-        .iter()
-        .map(|&i| (i, first_separator_pos(&line_text(&lines[i]))))
-        .collect();
+    let positions: Vec<(usize, Option<usize>)> =
+        CONTENT_ROWS.iter().map(|&i| (i, first_separator_pos(&line_text(&lines[i])))).collect();
 
     // Every content row must have a separator.
     for &(i, pos) in &positions {
@@ -740,10 +736,8 @@ fn single_col_label_separator_at_consistent_position_content_rows() {
     let theme = Theme::default();
     let lines = build_single_column_lines(&app, &ctx, &theme);
 
-    let positions: Vec<(usize, Option<usize>)> = CONTENT_ROWS
-        .iter()
-        .map(|&i| (i, first_separator_pos(&line_text(&lines[i]))))
-        .collect();
+    let positions: Vec<(usize, Option<usize>)> =
+        CONTENT_ROWS.iter().map(|&i| (i, first_separator_pos(&line_text(&lines[i])))).collect();
 
     for &(i, pos) in &positions {
         assert!(
@@ -873,10 +867,8 @@ fn two_col_right_column_separator_at_consistent_position() {
     let lines = build_two_column_lines(&app, &ctx, &theme);
 
     // Rows 3–5 are two-column lines; collect their right-column separator positions.
-    let positions: Vec<Option<usize>> = lines[3..=5]
-        .iter()
-        .map(|l| second_separator_pos(&line_text(l)))
-        .collect();
+    let positions: Vec<Option<usize>> =
+        lines[3..=5].iter().map(|l| second_separator_pos(&line_text(l))).collect();
 
     // Every two-column row must have a second separator.
     for (i, pos) in positions.iter().enumerate() {

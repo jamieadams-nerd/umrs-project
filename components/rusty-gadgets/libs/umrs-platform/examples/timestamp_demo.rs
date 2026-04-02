@@ -11,9 +11,7 @@ use umrs_platform::timestamp::{BootSessionDuration, BootSessionTimestamp};
 fn main() {
     println!("=== BootSessionTimestamp Demo ===");
     println!();
-    println!(
-        "Clock source: CLOCK_MONOTONIC_RAW (hardware rate, no NTP slewing)"
-    );
+    println!("Clock source: CLOCK_MONOTONIC_RAW (hardware rate, no NTP slewing)");
     println!("Precision:    nanosecond");
     println!("Scope:        valid within this boot session only");
     println!();
@@ -100,11 +98,7 @@ fn capture(label: &str) -> BootSessionTimestamp {
     }
 }
 
-fn print_interval(
-    label: &str,
-    earlier: BootSessionTimestamp,
-    later: BootSessionTimestamp,
-) {
+fn print_interval(label: &str, earlier: BootSessionTimestamp, later: BootSessionTimestamp) {
     match later.elapsed_since(earlier) {
         Some(dur) => println!("  {label}: {dur}  ({} ns)", dur.as_nanos()),
         None => println!("  {label}: INVERTED PAIR (clock anomaly)"),

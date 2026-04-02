@@ -86,14 +86,14 @@ Cantrip is the first public milestone. Work is in progress. No release date is s
 
 Cantrip will deliver:
 
-* CUI labeling on RHEL 10 using SELinux MCS in *targeted policy* mode
+* CUI labeling on RHEL 10 using SELinux MCS under *targeted policy*
 * `umrs-ls` — security-enriched directory listing, release-quality
 * `umrs-state` — renamed, polished, and stabilized system state tool
 * `umrs-stat` — file security report card (renamed from the current `umrs-file-stat` prototype)
 * RHEL 10 deployment guide
 * Contributor guide with annotation requirements
 
-NOTE: IMA/EVM integrity measurement and MLS policy mode are not included in Cantrip.
+NOTE: IMA/EVM integrity measurement and MLS policy are not included in Cantrip.
 Those capabilities are planned for later named releases.
 
 == Known Limitations
@@ -111,7 +111,7 @@ enabled. On systems where SELinux is absent or disabled, the crates fail closed 
 `None` or an appropriate error — they do not guess or silently degrade.
 
 Targeted policy only — no MLS enforcement::
-CUI labeling uses SELinux MCS within targeted policy mode. MLS policy mode, which provides
+CUI labeling uses SELinux MCS under targeted policy. MLS policy, which provides
 full Bell-LaPadula enforcement at the kernel level, is planned but not yet implemented.
 Category-based separation works now. Multi-level clearance enforcement does not.
 

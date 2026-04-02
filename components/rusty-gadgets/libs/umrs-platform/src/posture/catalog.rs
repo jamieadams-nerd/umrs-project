@@ -29,9 +29,7 @@
 //! NSA RTB: Compile-Time Path Binding — paths and expected values are
 //! compiler-verified, not runtime-parsed.
 
-use super::indicator::{
-    AssuranceImpact, DesiredValue, IndicatorClass, IndicatorId,
-};
+use super::indicator::{AssuranceImpact, DesiredValue, IndicatorClass, IndicatorId};
 
 // ===========================================================================
 // Catalog baseline version

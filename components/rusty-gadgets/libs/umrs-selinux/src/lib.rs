@@ -136,6 +136,5 @@ pub use user::SelinuxUser;
 // ===========================================================================
 
 pub use crate::status::{
-    SelinuxPolicy, SelinuxStatus, is_selinux_enabled, is_selinux_mls_enabled,
-    selinux_policy,
+    SelinuxPolicy, SelinuxStatus, is_selinux_enabled, is_selinux_mls_enabled, selinux_policy,
 };

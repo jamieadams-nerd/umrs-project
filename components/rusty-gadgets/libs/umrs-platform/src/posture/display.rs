@@ -74,9 +74,7 @@ pub fn annotate_live_value(id: IndicatorId, live: &LiveValue) -> String {
             }
         }
         LiveValue::Integer(v) => annotate_integer(id, u64::from(*v)),
-        LiveValue::SignedInteger(v) => {
-            annotate_signed_integer(id, i64::from(*v))
-        }
+        LiveValue::SignedInteger(v) => annotate_signed_integer(id, i64::from(*v)),
     }
 }
 
@@ -146,21 +144,17 @@ pub fn annotate_integer(id: IndicatorId, v: u64) -> String {
             2 => Some("Readable by Root Only"),
             _ => None,
         },
-        IndicatorId::ProtectedSymlinks | IndicatorId::ProtectedHardlinks => {
-            match v {
-                0 => Some("Not Protected"),
-                1 => Some("Protected"),
-                _ => None,
-            }
-        }
-        IndicatorId::ProtectedFifos | IndicatorId::ProtectedRegular => {
-            match v {
-                0 => Some("Not Protected"),
-                1 => Some("Partial Protection"),
-                2 => Some("Fully Protected"),
-                _ => None,
-            }
-        }
+        IndicatorId::ProtectedSymlinks | IndicatorId::ProtectedHardlinks => match v {
+            0 => Some("Not Protected"),
+            1 => Some("Protected"),
+            _ => None,
+        },
+        IndicatorId::ProtectedFifos | IndicatorId::ProtectedRegular => match v {
+            0 => Some("Not Protected"),
+            1 => Some("Partial Protection"),
+            2 => Some("Fully Protected"),
+            _ => None,
+        },
         IndicatorId::FipsEnabled => match v {
             0 => Some("Disabled"),
             1 => Some("Enabled"),

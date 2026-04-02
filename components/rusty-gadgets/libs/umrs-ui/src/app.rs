@@ -539,11 +539,7 @@ impl DataRow {
     /// This is the primary constructor. Use `normal()` for unstyled rows.
     #[must_use = "DataRow must be pushed into the row list; discarding it omits \
                   a labelled field from the audit card"]
-    pub fn key_value(
-        key: impl Into<String>,
-        value: impl Into<String>,
-        hint: StyleHint,
-    ) -> Self {
+    pub fn key_value(key: impl Into<String>, value: impl Into<String>, hint: StyleHint) -> Self {
         Self::KeyValue {
             key: key.into(),
             value: value.into(),
@@ -580,11 +576,7 @@ impl DataRow {
     /// the hint is already a named variable at the call site.
     #[must_use = "DataRow must be pushed into the row list; discarding it omits \
                   a labelled field from the audit card"]
-    pub fn new(
-        key: impl Into<String>,
-        value: impl Into<String>,
-        hint: StyleHint,
-    ) -> Self {
+    pub fn new(key: impl Into<String>, value: impl Into<String>, hint: StyleHint) -> Self {
         Self::key_value(key, value, hint)
     }
 
@@ -857,11 +849,7 @@ impl HeaderField {
     /// The `hint` controls the foreground color of the value.
     #[must_use = "HeaderField must be stored and returned from header_fields(); \
                   discarding it silently omits identification data from the audit card"]
-    pub fn new(
-        label: impl Into<String>,
-        value: impl Into<String>,
-        hint: StyleHint,
-    ) -> Self {
+    pub fn new(label: impl Into<String>, value: impl Into<String>, hint: StyleHint) -> Self {
         Self {
             label: label.into(),
             value: value.into(),

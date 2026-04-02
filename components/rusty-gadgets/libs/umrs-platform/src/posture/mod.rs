@@ -83,17 +83,12 @@ pub mod snapshot;
 // Public API re-exports
 // ---------------------------------------------------------------------------
 
-pub use catalog::{
-    CATALOG_KERNEL_BASELINE, INDICATORS, IndicatorDescriptor, lookup,
-};
+pub use catalog::{CATALOG_KERNEL_BASELINE, INDICATORS, IndicatorDescriptor, lookup};
 pub use contradiction::ContradictionKind;
-pub use display::{
-    annotate_integer, annotate_live_value, annotate_signed_integer,
-};
+pub use display::{annotate_integer, annotate_live_value, annotate_signed_integer};
 pub use fips_cross::FipsCrossCheck;
 pub use indicator::{
-    AssuranceImpact, ConfiguredValue, DesiredValue, IndicatorClass,
-    IndicatorId, LiveValue,
+    AssuranceImpact, ConfiguredValue, DesiredValue, IndicatorClass, IndicatorId, LiveValue,
 };
 pub use modprobe::{ModprobeConfig, ParsedDirective, parse_modprobe_line};
 pub use snapshot::{IndicatorReport, PostureSnapshot};

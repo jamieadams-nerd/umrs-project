@@ -37,13 +37,8 @@ use umrs_platform::kattrs::{ProcfsText, SecureReader, SysfsText};
 /// These are the `fstype` strings as they appear in `/proc/mounts`.
 ///
 /// NIST SP 800-53 SC-28: filesystem-layer encryption detection.
-const ENCRYPTED_FS_TYPES: &[&str] = &[
-    "ecryptfs",
-    "fuse.encfs",
-    "fuse.gocryptfs",
-    "fuse.securefs",
-    "fuse.cryfs",
-];
+const ENCRYPTED_FS_TYPES: &[&str] =
+    &["ecryptfs", "fuse.encfs", "fuse.gocryptfs", "fuse.securefs", "fuse.cryfs"];
 
 /// The source of encryption protecting a mounted filesystem.
 ///
@@ -129,8 +124,7 @@ struct MountEntry {
 /// Returns `None` if the mount point is not found or the read fails.
 fn find_mount_entry(mount_point: &Path) -> Option<MountEntry> {
     let node = ProcfsText::new(PathBuf::from("/proc/mounts")).ok()?;
-    let contents =
-        SecureReader::<ProcfsText>::new().read_generic_text(&node).ok()?;
+    let contents = SecureReader::<ProcfsText>::new().read_generic_text(&node).ok()?;
 
     for line in contents.lines() {
         let mut parts = line.split_whitespace();
@@ -183,8 +177,7 @@ fn check_luks_encrypted(dev_path: &str) -> bool {
 
     // file_name() returns only the terminal component — no `/` can appear,
     // so the kernel_name cannot escape /sys/class/block/ via traversal.
-    let Some(kernel_name) = real_path.file_name().and_then(|n| n.to_str())
-    else {
+    let Some(kernel_name) = real_path.file_name().and_then(|n| n.to_str()) else {
         return false;
     };
 
@@ -192,9 +185,7 @@ fn check_luks_encrypted(dev_path: &str) -> bool {
     // SysfsText::new validates the path starts with /sys/ before any I/O.
     let type_path = format!("/sys/class/block/{kernel_name}/dm/type");
     if let Ok(node) = SysfsText::new(PathBuf::from(&type_path)) {
-        if let Ok(dm_type) =
-            SecureReader::<SysfsText>::new().read_generic_text(&node)
-        {
+        if let Ok(dm_type) = SecureReader::<SysfsText>::new().read_generic_text(&node) {
             if dm_type.trim() == "crypt" {
                 return true;
             }
@@ -204,9 +195,7 @@ fn check_luks_encrypted(dev_path: &str) -> bool {
     // Fallback: dm/uuid prefix "CRYPT-LUKS"
     let uuid_path = format!("/sys/class/block/{kernel_name}/dm/uuid");
     if let Ok(node) = SysfsText::new(PathBuf::from(&uuid_path)) {
-        if let Ok(uuid) =
-            SecureReader::<SysfsText>::new().read_generic_text(&node)
-        {
+        if let Ok(uuid) = SecureReader::<SysfsText>::new().read_generic_text(&node) {
             return uuid.trim().starts_with("CRYPT-LUKS");
         }
     }

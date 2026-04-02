@@ -61,9 +61,7 @@ use serde::Serialize;
 use chrono::{DateTime, Local};
 use umrs_core::human::sizefmt::{SizeBase, auto_format as fmt_size};
 use umrs_core::i18n;
-use umrs_ls::grouping::{
-    FileGroup, SiblingKind, aggregate_size, group_entries, sibling_summary,
-};
+use umrs_ls::grouping::{FileGroup, SiblingKind, aggregate_size, group_entries, sibling_summary};
 use umrs_selinux::ObservationKind;
 use umrs_selinux::mcs::colors::{
     ContextComponents, Rgb, SeColorConfig, load_secolors_cached, resolve_colors,
@@ -151,10 +149,7 @@ struct DisplayConfig {
 impl DisplayConfig {
     fn build(use_color: bool) -> Self {
         let secolor = if use_color {
-            load_secolors_cached(Path::new(
-                "/etc/selinux/targeted/secolor.conf",
-            ))
-            .ok()
+            load_secolors_cached(Path::new("/etc/selinux/targeted/secolor.conf")).ok()
         } else {
             None
         };
@@ -170,28 +165,20 @@ impl DisplayConfig {
 }
 
 fn main() -> io::Result<()> {
-    env_logger::Builder::from_env(
-        env_logger::Env::default().default_filter_or("warn"),
-    )
-    .format_timestamp(None)
-    .init();
+    env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("warn"))
+        .format_timestamp(None)
+        .init();
 
     i18n::init("umrs-ls");
 
     let args: Vec<String> = std::env::args().collect();
 
     // First non-flag argument after the binary name is the path.
-    let target = args
-        .iter()
-        .skip(1)
-        .find(|a| !a.starts_with("--"))
-        .map(String::as_str)
-        .unwrap_or(".");
+    let target =
+        args.iter().skip(1).find(|a| !a.starts_with("--")).map(String::as_str).unwrap_or(".");
 
     // SelinuxType and Marking appear in the group header — omit from rows.
-    let mut cols = ColumnSet::default()
-        .without(Column::SelinuxType)
-        .without(Column::Marking);
+    let mut cols = ColumnSet::default().without(Column::SelinuxType).without(Column::Marking);
 
     if args.contains(&"--no-iov".to_owned()) {
         cols = cols.without(Column::Iov);
@@ -324,11 +311,7 @@ fn print_cuddle_line(fg: &FileGroup, cfg: &DisplayConfig) {
 ///
 /// Serialises the fully grouped structure.  All display-layer formatting
 /// (ANSI codes, column alignment) is bypassed.
-fn emit_json(
-    groups: &[DirGroup],
-    path: &str,
-    elapsed_us: u64,
-) -> io::Result<()> {
+fn emit_json(groups: &[DirGroup], path: &str, elapsed_us: u64) -> io::Result<()> {
     let json_groups: Vec<JsonDirGroup> = groups
         .iter()
         .map(|g| {
@@ -397,11 +380,7 @@ fn compute_widths(
             let header_w = col_header(col).len();
             let data_w = groups
                 .iter()
-                .flat_map(|g| {
-                    g.entries
-                        .iter()
-                        .map(|e| cell_plain(e, col, &g.key, cfg).len())
-                })
+                .flat_map(|g| g.entries.iter().map(|e| cell_plain(e, col, &g.key, cfg).len()))
                 .max()
                 .unwrap_or(0);
             (col, header_w.max(data_w) + 2)
@@ -484,10 +463,7 @@ fn print_row(
         } else if col == Column::Size {
             let w = col_width(widths, col);
             let inner = w.saturating_sub(2);
-            line.push_str(&format!(
-                "{:>inner$}  ",
-                cell_plain(entry, col, key, cfg)
-            ));
+            line.push_str(&format!("{:>inner$}  ", cell_plain(entry, col, key, cfg)));
         } else {
             let w = col_width(widths, col);
             line.push_str(&format!("{:<w$}", cell_plain(entry, col, key, cfg)));
@@ -503,12 +479,7 @@ fn print_row(
 //
 // `Column::Iov` and `Column::Name` are handled separately in `print_row`;
 // their arms here are used only during the width pre-scan.
-fn cell_plain(
-    entry: &ListEntry,
-    col: Column,
-    key: &GroupKey,
-    cfg: &DisplayConfig,
-) -> String {
+fn cell_plain(entry: &ListEntry, col: Column, key: &GroupKey, cfg: &DisplayConfig) -> String {
     match col {
         Column::Mode => {
             // Standard 10-char mode string; append '+' when POSIX ACL present.
@@ -517,8 +488,7 @@ fn cell_plain(
                 file_type_char(entry.dirent.file_type),
                 entry.dirent.mode.as_mode_str()
             );
-            if entry.dirent.sec_flags.contains(InodeSecurityFlags::ACL_PRESENT)
-            {
+            if entry.dirent.sec_flags.contains(InodeSecurityFlags::ACL_PRESENT) {
                 s.push('+');
             }
             s
@@ -533,9 +503,7 @@ fn cell_plain(
             let group = resolve_groupname(gid);
             format!("{owner}:{group}")
         }
-        Column::Size => {
-            fmt_size(u128::from(entry.dirent.size.as_u64()), SizeBase::Binary)
-        }
+        Column::Size => fmt_size(u128::from(entry.dirent.size.as_u64()), SizeBase::Binary),
         Column::Mtime => format_mtime(entry.mtime),
         Column::Inode => entry.dirent.inode.as_u64().to_string(),
         Column::Name => {
@@ -590,11 +558,8 @@ fn cell_iov(entry: &ListEntry, cfg: &DisplayConfig) -> String {
     // Using kind() keeps this logic stable as new observations are added —
     // new Risk variants automatically light up O without touching this code.
     // Warning and Good observations do not light up O.
-    let posture_obs = entry
-        .dirent
-        .security_observations()
-        .into_iter()
-        .any(|o| o.kind() == ObservationKind::Risk);
+    let posture_obs =
+        entry.dirent.security_observations().into_iter().any(|o| o.kind() == ObservationKind::Risk);
 
     let o = if posture_obs {
         if cfg.use_color {

@@ -10,7 +10,7 @@ use std::path::Path;
 use umrs_c2pa::c2pa::{
     build_c2pa_settings,
     config::UmrsConfig,
-    ingest::{ingest_file, sha256_hex},
+    ingest::{ingest_file, sha256_hex, sha384_hex},
     manifest::{TrustStatus, has_manifest, read_chain},
     signer::{ALLOWED_ALGORITHMS, describe_algorithm, parse_algorithm},
     validate::{CheckStatus, validate_config},
@@ -84,7 +84,10 @@ fn test_read_chain_signed_returns_entries() {
         return;
     }
     let chain = read_chain(&path, &default_config()).expect("read_chain failed");
-    assert!(!chain.is_empty(), "signed file should return at least one chain entry");
+    assert!(
+        !chain.is_empty(),
+        "signed file should return at least one chain entry"
+    );
 }
 
 #[test]
@@ -95,11 +98,14 @@ fn test_chain_entries_have_signer_names() {
     }
     let chain = read_chain(&path, &default_config()).expect("read_chain failed");
     for entry in &chain {
-        assert!(!entry.signer_name.is_empty(), "signer_name should not be empty");
+        assert!(
+            !entry.signer_name.is_empty(),
+            "signer_name should not be empty"
+        );
     }
 }
 
-// ── SHA-256 hashing ────────────────────────────────────────────────────────────
+// ── SHA-256 and SHA-384 hashing ────────────────────────────────────────────────
 
 #[test]
 fn test_sha256_produces_64_char_hex() {
@@ -113,6 +119,17 @@ fn test_sha256_produces_64_char_hex() {
 }
 
 #[test]
+fn test_sha384_produces_96_char_hex() {
+    let path = fixture("unsigned.jpg");
+    if !path.exists() {
+        return;
+    }
+    let hash = sha384_hex(&path).expect("sha384_hex failed");
+    assert_eq!(hash.len(), 96, "SHA-384 hex digest should be 96 characters");
+    assert!(hash.chars().all(|c| c.is_ascii_hexdigit()));
+}
+
+#[test]
 fn test_sha256_is_deterministic() {
     let path = fixture("unsigned.jpg");
     if !path.exists() {
@@ -121,6 +138,32 @@ fn test_sha256_is_deterministic() {
     let h1 = sha256_hex(&path).unwrap();
     let h2 = sha256_hex(&path).unwrap();
     assert_eq!(h1, h2);
+}
+
+#[test]
+fn test_sha384_is_deterministic() {
+    let path = fixture("unsigned.jpg");
+    if !path.exists() {
+        return;
+    }
+    let h1 = sha384_hex(&path).unwrap();
+    let h2 = sha384_hex(&path).unwrap();
+    assert_eq!(h1, h2);
+}
+
+#[test]
+fn test_sha256_and_sha384_are_different() {
+    let path = fixture("unsigned.jpg");
+    if !path.exists() {
+        return;
+    }
+    let h256 = sha256_hex(&path).unwrap();
+    let h384 = sha384_hex(&path).unwrap();
+    // Different algorithms must produce different digests of the same input.
+    assert_ne!(
+        h256, h384,
+        "SHA-256 and SHA-384 of the same file must differ"
+    );
 }
 
 // ── ingest pipeline ────────────────────────────────────────────────────────────
@@ -138,7 +181,8 @@ fn test_ingest_unsigned_file_produces_acquired_action() {
 
     assert!(!result.had_manifest);
     assert_eq!(result.action, "c2pa.acquired");
-    assert_eq!(result.sha256.len(), 64);
+    assert_eq!(result.sha256.len(), 64, "SHA-256 should be 64 hex chars");
+    assert_eq!(result.sha384.len(), 96, "SHA-384 should be 96 hex chars");
     assert!(result.is_ephemeral);
 
     // Cleanup.
@@ -190,9 +234,17 @@ fn test_ingest_sha256_matches_source() {
     let config = default_config();
 
     let result = ingest_file(&source, Some(&out), None, &config).expect("ingest_file failed");
-    let direct_hash = sha256_hex(&source).unwrap();
+    let direct_sha256 = sha256_hex(&source).unwrap();
+    let direct_sha384 = sha384_hex(&source).unwrap();
 
-    assert_eq!(result.sha256, direct_hash, "ingest SHA-256 must match direct hash of source");
+    assert_eq!(
+        result.sha256, direct_sha256,
+        "ingest SHA-256 must match direct hash of source"
+    );
+    assert_eq!(
+        result.sha384, direct_sha384,
+        "ingest SHA-384 must match direct hash of source"
+    );
 
     let _ = std::fs::remove_file(&out);
 }
@@ -222,14 +274,20 @@ fn test_ingest_png_file() {
 fn test_allowed_algorithms_are_all_fips_safe() {
     for alg in ALLOWED_ALGORITHMS {
         assert_ne!(*alg, "ed25519", "ed25519 must not be in the allowed set");
-        assert!(parse_algorithm(alg).is_ok(), "{alg} should parse successfully");
+        assert!(
+            parse_algorithm(alg).is_ok(),
+            "{alg} should parse successfully"
+        );
     }
 }
 
 #[test]
 fn test_ed25519_is_rejected() {
     let err = parse_algorithm("ed25519");
-    assert!(err.is_err(), "ed25519 should be rejected by parse_algorithm");
+    assert!(
+        err.is_err(),
+        "ed25519 should be rejected by parse_algorithm"
+    );
 }
 
 #[test]
@@ -243,7 +301,10 @@ fn test_unknown_algorithm_is_rejected() {
 #[test]
 fn test_default_config_uses_ephemeral_mode() {
     let config = default_config();
-    assert!(!config.has_credentials(), "default config should be ephemeral");
+    assert!(
+        !config.has_credentials(),
+        "default config should be ephemeral"
+    );
 }
 
 #[test]
@@ -282,7 +343,10 @@ fn test_validate_missing_key_file_fails() {
 
     let results = validate_config(&config);
     let failures: Vec<_> = results.iter().filter(|r| r.status == CheckStatus::Fail).collect();
-    assert!(!failures.is_empty(), "missing key/cert files should produce failures");
+    assert!(
+        !failures.is_empty(),
+        "missing key/cert files should produce failures"
+    );
 }
 
 #[test]
@@ -349,9 +413,15 @@ fn test_c2pa_no_manifest_jpg() {
     if !path.exists() {
         return;
     }
-    assert!(!has_manifest(&path), "no_manifest.jpg should have no C2PA data");
+    assert!(
+        !has_manifest(&path),
+        "no_manifest.jpg should have no C2PA data"
+    );
     let chain = read_chain(&path, &default_config()).expect("read_chain failed");
-    assert!(chain.is_empty(), "no_manifest.jpg should return empty chain");
+    assert!(
+        chain.is_empty(),
+        "no_manifest.jpg should return empty chain"
+    );
 }
 
 #[test]
@@ -377,7 +447,10 @@ fn test_c2pa_malformed_timestamp_ca_ct_jpg() {
     // Should not panic — graceful handling of malformed timestamp.
     let chain =
         read_chain(&path, &default_config()).expect("read_chain should handle malformed timestamp");
-    assert!(!chain.is_empty(), "CA_ct.jpg should still have chain entries");
+    assert!(
+        !chain.is_empty(),
+        "CA_ct.jpg should still have chain entries"
+    );
 }
 
 #[test]
@@ -391,7 +464,10 @@ fn test_c2pa_png_no_manifest() {
     let chain = read_chain(&path, &default_config()).expect("read_chain failed for sample1.png");
     // Whether it has a manifest or not, read_chain should not panic.
     // This exercises PNG format handling.
-    assert!(chain.is_empty() || !chain.is_empty(), "read_chain should handle PNG gracefully");
+    assert!(
+        chain.is_empty() || !chain.is_empty(),
+        "read_chain should handle PNG gracefully"
+    );
 }
 
 #[test]
@@ -415,12 +491,27 @@ fn test_creds_generate_self_signed() {
     assert!(result.cert_or_csr_pem.windows(11).any(|w| w == b"-----BEGIN "));
     assert!(result.key_pem.windows(11).any(|w| w == b"-----BEGIN "));
     // Structured fields carry the information that was previously in summary.
-    assert!(!result.algorithm.is_empty(), "algorithm field must be populated");
-    assert!(!result.curve_name.is_empty(), "curve_name field must be populated");
-    assert!(!result.key_bits.is_empty(), "key_bits field must be populated");
-    assert!(result.validity_days.is_some(), "self-signed cert must have a validity_days");
+    assert!(
+        !result.algorithm.is_empty(),
+        "algorithm field must be populated"
+    );
+    assert!(
+        !result.curve_name.is_empty(),
+        "curve_name field must be populated"
+    );
+    assert!(
+        !result.key_bits.is_empty(),
+        "key_bits field must be populated"
+    );
+    assert!(
+        result.validity_days.is_some(),
+        "self-signed cert must have a validity_days"
+    );
     assert_eq!(result.validity_days, Some(365));
-    assert!(!result.organization.is_empty(), "organization field must be populated");
+    assert!(
+        !result.organization.is_empty(),
+        "organization field must be populated"
+    );
 }
 
 #[test]
@@ -434,8 +525,14 @@ fn test_creds_generate_csr() {
             || result.cert_or_csr_pem.windows(11).any(|w| w == b"-----BEGIN ")
     );
     // CSRs carry no validity period — the CA sets it when signing.
-    assert!(result.validity_days.is_none(), "CSR must not have a validity_days");
-    assert!(!result.algorithm.is_empty(), "algorithm field must be populated");
+    assert!(
+        result.validity_days.is_none(),
+        "CSR must not have a validity_days"
+    );
+    assert!(
+        !result.algorithm.is_empty(),
+        "algorithm field must be populated"
+    );
 }
 
 #[test]
@@ -443,7 +540,10 @@ fn test_creds_validate_no_config() {
     let config = default_config(); // no cert/key configured
     let checks = umrs_c2pa::c2pa::creds::validate(&config);
     assert!(!checks.is_empty());
-    assert!(checks.iter().any(|c| !c.ok), "should fail when no credentials configured");
+    assert!(
+        checks.iter().any(|c| !c.ok),
+        "should fail when no credentials configured"
+    );
 }
 
 #[test]
@@ -467,7 +567,10 @@ fn test_creds_generate_and_validate_roundtrip() {
     // Validate should pass.
     let checks = umrs_c2pa::c2pa::creds::validate(&config);
     let failures: Vec<_> = checks.iter().filter(|c| !c.ok).collect();
-    assert!(failures.is_empty(), "generated creds should validate: {failures:?}");
+    assert!(
+        failures.is_empty(),
+        "generated creds should validate: {failures:?}"
+    );
 
     // Cleanup.
     let _ = std::fs::remove_file(&cert_path);
@@ -481,7 +584,10 @@ fn test_creds_generate_and_validate_roundtrip() {
 fn test_describe_algorithm_all_fips() {
     for alg in ALLOWED_ALGORITHMS {
         let desc = describe_algorithm(alg);
-        assert!(desc.contains("FIPS-safe"), "{alg} description should mention FIPS-safe");
+        assert!(
+            desc.contains("FIPS-safe"),
+            "{alg} description should mention FIPS-safe"
+        );
         assert!(
             desc.starts_with(&alg.to_uppercase()),
             "{alg} description should start with algorithm name"
@@ -542,7 +648,10 @@ fn test_build_settings_missing_trust_file_returns_io_error() {
     );
     let err = result.unwrap_err();
     let err_str = err.to_string();
-    assert!(err_str.contains("IO error"), "error should be an IO error, got: {err_str}");
+    assert!(
+        err_str.contains("IO error"),
+        "error should be an IO error, got: {err_str}"
+    );
 }
 
 /// When trust anchors are configured from a real PEM file, `build_c2pa_settings`

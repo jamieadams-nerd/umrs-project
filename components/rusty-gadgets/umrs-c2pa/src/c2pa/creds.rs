@@ -34,6 +34,8 @@ use openssl::x509::extension::{BasicConstraints, ExtendedKeyUsage, KeyUsage};
 use openssl::x509::{X509Builder, X509NameBuilder, X509ReqBuilder};
 use zeroize::Zeroizing;
 
+use umrs_core::i18n;
+
 use crate::c2pa::{config::UmrsConfig, error::InspectError, signer};
 #[allow(unused_imports)]
 use crate::verbose;
@@ -145,7 +147,12 @@ pub fn generate(
     let (nid, digest, curve_name, key_bits) = match alg {
         c2pa::SigningAlg::Es384 => (Nid::SECP384R1, MessageDigest::sha384(), "P-384", "384"),
         c2pa::SigningAlg::Es512 => (Nid::SECP521R1, MessageDigest::sha512(), "P-521", "521"),
-        _ => (Nid::X9_62_PRIME256V1, MessageDigest::sha256(), "P-256", "256"),
+        _ => (
+            Nid::X9_62_PRIME256V1,
+            MessageDigest::sha256(),
+            "P-256",
+            "256",
+        ),
     };
 
     verbose!("Generating ECDSA key pair on curve {}...", curve_name);
@@ -178,7 +185,10 @@ pub fn generate(
             organization: org.clone(),
         })
     } else {
-        verbose!("Generating self-signed certificate (valid {} days)...", validity_days);
+        verbose!(
+            "Generating self-signed certificate (valid {} days)...",
+            validity_days
+        );
         let cert_pem = build_self_signed(&pkey, org, digest, validity_days)?;
         Ok(GeneratedCredentials {
             cert_or_csr_pem: cert_pem,
@@ -215,65 +225,77 @@ pub fn validate(config: &UmrsConfig) -> Vec<CredCheck> {
         (None, None) => {
             checks.push(CredCheck::fail(
                 "credentials",
-                "No cert_chain or private_key configured. \
-                 Run `inspect creds generate` to create them, \
-                 then set the paths in umrs-c2pa.toml.",
+                &i18n::tr(
+                    "No cert_chain or private_key configured. \
+                     Run `inspect creds generate` to create them, \
+                     then set the paths in umrs-c2pa.toml.",
+                ),
             ));
             return checks;
         }
         (Some(_), None) => {
             checks.push(CredCheck::fail(
                 "private_key",
-                "cert_chain is set but private_key is missing",
+                &i18n::tr("cert_chain is set but private_key is missing"),
             ));
             return checks;
         }
         (None, Some(_)) => {
             checks.push(CredCheck::fail(
                 "cert_chain",
-                "private_key is set but cert_chain is missing",
+                &i18n::tr("private_key is set but cert_chain is missing"),
             ));
             return checks;
         }
     };
 
-    // File existence.
-    if cert_path.exists() {
-        checks.push(CredCheck::pass("cert_file", &format!("Found: {}", cert_path.display())));
-    } else {
-        checks.push(CredCheck::fail("cert_file", &format!("Not found: {}", cert_path.display())));
-    }
-    if key_path.exists() {
-        checks.push(CredCheck::pass("key_file", &format!("Found: {}", key_path.display())));
-    } else {
-        checks.push(CredCheck::fail("key_file", &format!("Not found: {}", key_path.display())));
-    }
-
-    // If either is missing, stop here.
-    if !cert_path.exists() || !key_path.exists() {
-        return checks;
-    }
-
-    // Unix permission check on the private key file.
-    // A world-readable or group-readable key is a deployment error.
-    #[cfg(unix)]
-    check_key_permissions(key_path, &mut checks);
-
-    // PEM format — read key bytes into Zeroizing so they are zeroed after this scope.
+    // File reads — authoritative check for existence and readability.
+    // Eliminates TOCTOU by using the read result itself to determine existence.
     let cert_bytes = match std::fs::read(cert_path) {
-        Ok(b) => b,
+        Ok(b) => {
+            checks.push(CredCheck::pass(
+                "cert_file",
+                &format!("Found: {}", cert_path.display()),
+            ));
+            b
+        }
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
+            checks.push(CredCheck::fail(
+                "cert_file",
+                &format!("Not found: {}", cert_path.display()),
+            ));
+            return checks;
+        }
         Err(e) => {
             checks.push(CredCheck::fail("cert_read", &format!("Cannot read: {e}")));
             return checks;
         }
     };
     let key_bytes: Zeroizing<Vec<u8>> = match std::fs::read(key_path) {
-        Ok(b) => Zeroizing::new(b),
+        Ok(b) => {
+            checks.push(CredCheck::pass(
+                "key_file",
+                &format!("Found: {}", key_path.display()),
+            ));
+            Zeroizing::new(b)
+        }
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
+            checks.push(CredCheck::fail(
+                "key_file",
+                &format!("Not found: {}", key_path.display()),
+            ));
+            return checks;
+        }
         Err(e) => {
             checks.push(CredCheck::fail("key_read", &format!("Cannot read: {e}")));
             return checks;
         }
     };
+
+    // Unix permission check on the private key file.
+    // A world-readable or group-readable key is a deployment error.
+    #[cfg(unix)]
+    check_key_permissions(key_path, &mut checks);
 
     if !cert_bytes.windows(11).any(|w| w == b"-----BEGIN ") {
         checks.push(CredCheck::fail("cert_format", "File is not valid PEM"));
@@ -291,21 +313,33 @@ pub fn validate(config: &UmrsConfig) -> Vec<CredCheck> {
     let cert = match openssl::x509::X509::from_pem(&cert_bytes) {
         Ok(c) => c,
         Err(e) => {
-            checks.push(CredCheck::fail("cert_parse", &format!("Cannot parse certificate: {e}")));
+            checks.push(CredCheck::fail(
+                "cert_parse",
+                &format!("Cannot parse certificate: {e}"),
+            ));
             return checks;
         }
     };
-    checks.push(CredCheck::pass("cert_parse", "Certificate parsed successfully"));
+    checks.push(CredCheck::pass(
+        "cert_parse",
+        "Certificate parsed successfully",
+    ));
 
     // Parse private key.
     let pkey = match openssl::pkey::PKey::private_key_from_pem(&key_bytes) {
         Ok(k) => k,
         Err(e) => {
-            checks.push(CredCheck::fail("key_parse", &format!("Cannot parse private key: {e}")));
+            checks.push(CredCheck::fail(
+                "key_parse",
+                &format!("Cannot parse private key: {e}"),
+            ));
             return checks;
         }
     };
-    checks.push(CredCheck::pass("key_parse", "Private key parsed successfully"));
+    checks.push(CredCheck::pass(
+        "key_parse",
+        "Private key parsed successfully",
+    ));
 
     // Key matches certificate.
     let cert_pubkey = match cert.public_key() {
@@ -319,7 +353,10 @@ pub fn validate(config: &UmrsConfig) -> Vec<CredCheck> {
         }
     };
     if cert_pubkey.public_eq(&pkey) {
-        checks.push(CredCheck::pass("key_match", "Private key matches certificate"));
+        checks.push(CredCheck::pass(
+            "key_match",
+            "Private key matches certificate",
+        ));
     } else {
         checks.push(CredCheck::fail(
             "key_match",
@@ -353,7 +390,10 @@ pub fn validate(config: &UmrsConfig) -> Vec<CredCheck> {
         .join(", ");
     let is_self_signed = cert.subject_name_hash() == cert.issuer_name_hash();
     if is_self_signed {
-        checks.push(CredCheck::pass("issuer", &format!("Issuer: {issuer} (self-signed)")));
+        checks.push(CredCheck::pass(
+            "issuer",
+            &format!("Issuer: {issuer} (self-signed)"),
+        ));
     } else {
         checks.push(CredCheck::pass("issuer", &format!("Issuer: {issuer}")));
     }
@@ -407,7 +447,10 @@ fn check_key_permissions(key_path: &std::path::Path, checks: &mut Vec<CredCheck>
     use std::os::unix::fs::MetadataExt;
     match std::fs::metadata(key_path) {
         Err(e) => {
-            checks.push(CredCheck::warn("key_permissions", &format!("Cannot stat key file: {e}")));
+            checks.push(CredCheck::warn(
+                "key_permissions",
+                &format!("Cannot stat key file: {e}"),
+            ));
         }
         Ok(meta) => {
             let mode = meta.mode() & 0o777;

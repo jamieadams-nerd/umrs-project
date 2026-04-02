@@ -11,8 +11,8 @@
 //!
 //! - [`UmrsConfig`] — top-level configuration
 //! - [`InspectError`] — unified error type
-//! - [`ingest_file`] / [`sha256_hex`] — file ingestion
-//! - [`read_chain`] / [`manifest_json`] / [`chain_json`] — manifest reading
+//! - [`ingest_file`] / [`sha256_hex`] / [`sha384_hex`] — file ingestion and hashing
+//! - [`read_chain`] / [`manifest_json`] / [`chain_json`] / [`chain_report_json`] — manifest reading
 //!   (all accept `&UmrsConfig` and perform trust validation from configured anchors)
 //! - [`build_c2pa_settings`] — assemble c2pa SDK `Settings` from trust config
 //! - [`ALLOWED_ALGORITHMS`] — FIPS-safe algorithm allow-list
@@ -47,8 +47,8 @@ pub mod validate;
 
 pub use config::UmrsConfig;
 pub use error::InspectError;
-pub use ingest::{ingest_file, sha256_hex};
-pub use manifest::{chain_json, has_manifest, manifest_json, read_chain};
+pub use ingest::{ingest_file, sha256_hex, sha384_hex};
+pub use manifest::{chain_json, chain_report_json, has_manifest, manifest_json, read_chain};
 pub use report::{print_chain, print_chain_readonly, print_validation_report};
 pub use signer::ALLOWED_ALGORITHMS;
 pub use trust::build_c2pa_settings;

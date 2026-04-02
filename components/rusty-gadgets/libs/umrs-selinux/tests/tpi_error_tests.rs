@@ -96,10 +96,7 @@ fn tpi_disagreement_carries_both_contexts() {
     let ctx_a = make_context("system_u", "system_r", "sshd_t");
     let ctx_b = make_context("unconfined_u", "unconfined_r", "unconfined_t");
 
-    let err = TpiError::Disagreement(
-        Box::new(ctx_a.clone()),
-        Box::new(ctx_b.clone()),
-    );
+    let err = TpiError::Disagreement(Box::new(ctx_a.clone()), Box::new(ctx_b.clone()));
 
     if let TpiError::Disagreement(a, b) = &err {
         assert_eq!(a.as_ref(), &ctx_a, "Path A context should be preserved");
@@ -161,14 +158,8 @@ fn tpi_error_disagreement_equality() {
     let ctx_a = make_context("system_u", "system_r", "sshd_t");
     let ctx_b = make_context("unconfined_u", "unconfined_r", "unconfined_t");
 
-    let d1 = TpiError::Disagreement(
-        Box::new(ctx_a.clone()),
-        Box::new(ctx_b.clone()),
-    );
-    let d2 = TpiError::Disagreement(
-        Box::new(ctx_a.clone()),
-        Box::new(ctx_b.clone()),
-    );
+    let d1 = TpiError::Disagreement(Box::new(ctx_a.clone()), Box::new(ctx_b.clone()));
+    let d2 = TpiError::Disagreement(Box::new(ctx_a.clone()), Box::new(ctx_b.clone()));
     assert_eq!(d1, d2);
 }
 
@@ -232,9 +223,10 @@ fn nom_error_kind_tag_does_not_contain_input() {
     // Construct a nom error that would normally include input bytes in its
     // Display output.
     let sensitive_input = "s3:c100,c200.classified";
-    let nom_err: nom::Err<nom::error::Error<&str>> = nom::Err::Error(
-        nom::error::Error::new(sensitive_input, nom::error::ErrorKind::Tag),
-    );
+    let nom_err: nom::Err<nom::error::Error<&str>> = nom::Err::Error(nom::error::Error::new(
+        sensitive_input,
+        nom::error::ErrorKind::Tag,
+    ));
 
     let kind = nom_error_kind(&nom_err);
 
@@ -248,17 +240,17 @@ fn nom_error_kind_tag_does_not_contain_input() {
 
 #[test]
 fn nom_error_kind_failure_returns_kind_name() {
-    let nom_err: nom::Err<nom::error::Error<&str>> = nom::Err::Failure(
-        nom::error::Error::new("user:role:type", nom::error::ErrorKind::Tag),
-    );
+    let nom_err: nom::Err<nom::error::Error<&str>> = nom::Err::Failure(nom::error::Error::new(
+        "user:role:type",
+        nom::error::ErrorKind::Tag,
+    ));
     let kind = nom_error_kind(&nom_err);
     assert_eq!(kind, "Tag");
 }
 
 #[test]
 fn nom_error_kind_incomplete_returns_label() {
-    let nom_err: nom::Err<nom::error::Error<&str>> =
-        nom::Err::Incomplete(nom::Needed::Unknown);
+    let nom_err: nom::Err<nom::error::Error<&str>> = nom::Err::Incomplete(nom::Needed::Unknown);
     let kind = nom_error_kind(&nom_err);
     assert_eq!(kind, "Incomplete");
 }

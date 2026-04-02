@@ -35,8 +35,7 @@ use crate::posture::configured::{SysctlConfig, configured_cmdline};
 use crate::posture::contradiction::{self, ContradictionKind};
 use crate::posture::fips_cross::FipsCrossCheck;
 use crate::posture::indicator::{
-    AssuranceImpact, ConfiguredValue, DesiredValue, IndicatorClass,
-    IndicatorId, LiveValue,
+    AssuranceImpact, ConfiguredValue, DesiredValue, IndicatorClass, IndicatorId, LiveValue,
 };
 use crate::posture::modprobe::ModprobeConfig;
 use crate::posture::reader::{BootIdReader, CmdlineReader};
@@ -156,10 +155,8 @@ impl PostureSnapshot {
             })
             .collect();
 
-        let readable =
-            reports.iter().filter(|r| r.live_value.is_some()).count();
-        let hardened =
-            reports.iter().filter(|r| r.meets_desired == Some(true)).count();
+        let readable = reports.iter().filter(|r| r.live_value.is_some()).count();
+        let hardened = reports.iter().filter(|r| r.meets_desired == Some(true)).count();
 
         #[cfg(debug_assertions)]
         log::debug!(
@@ -200,10 +197,7 @@ impl PostureSnapshot {
     ///
     /// Returns reports whose `descriptor.impact >= min`.
     #[must_use = "impact-filtered iterator carries security findings — examine each report"]
-    pub fn by_impact(
-        &self,
-        min: AssuranceImpact,
-    ) -> impl Iterator<Item = &IndicatorReport> {
+    pub fn by_impact(&self, min: AssuranceImpact) -> impl Iterator<Item = &IndicatorReport> {
         self.reports.iter().filter(move |r| r.descriptor.impact >= min)
     }
 
@@ -273,22 +267,19 @@ fn collect_one(
     // options line disagrees with /proc/cmdline on a security token.
     // NIST SP 800-53 CM-6: configured persistence layer for cmdline indicators is
     // the BLS options line, not a sysctl.d integer value.
-    let configured_meets: Option<bool> =
-        if desc.class == IndicatorClass::KernelCmdline {
-            // For KernelCmdline indicators, configured_meets is derived from token
-            // presence in the BLS options string (configured_boot_cmdline).
-            // If configured_boot_cmdline is None (BLS unavailable), configured_meets
-            // is None — no contradiction can be detected (graceful degrade).
-            configured_boot_cmdline
-                .and_then(|opts| desc.desired.meets_cmdline(opts))
-        } else {
-            configured_value.as_ref().and_then(|cv| {
-                contradiction::evaluate_configured_meets(&cv.raw, &desc.desired)
-            })
-        };
+    let configured_meets: Option<bool> = if desc.class == IndicatorClass::KernelCmdline {
+        // For KernelCmdline indicators, configured_meets is derived from token
+        // presence in the BLS options string (configured_boot_cmdline).
+        // If configured_boot_cmdline is None (BLS unavailable), configured_meets
+        // is None — no contradiction can be detected (graceful degrade).
+        configured_boot_cmdline.and_then(|opts| desc.desired.meets_cmdline(opts))
+    } else {
+        configured_value
+            .as_ref()
+            .and_then(|cv| contradiction::evaluate_configured_meets(&cv.raw, &desc.desired))
+    };
 
-    let contradiction =
-        contradiction::classify(meets_desired, configured_meets);
+    let contradiction = contradiction::classify(meets_desired, configured_meets);
 
     // Gate the summary log behind debug_assertions to prevent raw configured
     // values from leaking in release builds when debug logging is enabled on
@@ -344,9 +335,7 @@ fn read_live(
 ) -> (Option<LiveValue>, Option<bool>) {
     match desc.class {
         IndicatorClass::Sysctl => read_live_sysctl_signal(desc),
-        IndicatorClass::KernelCmdline => {
-            read_live_cmdline_indicator(desc, cmdline)
-        }
+        IndicatorClass::KernelCmdline => read_live_cmdline_indicator(desc, cmdline),
         IndicatorClass::SecurityFs => read_live_security_fs(desc),
         IndicatorClass::DistroManaged => read_live_distro_managed(desc),
         IndicatorClass::ModprobeConfig => read_live_modprobe(desc),
@@ -365,9 +354,7 @@ fn read_live_sysctl_signal(
                 Ok(Some((kind, raw))) => {
                     use crate::posture::reader::CorePatternKind;
                     let meets = Some(kind == CorePatternKind::ManagedHandler);
-                    log::debug!(
-                        "posture: CorePattern: kind={kind:?} meets={meets:?}"
-                    );
+                    log::debug!("posture: CorePattern: kind={kind:?} meets={meets:?}");
                     (Some(LiveValue::Text(raw)), meets)
                 }
                 Ok(None) => {
@@ -396,28 +383,21 @@ fn read_live_sysctl_signal(
         }
         // PerfEventParanoid uses a signed reader (can emit -1 = "unrestricted").
         IndicatorId::PerfEventParanoid => {
-            match crate::posture::reader::read_live_sysctl_signed(
-                IndicatorId::PerfEventParanoid,
-            ) {
+            match crate::posture::reader::read_live_sysctl_signed(IndicatorId::PerfEventParanoid) {
                 Ok(Some(v)) => {
                     let meets = desc.desired.meets_signed_integer(v);
                     (Some(LiveValue::SignedInteger(v)), meets)
                 }
                 Ok(None) => {
                     // read_live_sysctl_signed always handles PerfEventParanoid.
-                    debug_assert!(
-                        false,
-                        "PerfEventParanoid must be handled by signed reader"
-                    );
+                    debug_assert!(false, "PerfEventParanoid must be handled by signed reader");
                     log::warn!(
                         "posture: PerfEventParanoid: signed reader returned None unexpectedly"
                     );
                     (None, None)
                 }
                 Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
-                    log::debug!(
-                        "posture: PerfEventParanoid: kernel node absent"
-                    );
+                    log::debug!("posture: PerfEventParanoid: kernel node absent");
                     (None, None)
                 }
                 Err(e) => {
@@ -454,9 +434,7 @@ fn read_live_sysctl_signal(
                     (None, None)
                 }
                 Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
-                    log::debug!(
-                        "posture: indicator {id:?}: kernel node absent"
-                    );
+                    log::debug!("posture: indicator {id:?}: kernel node absent");
                     (None, None)
                 }
                 Err(e) => {
@@ -493,8 +471,7 @@ fn read_live_cmdline_indicator(
     // is present in the cmdline, or "absent" if it is not. This records what was
     // observed without retaining the entire cmdline content per indicator.
     let token_value = match &desc.desired {
-        DesiredValue::CmdlinePresent(token)
-        | DesiredValue::CmdlineAbsent(token) => {
+        DesiredValue::CmdlinePresent(token) | DesiredValue::CmdlineAbsent(token) => {
             if reader.contains_token(token) {
                 token.to_string()
             } else {
@@ -514,9 +491,7 @@ fn read_live_cmdline_indicator(
 /// `SecurityFs`-class indicator degrades gracefully to `(None, None)`.
 ///
 /// NIST SP 800-53 SI-7: provenance-verified via SECURITYFS_MAGIC.
-fn read_live_security_fs(
-    desc: &'static IndicatorDescriptor,
-) -> (Option<LiveValue>, Option<bool>) {
+fn read_live_security_fs(desc: &'static IndicatorDescriptor) -> (Option<LiveValue>, Option<bool>) {
     match desc.id {
         IndicatorId::Lockdown => {
             match crate::posture::reader::read_lockdown_live() {
@@ -582,9 +557,7 @@ fn read_live_distro_managed(
 ///
 /// NIST SP 800-53 SI-7: provenance-verified sysfs reads via SYSFS_MAGIC.
 /// NIST SP 800-53 CM-6: Trust Gate — module must be loaded to read parameters.
-fn read_live_modprobe(
-    desc: &'static IndicatorDescriptor,
-) -> (Option<LiveValue>, Option<bool>) {
+fn read_live_modprobe(desc: &'static IndicatorDescriptor) -> (Option<LiveValue>, Option<bool>) {
     use crate::posture::modprobe::{is_module_loaded, read_module_param};
 
     match desc.id {
@@ -707,12 +680,8 @@ fn read_configured(
     }
 
     match desc.class {
-        IndicatorClass::ModprobeConfig => {
-            read_configured_modprobe(desc, modprobe_config)
-        }
-        IndicatorClass::DistroManaged
-            if desc.id == IndicatorId::FipsEnabled =>
-        {
+        IndicatorClass::ModprobeConfig => read_configured_modprobe(desc, modprobe_config),
+        IndicatorClass::DistroManaged if desc.id == IndicatorId::FipsEnabled => {
             read_configured_fips(cmdline, live_value)
         }
         IndicatorClass::Sysctl | IndicatorClass::DistroManaged => {
@@ -857,8 +826,7 @@ fn read_configured_fips(
     // Extract cmdline fips=1 token from the shared CmdlineReader.
     let cmdline_has_fips1 = cmdline.map(|r| r.contains_token("fips=1"));
 
-    let cross_check =
-        FipsCrossCheck::evaluate(live_fips_readable, cmdline_has_fips1);
+    let cross_check = FipsCrossCheck::evaluate(live_fips_readable, cmdline_has_fips1);
     let result = cross_check.as_configured_value();
 
     #[cfg(debug_assertions)]

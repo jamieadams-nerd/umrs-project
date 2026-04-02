@@ -332,12 +332,7 @@ impl Default for TreeModel {
 // ---------------------------------------------------------------------------
 
 /// Recursively collect visible nodes into the flat display list.
-fn collect_entries(
-    node: &TreeNode,
-    path: &NodeId,
-    depth: usize,
-    out: &mut Vec<DisplayEntry>,
-) {
+fn collect_entries(node: &TreeNode, path: &NodeId, depth: usize, out: &mut Vec<DisplayEntry>) {
     if !node.visible {
         return;
     }

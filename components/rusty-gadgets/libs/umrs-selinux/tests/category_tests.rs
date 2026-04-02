@@ -16,9 +16,7 @@
 use std::str::FromStr;
 
 // Adjust crate path if needed
-use umrs_selinux::category::{
-    Category, CategoryError, CategorySet, MAX_CATEGORY,
-};
+use umrs_selinux::category::{Category, CategoryError, CategorySet, MAX_CATEGORY};
 
 //
 // =============================================================================

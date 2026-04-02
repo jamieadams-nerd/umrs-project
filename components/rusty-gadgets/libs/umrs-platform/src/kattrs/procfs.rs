@@ -84,7 +84,8 @@ impl KernelFileSource for ModuleLoadLatch {
     type Output = bool;
     const KOBJECT: &'static str = "proc/sys/kernel";
     const ATTRIBUTE_NAME: &'static str = "modules_disabled";
-    const DESCRIPTION: &'static str = "0 -- module loading enabled\n1 -- module loading permanently disabled (latch)";
+    const DESCRIPTION: &'static str =
+        "0 -- module loading enabled\n1 -- module loading permanently disabled (latch)";
     const KERNEL_NOTE: &'static str = "One-way latch: once set to 1, cannot be cleared without a reboot. \
          Verified via PROC_SUPER_MAGIC.";
 

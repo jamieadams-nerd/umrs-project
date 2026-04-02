@@ -100,6 +100,8 @@ If the injury from disclosure would be "serious" (Protected B), it is by definit
 The categorization process in TBS Standard J.2.2 requires a single determination.
 
 In MCS terms, a file at sensitivity level `s1` (Protected A) cannot simultaneously be at `s2` (Protected B) or `s3` (Protected C).
+These sensitivity levels (`s1`, `s2`, `s3`) reflect the MLS canonical mapping for future enforcement under MLS policy.
+Under the current targeted policy deployment, all MCS labels exist at `s0`; the `s1`/`s2`/`s3` assignments take effect when MLS policy is active.
 The sensitivity level enforces what the policy requires.
 
 === Protected vs Classified Exclusivity
@@ -148,7 +150,7 @@ They are not equivalence statements and must not be used as the basis for cross-
 
 Understanding what the Canadian system _does not include_ is as important as understanding what it does:
 
-. *No subcategories.* CUI has 125+ named categories organized under parent groups (e.g., PRIVACY/HEALTH, LEI/INV). Canada has three tiers. Period. There is no Canadian equivalent of the NARA CUI Registry category taxonomy.
+. *No subcategories.* CUI has 125+ named categories organized into index groups (e.g., Privacy, Law Enforcement, Defense). Each category has its own abbreviation and banner marking (e.g., `CUI//PRVCY`, `CUI//INV`, `CUI//LEI`). Canada has three tiers. Period. There is no Canadian equivalent of the NARA CUI Registry category taxonomy.
 
 . *No dissemination control suffixes.* CUI supports markings like NOFORN, FEDONLY, and REL TO that encode distribution restrictions in the label itself. Canada has no standardized equivalents. Canadian handling operates on two axes: injury tier plus need-to-know. The US operates on three axes: designation plus category plus dissemination control.
 
@@ -192,9 +194,9 @@ Need-to-know is procedural: individuals must demonstrate that their duties requi
 
 In MCS terms, need-to-know maps naturally to category membership:
 
-* A user with category `c200` in their clearance range can access files tagged `c200`.
-* A user without `c200` cannot, regardless of their sensitivity level.
+* A user with category `c300` in their clearance range can access files tagged `c300`.
+* A user without `c300` cannot, regardless of their sensitivity level.
 * This is the MCS two-factor model: sensitivity level (which tier) multiplied by category (which compartment).
 
 For the initial Canadian Protected implementation, the sensitivity level does the heavy lifting.
-Categories within the `c200-c299` range are reserved for future departmental subcategorization that does not yet exist in the TBS framework.
+Categories within the `c300-c399` range are reserved for future departmental subcategorization that does not yet exist in the TBS framework.

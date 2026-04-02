@@ -204,11 +204,7 @@ fn field_def_toggle_value_flips_back() {
 // ---------------------------------------------------------------------------
 
 fn make_selinux_field() -> FieldDef {
-    let options = vec![
-        "enforcing".to_owned(),
-        "permissive".to_owned(),
-        "disabled".to_owned(),
-    ];
+    let options = vec!["enforcing".to_owned(), "permissive".to_owned(), "disabled".to_owned()];
     let valid_options = options.clone();
     FieldDef::selection("SELINUX", options, "enforcing", move |v| {
         if let FieldValue::Selection(s) = v {
@@ -529,11 +525,7 @@ fn validation_summary_counts_errors() {
 #[test]
 fn config_header_context_fields_stored() {
     use umrs_ui::ConfigHeaderContext;
-    let ctx = ConfigHeaderContext::new(
-        "SELinux Config",
-        "/etc/selinux/config",
-        "all fields valid",
-    );
+    let ctx = ConfigHeaderContext::new("SELinux Config", "/etc/selinux/config", "all fields valid");
     assert_eq!(ctx.tool_name, "SELinux Config");
     assert_eq!(ctx.config_target, "/etc/selinux/config");
     assert_eq!(ctx.validation_summary, "all fields valid");

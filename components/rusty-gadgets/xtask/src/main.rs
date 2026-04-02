@@ -10,8 +10,7 @@ use std::process::{Command, Stdio};
 ///
 /// NIST SP 800-53 SA-11 / NIST SP 800-218 SSDF PW.4.
 fn doc_check() -> Result<()> {
-    let workspace_root =
-        Path::new(env!("CARGO_MANIFEST_DIR")).parent().unwrap();
+    let workspace_root = Path::new(env!("CARGO_MANIFEST_DIR")).parent().unwrap();
     let mut missing = Vec::new();
 
     // Walk each workspace member's src/ directory
@@ -42,18 +41,15 @@ fn doc_check() -> Result<()> {
     }
 }
 
-fn check_dir_for_module_docs(
-    dir: &Path,
-    missing: &mut Vec<std::path::PathBuf>,
-) -> Result<()> {
+fn check_dir_for_module_docs(dir: &Path, missing: &mut Vec<std::path::PathBuf>) -> Result<()> {
     for entry in fs::read_dir(dir)? {
         let entry = entry?;
         let path = entry.path();
         if path.is_dir() {
             check_dir_for_module_docs(&path, missing)?;
         } else if path.extension().is_some_and(|ext| ext == "rs") {
-            let content = fs::read_to_string(&path)
-                .with_context(|| format!("reading {}", path.display()))?;
+            let content =
+                fs::read_to_string(&path).with_context(|| format!("reading {}", path.display()))?;
             if !content.lines().any(|line| line.starts_with("//!")) {
                 missing.push(path);
             }

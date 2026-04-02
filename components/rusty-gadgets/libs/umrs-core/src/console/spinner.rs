@@ -214,18 +214,12 @@ impl Spinner {
     /// # Panics
     ///
     /// This function does not intentionally panic.
-    pub fn start_with_options(
-        message: impl Into<String>,
-        opts: SpinnerOptions,
-    ) -> Spinner {
+    pub fn start_with_options(message: impl Into<String>, opts: SpinnerOptions) -> Spinner {
         let style = opts.style.unwrap_or_default();
         let position = opts.position.unwrap_or_default();
         let frames = style.frames();
-        let final_marker = opts
-            .final_marker
-            .as_deref()
-            .unwrap_or(style.default_final_marker())
-            .to_string();
+        let final_marker =
+            opts.final_marker.as_deref().unwrap_or(style.default_final_marker()).to_string();
 
         let spinner_color = opts.spinner_color;
         let message_color = opts.message_color;
@@ -241,12 +235,7 @@ impl Spinner {
             let mut stderr = io::stderr();
 
             let message_rendered = if let Some(color) = message_color {
-                format!(
-                    "{}{}{}",
-                    color.start(),
-                    message_raw,
-                    AnsiColor::reset()
-                )
+                format!("{}{}{}", color.start(), message_raw, AnsiColor::reset())
             } else {
                 message_raw.clone()
             };
@@ -293,12 +282,7 @@ impl Spinner {
             }
 
             let final_marker_rendered = if let Some(color) = spinner_color {
-                format!(
-                    "{}{}{}",
-                    color.start(),
-                    final_marker,
-                    AnsiColor::reset()
-                )
+                format!("{}{}{}", color.start(), final_marker, AnsiColor::reset())
             } else {
                 final_marker
             };

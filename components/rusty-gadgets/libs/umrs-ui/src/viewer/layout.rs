@@ -38,9 +38,7 @@ use ratatui::Frame;
 use ratatui::layout::{Constraint, Direction, Layout, Rect};
 use ratatui::style::Style;
 use ratatui::text::{Line, Span};
-use ratatui::widgets::{
-    Block, BorderType, Borders, List, ListItem, ListState, Paragraph,
-};
+use ratatui::widgets::{Block, BorderType, Borders, List, ListItem, ListState, Paragraph};
 
 use crate::theme::Theme;
 
@@ -111,8 +109,7 @@ pub fn render_viewer(
         ])
         .split(area);
 
-    let [header_area, tab_area, body_area, search_area, status_area] = *outer
-    else {
+    let [header_area, tab_area, body_area, search_area, status_area] = *outer else {
         return;
     };
 
@@ -222,11 +219,8 @@ fn render_viewer_tabs(
 ) {
     use ratatui::widgets::Tabs;
 
-    let tab_titles: Vec<Line<'_>> = app
-        .tabs()
-        .iter()
-        .map(|t| Line::from(format!(" {} ", t.label)))
-        .collect();
+    let tab_titles: Vec<Line<'_>> =
+        app.tabs().iter().map(|t| Line::from(format!(" {} ", t.label))).collect();
 
     let tabs = Tabs::new(tab_titles)
         .select(active_tab)
@@ -246,12 +240,7 @@ fn render_viewer_tabs(
 /// The currently selected entry is highlighted using `theme.tab_active`.
 /// Scroll is driven by `state.scroll_offset` — the renderer shows a window
 /// of entries starting at `scroll_offset`.
-fn render_tree_panel(
-    frame: &mut Frame,
-    area: Rect,
-    state: &ViewerState,
-    theme: &Theme,
-) {
+fn render_tree_panel(frame: &mut Frame, area: Rect, state: &ViewerState, theme: &Theme) {
     let display = &state.tree.display_list;
 
     let items: Vec<ListItem<'_>> =
@@ -268,10 +257,8 @@ fn render_tree_panel(
         list_state.select(Some(state.selected_index));
     }
 
-    let list = List::new(items)
-        .block(block)
-        .highlight_style(theme.tab_active)
-        .highlight_symbol("► ");
+    let list =
+        List::new(items).block(block).highlight_style(theme.tab_active).highlight_symbol("► ");
 
     frame.render_stateful_widget(list, area, &mut list_state);
 }
@@ -302,12 +289,7 @@ fn build_tree_item<'a>(entry: &DisplayEntry, theme: &'a Theme) -> ListItem<'a> {
 /// Displays the current search query with a blinking cursor indicator.
 /// The operator types characters which are accumulated in
 /// `ViewerState::search_query`.
-fn render_search_bar(
-    frame: &mut Frame,
-    area: Rect,
-    query: &str,
-    theme: &Theme,
-) {
+fn render_search_bar(frame: &mut Frame, area: Rect, query: &str, theme: &Theme) {
     let prompt = format!(" / {query}█");
     let line = Line::from(Span::styled(prompt, theme.data_value));
 
@@ -326,18 +308,14 @@ fn render_search_bar(
 // ---------------------------------------------------------------------------
 
 /// Key legend for the viewer status bar.
-const VIEWER_KEY_LEGEND: &str = "  Tab: tabs | ↑↓: select | Enter/Space: expand | Backspace: up | /: search | q: quit";
+const VIEWER_KEY_LEGEND: &str =
+    "  Tab: tabs | ↑↓: select | Enter/Space: expand | Backspace: up | /: search | q: quit";
 
 /// Render the viewer status bar.
 ///
 /// Displays the app's current status message left-aligned with a compact
 /// key legend right-aligned when space permits.
-fn render_viewer_status(
-    frame: &mut Frame,
-    area: Rect,
-    app: &dyn ViewerApp,
-    theme: &Theme,
-) {
+fn render_viewer_status(frame: &mut Frame, area: Rect, app: &dyn ViewerApp, theme: &Theme) {
     use crate::theme::status_bg_color;
     use umrs_core::console::symbols::icons;
 
@@ -358,9 +336,7 @@ fn render_viewer_status(
     let combined = status_chars.saturating_add(legend_chars);
 
     let padded = if combined <= total_width {
-        let pad = total_width
-            .saturating_sub(status_chars)
-            .saturating_sub(legend_chars);
+        let pad = total_width.saturating_sub(status_chars).saturating_sub(legend_chars);
         format!("{status_text}{}{VIEWER_KEY_LEGEND}", " ".repeat(pad))
     } else if status_chars < total_width {
         let pad = total_width.saturating_sub(status_chars);

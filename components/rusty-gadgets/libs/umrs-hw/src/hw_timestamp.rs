@@ -186,11 +186,7 @@ mod fallback_impl {
         let nanos: u64 = u64::try_from(ts.tv_sec)
             .ok()
             .and_then(|s| s.checked_mul(1_000_000_000u64))
-            .and_then(|s_ns| {
-                u64::try_from(ts.tv_nsec)
-                    .ok()
-                    .and_then(|ns| s_ns.checked_add(ns))
-            })
+            .and_then(|s_ns| u64::try_from(ts.tv_nsec).ok().and_then(|ns| s_ns.checked_add(ns)))
             .unwrap_or(0);
 
         #[cfg(debug_assertions)]

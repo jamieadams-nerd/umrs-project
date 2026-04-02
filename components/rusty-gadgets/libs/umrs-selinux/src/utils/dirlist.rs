@@ -225,11 +225,7 @@ impl ColumnSet {
     #[must_use]
     pub fn with(mut self, col: Column) -> Self {
         if !self.0.contains(&col) {
-            let pos = self
-                .0
-                .iter()
-                .position(|c| *c == Column::Name)
-                .unwrap_or(self.0.len());
+            let pos = self.0.iter().position(|c| *c == Column::Name).unwrap_or(self.0.len());
             self.0.insert(pos, col);
         }
         self
@@ -309,9 +305,7 @@ pub fn list_directory(dir_path: &Path) -> io::Result<DirListing> {
             entries.sort_by(|a, b| {
                 let a_dir = a.dirent.file_type.is_directory();
                 let b_dir = b.dirent.file_type.is_directory();
-                b_dir.cmp(&a_dir).then_with(|| {
-                    a.dirent.name.as_str().cmp(b.dirent.name.as_str())
-                })
+                b_dir.cmp(&a_dir).then_with(|| a.dirent.name.as_str().cmp(b.dirent.name.as_str()))
             });
             DirGroup {
                 key,
@@ -320,8 +314,7 @@ pub fn list_directory(dir_path: &Path) -> io::Result<DirListing> {
         })
         .collect();
 
-    let elapsed_us =
-        u64::try_from(start.elapsed().as_micros()).unwrap_or(u64::MAX);
+    let elapsed_us = u64::try_from(start.elapsed().as_micros()).unwrap_or(u64::MAX);
 
     Ok(DirListing {
         path: dir_path.to_path_buf(),

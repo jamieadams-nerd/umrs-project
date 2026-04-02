@@ -20,23 +20,15 @@
 //! the indicator will show `live=None` — this is expected graceful degradation.
 
 use umrs_platform::posture::{
-    AssuranceImpact, ContradictionKind, IndicatorId, PostureSnapshot,
-    catalog::INDICATORS,
+    AssuranceImpact, ContradictionKind, IndicatorId, PostureSnapshot, catalog::INDICATORS,
 };
 
 fn main() {
-    env_logger::Builder::from_env(
-        env_logger::Env::default().default_filter_or("debug"),
-    )
-    .init();
+    env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("debug")).init();
 
-    println!(
-        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    );
+    println!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     println!(" UMRS Kernel Security Posture Probe — Phase 1");
-    println!(
-        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    );
+    println!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
     // ── Collect snapshot ────────────────────────────────────────────────────
     let snap = PostureSnapshot::collect();
@@ -68,10 +60,8 @@ fn main() {
     println!("{}", "─".repeat(78));
 
     for report in snap.iter() {
-        let live_str = report
-            .live_value
-            .as_ref()
-            .map_or_else(|| "<unavail>".to_owned(), |v| v.to_string());
+        let live_str =
+            report.live_value.as_ref().map_or_else(|| "<unavail>".to_owned(), |v| v.to_string());
 
         let meets_str = match report.meets_desired {
             Some(true) => "PASS",
@@ -112,13 +102,9 @@ fn main() {
     // ── Findings detail ─────────────────────────────────────────────────────
     let findings: Vec<_> = snap.findings().collect();
     if findings.is_empty() {
-        println!(
-            "No findings — all readable signals meet their desired value."
-        );
+        println!("No findings — all readable signals meet their desired value.");
     } else {
-        println!(
-            "── Findings ──────────────────────────────────────────────────────────────────"
-        );
+        println!("── Findings ──────────────────────────────────────────────────────────────────");
         for report in &findings {
             println!();
             println!("  Indicator  : {}", report.descriptor.id);
@@ -135,9 +121,7 @@ fn main() {
     // ── Contradictions ───────────────────────────────────────────────────────
     let contradictions: Vec<_> = snap.contradictions().collect();
     if !contradictions.is_empty() {
-        println!(
-            "── Contradictions ────────────────────────────────────────────────────────────"
-        );
+        println!("── Contradictions ────────────────────────────────────────────────────────────");
         for report in &contradictions {
             // contradictions() only yields reports where contradiction.is_some(),
             // so this match is exhaustive in practice. Pattern-matching is used
@@ -155,9 +139,7 @@ fn main() {
     }
 
     // ── Expert path: individual indicator lookup ────────────────────────────────
-    println!(
-        "── Individual indicator lookup (KptrRestrict) ───────────────────────────────────"
-    );
+    println!("── Individual indicator lookup (KptrRestrict) ───────────────────────────────────");
     if let Some(r) = snap.get(IndicatorId::KptrRestrict) {
         println!("  live={:?}  meets={:?}", r.live_value, r.meets_desired);
     } else {
@@ -167,9 +149,7 @@ fn main() {
     println!();
 
     // ── Expert path: catalog iteration ──────────────────────────────────────
-    println!(
-        "── Static catalog (first 5 entries) ─────────────────────────────────────────"
-    );
+    println!("── Static catalog (first 5 entries) ─────────────────────────────────────────");
     for desc in INDICATORS.iter().take(5) {
         println!(
             "  {:?}: desired={:?} impact={:?}",
@@ -178,11 +158,7 @@ fn main() {
     }
 
     println!();
-    println!(
-        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    );
+    println!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     println!(" Posture probe complete.");
-    println!(
-        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    );
+    println!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 }

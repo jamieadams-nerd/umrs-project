@@ -14,8 +14,8 @@
 //! All tests are pure logic — no terminal backend required.
 
 use umrs_ui::app::{
-    AuditCardApp, AuditCardState, ColumnLayout, DataRow, HeaderField,
-    StatusMessage, StyleHint, TabDef,
+    AuditCardApp, AuditCardState, ColumnLayout, DataRow, HeaderField, StatusMessage, StyleHint,
+    TabDef,
 };
 use umrs_ui::keymap::Action;
 
@@ -181,11 +181,7 @@ impl TwoColumnApp {
                 DataRow::normal("left-key-1", "left-val-1"),
                 DataRow::normal("left-key-2", "left-val-2"),
             ],
-            right: vec![DataRow::new(
-                "right-key-1",
-                "right-val-1",
-                StyleHint::Highlight,
-            )],
+            right: vec![DataRow::new("right-key-1", "right-val-1", StyleHint::Highlight)],
             single: vec![DataRow::normal("single-key", "single-val")],
             status: StatusMessage::default(),
         }

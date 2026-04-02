@@ -393,8 +393,7 @@ impl OsDetector {
         {
             let ev_before = evidence.len();
             let t0 = umrs_hw::read_hw_timestamp();
-            let boot_id_result =
-                kernel_anchor::run(&mut evidence, &mut confidence);
+            let boot_id_result = kernel_anchor::run(&mut evidence, &mut confidence);
             let t1 = umrs_hw::read_hw_timestamp();
             let ev_after = evidence.len();
             // Record timing before propagating the error — if Phase 1 fails we
@@ -418,11 +417,7 @@ impl OsDetector {
             // Upgrades to T2 (EnvAnchored) on success.
             let ev_before2 = evidence.len();
             let t2 = umrs_hw::read_hw_timestamp();
-            mount_topology::run(
-                &mut evidence,
-                &mut confidence,
-                self.max_mountinfo_bytes,
-            );
+            mount_topology::run(&mut evidence, &mut confidence, self.max_mountinfo_bytes);
             let t3 = umrs_hw::read_hw_timestamp();
             let ev_after2 = evidence.len();
             record_phase(
@@ -439,8 +434,7 @@ impl OsDetector {
             // Locates os-release, records statx metadata, resolves symlink.
             let ev_before3 = evidence.len();
             let t4 = umrs_hw::read_hw_timestamp();
-            let candidate =
-                release_candidate::run(&mut evidence, &mut confidence);
+            let candidate = release_candidate::run(&mut evidence, &mut confidence);
             let t5 = umrs_hw::read_hw_timestamp();
             let ev_after3 = evidence.len();
             record_phase(
@@ -472,16 +466,15 @@ impl OsDetector {
             );
 
             // Borrow the probe as a trait object reference for subsequent phases.
-            let probe: Option<&dyn substrate::PackageProbe> =
-                probe_box.as_deref();
+            let probe: Option<&dyn substrate::PackageProbe> = probe_box.as_deref();
 
             // ── Phase 5: File Ownership (soft) ─────────────────────────────
             // Queries selected probe for package ownership of the candidate.
             let ev_before5 = evidence.len();
             let t8 = umrs_hw::read_hw_timestamp();
-            let ownership = candidate.as_ref().and_then(|c| {
-                file_ownership::run(&mut evidence, &mut confidence, c, probe)
-            });
+            let ownership = candidate
+                .as_ref()
+                .and_then(|c| file_ownership::run(&mut evidence, &mut confidence, c, probe));
             let t9 = umrs_hw::read_hw_timestamp();
             let ev_after5 = evidence.len();
             record_phase(
@@ -535,9 +528,7 @@ impl OsDetector {
                     integrity_ok,
                     self.max_line_len,
                 ),
-                None => {
-                    (None, label_trust::LabelTrust::UntrustedLabelCandidate)
-                }
+                None => (None, label_trust::LabelTrust::UntrustedLabelCandidate),
             };
             let t13 = umrs_hw::read_hw_timestamp();
             let ev_after7 = evidence.len();

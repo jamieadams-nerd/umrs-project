@@ -33,18 +33,15 @@ fn mls_setrans_path() -> PathBuf {
 }
 
 fn targeted_setrans_path() -> PathBuf {
-    PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("config/TARGETED-setrans.conf")
+    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("config/TARGETED-setrans.conf")
 }
 
 fn us_catalog_path() -> PathBuf {
-    PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("config/us/US-CUI-LABELS.json")
+    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("config/us/US-CUI-LABELS.json")
 }
 
 fn ca_catalog_path() -> PathBuf {
-    PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("config/ca/CANADIAN-PROTECTED.json")
+    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("config/ca/CANADIAN-PROTECTED.json")
 }
 
 // ---------------------------------------------------------------------------
@@ -210,8 +207,7 @@ fn mls_no_line_lacks_equals_sign() {
 
 #[test]
 fn targeted_no_line_lacks_equals_sign() {
-    let entries =
-        parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
+    let entries = parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
     assert!(
         !entries.is_empty(),
         "TARGETED-setrans.conf should contain at least one entry"
@@ -234,8 +230,7 @@ fn mls_no_trailing_whitespace_in_labels() {
 
 #[test]
 fn targeted_no_trailing_whitespace_in_labels() {
-    let entries =
-        parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
+    let entries = parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
     for e in data_entries(&entries) {
         assert_eq!(
             e.label,
@@ -263,8 +258,7 @@ fn mls_no_trailing_whitespace_in_mcs_strings() {
 
 #[test]
 fn targeted_no_trailing_whitespace_in_mcs_strings() {
-    let entries =
-        parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
+    let entries = parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
     for e in &entries {
         assert_eq!(
             e.mcs,
@@ -298,8 +292,7 @@ fn mls_no_duplicate_mcs_strings() {
 
 #[test]
 fn targeted_no_duplicate_mcs_strings() {
-    let entries =
-        parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
+    let entries = parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
     let data = data_entries(&entries);
     let mut seen: HashMap<&str, usize> = HashMap::new();
     for e in &data {
@@ -331,8 +324,7 @@ fn mls_no_duplicate_label_strings() {
 
 #[test]
 fn targeted_no_duplicate_label_strings() {
-    let entries =
-        parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
+    let entries = parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
     let data = data_entries(&entries);
     let mut seen: HashMap<&str, usize> = HashMap::new();
     for e in &data {
@@ -349,20 +341,15 @@ fn targeted_no_duplicate_label_strings() {
 #[test]
 fn mls_and_targeted_have_same_label_set() {
     let mls_entries = parse_setrans(&mls_setrans_path()).expect("MLS parse");
-    let targeted_entries =
-        parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
+    let targeted_entries = parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
 
     let mls_labels: HashSet<&str> =
         data_entries(&mls_entries).iter().map(|e| e.label.as_str()).collect();
-    let targeted_labels: HashSet<&str> = data_entries(&targeted_entries)
-        .iter()
-        .map(|e| e.label.as_str())
-        .collect();
+    let targeted_labels: HashSet<&str> =
+        data_entries(&targeted_entries).iter().map(|e| e.label.as_str()).collect();
 
-    let only_in_mls: Vec<&&str> =
-        mls_labels.difference(&targeted_labels).collect();
-    let only_in_targeted: Vec<&&str> =
-        targeted_labels.difference(&mls_labels).collect();
+    let only_in_mls: Vec<&&str> = mls_labels.difference(&targeted_labels).collect();
+    let only_in_targeted: Vec<&&str> = targeted_labels.difference(&mls_labels).collect();
 
     assert!(
         only_in_mls.is_empty(),
@@ -380,8 +367,7 @@ fn mls_and_targeted_have_same_label_set() {
 
 #[test]
 fn mls_every_json_marking_has_setrans_entry() {
-    let us_cat =
-        catalog::load_catalog(us_catalog_path()).expect("US catalog load");
+    let us_cat = catalog::load_catalog(us_catalog_path()).expect("US catalog load");
     let entries = parse_setrans(&mls_setrans_path()).expect("MLS parse");
     let setrans_labels: HashSet<&str> =
         data_entries(&entries).iter().map(|e| e.label.as_str()).collect();
@@ -397,10 +383,8 @@ fn mls_every_json_marking_has_setrans_entry() {
 
 #[test]
 fn targeted_every_json_marking_has_setrans_entry() {
-    let us_cat =
-        catalog::load_catalog(us_catalog_path()).expect("US catalog load");
-    let entries =
-        parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
+    let us_cat = catalog::load_catalog(us_catalog_path()).expect("US catalog load");
+    let entries = parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
     let setrans_labels: HashSet<&str> =
         data_entries(&entries).iter().map(|e| e.label.as_str()).collect();
 
@@ -415,8 +399,7 @@ fn targeted_every_json_marking_has_setrans_entry() {
 
 #[test]
 fn mls_every_us_setrans_label_exists_in_json() {
-    let us_cat =
-        catalog::load_catalog(us_catalog_path()).expect("US catalog load");
+    let us_cat = catalog::load_catalog(us_catalog_path()).expect("US catalog load");
     let entries = parse_setrans(&mls_setrans_path()).expect("MLS parse");
 
     let json_keys: HashSet<&str> =
@@ -439,10 +422,8 @@ fn mls_every_us_setrans_label_exists_in_json() {
 
 #[test]
 fn targeted_every_us_setrans_label_exists_in_json() {
-    let us_cat =
-        catalog::load_catalog(us_catalog_path()).expect("US catalog load");
-    let entries =
-        parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
+    let us_cat = catalog::load_catalog(us_catalog_path()).expect("US catalog load");
+    let entries = parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
 
     let json_keys: HashSet<&str> =
         us_cat.iter_markings().map(|(k, _): (&String, _)| k.as_str()).collect();
@@ -464,8 +445,7 @@ fn targeted_every_us_setrans_label_exists_in_json() {
 #[test]
 fn mls_and_targeted_have_exactly_121_us_entries() {
     // US-CUI-LABELS.json has 121 markings. Both setrans files must cover all of them.
-    let us_cat =
-        catalog::load_catalog(us_catalog_path()).expect("US catalog load");
+    let us_cat = catalog::load_catalog(us_catalog_path()).expect("US catalog load");
     let json_count = us_cat.iter_markings().count();
     assert_eq!(
         json_count, 121,
@@ -473,17 +453,12 @@ fn mls_and_targeted_have_exactly_121_us_entries() {
     );
 
     let mls_entries = parse_setrans(&mls_setrans_path()).expect("MLS parse");
-    let mls_us_count = data_entries(&mls_entries)
-        .iter()
-        .filter(|e| e.label.starts_with("CUI"))
-        .count();
+    let mls_us_count =
+        data_entries(&mls_entries).iter().filter(|e| e.label.starts_with("CUI")).count();
 
-    let targeted_entries =
-        parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
-    let targeted_us_count = data_entries(&targeted_entries)
-        .iter()
-        .filter(|e| e.label.starts_with("CUI"))
-        .count();
+    let targeted_entries = parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
+    let targeted_us_count =
+        data_entries(&targeted_entries).iter().filter(|e| e.label.starts_with("CUI")).count();
 
     assert_eq!(
         mls_us_count, json_count,
@@ -498,8 +473,7 @@ fn mls_and_targeted_have_exactly_121_us_entries() {
 #[test]
 fn mls_canadian_entries_present() {
     let entries = parse_setrans(&mls_setrans_path()).expect("MLS parse");
-    let labels: HashSet<&str> =
-        data_entries(&entries).iter().map(|e| e.label.as_str()).collect();
+    let labels: HashSet<&str> = data_entries(&entries).iter().map(|e| e.label.as_str()).collect();
 
     assert!(labels.contains("PROTÉGÉ A"), "MLS missing PROTÉGÉ A");
     assert!(labels.contains("PROTÉGÉ B"), "MLS missing PROTÉGÉ B");
@@ -508,10 +482,8 @@ fn mls_canadian_entries_present() {
 
 #[test]
 fn targeted_canadian_entries_present() {
-    let entries =
-        parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
-    let labels: HashSet<&str> =
-        data_entries(&entries).iter().map(|e| e.label.as_str()).collect();
+    let entries = parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
+    let labels: HashSet<&str> = data_entries(&entries).iter().map(|e| e.label.as_str()).collect();
 
     assert!(labels.contains("PROTÉGÉ A"), "TARGETED missing PROTÉGÉ A");
     assert!(labels.contains("PROTÉGÉ B"), "TARGETED missing PROTÉGÉ B");
@@ -524,8 +496,7 @@ fn targeted_canadian_entries_present() {
 
 #[test]
 fn mls_inline_comments_match_json_names() {
-    let us_cat =
-        catalog::load_catalog(us_catalog_path()).expect("US catalog load");
+    let us_cat = catalog::load_catalog(us_catalog_path()).expect("US catalog load");
     let entries = parse_setrans(&mls_setrans_path()).expect("MLS parse");
 
     let mut mismatches: Vec<String> = Vec::new();
@@ -542,9 +513,7 @@ fn mls_inline_comments_match_json_names() {
         // The comment should be a substring of the JSON name or the JSON name
         // should contain the comment. Strip leading whitespace from comment.
         let comment_trimmed = e.comment.trim_start_matches(' ');
-        if !json_name.contains(comment_trimmed)
-            && !comment_trimmed.contains(json_name.as_str())
-        {
+        if !json_name.contains(comment_trimmed) && !comment_trimmed.contains(json_name.as_str()) {
             mismatches.push(format!(
                 "MLS line {}: label {:?} comment {:?} does not match JSON name {:?}",
                 e.lineno, e.label, comment_trimmed, json_name
@@ -561,10 +530,8 @@ fn mls_inline_comments_match_json_names() {
 
 #[test]
 fn targeted_inline_comments_match_json_names() {
-    let us_cat =
-        catalog::load_catalog(us_catalog_path()).expect("US catalog load");
-    let entries =
-        parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
+    let us_cat = catalog::load_catalog(us_catalog_path()).expect("US catalog load");
+    let entries = parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
 
     let mut mismatches: Vec<String> = Vec::new();
 
@@ -577,9 +544,7 @@ fn targeted_inline_comments_match_json_names() {
         };
         let json_name = &marking.name;
         let comment_trimmed = e.comment.trim_start_matches(' ');
-        if !json_name.contains(comment_trimmed)
-            && !comment_trimmed.contains(json_name.as_str())
-        {
+        if !json_name.contains(comment_trimmed) && !comment_trimmed.contains(json_name.as_str()) {
             mismatches.push(format!(
                 "TARGETED line {}: label {:?} comment {:?} does not match JSON name {:?}",
                 e.lineno, e.label, comment_trimmed, json_name
@@ -618,8 +583,7 @@ fn mls_all_us_entries_use_sensitivity_s1() {
 
 #[test]
 fn targeted_all_entries_use_sensitivity_s0() {
-    let entries =
-        parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
+    let entries = parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
     for e in data_entries(&entries) {
         assert_eq!(
             e.sensitivity(),
@@ -676,22 +640,15 @@ fn mls_canadian_pc_uses_s3() {
 
 #[test]
 fn targeted_canadian_all_use_s0() {
-    let entries =
-        parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
+    let entries = parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
     let data = data_entries(&entries);
 
-    let pa = data
-        .iter()
-        .find(|e| e.label == "PROTÉGÉ A")
-        .expect("PROTÉGÉ A must exist in TARGETED");
-    let pb = data
-        .iter()
-        .find(|e| e.label == "PROTÉGÉ B")
-        .expect("PROTÉGÉ B must exist in TARGETED");
-    let pc = data
-        .iter()
-        .find(|e| e.label == "PROTÉGÉ C")
-        .expect("PROTÉGÉ C must exist in TARGETED");
+    let pa =
+        data.iter().find(|e| e.label == "PROTÉGÉ A").expect("PROTÉGÉ A must exist in TARGETED");
+    let pb =
+        data.iter().find(|e| e.label == "PROTÉGÉ B").expect("PROTÉGÉ B must exist in TARGETED");
+    let pc =
+        data.iter().find(|e| e.label == "PROTÉGÉ C").expect("PROTÉGÉ C must exist in TARGETED");
 
     assert_eq!(
         pa.mcs, "s0:c200",
@@ -740,8 +697,7 @@ fn mls_subcategory_entries_are_compound_format() {
 
 #[test]
 fn targeted_subcategory_entries_are_compound_format() {
-    let entries =
-        parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
+    let entries = parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
     for e in data_entries(&entries) {
         if !e.label.starts_with("CUI") {
             continue;
@@ -795,8 +751,7 @@ fn mls_group_header_entries_are_simple_format() {
 #[test]
 fn targeted_group_header_entries_are_simple_format() {
     // Same rule as MLS — CUI//EXPT is the only known exception.
-    let entries =
-        parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
+    let entries = parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
     for e in data_entries(&entries) {
         if !e.label.starts_with("CUI") {
             continue;
@@ -827,8 +782,7 @@ fn mls_and_targeted_have_same_category_numbers() {
     // Category numbers must be identical between MLS and TARGETED.
     // Only the sensitivity prefix differs (s1 vs s0 for US; s1/s2/s3 vs s0 for CA).
     let mls_entries = parse_setrans(&mls_setrans_path()).expect("MLS parse");
-    let targeted_entries =
-        parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
+    let targeted_entries = parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
 
     let mls_cats: HashSet<String> = data_entries(&mls_entries)
         .iter()
@@ -840,10 +794,8 @@ fn mls_and_targeted_have_same_category_numbers() {
         .filter_map(|e| e.category_part().map(str::to_string))
         .collect();
 
-    let only_in_mls: Vec<&String> =
-        mls_cats.difference(&targeted_cats).collect();
-    let only_in_targeted: Vec<&String> =
-        targeted_cats.difference(&mls_cats).collect();
+    let only_in_mls: Vec<&String> = mls_cats.difference(&targeted_cats).collect();
+    let only_in_targeted: Vec<&String> = targeted_cats.difference(&mls_cats).collect();
 
     assert!(
         only_in_mls.is_empty(),
@@ -858,8 +810,7 @@ fn mls_and_targeted_have_same_category_numbers() {
 #[test]
 fn mls_and_targeted_entry_counts_are_equal() {
     let mls_entries = parse_setrans(&mls_setrans_path()).expect("MLS parse");
-    let targeted_entries =
-        parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
+    let targeted_entries = parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
     let mls_count = data_entries(&mls_entries).len();
     let targeted_count = data_entries(&targeted_entries).len();
     assert_eq!(
@@ -872,8 +823,7 @@ fn mls_and_targeted_entry_counts_are_equal() {
 fn mls_and_targeted_same_canadian_category_assignments() {
     // Canadian category numbers must be identical in both files.
     let mls_entries = parse_setrans(&mls_setrans_path()).expect("MLS parse");
-    let targeted_entries =
-        parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
+    let targeted_entries = parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
 
     let canadian_labels = ["PROTÉGÉ A", "PROTÉGÉ B", "PROTÉGÉ C"];
 
@@ -886,16 +836,11 @@ fn mls_and_targeted_same_canadian_category_assignments() {
         let targeted_entry = data_entries(&targeted_entries)
             .into_iter()
             .find(|e| e.label == *label)
-            .unwrap_or_else(|| {
-                panic!("TARGETED missing Canadian entry {label:?}")
-            });
+            .unwrap_or_else(|| panic!("TARGETED missing Canadian entry {label:?}"));
 
-        let mls_cat = mls_entry
-            .category_part()
-            .expect("MLS Canadian entry should have category");
-        let targeted_cat = targeted_entry
-            .category_part()
-            .expect("TARGETED Canadian entry should have category");
+        let mls_cat = mls_entry.category_part().expect("MLS Canadian entry should have category");
+        let targeted_cat =
+            targeted_entry.category_part().expect("TARGETED Canadian entry should have category");
 
         assert_eq!(
             mls_cat, targeted_cat,
@@ -923,8 +868,7 @@ fn mls_every_compound_entry_has_group_header() {
     // Known group headers that are intentionally absent: EXPT uses c30 only as
     // the base of compound entries; there is no standalone "CUI//EXPT" at s1:c30.
     // This is per the CUI Registry design — EXPT has no unqualified base label.
-    let known_absent_group_headers: HashSet<&str> =
-        ["s1:c30"].iter().copied().collect();
+    let known_absent_group_headers: HashSet<&str> = ["s1:c30"].iter().copied().collect();
 
     let mut unexpected_missing: Vec<String> = Vec::new();
 
@@ -932,9 +876,7 @@ fn mls_every_compound_entry_has_group_header() {
         if !e.is_compound() {
             continue;
         }
-        let group_mcs = e
-            .group_base_mcs()
-            .expect("compound entry must produce a group base MCS");
+        let group_mcs = e.group_base_mcs().expect("compound entry must produce a group base MCS");
 
         if !mcs_set.contains(group_mcs.as_str())
             && !known_absent_group_headers.contains(group_mcs.as_str())
@@ -956,13 +898,11 @@ fn mls_every_compound_entry_has_group_header() {
 #[test]
 fn targeted_every_compound_entry_has_group_header() {
     // Same as the MLS test — EXPT (c30) is the only known intentional exception.
-    let entries =
-        parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
+    let entries = parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
     let data = data_entries(&entries);
     let mcs_set: HashSet<&str> = data.iter().map(|e| e.mcs.as_str()).collect();
 
-    let known_absent_group_headers: HashSet<&str> =
-        ["s0:c30"].iter().copied().collect();
+    let known_absent_group_headers: HashSet<&str> = ["s0:c30"].iter().copied().collect();
 
     let mut unexpected_missing: Vec<String> = Vec::new();
 
@@ -970,9 +910,7 @@ fn targeted_every_compound_entry_has_group_header() {
         if !e.is_compound() {
             continue;
         }
-        let group_mcs = e
-            .group_base_mcs()
-            .expect("compound entry must produce a group base MCS");
+        let group_mcs = e.group_base_mcs().expect("compound entry must produce a group base MCS");
 
         if !mcs_set.contains(group_mcs.as_str())
             && !known_absent_group_headers.contains(group_mcs.as_str())
@@ -1002,8 +940,7 @@ fn mls_compound_label_starts_with_group_label() {
         data.iter().map(|e| (e.mcs.as_str(), e.label.as_str())).collect();
 
     // EXPT compound entries have no group header — skip them
-    let known_absent_group_headers: HashSet<&str> =
-        ["s1:c30"].iter().copied().collect();
+    let known_absent_group_headers: HashSet<&str> = ["s1:c30"].iter().copied().collect();
 
     let mut mismatches: Vec<String> = Vec::new();
 
@@ -1011,9 +948,7 @@ fn mls_compound_label_starts_with_group_label() {
         if !e.is_compound() {
             continue;
         }
-        let group_mcs = e
-            .group_base_mcs()
-            .expect("compound entry must produce a group base MCS");
+        let group_mcs = e.group_base_mcs().expect("compound entry must produce a group base MCS");
 
         if known_absent_group_headers.contains(group_mcs.as_str()) {
             continue;
@@ -1042,14 +977,12 @@ fn mls_compound_label_starts_with_group_label() {
 
 #[test]
 fn targeted_compound_label_starts_with_group_label() {
-    let entries =
-        parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
+    let entries = parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
     let data = data_entries(&entries);
     let label_map: HashMap<&str, &str> =
         data.iter().map(|e| (e.mcs.as_str(), e.label.as_str())).collect();
 
-    let known_absent_group_headers: HashSet<&str> =
-        ["s0:c30"].iter().copied().collect();
+    let known_absent_group_headers: HashSet<&str> = ["s0:c30"].iter().copied().collect();
 
     let mut mismatches: Vec<String> = Vec::new();
 
@@ -1057,9 +990,7 @@ fn targeted_compound_label_starts_with_group_label() {
         if !e.is_compound() {
             continue;
         }
-        let group_mcs = e
-            .group_base_mcs()
-            .expect("compound entry must produce a group base MCS");
+        let group_mcs = e.group_base_mcs().expect("compound entry must produce a group base MCS");
 
         if known_absent_group_headers.contains(group_mcs.as_str()) {
             continue;
@@ -1103,8 +1034,7 @@ fn mls_expt_known_exception_documented() {
         expt_entries.iter().map(|e| &e.mcs).collect::<Vec<_>>()
     );
 
-    let mcs_set: HashSet<&str> =
-        expt_entries.iter().map(|e| e.mcs.as_str()).collect();
+    let mcs_set: HashSet<&str> = expt_entries.iter().map(|e| e.mcs.as_str()).collect();
     assert!(
         mcs_set.contains("s1:c30,c31"),
         "Expected s1:c30,c31 for CUI//EXPT"
@@ -1117,8 +1047,7 @@ fn mls_expt_known_exception_documented() {
 
 #[test]
 fn targeted_expt_known_exception_documented() {
-    let entries =
-        parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
+    let entries = parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
     let data = data_entries(&entries);
 
     let expt_entries: Vec<&SetransEntry> =
@@ -1131,8 +1060,7 @@ fn targeted_expt_known_exception_documented() {
         expt_entries.iter().map(|e| &e.mcs).collect::<Vec<_>>()
     );
 
-    let mcs_set: HashSet<&str> =
-        expt_entries.iter().map(|e| e.mcs.as_str()).collect();
+    let mcs_set: HashSet<&str> = expt_entries.iter().map(|e| e.mcs.as_str()).collect();
     assert!(
         mcs_set.contains("s0:c30,c31"),
         "Expected s0:c30,c31 for CUI//EXPT in TARGETED"
@@ -1154,8 +1082,7 @@ fn targeted_expt_known_exception_documented() {
 fn ca_catalog_markings_contain_three_entries() {
     // Verify the CA JSON data has the three Protected tiers available for
     // cross-referencing.
-    let ca_cat =
-        catalog::load_catalog(ca_catalog_path()).expect("CA catalog load");
+    let ca_cat = catalog::load_catalog(ca_catalog_path()).expect("CA catalog load");
     let count = ca_cat.markings.len();
     assert_eq!(
         count, 3,
@@ -1165,10 +1092,8 @@ fn ca_catalog_markings_contain_three_entries() {
 
 #[test]
 fn ca_catalog_marking_keys_match_expected_names() {
-    let ca_cat =
-        catalog::load_catalog(ca_catalog_path()).expect("CA catalog load");
-    let keys: HashSet<&str> =
-        ca_cat.markings.keys().map(String::as_str).collect();
+    let ca_cat = catalog::load_catalog(ca_catalog_path()).expect("CA catalog load");
+    let keys: HashSet<&str> = ca_cat.markings.keys().map(String::as_str).collect();
     assert!(
         keys.contains("PROTECTED-A"),
         "CA catalog missing PROTECTED-A"
@@ -1187,14 +1112,11 @@ fn ca_catalog_marking_keys_match_expected_names() {
 fn ca_catalog_levels_match_setrans_mls() {
     // Verify that the sensitivity levels in the CA JSON match the MLS setrans assignments.
     // PA = s1, PB = s2, PC = s3.
-    let ca_cat =
-        catalog::load_catalog(ca_catalog_path()).expect("CA catalog load");
+    let ca_cat = catalog::load_catalog(ca_catalog_path()).expect("CA catalog load");
     let entries = parse_setrans(&mls_setrans_path()).expect("MLS parse");
 
-    let mls_map: HashMap<&str, &str> = data_entries(&entries)
-        .iter()
-        .map(|e| (e.label.as_str(), e.mcs.as_str()))
-        .collect();
+    let mls_map: HashMap<&str, &str> =
+        data_entries(&entries).iter().map(|e| (e.label.as_str(), e.mcs.as_str())).collect();
 
     let expected = [
         ("PROTECTED-A", "PROTÉGÉ A", "s1"),
@@ -1203,26 +1125,23 @@ fn ca_catalog_levels_match_setrans_mls() {
     ];
 
     for (ca_key, setrans_label, expected_sens) in &expected {
-        let label = ca_cat.markings.get(*ca_key).unwrap_or_else(|| {
-            panic!("{ca_key} must exist in CA catalog markings")
-        });
+        let label = ca_cat
+            .markings
+            .get(*ca_key)
+            .unwrap_or_else(|| panic!("{ca_key} must exist in CA catalog markings"));
 
-        let json_level = label
-            .level
-            .as_deref()
-            .unwrap_or_else(|| panic!("{ca_key} must have a level field"));
+        let json_level =
+            label.level.as_deref().unwrap_or_else(|| panic!("{ca_key} must have a level field"));
 
         assert_eq!(
             json_level, *expected_sens,
             "{ca_key}: JSON level {json_level:?} != expected {expected_sens:?}"
         );
 
-        let mcs = mls_map
-            .get(setrans_label)
-            .unwrap_or_else(|| panic!("MLS missing {setrans_label:?}"));
+        let mcs =
+            mls_map.get(setrans_label).unwrap_or_else(|| panic!("MLS missing {setrans_label:?}"));
 
-        let sens =
-            mcs.split(':').next().expect("MCS should have sensitivity prefix");
+        let sens = mcs.split(':').next().expect("MCS should have sensitivity prefix");
         assert_eq!(
             sens, *expected_sens,
             "{setrans_label}: MLS sensitivity {sens:?} != expected {expected_sens:?}"

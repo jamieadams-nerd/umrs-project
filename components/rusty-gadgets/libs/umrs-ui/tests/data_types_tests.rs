@@ -17,8 +17,7 @@ use umrs_ui::tabs::tabs_from_labels;
 
 #[test]
 fn data_row_key_value_sets_key_value_and_hint() {
-    let row =
-        DataRow::key_value("Hostname", "rhel10.example", StyleHint::Highlight);
+    let row = DataRow::key_value("Hostname", "rhel10.example", StyleHint::Highlight);
     match row {
         DataRow::KeyValue {
             key,
@@ -62,11 +61,7 @@ fn data_row_key_value_sets_highlight_key_false_by_default() {
 
 #[test]
 fn data_row_key_value_highlighted_sets_highlight_key_true() {
-    let row = DataRow::key_value_highlighted(
-        "Kernel Version",
-        "6.12.0",
-        StyleHint::Highlight,
-    );
+    let row = DataRow::key_value_highlighted("Kernel Version", "6.12.0", StyleHint::Highlight);
     match row {
         DataRow::KeyValue {
             key,
@@ -317,12 +312,7 @@ fn data_row_table_row_accepts_owned_strings() {
     let c1 = String::from("procfs");
     let c2 = String::from("/proc/sys/kernel/ostype");
     let c3 = String::from("\u{2717} FAIL (path)");
-    let row = DataRow::table_row(
-        c1.clone(),
-        c2.clone(),
-        c3.clone(),
-        StyleHint::TrustRed,
-    );
+    let row = DataRow::table_row(c1.clone(), c2.clone(), c3.clone(), StyleHint::TrustRed);
     match row {
         DataRow::TableRow {
             col1,
@@ -400,12 +390,7 @@ fn data_row_indicator_row_stores_all_fields() {
 #[test]
 fn data_row_indicator_row_empty_description_is_valid() {
     // Phase 2b CPU indicators supply an empty description — must not panic.
-    let row = DataRow::indicator_row(
-        "  some_cpu_indicator",
-        "enabled",
-        "",
-        StyleHint::TrustGreen,
-    );
+    let row = DataRow::indicator_row("  some_cpu_indicator", "enabled", "", StyleHint::TrustGreen);
     assert!(
         matches!(row, DataRow::IndicatorRow { .. }),
         "indicator_row with empty description must produce IndicatorRow variant"
@@ -415,12 +400,7 @@ fn data_row_indicator_row_empty_description_is_valid() {
 #[test]
 fn data_row_indicator_row_accepts_owned_string_key() {
     let key = String::from("  dynamic_key");
-    let row = DataRow::indicator_row(
-        key.clone(),
-        "1",
-        "Some description.",
-        StyleHint::Normal,
-    );
+    let row = DataRow::indicator_row(key.clone(), "1", "Some description.", StyleHint::Normal);
     match row {
         DataRow::IndicatorRow {
             key: k,

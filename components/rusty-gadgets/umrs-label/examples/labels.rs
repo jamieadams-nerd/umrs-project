@@ -73,8 +73,7 @@ fn main() {
     // Index group summary (groups by display grouping hint)
     // ---------------------------------------------------------------------------
     println!("\n=========== Index groups ===================");
-    let mut groups: std::collections::HashMap<String, usize> =
-        std::collections::HashMap::new();
+    let mut groups: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
     for (_, m) in cat.iter_markings() {
         let group = m.index_group.as_deref().unwrap_or("(ungrouped)");
         *groups.entry(group.to_string()).or_insert(0) += 1;
@@ -90,16 +89,10 @@ fn main() {
     // ---------------------------------------------------------------------------
     println!("\n=========== Field presence audit ===================");
     let total = cat.iter_markings().count();
-    let with_description = cat
-        .iter_markings()
-        .filter(|(_, m): &(_, &_)| m.has_description())
-        .count();
-    let with_handling =
-        cat.iter_markings().filter(|(_, m): &(_, &_)| m.has_handling()).count();
-    let with_level = cat
-        .iter_markings()
-        .filter(|(_, m): &(_, &_)| m.level.is_some())
-        .count();
+    let with_description =
+        cat.iter_markings().filter(|(_, m): &(_, &_)| m.has_description()).count();
+    let with_handling = cat.iter_markings().filter(|(_, m): &(_, &_)| m.has_handling()).count();
+    let with_level = cat.iter_markings().filter(|(_, m): &(_, &_)| m.level.is_some()).count();
     println!("Markings total:         {total}");
     println!("  with description:     {with_description}");
     println!("  with handling:        {with_handling}");

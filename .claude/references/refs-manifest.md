@@ -178,6 +178,51 @@ are validated under 140-3.
 
 ---
 
+### FIPS 180-4 — Secure Hash Standard (SHS)
+
+| Field | Value |
+|---|---|
+| Full title | Secure Hash Standard (SHS) |
+| Issuing authority | NIST |
+| Version | FIPS 180-4 |
+| Published | August 2015 |
+| Downloaded | 2026-04-02 |
+| Local path | `nist/fips180-4.pdf` |
+| Source URL | https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.180-4.pdf |
+| SHA-256 | `0455b406d89648d20cbde375561e19c245b9815e894164c2670772e3d54deb82` |
+| Status | ✓ Downloaded |
+
+**Key relevance**: Defines SHA-1, SHA-224, SHA-256, SHA-384, SHA-512, and the SHA-512/t
+variants. The `umrs-c2pa` crate uses SHA-256 for file integrity digests and SHA-384 for
+C2PA content binding — both are defined here. Compliance annotations in `umrs-c2pa` source
+code cite FIPS 180-4 directly. Required reference whenever NIST SP 800-53 SC-13 or CMMC
+cryptographic controls are cited alongside hash algorithm usage.
+
+---
+
+### FIPS 186-5 — Digital Signature Standard (DSS)
+
+| Field | Value |
+|---|---|
+| Full title | Digital Signature Standard (DSS) |
+| Issuing authority | NIST |
+| Version | FIPS 186-5 |
+| Published | February 2023 |
+| Downloaded | 2026-04-02 |
+| Local path | `nist/fips186-5.pdf` |
+| Source URL | https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.186-5.pdf |
+| SHA-256 | `fbb9c7c2ba442f03c57b63b43c888311903c9d0f29f89b06efdebd9b619140c5` |
+| Status | ✓ Downloaded |
+
+**Key relevance**: Defines DSA, RSA, and ECDSA (including the P-256 and P-384 curves).
+The `umrs-c2pa` crate uses ECDSA for C2PA manifest signing — the algorithm specification
+and parameter requirements are defined here. FIPS 186-5 supersedes FIPS 186-4; notably,
+it removes DSA and retains RSA and ECDSA. Compliance annotations in `umrs-c2pa` source
+code cite FIPS 186-5 directly. Required reference whenever NIST SP 800-53 SC-13 or
+CMMC cryptographic controls are cited alongside digital signature usage.
+
+---
+
 ### NIST SP 800-90B — Recommendation for the Entropy Sources Used for Random Bit Generation
 
 | Field | Value |

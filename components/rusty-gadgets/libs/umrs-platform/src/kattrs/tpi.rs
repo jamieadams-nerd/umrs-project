@@ -26,15 +26,9 @@ fn parse_type_path_a(input: &str) -> IResult<&str, &str> {
 
 fn parse_type_path_b(input: &str) -> io::Result<&str> {
     let mut parts = input.split(':');
-    let _u = parts
-        .next()
-        .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidData, "No User"))?;
-    let _r = parts
-        .next()
-        .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidData, "No Role"))?;
-    let t = parts
-        .next()
-        .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidData, "No Type"))?;
+    let _u = parts.next().ok_or_else(|| io::Error::new(io::ErrorKind::InvalidData, "No User"))?;
+    let _r = parts.next().ok_or_else(|| io::Error::new(io::ErrorKind::InvalidData, "No Role"))?;
+    let t = parts.next().ok_or_else(|| io::Error::new(io::ErrorKind::InvalidData, "No Type"))?;
     Ok(t)
 }
 
@@ -55,9 +49,8 @@ fn parse_type_path_b(input: &str) -> io::Result<&str> {
 /// NSA RTB VNSSA: deterministic, bounded parsing.
 /// NSA RTB RAIN: fail-closed on any ambiguity.
 pub fn validate_type_redundant(context: &str) -> io::Result<&str> {
-    let (_, type_a) = parse_type_path_a(context).map_err(|_| {
-        io::Error::new(io::ErrorKind::InvalidData, "Path A Logic Failure")
-    })?;
+    let (_, type_a) = parse_type_path_a(context)
+        .map_err(|_| io::Error::new(io::ErrorKind::InvalidData, "Path A Logic Failure"))?;
 
     let type_b = parse_type_path_b(context)?;
 

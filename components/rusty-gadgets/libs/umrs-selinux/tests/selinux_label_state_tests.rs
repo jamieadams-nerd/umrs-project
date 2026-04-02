@@ -23,8 +23,7 @@
 
 use umrs_selinux::secure_dirent::SelinuxCtxState;
 use umrs_selinux::{
-    ObservationKind, SecurityContext, SecurityObservation, SelinuxRole,
-    SelinuxType, SelinuxUser,
+    ObservationKind, SecurityContext, SecurityObservation, SelinuxRole, SelinuxType, SelinuxUser,
 };
 
 // ---------------------------------------------------------------------------

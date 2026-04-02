@@ -61,10 +61,7 @@ impl MlsLevel {
     ///
     /// This constructor assumes the supplied primitives have
     /// already passed their respective validation checks.
-    pub const fn new(
-        sensitivity: SensitivityLevel,
-        categories: CategorySet,
-    ) -> Self {
+    pub const fn new(sensitivity: SensitivityLevel, categories: CategorySet) -> Self {
         Self {
             sensitivity,
             categories,
@@ -162,8 +159,8 @@ impl FromStr for MlsLevel {
 
         let sens_str = parts.next().ok_or(MlsLevelError::InvalidFormat)?;
 
-        let sensitivity = SensitivityLevel::from_str(sens_str)
-            .map_err(|_| MlsLevelError::InvalidSensitivity)?;
+        let sensitivity =
+            SensitivityLevel::from_str(sens_str).map_err(|_| MlsLevelError::InvalidSensitivity)?;
 
         let categories = match parts.next() {
             None => CategorySet::default(),
@@ -191,8 +188,7 @@ fn parse_categories(raw: &str) -> Result<CategorySet, MlsLevelError> {
             return Err(MlsLevelError::InvalidFormat);
         }
 
-        let cat = Category::from_str(tok)
-            .map_err(|_| MlsLevelError::InvalidCategory)?;
+        let cat = Category::from_str(tok).map_err(|_| MlsLevelError::InvalidCategory)?;
 
         set.insert(cat);
     }

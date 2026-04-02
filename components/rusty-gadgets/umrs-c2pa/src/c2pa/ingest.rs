@@ -3,15 +3,17 @@
 
 //! # UMRS C2PA File Ingestion
 //!
-//! Implements the core UMRS ingest workflow: compute a SHA-256 digest of the
-//! source file, read any existing C2PA manifest, build and sign a new manifest
-//! recording this chain-of-custody event, and write the signed output.
+//! Implements the core UMRS ingest workflow: compute SHA-256 and SHA-384
+//! digests of the source file, read any existing C2PA manifest, build and
+//! sign a new manifest recording this chain-of-custody event, and write the
+//! signed output.
 //!
 //! ## Key Exported Types
 //!
-//! - [`IngestResult`] — result of ingesting a file, including paths and hash
+//! - [`IngestResult`] — result of ingesting a file, including paths and hashes
 //! - [`ingest_file`] — primary entry point: sign a file and record custody
-//! - [`sha256_hex`] — compute the SHA-256 hex digest of a file
+//! - [`sha256_hex`] — compute the SHA-256 hex digest of a file (system OpenSSL)
+//! - [`sha384_hex`] — compute the SHA-384 hex digest of a file (system OpenSSL)
 //!
 //! ## Trust Boundary
 //!
@@ -37,15 +39,19 @@
 //! - **NIST SP 800-53 SC-13**: Cryptographic Protection — signing is gated
 //!   behind `signer::parse_algorithm`, which enforces the FIPS allow-list.
 //! - **NIST SP 800-53 SI-7**: Software, Firmware, and Information Integrity —
-//!   SHA-256 is computed from the same buffer used for signing; the hash is
-//!   always consistent with the signed content (TOCTOU-free).
+//!   SHA-256 and SHA-384 are computed from the same buffer used for signing;
+//!   both hashes are always consistent with the signed content (TOCTOU-free).
+//! - **NIST SP 800-53 SC-13**: SHA-256 and SHA-384 are computed via system
+//!   OpenSSL, which uses a FIPS 140-2/3 validated module on RHEL 10.
 //! - **NSA RTB**: TOCTOU Safety — single-read design eliminates the race
 //!   window between hash computation and signing.
+//! - **CNSA 2.0**: SHA-384 is included alongside SHA-256 to satisfy CNSA 2.0
+//!   hash algorithm requirements for long-term integrity records.
 
 use std::io::Cursor;
 use std::path::{Path, PathBuf};
 
-use sha2::{Digest, Sha256};
+use openssl::hash::{MessageDigest, hash};
 
 use crate::c2pa::{config::UmrsConfig, error::InspectError, manifest, signer};
 #[allow(unused_imports)]
@@ -54,9 +60,12 @@ use crate::verbose;
 /// Result of ingesting a file into UMRS.
 ///
 /// Contains the chain-of-custody evidence record, including the signed output
-/// path, SHA-256 digest of the source bytes, and ephemeral mode status.
-/// The caller must inspect or log this result — discarding it silently loses
-/// the chain-of-custody record.
+/// path, SHA-256 and SHA-384 digests of the source bytes, and ephemeral mode
+/// status. The caller must inspect or log this result — discarding it silently
+/// loses the chain-of-custody record.
+///
+/// Both digests are computed via system OpenSSL, using the FIPS 140-2/3
+/// validated module on RHEL 10. SHA-384 is provided for CNSA 2.0 readiness.
 ///
 /// ## Compliance
 ///
@@ -64,9 +73,12 @@ use crate::verbose;
 ///   record for one signing event; discarding it means no audit trail is kept.
 /// - **NIST SP 800-53 AU-3**: Audit Record Content — fields carry the minimum
 ///   required audit content: identity, hash, timestamp, and action label.
+/// - **NIST SP 800-53 SC-13**: Cryptographic Protection — both digests are
+///   computed via system OpenSSL (FIPS 140-2/3 validated on RHEL 10).
+/// - **CNSA 2.0**: SHA-384 satisfies CNSA 2.0 hash algorithm requirements.
 #[must_use = "IngestResult is the chain-of-custody evidence record; \
               discarding it means the signing outcome, output path, and \
-              SHA-256 hash are silently lost"]
+              integrity digests are silently lost"]
 #[derive(Debug)]
 pub struct IngestResult {
     /// Original file path.
@@ -76,8 +88,13 @@ pub struct IngestResult {
     pub output_path: PathBuf,
 
     /// SHA-256 hex digest of the source file bytes, computed at ingest time.
-    /// Computed from the same buffer used for signing — always consistent.
+    /// Computed via system OpenSSL from the same buffer used for signing.
     pub sha256: String,
+
+    /// SHA-384 hex digest of the source file bytes, computed at ingest time.
+    /// Computed via system OpenSSL from the same buffer used for signing.
+    /// Provided for CNSA 2.0 readiness alongside SHA-256.
+    pub sha384: String,
 
     /// Whether the file had an existing C2PA manifest on arrival.
     pub had_manifest: bool,
@@ -132,7 +149,9 @@ pub fn ingest_file(
     // 0. Guard: refuse to re-sign a file that was already signed by UMRS.
     //    This prevents accidental overwrites and double-signing.
     if is_umrs_signed(source_path) {
-        return Err(InspectError::AlreadySigned(source_path.display().to_string()));
+        return Err(InspectError::AlreadySigned(
+            source_path.display().to_string(),
+        ));
     }
 
     // 1. Read source file once into memory.
@@ -140,12 +159,12 @@ pub fn ingest_file(
     verbose!("Reading source file into memory...");
     let source_bytes = std::fs::read(source_path).map_err(InspectError::Io)?;
 
-    // 2. Compute SHA-256 from the in-memory buffer.
-    verbose!("Computing SHA-256 of source file...");
-    let sha256 = {
-        let digest = Sha256::digest(&source_bytes);
-        hex::encode(digest)
-    };
+    // 2. Compute SHA-256 and SHA-384 from the in-memory buffer.
+    //    Both digests use system OpenSSL — the FIPS 140-2/3 validated module
+    //    on RHEL 10.  SHA-384 is provided for CNSA 2.0 readiness.
+    verbose!("Computing SHA-256 and SHA-384 of source file via system OpenSSL...");
+    let sha256 = digest_hex(&source_bytes, MessageDigest::sha256())?;
+    let sha384 = digest_hex(&source_bytes, MessageDigest::sha384())?;
 
     // 3. Check for existing manifest.
     verbose!("Checking for existing C2PA manifest...");
@@ -166,11 +185,23 @@ pub fn ingest_file(
 
     // 4. Choose action label and reason.
     let (action, reason) = if had_manifest {
-        verbose!("Action: {} (file had existing manifest)", config.policy.signed_action);
-        (config.policy.signed_action.clone(), config.policy.signed_reason.clone())
+        verbose!(
+            "Action: {} (file had existing manifest)",
+            config.policy.signed_action
+        );
+        (
+            config.policy.signed_action.clone(),
+            config.policy.signed_reason.clone(),
+        )
     } else {
-        verbose!("Action: {} (file had no manifest)", config.policy.unsigned_action);
-        (config.policy.unsigned_action.clone(), config.policy.unsigned_reason.clone())
+        verbose!(
+            "Action: {} (file had no manifest)",
+            config.policy.unsigned_action
+        );
+        (
+            config.policy.unsigned_action.clone(),
+            config.policy.unsigned_reason.clone(),
+        )
     };
 
     // 5. Resolve signing material.
@@ -241,10 +272,27 @@ pub fn ingest_file(
     };
 
     verbose!("Signing and writing output to {}...", out_path.display());
+    #[cfg(unix)]
+    let mut out_file = {
+        use std::os::unix::fs::OpenOptionsExt;
+        std::fs::OpenOptions::new()
+            .write(true)
+            .create(true)
+            .truncate(true)
+            .mode(0o640)
+            .open(&out_path)
+            .map_err(InspectError::Io)?
+    };
+    #[cfg(not(unix))]
     let mut out_file = std::fs::File::create(&out_path).map_err(InspectError::Io)?;
 
     builder
-        .sign(signer.as_ref(), &format, &mut Cursor::new(source_bytes), &mut out_file)
+        .sign(
+            signer.as_ref(),
+            &format,
+            &mut Cursor::new(source_bytes),
+            &mut out_file,
+        )
         .map_err(InspectError::C2pa)?;
     verbose!("Signing complete");
 
@@ -252,9 +300,11 @@ pub fn ingest_file(
     if had_manifest {
         log::info!(
             target: "umrs",
-            "ingest file=\"{}\" sha256=\"{}\" previous_signer=\"{}\" signed_at=\"{}\" action={}",
+            "ingest file=\"{}\" sha256=\"{}\" sha384=\"{}\" previous_signer=\"{}\" \
+             signed_at=\"{}\" action={}",
             source_path.display(),
             sha256,
+            sha384,
             previous_signer.as_deref().unwrap_or("unknown"),
             previous_signed_at.as_deref().unwrap_or("unknown"),
             action,
@@ -262,9 +312,10 @@ pub fn ingest_file(
     } else {
         log::info!(
             target: "umrs",
-            "ingest file=\"{}\" sha256=\"{}\" manifest=none action={}",
+            "ingest file=\"{}\" sha256=\"{}\" sha384=\"{}\" manifest=none action={}",
             source_path.display(),
             sha256,
+            sha384,
             action,
         );
     }
@@ -273,6 +324,7 @@ pub fn ingest_file(
         source_path: source_path.to_path_buf(),
         output_path: out_path,
         sha256,
+        sha384,
         had_manifest,
         action,
         previous_signer,
@@ -283,21 +335,60 @@ pub fn ingest_file(
 
 /// Compute the SHA-256 hex digest of the file at `path`.
 ///
+/// Uses system OpenSSL for FIPS 140-2/3 compliance on RHEL 10.
+///
 /// # Errors
 ///
-/// Returns `InspectError::Io` if the file cannot be read.
+/// Returns `InspectError::Io` if the file cannot be read, or
+/// `InspectError::Config` if the OpenSSL hash operation fails.
 ///
 /// ## Compliance
 ///
 /// - **NIST SP 800-53 SI-7**: the returned hex digest is the integrity
 ///   reference for the audit log entry; discarding it means no integrity
 ///   record exists for the caller's operation.
+/// - **NIST SP 800-53 SC-13**: computed via system OpenSSL (FIPS 140-2/3
+///   validated module on RHEL 10).
 #[must_use = "SHA-256 digest is the integrity reference for the audit log entry; \
               discarding it means no integrity record exists"]
 pub fn sha256_hex(path: &Path) -> Result<String, InspectError> {
     let bytes = std::fs::read(path).map_err(InspectError::Io)?;
-    let digest = Sha256::digest(&bytes);
-    Ok(hex::encode(digest))
+    digest_hex(&bytes, MessageDigest::sha256())
+}
+
+/// Compute the SHA-384 hex digest of the file at `path`.
+///
+/// Uses system OpenSSL for FIPS 140-2/3 compliance on RHEL 10.
+/// SHA-384 is provided alongside SHA-256 for CNSA 2.0 readiness.
+///
+/// # Errors
+///
+/// Returns `InspectError::Io` if the file cannot be read, or
+/// `InspectError::Config` if the OpenSSL hash operation fails.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 SI-7**: the returned hex digest is the integrity
+///   reference for the audit log entry; discarding it means no integrity
+///   record exists for the caller's operation.
+/// - **NIST SP 800-53 SC-13**: computed via system OpenSSL (FIPS 140-2/3
+///   validated module on RHEL 10).
+/// - **CNSA 2.0**: SHA-384 satisfies CNSA 2.0 hash algorithm requirements
+///   for long-term integrity records.
+#[must_use = "SHA-384 digest is the CNSA 2.0 integrity reference; \
+              discarding it means the stronger hash record is silently lost"]
+pub fn sha384_hex(path: &Path) -> Result<String, InspectError> {
+    let bytes = std::fs::read(path).map_err(InspectError::Io)?;
+    digest_hex(&bytes, MessageDigest::sha384())
+}
+
+/// Compute a hex-encoded digest of `data` using the given `MessageDigest`.
+///
+/// Internal helper — not part of the public API.
+fn digest_hex(data: &[u8], md: MessageDigest) -> Result<String, InspectError> {
+    let digest =
+        hash(md, data).map_err(|e| InspectError::Config(format!("OpenSSL hash error: {e}")))?;
+    Ok(hex::encode(digest.as_ref()))
 }
 
 /// Check whether a file was previously signed by UMRS (by filename convention).

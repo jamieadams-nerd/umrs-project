@@ -129,10 +129,7 @@ impl std::error::Error for PosixNameError {}
 /// `allow_trailing_dollar`: Samba machine accounts use a trailing `$`
 /// (e.g., `MYHOST$`). This is a username-only convention; group names
 /// must pass `false`.
-fn validate_posix_name(
-    raw: &str,
-    allow_trailing_dollar: bool,
-) -> Result<(), PosixNameError> {
+fn validate_posix_name(raw: &str, allow_trailing_dollar: bool) -> Result<(), PosixNameError> {
     // Null byte check — explicit defense against C interop confusion.
     // Rust strings cannot contain interior nulls, but the explicit check
     // documents intent for security reviewers and guards against future
@@ -594,13 +591,9 @@ impl LinuxOwnership {
     /// NIST SP 800-53 AC-2: Account Management.
     #[must_use]
     pub fn resolve(uid: Uid, gid: Gid) -> Self {
-        use nix::unistd::{
-            Gid as NixGid, Group as NixGroup, Uid as NixUid, User as NixUser,
-        };
+        use nix::unistd::{Gid as NixGid, Group as NixGroup, Uid as NixUid, User as NixUser};
 
-        let user = if let Ok(Some(entry)) =
-            NixUser::from_uid(NixUid::from_raw(uid.as_u32()))
-        {
+        let user = if let Ok(Some(entry)) = NixUser::from_uid(NixUid::from_raw(uid.as_u32())) {
             if let Ok(resolved) = LinuxUser::from_raw(uid, &entry.name) {
                 resolved
             } else {
@@ -610,9 +603,7 @@ impl LinuxOwnership {
             LinuxUser::from_uid(uid)
         };
 
-        let group = if let Ok(Some(entry)) =
-            NixGroup::from_gid(NixGid::from_raw(gid.as_u32()))
-        {
+        let group = if let Ok(Some(entry)) = NixGroup::from_gid(NixGid::from_raw(gid.as_u32())) {
             if let Ok(resolved) = LinuxGroup::from_raw(gid, &entry.name) {
                 resolved
             } else {
@@ -663,10 +654,7 @@ pub struct UserIdentity {
 
 impl UserIdentity {
     #[must_use]
-    pub const fn new(
-        username: LinuxUsername,
-        primary_group: LinuxGroupName,
-    ) -> Self {
+    pub const fn new(username: LinuxUsername, primary_group: LinuxGroupName) -> Self {
         Self {
             username,
             primary_group,
@@ -678,10 +666,7 @@ impl UserIdentity {
     /// # Errors
     ///
     /// Returns `io::Error` if the user or group cannot be resolved from the system database.
-    pub fn from_raw(
-        username: &str,
-        group: &str,
-    ) -> Result<Self, PosixNameError> {
+    pub fn from_raw(username: &str, group: &str) -> Result<Self, PosixNameError> {
         Ok(Self {
             username: LinuxUsername::new(username)?,
             primary_group: LinuxGroupName::new(group)?,

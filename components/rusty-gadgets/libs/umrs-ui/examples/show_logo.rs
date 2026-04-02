@@ -37,8 +37,7 @@ use std::time::Duration;
 use crossterm::event::{self, Event};
 use umrs_core::robots::ALL_ROBOTS;
 use umrs_ui::app::{
-    AuditCardApp, AuditCardState, DataRow, StatusLevel, StatusMessage,
-    StyleHint, TabDef,
+    AuditCardApp, AuditCardState, DataRow, StatusLevel, StatusMessage, StyleHint, TabDef,
 };
 use umrs_ui::indicators::build_header_context;
 use umrs_ui::keymap::KeyMap;

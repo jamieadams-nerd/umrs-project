@@ -60,9 +60,7 @@ use ratatui::text::{Line, Span};
 use ratatui::widgets::{Block, BorderType, Borders, Paragraph};
 use umrs_core::i18n;
 
-use crate::app::{
-    AuditCardApp, HeaderContext, HeaderField, IndicatorValue, StyleHint,
-};
+use crate::app::{AuditCardApp, HeaderContext, HeaderField, IndicatorValue, StyleHint};
 use crate::theme::{Theme, style_hint_color};
 
 // ---------------------------------------------------------------------------
@@ -146,12 +144,7 @@ pub fn render_header(
 
     if interior_height > fixed_count {
         let available = interior_height - fixed_count;
-        append_supplemental_fields(
-            &mut lines,
-            app.header_fields(),
-            available,
-            theme,
-        );
+        append_supplemental_fields(&mut lines, app.header_fields(), available, theme);
     }
 
     let title = format!(" {} ", app.card_title());
@@ -203,19 +196,13 @@ pub fn build_two_column_lines<'a>(
     // a trust-relevant assertion (see module doc).
     let os_str = format!("{} ({})", ctx.os_name, ctx.architecture);
     // Row 1: combine report_name and report_subject with " / " separator.
-    let assessment_value =
-        format!("{} / {}", app.report_name(), app.report_subject());
+    let assessment_value = format!("{} / {}", app.report_name(), app.report_subject());
 
     vec![
         // Blank line before the Assessment row for visual breathing room.
         Line::from(""),
         // Row 1: full-width Assessment — single column, styled as header_name.
-        single_col_line(
-            &lbl_assessment,
-            &assessment_value,
-            theme.header_name,
-            theme,
-        ),
+        single_col_line(&lbl_assessment, &assessment_value, theme.header_name, theme),
         // Blank line after the Assessment row separates it from the detail rows.
         Line::from(""),
         // Row 2: Host | Tool
@@ -277,17 +264,11 @@ pub fn build_single_column_lines<'a>(
     let lbl_selinux = i18n::tr("SELinux");
 
     let os_str = format!("{} ({})", ctx.os_name, ctx.architecture);
-    let assessment_value =
-        format!("{} / {}", app.report_name(), app.report_subject());
+    let assessment_value = format!("{} / {}", app.report_name(), app.report_subject());
 
     vec![
         Line::from(""),
-        single_col_line(
-            &lbl_assessment,
-            &assessment_value,
-            theme.header_name,
-            theme,
-        ),
+        single_col_line(&lbl_assessment, &assessment_value, theme.header_name, theme),
         Line::from(""),
         single_col_line(
             &lbl_host,
@@ -297,11 +278,7 @@ pub fn build_single_column_lines<'a>(
             theme,
         ),
         single_col_line(&lbl_os, &os_str, theme.header_field, theme),
-        single_col_indicator_line(
-            &lbl_selinux,
-            &ctx.indicators.selinux_status,
-            theme,
-        ),
+        single_col_indicator_line(&lbl_selinux, &ctx.indicators.selinux_status, theme),
     ]
 }
 
@@ -469,10 +446,7 @@ fn append_supplemental_fields<'a>(
 ///
 /// Uses the same `"Label      : value"` format as the fixed rows. The value
 /// column is styled by the field's `style_hint`.
-fn supplemental_field_line<'a>(
-    field: &HeaderField,
-    theme: &'a Theme,
-) -> Line<'a> {
+fn supplemental_field_line<'a>(field: &HeaderField, theme: &'a Theme) -> Line<'a> {
     let label_str = format!(" {:<LABEL_WIDTH$} : ", field.label);
     let value_color = style_hint_color(field.style_hint);
     let value_style = if field.style_hint == StyleHint::Normal {

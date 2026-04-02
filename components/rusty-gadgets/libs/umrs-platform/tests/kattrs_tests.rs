@@ -22,9 +22,9 @@
 
 use std::time::SystemTime;
 use umrs_platform::kattrs::{
-    AttributeCard, DualBool, EnforceState, GenericDualBool, KernelFileSource,
-    KernelLockdown, LockdownMode, ModuleLoadLatch, SelinuxEnforce, SelinuxMls,
-    SelinuxPolicyVers, StaticSource, validate_type_redundant,
+    AttributeCard, DualBool, EnforceState, GenericDualBool, KernelFileSource, KernelLockdown,
+    LockdownMode, ModuleLoadLatch, SelinuxEnforce, SelinuxMls, SelinuxPolicyVers, StaticSource,
+    validate_type_redundant,
 };
 
 // =============================================================================

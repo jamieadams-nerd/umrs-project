@@ -123,9 +123,7 @@ fn run_inner(
     }
 
     let Some(identity) = selected_identity else {
-        log::warn!(
-            "pkg_substrate: no probe succeeded — substrate identity unavailable"
-        );
+        log::warn!("pkg_substrate: no probe succeeded — substrate identity unavailable");
         confidence.downgrade(
             TrustLevel::EnvAnchored,
             "no package substrate probe succeeded",
@@ -181,9 +179,7 @@ fn run_inner(
 
     if selinux_enforce_ok {
         confidence.upgrade(TrustLevel::SubstrateAnchored);
-        log::debug!(
-            "pkg_substrate: confidence upgraded to SubstrateAnchored (T3)"
-        );
+        log::debug!("pkg_substrate: confidence upgraded to SubstrateAnchored (T3)");
     } else {
         // SELinux not enforcing: substrate identity is still useful, but T3
         // cannot be fully asserted. Downgrade by one tier.
@@ -218,13 +214,9 @@ fn check_selinux_enforce(evidence: &mut EvidenceBundle) -> bool {
             use crate::kattrs::EnforceState;
             let enforcing = state == EnforceState::Enforcing;
             if enforcing {
-                log::debug!(
-                    "pkg_substrate: SELinux enforce confirmed (Biba pre-check passed)"
-                );
+                log::debug!("pkg_substrate: SELinux enforce confirmed (Biba pre-check passed)");
             } else {
-                log::warn!(
-                    "pkg_substrate: SELinux is not enforcing — Biba pre-check failed"
-                );
+                log::warn!("pkg_substrate: SELinux is not enforcing — Biba pre-check failed");
             }
             evidence.push(EvidenceRecord {
                 source_kind: SourceKind::SysfsNode,
@@ -236,18 +228,13 @@ fn check_selinux_enforce(evidence: &mut EvidenceBundle) -> bool {
                 sha256: None,
                 pkg_digest: None,
                 parse_ok: true,
-                notes: vec![format!(
-                    "selinux_enforce={:?}; biba_check={enforcing}",
-                    state
-                )],
+                notes: vec![format!("selinux_enforce={:?}; biba_check={enforcing}", state)],
                 duration_ns: None,
             });
             enforcing
         }
         Err(e) => {
-            log::warn!(
-                "pkg_substrate: could not read SELinux enforce state: {e}"
-            );
+            log::warn!("pkg_substrate: could not read SELinux enforce state: {e}");
             evidence.push(EvidenceRecord {
                 source_kind: SourceKind::SysfsNode,
                 opened_by_fd: true,

@@ -99,8 +99,8 @@ pub fn init(domain: &'static str) {
         let _ = setlocale(LocaleCategory::LcAll, "");
 
         let dom = *DOMAIN.get().unwrap_or(&FALLBACK_DOMAIN);
-        let locale_dir = std::env::var(LOCALEDIR_ENV)
-            .unwrap_or_else(|_| DEFAULT_LOCALEDIR.to_string());
+        let locale_dir =
+            std::env::var(LOCALEDIR_ENV).unwrap_or_else(|_| DEFAULT_LOCALEDIR.to_string());
         let _ = bindtextdomain(dom, &locale_dir);
     });
 }

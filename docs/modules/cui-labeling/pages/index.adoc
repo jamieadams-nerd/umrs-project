@@ -1,13 +1,12 @@
 = CUI Labeling
 :description: How UMRS implements Controlled Unclassified Information labeling using SELinux MCS categories.
 
-Controlled Unclassified Information (CUI) is the single system for managing unclassified information that requires safeguarding or dissemination controls.
-Before CUI, agencies used over 100 ad hoc markings -- FOUO, SBU, LES, OPSEC -- with inconsistent handling rules.
-Executive Order 13556 (2010) and 32 CFR Part 2002 replaced all of them with one framework administered by the National Archives and Records Administration (NARA).
+Controlled Unclassified Information (CUI) is the United States government's single system for managing
+unclassified information that requires safeguarding or dissemination controls.
 
-UMRS brings CUI labeling into the filesystem.
-Every CUI category maps to an SELinux Multi-Category Security (MCS) label.
-When a file carries `CUI//LEI/INV`, the kernel enforces access -- not a policy document, not a training reminder, not a sticky note on a monitor.
+Before CUI, agencies used over 100 ad hoc markings -- FOUO, SBU, LES, OPSEC -- with inconsistent
+handling rules. Executive Order 13556 (2010) and 32 CFR Part 2002 replaced all of them with one
+framework administered by the National Archives and Records Administration (NARA).
 
 This module documents:
 
@@ -15,9 +14,9 @@ This module documents:
 * How UMRS maps CUI categories to MCS sensitivity labels
 * The DoD CUI Registry and how it relates to the NARA master registry
 * Reconciliation between our catalog and the authoritative DoD source
-* The `umrs-mcs` tool for loading CUI definitions into a running system
+* The `umrs-label` tool for loading CUI definitions into a running system
 
-== Why Filesystem Labeling Matters
+== Why Machine-Readable Labels Matter
 
 Most CUI breaches happen because a file ended up somewhere it should not be.
 An email attachment forwarded to an unauthorized recipient.
@@ -29,18 +28,24 @@ The file itself carried no machine-readable indication of its sensitivity.
 The filesystem had no mechanism to enforce boundaries.
 
 SELinux MCS changes this.
-A file labeled `s0:c100,c200` cannot be read by a process without those categories in its security context.
-The check happens in the kernel, on every `open()` call, regardless of DAC permissions.
+SELinux attaches a security context to every kernel object -- files, processes, network sockets,
+ports, and other resources -- not just files on disk.
+The enforcement is pervasive: every access decision, on every object, is mediated by the kernel.
+
+When a process attempts to open a file labeled `s0:c0,c90`, the kernel checks both sides:
+the file's security context and the process's security context must both carry those categories.
+Neither the file alone nor the process alone determines access -- the kernel evaluates the pair.
+The check happens on every `open()` call, regardless of DAC permissions.
 The label travels with the file through copy, move, and backup operations.
 
-CUI labeling is the bridge between the compliance framework (NARA, DoD, CMMC) and the enforcement mechanism (SELinux MCS).
-UMRS builds that bridge.
+CUI labeling is the bridge between the compliance framework (NARA, DoD, CMMC) and the enforcement
+mechanism (SELinux MCS). UMRS builds that bridge.
 
 == Phase 1: Awareness and Custody
 
-The first UMRS release operates under SELinux targeted policy.
-In targeted policy, MCS labels are present and functional, but the `unconfined_t` domain bypasses most MAC checks.
-This means:
+The first UMRS release operates under the SELinux targeted policy.
+In targeted policy, MCS labels are present and functional, but the `unconfined_t` domain bypasses 
+most MAC checks. This means:
 
 * Labels are applied and visible -- `umrs-ls` shows them, `chcat -L` translates them
 * Tools read and display label information correctly
@@ -51,7 +56,8 @@ What Phase 1 does _not_ do is enforce mandatory separation between CUI categorie
 An `unconfined_t` process can still read any file regardless of its MCS label.
 This is by design -- targeted policy is the safe starting point for organizations that have never used MCS.
 
-Phase 2 introduces MLS policy, where MCS enforcement is mandatory and `unconfined_t` does not exist.
+Phase 2 introduces MLS policy, where MCS category enforcement is mandatory and the `unconfined_t` domain does not exist.
+Under MLS policy, every process operates within a defined sensitivity range and category set; the escape hatch that targeted policy permits is closed.
 That is a different operational posture with different deployment requirements.
 
 == CUI Marking Syntax
@@ -59,20 +65,28 @@ That is a different operational posture with different deployment requirements.
 The standard CUI marking format uses the double-slash prefix:
 
 ----
-CUI//[Category Group]/[Category]
+CUI//Category1
+CUI//Category1/Category2
+CUI//Category1//LDC
 ----
 
-Examples:
+The double slash (`//`) separates `CUI` from the first category and separates the last
+category from a dissemination control.
+A single slash (`/`) separates categories from each other.
 
-* `CUI//LEI/INV` -- Law Enforcement, Investigation
-* `CUI//AGR/AMNT` -- Agriculture, Ammonium Nitrate
-* `CUI//INTEL/OPSEC` -- Intelligence, Operations Security
+Examples of correct CUI markings:
 
-Categories without subcategories use the group abbreviation alone:
+* `CUI//CTI` -- Controlled Technical Information (CUI Basic)
+* `CUI//SP-CTI` -- Controlled Technical Information (CUI Specified)
+* `CUI//INV` -- Investigation
+* `CUI//INV/PRVCY` -- Investigation and Privacy (two independent categories, alphabetized)
+* `CUI//SP-CTI/EXPT//NOFORN` -- Controlled Technical Information (Specified), Export Control, No Foreign Nationals
 
-* `CUI//FNC` -- General Financial Information
-* `CUI//GEO` -- Geodetic Product Information
+NOTE: Index groups (Law Enforcement, Defense, Intelligence, etc.) are organizational groupings
+used for navigation in the NARA registry. They never appear in a banner marking.
+`INV` is the Investigation category abbreviation; `LEI` (General Law Enforcement) is a
+separate category. Neither is a subcategory of the other.
 
-Categories that carry additional dissemination controls append them:
+Categories that carry required dissemination controls append them after a second double slash:
 
-* `CUI//DEF/NNPI//NOFORN` -- Naval Nuclear Propulsion Information, No Foreign Nationals
+* `CUI//SP-NNPI//NOFORN` -- Naval Nuclear Propulsion Information (Specified), No Foreign Nationals

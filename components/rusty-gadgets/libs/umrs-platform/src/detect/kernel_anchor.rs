@@ -99,9 +99,7 @@ fn run_inner(
 
     // procfs is real and PID coherence passed — advance to T1.
     confidence.upgrade(TrustLevel::KernelAnchored);
-    log::debug!(
-        "kernel_anchor: procfs gate passed; confidence upgraded to KernelAnchored"
-    );
+    log::debug!("kernel_anchor: procfs gate passed; confidence upgraded to KernelAnchored");
 
     // --- Step 3: boot_id ----------------------------------------------------
     let boot_id = read_boot_id(evidence, confidence);
@@ -128,36 +126,28 @@ fn run_inner(
 /// `Err(DetectionError::ProcfsNotReal)` if the magic check fails.
 ///
 /// NIST SP 800-53 SI-7: fd-anchored fstatfs before any bytes are consumed.
-fn read_proc_self_stat(
-    evidence: &mut EvidenceBundle,
-) -> Result<String, DetectionError> {
+fn read_proc_self_stat(evidence: &mut EvidenceBundle) -> Result<String, DetectionError> {
     let path = PathBuf::from("/proc/self/stat");
 
     let node = ProcfsText::new(path.clone()).map_err(|_| {
-        log::error!(
-            "kernel_anchor: /proc/self/stat path rejected by ProcfsText"
-        );
+        log::error!("kernel_anchor: /proc/self/stat path rejected by ProcfsText");
         DetectionError::ProcfsNotReal
     })?;
 
-    let content = SecureReader::<ProcfsText>::new()
-        .read_generic_text(&node)
-        .map_err(|e| {
-            // Magic check failure comes back as PermissionDenied from execute_read_text.
-            if e.kind() == std::io::ErrorKind::PermissionDenied {
-                log::error!("kernel_anchor: /proc/self/stat failed filesystem magic check");
-                DetectionError::ProcfsNotReal
-            } else {
-                log::error!("kernel_anchor: /proc/self/stat I/O error");
-                DetectionError::KernelAnchorIo(e)
-            }
-        })?;
+    let content = SecureReader::<ProcfsText>::new().read_generic_text(&node).map_err(|e| {
+        // Magic check failure comes back as PermissionDenied from execute_read_text.
+        if e.kind() == std::io::ErrorKind::PermissionDenied {
+            log::error!("kernel_anchor: /proc/self/stat failed filesystem magic check");
+            DetectionError::ProcfsNotReal
+        } else {
+            log::error!("kernel_anchor: /proc/self/stat I/O error");
+            DetectionError::KernelAnchorIo(e)
+        }
+    })?;
 
     // Enforce our own read cap on the returned content.
     if content.len() > MAX_PROC_READ {
-        log::error!(
-            "kernel_anchor: /proc/self/stat content exceeds expected size"
-        );
+        log::error!("kernel_anchor: /proc/self/stat content exceeds expected size");
         return Err(DetectionError::ProcfsNotReal);
     }
 
@@ -219,9 +209,7 @@ fn check_pid_coherence(stat_content: &str) -> Result<(), DetectionError> {
         });
     }
 
-    log::debug!(
-        "kernel_anchor: PID coherence check passed (pid={syscall_pid})"
-    );
+    log::debug!("kernel_anchor: PID coherence check passed (pid={syscall_pid})");
     Ok(())
 }
 
@@ -234,44 +222,38 @@ fn check_pid_coherence(stat_content: &str) -> Result<(), DetectionError> {
 /// Non-fatal: on any failure, downgrades confidence and returns `None`.
 ///
 /// NIST SP 800-53 SI-7 — boot session binding.
-fn read_boot_id(
-    evidence: &mut EvidenceBundle,
-    confidence: &mut ConfidenceModel,
-) -> Option<String> {
+fn read_boot_id(evidence: &mut EvidenceBundle, confidence: &mut ConfidenceModel) -> Option<String> {
     let path = PathBuf::from("/proc/sys/kernel/random/boot_id");
 
     let node = ProcfsText::new(path.clone()).ok()?;
-    let content =
-        match SecureReader::<ProcfsText>::new().read_generic_text(&node) {
-            Ok(s) => s,
-            Err(e) => {
-                log::warn!("kernel_anchor: could not read boot_id: {e}");
-                confidence.downgrade(
-                    TrustLevel::Untrusted,
-                    "boot_id read failed — kernel anchor degraded",
-                );
-                evidence.push(EvidenceRecord {
-                    source_kind: SourceKind::Procfs,
-                    opened_by_fd: true,
-                    path_requested: path.display().to_string(),
-                    path_resolved: None,
-                    stat: None,
-                    fs_magic: None,
-                    sha256: None,
-                    pkg_digest: None,
-                    parse_ok: false,
-                    notes: vec!["boot_id read failed".to_owned()],
-                    duration_ns: None,
-                });
-                return None;
-            }
-        };
+    let content = match SecureReader::<ProcfsText>::new().read_generic_text(&node) {
+        Ok(s) => s,
+        Err(e) => {
+            log::warn!("kernel_anchor: could not read boot_id: {e}");
+            confidence.downgrade(
+                TrustLevel::Untrusted,
+                "boot_id read failed — kernel anchor degraded",
+            );
+            evidence.push(EvidenceRecord {
+                source_kind: SourceKind::Procfs,
+                opened_by_fd: true,
+                path_requested: path.display().to_string(),
+                path_resolved: None,
+                stat: None,
+                fs_magic: None,
+                sha256: None,
+                pkg_digest: None,
+                parse_ok: false,
+                notes: vec!["boot_id read failed".to_owned()],
+                duration_ns: None,
+            });
+            return None;
+        }
+    };
 
     // boot_id is 36 chars + newline. Reject anything implausibly large.
     if content.len() > 128 {
-        log::warn!(
-            "kernel_anchor: boot_id content unexpectedly large, ignoring"
-        );
+        log::warn!("kernel_anchor: boot_id content unexpectedly large, ignoring");
         return None;
     }
 
@@ -313,9 +295,7 @@ fn read_kernel_release(evidence: &mut EvidenceBundle) -> Option<KernelRelease> {
     let path = PathBuf::from("/proc/sys/kernel/osrelease");
 
     let node = ProcfsText::new(path.clone()).ok()?;
-    let content = match SecureReader::<ProcfsText>::new()
-        .read_generic_text(&node)
-    {
+    let content = match SecureReader::<ProcfsText>::new().read_generic_text(&node) {
         Ok(s) => s,
         Err(e) => {
             log::warn!("kernel_anchor: could not read kernel osrelease: {e}");
@@ -338,9 +318,7 @@ fn read_kernel_release(evidence: &mut EvidenceBundle) -> Option<KernelRelease> {
 
     // Kernel release strings are bounded — reject implausibly large values.
     if content.len() > MAX_PROC_READ {
-        log::warn!(
-            "kernel_anchor: osrelease content unexpectedly large, ignoring"
-        );
+        log::warn!("kernel_anchor: osrelease content unexpectedly large, ignoring");
         return None;
     }
 
@@ -405,9 +383,7 @@ fn read_lockdown(evidence: &mut EvidenceBundle) {
             });
         }
         Err(e) => {
-            log::warn!(
-                "kernel_anchor: could not read kernel lockdown mode: {e}"
-            );
+            log::warn!("kernel_anchor: could not read kernel lockdown mode: {e}");
             evidence.push(EvidenceRecord {
                 source_kind: SourceKind::SysfsNode,
                 opened_by_fd: true,
@@ -418,10 +394,7 @@ fn read_lockdown(evidence: &mut EvidenceBundle) {
                 sha256: None,
                 pkg_digest: None,
                 parse_ok: false,
-                notes: vec![
-                    "lockdown read failed — securityfs may be unavailable"
-                        .to_owned(),
-                ],
+                notes: vec!["lockdown read failed — securityfs may be unavailable".to_owned()],
                 duration_ns: None,
             });
         }

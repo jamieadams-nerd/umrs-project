@@ -50,12 +50,7 @@ const KEY_LEGEND: &str = "  Tab: tabs | ↑↓/jk/PgDn: scroll | ?: help | q: qu
 /// NIST SP 800-53 AU-3 — security state is always present and typed.
 /// NIST SP 800-53 SA-5 — inline key legend reduces reliance on external
 /// documentation during an assessment.
-pub fn render_status_bar(
-    frame: &mut Frame,
-    area: Rect,
-    app: &dyn AuditCardApp,
-    theme: &Theme,
-) {
+pub fn render_status_bar(frame: &mut Frame, area: Rect, app: &dyn AuditCardApp, theme: &Theme) {
     let status = app.status();
     let bg = status_bg_color(status.level);
     let icon = level_icon(status.level);
@@ -73,9 +68,7 @@ pub fn render_status_bar(
 
     let padded = if combined <= total_width {
         // There is room for both: pad the status to push the legend right.
-        let pad = total_width
-            .saturating_sub(status_chars)
-            .saturating_sub(legend_chars);
+        let pad = total_width.saturating_sub(status_chars).saturating_sub(legend_chars);
         format!("{status_text}{}{KEY_LEGEND}", " ".repeat(pad))
     } else if status_chars < total_width {
         // No room for the legend — pad the status to fill the bar.

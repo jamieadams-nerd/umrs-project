@@ -47,8 +47,7 @@ struct C {
 
 impl C {
     fn new() -> Self {
-        let on = std::env::var("NO_COLOR").is_err()
-            && std::io::stdout().is_terminal();
+        let on = std::env::var("NO_COLOR").is_err() && std::io::stdout().is_terminal();
         if on {
             Self {
                 reset: "\x1b[0m",
@@ -155,10 +154,7 @@ fn task1_os_identity(c: &C) {
             } else {
                 "(single source)"
             };
-            println!(
-                "  {}kernel    :{} {} {note}",
-                c.cyan, c.reset, kr.release
-            );
+            println!("  {}kernel    :{} {} {note}", c.cyan, c.reset, kr.release);
         }
     }
 
@@ -194,10 +190,7 @@ fn task2_package_check(c: &C) {
                 );
             }
             Err(PackageQueryError::QueryFailed) => {
-                println!(
-                    "  {}[qry-error]{} {pkg} — query failed",
-                    c.red, c.reset
-                );
+                println!("  {}[qry-error]{} {pkg} — query failed", c.red, c.reset);
             }
         }
     }
@@ -245,12 +238,8 @@ fn task3_selinux_context(c: &C) {
     println!("  Use the `umrs-selinux` crate: umrs_selinux::ls::SecureDirent.");
     println!();
     println!("  There is no cross-crate pointer in umrs-platform rustdoc.");
-    println!(
-        "  The kattrs module doc does not mention file xattrs or SELinux."
-    );
-    println!(
-        "  A new user will not discover this without reading source or examples."
-    );
+    println!("  The kattrs module doc does not mention file xattrs or SELinux.");
+    println!("  A new user will not discover this without reading source or examples.");
 }
 
 // ---------------------------------------------------------------------------
@@ -332,10 +321,8 @@ fn task4_posture_check(c: &C) {
             continue;
         };
 
-        let live = report
-            .live_value
-            .as_ref()
-            .map_or_else(|| "<unavail>".to_owned(), |v| v.to_string());
+        let live =
+            report.live_value.as_ref().map_or_else(|| "<unavail>".to_owned(), |v| v.to_string());
 
         let status = match report.meets_desired {
             Some(true) => format!("{}[hardened]{}", c.green, c.reset),
@@ -379,9 +366,7 @@ fn main() {
         "{}{}umrs-platform system_check — first-day intern API walkthrough{}",
         c.bold, c.cyan, c.reset
     );
-    println!(
-        "Tasks: OS identity | package check | SELinux context | IMA/EVM posture"
-    );
+    println!("Tasks: OS identity | package check | SELinux context | IMA/EVM posture");
 
     task1_os_identity(&c);
     task2_package_check(&c);

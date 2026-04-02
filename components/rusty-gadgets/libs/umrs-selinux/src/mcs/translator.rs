@@ -131,16 +131,15 @@ pub struct Translator {
 ///
 /// Correct for: Read-heavy workload, One-time load, Runtime lookup
 ///
-pub static GLOBAL_TRANSLATOR: LazyLock<RwLock<Translator>> =
-    LazyLock::new(|| {
-        let mut translator = Translator::new();
-        if let Some(path) = default_setrans_path()
-            && let Err(e) = load_into(&mut translator, &path)
-        {
-            warn!("Auto-load setrans from {path} failed: {e}");
-        }
-        RwLock::new(translator)
-    });
+pub static GLOBAL_TRANSLATOR: LazyLock<RwLock<Translator>> = LazyLock::new(|| {
+    let mut translator = Translator::new();
+    if let Some(path) = default_setrans_path()
+        && let Err(e) = load_into(&mut translator, &path)
+    {
+        warn!("Auto-load setrans from {path} failed: {e}");
+    }
+    RwLock::new(translator)
+});
 
 impl Translator {
     #[must_use]
@@ -164,12 +163,7 @@ impl Translator {
     /// - Preserves audit metadata
     /// - Enables reverse lookup enrichment.
     ///
-    pub fn add_rule(
-        &mut self,
-        range: SecurityRange,
-        label: String,
-        detail: String,
-    ) {
+    pub fn add_rule(&mut self, range: SecurityRange, label: String, detail: String) {
         if !detail.is_empty() {
             self.details.insert(range.clone(), detail);
         }
@@ -212,10 +206,7 @@ impl Translator {
             .filter(|(_, label)| label.as_str() == marking)
             .map(|(range, _label)| {
                 let kernel_str = if range.low == range.high {
-                    format!(
-                        "s{}:{}",
-                        range.low.sensitivity, range.low.categories
-                    )
+                    format!("s{}:{}", range.low.sensitivity, range.low.categories)
                 } else {
                     format!(
                         "s{}:{}-s{}:{}",
@@ -300,8 +291,7 @@ impl FromStr for SecurityLevel {
     type Err = String;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let s = s.trim();
-        let (sens_part, cat_part) = if let Some((s_p, c_p)) = s.split_once(':')
-        {
+        let (sens_part, cat_part) = if let Some((s_p, c_p)) = s.split_once(':') {
             (s_p, Some(c_p))
         } else {
             (s, None)
@@ -341,12 +331,11 @@ impl FromStr for SecurityLevel {
                     ));
                 }
 
-                let current_id =
-                    if let Some((start_s, _)) = part.split_once('.') {
-                        start_s.trim_start_matches('c').parse::<u32>().ok()
-                    } else {
-                        part.trim_start_matches('c').parse::<u32>().ok()
-                    };
+                let current_id = if let Some((start_s, _)) = part.split_once('.') {
+                    start_s.trim_start_matches('c').parse::<u32>().ok()
+                } else {
+                    part.trim_start_matches('c').parse::<u32>().ok()
+                };
 
                 // Style Auditor (Order)
                 // Read readability: we prefer the categories to be in ascending order.
@@ -360,8 +349,7 @@ impl FromStr for SecurityLevel {
                         }
                     }
 
-                    last_cat_id = if let Some((_, end_s)) = part.split_once('.')
-                    {
+                    last_cat_id = if let Some((_, end_s)) = part.split_once('.') {
                         end_s.trim_start_matches('c').parse::<u32>().ok()
                     } else {
                         Some(curr)
@@ -374,22 +362,14 @@ impl FromStr for SecurityLevel {
                         .trim_start_matches('c')
                         .parse::<u32>()
                         .map_err(|_| "Bad start")?;
-                    let end = end_str
-                        .trim_start_matches('c')
-                        .parse::<u32>()
-                        .map_err(|_| "Bad end")?;
+                    let end =
+                        end_str.trim_start_matches('c').parse::<u32>().map_err(|_| "Bad end")?;
                     for i in start..=end {
                         let name = format!("c{i}");
-                        categories.insert(
-                            Category::from_str(&name)
-                                .map_err(|e| format!("{e:?}"))?,
-                        );
+                        categories.insert(Category::from_str(&name).map_err(|e| format!("{e:?}"))?);
                     }
                 } else if !part.is_empty() {
-                    categories.insert(
-                        Category::from_str(part)
-                            .map_err(|e| format!("{e:?}"))?,
-                    );
+                    categories.insert(Category::from_str(part).map_err(|e| format!("{e:?}"))?);
                 }
             }
         }
@@ -470,10 +450,7 @@ fn default_setrans_path() -> Option<String> {
 /// Parse a setrans.conf file and insert all rules into `translator`.
 ///
 /// First-match wins. Malformed lines are logged and skipped.
-fn load_into(
-    translator: &mut Translator,
-    path: &str,
-) -> Result<(), Box<dyn std::error::Error>> {
+fn load_into(translator: &mut Translator, path: &str) -> Result<(), Box<dyn std::error::Error>> {
     let file = File::open(path)?;
     let reader = BufReader::new(file);
 
@@ -503,24 +480,16 @@ fn load_into(
                         );
                     } else {
                         if comment.is_empty() {
-                            debug!(
-                                "Line {line_num}: Loaded '{raw_range}' -> '{label}'"
-                            );
+                            debug!("Line {line_num}: Loaded '{raw_range}' -> '{label}'");
                         } else {
                             debug!(
                                 "Line {line_num}: Loaded '{raw_range}' -> '{label}' | Detail: {comment}"
                             );
                         }
-                        translator.add_rule(
-                            range,
-                            label.to_string(),
-                            comment.to_string(),
-                        );
+                        translator.add_rule(range, label.to_string(), comment.to_string());
                     }
                 }
-                Err(e) => warn!(
-                    "Line {line_num}: Syntax error on '{raw_range}' - {e}"
-                ),
+                Err(e) => warn!("Line {line_num}: Syntax error on '{raw_range}' - {e}"),
             }
         }
     }
@@ -543,7 +512,6 @@ fn load_into(
 ///
 /// Returns an error if the setrans configuration file cannot be opened or contains malformed entries.
 pub fn load_setrans_file(path: &str) -> Result<(), Box<dyn std::error::Error>> {
-    let mut translator =
-        GLOBAL_TRANSLATOR.write().map_err(|_| "Lock poisoned")?;
+    let mut translator = GLOBAL_TRANSLATOR.write().map_err(|_| "Lock poisoned")?;
     load_into(&mut translator, path)
 }

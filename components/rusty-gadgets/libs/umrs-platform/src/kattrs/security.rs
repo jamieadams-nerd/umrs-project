@@ -163,20 +163,14 @@ impl KernelFileSource for KernelLockdown {
         #[cfg(debug_assertions)]
         let start = std::time::Instant::now();
 
-        let s = std::str::from_utf8(data).map_err(|_| {
-            io::Error::new(io::ErrorKind::InvalidData, "Non-UTF8 lockdown data")
-        })?;
+        let s = std::str::from_utf8(data)
+            .map_err(|_| io::Error::new(io::ErrorKind::InvalidData, "Non-UTF8 lockdown data"))?;
         // Strip trailing newline for both parse paths.
         let s = s.trim_end();
 
         // Path A: nom declarative parser — locate and extract bracketed token.
         let mode_a = parse_lockdown_path_a(s)
-            .map_err(|_| {
-                io::Error::new(
-                    io::ErrorKind::InvalidData,
-                    "Lockdown path A failure",
-                )
-            })
+            .map_err(|_| io::Error::new(io::ErrorKind::InvalidData, "Lockdown path A failure"))
             .and_then(|(_, token)| to_lockdown_mode(token))?;
 
         // Path B: imperative split parser — independently locate bracketed token.

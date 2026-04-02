@@ -5,9 +5,7 @@
 //
 // Convention: all tests in tests/ — no inline test blocks in source.
 
-use umrs_selinux::posix::primitives::{
-    DevId, FileMode, FileSize, HardLinkCount, Inode,
-};
+use umrs_selinux::posix::primitives::{DevId, FileMode, FileSize, HardLinkCount, Inode};
 
 // ── Inode ─────────────────────────────────────────────────────────────────────
 

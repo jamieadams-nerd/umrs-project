@@ -181,10 +181,7 @@ fn rounds_to_zero(scaled: f64, decimals: u8) -> bool {
 
 // Auto-select the best prefix and return "<number> <prefix>".
 // Caller appends the actual measured unit (e.g., "s", "Hz", etc.).
-pub fn auto_format(
-    value: f64,
-    style: PrefixStyle,
-) -> (String, SIPrefix, Option<FormatWarning>) {
+pub fn auto_format(value: f64, style: PrefixStyle) -> (String, SIPrefix, Option<FormatWarning>) {
     auto_format_with_options(value, style, &FormatOptions::default())
 }
 
@@ -206,12 +203,7 @@ pub fn format_in_prefix(
     prefix: SIPrefix,
     style: PrefixStyle,
 ) -> (String, Option<FormatWarning>) {
-    format_in_prefix_with_options(
-        value,
-        prefix,
-        style,
-        &FormatOptions::default(),
-    )
+    format_in_prefix_with_options(value, prefix, style, &FormatOptions::default())
 }
 
 // Same as format_in_prefix, but allows customization of decimals and auto-target range.

@@ -280,10 +280,7 @@ impl ViewerState {
                 true
             }
             Action::PrevTab => {
-                self.active_tab = self
-                    .active_tab
-                    .checked_sub(1)
-                    .unwrap_or(self.tab_count - 1);
+                self.active_tab = self.active_tab.checked_sub(1).unwrap_or(self.tab_count - 1);
                 true
             }
             Action::ScrollUp => {
@@ -309,8 +306,7 @@ impl ViewerState {
             }
             Action::PageDown => {
                 let max = self.tree.display_count().saturating_sub(1);
-                self.selected_index =
-                    self.selected_index.saturating_add(10).min(max);
+                self.selected_index = self.selected_index.saturating_add(10).min(max);
                 self.update_breadcrumb();
                 true
             }
@@ -432,11 +428,8 @@ impl ViewerState {
             if path.len() > 1 {
                 let parent_path = path[..path.len() - 1].to_vec();
                 // Find the display list index of the parent.
-                if let Some(parent_idx) = self
-                    .tree
-                    .display_list
-                    .iter()
-                    .position(|e| e.path == parent_path)
+                if let Some(parent_idx) =
+                    self.tree.display_list.iter().position(|e| e.path == parent_path)
                 {
                     self.selected_index = parent_idx;
                     self.update_breadcrumb();

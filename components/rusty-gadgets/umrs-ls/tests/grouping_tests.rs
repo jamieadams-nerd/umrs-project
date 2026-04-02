@@ -13,8 +13,7 @@
 // COMPLIANCE: NIST SP 800-53 AU-3 (audit record completeness preserved)
 
 use umrs_ls::grouping::{
-    SiblingKind, aggregate_size, classify_suffix, group_entries, is_sibling,
-    sibling_summary,
+    SiblingKind, aggregate_size, classify_suffix, group_entries, is_sibling, sibling_summary,
 };
 
 // ============================================================================
@@ -26,9 +25,7 @@ use std::time::SystemTime;
 use umrs_selinux::SelinuxCtxState;
 use umrs_selinux::fs_encrypt::EncryptionSource;
 use umrs_selinux::posix::identity::LinuxOwnership;
-use umrs_selinux::posix::primitives::{
-    DevId, FileMode, FileSize, Gid, HardLinkCount, Inode, Uid,
-};
+use umrs_selinux::posix::primitives::{DevId, FileMode, FileSize, Gid, HardLinkCount, Inode, Uid};
 use umrs_selinux::secure_dirent::{
     AbsolutePath, FileType, InodeSecurityFlags, SecureDirent, ValidatedFileName,
 };
@@ -251,10 +248,7 @@ fn group_entries_compressed_rotation() {
 // TEST-ID: GROUPING-021 — signature detection
 #[test]
 fn group_entries_signature_sibling() {
-    let entries = vec![
-        make_entry("report.pdf", 1_200_000),
-        make_entry("report.pdf.sig", 512),
-    ];
+    let entries = vec![make_entry("report.pdf", 1_200_000), make_entry("report.pdf.sig", 512)];
     let groups = group_entries(&entries);
     assert_eq!(groups.len(), 1);
     assert_eq!(groups[0].siblings.len(), 1);
@@ -264,10 +258,7 @@ fn group_entries_signature_sibling() {
 // TEST-ID: GROUPING-022 — checksum detection
 #[test]
 fn group_entries_checksum_sibling() {
-    let entries = vec![
-        make_entry("package.tar", 50_000),
-        make_entry("package.tar.sha256", 64),
-    ];
+    let entries = vec![make_entry("package.tar", 50_000), make_entry("package.tar.sha256", 64)];
     let groups = group_entries(&entries);
     assert_eq!(groups.len(), 1);
     assert_eq!(groups[0].siblings.len(), 1);
@@ -302,16 +293,9 @@ fn group_entries_mixed_rotation_and_signature() {
     assert_eq!(groups.len(), 1);
     assert_eq!(groups[0].siblings.len(), 3);
 
-    let rotation_count = groups[0]
-        .siblings
-        .iter()
-        .filter(|s| s.kind == SiblingKind::Rotation)
-        .count();
-    let sig_count = groups[0]
-        .siblings
-        .iter()
-        .filter(|s| s.kind == SiblingKind::Signature)
-        .count();
+    let rotation_count =
+        groups[0].siblings.iter().filter(|s| s.kind == SiblingKind::Rotation).count();
+    let sig_count = groups[0].siblings.iter().filter(|s| s.kind == SiblingKind::Signature).count();
     assert_eq!(rotation_count, 2);
     assert_eq!(sig_count, 1);
 }
@@ -319,8 +303,7 @@ fn group_entries_mixed_rotation_and_signature() {
 // TEST-ID: GROUPING-025 — no false positives: file.log does not absorb file.logging
 #[test]
 fn group_entries_no_false_positive_shared_prefix() {
-    let entries =
-        vec![make_entry("file.log", 100), make_entry("file.logging", 200)];
+    let entries = vec![make_entry("file.log", 100), make_entry("file.logging", 200)];
     let groups = group_entries(&entries);
     // "file.logging" lacks a separator at position 8, so it starts its own group.
     assert_eq!(groups.len(), 2);

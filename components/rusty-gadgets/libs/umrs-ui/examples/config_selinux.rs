@@ -27,9 +27,7 @@ use umrs_ui::Action;
 use umrs_ui::app::{StatusLevel, StatusMessage, TabDef};
 use umrs_ui::config::diff::DiffEntry;
 use umrs_ui::config::fields::{FieldDef, FieldValue, ValidationResult};
-use umrs_ui::config::{
-    ConfigApp, ConfigHeaderContext, ConfigState, ConfigStateEvent,
-};
+use umrs_ui::config::{ConfigApp, ConfigHeaderContext, ConfigState, ConfigStateEvent};
 
 // ---------------------------------------------------------------------------
 // Data struct
@@ -103,21 +101,15 @@ fn validate_selinux_mode(v: &FieldValue) -> ValidationResult {
                 ValidationResult::Ok
             }
         }
-        _ => ValidationResult::Error(
-            "Must be 'enforcing', 'permissive', or 'disabled'".to_owned(),
-        ),
+        _ => ValidationResult::Error("Must be 'enforcing', 'permissive', or 'disabled'".to_owned()),
     }
 }
 
 fn validate_selinux_type(v: &FieldValue) -> ValidationResult {
     let valid = ["targeted", "mls", "minimum"];
     match v {
-        FieldValue::Selection(s) if valid.contains(&s.as_str()) => {
-            ValidationResult::Ok
-        }
-        _ => ValidationResult::Error(
-            "Must be 'targeted', 'mls', or 'minimum'".to_owned(),
-        ),
+        FieldValue::Selection(s) if valid.contains(&s.as_str()) => ValidationResult::Ok,
+        _ => ValidationResult::Error("Must be 'targeted', 'mls', or 'minimum'".to_owned()),
     }
 }
 
@@ -130,11 +122,7 @@ fn populate_fields(state: &mut ConfigState) {
     state.fields.push(
         FieldDef::selection(
             "SELINUX",
-            vec![
-                "enforcing".to_owned(),
-                "permissive".to_owned(),
-                "disabled".to_owned(),
-            ],
+            vec!["enforcing".to_owned(), "permissive".to_owned(), "disabled".to_owned()],
             "enforcing",
             validate_selinux_mode,
         )

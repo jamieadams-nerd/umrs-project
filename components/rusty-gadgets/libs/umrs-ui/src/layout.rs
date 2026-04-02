@@ -144,11 +144,8 @@ pub fn render_audit_card(
 /// Each line is rendered green (wizard color from theme). The border uses
 /// the standard theme border style.
 fn render_logo(frame: &mut Frame, area: Rect, theme: &Theme) {
-    let lines: Vec<Line<'_>> = WIZARD_SMALL
-        .lines
-        .iter()
-        .map(|l| Line::from(Span::styled(*l, theme.wizard)))
-        .collect();
+    let lines: Vec<Line<'_>> =
+        WIZARD_SMALL.lines.iter().map(|l| Line::from(Span::styled(*l, theme.wizard))).collect();
 
     let block = Block::default()
         .borders(Borders::ALL)

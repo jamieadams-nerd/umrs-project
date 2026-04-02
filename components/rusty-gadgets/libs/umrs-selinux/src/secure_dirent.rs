@@ -295,10 +295,7 @@ pub mod path {
                     component,
                     max,
                     got,
-                } => write!(
-                    f,
-                    "component '{component}' too long: max {max}, got {got}"
-                ),
+                } => write!(f, "component '{component}' too long: max {max}, got {got}"),
                 Self::ContainsNull => {
                     write!(f, "path must not contain null bytes")
                 }
@@ -400,8 +397,7 @@ pub mod path {
         ///
         #[must_use]
         pub fn to_cstring(&self) -> CString {
-            CString::new(self.0.as_bytes())
-                .expect("AbsolutePath invariant: no null bytes")
+            CString::new(self.0.as_bytes()).expect("AbsolutePath invariant: no null bytes")
         }
 
         #[must_use]
@@ -928,16 +924,13 @@ impl SecureDirent {
     pub fn from_path(path: &Path) -> Result<Self, SecDirError> {
         // Step 1: symlink_metadata — does NOT follow symlinks
         // TOCTOU: we capture the lstat result before opening.
-        let meta =
-            std::fs::symlink_metadata(path).map_err(SecDirError::Metadata)?;
+        let meta = std::fs::symlink_metadata(path).map_err(SecDirError::Metadata)?;
 
         // Step 2: Validate and type the path
         let abs_path = path
             .to_str()
             .ok_or(SecDirError::InvalidPath(path::PathError::ContainsNull))
-            .and_then(|s| {
-                AbsolutePath::new(s).map_err(SecDirError::InvalidPath)
-            })?;
+            .and_then(|s| AbsolutePath::new(s).map_err(SecDirError::InvalidPath))?;
 
         // Step 3: Validate and type the filename component
         // Non-UTF8 filenames are rejected here — explicit OsStr boundary.
@@ -946,10 +939,7 @@ impl SecureDirent {
             .unwrap_or_else(|| std::ffi::OsStr::new("/"))
             .to_str()
             .ok_or(SecDirError::InvalidFileName)
-            .and_then(|s| {
-                ValidatedFileName::new(s)
-                    .map_err(|_| SecDirError::InvalidFileName)
-            })?;
+            .and_then(|s| ValidatedFileName::new(s).map_err(|_| SecDirError::InvalidFileName))?;
 
         // Step 4: Extract primitives from Metadata, then discard it
         // NSA RTB: Minimized TCB — do not retain kernel objects.
@@ -1008,10 +998,9 @@ impl SecureDirent {
 
             // Step 7: POSIX ACL xattr
             // NIST SP 800-53 AC-3: detect extended DAC in effect.
-            let has_acl =
-                SecureXattrReader::read_raw(file, "system.posix_acl_access")
-                    .map(|v| !v.is_empty())
-                    .unwrap_or(false);
+            let has_acl = SecureXattrReader::read_raw(file, "system.posix_acl_access")
+                .map(|v| !v.is_empty())
+                .unwrap_or(false);
             if has_acl {
                 sec_flags |= InodeSecurityFlags::ACL_PRESENT;
             }
@@ -1048,18 +1037,14 @@ impl SecureDirent {
                     // Treat as access_denied: inode anchor exists but label is
                     // unverifiable. Shows as <restricted> rather than <unlabeled>.
                     // NIST SP 800-53 AC-3; NSA RTB Non-Bypassability (RAIN).
-                    log::warn!(
-                        "SELinux xattr access denied for {abs_path}: {e}"
-                    );
+                    log::warn!("SELinux xattr access denied for {abs_path}: {e}");
                     access_denied = true;
                 }
                 Err(XattrReadError::OsError(ref e)) => {
                     // ENODATA or other OS error — inode is genuinely unlabeled
                     // or the xattr subsystem is unavailable.
                     // selinux_label stays Unlabeled.
-                    log::debug!(
-                        "SELinux xattr not present for {abs_path}: {e}"
-                    );
+                    log::debug!("SELinux xattr not present for {abs_path}: {e}");
                 }
                 Err(XattrReadError::Tpi(TpiError::Disagreement(_, _))) => {
                     // Both parsers succeeded but disagreed — potential
@@ -1093,9 +1078,7 @@ impl SecureDirent {
         let is_mountpoint = path
             .parent()
             .and_then(|p| std::fs::symlink_metadata(p).ok())
-            .is_some_and(|pm| {
-                !dev.same_device_as(posix::primitives::DevId::new(pm.dev()))
-            });
+            .is_some_and(|pm| !dev.same_device_as(posix::primitives::DevId::new(pm.dev())));
 
         // Step 11: encryption detection — only for mount points.
         // Non-mount-point entries always carry EncryptionSource::None.
@@ -1154,8 +1137,7 @@ impl SecureDirent {
     /// NIST SP 800-53 AC-4.
     #[must_use]
     pub fn has_explicit_selinux_label(&self) -> bool {
-        self.selinux_label.is_labeled()
-            && self.sec_flags.has_explicit_selinux_label()
+        self.selinux_label.is_labeled() && self.sec_flags.has_explicit_selinux_label()
     }
 
     /// True if this mount point has any detected at-rest encryption.
@@ -1255,9 +1237,7 @@ impl SecureDirent {
             }
             SelinuxCtxState::Labeled(_) | SelinuxCtxState::Unlabeled => {}
         }
-        if self.is_setuid()
-            && (self.mode.group_can_write() || self.mode.is_world_writable())
-        {
+        if self.is_setuid() && (self.mode.group_can_write() || self.mode.is_world_writable()) {
             obs.push(SecurityObservation::SetuidWritable);
         }
 
@@ -1273,10 +1253,7 @@ impl SecureDirent {
                 nlink: self.nlink.as_u32(),
             });
         }
-        if self.uid().is_root()
-            && self.file_type.is_regular()
-            && !self.is_write_protected()
-        {
+        if self.uid().is_root() && self.file_type.is_regular() && !self.is_write_protected() {
             obs.push(SecurityObservation::RootOwnedMutable);
         }
         if self.ownership.user.is_unresolved() {
@@ -1299,11 +1276,7 @@ impl SecureDirent {
         }
 
         if !obs.is_empty() {
-            let obs_str = obs
-                .iter()
-                .map(|o| o.to_string())
-                .collect::<Vec<String>>()
-                .join(", ");
+            let obs_str = obs.iter().map(|o| o.to_string()).collect::<Vec<String>>().join(", ");
             log::debug!("SecObservations: {} :: {}", self.name, obs_str);
         }
 

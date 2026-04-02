@@ -101,7 +101,7 @@ multiple algorithms, the FIPS-approved choice is listed first.
 
 |===
 
-NOTE: Entries marked // TODO: verify are based on RHEL 10 documentation and NIST guidance.
+NOTE: Entries in this table are based on RHEL 10 documentation and NIST guidance.
 Confirm against your specific system configuration and module security policy before citing
 these in a compliance artifact.
 
@@ -143,6 +143,21 @@ The following cryptographic operations are implemented and active in the UMRS co
   Pure Rust via RustCrypto `sha2` crate.
 | SI-7
 
+| *umrs-c2pa — C2PA manifest signing*
+| ECDSA-P256 (es256) or ECDSA-P384 (es384) via system OpenSSL FIPS provider
+| Signs C2PA provenance manifests embedded in media files.
+  Algorithm allow-list enforced by `parse_algorithm()` gate — only FIPS-approved ECDSA curves accepted.
+  Ed25519 explicitly excluded (not FIPS 186-5 approved for this use).
+  SHA-256 and SHA-384 dual digests computed via system OpenSSL (FIPS 180-4).
+| SC-13, AU-10, SI-7
+
+| *umrs-c2pa — C2PA manifest verification*
+| ECDSA (preferred), RSA (third-party manifests only) — via c2pa SDK
+| Verifies C2PA manifest signatures on ingested media.
+  UMRS never generates RSA signatures.
+  RSA verification is handled by the c2pa SDK for interoperability with third-party signers.
+| SI-7, AU-10
+
 |===
 
 [IMPORTANT]
@@ -155,6 +170,53 @@ When `/proc/sys/kernel/fips_enabled` is `1`, the sealed cache is unconditionally
 All queries re-run the full detection pipeline.
 This is an explicit, documented trade-off: correctness over performance in FIPS deployments.
 ====
+
+=== Dependency Cryptographic Advisories
+
+This section documents known cryptographic advisories in transitive dependencies,
+their assessed impact on UMRS, and the rationale for the assessment.
+
+==== RUSTSEC-2023-0071 — RSA Marvin Attack (`rsa` 0.9.x)
+
+*Advisory:* The pure-Rust `rsa` crate (version 0.9.10) contains a timing side-channel
+vulnerability in its PKCS#1 v1.5 decryption implementation. An attacker who can submit
+crafted ciphertexts and measure decryption timing can recover the plaintext or private key.
+This is a modernized variant of Bleichenbacher's 1998 adaptive chosen-ciphertext attack.
+CVSS: 5.9 (Medium). No patched version is available as of 2026-04.
+
+*Dependency path:* `rsa 0.9.10` ← `c2pa 0.78.7` ← `umrs-c2pa`
+
+*UMRS impact assessment: NOT AFFECTED*
+
+The `rsa` crate is a transitive dependency pulled in by the C2PA SDK. UMRS does not
+exercise the vulnerable code path for the following reasons:
+
+. *UMRS never performs RSA signing or decryption.* All UMRS signing operations use
+  ECDSA (P-256 or P-384) exclusively. The `parse_algorithm()` gate in `umrs-c2pa`
+  enforces an algorithm allow-list that does not include any RSA algorithm. This gate
+  is non-bypassable (NSA RTB RAIN).
+
+. *The Marvin Attack targets RSA decryption, not signature verification.* When UMRS
+  encounters a third-party C2PA manifest signed with RSA, the `c2pa` SDK performs
+  signature _verification_ (a public-key operation). The timing side-channel in the
+  `rsa` crate affects _decryption_ (a private-key operation). Signature verification
+  does not exercise the vulnerable PKCS#1 v1.5 decryption padding check.
+
+. *On FIPS-active systems, RSA operations route through system OpenSSL.* When
+  `/proc/sys/crypto/fips_enabled` is `1`, the `openssl` crate's FIPS provider handles
+  all RSA operations — the pure-Rust `rsa` crate is not exercised at all.
+
+. *UMRS holds no RSA private keys.* The Marvin Attack requires access to a decryption
+  oracle — a service that decrypts attacker-supplied ciphertexts using a private key.
+  UMRS does not possess, generate, or use RSA private keys.
+
+*Monitoring plan:* Track upstream `c2pa` crate releases for an update that drops or
+patches the `rsa` dependency. If a future UMRS feature requires RSA key operations
+(none are planned), this assessment must be revisited.
+
+*Assessed:* 2026-04-02 +
+*Control:* NIST SP 800-53 SC-13 +
+*Advisory:* https://rustsec.org/advisories/RUSTSEC-2023-0071[RUSTSEC-2023-0071]
 
 === Future (Planned Architecture)
 
@@ -248,3 +310,4 @@ Control: SC-28 (protection of information at rest), SC-13.
 * xref:patterns:pattern-sec.adoc[Sealed Evidence Cache] — SEC pattern full documentation
 * xref:patterns:pattern-supply-chain.adoc[Supply Chain Hygiene] — software signing and dependency vetting
 * xref:reference:compliance-frameworks.adoc[Compliance Frameworks Registry] — full NIST/CMMC/RTB control mapping
+* xref:rust-fips-strategies.adoc[Rust FIPS Strategies] — why UMRS uses system OpenSSL for signing
