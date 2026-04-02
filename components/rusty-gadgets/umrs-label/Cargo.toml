@@ -3,6 +3,10 @@ name = "umrs-label"
 version = "0.1.0"
 edition = "2024"
 
+[lib]
+name = "umrs_labels"
+path = "src/lib.rs"
+
 [[bin]]
 name = "umrs-label"
 path = "src/main.rs"

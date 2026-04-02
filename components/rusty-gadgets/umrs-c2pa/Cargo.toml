@@ -1,0 +1,75 @@
+[package]
+name    = "umrs-c2pa"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+authors = ["Jamie Adams"]
+description = "C2PA manifest inspection and signing toolkit for UMRS"
+
+[[bin]]
+name = "umrs-c2pa"
+path = "src/main.rs"
+
+[lib]
+name = "umrs_c2pa"
+path = "src/lib.rs"
+
+[features]
+default          = ["vendored-openssl", "internet"]
+vendored-openssl = ["openssl-sys/vendored"]  # hermetic build — no system OpenSSL required
+system-openssl   = []                    # link system OpenSSL — required for FIPS-validated RHEL
+internet         = ["ureq"]             # TSA timestamps + TSA reachability probe; omit for air-gap deployments
+
+[dependencies]
+# C2PA manifest read/write — reference Rust SDK by Adobe (MIT OR Apache-2.0)
+# See THIRD-PARTY-NOTICES.md for full attribution.
+c2pa = { version = "0.78.6", default-features = false, features = ["openssl", "file_io"] }
+
+# OpenSSL — always present (used for ephemeral cert generation and c2pa signing).
+# vendored-openssl feature enables static bundling; system-openssl links the host lib.
+openssl     = "0.10"
+openssl-sys = "0.9"  # needed to forward vendored feature flag
+
+# Error handling
+thiserror = "1"  # typed errors in library code
+anyhow    = "1"  # ergonomic error handling in binary only
+
+# CLI argument parsing
+clap = { version = "4", features = ["derive"] }
+
+# Config file
+toml  = "0.8"                              # TOML config parsing
+serde = { version = "1", features = ["derive"] }
+
+# JSON manifest output
+serde_json = "1"
+
+# Logging facade — always present; backend is platform-gated below
+log = "0.4"
+
+# SHA-256 file hash at ingest
+sha2 = "0.10"
+hex  = "0.4"
+
+# Timestamp parsing from manifests
+chrono = { version = "0.4", features = ["serde"] }
+
+# HTTP probe for TSA reachability check in config validate — gated behind `network` feature
+ureq = { version = "2", optional = true }
+
+# journald backend — primary audit log destination
+systemd-journal-logger = "2"
+
+# env_logger — stderr fallback when journald is unavailable (container, chroot).
+# Satisfies NIST SP 800-53 AU-5: response to audit processing failures.
+env_logger = { version = "0.11", default-features = false }
+
+# Memory zeroization for key material — zeroes private key bytes on drop,
+# preventing key recovery from freed heap memory.
+# Supply chain: pure Rust, no unsafe, published by the RustCrypto team.
+# Controls: NIST SP 800-53 SC-12, NIST SP 800-53 SC-28.
+zeroize = "1"
+
+# libc — needed for O_NOFOLLOW flag in Unix private key reads.
+# Widely used, well-audited system call binding.
+libc = "0.2"

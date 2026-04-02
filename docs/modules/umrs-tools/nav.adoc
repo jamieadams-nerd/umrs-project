@@ -4,6 +4,9 @@
 * xref:umrs-stat.adoc[umrs-stat — File Security Audit Card]
 * xref:umrs-ls.adoc[umrs-ls — High-Assurance Directory Listing]
 
+* Media Provenance
+** xref:umrs-c2pa.adoc[umrs-c2pa — Media Provenance and Chain-of-Custody]
+
 * Prototype Crates
 ** xref:umrs-logspace.adoc[umrs-logspace — Audit Trail and Logging]
 ** xref:umrs-state.adoc[umrs-state — System State Introspection]

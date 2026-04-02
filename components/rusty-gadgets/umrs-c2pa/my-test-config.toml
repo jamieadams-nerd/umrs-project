@@ -1,0 +1,88 @@
+# umrs-c2pa.toml — UMRS C2PA signing configuration
+#
+# Quick start:
+#   1. umrs-c2pa creds generate --output ./certs    # create cert + key
+#   2. Edit this file — set cert_chain and private_key paths
+#   3. umrs-c2pa config validate                    # verify everything
+#   4. umrs-c2pa --sign photo.jpg                   # sign your first file
+#
+# Run `umrs-c2pa config validate` to verify before use.
+# Run `umrs-c2pa config generate --output <path>` to regenerate this template.
+
+[identity]
+# Human-readable name embedded in every manifest produced by this system.
+claim_generator = "UMRS Reference System/1.0"
+
+# Organization name for display in chain-of-custody reports.
+organization = "Your Organization"
+
+# Path to PEM-encoded signing certificate chain (leaf cert first, root last).
+# Generate with: umrs-c2pa creds generate --output ./certs
+# If omitted, an ephemeral self-signed cert is generated at runtime (test mode).
+cert_chain = "./my-certs/signing.pem"
+
+# Path to PEM-encoded private key corresponding to the leaf certificate.
+private_key = "./my-certs/signing.key"
+
+# Signing algorithm. Must be in the FIPS-safe set.
+# Allowed : es256 | es384 | es512 | ps256 | ps384 | ps512
+# Excluded: ed25519 — unreliable on FIPS-enabled RHEL
+# Strongest FIPS+C2PA intersection: es512
+algorithm = "es256"
+
+[timestamp]
+# Time Stamp Authority URL for trusted signing timestamps.
+# Omit (or comment out) to sign without a TSA timestamp.
+# tsa_url = "http://timestamp.digicert.com"
+
+[policy]
+# Action label and reason for files arriving WITHOUT an existing C2PA manifest.
+# c2pa.acquired = "we received this; we are not the creator"
+unsigned_action = "c2pa.acquired"
+unsigned_reason = "Received at UMRS trusted ingest dropbox. Origin unknown. No modifications made."
+
+# Action label and reason for files arriving WITH an existing C2PA manifest.
+# c2pa.published = "we forwarded this as-is"
+signed_action = "c2pa.published"
+signed_reason = "Received at UMRS trusted ingest dropbox with existing provenance. No modifications made."
+
+[trust]
+# Trust list configuration for C2PA signature validation.
+# All paths are configurable — no hardcoded default location.
+# See docs/trust-maintenance.md for setup and update procedures.
+#
+# UMRS combines trust_anchors + user_anchors into a single PEM bundle.
+# Use user_anchors for the TSA trust list so both files update independently.
+#
+# Download both from:
+#   https://raw.githubusercontent.com/c2pa-org/conformance-public/refs/heads/main/trust-list/C2PA-TRUST-LIST.pem
+#   https://raw.githubusercontent.com/c2pa-org/conformance-public/refs/heads/main/trust-list/C2PA-TSA-TRUST-LIST.pem
+
+# Path to PEM bundle of C2PA signing root CA certificates.
+trust_anchors = "config/C2PA-TRUST-LIST.pem"
+
+# Path to PEM bundle of TSA root CA certificates (combined with trust_anchors).
+# Also accepts organization root CAs — any PEM bundle works here.
+user_anchors = "config/C2PA-TSA-TRUST-LIST.pem"
+
+# Path to end-entity certificate allowlist (optional).
+# Directly trust specific signer certs without chain validation.
+#allowed_list = "/path/to/trust/allowed-signers.pem"
+
+# Path to EKU OID filter file (optional). One OID per line, // comments.
+#trust_config = "/path/to/trust/ekus.cfg"
+
+# Enable trust validation (default: true).
+verify_trust = true
+
+# OCSP responder URL (skeleton — not fully implemented yet).
+# Organizations can point this to their own OCSP server when ready.
+#ocsp_responder = "http://ocsp.internal.example.com"
+
+[logging]
+# Enable or disable all logging output.
+enabled = true
+
+# Minimum log level: off | error | warn | info | debug | trace
+# Set to "off" in production if journald volume is a concern.
+level = "info"

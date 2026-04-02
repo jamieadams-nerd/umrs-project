@@ -90,12 +90,16 @@ fn main() {
     // ---------------------------------------------------------------------------
     println!("\n=========== Field presence audit ===================");
     let total = cat.iter_markings().count();
-    let with_description =
-        cat.iter_markings().filter(|(_, m)| m.has_description()).count();
+    let with_description = cat
+        .iter_markings()
+        .filter(|(_, m): &(_, &_)| m.has_description())
+        .count();
     let with_handling =
-        cat.iter_markings().filter(|(_, m)| m.has_handling()).count();
-    let with_level =
-        cat.iter_markings().filter(|(_, m)| m.level.is_some()).count();
+        cat.iter_markings().filter(|(_, m): &(_, &_)| m.has_handling()).count();
+    let with_level = cat
+        .iter_markings()
+        .filter(|(_, m): &(_, &_)| m.level.is_some())
+        .count();
     println!("Markings total:         {total}");
     println!("  with description:     {with_description}");
     println!("  with handling:        {with_handling}");

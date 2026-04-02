@@ -13,7 +13,8 @@
 // COMPLIANCE: NIST SP 800-53 AU-3 (audit record completeness preserved)
 
 use umrs_ls::grouping::{
-    SiblingKind, aggregate_size, classify_suffix, group_entries, is_sibling, sibling_summary,
+    SiblingKind, aggregate_size, classify_suffix, group_entries, is_sibling,
+    sibling_summary,
 };
 
 // ============================================================================
@@ -26,7 +27,7 @@ use umrs_selinux::SelinuxCtxState;
 use umrs_selinux::fs_encrypt::EncryptionSource;
 use umrs_selinux::posix::identity::LinuxOwnership;
 use umrs_selinux::posix::primitives::{
-    DevId, FileMode, FileSize, HardLinkCount, Inode, Uid, Gid,
+    DevId, FileMode, FileSize, Gid, HardLinkCount, Inode, Uid,
 };
 use umrs_selinux::secure_dirent::{
     AbsolutePath, FileType, InodeSecurityFlags, SecureDirent, ValidatedFileName,
@@ -42,8 +43,7 @@ fn make_entry(name: &str, size: u64) -> ListEntry {
     let path_str = format!("/test/{name}");
     let path = AbsolutePath::new(&path_str).expect("test path valid");
     let file_name = ValidatedFileName::new(name).expect("test name valid");
-    let ownership =
-        LinuxOwnership::from_ids(Uid::new(0), Gid::new(0));
+    let ownership = LinuxOwnership::from_ids(Uid::new(0), Gid::new(0));
 
     let dirent = SecureDirent {
         path,
@@ -62,7 +62,10 @@ fn make_entry(name: &str, size: u64) -> ListEntry {
         access_denied: false,
     };
 
-    ListEntry { dirent, mtime: Some(SystemTime::UNIX_EPOCH) }
+    ListEntry {
+        dirent,
+        mtime: Some(SystemTime::UNIX_EPOCH),
+    }
 }
 
 // ============================================================================
@@ -142,7 +145,10 @@ fn classify_dash_date_is_rotation() {
 fn classify_gz_extension_is_compressed() {
     assert_eq!(classify_suffix(".gz"), SiblingKind::CompressedRotation);
     assert_eq!(classify_suffix(".1.gz"), SiblingKind::CompressedRotation);
-    assert_eq!(classify_suffix("-20260301.gz"), SiblingKind::CompressedRotation);
+    assert_eq!(
+        classify_suffix("-20260301.gz"),
+        SiblingKind::CompressedRotation
+    );
 }
 
 // TEST-ID: GROUPING-012
@@ -313,10 +319,8 @@ fn group_entries_mixed_rotation_and_signature() {
 // TEST-ID: GROUPING-025 — no false positives: file.log does not absorb file.logging
 #[test]
 fn group_entries_no_false_positive_shared_prefix() {
-    let entries = vec![
-        make_entry("file.log", 100),
-        make_entry("file.logging", 200),
-    ];
+    let entries =
+        vec![make_entry("file.log", 100), make_entry("file.logging", 200)];
     let groups = group_entries(&entries);
     // "file.logging" lacks a separator at position 8, so it starts its own group.
     assert_eq!(groups.len(), 2);
@@ -395,6 +399,12 @@ fn sibling_summary_mixed_types() {
     let groups = group_entries(&entries);
     let summary = sibling_summary(&groups[0]);
     // Must mention 2 rotations and 1 signature.
-    assert!(summary.contains("rotation"), "expected 'rotation' in: {summary}");
-    assert!(summary.contains("signature"), "expected 'signature' in: {summary}");
+    assert!(
+        summary.contains("rotation"),
+        "expected 'rotation' in: {summary}"
+    );
+    assert!(
+        summary.contains("signature"),
+        "expected 'signature' in: {summary}"
+    );
 }

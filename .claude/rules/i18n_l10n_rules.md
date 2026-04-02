@@ -204,6 +204,36 @@ all output, the correct Unicode forms with accents must be used.
 [RULE] Every security label `msgstr` must include a `.po` comment citing the
 authoritative policy source (e.g., Treasury Board Directive on Security Management).
 
+### Translation Boundary — Specification Vocabulary vs Prose
+
+[RULE] **Translate prose; preserve specification vocabulary.** This applies to all
+UMRS tools, not just individual crates.
+
+The boundary is whether an authoritative bilingual form exists:
+
+| Category | Action | Examples |
+|---|---|---|
+| **Canadian government markings with TB-defined bilingual forms** | Translate using exact TB terminology | Protected A → PROTÉGÉ A |
+| **Field labels and prose messages** | Translate to `fr_CA` | "Signed at" → "Signé le" |
+| **Report headers and section titles** | Translate | "Chain of Custody" → "Chaîne de possession" |
+| **Industry specification vocabulary with no Termium entry** | Keep English in all locales | TRUSTED, UNVERIFIED, INVALID, REVOKED, NO TRUST LIST |
+| **CLI operational status codes** | Keep English in all locales | [PASS], [FAIL], [WARN], [INFO], [SKIP] |
+| **Algorithm identifiers and technical constants** | Keep English | es256, SHA-256, PEM, JUMBF |
+
+**Rationale (Henri, 2026-04-01):**
+- The Official Languages Act requires bilingual service delivery but does not extend
+  to machine-status codes or industry-standard technical vocabulary in CLI output.
+- CSE Assemblyline and CCCS indicator tools follow the same pattern: English status
+  codes, bilingual prose.
+- Translating terms where Termium Plus is silent produces Level 5 (agent judgment)
+  vocabulary — an invention, not a translation. This creates Five Eyes interoperability
+  friction with no corresponding compliance benefit.
+- When Termium Plus acquires entries for a term (e.g., if C2PA vocabulary is added),
+  revisit and translate at that time.
+
+[RULE] When in doubt about whether a term is specification vocabulary or translatable
+prose, check Termium Plus. If no entry exists, keep English and document the decision.
+
 ---
 
 ### French Typography Rules
@@ -261,12 +291,36 @@ Apply the correct standard based on context. Conflating them is a finding.
 | Responsibility | Owner |
 |---|---|
 | i18n infrastructure, gettext wiring | Jamie |
-| String wrapping, `.pot` generation | Rust developers (Rusty) |
+| String inventory and extraction reports | Simone |
+| String wrapping in Rust source (gettext macros) | Rust developers (Rusty) |
+| `.pot` template extraction from wrapped source | Simone (via Makefile) |
 | French translation (`msgstr`) | Simone |
 | Policy accuracy validation (TB, CCCS, Termium Plus) | Henri |
 | Typography and linguistic correctness | Simone + Henri |
 | l10n test suite | Rust developers (Rusty) |
 | Pre-release policy spot-check | Henri |
+
+### String Inventory → Wrapping Workflow
+
+[RULE] The i18n workflow for a new or existing crate follows this sequence:
+
+1. **Simone** scans the source and produces a string inventory report —
+   classifying each user-facing string by type (error, CLI output, verbose,
+   report), noting interpolated values, flagging layout-sensitive strings,
+   and identifying security labels that need `msgctxt`.
+2. **Rusty** wraps the identified strings in gettext macros in the Rust source,
+   guided by Simone's inventory. Rusty does not choose translations or decide
+   terminology — only applies the mechanical wrapping.
+3. **Simone** extracts the `.pot` template from the wrapped source using the
+   Makefile l10n targets (`make pot` or equivalent). The extraction tooling
+   is Simone's domain, not Rusty's.
+4. **Simone** translates the `msgid` entries into `fr_CA` `msgstr` values,
+   consulting Termium Plus and the approved vocabulary list.
+5. **Henri** validates policy-critical translations (security labels, TB terms).
+
+[CONSTRAINT] Simone does not modify Rust source code. Rusty does not write
+French translations. The boundary is the `.pot` file: Rusty produces it,
+Simone consumes it.
 
 [RULE] Linguistic correctness and policy correctness are separate, independent checks.
 Both must pass before any localized output leaves the team. Simone owns linguistic

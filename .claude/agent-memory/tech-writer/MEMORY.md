@@ -83,3 +83,12 @@ See [feedback_raw_notes_in_pages.md](feedback_raw_notes_in_pages.md).
 - `foundations/NOTE-TO-JAMIE.txt` — flagged for Jamie to remove
 - `foundations/history/mls-classified-talk.adoc` — placeholder stub, content pending
 - "targeted policy" is the consistent term (not "targeted mode")
+
+## umrs-c2pa Module (2026-04-01)
+Source at `components/rusty-gadgets/umrs-c2pa/`. Binary named `umrs-c2pa` (not `inspect`).
+Antora page: `docs/modules/umrs-tools/pages/umrs-c2pa.adoc`. Nav section: "Media Provenance".
+Key design facts: ephemeral mode = self-signed ECDSA, all manifests UNVERIFIED; production needs
+cert_chain + private_key both set. ed25519 excluded by policy (FIPS 140-2 portability).
+Trust list: two files — C2PA-TRUST-LIST.pem (signing CAs) and C2PA-TSA-TRUST-LIST.pem (TSA CAs).
+Security: key bytes in Zeroizing buffer, O_NOFOLLOW on key reads, mode 0600 at file creation.
+Journald fallback to stderr on AU-5 (never abort on logging failure).

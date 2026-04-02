@@ -6,7 +6,7 @@
 // or shell profile that enforces umask 0o027 before launching.
 //
 use std::collections::BTreeMap;
-use umrs_label::cui::catalog;
+use umrs_labels::cui::catalog;
 
 fn main() {
     let path = std::env::args().nth(1).unwrap_or_else(|| {
@@ -19,9 +19,7 @@ fn main() {
         std::process::exit(2);
     });
 
-    let country = cat
-        .country_code()
-        .unwrap_or("??");
+    let country = cat.country_code().unwrap_or("??");
 
     println!();
     if let Some(meta) = &cat.metadata {
@@ -32,7 +30,8 @@ fn main() {
     println!();
 
     // Group markings by index_group, sorted. Ungrouped entries go under "(No Group)".
-    let mut groups: BTreeMap<String, Vec<(&String, &catalog::Marking)>> = BTreeMap::new();
+    let mut groups: BTreeMap<String, Vec<(&String, &catalog::Marking)>> =
+        BTreeMap::new();
     for (key, marking) in cat.iter_markings() {
         let group_name = marking
             .index_group
@@ -43,17 +42,18 @@ fn main() {
 
     // Sort entries within each group alphabetically by key
     for entries in groups.values_mut() {
-        entries.sort_by(|a, b| a.0.cmp(b.0));
+        entries.sort_by(
+            |a: &(&String, &catalog::Marking),
+             b: &(&String, &catalog::Marking)| { a.0.cmp(b.0) },
+        );
     }
 
     for (group, entries) in &groups {
+        let group: &String = group;
         println!("  {group}");
         println!("  {}", "-".repeat(group.len()));
         for (key, marking) in entries {
-            let designation = marking
-                .designation
-                .as_deref()
-                .unwrap_or("");
+            let designation = marking.designation.as_deref().unwrap_or("");
             let tag = match designation {
                 "specified" => " [SP]",
                 "basic" => "",

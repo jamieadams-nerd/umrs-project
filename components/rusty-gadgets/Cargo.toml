@@ -7,6 +7,7 @@ members = [
     "libs/umrs-selinux",
     "libs/umrs-ui", 
     "umrs-label",
+    "umrs-c2pa",
     "umrs-ls", 
     "umrs-stat", 
     "umrs-uname",

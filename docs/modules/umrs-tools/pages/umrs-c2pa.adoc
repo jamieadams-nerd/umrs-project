@@ -1,0 +1,1232 @@
+= umrs-c2pa — Media Provenance and Chain-of-Custody Signing
+Jamie L. Adams
+:description: Reference page for the umrs-c2pa tool — C2PA manifest inspection, \
+    ingest signing, and chain-of-custody management for media assets.
+:toc: left
+:toclevels: 3
+
+// NIST SP 800-53 AU-3, AU-9, AU-10, SC-12, SC-13, SI-7
+// FIPS 186-5, C2PA Technical Specification 2.x
+
+== Purpose and Scope
+
+`umrs-c2pa` reads and writes C2PA (Coalition for Content Provenance and
+Authenticity) manifests embedded in media files.
+It serves two purposes.
+
+**Inspection** — given any media file, the tool reads the embedded C2PA
+manifest store and displays the chain of custody: every signer in the file's
+history, the algorithm and certificate used, the signing timestamp, and whether
+each signer's certificate chain leads to a recognized trust anchor.
+
+**Ingest signing** — when a file enters a UMRS-controlled boundary, the tool
+appends a new signed manifest entry that records the ingest event.
+If the file already carries a prior chain (e.g., from a camera or an AI image
+generator), that chain is preserved as a C2PA ingredient and the UMRS entry is
+added on top.
+The original file is never modified; a signed copy is written to a separate
+output path.
+
+The binary is named `umrs-c2pa`.
+All library logic is in the `umrs_c2pa` crate, which downstream systems can
+import without modification.
+
+WARNING: `umrs-c2pa` requires a Linux system with systemd.
+The tool initializes journald logging at startup.
+macOS and non-systemd Linux are not supported.
+
+'''
+
+== Quick Start
+
+This procedure covers a first-run setup from a clean install.
+
+=== Prerequisites
+
+* `umrs-c2pa` binary installed to your PATH.
+* A TOML configuration file (generate one below, or skip for ephemeral test mode).
+
+[IMPORTANT]
+====
+Without a configuration file, the tool runs in *ephemeral test mode*: a
+self-signed certificate is generated at runtime and all manifests your system
+produces are marked `UNVERIFIED` by external validators.
+Ephemeral mode is suitable for evaluation only.
+Do not use it in production ingest pipelines.
+====
+
+=== Procedure: Initial Setup and First Signing
+
+. Generate a starter configuration file.
++
+[source,shell]
+----
+umrs-c2pa config generate --output umrs-c2pa.toml
+----
++
+The file is written with all fields present and commented.
+
+. Generate signing credentials.
++
+[source,shell]
+----
+umrs-c2pa creds generate --output ./certs
+----
++
+This writes `certs/signing.pem` (certificate chain) and `certs/signing.key`
+(private key, mode 0600).
+The default is a self-signed certificate with 365-day validity.
+For production deployments, use `--csr` to generate a Certificate Signing
+Request and submit it to your Certificate Authority.
+
+. Edit `umrs-c2pa.toml` and set the certificate and key paths.
++
+[source,toml]
+----
+[identity]
+cert_chain  = "/path/to/certs/signing.pem"
+private_key = "/path/to/certs/signing.key"
+----
+
+. Install trust anchor files.
++
+Download the C2PA official trust lists:
++
+[source,shell]
+----
+curl -o config/C2PA-TRUST-LIST.pem \
+  https://raw.githubusercontent.com/c2pa-org/conformance-public/refs/heads/main/trust-list/C2PA-TRUST-LIST.pem
+
+curl -o config/C2PA-TSA-TRUST-LIST.pem \
+  https://raw.githubusercontent.com/c2pa-org/conformance-public/refs/heads/main/trust-list/C2PA-TSA-TRUST-LIST.pem
+----
++
+Add the trust paths to `umrs-c2pa.toml`:
++
+[source,toml]
+----
+[trust]
+trust_anchors = "config/C2PA-TRUST-LIST.pem"
+user_anchors  = "config/C2PA-TSA-TRUST-LIST.pem"
+verify_trust  = true
+----
+
+. Validate the configuration.
++
+[source,shell]
+----
+umrs-c2pa config validate
+----
++
+All checks must pass (warnings are acceptable; failures are not).
+
+. Inspect a file.
++
+[source,shell]
+----
+umrs-c2pa photo.jpg
+----
++
+The chain-of-custody report is printed to stdout.
+
+. Sign a file.
++
+[source,shell]
+----
+umrs-c2pa --sign photo.jpg
+----
++
+The signed output is written to `photo_umrs_signed.jpg` in the same directory.
+
+. Sign with a security marking.
++
+[source,shell]
+----
+umrs-c2pa --sign --marking "CUI//SP-CTI//NOFORN" photo.jpg
+----
++
+The marking is embedded as a tamper-evident, cryptographically signed
+`umrs.security-label` assertion.
+Modifying the marking string after signing invalidates the manifest.
+
+'''
+
+== Understanding the Chain-of-Custody Report
+
+The chain-of-custody report shows every signer in the file's manifest history,
+oldest first.
+Each entry corresponds to one signing event — one tool, at one point in time,
+that touched the file and added a manifest.
+
+=== Sample Report
+
+[source]
+----
+Chain of Custody — photo.jpg
+SHA-256: a3f1b2c4d5e6...
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  1   [TRUSTED]     Sony Corporation
+                     Signed at : 2025-09-14T08:12:33Z UTC
+                     Alg       : Es256
+                     Generator : Sony Camera Firmware 1.0
+
+  2   [TRUSTED]     Adobe Inc. / Adobe Lightroom
+                     Signed at : 2025-10-02T14:45:01Z UTC
+                     Issuer    : Adobe Content Credentials CA
+                     Alg       : Es256
+                     Generator : Adobe Lightroom 13.0
+
+  3   *[NO TRUST LIST]  My Organization (ephemeral — self-signed)
+                     Signed at : 2026-03-26T11:00:00Z UTC
+                     Alg       : Es256
+                     Generator : UMRS Reference System 0.1.0
+                     Marking   : CUI//SP-CTI//NOFORN
+
+────────────────────────────────────────────────────────
+  *[NO TRUST LIST] No trust list configured — trust could not be evaluated
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Hash consistency : PASS — file unchanged across all signing events
+UMRS action      : c2pa.published
+UMRS output      : photo_umrs_signed.jpg
+UMRS identity    : ephemeral self-signed cert (test mode — UNTRUSTED)
+----
+
+=== Field Definitions
+
+[cols="1,3", options="header"]
+|===
+| Field | Meaning
+
+| **Signer** (top line of each entry)
+| The certificate Common Name — the entity that physically performed the signing
+  operation.
+  For camera firmware this is the camera model.
+  For AI image generators it is the third-party signing service embedded in the
+  pipeline (e.g., `Truepic Lens CLI in Sora` for OpenAI/ChatGPT images).
+
+| **Signed at**
+| Signing timestamp.
+  Priority: TSA-certified timestamp from `signature_info.time`, then the `when`
+  field in the `c2pa.actions` assertion.
+  Shows `no timestamp provided` when neither is present — this means the
+  original signer did not record a timestamp; it is not a UMRS limitation.
+
+| **Issuer**
+| Certificate issuing organization.
+  Only shown when different from the Signer name.
+  Suppressed when signer and issuer are the same entity (self-signed certs).
+
+| **Alg**
+| Signing algorithm.
+  UMRS-signed entries always use a FIPS-safe algorithm from the allowed set.
+
+| **Generator**
+| Software that produced the manifest.
+  For UMRS entries this is `UMRS Reference System` plus the crate version.
+  For camera firmware it would be the model and firmware version.
+
+| **Marking**
+| Security label embedded as a `umrs.security-label` assertion.
+  Only present when `--marking` was used during signing.
+  Absent from third-party entries — no existing C2PA tooling embeds security
+  classification markings.
+
+| **SHA-256**
+| SHA-256 of the file as it exists on disk at inspection time.
+
+| **Hash consistency**
+| `PASS` — the c2pa SDK verified all ingredient hashes when building the chain.
+  The file has not been modified at any signing event.
+  `N/A` — no prior manifest; this is the first signature on the file.
+
+| **UMRS action**
+| `c2pa.acquired` for files that had no prior manifest.
+  `c2pa.published` for files with an existing manifest chain.
+|===
+
+=== Trust Status Values
+
+[cols="1,4", options="header"]
+|===
+| Status | Meaning
+
+| `TRUSTED`
+| The signer's certificate chain leads to a root CA in the configured trust
+  list.
+  This is the expected status for manifests from cameras, Adobe products, and
+  other C2PA-compliant tools when trust lists are configured correctly.
+
+| `UNVERIFIED`
+| The signature is cryptographically valid but the signer's root CA is not in
+  the configured trust list.
+  Configure `user_anchors` with the missing root CA to promote this to
+  `TRUSTED`.
+
+| `NO TRUST LIST`
+| No trust list is configured, or no trust list was loaded.
+  Trust could not be evaluated.
+  This is not a judgment on the image — it is an operational note that the
+  system is not configured for trust validation.
+  Configure `[trust]` in `umrs-c2pa.toml` to resolve this.
+
+| `INVALID`
+| Signature verification failed, or the asset hash does not match.
+  This indicates tampering or file corruption.
+
+| `REVOKED`
+| The signing certificate was revoked by the issuing CA.
+|===
+
+NOTE: Entries marked `*[NO TRUST LIST]` or `*[UNVERIFIED]` carry a footnote
+at the bottom of the chain explaining why.
+Identical statuses across multiple entries produce a single shared footnote.
+
+'''
+
+== CLI Reference
+
+=== Synopsis
+
+[source,shell]
+----
+umrs-c2pa [OPTIONS] FILE
+umrs-c2pa [OPTIONS] --sign FILE
+umrs-c2pa config validate
+umrs-c2pa config generate [--output PATH]
+umrs-c2pa creds generate [--output DIR] [--csr] [--days N]
+umrs-c2pa creds validate
+----
+
+=== Global Options
+
+[cols="1,3", options="header"]
+|===
+| Option | Description
+
+| `--config PATH`
+| Path to the UMRS configuration file.
+  Default: `umrs-c2pa.toml` in the current directory.
+  If the file does not exist, all defaults apply silently (ephemeral mode).
+
+| `-v`, `--verbose`
+| Show step-by-step progress messages on stderr.
+  Useful for troubleshooting trust list loading and signing operations.
+  Does not affect journald log output.
+
+| `-h`, `--help`
+| Print help message.
+
+| `-V`, `--version`
+| Print version.
+|===
+
+=== Inspection Flags
+
+These flags apply when inspecting or signing a file.
+
+[cols="1,3", options="header"]
+|===
+| Flag | Description
+
+| `--sign`
+| Sign (ingest) the file and add a UMRS chain-of-custody entry.
+  Without this flag, the file is inspected read-only.
+
+| `--marking STRING`
+| Security marking to embed in the signed manifest.
+  Example: `"CUI"`, `"CUI//SP-CTI"`, `"CUI//SP-CTI//NOFORN"`.
+  Only applies when `--sign` is used.
+  Stored as a tamper-evident `umrs.security-label` assertion.
+
+| `--output PATH`
+| Write the signed output to this path.
+  Default: `<filestem>_umrs_signed.<ext>` in the same directory.
+  Only applies when `--sign` is used.
+
+| `--json`
+| Emit the full manifest store as raw JSON from the c2pa SDK.
+  Useful for debugging and for piping to `jq`.
+  Includes all assertions, ingredients, and validation status codes.
+
+| `--detailed-json`
+| Emit the detailed manifest store as JSON.
+  Includes certificate chains and full validation data.
+  Use this to extract signer certificates from a manifest.
+
+| `--chain-json`
+| Emit the UMRS-parsed evidence chain as JSON.
+  Returns normalized, structured data with trust status, signer, algorithm,
+  generator, and security label fields.
+  Unlike `--json` (raw SDK output), this returns UMRS-processed entries.
+  Also available as the library call `umrs_c2pa::c2pa::chain_json()`.
+|===
+
+.`--json` vs `--chain-json`
+[cols="1,2,2", options="header"]
+|===
+| Flag | Returns | Use case
+
+| `--json`
+| Raw c2pa SDK manifest store
+| Debugging, full assertion inspection, piping to `jq`
+
+| `--detailed-json`
+| Raw c2pa SDK manifest store with certificate chains
+| Extracting signer certificates, full validation analysis
+
+| `--chain-json`
+| UMRS-parsed evidence chain
+| Integration with other tools, security dashboards, automated pipelines
+|===
+
+=== Subcommands
+
+==== `config validate`
+
+Run preflight checks on the configuration file.
+
+[source,shell]
+----
+umrs-c2pa config validate
+umrs-c2pa --config /etc/umrs/umrs-c2pa.toml config validate
+----
+
+Checks performed:
+
+[cols="1,1,1", options="header"]
+|===
+| Check | Pass | Fail / Warn
+
+| TOML syntax
+| `[OK]`
+| `[FAIL]` parse error
+
+| Required fields present
+| `[OK]`
+| `[FAIL]` missing field
+
+| `cert_chain` file exists and is valid PEM
+| `[OK]`
+| `[FAIL]` missing or invalid
+
+| `private_key` file exists and is valid PEM
+| `[OK]`
+| `[FAIL]` missing or invalid
+
+| Private key matches certificate
+| `[OK]`
+| `[FAIL]` mismatch
+
+| Private key permissions
+| `[OK]`
+| `[WARN]` not 0600 or 0400
+
+| Certificate validity window
+| `[OK]`
+| `[WARN]` expires within 30 days; `[FAIL]` expired
+
+| Algorithm in FIPS-safe set
+| `[OK]`
+| `[WARN]` ed25519 detected
+
+| TSA endpoint reachable (if `internet` feature, if `tsa_url` set)
+| `[OK]`
+| `[WARN]` timeout or unreachable
+
+| Trust anchor files exist and are valid PEM
+| `[OK]`
+| `[FAIL]` missing or invalid
+
+| Credential mode
+| `[INFO]` production or ephemeral
+|
+|===
+
+Exit codes: `0` = all checks pass (warnings acceptable); `1` = at least one failure.
+
+==== `config generate`
+
+Write a fully commented starter configuration file.
+
+[source,shell]
+----
+umrs-c2pa config generate                       # print to stdout
+umrs-c2pa config generate --output umrs-c2pa.toml
+----
+
+==== `creds generate`
+
+Generate a signing certificate and private key.
+
+[source,shell]
+----
+umrs-c2pa creds generate --output ./certs
+umrs-c2pa creds generate --output ./certs --csr --days 365
+----
+
+Options:
+
+[cols="1,3", options="header"]
+|===
+| Option | Description
+
+| `--output DIR`
+| Directory to write `signing.pem` and `signing.key`.
+  Default: current directory.
+
+| `--csr`
+| Generate a Certificate Signing Request instead of a self-signed certificate.
+  Submit the CSR to your Certificate Authority for a production-trusted cert.
+  `--days` is ignored with `--csr`.
+
+| `--days N`
+| Certificate validity in days.
+  Default: 365.
+  Ignored with `--csr`.
+|===
+
+After generating credentials, set the paths in `umrs-c2pa.toml`:
+
+[source,toml]
+----
+[identity]
+cert_chain  = "/path/to/signing.pem"
+private_key = "/path/to/signing.key"
+----
+
+==== `creds validate`
+
+Validate the configured signing credentials.
+
+[source,shell]
+----
+umrs-c2pa creds validate
+----
+
+Reports certificate subject, issuer, validity dates, algorithm, and whether
+the private key matches the certificate.
+
+=== Exit Codes
+
+[cols="1,3", options="header"]
+|===
+| Code | Meaning
+
+| `0`
+| Success.
+
+| `1`
+| File not found, manifest error, signing failure, or validation failure.
+
+| `2`
+| Usage error (bad arguments).
+|===
+
+'''
+
+== Configuration Reference
+
+The configuration file is TOML.
+Default path: `umrs-c2pa.toml` in the current directory.
+Override with `--config PATH`.
+
+If the file does not exist, all defaults apply silently and the tool runs in
+ephemeral mode.
+Generate a commented starter file with `umrs-c2pa config generate`.
+
+=== `[identity]`
+
+Controls the signing identity embedded in every manifest.
+
+[source,toml]
+----
+[identity]
+claim_generator = "UMRS Reference System/1.0"  # embedded in every manifest
+organization    = "Your Organization"           # used in ephemeral cert CN and O fields
+# cert_chain    = "/etc/umrs/certs/signing.pem" # PEM chain, leaf first; omit for ephemeral mode
+# private_key   = "/etc/umrs/certs/signing.key" # PEM private key; omit for ephemeral mode
+algorithm       = "es256"                        # see allowed set below
+----
+
+[cols="1,3", options="header"]
+|===
+| Field | Notes
+
+| `claim_generator`
+| String embedded in the manifest's `claim_generator` field.
+  Appears in the **Generator** column of the chain-of-custody report.
+
+| `organization`
+| Used in the Common Name and Organization fields of ephemeral self-signed
+  certificates.
+  Not used when `cert_chain` and `private_key` are both set.
+
+| `cert_chain`
+| Path to the PEM certificate chain, leaf certificate first.
+  If absent, the tool generates an ephemeral self-signed certificate.
+
+| `private_key`
+| Path to the PEM private key (PKCS#8 preferred).
+  Mode 0600 is required.
+  `config validate` warns if permissions are broader.
+
+| `algorithm`
+| Signing algorithm.
+  Must be from the FIPS-safe allowed set.
+  Default: `es256`.
+  See <<_algorithm_policy>> for the full list.
+|===
+
+NOTE: If only one of `cert_chain` or `private_key` is set, the tool falls back
+to ephemeral mode silently.
+Both must be present for production signing.
+
+=== `[timestamp]`
+
+Controls Time Stamp Authority (TSA) signing.
+
+[source,toml]
+----
+[timestamp]
+# tsa_url = "http://timestamp.digicert.com"  # omit to disable TSA timestamps
+----
+
+A TSA timestamp proves _when_ a signature was created, bound to an external
+authority.
+Without a TSA timestamp, signing time comes from the local system clock only.
+
+NOTE: The `internet` feature must be compiled in for TSA timestamps to be
+obtained during signing.
+In air-gap builds (no `internet` feature), `tsa_url` is accepted but ignored.
+`config validate` warns if `tsa_url` is set in an air-gap build.
+
+=== `[policy]`
+
+Controls the C2PA action assertions written during ingest signing.
+
+[source,toml]
+----
+[policy]
+unsigned_action = "c2pa.acquired"
+unsigned_reason = "Received at UMRS trusted ingest dropbox. Origin unknown. No modifications made."
+
+signed_action   = "c2pa.published"
+signed_reason   = "Received at UMRS trusted ingest dropbox with existing provenance. No modifications made."
+----
+
+`unsigned_action` and `unsigned_reason` apply when the file arrives with no
+prior C2PA manifest.
+`signed_action` and `signed_reason` apply when the file already carries a
+manifest from a prior system.
+
+=== `[trust]`
+
+Controls trust anchor loading.
+All paths accept absolute or relative paths (relative to the working directory).
+
+[source,toml]
+----
+[trust]
+# C2PA signing CA roots (signing authority trust list)
+trust_anchors = "config/C2PA-TRUST-LIST.pem"
+
+# TSA CA roots — automatically merged with trust_anchors at load time
+user_anchors  = "config/C2PA-TSA-TRUST-LIST.pem"
+
+# End-entity allowlist (optional) — directly trust specific signer certs
+# allowed_list = "config/allowed-signers.pem"
+
+# EKU OID filter (optional) — restrict accepted certificate purposes
+# trust_config = "config/ekus.cfg"
+
+# Master switch (default: true when any trust file is configured)
+verify_trust = true
+----
+
+Without a `[trust]` section, all manifests display `NO TRUST LIST`.
+See <<_trust_list_setup>> for the full setup procedure.
+
+=== `[logging]`
+
+[source,toml]
+----
+[logging]
+enabled = true
+level   = "info"   # off | error | warn | info | debug | trace
+----
+
+Logging goes to journald (tag: `umrs`).
+If journald is unavailable, the tool falls back to stderr rather than aborting.
+When `enabled = false`, all log calls are compiled to no-ops.
+
+'''
+
+== Trust List Setup
+
+UMRS validates C2PA signatures against a set of trusted root CA certificates
+stored as PEM files on disk.
+You are responsible for obtaining, placing, and periodically updating these
+files.
+
+=== Two Trust Lists
+
+C2PA validation requires two separate trust lists.
+
+[cols="1,2,2", options="header"]
+|===
+| File | Purpose | What it validates
+
+| `C2PA-TRUST-LIST.pem`
+| Signing CA roots
+| Certificate chain of whoever signed the manifest
+
+| `C2PA-TSA-TRUST-LIST.pem`
+| Timestamp Authority CA roots
+| Certificate chain of the TSA that timestamped the signature
+|===
+
+Verifying an existing TSA timestamp in a manifest is a purely local
+cryptographic operation.
+The `internet` feature is not required for TSA timestamp verification — it
+only controls whether the tool can _contact_ a TSA server to _obtain new_
+timestamps during signing.
+
+=== Download Procedure
+
+. Download the C2PA official trust lists.
++
+[source,shell]
+----
+curl -o config/C2PA-TRUST-LIST.pem \
+  https://raw.githubusercontent.com/c2pa-org/conformance-public/refs/heads/main/trust-list/C2PA-TRUST-LIST.pem
+
+curl -o config/C2PA-TSA-TRUST-LIST.pem \
+  https://raw.githubusercontent.com/c2pa-org/conformance-public/refs/heads/main/trust-list/C2PA-TSA-TRUST-LIST.pem
+----
+
+. Verify each file contains valid certificates.
++
+[source,shell]
+----
+grep -c 'BEGIN CERTIFICATE' config/C2PA-TRUST-LIST.pem
+grep -c 'BEGIN CERTIFICATE' config/C2PA-TSA-TRUST-LIST.pem
+----
++
+Each command must output a positive integer.
+Zero means the file is empty or corrupt — re-download.
+
+. Set file permissions.
++
+[source,shell]
+----
+chmod 644 config/C2PA-TRUST-LIST.pem config/C2PA-TSA-TRUST-LIST.pem
+----
+
+. Configure the paths in `umrs-c2pa.toml`.
++
+[source,toml]
+----
+[trust]
+trust_anchors = "config/C2PA-TRUST-LIST.pem"
+user_anchors  = "config/C2PA-TSA-TRUST-LIST.pem"
+verify_trust  = true
+----
+
+. Verify UMRS reads the trust lists correctly.
++
+[source,shell]
+----
+umrs-c2pa --verbose photo.jpg
+----
++
+Verbose output shows each trust file being loaded with certificate counts.
+Previously `NO TRUST LIST` entries will now show `TRUSTED` or `UNVERIFIED`.
+
+=== Trust File Profiles
+
+Not every deployment needs all four trust files.
+
+[cols="2,2,3", options="header"]
+|===
+| Profile | Config | When to use
+
+| **Minimal**
+| `trust_anchors` only
+| Validates signatures from Adobe, OpenAI, cameras, and other C2PA-compliant
+  tools. Sufficient for most read-only inspection deployments.
+
+| **Standard (recommended)**
+| `trust_anchors` + `user_anchors` (TSA list)
+| Adds TSA timestamp validation. Recommended for all ingest-signing deployments.
+
+| **Internal workflow**
+| `trust_anchors` + `user_anchors` (org root CA)
+| Your organization issues signing certificates.
+  Add your root CA to `user_anchors` so your manifests validate as `TRUSTED`.
+
+| **Mixed environment**
+| `trust_anchors` + `allowed_list`
+| You receive media from a partner using self-signed certificates.
+  The allowlist directly trusts that partner's specific leaf certificate.
+|===
+
+=== Updating Trust Anchors
+
+Update the C2PA official lists quarterly, or when the consortium announces new
+CAs or revocations.
+
+. Download updated PEM bundles to a staging location.
++
+[source,shell]
+----
+curl -o /tmp/C2PA-TRUST-LIST.pem \
+  https://raw.githubusercontent.com/c2pa-org/conformance-public/refs/heads/main/trust-list/C2PA-TRUST-LIST.pem
+
+curl -o /tmp/C2PA-TSA-TRUST-LIST.pem \
+  https://raw.githubusercontent.com/c2pa-org/conformance-public/refs/heads/main/trust-list/C2PA-TSA-TRUST-LIST.pem
+----
+
+. Verify the downloads.
++
+[source,shell]
+----
+openssl x509 -in /tmp/C2PA-TRUST-LIST.pem -noout -text | head -20
+grep -c 'BEGIN CERTIFICATE' /tmp/C2PA-TRUST-LIST.pem
+----
+
+. Replace the files at the configured paths.
++
+[source,shell]
+----
+cp /tmp/C2PA-TRUST-LIST.pem config/C2PA-TRUST-LIST.pem
+cp /tmp/C2PA-TSA-TRUST-LIST.pem config/C2PA-TSA-TRUST-LIST.pem
+chmod 644 config/C2PA-TRUST-LIST.pem config/C2PA-TSA-TRUST-LIST.pem
+----
+
+. Verify UMRS reads the updated lists.
++
+[source,shell]
+----
+umrs-c2pa --verbose some-signed-image.jpg
+----
+
+=== Air-Gapped Update Procedure
+
+. Download updated PEM bundles on a connected workstation.
+. Transfer to the air-gapped system via approved media per your security policy.
+. Place the files at the configured paths.
+. Verify with `openssl x509` as above.
+
+NOTE: No UMRS code attempts to fetch trust material from the network.
+All trust operations are local.
+
+'''
+
+== Algorithm Policy
+
+Only FIPS-safe algorithms are permitted.
+The allowed set is enforced at compile time via a constant in `signer.rs`.
+Any algorithm outside this set causes the tool to return an error before any
+signing occurs.
+
+[cols="1,1,2", options="header"]
+|===
+| Algorithm | Type | Notes
+
+| `es256`
+| ECDSA P-256 / SHA-256
+| Default. Mandatory in the C2PA specification. Widest validator support.
+
+| `es384`
+| ECDSA P-384 / SHA-384
+| Higher assurance. Mandatory in the C2PA specification.
+
+| `es512`
+| ECDSA P-521 / SHA-512
+| Strongest ECDSA. Mandatory in the C2PA specification. Recommended for high-assurance deployments.
+
+| `ps256`
+| RSA-PSS / SHA-256
+| Acceptable. Requires externally provisioned credentials.
+
+| `ps384`
+| RSA-PSS / SHA-384
+| Acceptable. Requires externally provisioned credentials.
+
+| `ps512`
+| RSA-PSS / SHA-512 / 4096-bit
+| Strongest RSA. Requires externally provisioned credentials.
+|===
+
+WARNING: `ed25519` is excluded by policy.
+Ed25519 was added to FIPS 186-5 but most deployed FIPS 140-2 validated OpenSSL
+modules were validated under FIPS 186-4, which does not include EdDSA.
+Using Ed25519 on those systems either silently falls back to a non-FIPS code path
+or fails at runtime.
+Additionally, ed25519 is optional in the C2PA specification — a conformant
+validator is not required to support it.
+ECDSA is mandatory; ed25519 is not.
+
+The ECDSA algorithms produce the same security guarantees on every FIPS-enabled
+RHEL version, making ECDSA the conservative choice for portability across
+customer deployments.
+
+'''
+
+== Security Markings
+
+The `--marking` flag embeds a `umrs.security-label` custom assertion in the
+signed manifest.
+
+[source,shell]
+----
+umrs-c2pa --sign --marking "CUI//SP-CTI//NOFORN" photo.jpg
+----
+
+The assertion is cryptographically bound to the manifest.
+The C2PA SDK verifies the binding with two validation codes:
+
+* `assertion.hashedURI.match` — the assertion's URI hash matches the claim
+* `assertion.dataHash.match` — the assertion's data hash is valid
+
+If anyone modifies the marking string after signing, both hashes break and the
+manifest is invalidated.
+This is the same cryptographic binding that protects every C2PA assertion —
+no additional application-layer check is required.
+
+The marking string is stored verbatim.
+UMRS does not validate the marking against a controlled vocabulary — that is
+the responsibility of the upstream policy system.
+Use values from the CUI marking standard (NARA 32 CFR Part 2002) for government
+deployments.
+
+Common CUI values:
+
+[cols="1,2", options="header"]
+|===
+| Marking | Meaning
+
+| `CUI`
+| Controlled Unclassified Information (basic, no category specified)
+
+| `CUI//SP-CTI`
+| CUI Specified — Controlled Technical Information
+
+| `CUI//SP-CTI//NOFORN`
+| CUI Specified CTI, No Foreign Nationals
+
+| `CUI//PRVCY`
+| CUI — Privacy
+|===
+
+The marking appears in:
+
+* The **Marking** line of the chain-of-custody report
+* The `security_label` field of `--chain-json` output
+* The raw manifest JSON (`--json`) under the `umrs.security-label` assertion
+
+If a file is later re-signed by another UMRS node, the original marking is
+preserved in the ingredient manifest and remains readable.
+
+'''
+
+== Output Formats
+
+=== Formatted Report (default)
+
+Human-readable chain-of-custody table.
+Uses Unicode box-drawing characters.
+No ANSI color codes — safe in all terminal contexts and in piped output.
+
+=== `--json` — Raw Manifest Store
+
+Raw JSON output from the c2pa SDK.
+Includes all assertions, ingredients, validation status codes, and claim
+generator info.
+Use for debugging or for piping to `jq`.
+
+=== `--detailed-json` — Extended Manifest Store
+
+Raw JSON with certificate chains and full validation data included.
+Use this format to extract signer certificates from a manifest.
+
+=== `--chain-json` — UMRS Evidence Chain
+
+Normalized JSON array of chain entries, one object per signing event.
+Fields are consistent across all signers and versions.
+
+[source,json]
+----
+[
+  {
+    "signer_name": "Truepic Lens CLI in Sora",
+    "issuer": "OpenAI",
+    "signed_at": null,
+    "trust_status": "NO_TRUST_LIST",
+    "algorithm": "Es256",
+    "generator": "ChatGPT",
+    "generator_version": null,
+    "security_label": null
+  },
+  {
+    "signer_name": "My Organization (ephemeral — self-signed)",
+    "issuer": "My Organization (ephemeral — self-signed)",
+    "signed_at": "2026-03-26T14:44:14Z",
+    "trust_status": "NO_TRUST_LIST",
+    "algorithm": "Es256",
+    "generator": "UMRS Reference System",
+    "generator_version": "0.1.0",
+    "security_label": "CUI//SP-CTI//NOFORN"
+  }
+]
+----
+
+This format is designed for integration with security tools and dashboards.
+The same data is available via the library API:
+
+[source,rust]
+----
+use umrs_c2pa::c2pa::{chain_json, read_chain, ChainEntry};
+
+// As JSON string
+let json = chain_json(std::path::Path::new("image.png"))?;
+
+// As typed structs
+let chain: Vec<ChainEntry> = read_chain(std::path::Path::new("image.png"))?;
+for entry in &chain {
+    println!("{}: {} ({})", entry.signer_name, entry.generator, entry.trust_status);
+}
+----
+
+'''
+
+== Air-Gapped Operation
+
+For deployments without internet access, build without the `internet` feature.
+
+[source,shell]
+----
+# Air-gap FIPS RHEL (system OpenSSL, no network code compiled in)
+cargo build --release --no-default-features --features system-openssl
+
+# Air-gap with vendored OpenSSL (non-FIPS; algorithms are FIPS-approved but
+# the OpenSSL module itself is not NIST-validated)
+cargo build --release --no-default-features --features vendored-openssl
+----
+
+In an air-gap build:
+
+* `ureq` (HTTP client) is not compiled in.
+* TSA timestamps are not obtained during signing, even if `tsa_url` is set.
+* `config validate` emits a warning for any configured `tsa_url` instead of
+  probing it.
+* TSA timestamps that are already embedded in existing manifests are still
+  verified locally using the TSA trust list — no network access required for
+  verification.
+
+Trust list updates in air-gapped environments must be transferred via approved
+media.
+See <<_air_gapped_update_procedure>>.
+
+=== Build Matrix
+
+[cols="1,2,1,1", options="header"]
+|===
+| Scenario | Cargo flags | OpenSSL source | FIPS validated
+
+| Development / CI / Ubuntu
+| `--features default` (implicit)
+| Bundled OpenSSL 3.x
+| No
+
+| FIPS RHEL + internet
+| `--no-default-features --features system-openssl,internet`
+| RHEL system library
+| Yes
+
+| Air-gap (any platform)
+| `--no-default-features --features vendored-openssl`
+| Bundled OpenSSL 3.x
+| No
+
+| Air-gap FIPS RHEL
+| `--no-default-features --features system-openssl`
+| RHEL system library
+| Yes
+|===
+
+CAUTION: The vendored build uses FIPS-approved _algorithms_ but links a
+bundled OpenSSL that is not the NIST-validated module.
+For strict FIPS compliance (government, regulated industries), use
+`system-openssl` on RHEL.
+
+'''
+
+== Journald Log Entries
+
+All security-relevant events are logged to journald under tag `umrs`.
+
+.Ingest — file with no prior manifest
+[source]
+----
+umrs [INFO] ingest file="photo.jpg" sha256="a3f1b2..." manifest=none action=c2pa.acquired
+----
+
+.Ingest — file with existing manifest
+[source]
+----
+umrs [INFO] ingest file="photo.jpg" sha256="a3f1b2..." previous_signer="Sony Corporation" signed_at="2025-09-14T08:12:33Z" action=c2pa.published
+----
+
+.Config validation
+[source]
+----
+umrs [INFO]  config_validate result=ok   path="/etc/umrs/umrs-c2pa.toml"
+umrs [WARN]  config_validate check="cert_expiry"  message="Certificate expires in 14 days"
+umrs [ERROR] config_validate check="private_key"  message="File not found: /etc/umrs/certs/signing.key"
+----
+
+If journald is unavailable (container, chroot, minimal environment), the tool
+falls back to stderr logging and continues.
+A warning is logged when this fallback occurs.
+This behavior satisfies NIST SP 800-53 AU-5: audit processing failures must not
+abort the tool.
+
+'''
+
+== Overwrite Safeguard
+
+`umrs-c2pa` refuses to sign a file whose stem ends with `_umrs_signed`.
+
+[source]
+----
+$ umrs-c2pa --sign photo_umrs_signed.jpg
+
+Error: Refusing to overwrite previously signed file: photo_umrs_signed.jpg
+----
+
+This prevents accidental double-signing.
+To re-sign intentionally, rename the source file or use `--output` to specify
+a new output path from a different source file.
+
+The check is filename-based and fast — no manifest parsing is required.
+
+'''
+
+== Troubleshooting
+
+[cols="2,2,3", options="header"]
+|===
+| Symptom | Likely cause | Fix
+
+| All manifests show `NO TRUST LIST`
+| No `[trust]` section, or no trust files are configured
+| Add `trust_anchors` to `[trust]` in `umrs-c2pa.toml`
+
+| All manifests show `UNVERIFIED`
+| Trust file loaded but signer's root CA is not in it
+| Add the missing root CA to the PEM bundle
+
+| `UNVERIFIED` for your org's certs only
+| Org root CA not in `user_anchors`
+| Add org root CA to `user_anchors`
+
+| TSA timestamps show as unverified
+| TSA trust list not loaded
+| Add `C2PA-TSA-TRUST-LIST.pem` as `user_anchors`
+
+| `config validate` warns about trust files
+| PEM file path does not exist or is not readable
+| Check path and permissions (644)
+
+| `InvalidEku` errors
+| Signer cert's EKU OID is not in the allowed set
+| Add the OID to your EKU config file (`trust_config`)
+
+| Verbose shows 0 certificates loaded
+| PEM file is empty or corrupt
+| Re-download from the C2PA consortium URLs
+
+| `error: journald unavailable`
+| Running in a container or chroot without systemd
+| Tool falls back to stderr logging automatically.
+  No action required; all operations continue normally.
+
+| Signing fails on FIPS RHEL
+| ed25519 in config algorithm field
+| Change `algorithm` to `es256` (or any FIPS-safe value)
+
+| `Refusing to overwrite previously signed file`
+| Source file ends with `_umrs_signed` in the stem
+| Rename the source file or use `--output` with a different path
+
+| `Error: MIME type could not be determined`
+| File extension is not recognized
+| Rename the file to use a standard extension (`.jpg`, `.png`, `.mp4`, etc.)
+|===
+
+'''
+
+== Compliance Annotations
+
+// NIST SP 800-53 AU-3 — Audit Record Content
+// NIST SP 800-53 AU-9 — Protection of Audit Information
+// NIST SP 800-53 AU-10 — Non-Repudiation
+// NIST SP 800-53 SC-12 — Cryptographic Key Management
+// NIST SP 800-53 SC-13 — Cryptographic Protection
+// NIST SP 800-53 SI-7 — Software, Firmware, and Information Integrity
+
+This tool contributes to the following control families:
+
+[cols="1,3", options="header"]
+|===
+| Control | How `umrs-c2pa` contributes
+
+| NIST SP 800-53 AU-3
+| Chain-of-custody report and journald log entries include all fields required
+  for forensic review: signer identity, algorithm, timestamp, trust status,
+  and optional security marking.
+
+| NIST SP 800-53 AU-9
+| Security marking assertions are cryptographically bound to the manifest.
+  Tampering with a marking invalidates the manifest signature.
+
+| NIST SP 800-53 AU-10
+| Every signed manifest contains a tamper-evident hash of the file bytes and
+  the full provenance chain.
+  Downstream recipients can verify that the file has not been modified since
+  UMRS accepted it.
+
+| NIST SP 800-53 SC-12
+| Private key bytes are held in `Zeroizing<Vec<u8>>` and zeroed on drop,
+  preventing key recovery from freed heap memory.
+  Private key files are created with mode 0600 atomically at file creation time.
+  On Unix, private key files are opened with `O_NOFOLLOW` to refuse symlink
+  targets.
+
+| NIST SP 800-53 SC-13
+| All signing operations are gated through the FIPS-safe algorithm set.
+  Ed25519 is excluded by policy.
+  The algorithm is validated before any signing occurs.
+
+| NIST SP 800-53 SI-7
+| The `c2pa.hash.data` assertion cryptographically binds the manifest to the
+  file's byte content.
+  If the file is modified after signing, verification fails with a hash
+  mismatch status code.
+|===
+
+'''
+
+== Standards References
+
+* **C2PA Technical Specification 2.x** — https://c2pa.org
+* **FIPS 186-5** — Digital Signature Standard (ECDSA, RSA-PSS, EdDSA)
+* **NIST SP 800-53r5** — Security and Privacy Controls for Information Systems
+* **NARA 32 CFR Part 2002** — Controlled Unclassified Information (CUI) marking rules
+
+== See Also
+
+* xref:umrs-stat.adoc[umrs-stat — File Security Audit Card]
+* xref:umrs-ls.adoc[umrs-ls — High-Assurance Directory Listing]
+* `openssl(1)`, `c2patool(1)`

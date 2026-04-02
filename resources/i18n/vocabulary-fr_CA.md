@@ -168,3 +168,16 @@ When a term has no established francophone equivalent, retain the English term a
 | fully open | entièrement ouvert | UMRS decision | perf_event_paranoid <= -1; no restrictions |
 | kernel profiling allowed | profilage noyau autorisé | UMRS decision | perf_event_paranoid = 0 |
 | user profiling allowed | profilage espace utilisateur autorisé | UMRS decision | perf_event_paranoid = 1 |
+
+---
+
+## C2PA / Provenance Terms (umrs-c2pa)
+
+| English | French (fr_CA) | Source | Notes |
+|---|---|---|---|
+| tamper-evident (assertion) | révélatrice de falsification | UMRS decision | Termium Plus "tamper-evident" → "à preuve d'effraction" (physical packaging connotation, not suitable). Henri E-3 finding: the phrase must convey *detection*, not *prevention*. "Révélatrice de falsification" = reveals/detects tampering. The assertion does not block modification; it makes modification detectable via signature invalidation. Policy-significant distinction. |
+| crate (Rust dependency unit) | crate | UMRS decision | No Termium Plus entry. No OQLF GDT entry. "Caisse" (wooden box) is informal Rust community usage with no authority behind it. Jamie decision (2026-04-01): keep "crate" as an English loan word following the pattern of keeping technical terms from English-only ecosystems. Rust tooling is not yet in the Translation Project. |
+| chain of custody | chaîne de possession | corpus:Termium Plus + OQLF GDT | Both Termium Plus (legal/forensic) and OQLF GDT agree. Confirmed by Henri C-2. |
+| credential (PKI signing) | justificatif d'identité de signature | corpus:Termium Plus | Closest Termium Plus match for "credential" in IT security domain. Connotation leans toward identity documents; in C2PA context the credential is a certificate-and-key pair. Henri C-1: defensible, no change required. |
+| trust anchor (PKI) | ancre de confiance | corpus:Termium Plus | Termium Plus standard for PKI trust anchor. |
+| security marking (C2PA manifest field) | marquage de sécurité | corpus:Termium Plus | Termium Plus standard; preferred over "étiquette de sécurité" in CUI/C2PA context to avoid SELinux terminology collision. |

@@ -44,6 +44,28 @@
 - Number formatting differences documented (100 $ vs $100, 20 % vs 20%, 16 h 30 vs 4:30 pm)
 - Guide is advisory for UMRS (reference system), but positions FR content for federal deployment
 
+## Appendix J Familiarization (2026-03-31)
+- Full report: `appendix-j-familiarization-report.md`
+- v0.2.0 catalog at `components/rusty-gadgets/umrs-label/config/ca/CANADIAN-PROTECTED.json` is substantially accurate
+- v0.1.0 prototype at `components/rust-prototypes/umrs-cui/data/ca/` uses outdated c200-c299 range -- needs cleanup or deletion
+- setrans.conf has NO Canadian entries (c300-c399) -- functional gap, Medium severity
+- setrans.conf EN vs FR marking language is an unresolved policy question -- routed to Jamie
+- PC volume qualifier ("very limited amount of information") not in catalog -- Low, easy fix
+- Aggregation rule (J.2.2.4) not in catalog -- Low, relevant for vault features
+- General impact levels (J.2.3: Low/Medium/High/Very High) not in scope of catalog -- by design
+- Appendix J has two categorization tracks: general impact (C-I-A) and confidentiality-specific (Protected/Classified)
+- National interest boundary is the definitional dividing line: Classified = national interest, Protected = outside national interest
+- Injury test standard: "could reasonably be expected to cause" -- legal standard of proof, not certainty
+
+## D3/D4 Status Label Recommendation (2026-04-01)
+- Full report: `d3-d4-status-label-recommendation.md`
+- D3 (status tags): Keep English in all locales. Operational codes, not prose. OLA does not require translation.
+- D4 (trust labels): Keep English in all locales. C2PA standard vocabulary with no Termium Plus authority for French equivalents.
+- Translate: prose messages, report headers, field labels, Canadian security markings (Protected A/B/C)
+- Do not translate: status tags, trust labels, check names, machine identifiers
+- Three findings filed: status tags as operational codes (Informational), no Termium Plus authority for C2PA vocab (Informational), C2PA trust vocab has no French authority (Low)
+- Awaiting Jamie's decision
+
 ## Key Policy References
 - TBS Standard on Security Categorization, Appendix J, section J.2.4.2 -- defines Protected A/B/C
 - EN: "Protected A" / "Protected B" / "Protected C"

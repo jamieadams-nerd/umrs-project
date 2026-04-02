@@ -177,6 +177,28 @@ Changes in `umrs-tui/src/`:
 - `status_bar.rs`: KEY_LEGEND const + right-aligned key legend; elided on narrow terminals
 - Internal Rust types (`SubstrateAnchored` enum variant etc.) NOT renamed — display layer only
 
+## umrs-c2pa Security Review Remediation (2026-04-01)
+
+Fixed all Knox + Herb findings. Key patterns applied:
+- `zeroize::Zeroizing<Vec<u8>>` on all private key material (K-1, K-4, K-5)
+- `O_NOFOLLOW` on private key reads via `OpenOptionsExt::custom_flags(libc::O_NOFOLLOW)` (K-2)
+- Mode 0600 at `create_new` time, not post-chmod (K-11) — `OpenOptionsExt::mode(0o600)`
+- Single-read TOCTOU fix in `ingest_file` — read once, hash + sign from same buffer (K-14)
+- Permission checks in `validate.rs` (K-6, K-7, K-13) — WARN for key file, WARN for world-writable trust anchors
+- Graceful journald fallback — `env_logger` on `Err`, not `.expect()` (K-12)
+- Random serial numbers via `BigNum::pseudo_rand(128, ...)` (K-3)
+- Full `//!` module doc + Compliance section added to `validate.rs` and `creds.rs` (E-1, E-2)
+- All `#[must_use]` annotations now have descriptive message strings (E-3, C-1..C-9)
+- `euid` check uses `/proc/self/status` Uid: line — no `unsafe { libc::geteuid() }`
+- `libc` crate added for `O_NOFOLLOW` constant only (safe, no unsafe blocks)
+- `env_logger` crate added for journald fallback
+
+## umrs-c2pa Trust List (2026-04-02)
+
+Trust wiring in Phase 2.2/2.3 complete. New `trust.rs` module; `build_c2pa_settings()` returns `c2pa::Settings`.
+All manifest reader functions now accept `&UmrsConfig`. Use `c2pa::Reader::from_context(ctx).with_file(path)`, not `Reader::from_file(path)`.
+See [project_umrs_c2pa.md](project_umrs_c2pa.md) for full details.
+
 ## umrs-labels Catalog (2026-03-27)
 
 `src/cui/catalog.rs`: `CatalogMetadata` (flatten for nation-specific fields; `catalog_name`/`authority` `#[serde(default)]` for LEVELS.json compat), `Catalog` (both `labels` and `markings` `#[serde(default)]`), `Marking`/`Label` (`handling: serde_json::Value` — US=string, CA=object), `LevelRegistry`/`LevelDefinition` + `load_levels()`. `country_code()` helper on `Catalog`. Tests: `catalog_tests.rs` (47 tests covering fixture, US, CA, LEVELS.json).

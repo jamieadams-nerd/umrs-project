@@ -59,8 +59,8 @@ use std::time::SystemTime;
 use serde::Serialize;
 
 use chrono::{DateTime, Local};
-use umrs_core::i18n;
 use umrs_core::human::sizefmt::{SizeBase, auto_format as fmt_size};
+use umrs_core::i18n;
 use umrs_ls::grouping::{
     FileGroup, SiblingKind, aggregate_size, group_entries, sibling_summary,
 };
@@ -215,7 +215,11 @@ fn main() -> io::Result<()> {
 
     // --json: emit machine-readable grouped output and exit.
     if json_mode {
-        return emit_json(&listing.groups, &listing.path.display().to_string(), listing.elapsed_us);
+        return emit_json(
+            &listing.groups,
+            &listing.path.display().to_string(),
+            listing.elapsed_us,
+        );
     }
 
     // Pre-scan column widths across all groups and entries.
@@ -363,8 +367,7 @@ fn emit_json(
         elapsed_us,
     };
 
-    let json = serde_json::to_string_pretty(&doc)
-        .map_err(io::Error::other)?;
+    let json = serde_json::to_string_pretty(&doc).map_err(io::Error::other)?;
     println!("{json}");
     Ok(())
 }

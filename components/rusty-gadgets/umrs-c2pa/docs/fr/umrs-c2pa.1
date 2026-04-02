@@ -1,0 +1,334 @@
+.\" SPDX-License-Identifier: MIT
+.\" Copyright (c) 2025 Jamie Adams
+.\"
+.\" French translation of umrs-c2pa
+.\" This file is distributed under the same license as the UMRS Project
+.\" MIT License
+.\" Copyright (c) 2025 Jamie Adams (a.k.a. Imodium Operator)
+.\"
+.\" Initial translation provided by a specialized Claude Code "umrs-translator".
+.\" The agent was assisted by a technical corpus derived from various GNU
+.\" tools via the Translation Project (https://translationproject.org).
+.\"
+.\" NOTE: This translation is AI-generated and may contain nuances
+.\" requiring human verification.
+.TH UMRS-C2PA 1 "1er avril 2026" "umrs-c2pa 0.1.0" "Outils UMRS"
+.SH NOM
+umrs-c2pa \- outil d'inspection et de signature C2PA pour fichiers multimédias
+.SH SYNOPSIS
+.B umrs-c2pa
+.RI [ OPTIONS ]
+.I FICHIER
+.br
+.B umrs-c2pa
+.RI [ OPTIONS ]
+.B \-\-sign
+.I FICHIER
+.br
+.B umrs-c2pa creds generate
+.RI [ OPTIONS ]
+.br
+.B umrs-c2pa creds validate
+.br
+.B umrs-c2pa config validate
+.br
+.B umrs-c2pa config generate
+.SH DESCRIPTION
+.B umrs-c2pa
+inspecte les fichiers multimédias à la recherche de manifestes C2PA (Coalition
+for Content Provenance and Authenticity) et gère la signature dans la chaîne de
+possession pour le projet Unclassified MLS Reference System (UMRS).
+.PP
+Lorsqu'un fichier est fourni sans sous-commande, l'outil lit le dépôt de manifestes
+C2PA et affiche la chaîne de possession \(em qui a signé le fichier, à quel moment,
+avec quel algorithme, et si la signature est de confiance.
+.PP
+Avec
+.BR \-\-sign ,
+l'outil intègre le fichier dans la chaîne de possession UMRS en le signant avec
+un nouveau manifeste C2PA contenant des assertions d'action, des marquages de
+sécurité facultatifs et l'identité du signataire.
+.SH OPTIONS
+.TP
+.BI \-\-config " CHEMIN"
+Chemin vers le fichier de configuration UMRS.
+Par défaut\~:
+.IR umrs-c2pa.toml .
+.TP
+.BR \-v ", " \-\-verbose
+Affiche les messages de progression étape par étape sur stderr.
+Utile pour comprendre ce que fait l'outil et pour le dépannage.
+N'affecte pas la sortie de journalisation structurée (journald).
+.TP
+.B \-\-sign
+Signe (intègre) le fichier et enregistre une entrée dans la chaîne de possession UMRS.
+Sans ce drapeau, le fichier est inspecté en lecture seule.
+.TP
+.B \-\-json
+Émet le dépôt complet de manifestes au format JSON au lieu du rapport formaté.
+Il s'agit de la sortie brute du SDK c2pa.
+.TP
+.B \-\-chain\-json
+Émet la chaîne de preuves analysée par UMRS au format JSON.
+Retourne des données structurées avec les champs\~: état de confiance, signataire,
+algorithme, générateur et marquage de sécurité.
+.TP
+.BI \-\-marking " CHAÎNE"
+Marquage de sécurité à intégrer dans le manifeste (p.\~ex., «\~CUI\~» ou «\~CUI//SP-CTI//NOFORN\~»).
+S'applique uniquement avec
+.BR \-\-sign .
+Stocké sous la forme d'une assertion
+.I umrs.security-label
+révélatrice de falsification.
+.TP
+.BI \-\-output " CHEMIN"
+Écrire la sortie signée à ce chemin.
+Par défaut\~: ajoute
+.I _umrs_signed
+avant l'extension du fichier.
+.TP
+.BR \-h ", " \-\-help
+Afficher le message d'aide.
+.TP
+.BR \-V ", " \-\-version
+Afficher la version.
+.SH SOUS-COMMANDES
+.SS creds generate
+Générer un nouveau certificat de signature et une clé privée.
+.TP
+.BI \-\-output " RÉP"
+Répertoire dans lequel écrire
+.I signing.pem
+et
+.IR signing.key .
+Par défaut\~: répertoire courant.
+.TP
+.B \-\-csr
+Générer une demande de signature de certificat plutôt qu'un certificat auto-signé.
+Soumettre la demande à votre autorité de certification pour obtenir un certificat
+de production.
+.TP
+.BI \-\-days " N"
+Durée de validité du certificat en jours.
+Ignoré avec
+.BR \-\-csr .
+Par défaut\~: 365.
+.PP
+Après la génération, définissez les chemins dans
+.IR umrs-c2pa.toml \~:
+.PP
+.RS
+.nf
+[identity]
+cert_chain  = "/chemin/vers/signing.pem"
+private_key = "/chemin/vers/signing.key"
+.fi
+.RE
+.SS creds validate
+Valider les justificatifs d'identité de signature configurés.
+Vérifie que les fichiers de certificat et de clé existent, sont en PEM valide,
+correspondent l'un à l'autre, et affiche les détails du certificat (sujet,
+émetteur, dates de validité, algorithme).
+.SS config validate
+Exécuter les vérifications préalables sur le fichier de configuration.
+Vérifie les champs obligatoires, les chemins vers le certificat et la clé,
+la conformité de l'algorithme, l'accessibilité de l'autorité d'horodatage et
+la configuration des listes de confiance.
+.SS config generate
+Générer un fichier de configuration de démarrage commenté.
+.TP
+.BI \-\-output " CHEMIN"
+Écrire la configuration générée à ce chemin.
+Si omis, affiche sur stdout.
+.SH ALGORITHMES
+Seuls les algorithmes conformes aux normes FIPS sont autorisés\~:
+.PP
+.TS
+l l l.
+Algorithme	Type	Détails
+_
+es256	ECDSA	P-256 / SHA-256 / 256 bits
+es384	ECDSA	P-384 / SHA-384 / 384 bits
+es512	ECDSA	P-521 / SHA-512 / 521 bits
+ps256	RSA-PSS	SHA-256 / 2048+ bits
+ps384	RSA-PSS	SHA-384 / 2048+ bits
+ps512	RSA-PSS	SHA-512 / 2048+ bits
+.TE
+.PP
+.B ed25519
+est intentionnellement exclu \(em peu fiable sur les systèmes RHEL avec FIPS activé.
+.SH LISTES DE CONFIANCE
+La validation de confiance requiert des fichiers d'ancres de confiance au format PEM
+configurés dans
+.IR umrs-c2pa.toml .
+Deux listes de confiance distinctes sont utilisées\~:
+.TP
+.B C2PA-TRUST-LIST.pem
+Racines des AC de signature \(em valide la chaîne de certificats du signataire du manifeste.
+.TP
+.B C2PA-TSA-TRUST-LIST.pem
+Racines des AC d'autorité d'horodatage \(em valide la chaîne de certificats de l'autorité
+d'horodatage qui a horodaté la signature.
+La vérification d'un horodatage TSA existant est une opération locale\~; la fonctionnalité
+.B internet
+n'est pas requise à cette fin.
+.PP
+Télécharger les deux listes depuis le consortium C2PA\~:
+.PP
+.RS
+.nf
+https://raw.githubusercontent.com/c2pa-org/conformance-public/\e
+  refs/heads/main/trust-list/C2PA-TRUST-LIST.pem
+https://raw.githubusercontent.com/c2pa-org/conformance-public/\e
+  refs/heads/main/trust-list/C2PA-TSA-TRUST-LIST.pem
+.fi
+.RE
+.PP
+Configurer les chemins dans
+.IR umrs-c2pa.toml \~:
+.PP
+.RS
+.nf
+[trust]
+trust_anchors = "/chemin/vers/C2PA-TRUST-LIST.pem"
+user_anchors  = "/chemin/vers/C2PA-TSA-TRUST-LIST.pem"
+allowed_list  = "/chemin/vers/allowed-signers.pem"
+trust_config  = "/chemin/vers/ekus.cfg"
+verify_trust  = true
+.fi
+.RE
+.PP
+Sans configuration de confiance, tous les manifestes affichent NO TRUST LIST.
+Consultez
+.I docs/trust-maintenance.md
+pour les procédures complètes de mise à jour, y compris les environnements isolés.
+.SH FICHIER DE CONFIGURATION
+Par défaut\~:
+.IR umrs-c2pa.toml .
+Sections\~:
+.TP
+.B [identity]
+Nom du générateur de revendication, organisation, chemins vers le certificat et la clé, algorithme.
+.TP
+.B [timestamp]
+URL de l'autorité d'horodatage.
+.TP
+.B [policy]
+Étiquettes d'action et chaînes de raison pour les fichiers signés et non signés.
+.TP
+.B [trust]
+Chemins PEM des ancres de confiance, configuration EKU, répondeur OCSP.
+.TP
+.B [logging]
+Activer/désactiver la journalisation, niveau minimal de journalisation.
+.SH DÉMARRAGE RAPIDE
+.PP
+.RS
+.nf
+# 1. Générer un fichier de configuration
+umrs-c2pa config generate --output umrs-c2pa.toml
+
+# 2. Générer les justificatifs d'identité de signature
+umrs-c2pa creds generate --output ./certs
+
+# 3. Modifier umrs-c2pa.toml \(em définir cert_chain et private_key
+
+# 4. Vérifier la configuration
+umrs-c2pa config validate
+umrs-c2pa creds validate
+
+# 5. Inspecter un fichier
+umrs-c2pa photo.jpg
+
+# 6. Signer un fichier
+umrs-c2pa --sign photo.jpg
+
+# 7. Signer avec un marquage de sécurité
+umrs-c2pa --sign --marking CUI photo.jpg
+.fi
+.RE
+.SH CODES DE RETOUR
+.TP
+.B 0
+Succès.
+.TP
+.B 1
+Erreur de fichier ou de manifeste, ou échec de validation.
+.TP
+.B 2
+Erreur d'utilisation (arguments incorrects).
+.SH FICHIERS
+.TP
+.I umrs-c2pa.toml
+Fichier de configuration par défaut (recherché dans le répertoire courant).
+.TP
+.I signing.pem
+Chaîne de certificats (PEM, feuille en premier).
+.TP
+.I signing.key
+Clé privée (PEM, PKCS#8).
+Mode 0600 recommandé.
+.SH ENVIRONNEMENT
+.TP
+.B C2PA_FIXTURES_DIR
+Remplace le chemin vers les données de test c2pa-rs (pour les tests d'intégration uniquement).
+.SH CONSIDÉRATIONS DE SÉCURITÉ
+.IP \(bu 2
+Les clés privées sont écrites avec le mode 0600 sur les systèmes Unix, de manière
+atomique à la création du fichier \(em et non par un chmod après écriture \(em
+ce qui élimine la fenêtre de compétition.
+L'outil refuse d'écraser les fichiers de clés existants.
+.IP \(bu 2
+Les octets de clé privée sont conservés dans un tampon à effacement automatique
+et mis à zéro à la libération afin d'empêcher la récupération de clé depuis la
+mémoire libérée
+(NIST SP 800-53 SC-12).
+.IP \(bu 2
+Sur Unix, les fichiers de clé privée sont ouverts avec
+.B O_NOFOLLOW
+afin de refuser les cibles symboliques, prévenant les attaques par substitution
+de clé via lien symbolique
+(NIST SP 800-53 AC-3).
+.IP \(bu 2
+.B config validate
+vérifie les permissions du fichier de clé privée et émet un avertissement si
+elles sont plus permissives que 0600 ou 0400.
+.IP \(bu 2
+Seuls les algorithmes conformes aux normes FIPS 140-2/140-3 sont autorisés.
+ed25519 est exclu par politique \(em peu fiable sur les fournisseurs OpenSSL RHEL
+avec FIPS activé.
+(NIST SP 800-53 SC-13, FIPS 186-5).
+.IP \(bu 2
+Les marquages de sécurité (p.\~ex., CUI) sont intégrés sous la forme d'assertions
+signées cryptographiquement.
+Toute falsification du marquage invalide la signature du manifeste.
+.IP \(bu 2
+Les certificats éphémères (mode test) sont clairement identifiés dans le champ CN
+et produisent un état de confiance UNVERIFIED.
+.IP \(bu 2
+Si journald est indisponible au démarrage, l'outil bascule vers la journalisation
+sur stderr plutôt que d'abandonner, garantissant que la sortie d'audit n'est jamais
+perdue silencieusement
+(NIST SP 800-53 AU-5).
+.SH NORMES
+.TP
+.B C2PA
+Spécification technique de la Coalition for Content Provenance and Authenticity
+.RI ( https://c2pa.org )
+.TP
+.B FIPS 186-5
+Norme de signature numérique (ECDSA, RSA-PSS)
+.TP
+.B NIST SP 800-53 AU-3
+Contenu des enregistrements d'audit
+.SH AUTEURS
+Jamie Adams (alias Imodium Operator)
+.SH LICENCE
+Licence MIT.
+Consultez le fichier LICENSE.
+.PP
+Cet outil dépend du crate c2pa d'Adobe (MIT OR Apache-2.0).
+Consultez THIRD-PARTY-NOTICES.md.
+.SH VOIR AUSSI
+.BR openssl (1),
+.BR c2patool (1)

@@ -107,10 +107,8 @@ pub fn classify_suffix(suffix: &str) -> SiblingKind {
     // Use Path::extension() for extension-based matching to satisfy the
     // case_sensitive_file_extension_comparisons lint and get correct semantics
     // for dotted suffixes (e.g., "1.gz" → extension "gz").
-    let ext = Path::new(rest)
-        .extension()
-        .and_then(|e| e.to_str())
-        .unwrap_or("");
+    let ext =
+        Path::new(rest).extension().and_then(|e| e.to_str()).unwrap_or("");
 
     // Compressed rotation: the final extension is a known compression format.
     // Also handle the bare-extension case (rest == "gz" etc.) where there is
@@ -170,7 +168,9 @@ pub fn classify_suffix(suffix: &str) -> SiblingKind {
     // extension is purely numeric (e.g., "1" in "1.old" is already Backup
     // above; "1" in "1" alone is Rotation; "20260301" is Rotation).
     let numeric_part = rest.split('.').next().unwrap_or("");
-    if !numeric_part.is_empty() && numeric_part.chars().all(|c| c.is_ascii_digit()) {
+    if !numeric_part.is_empty()
+        && numeric_part.chars().all(|c| c.is_ascii_digit())
+    {
         return SiblingKind::Rotation;
     }
 
@@ -247,10 +247,9 @@ pub fn group_entries(entries: &[ListEntry]) -> Vec<FileGroup> {
 /// Returns `0` for standalone files (no siblings).
 #[must_use = "aggregate size is used in summary display and JSON output"]
 pub fn aggregate_size(group: &FileGroup) -> u64 {
-    group
-        .siblings
-        .iter()
-        .fold(0u64, |acc, s| acc.saturating_add(s.entry.dirent.size.as_u64()))
+    group.siblings.iter().fold(0u64, |acc, s| {
+        acc.saturating_add(s.entry.dirent.size.as_u64())
+    })
 }
 
 /// Human-readable summary of the sibling kinds in a group.
@@ -276,7 +275,9 @@ pub fn sibling_summary(group: &FileGroup) -> String {
     for sib in &group.siblings {
         match sib.kind {
             SiblingKind::Rotation => rotations = rotations.saturating_add(1),
-            SiblingKind::CompressedRotation => compressed = compressed.saturating_add(1),
+            SiblingKind::CompressedRotation => {
+                compressed = compressed.saturating_add(1)
+            }
             SiblingKind::Signature => signatures = signatures.saturating_add(1),
             SiblingKind::Checksum => checksums = checksums.saturating_add(1),
             SiblingKind::Backup => backups = backups.saturating_add(1),
@@ -292,9 +293,7 @@ pub fn sibling_summary(group: &FileGroup) -> String {
         ));
     }
     if compressed > 0 {
-        parts.push(format!(
-            "{compressed} compressed"
-        ));
+        parts.push(format!("{compressed} compressed"));
     }
     if signatures > 0 {
         parts.push(format!(
@@ -315,14 +314,20 @@ pub fn sibling_summary(group: &FileGroup) -> String {
         ));
     }
     if related > 0 {
-        parts.push(format!(
-            "{related} related"
-        ));
+        parts.push(format!("{related} related"));
     }
 
     parts.join(", ")
 }
 
-const fn plural(n: u32, singular: &'static str, plural_form: &'static str) -> &'static str {
-    if n == 1 { singular } else { plural_form }
+const fn plural(
+    n: u32,
+    singular: &'static str,
+    plural_form: &'static str,
+) -> &'static str {
+    if n == 1 {
+        singular
+    } else {
+        plural_form
+    }
 }

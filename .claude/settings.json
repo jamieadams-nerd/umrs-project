@@ -288,7 +288,13 @@
       "Bash(/DEVELOPMENT/umrs-project/components/rusty-gadgets/target/debug/umrs-ls /MLS_TEST_DIRS/basic_tests/vault_sim/inbox --color)",
       "Bash(/DEVELOPMENT/umrs-project/components/rusty-gadgets/target/debug/umrs-ls /MLS_TEST_DIRS/basic_tests/vault_sim/reviewed --color)",
       "Bash(/DEVELOPMENT/umrs-project/components/rusty-gadgets/target/debug/umrs-ls /MLS_TEST_DIRS/basic_tests/vault_sim/exported --color)",
-      "WebFetch(domain:www.tbs-sct.canada.ca)"
+      "WebFetch(domain:www.tbs-sct.canada.ca)",
+      "Bash(cp -r /home/jadams/Downloads/appendix-j-en_files /DEVELOPMENT/umrs-project/.claude/references/five-eyes-classification/tbs-dosm-appendix-j-security-categorization-en_files)",
+      "Bash(cp -r /home/jadams/Downloads/appendix-j-french_files /DEVELOPMENT/umrs-project/.claude/references/five-eyes-classification/tbs-dosm-appendix-j-security-categorization-fr_files)",
+      "Bash(tee -a /DEVELOPMENT/umrs-project/.claude/logs/task-log.md)",
+      "Bash(./target/debug/umrs-c2pa:*)",
+      "Bash(/DEVELOPMENT/umrs-project/components/rusty-gadgets/target/debug/umrs-c2pa:*)",
+      "Bash(cd:*)"
     ]
   },
   "enabledPlugins": {

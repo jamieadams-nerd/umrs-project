@@ -76,6 +76,18 @@ Recurring gaps found in `US-CUI-LABELS.json` v0.3.0 audit:
 - EXPT warning conflates ITAR (22 CFR 120-130) and EAR (15 CFR 730-774) — these require separate treatments
 - RELIDO is a permissive foreign disclosure marking — logically mutually exclusive with NOFORN; add to `mutually_exclusive_with`
 
+## umrs-c2pa Audit Patterns (2026-04-01)
+
+- validate.rs is the canonical example of a "entirely uncited enforcement module" — no //! block at all
+- creds.rs: PKI key generation always needs SC-13 + SSDF PW.4.1 + CMMC SC.L2-3.13.10 + NSA RTB RAIN
+- #[must_use] debt pattern in this crate: 4 types + 7 Result-returning fns missing annotations; 8 bare (no message)
+- config.rs: "NSA RTB" without principle is a recurring incorrect citation — always flag and specify RAIN/Fail Secure
+- trust.rs is the model module for this crate — use as template for citation quality and fail-closed I/O pattern
+- GeneratedCredentials carries key_pem (raw private key) → must be #[must_use] at type level
+- IngestResult is a chain-of-custody evidence type → must be #[must_use] at type level
+- SignerMode determines FIPS mode choice → must be #[must_use] at type level
+- TrustStatus is a security-decision type → must be #[must_use] at type level
+
 ## Reports Index
 - `2026-03-11-rpm-db-security-audit.md` — RPM findings
 - `2026-03-11-os-detection-umrs-platform-surface-audit.md` — detect pipeline
@@ -88,6 +100,7 @@ Recurring gaps found in `US-CUI-LABELS.json` v0.3.0 audit:
 - `security-auditor-tui-review-2026-03-20.md` — TUI v1: 14A/17C/3E
 - `security-auditor-tui-review-2026-03-20-v2.md` — TUI v2: 26A/3C/0E; 3 open (C-15v2 MEDIUM, C-T3-STATUS LOW, C-7v2 LOW)
 - `code/2026-03-30-us-cui-labels-audit.md` — US-CUI-LABELS.json v0.3.0: 4E/9C; MCS range conflict, EXPT distribution stmt error, 5 missing warning stmts, RELIDO mutex gap; plus rules-file review: 1E/5C (LEI anti-pattern error, DL ONLY name, RELIDO title, JSON fields incomplete)
+- `code/2026-04-01-umrs-c2pa-security-audit-review.md` — in-depth; 13 files; 3E/9C/14A (4H/12M/9L); main gaps: validate.rs no //! block, creds.rs no Compliance section, 19 #[must_use] gaps (4 types, 7 Result fns, 8 bare annotations)
 
 ## TUI Audit Card Patterns
 - IndicatorValue for kernel flags → cite SI-7 + CM-6 (NOT SI-3)

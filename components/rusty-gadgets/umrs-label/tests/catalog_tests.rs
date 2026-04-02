@@ -458,7 +458,7 @@ fn levels_s1_nations_includes_us_cui() {
     let s1 = reg.level("s1").expect("s1 should exist");
     let nations = s1.nations.as_ref().expect("s1 should have nations");
     assert!(
-        nations.iter().any(|n| n.contains("US CUI")),
+        nations.iter().any(|n: &String| n.contains("US CUI")),
         "s1 nations should reference US CUI"
     );
 }

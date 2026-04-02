@@ -387,6 +387,7 @@ fn mls_every_json_marking_has_setrans_entry() {
         data_entries(&entries).iter().map(|e| e.label.as_str()).collect();
 
     for (key, _marking) in us_cat.iter_markings() {
+        let key: &String = key;
         assert!(
             setrans_labels.contains(key.as_str()),
             "US marking {key:?} from JSON catalog has no entry in MLS-setrans.conf"
@@ -404,6 +405,7 @@ fn targeted_every_json_marking_has_setrans_entry() {
         data_entries(&entries).iter().map(|e| e.label.as_str()).collect();
 
     for (key, _marking) in us_cat.iter_markings() {
+        let key: &String = key;
         assert!(
             setrans_labels.contains(key.as_str()),
             "US marking {key:?} from JSON catalog has no entry in TARGETED-setrans.conf"
@@ -418,7 +420,7 @@ fn mls_every_us_setrans_label_exists_in_json() {
     let entries = parse_setrans(&mls_setrans_path()).expect("MLS parse");
 
     let json_keys: HashSet<&str> =
-        us_cat.iter_markings().map(|(k, _)| k.as_str()).collect();
+        us_cat.iter_markings().map(|(k, _): (&String, _)| k.as_str()).collect();
 
     // Only check CUI-prefixed labels — Canadian entries are validated separately
     for e in data_entries(&entries) {
@@ -443,7 +445,7 @@ fn targeted_every_us_setrans_label_exists_in_json() {
         parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
 
     let json_keys: HashSet<&str> =
-        us_cat.iter_markings().map(|(k, _)| k.as_str()).collect();
+        us_cat.iter_markings().map(|(k, _): (&String, _)| k.as_str()).collect();
 
     for e in data_entries(&entries) {
         if !e.label.starts_with("CUI") {
