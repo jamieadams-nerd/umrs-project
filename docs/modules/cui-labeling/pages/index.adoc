@@ -27,6 +27,12 @@ Every one of these failures has the same root cause: the protection was procedur
 The file itself carried no machine-readable indication of its sensitivity.
 The filesystem had no mechanism to enforce boundaries.
 
+For documented examples of what happens when these controls are absent — including federal
+convictions, regulatory settlements, and environmental disasters — see the
+xref:ROOT:foundations/history/case-studies-consolidated.adoc[high-assurance failure case studies].
+Each case maps to a specific CUI category and identifies the NIST SP 800-53 controls that
+were published, required, and not implemented.
+
 SELinux MCS changes this.
 SELinux attaches a security context to every kernel object -- files, processes, network sockets,
 ports, and other resources -- not just files on disk.

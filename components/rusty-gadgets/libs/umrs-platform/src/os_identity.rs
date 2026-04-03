@@ -312,7 +312,7 @@ impl SubstrateIdentity {
     /// Return `true` if at least two independent facts have been corroborated.
     ///
     /// T3 (`SubstrateAnchored`) requires `facts_count >= 2`.
-    #[must_use]
+    #[must_use = "T3 gate check result must be examined before asserting SubstrateAnchored trust tier"]
     pub const fn meets_t3_threshold(&self) -> bool {
         self.facts_count >= 2
     }

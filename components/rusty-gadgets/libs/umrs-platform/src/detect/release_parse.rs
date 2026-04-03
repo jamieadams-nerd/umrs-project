@@ -234,7 +234,7 @@ fn run_inner(
 /// detection (side-effect: records in evidence and downgrades confidence).
 // Line-count overage is a result of F-03 TOCTOU re-verification code added
 // for security compliance (NSA RTB TOCTOU, NIST SP 800-53 SI-7).
-#[allow(clippy::too_many_lines)]
+#[expect(clippy::too_many_lines, reason = "line-count overage is TOCTOU re-verification code added for NSA RTB / NIST SP 800-53 SI-7 compliance")]
 fn read_candidate(
     candidate: &Path,
     candidate_str: &str,

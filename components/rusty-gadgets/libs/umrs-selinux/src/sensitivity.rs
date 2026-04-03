@@ -136,7 +136,7 @@ impl SensitivityLevel {
         Ok(Self(level))
     }
 
-    #[must_use]
+    #[must_use = "pure accessor returning the numeric sensitivity level used in ordinal dominance comparisons"]
     pub const fn value(self) -> u16 {
         self.0
     }

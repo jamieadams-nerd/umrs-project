@@ -516,7 +516,7 @@ pub fn render_dialog(
     let message_lines = count_dialog_lines(&state.message, content_width);
     // Write total_lines back so scroll_down() can clamp without geometry params.
     // Cast is safe: message_lines is bounded by dialog_height which fits u16.
-    #[allow(clippy::cast_possible_truncation)] // bounded by dialog_height (u16)
+    #[expect(clippy::cast_possible_truncation, reason = "bounded by dialog_height (u16)")]
     let total_lines_u16 = message_lines as u16;
     state.total_lines = total_lines_u16;
 

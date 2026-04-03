@@ -47,6 +47,12 @@ The root cause is always the same: the protection was procedural, not structural
 The file carried no machine-readable indication of its sensitivity.
 The filesystem had no mechanism to enforce the boundary.
 
+For documented Canadian examples — including the Walkerton water crisis, Phoenix pay system,
+and Privacy Commissioner findings — see the
+xref:ROOT:foundations/history/canadian-case-studies.adoc[Canadian failure case studies].
+Each case maps to a Protected tier and identifies the controls that were already required
+under TBS policy but not enforced at the system level.
+
 SELinux MCS changes this.
 A file labeled at sensitivity level `s2` with category `c200` cannot be read by a process without matching clearance in its security context.
 The check happens in the kernel, on every `open()` call, regardless of discretionary permissions.

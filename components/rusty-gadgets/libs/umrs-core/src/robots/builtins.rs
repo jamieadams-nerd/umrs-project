@@ -1,3 +1,16 @@
+//! Built-in static ASCII and Braille art assets for the UMRS robot mascot system.
+//!
+//! Provides [`ALL_ROBOTS`], a `&'static [&AsciiArtStatic]` slice enumerating every
+//! built-in mascot. Individual assets — [`MYROBOT`], [`UMRS_ROMAN`], [`ROBOT_BIG_WALK`],
+//! [`TINY_ROBOT`], [`ROBOT2`], [`WIZARD_MEDIUM`], [`WIZARD_SMALL`] — are exported as
+//! `pub static` items for direct reference. New assets are generated using the
+//! `umrs-robotgen` tool and added here.
+//!
+//! ## Compliance
+//!
+//! This module provides internal presentation-layer utility infrastructure with no
+//! direct security surface.
+
 // Use my umrs-robotgen tool to create these from ascii art files.
 //
 

@@ -252,7 +252,7 @@ pub struct EvidenceBundle {
 
 impl EvidenceBundle {
     /// Construct an empty bundle.
-    #[must_use]
+    #[must_use = "constructed bundle must be used to accumulate evidence records"]
     pub const fn new() -> Self {
         Self {
             records: Vec::new(),
@@ -272,7 +272,7 @@ impl EvidenceBundle {
     /// Return an immutable slice of all records collected so far.
     ///
     /// NIST SP 800-53 AU-10 — read-only access preserves the append-only invariant.
-    #[must_use]
+    #[must_use = "audit evidence records must be examined or stored — do not discard"]
     pub fn records(&self) -> &[EvidenceRecord] {
         &self.records
     }
@@ -285,13 +285,13 @@ impl EvidenceBundle {
     }
 
     /// Return the number of records collected so far.
-    #[must_use]
+    #[must_use = "pure accessor — returns the number of evidence records in the bundle"]
     pub const fn len(&self) -> usize {
         self.records.len()
     }
 
     /// Return `true` if no records have been collected yet.
-    #[must_use]
+    #[must_use = "pure accessor — returns whether the evidence bundle has any records"]
     pub const fn is_empty(&self) -> bool {
         self.records.is_empty()
     }

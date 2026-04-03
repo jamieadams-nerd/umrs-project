@@ -1462,7 +1462,7 @@ fn build_status(result: &DetectionResult) -> StatusMessage {
 ///
 /// NIST SP 800-53 SA-5 — inline system documentation reduces operator
 /// reliance on external reference guides during assessment.
-#[allow(clippy::too_many_lines)] // lookup table — splitting reduces readability
+#[expect(clippy::too_many_lines, reason = "lookup table — splitting reduces readability")]
 fn help_text_for_tab(tab_index: usize) -> String {
     match tab_index {
         // --------------------------------------------------------------------

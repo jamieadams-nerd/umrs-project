@@ -1,3 +1,18 @@
+//! Timed wrappers for infallible and fallible computations.
+//!
+//! Provides [`Timed<T>`] for computations that always succeed and
+//! [`TimedResult<T, E>`] for computations that may fail, both carrying a
+//! [`Duration`] recording wall-clock elapsed time. The [`HasElapsed`] trait
+//! provides generic access to the timing field.
+//!
+//! These types are used throughout the detection pipeline to record per-phase
+//! durations that appear in posture reports and audit records.
+//!
+//! ## Compliance
+//!
+//! - NIST SP 800-53 AU-8 (Time Stamps) — timed results anchor phase duration
+//!   records to wall-clock measurements used in audit reporting.
+
 // core/timed.rs
 
 use std::time::{Duration, Instant};

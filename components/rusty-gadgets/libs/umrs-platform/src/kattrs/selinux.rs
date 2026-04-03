@@ -148,7 +148,7 @@ impl GenericKernelBool {
         })
     }
 
-    #[must_use]
+    #[must_use = "pure accessor — returns the selinuxfs boolean attribute path bound at construction"]
     pub fn path(&self) -> &Path {
         &self.path
     }
@@ -205,7 +205,7 @@ impl GenericDualBool {
         })
     }
 
-    #[must_use]
+    #[must_use = "pure accessor — returns the selinuxfs dual-boolean attribute path bound at construction"]
     pub fn path(&self) -> &Path {
         &self.path
     }

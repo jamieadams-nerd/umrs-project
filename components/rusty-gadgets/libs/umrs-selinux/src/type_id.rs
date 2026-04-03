@@ -153,7 +153,7 @@ impl SelinuxType {
         Ok(Self(value))
     }
 
-    #[must_use]
+    #[must_use = "pure accessor returning the validated SELinux type identifier string"]
     pub fn as_str(&self) -> &str {
         &self.0
     }

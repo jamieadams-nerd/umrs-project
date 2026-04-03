@@ -50,7 +50,7 @@ use crate::sensitivity::SensitivityLevel;
 /// s3:c1,c7,c42
 /// ```
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-#[must_use]
+#[must_use = "MLS level carries the validated sensitivity and category components required for dominance comparisons"]
 pub struct MlsLevel {
     sensitivity: SensitivityLevel,
     categories: CategorySet,
@@ -69,19 +69,19 @@ impl MlsLevel {
     }
 
     /// Returns the sensitivity component.
-    #[must_use]
+    #[must_use = "pure accessor; sensitivity level is required for hierarchical MLS dominance ordering"]
     pub const fn sensitivity(&self) -> &SensitivityLevel {
         &self.sensitivity
     }
 
     /// Returns the category set.
-    #[must_use]
+    #[must_use = "pure accessor; category set is required for non-hierarchical MLS compartment dominance checks"]
     pub const fn categories(&self) -> &CategorySet {
         &self.categories
     }
 
     /// Returns true if the level contains any categories.
-    #[must_use]
+    #[must_use = "pure accessor; callers that discard this cannot distinguish a bare sensitivity level from a compartmented one"]
     pub fn has_categories(&self) -> bool {
         !self.categories.is_empty()
     }

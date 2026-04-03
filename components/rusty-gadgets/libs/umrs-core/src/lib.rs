@@ -45,7 +45,8 @@ pub struct UmrsState {
                                     // Add more flat keys here as needed
 }
 
-// Load state from a file. Returns default if file is missing.
+/// Load state from a file. Returns default if file is missing.
+#[must_use = "state load result must be checked — a silently ignored error means security posture data was not loaded"]
 pub fn load_state(path: &Path) -> io::Result<UmrsState> {
     let mut file = match fs::File::open(path) {
         Ok(f) => f,
@@ -61,7 +62,8 @@ pub fn load_state(path: &Path) -> io::Result<UmrsState> {
     Ok(state)
 }
 
-// Save state to a file atomically
+/// Save state to a file atomically
+#[must_use = "state save result must be checked — a silently discarded error means security posture data was not persisted"]
 pub fn save_state(path: &Path, state: &UmrsState) -> io::Result<()> {
     let tmp_path = path.with_extension("json.tmp");
     {

@@ -58,7 +58,7 @@ use c2pa::{
 /// Manage config:    umrs-c2pa config validate
 #[derive(Parser)]
 #[command(name = "umrs-c2pa", version, about, long_about = None)]
-#[allow(clippy::struct_excessive_bools)] // CLI flags — not a state machine
+#[expect(clippy::struct_excessive_bools, reason = "CLI flags — not a state machine")]
 struct Cli {
     /// Path to UMRS configuration file.
     #[arg(long, global = true, default_value = "umrs-c2pa.toml")]

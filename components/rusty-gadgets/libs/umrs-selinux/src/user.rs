@@ -90,7 +90,7 @@ impl SelinuxUser {
         Ok(Self(value))
     }
 
-    #[must_use]
+    #[must_use = "pure accessor returning the validated SELinux user identifier string"]
     pub fn as_str(&self) -> &str {
         &self.0
     }

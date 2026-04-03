@@ -132,7 +132,7 @@ pub fn render_data_panel(
         let max_pinned = (area.height as usize).saturating_mul(2).saturating_div(5);
         let pinned_height = pinned_height_raw.min(max_pinned).max(4);
 
-        #[allow(clippy::cast_possible_truncation)]
+        #[expect(clippy::cast_possible_truncation, reason = "pinned_height is clamped to 40% of area.height (u16), so it fits in u16")]
         let pinned_height_u16 = pinned_height as u16;
 
         let chunks = Layout::default()
@@ -547,7 +547,7 @@ fn expand_row_lines<'a>(
 /// so the assessor can see a finding without consulting a separate list.
 /// NIST SP 800-53 CM-6 — remediation guidance and configured-value source
 /// attribution are co-located with the failing indicator.
-#[allow(clippy::too_many_arguments)]
+#[expect(clippy::too_many_arguments, reason = "indicator row renderer requires independent params for key, value, description, styles, and layout context")]
 fn expand_indicator_row<'a>(
     key: &str,
     value: &str,

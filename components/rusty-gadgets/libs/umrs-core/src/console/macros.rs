@@ -118,7 +118,6 @@ macro_rules! console_info {
         if ! $crate::console::stdout_is_tty() {
             println!( concat!("{} ", $fmt), "[INFO]", $( $arg ),*);
         } else {
-            use ::colored::Colorize;
             let msg = format!( "{} {}", "[INFO]", format!($fmt $(, $arg)*));
             println!("{msg}");
         }
@@ -140,7 +139,7 @@ macro_rules! console_warn {
         if ! $crate::console::stdout_is_tty() {
             println!( concat!("{} ", $fmt), "[WARN]", $( $arg ),*);
         } else {
-            use ::colored::Colorize;
+            use ::owo_colors::OwoColorize;
             let msg = format!( "{} {}", "[WARN]".yellow().bold(), format!($fmt $(, $arg)*));
             println!("{msg}");
         }
@@ -163,7 +162,7 @@ macro_rules! console_error {
         if ! $crate::console::stdout_is_tty() {
             println!( concat!("{} ", $fmt), "[ERROR]", $( $arg ),*);
          } else {
-            use ::colored::Colorize;
+            use ::owo_colors::OwoColorize;
             let msg = format!( "{} {}", "[ERROR]".red().bold(), format!($fmt $(, $arg)*));
             println!("{msg}");
          }
@@ -198,7 +197,6 @@ macro_rules! console_status {
             let msg = format!( "{:>4} {}", prefix, format!($fmt $(, $arg)*));
             println!("{msg}");
         } else {
-            use ::colored::Colorize;
             let msg = format!( "{:>4} {}", prefix, format!($fmt $(, $arg)*));
             println!("{msg}");
         }

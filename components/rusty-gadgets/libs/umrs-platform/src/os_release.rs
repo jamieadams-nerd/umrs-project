@@ -135,7 +135,7 @@ impl OsId {
     }
 
     /// Return the validated identifier as a string slice.
-    #[must_use]
+    #[must_use = "pure accessor — returns the validated OS identifier string"]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -173,7 +173,7 @@ impl OsName {
     }
 
     /// Return the validated name as a string slice.
-    #[must_use]
+    #[must_use = "pure accessor — returns the validated OS name string"]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -212,7 +212,7 @@ impl VersionId {
     }
 
     /// Return the validated version string as a string slice.
-    #[must_use]
+    #[must_use = "pure accessor — returns the validated VERSION_ID string"]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -250,7 +250,7 @@ impl OsVersion {
     }
 
     /// Return the validated version string as a string slice.
-    #[must_use]
+    #[must_use = "pure accessor — returns the validated VERSION string"]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -282,7 +282,7 @@ impl Codename {
     }
 
     /// Return the validated codename as a string slice.
-    #[must_use]
+    #[must_use = "pure accessor — returns the validated VERSION_CODENAME string"]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -313,7 +313,7 @@ impl CpeName {
     }
 
     /// Return the validated CPE string as a string slice.
-    #[must_use]
+    #[must_use = "pure accessor — returns the validated CPE_NAME string used for NVD vulnerability mapping"]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -344,7 +344,7 @@ impl ValidatedUrl {
     }
 
     /// Return the validated URL as a string slice.
-    #[must_use]
+    #[must_use = "pure accessor — returns the validated HTTP(S) URL string"]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -376,7 +376,7 @@ impl VariantId {
     }
 
     /// Return the validated variant ID as a string slice.
-    #[must_use]
+    #[must_use = "pure accessor — returns the validated VARIANT_ID string"]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -405,7 +405,7 @@ impl BuildId {
     }
 
     /// Return the validated build ID as a string slice.
-    #[must_use]
+    #[must_use = "pure accessor — returns the validated BUILD_ID string"]
     pub fn as_str(&self) -> &str {
         &self.0
     }

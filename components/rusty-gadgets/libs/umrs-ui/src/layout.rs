@@ -50,7 +50,7 @@ use crate::theme::Theme;
 /// Logo panel width = wizard width + 2 border columns.
 ///
 /// `WIZARD_SMALL.width` is 15 — well within u16 range. The cast is safe.
-#[allow(clippy::cast_possible_truncation)]
+#[expect(clippy::cast_possible_truncation, reason = "WIZARD_SMALL.width is 15 — well within u16 range")]
 const LOGO_PANEL_WIDTH: u16 = WIZARD_SMALL.width as u16 + 2;
 
 /// Header height = wizard height + 2 border rows.
@@ -60,7 +60,7 @@ const LOGO_PANEL_WIDTH: u16 = WIZARD_SMALL.width as u16 + 2;
 /// adjustment is needed — the indicators are embedded in the six fixed rows.
 ///
 /// `WIZARD_SMALL.height` is 7 — well within u16 range. The cast is safe.
-#[allow(clippy::cast_possible_truncation)]
+#[expect(clippy::cast_possible_truncation, reason = "WIZARD_SMALL.height is 7 — well within u16 range")]
 const HEADER_HEIGHT: u16 = WIZARD_SMALL.height as u16 + 2;
 
 // ---------------------------------------------------------------------------

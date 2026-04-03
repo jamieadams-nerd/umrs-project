@@ -57,7 +57,7 @@ pub struct DpkgProbe;
 
 impl DpkgProbe {
     /// Construct a new `DpkgProbe`.
-    #[must_use]
+    #[must_use = "constructed probe must be used to run the dpkg substrate detection phase"]
     pub const fn new() -> Self {
         Self
     }

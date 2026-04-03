@@ -82,7 +82,7 @@ pub struct RpmProbe {
 
 impl RpmProbe {
     /// Construct a new `RpmProbe`.
-    #[must_use]
+    #[must_use = "constructed probe must be used to run the RPM substrate detection phase"]
     pub const fn new() -> Self {
         Self {
             #[cfg(feature = "rpm-db")]

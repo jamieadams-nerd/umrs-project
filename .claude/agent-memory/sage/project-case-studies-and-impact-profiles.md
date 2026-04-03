@@ -6,7 +6,15 @@ type: project
 
 ## Source Documents
 
-- Case studies: `docs/modules/ROOT/pages/foundations/history/case-studies.adoc`
+- **Consolidated reference (primary):** `docs/modules/ROOT/pages/foundations/history/case-studies-consolidated.adoc`
+  - Written 2026-04-03. Contains ALL cases from all three source files, merged and deduplicated.
+  - Adds: Anthem, VW (full treatment), USDA/agriculture, COVID/public health, water rights,
+    municipal police misuse, FRA/rail pattern, a full "Trust But Didn't Verify" section,
+    and the "Quiet Killer" productivity erosion section.
+  - This is now the authoritative case study document. Use this for blog source material.
+- Original draft: `docs/modules/ROOT/pages/foundations/history/case-studies.adoc`
+  - Kept per Archive-First Rule. Superseded by consolidated version for new content.
+- Raw notes (Jamie's unedited input): `docs/_scratch/notes/case-studies.txt`
 - IRS assessment: `.claude/reports/risk-domain-assessment-2026-03-21.md`
 - CUI enrichment vision: `/home/jadams/.claude/projects/-media-psf-repos-umrs-project/memory/project_cui_enrichment_vision.md`
 

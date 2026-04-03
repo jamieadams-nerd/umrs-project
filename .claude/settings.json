@@ -295,7 +295,8 @@
       "Bash(./target/debug/umrs-c2pa:*)",
       "Bash(/DEVELOPMENT/umrs-project/components/rusty-gadgets/target/debug/umrs-c2pa:*)",
       "Bash(cd:*)",
-      "Bash(openssl list:*)"
+      "Bash(openssl list:*)",
+      "Bash(git -C /DEVELOPMENT/umrs-project diff --name-only HEAD)"
     ]
   },
   "enabledPlugins": {

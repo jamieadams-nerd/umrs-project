@@ -372,7 +372,7 @@ impl OsDetector {
     // record_phase() call — six lines of instrumentation per phase. The
     // underlying logic is still sequential and linear; the overage is
     // mechanical AU-8 instrumentation, not structural complexity.
-    #[allow(clippy::too_many_lines)]
+    #[expect(clippy::too_many_lines, reason = "line-count overage is AU-8 instrumentation (timestamp pairs, evidence deltas, phase records) — six lines per phase")]
     pub fn detect(&self) -> Result<DetectionResult, DetectionError> {
         let mut evidence = EvidenceBundle::new();
         let mut confidence = ConfidenceModel::new();

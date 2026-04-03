@@ -273,7 +273,7 @@ pub struct StatusMessage {
 
 impl StatusMessage {
     /// Construct a new `StatusMessage`.
-    #[must_use]
+    #[must_use = "dropping the constructed StatusMessage discards the message before it is displayed"]
     pub fn new(level: StatusLevel, text: impl Into<String>) -> Self {
         Self {
             level,
@@ -301,7 +301,7 @@ pub struct TabDef {
 
 impl TabDef {
     /// Construct a tab definition with the given label.
-    #[must_use]
+    #[must_use = "dropping the constructed TabDef discards the tab definition before it is registered"]
     pub fn new(label: impl Into<String>) -> Self {
         Self {
             label: label.into(),
@@ -1031,7 +1031,7 @@ impl AuditCardState {
     /// Construct a new state for a card with `tab_count` tabs.
     ///
     /// `tab_count` must be at least 1. If 0 is passed it is clamped to 1.
-    #[must_use]
+    #[must_use = "dropping the constructed AuditCardState discards the initialized card state"]
     pub fn new(tab_count: usize) -> Self {
         Self {
             active_tab: 0,

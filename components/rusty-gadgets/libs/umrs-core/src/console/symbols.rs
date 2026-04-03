@@ -1,8 +1,19 @@
-/// Unified Symbols and Glyphs for the UMRS Design System.
+//! Unified symbols, box-drawing glyphs, and icons for the UMRS design system.
+//!
+//! Centralizes Unicode characters to ensure visual consistency across CLI output,
+//! logs, and UI headers. Provides [`BoxStyle`] (a character-based box frame descriptor),
+//! three built-in presets ([`SLIM`], [`BOLD`], [`ROUNDED`]), and the [`icons`] submodule
+//! containing semantic icon constants.
+//!
+//! ## Compliance
+//!
+//! This module provides internal formatting utility infrastructure with no
+//! direct security surface.
+
+/// Box-drawing character set for framed console output.
 ///
-/// This module centralizes Unicode characters to ensure visual
-/// consistency across CLI output, logs, and UI headers.
-///
+/// Used with [`SLIM`], [`BOLD`], and [`ROUNDED`] presets, or constructed
+/// directly for custom styles.
 // use crate::console::symbols::{SLIM, BOLD, icons};
 // fn draw_tree() {
 //     println!("{} My Folder", icons::FOLDER);

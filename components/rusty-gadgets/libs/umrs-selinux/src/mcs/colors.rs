@@ -45,7 +45,7 @@ pub struct Rgb {
 }
 
 impl Rgb {
-    #[must_use]
+    #[must_use = "returns an Rgb value constructed from a hex literal; discarding it wastes the conversion"]
     pub const fn from_hex(hex: u32) -> Self {
         Self {
             r: ((hex >> 16) & 0xff) as u8,
@@ -257,7 +257,7 @@ pub struct ContextComponents<'a> {
 
 // ----------------------------------------------------------------------------
 
-#[must_use]
+#[must_use = "returns the four-component color array for rendering a security context; discarding it loses the resolved palette"]
 pub fn resolve_colors(ctx: &ContextComponents, cfg: &SeColorConfig) -> [SeColor; 4] {
     let mut out: [Option<SeColor>; 4] = [None, None, None, None];
 
@@ -308,7 +308,7 @@ fn propagate_precedence(colors: &mut [Option<SeColor>; 4]) {
 // Defaults
 // ============================================================================
 
-#[must_use]
+#[must_use = "returns the fallback SeColor used when no rule matches; discarding it means the default palette is unused"]
 const fn default_color() -> SeColor {
     SeColor {
         fg: Rgb {

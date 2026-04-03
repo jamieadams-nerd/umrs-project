@@ -24,6 +24,7 @@
 
 ** xref:foundations/history/ibm-zos-os390.adoc[IBM z/OS and OS/390]
 ** xref:foundations/history/one-way-hashes.adoc[One-way hash algorithms]
-** xref:foundations/history/case-studies.adoc[High-assurance failure case studies]
+** xref:foundations/history/case-studies-consolidated.adoc[High-assurance failure case studies]
+*** xref:foundations/history/canadian-case-studies.adoc[Canadian case studies]
 ** xref:foundations/history/five-eyes-interop.adoc[Five Eyes classification interoperability]
 

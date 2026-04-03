@@ -1,3 +1,14 @@
+//! Text wrapping utilities for fixed-width console output.
+//!
+//! Provides [`text_wrap`], which wraps an input string to a specified column
+//! width with configurable left and right padding. Wrapping never breaks words
+//! and uses ASCII-space word boundaries.
+//!
+//! ## Compliance
+//!
+//! This module provides internal formatting utility infrastructure with no
+//! direct security surface.
+
 use ::textwrap::{Options, wrap};
 
 pub fn text_wrap(input: &str, width: usize, left_pad: usize, right_pad: usize) -> String {

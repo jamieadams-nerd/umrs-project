@@ -130,7 +130,7 @@ pub struct ConfidenceModel {
 
 impl ConfidenceModel {
     /// Construct a new model at `TrustLevel::Untrusted`.
-    #[must_use]
+    #[must_use = "constructed confidence model must be used to track trust tier across detection phases"]
     pub const fn new() -> Self {
         Self {
             level: TrustLevel::Untrusted,
@@ -140,7 +140,7 @@ impl ConfidenceModel {
     }
 
     /// Return the current trust tier.
-    #[must_use]
+    #[must_use = "pure accessor — returns the current trust tier; discarding it loses the security posture signal"]
     pub const fn level(&self) -> TrustLevel {
         self.level
     }

@@ -73,6 +73,11 @@ zeroize = "1"
 # Widely used, well-audited system call binding.
 libc = "0.2"
 
+# rustix — safe syscall wrappers (already in workspace: umrs-platform,
+# umrs-selinux, umrs-hw, umrs-ui, umrs-stat). Used here for geteuid()
+# without unsafe. Controls: NIST SP 800-53 AC-3.
+rustix = { version = "0.38", features = ["process"] }
+
 # Internationalization — gettext-based message translation.
 # gettext-rs wraps GNU gettext; gettext-system links the system libintl (present
 # on all RHEL/Fedora systems). umrs-core re-exports the tr() helper; we also

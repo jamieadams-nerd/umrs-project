@@ -181,7 +181,7 @@ impl<T> Default for SecureReader<T> {
 
 impl<T> SecureReader<T> {
     #[must_use = "SecureReader must be retained to call read() or read_with_card()"]
-    #[allow(clippy::new_without_default)]
+    #[allow(clippy::new_without_default)] // lint does not fire; const fn suppresses it — keep allow to document intent
     pub const fn new() -> Self {
         Self {
             _marker: PhantomData,

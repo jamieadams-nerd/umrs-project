@@ -148,8 +148,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         label: "Kernel Pointer Restriction",
         rationale: "Level 2 blocks kernel pointer exposure in all contexts, \
                     preventing KASLR bypass via /proc leaks.",
-        nist_controls: "NIST 800-53 CM-6(a), SC-30, SC-30(2), SC-30(5); \
-                        NSA RTB: minimized information disclosure",
+        nist_controls: "SP 800-53 CM-6(a), SC-30, SC-30(2), SC-30(5); RTB RAIN",
         cce: Some("CCE-88686-1"),
         description: "Hides kernel pointer addresses from /proc and logs. Knowing \
                       where kernel code lives in memory is the first step in most \
@@ -166,8 +165,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         label: "ASLR",
         rationale: "Full ASLR (level 2) randomises stack, mmap, and heap bases, \
                     making memory-corruption exploits significantly harder.",
-        nist_controls: "NIST 800-53 CM-6(a), SC-30, SC-30(2); \
-                        NSA RTB: exploit mitigation",
+        nist_controls: "SP 800-53 CM-6(a), SC-30, SC-30(2); RTB RAIN",
         cce: Some("CCE-87876-9"),
         description: "ASLR randomizes stack, heap, and library addresses on every \
                       process start. Without it, memory-corruption exploits can jump \
@@ -184,7 +182,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         label: "Unprivileged BPF",
         rationale: "Unprivileged BPF programs have been a recurring source of \
                     kernel exploits; restricting to CAP_BPF/CAP_SYS_ADMIN reduces attack surface.",
-        nist_controls: "NIST 800-53 AC-6, SC-7(10); NSA RTB: attack surface reduction",
+        nist_controls: "SP 800-53 AC-6, SC-7(10); RTB RAIN",
         cce: Some("CCE-89405-5"),
         description: "Prevents unprivileged users from loading BPF programs. The BPF \
                       JIT and verifier are complex attack surfaces responsible for many \
@@ -201,7 +199,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         label: "Perf Event Access",
         rationale: "Level >=2 restricts perf_event_open() to privileged users, \
                     blocking side-channel attacks and profiling-based ASLR leaks.",
-        nist_controls: "NIST 800-53 AC-6; NSA RTB: information disclosure prevention",
+        nist_controls: "SP 800-53 AC-6; RTB RAIN",
         cce: Some("CCE-90142-1"),
         description: "Limits access to CPU performance counters. Performance counters \
                       can be used as side-channels to leak information across processes \
@@ -218,7 +216,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         label: "Ptrace Scope",
         rationale: "YAMA scope >=1 restricts ptrace to parent/child relationships, \
                     preventing credential extraction from sibling processes.",
-        nist_controls: "NIST 800-53 SC-7(10), AC-6; NSA RTB: process isolation",
+        nist_controls: "SP 800-53 SC-7(10), AC-6; RTB RAIN",
         cce: Some("CCE-88785-1"),
         description: "Controls which processes can attach to another via ptrace. \
                       Without restriction, a compromised process can extract passwords \
@@ -235,8 +233,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         label: "Dmesg Access",
         rationale: "Restricts dmesg to CAP_SYSLOG, preventing unprivileged users \
                     from reading kernel addresses and capability-related messages.",
-        nist_controls: "NIST 800-53 SI-11(a), SI-11(b); \
-                        NSA RTB: information disclosure prevention",
+        nist_controls: "SP 800-53 SI-11(a), SI-11(b); RTB RAIN",
         cce: Some("CCE-89000-4"),
         description: "Prevents unprivileged users from reading the kernel message \
                       buffer. dmesg often contains hardware addresses and capability \
@@ -253,7 +250,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         label: "Kexec Load",
         rationale: "Disabling kexec_load() prevents runtime kernel replacement \
                     by root, preserving boot-time integrity guarantees (Secure Boot, IMA).",
-        nist_controls: "NIST 800-53 CM-6, SI-7; NSA RTB: boot integrity",
+        nist_controls: "SP 800-53 CM-6, SI-7; RTB RAIN",
         cce: Some("CCE-89232-3"),
         description: "Prevents loading a new kernel image at runtime. Without this, \
                       an attacker with root can replace the running kernel without a \
@@ -274,7 +271,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         label: "SysRq Key",
         rationale: "SysRq key can bypass access controls at the console; \
                     fully disabling (0) is safest on production servers.",
-        nist_controls: "NIST 800-53 AC-3, CM-7; NSA RTB: attack surface reduction",
+        nist_controls: "SP 800-53 AC-3, CM-7; RTB RAIN",
         cce: None,
         description: "Controls which Magic SysRq key combinations are active. On a \
                       system with console access, SysRq can kill security processes or \
@@ -292,7 +289,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         label: "Module Load Latch",
         rationale: "One-way latch: once set, no further kernel modules can be \
                     loaded, locking the kernel attack surface for the lifetime of the boot.",
-        nist_controls: "NIST 800-53 CM-7, SI-7; NSA RTB: minimised attack surface",
+        nist_controls: "SP 800-53 CM-7, SI-7; RTB RAIN",
         cce: None,
         description: "One-way latch: once set, no new kernel modules can be loaded. \
                       Prevents rootkits and SELinux bypass by freezing the kernel \
@@ -310,7 +307,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         label: "User Namespaces",
         rationale: "Unprivileged user namespaces are a primary container-escape \
                     vector; blocking them (0) reduces the attack surface significantly.",
-        nist_controls: "NIST 800-53 SC-39, CM-7; NSA RTB: process isolation",
+        nist_controls: "SP 800-53 SC-39, CM-7; RTB RAIN",
         cce: None,
         description: "Prevents unprivileged users from creating user namespaces. \
                       Unprivileged user namespaces are one of the most commonly \
@@ -328,7 +325,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         label: "Symlink Protection",
         rationale: "Prevents TOCTOU symlink attacks in world-writable sticky \
                     directories (e.g., /tmp); following symlinks owned by others is blocked.",
-        nist_controls: "NIST 800-53 AC-6(1), CM-6(a); NSA RTB: filesystem hardening",
+        nist_controls: "SP 800-53 AC-6(1), CM-6(a); RTB RAIN",
         cce: Some("CCE-88796-8"),
         description: "Prevents following symlinks in world-writable directories when \
                       owned by someone other than the caller. Blocks classic TOCTOU \
@@ -345,7 +342,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         label: "Hardlink Protection",
         rationale: "Prevents creation of hardlinks to files the caller does not \
                     own, blocking privilege escalation via SUID binaries.",
-        nist_controls: "NIST 800-53 AC-6(1), CM-6(a); NSA RTB: filesystem hardening",
+        nist_controls: "SP 800-53 AC-6(1), CM-6(a); RTB RAIN",
         cce: Some("CCE-86689-7"),
         description: "Prevents creating hard links to files the caller does not own. \
                       Without this, an attacker can hardlink a SUID binary into a \
@@ -362,7 +359,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         label: "FIFO Protection",
         rationale: "Level 2 prevents privileged processes from writing to FIFOs \
                     in world-writable sticky directories that they do not own.",
-        nist_controls: "NIST 800-53 SI-10, CM-7; NSA RTB: filesystem hardening",
+        nist_controls: "SP 800-53 SI-10, CM-7; RTB RAIN",
         cce: None,
         description: "Prevents privileged processes from writing to FIFOs they do not \
                       own in sticky directories. Blocks data interception via \
@@ -379,7 +376,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         label: "Regular File Protection",
         rationale: "Level 2 prevents privileged processes from writing to regular \
                     files in world-writable sticky directories that they do not own.",
-        nist_controls: "NIST 800-53 SI-10, CM-7; NSA RTB: filesystem hardening",
+        nist_controls: "SP 800-53 SI-10, CM-7; RTB RAIN",
         cce: None,
         description: "Prevents privileged processes from writing to regular files they \
                       do not own in sticky directories. Blocks replacement of trusted \
@@ -396,7 +393,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         label: "SUID Core Dumps",
         rationale: "Disabling core dumps for SUID processes (0) prevents \
                     credential and key material extraction via coredump files.",
-        nist_controls: "NIST 800-53 SC-28, SI-12; NSA RTB: information disclosure prevention",
+        nist_controls: "SP 800-53 SC-28, SI-12; RTB RAIN",
         // No direct STIG CCE for fs.suid_dumpable. Related STIG rules that address
         // coredump prevention via different mechanisms:
         //   CCE-88330-6 (disable_users_coredumps, PAM limits layer)
@@ -423,7 +420,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         label: "Kernel Lockdown",
         rationale: "Kernel lockdown at integrity level prevents runtime kernel \
                     modification by root, preserving Secure Boot guarantees.",
-        nist_controls: "NIST 800-53 CM-7, SI-7; NSA RTB: boot integrity",
+        nist_controls: "SP 800-53 CM-7, SI-7; RTB RAIN",
         cce: None,
         description: "Kernel lockdown LSM restricts operations that let root modify the \
                       running kernel. Without it, boot-time integrity checks can be \
@@ -440,7 +437,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         label: "Module Signature",
         rationale: "Enforcing module signatures at boot prevents loading of \
                     unsigned kernel modules, complementing lockdown mode.",
-        nist_controls: "NIST 800-53 SI-7, CM-7; NSA RTB: boot integrity",
+        nist_controls: "SP 800-53 SI-7, CM-7; RTB RAIN",
         // No direct STIG CCE for module.sig_enforce=1 cmdline enforcement.
         // UMRS proactive check exceeds STIG baseline (STIG audits reactively via
         // audit rules CCE-89982-3, CCE-88638-2, CCE-90172-8 instead).
@@ -461,7 +458,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         label: "CPU Mitigations",
         rationale: "CPU vulnerability mitigations (Spectre, Meltdown, MDS, etc.) \
                     must not be disabled; `mitigations=off` is a critical weakening flag.",
-        nist_controls: "NIST 800-53 SI-16, SC-39; NSA RTB: CPU vulnerability mitigations",
+        nist_controls: "SP 800-53 SI-16, SC-39; RTB RAIN",
         cce: None,
         description: "Umbrella switch: when mitigations=off is present, ALL CPU \
                       vulnerability mitigations (Spectre, Meltdown, MDS) are disabled \
@@ -479,7 +476,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         label: "Page Table Isolation",
         rationale: "Page Table Isolation (Meltdown mitigation) must not be \
                     explicitly disabled; `pti=off` removes kernel address space protection.",
-        nist_controls: "NIST 800-53 SI-16; NSA RTB: CPU vulnerability mitigations",
+        nist_controls: "SP 800-53 SI-16; RTB RAIN",
         cce: Some("CCE-88971-7"),
         description: "Page Table Isolation mitigates Meltdown (CVE-2017-5754). When \
                       pti=off is present, any process can read arbitrary kernel memory \
@@ -500,7 +497,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         label: "CPU RNG Trust",
         rationale: "Trusting CPU RNG unconditionally may not satisfy NIST SP 800-90B; \
                     RHEL 10 defaults to not trusting it.",
-        nist_controls: "NIST 800-53 SC-12; NIST SP 800-90B entropy requirements",
+        nist_controls: "SP 800-53 SC-12; SP 800-90B entropy requirements",
         cce: None,
         description: "Controls whether the kernel unconditionally trusts the CPU RNG \
                       (RDRAND). Trusting it exclusively risks weak key generation if \
@@ -517,7 +514,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         label: "Bootloader RNG Trust",
         rationale: "Trusting bootloader-provided entropy requires a verified \
                     boot chain; absent Secure Boot attestation, the seed is untrusted.",
-        nist_controls: "NIST 800-53 SC-12, SI-7; NIST SP 800-90B entropy requirements",
+        nist_controls: "SP 800-53 SC-12, SI-7; SP 800-90B entropy requirements",
         cce: None,
         description: "Controls whether the kernel trusts entropy from the bootloader. \
                       Without a verified boot chain, a predictable seed can weaken all \
@@ -535,7 +532,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         label: "FIPS Mode",
         rationale: "FIPS 140-2/3 mode enforces validated cryptographic primitives \
                     and is a mandatory baseline for DoD/government deployments.",
-        nist_controls: "NIST 800-53 SC-13, SC-28; FIPS 140-2/140-3; CMMC SC.L2-3.13.10",
+        nist_controls: "SP 800-53 SC-13, SC-28; FIPS 140-2/140-3; CMMC SC.L2-3.13.10",
         // CCE-89085-5 covers configure_crypto_policy (policy layer); UMRS checks
         // the kernel enforcement state directly — nearest STIG anchor, not exact equivalent.
         // CCE-89085-5 (RHEL 10 STIG, scap-security-guide 2026-03-17)
@@ -556,7 +553,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         label: "Conntrack Accounting",
         rationale: "Connection tracking accounting (acct=1) enables per-connection \
                     byte/packet counters used by audit and firewall logging tools.",
-        nist_controls: "NIST 800-53 AU-12, CM-6; NSA RTB: audit trail completeness",
+        nist_controls: "SP 800-53 AU-12, CM-6; RTB RAIN",
         cce: None,
         description: "Enables per-connection byte and packet counters in netfilter. \
                       Without it, network audit logs lack the traffic volume data \
@@ -573,8 +570,8 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         label: "Bluetooth",
         rationale: "The Bluetooth stack is a large attack surface on servers; \
                     blacklisting prevents accidental or malicious module loading.",
-        nist_controls: "NIST 800-53 AC-18(3), AC-18(a), CM-6(a), CM-7(a), CM-7(b), MP-7; \
-                        NSA RTB: attack surface reduction; CMMC CM.L2-3.4.6",
+        nist_controls: "SP 800-53 AC-18(3), AC-18(a), CM-6(a), CM-7(a), CM-7(b), MP-7; \
+                        RTB RAIN; CMMC CM.L2-3.4.6",
         cce: Some("CCE-87455-2"),
         description: "Bluetooth stack is blacklisted and cannot load. The Bluetooth \
                       protocol stack is large, historically vulnerability-prone, and \
@@ -592,8 +589,8 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         rationale: "USB mass storage is a primary data exfiltration vector on \
                     classified and government systems; blacklisting prevents \
                     mounting of untrusted external media.",
-        nist_controls: "NIST 800-53 CM-6(a), CM-7(a), CM-7(b), MP-7; \
-                        NSA RTB: media protection; CMMC MP.L2-3.8.7",
+        nist_controls: "SP 800-53 CM-6(a), CM-7(a), CM-7(b), MP-7; \
+                        RTB RAIN; CMMC MP.L2-3.8.7",
         cce: Some("CCE-89301-6"),
         description: "USB mass storage module is blacklisted. USB storage is a primary \
                       data exfiltration vector — blacklisting prevents copying data \
@@ -611,8 +608,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         rationale: "FireWire DMA can bypass memory protection; blacklisting \
                     prevents direct memory access attacks via physical FireWire \
                     ports.",
-        nist_controls: "NIST 800-53 SI-7, CM-7; NSA RTB: physical attack surface \
-                        reduction",
+        nist_controls: "SP 800-53 SI-7, CM-7; RTB RAIN",
         cce: None,
         description: "FireWire module is blacklisted. FireWire uses DMA with direct \
                       access to system RAM, allowing an attacker with physical access \
@@ -629,8 +625,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         label: "Thunderbolt",
         rationale: "Thunderbolt DMA can bypass IOMMU protections on some hardware; \
                     blacklisting prevents DMA-based attacks via Thunderbolt ports.",
-        nist_controls: "NIST 800-53 SI-7, CM-7; NSA RTB: physical attack surface \
-                        reduction; CMMC CM.L2-3.4.6",
+        nist_controls: "SP 800-53 SI-7, CM-7; RTB RAIN; CMMC CM.L2-3.4.6",
         cce: None,
         description: "Thunderbolt module is blacklisted. Like FireWire, Thunderbolt \
                       uses DMA that can bypass IOMMU protections and expose system \
@@ -654,7 +649,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         label: "Spectre v2",
         rationale: "Explicitly disabling Spectre v2 mitigation exposes the system to \
                     branch-predictor injection attacks between processes and the kernel.",
-        nist_controls: "NIST 800-53 SI-16, SC-39; NSA RTB: CPU vulnerability mitigations",
+        nist_controls: "SP 800-53 SI-16, SC-39; RTB RAIN",
         cce: None,
         description: "",
         recommended: None,
@@ -670,7 +665,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         rationale: "Disabling user-space Spectre v2 mitigation prevents processes \
                     from opting in to IBPB/STIBP protection via prctl, increasing \
                     cross-process speculation exposure.",
-        nist_controls: "NIST 800-53 SI-16, SC-39; NSA RTB: CPU vulnerability mitigations",
+        nist_controls: "SP 800-53 SI-16, SC-39; RTB RAIN",
         cce: None,
         description: "",
         recommended: None,
@@ -686,7 +681,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         rationale: "Disabling MDS mitigation exposes the system to RIDL/Fallout/\
                     ZombieLoad attacks (CVE-2018-12126 et al.) that leak kernel and \
                     hypervisor memory across fill-buffer boundaries.",
-        nist_controls: "NIST 800-53 SI-16, SC-39; NSA RTB: CPU vulnerability mitigations",
+        nist_controls: "SP 800-53 SI-16, SC-39; RTB RAIN",
         cce: None,
         description: "",
         recommended: None,
@@ -701,7 +696,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         label: "TSX Async Abort",
         rationale: "Disabling TAA mitigation exposes Intel systems with TSX to \
                     CVE-2019-11135, which leaks data via asynchronous TSX aborts.",
-        nist_controls: "NIST 800-53 SI-16, SC-39; NSA RTB: CPU vulnerability mitigations",
+        nist_controls: "SP 800-53 SI-16, SC-39; RTB RAIN",
         cce: None,
         description: "",
         recommended: None,
@@ -717,7 +712,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         rationale: "Disabling L1TF mitigation exposes Intel processors to L1 Terminal \
                     Fault (CVE-2018-3615/3620/3646), which leaks L1 cache data across \
                     VM and process boundaries.",
-        nist_controls: "NIST 800-53 SI-16, SC-39; NSA RTB: CPU vulnerability mitigations",
+        nist_controls: "SP 800-53 SI-16, SC-39; RTB RAIN",
         cce: None,
         description: "",
         recommended: None,
@@ -733,7 +728,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         rationale: "Disabling RETBLEED mitigation exposes the kernel to \
                     CVE-2022-29900/29901, allowing return-address speculation attacks \
                     that bypass retpoline on affected CPUs.",
-        nist_controls: "NIST 800-53 SI-16, SC-39; NSA RTB: CPU vulnerability mitigations",
+        nist_controls: "SP 800-53 SI-16, SC-39; RTB RAIN",
         cce: None,
         description: "",
         recommended: None,
@@ -749,7 +744,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         rationale: "Disabling SRBDS mitigation exposes Intel processors to \
                     CVE-2020-0543, which leaks RNG output from special registers \
                     via sampling attacks.",
-        nist_controls: "NIST 800-53 SI-16, SC-39; NSA RTB: CPU vulnerability mitigations",
+        nist_controls: "SP 800-53 SI-16, SC-39; RTB RAIN",
         cce: None,
         description: "",
         recommended: None,
@@ -765,7 +760,7 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
         rationale: "Re-enabling SMT when the kernel was booted with nosmt weakens \
                     MDS, L1TF, and cross-HT speculation attack mitigations that \
                     depend on SMT being disabled.",
-        nist_controls: "NIST 800-53 SI-16, SC-39; NSA RTB: CPU vulnerability mitigations",
+        nist_controls: "SP 800-53 SI-16, SC-39; RTB RAIN",
         cce: None,
         description: "",
         recommended: None,
@@ -787,8 +782,8 @@ pub static INDICATORS: &[IndicatorDescriptor] = &[
                     handler (e.g., systemd-coredump), enabling audit, compression, \
                     and access control. A raw path writes process memory directly to \
                     the filesystem with no handler accountability.",
-        nist_controls: "NIST 800-53 SC-7(10), SC-28, CM-6, AU-9; NSA RTB: information \
-                        disclosure prevention; CMMC SC.L2-3.13.10",
+        nist_controls: "SP 800-53 SC-7(10), SC-28, CM-6, AU-9; RTB RAIN; \
+                        CMMC SC.L2-3.13.10",
         cce: Some("CCE-86714-3"),
         description: "",
         recommended: None,

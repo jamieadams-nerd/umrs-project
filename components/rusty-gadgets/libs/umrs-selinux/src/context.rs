@@ -74,14 +74,14 @@ pub struct MlsLevel {
 
 impl MlsLevel {
     /// Returns the raw, untranslated string (Provenance).
-    #[must_use]
+    #[must_use = "pure accessor returning the provenance-preserving raw level string"]
     pub fn raw(&self) -> &str {
         &self.raw_level
     }
 
     /// Returns the translated, canonical string (Lattice representation).
     /// e.g., s0:c0.c15
-    #[must_use]
+    #[must_use = "returns owned canonical MLS level string; discarding it wastes the allocation"]
     pub fn translated(&self) -> String {
         format!("{}:{}", self.sensitivity, self.categories)
     }
@@ -99,7 +99,7 @@ impl fmt::Display for MlsLevel {
 /// NIST SP 800-53 AC-3: Access Enforcement logic depends on this structure.
 /// NSA RTB: Minimized TCB via strictly bounded data structures.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-#[must_use]
+#[must_use = "security context carries the MAC label used in access control decisions; discarding it bypasses label enforcement"]
 pub struct SecurityContext {
     user: SelinuxUser,
     role: SelinuxRole,
@@ -122,28 +122,28 @@ impl SecurityContext {
         }
     }
 
-    #[must_use]
+    #[must_use = "pure accessor; SELinux user component is required for context rendering and policy lookup"]
     pub const fn user(&self) -> &SelinuxUser {
         &self.user
     }
 
-    #[must_use]
+    #[must_use = "pure accessor; SELinux role component is required for context rendering and RBAC decisions"]
     pub const fn role(&self) -> &SelinuxRole {
         &self.role
     }
 
-    #[must_use]
+    #[must_use = "pure accessor; SELinux type is the primary enforcement anchor in type enforcement policy"]
     pub const fn security_type(&self) -> &SelinuxType {
         &self.security_type
     }
 
-    #[must_use]
+    #[must_use = "pure accessor; MLS level is required for dominance checks and CUI marking resolution"]
     pub const fn level(&self) -> Option<&MlsLevel> {
         self.level.as_ref()
     }
 
     /// NIST SP 800-53 AC-4: Information Flow Enforcement
-    #[must_use]
+    #[must_use = "dominance result determines whether information flow is permitted; discarding it bypasses the flow enforcement decision"]
     pub fn dominates(&self, _other: &Self) -> bool {
         todo!("Lattice dominance logic pending CategorySet bitmask integration")
     }

@@ -193,7 +193,7 @@ impl SecureXattrReader {
     /// Returns `io::Error` if the extended attribute cannot be read from the file descriptor.
     pub fn read_raw(file: &File, attr: &str) -> io::Result<Vec<u8>> {
         let size = fgetxattr(file, attr, &mut []).map_err(
-            #[allow(clippy::redundant_closure)]
+            #[expect(clippy::redundant_closure, reason = "explicit closure required for map_err with a From impl that rustc cannot infer without it")]
             |e| io::Error::from(e),
         )?;
 
@@ -203,7 +203,7 @@ impl SecureXattrReader {
 
         let mut buffer = vec![0u8; size];
         let bytes_read = fgetxattr(file, attr, &mut buffer).map_err(
-            #[allow(clippy::redundant_closure)]
+            #[expect(clippy::redundant_closure, reason = "explicit closure required for map_err with a From impl that rustc cannot infer without it")]
             |e| io::Error::from(e),
         )?;
 
@@ -366,7 +366,7 @@ impl SecureXattrReader {
 /// its output never contains raw input bytes.
 ///
 /// NIST SP 800-53 SI-12: Information Management and Retention
-#[must_use]
+#[must_use = "returns a sanitized error kind string for diagnostic output; discarding it loses the parse failure reason"]
 pub fn nom_error_kind(e: &nom::Err<nom::error::Error<&str>>) -> String {
     match e {
         nom::Err::Incomplete(_) => "Incomplete".to_string(),

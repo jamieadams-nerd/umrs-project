@@ -84,17 +84,17 @@ fn format_size(size: FileSize) -> String {
     }
     // KB — precision loss from u64→f64 is acceptable: this is a display hint,
     // not a security-relevant value. Files > 2^53 bytes are not a realistic concern.
-    #[allow(clippy::cast_precision_loss)]
+    #[expect(clippy::cast_precision_loss, reason = "display hint only; precision loss on large byte counts is acceptable")]
     let kb_frac = bytes as f64 / 1024.0;
     if kb_frac < 1024.0 {
         return format!("{bytes} bytes ({kb_frac:.1} KB)");
     }
-    #[allow(clippy::cast_precision_loss)]
+    #[expect(clippy::cast_precision_loss, reason = "display hint only; precision loss on large byte counts is acceptable")]
     let mb_frac = bytes as f64 / (1024.0 * 1024.0);
     if mb_frac < 1024.0 {
         return format!("{bytes} bytes ({mb_frac:.1} MB)");
     }
-    #[allow(clippy::cast_precision_loss)]
+    #[expect(clippy::cast_precision_loss, reason = "display hint only; precision loss on large byte counts is acceptable")]
     let gb_frac = bytes as f64 / (1024.0 * 1024.0 * 1024.0);
     format!("{bytes} bytes ({gb_frac:.2} GB)")
 }

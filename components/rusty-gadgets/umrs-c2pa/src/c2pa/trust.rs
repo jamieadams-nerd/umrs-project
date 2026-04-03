@@ -49,6 +49,9 @@ use std::path::Path;
 use c2pa::settings::Settings;
 use log::warn;
 
+#[cfg(unix)]
+use libc;
+
 use crate::c2pa::{config::UmrsConfig, error::InspectError};
 #[allow(unused_imports)]
 use crate::verbose;
@@ -62,11 +65,42 @@ fn count_pem_certs(pem: &str) -> usize {
 
 /// Read a PEM file from disk and return its content as a `String`.
 ///
+/// On Unix, opens the file with `O_NOFOLLOW` to refuse symlink targets.
+/// An attacker who can write to the trust anchor directory could otherwise
+/// replace a trust anchor path with a symlink to an attacker-controlled file,
+/// causing the SDK to validate manifests against an injected CA certificate.
+///
+/// On non-Unix platforms, falls back to `std::fs::read_to_string`.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AC-3**: Access Enforcement — `O_NOFOLLOW` enforces that
+///   the configured path names a regular file, not an attacker-redirected symlink.
+/// - **NSA RTB**: TOCTOU defense — the fd is obtained once; all subsequent
+///   I/O uses the same fd, eliminating the open-then-read race window.
+///
 /// # Errors
 ///
-/// Returns `InspectError::Io` if the file cannot be opened or read.
+/// Returns `InspectError::Io` if the file cannot be opened or read, or if
+/// the bytes are not valid UTF-8.
 fn read_pem(path: &Path) -> Result<String, InspectError> {
-    std::fs::read_to_string(path).map_err(InspectError::Io)
+    #[cfg(unix)]
+    {
+        use std::io::Read;
+        use std::os::unix::fs::OpenOptionsExt;
+        let mut file = std::fs::OpenOptions::new()
+            .read(true)
+            .custom_flags(libc::O_NOFOLLOW)
+            .open(path)
+            .map_err(InspectError::Io)?;
+        let mut contents = String::new();
+        file.read_to_string(&mut contents).map_err(InspectError::Io)?;
+        Ok(contents)
+    }
+    #[cfg(not(unix))]
+    {
+        std::fs::read_to_string(path).map_err(InspectError::Io)
+    }
 }
 
 /// Build c2pa SDK `Settings` from the UMRS trust configuration.

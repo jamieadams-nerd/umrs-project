@@ -1,8 +1,20 @@
+//! Unicode typography and stylization utilities for the UMRS design system.
+//!
+//! Provides [`TypographyStyle`] and [`stylize`], which map standard ASCII
+//! alphanumeric characters to Unicode stylistic sets (Bold, Double-Struck,
+//! Circled, Gothic, Script, Segmented). Punctuation, spaces, and existing
+//! Unicode characters pass through unchanged.
+//!
+//! ## Compliance
+//!
+//! This module provides internal formatting utility infrastructure with no
+//! direct security surface.
+
 //use crate::console::typography::{stylize, TypographyStyle};
 // let header = stylize("UMRS Core 1.0", TypographyStyle::DoubleStruck);
 // println!("{}", header); // 𝕌𝕄ℝ𝕊 ℂ𝕠𝕣𝕖 𝟙.𝟘
 
-/// Unified Typography and Stylization for the UMRS Design System.
+/// Unicode typography style variants for the UMRS design system.
 ///
 /// This module provides functions to map standard ASCII alphanumeric
 /// characters to various Unicode stylistic sets (Bold, Double-Struck, etc.)

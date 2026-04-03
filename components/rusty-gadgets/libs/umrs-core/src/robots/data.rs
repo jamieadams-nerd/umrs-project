@@ -1,3 +1,15 @@
+//! ASCII art data structures and normalization for the UMRS robot mascot system.
+//!
+//! Provides [`AsciiArt`] (owned, heap-allocated) and [`AsciiArtStatic`] (borrowed,
+//! `'static` slices) representations, plus [`build_robot_art`] which normalizes raw
+//! multi-line art by trimming empty border rows/columns and right-padding all lines
+//! to a uniform width.
+//!
+//! ## Compliance
+//!
+//! This module provides internal presentation-layer utility infrastructure with no
+//! direct security surface.
+
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 Jamie Adams
 

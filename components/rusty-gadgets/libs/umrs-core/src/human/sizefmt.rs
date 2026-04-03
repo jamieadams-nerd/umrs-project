@@ -1,3 +1,14 @@
+//! Human-readable byte size formatting for operator-facing output.
+//!
+//! Provides [`SizeBase`] (decimal SI vs. binary IEC) and [`SizeUnit`] for
+//! explicit unit selection, plus [`auto_format`] for automatic prefix selection
+//! and [`format_in_unit`] for fixed-unit rendering.
+//!
+//! ## Compliance
+//!
+//! This module provides internal formatting utility infrastructure with no
+//! direct security surface.
+
 use humansize::{BINARY, DECIMAL, format_size};
 
 #[derive(Debug, Clone, Copy)]

@@ -1,3 +1,15 @@
+//! Box-drawing utilities for framed console output.
+//!
+//! Provides [`BoxStyle`], which holds the Unicode or ASCII border characters for a
+//! frame, and [`box_lines`], which renders a slice of strings inside a padded
+//! bordered box. Supports both Unicode line-drawing glyphs and ASCII fallback
+//! characters for environments that cannot render Unicode.
+//!
+//! ## Compliance
+//!
+//! This module provides internal formatting utility infrastructure with no
+//! direct security surface.
+
 pub struct BoxStyle {
     pub top_left: &'static str,
     pub top_right: &'static str,

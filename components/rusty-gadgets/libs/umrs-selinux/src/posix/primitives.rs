@@ -74,13 +74,13 @@ pub struct Inode(u64);
 impl Inode {
     /// Wrap a raw kernel inode number.
     /// No validation beyond type wrapping — kernel-supplied values are trusted.
-    #[must_use]
+    #[must_use = "returns a typed Inode wrapper; discarding it loses the kernel-authoritative inode number"]
     pub const fn new(raw: u64) -> Self {
         Self(raw)
     }
 
     /// Return the raw numeric value.
-    #[must_use]
+    #[must_use = "pure accessor returning the numeric inode number required for audit records"]
     pub const fn as_u64(self) -> u64 {
         self.0
     }
@@ -126,13 +126,13 @@ pub struct DevId(u64);
 
 impl DevId {
     /// Wrap a raw kernel device ID.
-    #[must_use]
+    #[must_use = "returns a typed DevId wrapper; discarding it loses the kernel device identifier"]
     pub const fn new(raw: u64) -> Self {
         Self(raw)
     }
 
     /// Return the raw numeric value.
-    #[must_use]
+    #[must_use = "pure accessor returning the raw device ID required for mount-point detection and audit records"]
     pub const fn as_u64(self) -> u64 {
         self.0
     }
@@ -141,7 +141,7 @@ impl DevId {
     /// on the same device. Used for mount-point detection.
     ///
     /// NIST SP 800-53 CM-6: mount point detection is a configuration finding.
-    #[must_use]
+    #[must_use = "pure accessor; discarding the result means mount-point boundaries go undetected"]
     pub const fn same_device_as(self, other: Self) -> bool {
         self.0 == other.0
     }
@@ -189,23 +189,23 @@ pub struct HardLinkCount(u32);
 
 impl HardLinkCount {
     /// Wrap a raw kernel nlink value.
-    #[must_use]
+    #[must_use = "returns a typed HardLinkCount wrapper; discarding it loses the kernel hard-link count"]
     pub const fn new(raw: u32) -> Self {
         Self(raw)
     }
 
     /// Convenience: construct from a `u64` kernel value (nlink is u64
     /// in `MetadataExt` on Linux despite fitting in u32 in practice).
-    #[must_use]
+    #[must_use = "returns a typed HardLinkCount from a u64; discarding it loses the hard-link count"]
     pub fn from_u64(raw: u64) -> Self {
         // Saturating cast: .min() guarantees the value fits in u32; the cast
         // is therefore infallible but clippy can't see through the clamp.
-        #[allow(clippy::cast_possible_truncation)]
+        #[expect(clippy::cast_possible_truncation, reason = "value is clamped to u32::MAX by .min() so the cast is infallible; clippy cannot see through the clamp")]
         Self(raw.min(u64::from(u32::MAX)) as u32)
     }
 
     /// Return the raw count.
-    #[must_use]
+    #[must_use = "pure accessor returning the nlink count required for hard-link detection"]
     pub const fn as_u32(self) -> u32 {
         self.0
     }
@@ -217,7 +217,7 @@ impl HardLinkCount {
     /// `nlink > 1` is normal and should not be flagged.
     ///
     /// NIST SP 800-53 AC-3: hard-linked files may bypass path-based controls.
-    #[must_use]
+    #[must_use = "hard-link detection result; discarding it silently misses a potential path-bypass finding"]
     pub const fn is_multiply_linked(self) -> bool {
         self.0 > 1
     }
@@ -331,13 +331,13 @@ impl FileMode {
     ///
     /// This is the single construction gate. After this, the stored value
     /// is guaranteed to contain only permission and special bits.
-    #[must_use]
+    #[must_use = "returns a typed FileMode with permission bits masked; discarding it loses the mode value"]
     pub const fn from_mode(raw: u32) -> Self {
         Self(raw & Self::PERM_MASK)
     }
 
     /// Return the raw 12-bit permission value.
-    #[must_use]
+    #[must_use = "pure accessor returning the raw permission bits required for mode-string formatting and permission checks"]
     pub const fn as_u32(self) -> u32 {
         self.0
     }
@@ -350,7 +350,7 @@ impl FileMode {
     /// This is a privilege escalation risk and a mandatory audit finding.
     ///
     /// NIST SP 800-53 CM-6 / CMMC CM.L2-3.4.2.
-    #[must_use]
+    #[must_use = "privilege escalation indicator; discarding this silently misses a mandatory audit finding"]
     pub const fn is_setuid(self) -> bool {
         self.0 & Self::SETUID != 0
     }
@@ -358,13 +358,13 @@ impl FileMode {
     /// True if the setgid bit is set.
     ///
     /// NIST SP 800-53 CM-6.
-    #[must_use]
+    #[must_use = "privilege escalation indicator; discarding this silently misses a group-privilege audit finding"]
     pub const fn is_setgid(self) -> bool {
         self.0 & Self::SETGID != 0
     }
 
     /// True if the sticky bit is set.
-    #[must_use]
+    #[must_use = "pure accessor; sticky bit affects deletion semantics on directories"]
     pub const fn is_sticky(self) -> bool {
         self.0 & Self::STICKY != 0
     }
@@ -377,49 +377,49 @@ impl FileMode {
     /// security finding on a CUI system and should be reported unconditionally.
     ///
     /// NIST SP 800-53 AC-3 / CMMC AC.L1-3.1.1.
-    #[must_use]
+    #[must_use = "mandatory security finding; discarding this silently bypasses world-writable detection on CUI systems"]
     pub const fn is_world_writable(self) -> bool {
         self.0 & Self::OTHER_WRITE != 0
     }
 
     /// True if the world-readable bit is set.
-    #[must_use]
+    #[must_use = "pure accessor; callers that discard this cannot detect unauthorised public read access"]
     pub const fn is_world_readable(self) -> bool {
         self.0 & Self::OTHER_READ != 0
     }
 
     /// True if the world-executable bit is set.
-    #[must_use]
+    #[must_use = "pure accessor; callers that discard this cannot detect unauthorised public execute access"]
     pub const fn is_world_executable(self) -> bool {
         self.0 & Self::OTHER_EXEC != 0
     }
 
     // ── Owner queries ─────────────────────────────────────────────────────
 
-    #[must_use]
+    #[must_use = "pure accessor; owner read bit is required for mode-string rendering and permission analysis"]
     pub const fn owner_can_read(self) -> bool {
         self.0 & Self::OWNER_READ != 0
     }
-    #[must_use]
+    #[must_use = "pure accessor; owner write bit is required for mode-string rendering and permission analysis"]
     pub const fn owner_can_write(self) -> bool {
         self.0 & Self::OWNER_WRITE != 0
     }
-    #[must_use]
+    #[must_use = "pure accessor; owner execute bit affects setuid rendering (s vs S) in mode strings"]
     pub const fn owner_can_execute(self) -> bool {
         self.0 & Self::OWNER_EXEC != 0
     }
 
     // ── Group queries ─────────────────────────────────────────────────────
 
-    #[must_use]
+    #[must_use = "pure accessor; group read bit is required for mode-string rendering and permission analysis"]
     pub const fn group_can_read(self) -> bool {
         self.0 & Self::GROUP_READ != 0
     }
-    #[must_use]
+    #[must_use = "pure accessor; group write bit is required for mode-string rendering and permission analysis"]
     pub const fn group_can_write(self) -> bool {
         self.0 & Self::GROUP_WRITE != 0
     }
-    #[must_use]
+    #[must_use = "pure accessor; group execute bit affects setgid rendering (s vs S) in mode strings"]
     pub const fn group_can_execute(self) -> bool {
         self.0 & Self::GROUP_EXEC != 0
     }
@@ -428,7 +428,7 @@ impl FileMode {
 
     /// True if any execute bit (owner, group, or other) is set.
     /// Used to determine whether setuid/setgid is active or dormant (`S`).
-    #[must_use]
+    #[must_use = "pure accessor; execute status determines whether setuid/setgid is active or merely present"]
     pub const fn is_executable(self) -> bool {
         self.0 & (Self::OWNER_EXEC | Self::GROUP_EXEC | Self::OTHER_EXEC) != 0
     }
@@ -437,7 +437,7 @@ impl FileMode {
     /// privilege risk: setuid or setgid on an executable.
     ///
     /// NIST SP 800-53 CM-6 / CMMC CM.L2-3.4.2.
-    #[must_use]
+    #[must_use = "privilege risk indicator; discarding this silently bypasses mandatory setuid/setgid audit coverage"]
     pub const fn has_privilege_bits(self) -> bool {
         self.is_setuid() || self.is_setgid()
     }
@@ -452,7 +452,7 @@ impl FileMode {
     /// - Sticky: other execute position → `t` (execute set) or `T` (no execute)
     ///
     /// NIST SP 800-53 AU-3: mode string is a required audit record field.
-    #[must_use]
+    #[must_use = "returns the ls-style permission string required for audit record rendering; discarding it wastes the allocation"]
     pub fn as_mode_str(self) -> String {
         let mut s = String::with_capacity(9);
 
@@ -562,18 +562,18 @@ impl From<FileMode> for u32 {
 pub struct FileSize(u64);
 
 impl FileSize {
-    #[must_use]
+    #[must_use = "returns a typed FileSize wrapper; discarding it loses the kernel-reported file size"]
     pub const fn new(raw: u64) -> Self {
         Self(raw)
     }
 
-    #[must_use]
+    #[must_use = "pure accessor returning the numeric file size in bytes"]
     pub const fn as_u64(self) -> u64 {
         self.0
     }
 
     /// True if the file has no content. Meaningful only for regular files.
-    #[must_use]
+    #[must_use = "pure accessor; callers that discard this cannot detect empty regular files"]
     pub const fn is_empty(self) -> bool {
         self.0 == 0
     }
@@ -621,13 +621,13 @@ pub struct Uid(u32);
 
 impl Uid {
     /// Wrap a raw kernel uid value.
-    #[must_use]
+    #[must_use = "returns a typed Uid wrapper; discarding it loses the kernel-authoritative user identity"]
     pub const fn new(raw: u32) -> Self {
         Self(raw)
     }
 
     /// Return the raw numeric value.
-    #[must_use]
+    #[must_use = "pure accessor returning the numeric uid required for access control and audit records"]
     pub const fn as_u32(self) -> u32 {
         self.0
     }
@@ -636,7 +636,7 @@ impl Uid {
     ///
     /// Root-owned files that are mutable are a persistent escalation risk.
     /// NIST SP 800-53 CM-5 / CMMC CM.L2-3.4.5.
-    #[must_use]
+    #[must_use = "privilege indicator; discarding this silently misses root-ownership escalation risk detection"]
     pub const fn is_root(self) -> bool {
         self.0 == 0
     }
@@ -676,19 +676,19 @@ pub struct Gid(u32);
 
 impl Gid {
     /// Wrap a raw kernel gid value.
-    #[must_use]
+    #[must_use = "returns a typed Gid wrapper; discarding it loses the kernel-authoritative group identity"]
     pub const fn new(raw: u32) -> Self {
         Self(raw)
     }
 
     /// Return the raw numeric value.
-    #[must_use]
+    #[must_use = "pure accessor returning the numeric gid required for access control and audit records"]
     pub const fn as_u32(self) -> u32 {
         self.0
     }
 
     /// True if this is the root group (gid 0).
-    #[must_use]
+    #[must_use = "pure accessor; root group ownership indicates elevated privilege in DAC enforcement"]
     pub const fn is_root(self) -> bool {
         self.0 == 0
     }

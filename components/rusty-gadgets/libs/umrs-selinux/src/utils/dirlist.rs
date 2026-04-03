@@ -211,7 +211,7 @@ impl ColumnSet {
     ///
     /// [`Column::Name`] is silently preserved — removing the filename
     /// column would produce unusable output.
-    #[must_use]
+    #[must_use = "builder method returns the modified ColumnSet; the original is consumed"]
     pub fn without(mut self, col: Column) -> Self {
         if col != Column::Name {
             self.0.retain(|c| *c != col);
@@ -222,7 +222,7 @@ impl ColumnSet {
     /// Add a column, inserting it immediately before [`Column::Name`].
     ///
     /// No-op if the column is already present.
-    #[must_use]
+    #[must_use = "builder method returns the modified ColumnSet; the original is consumed"]
     pub fn with(mut self, col: Column) -> Self {
         if !self.0.contains(&col) {
             let pos = self.0.iter().position(|c| *c == Column::Name).unwrap_or(self.0.len());
@@ -232,13 +232,13 @@ impl ColumnSet {
     }
 
     /// Returns `true` if the column is currently active.
-    #[must_use]
+    #[must_use = "pure accessor; callers that discard this cannot determine whether a column will appear in output"]
     pub fn contains(&self, col: Column) -> bool {
         self.0.contains(&col)
     }
 
     /// The active columns in display order.
-    #[must_use]
+    #[must_use = "pure accessor returning the ordered column slice used to drive display rendering"]
     pub fn columns(&self) -> &[Column] {
         &self.0
     }

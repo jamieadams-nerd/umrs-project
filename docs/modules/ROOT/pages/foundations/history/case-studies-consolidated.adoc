@@ -1,0 +1,667 @@
+= High-Assurance Failure Case Studies — Consolidated Reference
+:toc: left
+:toclevels: 3
+:description: Authoritative reference compiling real-world CUI mishandling, record falsification, and "trust but didn't verify" failures — mapped to failure class, human cost, and UMRS design properties.
+
+// NIST SP 800-53 AC-4, AC-6, AU-9, SI-7
+// NSA RTB RAIN
+
+[IMPORTANT]
+====
+The case summaries below are based on publicly available reporting,
+government press releases, court documents, and NTSB or regulatory investigation
+findings. Numerical figures — dollar amounts, record counts, fines, and durations
+— are estimates or ranges derived from public sources and may not reflect final
+adjudicated facts. They are presented to illustrate the pattern of failure, not as
+verified statistics.
+====
+
+The dominant failure in unclassified systems is not sophisticated external attack.
+It is _too much legitimate access_, _informal integrity controls_, and _no enforceable
+provenance_ — conditions where access controls are social rather than technical, and
+where data can be modified, copied, or used outside its intended scope without detection.
+
+This page presents representative cases organized by CUI category and failure theme.
+Each case identifies the specific failure class and maps it to the UMRS design property
+that would have changed the outcome. A companion section covers "Trust But Didn't Verify"
+failures that cross categories, and a final section covers the quieter but pervasive
+productivity and trust erosion that occurs even without a headline breach.
+
+NOTE: This document serves two purposes: (1) authoritative background reference for the
+CUI-labeling module and related architecture pages, and (2) source material for outreach
+content. When citing these cases in blog posts or talks, always consult
+`phase1-phase2-positioning.md` to ensure capability claims accurately reflect Phase 1
+vs Phase 2 scope. IMA/EVM Appraisal is a Phase 2 control; labeling, custody metadata,
+and audit are Phase 1.
+
+== The Recurring Pattern
+
+Across every sector — water, transportation, energy, health, agriculture, finance — the
+same failure structure appears:
+
+. *Data is decision-critical.* It drives safety, policy, legal, or economic outcomes.
+. *Access is broad for convenience.* "Anyone in operations can query everything."
+. *Integrity controls are social, not technical.* Compliance is assumed; it is not enforced.
+. *Provenance is informal.* Records can be created, backdated, or modified without attribution.
+. *Audit exists, but enforcement does not.* Logs are present but cannot prove what happened.
+
+When something goes wrong, the organization cannot answer: who saw what, when, and why?
+Was this the original data? Was it modified? Was it used outside its intended scope?
+Decisions lose legitimacy as a result.
+
+MLS-style enforcement is not primarily about secrecy. It is about constraining legitimate
+access, proving provenance, preserving evidentiary value, and allowing systems to be
+trusted by design.
+
+== CUI//PRIVACY — Over-Access and Data Segmentation Failures
+
+=== OPM Breach (2015)
+
+The U.S. Office of Personnel Management stored background investigation records for federal
+employees in a centralized, minimally segmented system. Attackers gained access and
+exfiltrated records including SSNs, financial history, personal interview narratives, and
+foreign contact information for millions of individuals. The data was not classified, but
+was among the most sensitive unclassified records the federal government holds.
+
+*Failure class:* "One big database" architecture. Once inside the perimeter, lateral
+movement was unconstrained. Sensitivity subsets — SSNs, employment history, foreign
+contacts — were not separated by label or access tier. The attacker who could reach one
+record class could reach all of them.
+
+*Human and financial cost:* Millions of federal employee and contractor records exfiltrated.
+Identity theft and blackmail risk for individuals whose foreign contacts were exposed.
+Remediation costs estimated in the hundreds of millions. Long-term counterintelligence
+consequences assessed by the intelligence community.
+
+*UMRS design property:* MLS sensitivity labels on PII subsets. Purpose-based access: a
+"support lookup" operation and a "bulk export" operation require different security
+contexts — the kernel enforces the boundary. Mandatory high-signal audit events for every
+record access and export, not just login events.
+
+=== Equifax Breach (2017)
+
+Equifax stored credit data on approximately 147 million individuals. An unpatched vulnerability
+in a web application framework allowed attackers to move laterally through the environment
+and access a broad swath of stored records. The regulatory settlement exceeded $700 million.
+
+*Failure class:* Insufficient segmentation. Exploiting a single vulnerability provided
+access to large amounts of data that had no additional integrity or access boundaries
+protecting it. The blast radius of one exploit was the entire consumer credit database.
+
+*Human and financial cost:* Approximately 147 million individuals affected. Settlement with
+the FTC, CFPB, and state regulators exceeding $700 million. Long-term credit monitoring
+obligations. Significant reputational and operational damage.
+
+*UMRS design property:* Data labeling by sensitivity class (full SSN vs. partial vs.
+non-PII metadata). Anomaly detection on access volume and time patterns — bulk reads across
+PII records at unusual hours or from unexpected roles are high-signal events. Cryptographic,
+append-only logging for privileged queries and export operations.
+
+=== Twitter Internal Misuse (2019)
+
+Two Twitter employees were charged with using their legitimate access to user account data
+to identify and expose users for foreign intelligence purposes. This was not a hacking
+failure — neither employee circumvented authentication or exploited a vulnerability.
+
+*Failure class:* "Too much legitimate access." Access was role-based but not compartmentalized
+by data sensitivity, purpose, or explicit handling rules. Employee access to account
+records was not treated as a privileged, audited action that required justification. The
+access that served daily support tasks was indistinguishable from access used for foreign
+intelligence collection.
+
+*Human and financial cost:* Federal criminal charges. Users' identities exposed to a foreign
+government. Long-term chilling effect on whistleblower use of the platform.
+
+*UMRS design property:* Sensitivity labels on personal account records. Purpose separation:
+operational access (support ticket resolution) and export-level access (bulk account queries)
+require different security contexts. High-signal audit trails on any query that touches
+account identifiers outside a normal support workflow.
+
+=== Anthem Breach (2015)
+
+Anthem, one of the largest health insurers in the United States, experienced a breach that
+exposed personal and health-insurance-related data for tens of millions of members. The breach
+involved access to centralized data repositories used for both operational and analytics
+purposes.
+
+*Failure class:* Poor segmentation between operational workflows and bulk reporting/analytics
+data. Member identifiers, clinical data, and billing data were not labeled or separated by
+access tier. A compromise of one environment provided access to the full record set.
+
+*Human and financial cost:* Tens of millions of members affected. Significant civil settlement
+reported publicly. Member notification obligations, credit monitoring costs, and regulatory
+scrutiny.
+
+*UMRS design property:* Fine-grained labeling of record classes — member identifiers, clinical
+data, and billing records as separately labeled objects with distinct access requirements.
+Strong separation between the "care operations" domain and the "analytics/reporting" domain.
+Immutable audit trails for any "record of record" access and export.
+
+== CUI//WATER and CUI//ENV — Environmental Data Integrity Failures
+
+=== Flint Water Crisis
+
+Internal EPA memos documented concerns about lead contamination in Flint's water supply
+well before the public health emergency became public. Sampling procedures were altered,
+internal reports were not escalated or enforced, and external stakeholders were given
+incomplete information. Contemporaneous reporting documented EPA concern memos that
+were withheld or delayed; later investigations discussed altered sampling methodology
+and internal actions taken to suppress concerns.
+
+*Failure class:* Data integrity and custody. Water quality measurements were not treated
+as controlled objects with enforced review boundaries. Informal handling allowed concerns
+to be suppressed without attribution. There was no mechanism to create a tamper-visible
+record of what was known and when.
+
+*Human and financial cost:* Long-term public health harm including lead exposure in children.
+Property value collapse. Criminal convictions and civil liability. Billions in infrastructure
+remediation costs. Lasting erosion of public trust in government data and government institutions.
+
+*UMRS design property:* Phase 1 — CUI labeling on water quality reports creates machine-readable
+context that the document is decision-critical and subject to handling requirements; the label
+itself establishes chain of custody. Phase 2 — IMA/EVM Appraisal would treat the water quality
+memo as a measured artifact; unauthorized modification would be detected at the kernel level.
+Append-only audit log creates a forensic record of what was seen and when, not writable by
+userland processes.
+
+=== Falsified Drinking Water Reports (Multiple DOJ Cases)
+
+Multiple federal prosecutions have involved falsification of drinking water sampling results
+and laboratory reports submitted for Clean Water Act compliance:
+
+* A Town of Cary employee pleaded guilty to falsifying drinking-water sampling results and
+  documentation submitted to regulators.
+* A Mississippi lab director was sentenced for falsifying over 1,000 water-related laboratory
+  reports submitted for Clean Water Act compliance.
+* A CEO pleaded guilty to fabricating hundreds of false discharge monitoring reports required
+  under the Clean Water Act.
+
+*Failure class:* No tamper-evident provenance linking sample collection to reported results.
+Corrections could be made without attribution. Raw instrument data was not cryptographically
+bound to submitted compliance reports. The "raw measurement → reported compliance summary"
+chain was entirely social — dependent on individual integrity, not structural enforcement.
+
+*Human and financial cost:* Federal convictions. Compromised public health data used for
+regulatory decision-making. Compliance records that cannot be trusted retroactively, requiring
+re-inspection or remediation. Environmental harm from decisions based on falsified data.
+
+*UMRS design property:* Chain of custody for samples — who collected, where, when, and handling
+steps — signed and labeled at collection. Immutable lab results with corrections as append-only
+attributed events. Automated raw-to-reported pipeline with cryptographic binding: a regulator-facing
+compliance report can be traced to raw instrument output. Separation of duties between sampling,
+lab analysis, and compliance submission — no single actor controls the full chain.
+
+=== Water Rights and Land Valuation (Western U.S. Pattern)
+
+Water-rights adjudication in the Western United States depends on flow measurements, usage
+logs, historical diversion records, and environmental impact assessments. When these records
+are informally stored, manually editable, shared without provenance, or reused outside their
+original regulatory context, the results include inflated land valuations, disputed property
+sales, long-running civil litigation, and regulatory paralysis.
+
+There are many documented local and state-level cases where the data itself became contested —
+not because it was secret, but because it was not authoritative.
+
+*Failure class:* Provenance and integrity. Controlled does not mean secret. It means
+decision-critical. Water rights records determine property values, resolve disputes, and drive
+infrastructure investment. When those records can be silently edited or their provenance is
+informally asserted, the authority of the data collapses.
+
+*UMRS design property:* Append-only custody records for measurement data. Labels that mark
+data as decision-critical and subject to challenge-in-place rules. Separation between
+operational data collection and regulatory submission, with a controlled transformation step
+that creates an auditable record.
+
+== CUI//TRAN and CUI//CRIT — Inspection Record Falsification
+
+=== Rail Transit Inspection Falsification (WMATA, MBTA, LIRR)
+
+Federal investigations and prosecutions have alleged that rail transit inspectors at multiple
+agencies falsified bridge, tunnel, and track inspection records — reporting inspections as
+completed when they were not performed, or altering records after the fact:
+
+* WMATA: reports that inspectors falsified bridge and tunnel inspection documents for years.
+* MBTA: federal charges alleging track inspection reports were falsified — inspections reported
+  as completed but not performed.
+* LIRR: prosecutors alleged a faked inspection was tied to equipment later involved in a
+  derailment.
+
+*Failure class:* Inspection records were mutable, not tamper-evident. There was no cryptographic
+binding between the inspection event, the evidence (photographs, sensor data), and the written
+record. Corrections could be made silently. The inspector who performed — or did not perform —
+the inspection was also the party who controlled the record of that inspection.
+
+*Human and financial cost:* Federal investigations and active prosecutions. Infrastructure
+risk from deferred maintenance justified by falsified records. Direct safety exposure for
+commuters. Loss of institutional credibility for agencies whose entire safety posture depends
+on record integrity.
+
+*UMRS design property:* "Inspection record" as a controlled object — write-once, with amendments
+as append-only attributed events. Separation of duties: the inspector cannot be the sole
+approver; supervisor QA must attest independently. Evidence binding: photographs and sensor
+proofs are hashed and tied to the record at the time of collection, not retroactively.
+Mandatory access control on who can close an inspection item. Purpose scoping: operations
+read, compliance read, and investigative read require different security contexts.
+
+=== Boeing 737 MAX and FAA Disclosures
+
+The DOJ documented that Boeing employees made misleading statements and omissions to the FAA
+regarding the 737 MAX MCAS system, impeding safety oversight. The gaps were not primarily
+about secrecy — they were about provenance and accountability. There was no immutable record
+of what was communicated to regulators and when, and no structural separation between
+engineering, safety, and program management approval chains.
+
+*Failure class:* Provenance gaps in regulatory disclosures. Engineering, safety, and program
+management approvals were not structurally separated. The regulator-facing disclosure packet
+was not a controlled artifact with change control — it was a document managed informally.
+There was no mechanism to prove what was disclosed, to whom, in what version, and with what
+internal attestations.
+
+*Human and financial cost:* Two crashes; 346 deaths. Criminal charges against Boeing (DOJ
+deferred prosecution agreement). Multi-billion-dollar liability. Global grounding and loss
+of customer confidence. Long-term FAA oversight changes.
+
+*UMRS design property:* Regulator disclosure packet treated as a controlled artifact with
+full change control. Mandatory internal attestations before disclosure. Immutable record of
+what was disclosed when — not writable by the party making the disclosure. Structural
+separation between engineering and safety approval authorities as distinct labeled domains.
+
+== CUI//CRIT — Pipeline Safety Record Falsification
+
+Federal cases have involved safety inspectors fabricating hundreds of gas pipeline test
+results and covering the falsification with paperwork. State-level investigations have
+alleged similar patterns at regulated utilities:
+
+* SDNY: safety inspectors charged with fabricating hundreds of gas pipeline test results and
+  covering the falsification with paperwork.
+* Maryland PSC investigation: an allegation validated that a BGE inspector falsified gas
+  pipeline inspection reports for years; the report cited gaps in QA and oversight.
+* California regulators alleged that PG&E falsified pipeline safety records.
+
+*Failure class:* Field test results were not bound to the device, user, time, or location
+of the actual test. Paperwork could be created retrospectively. No independent attestation
+separated the contractor who performed the test from the record of the test result. The
+compliance chain was entirely social.
+
+*Human and financial cost:* Federal convictions. Infrastructure risk from accepted compliance
+records that were never actually validated. Regulatory exposure for utilities. The risk is
+not theoretical — gas pipeline failures have caused casualties in cases where inspection
+records were inaccurate.
+
+*UMRS design property:* Field test results as immutable, signed events: device identity, user
+identity, timestamp, and location are bound to the result at the time of recording. Contractor
+generates results; independent verifier attests — they cannot be the same party. Append-only
+corrections with mandatory reason codes; no silent edits. Auditable chain from raw measurement
+to reported compliance summary.
+
+== CUI//TRAN and CUI//ENV — Emissions Compliance System Compromise
+
+=== Volkswagen Defeat Device (DOJ / EPA)
+
+The DOJ and EPA documented that Volkswagen deployed software designed to detect when
+emissions testing was occurring and alter engine behavior to pass tests — while the same
+vehicles emitted pollutants far above legal limits under normal driving conditions. The
+compliance measurement system itself was the mechanism of fraud.
+
+*Failure class:* The compliance evidence pipeline was not trustworthy because the system
+producing it had been intentionally compromised. Separate engineering and compliance
+attestation authority did not exist — the same team that designed the defeat device
+controlled the compliance reporting pathway. There was no independent integrity check on
+the test results that could have detected the behavioral discrepancy.
+
+*Human and financial cost:* Multi-billion-dollar settlement with the DOJ and EPA. Recall
+obligations for millions of vehicles. Criminal charges. Environmental harm from vehicles
+emitting illegal levels of NOx over years of operation.
+
+*UMRS design property:* Strong integrity controls and independent verification on compliance
+measurement pipelines — the measurement pipeline and the product pipeline should be separate
+labeled domains with different approval authorities. Tamper-evident evidence bundles: raw
+test data, metadata, and signatures are bound at the time of test execution. Auditable
+traceability from test configuration to submitted reports.
+
+== CUI//TRAN — Federal Railroad Administration Safety Data
+
+Railroads generate massive volumes of track inspection data, sensor readings, maintenance
+logs, crew reports, and hazard assessments. NTSB and FRA investigations have repeatedly
+noted incomplete, inconsistent, or untrusted records as contributing factors in deferred
+maintenance decisions, missed early warnings, and post-incident attribution disputes.
+
+Documented failure modes include: data siloed by contractor with no handoff protocol;
+inconsistent formats that prevent comparison; manual "normalization" that introduces errors;
+reports downgraded to meet performance metrics; and incomplete record transfer during mergers.
+
+*Failure class:* Operational safety data treated as ordinary administrative records. No
+immutability, no purpose scoping, no enforcement of who can edit what and under what authority.
+
+*UMRS design property:* Rail safety data should be immutable once recorded, labeled by
+criticality (ops vs. compliance vs. investigation), and segregated by purpose. Without
+these controls, the system produces plausible deniability rather than accountability.
+
+== CUI//AGR — Agriculture and Food Supply Chain
+
+=== FDA Romaine E. coli Investigations
+
+FDA outbreak investigation summaries, and third-party reporting on those investigations,
+have noted that poor shipping and recordkeeping hampered traceback. Traceback challenges
+are a recurring theme in FDA investigations — when lot, batch, and shipping records are
+incomplete, inconsistent, or retroactively modified, the agency cannot precisely scope
+a recall and must issue overly broad advisories that cause unnecessary economic harm.
+
+*Failure class:* Incomplete, inconsistent, or retroactively cleaned shipping and traceability
+records. Slow traceback during outbreaks. Inability to precisely narrow the source of
+contamination because records do not have enforced integrity or chain-of-custody properties.
+
+*Human and financial cost:* Delayed response during active outbreaks. Broad recalls that
+harm producers not involved in the contamination event. Economic disruption across supply
+chains. Long-term erosion of public trust in food safety systems.
+
+*UMRS design property:* Labeling and integrity controls on lot/batch/shipping records — these
+records cannot be retroactively "cleaned up." Each handoff creates a signed custody transfer
+receipt for the shipment record set. Purpose separation: operational logistics, regulatory
+reporting, and public communications are distinct labeled domains. Fast, queryable audit trail
+for "who changed lot lineage data and why."
+
+=== USDA Agricultural Data and Market Impact
+
+Agricultural data includes crop yield forecasts, soil composition data, water usage records,
+pesticide application records, and livestock health metrics. When preliminary or pre-release
+yield or disease data is leaked or selectively shared before finalized reports, the consequences
+include commodity futures market distortion, land price speculation, insurance fraud or denial,
+bad planting decisions driven by manipulated forecasts, and food-safety delays.
+
+*Failure class:* No enforcement of who can see preliminary vs. finalized data. No provenance
+on measurements. No separation between operational data collection and market-impact dissemination.
+The timing, integrity, and scope of agricultural data all matter — not just its secrecy.
+
+*UMRS design property:* Labels that distinguish preliminary measurements from finalized reports,
+with different access tiers. Immutable raw data that cannot be altered to move market outcomes.
+Controlled transformation: the step from raw collection to published forecast is a labeled
+event with attestation, not a casual file edit.
+
+== CUI//HLTH — Public Health Data
+
+=== COVID-19 Reporting and Dashboard Integrity
+
+During the COVID-19 pandemic, problems with hospital capacity data, test results, reporting
+dashboards, and epidemiological models were documented across multiple jurisdictions:
+
+* Manual aggregation of data from disparate state and local sources with inconsistent definitions.
+* Retroactive edits to dashboards and reported figures — sometimes attributed to "corrections,"
+  sometimes unexplained.
+* Loss of raw source data; only the aggregated report survived.
+* Inconsistent case definitions across jurisdictions that made comparison unreliable.
+
+*Failure class:* No authoritative, enforced data handling for public health decision data.
+Retroactive edits were made without attribution. Raw data and processed data existed in
+the same mutable space with no structural separation.
+
+*Human and financial cost:* Policy whiplash as figures were revised. Public distrust in
+reported statistics. Delayed response decisions based on inaccurate situational awareness.
+Economic disruption from policy decisions that were later revised when data integrity
+problems surfaced.
+
+*UMRS design property:* Raw source data as a controlled, immutable object. Aggregation and
+transformation steps as labeled events with attribution. Separation between raw collection,
+reporting, and public communication domains — each requiring different authorization.
+Retroactive edits are append-only corrections with mandatory reason codes, not silent overwrites.
+
+== Digital Evidence and Legal Proceedings
+
+These cases illustrate that the consequences of missing provenance are not limited to safety
+or compliance. They extend to the legal system's ability to use digital artifacts as evidence.
+
+=== United States v. Vayner
+
+A federal conviction was vacated on appeal because the prosecution could not establish
+provenance for social-media content offered as evidence. Specifically, it could not prove
+the content was created by the defendant and had not been altered. The conviction was
+not overturned because the facts were wrong — it was overturned because the system produced
+no mechanism for proving the facts.
+
+*Failure class:* No provenance controls. There was no cryptographic binding of origin,
+integrity, and custody metadata to the artifact.
+
+*UMRS design property:* A file managed within a UMRS custody chain carries a kernel-level
+audit record of its origin, handling events, and integrity state. The artifact's provenance
+is not an assertion by the party presenting it — it is a record created by the kernel at
+the time of each event.
+
+=== Lorraine v. Markel
+
+A frequently cited e-discovery case in which a court excluded emails and digital records
+because the parties failed to properly authenticate them. The records existed; their
+authenticity could not be established. The legal outcome was determined not by what happened
+but by whether it could be proven to have happened.
+
+*UMRS lesson:* These failures are not about secrecy. They demonstrate that when systems do
+not treat digital artifacts as controlled objects with enforced lifecycle rules, those
+artifacts lose evidentiary weight. Custody trust and content trust must be structurally
+enforced, not assumed.
+
+=== Municipal and Public-Sector Database Misuse (Pattern)
+
+Across U.S. municipalities and public agencies, police, DMV, tax, and welfare databases
+routinely see documented internal misuse — employees looking up friends, ex-spouses,
+celebrities, or journalists. Discovery almost always occurs after external harm, not
+proactively. Insider threat in these contexts is not exotic; it is a predictable outcome
+of systems that know who logged in but not why the access was justified, and that do not
+enforce sensitivity-based separation between different classes of records.
+
+*Failure class:* Access controls are role-based but not compartmentalized by data sensitivity
+or purpose. Audit exists, but cannot drive enforcement. Access volume is indistinguishable
+from normal operations until harm surfaces.
+
+*UMRS design property:* Sensitivity labels that require explicit purpose justification at
+access time. High-signal audit events for queries on records outside normal operational
+scope. Anomaly detection on "celebrity lookup" patterns — high-volume or unusual access
+to specific record classes.
+
+== Trust But Didn't Verify — Cross-Category Failures
+
+This section covers cases where the root cause was not missing data or missing controls,
+but the decision to trust a system, process, or representation without independent
+verification. These cases sit at the intersection of multiple CUI categories and represent
+a structurally distinct failure class.
+
+=== Mars Climate Orbiter (1999)
+
+A $125 million spacecraft was lost because one engineering team used metric units while
+another used English units in navigation software. The mismatch was not detected until
+the spacecraft entered the Martian atmosphere on the wrong trajectory. Each team assumed
+the data flowing between systems was in the units their system expected. No one verified.
+
+*Failure class:* Data reused outside its original context without verified provenance or
+unit-type enforcement. There was no mechanism to prevent a "metric-labeled" calculation
+from being consumed by an "English-units-expecting" process. The trust in the interface
+was assumed, not verified.
+
+*UMRS design property:* MLS labels can tag data by processing context. A process expecting
+data in one labeled context cannot ingest a file labeled for a different context — the
+kernel denies the flow. Type-safe access controls prevent context mismatches at the data
+layer, not only at the application layer. Phase 2 capability.
+
+=== Deepwater Horizon Alarm Bypass
+
+Testimony in post-incident proceedings revealed that the Deepwater Horizon general alarm
+system had been placed in "bypass" mode to prevent false alarms from waking workers.
+When methane gas reached the drill floor, the alarm did not trigger. Workers had no
+warning before the explosion.
+
+The bypass was not a secret. It had been in place for an extended period. No one
+questioned whether the configuration was appropriate, and there was no system that would
+have flagged the safety-critical state as requiring authorization or review. The bypass
+was trusted as an operational convenience without being verified as an acceptable safety
+configuration.
+
+*Failure class:* A critical safety configuration was modified for operational convenience
+without enforced integrity controls. The bypass state was not treated as a controlled
+object requiring change authorization, independent review, or audit trail. The safety
+configuration was trusted at face value.
+
+*Human and financial cost:* 11 deaths. Explosion and fire that destroyed the rig.
+Environmental catastrophe. Estimated total costs exceeding $65 billion.
+
+*UMRS design property:* Phase 2 — IMA/EVM Appraisal would treat the alarm configuration
+file as a controlled object. Any modification to the bypass state would require authorization
+through the controlled change path; unauthorized modification would be detected by the
+kernel before the file was acted upon. The safety-critical configuration cannot be silently
+altered to an untrusted state.
+
+=== Boeing 737 MAX and FAA Oversight (Trust Without Verification)
+
+The Boeing 737 MAX case also exemplifies the "trust but didn't verify" failure at the
+regulatory oversight level. The FAA had, over time, delegated an increasing portion of
+safety certification work to Boeing employees acting as FAA designees. The regulator
+trusted the manufacturer's representations and internal processes rather than independently
+verifying the safety case.
+
+When Boeing employees made misleading statements to the FAA about the MCAS system, there
+was no structural mechanism — no immutable record, no independent attestation chain —
+that would have made the misrepresentation visible. The FAA's trust in Boeing's internal
+processes was not backed by verifiable provenance.
+
+*Failure class:* Regulator trusted the manufacturer's representations without a mechanism
+to verify them independently. The oversight structure assumed good faith rather than
+requiring technical proof.
+
+*UMRS design property:* A safety disclosure treated as a controlled artifact with
+cryptographic attestation creates a record the regulator can verify independently.
+The disclosing party's internal approval chain is separate from the regulatory submission
+chain — the two domains have different labels and different attestation requirements.
+
+=== Volkswagen Defeat Device (Trust Without Integrity Verification)
+
+The emissions compliance case also belongs here. The EPA and the public trusted the
+emissions certification records because they appeared to come from a legitimate compliance
+process. The actual measurement system had been compromised from within — the compliance
+measurements were trusted without any independent integrity verification of the measurement
+pipeline itself.
+
+*Failure class:* Compliance measurement pipeline trusted without integrity verification.
+The entity responsible for compliance was also responsible for the integrity of the
+measurement system. No independent verification existed that could have detected the
+behavioral discrepancy between test conditions and real-world operation.
+
+*UMRS design property:* Tamper-evident evidence bundles with raw test data, metadata,
+and signatures bound at execution time. The measurement pipeline and the product pipeline
+as structurally separate labeled domains with different approval authorities.
+
+== The Quiet Killer — Productivity and Trust Erosion
+
+These are not headline failures. They do not appear in court records or NTSB reports.
+But they represent the largest recurring cost of systems that lack enforceable data
+separation, integrity, and provenance.
+
+=== The Shadow System Problem
+
+When engineers and analysts cannot trust the authoritative system, they build alternatives:
+
+* Engineers maintain local copies of data "just in case" the central system is wrong.
+* Analysts duplicate storage rather than trusting a single source of record.
+* Teams export data to spreadsheets and manage reconciliation manually.
+* Legal insists on redundant exports rather than trusting system attestations.
+
+Each shadow system represents a fork in provenance. When the fork is used to drive a
+decision, no one knows which version was authoritative. When an audit occurs, there are
+now two records of what happened, and they may disagree.
+
+=== Defensive Documentation
+
+In organizations where data integrity is uncertain, documentation proliferates not to
+communicate but to protect:
+
+* Managers restrict sharing "just to be safe."
+* Auditors ask for screenshots instead of system attestations.
+* Administrators are over-privileged "just in case" they need access they don't have today.
+* Everyone assumes data might be tainted and acts accordingly.
+
+The organization pays a constant operational tax: slower workflows, more meetings,
+more manual reconciliation, reduced willingness to automate, and reduced ability to
+make confident decisions quickly.
+
+=== How Often Does This Actually Happen?
+
+These are conservative, defensible estimates based on breach studies, insider-risk
+research, and court and regulatory caseloads:
+
+* *Internal misuse or over-access (not hacking):* Occurs in roughly 20–30% of organizations
+  per year. This includes curiosity access, policy-violating lookups, data copied "just in case,"
+  and privileged users exceeding need-to-know. Most cases are never externally reported.
+
+* *Digital evidence weakened or excluded in civil or criminal cases:* Affects thousands of cases
+  per year in the United States alone. Not all lead to dismissal — but evidence weight is reduced,
+  settlements are favored over trial, and appeals succeed where provenance is weak. Courts do not
+  say "your system was insecure." They say "you did not prove authenticity." That distinction
+  matters.
+
+* *Productivity erosion due to lack of trust controls:* Daily, not annual. Staff re-verify data
+  manually. Managers restrict sharing. Teams duplicate storage instead of trusting a single source.
+  Legal and compliance reviews slow everything. This is the quiet killer.
+
+=== Why MLS-Style Thinking Addresses the Quiet Killer
+
+MLS is not about secrecy. In high-assurance thinking, "controlled" means decision-critical,
+not classified. The same controls that prevent foreign intelligence collection in a classified
+environment prevent falsification, over-access, and evidentiary collapse in an unclassified one.
+
+The productivity tax of distrust is not a character flaw in the organization. It is a rational
+response to systems that cannot prove their own integrity. When the system can prove it —
+when labels are authoritative, custody is structural, and the audit log is tamper-visible —
+the rational response changes. Operators trust the system. Auditors attest to system records
+instead of screenshots. Automation becomes tractable.
+
+This is what UMRS is designed to enable.
+
+== Summary Table — Failure Classes and UMRS Design Properties
+
+[cols="2,1,3"]
+|===
+| Failure class | Category | UMRS design property
+
+| "Too much legitimate access" — lateral movement, bulk export, insider misuse
+| CUI//PRIVACY, CUI//HLTH
+| MLS sensitivity labels and category-based compartments constrain access by type of data,
+  not just job title. Purpose-based contexts enforce that "support lookup" and "bulk export"
+  are different operations with different authorization requirements.
+
+| Falsified records — inspection reports, sampling results, safety configurations
+| CUI//TRAN, CUI//CRIT, CUI//WATER
+| Phase 1: CUI labels mark records as controlled objects subject to handling requirements.
+  Phase 2: IMA/EVM Appraisal — files are measured at the kernel level; unauthorized
+  modifications are detected or blocked before the file is used.
+
+| Provenance gaps — cannot prove origin, chain of custody, or what was seen when
+| All categories
+| Kernel-level audit (SELinux AVC, IMA measurement log in Phase 2) creates tamper-visible
+  provenance records not writable by userland processes. Phase 1: custody metadata and
+  signed labels establish the chain of custody.
+
+| Context mismatches — data reused outside intended purpose or processing context
+| CUI//TRAN, CUI//ENV, engineering
+| Phase 2: MLS labels as machine-enforced tags on processing context; the kernel prevents
+  flows between mismatched labeled domains.
+
+| Accountability gaps — cannot attribute modifications to specific identity and time
+| All categories
+| Signed audit log chains; Phase 2: EVM-protected xattrs; append-only kernel measurement
+  log creates a forensic record not alterable by any userland process.
+
+| Trust without verification — compliance systems, safety configs, regulator disclosures
+| CUI//CRIT, CUI//ENV, CUI//TRAN
+| Controlled artifact model: the measurement pipeline and the product pipeline are separate
+  labeled domains. Phase 2: IMA/EVM Appraisal on safety-critical configuration objects.
+  Tamper-evident evidence bundles with raw data and signatures bound at execution time.
+
+| Productivity and trust erosion — shadow systems, defensive documentation
+| All categories
+| Authoritative labeling that operators can trust eliminates the rational basis for shadow
+  systems. When the system can prove its own integrity, the operational tax of distrust goes
+  away.
+|===
+
+== See Also
+
+* xref:security-concepts:integrity-and-provenance.adoc[Integrity and provenance definitions]
+* xref:architecture:mls-label-model.adoc[MLS label model and CUI mapping]
+* xref:reference:compliance-frameworks.adoc[Compliance frameworks registry]
+* xref:deployment:ima-evm-setup.adoc[IMA/EVM setup]

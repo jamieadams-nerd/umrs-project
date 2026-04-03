@@ -70,7 +70,7 @@ pub enum EncryptionSource {
 ///
 /// NIST SP 800-53 SC-28 / SI-7.
 /// NSA RTB: Provenance Verification, Fail-Closed, Non-Bypassable.
-#[must_use]
+#[must_use = "encryption detection result is required for at-rest protection posture; discarding it means encryption status goes unrecorded"]
 pub fn detect_mount_encryption(mount_point: &Path) -> EncryptionSource {
     #[cfg(debug_assertions)]
     let t0 = std::time::Instant::now();
@@ -168,7 +168,7 @@ fn find_mount_entry(mount_point: &Path) -> Option<MountEntry> {
 /// Returns `false` on any read or resolve error — fail-closed.
 ///
 /// NIST SP 800-53 SC-28 / SI-7.
-#[allow(clippy::collapsible_if)]
+#[expect(clippy::collapsible_if, reason = "nested ifs reflect independent guard conditions; collapsing would obscure the two-stage resolve → probe logic")]
 fn check_luks_encrypted(dev_path: &str) -> bool {
     // Canonicalize /dev/mapper/X -> /dev/dm-N (or similar).
     let Ok(real_path) = std::fs::canonicalize(dev_path) else {

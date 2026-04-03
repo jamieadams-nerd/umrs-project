@@ -53,6 +53,8 @@
 //!   `log::warn!` producing auditable anomaly records.
 //! - **NIST SP 800-218 SSDF PW.4**: Secure coding — fail-closed behavior (PW.4.1),
 //!   ephemeral key management to limit exposure.
+//! - **FIPS 180-4**: Secure Hash Standard — SHA-256 used for HMAC-based
+//!   cache integrity verification.
 
 use std::path::PathBuf;
 use std::time::{Duration, Instant};

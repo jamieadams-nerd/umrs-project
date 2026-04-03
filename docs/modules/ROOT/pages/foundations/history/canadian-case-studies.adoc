@@ -1,0 +1,840 @@
+= Canadian High-Assurance Failure Case Studies
+:toc: left
+:description: Canadian incidents demonstrating the cost of missing integrity, provenance, access control, and audit in systems handling Protected and sensitive information — and how high-assurance design would have changed outcomes.
+
+// NIST SP 800-53 AC-4, AC-6, AU-9, SI-7
+// TBS Standard on Security Categorization, Appendix J
+// NSA RTB RAIN
+
+[IMPORTANT]
+====
+The case summaries below are based on publicly available reporting,
+government press releases, Auditor General reports, Privacy Commissioner
+findings, Transportation Safety Board reports, and court documents.
+Numerical figures (dollar amounts, record counts, durations) are estimates
+or ranges from public sources and may not reflect final adjudicated facts.
+They are presented to illustrate the pattern of failure, not as verified
+statistics.
+====
+
+This page presents Canadian incidents that parallel the
+xref:foundations/history/case-studies.adoc[US failure case studies],
+mapped to the Treasury Board Standard on Security Categorization
+(Protected A/B/C) and to the UMRS design properties that would have
+changed the outcome.
+
+== The Canadian Context
+
+Canadian federal information is categorized under the TBS Standard on
+Security Categorization as Protected A, Protected B, or Protected C
+based on the injury that unauthorized disclosure, modification, or
+unavailability could reasonably be expected to cause:
+
+* *Protected A* — could cause limited or moderate injury to an individual,
+  organization, or government.
+* *Protected B* — could cause serious injury. This is the most common
+  tier for personal information held by federal departments (tax records,
+  immigration files, health data, personnel records).
+* *Protected C* — could cause extremely grave injury outside the national
+  interest. Rare in practice; most information at this severity crosses
+  into the Classified tier.
+
+The recurring Canadian failure pattern mirrors the US pattern: broad
+legitimate access, social rather than technical integrity controls,
+absent or insufficient audit trails, and systems trusted without
+verification.
+
+== Protected B — Federal Government Data Breaches
+
+=== CRA / ESDC GCKey Credential Stuffing (2020)
+
+From July to August 2020, attackers used credential-stuffing techniques
+against the Canada Revenue Agency's sign-in portal and Employment and
+Social Development Canada's GCKey authentication service. Using
+credentials stolen from prior breaches, attackers accessed, modified,
+and created new accounts — redirecting COVID-19 Emergency Response
+Benefits (CERB) payments and exfiltrating sensitive financial, banking,
+and employment data.
+
+*Protected tier:* Protected B — tax records, banking information,
+employment history, SIN.
+
+*Scale:* At least 48,110 CRA My Accounts were impacted. The CRA
+reported over 31,000 confirmed privacy breaches between May 2020 and
+August 2024.
+
+*Failure class:* Over-access, no compartmentalization, insufficient
+authentication controls. Once an attacker presented valid credentials,
+no secondary verification or anomaly detection constrained access.
+The Privacy Commissioner found both departments contravened section 8
+of the Privacy Act.
+
+*Consequence:* Financial hardship, identity theft, damaged credit
+scores, and emotional distress for tens of thousands of Canadians.
+Class action certified by the Federal Court of Canada.
+
+*UMRS control pattern:* MLS labeling of PII subsets by sensitivity
+(banking data vs employment history vs tax assessment). Purpose-based
+access: "self-service lookup" and "benefit application" require
+different security contexts. Anomaly detection on access volume and
+patterns. Mandatory high-signal audit events for account modification
+and payment redirection.
+
+*US parallel:* OPM breach (2015) — same "one big database" failure
+where lateral movement was unconstrained once inside.
+
+*Sources:*
+
+* Office of the Privacy Commissioner, Special Report to Parliament
+  (2024-02-15): https://www.priv.gc.ca/en/opc-actions-and-decisions/ar_index/202324/sr_pa_20240215_gckey/
+* CBC News, CRA privacy breaches reporting
+* Federal Court class action certification: _Rice Harbut Elliott LLP v. CRA_
+
+=== BGRS / SIRVA Military Relocation Data Breach (2023)
+
+In September 2023, Brookfield Global Relocation Services (BGRS) and
+SIRVA Canada — contractors providing relocation services for DND, RCMP,
+and federal personnel since 1995 — reported unauthorized access to
+government personnel information. Any personal and financial information
+that employees provided to the companies during relocation may have been
+compromised.
+
+*Protected tier:* Protected B — military and RCMP personnel records,
+financial information, passport data.
+
+*Scale:* Potentially 480,000 individuals affected (anyone who used
+relocation services from 1999 onward, based on approximately 20,000
+relocations per year).
+
+*Failure class:* Third-party trust without verification. The Government
+of Canada trusted a contractor to safeguard Protected B data for
+24 years without adequate oversight of the contractor's security
+posture.
+
+*Consequence:* Government provided credit monitoring services and
+reissued valid passports for relocated personnel.
+
+*UMRS control pattern:* Data labeling by sensitivity class with
+mandatory encryption and access controls that persist when data is
+held by third parties. Periodic attestation of contractor security
+posture. Audit trail for all access to personnel records, including
+contractor access.
+
+*US parallel:* OPM breach — same category (personnel records),
+same scale, same failure (trusted without verification).
+
+*Sources:*
+
+* DND update on BGRS/SIRVA breach (2023-11):
+  https://www.canada.ca/en/department-national-defence/maple-leaf/defence/2023/11/update-privacy-breach-return-to-service-brookfield-global-relocation-services-sirva-canada.html
+* CTV News (2023-11-20): current and former public service, RCMP,
+  military members affected
+
+=== IRCC Unauthorized Employee Access
+
+Immigration, Refugees and Citizenship Canada (IRCC) identified twelve
+employees who violated the department's Network Acceptable Use Policy
+by accessing sensitive immigration files without authorization —
+checking the status of files for themselves, family members, friends,
+or acquaintances, or simply out of curiosity. In a separate incident,
+497 emails containing personal information were sent to wrong
+recipients due to a spreadsheet misalignment.
+
+*Protected tier:* Protected B — immigration files, biometric data,
+visa applications.
+
+*Failure class:* Over-access and insider misuse. Employees had
+broad access not constrained by purpose or compartment. No
+technical enforcement of "need to know."
+
+*Consequence:* Privacy Commissioner investigation. In a separate
+finding, CSIS received complete visa application packages from IRCC
+without establishing that the individuals were linked to a threat.
+
+*UMRS control pattern:* Purpose-based access enforcement — "case
+officer reviewing assigned file" and "browsing any file" require
+different security contexts. High-signal audit on access outside
+assigned caseload. Mandatory access control preventing bulk data
+sharing without explicit authorization.
+
+*US parallel:* Twitter internal misuse (2019) — same "too much
+legitimate access" pattern where employees used broad access for
+unauthorized purposes.
+
+*Sources:*
+
+* Office of the Privacy Commissioner, Investigation into IRCC
+  (2024-01-24): https://www.priv.gc.ca/en/opc-actions-and-decisions/investigations/investigations-into-federal-institutions/2023-24/pa_20240124_ircc/
+* IRCC Committee testimony (CIMM, 2022-03-03, 2021-06-02)
+
+== Protected B — Healthcare Data Breaches
+
+=== LifeLabs Data Breach (2019)
+
+LifeLabs, one of Canada's largest medical testing companies performing
+over 100 million laboratory tests annually, disclosed in December 2019
+that hackers had accessed computer systems containing data from
+approximately 15 million customers. Records relating to approximately
+8.6 million unique individuals were confirmed compromised, primarily
+from Ontario and British Columbia.
+
+*Protected tier:* Protected B equivalent (provincial jurisdiction) —
+personal health information, health card numbers, laboratory results,
+demographic data.
+
+*Failure class:* Insufficient segmentation and inadequate security
+controls. Privacy Commissioners from Ontario and British Columbia found
+that LifeLabs "failed to take reasonable steps" to protect clients'
+data while collecting more personal health information than was
+"reasonably necessary."
+
+*Consequence:* Potential class action liability exceeding $1 billion.
+LifeLabs fought for four years to suppress the investigation report,
+losing in court in 2024. Hackers may still hold the data.
+
+*UMRS control pattern:* MLS labeling of health data subsets by
+sensitivity (lab results vs demographic data vs health card numbers).
+Data minimization enforced by policy — collect only what is needed.
+Cryptographic, append-only logging for all access and export events.
+
+*US parallel:* Equifax breach (2017) — same pattern of insufficient
+segmentation where exploiting one path provides access to vast
+amounts of sensitive data.
+
+*Sources:*
+
+* BC OIPC and Ontario IPC Joint Investigation Report (released 2024):
+  https://www.oipc.bc.ca/documents/investigation-reports/2886
+* CBC News (2024-12): LifeLabs data breach report released
+
+=== Ontario Health atHome Data Breach (2025)
+
+A reported data breach affecting Ontario Health atHome exposed personal
+health information for at least 200,000 home-care patients. The breach
+occurred on or around March 17, 2025, but was not made public until
+significantly later.
+
+*Protected tier:* Protected B equivalent — personal health information,
+home-care records.
+
+*Failure class:* Third-party data handling failure and delayed
+notification. The delay between breach discovery and public disclosure
+compounded the harm.
+
+*UMRS control pattern:* Mandatory breach notification timelines
+enforced by system design, not policy alone. Cryptographic binding
+of data to access controls that persist across organizational
+boundaries.
+
+*Sources:*
+
+* CTV News (2025): Ontario Health atHome data breach investigation
+* CBC News (2025): 200,000 home-care patients' information exposed
+
+== Trust Without Verification — Technology Failures
+
+=== Phoenix Pay System (2016–present)
+
+The Phoenix pay system, built by IBM using PeopleSoft software, was
+deployed in 2016 to replace Canada's 40-year-old federal payroll
+system. Within two years, over 20,000 employees reported being
+overpaid, underpaid, or not paid at all. By July 2018, Phoenix had
+caused pay problems for close to 80 per cent of the federal
+government's 290,000 public servants.
+
+*Protected tier:* Protected B — federal employee pay records, banking
+information, personal financial data.
+
+*Scale:* As of 2025, the Phoenix system has cost the government
+more than $5.1 billion. The Auditor General estimates replacing
+Phoenix with Dayforce will cost more than $4.2 billion. The backlog
+stood at over 233,000 pay transactions affecting 133,000 employees
+as of September 2025.
+
+*Failure class:* Trust without verification. The Auditor General
+called Phoenix an "incomprehensible failure," citing "pervasive
+cultural problems" where officials painted a rosy picture for fear
+of telling hard truths, and senior executives buried problems and
+ignored repeated warnings to delay implementation. The original
+sole-source contract with IBM was $5.7 million; it was amended 39
+times and grew to $185 million. IBM has received more than $851
+million over the past decade.
+
+*Consequence:* Federal employees went months without pay. Some faced
+mortgage defaults, inability to pay rent, and severe financial
+hardship. Others were overpaid and faced unexpected tax liabilities.
+The human cost was measured in divorces, mental health crises, and
+at least one employee suicide attributed to pay problems.
+
+*UMRS control pattern:* This is not primarily a data labeling failure
+but a verification and audit failure. UMRS principles apply:
+independent verification of system output against expected state
+(dual-path validation), immutable audit trail of all pay
+transactions, and separation of duties between system deployment
+authority and verification authority. The Phoenix failure
+demonstrates that trusting a system without independent verification
+of its outputs is as dangerous as trusting data without provenance.
+
+*US parallel:* OPM breach — both are cases where the federal
+government trusted a technology system without adequate verification.
+Phoenix is the more severe case: it was not an external attack but
+a system the government built, deployed, and continued operating
+despite known failures.
+
+*Sources:*
+
+* Auditor General of Canada, Report on Phoenix (2018, 2026)
+* CBC News (2025-06): "10 years of mistakes and lessons"
+* IEEE Spectrum: "Canadian Government's Phoenix Pay System an
+  'Incomprehensible Failure'"
+
+=== ArriveCAN Procurement Failure (2020–2024)
+
+The ArriveCAN application, developed for COVID-19 border management,
+became a case study in procurement failure. The Auditor General found
+that CBSA, PHAC, and PSPC "repeatedly failed to follow good management
+practices in the contracting, development and implementation of the
+ArriveCan application." The total cost was deemed "impossible to
+determine" due to poor record-keeping.
+
+*Protected tier:* Protected B — traveller personal information, health
+declarations, border crossing records.
+
+*Failure class:* Trust without verification, audit trail failure,
+procurement integrity failure. In 46 per cent of reviewed contracts,
+there was little to no evidence the requested work was actually
+performed. In 58 per cent, public servants accepted poorly documented
+time sheets or failed to collect them. In 21 per cent of contracts
+with security requirements, subcontractors worked without required
+security clearance. GC Strategies was involved in developing
+requirements that were later used for a competitive contract — which
+was awarded to GC Strategies.
+
+*Consequence:* GC Strategies was awarded 106 contracts worth $92.7
+million across 31 federal organizations (2015–2024). Political fallout
+included parliamentary committee investigations and RCMP referrals.
+
+*UMRS control pattern:* Provenance and attestation for work products
+— every deliverable treated as a controlled artifact with
+cryptographic binding to the producing identity and timestamp.
+Separation of duties: the entity that defines requirements cannot
+be the sole competitor for the resulting contract. Immutable audit
+trail for all procurement decisions and deliverable acceptances.
+
+*Sources:*
+
+* Auditor General of Canada (2024-02-12): "Glaring disregard for basic
+  management and contracting practices":
+  https://www.oag-bvg.gc.ca/internet/English/mr_20240212_e_44430.html
+* CBC News: "Total cost of ArriveCan 'impossible to determine'"
+
+=== eHealth Ontario (2009)
+
+eHealth Ontario's CEO approved approximately $4.8 million in no-bid
+contracts during the agency's first four months of operation, while
+spending $50,000 to refurnish her office and paying consultants up to
+$300 an hour. The subsequent audit concluded the provincial government
+had wasted over $1 billion on electronic health records with
+insufficient results.
+
+*Protected tier:* Protected B equivalent — health records
+infrastructure, patient data systems.
+
+*Failure class:* Procurement integrity failure and trust without
+verification. No enforceable oversight on spending authority. No
+independent attestation that contracted work produced value.
+
+*Consequence:* CEO fired, Minister of Health and Deputy Minister
+resigned. Over $1 billion in public funds spent without commensurate
+health records infrastructure.
+
+*UMRS control pattern:* Separation of spending authority from
+verification authority. Immutable audit trail for procurement
+decisions. Mandatory independent attestation for contract deliverables.
+
+*Sources:*
+
+* Ontario Auditor General's report on eHealth Ontario (2009)
+* Wikipedia: eHealth Ontario
+
+== Environmental and Safety Data Integrity
+
+=== Walkerton Water Crisis (2000)
+
+In May 2000, the drinking water supply of Walkerton, Ontario, became
+contaminated with _E. coli_ O157:H7 and _Campylobacter jejuni_ after
+heavy rainfall washed bacteria from nearby cattle farms into a
+municipal well. Seven people died. More than 2,300 became seriously ill.
+
+*Protected tier:* Protected A (water quality data) — but the injury
+caused by its falsification reached Protected B severity.
+
+*Failure class:* Record falsification and audit absence. Operators
+had falsified chlorine residual records and water quality data for
+years — recording estimated readings as actual measurements, cutting
+short required testing periods. When laboratory tests confirmed
+_E. coli_ contamination on May 17, the operator failed to notify
+public health officials until May 23. Private laboratories were not
+required to report positive contamination results directly to health
+authorities.
+
+*Consequence:* Seven deaths, 2,300+ illnesses. The O'Connor Inquiry
+led to the Safe Drinking Water Act (Ontario) and the Clean Water Act.
+
+*UMRS control pattern:* IMA/EVM appraisal on measurement records —
+a water quality test result becomes a signed, measured artifact.
+Unauthorized modification is detected by the kernel. Chain of custody
+from sample collection through laboratory analysis to regulatory
+submission, with cryptographic binding at each step. Mandatory
+automated notification: a positive contamination result triggers
+immediate notification without depending on operator action.
+
+*US parallel:* Falsified drinking water reports (DOJ cases) —
+identical failure pattern of falsified lab results with no
+tamper-evident provenance.
+
+*Sources:*
+
+* Justice Dennis R. O'Connor, _Report of the Walkerton Inquiry_ (2002)
+* CBC News: "Inside Walkerton: Canada's worst-ever E. coli contamination"
+
+=== NEB / Enbridge Pipeline Audit Suppression
+
+A 15-month National Energy Board investigation of Enbridge, involving
+interviews with over 200 employees, inspections at 20 field locations,
+and review of over 65,000 pages of documents, concluded that Enbridge
+was not adequately addressing threats to public safety from its
+pipelines and was failing to protect whistleblowers. However, the final
+published audit report hid the existence of secret Enbridge
+environmental reports and deleted paragraphs suggesting the pipeline
+operator would have difficulty preventing leaks on aging infrastructure.
+
+*Protected tier:* Protected A/B — pipeline integrity data, safety
+inspection records.
+
+*Failure class:* Regulator-side record modification. The regulatory
+body itself edited its audit findings before publication, removing
+material that would have informed public safety decisions. This is
+not a case of the operator falsifying records — it is a case of the
+regulator suppressing its own findings.
+
+*Consequence:* Two independent engineering experts publicly disagreed
+with the published findings, stating the public should be alarmed
+about how the report was edited.
+
+*UMRS control pattern:* Audit reports as immutable controlled
+artifacts with change control. Any modification to a regulatory
+finding must be an attributed, append-only amendment — not a silent
+deletion. Separation of the investigation function from the
+publication-approval function.
+
+*US parallel:* Boeing 737 MAX / FAA disclosures — same pattern of
+regulatory findings being modified or suppressed before publication.
+
+*Sources:*
+
+* Canada's National Observer (2016-05-02): "Pipeline watchdog hid
+  evidence of secret Enbridge reports"
+
+=== Lac-Megantic Rail Disaster (2013)
+
+On July 6, 2013, an unattended 73-car Montreal, Maine and Atlantic
+Railway freight train carrying crude oil derailed in downtown
+Lac-Megantic, Quebec, resulting in fires and explosions. Forty-seven
+people were killed and more than 30 buildings were destroyed.
+
+*Protected tier:* Protected A — rail safety inspection records,
+operator training records, regulatory compliance data.
+
+*Failure class:* Regulatory oversight failure and trust without
+verification. The Transportation Safety Board found that Transport
+Canada did not provide adequate regulatory oversight despite MMA
+having been identified as having an elevated risk level requiring
+more frequent inspections. Transport Canada never followed up on its
+own order that MMA conduct a risk assessment of single-operator
+trains. By 2013, the ratio of crude oil tank carloads per inspector
+had increased from 14:1 (2009) to 4,500:1.
+
+*Consequence:* 47 deaths, destruction of downtown Lac-Megantic.
+Criminal charges against MMA employees. Regulatory reforms to
+dangerous goods transportation.
+
+*UMRS control pattern:* Regulatory orders as tracked, measured
+artifacts with mandatory completion attestation and escalation on
+non-compliance. Separation of risk assessment from risk acceptance.
+Immutable inspection records with tamper-evident provenance — an
+inspection that was ordered but never performed is a detectable gap,
+not a silent absence.
+
+*US parallel:* Rail transit inspection falsification (WMATA, MBTA,
+LIRR) and Deepwater Horizon — same pattern where safety
+configurations were inadequate and oversight was insufficient.
+
+*Sources:*
+
+* Transportation Safety Board of Canada, Railway Investigation Report
+  R13D0054: https://www.tsb.gc.ca/eng/rapports-reports/rail/2013/r13d0054/r13d0054.html
+* CBC News: Lac-Megantic coverage
+
+== Rail Safety Oversight
+
+=== CN Rail Safety Audit Findings
+
+Transport Canada audits of CN Rail found a "significantly high rate"
+of safety defects — 54 per cent — on inspected locomotives, with
+problems ranging from brake gear defects to excessive oil accumulation.
+Separately, Transport Canada was found to be heavily redacting rail
+safety documents at the request of the companies being regulated,
+with specific safety details blacked out from key reports. A "national
+risk issue" identified at CP in 2014 was never disclosed to the public,
+with CP vetoing any public release of related records.
+
+*Protected tier:* Protected A — inspection records, safety audit data.
+
+*Failure class:* Regulator-operator information asymmetry. The
+regulated entity controlled the release of safety information about
+itself. Inspection records were not treated as public safety
+artifacts with independent custody.
+
+*UMRS control pattern:* Inspection records as controlled objects with
+independent provenance. The entity being inspected cannot control the
+release or redaction of inspection findings. Mandatory access control
+separating the operator's view from the regulator's view from the
+public's view.
+
+*Sources:*
+
+* Auditor General of Canada, Follow-up Audit on Rail Safety (2021):
+  https://www.oag-bvg.gc.ca/internet/English/parl_oag_202102_05_e_43751.html
+* CBC News (2016): "Transport Canada heavily redacting rail safety
+  documents"
+
+== Corporate Espionage and Data Theft
+
+=== Nortel Networks Espionage (2000–2009)
+
+For approximately a decade, hackers — attributed to Chinese
+state-sponsored actors — systematically exfiltrated business plans,
+research and development reports, employee emails, and other documents
+from Nortel Networks. In a single seven-hour session on April 24, 2004,
+779 documents were downloaded using the compromised account of Nortel
+CEO Frank Dunn. A total of 1,488 documents were confirmed downloaded.
+
+*Protected tier:* Not government data, but equivalent to Protected B
+for the purposes of this case study — proprietary corporate R&D,
+strategic business plans, executive communications.
+
+*Failure class:* Trust without verification and absent audit response.
+Nortel approached the RCMP about the espionage in 2004 but received
+little support from Canadian law enforcement or intelligence agencies.
+CSIS only engaged shortly before Nortel filed for bankruptcy in 2009.
+
+*Consequence:* A former Nortel security adviser stated the espionage
+was "absolutely" a "considerable factor" in Nortel's collapse. Nortel
+filed for bankruptcy in 2009. The loss of Canadian telecommunications
+IP had strategic national consequences.
+
+*UMRS control pattern:* MLS labeling of corporate IP by sensitivity
+and compartment. Anomaly detection on bulk document access — 779
+documents in seven hours using a CEO's account is a detectable
+pattern. Mandatory audit on executive-level access. Data loss
+prevention controls that enforce flow boundaries.
+
+*Sources:*
+
+* Globe and Mail / Bloomberg (2020): "Did China Steal Canada's Edge
+  in 5G From Nortel?"
+* CBC News: "Nortel hit by suspected Chinese cyberattacks for a decade"
+* Global News (2020): "Inside the Chinese military attack on Nortel"
+
+== Compliance System Integrity
+
+=== Volkswagen Emissions — Canadian Prosecution (2020)
+
+Between January 2008 and December 2015, nearly 128,000 Volkswagen and
+Audi diesel vehicles equipped with defeat devices were imported into
+Canada, along with over 2,000 Porsche vehicles. The defeat devices
+caused vehicles to emit pollutants at up to 35 times the legal Canadian
+standard during normal driving while passing laboratory emissions tests.
+
+*Protected tier:* Protected A — emissions compliance data, vehicle
+certification records.
+
+*Failure class:* Compliance system itself was compromised. The
+emissions testing system produced results that appeared valid but
+were the product of deliberate deception engineered into the device
+under test. This is a provenance failure: the test results had no
+integrity binding to actual operating conditions.
+
+*Consequence:* Volkswagen pleaded guilty to 60 counts under the
+Canadian Environmental Protection Act (2020-01-22) and was fined
+CA$196.5 million — more than 20 times Canada's previous record
+environmental fine. Separate consumer class action settlements
+totalled up to $2.39 billion.
+
+*UMRS control pattern:* Provenance binding between the conditions
+under which a measurement is taken and the reported result.
+Independent attestation: the entity producing the data cannot be
+the sole verifier. IMA/EVM-style measurement of compliance
+configurations — the software state during testing must be the same
+software state during production use.
+
+*US parallel:* VW emissions scandal (same incident, Canadian
+prosecution arm) — demonstrates that the same compliance system
+failure creates enforcement actions in multiple jurisdictions.
+
+*Sources:*
+
+* Environment and Climate Change Canada (2020-01-22):
+  https://www.canada.ca/en/environment-climate-change/news/2020/01/volkswagen-aktiengesellschaft-ordered-to-pay-1965-million-fine-after-pleading-guilty-to-60-charges-for-offences-under-federal-environmental-legisla.html
+* Public Prosecution Service of Canada (2020-01-22):
+  https://www.ppsc-sppc.gc.ca/eng/nws-nvs/2020/22_01_20.html
+
+=== SNC-Lavalin Fraud (2001–2011)
+
+Between 2001 and 2011, SNC-Lavalin directed CA$47.7 million to a
+Libyan government official to secure construction contracts, altering
+competitive bidding processes. Internal accounting records used line
+items called "project consultancy costs" (PCCs) to mask the payments.
+In December 2019, SNC-Lavalin Construction Inc. pleaded guilty to
+fraud under section 380(1)(a) of the Criminal Code.
+
+*Protected tier:* Not government data per se, but the failure involved
+falsified corporate records used in government procurement contexts,
+equivalent to Protected A/B integrity requirements.
+
+*Failure class:* Record falsification for fraud. Internal accounting
+records were structured to conceal the true nature of payments. The
+integrity of the accounting system was deliberately compromised by
+authorized users.
+
+*Consequence:* CA$280 million fine, three-year probation order. The
+political controversy over whether to offer a deferred prosecution
+agreement contributed to a national political crisis in 2019.
+
+*UMRS control pattern:* Financial records as controlled objects with
+enforced categorization. "Project consultancy cost" entries that
+exceed thresholds or match suspicious patterns trigger mandatory
+independent review. Append-only audit trail for all financial
+transactions. Separation of authority between those who create records
+and those who approve them.
+
+*Sources:*
+
+* Public Prosecution Service of Canada (2019-12-18):
+  https://www.ppsc-sppc.gc.ca/eng/nws-nvs/2019/18_12_19.html
+* CBC News, Globe and Mail: SNC-Lavalin affair coverage
+
+== Environmental and Scientific Data Suppression
+
+=== Muzzling of Federal Scientists (2006–2015)
+
+Between 2006 and 2015, the federal government imposed communications
+policies that controlled Environment Canada scientists' interactions
+with media, requiring senior scientists to obtain government
+permission before speaking with reporters. A leaked internal document
+showed the policy reduced Environment Canada's media engagement on
+climate change by 80 per cent. The government closed science libraries
+in a manner that almost certainly resulted in data loss. The
+Information Commissioner of Canada confirmed in a 2018 report that six
+of seven investigated government bodies did not follow their own
+communications policies.
+
+*Protected tier:* The suppressed data itself ranged from Protected A
+(environmental monitoring data) to unclassified (published research).
+The failure was not about data classification — it was about applying
+access restrictions to data that should have been publicly available.
+
+*Failure class:* Integrity suppression and provenance destruction.
+Scientific data and publications were withheld from the public and
+media, and research infrastructure was dismantled. This is the inverse
+of the typical UMRS case: instead of insufficient controls on
+sensitive data, excessive controls were applied to public-interest
+data to suppress its dissemination.
+
+*Consequence:* Loss of irreplaceable long-term environmental datasets.
+Degradation of Canada's scientific reputation internationally.
+Policy decisions made without full scientific evidence.
+
+*UMRS control pattern:* This case illustrates why UMRS labels must
+work in both directions. MLS is not only about restricting access to
+sensitive data — it is also about ensuring that data labeled for
+public release cannot be silently reclassified to restrict access.
+Immutable provenance records prevent "disappearing" data by
+documenting what existed, when, and who had access. Append-only
+audit trails create an evidentiary record that data existed even if
+the data itself is removed.
+
+*Sources:*
+
+* Information Commissioner of Canada report (2018-02-28)
+* CBC News: "It's official — the Harper government muzzled scientists"
+* Smithsonian Magazine: "Canadian Scientists Explain Exactly How Their
+  Government Silenced Science"
+
+== Infrastructure and IT Systems
+
+=== Shared Services Canada Data Centre Failures
+
+Shared Services Canada (SSC), established in 2011 to consolidate
+federal IT services, experienced multiple significant outages. In
+October 2017, a data centre outage knocked out 82 systems at
+Correctional Service Canada for 20 hours, affecting offender
+management, security intelligence, and police information systems.
+In September 2025, a planned database upgrade by SSC corrupted live
+data in multiple CBSA systems when a critical prerequisite change was
+not performed before the upgrade, preventing recovery from backups.
+
+*Protected tier:* Protected B — offender management data, security
+intelligence, police records, border agency systems.
+
+*Failure class:* Change management failure and single-point-of-failure
+architecture. Consolidating 43 departments' IT into one organization
+created a single point where failures cascade across the entire
+federal government.
+
+*Consequence:* RCMP Commissioner reported critical IT failures
+increased 129 per cent after SSC took over. Correctional Service
+sought authority to manage its own IT. CBSA issued a joint
+investigation report.
+
+*UMRS control pattern:* Change management as a controlled process
+with mandatory pre-deployment verification. Rollback capability
+verified before deployment, not after failure. Integrity verification
+of backup systems before applying changes to production.
+
+*Sources:*
+
+* CBC News (2018): "Correctional Service to hire its own IT"
+* CBC News (2017): "StatsCan needed 30 hours to fix web outage"
+* CBSA Joint Report on IT outages (2025-10)
+
+=== Statistics Canada Census Data Loss
+
+During the 2016 Census, Statistics Canada reported multiple privacy
+breaches involving physical loss of completed census forms. In one
+incident, 587 long-form census forms completed by First Nations
+residents were stored in an employee's vehicle trunk; the vehicle was
+stolen during a weekend trip and never recovered. In separate incidents
+on two Alberta First Nations reserves, forms went missing or were sent
+to incorrect addresses. In those cases, Statistics Canada decided not
+to notify the affected respondents.
+
+*Protected tier:* Protected B — census personal information, including
+First Nations demographic data.
+
+*Failure class:* Physical custody failure and notification suppression.
+Controlled documents were transported in an employee's personal
+vehicle without chain-of-custody controls. The decision not to notify
+affected First Nations respondents compounded the breach.
+
+*UMRS control pattern:* Chain of custody for physical and digital
+documents — who holds the document, where, and under what conditions.
+Mandatory notification on breach, not discretionary. The fact that
+respondents were First Nations and the decision rationale was that
+notification might discourage future census participation is a policy
+finding: security controls must apply equally regardless of the
+affected population.
+
+*Sources:*
+
+* CBC News (2018): "Statistics Canada loses, mishandles hundreds of
+  sensitive census, employment files"
+* Disclosed via Access to Information request
+
+== Summary: UMRS Properties and Canadian Failure Classes
+
+[cols="2,3"]
+|===
+| Failure class | UMRS design property
+
+| "Too much legitimate access" — CRA/ESDC, IRCC insider access
+| MLS sensitivity labels and category-based compartments constrain
+  access by type of data and purpose, not just job title
+
+| Trust without verification — Phoenix, ArriveCAN, BGRS, Lac-Megantic
+| Independent verification of system output (dual-path validation);
+  immutable audit trail; separation of deployment authority from
+  verification authority
+
+| Record falsification — Walkerton, SNC-Lavalin
+| IMA/EVM Appraisal — records are measured at the kernel level;
+  unauthorized modifications are detected or blocked. Append-only
+  corrections with attribution.
+
+| Regulator suppression — NEB/Enbridge, CN/CP redactions, muzzled scientists
+| Audit reports and scientific data as immutable controlled artifacts
+  with independent provenance. Modifications are attributed amendments,
+  not silent deletions.
+
+| Compliance system compromise — VW emissions
+| Provenance binding between testing conditions and reported results.
+  IMA/EVM ensures the software state during testing matches production.
+
+| Third-party data custody — BGRS, LifeLabs, Ontario Health atHome
+| Data labeling and access controls that persist when data is held by
+  contractors. Periodic attestation of custodian security posture.
+
+| Physical custody failure — Statistics Canada census forms
+| Chain of custody controls for all forms of controlled information,
+  with mandatory breach notification regardless of population.
+
+| Infrastructure consolidation risk — SSC
+| Change management as a controlled process with mandatory
+  pre-deployment verification and verified rollback capability.
+|===
+
+== Cross-Reference: Canadian and US Case Pairs
+
+The following case pairs demonstrate that the same failure patterns
+appear in both Canadian and US contexts:
+
+[cols="2,2,2"]
+|===
+| Failure pattern | Canadian case | US case
+
+| Government trusted a technology system without verification
+| Phoenix pay system
+| OPM breach
+
+| Over-access to sensitive personal data
+| CRA/ESDC GCKey breach
+| OPM breach, Equifax
+
+| Insider misuse of broad legitimate access
+| IRCC unauthorized employee access
+| Twitter internal misuse
+
+| Falsified safety/environmental testing records
+| Walkerton water crisis
+| Falsified drinking water reports (DOJ)
+
+| Regulatory findings suppressed or modified
+| NEB/Enbridge audit suppression
+| Boeing 737 MAX / FAA disclosures
+
+| Rail safety oversight failure
+| Lac-Megantic, CN audit findings
+| WMATA/MBTA/LIRR inspection falsification
+
+| Compliance testing system compromised
+| VW emissions (Canadian prosecution)
+| VW emissions (US prosecution)
+
+| Procurement verification failure
+| ArriveCAN / GC Strategies
+| _(no direct US parallel in current corpus)_
+
+| Third-party contractor data breach
+| BGRS/SIRVA military relocation
+| OPM breach (contractor access vector)
+
+| Healthcare data segmentation failure
+| LifeLabs
+| Equifax
+|===
+
+== See Also
+
+* xref:foundations/history/case-studies.adoc[US High-Assurance Failure Case Studies]
+* xref:foundations/history/five-eyes-interop.adoc[Five Eyes Interoperability]

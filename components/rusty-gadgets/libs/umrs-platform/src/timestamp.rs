@@ -101,7 +101,7 @@ impl BootSessionDuration {
     /// Add two durations using checked arithmetic.
     ///
     /// Returns `None` on overflow. Use this for any security-relevant duration
-    /// arithmetic. NSA RTB: Secure Arithmetic — `checked_add` prevents silent
+    /// arithmetic. NIST SP 800-218 SSDF PW.4.1 — `checked_add` prevents silent
     /// integer overflow.
     #[must_use = "checked_add result must be examined — None indicates overflow"]
     pub fn checked_add(self, other: Self) -> Option<Self> {
@@ -177,7 +177,7 @@ pub enum TimestampError {
 ///
 /// NIST SP 800-53 AU-3, AU-8, AU-12 — audit record completeness, time stamps,
 /// and audit record generation.
-/// NSA RTB: Deterministic Execution, Secure Arithmetic.
+/// NSA RTB Deterministic Execution; NIST SP 800-218 SSDF PW.4.1.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct BootSessionTimestamp(u64);
 
@@ -210,7 +210,7 @@ impl BootSessionTimestamp {
         let ts = clock_gettime(ClockId::MonotonicRaw);
 
         // Fail-closed: reject negative values — they indicate a broken clock state.
-        // NSA RTB Secure Arithmetic: checked_mul and checked_add prevent overflow.
+        // NIST SP 800-218 SSDF PW.4.1: checked_mul and checked_add prevent overflow.
         let secs = u64::try_from(ts.tv_sec).map_err(|_| TimestampError::NegativeSecs(ts.tv_sec))?;
 
         let nsec =
@@ -247,7 +247,7 @@ impl BootSessionTimestamp {
     /// out of order) or if the subtraction overflows. This is fail-closed: any
     /// ambiguity returns `None` rather than a potentially wrong duration.
     ///
-    /// NSA RTB Secure Arithmetic — checked subtraction prevents silent underflow.
+    /// NIST SP 800-218 SSDF PW.4.1 — checked subtraction prevents silent underflow.
     ///
     /// NIST SP 800-53 AU-8: Time Stamps — elapsed duration supports audit
     /// record interval analysis.

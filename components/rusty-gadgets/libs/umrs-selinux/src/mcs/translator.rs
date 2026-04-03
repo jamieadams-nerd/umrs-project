@@ -142,7 +142,7 @@ pub static GLOBAL_TRANSLATOR: LazyLock<RwLock<Translator>> = LazyLock::new(|| {
 });
 
 impl Translator {
-    #[must_use]
+    #[must_use = "returns a new empty Translator; discarding it wastes the allocation and produces no translation table"]
     pub const fn new() -> Self {
         Self {
             rules: BTreeMap::new(),
@@ -173,7 +173,7 @@ impl Translator {
     ///
     /// FORWARD: 's0:c0' -> 'CUI'
     ///
-    #[must_use]
+    #[must_use = "returns the CUI marking for the given range; discarding it loses the regulatory label needed for display and audit"]
     pub fn lookup(&self, range: &SecurityRange) -> Option<String> {
         self.rules.get(range).cloned()
     }
@@ -190,7 +190,7 @@ impl Translator {
     /// details would be trimmed and include everything to the right of "#"
     ///   "GENERAL PROCUREMENT AND ACQUISITION"
     ///
-    #[must_use]
+    #[must_use = "returns the sidecar detail comment for the range; discarding it loses the regulatory annotation preserved for audit enrichment"]
     pub fn get_detail(&self, range: &SecurityRange) -> String {
         self.details.get(range).cloned().unwrap_or_default()
     }
@@ -198,7 +198,7 @@ impl Translator {
     ///
     /// REVERSE: 'CUI' -> ('s0:c0', 'Controlled Unclassified Info')
     ///
-    #[must_use]
+    #[must_use = "returns kernel range strings for the given marking; discarding the result loses the reverse-lookup output"]
     pub fn lookup_by_marking(&self, marking: &str) -> Vec<(String, String)> {
         let marking = marking.trim();
         self.rules
@@ -228,7 +228,7 @@ impl Translator {
     /// Returns a list of all markings (Label, Detail) that the given context is authorized to
     /// read.
     ///
-    #[must_use]
+    #[must_use = "returns all markings readable by the given process context; discarding the result loses the authorization-filtered label set"]
     pub fn list_readable_markings(
         &self,
         proc_ctx: &SecurityRange,
@@ -263,7 +263,7 @@ impl SecurityLevel {
     ///
     /// Returns true if 'self' dominates 'other'
     ///
-    #[must_use]
+    #[must_use = "dominance result determines read authorization in the MLS lattice; discarding it bypasses the access control check"]
     pub fn dominates(&self, other: &Self) -> bool {
         // Sensitivity check: Self must be at least as high as Other
         if self.sensitivity < other.sensitivity {
@@ -339,7 +339,7 @@ impl FromStr for SecurityLevel {
 
                 // Style Auditor (Order)
                 // Read readability: we prefer the categories to be in ascending order.
-                #[allow(clippy::collapsible_if)]
+                #[expect(clippy::collapsible_if, reason = "nested option guards reflect independent conditions; collapsing into && would require a different binding form")]
                 if let Some(curr) = current_id {
                     if let Some(last) = last_cat_id {
                         if curr < last {
@@ -387,7 +387,7 @@ impl SecurityRange {
     ///
     /// Used when translating file contexts which are not expressed
     /// as low-high ranges but still must index into the lattice.
-    #[must_use]
+    #[must_use = "returns a degenerate SecurityRange from a single level, required to index the lattice for file-context lookups"]
     pub fn from_level(level: &MlsLevel) -> Self {
         let t_level = SecurityLevel {
             //sensitivity: level.sensitivity.value() as u32,
@@ -410,7 +410,7 @@ impl SecurityRange {
     ///
     /// In most SELinux policies, we compare the "low" levels for simple read access
     ///
-    #[must_use]
+    #[must_use = "read authorization result; discarding it allows a process to consume content without verifying lattice clearance"]
     pub fn can_read(&self, file_range: &Self) -> bool {
         self.low.dominates(&file_range.low)
     }

@@ -62,7 +62,7 @@ impl SelinuxPolicy {
     ///
     /// Matches the value written in `/etc/selinux/config` and used in
     /// policy file paths (e.g., `/etc/selinux/targeted/setrans.conf`).
-    #[must_use]
+    #[must_use = "policy type string is used to construct config file paths; discarding it silently bypasses policy routing"]
     pub const fn as_str(&self) -> &str {
         match self {
             Self::Targeted => "targeted",
@@ -113,7 +113,7 @@ pub struct SelinuxStatus {
 }
 
 impl SelinuxStatus {
-    #[must_use]
+    #[must_use = "SELinux status captures the live kernel enforcement state; ignoring it may lead to unenforced security decisions"]
     pub fn current() -> Self {
         let enabled = is_selinux_enabled();
 
@@ -138,17 +138,17 @@ impl SelinuxStatus {
         }
     }
 
-    #[must_use]
+    #[must_use = "pure accessor; ignoring the enabled flag may allow code to proceed as if SELinux is active when it is not"]
     pub const fn enabled(&self) -> bool {
         self.enabled
     }
 
-    #[must_use]
+    #[must_use = "pure accessor; ignoring enforcement mode may allow decisions to proceed without MAC enforcement"]
     pub const fn enforcing(&self) -> bool {
         self.enforcing
     }
 
-    #[must_use]
+    #[must_use = "pure accessor; callers that discard the policy type cannot route config reads correctly"]
     pub const fn policy(&self) -> Option<&SelinuxPolicy> {
         self.policy.as_ref()
     }
@@ -157,7 +157,7 @@ impl SelinuxStatus {
 // ===========================================================================
 // Some legacy "looking" functions
 // ===========================================================================
-#[must_use]
+#[must_use = "security gate: ignoring whether SELinux is enabled may allow bypass of MAC enforcement checks"]
 pub fn is_selinux_enabled() -> bool {
     let path = "/sys/fs/selinux";
     match nix::sys::statfs::statfs(path) {
@@ -166,13 +166,13 @@ pub fn is_selinux_enabled() -> bool {
     }
 }
 
-#[must_use]
+#[must_use = "security gate: ignoring MLS mode may lead to incorrect lattice dominance assumptions in access decisions"]
 pub fn is_selinux_mls_enabled() -> bool {
     SelinuxMls::read().unwrap_or(false)
 }
 
 //  True  - Enforcing,  False - Permissive
-#[must_use]
+#[must_use = "security gate: discarding the enforce/permissive result may allow operations to proceed without verifying MAC is active"]
 pub fn security_getenforce() -> bool {
     SelinuxStatus::current().enforcing()
 }
@@ -181,7 +181,7 @@ pub fn security_getenforce() -> bool {
 /// or the config file cannot be read.
 ///
 /// NIST SP 800-53 CM-6: security configuration baseline inspection.
-#[must_use]
+#[must_use = "policy type gates config-file routing; discarding it means all subsequent config reads are unanchored"]
 pub fn selinux_policy() -> Option<SelinuxPolicy> {
     if is_selinux_enabled() {
         read_policy_from_config()

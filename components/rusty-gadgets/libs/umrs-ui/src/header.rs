@@ -290,7 +290,7 @@ pub fn build_single_column_lines<'a>(
 ///
 /// Left pair: `left_label : left_value` styled with `left_value_style`.
 /// Right pair: `right_label : right_value` styled with `right_value_style`.
-#[allow(clippy::too_many_arguments)]
+#[allow(clippy::too_many_arguments)] // lint does not fire at 7 args (threshold is 7); keep allow to document intent
 fn two_col_line<'a>(
     left_label: &str,
     left_value: &str,

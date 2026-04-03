@@ -220,7 +220,7 @@ impl LinuxUsername {
     }
 
     /// Borrow the inner string as `&str`.
-    #[must_use]
+    #[must_use = "pure accessor returning the validated username string"]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -229,20 +229,20 @@ impl LinuxUsername {
     ///
     /// Use sparingly — prefer borrowing via `as_str()` or `Deref`.
     /// This exists for interop with APIs that require owned `String`.
-    #[must_use]
+    #[must_use = "consumes the wrapper and returns the inner String; the value is lost if the result is discarded"]
     pub fn into_inner(self) -> String {
         self.0
     }
 
     /// Length in bytes. POSIX names are ASCII, so bytes == chars.
-    #[must_use]
+    #[must_use = "pure accessor returning the byte length of the username"]
     pub const fn len(&self) -> usize {
         self.0.len()
     }
 
     /// Always false for a valid `LinuxUsername` — construction rejects empty.
     /// Provided for API completeness and to satisfy clippy.
-    #[must_use]
+    #[must_use = "pure accessor; always false for a valid LinuxUsername — construction rejects empty names"]
     pub const fn is_empty(&self) -> bool {
         self.0.is_empty()
     }
@@ -326,25 +326,25 @@ impl LinuxGroupName {
     }
 
     /// Borrow the inner string as `&str`.
-    #[must_use]
+    #[must_use = "pure accessor returning the validated group name string"]
     pub fn as_str(&self) -> &str {
         &self.0
     }
 
     /// Consume the wrapper and return the inner `String`.
-    #[must_use]
+    #[must_use = "consumes the wrapper and returns the inner String; the value is lost if the result is discarded"]
     pub fn into_inner(self) -> String {
         self.0
     }
 
     /// Length in bytes.
-    #[must_use]
+    #[must_use = "pure accessor returning the byte length of the group name"]
     pub const fn len(&self) -> usize {
         self.0.len()
     }
 
     /// Always false for a valid `LinuxGroupName`.
-    #[must_use]
+    #[must_use = "pure accessor; always false for a valid LinuxGroupName — construction rejects empty names"]
     pub const fn is_empty(&self) -> bool {
         self.0.is_empty()
     }
@@ -415,7 +415,7 @@ pub struct LinuxUser {
 }
 
 impl LinuxUser {
-    #[must_use]
+    #[must_use = "returns a LinuxUser with both uid and resolved name; discarding it loses the identity record"]
     pub const fn new(uid: Uid, name: LinuxUsername) -> Self {
         Self {
             uid,
@@ -423,7 +423,7 @@ impl LinuxUser {
         }
     }
 
-    #[must_use]
+    #[must_use = "returns a LinuxUser with uid only (name unresolved); discarding it loses the numeric identity"]
     pub const fn from_uid(uid: Uid) -> Self {
         Self {
             uid,
@@ -444,7 +444,7 @@ impl LinuxUser {
         })
     }
 
-    #[must_use]
+    #[must_use = "pure accessor; an unresolved uid on a CUI file is a security finding that must not be silently dropped"]
     pub const fn is_unresolved(&self) -> bool {
         self.name.is_none()
     }
@@ -477,7 +477,7 @@ pub struct LinuxGroup {
 
 impl LinuxGroup {
     /// Construct with both gid and resolved name.
-    #[must_use]
+    #[must_use = "returns a LinuxGroup with both gid and resolved name; discarding it loses the group identity record"]
     pub const fn new(gid: Gid, name: LinuxGroupName) -> Self {
         Self {
             gid,
@@ -486,7 +486,7 @@ impl LinuxGroup {
     }
 
     /// Construct with gid only.
-    #[must_use]
+    #[must_use = "returns a LinuxGroup with gid only (name unresolved); discarding it loses the numeric group identity"]
     pub const fn from_gid(gid: Gid) -> Self {
         Self {
             gid,
@@ -507,7 +507,7 @@ impl LinuxGroup {
     }
 
     /// Returns true if this gid has no resolvable name.
-    #[must_use]
+    #[must_use = "pure accessor; an unresolved gid on a CUI file is a security finding that must not be silently dropped"]
     pub const fn is_unresolved(&self) -> bool {
         self.name.is_none()
     }
@@ -541,7 +541,7 @@ pub struct LinuxOwnership {
 }
 
 impl LinuxOwnership {
-    #[must_use]
+    #[must_use = "returns a LinuxOwnership pairing user and group; discarding it loses the complete ownership record"]
     pub const fn new(user: LinuxUser, group: LinuxGroup) -> Self {
         Self {
             user,
@@ -568,7 +568,7 @@ impl LinuxOwnership {
     }
 
     /// Construct from numeric ids only — names not resolved.
-    #[must_use]
+    #[must_use = "returns a LinuxOwnership from raw ids without name resolution; discarding it loses the ownership record"]
     pub const fn from_ids(uid: Uid, gid: Gid) -> Self {
         Self {
             user: LinuxUser::from_uid(uid),
@@ -589,7 +589,7 @@ impl LinuxOwnership {
     /// `name: None` — i.e., a genuinely missing account, not a lookup skip.
     ///
     /// NIST SP 800-53 AC-2: Account Management.
-    #[must_use]
+    #[must_use = "returns resolved ownership via NSS lookup; discarding it wastes the name-resolution calls"]
     pub fn resolve(uid: Uid, gid: Gid) -> Self {
         use nix::unistd::{Gid as NixGid, Group as NixGroup, Uid as NixUid, User as NixUser};
 
@@ -621,7 +621,7 @@ impl LinuxOwnership {
 
     /// Returns true if either owner uid or group gid has no resolved name.
     /// An unresolved owner on a CUI file is a security finding.
-    #[must_use]
+    #[must_use = "security finding indicator; discarding this silently misses orphaned account ownership on CUI files"]
     pub const fn has_unresolved(&self) -> bool {
         self.user.is_unresolved() || self.group.is_unresolved()
     }
@@ -653,7 +653,7 @@ pub struct UserIdentity {
 }
 
 impl UserIdentity {
-    #[must_use]
+    #[must_use = "returns a validated username + group pair for configuration-level identity; discarding it loses the identity record"]
     pub const fn new(username: LinuxUsername, primary_group: LinuxGroupName) -> Self {
         Self {
             username,

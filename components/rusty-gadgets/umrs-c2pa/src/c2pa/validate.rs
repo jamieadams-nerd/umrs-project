@@ -259,11 +259,9 @@ fn check_key_file(config: &UmrsConfig, out: &mut Vec<ValidationResult>) -> bool 
                         ),
                     ));
                 }
-                // Check owner matches effective uid.
-                // Read euid from /proc/self/status to avoid unsafe code.
-                if let Some(euid) = read_euid_from_proc()
-                    && meta.uid() != euid
-                {
+                // Check owner matches effective uid (direct syscall, no procfs).
+                let euid = get_euid();
+                if meta.uid() != euid {
                     out.push(ValidationResult::warn(
                         "key_owner",
                         &format!(
@@ -552,22 +550,20 @@ fn check_trust_file_permissions(
     }
 }
 
-/// Read the effective user ID from `/proc/self/status` without unsafe code.
+/// Return the effective user ID via a direct syscall (no `/proc` parsing).
 ///
-/// The `Uid:` line has the form: `Uid:\t<real> <effective> <saved> <fs>`
-/// Returns `None` if the file cannot be read or the line is not found.
+/// Uses `rustix::process::geteuid()` — a safe wrapper around the `geteuid(2)`
+/// syscall. No file I/O, no procfs parsing, no `unsafe`.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AC-3**: Access Enforcement — EUID is compared against
+///   the private key file owner to detect ownership mismatches.
+/// - **NSA RTB RAIN**: Non-bypassable — direct syscall eliminates the procfs
+///   read that previously deviated from the SecureReader rule.
 #[cfg(unix)]
-fn read_euid_from_proc() -> Option<u32> {
-    let status = std::fs::read_to_string("/proc/self/status").ok()?;
-    for line in status.lines() {
-        if let Some(rest) = line.strip_prefix("Uid:") {
-            let mut fields = rest.split_whitespace();
-            let _real = fields.next()?;
-            let effective = fields.next()?;
-            return effective.parse::<u32>().ok();
-        }
-    }
-    None
+fn get_euid() -> u32 {
+    rustix::process::geteuid().as_raw()
 }
 
 /// Naively check whether bytes look like PEM (contains "-----BEGIN").

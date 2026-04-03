@@ -1,22 +1,24 @@
-// SPDX-License-Identifier: MIT
-// Author: Jamie Adams
-//
-// Purpose:
-//   Generic engineering/diagnostic magnitude formatting using practical SI prefixes.
-//   This module formats an arbitrary scalar (f64) into a scaled value plus a prefix
-//   string only (e.g., "1.23 u" or "1.23 micro").
-//   The calling code is responsible for appending the actual measured unit (e.g. "s", "Hz").
-//
-//   Features:
-//     - Auto-select the "best" prefix so the scaled value is in the range [1, 1000), when possible.
-//     - Force a specific prefix.
-//     - Prefix rendering styles:
-//         * AbbrevAscii: "E", "P", "T", "G", "M", "k", "", "m", "u", "n", "p", "f"
-//         * FullText:    "exa", "peta", "tera", "giga", "mega", "kilo", "", "milli", "micro", "nano", "pico", "femto"
-//     - Precision warning:
-//         * If forced-prefix formatting yields an effectively-zero value at the configured display precision,
-//           a PrecisionLoss warning is returned (caller decides how to surface it).
-//
+//! Generic engineering and diagnostic magnitude formatting using practical SI prefixes.
+//!
+//! Formats an arbitrary scalar (`f64`) into a scaled value plus a prefix string, for
+//! example `"1.23 u"` or `"1.23 micro"`. The caller appends the actual measured unit
+//! (e.g., `"s"`, `"Hz"`).
+//!
+//! Key exported types: [`SIPrefix`], [`PrefixStyle`], [`FormatWarning`], [`FormatOptions`].
+//! Key functions: [`auto_format`], [`auto_format_with_options`], [`format_in_prefix`],
+//! [`format_in_prefix_with_options`].
+//!
+//! Features:
+//! - Auto-select the best prefix so the scaled value falls in `[1, 1000)`.
+//! - Force a specific prefix with [`format_in_prefix`].
+//! - Two rendering styles: abbreviated ASCII (`"u"`) and full text (`"micro"`).
+//! - [`FormatWarning::PrecisionLoss`] is returned when forced-prefix formatting
+//!   rounds to zero at the configured display precision.
+//!
+//! ## Compliance
+//!
+//! This module provides internal formatting utility infrastructure with no
+//! direct security surface.
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum SIPrefix {

@@ -128,7 +128,7 @@ impl Category {
     }
 
     /// Return the numeric id of the category ("c7" would return 7).
-    #[must_use]
+    #[must_use = "pure accessor returning the category number; discarding it loses the compartment identifier"]
     pub const fn id(self) -> u16 {
         self.0
     }
@@ -215,7 +215,7 @@ impl CategorySet {
     /// let mut myset = CategorySet::new();
     /// myset.insert(Category::new(4).unwrap());
     /// ```
-    #[must_use]
+    #[must_use = "returns an empty category set representing no compartments (SystemLow); discarding it wastes the allocation"]
     pub const fn new() -> Self {
         Self {
             bits: [0; 16],
@@ -224,7 +224,7 @@ impl CategorySet {
 
     /// Creates a full category set.
     /// Internal state: all bits = 1 which conceptually means all compartments.
-    #[must_use]
+    #[must_use = "returns a full category set representing all compartments (SystemHigh); discarding it wastes the allocation"]
     pub const fn full() -> Self {
         Self {
             bits: [u64::MAX; 16],
@@ -275,7 +275,7 @@ impl CategorySet {
     ///
     /// Kernel equivalent:
     ///   `ebitmap_get_bit()`
-    #[must_use]
+    #[must_use = "membership result drives compartment access decisions; discarding it bypasses the compartment check"]
     pub const fn contains(&self, cat: Category) -> bool {
         let (word, mask) = Self::index(cat);
         (self.bits[word] & mask) != 0
@@ -283,7 +283,7 @@ impl CategorySet {
 
     /// NSA RTB Principle: Secure Defaults.
     /// Initializes an empty category set (SystemLow/Unclassified).
-    #[must_use]
+    #[must_use = "pure accessor; callers that discard this cannot distinguish SystemLow from a labeled set"]
     pub fn is_empty(&self) -> bool {
         self.bits.iter().all(|w| *w == 0)
     }
@@ -305,7 +305,7 @@ impl CategorySet {
     ///
     /// Mathematically: (Subject & Object) == Object
     ///
-    #[must_use]
+    #[must_use = "dominance result is the authoritative MLS lattice decision; discarding it bypasses compartment enforcement"]
     pub fn dominates(&self, other: &Self) -> bool {
         for i in 0..16 {
             if (self.bits[i] & other.bits[i]) != other.bits[i] {
@@ -320,7 +320,7 @@ impl CategorySet {
 // Set Operations
 //
 impl CategorySet {
-    #[must_use]
+    #[must_use = "returns a new CategorySet that is the union of both; discarding it loses the combined compartment membership"]
     pub fn union(&self, other: &Self) -> Self {
         let mut out = Self::new();
         for i in 0..16 {
@@ -329,7 +329,7 @@ impl CategorySet {
         out
     }
 
-    #[must_use]
+    #[must_use = "returns a new CategorySet that is the intersection of both; discarding it loses the shared compartment membership"]
     pub fn intersection(&self, other: &Self) -> Self {
         let mut out = Self::new();
         for i in 0..16 {

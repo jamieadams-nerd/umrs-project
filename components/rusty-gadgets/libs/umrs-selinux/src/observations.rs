@@ -180,7 +180,7 @@ impl SecurityObservation {
     ///
     /// Use this to filter or score without pattern-matching every variant.
     /// New variants added to this enum must also be added here.
-    #[must_use]
+    #[must_use = "pure accessor returning the polarity of this finding; callers that discard it cannot filter or score observations"]
     pub const fn kind(&self) -> ObservationKind {
         match self {
             Self::WorldWritable

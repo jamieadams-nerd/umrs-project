@@ -146,7 +146,7 @@ pub enum SelinuxCtxState {
 
 impl SelinuxCtxState {
     /// Returns the context if the label is verified, otherwise `None`.
-    #[must_use]
+    #[must_use = "pure accessor; callers that discard this cannot read the SELinux label for access control decisions"]
     pub fn as_context(&self) -> Option<&SecurityContext> {
         if let Self::Labeled(ctx) = self {
             Some(ctx.as_ref())
@@ -156,7 +156,7 @@ impl SelinuxCtxState {
     }
 
     /// Returns `true` if this state carries a verified label.
-    #[must_use]
+    #[must_use = "pure accessor; callers that discard this cannot distinguish labeled from unlabeled objects"]
     pub const fn is_labeled(&self) -> bool {
         matches!(self, Self::Labeled(_))
     }
@@ -164,7 +164,7 @@ impl SelinuxCtxState {
     /// Returns the display string for the SELinux type column.
     ///
     /// Used by `dirlist.rs` when building `GroupKey`.
-    #[must_use]
+    #[must_use = "returns owned type display string used for GroupKey construction; discarding it wastes the allocation"]
     pub fn display_type(&self) -> String {
         match self {
             Self::Labeled(ctx) => ctx.security_type().to_string(),
@@ -178,7 +178,7 @@ impl SelinuxCtxState {
     ///
     /// Used by `dirlist.rs` to build the marking column without re-parsing.
     /// Returns `None` for `Unlabeled`, `ParseFailure`, and `TpiDisagreement`.
-    #[must_use]
+    #[must_use = "pure accessor; MLS level is required for marking column construction and CUI label resolution"]
     pub fn level(&self) -> Option<&crate::context::MlsLevel> {
         if let Self::Labeled(ctx) = self {
             ctx.level()
@@ -375,12 +375,12 @@ pub mod path {
             Ok(Self(raw.to_owned()))
         }
 
-        #[must_use]
+        #[must_use = "pure accessor returning the validated absolute path as a string slice"]
         pub fn as_str(&self) -> &str {
             &self.0
         }
 
-        #[must_use]
+        #[must_use = "pure accessor returning the validated path as a &Path for std::fs calls"]
         pub fn as_path(&self) -> &Path {
             Path::new(&self.0)
         }
@@ -395,22 +395,22 @@ pub mod path {
         /// Cannot panic in practice — `AbsolutePath` invariant guarantees no
         /// interior null bytes. The `expect` is a safety assertion only.
         ///
-        #[must_use]
+        #[must_use = "returns an owned CString for FFI calls; discarding it wastes the allocation"]
         pub fn to_cstring(&self) -> CString {
             CString::new(self.0.as_bytes()).expect("AbsolutePath invariant: no null bytes")
         }
 
-        #[must_use]
+        #[must_use = "pure accessor returning the terminal path component; discarding it loses the filename for display or validation"]
         pub fn file_name(&self) -> Option<&str> {
             Path::new(&self.0).file_name().and_then(|s| s.to_str())
         }
 
-        #[must_use]
+        #[must_use = "pure accessor returning the byte length of the path"]
         pub const fn len(&self) -> usize {
             self.0.len()
         }
 
-        #[must_use]
+        #[must_use = "pure accessor; AbsolutePath construction rejects empty strings so this is always false"]
         pub const fn is_empty(&self) -> bool {
             self.0.is_empty()
         }
@@ -508,15 +508,15 @@ pub mod path {
             Self::new(s)
         }
 
-        #[must_use]
+        #[must_use = "pure accessor returning the validated filename component as a string slice"]
         pub fn as_str(&self) -> &str {
             &self.0
         }
-        #[must_use]
+        #[must_use = "pure accessor returning the byte length of the filename component"]
         pub const fn len(&self) -> usize {
             self.0.len()
         }
-        #[must_use]
+        #[must_use = "pure accessor; ValidatedFileName construction rejects empty components so this is always false"]
         pub const fn is_empty(&self) -> bool {
             self.0.is_empty()
         }
@@ -582,7 +582,7 @@ pub mod filetype {
 
     impl FileType {
         /// Construct from `d_type` field of a Linux `dirent64`.
-        #[must_use]
+        #[must_use = "returns the FileType derived from the dirent d_type field; discarding it loses the file classification"]
         pub const fn from_d_type(d_type: u8) -> Self {
             match d_type {
                 8 => Self::RegularFile,
@@ -597,7 +597,7 @@ pub mod filetype {
         }
 
         /// Construct from `st_mode` (upper 4 bits are the type field in POSIX).
-        #[must_use]
+        #[must_use = "returns the FileType derived from the st_mode type bits; discarding it loses the file classification"]
         pub const fn from_mode(mode: u32) -> Self {
             match mode & 0o170_000 {
                 0o100_000 => Self::RegularFile,
@@ -611,15 +611,15 @@ pub mod filetype {
             }
         }
 
-        #[must_use]
+        #[must_use = "pure accessor; callers that discard this cannot distinguish regular files from other entry types"]
         pub fn is_regular(&self) -> bool {
             *self == Self::RegularFile
         }
-        #[must_use]
+        #[must_use = "pure accessor; callers that discard this cannot detect directory entries for hard-link suppression"]
         pub fn is_directory(&self) -> bool {
             *self == Self::Directory
         }
-        #[must_use]
+        #[must_use = "pure accessor; callers that discard this cannot apply symlink-specific security rules"]
         pub fn is_symlink(&self) -> bool {
             *self == Self::Symlink
         }
@@ -713,7 +713,7 @@ pub mod flags {
         /// Immutable or append-only both satisfy this.
         ///
         /// NIST SP 800-53 AU-9: write-protected audit log indicator.
-        #[must_use]
+        #[must_use = "write-protection status is a positive audit indicator; discarding it means immutability goes unrecorded"]
         pub fn is_write_protected(self) -> bool {
             self.intersects(Self::IMMUTABLE | Self::APPEND_ONLY)
         }
@@ -721,8 +721,8 @@ pub mod flags {
         /// True if IMA integrity measurement is active on this inode.
         ///
         /// NIST SP 800-53 SI-7: integrity measurement active.
-        #[allow(clippy::missing_const_for_fn)]
-        #[must_use]
+        #[expect(clippy::missing_const_for_fn, reason = "bitflags::contains is not const-stable; cannot be made const until upstream stabilizes")]
+        #[must_use = "IMA protection indicator; discarding this silently misses active integrity measurement on the inode"]
         pub fn has_ima_protection(self) -> bool {
             self.contains(Self::IMA_PRESENT)
         }
@@ -730,8 +730,8 @@ pub mod flags {
         /// True if extended ACL is in effect.
         ///
         /// NIST SP 800-53 AC-3: extended DAC is present.
-        #[allow(clippy::missing_const_for_fn)]
-        #[must_use]
+        #[expect(clippy::missing_const_for_fn, reason = "bitflags::contains is not const-stable; cannot be made const until upstream stabilizes")]
+        #[must_use = "pure accessor; extended ACL presence is a DAC configuration finding"]
         pub fn has_acl(self) -> bool {
             self.contains(Self::ACL_PRESENT)
         }
@@ -739,8 +739,8 @@ pub mod flags {
         /// True if SELinux label was explicitly set on disk.
         ///
         /// NIST SP 800-53 AC-4: MAC label is persisted (not runtime-only).
-        #[must_use]
-        #[allow(clippy::missing_const_for_fn)]
+        #[must_use = "pure accessor; explicit on-disk SELinux label confirms the MAC label is persisted, not policy-defaulted"]
+        #[expect(clippy::missing_const_for_fn, reason = "bitflags::contains is not const-stable; cannot be made const until upstream stabilizes")]
         pub fn has_explicit_selinux_label(self) -> bool {
             self.contains(Self::SELINUX_XATTR)
         }
@@ -920,7 +920,7 @@ impl SecureDirent {
     // The xattr permission-denial branch adds a few lines beyond the 100-line
     // default limit.  The function is a single sequential construction sequence
     // with no hidden branches; splitting it would hurt readability more than help.
-    #[allow(clippy::too_many_lines)]
+    #[expect(clippy::too_many_lines, reason = "single sequential TOCTOU-safe construction sequence; splitting would obscure the security-critical ordering")]
     pub fn from_path(path: &Path) -> Result<Self, SecDirError> {
         // Step 1: symlink_metadata — does NOT follow symlinks
         // TOCTOU: we capture the lstat result before opening.
@@ -957,7 +957,7 @@ impl SecureDirent {
         // Step 5: Open the file once — all attribute reads use this fd
         // TOCTOU: after this open, path is never re-resolved.
         // NSA RTB: Non-Bypassability — fd-based attribute reads.
-        #[allow(clippy::option_if_let_else)]
+        #[expect(clippy::option_if_let_else, reason = "explicit match is clearer here: the error arm sets a boolean side-effect that map_or_else would obscure")]
         let (file_opt, mut access_denied) = match File::open(path) {
             Ok(f) => (Some(f), false),
             Err(_) => (None, true),
@@ -1111,21 +1111,21 @@ impl SecureDirent {
     //
     /// True if this entry has write-protection (immutable or append-only).
     /// NIST SP 800-53 AU-9.
-    #[must_use]
+    #[must_use = "write-protection status is a positive security indicator; discarding it means immutability goes unrecorded"]
     pub fn is_write_protected(&self) -> bool {
         self.sec_flags.is_write_protected()
     }
 
     /// True if ACL-based access control is active.
     /// NIST SP 800-53 AC-3.
-    #[must_use]
+    #[must_use = "pure accessor; extended ACL presence is a DAC configuration finding"]
     pub fn has_acl(&self) -> bool {
         self.sec_flags.has_acl()
     }
 
     /// True if IMA integrity measurement is active.
     /// NIST SP 800-53 SI-7.
-    #[must_use]
+    #[must_use = "IMA protection indicator; discarding this silently misses active integrity measurement on the entry"]
     pub fn has_ima_protection(&self) -> bool {
         self.sec_flags.has_ima_protection()
     }
@@ -1135,7 +1135,7 @@ impl SecureDirent {
     /// Returns `false` for `ParseFailure` and `TpiDisagreement` states —
     /// the xattr byte may exist but the label could not be verified.
     /// NIST SP 800-53 AC-4.
-    #[must_use]
+    #[must_use = "MAC label persistence indicator; discarding this means unlabeled or unverifiable objects go unreported"]
     pub fn has_explicit_selinux_label(&self) -> bool {
         self.selinux_label.is_labeled() && self.sec_flags.has_explicit_selinux_label()
     }
@@ -1145,34 +1145,34 @@ impl SecureDirent {
     /// Always `false` for non-mount-point entries.
     ///
     /// NIST SP 800-53 SC-28: Protection of Information at Rest.
-    #[must_use]
+    #[must_use = "at-rest encryption indicator; discarding this means unencrypted mount points go undetected"]
     pub fn has_encryption(&self) -> bool {
         self.encryption != crate::fs_encrypt::EncryptionSource::None
     }
 
     /// True if the setuid bit is set.
     /// NIST SP 800-53 CM-6 / CMMC CM.L2-3.4.2.
-    #[must_use]
+    #[must_use = "privilege escalation indicator; discarding this silently misses a mandatory audit finding"]
     pub const fn is_setuid(&self) -> bool {
         self.mode.is_setuid()
     }
 
     /// True if the setgid bit is set.
     /// NIST SP 800-53 CM-6.
-    #[must_use]
+    #[must_use = "privilege escalation indicator; discarding this silently misses a group-privilege audit finding"]
     pub const fn is_setgid(&self) -> bool {
         self.mode.is_setgid()
     }
 
     /// True if the sticky bit is set.
-    #[must_use]
+    #[must_use = "pure accessor; sticky bit affects deletion semantics on directories"]
     pub const fn is_sticky(&self) -> bool {
         self.mode.is_sticky()
     }
 
     /// True if the world-writable bit is set.
     /// NIST SP 800-53 AC-3 / CMMC AC.L1-3.1.1.
-    #[must_use]
+    #[must_use = "mandatory security finding; discarding this silently bypasses world-writable detection on CUI systems"]
     pub const fn is_world_writable(&self) -> bool {
         self.mode.is_world_writable()
     }
@@ -1180,19 +1180,19 @@ impl SecureDirent {
     /// True if this is a hard-linked non-directory file (nlink > 1).
     /// Hard links can be used to bypass directory-level access controls.
     /// NIST SP 800-53 AC-3.
-    #[must_use]
+    #[must_use = "hard-link detection result; discarding it silently misses a potential path-bypass finding"]
     pub fn is_hard_linked(&self) -> bool {
         !self.file_type.is_directory() && self.nlink.is_multiply_linked()
     }
 
     /// Uid of the owning user (kernel ground truth).
-    #[must_use]
+    #[must_use = "pure accessor returning the kernel-authoritative uid required for access control and audit records"]
     pub const fn uid(&self) -> posix::primitives::Uid {
         self.ownership.user.uid
     }
 
     /// Gid of the owning group (kernel ground truth).
-    #[must_use]
+    #[must_use = "pure accessor returning the kernel-authoritative gid required for access control and audit records"]
     pub const fn gid(&self) -> posix::primitives::Gid {
         self.ownership.group.gid
     }
@@ -1209,7 +1209,7 @@ impl SecureDirent {
     /// NIST SP 800-53 CA-7: Continuous Monitoring.
     /// NIST SP 800-53 RA-5: Vulnerability Scanning.
     /// CMMC Level 2 CA.L2-3.12.1: Periodic security control assessment.
-    #[must_use]
+    #[must_use = "returns all security findings for this entry; discarding them means audit coverage is silently lost"]
     pub fn security_observations(&self) -> Vec<SecurityObservation> {
         let mut obs = Vec::new();
 

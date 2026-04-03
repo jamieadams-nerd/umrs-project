@@ -33,7 +33,7 @@ use super::traits::SecureReader;
 /// NIST SP 800-53 SI-7: magic verification prevents bind-mount spoofing of
 /// `/sys/` paths — an attacker with a bind-mount could substitute any
 /// filesystem; only genuine sysfs carries this magic.
-#[allow(clippy::unreadable_literal)]
+#[expect(clippy::unreadable_literal, reason = "sysfs magic constant — the raw hex value is the canonical form from the kernel source")]
 pub const SYSFS_MAGIC: FsType = FsType(0x62656572_i64);
 
 // ===========================================================================
@@ -82,7 +82,7 @@ impl SysfsText {
         })
     }
 
-    #[must_use]
+    #[must_use = "pure accessor — returns the sysfs attribute path validated at construction"]
     pub fn path(&self) -> &Path {
         &self.path
     }

@@ -32,6 +32,9 @@ use log::LevelFilter;
 use serde::{Deserialize, Serialize};
 use std::path::{Path, PathBuf};
 
+#[cfg(unix)]
+use libc;
+
 use crate::c2pa::error::InspectError;
 
 /// Top-level UMRS configuration loaded from `umrs-c2pa.toml`.
@@ -150,12 +153,41 @@ pub struct LoggingConfig {
 impl UmrsConfig {
     /// Load configuration from a TOML file at `path`.
     ///
+    /// On Unix, opens the file with `O_NOFOLLOW` to refuse symlink targets.
+    /// The configuration file drives algorithm selection, credential paths, and
+    /// trust list paths; a symlink substitution attack against it could redirect
+    /// any of these to attacker-controlled values.
+    ///
+    /// On non-Unix platforms, falls back to `std::fs::read_to_string`.
+    ///
+    /// ## Compliance
+    ///
+    /// - **NIST SP 800-53 CM-6**: Configuration Settings — `O_NOFOLLOW` ensures
+    ///   the config file is the operator-controlled file at the named path, not
+    ///   an attacker-supplied symlink target.
+    /// - **NSA RTB**: TOCTOU defense — single fd open; no re-open by path.
+    ///
     /// # Errors
     ///
     /// Returns `InspectError::Io` if the file cannot be read, or
     /// `InspectError::Config` if the TOML is malformed.
     pub fn load(path: &Path) -> Result<Self, InspectError> {
+        #[cfg(unix)]
+        let text = {
+            use std::io::Read;
+            use std::os::unix::fs::OpenOptionsExt;
+            let mut file = std::fs::OpenOptions::new()
+                .read(true)
+                .custom_flags(libc::O_NOFOLLOW)
+                .open(path)
+                .map_err(InspectError::Io)?;
+            let mut buf = String::new();
+            file.read_to_string(&mut buf).map_err(InspectError::Io)?;
+            buf
+        };
+        #[cfg(not(unix))]
         let text = std::fs::read_to_string(path).map_err(InspectError::Io)?;
+
         toml::from_str(&text).map_err(|e| InspectError::Config(e.to_string()))
     }
 

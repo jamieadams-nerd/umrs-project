@@ -149,7 +149,7 @@ impl ProcfsText {
         })
     }
 
-    #[must_use]
+    #[must_use = "pure accessor — returns the procfs attribute path validated at construction"]
     pub fn path(&self) -> &Path {
         &self.path
     }

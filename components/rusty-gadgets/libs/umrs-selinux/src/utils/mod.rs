@@ -99,7 +99,48 @@ fn xattr_err_to_io(e: XattrReadError) -> io::Error {
 
 /// libselinux-style: `getpidcon()`
 ///
-/// Reads `/proc/<pid>/attr/current` (procfs attribute contents) and parses it.
+/// Reads `/proc/<pid>/attr/current` to retrieve the SELinux security context
+/// of the process with the given PID.
+///
+/// ## Design Note — SecureReader not applicable for arbitrary PID paths
+///
+/// The UMRS project rules require all `/proc/` reads to route through
+/// `SecureReader::read_generic_text` (via `ProcfsText`).  That pattern uses
+/// compile-time path binding via the `StaticSource` trait — the path is an
+/// associated constant, verified at compile time, and the filesystem magic is
+/// confirmed before the read.
+///
+/// `ProcfsText` / `StaticSource` cannot express paths with a runtime component
+/// (`/proc/<pid>/...`) because the path is not known at compile time.  Each
+/// unique PID produces a distinct path; there is no way to bind an arbitrary
+/// PID path as a `StaticSource`.
+///
+/// The risk is bounded by the following mitigations already in place:
+///
+/// - The path is constructed entirely from a validated `u32` PID.  No
+///   user-supplied string is interpolated; no path traversal is possible.
+/// - `/proc/<pid>/attr/current` is a kernel-generated virtual file.  Only the
+///   kernel writes it; its content is the SELinux context of the target process
+///   as assigned by the kernel at process creation.
+/// - The `SecurityContext::from_str` parser is TPI-validated (two independent
+///   parse paths via `nom` and `FromStr`), so any malformed content is rejected.
+/// - SELinux enforcing mode prevents unauthorized reads of other processes'
+///   `/proc/attr` entries via type enforcement policy (AC-3 primary protection).
+///
+/// A future enhancement could introduce a `DynamicProcReader` abstraction that
+/// performs statfs-based provenance verification for runtime-constructed procfs
+/// paths, but this requires architectural work beyond the current scope.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AC-3**: Access Enforcement — SELinux type enforcement
+///   is the primary access control gate; this read retrieves subject labels for
+///   audit records.
+/// - **NIST SP 800-53 AU-3**: Audit Record Content — PID context is used in
+///   audit events to identify the subject of an access decision.
+/// - **NSA RTB RAIN**: Non-Bypassability — the parsed `SecurityContext` is
+///   constructed via TPI, preventing a malformed procfs entry from producing
+///   an accepted but incorrect label.
 ///
 /// # Errors
 ///
