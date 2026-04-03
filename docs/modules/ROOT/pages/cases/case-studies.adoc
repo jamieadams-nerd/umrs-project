@@ -1,0 +1,252 @@
+= High-Assurance Failure Case Studies
+:toc: left
+:description: Real-world failure examples that demonstrate the cost of missing integrity, provenance, and access control in unclassified systems — and how high-assurance design would have changed outcomes.
+
+// NIST SP 800-53 AC-4, AC-6, AU-9, SI-7
+// NSA RTB RAIN
+
+[IMPORTANT]
+====
+The case summaries below are based on publicly available reporting,
+government press releases, and court documents. Numerical figures (dollar amounts,
+record counts, durations) are estimates or ranges from public sources and may not
+reflect final adjudicated facts. They are presented to illustrate the pattern of
+failure, not as verified statistics.
+====
+
+The dominant failure in unclassified systems is not sophisticated external attack.
+It is _too much legitimate access_, _informal integrity controls_, and _no enforceable
+provenance_ — conditions where access controls are social rather than technical, and
+where data can be modified, copied, or used outside its intended scope without detection.
+
+This page presents representative cases by CUI category and maps each failure to the
+UMRS design property that would have changed the outcome.
+
+== The Recurring Pattern
+
+Across sectors, the same failure structure appears:
+
+. Data is decision-critical — it drives safety, policy, or legal outcomes.
+. Access is broad for convenience — "anyone in operations can query everything."
+. Integrity controls are social, not technical — rely on policy compliance, not enforcement.
+. Provenance is informal — records can be created, backdated, or modified without attribution.
+. Audit exists, but enforcement does not — logs are present but cannot prove what happened.
+
+When something goes wrong, the organization cannot answer: who saw what, when, and
+why? Was this the original data? Was it modified? Was it used outside its intended
+scope? Decisions lose legitimacy as a result.
+
+MLS-style enforcement is not primarily about secrecy. It is about constraining
+legitimate access, proving provenance, preserving evidentiary value, and allowing
+systems to be trusted by design.
+
+== CUI//PRIVACY — Over-Access and Data Segmentation Failures
+
+=== OPM Breach (2015)
+
+The U.S. Office of Personnel Management stored background investigation records
+for federal employees in a centralized, minimally segmented system. Attackers
+gained access and exfiltrated records including SSNs, financial history, and personal
+data on millions of individuals. The data was not classified, but was highly sensitive.
+
+*Failure:* "One big database" architecture. Once inside, lateral movement was
+unconstrained. Sensitivity subsets (SSN vs employment history vs foreign contacts)
+were not separated by label or access tier.
+
+*UMRS control pattern:* MLS labeling of PII subsets by sensitivity. Purpose-based
+access: "support lookup" and "bulk export" require different security contexts.
+Mandatory high-signal audit events for record access and export.
+
+=== Equifax Breach (2017)
+
+Equifax stored credit data on approximately 147 million individuals. An unpatched
+vulnerability allowed access to a broad swath of stored records. Settlement with
+regulators exceeded $700 million.
+
+*Failure:* Insufficient segmentation. Exploiting one vulnerability provided access
+to large amounts of data that had no additional integrity or access boundaries.
+
+*UMRS control pattern:* Data labeling by sensitivity class. Anomaly detection on
+access volume and time patterns. Cryptographic, append-only logging for privileged
+queries and exports.
+
+=== Twitter Internal Misuse (2019)
+
+Two Twitter employees were charged with using their legitimate access to user account
+data to identify users for foreign intelligence purposes. This was not a hacking failure.
+
+*Failure:* "Too much legitimate access." Access was role-based but not compartmentalized
+by data sensitivity, purpose, or explicit handling rules. Access was not treated as a
+privileged, audited action.
+
+*UMRS control pattern:* Sensitivity labels on personal account records. Purpose
+separation: operational access and export-level access require different security
+contexts. High-signal audit trails on privileged queries.
+
+== CUI//WATER and CUI//ENV — Environmental Data Integrity Failures
+
+=== Flint Water Crisis
+
+Internal EPA memos documented concerns about lead contamination in Flint's water
+supply. Sampling procedures were altered, internal reports were not escalated or
+enforced, and external stakeholders were given incomplete information. The public health
+impact was severe and long-term.
+
+*Failure:* Data integrity and custody. Water quality measurements were not treated as
+controlled objects with enforced review boundaries. Informal handling allowed concerns
+to be suppressed.
+
+*UMRS control pattern:* IMA/EVM appraisal on measurement records — a "Water Quality
+Memo" becomes a signed, measured artifact. Unauthorized modification is detected by
+the kernel. Append-only audit log creates a forensic record of what was seen and when.
+
+=== Falsified Drinking Water Reports (DOJ Cases)
+
+Multiple federal cases have involved falsification of drinking water sampling results
+and laboratory reports submitted for Clean Water Act compliance. In one case, a
+Mississippi lab director was sentenced for falsifying over 1,000 water-related
+laboratory reports.
+
+*Failure:* No tamper-evident provenance linking sample collection to reported results.
+Corrections could be made without attribution. Raw instrument data was not cryptographically
+bound to submitted compliance reports.
+
+*UMRS control pattern:* Chain of custody for samples — who collected, where, when,
+and handling steps — signed. Immutable lab results with corrections as append-only
+attributed events. Automated raw-to-reported pipeline with cryptographic binding so
+a regulator-facing report traces to raw instrument output.
+
+== CUI//TRAN and CUI//CRIT — Inspection Record Falsification
+
+=== Rail Transit Inspection Falsification (WMATA, MBTA, LIRR)
+
+Federal investigations and prosecutions have alleged that rail transit inspectors
+at multiple agencies falsified bridge, tunnel, and track inspection records —
+reporting inspections as completed when they were not performed, or altering records
+after the fact.
+
+*Failure:* Inspection records were mutable, not tamper-evident. No cryptographic
+binding between the inspection event, the evidence (photos, sensor data), and the
+written record. Corrections could be made silently.
+
+*UMRS control pattern:* "Inspection record" is a controlled object — write-once,
+with amendments as append-only attributed events. Separation of duties: inspector
+cannot be sole approver. Evidence binding: photos and sensor proofs are hashed and
+tied to the record at the time of collection. Mandatory access control around who
+can close an inspection item.
+
+=== Boeing 737 MAX and FAA Disclosures
+
+The DOJ documented that Boeing employees made misleading statements and omissions
+to the FAA regarding the 737 MAX MCAS system, impeding safety oversight.
+
+*Failure:* Provenance and accountability gaps in safety disclosures. No immutable
+record of what was communicated to regulators and when. Engineering, safety, and
+program management approvals were not structurally separated.
+
+*UMRS control pattern:* Regulator disclosure packet treated as a controlled artifact
+with change control. Mandatory internal attestations. Immutable record of what was
+disclosed when. Separation between engineering and safety approval authorities.
+
+== CUI//CRIT — Pipeline Safety Record Falsification
+
+Federal cases have involved safety inspectors fabricating hundreds of gas pipeline
+test results and covering the falsification with paperwork. State-level investigations
+have alleged similar falsification at regulated utilities.
+
+*Failure:* Field test results were not bound to the device, user, time, or location
+of the actual test. Paperwork could be created retrospectively. No independent
+attestation separated the inspector from the result.
+
+*UMRS control pattern:* Field test results as immutable, signed events (device identity,
+user identity, timestamp, location). Strong separation: contractor generates results,
+independent verifier attests. Append-only corrections with mandatory reason codes.
+Auditable chain from raw measurement to reported compliance summary.
+
+== Engineering and Safety Systems
+
+=== Mars Climate Orbiter (1999)
+
+A $125M spacecraft was lost because one engineering team used metric units while
+another used English units in navigation software. The mismatch was not detected until
+the spacecraft entered the Martian atmosphere on the wrong trajectory.
+
+*Failure:* Data was reused outside its original context without verified provenance
+or unit-type enforcement. There was no mechanism to prevent a "metric-labeled"
+calculation from being consumed by a "English-units-expecting" process.
+
+*UMRS control pattern:* MLS labels can be used to tag data by processing context.
+A process expecting data in one labeled context cannot ingest a file labeled for
+a different context — the kernel denies the flow. Type-safe access controls prevent
+context mismatches at the data layer, not just at the application layer.
+
+=== Deepwater Horizon Alarm Bypass
+
+Testimony in post-incident proceedings revealed that the Deepwater Horizon general
+alarm system had been placed in "bypass" mode to prevent false alarms from waking
+workers. When methane gas reached the drill floor, the alarm did not trigger. Workers
+had no warning before the explosion.
+
+*Failure:* A critical safety configuration was modified for operational convenience
+without enforced integrity controls. The bypass state was not treated as a controlled
+object with audit trail and change authorization requirements.
+
+*UMRS control pattern:* IMA/EVM Appraisal would treat the alarm configuration file as
+a controlled object. Any unauthorized modification to the "bypass" state would be
+detected or blocked by the kernel — the safety-critical configuration cannot be silently
+altered.
+
+== Digital Evidence and Legal Proceedings
+
+=== United States v. Vayner
+
+A federal conviction was vacated on appeal because the prosecution could not establish
+provenance for social-media content offered as evidence — specifically, it could not
+prove the content was created by the defendant and had not been altered.
+
+*Failure:* No provenance controls. There was no cryptographic binding of origin,
+integrity, and custody metadata to the artifact.
+
+=== Lorraine v. Markel
+
+A frequently cited e-discovery case in which a court excluded emails and digital
+records because the parties failed to properly authenticate them. The records existed;
+their authenticity could not be established.
+
+*UMRS lesson:* These failures are not about secrecy. They demonstrate that when
+systems do not treat digital artifacts as controlled objects with enforced lifecycle
+rules, those artifacts lose evidentiary weight. Custody trust and content trust must
+be structurally enforced, not assumed.
+
+== Summary: UMRS Properties and the Failures They Address
+
+[cols="2,3"]
+|===
+| Failure class | UMRS design property
+
+| "Too much legitimate access" — lateral movement, bulk export
+| MLS sensitivity labels and category-based compartments constrain access by type of
+  data, not just job title
+
+| Falsified records — inspection reports, sampling results, safety configurations
+| IMA/EVM Appraisal — files are measured at the kernel level; unauthorized modifications
+  are detected or blocked before the file is used
+
+| Provenance gaps — cannot prove origin, chain of custody, or what was seen when
+| Kernel-level audit (SELinux AVC, IMA measurement log) creates tamper-visible
+  provenance records not writable by userland processes
+
+| Context mismatches — data reused outside its intended purpose or processing context
+| MLS labels as a machine-enforced tag on the processing context; the kernel prevents
+  flows between mismatched labeled domains
+
+| Accountability gaps — cannot attribute modifications to a specific identity and time
+| Signed audit log chains; EVM-protected xattrs; append-only kernel measurement log
+|===
+
+== See Also
+
+* xref:security-concepts:integrity-and-provenance.adoc[Integrity and provenance definitions]
+* xref:architecture:mls-label-model.adoc[MLS label model and CUI mapping]
+* xref:reference:compliance-frameworks.adoc[Compliance frameworks registry]
+* xref:deployment:ima-evm-setup.adoc[IMA/EVM setup]

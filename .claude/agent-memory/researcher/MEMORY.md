@@ -137,6 +137,8 @@ Existing reports:
   Topics: HCI/IA/KO/TechComm open-access sources; 12 Tier-1 resources; ISKO IEKO, Stanford CS147, MIT 6.831
 - `.claude/references/reports/2026-03-31-priority4-nist-familiarization.md` (2026-03-31)
   Topics: SP 800-172 (APT/CMMC L3); SP 800-161r1 WITHDRAWN (superseded by upd1); SP 800-60 Vol 1 INCOMPLETE
+- `.claude/references/reports/five-eyes-case-study-research.md` (2026-04-03)
+  Topics: 50 new failure cases across US, CA, UK, AU, NZ — see project_case_study_corpus.md for summary
 
 ## Retrieval Patterns (learned 2026-03-11)
 

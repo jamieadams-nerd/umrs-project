@@ -1,7 +1,7 @@
 = High-Assurance Failure Case Studies — Consolidated Reference
 :toc: left
 :toclevels: 3
-:description: Authoritative reference compiling real-world CUI mishandling, record falsification, and "trust but didn't verify" failures — mapped to failure class, human cost, and UMRS design properties.
+:description: Authoritative reference compiling real-world CUI mishandling, record falsification, and "trust but didn't verify" failures — mapped to failure class, human cost, and applicable security controls.
 
 // NIST SP 800-53 AC-4, AC-6, AU-9, SI-7
 // NSA RTB RAIN
@@ -22,17 +22,17 @@ provenance_ — conditions where access controls are social rather than technica
 where data can be modified, copied, or used outside its intended scope without detection.
 
 This page presents representative cases organized by CUI category and failure theme.
-Each case identifies the specific failure class and maps it to the UMRS design property
-that would have changed the outcome. A companion section covers "Trust But Didn't Verify"
+Each case identifies the specific failure class and maps it to the applicable security
+controls that might have changed the outcome. A companion section covers "Trust But Didn't Verify"
 failures that cross categories, and a final section covers the quieter but pervasive
 productivity and trust erosion that occurs even without a headline breach.
 
 NOTE: This document serves two purposes: (1) authoritative background reference for the
 CUI-labeling module and related architecture pages, and (2) source material for outreach
-content. When citing these cases in blog posts or talks, always consult
-`phase1-phase2-positioning.md` to ensure capability claims accurately reflect Phase 1
-vs Phase 2 scope. IMA/EVM Appraisal is a Phase 2 control; labeling, custody metadata,
-and audit are Phase 1.
+content. When citing these cases in blog posts or talks, ensure capability claims accurately
+reflect the controls available at each assurance tier. IMA/EVM Appraisal is a kernel-level
+integrity enforcement control; CUI labeling, custody metadata, and audit logging are
+foundational controls available at lower assurance tiers.
 
 == The Recurring Pattern
 
@@ -73,10 +73,15 @@ Identity theft and blackmail risk for individuals whose foreign contacts were ex
 Remediation costs estimated in the hundreds of millions. Long-term counterintelligence
 consequences assessed by the intelligence community.
 
-*UMRS design property:* MLS sensitivity labels on PII subsets. Purpose-based access: a
-"support lookup" operation and a "bulk export" operation require different security
-contexts — the kernel enforces the boundary. Mandatory high-signal audit events for every
-record access and export, not just login events.
+*Applicable controls:* MLS sensitivity labels on PII subsets (NIST SP 800-53 AC-4, AC-6).
+Purpose-based access: a "support lookup" operation and a "bulk export" operation require
+different security contexts — the kernel enforces the boundary. Mandatory high-signal audit
+events for every record access and export, not just login events (NIST SP 800-53 AU-2, AU-9).
+
+*Sources:*
+
+* House Committee on Oversight and Government Reform, _The OPM Data Breach: How the Government Jeopardized Our National Security for More than a Generation_ (Sept. 7, 2016): https://oversight.house.gov/wp-content/uploads/2016/09/The-OPM-Data-Breach-How-the-Government-Jeopardized-Our-National-Security-for-More-than-a-Generation.pdf
+* GAO-17-614, _Information Security: OPM Has Improved Controls, but Further Efforts Are Needed_ (Aug. 2017): https://www.gao.gov/products/gao-17-614
 
 === Equifax Breach (2017)
 
@@ -92,10 +97,16 @@ protecting it. The blast radius of one exploit was the entire consumer credit da
 the FTC, CFPB, and state regulators exceeding $700 million. Long-term credit monitoring
 obligations. Significant reputational and operational damage.
 
-*UMRS design property:* Data labeling by sensitivity class (full SSN vs. partial vs.
-non-PII metadata). Anomaly detection on access volume and time patterns — bulk reads across
-PII records at unusual hours or from unexpected roles are high-signal events. Cryptographic,
-append-only logging for privileged queries and export operations.
+*Applicable controls:* Data labeling by sensitivity class — full SSN vs. partial vs.
+non-PII metadata — enforces compartment boundaries at the data layer (NIST SP 800-53 AC-4,
+SC-4). Anomaly detection on access volume and time patterns: bulk reads across PII records
+at unusual hours or from unexpected roles are high-signal events (NIST SP 800-53 SI-4).
+Cryptographic, append-only logging for privileged queries and export operations (NIST SP 800-53 AU-9, AU-10).
+
+*Sources:*
+
+* FTC, _Equifax to Pay $575 Million as Part of Settlement with FTC, CFPB, and States Related to 2017 Data Breach_ (July 22, 2019): https://www.ftc.gov/news-events/news/press-releases/2019/07/equifax-pay-575-million-part-settlement-ftc-cfpb-states-related-2017-data-breach
+* CFPB, _CFPB, FTC and States Announce Settlement with Equifax Over 2017 Data Breach_: https://www.consumerfinance.gov/about-us/newsroom/cfpb-ftc-states-announce-settlement-with-equifax-over-2017-data-breach/
 
 === Twitter Internal Misuse (2019)
 
@@ -112,10 +123,17 @@ intelligence collection.
 *Human and financial cost:* Federal criminal charges. Users' identities exposed to a foreign
 government. Long-term chilling effect on whistleblower use of the platform.
 
-*UMRS design property:* Sensitivity labels on personal account records. Purpose separation:
-operational access (support ticket resolution) and export-level access (bulk account queries)
-require different security contexts. High-signal audit trails on any query that touches
-account identifiers outside a normal support workflow.
+*Applicable controls:* Sensitivity labels on personal account records (NIST SP 800-53 AC-4).
+Purpose separation: operational access (support ticket resolution) and export-level access
+(bulk account queries) require different security contexts — structural enforcement, not
+policy acknowledgment (NIST SP 800-53 AC-6, AC-17). High-signal audit trails on any query
+that touches account identifiers outside a normal support workflow (NIST SP 800-53 AU-2, AU-9).
+
+*Sources:*
+
+* DOJ Office of Public Affairs, _Two Former Twitter Employees and a Saudi National Charged as Acting as Illegal Agents of Saudi Arabia_ (Nov. 6, 2019): https://www.justice.gov/archives/opa/pr/two-former-twitter-employees-and-saudi-national-charged-acting-illegal-agents-saudi-arabia
+* DOJ, _Former Twitter Employee Found Guilty of Acting as an Agent of a Foreign Government_ (Aug. 2022): https://www.justice.gov/opa/pr/former-twitter-employee-found-guilty-acting-agent-foreign-government-and-unlawfully-sharing
+* DOJ, _Former Twitter Employee Sentenced to 42 Months in Federal Prison_ (Dec. 2022): https://www.justice.gov/archives/opa/pr/former-twitter-employee-sentenced-42-months-federal-prison-acting-foreign-agent
 
 === Anthem Breach (2015)
 
@@ -132,10 +150,16 @@ access tier. A compromise of one environment provided access to the full record 
 reported publicly. Member notification obligations, credit monitoring costs, and regulatory
 scrutiny.
 
-*UMRS design property:* Fine-grained labeling of record classes — member identifiers, clinical
-data, and billing records as separately labeled objects with distinct access requirements.
-Strong separation between the "care operations" domain and the "analytics/reporting" domain.
-Immutable audit trails for any "record of record" access and export.
+*Applicable controls:* Fine-grained labeling of record classes — member identifiers, clinical
+data, and billing records as separately labeled objects with distinct access requirements
+(NIST SP 800-53 AC-4, AC-6, SC-4). Strong separation between the "care operations" domain
+and the "analytics/reporting" domain enforced at the data layer, not at the application layer.
+Immutable audit trails for any "record of record" access and export (NIST SP 800-53 AU-9, AU-10).
+
+*Sources:*
+
+* HHS Office for Civil Rights, _Anthem Pays OCR $16 Million in Record HIPAA Settlement_ (Oct. 15, 2018): https://www.hhs.gov/hipaa/for-professionals/compliance-enforcement/agreements/anthem/index.html
+* California DOJ, _Attorney General Becerra Announces $8.69 Million Settlement Against Anthem, Inc._: https://oag.ca.gov/news/press-releases/attorney-general-becerra-announces-869-million-settlement-against-anthem-inc
 
 == CUI//WATER and CUI//ENV — Environmental Data Integrity Failures
 
@@ -157,12 +181,18 @@ record of what was known and when.
 Property value collapse. Criminal convictions and civil liability. Billions in infrastructure
 remediation costs. Lasting erosion of public trust in government data and government institutions.
 
-*UMRS design property:* Phase 1 — CUI labeling on water quality reports creates machine-readable
-context that the document is decision-critical and subject to handling requirements; the label
-itself establishes chain of custody. Phase 2 — IMA/EVM Appraisal would treat the water quality
-memo as a measured artifact; unauthorized modification would be detected at the kernel level.
-Append-only audit log creates a forensic record of what was seen and when, not writable by
-userland processes.
+*Applicable controls:* CUI labeling on water quality reports creates machine-readable context
+that the document is decision-critical and subject to handling requirements; the label itself
+establishes chain of custody (NIST SP 800-53 SI-7, AC-4). Kernel-level integrity measurement —
+treating the water quality memo as a measured artifact — means unauthorized modification is
+detectable before the file is acted upon (NSA RTB RAIN). An append-only audit log creates a
+forensic record of what was seen and when, not writable by userland processes (NIST SP 800-53 AU-9, AU-10).
+
+*Sources:*
+
+* EPA Office of Inspector General, _Management Weaknesses Delayed Response to Flint Water Crisis_ (Report No. 18-P-0221, July 19, 2018): https://www.epa.gov/office-inspector-general/report-management-weaknesses-delayed-response-flint-water-crisis
+* EPA, Flint Drinking Water Documents (primary records collection): https://www.epa.gov/flint/flint-drinking-water-documents
+* Michigan Civil Rights Commission, _The Flint Water Crisis: Systemic Racism Through the Lens of Flint_ (Feb. 17, 2017)
 
 === Falsified Drinking Water Reports (Multiple DOJ Cases)
 
@@ -185,11 +215,18 @@ chain was entirely social — dependent on individual integrity, not structural 
 regulatory decision-making. Compliance records that cannot be trusted retroactively, requiring
 re-inspection or remediation. Environmental harm from decisions based on falsified data.
 
-*UMRS design property:* Chain of custody for samples — who collected, where, when, and handling
-steps — signed and labeled at collection. Immutable lab results with corrections as append-only
-attributed events. Automated raw-to-reported pipeline with cryptographic binding: a regulator-facing
-compliance report can be traced to raw instrument output. Separation of duties between sampling,
-lab analysis, and compliance submission — no single actor controls the full chain.
+*Applicable controls:* Chain of custody for samples — who collected, where, when, and handling
+steps — signed and labeled at collection (NIST SP 800-53 SI-7, AU-10). Immutable lab results
+with corrections as append-only attributed events (NIST SP 800-53 AU-9). Cryptographic binding
+from raw instrument output to regulator-facing compliance report, so a submitted summary can be
+traced to the original measurement (NSA RTB RAIN). Separation of duties between sampling,
+lab analysis, and compliance submission — no single actor controls the full chain (NIST SP 800-53 AC-5).
+
+*Sources:*
+
+* DOJ USAO-EDNC, _Former Town of Cary Employee Pleads Guilty to Falsifying Drinking Water Sampling Results_: https://www.justice.gov/usao-ednc/pr/former-town-cary-employee-pleads-guilty-falsifying-drinking-water-sampling-results
+* DOJ Office of Public Affairs, _Chief Executive Officer Sentenced to 36 Months in Prison for Submitting Hundreds of False Monitoring Reports_ (Sept. 2022): https://www.justice.gov/archives/opa/pr/chief-executive-officer-sentenced-36-months-prison-submitting-hundreds-false-monitoring
+* DOJ USAO-NDMS, _Greenville Lab Director Sentenced to Prison for Falsifying Lab Results Concerning Water Quality_: https://www.justice.gov/usao-ndms/pr/greenville-lab-director-sentenced-prison-falsifying-lab-results-concerning-water
 
 === Water Rights and Land Valuation (Western U.S. Pattern)
 
@@ -207,10 +244,16 @@ decision-critical. Water rights records determine property values, resolve dispu
 infrastructure investment. When those records can be silently edited or their provenance is
 informally asserted, the authority of the data collapses.
 
-*UMRS design property:* Append-only custody records for measurement data. Labels that mark
-data as decision-critical and subject to challenge-in-place rules. Separation between
-operational data collection and regulatory submission, with a controlled transformation step
-that creates an auditable record.
+*Applicable controls:* Append-only custody records for measurement data prevent silent
+modification (NIST SP 800-53 AU-9, AU-10). Labels that mark data as decision-critical enforce
+handling requirements at the system level, not through policy acknowledgment alone (NIST SP
+800-53 AC-4, SI-7). Separation between operational data collection and regulatory submission,
+with a controlled transformation step that creates an auditable record (NIST SP 800-53 AC-5).
+
+*Sources:*
+
+* DOJ Environment and Natural Resources Division, _Water Rights Reclamation_ (ongoing litigation overview): https://www.justice.gov/enrd/water-rights-reclamation
+* Scientific Data, _Harmonized Database of Western U.S. Water Rights (HarDWR) v.1_ (2024): https://www.nature.com/articles/s41597-024-03434-6
 
 == CUI//TRAN and CUI//CRIT — Inspection Record Falsification
 
@@ -236,12 +279,20 @@ risk from deferred maintenance justified by falsified records. Direct safety exp
 commuters. Loss of institutional credibility for agencies whose entire safety posture depends
 on record integrity.
 
-*UMRS design property:* "Inspection record" as a controlled object — write-once, with amendments
-as append-only attributed events. Separation of duties: the inspector cannot be the sole
-approver; supervisor QA must attest independently. Evidence binding: photographs and sensor
-proofs are hashed and tied to the record at the time of collection, not retroactively.
-Mandatory access control on who can close an inspection item. Purpose scoping: operations
-read, compliance read, and investigative read require different security contexts.
+*Applicable controls:* Write-once inspection records with amendments as append-only attributed
+events prevent silent modification (NIST SP 800-53 AU-9, AU-10, SI-7). Separation of duties:
+the inspector cannot be the sole approver; supervisor QA must attest independently (NIST SP
+800-53 AC-5). Evidence binding: photographs and sensor proofs are hashed and tied to the
+record at the time of collection, not retroactively (NSA RTB RAIN). Mandatory access control
+on who can close an inspection item; purpose scoping requires different security contexts for
+operations read, compliance read, and investigative read (NIST SP 800-53 AC-4, AC-6).
+
+*Sources:*
+
+* NTSB Accident Report RAR-16-01, _WMATA L'Enfant Plaza Smoke Event_ (Jan. 2016): https://www.ntsb.gov/investigations/AccidentReports/Reports/RAR1601.pdf
+* WMATA GM/CEO statement on track inspector falsification: https://www.wmata.com/about/news/Statement-re-track-inspectors.cfm
+* DOJ USAO-D.Mass., _Five Charged with Falsifying MBTA Track Inspection Records_ (May 29, 2025): https://www.justice.gov/usao-ma/pr/five-charged-falsifying-mbta-track-inspection-records
+* DOJ USAO-EDNY, _Former Long Island Rail Road Employee Charged with Falsifying Inspection Report_ (2021): https://www.justice.gov/usao-edny/pr/former-long-island-rail-road-employee-charged-falsifying-inspection-report
 
 === Boeing 737 MAX and FAA Disclosures
 
@@ -261,10 +312,18 @@ internal attestations.
 deferred prosecution agreement). Multi-billion-dollar liability. Global grounding and loss
 of customer confidence. Long-term FAA oversight changes.
 
-*UMRS design property:* Regulator disclosure packet treated as a controlled artifact with
-full change control. Mandatory internal attestations before disclosure. Immutable record of
-what was disclosed when — not writable by the party making the disclosure. Structural
-separation between engineering and safety approval authorities as distinct labeled domains.
+*Applicable controls:* Regulator disclosure packets treated as controlled artifacts with
+full change control (NIST SP 800-53 SI-7, AU-10). Mandatory internal attestations before
+disclosure create a record of internal approval that is structurally separate from the
+disclosure itself. An immutable record of what was disclosed when — not writable by the
+party making the disclosure — provides independent verification capability (NIST SP 800-53 AU-9).
+Structural separation between engineering and safety approval authorities as distinct labeled
+domains (NIST SP 800-53 AC-4, AC-5).
+
+*Sources:*
+
+* DOJ Office of Public Affairs, _Boeing Charged with 737 Max Fraud Conspiracy and Agrees to Pay Over $2.5 Billion_ (Jan. 7, 2021): https://www.justice.gov/archives/opa/pr/boeing-charged-737-max-fraud-conspiracy-and-agrees-pay-over-25-billion
+* DOJ Criminal Division, _United States v. The Boeing Company_ (case page): https://www.justice.gov/criminal/criminal-fraud/case/united-states-v-boeing-company
 
 == CUI//CRIT — Pipeline Safety Record Falsification
 
@@ -288,11 +347,18 @@ records that were never actually validated. Regulatory exposure for utilities. T
 not theoretical — gas pipeline failures have caused casualties in cases where inspection
 records were inaccurate.
 
-*UMRS design property:* Field test results as immutable, signed events: device identity, user
-identity, timestamp, and location are bound to the result at the time of recording. Contractor
-generates results; independent verifier attests — they cannot be the same party. Append-only
-corrections with mandatory reason codes; no silent edits. Auditable chain from raw measurement
-to reported compliance summary.
+*Applicable controls:* Field test results as immutable, signed events: device identity, user
+identity, timestamp, and location are cryptographically bound to the result at the time of
+recording (NIST SP 800-53 SI-7, AU-10, NSA RTB RAIN). Separation of duties: the contractor
+who generates results and the independent verifier who attests cannot be the same party
+(NIST SP 800-53 AC-5). Append-only corrections with mandatory reason codes; no silent edits
+(NIST SP 800-53 AU-9). Auditable chain from raw measurement to reported compliance summary.
+
+*Sources:*
+
+* DOJ USAO-SDNY, _Safety Inspectors Charged with Fabricating Hundreds of Gas Pipeline Test Results Throughout New York_ (Aug. 2025): https://www.justice.gov/usao-sdny/pr/safety-inspectors-charged-fabricating-hundreds-gas-pipeline-test-results-throughout
+* California Public Utilities Commission, _San Bruno Incident_ (PG&E pipeline records): https://www.cpuc.ca.gov/regulatory-services/safety/gas-safety-and-reliability-branch/san-bruno-incident
+* NPR, _PG&E Falsified Gas Pipeline Safety Records, Regulators Say_ (Dec. 14, 2018): https://www.npr.org/2018/12/14/677003961/pg-e-falsified-gas-pipeline-safety-records-regulators-say
 
 == CUI//TRAN and CUI//ENV — Emissions Compliance System Compromise
 
@@ -313,11 +379,18 @@ the test results that could have detected the behavioral discrepancy.
 obligations for millions of vehicles. Criminal charges. Environmental harm from vehicles
 emitting illegal levels of NOx over years of operation.
 
-*UMRS design property:* Strong integrity controls and independent verification on compliance
-measurement pipelines — the measurement pipeline and the product pipeline should be separate
-labeled domains with different approval authorities. Tamper-evident evidence bundles: raw
-test data, metadata, and signatures are bound at the time of test execution. Auditable
-traceability from test configuration to submitted reports.
+*Applicable controls:* Strong integrity controls and independent verification on compliance
+measurement pipelines — the measurement pipeline and the product pipeline must be separate
+labeled domains with different approval authorities (NIST SP 800-53 AC-4, AC-5). Tamper-evident
+evidence bundles: raw test data, metadata, and signatures are bound at the time of test
+execution (NSA RTB RAIN, NIST SP 800-53 SI-7). Auditable traceability from test configuration
+to submitted reports (NIST SP 800-53 AU-9, AU-10).
+
+*Sources:*
+
+* EPA, _Volkswagen Clean Air Act Civil Settlement_: https://www.epa.gov/enforcement/volkswagen-clean-air-act-civil-settlement
+* EPA, _Learn About Volkswagen Violations_: https://www.epa.gov/vw/learn-about-volkswagen-violations
+* DOJ Office of Public Affairs, _Volkswagen to Recall 83,000 3.0 Liter Diesel Vehicles and Fund Mitigation Projects to Settle Allegations_ (Dec. 2016): https://www.justice.gov/archives/opa/pr/volkswagen-recall-83000-30-liter-diesel-vehicles-and-fund-mitigation-projects-settle
 
 == CUI//TRAN — Federal Railroad Administration Safety Data
 
@@ -333,9 +406,16 @@ reports downgraded to meet performance metrics; and incomplete record transfer d
 *Failure class:* Operational safety data treated as ordinary administrative records. No
 immutability, no purpose scoping, no enforcement of who can edit what and under what authority.
 
-*UMRS design property:* Rail safety data should be immutable once recorded, labeled by
-criticality (ops vs. compliance vs. investigation), and segregated by purpose. Without
-these controls, the system produces plausible deniability rather than accountability.
+*Applicable controls:* Rail safety data must be immutable once recorded, labeled by criticality
+(ops vs. compliance vs. investigation), and segregated by purpose (NIST SP 800-53 AU-9, SI-7,
+AC-4). Without these controls, the system produces plausible deniability rather than
+accountability.
+
+*Sources:*
+
+* GAO-07-149, _Rail Safety: The Federal Railroad Administration Is Taking Steps to Better Target Its Oversight_ (Jan. 2007): https://www.govinfo.gov/content/pkg/GAOREPORTS-GAO-07-149/html/GAOREPORTS-GAO-07-149.htm
+* NTSB, _Letter to FRA on Open Safety Recommendations for Freight Rail_ (April 7, 2023): https://www.ntsb.gov/news/Documents/Freight%20Rail%20Safety%202023%204%207%202023.pdf
+* FRA Safety Data portal: https://safetydata.fra.dot.gov/
 
 == CUI//AGR — Agriculture and Food Supply Chain
 
@@ -355,11 +435,18 @@ contamination because records do not have enforced integrity or chain-of-custody
 harm producers not involved in the contamination event. Economic disruption across supply
 chains. Long-term erosion of public trust in food safety systems.
 
-*UMRS design property:* Labeling and integrity controls on lot/batch/shipping records — these
-records cannot be retroactively "cleaned up." Each handoff creates a signed custody transfer
-receipt for the shipment record set. Purpose separation: operational logistics, regulatory
-reporting, and public communications are distinct labeled domains. Fast, queryable audit trail
-for "who changed lot lineage data and why."
+*Applicable controls:* Labeling and integrity controls on lot/batch/shipping records prevent
+retroactive modification (NIST SP 800-53 SI-7, AU-10). Each handoff creates a signed custody
+transfer receipt for the shipment record set, establishing provenance at every step (NSA RTB RAIN).
+Purpose separation: operational logistics, regulatory reporting, and public communications are
+distinct labeled domains each requiring different authorization (NIST SP 800-53 AC-4, AC-6).
+Fast, queryable audit trail for "who changed lot lineage data and why" (NIST SP 800-53 AU-2, AU-9).
+
+*Sources:*
+
+* FDA, _FDA Releases Report on Investigation into the Fall 2018 Outbreak of Illnesses Tied to Romaine Lettuce_ (Feb. 2019): https://www.fda.gov/food/hfp-constituent-updates/fda-releases-report-investigation-fall-2018-outbreak-illnesses-tied-romaine-lettuce
+* FDA, _Investigation Report: Factors Potentially Contributing to the Contamination of Romaine Lettuce_ (PDF): https://www.fda.gov/media/147349/download
+* CDC (archived), _2018 E. coli Outbreak Linked to Romaine Lettuce_: https://archive.cdc.gov/www_cdc_gov/ecoli/2018/o157h7-11-18/index.html
 
 === USDA Agricultural Data and Market Impact
 
@@ -373,10 +460,16 @@ bad planting decisions driven by manipulated forecasts, and food-safety delays.
 on measurements. No separation between operational data collection and market-impact dissemination.
 The timing, integrity, and scope of agricultural data all matter — not just its secrecy.
 
-*UMRS design property:* Labels that distinguish preliminary measurements from finalized reports,
-with different access tiers. Immutable raw data that cannot be altered to move market outcomes.
-Controlled transformation: the step from raw collection to published forecast is a labeled
-event with attestation, not a casual file edit.
+*Applicable controls:* Labels that distinguish preliminary measurements from finalized reports
+enforce different access tiers at the data layer, not through policy alone (NIST SP 800-53 AC-4,
+AC-6). Immutable raw data cannot be altered to move market outcomes (NIST SP 800-53 SI-7, AU-9).
+The transformation from raw collection to published forecast is a labeled event with attestation —
+not a casual file edit (NSA RTB RAIN, NIST SP 800-53 AC-5).
+
+*Sources:*
+
+* USDA ERS, _Emergence and Impact of USDA's WASDE Report_ (Amber Waves, June 2012): https://www.ers.usda.gov/amber-waves/2012/june/wasde
+* USDA, _WASDE Report_ (current methodology and release protocol): https://www.usda.gov/about-usda/general-information/staff-offices/office-chief-economist/commodity-markets/wasde-report
 
 == CUI//HLTH — Public Health Data
 
@@ -400,10 +493,17 @@ reported statistics. Delayed response decisions based on inaccurate situational 
 Economic disruption from policy decisions that were later revised when data integrity
 problems surfaced.
 
-*UMRS design property:* Raw source data as a controlled, immutable object. Aggregation and
-transformation steps as labeled events with attribution. Separation between raw collection,
-reporting, and public communication domains — each requiring different authorization.
-Retroactive edits are append-only corrections with mandatory reason codes, not silent overwrites.
+*Applicable controls:* Raw source data as a controlled, immutable object (NIST SP 800-53 SI-7,
+AU-9). Aggregation and transformation steps as labeled events with attribution, creating an
+auditable record of how raw data became a published figure (NSA RTB RAIN). Separation between
+raw collection, reporting, and public communication domains — each requiring different
+authorization (NIST SP 800-53 AC-4, AC-5). Retroactive edits are append-only corrections with
+mandatory reason codes, not silent overwrites (NIST SP 800-53 AU-10).
+
+*Sources:*
+
+* The COVID Tracking Project: data quality documentation: https://covidtracking.com/about-data/data-definitions
+* GAO-21-551, "COVID-19: Federal Data Efforts to Support Response Have Improved, but Key Gaps Remain" (2021): https://www.gao.gov/products/gao-21-551
 
 == Digital Evidence and Legal Proceedings
 
@@ -421,10 +521,16 @@ no mechanism for proving the facts.
 *Failure class:* No provenance controls. There was no cryptographic binding of origin,
 integrity, and custody metadata to the artifact.
 
-*UMRS design property:* A file managed within a UMRS custody chain carries a kernel-level
-audit record of its origin, handling events, and integrity state. The artifact's provenance
-is not an assertion by the party presenting it — it is a record created by the kernel at
-the time of each event.
+*Applicable controls:* A file managed within a kernel-enforced custody chain carries an
+audit record of its origin, handling events, and integrity state (NIST SP 800-53 AU-9, AU-10,
+SI-7). The artifact's provenance is not an assertion by the party presenting it — it is a
+record created by the kernel at the time of each event (NSA RTB RAIN).
+
+*Sources:*
+
+* _United States v. Vayner_, 769 F.3d 125 (2d Cir. 2014)
+* ABA, _Inadmissible Social-Media Evidence Vacates Conviction_ (2015): https://www.americanbar.org/groups/litigation/committees/young-advocates/practice/2015/inadmissible-social-media-evidence-vacates-conviction/
+* NAAG, _Status Update on Authenticating Social Media Evidence_: https://www.naag.org/attorney-general-journal/status-update-on-authenticating-social-media-evidence-the-three-primary-approaches-applied-nationally/
 
 === Lorraine v. Markel
 
@@ -433,10 +539,15 @@ because the parties failed to properly authenticate them. The records existed; t
 authenticity could not be established. The legal outcome was determined not by what happened
 but by whether it could be proven to have happened.
 
-*UMRS lesson:* These failures are not about secrecy. They demonstrate that when systems do
+*High-assurance lesson:* These failures are not about secrecy. They demonstrate that when systems do
 not treat digital artifacts as controlled objects with enforced lifecycle rules, those
 artifacts lose evidentiary weight. Custody trust and content trust must be structurally
 enforced, not assumed.
+
+*Sources:*
+
+* _Lorraine v. Markel American Insurance Co._, 241 F.R.D. 534 (D. Md. 2007)
+* ABA CCB Journal, _Getting ESI Evidence Admitted: Lorraine v. Markel American Insurance Co._: https://ccbjournal.com/articles/getting-esi-evidence-admitted-lorraine-v-markel-american-insurance-co
 
 === Municipal and Public-Sector Database Misuse (Pattern)
 
@@ -451,10 +562,10 @@ enforce sensitivity-based separation between different classes of records.
 or purpose. Audit exists, but cannot drive enforcement. Access volume is indistinguishable
 from normal operations until harm surfaces.
 
-*UMRS design property:* Sensitivity labels that require explicit purpose justification at
-access time. High-signal audit events for queries on records outside normal operational
-scope. Anomaly detection on "celebrity lookup" patterns — high-volume or unusual access
-to specific record classes.
+*Applicable controls:* Sensitivity labels that require explicit purpose justification at
+access time prevent undifferentiated broad access to record classes (NIST SP 800-53 AC-4, AC-6).
+High-signal audit events for queries on records outside normal operational scope (NIST SP 800-53 AU-2, AU-9).
+Anomaly detection on high-volume or unusual access to specific record classes (NIST SP 800-53 SI-4).
 
 == Trust But Didn't Verify — Cross-Category Failures
 
@@ -475,10 +586,16 @@ unit-type enforcement. There was no mechanism to prevent a "metric-labeled" calc
 from being consumed by an "English-units-expecting" process. The trust in the interface
 was assumed, not verified.
 
-*UMRS design property:* MLS labels can tag data by processing context. A process expecting
+*Applicable controls:* MLS labels can tag data by processing context. A process expecting
 data in one labeled context cannot ingest a file labeled for a different context — the
-kernel denies the flow. Type-safe access controls prevent context mismatches at the data
-layer, not only at the application layer. Phase 2 capability.
+kernel denies the flow (NIST SP 800-53 AC-4). Type-safe access controls prevent context
+mismatches at the data layer, not only at the application layer (NSA RTB RAIN).
+
+*Sources:*
+
+* NASA Lessons Learned Information System, _Mars Climate Orbiter Mishap Investigation Board_ (Lesson #641): https://llis.nasa.gov/lesson/641
+* NASA LLIS, _Mars Climate Orbiter Mishap Investigation Board Phase I Report_ (PDF, Nov. 10, 1999): https://llis.nasa.gov/llis_lib/pdf/1009464main1_0641-mr.pdf
+* NASA JPL, _Mars Climate Orbiter Team Finds Likely Cause of Loss_: https://www.jpl.nasa.gov/news/mars-climate-orbiter-team-finds-likely-cause-of-loss/
 
 === Deepwater Horizon Alarm Bypass
 
@@ -501,11 +618,18 @@ configuration was trusted at face value.
 *Human and financial cost:* 11 deaths. Explosion and fire that destroyed the rig.
 Environmental catastrophe. Estimated total costs exceeding $65 billion.
 
-*UMRS design property:* Phase 2 — IMA/EVM Appraisal would treat the alarm configuration
+*Applicable controls:* Kernel-level integrity measurement would treat the alarm configuration
 file as a controlled object. Any modification to the bypass state would require authorization
-through the controlled change path; unauthorized modification would be detected by the
-kernel before the file was acted upon. The safety-critical configuration cannot be silently
-altered to an untrusted state.
+through the controlled change path; unauthorized modification is detectable by the kernel before
+the file is acted upon (NSA RTB RAIN, NIST SP 800-53 CM-6, SI-7). Safety-critical configuration
+cannot be silently altered to an untrusted state — the system enforces change authorization
+structurally, not through policy compliance (NIST SP 800-53 AC-5).
+
+*Sources:*
+
+* National Commission on the BP Deepwater Horizon Oil Spill and Offshore Drilling, _Deep Water: The Gulf Oil Disaster and the Future of Offshore Drilling_ (Jan. 2011): https://www.govinfo.gov/content/pkg/GPO-OILCOMMISSION/pdf/GPO-OILCOMMISSION.pdf
+* CSB, _Macondo Investigation Report Vol. 1_ (PDF): https://www.csb.gov/assets/1/7/vol_1_final.pdf
+* CNN, _Deepwater Horizon Alarm Had Been 'Inhibited,' Technician Testifies_ (July 23, 2010): https://www.cnn.com/2010/US/07/23/gulf.platform.alert/index.html
 
 === Boeing 737 MAX and FAA Oversight (Trust Without Verification)
 
@@ -524,10 +648,16 @@ processes was not backed by verifiable provenance.
 to verify them independently. The oversight structure assumed good faith rather than
 requiring technical proof.
 
-*UMRS design property:* A safety disclosure treated as a controlled artifact with
-cryptographic attestation creates a record the regulator can verify independently.
-The disclosing party's internal approval chain is separate from the regulatory submission
-chain — the two domains have different labels and different attestation requirements.
+*Applicable controls:* A safety disclosure treated as a controlled artifact with cryptographic
+attestation creates a record the regulator can verify independently (NIST SP 800-53 AU-9, AU-10,
+SI-7). The disclosing party's internal approval chain is structurally separate from the regulatory
+submission chain — the two domains have different labels and different attestation requirements
+(NIST SP 800-53 AC-4, AC-5, NSA RTB RAIN).
+
+*Sources:*
+
+* DOJ Office of Public Affairs, _Boeing Charged with 737 Max Fraud Conspiracy and Agrees to Pay Over $2.5 Billion_ (Jan. 7, 2021): https://www.justice.gov/archives/opa/pr/boeing-charged-737-max-fraud-conspiracy-and-agrees-pay-over-25-billion
+* DOJ Criminal Division, _United States v. The Boeing Company_ (case page): https://www.justice.gov/criminal/criminal-fraud/case/united-states-v-boeing-company
 
 === Volkswagen Defeat Device (Trust Without Integrity Verification)
 
@@ -542,9 +672,15 @@ The entity responsible for compliance was also responsible for the integrity of 
 measurement system. No independent verification existed that could have detected the
 behavioral discrepancy between test conditions and real-world operation.
 
-*UMRS design property:* Tamper-evident evidence bundles with raw test data, metadata,
-and signatures bound at execution time. The measurement pipeline and the product pipeline
-as structurally separate labeled domains with different approval authorities.
+*Applicable controls:* Tamper-evident evidence bundles with raw test data, metadata, and
+signatures bound at execution time (NSA RTB RAIN, NIST SP 800-53 SI-7). The measurement
+pipeline and the product pipeline as structurally separate labeled domains with different
+approval authorities (NIST SP 800-53 AC-4, AC-5).
+
+*Sources:*
+
+* EPA, _Volkswagen Clean Air Act Civil Settlement_: https://www.epa.gov/enforcement/volkswagen-clean-air-act-civil-settlement
+* EPA, _Learn About Volkswagen Violations_: https://www.epa.gov/vw/learn-about-volkswagen-violations
 
 == The Quiet Killer — Productivity and Trust Erosion
 
@@ -610,58 +746,51 @@ when labels are authoritative, custody is structural, and the audit log is tampe
 the rational response changes. Operators trust the system. Auditors attest to system records
 instead of screenshots. Automation becomes tractable.
 
-This is what UMRS is designed to enable.
-
-== Summary Table — Failure Classes and UMRS Design Properties
+== Summary Table — Failure Classes and Security Control Patterns
 
 [cols="2,1,3"]
 |===
-| Failure class | Category | UMRS design property
+| Failure class | Category | Applicable security controls
 
 | "Too much legitimate access" — lateral movement, bulk export, insider misuse
 | CUI//PRIVACY, CUI//HLTH
 | MLS sensitivity labels and category-based compartments constrain access by type of data,
-  not just job title. Purpose-based contexts enforce that "support lookup" and "bulk export"
-  are different operations with different authorization requirements.
+  not just job title (NIST SP 800-53 AC-4, AC-6). Purpose-based contexts enforce that "support
+  lookup" and "bulk export" are different operations with different authorization requirements.
 
 | Falsified records — inspection reports, sampling results, safety configurations
 | CUI//TRAN, CUI//CRIT, CUI//WATER
-| Phase 1: CUI labels mark records as controlled objects subject to handling requirements.
-  Phase 2: IMA/EVM Appraisal — files are measured at the kernel level; unauthorized
-  modifications are detected or blocked before the file is used.
+| CUI labels mark records as controlled objects subject to handling requirements (NIST SP 800-53
+  AC-4, SI-7). Kernel-level integrity measurement treats files as measured artifacts;
+  unauthorized modifications are detected or blocked before the file is used (NSA RTB RAIN,
+  NIST SP 800-53 SI-7).
 
 | Provenance gaps — cannot prove origin, chain of custody, or what was seen when
 | All categories
-| Kernel-level audit (SELinux AVC, IMA measurement log in Phase 2) creates tamper-visible
-  provenance records not writable by userland processes. Phase 1: custody metadata and
-  signed labels establish the chain of custody.
+| Kernel-level audit creates tamper-visible provenance records not writable by userland processes
+  (NIST SP 800-53 AU-9, AU-10). Signed labels and custody metadata establish the chain of custody
+  at each handling step (NSA RTB RAIN).
 
 | Context mismatches — data reused outside intended purpose or processing context
 | CUI//TRAN, CUI//ENV, engineering
-| Phase 2: MLS labels as machine-enforced tags on processing context; the kernel prevents
-  flows between mismatched labeled domains.
+| MLS labels as machine-enforced tags on processing context; the kernel prevents flows between
+  mismatched labeled domains (NIST SP 800-53 AC-4, NSA RTB RAIN).
 
 | Accountability gaps — cannot attribute modifications to specific identity and time
 | All categories
-| Signed audit log chains; Phase 2: EVM-protected xattrs; append-only kernel measurement
-  log creates a forensic record not alterable by any userland process.
+| Signed audit log chains and EVM-protected extended attributes; append-only kernel measurement
+  log creates a forensic record not alterable by any userland process (NIST SP 800-53 AU-9,
+  AU-10, SI-7).
 
 | Trust without verification — compliance systems, safety configs, regulator disclosures
 | CUI//CRIT, CUI//ENV, CUI//TRAN
 | Controlled artifact model: the measurement pipeline and the product pipeline are separate
-  labeled domains. Phase 2: IMA/EVM Appraisal on safety-critical configuration objects.
-  Tamper-evident evidence bundles with raw data and signatures bound at execution time.
+  labeled domains (NIST SP 800-53 AC-4, AC-5). Tamper-evident evidence bundles with raw data
+  and signatures bound at execution time (NSA RTB RAIN). Kernel integrity appraisal on
+  safety-critical configuration objects (NIST SP 800-53 CM-6, SI-7).
 
 | Productivity and trust erosion — shadow systems, defensive documentation
 | All categories
-| Authoritative labeling that operators can trust eliminates the rational basis for shadow
-  systems. When the system can prove its own integrity, the operational tax of distrust goes
-  away.
+| Authoritative labeling with structural integrity removes the rational basis for shadow systems.
+  When the system can prove its own integrity, the operational tax of distrust is eliminated.
 |===
-
-== See Also
-
-* xref:security-concepts:integrity-and-provenance.adoc[Integrity and provenance definitions]
-* xref:architecture:mls-label-model.adoc[MLS label model and CUI mapping]
-* xref:reference:compliance-frameworks.adoc[Compliance frameworks registry]
-* xref:deployment:ima-evm-setup.adoc[IMA/EVM setup]

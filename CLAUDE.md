@@ -84,6 +84,7 @@ Detailed rules are externalized. Do not duplicate rule content in this file.
 | **SELinux & labeling** | | |
 | `selinux.md` | SELinux axioms, trust gates, context format, Phase 1 | `umrs-selinux`, security contexts |
 | `labeling_mcs.md` | MCS labeling, CUI catalogs, setrans.conf, Five Eyes | `umrs-labels`, MCS categories |
+| `cui_phase1_language.md` | Phase 1 = labeling only; no enforcement claims until MLS | CUI content, blog posts, tool output |
 | **Documentation** | | |
 | `doc_workflow_rules.md` | Workflow, archiving, Antora structure, xref safety | `docs/` or `.adoc` files |
 | `ste_mode.md` | Simplified Technical English for procedures (EN + FR) | Numbered procedure steps, translation of procedures |

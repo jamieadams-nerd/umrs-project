@@ -494,6 +494,26 @@ permanent, stable location — always look here first.
 
 ---
 
+### Five Eyes Case Study Research — Expanded Corpus (50 New Cases)
+
+| Field | Value |
+|---|---|
+| File | `.claude/references/reports/five-eyes-case-study-research.md` |
+| Date | 2026-04-03 |
+| SHA-256 | `14f0f8ec1e97c068658a2af71931ba97c5aa4fdd047eb3252df7ae52a1002408` |
+| Topics | Five Eyes failure case studies; US (SolarWinds, Colonial Pipeline, IRS ProPublica leak, VA breaches, LANL nuclear USB, IRS insider misuse, municipal police misuse, IRS tax leak, trade secret theft, health data segmentation, PFAS data gap); Canada (RCMP Indigenous surveillance, Ontario health snooping, Statistics Canada First Nations, CRA 31,000 breaches); UK (Post Office Horizon, HMRC 25M child benefit, Windrush, Grenfell, WannaCry NHS, HMRC staff misuse, MOD SSCL payroll, NHS Advanced/Adastra, Cabinet Office Honours, Home Office migrant phones, Babylon Health, NHS pixel tracking, MOD laptop, police evidence chain); Australia (Optus, Medibank, Robodebt, Latitude, APT Alf defence, Medicare dark web, 2016 Census, myGov, Austal); New Zealand (Waikato DHB, MSD kiosk, Novopay, Te Whatu Ora COVID insider, Mercury IT, ACC, ManageMyHealth) |
+| Relevance | `case-studies-consolidated.adoc`, `canadian-case-studies.adoc`, new `five-eyes-case-studies.adoc`; UMRS design properties (AC-4, AC-6, AU-9, SI-7, NSA RTB RAIN); all 18 CUI index groups covered; PRVCY, HLTH, TAX, CRIT, EXPT, LEI, PROPIN, CTI, FNC, Statistical |
+
+**Key relevance**: 50 new real-world cases documented across all Five Eyes nations, organized by
+nation and failure class. Each case includes: incident description, national information handling
+tier (CUI category or Protected A/B/C equivalent), failure class, human and financial cost,
+NIST SP 800-53 controls that were published and required but not implemented, and UMRS design
+property that addresses the failure class. Suitable for integration into the UMRS case study
+corpus. All cases sourced from official regulatory findings, court records, government press
+releases, and auditor reports.
+
+---
+
 ## Access Control Reference Collection
 
 Documents retrieved per research-plan-access-control.md (2026-03-11).

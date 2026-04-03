@@ -18,9 +18,9 @@ statistics.
 ====
 
 This page presents Canadian incidents that parallel the
-xref:foundations/history/case-studies.adoc[US failure case studies],
+xref:cases/case-studies-consolidated.adoc[US failure case studies],
 mapped to the Treasury Board Standard on Security Categorization
-(Protected A/B/C) and to the UMRS design properties that would have
+(Protected A/B/C) and to the high-assurance security controls that might have
 changed the outcome.
 
 == The Canadian Context
@@ -73,12 +73,16 @@ of the Privacy Act.
 scores, and emotional distress for tens of thousands of Canadians.
 Class action certified by the Federal Court of Canada.
 
-*UMRS control pattern:* MLS labeling of PII subsets by sensitivity
-(banking data vs employment history vs tax assessment). Purpose-based
-access: "self-service lookup" and "benefit application" require
-different security contexts. Anomaly detection on access volume and
-patterns. Mandatory high-signal audit events for account modification
-and payment redirection.
+*Applicable controls:* MLS labeling of PII subsets by sensitivity
+(banking data vs employment history vs tax assessment) (NIST SP 800-53 AC-4, AC-6;
+TBS Standard on Security Categorization, Appendix J).
+Purpose-based access: "self-service lookup" and "benefit application" require
+different security contexts (NIST SP 800-53 AC-6; TBS Directive on Security Management).
+Anomaly detection on access volume and patterns (NIST SP 800-53 SI-4).
+Mandatory high-signal audit events for account modification
+and payment redirection (NIST SP 800-53 AU-2, AU-9).
+Privacy obligations under the Privacy Act, s. 8 (disclosure) and s. 6 (accuracy);
+OPC finding confirmed contravention of both departments.
 
 *US parallel:* OPM breach (2015) — same "one big database" failure
 where lateral movement was unconstrained once inside.
@@ -114,11 +118,17 @@ posture.
 *Consequence:* Government provided credit monitoring services and
 reissued valid passports for relocated personnel.
 
-*UMRS control pattern:* Data labeling by sensitivity class with
+*Applicable controls:* Data labeling by sensitivity class with
 mandatory encryption and access controls that persist when data is
-held by third parties. Periodic attestation of contractor security
-posture. Audit trail for all access to personnel records, including
-contractor access.
+held by third parties (NIST SP 800-53 AC-4, SC-28;
+TBS Standard on Security Categorization, Appendix J;
+TBS Policy on Government Security, s. 4.4 — security requirements in contracts).
+Periodic attestation of contractor security posture (NIST SP 800-53 SA-9, CA-2;
+TBS Directive on Security Management — third-party security assessments).
+Audit trail for all access to personnel records, including
+contractor access (NIST SP 800-53 AU-2, AU-10).
+Privacy obligations under the Privacy Act, s. 8 (disclosure of personal information
+to contractors acting on behalf of government departments).
 
 *US parallel:* OPM breach — same category (personnel records),
 same scale, same failure (trusted without verification).
@@ -151,11 +161,16 @@ technical enforcement of "need to know."
 finding, CSIS received complete visa application packages from IRCC
 without establishing that the individuals were linked to a threat.
 
-*UMRS control pattern:* Purpose-based access enforcement — "case
+*Applicable controls:* Purpose-based access enforcement — "case
 officer reviewing assigned file" and "browsing any file" require
-different security contexts. High-signal audit on access outside
-assigned caseload. Mandatory access control preventing bulk data
-sharing without explicit authorization.
+different security contexts (NIST SP 800-53 AC-3, AC-6;
+TBS Directive on Security Management — need-to-know enforcement).
+High-signal audit on access outside assigned caseload (NIST SP 800-53 AU-2, AU-12).
+Mandatory access control preventing bulk data sharing without
+explicit authorization (NIST SP 800-53 AC-4, AC-21).
+Privacy obligations under the Privacy Act, s. 7 (use of personal information)
+and s. 8 (disclosure to CSIS without threat nexus).
+OPC findings confirmed contravention of both provisions.
 
 *US parallel:* Twitter internal misuse (2019) — same "too much
 legitimate access" pattern where employees used broad access for
@@ -192,10 +207,14 @@ data while collecting more personal health information than was
 LifeLabs fought for four years to suppress the investigation report,
 losing in court in 2024. Hackers may still hold the data.
 
-*UMRS control pattern:* MLS labeling of health data subsets by
-sensitivity (lab results vs demographic data vs health card numbers).
-Data minimization enforced by policy — collect only what is needed.
-Cryptographic, append-only logging for all access and export events.
+*Applicable controls:* MLS labeling of health data subsets by
+sensitivity (lab results vs demographic data vs health card numbers) (NIST SP 800-53 AC-4, AC-6).
+Data minimization enforced by policy — collect only what is needed (NIST SP 800-53 PM-25, SA-8;
+Ontario PHIPA, s. 30 — limit collection to what is reasonably necessary;
+BC PIPA, s. 4 — reasonable purposes).
+Cryptographic, append-only logging for all access and export events (NIST SP 800-53 AU-9, AU-10).
+Joint investigation by Ontario IPC and BC OIPC found LifeLabs failed to meet
+reasonable safeguards under PHIPA and PIPA respectively.
 
 *US parallel:* Equifax breach (2017) — same pattern of insufficient
 segmentation where exploiting one path provides access to vast
@@ -221,10 +240,12 @@ home-care records.
 notification. The delay between breach discovery and public disclosure
 compounded the harm.
 
-*UMRS control pattern:* Mandatory breach notification timelines
-enforced by system design, not policy alone. Cryptographic binding
-of data to access controls that persist across organizational
-boundaries.
+*Applicable controls:* Mandatory breach notification timelines
+enforced by system design, not policy alone (NIST SP 800-53 IR-6, SI-12;
+Ontario PHIPA, s. 12(2) — mandatory notification to Commissioner and affected
+individuals "at the first reasonable opportunity").
+Cryptographic binding of data to access controls that persist across
+organizational boundaries (NIST SP 800-53 AC-4, SC-28).
 
 *Sources:*
 
@@ -266,14 +287,19 @@ hardship. Others were overpaid and faced unexpected tax liabilities.
 The human cost was measured in divorces, mental health crises, and
 at least one employee suicide attributed to pay problems.
 
-*UMRS control pattern:* This is not primarily a data labeling failure
-but a verification and audit failure. UMRS principles apply:
+*Applicable controls:* This is not primarily a data labeling failure
+but a verification and audit failure. High-assurance design principles apply:
 independent verification of system output against expected state
-(dual-path validation), immutable audit trail of all pay
-transactions, and separation of duties between system deployment
-authority and verification authority. The Phoenix failure
-demonstrates that trusting a system without independent verification
-of its outputs is as dangerous as trusting data without provenance.
+(dual-path validation) (NIST SP 800-53 SI-7, NSA RTB;
+Auditor General Act, s. 7 — examination of government accounts),
+immutable audit trail of all pay transactions (NIST SP 800-53 AU-9, AU-10),
+and separation of duties between system deployment authority and
+verification authority (NIST SP 800-53 AC-5;
+TBS Policy on Service and Digital — mandatory assessment of IT project readiness;
+Financial Administration Act, s. 34 and s. 33 — payment certification and
+requisition authority separation). The Phoenix failure demonstrates that trusting
+a system without independent verification of its outputs is as dangerous
+as trusting data without provenance.
 
 *US parallel:* OPM breach — both are cases where the federal
 government trusted a technology system without adequate verification.
@@ -314,12 +340,18 @@ was awarded to GC Strategies.
 million across 31 federal organizations (2015–2024). Political fallout
 included parliamentary committee investigations and RCMP referrals.
 
-*UMRS control pattern:* Provenance and attestation for work products
+*Applicable controls:* Provenance and attestation for work products
 — every deliverable treated as a controlled artifact with
-cryptographic binding to the producing identity and timestamp.
+cryptographic binding to the producing identity and timestamp (NIST SP 800-53 SI-7, AU-10).
 Separation of duties: the entity that defines requirements cannot
-be the sole competitor for the resulting contract. Immutable audit
-trail for all procurement decisions and deliverable acceptances.
+be the sole competitor for the resulting contract (NIST SP 800-53 AC-5;
+TBS Contracting Policy; Financial Administration Act, s. 34 and s. 33;
+Government Contracts Regulations — competitive process requirements).
+Immutable audit trail for all procurement decisions and deliverable
+acceptances (NIST SP 800-53 AU-9, AU-10).
+TBS Directive on Security Management — security screening requirements for
+contractor personnel (21% of contracts had subcontractors working without
+required security clearance).
 
 *Sources:*
 
@@ -348,9 +380,14 @@ independent attestation that contracted work produced value.
 resigned. Over $1 billion in public funds spent without commensurate
 health records infrastructure.
 
-*UMRS control pattern:* Separation of spending authority from
-verification authority. Immutable audit trail for procurement
-decisions. Mandatory independent attestation for contract deliverables.
+*Applicable controls:* Separation of spending authority from
+verification authority (NIST SP 800-53 AC-5;
+Ontario Broader Public Sector Procurement Directive — competitive procurement
+and conflict of interest requirements).
+Immutable audit trail for procurement decisions (NIST SP 800-53 AU-9, AU-10;
+Ontario Auditor General Act — examination of provincial agency accounts).
+Mandatory independent attestation for contract deliverables
+(NIST SP 800-53 SA-9, CA-2).
 
 *Sources:*
 
@@ -381,13 +418,16 @@ authorities.
 *Consequence:* Seven deaths, 2,300+ illnesses. The O'Connor Inquiry
 led to the Safe Drinking Water Act (Ontario) and the Clean Water Act.
 
-*UMRS control pattern:* IMA/EVM appraisal on measurement records —
+*Applicable controls:* IMA/EVM appraisal on measurement records —
 a water quality test result becomes a signed, measured artifact.
-Unauthorized modification is detected by the kernel. Chain of custody
-from sample collection through laboratory analysis to regulatory
-submission, with cryptographic binding at each step. Mandatory
-automated notification: a positive contamination result triggers
-immediate notification without depending on operator action.
+Unauthorized modification is detected by the kernel (NIST SP 800-53 SI-7, NSA RTB).
+Chain of custody from sample collection through laboratory analysis to
+regulatory submission, with cryptographic binding at each step (NIST SP 800-53 AU-10).
+Mandatory automated notification: a positive contamination result triggers
+immediate notification without depending on operator action (NIST SP 800-53 IR-6, SI-5;
+Safe Drinking Water Act (Ontario), 2002, s. 18 — mandatory notification
+to Medical Officer of Health; O'Connor Inquiry Recommendation 22 —
+mandatory reporting by private laboratories to public health authorities).
 
 *US parallel:* Falsified drinking water reports (DOJ cases) —
 identical failure pattern of falsified lab results with no
@@ -422,11 +462,14 @@ regulator suppressing its own findings.
 with the published findings, stating the public should be alarmed
 about how the report was edited.
 
-*UMRS control pattern:* Audit reports as immutable controlled
-artifacts with change control. Any modification to a regulatory
-finding must be an attributed, append-only amendment — not a silent
-deletion. Separation of the investigation function from the
-publication-approval function.
+*Applicable controls:* Audit reports as immutable controlled
+artifacts with change control (NIST SP 800-53 AU-9, AU-10;
+National Energy Board Act, s. 12 — public records and proceedings).
+Any modification to a regulatory finding must be an attributed,
+append-only amendment — not a silent deletion. Separation of the
+investigation function from the publication-approval function
+(NIST SP 800-53 AC-5; Canada Energy Regulator Act, 2019, s. 103 —
+transparency and public interest mandate).
 
 *US parallel:* Boeing 737 MAX / FAA disclosures — same pattern of
 regulatory findings being modified or suppressed before publication.
@@ -459,12 +502,16 @@ had increased from 14:1 (2009) to 4,500:1.
 Criminal charges against MMA employees. Regulatory reforms to
 dangerous goods transportation.
 
-*UMRS control pattern:* Regulatory orders as tracked, measured
+*Applicable controls:* Regulatory orders as tracked, measured
 artifacts with mandatory completion attestation and escalation on
-non-compliance. Separation of risk assessment from risk acceptance.
-Immutable inspection records with tamper-evident provenance — an
-inspection that was ordered but never performed is a detectable gap,
-not a silent absence.
+non-compliance (NIST SP 800-53 CA-7, SI-7;
+Railway Safety Act, s. 31 — ministerial orders and compliance verification;
+Transportation of Dangerous Goods Act, s. 7 — safety marks and documentation).
+Separation of risk assessment from risk acceptance (NIST SP 800-53 AC-5, RA-3;
+TSB Report R13D0054, Findings 7 and 8 — Transport Canada oversight deficiencies).
+Immutable inspection records with tamper-evident provenance — an inspection
+that was ordered but never performed is a detectable gap, not a silent
+absence (NIST SP 800-53 AU-9, AU-10).
 
 *US parallel:* Rail transit inspection falsification (WMATA, MBTA,
 LIRR) and Deepwater Horizon — same pattern where safety
@@ -496,11 +543,16 @@ regulated entity controlled the release of safety information about
 itself. Inspection records were not treated as public safety
 artifacts with independent custody.
 
-*UMRS control pattern:* Inspection records as controlled objects with
-independent provenance. The entity being inspected cannot control the
-release or redaction of inspection findings. Mandatory access control
-separating the operator's view from the regulator's view from the
-public's view.
+*Applicable controls:* Inspection records as controlled objects with
+independent provenance (NIST SP 800-53 AU-10, SI-7;
+Railway Safety Act, s. 28 — inspection powers and record-keeping;
+Auditor General Act, s. 7 — access to departmental records).
+The entity being inspected cannot control the release or redaction of
+inspection findings. Mandatory access control separating the operator's
+view from the regulator's view from the public's view
+(NIST SP 800-53 AC-4, AC-6;
+Access to Information Act, s. 20 — third-party business information
+exemption must not override public safety disclosure).
 
 *Sources:*
 
@@ -534,11 +586,18 @@ was "absolutely" a "considerable factor" in Nortel's collapse. Nortel
 filed for bankruptcy in 2009. The loss of Canadian telecommunications
 IP had strategic national consequences.
 
-*UMRS control pattern:* MLS labeling of corporate IP by sensitivity
-and compartment. Anomaly detection on bulk document access — 779
+*Applicable controls:* MLS labeling of corporate IP by sensitivity
+and compartment (NIST SP 800-53 AC-4, AC-6). Anomaly detection on bulk document access — 779
 documents in seven hours using a CEO's account is a detectable
-pattern. Mandatory audit on executive-level access. Data loss
-prevention controls that enforce flow boundaries.
+pattern (NIST SP 800-53 SI-4, AU-12). Mandatory audit on executive-level access
+(NIST SP 800-53 AU-2, AU-9). Data loss prevention controls that enforce flow
+boundaries (NIST SP 800-53 AC-4, SC-7).
+The Nortel case also demonstrates a gap in the Canadian framework: CSIS did not
+engage until shortly before bankruptcy, and the RCMP provided "little support"
+when approached in 2004. No federal instrument at the time mandated
+government-to-industry threat sharing for state-sponsored economic espionage
+(the Cyber Security Strategy, 2010, partially addressed this; the National
+Cyber Security Strategy, 2018, further expanded the mandate).
 
 *Sources:*
 
@@ -572,12 +631,16 @@ CA$196.5 million — more than 20 times Canada's previous record
 environmental fine. Separate consumer class action settlements
 totalled up to $2.39 billion.
 
-*UMRS control pattern:* Provenance binding between the conditions
-under which a measurement is taken and the reported result.
+*Applicable controls:* Provenance binding between the conditions
+under which a measurement is taken and the reported result (NIST SP 800-53 SI-7, AU-10;
+Canadian Environmental Protection Act, 1999, s. 272 — offence of providing
+false or misleading information).
 Independent attestation: the entity producing the data cannot be
-the sole verifier. IMA/EVM-style measurement of compliance
-configurations — the software state during testing must be the same
-software state during production use.
+the sole verifier (NIST SP 800-53 AC-5, CA-2).
+IMA/EVM-style measurement of compliance configurations — the software state
+during testing must be the same software state during production use
+(NIST SP 800-53 SI-7, NSA RTB; Motor Vehicle Safety Act — vehicle certification
+integrity requirements).
 
 *US parallel:* VW emissions scandal (same incident, Canadian
 prosecution arm) — demonstrates that the same compliance system
@@ -612,12 +675,16 @@ authorized users.
 political controversy over whether to offer a deferred prosecution
 agreement contributed to a national political crisis in 2019.
 
-*UMRS control pattern:* Financial records as controlled objects with
-enforced categorization. "Project consultancy cost" entries that
+*Applicable controls:* Financial records as controlled objects with
+enforced categorization (NIST SP 800-53 AC-4). "Project consultancy cost" entries that
 exceed thresholds or match suspicious patterns trigger mandatory
-independent review. Append-only audit trail for all financial
-transactions. Separation of authority between those who create records
-and those who approve them.
+independent review (NIST SP 800-53 SI-4, AU-12;
+Corruption of Foreign Public Officials Act, s. 3 — bribery offences;
+Criminal Code, s. 380 — fraud).
+Append-only audit trail for all financial transactions (NIST SP 800-53 AU-9, AU-10).
+Separation of authority between those who create records and those who
+approve them (NIST SP 800-53 AC-5; Proceeds of Crime (Money Laundering) and
+Terrorist Financing Act — suspicious transaction reporting obligations).
 
 *Sources:*
 
@@ -648,7 +715,7 @@ access restrictions to data that should have been publicly available.
 *Failure class:* Integrity suppression and provenance destruction.
 Scientific data and publications were withheld from the public and
 media, and research infrastructure was dismantled. This is the inverse
-of the typical UMRS case: instead of insufficient controls on
+of the typical high-assurance case: instead of insufficient controls on
 sensitive data, excessive controls were applied to public-interest
 data to suppress its dissemination.
 
@@ -656,14 +723,21 @@ data to suppress its dissemination.
 Degradation of Canada's scientific reputation internationally.
 Policy decisions made without full scientific evidence.
 
-*UMRS control pattern:* This case illustrates why UMRS labels must
+*Applicable controls:* This case illustrates why sensitivity labels must
 work in both directions. MLS is not only about restricting access to
 sensitive data — it is also about ensuring that data labeled for
-public release cannot be silently reclassified to restrict access.
-Immutable provenance records prevent "disappearing" data by
-documenting what existed, when, and who had access. Append-only
-audit trails create an evidentiary record that data existed even if
-the data itself is removed.
+public release cannot be silently reclassified to restrict access
+(NIST SP 800-53 AC-4, AC-16; TBS Standard on Security Categorization —
+downward reclassification is equally governed;
+Access to Information Act, s. 4 — right of access to government records).
+Immutable provenance records prevent "disappearing" data by documenting
+what existed, when, and who had access (NIST SP 800-53 AU-10, SI-7).
+Append-only audit trails create an evidentiary record that data existed
+even if the data itself is removed (NIST SP 800-53 AU-9).
+Information Commissioner of Canada confirmed (2018) that six of seven
+government bodies failed to follow their own communications policies —
+a systematic failure of information management obligations under the
+Library and Archives of Canada Act, s. 12.
 
 *Sources:*
 
@@ -698,10 +772,13 @@ increased 129 per cent after SSC took over. Correctional Service
 sought authority to manage its own IT. CBSA issued a joint
 investigation report.
 
-*UMRS control pattern:* Change management as a controlled process
-with mandatory pre-deployment verification. Rollback capability
-verified before deployment, not after failure. Integrity verification
-of backup systems before applying changes to production.
+*Applicable controls:* Change management as a controlled process
+with mandatory pre-deployment verification (NIST SP 800-53 CM-3, CM-4;
+TBS Policy on Service and Digital — service management requirements;
+TBS Directive on Management of IT — change management obligations).
+Rollback capability verified before deployment, not after failure
+(NIST SP 800-53 CP-9, CP-10). Integrity verification of backup systems before
+applying changes to production (NIST SP 800-53 SI-7, CP-9).
 
 *Sources:*
 
@@ -728,13 +805,19 @@ Controlled documents were transported in an employee's personal
 vehicle without chain-of-custody controls. The decision not to notify
 affected First Nations respondents compounded the breach.
 
-*UMRS control pattern:* Chain of custody for physical and digital
-documents — who holds the document, where, and under what conditions.
-Mandatory notification on breach, not discretionary. The fact that
-respondents were First Nations and the decision rationale was that
-notification might discourage future census participation is a policy
-finding: security controls must apply equally regardless of the
-affected population.
+*Applicable controls:* Chain of custody for physical and digital
+documents — who holds the document, where, and under what conditions
+(NIST SP 800-53 AU-10, MP-5; Statistics Act, s. 17 — prohibition on disclosure
+of identifiable census information; TBS Directive on Security Management —
+physical security of controlled documents).
+Mandatory notification on breach, not discretionary (NIST SP 800-53 IR-6;
+Privacy Act, s. 8 — disclosure limitations;
+TBS Directive on Privacy Practices — mandatory breach notification to
+the Privacy Commissioner and affected individuals).
+The fact that respondents were First Nations and the decision rationale
+was that notification might discourage future census participation is
+a policy finding: security controls must apply equally regardless of
+the affected population.
 
 *Sources:*
 
@@ -742,46 +825,58 @@ affected population.
   sensitive census, employment files"
 * Disclosed via Access to Information request
 
-== Summary: UMRS Properties and Canadian Failure Classes
+== Summary: Security Control Patterns and Canadian Failure Classes
 
 [cols="2,3"]
 |===
-| Failure class | UMRS design property
+| Failure class | Applicable security controls
 
 | "Too much legitimate access" — CRA/ESDC, IRCC insider access
 | MLS sensitivity labels and category-based compartments constrain
   access by type of data and purpose, not just job title
+  (NIST SP 800-53 AC-4, AC-6; TBS DSM; Privacy Act, ss. 7–8)
 
 | Trust without verification — Phoenix, ArriveCAN, BGRS, Lac-Megantic
 | Independent verification of system output (dual-path validation);
   immutable audit trail; separation of deployment authority from
-  verification authority
+  verification authority (NIST SP 800-53 SI-7, AC-5; TBS Policy on
+  Service and Digital; Financial Administration Act, ss. 33–34;
+  Railway Safety Act)
 
 | Record falsification — Walkerton, SNC-Lavalin
 | IMA/EVM Appraisal — records are measured at the kernel level;
   unauthorized modifications are detected or blocked. Append-only
-  corrections with attribution.
+  corrections with attribution (NIST SP 800-53 SI-7, AU-10;
+  Safe Drinking Water Act (Ontario); Criminal Code, s. 380)
 
 | Regulator suppression — NEB/Enbridge, CN/CP redactions, muzzled scientists
 | Audit reports and scientific data as immutable controlled artifacts
   with independent provenance. Modifications are attributed amendments,
-  not silent deletions.
+  not silent deletions (NIST SP 800-53 AU-9, AU-10; Access to Information
+  Act; Canada Energy Regulator Act; Library and Archives of Canada Act)
 
 | Compliance system compromise — VW emissions
 | Provenance binding between testing conditions and reported results.
-  IMA/EVM ensures the software state during testing matches production.
+  IMA/EVM ensures the software state during testing matches production
+  (NIST SP 800-53 SI-7; CEPA, 1999, s. 272; Motor Vehicle Safety Act)
 
 | Third-party data custody — BGRS, LifeLabs, Ontario Health atHome
 | Data labeling and access controls that persist when data is held by
-  contractors. Periodic attestation of custodian security posture.
+  contractors. Periodic attestation of custodian security posture
+  (NIST SP 800-53 SA-9; TBS Policy on Government Security, s. 4.4;
+  Ontario PHIPA; BC PIPA)
 
 | Physical custody failure — Statistics Canada census forms
 | Chain of custody controls for all forms of controlled information,
-  with mandatory breach notification regardless of population.
+  with mandatory breach notification regardless of population
+  (NIST SP 800-53 AU-10, IR-6; Statistics Act, s. 17; TBS Directive
+  on Privacy Practices)
 
 | Infrastructure consolidation risk — SSC
 | Change management as a controlled process with mandatory
-  pre-deployment verification and verified rollback capability.
+  pre-deployment verification and verified rollback capability
+  (NIST SP 800-53 CM-3, CP-9; TBS Policy on Service and Digital;
+  TBS Directive on Management of IT)
 |===
 
 == Cross-Reference: Canadian and US Case Pairs
@@ -836,5 +931,4 @@ appear in both Canadian and US contexts:
 
 == See Also
 
-* xref:foundations/history/case-studies.adoc[US High-Assurance Failure Case Studies]
-* xref:foundations/history/five-eyes-interop.adoc[Five Eyes Interoperability]
+* xref:cases/case-studies-consolidated.adoc[US High-Assurance Failure Case Studies]
