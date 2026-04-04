@@ -108,32 +108,20 @@ fn read_mnt_namespace(evidence: &mut EvidenceBundle) {
             log::debug!("mount_topology: mnt namespace = {target_str}");
             evidence.push(EvidenceRecord {
                 source_kind: SourceKind::Procfs,
-                opened_by_fd: false,
                 path_requested: path.to_owned(),
                 path_resolved: Some(target_str.clone()),
-                stat: None,
-                fs_magic: None,
-                sha256: None,
-                pkg_digest: None,
                 parse_ok: true,
                 notes: vec![format!("mnt_ns={target_str}")],
-                duration_ns: None,
+                ..Default::default()
             });
         }
         Err(e) => {
             log::warn!("mount_topology: could not read mnt namespace link: {e}");
             evidence.push(EvidenceRecord {
                 source_kind: SourceKind::Procfs,
-                opened_by_fd: false,
                 path_requested: path.to_owned(),
-                path_resolved: None,
-                stat: None,
-                fs_magic: None,
-                sha256: None,
-                pkg_digest: None,
-                parse_ok: false,
                 notes: vec!["mnt namespace readlink failed".to_owned()],
-                duration_ns: None,
+                ..Default::default()
             });
         }
     }
@@ -177,14 +165,8 @@ fn read_mountinfo(
                 source_kind: SourceKind::Procfs,
                 opened_by_fd: true,
                 path_requested: path.display().to_string(),
-                path_resolved: None,
-                stat: None,
-                fs_magic: None,
-                sha256: None,
-                pkg_digest: None,
-                parse_ok: false,
                 notes: vec!["mountinfo read failed".to_owned()],
-                duration_ns: None,
+                ..Default::default()
             });
             return false;
         }
@@ -201,14 +183,8 @@ fn read_mountinfo(
             source_kind: SourceKind::Procfs,
             opened_by_fd: true,
             path_requested: path.display().to_string(),
-            path_resolved: None,
-            stat: None,
-            fs_magic: None,
-            sha256: None,
-            pkg_digest: None,
-            parse_ok: false,
             notes: vec!["mountinfo exceeded size cap".to_owned()],
-            duration_ns: None,
+            ..Default::default()
         });
         return false;
     }
@@ -220,14 +196,9 @@ fn read_mountinfo(
         source_kind: SourceKind::Procfs,
         opened_by_fd: true,
         path_requested: path.display().to_string(),
-        path_resolved: None,
-        stat: None,
-        fs_magic: None,
-        sha256: None,
-        pkg_digest: None,
         parse_ok: true,
         notes: vec![format!("mount_count={mount_count}")],
-        duration_ns: None,
+        ..Default::default()
     });
 
     true
@@ -254,16 +225,11 @@ fn read_etc_statfs(evidence: &mut EvidenceBundle) -> bool {
             log::debug!("mount_topology: /etc filesystem magic = {magic_u64:#x}");
             evidence.push(EvidenceRecord {
                 source_kind: SourceKind::StatfsResult,
-                opened_by_fd: false,
                 path_requested: "/etc".to_owned(),
-                path_resolved: None,
-                stat: None,
                 fs_magic: Some(magic_u64),
-                sha256: None,
-                pkg_digest: None,
                 parse_ok: true,
                 notes: vec![format!("etc_fs_magic={magic_u64:#x}")],
-                duration_ns: None,
+                ..Default::default()
             });
             true
         }
@@ -271,16 +237,9 @@ fn read_etc_statfs(evidence: &mut EvidenceBundle) -> bool {
             log::warn!("mount_topology: statfs(/etc) failed: {e}");
             evidence.push(EvidenceRecord {
                 source_kind: SourceKind::StatfsResult,
-                opened_by_fd: false,
                 path_requested: "/etc".to_owned(),
-                path_resolved: None,
-                stat: None,
-                fs_magic: None,
-                sha256: None,
-                pkg_digest: None,
-                parse_ok: false,
                 notes: vec!["statfs(/etc) failed".to_owned()],
-                duration_ns: None,
+                ..Default::default()
             });
             false
         }

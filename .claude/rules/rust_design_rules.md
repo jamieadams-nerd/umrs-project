@@ -171,3 +171,61 @@ This check applies to every new file, every refactored module, and every file to
 - Doc comments must NEVER contain references to internal review documents, finding numbers, or session-specific context (e.g., "Finding 1", "Finding 3", "RAG Finding 5", "security review session").
 - All rationale in doc comments must be self-contained — a reader must understand the WHY without access to any external document.
 - If a design decision was driven by a review finding, embed the technical rationale directly in the comment.
+
+## Performance-Aware Construction Patterns
+
+These patterns are construction-time habits, not post-hoc optimizations. Apply them on first
+touch whenever the opportunity arises. Each pattern has zero cost to correctness and zero
+compromise to security posture. If a pattern conflicts with security or correctness in a
+specific context, correctness and security win — document why the pattern was not applied.
+
+[PATTERN] **Static singleton via `OnceLock<T>` per variant, not `Mutex<HashMap>`**
+
+When caching compiled resources (regex, parsed configs, lookup tables) with a fixed set of
+keys known at compile time, declare one `static OnceLock<T>` per key variant rather than a
+shared `Mutex<HashMap<K, T>>`. After the first initialization, reads are a single atomic load
+with no lock acquisition, no hash lookup, and no clone. This pattern is only safe when T is
+`Send + Sync` and the set of keys is bounded and enumerable at compile time. Do not apply it
+to dynamically keyed caches — a `Mutex<HashMap>` remains correct there.
+
+[PATTERN] **Pre-allocate `Vec` when element count is bounded**
+
+When the number of elements in a collection is bounded and predictable at construction time
+(e.g., evidence records across a fixed number of phases, category sets with a known maximum
+cardinality), use `Vec::with_capacity(n)` rather than `Vec::new()`. This eliminates
+reallocation cascades on push. Choose `n` to cover the typical case with modest headroom —
+over-allocating wastes memory; under-allocating triggers the reallocation the pattern exists
+to avoid. Never guess a capacity that could silently truncate security-relevant data; the
+pre-allocated size is a hint, not a hard limit.
+
+[PATTERN] **Byte-slice indexing for ASCII-only strings**
+
+When processing strings that are structurally required to be ASCII-only — hex digests, numeric
+identifiers, SELinux user/role identifiers — use `str::as_bytes()` and index the resulting
+`&[u8]` slice directly. This avoids the heap allocation and four-times memory expansion of
+`chars().collect::<Vec<char>>()`. The validation contract is non-negotiable: any code that
+takes the byte-slice fast path must have already validated (or must validate inline) that all
+bytes are in the expected ASCII range, rejecting invalid bytes before they influence any
+security decision. A fast-path that skips validation is a vulnerability, not a pattern.
+
+[PATTERN] **`splitn` iterator instead of `split().collect::<Vec>`**
+
+When parsing a delimited string into a known, bounded number of fields, use `splitn(n, delim)`
+and consume the iterator directly with `next()` calls rather than collecting into a
+`Vec<&str>`. This avoids the heap allocation for the intermediate vector. The last element
+produced by `splitn` preserves any remaining delimiters in the tail, which is useful for
+fields like MLS sensitivity levels that may themselves contain the delimiter character (e.g.,
+an MLS range `s0-s3:c0,c5` split on `:` for four colon-separated fields). When the field
+count is not known at compile time, `split().collect()` remains the correct choice.
+
+[PATTERN] **Fail-closed `Default` impls for evidence and audit types**
+
+When a struct carries a boolean field that names a success or verification state — `parse_ok`,
+`verified`, `integrity_confirmed`, or similar — its `Default` impl must initialize that field
+to `false`. Callers must explicitly set it to `true` on a confirmed success path. This ensures
+that any code path that forgets to set the flag produces a safe, fail-closed result rather than
+a silent false positive. Conversely, security-critical fields that have no safe default — such
+as `source_kind`, `trust_level`, or `classification` — must not appear in `Default` at all.
+Force callers to supply them explicitly at construction. If a type cannot be safely default-
+constructed, do not implement `Default` for it; implement a named constructor that requires
+all security-critical arguments.

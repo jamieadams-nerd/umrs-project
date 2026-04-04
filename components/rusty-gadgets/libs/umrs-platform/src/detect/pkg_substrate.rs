@@ -155,19 +155,13 @@ fn run_inner(
         );
         evidence.push(EvidenceRecord {
             source_kind: SourceKind::PackageDb,
-            opened_by_fd: false,
             path_requested: "pkg_substrate/stub-warning".to_owned(),
-            path_resolved: None,
-            stat: None,
-            fs_magic: None,
-            sha256: None,
-            pkg_digest: None,
             parse_ok: true,
             notes: vec![format!(
                 "stub probe {}: ownership={}, digest={}",
                 winning_probe_name, winning_can_ownership, winning_can_digest
             )],
-            duration_ns: None,
+            ..Default::default()
         });
     }
 
@@ -222,14 +216,9 @@ fn check_selinux_enforce(evidence: &mut EvidenceBundle) -> bool {
                 source_kind: SourceKind::SysfsNode,
                 opened_by_fd: true,
                 path_requested: SelinuxEnforce::PATH.to_owned(),
-                path_resolved: None,
-                stat: None,
-                fs_magic: None,
-                sha256: None,
-                pkg_digest: None,
                 parse_ok: true,
                 notes: vec![format!("selinux_enforce={:?}; biba_check={enforcing}", state)],
-                duration_ns: None,
+                ..Default::default()
             });
             enforcing
         }
@@ -239,14 +228,8 @@ fn check_selinux_enforce(evidence: &mut EvidenceBundle) -> bool {
                 source_kind: SourceKind::SysfsNode,
                 opened_by_fd: true,
                 path_requested: SelinuxEnforce::PATH.to_owned(),
-                path_resolved: None,
-                stat: None,
-                fs_magic: None,
-                sha256: None,
-                pkg_digest: None,
-                parse_ok: false,
                 notes: vec!["SELinux enforce read failed".to_owned()],
-                duration_ns: None,
+                ..Default::default()
             });
             false
         }

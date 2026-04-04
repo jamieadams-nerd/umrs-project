@@ -52,6 +52,9 @@
 use std::fmt;
 use std::str::FromStr;
 
+#[cfg(debug_assertions)]
+use std::time::Instant;
+
 use crate::category::CategorySet;
 use crate::role::SelinuxRole;
 use crate::sensitivity::SensitivityLevel;
@@ -197,55 +200,95 @@ impl FromStr for SecurityContext {
     type Err = ContextParseError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let parts: Vec<&str> = s.split(':').collect();
+        #[cfg(debug_assertions)]
+        let start = Instant::now();
 
-        // RHEL 10 MCS labels (e.g., s0:c0,c100) will result in len >= 4
-        if parts.len() < 3 {
-            return Err(ContextParseError::InvalidFormat);
-        }
+        // Path B: allocation-free field extraction.
+        //
+        // `splitn(5, ':')` splits into at most 5 tokens. With the security
+        // context format `user:role:type[:sensitivity[:categories]]`, the 5th
+        // token captures everything after the 4th colon — i.e. the category
+        // remainder that may itself contain commas but never colons.
+        //
+        // AXIOM (selinux.md): Targeted policy has exactly one sensitivity level,
+        // `s0`. MCS categories at `s0` are comma-separated and contain no colons.
+        // Phase 1 is targeted policy only, so the 5th token is always a flat
+        // category list with no embedded colon separators.
+        //
+        // Using splitn avoids collecting a Vec<&str> entirely; each token is
+        // consumed in a single forward pass.
+        //
+        // NIST SP 800-53 SI-7: Path B is one of two independent parse paths in
+        // the TPI gate. It must not be called as the sole parse path.
+        let mut iter = s.splitn(5, ':');
 
-        let user = SelinuxUser::from_str(parts[0]).map_err(|_| ContextParseError::InvalidUser)?;
+        let user_str = iter.next().ok_or(ContextParseError::InvalidFormat)?;
+        let role_str = iter.next().ok_or(ContextParseError::InvalidFormat)?;
+        let type_str = iter.next().ok_or(ContextParseError::InvalidFormat)?;
 
-        let role = SelinuxRole::from_str(parts[1]).map_err(|_| ContextParseError::InvalidRole)?;
-
+        let user = SelinuxUser::from_str(user_str).map_err(|_| ContextParseError::InvalidUser)?;
+        let role = SelinuxRole::from_str(role_str).map_err(|_| ContextParseError::InvalidRole)?;
         let security_type =
-            SelinuxType::from_str(parts[2]).map_err(|_| ContextParseError::InvalidType)?;
+            SelinuxType::from_str(type_str).map_err(|_| ContextParseError::InvalidType)?;
 
         // Path B: Greedy Level Capture (NIST SP 800-53 SI-7)
-        let level = if parts.len() >= 4 {
-            // Join all remaining parts to handle colons in categories (e.g., s0:c1:c2)
-            let level_raw = parts[3..].join(":");
-            log::debug!("[PATH B] Raw Level string: '{level_raw}'");
+        // SI-11: do not log the raw level string — it may contain MLS sensitivity
+        // and category values that are security-relevant.
+        let level = match iter.next() {
+            None => {
+                #[cfg(debug_assertions)]
+                log::debug!("[PATH B] No level field.");
+                None
+            }
+            Some(sens_str) => {
+                // The 5th splitn token (if any) is the category remainder; this
+                // is everything after the 4th colon. For `s0:c0,c100` the
+                // sensitivity token is `s0` and the remainder token is `c0,c100`.
+                // We reconstruct `raw_level` from these two parts — avoiding the
+                // `parts[3..].join(":")` allocation used in the Vec path.
+                let cats_remainder = iter.next().unwrap_or("");
 
-            // 1. Sensitivity Logic: Parse the first part of the level string
-            let sens_part = level_raw.split(':').next().unwrap_or(&level_raw);
+                #[cfg(debug_assertions)]
+                log::debug!("[PATH B] Level field present.");
 
-            let sens = SensitivityLevel::from_str(sens_part).unwrap_or_else(|_| {
-                SensitivityLevel::new(0)
-                    .expect("Invariant failure: SensitivityLevel::new(0) must succeed")
-            });
+                // 1. Sensitivity parse.
+                let sens = SensitivityLevel::from_str(sens_str).unwrap_or_else(|_| {
+                    SensitivityLevel::new(0)
+                        .expect("Invariant failure: SensitivityLevel::new(0) must succeed")
+                });
 
-            // 2. Category Logic: Only pass the part after the first colon
-            let cats_str = level_raw.split_once(':').map_or("", |(_, c)| c);
-            let cats = crate::xattrs::parse_mcs_categories(cats_str)
-                .unwrap_or_else(|_| CategorySet::new());
+                // 2. Category parse — cats_remainder is already the post-sensitivity
+                //    portion, so no second split is needed.
+                let cats = crate::xattrs::parse_mcs_categories(cats_remainder)
+                    .unwrap_or_else(|_| CategorySet::new());
 
-            //let cat_str = level_raw.split_once
-            //let cats = crate::xattrs::parse_mcs_categories(&level_raw)
-            //    .unwrap_or_else(|_| CategorySet::new());
+                // 3. Reconstruct raw_level for audit provenance (NIST SP 800-53 AU-3).
+                //    One allocation is unavoidable here since MlsLevel stores String.
+                let raw_level = if cats_remainder.is_empty() {
+                    sens_str.to_owned()
+                } else {
+                    format!("{sens_str}:{cats_remainder}")
+                };
 
-            log::debug!("[PATH B] Sens resolved, categories parsed.");
+                #[cfg(debug_assertions)]
+                log::debug!("[PATH B] Sensitivity resolved, categories parsed.");
 
-            Some(MlsLevel {
-                sensitivity: sens,
-                categories: cats,
-                raw_level: level_raw,
-            })
-        } else {
-            log::debug!("[PATH B] No level found (parts.len < 4)");
-            None
+                Some(MlsLevel {
+                    sensitivity: sens,
+                    categories: cats,
+                    raw_level,
+                })
+            }
         };
 
-        Ok(Self::new(user, role, security_type, level))
+        let result = Self::new(user, role, security_type, level);
+
+        #[cfg(debug_assertions)]
+        log::debug!(
+            "SecurityContext::from_str (Path B) completed in {} µs",
+            start.elapsed().as_micros(),
+        );
+
+        Ok(result)
     }
 }

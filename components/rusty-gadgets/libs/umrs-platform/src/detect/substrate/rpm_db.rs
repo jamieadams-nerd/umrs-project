@@ -443,18 +443,23 @@ fn rpm_algo_to_digest_algo(algo: RpmDigestAlgo) -> DigestAlgorithm {
 /// Decode a lowercase hex string into bytes. Returns `Err(HexDecode)` on any
 /// non-hex character or odd-length input.
 ///
-/// NIST SP 800-218 SSDF PW.4.1 — checked arithmetic on cursor advancement.
+/// Uses `as_bytes()` directly — hex strings are ASCII, so every byte is a
+/// valid char boundary. This eliminates the intermediate `Vec<char>` allocation
+/// that `.chars().collect()` would produce.
+///
+/// NIST SP 800-218 SSDF PW.4.1 — checked arithmetic on cursor advancement;
+/// `.get()` used for bounds-safe indexing on every nibble access.
 fn hex_decode(hex: &str) -> Result<Vec<u8>, RpmDbError> {
     if !hex.len().is_multiple_of(2) {
         return Err(RpmDbError::HexDecode);
     }
     let pair_count = hex.len() / 2;
     let mut bytes = Vec::with_capacity(pair_count);
-    let chars: Vec<char> = hex.chars().collect();
+    let raw = hex.as_bytes();
     let mut i = 0usize;
-    while i < chars.len() {
-        let hi = *chars.get(i).ok_or(RpmDbError::HexDecode)?;
-        let lo = *chars.get(i + 1).ok_or(RpmDbError::HexDecode)?;
+    while i < raw.len() {
+        let hi = *raw.get(i).ok_or(RpmDbError::HexDecode)?;
+        let lo = *raw.get(i + 1).ok_or(RpmDbError::HexDecode)?;
         let hi_nibble = hex_nibble(hi).ok_or(RpmDbError::HexDecode)?;
         let lo_nibble = hex_nibble(lo).ok_or(RpmDbError::HexDecode)?;
         bytes.push((hi_nibble << 4) | lo_nibble);
@@ -463,12 +468,16 @@ fn hex_decode(hex: &str) -> Result<Vec<u8>, RpmDbError> {
     Ok(bytes)
 }
 
-/// Convert a single hex character to its nibble value.
-const fn hex_nibble(c: char) -> Option<u8> {
-    match c {
-        '0'..='9' => Some(c as u8 - b'0'),
-        'a'..='f' => Some(c as u8 - b'a' + 10),
-        'A'..='F' => Some(c as u8 - b'A' + 10),
+/// Convert a single hex byte (ASCII) to its nibble value.
+///
+/// Takes `u8` rather than `char` so callers can work directly on byte slices
+/// without the UTF-8 decoding overhead of `.chars()`. All valid hex characters
+/// are single-byte ASCII, so this is correct for any well-formed hex string.
+const fn hex_nibble(b: u8) -> Option<u8> {
+    match b {
+        b'0'..=b'9' => Some(b - b'0'),
+        b'a'..=b'f' => Some(b - b'a' + 10),
+        b'A'..=b'F' => Some(b - b'A' + 10),
         _ => None,
     }
 }
@@ -477,15 +486,9 @@ const fn hex_nibble(c: char) -> Option<u8> {
 fn evidence_record(path: &str, ok: bool, notes: Vec<String>) -> EvidenceRecord {
     EvidenceRecord {
         source_kind: SourceKind::PackageDb,
-        opened_by_fd: false,
         path_requested: path.to_owned(),
-        path_resolved: None,
-        stat: None,
-        fs_magic: None,
-        sha256: None,
-        pkg_digest: None,
         parse_ok: ok,
         notes,
-        duration_ns: None,
+        ..Default::default()
     }
 }

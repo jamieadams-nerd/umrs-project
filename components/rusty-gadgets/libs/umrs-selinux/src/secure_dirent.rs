@@ -67,6 +67,9 @@ use std::fs::File;
 use std::os::unix::fs::MetadataExt;
 use std::path::Path;
 
+#[cfg(debug_assertions)]
+use std::time::Instant;
+
 use rustix::fs::{IFlags, ioctl_getflags};
 
 use crate::context::SecurityContext;
@@ -922,6 +925,9 @@ impl SecureDirent {
     // with no hidden branches; splitting it would hurt readability more than help.
     #[expect(clippy::too_many_lines, reason = "single sequential TOCTOU-safe construction sequence; splitting would obscure the security-critical ordering")]
     pub fn from_path(path: &Path) -> Result<Self, SecDirError> {
+        #[cfg(debug_assertions)]
+        let start = Instant::now();
+
         // Step 1: symlink_metadata — does NOT follow symlinks
         // TOCTOU: we capture the lstat result before opening.
         let meta = std::fs::symlink_metadata(path).map_err(SecDirError::Metadata)?;
@@ -1088,6 +1094,20 @@ impl SecureDirent {
         } else {
             crate::fs_encrypt::EncryptionSource::None
         };
+
+        #[cfg(debug_assertions)]
+        log::debug!(
+            "SecureDirent::from_path completed in {} µs — access_denied: {}, \
+             label_state: {}",
+            start.elapsed().as_micros(),
+            access_denied,
+            match &selinux_label {
+                SelinuxCtxState::Labeled(_) => "labeled",
+                SelinuxCtxState::Unlabeled => "unlabeled",
+                SelinuxCtxState::ParseFailure => "parse-failure",
+                SelinuxCtxState::TpiDisagreement => "tpi-disagreement",
+            },
+        );
 
         Ok(Self {
             path: abs_path,

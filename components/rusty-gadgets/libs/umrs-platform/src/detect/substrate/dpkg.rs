@@ -78,16 +78,9 @@ impl PackageProbe for DpkgProbe {
             log::debug!("dpkg_probe: /var/lib/dpkg not found — not a dpkg system");
             let rec = EvidenceRecord {
                 source_kind: SourceKind::PackageDb,
-                opened_by_fd: false,
                 path_requested: DPKG_DB_ROOT.to_owned(),
-                path_resolved: None,
-                stat: None,
-                fs_magic: None,
-                sha256: None,
-                pkg_digest: None,
-                parse_ok: false,
                 notes: vec!["dpkg DB root not present".to_owned()],
-                duration_ns: None,
+                ..Default::default()
             };
             bundle.push(rec.clone());
             return ProbeResult {
@@ -152,16 +145,11 @@ impl PackageProbe for DpkgProbe {
 
         let ev = EvidenceRecord {
             source_kind: SourceKind::PackageDb,
-            opened_by_fd: false,
             path_requested: DPKG_DB_ROOT.to_owned(),
-            path_resolved: None,
-            stat: None,
             fs_magic: fs_magic_opt,
-            sha256: None,
-            pkg_digest: None,
             parse_ok: true,
             notes,
-            duration_ns: None,
+            ..Default::default()
         };
         bundle.push(ev.clone());
 

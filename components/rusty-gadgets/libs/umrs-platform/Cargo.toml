@@ -129,6 +129,18 @@ rusqlite = { version = "0.31", optional = true }
 # Supply chain: single-purpose crate, minimal transitive deps, no unsafe surface.
 tempfile = "3"
 
+# criterion 0.5 — statistics-driven micro-benchmarking harness.
+# Used exclusively in benches/platform_bench.rs to establish a performance baseline
+# for the OsDetector::detect() pipeline and per-phase durations.
+# html_reports feature enables Criterion's built-in HTML output for visual regression
+# tracking. Dev-only; never linked into production binaries.
+# Supply chain: mature, widely-used benchmark harness; no unsafe surface for callers.
+criterion = { version = "0.5", features = ["html_reports"] }
+
+[[bench]]
+name = "platform_bench"
+harness = false
+
 [lints.clippy]
 unreadable_literal  = { level = "allow", priority = 1 }
 missing_errors_doc  = { level = "allow", priority = 1 }

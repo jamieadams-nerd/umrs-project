@@ -155,14 +155,9 @@ fn read_proc_self_stat(evidence: &mut EvidenceBundle) -> Result<String, Detectio
         source_kind: SourceKind::Procfs,
         opened_by_fd: true,
         path_requested: path.display().to_string(),
-        path_resolved: None,
-        stat: None,
-        fs_magic: None,
-        sha256: None,
-        pkg_digest: None,
         parse_ok: true,
         notes: vec!["procfs gate: PROC_SUPER_MAGIC verified".to_owned()],
-        duration_ns: None,
+        ..Default::default()
     });
 
     Ok(content)
@@ -238,14 +233,8 @@ fn read_boot_id(evidence: &mut EvidenceBundle, confidence: &mut ConfidenceModel)
                 source_kind: SourceKind::Procfs,
                 opened_by_fd: true,
                 path_requested: path.display().to_string(),
-                path_resolved: None,
-                stat: None,
-                fs_magic: None,
-                sha256: None,
-                pkg_digest: None,
-                parse_ok: false,
                 notes: vec!["boot_id read failed".to_owned()],
-                duration_ns: None,
+                ..Default::default()
             });
             return None;
         }
@@ -263,14 +252,9 @@ fn read_boot_id(evidence: &mut EvidenceBundle, confidence: &mut ConfidenceModel)
         source_kind: SourceKind::Procfs,
         opened_by_fd: true,
         path_requested: path.display().to_string(),
-        path_resolved: None,
-        stat: None,
-        fs_magic: None,
-        sha256: None,
-        pkg_digest: None,
         parse_ok: true,
         notes: vec!["boot_id read ok".to_owned()],
-        duration_ns: None,
+        ..Default::default()
     });
 
     Some(boot_id)
@@ -303,14 +287,8 @@ fn read_kernel_release(evidence: &mut EvidenceBundle) -> Option<KernelRelease> {
                 source_kind: SourceKind::Procfs,
                 opened_by_fd: true,
                 path_requested: path.display().to_string(),
-                path_resolved: None,
-                stat: None,
-                fs_magic: None,
-                sha256: None,
-                pkg_digest: None,
-                parse_ok: false,
                 notes: vec!["kernel osrelease read failed".to_owned()],
-                duration_ns: None,
+                ..Default::default()
             });
             return None;
         }
@@ -332,14 +310,9 @@ fn read_kernel_release(evidence: &mut EvidenceBundle) -> Option<KernelRelease> {
         source_kind: SourceKind::Procfs,
         opened_by_fd: true,
         path_requested: path.display().to_string(),
-        path_resolved: None,
-        stat: None,
-        fs_magic: None,
-        sha256: None,
-        pkg_digest: None,
         parse_ok: true,
         notes: vec!["kernel osrelease read ok".to_owned()],
-        duration_ns: None,
+        ..Default::default()
     });
 
     Some(KernelRelease {
@@ -372,14 +345,9 @@ fn read_lockdown(evidence: &mut EvidenceBundle) {
                 source_kind: SourceKind::SysfsNode,
                 opened_by_fd: true,
                 path_requested: KernelLockdown::PATH.to_owned(),
-                path_resolved: None,
-                stat: None,
-                fs_magic: None,
-                sha256: None,
-                pkg_digest: None,
                 parse_ok: true,
                 notes: vec![format!("lockdown={mode}")],
-                duration_ns: None,
+                ..Default::default()
             });
         }
         Err(e) => {
@@ -388,14 +356,8 @@ fn read_lockdown(evidence: &mut EvidenceBundle) {
                 source_kind: SourceKind::SysfsNode,
                 opened_by_fd: true,
                 path_requested: KernelLockdown::PATH.to_owned(),
-                path_resolved: None,
-                stat: None,
-                fs_magic: None,
-                sha256: None,
-                pkg_digest: None,
-                parse_ok: false,
                 notes: vec!["lockdown read failed — securityfs may be unavailable".to_owned()],
-                duration_ns: None,
+                ..Default::default()
             });
         }
     }

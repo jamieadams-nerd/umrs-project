@@ -12,6 +12,13 @@
 use ::textwrap::{Options, wrap};
 
 pub fn text_wrap(input: &str, width: usize, left_pad: usize, right_pad: usize) -> String {
+    #[cfg(debug_assertions)]
+    let t0 = std::time::Instant::now();
+
+    // Character count only — input content is never logged (SI-11).
+    #[cfg(debug_assertions)]
+    let input_chars = input.chars().count();
+
     let indent = " ".repeat(left_pad);
 
     let options = Options::new(width)
@@ -35,7 +42,15 @@ pub fn text_wrap(input: &str, width: usize, left_pad: usize, right_pad: usize) -
         }
     }
 
-    lines.join("\n")
+    let output = lines.join("\n");
+
+    #[cfg(debug_assertions)]
+    log::debug!(
+        "text_wrap input_chars={input_chars} width={width} elapsed={}µs",
+        t0.elapsed().as_micros()
+    );
+
+    output
 }
 
 // fn main() {

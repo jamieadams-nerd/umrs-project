@@ -114,6 +114,31 @@ pub enum DetectionPhase {
     ReleaseParse,
 }
 
+impl DetectionPhase {
+    /// Returns a human-readable label for this phase, suitable for audit log
+    /// entries and debug output.
+    ///
+    /// The returned string is a `'static` slice — no allocation occurs. This
+    /// method is designed for use in `log::debug!()` instrumentation where
+    /// phase names must be emitted without carrying kernel attribute values or
+    /// security label data (NIST SP 800-53 SI-11 — Error Information Discipline).
+    ///
+    /// NIST SP 800-53 AU-8 — phase label appears in per-phase timing records
+    /// to associate each duration measurement with its originating pipeline stage.
+    #[must_use = "phase name is used to label audit timing records"]
+    pub const fn name(self) -> &'static str {
+        match self {
+            Self::KernelAnchor    => "kernel_anchor",
+            Self::MountTopology   => "mount_topology",
+            Self::ReleaseCandidate => "release_candidate",
+            Self::PkgSubstrate    => "pkg_substrate",
+            Self::FileOwnership   => "file_ownership",
+            Self::IntegrityCheck  => "integrity_check",
+            Self::ReleaseParse    => "release_parse",
+        }
+    }
+}
+
 // ===========================================================================
 // PhaseDuration
 // ===========================================================================
@@ -540,6 +565,33 @@ impl OsDetector {
                 ev_after7,
                 &mut confidence,
                 &mut phase_durations,
+            );
+
+            // ── Debug instrumentation — per-phase timing summary ────────────
+            // Emits phase name, duration, and evidence-record count at debug
+            // level. release_max_level_info compiles these to no-ops in release
+            // builds (log feature flag in Cargo.toml).
+            //
+            // Error Information Discipline (NIST SP 800-53 SI-11): only static
+            // phase name strings and numeric timing values are logged — no
+            // kernel attribute values, configuration file contents, or security
+            // label data appear here.
+            for pd in &phase_durations {
+                log::debug!(
+                    "[detect_pipeline] phase={phase} duration_ns={dur} records={rec}",
+                    phase = pd.phase.name(),
+                    dur   = pd.duration_ns,
+                    rec   = pd.record_count,
+                );
+            }
+            let total_ns: u64 = phase_durations
+                .iter()
+                .map(|pd| pd.duration_ns)
+                .fold(0u64, u64::saturating_add);
+            log::debug!(
+                "[detect_pipeline] total_duration_ns={total} phases={count}",
+                total = total_ns,
+                count = phase_durations.len(),
             );
 
             Ok(DetectionResult {

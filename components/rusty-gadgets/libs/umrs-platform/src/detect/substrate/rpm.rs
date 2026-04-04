@@ -209,16 +209,11 @@ fn probe_inner(probe: &RpmProbe, bundle: &mut EvidenceBundle) -> ProbeResult {
 
     let ev = EvidenceRecord {
         source_kind: SourceKind::PackageDb,
-        opened_by_fd: false,
         path_requested: RPM_DB_ROOT.to_owned(),
-        path_resolved: None,
-        stat: None,
         fs_magic: fs_magic_opt,
-        sha256: None,
-        pkg_digest: None,
         parse_ok: true,
         notes,
-        duration_ns: None,
+        ..Default::default()
     };
     bundle.push(ev.clone());
 
@@ -459,15 +454,8 @@ pub fn is_installed(_pkgname: &str) -> Result<bool, PackageQueryError> {
 fn no_db_record(path: &str, note: &str) -> EvidenceRecord {
     EvidenceRecord {
         source_kind: SourceKind::PackageDb,
-        opened_by_fd: false,
         path_requested: path.to_owned(),
-        path_resolved: None,
-        stat: None,
-        fs_magic: None,
-        sha256: None,
-        pkg_digest: None,
-        parse_ok: false,
         notes: vec![note.to_owned()],
-        duration_ns: None,
+        ..Default::default()
     }
 }

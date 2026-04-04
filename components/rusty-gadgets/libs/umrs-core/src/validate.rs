@@ -17,7 +17,7 @@
 //!
 //! - Single drop-in module
 //! - Enum-addressable pattern registry
-//! - Cached regex compilation (`OnceLock<Mutex<HashMap>>`)
+//! - Cached regex compilation (`OnceLock<Regex>` per variant — lock-free warm path)
 //! - Stateless call surface
 //!
 //! ## Key Exported Types
@@ -46,8 +46,7 @@
 //!   without explicitly ignoring the return value, which `#[must_use]` flags.
 
 use regex::Regex;
-use std::collections::HashMap;
-use std::sync::{Mutex, OnceLock};
+use std::sync::OnceLock;
 
 /// Generic validation pattern registry for UMRS core data formats.
 ///
@@ -81,27 +80,34 @@ impl UmrsPattern {
 }
 
 // ---------------------------------------------------------------------------
-// Regex cache
+// Regex cache — one OnceLock<Regex> per variant
+//
+// Warm-path cost: one atomic load per call — no Mutex, no HashMap lookup,
+// no Regex clone. Each variant is compiled at most once across the process
+// lifetime. Thread safety is provided by OnceLock's internal Once.
+//
+// NIST SP 800-53 SI-10: compiled patterns are immutable once initialised;
+// callers cannot substitute a different pattern after first use.
 // ---------------------------------------------------------------------------
 
-static REGEX_CACHE: OnceLock<Mutex<HashMap<UmrsPattern, Regex>>> = OnceLock::new();
+static RE_EMAIL: OnceLock<Regex> = OnceLock::new();
+static RE_RGB_HEX: OnceLock<Regex> = OnceLock::new();
+static RE_SAFE_STRING: OnceLock<Regex> = OnceLock::new();
 
-fn get_regex(kind: UmrsPattern) -> Regex {
-    let cache = REGEX_CACHE.get_or_init(|| Mutex::new(HashMap::new()));
-
-    let mut map = cache.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
-
-    if let Some(re) = map.get(&kind) {
-        return re.clone();
-    }
-
-    // SAFETY of expect: pattern literals are authored at compile time and
-    // are known-valid. A panic here indicates a programmer error, not a
-    // runtime condition.
-    let compiled = Regex::new(kind.regex()).expect("UmrsPattern regex failed to compile");
-
-    map.insert(kind, compiled.clone());
-    compiled
+/// Return a reference to the compiled `Regex` for `kind`.
+///
+/// On first call per variant the pattern is compiled and stored; subsequent
+/// calls perform only an atomic load. The `expect` is unreachable in practice:
+/// all pattern strings are compile-time literals validated by the test suite.
+fn get_regex(kind: UmrsPattern) -> &'static Regex {
+    let cell = match kind {
+        UmrsPattern::Email => &RE_EMAIL,
+        UmrsPattern::RgbHex => &RE_RGB_HEX,
+        UmrsPattern::SafeString => &RE_SAFE_STRING,
+    };
+    cell.get_or_init(|| {
+        Regex::new(kind.regex()).expect("UmrsPattern regex failed to compile")
+    })
 }
 
 /// Validate `input` against a registered `UmrsPattern`.
@@ -114,6 +120,16 @@ fn get_regex(kind: UmrsPattern) -> Regex {
 ///   any string that does not match is rejected.
 #[must_use = "the validation result must be checked; ignoring it defeats the purpose"]
 pub fn is_valid(kind: UmrsPattern, input: &str) -> bool {
-    let re = get_regex(kind);
-    re.is_match(input)
+    #[cfg(debug_assertions)]
+    let t0 = std::time::Instant::now();
+
+    let result = get_regex(kind).is_match(input);
+
+    #[cfg(debug_assertions)]
+    log::debug!(
+        "is_valid pattern={kind:?} result={result} elapsed={}µs",
+        t0.elapsed().as_micros()
+    );
+
+    result
 }

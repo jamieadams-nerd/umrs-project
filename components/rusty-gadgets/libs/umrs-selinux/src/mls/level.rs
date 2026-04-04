@@ -37,6 +37,9 @@ use std::str::FromStr;
 use crate::category::{Category, CategorySet};
 use crate::sensitivity::SensitivityLevel;
 
+#[cfg(debug_assertions)]
+use std::time::Instant;
+
 /// Represents a single MLS/MCS level.
 ///
 /// A level combines a sensitivity classification with
@@ -148,6 +151,9 @@ impl FromStr for MlsLevel {
     /// s0:c0,c1
     /// ```
     fn from_str(s: &str) -> Result<Self, Self::Err> {
+        #[cfg(debug_assertions)]
+        let start = Instant::now();
+
         let s = s.trim();
 
         if s.is_empty() {
@@ -167,7 +173,15 @@ impl FromStr for MlsLevel {
             Some(raw) => parse_categories(raw)?,
         };
 
-        Ok(Self::new(sensitivity, categories))
+        let result = Self::new(sensitivity, categories);
+
+        #[cfg(debug_assertions)]
+        log::debug!(
+            "MlsLevel::from_str completed in {} µs",
+            start.elapsed().as_micros(),
+        );
+
+        Ok(result)
     }
 }
 

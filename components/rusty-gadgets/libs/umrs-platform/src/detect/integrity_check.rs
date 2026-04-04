@@ -243,21 +243,14 @@ fn run_inner(
             );
             evidence.push(EvidenceRecord {
                 source_kind: SourceKind::RegularFile,
-                opened_by_fd: false,
                 path_requested: candidate_str,
-                path_resolved: None,
-                stat: None,
-                fs_magic: None,
-                sha256: None,
-                pkg_digest: None,
-                parse_ok: false,
                 notes: vec![
                     "path-based open; (dev,ino) not re-verified against release_candidate statx"
                         .to_owned(),
                     "TOCTOU: file identity changed between statx and open; aborting hash"
                         .to_owned(),
                 ],
-                duration_ns: None,
+                ..Default::default()
             });
             confidence.downgrade(
                 TrustLevel::SubstrateAnchored,
@@ -299,23 +292,18 @@ fn run_inner(
         );
         evidence.push(EvidenceRecord {
             source_kind: SourceKind::RegularFile,
-            opened_by_fd: false,
             path_requested: candidate_str,
-            path_resolved: None,
-            stat: None,
-            fs_magic: None,
             sha256: Some(computed),
             pkg_digest: Some(PkgDigest {
                 algorithm: installed.algorithm,
                 value: installed.value,
             }),
-            parse_ok: false,
             notes: vec![
                 "path-based open; (dev,ino) not re-verified against release_candidate statx"
                     .to_owned(),
                 "SHA-512 vs SHA-256: cross-algorithm comparison unsupported".to_owned(),
             ],
-            duration_ns: None,
+            ..Default::default()
         });
         return false;
     }
@@ -364,19 +352,13 @@ fn check_algorithm_policy(
             );
             evidence.push(EvidenceRecord {
                 source_kind: SourceKind::PackageDb,
-                opened_by_fd: false,
                 path_requested: candidate_str.to_owned(),
-                path_resolved: None,
-                stat: None,
-                fs_magic: None,
-                sha256: None,
                 pkg_digest: Some(PkgDigest {
                     algorithm: installed.algorithm.clone(),
                     value: installed.value.clone(),
                 }),
-                parse_ok: false,
                 notes: vec!["MD5 digest rejected: weak algorithm".to_owned()],
-                duration_ns: None,
+                ..Default::default()
             });
             Some(false)
         }
@@ -427,15 +409,9 @@ fn compare_and_record(
         confidence.upgrade(TrustLevel::IntegrityAnchored);
         evidence.push(EvidenceRecord {
             source_kind: SourceKind::RegularFile,
-            // The file was opened via File::open (path-based), not via an fd-anchored
-            // call. opened_by_fd is always false here. Fstat verification status is
-            // recorded in the notes field. (NIST SP 800-53 AU-3 — audit records must
-            // accurately reflect the actual open method.)
-            opened_by_fd: false,
+            // opened_by_fd is false: File::open is path-based, not fd-anchored.
+            // Fstat verification status is recorded in notes. (NIST SP 800-53 AU-3)
             path_requested: candidate_str,
-            path_resolved: None,
-            stat: None,
-            fs_magic: None,
             sha256: Some(computed),
             pkg_digest: Some(PkgDigest {
                 algorithm: DigestAlgorithm::Sha256,
@@ -443,7 +419,7 @@ fn compare_and_record(
             }),
             parse_ok: true,
             notes: vec![open_note, "SHA-256 digest verified (T4 earned)".to_owned()],
-            duration_ns: None,
+            ..Default::default()
         });
         true
     } else {
@@ -457,22 +433,17 @@ fn compare_and_record(
         );
         evidence.push(EvidenceRecord {
             source_kind: SourceKind::RegularFile,
-            opened_by_fd: false,
             path_requested: candidate_str,
-            path_resolved: None,
-            stat: None,
-            fs_magic: None,
             sha256: Some(computed),
             pkg_digest: Some(PkgDigest {
                 algorithm: DigestAlgorithm::Sha256,
                 value: installed.value,
             }),
-            parse_ok: false,
             notes: vec![
                 open_note,
                 "SHA-256 digest mismatch — integrity deviation recorded".to_owned(),
             ],
-            duration_ns: None,
+            ..Default::default()
         });
         false
     }
@@ -486,16 +457,9 @@ fn compare_and_record(
 fn no_digest_record(candidate_str: &str) -> EvidenceRecord {
     EvidenceRecord {
         source_kind: SourceKind::PackageDb,
-        opened_by_fd: false,
         path_requested: candidate_str.to_owned(),
-        path_resolved: None,
-        stat: None,
-        fs_magic: None,
-        sha256: None,
-        pkg_digest: None,
-        parse_ok: false,
         notes: vec!["no installed digest in package DB".to_owned()],
-        duration_ns: None,
+        ..Default::default()
     }
 }
 
@@ -540,16 +504,11 @@ fn fips_mode_active(evidence: &mut EvidenceBundle, confidence: &mut ConfidenceMo
             source_kind: SourceKind::Procfs,
             opened_by_fd: true,
             path_requested: FIPS_PATH.to_owned(),
-            path_resolved: None,
-            stat: None,
-            fs_magic: None,
-            sha256: None,
-            pkg_digest: None,
-            parse_ok: false,
+            parse_ok: true,
             notes: vec![
                 "FIPS mode active: sha2 is not FIPS 140-3 validated; T4 not earned".to_owned(),
             ],
-            duration_ns: None,
+            ..Default::default()
         });
         confidence.downgrade(
             TrustLevel::SubstrateAnchored,
@@ -572,7 +531,10 @@ fn fips_mode_active(evidence: &mut EvidenceBundle, confidence: &mut ConfidenceMo
 ///
 /// NSA RTB: bounded reads prevent unbounded allocation on malformed inputs.
 fn read_bounded(file: &mut File, max_bytes: usize) -> io::Result<Vec<u8>> {
-    let mut buf = Vec::new();
+    // Pre-allocate up to 1 KiB or `max_bytes`, whichever is smaller.
+    // `take()` still enforces the hard size limit; this only eliminates the
+    // first few incremental reallocations for small-to-medium files.
+    let mut buf = Vec::with_capacity(1024_usize.min(max_bytes));
     let bytes_read = file.take((max_bytes as u64).saturating_add(1)).read_to_end(&mut buf)?;
 
     if bytes_read > max_bytes {

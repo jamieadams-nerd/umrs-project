@@ -122,6 +122,28 @@ Checklist Rule applies unconditionally. Flag this pattern in new crate reviews.
 Checked arithmetic maps to NIST SP 800-53 SI-10 per the Control Mapping Conventions.
 `NSA RTB Secure Arithmetic` is an invented principle name, not an RTB identifier.
 
+## EvidenceRecord `parse_ok` Default — Audit Pattern (2026-04-03)
+
+The `parse_ok: false` fail-closed default on `EvidenceRecord` is correctly implemented and
+consistently followed across ~30 construction sites. This has now been exhaustively verified.
+
+**Recurring trap**: blocking/gate records that succeed at the I/O level but prevent a security
+outcome (e.g., FIPS mode active → T4 blocked) may incorrectly default `parse_ok: false`.
+The read succeeded; `parse_ok: true` is correct. The reason T4 was not earned belongs in `notes`.
+Confirmed instance: `integrity_check.rs` FIPS gate record (C-1 in 2026-04-03 report).
+
+**Verified clean**: every success path explicitly sets `parse_ok: true`. Every failure/rejection
+path correctly relies on the `false` default. The pattern is stable — spot-check only in future
+reviews unless new construction sites are added.
+
+## `splitn(5, ':')` in context.rs Path B — Audit Pattern (2026-04-03)
+
+`SecurityContext::from_str` uses `splitn(5, ':')` for Path B. Correct for targeted policy.
+Would not correctly handle MLS range notation (e.g., `s0:c0,c1-s3:c0`) if ever present.
+Phase 1 axiom ("s0 only") rules this out. The comment hedges with "in practice" — should
+cite the targeted-policy AXIOM as the guarantee. Flag any future change to this method if
+MLS range support is added.
+
 ## Reports Index
 - `2026-03-11-rpm-db-security-audit.md` — RPM findings
 - `2026-03-11-os-detection-umrs-platform-surface-audit.md` — detect pipeline
@@ -136,6 +158,7 @@ Checked arithmetic maps to NIST SP 800-53 SI-10 per the Control Mapping Conventi
 - `code/2026-03-30-us-cui-labels-audit.md` — US-CUI-LABELS.json v0.3.0: 4E/9C; MCS range conflict, EXPT distribution stmt error, 5 missing warning stmts, RELIDO mutex gap; plus rules-file review: 1E/5C (LEI anti-pattern error, DL ONLY name, RELIDO title, JSON fields incomplete)
 - `code/2026-04-01-umrs-c2pa-security-audit-review.md` — in-depth; 13 files; 3E/9C/14A (4H/12M/9L); main gaps: validate.rs no //! block, creds.rs no Compliance section, 19 #[must_use] gaps (4 types, 7 Result fns, 8 bare annotations)
 - `code/2026-04-02-full-workspace-compliance-audit.md` — in-depth; 85 files; all 10 crates; 2H/11M/8L; main gaps: load_state/save_state missing #[must_use], is_selinux_enabled et al bare #[must_use], catalog.rs NIST 800-53 format error (20+ entries), ~40 bare #[must_use] in umrs-selinux, 10 umrs-core files missing //! blocks
+- `code/2026-04-03-perf-optimization-security-review.md` — in-depth; 6 optimizations, 14 files; 0H/0E/2C; C-1 FIPS gate parse_ok fidelity, C-2 splitn comment hedge; all optimizations confirmed safe
 
 ## TUI Audit Card Patterns
 - IndicatorValue for kernel flags → cite SI-7 + CM-6 (NOT SI-3)

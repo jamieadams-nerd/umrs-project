@@ -153,34 +153,21 @@ fn run_inner(
         );
         evidence.push(EvidenceRecord {
             source_kind: SourceKind::PackageDb,
-            opened_by_fd: false,
             path_requested: candidate_str,
-            path_resolved: None,
-            stat: None,
-            fs_magic: None,
-            sha256: None,
-            pkg_digest: None,
             parse_ok: true,
             notes: vec![
                 format!("owner={}", o.package_name),
                 format!("version={}", o.package_version),
             ],
-            duration_ns: None,
+            ..Default::default()
         });
     } else {
         log::warn!("file_ownership: {candidate_str} has no package owner — T4 cannot be reached");
         evidence.push(EvidenceRecord {
             source_kind: SourceKind::PackageDb,
-            opened_by_fd: false,
             path_requested: candidate_str,
-            path_resolved: None,
-            stat: None,
-            fs_magic: None,
-            sha256: None,
-            pkg_digest: None,
-            parse_ok: false,
             notes: vec!["file unowned by any package".to_owned()],
-            duration_ns: None,
+            ..Default::default()
         });
     }
 

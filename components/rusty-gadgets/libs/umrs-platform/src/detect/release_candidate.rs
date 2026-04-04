@@ -151,16 +151,10 @@ fn probe_candidate(
         );
         evidence.push(EvidenceRecord {
             source_kind: SourceKind::RegularFile,
-            opened_by_fd: false,
             path_requested: path_str.to_owned(),
-            path_resolved: None,
             stat: Some(extract_file_stat(&sx)),
-            fs_magic: None,
-            sha256: None,
-            pkg_digest: None,
-            parse_ok: false,
             notes: vec!["rejected: world-writable".to_owned()],
-            duration_ns: None,
+            ..Default::default()
         });
         return None;
     }
@@ -200,7 +194,6 @@ fn probe_candidate(
 
     evidence.push(EvidenceRecord {
         source_kind: SourceKind::RegularFile,
-        opened_by_fd: false,
         path_requested: path_str.to_owned(),
         path_resolved: resolved,
         stat: Some(FileStat {
@@ -213,12 +206,9 @@ fn probe_candidate(
             size: Some(sx.stx_size),
             mtime: Some(sx.stx_mtime.tv_sec),
         }),
-        fs_magic: None,
-        sha256: None,
-        pkg_digest: None,
         parse_ok: true,
         notes,
-        duration_ns: None,
+        ..Default::default()
     });
 
     log::debug!(
@@ -270,16 +260,11 @@ fn resolve_symlink(path_str: &str, evidence: &mut EvidenceBundle) -> Option<Stri
         log::debug!("release_candidate: {path_str} is a symlink → {target_str}");
         evidence.push(EvidenceRecord {
             source_kind: SourceKind::SymlinkTarget,
-            opened_by_fd: false,
             path_requested: path_str.to_owned(),
             path_resolved: Some(target_str.clone()),
-            stat: None,
-            fs_magic: None,
-            sha256: None,
-            pkg_digest: None,
             parse_ok: true,
             notes: vec![format!("symlink target={target_str}")],
-            duration_ns: None,
+            ..Default::default()
         });
         Some(target_str)
     } else {

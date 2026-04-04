@@ -165,16 +165,9 @@ fn run_inner(
         );
         evidence.push(EvidenceRecord {
             source_kind: SourceKind::RegularFile,
-            opened_by_fd: false,
             path_requested: candidate_str,
-            path_resolved: None,
-            stat: None,
-            fs_magic: None,
-            sha256: None,
-            pkg_digest: None,
-            parse_ok: false,
             notes: vec!["TPI: nom vs split_once key-set disagreement — fail closed".to_owned()],
-            duration_ns: None,
+            ..Default::default()
         });
         return (None, LabelTrust::UntrustedLabelCandidate);
     }
@@ -195,16 +188,10 @@ fn run_inner(
     // Record successful parse.
     evidence.push(EvidenceRecord {
         source_kind: SourceKind::RegularFile,
-        opened_by_fd: false,
         path_requested: candidate_str.clone(),
-        path_resolved: None,
-        stat: None,
-        fs_magic: None,
-        sha256: None,
-        pkg_digest: None,
         parse_ok: true,
         notes: build_notes,
-        duration_ns: None,
+        ..Default::default()
     });
 
     // --- Substrate corroboration and label trust assignment ---
@@ -252,16 +239,9 @@ fn read_candidate(
             );
             evidence.push(EvidenceRecord {
                 source_kind: SourceKind::RegularFile,
-                opened_by_fd: false,
                 path_requested: candidate_str.to_owned(),
-                path_resolved: None,
-                stat: None,
-                fs_magic: None,
-                sha256: None,
-                pkg_digest: None,
-                parse_ok: false,
                 notes: vec!["os-release open failed in parse phase".to_owned()],
-                duration_ns: None,
+                ..Default::default()
             });
             return None;
         }

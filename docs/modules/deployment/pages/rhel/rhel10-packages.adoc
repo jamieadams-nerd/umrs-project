@@ -21,6 +21,7 @@ sudo dnf install -y \
     ima-evm-utils \
     mcstrans \
     jq \
+    crypto-policies \
     gnupg2 \
     tuned \
     aide
@@ -103,7 +104,6 @@ sudo dnf install -y \
     rust \
     rust-toolset \
     rust-analyzer \
-    ctags \
     make
 ----
 
