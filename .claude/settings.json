@@ -297,7 +297,13 @@
       "Bash(cd:*)",
       "Bash(openssl list:*)",
       "Bash(git -C /DEVELOPMENT/umrs-project diff --name-only HEAD)",
-      "Bash(git -C /DEVELOPMENT/umrs-project status --short)"
+      "Bash(git -C /DEVELOPMENT/umrs-project status --short)",
+      "Bash(rustc --version)",
+      "Bash(git stash:*)",
+      "Bash(cp /DEVELOPMENT/umrs-project/components/rusty-gadgets/.claude/agent-memory/rust-developer/perf_baselines.md /DEVELOPMENT/umrs-project/.claude/agent-memory/rust-developer/perf_baselines.md)",
+      "Bash(cp /DEVELOPMENT/umrs-project/components/rusty-gadgets/.claude/agent-memory/rust-developer/feedback_debug_instrumentation.md /DEVELOPMENT/umrs-project/.claude/agent-memory/rust-developer/feedback_debug_instrumentation.md)",
+      "Bash(rm -rf /DEVELOPMENT/umrs-project/.claude/rag/.claude)",
+      "Bash(rm -rf /DEVELOPMENT/umrs-project/components/rusty-gadgets/.claude)"
     ]
   },
   "enabledPlugins": {

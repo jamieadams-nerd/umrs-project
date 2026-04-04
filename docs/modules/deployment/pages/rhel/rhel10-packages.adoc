@@ -103,6 +103,7 @@ For systems used to build and test UMRS, also install:
 sudo dnf install -y \
     rust \
     rust-toolset \
+    jq \
     rust-analyzer \
     make
 ----
@@ -149,7 +150,7 @@ For UMRS deployments:
 
 * The `FIPS` policy is required for systems handling CUI under NIST 800-171 or CMMC.
   Enable it at install time via the FIPS mode installer option, or after installation with
-  `fips-mode-setup --enable` followed by a reboot.
+  `fips=1` in the kernel boot parameter list, followed by a reboot.
 * On RHEL 10.1+, the `DEFAULT` policy includes PQC support (ML-KEM, ML-DSA) for
   non-FIPS systems. The `DEFAULT:TEST-PQ` subpolicy used on RHEL 10.0 is no longer needed.
 * FIPS mode and PQC support are mutually exclusive on current RHEL releases.

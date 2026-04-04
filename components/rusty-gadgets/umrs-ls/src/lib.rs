@@ -2,8 +2,9 @@
 // Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
 //! # umrs-ls — Library Target
 //!
-//! Exposes the `grouping` module for integration testing.  All display and
-//! CLI logic lives in `main.rs`.
+//! Exposes the `grouping`, `tree_adapter`, and `viewer_app` modules for
+//! integration testing and TUI integration.  All display and CLI logic
+//! lives in `main.rs`.
 //!
 //! ## Compliance
 //!
@@ -23,3 +24,6 @@
 #![allow(clippy::doc_markdown)]
 
 pub mod grouping;
+pub mod tree_adapter;
+pub mod tui_render;
+pub mod viewer_app;

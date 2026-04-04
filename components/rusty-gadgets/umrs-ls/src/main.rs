@@ -12,11 +12,19 @@
 //! sibling rows. Pass `--flat` to disable cuddling and show every entry on
 //! its own row.
 //!
+//! ## Output Modes
+//!
+//! - **TUI** (default when stdout is a TTY): interactive directory browser with
+//!   tree navigation, search, and directory traversal.
+//! - **CLI** (`--cli` or non-TTY stdout): human-readable columnar listing.
+//!   Use `--cli` to force text mode even on a TTY (e.g., `umrs-ls --cli | less`).
+//! - **JSON** (`--json`): machine-readable grouped output; always bypasses TUI.
+//!
 //! ## Usage
 //!
 //! ```text
 //! umrs-ls [PATH] [--color] [--no-iov] [--no-mtime]
-//!         [--with-size] [--with-inode] [--flat] [--json]
+//!         [--with-size] [--with-inode] [--flat] [--cli] [--json]
 //! ```
 //!
 //! Default path is the current directory. Color output is off by default.
@@ -52,16 +60,18 @@
 
 use std::borrow::Cow;
 use std::fmt::Write;
-use std::io;
-use std::path::Path;
-use std::time::SystemTime;
+use std::io::{self, IsTerminal as _};
+use std::path::{Path, PathBuf};
+use std::time::{Duration, SystemTime};
 
+use crossterm::event::{self, Event, KeyCode, KeyModifiers};
 use serde::Serialize;
 
 use chrono::{DateTime, Local};
 use umrs_core::human::sizefmt::{SizeBase, auto_format as fmt_size};
 use umrs_core::i18n;
 use umrs_ls::grouping::{FileGroup, SiblingKind, aggregate_size, group_entries, sibling_summary};
+use umrs_ls::viewer_app::DirViewerApp;
 use umrs_selinux::ObservationKind;
 use umrs_selinux::mcs::colors::{
     ContextComponents, Rgb, SeColorConfig, load_secolors_cached, resolve_colors,
@@ -70,6 +80,11 @@ use umrs_selinux::secure_dirent::{FileType, InodeSecurityFlags};
 use umrs_selinux::utils::dirlist::{
     Column, ColumnSet, DirGroup, GroupKey, ListEntry, list_directory,
 };
+use umrs_ui::indicators::build_header_context;
+use umrs_ui::keymap::{Action, KeyMap};
+use umrs_ui::theme::Theme;
+use umrs_ui::viewer::{ViewerApp as _, ViewerState};
+use umrs_ls::tui_render::{render_dir_browser, render_permission_denied};
 
 // ============================================================================
 // JSON output types
@@ -173,10 +188,55 @@ fn main() -> io::Result<()> {
 
     let args: Vec<String> = std::env::args().collect();
 
-    // First non-flag argument after the binary name is the path.
+    // First non-flag argument after the binary name is the target path.
     let target =
         args.iter().skip(1).find(|a| !a.starts_with("--")).map(String::as_str).unwrap_or(".");
 
+    let json_mode = args.contains(&"--json".to_owned());
+    let cli_mode = args.contains(&"--cli".to_owned());
+    let flat_mode = args.contains(&"--flat".to_owned());
+
+    // Mode selection:
+    //   --json              → JSON output, always (no TUI, no ANSI table)
+    //   --cli or non-TTY   → CLI columnar text output
+    //   otherwise          → TUI interactive viewer
+    if json_mode {
+        return run_json(&args, target);
+    }
+
+    if cli_mode || !io::stdout().is_terminal() {
+        return run_cli(&args, target, flat_mode);
+    }
+
+    run_tui(target, flat_mode)
+}
+
+// ============================================================================
+// JSON output path
+// ============================================================================
+
+/// Emit a JSON listing for `target` and return.
+fn run_json(args: &[String], target: &str) -> io::Result<()> {
+    // flat_mode has no effect on JSON output but we accept the flag for
+    // forward-compatibility — callers may pass it without knowing the mode.
+    let _ = args; // consumed only for flag detection in main()
+    let listing = list_directory(Path::new(target))?;
+    emit_json(&listing.groups, &listing.path.display().to_string(), listing.elapsed_us)
+}
+
+// ============================================================================
+// CLI (non-interactive) output path
+// ============================================================================
+
+/// Render the directory listing to stdout as a formatted columnar table.
+///
+/// This is the full existing CLI rendering path, extracted from `main()` so
+/// that the TUI path can branch at the top of `main()` without touching any
+/// of the rendering logic.
+///
+/// NIST SP 800-53 AU-3 — all identity, label, and observation fields required
+/// for audit are included in the tabular output.
+fn run_cli(args: &[String], target: &str, flat_mode: bool) -> io::Result<()> {
     // SelinuxType and Marking appear in the group header — omit from rows.
     let mut cols = ColumnSet::default().without(Column::SelinuxType).without(Column::Marking);
 
@@ -194,20 +254,9 @@ fn main() -> io::Result<()> {
     }
 
     let use_color = args.contains(&"--color".to_owned());
-    let flat_mode = args.contains(&"--flat".to_owned());
-    let json_mode = args.contains(&"--json".to_owned());
     let cfg = DisplayConfig::build(use_color);
 
     let listing = list_directory(Path::new(target))?;
-
-    // --json: emit machine-readable grouped output and exit.
-    if json_mode {
-        return emit_json(
-            &listing.groups,
-            &listing.path.display().to_string(),
-            listing.elapsed_us,
-        );
-    }
 
     // Pre-scan column widths across all groups and entries.
     let widths = compute_widths(&listing.groups, &cols, &cfg);
@@ -279,6 +328,256 @@ fn main() -> io::Result<()> {
     }
 
     Ok(())
+}
+
+// ============================================================================
+// TUI interactive viewer path
+// ============================================================================
+
+/// Run the interactive TUI directory browser.
+///
+/// Enters the ratatui alternate screen, runs the event loop, then restores
+/// the terminal on exit (clean or error).
+///
+/// # Key bindings
+///
+/// | Key | Action |
+/// |---|---|
+/// | q / Esc | Quit |
+/// | Up / k | Move selection up |
+/// | Down / j | Move selection down |
+/// | Right / l | Expand selected node |
+/// | Left / h | Collapse selected node |
+/// | Enter | Navigate into directory, or toggle expand on non-directory nodes |
+/// | Space | Expand/toggle |
+/// | Backspace | Navigate to parent in tree hierarchy |
+/// | / | Activate search/filter |
+/// | r | Refresh (re-scan current directory) |
+/// | `PageUp` / `PageDown` | Page navigation |
+///
+/// NIST SP 800-53 AC-3 — navigation is read-only; no directory entries are
+/// created, deleted, or modified through the viewer interface.
+/// NIST SP 800-53 AU-3 — the viewer header carries tool identity, data source
+/// path, and entry counts on every rendered frame.
+#[expect(clippy::too_many_lines, reason = "TUI event loop is inherently sequential; splitting would scatter the state machine")]
+fn run_tui(target: &str, _flat_mode: bool) -> io::Result<()> {
+    // Canonicalize the target path so the header always shows an absolute path.
+    let path = std::fs::canonicalize(target)?;
+
+    // Construct the viewer app — performs the initial list_directory scan.
+    let mut app = DirViewerApp::scan(&path)?;
+
+    // Create viewer state and load the initial tree.
+    let mut state = ViewerState::new(app.tabs().len());
+    if let Some(tree) = app.initial_tree() {
+        state.load_tree(tree);
+    }
+
+    // Build the keymap.  Start from defaults, then re-bind Left/Right to
+    // Expand/Collapse (overriding the default NextTab/PrevTab bindings —
+    // umrs-ls has only one tab so tab navigation is unused).
+    let mut keymap = KeyMap::default();
+    keymap.bind(
+        crossterm::event::KeyEvent::new(KeyCode::Right, KeyModifiers::NONE),
+        Action::Expand,
+    );
+    keymap.bind(
+        crossterm::event::KeyEvent::new(KeyCode::Left, KeyModifiers::NONE),
+        Action::Collapse,
+    );
+    // Vim users: l = expand, h = collapse.
+    keymap.bind(
+        crossterm::event::KeyEvent::new(KeyCode::Char('l'), KeyModifiers::NONE),
+        Action::Expand,
+    );
+    keymap.bind(
+        crossterm::event::KeyEvent::new(KeyCode::Char('h'), KeyModifiers::NONE),
+        Action::Collapse,
+    );
+
+    let theme = Theme::default();
+
+    // Build the header context once at startup.  OS name is read from
+    // /etc/os-release.  build_header_context reads all kernel security
+    // indicators via provenance-verified SecureReader paths.
+    let os_name = umrs_ls::viewer_app::read_os_name();
+    let ctx = build_header_context(
+        env!("CARGO_PKG_NAME"),
+        env!("CARGO_PKG_VERSION"),
+        os_name,
+    );
+
+    // Enter the alternate screen and raw mode.
+    let mut terminal = ratatui::init();
+
+    // Permission denied overlay — (path, error_message) shown as a modal.
+    // `None` = no overlay.  `Some(...)` = overlay is open, blocks all input
+    // except Enter/Esc to dismiss.
+    let mut nav_error: Option<(String, String)> = None;
+
+    // Event loop — 100 ms poll timeout keeps the TUI snappy without busy-waiting.
+    loop {
+        if let Err(e) = terminal.draw(|f| {
+            render_dir_browser(f, f.area(), &app, &state, &ctx, &theme);
+            // Permission denied overlay — rendered on top when present.
+            if let Some((ref path, ref msg)) = nav_error {
+                render_permission_denied(f, f.area(), path, msg, &theme);
+            }
+        }) {
+            log::error!("terminal draw error: {e}");
+            break;
+        }
+
+        match event::poll(Duration::from_millis(100)) {
+            Ok(true) => match event::read() {
+                Ok(Event::Key(key)) => {
+                    // When the permission overlay is open, only Enter/Esc dismiss it.
+                    // All other input is consumed and ignored.
+                    if nav_error.is_some() {
+                        match key.code {
+                            KeyCode::Enter | KeyCode::Esc => {
+                                nav_error = None;
+                            }
+                            _ => {}
+                        }
+                        continue;
+                    }
+
+                    // Search mode: character input goes to the query buffer.
+                    if state.search_active {
+                        match key.code {
+                            KeyCode::Char(ch) => {
+                                state.push_search_char(ch);
+                                continue;
+                            }
+                            KeyCode::Backspace => {
+                                state.pop_search_char();
+                                continue;
+                            }
+                            KeyCode::Esc => {
+                                let _ = state.handle_action(Action::DialogCancel);
+                                continue;
+                            }
+                            KeyCode::Enter => {
+                                let _ = state.handle_action(Action::DialogConfirm);
+                                continue;
+                            }
+                            _ => {}
+                        }
+                    }
+
+                    if let Some(action) = keymap.lookup(&key) {
+                        match action {
+                            Action::Refresh => {
+                                handle_refresh(&mut app, &mut state);
+                            }
+                            Action::DialogConfirm => {
+                                // Enter: navigate into a directory, or toggle
+                                // expand/collapse on non-directory nodes.
+                                handle_enter(&mut app, &mut state, &mut nav_error);
+                            }
+                            _ => {
+                                let _ = state.handle_action(action);
+                            }
+                        }
+                    }
+                }
+                // ratatui handles resize internally; all other events ignored
+                Ok(_) => {}
+                Err(e) => {
+                    log::warn!("event read error: {e}");
+                }
+            },
+            Ok(false) => {}
+            Err(e) => {
+                log::warn!("event poll error: {e}");
+            }
+        }
+
+        if state.should_quit {
+            break;
+        }
+    }
+
+    // Restore the terminal regardless of how the loop exited.
+    ratatui::restore();
+    Ok(())
+}
+
+// ============================================================================
+// TUI navigation helpers
+// ============================================================================
+
+/// Handle an Enter keypress in the TUI viewer.
+///
+/// If the selected node is a directory, navigate into it (re-scan and load the
+/// new tree).  If it is a file or group header, toggle expand/collapse instead.
+/// On navigation error the display stays on the current listing — no crash, no
+/// silent state corruption.
+///
+/// NIST SP 800-53 AC-3 — navigation is strictly read-only; this function never
+/// creates, modifies, or deletes directory entries.
+fn handle_enter(app: &mut DirViewerApp, state: &mut ViewerState, nav_error: &mut Option<(String, String)>) {
+    let Some(entry) = state.tree.display_list.get(state.selected_index) else {
+        return;
+    };
+    let path = entry.path.clone();
+    let Some(node) = state.tree.node_ref(&path) else {
+        return;
+    };
+
+    // Only navigate when the node represents a directory.
+    if node.metadata.get("is_dir").map(String::as_str) != Some("true") {
+        // File or group header: delegate to the tree's expand/collapse toggle.
+        let _ = state.handle_action(Action::Expand);
+        return;
+    }
+
+    let name = node.metadata.get("name").map(String::as_str).unwrap_or("");
+
+    let new_path: PathBuf = if name == ".." {
+        app.current_path()
+            .parent()
+            .map(Path::to_path_buf)
+            .unwrap_or_else(|| app.current_path().to_path_buf())
+    } else {
+        app.current_path().join(name)
+    };
+
+    match app.navigate_to(&new_path) {
+        Ok(tree) => {
+            state.load_tree(tree);
+        }
+        Err(e) => {
+            // Show an error dialog so the operator sees the failure and must
+            // acknowledge it.  The previous listing remains valid.
+            // No log::warn! here — stderr output corrupts the TUI display.
+            // The error is shown to the operator via the modal overlay.
+            *nav_error = Some((
+                new_path.display().to_string(),
+                e.to_string(),
+            ));
+        }
+    }
+}
+
+/// Re-scan the current directory and reload the tree.
+///
+/// Called when the user presses `r` (Refresh).  On scan error the display
+/// stays on the previous listing.
+///
+/// NIST SP 800-53 AU-3 — re-scan updates the status bar timing so the
+/// operator can confirm the listing is current.
+fn handle_refresh(app: &mut DirViewerApp, state: &mut ViewerState) {
+    let path = app.current_path().to_path_buf();
+    match app.navigate_to(&path) {
+        Ok(tree) => {
+            state.load_tree(tree);
+        }
+        Err(e) => {
+            log::warn!("refresh failed (path: {}): {e}", path.display());
+        }
+    }
 }
 
 // ============================================================================

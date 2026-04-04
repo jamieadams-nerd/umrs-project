@@ -38,7 +38,13 @@ OpenSSL is a system-wide trust anchor — binary analysis must trace linkage to 
 - All tests in `tests/`, never inline
 - Run via `cargo xtask {fmt,clippy,test}` from `components/rusty-gadgets/`
 - Binary crates that need testable modules: add `[lib]` + `src/lib.rs` to expose modules for `tests/`
-- `umrs-ls` now has `[lib]` (lib.rs) exposing `pub mod grouping`; binary in main.rs imports via `umrs_ls::grouping::`
+- `umrs-ls` now has `[lib]` (lib.rs) exposing `pub mod grouping`, `pub mod tree_adapter`, `pub mod tui_render`, `pub mod viewer_app`; binary in main.rs imports via `umrs_ls::`
+- `umrs-ls` now depends on `umrs-ui` (added 2026-04-04 for TUI Phase 1)
+- `DirViewerApp` (viewer_app.rs): implements `ViewerApp`; construct via `scan(path)` or `from_listing(path, listing)` for tests; `navigate_to()` replaces listing on navigation; `stats()` is `const fn`; `card_title()` returns `&'static str`
+- `tui_render.rs` (2026-04-04): custom TUI renderer replacing `render_viewer`; `render_dir_browser(frame, area, app, state, ctx, theme)` — header+logo, path bar, col headers, full-width listing, search bar, status bar
+- `tree_adapter.rs` now stores `mtime_secs` (epoch seconds as String) in node metadata; `tui_render` formats it via `chrono::Local.timestamp_opt`
+- `WIZARD_SMALL` width=15 height=7; logo panel=17 wide, header=9 tall; use literals for u16 constants (clippy rejects usize-as-u16 in const)
+- Pre-existing `umrs-label` test failures (7, setrans_tests) are CUI catalog rebuild in progress — not regressions
 
 ## posture Catalog — Display Fields (added 2026-03-22 Session 2)
 

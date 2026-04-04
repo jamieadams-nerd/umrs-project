@@ -4091,14 +4091,17 @@ name = "umrs-ls"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "crossterm 0.28.1",
  "env_logger",
  "gettext-rs",
  "log",
  "nix 0.27.1",
+ "ratatui",
  "serde",
  "serde_json",
  "umrs-core",
  "umrs-selinux",
+ "umrs-ui",
 ]
 
 [[package]]
