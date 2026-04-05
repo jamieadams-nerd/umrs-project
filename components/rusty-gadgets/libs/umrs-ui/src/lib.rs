@@ -81,11 +81,13 @@ pub mod config;
 pub mod data_panel;
 pub mod dialog;
 pub mod header;
+pub mod icons;
 pub mod indicators;
 pub mod keymap;
 pub mod layout;
 pub mod status_bar;
 pub mod tabs;
+pub mod text_fit;
 pub mod theme;
 pub mod viewer;
 

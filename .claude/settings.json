@@ -303,7 +303,13 @@
       "Bash(cp /DEVELOPMENT/umrs-project/components/rusty-gadgets/.claude/agent-memory/rust-developer/perf_baselines.md /DEVELOPMENT/umrs-project/.claude/agent-memory/rust-developer/perf_baselines.md)",
       "Bash(cp /DEVELOPMENT/umrs-project/components/rusty-gadgets/.claude/agent-memory/rust-developer/feedback_debug_instrumentation.md /DEVELOPMENT/umrs-project/.claude/agent-memory/rust-developer/feedback_debug_instrumentation.md)",
       "Bash(rm -rf /DEVELOPMENT/umrs-project/.claude/rag/.claude)",
-      "Bash(rm -rf /DEVELOPMENT/umrs-project/components/rusty-gadgets/.claude)"
+      "Bash(rm -rf /DEVELOPMENT/umrs-project/components/rusty-gadgets/.claude)",
+      "Bash(printf '[2026-04-04 00:00] [rust-developer] [Implement DirViewerApp \\(ViewerApp trait\\) in umrs-ls/src/viewer_app.rs \u2014 Phase 2 TUI] [Read,Edit,Write,Bash] [outcome: success] [7 tests pass; 2 I/O tests ignored; workspace clippy clean]\\\\n')",
+      "Bash(printf '[2026-04-04 00:00] [rust-developer] [Phase 3: TUI event loop + directory navigation for umrs-ls] [Read,Edit,Bash] [outcome: success] [Added run_tui/run_cli/run_json dispatch, handle_enter, handle_refresh; ratatui+crossterm added to Cargo.toml; clippy clean, all tests pass]\\\\n')",
+      "Bash(rustup show:*)",
+      "Bash(rustup toolchain:*)",
+      "Read(//home/jadams/.rustup/toolchains/**)",
+      "Bash(rustup which:*)"
     ]
   },
   "enabledPlugins": {

@@ -79,9 +79,14 @@ pub struct FileGroup {
 ///
 /// A sibling must:
 /// 1. Have `base_name` as a strict prefix (i.e., be longer), AND
-/// 2. Have one of `.`, `-`, or `_` immediately at `base_name.len()`.
+/// 2. Have one of `.`, `-`, or `_` immediately at `base_name.len()`, AND
+/// 3. If the separator is `-`, the next character must be an ASCII digit.
 ///
-/// This separator check prevents `file.log` from absorbing `file.logging`.
+/// The separator check prevents `file.log` from absorbing `file.logging`.
+/// The digit-after-dash rule prevents named siblings like `jvm-common` from
+/// cuddling under `jvm`; only numeric/date-stamped dash suffixes (e.g.,
+/// `boot.log-20260301`) are treated as rotations. Dot- and underscore-
+/// separated siblings are unaffected.
 #[must_use = "caller must decide what to do with the sibling decision"]
 pub fn is_sibling(base_name: &str, candidate: &str) -> bool {
     if candidate.len() <= base_name.len() {
@@ -90,8 +95,20 @@ pub fn is_sibling(base_name: &str, candidate: &str) -> bool {
     if !candidate.starts_with(base_name) {
         return false;
     }
-    let next_char = candidate.as_bytes()[base_name.len()];
-    next_char == b'.' || next_char == b'-' || next_char == b'_'
+    let bytes = candidate.as_bytes();
+    let sep = bytes[base_name.len()];
+    match sep {
+        b'.' | b'_' => true,
+        b'-' => {
+            // Only treat `-` as a sibling separator when followed by a digit.
+            // This keeps date/rotation suffixes (`-20260301`, `-1`) while
+            // rejecting named siblings (`jvm-common` under `jvm`).
+            bytes
+                .get(base_name.len().saturating_add(1))
+                .is_some_and(u8::is_ascii_digit)
+        }
+        _ => false,
+    }
 }
 
 /// Classify the suffix of a candidate name relative to its base.

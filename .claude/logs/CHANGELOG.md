@@ -1,5 +1,45 @@
 # Changelog
 
+## 2026-04-05
+
+### umrs-ls TUI Polish Pass
+- Fixed dash-separator cuddling bug: `is_sibling()` now only accepts `-` as a cuddle separator when followed by an ASCII digit; `jvm-common` no longer incorrectly absorbed under `jvm`. Added regression test `is_sibling_dash_requires_digit_suffix`.
+- Extended security observation flag detection to Warning tier (was Risk-only); tiered coloring in IOV column with bold red flag for Risk and yellow flag for Warning findings.
+- Reworked cuddled-base row rendering: name renders first in normal style, followed by dim-italic `(N rotations)` summary, with expand/collapse chevron at end of line.
+- Suppressed stderr log warnings in TUI mode via `log::set_max_level(LevelFilter::Off)` at `run_tui` entry to prevent alt-screen corruption.
+- Added "Go to path" prompt bound to Shift+G: pops up in search bar slot, supports Tab completion with longest-common-prefix, filename→parent-directory fallback, and inline error messages.
+- Added `?` help popup with two tabs (Navigation, Columns); owned input while visible, dismissed with `?` or Esc, cycles tabs with Tab/Left/Right.
+- Trimmed status bar legend to essentials to prevent overflow on narrow terminals.
+- Bound `r` refresh to also clear any active search filter for operator clarity.
+- Changed search bar prompt glyph from `/` to `➜` (U+279C) to match "Go to" bar visually.
+- Row selection highlight changed from bright ANSI LightYellow to warm parchment `Rgb(160, 145, 95)` via new `Theme::list_selection` field.
+- Restructured header: system posture (Host/OS/SELinux/FIPS) on top-left, operator session (User+type, Level, Time+offset) on top-right, directory info on full-width section at bottom.
+- Implemented algorithmic label-value padding via new `render_label_value_rows` helper; eliminates hand-counted padding and auto-realigns on label/value changes.
+- Made parent directory navigation row bright cyan bold for legibility.
+- Left-justified group header SELinux type with leading space (was centered, causing visual drift).
+- Applied `text_fit` helper to all header values with right-truncation for column budget; directory path left-truncated to preserve leaf directory name.
+
+### Shared umrs-ui Library Foundations
+- Created new `libs/umrs-ui/src/icons.rs` module as single source of truth for all Unicode glyphs in UMRS TUI tools. Six labeled sections: Prompt & text symbols, Filesystem objects, Tree & navigation, Group headers, Security posture, Configuration & activity, Actors. Module doc forbids `\u{...}` literals in binary render code.
+- Fixed flag glyph assignments: `ICON_FLAG` now correctly U+2691 (solid BLACK FLAG), `ICON_FLAG_OUTLINE` at U+2690 (WHITE FLAG outline); previous assignments were inverted.
+- Added `ELLIPSIS` constant for truncation indicators (U+2026).
+- Created new `libs/umrs-ui/src/text_fit.rs` module with `truncate_left`, `truncate_right`, `display_width` functions. Full UTF-8 safety via char_indices, wide-glyph aware via unicode-width crate, handles degenerate budgets. Includes 21 unit tests covering ASCII, multi-byte UTF-8, CJK wide glyphs, and budget edges.
+- Added `Theme::list_selection` field for consistent row-highlight styling across all TUI tools.
+- Added `Theme::dark()` and `Theme::light()` constructors; `Default` aliases to `dark()` for back-compat. `light()` is currently a TODO stub returning dark palette; call sites can be written now and will inherit real palette when implemented.
+- Added `unicode-width = "0.2"` as explicit dependency of umrs-ui.
+
+### Code Quality
+- Removed all `\u{...}` Unicode literals from `umrs-ls/src/tui_render.rs`; every glyph reference now goes through `umrs_ui::icons::*`.
+- All workspace `cargo xtask clippy` passes with zero warnings under pedantic + nursery + -D warnings.
+- All umrs-ls tests pass (grouping, tree_adapter, viewer_app — 31+7+7).
+- All umrs-ui tests pass including new 21 text_fit tests.
+- Both text_fit doctests pass.
+
+### Documentation & Infrastructure
+- Updated CLAUDE.md with `[RULE]` pointing agents to `.claude/references/unicode-symbols-corpus.txt` for Unicode lookups so future glyph additions consult corpus first.
+- Acquired unicode-symbols-corpus.txt reference document for authoritative glyph lookups.
+- Recorded memory notes for future sessions: TUI light/dark theme support, process-level semantics in header, encryption filesystem visibility, observation counts aggregation, per-file size display, Enter-target behavior, seamless tool conversions, and frozen child-process handling.
+
 ## 2026-03-25
 
 ### Architecture Refactoring — CUI → Labels + Validation Split

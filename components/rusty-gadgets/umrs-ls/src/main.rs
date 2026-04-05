@@ -84,7 +84,9 @@ use umrs_ui::indicators::build_header_context;
 use umrs_ui::keymap::{Action, KeyMap};
 use umrs_ui::theme::Theme;
 use umrs_ui::viewer::{ViewerApp as _, ViewerState};
-use umrs_ls::tui_render::{render_dir_browser, render_permission_denied};
+use umrs_ls::tui_render::{
+    GotoBar, HelpOverlay, render_dir_browser, render_help_overlay, render_permission_denied,
+};
 
 // ============================================================================
 // JSON output types
@@ -361,6 +363,12 @@ fn run_cli(args: &[String], target: &str, flat_mode: bool) -> io::Result<()> {
 /// path, and entry counts on every rendered frame.
 #[expect(clippy::too_many_lines, reason = "TUI event loop is inherently sequential; splitting would scatter the state machine")]
 fn run_tui(target: &str, _flat_mode: bool) -> io::Result<()> {
+    // Silence the global logger for the duration of the TUI session.
+    // `env_logger` writes to stderr, which ratatui shares with its alt-screen
+    // output — any `log::warn!` would corrupt the rendered frame.  Errors
+    // visible to the operator go through modal overlays instead.
+    log::set_max_level(log::LevelFilter::Off);
+
     // Canonicalize the target path so the header always shows an absolute path.
     let path = std::fs::canonicalize(target)?;
 
@@ -415,13 +423,27 @@ fn run_tui(target: &str, _flat_mode: bool) -> io::Result<()> {
     // except Enter/Esc to dismiss.
     let mut nav_error: Option<(String, String)> = None;
 
+    // "Go to path" prompt state.  Activated by Shift+G.  Mutually exclusive
+    // with the search bar — the event loop gates activation on the other's
+    // inactive state.
+    let mut goto = GotoBar::default();
+
+    // `?` help overlay — a modal popup with tabbed content (Navigation /
+    // Columns).  When active, blocks background input except for Tab / arrow
+    // (to switch tabs) and `?` / Esc (to dismiss).
+    let mut help = HelpOverlay::default();
+
     // Event loop — 100 ms poll timeout keeps the TUI snappy without busy-waiting.
     loop {
         if let Err(e) = terminal.draw(|f| {
-            render_dir_browser(f, f.area(), &app, &state, &ctx, &theme);
+            render_dir_browser(f, f.area(), &app, &state, &ctx, &theme, &goto);
             // Permission denied overlay — rendered on top when present.
             if let Some((ref path, ref msg)) = nav_error {
                 render_permission_denied(f, f.area(), path, msg, &theme);
+            }
+            // Help overlay — rendered on top of everything else.
+            if help.active {
+                render_help_overlay(f, f.area(), &help, &theme);
             }
         }) {
             log::error!("terminal draw error: {e}");
@@ -441,6 +463,60 @@ fn run_tui(target: &str, _flat_mode: bool) -> io::Result<()> {
                             _ => {}
                         }
                         continue;
+                    }
+
+                    // Help overlay: owns all input while visible.
+                    // Tab / ← / → cycle tabs; ? or Esc dismiss.
+                    if help.active {
+                        match key.code {
+                            KeyCode::Char('?') | KeyCode::Esc => help.close(),
+                            KeyCode::Tab | KeyCode::Left | KeyCode::Right => help.next_tab(),
+                            _ => {}
+                        }
+                        continue;
+                    }
+
+                    // `?` activates the help overlay (from normal mode only;
+                    // the prompt bars get a chance to consume `?` as a
+                    // literal character further down).
+                    if key.code == KeyCode::Char('?')
+                        && !state.search_active
+                        && !goto.active
+                    {
+                        help.open();
+                        continue;
+                    }
+
+                    // Goto mode: character input goes to the goto query buffer.
+                    if goto.active {
+                        match key.code {
+                            KeyCode::Char(ch) => {
+                                goto.push_char(ch);
+                                continue;
+                            }
+                            KeyCode::Backspace => {
+                                goto.pop_char();
+                                continue;
+                            }
+                            KeyCode::Tab => {
+                                complete_goto_query(&mut goto);
+                                continue;
+                            }
+                            KeyCode::Esc => {
+                                goto.close();
+                                continue;
+                            }
+                            KeyCode::Enter => {
+                                handle_goto_submit(
+                                    &mut app,
+                                    &mut state,
+                                    &mut goto,
+                                    &mut nav_error,
+                                );
+                                continue;
+                            }
+                            _ => {}
+                        }
                     }
 
                     // Search mode: character input goes to the query buffer.
@@ -464,6 +540,15 @@ fn run_tui(target: &str, _flat_mode: bool) -> io::Result<()> {
                             }
                             _ => {}
                         }
+                    }
+
+                    // "Go to" activation: Shift+G (uppercase G).  Only when
+                    // neither prompt bar is already active.  Crossterm reports
+                    // Shift+G as `KeyCode::Char('G')` on all modern terminals,
+                    // so we match the character directly.
+                    if key.code == KeyCode::Char('G') {
+                        goto.open();
+                        continue;
                     }
 
                     if let Some(action) = keymap.lookup(&key) {
@@ -561,14 +646,239 @@ fn handle_enter(app: &mut DirViewerApp, state: &mut ViewerState, nav_error: &mut
     }
 }
 
+/// Resolve a user-typed path in the "Go to" bar and navigate to it.
+///
+/// Resolution rules (in order):
+/// 1. If the query is empty, dismiss the bar with no error.
+/// 2. If the query starts with `~`, expand to `$HOME`.
+/// 3. Relative paths are resolved against the current directory.
+/// 4. The result is canonicalized (symlinks followed).
+/// 5. If the canonicalized target is a regular file, its parent directory
+///    is used — Jamie's rule: "if they accidently enter a filename, we
+///    open the parent directory."
+/// 6. If the target does not exist or is not accessible, the bar is kept
+///    open with an inline error message; the listing does not change.
+///
+/// On success the bar is closed and the tree is reloaded.
+///
+/// NIST SP 800-53 AC-3 — navigation is strictly read-only; no path operation
+/// mutates the filesystem.
+fn handle_goto_submit(
+    app: &mut DirViewerApp,
+    state: &mut ViewerState,
+    goto: &mut GotoBar,
+    nav_error: &mut Option<(String, String)>,
+) {
+    let query = goto.query.trim();
+    if query.is_empty() {
+        goto.close();
+        return;
+    }
+
+    let resolved = resolve_goto_path(query, app.current_path());
+
+    let canonical = match std::fs::canonicalize(&resolved) {
+        Ok(p) => p,
+        Err(e) => {
+            goto.error = Some(format!("{}: {e}", resolved.display()));
+            return;
+        }
+    };
+
+    // If the operator typed a filename, fall back to its parent directory.
+    let target = if canonical.is_dir() {
+        canonical
+    } else if let Some(p) = canonical.parent() {
+        p.to_path_buf()
+    } else {
+        goto.error = Some("no parent directory".to_owned());
+        return;
+    };
+
+    match app.navigate_to(&target) {
+        Ok(tree) => {
+            state.load_tree(tree);
+            goto.close();
+        }
+        Err(e) => {
+            // Navigation failed (typically EACCES).  Show the permission
+            // denied overlay and keep the goto bar open so the operator
+            // can retype.
+            *nav_error = Some((target.display().to_string(), e.to_string()));
+            goto.error = Some("permission denied".to_owned());
+        }
+    }
+}
+
+/// Resolve a user-typed path string against the current directory.
+///
+/// Handles `~` expansion and relative paths.  Does not touch the
+/// filesystem — callers must canonicalize separately.
+fn resolve_goto_path(query: &str, cwd: &Path) -> PathBuf {
+    if let Some(rest) = query.strip_prefix('~')
+        && let Ok(home) = std::env::var("HOME")
+    {
+        let trimmed = rest.strip_prefix('/').unwrap_or(rest);
+        if trimmed.is_empty() {
+            return PathBuf::from(home);
+        }
+        return PathBuf::from(home).join(trimmed);
+    }
+    let p = Path::new(query);
+    if p.is_absolute() {
+        p.to_path_buf()
+    } else {
+        cwd.join(p)
+    }
+}
+
+/// Tab-completion for the "Go to" bar.
+///
+/// Splits the current query into a parent directory and a filename stem,
+/// lists the parent, and finds every entry whose name starts with the stem
+/// (case-sensitive).  Behaviour:
+///
+/// - **0 matches** → sets an inline error "no match", query unchanged.
+/// - **1 match** → replaces the stem with the full name; appends `/` if
+///   the match is a directory.
+/// - **N matches** → completes the stem to the longest common prefix of
+///   all matches (no change if the stem is already that prefix).
+///
+/// The completion uses plain `std::fs::read_dir` rather than the UMRS
+/// listing pipeline — Tab completion is interactive, not an audit surface,
+/// and the listing pipeline is too heavy for keystroke latency.
+fn complete_goto_query(goto: &mut GotoBar) {
+    // Work on an owned copy so we can borrow `goto` mutably at the end.
+    let query = goto.query.clone();
+    if query.is_empty() {
+        return;
+    }
+
+    // Split into (parent_dir, stem).  Handle trailing slash — "foo/" means
+    // "list foo, stem is empty".  Handle `~` and relative paths via the
+    // existing resolver.
+    let (parent_str, stem) = match query.rfind('/') {
+        Some(idx) => (&query[..=idx], &query[idx + 1..]),
+        None => ("", query.as_str()),
+    };
+
+    // Resolve the parent path.  An empty parent means "current directory"
+    // only when the query itself has no slash; otherwise `/...` is root.
+    let parent_path: PathBuf = if parent_str.is_empty() {
+        PathBuf::from(".")
+    } else if let Some(rest) = parent_str.strip_prefix('~') {
+        if let Ok(home) = std::env::var("HOME") {
+            let trimmed = rest.strip_prefix('/').unwrap_or(rest);
+            PathBuf::from(home).join(trimmed)
+        } else {
+            PathBuf::from(parent_str)
+        }
+    } else {
+        PathBuf::from(parent_str)
+    };
+
+    let read = match std::fs::read_dir(&parent_path) {
+        Ok(r) => r,
+        Err(e) => {
+            goto.error = Some(format!("{}: {e}", parent_path.display()));
+            return;
+        }
+    };
+
+    // Collect (name, is_dir) for every entry whose name starts with `stem`.
+    let mut matches: Vec<(String, bool)> = Vec::new();
+    for entry in read.flatten() {
+        let name = entry.file_name().to_string_lossy().into_owned();
+        if name.starts_with(stem) {
+            let is_dir = entry.file_type().map(|ft| ft.is_dir()).unwrap_or(false);
+            matches.push((name, is_dir));
+        }
+    }
+
+    if matches.is_empty() {
+        goto.error = Some("no match".to_owned());
+        return;
+    }
+
+    if matches.len() == 1 {
+        // Exact completion.  Append "/" for directories so the operator can
+        // keep typing into the child.
+        let (name, is_dir) = &matches[0];
+        let mut completed = format!("{parent_str}{name}");
+        if *is_dir {
+            completed.push('/');
+        }
+        goto.query = completed;
+        goto.error = None;
+        return;
+    }
+
+    // Multiple matches: extend stem to the longest common prefix.
+    let lcp = longest_common_prefix(matches.iter().map(|(n, _)| n.as_str()));
+    if lcp.len() > stem.len() {
+        goto.query = format!("{parent_str}{lcp}");
+        goto.error = None;
+    } else {
+        // Already at the common prefix — hint at ambiguity.
+        goto.error = Some(format!("{} matches", matches.len()));
+    }
+}
+
+/// Compute the longest common prefix of an iterator of string slices.
+///
+/// Returns an owned `String`.  Operates on bytes (safe because all inputs
+/// are valid UTF-8 and the prefix cut only happens at character boundaries
+/// checked via `is_char_boundary`).
+fn longest_common_prefix<'a, I: IntoIterator<Item = &'a str>>(iter: I) -> String {
+    let mut it = iter.into_iter();
+    let Some(first) = it.next() else {
+        return String::new();
+    };
+    let mut prefix_len = first.len();
+    for s in it {
+        let bytes_a = first.as_bytes();
+        let bytes_b = s.as_bytes();
+        let limit = prefix_len.min(bytes_b.len());
+        let mut i = 0;
+        while i < limit && bytes_a[i] == bytes_b[i] {
+            i += 1;
+        }
+        // Back off to a char boundary so multi-byte UTF-8 sequences aren't cut.
+        while i > 0 && !first.is_char_boundary(i) {
+            i -= 1;
+        }
+        prefix_len = i;
+        if prefix_len == 0 {
+            break;
+        }
+    }
+    first[..prefix_len].to_owned()
+}
+
 /// Re-scan the current directory and reload the tree.
 ///
 /// Called when the user presses `r` (Refresh).  On scan error the display
 /// stays on the previous listing.
 ///
+/// If a search filter is active, refresh also clears it — operators found
+/// "how do I get back to the full listing" unclear when the only exit was
+/// Esc while in search mode.  Making refresh a catch-all reset is the
+/// least surprising behaviour.
+///
 /// NIST SP 800-53 AU-3 — re-scan updates the status bar timing so the
 /// operator can confirm the listing is current.
 fn handle_refresh(app: &mut DirViewerApp, state: &mut ViewerState) {
+    // Clear any active or committed search filter before re-scanning so the
+    // operator sees the full refreshed listing.  Handles both "bar still
+    // open" and "query committed with Enter but filter still applied".
+    if state.search_active || !state.search_query.is_empty() {
+        state.search_active = false;
+        state.search_query.clear();
+        state.tree.clear_filter();
+        state.tree.rebuild_display();
+        state.selected_index = 0;
+    }
+
     let path = app.current_path().to_path_buf();
     match app.navigate_to(&path) {
         Ok(tree) => {

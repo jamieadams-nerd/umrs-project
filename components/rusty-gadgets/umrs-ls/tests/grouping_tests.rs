@@ -118,6 +118,18 @@ fn is_sibling_compressed_rotation_is_sibling() {
     assert!(is_sibling("syslog", "syslog.1.gz"));
 }
 
+// TEST-ID: GROUPING-008a
+// Regression: `jvm-common` must NOT cuddle under `jvm`. A `-` separator
+// is only valid when followed by an ASCII digit (rotation / date suffix).
+#[test]
+fn is_sibling_dash_requires_digit_suffix() {
+    assert!(!is_sibling("jvm", "jvm-common"));
+    assert!(!is_sibling("foo", "foo-bar"));
+    // Dash-digit rotations still work.
+    assert!(is_sibling("boot.log", "boot.log-1"));
+    assert!(is_sibling("boot.log", "boot.log-20260301"));
+}
+
 // ============================================================================
 // Layer 2: classify_suffix() — kind classification
 // ============================================================================

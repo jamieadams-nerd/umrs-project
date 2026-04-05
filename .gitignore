@@ -38,6 +38,8 @@ src/umrs-rust/target/
 # Nested .claude directories — agents create these by mistake
 .claude/.claude/
 
+components/rusty-gadgets/.claude
+
 # FUSE filesystem artifacts (Parallels shared folder)
 .fuse_hidden*
 

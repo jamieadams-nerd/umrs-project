@@ -30,7 +30,10 @@
     "CUI": {
       "name": "Controlled Unclassified Information",
       "abbrv_name": "CUI",
-      "description": "Umbrella designation for all controlled unclassified information. In UMRS, specific category markings (CUI//ABBREVIATION) are always required for granular MAC enforcement.",
+      "description": [ 
+          { "en_US": "Umbrella designation for all controlled unclassified information. In UMRS, specific category markings (CUI//ABBREVIATION) are always required for granular MAC enforcement.",
+            "ca_FR": ""
+      }],
       "index_group": null,
       "designation": "basic",
       "level": "s1",

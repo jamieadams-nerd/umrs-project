@@ -111,6 +111,18 @@ pub struct Theme {
     /// known-disabled feature during continuous monitoring.
     pub indicator_unavailable: Style,
 
+    /// Selected-row highlight in list widgets.
+    ///
+    /// A subtle, warm highlight (black-on-light-yellow by default) —
+    /// distinct from the cyan of active tabs so the cursor position in a
+    /// list never gets confused with a selected tab.  Every UMRS TUI tool
+    /// reads from this single field, so a palette change propagates
+    /// everywhere at once.
+    ///
+    /// NIST SP 800-53 AU-3 — the current selection must be visually
+    /// unambiguous during operator review.
+    pub list_selection: Style,
+
     /// Group title style in the data panel (bold white).
     ///
     /// Group titles are visual organizers that mark the start of a named
@@ -178,10 +190,39 @@ impl Theme {
             IndicatorValue::Unavailable => self.indicator_unavailable,
         }
     }
-}
 
-impl Default for Theme {
-    fn default() -> Self {
+    /// Dark theme — the default UMRS palette.
+    ///
+    /// High-contrast on a dark terminal background: cyan borders, white
+    /// value text, green wizard, warm-yellow list selection.
+    ///
+    /// Callers should prefer `Theme::dark()` / `Theme::light()` over
+    /// `Theme::default()` when they have a preference — `Default` remains
+    /// backwards compatible and currently aliases to `dark()`.
+    #[must_use = "theme is consumed by render functions"]
+    pub fn dark() -> Self {
+        Self::default_dark()
+    }
+
+    /// Light theme — stub for future light-mode support.
+    ///
+    /// Currently returns the dark palette unchanged as a placeholder.
+    /// When light mode is implemented, every style in this method must be
+    /// re-tuned for a light terminal background (dark text on light bg,
+    /// muted cyan → navy, light-yellow → amber, etc.).
+    ///
+    /// The stub exists so that call sites can already be written as
+    /// `Theme::light()` and will inherit the new palette automatically.
+    #[must_use = "theme is consumed by render functions"]
+    pub fn light() -> Self {
+        // TODO(theming): implement a real light palette.  Placeholder
+        // returns the dark theme so the API is stable today.
+        Self::default_dark()
+    }
+
+    /// Internal constructor for the dark palette — shared by `Default`,
+    /// `dark()`, and the current `light()` stub.
+    fn default_dark() -> Self {
         Self {
             border: Style::default().fg(Color::Cyan),
             tab_active: Style::default()
@@ -198,6 +239,13 @@ impl Default for Theme {
             indicator_active: Style::default().fg(Color::Green).add_modifier(Modifier::BOLD),
             indicator_inactive: Style::default().fg(Color::DarkGray),
             indicator_unavailable: Style::default().fg(Color::Yellow),
+            // Dim aged-parchment background (RGB 160/145/95) — a
+            // recessed warm tint on a dark terminal, distinctly "this
+            // row is selected" without any of the glow of the ANSI
+            // bright-yellow slot.  Black fg, no bold.
+            list_selection: Style::default()
+                .fg(Color::Black)
+                .bg(Color::Rgb(160, 145, 95)),
             group_title: Style::default().fg(Color::White).add_modifier(Modifier::BOLD),
             // Dialog styles
             dialog_info_border: Style::default().fg(Color::Cyan),
@@ -211,5 +259,16 @@ impl Default for Theme {
             dialog_title: Style::default().fg(Color::White).add_modifier(Modifier::BOLD),
             dialog_message: Style::default().fg(Color::White),
         }
+    }
+}
+
+impl Default for Theme {
+    /// Default theme — aliases to [`Theme::dark`].
+    ///
+    /// Provided for backwards compatibility with call sites that use
+    /// `Theme::default()`.  New code should call `Theme::dark()` or
+    /// `Theme::light()` explicitly so the theming intent is visible.
+    fn default() -> Self {
+        Self::default_dark()
     }
 }

@@ -51,7 +51,8 @@ use std::path::Path;
 #[cfg(debug_assertions)]
 use std::time::Instant;
 
-use umrs_selinux::secure_dirent::FileType;
+use umrs_selinux::ObservationKind;
+use umrs_selinux::secure_dirent::{FileType, InodeSecurityFlags};
 use umrs_selinux::utils::dirlist::{DirListing, ListEntry};
 use umrs_ui::viewer::tree::{TreeModel, TreeNode};
 
@@ -206,7 +207,7 @@ pub fn compute_stats(listing: &DirListing) -> ScanStats {
 
 /// Build the `..` (parent directory) navigation leaf node.
 ///
-/// Uses `\u{21B0}` (↰ upwards arrow with tip leftwards) as the display icon
+/// Uses `\u{21EA}` (upwards arrow) as the display icon
 /// and "parent directory" as the detail text for clarity.
 ///
 /// The node carries `is_dir = "true"` and `name = ".."` so the event loop
@@ -214,7 +215,7 @@ pub fn compute_stats(listing: &DirListing) -> ScanStats {
 fn make_parent_nav_entry(parent_path: &Path) -> TreeNode {
     let path_str = parent_path.to_string_lossy().into_owned();
     let mut node = TreeNode::leaf(
-        "\u{21B0} parent directory", // ICON_PARENT defined in tui_render.rs
+        "\u{21EA} parent directory", // ICON_PARENT defined in tui_render.rs
         path_str.clone(),
     );
     node.metadata.insert("name".to_owned(), "..".to_owned());
@@ -342,6 +343,41 @@ fn populate_entry_metadata(meta: &mut BTreeMap<String, String>, entry: &ListEntr
     }
     if dirent.has_encryption() {
         meta.insert("has_encryption".to_owned(), "true".to_owned());
+    }
+
+    // IOV security-posture flags — serialised for the TUI renderer so the
+    // I/O/V column can match the CLI output.  `iov_i` = immutable bit set,
+    // `iov_v` = IMA signature present, `iov_o` = at least one Risk-kind
+    // security observation.  Keys are only inserted when true so absence
+    // is equivalent to "unset/clear" in the renderer's metadata lookup.
+    // NIST SP 800-53 AU-3, SI-7 — posture markers are audit-relevant.
+    let flags = &entry.dirent.sec_flags;
+    if flags.contains(InodeSecurityFlags::IMMUTABLE) {
+        meta.insert("iov_i".to_owned(), "true".to_owned());
+    }
+    if flags.contains(InodeSecurityFlags::IMA_PRESENT) {
+        meta.insert("iov_v".to_owned(), "true".to_owned());
+    }
+    // Highest-severity observation drives the O column:
+    //   Risk    → red bold flag
+    //   Warning → yellow flag
+    //   Good    → green dim (not yet rendered — omitted)
+    //   none    → dim dash
+    // We store the tier as a string so the renderer can pick the glyph/color
+    // without re-deriving it from `SecurityObservation`.
+    let mut iov_o_tier: Option<&str> = None;
+    for o in entry.dirent.security_observations() {
+        match o.kind() {
+            ObservationKind::Risk => {
+                iov_o_tier = Some("risk");
+                break;
+            }
+            ObservationKind::Warning => iov_o_tier = Some("warning"),
+            ObservationKind::Good => {}
+        }
+    }
+    if let Some(tier) = iov_o_tier {
+        meta.insert("iov_o".to_owned(), tier.to_owned());
     }
 
     // Mtime — stored as seconds since epoch for display in the TUI listing.

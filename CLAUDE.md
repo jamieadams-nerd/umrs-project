@@ -115,6 +115,12 @@ All agents read `.claude/agents/team-collaboration.md` at session start.
 
 Third-party standards in `.claude/references/`. Manifest at `.claude/references/refs-manifest.md` tracks versions, sources, and checksums.
 
+[RULE] When searching for a Unicode character (glyph, symbol, box-drawing,
+icon), grep `.claude/references/unicode-symbols-corpus.txt` first. It contains
+codepoint, glyph, and official name for the full symbol range and is the
+fastest way to pick the right character. Do not guess codepoints or rely on
+model recall.
+
 ---
 
 ## ASM Usage Policy
