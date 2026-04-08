@@ -31,6 +31,57 @@
 - Marked `umrs-label-tui.md` plan as completed.
 - Marked `cozy-watching-pearl.md` (setrans test fix) plan as completed.
 
+### Security & Architectural Rules
+- Added [CONSTRAINT] System State Read Prohibition: binary crates MUST NOT use std::fs on /etc/, /proc/, /sys/, /run/ for security decisions; all system state reads must be mediated through validated abstraction layers (OsDetector, SeColorConfig, etc.).
+- Added [CONSTRAINT] TUI/CLI I/O Discipline: display-only output mode is not a waiver for bypassing abstractions; data access patterns must remain invariant across output formats.
+
+### Integration: umrs-label Detail Popup in umrs-ls
+- Enter key on group header or CUI-marked file in umrs-ls opens SECURITY LABEL DETAILS popup from umrs-label catalog.
+- Double-line bordered popup (BorderType::Double) with centered bold white title and flag emoji (🇺🇸/🇨🇦) flush-right on marking key line.
+- Renders via shared `build_detail_lines()` from umrs-ui — single authoritative detail renderer across all tools.
+- Palette-colored marking chip keyed by index_group; SystemLow/SystemHigh get informational popups with detailed descriptions.
+- Escape dismisses popup; umrs-ls scroll position and selection preserved.
+- Catalog loaded at startup with graceful degradation (missing catalog = no popup, ls browsing unaffected).
+
+### CUI Marking Validation & Banner Syntax
+- Rewrote `CuiMarking` regex to accept full banner syntax: `CUI//CATEGORY//LDC` with bare `CUI` + direct LDC support per 32 CFR Part 2002.
+- Supports LDCs: NOFORN, FED ONLY, FEDCON, REL TO, DISPLAY ONLY, NOCON, RELIDO, Attorney-Client, Attorney-WP, Distribution Statements (DoD).
+- Fixed slash character class: removed slash from LDC pattern (was causing false validation of malformed entries like trailing slashes).
+- Optimized regex caching: replaced `OnceLock<Mutex<HashMap>>` with per-variant `OnceLock<Regex>` pattern (zero-lock fast path after first compile).
+- Added 6 new LDC banner tests and bare CUI+LDC test to validation suite.
+
+### CUI Phase 1 Language Compliance
+- Added `policy_aware_description()` runtime function: detects targeted vs MLS policy and swaps enforcement language to labeling language under Phase 1.
+- Fixed "granular MAC enforcement" → "granular labeling awareness" in US-CUI-LABELS.json and fixed-labels.json (EN + FR versions).
+- Fixed enforcement language in catalog metadata notes (removed enforcement claims from Phase 1 descriptions).
+- Fixed setrans.conf test comments to use Phase 1 language compliance.
+- Converted 278 empty-string `handling_group_id` entries → `null` in catalog JSON for cleaner validation.
+
+### Shared UI Library (umrs-ui)
+- Extracted palette color functions to new `umrs-ui/src/palette.rs` module for reuse across umrs-label, umrs-ls, umrs-stat.
+- Extracted text wrapping utilities to `umrs-ui/src/text_fit.rs`; `wrap_text_lines()` now respects embedded newlines for paragraph breaks.
+- Made `build_detail_lines()` public with `max_width` parameter; enables consistent detail rendering across all tools.
+- Added `PanelSwitch` action to shared Action enum in keymap.rs; supports panel navigation in multi-panel TUI tools.
+- Added `country_flag` field to MarkingDetailData for flag emoji rendering in detail popups.
+
+### TUI Display Polish
+- Removed `highlight_symbol("► ")` from umrs-label and umrs-ls; selection now indicated by color alone (cleaner visual presentation).
+- Fixed tree panel indentation: depth × 2 with proper icon trailing space handling for nested groups.
+- Added 1-character left and right padding to tree and detail panels in umrs-label for breathing room.
+- Column header alignment in umrs-ls: IOV/MODE/OWNER:GROUP/MODIFIED/NAME aligned to data rows; group header 1-space left padding before chevron; file entries 3-space indent.
+- Group header palette colors now looked up from catalog by marking → index_group (policy-aware coloring).
+- Added unconfined_t domain warning in header: yellow bold ⚠ symbol when process domain is unconfined (compliance visibility).
+- Wired KeyMap into umrs-label event loop (was raw match key.code dispatch); consistent keybinding across tools.
+- Added NO_COLOR environment variable check to all three TUI tools (umrs-label, umrs-ls, umrs-stat) for accessibility compliance.
+
+### Reviews & Quality Gates
+- Generated 5 comprehensive review reports in `.claude/reports/`:
+  - **Henri (operator review):** 12 Accurate / 4 Concern / 0 Error — Canadian content policy-compliant; flagged operator documentation gap.
+  - **Herb (compliance audit):** 28 Accurate / 6 Concern / 3 Error — Phase 1 language violations, regex edge cases, empty field handling (all remediated).
+  - **Knox (security review):** 21 Accurate / 6 Concern / 0 Error — system read prohibition architecture clean; OsDetector implementation correct; flagged NO_COLOR coverage gap (fixed).
+  - **Elena (HCI review):** 9 Accurate / 11 Concern / 2 Error — KeyMap wiring missing (fixed), highlight_symbol inconsistency (fixed), panel-swap recommendation accepted.
+  - **Sage (UX review):** tool credible and approachable; panel-swap feature enhances exploration; header height question routed to Jamie.
+
 ## 2026-04-05
 
 ### umrs-ls TUI Polish Pass

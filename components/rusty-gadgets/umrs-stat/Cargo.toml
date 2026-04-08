@@ -18,6 +18,10 @@ SELinux labels and inode security flags
 # keywords
 
 
+[lib]
+name = "umrs_stat"
+path = "src/lib.rs"
+
 [[bin]]
 name = "umrs-stat"
 path = "src/main.rs"

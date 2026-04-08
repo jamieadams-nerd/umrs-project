@@ -4107,10 +4107,12 @@ dependencies = [
  "ratatui",
  "serde",
  "serde_json",
+ "tree_magic_mini",
  "umrs-core",
  "umrs-label",
  "umrs-platform",
  "umrs-selinux",
+ "umrs-stat",
  "umrs-ui",
 ]
 

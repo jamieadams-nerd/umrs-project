@@ -34,7 +34,8 @@ OpenSSL is a system-wide trust anchor — binary analysis must trace linkage to 
 - Prototype workspace: `components/rust-prototypes/` — out of scope; no xtask
 - Primary crate: `umrs-selinux`; Platform crate: `umrs-platform`
 - UI library crate: `umrs-ui` (renamed from `umrs-tui` 2026-03-22); binary: `umrs-uname`
-- File stat crate: `umrs-stat` (extracted from umrs-tui 2026-03-22); binary: `umrs-stat`
+- File stat crate: `umrs-stat` (extracted from umrs-tui 2026-03-22); binary: `umrs-stat`; now also has `[lib]` (`src/lib.rs`) exposing `FileStatApp`, row builders, `format_size`, `find_fs_info`, `read_elf_info`, `build_status` (added 2026-04-08)
+- `umrs-ls` now depends on `umrs-stat` (added 2026-04-08 for stat popup overlay); `StatPopupState` + `render_stat_popup` + `build_stat_popup_state` in umrs-ls main.rs; Enter-on-file opens popup
 - HW crate: `umrs-hw` — ONLY crate WITHOUT `#![forbid(unsafe_code)]`
 - All tests in `tests/`, never inline
 - Run via `cargo xtask {fmt,clippy,test}` from `components/rusty-gadgets/`

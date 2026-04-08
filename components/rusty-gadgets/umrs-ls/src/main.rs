@@ -57,6 +57,13 @@
 // Rationale mirrors Cargo.toml [lints.clippy] entry — needed because xtask passes -D warnings
 // which overrides Cargo.toml lint table entries.
 #![allow(clippy::format_push_string)]
+// doc_markdown: backtick-wrapping every key name and field reference in prose
+// is disruptive for operational documentation.  Matches Cargo.toml policy.
+#![allow(clippy::doc_markdown)]
+// missing_errors_doc / missing_panics_doc: # Errors/# Panics on every Result fn adds noise.
+// Matches Cargo.toml policy.
+#![allow(clippy::missing_errors_doc)]
+#![allow(clippy::missing_panics_doc)]
 
 use std::borrow::Cow;
 use std::fmt::Write;
@@ -90,6 +97,7 @@ use umrs_ls::tui_render::{
 };
 use umrs_labels::cui::catalog::{Catalog, Marking, load_catalog, policy_aware_description};
 use umrs_ui::marking_detail::{MarkingDetailData, build_detail_lines};
+use umrs_stat::FileStatApp;
 
 // ============================================================================
 // JSON output types
@@ -131,6 +139,31 @@ struct JsonListing {
     path: String,
     groups: Vec<JsonDirGroup>,
     elapsed_us: u64,
+}
+
+// ============================================================================
+// Stat popup state
+// ============================================================================
+
+/// State for the file security audit popup overlay.
+///
+/// Opened by pressing Enter on a non-directory, non-group-header node.
+/// Closed by Esc or q.  Tab / ← / → cycle the three audit card tabs;
+/// j / k / Up / Down / PageUp / PageDown scroll the active tab.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**: The popup surfaces a complete audit card for the
+///   selected file, ensuring the operator has all identity and security context
+///   without leaving the directory view.
+/// - **NIST SP 800-53 AC-3**: MAC label state is visible on demand per node.
+struct StatPopupState {
+    /// Pre-built audit card data for the selected file.
+    app: FileStatApp,
+    /// Currently active tab (0 = Identity, 1 = Security, 2 = Observations).
+    active_tab: usize,
+    /// Per-tab scroll offsets; indexed by `active_tab`.
+    scroll: [u16; 3],
 }
 
 const TERM_WIDTH: usize = 100;
@@ -625,6 +658,15 @@ fn run_tui(target: &str, _flat_mode: bool) -> io::Result<()> {
     // definition accessible to the operator without leaving the directory view.
     let mut label_popup: Option<(MarkingDetailData, u16)> = None;
 
+    // File security audit popup state.  `Some(state)` means the three-tab
+    // audit card overlay is open for a selected file node.  `None` means
+    // closed.  Stat popup takes input priority over the label popup — only
+    // one popup is open at a time so priority order does not cause conflicts.
+    //
+    // NIST SP 800-53 AU-3 — the full audit card (identity, security,
+    // observations) is accessible on demand without leaving the directory view.
+    let mut stat_popup: Option<StatPopupState> = None;
+
     // Event loop — 100 ms poll timeout keeps the TUI snappy without busy-waiting.
     loop {
         if let Err(e) = terminal.draw(|f| {
@@ -641,6 +683,12 @@ fn run_tui(target: &str, _flat_mode: bool) -> io::Result<()> {
             if let Some((ref data, scroll)) = label_popup {
                 render_label_popup(f, f.area(), data, scroll, &theme);
             }
+            // Stat audit popup — rendered on top of everything else when open.
+            // Mutually exclusive with label_popup (Enter logic prevents both
+            // from opening simultaneously).
+            if let Some(ref sp) = stat_popup {
+                render_stat_popup(f, f.area(), sp, &theme);
+            }
         }) {
             log::error!("terminal draw error: {e}");
             break;
@@ -649,6 +697,41 @@ fn run_tui(target: &str, _flat_mode: bool) -> io::Result<()> {
         match event::poll(Duration::from_millis(100)) {
             Ok(true) => match event::read() {
                 Ok(Event::Key(key)) => {
+                    // Stat audit popup owns all input while open.
+                    // Esc / q dismiss; Tab / ← / → cycle tabs;
+                    // j / k / Up / Down / PageUp / PageDown scroll active tab.
+                    if let Some(ref mut sp) = stat_popup {
+                        match key.code {
+                            KeyCode::Esc | KeyCode::Char('q') => {
+                                stat_popup = None;
+                            }
+                            KeyCode::Tab | KeyCode::Right => {
+                                sp.active_tab = (sp.active_tab.saturating_add(1)) % 3;
+                            }
+                            KeyCode::BackTab | KeyCode::Left => {
+                                sp.active_tab = (sp.active_tab.saturating_add(2)) % 3;
+                            }
+                            KeyCode::Down | KeyCode::Char('j') => {
+                                sp.scroll[sp.active_tab] =
+                                    sp.scroll[sp.active_tab].saturating_add(1);
+                            }
+                            KeyCode::Up | KeyCode::Char('k') => {
+                                sp.scroll[sp.active_tab] =
+                                    sp.scroll[sp.active_tab].saturating_sub(1);
+                            }
+                            KeyCode::PageDown => {
+                                sp.scroll[sp.active_tab] =
+                                    sp.scroll[sp.active_tab].saturating_add(10);
+                            }
+                            KeyCode::PageUp => {
+                                sp.scroll[sp.active_tab] =
+                                    sp.scroll[sp.active_tab].saturating_sub(10);
+                            }
+                            _ => {}
+                        }
+                        continue;
+                    }
+
                     // Label detail popup owns all input while open.
                     // Esc / q dismiss; j / k / Up / Down / PageUp / PageDown scroll.
                     if let Some((_, ref mut scroll)) = label_popup {
@@ -777,8 +860,8 @@ fn run_tui(target: &str, _flat_mode: bool) -> io::Result<()> {
                                 handle_refresh(&mut app, &mut state);
                             }
                             Action::DialogConfirm => {
-                                // Enter: navigate into a directory, or toggle
-                                // expand/collapse on non-directory nodes.
+                                // Enter: navigate into a directory, open the
+                                // stat popup for files, or toggle expand/collapse.
                                 handle_enter(
                                     &mut app,
                                     &mut state,
@@ -786,6 +869,7 @@ fn run_tui(target: &str, _flat_mode: bool) -> io::Result<()> {
                                     us_catalog.as_ref(),
                                     ca_catalog.as_ref(),
                                     &mut label_popup,
+                                    &mut stat_popup,
                                 );
                             }
                             _ => {
@@ -820,6 +904,46 @@ fn run_tui(target: &str, _flat_mode: bool) -> io::Result<()> {
 // TUI navigation helpers
 // ============================================================================
 
+/// Build a `StatPopupState` for the given file path.
+///
+/// Calls `SecureDirent::from_path` (TOCTOU-safe, fd-anchored) and
+/// `tree_magic_mini::from_filepath` (display-only MIME detection).  On any
+/// I/O failure the error path is used — the popup still opens but shows the
+/// error rows rather than silently doing nothing.
+///
+/// Extracted from `handle_enter` to stay within the 100-line function limit.
+///
+/// NIST SP 800-53 AU-3 — audit card data is built in a single, traceable
+/// construction step per file node selection.
+fn build_stat_popup_state(file_path: &Path) -> StatPopupState {
+    let path_str = file_path.to_string_lossy().into_owned();
+
+    #[cfg(debug_assertions)]
+    let t0 = std::time::Instant::now();
+
+    let dirent_result = umrs_selinux::secure_dirent::SecureDirent::from_path(file_path);
+
+    #[cfg(debug_assertions)]
+    log::debug!(
+        "stat popup SecureDirent construction completed in {} µs",
+        t0.elapsed().as_micros()
+    );
+
+    let mime: &str =
+        tree_magic_mini::from_filepath(file_path).unwrap_or("application/octet-stream");
+
+    let app = match &dirent_result {
+        Ok(dirent) => FileStatApp::from_dirent(dirent, mime),
+        Err(e) => FileStatApp::from_error(&path_str, e),
+    };
+
+    StatPopupState {
+        app,
+        active_tab: 0,
+        scroll: [0; 3],
+    }
+}
+
 /// Handle an Enter keypress in the TUI viewer.
 ///
 /// Priority of actions:
@@ -847,6 +971,7 @@ fn handle_enter(
     us_catalog: Option<&Catalog>,
     ca_catalog: Option<&Catalog>,
     label_popup: &mut Option<(MarkingDetailData, u16)>,
+    stat_popup: &mut Option<StatPopupState>,
 ) {
     let Some(entry) = state.tree.display_list.get(state.selected_index) else {
         return;
@@ -929,10 +1054,21 @@ fn handle_enter(
         return;
     }
 
+    // ── File node (non-directory, non-group-header) → stat popup ─────────────
+    if node.metadata.get("is_dir").map(String::as_str) != Some("true")
+        && node.metadata.get("kind").map(String::as_str) != Some("group_header")
+        && node.metadata.get("is_parent_nav").map(String::as_str) != Some("true")
+    {
+        let name = node.metadata.get("name").map(String::as_str).unwrap_or("");
+        let file_path = app.current_path().join(name);
+        *stat_popup = Some(build_stat_popup_state(&file_path));
+        return;
+    }
+
     // ── Directory navigation ──────────────────────────────────────────────────
     // Only navigate when the node represents a directory.
     if node.metadata.get("is_dir").map(String::as_str) != Some("true") {
-        // File or group header with no catalog data: delegate to expand/collapse.
+        // Group header with no catalog data: delegate to expand/collapse.
         let _ = state.handle_action(Action::Expand);
         return;
     }
@@ -1333,6 +1469,191 @@ fn render_label_popup(
     let paragraph = ratatui::widgets::Paragraph::new(lines)
         .scroll((scroll_offset, 0));
     frame.render_widget(paragraph, inner);
+}
+
+// ============================================================================
+// File security audit popup
+// ============================================================================
+
+/// Convert a single [`DataRow`] into a ratatui [`Line`] for the stat popup.
+///
+/// The `col_width` parameter controls the key column padding (characters);
+/// `val_width` is the available value column width used for truncation.
+/// `theme` drives the value style for plain/structured rows.
+fn stat_row_to_line<'a>(
+    row: &'a umrs_ui::app::DataRow,
+    col_width: usize,
+    val_width: usize,
+    theme: &Theme,
+) -> ratatui::text::Line<'a> {
+    use ratatui::style::{Color, Modifier, Style};
+    use ratatui::text::{Line, Span};
+    use umrs_ui::app::DataRow;
+    use umrs_ui::theme::style_hint_color;
+
+    match row {
+        DataRow::Separator => Line::from(""),
+        DataRow::KeyValue { key, value, style_hint, .. } => {
+            let key_style = Style::default().fg(Color::DarkGray);
+            let val_style = Style::default().fg(style_hint_color(*style_hint));
+            let key_padded = format!("{key:<col_width$}");
+            let value_display = if value.len() > val_width && val_width > 0 {
+                format!("{}…", &value[..val_width.saturating_sub(1)])
+            } else {
+                value.clone()
+            };
+            Line::from(vec![
+                Span::styled(key_padded, key_style),
+                Span::raw(" : "),
+                Span::styled(value_display, val_style),
+            ])
+        }
+        DataRow::GroupTitle(title) => Line::from(Span::styled(
+            title.as_str(),
+            Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD),
+        )),
+        DataRow::TwoColumn { left_key, left_value, right_key, right_value, .. } => {
+            Line::from(vec![
+                Span::styled(format!("{left_key:<col_width$} : {left_value}"), theme.data_value),
+                Span::raw("  "),
+                Span::styled(format!("{right_key} : {right_value}"), theme.data_value),
+            ])
+        }
+        DataRow::IndicatorRow { key, value, .. } => Line::from(vec![
+            Span::styled(format!("{key:<col_width$}"), Style::default().fg(Color::DarkGray)),
+            Span::raw(" : "),
+            Span::styled(value.as_str(), theme.data_value),
+        ]),
+        DataRow::TableRow { col1, col2, col3, .. } => Line::from(Span::styled(
+            format!("{col1:<col_width$}  {col2}  {col3}"),
+            theme.data_value,
+        )),
+        DataRow::TableHeader { col1, col2, col3 } => Line::from(Span::styled(
+            format!("{col1:<col_width$}  {col2}  {col3}"),
+            Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD),
+        )),
+    }
+}
+
+/// Render the file security audit popup over the directory listing.
+///
+/// Sized and centred the same way as `render_label_popup`: 70 % of the
+/// terminal area, clamped to practical minimum (60 × 18) and maximum (90 × 35)
+/// dimensions.  A Double border with a centred title distinguishes this
+/// overlay from the rounded panels used elsewhere.
+///
+/// The popup has three tabs — Identity, Security, Observations — rendered
+/// as a tab bar at the top of the inner area.  The active tab's rows are
+/// rendered below as a scrollable list of key-value pairs.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**: The audit card provides complete file identity
+///   and security attribute information in one view.
+/// - **NIST SP 800-53 CA-7**: Security observations are accessible on demand
+///   for every file node.
+fn render_stat_popup(
+    frame: &mut ratatui::Frame,
+    area: ratatui::layout::Rect,
+    sp: &StatPopupState,
+    theme: &Theme,
+) {
+    use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
+    use ratatui::style::{Color, Modifier, Style};
+    use ratatui::text::{Line, Span};
+    use ratatui::widgets::{Block, BorderType, Borders, Paragraph};
+
+    // Centre the popup — 70 % of terminal dimensions, clamped to useful bounds.
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "popup width: f32 result of 0.70 * u16 is bounded and truncation is intentional"
+    )]
+    #[expect(
+        clippy::cast_sign_loss,
+        reason = "f32 value is always non-negative (0.70 * u16 >= 0.0)"
+    )]
+    let popup_width = (f32::from(area.width) * 0.70_f32) as u16;
+    let popup_width = popup_width.clamp(60, 90);
+
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "popup height: f32 result of 0.70 * u16 is bounded and truncation is intentional"
+    )]
+    #[expect(
+        clippy::cast_sign_loss,
+        reason = "f32 value is always non-negative (0.70 * u16 >= 0.0)"
+    )]
+    let popup_height = (f32::from(area.height) * 0.70_f32) as u16;
+    let popup_height = popup_height.clamp(18, 35);
+
+    let x = area.x.saturating_add(area.width.saturating_sub(popup_width) / 2);
+    let y = area.y.saturating_add(area.height.saturating_sub(popup_height) / 2);
+    let popup_area = Rect::new(x, y, popup_width, popup_height);
+    frame.render_widget(ratatui::widgets::Clear, popup_area);
+
+    let title = Line::from(Span::styled(
+        " FILE SECURITY AUDIT ",
+        Style::default().fg(Color::White).add_modifier(Modifier::BOLD),
+    ));
+    let block = Block::default()
+        .title(title)
+        .title_alignment(Alignment::Center)
+        .borders(Borders::ALL)
+        .border_type(BorderType::Double)
+        .border_style(Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD));
+
+    let inner = block.inner(popup_area);
+    frame.render_widget(block, popup_area);
+
+    let chunks = Layout::default()
+        .direction(Direction::Vertical)
+        .constraints([
+            Constraint::Length(1), // tab bar
+            Constraint::Length(1), // blank separator
+            Constraint::Min(1),    // scrollable content
+            Constraint::Length(1), // key hint line
+        ])
+        .split(inner);
+
+    // ── Tab bar ────────────────────────────────────────────────────────────
+    let tab_names = ["Identity", "Security", "Observations"];
+    let tab_spans: Vec<Span<'_>> = tab_names
+        .iter()
+        .enumerate()
+        .flat_map(|(i, name)| {
+            let label = format!(" [{name}] ");
+            let style = if i == sp.active_tab {
+                Style::default().fg(Color::Black).bg(Color::Cyan).add_modifier(Modifier::BOLD)
+            } else {
+                Style::default().fg(Color::DarkGray)
+            };
+            if i < tab_names.len().saturating_sub(1) {
+                vec![Span::styled(label, style), Span::raw(" ")]
+            } else {
+                vec![Span::styled(label, style)]
+            }
+        })
+        .collect();
+    frame.render_widget(Paragraph::new(Line::from(tab_spans)), chunks[0]);
+
+    // ── Scrollable content ─────────────────────────────────────────────────
+    let rows = sp.app.rows_for_tab(sp.active_tab);
+    let col_width: usize = 20;
+    // u16 → usize: lossless on all supported targets (32-bit and 64-bit).
+    let val_width = usize::from(chunks[2].width).saturating_sub(col_width).saturating_sub(3);
+    let lines: Vec<Line<'_>> = rows
+        .iter()
+        .map(|row| stat_row_to_line(row, col_width, val_width, theme))
+        .collect();
+    let content = Paragraph::new(lines).scroll((sp.scroll[sp.active_tab], 0));
+    frame.render_widget(content, chunks[2]);
+
+    // ── Key hint ────────────────────────────────────────────────────────────
+    let hint = Line::from(Span::styled(
+        "  [ESC/q] close  [TAB/\u{2192}] next tab  [j/k] scroll",
+        Style::default().fg(Color::DarkGray),
+    ));
+    frame.render_widget(Paragraph::new(hint), chunks[3]);
 }
 
 // ============================================================================
