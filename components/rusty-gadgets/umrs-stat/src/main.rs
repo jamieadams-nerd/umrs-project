@@ -55,6 +55,7 @@ use std::time::Duration;
 use clap::Parser;
 use crossterm::event::{self, Event};
 use umrs_core::i18n;
+use umrs_platform::detect::OsDetector;
 use umrs_platform::kattrs::{ProcfsText, SecureReader};
 use umrs_selinux::fs_encrypt::EncryptionSource;
 use umrs_selinux::mcs::translator::{GLOBAL_TRANSLATOR, SecurityRange};
@@ -783,14 +784,33 @@ fn main() {
     // ── UI state ──────────────────────────────────────────────────────────
     let mut state = AuditCardState::new(app.tabs().len());
     let keymap = KeyMap::default();
+    // NO_COLOR environment variable compliance (https://no-color.org/).
+    // When set (to any value), color output must be suppressed.
+    // TODO(umrs-ui): Theme::no_color() variant needed; currently falls back to
+    //   default. The check is present so the env var is honoured as soon as the
+    //   theme variant is implemented.
+    let _no_color = std::env::var("NO_COLOR").is_ok();
     let theme = Theme::default();
-    // os_name is "unavailable" in umrs-stat — this binary does not run
-    // the OS detection pipeline. The OS is visible from the RHEL host context;
-    // the header row displays the best available value.
+    // OS name is read through the umrs-platform OsDetector pipeline, which
+    // routes through provenance-verified SecureReader paths rather than raw
+    // /etc/os-release I/O.  Falls back to "unavailable" on detection failure.
+    let os_name = if let Some(rel) = OsDetector::default()
+        .detect()
+        .ok()
+        .and_then(|r| r.os_release)
+    {
+        let name = rel.name.as_str();
+        match rel.version_id.as_ref() {
+            Some(v) => format!("{name} {}", v.as_str()),
+            None => name.to_owned(),
+        }
+    } else {
+        "unavailable".to_owned()
+    };
     let ctx = build_header_context(
         env!("CARGO_PKG_NAME"),
         env!("CARGO_PKG_VERSION"),
-        "unavailable",
+        os_name,
     );
 
     // ── Terminal setup ────────────────────────────────────────────────────

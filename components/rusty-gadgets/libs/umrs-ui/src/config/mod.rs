@@ -431,6 +431,7 @@ impl ConfigState {
             | Action::Collapse
             | Action::Search
             | Action::Back
+            | Action::PanelSwitch
             | Action::PageUp
             | Action::PageDown
             | Action::Refresh

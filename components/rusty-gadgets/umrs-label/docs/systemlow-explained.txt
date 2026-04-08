@@ -1,0 +1,30 @@
+In the world of SELinux MLS (Multi-Level Security), items labeled as s0 or SystemLow are the "public" foundation of your operating system.
+In semi-formal terms, you can describe them as Unclassified Baseline Objects. Here is a simple breakdown of how they function:
+## 1. The "Public" Access Level
+Think of s0 as the ground floor of a high-security building. While the building has secret vaults (s1, s2, etc.), the lobby and hallways are s0.
+
+* Definition: They are objects that do not contain sensitive, partitioned, or classified data.
+* Visibility: Every user and process on the system, regardless of their clearance level, can usually "read" these items.
+
+## 2. General Purpose & Shared Resources
+These objects are the "tools" everyone needs to do their job.
+
+* System Binaries: Commands like ls, cd, or grep are typically s0.
+* Configuration Files: Standard system settings in /etc/ that don't reveal secrets.
+* Shared Libraries: The background code that helps apps run.
+
+## 3. The "Read-Down" Rule
+In MLS, security follows the Bell-LaPadula model, which says you can "Read Down" but not "Read Up."
+
+* Because s0 is the lowest level (SystemLow), a user with a high clearance (like s3) can easily interact with s0 objects.
+* However, an s0 process can never "peek" into an s1 or s2 file.
+
+## A Simple Formal Summary:
+
+"s0 (SystemLow) objects represent the Unclassified Partition of the system. They are non-sensitive, shared resources that provide the operational environment for all security levels while remaining strictly isolated from higher-sensitivity data."
+
+Does that help clarify the "hierarchy" for your project, or are you looking for the specific policy syntax used to define these in an .te file?
+
+
+
+

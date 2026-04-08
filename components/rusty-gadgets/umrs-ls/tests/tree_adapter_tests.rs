@@ -316,3 +316,38 @@ fn compute_stats_counts_files_and_directories() {
     assert_eq!(stats.file_count, 3, "expected 3 regular files");
     assert_eq!(stats.elapsed_us, 100, "elapsed_us should match listing");
 }
+
+// ============================================================================
+// TEST-ID: TREE-ADAPTER-008 — group header nodes carry kind and marking metadata
+// ============================================================================
+
+/// Verify that SELinux group nodes carry the metadata fields required by the
+/// label detail popup.
+///
+/// - `kind = "group_header"` — used by the event loop to identify group
+///   header nodes and route Enter to the label detail popup.
+/// - `marking` — the MCS marking string used to look up the catalog entry.
+///
+/// NIST SP 800-53 AC-16 — marking metadata on group nodes makes the full
+/// label definition accessible via the detail popup without re-scanning.
+#[test]
+fn group_header_nodes_carry_kind_and_marking_metadata() {
+    let entries = vec![make_entry("secret.conf", 512)];
+    let listing = make_listing(vec![("httpd_t", "s0:c1,c5", entries)]);
+    let model = build_tree(&listing, Path::new("/etc/httpd"));
+
+    // roots[0] = parent nav, roots[1] = SELinux group.
+    assert_eq!(model.roots.len(), 2);
+    let group_node = &model.roots[1];
+
+    assert_eq!(
+        group_node.metadata.get("kind").map(String::as_str),
+        Some("group_header"),
+        "group node must carry kind=group_header for popup routing"
+    );
+    assert_eq!(
+        group_node.metadata.get("marking").map(String::as_str),
+        Some("s0:c1,c5"),
+        "group node must carry the exact marking string for catalog lookup"
+    );
+}

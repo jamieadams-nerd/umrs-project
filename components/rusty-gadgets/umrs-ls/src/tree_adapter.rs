@@ -137,6 +137,14 @@ pub fn build_tree(listing: &DirListing, current_path: &Path) -> TreeModel {
         let mut group_node = TreeNode::branch(label, format!("{entry_count} entries"));
         group_node.expanded = true;
 
+        // Store marking metadata on the group node so the event loop can look
+        // up the catalog entry when the operator presses Enter on a group header.
+        //
+        // NIST SP 800-53 AC-16 — marking key is carried on every group node
+        // so the detail popup can retrieve the full label without re-scanning.
+        group_node.metadata.insert("kind".to_owned(), "group_header".to_owned());
+        group_node.metadata.insert("marking".to_owned(), group.key.marking.clone());
+
         // Run the cuddling grouper on this SELinux group's entries.
         let file_groups = group_entries(&group.entries);
         group_node.children.reserve(file_groups.len());

@@ -13,8 +13,8 @@
 // ## Compliance
 //
 // - NIST SP 800-53 AC-4: Information Flow Enforcement — MCS category
-//   assignments are the mechanism that controls information flow between
-//   security labels.
+//   assignments are the labeling mechanism that identifies information flow
+//   boundaries between security labels. Enforcement is policy-dependent.
 // - NIST SP 800-53 AC-16: Security Attributes — setrans translations are
 //   the authoritative display mapping for MCS attributes.
 // - NIST SP 800-53 AU-3: Audit Record Content — label names derived from

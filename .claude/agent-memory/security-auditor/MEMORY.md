@@ -144,6 +144,28 @@ Phase 1 axiom ("s0 only") rules this out. The comment hedges with "in practice" 
 cite the targeted-policy AXIOM as the guarantee. Flag any future change to this method if
 MLS range support is added.
 
+## umrs-label Audit Patterns (2026-04-08)
+
+### CUI Phase 1 language violations hide in JSON data files, not source
+The `description` field of `CUI` umbrella entry in `US-CUI-LABELS.json` used "MAC enforcement" language.
+Grep `config/**/*.json` for `enforcement`, `enforces`, `mandatory access control` in any future CUI catalog audit.
+
+### CuiMarking regex does not cover full-banner LDC suffix
+`^CUI(//[A-Z][-A-Z]*)(/[A-Z][-A-Z]*)*$` rejects `CUI//SP-CTI//NOFORN` (valid full banner with LDC).
+Any `is_valid()` caller passing a complete operator banner string gets a false rejection.
+The doc says "syntax-only" but does not warn about this gap. Track until a `CuiFullBanner` variant is added.
+
+### `handling_group_id: ""` (empty string) vs `null` in US CUI catalog
+139 of ~150 US catalog entries use `""` where `null` is semantically correct for "no group defined".
+Deserializes to `Some("")` instead of `None`. Affects `is_none()` checks by catalog consumers.
+Canadian catalog correctly uses `null`. Pattern: always grep for empty-string optional fields when auditing JSON catalogs.
+
+### `mcs_ranges` (object) vs `mcs_category_range` (string) naming mismatch
+US catalog: `mcs_ranges: { categories: "c0-c249", ... }` (nested object, different key).
+Canadian catalog: `mcs_category_range: "c300-c399"` (flat string, correct key).
+`CatalogMetadata` maps `mcs_category_range`, so US catalog always shows `None` for this field.
+TUI silently drops MCS range row for US catalog metadata panel.
+
 ## Reports Index
 - `2026-03-11-rpm-db-security-audit.md` — RPM findings
 - `2026-03-11-os-detection-umrs-platform-surface-audit.md` — detect pipeline
@@ -159,6 +181,7 @@ MLS range support is added.
 - `code/2026-04-01-umrs-c2pa-security-audit-review.md` — in-depth; 13 files; 3E/9C/14A (4H/12M/9L); main gaps: validate.rs no //! block, creds.rs no Compliance section, 19 #[must_use] gaps (4 types, 7 Result fns, 8 bare annotations)
 - `code/2026-04-02-full-workspace-compliance-audit.md` — in-depth; 85 files; all 10 crates; 2H/11M/8L; main gaps: load_state/save_state missing #[must_use], is_selinux_enabled et al bare #[must_use], catalog.rs NIST 800-53 format error (20+ entries), ~40 bare #[must_use] in umrs-selinux, 10 umrs-core files missing //! blocks
 - `code/2026-04-03-perf-optimization-security-review.md` — in-depth; 6 optimizations, 14 files; 0H/0E/2C; C-1 FIPS gate parse_ok fidelity, C-2 splitn comment hedge; all optimizations confirmed safe
+- `code/2026-04-08-umrs-label-compliance-audit.md` — in-depth; 10 files + 2 JSON catalogs; 2E/6C/0A structural errors; main gaps: MAC enforcement language in CUI description field (E-1 HIGH), CuiMarking regex rejects valid LDC banners (E-2 HIGH), 139 handling_group_id "" vs null (E-3 MEDIUM); 3 missing warning statements (SP-TAX/PCII/SGI); annotation discipline is otherwise excellent, zero bare #[must_use] found
 
 ## TUI Audit Card Patterns
 - IndicatorValue for kernel flags → cite SI-7 + CM-6 (NOT SI-3)

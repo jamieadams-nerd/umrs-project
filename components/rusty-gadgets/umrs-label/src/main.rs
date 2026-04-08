@@ -31,6 +31,7 @@
 //!   hostname, OS, SELinux mode, and FIPS state on every rendered frame.
 //! - **NIST SP 800-53 AC-3**: The browser is unconditionally read-only; no
 //!   catalog mutation is possible through the interface.
+//!
 #![forbid(unsafe_code)]
 #![warn(clippy::pedantic)]
 #![warn(clippy::nursery)]
@@ -45,13 +46,14 @@ use std::collections::BTreeMap;
 use std::io::{self, IsTerminal as _};
 use std::time::Duration;
 
-use crossterm::event::{self, Event, KeyCode, KeyModifiers};
+use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyModifiers};
 
 use umrs_labels::cui::catalog;
 use umrs_labels::tui::app::{DetailContent, LabelRegistryApp, Panel};
 use umrs_labels::tui::render::render_label_registry;
+use umrs_platform::detect::OsDetector;
 use umrs_ui::indicators::build_header_context;
-use umrs_ui::keymap::KeyMap;
+use umrs_ui::keymap::{Action, KeyMap};
 use umrs_ui::theme::Theme;
 use umrs_ui::viewer::ViewerState;
 
@@ -181,11 +183,52 @@ fn run_tui(us_catalog: catalog::Catalog, ca_catalog: Option<catalog::Catalog>) {
     let mut state = ViewerState::new(1); // single virtual "tab" (no tab bar shown)
     state.load_tree(tree);
 
-    let keymap = KeyMap::default();
+    let mut keymap = KeyMap::default();
+
+    // umrs-label uses Tab/BackTab for panel switching (Tree ↔ Detail), not tab
+    // navigation. Override the default NextTab/PrevTab bindings.
+    keymap.bind(KeyEvent::new(KeyCode::Tab, KeyModifiers::NONE), Action::PanelSwitch);
+    keymap.bind(KeyEvent::new(KeyCode::BackTab, KeyModifiers::SHIFT), Action::PanelSwitch);
+
+    // Right/Left expand/collapse in the tree, overriding default NextTab/PrevTab.
+    keymap.bind(KeyEvent::new(KeyCode::Right, KeyModifiers::NONE), Action::Expand);
+    keymap.bind(KeyEvent::new(KeyCode::Left, KeyModifiers::NONE), Action::Collapse);
+
+    // Vim-style expand/collapse bindings (l = right, h = left).
+    keymap.bind(KeyEvent::new(KeyCode::Char('l'), KeyModifiers::NONE), Action::Expand);
+    keymap.bind(KeyEvent::new(KeyCode::Char('h'), KeyModifiers::NONE), Action::Collapse);
+
+    // Space behaves the same as Enter (expand branch or load leaf detail),
+    // not just expand. Override the default Space = Expand binding.
+    keymap.bind(KeyEvent::new(KeyCode::Char(' '), KeyModifiers::NONE), Action::DialogConfirm);
+
+    // Uppercase Q also quits.
+    keymap.bind(KeyEvent::new(KeyCode::Char('Q'), KeyModifiers::NONE), Action::Quit);
+    keymap.bind(KeyEvent::new(KeyCode::Char('Q'), KeyModifiers::SHIFT), Action::Quit);
+
+    // NO_COLOR environment variable compliance (https://no-color.org/).
+    // When set (to any value), color output must be suppressed.
+    // TODO(umrs-ui): Theme::no_color() variant needed; currently falls back to
+    //   default. The check is present so the env var is honoured as soon as the
+    //   theme variant is implemented.
+    let _no_color = std::env::var("NO_COLOR").is_ok();
     let theme = Theme::default();
 
-    // Snapshot the security posture header once at startup.
-    let os_name = read_os_name();
+    // Snapshot the security posture header once at startup.  OS name is read
+    // through the umrs-platform OsDetector pipeline, which routes through
+    // provenance-verified SecureReader paths rather than raw /etc/os-release I/O.
+    let os_name = OsDetector::default()
+        .detect()
+        .ok()
+        .and_then(|r| r.os_release)
+        .map(|rel| {
+            let name = rel.name.as_str();
+            match rel.version_id.as_ref() {
+                Some(v) => format!("{name} {}", v.as_str()),
+                None => name.to_owned(),
+            }
+        })
+        .unwrap_or_else(|| "unavailable".to_owned());
     let ctx = build_header_context(
         env!("CARGO_PKG_NAME"),
         env!("CARGO_PKG_VERSION"),
@@ -227,7 +270,7 @@ fn run_event_loop(
     state: &mut ViewerState,
     ctx: &umrs_ui::app::HeaderContext,
     theme: &Theme,
-    _keymap: &KeyMap,
+    keymap: &KeyMap,
     detail_content: &mut DetailContent,
     detail_scroll: &mut u16,
     active_panel: &mut Panel,
@@ -303,15 +346,15 @@ fn run_event_loop(
             continue;
         }
 
-        // Normal mode input.
-        match key.code {
-            KeyCode::Char('q' | 'Q') | KeyCode::Esc => break,
+        // Normal mode — route through the shared KeyMap.
+        match keymap.lookup(&key) {
+            Some(Action::Quit) => break,
 
-            KeyCode::Char('?') => {
+            Some(Action::ShowHelp) => {
                 *help_active = true;
             }
 
-            KeyCode::Tab | KeyCode::BackTab => {
+            Some(Action::PanelSwitch) => {
                 *active_panel = match *active_panel {
                     Panel::Tree => Panel::Detail,
                     Panel::Detail => Panel::Tree,
@@ -319,7 +362,7 @@ fn run_event_loop(
                 *detail_scroll = 0;
             }
 
-            KeyCode::Up | KeyCode::Char('k') => {
+            Some(Action::ScrollUp) => {
                 if *active_panel == Panel::Detail {
                     *detail_scroll = detail_scroll.saturating_sub(1);
                 } else if state.selected_index > 0 {
@@ -327,7 +370,7 @@ fn run_event_loop(
                 }
             }
 
-            KeyCode::Down | KeyCode::Char('j') => {
+            Some(Action::ScrollDown) => {
                 if *active_panel == Panel::Detail {
                     *detail_scroll = detail_scroll.saturating_add(1);
                 } else {
@@ -338,7 +381,7 @@ fn run_event_loop(
                 }
             }
 
-            KeyCode::PageUp => {
+            Some(Action::PageUp) => {
                 if *active_panel == Panel::Detail {
                     *detail_scroll = detail_scroll.saturating_sub(10);
                 } else {
@@ -346,7 +389,7 @@ fn run_event_loop(
                 }
             }
 
-            KeyCode::PageDown => {
+            Some(Action::PageDown) => {
                 if *active_panel == Panel::Detail {
                     *detail_scroll = detail_scroll.saturating_add(10);
                 } else {
@@ -356,26 +399,36 @@ fn run_event_loop(
                 }
             }
 
-            KeyCode::Right | KeyCode::Char('l') => {
+            // DialogConfirm covers Enter and Space (both bound in keymap setup above).
+            // Expands branches AND loads detail for leaf nodes.
+            Some(Action::DialogConfirm) => {
+                handle_enter(app, state, detail_content, detail_scroll);
+            }
+
+            // Expand covers Right, l — purely expand, no detail loading.
+            Some(Action::Expand) => {
                 expand_selected(state);
             }
 
-            KeyCode::Left | KeyCode::Char('h') => {
+            Some(Action::Collapse) => {
                 collapse_selected(state);
             }
 
-            KeyCode::Char('/') => {
+            Some(Action::Search) => {
                 state.search_active = true;
                 state.search_query.clear();
             }
 
-            KeyCode::Enter | KeyCode::Char(' ') => {
-                handle_enter(app, state, detail_content, detail_scroll);
+            _ => {
+                // Ctrl+C fallback — not representable as a standalone keymap binding
+                // because the modifier pattern overlaps with the Char dispatch.
+                // Handle it here as a safety net.
+                if key.code == KeyCode::Char('c')
+                    && key.modifiers.contains(KeyModifiers::CONTROL)
+                {
+                    break;
+                }
             }
-
-            KeyCode::Char('c') if key.modifiers.contains(KeyModifiers::CONTROL) => break,
-
-            _ => {}
         }
     }
 }
@@ -551,6 +604,11 @@ fn render_help_overlay(
             ratatui::text::Span::styled("Expand node", theme.data_value),
         ]),
         ratatui::text::Line::from(vec![
+            ratatui::text::Span::styled("  PgUp/PgDn    ", theme.header_field),
+            ratatui::text::Span::styled("Scroll active panel", theme.data_value),
+        ]),
+        ratatui::text::Line::from(""),
+        ratatui::text::Line::from(vec![
             ratatui::text::Span::styled("  Enter        ", theme.header_field),
             ratatui::text::Span::styled("Show details / toggle branch", theme.data_value),
         ]),
@@ -566,10 +624,7 @@ fn render_help_overlay(
             ratatui::text::Span::styled("  Esc          ", theme.header_field),
             ratatui::text::Span::styled("Cancel search", theme.data_value),
         ]),
-        ratatui::text::Line::from(vec![
-            ratatui::text::Span::styled("  PgUp/PgDn    ", theme.header_field),
-            ratatui::text::Span::styled("Scroll active panel", theme.data_value),
-        ]),
+        ratatui::text::Line::from(""),
         ratatui::text::Line::from(vec![
             ratatui::text::Span::styled("  ?            ", theme.header_field),
             ratatui::text::Span::styled("Toggle this help", theme.data_value),
@@ -606,24 +661,3 @@ fn arg_value(args: &[String], flag: &str) -> Option<String> {
     None
 }
 
-/// Read the OS name from `/etc/os-release`.
-fn read_os_name() -> String {
-    let Ok(content) = std::fs::read_to_string("/etc/os-release") else {
-        return "unavailable".to_owned();
-    };
-    let mut name = None;
-    let mut version_id = None;
-    for line in content.lines() {
-        if let Some(val) = line.strip_prefix("NAME=") {
-            name = Some(val.trim_matches('"').to_owned());
-        }
-        if let Some(val) = line.strip_prefix("VERSION_ID=") {
-            version_id = Some(val.trim_matches('"').to_owned());
-        }
-    }
-    match (name, version_id) {
-        (Some(n), Some(v)) => format!("{n} {v}"),
-        (Some(n), None) => n,
-        _ => "unavailable".to_owned(),
-    }
-}

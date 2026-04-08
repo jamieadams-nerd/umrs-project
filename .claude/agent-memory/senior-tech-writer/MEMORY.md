@@ -141,3 +141,25 @@ All 12 Tier 1 resources downloaded, NONE yet ingested into RAG.
 Priority: IEKO → Blackwell/Green → Stanford CS147 → Miller/Bazerman → NISO Z39.19.
 Missing: Rosenfeld/Morville/Arango IA book (purchase needed).
 Full status: [hci-ia-ko-corpus-status.md](hci-ia-ko-corpus-status.md)
+
+---
+
+## TUI Tools — Integration Review (2026-04-08)
+
+Report: `.claude/reports/admin/2026-04-08-tui-hci-review-elena.md`
+Tools reviewed: umrs-label, umrs-ls, umrs-stat, umrs-ui (shared library)
+
+**Key structural facts**:
+- `render_kv_rows` (umrs-label) and `render_label_value_rows` (umrs-ls) are identical — should be moved to umrs-ui
+- `render_wizard_logo` is duplicated in umrs-label and umrs-ls; `pub render_logo` already exists in umrs-ui
+- Group header colors in umrs-ls are hard-coded `Color::Rgb(70,80,90)` / `(55,65,75)` — bypass the theme
+- `umrs-label` event loop uses `_keymap` (unused) and reimplements raw key dispatch — does not call `keymap.lookup()`
+- `NO_COLOR` is detected in umrs-stat and umrs-label but not acted on — `Theme::no_color()` not yet implemented
+- `umrs-ls` uses `highlight_symbol("► ")` on the list; `umrs-label` uses color-only selection — inconsistent
+- `umrs-stat --json` is silently ignored; tool falls through to TUI (E-1, must fix before shipping)
+
+**Integration readiness**:
+- `MarkingDetailData` + `render_marking_detail` are ready for popup embedding in umrs-ls
+- umrs-label popup: use ratatui `Clear` + floating overlay rect (not a fixed split)
+- umrs-stat: implement as full-screen SubView swap, not embedded panel (columns too narrow otherwise)
+- Navigation contract (Esc behavior in sub-view, Tab ownership) must be written before coding starts

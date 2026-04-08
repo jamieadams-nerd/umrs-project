@@ -72,9 +72,10 @@ use umrs_core::human::sizefmt::{SizeBase, auto_format as fmt_size};
 use umrs_core::i18n;
 use umrs_ls::grouping::{FileGroup, SiblingKind, aggregate_size, group_entries, sibling_summary};
 use umrs_ls::viewer_app::DirViewerApp;
+use umrs_platform::detect::OsDetector;
 use umrs_selinux::ObservationKind;
 use umrs_selinux::mcs::colors::{
-    ContextComponents, Rgb, SeColorConfig, load_secolors_cached, resolve_colors,
+    ContextComponents, Rgb, SeColorConfig, load_default as load_secolor_default, resolve_colors,
 };
 use umrs_selinux::secure_dirent::{FileType, InodeSecurityFlags};
 use umrs_selinux::utils::dirlist::{
@@ -87,6 +88,8 @@ use umrs_ui::viewer::{ViewerApp as _, ViewerState};
 use umrs_ls::tui_render::{
     GotoBar, HelpOverlay, render_dir_browser, render_help_overlay, render_permission_denied,
 };
+use umrs_labels::cui::catalog::{Catalog, Marking, load_catalog, policy_aware_description};
+use umrs_ui::marking_detail::{MarkingDetailData, build_detail_lines};
 
 // ============================================================================
 // JSON output types
@@ -166,7 +169,9 @@ struct DisplayConfig {
 impl DisplayConfig {
     fn build(use_color: bool) -> Self {
         let secolor = if use_color {
-            load_secolors_cached(Path::new("/etc/selinux/targeted/secolor.conf")).ok()
+            // load_secolor_default queries the active policy name from the kernel
+            // and constructs the correct path — no hardcoded policy name.
+            load_secolor_default().ok()
         } else {
             None
         };
@@ -178,6 +183,168 @@ impl DisplayConfig {
             encrypted_symbol: "\u{1F512}", // Lock icon
             secolor,
         }
+    }
+}
+
+// ============================================================================
+// CUI catalog loading — label detail popup
+// ============================================================================
+
+/// Search several candidate paths for a catalog JSON file, returning the first
+/// one that loads successfully.
+///
+/// The caller provides an ordered list of paths to try. The first success wins;
+/// all errors are silently discarded. When no candidate succeeds, `None` is
+/// returned and the label popup degrades gracefully (showing nothing).
+///
+/// Paths are tried relative to the process current working directory. In
+/// development this is the workspace root (`components/rusty-gadgets/`), so
+/// the `../umrs-label/config/…` path covers the normal `cargo run` case.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AC-16**: Security Attributes — catalogs are the
+///   authoritative source of CUI label definitions shown in the detail popup.
+fn try_load_catalog(candidates: &[&str]) -> Option<Catalog> {
+    candidates.iter().find_map(|p| load_catalog(p).ok())
+}
+
+/// Load the US and Canadian CUI catalogs for the label detail popup.
+///
+/// Returns `(us_catalog, ca_catalog)` where each is `Option<Catalog>`.
+/// Missing or unreadable files yield `None` — the popup degrades gracefully.
+///
+/// Path resolution tries two locations in order: a path relative to the
+/// current working directory (production install convention), and a path
+/// relative to the `umrs-label` crate directory (development via `cargo run`).
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AC-16**: Security Attributes — catalog data drives the
+///   label detail popup; loading errors surface as absent popup content, not
+///   panics.
+fn load_catalogs() -> (Option<Catalog>, Option<Catalog>) {
+    let us = try_load_catalog(&[
+        "config/us/US-CUI-LABELS.json",
+        "../umrs-label/config/us/US-CUI-LABELS.json",
+    ]);
+    let ca = try_load_catalog(&[
+        "config/ca/CANADIAN-PROTECTED.json",
+        "../umrs-label/config/ca/CANADIAN-PROTECTED.json",
+    ]);
+    (us, ca)
+}
+
+/// Look up a marking string in the loaded catalogs and build a detail popup.
+///
+/// Tries the US catalog first, then the Canadian catalog. Returns `None` when
+/// neither catalog contains an entry for `marking`.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AC-16**: Security Attributes — the popup shows the
+///   full regulatory label definition for the marking applied to selected nodes.
+fn lookup_marking_detail(
+    marking: &str,
+    us_catalog: Option<&Catalog>,
+    ca_catalog: Option<&Catalog>,
+) -> Option<MarkingDetailData> {
+    if let Some(cat) = us_catalog
+        && let Some(m) = cat.marking(marking)
+    {
+        let flag = cat.country_flag().unwrap_or_default();
+        return Some(build_marking_detail(marking, m, &flag));
+    }
+    if let Some(cat) = ca_catalog
+        && let Some(m) = cat.marking(marking)
+    {
+        let flag = cat.country_flag().unwrap_or_default();
+        return Some(build_marking_detail(marking, m, &flag));
+    }
+    None
+}
+
+/// Transform a catalog [`Marking`] into a [`MarkingDetailData`] for the popup.
+///
+/// Mirrors the field mapping used in `umrs-label`'s `marking_to_detail`
+/// function so both tools show consistent label information.
+fn build_marking_detail(key: &str, m: &Marking, flag: &str) -> MarkingDetailData {
+    use umrs_labels::cui::catalog::LocaleText;
+    use serde_json::{Map, Value};
+
+    let handling = match m.handling_as_str() {
+        Some(s) if !s.trim().is_empty() => s.to_owned(),
+        _ => m
+            .handling_as_object()
+            .and_then(|obj: &Map<String, Value>| {
+                obj.get("en_US")
+                    .or_else(|| obj.get("en"))
+                    .and_then(|v: &Value| v.as_str())
+                    .map(str::to_owned)
+            })
+            .unwrap_or_default(),
+    };
+
+    let mut additional: Vec<(String, String)> = Vec::new();
+    if let Some(cat_base) = &m.category_base {
+        additional.push(("MCS Category Base".to_owned(), cat_base.clone()));
+    }
+    if let Some(range) = &m.category_range_reserved {
+        additional.push(("MCS Range (Reserved)".to_owned(), range.clone()));
+    }
+    if let Some(ph) = &m.phase_note {
+        additional.push(("Phase Note".to_owned(), ph.clone()));
+    }
+    if let Some(auth) = &m.authority_section {
+        additional.push(("Authority Section".to_owned(), auth.clone()));
+    }
+    if let Some(corr) = &m.us_cui_approximate_correspondence {
+        additional.push(("US CUI Approximation".to_owned(), corr.clone()));
+    }
+    if let Some(domains) = m.risk_domains.as_ref().filter(|d: &&Vec<String>| !d.is_empty()) {
+        additional.push(("Risk Domains".to_owned(), domains.join(", ")));
+    }
+
+    MarkingDetailData {
+        key: key.to_owned(),
+        name_en: m.name.en().to_owned(),
+        name_fr: m.name.fr().to_owned(),
+        abbreviation: m.abbrv_name.clone(),
+        designation: m.designation.as_deref().unwrap_or("").to_owned(),
+        index_group: m.index_group.as_deref().unwrap_or("").to_owned(),
+        level: String::new(), // Suppressed in popup context — level display is pending design review
+
+        description_en: policy_aware_description(m.description.en()),
+        description_fr: policy_aware_description(m.description.fr()),
+        handling,
+        required_warning: m.required_warning_statement.as_deref().unwrap_or("").to_owned(),
+        required_dissemination: m
+            .required_dissemination_control
+            .as_deref()
+            .unwrap_or("")
+            .to_owned(),
+        marking_banner_en: m
+            .marking_banner
+            .as_ref()
+            .map(|lt: &LocaleText| lt.en().to_owned())
+            .unwrap_or_default(),
+        marking_banner_fr: m
+            .marking_banner
+            .as_ref()
+            .map(|lt: &LocaleText| lt.fr().to_owned())
+            .unwrap_or_default(),
+        injury_examples_en: m
+            .injury_examples
+            .as_ref()
+            .map(|lt: &LocaleText| lt.en().to_owned())
+            .unwrap_or_default(),
+        injury_examples_fr: m
+            .injury_examples
+            .as_ref()
+            .map(|lt: &LocaleText| lt.fr().to_owned())
+            .unwrap_or_default(),
+        additional,
+        country_flag: flag.to_owned(),
     }
 }
 
@@ -255,7 +422,7 @@ fn run_cli(args: &[String], target: &str, flat_mode: bool) -> io::Result<()> {
         cols = cols.with(Column::Inode);
     }
 
-    let use_color = args.contains(&"--color".to_owned());
+    let use_color = args.contains(&"--color".to_owned()) && std::env::var("NO_COLOR").is_err();
     let cfg = DisplayConfig::build(use_color);
 
     let listing = list_directory(Path::new(target))?;
@@ -405,10 +572,26 @@ fn run_tui(target: &str, _flat_mode: bool) -> io::Result<()> {
 
     let theme = Theme::default();
 
-    // Build the header context once at startup.  OS name is read from
-    // /etc/os-release.  build_header_context reads all kernel security
-    // indicators via provenance-verified SecureReader paths.
-    let os_name = umrs_ls::viewer_app::read_os_name();
+    // Load CUI catalogs for label detail popups.  Paths are tried in order;
+    // the first successful load wins.  Missing catalogs yield `None` — the
+    // popup degrades gracefully to "no data" rather than failing.
+    let (us_catalog, ca_catalog) = load_catalogs();
+
+    // Build the header context once at startup.  OS name is read through
+    // the umrs-platform OsDetector pipeline, which routes through
+    // provenance-verified SecureReader paths rather than raw /etc/os-release I/O.
+    let os_name = OsDetector::default()
+        .detect()
+        .ok()
+        .and_then(|r| r.os_release)
+        .map(|rel| {
+            let name = rel.name.as_str();
+            match rel.version_id.as_ref() {
+                Some(v) => format!("{name} {}", v.as_str()),
+                None => name.to_owned(),
+            }
+        })
+        .unwrap_or_else(|| "unavailable".to_owned());
     let ctx = build_header_context(
         env!("CARGO_PKG_NAME"),
         env!("CARGO_PKG_VERSION"),
@@ -433,10 +616,19 @@ fn run_tui(target: &str, _flat_mode: bool) -> io::Result<()> {
     // (to switch tabs) and `?` / Esc (to dismiss).
     let mut help = HelpOverlay::default();
 
+    // Label detail popup state.  `Some((data, scroll))` means the popup is
+    // open and displaying the given marking detail.  `None` means closed.
+    // When open, all input is consumed by the popup handler before reaching
+    // the directory browser event loop.
+    //
+    // NIST SP 800-53 AC-16 — the detail popup makes the full regulatory label
+    // definition accessible to the operator without leaving the directory view.
+    let mut label_popup: Option<(MarkingDetailData, u16)> = None;
+
     // Event loop — 100 ms poll timeout keeps the TUI snappy without busy-waiting.
     loop {
         if let Err(e) = terminal.draw(|f| {
-            render_dir_browser(f, f.area(), &app, &state, &ctx, &theme, &goto);
+            render_dir_browser(f, f.area(), &app, &state, &ctx, &theme, &goto, us_catalog.as_ref(), ca_catalog.as_ref());
             // Permission denied overlay — rendered on top when present.
             if let Some((ref path, ref msg)) = nav_error {
                 render_permission_denied(f, f.area(), path, msg, &theme);
@@ -444,6 +636,10 @@ fn run_tui(target: &str, _flat_mode: bool) -> io::Result<()> {
             // Help overlay — rendered on top of everything else.
             if help.active {
                 render_help_overlay(f, f.area(), &help, &theme);
+            }
+            // Label detail popup — rendered on top of all other overlays.
+            if let Some((ref data, scroll)) = label_popup {
+                render_label_popup(f, f.area(), data, scroll, &theme);
             }
         }) {
             log::error!("terminal draw error: {e}");
@@ -453,6 +649,30 @@ fn run_tui(target: &str, _flat_mode: bool) -> io::Result<()> {
         match event::poll(Duration::from_millis(100)) {
             Ok(true) => match event::read() {
                 Ok(Event::Key(key)) => {
+                    // Label detail popup owns all input while open.
+                    // Esc / q dismiss; j / k / Up / Down / PageUp / PageDown scroll.
+                    if let Some((_, ref mut scroll)) = label_popup {
+                        match key.code {
+                            KeyCode::Esc | KeyCode::Char('q') => {
+                                label_popup = None;
+                            }
+                            KeyCode::Down | KeyCode::Char('j') => {
+                                *scroll = scroll.saturating_add(1);
+                            }
+                            KeyCode::Up | KeyCode::Char('k') => {
+                                *scroll = scroll.saturating_sub(1);
+                            }
+                            KeyCode::PageDown => {
+                                *scroll = scroll.saturating_add(10);
+                            }
+                            KeyCode::PageUp => {
+                                *scroll = scroll.saturating_sub(10);
+                            }
+                            _ => {}
+                        }
+                        continue;
+                    }
+
                     // When the permission overlay is open, only Enter/Esc dismiss it.
                     // All other input is consumed and ignored.
                     if nav_error.is_some() {
@@ -559,7 +779,14 @@ fn run_tui(target: &str, _flat_mode: bool) -> io::Result<()> {
                             Action::DialogConfirm => {
                                 // Enter: navigate into a directory, or toggle
                                 // expand/collapse on non-directory nodes.
-                                handle_enter(&mut app, &mut state, &mut nav_error);
+                                handle_enter(
+                                    &mut app,
+                                    &mut state,
+                                    &mut nav_error,
+                                    us_catalog.as_ref(),
+                                    ca_catalog.as_ref(),
+                                    &mut label_popup,
+                                );
                             }
                             _ => {
                                 let _ = state.handle_action(action);
@@ -595,14 +822,32 @@ fn run_tui(target: &str, _flat_mode: bool) -> io::Result<()> {
 
 /// Handle an Enter keypress in the TUI viewer.
 ///
-/// If the selected node is a directory, navigate into it (re-scan and load the
-/// new tree).  If it is a file or group header, toggle expand/collapse instead.
+/// Priority of actions:
+///
+/// 1. **Group header with a known marking** — open the label detail popup
+///    using the marking stored in `metadata["marking"]`.  Falls through to
+///    expand/collapse when no catalog data is available for the marking.
+/// 2. **File node with a non-sentinel marking** — open the label detail popup
+///    for the file's applied marking.  Falls through to expand/collapse when
+///    no catalog data is available.
+/// 3. **Directory node** — navigate into the directory (re-scan).
+/// 4. **Everything else** — toggle expand/collapse on the selected tree node.
+///
 /// On navigation error the display stays on the current listing — no crash, no
 /// silent state corruption.
 ///
 /// NIST SP 800-53 AC-3 — navigation is strictly read-only; this function never
 /// creates, modifies, or deletes directory entries.
-fn handle_enter(app: &mut DirViewerApp, state: &mut ViewerState, nav_error: &mut Option<(String, String)>) {
+/// NIST SP 800-53 AC-16 — pressing Enter on a labeled node opens the full
+/// regulatory definition for the applied marking.
+fn handle_enter(
+    app: &mut DirViewerApp,
+    state: &mut ViewerState,
+    nav_error: &mut Option<(String, String)>,
+    us_catalog: Option<&Catalog>,
+    ca_catalog: Option<&Catalog>,
+    label_popup: &mut Option<(MarkingDetailData, u16)>,
+) {
     let Some(entry) = state.tree.display_list.get(state.selected_index) else {
         return;
     };
@@ -611,9 +856,83 @@ fn handle_enter(app: &mut DirViewerApp, state: &mut ViewerState, nav_error: &mut
         return;
     };
 
+    // ── Group header with a known marking → open label detail popup ──────────
+    if node.metadata.get("kind").map(String::as_str) == Some("group_header")
+        && let Some(marking_str) = node.metadata.get("marking")
+        && let Some(data) = lookup_marking_detail(marking_str, us_catalog, ca_catalog)
+    {
+        *label_popup = Some((data, 0));
+        return;
+    }
+
+    // ── Group header with a system-level marking (not in CUI catalog) ─────────
+    // setrans.conf defines well-known system sensitivity labels (SystemLow,
+    // SystemHigh, SystemLow-SystemHigh) that are not CUI categories and will
+    // never appear in the catalog.  Show an informational popup so the operator
+    // gets useful context rather than silent no-op behavior.
+    if node.metadata.get("kind").map(String::as_str) == Some("group_header")
+        && let Some(marking_str) = node.metadata.get("marking")
+    {
+        let system_info: Option<(&str, &str)> = match marking_str.as_str() {
+            "SystemLow" => Some((
+                "SystemLow (s0)",
+                "Default operating system sensitivity level. Every file and process \
+                 starts here under targeted SELinux policy. Files at SystemLow carry \
+                 no MCS category assignment — they are routine unclassified content \
+                 (binaries, libraries, configuration). \nA file with no category (bare s0) \
+                 displays as SystemLow in setrans.conf translations. New files inherit \
+                 the MCS range from their parent directory. \nIn MLS policy, s0 is the \
+                 lowest sensitivity tier; s1-s3 provide Bell-LaPadula dominance above it.",
+            )),
+            "SystemLow-SystemHigh" => Some((
+                "SystemLow-SystemHigh (s0-s0:c0.c1023)",
+                "Full MLS range spanning all sensitivity levels and all 1024 MCS \
+                 categories. Processes with this range can access objects at any \
+                 sensitivity level and any category combination. Typically assigned \
+                 to trusted system daemons that must operate across all security \
+                 boundaries (e.g., SELinux-aware services, audit infrastructure).",
+            )),
+            "SystemHigh" => Some((
+                "SystemHigh (s0:c0.c1023)",
+                "Maximum MCS category set — all 1024 categories included at the s0 \
+                 sensitivity level. Under targeted policy this is the theoretical \
+                 ceiling. Files or processes at SystemHigh have access to every \
+                 MCS category. In practice, only system services that must read \
+                 across all CUI categories operate at this level.",
+            )),
+            _ => None,
+        };
+        if let Some((name, description)) = system_info {
+            let data = MarkingDetailData {
+                key: marking_str.clone(),
+                name_en: name.to_owned(),
+                description_en: description.to_owned(),
+                designation: "system".to_owned(),
+                ..MarkingDetailData::default()
+            };
+            *label_popup = Some((data, 0));
+            return;
+        }
+    }
+    // No catalog data and no system-level match — fall through to expand/collapse.
+
+    // ── File node with a non-sentinel marking → open label detail popup ──────
+    // Sentinels emitted by extract_selinux_strings for non-labeled states are
+    // prefixed with `<` and are never valid catalog keys; skip them.
+    if node.metadata.get("kind").map(String::as_str) != Some("group_header")
+        && let Some(marking_str) = node.metadata.get("marking")
+        && !marking_str.starts_with('<')
+        && !marking_str.is_empty()
+        && let Some(data) = lookup_marking_detail(marking_str, us_catalog, ca_catalog)
+    {
+        *label_popup = Some((data, 0));
+        return;
+    }
+
+    // ── Directory navigation ──────────────────────────────────────────────────
     // Only navigate when the node represents a directory.
     if node.metadata.get("is_dir").map(String::as_str) != Some("true") {
-        // File or group header: delegate to the tree's expand/collapse toggle.
+        // File or group header with no catalog data: delegate to expand/collapse.
         let _ = state.handle_action(Action::Expand);
         return;
     }
@@ -744,9 +1063,18 @@ fn resolve_goto_path(query: &str, cwd: &Path) -> PathBuf {
 /// - **N matches** → completes the stem to the longest common prefix of
 ///   all matches (no change if the stem is already that prefix).
 ///
-/// The completion uses plain `std::fs::read_dir` rather than the UMRS
-/// listing pipeline — Tab completion is interactive, not an audit surface,
-/// and the listing pipeline is too heavy for keystroke latency.
+/// # Direct I/O Exception
+///
+/// `std::fs::read_dir` is used here rather than the UMRS listing pipeline.
+/// This is a justified exception because:
+///
+/// - The System State Read Prohibition covers system paths (`/etc/`, `/proc/`,
+///   `/sys/`, `/run/`). Tab completion operates on **user-directed arbitrary
+///   paths** — not system state — making the prohibition inapplicable.
+/// - The operation is UX-only (no security decision, no audit surface).
+///
+/// DIRECT-IO-EXCEPTION: user-directed arbitrary path traversal for keystroke
+/// completion. Reviewed 2026-04-08.
 fn complete_goto_query(goto: &mut GotoBar) {
     // Work on an owned copy so we can borrow `goto` mutably at the end.
     let query = goto.query.clone();
@@ -888,6 +1216,123 @@ fn handle_refresh(app: &mut DirViewerApp, state: &mut ViewerState) {
             log::warn!("refresh failed (path: {}): {e}", path.display());
         }
     }
+}
+
+// ============================================================================
+// Label detail popup
+// ============================================================================
+
+/// Render the security label detail popup over the directory listing.
+///
+/// Uses double-line borders to visually distinguish this popup from the
+/// rounded-corner panels used elsewhere in the directory browser.  The title
+/// "SECURITY LABEL" is centred on the top border.
+///
+/// The popup is sized at 70 % of the terminal width and height, clamped to
+/// practical minimum dimensions (40 × 12) and a maximum width of 80 columns.
+/// Content is scrolled by `scroll_offset` rows.
+///
+/// Content is built via [`umrs_ui::marking_detail::build_detail_lines`] and
+/// rendered directly inside the popup's own Double border — no nested block.
+/// Field layout and styling match the `umrs-label` registry browser so
+/// operators see consistent label information across both tools.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AC-16**: Security Attributes — the full regulatory label
+///   definition is accessible to the operator without leaving the directory view.
+/// - **NIST SP 800-53 AU-3**: Audit Record Content — every rendered panel is
+///   self-identifying via the marking key header.
+fn render_label_popup(
+    frame: &mut ratatui::Frame,
+    area: ratatui::layout::Rect,
+    data: &MarkingDetailData,
+    scroll_offset: u16,
+    theme: &Theme,
+) {
+    use ratatui::layout::{Alignment, Rect};
+    use ratatui::style::{Color, Modifier, Style};
+    use ratatui::text::{Line, Span};
+    use ratatui::widgets::{Block, BorderType, Borders};
+
+    // Centre the popup — 70 % of terminal dimensions, clamped to useful bounds.
+    //
+    // f32::from(u16) is lossless; the f32 → u16 cast truncates toward zero,
+    // which is the intended rounding for pixel-layout purposes.  The result
+    // is always in [0, 65535] because area dimensions fit in u16.
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "popup width: f32 result of 0.70 * u16 is bounded and truncation is intentional"
+    )]
+    #[expect(
+        clippy::cast_sign_loss,
+        reason = "f32 value is always non-negative (0.70 * u16 >= 0.0)"
+    )]
+    let popup_width = (f32::from(area.width) * 0.70_f32) as u16;
+    let popup_width = popup_width.clamp(40, 80);
+
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "popup height: f32 result of 0.70 * u16 is bounded and truncation is intentional"
+    )]
+    #[expect(
+        clippy::cast_sign_loss,
+        reason = "f32 value is always non-negative (0.70 * u16 >= 0.0)"
+    )]
+    let popup_height = (f32::from(area.height) * 0.70_f32) as u16;
+    let popup_height = popup_height.clamp(12, 30);
+    let x = area.x.saturating_add(area.width.saturating_sub(popup_width) / 2);
+    let y = area.y.saturating_add(area.height.saturating_sub(popup_height) / 2);
+    let popup_area = Rect::new(x, y, popup_width, popup_height);
+
+    // Clear the screen area behind the popup to prevent the directory listing
+    // from bleeding through the transparent background.
+    frame.render_widget(ratatui::widgets::Clear, popup_area);
+
+    // Double-line border with reverse-video centred title — black text on
+    // cyan background makes the popup immediately identifiable at a glance
+    // and visually distinct from the rounded panels used elsewhere.
+    let title = Line::from(Span::styled(
+        " SECURITY LABEL DETAILS ",
+        Style::default()
+            .fg(Color::White)
+            .add_modifier(Modifier::BOLD),
+    ));
+    let block = Block::default()
+        .title(title)
+        .title_alignment(Alignment::Center)
+        .borders(Borders::ALL)
+        .border_type(BorderType::Double)
+        .border_style(
+            Style::default()
+                .fg(Color::Cyan)
+                .add_modifier(Modifier::BOLD),
+        );
+
+    let inner = block.inner(popup_area);
+    frame.render_widget(block, popup_area);
+
+    // Build content lines directly — `build_detail_lines` is used instead of
+    // `render_marking_detail` so the popup's own Double border is the only
+    // border rendered.  Calling `render_marking_detail` would add a nested
+    // Rounded "Details" block inside the popup border, producing an ugly
+    // double-nested border.
+    //
+    // Multi-line fields are manually word-wrapped to the inner column budget so
+    // continuation lines remain indented with the originating label.
+    let mut lines = build_detail_lines(data, theme, inner.width as usize);
+
+    // Escape hint at the bottom — dim, non-intrusive.  Gives operators an
+    // explicit affordance without requiring them to know the key binding.
+    lines.push(Line::from(""));
+    lines.push(Line::from(Span::styled(
+        "  [ESC] close",
+        Style::default().fg(Color::DarkGray),
+    )));
+
+    let paragraph = ratatui::widgets::Paragraph::new(lines)
+        .scroll((scroll_offset, 0));
+    frame.render_widget(paragraph, inner);
 }
 
 // ============================================================================

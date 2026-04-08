@@ -4,6 +4,8 @@
 // Integration tests for umrs-labels::validate.
 //
 // Exercises CuiPattern::CuiMarking valid/invalid cases.
+// Covers the full NARA banner syntax: plain CUI, categories with SP- prefix,
+// multi-category banners, and LDC suffixes (NOFORN, FED ONLY, REL TO lists).
 
 use umrs_labels::validate::{CuiPattern, is_valid};
 
@@ -13,14 +15,8 @@ use umrs_labels::validate::{CuiPattern, is_valid};
 
 #[test]
 fn valid_cui_base() {
-    // "CUI" alone is not a valid marking by the pattern (requires at least one
-    // //SEGMENT). Test what the pattern actually requires.
-    // Pattern: ^CUI(//[A-Z][-A-Z]*)(/[A-Z][-A-Z]*)*$
-    // "CUI" alone does not match — it requires at least one //SEGMENT.
-    assert!(
-        !is_valid(CuiPattern::CuiMarking, "CUI"),
-        "bare CUI without category should not match"
-    );
+    // Plain "CUI" with no category is a valid marking under NARA rules.
+    assert!(is_valid(CuiPattern::CuiMarking, "CUI"), "bare CUI should be valid");
 }
 
 #[test]
@@ -91,6 +87,50 @@ fn invalid_completely_random_string() {
 #[test]
 fn invalid_double_slash_only() {
     assert!(!is_valid(CuiPattern::CuiMarking, "CUI//"));
+}
+
+// ---------------------------------------------------------------------------
+// LDC banner inputs (second // block)
+// ---------------------------------------------------------------------------
+
+#[test]
+fn valid_cui_with_ldc_noforn() {
+    assert!(is_valid(CuiPattern::CuiMarking, "CUI//SP-CTI/EXPT//NOFORN"));
+}
+
+/// CUI can stand alone as a generic designation. When combined directly
+/// with an LDC (no category), the marking is `CUI//LDC` — e.g.,
+/// `CUI//NOFORN`. This is valid per 32 CFR Part 2002.
+#[test]
+fn valid_cui_bare_with_ldc() {
+    assert!(is_valid(CuiPattern::CuiMarking, "CUI//NOFORN"));
+    assert!(is_valid(CuiPattern::CuiMarking, "CUI//FED ONLY"));
+    assert!(is_valid(CuiPattern::CuiMarking, "CUI//FEDCON"));
+}
+
+#[test]
+fn valid_cui_with_ldc_fed_only() {
+    assert!(is_valid(CuiPattern::CuiMarking, "CUI//LEI//FED ONLY"));
+}
+
+#[test]
+fn valid_cui_with_ldc_rel_to_list() {
+    assert!(is_valid(CuiPattern::CuiMarking, "CUI//SP-CTI//REL TO USA, CAN, GBR"));
+}
+
+#[test]
+fn valid_cui_single_cat_with_ldc() {
+    assert!(is_valid(CuiPattern::CuiMarking, "CUI//CTI//NOFORN"));
+}
+
+#[test]
+fn valid_cui_sp_prefix_with_ldc() {
+    assert!(is_valid(CuiPattern::CuiMarking, "CUI//SP-CTI//NOFORN"));
+}
+
+#[test]
+fn valid_cui_mixed_sp_and_basic_with_ldc() {
+    assert!(is_valid(CuiPattern::CuiMarking, "CUI//SP-CTI/EXPT//NOFORN"));
 }
 
 // ---------------------------------------------------------------------------

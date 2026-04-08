@@ -1,0 +1,21 @@
+
+│  IOV  MODE        OWNER:GROUP      MODIFIED             NAME                                                           │
+├────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│  ⇪  parent directory  (/)                                                                                              │
+│                                                                                                                        │
+│▼  user_home_t          🭬        CUI          🭬                                                                         │
+│  ··· drwxr-xr-x   jadams:jadams    2026-03-31 00:08  📁 basic_tests/                                                   │
+│  ··· drwxr-xr-x   jadams:jadams    2026-03-31 00:02  📁 cui_test/                                                      │
+│  ··· -rw-r--r--   jadams:jadams    2026-03-31 0
+
+
+AFTER
+
+│   IOV MODE         OWNER:GROUP      MODIFIED             NAME      
+├─────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ ⇪ parent directory  (/)                                            
+│                                                                   
+│ ▼ user_home_t          🭬        CUI          🭬                      
+│   ··· drwxr-xr-x   jadams:jadams    2026-03-31 00:08  📁 basic_tests/ 
+│   ··· drwxr-xr-x   jadams:jadams    2026-03-31 00:02  📁 cui_test/   
+│   ··· -rw-r--r--   jadams:jadams    2026-03-31 0

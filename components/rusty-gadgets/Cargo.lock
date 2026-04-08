@@ -4089,6 +4089,7 @@ dependencies = [
  "serde",
  "serde_json",
  "umrs-core",
+ "umrs-platform",
  "umrs-selinux",
  "umrs-ui",
 ]
@@ -4107,6 +4108,8 @@ dependencies = [
  "serde",
  "serde_json",
  "umrs-core",
+ "umrs-label",
+ "umrs-platform",
  "umrs-selinux",
  "umrs-ui",
 ]

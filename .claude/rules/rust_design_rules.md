@@ -46,6 +46,41 @@ to `#[expect]` opportunistically when touching the code.
 - Never traverse `target/` for metadata.
 - Before asking Jamie about crate structure, run `cargo metadata` first.
 
+## System State Read Prohibition Rule
+
+[CONSTRAINT] Binary crates MUST NOT use `std::fs::read_to_string`, `std::fs::File::open`,
+`std::fs::read_dir`, or any other direct `std::fs` I/O on system paths (`/etc/`, `/proc/`,
+`/sys/`, `/run/`). All system state reads MUST route through the provenance-verified
+abstractions in `umrs-platform` or `umrs-selinux`.
+
+Specifically:
+
+- `/etc/os-release` → `umrs_platform::detect::OsDetector::detect()`
+- `/proc/` paths → `ProcfsText` + `SecureReader`
+- `/sys/fs/selinux/` paths → `SelinuxEnforce`, `SelinuxMls`, or other typed `StaticSource` impls
+- `/sys/` paths → `SysfsText` + `SecureReader`
+- `/etc/selinux/` paths → `umrs_selinux::selinux_policy()` (kernel-gated)
+- SELinux xattrs → `SecureXattrReader`
+- Directory listings for security display → `umrs_selinux::utils::dirlist::list_directory()`
+
+**Why this exists:** Direct `std::fs` reads bypass provenance verification (filesystem magic
+checks), TOCTOU protection (fd-anchored reads), input validation (typed newtypes), and
+evidence recording. These are not optional hardening — they are the trust boundary.
+
+**Exception process:** A direct `std::fs` read is permitted ONLY when ALL of the following
+are true:
+
+1. No umrs-platform or umrs-selinux abstraction exists for the data.
+2. The read result is display-only and NEVER influences a security decision.
+3. The exemption is documented with a `// DIRECT-IO-EXCEPTION:` comment explaining why.
+4. The exemption is reviewed and approved before merge.
+
+Example of a valid exception: reading ELF magic bytes for MIME display (umrs-stat).
+Example of an INVALID exception: reading `/etc/os-release` for a TUI header — an abstraction
+exists and must be used regardless of how the data is displayed.
+
+Controls: NSA RTB RAIN (Non-Bypassability), NIST SP 800-53 SI-7 (Integrity).
+
 ## Tool Security Posture Rule
 
 - Design tool functionality from a security posture perspective.

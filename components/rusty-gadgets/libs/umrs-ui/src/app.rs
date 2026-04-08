@@ -1082,7 +1082,7 @@ impl AuditCardState {
             | Action::DialogToggleFocus
             | Action::ShowHelp
             // ViewerApp and ConfigApp actions — not relevant to AuditCardState.
-            // ViewerApp: Expand, Collapse, Search, Back.
+            // ViewerApp: Expand, Collapse, Search, Back, PanelSwitch.
             // ConfigApp: Save, Discard, ToggleEdit.
             // These variants exist in Action for the shared keymap; AuditCardState
             // ignores them rather than forwarding to unused code paths.
@@ -1090,6 +1090,7 @@ impl AuditCardState {
             | Action::Collapse
             | Action::Search
             | Action::Back
+            | Action::PanelSwitch
             | Action::Save
             | Action::Discard
             | Action::ToggleEdit => {

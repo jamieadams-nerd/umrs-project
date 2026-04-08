@@ -20,7 +20,7 @@
       "Palette colors are defined in the shared UMRS-PALETTE.json file.",
       "Dual-status categories (those that can be Basic or Specified depending on governing authority) have two entries: CUI//ABBREV (basic) and CUI//SP-ABBREV (specified).",
       "Index groups are NARA organizational groupings for display only — they never appear in banner markings.",
-      "UMRS convention: all markings use CUI//ABBREVIATION format, never bare CUI. NARA permits bare CUI for Basic categories, but UMRS requires specific category markings for granular MCS enforcement and auditability. A file marked just CUI would be invisible to category-based access control.",
+      "UMRS convention: all markings use CUI//ABBREVIATION format, never bare CUI. NARA permits bare CUI for Basic categories, but UMRS requires specific category markings for granular MCS labeling and auditability. A file marked just CUI would be invisible to category-based access control.",
       "Keys are the complete banner marking string in alphabetical order.",
       "NATO and Provisional categories are excluded — they lack finalized abbreviations in the NARA registry as of 2026-03.",
       "LDCs and Distribution Statements are tracked separately with their own MCS category numbers in the c250-c279 range."
@@ -34,8 +34,8 @@
       },
       "abbrv_name": "CUI",
       "description": {
-        "en_US": "Umbrella designation for all controlled unclassified information. In UMRS, specific category markings (CUI//ABBREVIATION) are always required for granular MAC enforcement.",
-        "fr_CA": "Désignation générale pour l'ensemble des informations non classifiées contrôlées. Dans UMRS, des marquages de catégorie spécifiques (CUI//ABRÉVIATION) sont toujours requis pour l'application granulaire du contrôle d'accès obligatoire."
+        "en_US": "Umbrella designation for all controlled unclassified information. In UMRS, specific category markings (CUI//ABBREVIATION) are always required for granular MCS labeling and auditability.",
+        "fr_CA": "Désignation générale pour l'ensemble des informations non classifiées contrôlées. Dans UMRS, des marquages de catégorie spécifiques (CUI//ABRÉVIATION) sont toujours requis pour l'étiquetage granulaire des catégories MCS et l'auditabilité."
       },
       "index_group": null,
       "designation": "basic",
@@ -57,7 +57,7 @@
       "index_group": "Immigration",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -74,7 +74,7 @@
       "index_group": "Legal",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -91,7 +91,7 @@
       "index_group": "Intelligence",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -108,7 +108,7 @@
       "index_group": "Patent",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -125,7 +125,7 @@
       "index_group": "Natural and Cultural Resources",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -142,7 +142,7 @@
       "index_group": "Immigration",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -159,7 +159,7 @@
       "index_group": "Legal",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -176,7 +176,7 @@
       "index_group": "Immigration",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -193,7 +193,7 @@
       "index_group": "Law Enforcement",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -210,7 +210,7 @@
       "index_group": "Financial",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -227,7 +227,7 @@
       "index_group": "Proprietary Business Information",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -244,7 +244,7 @@
       "index_group": "Tax",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -278,7 +278,7 @@
       "index_group": "Critical Infrastructure",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -295,7 +295,7 @@
       "index_group": "Legal",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -312,7 +312,7 @@
       "index_group": "Defense",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -329,7 +329,7 @@
       "index_group": "Defense",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -346,7 +346,7 @@
       "index_group": "Privacy",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -363,7 +363,7 @@
       "index_group": "Critical Infrastructure",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -380,7 +380,7 @@
       "index_group": "Export Control",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -397,7 +397,7 @@
       "index_group": "Export Control",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -414,7 +414,7 @@
       "index_group": "Financial",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -431,7 +431,7 @@
       "index_group": "Financial",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -448,7 +448,7 @@
       "index_group": "Financial",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -465,7 +465,7 @@
       "index_group": "Financial",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -482,7 +482,7 @@
       "index_group": "Financial",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -499,7 +499,7 @@
       "index_group": "Privacy",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -516,7 +516,7 @@
       "index_group": "Privacy",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -533,7 +533,7 @@
       "index_group": "Intelligence",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -550,7 +550,7 @@
       "index_group": "Law Enforcement",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -567,7 +567,7 @@
       "index_group": "Intelligence",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -584,7 +584,7 @@
       "index_group": "Law Enforcement",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -601,7 +601,7 @@
       "index_group": "Patent",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -618,7 +618,7 @@
       "index_group": "Critical Infrastructure",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -635,7 +635,7 @@
       "index_group": "Immigration",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -652,7 +652,7 @@
       "index_group": "Legal",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -669,7 +669,7 @@
       "index_group": "Law Enforcement",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -686,7 +686,7 @@
       "index_group": "Law Enforcement",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -703,7 +703,7 @@
       "index_group": "Law Enforcement",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -720,7 +720,7 @@
       "index_group": "Legal",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -737,7 +737,7 @@
       "index_group": "Law Enforcement",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -754,7 +754,7 @@
       "index_group": "Legal",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -771,7 +771,7 @@
       "index_group": "Law Enforcement",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -788,7 +788,7 @@
       "index_group": "Legal",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -805,7 +805,7 @@
       "index_group": "Financial",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -822,7 +822,7 @@
       "index_group": "Privacy",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -839,7 +839,7 @@
       "index_group": "Financial",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -856,7 +856,7 @@
       "index_group": "Defense",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -873,7 +873,7 @@
       "index_group": "Nuclear",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -890,7 +890,7 @@
       "index_group": "Proprietary Business Information",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -907,7 +907,7 @@
       "index_group": "Intelligence",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -924,7 +924,7 @@
       "index_group": "Privacy",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -941,7 +941,7 @@
       "index_group": "Statistical",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -958,7 +958,7 @@
       "index_group": "Critical Infrastructure",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -975,7 +975,7 @@
       "index_group": "Proprietary Business Information",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -992,7 +992,7 @@
       "index_group": "Legal",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1009,7 +1009,7 @@
       "index_group": "Privacy",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1026,7 +1026,7 @@
       "index_group": "Legal",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1043,7 +1043,7 @@
       "index_group": "Legal",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": "LDC restricted to Attorney-Client (AC) and/or Attorney Work Product (AWP) only. These LDCs may only be used with this category."
     },
@@ -1060,7 +1060,7 @@
       "index_group": "Proprietary Business Information",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1077,7 +1077,7 @@
       "index_group": "Immigration",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1094,7 +1094,7 @@
       "index_group": "Privacy",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1111,7 +1111,7 @@
       "index_group": "Patent",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1128,7 +1128,7 @@
       "index_group": "Defense",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1145,7 +1145,7 @@
       "index_group": "Transportation",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1162,7 +1162,7 @@
       "index_group": "Nuclear",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1179,7 +1179,7 @@
       "index_group": "Immigration",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1196,7 +1196,7 @@
       "index_group": "Financial",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1213,7 +1213,7 @@
       "index_group": "Law Enforcement",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1230,7 +1230,7 @@
       "index_group": "Critical Infrastructure",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1247,7 +1247,7 @@
       "index_group": "Procurement and Acquisition",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1264,7 +1264,7 @@
       "index_group": "Law Enforcement",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1281,7 +1281,7 @@
       "index_group": "Proprietary Business Information",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1298,7 +1298,7 @@
       "index_group": "Legal",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1315,7 +1315,7 @@
       "index_group": "Law Enforcement",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1332,7 +1332,7 @@
       "index_group": "Financial",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1349,7 +1349,7 @@
       "index_group": "Financial",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1366,7 +1366,7 @@
       "index_group": "Critical Infrastructure",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1383,7 +1383,7 @@
       "index_group": "Statistical",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1400,7 +1400,7 @@
       "index_group": "Legal",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1417,7 +1417,7 @@
       "index_group": "Law Enforcement",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1434,7 +1434,7 @@
       "index_group": "Privacy",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1451,7 +1451,7 @@
       "index_group": "Critical Infrastructure",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1485,7 +1485,7 @@
       "index_group": "Critical Infrastructure",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": "WARNING: This record contains Chemical-Terrorism Vulnerability Information controlled by 6 CFR 27.400. Unauthorized release may result in civil penalties or other action.",
       "required_dissemination_control": null
     },
@@ -1502,7 +1502,7 @@
       "index_group": "Defense",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": "Department of Defense Unclassified Controlled Nuclear Information. Exempt from mandatory disclosure pursuant to 5 U.S.C. 552(b)(3), as authorized by 10 U.S.C. 128.",
       "required_dissemination_control": null
     },
@@ -1519,7 +1519,7 @@
       "index_group": "Export Control",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": "WARNING: This document contains technical data whose export is restricted by the Arms Export Control Act (Title 22, U.S.C., Sec 2751, et seq.) or the Export Control Reform Act of 2018. Violations of these export laws are subject to severe criminal penalties.",
       "required_dissemination_control": null
     },
@@ -1536,7 +1536,7 @@
       "index_group": "Intelligence",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1553,7 +1553,7 @@
       "index_group": "Intelligence",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1570,7 +1570,7 @@
       "index_group": "Financial",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1587,7 +1587,7 @@
       "index_group": "Financial",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1604,7 +1604,7 @@
       "index_group": "Law Enforcement",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1621,7 +1621,7 @@
       "index_group": "Privacy",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1638,7 +1638,7 @@
       "index_group": "Intelligence",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1655,7 +1655,7 @@
       "index_group": "Natural and Cultural Resources",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1672,7 +1672,7 @@
       "index_group": "Privacy",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1689,7 +1689,7 @@
       "index_group": "Intelligence",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1706,7 +1706,7 @@
       "index_group": "Intelligence",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1723,7 +1723,7 @@
       "index_group": "Law Enforcement",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1740,7 +1740,7 @@
       "index_group": "Intelligence",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1757,7 +1757,7 @@
       "index_group": "International Agreements",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1774,7 +1774,7 @@
       "index_group": "Law Enforcement",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1791,7 +1791,7 @@
       "index_group": "Legal",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1808,7 +1808,7 @@
       "index_group": "Law Enforcement",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1825,7 +1825,7 @@
       "index_group": "Law Enforcement",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1842,7 +1842,7 @@
       "index_group": "Legal",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1859,7 +1859,7 @@
       "index_group": "Proprietary Business Information",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1893,7 +1893,7 @@
       "index_group": "Natural and Cultural Resources",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1910,7 +1910,7 @@
       "index_group": "Nuclear",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1927,7 +1927,7 @@
       "index_group": "Critical Infrastructure",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1944,7 +1944,7 @@
       "index_group": "Privacy",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1961,7 +1961,7 @@
       "index_group": "Privacy",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1978,7 +1978,7 @@
       "index_group": "Procurement and Acquisition",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -1995,7 +1995,7 @@
       "index_group": "Proprietary Business Information",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -2012,7 +2012,7 @@
       "index_group": "Privacy",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -2029,7 +2029,7 @@
       "index_group": "Nuclear",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -2046,7 +2046,7 @@
       "index_group": "Nuclear",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -2063,7 +2063,7 @@
       "index_group": "Procurement and Acquisition",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -2080,7 +2080,7 @@
       "index_group": "Transportation",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": "WARNING: This record contains Sensitive Security Information that is controlled under 49 CFR parts 15 and 1520. Unauthorized release may result in civil penalty or other action.",
       "required_dissemination_control": null
     },
@@ -2097,7 +2097,7 @@
       "index_group": "Statistical",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -2114,7 +2114,7 @@
       "index_group": "Privacy",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -2131,7 +2131,7 @@
       "index_group": "Law Enforcement",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -2148,7 +2148,7 @@
       "index_group": "Tax",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -2165,7 +2165,7 @@
       "index_group": "Critical Infrastructure",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -2182,7 +2182,7 @@
       "index_group": "Nuclear",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": "Unclassified Controlled Nuclear Information. Not for Public Dissemination. Unauthorized dissemination subject to civil and criminal sanctions under section 148 of the Atomic Energy Act of 1954, as amended (42 U.S.C. 2168).",
       "required_dissemination_control": null
     },
@@ -2199,7 +2199,7 @@
       "index_group": "Tax",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -2216,7 +2216,7 @@
       "index_group": "Law Enforcement",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -2233,7 +2233,7 @@
       "index_group": "Legal",
       "designation": "specified",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -2250,7 +2250,7 @@
       "index_group": "Nuclear",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -2267,7 +2267,7 @@
       "index_group": "Procurement and Acquisition",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -2284,7 +2284,7 @@
       "index_group": "Statistical",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -2301,7 +2301,7 @@
       "index_group": "Privacy",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -2318,7 +2318,7 @@
       "index_group": "Statistical",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -2335,7 +2335,7 @@
       "index_group": "Tax",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -2352,7 +2352,7 @@
       "index_group": "Law Enforcement",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -2369,7 +2369,7 @@
       "index_group": "Nuclear",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -2386,7 +2386,7 @@
       "index_group": "Immigration",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -2403,7 +2403,7 @@
       "index_group": "Critical Infrastructure",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -2420,7 +2420,7 @@
       "index_group": "Law Enforcement",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -2437,7 +2437,7 @@
       "index_group": "Legal",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
@@ -2454,7 +2454,7 @@
       "index_group": "Financial",
       "designation": "basic",
       "level": "s1",
-      "handling_group_id": "",
+      "handling_group_id": null,
       "required_warning_statement": null,
       "required_dissemination_control": null
     }

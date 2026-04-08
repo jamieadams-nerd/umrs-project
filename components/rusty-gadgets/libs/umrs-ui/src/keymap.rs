@@ -145,6 +145,17 @@ pub enum Action {
     /// Not bound in the default keymap.
     Back,
 
+    /// Switch focus between panels (Tree ↔ Detail in a viewer, or equivalent).
+    ///
+    /// Not bound in the default keymap — callers add bindings via `KeyMap::bind()`.
+    /// Typical binding is `Tab` / `Shift-Tab`, overriding the default `NextTab`
+    /// / `PrevTab` bindings when a multi-panel layout is in use instead of a
+    /// tab-bar layout.
+    ///
+    /// NIST SP 800-53 AC-3 — explicit panel switching ensures the operator
+    /// always knows which panel is receiving keyboard input.
+    PanelSwitch,
+
     // -----------------------------------------------------------------------
     // ConfigApp actions
     // -----------------------------------------------------------------------

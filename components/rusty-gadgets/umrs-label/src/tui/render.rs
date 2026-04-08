@@ -37,7 +37,8 @@ use ratatui::widgets::{Block, BorderType, Borders, List, ListItem, ListState, Pa
 use umrs_core::robots::WIZARD_SMALL;
 use umrs_ui::app::{HeaderContext, IndicatorValue};
 use umrs_ui::marking_detail::MarkingDetailData;
-use umrs_ui::text_fit::{display_width, truncate_right};
+use umrs_ui::palette::{palette_bg, palette_fg};
+use umrs_ui::text_fit::{display_width, truncate_right, wrap_indented, wrap_text_lines};
 use umrs_ui::theme::Theme;
 use umrs_ui::viewer::ViewerState;
 use umrs_ui::viewer::tree::DisplayEntry;
@@ -351,11 +352,13 @@ fn render_tree_panel(
     let raw_inner = block.inner(area);
     frame.render_widget(block, area);
 
-    // Shift content down by one row to create a blank top margin inside the panel.
+    // Shift content down by one row (top margin) and right by one column
+    // (left padding) inside the panel.
     let inner = Rect {
+        x: raw_inner.x.saturating_add(1),
         y: raw_inner.y.saturating_add(1),
+        width: raw_inner.width.saturating_sub(1),
         height: raw_inner.height.saturating_sub(1),
-        ..raw_inner
     };
 
     let display = &state.tree.display_list;
@@ -365,7 +368,7 @@ fn render_tree_panel(
         return;
     }
 
-    let panel_width = inner.width as usize;
+    let panel_width = (inner.width as usize).saturating_sub(1); // 1-char right pad
     let items: Vec<ListItem<'_>> = display
         .iter()
         .filter(|e| is_visible_entry(e, &state.tree.roots))
@@ -378,7 +381,10 @@ fn render_tree_panel(
     let mut list_state = ListState::default();
     list_state.select(visible_selected);
 
-    let list = List::new(items).highlight_style(theme.list_selection).highlight_symbol("► ");
+    // No highlight_symbol — the color delta from highlight_style is sufficient,
+    // and removing it eliminates the 2-char blank prefix on non-selected rows
+    // that was pushing depth-0 icons away from the left edge.
+    let list = List::new(items).highlight_style(theme.list_selection);
 
     frame.render_stateful_widget(list, inner, &mut list_state);
 }
@@ -429,7 +435,9 @@ fn build_tree_item<'a>(
     panel_width: usize,
 ) -> ListItem<'a> {
     let depth = entry.path.len().saturating_sub(1);
-    let indent = "  ".repeat(depth);
+    // Each level indents by 2 spaces so each icon falls under the first character
+    // of the parent row's label text (icon = 1 char + 1 trailing space = 2 chars wide).
+    let indent = " ".repeat(depth * 2);
 
     let Some(node) = node_at_path(roots, &entry.path) else {
         return ListItem::new(Line::from(Span::raw("?")));
@@ -451,9 +459,18 @@ fn build_tree_item<'a>(
 
     let label = &node.label;
 
-    // Compute available width for the label text after indent + icon + highlight symbol.
-    // highlight_symbol "► " is 2 chars wide.
-    let prefix_width = display_width(&indent) + display_width(icon) + 1 + 2; // icon + space + "► "
+    // Build icon string. CHEVRON_OPEN/CHEVRON_CLOSED already include a trailing
+    // space ("▼ ", "▶ "). ICON_MARKING has no trailing space, so append one here.
+    // This avoids double-spacing chevrons while keeping uniform 2-char icon width.
+    let icon_str: std::borrow::Cow<'_, str> = if node.children.is_empty() {
+        std::borrow::Cow::Owned(format!("{icon} "))
+    } else {
+        std::borrow::Cow::Borrowed(icon)
+    };
+
+    // Compute available width for the label text after indent + icon.
+    // No highlight_symbol — selection uses color only.
+    let prefix_width = display_width(&indent) + display_width(icon_str.as_ref());
     let label_budget = panel_width.saturating_sub(prefix_width);
 
     // Truncate with ellipsis if the label overflows. The operator can
@@ -463,7 +480,7 @@ fn build_tree_item<'a>(
 
     Line::from(vec![
         Span::raw(indent),
-        Span::styled(format!("{icon} "), icon_style),
+        Span::styled(icon_str.into_owned(), icon_style),
         Span::styled(fitted, label_style),
     ])
     .into()
@@ -504,6 +521,11 @@ fn compute_visible_selected(state: &ViewerState) -> Option<usize> {
 ///
 /// NIST SP 800-53 AC-16 — every field in the selected marking is rendered
 /// without omission, satisfying label display fidelity requirements.
+#[expect(
+    clippy::too_many_lines,
+    reason = "match arms for each DetailContent variant each need their own \
+              border + padding setup; splitting would scatter related layout logic"
+)]
 fn render_detail_panel(
     frame: &mut Frame,
     area: Rect,
@@ -556,8 +578,13 @@ fn render_detail_panel(
                 .borders(Borders::ALL)
                 .border_type(BorderType::Rounded)
                 .border_style(border_style);
-            let inner = block.inner(area);
+            let raw_inner = block.inner(area);
             frame.render_widget(block, area);
+            let inner = Rect {
+                x: raw_inner.x.saturating_add(1),
+                width: raw_inner.width.saturating_sub(1),
+                ..raw_inner
+            };
 
             let mut lines: Vec<Line<'_>> = vec![Line::from("")];
             let max_label = rows
@@ -603,8 +630,13 @@ fn render_detail_panel(
                 .borders(Borders::ALL)
                 .border_type(BorderType::Rounded)
                 .border_style(border_style);
-            let inner = block.inner(area);
+            let raw_inner = block.inner(area);
             frame.render_widget(block, area);
+            let inner = Rect {
+                x: raw_inner.x.saturating_add(1),
+                width: raw_inner.width.saturating_sub(1),
+                ..raw_inner
+            };
 
             let lines = vec![
                 Line::from(""),
@@ -648,8 +680,15 @@ fn render_marking_detail_with_border(
         .borders(Borders::ALL)
         .border_type(BorderType::Rounded)
         .border_style(border_style);
-    let inner = block.inner(area);
+    let raw_inner = block.inner(area);
     frame.render_widget(block, area);
+
+    // 1-char left padding inside the detail panel.
+    let inner = Rect {
+        x: raw_inner.x.saturating_add(1),
+        width: raw_inner.width.saturating_sub(1),
+        ..raw_inner
+    };
 
     render_detail_content_inner(frame, inner, data, provenance, scroll_offset, theme);
 }
@@ -702,17 +741,25 @@ fn render_detail_content_inner(
 
     let mut lines: Vec<Line<'static>> = Vec::new();
 
-    // ── Marking key — palette-colored chip ───────────────────────────────────
+    // ── Marking key — palette-colored chip, country flag flush-right ────────
     lines.push(Line::from(""));
     if !data.key.is_empty() {
         let bg = palette_bg(&data.index_group);
         let fg = palette_fg(&data.index_group);
         let key_style = Style::default().fg(fg).bg(bg).add_modifier(Modifier::BOLD);
         let padded_key = format!("  {} ", data.key);
-        lines.push(Line::from(vec![
+        let mut spans = vec![
             Span::raw("  "),
-            Span::styled(padded_key, key_style),
-        ]));
+            Span::styled(padded_key.clone(), key_style),
+        ];
+        if !data.country_flag.is_empty() {
+            let flag_width = display_width(&data.country_flag);
+            let used = 2 + display_width(&padded_key); // leading "  " + chip
+            let gap = panel_width.saturating_sub(used + flag_width);
+            spans.push(Span::raw(" ".repeat(gap)));
+            spans.push(Span::styled(data.country_flag.clone(), Style::default()));
+        }
+        lines.push(Line::from(spans));
         lines.push(Line::from(""));
     }
 
@@ -742,14 +789,14 @@ fn render_detail_content_inner(
     if !data.description_en.is_empty() {
         lines.push(Line::from(""));
         lines.push(Line::from(Span::styled("  Description", theme.data_key)));
-        lines.extend(wrap_indented(&data.description_en, "    ", area.width as usize, theme.data_value));
+        lines.extend(wrap_indented(&data.description_en, "    ", panel_width, theme.data_value));
     }
 
     // Handling — label on its own line, wrapped text below with 4-char indent.
     if !data.handling.is_empty() {
         lines.push(Line::from(""));
         lines.push(Line::from(Span::styled("  Handling", theme.data_key)));
-        lines.extend(wrap_indented(&data.handling, "    ", area.width as usize, theme.data_value));
+        lines.extend(wrap_indented(&data.handling, "    ", panel_width, theme.data_value));
     }
 
     // Injury examples — label on its own line, wrapped text below with 4-char indent.
@@ -864,63 +911,6 @@ fn push_kv_detail(
     }
 }
 
-/// Word-wrap `text` into owned strings that each fit within `max_width` characters.
-///
-/// Words are split on whitespace. A word longer than `max_width` is placed on its
-/// own line without mid-word splitting. Returns at least one element (may be empty
-/// string) when `text` is non-empty.
-fn wrap_text_lines(text: &str, max_width: usize) -> Vec<String> {
-    if text.is_empty() {
-        return Vec::new();
-    }
-    if max_width == 0 {
-        return vec![text.to_owned()];
-    }
-    let mut result: Vec<String> = Vec::new();
-    let mut current = String::new();
-    let mut current_width: usize = 0;
-
-    for word in text.split_whitespace() {
-        let ww = display_width(word);
-        if current_width == 0 {
-            word.clone_into(&mut current);
-            current_width = ww;
-        } else if current_width.saturating_add(1).saturating_add(ww) <= max_width {
-            current.push(' ');
-            current.push_str(word);
-            current_width = current_width.saturating_add(1).saturating_add(ww);
-        } else {
-            let mut next = String::new();
-            word.clone_into(&mut next);
-            result.push(std::mem::replace(&mut current, next));
-            current_width = ww;
-        }
-    }
-    if !current.is_empty() {
-        result.push(current);
-    }
-    result
-}
-
-/// Word-wrap `text` into `Line` values, each prefixed with `indent`.
-///
-/// The available text budget per line is `max_width - display_width(indent)`.
-/// A word longer than the budget is placed on its own line without splitting.
-/// Returns an empty `Vec` when `text` is empty or the budget is zero.
-fn wrap_indented(text: &str, indent: &str, max_width: usize, style: Style) -> Vec<Line<'static>> {
-    let indent_width = display_width(indent);
-    let text_budget = max_width.saturating_sub(indent_width);
-    if text_budget == 0 || text.is_empty() {
-        return Vec::new();
-    }
-    wrap_text_lines(text, text_budget)
-        .into_iter()
-        .map(|segment| {
-            let full_line = format!("{indent}{segment}");
-            Line::from(Span::styled(full_line, style))
-        })
-        .collect()
-}
 
 // ---------------------------------------------------------------------------
 // Search bar
@@ -978,49 +968,6 @@ fn render_status_bar(frame: &mut Frame, area: Rect, app: &LabelRegistryApp, them
 // Palette color helpers
 // ---------------------------------------------------------------------------
 
-/// Map an index group name to a truecolor background for the marking key chip.
-///
-/// Colors are sourced from `config/us/US-CUI-PALETTE.json`, one entry per
-/// index group. Canadian markings (no matching index group) fall through to
-/// the default `cui_purple`.
-///
-/// NIST SP 800-53 AC-16 — palette colors visually reinforce the index group
-/// classification of each marking for rapid operator identification.
-fn palette_bg(index_group: &str) -> Color {
-    match index_group {
-        "Critical Infrastructure" => Color::Rgb(0x4A, 0x6A, 0x20),          // olive_brass (shifted from #7A6008 — original was red-dominant, violates CUI no-red constraint)
-        "Defense" | "Export Control" => Color::Rgb(0x46, 0x82, 0xB4),       // cti_steel
-        "Financial" => Color::Rgb(0xD6, 0xA3, 0x00),                        // finance_gold
-        "Immigration" | "International Agreements" | "Legal" => {
-            Color::Rgb(0x5B, 0x7C, 0x99)                                     // govt_blue_gray
-        }
-        "Intelligence" => Color::Rgb(0x4B, 0x2E, 0x83),                     // intel_purple
-        "Law Enforcement" => Color::Rgb(0x1F, 0x4E, 0x79),                  // police_blue
-        "Natural and Cultural Resources" => Color::Rgb(0x70, 0xAD, 0x47),   // agriculture_green
-        "Nuclear" => Color::Rgb(0x1B, 0x3A, 0x5C),                          // nnpi_navy
-        "Patent" | "Statistical" => Color::Rgb(0x6E, 0x6E, 0x6E),           // research_gray
-        "Privacy" => Color::Rgb(0x8B, 0x3A, 0x62),                          // privacy_rose
-        "Procurement and Acquisition" => Color::Rgb(0x4A, 0x55, 0x68),      // procure_slate
-        "Proprietary Business Information" => Color::Rgb(0x7A, 0x6B, 0x5A), // warm_taupe (shifted from #CD8032 — original was orange, violates CUI no-red/orange constraint)
-        "Tax" => Color::Rgb(0x55, 0x6B, 0x2F),                              // tax_olive
-        "Transportation" => Color::Rgb(0x2D, 0x2D, 0x2D),                   // opsec_charcoal
-        _ => Color::Rgb(0x6A, 0x3D, 0x9A),                                  // cui_purple (default / CA)
-    }
-}
-
-/// Map an index group name to a truecolor foreground for the marking key chip.
-///
-/// Most palette backgrounds are dark enough to pair with white. A few lighter
-/// backgrounds (Financial gold, Natural/Cultural green, Proprietary bronze)
-/// require black text for legible contrast.
-fn palette_fg(index_group: &str) -> Color {
-    match index_group {
-        "Financial" | "Natural and Cultural Resources" => {
-            Color::Rgb(0x00, 0x00, 0x00) // black fg for light backgrounds
-        }
-        _ => Color::Rgb(0xFF, 0xFF, 0xFF), // white fg
-    }
-}
 
 // ---------------------------------------------------------------------------
 // Private helpers

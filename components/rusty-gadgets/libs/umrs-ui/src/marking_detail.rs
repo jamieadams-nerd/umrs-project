@@ -61,9 +61,10 @@ use ratatui::Frame;
 use ratatui::layout::Rect;
 use ratatui::style::{Color, Modifier, Style};
 use ratatui::text::{Line, Span};
-use ratatui::widgets::{Block, BorderType, Borders, Paragraph, Wrap};
+use ratatui::widgets::{Block, BorderType, Borders, Paragraph};
 
-use crate::text_fit::display_width;
+use crate::palette::{palette_bg, palette_fg};
+use crate::text_fit::{display_width, wrap_indented};
 use crate::theme::Theme;
 
 // ---------------------------------------------------------------------------
@@ -134,6 +135,9 @@ pub struct MarkingDetailData {
     pub injury_examples_fr: String,
     /// Additional caller-supplied key-value pairs rendered in section order.
     pub additional: Vec<(String, String)>,
+    /// Country flag emoji (e.g., "🇺🇸", "🇨🇦") — rendered flush-right on the
+    /// marking key line.  Empty when the catalog has no country code.
+    pub country_flag: String,
 }
 
 // ---------------------------------------------------------------------------
@@ -147,8 +151,9 @@ pub struct MarkingDetailData {
 /// section order with bilingual rows where both variants are present.
 ///
 /// `scroll_offset` scrolls the entire panel content — pass `0` for a
-/// non-scrolling view. The panel uses `Wrap { trim: false }` so long
-/// text fields flow across lines rather than overflowing off-screen.
+/// non-scrolling view. Multi-line text fields are manually word-wrapped
+/// to the available column budget so continuation lines remain indented
+/// with their originating label.
 ///
 /// ## Compliance
 ///
@@ -169,14 +174,15 @@ pub fn render_marking_detail(
         .border_type(BorderType::Rounded)
         .border_style(theme.border);
 
+    // The inner area subtracts the 2-column border (left + right).
+    let inner_width = (area.width as usize).saturating_sub(2);
     let lines = match data {
         None => placeholder_lines(theme),
-        Some(d) => build_detail_lines(d, theme),
+        Some(d) => build_detail_lines(d, theme, inner_width),
     };
 
     let paragraph = Paragraph::new(lines)
         .block(block)
-        .wrap(Wrap { trim: false })
         .scroll((scroll_offset, 0));
 
     frame.render_widget(paragraph, area);
@@ -204,12 +210,25 @@ fn placeholder_lines(theme: &Theme) -> Vec<Line<'static>> {
 ///
 /// The key column width is computed dynamically from the labels that will
 /// actually appear, so short-label entries (e.g., "Name", "Level") do not
-/// waste horizontal space with excessive padding.
+/// waste horizontal space with excessive padding.  Multi-line text fields
+/// (Description, Handling, Injury Examples, Required Warning, Required
+/// Dissemination) are rendered as a label on its own line followed by the
+/// text with a 4-space indent — matching the layout used in the `umrs-label`
+/// registry browser so operators see consistent presentation across tools.
 ///
 /// French-language rows are suppressed in this rendering path. Locale-aware
 /// display is a planned future feature; for now all output is English only.
-fn build_detail_lines<'a>(data: &'a MarkingDetailData, theme: &'a Theme) -> Vec<Line<'a>> {
-    // ── Dynamic key width — measure only labels that will appear ─────────────
+///
+/// This function is `pub` so that callers that already own a border block
+/// (e.g., `umrs-ls`'s label detail popup) can render content directly inside
+/// their own block rather than accepting the nested `Details` border that
+/// [`render_marking_detail`] would otherwise produce.
+#[must_use = "build_detail_lines returns the rendered content lines; pass them to a Paragraph widget"]
+pub fn build_detail_lines<'a>(data: &'a MarkingDetailData, theme: &'a Theme, max_width: usize) -> Vec<Line<'a>> {
+    // ── Dynamic key width — measure only key-value (non-multi-line) labels ────
+    // Multi-line fields (Description, Handling, Injury Examples, Required Warning,
+    // Dissemination) are rendered as label-then-block rather than key : value
+    // pairs, so they do not contribute to the key column width calculation.
     let mut labels: Vec<&str> = Vec::new();
     if !data.name_en.is_empty() { labels.push("Name"); }
     if !data.abbreviation.is_empty() { labels.push("Abbreviation"); }
@@ -217,11 +236,6 @@ fn build_detail_lines<'a>(data: &'a MarkingDetailData, theme: &'a Theme) -> Vec<
     if !data.index_group.is_empty() { labels.push("Index Group"); }
     if !data.level.is_empty() { labels.push("Level"); }
     if !data.marking_banner_en.is_empty() { labels.push("Banner"); }
-    if !data.description_en.is_empty() { labels.push("Description"); }
-    if !data.handling.is_empty() { labels.push("Handling"); }
-    if !data.injury_examples_en.is_empty() { labels.push("Injury Examples"); }
-    if !data.required_warning.is_empty() { labels.push("Required Warning"); }
-    if !data.required_dissemination.is_empty() { labels.push("Dissemination"); }
     for (key, value) in &data.additional {
         if !value.is_empty() { labels.push(key.as_str()); }
     }
@@ -230,14 +244,43 @@ fn build_detail_lines<'a>(data: &'a MarkingDetailData, theme: &'a Theme) -> Vec<
     let mut lines: Vec<Line<'a>> = Vec::new();
 
     // -----------------------------------------------------------------------
-    // Section 1 — Marking key (prominent header)
+    // Section 1 — Marking key (palette chip), country flag flush-right
+    //
+    // System-level markings (SystemLow, SystemHigh, etc.) carry
+    // designation == "system" and no index group — they use the theme
+    // default style.  CUI and Protected markings use the CUI palette chip
+    // (NIST SP 800-53 AC-16: palette colors reinforce index-group identity).
     // -----------------------------------------------------------------------
     lines.push(Line::from(""));
     if !data.key.is_empty() {
-        lines.push(Line::from(vec![
+        let key_style = if data.designation == "system" || data.index_group.is_empty() {
+            theme.header_name
+        } else {
+            Style::default()
+                .fg(palette_fg(&data.index_group))
+                .bg(palette_bg(&data.index_group))
+                .add_modifier(Modifier::BOLD)
+        };
+        // Pad the key with a leading and trailing space so the palette chip
+        // background has breathing room around the text.
+        let padded_key = format!(" {} ", data.key);
+        let key_display_width = 2 + display_width(&data.key); // "  " prefix + key
+        let mut spans = vec![
             Span::raw("  "),
-            Span::styled(&data.key, theme.header_name),
-        ]));
+            Span::styled(padded_key, key_style),
+        ];
+        if !data.country_flag.is_empty() {
+            let flag_width = display_width(&data.country_flag);
+            // key_display_width includes the "  " indent plus the padded key
+            // (" key " = 2 + key_len). Calculate gap to right-align the flag.
+            let used = key_display_width + 2; // +2 for the " " padding on both sides
+            let gap = max_width.saturating_sub(used + flag_width + 1); // +1 right padding
+            if gap > 0 {
+                spans.push(Span::raw(" ".repeat(gap)));
+            }
+            spans.push(Span::styled(data.country_flag.clone(), theme.data_value));
+        }
+        lines.push(Line::from(spans));
         lines.push(Line::from(""));
     }
 
@@ -260,42 +303,55 @@ fn build_detail_lines<'a>(data: &'a MarkingDetailData, theme: &'a Theme) -> Vec<
 
     // -----------------------------------------------------------------------
     // Section 4 — Description (English only)
+    // Multi-line: label on its own line, text manually word-wrapped below
+    // with a 4-space indent.  Manual wrapping ensures continuation lines
+    // remain aligned with the first line rather than resetting to column 0.
     // -----------------------------------------------------------------------
     if !data.description_en.is_empty() {
         lines.push(Line::from(""));
-        push_kv(&mut lines, "Description", &data.description_en, key_width, theme);
+        lines.push(Line::from(Span::styled("  Description", theme.data_key)));
+        lines.extend(wrap_indented(&data.description_en, "    ", max_width, theme.data_value));
     }
 
     // -----------------------------------------------------------------------
     // Section 5 — Handling
+    // Multi-line: label on its own line, text manually word-wrapped below.
     // -----------------------------------------------------------------------
     if !data.handling.is_empty() {
         lines.push(Line::from(""));
-        push_kv(&mut lines, "Handling", &data.handling, key_width, theme);
+        lines.push(Line::from(Span::styled("  Handling", theme.data_key)));
+        lines.extend(wrap_indented(&data.handling, "    ", max_width, theme.data_value));
     }
 
     // -----------------------------------------------------------------------
     // Section 6 — Injury examples (Canadian catalog, English only)
+    // Multi-line: label on its own line, text manually word-wrapped below.
     // -----------------------------------------------------------------------
     if !data.injury_examples_en.is_empty() {
         lines.push(Line::from(""));
-        push_kv(&mut lines, "Injury Examples", &data.injury_examples_en, key_width, theme);
+        lines.push(Line::from(Span::styled("  Injury Examples", theme.data_key)));
+        lines.extend(wrap_indented(&data.injury_examples_en, "    ", max_width, theme.data_value));
     }
 
     // -----------------------------------------------------------------------
     // Section 7 — Required warning (rendered in yellow/caution style)
+    // Multi-line: label on its own line, text manually word-wrapped below.
     // -----------------------------------------------------------------------
     if !data.required_warning.is_empty() {
         lines.push(Line::from(""));
-        push_warning(&mut lines, "Required Warning", &data.required_warning, key_width, theme);
+        lines.push(Line::from(Span::styled("  Required Warning", theme.data_key)));
+        let warn_style = Style::default().fg(Color::Yellow);
+        lines.extend(wrap_indented(&data.required_warning, "    ", max_width, warn_style));
     }
 
     // -----------------------------------------------------------------------
     // Section 8 — Required dissemination control
+    // Multi-line: label on its own line, text manually word-wrapped below.
     // -----------------------------------------------------------------------
     if !data.required_dissemination.is_empty() {
         lines.push(Line::from(""));
-        push_kv(&mut lines, "Dissemination", &data.required_dissemination, key_width, theme);
+        lines.push(Line::from(Span::styled("  Dissemination", theme.data_key)));
+        lines.extend(wrap_indented(&data.required_dissemination, "    ", max_width, theme.data_value));
     }
 
     // -----------------------------------------------------------------------
@@ -401,28 +457,3 @@ fn push_designation<'a>(
     ]));
 }
 
-/// Push a warning-style key-value line for required statutory warnings.
-///
-/// The value is rendered in yellow to signal that the operator must read
-/// and acknowledge this text before handling the marked data.
-///
-/// NIST SP 800-53 SI-12 — required warning statements must be visually
-/// distinct to prevent operators from overlooking mandatory handling notices.
-fn push_warning<'a>(
-    lines: &mut Vec<Line<'a>>,
-    key: &str,
-    value: &'a str,
-    key_width: usize,
-    theme: &'a Theme,
-) {
-    if value.is_empty() {
-        return;
-    }
-    let key_str = format!("  {key:<key_width$}{KEY_SEP}");
-    // Yellow matches `theme.indicator_unavailable` — the caution tier.
-    let warn_style = Style::default().fg(Color::Yellow);
-    lines.push(Line::from(vec![
-        Span::styled(key_str, theme.data_key),
-        Span::styled(value, warn_style),
-    ]));
-}

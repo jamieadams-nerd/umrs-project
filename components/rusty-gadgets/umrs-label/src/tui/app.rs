@@ -48,7 +48,7 @@ use std::collections::BTreeMap;
 use umrs_ui::marking_detail::MarkingDetailData;
 use umrs_ui::viewer::tree::{TreeModel, TreeNode};
 
-use crate::cui::catalog::{Catalog, DisseminationControl, Marking};
+use crate::cui::catalog::{Catalog, DisseminationControl, Marking, policy_aware_description};
 
 // ---------------------------------------------------------------------------
 // Panel focus
@@ -206,7 +206,8 @@ impl LabelRegistryApp {
     /// Returns `None` if the key is not present.
     #[must_use = "returns None if the marking key is absent; check before use"]
     pub fn marking_detail_us(&self, key: &str) -> Option<MarkingDetailData> {
-        self.us_catalog.marking(key).map(|m| marking_to_detail(key, m))
+        let flag = self.us_catalog.country_flag().unwrap_or_default();
+        self.us_catalog.marking(key).map(|m| marking_to_detail(key, m, &flag))
     }
 
     /// Build a [`MarkingDetailData`] for the marking identified by `key` in
@@ -215,7 +216,10 @@ impl LabelRegistryApp {
     /// Returns `None` if the Canadian catalog is not loaded or the key is absent.
     #[must_use = "returns None if the key is absent or CA catalog not loaded"]
     pub fn marking_detail_ca(&self, key: &str) -> Option<MarkingDetailData> {
-        self.ca_catalog.as_ref().and_then(|c| c.marking(key)).map(|m| marking_to_detail(key, m))
+        self.ca_catalog.as_ref().and_then(|c| {
+            let flag = c.country_flag().unwrap_or_default();
+            c.marking(key).map(|m| marking_to_detail(key, m, &flag))
+        })
     }
 
     /// Build a [`MarkingDetailData`] for a dissemination control entry.
@@ -223,7 +227,8 @@ impl LabelRegistryApp {
     /// Returns `None` if the key is not present in the US catalog.
     #[must_use = "returns None if the dissemination control key is absent"]
     pub fn dissemination_detail(&self, key: &str) -> Option<MarkingDetailData> {
-        self.us_catalog.dissemination_controls.get(key).map(|dc| dc_to_detail(key, dc))
+        let flag = self.us_catalog.country_flag().unwrap_or_default();
+        self.us_catalog.dissemination_controls.get(key).map(|dc| dc_to_detail(key, dc, &flag))
     }
 
     /// Build compact catalog provenance rows for the bottom of the detail panel.
@@ -300,6 +305,10 @@ impl LabelRegistryApp {
 
 /// Catalog-root node label from metadata.
 fn catalog_root_label(cat: &Catalog) -> String {
+    // NOTE: country flag prepending was tested here but felt cluttered since
+    // the country name already serves as the organizing header. The flag is
+    // shown in the detail panel instead. To re-enable, bind the result below
+    // to `name` and use: `cat.country_flag().map_or(name, |f| format!("{f} {name}"))`
     cat.metadata
         .as_ref()
         .map(|m| m.catalog_name.en().to_owned())
@@ -419,7 +428,7 @@ fn marking_leaf(key: &str, marking: &Marking) -> TreeNode {
 ///
 /// Maps all available `Marking` fields into the flat owned-string format
 /// expected by [`render_marking_detail`].
-fn marking_to_detail(key: &str, m: &Marking) -> MarkingDetailData {
+fn marking_to_detail(key: &str, m: &Marking, flag: &str) -> MarkingDetailData {
     let handling = match m.handling_as_str() {
         Some(s) if !s.trim().is_empty() => s.to_owned(),
         _ => m
@@ -464,8 +473,8 @@ fn marking_to_detail(key: &str, m: &Marking) -> MarkingDetailData {
         designation: m.designation.as_deref().unwrap_or("").to_owned(),
         index_group: m.index_group.as_deref().unwrap_or("").to_owned(),
         level: m.level.as_deref().unwrap_or("").to_owned(),
-        description_en: m.description.en().to_owned(),
-        description_fr: m.description.fr().to_owned(),
+        description_en: policy_aware_description(m.description.en()),
+        description_fr: policy_aware_description(m.description.fr()),
         handling,
         required_warning: m.required_warning_statement.as_deref().unwrap_or("").to_owned(),
         required_dissemination: m
@@ -494,11 +503,12 @@ fn marking_to_detail(key: &str, m: &Marking) -> MarkingDetailData {
             .map(|lt| lt.fr().to_owned())
             .unwrap_or_default(),
         additional,
+        country_flag: flag.to_owned(),
     }
 }
 
 /// Build a [`MarkingDetailData`] from a [`DisseminationControl`] entry.
-fn dc_to_detail(key: &str, dc: &DisseminationControl) -> MarkingDetailData {
+fn dc_to_detail(key: &str, dc: &DisseminationControl, flag: &str) -> MarkingDetailData {
     let mut additional: Vec<(String, String)> = Vec::new();
 
     if let Some(pm) = &dc.portion_marking {
@@ -523,9 +533,10 @@ fn dc_to_detail(key: &str, dc: &DisseminationControl) -> MarkingDetailData {
         name_fr: dc.name.fr().to_owned(),
         abbreviation: dc.banner_marking.as_deref().unwrap_or(key).to_owned(),
         designation: "LDC".to_owned(),
-        description_en: dc.description.en().to_owned(),
-        description_fr: dc.description.fr().to_owned(),
+        description_en: policy_aware_description(dc.description.en()),
+        description_fr: policy_aware_description(dc.description.fr()),
         additional,
+        country_flag: flag.to_owned(),
         ..MarkingDetailData::default()
     }
 }

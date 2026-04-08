@@ -1,0 +1,29 @@
+Current:
+
+  ▼  United States Controlled Unclassified Information (…
+│   ☐ CUI - Controlled Unclassified Information         
+│   ▶  Critical Infrastructure                         
+│   ▶  Defense                                        
+│   ▼  Export Control                                
+│    ☐ CUI//EXPT - Export Controlled                
+│    ☐ CUI//EXPTR - Export Controlled Research     
+│    ☐ CUI//SP-EXPT - Export Controlled (Specified)
+
+
+
+Fixed:
+
+ ▼ United States Controlled Unclassified Information (…
+   ☐ CUI - Controlled Unclassified Information           
+     ▶ Critical Infrastructure                           
+     ▶ Defense                                          
+     ▼ Export Control                                 
+       ☐ CUI//EXPT - Export Controlled                 
+       ☐ CUI//EXPTR - Export Controlled Research       
+       ☐ CUI//SP-EXPT - Export Controlled (Specified)
+
+First row, (US...) move d over one char to the left and only char between down chevron and "United"
+NOte how the next row's icon falls under the first chacter of the previoius row's string
+
+
+

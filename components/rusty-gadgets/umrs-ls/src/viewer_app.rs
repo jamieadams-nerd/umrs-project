@@ -402,28 +402,3 @@ fn extract_selinux_short(dirent: &SecureDirent) -> (String, String) {
     }
 }
 
-/// Read the OS name from `/etc/os-release`.
-///
-/// Prefers `NAME + VERSION_ID` for brevity (e.g., "CentOS Stream 10").
-/// Returns `"unavailable"` if the file cannot be read or parsed.
-#[must_use = "OS name is needed for the header context"]
-pub fn read_os_name() -> String {
-    let Ok(content) = std::fs::read_to_string("/etc/os-release") else {
-        return "unavailable".to_owned();
-    };
-    let mut name = None;
-    let mut version_id = None;
-    for line in content.lines() {
-        if let Some(val) = line.strip_prefix("NAME=") {
-            name = Some(val.trim_matches('"').to_owned());
-        }
-        if let Some(val) = line.strip_prefix("VERSION_ID=") {
-            version_id = Some(val.trim_matches('"').to_owned());
-        }
-    }
-    match (name, version_id) {
-        (Some(n), Some(v)) => format!("{n} {v}"),
-        (Some(n), None) => n,
-        _ => "unavailable".to_owned(),
-    }
-}

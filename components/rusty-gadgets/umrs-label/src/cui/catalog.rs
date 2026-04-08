@@ -37,6 +37,7 @@ use std::collections::HashMap;
 use std::fs::File;
 use std::io::BufReader;
 use std::path::Path;
+use umrs_selinux::status::{SelinuxPolicy, selinux_policy};
 
 pub use super::locale_text::LocaleText;
 
@@ -505,3 +506,45 @@ pub fn country_flag(iso_code: &str) -> Option<String> {
 }
 
 // ===========================================================================
+// Policy-aware description adjustment
+// ===========================================================================
+
+/// Adjust description text based on the active SELinux policy type.
+///
+/// Under targeted policy (Phase 1), enforcement language is replaced with
+/// labeling language so that displayed descriptions accurately reflect UMRS
+/// capability. Under MLS policy (Phase 2), enforcement language is accurate
+/// and is preserved unchanged.
+///
+/// This function is called on the English and French description strings from
+/// catalog entries before they reach operator-visible output. It ensures that
+/// no UMRS display path overstates the enforcement capability of the active
+/// policy.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AC-3**: Access Enforcement — accurately describes the
+///   level of enforcement the active policy provides.
+/// - **NIST SP 800-53 PL-4**: Rules of Behavior — security documentation must
+///   not overstate system capability.
+#[must_use = "the adjusted description must be used in place of the original"]
+pub fn policy_aware_description(description: &str) -> String {
+    let is_mls = matches!(selinux_policy(), Some(SelinuxPolicy::Mls));
+    if is_mls {
+        // Under MLS, enforcement language is accurate — preserve as-is.
+        description.to_owned()
+    } else {
+        // Under targeted policy, replace enforcement language with labeling
+        // language to avoid overstating UMRS capability (Phase 1).
+        description
+            .replace("MAC enforcement", "MCS labeling")
+            .replace("mandatory access control enforcement", "MCS category labeling")
+            .replace("granular MAC enforcement", "granular MCS category labeling")
+            // French equivalents
+            .replace("contrôle d'accès obligatoire", "étiquetage MCS")
+            .replace(
+                "l'application granulaire du contrôle d'accès obligatoire",
+                "l'étiquetage granulaire des catégories MCS",
+            )
+    }
+}

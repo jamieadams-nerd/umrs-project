@@ -13,9 +13,11 @@ name = "umrs-ls"
 path = "src/main.rs"
 
 [dependencies]
-umrs-selinux = { path = "../libs/umrs-selinux" }
-umrs-core    = { path = "../libs/umrs-core" }
-umrs-ui      = { path = "../libs/umrs-ui" }
+umrs-selinux  = { path = "../libs/umrs-selinux" }
+umrs-core     = { path = "../libs/umrs-core" }
+umrs-ui       = { path = "../libs/umrs-ui" }
+umrs-platform = { path = "../libs/umrs-platform" }
+umrs-label    = { path = "../umrs-label" }
 
 chrono       = "0.4"
 nix          = { version = "0.27", features = ["user", "fs"] }

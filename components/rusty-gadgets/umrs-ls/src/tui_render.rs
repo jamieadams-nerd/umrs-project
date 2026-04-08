@@ -55,6 +55,7 @@ use ratatui::widgets::{Block, BorderType, Borders, Clear, List, ListItem, ListSt
 
 use umrs_core::robots::WIZARD_SMALL;
 use umrs_ui::app::{HeaderContext, IndicatorValue, StatusLevel};
+use umrs_ui::palette::palette_bg;
 use umrs_ui::text_fit::{display_width, truncate_left, truncate_right};
 use umrs_ui::theme::Theme;
 use umrs_ui::viewer::{ViewerApp as _, ViewerState};
@@ -212,6 +213,10 @@ impl GotoBar {
 /// NIST SP 800-53 AU-3 — all identification, labeling, and audit-relevant
 /// fields appear in every rendered frame.
 /// NIST SP 800-53 AC-3 — rendering is unconditionally read-only.
+#[expect(
+    clippy::too_many_arguments,
+    reason = "top-level TUI render aggregates all shared state; extracting would require a wrapper struct"
+)]
 pub fn render_dir_browser(
     frame: &mut Frame,
     area: Rect,
@@ -220,6 +225,8 @@ pub fn render_dir_browser(
     ctx: &HeaderContext,
     theme: &Theme,
     goto: &GotoBar,
+    us_catalog: Option<&umrs_labels::cui::catalog::Catalog>,
+    ca_catalog: Option<&umrs_labels::cui::catalog::Catalog>,
 ) {
     // Search and Goto share the same bar area (mutually exclusive).
     let prompt_active = state.search_active || goto.active;
@@ -286,7 +293,7 @@ pub fn render_dir_browser(
     render_divider(frame, div1_area, display_panel_area, theme);
 
     // ── Listing ──────────────────────────────────────────────────────────
-    render_listing(frame, listing_area, state, theme);
+    render_listing(frame, listing_area, state, theme, us_catalog, ca_catalog);
 
     // ── Prompt bar (search or goto — mutually exclusive) ────────────────
     if state.search_active {
@@ -470,10 +477,20 @@ fn render_user_session_lines(frame: &mut Frame, area: Rect, theme: &Theme) {
 
     let tool_value = format!("{} v{}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
 
+    // unconfined_t means the process has no SELinux type enforcement —
+    // highlight as a warning so the operator knows their session is not
+    // confined.  NIST SP 800-53 AC-3 — access enforcement awareness.
+    let is_unconfined = ctx_type.contains("unconfined_t");
+    let (domain_display, domain_style) = if is_unconfined {
+        (format!("{ctx_type} \u{26A0}"), Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD))
+    } else {
+        (ctx_type, theme.data_value)
+    };
+
     let rows: [(&str, String, Style); 4] = [
         ("Tool", tool_value, theme.data_value),
         ("User", username, theme.data_value),
-        ("Domain", ctx_type, theme.data_value),
+        ("Domain", domain_display, domain_style),
         ("Level", ctx_level, theme.data_value),
     ];
 
@@ -628,7 +645,7 @@ fn render_wizard_logo(frame: &mut Frame, area: Rect, theme: &Theme) {
 /// The 4-char prefix accounts for: 2-char highlight symbol zone (`► ` or `  `)
 /// that ratatui prepends to every `List` item.
 const COL_HEADER_TEXT: &str =
-    "    IOV  MODE        OWNER:GROUP      MODIFIED             NAME";
+    "   IOV  MODE         OWNER:GROUP      MODIFIED             NAME";
 
 /// Render the `├───┤` horizontal divider using the T-connector characters.
 ///
@@ -688,7 +705,14 @@ fn render_col_headers(frame: &mut Frame, area: Rect, _theme: &Theme) {
 /// NIST SP 800-53 AC-4 — group headers make SELinux type and MCS marking
 /// prominent, surfacing information-flow boundary context for every entry.
 /// NIST SP 800-53 AU-3 — every entry row carries mode, owner, mtime, and name.
-fn render_listing(frame: &mut Frame, area: Rect, state: &ViewerState, theme: &Theme) {
+fn render_listing(
+    frame: &mut Frame,
+    area: Rect,
+    state: &ViewerState,
+    theme: &Theme,
+    us_catalog: Option<&umrs_labels::cui::catalog::Catalog>,
+    ca_catalog: Option<&umrs_labels::cui::catalog::Catalog>,
+) {
     let display = &state.tree.display_list;
 
     // Build items with blank spacer lines before group headers for visual
@@ -712,7 +736,7 @@ fn render_listing(frame: &mut Frame, area: Rect, state: &ViewerState, theme: &Th
             selected_item_index = Some(items.len());
         }
 
-        items.push(build_listing_item(entry, state, theme));
+        items.push(build_listing_item(entry, state, theme, us_catalog, ca_catalog));
     }
 
     let block = Block::default().borders(Borders::NONE);
@@ -722,10 +746,12 @@ fn render_listing(frame: &mut Frame, area: Rect, state: &ViewerState, theme: &Th
         list_state.select(Some(idx));
     }
 
+    // No highlight_symbol — color-only selection (matches umrs-label).
+    // Removes the 2-char blank prefix on non-selected rows that pushes
+    // group headers and file entries away from the left edge.
     let list = List::new(items)
         .block(block)
-        .highlight_style(theme.list_selection)
-        .highlight_symbol("► ");
+        .highlight_style(theme.list_selection);
 
     frame.render_stateful_widget(list, area, &mut list_state);
 }
@@ -741,13 +767,15 @@ fn build_listing_item<'a>(
     entry: &umrs_ui::viewer::tree::DisplayEntry,
     state: &'a ViewerState,
     theme: &'a Theme,
+    us_catalog: Option<&umrs_labels::cui::catalog::Catalog>,
+    ca_catalog: Option<&umrs_labels::cui::catalog::Catalog>,
 ) -> ListItem<'a> {
     let node = state.tree.node_ref(&entry.path);
 
     match node {
         // Depth-0 branches = SELinux group headers.
         Some(node) if !node.is_leaf() && entry.depth == 0 => {
-            build_group_header_item(node, theme)
+            build_group_header_item(node, theme, us_catalog, ca_catalog)
         }
         // Everything else (leaves, cuddled base branches at depth > 0).
         Some(node) => build_file_entry_item(node, entry, theme),
@@ -779,6 +807,8 @@ fn build_listing_item<'a>(
 fn build_group_header_item<'a>(
     node: &umrs_ui::viewer::tree::TreeNode,
     _theme: &'a Theme,
+    us_catalog: Option<&umrs_labels::cui::catalog::Catalog>,
+    ca_catalog: Option<&umrs_labels::cui::catalog::Catalog>,
 ) -> ListItem<'a> {
     let chevron = if node.expanded { CHEVRON_OPEN } else { CHEVRON_CLOSED };
 
@@ -795,7 +825,7 @@ fn build_group_header_item<'a>(
         let restricted_style = Style::default()
             .fg(Color::DarkGray)
             .add_modifier(Modifier::ITALIC);
-        let text = format!("{chevron} {selinux_type:<19} :: {marking}");
+        let text = format!(" {chevron} {selinux_type:<19} :: {marking}");
         let fill = " ".repeat(80usize.saturating_sub(text.chars().count()));
         let span = Span::styled(format!("{text}{fill}"), restricted_style);
         return ListItem::new(Line::from(vec![span]));
@@ -815,10 +845,21 @@ fn build_group_header_item<'a>(
     //   [fg=marking_bg, bg=default]  "🭬"       ← triangle: marking color into fill
     //   [underlined]          "{fill}"           ← underline rule to the right
     //
-    // Placeholder gray tones — will be replaced by umrs-labels palette in Phase 5.
+    // Type block uses a fixed dark navy. Marking block uses the CUI palette
+    // default (cui_purple) — group headers carry the SELinux type and marking
+    // string but not the NARA index group, so we pass "" for the fallback color.
+    // Per-index-group coloring can be added when the tree adapter carries catalog
+    // metadata.
 
-    let type_bg = Color::Rgb(70, 80, 90);
-    let marking_bg = Color::Rgb(55, 65, 75);
+    let type_bg = Color::Rgb(0x2D, 0x3A, 0x4A); // dark navy for SELinux type block
+    // Look up the NARA index group for this marking to get the right palette color.
+    // Every file in the group shares the same marking — just look it up in the catalog.
+    let index_group = us_catalog
+        .and_then(|c| c.marking(marking))
+        .or_else(|| ca_catalog.and_then(|c| c.marking(marking)))
+        .and_then(|m| m.index_group.as_deref())
+        .unwrap_or("");
+    let marking_bg = palette_bg(index_group);
 
     let chevron_span = Span::styled(
         chevron.to_owned(),
@@ -839,10 +880,11 @@ fn build_group_header_item<'a>(
         Style::default().fg(type_bg).bg(marking_bg),
     );
 
-    // Marking block: lighter text on marking_bg (no leading 🭬 here).
+    // Marking block: white text on marking_bg for clean contrast with the
+    // CUI palette background.
     let marking_span = Span::styled(
         format!("{marking:^20} "),
-        Style::default().fg(Color::Rgb(180, 190, 200)).bg(marking_bg),
+        Style::default().fg(Color::White).bg(marking_bg),
     );
 
     // Transition 🭬: marking_bg color pointing into the default background.
@@ -860,6 +902,7 @@ fn build_group_header_item<'a>(
     let fill_span = Span::styled(" ", Style::default());
 
     ListItem::new(Line::from(vec![
+        Span::raw(" "),
         chevron_span,
         type_span,
         trans1,
@@ -902,7 +945,7 @@ fn build_file_entry_item<'a>(
     // reads unmistakably as a navigation target, not as a data row.
     if meta.get("is_parent_nav").map(String::as_str) == Some("true") {
         let path_display = meta.get("path").map(String::as_str).unwrap_or("..");
-        let text = format!("  {ICON_PARENT}  parent directory  ({path_display})");
+        let text = format!(" {ICON_PARENT} parent directory  ({path_display})");
         let style = Style::default()
             .fg(Color::Cyan)
             .add_modifier(Modifier::BOLD);
@@ -913,7 +956,7 @@ fn build_file_entry_item<'a>(
     // columns stay aligned.  The dim styling and [kind] annotation distinguish
     // siblings visually without breaking the tabular layout.
     let is_sibling = meta.contains_key("sibling_kind");
-    let base_indent = "  ";
+    let base_indent = "   ";
 
     // IOV posture markers — read from metadata keys populated by
     // `tree_adapter::populate_entry_metadata`.  Each flag is rendered as a
@@ -1015,6 +1058,7 @@ fn build_file_entry_item<'a>(
         Style::default().fg(Color::DarkGray),
     ));
     append_iov_spans(&mut spans, iov_i, iov_o, iov_v);
+    spans.push(Span::raw(" ")); // gap between IOV and MODE, matching header
 
     spans.push(Span::styled(format!("{mode:<12} "), theme.data_value));
     spans.push(Span::styled(format!("{uid_gid:<16} "), theme.data_key));

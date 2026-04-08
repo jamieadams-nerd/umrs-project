@@ -206,6 +206,50 @@ Trust wiring in Phase 2.2/2.3 complete. New `trust.rs` module; `build_c2pa_setti
 All manifest reader functions now accept `&UmrsConfig`. Use `c2pa::Reader::from_context(ctx).with_file(path)`, not `Reader::from_file(path)`.
 See [project_umrs_c2pa.md](project_umrs_c2pa.md) for full details.
 
+## CUI Palette Module (added 2026-04-08)
+
+`umrs-ui/src/palette.rs` — canonical location for `palette_bg(index_group)` and `palette_fg(index_group)`.
+Both are `pub` with `#[must_use]` messages. Import as `use umrs_ui::palette::{palette_bg, palette_fg}`.
+Within `umrs-ui` itself, import as `use crate::palette::{palette_bg, palette_fg}`.
+`umrs-label/src/tui/render.rs` was the source — local copies deleted, now imports from `umrs_ui::palette`.
+`umrs-ls/src/tui_render.rs` also imports `palette_bg` from `umrs_ui::palette`.
+`marking_detail.rs` imports `crate::palette::{palette_bg, palette_fg}` for marking key chip styling.
+
+## umrs-ls Label Popup Polish (2026-04-08)
+
+Five issues fixed:
+1. Popup title: styled `Line::from(Span::styled(...))` with `fg=Black, bg=Cyan, BOLD` — NOT plain string
+2. Group header colors: `type_bg = Rgb(0x2D,0x3A,0x4A)` (dark navy), `marking_bg = palette_bg("")` (cui_purple)
+3. Flag flush-right: `gap = max_width.saturating_sub(used + flag_width)` before flag span
+4. ESC hint: appended after `build_detail_lines(...)` as dim `Span::styled("  [ESC] close", DarkGray)`
+5. Marking key chip: `palette_fg/palette_bg(index_group)` unless `designation=="system"` or `index_group.is_empty()`
+
+All `Line`/`Span` imports inside `render_label_popup` added as local `use ratatui::text::{Line, Span}`.
+
+## umrs-ui text_fit — wrap helpers (added 2026-04-08)
+
+`wrap_text_lines(text, max_width) -> Vec<String>` and
+`wrap_indented(text, indent, max_width, style) -> Vec<Line<'static>>` are now
+`pub` in `umrs-ui/src/text_fit.rs`. `build_detail_lines` in `marking_detail.rs`
+now takes `max_width: usize` and uses `wrap_indented` for all multi-line fields
+(Description, Handling, Injury Examples, Required Warning, Dissemination).
+`Wrap { trim: false }` removed from both `render_marking_detail` and
+`render_label_popup` in umrs-ls. Local copies in `umrs-label/src/tui/render.rs`
+deleted; replaced with `use umrs_ui::text_fit::{..., wrap_indented, wrap_text_lines}`.
+
+## umrs-ls Label Popup (added 2026-04-08)
+
+`umrs-ls` now integrates the CUI label detail popup. Enter on a group header or labeled file node opens the popup.
+
+Key changes:
+- `Cargo.toml`: `umrs-label = { path = "../umrs-label" }` (lib crate name: `umrs_labels`)
+- `tree_adapter.rs`: group nodes now carry `metadata["kind"] = "group_header"` and `metadata["marking"]` for popup routing
+- `main.rs`: `load_catalogs()` tries two candidate paths (CWD-relative + `../umrs-label/config/…` for dev); `lookup_marking_detail(marking, Option<&Catalog>, Option<&Catalog>)` → `Option<MarkingDetailData>`; `build_marking_detail(key, &Marking, flag)` mirrors `tui/app.rs::marking_to_detail`
+- Event loop: `label_popup: Option<(MarkingDetailData, u16)>` state; input interceptor before `nav_error` check; popup rendered last (on top of all others)
+- `handle_enter`: extended to accept `Option<&Catalog>` refs; opens popup on group headers and file nodes with non-sentinel markings; falls through to expand/collapse when no catalog data
+- `render_label_popup`: uses `BorderType::Double` + `render_marking_detail` from umrs-ui; clamp for popup sizing; `#[expect(...)]` for cast annotations
+- Test TREE-ADAPTER-008 added to `tests/tree_adapter_tests.rs`
+
 ## umrs-labels Catalog (updated 2026-04-07)
 
 **LocaleText migration complete.** All human-readable text fields (`name`, `description`, `marking_banner`, `injury_examples`) in `Marking` are now `LocaleText`. `CatalogMetadata.catalog_name` is also `LocaleText`. Old `_fr` Option fields removed.

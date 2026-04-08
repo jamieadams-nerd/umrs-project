@@ -350,9 +350,13 @@ impl ViewerState {
                 true
             }
             // Actions not relevant to viewer mode.
+            // PanelSwitch is handled by the calling binary's event loop — the
+            // caller owns the panel state and switches it directly, so ViewerState
+            // has no authority over which panel is active.
             Action::Refresh
             | Action::DialogToggleFocus
             | Action::ShowHelp
+            | Action::PanelSwitch
             | Action::Save
             | Action::Discard
             | Action::ToggleEdit => false,

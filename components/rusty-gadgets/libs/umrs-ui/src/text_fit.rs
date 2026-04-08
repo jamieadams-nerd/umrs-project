@@ -17,6 +17,12 @@
 //! - [`display_width`] — compute the terminal display width of a string
 //!   in monospace cells (`unicode-width` crate).  Most single-glyph
 //!   emoji occupy two cells; most ASCII occupies one.
+//! - [`wrap_text_lines`] — word-wrap a plain string into a `Vec<String>`,
+//!   one element per line, each fitting within a given column budget.
+//! - [`wrap_indented`] — word-wrap into styled ratatui [`Line`] values with
+//!   a fixed indent prefix on every continuation line.  Unlike ratatui's
+//!   built-in `Wrap`, this preserves the indent on every wrapped line so
+//!   multi-line fields in detail panels stay aligned.
 //!
 //! ## Why left-truncation for paths?
 //!
@@ -35,6 +41,8 @@
 //!   width; truncation must be deterministic and never silently hide
 //!   the trailing identifier.
 
+use ratatui::style::Style;
+use ratatui::text::{Line, Span};
 use unicode_width::UnicodeWidthStr;
 
 use crate::icons::ELLIPSIS;
@@ -178,4 +186,96 @@ pub fn truncate_right(input: &str, max_width: usize) -> String {
     out.push_str(&input[..keep_until]);
     out.push_str(ELLIPSIS);
     out
+}
+
+/// Word-wrap `text` into owned strings that each fit within `max_width`
+/// display columns.
+///
+/// Words are split on ASCII whitespace. A word wider than `max_width` is
+/// placed on its own line without mid-word splitting. Returns an empty
+/// `Vec` when `text` is empty; returns the full text as a single element
+/// when `max_width` is zero (no wrapping performed).
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**: Operator-visible text fields must remain
+///   legible at any terminal width; manual wrapping preserves indentation
+///   that ratatui's built-in `Wrap` cannot maintain.
+#[must_use = "wrapped lines are the only output; discarding them has no effect"]
+pub fn wrap_text_lines(text: &str, max_width: usize) -> Vec<String> {
+    if text.is_empty() {
+        return Vec::new();
+    }
+    if max_width == 0 {
+        return vec![text.to_owned()];
+    }
+    let mut result: Vec<String> = Vec::new();
+
+    // Respect embedded newlines: split into paragraphs first, then
+    // word-wrap each paragraph independently.  A bare `\n` in the
+    // input produces a blank line in the output (paragraph break).
+    for paragraph in text.split('\n') {
+        if paragraph.trim().is_empty() {
+            result.push(String::new());
+            continue;
+        }
+        let mut current = String::new();
+        let mut current_width: usize = 0;
+
+        for word in paragraph.split_whitespace() {
+            let ww = display_width(word);
+            if current_width == 0 {
+                word.clone_into(&mut current);
+                current_width = ww;
+            } else if current_width.saturating_add(1).saturating_add(ww) <= max_width {
+                current.push(' ');
+                current.push_str(word);
+                current_width = current_width.saturating_add(1).saturating_add(ww);
+            } else {
+                let mut next = String::new();
+                word.clone_into(&mut next);
+                result.push(std::mem::replace(&mut current, next));
+                current_width = ww;
+            }
+        }
+        if !current.is_empty() {
+            result.push(current);
+        }
+    }
+    result
+}
+
+/// Word-wrap `text` into styled [`Line`] values, each prefixed with `indent`.
+///
+/// The available text budget per line is
+/// `max_width.saturating_sub(display_width(indent))`. A word wider than
+/// the budget is placed on its own line without splitting. Returns an empty
+/// `Vec` when `text` is empty or the budget is zero.
+///
+/// Unlike ratatui's built-in `Wrap`, this function preserves the indentation
+/// prefix on every continuation line, so multi-line fields (Description,
+/// Handling, etc.) in detail panels remain visually aligned regardless of
+/// terminal width.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**: Multi-line content in audit-relevant panels
+///   must remain legible and correctly indented at any terminal width.
+/// - **NIST SP 800-53 AC-3**: Label display fidelity — no continuation line
+///   may be rendered without its indent prefix, which would break visual
+///   grouping with the originating label.
+#[must_use = "wrapped lines are the only output; pass them to a Paragraph widget"]
+pub fn wrap_indented(text: &str, indent: &str, max_width: usize, style: Style) -> Vec<Line<'static>> {
+    let indent_width = display_width(indent);
+    let text_budget = max_width.saturating_sub(indent_width);
+    if text_budget == 0 || text.is_empty() {
+        return Vec::new();
+    }
+    wrap_text_lines(text, text_budget)
+        .into_iter()
+        .map(|segment| {
+            let full_line = format!("{indent}{segment}");
+            Line::from(Span::styled(full_line, style))
+        })
+        .collect()
 }
